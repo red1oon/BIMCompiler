@@ -1,0 +1,4082 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Construction is manufacturing. A building IS its Bill of Materials.">
+      
+      
+        <meta name="author" content="Redhuan D. Oon">
+      
+      
+        <link rel="canonical" href="https://red1oon.github.io/BIMCompiler/BIMtoProject/">
+      
+      
+        <link rel="prev" href="../4D5DAnalysis/">
+      
+      
+        <link rel="next" href="../ModellerKernelFold/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>BIM → Project Order (ERP) - BIM Intent Compiler</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/custom.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  <script data-goatcounter="https://red1oon.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  
+  <meta name="robots" content="noindex">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#bim-project-order-blueprint" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../" title="BIM Intent Compiler" class="md-header__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            BIM Intent Compiler
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              BIM → Project Order (ERP)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source md-header__source--stacked">
+        <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+        <a href="https://github.com/red1oon/BIMCompiler" title="red1oon/BIMCompiler on GitHub" class="md-source" id="bim-compiler-source" target="_blank" rel="noopener">
+          <div class="md-source__icon md-icon">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+          </div>
+          <div class="md-source__repository" id="bim-compiler-repository">
+            Compiler
+          </div>
+        </a>
+        <span id="repo-totals" class="md-source-totals" title="Combined stars / forks across both repos"></span>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Start Here
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../BIMUserGuide/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  The 3 Apps
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../DeveloperGuide/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Go Deeper
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../SpatialCompilationPaper/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Papers & Positioning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../HalalTrace/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Prototypes & Demos
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../PROJECT_CHRONOLOGY/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  History & Legacy
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../" title="BIM Intent Compiler" class="md-nav__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    BIM Intent Compiler
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start Here
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_1" id="__nav_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Start Here
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../USER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    📖 User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMToolsGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🧰 BIM Tools — User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OFFLINE_INSTALL_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🔒 Fully Offline / Air-Gapped Install
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WhatsNew/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🆕 What's New
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AboutMore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About BIM OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FeatureComparison/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Feature Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MigrateComparisonPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrate & Compare (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TwoAppsOneKernel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two Apps, One Kernel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TwoAppsOneKernelInfographicLandscape.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    One Page InfoGraphics - Landscape
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bench_suite.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Comparison (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../age_demo.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Does Your ERP Age? (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MANIFESTO/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The ERP World View
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contribute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 3 Apps
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    The 3 Apps
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Viewer Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AskFirstSteps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewer Ask — First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerFirstSteps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modeller — First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DAGeVu Modeller — User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ProposerGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Proposer Guide (propose an edit, get the proof)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FastScriptGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fast Script Guide (one door: commands and scripts)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIMGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2D Drawings → BIM (DXF2BIM)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_Yellow_List/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — the yellow list (what you fill in, defaults used)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_Prior_Art/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — prior art (what is new, what we learned, cost of using others)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_FORMAT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — format contract (marks, outputs, registry, codes; generated)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERPUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel-ERP User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TillUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    uniCenta-style Till & Kitchen Screen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CapexDashboardGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM → ERP and CAPEX Dashboard — for iDempiere users
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CapexUATGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CAPEX UAT Guide — step-by-step test script
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERP_FirstSetup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel-ERP — Your First Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MigrationGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration User Guide (Odoo · Business Central · SAP Business One)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OdooMigration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moving from Odoo — how it works, what is proven
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NinjaExcelReport_UserManual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NinjaExcel Report — User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HRBIMAssetGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HR / Tenancy / Operate Module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CivilWorksGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Civil Works — Step by Step
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TeamsOverlayGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Teams Overlay — Collaboration & Optics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Go Deeper
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Go Deeper
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DeveloperGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide (read first if you will change the code)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ArchitectureOverview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Overview (for reviewers)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../FoldEngineBlackBook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fold Engine Black Book (dev manual)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HolyGrail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Holy Grail (editable rules, live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ERPConceptRosetta.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-ERP Rosetta Stone (concept + cost)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIM_Modeller_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Modeller OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERP_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP — Every Record Has a Place
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERPIntegration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP × BIM × HR — One Building, One Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DistributedERP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Distributed ERP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TermsHowToVerify/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to verify the terms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERP_AI_ADVISORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Letting an AI work on the ERP, safely
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SQLiteWasmArchitectureActual.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How the Database Works (big picture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ViewerComponentModel.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewer Component Model (dev architecture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CLASH_DETECTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clash Detection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../JKR_SKATA/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Asset Classification & JKR/SKATA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../IFC_ExportGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IFC Export Guide (for the BIM author)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TimeMachine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Time Machine (4D Scheduling & Editing)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4D5DAnalysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4D/5D Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM → Project Order (ERP)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM → Project Order (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-the-two-templates-the-source-of-truth-both-already-exist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        §0 — THE TWO TEMPLATES (the source of truth, both already exist)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-the-gateway-the-find-panel-selected-bar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        §A — THE GATEWAY: the Find panel selected bar
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#b-multi-select-the-enabler" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        §B — MULTI-SELECT (the enabler)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#c-the-push-selection-scope-project-wbs-the-isomorphism" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        §C — THE PUSH: selection scope → Project WBS (the isomorphism)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-the-round-trip-projectissue-actual-4d-split-screen-time-machine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        §D — THE ROUND-TRIP: ProjectIssue → "Actual" 4D → split-screen Time Machine
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#e-rollback-the-history-dots-scoped-no-new-ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        §E — ROLLBACK: the history dots, scoped (no new UI)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#f-what-this-is-not-scope-fences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        §F — What this is NOT (scope fences)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#g-build-order-paper-code-when-go" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        §G — Build order (paper → code, when GO)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#h-lifecycle-killers-follow-on-sub-lanes-same-plumbing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        §H — Lifecycle killers (follow-on sub-lanes, same plumbing)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="§H — Lifecycle killers (follow-on sub-lanes, same plumbing)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#h1-model-delta-signed-variation-order-highest-value-per-effort" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        §H1 — Model-delta → signed Variation Order (highest value-per-effort)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#h2-progress-claim-payment-certificate-the-get-paid-side" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        §H2 — Progress claim / payment certificate (the get-paid side)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#h3-owner-handover-live-as-built-asset-register-fm-work-orders-7d" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        §H3 — Owner handover: live as-built asset register + FM work orders (7D)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#h4-4d-lookahead-procurement-just-in-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        §H4 — 4D lookahead procurement (just-in-time)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#h5-embodied-carbon-as-a-parallel-ledger-6d-esg" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        §H5 — Embodied carbon as a parallel ledger (6D / ESG)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#i-reporting-excel-export-the-way-qspm-users-actually-want" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        §I — Reporting: Excel export the way QS/PM users actually want
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#f-versions-three-kinds-and-how-they-meet-2026-11-11-measured-against-the-code-the-revised-model-rule-is-the-owners-below" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        §F — VERSIONS: three kinds, and how they meet (2026-11-11, measured against the code; the revised-model rule is the OWNER'S, below)
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerKernelFold/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry as a Signed-Log Fold
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Papers & Positioning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Papers & Positioning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialCompilationPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deterministic Spatial Compilation (academic paper)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AIProposerDefensiveDisclosure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Defensive Disclosure: an Outside AI Proposes, the App Decides
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_TechnicalNote/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — Deterministic 2D ⇄ BIM Round Trip (technical note)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BrowserScaleBenchmark/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Browser-Scale Benchmark (one tab, local first)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnterpriseAuthentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enterprise Authentication (security)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../StrategicIndustryPositioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Strategic Positioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LocalFirstPriorArt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local-First Prior Art
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LegacyOracleAdapterSpec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Legacy-as-Oracle Adapter (migrate / test an ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ShipYard/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Beyond Buildings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RouteTemplate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Find & Navigate (wayfinding)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../halal/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prototypes & Demos
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Prototypes & Demos
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HalalTrace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Halalan Thayiban — halal track & trace (paper)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glassbowl.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glassbowl — the ERP engine as data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glassbowl_gravity.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glassbowl · Gravity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../RetailScaleStory.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Retail at Scale — two messages a day (benchmark story)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bim_architecture_viz.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How it works — interactive architecture tour
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    History & Legacy
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    History & Legacy
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROJECT_CHRONOLOGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Chronology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../VibeProgramming/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vibe Programming — AI + Domain Expertise
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4DGenerator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 4D Generator — Failure Catalogue & AI Findings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnablingTechTimeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enabling-Tech Timeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RED_PILL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Red Pill — Design From Grammar (origin)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LAST_MILE_PROBLEM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Last Mile — drift tracking (Java era)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMERPPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Construction Economy / ERP Wave (Java era)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SYSTEMS_INSTALLER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Self-Host the Java toolchain (legacy installer)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-the-two-templates-the-source-of-truth-both-already-exist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        §0 — THE TWO TEMPLATES (the source of truth, both already exist)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-the-gateway-the-find-panel-selected-bar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        §A — THE GATEWAY: the Find panel selected bar
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#b-multi-select-the-enabler" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        §B — MULTI-SELECT (the enabler)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#c-the-push-selection-scope-project-wbs-the-isomorphism" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        §C — THE PUSH: selection scope → Project WBS (the isomorphism)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-the-round-trip-projectissue-actual-4d-split-screen-time-machine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        §D — THE ROUND-TRIP: ProjectIssue → "Actual" 4D → split-screen Time Machine
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#e-rollback-the-history-dots-scoped-no-new-ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        §E — ROLLBACK: the history dots, scoped (no new UI)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#f-what-this-is-not-scope-fences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        §F — What this is NOT (scope fences)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#g-build-order-paper-code-when-go" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        §G — Build order (paper → code, when GO)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#h-lifecycle-killers-follow-on-sub-lanes-same-plumbing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        §H — Lifecycle killers (follow-on sub-lanes, same plumbing)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="§H — Lifecycle killers (follow-on sub-lanes, same plumbing)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#h1-model-delta-signed-variation-order-highest-value-per-effort" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        §H1 — Model-delta → signed Variation Order (highest value-per-effort)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#h2-progress-claim-payment-certificate-the-get-paid-side" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        §H2 — Progress claim / payment certificate (the get-paid side)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#h3-owner-handover-live-as-built-asset-register-fm-work-orders-7d" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        §H3 — Owner handover: live as-built asset register + FM work orders (7D)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#h4-4d-lookahead-procurement-just-in-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        §H4 — 4D lookahead procurement (just-in-time)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#h5-embodied-carbon-as-a-parallel-ledger-6d-esg" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        §H5 — Embodied carbon as a parallel ledger (6D / ESG)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#i-reporting-excel-export-the-way-qspm-users-actually-want" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        §I — Reporting: Excel export the way QS/PM users actually want
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#f-versions-three-kinds-and-how-they-meet-2026-11-11-measured-against-the-code-the-revised-model-rule-is-the-owners-below" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        §F — VERSIONS: three kinds, and how they meet (2026-11-11, measured against the code; the revised-model rule is the OWNER'S, below)
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+  <p class="i18n-note"><small>本页尚未翻译，以英文显示。<a href="https://red1oon.github.io/BIMCompiler/BIMtoProject/">英文页面</a>。</small></p>
+  
+                  
+
+
+  
+  
+
+
+<h1 id="bim-project-order-blueprint">BIM → Project Order — Blueprint<a class="headerlink" href="#bim-project-order-blueprint" title="Permanent link">&para;</a></h1>
+<p><em><a href="../USER_GUIDE/">← Back to the <strong>User Guide</strong></a> · <a href="../">Home</a></em></p>
+<blockquote>
+<p><strong>Status:</strong> Tasks 0, A, C BUILT, witnessed &amp; <strong>LIVE</strong> (browser-wired + deployed — bim-ootb PR #316:
+<code>viewer/proj_fold.js?v=1</code> + <code>erp/bim_orders_overlay.js?v=1</code>; the <code>› ERP</code> button drives the fold).
+Re-witnessed 2026-06-15 against the deployed engine — <code>§PROJ_FOLD plannedAmt=1055478 golden=1055478
+match=true</code> (6 phases · 9 tasks · 16 issued lines, idempotent, seqno traces to sequence_rules).
+§D/§E + §H/§I still PAPER.
+Sibling to <code>docs/BIMtoERP.md</code>.
+⚠ <strong>Repo note:</strong> the built files live in <strong>bim-ootb</strong>, not this repo — <code>viewer/proj_fold.js</code>,
+<code>common/history_bar.js</code> (this doc is the cross-repo blueprint; don't look for them here).
+<strong>Built so far:</strong> §0/Task 0 substrate confirmed (<code>W-PROJ-SCHEMA</code> — canonical <code>erp/ad_seed.db</code>,
+11 write targets, OPEN-3 resolved) · §A/Task A cost-on-selection + 5D-pack-in-Settings
+(<code>W-FIND-COST</code>) · §C/Task C the fold engine <code>proj_fold.js</code> (<code>W-PROJ-PUSH/FOLD/SEQ</code> — building
+selection → C_Project tree, idempotent, PlannedAmt == 5D golden via BigDecimal, seqno traces to
+sequence_rules; <code>› ERP</code> button wired). Remaining for §C: browser visual-drive + the cross-page
+hand-off so the ERP app reads the folded db (= BIMtoERP §B write-path).
+<strong>The one-line idea:</strong> the <em>whole building</em> (or any selected slice) becomes an
+iDempiere <strong><code>C_Project</code></strong> carrying its <strong>4D schedule</strong> (phases/tasks) and <strong>5D cost</strong>
+(planned BOQ lines), which iDempiere can then <strong>generate a Purchase Order from</strong>.
+<strong>Prime alignment:</strong> EXTRACT OR COMPILE ONLY. Phase/seq/dates come from the 4D template,
+price from the 5D template, qty from QTO. Never invent a phase, a date, a rate, or a line.
+Money/qty math via <code>site/bigdecimal.js</code> ONLY (see <code>memory feedback_numbers_via_bigdecimal</code>).</p>
+</blockquote>
+<p><strong>Noun vs verb.</strong> <code>docs/BIMtoERP.md</code> is the <strong>noun</strong> bridge — element Type→<code>M_Product</code>,
+GUID→<code>A_Asset</code>, on-hand (what a thing <em>is</em> in inventory). This doc is the <strong>verb</strong> bridge —
+the building as <em>work to be done</em>: project → phases → tasks → cost lines → PO. They share the
+IFC GUID join and the <code>M_Product</code>/<code>M_Product_Category</code> layer; the verb rides on the noun.</p>
+<p>Executable lane: <code>prompts/BIM_TO_PROJECT.md</code>. ERP engine source-of-truth: <code>build/erp/</code>
+(see <code>docs/ERP.md</code>). Round-trip plays through <code>time_machine.js</code> (the 4D Time Machine).</p>
+<hr />
+<h2 id="0-the-two-templates-the-source-of-truth-both-already-exist">§0 — THE TWO TEMPLATES (the source of truth, both already exist)<a class="headerlink" href="#0-the-two-templates-the-source-of-truth-both-already-exist" title="Permanent link">&para;</a></h2>
+<p>The Project Order is folded from <strong>two editable JSON templates</strong> — nothing is invented:</p>
+<table>
+<thead>
+<tr>
+<th>Template</th>
+<th>Lives at</th>
+<th>Drives</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>4D</strong> <code>sequence_rules.json</code></td>
+<td><code>viewer/rates/sequence_rules.json</code> (LIVE, used by Time Machine <code>injectGantt</code>)</td>
+<td><code>ifc_class → {phase, sequence, resource}</code> + labour productivity → phase <strong>structure, order, dates</strong></td>
+</tr>
+<tr>
+<td><strong>5D</strong> <code>5D_rates.json</code> / rate packs</td>
+<td><code>viewer/rates/&lt;pack&gt;.json</code> (cidb-my, bcis-uk, rsmeans-us, …; loaded by <code>rates.js</code>)</td>
+<td><code>ifc_class → {rate, unit}</code> → line <strong>price</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Because the push reads the <strong>same</strong> <code>sequence_rules.json</code> that Time Machine already plays, the
+planned Project Order and the planned Time Machine are <strong>consistent by construction</strong> — and the
+"Actual" version (§D) measures variance against that one baseline.</p>
+<blockquote>
+<p><strong>Asymmetry to fix (carried from BIMtoERP point 4):</strong> the 4D <code>sequence_rules.json</code> is already
+editable via the Settings JSON editor; the 5D rate packs are <strong>not</strong> surfaced there. This lane
+adds a 5D rate-pack picker to Settings so the cost <em>shown</em> on a selection (§A) and the price
+<em>pushed</em> into a line (§C) use the same active pack — one source, no drift.</p>
+</blockquote>
+<hr />
+<h2 id="a-the-gateway-the-find-panel-selected-bar">§A — THE GATEWAY: the Find panel selected bar<a class="headerlink" href="#a-the-gateway-the-find-panel-selected-bar" title="Permanent link">&para;</a></h2>
+<p>The Find panel (<code>navigate_find.js</code>) is the <strong>single gateway</strong> to the ERP side. Its <code>#find-selected</code>
+bar already carries the current selection + a ▶ Navigate button. It gains two siblings:</p>
+<ul>
+<li><strong><code>Check ERP</code></strong> (read) — the <code>docs/BIMtoERP.md</code> §A data-gated chip (product/asset/cost read).</li>
+<li><strong><code>&gt; to ERP</code></strong> (write) — fold the current selection into a Project Order (§C).</li>
+</ul>
+<p><strong>Cost on the selected bar (precondition — surface, don't build).</strong> The compute already exists in
+<code>nlp.js</code> (<code>calcCost()</code>, <code>getRate()</code>, <code>RATES</code>, currency conversion — what powers "total cost"). The
+selected bar must show <strong>qty × rate</strong> for the current selection, in the active pack's currency, so
+the user sees the 5D number <em>before</em> pushing it. An honest gateway shows the cost it will commit.</p>
+<p><strong>Witness.</strong>
+- <code>W-FIND-COST</code>: <code>§FIND_COST scope=&lt;sel&gt; elements=&lt;n&gt; qty=&lt;q&gt; cost=&lt;bd&gt; cur=&lt;CUR&gt; pack=&lt;name&gt;</code> —
+  cost folds exact == <code>Σ(qty × rate)</code> golden (BigDecimal); pack == active Settings pack.</p>
+<hr />
+<h2 id="b-multi-select-the-enabler">§B — MULTI-SELECT (the enabler)<a class="headerlink" href="#b-multi-select-the-enabler" title="Permanent link">&para;</a></h2>
+<p>Today <code>§NAV_FIND_002</code> gives multi-select for <strong>parent rows only</strong> (<code>_selStoreys</code>/<code>_selDiscs</code>,
+"plain = replace"). This lane extends the <strong>same Set model</strong> to <strong>type/category leaves</strong>
+(<code>_selTypes</code>/<code>_selCats</code>), so a user can tick several types/categories across the tree and push them
+as one Project Order slice. No new selection engine — extend the existing one; axis change still
+clears (the unify rule).</p>
+<p><strong>Witness.</strong>
+- <code>W-FIND-MULTI</code>: <code>§FIND_MULTI axis=&lt;a&gt; picked=&lt;ids&gt; elements=&lt;n&gt;</code> — selection set == union of
+  ticked leaves; cleared on axis change.</p>
+<hr />
+<h2 id="c-the-push-selection-scope-project-wbs-the-isomorphism">§C — THE PUSH: selection scope → Project WBS (the isomorphism)<a class="headerlink" href="#c-the-push-selection-scope-project-wbs-the-isomorphism" title="Permanent link">&para;</a></h2>
+<p>The Find panel's <strong>axes already ARE the project WBS levels</strong>. The granularity of the Project Order
+is just <em>how deep you selected</em> — no separate scoping UI:</p>
+<table>
+<thead>
+<tr>
+<th>Find selection</th>
+<th>→</th>
+<th>Project Order level</th>
+<th>Key columns</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>nothing</strong> (whole building)</td>
+<td>→</td>
+<td><code>C_Project</code> (all phases)</td>
+<td><code>value</code>,<code>name</code>,<code>datecontract</code>/<code>datefinish</code>,<code>plannedamt</code>,<code>c_currency_id</code>,<code>m_pricelist_version_id</code></td>
+</tr>
+<tr>
+<td>storey / discipline (parent row)</td>
+<td>→</td>
+<td><code>C_ProjectPhase</code></td>
+<td><code>name</code>(=4D <code>phase</code>),<code>seqno</code>(=4D <code>sequence</code>),<code>startdate</code>/<code>enddate</code>,<code>plannedamt</code></td>
+</tr>
+<tr>
+<td>type (leaf)</td>
+<td>→</td>
+<td><code>C_ProjectLine</code></td>
+<td><code>plannedqty</code>,<code>plannedprice</code>,<code>plannedamt</code>,<code>m_product_id</code></td>
+</tr>
+<tr>
+<td>category</td>
+<td>→</td>
+<td><code>M_Product_Category</code> grouping the lines</td>
+<td><code>m_product_category_id</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Fold steps (idempotent, find-or-create, BigDecimal):</strong>
+1. <strong>Header</strong> — find-or-create <code>C_Project</code> keyed on building <code>value</code>; span = 4D min/max dates.
+2. <strong>Phases/tasks (4D)</strong> — for each phase in <code>sequence_rules.json</code>: <code>C_ProjectPhase.name</code>=<code>phase</code>,
+   <code>seqno</code>=<code>sequence</code>; <code>startdate</code>/<code>enddate</code> from labour-productivity durations (the same dates
+   Time Machine computes). Work packages by <code>resource</code> → <code>C_ProjectTask</code>.
+3. <strong>Lines (5D)</strong> — each Type → <code>C_ProjectLine</code>: <code>plannedqty</code> from QTO, <code>plannedprice</code> from the
+   active rate pack (<code>rate × unit</code> via <code>site/bigdecimal.js</code>), <code>plannedamt</code>=qty×price.
+   <code>m_product_id</code> resolved by the <strong>same find-or-create as <code>docs/BIMtoERP.md</code> §B</strong>
+   (<code>M_Product.Value</code>=Type); <code>m_product_category_id</code> from the Type's parent/category.
+4. <strong>Roll-up</strong> — line→phase.<code>plannedamt</code>→project.<code>plannedamt</code>/<code>plannedqty</code>.
+5. <strong>The Order</strong> — phases with a supplier <code>c_bpartner_id</code>: set <code>generateorder</code> → fold a <code>C_Order</code>
+   PO (iDempiere's native Generate-PO-from-project). <strong>Gated:</strong> no supplier = plan-only project,
+   no PO (non-invent). This is the literal <strong>"Project Order."</strong></p>
+<p><strong>Witnesses.</strong>
+- <code>W-PROJ-PUSH</code>: <code>§PROJ_PUSH project=&lt;v&gt; phases=+&lt;np&gt; tasks=+&lt;nt&gt; lines=+&lt;nl&gt; order=&lt;co|-&gt;</code>
+  — counts == selection; <strong>second run reports <code>+0</code> (idempotent)</strong>.
+- <code>W-PROJ-FOLD</code>: <code>Σ project plannedamt folds exact == nD 5D golden</code> (BigDecimal).
+- <code>W-PROJ-SEQ</code>: <code>§PROJ_SEQ phase=&lt;name&gt; seqno=&lt;n&gt; start=&lt;d&gt; end=&lt;d&gt;</code> — every phase name+seqno
+  traces to a <code>sequence_rules.json</code> row; dates == Time Machine's planned dates for that phase.</p>
+<hr />
+<h2 id="d-the-round-trip-projectissue-actual-4d-split-screen-time-machine">§D — THE ROUND-TRIP: ProjectIssue → "Actual" 4D → split-screen Time Machine<a class="headerlink" href="#d-the-round-trip-projectissue-actual-4d-split-screen-time-machine" title="Permanent link">&para;</a></h2>
+<p>Delivery against the order folds <strong>back</strong> into a second schedule version, so the viewer can play
+<strong>as-planned vs as-built</strong>.</p>
+<ul>
+<li><strong>Planned / Budget</strong> = today's generative timeline = <code>kernel_ops</code> <code>ELEMENT_PLACE</code> with estimated
+  start/end (tagged <code>version=planned</code>). This is the 4D pushed as the Project Order.</li>
+<li><strong>Actual</strong> = a second timeline sourced from ERP delivery, <strong>not</strong> estimates:
+  <code>C_ProjectIssue.movementdate</code>/<code>movementqty</code> (real, dated, <code>docstatus</code>-gated) +
+  <code>C_ProjectPhase.enddate</code>/<code>iscomplete</code> → a second <code>ELEMENT_PLACE</code> set tagged <code>version=actual</code>.</li>
+<li><strong>The seam already exists:</strong> Time Machine distinguishes a <em>generated</em> from a <em>captured</em> schedule
+  (<code>_capActive</code>; <code>injectGantt()</code> anchors onto a captured schedule). <strong>"Actual" is just another
+  captured schedule whose source is ERP issues instead of an IFC schedule</strong> — no new render path.</li>
+<li><strong>Split-screen</strong> = two timelines (planned | actual) on one shared scrub cursor; divergence
+  (actual lagging planned) = the schedule variance, painted red.</li>
+<li><strong>5D variance rides the same event</strong> — the project already carries <code>plannedamt</code> vs <code>committedamt</code>
+  vs <code>invoicedamt</code>. One <code>C_ProjectIssue</code> posting moves both 4D (actual schedule) and 5D (actual
+  cost). One loop, two variances.</li>
+</ul>
+<p><strong>Two fences (the non-invent rules):</strong>
+1. <strong>Versioning</strong> — <code>version</code> dimension on the schedule (<code>planned|actual</code>); <strong>never overwrite the
+   planned baseline</strong>.
+2. <strong>Issue→GUID allocation</strong> — a <code>C_ProjectIssue</code> is <em>per-product, per-qty</em> ("20 doors on date D"),
+   not per-element-GUID. To paint actual progress on specific elements, allocate the issued qty back
+   to GUIDs by the deterministic rule: <strong>light <code>N of M</code> elements of that Type within the issue's
+   phase, ordered by <code>seqno</code></strong>. You commit "20 doors done" honestly; you do not invent <em>which
+   individual</em> door beyond the fixed seqno order. EXTRACT-only.</p>
+<p><strong>Witnesses.</strong>
+- <code>W-PROJ-ACTUAL</code>: <code>§PROJ_ACTUAL phase=&lt;name&gt; planned_end=&lt;d&gt; actual_end=&lt;d&gt; var_days=&lt;n&gt;</code> —
+  actual dates trace to <code>C_ProjectIssue.movementdate</code>/phase <code>enddate</code>; never to estimates.
+- <code>W-PROJ-ALLOC</code>: <code>§PROJ_ALLOC type=&lt;T&gt; issued=&lt;q&gt; lit=&lt;n&gt;/&lt;m&gt; order=seqno</code> — lit count == issued
+  qty (capped at M); the <em>which</em> is seqno-deterministic, re-run identical.
+- <code>W-TM-SPLIT</code>: planned + actual timelines render under one cursor; <code>var_days</code> == <code>W-PROJ-ACTUAL</code>.</p>
+<hr />
+<h2 id="e-rollback-the-history-dots-scoped-no-new-ui">§E — ROLLBACK: the history dots, scoped (no new UI)<a class="headerlink" href="#e-rollback-the-history-dots-scoped-no-new-ui" title="Permanent link">&para;</a></h2>
+<p>Scrubbing a Project Order to redo BIM→ERP is <strong>not</strong> a bespoke button — it is the <strong>same
+<code>‹ dots ›</code> history gesture</strong> the user already knows from the viewer timeline and the ERP
+world-history "W", mounted <strong>scoped</strong> to the project. The pieces are shipped:</p>
+<ul>
+<li><code>common/history_bar.js</code> takes <code>configure({mountHostId, source, treeKey})</code> → dock the bar inside
+  the Project Order panel, <code>source=doc</code>, <code>treeKey</code>=this <code>C_Project</code> → its own timeline of dots.</li>
+<li><code>crud_overlay.js</code> exposes <code>crudFoldBack</code> / <code>crudFoldForward</code> ("REUSED UNCHANGED — no second
+  history lane").</li>
+</ul>
+<p><strong>Behaviour:</strong>
+- <strong>Click back to the first dot</strong> → <code>crudFoldBack</code> walks every op back to before creation = the
+  project is scrubbed; re-run <code>&gt; to ERP</code> for a fresh push.
+- <strong>Forward</strong> → <code>crudFoldForward</code> = redo to tip (scrub is itself reversible).
+- <strong>Committed-safe for free</strong> — folding back a committed doc goes through the status FSM
+  (CO→DR via <code>setDocStatus</code>), <strong>not</strong> a delete; the §D "Actual"/variance data is protected with no
+  special gating. The fold already does the right thing.
+- <strong>Deterministic redo</strong> — because the push reads only the two templates (§0), scrub-then-redo
+  produces the <strong>identical</strong> Project Order (<code>W-PROJ-PUSH</code> second run = <code>+0</code>).</p>
+<p><strong>Standardization win:</strong> one bar, one mental model ("scrub the dots back to undo, forward to redo"),
+mounted everywhere — viewer, ERP, and now the Project Order panel. The user learns the gesture once;
+it works for BIM→ERP rollback too. This is <em>why</em> the history bar was extracted into a shared module.</p>
+<p><strong>Witness.</strong>
+- <code>W-PROJ-ROLLBACK</code>: <code>§PROJ_ROLLBACK project=&lt;v&gt; dots=&lt;n&gt; foldback=&lt;bool&gt; rows_after=0</code> —
+  first-dot fold-back leaves zero project rows; <code>&gt; to ERP</code> re-push restores identical counts.</p>
+<hr />
+<h2 id="f-what-this-is-not-scope-fences">§F — What this is NOT (scope fences)<a class="headerlink" href="#f-what-this-is-not-scope-fences" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Not a live two-way ERP daemon — deterministic push + read against ERP.db, scrubbable via history.</li>
+<li>Not invented financials/dates — price only from the active 5D pack, dates only from 4D durations,
+  qty only from QTO, BigDecimal only.</li>
+<li>Not a new geometry/render path — Project Order is a data fold; "Actual" rides the existing
+  captured-schedule path in Time Machine.</li>
+<li>6D carbon / 8D safety ride-along is <strong>out of v1</strong> — leave the seam (carbon = project attribute;
+  hazards → <code>C_ProjectIssue</code>), fence it so it is not silently dropped.</li>
+<li>Three Concerns stay split (BOM PRINCIPLE): WHAT = <code>M_Product</code>/<code>M_Product_Category</code>;
+  HOW = UOM + rate pack + 4D sequence; WHERE = <code>build/erp/ad_*.db</code>.</li>
+</ul>
+<hr />
+<h2 id="g-build-order-paper-code-when-go">§G — Build order (paper → code, when GO)<a class="headerlink" href="#g-build-order-paper-code-when-go" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Confirm <code>build/erp/ad_full.db</code> carries <code>c_project*</code> + <code>c_order*</code> (DONE — verified present);
+   confirm canonical viewer-side ERP.db (shared with BIMtoERP OPEN-3).</li>
+<li>§A cost-on-selection (surface <code>nlp.js</code> compute on <code>#find-selected</code>) + 5D pack picker in Settings.</li>
+<li>§B leaf multi-select (<code>_selTypes</code>/<code>_selCats</code>).</li>
+<li>§C <code>&gt; to ERP</code> push (find-or-create, idempotent) — header → phases (4D) → lines (5D) → PO.</li>
+<li>§E scoped <code>history_bar</code> mount (rollback) — verify <code>crudFoldBack</code> scrubs to zero.</li>
+<li>§D "Actual" schedule version + split-screen Time Machine (the round-trip).
+Each step lands with its witness <code>§</code>-line before the next. Whitebox <code>§</code>-log first; Playwright only
+drives/captures. ERP writes go to <code>build/erp/</code> ONLY; never touch <code>deploy/live/</code>.</li>
+</ol>
+<p>The §H lifecycle killers below are <strong>follow-on sub-lanes</strong> off this same plumbing (the GUID join,
+the signed fold, the two templates) — sequence them after §C–§E land.</p>
+<hr />
+<h2 id="h-lifecycle-killers-follow-on-sub-lanes-same-plumbing">§H — Lifecycle killers (follow-on sub-lanes, same plumbing)<a class="headerlink" href="#h-lifecycle-killers-follow-on-sub-lanes-same-plumbing" title="Permanent link">&para;</a></h2>
+<p>Five high-value flows BIM users want, each reusing this lane's machinery and <strong>mostly already
+backed by existing code or seed tables</strong> (verified 2026-06-14). EXTRACT-only throughout: every
+amount traces to the rate pack / QTO / a real ERP row; BigDecimal only.</p>
+<h3 id="h1-model-delta-signed-variation-order-highest-value-per-effort">§H1 — Model-delta → signed Variation Order (highest value-per-effort)<a class="headerlink" href="#h1-model-delta-signed-variation-order-highest-value-per-effort" title="Permanent link">&para;</a></h3>
+<p>The cost engine <strong>already exists</strong>: <code>viewer/variation_order.js</code> (S222) does <strong>FIDIC Clause 12
+valuation + AACE change-order costing + EVM variance</strong>, ADDED ×1.0 / REMOVED ×0.3 / CHANGED ×1.3,
+schedule impact from the 4D productivity. Today it terminates in an <strong>Excel file</strong>. This sub-lane
+folds it into the ledger instead:</p>
+<ul>
+<li>A model revision → <strong>GUID diff</strong> (added/removed/changed elements — the same <code>elements_meta.guid</code>
+  join) → <code>variation_order.js</code> prices the delta → fold a <strong>signed <code>C_Order</code> amendment</strong> (or a
+  <code>C_Project</code> variation line) in ERP, painted on the model, recorded in the history dots.</li>
+<li>The VO is a <strong>reversible signed fold</strong> (<code>crudFoldBack</code>) — survives dispute, fully auditable.</li>
+</ul>
+<p><strong>Witness — <code>W-PROJ-VO</code>:</strong> <code>§PROJ_VO rev=&lt;r&gt; added=&lt;n&gt; removed=&lt;n&gt; changed=&lt;n&gt; delta=&lt;bd&gt; co=&lt;id&gt;</code>
+— delta folds exact == <code>variation_order.js</code> golden (BigDecimal); counts == the GUID diff.</p>
+<h3 id="h2-progress-claim-payment-certificate-the-get-paid-side">§H2 — Progress claim / payment certificate (the get-paid side)<a class="headerlink" href="#h2-progress-claim-payment-certificate-the-get-paid-side" title="Permanent link">&para;</a></h3>
+<p>§C does the <strong>buy</strong> side (Generate-PO). This closes the <strong>cash-in</strong> loop: % complete per
+element/phase (from the §D <em>Actual</em> schedule) → certify → fold a <strong><code>C_Invoice</code>/<code>C_InvoiceLine</code>
+progress billing</strong> (<code>C_Project.projinvoicerule</code> governs it; column present, set the rule value).
+Paint the model by <strong>claimed / certified / disputed</strong>.</p>
+<p><strong>Witness — <code>W-PROJ-CLAIM</code>:</strong> <code>§PROJ_CLAIM phase=&lt;name&gt; pct=&lt;%&gt; claimed=&lt;bd&gt; certified=&lt;bd&gt;
+invoice=&lt;id&gt;</code> — <code>claimed</code> folds exact == <code>Σ(lineplannedamt × pct)</code> golden; ties to
+<code>C_ProjectLine.invoicedamt</code>.</p>
+<h3 id="h3-owner-handover-live-as-built-asset-register-fm-work-orders-7d">§H3 — Owner handover: live as-built asset register + FM work orders (7D)<a class="headerlink" href="#h3-owner-handover-live-as-built-asset-register-fm-work-orders-7d" title="Permanent link">&para;</a></h3>
+<p>The seed already carries the <strong>full asset lifecycle</strong>: <code>a_asset_addition</code>, <code>a_asset_delivery</code>,
+<code>a_asset_change</code>, <code>a_asset_retirement</code>, <code>a_asset_info_fin/_ins/_lic/_tax</code>. On project completion
+(<code>C_ProjectPhase.iscomplete</code>), capitalize project lines into <code>A_Asset</code> with warranty / serial /
+O&amp;M / insurance (reusing <code>docs/BIMtoERP.md</code> §B GUID→<code>A_Asset</code>). The owner <strong>taps an element →
+raises a maintenance request</strong> (<code>R_Request</code>). Deliverable: a <em>queryable, live</em> asset register
+bonded to the 3D model — not a 500-page handover PDF.</p>
+<p><strong>Witness — <code>W-PROJ-HANDOVER</code>:</strong> <code>§PROJ_HANDOVER assets=+&lt;na&gt; warranties=&lt;n&gt; request=&lt;id|-&gt;</code> —
+one <code>A_Asset</code> per completed-phase GUID; tap→<code>R_Request</code> traces to the element GUID.</p>
+<h3 id="h4-4d-lookahead-procurement-just-in-time">§H4 — 4D lookahead procurement (just-in-time)<a class="headerlink" href="#h4-4d-lookahead-procurement-just-in-time" title="Permanent link">&para;</a></h3>
+<p>"What must I order <strong>this week</strong> to not slip?" The model already holds the dates: 4D need-dates
+(phase <code>startdate</code> minus lead time) + supplier lead times → fold <code>M_Requisition</code>/<code>M_RequisitionLine</code>
+(or POs) with <strong>required-by</strong> dates. Replaces the manual 6-week lookahead.</p>
+<p><strong>Witness — <code>W-PROJ-LOOKAHEAD</code>:</strong> <code>§PROJ_LOOKAHEAD window=&lt;6wk&gt; items=&lt;n&gt; reqs=+&lt;nr&gt;</code> — every
+requisition's required-by == phase <code>startdate − leadtime</code>; no item without a real need-date (non-invent).</p>
+<h3 id="h5-embodied-carbon-as-a-parallel-ledger-6d-esg">§H5 — Embodied carbon as a parallel ledger (6D / ESG)<a class="headerlink" href="#h5-embodied-carbon-as-a-parallel-ledger-6d-esg" title="Permanent link">&para;</a></h3>
+<p>You already compute 6D carbon (<code>templates/6D_carbon.json</code>). Run it <strong>like cost</strong>: a carbon budget
+on the project, <strong>carbon actual folded per <code>C_ProjectIssue</code></strong> (each delivery posts its embodied
+carbon the way it posts cost). Carbon budget vs actual, painted on the model. Regulatory tailwind;
+almost nobody integrates carbon at the <em>transaction</em> layer.</p>
+<p><strong>Witness — <code>W-PROJ-CARBON</code>:</strong> <code>§PROJ_CARBON budget=&lt;tco2e&gt; actual=&lt;tco2e&gt; var=&lt;tco2e&gt;</code> — actual
+folds exact == <code>Σ(issued qty × carbon factor)</code> golden; factors trace to <code>6D_carbon.json</code>.</p>
+<blockquote>
+<p><strong>Sequencing:</strong> §H1 (VO) first — most reuse, loudest pain point. Then §H2 (claim) to close the
+cash loop, §H3 (handover) for the owner story, §H4/§H5 as differentiators. Each is a standalone
+sub-lane with its own witness; none blocks §C–§E.</p>
+</blockquote>
+<hr />
+<h2 id="i-reporting-excel-export-the-way-qspm-users-actually-want">§I — Reporting: Excel export the way QS/PM users actually want<a class="headerlink" href="#i-reporting-excel-export-the-way-qspm-users-actually-want" title="Permanent link">&para;</a></h2>
+<p>Every §C/§H output gets an <strong>Excel report</strong> in the standard construction layout — not a raw dump.
+Reuse the existing engines, do <strong>not</strong> write a new Excel writer:</p>
+<ul>
+<li><strong>ERP-side reports</strong> (claim, VO register, cost/EVM, asset register) → the <strong><code>erp/ninja_excel.js</code></strong>
+  engine: dictionary-driven, folds SQL over the tenant DB into a workbook <strong>and verifies every total
+  by example to the cent</strong>. This is the right tool because its output is <em>provably correct</em>, not just
+  formatted.</li>
+<li><strong>Viewer-side quick exports</strong> (BoQ, schedule) → <strong><code>viewer/excel.js</code></strong> (SheetJS/XLSX) +
+  <code>export_4d.js</code>/<code>export_5d.js</code>, the same path <code>variation_order.js</code> already uses.</li>
+<li><strong>Match iDempiere print layouts</strong> where one exists → the <strong><code>erp/report_overlay.js</code> <code>foldPrint</code></strong>
+  PrintFormat fold (already proven: Invoice 8/8, 48 cells, <code>W-PRINTFORMAT</code> to the cent).</li>
+</ul>
+<p><strong>The standard report set (the layouts users expect):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Report</th>
+<th>Grouping</th>
+<th>Columns (the conventional shape)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>BoQ</strong> (Bill of Quantities)</td>
+<td>by trade / WBS phase</td>
+<td>Item · Description · Unit · Qty · Rate · Amount; section subtotals; grand total</td>
+</tr>
+<tr>
+<td><strong>Progress Claim / Payment Certificate</strong></td>
+<td>by phase/line</td>
+<td>Contract value · Prev claimed · This claim % · This claim amt · Cumulative · Retention · Net</td>
+</tr>
+<tr>
+<td><strong>Variation Order register</strong></td>
+<td>by VO</td>
+<td>VO no. · Description · Added/Removed/Changed · Cost impact · Schedule impact · Status</td>
+</tr>
+<tr>
+<td><strong>Cost / EVM report</strong></td>
+<td>by phase</td>
+<td>PV · EV · AC · CV · SV · CPI · SPI</td>
+</tr>
+<tr>
+<td><strong>Schedule</strong></td>
+<td>by phase (seqno)</td>
+<td>Phase · Start · End · Duration · % complete · Predecessor</td>
+</tr>
+<tr>
+<td><strong>Asset register (handover)</strong></td>
+<td>by asset</td>
+<td>Tag/GUID · Product · Serial · Warranty · Value · Locator</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Layout conventions (the "usually wants" details):</strong>
+- <strong>Title block</strong> atop each sheet: project name/value, report date, <strong>currency + rate-pack source</strong>
+  (the non-invent traceability — the report says <em>which</em> pack/version priced it).
+- Frozen header row; grouped rows with <strong>section subtotals</strong>; bold <strong>totals</strong> row.
+- Number format: thousands separator + 2 dp; currency symbol from the active pack's <code>meta.currency</code>.
+- <strong>One workbook, multiple sheets</strong> when a flow spans reports (e.g. a project pack = BoQ + Schedule +
+  Cost on three tabs) — mirrors the §C Export chooser's multi-select bundling.
+- Footer cites the source rows (GUID / <code>C_*</code> id) so any cell is traceable back to the model/ledger.</p>
+<p><strong>The hard rule (this project's ethos): verify-by-example to the cent.</strong> A report is not "done"
+because it is formatted — its totals must fold <strong>== the golden</strong> (<code>ninja_excel.js</code> already enforces
+this). A pretty workbook with a wrong subtotal is a failed report.</p>
+<p><strong>Witness — <code>W-PROJ-REPORT</code>:</strong> <code>§PROJ_REPORT type=&lt;boq|claim|vo|evm|sched|asset&gt; rows=&lt;n&gt;
+total=&lt;bd&gt; golden=&lt;bd&gt; match=&lt;bool&gt; cur=&lt;CUR&gt; pack=&lt;name&gt;</code> — <code>match=true</code> (total == golden to the
+cent); currency + pack stamped in the title block; every section subtotal sums to the grand total.</p>
+<hr />
+<h2 id="f-versions-three-kinds-and-how-they-meet-2026-11-11-measured-against-the-code-the-revised-model-rule-is-the-owners-below">§F — VERSIONS: three kinds, and how they meet (2026-11-11, measured against the code; the revised-model rule is the OWNER'S, below)<a class="headerlink" href="#f-versions-three-kinds-and-how-they-meet-2026-11-11-measured-against-the-code-the-revised-model-rule-is-the-owners-below" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Kind</th>
+<th>Where</th>
+<th>State</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Document revision</strong></td>
+<td><code>BIM_Document</code> (<code>erp/plugins/bim_document.mjs</code>): per (project, deliverable no) a <code>Revision</code>; the latest wins; completing a newer revision sets the older to <strong>Superseded</strong> (<code>DocStatus RE</code>, <code>Reversal_ID</code> = "Superseded By"); issuing an older revision after a newer one is Issued for construction is refused</td>
+<td>BUILT, witnessed (W-BIMDOC)</td>
+</tr>
+<tr>
+<td><strong>Schedule version</strong> <code>planned</code> / <code>actual</code></td>
+<td>§D above</td>
+<td>PAPER: no <code>version=actual</code> code found in <code>viewer/</code> (2026-11-11)</td>
+</tr>
+<tr>
+<td><strong>Model version</strong></td>
+<td>the push is keyed by the model's name; a second Generate adds nothing (idempotent)</td>
+<td>BUILT, but a revised model has no way to arrive as a NEW version</td>
+</tr>
+</tbody>
+</table>
+<p><strong>OWNER DECISION 2026-11-11 (the project is still alpha): <em>"I agree if new documents are version tagged. Old simply replaced."</em></strong> A revised model's push is VERSION-TAGGED, and the old push is REPLACED: no frozen baseline is kept while the project is alpha. This supersedes the "<code>planned r1</code> frozen, <code>planned r2</code> new" proposal in gap 1 below, and relaxes the §D fence "never overwrite the planned baseline" for alpha ONLY. Planned and actual stay separate dimensions; the version tag is what the Time Machine and the dashboard show. Keeping a baseline comes back when the project leaves alpha (owner's call then). Build: a witness that a changed model pushed a second time yields ONE order carrying the new version tag and none of the old rows (and an unchanged model still adds nothing); the rule belongs in <code>viewer/erp_push_plan.js</code> / <code>proj_fold.js</code>, read before editing.</p>
+<p><strong>Gaps (proposed, owner's go before code):</strong>
+1. <strong>Revised model.</strong> Because the push is idempotent, a revised model re-pushed adds nothing, and a delete-and-re-issue overwrites. (Settled by the owner's decision above for alpha: version-tagged, old replaced. The earlier proposal, a frozen <code>planned r1</code> beside a new <code>planned r2</code>, is withdrawn until the project leaves alpha.) Variation Orders already exist for committed orders (guide: "Issue Variation Order"); a version is the schedule side of the same event.
+2. <strong>Which revision a walk used.</strong> SHEETS are already covered: the walker gate (<code>project_inputs.js</code>, <code>DISC_WALK_DRAWN_INTEGRATION.md</code> §12a) compares the register row's <code>sha256</code> with the sheet file, stores <code>drawn_sheet_status(sheet_number, revision, status, basis)</code> in the building DB, and stamps each drawn piece <code>prov='drawn:&lt;no&gt;/&lt;rev&gt;'</code>. NOT covered: (a) a walk is not re-judged when the register changes later (a newer revision issued for construction after the walk); (b) the IFC MODEL itself has no stamp: the extraction keeps the source file NAME (<code>project_metadata.source_file</code>), not a content hash (to verify). PROPOSED: the extraction stores the source file's sha256 so "the model matches the issued document" is two hashes compared (order of trust, §12 step 1 vs 2), and a re-run of the gate against a fresh register reports <code>§INPUTS-STALE</code> for any walk whose stamped revision is no longer the latest issued.
+3. <strong>Project to building</strong> is today a file-name convention: the dashboard looks for <code>&lt;C_Project.Value&gt;_extracted.db</code> (<code>capex/dash.js</code> <code>probeBim</code>) and the push keys the order by the model's name. It works while the two names agree and breaks silently when a project is renamed.</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+
+
+                
+
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/red1oon/bim-ootb" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.linkedin.com/in/red1oon/" target="_blank" rel="noopener" title="www.linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.indexes", "search.suggest", "search.highlight", "toc.follow", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../javascripts/fold-footnotes.js"></script>
+      
+        <script src="../../javascripts/bim_compiler_source.js"></script>
+      
+    
+  </body>
+</html>

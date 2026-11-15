@@ -1,0 +1,5260 @@
+
+<!doctype html>
+<html lang="de" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Construction is manufacturing. A building IS its Bill of Materials.">
+      
+      
+        <meta name="author" content="Redhuan D. Oon">
+      
+      
+        <link rel="canonical" href="https://red1oon.github.io/BIMCompiler/SYSTEMS_INSTALLER_GUIDE/">
+      
+      
+        <link rel="prev" href="../BIMERPPaper/">
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Self-Host the Java toolchain (legacy installer) - BIM Intent Compiler</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/custom.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  <script data-goatcounter="https://red1oon.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  
+  <meta name="robots" content="noindex">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#bim-intent-compiler-systems-installer-guide" class="md-skip">
+          Zum Inhalt
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Kopfzeile">
+    <a href="../" title="BIM Intent Compiler" class="md-header__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            BIM Intent Compiler
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Self-Host the Java toolchain (legacy installer)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Suche" placeholder="Suche" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Suche">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Zurücksetzen" aria-label="Zurücksetzen" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Suche wird initialisiert
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source md-header__source--stacked">
+        <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+        <a href="https://github.com/red1oon/BIMCompiler" title="red1oon/BIMCompiler on GitHub" class="md-source" id="bim-compiler-source" target="_blank" rel="noopener">
+          <div class="md-source__icon md-icon">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+          </div>
+          <div class="md-source__repository" id="bim-compiler-repository">
+            Compiler
+          </div>
+        </a>
+        <span id="repo-totals" class="md-source-totals" title="Combined stars / forks across both repos"></span>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Hauptnavigation" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Start Here
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../BIMUserGuide/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  The 3 Apps
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../DeveloperGuide/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Go Deeper
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../SpatialCompilationPaper/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Papers & Positioning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../HalalTrace/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Prototypes & Demos
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../PROJECT_CHRONOLOGY/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  History & Legacy
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../" title="BIM Intent Compiler" class="md-nav__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    BIM Intent Compiler
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start Here
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_1" id="__nav_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Start Here
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../USER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    📖 User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMToolsGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🧰 BIM Tools — User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OFFLINE_INSTALL_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🔒 Fully Offline / Air-Gapped Install
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WhatsNew/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🆕 What's New
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AboutMore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About BIM OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FeatureComparison/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Feature Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MigrateComparisonPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrate & Compare (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TwoAppsOneKernel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two Apps, One Kernel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TwoAppsOneKernelInfographicLandscape.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    One Page InfoGraphics - Landscape
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bench_suite.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Comparison (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../age_demo.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Does Your ERP Age? (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MANIFESTO/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The ERP World View
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contribute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 3 Apps
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    The 3 Apps
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Viewer Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AskFirstSteps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewer Ask — First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerFirstSteps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modeller — First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DAGeVu Modeller — User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ProposerGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Proposer Guide (propose an edit, get the proof)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FastScriptGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fast Script Guide (one door: commands and scripts)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIMGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2D Drawings → BIM (DXF2BIM)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_Yellow_List/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — the yellow list (what you fill in, defaults used)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_Prior_Art/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — prior art (what is new, what we learned, cost of using others)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_FORMAT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — format contract (marks, outputs, registry, codes; generated)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERPUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel-ERP User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TillUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    uniCenta-style Till & Kitchen Screen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CapexDashboardGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM → ERP and CAPEX Dashboard — for iDempiere users
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CapexUATGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CAPEX UAT Guide — step-by-step test script
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERP_FirstSetup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel-ERP — Your First Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MigrationGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration User Guide (Odoo · Business Central · SAP Business One)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OdooMigration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moving from Odoo — how it works, what is proven
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NinjaExcelReport_UserManual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NinjaExcel Report — User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HRBIMAssetGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HR / Tenancy / Operate Module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CivilWorksGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Civil Works — Step by Step
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TeamsOverlayGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Teams Overlay — Collaboration & Optics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Go Deeper
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Go Deeper
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DeveloperGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide (read first if you will change the code)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ArchitectureOverview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Overview (for reviewers)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../FoldEngineBlackBook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fold Engine Black Book (dev manual)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HolyGrail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Holy Grail (editable rules, live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ERPConceptRosetta.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-ERP Rosetta Stone (concept + cost)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIM_Modeller_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Modeller OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERP_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP — Every Record Has a Place
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERPIntegration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP × BIM × HR — One Building, One Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DistributedERP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Distributed ERP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TermsHowToVerify/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to verify the terms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERP_AI_ADVISORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Letting an AI work on the ERP, safely
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SQLiteWasmArchitectureActual.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How the Database Works (big picture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ViewerComponentModel.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewer Component Model (dev architecture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CLASH_DETECTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clash Detection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../JKR_SKATA/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Asset Classification & JKR/SKATA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../IFC_ExportGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IFC Export Guide (for the BIM author)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TimeMachine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Time Machine (4D Scheduling & Editing)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4D5DAnalysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4D/5D Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMtoProject/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM → Project Order (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerKernelFold/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry as a Signed-Log Fold
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Papers & Positioning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Papers & Positioning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialCompilationPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deterministic Spatial Compilation (academic paper)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AIProposerDefensiveDisclosure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Defensive Disclosure: an Outside AI Proposes, the App Decides
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_TechnicalNote/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — Deterministic 2D ⇄ BIM Round Trip (technical note)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BrowserScaleBenchmark/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Browser-Scale Benchmark (one tab, local first)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnterpriseAuthentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enterprise Authentication (security)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../StrategicIndustryPositioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Strategic Positioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LocalFirstPriorArt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local-First Prior Art
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LegacyOracleAdapterSpec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Legacy-as-Oracle Adapter (migrate / test an ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ShipYard/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Beyond Buildings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RouteTemplate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Find & Navigate (wayfinding)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../halal/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prototypes & Demos
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Prototypes & Demos
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HalalTrace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Halalan Thayiban — halal track & trace (paper)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glassbowl.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glassbowl — the ERP engine as data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glassbowl_gravity.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glassbowl · Gravity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../RetailScaleStory.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Retail at Scale — two messages a day (benchmark story)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bim_architecture_viz.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How it works — interactive architecture tour
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    History & Legacy
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    History & Legacy
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROJECT_CHRONOLOGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Chronology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../VibeProgramming/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vibe Programming — AI + Domain Expertise
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4DGenerator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 4D Generator — Failure Catalogue & AI Findings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnablingTechTimeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enabling-Tech Timeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RED_PILL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Red Pill — Design From Grammar (origin)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LAST_MILE_PROBLEM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Last Mile — drift tracking (Java era)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMERPPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Construction Economy / ERP Wave (Java era)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Self-Host the Java toolchain (legacy installer)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Self-Host the Java toolchain (legacy installer)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Inhaltsverzeichnis">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Inhaltsverzeichnis
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-clone-and-build" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Clone and Build
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-database-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Database Files
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Database Files">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-core-databases-required" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Core Databases (required)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-per-building-bom-databases-one-per-building" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Per-Building BOM Databases (one per building)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-working-databases-generated-at-runtime" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Working Databases (generated at runtime)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-inspecting-databases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Inspecting Databases
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-running-the-servers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Running the Servers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Running the Servers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-bim-designer-server-tcp-port-9876" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 BIM Designer Server (TCP, port 9876)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-back-office-server-http-port-9877" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Back Office Server (HTTP, port 9877)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-datasette-database-browser-erd-http-port-8001" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Datasette — Database Browser &amp; ERD (HTTP, port 8001)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-all-servers-typical-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 All Servers (typical setup)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-running-the-compilation-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Running the Compilation Pipeline
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Running the Compilation Pipeline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-rosetta-stone-buildings-full-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Rosetta Stone Buildings (full pipeline)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-onboarding-a-new-ifc-building" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Onboarding a New IFC Building
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-dagcompiler-compile-bom-to-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 DAGCompiler (compile BOM to output)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-blender-bonsai-integration-legacy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Blender + Bonsai Integration (legacy)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Blender + Bonsai Integration (legacy)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-federation-module-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Federation Module Setup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-blender-addon-activation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Blender Addon Activation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-federation-features-no-server-required" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Federation Features (no server required)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-connecting-blender-to-the-bim-designer-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4 Connecting Blender to the BIM Designer Server
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#65-putting-it-all-together" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.5 Putting It All Together
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-test-suites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Test Suites
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Test Suites">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-full-gate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Full Gate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-individual-modules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 Individual Modules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-bonsaibimdesigner-408-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.3 BonsaiBIMDesigner (408 tests)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#74-bimbackoffice-14-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.4 BIMBackOffice (14 tests)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#75-tamper-seal-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.5 Tamper Seal Verification
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-wan-deployment-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. WAN Deployment (Docker)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-migration-scripts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Migration Scripts
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-directory-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Directory Structure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-environment-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Environment Variables
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-verification-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. Verification Checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#14-erd-diagrams-database-browsing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14. ERD Diagrams &amp; Database Browsing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="14. ERD Diagrams &amp; Database Browsing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#141-datasette-live-database-erd-port-8001" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14.1 Datasette — Live Database ERD (port 8001)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#142-interactive-architecture-viz-html" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14.2 Interactive Architecture Viz (HTML)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-to-refresh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to refresh
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#15-database-schema-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15. Database Schema Reference
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#16-docker-what-to-containerize" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        16. Docker — What to Containerize
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="16. Docker — What to Containerize">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-docker-is-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Docker is for
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-docker-is-not-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Docker is NOT for
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docker-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker architecture
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quick-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick start
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updating-databases-in-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Updating databases in Docker
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Inhaltsverzeichnis">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Inhaltsverzeichnis
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-clone-and-build" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Clone and Build
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-database-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Database Files
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Database Files">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-core-databases-required" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Core Databases (required)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-per-building-bom-databases-one-per-building" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Per-Building BOM Databases (one per building)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-working-databases-generated-at-runtime" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Working Databases (generated at runtime)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-inspecting-databases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Inspecting Databases
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-running-the-servers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Running the Servers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Running the Servers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-bim-designer-server-tcp-port-9876" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 BIM Designer Server (TCP, port 9876)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-back-office-server-http-port-9877" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Back Office Server (HTTP, port 9877)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-datasette-database-browser-erd-http-port-8001" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Datasette — Database Browser &amp; ERD (HTTP, port 8001)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-all-servers-typical-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 All Servers (typical setup)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-running-the-compilation-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Running the Compilation Pipeline
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Running the Compilation Pipeline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-rosetta-stone-buildings-full-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Rosetta Stone Buildings (full pipeline)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-onboarding-a-new-ifc-building" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Onboarding a New IFC Building
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-dagcompiler-compile-bom-to-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 DAGCompiler (compile BOM to output)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-blender-bonsai-integration-legacy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Blender + Bonsai Integration (legacy)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Blender + Bonsai Integration (legacy)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-federation-module-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Federation Module Setup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-blender-addon-activation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Blender Addon Activation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-federation-features-no-server-required" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Federation Features (no server required)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-connecting-blender-to-the-bim-designer-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4 Connecting Blender to the BIM Designer Server
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#65-putting-it-all-together" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.5 Putting It All Together
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-test-suites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Test Suites
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Test Suites">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-full-gate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Full Gate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-individual-modules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 Individual Modules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-bonsaibimdesigner-408-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.3 BonsaiBIMDesigner (408 tests)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#74-bimbackoffice-14-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.4 BIMBackOffice (14 tests)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#75-tamper-seal-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.5 Tamper Seal Verification
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-wan-deployment-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. WAN Deployment (Docker)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-migration-scripts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Migration Scripts
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-directory-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Directory Structure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-environment-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Environment Variables
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-verification-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. Verification Checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#14-erd-diagrams-database-browsing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14. ERD Diagrams &amp; Database Browsing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="14. ERD Diagrams &amp; Database Browsing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#141-datasette-live-database-erd-port-8001" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14.1 Datasette — Live Database ERD (port 8001)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#142-interactive-architecture-viz-html" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14.2 Interactive Architecture Viz (HTML)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-to-refresh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to refresh
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#15-database-schema-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15. Database Schema Reference
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#16-docker-what-to-containerize" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        16. Docker — What to Containerize
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="16. Docker — What to Containerize">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-docker-is-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Docker is for
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-docker-is-not-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Docker is NOT for
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docker-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker architecture
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quick-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick start
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updating-databases-in-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Updating databases in Docker
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+  <p class="i18n-note"><small>Diese Seite ist noch nicht übersetzt; sie wird auf Englisch angezeigt. <a href="https://red1oon.github.io/BIMCompiler/SYSTEMS_INSTALLER_GUIDE/">Englische Seite</a>.</small></p>
+  
+                  
+
+
+  
+  
+
+
+<h1 id="bim-intent-compiler-systems-installer-guide">BIM Intent Compiler — Systems Installer Guide<a class="headerlink" href="#bim-intent-compiler-systems-installer-guide" title="Permanent link">&para;</a></h1>
+<p><em><a href="../USER_GUIDE/">← Back to the <strong>User Guide</strong></a> · <a href="../">Home</a></em></p>
+<blockquote>
+<p><strong>Foundation:</strong> <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BOMBasedCompilation.md">BBC</a> · <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/internal/DATA_MODEL.md">DATA_MODEL</a> · <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BIM_COBOL.md">BIM_COBOL</a> · <a href="../MANIFESTO/">MANIFESTO</a> · <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/TestArchitecture.md">TestArchitecture</a></p>
+</blockquote>
+<div class="admonition note">
+<p class="admonition-title">BIM OOTB now runs in the browser — you probably don't need this guide</p>
+<p>The product is <strong>browser-based</strong>: open the <a href="https://red1oon.github.io/bim-ootb/">front door</a>, or
+use the front door's <strong>About → Run it yourself (DIY)</strong> to download a one-step self-host script. <strong>Zero
+Java, zero install.</strong> See the <strong><a href="../USER_GUIDE/">User Guide</a></strong>.</p>
+<p>This page is the <strong>legacy / advanced path</strong>: building the original <strong>Java compiler + back-office +
+Blender</strong> toolchain from source — only needed to compile buildings from raw IFC or run the server-side
+nD reporting stack. Most users can skip it entirely.</p>
+</div>
+<div class="bim-banner">
+<p><b>Legacy full-platform setup from source — Java, Maven, SQLite, Blender.</b> Prerequisites, build steps, and verification for developers building the original compiler/back-office toolchain.</p>
+</div>
+<p><strong>Audience:</strong> Developers building the <strong>Java</strong> compiler + back-office from source (the browser app needs none of this).</p>
+<p><strong>For WAN/Docker deployment</strong> of the back-office server, see <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/internal/DEPLOYMENT.md">DEPLOYMENT.md</a>.</p>
+<hr />
+<h2 id="1-prerequisites">1. Prerequisites<a class="headerlink" href="#1-prerequisites" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Version</th>
+<th>Purpose</th>
+<th>Check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Java (JDK)</td>
+<td>17+</td>
+<td>Compiler, servers, all backend logic</td>
+<td><code>java --version</code></td>
+</tr>
+<tr>
+<td>Maven</td>
+<td>3.8+</td>
+<td>Build system, dependency management</td>
+<td><code>mvn --version</code></td>
+</tr>
+<tr>
+<td>SQLite</td>
+<td>3.40+</td>
+<td>Database engine (bundled via JDBC, CLI for inspection)</td>
+<td><code>sqlite3 --version</code></td>
+</tr>
+<tr>
+<td>Python</td>
+<td>3.10+</td>
+<td>IFC extraction (IfcOpenShell), Blender addon</td>
+<td><code>python3 --version</code></td>
+</tr>
+<tr>
+<td>Blender</td>
+<td>4.2+</td>
+<td>3D viewport (BIM Designer GUI)</td>
+<td><code>blender --version</code></td>
+</tr>
+<tr>
+<td>Git</td>
+<td>2.30+</td>
+<td>Source control, LFS for binary assets</td>
+<td><code>git --version</code></td>
+</tr>
+<tr>
+<td>Docker</td>
+<td>24+</td>
+<td>WAN deployment (optional)</td>
+<td><code>docker --version</code></td>
+</tr>
+<tr>
+<td>IfcOpenShell</td>
+<td>0.8+</td>
+<td>IFC file parsing and extraction</td>
+<td><code>python3 -c "import ifcopenshell"</code></td>
+</tr>
+<tr>
+<td>Bonsai</td>
+<td>0.8+</td>
+<td>Blender BIM addon (federation viewer)</td>
+<td>Bundled with IfcOpenShell</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Tested on:</strong> Ubuntu 24.04 (Linux 6.17), OpenJDK 17.0.18, Maven 3.8.7, Blender 5.0.1, IfcOpenShell 0.8.4, Bonsai 0.8.4-alpha.</p>
+<hr />
+<h2 id="2-clone-and-build">2. Clone and Build<a class="headerlink" href="#2-clone-and-build" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="c1"># 2.1 Clone the repository</span>
+git<span class="w"> </span>clone<span class="w"> </span>git@github.com:red1oon/BIMCompiler.git
+<span class="nb">cd</span><span class="w"> </span>BIMCompiler
+
+<span class="c1"># 2.2 Compile all 10 modules</span>
+mvn<span class="w"> </span>compile<span class="w"> </span>-q
+
+<span class="c1"># 2.3 Verify — run the full test gate</span>
+./scripts/run_tests.sh
+</code></pre></div>
+<p><strong>Expected output (baseline recorded 2026-03-11 in the script header; the counts have drifted since):</strong> ~382 PASS, ~94 intentional RED (pre-existing calibration items — see <code>scripts/run_tests.sh</code> header for breakdown).</p>
+<p><strong>Module build order</strong> (Maven reactor handles this automatically):</p>
+<div class="highlight"><pre><span></span><code>orm-core          → base ORM, BIMLogger
+ORMSandbox        → DAO smoke tests
+DAGCompiler       → 11-stage compilation pipeline
+2D_Layout         → floor plan generation
+TopologyMaker     → grid strategy, PO lifecycle
+BIM_COBOL         → 77 domain verbs, witness engine
+IFCtoBOM          → IFC extraction to BOM database
+BIMBackOffice     → ERP reporting, sessions, portfolio
+BIMEyes           → geometric comprehension, shape proofs
+BonsaiBIMDesigner → GUI server, validation, assembly
+</code></pre></div>
+<hr />
+<h2 id="3-database-files">3. Database Files<a class="headerlink" href="#3-database-files" title="Permanent link">&para;</a></h2>
+<p>The <code>library/</code> directory contains all SQLite databases. These ship with the repo.</p>
+<h3 id="31-core-databases-required">3.1 Core Databases (required)<a class="headerlink" href="#31-core-databases-required" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Size</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>component_library.db</code></td>
+<td>~230 MB</td>
+<td>Master catalog: 35 component types, 23,888 component definitions + geometries, thermal properties (80 tables)</td>
+</tr>
+<tr>
+<td><code>ERP.db</code></td>
+<td>~18 MB</td>
+<td>Discipline validation rules, IFC class mapping, MEP metadata (52 tables)</td>
+</tr>
+<tr>
+<td><code>validation.db</code></td>
+<td>~80 KB</td>
+<td>Compliance thresholds: clash, occupancy &amp; validation rules + results (9 tables)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="32-per-building-bom-databases-one-per-building">3.2 Per-Building BOM Databases (one per building)<a class="headerlink" href="#32-per-building-bom-databases-one-per-building" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Building</th>
+<th>Elements</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SH_BOM.db</code></td>
+<td>Sample House</td>
+<td>—</td>
+<td>Hello-world residential</td>
+</tr>
+<tr>
+<td><code>FK_BOM.db</code></td>
+<td>FZK Haus</td>
+<td>82</td>
+<td>Small residential</td>
+</tr>
+<tr>
+<td><code>DX_BOM.db</code></td>
+<td>Duplex</td>
+<td>1,099</td>
+<td>Multi-unit residential</td>
+</tr>
+<tr>
+<td><code>TE_BOM.db</code></td>
+<td>Terminal</td>
+<td>48,428</td>
+<td>Commercial airport terminal</td>
+</tr>
+<tr>
+<td><code>BR_BOM.db</code></td>
+<td>Bridge</td>
+<td>48</td>
+<td>Infrastructure</td>
+</tr>
+<tr>
+<td><code>RD_BOM.db</code></td>
+<td>Road</td>
+<td>53</td>
+<td>Infrastructure</td>
+</tr>
+<tr>
+<td><code>RL_BOM.db</code></td>
+<td>Rail</td>
+<td>73</td>
+<td>Infrastructure</td>
+</tr>
+<tr>
+<td><code>IN_BOM.db</code></td>
+<td>Infrastructure (combined)</td>
+<td>174</td>
+<td>Multi-facility infrastructure</td>
+</tr>
+<tr>
+<td><code>DM_BOM.db</code></td>
+<td>DemoHouse</td>
+<td>—</td>
+<td>Generative template</td>
+</tr>
+</tbody>
+</table>
+<h3 id="33-working-databases-generated-at-runtime">3.3 Working Databases (generated at runtime)<a class="headerlink" href="#33-working-databases-generated-at-runtime" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Created By</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>work_*.db</code></td>
+<td>BonsaiBIMDesigner</td>
+<td>Design variants, C_Order snapshots</td>
+</tr>
+<tr>
+<td><code>_*_compile.db</code></td>
+<td>DAGCompiler</td>
+<td>Temporary compile output (per run)</td>
+</tr>
+<tr>
+<td><code>output_template.db</code></td>
+<td>Pipeline</td>
+<td>Schema template for fresh output DBs</td>
+</tr>
+</tbody>
+</table>
+<h3 id="34-inspecting-databases">3.4 Inspecting Databases<a class="headerlink" href="#34-inspecting-databases" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># List tables</span>
+sqlite3<span class="w"> </span>library/SH_BOM.db<span class="w"> </span><span class="s2">&quot;.tables&quot;</span>
+
+<span class="c1"># Check BOM hierarchy</span>
+sqlite3<span class="w"> </span>library/SH_BOM.db<span class="w"> </span><span class="s2">&quot;SELECT bom_type, name, m_product_category_id FROM m_bom&quot;</span>
+
+<span class="c1"># Check product catalog</span>
+sqlite3<span class="w"> </span>library/component_library.db<span class="w"> </span><span class="s2">&quot;SELECT COUNT(*) FROM component_definitions&quot;</span>
+
+<span class="c1"># Check validation rules</span>
+sqlite3<span class="w"> </span>library/ERP.db<span class="w"> </span><span class="s2">&quot;SELECT COUNT(*) FROM AD_Val_Rule&quot;</span>
+</code></pre></div>
+<hr />
+<h2 id="4-running-the-servers">4. Running the Servers<a class="headerlink" href="#4-running-the-servers" title="Permanent link">&para;</a></h2>
+<h3 id="41-bim-designer-server-tcp-port-9876">4.1 BIM Designer Server (TCP, port 9876)<a class="headerlink" href="#41-bim-designer-server-tcp-port-9876" title="Permanent link">&para;</a></h3>
+<p>For Blender addon clients — single-user design mode:</p>
+<div class="highlight"><pre><span></span><code>mvn<span class="w"> </span>exec:java<span class="w"> </span>-pl<span class="w"> </span>BonsaiBIMDesigner<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-Dexec.mainClass<span class="o">=</span><span class="s2">&quot;com.bim.designer.api.DesignerServer&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-Dexec.args<span class="o">=</span><span class="s2">&quot;library 9876&quot;</span><span class="w"> </span>-q
+</code></pre></div>
+<p>Or from compiled classes:</p>
+<div class="highlight"><pre><span></span><code>java<span class="w"> </span>-cp<span class="w"> </span><span class="s2">&quot;BonsaiBIMDesigner/target/classes:BIMBackOffice/target/classes:DAGCompiler/target/classes:BIM_COBOL/target/classes:IFCtoBOM/target/classes:orm-core/target/classes:</span><span class="k">$(</span>mvn<span class="w"> </span>-q<span class="w"> </span>dependency:build-classpath<span class="w"> </span>-pl<span class="w"> </span>BonsaiBIMDesigner<span class="w"> </span>-Dmdep.outputFile<span class="o">=</span>/dev/stdout<span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>com.bim.designer.api.DesignerServer<span class="w"> </span>library<span class="w"> </span><span class="m">9876</span>
+</code></pre></div>
+<p><strong>Protocol:</strong> ndjson over TCP. One JSON object per line, newline-delimited.</p>
+<h3 id="42-back-office-server-http-port-9877">4.2 Back Office Server (HTTP, port 9877)<a class="headerlink" href="#42-back-office-server-http-port-9877" title="Permanent link">&para;</a></h3>
+<p>For multi-project ERP reporting, portfolio, 4D-7D queries:</p>
+<div class="highlight"><pre><span></span><code>java<span class="w"> </span>-cp<span class="w"> </span><span class="s2">&quot;BIMBackOffice/target/classes:orm-core/target/classes:</span><span class="k">$(</span>mvn<span class="w"> </span>-q<span class="w"> </span>dependency:build-classpath<span class="w"> </span>-pl<span class="w"> </span>BIMBackOffice<span class="w"> </span>-Dmdep.outputFile<span class="o">=</span>/dev/stdout<span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>com.bim.backoffice.server.BackOfficeServer<span class="w"> </span>library<span class="w"> </span><span class="m">9877</span>
+</code></pre></div>
+<p><strong>Verify:</strong></p>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:9877/api/health
+curl<span class="w"> </span>http://localhost:9877/api/portfolio
+curl<span class="w"> </span>http://localhost:9877/api/cost?id<span class="o">=</span>SH
+</code></pre></div>
+<h3 id="43-datasette-database-browser-erd-http-port-8001">4.3 Datasette — Database Browser &amp; ERD (HTTP, port 8001)<a class="headerlink" href="#43-datasette-database-browser-erd-http-port-8001" title="Permanent link">&para;</a></h3>
+<p>Interactive SQL browser for all project databases. Provides table browsing, ad-hoc SQL queries,
+JSON API, and CSV export — no Java or SQLite CLI needed.</p>
+<p><strong>Install (one-time, in project venv):</strong></p>
+<div class="highlight"><pre><span></span><code>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv
+<span class="nb">source</span><span class="w"> </span>.venv/bin/activate
+pip<span class="w"> </span>install<span class="w"> </span>datasette
+</code></pre></div>
+<p><strong>Launch:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nb">source</span><span class="w"> </span>.venv/bin/activate
+datasette<span class="w"> </span>library/component_library.db<span class="w"> </span><span class="se">\</span>
+<span class="w">          </span>library/ERP.db<span class="w"> </span><span class="se">\</span>
+<span class="w">          </span>library/SH_BOM.db<span class="w"> </span>library/DX_BOM.db<span class="w"> </span>library/TE_BOM.db<span class="w"> </span><span class="se">\</span>
+<span class="w">          </span>library/BR_BOM.db<span class="w"> </span>library/RD_BOM.db<span class="w"> </span>library/RL_BOM.db<span class="w"> </span><span class="se">\</span>
+<span class="w">          </span>--port<span class="w"> </span><span class="m">8001</span><span class="w"> </span>--host<span class="w"> </span><span class="m">127</span>.0.0.1<span class="w"> </span><span class="se">\</span>
+<span class="w">          </span>--setting<span class="w"> </span>sql_time_limit_ms<span class="w"> </span><span class="m">5000</span><span class="w"> </span><span class="p">&amp;</span>
+</code></pre></div>
+<p><strong>Browse:</strong>
+- Home page: <code>http://localhost:8001/</code> — lists all databases and tables
+- Table view: <code>http://localhost:8001/component_library/M_Product</code> — paginated rows
+- SQL console: <code>http://localhost:8001/component_library?sql=SELECT+COUNT(*)+FROM+M_Product</code>
+- JSON API: append <code>.json</code> to any URL for machine-readable output</p>
+<p><strong>Datasette reads SQLite files live</strong> — no restart needed after migrations or recompiles.
+Changes to <code>component_library.db</code>, <code>ERP.db</code>, or <code>*_BOM.db</code> are visible immediately.</p>
+<h3 id="44-all-servers-typical-setup">4.4 All Servers (typical setup)<a class="headerlink" href="#44-all-servers-typical-setup" title="Permanent link">&para;</a></h3>
+<p>Run in separate terminals or background:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Terminal 1: Designer (for Blender)</span>
+mvn<span class="w"> </span>exec:java<span class="w"> </span>-pl<span class="w"> </span>BonsaiBIMDesigner<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-Dexec.mainClass<span class="o">=</span><span class="s2">&quot;com.bim.designer.api.DesignerServer&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-Dexec.args<span class="o">=</span><span class="s2">&quot;library 9876&quot;</span><span class="w"> </span>-q<span class="w"> </span><span class="p">&amp;</span>
+
+<span class="c1"># Terminal 2: Back Office (for browser/API clients)</span>
+java<span class="w"> </span>-cp<span class="w"> </span><span class="s2">&quot;BIMBackOffice/target/classes:orm-core/target/classes:</span><span class="k">$(</span>mvn<span class="w"> </span>-q<span class="w"> </span>dependency:build-classpath<span class="w"> </span>-pl<span class="w"> </span>BIMBackOffice<span class="w"> </span>-Dmdep.outputFile<span class="o">=</span>/dev/stdout<span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>com.bim.backoffice.server.BackOfficeServer<span class="w"> </span>library<span class="w"> </span><span class="m">9877</span><span class="w"> </span><span class="p">&amp;</span>
+
+<span class="c1"># Terminal 3: Datasette (database browser)</span>
+<span class="nb">source</span><span class="w"> </span>.venv/bin/activate
+datasette<span class="w"> </span>library/*.db<span class="w"> </span>--port<span class="w"> </span><span class="m">8001</span><span class="w"> </span>--host<span class="w"> </span><span class="m">127</span>.0.0.1<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--setting<span class="w"> </span>sql_time_limit_ms<span class="w"> </span><span class="m">5000</span><span class="w"> </span><span class="p">&amp;</span>
+</code></pre></div>
+<hr />
+<h2 id="5-running-the-compilation-pipeline">5. Running the Compilation Pipeline<a class="headerlink" href="#5-running-the-compilation-pipeline" title="Permanent link">&para;</a></h2>
+<h3 id="51-rosetta-stone-buildings-full-pipeline">5.1 Rosetta Stone Buildings (full pipeline)<a class="headerlink" href="#51-rosetta-stone-buildings-full-pipeline" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Compile all Rosetta Stone buildings (SH, DX, TE, infrastructure)</span>
+./scripts/run_RosettaStones.sh<span class="w"> </span>classify_sh.yaml<span class="w">    </span><span class="c1"># Sample House</span>
+./scripts/run_RosettaStones.sh<span class="w"> </span>classify_dx.yaml<span class="w">    </span><span class="c1"># Duplex</span>
+./scripts/run_RosettaStones.sh<span class="w"> </span>classify_te.yaml<span class="w">    </span><span class="c1"># Terminal</span>
+./scripts/run_RosettaStones.sh<span class="w"> </span>classify_in.yaml<span class="w">    </span><span class="c1"># Infrastructure</span>
+</code></pre></div>
+<h3 id="52-onboarding-a-new-ifc-building">5.2 Onboarding a New IFC Building<a class="headerlink" href="#52-onboarding-a-new-ifc-building" title="Permanent link">&para;</a></h3>
+<p>To add a new building to the pipeline (zero code changes required):</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Generate skeleton YAML + DSL from an extracted reference DB</span>
+mvn<span class="w"> </span>exec:java<span class="w"> </span>-pl<span class="w"> </span>IFCtoBOM<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-Dexec.mainClass<span class="o">=</span><span class="s2">&quot;com.bim.ifctobom.NewBuildingGenerator&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-Dexec.args<span class="o">=</span><span class="s2">&quot;--prefix XX --type BuildingType --name &#39;Name&#39;&quot;</span><span class="w"> </span>-q
+</code></pre></div>
+<p>Then follow the 8-step process in <strong>IFC_ONBOARDING_RUNBOOK.md</strong> —
+from IFC extraction through gate verification. Proven on 5 Rosetta Stone buildings.</p>
+<p><strong>Quick version</strong> (if YAML + DSL already exist):</p>
+<div class="highlight"><pre><span></span><code>./scripts/run_RosettaStones.sh<span class="w"> </span>classify_xx.yaml
+</code></pre></div>
+<p>Output: <code>library/XX_BOM.db</code> (per-building BOM dictionary).</p>
+<h3 id="53-dagcompiler-compile-bom-to-output">5.3 DAGCompiler (compile BOM to output)<a class="headerlink" href="#53-dagcompiler-compile-bom-to-output" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>mvn<span class="w"> </span>exec:java<span class="w"> </span>-pl<span class="w"> </span>DAGCompiler<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-Dexec.mainClass<span class="o">=</span><span class="s2">&quot;com.bim.compiler.CompilationPipeline&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-Dbom.db<span class="o">=</span><span class="s2">&quot;library/SH_BOM.db&quot;</span><span class="w"> </span>-q
+</code></pre></div>
+<hr />
+<h2 id="6-blender-bonsai-integration-legacy">6. Blender + Bonsai Integration (legacy)<a class="headerlink" href="#6-blender-bonsai-integration-legacy" title="Permanent link">&para;</a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Superseded by the browser Modeller</p>
+<p>The desktop <strong>BIM Designer</strong> (Blender + Bonsai + the Java DesignerServer below) has been <strong>replaced by
+the in-browser <a href="../ModellerGuide/">DAGeVu Modeller</a></strong> — author geometry over a signed op-log, no Blender,
+no server. This section is kept only for the original Blender-based federation workflow.</p>
+</div>
+<p>The legacy BIM Designer GUI runs inside Blender via the <a href="https://bonsaibim.org/">Bonsai</a> addon
+(the open-source OpenBIM toolset). Two components work together:</p>
+<ol>
+<li><strong>Federation Module</strong> — IFC spatial database, clash detection, MEP routing, 4D/5D,
+   digital twin. Pure Python, runs inside Blender. No server needed.</li>
+<li><strong>BIM Designer Server</strong> — Java compilation backend (TCP :9876). Blender sends
+   ndjson commands, Java returns BOM data, compiled geometry, and validation results.</li>
+</ol>
+<h3 id="61-federation-module-setup">6.1 Federation Module Setup<a class="headerlink" href="#61-federation-module-setup" title="Permanent link">&para;</a></h3>
+<p>The Federation module lives in a separate repo (fork of IfcOpenShell/Bonsai):</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 1. Clone the federation branch</span>
+git<span class="w"> </span>clone<span class="w"> </span>-b<span class="w"> </span>feature/IFC4_DB<span class="w"> </span>git@github.com:red1oon/IfcOpenShell.git<span class="w"> </span>~/IfcOpenShell
+
+<span class="c1"># 2. Install system dependency (R-tree spatial index)</span>
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>libspatialindex-dev<span class="w">    </span><span class="c1"># Ubuntu/Debian</span>
+<span class="c1"># brew install spatialindex              # macOS</span>
+
+<span class="c1"># 3. Install Python dependency</span>
+pip<span class="w"> </span>install<span class="w"> </span>rtree
+
+<span class="c1"># 4. Register the federation module in Bonsai</span>
+<span class="c1"># Edit: ~/IfcOpenShell/src/bonsai/bonsai/bim/__init__.py</span>
+<span class="c1"># Add to the modules dict:  &quot;federation&quot;: None</span>
+</code></pre></div>
+<p><strong>Addon path:</strong> <code>~/IfcOpenShell/src/bonsai/bonsai/bim/module/federation/</code>
+<strong>Documentation:</strong> <code>federation/README.md</code> (750 lines — full user guide, CLI examples)</p>
+<h3 id="62-blender-addon-activation">6.2 Blender Addon Activation<a class="headerlink" href="#62-blender-addon-activation" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Open Blender → Edit → Preferences → Add-ons</li>
+<li>Point to the Bonsai addon directory (<code>~/IfcOpenShell/src/bonsai/</code>)</li>
+<li>Enable "Bonsai BIM" addon</li>
+<li>The Federation module registers automatically (~260 Blender classes)</li>
+<li>Verify: Federation panels appear in the N-panel sidebar</li>
+</ol>
+<h3 id="63-federation-features-no-server-required">6.3 Federation Features (no server required)<a class="headerlink" href="#63-federation-features-no-server-required" title="Permanent link">&para;</a></h3>
+<p>The Federation module preprocesses IFC files into SQLite databases for sub-100ms
+spatial queries inside Blender:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Preprocess IFC files (can run standalone, outside Blender)</span>
+python3<span class="w"> </span>-m<span class="w"> </span>bonsai.bim.module.federation.core.federation_preprocessor<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>model1.ifc<span class="w"> </span>model2.ifc<span class="w"> </span>--output<span class="w"> </span>federation.db
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Panel</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Multi-model spatial index</td>
+<td>Setup</td>
+<td>Production</td>
+</tr>
+<tr>
+<td>Clash detection + BCF export</td>
+<td>Clash</td>
+<td>Production</td>
+</tr>
+<tr>
+<td>MEP conduit routing</td>
+<td>MEP</td>
+<td>Production</td>
+</tr>
+<tr>
+<td>4D construction scheduling</td>
+<td>4D</td>
+<td>Production</td>
+</tr>
+<tr>
+<td>5D cost (Bill of Quantities)</td>
+<td>5D</td>
+<td>Production</td>
+</tr>
+<tr>
+<td>Digital Twin (sensors, assets)</td>
+<td>Digital Twin</td>
+<td>Beta</td>
+</tr>
+<tr>
+<td>NLP natural language queries</td>
+<td>NLP</td>
+<td>Beta</td>
+</tr>
+<tr>
+<td>PDF → BIM terrain extraction</td>
+<td>Setup</td>
+<td>Beta</td>
+</tr>
+</tbody>
+</table>
+<h3 id="64-connecting-blender-to-the-bim-designer-server">6.4 Connecting Blender to the BIM Designer Server<a class="headerlink" href="#64-connecting-blender-to-the-bim-designer-server" title="Permanent link">&para;</a></h3>
+<p>Start the Java server (§4.1), then connect from Blender:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># In Blender&#39;s Python console or addon:</span>
+<span class="kn">import</span> <span class="nn">socket</span><span class="o">,</span> <span class="nn">json</span>
+
+<span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">create_connection</span><span class="p">((</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="mi">9876</span><span class="p">))</span>
+<span class="n">request</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;listBuildings&quot;</span><span class="p">})</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+<span class="n">sock</span><span class="o">.</span><span class="n">sendall</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">sock</span><span class="o">.</span><span class="n">makefile</span><span class="p">()</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="p">))</span>
+</code></pre></div>
+<p><strong>Protocol:</strong> ndjson over TCP. One JSON object per line, newline-delimited.
+Server actions: <code>compile</code>, <code>createNew</code>, <code>verb</code>, <code>snap</code>, <code>save</code>, <code>recall</code>, <code>promote</code>.
+See the wire protocol spec for the full wire protocol spec.</p>
+<h3 id="65-putting-it-all-together">6.5 Putting It All Together<a class="headerlink" href="#65-putting-it-all-together" title="Permanent link">&para;</a></h3>
+<p>A typical development setup runs 4 services:</p>
+<div class="highlight"><pre><span></span><code>┌─────────────────┐     TCP :9876      ┌──────────────────────┐
+│  Blender 4.2+   │ ◄──── ndjson ────► │  BIM Designer Server │
+│  + Bonsai addon │                    │  (Java, mvn exec)    │
+│  + Federation   │                    └──────────┬───────────┘
+└────────┬────────┘                               │
+         │ local files                    reads   │
+         ▼                                        ▼
+┌─────────────────┐                    ┌──────────────────────┐
+│  federation.db  │                    │  library/*.db        │
+│  (IFC spatial)  │                    │  component_library.db│
+└─────────────────┘                    │  ERP.db, validation  │
+                                       │  *_BOM.db files      │
+  http://localhost:8001                └──────────────────────┘
+┌─────────────────┐                               │
+│  Datasette      │ ◄── reads SQLite files ───────┘
+│  (DB browser)   │
+└─────────────────┘
+
+  http://localhost:9877
+┌─────────────────┐
+│  BackOffice     │ ◄── portfolio, cost, 4D-7D reports
+│  (HTTP API)     │
+└─────────────────┘
+</code></pre></div>
+<hr />
+<h2 id="7-test-suites">7. Test Suites<a class="headerlink" href="#7-test-suites" title="Permanent link">&para;</a></h2>
+<h3 id="71-full-gate">7.1 Full Gate<a class="headerlink" href="#71-full-gate" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>./scripts/run_tests.sh<span class="w">          </span><span class="c1"># All suites</span>
+</code></pre></div>
+<h3 id="72-individual-modules">7.2 Individual Modules<a class="headerlink" href="#72-individual-modules" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>./scripts/run_tests.sh<span class="w"> </span>dag<span class="w">      </span><span class="c1"># DAGCompiler (pipeline + gates)</span>
+./scripts/run_tests.sh<span class="w"> </span>orm<span class="w">      </span><span class="c1"># ORMSandbox (DAO layer)</span>
+./scripts/run_tests.sh<span class="w"> </span>topology<span class="w"> </span><span class="c1"># TopologyMaker (grid strategy)</span>
+./scripts/run_tests.sh<span class="w"> </span>cobol<span class="w">    </span><span class="c1"># BIM_COBOL (verb witnesses)</span>
+</code></pre></div>
+<h3 id="73-bonsaibimdesigner-408-tests">7.3 BonsaiBIMDesigner (408 tests)<a class="headerlink" href="#73-bonsaibimdesigner-408-tests" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>mvn<span class="w"> </span><span class="nb">test</span><span class="w"> </span>-pl<span class="w"> </span>BonsaiBIMDesigner<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tail<span class="w"> </span>-5
+</code></pre></div>
+<h3 id="74-bimbackoffice-14-tests">7.4 BIMBackOffice (14 tests)<a class="headerlink" href="#74-bimbackoffice-14-tests" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>mvn<span class="w"> </span><span class="nb">test</span><span class="w"> </span>-pl<span class="w"> </span>BIMBackOffice<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tail<span class="w"> </span>-5
+</code></pre></div>
+<h3 id="75-tamper-seal-verification">7.5 Tamper Seal Verification<a class="headerlink" href="#75-tamper-seal-verification" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>./scripts/verify_test_seal.sh
+</code></pre></div>
+<p>Checks SHA256 fingerprints of 68 critical files. If any have changed since the last seal ceremony, the seal breaks.</p>
+<hr />
+<h2 id="8-wan-deployment-docker">8. WAN Deployment (Docker)<a class="headerlink" href="#8-wan-deployment-docker" title="Permanent link">&para;</a></h2>
+<p>See DEPLOYMENT.md for full instructions. Quick summary:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Generate TLS certificates</span>
+./deploy/generate-certs.sh
+
+<span class="c1"># Set session signing secret</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">BIM_SESSION_SECRET</span><span class="o">=</span><span class="s2">&quot;your-secret-here&quot;</span>
+
+<span class="c1"># Launch</span>
+docker-compose<span class="w"> </span>up<span class="w"> </span>-d
+
+<span class="c1"># Verify</span>
+curl<span class="w"> </span>-k<span class="w"> </span>https://your-server/api/health
+</code></pre></div>
+<p><strong>Architecture:</strong></p>
+<div class="highlight"><pre><span></span><code>Internet → nginx:443 (TLS) → BackOfficeServer:9877 (HTTP) → SQLite DBs
+                                      ↓
+                               SessionManager
+                               (HMAC tokens, per-DB write locks, WAL mode)
+</code></pre></div>
+<hr />
+<h2 id="9-migration-scripts">9. Migration Scripts<a class="headerlink" href="#9-migration-scripts" title="Permanent link">&para;</a></h2>
+<p>SQL migrations are in <code>migration/</code> — <strong>append-only, never modify existing</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Migration</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ASM001_material_thermal.sql</code></td>
+<td>Thermal conductivity table for U-value calculation</td>
+</tr>
+<tr>
+<td><code>ASM003_ac11_materials.sql</code></td>
+<td>AC11 material properties</td>
+</tr>
+<tr>
+<td><code>DV006b_infra_bridge_rules_fix.sql</code></td>
+<td>Bridge validation rules fix</td>
+</tr>
+<tr>
+<td><code>DV007_infra_road_rules.sql</code></td>
+<td>Road discipline rules (10 rules)</td>
+</tr>
+<tr>
+<td><code>DV008_infra_rail_rules.sql</code></td>
+<td>Rail discipline rules (7 rules)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Running a migration:</strong></p>
+<div class="highlight"><pre><span></span><code>sqlite3<span class="w"> </span>library/ERP.db<span class="w"> </span>&lt;<span class="w"> </span>migration/DV007_infra_road_rules.sql
+</code></pre></div>
+<hr />
+<h2 id="10-directory-structure">10. Directory Structure<a class="headerlink" href="#10-directory-structure" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>BIMCompiler/
+├── orm-core/              # Base ORM, BIMLogger, shared utilities
+├── ORMSandbox/            # DAO smoke tests, BuildingInspector
+├── DAGCompiler/           # 11-stage compilation pipeline (G1-G6 gates)
+├── 2D_Layout/             # Floor plan generation
+├── TopologyMaker/         # Grid strategy, production order lifecycle
+├── BIM_COBOL/             # 77 domain verbs, witness engine
+├── IFCtoBOM/              # IFC extraction → BOM database pipeline
+├── BIMBackOffice/         # ERP reporting, sessions, portfolio, 4D-7D
+├── BIMEyes/               # Geometric comprehension: 28 shape proofs
+├── BonsaiBIMDesigner/     # GUI server, validation, assembly, placement
+├── library/               # SQLite databases (product catalog, BOMs)
+├── migration/             # SQL migration scripts (append-only)
+├── scripts/               # Build, test, and audit shell scripts
+├── deploy/                # nginx config, TLS cert generator
+├── docs/                  # All specifications and analysis documents
+├── docker-compose.yml     # WAN deployment
+├── Dockerfile             # Multi-stage build
+└── pom.xml                # Parent POM (10 modules)
+</code></pre></div>
+<hr />
+<h2 id="11-troubleshooting">11. Troubleshooting<a class="headerlink" href="#11-troubleshooting" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mvn compile</code> fails</td>
+<td>Missing JDK 17</td>
+<td>Install OpenJDK 17: <code>sudo apt install openjdk-17-jdk</code></td>
+</tr>
+<tr>
+<td><code>sqlite3: command not found</code></td>
+<td>SQLite CLI not installed</td>
+<td><code>sudo apt install sqlite3</code></td>
+</tr>
+<tr>
+<td>Port 9876/9877 in use</td>
+<td>Server already running</td>
+<td><code>lsof -i :9876</code> then kill the process</td>
+</tr>
+<tr>
+<td><code>ClassNotFoundException</code></td>
+<td>Incomplete build</td>
+<td><code>mvn compile -q</code> (compile all modules first)</td>
+</tr>
+<tr>
+<td>Test seal BROKEN</td>
+<td>Files changed since last seal</td>
+<td>Expected during development; run <code>./scripts/verify_test_seal.sh</code> to see which files</td>
+</tr>
+<tr>
+<td><code>No such database: XX_BOM.db</code></td>
+<td>BOM not extracted yet</td>
+<td>Run <code>./scripts/run_RosettaStones.sh classify_xx.yaml</code></td>
+</tr>
+<tr>
+<td>IfcOpenShell import error</td>
+<td>Python package missing</td>
+<td><code>pip install ifcopenshell</code> or use conda</td>
+</tr>
+<tr>
+<td>Blender addon not showing</td>
+<td>Addon not enabled</td>
+<td>Blender → Preferences → Add-ons → search "Bonsai" → enable</td>
+</tr>
+<tr>
+<td>CORS errors in browser</td>
+<td>Direct access without proxy</td>
+<td>Use nginx proxy (see DEPLOYMENT.md) or add <code>--cors</code> flag</td>
+</tr>
+<tr>
+<td><code>HMAC signing failed</code></td>
+<td>JDK crypto issue</td>
+<td>Ensure standard JDK (not headless-minimal)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="12-environment-variables">12. Environment Variables<a class="headerlink" href="#12-environment-variables" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Default</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BIM_SESSION_SECRET</code></td>
+<td>(random per JVM)</td>
+<td>HMAC-SHA256 key for session token signing</td>
+</tr>
+<tr>
+<td><code>BIM_LIBRARY_DIR</code></td>
+<td><code>./library</code></td>
+<td>Path to database directory</td>
+</tr>
+<tr>
+<td><code>BIM_LOG_LEVEL</code></td>
+<td><code>INFO</code></td>
+<td>Logging level (DEBUG, INFO, WARN, ERROR)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="13-verification-checklist">13. Verification Checklist<a class="headerlink" href="#13-verification-checklist" title="Permanent link">&para;</a></h2>
+<p>After installation, verify each layer:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 1. Build compiles</span>
+mvn<span class="w"> </span>compile<span class="w"> </span>-q<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;BUILD OK&quot;</span>
+
+<span class="c1"># 2. Databases accessible</span>
+sqlite3<span class="w"> </span>library/component_library.db<span class="w"> </span><span class="s2">&quot;SELECT COUNT(*) FROM component_definitions&quot;</span>
+<span class="c1"># Expected: 23,888</span>
+
+<span class="c1"># 3. Tests pass</span>
+mvn<span class="w"> </span><span class="nb">test</span><span class="w"> </span>-pl<span class="w"> </span>BIMBackOffice<span class="w"> </span>-Dtest<span class="o">=</span><span class="s2">&quot;BackOfficeServerTest&quot;</span><span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;Tests run&quot;</span>
+<span class="c1"># Expected: Tests run: 14, Failures: 0</span>
+
+<span class="c1"># 4. Designer server starts</span>
+timeout<span class="w"> </span><span class="m">5</span><span class="w"> </span>mvn<span class="w"> </span>exec:java<span class="w"> </span>-pl<span class="w"> </span>BonsaiBIMDesigner<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-Dexec.mainClass<span class="o">=</span><span class="s2">&quot;com.bim.designer.api.DesignerServer&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-Dexec.args<span class="o">=</span><span class="s2">&quot;library 9876&quot;</span><span class="w"> </span>-q<span class="w"> </span><span class="p">&amp;</span>
+sleep<span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;{&quot;action&quot;:&quot;listBuildings&quot;}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>nc<span class="w"> </span>-w2<span class="w"> </span>localhost<span class="w"> </span><span class="m">9876</span>
+<span class="nb">kill</span><span class="w"> </span>%1<span class="w"> </span><span class="m">2</span>&gt;/dev/null
+
+<span class="c1"># 5. Back Office server starts</span>
+curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:9877/api/health<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-q<span class="w"> </span><span class="s2">&quot;UP&quot;</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;BACKOFFICE OK&quot;</span>
+
+<span class="c1"># 6. Rosetta Stone compiles</span>
+./scripts/run_RosettaStones.sh<span class="w"> </span>classify_sh.yaml<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tail<span class="w"> </span>-3
+</code></pre></div>
+<hr />
+<h2 id="14-erd-diagrams-database-browsing">14. ERD Diagrams &amp; Database Browsing<a class="headerlink" href="#14-erd-diagrams-database-browsing" title="Permanent link">&para;</a></h2>
+<h3 id="141-datasette-live-database-erd-port-8001">14.1 Datasette — Live Database ERD (port 8001)<a class="headerlink" href="#141-datasette-live-database-erd-port-8001" title="Permanent link">&para;</a></h3>
+<p>Datasette (§4.3) serves as the <strong>live ERD and data browser</strong>. Every table's schema, foreign keys,
+and row counts are visible at <code>http://localhost:8001/</code>. No manual refresh needed — Datasette
+reads SQLite files directly, so schema changes from migrations or table drops are reflected
+immediately.</p>
+<table>
+<thead>
+<tr>
+<th>URL</th>
+<th>What it shows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>http://localhost:8001/</code></td>
+<td>All databases, table counts</td>
+</tr>
+<tr>
+<td><code>http://localhost:8001/component_library</code></td>
+<td>All 80 tables with row counts and schema</td>
+</tr>
+<tr>
+<td><code>http://localhost:8001/ERP</code></td>
+<td>All 52 discipline-validation &amp; MEP metadata tables</td>
+</tr>
+<tr>
+<td><code>http://localhost:8001/SH_BOM</code></td>
+<td>Sample House BOM structure</td>
+</tr>
+<tr>
+<td><code>http://localhost:8001/component_library/M_Product</code></td>
+<td>Paginated product catalog rows</td>
+</tr>
+</tbody>
+</table>
+<h3 id="142-interactive-architecture-viz-html">14.2 Interactive Architecture Viz (HTML)<a class="headerlink" href="#142-interactive-architecture-viz-html" title="Permanent link">&para;</a></h3>
+<p>One interactive ERD in <code>database/</code> — clickable tables with detail panels, compilation pipeline, BOM tree:</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Content</th>
+<th>How to View</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>database/bim_architecture_viz.html</code></td>
+<td>4-DB architecture, clickable tables, pipeline steps, BOM tree</td>
+<td>Open in any browser</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Full schema reference:</strong> <code>database/DATABASE_SCHEMA.md</code> — complete table inventory with purpose, Java access, and review status.</p>
+<p><strong>Serving on a network:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>database<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>python3<span class="w"> </span>-m<span class="w"> </span>http.server<span class="w"> </span><span class="m">8080</span>
+<span class="c1"># Browse: http://localhost:8080/bim_architecture_viz.html</span>
+</code></pre></div>
+<h3 id="when-to-refresh">When to refresh<a class="headerlink" href="#when-to-refresh" title="Permanent link">&para;</a></h3>
+<p>The architecture viz is <strong>hand-authored HTML</strong> — update when tables are added/dropped.
+For live schema inspection, use Datasette instead (§4.3).</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Schema snapshot for comparison</span>
+sqlite3<span class="w"> </span>library/component_library.db<span class="w"> </span><span class="s2">&quot;.schema&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>database/schema_snapshot_component_library.sql
+</code></pre></div>
+<hr />
+<h2 id="15-database-schema-reference">15. Database Schema Reference<a class="headerlink" href="#15-database-schema-reference" title="Permanent link">&para;</a></h2>
+<p>Full table inventory with purpose, Java access patterns, and review status:
+<strong><a href="https://github.com/red1oon/BIMCompiler/blob/master/database/DATABASE_SCHEMA.md"><code>database/DATABASE_SCHEMA.md</code></a></strong></p>
+<p>Quick summary: component_library.db (80 tables), ERP.db (52 tables),
+validation.db (9 tables), {PREFIX}_BOM.db (~11 tables per building), output.db (written fresh each compile).</p>
+<hr />
+<h2 id="16-docker-what-to-containerize">16. Docker — What to Containerize<a class="headerlink" href="#16-docker-what-to-containerize" title="Permanent link">&para;</a></h2>
+<h3 id="what-docker-is-for">What Docker is for<a class="headerlink" href="#what-docker-is-for" title="Permanent link">&para;</a></h3>
+<p>Docker wraps the <strong>Back Office HTTP server</strong> for WAN deployment. This is the only component that needs containerization — it's a stateless API server with SQLite databases mounted as a volume.</p>
+<h3 id="what-docker-is-not-for">What Docker is NOT for<a class="headerlink" href="#what-docker-is-not-for" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Why not Docker</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Blender + BIM Designer</td>
+<td>Desktop GUI, needs OpenGL/GPU, user interaction</td>
+</tr>
+<tr>
+<td>IFCtoBOM extraction</td>
+<td>Batch CLI, runs once per building, needs local IFC files</td>
+</tr>
+<tr>
+<td>DAGCompiler pipeline</td>
+<td>Batch CLI, runs once per compile, development tool</td>
+</tr>
+<tr>
+<td>Test suites</td>
+<td>Development-time only, need full Maven + JDK</td>
+</tr>
+<tr>
+<td>Migration scripts</td>
+<td>One-shot <code>sqlite3</code> commands, run locally</td>
+</tr>
+</tbody>
+</table>
+<h3 id="docker-architecture">Docker architecture<a class="headerlink" href="#docker-architecture" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>┌─────────────────────────────────────────────────┐
+│                  WAN / Internet                  │
+└────────────────────┬────────────────────────────┘
+                     │
+         ┌───────────▼───────────┐
+         │   nginx:443 (TLS)     │  ← docker-compose service
+         │   SSL termination     │
+         └───────────┬───────────┘
+                     │
+         ┌───────────▼───────────┐
+         │  BackOfficeServer     │  ← docker-compose service
+         │  :9877 (HTTP)         │
+         │  HMAC session tokens  │
+         └───────────┬───────────┘
+                     │
+         ┌───────────▼───────────┐
+         │  /data/library/       │  ← bind-mounted volume
+         │  component_library.db │
+         │  ERP.db, validation   │
+         │  *_BOM.db files       │
+         └───────────────────────┘
+</code></pre></div>
+<h3 id="quick-start">Quick start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 1. Build</span>
+docker-compose<span class="w"> </span>build
+
+<span class="c1"># 2. Set HMAC secret (production — don&#39;t skip this)</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">BIM_SESSION_SECRET</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>openssl<span class="w"> </span>rand<span class="w"> </span>-hex<span class="w"> </span><span class="m">32</span><span class="k">)</span><span class="s2">&quot;</span>
+
+<span class="c1"># 3. Generate TLS certs (if not using Let&#39;s Encrypt)</span>
+./deploy/generate-certs.sh
+
+<span class="c1"># 4. Launch</span>
+docker-compose<span class="w"> </span>up<span class="w"> </span>-d
+
+<span class="c1"># 5. Verify</span>
+curl<span class="w"> </span>-k<span class="w"> </span>https://localhost/api/health
+docker-compose<span class="w"> </span>logs<span class="w"> </span>-f<span class="w"> </span>backoffice
+</code></pre></div>
+<h3 id="updating-databases-in-docker">Updating databases in Docker<a class="headerlink" href="#updating-databases-in-docker" title="Permanent link">&para;</a></h3>
+<p>The <code>library/</code> directory is bind-mounted, so database updates are live:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Run a migration against the mounted volume</span>
+sqlite3<span class="w"> </span>./library/ERP.db<span class="w"> </span>&lt;<span class="w"> </span>migration/DV008_infra_rail_rules.sql
+
+<span class="c1"># Recompile a building (output goes to same library/)</span>
+./scripts/run_RosettaStones.sh<span class="w"> </span>classify_sh.yaml
+
+<span class="c1"># No container restart needed — SQLite reads see changes immediately</span>
+</code></pre></div>
+<hr />
+<p><em>For the project overview paper, see <a href="../BIMERPPaper/">BIMERPPaper.md</a>.</em>
+<em>For the end-user installer specification, see <a href="https://github.com/red1oon/BIMCompiler/blob/master/internal/INSTALLER_SPEC.md">INSTALLER_SPEC.md</a>.</em>
+<em>For the WAN/Docker deployment guide, see <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/internal/DEPLOYMENT.md">DEPLOYMENT.md</a>.</em></p>
+<p><em>Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.</em></p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+
+
+                
+
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Zurück zum Seitenanfang
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/red1oon/bim-ootb" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.linkedin.com/in/red1oon/" target="_blank" rel="noopener" title="www.linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.indexes", "search.suggest", "search.highlight", "toc.follow", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "In Zwischenablage kopiert", "clipboard.copy": "In Zwischenablage kopieren", "search.result.more.one": "1 weiteres Suchergebnis auf dieser Seite", "search.result.more.other": "# weitere Suchergebnisse auf dieser Seite", "search.result.none": "Keine Suchergebnisse", "search.result.one": "1 Suchergebnis", "search.result.other": "# Suchergebnisse", "search.result.placeholder": "Suchbegriff eingeben", "search.result.term.missing": "Es fehlt", "select.version": "Version ausw\u00e4hlen"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../javascripts/fold-footnotes.js"></script>
+      
+        <script src="../../javascripts/bim_compiler_source.js"></script>
+      
+    
+  </body>
+</html>

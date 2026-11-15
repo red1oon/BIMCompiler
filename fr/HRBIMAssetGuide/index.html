@@ -1,0 +1,4507 @@
+
+<!doctype html>
+<html lang="fr" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Construction is manufacturing. A building IS its Bill of Materials.">
+      
+      
+        <meta name="author" content="Redhuan D. Oon">
+      
+      
+        <link rel="canonical" href="https://red1oon.github.io/BIMCompiler/HRBIMAssetGuide/">
+      
+      
+        <link rel="prev" href="../NinjaExcelReport_UserManual/">
+      
+      
+        <link rel="next" href="../CivilWorksGuide/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>HR / Tenancy / Operate Module - BIM Intent Compiler</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/custom.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  <script data-goatcounter="https://red1oon.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  
+  <meta name="robots" content="noindex">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#hr_bim_asset-hr-tenancy-operate-module-alpha" class="md-skip">
+          Aller au contenu
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="En-tête">
+    <a href="../" title="BIM Intent Compiler" class="md-header__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            BIM Intent Compiler
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              HR / Tenancy / Operate Module
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Rechercher" placeholder="Rechercher" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Recherche">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Effacer" aria-label="Effacer" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initialisation de la recherche
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source md-header__source--stacked">
+        <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+        <a href="https://github.com/red1oon/BIMCompiler" title="red1oon/BIMCompiler on GitHub" class="md-source" id="bim-compiler-source" target="_blank" rel="noopener">
+          <div class="md-source__icon md-icon">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+          </div>
+          <div class="md-source__repository" id="bim-compiler-repository">
+            Compiler
+          </div>
+        </a>
+        <span id="repo-totals" class="md-source-totals" title="Combined stars / forks across both repos"></span>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Onglets" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Start Here
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../BIMUserGuide/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  The 3 Apps
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../DeveloperGuide/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Go Deeper
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../SpatialCompilationPaper/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Papers & Positioning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../HalalTrace/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Prototypes & Demos
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../PROJECT_CHRONOLOGY/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  History & Legacy
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../" title="BIM Intent Compiler" class="md-nav__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    BIM Intent Compiler
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start Here
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_1" id="__nav_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Start Here
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../USER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    📖 User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMToolsGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🧰 BIM Tools — User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OFFLINE_INSTALL_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🔒 Fully Offline / Air-Gapped Install
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WhatsNew/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🆕 What's New
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AboutMore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About BIM OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FeatureComparison/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Feature Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MigrateComparisonPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrate & Compare (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TwoAppsOneKernel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two Apps, One Kernel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TwoAppsOneKernelInfographicLandscape.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    One Page InfoGraphics - Landscape
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bench_suite.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Comparison (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../age_demo.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Does Your ERP Age? (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MANIFESTO/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The ERP World View
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contribute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 3 Apps
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    The 3 Apps
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Viewer Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AskFirstSteps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewer Ask — First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerFirstSteps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modeller — First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DAGeVu Modeller — User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ProposerGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Proposer Guide (propose an edit, get the proof)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FastScriptGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fast Script Guide (one door: commands and scripts)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIMGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2D Drawings → BIM (DXF2BIM)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_Yellow_List/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — the yellow list (what you fill in, defaults used)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_Prior_Art/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — prior art (what is new, what we learned, cost of using others)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_FORMAT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — format contract (marks, outputs, registry, codes; generated)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERPUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel-ERP User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TillUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    uniCenta-style Till & Kitchen Screen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CapexDashboardGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM → ERP and CAPEX Dashboard — for iDempiere users
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CapexUATGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CAPEX UAT Guide — step-by-step test script
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERP_FirstSetup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel-ERP — Your First Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MigrationGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration User Guide (Odoo · Business Central · SAP Business One)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OdooMigration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moving from Odoo — how it works, what is proven
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NinjaExcelReport_UserManual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NinjaExcel Report — User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HR / Tenancy / Operate Module
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HR / Tenancy / Operate Module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#getting-started-about-5-minutes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Getting started (about 5 minutes)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common tasks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common tasks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#see-which-rooms-are-occupied" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See which rooms are occupied
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#see-who-is-physically-here-right-now-with-people-you-can-walk-up-to" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See who is physically here right now — with people you can walk up to
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spot-equipment-that-needs-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Spot equipment that needs service
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Spot equipment that needs service">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-iot-sensor-cctv-cockpit-mockup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The IoT sensor + CCTV cockpit (mockup)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The IoT sensor + CCTV cockpit (mockup)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#for-developers-interfacing-with-the-iotcctv-stubs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For developers — interfacing with the IoT/CCTV stubs
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jump-straight-to-the-erp-record" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Jump straight to the ERP record
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jump-back-from-erp-into-the-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Jump back from ERP into the model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#classify-spaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Classify spaces
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#read-the-numbers-dashboard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Read the numbers (Dashboard)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#payroll-payslip" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Payroll — payslip
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#leave-balance-statement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Leave — balance &amp; statement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tenancy-ad-compile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tenancy — AD compile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bim-bom-assembly-recipe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BIM BOM — assembly &amp; recipe
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-building-with-no-rooms-aisle-zones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A building with no rooms? Aisle-zones
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-lenses-at-a-glance-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The lenses at a glance (reference)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#under-the-hood-the-data-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Under the hood — the data model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Under the hood — the data model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-a-space-gets-its-class-non-invent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How a space gets its class (non-invent)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-money-contract-side-when-erp-is-loaded" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The money + contract side (when ERP is loaded)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#future-roadmap-addendum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Future roadmap (addendum)
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CivilWorksGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Civil Works — Step by Step
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TeamsOverlayGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Teams Overlay — Collaboration & Optics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Go Deeper
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Go Deeper
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DeveloperGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide (read first if you will change the code)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ArchitectureOverview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Overview (for reviewers)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../FoldEngineBlackBook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fold Engine Black Book (dev manual)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HolyGrail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Holy Grail (editable rules, live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ERPConceptRosetta.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-ERP Rosetta Stone (concept + cost)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIM_Modeller_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Modeller OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERP_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP — Every Record Has a Place
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERPIntegration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP × BIM × HR — One Building, One Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DistributedERP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Distributed ERP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TermsHowToVerify/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to verify the terms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERP_AI_ADVISORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Letting an AI work on the ERP, safely
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SQLiteWasmArchitectureActual.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How the Database Works (big picture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ViewerComponentModel.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewer Component Model (dev architecture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CLASH_DETECTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clash Detection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../JKR_SKATA/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Asset Classification & JKR/SKATA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../IFC_ExportGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IFC Export Guide (for the BIM author)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TimeMachine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Time Machine (4D Scheduling & Editing)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4D5DAnalysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4D/5D Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMtoProject/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM → Project Order (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerKernelFold/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry as a Signed-Log Fold
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Papers & Positioning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Papers & Positioning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialCompilationPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deterministic Spatial Compilation (academic paper)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AIProposerDefensiveDisclosure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Defensive Disclosure: an Outside AI Proposes, the App Decides
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_TechnicalNote/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — Deterministic 2D ⇄ BIM Round Trip (technical note)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BrowserScaleBenchmark/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Browser-Scale Benchmark (one tab, local first)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnterpriseAuthentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enterprise Authentication (security)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../StrategicIndustryPositioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Strategic Positioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LocalFirstPriorArt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local-First Prior Art
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LegacyOracleAdapterSpec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Legacy-as-Oracle Adapter (migrate / test an ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ShipYard/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Beyond Buildings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RouteTemplate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Find & Navigate (wayfinding)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../halal/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prototypes & Demos
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Prototypes & Demos
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HalalTrace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Halalan Thayiban — halal track & trace (paper)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glassbowl.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glassbowl — the ERP engine as data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glassbowl_gravity.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glassbowl · Gravity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../RetailScaleStory.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Retail at Scale — two messages a day (benchmark story)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bim_architecture_viz.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How it works — interactive architecture tour
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    History & Legacy
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    History & Legacy
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROJECT_CHRONOLOGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Chronology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../VibeProgramming/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vibe Programming — AI + Domain Expertise
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4DGenerator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 4D Generator — Failure Catalogue & AI Findings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnablingTechTimeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enabling-Tech Timeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RED_PILL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Red Pill — Design From Grammar (origin)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LAST_MILE_PROBLEM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Last Mile — drift tracking (Java era)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMERPPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Construction Economy / ERP Wave (Java era)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SYSTEMS_INSTALLER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Self-Host the Java toolchain (legacy installer)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#getting-started-about-5-minutes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Getting started (about 5 minutes)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common tasks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common tasks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#see-which-rooms-are-occupied" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See which rooms are occupied
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#see-who-is-physically-here-right-now-with-people-you-can-walk-up-to" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See who is physically here right now — with people you can walk up to
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spot-equipment-that-needs-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Spot equipment that needs service
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Spot equipment that needs service">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-iot-sensor-cctv-cockpit-mockup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The IoT sensor + CCTV cockpit (mockup)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The IoT sensor + CCTV cockpit (mockup)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#for-developers-interfacing-with-the-iotcctv-stubs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For developers — interfacing with the IoT/CCTV stubs
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jump-straight-to-the-erp-record" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Jump straight to the ERP record
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jump-back-from-erp-into-the-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Jump back from ERP into the model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#classify-spaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Classify spaces
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#read-the-numbers-dashboard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Read the numbers (Dashboard)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#payroll-payslip" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Payroll — payslip
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#leave-balance-statement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Leave — balance &amp; statement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tenancy-ad-compile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tenancy — AD compile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bim-bom-assembly-recipe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BIM BOM — assembly &amp; recipe
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-building-with-no-rooms-aisle-zones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A building with no rooms? Aisle-zones
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-lenses-at-a-glance-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The lenses at a glance (reference)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#under-the-hood-the-data-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Under the hood — the data model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Under the hood — the data model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-a-space-gets-its-class-non-invent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How a space gets its class (non-invent)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-money-contract-side-when-erp-is-loaded" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The money + contract side (when ERP is loaded)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#future-roadmap-addendum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Future roadmap (addendum)
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+  <p class="i18n-note"><small>Cette page n'est pas encore traduite ; elle s'affiche en anglais. <a href="https://red1oon.github.io/BIMCompiler/HRBIMAssetGuide/">Page en anglais</a>.</small></p>
+  
+                  
+
+
+  
+  
+
+
+<h1 id="hr_bim_asset-hr-tenancy-operate-module-alpha">HR_BIM_Asset — HR / Tenancy / Operate Module  <em>(ALPHA)</em><a class="headerlink" href="#hr_bim_asset-hr-tenancy-operate-module-alpha" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>⚠ DEMONSTRATOR — NOT OFFICIAL.</strong> Every screen and every generated output (payslip, invoice, report, export,
+print) carries the <strong><code>CONTOH — TIDAK RASMI</code> / <code>SAMPLE — NOT OFFICIAL</code></strong> watermark. Demo values only — this is a
+demonstrator and a policy counter-proposal, <strong>not</strong> a certified/compliant production system.</p>
+</blockquote>
+<p><strong>HR_BIM_Asset turns a finished building into its operate-phase (7D) cockpit.</strong> Open any building in the Viewer
+and a single toolbar pill lets you ask operational questions <em>on the geometry itself</em> — which units are occupied,
+who is physically present, what equipment is due for service — each answered by a colour wash over the real rooms.</p>
+<blockquote>
+<p><strong>One model · a few lenses, each answering exactly one question · all off one signed op-log.</strong></p>
+</blockquote>
+<p>This is a <strong>task-oriented manual</strong>. If you just want to <em>use</em> it, read <strong>Getting started</strong> and <strong>Common tasks</strong>.
+If you want to know <em>how it works</em> (or you administer the data), read <strong>Under the hood</strong>.</p>
+<hr />
+<h2 id="getting-started-about-5-minutes">Getting started (about 5 minutes)<a class="headerlink" href="#getting-started-about-5-minutes" title="Permanent link">&para;</a></h2>
+<p>You need nothing but the Viewer and a building that carries some operate data (the <strong>HHS office</strong> sample does).</p>
+<ol>
+<li><strong>Open the building.</strong> In the Viewer, load a building (e.g. the <em>HHS Office</em> sample). Let the 3D model finish
+   streaming in — the FM pill only lights once the model is FULLY streamed (a half-loaded model won't show a
+   lens the tail of the stream hasn't carried in yet, so the pill deliberately waits).</li>
+<li><strong>Reveal the toolbar.</strong> On a fresh load the icon rail is tucked behind the <strong>⋯</strong> button (bottom-right) — tap
+   it to unfold the full icon rail.</li>
+<li><strong>Find the <code>FM / Operate</code> pill.</strong> Look for the <strong>building glyph</strong> in the rail — it turns <strong>blue</strong> once tapped
+   (see the screenshot below). It appears <strong>only</strong> when the building has operate data — if you don't see it,
+   there's nothing to operate yet (see <a href="#troubleshooting">Troubleshooting</a>).</li>
+<li><strong>Open the drawer.</strong> Tap the pill — it highlights blue and a small <strong>FM / Operate</strong> drawer opens listing the
+   lenses. Lenses with data are bright and clickable; lenses with no data for <em>this</em> building are <strong>greyed and
+   marked "no data"</strong>.</li>
+</ol>
+<p><img alt="The toolbar with the FM / Operate pill lit (blue, bottom-right rail) and its drawer open — five lenses: Occupancy, Presence, Unit class, Assets / IoT, Dashboard" src="../../img/hba_fm_drawer.png" /></p>
+<p><em>(The drawer has since grown to 8 entries — the 4 lenses above plus Tenancy / AD, Dashboard, Payslip, and
+   Leave; see <a href="#the-lenses-at-a-glance-reference">The lenses at a glance</a> for the full current list.)</em></p>
+<p><img alt="Four panes open at once on the real HHS building — Occupancy (room utilization + request-age charts), Leave (balance &amp; statement), Tenancy (partially behind, subscriptions list), and Payslip (gross/net breakdown) — with the Human-Asset drawer showing all 8 lenses on the right" src="../../img/hba_4panels.png" /></p>
+<ol>
+<li><strong>Turn on a lens.</strong> Tap <strong>Occupancy</strong>. Tapping a row applies the lens <strong>and closes the drawer</strong>; re-tap the
+   pill to reopen it and see which lens is active (highlighted, "● on"). The status bar reads e.g.
+   <em>“HR · occupancy · 11 units lit”</em> — that status line is the reliable readout of what's lit; on this sample
+   building the bound elements are small real fixtures, so at a building-wide view the wash can be subtle — zoom
+   toward a room to see an individual tinted element close up.</li>
+</ol>
+<p><img alt="The Occupancy lens applied on the HHS office — drawer reopened showing &quot;Occupancy ● on&quot; and &quot;11 units lit&quot; on the status bar" src="../../img/hba_occupancy_live.png" /></p>
+<ol>
+<li><strong>Turn it off.</strong> Tap the lens row again (or pick another). The model is restored <strong>exactly</strong> — overlays never
+   leave residue and never disturb other panels.</li>
+</ol>
+<p>That's the whole interaction model: <strong>open → reveal toolbar → pill → drawer → toggle a lens</strong>. Everything below
+is variations on it.</p>
+<hr />
+<h2 id="common-tasks">Common tasks<a class="headerlink" href="#common-tasks" title="Permanent link">&para;</a></h2>
+<h3 id="see-which-rooms-are-occupied">See which rooms are occupied<a class="headerlink" href="#see-which-rooms-are-occupied" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Open the <strong>FM / Operate</strong> drawer → tap <strong>Occupancy</strong> (see the screenshot above).</li>
+<li>Read the wash:</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Colour</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🟢 green</td>
+<td><strong>occupied</strong> — an active booking covers now</td>
+</tr>
+<tr>
+<td>🟡 amber</td>
+<td><strong>expiring</strong> — the lease ends within the horizon</td>
+</tr>
+<tr>
+<td>⚪ grey</td>
+<td><strong>vacant</strong> — <em>no</em> booking (vacancy is read from the absence of one, never a faked tenant)</td>
+</tr>
+<tr>
+<td>🟣 purple</td>
+<td><strong>unavailable</strong> — a maintenance / renovation blackout</td>
+</tr>
+<tr>
+<td>3. The status bar tells you how many units lit (verified live: <em>"HR · occupancy · 11 units lit"</em> on the HHS</td>
+<td></td>
+</tr>
+<tr>
+<td>sample). Toggle off to restore.</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Where the colour actually lands.</strong> A room (<code>IfcSpace</code>) usually isn't its own mesh — the lens tints its real
+rendered <strong>contained members</strong> instead (see <a href="#under-the-hood-the-data-model">How a unit binds to the model</a>).
+On the HHS sample those members are small fixtures, so from a building-wide view the wash reads as a subtle
+tint; the <strong>GardenWorld</strong> warehouse below tints a whole aisle-floor at once and is the clearest example to look
+at first if you want to <em>see</em> the effect from a distance.</p>
+<p><strong>Tenancy is part of Occupancy.</strong> An earlier alpha had a separate <em>Tenancy</em> lens; it's now folded in. Occupancy
+replays each room's signed booking log (<code>ASSIGN</code> / <code>RELEASE</code> / <code>UNAVAIL</code>), so it <em>is</em> the lease-status superset.</p>
+</blockquote>
+<h3 id="see-who-is-physically-here-right-now-with-people-you-can-walk-up-to">See who is physically here right now — with people you can walk up to<a class="headerlink" href="#see-who-is-physically-here-right-now-with-people-you-can-walk-up-to" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Open the drawer → tap <strong>Presence</strong>. Zones tint by <strong>live headcount density</strong> (light → deep blue as more people
+   are present).</li>
+<li><strong>Zoom in.</strong> Each present person becomes a <strong>little avatar standing in the room</strong> where their signed check-in
+   put them. People cluster in a ring when several share a room — you're looking at the workforce <em>in situ</em>, not a
+   number in a grid.</li>
+</ol>
+<p><img alt="Presence — avatars standing in the rooms where real check-ins placed them, at two LOD tiers (full figures nearby, mini domes further off), with a hover card reading &quot;EMP-131 · RM_Level_3_2 · present · checked in · since 2026-07-15 08:32 · SAMPLE — NOT OFFICIAL&quot;" src="../../img/hba_presence_avatars.png" /></p>
+<ol>
+<li><strong>Hover an avatar</strong> → their card (name, room, since when, status), watermarked — exactly as captured above.
+   <strong>Draw nearer</strong> and the nearest person auto-labels; <strong>zoom out</strong> and the avatars collapse back to <strong>dots</strong> — an
+   automatic level-of-detail ladder (dot → mini → full) so a full floor never turns to soup. The screenshot above
+   catches the ladder mid-transition: a full-figure cluster close to camera, mini-dome clusters further back.</li>
+<li>Headcount comes from <strong>signed check-ins</strong> — a room with no check-in has no avatar (never a faked person).</li>
+<li>The <strong>Presence roster</strong> (the drawer's own list of every check-in for the period) carries an <strong>open ↗</strong> link
+   per person straight to their <code>AD_User</code> record — the first bidirectional click-through for a Person in this
+   module (every other pane already had one). No reverse direction (an ERP record flying you back into the 3D
+   model) exists yet — that's a genuinely new capability, tracked separately, not built here.</li>
+</ol>
+<h3 id="spot-equipment-that-needs-service">Spot equipment that needs service<a class="headerlink" href="#spot-equipment-that-needs-service" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Open the drawer → tap <strong>Assets / IoT</strong>.</li>
+<li>Equipment tints <strong>ok (green) · due (amber) · overdue (red)</strong>, driven by each asset's next-due date and cycle.</li>
+</ol>
+<p><img alt="The Assets / IoT lens on the HHS office — drawer showing &quot;Assets / IoT ● on&quot; and &quot;1 unit lit&quot; (this sample carries one seeded asset record)" src="../../img/hba_maintenance_lens.png" /></p>
+<ol>
+<li>If this entry is <strong>greyed “no data”</strong>, the building simply carries no asset/IoT records — nothing is faked.</li>
+</ol>
+<h4 id="the-iot-sensor-cctv-cockpit-mockup">The IoT sensor + CCTV cockpit (mockup)<a class="headerlink" href="#the-iot-sensor-cctv-cockpit-mockup" title="Permanent link">&para;</a></h4>
+<p>Tapping <strong>Assets / IoT</strong> does two things at once: it tints the asset in the model (above) <strong>and</strong> opens a
+supplementary pane — a small operate-cockpit showing what a real IoT feed would look like. This whole pane is
+an <strong>explicit mockup</strong> — every reading is a deterministic synthetic curve (same input, same output, always —
+never <code>Math.random</code>), watermarked, and never claimed as a real sensor value. It exists to <strong>stub out the
+finished shape</strong>: every reading, camera and tone already compiles onto a real ERP record, so wiring in an
+actual sensor feed later is a data-source swap, not a rebuild.</p>
+<p><strong>Seven sensor channels, last 24 hours</strong> — each with its own icon, colour and 24h trend bar, and <strong>each bound to
+its own real element in the model</strong> (not a shared placeholder):</p>
+<table>
+<thead>
+<tr>
+<th>Icon</th>
+<th>Sensor</th>
+<th>Bound to (a real element)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🌡️</td>
+<td>Temperature</td>
+<td>a supply-air diffuser</td>
+</tr>
+<tr>
+<td>🔧</td>
+<td>Boiler Pressure</td>
+<td>the rooftop mechanical plant</td>
+</tr>
+<tr>
+<td>🔊</td>
+<td>Sound Level</td>
+<td>a ceiling diffuser, open-plan floor</td>
+</tr>
+<tr>
+<td>🌫️</td>
+<td>Dust (PM2.5)</td>
+<td>a ceiling diffuser, open-plan floor</td>
+</tr>
+<tr>
+<td>☀️</td>
+<td>Solar Output</td>
+<td>the roof sun-shading structure</td>
+</tr>
+<tr>
+<td>⚡</td>
+<td>Electrical Load</td>
+<td>the Level 1 main distribution panel</td>
+</tr>
+<tr>
+<td>🚶</td>
+<td>Motion (PIR)</td>
+<td>a Level 1 entrance door</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="The IoT pane's seven sensor bars — temperature, boiler pressure, sound level, dust, solar output, electrical load, motion — each icon-labelled with a 24h value, a mute/unmute button top-right, watermarked SAMPLE/CONTOH" src="../../img/hba_iot_sensors.png" /></p>
+<p>Clicking any bar flies the camera to <strong>that sensor's own real position</strong> — not a single shared spot — and
+briefly rings it orange, a wider "establishing" shot than a normal zoom so the surrounding room/plant/entrance
+stays visible (a deliberate "wow, here's where this actually is", not a nose-to-mesh close-up).</p>
+<p><strong>Alarm tones, muted by default.</strong> Each bar's 24h value loop can ALSO chime — click the 🔇 in the pane header to
+turn it on (🔊). Pitch rises the closer a reading sits to its own observed extreme (a calm low tone vs a
+higher, more urgent one — never a fabricated "danger threshold", just the same range already shown on the bar).
+Every sensor has its <strong>own distinct tone character</strong> (a different waveform, and 1–3 quick "blips") so you can
+tell <em>which</em> sensor is alarming by ear alone, without looking at the screen — muted by default so opening the
+pane is never noisy by surprise.</p>
+<p><strong>A CCTV mockup grid and the ERP billing table</strong>, scrolled further down the same pane — six 📷 camera tiles
+(explicitly captioned "MOCKUP — NO REAL FEED", no invented video, each bound to its own real entrance/corridor
+door and clickable the same way as a sensor bar), and underneath, each sensor's <em>latest</em> reading compiled into
+a <strong>billable line</strong> — a real <code>C_OrderLine</code> (quantity, unit of measure, RM amount <strong>plus its USD equivalent</strong>)
+under a <code>C_Order</code> header, the same "compile into the real ERP dictionary, don't invent a parallel one"
+discipline the rest of this module follows:</p>
+<p><img alt="The CCTV mockup grid (6 tiles, no real feed, camera icon in the section header) and the ERP billing table underneath — each sensor reading compiled as a billable order line with qty/RM/≈USD/net amount" src="../../img/hba_iot_cctv.png" /></p>
+<p><strong>The sensors and cameras "talk" to each other.</strong> Every sensor and camera already knows which <strong>storey</strong> it's
+on — so clicking a sensor also briefly rings the CCTV tile(s) on the <em>same floor</em>, a real (if simple) connection
+between two otherwise-separate stubs, not a coincidence:</p>
+<p><img alt="Clicking the Electrical Load bar (Level 1) rings CAM 1 and CAM 2 — the two cameras also on Level 1 — while CAM 3-6 on other floors stay untouched" src="../../img/hba_iot_connect.png" /></p>
+<p>This is the clearest illustration of the module's <strong>Spatial ERP</strong> idea: a sensor bound to a real element in
+the model is, at the same time, a line item a real ERP order can bill — one binding, two views (the 3D tint
+and the ledger line), off the same record. Each billing row's <strong>open ↗</strong> deep-links straight to that
+<code>C_Order</code>/<code>C_OrderLine</code> in iDempiere — "here's a real billable document, ready for management's follow-up",
+not just a mockup number:</p>
+<p><img alt="The IoT billing table with an &quot;open ↗&quot; link on each row, deep-linking to the real C_Order in iDempiere" src="../../img/hba_iot_billing_link.png" /></p>
+<h5 id="for-developers-interfacing-with-the-iotcctv-stubs">For developers — interfacing with the IoT/CCTV stubs<a class="headerlink" href="#for-developers-interfacing-with-the-iotcctv-stubs" title="Permanent link">&para;</a></h5>
+<p>Everything above is two small, additive files, meant to be extended rather than rewritten:</p>
+<ul>
+<li><strong><code>hr_bim_asset/iot.js</code></strong> — the engine, no DOM. <code>IoT.SENSORS</code> (7 entries: <code>key</code>/<code>label</code>/<code>icon</code>/<code>uom_name</code>/
+  <code>uom_symbol</code>/<code>baseline</code>/<code>amplitude</code>) and <code>IoT.CAMERAS</code> (6 entries: <code>bim_guid</code>/<code>element</code>/<code>storey</code>) are the two
+  catalogs to extend for a new device — each <code>DEVICES[key]</code>/<code>CAMERAS[i]</code> needs only a real bound <code>bim_guid</code>
+  already present in the loaded building (never invent one). <code>IoT.demoSeries(id, hours)</code> produces the
+  deterministic 24h curve; <code>IoT.billingLines(id, series, building, period, {erpQuery})</code> compiles it onto real
+  <code>C_UOM</code>/<code>M_Product</code>/<code>C_Order</code>/<code>C_OrderLine</code> rows (pass a real <code>erpQuery</code> reader — the same sync seam every
+  other governed pane uses — to resolve durable seeded ids instead of a session-local mint). <code>IoT.toneFreqFor
+  (value, min, max)</code> is the pure pitch-vs-range mapping behind the alarm tones — safe to call standalone to
+  preview a tone's frequency. <code>IoT.camerasOnStorey(storey)</code> / <code>IoT.camerasNearDevice(deviceKey)</code> are the
+  "ready-made connector" utilities behind the CCTV-ring behaviour above — a plain filter over the <code>storey</code> field
+  every device/camera already carries, reusable for any future "what else is near this thing" feature without
+  new geometry work.</li>
+<li><strong><code>viewer/hba_iot.js</code></strong> — the pane, additive/host-injected (imports nothing from the viewer, the host hands it
+  <code>A</code>). Public surface: <code>HBAIotPane.toggle(A)</code> / <code>.detect(A)</code> / <code>.isActive()</code>. A new sensor/camera needs zero
+  changes here — the bar/tile loops already iterate <code>IoT.SENSORS</code>/<code>IoT.CAMERAS</code>. The per-device zoom reuses
+  <code>HBALens.flyToZone(A, guid, {dist: 18})</code> — the <code>dist</code> option is generic (default 8 everywhere else), so any
+  other pane can request the same wider "establishing shot" framing.</li>
+</ul>
+<h3 id="jump-straight-to-the-erp-record">Jump straight to the ERP record<a class="headerlink" href="#jump-straight-to-the-erp-record" title="Permanent link">&para;</a></h3>
+<p>Every pane above that shows data compiled onto a <strong>real AD table</strong> carries a small <strong>open ↗</strong> link per row —
+Dashboard's Resources, Payslip's concept lines, Leave's unpaid entries, Tenancy's subscriptions, and IoT's
+billing lines. Tapping it opens that exact record in <code>erp/idempiere.html</code> in a new tab — the <em>same</em> deep-link
+mechanism the Viewer's own <strong>Find</strong> panel already uses to reopen a pushed Project Order (<code>?client=garden&amp;
+window=&lt;id&gt;&amp;record=&lt;pk&gt;</code>), reused here rather than invented fresh. Every window number below was looked up
+from the real AD dictionary, never guessed:</p>
+<table>
+<thead>
+<tr>
+<th>Pane · row</th>
+<th>iDempiere window</th>
+<th>Native table</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dashboard → Resources</td>
+<td>Resource</td>
+<td><code>S_Resource</code></td>
+</tr>
+<tr>
+<td>Payslip → concept line</td>
+<td>Payroll Movement</td>
+<td><code>HR_Movement</code></td>
+</tr>
+<tr>
+<td>Leave → unpaid entry</td>
+<td>Payroll Concept Catalog</td>
+<td><code>HR_Concept</code> (the "Leave without pay" concept it feeds — Leave has no native table of its own)</td>
+</tr>
+<tr>
+<td>Leave → "Resource ↗"</td>
+<td>Resource</td>
+<td><code>S_Resource</code> (a leave TAKE also compiles a real <code>S_ResourceUnAvailable</code> blackout on the employee's own resource — see <a href="#leave-balance-statement">Leave — balance &amp; statement</a>)</td>
+</tr>
+<tr>
+<td>Tenancy → subscription</td>
+<td>Subscription</td>
+<td><code>C_Subscription</code></td>
+</tr>
+<tr>
+<td>IoT → billing line</td>
+<td>Sales Order</td>
+<td><code>C_Order</code></td>
+</tr>
+<tr>
+<td>Presence → roster row</td>
+<td>User</td>
+<td><code>AD_User</code> (the employee's own identity record — see <a href="#see-who-is-physically-here-right-now-with-people-you-can-walk-up-to">See who is physically here right now</a>)</td>
+</tr>
+</tbody>
+</table>
+<p>No link appears on a row that doesn't (yet) resolve to a real record — the same non-invent discipline as
+everywhere else in this module: an absent link is honest, never a dead one.</p>
+<h3 id="jump-back-from-erp-into-the-model">Jump back from ERP into the model<a class="headerlink" href="#jump-back-from-erp-into-the-model" title="Permanent link">&para;</a></h3>
+<p>The link above only ever pointed one way — BIM → ERP. Opening a record in <code>erp/idempiere.html</code> can now fly the
+<strong>same</strong> Viewer scene back to the exact spot that record describes, using the kernel's own <strong>Zoom Across</strong>
+mechanism (<code>erp/zoom_across.js</code>) — a generic "this record has a related surface" registry that already knew how
+to jump to a Project/Project-Line/Manufacturing-Order; it just didn't know about any HR_BIM_Asset table yet.</p>
+<ol>
+<li>Open a <strong>Warehouse</strong> (the building itself), a <strong>Subscription</strong> (a Tenancy lease/strata charge), a <strong>Resource</strong>
+   or its <strong>Unavailability</strong> row (a person or a room), or a <strong>User</strong> (an employee's identity) record in
+   <code>erp/idempiere.html</code>.</li>
+<li>The red <strong>Zoom Across</strong> pill lights up (same pill/shortcut <code>,</code> as every other cross-surface jump in this
+   kernel). Click it — the Viewer opens already scoped to that record's building, and where the record names a
+   specific unit or person, it flies straight to it, not just the building's default view.</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>ERP record</th>
+<th>Lands the Viewer on</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>M_Warehouse</code> (a Building)</td>
+<td>The building, default view</td>
+<td>A Warehouse record isn't finer than the whole building.</td>
+</tr>
+<tr>
+<td><code>C_Subscription</code> (Tenancy/Strata)</td>
+<td>The leased <strong>unit</strong>, camera centred on that room</td>
+<td>The unit guid is re-derived via the same Product→Locator→Warehouse join the Project-Line jump already used — <code>C_Subscription</code> itself carries no guid column.</td>
+</tr>
+<tr>
+<td><code>S_Resource</code> — a <strong>room</strong></td>
+<td>That room</td>
+<td><code>S_Resource.Value</code> holds a room guid directly.</td>
+</tr>
+<tr>
+<td><code>S_Resource</code> / <code>S_ResourceUnAvailable</code> — a <strong>person</strong></td>
+<td>That person's <strong>current zone</strong>, if they're checked in</td>
+<td><code>S_Resource.Value</code> holds the employee's code (e.g. <code>EMP001</code>), not a guid — the Viewer resolves it to a room via that employee's open attendance session, the same spatial fact the Presence roster already reads. No open session → lands on the building only, honestly.</td>
+</tr>
+<tr>
+<td><code>AD_User</code></td>
+<td>The person's building</td>
+<td><strong>Honest gap:</strong> AD_User carries no zone column anywhere in the dictionary — their exact current room isn't derivable from ERP data alone, so this one never claims finer than the building.</td>
+</tr>
+</tbody>
+</table>
+<p>Watch it end to end: open the <strong>Resource</strong> window on EMP001 (or a Presence roster row's "open ↗"), hit Zoom
+Across — the Viewer lands you in the exact room they last checked into, camera already there, not just the
+building loaded. That's the full loop this module has been building toward — precise both ways.</p>
+<h3 id="classify-spaces">Classify spaces<a class="headerlink" href="#classify-spaces" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Open the drawer → tap <strong>Unit class</strong>.</li>
+</ol>
+<p><img alt="The Unit class lens on the HHS office — drawer showing &quot;Unit class ● on&quot; and &quot;4 units lit&quot;" src="../../img/hba_class_lens.png" /></p>
+<ol>
+<li>Spaces tint <strong>residential (green) · commercial (orange) · office (indigo) · unclassified (grey)</strong> — same
+   caveat as Occupancy above: on the HHS sample the bound elements are small real fixtures (the small teal ticks
+   along the roofline in the screenshot), not a big room-sized colour wash, since this building's <code>IfcSpace</code>
+   rooms aren't drawn as their own filled mesh — zoom toward one of the 4 lit rooms to see its own tinted
+   element close up, or read the honest <strong>"4 units lit"</strong> status line rather than relying on the wide shot.</li>
+<li>The class is never guessed — see <a href="#how-a-space-gets-its-class-non-invent">How a space gets its class</a>.</li>
+</ol>
+<h3 id="read-the-numbers-dashboard">Read the numbers (Dashboard)<a class="headerlink" href="#read-the-numbers-dashboard" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Open the drawer → tap <strong>Dashboard</strong>. An additive pane opens (it never touches the 3D scene) with three KPI
+   tiles and three charts, every value a read-only fold of the same signed op-log — nothing typed by hand.</li>
+</ol>
+<p><img alt="The occupancy / availability dashboard — KPI tiles (14 rooms · 60% utilisation · 7 open), per-storey utilisation across all three levels, an open-ticket aging doughnut, and a 12-month availability trend — all watermarked" src="../../img/hba_occupancy_dashboard.png" /></p>
+<ol>
+<li>What you're seeing:</li>
+<li><strong>KPI tiles</strong> — rooms, overall utilisation, open tickets.</li>
+<li><strong>Occupancy by storey</strong> — utilisation % per level (all storeys, not just the ground floor).</li>
+<li><strong>Open requests by age</strong> — the SLA doughnut, tickets bucketed <code>&lt;1d · 1–3d · 3–7d · &gt;7d</code>.</li>
+<li><strong>Room availability over time</strong> — a 12-month stacked trend of occupied / expiring / unavailable / vacant.</li>
+<li><strong>Resources</strong>, scrolled further down the same pane — one row per real room (name · storey · utilisation),
+   each a genuine <code>S_Resource</code> record ("a room is a bookable resource"). Every row carries an <strong>open ↗</strong> link
+   straight to that record in iDempiere — see <a href="#jump-straight-to-the-erp-record">Jump straight to the ERP record</a>
+   below.</li>
+</ol>
+<p><img alt="The Dashboard pane scrolled to its Resources list — one row per real room with storey, utilisation %, and an &quot;open ↗&quot; link into iDempiere's Resource window" src="../../img/hba_dashboard_resources.png" /></p>
+<h3 id="payroll-payslip">Payroll — payslip<a class="headerlink" href="#payroll-payslip" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Open the drawer → tap <strong>Payslip</strong>. An additive pane opens with an employee picker and that employee's
+   payslip — gross/net KPIs and a per-concept line trace (Base Salary, Allowance, EPF, PCB…), each line showing
+   the <strong>rule it came from</strong> (glass-box, not a black-box number).</li>
+</ol>
+<p><img alt="The Payslip pane — EMP001 selected, gross 5200 / net 4234, four concept lines (Base Salary, Allowance, EPF, PCB) each with its rule trace and an &quot;open ↗&quot; link into iDempiere's Payroll Movement window" src="../../img/hba_payslip.png" /></p>
+<ol>
+<li>Every line is a real <code>HR_Movement</code> row — the native iDempiere payroll table (dormant everywhere else this
+   dictionary ships, first activated here). Each line's <strong>open ↗</strong> deep-links straight to that movement record.</li>
+</ol>
+<h3 id="leave-balance-statement">Leave — balance &amp; statement<a class="headerlink" href="#leave-balance-statement" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Open the drawer → tap <strong>Leave</strong>. Balances (taken / unpaid / per-type) are <strong>replayed</strong> from a signed
+   accrue/take op-log — never a stored number — with a chain-integrity check shown inline.</li>
+</ol>
+<p><img alt="The Leave pane — EMP001, 10d taken, 4d unpaid, per-entry statement rows, with an &quot;open ↗&quot; link on unpaid rows into iDempiere's Payroll Concept Catalog" src="../../img/hba_leave.png" /></p>
+<ol>
+<li>Leave itself has <strong>no native AD table anywhere</strong> in iDempiere (checked against the real dictionary) — it's a
+   genuine addition, not a reinvention of something that already existed. So an unpaid row's <strong>open ↗</strong> doesn't
+   point at a fabricated "leave record" window; it points at the real <strong>"Leave without pay" payroll concept</strong>
+   the unpaid days feed into once payroll runs — the honest, real thing an unpaid entry actually compiles onto.</li>
+<li>Leave is <em>also</em> a resource-availability fact, not just a payroll deduction — a taken leave marks the employee
+   unavailable the same way a room's maintenance blackout does, via the real native <code>S_ResourceUnAvailable</code> table
+   (the child "Unavailability" tab of the Resource window). A <strong>Resource ↗</strong> link at the top of the pane opens
+   the employee's own Resource record, where that blackout shows up in the standard iDempiere Resource Schedule
+   — no separate leave-record UI to maintain, the same window Dashboard's Resources already deep-link into.</li>
+</ol>
+<h3 id="tenancy-ad-compile">Tenancy — AD compile<a class="headerlink" href="#tenancy-ad-compile" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Open the drawer → tap <strong>Tenancy / AD</strong>. Every lease and strata charge in the building compiled onto real
+   iDempiere tables — a unit is a <code>M_Locator</code> + <code>M_Product</code> under a <code>M_Warehouse</code>-as-building, a lease or strata
+   fee is a real <code>C_Subscription</code> (party · unit · cadence · term).</li>
+</ol>
+<p><img alt="The Tenancy pane — Warehouse/Units/Leases/Strata KPI tiles and a per-subscription row list (party, storey, cadence, term), each row with an &quot;open ↗&quot; link into iDempiere's Subscription window, plus a skipped-record footer" src="../../img/hba_tenancy.png" /></p>
+<ol>
+<li>Row click flies the camera to that unit (the same shared fly-to used by the Presence roster above); the
+   <strong>open ↗</strong> link is separate and deep-links straight to the <code>C_Subscription</code> record. A record whose unit
+   doesn't resolve to a real room in this building is <strong>skipped</strong>, never fabricated — the footer says so.</li>
+<li>The building itself compiles onto <code>M_Warehouse</code> — but the only <em>stock</em> iDempiere window over that table is
+   139 "Warehouse and Locators", warehouse-industry language for what's conceptually a building. A second,
+   purpose-named window — <strong>"Construction"</strong> — now sits alongside it over the <em>identical</em> <code>M_Warehouse</code> row
+   (the same convention iDempiere itself already uses for <code>C_BPartner</code>, which has 10 distinct windows over one
+   table). Window 139 is untouched; "Construction" is just a role-appropriate second door onto the same record.
+   In the Viewer, tapping a room or storey in the <strong>Find</strong> panel's Room lens surfaces an <strong>iDempiere ↗</strong> link to
+   this building's Construction record (building-grain — every room in one building shares the same warehouse
+   record, there's no per-room window).</li>
+</ol>
+<h3 id="bim-bom-assembly-recipe">BIM BOM — assembly &amp; recipe<a class="headerlink" href="#bim-bom-assembly-recipe" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Open the drawer → tap <strong>BOM</strong>. Every room in the building is an <strong>assembly</strong>: the room itself plus
+   every element physically contained in it, compiled onto iDempiere's native Bill of Materials tables
+   — the same recipe structure iDempiere uses for manufacturing, not a bolt-on BIM-only concept.</li>
+</ol>
+<p><img alt="The BIM BOM pane over the HHS office model — assembly/component KPI tiles, then a per-room assembly list (RM_Level_1_1, RM_Level_1_2, …) with each room's contained elements listed underneath with quantities, an &quot;open ↗&quot; link on every assembly, and the SAMPLE — NOT OFFICIAL watermark" src="../../img/hba_bom.png" /></p>
+<ol>
+<li>Each assembly lists its component lines right underneath — one row per contained element, with the
+   recipe quantity carried over from the model. Click an assembly row and the camera flies to that room.
+   The <strong>open ↗</strong> link deep-links to the real <strong>"Bill of
+   Materials and Formula"</strong> window, the same one a manufacturing user would use for a physical product's
+   recipe — a room's contents are read through the identical lens, not a parallel BIM-only screen.</li>
+<li>This pane has no 3D wash — it's a compiled list, like Tenancy and Dashboard.</li>
+</ol>
+<hr />
+<h2 id="a-building-with-no-rooms-aisle-zones">A building with no rooms? Aisle-zones<a class="headerlink" href="#a-building-with-no-rooms-aisle-zones" title="Permanent link">&para;</a></h2>
+<p>Not every building has <code>IfcSpace</code> rooms. A <strong>warehouse</strong> like the <em>GardenWorld</em> sample has none — just elements
+grouped into <strong>aisles</strong>. The module detects this and falls back to <strong>aisle-as-zone</strong>: each aisle becomes a zone,
+its members are the real elements parked in that aisle, and the same lenses light it. Below, Occupancy is on
+("HR · occupancy · 2 units lit") while <em>Unit class</em> and <em>Assets / IoT</em> are greyed because this warehouse carries
+neither.</p>
+<p><img alt="GardenWorld warehouse with the FM / Operate drawer — Occupancy lit on an aisle-zone (the green floor patch, aisle A), Unit class and Assets / IoT greyed &quot;no data&quot;" src="../../img/hba_gardenworld_aisles.png" /></p>
+<p>This is also the clearest example of the wash itself: the aisle's whole floor-slab tints green (occupied), an easy
+contrast to spot from a distance — unlike a room bound only to small fixtures (see the note under Occupancy
+above). Nothing is invented to make this work: the aisle labels and the element guids are all read from the model.</p>
+<hr />
+<h2 id="the-lenses-at-a-glance-reference">The lenses at a glance (reference)<a class="headerlink" href="#the-lenses-at-a-glance-reference" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Lens</th>
+<th>The one question</th>
+<th>Colour legend</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Occupancy</strong></td>
+<td><em>Is this unit occupied — and what's its lease status?</em></td>
+<td>occupied <code>#2e7d32</code> · expiring <code>#f9a825</code> · vacant <code>#9e9e9e</code> · unavailable <code>#8e24aa</code></td>
+</tr>
+<tr>
+<td><strong>Presence</strong></td>
+<td><em>Who is physically here right now?</em></td>
+<td>1 <code>#90caf9</code> · 2–4 <code>#1976d2</code> · 5+ <code>#0d47a1</code> (+ per-person avatars near-field)</td>
+</tr>
+<tr>
+<td><strong>Unit class</strong></td>
+<td><em>What is this space?</em></td>
+<td>residential <code>#43a047</code> · commercial <code>#fb8c00</code> · office <code>#3949ab</code> · unclassified <code>#9e9e9e</code></td>
+</tr>
+<tr>
+<td><strong>Assets / IoT</strong></td>
+<td><em>What equipment needs service?</em></td>
+<td>ok <code>#2e7d32</code> · due <code>#f9a825</code> · overdue <code>#c62828</code></td>
+</tr>
+<tr>
+<td><strong>Tenancy / AD</strong></td>
+<td><em>What's the AD-compiled lease/strata detail?</em></td>
+<td>opens the AD-compile pane (no 3D wash)</td>
+</tr>
+<tr>
+<td><strong>BOM</strong></td>
+<td><em>What's this room's assembly recipe?</em></td>
+<td>opens the BOM pane (no 3D wash)</td>
+</tr>
+<tr>
+<td><strong>Dashboard</strong></td>
+<td><em>Give me the numbers.</em></td>
+<td>opens the charts pane (no 3D wash)</td>
+</tr>
+<tr>
+<td><strong>Payslip</strong></td>
+<td><em>What did this employee actually get paid, and why?</em></td>
+<td>opens the payslip pane (no 3D wash)</td>
+</tr>
+<tr>
+<td><strong>Leave</strong></td>
+<td><em>What's this employee's leave balance and statement?</em></td>
+<td>opens the leave pane (no 3D wash)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Wake-aware, always.</strong> The <code>FM</code> pill appears only when the building has <em>some</em> operate data; inside the drawer
+each lens is enabled only when <em>its</em> data exists here. No data → greyed “no data” → no clutter, nothing faked.</p>
+<p><strong>Watermark.</strong> Every screen and export carries <code>CONTOH — TIDAK RASMI</code> / <code>SAMPLE — NOT OFFICIAL</code>. The demo values
+are illustrative; any real statutory rate or fee sits behind a research gate and is never shipped as fact.</p>
+<hr />
+<h2 id="under-the-hood-the-data-model">Under the hood — the data model<a class="headerlink" href="#under-the-hood-the-data-model" title="Permanent link">&para;</a></h2>
+<p>You don't need this to <em>use</em> the lenses, but it explains why every wash is trustworthy.</p>
+<ul>
+<li>
+<p><strong>One signed op-log.</strong> Everything — bookings, check-ins, tickets — is an append-only <strong>signed <code>kernel_op</code></strong>.
+  Each op chains to the previous (<code>verifyChain</code>); amending a signed op breaks the chain. The lenses are pure
+  <strong>replays</strong> of this log, so two reads give a bit-identical result and a vacant room is vacant from the <em>absence</em>
+  of an op — never a fabricated value.</p>
+</li>
+<li>
+<p><strong>Records (the “WHAT”).</strong> A handful of AD-defined models seed the demo: <strong>Tenancy</strong> (a lease), <strong>Strata</strong>
+  (ownership/parcel), <strong>Asset</strong> (equipment, linking a <code>bim_guid</code> to an <code>iot_device</code> + a service schedule), and
+  <strong>Request</strong> (a maintenance/service ticket). Each carries the <strong>guid</strong> of the room or element it concerns.</p>
+</li>
+<li>
+<p><strong>How a unit binds to the model (the “WHERE”).</strong> A record lights a unit <strong>only</strong> when its guid <strong>resolves to a
+  real mesh</strong> in the loaded building. An <code>IfcSpace</code> room usually isn't drawn as its own mesh, so the lens resolves
+  and tints it through its <strong>rendered contained members</strong> (<code>rel_contained_in_space</code>). A guid that resolves to
+  nothing is honestly <strong>un-linked</strong> — shown nowhere, never a faked tint. For a room-less building the same join
+  runs over <strong>aisle-zones</strong> (see above). Avatars stand at the <strong>centroid</strong> of a zone's rendered members.</p>
+</li>
+<li>
+<p><strong>Occupancy = a signed resource ledger (<code>S_Resource</code>-style).</strong> A room is a <em>resource</em>; you <strong><code>ASSIGN</code></strong> a party
+  to it for a period, <strong><code>RELEASE</code></strong> it early, or mark it <strong><code>UNAVAIL</code></strong> for a blackout. <em>Availability at any month</em>
+  is the replay of that ledger — which is exactly what the Occupancy lens and the dashboard read.</p>
+</li>
+<li>
+<p><strong>The periodic RUN engine (the “HOW”).</strong> One generic engine — <strong><code>(period × parties × element-rules) → signed
+  lines → GL</code></strong> — serves four profiles, so tenancy is “payroll inverted”, not a new build:</p>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Profile</th>
+<th>Parties</th>
+<th>Cash direction</th>
+<th>Statement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>payroll</code></td>
+<td>employees</td>
+<td>OUT</td>
+<td>payslip</td>
+</tr>
+<tr>
+<td><code>tenancy</code></td>
+<td>active leases</td>
+<td>IN (AR)</td>
+<td>rent invoice</td>
+</tr>
+<tr>
+<td><code>strata</code></td>
+<td>owners / parcels</td>
+<td>IN (AR)</td>
+<td>fee notice</td>
+</tr>
+<tr>
+<td><code>maintenance</code></td>
+<td>assets</td>
+<td>COST</td>
+<td>work order</td>
+</tr>
+</tbody>
+</table>
+<p>Every line <strong>cites the rule it came from and recomputes exactly</strong> (glass-box), and every run posts a <strong>balanced</strong>
+  journal. The module boots and runs <strong>standalone</strong> on its own seed — no ERP required — and only lights up two
+  dotted-line adapters (GL posting, <code>C_BPartner.isEmployee</code>) when an ERP <em>is</em> present.</p>
+<h3 id="how-a-space-gets-its-class-non-invent">How a space gets its class (non-invent)<a class="headerlink" href="#how-a-space-gets-its-class-non-invent" title="Permanent link">&para;</a></h3>
+<p>Class is resolved by strict priority and <strong>never guessed</strong>: (1) a <em>real</em> <code>IfcSpace</code> <code>predefined_type</code> from the
+model, when present; else (2) the <strong>declared class on the lease record</strong> (a watermarked business datum); else
+(3) <strong>unclassified</strong>. The HHS office sample carries no IFC space-type, so its demo leases declare their class —
+the room guids are real, the labels are sample lease declarations.</p>
+<hr />
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>What it means</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>No <code>FM / Operate</code> pill</strong></td>
+<td>The building has <strong>no operate data that resolves to a real element</strong> (no lease/asset/check-in binds to a drawn guid).</td>
+<td>Expected on a bare model. Load a building with operate records (e.g. the HHS sample), or seed records bound to real guids.</td>
+</tr>
+<tr>
+<td><strong>A lens is greyed “no data”</strong></td>
+<td>That lens's data type isn't present here (e.g. no IoT assets → <em>Assets / IoT</em> greyed).</td>
+<td>Normal and honest — the lens won't fabricate data to look busy.</td>
+</tr>
+<tr>
+<td><strong>A room I expected isn't lit</strong></td>
+<td>Either its guid doesn't resolve to a drawn element, or it's genuinely <strong>vacant</strong> (no booking).</td>
+<td>Check the record's guid exists in the model; remember vacancy is the <em>absence</em> of a booking, not an error.</td>
+</tr>
+<tr>
+<td><strong>The dashboard charts are blank</strong></td>
+<td>Chart.js didn't load (offline / blocked).</td>
+<td>The KPI tiles still read correctly; reload with the chart library reachable and the three charts render.</td>
+</tr>
+<tr>
+<td><strong>Toggled a lens off and the colours look odd</strong></td>
+<td>Overlays restore on toggle-off; a stuck state is rare.</td>
+<td>Toggle the lens off again, or reopen the drawer — the scene restores fully (zero residue by design).</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="the-money-contract-side-when-erp-is-loaded">The money + contract side (when ERP is loaded)<a class="headerlink" href="#the-money-contract-side-when-erp-is-loaded" title="Permanent link">&para;</a></h2>
+<p>The <strong>deal and money</strong> half of a tenancy — the lease as a signed <strong>agreement</strong>, the <strong>rent run → AR</strong>
+(<code>C_Invoice → C_Payment → allocation → GL</code>), the <strong>Request/ticket</strong> workflow, and the product catalog (rental vs
+purchase, installment schedules) — lives in the <strong><a href="../ERPUserGuide/#hr-tenancy">Kernel-ERP guide → Tenancy</a></strong>. HR
+supplies the <strong>people + access</strong> (party = <code>C_BPartner</code>, signed check-in, capability tokens); the Viewer supplies
+the <strong>spatial</strong> view above; ERP supplies the <strong>money</strong>. One lease threads all three over the shared BIM model and
+the one signed op-log — see <strong><a href="../SpatialERPIntegration/">Spatial ERP × BIM × HR — One Building, One Log</a></strong>.</p>
+<hr />
+<h2 id="future-roadmap-addendum">Future roadmap (addendum)<a class="headerlink" href="#future-roadmap-addendum" title="Permanent link">&para;</a></h2>
+<p>Two directions under consideration, not yet built:</p>
+<ul>
+<li><strong>Find ↔ FM linking.</strong> Today, <em>Find</em> (the Viewer's element search) and the <em>FM / Operate</em> drawer are separate
+  surfaces — Find locates a spatial element, FM toggles a building-wide lens. The natural next step is linking
+  them rather than merging them: extend Find's search index to also cover HR_BIM_Asset records (a tenant's name,
+  a lease number, a ticket ID), so a search hit that resolves to an operate record both zooms to the unit <em>and</em>
+  deep-links into the FM drawer already scoped to that record (e.g. searching a tenant opens Occupancy with
+  their lease highlighted). One front door — "find anything, including people" — without forcing lens-toggle
+  behaviour into a search box.</li>
+<li><strong>Larger property-portfolio management.</strong> The compile-not-model foundation laid in this module (a leasable
+  unit already compiles to a real <code>M_Product</code>/<code>M_Locator</code> under a <code>M_Warehouse</code>-as-building, a lease/strata
+  charge is a real <code>C_Subscription</code>, an asset is a real <code>a_asset</code>) is structured to scale past a single
+  demonstrator building — the same native AD tables carry a portfolio of many buildings/units without a new
+  schema per building. Find↔FM linking would be the natural cross-portfolio search layer once more than one
+  building is loaded at once.</li>
+</ul>
+<hr />
+<p><em>Spec: <code>prompts/RESUME_HR_BIM_ASSET.md</code> (§FM-FAMILY · §REAL-BIND · §AISLE-ZONES · §RICH-DEMO · §AVATAR-LOD ·
+§BINDING · §CLASS · §PILLAR 1–4 · §CRITICAL "Compile not Model"). Back to the <a href="../BIMUserGuide/">BIM Viewer Guide</a>.</em></p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+
+
+                
+
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Retour en haut de la page
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/red1oon/bim-ootb" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.linkedin.com/in/red1oon/" target="_blank" rel="noopener" title="www.linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.indexes", "search.suggest", "search.highlight", "toc.follow", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copi\u00e9 dans le presse-papier", "clipboard.copy": "Copier dans le presse-papier", "search.result.more.one": "1 de plus sur cette page", "search.result.more.other": "# de plus sur cette page", "search.result.none": "Aucun document trouv\u00e9", "search.result.one": "1 document trouv\u00e9", "search.result.other": "# documents trouv\u00e9s", "search.result.placeholder": "Taper pour d\u00e9marrer la recherche", "search.result.term.missing": "Non trouv\u00e9", "select.version": "S\u00e9lectionner la version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../javascripts/fold-footnotes.js"></script>
+      
+        <script src="../../javascripts/bim_compiler_source.js"></script>
+      
+    
+  </body>
+</html>

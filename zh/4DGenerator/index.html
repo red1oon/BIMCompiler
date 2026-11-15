@@ -1,0 +1,3871 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Construction is manufacturing. A building IS its Bill of Materials.">
+      
+      
+        <meta name="author" content="Redhuan D. Oon">
+      
+      
+        <link rel="canonical" href="https://red1oon.github.io/BIMCompiler/4DGenerator/">
+      
+      
+        <link rel="prev" href="../VibeProgramming/">
+      
+      
+        <link rel="next" href="../EnablingTechTimeline/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>The 4D Generator — Failure Catalogue & AI Findings - BIM Intent Compiler</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/custom.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  <script data-goatcounter="https://red1oon.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  
+  <meta name="robots" content="noindex">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#the-4d-generator-journey-failure-catalogue-and-what-it-teaches-about-ai-coding-agents" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../" title="BIM Intent Compiler" class="md-header__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            BIM Intent Compiler
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              The 4D Generator — Failure Catalogue & AI Findings
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source md-header__source--stacked">
+        <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+        <a href="https://github.com/red1oon/BIMCompiler" title="red1oon/BIMCompiler on GitHub" class="md-source" id="bim-compiler-source" target="_blank" rel="noopener">
+          <div class="md-source__icon md-icon">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+          </div>
+          <div class="md-source__repository" id="bim-compiler-repository">
+            Compiler
+          </div>
+        </a>
+        <span id="repo-totals" class="md-source-totals" title="Combined stars / forks across both repos"></span>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Start Here
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../BIMUserGuide/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  The 3 Apps
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../DeveloperGuide/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Go Deeper
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../SpatialCompilationPaper/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Papers & Positioning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../HalalTrace/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Prototypes & Demos
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../PROJECT_CHRONOLOGY/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  History & Legacy
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../" title="BIM Intent Compiler" class="md-nav__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    BIM Intent Compiler
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start Here
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_1" id="__nav_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Start Here
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../USER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    📖 User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMToolsGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🧰 BIM Tools — User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OFFLINE_INSTALL_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🔒 Fully Offline / Air-Gapped Install
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WhatsNew/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🆕 What's New
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AboutMore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About BIM OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FeatureComparison/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Feature Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MigrateComparisonPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrate & Compare (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TwoAppsOneKernel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two Apps, One Kernel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TwoAppsOneKernelInfographicLandscape.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    One Page InfoGraphics - Landscape
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bench_suite.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Comparison (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../age_demo.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Does Your ERP Age? (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MANIFESTO/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The ERP World View
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contribute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 3 Apps
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    The 3 Apps
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Viewer Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AskFirstSteps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewer Ask — First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerFirstSteps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modeller — First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DAGeVu Modeller — User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ProposerGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Proposer Guide (propose an edit, get the proof)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FastScriptGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fast Script Guide (one door: commands and scripts)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIMGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2D Drawings → BIM (DXF2BIM)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_Yellow_List/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — the yellow list (what you fill in, defaults used)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_Prior_Art/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — prior art (what is new, what we learned, cost of using others)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_FORMAT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — format contract (marks, outputs, registry, codes; generated)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERPUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel-ERP User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TillUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    uniCenta-style Till & Kitchen Screen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CapexDashboardGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM → ERP and CAPEX Dashboard — for iDempiere users
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CapexUATGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CAPEX UAT Guide — step-by-step test script
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERP_FirstSetup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel-ERP — Your First Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MigrationGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration User Guide (Odoo · Business Central · SAP Business One)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OdooMigration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moving from Odoo — how it works, what is proven
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NinjaExcelReport_UserManual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NinjaExcel Report — User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HRBIMAssetGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HR / Tenancy / Operate Module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CivilWorksGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Civil Works — Step by Step
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TeamsOverlayGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Teams Overlay — Collaboration & Optics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Go Deeper
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Go Deeper
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DeveloperGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide (read first if you will change the code)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ArchitectureOverview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Overview (for reviewers)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../FoldEngineBlackBook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fold Engine Black Book (dev manual)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HolyGrail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Holy Grail (editable rules, live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ERPConceptRosetta.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-ERP Rosetta Stone (concept + cost)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIM_Modeller_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Modeller OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERP_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP — Every Record Has a Place
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERPIntegration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP × BIM × HR — One Building, One Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DistributedERP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Distributed ERP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TermsHowToVerify/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to verify the terms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERP_AI_ADVISORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Letting an AI work on the ERP, safely
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SQLiteWasmArchitectureActual.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How the Database Works (big picture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ViewerComponentModel.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewer Component Model (dev architecture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CLASH_DETECTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clash Detection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../JKR_SKATA/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Asset Classification & JKR/SKATA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../IFC_ExportGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IFC Export Guide (for the BIM author)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TimeMachine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Time Machine (4D Scheduling & Editing)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4D5DAnalysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4D/5D Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMtoProject/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM → Project Order (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerKernelFold/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry as a Signed-Log Fold
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Papers & Positioning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Papers & Positioning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialCompilationPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deterministic Spatial Compilation (academic paper)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AIProposerDefensiveDisclosure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Defensive Disclosure: an Outside AI Proposes, the App Decides
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_TechnicalNote/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — Deterministic 2D ⇄ BIM Round Trip (technical note)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BrowserScaleBenchmark/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Browser-Scale Benchmark (one tab, local first)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnterpriseAuthentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enterprise Authentication (security)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../StrategicIndustryPositioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Strategic Positioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LocalFirstPriorArt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local-First Prior Art
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LegacyOracleAdapterSpec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Legacy-as-Oracle Adapter (migrate / test an ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ShipYard/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Beyond Buildings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RouteTemplate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Find & Navigate (wayfinding)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../halal/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prototypes & Demos
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Prototypes & Demos
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HalalTrace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Halalan Thayiban — halal track & trace (paper)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glassbowl.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glassbowl — the ERP engine as data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glassbowl_gravity.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glassbowl · Gravity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../RetailScaleStory.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Retail at Scale — two messages a day (benchmark story)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bim_architecture_viz.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How it works — interactive architecture tour
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    History & Legacy
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    History & Legacy
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROJECT_CHRONOLOGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Chronology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../VibeProgramming/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vibe Programming — AI + Domain Expertise
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 4D Generator — Failure Catalogue & AI Findings
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 4D Generator — Failure Catalogue & AI Findings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#executive-summary-is-this-codebase-well-designed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executive summary — is this codebase well designed?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-why-this-domain-is-hard-for-an-ai-coding-agent-specifically" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Why this domain is hard for an AI coding agent specifically
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-the-domain-correctly-framed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. The domain, correctly framed
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. The domain, correctly framed">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-the-pipeline-shape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 The pipeline shape
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-location-based-scheduling-is-the-correct-model-not-an-invented-one" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Location-Based Scheduling is the correct model, not an invented one
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-resourcing-without-an-engineer-crew-rates-as-the-build-up-throttle-and-a-clean-exit-to-a-real-schedule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Resourcing without an engineer: crew rates as the build-up throttle, and a clean exit to a real schedule
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-failure-catalogue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Failure catalogue
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Failure catalogue">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-the-spec-described-dead-code-as-canonical" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 The spec described dead code as canonical
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-storeylevel-assignment-fabricated-data-past-its-own-safety-guard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Storey/level assignment fabricated data past its own safety guard
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-a-does-s-support-t-relation-independently-reimplemented-three-times" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 A "does S support T" relation, independently reimplemented three times
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-a-fix-correctly-not-shipped-because-its-precondition-was-checked-first" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 A fix correctly not shipped, because its precondition was checked first
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-a-witness-that-was-correct-when-written-and-silently-went-stale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 A witness that was correct when written, and silently went stale
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36-a-cache-evictor-not-the-save-path-silently-destroyed-saved-user-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6 A cache evictor, not the save path, silently destroyed saved user data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#37-green-ci-proved-nothing-about-any-of-the-above" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7 Green CI proved nothing about any of the above
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-the-ai-research-finding-what-actually-stopped-the-thrashing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. The AI-research finding: what actually stopped the thrashing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-journey-condensed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Journey, condensed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-open-items-read-before-extending-this-generator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Open items — read before extending this generator
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-the-pattern-isnt-4d-specific-the-same-day-a-second-domain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. The pattern isn't 4D-specific — the same day, a second domain
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnablingTechTimeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enabling-Tech Timeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RED_PILL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Red Pill — Design From Grammar (origin)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LAST_MILE_PROBLEM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Last Mile — drift tracking (Java era)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMERPPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Construction Economy / ERP Wave (Java era)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SYSTEMS_INSTALLER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Self-Host the Java toolchain (legacy installer)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#executive-summary-is-this-codebase-well-designed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executive summary — is this codebase well designed?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-why-this-domain-is-hard-for-an-ai-coding-agent-specifically" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Why this domain is hard for an AI coding agent specifically
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-the-domain-correctly-framed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. The domain, correctly framed
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. The domain, correctly framed">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-the-pipeline-shape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 The pipeline shape
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-location-based-scheduling-is-the-correct-model-not-an-invented-one" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Location-Based Scheduling is the correct model, not an invented one
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-resourcing-without-an-engineer-crew-rates-as-the-build-up-throttle-and-a-clean-exit-to-a-real-schedule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Resourcing without an engineer: crew rates as the build-up throttle, and a clean exit to a real schedule
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-failure-catalogue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Failure catalogue
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Failure catalogue">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-the-spec-described-dead-code-as-canonical" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 The spec described dead code as canonical
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-storeylevel-assignment-fabricated-data-past-its-own-safety-guard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Storey/level assignment fabricated data past its own safety guard
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-a-does-s-support-t-relation-independently-reimplemented-three-times" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 A "does S support T" relation, independently reimplemented three times
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-a-fix-correctly-not-shipped-because-its-precondition-was-checked-first" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 A fix correctly not shipped, because its precondition was checked first
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-a-witness-that-was-correct-when-written-and-silently-went-stale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 A witness that was correct when written, and silently went stale
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36-a-cache-evictor-not-the-save-path-silently-destroyed-saved-user-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6 A cache evictor, not the save path, silently destroyed saved user data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#37-green-ci-proved-nothing-about-any-of-the-above" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7 Green CI proved nothing about any of the above
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-the-ai-research-finding-what-actually-stopped-the-thrashing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. The AI-research finding: what actually stopped the thrashing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-journey-condensed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Journey, condensed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-open-items-read-before-extending-this-generator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Open items — read before extending this generator
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-the-pattern-isnt-4d-specific-the-same-day-a-second-domain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. The pattern isn't 4D-specific — the same day, a second domain
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+  <p class="i18n-note"><small>本页尚未翻译，以英文显示。<a href="https://red1oon.github.io/BIMCompiler/4DGenerator/">英文页面</a>。</small></p>
+  
+                  
+
+
+  
+  
+
+
+<h1 id="the-4d-generator-journey-failure-catalogue-and-what-it-teaches-about-ai-coding-agents">The 4D Generator — Journey, Failure Catalogue, and What It Teaches About AI Coding Agents<a class="headerlink" href="#the-4d-generator-journey-failure-catalogue-and-what-it-teaches-about-ai-coding-agents" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>Companion reads:</strong> <a href="../VibeProgramming/">Vibe Programming</a> for the general AI-assisted-development thesis this document is a deep case study of · the Time Machine feature guide (<code>BIMUserGuide.md</code>) for what this generator produces · <code>bim-ootb/prompts/4D_MODEL_INTEGRITY.md</code> and <code>4D_GANTT_TM_REFACTOR.md</code> for the raw, dated working notes this document distills.</p>
+</blockquote>
+<p>This is a technical reference for two audiences at once: developers who need to understand how this project's 4D construction-schedule generator actually works and where its known sharp edges are, and AI researchers interested in a concrete, evidenced account of where large-language-model coding agents fail on a genuinely novel domain — and what process change fixed it. Both audiences need the same thing: what actually happened, with citations, not a polished summary.</p>
+<p><strong>4D scheduling is a use case here, not the subject.</strong> The subject is what happens when a vibe-programming session meets a domain it has no prior familiarity with — it drifts, and getting it back on track takes a real sequence of deliberate steps, not one clever fix. 4D/Time-Machine simply produced the deepest, most instrumented example of that pattern on the day this document was written. It is not the only one: the same shape — work done in isolation, never reconciled back, silently drifting until something finally checks and catches it — surfaced again the same day in a completely unrelated domain, publishing this project's own documentation (§7). Read the failure catalogue below as <em>an</em> instance of the general problem <a href="../VibeProgramming/">Vibe Programming</a> names, not <em>the</em> problem.</p>
+<h2 id="executive-summary-is-this-codebase-well-designed">Executive summary — is this codebase well designed?<a class="headerlink" href="#executive-summary-is-this-codebase-well-designed" title="Permanent link">&para;</a></h2>
+<p>Asked plainly, mid-session, after the failure catalogue below was already found. The honest answer, scored against that evidence rather than impression:</p>
+<ul>
+<li><strong>Conceptual architecture — solid.</strong> Layered separation of concerns (§B in <code>4D_MODEL_INTEGRITY.md</code>), level-major Location-Based Scheduling (§2.2), a template/instance split, an extract-don't-invent discipline. The right ideas, and they're written down.</li>
+<li><strong>Duplication discipline — the real weak point.</strong> The same physical relation independently reimplemented more than once, silently disagreeing, is the pattern behind §3.2 and §3.3 both. A fix to one copy does not reach the others. This is the single highest-leverage thing to fix architecturally, ahead of anything else in this document.</li>
+<li><strong>Test/CI wiring — mostly decorative today.</strong> Extensive witness coverage exists; §3.7 found none of it wired into the pipeline that would need to run it automatically. A safety net not connected to a trigger is not a safety net.</li>
+<li><strong>Documentation health — was actively harmful, now improving.</strong> Multi-thousand-line files grown by append-only session logging is what produced §3.1's three-times-restated retraction. One file was already internally flagged (<code>time_machine.js</code>, 8,834 lines, its own tracked refactor-seam doc) as a known instance of this — known, not yet acted on.</li>
+<li><strong>Cross-repo and deploy sync — real, found twice in one day.</strong> §3.6's precondition (§3.4) and §7's orphaned-branch page are the same underlying gap: work landing in one place without a mechanical check that it also reached everywhere it needed to.</li>
+</ul>
+<p><strong>Bottom line:</strong> well-designed in principle, drifted from that design in practice. Everything found today was fixable by consolidation — delete a duplicate, wire a check in, split a file, merge a branch back — not by redesign. "Easy to maintain" as it stands would overstate it; "maintainable if today's discipline holds" is accurate.</p>
+<hr />
+<h2 id="1-why-this-domain-is-hard-for-an-ai-coding-agent-specifically">1. Why this domain is hard for an AI coding agent specifically<a class="headerlink" href="#1-why-this-domain-is-hard-for-an-ai-coding-agent-specifically" title="Permanent link">&para;</a></h2>
+<p><a href="../VibeProgramming/">Vibe Programming</a> already states the general thesis: <em>"known framework = reliable code, novel spatial reasoning = drift."</em> Generating a construction schedule from a 3D BIM model is squarely in the drift half. There is no large corpus of "IFC element → construction task sequence" examples in any LLM's training data, for a structural reason: the mapping isn't textual, it's physical. An AI can write a correct SQL query for "elements grouped by storey" fluently, because SQL grouping is a well-worn pattern. It has no comparably well-worn pattern for "can this slab exist yet, given which columns are actually built" — that requires reasoning about gravity, support, and sequencing simultaneously, which is not a pattern that shows up in code search results.</p>
+<p>The consequence, measured on this exact codebase before the process changed (2026-08-26, one session): five retractions, a structural-class regex that would have made 438 curtain-wall glazing panels load-bearing, a quantifier bug that produced 1,961 instead of 95, a missing upper bound that let a single riser "bore" the whole building. None of these are exotic bugs. They are what happens when an agent is asked to invent spatial-physical reasoning it has no textual precedent for, and does its best — confidently, plausibly, and wrong.</p>
+<p>The fix that worked, documented in full below, was not a better prompt. It was accepting that the agent cannot originate this reasoning reliably and building a process that doesn't require it to: extract the relation from data instead of deriving it from first principles, and verify every claim numerically instead of trusting the reasoning that produced it.</p>
+<hr />
+<h2 id="2-the-domain-correctly-framed">2. The domain, correctly framed<a class="headerlink" href="#2-the-domain-correctly-framed" title="Permanent link">&para;</a></h2>
+<h3 id="21-the-pipeline-shape">2.1 The pipeline shape<a class="headerlink" href="#21-the-pipeline-shape" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>4D_template.json (canonical, building-agnostic programme)
+        ↓
+instantiateTemplate()  — per-building task grid
+        ↓
+Time Machine — the editable, persisted schedule a user actually sees and drags
+</code></pre></div>
+<p>The template declares <em>what</em> happens (phases, trade sequencing, lag rules) once, for all buildings. Per-building instantiation decides <em>where</em> — which elements land in which phase, on which level, in what order within that level. Getting the "where" wrong is where nearly every defect below lives; the template layer itself has been comparatively stable.</p>
+<h3 id="22-location-based-scheduling-is-the-correct-model-not-an-invented-one">2.2 Location-Based Scheduling is the correct model, not an invented one<a class="headerlink" href="#22-location-based-scheduling-is-the-correct-model-not-an-invented-one" title="Permanent link">&para;</a></h3>
+<p>This project's own model spec (<code>4D_MODEL_INTEGRITY.md</code> §A) organizes the schedule <strong>level-major, phases inside</strong>: <code>Building → Level → Phase → Layer → Element</code>. Before this was understood to be industry-standard, it was discovered the hard way: phase-major ordering (all Superstructure before all Architecture) produced 17 bearing violations on a 20-element sandbox, because it put a Level-2 slab before the Level-1 walls it rests on. Inverting to level-major cut that to 10.</p>
+<p>This is not a house style. It is <strong>Location-Based Scheduling (LBS)</strong> — also called Line-of-Balance or flowline scheduling — the established alternative to plain trade-first CPM scheduling, used specifically for repetitive multi-story vertical construction (hospitals, offices, residential towers), because it is the representation that makes physical-support ordering visible instead of accidental. A generator for this domain should default to level-major grouping; that default is not a stylistic choice, it's the reason the model works at all.</p>
+<h3 id="23-resourcing-without-an-engineer-crew-rates-as-the-build-up-throttle-and-a-clean-exit-to-a-real-schedule">2.3 Resourcing without an engineer: crew rates as the build-up throttle, and a clean exit to a real schedule<a class="headerlink" href="#23-resourcing-without-an-engineer-crew-rates-as-the-build-up-throttle-and-a-clean-exit-to-a-real-schedule" title="Permanent link">&para;</a></h3>
+<p>Every 4D-BIM tool in mainstream use — Synchro, Vico — starts from a schedule someone already built: authored by hand or imported from Primavera P6 or MS Project, then linked to the model. That's correct for the tool's job, but it means there is no such thing as opening an arbitrary building and getting a resourced, sequenced schedule with zero project-specific planning. The closest AI-driven comparable, ALICE Technologies, is explicit that it optimizes <em>from an existing baseline schedule and activity/logic set</em> — it accelerates re-planning, it doesn't remove the planning step. <a href="#sources-for-23">Sources: ALICE Technologies, Bentley SYNCHRO</a>.</p>
+<p>This generator does remove it, for the specific purpose of instant, on-the-fly demonstration — walking into a room with a building's IFC and no scheduler present, and having a legally-sequenced, resourced, dated schedule the moment the model loads. That's only honest as a claim if the mechanism producing "resourced" is named precisely, so here it is:</p>
+<p><strong>What drives build-up speed.</strong> Every trade has a day-rate and a crew count in a small, declarative table (<code>rates/sequence_rules.json</code>'s <code>LABOR_RATES</code>), not a simulation: <code>max_crews</code> sets capacity (<code>§CREW_DEMAND</code> reports <code>capacity = crews × projectDays</code>, and flags <code>util&gt;100%</code> when a trade's declared work can't fit its declared crews — the log literally tells you which trade needs more crews, e.g. measured on Hospital: <code>PLUMBER demand=1563.8cd crews=2 capacity=2970cd util=52.7%</code>). Real per-element geometry then modulates that flat rate rather than treating every element identically — <code>§HEAVY_MEMBER_SPEED_LIMIT</code> redistributes each trade's flat total by each element's actual length, so a 7-meter beam and a 1-meter one don't install at the same assumed speed. The result, <code>§HR_COST</code>, is a real person-day and dollar figure per trade (<code>STEEL_ERECTOR personDays=815.0 @195/d = 158925</code>), derived, not typed in.</p>
+<p><strong>The adjustment path is fast in two different ways, and they are not the same mechanism.</strong> Every dated bar in the live Gantt is directly draggable, lockable, and undoable — an instant, in-session adjustment with the persistence and integrity guarantees covered in §3.5–3.6. The <em>resourcing assumption itself</em> (how many crews a trade gets, what a crew costs) is a one-line edit to <code>rates/sequence_rules.json</code>'s <code>max_crews_fixed</code> followed by a regenerate — seconds, not a re-plan, but a distinct step from dragging a bar. Presenting both accurately matters more than presenting one as more magical than it is.</p>
+<p><strong>The exit ramp is real, not aspirational.</strong> The Time Machine's toolbar carries a <code>⇄ P6/MSP</code> control, and <code>_tmPersistEdit</code>'s own call sites (verified in §3.5's investigation) include <code>import_p6</code> as a first-class edit path alongside drag/link/undo — importing a real Primavera P6 or MS Project schedule is not a separate product mode bolted on, it writes into the same persisted schedule tables the auto-generated one uses. The generated schedule is a placeholder with real physics, not a toy: it is legally sequenced (support-ordered, crew-capacity-checked) from the moment it appears, and it is designed to be <em>replaced</em>, not defended, the moment an actual project scheduler's P6 file exists.</p>
+<p><a id="sources-for-23"></a><em>Sources checked 2026-08-27: <a href="https://www.alicetechnologies.com/construction-project-scheduling-software">ALICE Technologies</a> · <a href="https://www.bentley.com/software/synchro/">Bentley SYNCHRO</a>. Web-search-level evidence, not an exhaustive market survey — treat the comparison as directionally accurate, not a verified "no prior art" claim.</em></p>
+<hr />
+<h2 id="3-failure-catalogue">3. Failure catalogue<a class="headerlink" href="#3-failure-catalogue" title="Permanent link">&para;</a></h2>
+<p>Each entry: what looked fine, what was actually wrong, how it was proven, and the fix. All findings below are dated 2026-08-27 unless stated otherwise, verified against merged code, not self-reports.</p>
+<h3 id="31-the-spec-described-dead-code-as-canonical">3.1 The spec described dead code as canonical<a class="headerlink" href="#31-the-spec-described-dead-code-as-canonical" title="Permanent link">&para;</a></h3>
+<p><strong>Symptom.</strong> Every fix aimed at "the 4D model" for months, including the day before this one, patched <code>bar_model.js</code>'s tree model — the model <code>4D_MODEL_INTEGRITY.md</code> §A described as canonical, with the invariant "no edges emitted, sibling order IS the order."</p>
+<p><strong>Root cause.</strong> That tree model is not what runs. The live path is <code>schedule_author.js:425 instantiateTemplate()</code>, an explicit edge-based task graph — the opposite of "no edges emitted." The project's own ownership table (§I, built the same day) had already correctly named <code>instantiateTemplate</code> as the owner of "what is the task grid?" — it simply was never reconciled with §A above it. Two sections of the same file contradicted each other from the day one was written, and a later session re-derived the contradiction as if it were new, burning three fix cycles wiring edges into a model whose own text said it had none.</p>
+<p><strong>Fix.</strong> A decision, not a patch: the user ruled the template path canonical. <code>4D_MODEL_INTEGRITY.md</code> §A now carries a superseded banner. A <code>PreToolUse</code> hook (<code>bim-compiler/.claude/hooks/block_bar_model.sh</code>) mechanically blocks any <code>Edit</code>/<code>Write</code> to a path ending <code>bar_model.js</code>, repo-wide, in any worktree — proven live with a real blocked edit call, not just documented. <strong>Lesson: when two authoritative documents disagree, the fix is reconciliation plus an enforced, un-skippable guard — not another spec section explaining the disagreement.</strong></p>
+<h3 id="32-storeylevel-assignment-fabricated-data-past-its-own-safety-guard">3.2 Storey/level assignment fabricated data past its own safety guard<a class="headerlink" href="#32-storeylevel-assignment-fabricated-data-past-its-own-safety-guard" title="Permanent link">&para;</a></h3>
+<p><strong>Symptom.</strong> <code>elements_meta.storey</code> is NULL for 15–86% of scheduled elements fleet-wide (Terminal 69.9%, Duplex 86.0%). The schedule invents storeys to compensate: Terminal declares 6, the schedule produces 22 bands, one of which — "06 ROOF LEVEL," declared by 10 elements — collects 10,950.</p>
+<p><strong>Root cause, found by tracing the actual call path rather than trusting the existing guard.</strong> <code>deriveBandRanks</code> (<code>schedule_gate.js:350</code>) deliberately excludes <code>_UNKNOWN</code> from the ladder — a correct-looking safety guard, added after a measured Hospital regression. But upstream, <code>assignStoreyByZ</code> (<code>schedule_author.js:342</code>) silently overwrites every <code>_UNKNOWN</code> element with the nearest real storey name by median center-Z <em>before</em> that guard ever runs. <strong>The guard was dead code from the moment it was written</strong>, because the thing it was meant to catch never survives long enough to be checked.</p>
+<p><strong>A second, independent implementation of the same relation was already live and correct.</strong> <code>LevelDeriver</code> (<code>viewer/lib/level_deriver.js</code>) — a tiered relation (containment → declared name/<code>spatial_structure</code> → geometry grid → none-counted) — was already running in production, but only for the <em>display</em> timeline (via <code>location_axis.js</code>), never for the task grid that actually generates the schedule. Two computations of "what level is this on," on the same elements, in the same call, disagreeing.</p>
+<p><strong>Fix, verified not assumed.</strong> Confirmed <code>LevelDeriver</code> reads the database directly and never touches the corrupted field, so swapping to it removes the exposure rather than relocating it (<code>bim-ootb</code> PR #1556). Shipped behind a flag, default off, proven byte-identical to prior behavior with the flag off across three existing witnesses. <strong>Left off deliberately</strong> — see §3.4. <strong>Lesson: a guard that excludes a bad value only works if nothing upstream launders that value into a good-looking one first. Verify the guard actually sees what it's supposed to catch, don't just read its logic in isolation.</strong></p>
+<p><strong>A related, measured non-obvious result:</strong> the rate at which storeys are <em>fabricated</em> (87%/31%/15% across three buildings) does not predict the rate at which the schedule's actual <em>structure</em> changes (9.6%/7.8%/40% for the same three) — a wrong-but-plausible guess and a genuinely different grid produce very different downstream impact from similar-looking input corruption. Don't use one as a proxy for the other.</p>
+<h3 id="33-a-does-s-support-t-relation-independently-reimplemented-three-times">3.3 A "does S support T" relation, independently reimplemented three times<a class="headerlink" href="#33-a-does-s-support-t-relation-independently-reimplemented-three-times" title="Permanent link">&para;</a></h3>
+<p><code>4D_MODEL_INTEGRITY.md</code> §I.1: <code>support_sweep.js:410</code> (the declared owner), <code>cpm_schedule.js:81</code> (a full independent reimplementation, not a delegation), and <code>schedule_gate.js:1195</code> (a third copy with a different, stricter upper bound added later to fix a specific false-positive class). Copies 1 and 2 never received that later fix. Measured consequence: 32.0% of Hospital's in-scope bearing contacts are "supports" whose top sits above the base they're claimed to carry — and the solve runs on copy 2, the one that never got fixed. <strong>Lesson: a physical relation computed independently in more than one place will drift the moment either copy is patched alone — this is not a hypothetical risk, it happened, silently, for an unknown period before being found.</strong></p>
+<h3 id="34-a-fix-correctly-not-shipped-because-its-precondition-was-checked-first">3.4 A fix correctly not shipped, because its precondition was checked first<a class="headerlink" href="#34-a-fix-correctly-not-shipped-because-its-precondition-was-checked-first" title="Permanent link">&para;</a></h3>
+<p><code>LevelDeriver</code>'s higher tiers need <code>spatial_structure</code> with real elevation data. Checked before flipping the flag: <strong>Duplex and Hospital have no <code>spatial_structure</code> table at all.</strong> Flipping the flag today would have degraded the grid to a uniform 3-meter fallback, inflating Hospital from 8 real storeys to 16 fabricated ones, with grid lines occasionally winning a label on absurd margins (one "Level 6" label won on 2 votes out of 5,676). The flag was left off, and the real blocker — the extractor fix committed that same morning (<code>d0b226dce</code>, writing <code>IfcBuildingStorey.Elevation</code>) never having reached the already-shipped databases — was named as the actual next step. <strong>Lesson: proving a fix is safe-by-construction (flag off, byte-identical) is necessary but not sufficient; also prove the condition required to turn it on, before anyone is tempted to turn it on.</strong></p>
+<h3 id="35-a-witness-that-was-correct-when-written-and-silently-went-stale">3.5 A witness that was correct when written, and silently went stale<a class="headerlink" href="#35-a-witness-that-was-correct-when-written-and-silently-went-stale" title="Permanent link">&para;</a></h3>
+<p><code>witness_gantt_edit_persist</code> (W-PERS) exists to prove a Gantt edit persists correctly. Its split-mode fixture never set <code>_dbPersistUrl</code> — because when the witness was written, the real code didn't read that field either. A later fix (§S78) changed the real persist logic to prefer <code>_dbPersistUrl</code> for split-mode buildings; nobody updated the witness fixture to match. The witness kept passing throughout — it was proving a version of reality that no longer existed.</p>
+<p><strong>The proof that this was real, not theoretical:</strong> the actual pre-fix bug was reverted and both witnesses run against it. The <em>old</em> witness stayed green — <code>pass=14 fail=0</code>, "PASS — every Gantt edit path persists" — on the exact defect it existed to catch. The <em>extended</em> witness correctly failed, <code>pass=17 fail=1</code>. That side-by-side result is the only real evidence a witness extension closed a gap; a witness that merely "looks right" against the current code proves nothing about whether it would have caught the bug it's named for. <strong>Lesson: to validate a regression guard, don't just make it pass on the fixed code — make it fail on the broken code first, on purpose.</strong></p>
+<h3 id="36-a-cache-evictor-not-the-save-path-silently-destroyed-saved-user-data">3.6 A cache evictor, not the save path, silently destroyed saved user data<a class="headerlink" href="#36-a-cache-evictor-not-the-save-path-silently-destroyed-saved-user-data" title="Permanent link">&para;</a></h3>
+<p><strong>Symptom.</strong> Editing a schedule on a large building (Hospital, ~56MB) appeared to save successfully (<code>ok=true</code>, correct cache key logged, no error) — but on reload, the edit was gone and the app silently re-fetched the pristine network copy.</p>
+<p><strong>Root cause, found only by instrumenting the actual mutation, not the reported call site.</strong> The persist function itself was innocent. A <em>separate</em>, oversized write (a ~240MB geometry file) hit Chrome's hard per-value IndexedDB limit (~127MiB) and aborted — a failure that can never succeed at any quota. The abort handler discarded the real error (<code>tx.error</code>) and assumed a quota problem, triggering an "evict the 4 oldest entries" fallback. The cache held exactly 2 entries, so it deleted everything — including the slot holding the user's edited schedule. A second, independent bug amplified it: saving an edit never updated that entry's last-used timestamp, so the just-edited slot looked <em>oldest</em> and was evicted first. <strong>Editing your schedule moved your unsaved work to the front of the deletion queue.</strong></p>
+<p><strong>Fix</strong> (<code>bim-ootb</code> PR #1555): read the real abort error before deciding to evict; evict only on a genuine quota error; stamp the timestamp on every persist; surface a previously-nonexistent user-visible failure warning. Proven with real read-back across three sequential persists, not a single write. <strong>A residual gap found by an independent audit, not the original fix's self-report:</strong> two narrow code paths still yield a falsy error name and fall through to eviction regardless — the fix closed the reported case, not every case with the same shape. <strong>Lesson: the module that logs success is not necessarily the module that caused the failure. When a symptom and its logged cause don't line up, instrument the actual mutation, and always look one layer past the fix that "worked" for a second path with the same failure shape.</strong></p>
+<h3 id="37-green-ci-proved-nothing-about-any-of-the-above">3.7 Green CI proved nothing about any of the above<a class="headerlink" href="#37-green-ci-proved-nothing-about-any-of-the-above" title="Permanent link">&para;</a></h3>
+<p>An audit of the four PRs above found: <strong>zero</strong> of the new witnesses/probes added that day were wired into CI. Every PR showed green because of an unrelated, pre-existing smoke suite; the new checks were, at best, syntax-parsed. The single worst case: the file carrying the storey-datum fix (§3.2's sibling bug, <code>room_walker.js</code>) sits in a directory both CI jobs explicitly exclude — it has <em>no</em> automated check of any kind, not even a parse. The project's own PR template asks for manual browser testing and screenshots, directly contradicting this project's own no-visual-verification rule. <strong>Lesson: "CI is green" is a claim about which jobs ran, not about what they checked. Verify the specific new assertion is actually invoked by the pipeline before treating a merged PR as regression-proof.</strong></p>
+<hr />
+<h2 id="4-the-ai-research-finding-what-actually-stopped-the-thrashing">4. The AI-research finding: what actually stopped the thrashing<a class="headerlink" href="#4-the-ai-research-finding-what-actually-stopped-the-thrashing" title="Permanent link">&para;</a></h2>
+<p>The single sentence version, stated by the domain owner mid-investigation and confirmed by every failure above: <em>the model optimises the artefact in front of it and does not check whether the construct can represent the answer — so every fix moves the defect sideways and the loop never closes.</em> A single long-running session, however capable, re-derives and retracts the same finding when nothing external forces it to check first — measured directly: the same fact (§3.1) was independently restated three separate times in one file in one day, and a written instruction to "re-read the spec before each thinking pass" failed within hours of being added, in the same document.</p>
+<p>What worked instead, same day, is a specific, reproducible pattern:</p>
+<ol>
+<li><strong>Orchestrator-worker, not one long session.</strong> One session holds the plan and never touches raw exploration; each actual code change goes to a fresh, single-purpose agent dispatch with an explicit stop-and-report condition ("if this needs a new architectural decision, stop and tell me — don't invent one").</li>
+<li><strong>Numeric proof is the only accepted evidence.</strong> Every dispatch was required to produce a before/after diff of real, persisted state — a byte count, a timestamp, a read-back value — never a description of what should have happened. This is what caught §3.6: the fix that "returned <code>ok=true</code>" was not accepted as proof until the actual store contents were read back.</li>
+<li><strong>Guardrails are enforced mechanically, never left to memory.</strong> §3.1's hook is the clearest instance: a written rule ("don't edit this file") had already failed once as prose; the fix was a <code>PreToolUse</code> hook that makes the mistake structurally impossible, verified by actually triggering it.</li>
+<li><strong>Self-reports are audited against merged code, not trusted.</strong> Every "done" claim in this document was independently re-verified by a separate pass reading the actual diff — which is precisely how §3.6's residual gap and §3.7's CI illusion were found. Both were real and both were missed by the fix's own author in the same turn it shipped.</li>
+<li><strong>Wrong hypotheses get refuted before they get built, not after.</strong> A proposed reuse of an existing UI module's storey logic (§4's own initial idea) was checked against the actual code before anything was written, and found to be the same bug wearing a different name — refuting it cost one dispatch; building it would have cost a rewrite.</li>
+</ol>
+<p>None of this required a different or better model. The roster was unchanged from the prior working session (<a href="../VibeProgramming/#capability-snapshot-dated-baseline">Vibe Programming §Capability Snapshot</a>). What changed was the shape of the work.</p>
+<hr />
+<h2 id="5-journey-condensed">5. Journey, condensed<a class="headerlink" href="#5-journey-condensed" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>When</th>
+<th>What happened</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-08-26</td>
+<td>A full session, four review rounds, five retractions, patching a scheduler whose <em>design</em> could not express the right answer. User ruling: <em>"WITNESS is moot if underlying design is poor."</em></td>
+</tr>
+<tr>
+<td>2026-08-27 early</td>
+<td>A new session finds §3.1 (spec contradicts itself) but retraces the same finding three times in one file before closing — the "re-read the spec each pass" rule fails within hours of being written.</td>
+</tr>
+<tr>
+<td>2026-08-27</td>
+<td>Model decision made (template path canonical); §3.1's hook built and proven live; six bounded dispatches run end-to-end: §3.2's datum fix, §3.5's witness gap closed and proven by reverting the real bug, §3.6's data-loss bug root-caused and fixed, §3.2's <code>LevelDeriver</code> swap shipped flag-off with its precondition checked and found missing, §3.7's CI audit, this document.</td>
+</tr>
+<tr>
+<td>Ongoing</td>
+<td>§3.4's flag stays off pending the DB backfill; §3.3's three-copy support relation and the legacy <code>ZoneIndex</code>/<code>GANTT_STOREY_Z</code> fabrication path (a related but distinct third consumer — see <code>4D_MODEL_INTEGRITY.md</code> §I.3a) remain named, not chased.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="6-open-items-read-before-extending-this-generator">6. Open items — read before extending this generator<a class="headerlink" href="#6-open-items-read-before-extending-this-generator" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong><code>LevelDeriver</code> flag (<code>opts.levelSource='deriver'</code>, <code>schedule_author.js</code>) stays OFF</strong> until <code>spatial_structure</code> with real elevation exists on every shipped building DB. Flipping it before then actively makes level assignment worse, not better — verified, not assumed.</li>
+<li><strong>Two more independent copies of <code>assignStoreyByZ</code>'s fabrication logic exist</strong>, feeding the movie/x-ray builders (<code>time_machine.js:3687</code>, <code>:4563</code>) via a shared <code>zone_index.js</code> — a second, separate mechanism from §3.2's task-grid copy. Not touched by the fixes above.</li>
+<li><strong>No CI job runs any of this project's 4D witnesses.</strong> Still not implemented: one new CI job executing the node-runnable checks that already exist, and <code>spatial_structure</code> added to the DB-integrity required-table list. (<strong>Done, 2026-08-27</strong>: the buried §I.3a/§I.3 warnings in <code>4D_MODEL_INTEGRITY.md</code> are now surfaced at the top of its §L session-handoff block, not left mid-file.)</li>
+<li><strong>The support-relation triplication (§3.3)</strong> has one declared owner and two independent copies still live; only one of the three received the later false-positive fix.</li>
+<li><strong>Four items queued live, not started</strong>: residual midair elements, build-up elements crowding the start of their bar instead of spreading across it, whether that crowding masks a real resource-timing problem, and a full-cycle review of the standalone Schedule Editor. Recorded in <code>4D_GANTT_TM_REFACTOR.md</code> §FUTURE (2026-08-27).</li>
+</ul>
+<hr />
+<h2 id="7-the-pattern-isnt-4d-specific-the-same-day-a-second-domain">7. The pattern isn't 4D-specific — the same day, a second domain<a class="headerlink" href="#7-the-pattern-isnt-4d-specific-the-same-day-a-second-domain" title="Permanent link">&para;</a></h2>
+<p>Everything in §3 is about spatial/physical reasoning going wrong. The same <em>shape</em> of failure — and the same <em>shape</em> of recovery — showed up the same day in a domain with nothing to do with geometry: publishing this project's own documentation.</p>
+<p><strong>What happened.</strong> A dispatched agent, mid-way through an unrelated docs task, ran the sanctioned deploy script's dry-run check before publishing — and it aborted. A live, publicly published page (this project's own academic paper) would have been deleted by the deploy, because its markdown source existed only on a branch that had been deployed to the live site once, directly, and never merged back into any branch anyone was actually working from. The branch had drifted 1,337 commits from where active work lived. Nobody had done anything wrong in the moment it happened — the drift accumulated silently across however many sessions touched docs since, each one working from a tree that looked complete because nothing told it otherwise.</p>
+<p><strong>Why this is the same lesson as §4, not a new one.</strong> Isolated work that never gets reconciled back into the shared source of truth is invisible until something checks — the deploy guard here plays exactly the role §4's <code>PreToolUse</code> hook and §3.5's revert-and-reverify test play elsewhere: a mechanical check that doesn't rely on anyone remembering. And the recovery followed the same discipline as every §3 fix: the agent did not override the abort, it did not guess a fix, it named the root cause precisely and surfaced three options — including the one that looked fastest (let the guard-blessed shrink through) and was actually the wrong one — to a human, who picked the minimal, purely-additive fix (restore the missing source from the orphaned branch) rather than the destructive one.</p>
+<p><strong>The generalizable point</strong>: neither the domain expert nor the AI needs to have seen a given domain before for this pattern to apply. Construction-schedule support ordering and documentation branch hygiene are unrelated fields. What's shared is the failure mode — undetected drift between an isolated working copy and the shared source of truth — and the fix — a mechanical check that fires whether or not anyone remembers to look, plus a human decision at the one point where a wrong choice would have been externally visible and hard to walk back. 4D happened to be where this project spent the most hours today. It was not the only place the lesson applied.</p>
+<p>This document should gain new dated entries the same way <a href="../VibeProgramming/#capability-snapshot-dated-baseline">Vibe Programming's capability table</a> does — append, never rewrite history.</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+
+
+                
+
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/red1oon/bim-ootb" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.linkedin.com/in/red1oon/" target="_blank" rel="noopener" title="www.linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.indexes", "search.suggest", "search.highlight", "toc.follow", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../javascripts/fold-footnotes.js"></script>
+      
+        <script src="../../javascripts/bim_compiler_source.js"></script>
+      
+    
+  </body>
+</html>

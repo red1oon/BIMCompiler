@@ -1,0 +1,5549 @@
+
+<!doctype html>
+<html lang="id" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Construction is manufacturing. A building IS its Bill of Materials.">
+      
+      
+        <meta name="author" content="Redhuan D. Oon">
+      
+      
+        <link rel="canonical" href="https://red1oon.github.io/BIMCompiler/CapexUATGuide/">
+      
+      
+        <link rel="prev" href="../CapexDashboardGuide/">
+      
+      
+        <link rel="next" href="../ERP_FirstSetup/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>CAPEX UAT Guide — step-by-step test script - BIM Intent Compiler</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/custom.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  <script data-goatcounter="https://red1oon.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  
+  <meta name="robots" content="noindex">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#capex-uat-guide-from-2d-drawings-to-the-dashboard" class="md-skip">
+          Lewati ke isi
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../" title="BIM Intent Compiler" class="md-header__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            BIM Intent Compiler
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              CAPEX UAT Guide — step-by-step test script
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Cari" placeholder="Cari" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Cari">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Kosongkan" aria-label="Kosongkan" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Mempersiapkan pencarian
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source md-header__source--stacked">
+        <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+        <a href="https://github.com/red1oon/BIMCompiler" title="red1oon/BIMCompiler on GitHub" class="md-source" id="bim-compiler-source" target="_blank" rel="noopener">
+          <div class="md-source__icon md-icon">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+          </div>
+          <div class="md-source__repository" id="bim-compiler-repository">
+            Compiler
+          </div>
+        </a>
+        <span id="repo-totals" class="md-source-totals" title="Combined stars / forks across both repos"></span>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tab" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Start Here
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../BIMUserGuide/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  The 3 Apps
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../DeveloperGuide/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Go Deeper
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../SpatialCompilationPaper/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Papers & Positioning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../HalalTrace/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Prototypes & Demos
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../PROJECT_CHRONOLOGY/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  History & Legacy
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigasi" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../" title="BIM Intent Compiler" class="md-nav__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    BIM Intent Compiler
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start Here
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_1" id="__nav_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Start Here
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../USER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    📖 User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMToolsGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🧰 BIM Tools — User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OFFLINE_INSTALL_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🔒 Fully Offline / Air-Gapped Install
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WhatsNew/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🆕 What's New
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AboutMore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About BIM OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FeatureComparison/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Feature Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MigrateComparisonPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrate & Compare (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TwoAppsOneKernel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two Apps, One Kernel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TwoAppsOneKernelInfographicLandscape.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    One Page InfoGraphics - Landscape
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bench_suite.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Comparison (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../age_demo.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Does Your ERP Age? (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MANIFESTO/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The ERP World View
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contribute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 3 Apps
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    The 3 Apps
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Viewer Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AskFirstSteps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewer Ask — First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerFirstSteps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modeller — First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DAGeVu Modeller — User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ProposerGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Proposer Guide (propose an edit, get the proof)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FastScriptGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fast Script Guide (one door: commands and scripts)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIMGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2D Drawings → BIM (DXF2BIM)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_Yellow_List/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — the yellow list (what you fill in, defaults used)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_Prior_Art/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — prior art (what is new, what we learned, cost of using others)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_FORMAT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — format contract (marks, outputs, registry, codes; generated)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERPUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel-ERP User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TillUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    uniCenta-style Till & Kitchen Screen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CapexDashboardGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM → ERP and CAPEX Dashboard — for iDempiere users
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CAPEX UAT Guide — step-by-step test script
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CAPEX UAT Guide — step-by-step test script
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Daftar isi">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Daftar isi
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#checklist-who-does-what" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checklist: who does what
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-set-up-system-setup-once" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A · Set up (System Setup, once)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="A · Set up (System Setup, once)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a1-the-bim-apps-on-your-own-server-optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A1 · The BIM apps on your own server (optional)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a2-install-the-dashboard-into-your-idempiere" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A2 · Install the dashboard into your iDempiere
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a3-load-the-test-data-gardenworld" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A3 · Load the test data (GardenWorld)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a4-erp-model-setup-where-needed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A4 · ERP model setup, where needed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#b-bim-the-shed-from-2d-drawings-to-a-priced-model-bim" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B · BIM: the Shed, from 2D drawings to a priced model (BIM)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="B · BIM: the Shed, from 2D drawings to a priced model (BIM)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#b00-for-the-drafter-export-the-nine-sheets-from-bricscad-as-dxf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B00 · For the drafter: export the nine sheets from BricsCAD as DXF
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b0-from-the-drawings-as-drawn-to-the-marked-set" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B0 · From the drawings as drawn to the marked set
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b1-get-to-know-the-drawings-one-sheet-at-a-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B1 · Get to know the drawings: one sheet at a time
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b2-open-all-nine-sheets-the-drawings-arrange-themselves" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B2 · Open all nine sheets: the drawings arrange themselves
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b2b-convert-the-drawings-to-the-3d-shed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B2b · Convert the drawings to the 3D Shed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b3-fit-the-4d-schedule-and-the-5d-rates-to-your-local-scene" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B3 · Fit the 4D schedule and the 5D rates to your local scene
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b4-send-the-model-to-the-erp-as-a-project-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B4 · Send the model to the ERP as a Project Order
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b5-mark-your-run-against-the-reference-pack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B5 · Mark your run against the reference pack
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#c-erp-the-hands-on-exercise-project-mgmt-accounting-as-gardenworld-admin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C · ERP: the hands-on exercise (Project Mgmt Accounting, as GardenWorld Admin)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="C · ERP: the hands-on exercise (Project Mgmt Accounting, as GardenWorld Admin)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#c1-purchase-orders" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C1 · Purchase orders
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c2-material-receipt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C2 · Material receipt
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c3-vendor-invoice-and-payment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C3 · Vendor invoice and payment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c4-issue-materials-to-site" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C4 · Issue materials to site
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c5-tick-a-phase" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C5 · Tick a phase
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-the-dashboard-project-mgmt-accounting-the-read-job-system-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D · The dashboard (Project Mgmt Accounting; the read job: System Setup)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#known-limits-do-not-fail-a-step-on-these" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Known limits (do not fail a step on these)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sign-off" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sign-off
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERP_FirstSetup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel-ERP — Your First Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MigrationGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration User Guide (Odoo · Business Central · SAP Business One)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OdooMigration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moving from Odoo — how it works, what is proven
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NinjaExcelReport_UserManual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NinjaExcel Report — User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HRBIMAssetGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HR / Tenancy / Operate Module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CivilWorksGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Civil Works — Step by Step
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TeamsOverlayGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Teams Overlay — Collaboration & Optics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Go Deeper
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Go Deeper
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DeveloperGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide (read first if you will change the code)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ArchitectureOverview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Overview (for reviewers)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../FoldEngineBlackBook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fold Engine Black Book (dev manual)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HolyGrail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Holy Grail (editable rules, live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ERPConceptRosetta.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-ERP Rosetta Stone (concept + cost)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIM_Modeller_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Modeller OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERP_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP — Every Record Has a Place
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERPIntegration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP × BIM × HR — One Building, One Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DistributedERP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Distributed ERP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TermsHowToVerify/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to verify the terms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERP_AI_ADVISORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Letting an AI work on the ERP, safely
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SQLiteWasmArchitectureActual.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How the Database Works (big picture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ViewerComponentModel.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewer Component Model (dev architecture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CLASH_DETECTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clash Detection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../JKR_SKATA/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Asset Classification & JKR/SKATA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../IFC_ExportGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IFC Export Guide (for the BIM author)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TimeMachine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Time Machine (4D Scheduling & Editing)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4D5DAnalysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4D/5D Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMtoProject/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM → Project Order (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerKernelFold/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry as a Signed-Log Fold
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Papers & Positioning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Papers & Positioning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialCompilationPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deterministic Spatial Compilation (academic paper)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AIProposerDefensiveDisclosure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Defensive Disclosure: an Outside AI Proposes, the App Decides
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_TechnicalNote/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — Deterministic 2D ⇄ BIM Round Trip (technical note)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BrowserScaleBenchmark/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Browser-Scale Benchmark (one tab, local first)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnterpriseAuthentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enterprise Authentication (security)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../StrategicIndustryPositioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Strategic Positioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LocalFirstPriorArt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local-First Prior Art
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LegacyOracleAdapterSpec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Legacy-as-Oracle Adapter (migrate / test an ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ShipYard/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Beyond Buildings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RouteTemplate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Find & Navigate (wayfinding)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../halal/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prototypes & Demos
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Prototypes & Demos
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HalalTrace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Halalan Thayiban — halal track & trace (paper)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glassbowl.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glassbowl — the ERP engine as data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glassbowl_gravity.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glassbowl · Gravity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../RetailScaleStory.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Retail at Scale — two messages a day (benchmark story)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bim_architecture_viz.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How it works — interactive architecture tour
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    History & Legacy
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    History & Legacy
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROJECT_CHRONOLOGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Chronology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../VibeProgramming/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vibe Programming — AI + Domain Expertise
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4DGenerator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 4D Generator — Failure Catalogue & AI Findings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnablingTechTimeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enabling-Tech Timeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RED_PILL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Red Pill — Design From Grammar (origin)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LAST_MILE_PROBLEM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Last Mile — drift tracking (Java era)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMERPPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Construction Economy / ERP Wave (Java era)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SYSTEMS_INSTALLER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Self-Host the Java toolchain (legacy installer)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Daftar isi">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Daftar isi
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#checklist-who-does-what" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checklist: who does what
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-set-up-system-setup-once" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A · Set up (System Setup, once)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="A · Set up (System Setup, once)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a1-the-bim-apps-on-your-own-server-optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A1 · The BIM apps on your own server (optional)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a2-install-the-dashboard-into-your-idempiere" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A2 · Install the dashboard into your iDempiere
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a3-load-the-test-data-gardenworld" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A3 · Load the test data (GardenWorld)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a4-erp-model-setup-where-needed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A4 · ERP model setup, where needed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#b-bim-the-shed-from-2d-drawings-to-a-priced-model-bim" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B · BIM: the Shed, from 2D drawings to a priced model (BIM)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="B · BIM: the Shed, from 2D drawings to a priced model (BIM)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#b00-for-the-drafter-export-the-nine-sheets-from-bricscad-as-dxf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B00 · For the drafter: export the nine sheets from BricsCAD as DXF
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b0-from-the-drawings-as-drawn-to-the-marked-set" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B0 · From the drawings as drawn to the marked set
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b1-get-to-know-the-drawings-one-sheet-at-a-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B1 · Get to know the drawings: one sheet at a time
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b2-open-all-nine-sheets-the-drawings-arrange-themselves" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B2 · Open all nine sheets: the drawings arrange themselves
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b2b-convert-the-drawings-to-the-3d-shed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B2b · Convert the drawings to the 3D Shed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b3-fit-the-4d-schedule-and-the-5d-rates-to-your-local-scene" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B3 · Fit the 4D schedule and the 5D rates to your local scene
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b4-send-the-model-to-the-erp-as-a-project-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B4 · Send the model to the ERP as a Project Order
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b5-mark-your-run-against-the-reference-pack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B5 · Mark your run against the reference pack
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#c-erp-the-hands-on-exercise-project-mgmt-accounting-as-gardenworld-admin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C · ERP: the hands-on exercise (Project Mgmt Accounting, as GardenWorld Admin)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="C · ERP: the hands-on exercise (Project Mgmt Accounting, as GardenWorld Admin)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#c1-purchase-orders" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C1 · Purchase orders
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c2-material-receipt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C2 · Material receipt
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c3-vendor-invoice-and-payment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C3 · Vendor invoice and payment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c4-issue-materials-to-site" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C4 · Issue materials to site
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c5-tick-a-phase" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C5 · Tick a phase
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-the-dashboard-project-mgmt-accounting-the-read-job-system-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D · The dashboard (Project Mgmt Accounting; the read job: System Setup)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#known-limits-do-not-fail-a-step-on-these" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Known limits (do not fail a step on these)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sign-off" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sign-off
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+  <p class="i18n-note"><small>Halaman ini belum diterjemahkan; ditampilkan dalam bahasa Inggris. <a href="https://red1oon.github.io/BIMCompiler/CapexUATGuide/">Halaman bahasa Inggris</a>.</small></p>
+  
+                  
+
+
+  
+  
+
+
+<h1 id="capex-uat-guide-from-2d-drawings-to-the-dashboard">CAPEX UAT Guide — from 2D drawings to the dashboard<a class="headerlink" href="#capex-uat-guide-from-2d-drawings-to-the-dashboard" title="Permanent link">&para;</a></h1>
+<div class="uat-noprint" markdown="0"><a class="md-button md-button--primary" href="../CapexUATGuide.pdf" download>⬇ Download the PDF</a> <button type="button" class="md-button" onclick="window.print()">🖨 Print from the browser</button>
+<span style="margin-left:.6em;font-size:.8em">The PDF is made from this page each time it is published, and checked: the checklist on a sheet of its own, each chapter on a new page, no table row split or cut off. Print it, tick the boxes by hand, sign the last page and hand it in.</span></div>
+<style>
+@media print {
+  .md-header, .md-tabs, .md-sidebar, .md-footer, .md-top, .md-source, .uat-noprint, .md-content__button, .headerlink { display: none !important; }
+  .md-main__inner, .md-content, .md-content__inner, .md-grid { margin: 0 !important; padding: 0 !important; max-width: none !important; }
+  .md-typeset { font-size: 10.5pt; }
+  .md-typeset table:not([class]) { display: table; width: 100%; font-size: 9pt; }
+  .md-typeset table:not([class]) th, .md-typeset table:not([class]) td { border: 1px solid #555; padding: 3pt 5pt; }
+  .md-typeset tr, .md-typeset img, .md-typeset figure { break-inside: avoid; page-break-inside: avoid; }
+  .md-typeset h2 { break-before: page; page-break-before: always; }
+  .md-typeset h3 { break-after: avoid; }
+  .md-typeset img { max-width: 100%; max-height: 105mm; }
+  a[href]::after { content: none !important; }
+  @page { margin: 14mm 12mm; }
+  .uat-sheet { break-before: page; page-break-before: always; break-after: page; page-break-after: always; font-size: 9pt; }
+  .uat-sheet table:not([class]) { font-size: 8pt; }
+  .uat-sheet table:not([class]) th, .uat-sheet table:not([class]) td { padding: 1.5pt 4pt; }
+  .uat-sheet p { margin: 3pt 0; }
+  .uat-sheet h2 { break-before: auto; page-break-before: auto; }
+}
+</style>
+
+<p>A hands-on test script for the testers of the pilot client (Sysnova). Each step says what to <strong>do</strong>, what you should <strong>see</strong>, and has a box to tick.
+<strong>A value is affirmed at its source, not trusted.</strong> Wherever a step gives a number, it also says <strong>Source:</strong> where the number is kept (a record, a field, a formula) and what to open to see it there. Open that source, read the value yourself, and tick <em>Pass</em> only if it matches. A figure on the dashboard is never the evidence: the rows behind it are.</p>
+<p>Work top to bottom: every chapter uses what the one before produced. Write anything that differs on the <strong>Notes</strong> line at the end of each chapter.</p>
+<p>Dates in the test data are set for <strong>13 November 2026</strong>. Testing well after that day still works, but the colours on the dashboard (on time, late, over budget) drift with the calendar.</p>
+<div class="uat-sheet">
+<h2 id="checklist-who-does-what">Checklist: who does what<a class="headerlink" href="#checklist-who-does-what" title="Permanent link">&para;</a></h2>
+<p>Three roles run this test. Tick a part when all its steps pass, and initial it.</p>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Who</th>
+<th>Needs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>System Setup</strong></td>
+<td>your iDempiere administrator</td>
+<td><code>psql</code> and a server restart, the GardenWorld Admin login, Node.js (D's read job)</td>
+</tr>
+<tr>
+<td><strong>BIM</strong></td>
+<td>a BIM / QS tester; your <strong>drafter</strong> for B00</td>
+<td>a desktop browser; the drafter: BricsCAD</td>
+</tr>
+<tr>
+<td><strong>Project Mgmt Accounting</strong></td>
+<td>a project / accounting user</td>
+<td>the GardenWorld Admin login, a desktop browser</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Order:</strong> System Setup first. BIM may start at once (public apps, not your iDempiere). Project Mgmt Accounting after A; D after C.</p>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Role</th>
+<th>Done in</th>
+<th>Needs first</th>
+<th>Hands over</th>
+<th>Steps</th>
+<th>Done / initials</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A1 · Own web copy (optional)</td>
+<td>System Setup</td>
+<td>web server</td>
+<td>—</td>
+<td>your copy of the apps</td>
+<td>4</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>A2 · Install the dashboard</td>
+<td>System Setup</td>
+<td><code>psql</code>, server restart</td>
+<td>—</td>
+<td>the dashboard's scripts in iDempiere</td>
+<td>3</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>A3 · Load the test data</td>
+<td>System Setup</td>
+<td>Pack In, <code>psql</code></td>
+<td>A2</td>
+<td>12 projects, 10 products</td>
+<td>6</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>A4 · ERP model check</td>
+<td>System Setup</td>
+<td>iDempiere</td>
+<td>A3</td>
+<td>vendor, stock, products</td>
+<td>4</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>B00 · Export the sheets as DXF</td>
+<td>BIM (drafter)</td>
+<td>BricsCAD</td>
+<td>the drawing</td>
+<td>nine <code>.dxf</code></td>
+<td>3</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>B0 · To the marked set</td>
+<td>BIM</td>
+<td>Modeller</td>
+<td>B00 or pack <code>sheets/</code></td>
+<td>nine <code>_marked.dxf</code></td>
+<td>11</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>B1 · The sheets one at a time</td>
+<td>BIM</td>
+<td>Modeller</td>
+<td>B0</td>
+<td>—</td>
+<td>4</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>B2 · Arrange and convert</td>
+<td>BIM</td>
+<td>Modeller, Viewer</td>
+<td>B0</td>
+<td><code>SHED_extracted.db</code></td>
+<td>11</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>B3 · 4D and 5D</td>
+<td>BIM</td>
+<td>Viewer</td>
+<td>B2</td>
+<td>total cost, finish date</td>
+<td>6</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>B4 · Project Order</td>
+<td>BIM</td>
+<td>Viewer, browser ERP</td>
+<td>B2</td>
+<td>project <strong>SHED</strong></td>
+<td>4</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>B5 · Mark your run</td>
+<td>BIM</td>
+<td>Run Checker</td>
+<td>B0.9 B2.8 B2.9 B3.1</td>
+<td><code>uat_result.json</code></td>
+<td>4</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>C1 · Purchase orders</td>
+<td>Project Mgmt Accounting</td>
+<td>iDempiere</td>
+<td>A3, A4</td>
+<td>orders</td>
+<td>2</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>C2 · Material receipt</td>
+<td>Project Mgmt Accounting</td>
+<td>iDempiere</td>
+<td>C1</td>
+<td>goods received</td>
+<td>1</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>C3 · Invoice and payment</td>
+<td>Project Mgmt Accounting</td>
+<td>iDempiere</td>
+<td>C2</td>
+<td>invoices, payments</td>
+<td>2</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>C4 · Issue to site</td>
+<td>Project Mgmt Accounting</td>
+<td>iDempiere</td>
+<td>A3</td>
+<td>project spending</td>
+<td>4</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>C5 · Tick a phase</td>
+<td>Project Mgmt Accounting</td>
+<td>iDempiere</td>
+<td>A3</td>
+<td>a phase completed</td>
+<td>1</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>D · The dashboard</td>
+<td>Project Mgmt Accounting</td>
+<td>browser</td>
+<td>C; read job (System Setup)</td>
+<td>figures signed off</td>
+<td>10</td>
+<td>☐</td>
+</tr>
+</tbody>
+</table>
+<p>Steps: A 17 · B 43 (29 if given the marked copies: skip B00, B0) · C 10 · D 10, as on the sign-off.</p>
+</div>
+<p><strong>What you need</strong></p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Where</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A desktop browser (Chrome, Edge or Firefox)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>The BIM apps</td>
+<td>the public site <a href="https://red1oon.github.io/bim-ootb/index.html">red1oon.github.io/bim-ootb</a>, or your own copy (chapter A1)</td>
+</tr>
+<tr>
+<td>Your iDempiere, with its <strong>GardenWorld</strong> client and a GardenWorld Admin login</td>
+<td>your server</td>
+</tr>
+<tr>
+<td>The test-data pack</td>
+<td><a href="https://github.com/red1oon/bim-ootb/raw/main/capex/plugin/testdata_2pack/202611131200_GardenWorld_CAPEXTestData.zip">202611131200_GardenWorld_CAPEXTestData.zip</a></td>
+</tr>
+<tr>
+<td>The construction-products script (10 materials at standard cost)</td>
+<td><a href="https://github.com/red1oon/bim-ootb/blob/main/capex/plugin/testdata_2pack/202611141500_CAPEX-TD-CONSTRUCTION-PRODUCTS.sql">202611141500_CAPEX-TD-CONSTRUCTION-PRODUCTS.sql</a></td>
+</tr>
+<tr>
+<td>The dashboard's scripts for iDempiere</td>
+<td>listed in chapter A2, all in the <a href="https://github.com/red1oon/bim-ootb/tree/main/capex/legacy">bim-ootb repository</a></td>
+</tr>
+<tr>
+<td>The <strong>Shed</strong> drawing set: nine 2D sheets as <strong>DXF</strong> files, one per sheet</td>
+<td>exported from BricsCAD by your drafter as in chapter <strong>B00</strong> (a <code>.dwg</code> cannot be opened); chapter B0 then turns them into the nine <code>…_marked.dxf</code> files that chapters B1 onward open (a tester given the <code>…_marked.dxf</code> copies skips B00 and B0)</td>
+</tr>
+<tr>
+<td>The <strong>reference pack</strong> (to mark your run, chapter B5)</td>
+<td><a href="https://objectstorage.ap-kulai-2.oraclecloud.com/n/ax3cp6tzwuy2/b/bim-ootb/o/uat/Shed_UAT_pack_20261115.zip">Shed_UAT_pack_20261115.zip</a>: the nine sheets as B00 exports them, the supplied marked copies, the reference Viewer database and the expected values</td>
+</tr>
+<tr>
+<td>The <strong>UAT Run Checker</strong></td>
+<td><a href="https://red1oon.github.io/bim-ootb/capex/uat/check.html">check.html</a> in your browser: it reads your files locally, nothing is uploaded</td>
+</tr>
+</tbody>
+</table>
+<p>The nine Shed sheets are the pilot client's own work, so its testers may use them. Any other drawing set goes through the same way once its sheets carry their settings (levels, datums and layer meanings), which the Modeller's <strong>Drawing metadata</strong> panel records.</p>
+<p><strong>Where to find each window.</strong> Every window and process below is in iDempiere's left-hand menu; open the folder and click the entry, or type the name in the menu's <strong>Search</strong> box. A new record is made with the <strong>New</strong> button in the toolbar, saved with <strong>Save</strong>, and a document is finished with its <strong>Document Action</strong> button (choose <strong>Complete</strong>, then <strong>OK</strong>).</p>
+<table>
+<thead>
+<tr>
+<th>Name used in this guide</th>
+<th>Menu path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pack In</td>
+<td>Application Dictionary ▸ Application Packaging ▸ Pack In</td>
+</tr>
+<tr>
+<td>Accounting Schema</td>
+<td>Performance Analysis and Accounting ▸ Accounting Rules ▸ Accounting Schema</td>
+</tr>
+<tr>
+<td>Performance Measure Calculation</td>
+<td>Performance Analysis and Accounting ▸ Performance Measurement ▸ Performance Measure Calculation</td>
+</tr>
+<tr>
+<td>Business Partner</td>
+<td>Partner Relations ▸ Business Partner Rules ▸ Business Partner</td>
+</tr>
+<tr>
+<td>Product</td>
+<td>Material Management and Pricing ▸ Material Management Rules ▸ Product</td>
+</tr>
+<tr>
+<td>Warehouse and Locators</td>
+<td>Material Management and Pricing ▸ Material Management Rules ▸ Warehouse and Locators</td>
+</tr>
+<tr>
+<td>Project</td>
+<td>Project Management ▸ Project</td>
+</tr>
+<tr>
+<td>Issue to Project (a process)</td>
+<td>Project Management ▸ Issue to Project</td>
+</tr>
+<tr>
+<td>Project (Lines/Issues)</td>
+<td>Project Management ▸ Project (Lines/Issues)</td>
+</tr>
+<tr>
+<td>Purchase Order</td>
+<td>Requisition-to-Invoice (Purchasing) ▸ Purchase Order</td>
+</tr>
+<tr>
+<td>Material Receipt</td>
+<td>Requisition-to-Invoice (Purchasing) ▸ Material Receipt</td>
+</tr>
+<tr>
+<td>Purchase Invoice and Credit/Debit Note</td>
+<td>Requisition-to-Invoice (Purchasing) ▸ Purchase Invoice and Credit/Debit Note</td>
+</tr>
+<tr>
+<td>Payment and Receipt</td>
+<td>Open Items (Financial Movements and Aging) ▸ Payment and Receipt</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Who does what:</strong> see the checklist sheet above.</p>
+<hr />
+<h2 id="a-set-up-system-setup-once">A · Set up (System Setup, once)<a class="headerlink" href="#a-set-up-system-setup-once" title="Permanent link">&para;</a></h2>
+<h3 id="a1-the-bim-apps-on-your-own-server-optional">A1 · The BIM apps on your own server (optional)<a class="headerlink" href="#a1-the-bim-apps-on-your-own-server-optional" title="Permanent link">&para;</a></h3>
+<p>The Modeller, the Viewer, the Kernel ERP and the dashboard are plain web files: no application server and no database server. Use the public site, or serve your own copy.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Do</th>
+<th>Confirm on screen</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A1.1</td>
+<td>Copy the repository: <code>git clone https://github.com/red1oon/bim-ootb</code></td>
+<td>A folder <code>bim-ootb</code> with <code>index.html</code>, <code>modeller/</code>, <code>erp/</code>, <code>capex/</code></td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>A1.2</td>
+<td>Serve the folder with any static web server, for example <code>python3 -m http.server 8080</code> inside it</td>
+<td>The server says it is listening</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>A1.3</td>
+<td>Open <code>http://&lt;your-server&gt;:8080/index.html</code>. On a first visit the page is a picture with two pills: click the <strong>red</strong> one</td>
+<td>Three doors appear under <em>choose your door</em>. Hold the pointer on each to read its name: <strong>Buildings / IFC</strong>, <strong>BIM Modeller</strong>, <strong>ERP</strong></td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>A1.4</td>
+<td>Open <code>/capex/index.html</code> on your server</td>
+<td>The dashboard opens on its built-in sample store (3 projects). The computed tiles read <strong>no data (CAPEX PA rows not installed)</strong>: that is correct until the page reads your iDempiere (chapter D)</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+</tbody>
+</table>
+<p>The large building databases are not stored in the repository. To open the sample buildings from your own server, ask us for the files and place them as the <a href="../BIMUserGuide/#run-it-on-your-own-machine">Viewer guide</a> says.</p>
+<h3 id="a2-install-the-dashboard-into-your-idempiere">A2 · Install the dashboard into your iDempiere<a class="headerlink" href="#a2-install-the-dashboard-into-your-idempiere" title="Permanent link">&para;</a></h3>
+<p>All scripts are iDempiere migration scripts (PostgreSQL), written for the <strong>GardenWorld</strong> client. Apply them with <code>psql</code> <strong>in file-name order</strong>, run <code>update_sequences()</code>, then <strong>restart the server</strong>: iDempiere keeps web-service types and measures in memory.</p>
+<table>
+<thead>
+<tr>
+<th>Folder in the repository</th>
+<th>Script(s)</th>
+<th>What it adds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/red1oon/bim-ootb/tree/main/capex/legacy/ws/migration/iD13/postgresql"><code>capex/legacy/ws/migration</code></a></td>
+<td><code>202611042300_CAPEX-WS-READ.sql</code></td>
+<td>Read-only web-service types for the dashboard's tables, and the role allowed to use them</td>
+</tr>
+<tr>
+<td><a href="https://github.com/red1oon/bim-ootb/tree/main/capex/legacy/ws/q4/migration/iD13/postgresql"><code>capex/legacy/ws/q4</code></a></td>
+<td><code>202611111400_CAPEX-WS-Q4.sql</code></td>
+<td>Reading purchase orders and project issues</td>
+</tr>
+<tr>
+<td><a href="https://github.com/red1oon/bim-ootb/tree/main/capex/legacy/ws/chain/migration/iD13/postgresql"><code>capex/legacy/ws/chain</code></a></td>
+<td><code>202611121700_CAPEX-WS-CHAIN.sql</code></td>
+<td>Reading receipts, vendor invoices and payments (the supply-chain view)</td>
+</tr>
+<tr>
+<td><a href="https://github.com/red1oon/bim-ootb/tree/main/capex/legacy/ws/pacalc/migration/iD13/postgresql"><code>capex/legacy/ws/pacalc</code></a></td>
+<td><code>202611131400_CAPEX-WS-PACALC.sql</code></td>
+<td>Reading the dashboard's own formulas (Performance Analysis measures) from your server</td>
+</tr>
+<tr>
+<td><a href="https://github.com/red1oon/bim-ootb/tree/main/capex/legacy/migration/iD13/postgresql"><code>capex/legacy/migration</code></a></td>
+<td>every script, in name order (<code>202611031900_CAPEX-R0.sql</code> … <code>202611141000_CAPEX-FORECAST-PROJECTS.sql</code>)</td>
+<td>The dashboard's formulas as Performance Analysis measures, the Home tab goals, their targets and colours. Money goals show the currency of your login</td>
+</tr>
+<tr>
+<td>BIM Document plugin</td>
+<td>see <a href="../CapexDashboardGuide/#installing-it">Installing it</a></td>
+<td>Drawings filed against projects (optional for this test)</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Do</th>
+<th>Confirm on screen</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A2.1</td>
+<td>Apply the scripts above, run <code>update_sequences()</code>, restart iDempiere</td>
+<td>Each script ends without an error; the server comes back</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>A2.2</td>
+<td>Log in as GardenWorld Admin, open the <strong>Home</strong> tab</td>
+<td>The Performance panel shows CAPEX goals, for example <em>CAPEX Total Projects</em>, <em>CAPEX Approved Budget</em></td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>A2.3</td>
+<td>Open the window <strong>Performance Measure Calculation</strong></td>
+<td>Rows named <em>CAPEX …</em> are there; their SQL can be read and edited here. This is where the dashboard’s formulas live</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+</tbody>
+</table>
+<p>Each script carries a <strong>Restore</strong> line at its top that removes what it adds.</p>
+<h3 id="a3-load-the-test-data-gardenworld">A3 · Load the test data (GardenWorld)<a class="headerlink" href="#a3-load-the-test-data-gardenworld" title="Permanent link">&para;</a></h3>
+<p>The pack holds <strong>12 projects</strong> (Value <code>TD_…</code>, names ending <em>(test data)</em>) with <strong>42 phases</strong>, <strong>84 tasks</strong>, <strong>84 planned lines</strong>, some phases already ticked complete, and <strong>2 test products</strong>. It holds <strong>no documents</strong> and none of the construction materials: those come from the script in A3.6: you make the orders, receipts, invoices, payments and issues yourself in chapter C. The data can stay in GardenWorld after the test.</p>
+<p>The pack goes to the client named in its file name (<strong>GardenWorld</strong>), and is packed in by that client's administrator.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Do</th>
+<th>Confirm on screen</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A3.1</td>
+<td>Put the zip in an empty folder on the server and run <code>utils/RUN_ApplyPackInFromFolder.sh &lt;folder&gt;</code>, or use the <strong>Pack In</strong> window logged in as GardenWorld Admin (choose the zip, then run it)</td>
+<td>The run prints <em>Successful application of …CAPEXTestData.zip</em>, <code>Error=false</code> and ends with <em>Done</em>. The log also prints a <code>java.lang.Exception</code> trace for each planned line (<em>MProduct.loadPO: NO Data found</em>): these do not stop the run, and the rows are checked in A3.2 to A3.4</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>A3.2</td>
+<td>Open the <strong>Project</strong> window, search Value <code>TD_%</code></td>
+<td>12 projects, for example <em>TD_RIVERSIDE – Riverside Tower (test data)</em> <strong>Source:</strong> the pack file itself holds 12 <code>C_Project</code> records; the window’s record count (status bar) is the count in your database</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>A3.3</td>
+<td>Open <em>TD_RIVERSIDE</em>, tab <strong>Phase</strong></td>
+<td>5 phases with dates; the first 3 are ticked <strong>Complete</strong> <strong>Source:</strong> the <strong>Phase</strong> tab’s own <em>Complete</em> tick boxes (the pack set them); count them yourself</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>A3.4</td>
+<td>Look at the project’s <strong>Currency</strong></td>
+<td>The currency of GardenWorld’s <em>Purchase</em> price list. The pack sets no currency: iDempiere takes it from the price list, so it follows your setup</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>A3.5</td>
+<td>Pack the same zip in a second time</td>
+<td>No new projects: still 12. The folder run says the pack is <em>already installed</em> and skips it</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>A3.6</td>
+<td>Apply the products script with <code>psql</code> (it can be applied twice: the second run adds nothing), then <strong>restart iDempiere</strong>: the accounting schema is kept in memory. The script makes 10 <strong>Construction</strong> products at the Schedule of Rates prices and sets GardenWorld's primary accounting schema (<em>GardenWorld US/A/US Dollar</em>) to <strong>Standard</strong> costing, because iDempiere costs a project issue by the <em>schema's</em> method. Its first lines hold the <strong>Restore</strong> line</td>
+<td>The script ends without an error. <strong>Accounting Schema</strong> window: <em>GardenWorld US/A/US Dollar</em>, <strong>Costing Method</strong> <em>Standard</em></td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+</tbody>
+</table>
+<h3 id="a4-erp-model-setup-where-needed">A4 · ERP model setup, where needed<a class="headerlink" href="#a4-erp-model-setup-where-needed" title="Permanent link">&para;</a></h3>
+<p>GardenWorld already has the vendor, the warehouse and the locator; the products come from A3.6. Check them before chapter C:</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Do</th>
+<th>Confirm on screen</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A4.1</td>
+<td><strong>Business Partner</strong> window: find a vendor (for example <em>Seed Farm Inc.</em>, the one this guide uses)</td>
+<td>At least one partner with <em>Vendor</em> ticked</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>A4.2</td>
+<td><strong>Product</strong> window: search Value <code>PWD-%</code>, then open <em>PWD-04.2 Brick masonry</em></td>
+<td>10 products in category <em>Construction</em>. <em>PWD-04.2</em>: unit <strong>M3</strong>, stocked, price <strong>68.1167</strong> on the <em>Purchase</em> price list (tab <strong>Price</strong>; 8,174 BDT ÷ 120), and a <strong>Standard</strong> cost of 68.1167 (tab <strong>Costs</strong>) <strong>Source:</strong> the product’s <strong>Description</strong> field names it: <em>PWD SoR 2022 item 04.2, page …, 8174 BDT/M3 = 68.1167 USD at 120</em>. That is the Public Works Department Schedule of Rates item; read the rate and the item number there and divide by 120 yourself</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>A4.3</td>
+<td><strong>Warehouse and Locators</strong> window: open <em>HQ Warehouse</em>, tab <strong>Locator</strong></td>
+<td>It has the locator <em>Default HQ Locator</em>, where you receive and issue</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>A4.4</td>
+<td><strong>Product</strong> window: <em>Test material A (test data)</em></td>
+<td>The pack’s product exists, in category <em>TD Materials (test data)</em></td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Notes (chapter A):</strong> <strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong>____</p>
+<hr />
+<h2 id="b-bim-the-shed-from-2d-drawings-to-a-priced-model-bim">B · BIM: the Shed, from 2D drawings to a priced model (BIM)<a class="headerlink" href="#b-bim-the-shed-from-2d-drawings-to-a-priced-model-bim" title="Permanent link">&para;</a></h2>
+<p>This chapter uses <strong>your own Shed drawing set</strong>: the single-storey farm shed, drawn as nine 2D sheets. You will see each drawing on its own first, then the nine arranged in place, then the 3D model built from them.</p>
+<p><strong>The drawings are shortened, so the model is too.</strong> The real shed is <strong>410 ft × 50 ft</strong> (124.97 m × 15.24 m): 41 bays of 10 ft, grid lines 01 to 42. The drawings show only grids <strong>01–06</strong> and <strong>35–42</strong>, with the expansion joint drawn between 06 and 35; the length dimension is drawn 130 ft long and its text is written over to read <em>410'-0"</em>. The Modeller builds what is drawn: <strong>13 bays, 39.62 m long</strong>. Every quantity and cost in B2b to B4 is for those 13 bays, about a third of the real shed's length. The 50 ft width is drawn to scale.</p>
+<p>The pictures were taken from the real Modeller with these same nine files. The label at the top of each picture and the red ring around a button were added for this guide; in the canvas-only pictures the drawing lines are shown at full strength so that they print clearly.</p>
+<p><strong>The nine sheets.</strong> From B1 on you open the <code>…_marked.dxf</code> copies: they carry the levels, heights and layer meanings the Modeller needs. You make them yourself from the nine sheets as drawn in <strong>B0</strong>; the result is the same, mark for mark, as the copies supplied for this test.</p>
+<table>
+<thead>
+<tr>
+<th>Sheet file</th>
+<th>What it is</th>
+<th>Role the Modeller shows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0_FLOOR_PLAN_marked.dxf</code></td>
+<td>Floor plan</td>
+<td>PLAN</td>
+</tr>
+<tr>
+<td><code>3_BEAM_LAYOUT_marked.dxf</code></td>
+<td>Beam layout</td>
+<td>PLAN</td>
+</tr>
+<tr>
+<td><code>4_FOUNDATION_LAYOUT_marked.dxf</code></td>
+<td>Foundation layout</td>
+<td>PLAN</td>
+</tr>
+<tr>
+<td><code>1N_ELEV_NORTH_marked.dxf</code></td>
+<td>North elevation</td>
+<td>ELEV</td>
+</tr>
+<tr>
+<td><code>1S_ELEV_SOUTH_marked.dxf</code></td>
+<td>South elevation</td>
+<td>ELEV</td>
+</tr>
+<tr>
+<td><code>2_ELEV_WEST_marked.dxf</code></td>
+<td>West elevation</td>
+<td>ELEV</td>
+</tr>
+<tr>
+<td><code>7_ELEV_EAST_marked.dxf</code></td>
+<td>East elevation</td>
+<td>ELEV</td>
+</tr>
+<tr>
+<td><code>8_SECTION_AA_TRUSS_marked.dxf</code></td>
+<td>Section A-A, the roof truss</td>
+<td>SECTION</td>
+</tr>
+<tr>
+<td><code>5_DETAILS_marked.dxf</code></td>
+<td>Details and general notes</td>
+<td>NOTES</td>
+</tr>
+</tbody>
+</table>
+<h3 id="b00-for-the-drafter-export-the-nine-sheets-from-bricscad-as-dxf">B00 · For the drafter: export the nine sheets from BricsCAD as DXF<a class="headerlink" href="#b00-for-the-drafter-export-the-nine-sheets-from-bricscad-as-dxf" title="Permanent link">&para;</a></h3>
+<p><em>This step is for whoever holds the drawing in BricsCAD.</em> Send the testers <strong>DXF files, one per sheet</strong>, not the <code>.dwg</code>: the Modeller opens <code>.dxf</code> files only. BricsCAD writes a DXF with its <strong>DXFOUT</strong> command, whose options are <em>Entities</em> (which entities to export), <em>Binary</em> (leave it off: the file is then written as ASCII text), <em>Version</em>, and the number of decimal places (see the <a href="https://help.bricsys.com/en-us/document/command-reference/d/dxfout-command">BricsCAD help for DXFOUT</a>).</p>
+<p><strong>Settings</strong></p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Use</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>File type</td>
+<td><strong>DXF, ASCII</strong> (text)</td>
+<td>A <strong>binary</strong> DXF is refused by the Modeller</td>
+</tr>
+<tr>
+<td>DXF version</td>
+<td><strong>2018</strong> (any of 2000, 2004, 2007, 2010, 2013, 2018 gives the same model)</td>
+<td><strong>R12</strong> is refused: it has no drawing units and no hatches, and the gable walls are hatches</td>
+</tr>
+<tr>
+<td>Files</td>
+<td><strong>one DXF per sheet</strong></td>
+<td>The whole drawing in one file gives no model: the Modeller cannot tell the sheets apart</td>
+</tr>
+<tr>
+<td>Drawing units</td>
+<td><strong>Inches</strong> (system variable <code>INSUNITS</code>; the Shed drawing already has it)</td>
+<td>A file without its units gives no model</td>
+</tr>
+<tr>
+<td>Decimal places</td>
+<td><strong>16</strong> (the most DXFOUT offers)</td>
+<td>keeps the coordinates as exact as in the drawing</td>
+</tr>
+<tr>
+<td>Position</td>
+<td><strong>as drawn</strong>: do not move, rotate or scale a sheet before exporting it</td>
+<td>B0 types levels and one box in the drawing's own coordinates</td>
+</tr>
+<tr>
+<td>Layers, dimensions, hatches</td>
+<td><strong>as drawn</strong>: do not explode, rename or merge them</td>
+<td>The Modeller reads the grid lines from the dimensions, the gable walls from the hatches, and each element type from its layer name (B0.4)</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Do</th>
+<th>Confirm on screen</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B00.1</td>
+<td>Open the Shed drawing in BricsCAD. Check that the drawing units are <strong>Inches</strong></td>
+<td><code>INSUNITS</code> reads 1 (Inches)</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B00.2</td>
+<td>For each row of the table below: type <strong>DXFOUT</strong>, choose <strong>Entities</strong>, select everything inside that sheet's frame (a window from one corner of the frame to the other), and confirm. Leave <strong>Binary</strong> off, choose version <strong>2018</strong> and <strong>16</strong> decimal places, and save under the file name in the table</td>
+<td>One <code>.dxf</code> file per row, nine in all</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B00.3</td>
+<td>Send the nine <code>.dxf</code> files to the testers</td>
+<td>The testers open them in B0.1, which is the check: <strong>All defaults</strong> must list <strong>34</strong> yellow rows, then <strong>113</strong> after B0.2. Other counts mean the export differs from the drawings this guide was proven on: check the settings above and export again</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Frame in the drawing (its title)</th>
+<th>Save as</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Shed Floor Plan</td>
+<td><code>0_FLOOR_PLAN.dxf</code></td>
+</tr>
+<tr>
+<td>Beam Lay out Plan</td>
+<td><code>3_BEAM_LAYOUT.dxf</code></td>
+</tr>
+<tr>
+<td>Foundation Lay out Plan</td>
+<td><code>4_FOUNDATION_LAYOUT.dxf</code></td>
+</tr>
+<tr>
+<td>North and South Elevation (one frame, two drawings): the <strong>upper</strong> drawing, North</td>
+<td><code>1N_ELEV_NORTH.dxf</code></td>
+</tr>
+<tr>
+<td>the same frame, the <strong>lower</strong> drawing, South</td>
+<td><code>1S_ELEV_SOUTH.dxf</code></td>
+</tr>
+<tr>
+<td>West Elevation</td>
+<td><code>2_ELEV_WEST.dxf</code></td>
+</tr>
+<tr>
+<td>East Elevation</td>
+<td><code>7_ELEV_EAST.dxf</code></td>
+</tr>
+<tr>
+<td>Section A-A (Truss Detail)</td>
+<td><code>8_SECTION_AA_TRUSS.dxf</code></td>
+</tr>
+<tr>
+<td>the details frame (footing, column and grade-beam casting ratios, long sections of the beams)</td>
+<td><code>5_DETAILS.dxf</code></td>
+</tr>
+</tbody>
+</table>
+<p>The general <em>Section A-A</em> frame is not used in this test.</p>
+<p><em>Proven by measurement (witness W-UAT-SHED-SOURCE, 2026-11-15) with files written in each DXF version by a DXF library, not by BricsCAD itself: ASCII 2000 to 2018 give the same model, 512 bodies, identical; R12, binary DXF, the whole drawing in one file, and a file without its units give no model. The settings above follow from that; the DXFOUT options are quoted from BricsCAD's help.</em></p>
+<h3 id="b0-from-the-drawings-as-drawn-to-the-marked-set">B0 · From the drawings as drawn to the marked set<a class="headerlink" href="#b0-from-the-drawings-as-drawn-to-the-marked-set" title="Permanent link">&para;</a></h3>
+<p><em>No export from your drafter yet?</em> The reference pack's <code>sheets/</code> folder holds the nine sheets exactly as B00 writes them; start B0 from those.</p>
+<p>The nine sheets as drawn carry no settings: the Modeller cannot tell which CAD layer is a column, how deep the footings go, or where the expansion joint is. In this step you tell it, in the <strong>Drawing metadata</strong> panel, and save the result as nine <code>…_marked.dxf</code> copies. Every value below is read from the drawings (the source is named in each row); nothing is invented. Type the numbers exactly as written.</p>
+<p>The panel has sections you open by clicking their title: <strong>All defaults</strong> (the yellow list), <strong>Sheets</strong> (one card per sheet), <strong>Layers</strong>, <strong>Body heights</strong>, <strong>Exclude areas</strong>. The badge at the top says <strong>Blocked · n</strong> (n things still missing) or <strong>Qualifies</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Do</th>
+<th>Confirm on screen</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B0.1</td>
+<td>Open <a href="https://red1oon.github.io/bim-ootb/modeller/modeller.html">the Modeller</a>. <strong>📂 Open → Open 2D drawings (.dxf)…</strong> and select <strong>all nine</strong> sheets exported in B00: <code>0_FLOOR_PLAN.dxf</code>, <code>3_BEAM_LAYOUT.dxf</code>, <code>4_FOUNDATION_LAYOUT.dxf</code>, <code>1N_ELEV_NORTH.dxf</code>, <code>1S_ELEV_SOUTH.dxf</code>, <code>2_ELEV_WEST.dxf</code>, <code>7_ELEV_EAST.dxf</code>, <code>8_SECTION_AA_TRUSS.dxf</code>, <code>5_DETAILS.dxf</code></td>
+<td>The <strong>Drawing metadata</strong> panel opens. The badge reads <strong>Blocked</strong> with a number (58 or 99 on the two exports this guide was proven on: the number depends on how the sheets were cut and is not a check). <strong>All defaults</strong> lists <strong>34</strong> yellow rows: what the Modeller read from the files (units, sheet roles and names, grid lines)</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B0.2</td>
+<td>In <strong>All defaults</strong>, press <strong>Accept stated + read</strong></td>
+<td>The list grows to <strong>113</strong> yellow rows: the grid lines, level lines and roles that follow from the first ones</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B0.2b</td>
+<td>Press <strong>Accept all</strong></td>
+<td><strong>0</strong> yellow rows. The badge still reads <strong>Blocked</strong> with a smaller number (48 or 89). In <strong>Sheets</strong>, eight cards now show a role (3 PLAN, 4 ELEV, 1 SECTION); <code>5_DETAILS</code> is the notes sheet</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B0.3</td>
+<td>In <strong>Sheets</strong>, open any card. In its <strong>Set</strong> field replace <code>BUILD-NAME</code> with <strong>SHED</strong> and press Enter</td>
+<td>Every sheet's <strong>Set</strong> reads <strong>SHED</strong> (typing it once fills all nine)</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B0.4</td>
+<td>Open <strong>Layers</strong>. Under each heading, pick the meaning of each CAD layer from its list, as in the table below. Where the table says <em>one sheet only</em>, press the small arrow at the right of the layer's row (<strong>Type this layer sheet by sheet</strong>) and pick the meaning on that sheet's line only</td>
+<td>After <strong>PLAN · Col = column</strong> the badge reads <strong>Blocked · 1</strong>; after <strong>ELEV · Wall = panel</strong> it reads <strong>Qualifies</strong>. When all ten are set, <strong>All defaults</strong> shows <strong>14</strong> yellow rows (sizes the Modeller assumes, such as the fan depth)</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B0.4b</td>
+<td>In <strong>All defaults</strong>, press <strong>Accept all</strong></td>
+<td><strong>0</strong> yellow rows</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B0.5</td>
+<td>Open <strong>Body heights</strong>. It lists <strong>footing</strong> and <strong>beam</strong> as waiting (no elevation shows them). Type <strong>footing</strong>: z0 <code>-1.4478</code>, z1 <code>-1.143</code>, <strong>Add</strong>. Type <strong>beam</strong>: z0 <code>3.098794</code>, z1 <code>3.352794</code>, <strong>Add</strong></td>
+<td>Two rows: <code>@BODYZ=footing,-1.4478,-1.143</code> and <code>@BODYZ=beam,3.098794,3.352794</code>. The badge still reads <strong>Qualifies</strong></td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B0.6</td>
+<td>In <strong>Sheets</strong>, open each elevation and the section card in turn. Under <strong>Level datums (@Z)</strong>, type the height <code>0.6096</code> in the first box and the card's y (table below) in <strong>y where drawn</strong>, then <strong>Add</strong></td>
+<td>Each of the five cards lists a new <code>@Z=0.6096</code> row beside the two it read itself (<code>@Z=0</code> and the eave or ridge height). The badge still reads <strong>Qualifies</strong></td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B0.7</td>
+<td>Open <strong>Exclude areas</strong>. Choose <strong>3_BEAM_LAYOUT</strong> in its list and press <strong>Exclude area</strong> (the button now reads <strong>Drag a box</strong>). On the canvas, zoom to the bay between grid <strong>06</strong> and grid <strong>35</strong>: the beam layout's <strong>expansion joint</strong> is the pair of close vertical lines (about 22 cm apart) running across all four rows A to D. Drag a box from above row A to below row D that holds both lines and the small break marks beside them: start about half a metre left of the left line (not more than 1 m: two short beam ends start 1.05 m to the left) and stop about 25 cm right of the right line. The break marks reach 18 cm out from the lines; the beams of the right-hand block start 37 cm right of the right line, so the box must stop before them. Press <strong>Drag a box</strong> again to leave the tool</td>
+<td><strong>Exclude areas</strong> lists one row, <code>3_BEAM_LAYOUT @EXCLUDE=…</code> with the box's four numbers. Without it the joint's two lines are read as four extra beams (B2b would then read 515 elements, not 511)</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B0.8</td>
+<td>Read the top of the panel</td>
+<td>The badge reads <strong>Qualifies</strong>; <strong>All defaults</strong> has <strong>0</strong> yellow rows</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B0.9</td>
+<td>Press <strong>Save marked copies</strong> (at the foot of the panel)</td>
+<td>Your browser downloads nine files named <code>0_FLOOR_PLAN_marked.dxf</code> … <code>5_DETAILS_marked.dxf</code>, the names used from B1 on. The panel says <strong>Downloaded: …</strong>; the files you opened are unchanged</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+</tbody>
+</table>
+<p><strong>B0.4 · the ten layer meanings</strong></p>
+<table>
+<thead>
+<tr>
+<th>Heading in Layers</th>
+<th>CAD layer</th>
+<th>Pick</th>
+<th>Where it is read from</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PLAN sheets</td>
+<td><code>Col</code></td>
+<td>column</td>
+<td>the 12"×12" column squares on the plans</td>
+</tr>
+<tr>
+<td>PLAN sheets</td>
+<td><code>Fo</code></td>
+<td>footing</td>
+<td>the F-1 footing outlines on the foundation layout</td>
+</tr>
+<tr>
+<td>PLAN sheets</td>
+<td><code>Dim</code></td>
+<td>beam, <strong>3_BEAM_LAYOUT only</strong> (one sheet only)</td>
+<td>the B-1 / B-2 beam lines of the beam layout (on the other plans the layer is left unread)</td>
+</tr>
+<tr>
+<td>PLAN sheets</td>
+<td><code>Rod</code></td>
+<td>doorswing</td>
+<td>the door arcs of the floor plan (<code>Rod</code> is on the floor plan only, so its row has no arrow)</td>
+</tr>
+<tr>
+<td>ELEV sheets</td>
+<td><code>Wall</code></td>
+<td>panel</td>
+<td>the brick-wall hatches of the gable ends</td>
+</tr>
+<tr>
+<td>ELEV sheets</td>
+<td><code>Rod</code></td>
+<td>fan</td>
+<td>the exhaust fans drawn on the elevations</td>
+</tr>
+<tr>
+<td>ELEV sheets</td>
+<td><code>Dim</code></td>
+<td>net</td>
+<td>the zigzag nets above the low bays</td>
+</tr>
+<tr>
+<td>ELEV sheets</td>
+<td><code>Win</code></td>
+<td>door</td>
+<td>the meaning the supplied set carries; it changes no element count in this test</td>
+</tr>
+<tr>
+<td>ELEV sheets</td>
+<td><code>0</code></td>
+<td>column, <strong>1S_ELEV_SOUTH only</strong> (one sheet only)</td>
+<td>the columns drawn on the south elevation</td>
+</tr>
+<tr>
+<td>SECTION sheets</td>
+<td><code>Fo</code></td>
+<td>bar</td>
+<td>the truss members of section A-A</td>
+</tr>
+</tbody>
+</table>
+<p><strong>B0.6 · the five level datums</strong> (<code>0.6096</code> m = 24 in, the plinth level <em>PL</em>: on every elevation the PL line is drawn 24 in above the ground line)</p>
+<table>
+<thead>
+<tr>
+<th>Card</th>
+<th>y where drawn</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>1S_ELEV_SOUTH</code></td>
+<td><code>-4446.6</code></td>
+</tr>
+<tr>
+<td><code>1N_ELEV_NORTH</code></td>
+<td><code>-3895.2</code></td>
+</tr>
+<tr>
+<td><code>2_ELEV_WEST</code></td>
+<td><code>-4515.7264</code></td>
+</tr>
+<tr>
+<td><code>7_ELEV_EAST</code></td>
+<td><code>-3766.442</code></td>
+</tr>
+<tr>
+<td><code>8_SECTION_AA_TRUSS</code></td>
+<td><code>-3726.416</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>B0.5 · where the body heights come from.</strong> Footing F-1 is 12 in thick, its top 45 in below the finished ground (z −1.143 m to −1.4478 m). The beams run from 122 in to 132 in above the ground (3.0988 m to 3.3528 m), as the section's lines give them; the elevations draw the beam soffit at 120 in, a 2 in difference the drawings leave open and this test does not settle.</p>
+<p><em>Proven (witness W-UAT-B0, 2026-11-15): these steps, done in the real Modeller on the nine sheets as drawn, reach </em><em>Qualifies</em><em>, save nine copies equal mark for mark to the supplied <code>…_marked.dxf</code> set, and B2b's </em><em>Convert</em><em> then reads the same <code>Converted: 511 elements (0 door/window fills), 2 openings cut.</code> The datum y values are typed, not picked with the </em><em>Pick</em><em> button; picking was not part of the proof.</em></p>
+<h3 id="b1-get-to-know-the-drawings-one-sheet-at-a-time">B1 · Get to know the drawings: one sheet at a time<a class="headerlink" href="#b1-get-to-know-the-drawings-one-sheet-at-a-time" title="Permanent link">&para;</a></h3>
+<p>Open <a href="https://red1oon.github.io/bim-ootb/modeller/modeller.html">the Modeller</a>. The drawings are opened from <strong>📂 Open → Open 2D drawings (.dxf)…</strong></p>
+<p><img alt="Where to click: Open, then Open 2D drawings (.dxf)" src="../../img/uat/uat_b1_open_menu.png" /></p>
+<p><em>Picture B1-a · Modeller: Open ▸ Open 2D drawings (.dxf)</em></p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Do</th>
+<th>Confirm on screen</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B1.1</td>
+<td><strong>📂 Open → Open 2D drawings (.dxf)…</strong> and select <strong>only</strong> <code>0_FLOOR_PLAN_marked.dxf</code></td>
+<td>The Shed <strong>floor plan</strong> is drawn on the canvas, as in picture B1-b: the long rectangle of the shed with its grid lines and column marks. The badge in the <strong>Drawing metadata</strong> panel reads <strong>Blocked</strong> for one sheet on its own: that is expected, one sheet is not yet a building</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B1.2</td>
+<td>Fold the <strong>2D Drawings</strong> panel away (the fold button in its title bar) and close the <strong>Drawing metadata</strong> panel (✕) to see the whole drawing. Turn the mouse wheel to zoom, drag to move</td>
+<td>You recognise your own floor plan</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="Shed floor plan on its own" src="../../img/uat/uat_b1_sheet_0_floor_plan.png" /></p>
+<p><em>Picture B1-b · </em><em>Shed · Floor plan</em><em> · sheet <code>0_FLOOR_PLAN.dxf</code>, on its own</em></p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Do</th>
+<th>Confirm on screen</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B1.3</td>
+<td>Reload the page. Open <strong>only</strong> <code>3_BEAM_LAYOUT_marked.dxf</code></td>
+<td>The <strong>beam layout</strong> is drawn, as in picture B1-c</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B1.4</td>
+<td>Reload the page. Open <strong>only</strong> <code>4_FOUNDATION_LAYOUT_marked.dxf</code></td>
+<td>The <strong>foundation layout</strong> is drawn, as in picture B1-d</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="Shed beam layout on its own" src="../../img/uat/uat_b1_sheet_3_beam_layout.png" /></p>
+<p><em>Picture B1-c · </em><em>Shed · Beam layout</em><em> · sheet <code>3_BEAM_LAYOUT.dxf</code>, on its own</em></p>
+<p><img alt="Shed foundation layout on its own" src="../../img/uat/uat_b1_sheet_4_foundation_layout.png" /></p>
+<p><em>Picture B1-d · </em><em>Shed · Foundation layout</em><em> · sheet <code>4_FOUNDATION_LAYOUT.dxf</code>, on its own</em></p>
+<p>An elevation or the section opened on its own shows nothing: it has to stand on a plan. You will see them in the next step, standing in place.</p>
+<h3 id="b2-open-all-nine-sheets-the-drawings-arrange-themselves">B2 · Open all nine sheets: the drawings arrange themselves<a class="headerlink" href="#b2-open-all-nine-sheets-the-drawings-arrange-themselves" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Do</th>
+<th>Confirm on screen</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B2.1</td>
+<td>Reload the page. <strong>📂 Open → Open 2D drawings (.dxf)…</strong> and select <strong>all nine</strong> <code>…_marked.dxf</code> files at once</td>
+<td>The <strong>2D Drawings</strong> panel is titled <strong>9 SHEETS</strong> and lists each file with its role: three PLAN rows, four ELEV rows, the section and the NOTES sheet (picture B2-a)</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B2.2</td>
+<td>Read the top of the <strong>Drawing metadata</strong> panel</td>
+<td>The green badge reads <strong>Qualifies</strong>. Under it a line reads <strong>MISSING SHEETS · no list … INCONCLUSIVE</strong>: that is expected, because these nine files carry no list of the sheets a set should have, so the Modeller cannot count missing ones; it does not stop <strong>Convert</strong>. The <strong>SHEETS</strong> list shows each sheet with its role: three <strong>PLAN</strong>, four <strong>ELEV</strong>, one <strong>SECTION</strong>, one <strong>NOTES</strong></td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B2.2b</td>
+<td>Below the sheets, find the yellow block <strong>ALL DEFAULTS</strong>. It says <strong>14 yellow in 1 group</strong>. Click the <strong>▸</strong> on the group to open it and read the 14 rows. Each row is one setting the Modeller applied because the drawings do not state it: its name and value (for example <em>building.type = General</em>, <em>fan.blades = 4</em>, <em>bodies.pair_max_width = 0.5</em>), then a sentence saying what it does. These rows are conventions, so clicking one does <strong>not</strong> jump to a place on the sheet. To see a whole sheet with its markings drawn on it, press <strong>Sheet</strong> on a sheet’s card; <strong>Esc</strong> (or the ✕) closes it again</td>
+<td>You have read all 14 rows and agree with each value for <strong>your</strong> shed. Ten rows end in <strong>[guess]</strong>, the Modeller’s assumptions: <em>building.type</em>, <em>column.top_under_beam</em>, <em>fan.blades</em>, <em>fan.depth</em>, <em>fan.housing_wall</em>, <em>net.thickness</em>, <em>panel.plane</em>, <em>profile.angle_heel</em>, <em>profile.angle_mesh</em> and <em>section.spacing</em>. Read those hardest. Write any value you do not accept on the <strong>Notes</strong> line. <strong>Source:</strong> each row’s own sentence says where the value comes from</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B2.2c</td>
+<td>Do nothing to the yellow rows yet: <strong>Convert</strong> (B2.6) works with the 14 rows still open. Optional: press <strong>Accept all</strong> (the button above the group; no key is needed) to mark them as yours. To keep just one, press <strong>✓ Keep this value</strong> at the right of its row</td>
+<td>The panel itself says <em>the defaults stay applied and Convert is not held up by them</em>. <strong>Keep this value</strong> on a row removes that row and no other (14 becomes 13). <strong>Accept all</strong> takes the yellow count from <strong>14</strong> to <strong>0</strong> and the block empties. Either way the badge stays <strong>Qualifies</strong> and Convert gives the same result (B2.6). If your browser still shows 3 rows left after <strong>Accept all</strong>, it is running an older copy of the Modeller: reload the page (Ctrl+F5)</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B2.3</td>
+<td>These nine sheets carry every value, so they open <strong>already in place</strong>: the Modeller does not replay anything on opening. Press <strong>Arrange</strong> in the panel to watch them move into place</td>
+<td>The status line counts <strong>Step 1/46 … Step 46/46</strong> (one step per setting, the last is <em>@CUT</em>). The plans lie on the ground; each elevation stands on the side it shows; the section stands across the shed (picture B2-b). The details sheet is not placed (it is notes only)</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B2.4</td>
+<td>Fold the <strong>2D Drawings</strong> panel away, close the <strong>Drawing metadata</strong> panel (✕), and orbit with the mouse</td>
+<td>You can see the floor plan you looked at in B1 lying flat, with the four elevations standing around it</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="The nine Shed sheets opened: the 2D Drawings panel and the Drawing metadata panel" src="../../img/uat/uat_b1_nine_opened.png" /></p>
+<p><em>Picture B2-a · </em><em>Shed · all nine sheets opened</em><em>: the list of sheets with their roles, and the verdict </em><em>Qualifies</em>**</p>
+<p><img alt="The nine Shed sheets arranged in place" src="../../img/uat/uat_b1_arranged.png" /></p>
+<p><em>Picture B2-b · </em><em>Shed · the nine 2D sheets arranged in place</em><em>: plans flat, elevations and section standing</em></p>
+<p><img alt="The arranged Shed sheets seen from above" src="../../img/uat/uat_b1_arranged_top.png" /></p>
+<p><em>Picture B2-c · </em><em>Shed · the arranged sheets seen from above</em><em>: the floor plan again, now with the other sheets around it</em></p>
+<h3 id="b2b-convert-the-drawings-to-the-3d-shed">B2b · Convert the drawings to the 3D Shed<a class="headerlink" href="#b2b-convert-the-drawings-to-the-3d-shed" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Do</th>
+<th>Confirm on screen</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B2.5</td>
+<td>If you pressed <strong>Arrange</strong>, wait until the status line stops counting <em>Step n/46</em> (or press <strong>Esc</strong> to stop it). Unfold the <strong>2D Drawings</strong> panel and tick <strong>Complete the building (floor slab, roof)</strong></td>
+<td>The box is ticked</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B2.6</td>
+<td>Press <strong>Convert</strong> (ringed in picture B2-d)</td>
+<td>Before you press it, the panel’s status line reads <em>Structure set: 445 bodies will be built, 4 left out (listed as advisory: no elevation or conflicting heights)</em>. After it: <strong>Converted: 511 elements (0 door/window fills), 2 openings cut.</strong> The Shed is built in 3D: columns, walls, beams, the roof on its trusses, doors and fans (picture B2-e). The yellow count is unchanged by Convert</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B2.7</td>
+<td>Orbit around the model</td>
+<td>It is the shed as these sheets draw it: one row of columns on each grid line of the floor plan (14 lines along the length, 4 across)</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B2.8</td>
+<td><strong>Export → Viewer database (.db)</strong> (ringed in picture B2-f)</td>
+<td>A <code>.db</code> file is downloaded</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B2.9</td>
+<td>Open the <a href="https://red1oon.github.io/bim-ootb/index.html">front door</a>, <strong>Buildings / IFC</strong>, then the card <strong>Blank Viewer · Open your own .db file</strong>. In the blank Viewer press <strong>Ctrl+O</strong> (Open Building) and choose the <code>.db</code></td>
+<td>The status line reads <strong>DONE — SHED 511 elements</strong>, the same count as the Convert; orbit with the mouse</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="Tick Complete, then press Convert" src="../../img/uat/uat_b2_convert_button.png" /></p>
+<p><em>Picture B2-d · </em><em>Shed · tick Complete, then press Convert</em><em>, in the 2D Drawings panel</em></p>
+<p><img alt="The Shed converted to a 3D model" src="../../img/uat/uat_b2_converted.png" /></p>
+<p><em>Picture B2-e · </em><em>Shed · converted to a 3D model</em><em> (511 parts when these pictures were taken)</em></p>
+<p><img alt="Export, Viewer database" src="../../img/uat/uat_b2_export_menu.png" /></p>
+<p><em>Picture B2-f · Modeller: Export ▸ Viewer database (.db)</em></p>
+<p>Full detail of every panel: <a href="../DXF2BIMGuide/#step-by-step-in-the-modeller">DXF2BIM guide</a>.</p>
+<h3 id="b3-fit-the-4d-schedule-and-the-5d-rates-to-your-local-scene">B3 · Fit the 4D schedule and the 5D rates to your local scene<a class="headerlink" href="#b3-fit-the-4d-schedule-and-the-5d-rates-to-your-local-scene" title="Permanent link">&para;</a></h3>
+<p>The schedule and the cost come from reference files the Viewer ships with. You edit your own copy in the browser. Full detail: <a href="../BIMUserGuide/#your-own-4d-5d-references-rates-durations-sequence">Your own 4D / 5D references</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Reference</th>
+<th>Open it from</th>
+<th>Example edit for this test</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>5D Rate Pack</strong> (the active pack, for example <code>cidb2024_my</code>)</td>
+<td><strong>Settings → Edit Project JSON → 5D Rate Pack</strong></td>
+<td>raise the rate of one material (for example walls) by 10 %</td>
+</tr>
+<tr>
+<td><strong>4D Schedule Template</strong></td>
+<td><strong>Settings → Edit Project JSON → 4D Schedule Template</strong></td>
+<td>add waiting days after one phase: in <strong>dependencies → within_level</strong>, raise <code>lag_days</code> of the <em>superstructure</em> rows by 5. (A phase has no length of its own to type: its length is worked out from the parts and the crews)</td>
+</tr>
+<tr>
+<td><strong>4D Sequence &amp; Labour Rules</strong></td>
+<td><strong>Settings → Edit Project JSON → 4D Sequence &amp; Labour Rules</strong></td>
+<td>change one trade’s crew size</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Do</th>
+<th>Confirm on screen</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B3.1</td>
+<td>Note the Viewer’s total cost (Find panel: <code>total cost</code>; it is the cost of the 13 drawn bays, see the note at the top of chapter B) and the schedule’s finish date (<strong>Time Machine</strong>, key <strong>T</strong>)</td>
+<td>With the shipped rates the total reads <strong>USD 96,839 (RM 372,457) — total building cost</strong> (the digits may be grouped differently in your browser's language). A higher figure, such as USD 97,979, means the B0.7 exclude box missed the expansion joint. Write the total and the finish date down: <strong><em>_</em></strong><em> / <strong><em>_</em></strong></em></td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B3.2</td>
+<td>Make the rate edit and the lag edit above. Your copy is saved in this browser as you type</td>
+<td>The form keeps your value; a list shown as JSON text must stay valid JSON</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B3.3</td>
+<td><strong>Reload the Viewer tab</strong>, so it reads your copies</td>
+<td>The building opens again</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B3.4</td>
+<td>Read the total cost again</td>
+<td>It moved in the direction of your rate edit</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B3.5</td>
+<td>Open <strong>Time Machine</strong> (key <strong>T</strong>). Press <strong>Jump to start</strong>, then <strong>Build</strong></td>
+<td>The finish date moved by the days you added (5 on each edited row); the day counter and the <em>placed</em> count rise as the parts go up in order</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B3.6</td>
+<td><strong>⬇ Download</strong> your edited files, then <strong>Reset</strong> them</td>
+<td>You keep your copies as files; the Viewer is back on the shipped references</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="The Inspect drawer: Measure, Clash, X-Ray, Section, Time Machine, 4D / 5D" src="../../img/viewer/pill-inspect-drawer.png" /></p>
+<h3 id="b4-send-the-model-to-the-erp-as-a-project-order">B4 · Send the model to the ERP as a Project Order<a class="headerlink" href="#b4-send-the-model-to-the-erp-as-a-project-order" title="Permanent link">&para;</a></h3>
+<p>Do this in the <strong>Viewer</strong>, on the Shed you opened in B2.9. (In the Modeller, <strong>ERP ▸ Project Order</strong> prices a building that was <em>opened</em> from a database; for a model made from drawings it tells you to use this route.) Full detail: <a href="../ModellerGuide/#send-it-to-erp-project-order-variant-vo">Send it to ERP</a>.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Do</th>
+<th>Confirm on screen</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B4.1</td>
+<td>Open the <strong>Find</strong> panel and click one group of parts in its list (for example a column type)</td>
+<td>The panel shows the group's cost and the button <strong>› ERP</strong></td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B4.2</td>
+<td>Press <strong>› ERP</strong></td>
+<td>The status line reads <em>Project Order: 1 lines · contract …  (saved)</em> and a link <strong>open ↗</strong> appears</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B4.3</td>
+<td>Press <strong>› ERP</strong> again</td>
+<td><em>Project Order: 0 lines</em>: nothing new is added, the order is keyed by the model's name (<strong>SHED</strong>)</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B4.4</td>
+<td>Click <strong>open ↗</strong>. On the Kernel ERP sign-in page choose <strong>GardenAdmin</strong>, then <strong>Log In</strong></td>
+<td>The ERP opens on the project <strong>SHED</strong> (<em>BIM: SHED</em>) with its planned amount; its <strong>Phase</strong>, <strong>Task</strong> and <strong>Project Line</strong> tabs hold the rows from the model</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+</tbody>
+</table>
+<h3 id="b5-mark-your-run-against-the-reference-pack">B5 · Mark your run against the reference pack<a class="headerlink" href="#b5-mark-your-run-against-the-reference-pack" title="Permanent link">&para;</a></h3>
+<p>The <strong>UAT Run Checker</strong> compares what your run produced with the run this guide was proven on, stage by stage. It reads your files in your browser; nothing is uploaded. Keep the files from B0.9 and B2.8 and the two lines from B2.9 and B3.1 for this step.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Do</th>
+<th>Confirm on screen</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B5.1</td>
+<td>Download the <strong>reference pack</strong> (link in <em>What you need</em>) and open the <a href="https://red1oon.github.io/bim-ootb/capex/uat/check.html">UAT Run Checker</a>. In box <strong>1</strong> choose the pack's <code>.zip</code></td>
+<td>Under box 1: <em>Pack intact: 19 files checked, built 2026-11-15 …</em>. A damaged or wrong file is refused, and <strong>Mark my run</strong> stays off</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B5.2</td>
+<td>In box <strong>2</strong> select your nine <code>…_marked.dxf</code> from B0.9 (all at once); in box <strong>3</strong> your <code>SHED_extracted.db</code> from B2.8; in box <strong>4</strong> paste the Viewer's status line from B2.9; in box <strong>5</strong> the total-cost line from B3.1 (before your rate edit)</td>
+<td>The boxes hold your files and lines</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B5.3</td>
+<td>Press <strong>Mark my run</strong></td>
+<td>One row per stage: <strong>B0.9</strong> marked sheets, <strong>B2.8</strong> Viewer database, <strong>B2.9</strong> status line, <strong>B3.1</strong> total cost, each <strong>PASS</strong>, <strong>FAIL</strong> or <strong>NOT GIVEN</strong>, with the reason under it. Your run reads <strong>PASS</strong> when all four pass. A tester who skipped B00 and B0 has no marked files: B0.9 reads NOT GIVEN and the run <strong>PARTIAL PASS</strong></td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B5.4</td>
+<td>Press <strong>Download result (uat_result.json)</strong> and attach the file to this sign-off</td>
+<td>The file is saved</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+</tbody>
+</table>
+<p><em>Proven (witness W-UAT-CHECK, 2026-11-15) on the pack as it is served: a run equal to the proven one marks PASS on all four rows; a run whose B0.7 exclude box was skipped marks FAIL on all four (515 elements, USD 97,979); an empty form marks INCONCLUSIVE; a pack with one file changed is refused.</em></p>
+<p><strong>Notes (chapter B):</strong> <strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong>____</p>
+<hr />
+<h2 id="c-erp-the-hands-on-exercise-project-mgmt-accounting-as-gardenworld-admin">C · ERP: the hands-on exercise (Project Mgmt Accounting, as GardenWorld Admin)<a class="headerlink" href="#c-erp-the-hands-on-exercise-project-mgmt-accounting-as-gardenworld-admin" title="Permanent link">&para;</a></h2>
+<p>Use the 12 test projects. The table says, per project, what to make. The products are the <strong>Construction</strong> products of A3.6 (<strong>not</strong> GardenWorld's own); use any GardenWorld vendor, the <em>Purchase</em> price list and <em>HQ Warehouse</em>. Do not type a price: the order line takes it from the price list, which is the product's standard cost. On each document, set <strong>Project</strong> to the test project (the windows do not ask for a phase).</p>
+<table>
+<thead>
+<tr>
+<th>Product</th>
+<th>Name</th>
+<th>Unit</th>
+<th>Standard cost (USD)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PWD-04.2</td>
+<td>Brick masonry</td>
+<td>M3</td>
+<td>68.1167</td>
+</tr>
+<tr>
+<td>PWD-07.2.2</td>
+<td>RC 1:2:4 column</td>
+<td>M3</td>
+<td>115.5250</td>
+</tr>
+<tr>
+<td>PWD-08.1.2</td>
+<td>Reinforcement bar Grade 400</td>
+<td>KG</td>
+<td>0.8333</td>
+</tr>
+<tr>
+<td>PWD-10.6</td>
+<td>Steel section</td>
+<td>KG</td>
+<td>1.0750</td>
+</tr>
+<tr>
+<td>PWD-10.21</td>
+<td>Profiled metal roofing</td>
+<td>M2</td>
+<td>4.8167</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Project</th>
+<th>Name</th>
+<th>Phases ticked (from the pack)</th>
+<th>Purchase orders</th>
+<th>How far the completed order goes</th>
+<th>Issue to the project</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TD_RIVERSIDE</td>
+<td>Riverside Tower</td>
+<td>3 of 5</td>
+<td>complete: 29 M3 PWD-04.2; leave in Draft: 7 M3 PWD-04.2</td>
+<td>Paid in full</td>
+<td>3 M3 PWD-04.2</td>
+</tr>
+<tr>
+<td>TD_DEPOT</td>
+<td>North Depot</td>
+<td>1 of 4</td>
+<td>leave in Draft: 1,008 KG PWD-08.1.2</td>
+<td>—</td>
+<td>92 KG PWD-08.1.2</td>
+</tr>
+<tr>
+<td>TD_BRIDGE</td>
+<td>Bridge Deck</td>
+<td>2 of 4</td>
+<td>complete: 21 M3 PWD-07.2.2; leave in Draft: 31 M3 PWD-07.2.2</td>
+<td>Half paid</td>
+<td>5 M3 PWD-07.2.2</td>
+</tr>
+<tr>
+<td>TD_CLINIC</td>
+<td>Clinic Wing</td>
+<td>2 of 4</td>
+<td>—</td>
+<td>—</td>
+<td>107 KG PWD-10.6</td>
+</tr>
+<tr>
+<td>TD_DATAHALL</td>
+<td>Data Hall</td>
+<td>1 of 3</td>
+<td>complete: 1,674 KG PWD-10.6; leave in Draft: 1,116 KG PWD-10.6</td>
+<td>Received</td>
+<td>178 KG PWD-10.6</td>
+</tr>
+<tr>
+<td>TD_SUBSTATION</td>
+<td>Substation</td>
+<td>1 of 3</td>
+<td>complete: 104 M2 PWD-10.21</td>
+<td>Ordered only</td>
+<td>—</td>
+</tr>
+<tr>
+<td>TD_CARPARK</td>
+<td>Car Park</td>
+<td>2 of 3</td>
+<td>—</td>
+<td>—</td>
+<td>95 M2 PWD-10.21</td>
+</tr>
+<tr>
+<td>TD_SCHOOL</td>
+<td>School Block</td>
+<td>3 of 4</td>
+<td>complete: 1,350 KG PWD-08.1.2</td>
+<td>Paid in full</td>
+<td>321 KG PWD-08.1.2</td>
+</tr>
+<tr>
+<td>TD_PUMP</td>
+<td>Pump Station</td>
+<td>1 of 3</td>
+<td>—</td>
+<td>—</td>
+<td>36 KG PWD-10.6</td>
+</tr>
+<tr>
+<td>TD_OFFICE</td>
+<td>Office Fit-out</td>
+<td>0 of 3</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>TD_WAREHOUSE</td>
+<td>Warehouse 3</td>
+<td>0 of 3</td>
+<td>leave in Draft: 133 M2 PWD-10.21</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>TD_PLAZA</td>
+<td>Plaza</td>
+<td>3 of 3</td>
+<td>—</td>
+<td>—</td>
+<td>110 KG PWD-08.1.2</td>
+</tr>
+</tbody>
+</table>
+<p>The products cost at <strong>Standard</strong>: a receipt at any price leaves a product's cost where it is, and every issue raises the project's <strong>Spent</strong> by <em>quantity × standard cost</em>. With this table the projects spread across the dashboard's Budget colours (chapter D) instead of all turning red. Five projects (<em>TD_DEPOT</em>, <em>TD_CLINIC</em>, <em>TD_CARPARK</em>, <em>TD_PUMP</em>, <em>TD_PLAZA</em>) issue a product that was never received, so its on-hand quantity goes negative. GardenWorld allows that; a warehouse that does not allow negative stock refuses those issues.</p>
+<h3 id="c1-purchase-orders">C1 · Purchase orders<a class="headerlink" href="#c1-purchase-orders" title="Permanent link">&para;</a></h3>
+<p>Make one order per row of the table that has a purchase order, with the quantity it states.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Do</th>
+<th>Confirm on screen</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C1.1</td>
+<td><strong>Purchase Order</strong> window, <strong>New</strong>. Header: <strong>Business Partner</strong> <em>Seed Farm Inc.</em> (or any vendor), <strong>Price List</strong> <em>Purchase</em>, <strong>Warehouse</strong> <em>HQ Warehouse</em>, <strong>Project</strong> the test project (the field sits in the header). Save. Tab <strong>PO Line</strong>, <strong>New</strong>: <strong>Product</strong> the table's product, <strong>Quantity</strong> from the table; leave the price as the price list gives it. Save</td>
+<td>The line price is the product's standard cost (for example 68.1167 for <em>PWD-04.2</em>). The order's <strong>Total Lines</strong> = quantity × price (for example 29 × 68.1167 = 1,975.38) and <strong>Grand Total</strong> is the same (the tax rate is 0). <strong>Source:</strong> the price is the product’s <strong>Price</strong> tab, <em>Purchase</em> list (A4.2); multiply it by the quantity yourself</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>C1.2</td>
+<td><strong>Document Action ▸ Complete ▸ OK</strong> on the orders the table marks <em>complete</em>; leave the others as they are</td>
+<td>Document status <em>Completed</em> on those, <em>Drafted</em> on the others</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+</tbody>
+</table>
+<h3 id="c2-material-receipt">C2 · Material receipt<a class="headerlink" href="#c2-material-receipt" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Do</th>
+<th>Confirm on screen</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C2.1</td>
+<td>For each completed order whose <em>How far</em> is <em>Received</em>, <em>Half paid</em> or <em>Paid in full</em>: <strong>Material Receipt</strong> window, <strong>New</strong>. Header: <strong>Business Partner</strong> the same vendor, <strong>Project</strong> the test project. Press <strong>Create lines from</strong>, choose the purchase order, tick its line, <strong>OK</strong>. On the <strong>Receipt Line</strong> tab check the <strong>Locator</strong> is <em>Default HQ Locator</em>. Save, then <strong>Document Action ▸ Complete ▸ OK</strong></td>
+<td>The receipt is <em>Completed</em> and carries the order's product and quantity. The product’s on-hand quantity rose (menu entry <strong>Storage per Product</strong>: type the name in the menu’s Search box), and in the <strong>Product</strong> window, tab <strong>Costs</strong>, its <strong>Standard</strong> cost did not change</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+</tbody>
+</table>
+<h3 id="c3-vendor-invoice-and-payment">C3 · Vendor invoice and payment<a class="headerlink" href="#c3-vendor-invoice-and-payment" title="Permanent link">&para;</a></h3>
+<p>Only <em>Half paid</em> and <em>Paid in full</em> orders (TD_BRIDGE, TD_RIVERSIDE, TD_SCHOOL).</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Do</th>
+<th>Confirm on screen</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C3.1</td>
+<td><strong>Purchase Invoice and Credit/Debit Note</strong> window, <strong>New</strong>. Header: <strong>Target Document Type</strong> <em>AP Invoice</em>, <strong>Business Partner</strong> the same vendor, <strong>Project</strong> the test project. Press <strong>Create lines from</strong>, choose the purchase order (or its receipt), tick the line, <strong>OK</strong>. Save, then <strong>Document Action ▸ Complete ▸ OK</strong></td>
+<td>The invoice is <em>Completed</em>; its <strong>Grand Total</strong> equals the order's</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>C3.2</td>
+<td><strong>Payment and Receipt</strong> window, <strong>New</strong>. <strong>Document Type</strong> <em>AP Payment</em>, <strong>Business Partner</strong> the same vendor, <strong>Invoice</strong> the invoice you just made (the amount fills in; the <strong>Project</strong> field disappears once an invoice is chosen, that is normal), <strong>Bank Account</strong> <em>MoneyBank 1234</em>, <strong>Tender type</strong> <em>Check</em>. For <em>Half paid</em> change <strong>Payment amount</strong> to half the invoice total. Save, then <strong>Document Action ▸ Complete ▸ OK</strong></td>
+<td>The payment is <em>Completed</em>. On the invoice, <strong>Paid</strong> is ticked for <em>Paid in full</em>; for <em>Half paid</em> it is not, and the open amount is the other half</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+</tbody>
+</table>
+<h3 id="c4-issue-materials-to-site">C4 · Issue materials to site<a class="headerlink" href="#c4-issue-materials-to-site" title="Permanent link">&para;</a></h3>
+<p>This is done in two parts, once per test project that has an issue in the table (nine projects). The pack's projects are category <em>General</em>, and iDempiere refuses to issue material to a General project (<em>Project not Work Order or Asset</em>), so each project is first set to the <strong>Work Order (Job)</strong> type.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Do</th>
+<th>Confirm on screen</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C4.1</td>
+<td><strong>Project</strong> window, open the test project. Press <strong>Set Project Type</strong>, choose <strong>Work Order (Job)</strong>, <strong>OK</strong></td>
+<td>The message says <em>OK</em>. The project's phases are still there (the Phase tab still lists them) and the <strong>Set Project Type</strong> button no longer accepts another type</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>C4.2</td>
+<td>Menu <strong>Project Management ▸ Issue to Project</strong>. <strong>Project</strong> the test project, <strong>Locator</strong> <em>Default HQ Locator</em>, <strong>Product</strong> the table's product, <strong>Movement Quantity</strong> from the last column, <strong>Movement Date</strong> today. Leave <strong>Shipment/Receipt</strong>, <strong>Expense Report</strong> and <strong>Project Line</strong> empty. <strong>OK</strong></td>
+<td>The message says <em>Created 1</em></td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>C4.3</td>
+<td><strong>Project (Lines/Issues)</strong> window, find the project, tab <strong>Issues</strong></td>
+<td>One issue line with the product and quantity, <strong>Document Status</strong> <em>Completed</em></td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>C4.4</td>
+<td>Back in the <strong>Project</strong> window, look at <strong>Project Balance</strong> in the header</td>
+<td>It rose by <em>quantity × standard cost</em>: <em>TD_RIVERSIDE</em> 3 × 68.1167 = <strong>204.35</strong>, <em>TD_BRIDGE</em> 5 × 115.525 = <strong>577.63</strong>, <em>TD_DATAHALL</em> 178 × 1.075 = <strong>191.35</strong>. A project that issues nothing stays at 0 <strong>Source:</strong> the quantity is on the issue line (C4.3) and the cost is the product’s <strong>Standard</strong> cost on its <strong>Costs</strong> tab; multiply them yourself and compare with <strong>Project Balance</strong></td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+</tbody>
+</table>
+<h3 id="c5-tick-a-phase">C5 · Tick a phase<a class="headerlink" href="#c5-tick-a-phase" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Do</th>
+<th>Confirm on screen</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C5.1</td>
+<td><strong>Project</strong> window, a test project (for example <em>TD_DEPOT</em>), tab <strong>Phase</strong>: tick <strong>Complete</strong> on the next phase that is not ticked, <strong>Save</strong></td>
+<td>The phase stays ticked (for <em>TD_DEPOT</em> 2 of 4 now); that project's <em>Done</em> on the dashboard rises (chapter D)</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Notes (chapter C):</strong> <strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong>____</p>
+<hr />
+<h2 id="d-the-dashboard-project-mgmt-accounting-the-read-job-system-setup">D · The dashboard (Project Mgmt Accounting; the read job: System Setup)<a class="headerlink" href="#d-the-dashboard-project-mgmt-accounting-the-read-job-system-setup" title="Permanent link">&para;</a></h2>
+<p>The dashboard reads a file that a small read job writes from your iDempiere. Run the job first, and again whenever you want fresh figures (it needs Node.js; the full line with user, password, tenant and role is in the <a href="../CapexDashboardGuide/#developers-note">Developer's note</a>):</p>
+<div class="highlight"><pre><span></span><code>BRIDGE_BASE=http://&lt;your-idempiere&gt;:&lt;port&gt; node capex/tools/legacy_snapshot.js
+</code></pre></div>
+<p>It writes the file <code>capex/legacy_snapshot.json</code> inside your copy of the repository (the folder from A1.1, next to <code>index.html</code>), and ends with a line <code>§DASH_LEGACY_SNAPSHOT … projects=14 … unavailable=[]</code> (14 on a fresh GardenWorld). Then open <code>/capex/index.html?source=legacy</code> on the server that holds that copy (see <a href="../CapexDashboardGuide/#how-the-dashboard-connects-to-the-data">How the dashboard connects to the data</a>). Every tile is described in <a href="../CapexDashboardGuide/#the-dashboard-page">The dashboard page</a>.</p>
+<p><img alt="The dashboard" src="../../img/capex/capex_page_dashboard.png" /></p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Do</th>
+<th>Confirm on screen</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D1</td>
+<td>Read <strong>Total Projects</strong> and <strong>Active Projects</strong></td>
+<td><strong>14</strong> and <strong>14</strong> on a fresh GardenWorld: the 12 test projects plus GardenWorld's own <em>Standard</em> and <em>Landscape</em> (plus any of your own). <strong>Step into the source:</strong> click the number: the side panel lists the projects behind it, and its row count is the figure. <strong>ƒ formula</strong> under the tile shows the measure (D7)</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>D2</td>
+<td>Read <strong>Approved Budget</strong></td>
+<td>The sum of the planned amounts, per currency: <strong>USD 4,667.80</strong> (the 12 test projects 4,067.80 plus <em>Landscape</em> 600.00). <strong>Step into the source:</strong> click the number; add the <strong>Approved</strong> column of the panel yourself. Press <strong>ERP ↗</strong> on a project: iDempiere’s <strong>Project</strong> window shows the same figure in <strong>Planned Amount</strong>, and it equals the sum of <strong>Planned Amount</strong> on the <strong>Phase</strong> tab</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>D2b</td>
+<td>Read the <strong>Budget</strong> tile (Within / Over / Not started)</td>
+<td><strong>Over</strong> lists <em>TD_CARPARK</em> (Spent 457.59 against a plan of 330.00) and <em>TD_DATAHALL</em> (191.35 against 181.50), plus GardenWorld’s own <em>Standard</em> project if it is still there; the other 7 projects with issues are <strong>Within</strong>; <strong>Not started</strong> is 4: <em>TD_OFFICE</em>, <em>TD_SUBSTATION</em>, <em>TD_WAREHOUSE</em> and GardenWorld’s <em>Landscape</em>. The three counts read <strong>Within 7, Over 3, Not started 4</strong> <strong>Step into the source:</strong> click <strong>Total Projects</strong> and read each project’s <strong>Spent</strong>, <strong>Approved</strong> and <strong>Budget</strong> columns: <em>Over</em> is Spent above Approved, <em>Not started</em> is Spent 0</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>D3</td>
+<td>Read <strong>Actual Cost</strong> (Spent)</td>
+<td>It rose by what you issued in C4: <strong>2,020.45</strong> over the 12 test projects. With GardenWorld’s own <em>Standard</em> project (137.70) the tile reads <strong>USD 2,158.15</strong>, <strong>46 %</strong> of plan. <strong>Step into the source:</strong> click the number and add the <strong>Spent</strong> column; each project’s <strong>Spent</strong> is <strong>Project Balance</strong> in iDempiere’s <strong>Project</strong> window (C4.4)</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>D4</td>
+<td>Open <strong>Procurement Risks</strong> in the left menu. Then open a test project's page (D5) and its <strong>Procurement</strong> tab</td>
+<td>Left menu: <em>Open purchase orders</em> = the 5 you left Drafted, <strong>USD 6,738.39</strong> in total. Project page: the <strong>Supply chain</strong> card shows that project's order at the stage you took it to (<em>TD_SUBSTATION</em> Ordered, <em>TD_DATAHALL</em> Received, <em>TD_BRIDGE</em> Invoiced, <em>TD_RIVERSIDE</em> and <em>TD_SCHOOL</em> Paid) and lists its receipt, invoice and payment <strong>Step into the source:</strong> each document number in the Supply chain card is a record number: open that receipt, invoice or payment in iDempiere (<strong>Material Receipt</strong>, <strong>Purchase Invoice and Credit/Debit Note</strong>, <strong>Payment and Receipt</strong>) and read its status and amount</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>D5</td>
+<td>Click a number on a tile</td>
+<td>The drill panel lists the projects behind it; click a project to open its page</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>D6</td>
+<td>On the project page of <em>TD_RIVERSIDE</em>, open the tabs</td>
+<td>Overview: Approved <strong>371.25</strong>, 5 phases. The Schedule tab draws the 5 phase bars with the pack’s dates, the first 3 <em>Complete</em> <strong>Source:</strong> the project’s <strong>Phase</strong> tab in iDempiere (<em>Planned Amount</em>, start and end dates, <em>Complete</em>); read them there and compare</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>D7</td>
+<td>Open <strong>ƒ formula</strong> under a tile</td>
+<td>The formula is shown; it is the same Performance Analysis measure your iDempiere holds (A2.3)</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>D8</td>
+<td>Change <strong>Layout</strong> (top bar) to <em>Executive</em> and <strong>Skin</strong> to <em>Dark</em>, then back to <em>Classic</em> and <em>Light</em></td>
+<td>The look changes. <em>Executive</em> shows fewer, re-labelled tiles (<em>Actual Cost</em> becomes <em>Spent so far</em>) with the same figures (4,667.80 approved, 2,158.15 spent); <em>Classic</em> shows them all again</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>D9</td>
+<td>Log in to iDempiere again and read the <strong>Home</strong> tab</td>
+<td>The CAPEX goals show the same counts as the dashboard tiles, money in your login’s currency. A goal that has a target (for example <em>Health Green</em>, <em>Schedule On Time</em>, <em>Actual Cost</em>) shows its percentage of the target on the Home tab, not the count</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Notes (chapter D):</strong> <strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong>____</p>
+<hr />
+<h2 id="known-limits-do-not-fail-a-step-on-these">Known limits (do not fail a step on these)<a class="headerlink" href="#known-limits-do-not-fail-a-step-on-these" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Proposed figures.</strong> <em>Forecast</em>, <em>Procurement Risks</em> and <em>Handover</em> use definitions we proposed; they await your confirmation.</li>
+<li><strong>Postings in the Kernel ERP.</strong> Project issues complete but are not yet posted to the books in the browser-based Kernel ERP; in your iDempiere they post as usual.</li>
+<li><strong>Task dates.</strong> Task dates are kept by the BIM Document plugin; without it, the Schedule tab draws phases only.</li>
+<li><strong>Standard costing is a PostgreSQL iDempiere set-up.</strong> The products script, and the change of GardenWorld’s accounting schema to Standard costing, are not available in the browser-based Kernel ERP. Applying the script changes how <em>all</em> GardenWorld products are costed on that server, so apply it on a test copy, not on a live GardenWorld.</li>
+<li><strong>This pack in the Kernel ERP.</strong> Loading this test pack into the browser-based Kernel ERP (rather than into your iDempiere) is not available yet.</li>
+</ul>
+<h2 id="sign-off">Sign-off<a class="headerlink" href="#sign-off" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Chapter</th>
+<th>Role / name</th>
+<th>Date</th>
+<th>Passed / total</th>
+<th>Signature</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A · Set up</td>
+<td>System Setup:</td>
+<td></td>
+<td>/ 17</td>
+<td></td>
+</tr>
+<tr>
+<td>B · BIM</td>
+<td>BIM:</td>
+<td></td>
+<td>/ 43 (29 if you were given the marked copies and skipped B00 and B0)</td>
+<td></td>
+</tr>
+<tr>
+<td>C · ERP</td>
+<td>Project Mgmt Accounting:</td>
+<td></td>
+<td>/ 10</td>
+<td></td>
+</tr>
+<tr>
+<td>D · Dashboard</td>
+<td>Project Mgmt Accounting:</td>
+<td></td>
+<td>/ 10</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+
+
+                
+
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Kembali ke atas
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/red1oon/bim-ootb" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.linkedin.com/in/red1oon/" target="_blank" rel="noopener" title="www.linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.indexes", "search.suggest", "search.highlight", "toc.follow", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Tersalin ke clipboard", "clipboard.copy": "Salin ke clipboard", "search.result.more.one": "1 lagi di halaman ini", "search.result.more.other": "# lagi di halaman ini", "search.result.none": "Tidak ada dokumen yang sesuai", "search.result.one": "1 dokumen ditemukan", "search.result.other": "# dokumen ditemukan", "search.result.placeholder": "Ketik untuk mulai pencarian", "search.result.term.missing": "Tidak ada", "select.version": "Pilih versi"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../javascripts/fold-footnotes.js"></script>
+      
+        <script src="../../javascripts/bim_compiler_source.js"></script>
+      
+    
+  </body>
+</html>

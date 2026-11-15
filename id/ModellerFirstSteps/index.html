@@ -1,0 +1,4518 @@
+
+<!doctype html>
+<html lang="id" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Construction is manufacturing. A building IS its Bill of Materials.">
+      
+      
+        <meta name="author" content="Redhuan D. Oon">
+      
+      
+        <link rel="canonical" href="https://red1oon.github.io/BIMCompiler/ModellerFirstSteps/">
+      
+      
+        <link rel="prev" href="../AskFirstSteps/">
+      
+      
+        <link rel="next" href="../ModellerGuide/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Modeller — First Steps - BIM Intent Compiler</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/custom.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  <script data-goatcounter="https://red1oon.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  
+  <meta name="robots" content="noindex">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#modeller-first-steps-10-minutes-no-experience-needed" class="md-skip">
+          Lewati ke isi
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../" title="BIM Intent Compiler" class="md-header__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            BIM Intent Compiler
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Modeller — First Steps
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Cari" placeholder="Cari" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Cari">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Kosongkan" aria-label="Kosongkan" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Mempersiapkan pencarian
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source md-header__source--stacked">
+        <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+        <a href="https://github.com/red1oon/BIMCompiler" title="red1oon/BIMCompiler on GitHub" class="md-source" id="bim-compiler-source" target="_blank" rel="noopener">
+          <div class="md-source__icon md-icon">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+          </div>
+          <div class="md-source__repository" id="bim-compiler-repository">
+            Compiler
+          </div>
+        </a>
+        <span id="repo-totals" class="md-source-totals" title="Combined stars / forks across both repos"></span>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tab" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Start Here
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../BIMUserGuide/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  The 3 Apps
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../DeveloperGuide/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Go Deeper
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../SpatialCompilationPaper/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Papers & Positioning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../HalalTrace/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Prototypes & Demos
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../PROJECT_CHRONOLOGY/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  History & Legacy
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigasi" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../" title="BIM Intent Compiler" class="md-nav__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    BIM Intent Compiler
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start Here
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_1" id="__nav_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Start Here
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../USER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    📖 User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMToolsGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🧰 BIM Tools — User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OFFLINE_INSTALL_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🔒 Fully Offline / Air-Gapped Install
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WhatsNew/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🆕 What's New
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AboutMore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About BIM OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FeatureComparison/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Feature Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MigrateComparisonPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrate & Compare (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TwoAppsOneKernel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two Apps, One Kernel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TwoAppsOneKernelInfographicLandscape.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    One Page InfoGraphics - Landscape
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bench_suite.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Comparison (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../age_demo.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Does Your ERP Age? (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MANIFESTO/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The ERP World View
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contribute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 3 Apps
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    The 3 Apps
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Viewer Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AskFirstSteps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewer Ask — First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modeller — First Steps
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modeller — First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Daftar isi">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Daftar isi
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-open-the-modeller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1 — Open the Modeller
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-click-the-folder-button-open" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2 — Click the folder button (Open)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-click-duplex" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3 — Click Duplex
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-click-fit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4 — Click Fit
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-5-click-one-wall" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5 — Click one wall
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-6-click-the-move-button" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6 — Click the Move button
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-7-drag-the-red-arrow-a-little" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7 — Drag the red arrow a little
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-8-undo-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 8 — Undo it
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-9-click-save" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 9 — Click Save
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-see-what-your-edit-costs-and-send-it-to-erp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2 — See what your edit costs, and send it to ERP
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2 — See what your edit costs, and send it to ERP">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-stretch-the-wall" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 — Stretch the wall
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-hover-the-wall" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 — Hover the wall
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-click-the-wall" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 — Click the wall
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-undo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 — Undo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25-see-the-same-numbers-in-the-viewer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5 — See the same numbers in the Viewer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#26-open-the-erp-panel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.6 — Open the ERP panel
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#27-generate-the-project-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.7 — Generate the Project Order
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#28-edit-a-part-that-is-already-in-the-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.8 — Edit a part that is already in the order
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#29-when-it-is-committed-only-b-is-allowed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.9 — When it is committed, only B is allowed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-fill-the-building-with-services-mep-walk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3 — Fill the building with services (MEP walk)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3 — Fill the building with services (MEP walk)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-open-duplex" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 — Open Duplex
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-find-the-plb-row-in-the-outliner" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 — Find the PLB row in the Outliner
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-click-on-plb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 — Click ▶ on PLB
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-what-the-pipes-are" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 — What the pipes are
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-move-a-fixture-and-its-pipes-follow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 — Move a fixture and its pipes follow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36-ctrl-z-takes-the-move-back" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6 — Ctrl + Z takes the move back
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#37-ctrl-z-again-takes-the-whole-walk-back" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7 — Ctrl + Z again takes the whole walk back
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#38-ctrl-y-brings-it-back" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.8 — Ctrl + Y brings it back
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-stretch-the-grid-safely" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4 — Stretch the grid safely
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4 — Stretch the grid safely">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-open-hospitalgarage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 — Open HospitalGarage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-click-move-grid-and-grab-a-gridline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 — Click Move Grid and grab a gridline
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-drag-it-the-bay-turns-orange" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 — Drag it: the bay turns orange
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-keep-dragging-the-bay-turns-red" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 — Keep dragging: the bay turns red
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-let-go" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5 — Let go
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#46-click-add-one-more" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.6 — Click Add one more
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#47-ctrl-z-takes-it-all-back" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.7 — Ctrl + Z takes it all back
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-5-see-the-history-of-one-thing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 5 — See the history of one thing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 5 — See the history of one thing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-look-at-the-chips" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 — Look at the chips
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-double-click-walls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 — Double-click + Walls
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-tap-the-strip" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 — Tap the strip
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54-press" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4 — Press ‹
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#55-press-esc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.5 — Press Esc
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DAGeVu Modeller — User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ProposerGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Proposer Guide (propose an edit, get the proof)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FastScriptGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fast Script Guide (one door: commands and scripts)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIMGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2D Drawings → BIM (DXF2BIM)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_Yellow_List/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — the yellow list (what you fill in, defaults used)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_Prior_Art/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — prior art (what is new, what we learned, cost of using others)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_FORMAT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — format contract (marks, outputs, registry, codes; generated)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERPUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel-ERP User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TillUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    uniCenta-style Till & Kitchen Screen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CapexDashboardGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM → ERP and CAPEX Dashboard — for iDempiere users
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CapexUATGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CAPEX UAT Guide — step-by-step test script
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERP_FirstSetup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel-ERP — Your First Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MigrationGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration User Guide (Odoo · Business Central · SAP Business One)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OdooMigration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moving from Odoo — how it works, what is proven
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NinjaExcelReport_UserManual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NinjaExcel Report — User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HRBIMAssetGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HR / Tenancy / Operate Module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CivilWorksGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Civil Works — Step by Step
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TeamsOverlayGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Teams Overlay — Collaboration & Optics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Go Deeper
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Go Deeper
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DeveloperGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide (read first if you will change the code)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ArchitectureOverview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Overview (for reviewers)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../FoldEngineBlackBook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fold Engine Black Book (dev manual)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HolyGrail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Holy Grail (editable rules, live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ERPConceptRosetta.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-ERP Rosetta Stone (concept + cost)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIM_Modeller_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Modeller OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERP_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP — Every Record Has a Place
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERPIntegration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP × BIM × HR — One Building, One Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DistributedERP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Distributed ERP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TermsHowToVerify/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to verify the terms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERP_AI_ADVISORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Letting an AI work on the ERP, safely
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SQLiteWasmArchitectureActual.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How the Database Works (big picture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ViewerComponentModel.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewer Component Model (dev architecture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CLASH_DETECTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clash Detection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../JKR_SKATA/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Asset Classification & JKR/SKATA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../IFC_ExportGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IFC Export Guide (for the BIM author)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TimeMachine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Time Machine (4D Scheduling & Editing)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4D5DAnalysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4D/5D Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMtoProject/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM → Project Order (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerKernelFold/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry as a Signed-Log Fold
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Papers & Positioning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Papers & Positioning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialCompilationPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deterministic Spatial Compilation (academic paper)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AIProposerDefensiveDisclosure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Defensive Disclosure: an Outside AI Proposes, the App Decides
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_TechnicalNote/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — Deterministic 2D ⇄ BIM Round Trip (technical note)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BrowserScaleBenchmark/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Browser-Scale Benchmark (one tab, local first)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnterpriseAuthentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enterprise Authentication (security)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../StrategicIndustryPositioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Strategic Positioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LocalFirstPriorArt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local-First Prior Art
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LegacyOracleAdapterSpec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Legacy-as-Oracle Adapter (migrate / test an ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ShipYard/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Beyond Buildings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RouteTemplate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Find & Navigate (wayfinding)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../halal/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prototypes & Demos
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Prototypes & Demos
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HalalTrace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Halalan Thayiban — halal track & trace (paper)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glassbowl.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glassbowl — the ERP engine as data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glassbowl_gravity.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glassbowl · Gravity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../RetailScaleStory.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Retail at Scale — two messages a day (benchmark story)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bim_architecture_viz.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How it works — interactive architecture tour
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    History & Legacy
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    History & Legacy
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROJECT_CHRONOLOGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Chronology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../VibeProgramming/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vibe Programming — AI + Domain Expertise
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4DGenerator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 4D Generator — Failure Catalogue & AI Findings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnablingTechTimeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enabling-Tech Timeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RED_PILL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Red Pill — Design From Grammar (origin)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LAST_MILE_PROBLEM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Last Mile — drift tracking (Java era)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMERPPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Construction Economy / ERP Wave (Java era)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SYSTEMS_INSTALLER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Self-Host the Java toolchain (legacy installer)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Daftar isi">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Daftar isi
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-open-the-modeller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1 — Open the Modeller
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-click-the-folder-button-open" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2 — Click the folder button (Open)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-click-duplex" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3 — Click Duplex
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-click-fit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4 — Click Fit
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-5-click-one-wall" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5 — Click one wall
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-6-click-the-move-button" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6 — Click the Move button
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-7-drag-the-red-arrow-a-little" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7 — Drag the red arrow a little
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-8-undo-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 8 — Undo it
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-9-click-save" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 9 — Click Save
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-see-what-your-edit-costs-and-send-it-to-erp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2 — See what your edit costs, and send it to ERP
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2 — See what your edit costs, and send it to ERP">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-stretch-the-wall" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 — Stretch the wall
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-hover-the-wall" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 — Hover the wall
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-click-the-wall" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 — Click the wall
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-undo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 — Undo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25-see-the-same-numbers-in-the-viewer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5 — See the same numbers in the Viewer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#26-open-the-erp-panel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.6 — Open the ERP panel
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#27-generate-the-project-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.7 — Generate the Project Order
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#28-edit-a-part-that-is-already-in-the-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.8 — Edit a part that is already in the order
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#29-when-it-is-committed-only-b-is-allowed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.9 — When it is committed, only B is allowed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-fill-the-building-with-services-mep-walk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3 — Fill the building with services (MEP walk)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3 — Fill the building with services (MEP walk)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-open-duplex" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 — Open Duplex
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-find-the-plb-row-in-the-outliner" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 — Find the PLB row in the Outliner
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-click-on-plb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 — Click ▶ on PLB
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-what-the-pipes-are" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 — What the pipes are
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-move-a-fixture-and-its-pipes-follow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 — Move a fixture and its pipes follow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36-ctrl-z-takes-the-move-back" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6 — Ctrl + Z takes the move back
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#37-ctrl-z-again-takes-the-whole-walk-back" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7 — Ctrl + Z again takes the whole walk back
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#38-ctrl-y-brings-it-back" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.8 — Ctrl + Y brings it back
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-stretch-the-grid-safely" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4 — Stretch the grid safely
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4 — Stretch the grid safely">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-open-hospitalgarage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 — Open HospitalGarage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-click-move-grid-and-grab-a-gridline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 — Click Move Grid and grab a gridline
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-drag-it-the-bay-turns-orange" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 — Drag it: the bay turns orange
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-keep-dragging-the-bay-turns-red" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 — Keep dragging: the bay turns red
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-let-go" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5 — Let go
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#46-click-add-one-more" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.6 — Click Add one more
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#47-ctrl-z-takes-it-all-back" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.7 — Ctrl + Z takes it all back
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-5-see-the-history-of-one-thing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 5 — See the history of one thing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 5 — See the history of one thing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-look-at-the-chips" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 — Look at the chips
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-double-click-walls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 — Double-click + Walls
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-tap-the-strip" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 — Tap the strip
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54-press" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4 — Press ‹
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#55-press-esc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.5 — Press Esc
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+  <p class="i18n-note"><small>Halaman ini belum diterjemahkan; ditampilkan dalam bahasa Inggris. <a href="https://red1oon.github.io/BIMCompiler/ModellerFirstSteps/">Halaman bahasa Inggris</a>.</small></p>
+  
+                  
+
+
+  
+  
+
+
+<h1 id="modeller-first-steps-10-minutes-no-experience-needed">Modeller — First Steps (10 minutes, no experience needed)<a class="headerlink" href="#modeller-first-steps-10-minutes-no-experience-needed" title="Permanent link">&para;</a></h1>
+<p><em><a href="../ModellerGuide/">← Back to the <strong>Modeller guide</strong></a> · <a href="../">Home</a></em></p>
+<p>One small job, start to finish: <strong>open a building, click one wall, nudge it, undo it, save.</strong>
+Use a desktop browser (Chrome or Edge). Every step below was run by a script against the live site
+and the numbers quoted are what the app itself reported.</p>
+<hr />
+<h3 id="step-1-open-the-modeller">Step 1 — Open the Modeller<a class="headerlink" href="#step-1-open-the-modeller" title="Permanent link">&para;</a></h3>
+<p>Go to <strong><a href="https://red1oon.github.io/bim-ootb/modeller/modeller.html">red1oon.github.io/bim-ootb/modeller/modeller.html</a></strong>.
+You should see an empty dark grid, a row of round buttons down the right edge, and the word <em>history</em>
+with a slider along the bottom.</p>
+<p><img alt="The Modeller just opened: empty grid, round buttons on the right, history slider at the bottom" src="../../img/modeller/first-steps-step1-app-open.png" /></p>
+<h3 id="step-2-click-the-folder-button-open">Step 2 — Click the folder button (Open)<a class="headerlink" href="#step-2-click-the-folder-button-open" title="Permanent link">&para;</a></h3>
+<p>On the right edge, click the <strong>folder</strong> button (<strong>📂 Open</strong>). A list called <strong>OPEN A BUILDING</strong> appears.</p>
+<p><img alt="The Open list, with the folder button highlighted on the right" src="../../img/modeller/first-steps-step2-open-panel.png" /></p>
+<h3 id="step-3-click-duplex">Step 3 — Click <strong>Duplex</strong><a class="headerlink" href="#step-3-click-duplex" title="Permanent link">&para;</a></h3>
+<p>Click <strong>Duplex · wall-bearing</strong>. Wait about 15–20 seconds. The house appears on the grid and its parts
+list fills the <strong>Outliner</strong> on the left. (The app reported 196 building elements.)</p>
+<p><img alt="Duplex loaded: Outliner on the left, the house on the grid" src="../../img/modeller/first-steps-step3-duplex-loaded.png" /></p>
+<h3 id="step-4-click-fit">Step 4 — Click Fit<a class="headerlink" href="#step-4-click-fit" title="Permanent link">&para;</a></h3>
+<p>Click the <strong>square-corners</strong> button (<strong>Fit</strong>), or press <strong>F</strong>. The whole house is now centred in view
+(all 196 elements on screen).</p>
+<p><img alt="After Fit: the whole Duplex centred on the grid" src="../../img/modeller/first-steps-step4-fit.png" /></p>
+<h3 id="step-5-click-one-wall">Step 5 — Click one wall<a class="headerlink" href="#step-5-click-one-wall" title="Permanent link">&para;</a></h3>
+<p>Click the long <strong>low wall along the bottom edge</strong> of the house. It turns light blue and the status line
+at the bottom-left says <code>selected feature #…</code>. Exactly one thing is selected.</p>
+<p><img alt="One wall selected: highlighted light blue" src="../../img/modeller/first-steps-step5-wall-selected.png" /></p>
+<blockquote>
+<p>Tip: a wall that carries a door or window takes them along when it moves. That is still <strong>one</strong> undo: one
+<strong>Ctrl + Z</strong> takes the wall and its door back together (proved on the live site: moving a Duplex wall with
+two hosted openings wrote 3 rows, one Ctrl + Z restored all 3, and Save still worked).</p>
+</blockquote>
+<h3 id="step-6-click-the-move-button">Step 6 — Click the Move button<a class="headerlink" href="#step-6-click-the-move-button" title="Permanent link">&para;</a></h3>
+<p>Click the <strong>four-arrow</strong> button (<strong>Move</strong>). Three coloured arrows and a yellow ring appear on the wall.
+The <strong>red arrow</strong> moves it sideways (X).</p>
+<p><img alt="The Move handles on the selected wall: red X arrow, green, blue, and the yellow ring" src="../../img/modeller/first-steps-step6-move-gizmo.png" /></p>
+<h3 id="step-7-drag-the-red-arrow-a-little">Step 7 — Drag the red arrow a little<a class="headerlink" href="#step-7-drag-the-red-arrow-a-little" title="Permanent link">&para;</a></h3>
+<p>Press on the <strong>red arrow</strong>, drag it a short way along its own direction, and let go. The wall slides.
+The status line reads something like <code>moved #82 Δ(0.42,0.00,0.00) verify=true</code>. The move snaps to the grid,
+so it can differ slightly from how far you dragged. (You may also see <code>ORANGE</code> — a soft "a neighbour is now close"
+note, not an error.)</p>
+<p><img alt="After the drag: the wall has moved along the red arrow" src="../../img/modeller/first-steps-step7-moved.png" /></p>
+<h3 id="step-8-undo-it">Step 8 — Undo it<a class="headerlink" href="#step-8-undo-it" title="Permanent link">&para;</a></h3>
+<p>Press <strong>Ctrl + Z</strong>. The wall jumps back to exactly where it was and the status line says <code>undo #…</code>.
+(The history slider at the bottom moves one notch left; you can also drag it.)</p>
+<p><img alt="After Ctrl+Z: the wall is back and the history slider has stepped back" src="../../img/modeller/first-steps-step8-undone.png" /></p>
+<h3 id="step-9-click-save">Step 9 — Click Save<a class="headerlink" href="#step-9-click-save" title="Permanent link">&para;</a></h3>
+<p>Click the <strong>floppy-disk</strong> button at the top of the right-hand column (<strong>Save</strong>).</p>
+<p><img alt="The Save button, top of the right-hand column" src="../../img/modeller/first-steps-step9-save-button.png" /></p>
+<p>The app checks the model for clashes, then writes a snapshot. After a few seconds the status line reads
+<strong><code>Saved — v0 (1 version)</code></strong>. (The snapshot was about 150 KB.)</p>
+<p><img alt="The status line after Save" src="../../img/modeller/first-steps-step9-saved.png" /></p>
+<p><strong>That is the whole loop:</strong> open → select → tool → drag → undo → save. Two more short parts follow:
+<strong><a href="#part-2-see-what-your-edit-costs-and-send-it-to-erp">Part 2 — see what your edit costs and send it to ERP</a></strong> and
+<strong><a href="#part-3-fill-the-building-with-services-mep-walk">Part 3 — fill the building with services</a></strong>. The full
+<a href="../ModellerGuide/">Modeller guide</a> covers every other tool.</p>
+<hr />
+<h2 id="part-2-see-what-your-edit-costs-and-send-it-to-erp">Part 2 — See what your edit costs, and send it to ERP<a class="headerlink" href="#part-2-see-what-your-edit-costs-and-send-it-to-erp" title="Permanent link">&para;</a></h2>
+<p><em>Do Part 1 steps 1–5 first, so a wall is selected. Everything below was run against the live site by a script;
+the numbers are what the app itself reported. This is the material cost and labour time of the
+</em><em>edit</em><em> — a projection, not a quote.</em></p>
+<h3 id="21-stretch-the-wall">2.1 — Stretch the wall<a class="headerlink" href="#21-stretch-the-wall" title="Permanent link">&para;</a></h3>
+<p>With the wall selected click <strong>Move</strong>, then drag the small <strong>cube</strong> at the end of the gizmo along the wall's own
+length. The wall grows. (In the test the wall went from 10.586 m² to 13.233 m² of face area.) Press <strong>Esc</strong> to leave the tool.</p>
+<h3 id="22-hover-the-wall">2.2 — Hover the wall<a class="headerlink" href="#22-hover-the-wall" title="Permanent link">&para;</a></h3>
+<p>Rest the pointer on the stretched wall. A small label appears beside the pointer:</p>
+<p><img alt="The hover label on the stretched wall: area 10.586 → 13.233, material +127.03, labour +0s, finish date not re-solved" src="../../img/modeller/first-steps-s8-1-hover-label.png" /></p>
+<p>One number everywhere: the same basis prices the Project Order line and any Variation Order below.</p>
+<p>Read it left to right: the wall class, its area <strong>before → after</strong>, the <strong>material</strong> change (<strong>+127</strong>, the
+extra square metres times the price per m², rounded the way the Project Order line is — 48 per m² in this run), the <strong>labour</strong> change (<strong>+0 s</strong>: an ordinary wall
+takes a flat time per element, so stretching it changes cost but not labour), and the note that the <strong>finish date
+is not re-solved</strong> (the Modeller does not re-run the whole programme for one edit).</p>
+<blockquote>
+<p>The price per m² comes from your <strong>language pack</strong> (this run: US English = 48 per m²; another country has its own
+table). Moving a wall without stretching it changes no quantity, so its line reads <code>+0.00</code>.</p>
+</blockquote>
+<h3 id="23-click-the-wall">2.3 — Click the wall<a class="headerlink" href="#23-click-the-wall" title="Permanent link">&para;</a></h3>
+<p>Click the wall. The same line stays pinned at the bottom-left, above the <strong>ERP ▸ Project Order</strong> button:</p>
+<p><img alt="The same line pinned at the bottom-left after a click" src="../../img/modeller/first-steps-s8-2-click-line.png" /></p>
+<h3 id="24-undo">2.4 — Undo<a class="headerlink" href="#24-undo" title="Permanent link">&para;</a></h3>
+<p>Press <strong>Ctrl + Z</strong>. The line reads <strong><code>Δ 0 — edit undone (no quantity change)</code></strong>.</p>
+<h3 id="25-see-the-same-numbers-in-the-viewer">2.5 — See the same numbers in the Viewer<a class="headerlink" href="#25-see-the-same-numbers-in-the-viewer" title="Permanent link">&para;</a></h3>
+<p>Tap <strong>Connect</strong> in the Modeller, open the <a href="https://red1oon.github.io/bim-ootb/viewer/viewer.html?connect=1">Viewer</a>
+in another tab, switch on <strong>hover name</strong> (press <code>'</code>) and rest the pointer on the same wall. The Viewer shows the
+<strong>identical</strong> line — the same code computes it on both sides (the test compares the text byte for byte):</p>
+<p><img alt="The Viewer's hover label for the same wall, with the same Δ line" src="../../img/modeller/first-steps-s8-viewer-hover.png" /></p>
+<h3 id="26-open-the-erp-panel">2.6 — Open the ERP panel<a class="headerlink" href="#26-open-the-erp-panel" title="Permanent link">&para;</a></h3>
+<p>Select the wall and click <strong>ERP ▸ Project Order</strong> (bottom-left). The first click fetches the ERP data once (about
+27 MB), so wait a few seconds. The panel says whether these parts already have a <strong>Project Order</strong>:</p>
+<p><img alt="Panel: not generated yet, these parts price at $ 1,004" src="../../img/modeller/first-steps-s9-1-read-not-generated.png" /></p>
+<h3 id="27-generate-the-project-order">2.7 — Generate the Project Order<a class="headerlink" href="#27-generate-the-project-order" title="Permanent link">&para;</a></h3>
+<p>Click <strong>Generate Project Order</strong>. The panel now shows the order number and its planned amount, and an
+<strong>Open in ERP ↗</strong> link:</p>
+<p><img alt="Panel: Project Order generated, planned $ 1,004" src="../../img/modeller/first-steps-s9-2-generated.png" /></p>
+<p><strong>Open in ERP ↗</strong> opens the ERP app on that record (choose the standard GardenWorld sign-in). The Viewer's own
+<strong>› ERP</strong> button, given the same parts, reports the same planned amount and finds this order instead of making a
+second one.</p>
+<h3 id="28-edit-a-part-that-is-already-in-the-order">2.8 — Edit a part that is already in the order<a class="headerlink" href="#28-edit-a-part-that-is-already-in-the-order" title="Permanent link">&para;</a></h3>
+<p>Stretch a selected wall again (2.1). The panel now calls it a <strong>variant</strong> of the same order and offers two choices:</p>
+<p><img alt="Panel: these parts are edited, a variant item of this Project Order — A delete and re-issue, B Variation Order" src="../../img/modeller/first-steps-s9-3-variant.png" /></p>
+<ul>
+<li><strong>A · Delete &amp; re-issue</strong> — for work that has <strong>not started</strong>. It deletes the old order and issues a fresh one
+  from the selected parts (test: still exactly <strong>one</strong> Project Order, planned amount 1,004 → 635). If the order held more
+  than the selected parts, the panel says so first.</li>
+<li><strong>B · Issue Variation Order</strong> — for an order <strong>already committed to a vendor</strong>. It adds a Variation Order to the
+  same Project Order instead of starting over. Its amount is the <strong>priced difference of the order line it amends</strong>, on the
+  same basis as the order itself: original order + Variation Order = what a fresh order for the edited parts costs, to the cent.</li>
+</ul>
+<p><img alt="After A: Deleted and re-issued, one Project Order, planned 635" src="../../img/modeller/first-steps-s9-4-option-a.png" /></p>
+<h3 id="29-when-it-is-committed-only-b-is-allowed">2.9 — When it is committed, only B is allowed<a class="headerlink" href="#29-when-it-is-committed-only-b-is-allowed" title="Permanent link">&para;</a></h3>
+<p>"Committed" is read from the ERP records (a purchase order on the project that is completed). Then <strong>A</strong> is greyed
+out with the reason written under it, and <strong>B</strong> stays available:</p>
+<p><img alt="Panel: committed to a vendor — A disabled with its reason, B available" src="../../img/modeller/first-steps-s9-5-committed.png" /></p>
+<p>Click <strong>B</strong>. The panel sends the Variation Order and lists it with its status read from the ERP record (<strong>Drafted</strong>), here <strong>127.00</strong> for a second, larger stretch (original 635 + 127 = 762, the fresh fold):</p>
+<p><img alt="After B: Variation Order issued, draft" src="../../img/modeller/first-steps-s9-6-option-b.png" /></p>
+<p>Approval of a Variation Order is done <strong>on the ERP side</strong>; the Modeller only sends it and shows the status the ERP record carries (Drafted, Approved …). This works for <strong>any IFC you open</strong>: the order is keyed by the model's own name (e.g. <code>SampleHouse_ARC</code> for the sample <code>.ifc</code>), tested on the local-IFC open path.</p>
+<hr />
+<h2 id="part-3-fill-the-building-with-services-mep-walk">Part 3 — Fill the building with services (MEP walk)<a class="headerlink" href="#part-3-fill-the-building-with-services-mep-walk" title="Permanent link">&para;</a></h2>
+<p><em>Duplex opens as a bare architectural model. A </em><em>walk</em><em> places the plumbing, ducts, cable or sprinkler
+components and draws their runs. Only </em><em>plumbing</em><em> was walked step by step for this page, on the live site.</em></p>
+<h3 id="31-open-duplex">3.1 — Open Duplex<a class="headerlink" href="#31-open-duplex" title="Permanent link">&para;</a></h3>
+<p>Open <strong>Duplex</strong> as in Part 1 step 3. It is a bare architecture model: no plumbing fixtures, no pipes yet
+(measured: 196 elements, 0 fixtures, 0 pipe runs).</p>
+<p><img alt="Duplex opened bare" src="../../img/modeller/first-steps-mep1-duplex-bare.png" /></p>
+<h3 id="32-find-the-plb-row-in-the-outliner">3.2 — Find the PLB row in the Outliner<a class="headerlink" href="#32-find-the-plb-row-in-the-outliner" title="Permanent link">&para;</a></h3>
+<p>In the <strong>Outliner</strong> (left) scroll to the <strong>Walk</strong> rows: <strong>ACMV</strong>, <strong>ELEC</strong>, <strong>PLB</strong>, <strong>FP</strong>. PLB is plumbing. Each row
+has a blue <strong>▶</strong> — its tooltip reads "Walk this discipline".</p>
+<p><img alt="The Walk rows in the Outliner: ACMV, ELEC, PLB, FP" src="../../img/modeller/first-steps-mep2-outliner-plb-row.png" /></p>
+<h3 id="33-click-on-plb">3.3 — Click ▶ on PLB<a class="headerlink" href="#33-click-on-plb" title="Permanent link">&para;</a></h3>
+<p>Click the <strong>▶</strong> on the <strong>PLB</strong> row. After a few seconds the fixtures are placed and pipes are drawn between them. The
+status line reads <strong><code>PLB — 18 placed across 6/21 spaces · 22 nn-chains</code></strong>. Measured on the live site: <strong>18 fixtures</strong>, <strong>22 pipe
+runs</strong> all drawn, <strong>22</strong> written to the signed history, 5 bend fittings, one history step <strong>"Walk PLB (45)"</strong>, and the
+building itself untouched (196 elements before, 196 after). The pipes sit inside the solid building, so press <strong>X-ray</strong>
+(the pill in the right-hand rail, or the <strong>X</strong> key): the structure goes glass and the plumbing shows.</p>
+<p><img alt="The Duplex after the PLB walk and X-ray: fixtures and pipe runs inside the building" src="../../img/modeller/first-steps-mep3-walk-done.png" /></p>
+<h3 id="34-what-the-pipes-are">3.4 — What the pipes are<a class="headerlink" href="#34-what-the-pipes-are" title="Permanent link">&para;</a></h3>
+<p>Every pipe is a signed row that names the product it is drawn as, and its size is read from that row — never typed in:
+<strong>25.4 mm</strong> cold water (1 run) and <strong>48.3 mm</strong> waste (21 runs), all 22 rows citing a real product. <em>(You cannot click a pipe to
+select it yet: it sits inside the solid building and even the x-ray glass takes the click.)</em></p>
+<p><img alt="The pipes seen through the x-rayed building" src="../../img/modeller/first-steps-mep4-pipes-xray.png" /></p>
+<h3 id="35-move-a-fixture-and-its-pipes-follow">3.5 — Move a fixture and its pipes follow<a class="headerlink" href="#35-move-a-fixture-and-its-pipes-follow" title="Permanent link">&para;</a></h3>
+<p>Moving a walked fixture re-routes its pipes. <strong>Today there is no drag handle on a walked fixture</strong> (a gridline drag moves walls, not fixtures): clicking one
+only identifies it (<code>walked PLB · FlowTerminal … (generated — identify only)</code>, Move stays greyed out; measured with the building hidden). So this
+step was proven by moving a fixture 0.5 m with the same signed move the Move tool writes: the network re-routed in
+<strong>about half a second</strong> (524 ms on the live site, Duplex) — 22 runs became 16, and a run now ends <strong>exactly</strong> at the fixture's new spot
+(distance 0.0000 m; it was 0.500 m from the old spot). The re-routed runs and their bend fittings are written to the signed
+history too.</p>
+<p><img alt="After the move: the pipes re-routed to the fixture's new spot" src="../../img/modeller/first-steps-mep5-after-move-reroute.png" /></p>
+<p><em>(Terminal, a much larger building, has not been timed.)</em></p>
+<h3 id="36-ctrl-z-takes-the-move-back">3.6 — Ctrl + Z takes the move back<a class="headerlink" href="#36-ctrl-z-takes-the-move-back" title="Permanent link">&para;</a></h3>
+<p>Press <strong>Ctrl + Z</strong>. The fixture and its pipes return: the original 22 runs are back to within 1 mm.</p>
+<p><img alt="After Ctrl+Z: the original pipe run set is back" src="../../img/modeller/first-steps-mep6-undo-move.png" /></p>
+<h3 id="37-ctrl-z-again-takes-the-whole-walk-back">3.7 — Ctrl + Z again takes the whole walk back<a class="headerlink" href="#37-ctrl-z-again-takes-the-whole-walk-back" title="Permanent link">&para;</a></h3>
+<p>Press <strong>Ctrl + Z</strong> once more. The <strong>whole</strong> walk goes — fixtures 18 → 0, pipe runs drawn 22 → 0 — and the model is back to its
+opened state (history position 196).</p>
+<p><img alt="After the second Ctrl+Z: the bare building again (x-ray still on)" src="../../img/modeller/first-steps-mep7-undo-walk.png" /></p>
+<h3 id="38-ctrl-y-brings-it-back">3.8 — Ctrl + Y brings it back<a class="headerlink" href="#38-ctrl-y-brings-it-back" title="Permanent link">&para;</a></h3>
+<p>Press <strong>Ctrl + Y</strong>. The same 18 fixtures and 22 pipe runs return (history position 196 → 241).</p>
+<p><img alt="After Ctrl+Y: the walk is back" src="../../img/modeller/first-steps-mep8-redo-walk.png" /></p>
+<p><strong>What is routed today:</strong> plumbing, as above. In <strong>Walk ALL Services</strong> the Duplex also shows <strong>ACMV</strong> ducts (8 runs) and <strong>FP</strong> sprinklers (4 runs) routed and signed; <strong>ELEC</strong> cable is placed
+but not routed (0 runs on Duplex). Those were not walked step by step here.</p>
+<h2 id="part-4-stretch-the-grid-safely">Part 4 — Stretch the grid safely<a class="headerlink" href="#part-4-stretch-the-grid-safely" title="Permanent link">&para;</a></h2>
+<p><em>A column grid can be stretched until a beam would span too far. The Modeller colours each bay as you drag and offers one more column
+when a bay passes the limit. Walked step by step on </em><em>HospitalGarage</em><em>, a concrete (RC) frame: 140 columns, 195 beams.</em></p>
+<p><strong>What the colours mean.</strong> <strong>Green</strong> is fine. <strong>Orange</strong> means the span needs a deeper beam than the building has (the tip names the depth).
+<strong>Red</strong> means the span is over the limit for that material. These are <strong>preliminary</strong> sizing rules: the structural engineer confirms.</p>
+<h3 id="41-open-hospitalgarage">4.1 — Open HospitalGarage<a class="headerlink" href="#41-open-hospitalgarage" title="Permanent link">&para;</a></h3>
+<p>Open the Modeller, click the folder (Open) and click <strong>HospitalGarage</strong> (as in Part 1). The Modeller reads the material from the building's own
+beam names: concrete, RC (166 of its 195 beams).</p>
+<p><img alt="HospitalGarage opened" src="../../img/modeller/first-steps-span1-open.png" /></p>
+<h3 id="42-click-move-grid-and-grab-a-gridline">4.2 — Click Move Grid and grab a gridline<a class="headerlink" href="#42-click-move-grid-and-grab-a-gridline" title="Permanent link">&para;</a></h3>
+<p>Click <strong>Move Grid</strong>. The building's own column lines appear as the grid (17 × 29 lines). Press on a gridline between two columns, here line 8,
+and keep the button down.</p>
+<p><img alt="A gridline grabbed" src="../../img/modeller/first-steps-span2-grab.png" /></p>
+<h3 id="43-drag-it-the-bay-turns-orange">4.3 — Drag it: the bay turns orange<a class="headerlink" href="#43-drag-it-the-bay-turns-orange" title="Permanent link">&para;</a></h3>
+<p>Drag the line. The bays next to it were 5.49 m. Past 6.42 m (the building's own beam depth, 0.535 m, times the RC ratio 12) they turn orange.
+Hover the orange bay: the tip says the beam depth that span needs (6.49 m needs at least 0.54 m).</p>
+<p><img alt="An orange bay with its tip" src="../../img/modeller/first-steps-span3-orange.png" /></p>
+<h3 id="44-keep-dragging-the-bay-turns-red">4.4 — Keep dragging: the bay turns red<a class="headerlink" href="#44-keep-dragging-the-bay-turns-red" title="Permanent link">&para;</a></h3>
+<p>Past 12 m, the RC limit, the bay turns red. The tip reads: "Limit for this column span (12 m, RC). Add one more?"</p>
+<p><img alt="A red bay with its tip" src="../../img/modeller/first-steps-span4-red.png" /></p>
+<h3 id="45-let-go">4.5 — Let go<a class="headerlink" href="#45-let-go" title="Permanent link">&para;</a></h3>
+<p>Release the button. Nothing is committed yet: the tip now has two buttons, <strong>Add one more</strong> and <strong>Cancel</strong>. Cancel stops the drag at the
+limit (12 m).</p>
+<p><img alt="The Add one more? prompt" src="../../img/modeller/first-steps-span5-prompt.png" /></p>
+<h3 id="46-click-add-one-more">4.6 — Click Add one more<a class="headerlink" href="#46-click-add-one-more" title="Permanent link">&para;</a></h3>
+<p>One column line appears at the middle of the red bay: 5 new columns, copies of the building's own concrete column (the same shape and type as the
+existing ones). The 12.09 m bay becomes two 6.04 m bays, both green by the same rule. The grid goes from 29 to 30 lines on that axis.</p>
+<p><img alt="The new column line" src="../../img/modeller/first-steps-span6-added.png" /></p>
+<h3 id="47-ctrl-z-takes-it-all-back">4.7 — Ctrl + Z takes it all back<a class="headerlink" href="#47-ctrl-z-takes-it-all-back" title="Permanent link">&para;</a></h3>
+<p>Press <strong>Ctrl + Z</strong> once. The 5 columns, the new line and the drag all go in one step; the bay is back to 5.49 m. <strong>Ctrl + Y</strong> brings them back
+(5 columns).</p>
+<p><img alt="After Ctrl+Z" src="../../img/modeller/first-steps-span7-undone.png" /></p>
+<p><strong>Limits, as tested:</strong> a grid that was not measured from columns (a wall-bearing building, or a grid you drew yourself) gets no colours. If the
+material cannot be read from the building's names, nothing is coloured. Dragging a line past its neighbour is not blocked by this check.</p>
+<hr />
+<h2 id="part-5-see-the-history-of-one-thing">Part 5 — See the history of one thing<a class="headerlink" href="#part-5-see-the-history-of-one-thing" title="Permanent link">&para;</a></h2>
+<p><em>The dots above the history slider are every edit you made, in order. The chips next to them sort those edits by kind, so you can
+look back at just your wall edits without wading through everything else. This part only looks; it never changes the model.
+Walked on </em><em>Duplex</em><em> after four edits: two wall moves, an ELEC walk and a door insert.</em></p>
+<h3 id="51-look-at-the-chips">5.1 — Look at the chips<a class="headerlink" href="#51-look-at-the-chips" title="Permanent link">&para;</a></h3>
+<p>After a few edits, chips appear next to the dots: <strong>+ Walls (2)</strong>, <strong>+ Openings (2)</strong>, <strong>+ MEP (1)</strong>, <strong>+ Inserts (1)</strong>. The number
+is how many of your edits touched that kind. A wall move that carried its door and window counts under Walls <em>and</em> Openings; so does the door you inserted.</p>
+<p><img alt="The category chips next to the dots" src="../../img/modeller/first-steps-thread1-chips.png" /></p>
+<h3 id="52-double-click-walls">5.2 — Double-click + Walls<a class="headerlink" href="#52-double-click-walls" title="Permanent link">&para;</a></h3>
+<p>The Walls strip opens under the dots: one dot per wall edit, oldest first. <strong>+ Wall #112 (1)</strong> opens that one wall's own history.
+On a phone, tap the chip instead.</p>
+<p><img alt="The Walls strip" src="../../img/modeller/first-steps-thread2-strip.png" /></p>
+<h3 id="53-tap-the-strip">5.3 — Tap the strip<a class="headerlink" href="#53-tap-the-strip" title="Permanent link">&para;</a></h3>
+<p>It glows blue and the badge reads <strong>Viewing: Walls</strong>.</p>
+<p><img alt="The glowing Walls thread" src="../../img/modeller/first-steps-thread3-glow.png" /></p>
+<h3 id="54-press">5.4 — Press ‹<a class="headerlink" href="#54-press" title="Permanent link">&para;</a></h3>
+<p>The view jumps to your newest wall edit, skipping the insert and the walk you made after it. That wall is selected and framed.
+Press <strong>‹</strong> again for the wall edit before it, <strong>›</strong> to come forward. The model does not change.</p>
+<p><img alt="Stepping back along the Walls thread" src="../../img/modeller/first-steps-thread4-scrub.png" /></p>
+<h3 id="55-press-esc">5.5 — Press Esc<a class="headerlink" href="#55-press-esc" title="Permanent link">&para;</a></h3>
+<p>The glow goes and the arrows step through every edit again. Tapping the strip again, or making a new edit, does the same.</p>
+<p><strong>Limits, as tested:</strong> this is for looking. To undo, use <strong>Ctrl + Z</strong> as before (it undoes your last edit, whatever its kind).
+Undoing only one kind of edit is not available yet.</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+
+
+                
+
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Kembali ke atas
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/red1oon/bim-ootb" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.linkedin.com/in/red1oon/" target="_blank" rel="noopener" title="www.linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.indexes", "search.suggest", "search.highlight", "toc.follow", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Tersalin ke clipboard", "clipboard.copy": "Salin ke clipboard", "search.result.more.one": "1 lagi di halaman ini", "search.result.more.other": "# lagi di halaman ini", "search.result.none": "Tidak ada dokumen yang sesuai", "search.result.one": "1 dokumen ditemukan", "search.result.other": "# dokumen ditemukan", "search.result.placeholder": "Ketik untuk mulai pencarian", "search.result.term.missing": "Tidak ada", "select.version": "Pilih versi"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../javascripts/fold-footnotes.js"></script>
+      
+        <script src="../../javascripts/bim_compiler_source.js"></script>
+      
+    
+  </body>
+</html>

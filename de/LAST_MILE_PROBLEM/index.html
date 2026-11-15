@@ -1,0 +1,4547 @@
+
+<!doctype html>
+<html lang="de" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Construction is manufacturing. A building IS its Bill of Materials.">
+      
+      
+        <meta name="author" content="Redhuan D. Oon">
+      
+      
+        <link rel="canonical" href="https://red1oon.github.io/BIMCompiler/LAST_MILE_PROBLEM/">
+      
+      
+        <link rel="prev" href="../RED_PILL/">
+      
+      
+        <link rel="next" href="../BIMERPPaper/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>The Last Mile — drift tracking (Java era) - BIM Intent Compiler</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/custom.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  <script data-goatcounter="https://red1oon.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  
+  <meta name="robots" content="noindex">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#the-drift" class="md-skip">
+          Zum Inhalt
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Kopfzeile">
+    <a href="../" title="BIM Intent Compiler" class="md-header__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            BIM Intent Compiler
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              The Last Mile — drift tracking (Java era)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Suche" placeholder="Suche" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Suche">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Zurücksetzen" aria-label="Zurücksetzen" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Suche wird initialisiert
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source md-header__source--stacked">
+        <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+        <a href="https://github.com/red1oon/BIMCompiler" title="red1oon/BIMCompiler on GitHub" class="md-source" id="bim-compiler-source" target="_blank" rel="noopener">
+          <div class="md-source__icon md-icon">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+          </div>
+          <div class="md-source__repository" id="bim-compiler-repository">
+            Compiler
+          </div>
+        </a>
+        <span id="repo-totals" class="md-source-totals" title="Combined stars / forks across both repos"></span>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Hauptnavigation" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Start Here
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../BIMUserGuide/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  The 3 Apps
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../DeveloperGuide/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Go Deeper
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../SpatialCompilationPaper/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Papers & Positioning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../HalalTrace/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Prototypes & Demos
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../PROJECT_CHRONOLOGY/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  History & Legacy
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../" title="BIM Intent Compiler" class="md-nav__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    BIM Intent Compiler
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start Here
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_1" id="__nav_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Start Here
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../USER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    📖 User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMToolsGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🧰 BIM Tools — User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OFFLINE_INSTALL_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🔒 Fully Offline / Air-Gapped Install
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WhatsNew/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🆕 What's New
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AboutMore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About BIM OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FeatureComparison/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Feature Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MigrateComparisonPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrate & Compare (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TwoAppsOneKernel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two Apps, One Kernel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TwoAppsOneKernelInfographicLandscape.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    One Page InfoGraphics - Landscape
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bench_suite.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Comparison (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../age_demo.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Does Your ERP Age? (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MANIFESTO/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The ERP World View
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contribute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 3 Apps
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    The 3 Apps
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Viewer Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AskFirstSteps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewer Ask — First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerFirstSteps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modeller — First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DAGeVu Modeller — User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ProposerGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Proposer Guide (propose an edit, get the proof)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FastScriptGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fast Script Guide (one door: commands and scripts)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIMGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2D Drawings → BIM (DXF2BIM)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_Yellow_List/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — the yellow list (what you fill in, defaults used)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_Prior_Art/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — prior art (what is new, what we learned, cost of using others)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_FORMAT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — format contract (marks, outputs, registry, codes; generated)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERPUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel-ERP User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TillUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    uniCenta-style Till & Kitchen Screen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CapexDashboardGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM → ERP and CAPEX Dashboard — for iDempiere users
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CapexUATGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CAPEX UAT Guide — step-by-step test script
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERP_FirstSetup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel-ERP — Your First Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MigrationGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration User Guide (Odoo · Business Central · SAP Business One)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OdooMigration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moving from Odoo — how it works, what is proven
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NinjaExcelReport_UserManual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NinjaExcel Report — User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HRBIMAssetGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HR / Tenancy / Operate Module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CivilWorksGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Civil Works — Step by Step
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TeamsOverlayGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Teams Overlay — Collaboration & Optics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Go Deeper
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Go Deeper
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DeveloperGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide (read first if you will change the code)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ArchitectureOverview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Overview (for reviewers)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../FoldEngineBlackBook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fold Engine Black Book (dev manual)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HolyGrail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Holy Grail (editable rules, live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ERPConceptRosetta.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-ERP Rosetta Stone (concept + cost)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIM_Modeller_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Modeller OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERP_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP — Every Record Has a Place
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERPIntegration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP × BIM × HR — One Building, One Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DistributedERP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Distributed ERP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TermsHowToVerify/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to verify the terms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERP_AI_ADVISORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Letting an AI work on the ERP, safely
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SQLiteWasmArchitectureActual.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How the Database Works (big picture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ViewerComponentModel.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewer Component Model (dev architecture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CLASH_DETECTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clash Detection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../JKR_SKATA/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Asset Classification & JKR/SKATA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../IFC_ExportGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IFC Export Guide (for the BIM author)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TimeMachine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Time Machine (4D Scheduling & Editing)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4D5DAnalysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4D/5D Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMtoProject/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM → Project Order (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerKernelFold/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry as a Signed-Log Fold
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Papers & Positioning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Papers & Positioning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialCompilationPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deterministic Spatial Compilation (academic paper)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AIProposerDefensiveDisclosure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Defensive Disclosure: an Outside AI Proposes, the App Decides
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_TechnicalNote/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — Deterministic 2D ⇄ BIM Round Trip (technical note)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BrowserScaleBenchmark/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Browser-Scale Benchmark (one tab, local first)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnterpriseAuthentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enterprise Authentication (security)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../StrategicIndustryPositioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Strategic Positioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LocalFirstPriorArt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local-First Prior Art
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LegacyOracleAdapterSpec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Legacy-as-Oracle Adapter (migrate / test an ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ShipYard/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Beyond Buildings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RouteTemplate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Find & Navigate (wayfinding)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../halal/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prototypes & Demos
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Prototypes & Demos
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HalalTrace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Halalan Thayiban — halal track & trace (paper)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glassbowl.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glassbowl — the ERP engine as data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glassbowl_gravity.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glassbowl · Gravity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../RetailScaleStory.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Retail at Scale — two messages a day (benchmark story)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bim_architecture_viz.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How it works — interactive architecture tour
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    History & Legacy
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    History & Legacy
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROJECT_CHRONOLOGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Chronology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../VibeProgramming/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vibe Programming — AI + Domain Expertise
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4DGenerator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 4D Generator — Failure Catalogue & AI Findings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnablingTechTimeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enabling-Tech Timeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RED_PILL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Red Pill — Design From Grammar (origin)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Last Mile — drift tracking (Java era)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Last Mile — drift tracking (Java era)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Inhaltsverzeichnis">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Inhaltsverzeichnis
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#drift-gate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Drift Gate
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#session-checklist-11-drift-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Session Checklist — 11 Drift Points
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Session Checklist — 11 Drift Points">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-input-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Input = Output?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-lod400-geometry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. LOD400 Geometry?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-compiler-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Compiler Only?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-openings-and-furniture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Openings and Furniture?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-spec-fidelity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Spec Fidelity?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-output-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Output Path?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-separate-from-input" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Separate From Input?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-visual-fidelity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Visual Fidelity?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#9-orientation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Orientation?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#10-who-checks-the-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Who Checks the Tests?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#11-factorization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Factorization?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#known-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Known Limits
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Known Limits">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#12-proof-data-gap-provestage-compliancestage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        §12 — Proof Data Gap (ProveStage + ComplianceStage)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#r25-ifctobom-qa-failure-not-propagated-to-gate-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R25 — IFCtoBOM QA Failure Not Propagated to Gate Results
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verb-fidelity-approximate-vs-exact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verb Fidelity — Approximate vs Exact
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#geometric-fingerprint-shape-identity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Geometric Fingerprint — Shape Identity
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pipeline-debug-log-based-proofing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pipeline Debug — Log-Based Proofing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pipeline Debug — Log-Based Proofing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#info-what-always-shows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        INFO — what always shows
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#warn-anomalies-and-proof-violations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WARN — anomalies and proof violations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fine-per-element-proofs-drift-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FINE — per-element proofs + Drift checklist
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spatial-accuracy-channels-s147" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Spatial accuracy channels (S147)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quick-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick commands
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-last-mile-crosses-to-javascript-the-modeller-drop-2026-06-22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Last Mile crosses to JavaScript — the Modeller Drop (2026-06-22)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The Last Mile crosses to JavaScript — the Modeller Drop (2026-06-22)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-geo_summary-self-proof-the-js-twin-of-7s-next-step-for-coder-done-2026-06-22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The §GEO_SUMMARY self-proof — the JS twin of §7's "Next step for coder" (DONE 2026-06-22)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMERPPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Construction Economy / ERP Wave (Java era)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SYSTEMS_INSTALLER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Self-Host the Java toolchain (legacy installer)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Inhaltsverzeichnis">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Inhaltsverzeichnis
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#drift-gate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Drift Gate
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#session-checklist-11-drift-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Session Checklist — 11 Drift Points
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Session Checklist — 11 Drift Points">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-input-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Input = Output?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-lod400-geometry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. LOD400 Geometry?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-compiler-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Compiler Only?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-openings-and-furniture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Openings and Furniture?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-spec-fidelity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Spec Fidelity?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-output-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Output Path?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-separate-from-input" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Separate From Input?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-visual-fidelity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Visual Fidelity?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#9-orientation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Orientation?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#10-who-checks-the-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Who Checks the Tests?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#11-factorization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Factorization?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#known-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Known Limits
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Known Limits">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#12-proof-data-gap-provestage-compliancestage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        §12 — Proof Data Gap (ProveStage + ComplianceStage)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#r25-ifctobom-qa-failure-not-propagated-to-gate-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R25 — IFCtoBOM QA Failure Not Propagated to Gate Results
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verb-fidelity-approximate-vs-exact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verb Fidelity — Approximate vs Exact
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#geometric-fingerprint-shape-identity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Geometric Fingerprint — Shape Identity
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pipeline-debug-log-based-proofing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pipeline Debug — Log-Based Proofing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pipeline Debug — Log-Based Proofing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#info-what-always-shows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        INFO — what always shows
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#warn-anomalies-and-proof-violations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WARN — anomalies and proof violations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fine-per-element-proofs-drift-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FINE — per-element proofs + Drift checklist
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spatial-accuracy-channels-s147" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Spatial accuracy channels (S147)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quick-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick commands
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-last-mile-crosses-to-javascript-the-modeller-drop-2026-06-22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Last Mile crosses to JavaScript — the Modeller Drop (2026-06-22)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The Last Mile crosses to JavaScript — the Modeller Drop (2026-06-22)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-geo_summary-self-proof-the-js-twin-of-7s-next-step-for-coder-done-2026-06-22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The §GEO_SUMMARY self-proof — the JS twin of §7's "Next step for coder" (DONE 2026-06-22)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+  <p class="i18n-note"><small>Diese Seite ist noch nicht übersetzt; sie wird auf Englisch angezeigt. <a href="https://red1oon.github.io/BIMCompiler/LAST_MILE_PROBLEM/">Englische Seite</a>.</small></p>
+  
+                  
+
+
+  
+  
+
+
+<h1 id="the-drift">The Drift<a class="headerlink" href="#the-drift" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>Foundation:</strong> <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BOMBasedCompilation.md">BBC</a> · <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/internal/DATA_MODEL.md">DATA_MODEL</a> · <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BIM_COBOL.md">BIM_COBOL</a> · <a href="../MANIFESTO/">MANIFESTO</a> · <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/TestArchitecture.md">TestArchitecture</a></p>
+</blockquote>
+<div class="bim-banner">
+<p><b>AI cannot repeat an outcome. Determinism is our religion here.</b></p>
+</div>
+<p><a href="../VibeProgramming/">Vibe Programming</a> under strict architectural supervision built this compiler — but AI cannot see spatial geometry. It doesn't know a wall must sit on a slab, or that two columns can't overlap. Months of frustration revealed a pattern: the code drifts from spec precisely where spatial reasoning is required. This document tracks every known drift point between "it compiles" and "it ships with no AI inside."</p>
+<p>See <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/EYES_SRS.md">BIMEyes</a> for how we taught the compiler to see. Below is the way we harness in Claude Code AI.</p>
+<hr />
+<h2 id="drift-gate">Drift Gate<a class="headerlink" href="#drift-gate" title="Permanent link">&para;</a></h2>
+<p>Before writing code that implements a spec section, the AI MUST:</p>
+<ol>
+<li><strong>Quote the spec section</strong> it is implementing</li>
+<li><strong>Follow the spec mechanism</strong>, not invent a shortcut — same output via a different path = draft</li>
+<li><strong>Ask</strong> if the spec is unclear — never guess</li>
+<li><strong>Log a new drift point</strong> before deviating from spec</li>
+</ol>
+<hr />
+<h2 id="session-checklist-11-drift-points">Session Checklist — 11 Drift Points<a class="headerlink" href="#session-checklist-11-drift-points" title="Permanent link">&para;</a></h2>
+<p>Every session ends by checking these 11 areas where AI-generated code is known to drift from spec. Each cites the spec section it guards.</p>
+<h3 id="1-input-output">1. Input = Output?<a class="headerlink" href="#1-input-output" title="Permanent link">&para;</a></h3>
+<p><strong>Spec:</strong> <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BOMBasedCompilation.md">BBC §2.2.1</a> count invariant — SUM(non-PHANTOM qty) = output count.
+<strong>Prerequisite:</strong> §3 (Compiler Only) must PASS first. If output was not compiled — only extracted — this count is a <strong>draft</strong>, not a verdict. (CP-5)</p>
+<p>The compiler must produce exactly the same number of elements as the BOM specifies. Not more (over-production = splitting when it shouldn't), not fewer (lost elements = broken walker).</p>
+<table>
+<thead>
+<tr>
+<th>Building</th>
+<th>Elements</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SH</td>
+<td>58/58</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>FK</td>
+<td>82/82</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>IN</td>
+<td>699/699</td>
+<td>PASS (120 window coordinate shifts — CLUSTER debt)</td>
+</tr>
+<tr>
+<td>DX</td>
+<td>1099/1099</td>
+<td>PASS (MIRROR dimension swaps accepted)</td>
+</tr>
+<tr>
+<td>TE</td>
+<td>48428/48428</td>
+<td>PASS (48336/48428 identity-matched = 99.8%)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-lod400-geometry">2. LOD400 Geometry?<a class="headerlink" href="#2-lod400-geometry" title="Permanent link">&para;</a></h3>
+<p><strong>Spec:</strong> <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BOMBasedCompilation.md">BBC §2.2</a> — every leaf product resolves to component library geometry, never a fallback shape.</p>
+<p>Zero <code>GEO_</code> fallback hashes in output. Every element's mesh traces to a real LOD entry in <code>component_library.db</code>. If the compiler generates a placeholder box instead of real geometry, this check catches it.</p>
+<p><strong>Verdict:</strong> PASS — G5 provenance and C8 geometry diversity both GREEN.</p>
+<h3 id="3-compiler-only">3. Compiler Only?<a class="headerlink" href="#3-compiler-only" title="Permanent link">&para;</a></h3>
+<p><strong>Spec:</strong> <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BOMBasedCompilation.md">BBC §2</a> Compilation Model — every element traces to IFC extraction or BOM template. Nothing invented.</p>
+<p>The compiler must never connect to <code>*_extracted.db</code> during compilation. It reads only from <code>{PREFIX}_BOM.db</code> (the dictionary) and writes to <code>output.db</code>. Three tamper rules (T18/T19/T20) enforce zero references to extraction databases in compiler source code.</p>
+<p><strong>MEP_RECIPE cardinal rules</strong> (violation = invention): MEP_RECIPE archetypes are
+abstract patterns — never explode recipe runs into per-instance LEAF rows during
+compilation. Validation Rules determine final expression; the callout only registers
+discipline scope and Qty (= IFC element count). LEAF children come from <code>*_SYSTEM</code>
+BOM only. See: <code>OrderLineProductCallout.java</code> and <code>IFCtoERP.java</code> class Javadoc,
+and <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/DISC_VALIDATION_DB_SRS.md#62-discipline-as-a-sub-bom">DISC_VALIDATION_DB_SRS §6.2</a>.</p>
+<p><strong>Verdict:</strong> PASS — 0 violations.</p>
+<h3 id="4-openings-and-furniture">4. Openings and Furniture?<a class="headerlink" href="#4-openings-and-furniture" title="Permanent link">&para;</a></h3>
+<p><strong>Spec:</strong> <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BOMBasedCompilation.md">BBC §4</a> tack convention — doors sit in walls, windows sit in walls, furniture sits in rooms.</p>
+<p>Hosted elements (doors, windows) must reference their host wall via <code>host_element_ref</code>. Rotation must match the host face. No overlapping elements within the same product class (P06 proof).</p>
+<p><strong>Verdict:</strong> PASS — rotation witness (W-ROT) proven, P05/P06 zero violations.</p>
+<h3 id="5-spec-fidelity">5. Spec Fidelity?<a class="headerlink" href="#5-spec-fidelity" title="Permanent link">&para;</a></h3>
+<p><strong>Spec:</strong> All sources that dictate output — are they the RIGHT sources?</p>
+<p>The real input is a <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/internal/ProjectOrderBlueprint.md">Construction Order</a> (<a href="../MANIFESTO/#the-order-configure-to-order">C_Order</a> → <a href="../MANIFESTO/#the-order-configure-to-order">C_OrderLine</a>). The order references products from the BOM dictionary, and the compiler explodes it into placed elements. Everything else is supporting data.</p>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>What it dictates</th>
+<th>Entry path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>C_Order → C_OrderLine</strong></td>
+<td>What to build — the construction order with exceptions</td>
+<td><a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BIM_Designer_UserGuide.md">BIM Designer</a> (interactive) or YAML (test harness)</td>
+</tr>
+<tr>
+<td><code>{PREFIX}_BOM.db</code></td>
+<td>Assembly recipes — the BOM dictionary the order references</td>
+<td><a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/internal/DATA_MODEL.md">IFCtoBOM pipeline</a> (once per building type)</td>
+</tr>
+<tr>
+<td><code>component_library.db</code></td>
+<td>Product geometry, meshes, materials, orientation + <code>ad_slab_spec</code> (per-building slab overrides)</td>
+<td>Extraction + curation</td>
+</tr>
+<tr>
+<td><code>ERP.db</code></td>
+<td>Validation rules — fire protection, MEP spacing, jurisdiction</td>
+<td><a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/internal/DocValidate.md">DocValidate</a> rule packs</td>
+</tr>
+<tr>
+<td><code>*.bimcobol</code></td>
+<td>Verb recipes: PLACE BOM, ROUTE, WIRE, TRIM</td>
+<td><a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BIM_COBOL.md">BIM COBOL</a> scripts</td>
+</tr>
+<tr>
+<td><code>BIMConstants.java</code></td>
+<td>Dimensional fallbacks (wall thickness, door/window dims)</td>
+<td>Code constants — <code>ad_slab_spec</code> overrides slab thickness</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note:</strong> <code>classify_*.yaml</code> is how the test harness represents a C_Order — it seeds the order and BOM for Rosetta Stone verification. In production, the <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BIM_Designer_UserGuide.md">BIM Designer</a> creates the C_Order interactively via <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BOMBasedCompilation.md#34-bom-drop--interactive-modification">BOM Drop</a>.</p>
+<p>The BOM walker must read products from the compile connection, not from extraction. If any value in the output cannot be traced to one of these sources, that's drift.</p>
+<p><strong>Verdict:</strong> PASS — all sources audited.</p>
+<h3 id="6-output-path">6. Output Path?<a class="headerlink" href="#6-output-path" title="Permanent link">&para;</a></h3>
+<p><strong>Spec:</strong> <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BOMBasedCompilation.md">BBC §3.3</a> — single path: C_OrderLine → BOM explosion → placed elements.</p>
+<p>There must be exactly ONE code path that writes elements to <code>output.db</code>. No side-channel insertions, no bulk copies, no shortcut SQL. Element counts verified for all 35 buildings.</p>
+<p><strong>Verdict:</strong> PASS.</p>
+<h3 id="7-separate-from-input">7. Separate From Input?<a class="headerlink" href="#7-separate-from-input" title="Permanent link">&para;</a></h3>
+<p><strong>Spec:</strong> <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BOMBasedCompilation.md">BBC §2</a> — <code>{PREFIX}_BOM.db</code> is a pure dictionary, never written to during compilation.</p>
+<p>The compiler reconstructs element positions from BOM tree traversal — it does NOT copy coordinates from extracted input databases. Evidence:</p>
+<div class="highlight"><pre><span></span><code>1. World origin     m_bom.origin_x/y/z         → SH: (-9.235, -2.746, -0.470)
+2. BOM tree walk    PlacementCollectorVisitor   → accumulate parent + line dx/dy/dz
+3. Leaf expansion   anchor + verb offset + ½dim → centroid (cx, cy, cz)
+4. AABB write       ElementPersistence          → INSERT elements_rtree
+</code></pre></div>
+<p>The 1mm rounding (maxZ: 2.474 input → 2.473 output from <code>allocated_height_mm=2473</code>) is the fingerprint proving the compiler reconstructs from BOM integers, not float copies.</p>
+<p><strong>Verdict:</strong> PASS — T18 guards enforced, BOM tree forensic verified.</p>
+<p><strong>Smoking gun: GEO debug mode (P123).</strong> <code>bim.geo.debug=true</code> in BIM.properties
+activates a <code>[GEO] TACK</code> channel in <code>PlacementCollectorVisitor</code>. Every element
+emits its tack chain with IFC GUID from the exact line that computed the position.</p>
+<p><strong>Evidence: <code>evidence/SH_GEO_proof_20260330.log</code></strong> — the first full GEO run.</p>
+<div class="highlight"><pre><span></span><code>[GEO] TACK ENTER SH_BED_SET depth=1: parent=(0.0000,0.0000,0.0000)
+        + line=(13.3480,3.6925,0.4700) → anchor=(13.3480,3.6925,0.4700)
+[GEO] TACK LEAF  Furniture_Bed guid=1RS53LK$j6KOlAGwxTiY8D
+        anchor=(13.3480,3.6925,0.4700) + offset=(0.0000,0.0000,0.0000)
+        → LBD=(13.3480,3.6925,0.4700)
+[GEO] TACK LEAF  Furniture_Desk guid=3cUkl32yn9qRSPvBJVyZVU
+        anchor=(13.3480,3.6925,0.4700) + offset=(0.4230,2.6015,0.0000)
+        → LBD=(13.7710,6.2940,0.4700)
+</code></pre></div>
+<p><strong>Verified result (S100 fleet run, 24 buildings):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Buildings verified</td>
+<td><strong>24/24</strong> (all extracted RE + CO)</td>
+</tr>
+<tr>
+<td>Buildings ZERO DRIFT</td>
+<td><strong>22/24</strong></td>
+</tr>
+<tr>
+<td>Pre-existing anomalies</td>
+<td>2 (IN double-walk 11.97m, GH 4.7mm accumulation)</td>
+</tr>
+<tr>
+<td>No-data</td>
+<td>1 (HI — no IFC GUIDs in extraction source)</td>
+</tr>
+<tr>
+<td>Largest clean run</td>
+<td><strong>CP: 6,584 elements, 21.7M pairs, 0.000mm worst</strong></td>
+</tr>
+<tr>
+<td>SH</td>
+<td>58 elements, 1,653 pairs, 0.002mm worst</td>
+</tr>
+<tr>
+<td>DX</td>
+<td>179 GUID-matched, 15,931 pairs, 0.004mm worst</td>
+</tr>
+</tbody>
+</table>
+<p>The two anomalies are pre-existing architecture issues, not compilation
+errors: IN has overlapping BOM paths that double-walk the same GUID through
+different coordinate frames; GH has floating-point accumulation through a
+deep tack chain. Both are diagnosed from the GEO log without code inspection.</p>
+<p>Every spatial relationship in the house — bed to desk, window to wall,
+door to room, slab to column — is preserved to 2 microns. The IFC GUID
+on each element traces it back to the original IFC entity.</p>
+<p><strong>Three proofs per TACK LEAF line:</strong></p>
+<ul>
+<li><strong>A (formula execution):</strong> the line emits from PlacementCollectorVisitor
+  line 325 using local variables <code>anchor</code>, <code>offsets[qi]</code>, <code>iHalfW</code>. If it
+  emits, the tack math ran. If absent, drift signal.</li>
+<li><strong>B (data provenance):</strong> <code>guid=1RS53LK$j6K...</code> traces this element to
+  IFC entity via <code>m_bom_line_ma</code>. 58/58 GUIDs carried through.</li>
+<li><strong>C (spatial fidelity):</strong> relative offset between any two elements in
+  compiled output matches extraction within 0.002mm. Not checked per-line
+  yet — verified by post-hoc all-pairs join (see evidence log).</li>
+</ul>
+<p><strong>Verification script:</strong> <a href="https://github.com/red1oon/BIMCompiler/blob/master/scripts/geo_verify.py"><code>scripts/geo_verify.py</code></a>
+joins GEO TACK LEAF log against extraction DB by IFC GUID, computes all-pairs
+relative offsets, reports MATCH/DRIFT. Verified results:</p>
+<table>
+<thead>
+<tr>
+<th>Building</th>
+<th>Elements</th>
+<th>GUID-matched</th>
+<th>Pairs</th>
+<th>Worst</th>
+<th>Drift</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SH</td>
+<td>58</td>
+<td>58</td>
+<td>1,653</td>
+<td>0.002mm</td>
+<td>0</td>
+</tr>
+<tr>
+<td>DX</td>
+<td>1,099</td>
+<td>179</td>
+<td>15,931</td>
+<td>0.004mm</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code>python3<span class="w"> </span>scripts/geo_verify.py<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="s2">&quot;logs/pipeline_Sample House_extracted_20260330_033940.log&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>DAGCompiler/lib/output/samplehouse.db<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>DAGCompiler/lib/input/SampleHouse_extracted.db
+</code></pre></div>
+<p><strong>Next step for coder:</strong> add a <code>[GEO] SUMMARY</code> line at end of compilation
+that emits the all-pairs relative offset count and worst error automatically:
+<div class="highlight"><pre><span></span><code>[GEO] SUMMARY 58 elements, 1653 pairs, worst=0.002mm, DRIFT=0
+</code></pre></div>
+This makes the proof self-contained in the log — no post-hoc Python needed.</p>
+<p><strong>Usage:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1"># Activate GEO in BIM.properties: bim.geo.debug=true</span>
+./scripts/run_RosettaStones.sh<span class="w"> </span>classify_sh.yaml
+grep<span class="w"> </span><span class="s2">&quot;GEO.*SUMMARY&quot;</span><span class="w"> </span>logs/pipeline_Sample<span class="se">\ </span>House*.log
+<span class="c1"># Output: 58 elements, 1653 pairs, worst=0.002mm, DRIFT=0</span>
+
+<span class="c1"># Filter to specific elements (avoids 48K lines on TE)</span>
+-Dbim.geo.filter<span class="o">=</span>Desk
+</code></pre></div></p>
+<h3 id="8-visual-fidelity">8. Visual Fidelity?<a class="headerlink" href="#8-visual-fidelity" title="Permanent link">&para;</a></h3>
+<p><strong>Spec:</strong> <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/TestArchitecture.md">TestArchitecture</a> C8 (geometry diversity) + C9 (axis dimensions) + P06 (overlap).</p>
+<p>Three independent proofs triangulate visual correctness: per-instance geometry resolution (C8), axis dimension matching within 1mm (C9), and no same-class element overlaps (P06). <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/EYES_SRS.md">BIMEyes</a> adds ~14 per-element geometric proofs.</p>
+<p><strong>Verdict:</strong> PASS.</p>
+<h3 id="9-orientation">9. Orientation?<a class="headerlink" href="#9-orientation" title="Permanent link">&para;</a></h3>
+<p><strong>Spec:</strong> <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BOMBasedCompilation.md">BBC §4</a> — rotation is a property of the BOM line, not invented at compile time.</p>
+<p>Doors and windows must face the correct direction. <code>host_element_ref</code> links each opening to its host wall. Orientation data seeded from extraction (M16/M17 SQL).</p>
+<p><strong>Verdict:</strong> PASS — W-ROT witness proven. Rotation read from <code>m_bom_line.rotation_rule</code> (PlacementCollectorVisitor:183).</p>
+<p><strong>PASS (S100-p91):</strong> ProveStage rewired to BOM tree proofs (BomTreeProver). <code>hasRelationalData()</code> gate removed — ProveStage now runs for every building with compiled elements. Four BOM-term proof checks: P-PARENT (LEAF within parent extent), P-SIBLING (no sibling tack collisions), P-QTY (LEAF qty vs output count), P-TACK (tack position vs element centroid). SH: P-SIBLING 93/93 PASS. P-PARENT/P-QTY/P-TACK produce advisory WARNs (room origins not persisted in c_orderline — gap for future work). ComplianceStage: jurisdiction=MY, 53ms, 8 proof lines.</p>
+<h3 id="10-who-checks-the-tests">10. Who Checks the Tests?<a class="headerlink" href="#10-who-checks-the-tests" title="Permanent link">&para;</a></h3>
+<p><strong>Spec:</strong> <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/TestArchitecture.md">TestArchitecture</a> §Anti-Drift — no silent re-seal, no weakened assertions.</p>
+<p>The tamper seal (SHA256 of 77 critical files) detects if a test was weakened to make it pass. Every seal change requires a full git diff review. T18-T20 tamper rules cross-validate. C8/C9 provide independent arithmetic verification that tests didn't drift.</p>
+<p><strong>Verdict:</strong> PASS — Seal v14 (77 files). Version bumped during S100 script refactoring (4 shell modules added).</p>
+<h3 id="11-factorization">11. Factorization?<a class="headerlink" href="#11-factorization" title="Permanent link">&para;</a></h3>
+<p><strong>Spec:</strong> <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BOMBasedCompilation.md">BBC §6</a> verb factorization — N elements → 1 BOM line with qty=N.</p>
+<p>Any code that factorizes BOM lines MUST preserve:
+- <strong>Material uniformity</strong> — mixed materials → reject, fall through to unfactored
+- <strong>Dimension uniformity</strong> — W/D/H within 50mm
+- <strong>Instance identity</strong> — GUID <code>element_ref</code> preserved per instance
+- <strong>element_name ≠ element_ref</strong> — name = product type (for grouping), ref = instance identity (GUID)</p>
+<p><strong>Verdict:</strong> PASS — material guard, identity threading, and per-instance geometry all verified.</p>
+<hr />
+<h2 id="known-limits">Known Limits<a class="headerlink" href="#known-limits" title="Permanent link">&para;</a></h2>
+<p>Two pre-existing issues that are accepted, not ignored:</p>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Issue</th>
+<th>Since</th>
+<th>Why accepted</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DX MIRROR</td>
+<td>G2 volume -0.16%, 89 axis swaps (width↔depth in some walls)</td>
+<td>S25</td>
+<td>MIRROR verb is incomplete — tracked in <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/internal/ACTION_ROADMAP.md">ACTION_ROADMAP</a> CP-2</td>
+</tr>
+<tr>
+<td>TE CLUSTER</td>
+<td>1015/48428 elements differ by 1mm at float rounding boundary</td>
+<td>S39c</td>
+<td>CLUSTER uses ±10% tolerance for semi-regular grids — by design</td>
+</tr>
+</tbody>
+</table>
+<h3 id="12-proof-data-gap-provestage-compliancestage">§12 — Proof Data Gap (ProveStage + ComplianceStage)<a class="headerlink" href="#12-proof-data-gap-provestage-compliancestage" title="Permanent link">&para;</a></h3>
+<p><strong>Status:</strong> CLOSED (S100-p91)</p>
+<p>Both stages now fire on SH and FK:</p>
+<table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>Step</th>
+<th>Code</th>
+<th>Gate condition</th>
+<th>Result (SH)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ProveStage</td>
+<td>11</td>
+<td><code>BomTreeProver</code></td>
+<td><code>elementCount() == 0</code></td>
+<td>P-SIBLING 93/93 PASS. P-PARENT 15/28, P-QTY delta=2, P-TACK 0/28 (advisory WARNs).</td>
+</tr>
+<tr>
+<td>ComplianceStage</td>
+<td>12</td>
+<td><code>ComplianceStage</code></td>
+<td><code>jurisdiction != null</code></td>
+<td>jurisdiction=MY, 53ms, 8 proof lines, submission package written.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Remaining advisory WARNs (non-blocking):</strong>
+- P-PARENT: room origins (from IFC spatial containment) not persisted in c_orderline → parent extent check uses container tacks only
+- P-QTY: delta=2 between LEAF qty sum and output count (static children counted differently)
+- P-TACK: BOM walker applies room origins internally; c_orderline LEAF dx/dy/dz are post-walk world positions, not raw tack accumulations. Reconstruction gap = room origins not in output DB.</p>
+<p><strong>What changed (p91):</strong>
+1. <code>BomTreeProver.java</code> — 4 BOM-term proof checks (no sidecar, no geometry language)
+2. <code>hasRelationalData()</code> gate removed — ProveStage runs for every compiled building
+3. <code>jurisdiction: MY</code> added to SH + FK YAMLs → ComplianceStage fires
+4. Jurisdiction wired: YAML → ClassificationYaml → C_DocType → BuildingRegistry
+5. SC_Run.BuildingID uses root BOM id (c_orderline root family_ref), not project name</p>
+<h3 id="r25-ifctobom-qa-failure-not-propagated-to-gate-results">R25 — IFCtoBOM QA Failure Not Propagated to Gate Results<a class="headerlink" href="#r25-ifctobom-qa-failure-not-propagated-to-gate-results" title="Permanent link">&para;</a></h3>
+<p><strong>Status:</strong> CLOSED (S100-p67)
+<strong>Root cause:</strong> IFCtoBOM pipeline ABORTs to log file. Rosetta script
+treats missing BOM.db as "skip" not "fail." G1-G6 gates don't check
+whether output was compiled or extracted.
+<strong>Fix:</strong> G0-COMPILED gate (checks c_order &gt; 0) + script fail-loud.
+<strong>Buildings affected:</strong> TE (CO_TE). Extraction passes, BOM compilation blocked.</p>
+<hr />
+<h2 id="verb-fidelity-approximate-vs-exact">Verb Fidelity — Approximate vs Exact<a class="headerlink" href="#verb-fidelity-approximate-vs-exact" title="Permanent link">&para;</a></h2>
+<p>Not all verbs produce exact results. The distinction matters:</p>
+<table>
+<thead>
+<tr>
+<th>Verb type</th>
+<th>Verbs</th>
+<th>Tolerance</th>
+<th>Gated?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Exact</strong></td>
+<td>TILE, FRAME, ARRAY</td>
+<td>0mm</td>
+<td>YES — G3-DIGEST must match</td>
+</tr>
+<tr>
+<td><strong>Approximate</strong></td>
+<td>ROUTE, CLUSTER</td>
+<td>±20% step, ±10% offset</td>
+<td>NO — known tolerance, not gated</td>
+</tr>
+</tbody>
+</table>
+<p>ROUTE's <code>isUniformRun()</code> guard rejects non-uniform spacing (±20%). Non-uniform groups fall through to CLUSTER or flat writes. See <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BIM_COBOL.md">BIM_COBOL</a> §19 for verb taxonomy.</p>
+<hr />
+<h2 id="geometric-fingerprint-shape-identity">Geometric Fingerprint — Shape Identity<a class="headerlink" href="#geometric-fingerprint-shape-identity" title="Permanent link">&para;</a></h2>
+<p><em>This is one technique within <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/EYES_SRS.md">BIMEyes</a>, the compiler's full geometric comprehension engine (26 proofs, 3 tiers).</em></p>
+<p>Dimensionless ratios that prove geometric equivalence regardless of scale:</p>
+<div class="highlight"><pre><span></span><code>Given AABB dimensions sorted smallest→largest as (S, M, L):
+
+planarity   = S / L    &quot;how thin&quot;       → walls, slabs
+elongation  = M / L    &quot;how stretched&quot;  → columns, pipes
+squareness  = S / M    &quot;cross-section&quot;  → furniture, terminals
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Archetype</th>
+<th>Condition</th>
+<th>Typical IFC Classes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PLANAR</td>
+<td>planarity &lt; 0.15, elongation ≥ 0.40</td>
+<td>IfcWall, IfcSlab, IfcPlate, IfcDoor</td>
+</tr>
+<tr>
+<td>ELONGATED</td>
+<td>planarity &lt; 0.15, elongation &lt; 0.40</td>
+<td>IfcColumn, IfcBeam, IfcPipeSegment</td>
+</tr>
+<tr>
+<td>COMPACT</td>
+<td>planarity ≥ 0.25, elongation ≥ 0.50</td>
+<td>IfcFurnishingElement, IfcFlowTerminal</td>
+</tr>
+</tbody>
+</table>
+<p>Implementation: <code>GeometricFingerprint.java</code>. Thresholds: planarity 0.15/0.20, elongation 0.40, epsilon 5%.</p>
+<hr />
+<h2 id="pipeline-debug-log-based-proofing">Pipeline Debug — Log-Based Proofing<a class="headerlink" href="#pipeline-debug-log-based-proofing" title="Permanent link">&para;</a></h2>
+<p>Following the Compiere/iDempiere convention, the pipeline uses Java's <code>java.util.logging</code> levels. Set the level to see more:</p>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>What you see</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>INFO</strong></td>
+<td>Pipeline stages, gate verdicts, summary counts</td>
+</tr>
+<tr>
+<td><strong>WARN</strong></td>
+<td>Non-fatal anomalies (non-zero origins, assembly stubs, proof violations)</td>
+</tr>
+<tr>
+<td><strong>FINE</strong></td>
+<td>Stage timings, per-element proofs, automated Drift checklist</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Rule:</strong> All diagnostic output (rejected mutations, constraint violations, category mismatches) MUST use <code>BIMLogger.fine()</code>, never <code>System.err</code>. This ensures rejection messages appear in the FINE drift checklist and can be grepped from logs. <code>System.err</code> bypasses log filtering and is invisible to auditors reviewing FINE output.</p>
+<h3 id="info-what-always-shows">INFO — what always shows<a class="headerlink" href="#info-what-always-shows" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>[INFO ] PIPELINE     PIPELINE: Sample House [EXTRACTED]
+[INFO ] PIPELINE     STEP 1: METADATA VALIDATION — starting
+[INFO ] PIPELINE     STEP 3: COMPILE TO BUILDINGSPEC — starting
+[INFO ] PIPELINE     STEP 4: ROUTE STAGE — starting
+[INFO ] PIPELINE     STEP 7: VERB STAGE (BIM COBOL) — starting
+[INFO ] PIPELINE     PIPELINE COMPLETE: Sample House — 58 elements
+</code></pre></div>
+<p>IFCtoBOM (extraction) logs verb detection and BOM QA at INFO:</p>
+<div class="highlight"><pre><span></span><code>[verb] Ground Floor STR: 1 verb patterns (4 instances), 12 unfactored
+[ASI] SH_CW_STR seq=20: 3/6 instances have dimension variants (BIM_Slab)
+=== BOM QA Validation ===
+  [PASS] BOM count                                9 (BUILDING=1, FLOOR=4, SET=4)
+  [PASS] Extraction reconciliation                58 extraction LEAFs vs 58 extracted (delta=+0)
+</code></pre></div>
+<h3 id="warn-anomalies-and-proof-violations">WARN — anomalies and proof violations<a class="headerlink" href="#warn-anomalies-and-proof-violations" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>[WARN ] QA           [FAIL] Non-zero BOM origins — 1
+[WARN ] PROVER       [VIOLATED] P27_WALL_ROOF_INTERSECTION — Basic Wall:Wall-Ext_102Bwk-75Ins-100LBlk-12P
+                     — wall.maxZ=2.821 exceeds roofZ=2.071 by 0.750m at (1.64,-1.25)
+</code></pre></div>
+<h3 id="fine-per-element-proofs-drift-checklist">FINE — per-element proofs + Drift checklist<a class="headerlink" href="#fine-per-element-proofs-drift-checklist" title="Permanent link">&para;</a></h3>
+<p>FINE adds three things: <strong>stage timings</strong>, <strong>per-element mathematical proofs</strong>, and an <strong>automated Drift checklist</strong> that runs the 11 drift points from this document.</p>
+<p>Per-element proofs (4 proofs × 58 elements = 232 lines for SH):</p>
+<div class="highlight"><pre><span></span><code>[FINE ] PROVER       [PROVEN] P01_POSITIVE_EXTENT — Compound Ceiling:Plain — dx=9.3075 dy=5.6550 dz=0.0570
+[FINE ] PROVER       [PROVEN] P04_STOREY_Z_BAND — Doors_IntSgl:810x2110mm — Z[0.000,2.145] within [0.0,3.5]±0.5
+[FINE ] PROVER       [PROVEN] P05_NO_DUPLICATE_POSITION — GLOBAL — 58 placements, no duplicate centroids
+[FINE ] PROVER       [PROVEN] P06_NO_SAME_CLASS_OVERLAP — GLOBAL — 58 placements, no same-class overlaps
+[FINE ] PROVER       [PROVEN] P28_ROOF_COVERAGE — GLOBAL — roof covers walls
+</code></pre></div>
+<p>Automated Drift checklist (runs after PIPELINE COMPLETE):</p>
+<div class="highlight"><pre><span></span><code>[FINE ] DRIFT        LAST MILE CHECK: Sample House (LAST_MILE_PROBLEM.md §Session Checklist)
+[FINE ] DRIFT        §1  Input=Output: expected=58, actual=58 → PASS
+[FINE ] DRIFT        §2  LOD400 Geometry: 58/58 OK, 0 warn, 0 fail → PASS
+[FINE ] DRIFT        §3  Compiler Only: T18/T19/T20 guard (checked at gate)
+[FINE ] DRIFT        §6  Output Path: C_OrderLine → BOM explosion → elements (structural)
+[FINE ] DRIFT        §7  Separate From Input: bom.db=library/_SH_compile.db
+[FINE ] DRIFT        §11 Factorization: BOM line guards (checked at extraction)
+[FINE ] DRIFT        SUMMARY: 6 pass, 0 fail, 2 deferred
+</code></pre></div>
+<h3 id="spatial-accuracy-channels-s147">Spatial accuracy channels (S147)<a class="headerlink" href="#spatial-accuracy-channels-s147" title="Permanent link">&para;</a></h3>
+<p>Added for duplex mirror verification, applicable to all buildings:</p>
+<div class="highlight"><pre><span></span><code>[INFO ] SPATIAL-REPORT exact=0 drift=0 shift=215 missing=904 extra=0 | modal=[390,22183,1550] | outliers=16 sym=15 asym=1 | verdict=POSITION_ERROR
+[INFO ] SPATIAL-REPORT   class=IfcFurnishingElement total=61 outlier=15 sym=15 asym=0 action=trace_tack_leaf
+[INFO ] SPATIAL-REPORT   missing class=IfcFlowTerminal count=105 reason=DISC_EXCLUDED
+[INFO ] SPATIAL-REPORT   missing_summary: total=904 disc_excluded=904 not_in_bom=0
+</code></pre></div>
+<p><strong>Reading the report:</strong>
+- <code>modal</code> = expected global offset (BOM-local vs IFC-world coords). Not a bug.
+- <code>outliers</code> = elements deviating from modal. <code>sym</code> = real position error, <code>asym</code> = SpatialDiff mis-pairing.
+- <code>verdict</code>: <code>CLEAN</code> (0 outliers), <code>FIX_PAIRING</code> (asym &gt; sym), <code>POSITION_ERROR</code> (sym &gt; asym).
+- <code>action</code>: <code>trace_tack_leaf</code> → investigate white box. <code>fix_pairing</code> → fix SpatialDiff.
+- <code>DISC_EXCLUDED</code> = MEP elements correctly excluded from ARC BOM. <code>NOT_IN_BOM</code> = genuinely missing.</p>
+<p>IFCtoBOM emits BOM tree shape (in the IFCtoBOM log, not the compilation log):</p>
+<div class="highlight"><pre><span></span><code>[INFO ] BOM-SUMMARY  type=BUILDING boms=1 total_lines=12
+[INFO ] BOM-SUMMARY  type=FLOOR boms=8 total_lines=114
+[INFO ] BOM-SUMMARY    bom=DUPLEX_SINGLE_UNIT_STD type=FLOOR children=51 instances=51
+[INFO ] BOM-SUMMARY    bom=DX_A103_SET type=SET children=5 instances=15 verbs=105chars
+</code></pre></div>
+<p>LOD rotation for mirrored half-units:</p>
+<div class="highlight"><pre><span></span><code>[INFO ] LOD-ROTATE   IfcStairFlight guid=MD_UNKNOWN_101_B rotZ=3.1416rad (180.0°) mesh=acb724912fe1015c
+</code></pre></div>
+<h3 id="quick-commands">Quick commands<a class="headerlink" href="#quick-commands" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>grep<span class="w"> </span>VIOLATED<span class="w"> </span>logs/pipeline_*.log<span class="w">    </span><span class="c1"># Find any proof failures</span>
+grep<span class="w"> </span>DRIFT<span class="w"> </span>logs/pipeline_*.log<span class="w">       </span><span class="c1"># Automated drift checklist results</span>
+grep<span class="w"> </span>SPATIAL-REPORT<span class="w"> </span>logs/pipeline_*.log<span class="w">  </span><span class="c1"># Spatial accuracy diagnosis</span>
+grep<span class="w"> </span>BOM-SUMMARY<span class="w"> </span>logs/*ifctobom*.log<span class="w"> </span><span class="c1"># BOM tree structure</span>
+grep<span class="w"> </span>LOD-ROTATE<span class="w"> </span>logs/pipeline_*.log<span class="w">  </span><span class="c1"># B-side mesh rotation proof</span>
+grep<span class="w"> </span><span class="s2">&quot;Stage.*completed&quot;</span><span class="w"> </span>logs/pipeline_*.log<span class="w">  </span><span class="c1"># Stage timings</span>
+./scripts/rosetta_trace.sh<span class="w"> </span>&lt;log&gt;<span class="w"> </span>&lt;output.db&gt;<span class="w"> </span><span class="o">[</span>ref.db<span class="o">]</span><span class="w">  </span><span class="c1"># Cross-box correlation</span>
+</code></pre></div>
+<hr />
+<h2 id="the-last-mile-crosses-to-javascript-the-modeller-drop-2026-06-22">The Last Mile crosses to JavaScript — the Modeller Drop (2026-06-22)<a class="headerlink" href="#the-last-mile-crosses-to-javascript-the-modeller-drop-2026-06-22" title="Permanent link">&para;</a></h2>
+<p>The compiler's Last Mile is won (§1–§12). But the browser <strong>DAGeVu modeller</strong> re-implements the placement
+in JS to <em>drop</em> a BOM (building / floor / room / furniture SET) interactively — and a port is a new last mile.
+This section records the textbook drift the doc predicted, and the proof discipline that closed it.</p>
+<p><strong>The drift (exactly where §7 warned):</strong> <code>viewer/bonsai_library.js expandAssembly</code> placed leaves with a naive
+<code>world = parent + yaw·(dx,dy) + dz</code> sum. It reproduced the <em>easy</em> half of the Java reconstruction (<code>BOMWalker</code>
+was ported faithfully) but reinvented the <em>hard</em> half (<code>PlacementCollectorVisitor</code>) as a shortcut that <strong>dropped
+three of the four §7 terms</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>§7 term</th>
+<th>Java <code>PlacementCollectorVisitor</code></th>
+<th>JS <code>expandAssembly</code> (before)</th>
+<th>Symptom</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. World/sub-BOM origin</td>
+<td><code>+ m_bom.origin_x/y/z</code> on descent</td>
+<td>dropped</td>
+<td>nested sets off by the parent origin</td>
+</tr>
+<tr>
+<td>2. Parent + line accumulate</td>
+<td>✓</td>
+<td>✓ (yaw only)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>3. <code>+ ½dim → centre</code></td>
+<td>LBD-corner → centroid half-extent</td>
+<td>dropped</td>
+<td>host <strong>8434 mm</strong> off oracle</td>
+</tr>
+<tr>
+<td>(mirror)</td>
+<td><code>MIRROR:X</code> = axis <strong>reflection</strong></td>
+<td>treated as rotation / ignored</td>
+<td>DX scattered <strong>±22.8 m</strong></td>
+</tr>
+</tbody>
+</table>
+<p>The bake (<code>scripts/extract_dagevu_catalog.py</code>) compounded it: it read <code>m_bom_line.dx/dy/dz</code> verbatim but never
+read <code>m_bom.origin</code>, never flagged the LBD convention, and classified FLOOR/SET by <code>bom_level</code> not <code>bom_type</code>.</p>
+<p><strong>The fix (PR #478, sw v697):</strong> <code>expandAssembly</code> now folds the sub-BOM origin, <strong>reflects</strong> (not rotates) under
+mirror, and adds the half-extent to recover the box centre — the full §7 four-term chain. Revert-safe: the
+single-component INSERT path that already worked is untouched (<code>W-BOM-SPATIAL</code> regression PASS).</p>
+<p><strong>The proof — the JS twin of <code>geo_verify.py</code>:</strong> <code>scripts/witness_modeller_drop.js</code> loads the <em>shipped</em> module in
+a sandbox and asserts host-placement <strong>== the Java oracle to 0.000 mm</strong> (SH 55 leaves, DX set 5), the catalog
+satisfies the §1-style IntraBOM invariant (R1 <code>|dx|,|dy|&lt;10m</code>, R2 <code>|dz|&lt;4.5m</code>, R3 no absolute leak — leaks=0),
+and a known leaf lands at the Java BOM-chain centre to 0.03 mm. <em>Honest scope:</em> the <code>TranslationChainTest</code> Piano
+zone-anchor (0.674, 4.109) is a different runtime path (<code>BOMTierResolver</code>, never stored in a BOM) — we prove the
+achievable BOM-chain target, no invented coordinates.</p>
+<p><strong>The lesson (the doctrine, restated for ports):</strong> <em>Porting the walker is not porting the placer, and porting the
+algorithm is not porting the proof.</em> The shortcut survived because the simple-insert witness passed; the case that
+exercised the dropped terms was never held to the Java's numeric contract. Carry the invariant across, not just
+the idea.</p>
+<h3 id="the-geo_summary-self-proof-the-js-twin-of-7s-next-step-for-coder-done-2026-06-22">The §GEO_SUMMARY self-proof — the JS twin of §7's "Next step for coder" (DONE 2026-06-22)<a class="headerlink" href="#the-geo_summary-self-proof-the-js-twin-of-7s-next-step-for-coder-done-2026-06-22" title="Permanent link">&para;</a></h3>
+<p>The Java compiler emits its own drift verdict (<code>[GEO] SUMMARY 58 elements, 1653 pairs, worst=0.002mm, DRIFT=0</code>).
+The modeller drop used to prove correctness only in the <em>external</em> witness — if <code>expandAssembly</code> drifted again,
+the running app stayed silent. <strong>Closed (bim-ootb PR #481, sw v698):</strong> every BOM drop now emits a runtime
+<code>§GEO_SUMMARY</code> so the modeller polices itself the way the pipeline does:</p>
+<div class="highlight"><pre><span></span><code>§GEO_SUMMARY BUILDING_SH_STD [BUILDING] 55 leaves, 1485 pairs, worst=0mm, DRIFT=0
+</code></pre></div>
+<p><code>bonsai_library.js geoSummary(rootId)</code> recomputes the proven IntraBOM invariant (faithful to
+<code>witness_modeller_drop.js checkInvariant</code>) over the expanded placement, scoped by bom_type — R1 <code>|dx|,|dy|&lt;10m</code>
++ R2 <code>|dz|&lt;4.5m</code> for SET/ROOM leaves, and an R3 absolute-leak gate (all-pairs leaf-centre span vs
+<code>env = max(declared bbox, 10m)+3m</code>). It is <strong>log-only</strong> — reads the catalog + <code>expandAssembly</code> output, never
+mutates geometry or the op-log — so it cannot regress geometry.</p>
+<p><em>Honest design note (NON-INVENT):</em> the catalog's declared bbox is the parent-<strong>product</strong> aabb, not the laid-out
+footprint (<code>BED_SET</code> declares 1.2×0.6 m but its five children span 3.5×2.0 m), so a tight "span == declared bbox"
+check would false-alarm on <strong>correct</strong> data. The gate therefore uses the same <em>loose</em> <code>max(declared, 10m)+3m</code>
+absolute-leak envelope the external witness proved — it passes coherent sets and fires on the ±22.8 m scatter
+that PR #478 fixed. Witness <code>scripts/witness_modeller_geo_summary.js</code> (<strong>W-GEO-SUMMARY</strong>): all 57 droppable roots
+report <code>DRIFT=0 / worst=0mm</code>; the line format matches the Java twin; and <strong>G4 falsifiability</strong> — the gate fires
+(<code>worst=4844mm, DRIFT=1</code>) on a simulated PR #478 scatter, so the self-proof can fail, not just pass.
+Resume card: <code>prompts/RESUME_MODELLER_FOCUS.md</code> (top block).</p>
+<p><em>Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.</em></p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+
+
+                
+
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Zurück zum Seitenanfang
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/red1oon/bim-ootb" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.linkedin.com/in/red1oon/" target="_blank" rel="noopener" title="www.linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.indexes", "search.suggest", "search.highlight", "toc.follow", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "In Zwischenablage kopiert", "clipboard.copy": "In Zwischenablage kopieren", "search.result.more.one": "1 weiteres Suchergebnis auf dieser Seite", "search.result.more.other": "# weitere Suchergebnisse auf dieser Seite", "search.result.none": "Keine Suchergebnisse", "search.result.one": "1 Suchergebnis", "search.result.other": "# Suchergebnisse", "search.result.placeholder": "Suchbegriff eingeben", "search.result.term.missing": "Es fehlt", "select.version": "Version ausw\u00e4hlen"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../javascripts/fold-footnotes.js"></script>
+      
+        <script src="../../javascripts/bim_compiler_source.js"></script>
+      
+    
+  </body>
+</html>

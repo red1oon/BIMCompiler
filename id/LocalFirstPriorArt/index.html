@@ -1,0 +1,4067 @@
+
+<!doctype html>
+<html lang="id" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Construction is manufacturing. A building IS its Bill of Materials.">
+      
+      
+        <meta name="author" content="Redhuan D. Oon">
+      
+      
+        <link rel="canonical" href="https://red1oon.github.io/BIMCompiler/LocalFirstPriorArt/">
+      
+      
+        <link rel="prev" href="../StrategicIndustryPositioning/">
+      
+      
+        <link rel="next" href="../LegacyOracleAdapterSpec/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Local-First Prior Art - BIM Intent Compiler</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/custom.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  <script data-goatcounter="https://red1oon.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  
+  <meta name="robots" content="noindex">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#local-first-prior-art-how-others-did-it-their-weaknesses-our-workarounds" class="md-skip">
+          Lewati ke isi
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../" title="BIM Intent Compiler" class="md-header__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            BIM Intent Compiler
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Local-First Prior Art
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Cari" placeholder="Cari" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Cari">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Kosongkan" aria-label="Kosongkan" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Mempersiapkan pencarian
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source md-header__source--stacked">
+        <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+        <a href="https://github.com/red1oon/BIMCompiler" title="red1oon/BIMCompiler on GitHub" class="md-source" id="bim-compiler-source" target="_blank" rel="noopener">
+          <div class="md-source__icon md-icon">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+          </div>
+          <div class="md-source__repository" id="bim-compiler-repository">
+            Compiler
+          </div>
+        </a>
+        <span id="repo-totals" class="md-source-totals" title="Combined stars / forks across both repos"></span>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tab" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Start Here
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../BIMUserGuide/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  The 3 Apps
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../DeveloperGuide/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Go Deeper
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../SpatialCompilationPaper/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Papers & Positioning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../HalalTrace/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Prototypes & Demos
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../PROJECT_CHRONOLOGY/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  History & Legacy
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigasi" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../" title="BIM Intent Compiler" class="md-nav__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    BIM Intent Compiler
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start Here
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_1" id="__nav_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Start Here
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../USER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    📖 User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMToolsGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🧰 BIM Tools — User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OFFLINE_INSTALL_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🔒 Fully Offline / Air-Gapped Install
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WhatsNew/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🆕 What's New
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AboutMore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About BIM OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FeatureComparison/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Feature Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MigrateComparisonPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrate & Compare (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TwoAppsOneKernel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two Apps, One Kernel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TwoAppsOneKernelInfographicLandscape.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    One Page InfoGraphics - Landscape
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bench_suite.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Comparison (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../age_demo.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Does Your ERP Age? (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MANIFESTO/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The ERP World View
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contribute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 3 Apps
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    The 3 Apps
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Viewer Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AskFirstSteps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewer Ask — First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerFirstSteps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modeller — First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DAGeVu Modeller — User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ProposerGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Proposer Guide (propose an edit, get the proof)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FastScriptGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fast Script Guide (one door: commands and scripts)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIMGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2D Drawings → BIM (DXF2BIM)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_Yellow_List/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — the yellow list (what you fill in, defaults used)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_Prior_Art/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — prior art (what is new, what we learned, cost of using others)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_FORMAT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — format contract (marks, outputs, registry, codes; generated)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERPUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel-ERP User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TillUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    uniCenta-style Till & Kitchen Screen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CapexDashboardGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM → ERP and CAPEX Dashboard — for iDempiere users
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CapexUATGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CAPEX UAT Guide — step-by-step test script
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERP_FirstSetup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel-ERP — Your First Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MigrationGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration User Guide (Odoo · Business Central · SAP Business One)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OdooMigration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moving from Odoo — how it works, what is proven
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NinjaExcelReport_UserManual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NinjaExcel Report — User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HRBIMAssetGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HR / Tenancy / Operate Module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CivilWorksGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Civil Works — Step by Step
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TeamsOverlayGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Teams Overlay — Collaboration & Optics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Go Deeper
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Go Deeper
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DeveloperGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide (read first if you will change the code)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ArchitectureOverview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Overview (for reviewers)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../FoldEngineBlackBook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fold Engine Black Book (dev manual)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HolyGrail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Holy Grail (editable rules, live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ERPConceptRosetta.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-ERP Rosetta Stone (concept + cost)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIM_Modeller_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Modeller OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERP_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP — Every Record Has a Place
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERPIntegration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP × BIM × HR — One Building, One Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DistributedERP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Distributed ERP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TermsHowToVerify/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to verify the terms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERP_AI_ADVISORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Letting an AI work on the ERP, safely
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SQLiteWasmArchitectureActual.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How the Database Works (big picture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ViewerComponentModel.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewer Component Model (dev architecture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CLASH_DETECTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clash Detection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../JKR_SKATA/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Asset Classification & JKR/SKATA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../IFC_ExportGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IFC Export Guide (for the BIM author)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TimeMachine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Time Machine (4D Scheduling & Editing)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4D5DAnalysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4D/5D Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMtoProject/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM → Project Order (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerKernelFold/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry as a Signed-Log Fold
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Papers & Positioning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Papers & Positioning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialCompilationPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deterministic Spatial Compilation (academic paper)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AIProposerDefensiveDisclosure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Defensive Disclosure: an Outside AI Proposes, the App Decides
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_TechnicalNote/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — Deterministic 2D ⇄ BIM Round Trip (technical note)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BrowserScaleBenchmark/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Browser-Scale Benchmark (one tab, local first)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnterpriseAuthentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enterprise Authentication (security)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../StrategicIndustryPositioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Strategic Positioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local-First Prior Art
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local-First Prior Art
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Daftar isi">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Daftar isi
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-one-lever-that-changes-everything-deterministic-replay-of-semantic-verbs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The one lever that changes everything: deterministic replay of semantic verbs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#per-system-mechanism-weakness-our-workaround" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Per-system: mechanism → weakness → our workaround
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Per-system: mechanism → weakness → our workaround">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-replicache-server-re-runs-mutations-as-authority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Replicache — server re-runs mutations as authority
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-electricsql-retreated-to-read-path-only-sync" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. ElectricSQL — retreated to read-path-only sync
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-powersync-server-authority-writes-through-your-backend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. PowerSync — server authority, writes through your backend
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-livestore-nearest-neighbour-on-the-data-layer-event-sourced-sqlite-materialised" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. LiveStore — nearest neighbour on the data layer (event-sourced, SQLite-materialised)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-crdts-automerge-30-yjs-guaranteed-convergence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. CRDTs (Automerge 3.0 / Yjs) — guaranteed convergence
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-sqlsync-carl-sverre-deterministic-reducer-git-style-rebase-our-true-nearest-neighbour-on-the-lever" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. SQLSync (Carl Sverre) — deterministic reducer + git-style rebase (our true nearest neighbour on the lever)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-cr-sqlite-vulcan-vlcnio-row-level-crdt-decentralized-no-sequencer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. cr-sqlite / Vulcan (vlcn.io) — row-level CRDT, decentralized, no sequencer
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cross-cutting-weaknesses-rxdbs-downsides-list-ours-vs-theirs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cross-cutting weaknesses (RxDB's "downsides" list) — ours vs theirs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary-where-we-genuinely-win-and-where-we-just-share-the-pain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary — where we genuinely win, and where we just share the pain
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-other-axis-sqlite-wasm-at-scale-storageengine-not-sync-added-2026-06-03" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The other axis — SQLite-WASM at scale (storage/engine, not sync) — added 2026-06-03
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#update-2026-10-25-enterprise-systems-scheduled-queries-and-replication-planning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Update 2026-10-25 — enterprise systems, scheduled queries and replication planning
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Update 2026-10-25 — enterprise systems, scheduled queries and replication planning">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-has-anyone-run-real-transactions-with-no-always-on-database-or-application-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Has anyone run real transactions with no always-on database or application server?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-scheduled-queries-answered-by-the-data-holder-replication-planned-from-a-dictionary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Scheduled queries answered by the data holder; replication planned from a dictionary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-engineering-lessons-from-systems-that-move-data-through-a-relay" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Engineering lessons from systems that move data through a relay
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LegacyOracleAdapterSpec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Legacy-as-Oracle Adapter (migrate / test an ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ShipYard/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Beyond Buildings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RouteTemplate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Find & Navigate (wayfinding)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../halal/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prototypes & Demos
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Prototypes & Demos
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HalalTrace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Halalan Thayiban — halal track & trace (paper)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glassbowl.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glassbowl — the ERP engine as data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glassbowl_gravity.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glassbowl · Gravity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../RetailScaleStory.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Retail at Scale — two messages a day (benchmark story)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bim_architecture_viz.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How it works — interactive architecture tour
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    History & Legacy
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    History & Legacy
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROJECT_CHRONOLOGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Chronology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../VibeProgramming/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vibe Programming — AI + Domain Expertise
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4DGenerator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 4D Generator — Failure Catalogue & AI Findings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnablingTechTimeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enabling-Tech Timeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RED_PILL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Red Pill — Design From Grammar (origin)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LAST_MILE_PROBLEM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Last Mile — drift tracking (Java era)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMERPPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Construction Economy / ERP Wave (Java era)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SYSTEMS_INSTALLER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Self-Host the Java toolchain (legacy installer)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Daftar isi">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Daftar isi
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-one-lever-that-changes-everything-deterministic-replay-of-semantic-verbs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The one lever that changes everything: deterministic replay of semantic verbs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#per-system-mechanism-weakness-our-workaround" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Per-system: mechanism → weakness → our workaround
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Per-system: mechanism → weakness → our workaround">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-replicache-server-re-runs-mutations-as-authority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Replicache — server re-runs mutations as authority
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-electricsql-retreated-to-read-path-only-sync" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. ElectricSQL — retreated to read-path-only sync
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-powersync-server-authority-writes-through-your-backend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. PowerSync — server authority, writes through your backend
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-livestore-nearest-neighbour-on-the-data-layer-event-sourced-sqlite-materialised" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. LiveStore — nearest neighbour on the data layer (event-sourced, SQLite-materialised)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-crdts-automerge-30-yjs-guaranteed-convergence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. CRDTs (Automerge 3.0 / Yjs) — guaranteed convergence
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-sqlsync-carl-sverre-deterministic-reducer-git-style-rebase-our-true-nearest-neighbour-on-the-lever" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. SQLSync (Carl Sverre) — deterministic reducer + git-style rebase (our true nearest neighbour on the lever)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-cr-sqlite-vulcan-vlcnio-row-level-crdt-decentralized-no-sequencer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. cr-sqlite / Vulcan (vlcn.io) — row-level CRDT, decentralized, no sequencer
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cross-cutting-weaknesses-rxdbs-downsides-list-ours-vs-theirs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cross-cutting weaknesses (RxDB's "downsides" list) — ours vs theirs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary-where-we-genuinely-win-and-where-we-just-share-the-pain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary — where we genuinely win, and where we just share the pain
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-other-axis-sqlite-wasm-at-scale-storageengine-not-sync-added-2026-06-03" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The other axis — SQLite-WASM at scale (storage/engine, not sync) — added 2026-06-03
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#update-2026-10-25-enterprise-systems-scheduled-queries-and-replication-planning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Update 2026-10-25 — enterprise systems, scheduled queries and replication planning
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Update 2026-10-25 — enterprise systems, scheduled queries and replication planning">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-has-anyone-run-real-transactions-with-no-always-on-database-or-application-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Has anyone run real transactions with no always-on database or application server?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-scheduled-queries-answered-by-the-data-holder-replication-planned-from-a-dictionary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Scheduled queries answered by the data holder; replication planned from a dictionary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-engineering-lessons-from-systems-that-move-data-through-a-relay" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Engineering lessons from systems that move data through a relay
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+  <p class="i18n-note"><small>Halaman ini belum diterjemahkan; ditampilkan dalam bahasa Inggris. <a href="https://red1oon.github.io/BIMCompiler/LocalFirstPriorArt/">Halaman bahasa Inggris</a>.</small></p>
+  
+                  
+
+
+  
+  
+
+
+<h1 id="local-first-prior-art-how-others-did-it-their-weaknesses-our-workarounds">Local-First Prior Art — How Others Did It, Their Weaknesses, Our Workarounds<a class="headerlink" href="#local-first-prior-art-how-others-did-it-their-weaknesses-our-workarounds" title="Permanent link">&para;</a></h1>
+<p><em><a href="../USER_GUIDE/">← Back to the <strong>User Guide</strong></a> · <a href="../">Home</a></em></p>
+<blockquote>
+<p><strong>See also:</strong> <a href="../BrowserScaleBenchmark/">Browser-Scale Benchmark</a> — how large our one-tab, local-first app is today, measured render and memory numbers, the memory threshold, and the claims we can cite against other projects.</p>
+</blockquote>
+<p><strong>Scope.</strong> Research companion to <code>ERP.md §0.20</code> (secured/durable next phase). For each production
+local-first system: <em>how it works</em>, <em>its documented weakness</em>, and <em>the workaround our architecture
+(<code>kernel_ops</code> deterministic semantic verbs + two-domain async split + native SQL + BIM/ERP unification)
+opens</em>. Researched 2026-05-31; sources at end. Non-invent: weaknesses are each system's <em>own documented</em>
+trade-offs, not our characterisation.</p>
+<hr />
+<h2 id="the-one-lever-that-changes-everything-deterministic-replay-of-semantic-verbs">The one lever that changes everything: <strong>deterministic replay of semantic verbs</strong><a class="headerlink" href="#the-one-lever-that-changes-everything-deterministic-replay-of-semantic-verbs" title="Permanent link">&para;</a></h2>
+<p>Every system below pays a tax our prime directive (deterministic, non-invent) waives for free. Their
+common problem: <strong>the server and the client run <em>different code</em></strong> (or different merge rules), so they must
+either (a) hand-code conflict logic per mutation, (b) overwrite the user's optimistic state when the server
+disagrees, or (c) implement business logic <em>twice</em> (client + backend). Because <code>kernel_ops</code> verbs are
+<strong>deterministic and replayable</strong> (proven: <code>replay-hash == live-hash</code>, §0.16/§0.19), the <strong>same kernel runs
+in both domains</strong> (<code>ERP.md §701</code> — "the same core runs under sql.js (browser) and server"). Server result
+== client result <em>by construction</em>. That single property neutralises the central weakness of Replicache,
+PowerSync, and ElectricSQL at once.</p>
+<hr />
+<h2 id="per-system-mechanism-weakness-our-workaround">Per-system: mechanism → weakness → our workaround<a class="headerlink" href="#per-system-mechanism-weakness-our-workaround" title="Permanent link">&para;</a></h2>
+<h3 id="1-replicache-server-re-runs-mutations-as-authority">1. Replicache — server re-runs mutations as authority<a class="headerlink" href="#1-replicache-server-re-runs-mutations-as-authority" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>How:</strong> client mutators run optimistically; push endpoint <strong>re-executes</strong> them on the canonical store;
+  pull <strong>rebases</strong> (rewind to last confirmed state → apply server patch → replay pending mutations).</li>
+<li><strong>Documented weakness:</strong> the docs state the server <em>"is not necessarily expected to compute the same
+  result"</em> as the client → on rebase, <strong>optimistic changes can be overwritten</strong> (flicker / lost work);
+  mutators must be re-execution-safe (run ≥3×); conflict logic is <strong>hand-coded per mutator</strong>; <strong>no
+  zero-server mode</strong> — a backend of authority is mandatory (offline operation works, but a server remains the source of truth).</li>
+<li><strong>Our workaround:</strong> determinism removes the divergence — our verbs compute the <em>same</em> effect on both
+  sides, so there is <strong>no "server disagrees → overwrite"</strong> case and <strong>no per-mutator conflict code</strong>. And
+  we <em>do</em> have a true offline-only mode (single-user, zero server) that Replicache structurally cannot.</li>
+</ul>
+<h3 id="2-electricsql-retreated-to-read-path-only-sync">2. ElectricSQL — retreated to read-path-only sync<a class="headerlink" href="#2-electricsql-retreated-to-read-path-only-sync" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>How:</strong> syncs data <strong>out of</strong> Postgres to clients via HTTP "Shapes" (read path). <strong>Writes are NOT in the
+  sync engine</strong> — you send them through "your existing REST API."</li>
+<li><strong>Documented weakness:</strong> this is an explicit <em>retreat</em> — the blog admits bidirectional sync's
+  "conflict resolution / consistency / operational complexity" is "fundamentally difficult," so they
+  <strong>sidestepped writes entirely.</strong> Result: <strong>two disjoint paths</strong> (sync for reads, your API for writes),
+  no unified model — reads sync from Postgres via logical replication, while writes live outside the sync engine in your own API.</li>
+<li><strong>Our workaround:</strong> the op-log is <strong>symmetric</strong> — the ops you <em>push</em> are the same ops that drive <em>reads</em>
+  (one model, the log). We never need a separate write API, and there's no Postgres coupling (sql.js <em>is</em>
+  the store).</li>
+</ul>
+<h3 id="3-powersync-server-authority-writes-through-your-backend">3. PowerSync — server authority, writes through your backend<a class="headerlink" href="#3-powersync-server-authority-writes-through-your-backend" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>How:</strong> Postgres→SQLite via logical replication; op-history kept in the <strong>PowerSync Service</strong> (not your
+  DB); <strong>writes routed through your own backend</strong> so you apply business logic / authz / validation; causal
+  consistency.</li>
+<li><strong>Trade-off (by design):</strong> the backend is the write authority (default last-write-wins), so write-side
+  business logic and conflict policy live <strong>server-side</strong> — the client writes optimistically to local SQLite
+  but is not the authority. Symmetric, offline-authoritative write logic is out of scope.</li>
+<li><strong>Our workaround:</strong> the "business logic on the write path" <em>is</em> our deterministic kernel — <strong>authored
+  once, run on both sides.</strong> No double-implementation, no client/server rule drift (the thing PowerSync
+  makes you maintain by hand).</li>
+</ul>
+<h3 id="4-livestore-nearest-neighbour-on-the-data-layer-event-sourced-sqlite-materialised">4. LiveStore — nearest neighbour <em>on the data layer</em> (event-sourced, SQLite-materialised)<a class="headerlink" href="#4-livestore-nearest-neighbour-on-the-data-layer-event-sourced-sqlite-materialised" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>How:</strong> events in an eventlog → <strong>materialised into reactive client SQLite</strong> via materialisers;
+  git-inspired sync; pluggable sync backend (Cloudflare / Electric / S2).</li>
+<li><strong>Documented weakness:</strong> <strong>BETA (v0.4)</strong>; requires a sync-provider backend (no hosted service);
+  <em>"doesn't sync with existing databases," "doesn't scale for unbounded data," "no P2P,"</em> and explicitly
+  <strong>"not batteries-included — no built-in auth or file uploads."</strong></li>
+<li><strong>Our position (not a workaround — an honest delta):</strong> LiveStore is our nearest neighbour <strong>on the data
+  layer</strong> (event → reactive SQLite materialisation), the way SQLSync (§6) is our nearest neighbour <strong>on the
+  determinism lever</strong> (one reducer both sides) — together they show we hold <strong>no technique novelty</strong> on either
+  axis in isolation. Conceptually almost identical at the data layer. Differentiators are <em>application-level</em>:
+  we span <strong>BIM geometry +
+  ERP</strong> under one log, ship a real <strong>domain reduction</strong> (iDempiere AD → 5 tables + verbs), and are
+  <strong>batteries-included</strong> (AD-derived rules/validation). LiveStore is infrastructure; we are an application
+  on the same idea. Its "no auth / doesn't scale unbounded" gaps confirm these are <strong>industry-wide</strong>, not
+  ours alone.</li>
+</ul>
+<h3 id="5-crdts-automerge-30-yjs-guaranteed-convergence">5. CRDTs (Automerge 3.0 / Yjs) — guaranteed convergence<a class="headerlink" href="#5-crdts-automerge-30-yjs-guaranteed-convergence" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>How:</strong> mathematical merge → all replicas converge with no central referee.</li>
+<li><strong>Documented weakness (from the CRDT literature):</strong> <em>"CRDTs can only handle invariants that do </em><em>not</em><em>
+  depend on the most up-to-date version"</em> → they <strong>cannot enforce business invariants</strong> (transactional
+  edits, permissions); the field says use <strong>OT or server-authoritative sequencing</strong> for those. Also: <strong>no
+  built-in access control</strong>, tombstone/GC overhead, and <em>"hard to use beyond what the library anticipated."</em></li>
+<li><strong>Our workaround:</strong> we already chose the right tool (§0.18c) — a <strong>semantic op-CRDT (CmRDT) carrying ERP
+  intent</strong>, with a <strong>designated-owner node at document-handoff seams</strong> (§18.7). That <em>is</em> the
+  "server-authoritative sequencing for invariants" the literature prescribes. We do <strong>not</strong> put money-
+  touching invariants under generic LWW (which silently loses an allocation). So the #1 CRDT weakness is
+  sidestepped by design, not patched.</li>
+</ul>
+<h3 id="6-sqlsync-carl-sverre-deterministic-reducer-git-style-rebase-our-true-nearest-neighbour-on-the-lever">6. SQLSync (Carl Sverre) — deterministic reducer + git-style rebase (our true nearest neighbour on the lever)<a class="headerlink" href="#6-sqlsync-carl-sverre-deterministic-reducer-git-style-rebase-our-true-nearest-neighbour-on-the-lever" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>How:</strong> mutations are ops; a <strong>reducer compiled to WASM runs identically on client and server</strong>; on
+  reconnect the client <strong>rewinds → applies the server-ordered log → replays pending local ops</strong> (a git-style
+  rebase). The server is the sequencer/authority that assigns the canonical op order.</li>
+<li><strong>Documented weakness:</strong> the reducer is <strong>Rust compiled to WASM</strong> (custom build, opaque to inspection);
+  a <strong>server of authority is mandatory</strong> (it owns the sequence — no zero-server total order); the SQLite is a
+  replica driven by the reducer, so you don't query/extend it with arbitrary SQL the way a native store allows.</li>
+<li><strong>Our position (validation, not a workaround):</strong> SQLSync's <em>"same reducer both sides → server result ==
+  client result by construction"</em> <strong>is our determinism lever, already shipped by someone else</strong> — it is a
+  closer neighbour than LiveStore (§4) for the <em>one-kernel-both-sides</em> claim, and it tempers any
+  "first to our knowledge" framing of that lever specifically. Our deltas: kernel verbs are <strong>plain JS over
+  real sql.js</strong> (full joins/FK, runs server-side as-is, no WASM toolchain) and we add <strong>W-CHAIN/W-SIGN</strong>
+  (SQLSync has no tamper-evidence). <strong>What we lack that SQLSync has:</strong> the <strong>multi-writer total order</strong> — we
+  order by local <code>id</code> rowid (two devices both emit id 1,2,3 with diverging chains and no merge path in
+  <code>kernel_ops.js</code>). <strong>Borrow:</strong> adopt SQLSync's rebase loop <em>as</em> our §0.20 owner-seam protocol — the server
+  assigns the sequence, the client rebases pending ops on top. We are already set up for it: <code>sealChain()</code> is a
+  <strong>full recompute</strong>, so after a rebase re-orders ops under the server's sequence we simply re-seal and the
+  hash chain stays valid. This gives multi-writer ordering <strong>without</strong> a row-level CRDT and <strong>preserves
+  invariant rejection</strong> (the server reducer can refuse an op) — the thing cr-sqlite (§7) structurally cannot.</li>
+</ul>
+<h3 id="7-cr-sqlite-vulcan-vlcnio-row-level-crdt-decentralized-no-sequencer">7. cr-sqlite / Vulcan (vlcn.io) — row-level CRDT, decentralized, no sequencer<a class="headerlink" href="#7-cr-sqlite-vulcan-vlcnio-row-level-crdt-decentralized-no-sequencer" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>How:</strong> a C extension compiled to WASM turns ordinary tables into <strong>CRRs</strong> (conflict-free replicated
+  relations) — per-row/per-column causal merge keyed on a <code>site_id</code> + a logical clock (<code>crsql_db_version</code>).
+  Two offline writers merge automatically with <strong>no central referee</strong>.</li>
+<li><strong>Documented weakness:</strong> it is <strong>state/LWW-flavoured per column</strong> — it carries <strong>no intent</strong>, so it inherits
+  the core CRDT limit (§5): it <strong>cannot enforce business invariants</strong> (it will converge to a consistent but
+  <em>wrong</em> number — e.g. silently allow a double-allocation of the same pallet); no built-in access control;
+  tombstone/GC overhead.</li>
+<li><strong>Our workaround / fit:</strong> for <strong>money-touching ops, cr-sqlite is the wrong tool</strong> — same reason we rejected
+  generic LWW (§5, §0.18c): we keep <code>documents</code>/<code>journal</code> invariants at the deterministic kernel + owner seam,
+  not under automatic row-merge. <strong>But its primitive is the right one for the <em>other half</em> of our unified log:</strong>
+  <strong>BIM geometry edits are commutative-ish and LWW-safe</strong> (a moved grid line has no double-spend invariant), so
+  a <strong>two-tier merge</strong> — cr-sqlite-style <code>site_id</code>+clock auto-merge for <em>geometry</em> ops, owner-seam serialization
+  for <em>money</em> ops — fits our BIM+ERP-under-one-log unification cleanly. This is the concrete decentralized-multi-
+  writer path we currently lack, applied <strong>only where it's safe</strong>. Never route <code>Fact_Acct</code> through it.</li>
+</ul>
+<hr />
+<h2 id="cross-cutting-weaknesses-rxdbs-downsides-list-ours-vs-theirs">Cross-cutting weaknesses (RxDB's "downsides" list) — ours vs theirs<a class="headerlink" href="#cross-cutting-weaknesses-rxdbs-downsides-list-ours-vs-theirs" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Industry weakness (RxDB)</th>
+<th>Their exposure</th>
+<th>Our angle</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Initial full-dataset download</strong></td>
+<td>must replicate whole dataset to client</td>
+<td><strong>Already solved</strong> — split-DB streaming (positions/metadata/geometry tiers; <code>initbubble.json</code> 2KB) → lazy fetch, never download all</td>
+</tr>
+<tr>
+<td><strong>Non-persistent storage</strong> (Safari evicts after 7 days)</td>
+<td>universal browser gap</td>
+<td>Mitigate same way: <code>navigator.storage.persist()</code> + the signed op-log spilled to <strong>any durable replica</strong> — cloud <em>or</em> the user's own email/social (<code>DistributedERP.md §5.2b</code>). <strong>The source of truth is the signed log itself, not a host</strong> — determinism replays any replica to identical state, so the local copy is disposable (W-PERSIST). Shared gap, no magic</td>
+</tr>
+<tr>
+<td><strong>Conflict resolution complexity</strong></td>
+<td>hand-rolled per collection</td>
+<td>Semantic op-CRDT + owner node (§18.7) — concentrated at few seams, not per-collection</td>
+</tr>
+<tr>
+<td><strong>Eventual consistency unsafe for finance</strong></td>
+<td>"risk in banking/financial apps"</td>
+<td>money-touching invariants are <strong>serialised at the one total-order / CAS seam</strong> (<code>DistributedERP.md §5-6</code>) + enforced by the deterministic kernel on replay — <strong>not</strong> routed through a re-running server; single-user offline is safe (one writer). We do <strong>not</strong> pretend offline multi-writer finance is safe</td>
+</tr>
+<tr>
+<td><strong>Schema migration to N offline clients</strong></td>
+<td>"weeks-long unpredictable windows"</td>
+<td>Partial lever: compiled-AD <strong>manifest</strong> (recompile UI structure) + <strong>forward-only rules / frozen-effects</strong> replay (§0.16). <strong>Shared hard problem — honest about it</strong></td>
+</tr>
+<tr>
+<td><strong>No SQL joins / relational limits</strong></td>
+<td>document-CRDT systems can't join</td>
+<td><strong>We are stronger here</strong> — sql.js is real SQLite: full joins + FK (the AD/BOM spine). Native relational, not a document store</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="summary-where-we-genuinely-win-and-where-we-just-share-the-pain">Summary — where we genuinely win, and where we just share the pain<a class="headerlink" href="#summary-where-we-genuinely-win-and-where-we-just-share-the-pain" title="Permanent link">&para;</a></h2>
+<p><strong>Real workarounds (our architecture removes their tax):</strong>
+1. <strong>Deterministic semantic verbs → one kernel both sides</strong> — kills Replicache's overwrite-on-rebase,
+   PowerSync's double-implementation, and ElectricSQL's split read/write model in one stroke.
+2. <strong>Symmetric op-log</strong> — reads and writes are the same ops; no separate write API.
+3. <strong>Semantic op-CRDT + owner node</strong> — enforces business invariants CRDTs structurally cannot.
+4. <strong>Native SQL + relational</strong> — joins/FK that document-CRDT systems lack.
+5. <strong>Split streaming</strong> — instant first paint vs full-dataset download.</p>
+<p><strong>Shared weaknesses — no magic, be honest (these become the §0.20 phase work):</strong>
+- Browser-storage eviction → <code>persist()</code> + cloud-of-truth (W-PERSIST).
+- Cross-client schema migration → compiled-AD manifest + forward-only rules (partial).
+- Tamper-evidence is <em>nobody's</em> default → our distinctive add: hash-chain/sign the log (W-CHAIN/W-SIGN).
+- Secured multi-user <strong>needs a trust anchor</strong> — every system above has a server; ours is the async
+  <strong>server domain</strong> (§0.20), reached only when single-user/offline no longer suffices.</p>
+<p><strong>Concrete borrows for the §0.20 phase (from §6/§7, the two systems we hadn't logged):</strong>
+1. <strong>Multi-writer ordering = SQLSync's rebase loop</strong> (§6) — server assigns canonical sequence, client
+   rewinds → applies server log → replays pending local ops. We currently order by local <code>id</code> only; this fills
+   the deferred owner-seam total order <strong>and keeps invariant rejection</strong> (server reducer refuses bad ops).
+   Cheap for us because <code>sealChain()</code> already full-recomputes — rebase, then re-seal.
+2. <strong>Two-tier merge = cr-sqlite primitive <em>only</em> for geometry</strong> (§7) — <code>site_id</code>+logical-clock auto-merge for
+   BIM/geometry ops (LWW-safe, no invariant); owner-seam serialization for money ops. Decentralized multi-writer
+   exactly where it's safe, never on <code>journal</code>/<code>Fact_Acct</code>.
+3. <strong>Incremental storage = OPFS</strong> (PowerSync/Notion, storage axis below) — replace <code>kernel_ops.js</code>'s
+   whole-DB <code>db.export()</code>→IndexedDB blob (O(db size) per debounce, the I-D cost) with OPFS SAHPool incremental
+   writes. Free perf win, independent of any sync work.</p>
+<hr />
+<h2 id="the-other-axis-sqlite-wasm-at-scale-storageengine-not-sync-added-2026-06-03">The other axis — SQLite-WASM <em>at scale</em> (storage/engine, not sync) — added 2026-06-03<a class="headerlink" href="#the-other-axis-sqlite-wasm-at-scale-storageengine-not-sync-added-2026-06-03" title="Permanent link">&para;</a></h2>
+<p>The systems above are <strong>sync</strong> frameworks. A separate question: who runs a <strong>large relational app fully in
+SQLite-WASM</strong>, and what does it cost? The canonical production example is <strong>Notion</strong> — and its architecture is
+<em>our doctrine, shipped at scale.</em></p>
+<ul>
+<li><strong>Notion</strong> (the existence proof): SQLite→WASM in a <strong>Web Worker</strong> (UI thread unburdened), a <strong>SharedWorker</strong>
+  routing every tab's queries to one active tab's worker, on the <strong>OPFS SAHPool VFS</strong>. <strong>Postgres stays the
+  canonical source of truth</strong> (logical replication + WAL → the browser SQLite is a disposable <strong>projection</strong>).
+  (<a href="https://www.notion.com/blog/how-we-sped-up-notion-in-the-browser-with-wasm-sqlite">Notion blog</a>,
+  <a href="https://news.ycombinator.com/item?id=40949489">HN</a>) — this validates <a href="../DistributedERP/">DistributedERP</a>'s
+  <em>"the operator's install is the system of record; the browser is a projection"</em> (<code>ENGINE_FULL_ERP_ISSUES.md</code> §I-A).
+  Notion chose <strong>server-of-record + local projection</strong>, NOT local-first-authoritative.</li>
+</ul>
+<p>The hard constraints (each maps to one of our engine issues):</p>
+<table>
+<thead>
+<tr>
+<th>SQLite-WASM finding</th>
+<th>Source</th>
+<th>Maps to</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>OPFS storage limit: "generous but differ per environment"</strong> — no fixed cap stated on the current page (an earlier reading here said ~2 GB, up from 512 MB; re-checked 2026-10-06, that figure is no longer on the cited page). In practice the ceiling is per-tab memory — measured in <a href="../BrowserScaleBenchmark/">Browser-Scale Benchmark</a></td>
+<td><a href="https://sqlite.org/wasm/doc/trunk/persistence.md">sqlite.org/wasm persistence</a></td>
+<td>I-A storage is bounded per browser → gravity-sharding (<a href="../DistributedERP/">DistributedERP §13</a>) not optional at full-AD scale</td>
+</tr>
+<tr>
+<td><strong>OPFS = one read/write txn at a time</strong></td>
+<td><a href="https://powersync.com/blog/sqlite-persistence-on-the-web">PowerSync state-of-persistence</a></td>
+<td><strong>single-writer holds at the <em>storage</em> layer too</strong> — reinforces G-SINGLE-WRITER / I-E from below</td>
+</tr>
+<tr>
+<td><strong>Multi-MB JS strings = measurable WASM-bridge cost</strong></td>
+<td><a href="https://sqlite.org/wasm/doc/trunk/persistence.md">sqlite.org/wasm</a></td>
+<td><strong>exactly I-D</strong> (projection 52→336 KB re-export) — keep state <em>in</em> SQLite, don't marshal big strings out</td>
+</tr>
+<tr>
+<td><strong>SAHPool VFS = 3–4× I/O; 8–16 MB page cache = big win</strong></td>
+<td><a href="https://powersync.com/blog/sqlite-persistence-on-the-web">PowerSync</a></td>
+<td>free wins for the engine-perf lane (Agent E) <em>before</em> any algorithmic change</td>
+</tr>
+<tr>
+<td><strong>Needs SharedArrayBuffer + COOP/COEP headers; Safari &lt;17 out</strong></td>
+<td><a href="https://sqlite.org/wasm/doc/trunk/persistence.md">sqlite.org/wasm persistence</a></td>
+<td>a deploy gate (OCI/GH-pages must send the headers)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Why SQLite, not DuckDB-WASM or PGlite.</strong> <a href="https://motherduck.com/blog/duckdb-wasm-in-browser/">DuckDB-WASM</a> is
+OLAP (TB via Parquet range-requests) — wrong shape for transactional ERP. <a href="https://pglite.dev/">PGlite</a> (full
+Postgres-in-WASM) is tempting for <em>server-side</em> logic in-browser, but iDempiere's business logic is <strong>Java, not
+PL/pgSQL</strong>, so it does not shortcut the callout port — and it is heavier than we need. SQLite-WASM (relational +
+R-tree + small footprint) is the right tier; the prior art confirms it.</p>
+<p><strong>Sources (storage axis):</strong> <a href="https://www.notion.com/blog/how-we-sped-up-notion-in-the-browser-with-wasm-sqlite">Notion WASM SQLite</a> ·
+<a href="https://sqlite.org/wasm/doc/trunk/persistence.md">SQLite WASM persistence</a> ·
+<a href="https://powersync.com/blog/sqlite-persistence-on-the-web">PowerSync — SQLite persistence on the web</a> ·
+<a href="https://motherduck.com/blog/duckdb-wasm-in-browser/">DuckDB-WASM</a> · <a href="https://pglite.dev/">PGlite</a>.</p>
+<hr />
+<p><strong>Sources:</strong> <a href="https://rxdb.info/downsides-of-offline-first.html">RxDB — downsides of offline-first</a> ·
+<a href="https://doc.replicache.dev/concepts/how-it-works">Replicache — how it works</a> ·
+<a href="https://electric.ax/blog/2024/11/21/local-first-with-your-existing-api">ElectricSQL — local-first with your existing API</a> ·
+<a href="https://powersync.com/blog/electricsql-vs-powersync">PowerSync vs ElectricSQL</a> ·
+<a href="https://livestore.dev/">LiveStore</a> ·
+<a href="https://github.com/orbitinghail/sqlsync">SQLSync</a> ·
+<a href="https://github.com/vlcn-io/cr-sqlite">cr-sqlite (vlcn.io)</a> ·
+<a href="https://mattweidner.com/2023/09/26/crdt-survey-4.html">CRDT survey (Weidner)</a> · <a href="https://automerge.org/">Automerge</a>.</p>
+<hr />
+<h2 id="update-2026-10-25-enterprise-systems-scheduled-queries-and-replication-planning">Update 2026-10-25 — enterprise systems, scheduled queries and replication planning<a class="headerlink" href="#update-2026-10-25-enterprise-systems-scheduled-queries-and-replication-planning" title="Permanent link">&para;</a></h2>
+<p><em>Added after a second research pass: web searches and page summaries, not a full literature review, and no patent-office search. Everything below is "to our knowledge". Figures come from the cited sources through summaries — check the original before quoting them outside the project. Full reports are kept in the project repository under <code>prompts/prior_art_2026-10-25/</code>.</em></p>
+<h3 id="1-has-anyone-run-real-transactions-with-no-always-on-database-or-application-server">1. Has anyone run real transactions with no always-on database or application server?<a class="headerlink" href="#1-has-anyone-run-real-transactions-with-no-always-on-database-or-application-server" title="Permanent link">&para;</a></h3>
+<p>To our knowledge we found no documented production system for real money or regulated transactions that has neither. Every system we examined has an arbiter somewhere — a server, a quorum, a payment processor or a git host.</p>
+<table>
+<thead>
+<tr>
+<th>System</th>
+<th>Server still running?</th>
+<th>Who decides a clash</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://api.corda.net/en/pdf/corda-technical-whitepaper.pdf">Corda</a></td>
+<td>Yes: each node runs its own database; a notary service</td>
+<td>the notary</td>
+<td>no shared central ledger, but servers everywhere (facts from search excerpts)</td>
+</tr>
+<tr>
+<td><a href="https://hyperledger-fabric.readthedocs.io/en/latest/orderer/ordering_service.html">Hyperledger Fabric</a></td>
+<td>Yes: peers and an ordering service</td>
+<td>the orderers (needs a quorum)</td>
+<td>no live bank settlement found</td>
+</tr>
+<tr>
+<td>Lotus Notes / Domino</td>
+<td>Yes: Domino servers replicate</td>
+<td>first save on one server; across replicas both versions are kept and a person reconciles</td>
+<td>documents, not money</td>
+</tr>
+<tr>
+<td><a href="https://docs.couchdb.org/en/latest/replication/conflicts.html">CouchDB / PouchDB</a></td>
+<td>Yes in every documented deployment (a hub CouchDB)</td>
+<td>a deterministic winner; the merge is the application's job</td>
+<td>health records, not money</td>
+</tr>
+<tr>
+<td><a href="https://bitcoin.org/bitcoin.pdf">Bitcoin</a></td>
+<td>Yes: thousands of always-on nodes</td>
+<td>proof of work</td>
+<td>the heavy alternative; not a licensed-entity model</td>
+</tr>
+<tr>
+<td>Secure Scuttlebutt, Holochain, p2panda, Hypercore</td>
+<td>helper nodes (pubs, rooms, bootstrap)</td>
+<td>nothing at the log layer</td>
+<td>no money use found</td>
+</tr>
+<tr>
+<td>Git with plain-text accounting</td>
+<td>the git host</td>
+<td>the host's fast-forward check</td>
+<td>real books at a non-profit; no regulated use found</td>
+</tr>
+<tr>
+<td><a href="https://developer.squareup.com/docs/mobile-payments-sdk/android/offline-payments">Square, Stripe, Adyen, SumUp offline payments</a></td>
+<td>Yes: the processor, on reconnect</td>
+<td>the issuer; the merchant bears the risk; caps on amount, count and time</td>
+<td>the closest shape to a sale path with no server in it</td>
+</tr>
+<tr>
+<td>Card-chip offline and ATM stand-in</td>
+<td>the issuer or network</td>
+<td>floor limits; stricter stand-in limits</td>
+<td></td>
+</tr>
+<tr>
+<td>India's offline payments framework</td>
+<td>the issuer</td>
+<td>₹200 per payment, ₹2,000 cumulative</td>
+<td>from press reports</td>
+</tr>
+</tbody>
+</table>
+<p><strong>What this means.</strong> The nearest precedent is "work offline within a cap, settle later". What our design adds is that the settling authority is a device the owner runs, reached through a mailbox that only stores bytes. We make no claim to be first.</p>
+<h3 id="2-scheduled-queries-answered-by-the-data-holder-replication-planned-from-a-dictionary">2. Scheduled queries answered by the data holder; replication planned from a dictionary<a class="headerlink" href="#2-scheduled-queries-answered-by-the-data-holder-replication-planned-from-a-dictionary" title="Permanent link">&para;</a></h3>
+<p>The closest work, none of it exact:</p>
+<ul>
+<li><strong><a href="https://people.csail.mit.edu/hari/papers/p92.pdf">CarTel / ICEDB</a> (MIT)</strong> — SQL queries with a <code>RATE</code> clause run on the node that holds the data and are delivered at its next contact. A central portal issues the queries and receives the results; the results are not signed.</li>
+<li><strong><a href="https://courses.cs.duke.edu/spring07/cps296.1/papers/tods05-MaddenFranklinEtAl-tinydb.pdf">TinyDB</a></strong> — the <code>SAMPLE PERIOD</code> clause; results flow to one root.</li>
+<li><strong><a href="https://www.cs.cornell.edu/projects/quicksilver/public_pdfs/astrolabe.pdf">Astrolabe</a> (Cornell)</strong> — signed, expiring SQL aggregation certificates with no central server, but over always-on gossiping agents.</li>
+<li><strong><a href="https://www.cs.ucdavis.edu/~green/papers/sigrec08.pdf">ORCHESTRA</a></strong> — peers with local databases publish and reconcile on their own schedule; it carries edit logs, not query requests.</li>
+<li><strong><a href="https://learn.microsoft.com/en-us/sql/relational-databases/replication/publish/automatically-generate-join-filters-between-merge-articles">SQL Server merge replication</a></strong> — derives join filters from foreign keys; central publisher, unsigned, and its own documentation describes a gap in completeness.</li>
+<li><strong>Sync engines (Zero, ElectricSQL, PowerSync, Couchbase, Ditto)</strong> — the developer writes the sync scope by hand.</li>
+</ul>
+<p>Not found together in any one system: a serverless compiler that turns a dictionary, roles and topology into signed per-device plans, plus a signed catalog of parameterised queries answered by the data holder under its own access check, with an "as of" stamp, over a passive carrier. The search did not cover patent offices, the ACM Digital Library or several named systems (Cimbiosys, SymmetricDS, GraphQL persisted queries); it shows none surfaced, not that none exists.</p>
+<h3 id="3-engineering-lessons-from-systems-that-move-data-through-a-relay">3. Engineering lessons from systems that move data through a relay<a class="headerlink" href="#3-engineering-lessons-from-systems-that-move-data-through-a-relay" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Relays turned out not to be simple.</strong> In a measurement study of Nostr (<a href="https://arxiv.org/abs/2402.05709">Wei and Tyson</a>) each post sat on 34.6 relays on average, 98.2 % of download traffic was redundant, and about 20 % of relays were down more than 40 % of the time. Delta Chat built its own relays because ordinary mail providers filter and throttle.</li>
+<li><strong>Every pure peer-to-peer system added an always-on helper:</strong> Briar its Mailbox, Scuttlebutt its pubs and rooms, Ditto its server, Anytype its sync nodes.</li>
+<li><strong>One identity on two devices forks a log</strong> (Scuttlebutt), so a device should have its own chain.</li>
+<li><strong>History growth is a cost that persists even at small scale.</strong> Scuttlebutt's first sync fell from about 12 hours to 55 minutes only after its storage was reworked.</li>
+<li><strong>Version differences are the top support problem</strong>, and changing a data format with no central authority is still unsolved.</li>
+<li><strong>Channel limits bind first.</strong> GitHub recommends no more than about 6 pushes a minute per repository; a consumer Google Apps Script account may send to only 100 mail recipients a day.</li>
+<li><strong>A database file in a synced folder is not a transport</strong> (SQLite's own documentation and Syncthing's conflict copies both say so).</li>
+</ul>
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+
+
+                
+
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Kembali ke atas
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/red1oon/bim-ootb" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.linkedin.com/in/red1oon/" target="_blank" rel="noopener" title="www.linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.indexes", "search.suggest", "search.highlight", "toc.follow", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Tersalin ke clipboard", "clipboard.copy": "Salin ke clipboard", "search.result.more.one": "1 lagi di halaman ini", "search.result.more.other": "# lagi di halaman ini", "search.result.none": "Tidak ada dokumen yang sesuai", "search.result.one": "1 dokumen ditemukan", "search.result.other": "# dokumen ditemukan", "search.result.placeholder": "Ketik untuk mulai pencarian", "search.result.term.missing": "Tidak ada", "select.version": "Pilih versi"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../javascripts/fold-footnotes.js"></script>
+      
+        <script src="../../javascripts/bim_compiler_source.js"></script>
+      
+    
+  </body>
+</html>

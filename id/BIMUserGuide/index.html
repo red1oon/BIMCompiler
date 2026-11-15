@@ -1,0 +1,5085 @@
+
+<!doctype html>
+<html lang="id" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Construction is manufacturing. A building IS its Bill of Materials.">
+      
+      
+        <meta name="author" content="Redhuan D. Oon">
+      
+      
+        <link rel="canonical" href="https://red1oon.github.io/BIMCompiler/BIMUserGuide/">
+      
+      
+        <link rel="prev" href="../CONTRIBUTING/">
+      
+      
+        <link rel="next" href="../AskFirstSteps/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>BIM Viewer Guide - BIM Intent Compiler</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/custom.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  <script data-goatcounter="https://red1oon.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  
+  <meta name="robots" content="noindex">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#bim-ootb-browser-viewer-user-guide" class="md-skip">
+          Lewati ke isi
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../" title="BIM Intent Compiler" class="md-header__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            BIM Intent Compiler
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              BIM Viewer Guide
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Cari" placeholder="Cari" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Cari">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Kosongkan" aria-label="Kosongkan" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Mempersiapkan pencarian
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source md-header__source--stacked">
+        <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+        <a href="https://github.com/red1oon/BIMCompiler" title="red1oon/BIMCompiler on GitHub" class="md-source" id="bim-compiler-source" target="_blank" rel="noopener">
+          <div class="md-source__icon md-icon">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+          </div>
+          <div class="md-source__repository" id="bim-compiler-repository">
+            Compiler
+          </div>
+        </a>
+        <span id="repo-totals" class="md-source-totals" title="Combined stars / forks across both repos"></span>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tab" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Start Here
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  
+    
+  
+  The 3 Apps
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../DeveloperGuide/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Go Deeper
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../SpatialCompilationPaper/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Papers & Positioning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../HalalTrace/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Prototypes & Demos
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../PROJECT_CHRONOLOGY/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  History & Legacy
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigasi" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../" title="BIM Intent Compiler" class="md-nav__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    BIM Intent Compiler
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start Here
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_1" id="__nav_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Start Here
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../USER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    📖 User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMToolsGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🧰 BIM Tools — User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OFFLINE_INSTALL_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🔒 Fully Offline / Air-Gapped Install
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WhatsNew/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🆕 What's New
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AboutMore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About BIM OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FeatureComparison/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Feature Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MigrateComparisonPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrate & Compare (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TwoAppsOneKernel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two Apps, One Kernel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TwoAppsOneKernelInfographicLandscape.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    One Page InfoGraphics - Landscape
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bench_suite.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Comparison (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../age_demo.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Does Your ERP Age? (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MANIFESTO/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The ERP World View
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contribute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 3 Apps
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    The 3 Apps
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Viewer Guide
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Viewer Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Daftar isi">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Daftar isi
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start-your-first-building" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Start — your first building
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#run-it-on-your-own-machine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run it on your own machine
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3d-navigation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3D Navigation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#viewer-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Viewer Features
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Viewer Features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#find-panel-search-voice-query-and-axis-lenses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Find panel — search, voice query, and axis lenses
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Find panel — search, voice query, and axis lenses">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#room-health-the-type-sub-toggle-shown-on-terminal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Room health — the Type sub-toggle (shown on Terminal)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#room-to-room-paths-escape-routes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Room-to-room paths &amp; escape routes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-rest-of-the-navigate-drawer-world-history-page-history-home" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The rest of the Navigate drawer — World History, Page History &amp; Home
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inspect-drawer-measure-clash-x-ray-section-time-machine-4d5d-fly-tour" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inspect drawer — Measure, Clash, X-Ray, Section, Time Machine, 4D/5D, Fly Tour
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Inspect drawer — Measure, Clash, X-Ray, Section, Time Machine, 4D/5D, Fly Tour">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#your-own-4d-5d-references-rates-durations-sequence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Your own 4D / 5D references: rates, durations, sequence
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#camera-view-drawer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Camera / View drawer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cinema-film-maker-altc-the-bim-ootb-film-maker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cinema Film-Maker (Alt+C) — the BIM OOTB Film-Maker
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cinema Film-Maker (Alt+C) — the BIM OOTB Film-Maker">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-bands-the-rows-in-the-panel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The bands — the rows in the panel
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#walk-finger-mode-walk-into-the-shot-plant-the-stick-where-you-stand" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Walk finger mode — walk into the shot, plant the stick where you stand
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#whole-path-the-controls-that-act-on-the-entire-film" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Whole path — the controls that act on the entire film
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#timing-preview-and-recording" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Timing, preview and recording
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-4d-reveal-and-what-it-may-honestly-be-called" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The 4D reveal — and what it may honestly be called
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#discipline-reveal-walk-it-twice-once-dressed-once-bare" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Discipline Reveal — walk it twice, once dressed, once bare
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sun-sky-and-shadow-while-the-film-records" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sun, sky and shadow while the film records
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#baking-without-the-browser-the-silent-bake-developers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Baking without the browser — the silent bake (developers)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#display-options-palette-night-shadow-ground-background-sound-fx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Display options — Palette, Night, Shadow + Ground, Background, Sound FX
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Settings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#save-open-a-building" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Save &amp; Open a building
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#share" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Share
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pick-walk-warehouse-logistics-buildings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pick Walk — warehouse / logistics buildings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fm-operate-lenses-hr_bim_asset-alpha" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FM / Operate lenses — HR_BIM_Asset (ALPHA)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#keyboard-mouse-cheat-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Keyboard &amp; Mouse Cheat-Sheet
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further Reading
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Further Reading">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#for-developers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For developers
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AskFirstSteps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewer Ask — First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerFirstSteps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modeller — First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DAGeVu Modeller — User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ProposerGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Proposer Guide (propose an edit, get the proof)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FastScriptGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fast Script Guide (one door: commands and scripts)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIMGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2D Drawings → BIM (DXF2BIM)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_Yellow_List/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — the yellow list (what you fill in, defaults used)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_Prior_Art/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — prior art (what is new, what we learned, cost of using others)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_FORMAT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — format contract (marks, outputs, registry, codes; generated)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERPUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel-ERP User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TillUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    uniCenta-style Till & Kitchen Screen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CapexDashboardGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM → ERP and CAPEX Dashboard — for iDempiere users
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CapexUATGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CAPEX UAT Guide — step-by-step test script
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERP_FirstSetup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel-ERP — Your First Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MigrationGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration User Guide (Odoo · Business Central · SAP Business One)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OdooMigration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moving from Odoo — how it works, what is proven
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NinjaExcelReport_UserManual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NinjaExcel Report — User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HRBIMAssetGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HR / Tenancy / Operate Module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CivilWorksGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Civil Works — Step by Step
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TeamsOverlayGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Teams Overlay — Collaboration & Optics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Go Deeper
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Go Deeper
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DeveloperGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide (read first if you will change the code)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ArchitectureOverview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Overview (for reviewers)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../FoldEngineBlackBook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fold Engine Black Book (dev manual)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HolyGrail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Holy Grail (editable rules, live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ERPConceptRosetta.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-ERP Rosetta Stone (concept + cost)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIM_Modeller_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Modeller OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERP_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP — Every Record Has a Place
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERPIntegration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP × BIM × HR — One Building, One Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DistributedERP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Distributed ERP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TermsHowToVerify/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to verify the terms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERP_AI_ADVISORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Letting an AI work on the ERP, safely
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SQLiteWasmArchitectureActual.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How the Database Works (big picture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ViewerComponentModel.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewer Component Model (dev architecture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CLASH_DETECTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clash Detection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../JKR_SKATA/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Asset Classification & JKR/SKATA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../IFC_ExportGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IFC Export Guide (for the BIM author)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TimeMachine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Time Machine (4D Scheduling & Editing)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4D5DAnalysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4D/5D Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMtoProject/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM → Project Order (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerKernelFold/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry as a Signed-Log Fold
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Papers & Positioning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Papers & Positioning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialCompilationPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deterministic Spatial Compilation (academic paper)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AIProposerDefensiveDisclosure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Defensive Disclosure: an Outside AI Proposes, the App Decides
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_TechnicalNote/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — Deterministic 2D ⇄ BIM Round Trip (technical note)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BrowserScaleBenchmark/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Browser-Scale Benchmark (one tab, local first)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnterpriseAuthentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enterprise Authentication (security)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../StrategicIndustryPositioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Strategic Positioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LocalFirstPriorArt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local-First Prior Art
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LegacyOracleAdapterSpec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Legacy-as-Oracle Adapter (migrate / test an ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ShipYard/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Beyond Buildings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RouteTemplate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Find & Navigate (wayfinding)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../halal/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prototypes & Demos
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Prototypes & Demos
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HalalTrace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Halalan Thayiban — halal track & trace (paper)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glassbowl.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glassbowl — the ERP engine as data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glassbowl_gravity.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glassbowl · Gravity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../RetailScaleStory.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Retail at Scale — two messages a day (benchmark story)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bim_architecture_viz.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How it works — interactive architecture tour
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    History & Legacy
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    History & Legacy
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROJECT_CHRONOLOGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Chronology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../VibeProgramming/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vibe Programming — AI + Domain Expertise
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4DGenerator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 4D Generator — Failure Catalogue & AI Findings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnablingTechTimeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enabling-Tech Timeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RED_PILL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Red Pill — Design From Grammar (origin)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LAST_MILE_PROBLEM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Last Mile — drift tracking (Java era)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMERPPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Construction Economy / ERP Wave (Java era)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SYSTEMS_INSTALLER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Self-Host the Java toolchain (legacy installer)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Daftar isi">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Daftar isi
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start-your-first-building" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Start — your first building
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#run-it-on-your-own-machine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run it on your own machine
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3d-navigation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3D Navigation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#viewer-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Viewer Features
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Viewer Features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#find-panel-search-voice-query-and-axis-lenses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Find panel — search, voice query, and axis lenses
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Find panel — search, voice query, and axis lenses">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#room-health-the-type-sub-toggle-shown-on-terminal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Room health — the Type sub-toggle (shown on Terminal)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#room-to-room-paths-escape-routes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Room-to-room paths &amp; escape routes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-rest-of-the-navigate-drawer-world-history-page-history-home" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The rest of the Navigate drawer — World History, Page History &amp; Home
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inspect-drawer-measure-clash-x-ray-section-time-machine-4d5d-fly-tour" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inspect drawer — Measure, Clash, X-Ray, Section, Time Machine, 4D/5D, Fly Tour
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Inspect drawer — Measure, Clash, X-Ray, Section, Time Machine, 4D/5D, Fly Tour">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#your-own-4d-5d-references-rates-durations-sequence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Your own 4D / 5D references: rates, durations, sequence
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#camera-view-drawer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Camera / View drawer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cinema-film-maker-altc-the-bim-ootb-film-maker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cinema Film-Maker (Alt+C) — the BIM OOTB Film-Maker
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cinema Film-Maker (Alt+C) — the BIM OOTB Film-Maker">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-bands-the-rows-in-the-panel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The bands — the rows in the panel
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#walk-finger-mode-walk-into-the-shot-plant-the-stick-where-you-stand" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Walk finger mode — walk into the shot, plant the stick where you stand
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#whole-path-the-controls-that-act-on-the-entire-film" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Whole path — the controls that act on the entire film
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#timing-preview-and-recording" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Timing, preview and recording
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-4d-reveal-and-what-it-may-honestly-be-called" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The 4D reveal — and what it may honestly be called
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#discipline-reveal-walk-it-twice-once-dressed-once-bare" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Discipline Reveal — walk it twice, once dressed, once bare
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sun-sky-and-shadow-while-the-film-records" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sun, sky and shadow while the film records
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#baking-without-the-browser-the-silent-bake-developers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Baking without the browser — the silent bake (developers)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#display-options-palette-night-shadow-ground-background-sound-fx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Display options — Palette, Night, Shadow + Ground, Background, Sound FX
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Settings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#save-open-a-building" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Save &amp; Open a building
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#share" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Share
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pick-walk-warehouse-logistics-buildings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pick Walk — warehouse / logistics buildings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fm-operate-lenses-hr_bim_asset-alpha" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FM / Operate lenses — HR_BIM_Asset (ALPHA)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#keyboard-mouse-cheat-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Keyboard &amp; Mouse Cheat-Sheet
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further Reading
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Further Reading">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#for-developers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For developers
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+  <p class="i18n-note"><small>Halaman ini belum diterjemahkan; ditampilkan dalam bahasa Inggris. <a href="https://red1oon.github.io/BIMCompiler/BIMUserGuide/">Halaman bahasa Inggris</a>.</small></p>
+  
+                  
+
+
+  
+  
+
+
+<h1 id="bim-ootb-browser-viewer-user-guide">BIM OOTB — Browser Viewer User Guide<a class="headerlink" href="#bim-ootb-browser-viewer-user-guide" title="Permanent link">&para;</a></h1>
+<p><em><a href="../USER_GUIDE/">← Back to the <strong>User Guide</strong></a> · <a href="../">Home</a></em></p>
+<blockquote>
+<p><strong>See also:</strong> <a href="../CLASH_DETECTION/">Clash Detection</a> · <a href="../4D5DAnalysis/">4D/5D Analysis</a></p>
+</blockquote>
+<hr />
+<h2 id="quick-start-your-first-building">Quick Start — your first building<a class="headerlink" href="#quick-start-your-first-building" title="Permanent link">&para;</a></h2>
+<p><strong>Zero install.</strong> Everything runs client-side in any browser; download a building once and it is
+cached in IndexedDB, so the second visit is instant. Works on desktop and mobile.</p>
+<p>You enter through the <strong>Matrix front door</strong> (<code>index.html</code>) — <em>not</em> <code>viewer/viewer.html</code> directly (that
+bare URL opens an unrelated warehouse view). On the front door choose the <strong>Buildings / IFC</strong> door and
+the <strong>BUILDINGS &amp; IFC hub</strong> opens:</p>
+<p><a href="https://red1oon.github.io/bim-ootb/"><strong>→ Front door (index.html)</strong></a> → choose <strong>Buildings / IFC</strong></p>
+<p><img alt="The BUILDINGS &amp; IFC hub — drop a file in the centre zone, or open a ready-made City / Landmark building" src="../../assets/buildings_page.png" /></p>
+<p><strong>Three ways in — pick one:</strong></p>
+<ol>
+<li><strong>Open a ready-made building.</strong> Tap a card under <strong>City Buildings</strong> or <strong>Landmark Buildings</strong>
+   (SampleHouse, Duplex, Clinic, Terminal, Hospital, …). It downloads that building's DB (0.5–177 MB),
+   flies to it, and streams the geometry in the 3D viewer.</li>
+<li><strong>Drop your own IFC.</strong> Drag an <code>.ifc</code> / <code>.obj</code> / <code>.dae</code> / <code>.glb</code> file onto the centre <strong>"Drop IFC /
+   3D files here"</strong> zone (or tap it to browse). The file is parsed in-browser and opens in the viewer.</li>
+<li><strong>Add to an existing project.</strong> When you drop a file that matches a building already loaded, a
+   prompt offers <strong>Merge</strong> (combine disciplines — <code>Enter</code>) or <strong>New</strong> (a fresh building — <code>Escape</code>);
+   two versions of the same building can be opened side-by-side with <strong>Compare Versions</strong>.</li>
+</ol>
+<p>Once the viewer opens:</p>
+<ol>
+<li>Watch the progress bar and element flicker as geometry streams in.</li>
+<li><strong>Click any element</strong> → the Info panel shows its IFC class, name, GUID, storey, discipline, material.</li>
+<li><strong>Filter</strong> by storey or discipline (bottom-left panels) to isolate part of the model.</li>
+<li><strong>Alt+Z</strong> for X-Ray, <strong>☆</strong> for white background, <strong>✈</strong> to fly around, <strong>📷</strong> for a screenshot.</li>
+<li>Open another building → the first pauses; tap back to resume.</li>
+</ol>
+<p>Full navigation, panels, and the keyboard cheat-sheet are below.</p>
+<hr />
+<h2 id="run-it-on-your-own-machine">Run it on your own machine<a class="headerlink" href="#run-it-on-your-own-machine" title="Permanent link">&para;</a></h2>
+<p><strong>Local setup (3 steps):</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 1. Go to deploy folder</span>
+<span class="nb">cd</span><span class="w"> </span>deploy
+
+<span class="c1"># 2. Start local server</span>
+python3<span class="w"> </span>-m<span class="w"> </span>http.server<span class="w"> </span><span class="m">8080</span>
+
+<span class="c1"># 3. Open the front door in your browser, then choose Buildings / IFC</span>
+<span class="c1"># http://localhost:8080/index.html</span>
+</code></pre></div>
+<p>Per-building DBs must be in <code>deploy/buildings/</code>:
+- <code>{Name}_extracted.db</code> — metadata + transforms
+- <code>{Name}_library.db</code> — geometry BLOBs (vertices + faces)</p>
+<p>Then open <code>http://localhost:8080/index.html</code>, choose <strong>Buildings / IFC</strong>, and use the same three ways in as above.</p>
+<p><strong>DB sizes:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Building</th>
+<th>Elements</th>
+<th>Download (ext+lib)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SampleHouse</td>
+<td>65</td>
+<td>0.5 MB</td>
+</tr>
+<tr>
+<td>Duplex</td>
+<td>1,169</td>
+<td>2.8 MB</td>
+</tr>
+<tr>
+<td>Clinic</td>
+<td>16,480</td>
+<td>31 MB</td>
+</tr>
+<tr>
+<td>Terminal</td>
+<td>48,428</td>
+<td>59 MB</td>
+</tr>
+<tr>
+<td>Hospital</td>
+<td>63,917</td>
+<td>88 MB</td>
+</tr>
+<tr>
+<td>LTU AHouse</td>
+<td>125,698</td>
+<td>177 MB</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3d-navigation">3D Navigation<a class="headerlink" href="#3d-navigation" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Input</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Drag</strong></td>
+<td>Orbit camera</td>
+</tr>
+<tr>
+<td><strong>Shift + Drag</strong></td>
+<td>Pan camera</td>
+</tr>
+<tr>
+<td><strong>Right-click drag</strong></td>
+<td>Pan camera</td>
+</tr>
+<tr>
+<td><strong>Scroll / Pinch</strong></td>
+<td>Zoom</td>
+</tr>
+<tr>
+<td><strong>Click</strong> element</td>
+<td>Identify — shows IFC class, name, GUID, storey, material</td>
+</tr>
+<tr>
+<td><strong>Alt+Z</strong></td>
+<td>X-Ray toggle (15% opacity)</td>
+</tr>
+<tr>
+<td><strong>F11</strong></td>
+<td>Fullscreen toggle</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Toolbar buttons (top-right panel):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Button</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Clear</strong></td>
+<td>Remove all streamed meshes</td>
+</tr>
+<tr>
+<td><strong>X-Ray</strong></td>
+<td>Toggle 15% transparency on all elements</td>
+</tr>
+<tr>
+<td>📷</td>
+<td>Screenshot (saves PNG to Downloads/)</td>
+</tr>
+<tr>
+<td>⛶</td>
+<td>Fullscreen</td>
+</tr>
+<tr>
+<td>☆ / ☾</td>
+<td>Light/dark theme</td>
+</tr>
+<tr>
+<td>✈</td>
+<td>Fly around rendered buildings</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Panels:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Panel</th>
+<th>Position</th>
+<th>Shows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>BIM OOTB</strong></td>
+<td>Top-left</td>
+<td>Buildings, streaming progress, element flicker</td>
+</tr>
+<tr>
+<td><strong>Tools</strong></td>
+<td>Top-right</td>
+<td>Filter, buttons, building list</td>
+</tr>
+<tr>
+<td><strong>Info</strong></td>
+<td>Bottom-right</td>
+<td>Clicked element metadata (class, GUID, storey, disc, material)</td>
+</tr>
+<tr>
+<td><strong>Storeys</strong></td>
+<td>Bottom-left</td>
+<td>Floor filter — click to isolate one storey</td>
+</tr>
+<tr>
+<td><strong>Disciplines</strong></td>
+<td>Bottom-left</td>
+<td>Discipline toggle — show/hide ARC, STR, MEP etc.</td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td>Bottom-centre</td>
+<td>Current streaming state</td>
+</tr>
+</tbody>
+</table>
+<p>All panels collapse with <strong>−/+</strong>.</p>
+<hr />
+<h2 id="viewer-features">Viewer Features<a class="headerlink" href="#viewer-features" title="Permanent link">&para;</a></h2>
+<p><strong>All browsers (desktop + mobile):</strong></p>
+<ul>
+<li>3D orbit, pan, zoom (mouse or touch)</li>
+<li>Click any element → IFC class, GUID, storey, discipline, material</li>
+<li>Fly-tour — plays a routed flight through the building (entrance → highlight room → storey-by-storey);
+  drag the scrub bar to seek anywhere in the tour, <code>◀◀</code>/<code>▶▶</code> to step beat-by-beat, <code>0.5x</code>/<code>1x</code>/<code>2x</code> speed,
+  pause/resume and loop — every position is deterministic (same timestamp always gives the same camera
+  pose), so scrubbing back and forth never drifts</li>
+</ul>
+<p><img alt="Fly Tour's scrub bar — beat counter (&quot;Entrance 2/43&quot;), elapsed/total time, tick marks per beat,
+  play/pause/step controls, and speed toggles" src="../../img/viewer/fly-tour-scrub-bar.png" />
+- Film-Maker (<strong>Alt+C</strong>) — derives a complete cinematic film of the building from its own room graph,
+  then lets you edit the flight by dragging the flight itself, and records it to an mp4 in the browser.
+  See <a href="#cinema-film-maker-altc-the-bim-ootb-film-maker">Cinema Film-Maker</a> below
+- Indoor walk-through — follows IfcSpace/door graph through the building
+- X-Ray mode (Alt+Z) — a 3-state cycle: <strong>Off → X-Ray → Bounding Boxes → Off</strong>. X-Ray is the transparent
+  see-through-walls view; Bounding Boxes swaps that for each element's envelope box instead — press again to cycle
+- Measure tool — tap two points, get distance in metres
+- Section cut — horizontal clip plane, slider to cut through floors
+- Storey filter — isolate a single floor
+- Discipline toggle — show/hide ARC, STR, MEP, ELEC, etc.
+- Screenshot — saves current view as PNG
+- Deep-link URL — camera + building state encoded in hash, shareable
+- IndexedDB cache — download once, instant on revisit
+- City mode — 786 building bboxes, click to download + stream on demand</p>
+<h3 id="find-panel-search-voice-query-and-axis-lenses">Find panel — search, voice query, and axis lenses<a class="headerlink" href="#find-panel-search-voice-query-and-axis-lenses" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p><strong>New: Ask.</strong> Pick a question, get a computed answer, save the answers as one Excel file for your own AI —
+<strong><a href="../AskFirstSteps/">Viewer Ask — First Steps</a></strong> (5 minutes).</p>
+</blockquote>
+<p>The <strong>Find</strong> panel is the Viewer's search/navigate surface: a text or voice query box up top, and a
+single axis toggle underneath that re-groups the whole element tree (by storey, discipline, room,
+material, phase, or the newest axis, building <strong>Parts</strong>).</p>
+<p><strong>How to open it</strong> (with a building already loaded — see <a href="#quick-start-your-first-building">Quick Start</a>):</p>
+<ol>
+<li>On the right edge of the screen, find the toolbar rail (desktop) or the scrollable pill strip
+   (mobile) — tap the <strong>···</strong> button if the rail isn't already showing. Find the <strong>Navigate</strong> icon
+   (a sailboat glyph) among the rail's icons.
+   <img alt="The toolbar rail, with the Navigate (sailboat) icon centred between Inspect (compass) above and Open (folder) below" src="../../img/viewer/find-panel-navigate-icon.png" /></li>
+<li>Tap <strong>Navigate</strong>. The <strong>Navigate</strong> drawer opens, listing <strong>Find / Navigate</strong>, <strong>Role View</strong>, <strong>World History</strong>,
+   <strong>Page History</strong>, <strong>Home</strong>, <strong>Fly Tour</strong> and <strong>Nav LOD</strong> (for large buildings); a further row, <strong>Walk</strong>, is
+   mobile-only and won't appear on desktop.
+   Tap the <strong>Find / Navigate</strong> row (magnifying-glass icon, shortcut <strong>F</strong>).
+   <img alt="The Navigate drawer open, showing the Find / Navigate row at the top with its &quot;f&quot; shortcut" src="../../img/viewer/find-panel-navigate-drawer.png" /></li>
+<li>The <strong>Find panel</strong> opens on the right side of the screen, with the search bar focused and ready to
+   type. On desktop you can also press <strong>F</strong> to open it directly, from anywhere in the viewer.
+   <img alt="The Find panel just opened on Duplex — &quot;Search elements…&quot; search bar, three example query chips, and the axis toggle reading &quot;1/6 Storey&quot;" src="../../img/viewer/find-panel-open.png" /></li>
+<li>Tap the <strong>×</strong> in the top corner of the panel, or press <strong>F</strong> again, to close it.</li>
+</ol>
+<p><strong>The search / query box.</strong> The input (placeholder <em>"Search elements…"</em>) does two different things
+depending on what you type:</p>
+<ul>
+<li><strong>Plain text</strong> (e.g. a product name, or an IFC class like "door") filters the element tree live as
+  you type — a normal name/class search.</li>
+<li><strong>A natural-language query</strong> — anything starting with a recognized verb (<code>count</code>, <code>how many</code>,
+  <code>number of</code>, <code>total</code>, <code>cost</code>, <code>show</code>, <code>list</code>, <code>what</code>, <code>find</code>, <code>search</code>) is detected as you type.
+  Recognized phrases don't filter the tree live like a plain search does — type the phrase, then press
+  <strong>Enter</strong> to run it. Recognized query shapes include:</li>
+<li><code>count doors</code> / <code>how many beams</code> / <code>number of windows</code> — element count by IFC class.</li>
+<li><code>total cost</code> — an indicative 5D cost breakdown by IFC class, using the active rate pack.</li>
+<li><code>cost of &lt;discipline or class&gt;</code> — cost narrowed to one discipline (e.g. "cost of electrical") or class.</li>
+<li><code>total area</code> / <code>total length</code> / <code>total volume</code> [<code>of &lt;class&gt;</code>] — element count as a proxy quantity
+    (the loaded DB does not carry IFC quantity-takeoff dimensions, so this is a count, not a measured
+    area/length/volume).</li>
+<li><code>floor area</code> — a slab count (same caveat: no measured floor-area dimension in the DB).</li>
+<li><code>show &lt;discipline&gt;</code> / <code>list &lt;discipline&gt;</code> — every element in that discipline, grouped by class.</li>
+<li><code>what disciplines</code> — every discipline present in the building, with element counts.</li>
+<li><code>find &lt;term&gt;</code> / <code>search &lt;term&gt;</code> — routes back into this same Find panel as a plain search for <code>&lt;term&gt;</code>.</li>
+<li><code>floor &lt;n&gt; &lt;class&gt;</code> / <code>ground floor &lt;class&gt;</code> — a storey-scoped count (e.g. "floor 2 beams").</li>
+<li>A more general typed-language decoder is tried first and understands a broader range of phrasing;
+    the patterns above are the documented fallback when that decoder doesn't recognize the phrase.</li>
+<li>Three example chips below the box — <strong>count doors</strong>, <strong>total cost</strong>, <strong>show structure</strong> — run a
+    query immediately when tapped, no typing required.
+  <img alt="The query box with &quot;count doors&quot; typed — this recognized phrase does not filter the tree below it; pressing Enter runs the query" src="../../img/viewer/find-nl-query.png" /></li>
+<li><strong>Voice search</strong> — tap the microphone icon to the left of the text box and speak a query using the
+  same phrasing as above (e.g. "count doors"). The recognized text fills the box live while you speak
+  (shown in italics until finalized), and the finished phrase runs automatically — no need to press Enter.</li>
+</ul>
+<p><strong>The axis toggle.</strong> Below the search bar, one button shows the current axis and how many are
+available (e.g. "1/6 Storey" on a building where all six axes are present) — tap it to cycle to the
+next axis. Two axes are always present; up to four more appear only when the loaded building actually
+has that kind of data (no data, no empty axis):</p>
+<table>
+<thead>
+<tr>
+<th>Axis</th>
+<th>Always shown?</th>
+<th>What it shows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Storey</strong></td>
+<td>Always</td>
+<td>Elements grouped by building level/storey. Expand a storey to see the rooms/spaces on it (or, if the building has no room data, its most common IFC classes). Tapping a storey or room isolates it in the 3D view.</td>
+</tr>
+<tr>
+<td><strong>Discipline</strong></td>
+<td>Always</td>
+<td>Elements grouped by discipline (ARC/STR/MEP/ELEC, etc). Expand a discipline to see its IFC classes; tap a class to highlight just those elements.</td>
+</tr>
+<tr>
+<td><strong>Room</strong></td>
+<td>Only if the building has volumetric room (IfcSpace) data</td>
+<td>A highlight lens: the model is X-rayed and a translucent box is drawn over each room. Has its own <strong>Storey / Type / Path</strong> sub-toggle: group rooms by floor, by the compiler's own confidence tier (see <a href="#room-health-the-type-sub-toggle-shown-on-terminal">Room health</a> below), or route between two rooms the way a person walks. (On a building without volume data, this falls back to a plain isolate-by-room list instead.)</td>
+</tr>
+<tr>
+<td><strong>Material</strong></td>
+<td>Only if material data is present</td>
+<td>Elements grouped by material name, or — via a <strong>Material / Category</strong> sub-toggle — by a derived construction category (Concrete, Metal, Wood, Glass, Drywall/Partition, Masonry, Insulation, Tile, Finish, Membrane, Flooring, Generic, Other). Categories are a keyword-derived heuristic, not an extracted IFC property, and are labelled accordingly in the panel. Highlight lens, same X-ray-and-box behavior as Room.</td>
+</tr>
+<tr>
+<td><strong>Phase</strong></td>
+<td>Only if a construction timeline can be generated for the building</td>
+<td>Elements grouped by construction phase/task, generated on the fly (a short "Timeline generating…" message appears first).</td>
+</tr>
+<tr>
+<td><strong>Parts</strong> <em>(new)</em></td>
+<td>Only if the building has stairway, lift-shaft, or plant-room elements</td>
+<td>Elements grouped into up to three building-part categories: <strong>Stairway</strong> (stair/ramp classes), <strong>Lift Shaft</strong> (elements named for lifts/elevators), <strong>Plant Room</strong> (HVAC-plant elements — vents, ducts, fans, AHUs, dampers, chillers, pumps). Each category is itself data-gated — it only appears if the building actually has a match. Tapping a category, or a single item inside it, isolates it in the 3D view (hides the rest of the model).</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="The axis toggle cycled to Parts on HHS Office (&quot;6/6 Parts&quot;), a real institutional-scale building showing all three categories at once: Stairway (20), Lift Shaft (3), and Plant Room (1769) — Plant Room only appears on complex-class buildings like this one, never on a residential building like Duplex" src="../../img/viewer/find-axis-parts.png" /></p>
+<p><strong>Room highlight, shown on HHS Office.</strong> Level 2 alone compiles 31 real rooms (105 across the
+whole building) — tapping one X-rays the model and draws a clean, correctly-bounded translucent box
+over just that room, confirming the room's geometry is well-formed and doesn't overlap its neighbours.</p>
+<p><img alt="A single real room on HHS Office Level 2, X-rayed and highlighted as a clean translucent purple box against the surrounding structure — SAMPLE, HHS_Office_Federated data" src="../../img/viewer/find-room-highlight-hhs.png" /></p>
+<p><em>Known gap:</em> tapping a room highlights it but does not move the camera to it; on a large building, orbit or
+zoom to see a small room clearly.</p>
+<p><strong>Plant Room</strong> appears only on larger, complex buildings (Terminal, Clinic, Hospital, HHS), never on homes, and
+it matches whole words only (so "Backflow Preventer" is not taken for a vent).</p>
+<p><em>While you type a recognized query phrase, the panel shows no preview and does not filter the tree; press </em><em>Enter</em><em> to run it.</em></p>
+<h4 id="room-health-the-type-sub-toggle-shown-on-terminal">Room health — the Type sub-toggle (shown on Terminal)<a class="headerlink" href="#room-health-the-type-sub-toggle-shown-on-terminal" title="Permanent link">&para;</a></h4>
+<p>Switch the Room axis's grouping from <strong>Storey</strong> to <strong>Type</strong> and rooms are grouped by the compiler's
+own confidence in them, not by a floor: <strong>INTERNAL</strong> / <strong>INTERNAL_SMALL</strong> (ordinary enclosed rooms,
+split by size) and <strong>SUSPECT_OPEN</strong> / <strong>SUSPECT_NO_DOOR</strong> (rooms the compiler could bound
+geometrically but flags for a human rather than silently accepting). This is the compile-with-honesty
+principle made visible — a low-confidence room is <em>shown</em> as low-confidence, never quietly promoted
+to "room" just because it fits inside walls.</p>
+<p><strong>Terminal, the hard case.</strong> The compiler knows only geometry, and a tall vertical shaft can look
+room-shaped from a single floor's footprint alone. So a room candidate whose footprint recurs, stacked,
+through multiple storeys with a real stair inside it — the signature of a shaft, not a room — is
+rejected. On Terminal that leaves <strong>40 rooms</strong> (down from 59) and no stairwell in either the Room list or
+the 3D view. A Terminal copy cached in your browser before this change is corrected automatically on reload.</p>
+<p><img alt="Terminal, Type grouping open: INTERNAL (30), INTERNAL_SMALL (15), SUSPECT_OPEN (22), SUSPECT_NO_DOOR (6) — &quot;Aras 02 R3&quot; selected, an empty doorless pocket beside a stair flight, flagged rather than guessed into being a room" src="../../img/viewer/type-suspect-no-door-terminal.png" /></p>
+<p>That SUSPECT_NO_DOOR pick is the demo frame: an empty pocket next to the stair, no door found
+bounding it, so the compiler says exactly what it knows and stops — it doesn't invent a door to make
+the room look finished.</p>
+<p><em>Known gap, named not hidden:</em> Type is a <strong>health</strong> taxonomy (how sure the compiler is this is a
+room), not a <strong>semantic</strong> one — it doesn't yet know "corridor" from "office." Terminal's concourses
+show no CORRIDOR band because the only measured corridor reference on file is Duplex's 10.4 m²
+hallway, and stretching that onto a terminal concourse would be inventing, not compiling.</p>
+<h4 id="room-to-room-paths-escape-routes">Room-to-room paths &amp; escape routes<a class="headerlink" href="#room-to-room-paths-escape-routes" title="Permanent link">&para;</a></h4>
+<p>With the <strong>Room</strong> axis selected, the <strong>Path</strong> sub-mode routes between any two rooms the way a
+person actually walks — out the door, along the corridor or concourse, and up or down the stairs
+when the two rooms are on different floors. The route draws as a line through the real doors and
+stair flights it uses, and the rooms along the way stay highlighted.</p>
+<p>A route across Terminal's floors returns several stair-crossing
+legs in sequence, not a single best-guess hop — each leg names the room and the door or stair flight
+it passes through.</p>
+<p><img alt="Aerial X-ray view of Hospital with the Find panel open on the same ≈ Level 1 R35 to ≈ Level 4 R8 route, the yellow line now hugging the real corridors and stair flights on both levels instead of cutting across the open roof between wings, the panel listing three numbered room stops with each hop labelled through door: / via stair: / along Corridor — 3 doors · 1 stair · 124.7m" src="../../img/viewer/find-room-path-hospital-topview.png" /></p>
+<p><img alt="Straight-on facade view of the same Hospital route with the Find panel still open, the yellow line now tracking the real ground-floor corridor and climbing through the stair flight against the building mass instead of floating in front of it, the same three numbered stops and through door: / via stair: / along Corridor hop labels visible in the list — 3 doors · 1 stair · 124.7m" src="../../img/viewer/find-room-path-hospital-frontview.png" /></p>
+<p><img alt="Angled view along the Hospital building's length, same route — the yellow line now runs along the real corridor windows and through the doorways it uses on its way up the stair instead of floating outside the floor plates — 3 doors · 1 stair · 124.7m" src="../../img/viewer/find-room-path-hospital-sideview.png" /></p>
+<p>The drawn route follows the real walkable floor: along corridors, through doorways and up the stairs, never
+through open air or across an atrium. On some floors the line may step back through a door it has just passed,
+so the route is right even where the line is not the tidiest; the distance and the doors it lists are the
+route's own.</p>
+<p><em>Future feature — mobile:</em> scan a QR code posted beside a door to fetch that building's lightweight
+architecture model on your phone and see the escape route in Walk mode from exactly where you stand.</p>
+<h3 id="the-rest-of-the-navigate-drawer-world-history-page-history-home">The rest of the Navigate drawer — World History, Page History &amp; Home<a class="headerlink" href="#the-rest-of-the-navigate-drawer-world-history-page-history-home" title="Permanent link">&para;</a></h3>
+<p>The <strong>Navigate</strong> drawer (sailboat icon — see <a href="#find-panel-search-voice-query-and-axis-lenses">Find panel</a>
+above for how to open it) has three more rows besides Find / Navigate:</p>
+<ul>
+<li><strong>World History</strong> (shortcut <strong>W</strong>) — a cross-page timeline: every significant action across <em>every</em>
+  page — Viewer, ERP, Gravity — in one place. Opens a card with a <strong>Whole / This page</strong> toggle, day-by-day
+  navigation (<strong>‹ day</strong> / <strong>day ›</strong>), and one entry per action (what happened, where, and when).
+  <img alt="The World History card open — &quot;Whole&quot; scope, Jul 12 selected, one &quot;Opened Ifc2x3_Duplex_Federated&quot; entry from the Viewer" src="../../img/viewer/pill-world-history.png" /></li>
+<li><strong>Page History</strong> (shortcut <strong>Z</strong>) — this page's own compact dot-timeline, a small step-back/step-forward
+  bar. It only lights up once you've made edits in this session — a fresh session shows an empty strip
+  (the pair of arrows either side of a single dot), as captured here.
+  <img alt="The Page History bar — a fresh session, no edits yet to step through" src="../../img/viewer/pill-page-history.png" /></li>
+<li><strong>Home</strong> — returns to the front-door hub (the same page the <a href="#quick-start-your-first-building">Quick Start</a>
+  walkthrough starts from). Installed as a standalone app (PWA), it opens the live hub online, or falls
+  back to the cached hub offline.</li>
+</ul>
+<h3 id="inspect-drawer-measure-clash-x-ray-section-time-machine-4d5d-fly-tour">Inspect drawer — Measure, Clash, X-Ray, Section, Time Machine, 4D/5D, Fly Tour<a class="headerlink" href="#inspect-drawer-measure-clash-x-ray-section-time-machine-4d5d-fly-tour" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p><strong>Road (civil works) model?</strong> The same drawer gives extra road reports — clash between trades, earthworks volume, long / cross sections and a road Model Check. Walkthrough: <strong><a href="../CivilWorksGuide/">Civil Works — Step by Step</a></strong>.</p>
+</blockquote>
+<p>The <strong>Inspect</strong> drawer (compass icon, next to Navigate on the toolbar rail) bundles the analysis tools behind
+one icon: Measure, Clash Matrix, X-Ray / Bbox, Section Cut, Time Machine and 4D / 5D. On a road (civil
+works) model it also lists Road standards, Road report, Earthworks and Roadworks. <strong>Fly Tour</strong> now lives in
+the <strong>Navigate</strong> drawer (key <strong>L</strong>).</p>
+<p><img alt="The Inspect drawer open — Measure, Clash Matrix, X-Ray / Bbox (currently &quot;Off&quot;), Section Cut, Time Machine and 4D / 5D, each with its shortcut key" src="../../img/viewer/pill-inspect-drawer.png" /></p>
+<ul>
+<li><strong>Measure</strong>, <strong>X-Ray / Bbox</strong> and <strong>Section Cut</strong> are covered above, under
+  <a href="#viewer-features">Viewer Features</a>; <strong>Fly Tour</strong> is there too.</li>
+<li><strong>Clash Matrix</strong> (key <strong>C</strong>) opens the clash-detection engine (discipline-pair grid, tolerance, Review /
+  Resolve / Accept status, HTML + CSV export) — full coverage: <strong><a href="../CLASH_DETECTION/">Clash Detection guide</a></strong>.</li>
+<li><strong>Time Machine</strong> (key <strong>T</strong>) opens the 4D construction timeline — author a schedule, play it back,
+  try a What-if slip, share a <code>?tm=play</code> link. On a large building (100K+ elements), a box-cube pill
+  in the panel header trims GPU cost by rendering already-built-but-out-of-view elements as lightweight
+  wireframe boxes, keeping whatever you're actually looking at full LOD400.
+  The schedule it plays is generated element-by-element from the model's own geometry, and it holds a
+  measured invariant — <strong>no element appears before the first element it physically touches appears</strong>
+  (0 violations across 266,954 elements on seven buildings; see
+  <strong><a href="../4D5DAnalysis/#the-generated-4d-movie-support-order-is-a-measured-invariant">the generated 4D movie</a></strong>
+  for the numbers and the stated limits).</li>
+</ul>
+<figure style="margin: 12px 0;">
+  <a href="https://youtu.be/juwOrpqKhFE" target="_blank"><img src="https://img.youtube.com/vi/juwOrpqKhFE/hqdefault.jpg" alt="Time Machine box-proxy demo" style="width:100%; max-width:480px; border:1px solid #333; border-radius:8px;"/></a>
+  <figcaption style="text-align:center; font-style:italic; color:#666; margin-top:6px;"><a href="https://youtu.be/juwOrpqKhFE">Watch on YouTube</a> — Time Machine playback on a large building with the box-cube proxy toggle.</figcaption>
+  </figure>
+
+<p>Full authoring/editing/import walkthrough — including direct Gantt drag/resize/link and the
+  <strong>⏪ Pull Back</strong> (reschedule-as-early-as-possible) action — lives on its own page:
+  <strong><a href="../TimeMachine/">Time Machine — the 4D construction timeline</a></strong> (not re-documented here — same
+  building, same feature, reached from either app), including the
+  <strong><a href="../TimeMachine/">ERP-side entry point</a></strong> — picking an
+  element in 3D (or a red <strong>Zoom Across</strong> pill on an ERP record) jumps the Time Machine straight to
+  that element's construction moment.
+- <strong>4D / 5D</strong> (key <strong>4</strong>) opens the analytics dashboard (<code>boq_charts.html</code>) for the loaded building in a
+  new tab — full coverage: <strong><a href="../4D5DAnalysis/">4D/5D Analysis guide</a></strong>.</p>
+<h4 id="your-own-4d-5d-references-rates-durations-sequence">Your own 4D / 5D references: rates, durations, sequence<a class="headerlink" href="#your-own-4d-5d-references-rates-durations-sequence" title="Permanent link">&para;</a></h4>
+<p>The 4D schedule and the 5D cost are computed from reference files the Viewer ships with. You can pull each one
+out, change it to your own references (your firm's rates, your crew sizes, your durations) and the Viewer then
+uses your copy.</p>
+<table>
+<thead>
+<tr>
+<th>Reference</th>
+<th>File</th>
+<th>What it holds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>5D Rate Pack</strong></td>
+<td><code>rates/&lt;pack&gt;.json</code>: 16 national packs (<code>cidb2024_my</code>, <code>bcis2024_uk</code>, <code>rsmeans2024_us</code>, <code>rawlinsons2024_au</code> …) plus <code>custom_template.json</code>, an empty pack to fill</td>
+<td><code>meta</code> (name, region, currency, exchange rate, source), <code>materials</code> (a rate and unit per IFC class, e.g. <code>IfcDuct</code>: 165 per metre), <code>labor</code>, <code>equipment</code>, <code>work_packages</code>, <code>smm_sections</code>, <code>provisions</code></td>
+</tr>
+<tr>
+<td><strong>4D Schedule Template</strong></td>
+<td><code>rates/4D_template.json</code></td>
+<td><code>calendar</code>, <code>duration_rule</code>, <code>capacity_rule</code>, the 7 <code>phases</code> (substructure, superstructure, envelope …, each with its trades and whether it repeats per storey) and their <code>dependencies</code> (predecessor, successor, type, lag days)</td>
+</tr>
+<tr>
+<td><strong>4D Sequence &amp; Labour Rules</strong></td>
+<td><code>rates/sequence_rules.json</code></td>
+<td><code>SEQUENCE_RULES</code> (the trade order by IFC class) and <code>LABOR_RATES</code> (per trade: rate per day, crew size, crews, productivity per IFC class)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Pull a file out.</strong> <strong>Settings → Edit Project JSON</strong>, open the file (the rate pack entry always shows the pack that is
+active now; choose another one under <strong>5D Rate Pack</strong> first), then <strong>⬇ Download</strong>. You can also open the file
+straight from the site, for example <code>https://red1oon.github.io/bim-ootb/viewer/rates/cidb2024_my.json</code>.</p>
+<p><strong>Edit it to your own references.</strong> In the same <strong>Edit Project JSON</strong> form, change the values: a rate, a crew size,
+a lag. A list of items inside an item (such as a phase's dependencies) is shown as JSON text: keep it valid JSON;
+if it is not, the last good value is kept and nothing is broken. Your copy is saved in this browser as you type,
+separately for each rate pack, so a change to the Malaysian pack does not touch the UK one.</p>
+<p><strong>Use it.</strong> These references belong to the <strong>Viewer</strong>. After editing, switch to the Viewer tab and reload it.
+The Modeller uses them only for the cost and labour change it shows on an edited element: that change is priced with
+the same rate pack, and the same copies, as the Viewer. Where each copy takes effect:</p>
+<ul>
+<li><strong>5D Rate Pack:</strong> the Viewer (the Find panel's <code>total cost</code>, the Time Machine's schedule) and the <strong>4D / 5D</strong>
+  dashboard price with your rates as soon as they open. The pack is the one picked under <strong>Settings → 5D Rate Pack</strong>;
+  with none picked, it is the pack of the display language (English (US): <code>rsmeans2024_us</code>, English (Malaysia):
+  <code>cidb2024_my</code>), and switching the language switches the pack. The language changes only the words (descriptions,
+  trade names); the prices and the currency always come from the pack.</li>
+<li><strong>4D Schedule Template:</strong> the next schedule the Time Machine generates uses it.</li>
+<li><strong>4D Sequence &amp; Labour Rules:</strong> used by the Viewer, the <strong>4D / 5D</strong> dashboard and the MEP report when they open.</li>
+</ul>
+<p><strong>Reset</strong> in the same form discards your copy and goes back to the shipped file.</p>
+<p><strong>Keep and share it.</strong> <strong>⬇ Download</strong> saves your edited file. Your copy lives in this browser only: there is no
+<em>load from file</em> yet, so on another browser or computer the changes are entered again (or the downloaded file is
+added to the project's <code>viewer/rates/</code> folder by whoever publishes the Viewer).</p>
+<h3 id="camera-view-drawer">Camera / View drawer<a class="headerlink" href="#camera-view-drawer" title="Permanent link">&para;</a></h3>
+<p>The <strong>Camera / View</strong> drawer (camera icon) bundles three camera-control toggles, plus <strong>GI Preview</strong> (<strong>Alt+G</strong>,
+desktop only — an ambient-occlusion preview):</p>
+<p><img alt="The Camera / View drawer open — Precision (Fine), Reset Camera, and Auto-Pivot, each with its shortcut key" src="../../img/viewer/pill-camview-drawer.png" /></p>
+<ul>
+<li><strong>Precision (Fine)</strong> (Caps Lock) — slows orbit/pan/zoom for fine, deliberate camera moves (e.g. lining
+  up a screenshot or a measurement).</li>
+<li><strong>Reset Camera</strong> (key <strong>A</strong>) — snaps the camera back to its default orbit position.</li>
+<li><strong>Auto-Pivot</strong> (key <strong>Q</strong>) — toggles automatic pivot-point recentring as you orbit, so the camera keeps
+  turning around whatever's in view instead of a fixed point.</li>
+</ul>
+<h3 id="cinema-film-maker-altc-the-bim-ootb-film-maker">Cinema Film-Maker (Alt+C) — the BIM OOTB Film-Maker<a class="headerlink" href="#cinema-film-maker-altc-the-bim-ootb-film-maker" title="Permanent link">&para;</a></h3>
+<p><strong>Alt+C</strong> computes a complete cinematic film of the building — dive in, settle on the largest occupiable
+space, walk out through a real door, orbit the exterior — in well under a second, from the model's own
+room graph. No camera path is authored by hand; the defaults come from measured geometry (room area,
+reachability, door position, clearance), not a guess.</p>
+<p>Before recording starts, a <strong>Cinema path</strong> panel opens with the whole film drawn as a yellow tube
+through the building. You edit the flight by dragging the flight itself — there is no separate
+storyboard or keyframe list:</p>
+<p><img alt="The Cinema path panel the moment Alt+C is pressed, before any editing — the derived flight drawn as a yellow tube diving into the building and running out along the roof, and the panel listing just three bands (settle, one stick, stop) each with its x / z / height / length fields and aim angles, then the Whole path block: reach 15%, clip &quot;whole film&quot;, the buildup checkbox, &quot;saved — none yet —&quot;, total 53.9 s / 808 frames, and the derived line &quot;walk 36.9m · 1.69 m/s · natural 53.9s · replan 91ms&quot;" src="../../img/viewer/filmmaker-path-editor-initial.png" /></p>
+<p>That is the whole film, derived, before you touch anything — and the footer says so: <em>"Unedited · OK
+records exactly the film the preview just showed."</em> Pressing <strong>OK</strong> here is already a complete take.</p>
+<h4 id="the-bands-the-rows-in-the-panel">The bands — the rows in the panel<a class="headerlink" href="#the-bands-the-rows-in-the-panel" title="Permanent link">&para;</a></h4>
+<p>Every row is one straight <strong>band</strong> of the flight, listed in flight order with its own x, z, <strong>height</strong>
+(green) and <strong>length</strong> (orange) fields, plus its aim angles:</p>
+<ul>
+<li><strong>settle</strong> — where the dive lands and the camera looks around. Always the first row.</li>
+<li><strong>stop</strong> — end of the <em>walk</em>, not the film; its far end stretches the exterior orbit that follows.
+  Always the last row.</li>
+<li><strong>stick</strong> — any band you added yourself, labelled with how far along the walk it sits. A derived path
+  opens with one; the screenshot below has four.</li>
+</ul>
+<p>To work with them:</p>
+<ol>
+<li><strong>Click the tube</strong> anywhere along the walk to drop a new <strong>stick</strong> there. A fresh stick lies exactly
+   along the curve, so the film does not move until you move it — dropping one costs nothing.</li>
+<li><strong>Drag a band's end</strong> to pivot it about its far end (length is fixed, so this aims a leg — use it to
+   turn through a different doorway).</li>
+<li><strong>Drag a band's middle</strong> to move the whole band without pivoting.</li>
+<li><strong>Press <code>×</code> on a stick's row</strong> to remove it. <em>settle</em> and <em>stop</em> have no <code>×</code> — the dive lands on one
+   and the orbit stretches off the other, so removing either would change what the beats mean.</li>
+<li><strong>Anywhere else orbits the scene as normal</strong> — no freeze, no modifier key. A drag moves in the plane
+   you are currently facing, so orbit to a side view when you need to change height.</li>
+</ol>
+<p><img alt="The same panel after authoring — the yellow flight tube now bent through the model with draggable band handles along it, and the list grown to settle, four added sticks (each labelled with how far along the walk it sits and carrying a × to remove it) and stop, above the same Whole path block and the Preview / Cancel / Save this path / OK row" src="../../img/viewer/filmmaker-path-editor.png" /></p>
+<h4 id="walk-finger-mode-walk-into-the-shot-plant-the-stick-where-you-stand">Walk finger mode — walk into the shot, plant the stick where you stand<a class="headerlink" href="#walk-finger-mode-walk-into-the-shot-plant-the-stick-where-you-stand" title="Permanent link">&para;</a></h4>
+<p>Dropping sticks by clicking the tube works from the outside looking in. <strong>Walk finger mode</strong> does the
+same edit from the inside: you walk through the building in first person and plant the stick exactly
+where you are standing, aimed exactly where you are looking.</p>
+<ol>
+<li>Press the <strong>eye</strong> on the Cinema path panel's title row — the <strong>POV frame</strong> opens bottom-left,
+   showing the film's own camera view.</li>
+<li>Press the <strong>shoes</strong> (footprints) icon on the POV frame's header. You are now standing inside the
+   film, at the start of its walkable stretch, at walking height. (Optional shortcut: drag the
+   timeline bar to a point along the walk first, and the shoes start you there instead.)</li>
+<li><strong>Walk with the usual trackpad moves, all shown in the POV frame:</strong> move your finger to look
+   around; pinch out or scroll to glide toward what you are facing (hold <strong>Shift</strong> to glide faster);
+   the <strong>W A S D</strong> keys do the same moving from the keyboard. The rest of the screen freezes while
+   you walk — that is deliberate, it keeps the walk smooth on large buildings.</li>
+<li><strong>Enter or Spacebar plants the stick</strong> — where you stand becomes its position, where you look
+   becomes its aim — and drops you straight back into the editor to review it. A <strong>click</strong> plants
+   the stick and keeps you walking, for laying several in one pass. <strong>Esc</strong> leaves without planting.
+   Pressing the shoes again continues from the exact spot you left.</li>
+</ol>
+<p>Example on the Terminal building: walk into the POV, hit Spacebar, and <strong>stick @ 13%</strong> appears — the new
+row highlighted in the panel and its blue middle dot on the path in canvas right beside it. One keypress,
+one stick, position and aim both set:</p>
+<p><img alt="Walk finger mode's result the moment Spacebar was hit — the Cinema path panel now lists a highlighted &quot;stick @ 13%&quot; row with its pinned aim coordinates, the same stick's blue middle dot visible on the yellow flight tube in canvas just left of the panel, the POV frame bottom-left still showing the walker's own view, and the Time Machine's construction timeline still running top-left" src="../../img/viewer/filmmaker-walk-stick13.png" /></p>
+<p>Two small behaviours keep this honest: planting re-shapes the flight around the new stick immediately
+(the brief pause is the film re-deriving), and clicking again at the stick you just planted does
+<strong>not</strong> stack a duplicate — the editor reads it as "I'm done here" and returns you to review.</p>
+<h4 id="whole-path-the-controls-that-act-on-the-entire-film">Whole path — the controls that act on the entire film<a class="headerlink" href="#whole-path-the-controls-that-act-on-the-entire-film" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>reach %</strong> — how far a drag on the tube carries along the walk. Drag the tube <em>between</em> the bands and
+  it bends like a hose, falling off over that reach; a small reach edits locally, a large one sweeps the
+  whole flight.</li>
+<li><strong>clip · mark in / mark out / whole film</strong> — trims the film to a window without changing the path.
+  ⚠ <strong>Marking uses the point of the film nearest your camera</strong>, so put the camera close to the spot <em>on
+  the yellow tube</em> where the cut belongs before pressing — marking from a wide exterior view lands on
+  whichever part of the flight happens to pass closest to your eye. <strong>whole film</strong> clears the window.</li>
+<li><strong>build the model as the camera flies</strong> — the construction reveal. See the 4D note below.</li>
+<li><strong>room titles</strong> — a name card appears as the camera enters each room, sourced from the room's own
+  friendly name, never invented.</li>
+<li><strong>Reveal</strong> — cycles every discipline in the model past the camera in turn. See below.</li>
+<li><strong>Clash pairs</strong> — the model's mesh-true clash pairs (not the bounding-box list, part of which is false)
+  appear as red/blue pulsing markers from frame 0, so you see where the trouble is before it's built. A
+  pair that comes near the camera gets an on-screen label naming both sides, plus a <code>[tolerance mm /
+  clash mm]</code> line beneath them — the tolerance from that discipline pair's own rule, the clash figure
+  from the real mesh overlap depth, not a bounding-box estimate. The Reveal round's rotating stat
+  cards also gain a "N mesh-true clashes flagged" card while this is on.</li>
+<li><strong>Measure</strong> — the setting-out drawing, from the real column grid: numbered and lettered bubbles, bay
+  chains that sum to the overall, and storey rules. It is <strong>up at frame 0</strong> — built from the database, so
+  it does not wait for the model to load — and it is drawn <strong>in the model's own planes</strong>. The upright
+  storey rules occlude normally as the buildup rises — that occlusion is how you see them sitting
+  behind the building rather than painted on the lens. The ground plan lines shine through the
+  building instead: a live check found them fully hidden behind the building's own walls from every
+  camera angle otherwise, including the opening shot, so occluding them would mean they were never
+  actually seen. The chains are checked rather than
+  claimed — on Hospital, HHS and Terminal the bay chain sums to the overall exactly on all three axes
+  (<code>X 95.915 = 95.915</code>, and so on), with no per-building tuning.
+  ⚠ Where a federated model records the same storey at two elevations, the drawing <strong>states the fault
+  and draws the levels as recorded</strong> rather than choosing between them — resolving it would be inventing
+  a datum the file does not contain.</li>
+<li><strong>Storey highlight</strong> — each storey's facade (its exterior walls only, not the whole floor) glows
+  blue / green / yellow / orange in turn over the last 10 s before the closing orbit, with a
+  door-count and footprint HUD card for each shown in the same corner panel every other measure
+  uses. An exterior wall is already visible from the closing orbit shot on its own, so nothing else
+  in the building is touched, dimmed, or made transparent for this.
+  ⚠ The card's counts are read per storey <strong>name</strong>. On a federated model whose storey table carries alias
+  or duplicate names (one Terminal file lists 22 names for six real floors), the highlight can land on
+  alias rows and the card then reads <code>doors 0</code> — the doors are real, they are attributed to the storey
+  names the highlight did not pick.</li>
+<li><strong>Silent-bake size</strong> — a resolution/fps preset (720p, 1080p, or 1440p) for a <em>silent</em> bake only (see
+  below); an interactive Alt+C recording always uses the size of the window it's pressed in, so this
+  select doesn't resize anything here — it's just remembered on the saved path. There is currently no
+  time estimate shown next to it; picking 1440p over 720p costs real extra bake minutes with no on-screen
+  warning yet.</li>
+</ul>
+<p><img alt="The Cinema path panel with Clash pairs ticked and Silent-bake size set to &quot;this window (interactive)&quot; — the Whole path block showing reach 15%, clip &quot;whole film&quot;, build-the-model and room titles and Reveal and Clash pairs all checked, the Silent-bake size dropdown, the Day # counter set to top left, a saved plan selected, and the derived total 281.6s / 4225 frames line below" src="../../img/viewer/filmmaker-clash-and-bake-size.png" /></p>
+<p><img alt="The Cinema path panel with the full option set — seven bands (settle, five exit doors, stop) each with x / z / height / length and aim angles, then Whole path: reach 15%, clip &quot;whole film&quot; with mark in / mark out, and one button per film feature — Buildup (on), 4D/5D, Reveal, Clash pairs, Measure, Sun compass, Storey highlight, Load path freeze and Escape route — above Silent-bake size &quot;this window (interactive)&quot; with its copy-bake-command link, Day # counter &quot;top right&quot;, the saved-plan list, and the derived total 97.9 s · 1468 frames to bake" src="../../img/viewer/filmmaker-measure-storey-panel.png" /></p>
+<ul>
+<li><strong>saved</strong> — plans you stored for this building, with <strong>open</strong> and <strong>delete</strong>. Choosing one and pressing
+  <strong>open</strong> replaces the path you are editing; the line under it says how many bands, how many hose pulls,
+  the clip window and when it was saved.</li>
+</ul>
+<h4 id="timing-preview-and-recording">Timing, preview and recording<a class="headerlink" href="#timing-preview-and-recording" title="Permanent link">&para;</a></h4>
+<p>The <strong>total</strong> field is seconds, and the line beneath it reports the derived reality: walk length, walking
+speed in m/s, the natural duration, and how far your edit has moved it. Total duration is derived per
+building from real walk distance and pull-back distance, never a fixed number — a small building's film
+is shorter than a large one's by construction, not by a setting.</p>
+<ul>
+<li><strong>Preview</strong> flies the current edit so you can watch it before committing to a bake. The panel tells you
+  when what you are looking at is older than your last edit.</li>
+<li><strong>Save this path</strong> stores the plan — both into the building (so it travels with the file when you save
+  it) and as a named entry in the <strong>saved</strong> list above.</li>
+<li><strong>Cancel</strong> discards; <strong>OK</strong> records the film exactly as previewed. If you touched nothing, that is
+  byte-identical to the un-edited default — opening the panel to look costs you nothing.</li>
+</ul>
+<h4 id="the-4d-reveal-and-what-it-may-honestly-be-called">The 4D reveal — and what it may honestly be called<a class="headerlink" href="#the-4d-reveal-and-what-it-may-honestly-be-called" title="Permanent link">&para;</a></h4>
+<p>With <strong>build the model as the camera flies</strong> ticked, the model assembles as the film runs. What drives
+that order depends on the data in <em>your</em> building, and the viewer picks automatically:</p>
+<table>
+<thead>
+<tr>
+<th>your data</th>
+<th>what drives the reveal</th>
+<th>what to call it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>no dated tasks</td>
+<td>the derived build order, re-keyed to the flight</td>
+<td><strong>"derived build order"</strong> — never "the schedule"</td>
+</tr>
+<tr>
+<td>real dated tasks (a 4D schedule authored or imported into the building)</td>
+<td>each element's own <code>schedule_start</code></td>
+<td><strong>"a linked 4D schedule"</strong></td>
+</tr>
+</tbody>
+</table>
+<p>A building with a real schedule reveals by that schedule and nothing is re-ordered. The practical
+workflow is to <strong>preview the Time Machine first</strong> — its Gantt is in the Inspect drawer — and then place
+your <strong>mark in / mark out</strong> against what the programme actually shows.</p>
+<p><a href="https://youtu.be/sUTscAgnQMc">Watch the film</a> this feature produced on a real building.</p>
+<h4 id="discipline-reveal-walk-it-twice-once-dressed-once-bare">Discipline Reveal — walk it twice, once dressed, once bare<a class="headerlink" href="#discipline-reveal-walk-it-twice-once-dressed-once-bare" title="Permanent link">&para;</a></h4>
+<p>Tick <strong>Reveal</strong> (beside <strong>room titles</strong>) and the film grows a second act after the normal walk-out
+ends, before the closing orbit:</p>
+<ol>
+<li><strong>A brief pull-out</strong> from the spot the walk just ended on — the camera eases back a short distance,
+   still looking the way it was looking, a beat to mark that the walk itself is done.</li>
+<li><strong>A fast retrace back to where the walk began</strong> — the camera flies back along the exact same route
+   it just walked, at a quicker pace than the walk itself, easing in and out so the motion reads as
+   one continuous flight, never a jump cut.</li>
+<li><strong>The same walk, a second time, with the architecture hidden.</strong> Walls, slabs and structure fade out
+   of the shot for this lap only, so every other discipline present in the model — mechanical,
+   electrical, fire protection, plumbing, whatever the building actually has — shows through at once,
+   exactly where it really sits.</li>
+<li><strong>A parade, one discipline at a time.</strong> Each discipline present takes its own short turn alone on
+   screen, named on the title card in place of the room name, smallest-average-element disciplines
+   first and MEP last — MEP's own ducts and pipework tend to be large and easy to spot even briefly, so
+   it doesn't need the early slot the finer trades do. Each hand-off holds both the outgoing and
+   incoming discipline on screen together for a moment rather than swapping instantly, before <strong>All
+   Disciplines</strong> together closes the parade.</li>
+</ol>
+<p>Every distance and duration in this second act is derived from the same real geometry the rest of the
+film uses — the pull-out, the retrace and the walk are each priced by a real speed times a real
+measured length, never a fixed number tuned to look right on one building.</p>
+<h4 id="sun-sky-and-shadow-while-the-film-records">Sun, sky and shadow while the film records<a class="headerlink" href="#sun-sky-and-shadow-while-the-film-records" title="Permanent link">&para;</a></h4>
+<p>A recorded film is not lit the way the live viewport is. The moment recording starts, the viewer stages a
+photographic pass — and it keeps running <em>while the 4D reveal assembles the building</em>, so the light and the
+construction sequence advance together in the same take:</p>
+<table>
+<thead>
+<tr>
+<th>what happens</th>
+<th>detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>The sun travels</strong></td>
+<td>It starts at a high 55° "late morning" angle and sinks to a 6° dusk by the last frame. Shadows lengthen and swing across the film — the sun is not parked.</td>
+</tr>
+<tr>
+<td><strong>Real cast shadows</strong></td>
+<td>The building, its rooftop plant, and the distant skyline all cast real shadows onto the ground, at a 4096² shadow map for the recording only (the live viewport uses a cheaper one). The shadow frustum widens as the sun drops so a long dusk shadow isn't clipped at its tip.</td>
+</tr>
+<tr>
+<td><strong>Atmospheric sky</strong></td>
+<td>A physically-based clear-sky scattering model (Preetham), pushed warmer and hazier for the shoot — deeper reds and a tighter sun glow near the horizon than normal navigation shows.</td>
+</tr>
+<tr>
+<td><strong>Photographic reflections</strong></td>
+<td>Glass and metal reflect a real photographed sky (HDRI), refreshed as the sun moves, so the glint tracks where the sun actually is at that moment of the film.</td>
+</tr>
+<tr>
+<td><strong>Warm evening key light</strong></td>
+<td>The sun tints warm and window/fixture glow comes up as the light falls.</td>
+</tr>
+</tbody>
+</table>
+<p>You can also stage a <strong>single still</strong> rather than a whole film: <strong>Alt+S</strong> applies the same photographic pass
+and then refines the frozen frame over 16 jittered sub-pixel samples for clean edges. <strong>Alt+J</strong> adds an
+optional bounce-light (GI) pass — off by default, and deliberately excluded from film recording because it
+costs far more per frame than a film's frame budget allows. <strong>Alt+G</strong> is the lighter ambient-occlusion preview.</p>
+<p><strong>What this is honestly not.</strong> There is no weather: no rain, no snow, no cloud shapes — the sky model is a
+clear-sky one and has no cloud geometry at all. And it does not claim to be indistinguishable from a
+photograph: the geometry is idealised IFC with no real-world wear, materials are assigned by class rather
+than hand-tuned per surface, and nothing is colour-graded per shot. What it does target is the good-archviz
+tier — and, unlike a still-render tool, it does it <em>while the building assembles itself to the programme</em>.</p>
+<h4 id="baking-without-the-browser-the-silent-bake-developers">Baking without the browser — the silent bake (developers)<a class="headerlink" href="#baking-without-the-browser-the-silent-bake-developers" title="Permanent link">&para;</a></h4>
+<p>Everything above records the film from the viewer window: press <strong>Alt+C</strong>, edit, press <strong>OK</strong>, and watch
+it bake. There is also a <strong>command-line path that bakes the same film with no window and nobody
+watching</strong>. It is a development tool — it is gated behind an internal flag that a
+normal viewer session never sets, and there is no button for it.</p>
+<p>It exists because a film is expensive to check. A bake takes tens of minutes, so a defect in the HUD or
+the pacing used to be found only after sitting through the result. The silent bake lets the same film be
+produced, measured and re-run from a terminal, so what used to be a wait becomes a test.</p>
+<div class="highlight"><pre><span></span><code>node cli_silent_bake.js --db HospitalAjaibPath --out /tmp/hospital.mp4 \
+  [--plan NAME | --override file.json]          path source (default: the DB&#39;s cinema_path table)
+  [--buildup] [--label] [--reveal] [--clash] [--day tr|tl|br|bl|off]     turn a setting ON for this run
+  [--no-buildup] [--no-label] [--no-reveal] [--no-clash]                 turn a SAVED setting off for this run
+  [--frames N | --seconds S] [--fps N]          length (default: the plan&#39;s own pacing)
+  [--gpu sw|real|headful]
+  [--width W --height H] [--port P] [--log FILE] [--profile DIR]
+  [--stall-min N] [--max-frame-ms N]            health watchdog — aborts early, not at the end
+  [--timeout-min N]                             hard wall-clock cap
+</code></pre></div>
+<p><strong>With no flags at all, the saved path decides.</strong> That is the normal way to use this — save the film
+you want in the viewer, then bake it from the terminal with nothing but <code>--db</code> and <code>--out</code>.</p>
+<p><strong>It bakes your saved path, not a fresh derived one.</strong> When you press <strong>Save this path</strong>, the plan is
+written to two places: a browsable copy in the browser's own storage, and a portable copy in the
+building DB's <code>cinema_path</code> table that travels with the file. The command line reads the second one by
+default, so a path saved in the viewer bakes from the terminal with no export step. <code>--plan NAME</code> picks
+a named plan instead; <code>--override file.json</code> takes one directly.</p>
+<p><strong>The saved path carries its settings with it</strong>, not just its shape — the buildup, the room titles, the
+Reveal round and the day-counter corner you had ticked are all restored. The run announces what it
+resolved, so there is no guessing whether a setting survived:</p>
+<div class="highlight"><pre><span></span><code>§CINEMA_PATH_RESTORE bands=4 total=278.8s holdCol=true flagCol=true buildup=1 roomTitle=1 reveal=1 dayCounter=tl
+§CLI_BAKE_RESOLVED source=db:cinema_path bands=4 total=278.8s buildup=1 roomTitle=1 reveal=1 dayCounter=tl
+</code></pre></div>
+<p>The corner is worth calling out on its own, because it moves more than the day counter: the HUD is one
+stacked column, so <code>dayCounter=tl</code> puts the day counter, the path-overview box and the panel beneath
+them all on the left. One preference, one column.</p>
+<p><strong>⚠ A file saved before 2026-09-04 carries no settings.</strong> Until that date the portable table stored the
+path's shape and its beat seconds and nothing else, so a bake of an older <code>.db</code> resolves every setting
+OFF no matter what you had ticked when you saved it — the file was not wrong about the path, it simply
+never carried the answer. <code>§CINEMA_PATH_RESTORE</code> says which kind of file you have: <code>flagCol=false</code> is the
+old shape. <strong>Re-save the path once from a current build and it travels properly from then on.</strong> In the
+meantime the flags above still work, which is what they are for.</p>
+<p><strong>Arguments override the saved settings, in both directions.</strong> A flag you do not pass leaves the saved
+value alone — that is why a bare <code>--db</code>/<code>--out</code> run reproduces exactly what you authored. Passing
+<code>--buildup</code> turns it on over a saved off; passing <code>--no-buildup</code> turns it off over a saved on. So one
+saved path can be baked several ways without re-saving it, which is how you compare two cuts of the same
+film:</p>
+<div class="highlight"><pre><span></span><code>node cli_silent_bake.js --db Hospital_silent --out /tmp/full.mp4      # exactly as authored
+node cli_silent_bake.js --db Hospital_silent --out /tmp/nobuild.mp4 --no-buildup   # same path, no 4D build-up
+</code></pre></div>
+<p><strong>Use <code>--gpu real</code>.</strong> Headless Chrome defaults to software rendering, which is far too slow to finish a
+film. <code>--gpu real</code> reaches the machine's actual GPU with no display attached, and the run prints which
+renderer it got so the choice is never assumed. <code>--gpu sw</code> is kept only for comparison.</p>
+<p><strong>Measured on this machine (RTX 4060 laptop, headless).</strong> A saved path is always shorter than the film
+it produces, because the Reveal round's second act is derived rather than authored:</p>
+<table>
+<thead>
+<tr>
+<th>building</th>
+<th>elements</th>
+<th>frames</th>
+<th>film</th>
+<th>wall clock</th>
+<th>per frame</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HHS Office (federated)</td>
+<td>6,880</td>
+<td>1,901</td>
+<td>126.7 s</td>
+<td><strong>15 min 21 s</strong></td>
+<td>0.485 s</td>
+</tr>
+<tr>
+<td>Hospital</td>
+<td>63,415</td>
+<td>2,937</td>
+<td>195.8 s</td>
+<td><strong>~30–45 min</strong></td>
+<td>0.6–0.9 s</td>
+</tr>
+</tbody>
+</table>
+<p>With clash markers on, the same Hospital film at 1080p takes <strong>80–90 minutes</strong> on that machine. 1280p/1440p have not been measured.</p>
+<p>Hospital carries <strong>9x</strong> the elements for under <strong>2x</strong> the per-frame cost — the frame cost scales far
+better than the model does, and most of the difference in wall clock is simply that its film is longer
+(its walk is 278.8 s to HHS's 61 s, and its Reveal round adds 87.4 s of its own across four
+disciplines instead of one). Three shipped mechanisms are what make that rate possible, and each names
+itself in the log so a regression is visible rather than guessed: <code>§MAXQ_FRAME_BUDGET</code> (a baked frame
+costs 20 composer renders, not 40), <code>§NIGHT_BAKE_POOL</code> (the point-light count is frozen for the bake —
+a changed count recompiles every shader in the scene, measured at 13–53 s for such a frame against
+0.8–1.3 s when it holds), and <code>§GLOW_BUILDUP_EARLY_OUT</code>.</p>
+<p><strong>What this is honestly not.</strong> It is not a faster renderer — it bakes the same frames at the same
+quality settings as the window does, and it will not make a film cheaper than the frame budget allows.
+It is not a user feature, and it does not replace watching the result; what it replaces is <em>guessing</em>.
+Its real value is that the film's own <code>§</code>-tagged log can be read afterwards and asserted against — which
+is how several shipped-but-unverified behaviours were finally confirmed to fire in a real bake rather
+than only in theory.</p>
+<h3 id="display-options-palette-night-shadow-ground-background-sound-fx">Display options — Palette, Night, Shadow + Ground, Background, Sound FX<a class="headerlink" href="#display-options-palette-night-shadow-ground-background-sound-fx" title="Permanent link">&para;</a></h3>
+<p>The <strong>Palette</strong> pill (key <strong>P</strong>) opens one panel for every visual-appearance control — five lighting
+sliders, plus four more toggles appended below them:</p>
+<p><img alt="The Display options panel — Ambience/Sun/Exposure/Ambient/Hemisphere sliders, then Night, Shadow + Ground (3 texture swatches), Background, and Sound FX rows" src="../../img/viewer/pill-display-options.png" /></p>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Shortcut</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ambience / Sun / Exposure / Ambient / Hemisphere</td>
+<td>—</td>
+<td>Five sliders — overall scene lighting, sun intensity, camera exposure, ambient fill light, and sky/ground hemisphere light.</td>
+</tr>
+<tr>
+<td><strong>Night</strong></td>
+<td><strong>N</strong></td>
+<td>Toggles a night lighting preset.</td>
+</tr>
+<tr>
+<td><strong>Shadow + Ground</strong></td>
+<td><strong>H</strong></td>
+<td>Cycles <strong>Off → Grass → Earth → Paved</strong> — a real ground-texture swatch under the building, with matching shadows.</td>
+</tr>
+<tr>
+<td><strong>Background</strong></td>
+<td><strong>B</strong></td>
+<td>Reverses the background (dark ↔ light/white).</td>
+</tr>
+<tr>
+<td><strong>Sound FX</strong></td>
+<td><strong>V</strong></td>
+<td>Toggles synthesized UI/Time-Machine/Fly-Tour sound cues — no audio files, off by default.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="settings">Settings<a class="headerlink" href="#settings" title="Permanent link">&para;</a></h3>
+<p>The <strong>Settings</strong> pill (key <strong>=</strong>) opens a panel with four sections:</p>
+<p><img alt="The Settings panel's &quot;Edit Project JSON&quot; section expanded — Corporate/Branding, Grid Rules, Clash Rules, ERP Globe Bubbles, Sound Effects, and 4D Schedule (this building), plus the collapsed 5D Rate Pack and Cache Info sections below" src="../../img/viewer/pill-settings-json-hub.png" /></p>
+<ul>
+<li><strong>Pill Icons</strong> — show/hide/reorder every toolbar action, and see each one's current shortcut key at a
+  glance (this is also how a hidden action like a data-gated drawer row becomes visible once its data
+  exists). A <strong>Reset Pill Icons</strong> button restores the defaults.</li>
+<li><strong>Edit Project JSON</strong> — a power-user hub: open and edit any of the project's config files directly
+  in-browser (auto-inferred form fields, not raw text), then <strong>Download</strong> the edited file to commit back
+  to the repo, or <strong>Reset</strong> to discard the override. Eleven files are registered: <strong>Corporate / Branding</strong>,
+  <strong>Grid Rules</strong>, <strong>Clash Rules</strong>, <strong>Road Standards (ATJ sign table)</strong>, <strong>Civil Labels</strong>, <strong>ERP Globe Bubbles</strong>,
+  <strong>Sound Effects</strong> (the audio <em>parameters</em> file — distinct from the Display-options Sound FX on/off toggle above),
+  the three 4D / 5D references (<strong>5D Rate Pack</strong> of the active pack, <strong>4D Schedule Template</strong>, <strong>4D Sequence &amp;
+  Labour Rules</strong>: see <em>Your own 4D / 5D references</em> above), and a <strong>read-only</strong> view of the <strong>4D Schedule</strong>
+  captured for the currently-open building (the same data Time Machine authors).</li>
+<li><strong>5D Rate Pack</strong> — pick which cost-rate pack is active (the same rate pack the Find panel's
+  <code>total cost</code> query and the 4D/5D dashboard both price against).</li>
+<li><strong>Cache Info</strong> — see how much this building's data is using in IndexedDB, and clear it.</li>
+</ul>
+<p><img alt="The full Settings panel, Pill Icons section open — every toolbar action listed with its visibility and shortcut" src="../../img/viewer/pill-settings-panel.png" /></p>
+<h3 id="save-open-a-building">Save &amp; Open a building<a class="headerlink" href="#save-open-a-building" title="Permanent link">&para;</a></h3>
+<p>Two toolbar pills, both native-dialog verbs — distinct from the Hub's building-open flow in
+<a href="#quick-start-your-first-building">Quick Start</a>:</p>
+<p><img alt="The Save and Open pill icons on the toolbar rail" src="../../img/viewer/pill-save-open.png" /></p>
+<ul>
+<li><strong>Save Building</strong> (<strong>Ctrl+S</strong>) — saves the currently open building, including any session edits
+  (clash resolutions, captured 4D schedule, etc.), to a <code>.db</code> file via the browser's native Save As dialog.</li>
+<li><strong>Open Building</strong> (<strong>Ctrl+O</strong>) — opens a previously-saved <code>.db</code> file via a native Open dialog, replacing
+  the current scene.</li>
+</ul>
+<h3 id="share">Share<a class="headerlink" href="#share" title="Permanent link">&para;</a></h3>
+<p>The <strong>Share</strong> pill (key <strong>/</strong>) is a step up from the plain deep-link URL: on mobile, it hands the current
+view to the device's native share sheet with a snapshot photo attached; on desktop (no native share API),
+it shows a preview card — a live snapshot, the building name, the same deep-link URL described above, and
+<strong>Copy Link</strong> / <strong>Cancel</strong> buttons. If a clash is open when you tap Share, the shared text and photo are
+about that specific clash instead of the general view.</p>
+<p><img alt="The desktop Share preview card — a live canvas snapshot, the building name, the shareable deep-link URL, and Copy Link / Cancel" src="../../img/viewer/pill-share-preview.png" /></p>
+<h3 id="pick-walk-warehouse-logistics-buildings">Pick Walk — warehouse / logistics buildings<a class="headerlink" href="#pick-walk-warehouse-logistics-buildings" title="Permanent link">&para;</a></h3>
+<p>A data-gated pill (only appears when the loaded building carries locator-GUID bins, e.g. a warehouse
+building like GardenWorld) that walks a picking route over the bins: fly to the next bin in order, scan
+a bin's QR/type code, and record a signed pick group per bin. Not covered further here — it needs a
+warehouse-class building loaded to demonstrate, outside this general viewer guide's scope.</p>
+<p><a id="find-lenses-tenancy"></a></p>
+<h3 id="fm-operate-lenses-hr_bim_asset-alpha">FM / Operate lenses — HR_BIM_Asset  <em>(ALPHA)</em><a class="headerlink" href="#fm-operate-lenses-hr_bim_asset-alpha" title="Permanent link">&para;</a></h3>
+<p>The viewer carries one <strong><code>FM / Operate</code></strong> toolbar pill (a building glyph) that opens a wake-aware drawer of
+operate-phase lenses — <strong>Occupancy</strong> (incl. lease status) · <strong>Presence</strong> · <strong>Unit class</strong> · <strong>Assets / IoT</strong> ·
+<strong>Dashboard</strong>. It appears only when the loaded building carries operate data, and each lens is enabled only when
+<em>its</em> data exists (else greyed) — no data, no clutter.</p>
+<p>→ <strong>Full walkthrough (with screenshots): <a href="../HRBIMAssetGuide/">HR / Tenancy / Operate Module guide</a>.</strong></p>
+<p><strong>Collaborate on the model — the Teams overlay.</strong> One toolbar toggle overlays <strong>who-did-what</strong> on the building:
+identity-coloured dots on elements, a history/blame tree, a chat that <strong>is</strong> the signed log,
+and dashboard graphs — off by default, pixel-identical until you turn it on. It is available in the Modeller and
+Kernel-ERP; the Viewer does not carry the toggle.
+→ <strong><a href="../TeamsOverlayGuide/">Teams Overlay guide (with screenshots)</a>.</strong></p>
+<p><strong>Mobile-only (touch-optimised):</strong></p>
+<ul>
+<li>Site Camera — phone camera with GPS + compass + timestamp overlay</li>
+<li>BIM picture-in-picture — 3D snapshot composited into the photo</li>
+<li>Markup tools — arrow, circle, freehand draw, text annotations</li>
+<li>Share → WhatsApp (with BIM context baked into image)</li>
+<li>GPS Walk Mode — blue dot tracks position in the model</li>
+<li>Wall X-Ray — tap a wall in Walk Mode to see MEP behind it</li>
+<li>Issue log — capture site issues with photo + GPS + classification, export to Excel</li>
+</ul>
+<hr />
+<h2 id="keyboard-mouse-cheat-sheet">Keyboard &amp; Mouse Cheat-Sheet<a class="headerlink" href="#keyboard-mouse-cheat-sheet" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Key / Gesture</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Drag</strong></td>
+<td>Orbit camera</td>
+</tr>
+<tr>
+<td><strong>Shift + Drag</strong> / <strong>Right-click drag</strong></td>
+<td>Pan camera</td>
+</tr>
+<tr>
+<td><strong>Scroll / Pinch</strong></td>
+<td>Zoom</td>
+</tr>
+<tr>
+<td><strong>Click</strong> element</td>
+<td>Identify — IFC class, name, GUID, storey, material</td>
+</tr>
+<tr>
+<td><strong>'</strong> (apostrophe)</td>
+<td>Toggle <strong>Hover Name</strong> — hovering (no click) shows the friendly name + room of whatever's under the cursor; also a checkbox in the Find panel. Dead key on some international keyboard layouts (US-International, Spanish, Portuguese, French-Canadian) — fails harmlessly there, use the checkbox instead.</td>
+</tr>
+<tr>
+<td><strong>Front / Back / Left / Right</strong></td>
+<td>Elevation views</td>
+</tr>
+<tr>
+<td><strong>Roof</strong></td>
+<td>Roof plan view</td>
+</tr>
+<tr>
+<td><strong>Alt+Z</strong></td>
+<td>Toggle X-ray mode</td>
+</tr>
+<tr>
+<td><strong>Alt+C</strong></td>
+<td><a href="#cinema-film-maker-altc-the-bim-ootb-film-maker">Film-Maker</a> — derive a cinematic film, edit the flight, record</td>
+</tr>
+<tr>
+<td><strong>Alt+S</strong></td>
+<td><a href="#sun-sky-and-shadow-while-the-film-records">Photographic still</a> — stages the sun/sky/shadow pass, then refines the frozen frame over 16 sub-pixel samples</td>
+</tr>
+<tr>
+<td><strong>Alt+J</strong></td>
+<td>Bounce-light (GI) pass — optional, off by default, not used while recording a film</td>
+</tr>
+<tr>
+<td><strong>Alt+G</strong></td>
+<td>GI Preview — ambient-occlusion preview (desktop only)</td>
+</tr>
+<tr>
+<td><strong>Alt+P</strong></td>
+<td>Populate — adds staffage (people, trees and cars) to the scene</td>
+</tr>
+<tr>
+<td><strong>Click the flight tube</strong> (in the Film-Maker)</td>
+<td>Add a stick — a new band you can drag</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Z / Ctrl+Shift+Z</strong> (in the Film-Maker)</td>
+<td>Undo / redo a path edit</td>
+</tr>
+<tr>
+<td><strong>F11</strong></td>
+<td>Toggle fullscreen</td>
+</tr>
+<tr>
+<td><strong>F1</strong></td>
+<td>Help — the full, live list of every toolbar action and its shortcut key</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Authoring — editing the structural grid, sketching, extruding — lives in the <strong><a href="../ModellerGuide/">DAGeVu Modeller</a></strong>, not the Viewer.</p>
+</blockquote>
+<hr />
+<h2 id="further-reading">Further Reading<a class="headerlink" href="#further-reading" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Doc</th>
+<th>What</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../CivilWorksGuide/">Civil Works — Step by Step</a></td>
+<td>Road models: discipline counts + cost, cross-vendor clash, earthworks volume, long / cross sections, road Model Check report</td>
+</tr>
+<tr>
+<td><a href="../ERPUserGuide/">Kernel-ERP User Guide</a></td>
+<td>iDempiere browser ERP — login → install → POS → reporting · <a href="../ERPUserGuide/#hr-tenancy">Tenancy</a></td>
+</tr>
+<tr>
+<td><a href="../ModellerGuide/">DAGeVu Modeller Guide</a></td>
+<td>Author geometry — the editable 3D Grid</td>
+</tr>
+<tr>
+<td><a href="../CLASH_DETECTION/">Clash Detection</a></td>
+<td>Clash detection engine</td>
+</tr>
+<tr>
+<td><a href="../4D5DAnalysis/">4D/5D Analysis</a></td>
+<td>nD analytics (4D–8D)</td>
+</tr>
+<tr>
+<td><a href="../JKR_SKATA/">Asset Classification &amp; JKR/SKATA</a></td>
+<td>Classification codes, Malaysian handover compliance — what we measure, and what we don't yet certify</td>
+</tr>
+</tbody>
+</table>
+<h3 id="for-developers">For developers<a class="headerlink" href="#for-developers" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Doc</th>
+<th>What</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../ViewerComponentModel.html">Viewer Component Model</a></td>
+<td>The viewer's 128 JS modules as dependency strata, derived from the call graph — layers, fan-in, and where the scheduling subsystem sits</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.</em></p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+
+
+                
+
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Kembali ke atas
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/red1oon/bim-ootb" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.linkedin.com/in/red1oon/" target="_blank" rel="noopener" title="www.linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.indexes", "search.suggest", "search.highlight", "toc.follow", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Tersalin ke clipboard", "clipboard.copy": "Salin ke clipboard", "search.result.more.one": "1 lagi di halaman ini", "search.result.more.other": "# lagi di halaman ini", "search.result.none": "Tidak ada dokumen yang sesuai", "search.result.one": "1 dokumen ditemukan", "search.result.other": "# dokumen ditemukan", "search.result.placeholder": "Ketik untuk mulai pencarian", "search.result.term.missing": "Tidak ada", "select.version": "Pilih versi"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../javascripts/fold-footnotes.js"></script>
+      
+        <script src="../../javascripts/bim_compiler_source.js"></script>
+      
+    
+  </body>
+</html>

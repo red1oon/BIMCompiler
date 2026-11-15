@@ -1,0 +1,6043 @@
+
+<!doctype html>
+<html lang="de" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Construction is manufacturing. A building IS its Bill of Materials.">
+      
+      
+        <meta name="author" content="Redhuan D. Oon">
+      
+      
+        <link rel="canonical" href="https://red1oon.github.io/BIMCompiler/CapexDashboardGuide/">
+      
+      
+        <link rel="prev" href="../TillUserGuide/">
+      
+      
+        <link rel="next" href="../CapexUATGuide/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>BIM → ERP and CAPEX Dashboard — for iDempiere users - BIM Intent Compiler</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/custom.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  <script data-goatcounter="https://red1oon.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  
+  <meta name="robots" content="noindex">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#bim-erp-and-the-capex-dashboard-guide-for-idempiere-users" class="md-skip">
+          Zum Inhalt
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Kopfzeile">
+    <a href="../" title="BIM Intent Compiler" class="md-header__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            BIM Intent Compiler
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              BIM → ERP and CAPEX Dashboard — for iDempiere users
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Suche" placeholder="Suche" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Suche">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Zurücksetzen" aria-label="Zurücksetzen" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Suche wird initialisiert
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source md-header__source--stacked">
+        <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+        <a href="https://github.com/red1oon/BIMCompiler" title="red1oon/BIMCompiler on GitHub" class="md-source" id="bim-compiler-source" target="_blank" rel="noopener">
+          <div class="md-source__icon md-icon">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+          </div>
+          <div class="md-source__repository" id="bim-compiler-repository">
+            Compiler
+          </div>
+        </a>
+        <span id="repo-totals" class="md-source-totals" title="Combined stars / forks across both repos"></span>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Hauptnavigation" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Start Here
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../BIMUserGuide/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  The 3 Apps
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../DeveloperGuide/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Go Deeper
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../SpatialCompilationPaper/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Papers & Positioning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../HalalTrace/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Prototypes & Demos
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../PROJECT_CHRONOLOGY/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  History & Legacy
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../" title="BIM Intent Compiler" class="md-nav__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    BIM Intent Compiler
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start Here
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_1" id="__nav_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Start Here
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../USER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    📖 User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMToolsGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🧰 BIM Tools — User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OFFLINE_INSTALL_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🔒 Fully Offline / Air-Gapped Install
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WhatsNew/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🆕 What's New
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AboutMore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About BIM OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FeatureComparison/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Feature Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MigrateComparisonPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrate & Compare (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TwoAppsOneKernel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two Apps, One Kernel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TwoAppsOneKernelInfographicLandscape.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    One Page InfoGraphics - Landscape
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bench_suite.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Comparison (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../age_demo.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Does Your ERP Age? (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MANIFESTO/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The ERP World View
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contribute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 3 Apps
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    The 3 Apps
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Viewer Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AskFirstSteps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewer Ask — First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerFirstSteps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modeller — First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DAGeVu Modeller — User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ProposerGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Proposer Guide (propose an edit, get the proof)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FastScriptGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fast Script Guide (one door: commands and scripts)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIMGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2D Drawings → BIM (DXF2BIM)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_Yellow_List/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — the yellow list (what you fill in, defaults used)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_Prior_Art/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — prior art (what is new, what we learned, cost of using others)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_FORMAT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — format contract (marks, outputs, registry, codes; generated)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERPUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel-ERP User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TillUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    uniCenta-style Till & Kitchen Screen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM → ERP and CAPEX Dashboard — for iDempiere users
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM → ERP and CAPEX Dashboard — for iDempiere users
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Inhaltsverzeichnis">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Inhaltsverzeichnis
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#from-the-bim-model-to-the-dashboard-the-whole-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From the BIM model to the dashboard (the whole flow)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#where-every-number-comes-from-the-sources-and-how-they-come-together" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where every number comes from (the sources, and how they come together)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Where every number comes from (the sources, and how they come together)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bim-document-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BIM Document fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-formulas-behind-the-figures-and-what-data-to-prepare" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The formulas behind the figures, and what data to prepare
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-the-dashboard-connects-to-the-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How the dashboard connects to the data
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#for-review-three-definitions-we-propose-not-yet-agreed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For review: three definitions we propose (not yet agreed)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#three-places-one-set-of-figures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Three places, one set of figures
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Three places, one set of figures">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rich-or-editable-today-you-choose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rich or editable: today you choose
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-the-twin-does-and-does-not-add" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the twin does and does not add
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-close-the-page-is-to-the-design-it-follows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How close the page is to the design it follows
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-dashboard-page" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The dashboard page
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The dashboard page">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-to-read-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to read it
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-summary-tiles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The summary tiles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-panels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The panels
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#choosing-a-look-layout-and-skin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Choosing a look: Layout and Skin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-project-page" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The project page
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-other-views" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The other views
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#page-and-home-tab-why-a-figure-can-differ" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Page and Home tab: why a figure can differ
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#if-you-know-idempiere" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        If you know iDempiere
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-home-tab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Home tab
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The Home tab">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#three-kinds-of-dial" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Three kinds of dial
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-only-9-of-the-27-have-a-target" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why only 9 of the 27 have a target
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-27-goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The 27 goals
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-moves-the-numbers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What moves the numbers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#changing-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changing it
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Changing it">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#set-or-change-a-target" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Set or change a target
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#show-a-goal-to-fewer-people" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Show a goal to fewer people
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#change-what-a-goal-counts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Change what a goal counts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#change-the-dials-colours" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Change the dial's colours
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#add-a-goal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Add a goal
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installing-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installing it
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-it-does-not-do-yet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What it does not do yet
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-it-was-checked" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How it was checked
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#developers-note" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Developer's note
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Developer&#39;s note">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-to-install" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to install
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How to install">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-home-tab-goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Home tab goals
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#for-your-own-tenant" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For your own tenant
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-page" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The page
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#in-kernel-erp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        In Kernel-ERP
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bim-document-on-your-own-idempiere" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BIM Document on your own iDempiere
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#try-it-the-bim-document-test-instance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Try it: the BIM Document test instance
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-bim-document-model-what-is-in-the-plugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The BIM Document model (what is in the plugin)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CapexUATGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CAPEX UAT Guide — step-by-step test script
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERP_FirstSetup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel-ERP — Your First Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MigrationGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration User Guide (Odoo · Business Central · SAP Business One)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OdooMigration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moving from Odoo — how it works, what is proven
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NinjaExcelReport_UserManual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NinjaExcel Report — User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HRBIMAssetGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HR / Tenancy / Operate Module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CivilWorksGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Civil Works — Step by Step
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TeamsOverlayGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Teams Overlay — Collaboration & Optics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Go Deeper
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Go Deeper
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DeveloperGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide (read first if you will change the code)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ArchitectureOverview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Overview (for reviewers)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../FoldEngineBlackBook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fold Engine Black Book (dev manual)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HolyGrail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Holy Grail (editable rules, live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ERPConceptRosetta.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-ERP Rosetta Stone (concept + cost)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIM_Modeller_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Modeller OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERP_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP — Every Record Has a Place
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERPIntegration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP × BIM × HR — One Building, One Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DistributedERP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Distributed ERP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TermsHowToVerify/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to verify the terms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERP_AI_ADVISORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Letting an AI work on the ERP, safely
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SQLiteWasmArchitectureActual.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How the Database Works (big picture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ViewerComponentModel.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewer Component Model (dev architecture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CLASH_DETECTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clash Detection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../JKR_SKATA/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Asset Classification & JKR/SKATA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../IFC_ExportGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IFC Export Guide (for the BIM author)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TimeMachine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Time Machine (4D Scheduling & Editing)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4D5DAnalysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4D/5D Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMtoProject/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM → Project Order (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerKernelFold/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry as a Signed-Log Fold
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Papers & Positioning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Papers & Positioning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialCompilationPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deterministic Spatial Compilation (academic paper)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AIProposerDefensiveDisclosure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Defensive Disclosure: an Outside AI Proposes, the App Decides
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_TechnicalNote/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — Deterministic 2D ⇄ BIM Round Trip (technical note)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BrowserScaleBenchmark/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Browser-Scale Benchmark (one tab, local first)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnterpriseAuthentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enterprise Authentication (security)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../StrategicIndustryPositioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Strategic Positioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LocalFirstPriorArt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local-First Prior Art
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LegacyOracleAdapterSpec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Legacy-as-Oracle Adapter (migrate / test an ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ShipYard/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Beyond Buildings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RouteTemplate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Find & Navigate (wayfinding)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../halal/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prototypes & Demos
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Prototypes & Demos
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HalalTrace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Halalan Thayiban — halal track & trace (paper)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glassbowl.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glassbowl — the ERP engine as data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glassbowl_gravity.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glassbowl · Gravity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../RetailScaleStory.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Retail at Scale — two messages a day (benchmark story)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bim_architecture_viz.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How it works — interactive architecture tour
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    History & Legacy
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    History & Legacy
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROJECT_CHRONOLOGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Chronology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../VibeProgramming/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vibe Programming — AI + Domain Expertise
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4DGenerator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 4D Generator — Failure Catalogue & AI Findings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnablingTechTimeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enabling-Tech Timeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RED_PILL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Red Pill — Design From Grammar (origin)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LAST_MILE_PROBLEM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Last Mile — drift tracking (Java era)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMERPPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Construction Economy / ERP Wave (Java era)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SYSTEMS_INSTALLER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Self-Host the Java toolchain (legacy installer)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Inhaltsverzeichnis">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Inhaltsverzeichnis
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#from-the-bim-model-to-the-dashboard-the-whole-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From the BIM model to the dashboard (the whole flow)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#where-every-number-comes-from-the-sources-and-how-they-come-together" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where every number comes from (the sources, and how they come together)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Where every number comes from (the sources, and how they come together)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bim-document-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BIM Document fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-formulas-behind-the-figures-and-what-data-to-prepare" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The formulas behind the figures, and what data to prepare
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-the-dashboard-connects-to-the-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How the dashboard connects to the data
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#for-review-three-definitions-we-propose-not-yet-agreed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For review: three definitions we propose (not yet agreed)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#three-places-one-set-of-figures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Three places, one set of figures
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Three places, one set of figures">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rich-or-editable-today-you-choose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rich or editable: today you choose
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-the-twin-does-and-does-not-add" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the twin does and does not add
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-close-the-page-is-to-the-design-it-follows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How close the page is to the design it follows
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-dashboard-page" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The dashboard page
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The dashboard page">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-to-read-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to read it
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-summary-tiles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The summary tiles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-panels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The panels
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#choosing-a-look-layout-and-skin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Choosing a look: Layout and Skin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-project-page" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The project page
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-other-views" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The other views
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#page-and-home-tab-why-a-figure-can-differ" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Page and Home tab: why a figure can differ
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#if-you-know-idempiere" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        If you know iDempiere
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-home-tab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Home tab
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The Home tab">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#three-kinds-of-dial" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Three kinds of dial
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-only-9-of-the-27-have-a-target" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why only 9 of the 27 have a target
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-27-goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The 27 goals
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-moves-the-numbers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What moves the numbers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#changing-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changing it
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Changing it">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#set-or-change-a-target" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Set or change a target
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#show-a-goal-to-fewer-people" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Show a goal to fewer people
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#change-what-a-goal-counts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Change what a goal counts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#change-the-dials-colours" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Change the dial's colours
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#add-a-goal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Add a goal
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installing-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installing it
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-it-does-not-do-yet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What it does not do yet
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-it-was-checked" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How it was checked
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#developers-note" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Developer's note
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Developer&#39;s note">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-to-install" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to install
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How to install">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-home-tab-goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Home tab goals
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#for-your-own-tenant" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For your own tenant
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-page" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The page
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#in-kernel-erp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        In Kernel-ERP
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bim-document-on-your-own-idempiere" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BIM Document on your own iDempiere
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#try-it-the-bim-document-test-instance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Try it: the BIM Document test instance
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-bim-document-model-what-is-in-the-plugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The BIM Document model (what is in the plugin)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+  <p class="i18n-note"><small>Diese Seite ist noch nicht übersetzt; sie wird auf Englisch angezeigt. <a href="https://red1oon.github.io/BIMCompiler/CapexDashboardGuide/">Englische Seite</a>.</small></p>
+  
+                  
+
+
+  
+  
+
+
+<h1 id="bim-erp-and-the-capex-dashboard-guide-for-idempiere-users">BIM → ERP and the CAPEX Dashboard — Guide for iDempiere Users<a class="headerlink" href="#bim-erp-and-the-capex-dashboard-guide-for-idempiere-users" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>⚠ DEMONSTRATOR — NOT OFFICIAL.</strong> Every screenshot and figure comes from a <strong>local GardenWorld test server</strong>
+(iDempiere 13) holding test projects, some of them repeat test runs. Treat every number as a sample
+(<code>SAMPLE — NOT OFFICIAL</code>). The health and schedule rules are provisional until a client confirms them.</p>
+</blockquote>
+<p><strong>What this is.</strong> One set of project and capital-spending figures from your iDempiere, in three places:</p>
+<ul>
+<li><strong>The dashboard page</strong>: a full executive page in a browser. It reads your iDempiere and writes nothing back.</li>
+<li><strong>The Performance panel on your iDempiere Home tab</strong>: the same figures as ordinary Performance Goals, which you change in the
+  stock windows.</li>
+<li><strong>The Performance panel on the twin's Home tab</strong>: the same goals in Kernel-ERP, the SQLite twin of iDempiere that runs in a browser.</li>
+</ul>
+<blockquote>
+<p><strong>What it changes on your iDempiere:</strong> no change to iDempiere's code or tables for the dashboard, which needs only read-only setup data. The optional BIM Document plugin adds its own table, and two date columns (<code>BIM_StartDate</code>, <code>BIM_EndDate</code>) to the Project Task, for the Schedule tab's task bars.
+Sending a Project Order <em>from a BIM model</em> into iDempiere is a separate thing: that is one standard plugin. How it, the drawings
+filed against the project and this dashboard fit together is the next chapter.
+BIM Document (the drawings) is part of Kernel-ERP today; on your own iDempiere it needs a pack and a plugin: see <em>Installing it</em> and the <em>Developer's note</em>.</p>
+</blockquote>
+<p><strong>Who reads what.</strong> <strong>Project manager:</strong> <em>The dashboard page</em>, <em>The Home tab</em> and <em>What moves the numbers</em>.
+<strong>Administrator:</strong> <em>Changing it</em> and <em>Installing it</em>. Everyone: <em>Three places</em>, <em>What it does not do yet</em> and <em>Troubleshooting</em>.</p>
+<hr />
+<hr />
+<h2 id="from-the-bim-model-to-the-dashboard-the-whole-flow">From the BIM model to the dashboard (the whole flow)<a class="headerlink" href="#from-the-bim-model-to-the-dashboard-the-whole-flow" title="Permanent link">&para;</a></h2>
+<p>One project, four places. Each hands the next the same project:</p>
+<ol>
+<li><strong>The model becomes a Project Order.</strong> In the Modeller or Viewer, select parts and send them: the order's phases and cost lines are
+   the model's own, and the order is keyed by the model's name. A second send adds nothing.</li>
+<li><strong>Drawings and model files are filed against the project: BIM Document.</strong> A <em>deliverable</em> sits under one task of the project, with a
+   <strong>revision</strong> and a state: <strong>Draft</strong>, <strong>Issued for review</strong>, <strong>Issued for construction</strong>, <strong>Superseded</strong>. Issuing a newer revision for
+   construction makes the older one Superseded; an older revision cannot be issued after a newer one. The Project window shows, per task
+   and phase, how many deliverables are issued for construction.</li>
+<li><strong>The register decides what a walker may read.</strong> The project's register (every deliverable at its latest revision, plus the superseded
+   ones: number, revision, state, discipline, file kind, the file's <code>sha256</code>) is exported from the BIM Document. A sheet <em>issued for
+   construction</em> is used as placed; <em>issued for review</em> as provisional and left out of totals; Draft and Superseded sheets are refused.
+   It is exported by the <strong>Export Register</strong> process, under the gear of a document in the BIM Document window; the Modeller reads the exported file.</li>
+<li><strong>This dashboard reads the same Project Order.</strong> Its <strong>BIM</strong> button appears when the project's building file is found, by the project's
+   value (the model's name). The <em>BIM Documents issued for construction</em> tile and the project page's <strong>Documents</strong> tab show the counts.</li>
+</ol>
+<h2 id="where-every-number-comes-from-the-sources-and-how-they-come-together">Where every number comes from (the sources, and how they come together)<a class="headerlink" href="#where-every-number-comes-from-the-sources-and-how-they-come-together" title="Permanent link">&para;</a></h2>
+<p>A figure on the dashboard is never typed on the page. It is made from five sources, in this order. If a source is missing, the tile says
+<strong>no data</strong> and names why; it never shows zero.</p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Source</th>
+<th>What it gives</th>
+<th>Where you can change it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>The model</strong> (the building's IFC, read once)</td>
+<td>every element with its class and its size (length, area, volume taken from the element's bounding box)</td>
+<td>the model itself. Elements with no size of their own (a roof or curtain wall made of parts) are priced through their parts; elements with no geometry at all are listed, not priced</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>The rates table</strong> (one price per material class)</td>
+<td>a unit price for each class</td>
+<td>the rates table. The shipped tables are <em>examples</em> (for instance a 2024 US table): a cost from them is quantity-true to the model, but it is not an estimate until you load your own rates</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>The programme</strong> (the 4D schedule)</td>
+<td>which elements are built in which phase, and each phase's start and end date</td>
+<td>the 4D template and rules</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>The Project Order</strong> (project, phases, tasks, lines)</td>
+<td>the planned amount: quantity x price per line, summed to tasks, phases and the project</td>
+<td>it is computed from steps 1-3; edit the inputs, not the order</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>Real documents in iDempiere</strong></td>
+<td>what has actually happened: a phase ticked complete, material issued to the project (a <em>Project Issue</em>), a completed <em>purchase order</em> on the project</td>
+<td>the stock windows: tick the phase, issue material, complete the order</td>
+</tr>
+</tbody>
+</table>
+<p>Steps 1-4 are the <strong>plan</strong>; step 5 is <strong>what happened</strong>. Each tile compares the two, or reports one of them:</p>
+<table>
+<thead>
+<tr>
+<th>Tile</th>
+<th>Plan side</th>
+<th>Actual side</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Approved Budget</td>
+<td>sum of the project's planned amounts (steps 1-4)</td>
+<td></td>
+</tr>
+<tr>
+<td>Actual Cost</td>
+<td></td>
+<td>the project's balance, which iDempiere builds from completed Project Issues</td>
+</tr>
+<tr>
+<td>Committed Cost: contract</td>
+<td></td>
+<td>completed purchase orders on the project (proposed)</td>
+</tr>
+<tr>
+<td>Committed Cost: verified</td>
+<td></td>
+<td>the actual cost of projects that have a completed Project Issue (proposed; it overlaps Actual Cost)</td>
+</tr>
+<tr>
+<td>Forecast Cost at Completion</td>
+<td>budget, and the value of the phases ticked complete</td>
+<td>the project's balance (proposed)</td>
+</tr>
+<tr>
+<td>Physical vs Spent</td>
+<td>the value of the phases ticked complete against the plan</td>
+<td>spent against the plan</td>
+</tr>
+<tr>
+<td>Budget Status</td>
+<td>planned amount</td>
+<td>the project's balance</td>
+</tr>
+<tr>
+<td>Schedule, Project Health</td>
+<td>each phase's dates and planned amount (step 3-4)</td>
+<td>which phases are ticked complete, and the project's balance</td>
+</tr>
+<tr>
+<td>Project Stage</td>
+<td></td>
+<td>the project's own Standard Phase (empty until it is set)</td>
+</tr>
+<tr>
+<td>BIM Documents issued for construction</td>
+<td></td>
+<td>the BIM Document register (empty until sheets are filed)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Two rules keep the sources honest.</strong> (1) The page only reads. Every actual figure is a document a person completed in iDempiere, so it can
+be traced to a window. (2) Money is shown per currency and never added across currencies.</p>
+<p><strong>What to check before you trust a figure (known limits, under review):</strong> the <em>Actual Cost</em> and the <em>Budget</em> must be on the same basis. If
+the material issued to the project is priced from stock costs that have nothing to do with the rates table, a project can read "72 % built,
+0.08 % spent", and the forecast and health tiles then follow that gap; they are only as meaningful as the pairing. The <em>Project Health</em> tile
+currently counts a phase as planned-to-date only once its end date has passed, so a long phase that is half way through counts as nothing
+planned yet. Since 2026-11-12 <em>Project Health</em> also never reads Green while a phase is overdue (it reads Amber), so it can no longer disagree with the <em>Schedule</em> tile's Delayed count. How "due" is counted (end date passed, or spread over the phase's dates) is still being reviewed against the specification.</p>
+<h3 id="bim-document-fields">BIM Document fields<a class="headerlink" href="#bim-document-fields" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Project, Phase, Task</td>
+<td>Where the deliverable sits. The task is required</td>
+</tr>
+<tr>
+<td>Deliverable no</td>
+<td>The sheet or model number. Revisions of one deliverable share it</td>
+</tr>
+<tr>
+<td>Revision</td>
+<td>A number. The highest revision is the current one</td>
+</tr>
+<tr>
+<td>Document status</td>
+<td>Draft (DR), Issued for review (IP), Issued for construction (CO), Superseded (RE)</td>
+</tr>
+<tr>
+<td>Superseded by</td>
+<td>Set on the older revision when a newer one is issued for construction</td>
+</tr>
+<tr>
+<td>Discipline, File kind</td>
+<td>What the sheet covers (for example architecture, structure, services) and its format (IFC, DXF, ...)</td>
+</tr>
+<tr>
+<td>Attachment <code>sha256</code></td>
+<td>The fingerprint of the attached file, so a register row can be checked against the file it names</td>
+</tr>
+<tr>
+<td>Issued (on a task or phase)</td>
+<td>Number of deliverables whose current revision is Issued for construction. Computed, never typed</td>
+</tr>
+<tr>
+<td>Earned hours</td>
+<td>Hours budget of those issued deliverables. Computed</td>
+</tr>
+<tr>
+<td>Hours booked</td>
+<td>Time-and-expense hours booked on the task. Computed</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="the-formulas-behind-the-figures-and-what-data-to-prepare">The formulas behind the figures, and what data to prepare<a class="headerlink" href="#the-formulas-behind-the-figures-and-what-data-to-prepare" title="Permanent link">&para;</a></h2>
+<p>Every figure is built from <strong>five working quantities</strong> per project. If you prepare these five well, every tile follows. They use the standard earned-value names, with the plain name this page uses beside them.</p>
+<table>
+<thead>
+<tr>
+<th>Working quantity</th>
+<th>Plain name on the page</th>
+<th>Formula</th>
+<th>Where it lives in iDempiere</th>
+<th>What you prepare</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Budget</strong> (BAC)</td>
+<td>Approved Budget</td>
+<td>the sum of the project's planned amounts</td>
+<td><code>C_Project.PlannedAmt</code>, which iDempiere rolls up from the project lines (quantity x price)</td>
+<td>The plan: phases, and lines with quantity and price, in the project's currency. A project with no planned amount has no budget figures</td>
+</tr>
+<tr>
+<td><strong>Planned to date</strong> (PV)</td>
+<td>Due</td>
+<td>the planned amounts of the phases whose <strong>End Date has passed</strong></td>
+<td><code>C_ProjectPhase.PlannedAmt</code> where <code>EndDate</code> is today or earlier</td>
+<td><strong>Start Date and End Date on every phase.</strong> A phase with no dates counts as nothing planned yet</td>
+</tr>
+<tr>
+<td><strong>Done</strong> (EV)</td>
+<td>Done</td>
+<td>the planned amounts of the phases <strong>ticked complete</strong></td>
+<td><code>C_ProjectPhase.PlannedAmt</code> where <code>IsComplete</code> = Y</td>
+<td><strong>Tick the phase when it is finished.</strong> It is all or nothing: a phase half built counts as nothing until it is ticked</td>
+</tr>
+<tr>
+<td><strong>Spent</strong> (AC)</td>
+<td>Actual Cost</td>
+<td>the cost of the material issued to the project</td>
+<td><code>C_Project.ProjectBalanceAmt</code>, which each completed Project Issue adds to</td>
+<td><strong>Issue the material to the project</strong> with a Project Issue and complete it. Cost that is never issued to the project (for example a vendor invoice that did not become a Project Issue) is not in Spent</td>
+</tr>
+<tr>
+<td><strong>Committed</strong></td>
+<td>Committed Cost: contract</td>
+<td>the totals of completed purchase orders on the project</td>
+<td><code>C_Order</code> (purchase, completed) with the project set</td>
+<td>Complete the purchase order with the <strong>Project</strong> filled in on the order. An order with no project is not counted</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The abbreviations, in full, and where each one comes from.</strong> One table, so you can read any formula in this guide or on the page.</p>
+<table>
+<thead>
+<tr>
+<th>Short</th>
+<th>Long form</th>
+<th>On this page</th>
+<th>Source in iDempiere</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>BAC</strong></td>
+<td>Budget at Completion</td>
+<td>Approved Budget</td>
+<td><code>C_Project.PlannedAmt</code> (rolled up from <code>C_ProjectLine</code>)</td>
+</tr>
+<tr>
+<td><strong>PV</strong></td>
+<td>Planned Value</td>
+<td>Due, "planned to date"</td>
+<td><code>C_ProjectPhase.PlannedAmt</code> where <code>EndDate</code> is today or earlier</td>
+</tr>
+<tr>
+<td><strong>EV</strong></td>
+<td>Earned Value</td>
+<td>Done</td>
+<td><code>C_ProjectPhase.PlannedAmt</code> where <code>IsComplete</code> = Y</td>
+</tr>
+<tr>
+<td><strong>AC</strong></td>
+<td>Actual Cost</td>
+<td>Spent, Actual Cost</td>
+<td><code>C_Project.ProjectBalanceAmt</code> (completed <code>C_ProjectIssue</code>)</td>
+</tr>
+<tr>
+<td><strong>SPI</strong></td>
+<td>Schedule Performance Index = EV ÷ PV</td>
+<td>the schedule index</td>
+<td>worked out from EV and PV</td>
+</tr>
+<tr>
+<td><strong>CPI</strong></td>
+<td>Cost Performance Index = EV ÷ AC</td>
+<td>the cost index</td>
+<td>worked out from EV and AC</td>
+</tr>
+<tr>
+<td><strong>EAC</strong></td>
+<td>Estimate at Completion = AC + (BAC − EV) ÷ CPI</td>
+<td>Forecast Cost at Completion (proposed)</td>
+<td>worked out from the above</td>
+</tr>
+<tr>
+<td><strong>PO</strong></td>
+<td>Purchase Order</td>
+<td>Committed Cost: contract, Procurement</td>
+<td><code>C_Order</code> with <code>IsSOTrx</code> = N</td>
+</tr>
+<tr>
+<td><strong>WS</strong></td>
+<td>Web Service</td>
+<td>the read access in <em>Installing it</em></td>
+<td>iDempiere's standard web services</td>
+</tr>
+<tr>
+<td><strong>PA</strong></td>
+<td>Performance Analysis</td>
+<td>the Home tab goals</td>
+<td><code>PA_Measure</code>, <code>PA_MeasureCalc</code>, <code>PA_Goal</code></td>
+</tr>
+<tr>
+<td><strong>BIM</strong></td>
+<td>Building Information Model</td>
+<td>the model a project order is made from</td>
+<td>the building's IFC file</td>
+</tr>
+</tbody>
+</table>
+<p>From these, the page works out the rest. The ƒ line under each tile shows the same in iDempiere columns.</p>
+<table>
+<thead>
+<tr>
+<th>Figure</th>
+<th>Formula</th>
+<th>Reads as</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Schedule index</strong> (SPI)</td>
+<td>Done ÷ Planned to date</td>
+<td>1 or above: at least as much finished as the dates asked for. Below 1: behind</td>
+</tr>
+<tr>
+<td><strong>Cost index</strong> (CPI)</td>
+<td>Done ÷ Spent, when Spent is above zero</td>
+<td>1 or above: each unit spent has earned at least a unit. Below 1: over cost</td>
+</tr>
+<tr>
+<td><strong>Project Health</strong></td>
+<td><strong>Green</strong>: every index at least 0.9 <strong>and</strong> no overdue phase. <strong>Red</strong>: every index below 0.9. <strong>Amber</strong>: anything else. (The cost index counts only where Spent is above zero.)</td>
+<td>A phase is <em>overdue</em> when it is not ticked and its End Date has passed, so such a project is never Green</td>
+</tr>
+<tr>
+<td><strong>Schedule</strong> tile</td>
+<td><strong>Delayed</strong>: a phase not ticked past its End Date. <strong>At risk</strong>: SPI below 0.9. <strong>No schedule</strong>: no phase with both dates. Otherwise <strong>On time</strong></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Budget Status</strong></td>
+<td><strong>Not started</strong>: Spent is zero or empty. <strong>Over</strong>: Spent is above the planned amount. Otherwise <strong>Within</strong></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Physical vs Spent</strong></td>
+<td>Physical = Done ÷ all planned amounts of the phases; Spent = Spent ÷ the planned amount of the project</td>
+<td>Compares how much is built with how much is spent</td>
+</tr>
+<tr>
+<td><strong>Forecast at completion</strong> (proposed)</td>
+<td>EAC = Spent + (Budget − Done) ÷ CPI</td>
+<td>What the project will cost if the cost performance so far <strong>continues</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Only the <strong>0.9</strong> threshold is the client's; the rest of the Health rule is ours and is marked provisional until you confirm it. The three definitions under <em>For review</em> are proposals; the page says so.</p>
+<p><strong>What the forecast can and cannot tell you.</strong> The cost index is a single figure for the project <strong>so far</strong>: it adds everything spent and everything done up to today. So the forecast assumes the rest of the project will cost what the part so far did. It cannot show whether cost performance is getting better or worse, because iDempiere keeps <strong>no completion date on a phase</strong>: it records that a phase is ticked, not when. Cost over time can be rebuilt from dated documents (Project Issues, invoices, payments); earned value over time cannot. If you want a trend or a time-phased planned value, say so: it needs either iDempiere's change log switched on for the phase's <em>Is Complete</em>, or a completion date added to the phase through the BIM Document module. Two other textbook forms exist: <strong>Budget ÷ CPI</strong>, and <strong>Spent + (Budget − Done)</strong> when overruns are not expected to continue. Which one is yours is a question for you under <em>For review</em>; changing it is editing one Performance Measure row.</p>
+<p><strong>Check before you rely on a figure (what to prepare):</strong></p>
+<ol>
+<li><strong>Plan on every project:</strong> phases, lines with quantity and price, one currency per project.</li>
+<li><strong>Dates on every phase</strong> (Start and End). Without them Schedule says <em>No schedule</em> and Health has nothing planned to compare.</li>
+<li><strong>Tick phases the day they finish.</strong> Done, Health, Physical and the forecast all move only when you do.</li>
+<li><strong>Issue material to the project and complete the issue.</strong> Spent is only what was issued. If the cost the stock carries has nothing to do with the rates behind the plan, Spent and Budget are not on one basis and the forecast and Health follow that gap (the page warns <em>basis differs</em> when they diverge by more than a factor of two).</li>
+<li><strong>Set the Project on purchase orders</strong> and complete them. For the Supply chain card also complete the receipts, invoices and payments with the Project and the Order filled in.</li>
+<li><strong>Set the Project Category</strong> if you want that filter to work, and the project's <strong>Standard Phase</strong> (from the CAPEX Project Type) if you want the Stage tile to.</li>
+<li><strong>Keep one currency per project.</strong> Money is shown per currency and never added across currencies.</li>
+</ol>
+<p>When something is missing the tile says <strong>no data</strong>, never zero, and the page says what is missing.</p>
+<h2 id="how-the-dashboard-connects-to-the-data">How the dashboard connects to the data<a class="headerlink" href="#how-the-dashboard-connects-to-the-data" title="Permanent link">&para;</a></h2>
+<p>The page holds no data of its own and writes nothing. It is pointed at one <strong>source</strong>, reads that source's rows, and works every figure out in your browser. You can see which source it is on at the bottom left (<em>Data source</em>).</p>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>What it is</th>
+<th>When you use it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>B · Legacy iDempiere</strong></td>
+<td>Your iDempiere's own rows, read through its <strong>standard web services</strong> with a read-only role. A small job beside the server reads them and writes the file the page opens (the job and the file are in the Developer's note).</td>
+<td>Production: the figures are your server's, as of the last job run</td>
+</tr>
+<tr>
+<td><strong>A · SQLite ERP DB</strong></td>
+<td>The rows of a <strong>Kernel-ERP twin</strong>: the same tables as iDempiere, held in the browser. The page can open the twin's own store, for example the one that holds the film's test projects.</td>
+<td>Trying the whole flow without an iDempiere server, or showing it</td>
+</tr>
+</tbody>
+</table>
+<p>Either way the page asks for the same tables, and a figure means the same thing on both. A difference between the two is a defect, not a feature.</p>
+<p><strong>What it reads, and what you need for each part.</strong> The first row is the dashboard itself; every row after it is optional, and a missing one never shows as zero: the tile or card says <strong>no data (not installed)</strong> and names what is missing.</p>
+<table>
+<thead>
+<tr>
+<th>It shows</th>
+<th>It reads</th>
+<th>Needed on iDempiere</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Projects, phases, tasks, lines, organisations, currencies, approvals</td>
+<td><code>C_Project</code>, <code>C_ProjectPhase</code>, <code>C_ProjectTask</code>, <code>C_ProjectLine</code>, <code>AD_Org</code>, <code>C_Phase</code>, <code>C_Currency</code>, <code>AD_WF_Activity</code></td>
+<td>the read-only access in <em>Installing it</em>, step 1</td>
+</tr>
+<tr>
+<td>Actual cost, <em>Committed: verified</em></td>
+<td>completed <strong>Project Issues</strong> (<code>C_ProjectIssue</code>)</td>
+<td>the <em>Q4</em> read types (optional)</td>
+</tr>
+<tr>
+<td><em>Committed: contract</em>, open purchase orders</td>
+<td>purchase orders on the project (<code>C_Order</code>)</td>
+<td>the same optional read types</td>
+</tr>
+<tr>
+<td>The <strong>Supply chain</strong> card on the project page (see below)</td>
+<td>receipts (<code>M_InOut</code>), vendor invoices (<code>C_Invoice</code>), payments (<code>C_Payment</code>)</td>
+<td>three more optional read types</td>
+</tr>
+<tr>
+<td>Task bars on the <strong>Schedule</strong> tab</td>
+<td>each task's start and end date, which the BIM Document module adds to a Project Task</td>
+<td>BIM Document installed, and the date columns on the task read type</td>
+</tr>
+<tr>
+<td>BIM documents issued for construction</td>
+<td>the BIM Document register (<code>BIM_Document</code>)</td>
+<td>BIM Document installed</td>
+</tr>
+</tbody>
+</table>
+<p><strong>One use case, followed through: a purchase order from order to payment.</strong> Take a project whose order was pushed from a building model.</p>
+<ol>
+<li>The <strong>plan</strong> is the Project Order: phases and lines with their planned amounts. This is <strong>Approved Budget</strong>. Task dates, where the module is installed, come from the same programme as the phases and give the bars on the Schedule tab.</li>
+<li>Someone raises a <strong>purchase order</strong> on the project. While it is a draft it counts under <em>open purchase orders</em>; once completed it is <strong>Committed Cost: contract</strong>.</li>
+<li>The goods arrive: a <strong>receipt</strong> on the order. The order's stage on the project page becomes <em>Received</em>.</li>
+<li>Material is <strong>issued to the project</strong> (a completed Project Issue). The stock goes down by the quantity and the project's balance goes up by its cost: that is <strong>Actual Cost</strong> and <strong>Spent</strong>. On a Kernel-ERP twin a Project Issue completes the way it does on iDempiere, and reversing it puts both back.</li>
+<li>The supplier's <strong>invoice</strong> arrives and is completed: the stage becomes <em>Invoiced</em>.</li>
+<li>A <strong>payment</strong> is made against the invoice: the stage becomes <em>Paid</em> once the payments cover the invoice, and <em>Invoiced</em> while they do not.</li>
+</ol>
+<p>Steps 3, 5 and 6 are shown in one place only, the <strong>Supply chain</strong> card at the top of the project's <strong>Procurement</strong> tab. It has a strip of four counts (Ordered, Received, Invoiced, Paid) and one row per purchase order, with its received count and its invoiced and paid amounts. It is a drill-in, so the glance and the left menu stay as they are. Each document in the card opens its own record in the system the figures came from (iDempiere's own page for that record, or the matching window of the twin). The stages are <strong>proposed</strong>, like the Procurement Risks view: they come from completed documents only, a document in another currency is counted and flagged and never converted, and a receipt, invoice or payment that names no order is counted on a line under the table instead of being added to an order.</p>
+<p><strong>Two honest limits.</strong> The page shows the rows of its source as of the last read (the job's last run, or the store it opened); it does not refresh itself. And a twin can show a different <em>Spent</em> from iDempiere's for the same project when receipts have moved the product's average cost in one and not the other: the issue itself behaves the same on both, which was checked on the test server, but the cost it takes depends on the stock history.</p>
+<h2 id="for-review-three-definitions-we-propose-not-yet-agreed">For review: three definitions we propose (not yet agreed)<a class="headerlink" href="#for-review-three-definitions-we-propose-not-yet-agreed" title="Permanent link">&para;</a></h2>
+<p>Three of the design's tiles have no formula we could verify. These are our proposals, built the iDempiere way, so you can say whether
+they are what you have in mind. <strong>Until you confirm, the page prints them as ours.</strong> Each is a Performance Measure row, so changing one
+is editing a row, not code.</p>
+<table>
+<thead>
+<tr>
+<th>Tile</th>
+<th>Proposed definition</th>
+<th>Why this</th>
+<th>Question for you</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Project Stage</strong></td>
+<td>A Project Type "CAPEX" whose standard phases are your five stages (Concept, Initiation, Planning, Execution, Closing). The stage is the project's own <em>Standard Phase</em>.</td>
+<td>It is how iDempiere holds a project's stage, with no new column. The stock Standard Phase rows are sales steps and are not used</td>
+<td>Are these the five names, in this order? <strong>Built, labelled proposed:</strong> the Project Type and its five stages are installed as data (a migration script), the same rows on iDempiere and on the twin.</td>
+</tr>
+<tr>
+<td><strong>Committed Cost: contract and verified</strong></td>
+<td><strong>Contract</strong> = completed purchase orders on the project. <strong>Verified</strong> = the actual cost (<code>ProjectBalanceAmt</code>) of projects that have at least one completed Project Issue.</td>
+<td>The project's <code>CommittedAmt</code> is typed by hand and a purchase order never fills it, so the contract figure is computed from the orders. A completed Project Issue adds its cost to the project's balance, so verified overlaps <em>Actual Cost</em></td>
+<td>Is "verified" delivery, or invoice?</td>
+</tr>
+<tr>
+<td><strong>Forecast Cost at Completion</strong></td>
+<td>EAC = Spent + (Approved Budget − Done) ÷ CPI, where CPI = Done ÷ Spent</td>
+<td>The usual form when past cost performance continues. <em>Spent</em>, <em>Done</em> and <em>Approved Budget</em> are already on this page. With Spent or Done at zero the tile says <strong>no data</strong>, not a number</td>
+<td>Is this your formula, or plain Budget ÷ CPI? <strong>Built, labelled proposed:</strong> the page tile shows the figure per currency (active projects with Spent and Done above zero), and the Home has a matching goal <em>CAPEX Forecast Cost at Completion USD (proposed)</em> whose value was checked equal on iDempiere and on the twin.</td>
+</tr>
+</tbody>
+</table>
+<p><em>Order of work:</em> Project Stage first (data only), then the committed split, then the forecast, because the forecast needs the actual cost
+to be settled.</p>
+<hr />
+<h2 id="three-places-one-set-of-figures">Three places, one set of figures<a class="headerlink" href="#three-places-one-set-of-figures" title="Permanent link">&para;</a></h2>
+<p>These are different screens over the same kind of rows. They are not one HTML page shown three times.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Dashboard page</th>
+<th>iDempiere Home tab</th>
+<th>Twin Home tab</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>What you see</strong></td>
+<td>Seven tiles, five panels, project lists</td>
+<td>Performance dials, one per goal</td>
+<td>The same dials as iDempiere, on purpose</td>
+</tr>
+<tr>
+<td><strong>What defines the figures</strong></td>
+<td>Formulas built into the page</td>
+<td><code>PA_Goal</code> and <code>PA_Measure</code> rows</td>
+<td>The same rows</td>
+</tr>
+<tr>
+<td><strong>What calculates them</strong></td>
+<td>The page, in the browser</td>
+<td>iDempiere</td>
+<td>The twin's goal engine, running the same SQL</td>
+</tr>
+<tr>
+<td><strong>Where its data comes from</strong></td>
+<td>A file written by a small job, or a twin's own store</td>
+<td>Your iDempiere</td>
+<td>A copy of your iDempiere's rows, in the browser</td>
+</tr>
+<tr>
+<td><strong>Change a formula without code</strong></td>
+<td>No</td>
+<td>Yes, in the stock windows</td>
+<td>Yes, in the same stock windows</td>
+</tr>
+<tr>
+<td><strong>Change the look without code</strong></td>
+<td>Yes: the Layout and Skin selects</td>
+<td>No</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<h3 id="rich-or-editable-today-you-choose">Rich or editable: today you choose<a class="headerlink" href="#rich-or-editable-today-you-choose" title="Permanent link">&para;</a></h3>
+<p>A goal is one number on a dial, so the Home tabs cannot draw a stage pipeline, a Physical vs Spent panel or a project list. The page can,
+because it is not limited to what a goal expresses. But the page is the part you cannot change without a developer: its layout and
+formulas are built into it. <strong>There is no editor for the page.</strong> On it you can change the filters, the data source and, by choosing a Layout and Skin, how it looks (never what it says). Its tiles and rows click through to the projects behind them and on to a project page, and each project and each document of the Supply chain card has a link out to its record in the ERP.</p>
+<p>The windows under <em>Changing it</em> edit a goal's numbers and SQL. They do not change how anything looks. Where a figure appears on both,
+the checks under <em>How it was checked</em> keep the two formulas in agreement.</p>
+<h3 id="what-the-twin-does-and-does-not-add">What the twin does and does not add<a class="headerlink" href="#what-the-twin-does-and-does-not-add" title="Permanent link">&para;</a></h3>
+<p>The twin does not show more figures than iDempiere. It is built to show the same ones in the same way, and a difference is a defect to fix.
+What differs is where it runs:</p>
+<table>
+<thead>
+<tr>
+<th>The twin adds</th>
+<th>The twin lacks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Runs in a browser, with no server of its own</td>
+<td>The page's panels: Stage, Physical vs Spent and the lists are not on its Home either</td>
+</tr>
+<tr>
+<td>The password stays with the job: the copy and the browser never hold it</td>
+<td>Six of its ten Home gadgets say <em>Not ported yet</em>, including Calendar, Views and Running Jobs</td>
+</tr>
+<tr>
+<td>A Project Order folded from a BIM model can reach its Home before anything is pushed. A copy from iDempiere, while active, hides it until it is pushed</td>
+<td>Edits made in its windows stay in the twin: they do not reach your iDempiere</td>
+</tr>
+<tr>
+<td>You can change a goal there without touching your server</td>
+<td>Nothing tells a user the copy is old. If the job stops, the figures just stop moving</td>
+</tr>
+<tr>
+<td>Each saved edit is kept in a signed log</td>
+<td>Tested on a test server only, with a handful of projects</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Inside its 30-minute refresh, one difference remains.</strong> The twin stores a recalculated goal on each device, so one user's Home does not
+refresh another's stored value. On iDempiere it does, because there is one database.</p>
+<p><img alt="The twin's Performance panel: the stock goals, then the CAPEX goals, the same rows as iDempiere's" src="../../img/capex/capex_twin_home.png" /></p>
+<h3 id="how-close-the-page-is-to-the-design-it-follows">How close the page is to the design it follows<a class="headerlink" href="#how-close-the-page-is-to-the-design-it-follows" title="Permanent link">&para;</a></h3>
+<p>The page follows an executive dashboard a client prototyped. We have seen one screenshot of it, not its code or its formulas, so its tiles are matched by name.</p>
+<p><strong>The same:</strong> the title, the left menu's six items, the Org, Category and Status filters, Last Updated, the seven tiles and the five panels.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>That design</th>
+<th>This page</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Forecast Cost at Completion</td>
+<td>A figure</td>
+<td>Our proposed figure, labelled <em>proposed</em></td>
+<td>No formula has been stated; see <em>For review</em></td>
+</tr>
+<tr>
+<td>Committed Cost</td>
+<td>Split into verified and contract</td>
+<td>Committed, with invoiced under it, and our proposed contract and verified lines</td>
+<td>No column for that split has been stated; see <em>For review</em></td>
+</tr>
+<tr>
+<td>Project Stage</td>
+<td>The client's own five stages</td>
+<td>The Standard Phase names</td>
+<td>How those stages map to <code>C_Phase</code> is not agreed</td>
+</tr>
+<tr>
+<td>Money</td>
+<td>One currency, in large units</td>
+<td>Each currency separately, in full</td>
+<td>Never added together</td>
+</tr>
+<tr>
+<td>Explaining a tile</td>
+<td>An information mark</td>
+<td>The formula printed on the tile</td>
+<td>So anyone can check it in SQL</td>
+</tr>
+<tr>
+<td>Tiles</td>
+<td>Icons and progress bars</td>
+<td>The Executive layout draws meters and a coloured health bar; the Classic layout is plain text</td>
+<td>Both are built; you choose under <em>Choosing a look</em></td>
+</tr>
+<tr>
+<td>Data</td>
+<td>Described as live</td>
+<td>The last run of the job</td>
+<td>See <em>Installing it</em></td>
+</tr>
+</tbody>
+</table>
+<p>The figures themselves come from different data, so they will not match.</p>
+<hr />
+<h2 id="the-dashboard-page">The dashboard page<a class="headerlink" href="#the-dashboard-page" title="Permanent link">&para;</a></h2>
+<p><strong><a href="https://red1oon.github.io/bim-ootb/capex/index.html?snapshot=sample/pilot_snapshot.json&amp;source=legacy&amp;today=2026-11-04">Open the page with the sample data</a></strong>:
+real rows read from the test server, the date held at 4 Nov 2026 so it matches this guide.</p>
+<p><img alt="The full dashboard page populated from the test server: seven summary tiles and five panels" src="../../img/capex/capex_page_dashboard.png" /></p>
+<h3 id="how-to-read-it">How to read it<a class="headerlink" href="#how-to-read-it" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Left menu.</strong> <em>Dashboard</em> is this view. The others are below. The red badge on <em>Approval Pending</em> is that count.</li>
+<li><strong>Data source</strong> (bottom left). <strong>B · Legacy iDempiere</strong> is your server's data, from the job's file. <strong>A · SQLite ERP DB</strong> is a Kernel-ERP store: by default the stock sample database shipped with the page (not your data), or a twin's own store when the page is opened on one. See <em>How the dashboard connects to the data</em>.</li>
+<li><strong>Filters.</strong> <em>Org</em>, <em>Category</em> (<code>ProjectCategory</code>) and <em>Status</em>. Status starts on <strong>Active Projects</strong>. A fourth filter, <strong>Project</strong>, picks one project: its first choice is <strong>All Projects</strong>, and it lists only the projects the other three filters let through (change Status and a project that no longer fits drops out and the choice goes back to All Projects). A page address with <code>&amp;project=&lt;Value&gt;</code> opens with that project already chosen. That changes the money
+   tiles, as explained under <em>Page and Home tab: why a figure can differ</em>.</li>
+<li><strong>Last Updated.</strong> The newest <code>C_Project.Updated</code> in the data, never the clock. An old date means old data.</li>
+<li><strong>The ƒ line</strong> under each tile states its formula in iDempiere columns, so anyone can check it in SQL.</li>
+<li><strong>Click any number to see the projects behind it.</strong> The page stays one screen for a glance; clicking a tile (Total, Active, Approved Budget, Actual Cost, Committed Cost, Forecast, Completed) or a row of a panel (a Health, Schedule or Budget bucket, a Stage) opens a side panel on the right. It lists the projects that make that number, each with Approved, Spent, Due, Done and its Health, Schedule and Budget bucket. The count at the top of the panel is always the number you clicked, and for money tiles the listed amounts add up to the tile. Click a project code to open that project in iDempiere itself (its Phase tab, documents and schedule). <strong>Esc</strong> or <strong>×</strong> closes the panel. The <em>BIM Documents</em> tile counts deliverables, not projects, so it has no project list.</li>
+</ol>
+<p>A tile with nothing to judge says <strong>no data</strong>, not 0%. A tile with no agreed formula says <strong>definition pending</strong>, not a guess.</p>
+<h3 id="the-summary-tiles">The summary tiles<a class="headerlink" href="#the-summary-tiles" title="Permanent link">&para;</a></h3>
+<p>Money is shown <strong>per currency</strong>, never added together.</p>
+<table>
+<thead>
+<tr>
+<th>Tile</th>
+<th>Sample shows</th>
+<th>Where it comes from</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Total Projects (All)</td>
+<td>13, Closed: 1</td>
+<td>Every <code>C_Project</code>. Closed = <code>Processed = Y</code></td>
+</tr>
+<tr>
+<td>Active Projects</td>
+<td>9</td>
+<td><code>IsActive = Y</code> and <code>Processed = N</code></td>
+</tr>
+<tr>
+<td>Approved Budget</td>
+<td>USD 24,982,203.77, BDT 15,139,265.67</td>
+<td>Sum of <code>PlannedAmt</code></td>
+</tr>
+<tr>
+<td>Actual Cost</td>
+<td>USD 342.59, BDT 7.97</td>
+<td>Sum of <code>ProjectBalanceAmt</code>, also as % of plan</td>
+</tr>
+<tr>
+<td>Committed Cost</td>
+<td>USD 1,347,462.62, BDT 1,000.00 (invoiced USD 8.10, BDT 0.00)</td>
+<td>Sum of <code>CommittedAmt</code>, with <code>InvoicedAmt</code> under it. Two further lines, <em>contract (proposed)</em> and <em>verified (proposed; overlaps Actual Cost)</em>, show <strong>no data (not installed)</strong> until the purchase-order and project-issue web-service types are registered</td>
+</tr>
+<tr>
+<td>Forecast Cost at Completion (proposed)</td>
+<td>the figure of the proposal under <em>For review</em>, per currency, or <strong>no data</strong> when no active project has both Spent and Done above zero</td>
+<td>Per active project: Spent + (Approved Budget − Done) ÷ CPI, with CPI = Done ÷ Spent. Summed per currency. Not agreed yet. Under the figure the page prints <strong>basis differs</strong> when, on any project in it, Done ÷ Spent is below 0.5 or above 2: Spent and Done are then not measured on one basis, and the forecast is an alarm, not a result</td>
+</tr>
+<tr>
+<td>BIM Documents issued for construction</td>
+<td>issued / deliverables, for example 3 / 6</td>
+<td>Counts each deliverable at its latest revision; <em>issued</em> means that revision is Issued for construction. Says <strong>no data (BIM Document not installed on this server)</strong> where the plugin is not installed, and <strong>no data</strong> for a project with no deliverables</td>
+</tr>
+<tr>
+<td>Projects Completed this year</td>
+<td>1</td>
+<td><code>Processed = Y</code> with <code>DateFinish</code> in this year</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-panels">The panels<a class="headerlink" href="#the-panels" title="Permanent link">&para;</a></h3>
+<p>These work per project, from its <strong>Phase</strong> tab, with three amounts (the full set of formulas and the data to prepare is under <em>The formulas behind the figures</em>):</p>
+<ul>
+<li><strong>Due</strong> (PV) = planned amount of phases whose End Date has passed.</li>
+<li><strong>Done</strong> (EV) = planned amount of phases marked Complete.</li>
+<li><strong>Spent</strong> (AC) = the project's <code>ProjectBalanceAmt</code>.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Panel</th>
+<th>Sample shows</th>
+<th>What it means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Project Health</td>
+<td>Green 0, Amber 2, Red 1, No EVM data 6</td>
+<td><strong>No EVM data</strong>: nothing due yet. <strong>Green</strong>: Done is at least 90% of Due, and of Spent if there is any, <strong>and no phase is overdue</strong> (not Complete, End Date before today). <strong>Red</strong>: below 90% on all of them. <strong>Amber</strong>: mixed, or the figures say Green but a phase is overdue</td>
+</tr>
+<tr>
+<td>Project Stage</td>
+<td>(no phase) 8, First Product Presentation 1</td>
+<td>Count by the project's Standard Phase (<code>C_Phase_ID</code>). Your own stages are not mapped onto this yet</td>
+</tr>
+<tr>
+<td>Physical vs Spent</td>
+<td>Physical USD 20%, BDT 0%. Spent 0% (the amounts spent are tiny)</td>
+<td><strong>Physical</strong> = Done as a share of all phases' planned amount. <strong>Spent</strong> = <code>ProjectBalanceAmt</code> as a share of <code>PlannedAmt</code>. Payment-based progress is not in the ERP</td>
+</tr>
+<tr>
+<td>Schedule Performance</td>
+<td>On Time 2, Delayed 1, At Risk 2, No schedule data 4, Average Delay 180 days</td>
+<td><strong>No schedule data</strong>: no phase with both dates. <strong>At Risk</strong>: Done is under 90% of Due. <strong>Delayed</strong>: a phase not Complete is past its End Date. Average Delay is over At Risk and Delayed projects</td>
+</tr>
+<tr>
+<td>Budget Status</td>
+<td>Within 1, Over 2, Not Started 6, Overrun USD 334.62, BDT 7.97</td>
+<td><strong>Not Started</strong>: nothing spent. <strong>Over</strong>: Spent is above Planned. Overrun is the excess</td>
+</tr>
+</tbody>
+</table>
+<p><strong>What is in the sample.</strong> Real documents on a test server, entered through iDempiere's own services, not invented figures. Most of
+the projects are test pushes of one building, so the amounts themselves mean nothing. What each one is there to show:</p>
+<table>
+<thead>
+<tr>
+<th>Project</th>
+<th>What was done in iDempiere</th>
+<th>Where it lands</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HHS_VIEWER_PUSH_..840</td>
+<td>All phases past due. 5 of 6 marked Complete</td>
+<td>Health Amber (the sixth phase is overdue), Schedule Delayed</td>
+</tr>
+<tr>
+<td>HHS_VIEWER_PUSH_..809</td>
+<td>All phases past due. Smallest marked Complete, material issued</td>
+<td>Health Amber, At Risk, Budget Within</td>
+</tr>
+<tr>
+<td>SHED</td>
+<td>One phase past due, not Complete</td>
+<td>Health Red, At Risk</td>
+</tr>
+<tr>
+<td>HHS_PLUGIN_POC</td>
+<td>Marked Commitment, Committed Amount on a line, one sales invoice</td>
+<td>Committed Cost, Invoiced</td>
+</tr>
+<tr>
+<td>CAPEX_BDT_POC</td>
+<td>New project in BDT: Committed Amount, material issued, no budget</td>
+<td>BDT amounts, Budget Over, Overrun</td>
+</tr>
+<tr>
+<td>Standard</td>
+<td>Material issued, no budget</td>
+<td>Budget Over, Overrun</td>
+</tr>
+<tr>
+<td>HHS_VIEWER_PUSH_..730</td>
+<td>Finish Date entered, then Close Project</td>
+<td>Closed, Completed this year. Not Active any more</td>
+</tr>
+</tbody>
+</table>
+<h3 id="choosing-a-look-layout-and-skin">Choosing a look: Layout and Skin<a class="headerlink" href="#choosing-a-look-layout-and-skin" title="Permanent link">&para;</a></h3>
+<p>Two selects in the header change how the page looks, never what it says. Every number comes from the same calculation in every look, for both the Kernel ERP and legacy iDempiere.</p>
+<table>
+<thead>
+<tr>
+<th>Choice</th>
+<th>Options</th>
+<th>What changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Layout</strong></td>
+<td><em>Classic</em> (the default: tiles and panels)</td>
+<td>The tiles and panels described above</td>
+</tr>
+<tr>
+<td></td>
+<td><em>Executive</em></td>
+<td>Four large tiles with meters (Approved budget, Spent so far, Forecast, Project health as one coloured bar), a <strong>portfolio map</strong>, a <strong>Needs attention</strong> list and the stage bars</td>
+</tr>
+<tr>
+<td><strong>Skin</strong></td>
+<td><em>Light</em>, <em>Dark</em></td>
+<td>Colours only</td>
+</tr>
+</tbody>
+</table>
+<p>The choice is remembered in your browser. It can also be set in the address (<code>?theme=executive&amp;skin=dark</code>).</p>
+<p><strong>The portfolio map</strong> (Executive layout) draws one bubble per active project that has a planned amount. Left to right is how many days behind schedule the project is (its longest overdue phase); bottom to top is how much of its budget is spent; the colour is its health. Hover or Tab to a bubble to see its figures and the reason it is amber or red; click it to open the project. Bubble size shows the planned amount, but only when all plotted projects share one currency (amounts in different currencies are never compared). Projects with no planned amount are counted under the map as <em>not plotted</em>. <strong>Table view</strong> shows the same projects as a table.</p>
+<h3 id="the-project-page">The project page<a class="headerlink" href="#the-project-page" title="Permanent link">&para;</a></h3>
+<p>Click a project code in any list (or a bubble, or a row under <em>Needs attention</em>) and the project opens on its own page, in five narrow tabs. <strong>Open in iDempiere</strong> at the top right opens the same record in the ERP, and <strong>‹ Dashboard</strong> brings you back.</p>
+<table>
+<thead>
+<tr>
+<th>Tab</th>
+<th>Shows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Overview</strong></td>
+<td>Approved, Spent, Due against Done, the forecast warning if Spent and Done are not on one basis, and <strong>In plain words</strong>: sentences made from the project's own rows, for example <em>Substructure is overdue: it ended 2026-09-22 and is not ticked complete</em>. If nothing is flagged it says so</td>
+</tr>
+<tr>
+<td><strong>Schedule</strong></td>
+<td>The phases as bars against a <em>today</em> line (Complete, In progress, Overdue, To come) and the same phases as a table. Under them, a <strong>Tasks</strong> card with one bar per task where the server has task dates (BIM Document installed); otherwise it says <em>no task dates on this server</em> and draws nothing</td>
+</tr>
+<tr>
+<td><strong>Cost</strong></td>
+<td>Each phase's planned and committed amount, a total row, and the project's committed and invoiced amounts from its lines</td>
+</tr>
+<tr>
+<td><strong>Procurement</strong></td>
+<td>The <strong>Supply chain</strong> card (proposed): per purchase order, received, invoiced and paid, with a strip of four counts, each document one click from its record; then the project's purchase orders and which are still open. <em>no data (not installed)</em> where they cannot be read</td>
+</tr>
+<tr>
+<td><strong>Documents</strong></td>
+<td>The BIM deliverables at their latest revision and how many are issued for construction. <em>no data (not installed)</em> without the BIM Document module</td>
+</tr>
+</tbody>
+</table>
+<p>The tabs can be used from the keyboard: Left and Right move between them, Home and End jump to the first and last.</p>
+<h3 id="the-other-views">The other views<a class="headerlink" href="#the-other-views" title="Permanent link">&para;</a></h3>
+<p><strong>Projects</strong> lists each project: Value, Name, Org, Currency, Planned, Actual, Committed, Standard Phase. The <strong>BIM</strong> button appears only when
+that project's building file is found, and opens it in the BIM viewer. The file is found by name: <code>&lt;project Value&gt;_extracted.db</code>, the same name the BIM push uses for the Project Order. The drawings and models filed against the project (BIM Document) are not shown here yet; see the Modeller guide, <em>After the order</em>.</p>
+<p><img alt="Projects view: one row per active project" src="../../img/capex/capex_page_projects.png" /></p>
+<p><strong>Budget &amp; Cost</strong> lists Planned, Committed, Invoiced and Actual per project.</p>
+<p><img alt="Budget and Cost view" src="../../img/capex/capex_page_budget.png" /></p>
+<p><strong>Approval Pending</strong> shows how many workflow approvals are waiting for someone to act (<code>AD_WF_Activity</code>, state <em>Waiting</em>, not processed), 261 in the sample. The red badge on the menu is the same number.</p>
+<p><strong>Procurement Risks (proposed)</strong> shows where buying may go wrong. Our proposal, until the client says otherwise:</p>
+<table>
+<thead>
+<tr>
+<th>Line</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Open purchase orders</td>
+<td>Purchase orders on the filtered projects that are not Completed, Closed, Voided or Reversed: how many, and their total per currency</td>
+</tr>
+<tr>
+<td>Over-committed projects</td>
+<td>Active projects whose Committed Amount is above their Planned Amount</td>
+</tr>
+<tr>
+<td>Budget, nothing ordered</td>
+<td>Active projects with a Planned Amount and no purchase order at all</td>
+</tr>
+</tbody>
+</table>
+<p>The first and last need purchase orders to be readable on the server; where they are not, the line says <strong>no data (not installed)</strong>, never 0.</p>
+<p><strong>Handover (proposed)</strong> shows how close projects are to being handed over: <strong>Ready for handover</strong> (active projects with phases, every phase ticked Complete), <strong>Handed over</strong> (closed projects), and the drawings issued for construction, as on the dashboard.</p>
+<p>Every count on these two views opens the projects behind it, like the dashboard's. Both views say <em>proposed</em> because the definitions are ours (question Q6 to the client).</p>
+<p><strong>One sentence under every page.</strong> Each view starts with a plain sentence saying what it is for, so a first-time reader does not need this guide to open it.</p>
+<h3 id="page-and-home-tab-why-a-figure-can-differ">Page and Home tab: why a figure can differ<a class="headerlink" href="#page-and-home-tab-why-a-figure-can-differ" title="Permanent link">&para;</a></h3>
+<p>They use the same columns, but the page starts on Status <strong>Active Projects</strong> while the Home tab's money goals count every
+project, including inactive ones. Set Status to <strong>All</strong> and they agree:</p>
+<table>
+<thead>
+<tr>
+<th>Figure</th>
+<th>Page, Status Active</th>
+<th>Page, Status All</th>
+<th>Home tab goal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Approved Budget (USD)</td>
+<td>24,982,203.77</td>
+<td>39,971,166.17</td>
+<td>39,971,166</td>
+</tr>
+<tr>
+<td>Approved Budget (BDT)</td>
+<td>15,139,265.67</td>
+<td>30,286,701.64</td>
+<td>30,286,702</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="if-you-know-idempiere">If you know iDempiere<a class="headerlink" href="#if-you-know-idempiere" title="Permanent link">&para;</a></h2>
+<p>The Home tab side is made of windows you already have.</p>
+<table>
+<thead>
+<tr>
+<th>Dashboard piece</th>
+<th>iDempiere window</th>
+<th>Menu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>One figure on the Home tab</td>
+<td><strong>Performance Goal</strong></td>
+<td>Performance Analysis and Accounting › Performance Measurement</td>
+</tr>
+<tr>
+<td>What a goal measures</td>
+<td><strong>Performance Measure</strong></td>
+<td>same folder</td>
+</tr>
+<tr>
+<td>The SQL behind it</td>
+<td><strong>Performance Measure Calculation</strong></td>
+<td>same folder</td>
+</tr>
+<tr>
+<td>The dial's colours</td>
+<td><strong>Performance Color Schema</strong></td>
+<td>same folder</td>
+</tr>
+<tr>
+<td>The panel itself</td>
+<td><strong>Dashboard Content</strong> (<em>Performance</em>, shown at login)</td>
+<td>Organization Rules folder</td>
+</tr>
+</tbody>
+</table>
+<p>Search any of these by name in the box at the top left (Alt+G).</p>
+<hr />
+<h2 id="the-home-tab">The Home tab<a class="headerlink" href="#the-home-tab" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Log in as usual. The goals have no Role or User set, so <strong>every user of the tenant</strong> sees them.</li>
+<li>On <strong>Home</strong>, find the <strong>Performance</strong> panel, a narrow column at the far right.</li>
+<li>Click the panel's <strong>maximize</strong> button (top right of the panel). Your stock goals come first, then the 27 CAPEX goals.</li>
+</ol>
+<p><img alt="The Performance panel maximized: stock goals first, then CAPEX goals on gray dials" src="../../img/capex/capex_home_top.png" /></p>
+<h3 id="three-kinds-of-dial">Three kinds of dial<a class="headerlink" href="#three-kinds-of-dial" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Dial</th>
+<th>Caption</th>
+<th>Used for</th>
+<th>How to read it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Gray</strong></td>
+<td>A number</td>
+<td>Goals with no target</td>
+<td>Read the number. The needle stays at 0: it means nothing here</td>
+</tr>
+<tr>
+<td><strong>Green → Red</strong></td>
+<td>A percent</td>
+<td>Cost against budget, lower is better</td>
+<td>Green up to 50%, yellow up to 100%, red beyond</td>
+</tr>
+<tr>
+<td><strong>Red → Green</strong></td>
+<td>A percent</td>
+<td>Share of active projects, higher is better</td>
+<td>Red up to 50%, yellow up to 100%, green beyond</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="Gray dials for figures with no target, and green-to-red dials for cost against budget" src="../../img/capex/capex_home_cost.png" /></p>
+<p><img alt="Health and schedule goals: the good buckets as a share of active projects, the others as counts" src="../../img/capex/capex_home_green.png" /></p>
+<h3 id="why-only-9-of-the-27-have-a-target">Why only 9 of the 27 have a target<a class="headerlink" href="#why-only-9-of-the-27-have-a-target" title="Permanent link">&para;</a></h3>
+<p>We followed what GardenWorld's own goals do: a plain plan number on the goal, and the colour schema that fits the direction. A
+target turns the caption into a percent and hides the number, so it is used only where the percent says more.</p>
+<table>
+<thead>
+<tr>
+<th>Goals</th>
+<th>Target</th>
+<th>Reads as</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Actual Cost, Committed Cost, Invoiced (USD, BDT)</td>
+<td>Approved Budget: USD 39,971,166.17, BDT 30,286,701.64</td>
+<td>Share of the budget used</td>
+</tr>
+<tr>
+<td>Health Green, Schedule On Time, Budget Within</td>
+<td>Active projects: 9</td>
+<td><code>On Time: 22%</code> means 2 of 9</td>
+</tr>
+<tr>
+<td>The other 18</td>
+<td>None</td>
+<td>The number itself</td>
+</tr>
+</tbody>
+</table>
+<p>The other 18 are the totals themselves, goals with no plan behind them (Completed this Year, Approval Pending, Average Delay,
+Overruns), and the bad buckets (Amber, Red, No EVM data, Delayed, At Risk, No schedule data, Over, Not started). A bad bucket with
+a target gets worse either way: on the stock schema, "33% of projects are red" would draw <strong>green</strong>.</p>
+<p><strong>These targets are the test server's own figures. Enter your own plan.</strong> A target is a fixed number, as on any stock goal, so
+when projects are added, "of 9" stays 9 until someone changes it.</p>
+<h3 id="the-27-goals">The 27 goals<a class="headerlink" href="#the-27-goals" title="Permanent link">&para;</a></h3>
+<p><strong>Projects and money:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Goal</th>
+<th>How it is worked out</th>
+<th>Counts inactive projects?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Total Projects</td>
+<td>All projects</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Closed Projects</td>
+<td><code>Processed = Y</code></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Active Projects</td>
+<td><code>IsActive = Y</code> and <code>Processed = N</code></td>
+<td>No</td>
+</tr>
+<tr>
+<td>Approved Budget (USD, BDT)</td>
+<td>Sum of <code>PlannedAmt</code></td>
+<td><strong>Yes</strong></td>
+</tr>
+<tr>
+<td>Actual Cost (USD, BDT)</td>
+<td>Sum of <code>ProjectBalanceAmt</code></td>
+<td><strong>Yes</strong></td>
+</tr>
+<tr>
+<td>Committed Cost (USD, BDT)</td>
+<td>Sum of <code>CommittedAmt</code></td>
+<td><strong>Yes</strong></td>
+</tr>
+<tr>
+<td>Invoiced (USD, BDT)</td>
+<td>Sum of <code>InvoicedAmt</code></td>
+<td><strong>Yes</strong></td>
+</tr>
+<tr>
+<td>Projects Completed this Year</td>
+<td><code>Processed = Y</code>, <code>DateFinish</code> in this year</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Approval Pending</td>
+<td>Workflow activities with <code>WFState = OS</code> and <code>Processed = N</code>, on <strong>any</strong> table</td>
+<td>n/a</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Health, schedule and budget</strong>, active projects only, using Due, Done and Spent from <em>The panels</em> above:</p>
+<table>
+<thead>
+<tr>
+<th>Goal</th>
+<th>A project counts here when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Health No EVM data</td>
+<td>Nothing is due yet</td>
+</tr>
+<tr>
+<td>Health Green</td>
+<td>Something is due, Done ≥ 90% of Due, Spent is 0 or Done ≥ 90% of Spent, and no phase is overdue (a phase that is not Complete and whose End Date is before today)</td>
+</tr>
+<tr>
+<td>Health Amber</td>
+<td>Something is due, Spent is above 0, and only one of those two tests passes; or both pass but a phase is overdue</td>
+</tr>
+<tr>
+<td>Health Red</td>
+<td>Something is due, Done &lt; 90% of Due, and Spent is 0 or Done &lt; 90% of Spent</td>
+</tr>
+<tr>
+<td>Schedule No schedule data</td>
+<td>No phase has both a Start and End Date</td>
+</tr>
+<tr>
+<td>Schedule At Risk</td>
+<td>Has dated phases, something is due, and Done &lt; 90% of Due</td>
+</tr>
+<tr>
+<td>Schedule Delayed</td>
+<td>Has dated phases, not At Risk, and an unfinished phase is past its End Date</td>
+</tr>
+<tr>
+<td>Schedule On Time</td>
+<td>Has dated phases, and neither At Risk nor Delayed</td>
+</tr>
+<tr>
+<td>Schedule Average Delay (days)</td>
+<td>Over At Risk and Delayed projects: the average of each one's largest overdue days</td>
+</tr>
+<tr>
+<td>Budget Not started</td>
+<td>Spent is 0</td>
+</tr>
+<tr>
+<td>Budget Within</td>
+<td>Spent is not 0, and is at or below Planned</td>
+</tr>
+<tr>
+<td>Budget Over</td>
+<td>Spent is above Planned</td>
+</tr>
+<tr>
+<td>Budget Actual Overrun (USD, BDT)</td>
+<td>Total of Spent minus Planned over the Over projects</td>
+</tr>
+</tbody>
+</table>
+<p>The 90% is the one rule a client stated. The rest are our working definitions, and you can change any of them: see
+<em>Change what a goal counts</em>.</p>
+<hr />
+<h2 id="what-moves-the-numbers">What moves the numbers<a class="headerlink" href="#what-moves-the-numbers" title="Permanent link">&para;</a></h2>
+<p>Both places only read your project records. These are the iDempiere actions behind each figure, read from iDempiere's own code and
+tried on the test server:</p>
+<table>
+<thead>
+<tr>
+<th>Figure</th>
+<th>What moves it</th>
+<th>Where</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Schedule goals</td>
+<td>Phases with Start Date and End Date</td>
+<td><strong>Project</strong> window, <strong>Phase</strong> tab</td>
+</tr>
+<tr>
+<td>Due, Done, Health</td>
+<td>Planned Amount on phases. Tick <strong>Complete</strong> when a phase finishes</td>
+<td><strong>Phase</strong> tab</td>
+</tr>
+<tr>
+<td>Actual Cost, Budget goals</td>
+<td>Issue material to the project</td>
+<td><strong>Issue to Project</strong></td>
+</tr>
+<tr>
+<td>Committed Cost</td>
+<td>Tick <strong>Commitment</strong> on the project, then type <strong>Committed Amount</strong> on its lines</td>
+<td><strong>Project</strong> window, <strong>Project Line</strong> tab</td>
+</tr>
+<tr>
+<td>Invoiced</td>
+<td>Complete a <strong>sales</strong> invoice with the Project field set</td>
+<td><strong>Sales Invoice and Credit/Debit Note</strong></td>
+</tr>
+<tr>
+<td>Closed</td>
+<td>Run <strong>Close Project</strong></td>
+<td><strong>Project</strong> window</td>
+</tr>
+<tr>
+<td>Completed this Year</td>
+<td>Enter <strong>Finish Date</strong>, and close the project</td>
+<td><strong>Project</strong> window</td>
+</tr>
+</tbody>
+</table>
+<p>Three things that may surprise you:</p>
+<ul>
+<li><strong>A purchase order does not fill Committed Cost.</strong> iDempiere has no code that writes it from a PO, not even Generate PO from Project. It is typed in.</li>
+<li><strong>Close Project does not set the Finish Date.</strong> Without one, the project counts as Closed but not as Completed this Year.</li>
+<li><strong>Actual Cost is in your accounting currency, whatever the project's.</strong> Issue to Project adds the product's cost without converting it. On the test server, a BDT project shows 7.97, which is the USD cost. If you run projects in another currency, read that tile knowing this.</li>
+</ul>
+<p><strong>A measured example</strong> (taken before the overdue rule above; the Health Green line would now also depend on the other phases). On the test server, ticking <strong>Complete</strong> on SHED's one overdue phase moved five goals. It was then undone.</p>
+<table>
+<thead>
+<tr>
+<th>Home tab caption</th>
+<th>Before</th>
+<th>After</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Health Green</td>
+<td>11%</td>
+<td>22%</td>
+</tr>
+<tr>
+<td>Health Red</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Schedule On Time</td>
+<td>22%</td>
+<td>33%</td>
+</tr>
+<tr>
+<td>Schedule At Risk</td>
+<td>2</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Schedule Average Delay (days)</td>
+<td>180</td>
+<td>269</td>
+</tr>
+</tbody>
+</table>
+<p>The average delay went <strong>up</strong> although a project improved: it left the average, and it had one of the shorter delays.
+Read that goal beside the At Risk and Delayed counts, not on its own.</p>
+<hr />
+<h2 id="changing-it">Changing it<a class="headerlink" href="#changing-it" title="Permanent link">&para;</a></h2>
+<p>You need no developer for any of this. It changes the Home tab goals; the page's formulas stay as they are.</p>
+<h3 id="set-or-change-a-target">Set or change a target<a class="headerlink" href="#set-or-change-a-target" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Open <strong>Performance Goal</strong>. Find the goal with the arrows or search.</li>
+<li>Enter <strong>Measure Target</strong> and pick a <strong>Color Schema</strong> that fits the direction. Save.</li>
+</ol>
+<p><img alt="The Performance Goal window on CAPEX Actual Cost (USD): Measure Target, Color Schema and Measure Actual" src="../../img/capex/capex_win_goal.png" /></p>
+<p>The amount behind a percent stays visible here, in <strong>Measure Actual</strong>.</p>
+<div class="admonition note">
+<p class="admonition-title">The first percent can be out of date</p>
+<p>Saving a new target recalculates at once, but that first percent is scored against the <strong>previous</strong> target
+(standard iDempiere behaviour). The new target applies at the next refresh, see <em>Troubleshooting</em>.</p>
+</div>
+<h3 id="show-a-goal-to-fewer-people">Show a goal to fewer people<a class="headerlink" href="#show-a-goal-to-fewer-people" title="Permanent link">&para;</a></h3>
+<p>In <strong>Performance Goal</strong>, set <strong>Role</strong> or <strong>User/Contact</strong>. To hide it, clear <strong>Active</strong>. Your stock goals can be
+hidden the same way if you want only the CAPEX goals on Home.</p>
+<h3 id="change-what-a-goal-counts">Change what a goal counts<a class="headerlink" href="#change-what-a-goal-counts" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Open <strong>Performance Measure Calculation</strong> and find the row with the goal's name.</li>
+<li>Edit <strong>Sql WHERE</strong> (or <strong>Sql SELECT</strong>). Save.</li>
+</ol>
+<p><img alt="The Performance Measure Calculation window: Sql SELECT and Sql WHERE for CAPEX Active Projects" src="../../img/capex/capex_win_calc.png" /></p>
+<div class="admonition warning">
+<p class="admonition-title">A broken SQL shows 0, not an error</p>
+<p>iDempiere catches a measure's SQL error, logs it and returns 0. After any edit, check the number is what you
+expect. A sudden 0 may be your SQL.</p>
+</div>
+<p>To see a <strong>narrower</strong> population (one organization, for example), iDempiere offers the <strong>Restriction</strong> tab of Performance Goal. We have not tried it on these goals.</p>
+<h3 id="change-the-dials-colours">Change the dial's colours<a class="headerlink" href="#change-the-dials-colours" title="Permanent link">&para;</a></h3>
+<p>Open <strong>Performance Color Schema</strong>. Each schema gives a colour up to Mark 1, up to Mark 2, and up to Mark 3.</p>
+<p><img alt="The Performance Color Schema window: Green (50) - Yellow (100) - Red" src="../../img/capex/capex_win_color.png" /></p>
+<table>
+<thead>
+<tr>
+<th>Schema</th>
+<th>Tenant</th>
+<th>Editable by a tenant user?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Green (50) - Yellow (100) - Red</td>
+<td>System</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Red (50) - Yellow (100) - Green</td>
+<td>System</td>
+<td>No</td>
+</tr>
+<tr>
+<td>No target (Gray)</td>
+<td>Yours</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+<p>To use other marks, add a schema in your tenant, then pick it in the goal's <strong>Color Schema</strong> field.</p>
+<h3 id="add-a-goal">Add a goal<a class="headerlink" href="#add-a-goal" title="Permanent link">&para;</a></h3>
+<p>Add a row in <strong>Performance Measure Calculation</strong>, a <strong>Performance Measure</strong> that uses it, then a <strong>Performance Goal</strong> on that
+measure. To add a currency, copy an existing pair and change <code>C_Currency_ID</code> in Sql WHERE. We have edited targets through these windows and tested that; adding a goal by hand is standard iDempiere, but we have not run it for this dashboard.</p>
+<hr />
+<h2 id="installing-it">Installing it<a class="headerlink" href="#installing-it" title="Permanent link">&para;</a></h2>
+<p>Your administrator installs it once; nothing is installed on a user's computer. What gets installed, in order:</p>
+<ol>
+<li><strong>The dashboard's read access</strong> on your iDempiere (data only, no program code): the read-only web-service types and a user allowed to use them.</li>
+<li><strong>The Home tab goals</strong> (data only), if you want the Performance panel.</li>
+<li><strong>BIM Document</strong>, if you want drawings filed against projects: a metadata pack and one plugin (a <code>.jar</code>) on the server.</li>
+</ol>
+<p>Kernel-ERP needs no installation: its Home tab goals and BIM Document are built in, and start or stop from <strong>Plugins &amp; Releases</strong>.</p>
+<p>The steps, the scripts and the plugin's contents are in the <strong>Developer's note</strong> at the end of this guide.</p>
+<hr />
+<h2 id="what-it-does-not-do-yet">What it does not do yet<a class="headerlink" href="#what-it-does-not-do-yet" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Topic</th>
+<th>Today</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Forecast Cost at Completion</td>
+<td>Shows our proposed figure, labelled <em>proposed</em>, until you confirm the formula (<em>For review</em>)</td>
+</tr>
+<tr>
+<td>Procurement Risks, Handover</td>
+<td>Show our proposed definitions, labelled <em>proposed</em>, until you confirm them</td>
+</tr>
+<tr>
+<td>Project Stage</td>
+<td>Shows the project's Standard Phase. The five CAPEX stages are installed as a Project Type (proposed); a project shows them once you set its Standard Phase to one of them. <em>For review</em></td>
+</tr>
+<tr>
+<td>Payment-based progress</td>
+<td>Not in the ERP</td>
+</tr>
+<tr>
+<td>Document figures</td>
+<td>The tile <em>BIM Documents issued for construction</em> is on the page. Not yet shown: <em>Issued for review</em> as a separate count</td>
+</tr>
+<tr>
+<td>BIM Document on your own iDempiere</td>
+<td>The plugin's source is written and compiles against iDempiere 13; it has been installed and checked on a real iDempiere 13 test instance (see the Developer's note), not yet on a client's server. It runs in Kernel-ERP today</td>
+</tr>
+<tr>
+<td>A revised model</td>
+<td>Sending a revised model again adds nothing today (a second send changes nothing). On Kernel-ERP a revised model arrives as a new, version-tagged order that replaces the old one (the project is still in alpha, so no baseline is kept). Whether a push to your iDempiere may delete the old order is still to be decided</td>
+</tr>
+<tr>
+<td>Register in the Modeller</td>
+<td>The register is exported by <em>Export Register</em> in the BIM Document window; a button in the Modeller itself is not built</td>
+</tr>
+<tr>
+<td>Project Stage, Physical vs Spent, project lists on the Home tab</td>
+<td>Page only, not goals</td>
+</tr>
+<tr>
+<td>Other currencies on the Home tab</td>
+<td>No money goal covers them until you add one. The page shows each currency it finds</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Still 0 on the test server: Invoiced (BDT).</strong> It has no BDT price list or USD-to-BDT rate, so a sales invoice can't reach a BDT
+project. Every other goal has counted real documents.</p>
+<p><strong>Check Approval Pending against your own meaning of "approval".</strong> It counts every suspended workflow activity. On
+the test server all 261 are on <strong>Business Partner</strong>, not on project documents.</p>
+<hr />
+<h2 id="how-it-was-checked">How it was checked<a class="headerlink" href="#how-it-was-checked" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Every tile drawn on the page equals the formula run separately over the sample's rows (19 of 19, at Status Active and All).</li>
+<li>Every CAPEX caption on the test server's real Home tab equals the twin's, all 27.</li>
+<li>For 26 of the 27 goals, Home tab values equal iDempiere's own goals, recalculated just before comparing. The other, Invoiced (BDT), is 0 on both sides, which proves nothing.</li>
+<li>iDempiere's calculation, the twin's and the page's own formulas agree on the same rows.</li>
+<li>A goal's stored value behaves the same on iDempiere and the twin: the caption holds inside the refresh interval, and moves after it, in three steps compared exactly.</li>
+<li>The read types, built from their script alone on a clean server, each answered a real call. A write through a read type is refused.</li>
+<li>
+<p>A real edit in iDempiere reached the twin after the next job and reload, changing exactly one row, and was undone.</p>
+</li>
+<li>
+<p>The <strong>Supply chain</strong> card equals a separate count from the raw rows for a set of awkward cases (a draft order, a part payment, a payment tied only through its invoice, a document in another currency, an unlinked receipt, another project's documents), and the three read types it needs return the same rows on the test server.</p>
+</li>
+<li><strong>Task dates</strong> written from the 4D programme equal the programme's own tasks one by one, each phase's window equals the span of its tasks, and the Schedule tab draws exactly those bars. On the test server the dates come back through the standard read type.</li>
+<li>A <strong>Project Issue</strong> on Kernel-ERP moves the project's balance and the stock by the same amounts as the same issue on iDempiere (checked on the test server); reversing it restores both.</li>
+<li>The dashboard opened on a Kernel-ERP store built through the twin's own operations shows totals equal to separate sums over that store's rows.</li>
+</ul>
+<p>Not checked: a site larger than this test server. If the job stops, the copy just goes quietly out of date.</p>
+<hr />
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>You see</th>
+<th>Why</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A gray dial at 0%</td>
+<td>That goal has no target</td>
+<td>Read the number in the caption</td>
+</tr>
+<tr>
+<td>A percent, and you want the amount</td>
+<td>A target hides the number</td>
+<td>Open the goal: <strong>Measure Actual</strong></td>
+</tr>
+<tr>
+<td>A share over 100%</td>
+<td>The target is fixed, and projects were added</td>
+<td>Update <strong>Measure Target</strong></td>
+</tr>
+<tr>
+<td>A number looks out of date</td>
+<td>A goal recalculates only when a Home tab shows it <strong>and</strong> its value is over 30 minutes old. We saw one still showing 318.68 when the real figure was 334.62</td>
+<td>Wait, or set <code>ZK_DASHBOARD_PERFORMANCE_REFRESH_INTERVAL</code> (milliseconds, default 1800000) in System Configurator</td>
+</tr>
+<tr>
+<td>I changed the SQL and nothing moved</td>
+<td>Only saving a goal's target or scope recalculates at once</td>
+<td>Wait for the refresh</td>
+</tr>
+<tr>
+<td>A goal suddenly reads 0</td>
+<td>The SQL may be broken: errors show as 0</td>
+<td>Check Sql WHERE and the server log</td>
+</tr>
+<tr>
+<td>Page and Home tab budgets differ</td>
+<td>The page starts on Status Active, the goals count inactive projects too</td>
+<td>Set Status to All</td>
+</tr>
+<tr>
+<td>Page shows old figures</td>
+<td>The job has not run since. Check <strong>Last Updated</strong></td>
+<td>Run the job</td>
+</tr>
+<tr>
+<td>The page has no <strong>B · Legacy iDempiere</strong> source</td>
+<td>The job's file is not beside the page</td>
+<td>Run the job, or check where it wrote</td>
+</tr>
+<tr>
+<td>A project is missing from every Home tab money goal</td>
+<td>Its currency is not USD or BDT</td>
+<td>Add a goal for that currency</td>
+</tr>
+<tr>
+<td>The panel is hard to read</td>
+<td>It is a narrow column</td>
+<td>Use the panel's maximize button</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p>Related guides: <a href="../ERPUserGuide/">Kernel-ERP User Guide</a> · <a href="../DistributedERP/">Distributed ERP</a>.</p>
+<hr />
+<h2 id="developers-note">Developer's note<a class="headerlink" href="#developers-note" title="Permanent link">&para;</a></h2>
+<p>For the person who installs and extends it. Nothing here is needed to <em>use</em> the dashboard.</p>
+<h3 id="how-to-install">How to install<a class="headerlink" href="#how-to-install" title="Permanent link">&para;</a></h3>
+<h4 id="the-home-tab-goals">The Home tab goals<a class="headerlink" href="#the-home-tab-goals" title="Permanent link">&para;</a></h4>
+<p>For an administrator with database access. On the test server these were applied with <code>psql</code>, in name order, followed by
+<code>update_sequences</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Script</th>
+<th>Adds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>202611031900_CAPEX-R0.sql</code></td>
+<td>The first measure: Approved Budget (USD)</td>
+</tr>
+<tr>
+<td><code>202611032000_CAPEX-G2.sql</code></td>
+<td>The count and sum measures</td>
+</tr>
+<tr>
+<td><code>202611032100_CAPEX-G3.sql</code></td>
+<td>A goal for each of them</td>
+</tr>
+<tr>
+<td><code>202611032200_CAPEX-G4.sql</code></td>
+<td>The health, schedule and budget measures, and their goals</td>
+</tr>
+<tr>
+<td><code>202611121000_CAPEX-S2-HEALTH-OVERDUE.sql</code></td>
+<td>Health Green and Amber also look at overdue phases</td>
+</tr>
+<tr>
+<td><code>202611041000_CAPEX-G7.sql</code></td>
+<td>The targets and the gray colour schema</td>
+</tr>
+</tbody>
+</table>
+<p>They are in the bim-ootb repository, under <code>capex/legacy/migration/iD13/postgresql/</code>, in iDempiere's own migration format.
+The first statement of each registers it in the migration log. Most carry a <code>Restore</code> line at the top that removes what they
+added. Goals calculate themselves the first time a Home tab shows them.</p>
+<div class="admonition warning">
+<p class="admonition-title">These scripts are written for GardenWorld</p>
+<p>They set <code>AD_Client_ID = 11</code>, the currencies USD (100) and BDT (322), and this test server's target figures. <strong>Do not run them
+on your own tenant.</strong> Render your own from them instead, as below.</p>
+</div>
+<h4 id="for-your-own-tenant">For your own tenant<a class="headerlink" href="#for-your-own-tenant" title="Permanent link">&para;</a></h4>
+<p><code>capex/tools/site_migration.js</code> writes your tenant's two scripts from the shipped ones. It never connects to your server.</p>
+<ol>
+<li><code>node capex/tools/site_migration.js --preflight &lt;AD_Client_ID&gt;</code> prints a read-only SQL. Run it with <code>psql -qtA</code> and save the line it prints as <code>preflight.json</code>.
+   It reports your roles, the currencies your projects hold and your next free ids.</li>
+<li><code>node capex/tools/site_migration.js preflight.json --role &lt;AD_Role_ID&gt; --out &lt;folder&gt;</code>. Add <code>--targets &lt;file&gt;</code> to state your plan,
+   for example <code>{"budget":{"USD":1000},"activeProjects":3}</code>.</li>
+<li>Apply the two scripts with <code>psql</code> in name order, run <code>update_sequences()</code>, and restart the server.</li>
+</ol>
+<p>A goal with no target stated goes on the gray schema, so another company's numbers can never reach you. It refuses, and says why, if no role
+is given, if your projects hold no currency yet, or if these types or goals are already there.</p>
+<p>Tested on a second tenant of a test server, through to that tenant's real Home tab. It has not been run on a real site.</p>
+<h4 id="the-page">The page<a class="headerlink" href="#the-page" title="Permanent link">&para;</a></h4>
+<p>The page is plain files (<code>capex/index.html</code> and what it loads), with no server of its own and nothing to install in iDempiere's
+code. Your iDempiere needs a read-only <strong>web-service read type</strong> for each of the 8 tables it reads, and a user allowed to use them.
+These come in one migration script, <code>202611042300_CAPEX-WS-READ.sql</code>, under <code>capex/legacy/ws/migration/iD13/postgresql/</code>, for GardenWorld.
+For your own tenant, <em>For your own tenant</em> above writes it. Restart the server afterwards. The write types in <code>capex/legacy/ws_testserver/</code>
+are for a test server only: do not install them on yours.</p>
+<p>A small job beside your server reads iDempiere and writes the file the page opens:</p>
+<div class="highlight"><pre><span></span><code>BRIDGE_BASE=https://your-server BRIDGE_USER=... BRIDGE_PASS=... BRIDGE_CLIENT=... BRIDGE_ROLE=... BRIDGE_ORG=... BRIDGE_WH=... \
+  node capex/tools/legacy_snapshot.js
+</code></pre></div>
+<p>It writes <code>capex/legacy_snapshot.json</code>. The password stays with the job: the file and the browser never hold it, and nothing is
+written to iDempiere. Run it on a schedule. The page shows what the last run saw. Add <code>?source=legacy</code> to the page's
+address to open on your data.</p>
+<div class="admonition warning">
+<p class="admonition-title">The file holds your project figures</p>
+<p>Whoever can open the page can read them. Serve it only where you would show them.</p>
+</div>
+<p>The optional read types come in their own migration scripts, one folder each, so a site installs only what it uses: <code>capex/legacy/ws/q4/</code> (<code>QueryCOrder</code>, <code>QueryCProjectIssue</code>), <code>capex/legacy/ws/bimdoc/</code> (<code>QueryBIMDocument</code>, and the task-date columns added to <code>QueryCProjectTask</code> and <code>BridgeCreateCProjectTask</code>), and <code>capex/legacy/ws/chain/</code> (<code>QueryMInOut</code>, <code>QueryCInvoice</code>, <code>QueryCPayment</code>: the Supply chain card). Each script does nothing where its table or column is absent, finds columns by name, and is safe to run twice; restart the server afterwards, because web-service types are cached.</p>
+<p>To open the page on a twin's own store instead of the job's file, add <code>?db=/path/to/store.db</code> to its address. <code>node capex/tools/twin_mockchain.js</code> builds the film's 12-project store through the twin's own model layer (projects, issues, purchase orders, and for each completed order a receipt, a vendor invoice and a payment) and exports it; the page's <em>A · SQLite ERP DB</em> then reads that file.</p>
+<h4 id="in-kernel-erp">In Kernel-ERP<a class="headerlink" href="#in-kernel-erp" title="Permanent link">&para;</a></h4>
+<p>Nothing is installed by hand. The Home tab goals and BIM Document are built in: open <strong>Plugins &amp; Releases</strong> to start or stop them. A stopped one
+stays stopped.</p>
+<h4 id="bim-document-on-your-own-idempiere">BIM Document on your own iDempiere<a class="headerlink" href="#bim-document-on-your-own-idempiere" title="Permanent link">&para;</a></h4>
+<p>Two parts, kept apart (metadata is data; code is code):</p>
+<ol>
+<li><strong>A 2Pack file: metadata only.</strong> The table <code>BIM_Document</code> and its columns, the lists (discipline, file kind, the four states), the window,
+   the BIM Document tabs in the Project window, the menu entry, and the two process rows (they carry class <em>names</em>). The pack creates the
+   physical table when it is missing (<code>ColumnElementHandler</code>). It holds no program code.</li>
+<li><strong>An OSGi plugin, <code>org.idempiere.bimdocument</code>, with the Java in its <code>src</code> folder.</strong> Source: <code>iDempiereOOTB/org.idempiere.bimdocument/</code> in the
+   bim-compiler repository. Install it like any iDempiere plugin. A pack that names a class the server does not have is reported as <em>class not on the server</em>.</li>
+</ol>
+<p>How the metadata gets in is your choice, as in any iDempiere installation:
+<strong>rows in the pack's <code>PackOut.xml</code></strong> (the dictionary itself); <strong>SQL statements inside <code>PackOut.xml</code></strong> (a database type is stated per statement);
+or <strong>a SQL migration script</strong> under the plugin's <code>migration</code> folder, as the dashboard's read types already do. A pack version is applied once and
+never changed: a changed pack gets a new version. Start the database first, apply the pack, then check the rows on the server.</p>
+<p><em>Status:</em> installed and tested on a real iDempiere 13 server (a test instance on the developer's machine). The pack and the <code>I_</code>/<code>X_</code> classes are generated from one
+Excel data-model workbook. The four document types (<code>DocBaseType</code> BIM: Drawing, Model, Specification, Report) come from a migration script, and the Project window has a project-level BIM Document tab.</p>
+<h4 id="try-it-the-bim-document-test-instance">Try it: the BIM Document test instance<a class="headerlink" href="#try-it-the-bim-document-test-instance" title="Permanent link">&para;</a></h4>
+<p><code>scripts/legacy_bimdoc_refresh.sh</code> (in the bim-compiler repository) rebuilds a test instance from iDempiere's base seed in about two minutes: it creates a fresh
+database, imports the seed, applies the newer migration scripts, installs the plugin and starts the server, then reads the rows back. The instance is
+<code>~/idempiere-bimdoc</code>, at <code>http://localhost:8108/webui</code>; start and stop it with the <code>start.sh</code> and <code>stop.sh</code> beside it. <code>scripts/legacy_bimdoc_witness.sh</code> then runs the
+checks inside the server (a document issued for construction supersedes the older revision, an older revision cannot be issued after a newer one, the register file,
+a task-less deliverable refused) and rolls its changes back. Do not use iDempiere's own <code>ImportIdempiere.sh</code> on a database server shared with other databases: it drops
+the shared <code>adempiere</code> role.</p>
+<h3 id="the-bim-document-model-what-is-in-the-plugin">The BIM Document model (what is in the plugin)<a class="headerlink" href="#the-bim-document-model-what-is-in-the-plugin" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Class (package <code>org.kernel.bim</code>)</th>
+<th>What it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>model.I_BIM_Document</code></td>
+<td>The interface: the table name, every column name as a constant, a getter and setter for each. The table id is read from the dictionary, never typed (it differs per database)</td>
+</tr>
+<tr>
+<td><code>model.X_BIM_Document</code></td>
+<td>The persistent class, in the shape iDempiere's own model generator writes (<code>extends PO implements I_BIM_Document, I_Persistent</code>). Plain getters and setters, no rules</td>
+</tr>
+<tr>
+<td><code>model.MBIMDocument</code></td>
+<td>The model class: the document rules, below</td>
+</tr>
+<tr>
+<td><code>model.BIMDocumentModelFactory</code></td>
+<td>Tells iDempiere that <code>BIM_Document</code> is served by <code>MBIMDocument</code></td>
+</tr>
+<tr>
+<td><code>process.BIMDocumentRegisterExport</code></td>
+<td>Export Register</td>
+</tr>
+<tr>
+<td><code>process.BIMDocumentOpen</code></td>
+<td>Open</td>
+</tr>
+<tr>
+<td><code>process.BIMDocumentProcessFactory</code></td>
+<td>Tells iDempiere which class serves each process row</td>
+</tr>
+</tbody>
+</table>
+<p><strong>What <code>MBIMDocument</code> updates, and when.</strong> It is the document-action class (<code>DocAction</code>), so the stock Document Action field drives it. Only two actions are offered:</p>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Checks</th>
+<th>What it changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Issue for review</strong> (prepare)</td>
+<td>The deliverable has a number and a title; it hangs under a project task; no newer revision is already Issued for construction. Otherwise the document goes <em>Invalid</em> and says why</td>
+<td>Status becomes Issued for review</td>
+</tr>
+<tr>
+<td><strong>Issue for construction</strong> (complete)</td>
+<td>The same checks, if it was not prepared first</td>
+<td>Status becomes Issued for construction and the document is closed to further action. <strong>Every older revision of the same deliverable that was Issued for construction or for review is set to Superseded</strong>, its <em>Superseded By</em> points to this revision, and it is closed. Nothing else is touched</td>
+</tr>
+</tbody>
+</table>
+<p>Void, close, reverse and re-activate are not offered: a deliverable is replaced by a newer revision, not undone. The log carries
+<code>§BIMDOC-SUPERSEDE</code> for each older revision changed, <code>§BIMDOC-ISSUED</code>, and <code>§BIMDOC-CHAIN</code> with the project's issued count before and after.</p>
+<p><strong>What the processes update.</strong> Neither changes any data.</p>
+<table>
+<thead>
+<tr>
+<th>Process</th>
+<th>Reads</th>
+<th>Gives</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Export Register</td>
+<td>Every active document of the selected document's project</td>
+<td>A <code>.json</code> file: each deliverable's current revision plus every superseded revision, with number, revision, status, discipline, file kind, name and the attached file's <code>sha256</code> (null when nothing is attached). The walkers read this file</td>
+</tr>
+<tr>
+<td>Open</td>
+<td>The attached file of the document's file kind</td>
+<td>The file as a download, with its <code>sha256</code>. Refuses when there is no file kind or no attachment of that kind. (Kernel-ERP opens the Modeller or Viewer instead, because it has a browser file store; a server has none)</td>
+</tr>
+</tbody>
+</table>
+<p>The Project window's <em>Issued</em>, <em>Earned hours</em> and <em>Hours booked</em> columns are computed from the table by their own SQL: no class writes them.</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+
+
+                
+
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Zurück zum Seitenanfang
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/red1oon/bim-ootb" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.linkedin.com/in/red1oon/" target="_blank" rel="noopener" title="www.linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.indexes", "search.suggest", "search.highlight", "toc.follow", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "In Zwischenablage kopiert", "clipboard.copy": "In Zwischenablage kopieren", "search.result.more.one": "1 weiteres Suchergebnis auf dieser Seite", "search.result.more.other": "# weitere Suchergebnisse auf dieser Seite", "search.result.none": "Keine Suchergebnisse", "search.result.one": "1 Suchergebnis", "search.result.other": "# Suchergebnisse", "search.result.placeholder": "Suchbegriff eingeben", "search.result.term.missing": "Es fehlt", "select.version": "Version ausw\u00e4hlen"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../javascripts/fold-footnotes.js"></script>
+      
+        <script src="../../javascripts/bim_compiler_source.js"></script>
+      
+    
+  </body>
+</html>

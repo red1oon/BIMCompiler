@@ -1,0 +1,5218 @@
+
+<!doctype html>
+<html lang="fr" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Construction is manufacturing. A building IS its Bill of Materials.">
+      
+      
+        <meta name="author" content="Redhuan D. Oon">
+      
+      
+        <link rel="canonical" href="https://red1oon.github.io/BIMCompiler/VibeProgramming/">
+      
+      
+        <link rel="prev" href="../PROJECT_CHRONOLOGY/">
+      
+      
+        <link rel="next" href="../4DGenerator/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Vibe Programming — AI + Domain Expertise - BIM Intent Compiler</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/custom.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  <script data-goatcounter="https://red1oon.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  
+  <meta name="robots" content="noindex">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#vibe-programming-how-this-compiler-was-built" class="md-skip">
+          Aller au contenu
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="En-tête">
+    <a href="../" title="BIM Intent Compiler" class="md-header__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            BIM Intent Compiler
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Vibe Programming — AI + Domain Expertise
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Rechercher" placeholder="Rechercher" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Recherche">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Effacer" aria-label="Effacer" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initialisation de la recherche
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source md-header__source--stacked">
+        <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+        <a href="https://github.com/red1oon/BIMCompiler" title="red1oon/BIMCompiler on GitHub" class="md-source" id="bim-compiler-source" target="_blank" rel="noopener">
+          <div class="md-source__icon md-icon">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+          </div>
+          <div class="md-source__repository" id="bim-compiler-repository">
+            Compiler
+          </div>
+        </a>
+        <span id="repo-totals" class="md-source-totals" title="Combined stars / forks across both repos"></span>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Onglets" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Start Here
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../BIMUserGuide/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  The 3 Apps
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../DeveloperGuide/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Go Deeper
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../SpatialCompilationPaper/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Papers & Positioning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../HalalTrace/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Prototypes & Demos
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../PROJECT_CHRONOLOGY/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  History & Legacy
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../" title="BIM Intent Compiler" class="md-nav__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    BIM Intent Compiler
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start Here
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_1" id="__nav_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Start Here
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../USER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    📖 User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMToolsGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🧰 BIM Tools — User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OFFLINE_INSTALL_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🔒 Fully Offline / Air-Gapped Install
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WhatsNew/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🆕 What's New
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AboutMore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About BIM OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FeatureComparison/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Feature Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MigrateComparisonPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrate & Compare (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TwoAppsOneKernel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two Apps, One Kernel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TwoAppsOneKernelInfographicLandscape.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    One Page InfoGraphics - Landscape
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bench_suite.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Comparison (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../age_demo.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Does Your ERP Age? (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MANIFESTO/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The ERP World View
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contribute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 3 Apps
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    The 3 Apps
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Viewer Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AskFirstSteps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewer Ask — First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerFirstSteps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modeller — First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DAGeVu Modeller — User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ProposerGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Proposer Guide (propose an edit, get the proof)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FastScriptGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fast Script Guide (one door: commands and scripts)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIMGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2D Drawings → BIM (DXF2BIM)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_Yellow_List/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — the yellow list (what you fill in, defaults used)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_Prior_Art/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — prior art (what is new, what we learned, cost of using others)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_FORMAT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — format contract (marks, outputs, registry, codes; generated)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERPUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel-ERP User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TillUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    uniCenta-style Till & Kitchen Screen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CapexDashboardGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM → ERP and CAPEX Dashboard — for iDempiere users
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CapexUATGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CAPEX UAT Guide — step-by-step test script
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERP_FirstSetup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel-ERP — Your First Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MigrationGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration User Guide (Odoo · Business Central · SAP Business One)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OdooMigration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moving from Odoo — how it works, what is proven
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NinjaExcelReport_UserManual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NinjaExcel Report — User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HRBIMAssetGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HR / Tenancy / Operate Module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CivilWorksGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Civil Works — Step by Step
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TeamsOverlayGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Teams Overlay — Collaboration & Optics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Go Deeper
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Go Deeper
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DeveloperGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide (read first if you will change the code)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ArchitectureOverview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Overview (for reviewers)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../FoldEngineBlackBook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fold Engine Black Book (dev manual)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HolyGrail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Holy Grail (editable rules, live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ERPConceptRosetta.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-ERP Rosetta Stone (concept + cost)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIM_Modeller_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Modeller OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERP_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP — Every Record Has a Place
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERPIntegration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP × BIM × HR — One Building, One Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DistributedERP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Distributed ERP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TermsHowToVerify/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to verify the terms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERP_AI_ADVISORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Letting an AI work on the ERP, safely
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SQLiteWasmArchitectureActual.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How the Database Works (big picture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ViewerComponentModel.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewer Component Model (dev architecture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CLASH_DETECTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clash Detection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../JKR_SKATA/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Asset Classification & JKR/SKATA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../IFC_ExportGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IFC Export Guide (for the BIM author)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TimeMachine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Time Machine (4D Scheduling & Editing)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4D5DAnalysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4D/5D Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMtoProject/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM → Project Order (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerKernelFold/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry as a Signed-Log Fold
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Papers & Positioning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Papers & Positioning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialCompilationPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deterministic Spatial Compilation (academic paper)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AIProposerDefensiveDisclosure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Defensive Disclosure: an Outside AI Proposes, the App Decides
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_TechnicalNote/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — Deterministic 2D ⇄ BIM Round Trip (technical note)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BrowserScaleBenchmark/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Browser-Scale Benchmark (one tab, local first)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnterpriseAuthentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enterprise Authentication (security)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../StrategicIndustryPositioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Strategic Positioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LocalFirstPriorArt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local-First Prior Art
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LegacyOracleAdapterSpec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Legacy-as-Oracle Adapter (migrate / test an ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ShipYard/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Beyond Buildings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RouteTemplate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Find & Navigate (wayfinding)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../halal/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prototypes & Demos
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Prototypes & Demos
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HalalTrace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Halalan Thayiban — halal track & trace (paper)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glassbowl.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glassbowl — the ERP engine as data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glassbowl_gravity.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glassbowl · Gravity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../RetailScaleStory.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Retail at Scale — two messages a day (benchmark story)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bim_architecture_viz.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How it works — interactive architecture tour
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    History & Legacy
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    History & Legacy
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROJECT_CHRONOLOGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Chronology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vibe Programming — AI + Domain Expertise
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vibe Programming — AI + Domain Expertise
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-vibe-programming" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Vibe Programming?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-industry-numbers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Industry Numbers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2026-the-industry-starts-lamenting-vibe-slop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2026: The Industry Starts Lamenting "Vibe Slop"
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-it-works-here-and-fails-elsewhere" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why It Works Here (And Fails Elsewhere)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Why It Works Here (And Fails Elsewhere)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-a-domain-expert-who-knows-what-correct-looks-like" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. A domain expert who knows what correct looks like
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-deterministic-verification-no-looks-right" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Deterministic verification (no "looks right")
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-the-drift-is-tracked-not-hidden" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. The Drift is tracked, not hidden
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-build-on-known-frameworks-never-from-scratch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Build on known frameworks, never from scratch
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-toolchain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Toolchain
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The Toolchain">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#capability-snapshot-dated-baseline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Capability Snapshot — Dated Baseline
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-the-sceptics-get-right" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the Sceptics Get Right
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-honest-ledger" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Honest Ledger
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#case-study-rtree-federation-viewer-s180s189" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Case Study: RTree Federation Viewer (S180–S189)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Case Study: RTree Federation Viewer (S180–S189)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-was-built" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What was built
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#proven-at-scale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Proven at scale
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-it-would-cost-without-ai" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What it would cost without AI
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-the-multiplier-is-so-large" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why the multiplier is so large
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#case-study-the-browser-pivot-s165s231" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Case Study: The Browser Pivot (S165–S231)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Case Study: The Browser Pivot (S165–S231)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-turning-points-at-a-glance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key turning points at a glance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-assumption-we-started-with" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The assumption we started with
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s165s174-building-the-worlds-most-sophisticated-blender-bim-viewer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S165–S174: Building the world's most sophisticated Blender BIM viewer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s175-the-wall-that-stopped-gn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S175: The wall that stopped GN
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s180s189-rtree-rescues-blender" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S180–S189: RTree rescues Blender
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s192s193-the-last-blender-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S192–S193: The last Blender steps
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s195-bonsai-out-browser-in" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S195: Bonsai out. Browser in.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s200-bim-ootb-two-dbs-one-browser-zero-install" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S200: BIM OOTB — Two DBs. One browser. Zero install.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s220-ifc-import-in-the-browser" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S220: IFC import in the browser
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s231-instancedmesh-the-schema-pays-dividends" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S231: InstancedMesh — the schema pays dividends
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-vibe-programming-produced" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What vibe programming produced
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-technology-convergence-why-this-was-impossible-before-2025" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Technology Convergence — Why This Was Impossible Before 2025
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The Technology Convergence — Why This Was Impossible Before 2025">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#timeline-of-key-dependencies-npm-exact-dates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Timeline of Key Dependencies (npm exact dates)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-critical-convergence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Critical Convergence
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-discovery-chain-how-ai-found-what-google-could-not" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Discovery Chain — How AI Found What Google Could Not
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The Discovery Chain — How AI Found What Google Could Not">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#without-ai-what-path-leads-here" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Without AI, what path leads here?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-r-tree-is-load-bearing-not-optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why R-tree Is Load-Bearing — Not Optional
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#no-prior-art-in-any-industry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        No Prior Art — In Any Industry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-solo-multiplier-its-not-speed-its-capability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Solo Multiplier — It's Not Speed, It's Capability
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#for-the-bonsaiblenderbim-community" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For the Bonsai/BlenderBIM Community
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4DGenerator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 4D Generator — Failure Catalogue & AI Findings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnablingTechTimeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enabling-Tech Timeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RED_PILL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Red Pill — Design From Grammar (origin)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LAST_MILE_PROBLEM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Last Mile — drift tracking (Java era)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMERPPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Construction Economy / ERP Wave (Java era)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SYSTEMS_INSTALLER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Self-Host the Java toolchain (legacy installer)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-vibe-programming" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Vibe Programming?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-industry-numbers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Industry Numbers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2026-the-industry-starts-lamenting-vibe-slop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2026: The Industry Starts Lamenting "Vibe Slop"
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-it-works-here-and-fails-elsewhere" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why It Works Here (And Fails Elsewhere)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Why It Works Here (And Fails Elsewhere)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-a-domain-expert-who-knows-what-correct-looks-like" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. A domain expert who knows what correct looks like
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-deterministic-verification-no-looks-right" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Deterministic verification (no "looks right")
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-the-drift-is-tracked-not-hidden" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. The Drift is tracked, not hidden
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-build-on-known-frameworks-never-from-scratch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Build on known frameworks, never from scratch
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-toolchain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Toolchain
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The Toolchain">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#capability-snapshot-dated-baseline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Capability Snapshot — Dated Baseline
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-the-sceptics-get-right" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the Sceptics Get Right
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-honest-ledger" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Honest Ledger
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#case-study-rtree-federation-viewer-s180s189" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Case Study: RTree Federation Viewer (S180–S189)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Case Study: RTree Federation Viewer (S180–S189)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-was-built" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What was built
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#proven-at-scale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Proven at scale
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-it-would-cost-without-ai" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What it would cost without AI
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-the-multiplier-is-so-large" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why the multiplier is so large
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#case-study-the-browser-pivot-s165s231" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Case Study: The Browser Pivot (S165–S231)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Case Study: The Browser Pivot (S165–S231)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-turning-points-at-a-glance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key turning points at a glance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-assumption-we-started-with" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The assumption we started with
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s165s174-building-the-worlds-most-sophisticated-blender-bim-viewer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S165–S174: Building the world's most sophisticated Blender BIM viewer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s175-the-wall-that-stopped-gn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S175: The wall that stopped GN
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s180s189-rtree-rescues-blender" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S180–S189: RTree rescues Blender
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s192s193-the-last-blender-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S192–S193: The last Blender steps
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s195-bonsai-out-browser-in" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S195: Bonsai out. Browser in.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s200-bim-ootb-two-dbs-one-browser-zero-install" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S200: BIM OOTB — Two DBs. One browser. Zero install.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s220-ifc-import-in-the-browser" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S220: IFC import in the browser
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s231-instancedmesh-the-schema-pays-dividends" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S231: InstancedMesh — the schema pays dividends
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-vibe-programming-produced" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What vibe programming produced
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-technology-convergence-why-this-was-impossible-before-2025" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Technology Convergence — Why This Was Impossible Before 2025
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The Technology Convergence — Why This Was Impossible Before 2025">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#timeline-of-key-dependencies-npm-exact-dates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Timeline of Key Dependencies (npm exact dates)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-critical-convergence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Critical Convergence
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-discovery-chain-how-ai-found-what-google-could-not" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Discovery Chain — How AI Found What Google Could Not
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The Discovery Chain — How AI Found What Google Could Not">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#without-ai-what-path-leads-here" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Without AI, what path leads here?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-r-tree-is-load-bearing-not-optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why R-tree Is Load-Bearing — Not Optional
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#no-prior-art-in-any-industry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        No Prior Art — In Any Industry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-solo-multiplier-its-not-speed-its-capability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Solo Multiplier — It's Not Speed, It's Capability
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#for-the-bonsaiblenderbim-community" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For the Bonsai/BlenderBIM Community
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+  <p class="i18n-note"><small>Cette page n'est pas encore traduite ; elle s'affiche en anglais. <a href="https://red1oon.github.io/BIMCompiler/VibeProgramming/">Page en anglais</a>.</small></p>
+  
+                  
+
+
+  
+  
+
+
+<h1 id="vibe-programming-how-this-compiler-was-built">Vibe Programming — How This Compiler Was Built<a class="headerlink" href="#vibe-programming-how-this-compiler-was-built" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>Foundation:</strong> <a href="../LAST_MILE_PROBLEM/">The Drift</a> · <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/TestArchitecture.md">TestArchitecture</a> · <a href="../MANIFESTO/">MANIFESTO</a>
+<strong>By the numbers:</strong> <a href="../PROJECT_CHRONOLOGY/">Project Chronology</a> — dated milestones + commit/fix ledger, Federation → Compiler → Browser.
+<strong>Deep dive:</strong> <a href="../4DGenerator/">The 4D Generator</a> — a full technical case study of the 2026-08-27 turnaround referenced in the Capability Snapshot below: the failure catalogue, the AI-agent process fix, and what's still open.</p>
+</blockquote>
+<div class="bim-banner">
+<p><b>One human. Zero traditional coding.</b> This compiler was built by a Java-literate ERP architect using AI as a force multiplier — domain expertise steers, AI types at the speed of thought. Current metrics in <a href="https://github.com/red1oon/BIMCompiler/blob/master/PROGRESS.md">PROGRESS.md</a>.</p>
+</div>
+<hr />
+<h2 id="what-is-vibe-programming">What Is Vibe Programming?<a class="headerlink" href="#what-is-vibe-programming" title="Permanent link">&para;</a></h2>
+<p>In February 2025, Andrej Karpathy (co-founder of OpenAI, former Tesla AI director) coined the term:</p>
+<blockquote>
+<p><em>"There's a new kind of coding I call 'vibe coding', where you fully give in to the vibes, embrace exponentials, and forget that the code even exists."</em></p>
+</blockquote>
+<p>He described accepting LLM suggestions without fully reading the code, running the app, seeing if it works, and iterating. He noted this works for throwaway weekend projects, not production code.</p>
+<p><strong>This project disagrees with half of that statement.</strong> The BIM Compiler is production-grade — 33 buildings compiled, 6 mathematical gates, deterministic output. But it was built entirely through AI-assisted programming. The difference: <strong>domain expertise is the guard rail, not the code.</strong></p>
+<hr />
+<h2 id="the-industry-numbers">The Industry Numbers<a class="headerlink" href="#the-industry-numbers" title="Permanent link">&para;</a></h2>
+<p>The shift is real. These are the numbers the sceptics should weigh:</p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Figure</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Developers using or planning to use AI tools</td>
+<td>76% (2024) → 84% (2025)</td>
+<td>Stack Overflow Developer Survey 2024 / 2025</td>
+</tr>
+<tr>
+<td>GitHub Copilot paid users</td>
+<td>2M+</td>
+<td>GitHub, late 2024</td>
+</tr>
+<tr>
+<td>Code suggestions accepted (Copilot)</td>
+<td>~30%</td>
+<td>GitHub Blog, 2023-2024</td>
+</tr>
+<tr>
+<td>Developer task completion speed with AI</td>
+<td>55% faster</td>
+<td>GitHub/Microsoft Research, 2023</td>
+</tr>
+<tr>
+<td>AI-generated code share in enabled repos</td>
+<td>~46%</td>
+<td>GitHub Octoverse 2024</td>
+</tr>
+<tr>
+<td>Code churn (new code revised within 2 weeks)</td>
+<td>3.1% (2020) → 5.7% (2024) → 7.1% (2025)</td>
+<td>GitClear, 211M-line study, 2025-2026 reports</td>
+</tr>
+</tbody>
+</table>
+<p>That churn trajectory is the one that matters — and it kept climbing after this paper first cited it. Adoption went up; stability did not follow. More usage produced more code, written faster, more of which got rewritten within two weeks. This is the central risk — and the central problem this project solved.</p>
+<hr />
+<h2 id="2026-the-industry-starts-lamenting-vibe-slop">2026: The Industry Starts Lamenting "Vibe Slop"<a class="headerlink" href="#2026-the-industry-starts-lamenting-vibe-slop" title="Permanent link">&para;</a></h2>
+<p>Sixteen months after Karpathy's tweet, the term earned an unflattering sequel. In a May 2026 <em>Wall Street Journal</em> interview, <strong>Mario Zechner</strong> — an engineer behind Pi, OpenClaw's foundational engine — put it bluntly:</p>
+<blockquote>
+<p><em>"You see infrastructure crumbling, and software is now much, much more buggy than before. We can keep playing this game for a few more months, maybe even years, but eventually it's going to come back to bite us."</em></p>
+</blockquote>
+<p>His collaborator <strong>Armin Ronacher</strong> coined the harsher phrase: "vibe slop at inference speeds." Even Karpathy walked part of it back — building his <code>nanochat</code> model, he found AI tools "just didn't work well enough at all and net unhelpful," and wrote it by hand instead.</p>
+<p>The trend data backs the lament:</p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Figure</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Developer trust in AI code accuracy</td>
+<td>40% (2024) → 29% (2025)</td>
+<td>Stack Overflow Developer Survey 2025</td>
+</tr>
+<tr>
+<td>Developers with a favorable opinion of AI tools</td>
+<td>72% (2024) → 60% (2025)</td>
+<td>Stack Overflow Developer Survey 2025</td>
+</tr>
+<tr>
+<td>Cite "almost right, but not quite" as their #1 AI frustration</td>
+<td>45%</td>
+<td>Stack Overflow Developer Survey 2025</td>
+</tr>
+<tr>
+<td>Spend more time fixing AI output than writing it themselves</td>
+<td>66%</td>
+<td>Stack Overflow Developer Survey 2025</td>
+</tr>
+<tr>
+<td>Copy-pasted code, share of all lines</td>
+<td>8.3% (2020) → 12.3% (2024)</td>
+<td>GitClear AI Copilot Code Quality 2025</td>
+</tr>
+<tr>
+<td>Refactored ("moved") code, share of all lines</td>
+<td>24.1% (2020) → 9.5% (2024)</td>
+<td>GitClear AI Copilot Code Quality 2025</td>
+</tr>
+<tr>
+<td>AI-generated code samples failing security tests</td>
+<td>45% overall, 72% for Java</td>
+<td>Veracode, 100+ LLMs / 80 coding tasks, 2025-2026</td>
+</tr>
+<tr>
+<td>Enterprise tech leaders seeing more production issues from AI code</td>
+<td>81%</td>
+<td>CloudBees State of Code Abundance 2026</td>
+</tr>
+<tr>
+<td>...same leaders still confident shipping it anyway</td>
+<td>92%</td>
+<td>CloudBees State of Code Abundance 2026</td>
+</tr>
+<tr>
+<td>Fortune 50 monthly AI-code security findings, Dec 2024 → Jun 2025</td>
+<td>~1,000 → 10,000+</td>
+<td>Apiiro, via Cloud Security Alliance research note 2026</td>
+</tr>
+</tbody>
+</table>
+<p><strong>A concrete case:</strong> in March 2026, Amazon suffered two outages within one week, traced in part to AI-assisted code changes — the first cost 120,000 lost orders and 1.6 million website errors, the second 6.3 million lost orders (Business Insider, via CloudBees).</p>
+<p><strong>This project's answer to the lament is not "the sceptics are wrong."</strong> They're right, and the numbers above are worse than when this paper was first written. The disagreement is about the fix. The industry-wide pattern is AI code shipped <em>without</em> an independent, deterministic check — trust the vibes, ship, discover the crumbling infrastructure later. This project inverts that: <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/TestArchitecture.md">6 mathematical gates</a> that don't care about vibes, where G3 alone can fail a build over one wrong coordinate in 48,428 elements. The backlash is evidence the industry needs more projects built this way, not fewer.</p>
+<hr />
+<h2 id="why-it-works-here-and-fails-elsewhere">Why It Works Here (And Fails Elsewhere)<a class="headerlink" href="#why-it-works-here-and-fails-elsewhere" title="Permanent link">&para;</a></h2>
+<p>Most vibe-coded projects fail because the human doesn't know what correct looks like. They accept whatever the AI produces because they can't evaluate it. The AI is both the author and the reviewer — a closed loop with no external ground truth.</p>
+<p>This project has three things most don't:</p>
+<h3 id="1-a-domain-expert-who-knows-what-correct-looks-like">1. A domain expert who knows what correct looks like<a class="headerlink" href="#1-a-domain-expert-who-knows-what-correct-looks-like" title="Permanent link">&para;</a></h3>
+<p>The creator, <a href="mailto:red1org@gmail.com">Redhuan D. Oon</a>, has two decades in ERP systems — <a href="https://adempiere.net/">ADempiere</a> (2006), <a href="https://idempiere.org/">iDempiere</a> (2010), and the BIM Compiler (2025). He helped start the ADempiere fork that led to iDempiere, wrote plugins and core improvements in Java, and knows the language and the ERP internals. But vibe programming changes the role: instead of typing Java line by line, he <strong>supervises at the speed of thought</strong> — his Java insight provides the key questions that steer the AI, while the AI handles the typing at a pace no human can match.</p>
+<p>He writes <strong>specifications</strong>: what M_BOM means, how C_Order flows, why a wall must sit on a slab. The AI writes the Java. The domain expert evaluates whether the output is correct — not just by reading the compiled building, but by asking the precise Java questions that expose whether the AI's implementation actually honours the spec.</p>
+<p>This is not a non-programmer hoping AI gets it right. This is a <strong>Java-literate ERP architect using AI as a force multiplier for his domain expertise</strong>.</p>
+<h3 id="2-deterministic-verification-no-looks-right">2. Deterministic verification (no "looks right")<a class="headerlink" href="#2-deterministic-verification-no-looks-right" title="Permanent link">&para;</a></h3>
+<p>Every compiled building passes through <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/TestArchitecture.md">6 mathematical gates</a>:</p>
+<table>
+<thead>
+<tr>
+<th>Gate</th>
+<th>What it proves</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G1 COUNT</td>
+<td>Input BOM quantity = output element count</td>
+</tr>
+<tr>
+<td>G2 VOLUME</td>
+<td>Compiled bounding volume matches reference</td>
+</tr>
+<tr>
+<td>G3 DIGEST</td>
+<td>Byte-level hash of output matches known-good baseline</td>
+</tr>
+<tr>
+<td>G4 TAMPER</td>
+<td>No file was modified outside the compilation pipeline</td>
+</tr>
+<tr>
+<td>G5 PROVENANCE</td>
+<td>Every output element traces back to a BOM line</td>
+</tr>
+<tr>
+<td>G6 ISOLATION</td>
+<td>No cross-building contamination between compilations</td>
+</tr>
+</tbody>
+</table>
+<p>The AI cannot cheat these gates. G3 alone — a cryptographic digest of the entire output — means a single wrong coordinate in a 48,428-element building fails the build. There is no "close enough."</p>
+<h3 id="3-the-drift-is-tracked-not-hidden">3. The Drift is tracked, not hidden<a class="headerlink" href="#3-the-drift-is-tracked-not-hidden" title="Permanent link">&para;</a></h3>
+<p>When AI-generated code drifts from spec — and it does, consistently — the drift is documented. <a href="../LAST_MILE_PROBLEM/">The Drift</a> tracks every known failure mode: walls that don't sit on slabs, columns that overlap, coordinates that shift by millimetres. 11 drift points, each citing the spec section it violates.</p>
+<p>The project doesn't pretend AI code is perfect. It assumes AI code will drift and builds the infrastructure to catch it.</p>
+<h3 id="4-build-on-known-frameworks-never-from-scratch">4. Build on known frameworks, never from scratch<a class="headerlink" href="#4-build-on-known-frameworks-never-from-scratch" title="Permanent link">&para;</a></h3>
+<p>This may be the most important lesson after months of vibe programming: <strong>LLMs extrapolate well from established patterns. They hallucinate when there is no pattern to follow.</strong></p>
+<p>Every major module in this project is built on a framework the LLM already knows:</p>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>Framework it builds on</th>
+<th>Why the AI gets it right</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Data model</td>
+<td><a href="https://idempiere.org/">iDempiere</a> ERP tables (M_Product, M_BOM, C_Order)</td>
+<td>20 years of open-source ERP code in training data</td>
+</tr>
+<tr>
+<td>Compilation pipeline</td>
+<td><a href="https://en.wikipedia.org/wiki/Bill_of_materials">Bill of Materials</a> explosion — standard MRP pattern</td>
+<td>Textbook manufacturing algorithm, widely documented</td>
+</tr>
+<tr>
+<td>Geometry verbs</td>
+<td>Trigonometry, linear algebra, coordinate transforms</td>
+<td>Maths doesn't drift — <code>cos(30°)</code> is <code>cos(30°)</code> in every language</td>
+</tr>
+<tr>
+<td>Validation rules</td>
+<td><a href="https://wiki.idempiere.org/">iDempiere AD_Val_Rule</a> pattern</td>
+<td>Same validation framework used across the ERP ecosystem</td>
+</tr>
+<tr>
+<td>3D viewport</td>
+<td><a href="https://bonsaibim.org/">Bonsai</a> / Blender Python API</td>
+<td>Massive open-source codebase, heavily represented in training data</td>
+</tr>
+<tr>
+<td>Test architecture</td>
+<td>JUnit 5 + SQLite assertions</td>
+<td>Standard Java testing — the AI writes these fluently</td>
+</tr>
+</tbody>
+</table>
+<p>When the AI is asked to "write a BOM explosion algorithm," it draws on thousands of MRP implementations it has seen. When asked to "compute a rafter length from pitch and span," it applies trigonometry it has been trained on extensively. When asked to "create a Blender panel with property fields," it follows Bonsai patterns it has seen in the IfcOpenShell codebase.</p>
+<p>The failures come when the AI is asked to do something with <strong>no framework precedent</strong> — spatial reasoning about whether a wall sits on a slab, or whether two columns overlap in 3D space. These are the <a href="../LAST_MILE_PROBLEM/">drift points</a>. The pattern: <strong>known framework = reliable code. Novel spatial reasoning = drift.</strong></p>
+<p>The practical rule: if you can frame your problem as an instance of a pattern the LLM has seen before, vibe programming works. If you're inventing a new pattern, write the spec first and supervise every line.</p>
+<hr />
+<h2 id="the-toolchain">The Toolchain<a class="headerlink" href="#the-toolchain" title="Permanent link">&para;</a></h2>
+<p>This project uses <a href="https://claude.ai/">Claude Code</a>, Anthropic's CLI agent, as the primary development environment. The tools that make it work:</p>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Agent</strong> (parallel subprocesses)</td>
+<td>4 research threads simultaneously — codebase search, spec verification, test runs in parallel. As of 2026-08-23: also dispatches fully autonomous dev-agent sessions in parallel (write code, prove via witness, commit, push, open PR) — see <a href="#capability-snapshot-dated-baseline">Capability Snapshot</a> below</td>
+</tr>
+<tr>
+<td><strong>Bash</strong> (unrestricted shell)</td>
+<td><code>mvn compile</code>, <code>git</code>, <code>sqlite3</code>, pipeline scripts — the AI runs the full build chain</td>
+</tr>
+<tr>
+<td><strong>Grep + Glob</strong> (ripgrep-speed search)</td>
+<td>Pattern matching across 400+ Java files in milliseconds</td>
+</tr>
+<tr>
+<td><strong>Edit</strong> (surgical diff)</td>
+<td>One exact string replacement — not whole-file rewrites</td>
+</tr>
+<tr>
+<td><strong>Read</strong> (multimodal file access)</td>
+<td>Code, images, PDFs, screenshots — the AI reads the same artefacts the architect reads</td>
+</tr>
+</tbody>
+</table>
+<h3 id="capability-snapshot-dated-baseline">Capability Snapshot — Dated Baseline<a class="headerlink" href="#capability-snapshot-dated-baseline" title="Permanent link">&para;</a></h3>
+<p>A living comparison point, not a one-time claim. <strong>Each revisit adds a new row below — never edit or delete a prior one.</strong> The model roster is pulled from this repo's own commit history (<code>git log --format="%H" --grep="Claude &lt;name&gt;"</code>, oldest/newest <code>%ai</code>), not from memory — this project's own no-invent rule applies to its own documentation.</p>
+<table>
+<thead>
+<tr>
+<th>Date</th>
+<th>Model roster active in this repo</th>
+<th>What was demonstrated</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-08-23</td>
+<td>Sonnet 5 (active since 2026-07-02) · Opus 5 (since 2026-07-25) · Fable 5 (since 2026-06-11) — all three were <em>already</em> active before this doc's prior 2026-08-09 update. No new model generation shipped in that 2-week window, per this repo's own git history.</td>
+<td>6 parallel, fully autonomous dev-agent sessions (not read-only research threads) — each independently wrote code, ran before/after witness proof, committed, pushed, and opened a PR, across 2 repos. 3 of the 6 hit a mid-task session limit and resumed cleanly with zero rework once it reset. One caught a real bug on its own (a <code>sql.js</code> instance-aliasing trap in a memory-leak fix) that the original spec's naive fix would have shipped. A separate review pass caught an ESLint regression in one PR before merge.</td>
+<td>bim-ootb PRs #1487, #1488, #1489 · bim-compiler PRs #87, #88, #89, #90 — all reviewed, CI-checked, and squash-merged in the same session</td>
+</tr>
+<tr>
+<td>2026-08-27</td>
+<td>Same roster as 2026-08-23 (Sonnet 5, Opus 5, Fable 5) — no new model generation. What changed was the <strong>working pattern</strong>, not the model.</td>
+<td>A 4D-scheduling lane had produced three retractions of the same finding in one session the day before, entirely from an unforced habit: a long-running session re-deriving answers its own spec already contained, with no external checkpoint. The fix was not a smarter prompt — it was making the <em>coordinator</em> (this session) hold the plan and verify, while every actual code change went to a fresh, single-purpose Opus dispatch with an explicit stop-and-report condition, required to prove its result as a numeric before/after diff of real persisted state, never a screenshot. Six such dispatches ran end-to-end in one sitting: a wrong storey-elevation datum fixed and measured fleet-wide; a safety check proven to have gone stale by reverting the real bug and watching the <em>old</em> check stay green on it while the <em>extended</em> one correctly failed; a genuine silent-data-loss bug traced to an unrelated cache-eviction module racing against a save (not the save path itself, which is why two earlier sessions searching inside the save path never found it); a broken level-relation swapped for an already-correct one that had been running unused two files away — shipped behind a flag, and correctly left off when its own precondition data was found missing; and a closing audit that caught the coordinator's own blind spot — none of the day's new checks were actually wired into CI, so "green" had been an unrelated smoke suite the whole time. Two of the six also caught the coordinator being wrong: a proposed reuse of an existing UI module's storey logic was refuted with cited evidence before any code was written on it, and a wrong file citation in a dispatch brief was corrected by the agent that received it. A <code>PreToolUse</code> hook was also added mid-session to mechanically block edits to the retired code path fleet-wide — proven live with a real blocked <code>Edit</code> call, not just documented. Machine/checkout-local only, not portable — the hook lives in <code>.claude/settings.local.json</code>, which is gitignored, so it protects every session rooted at this checkout but neither a fresh clone nor a session rooted elsewhere.</td>
+<td>bim-ootb PRs #1552, #1554, #1555, #1556, #1557 · bim-compiler <code>prompts/4D_MODEL_INTEGRITY.md</code> §A/§I/§L · <a href="../4DGenerator/">4D Generator</a> · hook at <code>bim-compiler/.claude/hooks/block_bar_model.sh</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>How to compare next time:</strong> re-run the model-roster query per name; note whether a new model name appears in the git history since the last row. Describe the largest capability jump as an <em>actual demonstrated task</em> from that session's own work — not a benchmark figure pulled from memory, which this doc has no way to verify. <strong>2026-08-27 adds a second axis worth tracking even when the roster doesn't change: did the <em>working pattern</em> — bounded dispatch, numeric proof, an audited coordinator — get better, worse, or stay the same?</strong></p>
+<p>The workflow:</p>
+<div class="highlight"><pre><span></span><code>Architect writes spec (what to build, why, constraints)
+     ↓
+AI reads spec + existing code + test architecture
+     ↓
+AI writes code (Java, SQL, YAML)
+     ↓
+AI runs tests (mvn test, Rosetta Stone gates)
+     ↓
+Gates pass? → commit. Gates fail? → AI reads drift doc, fixes, retries.
+     ↓
+Architect reviews compiled building in Bonsai viewport
+     ↓
+Building correct? → next task. Building wrong? → new drift point logged.
+</code></pre></div>
+<p><strong>Session discipline:</strong> One bounded task per session. The AI reads the spec before writing code. Every code change cites the spec section it implements. Pre-flight citation is mandatory:
+<div class="highlight"><pre><span></span><code><span class="c1">// Implementing BBC.md §3.5.2 — Witness: W-FORGE-1</span>
+</code></pre></div></p>
+<hr />
+<h2 id="what-the-sceptics-get-right">What the Sceptics Get Right<a class="headerlink" href="#what-the-sceptics-get-right" title="Permanent link">&para;</a></h2>
+<p>The concerns are valid. This project has lived through all of them:</p>
+<p><strong>"AI code drifts from architecture."</strong> Yes. Relentlessly. The AI will invent shortcuts, merge concerns that should be separate, and silently change assumptions. <a href="../LAST_MILE_PROBLEM/">The Drift</a> exists because this happened dozens of times. The solution is not to stop using AI — it's to build gates that catch the drift before it ships.</p>
+<p><strong>"AI code has more bugs."</strong> True, and getting worse, not better — GitClear's code churn climbed from a 3.1% pre-AI baseline to 7.1% by 2025, and Veracode found 45% of AI-generated samples fail security tests outright (see <a href="#2026-the-industry-starts-lamenting-vibe-slop">2026: The Industry Starts Lamenting "Vibe Slop"</a> above). This project's answer: 6 gates, 408 tests, 35 reference buildings. The bug rate per shipped line is lower than most hand-written projects because the verification is more rigorous, not because the AI writes better code.</p>
+<p><strong>"You don't understand your own codebase."</strong> Partially true. The architect understands the <em>architecture</em> — what each module does, how data flows, what correct output looks like. He does not memorise every Java method signature. This is a feature, not a bug: the spec is the source of truth, not the code. If the code drifts from spec, the code is wrong — regardless of what it says internally.</p>
+<p><strong>"It won't scale."</strong> Tens of thousands of elements in the Terminal building. Multiple pipeline stages. Multiple databases. Dozens of specification documents. The project is larger than most startups' entire codebases. It scales because the architecture scales — not because the AI understands scale.</p>
+<hr />
+<h2 id="the-honest-ledger">The Honest Ledger<a class="headerlink" href="#the-honest-ledger" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>What works</th>
+<th>What doesn't</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Spec → code → test → ship pipeline</td>
+<td>AI cannot see spatial geometry — walls, slabs, collisions</td>
+</tr>
+<tr>
+<td>Parallel agent research (4 threads)</td>
+<td>AI invents plausible-looking code that violates spec</td>
+</tr>
+<tr>
+<td>Deterministic gates catch all regressions</td>
+<td>AI cannot evaluate aesthetic quality of compiled buildings</td>
+</tr>
+<tr>
+<td>Domain expert catches architectural drift</td>
+<td>AI forgets constraints from earlier in the conversation</td>
+</tr>
+<tr>
+<td>100 sessions, each bounded and verified</td>
+<td>Long sessions degrade — quality drops past ~80% context</td>
+</tr>
+</tbody>
+</table>
+<p>The project succeeds not because AI is reliable, but because the verification infrastructure assumes AI is unreliable and proves correctness independently.</p>
+<hr />
+<h2 id="case-study-rtree-federation-viewer-s180s189">Case Study: RTree Federation Viewer (S180–S189)<a class="headerlink" href="#case-study-rtree-federation-viewer-s180s189" title="Permanent link">&para;</a></h2>
+<p>The strongest evidence for vibe programming at scale is the RTree federation viewer — a city-scale BIM viewer built inside Blender's Bonsai addon in ~3 weeks of Claude-assisted sessions.</p>
+<h3 id="what-was-built">What was built<a class="headerlink" href="#what-was-built" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Lines</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>operator.py</code></td>
+<td>~9,200</td>
+<td>Modal loaders, BACKEND bake pipeline, live-link, navigation, shred, distro</td>
+</tr>
+<tr>
+<td><code>bbox_visualization.py</code></td>
+<td>~1,300</td>
+<td>GPU draw handler, RTree spatial queries, search, drill-down (L0→L1→L2)</td>
+</tr>
+<tr>
+<td><code>blend_cache.py</code></td>
+<td>~1,400</td>
+<td>Full load, BLOB tessellation from SQLite, LOD manager</td>
+</tr>
+<tr>
+<td><code>blob_tessellate_worker.py</code></td>
+<td>~420</td>
+<td>Discipline-based chunk baking subprocess</td>
+</tr>
+<tr>
+<td>UI panels, logging, tests</td>
+<td>~800</td>
+<td>N-panel cockpit, discipline bars, storey filter</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td><strong>~13,000</strong></td>
+<td><strong>Complete BIM federation viewer</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="proven-at-scale">Proven at scale<a class="headerlink" href="#proven-at-scale" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>1,063,911 elements</strong> in sandbox city (12 disciplines, 33 buildings)</li>
+<li><strong>190,000 meshes</strong> tessellated from SQLite BLOBs in &lt;45s</li>
+<li><strong>Fine-grained Outliner</strong> — VENT/HEAT/PLB/SAN/HVAC/ARC/STR/VOID, not generic MEP</li>
+<li><strong>Session .blend ~1MB</strong> — links to baked chunks, instant save</li>
+<li>Posted to <a href="https://community.osarch.org/">osARCH forum</a> with video proof (April 2026)</li>
+</ul>
+<h3 id="what-it-would-cost-without-ai">What it would cost without AI<a class="headerlink" href="#what-it-would-cost-without-ai" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Approach</th>
+<th>Team</th>
+<th>Duration</th>
+<th>Cost (USD)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Expert team (3–4 people)</td>
+<td>Blender dev + BIM domain + perf engineer</td>
+<td>6–9 months</td>
+<td>$150–300K</td>
+</tr>
+<tr>
+<td>Single senior generalist</td>
+<td>Blender + IFC + SQLite + GPU (rare unicorn)</td>
+<td>12–18 months</td>
+<td>$120–200K</td>
+</tr>
+<tr>
+<td>Outsource to BIM software firm</td>
+<td>Contract team</td>
+<td>9–12 months</td>
+<td>$200–400K</td>
+</tr>
+<tr>
+<td><strong>Claude-assisted (actual)</strong></td>
+<td><strong>1 domain expert + Claude Code</strong></td>
+<td><strong>~3 weeks</strong></td>
+<td><strong>Subscription</strong></td>
+</tr>
+</tbody>
+</table>
+<p>The skill intersection — <code>bpy.data.libraries.load(link=True)</code> + <code>IfcOpenShell geom.iterator()</code> + SQLite RTree + Blender GPU instancing + BIM domain knowledge — exists in perhaps 50 people worldwide. Hiring even one of them takes months.</p>
+<h3 id="why-the-multiplier-is-so-large">Why the multiplier is so large<a class="headerlink" href="#why-the-multiplier-is-so-large" title="Permanent link">&para;</a></h3>
+<p><strong>Iteration speed.</strong> Each "try → see in Blender → fix" loop (baked-link path, disc suffixes, chunk naming, fly-to distance, Outliner hierarchy) takes 5–10 minutes with Claude. A developer would need a day per loop — reading Blender API docs, testing, debugging. S189 alone had ~30 such loops.</p>
+<p><strong>Dead-end detection.</strong> GN mode (Geometry Nodes instancing) was explored S165–S176 then halted — 8-minute evaluation overhead at 500 modifier trees made it unviable. A hired team would have burned weeks before discovering that. Claude explored it in 3 sessions.</p>
+<p><strong>Domain bridging.</strong> The architect brings "PLB pipes should not inflate the building bbox" and "disciplines must be contiguous per chunk." Claude brings <code>bpy.ops.wm.redraw_timer(type='DRAW_WIN_SWAP', iterations=1)</code> to force status bar updates during blocking loads. Neither alone could have built this.</p>
+<hr />
+<h2 id="case-study-the-browser-pivot-s165s231">Case Study: The Browser Pivot (S165–S231)<a class="headerlink" href="#case-study-the-browser-pivot-s165s231" title="Permanent link">&para;</a></h2>
+<p>The second case study is more instructive than the first, because it documents a <strong>complete architectural reversal</strong> — built collaboratively across 190+ sessions with Claude Code (1,400+ commits to date), where each session's constraints forced the next decision.</p>
+<h3 id="key-turning-points-at-a-glance">Key turning points at a glance<a class="headerlink" href="#key-turning-points-at-a-glance" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Date</th>
+<th>Event</th>
+<th>Significance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/red1oon/IfcOpenShell/commit/f410e32a13297355d8d5aed444ed176dd18e70a0">2025-10-30</a></td>
+<td>"Full IFC4 database extraction and loading — MILESTONE" in the IfcOpenShell federation branch</td>
+<td><strong>True origin.</strong> First proof that IFC could become a queryable SQLite DB inside Bonsai/Blender.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/red1oon/IfcOpenShell/commit/bc76b7123ef8ebc73155fc20a4714f42eaec1029">2025-12-18</a></td>
+<td>PDF Terrain + federation GI database</td>
+<td>DB-as-scene-data extended beyond pure IFC geometry</td>
+</tr>
+<tr>
+<td><a href="https://github.com/red1oon/BIMCompiler/commit/1702488d9c974310179d4d111e99e40cfaf1f113">2026-01-25</a></td>
+<td>BIM Compiler repo created; Phase 3+4 Wall/Pipe builders</td>
+<td>Work moved into standalone compiler repo; 190+ sessions begin</td>
+</tr>
+<tr>
+<td><a href="https://github.com/red1oon/BIMCompiler/commit/f116fdde35eeccbc1d69dc533a89df17bf38a687">2026-04-11</a></td>
+<td>S173 — library-linked geometry pipeline</td>
+<td><strong>Two-DB split born:</strong> BLOBs in <code>library.db</code>, hashes in <code>extracted.db</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/red1oon/BIMCompiler/commit/f3d2902b2b7fb578b8916565d9db7f1ee76f69bf">2026-04-11</a></td>
+<td>S172 — <code>geom.iterator()</code> replaces <code>create_shape()</code></td>
+<td>Hash-addressed geometry dedup; 123K unique meshes serve 1M elements</td>
+</tr>
+<tr>
+<td><a href="https://github.com/red1oon/BIMCompiler/commit/2bb9335ed64d6fa8b352cc438872f6a6d4d5e70a">2026-04-12</a></td>
+<td>S175 — GN 500-tree overhead confirmed</td>
+<td><strong>GN halted.</strong> Blender's own instancer had a hard ceiling at building scale</td>
+</tr>
+<tr>
+<td><a href="https://github.com/red1oon/BIMCompiler/commit/66fc9413a9ed8c3ac0b9d900634c57ba2a7e9e65">2026-04-18</a></td>
+<td>S195 — "Direct DB Streaming — no .blend files"</td>
+<td><strong>Bonsai out. Browser in.</strong> Float32 BLOBs work in Python <em>and</em> JavaScript — the schema was always the portable part</td>
+</tr>
+<tr>
+<td><a href="https://github.com/red1oon/BIMCompiler/commit/7a19d6e2543aeae89d93d80042bb8704793da193">2026-04-20</a></td>
+<td>S200 — BIM OOTB: single HTML + two DBs + sql.js WASM</td>
+<td><strong>Bonsai becomes optional.</strong> 126K elements in a browser tab, zero install</td>
+</tr>
+<tr>
+<td><a href="https://github.com/red1oon/BIMCompiler/commit/788eb47cc302b680025af07d7f55cc20de0ae742">2026-04-24</a></td>
+<td>S220 — IFC import direct in browser via web-ifc WASM</td>
+<td>Full round-trip closes: IFC → browser → same schema → viewer</td>
+</tr>
+<tr>
+<td><a href="https://github.com/red1oon/BIMCompiler/commit/9cca45a365d6dfaa650995288f62f1e08fec8926">2026-04-27</a></td>
+<td>S231 — InstancedMesh, 85% draw call reduction</td>
+<td>Hash-addressed schema pays dividends: instancing needed no schema change</td>
+</tr>
+<tr>
+<td>2026-04-29</td>
+<td><code>docs/SQLite3D_Schema.md</code> published</td>
+<td>Schema formalised as a candidate open standard</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-assumption-we-started-with">The assumption we started with<a class="headerlink" href="#the-assumption-we-started-with" title="Permanent link">&para;</a></h3>
+<p>From S165 onward, the viewer was Blender + Bonsai. The BIM compiler produced SQLite databases; Bonsai loaded them. This was the right assumption at the time: Bonsai had GPU rendering, IFC awareness, and a Python plugin API. The goal was city-scale BIM federation inside Blender — a direct extension of the work that began in the <a href="https://github.com/red1oon/IfcOpenShell/commit/f410e32a13297355d8d5aed444ed176dd18e70a0">IfcOpenShell federation branch in October 2025</a>.</p>
+<h3 id="s165s174-building-the-worlds-most-sophisticated-blender-bim-viewer">S165–S174: Building the world's most sophisticated Blender BIM viewer<a class="headerlink" href="#s165s174-building-the-worlds-most-sophisticated-blender-bim-viewer" title="Permanent link">&para;</a></h3>
+<p>The first attempt at scale used <strong>Geometry Nodes (GN)</strong> — Blender's node-based instancing system — to render 1M elements as GPU instances. By S172, <a href="https://github.com/red1oon/BIMCompiler/commit/f3d2902b2b7fb578b8916565d9db7f1ee76f69bf"><code>geom.iterator()</code> replaced the slower <code>create_shape()</code></a> per-element tessellator, and BLOBs started flowing from SQLite into Blender via <code>from_pydata()</code>.</p>
+<p>The architecture at S174 was impressive:</p>
+<ul>
+<li>3-building pipeline (Clinic / Hospital / Terminal), parallel discipline merge</li>
+<li>123,573 unique meshes in a 305MB <code>library.blend</code></li>
+<li>Hash-addressed geometry deduplication: identical components share one mesh</li>
+<li><code>element_instances.geometry_hash</code> → <code>component_geometries.vertices BLOB</code> — <a href="https://github.com/red1oon/BIMCompiler/commit/f116fdde35eeccbc1d69dc533a89df17bf38a687">the two-DB split was born here</a>, not in the browser</li>
+</ul>
+<h3 id="s175-the-wall-that-stopped-gn">S175: The wall that stopped GN<a class="headerlink" href="#s175-the-wall-that-stopped-gn" title="Permanent link">&para;</a></h3>
+<p><strong>One number killed Geometry Nodes:</strong> at 500 modifier trees (each GN instance is a modifier), Blender's evaluation overhead hit <strong>8 minutes per viewport interaction</strong>. The user could not orbit the model. No GN optimisation — chunking, lazy eval, batch size tuning — changed this. <a href="https://github.com/red1oon/BIMCompiler/commit/2bb9335ed64d6fa8b352cc438872f6a6d4d5e70a">S175 session 2 confirmed it</a>: <code>Collection Info</code> node with &gt;7K objects causes viewport hang. GN was <a href="https://github.com/red1oon/BIMCompiler/commit/9d1fc6d810993677a4bccab6bc6fa60a7988d5c4">halted at S176</a>.</p>
+<p>This was the first crack: the assumed viewer technology had a hard ceiling we hit at real building scale.</p>
+<h3 id="s180s189-rtree-rescues-blender">S180–S189: RTree rescues Blender<a class="headerlink" href="#s180s189-rtree-rescues-blender" title="Permanent link">&para;</a></h3>
+<p>With GN abandoned, S180 introduced the <strong>RTree Stingy Loader</strong> — load geometry only for elements near the camera, shred everything else, query the SQLite R-tree for the next batch. This worked: <code>&lt;1s</code> to first mesh in the viewport at S184. S189 added BLOB tessellation via <code>from_pydata()</code> — no <code>library.blend</code> file, geometry reconstructed directly from SQLite bytes in Python.</p>
+<p>But Blender's save pipeline had its own ceiling. A session <code>.blend</code> linking 190K meshes to a baked library file was 300MB+. Every code change required baking. The bake took 45 minutes for a full city. Users needed Blender installed. They needed the Python addon configured. They needed the DB file paths set in the N-panel.</p>
+<p>The second crack: Blender was the bottleneck, not the data.</p>
+<h3 id="s192s193-the-last-blender-steps">S192–S193: The last Blender steps<a class="headerlink" href="#s192s193-the-last-blender-steps" title="Permanent link">&para;</a></h3>
+<p>S192 bridged the BLOB gap to the browser — the first time geometry from <code>component_geometries</code> was served to a client other than Blender. S193 implemented DLOD auto-linker: <code>.blend</code> link/unlink by camera position. These were still Blender sessions. The pivot hadn't happened yet. (DLOD later rewritten as S274 per-slot frustum culling — see <code>docs/FeatureComparison.md</code> §Visibility Culling.)</p>
+<h3 id="s195-bonsai-out-browser-in">S195: Bonsai out. Browser in.<a class="headerlink" href="#s195-bonsai-out-browser-in" title="Permanent link">&para;</a></h3>
+<p>The <a href="https://github.com/red1oon/BIMCompiler/commit/66fc9413a9ed8c3ac0b9d900634c57ba2a7e9e65">S195 commit</a> is where everything flips:</p>
+<div class="highlight"><pre><span></span><code>[S195] Direct DB Streaming — camera-driven mesh from BLOBs, no .blend files
+</code></pre></div>
+<p>Five months of Blender sessions. 500 modifier trees. 45-minute bake cycles. A 300MB session <code>.blend</code>. All of it dissolved by a single realisation: <strong>the data format was the viewer interface, not the Blender addon API.</strong></p>
+<p>If <code>from_pydata()</code> in Python could reconstruct a mesh from a BLOB, so could <code>new Float32Array(blob)</code> in JavaScript. The BLOB didn't care what consumed it. The SQLite file didn't care what opened it — Blender or a browser tab. Both were doing the same thing: deserialising <code>float32</code> bytes and handing them to a renderer.</p>
+<p>Bonsai had been the assumed destination since October 2025. S195 made it optional in one session. The schema — built under Blender's constraints — turned out to be the portable part. Everything else was just a renderer.</p>
+<h3 id="s200-bim-ootb-two-dbs-one-browser-zero-install">S200: BIM OOTB — Two DBs. One browser. Zero install.<a class="headerlink" href="#s200-bim-ootb-two-dbs-one-browser-zero-install" title="Permanent link">&para;</a></h3>
+<p><div class="highlight"><pre><span></span><code>[S200] BIM OOTB — single HTML + Two DBs + sql.js WASM + Three.js. No server.
+Proven at 126K elements (LTU AHouse).
+</code></pre></div>
+(<a href="https://github.com/red1oon/BIMCompiler/commit/7a19d6e2543aeae89d93d80042bb8704793da193">commit 7a19d6e</a>)</p>
+<p>No Bonsai. No Blender. No server. The same two DBs — <code>_extracted.db</code> (semantic index) and <code>_library.db</code> (BLOB geometry pool) — that the Blender viewer had been reading since S168 were now loaded into a browser tab via <code>fetch()</code> and opened with <code>new SQL.Database(new Uint8Array(buf))</code>.</p>
+<p>The coordinate transform (<code>IFC X,Y,Z → Three.js X,Z,-Y</code>) was the only thing that changed. The schema was identical. The BLOBs were identical. The hash-addressed deduplication was identical.</p>
+<h3 id="s220-ifc-import-in-the-browser">S220: IFC import in the browser<a class="headerlink" href="#s220-ifc-import-in-the-browser" title="Permanent link">&para;</a></h3>
+<p><div class="highlight"><pre><span></span><code>[S220] IFC import: coord fix, unit scaling, material extraction, boolean openings
+</code></pre></div>
+(<a href="https://github.com/red1oon/BIMCompiler/commit/788eb47cc302b680025af07d7f55cc20de0ae742">commit 788eb47</a>)</p>
+<p>With web-ifc WASM parsing IFC directly in the browser, the full round-trip closed: IFC → browser → same <code>_extracted.db</code> + <code>_library.db</code> schema → viewer. Bonsai was no longer needed to create the DBs either.</p>
+<p>The Bonsai addon — the assumed viewer from S165 — became one of several <em>optional</em> consumers of a schema that now ran everywhere.</p>
+<h3 id="s231-instancedmesh-the-schema-pays-dividends">S231: InstancedMesh — the schema pays dividends<a class="headerlink" href="#s231-instancedmesh-the-schema-pays-dividends" title="Permanent link">&para;</a></h3>
+<p><div class="highlight"><pre><span></span><code>[S231] TE BOM storey fix + InstancedMesh 85% draw call reduction
+</code></pre></div>
+(<a href="https://github.com/red1oon/BIMCompiler/commit/9cca45a365d6dfaa650995288f62f1e08fec8926">commit 9cca45a</a>)</p>
+<p>Because geometry is hash-addressed from the beginning — not as a performance optimisation but as a consequence of how the extractor works — instancing in the browser required no schema change. Elements with the same <code>geometry_hash</code> were grouped in one SQL query result. <code>THREE.InstancedMesh</code> consumed them directly. 85% draw call reduction on a 48K-element Terminal building, with no change to the DB.</p>
+<h3 id="what-vibe-programming-produced">What vibe programming produced<a class="headerlink" href="#what-vibe-programming-produced" title="Permanent link">&para;</a></h3>
+<p>The schema in <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/internal/SQLite3D_Schema.md">SQLite3D_Schema.md</a> was not designed top-down. It emerged from 60+ sessions of constraint-driven iteration:</p>
+<table>
+<thead>
+<tr>
+<th>Session</th>
+<th>Constraint</th>
+<th>Schema consequence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S168</td>
+<td>Blender session save was too large with BLOBs inlined</td>
+<td>Two-DB split: BLOBs in <code>library.db</code>, hashes in <code>extracted.db</code></td>
+</tr>
+<tr>
+<td>S172</td>
+<td><code>create_shape()</code> per element was O(n) and slow</td>
+<td><code>geom.iterator()</code> + SHA256 hash-addressed <code>component_geometries</code></td>
+</tr>
+<tr>
+<td>S173</td>
+<td>30 buildings needed the same door mesh without copying it</td>
+<td>Hash dedup: 123K unique meshes serve 1M elements</td>
+</tr>
+<tr>
+<td>S175</td>
+<td>GN 500-tree overhead — Blender viewer had a hard ceiling</td>
+<td>R-tree virtual table for spatial queries without in-memory BVH</td>
+</tr>
+<tr>
+<td>S195</td>
+<td>Blender save pipeline was the bottleneck, not the data</td>
+<td>Float32 BLOB format works in any language — Python or JS</td>
+</tr>
+<tr>
+<td>S200</td>
+<td>Zero-install requirement for site use</td>
+<td>sql.js WASM opens the same SQLite file in the browser</td>
+</tr>
+<tr>
+<td>S231</td>
+<td>Mobile draw call budget</td>
+<td><code>geometry_hash</code> grouping → <code>THREE.InstancedMesh</code> with no schema change</td>
+</tr>
+</tbody>
+</table>
+<p>Each constraint was discovered in practice, not anticipated. Claude Code explored the solution space; the domain expert evaluated whether each result was correct. The schema that emerged is now published as a candidate open standard — not because it was designed to be one, but because 60 sessions of real-world pressure produced something that actually works.</p>
+<hr />
+<h2 id="the-technology-convergence-why-this-was-impossible-before-2025">The Technology Convergence — Why This Was Impossible Before 2025<a class="headerlink" href="#the-technology-convergence-why-this-was-impossible-before-2025" title="Permanent link">&para;</a></h2>
+<p>The BIM OOTB browser viewer and clash detection system depends on a stack that only became viable in 2025-2026. None of these components existed in production-ready form two years earlier.</p>
+<h3 id="timeline-of-key-dependencies-npm-exact-dates">Timeline of Key Dependencies (npm exact dates)<a class="headerlink" href="#timeline-of-key-dependencies-npm-exact-dates" title="Permanent link">&para;</a></h3>
+<p>The packages existed for years. But <strong>production stability</strong> — the point where you can trust them with a 48K-element building on a phone — converged in a narrow window.</p>
+<table>
+<thead>
+<tr>
+<th>Technology</th>
+<th>First release</th>
+<th>Production-stable</th>
+<th>Exact date</th>
+<th>What it enabled</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>sql.js</strong></td>
+<td>v0.1.1 (May 2014)</td>
+<td>v1.10.3</td>
+<td><strong>14 Apr 2024</strong></td>
+<td>WASM SQLite — reliable memory, large DBs, no crashes</td>
+</tr>
+<tr>
+<td><strong>sql.js</strong></td>
+<td></td>
+<td>v1.12.0</td>
+<td><strong>29 Oct 2024</strong></td>
+<td>Last stability fix before our Oct 2025 discovery</td>
+</tr>
+<tr>
+<td><strong>rtree-sql.js</strong></td>
+<td>v1.0.0 (Oct 2019)</td>
+<td>v1.7.0</td>
+<td><strong>3 Jun 2022</strong></td>
+<td>R-tree WASM — O(n log N) spatial clash queries in browser</td>
+</tr>
+<tr>
+<td><strong>Three.js</strong></td>
+<td>r1 (2010)</td>
+<td>r128</td>
+<td><strong>23 Apr 2021</strong></td>
+<td>Stable InstancedMesh — 48K elements, mobile GPU viable</td>
+</tr>
+<tr>
+<td><strong>web-ifc</strong></td>
+<td>v0.0.36 (Aug 2022)</td>
+<td>v0.0.57-0.0.66</td>
+<td><strong>Aug–Nov 2024</strong></td>
+<td>10 releases in 4 months — IFC4 tessellation hardened</td>
+</tr>
+<tr>
+<td><strong>web-ifc</strong></td>
+<td></td>
+<td>v0.0.72</td>
+<td><strong>2 Oct 2025</strong></td>
+<td>Released the same month we discovered spatial DB</td>
+</tr>
+<tr>
+<td><strong>Web Share API</strong></td>
+<td>Chrome 89 (Mar 2021)</td>
+<td>Safari 15</td>
+<td><strong>Sep 2021</strong></td>
+<td>File sharing (images + text) to WhatsApp/Telegram</td>
+</tr>
+<tr>
+<td><strong>Service Workers</strong></td>
+<td>Chrome 40 (2015)</td>
+<td>Safari + Chrome stable</td>
+<td><strong>2023–2024</strong></td>
+<td>Reliable offline PWA with WASM + DB caching</td>
+</tr>
+<tr>
+<td><strong>Claude Code</strong></td>
+<td></td>
+<td>Anthropic CLI</td>
+<td><strong>2025</strong></td>
+<td>AI pair programming — domain expert + AI</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-critical-convergence">The Critical Convergence<a class="headerlink" href="#the-critical-convergence" title="Permanent link">&para;</a></h3>
+<p>Three things happened in the same narrow window:</p>
+<ol>
+<li><strong>sql.js v1.12.0</strong> (29 Oct 2024) — fixed WASM memory stability for large databases. Without this, a 48K-element building would crash the browser tab.</li>
+<li><strong>web-ifc v0.0.57–0.0.72</strong> (Aug 2024 – Oct 2025) — a burst of 16 releases that hardened IFC4 tessellation. The parser we built on (v0.0.72) was released the same month we started the project.</li>
+<li><strong>rtree-sql.js v1.7.0</strong> (Jun 2022) — existed for 3 years but was obscure. Nobody had combined it with Three.js for BIM clash detection. The discovery was ours.</li>
+</ol>
+<h3 id="the-discovery-chain-how-ai-found-what-google-could-not">The Discovery Chain — How AI Found What Google Could Not<a class="headerlink" href="#the-discovery-chain-how-ai-found-what-google-could-not" title="Permanent link">&para;</a></h3>
+<p>The turning point of this entire project was not a line of code. It was a <strong>discovery</strong>: that an obscure npm package called <code>rtree-sql.js</code> — a fork of sql.js with one Makefile flag changed (<code>-DSQLITE_ENABLE_RTREE=1</code>) — could turn a browser tab into a spatial database engine capable of O(n log N) clash detection on 48,000 building elements.</p>
+<p>Consider the chain of people who made this possible, none of whom knew each other or intended what we built:</p>
+<table>
+<thead>
+<tr>
+<th>Who</th>
+<th>When</th>
+<th>What they did</th>
+<th>Why they did it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Alon Zakai</strong> (Mozilla, <code>kripken</code>)</td>
+<td>2010</td>
+<td>Created Emscripten — C/C++ → JavaScript compiler</td>
+<td>Wanted to port his C++ game fork (Syntensity/Sauerbraten) to the browser</td>
+</tr>
+<tr>
+<td><strong>Zakai</strong></td>
+<td>Feb 2012</td>
+<td>First commit to <code>sql.js</code> — SQLite compiled to JS</td>
+<td>Side-project demo of Emscripten's power. Not a product — one <code>db.exec()</code> method, all data coerced to strings, no tests.</td>
+</tr>
+<tr>
+<td><strong>Ophir Lojkine</strong> (Paris, <code>lovasoa</code>)</td>
+<td>2014</td>
+<td>Found sql.js stalled (last commit over a year old, author unresponsive). Rewrote the API: prepared statements, BLOB support, types, tests.</td>
+<td>Needed to test SQL commands on a machine with no database software. <a href="https://linuxfr.org/news/retour-d-experience-sur-sql-js">Wrote about it on LinuxFr.org</a>, 15 June 2014. Kripken added him as contributor; he has maintained it ever since.</td>
+</tr>
+<tr>
+<td><strong>W3C / browser vendors</strong></td>
+<td>Mar 2017</td>
+<td>WebAssembly MVP ships — Firefox 52 (Mar 7), Chrome 57 (Mar 9), Safari 11 (Sep), Edge 16 (Oct)</td>
+<td>Cross-vendor binary format for compiled languages in the browser</td>
+</tr>
+<tr>
+<td><strong>Taylor Brown</strong> (<code>Taytay</code>)</td>
+<td>Apr 2019</td>
+<td><a href="https://github.com/sql-js/sql.js/pull/255">PR #255</a> — switched sql.js from asm.js to WASM output</td>
+<td>WASM was faster and smaller. Opened Nov 2018, merged Apr 29, 2019.</td>
+</tr>
+<tr>
+<td><strong>Daniel Barela</strong> (<code>danielbarela</code>)</td>
+<td>Oct 2019</td>
+<td>Published <a href="https://www.npmjs.com/package/rtree-sql.js"><code>rtree-sql.js</code></a> — sql.js recompiled with one flag: <code>-DSQLITE_ENABLE_RTREE=1</code></td>
+<td>Needed spatial queries in the browser. Likely GIS background, not BIM. Three versions ever published (1.0.0, 1.0.1, 1.7.0). Minimal downloads.</td>
+</tr>
+<tr>
+<td><strong>Stephan Beal</strong> (SQLite team)</td>
+<td>Nov 2022</td>
+<td>SQLite 3.40.0 — <a href="https://sqlite.org/wasm/doc/trunk/about.md">first official WASM build</a>. Explicitly credits sql.js as "the first-ever published use of sqlite3 for the web."</td>
+<td>Making WASM a "first-class member of the family of supported SQLite deliverables."</td>
+</tr>
+<tr>
+<td><strong>Lojkine + contributors</strong></td>
+<td>Oct 2024</td>
+<td>sql.js v1.12.0 — WASM memory stability for large DBs</td>
+<td>Bug fixes. No idea anyone would stream 48K building elements through it.</td>
+</tr>
+<tr>
+<td><strong>Redhuan D. Oon</strong></td>
+<td>Oct 2025</td>
+<td>Connected SQLite BLOBs → Float32Array → Three.js GPU</td>
+<td>Needed zero-install BIM viewer for site foremen on phones</td>
+</tr>
+</tbody>
+</table>
+<p>A Mozilla game developer's side project → a French developer's maintenance rescue → a GIS engineer's one-flag fork → a Malaysian ERP architect who knew what a BOM was. <strong>Four communities that never intersect</strong> (compilers, databases, 3D graphics, construction) produced the ingredients. AI connected them.</p>
+<h4 id="without-ai-what-path-leads-here">Without AI, what path leads here?<a class="headerlink" href="#without-ai-what-path-leads-here" title="Permanent link">&para;</a></h4>
+<p>An ERP architect who knows Java, iDempiere, and BIM would need to:</p>
+<ol>
+<li>
+<p><strong>Know that SQLite can run in a browser.</strong> This means knowing about Emscripten, knowing that C libraries can compile to WASM, and knowing that sql.js exists. None of this appears in BIM literature, ERP forums, or construction technology conferences. The search term "SQLite in browser" leads to sql.js — but only if you already know to ask.</p>
+</li>
+<li>
+<p><strong>Know that SQLite has a spatial index.</strong> R-tree is a compile-time extension in SQLite, off by default. It is documented in SQLite's C API docs, not in any JavaScript context. The search term "spatial index JavaScript" leads to Turf.js, RBush, or PostGIS — not to SQLite R-tree.</p>
+</li>
+<li>
+<p><strong>Know that someone compiled sql.js with the R-tree flag.</strong> Daniel Barela published <code>rtree-sql.js</code> in October 2019 — three versions ever, minimal downloads, no blog posts, no tutorials, no Stack Overflow answers. Searching "R-tree WASM" or "spatial query browser" does not surface it. You would need to read sql.js GitHub issue <a href="https://github.com/sql-js/sql.js/issues/390">#390</a> ("How to turn on rtree?"), follow the thread, and find Barela's fork. This is a needle in a mass of unrelated search results.</p>
+</li>
+<li>
+<p><strong>Know that geometry BLOBs can go straight to WebGL.</strong> The idea that <code>new Float32Array(blob)</code> produces a valid <code>BufferGeometry</code> for Three.js is not documented anywhere. It requires knowing both the SQLite BLOB storage format (just raw bytes) and the Three.js buffer attribute API (just typed arrays). These two facts live in different documentation universes.</p>
+</li>
+<li>
+<p><strong>Connect all four in the right order.</strong> Even if you discovered each piece independently, the architectural insight — that the SQLite file IS the delivery format, no server, no conversion, no API — requires seeing across all four domains simultaneously.</p>
+</li>
+</ol>
+<p><strong>No search engine connects these.</strong> Google returns results within a domain. "SQLite spatial browser 3D BIM" returns nothing useful — the intersection has zero prior art. An AI trained across all four domains can hold the connection in a single context window: "You have geometry as BLOBs in SQLite. There is a WASM build of SQLite with R-tree. Three.js accepts Float32Array. The browser is the viewer." That sentence crosses four knowledge boundaries. It took one AI conversation to say it. It would have taken a human years of accidental discovery — or never.</p>
+<h3 id="why-r-tree-is-load-bearing-not-optional">Why R-tree Is Load-Bearing — Not Optional<a class="headerlink" href="#why-r-tree-is-load-bearing-not-optional" title="Permanent link">&para;</a></h3>
+<p>The R-tree spatial index is not an optimisation. It is the reason the product works on a phone. Without it, clash detection is a mathematical impossibility at building scale.</p>
+<p><strong>What it is:</strong> SQLite's R-tree is a compile-time extension (off by default) that creates a virtual table indexing objects by their bounding boxes in N dimensions. A query like "which elements overlap this box?" completes in <strong>O(log N)</strong> instead of scanning every row. It was designed by <a href="https://en.wikipedia.org/wiki/R-tree">Antonin Guttman in 1984</a> for spatial databases — and it sat inside SQLite for years, unused in the browser, because nobody compiled it into the WASM build. In October 2019, Daniel Barela (<code>danielbarela</code>) added one flag (<code>-DSQLITE_ENABLE_RTREE=1</code>) to the sql.js Makefile and published <a href="https://www.npmjs.com/package/rtree-sql.js"><code>rtree-sql.js</code></a> to npm — three versions ever, minimal downloads. That single flag is the difference between a product and a demo.</p>
+<p><strong>Where it runs in BIM OOTB</strong> (three modules, 43 code references):</p>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>What R-tree does</th>
+<th>Without R-tree</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>measure.js</code> (clash detection)</td>
+<td>For each MEP element, probe R-tree for overlapping ARC/STR elements. 500 probes × O(log 48K) = <strong>sub-second</strong>.</td>
+<td>O(n²) cross-join: 500 × 47,500 = <strong>23.75 million</strong> row comparisons. Browser tab freezes or crashes.</td>
+</tr>
+<tr>
+<td><code>section_cut.js</code> (storey slicing)</td>
+<td>Query elements within a Z-range slab. R-tree returns only elements in that band.</td>
+<td>Full-table scan of all transforms, then filter by Z in JavaScript. Slow on large buildings.</td>
+</tr>
+<tr>
+<td><code>elevation.js</code> (building extents)</td>
+<td>Min/max of all bounding boxes along any axis — one R-tree aggregate.</td>
+<td>Full scan of <code>element_transforms</code> — works but slower, no spatial pruning.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The maths:</strong> A 48,000-element airport terminal with 7 disciplines and 12 clash rules requires checking every discipline pair. Without R-tree, the naïve approach is a cross-join — <code>O(n²)</code> per pair. With 12 rules and ~7,000 elements per discipline on average, that's 12 × 7,000² = <strong>588 million</strong> comparisons. The browser has ~5 seconds before the user assumes it's broken. R-tree reduces this to 12 × 7,000 × O(log 48,000) ≈ <strong>12 × 7,000 × 16 = 1.3 million</strong> operations — a <strong>450× speedup</strong>. That's the difference between "instant" and "dead."</p>
+<p><strong>The irony:</strong> R-tree has been part of SQLite since <a href="https://sqlite.org/changes.html">version 3.6.10 (2009)</a>. It has been available as a compile flag for 17 years. The browser WASM build of SQLite (sql.js) existed since 2012. But nobody compiled the two together until <code>rtree-sql.js</code> appeared in 2019 — and even then, almost nobody used it. Our clash detection, running live on phones in 2026, depends on a 1984 algorithm, compiled through a 2010 toolchain, into a 2019 package, discovered by an AI in 2025.</p>
+<p><strong>What actually runs in the viewer (verified from <code>loader.js</code>):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Package</th>
+<th>Version</th>
+<th>Date</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>rtree-sql.js</strong></td>
+<td>v1.7.0</td>
+<td>3 Jun 2022</td>
+<td>All DB queries + R-tree clash detection — loaded on <strong>every page view</strong></td>
+</tr>
+<tr>
+<td><strong>Three.js</strong></td>
+<td>r160</td>
+<td>13 Dec 2023</td>
+<td>3D rendering, BatchedMesh, clipping — loaded on <strong>every page view</strong></td>
+</tr>
+<tr>
+<td><strong>web-ifc</strong></td>
+<td>v0.0.77</td>
+<td>6 Mar 2026</td>
+<td>IFC parsing — loaded <strong>only when user drops an IFC file</strong></td>
+</tr>
+<tr>
+<td><strong>SheetJS</strong></td>
+<td>v0.20.3</td>
+<td>—</td>
+<td>Excel export — loaded on <strong>every page view</strong></td>
+</tr>
+</tbody>
+</table>
+<p>The core viewer (DB streaming, 3D rendering, clash detection, sharing) runs entirely on <strong>rtree-sql.js v1.7.0 (2022)</strong> and <strong>Three.js r160 (2023)</strong>. Both are 2-3 years old. The sql.js stability fixes from 2024 are not in our build (rtree-sql.js is a separate fork). web-ifc only matters for IFC import — the viewer never touches it. <strong>This product could have been built in 2022</strong> — the technology was ready. Nobody connected the pieces until Oct 2025.</p>
+<h3 id="no-prior-art-in-any-industry">No Prior Art — In Any Industry<a class="headerlink" href="#no-prior-art-in-any-industry" title="Permanent link">&para;</a></h3>
+<p>A search across npm, GitHub, academic databases, and industry tools confirms: <strong>no application in the world streams 3D geometry from a SQLite database directly to the GPU in a browser.</strong> Not in BIM. Not in GIS. Not in CAD. Not in gaming. Not in mapping.</p>
+<p>The closest prior art:</p>
+<table>
+<thead>
+<tr>
+<th>Project</th>
+<th>What it does</th>
+<th>Why it's not the same</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sdlgl3c-sqlite</code> (GitHub)</td>
+<td>Loads 3D models from SQLite via OpenGL</td>
+<td>Desktop native (C/C++), not browser, not WASM</td>
+</tr>
+<tr>
+<td>SpatiaLite / GeoPackage</td>
+<td>SQLite with spatial extensions</td>
+<td>2D GIS data, no 3D geometry BLOBs, no GPU rendering</td>
+</tr>
+<tr>
+<td>CesiumJS / deck.gl</td>
+<td>Browser 3D for GIS</td>
+<td>Server-side tile rendering, not client-side SQLite</td>
+</tr>
+<tr>
+<td>IFC.js / That Open Engine</td>
+<td>Browser IFC viewer</td>
+<td>Loads IFC files directly, not from SQLite DB</td>
+</tr>
+<tr>
+<td>Speckle / Bimdata</td>
+<td>Browser BIM viewers</td>
+<td>Server-rendered, require accounts, no offline</td>
+</tr>
+</tbody>
+</table>
+<p>The BIM OOTB pipeline — <strong>SQLite BLOB → Float32Array → BufferGeometry → GPU</strong> — has no precedent in any industry. Every other 3D browser application either uses server-side rendering, proprietary file formats, or requires a backend. None store geometry as SQLite BLOBs and stream them to WebGL in the client. The combination was invisible because it crosses three communities (database, 3D graphics, construction) that don't talk to each other.</p>
+<h3 id="the-solo-multiplier-its-not-speed-its-capability">The Solo Multiplier — It's Not Speed, It's Capability<a class="headerlink" href="#the-solo-multiplier-its-not-speed-its-capability" title="Permanent link">&para;</a></h3>
+<p>This is not "I could have done it in 36 months, AI did it in 1." <strong>It could not have been done at all.</strong> A solo developer — even a competent one — hitting the WASM R-tree wall, Three.js clipping planes, service worker cache invalidation, and mobile touch event handling would not eventually get there slower. They would <strong>stop</strong>. You can't Google what you don't know to search for.</p>
+<p><strong>Actual project timeline (git history):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Duration</th>
+<th>What was built</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Spatial DB discovery → Blender pipeline (S165-S193)</td>
+<td>Oct-Dec 2025 (~2 months)</td>
+<td>R-tree, GN instancing, DLOD — hit Blender's hard ceiling</td>
+</tr>
+<tr>
+<td>Browser pivot (S195-S231)</td>
+<td>Jan-Apr 2026 (~3 months)</td>
+<td>sql.js WASM, Three.js streaming, InstancedMesh, mobile PWA</td>
+</tr>
+<tr>
+<td>Clash detection + snag + share (S245-S246)</td>
+<td>May 2026 (~2 days)</td>
+<td>R-tree queries, matrix, fly-to, annotate, deep-link</td>
+</tr>
+<tr>
+<td><strong>Total elapsed</strong></td>
+<td><strong>~6 months</strong></td>
+<td>Full browser BIM viewer + clash detection + sharing</td>
+</tr>
+<tr>
+<td><strong>Compressed (hindsight, no dead ends)</strong></td>
+<td><strong>~1 month</strong></td>
+<td>If you already knew what worked</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Cost comparison:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Duration</th>
+<th>Cost</th>
+<th>Outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Traditional team (5-6 people)</td>
+<td>3-4 months</td>
+<td>$150K-$300K</td>
+<td>Delivered but slow to pivot</td>
+</tr>
+<tr>
+<td>Solo developer, pre-AI</td>
+<td>36 months</td>
+<td>Time</td>
+<td><strong>Abandoned</strong> — too many unknowns outside domain expertise</td>
+</tr>
+<tr>
+<td>Solo domain expert + AI</td>
+<td>6 months (1 month compressed)</td>
+<td>~$500 total API cost</td>
+<td>Shipped, deployed, live on phones</td>
+</tr>
+</tbody>
+</table>
+<p>The team comparison is not a speed ratio. A team <em>can</em> build it — but they'd never pivot from Blender to browser in one conversation. The sunk cost of 3 engineers hired for Blender would anchor the project for months. The solo pre-AI comparison is not a speed ratio either — it's a binary: <strong>possible vs impossible</strong>. The WASM R-tree spatial index, the Three.js clipping planes with depth buffer management, the service worker cache versioning — these are not things a BIM domain expert learns by Googling. They are outside the search radius entirely.</p>
+<p>AI doesn't make you faster. <strong>AI makes the unreachable reachable.</strong> The domain expert provides judgment that AI cannot: whether 25mm tolerance makes engineering sense, whether a pipe through a wall is a false positive, whether the building loads correctly on a foreman's phone. Speed without domain judgment produces fast garbage. Domain judgment without AI produces slow abandonment.</p>
+<p>The combination — domain expert steering, AI building — is a new category. Not faster programming. Not no-code. Not outsourcing. A single mind with the full context, building at the speed of thought, with guard rails that only decades of industry experience can provide.</p>
+<blockquote>
+<p><strong>The parallel SQLite/Turso ferment of 2024–2026</strong> — and what an LLM got <em>wrong</em> when asked to date it — is recorded in the <a href="../EnablingTechTimeline/#the-turso-core-sqlite-ferment-20242026-parallel-mostly-routed-around">Enabling-Tech Timeline → The Turso / core-SQLite ferment</a>, where the ROUTED-AROUND thesis already lives.</p>
+</blockquote>
+<hr />
+<h2 id="for-the-bonsaiblenderbim-community">For the Bonsai/BlenderBIM Community<a class="headerlink" href="#for-the-bonsaiblenderbim-community" title="Permanent link">&para;</a></h2>
+<p>If you're evaluating this project and wondering whether vibe-programmed code can be trusted:</p>
+<ol>
+<li><strong>Clone it.</strong> <code>git clone https://github.com/red1oon/BIMCompiler.git</code></li>
+<li><strong>Run the gates.</strong> <code>./scripts/run_RosettaStones.sh classify_sh.yaml</code> — watch a building compile and pass 6 mathematical proofs.</li>
+<li><strong>Read <a href="../LAST_MILE_PROBLEM/">The Drift</a>.</strong> Every known failure is documented. Nothing is hidden.</li>
+<li><strong>Check the tests.</strong> <code>mvn test</code> — 408+ tests, not mocked, not stubbed, running against real SQLite databases with real BOM data.</li>
+</ol>
+<p>The code was written by AI. The architecture was not. The proofs are mathematical. The buildings compile deterministically. Judge by the output, not the author.</p>
+<hr />
+<p><em>Built with <a href="https://claude.ai/">Claude Code</a> (Anthropic) in ~190 sessions over 5 months. 1M elements compiled, 35 buildings, city-scale federation. Kuala Lumpur, 2025–2026.</em></p>
+<p><em>Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.</em></p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+
+
+                
+
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Retour en haut de la page
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/red1oon/bim-ootb" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.linkedin.com/in/red1oon/" target="_blank" rel="noopener" title="www.linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.indexes", "search.suggest", "search.highlight", "toc.follow", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copi\u00e9 dans le presse-papier", "clipboard.copy": "Copier dans le presse-papier", "search.result.more.one": "1 de plus sur cette page", "search.result.more.other": "# de plus sur cette page", "search.result.none": "Aucun document trouv\u00e9", "search.result.one": "1 document trouv\u00e9", "search.result.other": "# documents trouv\u00e9s", "search.result.placeholder": "Taper pour d\u00e9marrer la recherche", "search.result.term.missing": "Non trouv\u00e9", "select.version": "S\u00e9lectionner la version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../javascripts/fold-footnotes.js"></script>
+      
+        <script src="../../javascripts/bim_compiler_source.js"></script>
+      
+    
+  </body>
+</html>

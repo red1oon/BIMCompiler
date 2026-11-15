@@ -1,0 +1,5815 @@
+
+<!doctype html>
+<html lang="de" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Construction is manufacturing. A building IS its Bill of Materials.">
+      
+      
+        <meta name="author" content="Redhuan D. Oon">
+      
+      
+        <link rel="canonical" href="https://red1oon.github.io/BIMCompiler/ModellerGuide/">
+      
+      
+        <link rel="prev" href="../ModellerFirstSteps/">
+      
+      
+        <link rel="next" href="../ProposerGuide/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>DAGeVu Modeller — User Guide - BIM Intent Compiler</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/custom.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  <script data-goatcounter="https://red1oon.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  
+  <meta name="robots" content="noindex">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#dagevu-modeller-user-guide" class="md-skip">
+          Zum Inhalt
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Kopfzeile">
+    <a href="../" title="BIM Intent Compiler" class="md-header__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            BIM Intent Compiler
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              DAGeVu Modeller — User Guide
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Suche" placeholder="Suche" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Suche">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Zurücksetzen" aria-label="Zurücksetzen" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Suche wird initialisiert
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source md-header__source--stacked">
+        <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+        <a href="https://github.com/red1oon/BIMCompiler" title="red1oon/BIMCompiler on GitHub" class="md-source" id="bim-compiler-source" target="_blank" rel="noopener">
+          <div class="md-source__icon md-icon">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+          </div>
+          <div class="md-source__repository" id="bim-compiler-repository">
+            Compiler
+          </div>
+        </a>
+        <span id="repo-totals" class="md-source-totals" title="Combined stars / forks across both repos"></span>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Hauptnavigation" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Start Here
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../BIMUserGuide/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  The 3 Apps
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../DeveloperGuide/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Go Deeper
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../SpatialCompilationPaper/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Papers & Positioning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../HalalTrace/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Prototypes & Demos
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../PROJECT_CHRONOLOGY/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  History & Legacy
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../" title="BIM Intent Compiler" class="md-nav__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    BIM Intent Compiler
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start Here
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_1" id="__nav_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Start Here
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../USER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    📖 User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMToolsGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🧰 BIM Tools — User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OFFLINE_INSTALL_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🔒 Fully Offline / Air-Gapped Install
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WhatsNew/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🆕 What's New
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AboutMore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About BIM OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FeatureComparison/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Feature Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MigrateComparisonPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrate & Compare (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TwoAppsOneKernel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two Apps, One Kernel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TwoAppsOneKernelInfographicLandscape.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    One Page InfoGraphics - Landscape
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bench_suite.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Comparison (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../age_demo.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Does Your ERP Age? (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MANIFESTO/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The ERP World View
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contribute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 3 Apps
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    The 3 Apps
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Viewer Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AskFirstSteps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewer Ask — First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerFirstSteps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modeller — First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DAGeVu Modeller — User Guide
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DAGeVu Modeller — User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Inhaltsverzeichnis">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Inhaltsverzeichnis
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-big-idea-open-a-building-and-edit-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The big idea — open a building and edit it
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-workspace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The workspace
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-started-your-first-five-minutes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Getting started — your first five minutes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Getting started — your first five minutes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#open-your-own-building-straight-from-an-ifc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Open your own building — straight from an .ifc
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#outliner-find-focus-and-manage-whats-shown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Outliner — find, focus, and manage what's shown
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Outliner — find, focus, and manage what&#39;s shown">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#building-parts-stairway-lift-shaft-plant-room" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Building Parts — Stairway / Lift Shaft / Plant Room
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#realistic-glass" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Realistic glass
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-a-wall-is-made-of" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What a wall is made of
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#assemble-draw" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Assemble &amp; draw
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Assemble &amp; draw">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#insert-assemble-from-the-catalog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Insert — assemble from the catalog
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sketch-extrude-draw-a-wall" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sketch → Extrude — draw a wall
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Sketch → Extrude — draw a wall">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#type-an-exact-dimension-rect-square" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Type an exact dimension (rect / square)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#circle-extrude-draw-a-cylinder" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Circle → Extrude — draw a cylinder
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#route-sweep-run-lay-a-run-duct" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Route → Sweep-Run — lay a run / duct
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cut-open-a-wall" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cut — open a wall
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fillet-round-a-solids-edge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fillet — round a solid's edge
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#transform" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Transform
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Transform">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#move" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Move
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#snap-to-geometry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Snap-to-geometry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multi-select" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multi-select
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scale
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rotate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rotate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keyboard-arm-a-handle-t-s" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Keyboard-arm a handle (T / S)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grid-stretch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Grid-Stretch
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Grid-Stretch">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#on-a-real-building-not-a-diagram" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        On a real building, not a diagram
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grid-span-colours" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Grid span colours
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delete" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Delete
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#copy-paste" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Copy &amp; paste
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#add-a-bay-repeating-bay-buildings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Add a bay (repeating-bay buildings)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#room-move" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Room Move
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#item-drag" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Item Drag
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#generate-walkers-fill-the-arc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Generate — walkers fill the ARC
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Generate — walkers fill the ARC">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-a-walk-actually-places" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What a walk actually places
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-the-right-standard-matters-clash-collapse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why the right standard matters — clash collapse
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#does-the-residential-standard-reproduce-a-real-houses-mep" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Does the residential standard reproduce a real house's MEP?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#does-it-generalize-to-a-building-it-never-saw" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Does it generalize to a building it never saw?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#walk-them-all-at-once" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Walk them all at once
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#find-a-walked-type-and-see-one-device-up-close" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Find a walked type, and see one device up close
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rules-read-and-edit-what-the-walker-uses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rules — read and edit what the walker uses
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-a-walk-gives-you-now-pipes-one-step-undo-and-pipes-that-follow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What a walk gives you now — pipes, one-step undo, and pipes that follow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#seed-trunk-route-a-service-trunk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Seed-Trunk — route a service trunk
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#history-the-slider-is-the-timeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        History — the slider is the timeline
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#save" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Save
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-what-your-edit-costs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See what your edit costs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#send-it-to-erp-project-order-variant-vo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Send it to ERP — Project Order, variant, VO
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Send it to ERP — Project Order, variant, VO">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#after-the-order-documents-the-dashboard-and-the-walker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        After the order: documents, the dashboard, and the walker
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#export-db-ifc-reports-bcf-issue-2d-drawings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Export — .db, IFC, reports, BCF issue, 2D drawings
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Export — .db, IFC, reports, BCF issue, 2D drawings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ifc-the-whole-building-you-opened" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IFC — the whole building you opened
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bcf-share-an-issue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BCF — share an issue
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#toolbar-icon-index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Toolbar — icon index
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#collaborate-on-the-design-team-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Collaborate on the design — Team mode
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ProposerGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Proposer Guide (propose an edit, get the proof)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FastScriptGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fast Script Guide (one door: commands and scripts)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIMGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2D Drawings → BIM (DXF2BIM)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_Yellow_List/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — the yellow list (what you fill in, defaults used)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_Prior_Art/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — prior art (what is new, what we learned, cost of using others)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_FORMAT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — format contract (marks, outputs, registry, codes; generated)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERPUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel-ERP User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TillUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    uniCenta-style Till & Kitchen Screen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CapexDashboardGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM → ERP and CAPEX Dashboard — for iDempiere users
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CapexUATGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CAPEX UAT Guide — step-by-step test script
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERP_FirstSetup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel-ERP — Your First Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MigrationGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration User Guide (Odoo · Business Central · SAP Business One)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OdooMigration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moving from Odoo — how it works, what is proven
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NinjaExcelReport_UserManual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NinjaExcel Report — User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HRBIMAssetGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HR / Tenancy / Operate Module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CivilWorksGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Civil Works — Step by Step
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TeamsOverlayGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Teams Overlay — Collaboration & Optics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Go Deeper
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Go Deeper
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DeveloperGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide (read first if you will change the code)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ArchitectureOverview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Overview (for reviewers)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../FoldEngineBlackBook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fold Engine Black Book (dev manual)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HolyGrail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Holy Grail (editable rules, live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ERPConceptRosetta.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-ERP Rosetta Stone (concept + cost)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIM_Modeller_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Modeller OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERP_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP — Every Record Has a Place
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERPIntegration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP × BIM × HR — One Building, One Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DistributedERP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Distributed ERP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TermsHowToVerify/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to verify the terms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERP_AI_ADVISORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Letting an AI work on the ERP, safely
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SQLiteWasmArchitectureActual.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How the Database Works (big picture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ViewerComponentModel.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewer Component Model (dev architecture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CLASH_DETECTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clash Detection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../JKR_SKATA/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Asset Classification & JKR/SKATA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../IFC_ExportGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IFC Export Guide (for the BIM author)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TimeMachine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Time Machine (4D Scheduling & Editing)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4D5DAnalysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4D/5D Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMtoProject/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM → Project Order (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerKernelFold/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry as a Signed-Log Fold
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Papers & Positioning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Papers & Positioning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialCompilationPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deterministic Spatial Compilation (academic paper)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AIProposerDefensiveDisclosure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Defensive Disclosure: an Outside AI Proposes, the App Decides
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_TechnicalNote/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — Deterministic 2D ⇄ BIM Round Trip (technical note)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BrowserScaleBenchmark/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Browser-Scale Benchmark (one tab, local first)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnterpriseAuthentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enterprise Authentication (security)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../StrategicIndustryPositioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Strategic Positioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LocalFirstPriorArt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local-First Prior Art
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LegacyOracleAdapterSpec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Legacy-as-Oracle Adapter (migrate / test an ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ShipYard/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Beyond Buildings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RouteTemplate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Find & Navigate (wayfinding)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../halal/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prototypes & Demos
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Prototypes & Demos
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HalalTrace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Halalan Thayiban — halal track & trace (paper)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glassbowl.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glassbowl — the ERP engine as data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glassbowl_gravity.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glassbowl · Gravity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../RetailScaleStory.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Retail at Scale — two messages a day (benchmark story)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bim_architecture_viz.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How it works — interactive architecture tour
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    History & Legacy
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    History & Legacy
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROJECT_CHRONOLOGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Chronology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../VibeProgramming/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vibe Programming — AI + Domain Expertise
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4DGenerator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 4D Generator — Failure Catalogue & AI Findings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnablingTechTimeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enabling-Tech Timeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RED_PILL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Red Pill — Design From Grammar (origin)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LAST_MILE_PROBLEM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Last Mile — drift tracking (Java era)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMERPPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Construction Economy / ERP Wave (Java era)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SYSTEMS_INSTALLER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Self-Host the Java toolchain (legacy installer)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Inhaltsverzeichnis">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Inhaltsverzeichnis
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-big-idea-open-a-building-and-edit-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The big idea — open a building and edit it
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-workspace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The workspace
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-started-your-first-five-minutes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Getting started — your first five minutes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Getting started — your first five minutes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#open-your-own-building-straight-from-an-ifc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Open your own building — straight from an .ifc
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#outliner-find-focus-and-manage-whats-shown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Outliner — find, focus, and manage what's shown
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Outliner — find, focus, and manage what&#39;s shown">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#building-parts-stairway-lift-shaft-plant-room" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Building Parts — Stairway / Lift Shaft / Plant Room
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#realistic-glass" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Realistic glass
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-a-wall-is-made-of" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What a wall is made of
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#assemble-draw" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Assemble &amp; draw
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Assemble &amp; draw">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#insert-assemble-from-the-catalog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Insert — assemble from the catalog
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sketch-extrude-draw-a-wall" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sketch → Extrude — draw a wall
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Sketch → Extrude — draw a wall">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#type-an-exact-dimension-rect-square" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Type an exact dimension (rect / square)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#circle-extrude-draw-a-cylinder" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Circle → Extrude — draw a cylinder
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#route-sweep-run-lay-a-run-duct" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Route → Sweep-Run — lay a run / duct
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cut-open-a-wall" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cut — open a wall
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fillet-round-a-solids-edge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fillet — round a solid's edge
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#transform" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Transform
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Transform">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#move" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Move
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#snap-to-geometry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Snap-to-geometry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multi-select" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multi-select
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scale
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rotate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rotate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keyboard-arm-a-handle-t-s" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Keyboard-arm a handle (T / S)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grid-stretch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Grid-Stretch
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Grid-Stretch">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#on-a-real-building-not-a-diagram" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        On a real building, not a diagram
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grid-span-colours" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Grid span colours
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delete" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Delete
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#copy-paste" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Copy &amp; paste
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#add-a-bay-repeating-bay-buildings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Add a bay (repeating-bay buildings)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#room-move" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Room Move
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#item-drag" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Item Drag
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#generate-walkers-fill-the-arc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Generate — walkers fill the ARC
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Generate — walkers fill the ARC">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-a-walk-actually-places" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What a walk actually places
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-the-right-standard-matters-clash-collapse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why the right standard matters — clash collapse
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#does-the-residential-standard-reproduce-a-real-houses-mep" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Does the residential standard reproduce a real house's MEP?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#does-it-generalize-to-a-building-it-never-saw" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Does it generalize to a building it never saw?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#walk-them-all-at-once" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Walk them all at once
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#find-a-walked-type-and-see-one-device-up-close" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Find a walked type, and see one device up close
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rules-read-and-edit-what-the-walker-uses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rules — read and edit what the walker uses
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-a-walk-gives-you-now-pipes-one-step-undo-and-pipes-that-follow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What a walk gives you now — pipes, one-step undo, and pipes that follow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#seed-trunk-route-a-service-trunk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Seed-Trunk — route a service trunk
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#history-the-slider-is-the-timeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        History — the slider is the timeline
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#save" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Save
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-what-your-edit-costs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See what your edit costs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#send-it-to-erp-project-order-variant-vo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Send it to ERP — Project Order, variant, VO
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Send it to ERP — Project Order, variant, VO">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#after-the-order-documents-the-dashboard-and-the-walker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        After the order: documents, the dashboard, and the walker
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#export-db-ifc-reports-bcf-issue-2d-drawings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Export — .db, IFC, reports, BCF issue, 2D drawings
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Export — .db, IFC, reports, BCF issue, 2D drawings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ifc-the-whole-building-you-opened" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IFC — the whole building you opened
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bcf-share-an-issue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BCF — share an issue
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#toolbar-icon-index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Toolbar — icon index
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#collaborate-on-the-design-team-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Collaborate on the design — Team mode
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+  <p class="i18n-note"><small>Diese Seite ist noch nicht übersetzt; sie wird auf Englisch angezeigt. <a href="https://red1oon.github.io/BIMCompiler/ModellerGuide/">Englische Seite</a>.</small></p>
+  
+                  
+
+
+  
+  
+
+
+<h1 id="dagevu-modeller-user-guide">DAGeVu Modeller — User Guide<a class="headerlink" href="#dagevu-modeller-user-guide" title="Permanent link">&para;</a></h1>
+<p><em><a href="../USER_GUIDE/">← Back to the <strong>User Guide</strong></a> · <a href="../">Home</a></em></p>
+<p>DAGeVu is a <strong>browser BIM authoring surface</strong> that sits beside the read-only viewer. You don't edit a
+dead file — every action (drop a component, cut a window, route a duct, move a wall) is <strong>one signed
+operation</strong> folded into a verifiable hash-chain. The 3D you see is a pure <em>fold</em> of that operation log,
+so <strong>every edit is exact, reversible, and provable</strong> — never invented. The same signed-log engine drives
+the Kernel-ERP.</p>
+<p><strong>Open it:</strong> <a href="https://red1oon.github.io/bim-ootb/modeller/modeller.html">red1oon.github.io/bim-ootb/modeller/modeller.html</a>
+(desktop — the B-rep kernel is heavy). The <strong>Home</strong> pill returns to the Matrix landing.</p>
+<blockquote>
+<p><strong>Every tool on this page is checked by a real-user, end-to-end test</strong> — the tool is driven through the
+production path with real mouse/keyboard and the result checked by numbers (the op-log, the scene graph,
+the pixels), not by eye. <strong>The screenshots are real frames captured from those test runs</strong> — nothing here
+is a mock-up.</p>
+</blockquote>
+<hr />
+<h2 id="the-big-idea-open-a-building-and-edit-it">The big idea — open a building and edit it<a class="headerlink" href="#the-big-idea-open-a-building-and-edit-it" title="Permanent link">&para;</a></h2>
+<p>Don't draw a model up from a blank grid. <strong>📂 Open</strong> a real building's <strong>ARC</strong> (architectural) model — its
+<em>digital twin</em> — and edit <em>that</em>. The other disciplines and dimensions aren't re-drawn; they <strong>follow</strong>:
+structure, MEP, the 4D schedule, the 5D cost and the ERP auto-complete by <em>crawling</em> against your ARC
+(the <strong>Walk</strong> tools), and every edit and every follow is one signed operation the enterprise folds from.</p>
+<p><svg viewBox="0 0 820 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The modelling inversion: open a ready ARC twin, edit it, and the rest auto-completes from one signed op-log." style="max-width:100%;height:auto;font-family:system-ui,-apple-system,sans-serif">
+  <rect x="0" y="0" width="820" height="320" fill="#fbfcfe"/>
+  <text x="20" y="28" font-size="16" font-weight="700" fill="#1b2b3a">Open a ready ARC twin · edit · the rest auto-completes</text>
+  <g font-size="12" fill="#16324a">
+    <rect x="20" y="70" width="170" height="74" rx="8" fill="#e9f2fb" stroke="#3f78b5" stroke-width="1.5"/>
+    <text x="105" y="98" text-anchor="middle" font-weight="700">📂 Open extracted.db</text>
+    <text x="105" y="116" text-anchor="middle">the ARC twin</text>
+    <text x="105" y="134" text-anchor="middle" fill="#5b6473">(real building, verbatim)</text>
+    <rect x="232" y="70" width="170" height="74" rx="8" fill="#e9f2fb" stroke="#3f78b5" stroke-width="1.5"/>
+    <text x="317" y="98" text-anchor="middle" font-weight="700">Edit the ARC</text>
+    <text x="317" y="116" text-anchor="middle">move · cut · insert · grid</text>
+    <text x="317" y="134" text-anchor="middle" fill="#5b6473">each a signed op</text>
+    <rect x="444" y="70" width="170" height="74" rx="8" fill="#eef6ee" stroke="#5a9e5a" stroke-width="1.5"/>
+    <text x="529" y="98" text-anchor="middle" font-weight="700">Followers crawl</text>
+    <text x="529" y="116" text-anchor="middle">Walk · RouteWalk</text>
+    <text x="529" y="134" text-anchor="middle" fill="#5b6473">STR · MEP regenerate</text>
+    <rect x="656" y="70" width="144" height="74" rx="8" fill="#eef6ee" stroke="#5a9e5a" stroke-width="1.5"/>
+    <text x="728" y="98" text-anchor="middle" font-weight="700">Auto-complete</text>
+    <text x="728" y="116" text-anchor="middle">4D · 5D · ERP</text>
+    <text x="728" y="134" text-anchor="middle" fill="#5b6473">the live twin</text>
+  </g>
+  <g fill="#3f78b5" font-size="20" font-weight="700">
+    <text x="201" y="113">→</text><text x="413" y="113">→</text><text x="625" y="113">→</text>
+  </g>
+  <rect x="20" y="178" width="780" height="44" rx="8" fill="#1b1d23"/>
+  <text x="410" y="199" text-anchor="middle" font-size="13" font-weight="700" fill="#dce6f4">ONE signed op-log</text>
+  <text x="410" y="216" text-anchor="middle" font-size="11.5" fill="#aab4c4">every edit &amp; every follow is a signed fact — model · structure · MEP · 4D · 5D · ERP all fold from it</text>
+  <text x="20" y="250" font-size="12" fill="#16324a" font-weight="700">Why it's faster</text>
+  <text x="20" y="270" font-size="11.5" fill="#5b6473">Speed — you start complete (a real building), not a blank canvas.   ·   Completion — open a bare ARC and the rest fills itself in.</text>
+  <text x="20" y="288" font-size="11.5" fill="#5b6473">Reuse — the real building is the substrate; you edit batches, never reconstruct.   ·   Trust — a verified twin, so editing starts from truth.</text>
+  <text x="20" y="310" font-size="10.5" fill="#8a93a0">Open = ARC only (the single editable substrate). Structure / MEP / 4D / 5D / ERP are shown but derived — they regenerate against your ARC edits.</text>
+</svg></p>
+<hr />
+<blockquote>
+<p><strong>New: 2D drawings → BIM.</strong> Open a set of <code>.dxf</code> plans, elevations, roof and section and convert them into a model — see <a href="../DXF2BIMGuide/">2D Drawings → BIM (DXF2BIM)</a>; for what a plain drawing set asks of you (the yellow rows, the datums, doors and windows) and how long it took, see <a href="../DXF2BIMGuide/#3-raw-drawings-fill-in-what-is-missing">Raw drawings: fill in what is missing</a>.</p>
+</blockquote>
+<h2 id="the-workspace">The workspace<a class="headerlink" href="#the-workspace" title="Permanent link">&para;</a></h2>
+<p><img alt="The modeller workspace: the Outliner (left) over the BOM tree, the ARC building on the grid, the ⋯ pill toolbar down the right edge, and the history scrubber along the bottom" src="../../img/modeller/workspace-open.png" /></p>
+<ul>
+<li><strong>Outliner</strong> (left) — the BOM tree of the opened building (<code>Building → Level → Room → ARC → element</code>), plus the <strong>Walk</strong> rows and a live <strong>find</strong> filter. Collapse it with its chevron to free the canvas.</li>
+<li><strong>Properties panel</strong> — select a part of an opened building and the panel shows what its IFC carries: class, name, type, material and its property sets (for a converted 2D set, also where it came from and its size basis). A raw <code>.ifc</code> is read once to fill it.</li>
+<li><strong>Canvas</strong> (centre) — the 3D building on the construction grid. Click an element to select it; <strong>Shift-drag</strong> marquee-selects many. Elements cast real shadows onto each other and the ground, so massing and floor-to-floor relationships read correctly at a glance — not a flat, shadowless render.</li>
+<li><strong>Pill toolbar</strong> (right edge) — an icon rail. The rail is open by default and stays open; tap <strong>⋯</strong> (bottom-right) to fold or unfold it; hover a pill for its name; <strong>? Help</strong> lists every tool + shortcut. <code>Esc</code> cancels any active mode.</li>
+<li><strong>History scrubber</strong> (bottom) — the signed op-log <em>is</em> the timeline. Drag it to travel through every edit. The status line beneath it echoes what each op did (e.g. <code>scaled #183 X ×1.50  verify=true</code>).</li>
+</ul>
+<p><strong>How to read it:</strong> the op-log is the model, the 3D is a fold of it, and the slider is the single honest
+retreat across every tool below.</p>
+<hr />
+<h2 id="getting-started-your-first-five-minutes">Getting started — your first five minutes<a class="headerlink" href="#getting-started-your-first-five-minutes" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p><strong>Brand new?</strong> Start with the <strong><a href="../ModellerFirstSteps/">First Steps</a></strong> page — a nine-step first edit, then <a href="../ModellerFirstSteps/#part-2-see-what-your-edit-costs-and-send-it-to-erp">what your edit costs and sending it to ERP</a>, then <a href="../ModellerFirstSteps/#part-3-fill-the-building-with-services-mep-walk">filling the building with services</a>.</p>
+</blockquote>
+<ol>
+<li><strong>Open the app</strong> — <a href="https://red1oon.github.io/bim-ootb/modeller/modeller.html">red1oon.github.io/bim-ootb/modeller/modeller.html</a>
+   (desktop; the B-rep kernel is heavy). The pill toolbar is open on the right edge; <strong>⋯</strong> at the bottom-right folds and unfolds it.</li>
+<li><strong>Open a building</strong> — tap <strong>📂 Open</strong> and pick a resident building (e.g. <em>Duplex</em>). Its <strong>ARC</strong> model loads
+   onto the grid and its BOM tree fills the Outliner on the left. You're now editing a real building, not a
+   blank canvas.</li>
+<li><strong>Frame it</strong> — press <strong><code>F</code></strong> (or tap <strong>Fit</strong>) to zoom the whole building into view.</li>
+<li><strong>Select something</strong> — click an element (a wall, a door). It highlights; the status line names it.
+   <strong>Shift-drag</strong> to marquee-select many.</li>
+<li><strong>Do one edit</strong> — tap <strong>Move</strong>, drag an axis arrow, and release. Watch the status line print the signed op
+   (e.g. <code>moved #142 Δ(0.50,0.00,0.00)  verify=true</code>). That edit is now one fact in the op-log.</li>
+<li><strong>Undo it</strong> — drag the <strong>history scrubber</strong> (bottom) one notch left. The edit reverses exactly, because the
+   3D is a pure fold of the log. Drag right to redo.</li>
+</ol>
+<p>That's the whole loop: <strong>open → select → tool → commit → scrub</strong>. Every tool below is a variation on it. Press
+<strong>? Help</strong> any time for the live list of pills and shortcuts, or <strong><code>Esc</code></strong> to cancel a mode.</p>
+<h3 id="open-your-own-building-straight-from-an-ifc">Open your own building — straight from an <code>.ifc</code><a class="headerlink" href="#open-your-own-building-straight-from-an-ifc" title="Permanent link">&para;</a></h3>
+<p>The resident buildings are there so you can start in one click, but <strong>📂 Open</strong> takes your own model too.
+Besides a resident, it accepts an <strong><code>.ifc</code> file</strong>, a local <strong><code>.db</code></strong> and a set of <strong>2D drawings (<code>.dxf</code>)</strong>.</p>
+<ol>
+<li>Tap <strong>📂 Open</strong>.</li>
+<li>Choose <strong>Open local .db / .ifc…</strong> and pick your <code>.ifc</code> — or a local <code>.db</code> you exported earlier. (The <strong>FROM IFC (ARC only)</strong> rows in the list open the two sample ARC <code>.ifc</code> files, SampleHouse and Duplex, the same way.)</li>
+<li>The building lands on the grid the same way a resident does: it walks the structure and seeds the
+   editable ARC substrate, so you can select and edit immediately.</li>
+</ol>
+<p>Two things to know. First, an IFC opens <strong>filtered to ARC</strong> — the architectural model only, the single
+editable substrate; the other disciplines follow by walking, exactly as they do for a resident. Second,
+it's read by the <strong>same extractor the Viewer uses</strong> — not a second, differently-behaved importer — so a
+building reads the same in both tools.</p>
+<p>Because an IFC carries more than the pre-filtered resident <code>.db</code> does, an IFC-opened building often shows
+<em>more</em> ARC elements than the same building opened as a resident. That's the source file being richer, not
+a discrepancy.</p>
+<hr />
+<h2 id="outliner-find-focus-and-manage-whats-shown">Outliner — find, focus, and manage what's shown<a class="headerlink" href="#outliner-find-focus-and-manage-whats-shown" title="Permanent link">&para;</a></h2>
+<p>The Outliner is more than a tree of rows — it's the fastest way to find an element and control what the
+canvas shows, especially on a large building.</p>
+<ul>
+<li><strong>Click a row</strong> to select that element and fly the camera to it — this works even for a row with no
+  direct canvas widget of its own; it flies to the element's real position, not a fallback toast.</li>
+<li><strong>Selecting anything expands its ancestors automatically</strong> — you never have to manually drill down
+  through Building → Level → Room to see where a selected element sits in the tree.</li>
+<li><strong>The selected element gets a highlighted outline</strong> on the canvas, in addition to the existing status-line
+  name — easier to spot on a busy, similarly-coloured floor.</li>
+<li><strong>Type in the find filter</strong> and the tree narrows to matches — everything that doesn't match <strong>dims</strong> on
+  the canvas too, so filtering the list and seeing where those elements actually are happen together.</li>
+<li><strong>Toggle the eye icon</strong> on any row to hide or show that element (and its children) on the canvas without
+  deleting it — useful for looking inside a wall or floor you'd otherwise have to work around.</li>
+<li>The tree stays responsive on large buildings — rows render only as you scroll near them, so opening a
+  building with thousands of elements doesn't stall the panel.</li>
+</ul>
+<h3 id="building-parts-stairway-lift-shaft-plant-room">Building Parts — Stairway / Lift Shaft / Plant Room<a class="headerlink" href="#building-parts-stairway-lift-shaft-plant-room" title="Permanent link">&para;</a></h3>
+<p>Below the BOM tree, a <strong>Building Parts</strong> row appears in the Outliner whenever the open building actually
+contains one of three part types — it's the Modeller-side twin of the Viewer's Find-panel <strong>Parts</strong> axis
+(same building, same categories, same underlying match rules), so a building looks the same way in both
+tools. Each category is independently gated: a building with stairs but no lift shows only <strong>Stairway</strong>;
+a small house typically shows Stairway and, if the ARC data has HVAC-plant elements, Plant Room — no
+empty categories, no clutter.</p>
+<ul>
+<li><strong>Stairway</strong> — every <code>IfcStair</code>/<code>IfcRamp</code> element.</li>
+<li><strong>Lift Shaft</strong> — elements named for a lift/elevator (works across a few languages — e.g. "liftdeur").</li>
+<li><strong>Plant Room</strong> — HVAC-plant elements (ducts, fans, air-handling units, dampers, chillers, pumps).</li>
+</ul>
+<p>Click <strong>Building Parts</strong> to select and zoom to every real element across all three categories at once,
+which also expands the tree to show them; click <strong>Stairway</strong> (or Lift Shaft / Plant Room) the same way to
+zoom to just that category; click one specific item inside a category to fly the camera to that exact
+element, same as any other Outliner row.</p>
+<p><img alt="The Outliner's Building Parts category expanded on Duplex — Stairway holding its 2 real IfcStair elements plus their 2 IfcStairFlight children" src="../../img/modeller/outliner-building-parts.png" /></p>
+<hr />
+<h2 id="realistic-glass">Realistic glass<a class="headerlink" href="#realistic-glass" title="Permanent link">&para;</a></h2>
+<p>Windows render as real glass now — see-through, not a solid opaque panel the same colour as the wall
+around them. The Modeller reads each element's real material transparency (the same <code>material_rgba</code> alpha
+value the Viewer already used) and renders it faithfully: an element with real glass data gets a
+transparent material at its true opacity, everything else is unaffected.</p>
+<p><img alt="A Duplex window rendered as real transparent glass, recessed into its wall opening — not an opaque panel" src="../../img/modeller/glass-window-transparent.png" /></p>
+<h2 id="what-a-wall-is-made-of">What a wall is made of<a class="headerlink" href="#what-a-wall-is-made-of" title="Permanent link">&para;</a></h2>
+<p>A real wall is not one solid lump — it is a stack of layers. Take the party wall between two Duplex
+units (<code>2O2Fr$t4X7Zf8NOew3FKRH</code>): it is built from 7 layers — plasterboard (16mm), metal stud (41mm),
+block (193mm), an air gap (50mm), block again (193mm), metal stud (41mm), plasterboard (16mm), 550mm in
+all. The source file draws that wall as <strong>one outer shape</strong> and keeps the 7 thicknesses in a side list
+("this shape is made of, in order..."). The Modeller reads that list and draws the wall as <strong>7 real
+slabs</strong>, one per layer, each at its own measured thickness.</p>
+<p>Two of the Duplex party walls (<code>2O2Fr$t4X7Zf8NOew3FNbT</code> and its twin <code>2O2Fr$t4X7Zf8NOew3FKRi</code>) show
+<strong>5 slabs, not 7</strong> — and that is correct. The source file itself trims off the neighbour-side stud and
+plasterboard, because those belong to the wall on the other side. The Modeller draws the 5 layers that
+are really there (493mm) and makes up nothing for the 2 that aren't.</p>
+<p>On Duplex, 50 of its 57 walls draw as layer stacks this way. The other 7 are not authored with more than one
+layer, so they stay one plain box — which is exactly what their source says. Floor slabs and coverings carry layers
+too.</p>
+<p><strong>No layers, no stand-in.</strong> If an element is authored with several layers but its layer slabs can't be
+found, the Modeller does not draw a plain box in its place — it leaves that element out and reports it by
+name in the browser console.</p>
+<p><strong>Only Duplex, for now.</strong> Duplex is the only resident that ships its layer data today. The other
+residents still draw each wall as the one outer shape its file gives — real geometry at the detail the
+file authored, not a placeholder.</p>
+<p><strong>Why the Viewer looks richer on the same building.</strong> Open Duplex in the Viewer and you'll see far more
+going on — because the Viewer loads everything the Modeller deliberately doesn't: pipes, ducts, and other
+services (904 extra parts). The Modeller is scoped to architecture + structure by design.</p>
+<hr />
+<h2 id="assemble-draw">Assemble &amp; draw<a class="headerlink" href="#assemble-draw" title="Permanent link">&para;</a></h2>
+<h3 id="insert-assemble-from-the-catalog">Insert — assemble from the catalog<a class="headerlink" href="#insert-assemble-from-the-catalog" title="Permanent link">&para;</a></h3>
+<p><em>Commits <code>GEOM_INSERT</code>.</em></p>
+<p>The fastest way to build is to <strong>assemble, not draw</strong>.</p>
+<ol>
+<li>Tap <strong>Insert</strong> (the cube pill) to open the <strong>BOM catalog</strong> on the left.</li>
+<li>Search or filter (<strong>All · Structure · Openings · Furniture · Sets</strong>), then click a <strong>component</strong> — or a whole <strong>Set</strong> (an assembly that drops its entire recipe at once).</li>
+<li>Aim on the grid (press <strong>R</strong> to rotate, set <strong>Elev</strong> for storey height) — a ghost previews the landing — then <strong>click</strong> to place.</li>
+</ol>
+<p><img alt="The Insert catalog armed — a component picked, ghost preview following the cursor on the grid" src="../../img/modeller/insert-catalog.png" /></p>
+<p>The component lands as one signed <code>GEOM_INSERT</code> (a LOD-200 box that lazily refines to its real library
+mesh). An assembly drops as one grouped op of <em>N</em> seated, oriented parts — a door takes its host wall's
+facing automatically. Undo removes it exactly.</p>
+<p><img alt="After the click — the component placed on the grid as a signed operation" src="../../img/modeller/insert-placed.png" /></p>
+<h3 id="sketch-extrude-draw-a-wall">Sketch → Extrude — draw a wall<a class="headerlink" href="#sketch-extrude-draw-a-wall" title="Permanent link">&para;</a></h3>
+<p><em>Commits <code>GEOM_EXTRUDE_POLY</code> (a real occt B-rep solid).</em></p>
+<ol>
+<li>Tap <strong>Sketch</strong> and click <strong>≥3 points</strong> on the grid to lay a closed profile.</li>
+<li>Set the <strong>depth</strong>, then tap <strong>Extrude</strong>.</li>
+</ol>
+<p><img alt="Sketch — a closed profile laid on the grid, ready to extrude" src="../../img/modeller/sketch-profile.png" /></p>
+<p>The solved polygon is swept to depth and committed as one signed operation.</p>
+<p><img alt="Extrude — the profile pushed into a B-rep wall solid" src="../../img/modeller/sketch-wall.png" /></p>
+<h4 id="type-an-exact-dimension-rect-square">Type an exact dimension (rect / square)<a class="headerlink" href="#type-an-exact-dimension-rect-square" title="Permanent link">&para;</a></h4>
+<p>Cycle <strong>Axis</strong> to <strong>Rect</strong> or <strong>Square</strong> before or during your 4 clicks — once the profile closes,
+<strong>W / H / ∠</strong> fields appear showing the sketch's current width, height, and corner angle. Type a new
+number into any of them and press <strong>Enter</strong>: the WHOLE profile re-solves from that one value, not just
+the one edge — a rectangle at 90°, or a true parallelogram at any other typed angle.</p>
+<p><img alt="A closed 4-point sketch in Rect mode — W/H/∠ fields read the current shape (3.00m × 3.00m, 90°)" src="../../img/modeller/sketch-dims-square.png" /></p>
+<p><img alt="The same sketch after typing a new width, height, and a 70° corner angle — one number changes the whole shape" src="../../img/modeller/sketch-dims-angled.png" /></p>
+<p>A click that lands near an <strong>earlier point in the same sketch</strong> welds the new point exactly onto it
+(the status line reads <code>welded to p«N»</code>) instead of adding a near-duplicate point a few centimetres off —
+useful for closing a hand-drawn polygon precisely back onto its own start.</p>
+<p><img alt="A 5-click L-shape where the last click landed near the 2nd point — welded exactly onto it, not a stray near-duplicate" src="../../img/modeller/sketch-weld.png" /></p>
+<h3 id="circle-extrude-draw-a-cylinder">Circle → Extrude — draw a cylinder<a class="headerlink" href="#circle-extrude-draw-a-cylinder" title="Permanent link">&para;</a></h3>
+<p><em>Commits <code>GEOM_EXTRUDE_POLY</code> with a <code>circle</code> profile (a real occt cylinder, not a tessellated polygon).</em></p>
+<ol>
+<li>Cycle <strong>Axis</strong> to <strong>Circle</strong>.</li>
+<li>Click a <strong>centre</strong> point, then click a second point to set the <strong>radius</strong> — or type an exact radius
+   into the field that appears.</li>
+<li>Set the <strong>depth</strong>, then tap <strong>Extrude</strong>.</li>
+</ol>
+<p><img alt="Circle mode — centre clicked, radius set to 1.75m either by the second click or by typing it" src="../../img/modeller/sketch-circle.png" /></p>
+<p>The circle sweeps into a genuine cylindrical solid (<code>makeCircleEdge</code> → a real curved B-rep face), the same
+signed-op path as a polygon extrude.</p>
+<p><img alt="Extrude on a circle profile — a real cylinder standing next to the building, not an approximated polygon" src="../../img/modeller/sketch-circle-extruded.png" /></p>
+<h3 id="route-sweep-run-lay-a-run-duct">Route → Sweep-Run — lay a run / duct<a class="headerlink" href="#route-sweep-run-lay-a-run-duct" title="Permanent link">&para;</a></h3>
+<p><em>Commits <code>GEOM_SWEEP</code>.</em></p>
+<ol>
+<li>Tap <strong>Route</strong> and click <strong>≥2 points</strong> to lay a spine.</li>
+<li>Set the <strong>profile</strong> size, then tap <strong>Sweep-Run</strong>.</li>
+</ol>
+<p><img alt="Route — a poly-line spine laid across the grid" src="../../img/modeller/route-spine.png" /></p>
+<p>The profile is swept along the spine (an occt pipe) as one signed op — the way MEP runs are authored.</p>
+<p><img alt="Sweep-Run — the profile swept along the spine into a run" src="../../img/modeller/route-run.png" /></p>
+<h3 id="cut-open-a-wall">Cut — open a wall<a class="headerlink" href="#cut-open-a-wall" title="Permanent link">&para;</a></h3>
+<p><em>Commits <code>GEOM_CUT</code> (a child of the selected wall).</em></p>
+<ol>
+<li>Click a wall to <strong>select</strong> it.</li>
+<li>Tap <strong>Cut</strong> — a window void is derived from the wall and subtracted.</li>
+</ol>
+<p><img alt="Select the wall to open" src="../../img/modeller/cut-select.png" /></p>
+<p>The opening shows immediately; undo closes it to the exact original frame. (Cutting a seeded ARC wall
+promotes it to a B-rep just-in-time — from its measured box, or, on a layered wall, from its real layer
+slabs — so it is never approximated. See <a href="#what-a-wall-is-made-of">What a wall is made of</a>.)</p>
+<p><strong>This works on a layered wall.</strong> Checked with a real click on the Duplex: a 5-layer
+wall is selected, one signed <code>GEOM_CUT</code> lands, the opening is visible, and undo closes it again. Two limits:
+- <strong>Rounding an edge (Fillet) right after cutting a layered wall</strong> is not reliable yet.
+- <strong>A wall boxed in on every side by other walls</strong> can't be clicked. On the Duplex that is the 7-layer party-wall core,
+  which touches its neighbours on four sides and is covered from above.</p>
+<p><img alt="Cut — a signed opening void subtracted from the wall" src="../../img/modeller/cut-open.png" /></p>
+<h3 id="fillet-round-a-solids-edge">Fillet — round a solid's edge<a class="headerlink" href="#fillet-round-a-solids-edge" title="Permanent link">&para;</a></h3>
+<p><em>Commits <code>GEOM_FILLET</code>.</em></p>
+<ol>
+<li>Select a B-rep solid and tap <strong>Fillet</strong> — its edges become pickable markers.</li>
+<li>Click an edge (or several), set the <strong>radius</strong>, then tap <strong>Apply</strong>.</li>
+</ol>
+<p><img alt="Fillet — the solid's edges shown as pickable markers" src="../../img/modeller/fillet-edges2.png" /></p>
+<p>The picked edge is rounded in place (the wall's triangle count grows exactly where the round lands); undo
+restores it.</p>
+<p><img alt="Apply — the picked edge rounded" src="../../img/modeller/fillet-rounded.png" /></p>
+<hr />
+<h2 id="transform">Transform<a class="headerlink" href="#transform" title="Permanent link">&para;</a></h2>
+<p>Every transform below — move, scale, rotate, grid-stretch, delete — commits as one signed operation in
+the same tamper-evident log that drives undo/redo/history-scrub, and a move or stretch is checked against
+the building's own recovered relationships before it settles: a hosted door rides its host wall rather
+than divorcing from it, and a delta-based conformity gate flags only what the edit actually broke (RED)
+or softly disturbed (ORANGE) — never a pre-existing condition the building already shipped with. That
+combination — open a <em>complete, real, production</em> IFC and safely edit <em>part</em> of it — is what a
+Bonsai/FreeCAD-style direct editor doesn't do.</p>
+<p>Which elements touch which is worked out from each element's <strong>real shape, where it actually sits</strong> — not
+from a rough box around its insertion point, which could land up to about 0.4 m off.</p>
+<p>Full dated disclosure:
+<strong><a href="../ModellerKernelFold/">Event-Sourced Geometry &amp; the Graph-Cascade Conformity Layer</a></strong>.</p>
+<p>Select an element and tap <strong>Move</strong> to raise the <strong>transform gizmo</strong> — the shared handle for moving,
+scaling and rotating.</p>
+<p><img alt="The transform gizmo on a selected element — XYZ arrows (move), cube handles (scale), yaw ring (rotate)" src="../../img/modeller/gizmo.png" /></p>
+<p>While you drag any handle, a <strong>floating readout</strong> follows your cursor showing the live delta (distance
+moved, scale factor, or degrees turned) — the same number the status line prints on release, just visible
+mid-drag instead of only after.</p>
+<h3 id="move">Move<a class="headerlink" href="#move" title="Permanent link">&para;</a></h3>
+<p><em>Commits <code>GEOM_MOVE {dx,dy,dz}</code>.</em></p>
+<ol>
+<li>Select an element to raise the transform gizmo.</li>
+<li>Drag an <strong>axis arrow</strong> (X/Y/Z, grid-snapped) — or nudge with the arrow keys for a free move.</li>
+<li>Release to commit. A moved host <strong>drags its hosted fillings</strong> (a door rides its wall); undo is exact to the micron.</li>
+</ol>
+<p><img alt="Move engaged on a selected element — dragging the X arrow moves it on that axis only (the commit is X-only, exact, reversible)" src="../../img/modeller/move-gizmo.png" /></p>
+<h3 id="snap-to-geometry">Snap-to-geometry<a class="headerlink" href="#snap-to-geometry" title="Permanent link">&para;</a></h3>
+<p>While dragging the ground-plane hub (not a single axis arrow), the handle also snaps to nearby
+<strong>vertices, edge-midpoints, and face-centers of OTHER elements</strong> — not just the grid. A small marker
+appears at the candidate point, and the status line reads <code>snap-to-geometry</code>; releasing commits the exact
+snapped coordinate, read from the other element's own real bounding box (never invented).</p>
+<p><img alt="Dragging one wall toward another — the ground-plane hub snapped exactly onto the neighbour's corner, a marker shows the snap point, the status line reads snap-to-geometry" src="../../img/modeller/snap-to-geometry.png" /></p>
+<h3 id="multi-select">Multi-select<a class="headerlink" href="#multi-select" title="Permanent link">&para;</a></h3>
+<p><strong>Shift-drag</strong> an empty-space marquee to select every element whose on-screen footprint falls inside the
+box (shift-click adds/removes one at a time). The transform gizmo then acts on the WHOLE set — a group
+move/rotate/scale commits the same delta to every selected element about their shared centre.</p>
+<p><img alt="Shift-drag marquee over three elements — all three highlight and the status line reads the new selection count" src="../../img/modeller/multiselect-marquee.png" /></p>
+<h3 id="scale">Scale<a class="headerlink" href="#scale" title="Permanent link">&para;</a></h3>
+<p><em>Commits <code>GEOM_SCALE {fx,fy,fz}</code>.</em></p>
+<ol>
+<li>Select a single component to raise the gizmo.</li>
+<li>Drag a <strong>cube handle</strong> to stretch that axis — it's edge-anchored, so the opposite face stays put.
+   The preview follows the element's own <strong>local axes</strong> (not the world grid), so a rotated element
+   previews and commits identically — no snap-back or mismatch on release.</li>
+<li>Release to commit. The rendered extent grows by exactly the committed factor (the status line reads the signed factor).</li>
+</ol>
+<p><img alt="Scale — dragging the cube handle stretched the element; the status line reads the signed factor" src="../../img/modeller/scale-stretched.png" /></p>
+<h3 id="rotate">Rotate<a class="headerlink" href="#rotate" title="Permanent link">&para;</a></h3>
+<p><em>Commits <code>GEOM_ROTATE {drot}</code>.</em></p>
+<ol>
+<li>Select an element to raise the gizmo.</li>
+<li>Drag the yellow <strong>yaw ring</strong> to spin the selection about its centre — 15° snap, hold <code>Shift</code> for a free angle.</li>
+<li>Release to commit. The rendered footprint turns by exactly the committed angle.</li>
+</ol>
+<p><img alt="Rotate — the yaw ring spins the element in place" src="../../img/modeller/rotate-yaw.png" /></p>
+<h3 id="keyboard-arm-a-handle-t-s">Keyboard-arm a handle (<code>T</code> / <code>S</code>)<a class="headerlink" href="#keyboard-arm-a-handle-t-s" title="Permanent link">&para;</a></h3>
+<p>With an element selected, press <strong><code>T</code></strong> to arm the rotate ring or <strong><code>S</code></strong> to arm the scale cubes directly
+— no need to first tap Move and then find the right handle. Arming is a pure affordance: the armed handle
+lights at full opacity while the rest of the gizmo dims, and dragging it commits through the exact same
+<code>GEOM_ROTATE</code>/<code>GEOM_SCALE</code> path as clicking the handle normally would. Press the same key again (or <code>Esc</code>)
+to disarm. <code>R</code> is reserved for Insert, so it doesn't arm anything here.</p>
+<h3 id="grid-stretch">Grid-Stretch<a class="headerlink" href="#grid-stretch" title="Permanent link">&para;</a></h3>
+<p><em>Commits <code>GEOM_GRID_MOVE</code>.</em></p>
+<ol>
+<li>Tap <strong>Move Grid</strong>.</li>
+<li>Drag a <strong>gridline</strong>.</li>
+<li>Release to commit. Walls attached to that line <strong>recompose</strong> — a span stretches, an attached wall translates — as one signed operation. A hosted door or window <strong>holds its position</strong> by default rather than stretching or divorcing from it, same as Move.</li>
+</ol>
+<p>What that recompose actually does, in plain terms:</p>
+<ol>
+<li><strong>Walls fill the gap, never leave one.</strong> Every wall on the dragged gridline is classified against it first — a wall that only touches the gridline <strong>translates</strong> with it, a wall that <strong>spans</strong> across to another gridline <strong>stretches</strong>, with its far end staying anchored on that other gridline. Either way the wall keeps meeting the gridline; it can't detach or overshoot.</li>
+<li><strong>Only the grabbed bay moves.</strong> The edit is scoped to the walls actually connected to the dragged gridline — a wall elsewhere in the building that happens to sit at the same coordinate, but belongs to an unrelated room, is left alone.</li>
+<li><strong>Hosted doors and windows are ANCHORED by default, never distort.</strong> A filling keeps its own size and its own world position while its host stretches around it — zero induced move. Ctrl+click an opening before dragging to opt it into <strong>Ride</strong> instead, where it keeps its <em>proportional</em> position along the host and moves by its own share of the stretch. Either mode, it never scales and never divorces from its host.</li>
+<li><strong>Furniture and fixtures stay put.</strong> They aren't part of the grid at all — a couch sitting in a room doesn't drag when the room's wall stretches.</li>
+</ol>
+<p>Anchor vs. Ride is not a guess about what looks hosted. It follows the <strong>authored</strong> host↔opening↔filling
+chain recovered verbatim from the building's own IFC, so a door is only ever held or ridden against the
+wall its designer actually put it in — and where a building's author never declared that relationship, the
+modeller says so rather than inventing one. In practice that means the relationship is exact on
+<em>SampleHouse</em> (all 7 hosted openings), <em>Duplex</em> (36 of its 38), <em>SampleCastle</em> (all 74 — its
+window-frame walls are consumed by their own openings, so they take part as invisible anchors that are
+never drawn or counted), <em>HHS</em> (99), <em>Clinic</em> (302), <em>Hospital</em> (506) and <em>Garage</em> (36). <em>Terminal</em>
+has none: its source IFC declares no opening/filling relationship at all, so there is nothing to follow.</p>
+<p><strong>A carved hole comes along too.</strong> If the held or ridden opening has a real cut-through void (a door or
+window opening actually subtracted from the wall, not a catalog frame sitting in front of it), the hole
+itself is kept in sync with it — its centre never drifts off the door under a stretch, its width is held
+exactly (not silently widened by the stretch's own scale factor), and it survives the host wall being
+rotated a multiple of 90° after the cut. The status line names it directly: <code>N hole(s) held</code>, with a
+<code>(Δw ±x.xxm)</code> suffix only on the rare axis this can't correct (the wall's own thickness direction, where
+holding the width could stop the cut from reaching all the way through).</p>
+<p><img alt="Before — a wall spanning two gridlines" src="../../img/modeller/gridstretch-before.png" />
+<img alt="After — dragging the gridline stretched the attached wall by exactly the drag distance" src="../../img/modeller/gridstretch-after.png" /></p>
+<h4 id="on-a-real-building-not-a-diagram">On a real building, not a diagram<a class="headerlink" href="#on-a-real-building-not-a-diagram" title="Permanent link">&para;</a></h4>
+<p>The two frames above are a clean teaching diagram (Move Grid on a synthetic scratch wall). The mechanic works
+identically against a real, fully-loaded building — no separate mode, nothing cleared first. Here it is on
+Duplex's own ground floor, near the stair: a column grid aligned to a real wall's own measured edge, then that
+gridline dragged for real.</p>
+<p>Checked end-to-end with a real mouse drag (down→move→up), no synthetic shortcuts:</p>
+<ul>
+<li>A real mouse drag on gridline "2" landed at <strong>delta = 0.5000 m</strong>, folded into <strong>16</strong> real recompose
+  commands. The governed wall's own <em>rendered</em> Y-extent grew from <strong>2.920 m → 3.420 m</strong> — exactly the
+  committed op's delta, read back off the live mesh, not assumed from the drag alone.</li>
+<li>Its hosted door — a real <code>rel_fills_host</code> edge recovered from the IFC, not a proximity guess — <strong>held its
+  position exactly</strong> (its centre measured identical before and after): <strong>zero</strong> induced rider rows, the
+  default <strong>Anchor</strong> behaviour above, not the older always-proportional-ride this section used to describe.
+  Ctrl+click the door first and repeat the same drag to see it <strong>Ride</strong> instead.</li>
+<li>The gesture landed as <strong>one</strong> signed <code>GEOM_GRID_MOVE</code>; a real console line names it exactly —
+  <code>§GESTURE gid=&lt;id&gt; riders=&lt;N&gt; cutRiders=&lt;N&gt; verify=true tris=&lt;N&gt;</code> — where <code>riders</code> counts any hosted
+  fillings opted into Ride and <code>cutRiders</code> counts any carved holes riding along with them (see "A carved
+  hole comes along too" above). One Ctrl+Z undoes the whole group, verified: cursor and wall extent both
+  restored byte-exact.</li>
+<li><code>verifyChain</code> held throughout. The drag-session cache (§SCALE_CHECK_FIX) is built once per gesture and reused
+  every pointermove frame, not rebuilt per frame, cited from its own log line rather than re-profiled.</li>
+</ul>
+<p>The conformity gate runs on every drag, real building included — it doesn't get a pass because the input is a
+big, dense floor plan. If a stretch pushes an element into a real clash against neighbouring structure, the
+status line reports it live and by name — <code>⛔ N RED</code> for a hard violation, <code>⚠ N ORANGE</code> for something softly
+disturbed — rather than silently accepting a bad edit.</p>
+<p><img alt="Before — Duplex's real ground floor near the stair, the authoring grid aligned to a real wall's own measured edge" src="../../img/modeller/grid-editor-before.png" />
+<img alt="After — gridline &quot;2&quot; dragged 0.5 m for real: 16 recompose commands, hosted doors held per the Anchor default, the conformity gate flags any resulting clashes live in the status line" src="../../img/modeller/grid-editor-after.png" /></p>
+<h4 id="grid-span-colours">Grid span colours<a class="headerlink" href="#grid-span-colours" title="Permanent link">&para;</a></h4>
+<p>On a building framed with columns (measured on <em>HospitalGarage</em>), <strong>Move Grid</strong> lays the building's own column lines as the grid, and a drag
+colours each bay it widens or narrows: <strong>green</strong> fine, <strong>orange</strong> the span needs a deeper beam than the building has (hover shows the depth,
+span / ratio), <strong>red</strong> over the limit for the material (hover: "Limit for this column span (12 m, RC). Add one more?"). The rules are the
+preliminary Eurocode-cited table in <code>str_walker.js</code> (RC: depth about span/12, max 12 m; steel: span/20, max 18 m); ORANGE uses the building's own
+median beam depth (0.535 m on Garage, so orange from 6.42 m). The material is the majority material of the building's own beam names
+(Garage: RC, 166 of 195). Release on red opens <strong>Add one more</strong> / <strong>Cancel</strong>: Add one more inserts a column line at the bay midpoint (5 columns on
+Garage, real copies of the building's own column, one Ctrl+Z); Cancel stops the drag at the limit. Wall-bearing or hand-drawn grids get no
+colours. Every message says "preliminary — the structural engineer confirms". </p>
+<p>Roofs recompose the same way. <em>SampleHouse</em>'s barrel-vault roof spans the two gridlines bracketing the
+building; dragging the far one <strong>0.5000 m</strong> grows the roof's own rendered X-extent from <strong>14.8410 m → 15.3410
+m</strong> — exactly the drag, with the near edge held fixed at the other gridline — while the wall it sits on rides
+along in the same recomposed group (<code>recomposed=8</code>, <code>§STRETCH-RIDE riders=7</code>). Undo restores the roof's extent
+byte-exact. Checked end-to-end the same way.</p>
+<p><img alt="The roof stretched 0.5 m along with the wall it sits on — gridline &quot;2&quot; dragged for real on SampleHouse" src="../../img/modeller/grid-editor-roof.png" /></p>
+<h3 id="delete">Delete<a class="headerlink" href="#delete" title="Permanent link">&para;</a></h3>
+<p><em>Soft-deletes from the signed log (reversible).</em></p>
+<ol>
+<li>Select the feature — its children (hosted fillings) come along.</li>
+<li>Tap <strong>Delete</strong> (or press <code>Del</code>).</li>
+<li>The feature hides from the model — the signed payload is never rewritten, so the chain stays valid. Delete is now a real node in the history tree, so <strong>Undo</strong> (<code>Ctrl+Z</code>) — not Redo — brings it back exactly; <code>Ctrl+Y</code> right after a delete is a no-op (there's nothing ahead of it to redo), and a further <code>Ctrl+Y</code> after undoing re-applies the delete.</li>
+</ol>
+<p><img alt="Delete — the selected feature removed; Undo restores it" src="../../img/modeller/delete-gone.png" /></p>
+<h3 id="copy-paste">Copy &amp; paste<a class="headerlink" href="#copy-paste" title="Permanent link">&para;</a></h3>
+<p><em>Commits one gesture: a <code>GEOM_INSERT</code> per copied element plus every edit it carries.</em></p>
+<ol>
+<li>Select one or more elements and press <strong><code>Ctrl+C</code></strong>. Nothing is written yet.</li>
+<li>Press <strong><code>Ctrl+V</code></strong>. A blue ghost of the copy follows the pointer and snaps to the grid like <strong>Insert</strong> does. <strong><code>Esc</code></strong> cancels.</li>
+<li>Click where the copy goes. It lands with its centre on the snapped point and is selected, ready to move.</li>
+</ol>
+<p>A copy is the element <strong>as it is now</strong>: its later moves, stretches and grid drags come with it, not just the shape it was first inserted with. Copying a wall brings the doors and windows it hosts and the holes they sit in. The pasted door belongs to the pasted wall, so moving the copy drags its door the way the original does. One <strong><code>Ctrl+Z</code></strong> removes the whole paste. If the copy lands on something, the conformity check reports the overlap in red or orange, as it does after a move.</p>
+<h3 id="add-a-bay-repeating-bay-buildings">Add a bay (repeating-bay buildings)<a class="headerlink" href="#add-a-bay-repeating-bay-buildings" title="Permanent link">&para;</a></h3>
+<p>A farm or industrial shed is lengthened by whole bays. When the building type in force allows it (<em>Element defaults ▸ <code>building.type</code></em>, e.g. <strong>Farming Shed</strong>), the <strong>2D Drawings</strong> panel shows a row <strong>Add a bay (Farming Shed)</strong> with the buttons <strong>at <first grid line></strong> and <strong>at <last grid line></strong>. One click copies the typical bay <strong>as it is</strong> (frame, side walls, purlins, sheets, and any opening, door or window it holds) one bay on, moves everything beyond it one bay further (hosted doors ride their walls), stretches the full-length members and sheets by one bay, and adds the new grid line. The panel shows the cost of the change (copies as added, stretched members as changed). It is one step in the history, so <strong><code>Ctrl+Z</code></strong> undoes it. Fans are not copied: their number is sized for the airflow, not repeated per bay. See <a href="../DXF2BIMGuide/">2D Drawings → BIM</a> for converting the drawings first.</p>
+<h3 id="room-move">Room Move<a class="headerlink" href="#room-move" title="Permanent link">&para;</a></h3>
+<p><em>Commits <code>GEOM_ROOM_MOVE {spaceGuid,dx,dy,members[]}</code>.</em></p>
+<p>Moving furniture around a room one piece at a time divorces the room from its contents the moment anything
+gets left behind. Room Move grabs the <strong>whole room</strong> instead — everything it actually contains, plus
+anything sitting freestanding inside its footprint, plus any hosted door or window riding a wall that moves
+with it — and translates it all by one shared delta, as a single signed operation with one-step undo.</p>
+<ol>
+<li>Open the <strong>Outliner</strong>'s BOM Tree and expand down to the room you want (Building → Storey → Room).
+   An <code>IfcSpace</code> has no rendered mesh of its own, so the room's Outliner row — not a click in the 3D view —
+   is the grab target.</li>
+<li>Click the <strong>⛶</strong> icon next to the room's name. It enumerates every real member for that room right then
+   (logged to the status line and the console) and arms the drag; a room with nothing honest to move (zero
+   members across every leg) refuses the grab instead of dragging an empty box.</li>
+<li>Drag anywhere on the canvas — it's the <strong>ground-plane delta</strong> that moves the room, not where inside the
+   room you happened to click.</li>
+<li>Release to commit. Everything the grab found moves together, as one signed operation with one-step undo
+   (<code>Esc</code> cancels an armed grab before you release).</li>
+</ol>
+<p>Membership is never a proximity guess: an element joins the move only because a real recovered relationship
+says so —</p>
+<ul>
+<li>every element with a real <code>rel_contained_in_space</code> edge into the room,</li>
+<li>a bounding wall, <em>if</em> the building's extracted schema carries a real space-boundary edge for it (most
+  don't yet — a room's walls stay put rather than being swept in by nearness),</li>
+<li>a freestanding, non-structural item with no containment edge whose real footprint centre falls inside the
+  room (tagged <code>derived-footprint</code> in the op, so it's always visible which leg brought each element in), and</li>
+<li>any door/window hosted by a wall that's already a member, carried over the same one-hop host→filling ride
+  Grid-Stretch uses.</li>
+</ul>
+<p>Because the whole set shares one rigid <code>(dx,dy)</code> — never a per-member recompute — the room's contents stay in
+the same relative arrangement, and the BOM needs zero work to follow: no containment edge changes, so the
+same tree replay is valid before and after. The move is in-plane only (a <code>dz</code> is refused outright — moving a
+room to a different storey is a bigger, separate decision this tool doesn't make) and it snaps back to
+nothing on an empty room (nothing honest to move). Like every other geometry edit, a room move still runs
+through the modeller's conformity gate — if the delta pushes a member into another element's real footprint,
+the status line names the clash the same way Move or Grid-Stretch would.</p>
+<p>Verified on SampleHouse's "1 - Living room": 16 real members — 12 via
+<code>rel_contained_in_space</code>, 4 via <code>derived-footprint</code> — move as one <code>GEOM_ROOM_MOVE</code>, every member's rendered
+centre landing on the committed delta to within float32 precision (max error 2.4×10⁻⁷ m). Round-tripping
+<code>(dx,dy)</code> then <code>(−dx,−dy)</code> returns all 16 members to their exact
+starting position — 0.000 mm residual. The Outliner grab-to-drag UI above is verified the same way, with real
+pointer input instead of a direct engine call (real Duplex): it clicks a real
+⛶ glyph, drags a real mouse gesture across the canvas, and asserts the committed op's member list is
+byte-identical to what the grab enumerated, the moved elements' rendered centres shifted by exactly the
+committed delta, and one scrub undoes it exactly.</p>
+<p><img alt="Room Move armed on Duplex — the Outliner's ⛶ glyph next to A101 grabbed 4 real members; the status line tracks the live ground-plane delta as the drag continues" src="../../img/modeller/room-move.png" /></p>
+<h3 id="item-drag">Item Drag<a class="headerlink" href="#item-drag" title="Permanent link">&para;</a></h3>
+<p><em>Commits <code>GEOM_MOVE {parent,dx,dy,dz}</code>.</em></p>
+<p>A free single-item drag for one non-structural piece — a fixture, fitting, or loose furnishing — placed by
+eye onto a real surface rather than nudged axis-by-axis. It's a dedicated tool (its own <strong>Drag Item</strong> toolbar
+button), not the Move gizmo from the <a href="#move">Transform</a> section above — Move is an ungated axis drag for
+anything already selected; Item Drag is specifically gated by real product data and a real drop surface, so
+it stays a separate button rather than silently changing what Move already does.</p>
+<ol>
+<li>Tap <strong>Drag Item</strong>.</li>
+<li>Click a fixture or fitting in the 3D view to grab it. Two refusals happen before anything can move, and
+   neither ever falls back to a guess:</li>
+<li><strong>No real dimensions, no lift.</strong> The drag session looks up the item's real product dimensions before it
+     starts; with nothing to match, it throws <code>WalkerGapError</code>, refuses the grab, and the item never leaves
+     its spot — never a placeholder box standing in for a real size.</li>
+<li><strong>Not a valid subject.</strong> A wall, or an element already hosting a door or window, is refused as a drag
+     <em>subject</em> outright — those move via Grid-Stretch or Room Move instead.</li>
+<li>Drag across the canvas. The preview tints <strong>green</strong> where the drop would be valid, <strong>red</strong> where it
+   wouldn't — a wall-mounted item must find an actual wall face under the cursor (a floor item an actual
+   slab, a ceiling item an actual soffit), and a drop that collides with another element's real footprint is
+   refused the same way, with every refusal reporting what it hit.</li>
+<li>Release. A valid drop commits one ordinary <code>GEOM_MOVE</code> — item-drag introduces no new op type, so it plays
+   back through the exact same fold and undo path as the Move gizmo. An invalid release snaps the item
+   straight back to its pre-drag position, uncommitted (<code>Esc</code> cancels an armed grab before you release).</li>
+</ol>
+<p>On today's building data, every already-placed fixture in the log honestly refuses at step 2 — the product
+identity a walker used to place it lives only in a transient value at commit time, never written to the
+signed log, so there's nothing left afterward for a generic pick to match against. That's not a UI gap, it's
+the same refuse-don't-fabricate rule the rest of the modeller runs on: a future catalog-drop flow that still
+holds the product id at drag time reaches the real match/commit path shown below; a plain pick on existing
+content reaches the refusal path, cleanly, every time.</p>
+<p>On real SampleHouse data, both refusals hold at the engine level: a
+session with no product hint throws <code>WalkerGapError</code> and adds zero rows to the op-log; a matched item (a real
+sink, 0.5×0.45×0.2 m from <code>ad_product_dim</code>) that collides with a neighbour is refused with the colliding fids
+named and the log length unchanged; the same item dropped against a real wall face commits exactly one
+<code>GEOM_MOVE</code> with a <code>snappedPos</code> read off that wall's own geometry. On the real Duplex, the UI above works end-to-end with real pointer input: a real <strong>Drag Item</strong> arm + real canvas pick
+on existing content refuses cleanly (zero ops); a held product hint reaches a real wall face found by
+scanning with the tool's own validity check and commits one <code>GEOM_MOVE</code>, the dragged mesh's rendered centre
+landing on the exact committed delta; the same grab dropped onto another element's real box refuses the
+commit and leaves the mesh exactly where it started.</p>
+<p><img alt="Item Drag armed on Duplex — a real fixture grabbed and dragged to a wall face; the status line reads &quot;valid drop — release to commit&quot; as the live preview tints green" src="../../img/modeller/item-drag.png" /></p>
+<hr />
+<h2 id="generate-walkers-fill-the-arc">Generate — walkers fill the ARC<a class="headerlink" href="#generate-walkers-fill-the-arc" title="Permanent link">&para;</a></h2>
+<p>When you open a bare <strong>ARC</strong> building, the other disciplines <em>fill themselves in</em>. You pick a discipline
+that is <strong>absent</strong> — Structure, Electrical, Fire-Protection, Plumbing, HVAC — and the modeller <strong>walks</strong>
+it: it places that trade's elements at the <strong>measured cadence</strong> of a real coordinated building, chains the
+runs it can, gates the clashes, and <strong>honestly refuses</strong> when the building has nothing to hang the trade
+on. Nothing is invented — every placement uses a spacing/clearance rule <em>mined from a real IFC model</em>.</p>
+<p><img alt="Walk ALL on the Duplex, X-ray: 202 service elements glow through 196 near-transparent building elements. The Outliner rows read ACMV 19 placed, ELEC 102, PLB 18, FP 0 placed · 38 provisional" src="../../img/modeller/duplex-walk-all-xray.png" /></p>
+<p>A normal (non-X-ray) view of this same walk is honestly near-empty: a real electrical outlet or light
+lives inside a room, not poking through an exterior wall, so from outside the sealed shell it's naturally
+occluded — same as it would be in a real building. Tap <strong>X-ray</strong> (or press <code>X</code>) to see the walk actually
+landed, as captured here: structure fades to near-transparent glass and the fixtures glow through it in
+their discipline colour, room by room. This is the corrected placement too (2026-07-12): a previous
+version of this pipeline had a containment bug where roughly a quarter of placements landed outside the
+building's own walls — fixed (mesh-recovered true-midpoint host binding) and independently verified 5
+separate ways (containment count, real-oracle walk-back match, measured-pattern conformance, wall-clearance
+margin, mirror-symmetry residual on the Duplex's own A/B twin layout).</p>
+<p><strong>How real is the fixture mesh, up close?</strong> It depends on whether the rule-set was mined from <em>this</em>
+building. Duplex is the building <code>duplex_rules.db</code>'s residential standard was mined from, so its own
+walked fixtures resolve to their own real extracted device mesh — a genuine ceiling fan, motor housing and
+all, not a box:</p>
+<p><img alt="Close-up of a Duplex-walked ceiling fan — a real rule-mined LOD400 device mesh (motor housing, blades, mount stem), not a box stand-in" src="../../img/modeller/duplex-fixture-lod400-closeup.png" /></p>
+<p>SampleCastle walks the <em>same</em> residential rule-set (it's a different building — see the table below). A
+walk places a fixture only when it can seat a real extracted mesh for it (LOD400). Where a fixture class has
+no mesh match, the walk <strong>refuses</strong> that placement and says so; it never stands a box in for the real shape.
+Today that is why SampleHouse gets no plumbing devices (table below). SampleCastle has no rooms in its file, so its devices come from the measured bands: since 2026-11-10 each band device takes one of the real meshes its rule row was measured from, in the measured mix, and is always <em>provisional</em> (drawn and flagged, never counted as placed). SampleHouse's electrical devices are placed since 2026-11-10: its source IFC states four rooms, the Modeller now reads them, and a device placed from a room schedule carries its own real mesh.</p>
+<p><strong>One engine, two standards.</strong> A single walker drives every discipline; the discipline is just a data
+filter. It carries two measured rule-sets and auto-selects by building class:</p>
+<table>
+<thead>
+<tr>
+<th>Building class</th>
+<th>Standard used</th>
+<th>Mined from</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>House / residential (SampleHouse, Duplex, SampleCastle)</td>
+<td><strong>residential</strong> (<code>duplex_rules.db</code>)</td>
+<td>the Duplex's <em>own</em> real MEP — 908 elements</td>
+<td>tight residential cadence (~0.5 m trade separation)</td>
+</tr>
+<tr>
+<td>Large / complex (airport, hospital)</td>
+<td><strong>large-complex</strong> (<code>terminal_rules.db</code>)</td>
+<td>a real airport terminal</td>
+<td>sparse, plenum-scale cadence</td>
+</tr>
+</tbody>
+</table>
+<p>On open you'll see <code>§DW-PROV</code> print the standard and its provenance, so you always know which rule-set is
+driving the walk. The tables below are the <strong>evidence</strong> that the walk produces sensible numbers — every
+figure traces to a witnessed <code>§</code>-log (no estimates).</p>
+<p><img alt="SampleCastle opened as its bare ARC twin — the largest of the residential-class buildings the tables below cover, 7 storeys / 3,621 features in the Outliner's BOM tree, real per-element geometry (dormers, window frames, skylights), before any walk" src="../../img/modeller/samplecastle-arc-open.png" /></p>
+<h3 id="what-a-walk-actually-places">What a walk actually places<a class="headerlink" href="#what-a-walk-actually-places" title="Permanent link">&para;</a></h3>
+<p><strong>Walk ALL</strong> on the three residential buildings, measured on a real Open → Walk ALL (Modeller sw v267,
+2026-11-09; the walk's own <code>§DISC-WALK</code> lines). <em>Placed</em> = devices seated with a real mesh; <em>provisional</em> =
+see below; <em>refused</em> = what the walk declined and why:</p>
+<table>
+<thead>
+<tr>
+<th>Building</th>
+<th>Discipline</th>
+<th style="text-align: right;">Placed</th>
+<th style="text-align: right;">Provisional</th>
+<th>What the walk reported</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>SampleHouse</strong></td>
+<td>HVAC (ACMV)</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td>refused: 4 duct or pipe pieces with no main</td>
+</tr>
+<tr>
+<td></td>
+<td>Electrical</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">0</td>
+<td>from its own 4 rooms: Living room 11, Bedroom 7, Entrance hall 3; the Roof space gets none (re-measured 2026-11-10, sw v269)</td>
+</tr>
+<tr>
+<td></td>
+<td>Plumbing</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td>refused: no real mesh for any of 7; none of its rooms has a plumbing schedule (the file has no bathroom or kitchen space)</td>
+</tr>
+<tr>
+<td></td>
+<td>Fire-Protection</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td>refused: no real mesh for any of 17</td>
+</tr>
+<tr>
+<td><strong>Duplex</strong></td>
+<td>HVAC (ACMV)</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">0</td>
+<td>—</td>
+</tr>
+<tr>
+<td></td>
+<td>Electrical</td>
+<td style="text-align: right;">102</td>
+<td style="text-align: right;">0</td>
+<td>15 gated, 27 clashes flagged</td>
+</tr>
+<tr>
+<td></td>
+<td>Plumbing</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">0</td>
+<td>8 gated, 2 clashes flagged</td>
+</tr>
+<tr>
+<td></td>
+<td>Fire-Protection</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">38</td>
+<td>sprinklers at borrowed spacing</td>
+</tr>
+<tr>
+<td><strong>SampleCastle</strong></td>
+<td>HVAC (ACMV)</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td>refused: 12 duct or pipe pieces with no main</td>
+</tr>
+<tr>
+<td></td>
+<td>Electrical</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">88</td>
+<td>band devices with the meshes of their rule row's own source elements, in the measured mix (re-measured 2026-11-10, sw v272)</td>
+</tr>
+<tr>
+<td></td>
+<td>Plumbing</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">21</td>
+<td>same: band devices in the measured mix</td>
+</tr>
+<tr>
+<td></td>
+<td>Fire-Protection</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">126</td>
+<td>sprinklers at borrowed spacing</td>
+</tr>
+</tbody>
+</table>
+<p>The status line says the same: <em>Walk ALL — 4/4 disciplines · 139 placed · 38 provisional</em> on the Duplex.
+Structure is not part of Walk ALL; it keeps its own row. Walking an <em>unknown</em> discipline returns
+<strong>REFUSE — no measured rule</strong> rather than guessing.</p>
+<p><strong>Provisional devices.</strong> Two kinds. A building with no rooms gets its devices from measured bands: their count follows the measured density and each takes a mesh from the mix its rule row was measured from, so neither its position nor which device it is can be claimed for this building. And some devices are placed at a spacing <em>borrowed</em> from another building, because this
+building's own rules have none for that trade (the residential rules hold no sprinkler rule, so FP borrows
+the Terminal's). Their positions follow that borrowed spacing, so their count is not a claim about this
+building. They are drawn, flagged <em>provisional</em> in the Outliner row and the status line, and <strong>left out of
+the placed totals</strong>.</p>
+<blockquote>
+<p>The tables in the next three sections quote logs written before the real-mesh-only rule above (the clash
+and Duplex re-growth logs are dated 2026-06-28). They have not been re-run since; read them as that walker's
+results, not today's counts.</p>
+</blockquote>
+<h3 id="why-the-right-standard-matters-clash-collapse">Why the right standard matters — clash collapse<a class="headerlink" href="#why-the-right-standard-matters-clash-collapse" title="Permanent link">&para;</a></h3>
+<p>The walk gates clashes between the fixtures it placed. Using the <strong>right</strong> standard for the building class
+collapses the phantom clashes a mismatched (too-wide) standard would raise — same layout, only the
+clearance standard changes (<code>witness_disc_walk_duplex_generalize.log</code>, gated irreducible residual):</p>
+<table>
+<thead>
+<tr>
+<th>Building</th>
+<th style="text-align: right;">Residual @ large-complex standard</th>
+<th style="text-align: right;">Residual @ residential standard</th>
+<th style="text-align: right;">Collapse</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SampleHouse</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;"><strong>4</strong></td>
+<td style="text-align: right;">56 %</td>
+</tr>
+<tr>
+<td>Duplex</td>
+<td style="text-align: right;">32</td>
+<td style="text-align: right;"><strong>2</strong></td>
+<td style="text-align: right;">94 %</td>
+</tr>
+<tr>
+<td>SampleCastle</td>
+<td style="text-align: right;">501</td>
+<td style="text-align: right;"><strong>3</strong></td>
+<td style="text-align: right;">99.4 %</td>
+</tr>
+</tbody>
+</table>
+<p>Every residual is <strong>flagged, none silent</strong> — the walk never hides a clash to make the number look good.</p>
+<h3 id="does-the-residential-standard-reproduce-a-real-houses-mep">Does the residential standard reproduce a real house's MEP?<a class="headerlink" href="#does-the-residential-standard-reproduce-a-real-houses-mep" title="Permanent link">&para;</a></h3>
+<p>The residential standard was mined from the Duplex's own MEP, so the acid test is whether it <em>re-grows</em>
+that MEP (<code>witness_duplex_rules.log</code>, <code>§DXM-RT</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Discipline</th>
+<th>Verdict</th>
+<th>What it means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Plumbing</td>
+<td>✅ <strong>GREEN</strong> (4/4 classes)</td>
+<td>the bulk of a house's MEP reproduces — segments 0.93, fittings 0.85</td>
+</tr>
+<tr>
+<td>Electrical</td>
+<td>🟡 <strong>WEAK</strong></td>
+<td>fixtures (n = 89) GREEN; the sparse 8-segment conduit is honestly WEAK</td>
+</tr>
+<tr>
+<td>HVAC</td>
+<td>🔴 <strong>RED</strong> (n = 2)</td>
+<td>a house has ~no ductwork — honest RED, <em>not</em> a failure</td>
+</tr>
+</tbody>
+</table>
+<p>RED/WEAK here are <strong>honesty</strong>, not breakage: a single-family house genuinely has almost no ducting, so the
+walk declines to fabricate it.</p>
+<h3 id="does-it-generalize-to-a-building-it-never-saw">Does it generalize to a building it never saw?<a class="headerlink" href="#does-it-generalize-to-a-building-it-never-saw" title="Permanent link">&para;</a></h3>
+<p>We routed the residential rules (mined from the Duplex) onto held-out buildings and scored each against
+<em>that building's own pipes</em> (<code>witness_generalize_curve_*.log</code>, <code>§GC</code>). Precision is the <strong>don't-fabricate</strong>
+score: of the joins the walker drew, how many land on a real pipe touch.</p>
+<table>
+<thead>
+<tr>
+<th>Building</th>
+<th>Type</th>
+<th>In/out of domain</th>
+<th style="text-align: right;">Segments</th>
+<th style="text-align: right;">Precision @0.15 m</th>
+<th style="text-align: right;">Fabricated</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Duplex <em>(self-consistency ceiling)</em></td>
+<td>house</td>
+<td>—</td>
+<td style="text-align: right;">358</td>
+<td style="text-align: right;"><strong>0.969</strong></td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td><strong>LTU_AHouse</strong></td>
+<td>house</td>
+<td><strong>in-domain</strong></td>
+<td style="text-align: right;">32 138</td>
+<td style="text-align: right;"><strong>0.839</strong></td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>WBDG_Office</td>
+<td>office</td>
+<td>out-of-domain</td>
+<td style="text-align: right;">2 241</td>
+<td style="text-align: right;">0.749</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Clinic</td>
+<td>healthcare</td>
+<td>out-of-domain</td>
+<td style="text-align: right;">4 906</td>
+<td style="text-align: right;">0.705</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>HHS_Office</td>
+<td>office</td>
+<td>out-of-domain</td>
+<td style="text-align: right;">1 380</td>
+<td style="text-align: right;">0.620</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>The model <strong>degrades gracefully</strong> and never collapses. On <strong>every</strong> building <strong>0 joins were fabricated</strong> and
+<strong>0 exceeded the gap bound</strong>. That table scores the walker against a building's <em>own</em> pipes. On an ARC-only
+building there are none to join, so the walk <strong>generates</strong> plumbing instead — see <em>What a walk gives you now</em>
+below.</p>
+<h3 id="walk-them-all-at-once">Walk them all at once<a class="headerlink" href="#walk-them-all-at-once" title="Permanent link">&para;</a></h3>
+<p>You don't have to pick the trades one at a time. Under <strong>Not extracted — walk from …</strong> in the Outliner,
+the first row is <strong>▶▶ Walk ALL Services</strong>; its sub-label tells you how many service trades the building is
+missing (e.g. <em>4 services not extracted · x-ray reveal</em>).</p>
+<ol>
+<li>Open a bare ARC building.</li>
+<li>Click <strong>▶▶ Walk ALL Services</strong>.</li>
+</ol>
+<p>It walks every absent <strong>service</strong> (ACMV, ELEC, PLB, FP) in turn. Structure and roof plates are <em>not</em> part of
+it: on a large building they are tens of thousands of elements (Terminal's roof alone is 10,584 plates), so
+they keep their own rows and you walk them only when you want them. It works through exactly the same production path a single click uses —
+same rules, same gating, same honest refusal when a trade has nothing to hang on. The difference is the
+presentation: X-ray brackets the whole run so you can watch it land. Each discipline <strong>builds up</strong> after
+its walk is committed: its devices come on one by one over a few seconds, so you see <em>which</em> trade just
+filled in rather than one undifferentiated wave. On a big building the commit can take a few seconds; the
+build-up waits for it and then plays in full.</p>
+<p>X-ray is restored afterwards even if a discipline refuses part-way. On a very large building the
+per-element flash is dropped in favour of one batched hold-and-settle — the geometry committed is
+identical either way, only the reveal animation is coarser.</p>
+<h3 id="find-a-walked-type-and-see-one-device-up-close">Find a walked type, and see one device up close<a class="headerlink" href="#find-a-walked-type-and-see-one-device-up-close" title="Permanent link">&para;</a></h3>
+<p>After a walk, the Outliner's <strong>Walked Fixtures</strong> category scrolls into view. Each type row shows its count,
+e.g. <em>FlowTerminal (102)</em>.</p>
+<ul>
+<li><strong>Click a type row</strong>: every device of that type is selected (tinted) and the camera frames the whole set.
+  <code>Escape</code> clears it. A device you have hidden with its eye is left out.</li>
+<li><strong>Click one device</strong>: the camera frames it at a size you can see, from the side it <strong>faces</strong>: from below
+  for a ceiling device, from in front for a wall device. The close-up stays inside the space the device
+  faces.</li>
+</ul>
+<p><img alt="Walked Fixtures, X-ray: the Electrical type row FlowTerminal (102) clicked on the Duplex; all 102 devices are selected and in frame" src="../../img/modeller/walked-fixtures-typeset.png" /></p>
+<h3 id="rules-read-and-edit-what-the-walker-uses">Rules — read and edit what the walker uses<a class="headerlink" href="#rules-read-and-edit-what-the-walker-uses" title="Permanent link">&para;</a></h3>
+<p>The walker's rules are tables mined from real buildings: room schedules, placement bands, clearances,
+routing. Tap <strong>Rules</strong> (the <code>{ }</code> button) to see them as JSON, one section per table.</p>
+<p><img alt="The Rules editor on the Duplex: duplex_rules.db, 12 tables, 364 rows; the header says the rules are shared by every residential building (SampleHouse, Duplex, SampleCastle)" src="../../img/modeller/rules-editor.png" /></p>
+<ol>
+<li>Change a value (for example a device's height in a room schedule).</li>
+<li><strong>Save</strong>, then walk that discipline again: the walk uses your value.</li>
+<li><strong>Download edits (JSON)</strong> saves your changes (each cell, plus the same change as SQL) to send back.</li>
+<li><strong>Reset to shipped</strong> removes your changes.</li>
+</ol>
+<p>Your edits are kept in this browser and applied every time the rules load. <strong>The rules belong to a building
+type, not to one building</strong>: the header names every building that uses them, and one edited cell changes
+all of them. The downloaded file carries <code>checkedOn: []</code>. Before an edit is contributed, a fleet check
+(<code>modeller/tests/rules_edit_fleet_check.js</code>) walks every building that reads that rules file with and without
+the edit, lists what moved, and fills <code>checkedOn</code>. That includes buildings of the other type: complex
+buildings read their room schedules from the residential rules, and residential buildings borrow sprinkler
+rules from the Terminal's.</p>
+<h3 id="what-a-walk-gives-you-now-pipes-one-step-undo-and-pipes-that-follow">What a walk gives you now — pipes, one-step undo, and pipes that follow<a class="headerlink" href="#what-a-walk-gives-you-now-pipes-one-step-undo-and-pipes-that-follow" title="Permanent link">&para;</a></h3>
+<p><strong>Plumbing is routed, not just placed.</strong> Walking <strong>PLB</strong> on a bare building now also draws the pipe runs
+between the fixtures: cold water and waste. It works through the same path as any walk; measured on a real Open → Walk:</p>
+<table>
+<thead>
+<tr>
+<th>Building</th>
+<th style="text-align: right;">PLB fixtures</th>
+<th style="text-align: right;">Pipe runs drawn</th>
+<th style="text-align: right;">Runs signed into the log</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Duplex</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">22</td>
+</tr>
+<tr>
+<td>SampleCastle</td>
+<td style="text-align: right;">84</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">18</td>
+</tr>
+<tr>
+<td>Terminal</td>
+<td style="text-align: right;">969</td>
+<td style="text-align: right;">2,915</td>
+<td style="text-align: right;">60 (a size cap; every run is drawn)</td>
+</tr>
+</tbody>
+</table>
+<p>Typical run length is 2–3 m. The pipe sizes are real, measured from the Duplex plumbing model:
+- cold water 25.4 mm (1″, the mains size; the Duplex also has ½″ branches)
+- waste 48.3 mm (1½″)</p>
+<p>A pipe is never drawn at an invented size. A stand-alone PLB walk on the live Duplex measured 18 fixtures and 22 pipe runs (1 cold-water 25.4 mm, 21 waste 48.3 mm), all signed. In <strong>Walk ALL</strong> the Duplex also routes ducts (ACMV, 8 runs) and sprinklers (FP, 4 runs), signed; cable (ELEC) is placed but not routed (0 runs on Duplex).</p>
+<p><strong>One Ctrl+Z takes the whole walk back.</strong> A walk appears in the history as one step, e.g. <em>Walk PLB (45)</em>:
+the fixtures, the pipe runs and their bend fittings together. <code>Ctrl+Z</code> removes all of it from the model and
+the screen, and <code>Ctrl+Y</code> brings it all back.</p>
+<p><strong>Move a fixture and its pipes follow.</strong> Moving a walked fixture, by dragging it or a gridline, re-routes
+that trade's pipes from the new positions (a 1 m move re-routes the Duplex network so a
+run ends at the fixture's new spot). Undo the move and the pipes route back. The re-routed runs and their bend fittings are written to
+the signed history too (measured on the live Duplex: after a 0.5 m move, 14 runs kept, 2 new, 8 superseded; fittings 3 kept, 1 new, 2 superseded; re-route about 0.5 s).
+Walked fixtures have no drag handle yet (clicking one only identifies it), so that move is made by the engine — see <a href="../ModellerFirstSteps/#part-3-fill-the-building-with-services-mep-walk">First Steps, Part 3</a>.</p>
+<h3 id="seed-trunk-route-a-service-trunk">Seed-Trunk — route a service trunk<a class="headerlink" href="#seed-trunk-route-a-service-trunk" title="Permanent link">&para;</a></h3>
+<p>After walking a discipline, route its <strong>service trunk</strong> from a real entry.</p>
+<ol>
+<li>In the Outliner, open the <strong>Route trunk</strong> row for the walked discipline.</li>
+<li>A popup offers the real service <strong>entry</strong> elements (doors / stairs) — confirm the default or choose one.</li>
+<li>Tap <strong>Route ▶</strong>.</li>
+</ol>
+<p><img alt="Route trunk — choose the service entry (a real door / stair) from the popup, then Route ▶" src="../../img/modeller/seedtrunk-entry.png" /></p>
+<p>A corridor-aware trunk is routed from that entry through the walked fixtures — around walls, through real
+doors, up risers between storeys.</p>
+<p><img alt="The Duplex after Route ▶ — a real ELEC trunk is now rendered (0→3,922 segments, verified by framebuffer diff), threaded through the walked fixtures and recoloured magenta for this shot (its real default is gold, the same family as the ELEC fixture boxes, which read as low-contrast clutter against the wall in a static frame); the important thing this proves is that nothing renders outside the building anymore" src="../../img/modeller/seedtrunk-trunk.png" /></p>
+<hr />
+<h2 id="history-the-slider-is-the-timeline">History — the slider <em>is</em> the timeline<a class="headerlink" href="#history-the-slider-is-the-timeline" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Drag the <strong>history scrubber</strong> back to undo, forward to redo — it scrubs the signed op-log and re-folds the
+  geometry deterministically. It is a strict superset of the keyboard shortcuts.</li>
+<li><strong><code>Ctrl+Z</code></strong> undo · <strong><code>Ctrl+Y</code></strong> (or <code>Ctrl+Shift+Z</code>) redo · <strong><code>Del</code></strong> delete selection · <strong><code>F</code></strong> fit · <strong><code>Esc</code></strong> cancel mode · <strong><code>R</code></strong> rotate a pending insert.</li>
+<li>Every retreat is exact because the geometry is a pure fold of the log — there is no separate "undo buffer"
+  to drift out of sync.</li>
+</ul>
+<p><strong>The dots.</strong> Above the slider sits a row of dots, one per edit gesture (a square dot = a model edit, a round dot =
+a milestone such as <em>Opened Duplex</em>). Clicking a dot, or the <strong>‹ ›</strong> arrows beside them, only <em>shows</em> that moment —
+the camera and highlight go there, the model is not changed. Undo stays <strong>Ctrl+Z</strong> (or the slider).</p>
+<p><strong>History threads — see the history of one kind of thing.</strong> Next to the dots, chips such as <strong><code>+ Walls (2)</code></strong>,
+<strong><code>+ Openings (2)</code></strong>, <strong><code>+ MEP (1)</code></strong>, <strong><code>+ Inserts (1)</code></strong> count the edits of each kind (seven kinds: Grid/Structure,
+Walls, Openings, MEP, Inserts, Shapes, Other). An edit that touched several kinds — a wall move that drags its door
+along — is counted in each. Double-click a chip (tap on a phone) to open that kind's strip: just those edits, in the
+order you made them. Inside it, <code>+ Wall #112 (1)</code> opens one element's own thread. Tap a strip and it glows blue with
+the badge <strong>Viewing: Walls</strong>; now <strong>‹ ›</strong> step through the wall edits only, skipping the walk, the insert and
+everything in between. This is a viewer: it never changes the model. Leave it by tapping the strip again, pressing
+<strong>Esc</strong>, or making a new edit. Undoing just one kind of edit is not available yet. Walked through step by step in
+<a href="../ModellerFirstSteps/#part-5-see-the-history-of-one-thing">First Steps, Part 5</a>.</p>
+<hr />
+<h2 id="save">Save<a class="headerlink" href="#save" title="Permanent link">&para;</a></h2>
+<p><em>Clash-check + auto-heal, then write a physical-DB snapshot — blocks on residual RED.</em></p>
+<p>Every edit lives in the signed op-log the moment you commit it, but the op-log isn't a physical-DB
+snapshot on its own. <strong>Save</strong> is the gate between the two: it re-verifies the WHOLE building's conformity,
+tries to heal what it safely can, and only then writes.</p>
+<ol>
+<li>Tap <strong>Save</strong>.</li>
+<li>If the building is clean (or every finding is soft <strong>ORANGE</strong>), it auto-heals what it can, re-verifies,
+   and writes a real physical-DB snapshot — the same one <strong>Open</strong> reads back.</li>
+<li>If a hard <strong>RED</strong> clash survives healing, Save refuses the write outright rather than persisting a
+   broken state — go fix the flagged clash (the status line names it, same as any other tool's gate) and
+   try again.</li>
+</ol>
+<p><strong>Auto-heal is real, but narrow.</strong> An ORANGE finding it recognises as a safe abuts-realign (two elements
+that drifted apart but were clearly meant to still touch) gets one corrective <code>GEOM_MOVE</code>, re-verified as
+gap-closed before the snapshot writes. If that heal itself nudges a <em>third</em>, previously-fine element into
+a new soft finding, Save reports that new ORANGE by name rather than chasing it with a second heal pass —
+one heal, never an unbounded cascade.</p>
+<p>In practice: a real hard clash blocks the write outright (no snapshot is written); a real auto-healable pair
+heals, re-verifies clean, and the snapshot lands; a heal that disturbs a third element reports that one new
+finding by name without touching it further.</p>
+<hr />
+<h2 id="see-what-your-edit-costs">See what your edit costs<a class="headerlink" href="#see-what-your-edit-costs" title="Permanent link">&para;</a></h2>
+<p><em>Commits nothing new — it reads the edit you already made. First-timer version: <a href="../ModellerFirstSteps/#part-2-see-what-your-edit-costs-and-send-it-to-erp">First Steps, Part 2</a>.</em></p>
+<p>When you <strong>stretch</strong> an element (the cube handles of the Move gizmo), its quantity changes — and so do its material
+cost and, for some classes, its labour time. The Modeller shows that change on the element itself:</p>
+<ol>
+<li><strong>Stretch a wall</strong> with the Move gizmo's cube handle, then press <strong>Esc</strong>.</li>
+<li><strong>Hover</strong> the wall: a label shows the class, the quantity <strong>before → after</strong>, the <strong>material</strong> change and the <strong>labour</strong> change.</li>
+</ol>
+<p><img alt="Hover label on a stretched wall" src="../../img/modeller/first-steps-s8-1-hover-label.png" /></p>
+<ol>
+<li><strong>Click</strong> the wall: the same line stays pinned at the bottom-left.</li>
+</ol>
+<p><img alt="The same line pinned after a click" src="../../img/modeller/first-steps-s8-2-click-line.png" /></p>
+<ol>
+<li><strong>Ctrl+Z</strong>: the line reads <code>Δ 0 — edit undone</code>.</li>
+<li>Tap <strong>Connect</strong>, open the Viewer with <code>?connect=1</code> and hover the same wall: the Viewer shows the <strong>identical</strong> line.</li>
+</ol>
+<p><img alt="The Viewer's hover label for the same wall" src="../../img/modeller/first-steps-s8-viewer-hover.png" /></p>
+<p><strong>What the numbers are</strong> (honest labels): the quantity basis is the bounding box, the same one the 5D cost report uses
+(length, face area, volume or count, by the class's unit). <strong>Material</strong> = the change in quantity × the price of the
+active <strong>rate pack</strong> — your language setting picks it (the tested run used US English: 48 per m² for a wall) — rounded the same way the Project Order line is, so the hover, a fresh order and a Variation Order all show <strong>one number</strong>. It is
+<em>projected</em>, per element. <strong>Labour</strong> comes from the shipped duration rule: an ordinary wall (priced per m²) takes a
+<strong>flat time per element</strong>, so stretching it changes cost but not labour (<code>+0 s</code>); a linear class such as a beam or duct
+scales with length. A plain <strong>move</strong> changes no quantity, so it reads <code>+0.00</code>. The <strong>finish date is not re-solved</strong> — that
+would need a whole-programme re-run, and whether a hover may trigger one is an open question.
+A grid stretch is priced too, from the commands the stretch stored.</p>
+<h2 id="send-it-to-erp-project-order-variant-vo">Send it to ERP — Project Order, variant, VO<a class="headerlink" href="#send-it-to-erp-project-order-variant-vo" title="Permanent link">&para;</a></h2>
+<p><em>Works across the Modeller, the Viewer and the ERP app; first-timer
+version: <a href="../ModellerFirstSteps/#part-2-see-what-your-edit-costs-and-send-it-to-erp">First Steps, Part 2</a>.</em></p>
+<p>Select parts and click <strong>ERP ▸ Project Order</strong> (bottom-left). It reads the ERP's Project Order for those parts:</p>
+<ol>
+<li><strong>No Project Order yet</strong> → the panel prices the parts and offers <strong>Generate Project Order</strong> (the same engine as the Viewer's <strong>› ERP</strong> button; a second Generate adds nothing).</li>
+</ol>
+<p><img alt="Not generated yet" src="../../img/modeller/first-steps-s9-1-read-not-generated.png" /></p>
+<ol>
+<li>After generating, the panel shows the order, its planned amount and <strong>Open in ERP ↗</strong> (opens the ERP app on that record).</li>
+</ol>
+<p><img alt="Generated" src="../../img/modeller/first-steps-s9-2-generated.png" /></p>
+<ol>
+<li><strong>Edit a part that is already in the order</strong> → it is a <strong>variant item of the same Project Order</strong>. Two options:</li>
+</ol>
+<p><img alt="Variant: A or B" src="../../img/modeller/first-steps-s9-3-variant.png" /></p>
+<ul>
+<li>
+<p><strong>A · Delete &amp; re-issue</strong> — only while the order is <strong>not committed</strong>. It leaves exactly one order, issued from the selected parts.</p>
+<p><img alt="After A" src="../../img/modeller/first-steps-s9-4-option-a.png" />
+   - <strong>B · Issue Variation Order</strong> — required once the order is <strong>committed to a vendor</strong> (a completed purchase order on the project, read from the ERP records). A is then disabled with its reason. The VO is the <strong>priced difference of the order line it amends</strong>: original order + VO = a fresh order for the edited parts, to the cent. It is sent as <strong>Drafted</strong>; the Modeller only shows the status the ERP record carries — approval is done on the ERP side.</p>
+<p><img alt="Committed: A disabled" src="../../img/modeller/first-steps-s9-5-committed.png" /></p>
+<p><img alt="After B" src="../../img/modeller/first-steps-s9-6-option-b.png" /></p>
+</li>
+<li>
+<p>Undo the edit (<strong>Ctrl+Z</strong>) and the panel's price for the parts returns to the original.</p>
+</li>
+</ul>
+<p>The Viewer reads the same store: the same parts folded from the Viewer give the same planned amount and find the existing order.
+Any IFC you open works: the order is keyed by the model's own name (the Duplex resident keeps its measured Viewer label).</p>
+<h3 id="after-the-order-documents-the-dashboard-and-the-walker">After the order: documents, the dashboard, and the walker<a class="headerlink" href="#after-the-order-documents-the-dashboard-and-the-walker" title="Permanent link">&para;</a></h3>
+<p>The drawings filed against the order (BIM Document), the register the walkers read, and the CAPEX dashboard are described in one place: <a href="../CapexDashboardGuide/#from-the-bim-model-to-the-dashboard-the-whole-flow">BIM → ERP and the CAPEX Dashboard</a>.</p>
+<hr />
+<h2 id="export-db-ifc-reports-bcf-issue-2d-drawings">Export — .db, IFC, reports, BCF issue, 2D drawings<a class="headerlink" href="#export-db-ifc-reports-bcf-issue-2d-drawings" title="Permanent link">&para;</a></h2>
+<p>Tap the <strong>Export</strong> pill. The menu offers:</p>
+<ul>
+<li><strong>Native .db</strong> — the full-fidelity signed op-log, every edit you made. Re-open it later with
+  <strong>📂 Open ▸ Open local .db / .ifc…</strong>.</li>
+<li><strong>Viewer database (.db)</strong> — the building (elements, materials, positions) in the form the Viewer opens.</li>
+<li><strong>IFC (IFC4)</strong> — the building as a standard IFC4 file other BIM tools can read.</li>
+<li><strong>Load Summary…</strong> — own weight by part and per footing, as a report for the structural engineer (needs a converted 2D set).</li>
+<li><strong>Regulatory Report…</strong> — the facts of the model for a submission (checks, loads, bill, assumptions) as a page to attach (needs a converted 2D set). A facts form asks for what the model cannot state.</li>
+<li><strong>Analytical model (STAAD)…</strong> — nodes, members, sections, supports and self-weight as a <code>.std</code> file, from a converted drawing set or any <code>.ifc</code>: a starting model, not a design.</li>
+<li><strong>BCF issue (.bcfzip)</strong> — your current view and selection, as an issue (see below).</li>
+<li><strong>2D drawings (DXF)</strong> — plans, elevations, roof and section with markings, so a model goes back to drawings (the reverse of <a href="../DXF2BIMGuide/">2D Drawings → BIM</a>).</li>
+</ul>
+<h3 id="ifc-the-whole-building-you-opened">IFC — the whole building you opened<a class="headerlink" href="#ifc-the-whole-building-you-opened" title="Permanent link">&para;</a></h3>
+<p>Export ▸ IFC downloads <code>bonsai_model.ifc</code>. It carries <strong>every element of the building you opened</strong>, plus
+the walls you drew with Sketch → Extrude and the openings you Cut:</p>
+<ul>
+<li>Each element keeps its <strong>real class</strong> — a door stays an <code>IfcDoor</code>, a slab an <code>IfcSlab</code>, a stair an
+  <code>IfcStair</code>. A class the exporter doesn't know becomes a generic <code>IfcBuildingElementProxy</code>, never
+  dropped.</li>
+<li>Each element's <strong>shape is the same triangles you see on screen</strong>, written as an IFC4 triangle mesh — not
+  re-computed, not simplified.</li>
+<li>An element whose shape can't be found is <strong>left out and counted</strong>, never swapped for a plain box.</li>
+<li>The invisible ride anchors some buildings carry (SampleCastle has 65) are left out — they aren't real
+  building parts.</li>
+</ul>
+<p>Checked by re-reading the exported file: Duplex's 196 elements come back as 196 products (about 4 MB);
+SampleCastle's 3,225 come back as 3,225 (about 26 MB).</p>
+<p><strong>Not in the file yet:</strong> materials and colours, property sets, the storey/space structure, and openings as
+separate cut objects. It carries the building's real shapes, not yet a fully furnished IFC.</p>
+<p>The status line after an IFC export counts <code>walls=</code> only for walls you drew with Sketch → Extrude, so on
+an opened building it can read <code>walls=0</code> even though the file is full — check the byte count it prints
+instead.</p>
+<h3 id="bcf-share-an-issue">BCF — share an issue<a class="headerlink" href="#bcf-share-an-issue" title="Permanent link">&para;</a></h3>
+<p>Pick <strong>Export ▸ BCF issue</strong> to export your current view as a <strong>BCF 2.1</strong> file (<code>.bcfzip</code>) — the open
+buildingSMART format for exchanging issues between BIM tools. The export carries your live camera
+viewpoint and the real <code>IfcGuid</code>s of whatever's selected, so the file opens correctly in Navisworks,
+Solibri, BIMcollab, Revit (via plugin), or Trimble Connect — never a synthetic ID that only means
+something inside this app. See <a href="../CLASH_DETECTION/#85-bcf-export-shipped">Clash Detection §8.5</a> for exporting a
+whole batch of detected clashes as one topic set.</p>
+<hr />
+<h2 id="toolbar-icon-index">Toolbar — icon index<a class="headerlink" href="#toolbar-icon-index" title="Permanent link">&para;</a></h2>
+<p>The toolbar is a <strong>⋯ pill rail</strong> at the right edge: the rail starts open (<strong>⋯</strong> folds / unfolds it), hover for a name, and open
+<strong>? Help</strong> for the live registry (icon · name · shortcut). <code>Esc</code> always cancels the current mode.</p>
+<table>
+<thead>
+<tr>
+<th>Icon</th>
+<th>Does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>⋯ Toolbar</strong></td>
+<td>Fold / unfold the pill rail (open by default)</td>
+</tr>
+<tr>
+<td><strong>Home</strong></td>
+<td>Back to the Matrix landing</td>
+</tr>
+<tr>
+<td><strong>📂 Open</strong></td>
+<td>Load a resident building, a local <code>.db</code>, your own <code>.ifc</code> (filtered to ARC, walked + BOM-graphed), or a set of 2D drawings (<code>.dxf</code>, see <a href="../DXF2BIMGuide/">DXF2BIM</a>)</td>
+</tr>
+<tr>
+<td><strong>Fit</strong></td>
+<td>Zoom to fit — the selection, or the whole scene (<code>F</code>)</td>
+</tr>
+<tr>
+<td><strong>Iso</strong></td>
+<td>Cycle the view: Iso ⇄ Top</td>
+</tr>
+<tr>
+<td><strong>Grid</strong></td>
+<td>Show / add a construction grid</td>
+</tr>
+<tr>
+<td><strong>Move Grid</strong></td>
+<td>Drag a gridline — attached walls recompose (<code>GEOM_GRID_MOVE</code>); hosted openings hold or ride (see <a href="#grid-stretch">Grid-Stretch</a>)</td>
+</tr>
+<tr>
+<td><strong>Move</strong></td>
+<td>Transform gizmo — move / scale / rotate the selection (<code>M</code>)</td>
+</tr>
+<tr>
+<td><strong>Drag Item</strong></td>
+<td>Free single-item drag for a fixture/fitting, gated by real product data and a real drop surface (see <a href="#item-drag">Item Drag</a>)</td>
+</tr>
+<tr>
+<td><strong>Sketch</strong></td>
+<td>Start a 2D sketch</td>
+</tr>
+<tr>
+<td><strong>Extrude</strong></td>
+<td>Push a sketch profile into a solid (<code>GEOM_EXTRUDE_POLY</code>)</td>
+</tr>
+<tr>
+<td><strong>Axis</strong></td>
+<td>Set the constraint intent the solver enforces on the sketch (Rect / Square / Circle)</td>
+</tr>
+<tr>
+<td><strong>Cut</strong></td>
+<td>Cut an opening in the selected wall (<code>GEOM_CUT</code>)</td>
+</tr>
+<tr>
+<td><strong>Route</strong></td>
+<td>Lay a spine to sweep a profile along (e.g. an MEP run)</td>
+</tr>
+<tr>
+<td><strong>Sweep Run</strong></td>
+<td>Sweep the profile along the route (<code>GEOM_SWEEP</code>)</td>
+</tr>
+<tr>
+<td><strong>Fillet</strong></td>
+<td>Round a selected solid's picked edges (<code>GEOM_FILLET</code>)</td>
+</tr>
+<tr>
+<td><strong>Apply</strong></td>
+<td>Commit the pending fillet / chamfer</td>
+</tr>
+<tr>
+<td><strong>Insert</strong></td>
+<td>Insert a library component — assemble, don't draw (<code>GEOM_INSERT</code>)</td>
+</tr>
+<tr>
+<td><strong>LOD 200</strong></td>
+<td>Refine the last-placed component's level of detail (same signed row) — appears once you enter <strong>Insert</strong>, not on the resting rail</td>
+</tr>
+<tr>
+<td><strong>Export</strong></td>
+<td>Export menu — Native <code>.db</code>, Viewer <code>.db</code>, IFC4, Load Summary, Regulatory Report, Analytical model (STAAD), BCF 2.1 issue, 2D drawings (DXF) (see <a href="#export-db-ifc-reports-bcf-issue-2d-drawings">Export</a>)</td>
+</tr>
+<tr>
+<td><strong>Save</strong></td>
+<td>Clash-check + auto-heal, then write a physical-DB snapshot — blocks on residual RED (see <a href="#save">Save</a>)</td>
+</tr>
+<tr>
+<td><strong>History</strong></td>
+<td>World History — the cross-page timeline shared with the Viewer, iDempiere, and Gravity</td>
+</tr>
+<tr>
+<td><strong>Language</strong></td>
+<td>Flag button — the Modeller speaks the 13 film languages</td>
+</tr>
+<tr>
+<td><strong>Guide</strong></td>
+<td>A short in-app user guide — how to Open, walk, edit &amp; export</td>
+</tr>
+<tr>
+<td><strong>? Help</strong></td>
+<td>Toolbar &amp; shortcuts — the live pill registry</td>
+</tr>
+<tr>
+<td><strong>Delete</strong></td>
+<td>Delete the selection (<code>Del</code>)</td>
+</tr>
+<tr>
+<td><strong>Clear</strong></td>
+<td>Empty the scene</td>
+</tr>
+<tr>
+<td><strong>Sound</strong></td>
+<td>Toggle authoring sound feedback</td>
+</tr>
+<tr>
+<td><strong>Connect</strong></td>
+<td>Connect Scene — share selection / timeline with the Viewer &amp; ERP (opt-in)</td>
+</tr>
+<tr>
+<td><strong>Team</strong></td>
+<td>Start or join a team (the Team panel); once you are in one, it opens the people strip (see <a href="#collaborate-on-the-design-team-mode">Collaborate</a>)</td>
+</tr>
+<tr>
+<td><strong>X-ray</strong></td>
+<td>Reveal — structure goes glass so routed MEP glows through in its discipline colours (<code>X</code>)</td>
+</tr>
+<tr>
+<td><strong>Undo / Redo</strong></td>
+<td>Undo (<code>Ctrl+Z</code>) · Redo (<code>Ctrl+Y</code>)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<p>Each row below is a real behaviour the tool suite exercised (and, where it was a defect, fixed) — not a
+hypothetical. If you hit something else, <strong>? Help</strong> lists every tool and shortcut, and the history scrubber is
+always a safe retreat.</p>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Why</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A pill looks stuck in the top-left corner</strong> and won't click</td>
+<td>A mode-revealed pill (Extrude, Sweep-Run, Apply) is shown only after you start its mode; the rail lays them out on reveal.</td>
+<td>Start the mode first (e.g. finish the Sketch before reaching for <strong>Extrude</strong>). The rail re-positions the pill as it appears — if one still looks stranded, toggle the <strong>⋯</strong> rail folded and unfolded.</td>
+</tr>
+<tr>
+<td><strong>Cut / Scale seems to do nothing on a wall from an opened building</strong></td>
+<td>A seeded ARC wall is a <em>baked</em> mesh, not a B-rep. Cut promotes it to a B-rep just-in-time — from its box, or on a layered wall from its real layer slabs; an insert that is neither a plain box nor layered is refused up-front (logged) rather than approximated.</td>
+<td>Nothing to do for a normal axis-aligned wall — the op commits and renders. If a specific insert is <em>refused</em>, it can't be cut exactly; sketch the void instead.</td>
+</tr>
+<tr>
+<td><strong>A Walk seems to hang on a big building</strong></td>
+<td>A discipline walk places hundreds of fixtures; they commit as <strong>one batched signed group</strong>, so a large walk takes a couple of seconds, not a frozen minute.</td>
+<td>Wait for the batch — the status line reports the result when it lands (e.g. <code>ELEC — 267 placed across 5 storeys · 0 routed</code>). Scrub the slider back to clear them.</td>
+</tr>
+<tr>
+<td><strong>I want to "make an opening" but there's no Opening tool</strong></td>
+<td>Opening is not a separate authoring tool — the real "cut a window/door" is the <strong>Cut</strong> tool (<code>GEOM_CUT</code>).</td>
+<td>Select the wall, tap <strong>Cut</strong>. <code>GEOM_OPENING</code> is only a legacy sample primitive, never a user action.</td>
+</tr>
+<tr>
+<td><strong>Fillet won't pick an edge</strong></td>
+<td>Fillet needs a <strong>B-rep solid</strong>; a seeded ARC insert has no worker edges to round.</td>
+<td>Author a solid first (Sketch → Extrude), select it, then <strong>Fillet</strong> — its edges become pickable markers.</td>
+</tr>
+<tr>
+<td><strong>An edit didn't land the way I expected</strong></td>
+<td>Every edit is a signed op; nothing is silently applied.</td>
+<td>Drag the <strong>history scrubber</strong> back one notch to undo it exactly, then retry. There is no separate undo buffer to drift out of sync.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="collaborate-on-the-design-team-mode">Collaborate on the design — Team mode<a class="headerlink" href="#collaborate-on-the-design-team-mode" title="Permanent link">&para;</a></h2>
+<p>The Modeller shares <strong>one signed op-log</strong> with the Viewer and the Kernel-ERP, so a team can work on <strong>one model
+from two browsers</strong> over the same comm layer the ERP uses. Tap the <strong>Team</strong> icon on the right rail: the Team
+panel lets you <strong>Start a team</strong> or <strong>Join</strong> one and pick an avatar; once you are in a team the same icon opens
+the <strong>people strip</strong> (who is on what). See the <strong><a href="https://red1oon.github.io/bim-ootb/erp/team_guide.html">Team guide</a></strong>.</p>
+<p>The older <strong>Teams overlay</strong> — who-dots on the Outliner rows, git-style design branches, a spatial merge gate,
+the tabbed Outliner (Tree / Chat / Dashboard) — is reached from the Team panel (<strong>Show dots on this machine</strong>).
+→ <strong><a href="../TeamsOverlayGuide/">Teams Overlay guide (with screenshots)</a>.</strong></p>
+<hr />
+<p><em>Part of <a href="../USER_GUIDE/">BIM OOTB</a>. Copyright (c) 2025–2026 Redhuan D. Oon. MIT Licensed.</em></p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+
+
+                
+
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Zurück zum Seitenanfang
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/red1oon/bim-ootb" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.linkedin.com/in/red1oon/" target="_blank" rel="noopener" title="www.linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.indexes", "search.suggest", "search.highlight", "toc.follow", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "In Zwischenablage kopiert", "clipboard.copy": "In Zwischenablage kopieren", "search.result.more.one": "1 weiteres Suchergebnis auf dieser Seite", "search.result.more.other": "# weitere Suchergebnisse auf dieser Seite", "search.result.none": "Keine Suchergebnisse", "search.result.one": "1 Suchergebnis", "search.result.other": "# Suchergebnisse", "search.result.placeholder": "Suchbegriff eingeben", "search.result.term.missing": "Es fehlt", "select.version": "Version ausw\u00e4hlen"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../javascripts/fold-footnotes.js"></script>
+      
+        <script src="../../javascripts/bim_compiler_source.js"></script>
+      
+    
+  </body>
+</html>

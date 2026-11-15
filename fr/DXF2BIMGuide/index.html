@@ -1,0 +1,5000 @@
+
+<!doctype html>
+<html lang="fr" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Construction is manufacturing. A building IS its Bill of Materials.">
+      
+      
+        <meta name="author" content="Redhuan D. Oon">
+      
+      
+        <link rel="canonical" href="https://red1oon.github.io/BIMCompiler/DXF2BIMGuide/">
+      
+      
+        <link rel="prev" href="../FastScriptGuide/">
+      
+      
+        <link rel="next" href="../DXF2BIM_Yellow_List/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>2D Drawings → BIM (DXF2BIM) - BIM Intent Compiler</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/custom.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  <script data-goatcounter="https://red1oon.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  
+  <meta name="robots" content="noindex">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#2d-drawings-bim-dxf2bim-user-guide" class="md-skip">
+          Aller au contenu
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="En-tête">
+    <a href="../" title="BIM Intent Compiler" class="md-header__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            BIM Intent Compiler
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              2D Drawings → BIM (DXF2BIM)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Rechercher" placeholder="Rechercher" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Recherche">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Effacer" aria-label="Effacer" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initialisation de la recherche
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source md-header__source--stacked">
+        <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+        <a href="https://github.com/red1oon/BIMCompiler" title="red1oon/BIMCompiler on GitHub" class="md-source" id="bim-compiler-source" target="_blank" rel="noopener">
+          <div class="md-source__icon md-icon">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+          </div>
+          <div class="md-source__repository" id="bim-compiler-repository">
+            Compiler
+          </div>
+        </a>
+        <span id="repo-totals" class="md-source-totals" title="Combined stars / forks across both repos"></span>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Onglets" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Start Here
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../BIMUserGuide/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  The 3 Apps
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../DeveloperGuide/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Go Deeper
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../SpatialCompilationPaper/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Papers & Positioning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../HalalTrace/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Prototypes & Demos
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../PROJECT_CHRONOLOGY/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  History & Legacy
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../" title="BIM Intent Compiler" class="md-nav__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    BIM Intent Compiler
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start Here
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_1" id="__nav_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Start Here
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../USER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    📖 User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMToolsGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🧰 BIM Tools — User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OFFLINE_INSTALL_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🔒 Fully Offline / Air-Gapped Install
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WhatsNew/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🆕 What's New
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AboutMore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About BIM OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FeatureComparison/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Feature Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MigrateComparisonPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrate & Compare (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TwoAppsOneKernel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two Apps, One Kernel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TwoAppsOneKernelInfographicLandscape.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    One Page InfoGraphics - Landscape
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bench_suite.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Comparison (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../age_demo.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Does Your ERP Age? (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MANIFESTO/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The ERP World View
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contribute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 3 Apps
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    The 3 Apps
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Viewer Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AskFirstSteps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewer Ask — First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerFirstSteps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modeller — First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DAGeVu Modeller — User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ProposerGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Proposer Guide (propose an edit, get the proof)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FastScriptGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fast Script Guide (one door: commands and scripts)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2D Drawings → BIM (DXF2BIM)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2D Drawings → BIM (DXF2BIM)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-idea-in-one-picture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The idea in one picture
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-a-standard-sheet-looks-like" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What a standard sheet looks like
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-by-step-in-the-modeller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step by step in the Modeller
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step by step in the Modeller">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-open-the-drawings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1 · Open the drawings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-check-the-metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2 · Check the metadata
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2 · Check the metadata">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#2a-see-a-whole-sheet-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2a · See a whole sheet: Sheet
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-raw-drawings-fill-in-what-is-missing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3 · Raw drawings: fill in what is missing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3 · Raw drawings: fill in what is missing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#3a-what-yellow-means" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3a · What yellow means
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3b-the-sheet-facts-and-datums-what-you-state-and-how" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3b · The sheet facts and datums: what you state, and how
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3c-wall-tops" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3c · Wall tops
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#doors-and-windows-tagged-by-width" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Doors and windows tagged by width
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3d-blocking-items-what-they-mean-and-what-to-do" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3d · Blocking items: what they mean and what to do
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3e-how-long-the-plain-duplex-took" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3e · How long the plain Duplex took
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-save-the-marked-copies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4 · Save the marked copies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-convert" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5 · Convert
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5 · Convert">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#5a-properties-what-a-part-carries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5a · Properties: what a part carries
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-export-ifc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6 · Export IFC
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-load-summary-for-your-structural-engineer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7 · Load Summary (for your structural engineer)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-regulatory-report-what-you-hand-in" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8 · Regulatory Report (what you hand in)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#9-analytical-model-staad-for-your-structural-engineer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9 · Analytical model (STAAD, for your structural engineer)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#if-something-goes-wrong" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        If something goes wrong
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-metadata-for-cad-users" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The metadata, for CAD users
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#drawing-in-bricscad-so-fewer-values-are-guessed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Drawing in BricsCAD so fewer values are guessed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-set-exported-from-revit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A set exported from Revit
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-building-drawn-only-in-2d-a-farm-shed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A building drawn only in 2D: a farm shed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-yellow-list-what-you-fill-in-and-the-defaults-used" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The yellow list: what you fill in, and the defaults used
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The yellow list: what you fill in, and the defaults used">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#which-default-matters-element-defaults-measure-impact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which default matters? Element defaults ▸ Measure impact
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prior-art" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prior art
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-it-does-not-do-yet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What it does not do yet
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#for-developers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For developers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#shed-example-poc-how-long-it-takes-and-how-big-it-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shed example POC: how long it takes and how big it is
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_Yellow_List/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — the yellow list (what you fill in, defaults used)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_Prior_Art/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — prior art (what is new, what we learned, cost of using others)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_FORMAT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — format contract (marks, outputs, registry, codes; generated)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERPUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel-ERP User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TillUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    uniCenta-style Till & Kitchen Screen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CapexDashboardGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM → ERP and CAPEX Dashboard — for iDempiere users
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CapexUATGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CAPEX UAT Guide — step-by-step test script
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERP_FirstSetup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel-ERP — Your First Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MigrationGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration User Guide (Odoo · Business Central · SAP Business One)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OdooMigration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moving from Odoo — how it works, what is proven
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NinjaExcelReport_UserManual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NinjaExcel Report — User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HRBIMAssetGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HR / Tenancy / Operate Module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CivilWorksGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Civil Works — Step by Step
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TeamsOverlayGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Teams Overlay — Collaboration & Optics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Go Deeper
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Go Deeper
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DeveloperGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide (read first if you will change the code)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ArchitectureOverview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Overview (for reviewers)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../FoldEngineBlackBook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fold Engine Black Book (dev manual)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HolyGrail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Holy Grail (editable rules, live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ERPConceptRosetta.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-ERP Rosetta Stone (concept + cost)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIM_Modeller_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Modeller OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERP_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP — Every Record Has a Place
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERPIntegration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP × BIM × HR — One Building, One Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DistributedERP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Distributed ERP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TermsHowToVerify/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to verify the terms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERP_AI_ADVISORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Letting an AI work on the ERP, safely
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SQLiteWasmArchitectureActual.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How the Database Works (big picture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ViewerComponentModel.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewer Component Model (dev architecture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CLASH_DETECTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clash Detection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../JKR_SKATA/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Asset Classification & JKR/SKATA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../IFC_ExportGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IFC Export Guide (for the BIM author)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TimeMachine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Time Machine (4D Scheduling & Editing)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4D5DAnalysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4D/5D Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMtoProject/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM → Project Order (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerKernelFold/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry as a Signed-Log Fold
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Papers & Positioning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Papers & Positioning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialCompilationPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deterministic Spatial Compilation (academic paper)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AIProposerDefensiveDisclosure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Defensive Disclosure: an Outside AI Proposes, the App Decides
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_TechnicalNote/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — Deterministic 2D ⇄ BIM Round Trip (technical note)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BrowserScaleBenchmark/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Browser-Scale Benchmark (one tab, local first)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnterpriseAuthentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enterprise Authentication (security)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../StrategicIndustryPositioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Strategic Positioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LocalFirstPriorArt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local-First Prior Art
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LegacyOracleAdapterSpec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Legacy-as-Oracle Adapter (migrate / test an ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ShipYard/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Beyond Buildings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RouteTemplate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Find & Navigate (wayfinding)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../halal/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prototypes & Demos
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Prototypes & Demos
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HalalTrace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Halalan Thayiban — halal track & trace (paper)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glassbowl.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glassbowl — the ERP engine as data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glassbowl_gravity.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glassbowl · Gravity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../RetailScaleStory.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Retail at Scale — two messages a day (benchmark story)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bim_architecture_viz.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How it works — interactive architecture tour
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    History & Legacy
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    History & Legacy
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROJECT_CHRONOLOGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Chronology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../VibeProgramming/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vibe Programming — AI + Domain Expertise
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4DGenerator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 4D Generator — Failure Catalogue & AI Findings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnablingTechTimeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enabling-Tech Timeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RED_PILL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Red Pill — Design From Grammar (origin)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LAST_MILE_PROBLEM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Last Mile — drift tracking (Java era)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMERPPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Construction Economy / ERP Wave (Java era)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SYSTEMS_INSTALLER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Self-Host the Java toolchain (legacy installer)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-idea-in-one-picture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The idea in one picture
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-a-standard-sheet-looks-like" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What a standard sheet looks like
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-by-step-in-the-modeller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step by step in the Modeller
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step by step in the Modeller">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-open-the-drawings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1 · Open the drawings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-check-the-metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2 · Check the metadata
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2 · Check the metadata">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#2a-see-a-whole-sheet-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2a · See a whole sheet: Sheet
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-raw-drawings-fill-in-what-is-missing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3 · Raw drawings: fill in what is missing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3 · Raw drawings: fill in what is missing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#3a-what-yellow-means" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3a · What yellow means
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3b-the-sheet-facts-and-datums-what-you-state-and-how" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3b · The sheet facts and datums: what you state, and how
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3c-wall-tops" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3c · Wall tops
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#doors-and-windows-tagged-by-width" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Doors and windows tagged by width
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3d-blocking-items-what-they-mean-and-what-to-do" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3d · Blocking items: what they mean and what to do
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3e-how-long-the-plain-duplex-took" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3e · How long the plain Duplex took
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-save-the-marked-copies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4 · Save the marked copies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-convert" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5 · Convert
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5 · Convert">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#5a-properties-what-a-part-carries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5a · Properties: what a part carries
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-export-ifc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6 · Export IFC
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-load-summary-for-your-structural-engineer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7 · Load Summary (for your structural engineer)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-regulatory-report-what-you-hand-in" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8 · Regulatory Report (what you hand in)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#9-analytical-model-staad-for-your-structural-engineer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9 · Analytical model (STAAD, for your structural engineer)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#if-something-goes-wrong" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        If something goes wrong
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-metadata-for-cad-users" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The metadata, for CAD users
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#drawing-in-bricscad-so-fewer-values-are-guessed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Drawing in BricsCAD so fewer values are guessed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-set-exported-from-revit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A set exported from Revit
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-building-drawn-only-in-2d-a-farm-shed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A building drawn only in 2D: a farm shed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-yellow-list-what-you-fill-in-and-the-defaults-used" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The yellow list: what you fill in, and the defaults used
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The yellow list: what you fill in, and the defaults used">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#which-default-matters-element-defaults-measure-impact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which default matters? Element defaults ▸ Measure impact
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prior-art" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prior art
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-it-does-not-do-yet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What it does not do yet
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#for-developers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For developers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#shed-example-poc-how-long-it-takes-and-how-big-it-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shed example POC: how long it takes and how big it is
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+  <p class="i18n-note"><small>Cette page n'est pas encore traduite ; elle s'affiche en anglais. <a href="https://red1oon.github.io/BIMCompiler/DXF2BIMGuide/">Page en anglais</a>.</small></p>
+  
+                  
+
+
+  
+  
+
+
+<h1 id="2d-drawings-bim-dxf2bim-user-guide">2D Drawings → BIM (DXF2BIM) — User Guide<a class="headerlink" href="#2d-drawings-bim-dxf2bim-user-guide" title="Permanent link">&para;</a></h1>
+<p><em><a href="../USER_GUIDE/">← Back to the <strong>User Guide</strong></a> · <a href="../ModellerGuide/">Modeller Guide</a> · <a href="../">Home</a></em></p>
+<p>Turn a set of 2D CAD drawings (<code>.dxf</code>) — floor plans, elevations, a roof plan and a section — into a 3D BIM
+model inside the <strong>DAGeVu Modeller</strong>, and export it as IFC4 with real storeys.</p>
+<p>It is <strong>deterministic</strong>: the same drawings and the same metadata give the same model, every time. <strong>No AI
+runs on your drawings</strong> — the code reads geometry and the labels you (or the drawing) state. Anything the
+drawing cannot tell it is listed as a <strong>gap</strong>, never guessed.</p>
+<blockquote>
+<p><strong>Status: preliminary.</strong> Two paths. (1) <strong>Standard sets</strong> (walls, floor slabs, roof, door and window openings,
+fills): proven end-to-end on the Duplex, which has a 3D answer key. (2) <strong>Structure sets</strong> drawn only in 2D
+(columns, footings, beams, wall panels, fans, nets, doors, trusses): worked on a real farm-shed drawing set, see
+<a href="#a-building-drawn-only-in-2d-a-farm-shed">A building drawn only in 2D</a>. Anything a drawing does not state is a
+<strong>yellow</strong> setting: see <a href="../DXF2BIM_Yellow_List/">the yellow list</a>. Read
+<a href="#what-it-does-not-do-yet">What it does not do yet</a> before you try your own drawings.</p>
+</blockquote>
+<p><strong>Videos</strong> (the owner's channel, <a href="https://www.youtube.com/@redhuanoon">youtube.com/@redhuanoon</a>; in the order this guide follows):</p>
+<ol>
+<li><a href="https://youtu.be/TuTlhO8cCIY">BricsCAD 2D to BIM 5D in depth</a> (7:12, 2026-10-28): the whole path on the farm shed: what the drawing does not
+   state, the Sheet view, the markings written into your DXF, Convert, one wall edited in small steps, one more bay and where its cost comes from.</li>
+<li><a href="https://youtu.be/mwZ6fkngaao">2D layout assembled automatically in BIM 3D</a> (4:10, 2026-10-22): a raw set opening, each sheet moved by its yellow
+   defaults, then what a person states (steps 1 and 3).</li>
+<li><a href="https://youtu.be/SnqJ7ERxuk0">BricsCAD 2D DXF to BIM 5D</a> (5:17, 2026-10-18): the shed from the converted model to the Viewer, 4D and 5D (shed step 7).</li>
+<li><a href="https://youtu.be/buybl3BWTUw">BIM 3D to DXF 2D</a> (1:58, 2026-10-21): a model written out as a standard 2D set (<a href="#what-a-standard-sheet-looks-like">What a standard sheet looks like</a>).</li>
+<li>
+<p><a href="https://youtu.be/RaU6A8y6ymw">DXF to BIM 3D to 2D to 3D round trip both ways</a> (4:35, 2026-10-16): the Duplex standard set read back to the model it came from.</p>
+</li>
+<li>
+<p>Can I hand this in? — the submission pack (2026-11-01): the same converted shed, then what you attach to a submission (Load Summary, bill, Regulatory Report).
+   <!-- TODO: add the link once the film is published; no URL yet -->
+</p>
+</li>
+</ol>
+<p>Related, outside this guide: <a href="https://youtu.be/tkKP__O1sGU">MEP Walker onto new 2D drawing in BIM</a> (1:36, 2026-10-23).</p>
+<hr />
+<h2 id="the-idea-in-one-picture">The idea in one picture<a class="headerlink" href="#the-idea-in-one-picture" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>A standard 2D set.</strong> Grid lines on the real wall axes (1, 2, 3… across; A, B, C… up, skipping I and O),
+   dimension strings in three tiers (overall · grid-to-grid · detail), level marks, door swings, window sills.</li>
+<li><strong>Metadata.</strong> Each sheet says what it is (plan of which level, which elevation face, roof, section) and the
+   few facts geometry cannot decide (units, wall tops, door sizes from the schedule). The metadata lives
+   <strong>inside the DXF</strong>, on its own layer, so the file stays a normal DXF any CAD program opens.</li>
+<li><strong>A verdict.</strong> Before anything is built, the drawings are checked. Green = <em>Qualifies</em>. Red = a clickable
+   list of exactly what is missing or inconsistent.</li>
+<li><strong>Convert.</strong> One click builds the model. Every element remembers the DXF entity (handle and layer) it came from.</li>
+</ol>
+<hr />
+<h2 id="what-a-standard-sheet-looks-like">What a standard sheet looks like<a class="headerlink" href="#what-a-standard-sheet-looks-like" title="Permanent link">&para;</a></h2>
+<p><img alt="Ground floor plan from the standard writer: grid 1–3 / A–D, three dimension tiers, door swings and window sills" src="../../img/dxf2bim/std_plan_gf.jpg" /></p>
+<p><em>Ground floor plan of the Duplex, written from the model by the standard 2D writer. Grid bubbles at both ends;
+dimension strings: overall (8800 / 17800), grid-to-grid (4192 + 4192, 7620 / 2143 / 7620) and detail (walls
+and openings). Every dimension is a real CAD dimension measured between its two points — never typed text.</em></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img alt="Front elevation with level datums" src="../../img/dxf2bim/std_front.jpg" /></td>
+<td><img alt="Building section through both storeys and the roof" src="../../img/dxf2bim/std_section.jpg" /></td>
+</tr>
+<tr>
+<td><em>Front elevation: walls and openings on that face, level datums and height dimensions.</em></td>
+<td><em>Section: slabs and roof cut through, with their levels — this is where slab thickness comes from.</em></td>
+</tr>
+</tbody>
+</table>
+<p>▶ Video: <a href="https://youtu.be/buybl3BWTUw">BIM 3D to DXF 2D</a> (1:58) · <a href="https://youtu.be/RaU6A8y6ymw">the round trip both ways</a> (4:35).</p>
+<p><strong>Rules the writer follows</strong> (drafting conventions, stated as choices):</p>
+<ul>
+<li>A floor plan shows <strong>everything the cut plane passes through</strong> — cut at the storey level + 1.2 m.</li>
+<li>Grid lines sit on <strong>load-bearing and exterior wall axes</strong>, never snapped to a module.</li>
+<li>Door arcs: the <strong>hinge</strong> from the IFC door type (left/right hand), the <strong>swing side</strong> from the door leaf, the
+  <strong>radius = leaf width</strong> (not the frame). No hinge data → a <code>HINGE ?</code> note, never a guessed arc.</li>
+<li>Slab thickness is read from the <strong>section</strong>, not from elevations.</li>
+</ul>
+<hr />
+<h2 id="step-by-step-in-the-modeller">Step by step in the Modeller<a class="headerlink" href="#step-by-step-in-the-modeller" title="Permanent link">&para;</a></h2>
+<p><strong>Open:</strong> <a href="https://red1oon.github.io/bim-ootb/modeller/modeller.html">red1oon.github.io/bim-ootb/modeller/modeller.html</a> (desktop browser).</p>
+<h3 id="1-open-the-drawings">1 · Open the drawings<a class="headerlink" href="#1-open-the-drawings" title="Permanent link">&para;</a></h3>
+<p><strong>📂 Open → Open 2D drawings (.dxf)…</strong> and select <strong>all</strong> sheets of the set at once (plans, elevations, roof,
+section). The <strong>2D Drawings</strong> panel lists each sheet with its role; the canvas shows each sheet placed in 3D —
+plans at their level, elevations on their face, the section on its cut plane.</p>
+<p>A raw set (no metadata yet) <strong>plays its arrangement</strong> as it opens: each sheet first lies where it was drawn, then
+moves to where its markings and yellow defaults put it, one value at a time, so you can see what each value does.
+<strong>Arrange</strong> in the 2D Drawings panel plays it again; <strong>Esc</strong> stops it. ▶ Video: <a href="https://youtu.be/mwZ6fkngaao">2D layout assembled automatically in BIM 3D</a> (4:10).</p>
+<p><img alt="The 2D Drawings panel and the Drawing metadata editor, standard set loaded: verdict Qualifies" src="../../img/dxf2bim/import_sheets.jpg" /></p>
+<h3 id="2-check-the-metadata">2 · Check the metadata<a class="headerlink" href="#2-check-the-metadata" title="Permanent link">&para;</a></h3>
+<p>Press <strong>Metadata</strong>. The <strong>Drawing metadata</strong> panel shows, per section:</p>
+<table>
+<thead>
+<tr>
+<th>Section</th>
+<th>What you set</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Sheets</strong></td>
+<td>role (plan / elevation / roof / section), level, face, cut</td>
+<td>a plan's level defines a storey</td>
+</tr>
+<tr>
+<td><strong>Units</strong></td>
+<td>mm, m, in, ft</td>
+<td><strong>you confirm</strong> — the file header is shown ("file says mm") but never applied by itself</td>
+</tr>
+<tr>
+<td><strong>Layers</strong></td>
+<td>which layer holds walls, doors, glazing, dims, grid, levels; or ignore</td>
+<td>templates for common layer standards</td>
+</tr>
+<tr>
+<td><strong>Tags</strong></td>
+<td>click an element on the canvas, pick its mark / type</td>
+<td>e.g. a door mark that links to the schedule</td>
+</tr>
+<tr>
+<td><strong>Exclude areas</strong></td>
+<td>drag a box around decking, furniture, landscaping</td>
+<td>its contents are ignored</td>
+</tr>
+<tr>
+<td><strong>Wall tops</strong></td>
+<td>"walls stop under the slab above", or a height per wall</td>
+<td>interior wall heights are never visible in elevations</td>
+</tr>
+<tr>
+<td><strong>Verdict</strong></td>
+<td>live result</td>
+<td>click an item to zoom to it on the drawing</td>
+</tr>
+</tbody>
+</table>
+<p>Every value shows <strong>where it came from</strong>: <em>from file</em>, <em>from model</em>, or <em>you</em>.</p>
+<p><img alt="Editor with the standard set: units confirmed, layers mapped, verdict Qualifies" src="../../img/dxf2bim/editor_std.jpg" /></p>
+<h4 id="2a-see-a-whole-sheet-sheet">2a · See a whole sheet: Sheet<a class="headerlink" href="#2a-see-a-whole-sheet-sheet" title="Permanent link">&para;</a></h4>
+<p>Open a sheet's card in the <strong>Sheets</strong> section and press <strong>Sheet</strong>. The sheet fills the canvas beside the panel,
+<strong>as it was drawn</strong>, with its metadata drawn on top:</p>
+<ul>
+<li>a <strong>grid line</strong> or <strong>level datum</strong> you stated is a dashed line through its own position, labelled <code>@GRIDX=A</code>,
+  <code>@Z=3.1</code> …; a tag sits at its point, an exclude area is drawn as its box;</li>
+<li>values that have no place on the sheet (units, role, name, set) are listed in a <strong>markings box</strong>;</li>
+<li>every <strong>yellow row still open</strong> in the list is a ring at the spot the editor read it from (yellow = stated or
+  read, orange = inferred). Tick the row in the list and its ring turns into a marking, while the view stays open.</li>
+</ul>
+<p>A sheet that already has its own border and title block keeps them. A sheet without one (for example a sheet
+written by the model's own 2D export) gets an <strong>ISO border and title block</strong> at the paper size and scale that hold
+it (1:100 first, then 1:200, 1:500, 1:50, on A4 to A0); what the drawing does not say (date, owner, approver,
+revision) is shown in yellow as <em>not stated</em>, never filled in. <strong>Save SVG</strong> saves the view at paper size, <strong>Print</strong>
+prints it, and <strong>Markings</strong> switches the drawn metadata off for a clean copy. Wheel to zoom, drag to pan, <strong>Esc</strong>
+or ✕ to close; nothing you do in the view changes the drawings or the metadata.</p>
+<p><strong>What the view draws</strong> (bim-ootb §D101):</p>
+<ul>
+<li><strong>Every dimension, even when the DXF does not link it to its picture.</strong> On the shed's 9 sheets all 147 dimensions are drawn: 111 through their own stored
+  pictures (found by their definition points), and 36 (North and South elevations, which have no stored picture) drawn from their own points with the value in the file's
+  own dimension style. Those 36 values are small next to the sheet's texts; that is the file's style, not a fault. A dimension that cannot be matched is left out and counted, never drawn from a guess.</li>
+<li><strong>CAD codes read as symbols:</strong> <code>%%c</code> shows as Ø, <code>%%d</code> as °, <code>%%p</code> as ±.</li>
+<li><strong>The drafter's geometry, as given, one scale both ways.</strong> The view does not rescale a detail to match its written values. A detail sheet that is drawn <strong>not to scale stays not to scale</strong>
+  and the written values govern: on the shed's details sheet a span written <code>10'-0"</code> is drawn about 1.7 times its scale and the cross-sections <code>12"</code> about 4.2 to 4.5 times (§D102).</li>
+<li><strong>A details / notes sheet shows NOTES.</strong> A sheet that states notes but draws no body shows the chip <strong>NOTES</strong> (not a red <em>NO ROLE</em>) and "general notes read: n" in both panels,
+  and it is not counted as needing input.</li>
+</ul>
+<p><img alt="The shed's details sheet in the Sheet view: every dimension drawn (10'-0&quot; / 16'-8&quot; over the beam long sections), Ø for %%c, the private title-block text blurred for this picture; the 2D panel shows the sheet as NOTES, general notes read: 4" src="../../img/dxf2bim/dxf2bim_sub_details_sheet.jpg" /></p>
+<h3 id="3-raw-drawings-fill-in-what-is-missing">3 · Raw drawings: fill in what is missing<a class="headerlink" href="#3-raw-drawings-fill-in-what-is-missing" title="Permanent link">&para;</a></h3>
+<p>A drawing without metadata opens with <strong>red</strong> fields and the verdict <strong>Blocked</strong>. The editor lists
+<strong>suggestions</strong> it can prove from the drawing (e.g. a title text "GROUND FLOOR PLAN" → role = plan) — <strong>nothing
+becomes metadata until you tick it.</strong></p>
+<p><img alt="Raw drawings: every sheet needs a role; suggestions wait for your tick; Convert is refused" src="../../img/dxf2bim/editor_raw.jpg" /></p>
+<p>Click any verdict item to jump to it:</p>
+<p><img alt="Clicking a verdict item zooms the canvas to the offending entity" src="../../img/dxf2bim/editor_verdict_zoom.jpg" /></p>
+<p>The rest of this step is written from a first-time walk through the real Modeller (2026-10-22) on the Duplex
+standard set with every marking removed (8 sheets, the plain drawings a CAD program would hand you). The walk
+reached <strong>Qualifies</strong>, and <strong>Convert</strong> built 135 elements with 36 openings cut, the same numbers as the editor's
+own end-to-end check. (Today the same set converts to 87 elements with 36 openings cut: a drawn wall line is now
+one wall, not one piece per segment.) The counts below are the clicks and typed values of that walk.</p>
+<h4 id="3a-what-yellow-means">3a · What yellow means<a class="headerlink" href="#3a-what-yellow-means" title="Permanent link">&para;</a></h4>
+<p>A <strong>yellow row</strong> is a value the editor read from the drawing (or a default it applied) that is <strong>not yours yet</strong>.
+Each row names its source: <code>PR-UNITS: file says mm</code>, <code>PR-GRID: grid line 190 + label 1</code>, <code>PR-Z: level text B5 +
+level line B3</code>. Tick one row, tick a whole group, or press <strong>Accept all</strong>; the value then shows <strong>you</strong>. When the list holds both
+values the file states or a text names (stated / read) and values inferred from geometry or a convention (orange rows), <strong>Accept all</strong> is
+replaced by two buttons, <strong>Accept stated + read</strong> and <strong>Accept inferred</strong>: check the orange rows first (a click on a row shows its evidence on the sheet). Ignoring a yellow default
+is allowed (the default stays applied and is listed); ignoring a yellow <em>suggestion</em> leaves the field empty.</p>
+<p>The list grows as you answer. On the plain Duplex set it came in four rounds (walk of 2026-10-22; the editor has
+since read more from the titles, so today's rounds are larger: 24 rows in round 1, 66 in round 2):</p>
+<table>
+<thead>
+<tr>
+<th>Round</th>
+<th>Appears after</th>
+<th>Rows</th>
+<th>What they are</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>opening the sheets</td>
+<td>10</td>
+<td>units of each sheet (8), the section's view and name (2)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>you choose each sheet's role</td>
+<td>49</td>
+<td>grid lines on the plans and elevations, level datums (<code>@Z</code>) from level texts, elevation faces, the section cut</td>
+</tr>
+<tr>
+<td>3</td>
+<td>you type the set name once</td>
+<td>7</td>
+<td>the same set name for the other sheets</td>
+</tr>
+<tr>
+<td>4</td>
+<td>you type the plan levels</td>
+<td>5</td>
+<td>the horizontal axis (<code>@HAXIS</code>) of each elevation and the section, fitted to the plan grid</td>
+</tr>
+</tbody>
+</table>
+<p>The list opens with its count (round 2 of the plain Duplex: <code>66 yellow in 6 groups</code>) and the accept buttons, <strong>above</strong> the rows. The rows come in one
+group per rule (<em>Grid lines</em>, <em>Level datums</em>, <em>Elevation faces</em> ...), closed: the header gives the rule, its row count and the
+sheets, and one tick accepts exactly that group. A grid group states its measurement in the header (for each of <code>GRIDX</code> /
+<code>GRIDY</code> / <code>GRIDH</code>: the label range and the bay sizes in drawing units), so a badly formed grid shows before you accept it. For
+the set-wide values (units, set name, roof) the header names the one value when every sheet agrees (<code>@UNITS=mm on all 8
+sheets</code>); a sheet that disagrees is shown on its own, open, marked <em>disagrees</em>, and the group tick leaves it.</p>
+<p><strong>The section cut.</strong> When the section's title states where it cuts (<code>SECTION A-A AT X=2304.25</code>), the cut is read from
+the title (<em>Section cut from the title</em>, a read row) and nothing else is looked at. Only when the title does not
+say it does the editor pair the two section labels on the plan (<em>Section cut</em>, an <strong>orange</strong> inferred row): check
+that one on the sheet before you accept it. (Until 2026-10-23 the pairing ran first and was wrong on both standard
+sets walked: it took two grid bubbles with the section's letter. Since then, on the Duplex and the three-storey
+office, the cut, the roles, the plan levels and the roof tops read from the titles equal the model's own, 0 wrong:
+<code>W-TITLE</code>, <code>DXF2BIM_FOUNDATION_LANE.md</code> §D46.)</p>
+<p><img alt="Round 2 of the yellow list: one row per grid line, datum and face, each with its source" src="../../img/dxf2bim/walk_yellow_list.jpg" /></p>
+<h4 id="3b-the-sheet-facts-and-datums-what-you-state-and-how">3b · The sheet facts and datums: what you state, and how<a class="headerlink" href="#3b-the-sheet-facts-and-datums-what-you-state-and-how" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Marking</th>
+<th>What it is</th>
+<th>Where it comes from in the walk</th>
+<th>How you give it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Role (<code>@VIEW</code>)</td>
+<td>plan, elevation, roof plan or section</td>
+<td>the title, read without its scale or a trailing note (<code>FRONT ELEVATION  1:100</code> → elevation)</td>
+<td>accept; pick from the list only when no title says it</td>
+</tr>
+<tr>
+<td><code>@SET</code></td>
+<td>the name of the set</td>
+<td>nothing in the drawing; when no sheet names it, the placeholder <code>BUILD-NAME</code> is offered (orange)</td>
+<td>type once and the other sheets get it as yellow; or accept the placeholder to go on: it stays marked <em>default</em> until you type the real name on any one sheet, which replaces it on every sheet</td>
+</tr>
+<tr>
+<td><code>@UNITS</code></td>
+<td>drawing units</td>
+<td>the file header (<code>$INSUNITS</code>), shown as yellow</td>
+<td>accept</td>
+</tr>
+<tr>
+<td><code>@LEVEL</code></td>
+<td>a plan's storey level, metres</td>
+<td>the plan title (<code>LEVEL 2 PLAN (FFL +3.100)</code> → 3.1)</td>
+<td>accept; type it only when no title states it</td>
+</tr>
+<tr>
+<td><code>@ROOF</code></td>
+<td>the roof top, metres</td>
+<td>a roof-top text on the sheet (<code>T/ROOF +6.457</code>, <code>TOP OF ROOF ...</code>); two different values on one sheet are not proposed</td>
+<td>accept; type it where no text states it</td>
+</tr>
+<tr>
+<td><code>@Z</code></td>
+<td>a level datum on an elevation or section: a height in metres at a drawing y</td>
+<td>level texts paired with their level lines; else the heavy ground line as z 0; the second height from the drawing's own vertical dimension (orange: a dimension the CAD measured, not typed over, at dimension scale 1)</td>
+<td>accept; only where no such dimension exists: type the height and <strong>Pick</strong> its line on the sheet (see the shed)</td>
+</tr>
+<tr>
+<td><code>@GRIDX</code> / <code>@GRIDY</code> / <code>@GRIDH</code></td>
+<td>which grid label sits on which line</td>
+<td>grid lines with their labels, or dimension ticks</td>
+<td>accept</td>
+</tr>
+<tr>
+<td><code>@FACE</code></td>
+<td>which side of the building an elevation shows</td>
+<td>the sheet name or title (FRONT, LEFT, SOUTH...)</td>
+<td>accept</td>
+</tr>
+<tr>
+<td><code>@HAXIS</code></td>
+<td>which plan axis runs left to right on an elevation</td>
+<td>fitted to the plan grid after the plan levels exist</td>
+<td>accept (round 4)</td>
+</tr>
+<tr>
+<td><code>@CUT</code></td>
+<td>where the section cuts the plan</td>
+<td>the section title (<code>AT X=2304.25</code>); else the section labels on the plan (orange)</td>
+<td>accept; check an orange one on the sheet</td>
+</tr>
+</tbody>
+</table>
+<p>On the walk of 2026-10-22 the Duplex needed 7 role picks and 11 typed values (set name 1, levels 3, roof top 6,
+cut 1). Since §D46 (2026-10-23) the roles, the levels, the roof tops and the cut are read from the titles and texts
+(W-TITLE: 8 of 8 roles by <strong>Accept all</strong> alone, 0 wrong), so the set name is the one value left to type for the
+sheets, and since §D98 (2026-10-31) even that one can be the accepted placeholder <code>BUILD-NAME</code> until you name the set. The whole walk has not been re-counted since.</p>
+<h4 id="3c-wall-tops">3c · Wall tops<a class="headerlink" href="#3c-wall-tops" title="Permanent link">&para;</a></h4>
+<p>After the sheets are complete, <strong>Wall tops</strong> lists the interior walls no elevation shows (17 on the ground floor,
+27 on the first floor of the Duplex). Tick <strong>Interior walls run to the slab above</strong> once per plan; the list
+empties. A wall that stops lower than the slab can still be given its own top in the field beside it.</p>
+<p><img alt="Wall tops: one tick per plan clears the interior walls the elevations cannot show" src="../../img/dxf2bim/walk_wall_tops.jpg" /></p>
+<h4 id="doors-and-windows-tagged-by-width">Doors and windows tagged by width<a class="headerlink" href="#doors-and-windows-tagged-by-width" title="Permanent link">&para;</a></h4>
+<p>Give each row of the drawing's <strong>Door schedule</strong> and <strong>Window schedule</strong> once, in the <strong>Doors and windows</strong> section
+(mark, width, height; a window row also its sill). When a plan carries a door schedule as text, its rows are
+proposed from that text (<em>Schedule rows</em>, a read row) and you only accept them; otherwise type them. The editor
+then proposes one <strong>orange</strong> row per schedule row, for example <code>@TAG=door,D1 on 6 doors</code>: every untagged door (or
+window) whose drawn width matches exactly that row's width. One tick tags them all. A width that two rows share is
+not proposed (it is listed with both marks); tag those one by one. Measured: Duplex doors 4 rows, 4 clicks, 14 tags
+(W-TAG-WIDTH); Duplex windows 10 tagged in 3 clicks, 4 left because two 819 mm rows differ only by their sill
+(W-WIN-TAG-WIDTH); on a clinic set whose door types share one leaf width, 234 doors are listed, never guessed.</p>
+<h4 id="3d-blocking-items-what-they-mean-and-what-to-do">3d · Blocking items: what they mean and what to do<a class="headerlink" href="#3d-blocking-items-what-they-mean-and-what-to-do" title="Permanent link">&para;</a></h4>
+<p>A <strong>blocking</strong> item stops Convert. An <strong>advisory</strong> item does not. The verdict lists them; click one to zoom to it.
+What blocked the plain Duplex after the sheets were complete, and how each was cleared:</p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Meaning</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>QF:elev_roof_unstated</code>, <code>QF:elev_height_dim_missing</code></td>
+<td>an elevation has no roof top</td>
+<td>type <code>@ROOF</code> on that elevation</td>
+</tr>
+<tr>
+<td><code>GAP:no_elevation_height</code> on <code>A-WALL-PRTN</code></td>
+<td>interior walls with no height</td>
+<td>Wall tops (3c)</td>
+</tr>
+<tr>
+<td><code>GAP:no_elevation_height</code> + <code>GAP:no_host_cut</code> on <code>A-DOOR</code></td>
+<td>a door with no schedule mark: its height is unknown and its opening is not cut</td>
+<td>Doors (below)</td>
+</tr>
+<tr>
+<td><code>GAP:fill_unbound</code></td>
+<td>a window with no product: the plan cannot tell three windows stacked at one position apart</td>
+<td>Tags, picked on an elevation (below)</td>
+</tr>
+<tr>
+<td><code>QF:layer_unmapped</code></td>
+<td>a layer the set does not read</td>
+<td>Layers: choose what it holds, or <em>ignore</em></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Doors.</strong> The plain drawings carry the door widths (the drawn leaf) but <strong>no door heights</strong>: you bring them from the
+door schedule. In <strong>Doors</strong>, add one schedule row per door type (mark, width, height in mm, then <strong>+</strong>), or accept
+the rows read from a schedule text. Then tick the <strong>Tags by width</strong> rows (above): each tags every door of its width.
+For a door left over (a width two rows share, or a width no row has), <strong>Tag doors</strong>: click the door in the list (the
+canvas zooms to it), click the door's <strong>arc</strong> on the canvas, pick the mark, <strong>Tag</strong>. Click the arc itself: a click
+beside it, or on the leaf line, answers <em>No door here</em>. The Duplex has 14 doors of 4 widths: 4 schedule rows and 4
+clicks (on the walk of 2026-10-22, before tags by width: 14 tags, about 4 clicks per door).</p>
+<p><img alt="Doors: the schedule row, the picked door (17D, leaf 1250 mm) and its Tag card" src="../../img/dxf2bim/walk_door_tag.jpg" /></p>
+<p><strong>Stacked windows.</strong> In <strong>Tags</strong>, turn on the Tag tool, turn the view to face an elevation, click a window's glazing
+there (the plan position and height come from the elevation), choose the product, <strong>Add</strong>. The product list holds
+every window family of the library (37 on the walk) by name, without sizes: choose the one whose name matches the
+drawn width (on the Duplex, the 819 mm family). A wrong family is reported as <code>GAP:type_size_mismatch</code> and the tag
+can be removed with its bin icon. When the library holds several types of one size, the window takes the library's
+first one as an <strong>amber default</strong> (listed as <code>GAP:type_defaulted</code>, advisory: it does not block) and you correct it
+per window with a tag; on the Duplex that first type is right for 4 of the 12 stacked windows (<code>@DEFAULT=type.size_tie,none</code>
+on a sheet turns the default off).</p>
+<p>When the last blocking item is cleared the badge reads <strong>Qualifies</strong> and Convert is enabled.</p>
+<h4 id="3e-how-long-the-plain-duplex-took">3e · How long the plain Duplex took<a class="headerlink" href="#3e-how-long-the-plain-duplex-took" title="Permanent link">&para;</a></h4>
+<p>Clicks and typed values of the walk of <strong>2026-10-22</strong>, from opening to Qualifies: 3 to open, 4 <em>Accept all</em>, 7 role
+picks, 11 typed sheet values, 2 wall-top ticks, then 83 actions for the 14 doors (16 for the schedule rows) and 41
+for the 12 stacked windows. The doors and windows were about four fifths of the work. The machine time between
+steps was under 2 s each (a verdict re-run takes 0.2 to 0.8 s on this set).</p>
+<p>What changed since, step by step (each measured by its own check; the whole walk has not been re-counted): the
+roles, levels, roof tops and cut are read from the titles (7 role picks and 10 of the 11 typed values gone); the
+14 doors are tagged by width in 4 clicks after their 4 schedule rows; 10 windows are tagged by width in 3 clicks.</p>
+<h3 id="4-save-the-marked-copies">4 · Save the marked copies<a class="headerlink" href="#4-save-the-marked-copies" title="Permanent link">&para;</a></h3>
+<p><strong>Save marked copies</strong> downloads <code>&lt;name&gt;_marked.dxf</code> for every sheet, with your metadata written in. The
+originals are never modified. Next time you open the marked copies, everything is already filled.</p>
+<h3 id="5-convert">5 · Convert<a class="headerlink" href="#5-convert" title="Permanent link">&para;</a></h3>
+<p><strong>Convert</strong> is enabled only when the verdict is <strong>Qualifies</strong>. It builds walls, floor slabs, the roof, cuts the
+door and window openings, and places the door and window fills from the component library — as <strong>one undo
+step</strong>.</p>
+<p>Two choices sit above <strong>Convert</strong>. <strong>Evidence colours (drawn / derived / assumed)</strong> shows each body by how it is
+known instead of its material: drawn as is, <strong>derived</strong> (amber: computed from drawing evidence plus a stated
+convention) or <strong>assumed</strong> (red: no drawing evidence for it). <strong>Firm catalogue: Load</strong> takes your office's catalogue
+(made from one of your own IFC models with <code>modeller/tools/catalogue_from_ifc.js</code>): a wall or slab of a thickness
+in the catalogue gets that thickness's most frequent material, a door its type, with the count stated. A file
+that does not fit is refused with the reason, never half-loaded; <strong>Clear</strong> goes back to the reference materials.</p>
+<p><img alt="The converted Duplex: two storeys, openings cut, doors and glazing placed" src="../../img/dxf2bim/converted.jpg" /></p>
+<h4 id="5a-properties-what-a-part-carries">5a · Properties: what a part carries<a class="headerlink" href="#5a-properties-what-a-part-carries" title="Permanent link">&para;</a></h4>
+<p>Click a converted part and the <strong>Properties</strong> panel opens beside the tool rail. It shows exactly what that part's IFC will carry: the IFC class, name,
+label, predefined type and material, then the drawing evidence in groups — <strong>Source</strong> (sheet, handle, layer, how it is known), <strong>Size</strong> (each stated size, in
+metres, with its base and top), <strong>Drawing notes</strong> (each note beside the sheet and handle it was read from) and <strong>Schedule</strong> (the schedule row it matched). A value
+with no content is not shown, because the IFC does not write it. A part you drew yourself says <em>no drawing evidence: this part was not converted from the 2D set</em>.</p>
+<p><strong>A part of an opened building</strong> (a resident, a <code>.db</code>, or an <code>.ifc</code> you open) shows what the building's database states about it: IFC class, name, storey,
+material, type, GlobalId, and each standard property set (<code>Pset_WallCommon</code>, <code>Pset_DoorCommon</code>, …) with whether the value is set on the element or on its type.
+A raw <code>.ifc</code> is read once, on the first click, by the same converter the residents and every export use, so it shows the same rows its <code>.db</code> would (the Duplex
+architecture IFC: 289 elements, 219 property rows, about half a second). Only the standard <code>Pset_*Common</code> sets are read; a vendor's own sets are not shown yet.
+With several parts selected it shows the last one picked; <strong>×</strong> closes it until the selection changes. On a small screen with the
+metadata editor open there is no room beside it, so it opens on top of the editor.</p>
+<h3 id="6-export-ifc">6 · Export IFC<a class="headerlink" href="#6-export-ifc" title="Permanent link">&para;</a></h3>
+<p><strong>Export → IFC4.</strong> The file has a proper spatial structure (Project → Site → Building → Storeys) and every
+element contained in its storey. On the Duplex standard set (measured 2026-10-26): 44 walls (one wall per drawn
+wall line), 6 slabs, 1 roof, 14 doors, 22 windows, 36 openings, 2 storeys.</p>
+<p><strong>Export → Viewer database (.db)</strong> builds the same IFC4 and runs it through the extractor the Viewer uses, then
+downloads <code>&lt;name&gt;_extracted.db</code>. Open that file in the <strong>Viewer</strong> (<strong>Open → local .db</strong>) for 3D, 4D and 5D.</p>
+<hr />
+<h3 id="7-load-summary-for-your-structural-engineer">7 · Load Summary (for your structural engineer)<a class="headerlink" href="#7-load-summary-for-your-structural-engineer" title="Permanent link">&para;</a></h3>
+<p><strong>Export ▸ Load Summary…</strong> opens a report in a new tab: <em>what your drawings tell the structural engineer. Not a design check.</em></p>
+<ul>
+<li><strong>Own weight by part</strong>: every converted part weighed from its drawn size and material, with the unit weight it used and where that comes from
+  (BNBC 2012 Part 6 Ch 2, Tables 2.2.1 / 2.2.2: concrete 22.8 kN/m³ + 0.63 per 1 % reinforcement, brick 18.9, steel 77.0, galvanized roof sheeting 0.096 kN/m² for 0.8 mm).
+  Green = a cited table value, amber = a best-effort default to confirm (the reinforcement percentage and the roof sheet thickness are not drawn).</li>
+<li><strong>Load on each footing</strong>: each part goes once to the nearest footing in plan; a ground-floor slab bears on the ground. The pressure on the soil is shown;
+  the soil's capacity is a red field until a soil report gives it.</li>
+<li><strong>Shape for wind and earthquake</strong>: length, width, eave and ridge height, roof slope, read from the model.</li>
+<li><strong>What only you can state</strong> (red, never guessed): fan, door and netting weights, the size of members the drawing does not size, the site district, the soil capacity.</li>
+<li><strong>Inputs</strong>: edit the values and facts on the page and press <strong>Apply</strong> to recompute; <strong>Download inputs</strong> keeps them; to keep a value with the drawings,
+  state it in the Modeller as <code>@DEFAULT=&lt;key&gt;,&lt;value&gt;</code>. <strong>Print / Save as PDF</strong> for the engineer.</li>
+</ul>
+<p>On the farm shed (2026-11-01, Complete ticked): 5,275.1 kN of own weight from 480 parts (537.9 t), 1,737.9 kN on the 32 footings, 3,537.2 kN of ground slab on the
+ground; the heaviest footing carries 120.0 kN (64.6 kPa); 32 parts are listed as not weighed (12 members with no section drawn and none to assume, 13 fans, 4 doors,
+3 nettings). Members with no section on their label take the drawing's most common section of the same kind, marked <em>assumed</em> (91 of the shed's 156 bars).
+A beam is sized along its own axis, so a beam drawn at an angle weighs the same as one square to the grid.
+It does not compute live load, wind, earthquake or member strength: those need the stated site, soil and an engineer's analysis.</p>
+<p><img alt="Export ▸ Load Summary on the converted shed (2026-11-01): own weight 5,275.1 kN, 1,737.9 kN on the footings, heaviest footing 120.0 kN; part by part with each unit weight's source; inputs nothing states are red" src="../../img/dxf2bim/dxf2bim_load_summary_2026-11-01.jpg" /></p>
+<h3 id="8-regulatory-report-what-you-hand-in">8 · Regulatory Report (what you hand in)<a class="headerlink" href="#8-regulatory-report-what-you-hand-in" title="Permanent link">&para;</a></h3>
+<p><strong>Export ▸ Regulatory Report…</strong> opens a short form of the facts a model cannot give (plot area, setbacks, occupancy, district, soil bearing capacity …,
+ten in all). A box left empty makes the report say <em>not stated</em>; nothing is guessed. Pick the rate pack and press <strong>Build report</strong>.</p>
+<p><img alt="The facts form: soil typed 150 kPa as an example, the other boxes left empty, rate pack PWD Bangladesh SoR 2022" src="../../img/dxf2bim/dxf2bim_sub_report_form.jpg" /></p>
+<p>The report has nine sections: identification and scope, areas and heights, egress checks, structural checks, dead load, foundation loads, the bill of quantities,
+model quality, and the assumptions and facts not stated. Each verdict is a plain word (PASS, FINDINGS n, INCONCLUSIVE, NOT STATED), never "compliant";
+it says first that it is <strong>not a compliance certificate</strong>, and its signature blocks are left blank for the people who sign.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img alt="The report's opening: identification and scope, not a certificate" src="../../img/dxf2bim/dxf2bim_sub_report.jpg" /></td>
+<td><img alt="Checks with their codes, and the rules that found nothing of their kind to judge" src="../../img/dxf2bim/dxf2bim_sub_checks.jpg" /></td>
+</tr>
+<tr>
+<td><img alt="The bill: every rate names its PWD Schedule of Rates item and page" src="../../img/dxf2bim/dxf2bim_sub_bill.jpg" /></td>
+<td><img alt="What it does not claim: the defaults used, best guesses marked to confirm, facts not stated" src="../../img/dxf2bim/dxf2bim_sub_assumptions.jpg" /></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Where the report is kept.</strong> It is ONE self-contained HTML file, <code>regulatory_report.html</code> (its styles are inside it): the Modeller downloads it to your browser's
+download folder and opens it in a new tab; the CLI writes it to <code>&lt;out&gt;/regulatory_report.html</code> with <code>--report</code>. Print it to PDF from the browser if a PDF is wanted.</p>
+<p><strong>Is it editable?</strong> At its <strong>source</strong>, yes, and that is where to edit it. The report's format lives in one open-source (MIT) file, <code>modeller/reg_report.js</code> in bim-ootb:
+the facts the form asks for (<code>FACTS</code>, line 17), the nine sections, their titles, order and verdict words (<code>compose()</code>, lines 40–98), the look (the <code>css</code> string,
+line 101) and the page skeleton (line 102). The Modeller's Export and the CLI's <code>--report</code> both use this one file, so a change there (a section renamed, an
+authority's header added, another style) reaches both; the witnesses W-REG-REPORT and W-REG-REPORT-UI check that the page and the CLI still match.
+<strong>Before building</strong>, edit what goes in, not the page: the facts form, the rate pack and its rates (the rate editor), and the defaults (Element defaults ▸ Set);
+build again and the report follows in seconds. Editing the downloaded HTML by hand is possible, but that copy no longer matches the model fingerprint and sources it states.
+The 4D/5D page is different (a live page, its downloads are Excel files): see <a href="../4D5DAnalysis/">4D5D Analysis ▸ Where the page's format is kept, and how to edit it</a>.</p>
+<h3 id="9-analytical-model-staad-for-your-structural-engineer">9 · Analytical model (STAAD, for your structural engineer)<a class="headerlink" href="#9-analytical-model-staad-for-your-structural-engineer" title="Permanent link">&para;</a></h3>
+<p><strong>Export ▸ Analytical model (STAAD)…</strong> downloads a <code>.std</code> file the engineer opens in STAAD.Pro as a <strong>starting model, not a design</strong>. It is built from the model's IFC,
+so the same export works on a converted 2D set (it writes the IFC first) and, with nothing converted, on <strong>any <code>.ifc</code> you choose</strong>.</p>
+<ul>
+<li><strong>Members</strong>: each column, beam and steel member on its centre line; a free end that lands on another member's span joins it there. Gusset plates, walls, the roof
+  sheet, fans, doors and netting are listed as left out with the reason; a footing becomes a <strong>support</strong> (FIXED by default; Element defaults <code>analytical.support</code>).</li>
+<li><strong>Joints</strong>: member ends closer than <code>analytical.node_snap</code> (0.25 m by default) are one joint. Ends joined to nothing are listed as <strong>dangling</strong>, with their sheet
+  and handle, never hidden.</li>
+<li><strong>Sections and materials</strong>: concrete rectangles from the drawn sizes; steel angles from the label (or the drawing's most common section, marked assumed).
+  Concrete stiffness is E = 4700 √f'c from the drawing's own strength note (ACI 318-19 §19.2.2.1); with no f'c stated, no stiffness is given and a finding says so.
+  A member whose stated material is neither concrete nor steel gets no stiffness either.</li>
+<li><strong>Load</strong>: one case, self-weight only. No live, wind or seismic load, no member releases: the file header lists every assumption for the engineer.</li>
+</ul>
+<p>On the farm shed: 337 members (96 column pieces, 35 beams, 206 truss-bar pieces), 319 joints, 32 supports, 36 dangling ends, 14 findings; a 19,330-byte <code>.std</code>.
+The file built from the drawings and the file built from the exported IFC alone are <strong>byte-identical</strong>, so nothing the analysis needs is lost on the way through IFC.
+From the command line: <code>node modeller/dxf2bim_cli.js --sheets &lt;sheets&gt; --out &lt;dir&gt; --complete --analytical</code> (also writes <code>analytical.json</code>, an open format), or
+<code>node modeller/dxf2bim_cli.js --ifc-in &lt;file.ifc&gt; --analytical --out &lt;dir&gt;</code> for any IFC. A typical IFC from elsewhere states no section sizes and no f'c, so its
+members take their box sizes and get findings instead of a stiffness (measured on six models, e.g. <code>Ifc4_Revit_STR.ifc</code>: 449 members, 453 joints, 4 supports, 152 dangling ends).</p>
+<h3 id="if-something-goes-wrong">If something goes wrong<a class="headerlink" href="#if-something-goes-wrong" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>What you see</th>
+<th>Why</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>the panel says <em>Convert failed: …</em> (the badge still says <em>Qualifies</em>: the drawings are fine, the run was not)</td>
+<td>the conversion stopped on an error; <em>(nothing was built)</em> or <em>(undone)</em> says the model is as it was before the click</td>
+<td><strong>Convert</strong> again; if it fails again, the message and the console line <code>§DXF-CONVERT failed …</code> are what to report</td>
+</tr>
+<tr>
+<td><em>No door here: click a door's arc or leaf</em></td>
+<td>the click was beside the door's swing box</td>
+<td>click on the arc itself</td>
+</tr>
+<tr>
+<td>a suggested <code>@CUT</code> that disagrees with the section's title</td>
+<td>grid bubbles with the section's letter were read as the section line</td>
+<td>type the cut from the title</td>
+</tr>
+<tr>
+<td><em>PR-VIEW not proposed: no title text ending PLAN / ELEVATION / SECTION</em></td>
+<td>the title, once a scale (<code>1:100</code>) and a closing bracket are set aside, does not end with the view word, or the sheet has no title text</td>
+<td>choose the role from the list, or retitle the sheet (see <em>Drawing in BricsCAD</em> below)</td>
+</tr>
+<tr>
+<td><strong>Save marked copies</strong> asks to allow several downloads</td>
+<td>one file per sheet is downloaded</td>
+<td>allow it; the copies keep every value you stated</td>
+</tr>
+</tbody>
+</table>
+<h2 id="the-metadata-for-cad-users">The metadata, for CAD users<a class="headerlink" href="#the-metadata-for-cad-users" title="Permanent link">&para;</a></h2>
+<p><strong>The rule: labels set what geometry cannot.</strong> The drawing's geometry gives the 3D outline. Anything the geometry
+cannot decide (which product, which schedule mark, which of two same-size types) is set by a label you state
+(<code>@TAG</code>, <code>@LABEL</code>, <code>@SCHEDULE</code>). The editor never guesses: an undecided element is left untyped and listed as a gap
+with its candidates. A label sets the <em>type</em>; it never changes a measured size.</p>
+<p>Metadata is plain text on the layer <strong><code>DXF2BIM-MARK</code></strong>, one marking per text entity, <code>@KEY=value</code>. You can type
+it in any CAD program, or let the editor write it.</p>
+<table>
+<thead>
+<tr>
+<th>Marking</th>
+<th>Example</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@VIEW</code></td>
+<td><code>@VIEW=PLAN</code> · <code>ELEV</code> · <code>ROOF</code> · <code>SECTION</code></td>
+<td>what the sheet is</td>
+</tr>
+<tr>
+<td><code>@LEVEL</code></td>
+<td><code>@LEVEL=3.1</code></td>
+<td>plan level (m) — defines the storey</td>
+</tr>
+<tr>
+<td><code>@FACE</code></td>
+<td><code>@FACE=minY</code></td>
+<td>which building face an elevation shows</td>
+</tr>
+<tr>
+<td><code>@CUT</code></td>
+<td><code>@CUT=X,2304.25</code></td>
+<td>where a section cuts (drawing units)</td>
+</tr>
+<tr>
+<td><code>@ROOF</code></td>
+<td><code>@ROOF=6.457</code></td>
+<td>roof top level</td>
+</tr>
+<tr>
+<td><code>@UNITS</code></td>
+<td><code>@UNITS=mm</code></td>
+<td>drawing units</td>
+</tr>
+<tr>
+<td><code>@REGION</code> / <code>@EXCLUDE</code></td>
+<td>rectangles</td>
+<td>the part of the sheet that is the view / areas to ignore</td>
+</tr>
+<tr>
+<td><code>@LAYER</code></td>
+<td><code>@LAYER=A-WALL,wall</code></td>
+<td>what a layer means on this sheet</td>
+</tr>
+<tr>
+<td><code>@TAG</code></td>
+<td><code>@TAG=door,D3</code></td>
+<td>the mark of the element under the text</td>
+</tr>
+<tr>
+<td><code>@SCHEDULE</code></td>
+<td><code>@SCHEDULE=D3,door,900,2100</code></td>
+<td>a schedule row (size of a mark)</td>
+</tr>
+<tr>
+<td><code>@WALLTOP</code></td>
+<td><code>@WALLTOP=3.1,slab_above</code> · <code>@WALLTOP=handle:99,5.695</code></td>
+<td>interior wall heights</td>
+</tr>
+<tr>
+<td><code>@PLANE</code></td>
+<td><code>@PLANE=A2</code></td>
+<td>the grid line this elevation stands on; <code>@FACE</code> still says which way it looks (optional)</td>
+</tr>
+<tr>
+<td><code>@GRIDA</code></td>
+<td><code>@GRIDA=B1,73.835</code></td>
+<td>a plan grid line in any direction: its label and angle, the marking's position on the line (optional)</td>
+</tr>
+<tr>
+<td><code>@SHEETNO</code></td>
+<td><code>@SHEETNO=A-100</code></td>
+<td>this sheet's number, so the set can list the sheets it refers to and does not hold (optional)</td>
+</tr>
+<tr>
+<td><code>@BY</code> (suffix)</td>
+<td><code>@LEVEL=3.1 @BY=user</code></td>
+<td>who stated it: <code>user</code> or <code>model</code>; no suffix = stated in the file</td>
+</tr>
+</tbody>
+</table>
+<p><strong>One rule governs it all:</strong> geometry is what is drawn and dimensioned; a label states only what geometry
+cannot decide (which product, which schedule mark, how tall an interior wall is). A difference between the
+drawing and its schedule is reported (<code>GAP:schedule_conflict</code>), never silently resolved.</p>
+<hr />
+<h2 id="drawing-in-bricscad-so-fewer-values-are-guessed">Drawing in BricsCAD so fewer values are guessed<a class="headerlink" href="#drawing-in-bricscad-so-fewer-values-are-guessed" title="Permanent link">&para;</a></h2>
+<p>The editor fills every value it can from the drawing, and says how sure it is: <strong>yellow</strong> = read from a text
+the sheet holds, <strong>orange</strong> = inferred from geometry or a convention, <strong>no row at all</strong> = stated. A few drafting
+habits in BricsCAD (or any CAD program) move values from orange to yellow, or remove the row altogether. Each tip
+below names what the editor then does.</p>
+<table>
+<thead>
+<tr>
+<th>In BricsCAD</th>
+<th>What the editor then does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Set the drawing units: system variable <strong><code>INSUNITS</code></strong> (1 = inches, 4 = millimetres), the same on every sheet</td>
+<td>Units come from the file (yellow). A sheet whose units differ from the others is shown on its own, marked <em>disagrees</em></td>
+</tr>
+<tr>
+<td>Write the <strong>title</strong> as one text with the view word: <code>GROUND FLOOR PLAN</code>, <code>NORTH ELEVATION</code>, <code>SECTION A-A</code> (a scale such as <code>1:100</code> after it is fine)</td>
+<td>The sheet's role is read from the title (yellow), not picked by hand</td>
+</tr>
+<tr>
+<td>Put the <strong>level in the plan title</strong>: <code>LEVEL 2 PLAN (FFL +3.800)</code>, the value in metres</td>
+<td>The plan's level is read (yellow); without it, the default ground level 0 is offered (orange)</td>
+</tr>
+<tr>
+<td>Put the <strong>cut in the section title</strong>: <code>SECTION A-A AT X=2304.25</code></td>
+<td>The section cut is read (yellow); without it, it is inferred by pairing the section's letter with texts on the plan (orange), and on two test sets that guess was wrong</td>
+</tr>
+<tr>
+<td>Write the <strong>roof top</strong> on an elevation or section: <code>T/ROOF +10.695</code> or <code>TOP OF ROOF +10.695</code></td>
+<td>The roof top is read (yellow)</td>
+</tr>
+<tr>
+<td>Draw <strong>level datums</strong> on elevations and sections: a horizontal line on a level layer with its text at that height, such as <code>LEVEL 1 +0.000</code> (metres)</td>
+<td>Each datum is read (yellow); without them only the ground line is guessed (orange)</td>
+</tr>
+<tr>
+<td>Draw <strong>grid lines</strong> as straight LINEs on a grid layer (<code>A-GRID</code>, or your own layer once typed as <em>grid</em>), each with its label (<code>A</code>, <code>1</code>, <code>10</code>, <code>AA</code>) as a plain text at the line's end, in or next to its bubble</td>
+<td>Every grid line is read (yellow). On the shed the grid is inferred from the dimension ticks instead (orange: 91 rows)</td>
+</tr>
+<tr>
+<td>Give each kind of thing <strong>its own layer, with the same name on every sheet</strong>, ideally the US National CAD Standard names the Modeller itself writes (<code>A-WALL-FULL</code>, <code>A-DOOR</code>, <code>A-GLAZ</code>, <code>A-GRID</code>, <code>A-ANNO-DIMS</code>, <code>S-SLAB</code> …)</td>
+<td>Layers are recognised instead of asked, and one answer covers every sheet. The shed's sheets use short names (<code>Wall</code>, <code>Win</code>, <code>Col</code>, <code>Dim</code>, <code>C L</code>) and put the frame, title block and much else on layer <code>0</code>: every layer there has to be stated</td>
+</tr>
+<tr>
+<td>Keep <strong>dimensions as real dimensions</strong>: do not explode them or type over their text</td>
+<td>The dimension checks compare drawn and written values. On the shed a dimension written <code>410'-0"</code> over a drawn 1,560 in is listed as a conflict</td>
+</tr>
+<tr>
+<td>Draw in <strong>model space</strong> (the <em>Model</em> tab), not on a layout</td>
+<td>The editor reads model space only</td>
+</tr>
+<tr>
+<td>Save each sheet with <strong>Save As → DXF</strong>, one file per sheet</td>
+<td>The shed's sheets (DXF, AutoCAD 2010 format) open as they are</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Strongest of all: write the values yourself, in BricsCAD.</strong> A marking is plain text on layer <strong><code>DXF2BIM-MARK</code></strong>,
+one <code>@KEY=value</code> per text (see <em>The metadata, for CAD users</em> above), for example <code>@SET=SHED</code>, <code>@UNITS=in</code> or
+<code>@LEVEL=0</code>. A value written this way is stated: it opens with no yellow row and needs no tick. The set name is the
+one value no drawing states by itself: on the plain Duplex it is the first thing the editor asks for.</p>
+<h2 id="a-set-exported-from-revit">A set exported from Revit<a class="headerlink" href="#a-set-exported-from-revit" title="Permanent link">&para;</a></h2>
+<p>A Revit sheet set saved as DWG, converted to DXF, one view per file: real dimensions, a layer standard, and its grid and levels written as ordinary text. The editor reads these on its own, as yellow rows you still accept. Measured on one real architect's set (3 plans and 12 wall elevations, one wing rotated off the others, nothing typed): <strong>Arrange</strong> placed all 15 sheets, the plans at the levels their titles name and each elevation on its own grid line. Three elevations that lack enough grid lines of their own are centred on their wing, tinted, and say so. <strong>That is the shape, not a model:</strong> Convert still needs the items below.</p>
+<table>
+<thead>
+<tr>
+<th>The drawing has</th>
+<th>The yellow row</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GROUND FLOOR PLAN</code>, <code>WALL ELEVATION GRID A1</code> as a title, also in a multi-line text</td>
+<td><strong>role</strong> (read). A note such as <code>BEAM, SEE PLAN</code> is not a title</td>
+</tr>
+<tr>
+<td>A grid line with <code>A1</code>, <code>AA</code> or <code>B12</code> in its bubble, on any layer whose name holds <code>GRID</code></td>
+<td><strong>grid line</strong> (read). A rotated one is read in its own direction (<code>@GRIDA</code>)</td>
+</tr>
+<tr>
+<td><code>HALL LEVEL 01</code> beside <code>EL: +4.800 m</code> on an elevation, and a plan titled <code>LEVEL 1 ... PLAN</code></td>
+<td><strong>the plan's level</strong> (read). The most-named value wins; the row states any others</td>
+</tr>
+<tr>
+<td><code>+4.00 m</code> or <code>EL: +4.800 m</code>, and a horizontal line at exactly that height</td>
+<td><strong>level datum</strong> (read): the value and the line must agree</td>
+</tr>
+<tr>
+<td><code>WALL ELEVATION GRID A1</code></td>
+<td><strong>the line it stands on</strong> (<code>@PLANE</code>, read), and its <strong>face</strong> when that line is the end of its family (orange)</td>
+</tr>
+<tr>
+<td><code>A-100</code> in the file name</td>
+<td><strong>sheet number</strong> (<code>@SHEETNO</code>, read). The set then lists the sheets it refers to and does not hold, as a note that never blocks</td>
+</tr>
+</tbody>
+</table>
+<p>Grid labels that share a first letter (<code>AA</code>, <code>AB</code>, <code>A1</code>) form one family. On a set of several wings, an elevation drawn on family A stands on family A's end line, not on the far wing's.</p>
+<p><strong>Every one of these is a setting.</strong> Under <strong>Element defaults ▸ suggest</strong> (and <code>panel.plane</code>), or in <code>element_defaults.json</code>, or as <code>@DEFAULT=&lt;key&gt;,&lt;value&gt;</code> in a drawing, each has the earlier behaviour on offer, for example <code>suggest.grid_ticks</code> = <code>always</code> or <code>suggest.title_text</code> = <code>text_only</code>. See <a href="../DXF2BIM_Yellow_List/">the yellow list</a>.</p>
+<p><strong>Not done yet:</strong> Convert does not build from rotated elevations (they place in Arrange only), walls and structure are not mixed in one set, a curved roof shows as lines, and a sheet holding several views in one file must be split into one file per view first. An architecture plan and a structure wall elevation can differ by more than the 1 mm the axis check allows: on that set, keep each discipline's plan with its own elevations.</p>
+<h2 id="a-building-drawn-only-in-2d-a-farm-shed">A building drawn only in 2D: a farm shed<a class="headerlink" href="#a-building-drawn-only-in-2d-a-farm-shed" title="Permanent link">&para;</a></h2>
+<p>▶ Video: <a href="https://youtu.be/TuTlhO8cCIY">BricsCAD 2D to BIM 5D in depth</a> (7:12): this shed, from the raw sheets to one more bay and its cost.</p>
+<p>A common CAD set (here a BricsCAD drawing set saved as DXF) with <strong>no 3D model behind it</strong>: nine sheets, a floor
+plan, four elevations, a beam layout, a foundation plan, a truss section and a details sheet (grades, casting
+ratios, footing and column schedules). There is no answer key, so the check
+is different: every body traces to a drawn entity, a setting you stated, or a <strong>yellow default</strong> you can see.
+The method (units, grid from dimension ticks, level and datum) is the same as above; what differs is that the
+building is made of <strong>bodies</strong> read from layers you type, not of walls and slabs.</p>
+<ol>
+<li><strong>Open</strong> the sheets. Each one lists three yellow suggestions it can prove (units from the file header, view and
+   name from the title). <strong>Accept all</strong> also takes the grid from the dimension ticks and the ground datum from the
+   heavy ground line.</li>
+<li><strong>State the few facts only a person can</strong> (set name, plan level, the datum height, e.g. a plinth line 2 ft above
+   ground read from the column detail). They are written into the sheets themselves, so the <strong>settings sheets
+   reopen together</strong> next time. In the walk of 2026-10-22 on the nine raw sheets: the set name typed once, <code>@LEVEL=0</code>
+   typed on the three plans (floor, beam layout, foundation layout), and on each of the four elevations and the
+   section a second level datum: <strong>z</strong> <code>0.6096</code> and the <strong>drawing y</strong> of the plinth line (a CAD coordinate such as
+   <code>-4446.6</code>, read in the CAD program). That is 10 typed values for the datums.
+   Each typed y lay 24.0 in (within 0.02 in) above the ground line the editor had already accepted as z 0, so the
+   value you type is the plinth height; the y only places it.</li>
+</ol>
+<p><strong>Since 2026-10-29 the shed asks for none of these heights.</strong> Its elevations and section carry vertical dimensions
+   that BricsCAD measured itself (not typed over), and the file's dimension scale is 1: that shows each sheet is drawn
+   at full size, so the second height is read from the longest such dimension (<em>Second heights from the drawing's
+   dimensions</em>, an orange row: check it, then <strong>Accept all</strong> takes it). Measured: the 5 read heights build the same
+   445 bodies as the 5 typed ones (worst difference 0.000 mm). A typed-over dimension (this set has <code>8'</code>, <code>16'-0"</code>,
+   <code>410'-0"</code> and <code>8"</code> written over the measurement) is never used. A sheet with no such dimension, or whose dimension
+   scale is not 1 (a reduced-scale sheet), still asks, as below.</p>
+<p><strong>Pick instead of typing the y:</strong> press <strong>Pick</strong> beside the height field. The sheet opens around its known datum;
+   a dashed line follows the pointer and snaps to a drawn horizontal line, its label giving the y and the drawn
+   distance from the known datum (<code>24.00 in above @Z=0</code>: a measurement shown, the height is still yours to type).
+   Click: the y fills the field. Where two drawn lines are too close to tell apart at that zoom, the label says
+   <em>zoom in</em> and the click picks nothing: wheel in and click again. <strong>Esc</strong> leaves the field as it was. The pick
+   writes no marking; you type the height and press <strong>Add</strong> as before.
+3. <strong>Type the layers that mean something:</strong> column, footing, beam, wall-panel hatch, fan, net, door swing, truss
+   bar, door frame. Nothing else is chosen for you. In <strong>Layers</strong> this is 10 choices; two of them hold only on one
+   sheet (the <code>Dim</code> layer is a beam on the beam layout only, layer <code>0</code> is a column on the South elevation only): use
+   the split button of that row to choose sheet by sheet. The door frame on the elevations is listed as <strong>door</strong>.
+   Once the first body layer is chosen the set is read as a structure set and the dimension-text items of the
+   standard check (18 on this set) no longer block.
+4. <strong>Give heights nothing draws</strong> (footing depth, beam range) under <em>Body heights</em>, and leave out the areas that
+   would build false bodies (an expansion-joint strip). The heights are typed in <strong>metres</strong> even when the sheets are
+   in inches (<code>-1.4478</code> for -57 in). Nothing flags the expansion joint: without the exclude box the walk built 516
+   bodies, the four extra being beams along the joint; with it, 512. Use <em>Exclude areas</em>, pick the beam layout and
+   drag a box over the joint.
+5. <strong>Complete the building</strong> (optional): adds the floor slab and gabled roof the drawings imply, in amber, with
+   their thickness listed as yellow defaults.
+6. <strong>Convert.</strong> The whole shed lands on the canvas: 512 bodies (96 column parts: 32 columns, each with a below-grade
+   part and a grade-to-base part; 32 footings, 35 beams, 41 wall panels, 13 fans, 3 nets, 4 doors, the truss members
+   and plates, a slab and a roof). Each body is in its <strong>material's
+   standard colour</strong> and carries its class, the drawing's own type label, its material, its storey and its
+   <strong>source</strong> (sheet, handle, layer, how each size was obtained).</p>
+<p><strong>The details sheet.</strong> A sheet that states notes but draws no body (it has no role) is accepted as a <em>notes sheet</em>,
+   not refused. Its text is read by a fixed grammar and carried as properties, each with the cell it came from:
+   the concrete grade (f'c, fy) on every concrete body, each casting ratio on exactly the elements it names (footing,
+   column, grade beam, floor: not the beams), and the <strong>footing and column schedules</strong>, read by cell position
+   against their headers, on the footings and columns (the schedule has one row per kind and the bodies carry no
+   type name, so the properties say <em>single schedule row</em>). The column schedule also states a larger section
+   <strong>below grade</strong> (14 x 14 in): each column then continues from its footing to grade at that section, with no
+   setting typed (a stated <code>@DEFAULT</code> still wins). Not built, because the drawings give only labels: the false
+   ceiling and the slats of the cross-section.</p>
+<p><strong>Type marks checked across the set.</strong> For each mark (<code>B-1</code>, <code>GB-1</code>, <code>C-1</code> ...) the app counts where it is <strong>tagged</strong> on the sheets, where it is <strong>detailed</strong> (a
+   "Long Section of ..." title or a schedule row on the notes sheet) and how many <strong>parts</strong> carry it (bim-ootb §D102). When the set converts and has a notes sheet, two
+   advisories can follow: <code>GAP:mark_not_modelled</code> (tagged, no part) and <code>GAP:mark_no_detail</code> (tagged or modelled, no detail). They never block, and the app never builds or drops a part
+   because of them. On the shed: <code>B-1</code>, <code>B-2</code>, <code>C-1</code>, <code>F-1</code> are modelled and detailed; <strong><code>GB-1</code> is tagged 4 times on the foundation layout and detailed, but no sheet draws it, so it is
+   reported and not built</strong>: four tags do not say which spans the grade beams run, and building them under every wall would be a guess. Draw it on a typed layer and it is built as drawn.</p>
+<p><img alt="The converted shed (2026-11-01, Complete ticked): 512 parts; the 2D panel lists the nine sheets, the details sheet as NOTES" src="../../img/dxf2bim/dxf2bim_sub_converted.jpg" /></p>
+<p><img alt="A footing picked in x-ray: the Properties panel shows what its IFC carries — the casting ratio 1:1.5:3 from the details sheet (handle 2E2), f'c 24 MPa and fy 500 MPa (handle 2E1), and the footing schedule's row (2026-11-01)" src="../../img/dxf2bim/dxf2bim_props_panel.jpg" /></p>
+<p><img alt="The converted shed on the canvas: material colours, 512 bodies" src="../../img/dxf2bim/shed_canvas.jpg" /></p>
+<ol>
+<li><strong>Save and open elsewhere.</strong> <em>Export → IFC4</em> writes the typed model with materials, colours and a property set
+   <code>Dxf2Bim_Evidence</code> (Provenance, SourceSheet, SourceHandle, SourceLayer, Kind, SizeBasis; the <code>Pset_</code> prefix is reserved for buildingSMART's own sets, so the product's set does not use it) per mesh. The usual
+   IFC → database extractor gives a database with the material name, the colour and one provenance row per mesh.
+   The <strong>Viewer</strong> opens that database (3D in the material colours, Find, per-element information), and so does the
+   <strong>4D/5D page</strong>. ▶ Video: <a href="https://youtu.be/SnqJ7ERxuk0">BricsCAD 2D DXF to BIM 5D</a> (5:17).</li>
+</ol>
+<p><img alt="The same database in the Viewer" src="../../img/dxf2bim/shed_viewer.jpg" /></p>
+<p><img alt="The 4D/5D page on the shed database: cost by discipline, schedule, resources" src="../../img/dxf2bim/shed_4d5d.jpg" /></p>
+<p><strong>Read these numbers as what they are.</strong> The 5D cost is the Viewer's rate-based <strong>estimate</strong>, not a tender. The 4D
+schedule is the Viewer's <strong>generated default</strong> (phases by discipline), not the farm's real construction sequence.
+The repeated trusses are <strong>assumed</strong> (the drawings show one section, not its spacing), shown red under the
+<em>Evidence colours</em> option.</p>
+<p><strong>The IFC is checked by an independent validator.</strong> The shed's IFC4 from both writers (headless and the page) is validated with IfcOpenShell at schema level: zero statements (it was 23: every door carried derived-attribute markers and the STEP header had no author or organisation; both are fixed, and a witness puts the old defect back to prove the validator catches it). The EXPRESS WHERE rules and the buildingSMART online validation service have not been run yet. The file formats and their versions are written down in <a href="../DXF2BIM_FORMAT/">the format contract</a>.</p>
+<p><strong>Closing the loop on the drawing itself.</strong> The shed's IFC was written back to a standard 2D set and compared with
+the original plan at 1 mm: all 32 columns, all 18 grid centre lines and the 4 doors match to under 0.02 mm, and
+the wall faces to 0.004 mm. This proves the reading is self-consistent; it is not a comparison with a 3D reference.</p>
+<hr />
+<h2 id="the-yellow-list-what-you-fill-in-and-the-defaults-used">The yellow list: what you fill in, and the defaults used<a class="headerlink" href="#the-yellow-list-what-you-fill-in-and-the-defaults-used" title="Permanent link">&para;</a></h2>
+<p>A drawing never states everything a model needs. <strong><a href="../DXF2BIM_Yellow_List/">The yellow list</a></strong> gives, in one place:
+<strong>(A)</strong> the facts you are asked to state, <strong>(B)</strong> all 43 default settings with their value, whether it is a
+standard or a guess, and its basis, <strong>(C)</strong> the <em>Farming Shed</em> building-type values and their sources,
+<strong>(D)</strong> what <em>Complete the building</em> adds, <strong>(E)</strong> how drawn / derived / assumed evidence is shown, and
+<strong>(F)</strong> the items the shed drawings left open. You may ignore it: the defaults stay applied and every one is listed.</p>
+<h3 id="which-default-matters-element-defaults-measure-impact">Which default matters? Element defaults ▸ Measure impact<a class="headerlink" href="#which-default-matters-element-defaults-measure-impact" title="Permanent link">&para;</a></h3>
+<p>On a structure set the <strong>Element defaults</strong> section lists every default in use (one row per setting, grouped by element). <strong>Measure impact</strong> ranks them by what they move
+(bim-ootb §D99, #2483):</p>
+<ul>
+<li>Nothing runs until you press it. The <strong>first click</strong> loads the tools and shows a <strong>rate-pack picker</strong> (the locale's pack is preselected, for example <em>PWD Bangladesh SoR 2022</em>);
+  the <strong>second click</strong> measures.</li>
+<li>It re-runs the model once per option of each default and lists the defaults by what they change: the <strong>bill</strong>, the <strong>own weight</strong> (kN) and the <strong>body count</strong>. Your model on screen does not change while it measures.</li>
+<li>A default that moves none of the three is gathered in one collapsed line, <em>No effect on the bill, the loads or the body count (n)</em>; click it to open.</li>
+<li>Any later change (a marking, a choice, the pack, <em>Complete</em>) marks the result <em>Measured before your last change</em>; press it again.</li>
+<li>It measures bill, own weight and body count only. It does not re-run the structural checks.</li>
+</ul>
+<p>Measured on the shed (pack PWD Bangladesh SoR 2022, 1.4 s): <strong>6 active, 6 inert</strong>. Slab thickness (0.15 m) −1,298,309 BDT · section spacing −262,675 BDT (126 bodies fewer) ·
+<code>column.top_under_beam</code> (as drawn) −38,717 BDT · building type +19,968 BDT · roof overhang +11,231 BDT · roof sheet thickness 0 BDT (+0.06 kN). The ranking is the shed's; another set ranks differently.</p>
+<p><strong>The PWD rate pack</strong> is named <strong>PWD Bangladesh SoR 2022</strong>: its source is the Finance Division approval of 21 June 2022, valid three years. (The file id <code>pwd2024_bd</code> is unchanged.)</p>
+<p><img alt="Element defaults ▸ Measure impact on the shed with PWD Bangladesh SoR 2022: the six defaults that move the model, ranked, each with its change in BDT, kN and bodies; the six that move nothing in one collapsed line" src="../../img/dxf2bim/dxf2bim_measure_impact.jpg" /></p>
+<hr />
+<h2 id="prior-art">Prior art<a class="headerlink" href="#prior-art" title="Permanent link">&para;</a></h2>
+<p>What already exists, what we believe is new, what we learned from others, and what using them would cost:
+<strong><a href="../DXF2BIM_Prior_Art/">Prior art</a></strong>. Short version: other tools detect walls, doors and windows with default
+parameters and ask a subscription; we state the gaps, keep provenance on every body, and ask nothing but the facts
+in the yellow list. No head-to-head benchmark has been run.</p>
+<hr />
+<p><img alt="The back card of the submission-pack film: what we learned from others, what this adds for architects, engineers and accountants, and how to report a fact that is wrong" src="../../img/dxf2bim/dxf2bim_back_card.jpg" /></p>
+<h2 id="what-it-does-not-do-yet">What it does not do yet<a class="headerlink" href="#what-it-does-not-do-yet" title="Permanent link">&para;</a></h2>
+<p>Honest limits of the preliminary version:</p>
+<ul>
+<li><strong>Basic shapes only:</strong> walls, curtain walls (a plan's <code>A-WALL-CURT</code> band becomes <code>IfcCurtainWall</code>, priced by area), slabs, roof, openings, door/window fills, and for structure sets the bodies listed above. No stairs, railings, ramps, piles, ceilings or furniture are built from a 2D set yet (their defaults are in the yellow list, ready for the builders; no drawing used so far carries them).</li>
+<li><strong>Structure sets and standard sets are not mixed yet:</strong> a set that types body layers (column, beam...) and also wall/slab/opening layers is refused with that reason.</li>
+<li><strong>Evaporative pads and the shed's false ceiling</strong> are labelled or drawn but not read yet. (The details sheet <em>is</em> read: its stated concrete grades reach the bodies they name, and its footing and column schedules give the below-grade columns.)</li>
+<li><strong>Angled walls:</strong> a 2D set written from a model now cuts the windows of angled walls (Hospital 72, LTU 59 windows
+  had no gap before), and reading such a set back finds a door's host on the angled wall's own outline. <strong>Curved
+  walls</strong> are reported as gaps; roofs are flat outlines (pitched or curved roofs are not drawn correctly yet).</li>
+<li><strong>Columns</strong> are cut and drawn, but not yet as column symbols on the grid.</li>
+<li><strong>Openings above or below the plan cut</strong> (e.g. high bathroom windows) — being changed so every opening of
+  the storey is shown from its host wall regardless of height.</li>
+<li><strong>The Regulatory Report is not a certificate.</strong> It states the facts of the model, with blank signature blocks for the people who sign; it is not a code-compliance certificate.</li>
+<li><strong>The details' bar sizes are not used.</strong> Reinforcement is an assumed bill line (a stated percentage of each concrete body), shown as assumed.</li>
+<li><strong>The Load Summary is own weight, not a structural design.</strong> No live load, wind, earthquake or member strength.</li>
+<li><strong>The analytical model is a starting point, not an analysis.</strong> It has not been opened in STAAD.Pro here (no STAAD on the build machine; it is checked by its own reader); releases, member orientation and loads other than self-weight are for the engineer.</li>
+<li><strong>"Any DXF"</strong> is not claimed. Your drawing needs the metadata above; the editor helps you add it, the verdict
+  tells you when it is complete.</li>
+<li><strong>The component library</strong> (door/window geometry) is published: when no local copy is present, Convert loads it
+  from the project's object storage. A window or door type the library does not hold is a blocking item, never a box.</li>
+</ul>
+<hr />
+<h2 id="for-developers">For developers<a class="headerlink" href="#for-developers" title="Permanent link">&para;</a></h2>
+<p>The same pipeline runs in Node (BIMCompiler repo):</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># standard 2D set from a model DB (+ door operations extracted from the IFC by scripts/extractIFC2DB.js)</span>
+python3<span class="w"> </span>2D_Layout/python/std2d.py<span class="w"> </span>&lt;model_extracted.db&gt;<span class="w"> </span>--out<span class="w"> </span>2D_Layout/output/STD<span class="w"> </span>--door-ops<span class="w"> </span>&lt;door_ops.db&gt;
+node<span class="w"> </span>tests/dxf2bim/mark_dx_set.js<span class="w"> </span>std<span class="w"> </span>&lt;door_ops.db&gt;<span class="w">        </span><span class="c1"># metadata from the model (@BY=model)</span>
+<span class="nv">DXSET</span><span class="o">=</span>std<span class="w"> </span>node<span class="w"> </span>tests/dxf2bim/rosetta_dx_shell.js<span class="w">           </span><span class="c1"># basic shapes, checked against the model</span>
+node<span class="w"> </span>tests/dxf2bim/rosetta_qualify.js<span class="w">                      </span><span class="c1"># the verdict for every test set</span>
+</code></pre></div>
+<p>Specs: <a href="../DXF2BIM_SPEC/">DXF2BIM spec</a> · <a href="../DXF2BIM_BASIC_SHAPES_SPEC/">Basic shapes spec</a>.
+Modeller lane spec: <code>prompts/DXF2BIM_MODELLER_LANE.md</code> (bim-ootb).
+Every check has a deliberately broken control that must fail. Code is MIT licensed.</p>
+<p><em>Test drawing credit: the American Farmhouse drawings used as an independent test are by Jay Osborne
+(freefarmhouse.com), CC BY-SA; they are not included in the repository.</em></p>
+<hr />
+<h2 id="shed-example-poc-how-long-it-takes-and-how-big-it-is">Shed example POC: how long it takes and how big it is<a class="headerlink" href="#shed-example-poc-how-long-it-takes-and-how-big-it-is" title="Permanent link">&para;</a></h2>
+<p><em>Measured 2026-10-19 on one laptop (CPU only, headless browser with software rendering, no GPU), the real nine-sheet shed set (with the details sheet), 2,943 CAD entities, about 1.05 MB of DXF in total. Times are wall-clock from the run logs; they exclude the time a person spends typing the facts in <a href="../DXF2BIM_Yellow_List/">the yellow list</a>.</em></p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Time</th>
+<th>Output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Open the nine settings sheets to a verdict (<em>Qualifies</em>)</td>
+<td><strong>2.1 s</strong></td>
+<td>roles, grid, 445 bodies ready (512 with <em>Complete</em>)</td>
+</tr>
+<tr>
+<td><strong>Convert</strong> to 3D: click to 512 bodies on the canvas</td>
+<td><strong>0.23 s</strong></td>
+<td>512 bodies with material colours and metadata</td>
+</tr>
+<tr>
+<td>Export IFC4 in the page</td>
+<td>0.4 s</td>
+<td>1,001,552 bytes (about 1.0 MB)</td>
+</tr>
+<tr>
+<td>IFC → database (the in-browser extractor)</td>
+<td>0.5 s</td>
+<td><strong>1,118,208 bytes (1.1 MB; about 230 KB compressed)</strong></td>
+</tr>
+<tr>
+<td>Open that database in the Viewer, 3D fully rendered</td>
+<td>2.3 s</td>
+<td>512 elements</td>
+</tr>
+<tr>
+<td>The same whole shed from the command line (read sheets, 512 bodies, bill, IFC4)</td>
+<td><strong>0.88 s</strong></td>
+<td>about 198 MB of memory</td>
+</tr>
+</tbody>
+</table>
+<p>So the machine part, from an opened set of sheets to a rendered Viewer, is <strong>about five and a half seconds</strong>; the 3D itself appears in under a quarter of a second after Convert. The five-minute film is slow because it narrates and types, not because the software is.</p>
+<p>The database holds 512 elements (about 160 KB is mesh geometry across 133 distinct shapes, about 550 KB the per-mesh provenance and notes rows (4,961 rows) with their index, the rest names, materials, colours and bounding boxes). A 1.05 MB set of drawings becomes a 1.1 MB database. (The compressed size and the split by table were measured on the equivalent page-extracted database of the film take, same pipeline.)</p>
+<p>A caution on method: this is one machine and one building, measured by the run logs, not a benchmark; a larger building will take longer (the Hospital extraction in the Node CLI takes minutes). An earlier measurement of the command-line extractor looked slow (16 s) because every row was its own disk commit; that is fixed in the extractor (0.4 s), and the numbers above use the fixed one.</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+
+
+                
+
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Retour en haut de la page
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/red1oon/bim-ootb" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.linkedin.com/in/red1oon/" target="_blank" rel="noopener" title="www.linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.indexes", "search.suggest", "search.highlight", "toc.follow", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copi\u00e9 dans le presse-papier", "clipboard.copy": "Copier dans le presse-papier", "search.result.more.one": "1 de plus sur cette page", "search.result.more.other": "# de plus sur cette page", "search.result.none": "Aucun document trouv\u00e9", "search.result.one": "1 document trouv\u00e9", "search.result.other": "# documents trouv\u00e9s", "search.result.placeholder": "Taper pour d\u00e9marrer la recherche", "search.result.term.missing": "Non trouv\u00e9", "select.version": "S\u00e9lectionner la version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../javascripts/fold-footnotes.js"></script>
+      
+        <script src="../../javascripts/bim_compiler_source.js"></script>
+      
+    
+  </body>
+</html>

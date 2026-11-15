@@ -1,0 +1,4574 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Construction is manufacturing. A building IS its Bill of Materials.">
+      
+      
+        <meta name="author" content="Redhuan D. Oon">
+      
+      
+        <link rel="canonical" href="https://red1oon.github.io/BIMCompiler/DXF2BIM_Yellow_List/">
+      
+      
+        <link rel="prev" href="../DXF2BIMGuide/">
+      
+      
+        <link rel="next" href="../DXF2BIM_Prior_Art/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>DXF2BIM — the yellow list (what you fill in, defaults used) - BIM Intent Compiler</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/custom.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  <script data-goatcounter="https://red1oon.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  
+  <meta name="robots" content="noindex">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#dxf2bim-the-yellow-list" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../" title="BIM Intent Compiler" class="md-header__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            BIM Intent Compiler
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              DXF2BIM — the yellow list (what you fill in, defaults used)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source md-header__source--stacked">
+        <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+        <a href="https://github.com/red1oon/BIMCompiler" title="red1oon/BIMCompiler on GitHub" class="md-source" id="bim-compiler-source" target="_blank" rel="noopener">
+          <div class="md-source__icon md-icon">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+          </div>
+          <div class="md-source__repository" id="bim-compiler-repository">
+            Compiler
+          </div>
+        </a>
+        <span id="repo-totals" class="md-source-totals" title="Combined stars / forks across both repos"></span>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Start Here
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../BIMUserGuide/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  The 3 Apps
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../DeveloperGuide/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Go Deeper
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../SpatialCompilationPaper/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Papers & Positioning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../HalalTrace/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Prototypes & Demos
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../PROJECT_CHRONOLOGY/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  History & Legacy
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../" title="BIM Intent Compiler" class="md-nav__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    BIM Intent Compiler
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start Here
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_1" id="__nav_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Start Here
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../USER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    📖 User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMToolsGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🧰 BIM Tools — User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OFFLINE_INSTALL_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🔒 Fully Offline / Air-Gapped Install
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WhatsNew/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🆕 What's New
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AboutMore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About BIM OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FeatureComparison/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Feature Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MigrateComparisonPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrate & Compare (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TwoAppsOneKernel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two Apps, One Kernel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TwoAppsOneKernelInfographicLandscape.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    One Page InfoGraphics - Landscape
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bench_suite.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Comparison (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../age_demo.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Does Your ERP Age? (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MANIFESTO/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The ERP World View
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contribute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 3 Apps
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    The 3 Apps
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Viewer Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AskFirstSteps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewer Ask — First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerFirstSteps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modeller — First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DAGeVu Modeller — User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ProposerGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Proposer Guide (propose an edit, get the proof)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FastScriptGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fast Script Guide (one door: commands and scripts)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIMGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2D Drawings → BIM (DXF2BIM)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — the yellow list (what you fill in, defaults used)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — the yellow list (what you fill in, defaults used)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#a-what-you-are-asked-to-state-the-facts-a-drawing-cannot-give" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A. What you are asked to state (the facts a drawing cannot give)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#b-the-defaults-used-when-you-state-nothing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B. The defaults used when you state nothing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#c-building-type-farming-shed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C. Building type: Farming Shed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-what-complete-the-building-adds-amber-estimated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D. What Complete the building adds (amber, estimated)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#e-how-evidence-is-shown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E. How evidence is shown
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#f-items-the-shed-drawings-left-open-carried-as-yellow-rows-never-decided-in-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F. Items the shed drawings left open (carried as yellow rows, never decided in code)
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_Prior_Art/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — prior art (what is new, what we learned, cost of using others)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_FORMAT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — format contract (marks, outputs, registry, codes; generated)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERPUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel-ERP User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TillUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    uniCenta-style Till & Kitchen Screen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CapexDashboardGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM → ERP and CAPEX Dashboard — for iDempiere users
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CapexUATGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CAPEX UAT Guide — step-by-step test script
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERP_FirstSetup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel-ERP — Your First Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MigrationGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration User Guide (Odoo · Business Central · SAP Business One)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OdooMigration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moving from Odoo — how it works, what is proven
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NinjaExcelReport_UserManual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NinjaExcel Report — User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HRBIMAssetGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HR / Tenancy / Operate Module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CivilWorksGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Civil Works — Step by Step
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TeamsOverlayGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Teams Overlay — Collaboration & Optics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Go Deeper
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Go Deeper
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DeveloperGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide (read first if you will change the code)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ArchitectureOverview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Overview (for reviewers)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../FoldEngineBlackBook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fold Engine Black Book (dev manual)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HolyGrail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Holy Grail (editable rules, live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ERPConceptRosetta.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-ERP Rosetta Stone (concept + cost)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIM_Modeller_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Modeller OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERP_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP — Every Record Has a Place
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERPIntegration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP × BIM × HR — One Building, One Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DistributedERP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Distributed ERP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TermsHowToVerify/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to verify the terms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERP_AI_ADVISORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Letting an AI work on the ERP, safely
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SQLiteWasmArchitectureActual.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How the Database Works (big picture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ViewerComponentModel.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewer Component Model (dev architecture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CLASH_DETECTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clash Detection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../JKR_SKATA/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Asset Classification & JKR/SKATA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../IFC_ExportGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IFC Export Guide (for the BIM author)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TimeMachine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Time Machine (4D Scheduling & Editing)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4D5DAnalysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4D/5D Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMtoProject/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM → Project Order (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerKernelFold/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry as a Signed-Log Fold
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Papers & Positioning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Papers & Positioning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialCompilationPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deterministic Spatial Compilation (academic paper)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AIProposerDefensiveDisclosure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Defensive Disclosure: an Outside AI Proposes, the App Decides
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_TechnicalNote/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — Deterministic 2D ⇄ BIM Round Trip (technical note)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BrowserScaleBenchmark/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Browser-Scale Benchmark (one tab, local first)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnterpriseAuthentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enterprise Authentication (security)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../StrategicIndustryPositioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Strategic Positioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LocalFirstPriorArt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local-First Prior Art
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LegacyOracleAdapterSpec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Legacy-as-Oracle Adapter (migrate / test an ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ShipYard/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Beyond Buildings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RouteTemplate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Find & Navigate (wayfinding)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../halal/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prototypes & Demos
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Prototypes & Demos
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HalalTrace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Halalan Thayiban — halal track & trace (paper)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glassbowl.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glassbowl — the ERP engine as data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glassbowl_gravity.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glassbowl · Gravity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../RetailScaleStory.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Retail at Scale — two messages a day (benchmark story)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bim_architecture_viz.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How it works — interactive architecture tour
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    History & Legacy
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    History & Legacy
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROJECT_CHRONOLOGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Chronology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../VibeProgramming/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vibe Programming — AI + Domain Expertise
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4DGenerator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 4D Generator — Failure Catalogue & AI Findings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnablingTechTimeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enabling-Tech Timeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RED_PILL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Red Pill — Design From Grammar (origin)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LAST_MILE_PROBLEM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Last Mile — drift tracking (Java era)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMERPPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Construction Economy / ERP Wave (Java era)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SYSTEMS_INSTALLER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Self-Host the Java toolchain (legacy installer)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#a-what-you-are-asked-to-state-the-facts-a-drawing-cannot-give" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A. What you are asked to state (the facts a drawing cannot give)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#b-the-defaults-used-when-you-state-nothing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B. The defaults used when you state nothing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#c-building-type-farming-shed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C. Building type: Farming Shed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-what-complete-the-building-adds-amber-estimated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D. What Complete the building adds (amber, estimated)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#e-how-evidence-is-shown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E. How evidence is shown
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#f-items-the-shed-drawings-left-open-carried-as-yellow-rows-never-decided-in-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F. Items the shed drawings left open (carried as yellow rows, never decided in code)
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+  <p class="i18n-note"><small>本页尚未翻译，以英文显示。<a href="https://red1oon.github.io/BIMCompiler/DXF2BIM_Yellow_List/">英文页面</a>。</small></p>
+  
+                  
+
+
+  
+  
+
+
+<h1 id="dxf2bim-the-yellow-list">DXF2BIM — the yellow list<a class="headerlink" href="#dxf2bim-the-yellow-list" title="Permanent link">&para;</a></h1>
+<p><em><a href="../DXF2BIMGuide/">← Back to the <strong>2D Drawings → BIM guide</strong></a></em></p>
+<p>A 2D drawing carries only some of what a model needs. Everything it does not state is a <strong>setting</strong>: a <strong>yellow</strong> field that holds a <em>standard value</em> or a <em>typical-practice guess</em>, so you can see exactly what was assumed. <strong>You can ignore the yellow list</strong>: the defaults stay applied and the measurement is determined by them, but each one is listed, tagged, and never presented as the drawing's own statement. State a value and it is kept <strong>inside your drawing set</strong> as a marking (<code>@DEFAULT=&lt;key&gt;,&lt;value&gt;</code>, <code>@BY=user</code>); remove it and the default returns.</p>
+<h2 id="a-what-you-are-asked-to-state-the-facts-a-drawing-cannot-give">A. What you are asked to state (the facts a drawing cannot give)<a class="headerlink" href="#a-what-you-are-asked-to-state-the-facts-a-drawing-cannot-give" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Fact</th>
+<th>Where you state it</th>
+<th>Why a default would be wrong</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Units</strong> of each sheet</td>
+<td>Units section (the file header is shown, never applied by itself)</td>
+<td>a wrong unit scales the whole model</td>
+</tr>
+<tr>
+<td><strong>Set name</strong> (e.g. <code>SHED</code>) and <strong>view / level</strong> of each sheet</td>
+<td>Sheets section; suggestions from the title text wait for your tick</td>
+<td>which plan is which storey</td>
+</tr>
+<tr>
+<td><strong>Plan level</strong> (e.g. 0)</td>
+<td>Sheets section</td>
+<td>defines the storey</td>
+</tr>
+<tr>
+<td><strong>Height datum</strong> per elevation: the z of a marked line (e.g. the plinth line is 0.6096 m = 2 ft above ground, read from the column detail)</td>
+<td>Metadata → elevation sheet → <code>@Z</code></td>
+<td>no drawing says which line is the datum</td>
+</tr>
+<tr>
+<td><strong>Which layer is what</strong> (column, footing, grade beam, beam, wall-panel hatch, fan, net, door swing, truss bar, door frame)</td>
+<td>Layers section (one choice per layer and view)</td>
+<td>a layer <em>name</em> is not evidence of what is drawn</td>
+</tr>
+<tr>
+<td><strong>Body heights nothing draws</strong> (e.g. footing depth from a detail, beam depth range)</td>
+<td>Body heights section → <code>@BODYZ</code></td>
+<td>no elevation shows a buried footing</td>
+</tr>
+<tr>
+<td><strong>Areas to leave out</strong> (e.g. an expansion-joint strip that looks like a beam)</td>
+<td>Exclude areas → <code>@EXCLUDE</code></td>
+<td>the joint would become a false beam</td>
+</tr>
+<tr>
+<td><strong>A stated size</strong> where a label and the drawn length disagree (e.g. a beam drawn 10 in deep, labelled 12 in)</td>
+<td>Stated sizes section → <code>@SIZE</code></td>
+<td>the label's number is used; you may correct it</td>
+</tr>
+<tr>
+<td><strong>A details sheet</strong> (optional): a sheet of notes and schedules with no body layers</td>
+<td>add it to the set; nothing to type</td>
+<td>its text states the concrete grade, casting ratios and the footing / column schedules; it is read, never guessed, and a column schedule's below-grade section replaces a typed setting</td>
+</tr>
+<tr>
+<td><strong>Building type</strong> (<code>General</code> or <code>Farming Shed</code>)</td>
+<td>Element defaults → Building type</td>
+<td>selects cited type-specific defaults</td>
+</tr>
+<tr>
+<td>Anything in section B you know better</td>
+<td>Element defaults → type a value and <strong>Set</strong></td>
+<td>the default is a guess or a standard value, not your fact</td>
+</tr>
+</tbody>
+</table>
+<h2 id="b-the-defaults-used-when-you-state-nothing">B. The defaults used when you state nothing<a class="headerlink" href="#b-the-defaults-used-when-you-state-nothing" title="Permanent link">&para;</a></h2>
+<p><strong>std</strong> = a value with a named source in this repository or the rate pack. <strong>guess</strong> = typical practice, to be confirmed. The list below is generated from <code>modeller/element_defaults.json</code> (the registry the Modeller reads); the Element defaults section in the editor shows the same rows with the value in force, highlights the ones used in your model, and tells you where each value came from (default, your choice, the drawing set, or the building type).</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Element</th>
+<th>Unit</th>
+<th>Default</th>
+<th>Kind</th>
+<th>Basis</th>
+<th>Offered choices</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>building.type</code></td>
+<td>Building</td>
+<td>text</td>
+<td><strong>General</strong></td>
+<td>guess</td>
+<td>the kind of building; it selects the type-specific defaults and organises the reference component library. A person states it (@DEFAULT=building.type,Farming Shed)</td>
+<td>General, Farming Shed</td>
+</tr>
+<tr>
+<td><code>beam.depth</code></td>
+<td>IfcBeam</td>
+<td>m</td>
+<td><strong>0.45</strong></td>
+<td>guess</td>
+<td>section depth when no label or band gives it</td>
+<td>0.3, 0.45, 0.6</td>
+</tr>
+<tr>
+<td><code>beam.edge_tol</code></td>
+<td>IfcBeam</td>
+<td>m</td>
+<td><strong>0.006</strong></td>
+<td>guess</td>
+<td>two parallel lines count as a beam's edges when their spacing is within this of the label's width, and pieces on one line within this are one run (§D109)</td>
+<td>0.006, 0.003</td>
+</tr>
+<tr>
+<td><code>beam.label_reach</code></td>
+<td>IfcBeam</td>
+<td>m</td>
+<td><strong>2.5</strong></td>
+<td>guess</td>
+<td>how far from a beam's size label its two edge lines may run (§D109: one label was measured 2.3 m from its member). 0 = beams are not read from labels</td>
+<td>2.5, 0</td>
+</tr>
+<tr>
+<td><code>beam.span_split</code></td>
+<td>IfcBeam</td>
+<td>text</td>
+<td><strong>label_midpoint</strong></td>
+<td>guess</td>
+<td>labels of different marks along one pair of edge lines split it at the midpoint between them: the drawing does not state where one mark ends (§D109: 3 marks on one 42.565 m pair). 'one_body' = the first label takes the whole run</td>
+<td>label_midpoint, one_body</td>
+</tr>
+<tr>
+<td><code>beam.width</code></td>
+<td>IfcBeam</td>
+<td>m</td>
+<td><strong>0.3</strong></td>
+<td>guess</td>
+<td>section width when no label or band gives it</td>
+<td>0.2, 0.25, 0.3</td>
+</tr>
+<tr>
+<td><code>gradebeam.depth</code></td>
+<td>IfcBeam</td>
+<td>m</td>
+<td><strong>0.3</strong></td>
+<td>guess</td>
+<td>grade beam depth</td>
+<td>0.3, 0.45</td>
+</tr>
+<tr>
+<td><code>gradebeam.width</code></td>
+<td>IfcBeam</td>
+<td>m</td>
+<td><strong>0.3</strong></td>
+<td>guess</td>
+<td>grade beam width when no label gives it</td>
+<td>0.2, 0.3</td>
+</tr>
+<tr>
+<td><code>steel.label_reach</code></td>
+<td>IfcBeam</td>
+<td>m</td>
+<td><strong>1.5</strong></td>
+<td>guess</td>
+<td>how far from a steel section label its member's line may run (§D109). 0 = steel is not read from labels</td>
+<td>1.5, 0</td>
+</tr>
+<tr>
+<td><code>steel.section_table</code></td>
+<td>IfcBeam</td>
+<td>text</td>
+<td><strong>standard</strong></td>
+<td>guess</td>
+<td>a UB label names a designation, not its web and flange. BS EN 10365 values taken from public references, not from the drawing and not checked against the standard itself (§D109). 'off' = a gap</td>
+<td>standard, off</td>
+</tr>
+<tr>
+<td><code>bodies.touching_parts</code></td>
+<td>IfcColumn</td>
+<td>text</td>
+<td><strong>one_body</strong></td>
+<td>guess</td>
+<td>rectangles of one direction that touch along a side are the parts of one body: the 2 flanges and the web of a built-up steel section drawn as 3 loops (§D109). 'separate' = one body per loop</td>
+<td>one_body, separate</td>
+</tr>
+<tr>
+<td><code>column.height</code></td>
+<td>IfcColumn</td>
+<td>m</td>
+<td><strong>3</strong></td>
+<td>guess</td>
+<td>storey height when no elevation gives it</td>
+<td>2.7, 3, 3.6</td>
+</tr>
+<tr>
+<td><code>column.size</code></td>
+<td>IfcColumn</td>
+<td>m</td>
+<td><strong>0.3</strong></td>
+<td>guess</td>
+<td>square section when a column symbol gives none</td>
+<td>0.2, 0.25, 0.3, 0.4</td>
+</tr>
+<tr>
+<td><code>column.top_under_beam</code></td>
+<td>IfcColumn</td>
+<td>text</td>
+<td><strong>beam_above</strong></td>
+<td>guess</td>
+<td>a column under a beam end carries it up to the beam's underside; an elevation may draw it short where a wall, a net or another sheet hides it (§D100: the shed's lines 36–41 drawn 1.52 m under beams at 3.10 m). 'as_drawn' keeps the drawn top and the gap shows as a load_path finding</td>
+<td>beam_above, as_drawn</td>
+</tr>
+<tr>
+<td><code>column.z_from_plans</code></td>
+<td>IfcColumn</td>
+<td>text</td>
+<td><strong>plan_levels</strong></td>
+<td>guess</td>
+<td>a column with no elevation height and no @BODYZ runs from the lowest plan that draws it to the next plan level above the highest plan that draws it (§D109). 'off' = a gap, left out</td>
+<td>plan_levels, off</td>
+</tr>
+<tr>
+<td><code>loops.skew_tol</code></td>
+<td>IfcColumn</td>
+<td>m</td>
+<td><strong>0.001</strong></td>
+<td>guess</td>
+<td>a closed loop of lines counts as square, in any direction, when its corners lie within this of a true rectangle in the frame of its own longest side (§D109: a CAD export is 0.05 to 0.1 mm off square, the snap tolerance is 0.01 mm). 0 = sheet-axis rectangles only</td>
+<td>0.001, 0</td>
+</tr>
+<tr>
+<td><code>synth.column.belowgrade.size</code></td>
+<td>IfcColumn</td>
+<td>m</td>
+<td><strong>0</strong></td>
+<td>guess</td>
+<td>0 = not stated: no below-grade column is built; state the schedule's below-grade section (e.g. 0.3556 for 14 in)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>synth.column.grade_to_base</code></td>
+<td>IfcColumn</td>
+<td>m</td>
+<td><strong>0.6096</strong></td>
+<td>guess</td>
+<td>grade to the column base (plinth): 2 ft, the datum read from a column detail</td>
+<td></td>
+</tr>
+<tr>
+<td><code>ceiling.thickness</code></td>
+<td>IfcCovering</td>
+<td>m</td>
+<td><strong>0.012</strong></td>
+<td>guess</td>
+<td>board thickness when a ceiling is implied</td>
+<td>0.009, 0.012, 0.015</td>
+</tr>
+<tr>
+<td><code>floorfinish.thickness</code></td>
+<td>IfcCovering</td>
+<td>m</td>
+<td><strong>0.02</strong></td>
+<td>guess</td>
+<td>floor finish thickness when implied</td>
+<td>0.01, 0.02, 0.05</td>
+</tr>
+<tr>
+<td><code>net.thickness</code></td>
+<td>IfcCovering</td>
+<td>m</td>
+<td><strong>0.005</strong></td>
+<td>guess</td>
+<td>netting sheet thickness; the area is drawn</td>
+<td>0.002, 0.005, 0.01</td>
+</tr>
+<tr>
+<td><code>curtainwall.mullion</code></td>
+<td>IfcCurtainWall</td>
+<td>m</td>
+<td><strong>0.05</strong></td>
+<td>guess</td>
+<td>typical mullion width</td>
+<td>0.05, 0.06</td>
+</tr>
+<tr>
+<td><code>door.height</code></td>
+<td>IfcDoor</td>
+<td>m</td>
+<td><strong>2.1</strong></td>
+<td>guess</td>
+<td>typical door set height; plans do not draw it</td>
+<td>2, 2.1, 2.4</td>
+</tr>
+<tr>
+<td><code>door.operation_standard</code></td>
+<td>IfcDoor</td>
+<td>text</td>
+<td><strong>SINGLE_SWING_LEFT</strong></td>
+<td>guess</td>
+<td>the running standard of a 2D set's doors whose operation the model does not state (F7 D18): the majority side of the building's stated single-swing doors; drawn yellow on A-DOOR-DFLT</td>
+<td>SINGLE_SWING_LEFT, SINGLE_SWING_RIGHT</td>
+</tr>
+<tr>
+<td><code>door.tag_reach</code></td>
+<td>IfcDoor</td>
+<td>m</td>
+<td><strong>3</strong></td>
+<td>guess</td>
+<td>how far from a door's tag its swing arc may be, the leaf then taking the schedule row's width and height (§D109: measured up to 2.6 m). 0 = doors are not read from tags</td>
+<td>3, 0</td>
+</tr>
+<tr>
+<td><code>door.thickness</code></td>
+<td>IfcDoor</td>
+<td>m</td>
+<td><strong>0.04</strong></td>
+<td>guess</td>
+<td>typical leaf thickness for a leaf drawn as one line</td>
+<td>0.04, 0.05</td>
+</tr>
+<tr>
+<td><code>door.width</code></td>
+<td>IfcDoor</td>
+<td>m</td>
+<td><strong>0.9</strong></td>
+<td>guess</td>
+<td>typical single leaf; used only for a door tag with no drawn swing or gap</td>
+<td>0.8, 0.9, 1</td>
+</tr>
+<tr>
+<td><code>fan.blades</code></td>
+<td>IfcFan</td>
+<td>count</td>
+<td><strong>4</strong></td>
+<td>guess</td>
+<td>the drawing's rings give the housing and hub radii, not the blades; a propeller fan is drawn with this many radial paddles</td>
+<td>3, 4, 5, 6</td>
+</tr>
+<tr>
+<td><code>fan.depth</code></td>
+<td>IfcFan</td>
+<td>m</td>
+<td><strong>0.3</strong></td>
+<td>guess</td>
+<td>housing depth; the diameter is drawn</td>
+<td>0.2, 0.3, 0.4</td>
+</tr>
+<tr>
+<td><code>fan.housing_wall</code></td>
+<td>IfcFan</td>
+<td>m</td>
+<td><strong>0.02</strong></td>
+<td>guess</td>
+<td>the housing is a tube of the drawn outer radius; its wall is not drawn</td>
+<td>0.01, 0.02, 0.03</td>
+</tr>
+<tr>
+<td><code>footing.depth</code></td>
+<td>IfcFooting</td>
+<td>m</td>
+<td><strong>0.4</strong></td>
+<td>guess</td>
+<td>pad footing thickness</td>
+<td>0.3, 0.4, 0.6</td>
+</tr>
+<tr>
+<td><code>footing.length</code></td>
+<td>IfcFooting</td>
+<td>m</td>
+<td><strong>1.2</strong></td>
+<td>guess</td>
+<td>pad footing plan length when no schedule gives it</td>
+<td>1, 1.2, 1.5</td>
+</tr>
+<tr>
+<td><code>footing.width</code></td>
+<td>IfcFooting</td>
+<td>m</td>
+<td><strong>1.2</strong></td>
+<td>guess</td>
+<td>pad footing plan width</td>
+<td>1, 1.2, 1.5</td>
+</tr>
+<tr>
+<td><code>footing.z_from_plan</code></td>
+<td>IfcFooting</td>
+<td>text</td>
+<td><strong>plan_level</strong></td>
+<td>guess</td>
+<td>a footing-layer loop with no elevation height: top = the plan's level. One F mark inside = a pad, its thickness footing.depth; else a raft, thick by the labels inside it (<n>mm TH, RAFT <n>mm) or the raft around it (§D109). 'off' = a gap, left out</td>
+<td>plan_level, off</td>
+</tr>
+<tr>
+<td><code>member.section</code></td>
+<td>IfcMember</td>
+<td>text</td>
+<td><em>(empty)</em></td>
+<td>guess</td>
+<td>a member whose label carries no section: empty = the most common section drawn on the same set for the same kind of member (load_summary.js, shown assumed); a label such as 1.5"x1.5"x1/4" Angle = that section; none = leave them unweighed</td>
+<td></td>
+</tr>
+<tr>
+<td><code>member.size</code></td>
+<td>IfcMember</td>
+<td>m</td>
+<td><strong>0.04</strong></td>
+<td>guess</td>
+<td>square envelope for a member with no label or size</td>
+<td>0.04, 0.05, 0.075</td>
+</tr>
+<tr>
+<td><code>profile.angle_heel</code></td>
+<td>IfcMember</td>
+<td>text</td>
+<td><strong>lower</strong></td>
+<td>guess</td>
+<td>which way an angle opens is not stated by a section label; the heel corner sits at the low side of the bar's normal (the b x b envelope is kept either way)</td>
+<td>lower, upper</td>
+</tr>
+<tr>
+<td><code>profile.angle_mesh</code></td>
+<td>IfcMember</td>
+<td>text</td>
+<td><strong>label</strong></td>
+<td>guess</td>
+<td>a section bar whose label states one equal-leg angle (1.5"x1.5"x1/4" Angle) is built as that L section (t(2b-t) x length) instead of its b x b box; 'box' keeps the drawn prism</td>
+<td>label, box</td>
+</tr>
+<tr>
+<td><code>section.spacing</code></td>
+<td>IfcMember</td>
+<td>text</td>
+<td><strong>column pitch</strong></td>
+<td>guess</td>
+<td>a section drawn once repeats at the column pitch from its cut</td>
+<td>column pitch, 2 x column pitch</td>
+</tr>
+<tr>
+<td><code>pile.diameter</code></td>
+<td>IfcPile</td>
+<td>m</td>
+<td><strong>0.3</strong></td>
+<td>guess</td>
+<td>typical bored pile diameter</td>
+<td>0.3, 0.45, 0.6</td>
+</tr>
+<tr>
+<td><code>pile.length</code></td>
+<td>IfcPile</td>
+<td>m</td>
+<td><strong>12</strong></td>
+<td>guess</td>
+<td>no pile length is drawn on a layout</td>
+<td>6, 12, 18</td>
+</tr>
+<tr>
+<td><code>plate.thickness</code></td>
+<td>IfcPlate</td>
+<td>m</td>
+<td><strong>0.00635</strong></td>
+<td>std</td>
+<td>1/4 in, the thickness the truss section's own label states (a plate with no label takes it)</td>
+<td>0.00476, 0.00635, 0.0095</td>
+</tr>
+<tr>
+<td><code>railing.height</code></td>
+<td>IfcRailing</td>
+<td>m</td>
+<td><strong>1</strong></td>
+<td>guess</td>
+<td>typical guard height</td>
+<td>0.9, 1, 1.1</td>
+</tr>
+<tr>
+<td><code>railing.post_spacing</code></td>
+<td>IfcRailing</td>
+<td>m</td>
+<td><strong>1.2</strong></td>
+<td>guess</td>
+<td>typical post spacing</td>
+<td>1, 1.2, 1.5</td>
+</tr>
+<tr>
+<td><code>ramp.slope</code></td>
+<td>IfcRamp</td>
+<td>ratio</td>
+<td><strong>0.0833</strong></td>
+<td>guess</td>
+<td>1:12, a typical accessible ramp</td>
+<td>0.0625, 0.0833, 0.1</td>
+</tr>
+<tr>
+<td><code>roof.from_spots</code></td>
+<td>IfcRoof</td>
+<td>text</td>
+<td><strong>read</strong></td>
+<td>guess</td>
+<td>a surface through the plan's TOS spot levels, inside what the spots reach; deck thickness and height over the steel from the sheet's own deck note (§D109). Not the roof's outline: nothing states its edge. 'off' = none</td>
+<td>read, off</td>
+</tr>
+<tr>
+<td><code>roof.slope_deg</code></td>
+<td>IfcRoof</td>
+<td>deg</td>
+<td><strong>15</strong></td>
+<td>guess</td>
+<td>typical light roof pitch; used only when no gable or section gives the slope</td>
+<td>10, 15, 17.5, 22.5</td>
+</tr>
+<tr>
+<td><code>synth.roof.overhang</code></td>
+<td>IfcRoof</td>
+<td>m</td>
+<td><strong>0</strong></td>
+<td>guess</td>
+<td>the roof is cut at the gable planes until an overhang is stated</td>
+<td>0, 0.4572, 0.6</td>
+</tr>
+<tr>
+<td><code>synth.roof.sheet_thickness</code></td>
+<td>IfcRoof</td>
+<td>m</td>
+<td><strong>0.0254</strong></td>
+<td>guess</td>
+<td>display thickness of a roofing sheet (1 in); the cost is by area. The own weight is by area too, read off the sheet's plan box, which this thickness widens by thickness x sin(slope): a small weight change, no cost change</td>
+<td>0.0254, 0.05</td>
+</tr>
+<tr>
+<td><code>slab.edge_arc_sagitta</code></td>
+<td>IfcSlab</td>
+<td>m</td>
+<td><strong>0.005</strong></td>
+<td>guess</td>
+<td>an arc in a slab edge is read as straight facets no further than this from the arc (5 mm: under the reader's thinnest wall and the plank keyway)</td>
+<td>0.002, 0.005, 0.01</td>
+</tr>
+<tr>
+<td><code>slab.edge_joint_close</code></td>
+<td>IfcSlab</td>
+<td>m</td>
+<td><strong>0.05</strong></td>
+<td>guess</td>
+<td>§D70.1 the plan's slab edge closes gaps and notches narrower than this (plank / modelling joints are not drawn: hollow-core joints are grouted monolithic, the open keyway about 3/4 in, Oldcastle Hollowcore Plank Pocket Guide 2019); 0.05 m = the reader's thinnest wall (CFG wall.min_thickness), measured joints &lt;= 24.9 mm (JKR), the first wall gap 60 mm (HHS)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>slab.edge_void_min_area</code></td>
+<td>IfcSlab</td>
+<td>m2</td>
+<td><strong>0.0645</strong></td>
+<td>guess</td>
+<td>§D70.1 a hole in the slab is drawn as an opening when at least a 254 mm (10 in) square: the producer shows openings larger than 10 in square on shop drawings, smaller ones are core-drilled in the field (Oldcastle Hollowcore Plank Pocket Guide 2019); a hole a column or wall drawn on the same plan fills (&gt;= 0.9) is that element, never an opening</td>
+<td></td>
+</tr>
+<tr>
+<td><code>slab.ground_on_raft</code></td>
+<td>IfcSlab</td>
+<td>text</td>
+<td><strong>read</strong></td>
+<td>guess</td>
+<td>a raft holding an S.O.G-<n>mm label of a plan carries a ground slab on its own outline, n thick (§D109: the drawing states the thickness, not the slab's edge). 'off' = no such slab</td>
+<td>read, off</td>
+</tr>
+<tr>
+<td><code>slab.level_step_min</code></td>
+<td>IfcSlab</td>
+<td>m</td>
+<td><strong>0.1</strong></td>
+<td>guess</td>
+<td>slab tops closer than this are one level (the measured finishes are 25-50 mm); a step of this size or more is drawn as its own piece with its own top and thickness (A-FLOR-OTLN elevation / thickness, A-FLOR-LEVL line); 1 or more = one level per storey</td>
+<td>0.05, 0.1, 0.2, 1</td>
+</tr>
+<tr>
+<td><code>slab.outline_when_not_rect</code></td>
+<td>IfcSlab</td>
+<td>text</td>
+<td><strong>walls_bounded</strong></td>
+<td>guess</td>
+<td>when the walls do not draw a rectangle, the slab is the area they bound on both axes (best effort, amber; HHS -10% against the model's floor slabs, a rectangle +163%); 'none' leaves the slab out and lists it</td>
+<td>walls_bounded, none</td>
+</tr>
+<tr>
+<td><code>slab.underside_when_stepped</code></td>
+<td>IfcSlab</td>
+<td>text</td>
+<td><strong>longest_cut</strong></td>
+<td>guess</td>
+<td>when the section's slab under a level steps (finish on planks, a dropped wet area), the underside is the stack bottom under the longest cut (best effort, amber; JKR with STR: 84.33 under 77% of the cut); 'none' leaves it a conflict</td>
+<td>longest_cut, none</td>
+</tr>
+<tr>
+<td><code>synth.slab.footprint</code></td>
+<td>IfcSlab</td>
+<td>text</td>
+<td><strong>outermost grid lines</strong></td>
+<td>guess</td>
+<td>the slab edge is taken at the outermost grid lines of the base plan</td>
+<td>outermost grid lines</td>
+</tr>
+<tr>
+<td><code>synth.slab.thickness</code></td>
+<td>IfcSlab</td>
+<td>m</td>
+<td><strong>0.25</strong></td>
+<td>guess</td>
+<td>a guess: no sheet states the slab thickness. 250 mm is the slab line every rate pack's class table names ('RC Slab 250mm', the same 250 mm in all 16 country packs), a priced item, not a design value for this building (§D99)</td>
+<td>0.15, 0.2, 0.25</td>
+</tr>
+<tr>
+<td><code>stair.going</code></td>
+<td>IfcStair</td>
+<td>m</td>
+<td><strong>0.25</strong></td>
+<td>guess</td>
+<td>typical tread depth</td>
+<td>0.25, 0.28, 0.3</td>
+</tr>
+<tr>
+<td><code>stair.riser</code></td>
+<td>IfcStair</td>
+<td>m</td>
+<td><strong>0.175</strong></td>
+<td>guess</td>
+<td>typical riser height; a stair symbol carries no riser</td>
+<td>0.15, 0.175, 0.19</td>
+</tr>
+<tr>
+<td><code>stair.width</code></td>
+<td>IfcStair</td>
+<td>m</td>
+<td><strong>1</strong></td>
+<td>guess</td>
+<td>typical flight width</td>
+<td>0.9, 1, 1.2</td>
+</tr>
+<tr>
+<td><code>stair.flights</code></td>
+<td>IfcStairFlight</td>
+<td>text</td>
+<td><strong>read</strong></td>
+<td>guess</td>
+<td>3 or more parallel lines of one length, evenly spaced, are a flight's nosings; rise = (0.63 - tread) / 2, the drawing states no riser; a flight narrower than 0.6 m is no flight (§D109). 'off' = no flights</td>
+<td>read, off</td>
+</tr>
+<tr>
+<td><code>panel.plane</code></td>
+<td>IfcWall</td>
+<td>text</td>
+<td><strong>grid family end line, centred</strong></td>
+<td>guess</td>
+<td>an elevation panel is placed on an end grid line of its face, centred. An elevation whose grid labels share one family (AA, AB or A1 = family A; a label of one character or digits only has none) uses that family's end line, so a set of several wings keeps each elevation on its own wing (§D107); set back to the plan's outermost line with 'end grid line, centred'. @PLANE=<grid label> on the sheet wins over both</td>
+<td>grid family end line, centred, end grid line, centred</td>
+</tr>
+<tr>
+<td><code>wall.band_gap</code></td>
+<td>IfcWall</td>
+<td>m</td>
+<td><strong>0.35</strong></td>
+<td>guess</td>
+<td>parallel wall lines closer than this are one wall, solid from outer line to outer line: with no wall type schedule a leaf cannot be told from a cavity (§D109: spacing peaks at 50 to 300 mm). 0 = walls are not read from their lines</td>
+<td>0.35, 0</td>
+</tr>
+<tr>
+<td><code>wall.base</code></td>
+<td>IfcWall</td>
+<td>m</td>
+<td><strong>0</strong></td>
+<td>guess</td>
+<td>floor level of the storey</td>
+<td></td>
+</tr>
+<tr>
+<td><code>wall.height</code></td>
+<td>IfcWall</td>
+<td>m</td>
+<td><strong>3</strong></td>
+<td>guess</td>
+<td>typical storey wall height; not stated by a plan</td>
+<td>2.4, 2.7, 3, 3.6</td>
+</tr>
+<tr>
+<td><code>wall.min_thick</code></td>
+<td>IfcWall</td>
+<td>m</td>
+<td><strong>0.05</strong></td>
+<td>guess</td>
+<td>a band of wall lines thinner than this is a finish line, not a wall (§D109: 28 pieces measured 10-20 mm). 0 = read them as walls</td>
+<td>0.05, 0</td>
+</tr>
+<tr>
+<td><code>wall.tag_reach</code></td>
+<td>IfcWall</td>
+<td>m</td>
+<td><strong>1.5</strong></td>
+<td>guess</td>
+<td>how far a wall tag may lie from the wall it names, on a plan layer typed walltag: the nearest wall of that plan's level takes the tag as its type name. The binding is by distance, not checked; a name, not a build-up, without the wall type schedule (§D110). 0 = no tag is read</td>
+<td>1.5, 0</td>
+</tr>
+<tr>
+<td><code>wall.thickness</code></td>
+<td>IfcWall</td>
+<td>m</td>
+<td><strong>0.15</strong></td>
+<td>guess</td>
+<td>a guess: no sheet states the wall thickness. 150 mm is the wall line every rate pack's class table names (the same 150 mm in all 16 country packs), a priced item, not a design value for this building (§D99)</td>
+<td>0.1, 0.115, 0.15, 0.2, 0.225</td>
+</tr>
+<tr>
+<td><code>wall.top_from_elevation</code></td>
+<td>IfcWall</td>
+<td>text</td>
+<td><strong>read</strong></td>
+<td>guess</td>
+<td>a wall on the grid line an elevation stands on takes its top and base from that elevation's wall lines over its own span; other walls of that wing no higher than the wing's top (§D110). 'next_plan_level' = every wall stops at the next plan level</td>
+<td>read, next_plan_level</td>
+</tr>
+<tr>
+<td><code>wall.top_when_unseen</code></td>
+<td>IfcWall</td>
+<td>text</td>
+<td><strong>slab_above</strong></td>
+<td>guess</td>
+<td>a wall no elevation shows runs from its floor to the slab underside above (the section states it); HHS Level 2 / 3 = the model, Level 1 0.3 m above the model's (its walls stop at a ceiling the drawings do not show); 'none' leaves such walls as asks</td>
+<td>slab_above, none</td>
+</tr>
+<tr>
+<td><code>type.size_tie</code></td>
+<td>IfcWindow</td>
+<td>text</td>
+<td><strong>library_first</strong></td>
+<td>guess</td>
+<td>a size the library answers with several types (Duplex 819 x 759: SMALL_FIXED, CASEMENT) binds the library's first row (8 of the Duplex IFC's 12 are that type); an explicit binding or label always wins; 'none' leaves such fills as asks</td>
+<td>library_first, none</td>
+</tr>
+<tr>
+<td><code>window.height</code></td>
+<td>IfcWindow</td>
+<td>m</td>
+<td><strong>1.2</strong></td>
+<td>guess</td>
+<td>typical window height</td>
+<td>1, 1.2, 1.5</td>
+</tr>
+<tr>
+<td><code>window.sill</code></td>
+<td>IfcWindow</td>
+<td>m</td>
+<td><strong>0.9</strong></td>
+<td>guess</td>
+<td>typical sill height above the floor</td>
+<td>0.9, 1, 1.1</td>
+</tr>
+<tr>
+<td><code>window.width</code></td>
+<td>IfcWindow</td>
+<td>m</td>
+<td><strong>1.2</strong></td>
+<td>guess</td>
+<td>typical window width; used when a plan symbol gives no width</td>
+<td>0.9, 1.2, 1.5</td>
+</tr>
+<tr>
+<td><code>check.set</code></td>
+<td>Set</td>
+<td>text</td>
+<td><strong>read</strong></td>
+<td>guess</td>
+<td>which printed relations the set check judges (§D112). A rule names its columns by heading; the tolerance is the printed rounding. 'off' = no sum is judged; add a row to judge another relation</td>
+<td>read, off</td>
+</tr>
+<tr>
+<td><code>gate.unplaced_sheet</code></td>
+<td>Set</td>
+<td>text</td>
+<td><strong>refuse</strong></td>
+<td>guess</td>
+<td>a sheet the reader cannot place refuses the whole set, so nothing is converted past a sheet you meant to be read. 'set_aside' = the rest converts, each such sheet a counted gap with the reader's reason (§D110)</td>
+<td>refuse, set_aside</td>
+</tr>
+<tr>
+<td><code>guide.gap_sheets</code></td>
+<td>Set</td>
+<td>text</td>
+<td><strong>read</strong></td>
+<td>guess</td>
+<td>which sheet of the set's own register might close each gap, by the words of its title; it says a sheet might help, never that it will (§D110). 'off' = no guide</td>
+<td>read, off</td>
+</tr>
+<tr>
+<td><code>read.tables</code></td>
+<td>Set</td>
+<td>text</td>
+<td><strong>read</strong></td>
+<td>guess</td>
+<td>how a ruled schedule is told from other linework and how its heading is told from its rows (§D111). Fractions of the table's own cells or columns; 'off' = no table is read</td>
+<td>read, off</td>
+</tr>
+<tr>
+<td><code>suggest.title_layout</code></td>
+<td>Set</td>
+<td>text</td>
+<td><strong>read</strong></td>
+<td>guess</td>
+<td>a title ending LAYOUT names a plan, as a title ending PLAN does (§D110). 'off' = no view is read from it, and the sheet refuses the set</td>
+<td>read, off</td>
+</tr>
+<tr>
+<td><code>analytical.node_snap</code></td>
+<td>analytical</td>
+<td>m</td>
+<td><strong>0.25</strong></td>
+<td>guess</td>
+<td>ends closer than this are one joint in the analytical model (§D103): a beam drawn to a column face and a column top under the beam's axis are one joint; too small leaves joints open (dangling ends), too large merges separate joints</td>
+<td>0.05, 0.1, 0.15, 0.25, 0.4</td>
+</tr>
+<tr>
+<td><code>analytical.support</code></td>
+<td>analytical</td>
+<td>text</td>
+<td><strong>FIXED</strong></td>
+<td>guess</td>
+<td>a footing is assumed to restrain the column base; the engineer confirms (FIXED = no translation or rotation, PINNED = no translation)</td>
+<td>FIXED, PINNED</td>
+</tr>
+<tr>
+<td><code>load.rc_steel_percent</code></td>
+<td>load</td>
+<td>% by volume</td>
+<td><strong>1</strong></td>
+<td>guess</td>
+<td>main reinforcement not drawn; BNBC 2012 Table 2.2.1 note: "for reinforced concrete, add 0.63 kN/m3 for each 1% by volume of main reinforcement"</td>
+<td>0.5, 1, 1.5, 2, 3</td>
+</tr>
+<tr>
+<td><code>load.roof_sheet</code></td>
+<td>load</td>
+<td>kN/m2</td>
+<td><strong>0.096</strong></td>
+<td>guess</td>
+<td>sheet thickness not drawn; BNBC 2012 Part 6 Ch 2 Table 2.2.2 "Steel, galvanized std. corrugated sheeting (incl. lap and fastenings) 0.8 mm thick 0.096"</td>
+<td>0.077, 0.096, 0.12</td>
+</tr>
+<tr>
+<td><code>load.unit_weight.brick</code></td>
+<td>load</td>
+<td>kN/m3</td>
+<td><strong>18.9</strong></td>
+<td>std</td>
+<td>BNBC 2012 Part 6 Ch 2 Table 2.2.1: "Brick 18.9" (modeller/reference/BNBC2012_P6C2_dead_load_tables.txt)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>load.unit_weight.concrete</code></td>
+<td>load</td>
+<td>kN/m3</td>
+<td><strong>22.8</strong></td>
+<td>std</td>
+<td>BNBC 2012 Part 6 Ch 2 Table 2.2.1: "Concrete - stone aggregate (unreinforced) 22.8" (modeller/reference/BNBC2012_P6C2_dead_load_tables.txt)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>load.unit_weight.steel</code></td>
+<td>load</td>
+<td>kN/m3</td>
+<td><strong>77</strong></td>
+<td>std</td>
+<td>BNBC 2012 Part 6 Ch 2 Table 2.2.1: "Steel 77.0" (modeller/reference/BNBC2012_P6C2_dead_load_tables.txt)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>suggest.elev_no_grid</code></td>
+<td>suggest</td>
+<td>text</td>
+<td><strong>centre_on_wing</strong></td>
+<td>guess</td>
+<td>an elevation that names its grid line but draws no grid: centred along that line on the span of its wing, tinted and said so; its heights stay read (§D108: best-effort shape). 'lie_flat' = it stays as drawn</td>
+<td>centre_on_wing, lie_flat</td>
+</tr>
+<tr>
+<td><code>suggest.grid_along</code></td>
+<td>suggest</td>
+<td>m</td>
+<td><strong>0.5</strong></td>
+<td>guess</td>
+<td>how far sideways a grid label's text position may sit from its line: CAD anchors a text at its corner, not its bubble's centre (measured 0.25 to 0.37 m on a Revit-exported plan, §D107); the nearest label still wins. 0.06 = the earlier value</td>
+<td>0.06, 0.5</td>
+</tr>
+<tr>
+<td><code>suggest.grid_label</code></td>
+<td>suggest</td>
+<td>text</td>
+<td><strong>letters_digits</strong></td>
+<td>guess</td>
+<td>the labels read from a grid line's end: A, AA, 12 and also A1, B12 (§D107: 10 of 29 labels of a Revit-exported plan). 'letters_or_digits' = the earlier grammar</td>
+<td>letters_digits, letters_or_digits</td>
+</tr>
+<tr>
+<td><code>suggest.grid_layer</code></td>
+<td>suggest</td>
+<td>text</td>
+<td><strong>name_has_grid</strong></td>
+<td>guess</td>
+<td>layers searched for grid lines: any layer whose name holds GRID (a line with no label proposes nothing, so the name alone decides nothing, §D107). 'a_grid_only' = the template's layer and the layers you typed as grid</td>
+<td>name_has_grid, a_grid_only</td>
+</tr>
+<tr>
+<td><code>suggest.grid_reach</code></td>
+<td>suggest</td>
+<td>m</td>
+<td><strong>1.2</strong></td>
+<td>guess</td>
+<td>how far beyond a grid line's end its label may sit: a bubble's centre at 1:100 (measured 0.809 to 1.022 m on a Revit-exported plan, §D107). 0.7 = the earlier reach</td>
+<td>0.7, 1.2</td>
+</tr>
+<tr>
+<td><code>suggest.grid_rotated</code></td>
+<td>suggest</td>
+<td>text</td>
+<td><strong>read</strong></td>
+<td>guess</td>
+<td>a grid line off the sheet axes with its label at one end is read as a plan grid line in its own direction (@GRIDA, §D108). 'off' = only counted</td>
+<td>read, off</td>
+</tr>
+<tr>
+<td><code>suggest.grid_ticks</code></td>
+<td>suggest</td>
+<td>text</td>
+<td><strong>unless_stated</strong></td>
+<td>guess</td>
+<td>grid lines guessed from dimension ticks: not on an axis where the sheet states or reads 2 or more grid lines, and not outside its @REGION (§D107: a stated plan was given wall tags as grids and an elevation landed 72 m away). 'always' = the earlier behaviour</td>
+<td>unless_stated, always, off</td>
+</tr>
+<tr>
+<td><code>suggest.level_footing</code></td>
+<td>suggest</td>
+<td>text</td>
+<td><strong>read</strong></td>
+<td>guess</td>
+<td>a plan no title or level name places takes its level from one distinct T/FOOTING value on the sheet: T/FOOTING: -1.250 m (§D109). 'off' = no such row</td>
+<td>read, off</td>
+</tr>
+<tr>
+<td><code>suggest.level_name</code></td>
+<td>suggest</td>
+<td>text</td>
+<td><strong>read</strong></td>
+<td>guess</td>
+<td>a plan's level is read when its title and an elevation's level name agree: LEVEL 1 PLAN with LEVEL 01 beside EL: +4.800 m (§D108). 'off' = no such row</td>
+<td>read, off</td>
+</tr>
+<tr>
+<td><code>suggest.level_text</code></td>
+<td>suggest</td>
+<td>text</td>
+<td><strong>value_on_line</strong></td>
+<td>guess</td>
+<td>a level datum is read from a TEXT or MTEXT such as +4.00 m or EL: +4.800 m when a horizontal line lies at exactly that height, on any layer; the value and the line are two separate facts that must agree (§D107). 'level_layer_only' = the earlier rule</td>
+<td>value_on_line, level_layer_only</td>
+</tr>
+<tr>
+<td><code>suggest.sheet_refs</code></td>
+<td>suggest</td>
+<td>text</td>
+<td><strong>report</strong></td>
+<td>guess</td>
+<td>sheet numbers the set refers to but does not hold are listed as an advisory; it never blocks (§D107). 'off' = no list</td>
+<td>report, off</td>
+</tr>
+<tr>
+<td><code>suggest.title_text</code></td>
+<td>suggest</td>
+<td>text</td>
+<td><strong>text_and_mtext</strong></td>
+<td>guess</td>
+<td>a sheet's role is read from TEXT and MTEXT titles; a note (a comma, or SEE / REFER) is not a title, and two spellings of one title are one (§D107). 'text_only' = the earlier rule</td>
+<td>text_and_mtext, text_only</td>
+</tr>
+</tbody>
+</table>
+<p>Rule of resolution, strongest first: the drawing set's <code>@DEFAULT</code> marking → a choice made in the editor → the building type's cited override → the registry value above. A typo in a key is an error, never a silent default; a value that is not a non-negative number is refused and the default is used.</p>
+<h2 id="c-building-type-farming-shed">C. Building type: Farming Shed<a class="headerlink" href="#c-building-type-farming-shed" title="Permanent link">&para;</a></h2>
+<p>Stating <code>building.type = Farming Shed</code> switches on cited values (sources: the TNAU poultry-house construction guide, and a Bangladesh agricultural-university broiler-shed lecture; both medium confidence):</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Value</th>
+<th>Basis</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>door.height</code></td>
+<td>1.83</td>
+<td>Farming Shed: preferred door 6 x 2.5 ft opening outward (TNAU)</td>
+</tr>
+<tr>
+<td><code>door.width</code></td>
+<td>0.762</td>
+<td>Farming Shed: preferred door 6 x 2.5 ft (TNAU)</td>
+</tr>
+<tr>
+<td><code>synth.roof.overhang</code></td>
+<td>1.0668</td>
+<td>Farming Shed: roof overhang at least 3.5 ft to keep rain out (TNAU)</td>
+</tr>
+</tbody>
+</table>
+<p>It also lists the components a farming shed is expected to contain (fans, nets/pads, doors, roof, slab) and the typical ranges used for the <strong>Typology</strong> advisories (open-sided width 15–25 ft, environment-controlled 40 ft and wider, eave 6–7 ft, centre 10–12 ft). Advisories compare and never change a body or a setting; a missing expected part is reported, never invented (an evaporative pad with no drawn length is not built).</p>
+<h2 id="d-what-complete-the-building-adds-amber-estimated">D. What <em>Complete the building</em> adds (amber, estimated)<a class="headerlink" href="#d-what-complete-the-building-adds-amber-estimated" title="Permanent link">&para;</a></h2>
+<p>Ticking <strong>Complete the building</strong> adds a floor slab and the gabled roof the drawings imply, and, where a column schedule states a section below grade, the <strong>below-grade column parts</strong> (footing top to grade at that section, grade to the base at the column's own section; <code>synth.column.*</code>). They are computed from drawn evidence plus the stated conventions <code>synth.slab.*</code> and <code>synth.roof.*</code> above, shown <strong>amber</strong> (derived), and their defaults are listed in yellow.</p>
+<h2 id="e-how-evidence-is-shown">E. How evidence is shown<a class="headerlink" href="#e-how-evidence-is-shown" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Evidence</th>
+<th>Meaning</th>
+<th>Where you see it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>drawn</strong></td>
+<td>measured from the drawing</td>
+<td>no mark</td>
+</tr>
+<tr>
+<td><strong>derived</strong> (amber)</td>
+<td>computed from drawn evidence plus a stated convention (slab, roof, a panel that inherits a thickness label, a stated beam range, fans, nets, door swings)</td>
+<td><em>Evidence colours</em> checkbox on the import panel; <code>Provenance = derived</code> in the database</td>
+</tr>
+<tr>
+<td><strong>assumed</strong> (red)</td>
+<td>no drawing evidence for the body's existence or position (e.g. a truss section drawn once, repeated along the building)</td>
+<td>same checkbox; <code>Provenance = assumed</code></td>
+</tr>
+<tr>
+<td>yellow row</td>
+<td>a value the drawing did not state and a default supplied</td>
+<td>Metadata panel → <em>All defaults</em>; Accept all, or ignore</td>
+</tr>
+</tbody>
+</table>
+<p>By default the canvas shows each body in its <strong>material's standard colour</strong> (display convention, not a measurement): reinforced concrete grey, brick masonry brick red, profiled metal roofing light blue-grey, netting green, steel sections and plates dark blue-grey, extraction fans and door sets their own colours. A material with no colour in the palette is shown neutral grey and listed.</p>
+<h2 id="f-items-the-shed-drawings-left-open-carried-as-yellow-rows-never-decided-in-code">F. Items the shed drawings left open (carried as yellow rows, never decided in code)<a class="headerlink" href="#f-items-the-shed-drawings-left-open-carried-as-yellow-rows-never-decided-in-code" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>State</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Truss spacing; whether the right half repeats the left</td>
+<td>assumed: a truss at every column line (red), <code>section.spacing</code></td>
+</tr>
+<tr>
+<td>Roof sheet thickness and overhang</td>
+<td>defaults 0.0254 m and 0 (<code>synth.roof.*</code>), overhang 1.0668 m under <em>Farming Shed</em></td>
+</tr>
+<tr>
+<td>Floor slab thickness and extent</td>
+<td>0.25 m (rate-pack standard), outermost grid lines</td>
+</tr>
+<tr>
+<td>Fan depth; netting thickness</td>
+<td>0.3 m; 5 mm (the areas are drawn)</td>
+</tr>
+<tr>
+<td>Door leaf thickness</td>
+<td>0.04 m for a leaf drawn as one line (two drawn lines give the real thickness)</td>
+</tr>
+<tr>
+<td>Door height</td>
+<td><strong>drawn</strong> when the elevation's door-frame layer is typed (96 / 94 in on the shed), else 2.1 m</td>
+</tr>
+<tr>
+<td>Four unlabelled 21.7 in swings with no open leaf</td>
+<td>listed, not built (they sweep 75°, not a door's quarter turn)</td>
+</tr>
+<tr>
+<td>Evaporative pads</td>
+<td>not built: labelled, but no outline or length is drawn</td>
+</tr>
+<tr>
+<td>False ceiling, slats (cross-section)</td>
+<td>not built: labelled on the section, no closed plane, size or spacing is drawn</td>
+</tr>
+<tr>
+<td>Polythene and compacted sand under the slab</td>
+<td>not built: labelled, no thickness stated</td>
+</tr>
+<tr>
+<td>Footing top: the detail section sums footing top to plinth to 84 in, the stated footing height (<code>@BODYZ</code>) puts it 69 in below the plinth</td>
+<td>the stated value is kept; the 15 in difference is listed here</td>
+</tr>
+<tr>
+<td>Beam reinforcement</td>
+<td>not read: bars are labels on the section drawings, not a schedule (only the footing and column schedules are read)</td>
+</tr>
+<tr>
+<td>24 in "support wall" text against the 96 / 98 in brick drawn on the elevations</td>
+<td>both kept; the brick is built as drawn</td>
+</tr>
+<tr>
+<td>A beam drawn 10 in deep but labelled 12 in</td>
+<td>conflict row; the label's number is used</td>
+</tr>
+<tr>
+<td><code>410'-0"</code> dimension text against 1,560 in drawn</td>
+<td>conflict row in the dimension audit</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+
+
+                
+
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/red1oon/bim-ootb" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.linkedin.com/in/red1oon/" target="_blank" rel="noopener" title="www.linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.indexes", "search.suggest", "search.highlight", "toc.follow", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../javascripts/fold-footnotes.js"></script>
+      
+        <script src="../../javascripts/bim_compiler_source.js"></script>
+      
+    
+  </body>
+</html>
