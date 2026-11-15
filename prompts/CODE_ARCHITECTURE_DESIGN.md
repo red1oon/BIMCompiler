@@ -772,6 +772,28 @@ at a worktree on `origin/master` (e.g. `/tmp/wt-bridge`) until the default is de
 
 ---
 
+### F.24 The X0 witnesses in CI's fast checks (ADVICE C1; no decision needed; spec 2026-11-16)
+- **Issue proved:** CI passes a change that breaks an X0 witness. That happened twice: archive §F.15 (#2954) and §F.19, the "fake field in the index" class that `witness_x0_appdef` catches, and both times it was caught before the PR only by luck. Today `.github/workflows/ci.yml` runs no `devtools/` witness (`git grep x0 .github/workflows` = 0 hits).
+- **Measured 2026-11-16** on a fresh `git clone --depth 1` of bim-ootb `main` @ `8c3f0af6`, with no `../bim-compiler` beside it (the CI runner's view; `node_modules` from `npm ci`):
+
+| witness | exit | seconds | verdict |
+|---|---|---|---|
+| `witness_x0_isolation` | 0 | 0.7 | PASS |
+| `witness_x0_lens` | 0 | 1.3 | PASS |
+| `witness_x0_deploy_cost` | 0 | 1.3 | PASS |
+| `witness_x0_appdef` | 0 | 2.6 | PASS |
+| `witness_x0_context` | 0 | 2.8 | PASS |
+| `witness_x0_refs` | 0 | 13.9 | PASS |
+| `witness_x0_ship` | 0 | 17.8 | PASS |
+| `witness_x0_fresh` | 0 | 18.2 | PASS |
+| `witness_x0_mcp` | 0 | 28.0 | PASS |
+| `witness_x0_activate` | 0 | 28.3 | PASS |
+| `witness_x0_taghover` | **0** | 0.2 | **INCONCLUSIVE** (it needs the bim-compiler repo) |
+
+- **Build:** one step in `ci.yml` `fast-checks`, **"X0 Navigator witnesses (node only)"**, running the five that take under 3 s (isolation, lens, deploy_cost, appdef, context; about 9 s together). The step **fails unless each witness exits 0 AND prints a `verdict=PASS` line**: `taghover` shows that an exit code of 0 can mean INCONCLUSIVE (PRIMAL LAW 4), and a CI step that judged nothing must not be green. `taghover` stays out (it would be vacuous on a runner). The five slower ones (14 to 28 s each, about 106 s together) stay local, run with "Run this witness" as before. Moving them into CI is a later choice, if the cost is worth it.
+- **Witness of the step itself (red control):** the step's `run:` script, read from `ci.yml` and run by `bash` in the clean clone, must exit 0. In a copy with a planted defect, it must exit 1 and name the witness that failed. **Done when:** both local runs behave, and the PR's own CI run shows the step green on GitHub.
+- **Not in this PR:** ADVICE C2 (the version stamp at pack time) and C3 (the stale "138" texts), one PR each after this.
+
 ## ADVICE — from the session that built Part F, for the owner and the sessions that follow (2026-11-14)
 
 Owner: *"Put in your advice as you know VSC and software better"*. **These are recommendations, not decisions.** A decision is only
