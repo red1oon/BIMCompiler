@@ -1860,6 +1860,56 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#43-the-provenance-hover-the-code-behind-what-you-see-on-the-page" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 The provenance hover: the code behind what you see on the page
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.3 The provenance hover: the code behind what you see on the page">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#in-the-modeller-a-bodys-six-layers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        In the Modeller: a body's six layers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#in-the-erp-every-layer-of-code-behind-a-field" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        In the ERP: every layer of code behind a field
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#if-something-looks-wrong" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        If something looks wrong
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3653,6 +3703,56 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#43-the-provenance-hover-the-code-behind-what-you-see-on-the-page" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 The provenance hover: the code behind what you see on the page
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.3 The provenance hover: the code behind what you see on the page">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#in-the-modeller-a-bodys-six-layers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        In the Modeller: a body's six layers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#in-the-erp-every-layer-of-code-behind-a-field" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        In the ERP: every layer of code behind a field
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#if-something-looks-wrong" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        If something looks wrong
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -4223,6 +4323,10 @@ The app's only runtime dependency is <code>sql.js</code>, which is already vendo
 <td>With X0 Navigator (§4.1): hover the tag. Without it: search the tag. The code that prints it is the definition, and its spec is usually named in the same file's header.</td>
 </tr>
 <tr>
+<td>Which code built a body on the Modeller canvas, or runs on an ERP field</td>
+<td>The provenance hover (§4.3): hover it, press a number to open that line in VS Code.</td>
+</tr>
+<tr>
 <td>What a spec section says (<code>§S59</code>, <code>W-BUMP</code>)</td>
 <td>Search <code>prompts/</code> in both repos for the section or witness name.</td>
 </tr>
@@ -4522,6 +4626,128 @@ tokens). In the terminal: <code>/usage</code> (also typed <code>/cost</code>) sh
 window, item by item. A terminal status line can show cost and context percentage all the time (<code>statusLine</code> in the settings). Not
 documented: a status line inside the VS Code panel.</p>
 <hr />
+<h3 id="43-the-provenance-hover-the-code-behind-what-you-see-on-the-page">4.3 The provenance hover: the code behind what you see on the page<a class="headerlink" href="#43-the-provenance-hover-the-code-behind-what-you-see-on-the-page" title="Permanent link">&para;</a></h3>
+<p>X0 Navigator (§4.1) works inside the editor. The provenance hover works the other way round: you point at something on the page and it
+tells you which code made it, then opens that line in VS Code. There are two: one for a body in the <strong>Modeller</strong>, one for a field in the <strong>ERP</strong>.
+Both live in bim-ootb <code>devtools/hover/</code> (part of BIM DevTools).</p>
+<p><strong>It is a developer tool.</strong> You load it into one browser tab with a bookmark. No shipped page loads it, so users never see it. Reload the
+tab and it is gone. Nothing is guessed: when the data does not name a line, the tooltip says so and opens nothing.</p>
+<h4 id="in-the-modeller-a-bodys-six-layers">In the Modeller: a body's six layers<a class="headerlink" href="#in-the-modeller-a-bodys-six-layers" title="Permanent link">&para;</a></h4>
+<ol>
+<li>In bim-ootb, run <code>node devtools/hover/gen_trace_index.js</code>. It prints <code>§DXF_HOVER_INDEX keys=28 defaults=99</code> (counted 2026-11-15) and writes
+   <code>devtools/hover/trace_index.json</code>. That file holds your machine's folder path, so it is git-ignored. Run it again after you edit a builder or
+   <code>modeller/element_defaults.json</code>.</li>
+<li>Serve the repo (VS Code task <strong>Serve repo</strong>, <code>http://localhost:8000</code>) and open <code>/modeller/modeller.html</code>.</li>
+<li>Make a bookmark whose address is:
+   <code>javascript:(function(){var s=document.createElement('script');s.src='/devtools/hover/dxf_hover.js?'+Date.now();document.head.appendChild(s)})()</code>
+   Click it <strong>before</strong> you Convert. The console prints <code>§DXF_HOVER installed index_keys=28 defaults=99</code>.</li>
+<li>Open the DXF sheets and press <strong>Convert</strong>.</li>
+<li>Hover a body. The tooltip shows a title line (class, feature id, DXF handle, layer, sheet, provenance), then six numbered layers in the order
+   they happened. Every layer is always listed; an empty one says <code>none</code>.</li>
+<li>Press a number <strong>1-6</strong> to open that layer's first line in VS Code (<strong>Alt+1-6</strong> while you are typing in a field). <strong>V</strong> opens the builder line.</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Layer</th>
+<th>What it tells you</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>BUILDER</td>
+<td>the line of code that built the body</td>
+</tr>
+<tr>
+<td>2</td>
+<td>PASS-THROUGH</td>
+<td>any later code that touched it</td>
+</tr>
+<tr>
+<td>3</td>
+<td>SIZES</td>
+<td>each size, its number, and where it came from (<code>label</code>, <code>drawn</code>, <code>schedule</code>, <code>inherited</code>, <code>default</code>, …). A default that records which one links its row in <code>modeller/element_defaults.json</code>, the setting a user can change</td>
+</tr>
+<tr>
+<td>4</td>
+<td>CUTS</td>
+<td>the openings cut into it and the fill each one holds; for a door, the opening it fills</td>
+</tr>
+<tr>
+<td>5</td>
+<td>EDITS</td>
+<td>moves, resizes and grid moves after Convert (an undone edit is not listed)</td>
+</tr>
+<tr>
+<td>6</td>
+<td>EVIDENCE</td>
+<td>the DXF handle, layer, sheet and provenance, and each drawn note or schedule row the converter attached</td>
+</tr>
+</tbody>
+</table>
+<p><strong>A column whose top is a default.</strong> Layer 3 says the top, 3.0988 m, is the default <code>column.top_under_beam</code>; key 3 opens
+<code>modeller/element_defaults.json</code> at that row.</p>
+<p><img alt="The provenance hover on a column: six layers; in SIZES the top is a default, column.top_under_beam, element_defaults.json:5" src="../figs/hover/01_column_sizes_default.png" /></p>
+<p><strong>A wall with two door openings.</strong> Layer 4 lists the two door-gap cuts and the door each one holds. Layer 1 names the line that joined the
+wall's two drawn pieces into one.</p>
+<p><img alt="The provenance hover on the north wall: layer 4 lists two GEOM_CUT door gaps, each holding its door" src="../figs/hover/02_wall_cuts.png" /></p>
+<p><strong>When it does not know, it says so.</strong> This truss bar's width is a default, but the body does not record which default. The tooltip says
+<em>which default is not recorded on the body</em> and key 3 opens nothing. On the sample shed, 110 of 122 default sizes are like this (counted
+2026-11-15); the DXF2BIM lane has the proposal to record them (bim-ootb <code>prompts/DXF2BIM_ARCHITECT_REVIEW.md</code> §D113).</p>
+<p><img alt="The provenance hover on a truss bar: its width is a default, &quot;which default is not recorded on the body&quot;" src="../figs/hover/03_bar_default_not_recorded.png" /></p>
+<h4 id="in-the-erp-every-layer-of-code-behind-a-field">In the ERP: every layer of code behind a field<a class="headerlink" href="#in-the-erp-every-layer-of-code-behind-a-field" title="Permanent link">&para;</a></h4>
+<ol>
+<li>Run <code>node devtools/hover/gen_erp_index.js</code> (writes the git-ignored <code>devtools/hover/erp_index.json</code>).</li>
+<li>Serve the repo, open <code>/erp/idempiere.html</code>, log in and open a window.</li>
+<li>Bookmark: <code>javascript:(function(){var s=document.createElement('script');s.src='/devtools/hover/erp_hover.js?'+Date.now();document.head.appendChild(s)})()</code></li>
+<li>Hover a field. You get its layers in the order they fire: the field's dictionary row, then on change its callouts, then the picker's
+   validation rule, then on save the model hooks, doc action and validators, then the button's process. Each layer shows its owner, the
+   line that registered it, and the iDempiere Java file it was ported from. A layer with nothing registered says <code>UNPORTED</code>.</li>
+<li>Keys <strong>1-9</strong> open that layer's line in VS Code (<strong>Alt+1-9</strong> in a text field).</li>
+</ol>
+<h4 id="if-something-looks-wrong">If something looks wrong<a class="headerlink" href="#if-something-looks-wrong" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>You see</th>
+<th>It means</th>
+<th>Do this</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>convert again (the trace is on now)</em></td>
+<td>the body was converted before you clicked the bookmark</td>
+<td>Convert again</td>
+</tr>
+<tr>
+<td><em>no trace key</em></td>
+<td>the code that built this body has no trace stamp</td>
+<td>run <code>modeller/tests/witness_dxf_trace.js</code>; it lists such bodies</td>
+</tr>
+<tr>
+<td><em>line not in the index</em></td>
+<td>the index is older than your edit</td>
+<td>run the index command (step 1) again</td>
+</tr>
+<tr>
+<td>a number key does nothing</td>
+<td>that layer names no line (data, or not recorded)</td>
+<td>read the layer's text: it says why</td>
+</tr>
+<tr>
+<td>VS Code does not open</td>
+<td>your system has no handler for <code>vscode://</code> links</td>
+<td>on Linux, check <code>xdg-mime query default x-scheme-handler/vscode</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>What proves it</strong> (bim-ootb, node unless marked): <code>devtools/hover/tests/witness_bim_layers.js</code> checks every body of the sample shed against a
+separate converter run (W-BIM-LAYERS); <code>devtools/hover/tests/witness_dxf_hover.js</code> moves a real mouse over the real Modeller page, headless,
+and checks the tooltip against the same answer and that it stays inside the window (W-DXF-HOVER); <code>devtools/hover/tests/witness_erp_hover.js</code>
+covers every field of every active ERP window (W-ERP-HOVER). Spec: bim-compiler <code>prompts/CODE_ARCHITECTURE_DESIGN.md</code> §F.21–§F.23.</p>
 <h2 id="5-changing-things">5. Changing things<a class="headerlink" href="#5-changing-things" title="Permanent link">&para;</a></h2>
 <h3 id="51-any-edit-to-a-file-the-browser-loads">5.1 Any edit to a file the browser loads<a class="headerlink" href="#51-any-edit-to-a-file-the-browser-loads" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code>edit  →  node scripts/bump.js &lt;file&gt;           (dry run: shows what it will change)
