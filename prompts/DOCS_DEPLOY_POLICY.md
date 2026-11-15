@@ -40,3 +40,6 @@ glassbowl pages. Fix used 2026-09-27: copy the local, byte-identical file into t
 committed): `cp ~/bim-compiler/docs/glassbowl_data.db <worktree>/docs/` (sha256 prefix `efed6b5b8e4b195e` == live), then
 `scripts/safe_gh_deploy.sh` → guard PASS 292/292. If the local copy is ever missing, fetch it from the live site first:
 `curl -o docs/glassbowl_data.db https://red1oon.github.io/BIMCompiler/glassbowl_data.db`.
+
+## Translated guides (2026-11-16)
+A language chooser and translated guides are specified in `prompts/DOCS_I18N.md` (nothing built). They must add pages only: English URLs unchanged, the guard passes with no `ALLOW_SHRINK`.
