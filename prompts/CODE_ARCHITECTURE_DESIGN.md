@@ -42,9 +42,9 @@ X0 Navigator: F12 + hover on a field of the shared object · Find All References
 Film 1 `~/Videos/Editing_Real_Code_EN_AFTER_2026-11-14_v5.mp4` (owner: fine as it is) · Film 2 `~/Videos/Editing_Real_Code_2_EN_AFTER_2026-11-14_v1.mp4` (§F.18, not reviewed) · **Film 3 "The invoice dated yesterday"** (#2996 found and fixed in the editor, VS Code above, the real ERP page below): `~/Videos/Invoice_Dated_Yesterday_EN_AFTER_2026-11-14_v1.mp4` and **`_v2.mp4`** (75.9 s: adds the two-tone **CH 0 / VSC Hot Edit** cover and the **Prior art** last card with the Developer Guide link; `§FILM_GUARD` 30 OK incl. check P, `§K2_VERDICT PASS`). **The owner has not reviewed the cut.** Rebuild = two bim-ootb worktrees (`614bb121^`, `614bb121`), `node facts.js`, `./shoot.sh`, `./build.sh` (59 s; facts ~2 min, shoot ~3 min). Scenarios 2 and 3 are kept in the film spec. **Memory `project_vsc_hot_edit_film_revisit`: on any future real bug, try the VS Code tools first; it may be the next example.** Other languages: only if asked.
 
 **5. Open with the owner, none of it started.**
-- **§F.21 slice 2 / X0 witness stub** (asked) · **F-1** (Fetch back also runs a headless browser?) · **F-2** (size and speed budgets) · **F-7** (a hosted preview per pull request) · **F-12 step 2** (a token so CI-bot merges also deploy; only he can create it).
+- **F-16** ERP parity check before the bump (§F.21) · the X0 "New witness for this file" command (after slice 2) · **F-1** (Fetch back also runs a headless browser?) · **F-2** (size and speed budgets) · **F-7** (a hosted preview per pull request) · **F-12 step 2** (a token so CI-bot merges also deploy; only he can create it).
 - **A status-bar Bump button** (he suggested it: *"Perhap a 'bump' button if hasn't done"*): not built; the light-bulb quick fix exists (cheatsheet step 26). Dev-side only, would need a `realvsc` witness.
-- **Hover in the app → jump VS Code (F-14 ANSWERED 2026-11-15: Modeller canvas first, for DXF → BIM accuracy, then BIM → ERP).** F-15 answered (trace switch); **slice 1 built, bim-ootb #3043** (`--trace`, W-DXF-TRACE); open: slice 2 hover + an X0 "New witness for this file" command, §F.21.
+- **Hover in the app → jump VS Code (F-14 ANSWERED 2026-11-15: Modeller canvas first, for DXF → BIM accuracy, then BIM → ERP).** F-15 answered (trace switch); **slice 1 built, bim-ootb #3043** (`--trace`, W-DXF-TRACE); **slice 2 built, #3047** (hover → line → V opens VS Code). Open: F-16 (ERP parity before the bump), the X0 witness stub, §F.21.
 - **A bake, on his go:** the first bake after bim-ootb #2977 writes a `§LOG_STAMP`; read its log and check that a "last:" line lights up.
 - **His hands-on dry run:** `~/VSCcheatsheet.txt` (now 29 steps; steps 27-29 = the clock rule), his own worktree `~/bim-ootb-dryrun`, not yet created. What differs from the sheet when he reports is a finding.
 
@@ -534,7 +534,7 @@ PR, deploy), budgets and a hosted preview wait for F-1, F-2, F-7. DEV_TOOLKIT's 
 later (a) too · F-4, F-5 by DEV_TOOLKIT §8/§10 · F-6 *"go for one click"* · F-8 *"advice me and proceed"* → own providers, no TypeScript
 plugin · F-9 closed "not next", then built as F.12b once logs were stamped · F-10 and F-11 *"Go with your advice."* · F-12 *"Both."* (step 1
 applied on *"yes do it"*) · F-13 *"ok"*, then *"Follow your yes advice."* · film 1 *"Past film is OK as it delivers the idea."* · film 2
-*"This one again is a conceptual idea. Proceed."* **Still open in F: F-1, F-2, F-7; §F.21 slice 2.**
+*"This one again is a conceptual idea. Proceed."* **Still open in F: F-1, F-2, F-7, F-16 (ERP parity before the bump, §F.21).**
 
 ### F.21 Hover in the app, jump VS Code to the code   (owner idea 2026-11-14; decision **F-14**; not built)
 - 2026-11-15, owner, on **F-14** (which surface first; advice given: the ERP window): *"About experimental browser hover, let's go for Modeller
@@ -609,6 +609,26 @@ applied on *"yes do it"*) · F-13 *"ok"*, then *"Follow your yes advice."* · fi
   shows *convert again*, 0 lines claimed · INCONCLUSIVE if the sweep hovered 0 bodies. **Not proven by the witness:** that the operating system hands `vscode://` to
   VS Code (no desktop in a headless run); the witness checks the link text and the session reports whether a `vscode` URL handler is registered (`xdg-mime`).
 - **Issue proved:** *"I see a wrong body on the canvas; which code made it?"* had no answer without reading the pipeline; after: hover it, read the line, press V.
+
+**F.21 SLICE 2 RESULT (2026-11-15): built and merged, bim-ootb #3047 (`Fixes #3046`), re-run on `main` @ `460c6eea`: W-DXF-HOVER `VERDICT PASS` (H2 15 bodies / 8 keys
+`wrong=0`, H3 red control `claimed_a_line=0`), W-DXF-TRACE `VERDICT PASS bodies=512 keys=12`.** How to use it: bim-ootb `devtools/hover/README.md`.
+- **Gap the witness found (its first run FAILED):** `toOps` joins wall pieces into NEW bodies that exist only as inserts (shed: 512 bodies → 511 inserts; `CC-L0`+`CC-L1`
+  became one). Slice 1 judged `R.els` only. Fixed: stamped at `dxf2bim_import.js:716` (`dxf2bim_import:wall-line`); the CLI keeps the trace on through `write()` and
+  judges inserts too (`§DXF_TRACE inserts=511 inserts_untraced=0`, W-DXF-TRACE T2b). Model bytes unchanged (T1 off == on == main).
+- Deviations from the spec: the overlay reads handle / layer / sheet from the op (`Bonsai.oplog._geomOps()`, survives a reload) first, `R.els` second; a body with a
+  trace map on but no key says *no stamp* (UNSTAMPED), not *convert again*. Each witness page gets its own browser context (the shared one timed out at Convert).
+- Not proven: the OS handing `vscode://` to VS Code (headless). This machine has `code_code-url-handler.desktop` registered.
+- **Correction (2026-11-15), said to the owner:** slice 1's result called "64 synthesized columns" the place to start. Wrong: they are 32 below-grade parts (14", from
+  the column SCHEDULE, `source: schedule`) + 32 grade-to-base stubs (12", inherited), one pair per drawn column (§L29, `dxf2synth.js:52-62`). The real assumption is the
+  truss: drawn once at cut AA, copied to 13 stations (`dxf2section.js:42-44`), so 144/156 bars and 108/117 plates (252 bodies, ~half the model) are `assumed`, and their
+  spacing is ONE default, `section.spacing` (= column pitch) unless the user states it. That is the accuracy item to raise with the DXF2BIM lane.
+- **Handed to this lane 2026-11-15 by bim-compiler-8e (owner's words, typed into that session): an ERP legacy-parity check before the bump.** *"atm, the main user of VSC
+  will be me, so having an auto legacy parity validation while working on the ERP can be set here as i eventually get to learning it up"* · *"That means we should have a
+  parity check button before the bump, but do advice"*. NOT decided. Facts measured there: legacy stack up (docker postgres :5432 `idempiere_pilot`, pilot :8088); the full
+  run `scripts/bridge/run_all.sh` ≈ 70 s, writes throwaway clients to the pilot, last run 2026-11-04 had 2 FAIL + 1 HARNESS-FAIL (a zero-failure gate would block every bump
+  today); repeat-safe parity witnesses exist (e.g. bim-ootb `common/door/tests/witness_valrule_parity.js`, #3041). Their advice: one VS Code task; the gate inside
+  `bump.js --write` for `erp/` files keyed on a parity PASS log for the current commit + dirty set; "no NEW failure vs a stored baseline"; not on save; no parity witness =
+  INCONCLUSIVE; a logged `--no-parity` override. **Open question to put to the owner (F-16): a new parity failure BLOCKS the bump (with the logged override) or only WARNS?**
 
 
 ---
