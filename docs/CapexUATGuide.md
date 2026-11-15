@@ -1,7 +1,7 @@
 # CAPEX UAT Guide — from 2D drawings to the dashboard
 
-<div class="uat-noprint" markdown="0"><button type="button" class="md-button md-button--primary" onclick="window.print()">🖨 Print this guide / Save as PDF</button>
-<span style="margin-left:.6em;font-size:.8em">Print it, tick the boxes by hand, sign the last page and hand it in. In the print dialog choose <b>Save as PDF</b> to keep a file.</span></div>
+<div class="uat-noprint" markdown="0"><a class="md-button md-button--primary" href="../CapexUATGuide.pdf" download>⬇ Download the PDF</a> <button type="button" class="md-button" onclick="window.print()">🖨 Print from the browser</button>
+<span style="margin-left:.6em;font-size:.8em">The PDF is made from this page each time it is published, and checked: the checklist on a sheet of its own, each chapter on a new page, no table row split or cut off. Print it, tick the boxes by hand, sign the last page and hand it in.</span></div>
 <style>
 @media print {
   .md-header, .md-tabs, .md-sidebar, .md-footer, .md-top, .md-source, .uat-noprint, .md-content__button, .headerlink { display: none !important; }
