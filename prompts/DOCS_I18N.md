@@ -25,6 +25,17 @@ Each translated page's front matter: `review: native | machine | unreviewed` and
 ## 4. Glossary
 `docs/i18n_glossary.yml`: one row per project term (door, witness, twin, MIS, chip, op-log, falsifier …) with `en`, a per-language rendering or `keep`, and a one-line reason. Decided once, used by every page; the owner or a reviewer settles a term, a session never improvises it. Terms marked `keep` appear verbatim.
 
+### 4b. One vocabulary for the CLI and the guides (owner, 2026-11-16: *"can we make that CLI picks out responses from a vocab dictionary that the guides also uses? I am thinking from those XML book projects days"*) — SPEC STUB, nothing built
+**Idea.** A single-sourced term and message catalog (the DocBook entity / glossary habit): the CLI's human-facing text (`help` lines, group names, refusals, notes) and the guides' prose both read ONE keyed file, so a term is defined and translated once. Today the English strings live in code (`erp_cli.js`, `red1.js`, `words_core.js`) and in the guide prose, apart.
+**Measured 2026-11-16:** the local `bim-ootb/erp/ad_seed.db` (dated Sep 18, may be stale) holds `ad_element` (6024 rows) but NO `ad_message` or `*_trl` table, so the iDempiere message/translation tables are not a ready store here; the UI's translations come from the build in `ERP_UI_LOCALES.md`. Whether an AD-shaped store (AD-LAYER LAW: port the mechanism) or a flat data file is right is the open design question; the recommendation is a flat keyed data file first (`vocab/messages.json` beside `words.json`, which is already data), shaped so it can later load from AD rows.
+**Rules (each is a witness claim when built):**
+- **English stays byte-identical by default.** The door's envelope, journal and `verbs.json` are English and replayable; only text meant for a person is looked up, and only when a locale is set. AI actors and scripts always get the English/stable text. (Witnesses such as W-DOOR-SHAPE and the guide's exact-match blocks pin English bytes.)
+- **A key per message; no string left in code** (deletion budget: each moved string is a deleted literal). Claim: every message key used in code exists in the catalog, and every catalog key is used (X of N both ways); falsifier: a key renamed in code only.
+- **The guide pulls from the same keys** (a build-time substitution, in the XML days an entity): a term defined in the catalog is not retyped in prose. Claim: every guide term reference resolves; falsifier: delete a key.
+- **Translations live in the catalog, the §4 glossary becomes a view of it** (one file, not two). Reviewer status per language as in §3.
+- **Run blocks are never in the catalog:** they remain pasted from real runs (§1).
+**Not decided:** the store (flat file vs AD rows), the substitution mechanism for MkDocs, and who owns the English wording (the CLI session owns `CLI_ERP_IVR.md`; this file only records the idea until that session takes it).
+
 ## 5. Witness W-DOCS-I18N (claims written first; each names its issue; each can say VACUOUS / INCONCLUSIVE; a falsifier FAILS it)
 Reads the BUILT site and the sources; no human looks at a page. Populations are stated per language as X of N pages.
 - **I1 English URLs unchanged.** Issue: the plugin moves English into a subfolder and breaks live links. Claim: every path live on `gh-pages` is present in the new build, and every English page's bytes-size is within `SHRINK_TOL` of live. Falsifier: configure the English default inside a subfolder: I1 FAILS and so does the guard.
