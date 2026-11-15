@@ -582,8 +582,33 @@ applied on *"yes do it"*) · F-13 *"ok"*, then *"Follow your yes advice."* · fi
   (`dxf2section.js:89`) and 108 of 117 plates (`dxf2section.js:103`) are `assumed`. `dxf2bodies.js:422` alone builds 99 bodies (footings, 32 columns, beams): the
   trace names that line, not the branch inside it (coarse there, by design; finer only when a real accuracy bug needs it).
 - **Machine load:** two runner suites in parallel saturated the machine (a peer session asked to throttle, 2026-11-15). Run ONE suite at a time, under `nice -n 19 ionice -c3`.
-- **OPEN (asked 2026-11-15, no answer yet):** slice 2 (the canvas hover → `vscode://file/<path>:<line>`, dev-only) build or skip? · a new X0 command "New witness for this
-  file" (a skeleton pre-filled from facts the index has: cited spec, `§` tags the file prints, the witnesses touching it; population + red control left empty so it FAILs until a person fills them).
+- 2026-11-15, owner, after the advice "next: the hover (slice 2), witness-led; then use it on the 64 synthesized columns; the X0 witness stub after": *"WITNESS, go
+  with your recommendation."* → **slice 2 is GO, witness first.** The X0 "New witness for this file" command waits until slice 2 is done (not asked again).
+- **Inputs restored 2026-11-15 (owner: *"Restore what is needed"*):** `~/Videos/dxf2bim_film_work/why/raw` = the 9 raw sheets from
+  `~/Projects/SYSNOVA/DXF2BIM/ShedDrawing/sheets/`; `…/why/cli/marked` = the 9 marked sheets from `~/.cache/capex_uat_dryrun/shed_cli/marked/` (2026-11-14, original file
+  names; its `bodies.json` = the `/tmp` copy's byte for byte once the sheet names are normalised; `bodies=512`). A `README.txt` there says where each came from. Some
+  witnesses read the raw set ONLY through `SHED_RAW_DIR` (no default): run the runner with `SHED_RAW_DIR=~/Videos/dxf2bim_film_work/why/raw`.
+
+**F.21 SLICE 2 SPEC — hover a body on the Modeller canvas, see the line that built it, open it in VS Code (2026-11-15; dev-only).**
+- **Nothing shipped changes.** The overlay is `devtools/hover/dxf_hover.js` (a classic script), loaded into an open Modeller tab by a bookmarklet from the same
+  localhost server (the "Serve repo" task serves the repo root; the Modeller service worker's scope is `/modeller/`, so `/devtools/` is not cached):
+  `javascript:(function(){var s=document.createElement('script');s.src='/devtools/hover/dxf_hover.js?'+Date.now();document.head.appendChild(s)})()`.
+  `modeller.html`, `sw.js` and the precache lists are untouched.
+- **The key → line index is generated, never typed:** `node devtools/hover/gen_trace_index.js` writes `devtools/hover/trace_index.json`
+  `{format, root, keys: {key: 'modeller/<file>.js:<line>'}}` from an espree parse. The scan lives in ONE module, `devtools/hover/trace_sites.js`, which W-DXF-TRACE T3 also
+  uses (one implementation). The file holds this machine's absolute repo path (for the `vscode://` link), so it is git-ignored, not committed.
+- **Overlay behaviour:** on load it installs the trace map (`globalThis.__DXF_TRACE`) if absent and prints `§DXF_HOVER installed index_keys=N`; a body converted
+  BEFORE that has no key, and the tooltip says *convert again (the trace is on now)*, never a guessed line. It listens to the page's own `dagevu:hover` event
+  (`modeller.html` `setHover`), resolves fid → guid (`__arcGuidByFid`) → key (the map) → `file:line` (the index), and shows a small fixed tooltip: key, `file:line`,
+  class, DXF handle / layer / sheet, provenance. **V** opens `vscode://file/<root>/<file>:<line>` for the body under the cursor. Each new hover prints
+  `§DXF_HOVER fid= guid= key= at=` (the witness reads these, not pixels).
+- **Witness W-DXF-HOVER** (`devtools/hover/tests/witness_dxf_hover.js`; headless Chromium with SwiftShader as `witness_dxf_props_panel.js` does, ONE page, run under
+  `nice -n 19 ionice -c3`): H1 the generated index = a fresh parse (every stamp site, one line per key) · H2 THE PAGE: open the marked shed, Complete, load the overlay,
+  Convert, then REAL mouse moves over a grid of canvas points: for every body the page's own pick hovered, the tooltip's key = the page's trace map = the Node CLI's
+  `trace.json` for that guid (an independent run), and its `file:line` = the index · H3 RED CONTROL: a second tab converts BEFORE the overlay loads → every hovered body
+  shows *convert again*, 0 lines claimed · INCONCLUSIVE if the sweep hovered 0 bodies. **Not proven by the witness:** that the operating system hands `vscode://` to
+  VS Code (no desktop in a headless run); the witness checks the link text and the session reports whether a `vscode` URL handler is registered (`xdg-mime`).
+- **Issue proved:** *"I see a wrong body on the canvas; which code made it?"* had no answer without reading the pipeline; after: hover it, read the line, press V.
 
 
 ---
