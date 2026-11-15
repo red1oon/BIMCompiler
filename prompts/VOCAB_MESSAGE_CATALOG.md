@@ -132,8 +132,26 @@ clash: <the short help, unchanged>
   3. W-MSG-CATALOG M2 counted the 12 new keys as unreached. M2's scope is the P2a move, so the `words.level_*` and `words.student.*` keys are now named as handed to W-HELP-STUDENT.
 - Deletion budget: `words_core.js` + `red1.js` +38/-13. No literal was added, and `words.json` and `verbs.json` are untouched.
 - The CLI session cleared `red1.js` (help, argv) and `words_core.js` before the edit.
-**Open for the owner:** whether the greeting or the short `help` should mention `level student`, since today a person has to know it exists. Either change alters today's bytes, so it is the owner's call.
+**Decided by the owner, 2026-11-16 (P3a-1):** asked whether the greeting or the help should mention `level student`, the owner said *"Yes it should"*.
+- **What changes:** one catalog entry, `words.help_footer`, the last line of `help`. `… · help <word> for one word · …` becomes `… · help <word> for one word (level student first for the full explanation) · …`. No code changes.
+- **What does not change:** the greeting (`words.json` `welcome`) and the `everywhere` line. Both are the CLI session's data in `words.json`, and no existing `words.json` key is rewritten (§0). The footer is enough to make `level student` visible.
+- **The witness rule for a deliberate wording change:** W-MSG-CATALOG M1 proves the CODE is byte-identical. From now on it runs the new core with the catalog as it was at P2a: today's catalog with each ledgered change reverted. A ledger in the witness names each deliberate change (key, old text, new text, the owner's words, date).
+- **New claim M5 (the ledger is the only drift):** the live catalog differs from the P2a catalog only in ledgered keys, and each ledgered key holds exactly its new text. Falsifier `unledgered` (a second key changed in a copy of the catalog, with no ledger entry) → M5 FAILS naming it.
+- W-HELP-STUDENT S1 is not affected: its old and new cores read the same live catalog.
+- **The opening tip, with the usual don't-repeat convention.** The owner added mid-turn: *"with a 'do not repeat' usual convention ie when opening 'red1' with a 'fast' flag"*.
+  - On opening a terminal session, one tip line follows the greeting: new key `words.tip_level`, `Tip: type level student for fuller help on each word (red1 --fast opens without tips).`
+  - `red1 --fast` opens without tips. The greeting itself stays, because it is the CLI session's §26.
+  - A pipe, a one-shot line and `-f` never show the greeting, so they never show the tip either.
+  - **A flag, not "shown once, then remembered":** remembering needs a state file and makes the opening differ from one run to the next. A flag keeps every run deterministic.
+  - `red1 -h` names `--fast` and `--level student`.
+  - New claim **W-HELP-STUDENT S6:** on a terminal (a `script` pseudo-terminal, the W-RED1-WELCOME method), the tip follows the greeting and comes before the prompt. `--fast` drops the tip and keeps the greeting. A pipe shows no tip.
+- **P3a-1 RESULT (2026-11-16, bim-ootb #3084 `feat/help-footer-level`; logs read):**
+  - W-MSG-CATALOG 5/0: M1 2,185 of 2,185 steps on the P2a wording. M5 shows no drift from the P2a catalog (`78aa51b6`) beyond the one ledgered change, and 13 keys added since, which are additions.
+  - W-HELP-STUDENT 6/0: S6 found the tip after the greeting and before the prompt; with `--fast` the tip is gone and the greeting is kept; a pipe shows no tip.
+  - Falsifiers: `unledgered` FAILs M5, `edittemplate` FAILs M1, `renamekey` FAILs M1 and M3.
+  - W-RED1-* (14), W-DOOR-HELP and W-RED1-WELCOME are green after merging `origin/main`.
+  - **Found by reading the log, fixed:** M3 scanned `words_core.js` only, so the tip key (read in `red1.js`) looked unused. M3 now reads `red1.js` `.t('…')` calls too, and M2 hands `words.tip_*` to S6 by name.
 **Not in P3a:** hint lines on refusals (P3b, needs P2b), Student text for groups and the overview, the ERP field Help (the P1 layer, separate), translations, and any mention of `level` in the greeting or the short help (that would change today's bytes; the owner decides).
 
 ## STATUS
-2026-11-16: P1 built and witnessed (5/0), merged as bim-ootb #3079. P2a built and witnessed (W-MSG-CATALOG 4/0), merged as bim-ootb #3082. P3a built and witnessed (W-HELP-STUDENT 5/0), bim-ootb #3083. Depends on `prompts/DOCS_I18N.md`, `prompts/CLI_ERP_IVR.md` (CLI session owns), `prompts/ERP_UI_LOCALES.md`.
+2026-11-16: P1 built and witnessed (5/0), merged as bim-ootb #3079. P2a built and witnessed (W-MSG-CATALOG 4/0), merged as bim-ootb #3082. P3a built and witnessed (W-HELP-STUDENT 5/0), merged as bim-ootb #3083. P3a-1 (help footer + opening tip, `red1 --fast`), bim-ootb #3084. Depends on `prompts/DOCS_I18N.md`, `prompts/CLI_ERP_IVR.md` (CLI session owns), `prompts/ERP_UI_LOCALES.md`.
