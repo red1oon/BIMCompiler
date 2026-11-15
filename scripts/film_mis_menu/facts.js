@@ -11,7 +11,7 @@ if (!OOTB || !fs.existsSync(path.join(OOTB, 'common/door/menu_core.js'))) { cons
 const puppeteer = require(process.env.PUPPETEER_PATH || path.join(os.homedir(), 'bim-compiler', 'node_modules', 'puppeteer'));
 const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'mmd_')), OUT = path.join(__dirname, process.env.OUTD || 'out'), ERP = path.join(OUT, 'erp'); fs.mkdirSync(ERP, { recursive: true });
 process.env.BIM_OBJECT_OPLOG = path.join(dir, 'ops.jsonl'); process.env.ERP_OPIMAGE = 'off'; process.env.BIM_DOOR_JOURNAL = path.join(dir, 'journal.jsonl'); process.chdir(dir);
-const LANGC = { en: 'en_US', zh: 'zh_CN', th: 'th_TH' }[process.env.FILM_LANG || 'en'], ROLE = '102', K = 'C_BP_Group', WIN = 192;
+const LANGC = { en: 'en_US', zh: 'zh_CN', th: 'th_TH', ms: 'ms_MY' }[process.env.FILM_LANG || 'en'], ROLE = '102', K = 'C_BP_Group', WIN = 192;
 const L = (m) => console.log('§FACTS ' + m);
 const out = { made: new Date().toISOString(), ootb: spawnSync('git', ['-C', OOTB, 'rev-parse', '--short', 'HEAD'], { encoding: 'utf8' }).stdout.trim(), lines: {}, states: {}, ms: [] };
 const { createDoor } = require(path.join(OOTB, 'common/door/door.js')), E = require(path.join(OOTB, 'common/door/erp_cli.js')), MIS = require(path.join(OOTB, 'common/door/mis.js'));
