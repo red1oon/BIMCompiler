@@ -64,7 +64,7 @@ Built on [iDempiere](https://idempiere.org/) ERP conventions and [SQLite](https:
 
     Real iDempiere in the browser — POS, financial statements, the full Application Dictionary from SQLite. No Java, no server, no install.
 
-    [:octicons-arrow-right-24: Kernel-ERP Guide](ERPUserGuide.md) · [Open](https://red1oon.github.io/bim-ootb/erp/erp.html)
+    [:octicons-arrow-right-24: Kernel-ERP Guide](ERPUserGuide.md) · [Till & Kitchen (uniCenta twin)](TillUserGuide.md) · [All the lenses](ERPUserGuide.md#other-views-of-the-same-log-the-lens-family) · [Open](https://red1oon.github.io/bim-ootb/erp/erp.html)
 
 </div>
 

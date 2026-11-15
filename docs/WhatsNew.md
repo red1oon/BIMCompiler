@@ -22,6 +22,9 @@ only things you'd actually notice using the app. See each app's guide for full h
   the dictionary already holds is reused.
 
 **ERP**
+- **Till & Kitchen**: selling now happens on a standalone uniCenta-style till and kitchen screen (the in-ERP POS pill was
+  removed on 2026-11-03); head office imports the sales and closes the branch day. See the **[Till & Kitchen User Guide](TillUserGuide.md)**,
+  and the table of every lens in the **[ERP guide](ERPUserGuide.md#other-views-of-the-same-log-the-lens-family)**.
 - **Attachments** on every window's tab; large files go to the shared browser file store.
 - **BIM Document** window, with **Open in Modeller / Viewer** from the record.
 - **Migrate from Odoo** (a form in the ERP, hardened for a real company's data, not the demo) and **Migrate from

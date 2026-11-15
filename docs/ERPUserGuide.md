@@ -96,6 +96,28 @@ flowchart TD
 
 ---
 
+## Other views of the same log — the lens family
+
+Every surface in this table reads the **same signed op-log** the windows write to; none keeps data of its own. A lens
+changes how you *see* the log, not what it says. **Kanban, Chat and Pivot are concept lenses:** they read the demo data
+and have no section of their own yet, so the table below is their documentation.
+
+| Lens | What you see | Open | More |
+|---|---|---|---|
+| **Data Globe · Glass · Gravity** | The bubbles front door and its two concept views | [erp.html](https://red1oon.github.io/bim-ootb/erp/erp.html) | *Quick start*, above |
+| **Dashboard** | Any window's records grouped, as donuts, a list or a timeline | the Dashboard tab of a window | §2 |
+| **Kanban** | Columns are document states; cards are real documents; dragging a card sends a status change, and only the moves that document's workflow allows are offered | [kanban_lens.html](https://red1oon.github.io/bim-ootb/erp/kanban_lens.html) | concept, demo data |
+| **Chat** | The log as a mobile-first conversation; each bubble is one real operation, and absent data is labelled *absent* | [chat_lens.html](https://red1oon.github.io/bim-ootb/erp/chat_lens.html) | concept, demo data |
+| **Pivot** | A read-only cross-tab; a cell opens its records; the result can be exported | [pivot_lens.html](https://red1oon.github.io/bim-ootb/erp/pivot_lens.html) | concept, demo data |
+| **Till & Kitchen** (the uniCenta twin) | A cash-register screen, a kitchen screen and a branch admin page; head office imports the sales and closes the day | [till.html](https://red1oon.github.io/bim-ootb/erp/till.html) · [kitchen.html](https://red1oon.github.io/bim-ootb/erp/kitchen.html) · [branch_admin.html](https://red1oon.github.io/bim-ootb/erp/branch_admin.html) | **[Till & Kitchen User Guide](TillUserGuide.md)**, §7 |
+| **Teams overlay** | Who did what, a chat that is the log, dashboard graphs | the overlay toggle | [Teams Overlay guide](TeamsOverlayGuide.md) |
+| **Tenancy · Occupancy · Tickets** | Leases, bookable rooms and service requests on the building's own geometry | the Tenancy section below | [HR · BIM · Asset guide](HRBIMAssetGuide.md) |
+| **Warehouse Walk** | The warehouse as a 3D model, picked bin by bin | the Warehouse pill | §10 |
+| **Excel report** | Your workbook is the report | the Excel Report process | §8, [NinjaExcel manual](NinjaExcelReport_UserManual.md) |
+| **Command line** | The same actions as one-line commands, for you or an AI | a terminal | [Fast Script Guide](FastScriptGuide.md) |
+
+---
+
 ## Initial Tenant Setup — born a new client *(LIVE)*
 
 This is iDempiere's **Initial Client Setup**, on our engine. Open **genesis.html**, give the new
