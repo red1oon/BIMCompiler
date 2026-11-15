@@ -1,0 +1,37 @@
+§FILM_GUARD OK   setup says "twenty-eight code stamps" <- index.keys expected 28 got 28
+§FILM_GUARD OK   setup says "ninety-nine default rows" <- index.defaults expected 99 got 99
+§FILM_GUARD OK   setup says "loads the tool" <- page.installed_keys expected 28 got 28
+§FILM_GUARD OK   move1 says "Six layers" <- col.layers expected 6 got 6
+§FILM_GUARD OK   move1 says "three point one metres" <- col.top_m expected 3.1 got 3.1
+§FILM_GUARD OK   move1 says "is a default" <- col.top_source expected default got default
+§FILM_GUARD OK   move1 says "column top under beam" <- col.default_key expected column.top_under_beam got column.top_under_beam
+§FILM_GUARD OK   move1 says "Press three, and the editor opens that row" <- col.key3_opens_row expected Y got Y
+§FILM_GUARD OK   move2 says "Two cuts" <- wall.cuts expected 2 got 2
+§FILM_GUARD OK   move2 says "door gaps" <- wall.door_gaps expected 2 got 2
+§FILM_GUARD OK   move2 says "each holding its door" <- wall.holds expected 2 got 2
+§FILM_GUARD OK   move2 says "joined from two drawn pieces" <- wall.joined expected Y got Y
+§FILM_GUARD OK   move2 says "layer one still names the line" <- wall.key1_opens_builder expected Y got Y
+§FILM_GUARD OK   move3 says "does not record which one" <- bar.width_default_unrecorded expected Y got Y
+§FILM_GUARD OK   move3 says "opens nothing" <- bar.key3_opens_nothing expected Y got Y
+§FILM_GUARD OK   move3 says "a hundred and ten" <- witness.not_recorded expected 110 got 110
+§FILM_GUARD OK   move3 says "Only twelve" <- witness.linked expected 12 got 12
+§FILM_GUARD OK   the page tooltip counts are the six layers the hover logged
+§FILM_GUARD OK   every tooltip shown lies inside the page
+§FILM_GUARD OK   the lower band (480 px, centred as cards.js centres it) holds the whole tooltip and the cursor
+§FILM_GUARD OK   every body and every insert traced (CLI)
+§FILM_GUARD OK   no page error in any session
+§FILM_GUARD OK   no shoot step reported an error
+§FILM_GUARD OK   the memory was measured after a forced GC in both sessions
+§FILM_GUARD OK   credentials: MIT licence, the three PRs merged, the paper states its priority date
+§FILM_GUARD OK   the witness lines quoted are in the logs copied into out/
+§FILM_GUARD OK   every picture the cards need exists
+§FILM_GUARD OK   prior art "RenderDoc, Pixel History" <- out/prior/renderdoc_texture_viewer.html
+§FILM_GUARD OK   prior art "The Whyline (CMU)" <- out/prior/whyline_cmu.html
+§FILM_GUARD OK   prior art "click-to-component (React)" <- out/prior/click_to_component_README.md
+§FILM_GUARD OK   prior art "this Modeller's edit owner" <- bim-ootb:viewer/edit_delta.js:23
+§FILM_GUARD OK   not said: the page pictures are taken, not streamed
+§FILM_GUARD OK   not said: the claim is only that the shipped Modeller never loads it
+§FILM_GUARD OK   not said: no speed was measured
+§FILM_GUARD OK   not said: the film makes no edit: layer five is not shown working on the page
+§FILM_GUARD OK   not said: no claim of being first (three quick searches, not a survey)
+§FILM_GUARD VERDICT PASS
