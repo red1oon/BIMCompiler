@@ -759,7 +759,11 @@ at a worktree on `origin/master` (e.g. `/tmp/wt-bridge`) until the default is de
   `ifc.props.SourceLayer`. Kept as a lesson: check the oracle's shape before trusting a 510-of-511 failure.
 - Unchanged neighbours on the branch: W-DXF-TRACE `VERDICT PASS bodies=512 keys=12`, W-X0-APPDEF `verdict=PASS`.
 - Deviation from the spec: the page-shaped setup lives in ONE helper, `devtools/hover/tests/shed_ctx.js`, used by both witnesses (not a second copy of the commit mapping).
-- **Next: FILM 3** (BIM with layers, `prompts/FILM_IMMERSIVE_SOFTWARE.md`, same recipe as FILM 2) · raise the 110 unrecorded default keys with the DXF2BIM lane.
+- **Next: FILM 3** (BIM with layers, `prompts/FILM_IMMERSIVE_SOFTWARE.md`, same recipe as FILM 2) · raise the 110 unrecorded default keys with the DXF2BIM lane. *(Both done 2026-11-15: FILM 3 STATUS; bim-ootb #3070 §D113.)*
+- **Developer Guide §4.3 "The provenance hover"** (2026-11-15, owner: *"Software Guide updated?"* — it was not: §F.21 / §F.22 / §F.23 had never reached the guide): numbered steps for both hovers, the six
+  layers, three figures clipped from ONE real Modeller session (`scripts/film_bim_layers/modeller_shot.js` `MS_DPR=2 MS_CLIP=1`, `errors=[]`, every tooltip `tipInView`), a troubleshooting table, the
+  witnesses. Name used: **BIM DevTools** for the set, **the provenance hover** for the feature (owner asked whether it is an "SDK": advised no — an SDK is what outside developers build ON; this is
+  developer tooling, an inspector).
 
 ---
 

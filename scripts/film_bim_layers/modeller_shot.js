@@ -3,6 +3,7 @@
 // Then REAL mouse moves: a sweep finds a screen point for each target (col: a column whose size layer links a default row; wall: the joined wall by its guid; bar: a truss bar whose width is a
 // default with no recorded key), the cursor rests there, the page is photographed, and the target's key (col 3, wall 1, bar 3) is pressed with window.open recorded (the link the key makes). Also the heap after a forced GC. Prints one line `MS_RESULT {json}`. Nothing is drawn by hand: every picture is the page's own pixels.
 // Usage: node modeller_shot.js <bim-ootb tree> <outPrefix>   env: MS_OVERLAY=0|1, MS_WALL=<guid>, MS_POINT_WALL=x,y (reuse a point found on the other tree)
+//        MS_DPR=2 (pixel ratio of the pictures) · MS_CLIP=1: per target ALSO <outPrefix>_<k>_clip.png = the tooltip + the cursor + a margin only (the Developer Guide's figures, §4.3)
 'use strict';
 const fs = require('fs'), path = require('path'), os = require('os'), http = require('http');
 const TREE = path.resolve(process.argv[2]), PRE = path.resolve(process.argv[3]), OVERLAY = process.env.MS_OVERLAY !== '0', WALL = process.env.MS_WALL || '';
@@ -17,7 +18,7 @@ const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/jav
   await new Promise(z => srv.listen(0, '127.0.0.1', z));
   const br = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--enable-precise-memory-info', '--js-flags=--expose-gc'] });
   try {
-    const pg = await br.newPage(); await pg.setViewport({ width: 1920, height: 1080 });
+    const pg = await br.newPage(); await pg.setViewport({ width: 1920, height: 1080, deviceScaleFactor: Number(process.env.MS_DPR || 1) });
     pg.on('pageerror', e => res.errors.push(String(e).slice(0, 160)));
     pg.on('console', m => { const t = m.text(); if (/^§DXF_HOVER /.test(t)) res.console.push(t); });
     await pg.goto('http://127.0.0.1:' + srv.address().port + '/modeller/modeller.html', { waitUntil: 'load', timeout: 120000 });
@@ -61,6 +62,9 @@ const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/jav
       await pg.mouse.move(5, 1075); await new Promise(r => setTimeout(r, 400));
       await pg.mouse.move(pts[k].x, pts[k].y, { steps: 8 }); await new Promise(r => setTimeout(r, 900));
       const s = await cur(); await pg.screenshot({ path: PRE + '_' + k + '.png' });
+      if (process.env.MS_CLIP === '1' && s) { const M = 60, x0 = Math.max(0, Math.min(s.tip.x, pts[k].x) - M), y0 = Math.max(0, Math.min(s.tip.y, pts[k].y) - M),
+        x1 = Math.min(1920, Math.max(s.tip.x + s.tip.w, pts[k].x) + M), y1 = Math.min(1080, Math.max(s.tip.y + s.tip.h, pts[k].y) + M);
+        await pg.screenshot({ path: PRE + '_' + k + '_clip.png', clip: { x: x0, y: y0, width: x1 - x0, height: y1 - y0 } }); }
       await pg.evaluate(() => { window.__opened = []; }); await pg.keyboard.press(KEY[k]); await new Promise(r => setTimeout(r, 300));
       const opened = await pg.evaluate(() => window.__opened.slice());
       res.targets[k] = Object.assign({ point: pts[k], png: PRE + '_' + k + '.png', keyPressed: KEY[k], opened, tipInView: !!(s && s.tip.y >= 0 && s.tip.y + s.tip.h <= 1080 && s.tip.x + s.tip.w <= 1920) }, s || { missing: true });
