@@ -63,7 +63,7 @@ Background, measurements and prior art are in `prompts/DOCS_I18N.md` §4b-§4d (
 - The witnesses that assert this text are run and their logs read, unchanged: W-RED1-WORDS, W-RED1-CD, W-RED1-HELP, W-RED1-RUN, W-RED1-MENU, W-RED1-SHELL.
 **Not in P2a:** `door.js`, `erp_cli.js`, the other cores, `words.json`, `verbs.json`, a level, a locale, `explain <key>`, and `match(text)` (finding a key from the English `why` of an envelope; it comes with the first envelope-text file so the envelope never needs a new field).
 
-**P2a RESULT (2026-11-16, bim-ootb `feat/msg-passthrough`; logs read: `common/door/tests/logs/msg_catalog*.log`):** W-MSG-CATALOG **4 pass / 0 fail**.
+**P2a RESULT (2026-11-16, bim-ootb #3082 `feat/msg-passthrough`; logs read: `common/door/tests/logs/msg_catalog*.log`):** W-MSG-CATALOG **4 pass / 0 fail**.
 - M1: the pre-change `words_core.js` (`1cc4f2cd`) and the new one answer 2,185 of 2,185 corpus steps byte for byte. 96 of the steps are `helpText`. Three core variants: with buildings, without, interactive.
 - M2: 59 of 59 `words.*` keys reached.
 - M3: 59 of 59 keys both ways. No template has a gap or a stray brace. No call passes an argument that its template drops.
