@@ -21,6 +21,7 @@ VENV=".venv"
 # one-time venv + mkdocs-material install
 [ -d "$VENV" ] || python3 -m venv "$VENV"
 "$VENV/bin/python" -c "import material" 2>/dev/null || "$VENV/bin/pip" install --quiet mkdocs-material
+"$VENV/bin/python" -c "import mkdocs_static_i18n" 2>/dev/null || "$VENV/bin/pip" install --quiet mkdocs-static-i18n==1.3.1   # the language chooser (DOCS_I18N.md §6d)
 
 # free the port — kill any mkdocs already holding it (no "address in use")
 pkill -f "mkdocs serve.*:$PORT" 2>/dev/null || true
