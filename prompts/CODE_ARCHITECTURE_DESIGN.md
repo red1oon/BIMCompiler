@@ -629,6 +629,28 @@ applied on *"yes do it"*) · F-13 *"ok"*, then *"Follow your yes advice."* · fi
   today); repeat-safe parity witnesses exist (e.g. bim-ootb `common/door/tests/witness_valrule_parity.js`, #3041). Their advice: one VS Code task; the gate inside
   `bump.js --write` for `erp/` files keyed on a parity PASS log for the current commit + dirty set; "no NEW failure vs a stored baseline"; not on save; no parity witness =
   INCONCLUSIVE; a logged `--no-parity` override. **Open question to put to the owner (F-16): a new parity failure BLOCKS the bump (with the logged override) or only WARNS?**
+- 2026-11-15, owner, on **F-16**: *"About bump, yes block note mismatch for now, but a config setting for such be good"*. → **F-16 = BLOCK on a new parity
+  mismatch (logged override), with a config setting (block / warn / off).** Also asked: *"So such hover can be toggled on and off by the dev outside so not impact
+  normal non dev users?"* (answered: yes; on = the bookmarklet in that tab, off = reload; nothing loads it for other users).
+
+**F-16 BUILD SPEC — the ERP parity gate in `scripts/bump.js` (2026-11-15).** Measured today: the parallel run (bim-compiler `scripts/bridge/run_all.sh`, run on
+`origin/master`, pilot up: `/webui/` 200) took ~70 s and printed one `§<TAG>_VERDICT <WORD>` line per witness; log
+`~/.cache/bim_bridge/run_20261115_110513.log`. Its non-passing verdicts are the same 3 as on 2026-11-04: `DD FAIL`, `CTX FAIL`, `DDS HARNESS-FAIL`
+(`ATTACH_PARITY` / `PRODUCT_ICONS` are `NOT-RUN` without their env).
+- **Config (tracked):** bim-ootb `scripts/bump_parity.json` `{ "mode": "block", "applies_to": ["erp/"], "bridge": "~/bim-compiler/scripts/bridge/run_all.sh",
+  "known": ["DD:FAIL", "CTX:FAIL", "DDS:HARNESS-FAIL"] }`. `BUMP_PARITY=block|warn|off` overrides `mode` for one run (a VS Code task can set it).
+- **When:** `bump.js … --write` and at least one target under `applies_to`. A dry run never runs it; a non-ERP bump never runs it.
+- **What:** run the bridge (its own log under `~/.cache/bim_bridge/`), parse every `§<TAG>_VERDICT <WORD>`; NEW = a `FAIL`/`HARNESS-FAIL` whose `TAG:WORD` is not in
+  `known`. Prints `§BUMP_PARITY mode= verdicts=N new=[...] known=[...] log=<path> verdict=PASS|BLOCKED|WARN|INCONCLUSIVE|OFF`.
+- **Block:** NEW non-empty, or INCONCLUSIVE (the bridge printed 0 verdicts, e.g. the pilot is down: the line says how to start it), in `block` mode → nothing written,
+  exit 3. `warn` → written, the line says WARN. `off` → not run, the line says OFF.
+- **Override:** `--no-parity "<reason>"` writes and prints `§BUMP_PARITY verdict=OVERRIDE reason="…"` (the reason is required; the commit message should carry it).
+- **No re-run for the same tree:** a PASS is cached under `~/.cache/bim_bridge/bump_parity/<sha256 of HEAD + git diff>.json`; same tree = reused (printed `cached=Y`).
+- **Witness W-BUMP-PARITY** (bim-ootb `tests/witness_bump_parity.js`, node): a stub bridge (`BUMP_PARITY_BRIDGE=<script>`) printing chosen verdict lines drives:
+  P1 new FAIL → BLOCKED, file and `?v=` unchanged · P2 only known FAILs → PASS, written · P3 `warn` → written + WARN · P4 `off` → not run · P5 non-ERP target → not run ·
+  P6 `--no-parity` without a reason → refused; with one → OVERRIDE, written · P7 0 verdicts → INCONCLUSIVE, blocked · P8 same tree twice → second `cached=Y`.
+  Every row on a temp copy (`--root`, as W-BUMP does). One REAL row (opt-in `BUMP_PARITY_REAL=1`): the real bridge on this machine gives `verdict=PASS` with today's
+  `known`. **Issue proved:** an ERP edit could be bumped (shipped to users) with no check that it still matches legacy iDempiere; after: a new mismatch stops it, visibly.
 
 
 ---

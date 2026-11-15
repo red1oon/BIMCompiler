@@ -1,0 +1,28 @@
+# ⚠ DO NOT REMOVE — SCOPE: the film "CH 0 · Immersive Software" (the canvas hover of `prompts/CODE_ARCHITECTURE_DESIGN.md` §F.21): how the hover is set up, then two dramatic moves on the real Modeller, ENGLISH ONLY. Read the log after every run (`out/*.log`): exit code is not evidence. Every number spoken or shown comes from a `§` line in `out/facts.json` / `out/shots.log`; a number that no longer matches FAILS the build (`§FILM_GUARD`). The film file is never committed, only the scripts.
+
+Owner, 2026-11-15: *"Make a film that shows, CH 0 'Immersive Software' - Soverignity begins with visbility in a single window.. how the hover is setup, and show at least 2 dramatic moves to show the point."* then *"last card to indicate the cost in mem, priort art lesson, and project credentials"*.
+
+House style: `prompts/FILM_NARRATION.md` "HOUSE STYLE FOR ALL FUTURE FILMS" (split screen, REAL key sounds from `~/.local/share/film_narration/keys_eklee/`, typing first, voice after the return key, the key-sound credit on the end card). Mechanics copied from `scripts/film_ide_erp_debug/` (film 3: real VS Code on a private virtual display above, the real app page below, `facts.js` → `shoot.sh` → `build.sh`, `guard.js`, `k2.py`, `priorart.json` + guard check P). Scripts: `scripts/film_immersive_software/`.
+
+**Honest framing (on screen):** the hover is a DEV tool, loaded by a bookmarklet into a localhost tab; users of the shipped Modeller never load it. The lower frame is the real Modeller on the real shed drawings (no client name on screen: the sheet names only).
+
+## Beats (the beat ids are the tsv ids)
+| id | top (terminal strip / real VS Code) | bottom (real Modeller, headless, CPU) | numbers from |
+|---|---|---|---|
+| cover | two-tone chapter card: kicker **CH 0**, title **Immersive Software**, sub-line **Sovereignty begins with visibility in a single window** | — | — |
+| setup | typed: `node devtools/hover/gen_trace_index.js` → its `§DXF_HOVER_INDEX keys=N` line; then the bookmarklet (shown as typed text, then clicked) → `§DXF_HOVER installed index_keys=N` | Modeller, the 9 shed sheets opened, Convert: the model on the canvas | `facts.json` (the generator's and the page's own lines) |
+| move1 "The truss you see 13 times was drawn once" | VS Code opens on **V** at `modeller/dxf2section.js` on the line the tooltip named (the `prov = atCut(n) ? 'derived' : 'assumed'` site), the line visible | the cursor on a truss bar away from cut AA; tooltip `dxf2section:bar · modeller/dxf2section.js:<line> · … assumed` | page `§DXF_HOVER` line; bodies count assumed / stations from the CLI trace run |
+| move2 "The body nobody stamped" | VS Code on **V** at `modeller/dxf2bim_import.js:<line>` (the `dxf2bim_import:wall-line` stamp) | FIRST on the OLD tree (slice 2 without the wall-line stamp): the joined wall says *no trace key: the code that built this body has no trace stamp*; THEN on main: the same wall names its line | two page runs; `512 bodies → 511 inserts` from the CLI `§DXF_TRACE` lines |
+| close | the LAST card (below) | — | `facts.json` |
+
+**Last card (owner):** (1) **cost in memory**, measured, never estimated: the heap with and without the overlay after Convert (`performance.memory.usedJSHeapSize` after a forced GC, Chromium `--js-flags=--expose-gc`, same page, same sheets), the trace map's entries, the overlay and index file sizes, and the OFF path (one `typeof` test per body; model bytes identical, W-DXF-TRACE T1); (2) **prior art, the lesson**: rows built like film 3's `priorart.json`, every row = a file or page this lane READ (path:line, or the URL fetched), guard check P fails a row whose text is not found there; nothing from memory; (3) **project credentials**: the repos and licence (from the repo's own LICENSE / SPDX lines), the PRs and witness verdict lines of this feature (#3043, #3047; `§DXF_TRACE_W VERDICT PASS`, `§DXF_HOVER_W VERDICT PASS`), the Developer Guide link, the published paper link if its page answers 200. Plus the key-sound credit.
+
+## Build plan (each step has its log)
+1. `scripts/film_immersive_software/` copied from `scripts/film_ide_erp_debug/`. Two bim-ootb worktrees: NEW = `origin/main` (has #3047), OLD = NEW with the one `_trace('dxf2bim_import:wall-line', …)` statement removed (the state of slice 2's FIRST, failing witness run). `git worktree list` first.
+2. `facts.js`: the generator line; the CLI `--trace` run (bodies, inserts, per-key counts, assumed counts, stations); a headless Modeller page per tree with the overlay, real mouse moves to the two target bodies (found by a sweep, as W-DXF-HOVER does), the tooltip text and the page's `§DXF_HOVER` lines; the memory measurement; file sizes.
+3. `shoot.sh`: real VS Code on the virtual display (`--disable-gpu`), opened at each `file:line` the tooltip named; Modeller stills from step 2. All browser/GUI work under `nice -n 19 ionice -c3`, ONE job at a time (2026-11-15: two parallel suites saturated the machine).
+4. `build.sh`: `guard.js` (`§FILM_GUARD`, checks every spoken number, check P), `k2.py` (`§K2_VERDICT PASS`), narration after each return key.
+5. Output `~/Videos/Immersive_Software_CH0_EN_AFTER_<date>_v1.mp4`, never committed.
+
+## STATUS
+2026-11-15: spec written; build started.
