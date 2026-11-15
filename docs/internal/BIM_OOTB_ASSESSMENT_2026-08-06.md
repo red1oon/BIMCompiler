@@ -406,3 +406,26 @@ Original ranking is struck through where §0 changed the priority; unchanged ite
 The engineering is well ahead of the distribution. That is a much better problem than the reverse — depth cannot be retrofitted and machinery can — but it does not fix itself, and it is the one thing an agentic coding tool cannot ship on your behalf.
 
 The window is open. What makes it *yours* is not build velocity, which commoditized the day it arrived, but that you may be the only person carrying both an Application Dictionary's internals and construction BIM in one head. Spend the window on what is expensive to reverse.
+
+---
+
+## 9. Positioning check, 2026-11-15 (two outside model reviews + web facts)
+
+Source: an outside analysis and a second model's reply, each checked against the repo and the web. Internal; names no client.
+
+**Corrections to claims the reviews made (repo checked):**
+- "Air-gapped" is **not** an overclaim for the viewer: `docs/OFFLINE_INSTALL_GUIDE.md` documents it, with the right caveat (open each building once while online, then cut the network). It **is** an overclaim for the Teamwork relay (GitHub pipe + Gmail post box) — keep the two apart. No public doc says "air-gapped" about the relay.
+- "Byte-parity" is not what the twin claims. Parity is **scenario-level MATCH vs a live legacy oracle** (`prompts/SQLiteIDEMPIERE.md`): shop day 25 of 25, COVERAGE 19 of 34 dictionary document tables (`scripts/bridge/coverage.js` — the 34 are tables with DocAction), run of 2026-10-12. "Byte-identical" appears only in regression-log diffs and the erasure witness. Now stated with its denominator in `docs/FeatureComparison.md` (§How closely the kernel matches legacy iDempiere).
+- 125K (view of a pre-extracted DB) vs ~63,600 (in-browser IFC import, wasm32 4 GB) are different limits; footnoted in `FeatureComparison.md`.
+- Version drift is already a named gap (G16, `SQLiteIDEMPIERE.md:116`). The answer is the oracle runner re-run per target version — a method, not yet a result for any client's own version.
+
+**Web facts (sources; reliability noted):**
+- iDempiere community is **small**. 2025 community survey: 88 respondents, most common deployment 10–100 users, largest 40,000 users, self-selected ([results](https://idempiere.org/blog/2025/05/28/idempiere-survey-2025-results/)). Enlyft lists data on 118 iDempiere companies, ~0.01% ERP share (partial sample). A blog's "~200,000 users" is unverified — do not cite. **Consequence:** "iDempiere shops" is a better wedge than "BricsCAD + iDempiere + offline", but its absolute size is small; the second-client question is about reach, not only generalisation.
+- iDempiere 13 is an LTS release announced March 2026; older versions lose maintenance; builds roughly every 1–2 weeks ([release post](https://idempiere.org/?p=3658), [changelog](https://wiki.idempiere.org/en/ChangeLog_Release_13)). A stated LTS window "through 2026" means a client upgrade inside the next year is likely: the version-parity runner is a product need, not a nicety.
+- BIM–ERP gap for SMEs is real and published: Hunhevicz et al., *A Customized Data Environment for Small and Medium Construction Enterprises*, EC³ 2025 ([page](https://ec-3.org/publication/ec32025_252/)) — one SME, action research, a prototype linking BIM and ERP. This is the **closest prior art in shape** (single-SME, custom link); cite it as such. Galagali et al., *Buildings* 2024, DOI 10.3390/buildings14103165: BIM–ERP research is "nascent". The second-reply quote "limitations commonly attributed to later construction phases…" and the "Authority Gap" in local-first retail were **not found** — treat as unsourced.
+- Partial-chain competitors exist: Speckle markets BIM-to-ERP/cost linking ([AEC Magazine](https://aecmag.com/data-management/speckle-the-open-source-cloud-data-platform/)); Procore has an ERP Connector platform (2021); AMC Bridge demoed model quantities pushed to Procore cost codes (Autodesk-platform-based). **No Odoo or ThatOpen connector found — absence in one search, not proof of absence.** Safe claim: "no one assembled the whole chain with parity measured against a legacy oracle", never "no competitor".
+- Competitor figures in `FeatureComparison.md` (APS ~50K, ThatOpen ~20K) were not re-verified here.
+
+**Strategic point neither review raised:** if the funded deliverable is plugins inside a client's existing iDempiere (not the SQLite twin), the twin's own buyer is untested. The oracle / parity runner may be the more sellable asset — a way to prove a plugin or offline edge behaves like the client's own iDempiere — than the offline BIM kernel. Decision belongs to the owner; nothing changed in the pitch pages beyond the scoped claims above.
+
+**Still unmeasured:** whether any client's iDempiere version has been run through the oracle; a real second customer (the SD-00 fresh-client run is synthetic).
