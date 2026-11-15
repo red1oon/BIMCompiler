@@ -113,7 +113,7 @@ Each line is a pointer, not a claim that it is still open: other lanes have work
 
 ### §PROJ-PROCS RESULT — 2026-11-16 (bim-ootb PR #3078; witness `erp/tests/witness_project_procs.js`, mutants `witness_project_procs_mutants.js`)
 **All four ported; 4 of 4 Project-window buttons run through the red1 door with no door code** (`§RED1_RUN_COVERAGE Project-window buttons: 4 of 4 run (Copy Details, Generate Order, Close Project, Set Project Type)`, was 1 of 4; Generate PO from Project runs through `run` as well, its four questions asked in SeqNo order, W-RED1-RUN R2).
-| Process | State | Witness (read from `pp_run4.log`) |
+| Process | State | Witness (read from the witness log) |
 |---|---|---|
 | ProjectGenOrder (164) | ported, REPLACES `registerProjectGenOrder` | G 20/0: header (Sales, On Credit WI, project/partner/warehouse/price list/payment term/dates), DocumentNo = the doc-type sequence's next, Qty = Planned - Invoiced, PlannedPrice override, list price otherwise, discount, tax, TotalLines; refusals with Java's exact text and no op; S category rolled back (no order, sequence unmoved); inactive line ordered; unpriced product line not saved and not counted; second run = second order |
 | ProjectGenPO (225) | ported | O 22/0: one PO per vendor in a consolidated run, per line with `ConsolidateDocument=N`, single line / phase parameters, `C_OrderPO_ID` write-back, the three skip messages by line number, buffer log rows on table 259, re-run skips, the PO price chain (PricePO, PriceLastPO, PriceList) and the currency conversion (10 EUR -> 11.76 at the seed rate), refusal when the product is on no list and the doc type checks |
