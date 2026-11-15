@@ -4545,6 +4545,7 @@ GD100  Guide Partner One  first supplier  Standard Customers
 shown 1 of 1
 </code></pre></div>
 <p><code>mis.update</code> sends only the columns you give; giving the values a record already has changes nothing and the answer says <code>noop</code>. A column the window would not let a person edit (a read-only field, or any column of a completed document) is refused, and the answer names the rule. Clear a column with the value <code>&lt;null&gt;</code>.</p>
+<p><strong>A column that points at another record</strong> (a business partner, a product, a warehouse) must name a record that exists and that your company may use. <code>mis.new</code> checks every such column and <code>mis.update</code> the ones you change, and a wrong one is refused with the legacy ERP's own words, for example <code>Cannot save record in C_Order: Foreign ID 999999 not found in C_BPartner_ID</code>, or <code>Cross tenant ID … not allowed in …</code> for a record of another company. A value outside a lookup's validation rule (the list a window would offer) is NOT refused: the legacy ERP saves it too, since the rule only decides what the window offers.</p>
 <p><strong>Delete.</strong> <code>mis.delete</code> is the window's Delete. It refuses what the window refuses, with the engine's own words, and writes nothing. The standard partner is used by other records:</p>
 <!-- run: mis_refuse cut=300 -->
 <div class="highlight"><pre><span></span><code>$ BIM_OBJECT_OPLOG=/tmp/fast_guide_mis.ops node common/door/door.js --list &#39;mis.delete kind=C_BPartner id=112&#39;

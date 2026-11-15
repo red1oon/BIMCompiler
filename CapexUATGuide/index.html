@@ -1562,6 +1562,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#b5-mark-your-run-against-the-reference-pack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B5 · Mark your run against the reference pack
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3607,6 +3618,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#b5-mark-your-run-against-the-reference-pack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B5 · Mark your run against the reference pack
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3796,6 +3818,14 @@
 <tr>
 <td>The <strong>Shed</strong> drawing set: nine 2D sheets as <strong>DXF</strong> files, one per sheet</td>
 <td>exported from BricsCAD by your drafter as in chapter <strong>B00</strong> (a <code>.dwg</code> cannot be opened); chapter B0 then turns them into the nine <code>…_marked.dxf</code> files that chapters B1 onward open (a tester given the <code>…_marked.dxf</code> copies skips B00 and B0)</td>
+</tr>
+<tr>
+<td>The <strong>reference pack</strong> (to mark your run, chapter B5)</td>
+<td><a href="https://objectstorage.ap-kulai-2.oraclecloud.com/n/ax3cp6tzwuy2/b/bim-ootb/o/uat/Shed_UAT_pack_20261115.zip">Shed_UAT_pack_20261115.zip</a>: the nine sheets as B00 exports them, the supplied marked copies, the reference Viewer database and the expected values</td>
+</tr>
+<tr>
+<td>The <strong>UAT Run Checker</strong></td>
+<td><a href="https://red1oon.github.io/bim-ootb/capex/uat/check.html">check.html</a> in your browser: it reads your files locally, nothing is uploaded</td>
 </tr>
 </tbody>
 </table>
@@ -4285,6 +4315,7 @@
 <p>The general <em>Section A-A</em> frame is not used in this test.</p>
 <p><em>Proven by measurement (witness W-UAT-SHED-SOURCE, 2026-11-15) with files written in each DXF version by a DXF library, not by BricsCAD itself: ASCII 2000 to 2018 give the same model, 512 bodies, identical; R12, binary DXF, the whole drawing in one file, and a file without its units give no model. The settings above follow from that; the DXFOUT options are quoted from BricsCAD's help.</em></p>
 <h3 id="b0-from-the-drawings-as-drawn-to-the-marked-set">B0 · From the drawings as drawn to the marked set<a class="headerlink" href="#b0-from-the-drawings-as-drawn-to-the-marked-set" title="Permanent link">&para;</a></h3>
+<p><em>No export from your drafter yet?</em> The reference pack's <code>sheets/</code> folder holds the nine sheets exactly as B00 writes them; start B0 from those.</p>
 <p>The nine sheets as drawn carry no settings: the Modeller cannot tell which CAD layer is a column, how deep the footings go, or where the expansion joint is. In this step you tell it, in the <strong>Drawing metadata</strong> panel, and save the result as nine <code>…_marked.dxf</code> copies. Every value below is read from the drawings (the source is named in each row); nothing is invented. Type the numbers exactly as written.</p>
 <p>The panel has sections you open by clicking their title: <strong>All defaults</strong> (the yellow list), <strong>Sheets</strong> (one card per sheet), <strong>Layers</strong>, <strong>Body heights</strong>, <strong>Exclude areas</strong>. The badge at the top says <strong>Blocked · n</strong> (n things still missing) or <strong>Qualifies</strong>.</p>
 <table>
@@ -4750,6 +4781,45 @@
 </tr>
 </tbody>
 </table>
+<h3 id="b5-mark-your-run-against-the-reference-pack">B5 · Mark your run against the reference pack<a class="headerlink" href="#b5-mark-your-run-against-the-reference-pack" title="Permanent link">&para;</a></h3>
+<p>The <strong>UAT Run Checker</strong> compares what your run produced with the run this guide was proven on, stage by stage. It reads your files in your browser; nothing is uploaded. Keep the files from B0.9 and B2.8 and the two lines from B2.9 and B3.1 for this step.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Do</th>
+<th>Confirm on screen</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B5.1</td>
+<td>Download the <strong>reference pack</strong> (link in <em>What you need</em>) and open the <a href="https://red1oon.github.io/bim-ootb/capex/uat/check.html">UAT Run Checker</a>. In box <strong>1</strong> choose the pack's <code>.zip</code></td>
+<td>Under box 1: <em>Pack intact: 19 files checked, built 2026-11-15 …</em>. A damaged or wrong file is refused, and <strong>Mark my run</strong> stays off</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B5.2</td>
+<td>In box <strong>2</strong> select your nine <code>…_marked.dxf</code> from B0.9 (all at once); in box <strong>3</strong> your <code>SHED_extracted.db</code> from B2.8; in box <strong>4</strong> paste the Viewer's status line from B2.9; in box <strong>5</strong> the total-cost line from B3.1 (before your rate edit)</td>
+<td>The boxes hold your files and lines</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B5.3</td>
+<td>Press <strong>Mark my run</strong></td>
+<td>One row per stage: <strong>B0.9</strong> marked sheets, <strong>B2.8</strong> Viewer database, <strong>B2.9</strong> status line, <strong>B3.1</strong> total cost, each <strong>PASS</strong>, <strong>FAIL</strong> or <strong>NOT GIVEN</strong>, with the reason under it. Your run reads <strong>PASS</strong> when all four pass. A tester who skipped B00 and B0 has no marked files: B0.9 reads NOT GIVEN and the run <strong>PARTIAL PASS</strong></td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B5.4</td>
+<td>Press <strong>Download result (uat_result.json)</strong> and attach the file to this sign-off</td>
+<td>The file is saved</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+</tbody>
+</table>
+<p><em>Proven (witness W-UAT-CHECK, 2026-11-15) on the pack as it is served: a run equal to the proven one marks PASS on all four rows; a run whose B0.7 exclude box was skipped marks FAIL on all four (515 elements, USD 97,979); an empty form marks INCONCLUSIVE; a pack with one file changed is refused.</em></p>
 <p><strong>Notes (chapter B):</strong> <strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong>____</p>
 <hr />
 <h2 id="c-erp-the-hands-on-exercise-gardenworld-admin">C · ERP: the hands-on exercise (GardenWorld Admin)<a class="headerlink" href="#c-erp-the-hands-on-exercise-gardenworld-admin" title="Permanent link">&para;</a></h2>
@@ -5148,7 +5218,7 @@
 <td>B · BIM</td>
 <td></td>
 <td></td>
-<td>/ 39 (25 if you were given the marked copies and skipped B00 and B0)</td>
+<td>/ 43 (29 if you were given the marked copies and skipped B00 and B0)</td>
 <td></td>
 </tr>
 <tr>
