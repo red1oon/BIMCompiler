@@ -503,6 +503,36 @@ node, no npm), then `code --install-extension devtools/vscode/dist/x0-navigator-
 calls, and a check in the real editor (`tests/realvsc/`). The list is in `devtools/vscode/x0-navigator/README.md`.
 **Open decisions in F:** F-1 (§F.2), F-2 and F-7 (§F.3). Everything else is answered (below).
 
+### F.22 Hover an ERP field, see every layer of code behind it   (owner 2026-11-15; decision **F-17**)
+- 2026-11-15, owner: *"Can we do one when we hover an ERP panel item? But i reckon, similar to BIM, there maybe other layers of code at that spot?"* → advice: yes, a STACK, not
+  one line (AD-LAYER LAW: one generic engine + named layers registered per table/column); show every registered layer in firing order (recommended) or only what ran on
+  the last edit. Owner: *"So BIM has no layers? Go with your layering tool tip idea"*. → **F-17 = every registered layer, in firing order.** (BIM answer given: it has
+  layers too — the size sources, the pass-through stamps, the door cuts, the edits after Convert; a layered BIM tooltip may follow, not now.)
+- **Measured 2026-11-15 (bim-ootb `main`):** form fields carry `data-ad-table` + `data-ad-column` (`erp/crud_overlay.js:1553`), so no stamp is needed: the ERP's own
+  registries are the index. Each keeps its layers with owner and rank (`erp/layered_registry.js:32-35`) and says so in `describe()`: callouts `erp/ad_callout.js:1051`
+  (classes + legacy handlers; per-column callouts `findColumnCallouts` `:437`), model hooks + doc actions `erp/model_layer.js:643`, processes `erp/ad_process.js:1176`.
+  Every registration is a call with a literal first name: `ML.registerModel` 72 + `MLo.registerModel` 4, `P.defineProcess` 56, `ML.registerDocAction` 26,
+  `A.defineCallout` 17, `A.defineColumnCallout` 4. The node kernel loads all of them (`erp/ws_kernel.js:20-31`).
+
+**F.22 SPEC (dev-only, the same pattern as §F.21 slice 2; nothing shipped changes).**
+- **Index, generated:** `devtools/hover/erp_sites.js` (espree over `erp/**/*.js`, vendored and `tests/` excluded) → every registration call
+  `{kind: callout|column-callout|process|model|docaction, name, file:line}` plus, per file, the iDempiere Java file:line its comments cite (comments read through the
+  parser's comment list, not by text search over code). `node devtools/hover/gen_erp_index.js` → `devtools/hover/erp_index.json` (git-ignored: absolute root).
+- **The stack for (table, column), in firing order** (`stackFor()`, pure, used by the page AND the node witness): 1 the dictionary row (`AD_Column`: reference,
+  default, mandatory / read-only logic) · 2 ON CHANGE: each `Class.method` of `AD_Column.Callout`, then the per-column callouts, each with owner@rank and file:line, or
+  `UNPORTED` when nothing is registered (never a guessed file) · 3 PICKER: the `AD_Val_Rule` (name + its SQL; it is data, it has no file) · 4 ON SAVE: the table's model
+  hooks (owner@rank: beforeSave / afterSave / …) and its doc action · 5 BUTTON: the column's `AD_Process` Classname → the registered process · 6 per layer, the legacy Java
+  file:line its file cites. Keys **1-9** open that layer's line in VS Code (`vscode://file/<root>/<file>:<line>`).
+- **Overlay:** `devtools/hover/erp_hover.js`, bookmarklet-loaded into `erp/idempiere.html` on localhost; reads `window.__idmpDb` and the registries' `describe()`;
+  prints `§ERP_HOVER installed index_entries=N` and per new field `§ERP_HOVER table= column= layers=K [kind:name@file:line …]`.
+- **Witness W-ERP-HOVER** (`devtools/hover/tests/witness_erp_hover.js`): E1 index = a fresh parse, and every registered name the registries report has its line ·
+  **E2 the denominator (AD-LAYER LAW, "X of N"):** node kernel + `erp/ad_seed.db`: for EVERY column shown on an AD window (`AD_Field`→`AD_Tab`→`AD_Window`, active), the
+  stack is built; prints `§ERP_HOVER_W fields=N with_layers=K callouts_named=a resolved=b unported=c models=…`; FAILS on any layer whose file:line does not resolve
+  (UNPORTED is reported, not failed: it is a coverage fact) · E3 red control: one index entry removed → the judge counts that layer as unresolved · E4 THE PAGE (headless,
+  CPU, ONE session, `nice`): GardenWorld login, the Sales Order window, the overlay, REAL mouse hovers on fields with layers → the tooltip's stack = E2's for that column;
+  key 1 records the `vscode://` link. INCONCLUSIVE if E4 hovered 0 fields with layers.
+- **Issue proved:** *"what code runs when I touch this field?"* needed reading the dictionary and four registries by hand; after: hover it, the whole stack in order.
+
 ### §F index — what is built (one line each; the full section is in the archive under the same name)
 
 | § | What | bim-ootb PR | The line that proves it |
