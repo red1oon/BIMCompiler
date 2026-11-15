@@ -194,5 +194,20 @@ plugins:
         - locale: es
           name: Español (Latinoamérica)
           build: true
+        - locale: fr
+          name: Français
+          build: true
+        - locale: de
+          name: Deutsch
+          build: true
+        - locale: id
+          name: Bahasa Indonesia
+          build: true
+        - locale: ja
+          name: 日本語
+          build: true
+        - locale: zh
+          name: 简体中文
+          build: true
 hooks:
   - hooks/i18n_pages.py

@@ -1,5 +1,5 @@
 # ⚠ DO NOT REMOVE
-Scope: **SPEC** for translated guides and a language chooser on https://red1oon.github.io/BIMCompiler/ . V0 measured (§6d); V1 being built. Read the build log and the witness log after every run (exit code is not evidence). Spec first, witness with a falsifier next, code last; honour until this file is marked DONE. Publishing stays under `prompts/DOCS_DEPLOY_POLICY.md` and `prompts/DOCS_DEPLOY_GUARD.md`: deploy ONLY via `scripts/safe_gh_deploy.sh`, never bare `mkdocs gh-deploy`, never `ALLOW_SHRINK` to get past this work.
+Scope: **SPEC** for translated guides and a language chooser on https://red1oon.github.io/BIMCompiler/ . V1 + V2 deployed (§6e): the chooser and the CLI user guide in six languages. Read the build log and the witness log after every run (exit code is not evidence). Spec first, witness with a falsifier next, code last; honour until this file is marked DONE. Publishing stays under `prompts/DOCS_DEPLOY_POLICY.md` and `prompts/DOCS_DEPLOY_GUARD.md`: deploy ONLY via `scripts/safe_gh_deploy.sh`, never bare `mkdocs gh-deploy`, never `ALLOW_SHRINK` to get past this work.
 
 ## 0. Owner decisions (2026-11-16) — binding
 > *"Perhaps we do guide translations then? Can ours at github.io have a language chooser? Would this be a next killer as certain locales are very innate to their own languages."*
@@ -123,6 +123,36 @@ Cost of each English edit is now up to six translations: the staleness check (§
 **Search:** one shared index; the test words `建設` and `建筑` find their own pages. The index separator is `[\s\-]+`, and the Python `jieba` segmenter is not installed. So Japanese and Chinese words inside a sentence without spaces are NOT yet proven searchable. That measurement waits for the ja and zh pages (INCONCLUSIVE, not a pass).
 **Size of a language:** building a language only when it has at least one page keeps the site from growing with empty copies (each full fallback copy is about 72 HTML pages and about 8 MB).
 
+## 6e. V1 + V2 RESULT (2026-11-16; logs read; deployed through `scripts/safe_gh_deploy.sh` only)
+**Built:**
+- `site_url`, and the pinned plugin in `mkdocs.yml`. Locale `es` stands for Latin-American Spanish: the plugin rejects `es-419`, because it takes ISO 639-1 or a country code only.
+- `hooks/i18n_pages.py` runs at `event_priority(-100)`, after the plugin. Measured: at the default priority it ran first and was overwritten. The plugin sets `config.extra.alternate` as an attribute, so `.get()` read an empty key.
+- `hooks/i18n_ui.yml`: the three lines per language.
+- `overrides/main.html`: `noindex` and the line.
+- `scripts/guide/witness_docs_i18n.js`.
+- The plugin is pinned in `docs.yml`, `serve_docs.sh` and `edit_paper.sh`. `safe_gh_deploy.sh` aborts early, naming the fix, when the plugin is missing. W-DEPLOY-GUARD 4/0.
+- The plugin is installed for the user's mkdocs (`pip install --user --break-system-packages mkdocs-static-i18n==1.3.1`, the same place as mkdocs itself).
+**The CLI user guide in all six languages:** `FastScriptGuide.{es,fr,de,id,ja,zh}.md`, `review: machine`, `source_sha 276f5bede717d2ac`.
+- One helper agent per language drafted each page from the English and assembled it with a script that copies every fenced block and comment verbatim.
+- The session read a sample of every language.
+**W-DOCS-I18N 7/0 on the six pages:**
+- I1: the real guard, live → build. Its only offenders are files the deploy itself adds.
+- I2: 77/77 blocks and 76/76 comments per page.
+- I3: 817/817 code spans and 2/2 § tags.
+- I4: 77/77 numbers.
+- I5: 39 headings and 50 links resolve per page.
+- I6: 426 fallback copies.
+- I7: 504 pages, the chooser on exactly the 7 guide pages.
+- Falsifiers `blockdigit`, `codespan`, `swapdigits`, `dropheading`, `noreview` and `addalt` each FAIL their claim.
+- **Defect found by the witness, fixed:** the Japanese page wrote "row 1" as 一行目, a kanji digit. I4 FAILED with "1" en=8 tr=7; the page now reads `1 行目`.
+- **Instrument error, fixed:** the witness read `hooks/i18n_ui.yml` with a line parser that kept the YAML `''` escape (French `n''est`). It now unescapes.
+**I8, deploy evidence:**
+- Spanish was published first: guard PASS 549 → 621 files, no `ALLOW_SHRINK`, canaries 200.
+- Fetched: `/es/FastScriptGuide/` returns 200 with `lang="es"`, the Spanish title and the "Traducida…" line. The English guide carries `hreflang="es"`. `/es/MANIFESTO/` shows "aún no está traducida", `noindex`, and no chooser.
+- The other five follow in the next publish; their I8 is recorded below when fetched.
+**Found for the CLI session, not a translation issue:** the Indonesian draft notes that English line 441 says `erp.read` does not fill in the order's own lines, while the run block under it shows a `children` list.
+**Next:** §6c, the cross-language search vocabulary.
+
 ## 7. Open, one question at a time (owner)
 1. ~~Reviewers~~: decided, none (§6b).
 2. ~~Pilot~~: decided, the CLI user guide `FastScriptGuide.md`, every language progressively (§6b).
@@ -130,4 +160,4 @@ Cost of each English edit is now up to six translations: the staleness check (§
 4. **Tier B list:** which pages after Tier A.
 
 ## STATUS
-2026-11-16: spec written; V0 measured (§6d); owner decisions §6b (no review, the CLI guide first, en bloc, cross-language search §6c); V1 next. Related: `prompts/ERP_UI_LOCALES.md` (UI locales), `prompts/CLI_ERP_IVR.md` §22 (localized `red1` words, a separate idea and not part of this file), `docs/FastScriptGuide.md`.
+2026-11-16: spec written; V0 measured (§6d); owner decisions §6b; V1 + V2 built and deployed, the CLI guide in six languages (§6e); §6c search vocabulary next. Related: `prompts/ERP_UI_LOCALES.md` (UI locales), `prompts/CLI_ERP_IVR.md` §22 (localized `red1` words, a separate idea and not part of this file), `docs/FastScriptGuide.md`.
