@@ -1,0 +1,15 @@
+[
+ {"id":"start","do":[{"line":"red1"},{"wait":"red1> ","quiet":0.5,"max":30}]},
+ {"id":"help","do":[{"line":"help"},{"wait":"red1> "}]},
+ {"id":"cd","do":[{"key":"CtrlL"},{"wait":"red1> "},{"line":"cd Duplex"},{"wait":"red1 Duplex> ","max":60}]},
+ {"id":"count","do":[{"line":"count"},{"wait":"red1 Duplex> ","quiet":1.0,"max":300}]},
+ {"id":"clash","do":[{"key":"CtrlL"},{"wait":"red1 Duplex> "},{"line":"clash ARC MEP"},{"wait":"red1 Duplex> ","quiet":1.0,"max":240}]},
+ {"id":"ls","do":[{"line":"ls *Bath*"},{"wait":"red1 Duplex> ","quiet":1.0,"max":60}]},
+ {"id":"menu","do":[{"key":"CtrlL"},{"wait":"red1 Duplex> "},{"line":"clash"},{"see":"pick discA"}]},
+ {"id":"pick","do":[{"key":"Down"},{"key":"Return"},{"see":"pick discB"},{"key":"Down"},{"key":"Down"},{"key":"Down"},{"key":"Return"},{"wait":"red1 Duplex> ","quiet":1.0,"max":240}]},
+ {"id":"element","do":[{"key":"CtrlL"},{"wait":"red1 Duplex> "},{"line":"cd Element"},{"wait":"red1 Duplex/Element> ","max":120}]},
+ {"id":"lsel","do":[{"line":"ls element_name=*bath*"},{"wait":"red1 Duplex/Element> ","quiet":1.0,"max":120}]},
+ {"id":"group","do":[{"line":"group storey"},{"wait":"red1 Duplex/Element> ","quiet":1.0,"max":120}]},
+ {"id":"pwd","do":[{"line":"pwd"},{"wait":"red1 Duplex/Element> "}]},
+ {"id":"exit","do":[{"line":"exit"},{"wait":"$"}]}
+]
