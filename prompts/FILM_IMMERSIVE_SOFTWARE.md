@@ -34,3 +34,28 @@ voice 3 of 3 `DETAIL`, 0 `WRONG`; `§FILM_DONE frames=1701 planned=1701`; `§K2_
 - **Found and fixed in the build:** v1's last card ran off the right edge (the card check measured height only); `cards.js` now also fails on any width overflow; the cut was rebuilt before anyone saw it.
 - **The wrong guid trap:** the first page session was given a beam pair whose guid contains `+` as "the joined wall"; the joined wall is the ONE insert whose guid is not a body (`facts.js` derives it that way now).
 - Rebuild: two bim-ootb worktrees (NEW = `origin/main`, OLD = NEW minus the one `_trace('dxf2bim_import:wall-line', …)` statement), `node devtools/hover/gen_trace_index.js` in each, then `node facts.js <NEW> <OLD> <first-run hover log> <hover log on main> <trace log on main>`, `./shoot.sh <NEW>`, `./build.sh`. The first-run log is committed as `out/witness_hover_first_run.log`.
+
+---
+
+# FILM 2 — "CH 0 · Immersive Software: the ERP field" (owner, 2026-11-15: *"Yes a film to show how ERP uses it and later a remake of the BIM with layers. Prior art?"*)
+
+Same house style and pipeline (copy `scripts/film_immersive_software/` → `scripts/film_erp_layers/`; the Modeller session becomes an ERP page session: GardenWorld login, the Sales Order
+window, the overlay `devtools/hover/erp_hover.js` loaded with its bookmarklet's own code; real mouse; the tooltip and the `§ERP_HOVER` lines are the evidence). Source of every number:
+W-ERP-HOVER (bim-ootb #3055) and the page session's own lines.
+
+| id | top | bottom (real ERP page) | numbers from |
+|---|---|---|---|
+| cover | CH 0 · Immersive Software · *the ERP field: every layer at one spot* | — | — |
+| setup | typed `node devtools/hover/gen_erp_index.js` → its `§ERP_HOVER_INDEX` line; the bookmarklet; `§ERP_HOVER installed` | the Sales Order window | generator + page lines |
+| move1 "One field, many layers" | VS Code on key **1**/**2** at the line the tooltip numbered (the callout method, then the model hook) | hover Target Document Type: dictionary → on change `CalloutOrder.docType` → picker rule → on save hooks / doc action / validators | page `§ERP_HOVER` line; E2 |
+| move2 "It says what is missing" | terminal strip: W-ERP-HOVER's E2 line (`fields=12323 … unported=213`) | hover a field whose callout or process is UNPORTED: the tooltip says so, no guessed file | witness log; page |
+| close | last card: memory (heap with / without the overlay after the window opens, one run each, forced GC; index size), prior art (rows read: iDempiere `ADTabpanel.java:837` + `WFieldRecordInfo.java:174-179` show the field's ENTITY TYPE, the owner, with `IsShowTechnicalInfOnHelp`, not the code; Odoo developer mode `?debug=1` page; click-to-component README), credentials | — | facts.json |
+
+**Prior art, read 2026-11-15 (for the card; guard check P cites these exact places):** iDempiere's field tooltip adds the Entity Type when the user preference `IsShowTechnicalInfOnHelp` is on
+(`org.adempiere.ui.zk/…/adwindow/ADTabpanel.java:837`), and Field Record Info shows `Table.Column='value'` + the entity type (`…/window/WFieldRecordInfo.java:174-179`): the OWNER of a field,
+not the code that runs. Odoo's developer mode is a per-session switch (`?debug=1`) whose bug-icon menu shows "technical data, such as a view's field" (docs page, fetched 2026-11-15).
+**Lesson for the card:** both name who owns a field; neither lists the code that fires on it in order. That list is what this hover adds, and it can because the twin keeps every layer in a
+registry with an owner and a rank.
+
+# FILM 3 (later) — the BIM film remade with layers
+Waits for a layered BIM tooltip (size sources, pass-through stamps, door cuts, edits after Convert; §F.22 records the BIM answer). Not started.
