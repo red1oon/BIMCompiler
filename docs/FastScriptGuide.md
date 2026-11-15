@@ -340,24 +340,29 @@ $ node common/door/door.js 'modeller.walk building=Duplex discipline=FP' | grep 
 
 `count` is everything the walk would place. `provisional` are positions the walker itself marks as not final, for example a fitting with no ceiling found above it. `rules` is the rule set the building's class uses: a house walks the residential rules. A walk that places nothing answers `inconclusive` with the walker's reason.
 
-## Keep a Modeller open between lines: `model.open`, `model.convert`, `model.addbay`, `model.undo`, `model.close`
+## Keep a Modeller open between lines: `model.open`, `model.convert`, `model.addbay`, `model.undo`, `model.save`, `model.close`
 
-These five lines drive ONE Modeller page kept open in the background (headless, on the CPU, no graphics card), so each line acts on what the line before left. `model.open sheets=<folder or a.dxf,b.dxf> type="Farming Shed"` opens the 2D sheets, `model.convert` makes the 3D model (the page's own Convert), `model.addbay end=high|low` adds one bay at that end of a repeating-bay building, `model.undo` takes the last change back, and `model.close` stops the page. The page does all the work with its own functions; the line presses what a person presses and prints the page's own answer. Nothing is saved: closing drops the model. They need a `bim-ootb` checkout, and the folder you run them from holds the session (a file `.model_session.json`; the port listens on this machine only and every request carries a one-time token).
+These lines drive ONE Modeller page kept open in the background (headless, on the CPU, no graphics card), so each line acts on what the line before left. `model.open sheets=<folder or a.dxf,b.dxf> type="Farming Shed"` opens the 2D sheets, `model.convert` makes the 3D model (the page's own Convert), `model.addbay end=high|low` adds one bay at that end of a repeating-bay building, `model.undo` takes the last change back, and `model.close` stops the page. The page does all the work with its own functions; the line presses what a person presses and prints the page's own answer. The model lives in that page until you save it: `model.save` writes it to a `.db` file in this folder, and `model.close` saves first when the model changed and a save file is known. They need a `bim-ootb` checkout, and the folder you run them from holds the session (a file `.model_session.json`; the port listens on this machine only and every request carries a one-time token).
 
-Rules you will meet: a line before `model.open` is refused ("no session: model.open first"), and so is a second `model.open`, a second `model.convert`, and `model.addbay` before Convert. A bay is offered only when the building type declares one (Farming Shed does); with no `type=` the bay is refused, saying the type declares no rule. The sheets must carry their markings: plain sheets of a drawing do not pass the gate. Each line takes a few seconds (here: open about 6 s, convert 3 s, a bay 3 s; on a bigger set of sheets convert took up to 15 s).
+Rules you will meet: a line before `model.open` is refused ("no session: model.open first"), and so is a second `model.open`, a second `model.convert`, and `model.addbay` before Convert. A bay is offered only when the building type declares one (Farming Shed does); with no `type=` the bay is refused, saying the type declares no rule. The sheets must carry their markings: plain sheets of a drawing do not pass the gate. Each line takes a few seconds (here: open about 6 s, convert 3 s, a bay 3 s; on a bigger set of sheets convert took up to 15 s). **Saving:** name the file once, on `model.open … file=shed.db` or on the first `model.save file=shed.db`. A save runs the page's own Save: the clash check first (a RED clash blocks the save, as it does on screen, and nothing is written), then the model is written as a native `.db`. On this shed a save takes about half a second, and the answer gives the time of each step. `model.close` with unsaved changes and no file is refused and the session stays open: save, or `model.close discard=Y` to drop the changes on purpose. A save before anything is made is refused, in the page's words.
 
 The block below copies a folder of 9 marked sheets of a shed, named by `SHED_SHEETS`, into `shed/`, and runs the lines one after the other; set `SHED_SHEETS` to your own folder of marked `.dxf` sheets.
 
 <!-- run: model_ses cut=200 -->
 ```text
-$ rm -rf shed; mkdir shed; cp "$SHED_SHEETS"/*.dxf shed/; D='node common/door/door.js --list'; eval "$D 'model.convert'" | grep -E '^error:'; eval "$D 'model.open sheets=shed type=\"Farming Shed\"'" | grep -E '^summary:'; eval "$D model.convert" | grep -E '^summary:'; eval "$D 'model.addbay end=high'" | grep -E '^(copies_by_class|summary):'; eval "$D model.undo" | grep -E '^summary:'; eval "$D model.close" | grep -E '^closed:'; eval "$D model.undo" | grep -E '^error:'; rm -rf shed .model_session.json
+$ rm -rf shed shed.db; mkdir shed; cp "$SHED_SHEETS"/*.dxf shed/; D='node common/door/door.js --list'; eval "$D 'model.convert'" | grep -E '^error:'; eval "$D 'model.open sheets=shed type=\"Farming Shed\" file=shed.db'" | grep -E '^summary:'; eval "$D model.save" | grep -E '^error:'; eval "$D model.convert" | grep -E '^summary:'; eval "$D model.save" | grep -E '^(file|bytes|elements):'; eval "$D 'model.addbay end=high'" | grep -E '^(copies_by_class|summary):'; eval "$D model.undo" | grep -E '^summary:'; eval "$D model.close" | grep -E '^closed:'; ls -l shed.db | awk '{print "shed.db bytes: " $5}'; eval "$D model.undo" | grep -E '^error:'; rm -rf shed shed.db .model_session.log
 error: no session in this folder: model.open first
 summary: 9 sheets open, 445 bodies read (4 left out), the gate is open
+error: author something first (the page's Save has nothing to save)
 summary: 444 elements made; add-a-bay is offered for Farming Shed
+file: shed.db
+bytes: 1298432
+elements: 444
 copies_by_class: {"IfcColumn":2,"IfcBeam":2,"IfcFooting":2,"IfcWall":2,"IfcMember":12,"IfcPlate":9}
 summary: one bay added at the high end (29 copies, pitch 3.0480 m), the gate is clean, cost 15898 USD (10722 added, 5176 changed)
 summary: undone: 473 -> 444 elements
 closed: true
+shed.db bytes: 1343488
 error: no session in this folder: model.open first
 ```
 
@@ -921,9 +926,13 @@ Everything here is practice on **your own copy**: the first line names a file th
 | Write a bundle back as a workbook | `d 'ninja.export bundle=Practice file=Practice_out.xlsx'` | the model, to edit and run again |
 | Under one record | `d 'mis.list kind=PR_Visit master=PR_Patient/1'` | the visits of patient 1 only; also on `mis.sum` and `mis.group` |
 | Compare a sheet before loading | `d 'mis.diff kind=PR_Patient file=patients.csv'` | new, changed, same and missing lines; nothing written |
-| Keep a Modeller open | `d 'model.open sheets=shed type="Farming Shed"'` then `d model.convert`, `d 'model.addbay end=high'`, `d model.undo`, `d model.close` | the 2D sheets made 3D, one bay added and taken back; each line a few seconds |
+| Keep a Modeller open | `d 'model.open sheets=shed type="Farming Shed" file=shed.db'` then `d model.convert`, `d 'model.addbay end=high'`, `d model.undo`, `d model.close` | the 2D sheets made 3D, one bay added and taken back; each line a few seconds; close saves to shed.db |
+| Save the model now | `d model.save` (or `d 'model.save file=shed.db'` the first time) | the clash check, then shed.db written; refused while a RED clash stands |
+| Close without saving | `d 'model.close discard=Y'` | the changes dropped on purpose (a plain close refuses when there is no save file) |
 | Try a whole file first | `node common/door/door.js --list --script setup.door --dry` | every line's real answer; nothing kept (needs `BIM_OBJECT_OPLOG`) |
 | One table from a CSV | `d 'ninja.exec file=CL_Client.csv'` | the table from the header, its lines loaded; run again, only new lines load |
+| The menu on a screen | `d /M` (or `d '/M role=102'`) | the ERP menu; Enter opens a window's list, Esc goes back, `/` finds |
+| Find a menu entry | `d 'mis.menu role=102 find=partner'` | the entries whose name has "partner", with their folders |
 | Work in another window | add `window=<name or id>` to `mis.new`, `mis.update` or `mis.delete` | the fields of that window's tab, for a table shown in two windows |
 
 **Speed.** After a big workbook the door keeps an image of what the op-log has made, so a later line does not apply every op again; it is used only while your op-log file still begins exactly as it did, and `ERP_OPIMAGE=off` switches it off.
@@ -985,6 +994,45 @@ $ printf '+\n=GD300\nTab\n=Guide Four\nEnter\ny\nEsc\n' | BIM_OBJECT_OPLOG=/tmp/
 ```
 
 Edit works the same way: it shows only the columns the window lets a person edit, with lookups as names, and sends only what you changed. Copy starts a new record from the pointed one, so you must change what must be unique (a duplicate is refused and your typing is kept). Set `MIS_SESSION_FILE=session.door` and a terminal session records the lines it ran, one per line, as a script you can read and run again.
+
+### The menu on a screen: `/M` and `mis.menu`
+
+`node common/door/door.js /M` (with the cheatsheet's alias, `d /M`) opens the ERP menu on the terminal, the same menu the browser ERP shows, with the same folders in the same order. Add a role (`d '/M role=102'`) and you see only what that role may open. Up and Down, or a number, pick an entry; Enter opens a folder, or a window's list screen (the `mis.js` screen above, on the table of the window's first tab); Esc goes back up, and from the top it quits; `/` finds an entry by name; `?` shows the keys. A process, report or form says that it opens in the browser ERP, and runs nothing. As everywhere on this page, the screen only types door lines for you, and it prints each one before it runs it (the `->` lines), so what you do on the screen you can also type, or put in a script.
+
+The menu itself is a door line, `mis.menu [role=] [find=]`. Here the screen is driven with typed keys (`--plain` reads them from the input), finding "partner" and opening the third match:
+
+<!-- run: menu_screen cut=200 -->
+```text
+$ rm -f /tmp/fast_guide_menu.ops; printf '/\n=partner\nEnter\n3\nEsc\nEsc\nq\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide_menu.ops node common/door/door.js '/M role=102' --plain | grep -E '^(-> |key |Menu|find|> )'
+-> mis.menu role=102
+Menu   (role 102)   294 windows
+> 1  ▸ System Admin
+key /
+Menu   (role 102)   294 windows
+> 1  ▸ System Admin
+find: _   (Enter search, Esc cancel)
+key =partner
+Menu   (role 102)   294 windows
+> 1  ▸ System Admin
+find: partner_   (Enter search, Esc cancel)
+key Enter
+-> mis.menu find=partner role=102
+find "partner"   (role 102)   294 windows
+> 1    System Admin > Data > Data Import > Import Business Partner
+key 3
+-> (open Business Partner Group: the list screen on C_BP_Group)
+-> mis.describe kind=C_BP_Group role=102
+-> mis.list kind=C_BP_Group columns=C_BP_Group_ID,Value,Name,Description names=Y limit=10 offset=0 role=102
+key Esc
+find "partner"   (role 102)   294 windows
+> 3    Partner Relations > Business Partner Rules > Business Partner Group
+key Esc
+Menu   (role 102)   294 windows
+> 1  ▸ System Admin
+key q
+Menu   (role 102)   294 windows
+> 1  ▸ System Admin
+```
 
 ## Choose how the answer is shown, and keep it
 
@@ -1168,11 +1216,12 @@ This table is **generated from the vocabulary file** (`common/door/verbs.json`) 
 | `legacy.witness` | Run the in-server witness on the legacy test instance | none | trial | human, ai | a bim-ootb checkout |
 | `legacy.check` | Check a workbook's rows in the legacy test database | `book`, `version` (optional) | read | human, ai | a bim-ootb checkout |
 | `legacy.plugin` | Put a data-model plugin on the legacy test instance and check it there | `book`, `version` | writes | human, ai | a bim-ootb checkout |
-| `model.open` | Open 2D sheets in the Modeller | `sheets`, `type` (optional) | trial | human, ai | a bim-ootb checkout |
+| `model.open` | Open 2D sheets in the Modeller | `sheets`, `type` (optional), `file` (optional) | trial | human, ai | a bim-ootb checkout |
 | `model.convert` | Convert the open sheets to a 3D model | none | trial | human, ai | a bim-ootb checkout |
 | `model.addbay` | Add a bay to the model | `end` | trial | human, ai | a bim-ootb checkout |
 | `model.undo` | Undo the last model change | none | trial | human, ai | a bim-ootb checkout |
-| `model.close` | Close the Modeller session | none | trial | human, ai | a bim-ootb checkout |
+| `model.save` | Save the open model | `file` (optional) | writes | human, ai | a bim-ootb checkout |
+| `model.close` | Close the Modeller session | `discard` (optional) | trial | human, ai | a bim-ootb checkout |
 | `erp.find` | Find a document | `kind`, `number` | read | human, ai | a bim-ootb checkout |
 | `erp.actions` | What can be done to a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | read | human, ai | a bim-ootb checkout |
 | `erp.complete` | Complete a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | posts | human, ai | a bim-ootb checkout |
@@ -1192,6 +1241,7 @@ This table is **generated from the vocabulary file** (`common/door/verbs.json`) 
 | `ninja.exec` | Run a Ninja workbook | `file`, `dry` (optional), `data` (optional), `table` (optional) | writes | human, ai | a bim-ootb checkout |
 | `ninja.workflow` | Give a table the document columns | `table`, `dry` (optional) | writes | human, ai | a bim-ootb checkout |
 | `mis.diff` | Compare a CSV with the table | `kind`, `file`, `key` (optional) | read | human, ai | a bim-ootb checkout |
+| `mis.menu` | Read the menu | `role` (optional), `find` (optional) | read | human, ai | a bim-ootb checkout |
 | `ninja.rollback` | Undo a Ninja bundle | `bundle`, `dry` (optional) | writes | human, ai | a bim-ootb checkout |
 | `ninja.export` | Write a Ninja bundle back as a workbook | `bundle` (optional), `window` (optional), `table` (optional), `file` | writes | human, ai | a bim-ootb checkout |
 | `erp.column` | Who fills a column: twin and legacy side by side (old name of mis.column) | `kind`, `column` | read | human, ai | a bim-ootb checkout |
@@ -1206,7 +1256,7 @@ This table is **generated from the vocabulary file** (`common/door/verbs.json`) 
 | `erp.new` | Create a record (old name of mis.new) | `kind`, `dry` (optional), `role` (optional), `window` (optional), further `column=value` filters (optional) | writes | human, ai | a bim-ootb checkout |
 <!-- /GEN:verbs -->
 
-**Coverage today.** The list is small on purpose: 57 verbs cover the Modeller's grid edits, its walker and a Modeller kept open between lines, a few Viewer questions, the schedule, generic object reading, counting and writing, and the first ERP document verbs. The Viewer has 64 actions a person can press, and the door offers 5 Viewer verbs. The ERP has 1157 documents and processes, and the door offers 6 ERP verbs for a document's life and 13 MIS verbs that work on any table, and keeps 10 old names so earlier lines still run. So this is a start, not the whole menu.
+**Coverage today.** The list is small on purpose: 59 verbs cover the Modeller's grid edits, its walker and a Modeller kept open between lines, a few Viewer questions, the schedule, generic object reading, counting and writing, and the first ERP document verbs. The Viewer has 64 actions a person can press, and the door offers 5 Viewer verbs. The ERP has 1157 documents and processes, and the door offers 6 ERP verbs for a document's life and 14 MIS verbs that work on any table, and keeps 10 old names so earlier lines still run. So this is a start, not the whole menu.
 
 ## What is not checked
 
