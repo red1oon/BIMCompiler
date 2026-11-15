@@ -20,15 +20,15 @@ Owner, closing: *"update prompt, to close session, new session will 'resume soft
 
 **1. Part A (the pure core), where it stands.** A-1 (the core list), A-2 (the login context is the one clock), A-3 (core never falls back; the day is the LOCAL day; the edge records it), A-4 (`Env.elapsed()` for timing) are ALL answered (Part A DECISIONS). Built, all merged and re-run on `main`:
 `Env.stamp / Env.modelEnv / Env.nowStamp / Env.nowMs` in `erp/ad_callout.js` (A1, bim-ootb #3007, `W-ENV-VIEWS`) · `ws_kernel.js` session day = local day (**#2996 fixed**, #3010; legacy oracle `CompiereService.java:281-283`) · `Import*` x7 + `ClientAcctProcessor` (#3013) · `InvoiceGenerate` + `InOutGenerate` (#3016) · `model_asi` + `doc_poster` + the ASI dialog's day (#3021) · `crud_core.localDay(ms)` + the two `ad_process` report handlers (#3026). The regex precursor `erp/tests/witness_core_clock_reads.js` scans 13 files (`clockReads=0` each, red control).
-**REMAINING for A2 (measured 2026-11-14), one PR each, callers read first:** `processes/PackIn.js:39` (async, no trx in scope) · `rule_fold.js:94` (`crypto.randomUUID`; **no witness exists for it**, and its uuid must stay unique across sessions, a deterministic `'rule:'+N` would collide) · timing only, via `Env.elapsed`: `ad_callout.js:995`, `model_pa.js:23`, `viewer/cpm_schedule.js:862-918`, `viewer/schedule_gate.js:849/1007` (4D cache key: re-run `scripts/cache_4d_run.js` once), `common/room_graph.js:1692/1773`, `viewer/schedule_inject.js:55` · viewer: `schedule_author.js:3115/3448`, `schedule_sync.js:36` (`Math.random` tab id, edge or core?) · the EDGE producers `crud_overlay._modelEnv`, `plugin_overlay._localNow`, `genesis.js:729` LAST (crud_overlay returns before `_modelEnv` in node, so it needs a witness that can load it). Then **A3 `W-CORE-PURE`** (a real AST scan, replacing the hand list).
-**A-5 ANSWERED 2026-11-15** (owner: *"Go with your advice on Option 1."*): `Env.setEdge` installed once by the page; build spec **A2-EDGE** in Part A (rule_fold PR first, then PackIn).
+**REMAINING for A2 (measured 2026-11-14), one PR each, callers read first:** ~~`processes/PackIn.js:39`~~ ✅ #3033 · ~~`rule_fold.js:94`~~ ✅ #3030 (A2-EDGE RESULT in Part A) · timing only, via `Env.elapsed`: `ad_callout.js:995`, `model_pa.js:23`, `viewer/cpm_schedule.js:862-918`, `viewer/schedule_gate.js:849/1007` (4D cache key: re-run `scripts/cache_4d_run.js` once), `common/room_graph.js:1692/1773`, `viewer/schedule_inject.js:55` · viewer: `schedule_author.js:3115/3448`, `schedule_sync.js:36` (`Math.random` tab id, edge or core?) · the EDGE producers `crud_overlay._modelEnv`, `plugin_overlay._localNow`, `genesis.js:729` LAST (crud_overlay returns before `_modelEnv` in node, so it needs a witness that can load it). Then **A3 `W-CORE-PURE`** (a real AST scan, replacing the hand list).
+**A-5 ANSWERED 2026-11-15** (owner: *"Go with your advice on Option 1."*): `Env.setEdge` installed once by the page; **A2-EDGE built: bim-ootb #3030 (rule_fold) + #3033 (PackIn)**, result in Part A. Next A2 item: the timing reads via `Env.elapsed`.
 **Method that worked for every file (keep):** list the witnesses that touch the file; BEFORE editing, save their verdict lines (3 lanes, `< /dev/null` on every `node`, **do not edit that worktree until the baseline finishes**); edit; compare after; investigate every diff (for browser witnesses mask ids and ordering, then diff again; a diff in one that fails on unedited `main` too is load, not you); change a witness only when the RULE itself changed (`W-LOCAL-TIME` C updated, D added in #3026), and say so in the PR.
 
 **2. Where each part stands.**
 
 | Part | State | Next step |
 |---|---|---|
-| A | A0, A1 ✅; A2 mostly done (above); A-5 answered | A2-EDGE (rule_fold, PackIn) → the remaining A2 files → A3 |
+| A | A0, A1 ✅; A-1..A-5 ✅; A2 done for 15 files (above) | the remaining A2 files (timing, viewer, edge producers) → A3 |
 | B | not started | **B0 needs no decision** (generator in check mode, no file changes, §READY). Then ask B-1 |
 | C, D | not started; wait on B | — |
 | E | not started | `witness_kit/paths.js` needs no decision (§READY). Then ask E-1 |
@@ -287,6 +287,17 @@ Both load only on `erp/idempiere.html` (`rule_fold.js` at line 647, `ad_callout.
 `§ENV_EDGE_HELPER` (a) a fixed edge in → `Env.edge().uuid()` returns it; (b) no edge → `§ENV_NO_DATE` + throw (red control: the old silent
 fallback would return a value and FAIL this row); (c) an edge without `uuid` is refused. **Issue proved:** a core module reached the wall clock
 and the RNG directly, and silently fell back to a colliding id; after: one edge, installed once, and a missing edge fails loudly.
+**A2-EDGE RESULT (2026-11-15).** Built and merged: **bim-ootb #3030** (`Fixes #3029`: `Env.setEdge`/`Env.edge()` in `erp/ad_callout.js`, the
+inline installer in `erp/idempiere.html`, `rule_fold.js` `commitEdit`) and **#3033** (`processes/PackIn.js`). **Spec deviations, said here:** (1) the
+behaviour rows went into a NEW witness `erp/tests/witness_rule_fold_edge.js` (**W-RULE-FOLD-EDGE**), not into `witness_core_clock_reads.js`, which
+only gained the two file names; (2) `poc_gated_complete.js` / `poc_i4_reconcile.js` could not serve as before/after: they wait for `#pill-kanban`,
+which no longer exists, and FAIL on unedited `main` (left to the ERP lane, not fixed here). Evidence (logs read):
+- W-RULE-FOLD-EDGE on unedited `main`: `§RFE VERDICT FAIL rows=4 fail=4`, R3 `outcome=returned id="rule:5001"` (the colliding fallback, live; every
+  gesture op was `rule:500x`). After, and re-run on `main` @ `58376fe3`: `§RFE VERDICT PASS rows=5 fail=0` (PackIn re-run on `main` @ `51438e7e`: WTW PASS 4/4, `clockReads=0`); R2 on the real seed DB (GardenWorld 11,
+  N=114) `edge_ids_minted=3 reversible=Y oracle=Y`; R5 the real page (headless, no GPU) `§ENV_EDGE_lines=1 §ENV_NO_DATE=0 setT_uuid=<v4> chainOk=Y`.
+- W-TD-PACKIN-WINDOW: `VERDICT PASS judged=4` before, after #3030 and after the PackIn edit (W3 = DateProcessed on the local day). Under a load
+  average of 22 it timed out at `page.goto` (load, not code): run it alone.
+- `witness_core_clock_reads`: `ran=19` → `ran=21`, `rule_fold.js` and `processes/PackIn.js` `clockReads=0`; `witness_env_views` § lines identical.
 
 ---
 
@@ -611,7 +622,7 @@ first, as §F.4, the next session's bounded task**; A0 runs in parallel if a sec
 
 | Part | Starts with no decision | Next decision to ask | Why that one |
 |---|---|---|---|
-| A | A0 ✅, A-1..A-5 ✅, A1 ✅ | none | A2-EDGE spec in Part A |
+| A | A0 ✅, A-1..A-5 ✅, A1 ✅ | none | the remaining A2 files (RESUME 1) |
 | B | **B0: generator in check mode** (manifest built from today's files, regenerate, byte-compare; no file changes) | B-1 `?v=` numbers or hashes | B1 writes `?v=`; B0 does not |
 | C | nothing; waits on B and D | C-1 part names + owners | |
 | D | nothing new; the multi-publisher list already exists (`types/globals.gen.d.ts`) | D-1 where the questions list lives | needs B's `owner` field |
@@ -652,7 +663,7 @@ Ask the owner **one decision per message, with the recommendation** (START HERE 
 
 | Part | What | State |
 |---|---|---|
-| A | pure core + Env | **A0 ✅** · **A-1..A-4 ✅** · **A1 ✅** (#3007) · **A2** done for 13 files (#3010 #3013 #3016 #3021 #3026), remaining listed in RESUME 1 · A-5 ✅ (2026-11-15) → A2-EDGE, then A3 |
+| A | pure core + Env | **A0 ✅** · **A-1..A-4 ✅** · **A1 ✅** (#3007) · **A2** done for 13 files (#3010 #3013 #3016 #3021 #3026), remaining listed in RESUME 1 · A-5 ✅ → A2-EDGE ✅ (#3030 #3033), then A3 |
 | B | manifest per app | not started · B0 ready · open: B-1 to B-4 |
 | C | named APP parts | not started · open: C-1, C-2 |
 | D | owner table | not started · open: D-1, D-2 |
