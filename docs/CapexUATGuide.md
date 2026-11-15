@@ -334,7 +334,7 @@ The schedule and the cost come from reference files the Viewer ships with. You e
 
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|
-| B3.1 | Note the Viewer’s total cost (Find panel: `total cost`; it is the cost of the 13 drawn bays, see the note at the top of chapter B) and the schedule’s finish date (**Time Machine**, key **T**) | Write both down: ________ / ________ | ☐ Pass ☐ Fail |
+| B3.1 | Note the Viewer’s total cost (Find panel: `total cost`; it is the cost of the 13 drawn bays, see the note at the top of chapter B) and the schedule’s finish date (**Time Machine**, key **T**) | With the shipped rates the total reads **USD 96,839 (RM 372,457) — total building cost** (the digits may be grouped differently in your browser's language). A higher figure, such as USD 97,979, means the B0.7 exclude box missed the expansion joint. Write the total and the finish date down: ________ / ________ | ☐ Pass ☐ Fail |
 | B3.2 | Make the rate edit and the lag edit above. Your copy is saved in this browser as you type | The form keeps your value; a list shown as JSON text must stay valid JSON | ☐ Pass ☐ Fail |
 | B3.3 | **Reload the Viewer tab**, so it reads your copies | The building opens again | ☐ Pass ☐ Fail |
 | B3.4 | Read the total cost again | It moved in the direction of your rate edit | ☐ Pass ☐ Fail |
