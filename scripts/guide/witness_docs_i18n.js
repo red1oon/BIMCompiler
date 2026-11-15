@@ -25,7 +25,7 @@ if (!SITE || !fs.existsSync(path.join(SITE, 'index.html'))) { console.log('usage
 // the languages: mkdocs.yml's i18n block (the default first)
 const yml = fs.readFileSync(path.join(REPO, 'mkdocs.yml'), 'utf8'), LANGS = Array.from(yml.matchAll(/^\s*- locale: ([a-z]{2}(?:_[A-Z]{2})?)\s*$/mg)).map(m => m[1]);
 const DEF = 'en', OTHER = LANGS.filter(l => l !== DEF);
-const UI = {}; { let cur = null; fs.readFileSync(path.join(REPO, 'hooks/i18n_ui.yml'), 'utf8').split('\n').forEach(l => { let m = /^([a-z]{2}):/.exec(l); if (m) { cur = m[1]; UI[cur] = {}; return; } m = /^\s+(\w+): '(.*)'\s*$/.exec(l); if (m && cur) UI[cur][m[1]] = m[2]; }); }
+const UI = {}; { let cur = null; fs.readFileSync(path.join(REPO, 'hooks/i18n_ui.yml'), 'utf8').split('\n').forEach(l => { let m = /^([a-z]{2}):/.exec(l); if (m) { cur = m[1]; UI[cur] = {}; return; } m = /^\s+(\w+): '(.*)'\s*$/.exec(l); if (m && cur) UI[cur][m[1]] = m[2].replace(/''/g, "'"); }); }   // YAML single-quoted: '' is one quote (French n''est)
 L('languages=' + JSON.stringify(LANGS) + ' ui rows=' + JSON.stringify(Object.keys(UI)));
 
 // ── source parsing (fences toggle on a line whose first non-space characters are ``` ) ──

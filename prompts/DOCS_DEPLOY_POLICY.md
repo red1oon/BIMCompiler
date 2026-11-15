@@ -42,4 +42,4 @@ committed): `cp ~/bim-compiler/docs/glassbowl_data.db <worktree>/docs/` (sha256 
 `curl -o docs/glassbowl_data.db https://red1oon.github.io/BIMCompiler/glassbowl_data.db`.
 
 ## Translated guides (2026-11-16)
-A language chooser and translated guides are specified in `prompts/DOCS_I18N.md` (nothing built). They must add pages only: English URLs unchanged, the guard passes with no `ALLOW_SHRINK`.
+A language chooser and translated guides are LIVE (`prompts/DOCS_I18N.md` §6e): `mkdocs-static-i18n==1.3.1` builds `/<lang>/` copies beside the English root. **A deploy needs the plugin installed** (`pip install --user --break-system-packages mkdocs-static-i18n==1.3.1`); `safe_gh_deploy.sh` aborts early naming it. A branch without the translated pages would DELETE live `/<lang>/` pages and the guard aborts it: merge `origin/master` first. Pages must add only: English URLs unchanged, the guard passes with no `ALLOW_SHRINK`. Check a translated page with `node scripts/guide/witness_docs_i18n.js <built_site>`.
