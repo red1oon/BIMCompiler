@@ -1,4 +1,5 @@
 site_name: BIM Intent Compiler
+site_url: https://red1oon.github.io/BIMCompiler/   # needed by the language chooser: without it the chooser's links are root-absolute (/es/), a 404 on this site (DOCS_I18N.md §6d)
 site_description: Construction is manufacturing. A building IS its Bill of Materials.
 site_author: Redhuan D. Oon
 repo_url: https://github.com/red1oon/bim-ootb
@@ -175,3 +176,38 @@ nav:
       - "The Last Mile — drift tracking (Java era)": LAST_MILE_PROBLEM.md
       - "Construction Economy / ERP Wave (Java era)": BIMERPPaper.md
       - "Self-Host the Java toolchain (legacy installer)": SYSTEMS_INSTALLER_GUIDE.md
+
+# Translated guides (prompts/DOCS_I18N.md): suffix files (Page.es.md beside Page.md; Spanish is the es-419 variant, but the plugin takes ISO 639-1 or a country code only, so its locale is es), English stays at the root and keeps every URL.
+# A language is listed here only once it has at least one translated page (§6d: each language builds a full fallback copy of the site).
+plugins:
+  - search
+  - i18n:
+      docs_structure: suffix
+      fallback_to_default: true
+      reconfigure_material: true
+      reconfigure_search: true
+      languages:
+        - locale: en
+          default: true
+          name: English
+          build: true
+        - locale: es
+          name: Español (Latinoamérica)
+          build: true
+        - locale: fr
+          name: Français
+          build: true
+        - locale: de
+          name: Deutsch
+          build: true
+        - locale: id
+          name: Bahasa Indonesia
+          build: true
+        - locale: ja
+          name: 日本語
+          build: true
+        - locale: zh
+          name: 简体中文
+          build: true
+hooks:
+  - hooks/i18n_pages.py
