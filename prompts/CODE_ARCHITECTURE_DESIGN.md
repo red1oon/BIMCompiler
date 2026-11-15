@@ -21,14 +21,14 @@ Owner, closing: *"update prompt, to close session, new session will 'resume soft
 **1. Part A (the pure core), where it stands.** A-1 (the core list), A-2 (the login context is the one clock), A-3 (core never falls back; the day is the LOCAL day; the edge records it), A-4 (`Env.elapsed()` for timing) are ALL answered (Part A DECISIONS). Built, all merged and re-run on `main`:
 `Env.stamp / Env.modelEnv / Env.nowStamp / Env.nowMs` in `erp/ad_callout.js` (A1, bim-ootb #3007, `W-ENV-VIEWS`) · `ws_kernel.js` session day = local day (**#2996 fixed**, #3010; legacy oracle `CompiereService.java:281-283`) · `Import*` x7 + `ClientAcctProcessor` (#3013) · `InvoiceGenerate` + `InOutGenerate` (#3016) · `model_asi` + `doc_poster` + the ASI dialog's day (#3021) · `crud_core.localDay(ms)` + the two `ad_process` report handlers (#3026). The regex precursor `erp/tests/witness_core_clock_reads.js` scans 13 files (`clockReads=0` each, red control).
 **REMAINING for A2 (measured 2026-11-14), one PR each, callers read first:** `processes/PackIn.js:39` (async, no trx in scope) · `rule_fold.js:94` (`crypto.randomUUID`; **no witness exists for it**, and its uuid must stay unique across sessions, a deterministic `'rule:'+N` would collide) · timing only, via `Env.elapsed`: `ad_callout.js:995`, `model_pa.js:23`, `viewer/cpm_schedule.js:862-918`, `viewer/schedule_gate.js:849/1007` (4D cache key: re-run `scripts/cache_4d_run.js` once), `common/room_graph.js:1692/1773`, `viewer/schedule_inject.js:55` · viewer: `schedule_author.js:3115/3448`, `schedule_sync.js:36` (`Math.random` tab id, edge or core?) · the EDGE producers `crud_overlay._modelEnv`, `plugin_overlay._localNow`, `genesis.js:729` LAST (crud_overlay returns before `_modelEnv` in node, so it needs a witness that can load it). Then **A3 `W-CORE-PURE`** (a real AST scan, replacing the hand list).
-**ASK THE OWNER NEXT, one message, with the recommendation (A-5):** how does a standalone core module with no transaction (rule_fold, PackIn) get its clock and id? **Option 1 (recommended): the shell installs the edge once** (`Env.setEdge({nowMs, uuid, perfMs})`, set by the page boot / the kernel; absent = `§ENV_NO_DATE` + throw, A-3), modules ask `Env`. **Option 2:** pass the clock and id as an argument through the 4 call sites of `commitEdit` and the PackIn caller. Record his answer in Part A DECISIONS.
+**A-5 ANSWERED 2026-11-15** (owner: *"Go with your advice on Option 1."*): `Env.setEdge` installed once by the page; build spec **A2-EDGE** in Part A (rule_fold PR first, then PackIn).
 **Method that worked for every file (keep):** list the witnesses that touch the file; BEFORE editing, save their verdict lines (3 lanes, `< /dev/null` on every `node`, **do not edit that worktree until the baseline finishes**); edit; compare after; investigate every diff (for browser witnesses mask ids and ordering, then diff again; a diff in one that fails on unedited `main` too is load, not you); change a witness only when the RULE itself changed (`W-LOCAL-TIME` C updated, D added in #3026), and say so in the PR.
 
 **2. Where each part stands.**
 
 | Part | State | Next step |
 |---|---|---|
-| A | A0, A1 ✅; A2 mostly done (above) | A-5 (above) → the remaining A2 files → A3 |
+| A | A0, A1 ✅; A2 mostly done (above); A-5 answered | A2-EDGE (rule_fold, PackIn) → the remaining A2 files → A3 |
 | B | not started | **B0 needs no decision** (generator in check mode, no file changes, §READY). Then ask B-1 |
 | C, D | not started; wait on B | — |
 | E | not started | `witness_kit/paths.js` needs no decision (§READY). Then ask E-1 |
@@ -42,9 +42,9 @@ X0 Navigator: F12 + hover on a field of the shared object · Find All References
 Film 1 `~/Videos/Editing_Real_Code_EN_AFTER_2026-11-14_v5.mp4` (owner: fine as it is) · Film 2 `~/Videos/Editing_Real_Code_2_EN_AFTER_2026-11-14_v1.mp4` (§F.18, not reviewed) · **Film 3 "The invoice dated yesterday"** (#2996 found and fixed in the editor, VS Code above, the real ERP page below): `~/Videos/Invoice_Dated_Yesterday_EN_AFTER_2026-11-14_v1.mp4` and **`_v2.mp4`** (75.9 s: adds the two-tone **CH 0 / VSC Hot Edit** cover and the **Prior art** last card with the Developer Guide link; `§FILM_GUARD` 30 OK incl. check P, `§K2_VERDICT PASS`). **The owner has not reviewed the cut.** Rebuild = two bim-ootb worktrees (`614bb121^`, `614bb121`), `node facts.js`, `./shoot.sh`, `./build.sh` (59 s; facts ~2 min, shoot ~3 min). Scenarios 2 and 3 are kept in the film spec. **Memory `project_vsc_hot_edit_film_revisit`: on any future real bug, try the VS Code tools first; it may be the next example.** Other languages: only if asked.
 
 **5. Open with the owner, none of it started.**
-- **A-5** (above) · **F-1** (Fetch back also runs a headless browser?) · **F-2** (size and speed budgets) · **F-7** (a hosted preview per pull request) · **F-12 step 2** (a token so CI-bot merges also deploy; only he can create it).
+- **F-15** (§F.21) · **F-1** (Fetch back also runs a headless browser?) · **F-2** (size and speed budgets) · **F-7** (a hosted preview per pull request) · **F-12 step 2** (a token so CI-bot merges also deploy; only he can create it).
 - **A status-bar Bump button** (he suggested it: *"Perhap a 'bump' button if hasn't done"*): not built; the light-bulb quick fix exists (cheatsheet step 26). Dev-side only, would need a `realvsc` witness.
-- **IDEA (owner, 2026-11-14, last message): hover over the browser canvas/window gives a popup that jumps an open VS Code to the line.** Not built, not tested. Advice given: (1) the jump is `vscode://file/<abs path>:<line>` or `code --goto file:line` (jumps in the window already open); test both before relying on them. (2) There is NO line per field: the ERP is one generic dictionary engine (AD-LAYER LAW), so the popup shows the table, the column and the NAMES attached to it (callout, validator, process, model hook) and links each to the file it lives in (`erp/callouts/<Class>.js`, `erp/processes/<Class>.js`, `model_*.js`) using an index like X0's. (3) Ship it as a DEV-ONLY overlay injected on localhost (a dev server or a bookmarklet), so the shipped app's browser code does not change (minimalism §13). (4) The 3D canvas works only if each mesh records what produced it (verb or line): CHECK that first. Recommendation: ERP window first, prove it with a witness, film after. **Ask the owner: ERP window or 3D canvas first?** (the question is out; no answer yet). Natural home: a new Part F row (F-13).
+- **Hover in the app → jump VS Code (F-14 ANSWERED 2026-11-15: Modeller canvas first, for DXF → BIM accuracy, then BIM → ERP).** Measured gap and the next question **F-15** (where "which code made this element" is recorded; recommendation: a trace switch, OFF by default) are in **§F.21**.
 - **A bake, on his go:** the first bake after bim-ootb #2977 writes a `§LOG_STAMP`; read its log and check that a "last:" line lights up.
 - **His hands-on dry run:** `~/VSCcheatsheet.txt` (now 29 steps; steps 27-29 = the clock rule), his own worktree `~/bim-ootb-dryrun`, not yet created. What differs from the sheet when he reports is a finding.
 
@@ -262,6 +262,31 @@ FAILs as it should.
 - 2026-11-14, owner, on **A-4** (timing reads; advice given: Option 1, `Env.elapsed()`): standing delegation *"On question, advice me as u know better."*,
   then *"continue what is pending"*. → **A-4 = Env.elapsed(); `performance.now()`/`Date.now()` are banned in core even inside a `§` call**, so
   W-CORE-PURE stays a plain call ban with no data-flow analysis. All of Part A's decisions are now answered: A1, A2, A3 may proceed.
+- 2026-11-15, owner, on **A-5** (how a standalone core module with no transaction, `rule_fold.js` and `processes/PackIn.js`, gets its clock and id;
+  advice given: Option 1, the shell installs the edge once): *"Go with your advice on Option 1."* → **A-5 = `Env.setEdge({nowMs, uuid, perfMs})`,
+  installed once by the page; core modules ask `Env.edge()`; no edge installed = `§ENV_NO_DATE` + throw (A-3).** Spec: A2-EDGE below.
+
+**A2-EDGE SPEC (2026-11-15, decision A-5; bim-ootb tracker issue opened with the PR).** Measured on bim-ootb `main` @ `27ac46cc`:
+`erp/rule_fold.js:94` `commitEdit` mints the op uuid with `crypto.randomUUID()`, else `'rule:'+nextTs()` (a fallback that can collide across
+sessions); its 4 callers are all in that file (`:116 :135 :145 :155`). `erp/processes/PackIn.js:39` builds DateProcessed from `new Date()`.
+Both load only on `erp/idempiere.html` (`rule_fold.js` at line 647, `ad_callout.js` at 679; `capex/index.html` loads `ad_callout.js` but neither file).
+**Build (one PR per file, `ad_callout.js` change rides with the first):**
+- `Env.setEdge(edge)` in `erp/ad_callout.js`: `edge.nowMs` and `edge.uuid` must be functions (`perfMs` optional), else throw; stores it; logs
+  `§ENV_EDGE set nowMs=Y uuid=Y perfMs=Y|N replaced=Y|N`. `Env.edge()` returns it, or logs `§ENV_NO_DATE no edge installed` and throws. Core code
+  never calls a clock: `ad_callout.js` itself stays clock-free on this path. `Env.modelEnv(ctx, edge)` is NOT changed (callers pass their edge).
+- The installer is EDGE code: one inline `<script>` in `erp/idempiere.html` right after `ad_callout.js`: `nowMs` = `Date.now`, `perfMs` =
+  `performance.now`, `uuid` = `crypto.randomUUID` when present, else an RFC 4122 v4 id from `crypto.getRandomValues` (available outside a secure
+  context too), so the id stays unique where the old `'rule:'+N` fallback did not. No new file, so no precache / `?v=` list grows (P2).
+- `rule_fold.js` `commitEdit`: `uuid = Env.edge().uuid()`; the `'rule:'` fallback is removed (A-3). `nextTs()` stays: it is already a
+  deterministic counter, not a clock.
+- `PackIn.js` (second PR): `now = Env.stamp(Env.edge().nowMs()).now` (the same local stamp the hand-written line made; legacy
+  `new Timestamp(System.currentTimeMillis())`, the server's local time).
+**Witnesses.** Before/after, unchanged verdict lines: `erp/tests/poc_gated_complete.js` and `erp/tests/poc_i4_reconcile.js` (the real page drives
+`RuleFold.setT` / `runGesture`), `capex/tests/witness_td_packin_window.js` (W-TD-PACKIN-WINDOW, the Pack In button), `erp/tests/witness_env_views.js`.
+`erp/tests/witness_core_clock_reads.js` gains `rule_fold.js` (then `processes/PackIn.js`) in its list (`clockReads=0`), plus behaviour rows:
+`§ENV_EDGE_HELPER` (a) a fixed edge in → `Env.edge().uuid()` returns it; (b) no edge → `§ENV_NO_DATE` + throw (red control: the old silent
+fallback would return a value and FAIL this row); (c) an edge without `uuid` is refused. **Issue proved:** a core module reached the wall clock
+and the RNG directly, and silently fell back to a colliding id; after: one edge, installed once, and a missing edge fails loudly.
 
 ---
 
@@ -498,7 +523,24 @@ PR, deploy), budgets and a hosted preview wait for F-1, F-2, F-7. DEV_TOOLKIT's 
 later (a) too · F-4, F-5 by DEV_TOOLKIT §8/§10 · F-6 *"go for one click"* · F-8 *"advice me and proceed"* → own providers, no TypeScript
 plugin · F-9 closed "not next", then built as F.12b once logs were stamped · F-10 and F-11 *"Go with your advice."* · F-12 *"Both."* (step 1
 applied on *"yes do it"*) · F-13 *"ok"*, then *"Follow your yes advice."* · film 1 *"Past film is OK as it delivers the idea."* · film 2
-*"This one again is a conceptual idea. Proceed."* **Still open in F: F-1, F-2, F-7.**
+*"This one again is a conceptual idea. Proceed."* **Still open in F: F-1, F-2, F-7, F-15.**
+
+### F.21 Hover in the app, jump VS Code to the code   (owner idea 2026-11-14; decision **F-14**; not built)
+- 2026-11-15, owner, on **F-14** (which surface first; advice given: the ERP window): *"About experimental browser hover, let's go for Modeller
+  canvas first as we try to debug the 2D processing accuracy, and then BIM to ERP."* → **F-14 = the Modeller canvas first (DXF → BIM accuracy
+  debugging), then BIM → ERP.** Still a DEV-ONLY overlay on localhost (advice 3 of the 2026-11-14 idea, minimalism §13).
+- **Measured 2026-11-15 (read-only, bim-ootb `main` @ `27ac46cc`, all paths `modeller/`):** a DXF element on the canvas is a `THREE.Mesh` with only
+  `userData.featureId` = the `kernel_ops` id (`bonsai_kernel.js:285-286`). Hover already exists: `pointermove` → `setHover` → `CustomEvent('dagevu:hover',
+  {detail:{fid}})` (`modeller.html:1710-1728`); a tooltip precedent listens to it (`edit_delta_ui.js:77-83`). The op's `parameters.provenance` holds
+  `{dxf_handle, layer, sheet, run_id, prov_kind, ifc}` (`dxf2bim_import.js:593-598`, `:623`), readable after reload by `Bonsai.oplog._geomOps()`
+  (`bonsai_oplog.js:300-305`). **The gap:** nothing records WHICH rule or code made an element (no gate / verb / function anywhere in the element or
+  the op; producers are `dxf2bodies.js` `:389`, `:422`, `dxf2bim_import.js` `toOps` steps 1, 2, 2b, 3, and `dxf2bim/dxf2shell.js`); merged walls keep
+  a `+`-joined handle list with no rule per piece; no `§` line prints element + handle + rule.
+- **OPEN F-15 (ask next): where is "which code made this element" recorded?** (a) a field added to `provenance` in the op (changes op bytes and
+  every pinned op hash / sha; shipped data grows); (b) a trace switch, OFF by default: when on (localhost dev only), each producer site records
+  `handle → producer name` in a side map the overlay reads; ops and their hashes stay identical. **Recommendation: (b)**, the producer recorded as a
+  NAME (e.g. `dxf2bodies.wallFromLines`) that the X0 index turns into file:line, so line numbers never go stale in data.
+
 
 ---
 
@@ -569,7 +611,7 @@ first, as §F.4, the next session's bounded task**; A0 runs in parallel if a sec
 
 | Part | Starts with no decision | Next decision to ask | Why that one |
 |---|---|---|---|
-| A | A0 ✅, A-1..A-4 ✅, A1 ✅ | **A-5** (how a standalone module gets its clock and id), recommendation in RESUME 1 | A2 for rule_fold and PackIn needs it |
+| A | A0 ✅, A-1..A-5 ✅, A1 ✅ | none | A2-EDGE spec in Part A |
 | B | **B0: generator in check mode** (manifest built from today's files, regenerate, byte-compare; no file changes) | B-1 `?v=` numbers or hashes | B1 writes `?v=`; B0 does not |
 | C | nothing; waits on B and D | C-1 part names + owners | |
 | D | nothing new; the multi-publisher list already exists (`types/globals.gen.d.ts`) | D-1 where the questions list lives | needs B's `owner` field |
@@ -610,7 +652,7 @@ Ask the owner **one decision per message, with the recommendation** (START HERE 
 
 | Part | What | State |
 |---|---|---|
-| A | pure core + Env | **A0 ✅** · **A-1..A-4 ✅** · **A1 ✅** (#3007) · **A2** done for 13 files (#3010 #3013 #3016 #3021 #3026), remaining listed in RESUME 1 · open: **A-5**, then A3 |
+| A | pure core + Env | **A0 ✅** · **A-1..A-4 ✅** · **A1 ✅** (#3007) · **A2** done for 13 files (#3010 #3013 #3016 #3021 #3026), remaining listed in RESUME 1 · A-5 ✅ (2026-11-15) → A2-EDGE, then A3 |
 | B | manifest per app | not started · B0 ready · open: B-1 to B-4 |
 | C | named APP parts | not started · open: C-1, C-2 |
 | D | owner table | not started · open: D-1, D-2 |
