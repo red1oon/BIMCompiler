@@ -1,3 +1,1011 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/4D5DAnalysis/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/4D5DAnalysis/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/4D5DAnalysis/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/4DGenerator/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/4DGenerator/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/4DGenerator/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/AIProposerDefensiveDisclosure/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/AIProposerDefensiveDisclosure/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/AIProposerDefensiveDisclosure/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/AboutMore/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/AboutMore/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/AboutMore/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/ArchitectureOverview/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/ArchitectureOverview/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/ArchitectureOverview/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/AskFirstSteps/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/AskFirstSteps/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/AskFirstSteps/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/BIMERPPaper/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/BIMERPPaper/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/BIMERPPaper/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/BIMToolsGuide/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/BIMToolsGuide/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/BIMToolsGuide/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/BIMUserGuide/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/BIMUserGuide/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/BIMUserGuide/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/BIM_Modeller_OOTB/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/BIM_Modeller_OOTB/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/BIM_Modeller_OOTB/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/BIMtoProject/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/BIMtoProject/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/BIMtoProject/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/BrowserScaleBenchmark/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/BrowserScaleBenchmark/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/BrowserScaleBenchmark/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/BusinessCentralMigrationGuide/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/BusinessCentralMigrationGuide/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/BusinessCentralMigrationGuide/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/CLASH_DETECTION/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/CLASH_DETECTION/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/CLASH_DETECTION/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/CONTRIBUTING/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/CONTRIBUTING/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/CONTRIBUTING/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/CapexDashboardGuide/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/CapexDashboardGuide/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/CapexDashboardGuide/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/CapexUATGuide/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/CapexUATGuide/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/CapexUATGuide/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/CivilWorksGuide/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/CivilWorksGuide/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/CivilWorksGuide/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/DXF2BIMGuide/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/DXF2BIMGuide/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/DXF2BIMGuide/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/DXF2BIM_BASIC_SHAPES_SPEC/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/DXF2BIM_BASIC_SHAPES_SPEC/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/DXF2BIM_BASIC_SHAPES_SPEC/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/DXF2BIM_FORMAT/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/DXF2BIM_FORMAT/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/DXF2BIM_FORMAT/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/DXF2BIM_Prior_Art/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/DXF2BIM_Prior_Art/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/DXF2BIM_Prior_Art/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/DXF2BIM_SPEC/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/DXF2BIM_SPEC/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/DXF2BIM_SPEC/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/DXF2BIM_TechnicalNote/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/DXF2BIM_TechnicalNote/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/DXF2BIM_TechnicalNote/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/DXF2BIM_Yellow_List/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/DXF2BIM_Yellow_List/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/DXF2BIM_Yellow_List/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/DeveloperGuide/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/DeveloperGuide/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/DeveloperGuide/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/DistributedERP/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/DistributedERP/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/DistributedERP/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/ERPUserGuide/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/ERPUserGuide/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/ERPUserGuide/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/ERP_AI_ADVISORY/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/ERP_AI_ADVISORY/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/ERP_AI_ADVISORY/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/ERP_FirstSetup/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/ERP_FirstSetup/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/ERP_FirstSetup/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/EnablingTechTimeline/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/EnablingTechTimeline/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/EnablingTechTimeline/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/EnterpriseAuthentication/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/EnterpriseAuthentication/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/EnterpriseAuthentication/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/FastScriptGuide/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/FastScriptGuide/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/FastScriptGuide/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/FeatureComparison/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/FeatureComparison/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/FeatureComparison/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/HRBIMAssetGuide/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/HRBIMAssetGuide/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/HRBIMAssetGuide/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/HalalTrace/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/HalalTrace/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/HalalTrace/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/HolyGrail/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/HolyGrail/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/HolyGrail/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/IFC_ExportGuide/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/IFC_ExportGuide/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/IFC_ExportGuide/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/JKR_SKATA/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/JKR_SKATA/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/JKR_SKATA/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/LAST_MILE_PROBLEM/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/LAST_MILE_PROBLEM/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/LAST_MILE_PROBLEM/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/LegacyOracleAdapterSpec/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/LegacyOracleAdapterSpec/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/LegacyOracleAdapterSpec/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/LocalFirstPriorArt/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/LocalFirstPriorArt/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/LocalFirstPriorArt/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/MANIFESTO/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/MANIFESTO/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/MANIFESTO/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/MigrateComparisonPaper/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/MigrateComparisonPaper/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/MigrateComparisonPaper/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/MigrationGuide/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/MigrationGuide/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/MigrationGuide/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/ModellerFirstSteps/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/ModellerFirstSteps/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/ModellerFirstSteps/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/ModellerGuide/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/ModellerGuide/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/ModellerGuide/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/ModellerKernelFold/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/ModellerKernelFold/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/ModellerKernelFold/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/NinjaExcelReport_UserManual/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/NinjaExcelReport_UserManual/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/NinjaExcelReport_UserManual/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/OFFLINE_INSTALL_GUIDE/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/OFFLINE_INSTALL_GUIDE/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/OFFLINE_INSTALL_GUIDE/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/OdooMigration/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/OdooMigration/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/OdooMigration/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/OdooMigrationGuide/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/OdooMigrationGuide/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/OdooMigrationGuide/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/PROJECT_CHRONOLOGY/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/PROJECT_CHRONOLOGY/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/PROJECT_CHRONOLOGY/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/ProposerGuide/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/ProposerGuide/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/ProposerGuide/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/RED_PILL/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/RED_PILL/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/RED_PILL/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/ReplicationFlowRows/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/ReplicationFlowRows/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/ReplicationFlowRows/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/RouteTemplate/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/RouteTemplate/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/RouteTemplate/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/SYSTEMS_INSTALLER_GUIDE/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/SYSTEMS_INSTALLER_GUIDE/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/SYSTEMS_INSTALLER_GUIDE/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/ShipYard/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/ShipYard/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/ShipYard/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/SpatialCompilationPaper/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/SpatialCompilationPaper/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/SpatialCompilationPaper/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/SpatialERPIntegration/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/SpatialERPIntegration/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/SpatialERPIntegration/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/SpatialERP_OOTB/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/SpatialERP_OOTB/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/SpatialERP_OOTB/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/StrategicIndustryPositioning/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/StrategicIndustryPositioning/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/StrategicIndustryPositioning/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/TeamsOverlayGuide/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/TeamsOverlayGuide/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/TeamsOverlayGuide/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/TermsHowToVerify/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/TermsHowToVerify/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/TermsHowToVerify/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/TillUserGuide/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/TillUserGuide/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/TillUserGuide/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/TimeMachine/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/TimeMachine/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/TimeMachine/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/TwoAppsOneKernel/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/TwoAppsOneKernel/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/TwoAppsOneKernel/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/USER_GUIDE/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/USER_GUIDE/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/USER_GUIDE/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/VibeProgramming/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/VibeProgramming/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/VibeProgramming/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/WhatsNew/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/WhatsNew/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/WhatsNew/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/4D5DAnalysis/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/4D5DAnalysis/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/4D5DAnalysis/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/4DGenerator/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/4DGenerator/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/4DGenerator/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/AIProposerDefensiveDisclosure/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/AIProposerDefensiveDisclosure/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/AIProposerDefensiveDisclosure/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/AboutMore/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/AboutMore/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/AboutMore/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/ArchitectureOverview/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/ArchitectureOverview/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/ArchitectureOverview/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/AskFirstSteps/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/AskFirstSteps/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/AskFirstSteps/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/BIMERPPaper/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/BIMERPPaper/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/BIMERPPaper/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/BIMToolsGuide/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/BIMToolsGuide/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/BIMToolsGuide/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/BIMUserGuide/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/BIMUserGuide/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/BIMUserGuide/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/BIM_Modeller_OOTB/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/BIM_Modeller_OOTB/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/BIM_Modeller_OOTB/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/BIMtoProject/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/BIMtoProject/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/BIMtoProject/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/BrowserScaleBenchmark/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/BrowserScaleBenchmark/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/BrowserScaleBenchmark/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/BusinessCentralMigrationGuide/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/BusinessCentralMigrationGuide/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/BusinessCentralMigrationGuide/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/CLASH_DETECTION/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/CLASH_DETECTION/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/CLASH_DETECTION/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/CONTRIBUTING/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/CONTRIBUTING/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/CONTRIBUTING/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/CapexDashboardGuide/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/CapexDashboardGuide/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/CapexDashboardGuide/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/CapexUATGuide/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/CapexUATGuide/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/CapexUATGuide/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/CivilWorksGuide/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/CivilWorksGuide/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/CivilWorksGuide/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/DXF2BIMGuide/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/DXF2BIMGuide/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/DXF2BIMGuide/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/DXF2BIM_BASIC_SHAPES_SPEC/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/DXF2BIM_BASIC_SHAPES_SPEC/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/DXF2BIM_BASIC_SHAPES_SPEC/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/DXF2BIM_FORMAT/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/DXF2BIM_FORMAT/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/DXF2BIM_FORMAT/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/DXF2BIM_Prior_Art/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/DXF2BIM_Prior_Art/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/DXF2BIM_Prior_Art/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/DXF2BIM_SPEC/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/DXF2BIM_SPEC/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/DXF2BIM_SPEC/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/DXF2BIM_TechnicalNote/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/DXF2BIM_TechnicalNote/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/DXF2BIM_TechnicalNote/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/DXF2BIM_Yellow_List/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/DXF2BIM_Yellow_List/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/DXF2BIM_Yellow_List/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/DeveloperGuide/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/DeveloperGuide/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/DeveloperGuide/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/DistributedERP/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/DistributedERP/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/DistributedERP/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/ERPUserGuide/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/ERPUserGuide/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/ERPUserGuide/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/ERP_AI_ADVISORY/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/ERP_AI_ADVISORY/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/ERP_AI_ADVISORY/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/ERP_FirstSetup/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/ERP_FirstSetup/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/ERP_FirstSetup/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/EnablingTechTimeline/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/EnablingTechTimeline/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/EnablingTechTimeline/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/EnterpriseAuthentication/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/EnterpriseAuthentication/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/EnterpriseAuthentication/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/FastScriptGuide/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/FastScriptGuide/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/FastScriptGuide/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/FeatureComparison/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/FeatureComparison/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/FeatureComparison/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/HRBIMAssetGuide/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/HRBIMAssetGuide/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/HRBIMAssetGuide/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/HalalTrace/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/HalalTrace/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/HalalTrace/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/HolyGrail/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/HolyGrail/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/HolyGrail/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/IFC_ExportGuide/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/IFC_ExportGuide/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/IFC_ExportGuide/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/JKR_SKATA/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/JKR_SKATA/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/JKR_SKATA/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/LAST_MILE_PROBLEM/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/LAST_MILE_PROBLEM/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/LAST_MILE_PROBLEM/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/LegacyOracleAdapterSpec/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/LegacyOracleAdapterSpec/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/LegacyOracleAdapterSpec/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/LocalFirstPriorArt/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/LocalFirstPriorArt/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/LocalFirstPriorArt/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/MANIFESTO/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/MANIFESTO/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/MANIFESTO/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/MigrateComparisonPaper/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/MigrateComparisonPaper/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/MigrateComparisonPaper/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/MigrationGuide/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/MigrationGuide/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/MigrationGuide/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/ModellerFirstSteps/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/ModellerFirstSteps/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/ModellerFirstSteps/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/ModellerGuide/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/ModellerGuide/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/ModellerGuide/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/ModellerKernelFold/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/ModellerKernelFold/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/ModellerKernelFold/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/NinjaExcelReport_UserManual/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/NinjaExcelReport_UserManual/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/NinjaExcelReport_UserManual/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/OFFLINE_INSTALL_GUIDE/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/OFFLINE_INSTALL_GUIDE/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/OFFLINE_INSTALL_GUIDE/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/OdooMigration/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/OdooMigration/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/OdooMigration/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/OdooMigrationGuide/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/OdooMigrationGuide/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/OdooMigrationGuide/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/PROJECT_CHRONOLOGY/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/PROJECT_CHRONOLOGY/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/PROJECT_CHRONOLOGY/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/ProposerGuide/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/ProposerGuide/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/ProposerGuide/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/RED_PILL/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/RED_PILL/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/RED_PILL/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/ReplicationFlowRows/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/ReplicationFlowRows/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/ReplicationFlowRows/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/RouteTemplate/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/RouteTemplate/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/RouteTemplate/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/SYSTEMS_INSTALLER_GUIDE/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/SYSTEMS_INSTALLER_GUIDE/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/SYSTEMS_INSTALLER_GUIDE/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/ShipYard/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/ShipYard/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/ShipYard/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/SpatialCompilationPaper/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/SpatialCompilationPaper/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/SpatialCompilationPaper/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/SpatialERPIntegration/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/SpatialERPIntegration/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/SpatialERPIntegration/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/SpatialERP_OOTB/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/SpatialERP_OOTB/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/SpatialERP_OOTB/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/StrategicIndustryPositioning/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/StrategicIndustryPositioning/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/StrategicIndustryPositioning/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/TeamsOverlayGuide/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/TeamsOverlayGuide/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/TeamsOverlayGuide/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/TermsHowToVerify/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/TermsHowToVerify/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/TermsHowToVerify/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/TillUserGuide/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/TillUserGuide/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/TillUserGuide/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/TimeMachine/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/TimeMachine/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/TimeMachine/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/TwoAppsOneKernel/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/TwoAppsOneKernel/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/TwoAppsOneKernel/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/USER_GUIDE/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/USER_GUIDE/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/USER_GUIDE/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/VibeProgramming/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/VibeProgramming/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/VibeProgramming/"/>
+    </url>
+    <url>
+        <loc>https://red1oon.github.io/BIMCompiler/es/WhatsNew/</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://red1oon.github.io/BIMCompiler/es/WhatsNew/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://red1oon.github.io/BIMCompiler/WhatsNew/"/>
+    </url>
 </urlset>

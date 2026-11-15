@@ -1,0 +1,4056 @@
+
+<!doctype html>
+<html lang="es" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Construction is manufacturing. A building IS its Bill of Materials.">
+      
+      
+        <meta name="author" content="Redhuan D. Oon">
+      
+      
+        <link rel="canonical" href="https://red1oon.github.io/BIMCompiler/StrategicIndustryPositioning/">
+      
+      
+        <link rel="prev" href="../EnterpriseAuthentication/">
+      
+      
+        <link rel="next" href="../LocalFirstPriorArt/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Strategic Positioning - BIM Intent Compiler</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/custom.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  <script data-goatcounter="https://red1oon.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  
+  <meta name="robots" content="noindex">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#what-exists-today-whats-missing-and-where-we-sit" class="md-skip">
+          Saltar a contenido
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabecera">
+    <a href="../" title="BIM Intent Compiler" class="md-header__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            BIM Intent Compiler
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Strategic Positioning
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Búsqueda" placeholder="Búsqueda" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Buscar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpiar" aria-label="Limpiar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando búsqueda
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source md-header__source--stacked">
+        <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+        <a href="https://github.com/red1oon/BIMCompiler" title="red1oon/BIMCompiler on GitHub" class="md-source" id="bim-compiler-source" target="_blank" rel="noopener">
+          <div class="md-source__icon md-icon">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+          </div>
+          <div class="md-source__repository" id="bim-compiler-repository">
+            Compiler
+          </div>
+        </a>
+        <span id="repo-totals" class="md-source-totals" title="Combined stars / forks across both repos"></span>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Pestañas" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Start Here
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../BIMUserGuide/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  The 3 Apps
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../DeveloperGuide/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Go Deeper
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../SpatialCompilationPaper/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Papers & Positioning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../HalalTrace/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Prototypes & Demos
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../PROJECT_CHRONOLOGY/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  History & Legacy
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navegación" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../" title="BIM Intent Compiler" class="md-nav__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    BIM Intent Compiler
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start Here
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_1" id="__nav_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Start Here
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../USER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    📖 User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMToolsGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🧰 BIM Tools — User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OFFLINE_INSTALL_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🔒 Fully Offline / Air-Gapped Install
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WhatsNew/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🆕 What's New
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AboutMore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About BIM OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FeatureComparison/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Feature Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MigrateComparisonPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrate & Compare (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TwoAppsOneKernel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two Apps, One Kernel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TwoAppsOneKernelInfographicLandscape.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    One Page InfoGraphics - Landscape
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bench_suite.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Comparison (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../age_demo.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Does Your ERP Age? (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MANIFESTO/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The ERP World View
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contribute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 3 Apps
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    The 3 Apps
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Viewer Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AskFirstSteps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewer Ask — First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerFirstSteps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modeller — First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DAGeVu Modeller — User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ProposerGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Proposer Guide (propose an edit, get the proof)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FastScriptGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fast Script Guide (one door: commands and scripts)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIMGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2D Drawings → BIM (DXF2BIM)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_Yellow_List/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — the yellow list (what you fill in, defaults used)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_Prior_Art/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — prior art (what is new, what we learned, cost of using others)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_FORMAT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — format contract (marks, outputs, registry, codes; generated)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERPUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel-ERP User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TillUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    uniCenta-style Till & Kitchen Screen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CapexDashboardGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM → ERP and CAPEX Dashboard — for iDempiere users
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CapexUATGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CAPEX UAT Guide — step-by-step test script
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERP_FirstSetup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel-ERP — Your First Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MigrationGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration User Guide (Odoo · Business Central · SAP Business One)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OdooMigration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moving from Odoo — how it works, what is proven
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NinjaExcelReport_UserManual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NinjaExcel Report — User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HRBIMAssetGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HR / Tenancy / Operate Module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CivilWorksGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Civil Works — Step by Step
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TeamsOverlayGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Teams Overlay — Collaboration & Optics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Go Deeper
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Go Deeper
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DeveloperGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide (read first if you will change the code)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ArchitectureOverview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Overview (for reviewers)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../FoldEngineBlackBook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fold Engine Black Book (dev manual)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HolyGrail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Holy Grail (editable rules, live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ERPConceptRosetta.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-ERP Rosetta Stone (concept + cost)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIM_Modeller_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Modeller OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERP_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP — Every Record Has a Place
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERPIntegration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP × BIM × HR — One Building, One Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DistributedERP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Distributed ERP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TermsHowToVerify/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to verify the terms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERP_AI_ADVISORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Letting an AI work on the ERP, safely
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SQLiteWasmArchitectureActual.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How the Database Works (big picture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ViewerComponentModel.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewer Component Model (dev architecture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CLASH_DETECTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clash Detection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../JKR_SKATA/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Asset Classification & JKR/SKATA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../IFC_ExportGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IFC Export Guide (for the BIM author)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TimeMachine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Time Machine (4D Scheduling & Editing)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4D5DAnalysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4D/5D Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMtoProject/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM → Project Order (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerKernelFold/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry as a Signed-Log Fold
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Papers & Positioning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Papers & Positioning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialCompilationPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deterministic Spatial Compilation (academic paper)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AIProposerDefensiveDisclosure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Defensive Disclosure: an Outside AI Proposes, the App Decides
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_TechnicalNote/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — Deterministic 2D ⇄ BIM Round Trip (technical note)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BrowserScaleBenchmark/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Browser-Scale Benchmark (one tab, local first)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnterpriseAuthentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enterprise Authentication (security)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Strategic Positioning
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Strategic Positioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Tabla de contenidos">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Tabla de contenidos
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-read-this-the-honest-frame" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to read this — the honest frame
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-core-problem-geometry-is-not-intent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The core problem: geometry is not intent
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The core problem: geometry is not intent">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-proven-core-why-the-rest-can-be-believed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The proven core (why the rest can be believed)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tier-1-landed-use-as-is-where-is-witnessed-today" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tier 1 — Landed: use-as-is, where-is (witnessed today)
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LocalFirstPriorArt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local-First Prior Art
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LegacyOracleAdapterSpec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Legacy-as-Oracle Adapter (migrate / test an ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ShipYard/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Beyond Buildings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RouteTemplate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Find & Navigate (wayfinding)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../halal/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prototypes & Demos
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Prototypes & Demos
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HalalTrace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Halalan Thayiban — halal track & trace (paper)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glassbowl.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glassbowl — the ERP engine as data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glassbowl_gravity.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glassbowl · Gravity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../RetailScaleStory.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Retail at Scale — two messages a day (benchmark story)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bim_architecture_viz.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How it works — interactive architecture tour
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    History & Legacy
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    History & Legacy
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROJECT_CHRONOLOGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Chronology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../VibeProgramming/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vibe Programming — AI + Domain Expertise
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4DGenerator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 4D Generator — Failure Catalogue & AI Findings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnablingTechTimeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enabling-Tech Timeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RED_PILL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Red Pill — Design From Grammar (origin)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LAST_MILE_PROBLEM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Last Mile — drift tracking (Java era)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMERPPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Construction Economy / ERP Wave (Java era)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SYSTEMS_INSTALLER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Self-Host the Java toolchain (legacy installer)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Tabla de contenidos">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Tabla de contenidos
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-read-this-the-honest-frame" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to read this — the honest frame
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-core-problem-geometry-is-not-intent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The core problem: geometry is not intent
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The core problem: geometry is not intent">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-proven-core-why-the-rest-can-be-believed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The proven core (why the rest can be believed)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tier-1-landed-use-as-is-where-is-witnessed-today" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tier 1 — Landed: use-as-is, where-is (witnessed today)
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+  <p class="i18n-note"><small>Esta página aún no está traducida; se muestra en inglés. <a href="https://red1oon.github.io/BIMCompiler/StrategicIndustryPositioning/">Página en inglés</a>.</small></p>
+  
+                  
+
+
+  
+  
+
+
+<h1 id="what-exists-today-whats-missing-and-where-we-sit">What Exists Today, What's Missing, and Where We Sit<a class="headerlink" href="#what-exists-today-whats-missing-and-where-we-sit" title="Permanent link">&para;</a></h1>
+<p><em><a href="../USER_GUIDE/">← Back to the <strong>User Guide</strong></a> · <a href="../">Home</a></em></p>
+<div style="max-width: 620px; margin: 32px auto; padding: 24px 40px; background: #263238; border-left: 4px solid #ff9800; text-align: center; border-radius: 4px;">
+<span style="font-size: 1.3em; line-height: 1.7; color: #eceff1; letter-spacing: 0.3px;">We BIM living the <b style="color: #ff9800;">GAP</b> between<br><b style="color: #ff9800;">DESIGN</b> and our <b style="color: #ff9800;">SPREADSHEET</b></span>
+<br><span style="font-size: 0.75em; letter-spacing: 1.5px; text-transform: uppercase; color: #78909c; margin-top: 12px; display: inline-block;">The industry designs buildings. Who compiles them?</span>
+</div>
+
+<hr />
+<h2 id="how-to-read-this-the-honest-frame">How to read this — the honest frame<a class="headerlink" href="#how-to-read-this-the-honest-frame" title="Permanent link">&para;</a></h2>
+<p>This project is broad. To keep it honest, everything below is sorted into three tiers,
+and the line between them is never blurred:</p>
+<ul>
+<li><strong>Tier 1 — Landed.</strong> Works today, <strong>use-as-is-where-is</strong>, and every claim carries a
+  witness (a <code>§</code>-logged, falsifiable test you can run). This is real commercial value now.</li>
+<li><strong>Tier 2 — Wedges.</strong> Small hardening or a short build away — the commercial on-ramps.
+  Stated as <em>targets</em>, never as done.</li>
+<li><strong>Tier 3 — Frontier.</strong> The demonstrated promise — proven in architecture, not yet
+  finished. Shown to be <em>possible</em>, labelled as <em>unfinished</em>.</li>
+</ul>
+<p>If you grep the repo, the Tier-1 claims must hold and the Tier-2/3 ones must read as
+runway. That discipline is the point.</p>
+<p><em>Currency, 2026-10-25: the Tier-1 rows were last re-read against merged work on 2026-09-27. The team-layer
+and replication rows added below postdate that pass and are labelled as such; a dated re-read of Tier 1 is
+owed before the next publish.</em></p>
+<hr />
+<h2 id="the-core-problem-geometry-is-not-intent">The core problem: geometry is not intent<a class="headerlink" href="#the-core-problem-geometry-is-not-intent" title="Permanent link">&para;</a></h2>
+<p>Most BIM tools store <strong>geometry as the source of truth</strong>. An IFC file carries the
+building — 51,000+ elements of geometry, relationships, properties — in one monolithic
+file. Lose the IFC, lose the building. But a 200 MB IFC captures <em>what was drawn</em>, not
+<em>what was meant</em>. You cannot ask it "give me a building like this but with 4 m ceilings,"
+because the intent was never separated from the output.</p>
+<p><strong>Autodesk solved it behind a proprietary wall.</strong> Revit's <code>.rvt</code> keeps full spatial
+fidelity internally, but is editable only in Revit with a shelf-life tied to Autodesk's
+support cycle <a href="#ref6">[6]</a>. Leave via IFC and "there's always loss of data... all
+constraints are lost and component parametrics are gone" <a href="#ref7">[7]</a>.</p>
+<p><strong>The openBIM world has no equivalent.</strong> Bonsai/BlenderBIM is IFC-native <a href="#ref8">[8]</a>, but
+IFC is an exchange format, not a compilation target — it does not decompose a building
+into a reusable BOM recipe, compile from it, and verify the round-trip <a href="#ref9">[9]</a>.</p>
+<p><strong>The compilation challenge:</strong> extract a building's intent from its geometry, express it
+as a reusable recipe (BOM), recompile the recipe back into spatially correct geometry —
+and <em>prove</em> the recipe is faithful. Construction is
+<a href="https://www.autodesk.com/design-make/emerging-tech/industrialized-construction">industrialised manufacturing</a> <a href="#ref11">[11]</a>,
+yet architecture is drawn as art; the compiler gives determinism to art. A beam is either
+at (3200, 0, 2700) or it isn't — no probabilistic guessing <a href="#ref12">[12]</a>.</p>
+<p>That is what the BIM Intent Compiler does, in two databases — and it is the <strong>proven core</strong>
+that makes Tier 1 real.</p>
+<h3 id="the-proven-core-why-the-rest-can-be-believed">The proven core (why the rest can be believed)<a class="headerlink" href="#the-proven-core-why-the-rest-can-be-believed" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Input DB</strong> — an IFC (or OBJ/STL/DAE/GLB) is extracted into a normalised SQLite DB.
+   Geometry hell is resolved here: origin divergence, unit mismatch (the 1000× metres-vs-mm
+   error), axis ambiguity, and GUID identity — documented industry problems
+   <a href="#ref1">[1]</a><a href="#ref2">[2]</a><a href="#ref3">[3]</a><a href="#ref4">[4]</a><a href="#ref5">[5]</a>. Every element becomes a row;
+   every spatial relationship a foreign key. The building is SQL-queryable.</li>
+<li><strong>BOM abstraction</strong> — 51,000 elements decompose into ~700 BOM lines (73× compression)
+   via formula verbs (TILE, ROUTE, FRAME, CLUSTER). This is the <em>intent</em>: not "12 wall
+   meshes at these coordinates" but "12 of product W-EXT-200, tiled at 2.5 m along the
+   north facade."</li>
+<li><strong>Output DB</strong> — the BOM + shared library recompiles into spatially placed geometry,
+   each element carrying its original GUID. A 200 MB IFC becomes a ~10 KB semantic
+   definition. The output is disposable — delete it, recompile, the geometry reproduces.</li>
+<li><strong>Rosetta Stone</strong> — Input vs Output across verification gates (counts, volumes, geometry
+   hashes, spatial digests, GUID provenance, transforms, materials). <strong>21 buildings from 9
+   authoring tools; 116/157 gates PASS, 4 ALL GREEN; worst-case positional error 0.002 mm.</strong>
+   See <code>SPATIAL_COMPILATION_PAPER.md</code>.</li>
+</ol>
+<p>The hard problem was always the spatial compilation. Everything downstream — 4D, 5D, cost,
+ERP — is a projection of the same verified BOM.</p>
+<hr />
+<h2 id="tier-1-landed-use-as-is-where-is-witnessed-today">Tier 1 — Landed: use-as-is, where-is (witnessed today)<a class="headerlink" href="#tier-1-landed-use-as-is-where-is-witnessed-today" title="Permanent link">&para;</a></h2>
+<p>These work now, in a browser tab, no install. Each carries a witness you can run.</p>
+<p><strong>Currency note, 2026-09-27:</strong> three rows re-verified, one corrected, two more sourced facts folded
+in that bear on rows above without being their own row, everything else carried forward untouched.
+<strong>Verified merged and live:</strong> the ERP UX-parity row — bim-ootb PR #1613/#1626/#1636, read live off
+<code>erp/ad_seed.db</code>; the Viewer's clash + narrated fly-through row — PR #1697/#1699 merged,
+<code>viewer/sw.js</code> now <code>v1449</code> on <code>origin/main</code>; and the 4D Time Machine row's editor claim —
+<code>witness_gantt_edit_coherence</code> had been silently judging a dead scheduling model, now fixed to judge
+the canonical one, with a live editor test confirming drag/clamp/cascade/persist off real <code>§</code>-logs
+(PR #1553, 7 PRs total, merged 2026-08-27). <strong>One caveat carried honestly:</strong> a fleet-wide
+construction-sequencing check still fails on 6 of 7 test buildings on floor-ordering grounds
+(<code>§CPM_FLEET_VERDICT</code>, re-verified 2026-09-15) — a schedule-data gap, not an editor defect.
+<strong>Corrected, not carried forward:</strong> <code>W-MV-PARITY</code>'s prior 12/12 no longer holds. The Modeller now
+renders each building from its own per-resident <code>_geo.db</code>, while the witness still checks it against
+<code>Duplex_extracted.db</code>; the two disagree on triangle count for 82 of 203 shared geometry hashes.
+Parked, not fixed — full detail in Tier 3 below. <strong>Two more verified facts, not their own row:</strong> a
+photoreal-still defect that silently dropped whole element classes (glazing, furniture) from Alt+S
+bakes mid-playback, traced to a camera-culler/Time-Machine matrix-ownership conflict and fixed (PR</p>
+<h1 id="1660-and-a-2026-09-04-audit-that-found-three-things-believed-live-on-bim-ootbs-github-pages">1660); and a 2026-09-04 audit that found three things believed live on bim-ootb's GitHub Pages —<a class="headerlink" href="#1660-and-a-2026-09-04-audit-that-found-three-things-believed-live-on-bim-ootbs-github-pages" title="Permanent link">&para;</a></h1>
+<p>a version stamp, JS minification, both ERP agent-download zips — were 404 despite green CI, caught
+only by fetching the live URL (<code>§PAGES-SERVES-THE-BRANCH</code>, PR #1680: the zips are fixed and
+re-verified by <code>curl</code>; the minification/version-stamp gap is a live repo-settings question, still
+unresolved). <strong>Not independently re-verified this pass, carried forward as before:</strong> the BIM↔ERP
+fold row, EVM, POS, iDempiere extraction, and the 5D cost row.</p>
+<table>
+<thead>
+<tr>
+<th>Capability</th>
+<th>What it does</th>
+<th>Witness</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>IFC handoff</strong></td>
+<td>Drop IFC/OBJ/STL/DAE/GLB/glTF/3DS/FBX → queryable DB → view, classify, export back to IFC. Geometry hell resolved at import.</td>
+<td>Rosetta gates; <code>import.js</code> round-trip</td>
+</tr>
+<tr>
+<td><strong>4D Time Machine</strong></td>
+<td>Construction-sequence playback from BOM depth; stacked S-curve folded from real orders (Σ == PlannedAmt). The Gantt editor's own edit path (drag/resize/lock/undo a bar) is now witnessed end to end, not just the playback. Click any element in the 3D view to see its scheduled task, dates and derived cost — closing a slice of the Navisworks TimeLiner/Synchro object-to-schedule gap.</td>
+<td><code>W-SHOP-SCURVE</code>; <code>witness_gantt_edit_coherence</code>, <code>witness_gantt_lock_integrity</code>; <code>W-S7-CANVAS-PICK</code> 14/14</td>
+</tr>
+<tr>
+<td><strong>5D cost (editable)</strong></td>
+<td>BOQ + cost rollup with <strong>editable</strong> per-jurisdiction rate templates; Variation Order Excel (FIDIC Clause 12).</td>
+<td><code>4D5DAnalysis.md</code>; VO demo <a href="#ref10">[10]</a></td>
+</tr>
+<tr>
+<td><strong>BIM↔ERP — to the cent</strong></td>
+<td>A BIM-pushed building folds into a real procurement/project order and ERP documents, reproducing iDempiere/Odoo output at <strong><code>maxDiff=0c</code></strong>. <strong>No other tool connects BIM to ERP over one signed log.</strong></td>
+<td><code>W-PROJ-FOLD</code>, <code>W-GW-HOSP-FOLD</code>, <code>W-FOLD-COMPLETE</code></td>
+</tr>
+<tr>
+<td><strong>ERP screens — AD-driven, not a hand-list</strong></td>
+<td>The five core document screens (Sales Order, Shipment, Invoice, Payment, Allocation Line) now render iDempiere's own AD field set per window instead of a curated shortlist — <code>c_order</code> 8→56 fields, <code>c_payment</code> 4→78, 139 DisplayLogic-bearing fields now evaluated live off the same AD metadata iDempiere reads, plus live AD_Ref_List/Yes-No editors and AD_Val_Rule-filtered FK pickers.</td>
+<td><code>W-PARITY-FIELDSET</code>, <code>W-PARITY-REFLIST</code>, <code>W-PARITY-VALRULE</code>, <code>W-AD-DISPLAYLOGIC-LIVE</code></td>
+</tr>
+<tr>
+<td><strong>MEP clash + narrated fly-through</strong></td>
+<td>A camera-directed tour of the building (Cinema Path Editor) surfaces real, triangle-exact clashes (not bounding-box proxies) as persistent world markers, reveals disciplines one at a time (finest-detail discipline first, MEP always last) as it passes, and overlays live measurements (spans, clear heights, room areas) — an automated clash-and-measure narration, not a static report.</td>
+<td><code>witness_clash_mesh_narrowphase</code>, <code>witness_clash_film_labels</code>/<code>_markers</code>, <code>witness_datum_stability</code>, <code>witness_indoor_beats</code>, <code>witness_linear_beat</code>, <code>witness_storey_walkable_card</code></td>
+</tr>
+<tr>
+<td><strong>Photoreal still render (Alt+S)</strong></td>
+<td>A physically-lit single-frame render from any camera pose, in the same browser tab — light comes only from the building's own modelled fixtures and openings (fabricated staging lights were found and removed outright), with zone-based daylight visibility and shadow cascades. <strong>Under active accuracy tuning, stated plainly:</strong> a light-intensity-scale audit run the same day this note was written found part of the scale unsourced, and an exterior-wall darkening defect is being fixed on an unmerged branch.</td>
+<td><code>witness_sky_view_field</code>, <code>witness_zone_glare</code>, <code>witness_still_shadow_fit</code>, <code>viewer/tests/smoke_alts.js</code></td>
+</tr>
+<tr>
+<td><strong>Budget vs Actual (EVM)</strong></td>
+<td>Planned vs Committed at project + phase + task grain; CV/SV/CPI/SPI in BigDecimal; cost overrun surfaced on the 4D S-curve.</td>
+<td><code>W-GW-HOSP-COSTVAR</code>; <code>proj_control.js</code></td>
+</tr>
+<tr>
+<td><strong>What-If (cost)</strong></td>
+<td>Speculative VO branch — revised = original + approved + pending — kept separate from the official ledger, reversible.</td>
+<td><code>W-FIN-BLUE-SPEC</code> (5/5)</td>
+</tr>
+<tr>
+<td><strong>Dashboard / analytics</strong></td>
+<td>Generic multi-view over <strong>any</strong> data model: donut grid, "By-X" group-by chips that fill the grid, pivot lens, scrubbable timeline filmstrip, CSV/SVG/PNG export. Field-driven, not hardcoded per table.</td>
+<td><code>W-DASHBOARD</code>; <code>pivot_lens.html</code></td>
+</tr>
+<tr>
+<td><strong>POS sale loop</strong></td>
+<td>Ring → complete → backflush BOM → hold/recall → deliver-later → register, all over the signed op-log; the signed orderline doubles as the buyer's receipt artifact. WAN bench <strong>to 10,000 stations</strong> with idempotent retry + email-backup recovery.</td>
+<td><code>W-POS</code>; <code>poc_pos_wan_scale.js</code> (B1–B7)</td>
+</tr>
+<tr>
+<td><strong>iDempiere DB extraction</strong></td>
+<td>Connect a live iDempiere PostgreSQL → raw, non-inventive PG→SQLite extraction (<code>--list-clients</code>, <code>--masters</code>).</td>
+<td><code>migrate_agent.js</code>; <code>ERP_RAW_MIGRATION.md</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>The standout no one else has:</strong> <em>building → procurement order, in one browser, tied to
+the cent.</em> The Dashboard is the answer to "where's your Odoo kanban / SAP analytics" — and
+because it's AD-field-driven, it's one dashboard for <em>every</em> data model, not a bespoke
+screen per report.</p>
+<hr />
+<h2 id="tier-2-wedges-small-hardening-the-commercial-on-ramps">Tier 2 — Wedges: small hardening, the commercial on-ramps<a class="headerlink" href="#tier-2-wedges-small-hardening-the-commercial-on-ramps" title="Permanent link">&para;</a></h2>
+<p>Real markets, short runway. Stated as targets — not yet shipped.</p>
+<ul>
+<li><strong>POS → Malaysian e-invoicing + personal accounting (the long tail).</strong> The LHDN/MyInvois
+  mandate forces every business onto e-invoicing, and the government's own central service
+  has buckled under server-side load — a structural opening for a <strong>serverless, local-first</strong>
+  POS that each merchant runs themselves. The sale loop is landed; the wedge is hardening it
+  against real-world bugs and adding the compliance surface. The signed orderline is already
+  a receipt artifact — evolving it into a MyInvois-format submission is the build. <em>(Not yet
+  in code; this is the target.)</em></li>
+<li><strong>iDempiere branch / offline kit — legacy untouched.</strong> A branch runs the same iDempiere
+  windows and documents offline in the browser, exchanging signed changes through a passive
+  post box, while head office keeps running legacy iDempiere unchanged. The legacy system is the
+  oracle: the parallel run against legacy (<code>prompts/SQLiteIDEMPIERE.md</code>) is how it is judged, and a
+  difference it finds is fixed on our side, never accepted. <em>(Target: a one-branch week is not
+  done; the parity run itself exists and is measured — next bullet. Kill criterion — parity cannot
+  reach every window/doctype, or the iDempiere community will not run it.)</em></li>
+<li><strong>The parity runner — the baseline proof the fork is faithful, useful on its own.</strong> The same
+  scenario is submitted, as a normal web-service user, to a live legacy iDempiere and to the SQLite
+  kernel; documents, books, stock, cost and refusals are compared, and every difference is a
+  numbered finding fixed on our side (<a href="../LegacyOracleAdapterSpec/">method</a>; code
+  <code>scripts/bridge/run_all.sh</code>). <em>Landed, measured on a local pilot with the GardenWorld seed
+  (run of 2026-10-12):</em> the shop-day suite matched <strong>25 of 25</strong> scenarios, negative controls
+  included, and <strong>19 of the 34</strong> dictionary document tables have a compared scenario. GardenWorld
+  synthetic data is the standing convention for testing anything new in iDempiere and it proves
+  the <em>stock</em> behaviour. <em>Not yet:</em> a run against a customer's own server, where customisations,
+  plugins, costing and tax set-up and real data volumes are untested, and a re-run per iDempiere
+  version (iDempiere 13 is a long-term-support release; older versions lose maintenance —
+  <a href="https://idempiere.org/?p=3658">release post</a>). A design partner has offered a legacy server for
+  test runs — <strong>planned, not run.</strong> Such runs go against a restored copy or a throwaway client,
+  because the scenarios create documents. The runner is also what a migration or a plugin
+  vendor can point at <em>their own</em> iDempiere to prove a change behaves like the system they
+  already run.</li>
+<li><strong>Touch-kitchen + self-order tabs + QR payment.</strong> A self-order surface (URL-fetched remote
+  ordering, QR payment display, payment-status fold returned by email) sits naturally on the
+  same op-log. <em>(Not yet in code; the POS loop it rides is.)</em></li>
+<li><strong>iDempiere DB health-check report — "the diagnosis; the diet is optional."</strong> A read-only
+  analysis pass over the <em>already-working</em> extraction: scan a user's DB for dirty data,
+  orphans, GL imbalances, and a migration-gap score. Sold as a <strong>health check + migration
+  plan</strong> — standalone value even if they never migrate. Low lift (the extraction plumbing
+  exists), high value (migration paralysis is real). <em>(Analysis pass not yet built; extraction
+  is.)</em></li>
+<li><strong>What-If (schedule ripple).</strong> Finish-to-start cascade on the timeline. Engine done; browser
+  drive pending.</li>
+</ul>
+<hr />
+<h2 id="tier-3-frontier-the-demonstrated-promise-the-dragons-head">Tier 3 — Frontier: the demonstrated promise (the dragon's head)<a class="headerlink" href="#tier-3-frontier-the-demonstrated-promise-the-dragons-head" title="Permanent link">&para;</a></h2>
+<p><strong>DAGeVu modeller</strong> — a browser-native BIM authoring tool whose endgame is to <strong>sever the
+Revit-license tether</strong>. The <em>hard</em> part is shipped and witnessed: an occt-wasm B-rep kernel
+as a pure <code>ops → mesh</code> fold, the signed op-log <strong>as the feature tree</strong> (scrub, undo, tamper-
+evident), and <strong>IFC4 export that round-trips</strong> (<code>IfcWall</code> + profile + <code>IfcOpeningElement</code>,
+re-imports exact). A user can <em>today</em> author a few walls, a door, an opening, and MEP runs,
+and export usable IFC — without Revit.</p>
+<p><strong>Update 2026-09-27 — the working thesis changed (generate, then edit minimally), real generation
+now lands end-to-end, a real defect was found by finally auditing the witnesses themselves, and one
+claim in this section needs correcting.</strong></p>
+<p>Since 2026-09-24 the strategy is no longer "hand-author a wall at a time." It is <strong>generate, then
+edit minimally</strong>: open an ARC-only (architecture-only) building, let walkers generate the structure
+and MEP from measured rules, correct the result with a few signed edits — Open → Walk → Route →
+Sign → Review → Edit → Re-walk/re-route → Save/Export. Merged and measured on real buildings
+(bim-ootb #1762/#1768 plus the PRs below): routing now reaches the production walk path (it was
+silently dead on 7 of 8 sample buildings) and a generated network can be signed — Terminal's
+plumbing runs went 0 → 2,915 signed sweeps; a walk is one undo-able gesture (Ctrl+Z removes the
+whole generated layer, Ctrl+Y restores it); moving a fixture re-routes its pipes. One measured "Walk
+ALL Services" pass, generated / flagged-for-review per building: SampleHouse 60/0, Duplex 206/29,
+SampleCastle 514/9, HHS 3,415/0, Clinic 5,140/0, Hospital 39,979/22, HospitalGarage 13,965/0,
+Terminal 7,854/60 — read as "little is left to fix," not as an "N× faster" claim, since there is
+still no hand-modelling baseline to compare against.</p>
+<p><strong>That same push found a 3-month-old defect no witness had caught: the product catalog was silently
+loading 0 products</strong> (a path typo after a June refactor), so every bend fitting failed to render
+while every witness stayed green (fixed, bim-ootb #1770). That is the direct reason a systematic
+audit of the Modeller's own witness suite was run next — and it is still open: <strong>19 of 58 browser
+witnesses came back red on <code>main</code></strong>, nothing in CI catches this today. Four real product bugs (not
+test bugs) were found and fixed this way: the Outliner's adjacency lens was dead on every
+ARC-seeded pick, eye-toggles never repainted after opening a building, x-ray silently reverted to
+opaque after any re-fold, and a route-walk's tag was dropped at commit (so x-ray treated its pipes
+as structure). Separately, 6 of 8 sample buildings were opening with <strong>zero rooms</strong>, because the
+Modeller never called the room walker the Viewer already runs — fixed, <code>W-MODELLER-ROOM-INJECT</code>
+25/0. <strong>All of this lives on bim-ootb branch <code>test/modeller-net-audit</code>, pushed, no PR yet — found,
+fixed, and witnessed, but not merged and not live.</strong></p>
+<ul>
+<li><strong>Kernel breadth</strong> — 6 more occt shoulders wired in one session (<code>GEOM_REVOLVE</code>/<code>SHELL</code>/
+  <code>OFFSET</code>/<code>FILLET_VARIABLE</code>/<code>CHAMFER_DIST_ANGLE</code>/<code>DRAFT</code>, <code>W-BONSAI-TIER1</code> 20/20), plus
+  <code>GEOM_ARRAY</code>/<code>GEOM_LOFT</code> (formula-driven instancing, real curve-following). <code>GEOM_REVOLVE</code> is
+  the first axisymmetric-solid authoring path this tool has ever had.</li>
+<li><strong>MEP domain fidelity, the harder half</strong> — fitting rotation and pipe/duct cross-section are
+  now EXTRACTED from real IFC/catalog data (RosettaStone mini-BOM method), not computed — a
+  same-day audit found and fixed a bisector-computed rotation that was ~135° wrong on real data,
+  and an invented pipe diameter that was 2.3× oversized and the wrong shape. A shared
+  <code>resolveRealPlacement()</code> gate now HARD-FAILS rather than silently substituting invented
+  geometry anywhere in the leaf-placement path — a structural fix, not a point patch. Full
+  detail: <code>docs/internal/WalkerDoctrine.md §7-§10</code>.</li>
+<li><strong>Cross-app trust — correcting the prior claim, not carrying it forward.</strong> <code>W-MV-PARITY</code>
+  (Modeller ≡ Viewer on the same real building) is <strong>no longer 12/12.</strong> The Modeller now renders
+  each building from its own per-resident <code>_geo.db</code>, while the witness still checks it against
+  <code>Duplex_extracted.db</code> — the two geometry sources disagree on triangle count for 82 of 203 shared
+  geometry hashes (121 agree, 12 missing). Parked, not fixed, pending a call on which geometry
+  source is canonical (<code>test/modeller-net-audit</code>, 2026-09-27). Stated plainly because the Tier-1
+  currency note above previously cited this witness's old 12/12 result as current.</li>
+<li><strong>Dimension-driven parametric edit — first real increment, not yet the whole gap.</strong> <code>p2p_distance</code>
+  (width) is wired and PROVEN by exact numeric position assertion (not a screenshot) — real
+  Playwright interaction, hand-computed expected geometry, <code>witness_e2e_sketch_dims.js</code> 10/10.
+  Only ~5 of ~60 real planegcs constraints are wired; this is genuinely the gap between
+  "constraint-solving on fixed hand-drawn geometry" and Grasshopper/Dynamo-class "geometry as a
+  function of parameters" — most of it still open.</li>
+</ul>
+<p><strong>Honest distance to the mountain top: ~40-45%</strong>, carried forward from the 2026-07-25 estimate —
+no source read this pass gives a revised figure, so the number is not re-rounded. What moved since
+then is breadth of what generates automatically (the loop above) and the discovery of how much of
+the existing witness net was not actually checking what it claimed to; neither is the same axis as
+"kernel/constraint completeness," so it does not by itself move this %. The still-open gap remains
+constraint-solving depth and the direct-manipulation UI, per <code>prompts/BONSAI_KERNEL_RESEARCH.md
+§GAP-TO-COMPETITIVE</code>. Read: <strong>weeks-to-months, not years</strong>, unchanged.</p>
+<p>Witnesses: <code>W-BONSAI-*</code> (<code>bonsai_signed_live.js</code>, <code>bonsai_ifc_live.js</code>, <code>bonsai_sweep_live.js</code>,
+<code>bonsai_fillet_live.js</code>, <code>bonsai_move_live.js</code>, <code>bonsai_tier1_live.js</code>), <code>W-MV-PARITY</code>
+(<code>witness_e2e_mv_parity.js</code>), <code>W-BONSAI-ROSETTASTONE</code>/<code>witness_mep_rosettastone_lookup.js</code>. See
+<a href="../ModellerKernelFold/"><code>ModellerKernelFold.md</code></a> and <code>docs/internal/WalkerDoctrine.md</code>.</p>
+<p><strong>Occupant/topology graph — one substrate, three consumers (update 2026-07-25).</strong> A second
+frontier piece sits underneath the editing kernel: a typed graph over the same building where every
+edge is <code>recovered</code> (from IFC relations) or <code>derived</code> (pure geometry — face-touch, cadence, bbox-
+span), never invented, oracle'd to a <strong>0.000mm</strong> fold round-trip and proven construct-agnostic —
+the same builders run unmodified on a house and on a bridge (no grid, no storeys, zero fabricated
+edges either way). Three separate features consume the same graph rather than each growing its own
+pathfinding: the Spatial Dependency Graph's edit-time fold/cascade engine, an occupant-navigation
+graph (room ↔ corridor ↔ stair ↔ exit — a real hospital's room pathability raised 56%→86%, an
+isolated 315 m² atrium reconnected), and the Viewer's Fly Tour, which routes its camera through the
+identical compiled vocabulary instead of inventing its own waypoints (highlight-first routing
+shipped, PR #989).</p>
+<p>What keeps this in Frontier rather than the Moats list below: a provenance gate now checks every
+deploy of this data on two axes — the exact bytes of the building DB actually being served, and the
+exact commit of the code that measured it — refusing to run against a stale checkout or a mismatched
+snapshot. It replaced a manual discipline that had already let two real defects reach
+near-publication (a raster built for one room count silently judged against another; a stale engine
+checkout nearly reported a fix as a regression), and its own first run caught a third: an uploaded
+patch with no reconstructable source in the repository. <strong>Stated plainly, what's still open:</strong> on
+5 of a real building's 7 storeys, the occupant graph's walkability today is a room/corridor-rectangle
+network, not independently measured floor geometry — real connectivity under that definition, not yet
+demonstrated against slab-level geometry there. No incumbent or open-source BIM tool surveyed below
+treats occupant navigation, camera-tour routing, and parametric editing as three consumers of one
+zero-invented, snapshot-verified graph; this is architecture proven on a real multi-storey building,
+not yet a finished capability. See <code>prompts/SPATIAL_DEPENDENCY_GRAPH.md</code>,
+<code>prompts/Modeller/DISC_Walker/OCCUPANT_PATHFINDER.md</code>, <code>prompts/Viewer/FLY_TOUR_CORRIDOR_GRAPH.md</code>.</p>
+<p><strong>Team layer and Replication Scriptor (added 2026-10-25).</strong> <em>Witnessed (bench, two real browsers, folder pipe):</em>
+the Modeller and the ERP share signed changes through a passive post box with per-column conflict warnings,
+a People list and a heads-up label ("founder is editing this element") that carry each person's chosen
+built-in avatar, and ONE Team icon in the Modeller that starts, joins and approves a team inside the app
+(bim-ootb PR #2368; <code>W-TEAM-MODELLER</code> 33/0, <code>W-PEOPLE-MODELLER</code> 22/0, <code>W-TEAM-ICON-MODELLER</code> 15/0,
+<code>W-AVATARS</code> 13/0, <code>W-AVATAR-TRAVEL</code> 9/0). <em>Specified, prototype only:</em> the <strong>Replication Scriptor</strong> — a
+compiler that turns the dictionary, roles and topology into signed per-device plans of what each device holds,
+sends and asks for, so that a new flow is a new row and not new code (<code>TEAMWORK_FRAMEWORK.md</code> §16; its S1
+prototype passes 22/22 for logic only: one in-memory hub, sample data, not encrypted). <strong>Stated plainly,
+what's still open:</strong> the building itself is not shared (moving a seeded wall stays local), the wings of a
+shared building are agreement and not enforcement, the older Outliner dots still only see the same machine,
+and everything above is a proof of concept (risks 5 and 6).</p>
+<hr />
+<h2 id="the-landscape-nobody-else-compiles-nobody-else-connects">The landscape — nobody else compiles, nobody else connects<a class="headerlink" href="#the-landscape-nobody-else-compiles-nobody-else-connects" title="Permanent link">&para;</a></h2>
+<h3 id="tier-1-incumbents-geometry-authoring">Tier 1 — Incumbents (geometry authoring)<a class="headerlink" href="#tier-1-incumbents-geometry-authoring" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Autodesk Revit</strong></td>
+<td>Full BIM authoring. Industry standard.</td>
+</tr>
+<tr>
+<td><strong>ArchiCAD</strong> (Graphisoft)</td>
+<td>Architectural BIM. Strong in EU/Asia.</td>
+</tr>
+<tr>
+<td><strong>Tekla Structures</strong> (Trimble)</td>
+<td>Steel/concrete detailing, fabrication-grade.</td>
+</tr>
+</tbody>
+</table>
+<p>They create IFC. They model geometry. They do not decompose it into a BOM recipe, compile
+from intent, or verify the round-trip.</p>
+<h3 id="tier-2-visual-newcomers">Tier 2 — Visual newcomers<a class="headerlink" href="#tier-2-visual-newcomers" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://www.snaptrude.com/"><strong>Snaptrude</strong></a></td>
+<td>Browser sketch-to-BIM</td>
+</tr>
+<tr>
+<td><a href="https://www.testfit.io/"><strong>TestFit</strong></a></td>
+<td>AI generative site planning</td>
+</tr>
+<tr>
+<td><a href="https://www.arkio.is/"><strong>Arkio</strong></a></td>
+<td>VR/AR collaborative design</td>
+</tr>
+</tbody>
+</table>
+<p>Design exploration. No BOM, no compilation, no verification.</p>
+<h3 id="tier-3-open-source-ifc-native">Tier 3 — Open source (IFC-native)<a class="headerlink" href="#tier-3-open-source-ifc-native" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://bonsaibim.org/"><strong>Bonsai/BlenderBIM</strong></a></td>
+<td>IFC-native authoring inside Blender</td>
+</tr>
+<tr>
+<td><a href="https://ifcopenshell.org/"><strong>IfcOpenShell</strong></a></td>
+<td>IFC parsing/generation library</td>
+</tr>
+<tr>
+<td><a href="https://thatopen.com/"><strong>ThatOpen (IFC.js)</strong></a></td>
+<td>Web IFC viewer/editor</td>
+</tr>
+</tbody>
+</table>
+<p>They parse and display IFC. They do not abstract intent, compile from recipes, or prove
+round-trip fidelity — and <strong>none connect BIM to a transaction ERP over one signed log.</strong></p>
+<h3 id="a-different-field-local-first-sync-and-offline-pos-where-the-team-layer-competes">A different field — local-first sync and offline POS (where the team layer competes)<a class="headerlink" href="#a-different-field-local-first-sync-and-offline-pos-where-the-team-layer-competes" title="Permanent link">&para;</a></h3>
+<p><em>Class and members listed from general knowledge, </em><em>not re-verified in this pass</em><em>; the sourced
+comparison is <code>prompts/prior_art_2026-10-25/</code> (R1–R3). Verify before any public comparison.</em></p>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Examples</th>
+<th>What they do</th>
+<th>Where we differ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Local-first sync engines</td>
+<td>Automerge, Yjs, Replicache / Zero, ElectricSQL, PowerSync, Ditto, CouchDB / PouchDB</td>
+<td>replicate application data between devices; the developer hand-writes the sync scope (R2)</td>
+<td>the scope is compiled from the dictionary (the Replication Scriptor, <code>TEAMWORK_FRAMEWORK.md</code> §16); the same deterministic verbs replay identically on every device</td>
+</tr>
+<tr>
+<td>Offline POS</td>
+<td>Unicenta, Odoo POS offline mode</td>
+<td>sell locally, sync to a central database on reconnect</td>
+<td>the sale path needs no central database; head office derives stock from declared sales (§16.0a)</td>
+</tr>
+<tr>
+<td>Cloud BIM collaboration (CDE)</td>
+<td>Trimble Connect, Autodesk Construction Cloud, Bentley iTwin, Procore</td>
+<td>central servers, permissions, issues, support</td>
+<td>no operated server, works offline, no subscription — but they sell integration, compliance and accountability, which we do not claim to replace</td>
+</tr>
+</tbody>
+</table>
+<h3 id="adjacent-layers-interop-and-governance-not-authoring-not-competing-directly">Adjacent layers — interop and governance (not authoring, not competing directly)<a class="headerlink" href="#adjacent-layers-interop-and-governance-not-authoring-not-competing-directly" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Example</th>
+<th>What it does</th>
+<th>What it doesn't</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Geometry interop</td>
+<td><a href="https://speckle.systems/">Speckle</a></td>
+<td>Git-like versioning for geometry across tools</td>
+<td>Needs a server; stops at geometry — no cost/schedule/ERP</td>
+</tr>
+<tr>
+<td>Governance/CDE</td>
+<td>AWARO, Trimble Connect, ACC</td>
+<td>WIP→Shared→Published workflow, roles, sign-off</td>
+<td>Manages artifacts, not derived data — computes nothing</td>
+</tr>
+</tbody>
+</table>
+<p>Neither is a competitor — both could sit upstream or downstream of this pipeline. The
+versioning half (Speckle's job) is already native here as the signed op-log (Moat #6, no
+server needed); the governance half (AWARO's job) is a state machine that could ride on top
+of this pipeline's merge gate rather than replace it.</p>
+<hr />
+<h2 id="moats">Moats<a class="headerlink" href="#moats" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Spatial compilation is solved — and hard to replicate.</strong> Intent extraction, recompile,
+   and a 0.002 mm round-trip across 21 buildings from 9 tools. Years of domain work.</li>
+<li><strong>BIM↔ERP over one signed op-log — unique.</strong> Building → procurement order, ERP documents
+   reproduced to the cent on every scenario compared against a live legacy iDempiere (19 of 34
+   document tables, 2026-10-12 — the denominator matters). Requires rare BIM <em>and</em>
+   manufacturing-ERP knowledge in one head.</li>
+<li><strong>One generic dashboard for every data model.</strong> AD-field-driven group-by/pivot/timeline —
+   not a bespoke report per table.</li>
+<li><strong>Serverless / local-first by construction.</strong> Each browser is its own server and no server we
+   operate holds the truth. Two carriages are measured and their numbers differ: the
+   signature-gatekeeper POS carriage reaches 10,000 stations (<code>poc_pos_wan_scale</code>, ~4.6k ops/s) with
+   no central database to overload — the failure mode that sank the national e-invoicing rollout;
+   the passive post-office carriage used by the team layer holds ~31 devices per GitHub account
+   at one visit per 15 s and ~100 on a web relay with staggered visits. A few scarce resources
+   (last unit of stock, ledger posting, credit limit, batch runs) still need one owner-designated
+   always-on hub (<code>prompts/TEAMWORK_FRAMEWORK.md</code> §16.14 B1), so "serverless" here means <em>no shared
+   database server we operate</em>, not <em>no always-on role</em>. <strong>Forged or altered signed ops are detected
+   and refused on every device</strong> (witnessed; tamper-evident, not tamper-proof).</li>
+<li><strong>Domain-agnostic pipeline.</strong> Houses, terminals, bridges, rail (93% BOM compression) — one
+   pipeline, a YAML mapping per domain. See <code>INFRA_DESIGNER_SRS.md</code>.</li>
+<li><strong>Op-log = git-for-data.</strong> Every state is a deterministic, reversible fold of a signed log
+   — what makes What-If branches, audit, and crash-replay fall out for free.</li>
+</ol>
+<p><strong>The asymmetry:</strong> adding a GUI to a compilation foundation takes weeks. Adding spatial
+compilation — or a to-the-cent ERP fold — to a GUI-first tool takes years.</p>
+<hr />
+<h2 id="honest-risks-kept-current-not-just-moats">Honest risks (kept current, not just moats)<a class="headerlink" href="#honest-risks-kept-current-not-just-moats" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Adoption is structurally harder for an intersection than a point solution.</strong> Needs a
+   modeler, a scheduler, and a cost/ERP owner to all find it worthwhile at once.</li>
+<li><strong>Generality is claimed, not yet proven externally.</strong> Every capability measured so far
+   was built and tuned in-house; a genuinely foreign file is still an open test.</li>
+<li><strong>Distribution is currently bespoke, not repeatable.</strong> Real signal so far has cost real
+   founder-hours per contact — not yet a growth motion.</li>
+<li>
+<p><strong>Credibility currently rests on one person</strong> across communities that don't normally
+   talk to each other (BIM, ERP, open-source/local-first) — coherent, but earned per
+   conversation, not yet institutional.</p>
+</li>
+<li>
+<p><strong>The team layer is measured on a bench, not in the field.</strong> The team-size ceiling above is
+   a simulator number; fold speed on a real phone, the email post-box path, and the free-tier limits
+   and terms of every relay in the path (GitHub as a pipe, Gmail as a post box) are unmeasured or
+   unchecked, and no real team has run it for two weeks. Each has a named test with a pass line in
+   <code>prompts/TEAMWORK_FRAMEWORK.md</code> §17 (T1 scale ladder, T2 phones, T3 post box, T9 cost ledger, T10 pilot).</p>
+</li>
+<li>
+<p><strong>Novelty is "to our knowledge", not "first".</strong> The prior-art checks found no documented production
+   system with real transactions and no always-on database or application server, and no system combining a
+   serverless plan compiler with a signed deferred-query catalog — but the searches were shallow (digests and
+   excerpts, no patent-office search) and an independent clean-clone reproduction has not been done (§17 T8).
+   We say "to our knowledge", never "first", and never "no other open-source project has this" as a fact.</p>
+</li>
+<li>
+<p><strong>Parity is measured on a stock dataset, in a small community.</strong> Every parity number above is
+   from the GardenWorld seed on a local pilot. A customer's customisations and real data are
+   untested, and parity has to be re-run for each iDempiere version a client runs. The community
+   is also small: the project's own 2025 survey had 88 respondents, most common deployment 10–100
+   users, largest 40,000 (<a href="https://idempiere.org/blog/2025/05/28/idempiere-survey-2025-results/">survey</a>;
+   self-selected, so it describes respondents, not the whole base). Whether enough iDempiere shops
+   want this to sustain more than one or two clients is unproven.</p>
+</li>
+</ol>
+<p>None of these block using or trying the project — they're the risks worth tracking as it
+scales, stated plainly rather than smoothed over.</p>
+<hr />
+<h2 id="who-uses-this-and-what-theyd-pay-for">Who uses this, and what they'd pay for<a class="headerlink" href="#who-uses-this-and-what-theyd-pay-for" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Workflow</th>
+<th>Value</th>
+<th>Tier</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Quantity Surveyor</strong></td>
+<td>Drop IFC → BOQ + Variation Order Excel</td>
+<td>Automated takeoff, no Navisworks</td>
+<td>1</td>
+</tr>
+<tr>
+<td><strong>Contractor (tender)</strong></td>
+<td>Import architect's IFC → classify → costed BOM</td>
+<td>Quantities tied to verified geometry</td>
+<td>1</td>
+</tr>
+<tr>
+<td><strong>Project Manager</strong></td>
+<td>Push building → ERP project; track Planned vs Committed + EVM</td>
+<td>Budget/actual + cost What-If in one place</td>
+<td>1</td>
+</tr>
+<tr>
+<td><strong>Developer / Investor</strong></td>
+<td>Share a URL → browse the model, no install</td>
+<td>Instant stakeholder view</td>
+<td>1</td>
+</tr>
+<tr>
+<td><strong>SME merchant (Malaysia)</strong></td>
+<td>Run a local POS that does e-invoicing + accounting</td>
+<td>Mandate compliance without a server to crash</td>
+<td>2 (target)</td>
+</tr>
+<tr>
+<td><strong>ERP owner (migration)</strong></td>
+<td>Run a DB health-check → dirty-data + migration-gap report</td>
+<td>Knows what they're sitting on before committing</td>
+<td>2 (target)</td>
+</tr>
+<tr>
+<td><strong>Architect / small practice</strong></td>
+<td>Author basic geometry in-browser, export IFC</td>
+<td>A path off per-seat license fees</td>
+<td>3 (frontier)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="next-moves-2026-11-16-ideas-that-follow-from-the-pattern-so-far">Next moves (2026-11-16): ideas that follow from the pattern so far<a class="headerlink" href="#next-moves-2026-11-16-ideas-that-follow-from-the-pattern-so-far" title="Permanent link">&para;</a></h2>
+<p>The same pattern repeats through the work: one engine with many faces (the door verbs, the AD layer, pure cores a terminal and a browser both draw), and one habit of proof (witnesses with falsifiers, <code>§</code> logs, a legacy system as the oracle). These ideas follow from that. They are a judgment, not market research, and none has a named buyer yet.</p>
+<ol>
+<li><strong>Repeat the paid chain so it becomes an offer.</strong> DXF drawing to BIM to ERP project order to dashboard has been delivered once. A second client on the same flow shows how many hours a repeat takes, and that number is the price. A natural buyer is a contractor or quantity-surveying firm that wants cost control without a heavy ERP. This is the most direct route to revenue.</li>
+<li><strong>A safe gateway for AI agents into ERP and BIM.</strong> The door already has harm classes, claims for AI writes, a journal, and refusals that name the legal values. Companies fear letting AI agents write into an ERP; this layer answers that. Publish the verb grammar as a small open specification with an MCP connector. It is the idea closest to a product that works for any ERP.</li>
+<li><strong>Legacy-parity migration as a service.</strong> The parallel-run method, with the legacy system as the oracle, gives a client a parity report they can read. Aim it at small and mid-size sites stuck on older Compiere, Adempiere or iDempiere installs: provable zero impact.</li>
+<li><strong>The witness discipline as a verification toolkit.</strong> The OpenBIM readiness toolkit in a broader form: audit AI-built or vendor-built systems against <code>§</code>-tagged claims that each have a falsifier. It answers "how do I trust AI-written code?". It can be a paid review, a short course, or a template repository.</li>
+<li><strong>A handover kit.</strong> Write down what one trained person needs to run a lane from its resume block. This lowers key-person risk and lets a second client be taken on without doubling the hours.</li>
+</ol>
+<p><strong>Order.</strong> One paying lane (1), one product lane (2), with (3) and (4) as the sales story. The prototypes elsewhere in the project (pawn fintech, halal track and trace, POS, warehouse robotics) should wait until (1) has a second client: the hard part is finishing and selling one thing, not generating ideas.</p>
+<hr />
+<h2 id="get-involved">Get involved<a class="headerlink" href="#get-involved" title="Permanent link">&para;</a></h2>
+<p>The project is <strong>open source (MIT)</strong> and actively developed. Roadmap:
+<code>ACTION_ROADMAP.md</code>. For the journey from the IfcOpenShell Federation
+branch (Oct 2025) to today, see <code>PROJECT_CHRONOLOGY.md</code>.</p>
+<p>If you work with IFC models, run an ERP you're afraid to migrate, or just want verified
+spatial compilation — try it, break it, tell us what's missing. Contributions welcome:
+product catalogs, jurisdiction rules, format importers, test buildings.</p>
+<hr />
+<p><em>Cross-references:</em>
+<em><code>SPATIAL_COMPILATION_PAPER.md</code> — academic paper (0.002 mm proof),</em>
+<em><a href="../MigrateComparisonPaper/"><code>MigrateComparisonPaper.md</code></a> — ERP fold, to the cent,</em>
+<em><code>BOMBasedCompilation.md</code> — compilation pipeline spec,</em>
+<em><code>DATA_MODEL.md</code> — 4-database schema,</em>
+<em><code>TestArchitecture.md</code> — Rosetta Stone gates and traceability,</em>
+<em><a href="../ModellerKernelFold/"><code>ModellerKernelFold.md</code></a> — modeller as signed-log fold,</em>
+<em><code>PROJECT_CHRONOLOGY.md</code> — dated history + commit ledger,</em>
+<em><code>ACTION_ROADMAP.md</code> — project roadmap</em></p>
+<hr />
+<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
+<p><span id="ref1">[1]</span> Muller, M.F. <em>et al.</em> "On BIM Interoperability via the IFC Standard: An Assessment from the Structural Engineering and Design Viewpoint." <em>Applied Sciences</em> 11(23), 2021. — Documents geometry loss and property loss across IFC exchanges between Revit, ArchiCAD, Tekla, and others. <a href="https://www.mdpi.com/2076-3417/11/23/11430">doi:10.3390/app112311430</a></p>
+<p><span id="ref2">[2]</span> Pazlar, T. &amp; Turk, Z. "Interoperability in practice: Geometric data exchange using the IFC standard." <em>ITcon</em> 13, 2008. — Early benchmark showing "distortion or loss of information related to the geometry of the elements" and "incorrect connection between elements" across five IFC-certified tools. <a href="https://www.researchgate.net/publication/281596020_Interoperability_in_practice_Geometric_data_exchange_using_the_IFC_standard">ResearchGate</a></p>
+<p><span id="ref3">[3]</span> Diakite, A. &amp; Zlatanova, S. "About the Geo-referencing of BIM models." TU Delft, 2018. — Analysis of coordinate system divergence in IFC georeferencing, origin offset problems, and IfcMapConversion limitations. <a href="https://3d.bk.tudelft.nl/pdfs/18_georeferencing.pdf">PDF</a></p>
+<p><span id="ref4">[4]</span> BIMcollab. "Coordinating IFC Models with World Coordinate System information." — Documents how models without IfcMapConversion "will be shown somewhere far away from the already loaded model." <a href="https://helpcenter.bimcollab.com/en/articles/326917-coordinating-ifc-models-with-world-coordinate-system-information">BIMcollab Help</a></p>
+<p><span id="ref5">[5]</span> Autodesk. "Revit 2024: Enhancements to IFC Geometric Fidelity." 2023. — Autodesk's own acknowledgement that IFC geometric fidelity required improvement, with fixes for "complex families (parametric railings, helical stairs) which may generate fragmented geometries." <a href="https://www.autodesk.com/blogs/aec/2023/07/24/revit-2024-enhancements-to-ifc-geometric-fidelity/">Autodesk Blog</a></p>
+<p><span id="ref6">[6]</span> CAD Interop. "Revit File Formats: BIM Interoperability, IFC Conversion." — Notes that .rvt files are "editable only in Revit" with "a shelf-life of 3 years (the lifespan of Autodesk support)." <a href="https://www.cadinterop.com/en/formats/cad-systems/revit.html">CAD Interop</a></p>
+<p><span id="ref7">[7]</span> Moult, D. "How to create better IFC files with Revit." thinkmoult.com. — Documents that "even when you manage to export your geometry through IFC, there's always loss of data" and "importing that into Revit makes it utterly useless." <a href="https://thinkmoult.com/how-to-create-better-ifc-files-with-revit.html">thinkmoult</a></p>
+<p><span id="ref8">[8]</span> Bonsai BIM. "Beautiful, detailed, and data-rich OpenBIM." — Bonsai is IFC-native: "you're not creating geometry that gets converted to IFC later. You're working directly in IFC." <a href="https://bonsaibim.org/">bonsaibim.org</a></p>
+<p><span id="ref9">[9]</span> OSArch Community. "How to import IFC with large coordinates?" — Documents floating-point precision limits with georeferenced files requiring local origin offsets, and that "horizontal construction where distances frequently exceed 1km presents challenges." <a href="https://community.osarch.org/discussion/1099/blenderbim-how-to-import-ifc-with-large-coordinates">OSArch</a></p>
+<p><span id="ref10">[10]</span> Oon, R.D. "BIM OOTB — Browser Variation Order from IFC Import." 2026. — Demonstrates what becomes possible when BIM data lives in a queryable DB rather than a file: geometry stored as hash-keyed BLOBs (identical meshes instanced, not duplicated), revision diff as SQL <code>EXCEPT</code> on GUID sets, cost impact as <code>GROUP BY</code> on diff × rates template. IFC import, 4D/5D variance, and costed Variation Order Excel — entirely in the browser, no server. <a href="https://youtu.be/hv0kcc_TKvY">YouTube</a></p>
+<p><span id="ref11">[11]</span> Autodesk. "Industrialized Construction." — "Applies the discipline and systematized fabrication process of manufacturing to the design and build process... as consistent and replicable as widgets rolling off a factory assembly line." <a href="https://www.autodesk.com/design-make/emerging-tech/industrialized-construction">Autodesk Emerging Tech</a></p>
+<p><span id="ref12">[12]</span> Olanrewaju, O.I. <em>et al.</em> "Quantifying the influence of BIM adoption." <em>Automation in Construction</em> 161, 2024. — Notes "a significant gap between research and industry practice" and that the industry "still lacks its own quantification methodology for BIM benefits." <a href="https://www.sciencedirect.com/science/article/pii/S2590123024008107">ScienceDirect</a></p>
+<p><em>Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.</em></p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+
+
+                
+
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Volver al principio
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/red1oon/bim-ootb" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.linkedin.com/in/red1oon/" target="_blank" rel="noopener" title="www.linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.indexes", "search.suggest", "search.highlight", "toc.follow", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado al portapapeles", "clipboard.copy": "Copiar al portapapeles", "search.result.more.one": "1 m\u00e1s en esta p\u00e1gina", "search.result.more.other": "# m\u00e1s en esta p\u00e1gina", "search.result.none": "No se encontraron documentos", "search.result.one": "1 documento encontrado", "search.result.other": "# documentos encontrados", "search.result.placeholder": "Teclee para comenzar b\u00fasqueda", "search.result.term.missing": "Falta", "select.version": "Seleccionar versi\u00f3n"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../javascripts/fold-footnotes.js"></script>
+      
+        <script src="../../javascripts/bim_compiler_source.js"></script>
+      
+    
+  </body>
+</html>
