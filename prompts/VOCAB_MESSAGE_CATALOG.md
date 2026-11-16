@@ -5,6 +5,12 @@ Background, measurements and prior art are in `prompts/DOCS_I18N.md` §4b-§4d (
 ## ▶▶ RESUME HERE FIRST (2026-11-16, end of session bim-compiler-41; the next "resume message" session starts here)
 **Owner, 2026-11-16 (verbatim, binding):** *"Agree. Update prompt to resume new session. We check (a) and agree your b and c."*
 **Next task: the BIM help panel (Viewer + Modeller), §14.** Spec before code; the design below is AGREED, the one open item is (a).
+**STATE 2026-11-17 (read first):**
+- (a) decided: bSI's official bSDD text, verbatim (§14 (a) DECIDED).
+- Step 1 'This element' was already built in `#info-panel` (§14 FINDING).
+- Step 3, class text in the info panel: BUILT and live, bim-ootb #3150, W-CLASS-HELP PASS (§14.1 RESULT).
+- **NEXT = step 2, How To in the `?` panel** (from `verbs.json` + the BIM guide). Spec it in §14 first.
+- Three owner items are open in §14.1 RESULT.
 1. **(a) CHECKED 2026-11-17, see §14 (a) RESULT:** CC BY-ND 4.0. Verbatim English with attribution is usable. A translation needs bSI's written consent. **DECIDED 2026-11-17: use bSI's own official translations from bSDD, verbatim; coverage measured, see §14 (a) DECIDED.** Original task: may buildingSMART's IFC class definitions (the IFC4 / IFC4.3 documentation text) be shown, translated and redistributed inside our pages?
    - Read the actual licence or terms on buildingSMART's own site, save the copy into the session's prior folder, and cite the clause.
    - If the terms are unclear, say "not usable yet". Never assume.
