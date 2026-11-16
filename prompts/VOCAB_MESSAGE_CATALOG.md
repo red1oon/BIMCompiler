@@ -153,5 +153,21 @@ clash: <the short help, unchanged>
   - **Found by reading the log, fixed:** M3 scanned `words_core.js` only, so the tip key (read in `red1.js`) looked unused. M3 now reads `red1.js` `.t('…')` calls too, and M2 hands `words.tip_*` to S6 by name.
 **Not in P3a:** hint lines on refusals (P3b, needs P2b), Student text for groups and the overview, the ERP field Help (the P1 layer, separate), translations, and any mention of `level` in the greeting or the short help (that would change today's bytes; the owner decides).
 
+## 5. P2a-1 spec: ONE key scanner, `common/door/msg_keys.js` (2026-11-16)
+**Why:** the owner approved F-19, the X0 Navigator. It is a dev-side hover, jump and check on message keys in `CODE_ARCHITECTURE_DESIGN.md` (code-design session, `bim-compiler-2c`). It must read keys through THIS lane's scanner, not a copy. Until now, W-MSG-CATALOG M3 held the scan inline.
+**Module (pure: no require, fs or process; it runs in Node, the witness and the VS Code extension):**
+- `scan(sourceText, fileRel)` → `[{ key, line, col, args, file }]` for every call `M('key', …)` or `.t('key', …)`.
+  - The key must be a literal string; a computed key is reported as `key: null` with its line, never skipped.
+  - `args` is the number of top-level arguments after the key, counted through nested brackets and strings.
+- `check(catalog, uses, opts)` → `findings[]`, each `{ kind, key, file, line, col, detail }`:
+  - `unknown-key`: used, not in the catalog.
+  - `unused-key`: in the catalog under the scanned prefixes, never used.
+  - `template`: a placeholder gap or a stray brace.
+  - `arg-count`: the call passes a different number of arguments than the template takes. This is now a static check; before, only a missing argument threw, at run time.
+  - `computed-key`: a key that is not a literal string.
+**W-MSG-CATALOG M3 uses it,** with the same verdicts as before, plus the static `arg-count`. New falsifiers:
+- `MSG_BREAK=extraarg`: one call passes one argument too many. M3 must FAIL with `arg-count`.
+- `MSG_BREAK=computedkey`: one key is built at run time. M3 must FAIL with `computed-key`.
+
 ## STATUS
 2026-11-16: P1 built and witnessed (5/0), merged as bim-ootb #3079. P2a built and witnessed (W-MSG-CATALOG 4/0), merged as bim-ootb #3082. P3a built and witnessed (W-HELP-STUDENT 5/0), merged as bim-ootb #3083. P3a-1 (help footer + opening tip, `red1 --fast`), bim-ootb #3084. Depends on `prompts/DOCS_I18N.md`, `prompts/CLI_ERP_IVR.md` (CLI session owns), `prompts/ERP_UI_LOCALES.md`.
