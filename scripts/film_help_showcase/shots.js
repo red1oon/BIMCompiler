@@ -5,7 +5,9 @@
 'use strict';
 const fs = require('fs'), path = require('path'), os = require('os'), http = require('http'), { spawnSync } = require('child_process');
 const TREE = path.resolve(process.argv[2]), OUT = path.join(__dirname, process.env.OUTD || 'out'), PAGES = path.join(OUT, 'pages');
-const LB_LANG = process.env.LB_LANG || 'de_DE', LB_COL = process.env.LB_COL || 'DocumentNo';   // the language beat: which language, which Sales Order field (the English cut: Deutsch, Document No)
+const LB_LANG = process.env.LB_LANG || 'de_DE', LB_COL = process.env.LB_COL || 'DocumentNo';
+// §12/§13 cut (the Mandarin v2): UI_LANG = the screen language from login (no switch beat); Q1/Q2 = the two typed questions; CLI_ASK=1 = the same question asked at the red1 prompt (its real answer)
+const UI = process.env.UI_LANG || '', Q1 = process.env.Q1 || 'How do I close a Sales Order?', Q2 = process.env.Q2 || 'How can I void a payment?';   // the language beat: which language, which Sales Order field (the English cut: Deutsch, Document No)
 fs.mkdirSync(PAGES, { recursive: true });
 const { chromium } = require(process.env.PW || path.join(os.homedir(), 'bim-ootb', 'tests', 'node_modules', 'playwright'));
 const LOG = []; const L = (m) => { LOG.push(m); console.log(m); };
@@ -17,9 +19,9 @@ async function session(port, opts) {
   const ctx = await br.newContext({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: 1.5 }), page = await ctx.newPage();
   if (opts && opts.blockHelp) await page.route('**/i18n/help/**', (r) => r.abort());
   const con = [], errs = []; page.on('console', (m) => con.push(m.text())); page.on('pageerror', (e) => errs.push(e.message));
-  await page.goto('http://localhost:' + port + '/erp/idempiere.html?seed=ad_seed.db&login=GardenAdmin', { waitUntil: 'networkidle', timeout: 90000 });
+  await page.goto('http://localhost:' + port + '/erp/idempiere.html?seed=ad_seed.db&login=GardenAdmin' + (UI ? '&lang=' + UI : ''), { waitUntil: 'networkidle', timeout: 90000 });
   await page.waitForFunction(() => window.__idmpHowto && window.__idmpFieldHelp && window.__idmpFieldHelp.menu().windows.length > 0, null, { timeout: 60000 });
-  for (let i = 0; i < 60 && !con.some((l) => /^§HELP_SEARCH index/.test(l)); i++) await page.waitForTimeout(250);
+  for (let i = 0; i < 60 && !con.some((l) => (UI ? l.startsWith('§HELP_SEARCH index lang=' + UI) : /^§HELP_SEARCH index/.test(l))); i++) await page.waitForTimeout(250);
   return { br, page, con, errs };
 }
 const last = (con, re) => { const ls = con.filter((l) => re.test(l)); return ls.length ? ls[ls.length - 1] : null; };
@@ -49,17 +51,18 @@ async function focusField(page, col) {
     await page.waitForTimeout(500); const line = last(con, /^§HELP_SEARCH ask=/), card = await page.evaluate(() => document.getElementById('idmp-howto-card').innerText);
     await shot(page, name, con); return { q, line, card };
   };
-  F.ask1 = await ask('How do I close a Sales Order?', 'ask_close');
+  F.ui = UI || null; F.ask1 = await ask(Q1, 'ask_close');
   const n0 = con.length; await page.click('#idmp-howto-card .hs-card > .hs-row a[data-help-win]');
   for (let i = 0; i < 40 && !con.slice(n0).some((l) => /^§HELP_CTX window=143/.test(l)); i++) await page.waitForTimeout(250);
   await page.waitForTimeout(1500);
   F.link = { link: con.slice(n0).find((l) => /^§HELP_LINK/.test(l)) || null, opened: con.slice(n0).find((l) => /^§IDEMPIERE window=/.test(l)) || null, ctx: con.slice(n0).find((l) => /^§HELP_CTX window=143/.test(l)) || null,
     howto: await page.evaluate(() => document.getElementById('idmp-howto-ctx').innerText) };
   await shot(page, 'link_open', con);
-  F.field = await focusField(page, 'DocumentNo'); F.lines.fieldFocus = last(con, /^§FIELD_HELP focus=/); await shot(page, 'field_en', con);
+  F.field = await focusField(page, UI ? LB_COL : 'DocumentNo'); F.lines.fieldFocus = last(con, /^§FIELD_HELP focus=/); await shot(page, UI ? 'field_ui' : 'field_en', con);
   await page.click('#idmp-help-title');   // fold the Tool Tip box (Panel.setCollapsible) so the answer card sits at the top of the panel
-  F.ask2 = await ask('How can I void a payment?', 'ask_void');
+  F.ask2 = await ask(Q2, 'ask_2');
   await page.click('#idmp-help-title');   // unfold it again for the German beat
+  if (!UI) {
   const n1 = con.length; await page.selectOption('#idmp-lang', LB_LANG);
   for (let i = 0; i < 60 && !con.slice(n1).some((l) => l.startsWith('§I18N lang=' + LB_LANG)); i++) await page.waitForTimeout(250);
   await page.waitForTimeout(1500);
@@ -67,9 +70,10 @@ async function focusField(page, col) {
   // the fallback first: Document No in that language (no pack text for it in zh_CN -> the English shows, as legacy); then the beat's field, the shot
   F.lb.docNo = await focusField(page, 'DocumentNo');
   F.lb.field = await focusField(page, LB_COL); F.lines.fieldFocusLb = last(con, /^§FIELD_HELP focus=/); await shot(page, 'field_lb', con);
+  } else F.lb = { lang: UI, col: LB_COL };
   F.errors = S.errs; await S.br.close();
   // ---- the cost: the same German session with and without the help pack, heap after a forced GC
-  const heap = async (blockHelp) => { const s = await session(port, { blockHelp }); await s.page.selectOption('#idmp-lang', LB_LANG); await s.page.waitForTimeout(2500);
+  const heap = async (blockHelp) => { const s = await session(port, { blockHelp }); await s.page.selectOption('#idmp-lang', UI || LB_LANG); await s.page.waitForTimeout(2500);
     const h = await s.page.evaluate(() => { if (typeof gc === 'function') { gc(); gc(); } return { gc: typeof gc === 'function', used: performance.memory.usedJSHeapSize, pack: !!(window.ErpI18n && ErpI18n.help) }; }); await s.br.close(); return h; };
   F.memory = { withPack: await heap(false), without: await heap(true) }; F.memory.deltaBytes = F.memory.withPack.used - F.memory.without.used;
   L('§FILM_MEMORY with=' + F.memory.withPack.used + ' (pack=' + F.memory.withPack.pack + ') without=' + F.memory.without.used + ' (pack=' + F.memory.without.pack + ') delta=' + F.memory.deltaBytes + ' gc=' + F.memory.withPack.gc);
@@ -85,6 +89,15 @@ async function focusField(page, col) {
   F.lb.fieldId = lr.fid; F.lb.english = [lr.fd || '', lr.fh || '']; F.lb.packText = px.map((i) => (i >= 0 ? pk.texts[i] : null));
   const dx = pk.fields[String(JSON.parse(q1("SELECT f.ad_field_id fid FROM ad_field f JOIN ad_column c ON c.ad_column_id=f.ad_column_id JOIN ad_tab t ON t.ad_tab_id=f.ad_tab_id WHERE t.ad_window_id=143 AND t.tablevel=0 AND c.columnname='DocumentNo' ORDER BY t.seqno LIMIT 1"))[0].fid)];
   F.lb.docNoHasPack = !!(dx && dx[0] >= 0);
+  // §13: the same question at the red1 prompt, in the terminal's language (LANG), through the real door: its answer, and the card red1 prints (the answer's summary)
+  if (process.env.CLI_ASK === '1') {
+    const line = 'cd Order; ask ' + Q1, r = spawnSync(process.execPath, [path.join(TREE, 'common', 'door', 'red1.js'), line], { cwd: TREE, encoding: 'utf8', env: Object.assign({}, process.env, { LANG: (UI || 'en_US') + '.UTF-8' }), timeout: 120000 });
+    const envs = (r.stdout || '').split('\n').filter((l) => l.trim().startsWith('{')).map((l) => { try { return JSON.parse(l); } catch (e) { return {}; } }), env = envs.find((e) => e.verb === 'erp.ask') || {}, a = env.answer || {};   // red1 prints one envelope per word: the erp.ask one
+    const V = JSON.parse(fs.readFileSync(path.join(TREE, 'common', 'door', 'verbs.json'), 'utf8')).verbs.find((v) => v.verb === 'erp.ask') || {};
+    F.cliAsk = { line, arrow: (String(r.stderr || '').split('\n').filter((l) => l.startsWith('→ erp.ask')).pop() || '').trim(), status: env.status, harm: V.harm || null, lang: a.lang, langBy: a.langBy, howtoLang: a.howtoLang,
+      window: a.window || null, action: a.action ? a.action.code : null, summary: a.summary || '' };
+    L('§FILM_CLI ' + JSON.stringify({ line, status: env.status, lang: a.lang, by: a.langBy, window: a.window && a.window.id, action: F.cliAsk.action, exit: r.status }));
+  }
   const pre = spawnSync('git', ['-C', TREE, 'log', '--format=%h', '-1', '6b2d5f06^'], { encoding: 'utf8' }).stdout.trim();
   const oldSrc = spawnSync('git', ['-C', TREE, 'show', pre + ':erp/idempiere.html'], { encoding: 'utf8', maxBuffer: 1 << 28 }).stdout.split('\n');
   const oi = oldSrc.findIndex((l) => /v\.title = f\.columnName \+ ' · ' \+ f\.referenceType;/.test(l));

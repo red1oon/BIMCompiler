@@ -568,6 +568,53 @@ These are legacy's own words in that language; the twin shows them unchanged.
 - **S7:** with zh_CN chosen, the How To widget of Sales Order shows the zh_CN row, and every link in it points at a window on the menu.
 - **S1 extended:** every name in a pack occurs in its published XML.
 
+### §11 RESULT, Mandarin cut v2 (2026-11-16): `~/Videos/Help_that_answers_ERP_ZH_AFTER_2026-11-16_v5.mp4` (119.2 s, 2,861 frames, −16.5 LUFS), sent to the owner's phone
+- **Owner's corrections it answers:** *"The Mandarin should show in Mandarin on the app too"* · *"can its CLI also asks in Mandarin"*.
+  - The screen is 中文 from login (`UI_LANG=zh_CN`). The questions are typed in Chinese: 「如何关闭销售订单？」 → 销售订单 / 结束 / 完成, 等候付款; 「怎样完成一张发票？」 → 发票(客户/公司) / 完成.
+  - The Sales Order how-to is the zh_CN row, with its translated-by-the-build note.
+  - The before beat is the Description field in Chinese.
+  - A new last beat types `cd Order; ask 如何关闭销售订单？` at the red1 prompt. Its output is red1's own real answer (LANG=zh_CN, by=LANG): the Chinese card.
+- **Witnessed on the tree the film shows (main `f79058ee`):** W-FIELD-HELP 13/0, W-HELP-SHOWCASE 20/0, W-ERP-ASK 10/0.
+- **Checks:**
+
+  | Check | Result |
+  |---|---|
+  | guard | PASS (CLI facts: window 143, CL, zh_CN/LANG, harm read) |
+  | K2 | PASS, 3 typed beats |
+  | keys | PASS |
+  | gloss | PASS |
+  | ass_noverlap | 0 left |
+  | check C | 33/33 |
+  | frames | 2,861/2,861 |
+  | heap with the zh_CN pack | +835 KB |
+
+- **Seen on the frame, fixed after:** the panel's own words (Tool Tip, How To, the idle *Place your cursor…*) were English. The zh_CN pack holds none of the three, so the film is legacy-faithful. But the de/fr packs DO hold *Place your cursor…*, and the page ignored them; fixed in bim-ootb #3137 (S2c, falsifier `nomsgtrl`).
+- **Measured cost of the language immersion** (owner: *"is this costly to do"*), this machine (i5-13500HX), the page's own code on an in-memory seed:
+
+  | Measure | Value |
+  |---|---|
+  | download, the chosen language once, then cached (gzip) | de 152 KB, fr 133 KB, zh 60 KB, ja 19 KB, en how-to 2 KB |
+  | heap after a forced GC | +0.6–0.8 MB on ~48 MB |
+  | parse + index build on a switch | 4–8 ms |
+  | one question | median 0.3–0.8 ms, p95 ≤ 2.1 ms |
+  | `erp.ask` at the terminal | ~1 s, the engine boot |
+
+  The cost that remains is content: how-to translations per language, and old packs' words.
+
+### §12 RESULT (2026-11-16, bim-ootb #3133 MERGED): W-HELP-SHOWCASE 20/0
+- **Names per language, from each language's XML:** fr 254 windows / 453 tables / 13 actions / 12 statuses; de 349 / 0 / 13 / 12; ja 288 / 0 / 13 / 12; zh 250 / 5 / 11 / 12.
+- **S1 extended to names:** fr 732/732, de 374/374, ja 313/313, zh 278/278.
+- **zh_CN how-to:** 4 rows (`erp/tools/help_howto_zh_CN.json`), each marked as the build session's translation, with 4 links, all bold window names.
+- **S6** 7/7 Chinese questions (one English question asked with 中文 chosen). **S7** the Sales Order row in zh_CN, links 1/1.
+- **Falsifiers:** `nocjk` FAILs S6 (1/7); `tamper` FAILs S1 and the names in all 4 languages; `nophrase` and `deadlink` FAIL as before.
+- **Regressions:** W-FIELD-HELP 13/0; W-ERP-I18N 7/4, the same failures and numbers as main.
+
+**Measured / decided:**
+- CJK has no case, so a CJK window name links only as a whole bold term. 菜单 ('menu') and 产品 ('product') are words; they matched the Menu and Product windows before this rule.
+- A status name finds the action that reaches it through `AdDocFsm.TRANSITION`: 关闭 (the status Closed) → Close, whose pack name is 结束. This is the dictionary's own relation, not a synonym.
+- The zh_CN pack's action descriptions are untranslated English, so the English shows, as legacy shows it.
+- **Known gap, not hidden:** the zh_CN pack has no word for "void" (Void = 空白, Voided = 空虚). 「作废」 finds the window but no action; it is left out of the fixture.
+
 ## 13. The CLI asks in the chosen language: `erp.ask` (owner 2026-11-16: *"can its CLI also asks in Mandarin or local chosen language?"* · *"u can take it on after informing the CLI session, as it be resting"*)
 **Issue it removes:** the question box exists only in the page; a person at the terminal (or `red1`) cannot ask "How do I close a Sales Order?" or 「如何关闭销售订单？」.
 **Design:**
@@ -582,6 +629,21 @@ These are legacy's own words in that language; the twin shows them unchanged.
 - A2: the Chinese set (LANG=zh_CN) gives S6's answers;
 - A3: verbs.json lists the verb and the door's download includes help_search.js.
 - Falsifier `ASK_BREAK=nolang` (the pack's names ignored): A2 FAILs.
+
+### §13 RESULT (2026-11-16, bim-ootb #3136): W-ERP-ASK 10/0
+- **Built:** `erp_cli.js ask` over `help_search.js indexFrom` (the page's own index builder); `common/door/lang_rule.js`, the §30 order written once.
+  - Measured: the seed has no client 0 row, so step (3) falls to the role's client, then en_US, and the answer names the step.
+  - `erp.ask` lives in `vocab/hand.json`; `verbs.json` is composed from it (compose `--check`: CURRENT).
+  - The red1 word `ask` is in the ERP context (W-RED1-WORDS R2: an anywhere-word reaches only model/ninja), used as `red1 'cd Order; ask …'`.
+  - The answer's `summary` is the card red1 prints, with the page's `help.*` labels resolved as `ErpI18n.t` resolves them.
+- **Checks:**
+  - A1 8/8 English questions through the door; A2 7/7 Chinese; the L order (flag, LANG, fallback, preference on the rule); A4 the zh/en cards; A3 a read, an AI gets the answer.
+  - Falsifier `ERP_BREAK=nolang` FAILs A2 and L (named `ERP_BREAK`, not `ASK_BREAK`: `erp_cli`'s one falsifier switch).
+  - Corrected claim: the door's flat download does NOT need `help_search.js`, because `erp_cli` already runs from the repo (it loads the ERP engine). A3 checks the verb's harm and actors instead.
+- **Door witnesses on the branch:**
+  - pass: W-ERP-VERBS 46/0 (its explicit verb list and subcommand regex gain `erp.ask` / `ask`, as each new verb does), W-RED1-WORDS 3/0, W-VOCAB-COMPOSE 7/0, door static / honest / help, msg-door, red1 api / help / shell / welcome / post, help-student, msg-catalog, W-HELP-SHOWCASE 20/0;
+  - fail identically on main `14ade155` (local setup): W-MCP-DOWNLOAD (puppeteer), W-RED1-REPORT (`sql.js`).
+- **Defect found and fixed:** a JSON rewrite of `words.json` reflowed the CLI session's hand-aligned file (+572 / −71). It was reverted, and the entry inserted as text in the file's own style (+3 / −1).
 
 ## STATUS
 2026-11-16: P1 built and witnessed (5/0), merged as bim-ootb #3079. P2a built and witnessed (W-MSG-CATALOG 4/0), merged as bim-ootb #3082. P3a built and witnessed (W-HELP-STUDENT 5/0), merged as bim-ootb #3083. P3a-1 (help footer + opening tip, `red1 --fast`), bim-ootb #3084. P2b (W-MSG-DOOR 5/0) #3108. P1b (W-FIELD-HELP 13/0) #3126. Depends on `prompts/DOCS_I18N.md`, `prompts/CLI_ERP_IVR.md` (CLI session owns), `prompts/ERP_UI_LOCALES.md`.
