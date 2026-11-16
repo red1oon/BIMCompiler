@@ -20,8 +20,10 @@ Owner, closing 2026-11-15: *"get it well documented in the prompts/# consolidate
 
 **0. ✅ DONE 2026-11-15 (fourth session): F-18 answered, the provenance hover built and merged — §F.23 (bim-ootb #3064 + tooltip-in-window fix #3069); FILM 3 built (`prompts/FILM_IMMERSIVE_SOFTWARE.md` FILM 3 STATUS, awaiting the owner's review); the default-key + truss findings handed to the DXF2BIM lane (bim-ootb `prompts/DXF2BIM_ARCHITECT_REVIEW.md` §D113, #3070). NEXT = the X0 "New witness for this file" command (§F.21 OPEN), or Part A's remaining A2 (item 2).** The text below is the original hand-over.
 
+**0c. 2026-11-16 (same session), after the owner said *"Focus on your VSC side, let the others handle as your info"*:** the door stamp fix (0b, first bullet) is the **CLI lane's** to do. It was handed back to bim-compiler-06 as information, and this lane will not open that PR. **ADVICE C is DONE (all three):** C1 X0 witnesses in CI (§F.24, #3090) · C2 stale-copy warning (§F.25, #3092) · C3 the "138" corrections (comments on #2974/#2975). **NEXT for this lane:** the X0 "New witness for this file" command (§F.21 OPEN) · F-19 waits for the owner (and for the message lane's `msg_keys.js`) · Part A's remaining timing items need headless-browser witnesses (W-GOAL-STORE, W-DASH-SYNC, W-TEAM-SO), which run only on the owner's go.
+
 **0b. 2026-11-16 SYNC with the CLI lane (`prompts/CLI_ERP_IVR.md`, the `red1` shell) and the message lane (`prompts/VOCAB_MESSAGE_CATALOG.md`).** Owner: *"with much happening on the CLI side and a new session doing translation messaging, do your 'resume VSC' to see if it needs updating besides continuing its pending roadmap"*. Since 2026-11-15, bim-ootb `main` (`8c3f0af6`) gained the `red1` shell (#3060-#3088), `vocab/words.json` + `vocab/messages.json` + `msg_core.js` (#3082) and the Student level (#3083/#3084). The VS Code tools knew none of it: `git grep` over `devtools/` finds 0 hits for `verbs.json`, `messages.json`, `words.json`, `vocab` or `msg_core`. What changes here:
-- **Part A, a real defect (CLI owner agreed, 2026-11-16: *"please do it from the code-design lane … object_cli's UTC is the defect"*):** `common/door/object_cli.js:212` stamps the model Trx `now` in **UTC** (`new Date().toISOString()`), but `common/door/erp_cli.js:26` stamps **LOCAL** time (the §20 rule, W-DOOR-STAMP, #2953). So `object.update` and `mis.update` write `Updated` on two different clocks. `erp_cli.js:26` is also a second local-day helper beside `crud_core.localDay` (`erp/crud_core.js:64`, which says it is "the ONE implementation"). Measured: `clock_probe.js <bim-ootb> 'common/door/*.js'` → `§CLOCK_PROBE files=18 with_calls=7 calls=58 parse_fail=0`. Most are ms timers or log-file names (fine at an edge). **Fix = A2 item "door stamp", one PR touching only those lines:** object_cli takes the one stamp, and erp_cli's `stamp()`/`today()` are built on `crud_core.localDay(Date.now())` plus the time. **Wait for the CLI session's go:** its agent is editing `erp_cli.js` (§29.6 P3a/P3b) and maybe `object_cli.js` near `applyOp`; it will message when those merge. Witnesses: W-DOOR-STAMP, a NEW claim that `object.update` and `mis.update` stamp the same clock (with a falsifier: put the UTC line back and it must FAIL), W-MIS-CRUD, W-ERP-VERBS, W-OBJ-COUNT.
+- **Part A, a real defect (CLI owner agreed, 2026-11-16: *"please do it from the code-design lane … object_cli's UTC is the defect"*):** `common/door/object_cli.js:212` stamps the model Trx `now` in **UTC** (`new Date().toISOString()`), but `common/door/erp_cli.js:26` stamps **LOCAL** time (the §20 rule, W-DOOR-STAMP, #2953). So `object.update` and `mis.update` write `Updated` on two different clocks. `erp_cli.js:26` is also a second local-day helper beside `crud_core.localDay` (`erp/crud_core.js:64`, which says it is "the ONE implementation"). Measured: `clock_probe.js <bim-ootb> 'common/door/*.js'` → `§CLOCK_PROBE files=18 with_calls=7 calls=58 parse_fail=0`. Most are ms timers or log-file names (fine at an edge). **Fix (handed to the CLI lane, 0c), one PR touching only those lines:** object_cli takes the one stamp, and erp_cli's `stamp()`/`today()` are built on `crud_core.localDay(Date.now())` plus the time. Its agent was editing `erp_cli.js` (§29.6 P3a/P3b) at the time. Witnesses the CLI lane named: W-DOOR-STAMP, a NEW claim that `object.update` and `mis.update` stamp the same clock (with a falsifier: put the UTC line back and it must FAIL), W-MIS-CRUD, W-ERP-VERBS, W-OBJ-COUNT.
 - **Part A3 scope:** `common/door/` is an EDGE: it reads the clock and hands `env` in, which is the Part A pattern. Its `*_core.js` files (`assist_core`, `draw_core`, `menu_core`, `msg_core`, `report_core`, `mis_core`) have zero clock reads (same probe) and are pure. W-CORE-PURE should list them as core and `door.js`/`*_cli.js`/`red1.js` as edge, and it should flag a second local-day implementation anywhere.
 - **Part F, a new decision F-19 (ask the owner, one message):** X0 Navigator support for the catalog and the verbs, dev-side only, nothing reaches the browser (§13 guard). Hovering a `t('key', …)` shows the English (and later the Student and other-language) text; F12 jumps to its `messages.json` line; while you edit, it warns about an unknown key or a `{n}` with no argument. Today `msg_core.js` throws only when the code runs. The same for a verb name, opening its `common/door/verbs.json` entry. **Recommendation: yes, built as one more X0 index (`lib/catalog_index.js`) that reads the JSON files, plus a witness with a red control (a made-up key must be flagged, a real key must not).** **Message lane's answer (2026-11-16):** a key checker already exists, so REUSE it and don't copy it: W-MSG-CATALOG M3 (bim-ootb `common/door/tests/witness_msg_catalog.js`) checks every literal `M('key'` / `.t('key'` both ways against `messages.json`, checks that placeholders run {0}..{n-1}, and catches calls that pass too many arguments. Keys must stay LITERAL strings (M3 caught one chosen by a ternary). The message lane offers to pull that scan out into one shared module (e.g. `common/door/msg_keys.js`) when P2b starts, used by both the witness and X0. The shape `{"_", "messages": {"<file>.<name>": {"en": …}}}` is stable: `en` stays, and later phases ADD fields beside it (Student text, per-language texts such as `ja`), never a new top level. `msg_core.js` is pure, so X0 can require it to render the hover. **So the F-19 recommendation becomes:** X0 reads the catalog through the shared `msg_keys.js` and `msg_core.js`, with no scanner of its own; it is built after the message lane extracts `msg_keys.js`.
 
@@ -44,7 +46,7 @@ Owner, closing 2026-11-15: *"get it well documented in the prompts/# consolidate
 **3. Where each part stands.**
 | Part | State | Next step |
 |---|---|---|
-| A | A-1..A-5 ✅, A2 done for 15 files | the door stamp (0b, on the CLI session's go), remaining A2 (above) → A3 |
+| A | A-1..A-5 ✅, A2 done for 15 files | remaining A2 (above; browser witnesses, on the owner's go) → A3; the door stamp is the CLI lane's (0c) |
 | B | not started | B0 needs no decision (§READY), then ask B-1 |
 | C, D | not started; wait on B | — |
 | E | not started | `witness_kit/paths.js` needs no decision (§READY), then ask E-1 |
@@ -772,6 +774,47 @@ at a worktree on `origin/master` (e.g. `/tmp/wt-bridge`) until the default is de
 
 ---
 
+### F.24 The X0 witnesses in CI's fast checks (ADVICE C1; no decision needed; spec 2026-11-16)
+- **Issue proved:** CI passes a change that breaks an X0 witness. That happened twice: archive §F.15 (#2954) and §F.19, the "fake field in the index" class that `witness_x0_appdef` catches, and both times it was caught before the PR only by luck. Today `.github/workflows/ci.yml` runs no `devtools/` witness (`git grep x0 .github/workflows` = 0 hits).
+- **Measured 2026-11-16** on a fresh `git clone --depth 1` of bim-ootb `main` @ `8c3f0af6`, with no `../bim-compiler` beside it (the CI runner's view; `node_modules` from `npm ci`):
+
+| witness | exit | seconds | verdict |
+|---|---|---|---|
+| `witness_x0_isolation` | 0 | 0.7 | PASS |
+| `witness_x0_lens` | 0 | 1.3 | PASS |
+| `witness_x0_deploy_cost` | 0 | 1.3 | PASS |
+| `witness_x0_appdef` | 0 | 2.6 | PASS |
+| `witness_x0_context` | 0 | 2.8 | PASS |
+| `witness_x0_refs` | 0 | 13.9 | PASS |
+| `witness_x0_ship` | 0 | 17.8 | PASS |
+| `witness_x0_fresh` | 0 | 18.2 | PASS |
+| `witness_x0_mcp` | 0 | 28.0 | PASS |
+| `witness_x0_activate` | 0 | 28.3 | PASS |
+| `witness_x0_taghover` | **0** | 0.2 | **INCONCLUSIVE** (it needs the bim-compiler repo) |
+
+- **Build:** one step in `ci.yml` `fast-checks`, **"X0 Navigator witnesses (node only)"**, first planned for the five that take under 3 s (isolation, lens, deploy_cost, appdef, context), and cut to three after the FINDING below. The step **fails unless each witness exits 0 AND prints a `verdict=PASS` line**: `taghover` shows that an exit code of 0 can mean INCONCLUSIVE (PRIMAL LAW 4), and a CI step that judged nothing must not be green. `taghover` stays out (it would be vacuous on a runner). The five slower ones (14 to 28 s each, about 106 s together) stay local, run with "Run this witness" as before. Moving them into CI is a later choice, if the cost is worth it.
+- **Witness of the step itself (red control):** the step's `run:` script, read from `ci.yml` and run by `bash` in the clean clone, must exit 0. In a copy with a planted defect, it must exit 1 and name the witness that failed. **Done when:** both local runs behave, and the PR's own CI run shows the step green on GitHub.
+- **Not in this PR:** ADVICE C2 (the version stamp at pack time) and C3 (the stale "138" texts), one PR each after this.
+- **FINDING on the PR's first CI run (2026-11-16):** on GitHub's runner, `deploy_cost` printed `§PERF_IMPACT parser=N verdict=INCONCLUSIVE` and `context` printed `load=?`, **both with exit 0**. The verdict check failed the step (`§X0_CI verdict=FAIL failed=deploy_cost context`), which is the vacuous-green case it exists to catch. Cause: both parse with the TypeScript **inside VS Code** (`scripts/lib/find_ts.js`, the no-install rule of `EDITOR_MAINTAINABILITY_STUDY.md` §14), and a runner has no VS Code. My local "CI-like" clone borrowed the shared checkout's `node_modules` and ran on a machine with VS Code installed, so it hid this: a local imitation of CI is not CI. **Fix:** the step runs the three that judge without that parser (`isolation`, `lens`, `appdef`), so `appdef`, the one that catches the past breaks, stays in. `deploy_cost` and `context` stay local. Installing TypeScript in CI only for them was not done, since it would go against the §13 minimalism guard.
+- **RESULT 2026-11-16: ✅ DONE (witness), bim-ootb #3089 / PR #3090, merged `234a6dc1`.** GitHub run 43778395254: `§X0_CI isolation … verdict=PASS` · `lens … PASS` · `appdef rows=1856 … verdict=PASS` · `§X0_CI checked=3 verdict=PASS`. The step's own script under `bash -eo pipefail` (GitHub's shell; my first local test used plain `bash`, under which a failing node would have aborted the loop before naming it, now fixed with `rc=0; node … || rc=$?`): clean clone, exit 0. Red: a devtools path planted in `erp/sw.js` PRECACHE gives `failed=isolation`; an exit-0 INCONCLUSIVE stub gives `failed=context`; a log with no verdict gives `failed=lens`. All witnesses are still reported each time.
+
+### F.25 The installed X0 copy knows when it is stale (ADVICE C2; no decision needed; spec 2026-11-16)
+- **Issue proved:** `package.json` says `0.1.0` for every build, so an installed X0 cannot tell that the source changed after a pull (or an edit), and the developer runs old hovers without knowing.
+- **Why a content hash and not the commit:** `pack.js` is deterministic (same input, same bytes, kept by W-X0-INSTALL). A hash of the packed files keeps that, catches uncommitted edits, and needs no git. Bumping the version number would also change the file name and the install list for no reason.
+- **Build:**
+  - `x0-navigator/lib/build_stamp.js` (packed, node only): `listFiles` moves here from `pack.js` (ONE listing rule: no `tests/`, `node_modules/` or dot-folders). `sourceHash(dir)` is the sha-256 of each relative path plus its bytes, in sorted order, leaving out `built.json`. `compare(extensionPath, sourceRoot)` → `{ state: 'same' | 'stale' | 'unknown', built, source, reason }`. `unknown` comes with a reason (no `built.json` = a build from before this change; no `devtools/vscode/x0-navigator` in the open folder) and never says `same` when nothing was compared.
+  - `pack.js` adds `extension/built.json` = `{ "sourceHash": … }`.
+  - `extension.js` `activate`: one output line `§X0_STAMP state= built= source=`. Only on `stale`, one warning: *"X0 Navigator is older than devtools/vscode/x0-navigator in this folder: run node devtools/vscode/pack.js --install, then reload the window."* Nothing is shown on `same` or `unknown` (ADVICE D: keep it quiet).
+  - The `vscode` stub moves from `witness_x0_activate.js` into `tests/vscode_stub.js`, shared by both witnesses (one stub, not two).
+- **Witness W-X0-STAMP** (`tests/witness_x0_stamp.js`, node):
+  - S1: a packed temp copy carries `extension/built.json`, whose hash equals `sourceHash` of that copy.
+  - S2: two packs of the same input give the same bytes.
+  - S3: an unpacked copy compared with the same source gives `same`. Editing one packed file in the source gives `stale` (the red control: the judge must flip). An edit under `tests/` stays `same`, since tests are not packed, so there is no false alarm.
+  - S4: no `built.json` gives `unknown`, and so does no source folder. Neither gives `same`.
+  - S5 (wiring, through the shared stub): `activate` with a stale `extensionPath` shows the warning once; with a matching one it shows none.
+  - Before/after: `witness_x0_activate` and the realvsc install suite keep their verdicts.
+- **RESULT 2026-11-16: ✅ DONE (witness), bim-ootb #3091 / PR #3092, merged `186d80ae`.** On `main`: `§X0_STAMP_W files=13 stamp=1c3372cfee90 deterministic=Y checks=10 failed=0 verdict=PASS`. S5 activates the PACKED `extension.js`: stale gives `§X0_STAMP state=stale built=1c3372cfee90 source=4ed593f6e739 warnings=1`, restored gives `state=same … warnings=0`. **Red run on the old code** (the new witness with `main`'s old `pack.js`/`extension.js`): exit 1, S1 `null = f56ea15ddad5`, S3 `state=unknown`. The stub refactor is neutral: `witness_x0_activate` gives the same 30 PASS checks and the same `§X0_ACTIVATE definition=1 hover=2 commands=8 fresh=Y checks_failed=0 verdict=PASS`. Also PASS on the branch and on `main`: isolation (`deps=0`), lens, appdef, deploy_cost, context. `pack.js` prints `source=<hash12>`. **Not run:** the realvsc install suite (it starts a real VS Code; owner's go first). **For the owner's own copy:** the next `node devtools/vscode/pack.js --install` is the first build that carries a stamp. Copies installed before it report `unknown` and show no warning.
+
 ## ADVICE — from the session that built Part F, for the owner and the sessions that follow (2026-11-14)
 
 Owner: *"Put in your advice as you know VSC and software better"*. **These are recommendations, not decisions.** A decision is only
@@ -801,11 +844,11 @@ Env) and A3 (the purity check with its red control) early, then let A2 (moving e
 time when someone is in that file anyway. A0 showed nothing is broken, so A2 is not urgent. Part C last, as written.
 
 **C. Three small things worth doing soon (none needs a decision; each is one PR).**
-1. **Put the node-only X0 witnesses into CI's fast checks**, `witness_x0_appdef.js` first. CI passed two changes that broke `main`'s own
+1. ✅ 2026-11-16 (§F.24, #3090: isolation, lens, appdef; deploy_cost + context need VS Code's TypeScript) **Put the node-only X0 witnesses into CI's fast checks**, `witness_x0_appdef.js` first. CI passed two changes that broke `main`'s own
    witnesses (archive §F.16, §F.19 "caught before the PR" was luck the second time). They need no browser and run in seconds.
-2. **Stamp the extension's version at pack time.** `package.json` says `0.1.0` for every build, so an installed copy cannot tell that it is
+2. ✅ 2026-11-16 (§F.25, #3092, as a content hash, not the version) **Stamp the extension's version at pack time.** `package.json` says `0.1.0` for every build, so an installed copy cannot tell that it is
    stale after a pull. Let `pack.js` write the commit into the version (or a visible "built from" line in a command's output).
-3. **Fix the two stale GitHub texts** (bim-ootb issue #2974, PR #2975: "138" should read 130) with a comment, not an edit of history.
+3. ✅ 2026-11-16 (correction comments: bim-ootb #2974 issuecomment-6903656757, #2975 issuecomment-6903657121) **Fix the two stale GitHub texts** (bim-ootb issue #2974, PR #2975: "138" should read 130) with a comment, not an edit of history.
 
 **D. How to keep the editor tooling healthy (the rules that made it trustworthy).**
 - **It never guesses.** Every answer is a lookup in something the repo generated, or a named reason why there is none. A new feature that
@@ -844,7 +887,7 @@ first, as §F.4, the next session's bounded task**; A0 runs in parallel if a sec
 | C | nothing; waits on B and D | C-1 part names + owners | |
 | D | nothing new; the multi-publisher list already exists (`types/globals.gen.d.ts`) | D-1 where the questions list lives | needs B's `owner` field |
 | E | `witness_kit/paths.js` (no behaviour change; witness: the same suite verdicts before and after) | E-1 the `PROVES:` header format | |
-| F | the three small PRs of ADVICE C · the X0 "New witness for this file" command | **F-19 (catalog + verb hover, RESUME 0b)**, then F-1, F-2, F-7 | F-18 ✅ 2026-11-15; F-19 follows the CLI + message lanes (2026-11-16) |
+| F | the X0 "New witness for this file" command (ADVICE C ✅ 2026-11-16) | **F-19 (catalog + verb hover, RESUME 0b)**, then F-1, F-2, F-7 | F-18 ✅ 2026-11-15; F-19 follows the CLI + message lanes (2026-11-16) |
 
 Ask the owner **one decision per message, with the recommendation** (START HERE 2). The recommendations are in each part and in ADVICE A.
 
@@ -885,6 +928,6 @@ Ask the owner **one decision per message, with the recommendation** (START HERE 
 | C | named APP parts | not started · open: C-1, C-2 |
 | D | owner table | not started · open: D-1, D-2 |
 | E | proof map | not started · `paths.js` ready · open: E-1, E-2 |
-| F | VS Code extension + facts server + the hovers | every unblocked row built (§F index) · §F.21 BIM trace + hover (#3043 #3047) · §F.22 ERP hover (#3055 #3057 #3059) · F-16 parity gate (#3050) · §F.23 BIM layered hover (#3064 #3069) · next: the X0 "New witness" command · open: F-19 (RESUME 0b), F-1, F-2, F-7, the F-12 step 2 token |
+| F | VS Code extension + facts server + the hovers | every unblocked row built (§F index) · §F.21 BIM trace + hover (#3043 #3047) · §F.22 ERP hover (#3055 #3057 #3059) · F-16 parity gate (#3050) · §F.23 BIM layered hover (#3064 #3069) · §F.24 X0 in CI (#3090) · §F.25 stale-copy stamp (#3092) · next: the X0 "New witness" command · open: F-19 (RESUME 0b), F-1, F-2, F-7, the F-12 step 2 token |
 
 **§VET** (the 2026-11-13 vetting pass of every claim in this file) is in the archive.
