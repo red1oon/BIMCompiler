@@ -20,7 +20,7 @@ Owner, closing 2026-11-15: *"get it well documented in the prompts/# consolidate
 
 **0. ✅ DONE 2026-11-15 (fourth session): F-18 answered, the provenance hover built and merged — §F.23 (bim-ootb #3064 + tooltip-in-window fix #3069); FILM 3 built (`prompts/FILM_IMMERSIVE_SOFTWARE.md` FILM 3 STATUS, awaiting the owner's review); the default-key + truss findings handed to the DXF2BIM lane (bim-ootb `prompts/DXF2BIM_ARCHITECT_REVIEW.md` §D113, #3070). NEXT = the X0 "New witness for this file" command (§F.21 OPEN), or Part A's remaining A2 (item 2).** The text below is the original hand-over.
 
-**0h. 2026-11-16 (fifth session):** A-6 asked and answered (Option 1, one global `CoreEdge`); A2-TIMING-2 spec written (the 4D pair). Status lines follow in the RESULT.
+**0h. 2026-11-16 (fifth session):** A-6 asked and answered (*"Option 1 (Recommended)"*: one global `CoreEdge`, Part A DECISIONS) and **A2-TIMING-2 built (bim-ootb #3122)**: the 4D pair times through the viewer's new edge, 4D cache identical. **NEXT:** `common/room_graph.js` + `viewer/schedule_inject.js` (timing), then `schedule_author.js` / `schedule_sync.js` (values), then the EDGE producers, then A3 (A2-TIMING-2 RESULT lists the traps).
 
 **0g. 2026-11-16, the owner's go for the NEXT session:** *"U can do browser run for those items new session"* (to: the parked items that need a browser: the F-1 headless Fetch back button and Part A's browser witnesses). That covers headless-browser runs for those items: one at a time, `nice -n 19`, never beside a live bake or GPU work. A witness that needs a legacy server another lane uses (W-DASH-SYNC writes into the 8088 pilot) still waits until that lane is asked. The local servers were cleaned up the same day: 3 orphaned till-film relays and 2 orphaned W-MODEL-SAVE daemons with their headless Chromes (source folders deleted, parent systemd); the iDempiere pilot and bimdoc servers were left running.
 
@@ -358,6 +358,24 @@ cache re-run covers them. Measured on bim-ootb `main` @ `8f2dc6b5`:
   the cached `main` run (`9098b76bb1ef_*`, 2026-11-14) line for line once ms values are masked, and `run.json` must be byte-identical apart from timings.
   Any other difference is investigated before merge. **Issue proved:** the 4D core timed its own § lines with the wall clock and the viewer had no
   edge; after, the timer comes from one installed edge, and schedules are unchanged.
+
+**A2-TIMING-2 RESULT (2026-11-16): ✅ DONE (witness), bim-ootb #3121 / PR #3122, merged as `80397d69` (CI fast-checks + e2e pass); re-run on `main`: W-CORE-TIMING 14/0 PASS, W-CORE-CLOCK-READS 4/0, W-ENV-VIEWS 7/0.** +94 / −23, 12 files. Logs read:
+- W-CORE-TIMING `§CORE_TIMING checks=14 failed=0 verdict=PASS`: the fake edge gives `§CPM_RUN … ms={contact:42,build:42,solve:42,total:126}`, `res.ms.total=126` and
+  `§GEO_ORDER … orderMs=42`; no edge gives `ms={contact:?,build:?,solve:?,total:?}`, `res.ms.total=null`, `orderMs=?`. **Red:** main's viewer copies FAIL 6
+  (T5-T7: `ms={1,4,2,7}`, `orderMs=2`, 5 + 2 clock calls); main's `ad_callout.js` FAILs T4 2/2 (the closure is not the global).
+- W-CORE-CLOCK-READS `pass=4 fail=0 ran=24` (both viewer files `clockReads=0`) · W-ENV-VIEWS `pass=7 fail=0` · W-RULE-FOLD-EDGE `VERDICT PASS rows=5`, R5 on the
+  real ERP page (headless, on the owner's 0g go; needs `PW=~/bim-ootb/tests/node_modules/playwright` in a worktree): `§ENV_EDGE_lines=1 §ENV_NO_DATE=0 chainOk=Y`.
+- **4D cache, one re-run** (`7fa3d835d478_*` vs main's `9098b76bb1ef_*`, same db keys, 119,568 elements): `witness.log` identical once ms are masked
+  (Duplex 55, HHS 51, Hospital 65, Terminal 75 lines); `run.json` differs ONLY in `builtAt` + `codeKey`. Timings print real values through the Node edge
+  (Hospital `orderMs=1161`, `§CELL_RUN ms={contact:910,axis+solve:1078,total:1988}`).
+- `scripts/bump.js` (erp v1086 → v1087, viewer v1709 → v1710, `ad_callout.js` 7 → 8 in `idempiere.html` + `capex/index.html`, gate 4 → 5, cpm 3 → 4):
+  `§BUMP_PARITY mode=block verdicts=13 new=[] tree=/tmp/wt-a6 scoped=partial verdict=PASS`, the same verdict set as the #3112 run (A2-TIMING-1's "14" was the
+  unscoped count). `audit_sw_precache` 268/268, 0 unlisted.
+- **Not covered by T5:** the CELL path's `§CELL_RUN` line (needs a building db + `LocationAxis`); the 4D cache run covers it (Hospital/Terminal take that path).
+- The CLI lane was told its door's `setEdge` now also fills the shared holder (no door edit). **Remaining A2:** `common/room_graph.js` (its
+  `_legalizeStats.ms` is read by `viewer/egress_sanity.js:552` with `.toFixed`, so a no-edge `null` must be handled there too), `viewer/schedule_inject.js`
+  (`materializeMs`/`persistMs`, read by `viewer/tests/witness_s7_inject_persist.js:166`), then the VALUE reads `schedule_author.js:3115/3448`,
+  `schedule_sync.js:36` (they need `CoreEdge.nowMs`/`uuid`, the viewer edge now exists), then the EDGE producers, then A3.
 
 ---
 
@@ -1047,7 +1065,7 @@ Ask the owner **one decision per message, with the recommendation** (START HERE 
 
 | Part | What | State |
 |---|---|---|
-| A | pure core + Env | **A0 ✅** · **A-1..A-5 ✅** · **A1 ✅** (#3007) · **A2** done for 15 files (#3010 #3013 #3016 #3021 #3026 #3030 #3033), remaining listed in RESUME 2, then A3 |
+| A | pure core + Env | **A0 ✅** · **A-1..A-5 ✅** · **A1 ✅** (#3007) · **A2** done for 15 files (#3010 #3013 #3016 #3021 #3026 #3030 #3033) + A2-TIMING-1 (#3110) + A-6 / A2-TIMING-2 (#3122), remaining listed in RESUME 2, then A3 |
 | B | manifest per app | not started · B0 ready · open: B-1 to B-4 |
 | C | named APP parts | not started · open: C-1, C-2 |
 | D | owner table | not started · open: D-1, D-2 |
