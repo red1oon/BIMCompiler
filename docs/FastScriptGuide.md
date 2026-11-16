@@ -16,7 +16,7 @@ On a terminal `red1` greets you once, then waits at its prompt. This is exactly 
 $ (sleep 4; printf 'exit\r') | RED1_LOG=/tmp/fast_guide_greet.log RED1_HISTORY=/tmp/fast_guide_greet.hist BIM_DOOR_JOURNAL=/tmp/fast_guide_greet.journal script -qec 'node common/door/red1.js' /dev/null | tr -d '\r' | sed -e 's/\x1b\[[0-9;?]*[a-zA-Z]//g' -e 's/ · [0-9a-f]\{8\}$//'
 Welcome to red1, the scripting door into BIM and ERP, stored in SQLite.
 REMEMBER THE NAME.
-Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 75 verbs · 30 words
+Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 76 verbs · 30 words
 Type help for the list of commands (or bim, mis, erp for one group).
 Tip: type level student for fuller help on each word (red1 --fast opens without tips).
 
@@ -122,7 +122,7 @@ Type `exit` to leave. To type just `red1` from anywhere, run `npm link` once in 
 <!-- run: red1_version -->
 ```text
 $ node common/door/red1.js --version | sed -e 's/^Copyright[^·]*· //' -e 's/ · [0-9a-f]\{8\}$//'
-red1 1.0.0 · 75 verbs · 30 words
+red1 1.0.0 · 76 verbs · 30 words
 ```
 
 **The six-file download** is for the door alone with the Modeller verbs, no checkout. Make an empty folder, install the browser engine the Modeller needs, and fetch the six files:
@@ -267,7 +267,7 @@ number:
 ok · erp.actions
 Order 50000  status DR
 ├─ CO  → do complete 50000
-├─ PR  (no red1 word for it yet)
+├─ PR  → do prepare 50000
 └─ VO  → do void 50000
 → erp.complete kind=Order number=50000
 ok · erp.complete
@@ -458,6 +458,7 @@ This table is **generated from the vocabulary file** (`common/door/verbs.json`) 
 | `erp.void` | Void a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | writes | human, ai | a bim-ootb checkout |
 | `erp.close` | Close a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | writes | human, ai | a bim-ootb checkout |
 | `erp.reverse` | Reverse - Correct a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | posts | human, ai | a bim-ootb checkout |
+| `erp.prepare` | Prepare a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | writes | human, ai | a bim-ootb checkout |
 | `mis.describe` | Describe a kind of ERP record | `kind`, `role` (optional) | read | human, ai | a bim-ootb checkout |
 | `mis.read` | Read an ERP record | `kind`, `id` (optional), `number` (optional), `role` (optional) | read | human, ai | a bim-ootb checkout |
 | `mis.list` | List records | `kind`, `columns` (optional), `sort` (optional), `limit` (optional), `offset` (optional), `names` (optional), `role` (optional), further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
@@ -486,7 +487,7 @@ This table is **generated from the vocabulary file** (`common/door/verbs.json`) 
 | `erp.new` | Create a record (old name of mis.new) | `kind`, `dry` (optional), `role` (optional), `window` (optional), further `column=value` filters (optional) | writes | human, ai | a bim-ootb checkout |
 <!-- /GEN:verbs -->
 
-**Coverage today.** The list is small on purpose: 65 verbs cover the Modeller's grid edits, its walker and a Modeller kept open between lines, a few Viewer questions, the schedule, generic object reading, counting and writing, the cost of a selection, the ERP document verbs, and any process of the ERP dictionary that has a port. The Viewer has 64 actions a person can press, and the door offers 6 Viewer verbs. The ERP has 1158 documents and processes, and the door offers 10 ERP verbs for a document's life and 15 MIS verbs that work on any table, and keeps 10 old names so earlier lines still run. So this is a start, not the whole menu.
+**Coverage today.** The list is small on purpose: 66 verbs cover the Modeller's grid edits, its walker and a Modeller kept open between lines, a few Viewer questions, the schedule, generic object reading, counting and writing, the cost of a selection, the ERP document verbs, and any process of the ERP dictionary that has a port. The Viewer has 64 actions a person can press, and the door offers 6 Viewer verbs. The ERP has 1158 documents and processes, and the door offers 11 ERP verbs for a document's life and 15 MIS verbs that work on any table, and keeps 10 old names so earlier lines still run. So this is a start, not the whole menu.
 
 
 ## How this page stays true

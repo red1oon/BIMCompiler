@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 7065b49039438599
+source_sha: 72198f6f900235d2
 lang: de
 ---
 
@@ -22,7 +22,7 @@ An einem Terminal begrüßt Sie `red1` einmal und wartet dann an seinem Prompt. 
 $ (sleep 4; printf 'exit\r') | RED1_LOG=/tmp/fast_guide_greet.log RED1_HISTORY=/tmp/fast_guide_greet.hist BIM_DOOR_JOURNAL=/tmp/fast_guide_greet.journal script -qec 'node common/door/red1.js' /dev/null | tr -d '\r' | sed -e 's/\x1b\[[0-9;?]*[a-zA-Z]//g' -e 's/ · [0-9a-f]\{8\}$//'
 Welcome to red1, the scripting door into BIM and ERP, stored in SQLite.
 REMEMBER THE NAME.
-Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 75 verbs · 30 words
+Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 76 verbs · 30 words
 Type help for the list of commands (or bim, mis, erp for one group).
 Tip: type level student for fuller help on each word (red1 --fast opens without tips).
 
@@ -128,7 +128,7 @@ Tippen Sie `exit`, um zu beenden. Um nur `red1` von überall zu tippen, führen 
 <!-- run: red1_version -->
 ```text
 $ node common/door/red1.js --version | sed -e 's/^Copyright[^·]*· //' -e 's/ · [0-9a-f]\{8\}$//'
-red1 1.0.0 · 75 verbs · 30 words
+red1 1.0.0 · 76 verbs · 30 words
 ```
 
 **Der Sechs-Dateien-Download** ist für die Tür allein mit den Modeller-Verben, ohne Checkout. Legen Sie einen leeren Ordner an, installieren Sie die Browser-Engine, die der Modeller braucht, und laden Sie die sechs Dateien:
@@ -273,7 +273,7 @@ number:
 ok · erp.actions
 Order 50000  status DR
 ├─ CO  → do complete 50000
-├─ PR  (no red1 word for it yet)
+├─ PR  → do prepare 50000
 └─ VO  → do void 50000
 → erp.complete kind=Order number=50000
 ok · erp.complete
@@ -464,6 +464,7 @@ Diese Tabelle wird **aus der Vokabeldatei erzeugt** (`common/door/verbs.json`), 
 | `erp.void` | Einen Beleg stornieren | `kind`, `id` (optional), `number` (optional), `role` (optional) | writes | human, ai | ein bim-ootb-Checkout |
 | `erp.close` | Einen Beleg schließen | `kind`, `id` (optional), `number` (optional), `role` (optional) | writes | human, ai | ein bim-ootb-Checkout |
 | `erp.reverse` | Einen Beleg umkehren - korrigieren | `kind`, `id` (optional), `number` (optional), `role` (optional) | posts | human, ai | ein bim-ootb-Checkout |
+| `erp.prepare` | Einen Beleg vorbereiten | `kind`, `id` (optional), `number` (optional), `role` (optional) | writes | human, ai | ein bim-ootb-Checkout |
 | `mis.describe` | Eine Art von ERP-Datensatz beschreiben | `kind`, `role` (optional) | read | human, ai | ein bim-ootb-Checkout |
 | `mis.read` | Einen ERP-Datensatz lesen | `kind`, `id` (optional), `number` (optional), `role` (optional) | read | human, ai | ein bim-ootb-Checkout |
 | `mis.list` | Datensätze auflisten | `kind`, `columns` (optional), `sort` (optional), `limit` (optional), `offset` (optional), `names` (optional), `role` (optional), weitere `column=value`-Filter (optional) | read | human, ai | ein bim-ootb-Checkout |
@@ -492,7 +493,7 @@ Diese Tabelle wird **aus der Vokabeldatei erzeugt** (`common/door/verbs.json`), 
 | `erp.new` | Einen Datensatz anlegen (alter Name von mis.new) | `kind`, `dry` (optional), `role` (optional), `window` (optional), weitere `column=value`-Filter (optional) | writes | human, ai | ein bim-ootb-Checkout |
 <!-- /GEN:verbs -->
 
-**Abdeckung heute.** Die Liste ist mit Absicht klein: 65 Verben decken die Rasterbearbeitungen des Modellers, seinen Walker und einen zwischen den Zeilen offen gehaltenen Modeller ab, einige Viewer-Fragen, den Zeitplan, das generische Lesen, Zählen und Schreiben von Objekten, die Kosten einer Auswahl, die ERP-Belegverben und jeden Prozess des ERP-Wörterbuchs, der einen Port hat. Der Viewer hat 64 Aktionen, die eine Person drücken kann, und die Tür bietet 6 Viewer-Verben. Das ERP hat 1158 Belege und Prozesse, und die Tür bietet 10 ERP-Verben für das Leben eines Belegs und 15 MIS-Verben, die auf jeder Tabelle arbeiten, und behält 10 alte Namen, damit frühere Zeilen weiter laufen. Das ist also ein Anfang, nicht die ganze Speisekarte.
+**Abdeckung heute.** Die Liste ist mit Absicht klein: 66 Verben decken die Rasterbearbeitungen des Modellers, seinen Walker und einen zwischen den Zeilen offen gehaltenen Modeller ab, einige Viewer-Fragen, den Zeitplan, das generische Lesen, Zählen und Schreiben von Objekten, die Kosten einer Auswahl, die ERP-Belegverben und jeden Prozess des ERP-Wörterbuchs, der einen Port hat. Der Viewer hat 64 Aktionen, die eine Person drücken kann, und die Tür bietet 6 Viewer-Verben. Das ERP hat 1158 Belege und Prozesse, und die Tür bietet 11 ERP-Verben für das Leben eines Belegs und 15 MIS-Verben, die auf jeder Tabelle arbeiten, und behält 10 alte Namen, damit frühere Zeilen weiter laufen. Das ist also ein Anfang, nicht die ganze Speisekarte.
 
 
 ## Wie diese Seite wahr bleibt

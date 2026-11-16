@@ -141,7 +141,7 @@ The last row is deliberate. Text that matches no verb is **never guessed at**:
 <!-- run: question -->
 ```text
 $ node door.js 'please widen the bay'
-{"request":"d-mwj8007q-3743428-1","verb":null,"actor":"human","status":"refused","answer":{"question":"I could not read that as a command. A command is app.verb key=value … Which one do you mean? Type help.","verbs":["modeller.lines","modeller.try_shift","viewer.counts","viewer.clashes","viewer.film_path","viewer.schedule_at","viewer.schedule_compare","modeller.widen_bay","modeller.walk","object.describe","object.read","object.history","object.update","object.attach","object.count","object.list","object.sum","object.group","witness.run","witness.last","legacy.status","legacy.query","mis.column","legacy.compare","idempiere.where","mis.pack","legacy.up","legacy.refresh","legacy.witness","legacy.check","legacy.plugin","model.open","model.convert","model.addbay","model.undo","model.save","model.close","erp.process","erp.order_state","erp.project_status","erp.ask","mis.lookup","viewer.cost","erp.find","erp.actions","erp.complete","erp.void","erp.close","erp.reverse","mis.describe","mis.read","mis.list","mis.sum","mis.group","mis.new","mis.update","mis.delete","mis.load","mis.add_window","ninja.exec","ninja.workflow","mis.diff","mis.menu","ninja.rollback","ninja.export","erp.column","erp.compare","erp.pack","erp.legacy_plugin","erp.describe","erp.read","erp.list","erp.sum","erp.group","erp.new"]},"why":"not a command: \"please widen the bay\"","notChecked":[],"ops":[],"next":[],"ms":3}
+{"request":"d-mwjpx4ha-3983540-1","verb":null,"actor":"human","status":"refused","answer":{"question":"I could not read that as a command. A command is app.verb key=value … Which one do you mean? Type help.","verbs":["modeller.lines","modeller.try_shift","viewer.counts","viewer.clashes","viewer.film_path","viewer.schedule_at","viewer.schedule_compare","modeller.widen_bay","modeller.walk","object.describe","object.read","object.history","object.update","object.attach","object.count","object.list","object.sum","object.group","witness.run","witness.last","legacy.status","legacy.query","mis.column","legacy.compare","idempiere.where","mis.pack","legacy.up","legacy.refresh","legacy.witness","legacy.check","legacy.plugin","model.open","model.convert","model.addbay","model.undo","model.save","model.close","erp.process","erp.order_state","erp.project_status","erp.ask","mis.lookup","viewer.cost","erp.find","erp.actions","erp.complete","erp.void","erp.close","erp.reverse","erp.prepare","mis.describe","mis.read","mis.list","mis.sum","mis.group","mis.new","mis.update","mis.delete","mis.load","mis.add_window","ninja.exec","ninja.workflow","mis.diff","mis.menu","ninja.rollback","ninja.export","erp.column","erp.compare","erp.pack","erp.legacy_plugin","erp.describe","erp.read","erp.list","erp.sum","erp.group","erp.new"]},"why":"not a command: \"please widen the bay\"","notChecked":[],"ops":[],"next":[],"ms":3}
 ```
 
 ### Reading the reply
@@ -429,7 +429,7 @@ DocumentNo  DocStatus  GrandTotal
 shown 3 of 14
 ```
 
-`mis.sum` adds a number column up exactly. Decimals are added as decimals, never as floating point, so money does not drift. `mis.group` counts the records for each value of a column, most common first:
+`mis.sum` adds a number column up exactly. Decimals are added as decimals, never as floating point, so money does not drift. A money column (an Amount or a Price) of a table that has a currency is added per currency: two currencies are never added, so a sum over orders in USD and EUR answers one total for each. `mis.group` counts the records for each value of a column, most common first:
 
 <!-- run: sum_orders -->
 ```text
@@ -439,10 +439,11 @@ table: C_Order
 column: GrandTotal
 filters: [{"column":"DocStatus","value":"CO"}]
 n: 14
-sum: 19505.9
+sum: 
+byCurrency: [{"currency":100,"iso":"USD","n":12,"sum":"19048.2"},{"currency":102,"iso":"EUR","n":2,"sum":"457.7"}]
 population: 44
 verdict: OK
-summary: 19505.9 = sum of GrandTotal over 14 Order
+summary: amounts in 2 currencies are not added: USD 19048.2 (12) · EUR 457.7 (2); one currency: add C_Currency_ID=<id>
 ```
 
 <!-- run: group_orders -->
@@ -619,10 +620,10 @@ Every `mis.*` verb takes `role=`, the id of a role of the ERP. **Without a role 
 
 <!-- run: mis_role -->
 ```text
-$ for r in '' ' role=103' ' role=12000'; do BIM_OBJECT_OPLOG=/tmp/fast_guide_mis.ops node common/door/door.js --list "mis.sum kind=C_Order column=GrandTotal$r" | grep -E '^(n|sum):' | tr '\n' ' '; echo; done
-n: 43 sum: 74936.76 
-n: 8 sum: 9914.07 
-n: 27 sum: 55108.62
+$ for r in '' ' role=103' ' role=12000'; do BIM_OBJECT_OPLOG=/tmp/fast_guide_mis.ops node common/door/door.js --list "mis.sum kind=C_Order column=GrandTotal$r" | grep -E '^summary:'; done
+summary: amounts in 2 currencies are not added: USD 74479.06 (41) · EUR 457.7 (2); one currency: add C_Currency_ID=<id>
+summary: amounts in 2 currencies are not added: USD 9685.22 (7) · EUR 228.85 (1); one currency: add C_Currency_ID=<id>
+summary: 55108.62 USD = sum of GrandTotal over 27 Order
 ```
 
 A record outside the role's records answers exactly as a record that does not exist. A column the role may only read cannot be changed. A kind the role has no window for is refused; role 103 has no window that shows Tax:
@@ -783,7 +784,7 @@ A feature can be switched on later, for one table, without touching the workbook
 
 <!-- run: nx_wf cut=200 -->
 ```text
-$ cp common/door/samples/Ninja_Practice.xlsx . ; rm -f /tmp/fast_guide_wf.ops; D='BIM_OBJECT_OPLOG=/tmp/fast_guide_wf.ops node common/door/door.js --list'; eval "$D 'ninja.exec file=Ninja_Practice.xlsx'" | grep -E '^ops:'; eval "$D 'mis.new kind=PR_Visit Name=Before PR_Patient_ID=1'" | grep -E '^number:'; eval "$D 'ninja.workflow table=PR_Visit'" | grep -E '^(added|fields|rowsFilled|ops):'; eval "$D 'ninja.workflow table=PR_Visit'" | grep -E '^(alreadyDone|ops):'; eval "$D 'mis.new kind=PR_Visit Name=After PR_Patient_ID=1'" | grep -E '^docStatus:'; eval "$D 'mis.list kind=PR_Visit columns=Name,DocStatus,DocAction,Processed'"; eval "$D 'erp.complete kind=PR_Visit id=1'" | grep reason; rm -f Ninja_Practice.xlsx
+$ cp common/door/samples/Ninja_Practice.xlsx . ; rm -f /tmp/fast_guide_wf.ops; D='BIM_OBJECT_OPLOG=/tmp/fast_guide_wf.ops node common/door/door.js --list'; eval "$D 'ninja.exec file=Ninja_Practice.xlsx'" | grep -E '^ops:'; eval "$D 'mis.new kind=PR_Visit Name=Before PR_Patient_ID=1'" | grep -E '^number:'; eval "$D 'ninja.workflow table=PR_Visit'" | grep -E '^(added|fields|rowsFilled|ops):'; eval "$D 'ninja.workflow table=PR_Visit'" | grep -E '^(alreadyDone|ops):'; eval "$D 'mis.new kind=PR_Visit Name=After PR_Patient_ID=1'" | grep -E '^docStatus:'; eval "$D 'mis.list kind=PR_Visit columns=Name,DocStatus,DocAction,Processed'"; eval "$D 'erp.complete kind=PR_Visit id=1'" | grep -E '^after:'; rm -f Ninja_Practice.xlsx
 ops: 151
 number: Before
 added: ["DocStatus","DocAction","Processed","DocumentNo","IsApproved"]
@@ -797,10 +798,10 @@ Name    DocStatus  DocAction  Processed
 Before  DR         CO         N
 After   DR         CO         N
 shown 2 of 2
-reason: Complete was not done: PR Visit has the document columns but no document class yet, so nothing says what Complete does on it (DocStatus stays DR)
+after: {"docStatus":"CO","docAction":"CL","processed":"Y","grandTotal":null}
 ```
 
-It does not yet say what *Complete* does on such a table: the answer's `notMade` names what is still missing, and `erp.complete` is refused in plain words until then. A table that came with the system is refused.
+*Complete* on such a table runs the generic document class, the one the older Ninja's Code Maker writes for a table with a DocAction column: Prepare, Complete, Close and Void work as the system's simple documents do, Reverse and Re-activate are refused. The answer's `notMade` names what is still missing (the workflow rows). A table that came with the system is refused.
 
 #### Undo a bundle, and write one back as a workbook: `ninja.rollback`, `ninja.export`
 
