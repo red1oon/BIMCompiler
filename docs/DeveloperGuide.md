@@ -62,6 +62,43 @@ lines and checks the values in them. A saved witness log starts with `§LOG_STAM
 So proof adds no weight to a page load: the witnesses sit beside the app, never inside it. The only part of the proof
 that ships is the `§` lines, and those are part of the code anyway.
 
+**The whole picture: the dev side beside the deployed side** (bim-ootb `main` @ `9b7d2f86`, 2026-11-16).
+
+```mermaid
+flowchart LR
+  subgraph DEV["DEV SIDE: a developer's machine or CI (never loaded by a page)"]
+    W["Witnesses<br/>1,403 witness_*.js<br/>2,112 JS files in test folders<br/>284,795 lines"]
+    T["Dev tools<br/>devtools/ (VS Code X0): 52 files, 5,385 lines<br/>scripts/: 133 files, 17,400 lines"]
+    N["node witness_x.js<br/>exit 0 / 1 / 2<br/>log in logs/, line 1 = §LOG_STAMP"]
+    W --> N
+    T --> N
+  end
+  subgraph APP["THE SAME FILES: the app code"]
+    C["App code<br/>1,004 JS files, 313,887 lines<br/>63 HTML pages<br/>22,429 lines carry a § tag"]
+    V["Vendored libraries<br/>127 files, 30.1 MB"]
+  end
+  subgraph LIVE["DEPLOYED SIDE: github.io, then the user's browser"]
+    D["Deploy (deploy-pages.yml)<br/>minifies its own JS: 644 files<br/>16.6 MB to 8.6 MB, gzip 5.4 MB to 2.8 MB"]
+    P["Page load<br/>service-worker precache:<br/>viewer 268, ERP 403, Modeller 157 entries<br/>witness entries: 0<br/>the rest loads lazily, on use"]
+    K["Browser console<br/>the § lines print here too"]
+    D --> P --> K
+  end
+  N -- "require() the real file<br/>and read its § lines" --> C
+  C --> D
+  V --> D
+```
+
+| Number | Value | Where it comes from |
+|---|---|---|
+| Witness files | 1,403 named `witness_*.js`; 2,112 JS files in test folders (with helpers and fixtures), 284,795 lines, 23.4 MB | `git ls-files` at `9b7d2f86` |
+| App code | 1,004 JS files, 313,887 lines, 23.6 MB, plus 63 HTML pages (38,399 lines) | the same, without test folders, `scripts/`, `devtools/`, `docs/`, `prompts/` and vendored `lib/` |
+| What the deploy ships of its own JS | 644 files; 16,959 KB to 8,841 KB minified; 5,543 KB to 2,831 KB gzipped | the deploy's own log line, `§PAYLOAD-MIN-TOTAL`, run `43830642465` |
+| What a page caches up front | viewer 268, ERP 403, Modeller 157 precache entries; **0** of them a witness | `PRECACHE_ASSETS` in the three `sw.js` |
+| `§` lines that ship | 22,429 lines of app code contain `§` (a text count: comments that mention a tag count too) | grep over the app files |
+
+The two sides share one set of files. A developer's witness runs that exact file in Node. A user's browser runs it from the site, minified,
+with no witness beside it. Re-measure with `bim-compiler/scripts/code_arch/size_stack.sh <bim-ootb tree>`; it prints one `§STACK_SIZE` line per number.
+
 **Why this shape.** (1) The proof runs on the exact file that ships, with no test copy that can drift. (2) No build step and no test
 framework, which keeps the project's no-install rule (§3). (3) A test that cannot fail is not a test. Every new witness carries a
 **red control**, a case that must FAIL, and it is run once against the old code to show that it does.
