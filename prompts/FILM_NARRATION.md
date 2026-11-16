@@ -217,6 +217,13 @@ Every new film is made in the style of **CLI in Action** (`scripts/film_cli_in_a
 2. **Real keyboard sounds on the typing** (real recorded presses, never synthesised: eklee / qubodup, OpenGameArt "Single Key Press Sounds", CC BY 3.0, folder `~/.local/share/film_narration/keys_eklee/`, credited on the end card): the line is typed first with only the key sounds, the voice starts after the return key. Check **K2** (`k2.py`) must PASS: no voice over the typing, key track audible.
 3. Build from `scripts/film_cli_in_action/` (copy it; `FILM_LANG=en|zh|th`, one out folder per language, the lower frame captured in that language). A film that is not about a terminal still gets the two frames and the typed-line-plus-key-sounds beat structure where a command is shown.
 
+## ▶ HOUSE STYLE — THE LAST CARD OF EVERY FILM (owner, 2026-11-16: *"Make a note in FILM_NARRATION.md that last page should have what is in Immersive_ film showing prior art learning and credentials. It is fine for just done, need not redo."*)
+Every film ends on ONE last card with what the "Immersive Software" films' last card carries (`prompts/FILM_IMMERSIVE_SOFTWARE.md`, FILM 1 L18, FILM 2 L52, FILM 3 L92; built by `scripts/film_immersive_software/cards.js`):
+1. **Prior art, "what this learned from":** only sources this lane READ, each with what was taken from it (e.g. iDempiere `ADTabpanel.java:837`, the Pixel History of RenderDoc); the guard's check P cites the exact places, so no source on the card was not read. "Not found in this search" where nothing was found; never "first" or "novel".
+2. **Credentials:** the PR numbers the film shows and the witness verdicts that prove its claims (e.g. `W-RED1-POST 7/0`), read from the build's own logs.
+3. **Measured cost where it applies** (memory with / without the feature after a forced GC, time of the slow step), never estimated; and the key-sound credit; and "translated by the build session, not reviewed by a native speaker" on a translated cut.
+Fonts and width checked by `cards.js` (no overflow: the card check measures width and height). **Films already built need not be redone** (owner): Fast Script ERP EN/ZH/MS/TH rc2 (2026-11-16) keep their end card; the rule applies from the next film or the next rebuild.
+
 ## ▶ PLAYBOOK — "make a narrated / dialogue film" (read this first; written 2026-10-03 after 7 films shipped)
 **What red1 likes (settled, don't re-ask):** a LIVELY two-voice DIALOGUE (F asks/reacts, M explains), not a monologue
 readout. Every pause filled where the picture allows. Questions must sound like questions (measured, §NARR_TONE).

@@ -129,6 +129,7 @@ top-to-bottom to zero in whatever file it lives:
   to the live superset 2026-06-16 (`21f7bbd2`). If the guard ABORTS: your tree is missing live pages — `git merge
   origin/master` to become the superset (or `ALLOW_SHRINK=1 paths=...` to bless an intentional removal), then
   re-deploy. Never `--force` a thin tree over `gh-pages`.
+- **Translated pages travel with their English (owner 2026-11-16, *"once those pages are touched, translations automatically done, without your session been active. Responsibility belongs to whichever session touches them."*):** a session that changes an English page that has translations (`docs/<Page>.<lang>.md` exists) syncs and translates them in the SAME PR and docs deploy. Use `scripts/guide/i18n_sync.js` and W-DOCS-I18N; the steps are in `prompts/DOCS_I18N.md` §6g. No handing off to another session.
 - **Push before you finish (every session):** committing saves work to THIS disk only — `git push` is the backup
   and the only thing that lets work reach `master`/other branches. Leave NO committed-but-unpushed branch at
   session end (it caused a 63-commit single-copy near-miss, 2026-06-16). Pushing is a clean fast-forward to your
