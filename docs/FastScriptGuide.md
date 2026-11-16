@@ -44,7 +44,7 @@ Read the picture from left to right.
 
 You need Node 18 or newer. These steps were run on Node 18.19.
 
-**The Modeller verbs need four files.** Make an empty folder, install the browser engine, and download them:
+**The Modeller verbs need six files.** Make an empty folder, install the browser engine, and download them:
 
 ```bash
 mkdir fastscript && cd fastscript
@@ -54,11 +54,13 @@ curl -O https://red1oon.github.io/bim-ootb/modeller/tools/edit_cli.js
 curl -O https://red1oon.github.io/bim-ootb/modeller/tools/bim_mcp.js
 curl -O https://red1oon.github.io/bim-ootb/common/door/door.js
 curl -O https://red1oon.github.io/bim-ootb/common/door/verbs.json
+curl -O https://red1oon.github.io/bim-ootb/common/door/msg_core.js
+curl -O https://red1oon.github.io/bim-ootb/common/door/vocab/messages.json
 ```
 
-Keep all four in the same folder. `door.js` reads the verb list from `verbs.json` and runs `edit_cli.js`, which opens the live Modeller page with no window. If a file is missing, the door says which one and prints its `curl` line. `bim_mcp.js` is only for connecting an AI; the commands on this page do not use it.
+Keep all six in the same folder. `door.js` reads the verb list from `verbs.json` and its messages from `messages.json` (through `msg_core.js`), and runs `edit_cli.js`, which opens the live Modeller page with no window. If a file is missing, the door says which one and prints its `curl` line. `bim_mcp.js` is only for connecting an AI; the commands on this page do not use it.
 
-**The Viewer, object and schedule verbs need a full checkout.** They are not in the four files. Get the whole `bim-ootb` repository (`git clone https://github.com/red1oon/bim-ootb`) and run `node common/door/door.js` from its top folder instead of `node door.js`. The [verb table](#the-verbs) says, for each verb, which of the two it needs. A one-file download for the Viewer is not built yet.
+**The Viewer, object and schedule verbs need a full checkout.** They are not in the six files. Get the whole `bim-ootb` repository (`git clone https://github.com/red1oon/bim-ootb`) and run `node common/door/door.js` from its top folder instead of `node door.js`. The [verb table](#the-verbs) says, for each verb, which of the two it needs. A one-file download for the Viewer is not built yet.
 
 ## Your first command
 
@@ -67,7 +69,7 @@ One line, one verb, `key=value` pairs with no spaces around the `=`. Ask the Hos
 <!-- run: lines cut=700 -->
 ```text
 $ node door.js 'modeller.lines building=HospitalGarage'
-{"request":"d-mwhmmeq9-2276636-1","verb":"modeller.lines","actor":"human","status":"ok","answer":{"ok":true,"building":"HospitalGarage","edits":[],"ms":16010,"model":{"grid_source":"column-derived","system":"column-framed","material":"RC","mixed":true,"girders":228,"rotation_deg":-2,"frame":"building","lines":[{"id":"gx0","axis":"x","pos":128.131,"world":132.184},{"id":"gx1","axis":"x","pos":129.223,"world":133.277},{"id":"gx2","axis":"x","pos":133.277,"world":137.334},{"id":"gx3","axis":"x","pos":133.795,"world":137.851},{"id":"gx4","axis":"x","pos":134.811,"world":138.868},{"id":"gx5","axis":"x","pos":145.987,"world":150.051},{"id":"gx6","axis":"x","pos":157.163,"world":161.234},{"id":"gx7…
+{"request":"d-mwiqhn1b-3186337-1","verb":"modeller.lines","actor":"human","status":"ok","answer":{"ok":true,"building":"HospitalGarage","edits":[],"ms":15019,"model":{"grid_source":"column-derived","system":"column-framed","material":"RC","mixed":true,"girders":228,"rotation_deg":-2,"frame":"building","lines":[{"id":"gx0","axis":"x","pos":128.131,"world":132.184},{"id":"gx1","axis":"x","pos":129.223,"world":133.277},{"id":"gx2","axis":"x","pos":133.277,"world":137.334},{"id":"gx3","axis":"x","pos":133.795,"world":137.851},{"id":"gx4","axis":"x","pos":134.811,"world":138.868},{"id":"gx5","axis":"x","pos":145.987,"world":150.051},{"id":"gx6","axis":"x","pos":157.163,"world":161.234},{"id":"gx7…
 ```
 
 It opens the Modeller and the building, so it takes 10 to 40 seconds. What you see is one line of JSON, an **envelope**. Only the start is shown here; the grid has more lines than fit. The answer is the app's own, unchanged, inside `answer`. Here `gx5` is at 145.987 m and `gx6` at 157.163 m on the building's own grid. `status` is `ok`.
@@ -90,9 +92,9 @@ The exit code is the first answer: `0` means ok, `3` means the app gave an answe
 <!-- run: widen_steps cut=200 -->
 ```text
 $ grep -o '"request":"[^"]*","verb":"[^"]*","actor":"[^"]*","status":"[^"]*"' widen.json
-"request":"d-mwhmmrdh-2276921-1","verb":"modeller.widen_bay","actor":"human","status":"refused"
-"request":"d-mwhmmrdh-2276921-1.1","verb":"modeller.lines","actor":"human","status":"ok"
-"request":"d-mwhmmrdh-2276921-1.2","verb":"modeller.try_shift","actor":"human","status":"refused"
+"request":"d-mwiqhyza-3186904-1","verb":"modeller.widen_bay","actor":"human","status":"refused"
+"request":"d-mwiqhyza-3186904-1.1","verb":"modeller.lines","actor":"human","status":"ok"
+"request":"d-mwiqhyza-3186904-1.2","verb":"modeller.try_shift","actor":"human","status":"refused"
 ```
 
 The first step read the grid. It found the bay now:
@@ -164,8 +166,8 @@ A script runs top to bottom and **stops at the first line that is not ok**. Here
 <!-- run: script_status -->
 ```text
 $ grep -o '"request":"[^"]*","verb":"[^"]*","actor":"[^"]*","status":"[^"]*"' bay.json
-"request":"d-mwhmni28-2277438-2","verb":"modeller.lines","actor":"human","status":"ok"
-"request":"d-mwhmntjy-2277438-3","verb":"modeller.try_shift","actor":"human","status":"ok"
+"request":"d-mwiqis8z-3188092-2","verb":"modeller.lines","actor":"human","status":"ok"
+"request":"d-mwiqj50r-3188092-3","verb":"modeller.try_shift","actor":"human","status":"ok"
 ```
 
 At exactly 12 m the app finds no new problem: the count of beam spans over the limit stays where it was.
@@ -195,7 +197,7 @@ The last row is deliberate. Text that matches no verb is **never guessed at**:
 <!-- run: question -->
 ```text
 $ node door.js 'please widen the bay'
-{"request":"d-mwhmo809-2277927-1","verb":null,"actor":"human","status":"refused","answer":{"question":"I could not read that as a command. A command is app.verb key=value … Which one do you mean? Type help.","verbs":["modeller.lines","modeller.try_shift","viewer.counts","viewer.clashes","viewer.film_path","viewer.schedule_at","viewer.schedule_compare","modeller.widen_bay","modeller.walk","object.describe","object.read","object.history","object.update","object.attach","object.count","object.list","object.sum","object.group","witness.run","witness.last","legacy.status","legacy.query","mis.column","legacy.compare","idempiere.where","mis.pack","legacy.up","legacy.refresh","legacy.witness","legacy.check","legacy.plugin","model.open","model.convert","model.addbay","model.undo","model.save","model.close","erp.find","erp.actions","erp.complete","erp.void","erp.close","erp.reverse","mis.describe","mis.read","mis.list","mis.sum","mis.group","mis.new","mis.update","mis.delete","mis.load","mis.add_window","ninja.exec","ninja.workflow","mis.diff","mis.menu","ninja.rollback","ninja.export","erp.column","erp.compare","erp.pack","erp.legacy_plugin","erp.describe","erp.read","erp.list","erp.sum","erp.group","erp.new"]},"why":"not a command: \"please widen the bay\"","notChecked":[],"ops":[],"next":[],"ms":0}
+{"request":"d-mwiqjlcw-3189389-1","verb":null,"actor":"human","status":"refused","answer":{"question":"I could not read that as a command. A command is app.verb key=value … Which one do you mean? Type help.","verbs":["modeller.lines","modeller.try_shift","viewer.counts","viewer.clashes","viewer.film_path","viewer.schedule_at","viewer.schedule_compare","modeller.widen_bay","modeller.walk","object.describe","object.read","object.history","object.update","object.attach","object.count","object.list","object.sum","object.group","witness.run","witness.last","legacy.status","legacy.query","mis.column","legacy.compare","idempiere.where","mis.pack","legacy.up","legacy.refresh","legacy.witness","legacy.check","legacy.plugin","model.open","model.convert","model.addbay","model.undo","model.save","model.close","erp.process","mis.lookup","viewer.cost","erp.find","erp.actions","erp.complete","erp.void","erp.close","erp.reverse","mis.describe","mis.read","mis.list","mis.sum","mis.group","mis.new","mis.update","mis.delete","mis.load","mis.add_window","ninja.exec","ninja.workflow","mis.diff","mis.menu","ninja.rollback","ninja.export","erp.column","erp.compare","erp.pack","erp.legacy_plugin","erp.describe","erp.read","erp.list","erp.sum","erp.group","erp.new"]},"why":"not a command: \"please widen the bay\"","notChecked":[],"ops":[],"next":[],"ms":8}
 ```
 
 ## Reading the reply
@@ -224,7 +226,7 @@ The five statuses, each from a real run:
 <!-- run: error -->
 ```text
 $ node door.js 'modeller.lines'
-{"request":"d-mwhmo856-2277937-1","verb":"modeller.lines","actor":"human","status":"error","answer":null,"why":"missing input: building","notChecked":[],"ops":[],"next":[],"ms":2}
+{"request":"d-mwiqjlky-3189400-1","verb":"modeller.lines","actor":"human","status":"error","answer":null,"why":"missing input: building","notChecked":[],"ops":[],"next":[],"ms":6}
 ```
 
 **claim.** The line is understood, but the actor has no proof that allows it, so the door **holds it and does not run it**. This is the safety rule for an AI, and it comes from the verb, not from the actor. See [What is a claim](#what-is-a-claim).
@@ -232,7 +234,7 @@ $ node door.js 'modeller.lines'
 <!-- run: claim -->
 ```text
 $ node door.js --actor ai --request ai-1 'object.update building=Duplex kind=Element uu=abc column=Name value=x'
-{"request":"ai-1","verb":"object.update","actor":"ai","status":"claim","answer":null,"why":"actor ai has proof \"local-user\", which allows read/trial verbs; object.update is writes. Held as a claim, not run. A person confirms it with: door.js --confirm ai-1","notChecked":[],"ops":[],"next":[],"ms":5}
+{"request":"ai-1","verb":"object.update","actor":"ai","status":"claim","answer":null,"why":"actor ai has proof \"local-user\", which allows read/trial verbs; object.update is writes. Held as a claim, not run. A person confirms it with: door.js --confirm ai-1","notChecked":[],"ops":[],"next":[],"ms":11}
 ```
 
 **inconclusive.** The app could not judge, and says so. It is never turned into an `ok`. Here the Viewer has no clash rule for the pair ARC and ZZZ. This one needs a checkout:
@@ -240,7 +242,7 @@ $ node door.js --actor ai --request ai-1 'object.update building=Duplex kind=Ele
 <!-- run: inconclusive -->
 ```text
 $ node common/door/door.js 'viewer.clashes building=Duplex discA=ARC discB=ZZZ'
-{"request":"d-mwhmo8hh-2277957-1","verb":"viewer.clashes","actor":"human","status":"inconclusive","answer":null,"why":"the Viewer could not answer (exit 1): the Viewer says INCONCLUSIVE: no rule for ARC/ZZZ in clash_rules.json","notChecked":[],"ops":[],"next":[],"ms":24342}
+{"request":"d-mwiqjly7-3189440-1","verb":"viewer.clashes","actor":"human","status":"inconclusive","answer":null,"why":"the Viewer could not answer (exit 1): the Viewer says INCONCLUSIVE: no rule for ARC/ZZZ in clash_rules.json","notChecked":[],"ops":[],"next":[],"ms":19539}
 ```
 
 ### What is a claim
@@ -252,7 +254,7 @@ Each actor has a proof. A person at the terminal is trusted for every class. An 
 <!-- run: claim_email -->
 ```text
 $ node door.js --actor email --request mail-0 'modeller.try_shift building=HospitalGarage line=gx6 move=1.824'
-{"request":"mail-0","verb":"modeller.try_shift","actor":"email","status":"claim","answer":null,"why":"actor email has proof \"none\", which allows read verbs; modeller.try_shift is trial. Held as a claim, not run. A person confirms it with: door.js --confirm mail-0","notChecked":[],"ops":[],"next":[],"ms":2}
+{"request":"mail-0","verb":"modeller.try_shift","actor":"email","status":"claim","answer":null,"why":"actor email has proof \"none\", which allows read verbs; modeller.try_shift is trial. Held as a claim, not run. A person confirms it with: door.js --confirm mail-0","notChecked":[],"ops":[],"next":[],"ms":7}
 ```
 
 A held claim is not run, not queued and not lost: it is in the journal, under its request id. The door does not confirm anything on anyone's behalf.
@@ -264,7 +266,7 @@ A person lets a held claim through **by its request id**, so the line that runs 
 <!-- run: confirm_claim -->
 ```text
 $ node door.js --journal claims.jsonl --actor email --request mail-1 'modeller.try_shift building=HospitalGarage line=gx6 move=0.824'
-{"request":"mail-1","verb":"modeller.try_shift","actor":"email","status":"claim","answer":null,"why":"actor email has proof \"none\", which allows read verbs; modeller.try_shift is trial. Held as a claim, not run. A person confirms it with: door.js --confirm mail-1","notChecked":[],"ops":[],"next":[],"ms":2}
+{"request":"mail-1","verb":"modeller.try_shift","actor":"email","status":"claim","answer":null,"why":"actor email has proof \"none\", which allows read verbs; modeller.try_shift is trial. Held as a claim, not run. A person confirms it with: door.js --confirm mail-1","notChecked":[],"ops":[],"next":[],"ms":7}
 ```
 
 `--claims` lists what is being held:
@@ -306,7 +308,7 @@ A verb can also ask the model itself what it holds. `object.describe` is **refle
 <!-- run: describe cut=520 -->
 ```text
 $ node common/door/door.js 'object.describe building=Duplex kind=Element'
-{"request":"d-mwhmp6f0-2278556-1","verb":"object.describe","actor":"human","status":"ok","answer":{"kind":"Element","table":"elements_meta","uu":"3027c2ed-8cb6-5ccb-ae8c-fd7df2eca264","key":"elements_meta_uu","highVolume":true,"properties":[{"name":"guid","label":"GUID","type":"string","mandatory":true,"updateable":false,"key":false,"parent":false,"length":255,"displayed":true,"seq":10,"fieldReadOnly":true,"allowCopy":false},{"name":"ifc_class","label":"IFC Class","type":"list","mandatory":false,"updateable":true,"…
+{"request":"d-mwiqkdzw-3190928-1","verb":"object.describe","actor":"human","status":"ok","answer":{"kind":"Element","table":"elements_meta","uu":"3027c2ed-8cb6-5ccb-ae8c-fd7df2eca264","key":"elements_meta_uu","highVolume":true,"properties":[{"name":"guid","label":"GUID","type":"string","mandatory":true,"updateable":false,"key":false,"parent":false,"length":255,"displayed":true,"seq":10,"fieldReadOnly":true,"allowCopy":false},{"name":"ifc_class","label":"IFC Class","type":"list","mandatory":false,"updateable":true,"…
 ```
 
 Which methods may an `Element` use?
@@ -326,7 +328,7 @@ An unknown kind is an error that lists the kinds the model has, so a wrong guess
 <!-- run: count_rooms -->
 ```text
 $ node common/door/door.js 'object.count building=Duplex kind=Room'
-{"request":"d-mwhmp7mf-2278599-1","verb":"object.count","actor":"human","status":"ok","answer":{"kind":"Room","table":"model_room","filters":[],"count":5,"population":5,"verdict":"OK","summary":"5 Room"},"why":null,"notChecked":[],"ops":[],"next":[],"ms":594}
+{"request":"d-mwiqkfde-3190996-1","verb":"object.count","actor":"human","status":"ok","answer":{"kind":"Room","table":"model_room","filters":[],"count":5,"population":5,"verdict":"OK","summary":"5 Room"},"why":null,"notChecked":[],"ops":[],"next":[],"ms":614}
 ```
 
 Add `column=value` to narrow the count. The column must be a property of the kind (`object.describe` lists them), and the answer keeps the **population**, the number before narrowing:
@@ -334,15 +336,15 @@ Add `column=value` to narrow the count. The column must be a property of the kin
 <!-- run: count_storey -->
 ```text
 $ node common/door/door.js 'object.count building=Duplex kind=Room storey="Level 1"'
-{"request":"d-mwhmp87z-2278619-1","verb":"object.count","actor":"human","status":"ok","answer":{"kind":"Room","table":"model_room","filters":[{"column":"storey","value":"Level 1"}],"count":2,"population":5,"verdict":"OK","summary":"2 Room where storey = Level 1 (of 5)"},"why":null,"notChecked":[],"ops":[],"next":[],"ms":569}
+{"request":"d-mwiqkg0w-3191055-1","verb":"object.count","actor":"human","status":"ok","answer":{"kind":"Room","table":"model_room","filters":[{"column":"storey","value":"Level 1"}],"count":2,"population":5,"verdict":"OK","summary":"2 Room where storey = Level 1 (of 5)"},"why":null,"notChecked":[],"ops":[],"next":[],"ms":714}
 ```
 
-A column the kind does not have is an error that names it and lists the real ones. It is never read as "no match":
+A column the kind does not have is refused, and the answer names it and lists the real ones. It is never read as "no match":
 
 <!-- run: count_badcol cut=330 -->
 ```text
 $ node common/door/door.js 'object.count building=Duplex kind=Room floor=1'
-{"request":"d-mwhmp8u8-2278641-1","verb":"object.count","actor":"human","status":"error","answer":null,"why":"the object engine could not answer (exit 1): kind Room has no property \"floor\" (its properties: guid, type, name, parent_guid, object_type, predefined_type, center_x, center_y, center_z, size_x, size_y, size_z, room_gu…
+{"request":"d-mwiqkgro-3191109-1","verb":"object.count","actor":"human","status":"refused","answer":{"refused":true,"reason":"kind Room has no property \"floor\"; none is close, its properties: guid, type, name, parent_guid, object_type, predefined_type, center_x, center_y, center_z, size_x, size_y, size_z, room_guid, elevation,…
 ```
 
 A model with no room at all does not answer `0`. It answers `inconclusive`, because nothing was counted. A zero you can trust is a narrowed count inside a population that is not empty.
@@ -492,7 +494,7 @@ docStatus:
 given: ["Value","Name"]
 defaulted: 32
 filled: ["ad_client_id","ad_org_id","c_bp_group_id","iscustomer","isvendor","isemployee","isprospect","issalesrep","so_creditlimit","totalopenbalance","istaxexempt","ispotaxexempt","issummary","isactive","c_paymentterm_id","m_pricelist_id","flatdiscount","c_dunning_id","shelflifeminpct","ismanufacturer","is1099vendor","documentc…
-record: {"c_bpartner_id":1600010,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-15 17:26:07","createdby":101,"updated":"2026-11-15 17:26:07","updatedby":101,"value":"GD100","name":"Guide Partner One","name2":null,"description":null,"issummary":"N","c_bp_group_id":103,"isonetime":"N","isprospect":"N","isvendor…
+record: {"c_bpartner_id":1600010,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-16 12:01:52","createdby":101,"updated":"2026-11-16 12:01:52","updatedby":101,"value":"GD100","name":"Guide Partner One","name2":null,"description":null,"issummary":"N","c_bp_group_id":103,"isonetime":"N","isprospect":"N","isvendor…
 ops: [{"op_type":"CRUD_CREATE","table":"c_bpartner"},{"op_type":"CRUD_CREATE","table":"ad_treenodebp"},{"op_type":"CRUD_CREATE","table":"c_bp_customer_acct"},{"op_type":"CRUD_CREATE","table":"c_bp_customer_acct"},{"op_type":"CRUD_CREATE","table":"c_bp_vendor_acct"},{"op_type":"CRUD_CREATE","table":"c_bp_vendor_acct"}]
 ```
 
@@ -639,7 +641,7 @@ $ D='BIM_OBJECT_OPLOG=/tmp/fast_guide_win.ops node common/door/door.js --list'; 
 number: Tractor
 filled: ["ad_client_id","ad_org_id","isactive","condition","isinsured"]
 reason: mandatory and still empty after the defaults and callouts: Name (give them as column=value)
-reason: Condition Invalid value - BAD - Reference_ID=200277 - FAIR - GOOD - POOR; nothing was written
+reason: Condition Invalid value - BAD - Reference_ID=9541005 - FAIR - GOOD - POOR; nothing was written
 Name     Cost    Condition
 Tractor  1200.5  GOOD
 shown 1 of 1
@@ -704,7 +706,7 @@ id: 1
 Name     Fee  PR_Patient_ID
 Checkup  50   1
 shown 1 of 1
-reason: BloodGroup Invalid value - Z - Reference_ID=200277 - A - AB - B - O; nothing was written
+reason: BloodGroup Invalid value - Z - Reference_ID=9541005 - A - AB - B - O; nothing was written
 ```
 
 **A table that is already there.** When the workbook names a table the system already has, nothing is made twice. If the sheet gives that table a `Master`, the table is reused: the sheet's columns are added to it and it becomes a tab under that master. If the sheet gives it no `Master`, the row is left alone. The answer lists both (`reused`, `leftAlone`). This is what the Ninja of iDempiere does. A reused table keeps its own rules, so a record of it must still fill that table's own mandatory columns.
@@ -953,32 +955,32 @@ The menu itself is a door line, `mis.menu [role=] [find=]`. Here the screen is d
 ```text
 $ rm -f /tmp/fast_guide_menu.ops; printf '/\n=partner\nEnter\n3\nEsc\nEsc\nq\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide_menu.ops node common/door/door.js 'menu role=102' --plain | grep -E '^(-> |key |Menu|find|> )'
 -> mis.menu role=102
-Menu   (role 102)   294 windows
+Menu   (role 102)   295 windows
 > 1  ▸ System Admin
 key /
-Menu   (role 102)   294 windows
+Menu   (role 102)   295 windows
 > 1  ▸ System Admin
 find: _   (Enter search, Esc cancel)
 key =partner
-Menu   (role 102)   294 windows
+Menu   (role 102)   295 windows
 > 1  ▸ System Admin
 find: partner_   (Enter search, Esc cancel)
 key Enter
 -> mis.menu find=partner role=102
-find "partner"   (role 102)   294 windows
+find "partner"   (role 102)   295 windows
 > 1    System Admin > Data > Data Import > Import Business Partner
 key 3
 -> (open Business Partner Group: the list screen on C_BP_Group)
 -> mis.describe kind=C_BP_Group role=102
 -> mis.list kind=C_BP_Group columns=C_BP_Group_ID,Value,Name,Description names=Y limit=10 offset=0 role=102
 key Esc
-find "partner"   (role 102)   294 windows
+find "partner"   (role 102)   295 windows
 > 3    Partner Relations > Business Partner Rules > Business Partner Group
 key Esc
-Menu   (role 102)   294 windows
+Menu   (role 102)   295 windows
 > 1  ▸ System Admin
 key q
-Menu   (role 102)   294 windows
+Menu   (role 102)   295 windows
 > 1  ▸ System Admin
 ```
 
@@ -1108,7 +1110,7 @@ Give it `version=<x.y.z>` as well and it compares the 2Pack installed in the plu
 
 ## Viewer questions from a plain download
 
-Two Viewer verbs, `viewer.counts` and `viewer.clashes`, also work without a checkout. Put two more files beside the four:
+Two Viewer verbs, `viewer.counts` and `viewer.clashes`, also work without a checkout. Put two more files beside the six:
 
 ```text
 curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_verbs.js
@@ -1507,14 +1509,14 @@ This table is **generated from the vocabulary file** (`common/door/verbs.json`) 
 <!-- GEN:verbs -->
 | Verb | What it does | Inputs | Harm | Who may use it | Needs |
 |---|---|---|---|---|---|
-| `modeller.lines` | Read the grid | `building` | read | human, ai | the 4-file download |
-| `modeller.try_shift` | Try shifting a grid line | `building`, `line`, `move` (metres) | trial | human, ai | the 4-file download |
-| `viewer.counts` | Count elements | `building`, `by` (optional) | read | human, ai | the 4 files + the 2 Viewer files |
-| `viewer.clashes` | List clashes between two disciplines | `building`, `discA`, `discB`, `rows` (optional) | read | human, ai | the 4 files + the 2 Viewer files |
+| `modeller.lines` | Read the grid | `building` | read | human, ai | the 6-file download |
+| `modeller.try_shift` | Try shifting a grid line | `building`, `line`, `move` (metres) | trial | human, ai | the 6-file download |
+| `viewer.counts` | Count elements | `building`, `by` (optional) | read | human, ai | the 6 files + the 2 Viewer files |
+| `viewer.clashes` | List clashes between two disciplines | `building`, `discA`, `discB`, `rows` (optional) | read | human, ai | the 6 files + the 2 Viewer files |
 | `viewer.film_path` | Film path visibility | `db`, `path` (optional) | read | human, ai | a bim-ootb checkout |
 | `viewer.schedule_at` | Schedule state at a day | `building`, `day` (day number) | read | human, ai | a bim-ootb checkout |
 | `viewer.schedule_compare` | Schedule engine against its reference | `building`, `shift_hours` (hours) (optional) | read | human, ai | a bim-ootb checkout |
-| `modeller.widen_bay` | Widen a bay to a target width | `building`, `from`, `to`, `target` (metres) | trial | human, ai | the 4-file download |
+| `modeller.widen_bay` | Widen a bay to a target width | `building`, `from`, `to`, `target` (metres) | trial | human, ai | the 6-file download |
 | `modeller.walk` | What the walker would place | `building`, `discipline` | read | human, ai | a bim-ootb checkout |
 | `object.describe` | Describe an object kind | `building`, `kind`, `uu` (optional) | read | human, ai | a bim-ootb checkout |
 | `object.read` | Read an object | `building`, `kind`, `uu` | read | human, ai | a bim-ootb checkout |
@@ -1600,7 +1602,7 @@ The same words apply to any answer: overlaps are bounding boxes first, a check c
 
 | What you see | What to do |
 |---|---|
-| `edit_cli is not at …` | One of the four files is missing. The message prints the `curl` line |
+| `edit_cli is not at …` | One of the six files is missing. The message prints the `curl` line |
 | `puppeteer not found` | Run `npm install puppeteer@24` in the same folder |
 | `unknown verb` | The message lists every verb. Check the spelling against the [table](#the-verbs) |
 | `missing input: …` | The verb needs that key. The table lists the inputs |

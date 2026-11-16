@@ -23,5 +23,10 @@ function kinds(body) {
 // the tokens a translation must keep on a prose line (code spans and digit runs, in order) and the line with them masked
 const TOK = /`[^`\n]+`|\d+/g;
 function tokens(line) { return { toks: line.match(TOK) || [], mask: line.replace(TOK, '\u0000') }; }
-const count = (s, sub) => { let n = 0, i = 0; while ((i = s.indexOf(sub, i)) >= 0) { n++; i += sub.length; } return n; };
-module.exports = { parse, kinds, tokens, count };
+// a token as a pattern: a number matches only as a whole digit run (5 is not inside 1157), a code span as written (DOCS_I18N.md §6f FIX)
+const esc = (x) => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const tokRe = (x) => (/^\d+$/.test(x) ? '(?<!\\d)' + esc(x) + '(?!\\d)' : esc(x));
+const count = (s, sub) => (s.match(new RegExp(tokRe(sub), 'g')) || []).length;
+// swap every old token for its new one in ONE pass (longest first), so text just written is never scanned again
+function swap(s, map) { const keys = Array.from(map.keys()).sort((x, y) => y.length - x.length); if (!keys.length) return s; return s.replace(new RegExp(keys.map(tokRe).join('|'), 'g'), (m) => map.get(m)); }
+module.exports = { parse, kinds, tokens, count, swap };

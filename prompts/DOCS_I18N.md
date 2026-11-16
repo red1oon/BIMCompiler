@@ -195,7 +195,20 @@ Cost of each English edit is now up to six translations: the staleness check (§
 **How an English edit reaches the translations now:**
 1. `node scripts/guide/i18n_sync.js <Page> --apply`
 2. Translate only the lines listed in `docs/<Page>.<lang>.todo.json`, one small job per language.
-3. Run `--apply` again: `source_sha` moves on and the "out of date" line goes.
+3. Run `--apply` again: `source_sha` moves on and the "out of date" line goes. (After an edit that adds lines, step 3 is `i18n_sync.js <Page> --old-english docs/<Page>.md --apply`, see §6f FIX.)
+
+**§6f FIX (2026-11-16, found by W-DOCS-I18N I4 while syncing the FastScriptGuide six-file edit, VOCAB_MESSAGE_CATALOG.md §6):**
+- **Issue:** a PATCHED line swapped its numbers as SUBSTRINGS, one after another. A number inside another number was changed too, and a later swap re-changed text an earlier swap had written.
+  - Measured on the coverage line, all six languages: old `59 64 5 1157 6 14` became `72 74 7 1177 7 15`. The English is `62 64 6 1158 7 15`.
+  - W-I18N-SYNC Y3 passed anyway: its one fixture (`93611da3b`) never has one number inside another.
+- **Fix in `i18n_sync.js`:**
+  - A number token matches only as a whole digit run (no digit before or after it).
+  - Every swap is done in ONE pass (one combined pattern, longest token first), so text that was just written is never scanned again.
+  - The "occurs exactly as often" test counts the same whole-run way.
+  - Code spans are matched as before.
+- **New claim, W-I18N-SYNC Y7 (nested numbers):** a synthetic case. English `59 a 5 b 1157 c 6 d 14` changes to `62 a 6 b 1158 c 7 d 15`, against a translation holding the same numbers in another order. The patched line must hold exactly the new numbers.
+  - Falsifier `SYNC_BREAK=substring` (the old swap) must FAIL Y7.
+- **Also found:** the step "run `--apply` again" (step 3 below) is REFUSED after an edit that adds lines. The translation then has the new line count, while its `source_sha` still names the old English. The working second step is `i18n_sync.js <Page> --old-english docs/<Page>.md --apply`: every line pairs with itself, 0 to-do, and `source_sha` moves on.
 
 ## 7. Open, one question at a time (owner)
 1. ~~Reviewers~~: decided, none (§6b).
