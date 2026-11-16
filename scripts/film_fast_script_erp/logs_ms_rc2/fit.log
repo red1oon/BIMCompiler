@@ -1,0 +1,38 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT start cue=5.47 room=14.31 dur=13.41 -> DETAIL slack=+0.90 detailDur=13.41 words=25
+§NARR_TONE start#0 F WH own=-5.3st rose=0st endDelta=-5.3st want=any OK "Bagaimana hendak bermula?"
+§NARR_FIT help cue=24.22 room=13.81 dur=12.90 -> DETAIL slack=+0.91 detailDur=12.90 words=28
+§NARR_TONE help#0 F WH own=-5.6st rose=0st endDelta=-5.6st want=any OK "Apa yang boleh dilakukannya?"
+§NARR_FIT level cue=43.63 room=12.07 dur=11.18 -> DETAIL slack=+0.89 detailDur=11.18 words=21
+§NARR_TONE level#0 F YN own=-4.2st rose=8.0st endDelta=+1.6st want=rise OK "Bolehkah ia menerangkan sesuatu perkataan?"
+§NARR_FIT bp cue=63.22 room=13.69 dur=12.77 -> DETAIL slack=+0.92 detailDur=12.77 words=24
+§NARR_TONE bp#0 F WH own=-6.4st rose=0st endDelta=-6.4st want=any OK "Bagaimana hendak ke sebuah jadual?"
+§NARR_FIT po1 cue=84.09 room=11.57 dur=10.68 -> DETAIL slack=+0.89 detailDur=10.68 words=18
+§NARR_TONE po1#0 F YN own=-4.6st rose=5.0st endDelta=+6.7st want=rise OK "Bolehkah ia menjalankan proses?"
+§NARR_FIT po2 cue=96.76 room=7.15 dur=6.23 -> DETAIL slack=+0.92 detailDur=6.23 words=11
+§NARR_TONE po2#0 F YN own=-5.3st rose=5.0st endDelta=+3.0st want=rise OK "Dan fasa?"
+§NARR_FIT po3 cue=105.01 room=6.27 dur=5.36 -> DETAIL slack=+0.91 detailDur=5.36 words=11
+§NARR_TONE po3#0 F YN own=+0.1st rose=5.0st endDelta=+4.5st want=rise OK "Baris projek?"
+§NARR_FIT po4 cue=115.22 room=16.02 dur=15.12 -> DETAIL slack=+0.90 detailDur=15.12 words=28
+§NARR_TONE po4#0 F YN own=-5.5st rose=5.0st endDelta=+4.1st want=rise OK "Dan soalan terakhir?"
+§NARR_FIT co cue=136.76 room=14.11 dur=13.19 -> DETAIL slack=+0.92 detailDur=13.19 words=28
+§NARR_TONE co#0 F WH own=-5.3st rose=0st endDelta=-5.3st want=any OK "Bagaimana melengkapkan pesanan?"
+§NARR_FIT next cue=154.05 room=13.36 dur=12.45 -> DETAIL slack=+0.91 detailDur=12.45 words=24
+§NARR_TONE next#0 F WH own=-1.7st rose=0st endDelta=-1.7st want=any OK "Apa lagi yang boleh dilakukan sekarang?"
+§NARR_FIT gap cue=170.84 room=11.65 dur=10.75 -> DETAIL slack=+0.90 detailDur=10.75 words=26
+§NARR_TONE gap#0 F YN own=-4.5st rose=8.0st endDelta=+2.0st want=rise OK "Dan proses yang tidak boleh dijalankannya?"
+§NARR_FIT report cue=185.26 room=9.11 dur=8.21 -> DETAIL slack=+0.90 detailDur=8.21 words=14
+§NARR_TONE report#0 F YN own=-5.6st rose=11.0st endDelta=+2.1st want=rise OK "Bolehkah saya maklumkan kepada pemilik?"
+§NARR_FIT url cue=196.72 room=11.69 dur=10.81 -> DETAIL slack=+0.88 detailDur=10.81 words=21
+§NARR_TONE url#0 F YN own=-7.1st rose=5.0st endDelta=+4.2st want=rise OK "Dan untuk menghantarnya?"
+§NARR_FIT cost cue=214.26 room=18.40 dur=17.50 -> DETAIL slack=+0.90 detailDur=17.50 words=36
+§NARR_TONE cost#0 F YN own=-6.0st rose=5.0st endDelta=+3.1st want=rise OK "Dan kembali ke bangunan?"
+§NARR_FIT post cue=240.92 room=19.57 dur=18.65 -> DETAIL slack=+0.92 detailDur=18.65 words=44
+§NARR_TONE post#0 F YN own=-5.7st rose=5.0st endDelta=+2.7st want=rise OK "Dan jika saya jawab ya?"
+§NARR_FIT proj cue=262.01 room=10.11 dur=9.19 -> DETAIL slack=+0.92 detailDur=9.19 words=18
+§NARR_TONE proj#0 F YN own=-4.8st rose=5.0st endDelta=+3.2st want=rise OK "Bolehkah saya melihatnya?"
+§NARR_FIT ls cue=274.55 room=7.23 dur=6.34 -> DETAIL slack=+0.89 detailDur=6.34 words=11
+§NARR_TONE ls#0 F YN own=-6.8st rose=5.0st endDelta=+4.0st want=rise OK "Dan senarainya?"
+§NARR_FIT exit cue=283.55 room=5.78 dur=4.88 -> DETAIL slack=+0.90 detailDur=4.88 words=11

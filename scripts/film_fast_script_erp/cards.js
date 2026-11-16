@@ -6,16 +6,17 @@
 'use strict';
 const fs = require('fs'), path = require('path'), os = require('os'), R = require('./render.js'), N = require('./narr.js');
 const puppeteer = require(process.env.PUPPETEER_PATH || path.join(os.homedir(), 'bim-compiler', 'node_modules', 'puppeteer'));
+const LG = ['zh', 'ms', 'th'].indexOf(process.env.FILM_LANG) >= 0 ? process.env.FILM_LANG : 'en', tr = (en, zh, ms, th) => ({ en, zh, ms, th }[LG]);   // zh: translated by the build session (2026-11-16), NOT reviewed by a native speaker; only the title/end cards carry words, the screens are the shell's own English
 const OD = process.env.OUTD || 'out', rec = JSON.parse(fs.readFileSync(path.join(__dirname, OD, 'rec', 'frames.json'), 'utf8')), out = path.resolve(process.argv[2] || OD + '/cards'); fs.mkdirSync(out, { recursive: true });
 const AREA_W = 1860, AREA_H = 880, MIN_FONT = 13, MAX_FONT = 26, CW = 0.602, LH = 1.27;
 const byStep = {}; rec.frames.forEach(f => { (byStep[f.step] = byStep[f.step] || []).push(f); });
 const order = rec.frames.map(f => f.step).filter((s, i, a) => a.indexOf(s) === i);
 const used = (f) => { let c = 0, r = 0; f.text.forEach((l, y) => { if (l.trim()) { c = Math.max(c, l.length); r = Math.max(r, y + 1); } }); if (!f.hidden) { c = Math.max(c, f.cx + 1); r = Math.max(r, f.cy + 1); } return [c, r]; };
-const CHCSS = `*{margin:0;padding:0;box-sizing:border-box} body{width:1920px;height:1080px;background:#0b0f17;color:#F3EEE8;font-family:'DejaVu Sans',sans-serif;overflow:hidden} .ch{text-align:center;margin-top:300px} .k{font-size:34px;color:#FF6B78;letter-spacing:6px;font-weight:700} .t1{font-size:136px;font-weight:700;margin-top:40px;line-height:1.1} .t2{font-size:44px;color:#94a3b8;margin-top:36px} .m{font-family:'DejaVu Sans Mono',monospace}`;
+const CHCSS = `*{margin:0;padding:0;box-sizing:border-box} body{width:1920px;height:1080px;background:#0b0f17;color:#F3EEE8;font-family:${LG === 'zh' ? "'Noto Sans CJK SC','DejaVu Sans'" : LG === 'th' ? "'Noto Sans Thai','DejaVu Sans'" : "'DejaVu Sans'"},sans-serif;overflow:hidden} .ch{text-align:center;margin-top:300px} .k{font-size:34px;color:#FF6B78;letter-spacing:6px;font-weight:700} .t1{font-size:136px;font-weight:700;margin-top:40px;line-height:1.1} .t2{font-size:44px;color:#94a3b8;margin-top:36px} .m{font-family:'DejaVu Sans Mono',monospace}`;
 const card = (inner) => '<!doctype html><html><head><meta charset="utf-8"><style>' + CHCSS + '</style></head><body>' + inner + '</body></html>';
 const cards = {
-  cover: card('<div class="ch"><div class="k">KEYBOARD ONLY  ·  ERP</div><div class="t1">Fast Script ERP</div><div class="t2 m">red1</div></div>'),
-  end: card('<div class="ch"><div class="t1 m" style="font-size:200px;margin-top:60px">red1</div><div class="t2">the scripting door into BIM and ERP</div></div>')
+  cover: card('<div class="ch"><div class="k">' + tr('KEYBOARD ONLY  ·  ERP', '只用键盘  ·  ERP', 'PAPAN KEKUNCI SAHAJA  ·  ERP', 'ใช้แค่คีย์บอร์ด  ·  ERP') + '</div><div class="t1">' + tr('Fast Script ERP', '极速脚本 ERP', 'ERP Skrip Pantas', 'ERP สคริปต์เร็ว') + '</div><div class="t2 m">red1</div></div>'),
+  end: card('<div class="ch"><div class="t1 m" style="font-size:200px;margin-top:60px">red1</div><div class="t2">' + tr('the scripting door into BIM and ERP', '通往 BIM 与 ERP 的脚本入口', 'pintu skrip ke dalam BIM dan ERP', 'ประตูสคริปต์สู่ BIM และ ERP') + '</div></div>')
 };
 function screenHtml(f, fs_, cursor) {   // the 220x50 grid drawn at font fs_, from its top-left corner
   const h = R.html(f, { cursor }); return h.replace(/font-size:22px;line-height:28px/, 'font-size:' + fs_ + 'px;line-height:' + Math.round(fs_ * LH) + 'px').replace(/\.r\{height:28px/, '.r{height:' + Math.round(fs_ * LH) + 'px').replace(/left:33px;top:14px/, 'left:30px;top:16px');
@@ -37,7 +38,7 @@ function screenHtml(f, fs_, cursor) {   // the 220x50 grid drawn at font fs_, fr
     let lastK = null;
     for (let j = 0; j < F.length; j++) { const f = F[j], lastOfBeat = j === F.length - 1;
       if (f.kind === 'k') { lastK = f; await add(f, /^[A-Z][a-z]+$/.test(f.what) && f.what.length > 1 ? 10 : 2, 'k', true); }   // a typed character: 2 frames; a named key (Down, CtrlL): 10 so the change is seen
-      else if (f.kind === 'r') { if (f.what === 'Return' && lastK && F[j - 1] && F[j - 1].kind === 'k' && F[j - 1].what.length === 1) await add(lastK, 8, 'r', false);   // Return after a typed line: the line as typed, then the answer
+      else if (f.kind === 'r') { if (f.what === 'Return' && lastK && F[j - 1] && F[j - 1].kind === 'k' && F[j - 1].what.length === 1) await add(lastK, (F[j + 1] && F[j + 1].showwait) ? Math.round(F[j + 1].waited * 24) : 8, 'r', false);   // post: the real wait is shown, frame for frame   // Return after a typed line: the line as typed, then the answer
         else await add(f, 8, 'r', true); }   // Return / Esc on a menu: the screen the key produced
       else if (f.kind === 'a') await add(f, lastOfBeat ? null : 30, null, true);
     }

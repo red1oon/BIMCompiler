@@ -44,6 +44,9 @@ def pump(t):   # read until nothing has arrived for t seconds; returns the bytes
         stream.feed(d); n += len(d)
 def text(): return [l.rstrip() for l in screen.display]
 def snap(kind, step, what=''):
+    for l in screen.display:
+        m = re.search(r'^Posted .*: Project (\d+),', l)
+        if m: LASTPROJ[0] = m.group(1)
     rows = []
     for y in range(ROWS):
         runs = []; line = screen.buffer[y]
@@ -74,9 +77,10 @@ def pos():   # the purchase orders the run made, from the SCRATCH op-log (a CRUD
                 if m and m.group(1) not in out: out.append(m.group(1))
     except Exception: pass
     return out
+LASTPROJ = ['??']
 def sub(t):
     for i in range(3): t = t.replace('{po%d}' % i, (pos() + ['??', '??', '??'])[i])
-    return t.replace('{noport}', NOPORT)
+    return t.replace('{noport}', NOPORT).replace('{postedproj}', LASTPROJ[0])   # the project the post made, read from the screen the shell drew
 KEY = {'Tab': b'\t', 'Down': b'\x1b[B', 'Up': b'\x1b[A', 'Return': b'\r', 'Esc': b'\x1b', 'CtrlL': b'\x0c', 'Tab': b'\t'}
 T0 = time.time(); frames = []; pump(1.0); settle('$', 0.3, 15)
 frames.append(snap('s', 'start', 'the bash prompt')); L('§REC start screen cursor=(%d,%d) line=%r' % (screen.cursor.x, screen.cursor.y, text()[screen.cursor.y]))
@@ -107,7 +111,8 @@ for st in STEPS:
             L('§REC step %s see %r -> %s' % (sid, it['see'], 'ok' if ok else 'TIMEOUT'))
             if not ok: L('§REC_FAIL timeout in step ' + sid); json.dump({'rows': ROWS, 'cols': COLS, 'frames': frames}, open(os.path.join(OUT, 'frames.json'), 'w')); sys.exit(1)
         elif 'wait' in it:   # the answer: settled when the cursor line ends with the expected prompt
-            ok = settle(it['wait'], it.get('quiet', 0.6), it.get('max', 240)); frames.append(snap('a', sid, 'answer' + ('' if ok else ' TIMEOUT')))
+            tw = time.time(); ok = settle(it['wait'], it.get('quiet', 0.6), it.get('max', 240)); frames.append(snap('a', sid, 'answer' + ('' if ok else ' TIMEOUT')))
+            if it.get('showwait'): frames[-1]['showwait'] = True; frames[-1]['waited'] = round(time.time() - tw - it.get('quiet', 0.6), 2)   # a REAL wait the film shows (post: the session building), not cut
             L('§REC step %s wait for %r -> %s after %.1f s' % (sid, it['wait'], 'ok' if ok else 'TIMEOUT', time.time() - t0))
             if not ok: L('§REC_FAIL timeout in step ' + sid); json.dump(frames, open(os.path.join(OUT, 'frames.json'), 'w')); sys.exit(1)
     L('§REC step %s done: %.1f s, frames so far %d' % (sid, time.time() - t0, len(frames)))

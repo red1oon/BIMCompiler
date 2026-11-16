@@ -1,0 +1,47 @@
+§GUARD OK   beat=start greet.verbs=73 expect=73 spoken="เจ็ดสิบสาม คำกริยา"
+§GUARD OK   beat=start greet.words=26 expect=26 spoken="ยี่สิบหก คำ"
+§GUARD OK   beat=help help.groups=3 expect=3 spoken="สาม กลุ่ม"
+§GUARD OK   beat=help help.erpN=4 expect=4 spoken="สี่ คำ"
+§GUARD OK   beat=bp bp.of=113 expect=113 spoken="คู่ค้า หนึ่งร้อยสิบสาม ราย"
+§GUARD OK   beat=bp bp.shown=20 expect=20 spoken="แสดง ยี่สิบ ราย"
+§GUARD OK   beat=po1 po.project.n=3 expect=3 spoken="มี สาม ให้เลือก"
+§GUARD OK   beat=po2 po.phase.n=7 expect=7 spoken="เจ็ด ระยะ"
+§GUARD OK   beat=po3 po.line.n=32 expect=32 spoken="สามสิบสอง บรรทัด"
+§GUARD OK   beat=po4 po.run.orders=3 expect=3 spoken="ใบสั่งซื้อ สาม ใบ"
+§GUARD OK   beat=po4 po.run.orderLines=4 expect=4 spoken="สี่ บรรทัดคำสั่งซื้อ"
+§GUARD OK   beat=co co.total=81 expect=81 spoken="ยอดรวมคือ แปดสิบเอ็ด"
+§GUARD OK   beat=next next.withWord=["CL","VO"] expect=CL,VO spoken="close กับ void"
+§GUARD OK   beat=next next.noWord=["RE"] expect=RE spoken="r e ยังไม่มี"
+§GUARD OK   beat=gap gap.process="Renumber" expect=Renumber spoken="renumber"
+§GUARD OK   beat=url url.chars=6838 expect=6838 spoken="หกพันแปดร้อยสามสิบแปด ตัวอักษร"
+§GUARD OK   beat=cost cost.discs=5 expect=5 spoken="ห้า สาขางาน"
+§GUARD OK   beat=cost cost.total=1054482 expect=1054482 spoken="รวม หนึ่งล้านห้าหมื่นสี่พันสี่ร้อยแปดสิบสอง"
+§GUARD OK   beat=post post.sec=7 expect=7 spoken="เจ็ด วินาที"
+§GUARD OK   beat=post post.changes=81 expect=81 spoken="มี แปดสิบเอ็ด การเปลี่ยนแปลง"
+§GUARD OK   beat=post post.planned="1054482.22784" expect=1054482.22784 spoken="หนึ่งล้านห้าหมื่นสี่พันสี่ร้อยแปดสิบสอง จุด สอง สอง เจ็ด แปด สี่"
+§GUARD OK   beat=proj proj.props=48 expect=48 spoken="สี่สิบแปด คุณสมบัติ"
+§GUARD OK   beat=ls ls.rows=4 expect=4 spoken="สี่ โครงการ"
+§GUARD OK   beat=start number words not covered by a fact=0 () typed digits=0
+§GUARD OK   beat=help number words not covered by a fact=0 () typed digits=0
+§GUARD OK   beat=level number words not covered by a fact=0 () typed digits=0
+§GUARD OK   beat=bp number words not covered by a fact=0 () typed digits=0
+§GUARD OK   beat=po1 number words not covered by a fact=0 () typed digits=0
+§GUARD OK   beat=po2 number words not covered by a fact=0 () typed digits=0
+§GUARD OK   beat=po3 number words not covered by a fact=0 () typed digits=0
+§GUARD OK   beat=po4 number words not covered by a fact=0 () typed digits=0
+§GUARD OK   beat=co number words not covered by a fact=0 () typed digits=0
+§GUARD OK   beat=next number words not covered by a fact=0 () typed digits=0
+§GUARD OK   beat=gap number words not covered by a fact=0 () typed digits=0
+§GUARD OK   beat=report number words not covered by a fact=0 () typed digits=0
+§GUARD OK   beat=url number words not covered by a fact=0 () typed digits=0
+§GUARD OK   beat=cost number words not covered by a fact=0 () typed digits=0
+§GUARD OK   beat=post number words not covered by a fact=0 () typed digits=0
+§GUARD OK   beat=proj number words not covered by a fact=0 () typed digits=0
+§GUARD OK   beat=ls number words not covered by a fact=0 () typed digits=0
+§GUARD OK   beat=exit number words not covered by a fact=0 () typed digits=0
+§GUARD proof talk or first/novel/unique: none
+§GUARD not-said N (a live link to a browser, or a thing not built), named in the voice: none
+§GUARD next-step talk ("being built", owner-allowed, only on the cost beat): none
+§GUARD language=th
+§GUARD facts verdict in facts.json: bad=0 missing=0
+§GUARD_VERDICT PASS facts=23 bad=0
