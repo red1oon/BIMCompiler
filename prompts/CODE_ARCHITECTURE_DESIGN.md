@@ -20,6 +20,8 @@ Owner, closing 2026-11-15: *"get it well documented in the prompts/# consolidate
 
 **0. ✅ DONE 2026-11-15 (fourth session): F-18 answered, the provenance hover built and merged — §F.23 (bim-ootb #3064 + tooltip-in-window fix #3069); FILM 3 built (`prompts/FILM_IMMERSIVE_SOFTWARE.md` FILM 3 STATUS, awaiting the owner's review); the default-key + truss findings handed to the DXF2BIM lane (bim-ootb `prompts/DXF2BIM_ARCHITECT_REVIEW.md` §D113, #3070). NEXT = the X0 "New witness for this file" command (§F.21 OPEN), or Part A's remaining A2 (item 2).** The text below is the original hand-over.
 
+**0q. 2026-11-17 (seventh session, end):** §F.34 the Bump button built (bim-ootb #3162, merged): press when the feature is done, background check, ✓ then press to write; the VS Code ERP bump works again. **NEXT: A3-CLOCK-2** (spec drafted; tell the live sessions before merging, it makes `ad_callout.js` hosts install an edge), **then W-CORE-PURE** (closes Part A), then B0.
+
 **0p. 2026-11-17 (seventh session, last):** §F.33 (the changed file's own witnesses, F-23 + F-23b 10-min budget) built and measured; **F-24 decided: the Bump button (§F.34)**, which also fixes the VS Code bump that has failed on every ERP file since F-16 (60 s `spawnSync`). NEXT: merge §F.33, build §F.34, then A3-CLOCK-2, then W-CORE-PURE.
 
 **0o. 2026-11-17 (seventh session, later):** §F.32 built (bim-ootb #3154): the parity gate runs the 5 bridge witnesses that read the bumped tree (~5.5 min, was a 25-min timeout); FA out, M3 (sales/purchase cycle + books) in. **Open with the owner: F-23** (the gate also runs the witnesses of the exact file touched; §F.32 RESULT has the counts). NEXT unchanged: A3-CLOCK-2, then W-CORE-PURE.
@@ -1296,6 +1298,29 @@ new failure blocks.
 - **Shape (to spec in full when built):** `bump.js --check` runs both gates with no write and stores the verdict by tree identity (the bridge part already
   caches its PASS by tree, `parityGate`; §F.33 gains the same) · the extension runs it with `spawn` (async), status bar: hollow `Bump: checking… n/N`,
   solid `Bump ✓`, red `Bump ✗ <witness>` (click opens the log) · a press on solid runs `--write`, which reads the stored PASS and writes in a second.
+- **BUILD SPEC (2026-11-17, owner "yes"):**
+  1. `scripts/bump.js --changed`: the targets = every file changed against the merge-base with `origin/main` (committed + working tree + untracked) that a
+     page or loader references with `?v=` (the files a bump can raise); the rest (prompts, tests, tools) are skipped and counted. `--check`: run both gates,
+     write nothing, `§BUMP_CHECK verdict=PASS|BLOCKED key=<tree key>`, exit 0 / 3. Both gates print a plan line first (`§BUMP_PARITY_PLAN witnesses=`,
+     `§BUMP_TOUCH_PLAN witnesses= budget_s=`) so a caller can show progress. The touch gate caches a PASS by tree key + changed set, as the bridge does, so
+     `--write` right after a passing `--check` on the same tree re-runs nothing.
+  2. Extension (`extension.js`), one status-bar item made at activation, text only (no timer, no listener but the save one already pinned): idle
+     `$(circle-outline) Bump` → press: `$(sync~spin) Bump: bridge n/N` then `witnesses n/N` (an async `spawn` of `bump.js --changed --check`, never
+     `spawnSync`) → exit 0: `$(pass-filled) Bump ✓` · exit 3: `$(error) Bump ✗ <first new_fail or verdict>` · press on ✓: `bump.js --changed --write`,
+     then back to idle. A save of a file in the source root while ✓/✗ puts it back to idle (tooltip "changed since the check"). The ERP quick fix
+     (`bumpThisFile`, `ship.bump` = `spawnSync` 60 s) for a file under the gate's `applies_to` starts the button instead.
+  3. **Witnesses:** W-BUMP-PARITY gains C1 (`--check` writes nothing; `--write` after it re-runs neither gate: bridge marker 1, touch marker 1) · C2 (an
+     edit between check and write re-runs both) · C3 (`--changed` in a temp git repo picks the changed referenced file and skips a changed `.md`).
+     NEW `witness_x0_bump_button.js` (vscode stub, a fixture `scripts/bump.js` that prints the plan/run lines and exits by env): B1 idle text · B2 a press
+     shows progress and ends ✓, the fixture saw `--changed --check` · B3 a press on ✓ runs `--write` · B4 exit 3 → ✗ with the witness name · B5 a save resets
+     to idle · B6 the ERP quick fix starts the button, not `ship.bump`. Red control: main's extension has no `x0Navigator.bumpButton` command (B1-B6 FAIL).
+- **RESULT 2026-11-17: ✅ DONE (witness), bim-ootb #3161 / PR #3162, merged `0cc03ed6`.** +224 / −22, 7 files. Re-run on `main` @ `0cc03ed6`:
+  `§X0_BUMP_BUTTON checks=6 failed=0 verdict=PASS` · `§BUMP_PARITY_W_VERDICT PASS judged=24 failed=0`. B2's log: progress `bridge 0/2 … 2/2 | witnesses 0/1 …`, the
+  press returned while `Bump: checking`, the fixture saw `--changed --check --root …`. **Red:** main's extension → `FAIL B1 … (no button)`. Neighbours PASS:
+  W-X0-ACTIVATE (commands 11 → 12), ship, isolation, fresh, newwit, deploy. **Two bugs the witnesses caught while building:** C2 (the touch cache of C1
+  matched C2's identical start: the test cleared it per row) and C3 (`--changed` alone hit the "no targets" usage error). **Not in CI's X0 list:**
+  it activates the whole extension, like W-X0-ACTIVATE, which that list also leaves out. **Not yet done:** a real press in a real VS Code (the stub proves
+  wiring, not drawing; `devtools/vscode/x0-navigator/tests/realvsc/` exists for that kind of run, on the owner's go).
 
 ### F.31 Browser memory of the three pages, shown in VS Code (owner 2026-11-16; tier 3 of §F.3; decisions **F-20..F-22**; not built)
 Owner, 2026-11-16: *"reminder, i did suggest before that we have some monitor in the VSC showing what is the mem load on browser of the differing
