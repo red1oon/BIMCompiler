@@ -42,9 +42,33 @@ const ZH = [   // v2 (owner: "The Mandarin should show in Mandarin on the app to
     says: [['cli.window', '143', '同样的问题'], ['cli.action', 'CL', '同样的字典'], ['cli.lang', 'zh_CN/LANG', '终端的语言是中文'], ['cli.harm', 'read', '只读不写']] },
   { id: 'close', hold: 18 }
 ];
+// The German cut (FILM_LANG=de): the screen is Deutsch from login, the questions are typed in German, the CLI answers in German. Each turn is ONE caption line; its `gloss` is the English under it.
+//   Translated by the build session, not reviewed by a native speaker (said on the last card).
+const DE = [
+  { id: 'cover', hold: 4.5 },
+  { id: 'quote', text: 'F: Wie viel Zeit der Woche geht fürs Nachschlagen drauf? | M: McKinsey schätzt: fast zwanzig Prozent. | M: Für die Suche nach internen Informationen, | M: oder nach einem Kollegen, der helfen kann.',
+    gloss: 'F: How much of the week goes into just looking things up? | M: McKinsey estimated nearly twenty percent of it. | M: Looking for internal information, | M: or tracking down a colleague who can help.',
+    says: [['quote.found', 'Y', 'fast zwanzig Prozent'], ['quote.source', 'McKinsey Global Institute', 'McKinsey']] },
+  { id: 'before', text: 'F: Was hat ein Feld früher angezeigt? | M: Nur seinen Spaltennamen und seinen Typ. | M: Jetzt zeigt es seine eigene Beschreibung, wie das Original. | M: Hier auf Deutsch. | M: In der echten Originaldatenbank stimmen sie überein: | M: alle fünfzehntausendachthundertneunundvierzig Felder. | M: Klicken Sie ins Feld Beschreibung. | M: Der Tool-Tip-Bereich zeigt Name, Beschreibung und Hilfe.',
+    gloss: 'F: What did a field tell you before? | M: Its column name and its type. | M: Now it shows its own description, as the original does. | M: Here in German. | M: In the real original database they match: | M: all 15,849 fields. | M: Click into the Description field. | M: The Tool Tip panel shows its name, its description and its help.',
+    says: [['old.tooltip', 'Y', 'Spaltennamen und seinen Typ'], ['f4.n', '15849', 'fünfzehntausendachthundertneunundvierzig'], ['ui.desc_translated', 'Y', 'Hier auf Deutsch'], ['field.panel', 'Y', 'Name, Beschreibung und Hilfe']] },
+  { id: 'ask1', text: 'F: Kann ich einfach auf Deutsch fragen? | M: Ja. Es findet das Fenster Auftrag und die Aktion Schließen. | M: Erlaubt bei Fertiggestellt oder Zurückgehaltene Zahlung. | M: Dazu die Befehlszeile, die es erledigt. | M: Keine KI dahinter: es vergleicht die Wörter des Wörterbuchs.',
+    gloss: 'F: Can I just ask in German? | M: Yes. It finds the Sales Order window (Auftrag) and the Close action. | M: Allowed when the order is Completed or Waiting Payment. | M: And the command line that does it. | M: No AI inside: it matches the dictionary\'s own words.',
+    says: [['ask1.lang', 'de_DE', 'auf Deutsch fragen'], ['ask1.window', '143', 'Fenster Auftrag'], ['ask1.action', 'CL', 'Aktion Schließen'], ['ask1.allowed', 'Fertiggestellt, Zurückgehaltene Zahlung', 'Fertiggestellt oder Zurückgehaltene Zahlung'], ['ask1.cli', 'erp.close kind=Order number=<Document No>', 'die Befehlszeile']] },
+  { id: 'link', text: 'F: Woher kommen diese Schritte? | M: Aus dem ERP-Benutzerhandbuch, übersetzt von der Build-Sitzung, | M: mit einem Link zum Originalabschnitt. | M: Klicken Sie auf Auftrag: das Fenster öffnet sich, | M: daneben die Anleitung auf Deutsch.',
+    gloss: 'F: Where do these steps come from? | M: From the ERP user guide, translated by the build session, | M: with a link to the original section. | M: Click Auftrag (Sales Order): the window opens, | M: with its how-to beside it, in German.',
+    says: [['link.opened', '143', 'das Fenster öffnet sich'], ['link.ctx_lang', 'de_DE', 'Anleitung auf Deutsch'], ['w.s7', 'Y', 'übersetzt von der Build-Sitzung']] },
+  { id: 'ask2', text: 'F: Und eine Rechnung fertigstellen? | M: Das Fenster Rechnung und die Aktion Fertigstellen, | M: mit jedem Status, aus dem sie erlaubt ist. | M: Die Befehlszeile ist ehrlich: bisher nur für Aufträge.',
+    gloss: 'F: And completing an invoice? | M: The Invoice window and the Complete action, | M: with every status it is allowed from. | M: The command line is honest: so far for orders only.',
+    says: [['ask2.window', '167', 'Fenster Rechnung'], ['ask2.action', 'CO', 'Aktion Fertigstellen'], ['ask2.cli_note', 'Y', 'bisher nur für Aufträge']] },
+  { id: 'cli', text: 'F: Geht das auch auf der Kommandozeile? | M: Ja. Dieselbe Frage, dasselbe Wörterbuch, dasselbe Sprachpaket. | M: Das Terminal ist auf Deutsch eingestellt, also antwortet es deutsch. | M: Es liest nur: nichts wird verändert.',
+    gloss: 'F: Can I ask at the command line too? | M: Yes. The same question, the same dictionary, the same language pack. | M: The terminal is set to German, so it answers in German. | M: It only reads: nothing is changed.',
+    says: [['cli.window', '143', 'Dieselbe Frage'], ['cli.action', 'CL', 'dasselbe Wörterbuch'], ['cli.lang', 'de_DE/LANG', 'Terminal ist auf Deutsch eingestellt'], ['cli.harm', 'read', 'Es liest nur']] },
+  { id: 'close', hold: 18 }
+];
 const L = process.env.FILM_LANG || 'en';
 exports.lang = L;
-exports.beats = L === 'zh' ? ZH : EN;
-exports.en = EN; exports.zh = ZH;
+exports.beats = L === 'zh' ? ZH : (L === 'de' ? DE : EN);
+exports.en = EN; exports.zh = ZH; exports.de = DE;
 // what the film SAYS in English (the voice of the English cut, the gloss of the Mandarin cut): the guard's not-said list reads this
-exports.saidEnglish = (L === 'zh' ? ZH.map((b) => b.gloss || '') : EN.map((b) => b.text || '')).join(' ');
+exports.saidEnglish = (L === 'zh' ? ZH.map((b) => b.gloss || '') : (L === 'de' ? DE.map((b) => b.gloss || '') : EN.map((b) => b.text || ''))).join(' ');

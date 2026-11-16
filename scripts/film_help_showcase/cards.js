@@ -9,7 +9,22 @@ const F = JSON.parse(fs.readFileSync(path.join(OUT, 'facts.json'), 'utf8'));
 const W1 = fs.readFileSync(path.join(OUT, 'witness_field_help_main.log'), 'utf8'), W2 = fs.readFileSync(path.join(OUT, 'witness_help_showcase_main.log'), 'utf8');
 const ZH = (process.env.FILM_LANG || 'en') === 'zh', LB = F.lb;
 // the words of the cards, per cut. Code, log lines, file names and the names of sources stay as they are in both; the Mandarin cut's words are translated by the build session (said on the last card).
-const T = ZH ? {
+const LANGC = process.env.FILM_LANG || 'en', DE = LANGC === 'de';
+const DE_T = {
+  bar: (st) => `▲ <b>eingegeben</b> ins Feld „How To“, und das eigene § Protokoll der Seite &nbsp;·&nbsp; ▼ <b>der ERP-Zwilling</b>, die echte Seite &nbsp;·&nbsp; ${st}`,
+  barCli: (st) => `▲ <b>red1</b>, die Kommandozeile (Terminal auf de_DE) &nbsp;·&nbsp; ▼ <b>der ERP-Zwilling</b>, dieselbe Antwort auf der Seite &nbsp;·&nbsp; ${st}`,
+  lab: (sc) => 'das Hilfefenster, die eigenen Pixel der Seite, ' + (sc === 1 ? '1:1' : (sc > 1 ? 'vergrößert ' : 'verkleinert ') + sc.toFixed(2).replace(/0$/, '') + 'x'),
+  kicker: 'KERNEL-ERP · HILFE', title: 'Hilfe, die <span style="color:#FF6B78">antwortet</span>', sub: 'Feldhilfe, eine Frage-Box und Anleitungen, im Fenster', line: 'Die echte Seite, ohne Bildschirm · Deutsch (englische Untertitel)',
+  quoteZh: '„Ein typischer Interaktionsmitarbeiter verbringt schätzungsweise 28 Prozent der Arbeitswoche mit E-Mails und fast 20 Prozent mit der Suche nach internen Informationen oder nach Kollegen, die bei bestimmten Aufgaben helfen können.“', quoteZhNote: 'Deutsche Übersetzung von der Build-Sitzung, nicht von Muttersprachlern geprüft',
+  fetched: 'Kopie abgerufen', before1: 'vorher (vor #3126): ', now1: 'jetzt: die eigene Beschreibung des Felds, wie im Original (WEditor.java:333); Spalte · Typ nur noch im Protokoll:',
+  st: { before: 'ins Feld Belegnr. klicken: das Tool-Tip-Fenster', idle: 'noch kein Feld gewählt', card: 'die Antwortkarte, aus dem Wörterbuch', link: 'der Link der Karte öffnete Auftrag: daneben seine Anleitung, aus dem Handbuch', open: 'Auftrag geöffnet', pay: 'die Antwortkarte', lb: 'Deutsch gewählt: dasselbe Feld',
+    beforeUi: 'ins Feld Beschreibung klicken: das Tool-Tip-Fenster (Deutsch)', pay2: 'die Antwortkarte für eine Rechnung', cli: 'dieselbe Frage an der red1-Kommandozeile: ihre echte Antwort' },
+  lbLang: 'Deutsch', english: 'englisches Original (Wörterbuch): ', fallback: null,
+  h1: 'Was es kostet, <span style="color:#FF6B78">was wir gelernt haben</span>, wer dahintersteht', cost: 'Kosten, gemessen', prior: 'Vorbild: die Lehre', cred: 'Projekt-Nachweise',
+  heap: (a, b, d) => '<b>Speicher, deutsche Sitzung</b> (nach erzwungener Bereinigung, je ein Lauf)<br>mit Hilfepaket ' + a + ' · ohne ' + b + ' · <i>' + d + '</i>', packs: '<b>Hilfepaket, einmal je Sprache geladen</b>', fields: '<b>Felder mit Übersetzung</b>', seed: '<b>Nie in der Seed-Datenbank</b><br>eine eigene Datei, nur die gewählte Sprache',
+  feature: '<b>Diese Funktion</b>', featureHead: '<b>Diese Funktion</b>', merged: '(zusammengeführt)', witnessed: '<b>Bezeugt auf main ', guide: '<b>ERP-Benutzerhandbuch</b>', paper: '<b>Paper</b>: Deterministic Spatial Compilation<br>Prioritätsdatum ',
+  credit: 'Eingangszitat: McKinsey Global Institute, <i>The social economy</i>, Juli 2012 · deutscher Text: das veröffentlichte de_DE-Paket (Team Germany), unverändert · Sprecher, Untertitel und Karten auf Deutsch von der Build-Sitzung übersetzt, nicht von Muttersprachlern geprüft · Tastengeräusche: eklee und qubodup, OpenGameArt „Single Key Press Sounds“, CC BY 3.0 · Bilder: die echte ERP-Seite, ohne Bildschirm auf der CPU' };
+const T = DE ? DE_T : ZH ? {
   bar: (st) => `▲ <b>输入</b>到“操作说明”框中的内容，以及页面自己的 § 日志 &nbsp;·&nbsp; ▼ <b>ERP 孪生系统</b>，真实页面 &nbsp;·&nbsp; ${st}`,
   lab: (sc) => '帮助面板：页面自己的像素，' + (sc === 1 ? '原尺寸' : (sc > 1 ? '放大 ' : '缩小为 ') + sc.toFixed(2).replace(/0$/, '') + ' 倍'),
   kicker: 'KERNEL-ERP · 帮助', title: '会' + '<span style="color:#FF6B78">回答问题</span>' + '的帮助', sub: '字段帮助、提问框和操作说明，都在窗口里', line: '真实页面，无头浏览器 · 普通话（英文字幕）',
@@ -73,7 +88,7 @@ const full = (inner) => `<!doctype html><html><head><meta charset="utf-8"><style
 const CO = '<span style="color:#FF6B78">', CE = '</span>', cards = {};
 cards.cover = [{ html: full('<div class="ch"><div class="k">' + T.kicker + '</div><div class="t1">' + T.title + '</div><div class="s">' + T.sub + '</div><div class="c">' + T.line + '</div></div>'), frames: null }];
 { const Q = F.quote, zq = T.quoteZh ? '<div class="qa" style="margin-top:22px;color:#F3EEE8;font-size:30px">' + esc(T.quoteZh) + '<br><span style="font-size:19px;color:#94a3b8">' + esc(T.quoteZhNote) + '</span></div>' : '';
-  cards.quote = [{ html: full('<div class="q"' + (ZH ? ' style="margin-top:90px;font-size:42px"' : '') + '>“' + esc(Q.text).replace(esc(Q.stat), '<span class="big">' + esc(Q.stat) + '</span>') + '”</div>' + zq + '<div class="qa">' + esc(Q.who) + '<br><i>' + esc(Q.title) + '</i>, ' + esc(Q.date) + '</div><div class="qs">' + esc(Q.url) + ' · ' + T.fetched + ' ' + esc(Q.fetched) + ' (web.archive.org)</div>'), frames: null }]; }
+  cards.quote = [{ html: full('<div class="q"' + ((ZH || DE) ? ' style="margin-top:90px;font-size:42px"' : '') + '>“' + esc(Q.text).replace(esc(Q.stat), '<span class="big">' + esc(Q.stat) + '</span>') + '”</div>' + zq + '<div class="qa">' + esc(Q.who) + '<br><i>' + esc(Q.title) + '</i>, ' + esc(Q.date) + '</div><div class="qs">' + esc(Q.url) + ' · ' + T.fetched + ' ' + esc(Q.fetched) + ' (web.archive.org)</div>'), frames: null }]; }
 cards.before = [{ html: frame(term(dim(T.before1 + 'erp/idempiere.html:' + F.oldTooltip.line + ' @ ' + F.oldTooltip.commit + ':') + `<div class="ans bad">${esc(F.oldTooltip.text)}</div>` + dim(T.now1) + ans(F.lines.fieldFocus) + good(wline(W1, /F4 description = AD_Field_v\.description/))),
   band(F.ui ? 'field_ui' : 'field_en', 'tip'), F.ui ? T.st.beforeUi : T.st.before), frames: null }];
 cards.ask1 = typed(F.ask1.q, ans(F.ask1.line), band('idle', 'idle'), band('ask_close', 'card'), T.st.idle, T.st.card);
@@ -94,8 +109,8 @@ if (LB && LB.field) { const lp = LB.field.panel.split('\n').filter(Boolean), dn 
   const mem = [T.heap((M.withPack.used / 1048576).toFixed(1) + ' MB', (M.without.used / 1048576).toFixed(1) + ' MB', sign + kb(Math.abs(M.deltaBytes))),
     T.packs + '<br>de ' + kb(P.de_DE.bytes) + ' · fr ' + kb(P.fr_FR.bytes) + ' · zh ' + kb(P.zh_CN.bytes) + ' · ja ' + kb(P.ja_JP.bytes) + ' · how-to ' + kb(P.en_US.bytes),
     T.fields + '<br>de ' + P.de_DE.fields + ' · fr ' + P.fr_FR.fields + ' · zh ' + P.zh_CN.fields + ' · ja ' + P.ja_JP.fields, T.seed];
-  const pa = PA.items.filter((i) => !i.lang || i.lang === LB.lang).map((i) => '<b>' + esc(i.name) + '</b><br>' + esc(ZH ? i.does_zh : i.does) + '<br><i>→ ' + esc(ZH ? i.took_zh : i.took) + '</i>');
-  const PRL = ZH ? { 3126: '字段帮助', 3128: '帮助包、搜索、操作说明', 3133: '所选语言的帮助', 0: '命令行 erp.ask' } : { 3126: 'field help', 3128: 'the help pack, search, how-to', 3133: 'help in the chosen language', 0: 'erp.ask at the CLI' };
+  const pa = PA.items.filter((i) => !i.lang || i.lang === LB.lang).map((i) => '<b>' + esc(i.name) + '</b><br>' + esc(ZH ? i.does_zh : (DE ? i.does_de : i.does)) + '<br><i>→ ' + esc(ZH ? i.took_zh : (DE ? i.took_de : i.took)) + '</i>');
+  const PRL = DE ? { 3126: 'Feldhilfe', 3128: 'Hilfepaket, Suche, Anleitungen', 3133: 'Hilfe in der gewählten Sprache', 3136: 'erp.ask an der Kommandozeile', 3138: 'Deutsch', 0: 'Hilfe' } : ZH ? { 3126: '字段帮助', 3128: '帮助包、搜索、操作说明', 3133: '所选语言的帮助', 0: '命令行 erp.ask' } : { 3126: 'field help', 3128: 'the help pack, search, how-to', 3133: 'help in the chosen language', 0: 'erp.ask at the CLI' };
   const feat = (C.prs || []).length > 2 ? T.featureHead + '<br>' + C.prs.map((x) => '#' + x.n + ' ' + (PRL[x.n] || PRL[0])).join(' · ') + ' ' + T.merged : T.feature;
   const cred = ['<b>' + esc(C.repo) + '</b><br>' + esc(C.licence), feat, T.witnessed + esc(F.tree) + '</b><br>' + esc(F.verdicts.fieldHelp) + '<br>' + esc(F.verdicts.showcase) + (F.verdicts.erpAsk ? '<br>' + esc(F.verdicts.erpAsk) : ''),
     T.guide + '<br>red1oon.github.io/BIMCompiler/ERPUserGuide/', T.paper + esc(C.paperPriority) + ' · red1oon.github.io/BIMCompiler/SpatialCompilationPaper/'];

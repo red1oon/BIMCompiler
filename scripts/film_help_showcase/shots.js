@@ -91,7 +91,7 @@ async function focusField(page, col) {
   F.lb.docNoHasPack = !!(dx && dx[0] >= 0);
   // §13: the same question at the red1 prompt, in the terminal's language (LANG), through the real door: its answer, and the card red1 prints (the answer's summary)
   if (process.env.CLI_ASK === '1') {
-    const line = 'cd Order; ask ' + Q1, r = spawnSync(process.execPath, [path.join(TREE, 'common', 'door', 'red1.js'), line], { cwd: TREE, encoding: 'utf8', env: Object.assign({}, process.env, { LANG: (UI || 'en_US') + '.UTF-8' }), timeout: 120000 });
+    const line = 'cd Order; ask ' + (/\s/.test(Q1) ? '"' + Q1 + '"' : Q1), r = spawnSync(process.execPath, [path.join(TREE, 'common', 'door', 'red1.js'), line], { cwd: TREE, encoding: 'utf8', env: Object.assign({}, process.env, { LANG: (UI || 'en_US') + '.UTF-8' }), timeout: 120000 });
     const envs = (r.stdout || '').split('\n').filter((l) => l.trim().startsWith('{')).map((l) => { try { return JSON.parse(l); } catch (e) { return {}; } }), env = envs.find((e) => e.verb === 'erp.ask') || {}, a = env.answer || {};   // red1 prints one envelope per word: the erp.ask one
     const V = JSON.parse(fs.readFileSync(path.join(TREE, 'common', 'door', 'verbs.json'), 'utf8')).verbs.find((v) => v.verb === 'erp.ask') || {};
     F.cliAsk = { line, arrow: (String(r.stderr || '').split('\n').filter((l) => l.startsWith('→ erp.ask')).pop() || '').trim(), status: env.status, harm: V.harm || null, lang: a.lang, langBy: a.langBy, howtoLang: a.howtoLang,

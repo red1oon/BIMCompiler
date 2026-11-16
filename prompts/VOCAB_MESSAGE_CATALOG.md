@@ -601,6 +601,32 @@ These are legacy's own words in that language; the twin shows them unchanged.
 
   The cost that remains is content: how-to translations per language, and old packs' words.
 
+### §11 RESULT, German cut (2026-11-16): `~/Videos/Help_that_answers_ERP_DE_AFTER_2026-11-16_v1.mp4` (132.3 s, 3,176 frames, −16.3 LUFS), sent to the owner's phone
+- **Owner:** *"Do a German version"*.
+  - Deutsch from login; Edge TTS de-DE Katja / Conrad; German captions with the English line under each (one event per turn; each German turn is one line, ≤ 68 characters).
+  - Questions: *Wie kann ich einen Auftrag schließen?* → Auftrag / Schließen / Fertiggestellt, Zurückgehaltene Zahlung; *Wie kann ich eine Rechnung fertigstellen?* → Rechnung (Kunde) / Fertigstellen.
+  - The Sales Order how-to in German; the Description field in German, both lines translated.
+  - The red1 beat `cd Order; ask "Wie kann ich einen Auftrag schließen?"` gives the real German card (LANG=de_DE).
+- **App side first** (bim-ootb #3138): the de_DE how-to rows, German card labels, the German question set in both witnesses.
+  - W-HELP-SHOWCASE 23/0 (S6de 5/5, S7de); W-ERP-ASK 11/0 (A2de 5/5).
+  - A translated row links a window name only as a whole bold term, in every language.
+  - #3137 made the panel's own words come from the pack's AD_Message_Trl, so the idle line reads *Setzen Sie den Mauszeiger in ein Feld auf dem Bildschirm*.
+- **Witnessed on the tree the film shows (main `f869e430`):** W-FIELD-HELP 13/0, W-HELP-SHOWCASE 23/0, W-ERP-ASK 11/0. Credentials: #3126 #3128 #3133 #3136 #3138, all MERGED.
+- **Checks:**
+
+  | Check | Result |
+  |---|---|
+  | guard | PASS |
+  | K2 | PASS, 3 typed beats |
+  | keys | PASS |
+  | gloss | PASS |
+  | ass_noverlap | 0 left |
+  | check C | 31/31 |
+  | frames | 3,176/3,176 |
+
+- **Heap of a German session with the pack: +1.29 MB** (forced GC, one run). The pack now also carries names and how-to rows; the earlier +629 KB was before those.
+- **Pipeline:** `gloss.js` serves any non-English cut (`FILM_LANG`); `build.sh` runs gloss → ass_noverlap for it; `cards.js` has a de string table; `priorart.json` has `does_de` / `took_de`; a CLI question with spaces is quoted.
+
 ### §12 RESULT (2026-11-16, bim-ootb #3133 MERGED): W-HELP-SHOWCASE 20/0
 - **Names per language, from each language's XML:** fr 254 windows / 453 tables / 13 actions / 12 statuses; de 349 / 0 / 13 / 12; ja 288 / 0 / 13 / 12; zh 250 / 5 / 11 / 12.
 - **S1 extended to names:** fr 732/732, de 374/374, ja 313/313, zh 278/278.

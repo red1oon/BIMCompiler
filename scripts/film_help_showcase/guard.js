@@ -16,8 +16,8 @@ const facts = {
   'f4.n': f4 && f4[1] === f4[2] ? f4[1] : 'N', 'field.panel': (F.ui ? enP.length >= 3 && enP[1] === F.lb.packText[0] : enP.length >= 3 && enP[0] === 'Document No' && enP[1] === F.docNoEnglish) ? 'Y' : 'N',
   // the v2 cut (screen language from login): the focused field's description is the pack's text for it, not the English
   'ui.desc_translated': F.ui && enP.length >= 2 && F.lb.packText && F.lb.packText[0] != null && enP[1] === F.lb.packText[0] && enP[1] !== F.lb.english[0] ? 'Y' : 'N', 'ask1.lang': g(F.ask1.line, / lang=(\S+)/),
-  'ask1.window': g(F.ask1.line, / window=(\d+)/), 'ask1.action': g(F.ask1.line, / action=(\w+)/), 'ask1.allowed': g(F.ask1.card, /(?:Allowed when the document is|单据处于以下状态时可用): ([^\n]+)/), 'ask1.cli': g(F.ask1.line, / cli="([^"]+)"/),
-  's5': s5 ? s5[1] : 'N', 'link.opened': g(F.link.opened, /\((\d+)\)/), 'link.ctx': /§HELP_CTX window=143 howto=\d+/.test(F.link.ctx || '') ? 'Y' : 'N', 'link.ctx_lang': g(F.link.ctx, / lang=(\S+)/), 'w.s7': /✅ S7 with 中文 chosen, Sales Order shows the zh_CN how-to row/.test(W2) ? 'Y' : 'N',
+  'ask1.window': g(F.ask1.line, / window=(\d+)/), 'ask1.action': g(F.ask1.line, / action=(\w+)/), 'ask1.allowed': g(F.ask1.card, /(?:Allowed when the document is|单据处于以下状态时可用|Erlaubt, wenn der Beleg diesen Status hat): ([^\n]+)/), 'ask1.cli': g(F.ask1.line, / cli="([^"]+)"/),
+  's5': s5 ? s5[1] : 'N', 'link.opened': g(F.link.opened, /\((\d+)\)/), 'link.ctx': /§HELP_CTX window=143 howto=\d+/.test(F.link.ctx || '') ? 'Y' : 'N', 'link.ctx_lang': g(F.link.ctx, / lang=(\S+)/), 'w.s7': (F.lb.lang === 'de_DE' ? /✅ S7de with Deutsch chosen, Sales Order shows the de_DE how-to row/ : /✅ S7 with 中文 chosen, Sales Order shows the zh_CN how-to row/).test(W2) ? 'Y' : 'N',
   'ask2.window': g(F.ask2.line, / window=(\d+)/), 'ask2.action': g(F.ask2.line, / action=(\w+)/), 'ask2.cli_note': /erp\.(void|complete) is offered for Order \(C_Order\), not for (Payment|Invoice)/.test(F.ask2.line || '') ? 'Y' : 'N',
   'cli.window': F.cliAsk && F.cliAsk.status === 'ok' && F.cliAsk.window ? String(F.cliAsk.window.id) : 'N', 'cli.action': F.cliAsk ? String(F.cliAsk.action) : 'N', 'cli.lang': F.cliAsk ? F.cliAsk.lang + '/' + F.cliAsk.langBy : 'N', 'cli.harm': F.cliAsk ? String(F.cliAsk.harm) : 'N',
   // the language beat: the panel's description = the pack's text for that field and not the English; its help translated (= the pack's) or still the English; Document No's fallback to English
@@ -36,7 +36,7 @@ const must = [
   ['the verdicts on the card are PASS lines of the logs run on the same tree (W-ERP-ASK too when the film shows the CLI)', /PASS$/.test(F.verdicts.fieldHelp) && /PASS$/.test(F.verdicts.showcase) && (!F.cliAsk || /PASS$/.test(F.verdicts.erpAsk || ''))],
   ['the verdicts on the card are PASS lines of the logs run on the same tree', /PASS$/.test(F.verdicts.fieldHelp) && /PASS$/.test(F.verdicts.showcase)],
   ['the language-beat pack loaded is the one chosen, and S1 (every pack text in the published pack) passed on main for it', (F.ui || new RegExp('^§HELP_PACK loaded lang=' + F.lb.lang + ' ').test(F.lb.pack || '')) && new RegExp('✅ S1 ' + F.lb.lang + ' every pack text occurs').test(W2)],
-  ['the v2 cut: the CLI card printed is the Chinese one (dictionary labels), from the real door', !F.ui || !F.cliAsk || /^窗口: /.test(F.cliAsk.summary || '')]];
+  ['the v2 cut: the CLI card printed is in the screen language (the dictionary\'s label for Window), from the real door', !F.ui || !F.cliAsk || new RegExp('^' + ({ zh_CN: '窗口', de_DE: 'Fenster' }[F.ui] || 'Window') + ': ').test(F.cliAsk.summary || '')]];
 must.forEach(([t, ok]) => { if (!ok) bad++; L((ok ? 'OK   ' : 'FAIL ') + t); });
 // P prior art: a repo row = the text ON the cited line (idempiere: the local legacy source on disk; bim-ootb: origin/main); a web row = the text inside the copy saved in out/prior/ (tags stripped)
 const PA = require('./priorart.json');
