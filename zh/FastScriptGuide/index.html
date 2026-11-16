@@ -18,7 +18,7 @@
         <link rel="prev" href="../ProposerGuide/">
       
       
-        <link rel="next" href="../DXF2BIMGuide/">
+        <link rel="next" href="../FastScriptReference/">
       
       
         
@@ -1009,6 +1009,8 @@
       
         
       
+        
+      
     
     
     
@@ -1267,7 +1269,7 @@
   <a href="#red1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        red1 速览
+        从 red1 开始
       
     </span>
   </a>
@@ -1278,7 +1280,7 @@
   <a href="#_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        获取入口
+        如何安装
       
     </span>
   </a>
@@ -1289,41 +1291,52 @@
   <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        你的第一条命令
+        您最常用的词
       
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_3" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        一个动词完成整个请求
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#a-script-several-lines-a-named-result" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        一个脚本：多行，一个命名结果
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="一个脚本：多行，一个命名结果">
+    <nav class="md-nav" aria-label="您最常用的词">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#_4" class="md-nav__link">
+  <a href="#bim" class="md-nav__link">
     <span class="md-ellipsis">
       
-        行的语法
+        bim：建筑和模型
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        mis：记录、表、文件
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#erp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        erp：单据和流程
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        从建筑到订单：成本、提议、过账
       
     </span>
   </a>
@@ -1332,6 +1345,28 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        所有的词
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-not-checked" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        未检查的内容
+      
+    </span>
+  </a>
   
 </li>
       
@@ -1339,340 +1374,18 @@
   <a href="#_5" class="md-nav__link">
     <span class="md-ellipsis">
       
-        阅读回复
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="阅读回复">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#what-is-a-claim" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        什么是待确认请求（claim）
+        故障排除
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#_6" class="md-nav__link">
     <span class="md-ellipsis">
       
-        确认一个待确认请求
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_7" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        在你自己的脚本里使用入口
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#objectdescribe" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        询问某物是什么：object.describe
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#objectcount" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        计数：object.count
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#modellerwalk" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        布置器会放置什么：modeller.walk
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#modeller-modelopenmodelconvertmodeladdbaymodelundomodelsavemodelclose" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        在各行之间保持一个 Modeller 打开：model.open、model.convert、model.addbay、model.undo、model.save、model.close
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#erplisterpsumerpgroup" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        列表、求和与分组：erp.list、erp.sum、erp.group
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#erpnew" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        创建记录：erp.new
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mis" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        处理任何表：mis.* 动词
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="处理任何表：mis.* 动词">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#_8" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        以某个角色查看和修改记录
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#misadd_window" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        建一张你自己的表：mis.add_window
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#ninjaexec" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        一行建出整个工作簿：ninja.exec
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="一行建出整个工作簿：ninja.exec">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#csv-ninjaexec-filetablecsv" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        从普通 CSV 建一张表：ninja.exec file=&lt;Table&gt;.csv
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#ninjaworkflow" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        给一张表加上单据列：ninja.workflow
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#ninjarollbackninjaexport" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        撤销一个工作簿包，并把它写回工作簿：ninja.rollback、ninja.export
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mastermisdiff" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        一条记录之下的记录，以及用一张表格对照数据表：master=、mis.diff
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="一条记录之下的记录，以及用一张表格对照数据表：master=、mis.diff">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#mis-script-dry" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        一个 MIS 行的文件，先试运行：--script … --dry
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mis_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        速查表：练习 MIS 的各行
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#misjs" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        在终端里操作：mis.js
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="在终端里操作：mis.js">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#menu-mismenu" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        屏幕上的菜单：menu 和 mis.menu
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_9" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        选择答案如何显示，并把它保存下来
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#help" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        向入口求助：help
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_10" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        给开发者：对照旧版检查孪生版
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="给开发者：对照旧版检查孪生版">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#idempiere-osgi-2pack" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        为旧版 iDempiere 制作插件（OSGi 和 2Pack）
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#viewer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        来自普通下载的 Viewer 问题
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#the-red1-shell-short-words-at-one-prompt" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        red1 shell：同一个提示符下的短词
+        面向开发者
       
     </span>
   </a>
@@ -1691,29 +1404,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#what-is-not-checked" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        哪些没有检查
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_11" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        故障排除
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_12" class="md-nav__link">
+  <a href="#_7" class="md-nav__link">
     <span class="md-ellipsis">
       
         本页为何保持真实
@@ -1727,6 +1418,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FastScriptReference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fast Script Reference (every command with its output)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -3736,7 +3455,7 @@
   <a href="#red1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        red1 速览
+        从 red1 开始
       
     </span>
   </a>
@@ -3747,7 +3466,7 @@
   <a href="#_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        获取入口
+        如何安装
       
     </span>
   </a>
@@ -3758,41 +3477,52 @@
   <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        你的第一条命令
+        您最常用的词
       
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_3" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        一个动词完成整个请求
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#a-script-several-lines-a-named-result" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        一个脚本：多行，一个命名结果
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="一个脚本：多行，一个命名结果">
+    <nav class="md-nav" aria-label="您最常用的词">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#_4" class="md-nav__link">
+  <a href="#bim" class="md-nav__link">
     <span class="md-ellipsis">
       
-        行的语法
+        bim：建筑和模型
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        mis：记录、表、文件
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#erp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        erp：单据和流程
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        从建筑到订单：成本、提议、过账
       
     </span>
   </a>
@@ -3801,6 +3531,28 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        所有的词
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-not-checked" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        未检查的内容
+      
+    </span>
+  </a>
   
 </li>
       
@@ -3808,340 +3560,18 @@
   <a href="#_5" class="md-nav__link">
     <span class="md-ellipsis">
       
-        阅读回复
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="阅读回复">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#what-is-a-claim" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        什么是待确认请求（claim）
+        故障排除
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#_6" class="md-nav__link">
     <span class="md-ellipsis">
       
-        确认一个待确认请求
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_7" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        在你自己的脚本里使用入口
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#objectdescribe" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        询问某物是什么：object.describe
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#objectcount" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        计数：object.count
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#modellerwalk" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        布置器会放置什么：modeller.walk
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#modeller-modelopenmodelconvertmodeladdbaymodelundomodelsavemodelclose" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        在各行之间保持一个 Modeller 打开：model.open、model.convert、model.addbay、model.undo、model.save、model.close
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#erplisterpsumerpgroup" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        列表、求和与分组：erp.list、erp.sum、erp.group
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#erpnew" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        创建记录：erp.new
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mis" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        处理任何表：mis.* 动词
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="处理任何表：mis.* 动词">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#_8" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        以某个角色查看和修改记录
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#misadd_window" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        建一张你自己的表：mis.add_window
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#ninjaexec" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        一行建出整个工作簿：ninja.exec
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="一行建出整个工作簿：ninja.exec">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#csv-ninjaexec-filetablecsv" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        从普通 CSV 建一张表：ninja.exec file=&lt;Table&gt;.csv
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#ninjaworkflow" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        给一张表加上单据列：ninja.workflow
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#ninjarollbackninjaexport" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        撤销一个工作簿包，并把它写回工作簿：ninja.rollback、ninja.export
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mastermisdiff" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        一条记录之下的记录，以及用一张表格对照数据表：master=、mis.diff
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="一条记录之下的记录，以及用一张表格对照数据表：master=、mis.diff">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#mis-script-dry" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        一个 MIS 行的文件，先试运行：--script … --dry
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mis_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        速查表：练习 MIS 的各行
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#misjs" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        在终端里操作：mis.js
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="在终端里操作：mis.js">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#menu-mismenu" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        屏幕上的菜单：menu 和 mis.menu
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_9" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        选择答案如何显示，并把它保存下来
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#help" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        向入口求助：help
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_10" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        给开发者：对照旧版检查孪生版
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="给开发者：对照旧版检查孪生版">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#idempiere-osgi-2pack" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        为旧版 iDempiere 制作插件（OSGi 和 2Pack）
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#viewer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        来自普通下载的 Viewer 问题
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#the-red1-shell-short-words-at-one-prompt" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        red1 shell：同一个提示符下的短词
+        面向开发者
       
     </span>
   </a>
@@ -4160,29 +3590,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#what-is-not-checked" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        哪些没有检查
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_11" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        故障排除
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_12" class="md-nav__link">
+  <a href="#_7" class="md-nav__link">
     <span class="md-ellipsis">
       
         本页为何保持真实
@@ -4215,72 +3623,104 @@
 
 
 <h1 id="fast-script">Fast Script 用户指南<a class="headerlink" href="#fast-script" title="Permanent link">&para;</a></h1>
-<p><strong>一次给 BIM 和 ERP 应用一条简短的命令，或在文件里写几行，就能拿回应用自己的答案。同样的几行，你在终端里能用，AI 也能用。</strong></p>
-<p>这是<strong>唯一入口</strong>（the door，下文简称“入口”）的指南：它是一个放在各个应用前面的小型脚本引擎。你写一行，例如 <code>modeller.lines building=HospitalGarage</code>。入口读取这一行，对照一份固定的动词清单进行检查，调用应用自己的代码，再把答案连同“哪些没有检查”一起交还给你。入口里没有 AI。</p>
-<p><img alt="唯一入口。左边的各类发起者说同样的动词；入口负责解析、检查、绑定、调用和回复；由应用自己的检查来裁决。" src="../../figs/one_door.svg" /></p>
-<p>请从左到右看这张图。</p>
-<ol>
-<li><strong>发起者（Actor）</strong>。发出这一行的人或程序，以及它送达的方式。目前是通过工具连接的 AI，或在终端前的人。邮箱、手机和设备已在规划中，<strong>尚未建成</strong>。</li>
-<li><strong>通道：动词</strong>。发起者可以说的全部内容，列成一张清单。每个动词都有一段简明的说明、它的输入，以及一个<em>危害</em>等级。完整清单见<a href="#the-verbs">下文</a>。</li>
-<li><strong>唯一入口：脚本引擎</strong>。它解析这一行，检查输入，把这一行与提出请求的人绑定，调用应用，然后回复。所有发起者都经过同一个入口，所以同一行会得到同样的答案。</li>
-<li><strong>引擎：应用</strong>。由应用自己的检查来裁决。造成新问题的改动会被撤销，并附上原因。</li>
-</ol>
+<p><strong>一次一条简短命令，面向 BIM 和 ERP，并原样返回应用自己的答复。同样的词，既适用于终端前的您，也适用于 AI。</strong></p>
+<p>可以把它看作“加了类固醇的 SQL”：一行就能读取或修改记录，但每一行都要经过与窗口相同的规则，并打印它做了什么。您在一个提示符 <code>red1</code> 下输入简短的词。每个词都会打印它所执行的完整一行（在 <code>→</code> 之后），所以您可以边用边学长格式。里面没有 AI。</p>
 <div class="admonition warning">
 <p class="admonition-title">好答案并不意味着什么</p>
-<p>没有发现问题的答案，<strong>绝不等于安全、合规或良好</strong>。每个答案都会列出哪些没有检查，<a href="#what-is-not-checked">哪些没有检查</a>一节会再列一遍。结构工程师拥有最终决定权。</p>
+<p>没有问题的答复<strong>绝不意味着安全、合规或良好</strong>。每个答复都会列出未检查的内容，<a href="#what-is-not-checked">未检查的内容</a>会再说一遍。最终决定权在结构工程师。</p>
 </div>
-<p><strong>第一次来，想接入 AI？</strong> 把 AI 接到入口的方法在 <a href="../ProposerGuide/#connect-your-ai">AI 提议者指南</a>里。本页讲的是你自己编写的命令和脚本，以及如何阅读返回的结果。</p>
-<h2 id="red1"><code>red1</code> 速览<a class="headerlink" href="#red1" title="Permanent link">&para;</a></h2>
-<p><code>red1</code> 是最短的入口：一个提示符，同时面向 BIM 和 ERP 应用。每个短词都会打印出它所运行的完整入口行（在 <code>→</code> 之后），所以你会在使用中逐渐学会完整写法。<a href="#the-red1-shell-short-words-at-one-prompt">完整的 red1 一节</a>在本页靠后的位置。</p>
+<h2 id="red1">从 red1 开始<a class="headerlink" href="#red1" title="Permanent link">&para;</a></h2>
+<p>在终端里，<code>red1</code> 会问候您一次，然后在提示符处等待。下面就是它打印的原样内容（版本行末尾的 commit 已被截掉，因为它随每次提交而变）：</p>
+<!-- run: greet -->
+<div class="highlight"><pre><span></span><code>$ (sleep 4; printf &#39;exit\r&#39;) | RED1_LOG=/tmp/fast_guide_greet.log RED1_HISTORY=/tmp/fast_guide_greet.hist BIM_DOOR_JOURNAL=/tmp/fast_guide_greet.journal script -qec &#39;node common/door/red1.js&#39; /dev/null | tr -d &#39;\r&#39; | sed -e &#39;s/\x1b\[[0-9;?]*[a-zA-Z]//g&#39; -e &#39;s/ · [0-9a-f]\{8\}$//&#39;
+Welcome to red1, the scripting door into BIM and ERP, stored in SQLite.
+REMEMBER THE NAME.
+Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 74 verbs · 29 words
+Type help for the list of commands (or bim, mis, erp for one group).
+Tip: type level student for fuller help on each word (red1 --fast opens without tips).
+
+red1&gt; exit
+</code></pre></div>
+<p>把它当作一张地图来读。版本行说明 red1 有多少个门动词（长格式）和短词。<code>help</code> 把短词分成三组显示；<code>help bim</code>、<code>help mis</code> 或 <code>help erp</code>（或只输入组名）可查看一组：</p>
 <table>
 <thead>
 <tr>
-<th>输入</th>
-<th>作用</th>
+<th>分组</th>
+<th>用途</th>
+<th>从这里开始</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>red1</code></td>
-<td>打开 <code>red1&gt;</code> 提示符（<code>node common/door/red1.js</code>；或 <code>red1</code>，只需先 <code>npm link</code> 一次）</td>
+<td><strong>bim</strong></td>
+<td>建筑和模型：计数、碰撞、成本、进度、Modeller</td>
+<td><code>cd Duplex</code></td>
 </tr>
 <tr>
-<td><code>cd Duplex</code> · <code>cd Element</code> · <code>cd Order</code> · <code>cd ..</code> · <code>pwd</code></td>
-<td>进入一栋建筑、它的某一类对象或某一类 ERP 记录；返回上一级；显示当前位置</td>
+<td><strong>mis</strong></td>
+<td>记录、表、文件和 Ninja 工作簿：列出、创建、修改、加载</td>
+<td><code>cd Order</code></td>
 </tr>
 <tr>
-<td><code>count</code> · <code>ls</code> · <code>group storey</code> · <code>sum &lt;column&gt;</code> · <code>cat &lt;id&gt;</code></td>
-<td>在当前位置计数、列出、分组、求和、显示一条记录</td>
-</tr>
-<tr>
-<td><code>ls element_name=*bath*</code></td>
-<td>用通配符查找：<code>*</code> 表示任意一串字符，<code>?</code> 表示一个字符，<code>[abc]</code> 表示其中之一</td>
-</tr>
-<tr>
-<td><code>clash ARC MEP</code> · 然后 <code>ls</code> · <code>ls *Bath*</code></td>
-<td>以漏斗形式画出的碰撞；它们的行；与之匹配的行</td>
-</tr>
-<tr>
-<td><code>clash</code></td>
-<td>打开该建筑各专业的菜单：用方向键或数字键选择，然后按回车</td>
-</tr>
-<tr>
-<td><code>next &lt;number&gt;</code> · <code>do complete &lt;number&gt;</code></td>
-<td>显示一份单据现在可以做什么；执行它</td>
-</tr>
-<tr>
-<td><code>menu</code> · <code>help</code> · <code>help verbs</code> · <code>exit</code></td>
-<td>ERP 菜单；各个短词；所有入口动词；退出</td>
-</tr>
-<tr>
-<td><code>red1 'cd Duplex; count'</code></td>
-<td>在脚本里使用同样的短词，一次执行完</td>
+<td><strong>erp</strong></td>
+<td>单据和流程：完成、作废、关闭、运行流程、把建筑过账到其订单</td>
+<td><code>cd Order</code></td>
 </tr>
 </tbody>
 </table>
-<h2 id="_1">获取入口<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
-<p>你需要 Node 18 或更新的版本。这些步骤是在 Node 18.19 上运行的。</p>
-<p><strong>Modeller 动词需要六个文件</strong>。新建一个空文件夹，安装浏览器引擎，然后下载这六个文件：</p>
+<!-- run: red1_help -->
+<div class="highlight"><pre><span></span><code>$ node common/door/red1.js help 2&gt;/dev/null
+red1: type a short word; red1 prints the full line it runs (→ …), then runs it.
+  bim   buildings and models             start with: cd Duplex   (16 words)
+  mis   records, tables, files, Ninja    start with: cd Order   (11 words)
+  erp   document actions (CO VO CL RC)   start with: cd Order   (7 words)
+  everywhere: cd &lt;place&gt; · pwd · role &lt;id&gt; · history · report · exit
+Type bim, mis or erp for its words · help &lt;word&gt; for one word (level student first for the full explanation) · help verbs for the full door lines.
+</code></pre></div>
+<p>一个组列出它的词，每个词附一个可以输入的例子。<code>erp</code> 组最短：</p>
+<!-- run: red1_help_erp -->
+<div class="highlight"><pre><span></span><code>$ node common/door/red1.js &#39;help erp&#39; 2&gt;/dev/null
+erp: document actions (CO VO CL RC) (start with: cd Order)
+ in a building:
+  post discipline=ARC  post the building&#39;s priced selection to its ERP Project Order
+  vo discipline=ARC    issue the change between the model and the Project Order as a Variation Order
+ in an ERP kind:
+  status                                              a Project&#39;s earned value (PV, EV, AC, SPI, CPI per phase)
+  claim                                               bill the project&#39;s completed phases not yet billed
+  do CO 50000                                         a document action
+  run &quot;Set Project Type&quot; 990000 C_ProjectType_ID=103  run a process of the dictionary
+  next 50000                                          what a document may do next
+</code></pre></div>
+<p><code>help</code> 不打印门动词，只打印这些词。<code>help verbs</code> 列出每个门动词及其完整一行。若要了解某个词的更完整说明，切换到 Student 级别：在会话中输入 <code>level student</code>，或在一行里用 <code>--level student</code>，然后 <code>help &lt;word&gt;</code> 会说明该词做什么、您输入什么、red1 从您所在位置取什么，并给出一个示例。文字取自该动词自己的描述，所以不会与末尾的表产生偏差：</p>
+<!-- run: red1_help_student cut=170 -->
+<div class="highlight"><pre><span></span><code>$ node common/door/red1.js --level student &#39;help cost&#39; 2&gt;/dev/null
+cost: the cost of a selection: cost [phase|task|storey|discipline|class] [column=value …]
+  in a building: cost discipline   → viewer.cost
+    what it does: Price a selection of a building&#39;s elements as the Viewer&#39;s Find panel does: quantities from the model × the rate pack, grouped by 4D phase, task, storey…
+    you type: by (phase (default), task, storey, discipline or class.)
+    taken from where you are: building
+    e.g. in Duplex: viewer.cost building=Duplex by=discipline
+</code></pre></div>
+<p>现在看一个词。<code>cd</code> 记住您在哪里，所以无需重复。在 <code>cd Duplex</code> 和 <code>cd Element</code> 之后，<code>count</code> 只需要那一个新的内容。<code>→</code> 行是 red1 发给门的内容；这一行就是该词的长格式：</p>
+<!-- run: red1_lines -->
+<div class="highlight"><pre><span></span><code>$ node common/door/red1.js &#39;cd Duplex; cd Element; count discipline=ARC&#39; 2&gt;&amp;1 | grep &#39;^→&#39;
+→ object.describe building=Duplex kind=Element
+→ object.count building=Duplex kind=Element discipline=ARC
+</code></pre></div>
+<p>您输入词、位置或列时，光标后会出现灰色文字：来自字典的建议。<strong>Tab</strong> 或 <strong>→</strong> 接受它；<strong>回车始终执行您输入的内容</strong>，绝不执行建议。拼错会得到提示，绝不会被悄悄改正（<code>ls Valu=…</code> 被拒绝，并指出 <code>Value</code>）。</p>
+<h2 id="_1">如何安装<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>您需要 Node 18 或更新版本（这些步骤在 Node 18.19 上运行过）。有两种进入方式。</p>
+<p><strong>完整检出</strong>为您提供 red1、BIM、ERP、Viewer 以及下面的一切。克隆它，然后从其顶层文件夹启动 red1：</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/red1oon/bim-ootb
+<span class="nb">cd</span><span class="w"> </span>bim-ootb
+node<span class="w"> </span>common/door/red1.js
+</code></pre></div>
+<p>输入 <code>exit</code> 退出。若想在任何位置只输入 <code>red1</code>，请在该文件夹中运行一次 <code>npm link</code>。要检查它是否工作，请查看它的版本行：</p>
+<!-- run: red1_version -->
+<div class="highlight"><pre><span></span><code>$ node common/door/red1.js --version | sed -e &#39;s/^Copyright[^·]*· //&#39; -e &#39;s/ · [0-9a-f]\{8\}$//&#39;
+red1 1.0.0 · 74 verbs · 29 words
+</code></pre></div>
+<p><strong>六文件下载</strong>用于只要门和 Modeller 动词、不需要检出的情况。新建一个空文件夹，安装 Modeller 所需的浏览器引擎，然后获取这六个文件：</p>
 <div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>fastscript<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>fastscript
 npm<span class="w"> </span>init<span class="w"> </span>-y
 npm<span class="w"> </span>install<span class="w"> </span>puppeteer@24
@@ -4291,1040 +3731,11 @@ curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/
 curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/msg_core.js
 curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/vocab/messages.json
 </code></pre></div>
-<p>这六个文件要放在同一个文件夹里。<code>door.js</code> 从 <code>verbs.json</code> 读取动词清单，从 <code>messages.json</code>（通过 <code>msg_core.js</code>）读取消息，并运行 <code>edit_cli.js</code>，后者会在没有窗口的情况下打开在线的 Modeller 页面。如果缺少某个文件，入口会指出是哪一个，并打印出它的 <code>curl</code> 行。<code>bim_mcp.js</code> 只用于连接 AI；本页的命令用不到它。</p>
-<p><strong>Viewer、对象和进度计划相关的动词需要完整检出（checkout）</strong>。它们不在这六个文件里。请取得整个 <code>bim-ootb</code> 仓库（<code>git clone https://github.com/red1oon/bim-ootb</code>），并在它的顶层文件夹里运行 <code>node common/door/door.js</code>，而不是 <code>node door.js</code>。<a href="#the-verbs">动词表</a>会写明每个动词需要这两种方式中的哪一种。针对 Viewer 的单文件下载尚未做好。</p>
-<h2 id="_2">你的第一条命令<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
-<p>一行，一个动词，<code>key=value</code> 键值对，<code>=</code> 两边不留空格。向 HospitalGarage 询问它的轴网：</p>
-<!-- run: lines cut=700 -->
-<div class="highlight"><pre><span></span><code>$ node door.js &#39;modeller.lines building=HospitalGarage&#39;
-{&quot;request&quot;:&quot;d-mwiqhn1b-3186337-1&quot;,&quot;verb&quot;:&quot;modeller.lines&quot;,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;ok&quot;,&quot;answer&quot;:{&quot;ok&quot;:true,&quot;building&quot;:&quot;HospitalGarage&quot;,&quot;edits&quot;:[],&quot;ms&quot;:15019,&quot;model&quot;:{&quot;grid_source&quot;:&quot;column-derived&quot;,&quot;system&quot;:&quot;column-framed&quot;,&quot;material&quot;:&quot;RC&quot;,&quot;mixed&quot;:true,&quot;girders&quot;:228,&quot;rotation_deg&quot;:-2,&quot;frame&quot;:&quot;building&quot;,&quot;lines&quot;:[{&quot;id&quot;:&quot;gx0&quot;,&quot;axis&quot;:&quot;x&quot;,&quot;pos&quot;:128.131,&quot;world&quot;:132.184},{&quot;id&quot;:&quot;gx1&quot;,&quot;axis&quot;:&quot;x&quot;,&quot;pos&quot;:129.223,&quot;world&quot;:133.277},{&quot;id&quot;:&quot;gx2&quot;,&quot;axis&quot;:&quot;x&quot;,&quot;pos&quot;:133.277,&quot;world&quot;:137.334},{&quot;id&quot;:&quot;gx3&quot;,&quot;axis&quot;:&quot;x&quot;,&quot;pos&quot;:133.795,&quot;world&quot;:137.851},{&quot;id&quot;:&quot;gx4&quot;,&quot;axis&quot;:&quot;x&quot;,&quot;pos&quot;:134.811,&quot;world&quot;:138.868},{&quot;id&quot;:&quot;gx5&quot;,&quot;axis&quot;:&quot;x&quot;,&quot;pos&quot;:145.987,&quot;world&quot;:150.051},{&quot;id&quot;:&quot;gx6&quot;,&quot;axis&quot;:&quot;x&quot;,&quot;pos&quot;:157.163,&quot;world&quot;:161.234},{&quot;id&quot;:&quot;gx7…
-</code></pre></div>
-<p>它会打开 Modeller 和这栋建筑，所以需要 10 到 40 秒。你看到的是一行 JSON，也就是一个<strong>信封</strong>（envelope）。这里只显示开头；轴网的线条太多，放不下。答案是应用自己的，原样放在 <code>answer</code> 里。这里 <code>gx5</code> 位于 145.987 m，<code>gx6</code> 位于 157.163 m，都是在这栋建筑自己的轴网上。<code>status</code> 是 <code>ok</code>。</p>
-<div class="admonition note">
-<p class="admonition-title">‘request’ 从哪里来？</p>
-<p>每一行都会得到一个请求编号（<code>"request":"d-…"</code>），并在运行之前写入一份日志，位置在 <code>~/.cache/bim_door/journal.jsonl</code>。同一个编号发送两次，你得到的是第一次的答案，所以重试绝不会重复一次改动。入口还会在错误输出流上打印一行 <code>§DOOR …</code>；本指南只显示标准输出。</p>
-</div>
-<h2 id="_3">一个动词完成整个请求<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
-<p>像“<em>把 gx5 和 gx6 之间的开间做成 13 m 宽</em>”这样的请求有好几个步骤：读取轴网、算出移动量、试做平移。动词 <code>modeller.widen_bay</code> 一次做完这三步。它的输入是两条轴线和你想要的宽度：</p>
-<!-- run: widen -->
-<div class="highlight"><pre><span></span><code>$ node door.js &#39;modeller.widen_bay building=HospitalGarage from=gx5 to=gx6 target=13&#39; &gt; widen.json; echo &quot;exit $?&quot;
-exit 3
-</code></pre></div>
-<p>退出码是第一个答案：<code>0</code> 表示 ok，<code>3</code> 表示应用给出的答案不是一个单纯的“是”（被拒绝、被挂起或无法判定），<code>1</code> 表示出错，<code>2</code> 表示命令写错了。现在看看文件里面。先是整个请求，然后是它的两个步骤，每个步骤各有自己的信封：</p>
-<!-- run: widen_steps cut=200 -->
-<div class="highlight"><pre><span></span><code>$ grep -o &#39;&quot;request&quot;:&quot;[^&quot;]*&quot;,&quot;verb&quot;:&quot;[^&quot;]*&quot;,&quot;actor&quot;:&quot;[^&quot;]*&quot;,&quot;status&quot;:&quot;[^&quot;]*&quot;&#39; widen.json
-&quot;request&quot;:&quot;d-mwiqhyza-3186904-1&quot;,&quot;verb&quot;:&quot;modeller.widen_bay&quot;,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;refused&quot;
-&quot;request&quot;:&quot;d-mwiqhyza-3186904-1.1&quot;,&quot;verb&quot;:&quot;modeller.lines&quot;,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;ok&quot;
-&quot;request&quot;:&quot;d-mwiqhyza-3186904-1.2&quot;,&quot;verb&quot;:&quot;modeller.try_shift&quot;,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;refused&quot;
-</code></pre></div>
-<p>第一步读取了轴网。它找到了现在的开间：</p>
-<!-- run: widen_read -->
-<div class="highlight"><pre><span></span><code>$ grep -o &#39;&quot;id&quot;:&quot;gx[56]&quot;,&quot;axis&quot;:&quot;x&quot;,&quot;pos&quot;:[0-9.]*&#39; widen.json
-&quot;id&quot;:&quot;gx5&quot;,&quot;axis&quot;:&quot;x&quot;,&quot;pos&quot;:145.987
-&quot;id&quot;:&quot;gx6&quot;,&quot;axis&quot;:&quot;x&quot;,&quot;pos&quot;:157.163
-</code></pre></div>
-<p>所以开间是 157.163 − 145.987 = <strong>11.176 m</strong>。要达到 13 m，轴线 <code>gx6</code> 以及它之后的每一条轴线，都必须移动 <strong>1.824 m</strong>。入口算出了这个数，第二步把它传了下去：</p>
-<!-- run: widen_move -->
-<div class="highlight"><pre><span></span><code>$ grep -o &#39;&quot;move&quot;:[0-9.]*&#39; widen.json | head -1
-&quot;move&quot;:1.824
-</code></pre></div>
-<p>应用试做了这次平移，检查了它，然后<strong>叫停了它</strong>：</p>
-<!-- run: widen_why -->
-<div class="highlight"><pre><span></span><code>$ grep -o &#39;&quot;why&quot;:&quot;[^&quot;]*&quot;&#39; widen.json | tail -1
-&quot;why&quot;:&quot;line 2 (modeller.try_shift): stopped: Beam spans over limit: 91 -&gt; 92 (limit 12 m, RC); bay gx5-gx6 newly over the limit: 13 m&quot;
-</code></pre></div>
-<p>这次改动被做出、被评判，然后被撤销。任何东西都不会被保存。叫停背后的数字在应用的报告里：</p>
-<!-- run: widen_bay -->
-<div class="highlight"><pre><span></span><code>$ grep -o &#39;&quot;bay&quot;:&quot;gx5-gx6&quot;[^}]*&#39; widen.json
-&quot;bay&quot;:&quot;gx5-gx6&quot;,&quot;before&quot;:11.176,&quot;after&quot;:13,&quot;newly_over&quot;:true
-</code></pre></div>
-<p>开间从 11.176 m 变成 13 m，超过了这栋建筑对混凝土梁规定的 12 m 上限（<code>limit</code> 和 <code>material</code> 来自建筑本身）。这就是 Garage 这次请求的全部经过：13 m 的开间需要再增加一条柱轴线。</p>
-<h2 id="a-script-several-lines-a-named-result">一个脚本：多行，一个命名结果<a class="headerlink" href="#a-script-several-lines-a-named-result" title="Permanent link">&para;</a></h2>
-<p>脚本是一个文本文件，每行一条命令。一行可以以一个<strong>名字</strong>加 <code>=</code> 开头，这样它的答案会保留给下面的各行使用。<code>--</code> 之后的内容都是注释。把下面的内容保存为 <code>bay.door</code>：</p>
-<!-- file: bay.door -->
-<div class="highlight"><pre><span></span><code>-- read the grid, then widen the bay between gx5 and gx6 to exactly 12 m
-lines = modeller.lines building=HospitalGarage
-modeller.try_shift building=HospitalGarage line=gx6 move={12 - (lines.model.lines[gx6].pos - lines.model.lines[gx5].pos)}
-</code></pre></div>
-<p>用 <code>--script</code> 运行它：</p>
-<!-- run: script -->
-<div class="highlight"><pre><span></span><code>$ node door.js --script bay.door &gt; bay.json; echo &quot;exit $?&quot;
-exit 0
-</code></pre></div>
-<p><code>{ }</code> 里面的文字是算术表达式。其中可以使用数字、<code>+ - * /</code>、括号，以及某个命名结果的字段。<code>lines.model.lines[gx6].pos</code> 的意思是：在名为 <code>lines</code> 的答案里，取 <code>model</code> 之下 <code>lines</code> 中 id 为 <code>gx6</code> 的那一项，再取它的 <code>pos</code>。只能读取动词已声明的字段；任何其他名字都会报错，并说明原因。</p>
-<p>这里的算术是<strong>精确的十进制</strong>，不是浮点数。用浮点数的计算机会得到 <code>12 - 11.176 = 0.8239999999999998</code>。入口得到的是这个：</p>
-<!-- run: script_move -->
-<div class="highlight"><pre><span></span><code>$ grep -o &#39;&quot;change&quot;:{&quot;kind&quot;:&quot;[^&quot;]*&quot;,&quot;grid&quot;:&quot;[^&quot;]*&quot;,&quot;through&quot;:&quot;[^&quot;]*&quot;,&quot;lines&quot;:[0-9]*,&quot;delta&quot;:[0-9.]*&#39; bay.json
-&quot;change&quot;:{&quot;kind&quot;:&quot;block-shift&quot;,&quot;grid&quot;:&quot;gx6&quot;,&quot;through&quot;:&quot;gx16&quot;,&quot;lines&quot;:11,&quot;delta&quot;:0.824
-</code></pre></div>
-<p>脚本从上到下运行，并<strong>在遇到第一行不是 ok 的地方停下</strong>。这里两行的答案都是 <code>ok</code>：</p>
-<!-- run: script_status -->
-<div class="highlight"><pre><span></span><code>$ grep -o &#39;&quot;request&quot;:&quot;[^&quot;]*&quot;,&quot;verb&quot;:&quot;[^&quot;]*&quot;,&quot;actor&quot;:&quot;[^&quot;]*&quot;,&quot;status&quot;:&quot;[^&quot;]*&quot;&#39; bay.json
-&quot;request&quot;:&quot;d-mwiqis8z-3188092-2&quot;,&quot;verb&quot;:&quot;modeller.lines&quot;,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;ok&quot;
-&quot;request&quot;:&quot;d-mwiqj50r-3188092-3&quot;,&quot;verb&quot;:&quot;modeller.try_shift&quot;,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;ok&quot;
-</code></pre></div>
-<p>恰好 12 m 时，应用没有发现新问题：超过上限的梁跨数量保持原样。</p>
-<!-- run: script_span -->
-<div class="highlight"><pre><span></span><code>$ grep -o &#39;&quot;label&quot;:&quot;Beam spans over limit&quot;,&quot;scope&quot;:&quot;[^&quot;]*&quot;,&quot;state&quot;:&quot;JUDGED&quot;,&quot;before&quot;:[0-9]*,&quot;after&quot;:[0-9]*,&quot;delta&quot;:[0-9]*&#39; bay.json
-&quot;label&quot;:&quot;Beam spans over limit&quot;,&quot;scope&quot;:&quot;228 walked girders, RC (mixed building)&quot;,&quot;state&quot;:&quot;JUDGED&quot;,&quot;before&quot;:91,&quot;after&quot;:91,&quot;delta&quot;:0
-</code></pre></div>
-<p>所以，同一栋建筑，要求 13 m 时被叫停，要求 12 m 时成立。<code>ok</code> 并不保证这栋建筑是好的：同样的<a href="#what-is-not-checked">未检查事项清单</a>依然适用。</p>
-<h3 id="_4">行的语法<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
-<table>
-<thead>
-<tr>
-<th>部分</th>
-<th>规则</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>一条命令</td>
-<td><code>app.verb key=value key=value</code>，每行一条</td>
-</tr>
-<tr>
-<td>含空格的值</td>
-<td>放进双引号：<code>text="a note"</code></td>
-</tr>
-<tr>
-<td>命名结果</td>
-<td><code>name = app.verb …</code>；后面的行读取 <code>name.field</code></td>
-</tr>
-<tr>
-<td>算术</td>
-<td><code>{ … }</code>，内含数字、<code>+ - * /</code>、括号和结果字段；精确十进制</td>
-</tr>
-<tr>
-<td>注释</td>
-<td><code>--</code> 及该行其余部分</td>
-</tr>
-<tr>
-<td>单位</td>
-<td>从不写在行里；由动词决定用米、小时还是天</td>
-</tr>
-<tr>
-<td>其他任何内容</td>
-<td>不是命令：它会作为一个问题返回，而不是作为一个动作执行</td>
-</tr>
-</tbody>
-</table>
-<p>最后一行是有意为之。与任何动词都不匹配的文字<strong>绝不会被猜测</strong>：</p>
-<!-- run: question -->
-<div class="highlight"><pre><span></span><code>$ node door.js &#39;please widen the bay&#39;
-{&quot;request&quot;:&quot;d-mwiqjlcw-3189389-1&quot;,&quot;verb&quot;:null,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;refused&quot;,&quot;answer&quot;:{&quot;question&quot;:&quot;I could not read that as a command. A command is app.verb key=value … Which one do you mean? Type help.&quot;,&quot;verbs&quot;:[&quot;modeller.lines&quot;,&quot;modeller.try_shift&quot;,&quot;viewer.counts&quot;,&quot;viewer.clashes&quot;,&quot;viewer.film_path&quot;,&quot;viewer.schedule_at&quot;,&quot;viewer.schedule_compare&quot;,&quot;modeller.widen_bay&quot;,&quot;modeller.walk&quot;,&quot;object.describe&quot;,&quot;object.read&quot;,&quot;object.history&quot;,&quot;object.update&quot;,&quot;object.attach&quot;,&quot;object.count&quot;,&quot;object.list&quot;,&quot;object.sum&quot;,&quot;object.group&quot;,&quot;witness.run&quot;,&quot;witness.last&quot;,&quot;legacy.status&quot;,&quot;legacy.query&quot;,&quot;mis.column&quot;,&quot;legacy.compare&quot;,&quot;idempiere.where&quot;,&quot;mis.pack&quot;,&quot;legacy.up&quot;,&quot;legacy.refresh&quot;,&quot;legacy.witness&quot;,&quot;legacy.check&quot;,&quot;legacy.plugin&quot;,&quot;model.open&quot;,&quot;model.convert&quot;,&quot;model.addbay&quot;,&quot;model.undo&quot;,&quot;model.save&quot;,&quot;model.close&quot;,&quot;erp.process&quot;,&quot;mis.lookup&quot;,&quot;viewer.cost&quot;,&quot;erp.find&quot;,&quot;erp.actions&quot;,&quot;erp.complete&quot;,&quot;erp.void&quot;,&quot;erp.close&quot;,&quot;erp.reverse&quot;,&quot;mis.describe&quot;,&quot;mis.read&quot;,&quot;mis.list&quot;,&quot;mis.sum&quot;,&quot;mis.group&quot;,&quot;mis.new&quot;,&quot;mis.update&quot;,&quot;mis.delete&quot;,&quot;mis.load&quot;,&quot;mis.add_window&quot;,&quot;ninja.exec&quot;,&quot;ninja.workflow&quot;,&quot;mis.diff&quot;,&quot;mis.menu&quot;,&quot;ninja.rollback&quot;,&quot;ninja.export&quot;,&quot;erp.column&quot;,&quot;erp.compare&quot;,&quot;erp.pack&quot;,&quot;erp.legacy_plugin&quot;,&quot;erp.describe&quot;,&quot;erp.read&quot;,&quot;erp.list&quot;,&quot;erp.sum&quot;,&quot;erp.group&quot;,&quot;erp.new&quot;]},&quot;why&quot;:&quot;not a command: \&quot;please widen the bay\&quot;&quot;,&quot;notChecked&quot;:[],&quot;ops&quot;:[],&quot;next&quot;:[],&quot;ms&quot;:8}
-</code></pre></div>
-<h2 id="_5">阅读回复<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
-<p>每一行，无论来自哪个发起者，得到的都是同一种信封。请按顺序阅读这些字段。</p>
-<table>
-<thead>
-<tr>
-<th>字段</th>
-<th>含义</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>status</code></td>
-<td><code>ok</code>、<code>refused</code>、<code>claim</code>、<code>error</code> 或 <code>inconclusive</code>。先读这一项</td>
-</tr>
-<tr>
-<td><code>why</code></td>
-<td>状态不是 <code>ok</code> 时的原因</td>
-</tr>
-<tr>
-<td><code>answer</code></td>
-<td>应用自己的答案，原样不动</td>
-</tr>
-<tr>
-<td><code>notChecked</code></td>
-<td>这次检查没有覆盖的内容。务必转告给相关的人</td>
-</tr>
-<tr>
-<td><code>request</code>、<code>verb</code>、<code>actor</code></td>
-<td>哪一行、哪个动词、谁提出的</td>
-</tr>
-<tr>
-<td><code>ops</code></td>
-<td>写入了什么（对会写入的动词而言）</td>
-</tr>
-<tr>
-<td><code>next</code></td>
-<td>保留字段；目前为空</td>
-</tr>
-<tr>
-<td><code>ms</code></td>
-<td>用了多长时间</td>
-</tr>
-</tbody>
-</table>
-<p>五种状态，各取自一次真实运行：</p>
-<p><strong>ok.</strong> 应用作了答复，没有任何东西被扣下。本页的第一条命令就是一例。即便如此，也要读 <code>notChecked</code>。</p>
-<p><strong>refused.</strong> 应用给出的答案不是“是”。上面 13 m 的请求就是一例：它被试做、被评判、被撤销，<code>why</code> 说明了原因。拒绝是一种答案，不是故障。不是命令的文字同样是 <code>refused</code>（上面那个问题）。</p>
-<p><strong>error.</strong> 这一行本身有错：缺少输入、动词未知、值的类型不对。什么都没有运行。</p>
-<!-- run: error -->
-<div class="highlight"><pre><span></span><code>$ node door.js &#39;modeller.lines&#39;
-{&quot;request&quot;:&quot;d-mwiqjlky-3189400-1&quot;,&quot;verb&quot;:&quot;modeller.lines&quot;,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;error&quot;,&quot;answer&quot;:null,&quot;why&quot;:&quot;missing input: building&quot;,&quot;notChecked&quot;:[],&quot;ops&quot;:[],&quot;next&quot;:[],&quot;ms&quot;:6}
-</code></pre></div>
-<p><strong>claim.</strong> 这一行读懂了，但发起者没有允许它的凭证，所以入口<strong>把它扣下，不运行它</strong>。这是针对 AI 的安全规则，它取决于动词，而不取决于发起者。参见<a href="#what-is-a-claim">什么是待确认请求</a>。</p>
-<!-- run: claim -->
-<div class="highlight"><pre><span></span><code>$ node door.js --actor ai --request ai-1 &#39;object.update building=Duplex kind=Element uu=abc column=Name value=x&#39;
-{&quot;request&quot;:&quot;ai-1&quot;,&quot;verb&quot;:&quot;object.update&quot;,&quot;actor&quot;:&quot;ai&quot;,&quot;status&quot;:&quot;claim&quot;,&quot;answer&quot;:null,&quot;why&quot;:&quot;actor ai has proof \&quot;local-user\&quot;, which allows read/trial verbs; object.update is writes. Held as a claim, not run. A person confirms it with: door.js --confirm ai-1&quot;,&quot;notChecked&quot;:[],&quot;ops&quot;:[],&quot;next&quot;:[],&quot;ms&quot;:11}
-</code></pre></div>
-<p><strong>inconclusive.</strong> 应用无法判定，并且明说了。它绝不会被改成 <code>ok</code>。这里 Viewer 对 ARC 和 ZZZ 这一对没有碰撞规则。这条需要完整检出：</p>
-<!-- run: inconclusive -->
-<div class="highlight"><pre><span></span><code>$ node common/door/door.js &#39;viewer.clashes building=Duplex discA=ARC discB=ZZZ&#39;
-{&quot;request&quot;:&quot;d-mwiqjly7-3189440-1&quot;,&quot;verb&quot;:&quot;viewer.clashes&quot;,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;inconclusive&quot;,&quot;answer&quot;:null,&quot;why&quot;:&quot;the Viewer could not answer (exit 1): the Viewer says INCONCLUSIVE: no rule for ARC/ZZZ in clash_rules.json&quot;,&quot;notChecked&quot;:[],&quot;ops&quot;:[],&quot;next&quot;:[],&quot;ms&quot;:19539}
-</code></pre></div>
-<h3 id="what-is-a-claim">什么是待确认请求（claim）<a class="headerlink" href="#what-is-a-claim" title="Permanent link">&para;</a></h3>
-<p>每个动词都有一个<strong>危害等级</strong>（harm class）：<code>read</code>（不改变任何东西）、<code>trial</code>（在一个用完即弃的副本上做改动，评判后绝不保存）、<code>writes</code>、<code>posts</code> 或 <code>sends</code>。这个等级在动词清单里只写一次，所以没有任何发起者能绕开它。</p>
-<p>每个发起者都有一份凭证。在终端前的人，对每个等级都被信任。<strong>AI</strong> 只对 <code>read</code> 和 <code>trial</code> 被信任：它可以看，也可以试，但 AI 发出的 <code>writes</code>、<code>posts</code> 或 <code>sends</code> 动词会被当作待确认请求挂起，上面的 <code>object.update</code> 那一行就是这样。完全没有凭证的发起者，例如来自陌生发件人的邮件，只能读，别的都不行：</p>
-<!-- run: claim_email -->
-<div class="highlight"><pre><span></span><code>$ node door.js --actor email --request mail-0 &#39;modeller.try_shift building=HospitalGarage line=gx6 move=1.824&#39;
-{&quot;request&quot;:&quot;mail-0&quot;,&quot;verb&quot;:&quot;modeller.try_shift&quot;,&quot;actor&quot;:&quot;email&quot;,&quot;status&quot;:&quot;claim&quot;,&quot;answer&quot;:null,&quot;why&quot;:&quot;actor email has proof \&quot;none\&quot;, which allows read verbs; modeller.try_shift is trial. Held as a claim, not run. A person confirms it with: door.js --confirm mail-0&quot;,&quot;notChecked&quot;:[],&quot;ops&quot;:[],&quot;next&quot;:[],&quot;ms&quot;:7}
-</code></pre></div>
-<p>被挂起的待确认请求不运行、不排队，也不会丢失：它在日志里，记在它的请求编号之下。入口不会替任何人确认任何东西。</p>
-<h3 id="_6">确认一个待确认请求<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
-<p>由一个人<strong>凭请求编号</strong>放行被挂起的待确认请求，所以真正运行的这一行，正是当初提出的那一行。没有人需要重新输入它。这里，一封邮件请求做一次试移动，被挂起了：</p>
-<!-- run: confirm_claim -->
-<div class="highlight"><pre><span></span><code>$ node door.js --journal claims.jsonl --actor email --request mail-1 &#39;modeller.try_shift building=HospitalGarage line=gx6 move=0.824&#39;
-{&quot;request&quot;:&quot;mail-1&quot;,&quot;verb&quot;:&quot;modeller.try_shift&quot;,&quot;actor&quot;:&quot;email&quot;,&quot;status&quot;:&quot;claim&quot;,&quot;answer&quot;:null,&quot;why&quot;:&quot;actor email has proof \&quot;none\&quot;, which allows read verbs; modeller.try_shift is trial. Held as a claim, not run. A person confirms it with: door.js --confirm mail-1&quot;,&quot;notChecked&quot;:[],&quot;ops&quot;:[],&quot;next&quot;:[],&quot;ms&quot;:7}
-</code></pre></div>
-<p><code>--claims</code> 列出正被挂起的内容：</p>
-<!-- run: confirm_list -->
-<div class="highlight"><pre><span></span><code>$ node door.js --journal claims.jsonl --claims | grep -o &#39;&quot;actor&quot;:&quot;[a-z]*&quot;,&quot;line&quot;:&quot;[^&quot;]*&quot;,&quot;verb&quot;:&quot;[^&quot;]*&quot;,&quot;harm&quot;:&quot;[a-z]*&quot;&#39;
-&quot;actor&quot;:&quot;email&quot;,&quot;line&quot;:&quot;modeller.try_shift building=HospitalGarage line=gx6 move=0.824&quot;,&quot;verb&quot;:&quot;modeller.try_shift&quot;,&quot;harm&quot;:&quot;trial&quot;
-</code></pre></div>
-<p><code>--confirm</code> 以你的身份，把记录下来的那一行运行一次：</p>
-<!-- run: confirm_run cut=200 -->
-<div class="highlight"><pre><span></span><code>$ node door.js --journal claims.jsonl --confirm mail-1
-{&quot;request&quot;:&quot;mail-1#confirmed&quot;,&quot;verb&quot;:&quot;modeller.try_shift&quot;,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;ok&quot;,&quot;answer&quot;:{&quot;ok&quot;:true,&quot;building&quot;:&quot;HospitalGarage&quot;,&quot;edits&quot;:[{&quot;tag&quot;:&quot;EDIT_REPORT&quot;,&quot;version&quot;:1,&quot;change&quot;:{&quot;kind&quot;:&quot;bloc…
-</code></pre></div>
-<p>回复是普通的回复，并写明它所确认的待确认请求。再问一次，不会运行任何东西：入口会根据自己的记录作答。</p>
-<!-- run: confirm_again -->
-<div class="highlight"><pre><span></span><code>$ node door.js --journal claims.jsonl --confirm mail-1 | grep -o &#39;&quot;confirms&quot;:&quot;[^&quot;]*&quot;&#39;
-&quot;confirms&quot;:&quot;mail-1&quot;
-</code></pre></div>
-<p>有三条规则成立。只有在终端前的人才能确认：<code>--actor ai --confirm …</code> 会被拒绝，待确认请求继续被挂起。应用在确认的那一刻仍然会作出裁决，所以一行自提出以来已变得不对，就会连同应用给出的原因一起被拒绝。而且 AI 的工具连接根本没有确认命令。</p>
-<p><strong>这并不能证明什么</strong>。入口信任坐在本地终端前的任何人。一个被允许在你的机器上运行 shell 命令的 AI，可以自己输入 <code>--confirm</code>，就像它可以以你的身份输入一行命令一样。如果这一点重要，请让 AI 只能使用它的工具连接。</p>
-<h2 id="_7">在你自己的脚本里使用入口<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
-<p>上面的一切都是 <code>door.js</code>，也就是 AI 连接所用的同一个文件。在你自己的程序里，把它当作命令来调用，并读取它的 JSON：退出码（<code>0</code>、<code>3</code>、<code>1</code>、<code>2</code>）说明该读答案还是读问题，<code>status</code> 则说明具体是哪一种。<code>--actor human</code> 是默认值；<code>--actor ai</code> 会让入口把这一行当作 AI 发出的。</p>
-<h2 id="objectdescribe">询问某物是什么：<code>object.describe</code><a class="headerlink" href="#objectdescribe" title="Permanent link">&para;</a></h2>
-<p>动词还可以向模型本身询问它包含什么。<code>object.describe</code> 是<strong>反射</strong>：它读取模型自己的字典，说明某一类对象有哪些属性、哪些子页签，以及哪些通用方法对它是合法的。它只读取字典的行，不会打开任何构件。它需要完整检出，并且需要模型自带字典的建筑（Duplex 就是）。</p>
-<!-- run: describe cut=520 -->
-<div class="highlight"><pre><span></span><code>$ node common/door/door.js &#39;object.describe building=Duplex kind=Element&#39;
-{&quot;request&quot;:&quot;d-mwiqkdzw-3190928-1&quot;,&quot;verb&quot;:&quot;object.describe&quot;,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;ok&quot;,&quot;answer&quot;:{&quot;kind&quot;:&quot;Element&quot;,&quot;table&quot;:&quot;elements_meta&quot;,&quot;uu&quot;:&quot;3027c2ed-8cb6-5ccb-ae8c-fd7df2eca264&quot;,&quot;key&quot;:&quot;elements_meta_uu&quot;,&quot;highVolume&quot;:true,&quot;properties&quot;:[{&quot;name&quot;:&quot;guid&quot;,&quot;label&quot;:&quot;GUID&quot;,&quot;type&quot;:&quot;string&quot;,&quot;mandatory&quot;:true,&quot;updateable&quot;:false,&quot;key&quot;:false,&quot;parent&quot;:false,&quot;length&quot;:255,&quot;displayed&quot;:true,&quot;seq&quot;:10,&quot;fieldReadOnly&quot;:true,&quot;allowCopy&quot;:false},{&quot;name&quot;:&quot;ifc_class&quot;,&quot;label&quot;:&quot;IFC Class&quot;,&quot;type&quot;:&quot;list&quot;,&quot;mandatory&quot;:false,&quot;updateable&quot;:true,&quot;…
-</code></pre></div>
-<p><code>Element</code> 可以使用哪些方法？</p>
-<!-- run: describe_methods -->
-<div class="highlight"><pre><span></span><code>$ node common/door/door.js &#39;object.describe building=Duplex kind=Element&#39; | grep -o &#39;&quot;methods&quot;:\[[^]]*\]&#39;
-&quot;methods&quot;:[&quot;read&quot;,&quot;update&quot;,&quot;attach&quot;,&quot;history&quot;]
-</code></pre></div>
-<p>未知的类别会报错，并列出模型里有的各个类别，所以猜错一次，就学到了正确的名字。</p>
-<h2 id="objectcount">计数：<code>object.count</code><a class="headerlink" href="#objectcount" title="Permanent link">&para;</a></h2>
-<p><code>object.count</code> 回答“有多少”：模型里某一类记录有多少条。Duplex 把它的房间称为 <code>Room</code> 这个类别。它需要完整检出。</p>
-<!-- run: count_rooms -->
-<div class="highlight"><pre><span></span><code>$ node common/door/door.js &#39;object.count building=Duplex kind=Room&#39;
-{&quot;request&quot;:&quot;d-mwiqkfde-3190996-1&quot;,&quot;verb&quot;:&quot;object.count&quot;,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;ok&quot;,&quot;answer&quot;:{&quot;kind&quot;:&quot;Room&quot;,&quot;table&quot;:&quot;model_room&quot;,&quot;filters&quot;:[],&quot;count&quot;:5,&quot;population&quot;:5,&quot;verdict&quot;:&quot;OK&quot;,&quot;summary&quot;:&quot;5 Room&quot;},&quot;why&quot;:null,&quot;notChecked&quot;:[],&quot;ops&quot;:[],&quot;next&quot;:[],&quot;ms&quot;:614}
-</code></pre></div>
-<p>加上 <code>column=value</code> 可以缩小计数范围。该列必须是这个类别的属性（<code>object.describe</code> 会列出它们），并且答案会保留<strong>总体数</strong>（population），也就是缩小范围之前的数量：</p>
-<!-- run: count_storey -->
-<div class="highlight"><pre><span></span><code>$ node common/door/door.js &#39;object.count building=Duplex kind=Room storey=&quot;Level 1&quot;&#39;
-{&quot;request&quot;:&quot;d-mwiqkg0w-3191055-1&quot;,&quot;verb&quot;:&quot;object.count&quot;,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;ok&quot;,&quot;answer&quot;:{&quot;kind&quot;:&quot;Room&quot;,&quot;table&quot;:&quot;model_room&quot;,&quot;filters&quot;:[{&quot;column&quot;:&quot;storey&quot;,&quot;value&quot;:&quot;Level 1&quot;}],&quot;count&quot;:2,&quot;population&quot;:5,&quot;verdict&quot;:&quot;OK&quot;,&quot;summary&quot;:&quot;2 Room where storey = Level 1 (of 5)&quot;},&quot;why&quot;:null,&quot;notChecked&quot;:[],&quot;ops&quot;:[],&quot;next&quot;:[],&quot;ms&quot;:714}
-</code></pre></div>
-<p>这个类别没有的列会被拒绝，回答会指出该列并列出真正的列。它绝不会被当成“没有匹配”：</p>
-<!-- run: count_badcol cut=330 -->
-<div class="highlight"><pre><span></span><code>$ node common/door/door.js &#39;object.count building=Duplex kind=Room floor=1&#39;
-{&quot;request&quot;:&quot;d-mwiqkgro-3191109-1&quot;,&quot;verb&quot;:&quot;object.count&quot;,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;refused&quot;,&quot;answer&quot;:{&quot;refused&quot;:true,&quot;reason&quot;:&quot;kind Room has no property \&quot;floor\&quot;; none is close, its properties: guid, type, name, parent_guid, object_type, predefined_type, center_x, center_y, center_z, size_x, size_y, size_z, room_guid, elevation,…
-</code></pre></div>
-<p>完全没有房间的模型不会回答 <code>0</code>。它回答 <code>inconclusive</code>，因为什么都没有被计数。一个可以信赖的零，是在非空总体之内缩小范围后的计数。</p>
-<h2 id="modellerwalk">布置器会放置什么：<code>modeller.walk</code><a class="headerlink" href="#modellerwalk" title="Permanent link">&para;</a></h2>
-<p>Modeller 里有一个<em>布置器</em>（walker），它按照从真实建筑中测得的规则，放置某一个专业的配件（喷头、灯具、插座）。<code>modeller.walk</code> 是它的一次<strong>试运行</strong>：它说明布置器会放置什么，并且不改变任何东西。之后模型文件逐字节与之前相同，答案里也这样说明。它需要完整检出。完整的回复很长，所以这里只显示它的主要数字：</p>
-<!-- run: walk_fp -->
-<div class="highlight"><pre><span></span><code>$ node common/door/door.js &#39;modeller.walk building=Duplex discipline=FP&#39; | grep -o &#39;&quot;rules&quot;:&quot;[^&quot;]*&quot;\|&quot;count&quot;:[0-9]*,&quot;placed&quot;:[0-9]*,&quot;provisional&quot;:[0-9]*\|&quot;byClass&quot;:{[^}]*}\|&quot;modelUnchanged&quot;:[a-z]*&#39;
-&quot;rules&quot;:&quot;duplex_rules.db&quot;
-&quot;count&quot;:46,&quot;placed&quot;:0,&quot;provisional&quot;:46
-&quot;byClass&quot;:{&quot;IfcFireSuppressionTerminal&quot;:45,&quot;IfcAlarm&quot;:1}
-&quot;modelUnchanged&quot;:true
-</code></pre></div>
-<p><code>count</code> 是这次布置会放置的全部数量。<code>provisional</code> 是布置器自己标记为非最终的位置，例如上方没有找到天花板的配件。<code>rules</code> 是这栋建筑所属类别使用的规则集：住宅使用住宅规则。一次什么都没有放置的布置会回答 <code>inconclusive</code>，并附上布置器给出的原因。</p>
-<h2 id="modeller-modelopenmodelconvertmodeladdbaymodelundomodelsavemodelclose">在各行之间保持一个 Modeller 打开：<code>model.open</code>、<code>model.convert</code>、<code>model.addbay</code>、<code>model.undo</code>、<code>model.save</code>、<code>model.close</code><a class="headerlink" href="#modeller-modelopenmodelconvertmodeladdbaymodelundomodelsavemodelclose" title="Permanent link">&para;</a></h2>
-<p>这些行驱动的是一个在后台保持打开的 Modeller 页面（无界面，用 CPU 运行，不需要显卡），所以每一行都建立在前一行留下的结果之上。<code>model.open sheets=&lt;folder or a.dxf,b.dxf&gt; type="Farming Shed"</code> 打开 2D 图纸，<code>model.convert</code> 生成 3D 模型（页面自己的 Convert，即“转换”），<code>model.addbay end=high|low</code> 在重复开间建筑的那一端增加一个开间，<code>model.undo</code> 撤回最近一次改动，<code>model.close</code> 停止该页面。所有工作都由页面自己的函数完成；这一行只是按下人会按的按钮，并打印页面自己的答案。模型在那个页面里一直存在，直到你保存它：<code>model.save</code> 把它写成这个文件夹里的一个 <code>.db</code> 文件；当模型已改动且已知保存文件时，<code>model.close</code> 会先保存。它们需要 <code>bim-ootb</code> 的完整检出，并且你运行它们的那个文件夹保存着会话（一个名为 <code>.model_session.json</code> 的文件；端口只在本机监听，每个请求都带有一次性令牌）。</p>
-<p>你会遇到的规则：在 <code>model.open</code> 之前的一行会被拒绝（“no session: model.open first”），第二次 <code>model.open</code>、第二次 <code>model.convert</code>，以及在 Convert 之前的 <code>model.addbay</code> 也同样被拒绝。只有当建筑类型声明了开间时才会提供开间（Farming Shed 声明了）；没有 <code>type=</code> 时，开间会被拒绝，并说明该类型没有声明规则。图纸必须带有标记：普通的图纸通不过这道关口。每一行需要几秒钟（这里：打开约 6 s，转换 3 s，一个开间 3 s；图纸更多时，转换最多用了 15 s）。<strong>保存</strong>：文件名只需指定一次，要么在 <code>model.open … file=shed.db</code> 上，要么在第一次 <code>model.save file=shed.db</code> 上。保存运行的是页面自己的 Save（保存）：先做碰撞检查（出现 RED 碰撞会阻止保存，与在屏幕上一样，并且什么都不会写入），然后把模型写成原生的 <code>.db</code>。这个棚屋的一次保存大约用半秒，答案会给出每一步的用时。有未保存的改动又没有文件时，<code>model.close</code> 会被拒绝，会话保持打开：请保存，或用 <code>model.close discard=Y</code> 有意丢弃这些改动。在什么都没有做出之前就保存，会被拒绝，并用页面自己的话说明。</p>
-<p>下面的代码块把一个文件夹里 9 张带标记的棚屋图纸（由 <code>SHED_SHEETS</code> 指定）复制到 <code>shed/</code>，并依次运行这些行；请把 <code>SHED_SHEETS</code> 设为你自己的、装有带标记 <code>.dxf</code> 图纸的文件夹。</p>
-<!-- run: model_ses cut=200 -->
-<div class="highlight"><pre><span></span><code>$ rm -rf shed shed.db; mkdir shed; cp &quot;$SHED_SHEETS&quot;/*.dxf shed/; D=&#39;node common/door/door.js --list&#39;; eval &quot;$D &#39;model.convert&#39;&quot; | grep -E &#39;^error:&#39;; eval &quot;$D &#39;model.open sheets=shed type=\&quot;Farming Shed\&quot; file=shed.db&#39;&quot; | grep -E &#39;^summary:&#39;; eval &quot;$D model.save&quot; | grep -E &#39;^error:&#39;; eval &quot;$D model.convert&quot; | grep -E &#39;^summary:&#39;; eval &quot;$D model.save&quot; | grep -E &#39;^(file|bytes|elements):&#39;; eval &quot;$D &#39;model.addbay end=high&#39;&quot; | grep -E &#39;^(copies_by_class|summary):&#39;; eval &quot;$D model.undo&quot; | grep -E &#39;^summary:&#39;; eval &quot;$D model.close&quot; | grep -E &#39;^closed:&#39;; ls -l shed.db | awk &#39;{print &quot;shed.db bytes: &quot; $5}&#39;; eval &quot;$D model.undo&quot; | grep -E &#39;^error:&#39;; rm -rf shed shed.db .model_session.log
-error: no session in this folder: model.open first
-error: nothing is open: model.open first
-closed: true
-error: no session in this folder: model.open first
-</code></pre></div>
-<p><code>model.addbay end=low</code> 在另一端增加开间（铰点不同，同样是 29 份副本）。这些行没有检查的内容：成本与独立计数的对照（另有单独的测试做这件事），以及同一个文件夹里有多个会话的情况。</p>
-<h2 id="erplisterpsumerpgroup">列表、求和与分组：<code>erp.list</code>、<code>erp.sum</code>、<code>erp.group</code><a class="headerlink" href="#erplisterpsumerpgroup" title="Permanent link">&para;</a></h2>
-<p><code>count</code> 回答“有多少”。另外三个只读动词分别回答“是哪些”“共多少”和“每种各有多少”。它们可以用于 ERP 字典里的任何类别（建筑的模型也有同样的三个，叫 <code>object.list</code>、<code>object.sum</code>、<code>object.group</code>）。它们需要完整检出。</p>
-<p><code>erp.list</code> 显示若干行。每一个列、筛选条件和排序都会对照字典检查，所以名字写错会报错，并列出真正的名字。加上 <code>column=value</code> 可以缩小列表范围。列表最多显示 50 行，除非 <code>limit</code> 另有指定（最多 1000），并且答案始终带有<strong>总数</strong>，所以较短的列表绝不会被误认为是全部。用 <code>offset</code> 翻阅较长的列表：</p>
-<!-- run: list_orders -->
-<div class="highlight"><pre><span></span><code>$ node common/door/door.js --list &#39;erp.list kind=Order docstatus=CO limit=3 columns=DocumentNo,DocStatus,GrandTotal sort=-DocumentNo&#39;
-DocumentNo  DocStatus  GrandTotal
-80001       CO         100.7
-80001       CO         100.7
-800002      CO         2160
-shown 3 of 14
-</code></pre></div>
-<p><code>erp.sum</code> 把一个数值列精确地加起来。小数按小数相加，绝不用浮点数，所以金额不会漂移。<code>erp.group</code> 统计某一列每个取值对应的记录数，最常见的排在前面：</p>
-<!-- run: sum_orders -->
-<div class="highlight"><pre><span></span><code>$ node common/door/door.js --list &#39;erp.sum kind=Order column=GrandTotal docstatus=CO&#39;
-kind: Order
-table: C_Order
-column: GrandTotal
-filters: [{&quot;column&quot;:&quot;DocStatus&quot;,&quot;value&quot;:&quot;CO&quot;}]
-n: 14
-sum: 19505.9
-population: 44
-verdict: OK
-summary: 19505.9 = sum of GrandTotal over 14 Order
-</code></pre></div>
-<!-- run: group_orders -->
-<div class="highlight"><pre><span></span><code>$ node common/door/door.js --list &#39;erp.group kind=Order by=DocStatus&#39;
-DocStatus  count
-IP         22
-CO         14
-DR         6
-CL         2
-shown 4 of 4
-</code></pre></div>
-<p>完全没有记录的类别不会回答 <code>0</code> 或空列表。它回答 <code>inconclusive</code>，因为什么都没有被评判。</p>
-<h2 id="erpnew">创建记录：<code>erp.new</code><a class="headerlink" href="#erpnew" title="Permanent link">&para;</a></h2>
-<p><code>erp.new</code> 按照 ERP 自己的窗口创建记录的方式创建一条记录。你指明类别和你已知的列；其余的由引擎按窗口的做法填写（默认值、业务伙伴带来的各项选择、取自序列的单据编号）。字典里没有的列会被拒绝，并且回复会列出真正的列。在此之后仍为空的必填列，会按名字被拒绝，并且什么都不写入。回复以 <code>number</code> 开头：也就是单据编号（Document No），接下来要用的就是它。</p>
-<p>销售或采购单据需要 <code>issotrx=Y</code> 或 <code>N</code>。业务伙伴或产品可以按名字给出；名字没有匹配任何记录，或匹配到多条，都会被拒绝。一个明细行用编号指明它所属的单据：</p>
-<!-- run: new_order -->
-<div class="highlight"><pre><span></span><code>$ rm -f /tmp/fast_guide_new.ops; BIM_OBJECT_OPLOG=/tmp/fast_guide_new.ops node common/door/door.js &#39;erp.new kind=Order issotrx=Y c_doctypetarget_id=132 c_bpartner_id=112 salesrep_id=101&#39;
-{&quot;request&quot;:&quot;d-mwiqksoh-3192036-1&quot;,&quot;verb&quot;:&quot;erp.new&quot;,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;ok&quot;,&quot;answer&quot;:{&quot;number&quot;:&quot;50000&quot;,&quot;kind&quot;:&quot;Order&quot;,&quot;table&quot;:&quot;c_order&quot;,&quot;id&quot;:1500004,&quot;docStatus&quot;:&quot;DR&quot;,&quot;given&quot;:[&quot;IsSOTrx&quot;,&quot;C_DocTypeTarget_ID&quot;,&quot;C_BPartner_ID&quot;,&quot;SalesRep_ID&quot;],&quot;defaulted&quot;:52,&quot;filled&quot;:[&quot;ad_client_id&quot;,&quot;ad_org_id&quot;,&quot;documentno&quot;,&quot;isselfservice&quot;,&quot;dateordered&quot;,&quot;datepromised&quot;,&quot;bill_bpartner_id&quot;,&quot;c_bpartner_location_id&quot;,&quot;bill_location_id&quot;,&quot;deliveryrule&quot;,&quot;priorityrule&quot;,&quot;m_warehouse_id&quot;,&quot;isdropship&quot;,&quot;deliveryviarule&quot;,&quot;freightcostrule&quot;,&quot;freightamt&quot;,&quot;ispriviledgedrate&quot;,&quot;shippingrateinquiry&quot;,&quot;invoicerule&quot;,&quot;m_pricelist_id&quot;,&quot;c_currency_id&quot;,&quot;c_conversiontype_id&quot;,&quot;isdiscountprinted&quot;,&quot;chargeamt&quot;,&quot;paymentrule&quot;,&quot;c_paymentterm_id&quot;,&quot;totallines&quot;,&quot;grandtotal&quot;,&quot;docstatus&quot;,&quot;c_doctype_id&quot;,&quot;ispayschedulevalid&quot;,&quot;copyfrom&quot;,&quot;docaction&quot;,&quot;posted&quot;,&quot;isdelivered&quot;,&quot;dateacct&quot;,&quot;amountrefunded&quot;,&quot;isapproved&quot;,&quot;processed&quot;,&quot;processing&quot;,&quot;istaxincluded&quot;,&quot;isinvoiced&quot;,&quot;isselected&quot;,&quot;isprinted&quot;,&quot;sendemail&quot;,&quot;istransferred&quot;,&quot;iscreditapproved&quot;,&quot;isactive&quot;,&quot;processedon&quot;,&quot;amounttendered&quot;,&quot;volume&quot;,&quot;weight&quot;],&quot;record&quot;:{&quot;c_order_id&quot;:1500004,&quot;ad_client_id&quot;:11,&quot;ad_org_id&quot;:11,&quot;isactive&quot;:&quot;Y&quot;,&quot;created&quot;:&quot;2026-11-16 12:01:24&quot;,&quot;createdby&quot;:101,&quot;updated&quot;:&quot;2026-11-16 12:01:24&quot;,&quot;updatedby&quot;:101,&quot;issotrx&quot;:&quot;Y&quot;,&quot;documentno&quot;:&quot;50000&quot;,&quot;docstatus&quot;:&quot;DR&quot;,&quot;docaction&quot;:&quot;CO&quot;,&quot;processing&quot;:&quot;N&quot;,&quot;processed&quot;:&quot;N&quot;,&quot;c_doctype_id&quot;:0,&quot;c_doctypetarget_id&quot;:132,&quot;description&quot;:null,&quot;isapproved&quot;:&quot;N&quot;,&quot;iscreditapproved&quot;:&quot;N&quot;,&quot;isdelivered&quot;:&quot;N&quot;,&quot;isinvoiced&quot;:&quot;N&quot;,&quot;isprinted&quot;:&quot;N&quot;,&quot;istransferred&quot;:&quot;N&quot;,&quot;isselected&quot;:&quot;N&quot;,&quot;salesrep_id&quot;:101,&quot;dateordered&quot;:&quot;2026-11-16 00:00:00&quot;,&quot;datepromised&quot;:&quot;2026-11-16 00:00:00&quot;,&quot;dateprinted&quot;:null,&quot;dateacct&quot;:&quot;2026-11-16 00:00:00&quot;,&quot;c_bpartner_id&quot;:112,&quot;c_bpartner_location_id&quot;:108,&quot;poreference&quot;:null,&quot;isdiscountprinted&quot;:&quot;Y&quot;,&quot;c_currency_id&quot;:100,&quot;paymentrule&quot;:&quot;P&quot;,&quot;c_paymentterm_id&quot;:105,&quot;invoicerule&quot;:&quot;D&quot;,&quot;deliveryrule&quot;:&quot;A&quot;,&quot;freightcostrule&quot;:&quot;I&quot;,&quot;freightamt&quot;:0,&quot;deliveryviarule&quot;:&quot;P&quot;,&quot;m_shipper_id&quot;:null,&quot;c_charge_id&quot;:null,&quot;chargeamt&quot;:0,&quot;priorityrule&quot;:&quot;5&quot;,&quot;totallines&quot;:0,&quot;grandtotal&quot;:0,&quot;m_warehouse_id&quot;:103,&quot;m_pricelist_id&quot;:101,&quot;istaxincluded&quot;:&quot;N&quot;,&quot;c_campaign_id&quot;:null,&quot;c_project_id&quot;:null,&quot;c_activity_id&quot;:null,&quot;posted&quot;:&quot;N&quot;,&quot;c_payment_id&quot;:null,&quot;c_cashline_id&quot;:null,&quot;sendemail&quot;:&quot;N&quot;,&quot;ad_user_id&quot;:null,&quot;copyfrom&quot;:&quot;N&quot;,&quot;isselfservice&quot;:&quot;N&quot;,&quot;ad_orgtrx_id&quot;:null,&quot;user1_id&quot;:null,&quot;user2_id&quot;:null,&quot;c_conversiontype_id&quot;:114,&quot;bill_bpartner_id&quot;:112,&quot;bill_location_id&quot;:108,&quot;bill_user_id&quot;:null,&quot;pay_bpartner_id&quot;:null,&quot;pay_location_id&quot;:null,&quot;ref_order_id&quot;:null,&quot;isdropship&quot;:&quot;N&quot;,&quot;volume&quot;:0,&quot;weight&quot;:0,&quot;ordertype&quot;:null,&quot;c_pos_id&quot;:null,&quot;amounttendered&quot;:0,&quot;amountrefunded&quot;:0,&quot;link_order_id&quot;:null,&quot;m_freightcategory_id&quot;:null,&quot;dropship_bpartner_id&quot;:null,&quot;dropship_location_id&quot;:null,&quot;dropship_user_id&quot;:null,&quot;promotioncode&quot;:null,&quot;c_ordersource_id&quot;:null,&quot;processedon&quot;:0,&quot;ispayschedulevalid&quot;:&quot;N&quot;,&quot;c_cashplanline_id&quot;:null,&quot;c_order_uu&quot;:&quot;c72be278-7cf1-4062-a2c4-e0dee631a168&quot;,&quot;shippingrateinquiry&quot;:&quot;N&quot;,&quot;ispriviledgedrate&quot;:&quot;N&quot;,&quot;c_opportunity_id&quot;:null,&quot;quotationorder_id&quot;:null,&quot;c_department_id&quot;:null,&quot;c_costcenter_id&quot;:null},&quot;ops&quot;:[{&quot;op_type&quot;:&quot;CRUD_UPDATE&quot;,&quot;table&quot;:&quot;ad_sequence&quot;},{&quot;op_type&quot;:&quot;CRUD_CREATE&quot;,&quot;table&quot;:&quot;c_order&quot;}]},&quot;why&quot;:null,&quot;notChecked&quot;:[],&quot;ops&quot;:[{&quot;op_type&quot;:&quot;CRUD_UPDATE&quot;,&quot;table&quot;:&quot;ad_sequence&quot;},{&quot;op_type&quot;:&quot;CRUD_CREATE&quot;,&quot;table&quot;:&quot;c_order&quot;}],&quot;next&quot;:[],&quot;ms&quot;:8305}
-</code></pre></div>
-<!-- run: new_line -->
-<div class="highlight"><pre><span></span><code>$ BIM_OBJECT_OPLOG=/tmp/fast_guide_new.ops node common/door/door.js &#39;erp.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2&#39;
-{&quot;request&quot;:&quot;d-mwiqkza1-3192368-1&quot;,&quot;verb&quot;:&quot;erp.new&quot;,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;ok&quot;,&quot;answer&quot;:{&quot;number&quot;:null,&quot;kind&quot;:&quot;Sales Order Line&quot;,&quot;table&quot;:&quot;c_orderline&quot;,&quot;id&quot;:120002710,&quot;docStatus&quot;:null,&quot;given&quot;:[&quot;M_Product_ID&quot;,&quot;QtyEntered&quot;,&quot;C_Order_ID&quot;],&quot;defaulted&quot;:31,&quot;filled&quot;:[&quot;ad_client_id&quot;,&quot;ad_org_id&quot;,&quot;c_bpartner_id&quot;,&quot;c_bpartner_location_id&quot;,&quot;datepromised&quot;,&quot;dateordered&quot;,&quot;line&quot;,&quot;m_warehouse_id&quot;,&quot;m_attributesetinstance_id&quot;,&quot;c_uom_id&quot;,&quot;qtyordered&quot;,&quot;qtydelivered&quot;,&quot;qtyreserved&quot;,&quot;qtyinvoiced&quot;,&quot;priceentered&quot;,&quot;priceactual&quot;,&quot;pricelist&quot;,&quot;freightamt&quot;,&quot;c_tax_id&quot;,&quot;discount&quot;,&quot;linenetamt&quot;,&quot;qtylostsales&quot;,&quot;processed&quot;,&quot;createshipment&quot;,&quot;createproduction&quot;,&quot;rramt&quot;,&quot;pricecost&quot;,&quot;pricelimit&quot;,&quot;c_currency_id&quot;,&quot;isactive&quot;,&quot;isdescription&quot;],&quot;record&quot;:{&quot;c_orderline_id&quot;:120002710,&quot;ad_client_id&quot;:11,&quot;ad_org_id&quot;:11,&quot;isactive&quot;:&quot;Y&quot;,&quot;created&quot;:&quot;2026-11-16 12:01:34&quot;,&quot;createdby&quot;:101,&quot;updated&quot;:&quot;2026-11-16 12:01:34&quot;,&quot;updatedby&quot;:101,&quot;c_order_id&quot;:1500004,&quot;line&quot;:10,&quot;c_bpartner_id&quot;:112,&quot;c_bpartner_location_id&quot;:108,&quot;dateordered&quot;:&quot;2026-11-16 00:00:00&quot;,&quot;datepromised&quot;:&quot;2026-11-16 00:00:00&quot;,&quot;datedelivered&quot;:null,&quot;dateinvoiced&quot;:null,&quot;description&quot;:null,&quot;m_product_id&quot;:137,&quot;m_warehouse_id&quot;:103,&quot;c_uom_id&quot;:100,&quot;qtyordered&quot;:2,&quot;qtyreserved&quot;:0,&quot;qtydelivered&quot;:0,&quot;qtyinvoiced&quot;:0,&quot;m_shipper_id&quot;:null,&quot;c_currency_id&quot;:100,&quot;pricelist&quot;:3,&quot;priceactual&quot;:3,&quot;pricelimit&quot;:2.7,&quot;linenetamt&quot;:6,&quot;discount&quot;:0,&quot;freightamt&quot;:0,&quot;c_charge_id&quot;:null,&quot;c_tax_id&quot;:104,&quot;s_resourceassignment_id&quot;:null,&quot;ref_orderline_id&quot;:null,&quot;m_attributesetinstance_id&quot;:0,&quot;isdescription&quot;:&quot;N&quot;,&quot;processed&quot;:&quot;N&quot;,&quot;qtyentered&quot;:2,&quot;priceentered&quot;:3,&quot;c_project_id&quot;:null,&quot;pricecost&quot;:0,&quot;qtylostsales&quot;:0,&quot;c_projectphase_id&quot;:null,&quot;c_projecttask_id&quot;:null,&quot;rrstartdate&quot;:null,&quot;rramt&quot;:0,&quot;c_campaign_id&quot;:null,&quot;c_activity_id&quot;:null,&quot;user1_id&quot;:null,&quot;user2_id&quot;:null,&quot;ad_orgtrx_id&quot;:null,&quot;link_orderline_id&quot;:null,&quot;pp_cost_collector_id&quot;:null,&quot;m_promotion_id&quot;:null,&quot;c_orderline_uu&quot;:&quot;ebc4bda0-3e8c-426b-a9cd-1829c8c56a83&quot;,&quot;createshipment&quot;:&quot;N&quot;,&quot;createproduction&quot;:&quot;N&quot;,&quot;c_department_id&quot;:null,&quot;c_costcenter_id&quot;:null},&quot;ops&quot;:[{&quot;op_type&quot;:&quot;CRUD_CREATE&quot;,&quot;table&quot;:&quot;c_orderline&quot;},{&quot;op_type&quot;:&quot;CRUD_UPDATE&quot;,&quot;table&quot;:&quot;c_order&quot;}]},&quot;why&quot;:null,&quot;notChecked&quot;:[],&quot;ops&quot;:[{&quot;op_type&quot;:&quot;CRUD_CREATE&quot;,&quot;table&quot;:&quot;c_orderline&quot;},{&quot;op_type&quot;:&quot;CRUD_UPDATE&quot;,&quot;table&quot;:&quot;c_order&quot;}],&quot;next&quot;:[],&quot;ms&quot;:9220}
-</code></pre></div>
-<p>订单在有人完成它之前一直是草稿。因为这一行给出了订单的编号，订单的合计会随之更新，无需第二步：下面记录里的 <code>totallines</code> 和 <code>grandtotal</code> 就是这一行的金额（6）。订单自己的明细行列表不会由 <code>erp.read</code> 填入。</p>
-<!-- run: new_read -->
-<div class="highlight"><pre><span></span><code>$ BIM_OBJECT_OPLOG=/tmp/fast_guide_new.ops node common/door/door.js --list &#39;erp.read kind=Order number=50000&#39;
-kind: Order
-uu: 1500004
-record: {&quot;c_order_id&quot;:1500004,&quot;ad_client_id&quot;:11,&quot;ad_org_id&quot;:11,&quot;isactive&quot;:&quot;Y&quot;,&quot;created&quot;:&quot;2026-11-16 12:01:24&quot;,&quot;createdby&quot;:101,&quot;updated&quot;:&quot;2026-11-16 12:01:24&quot;,&quot;updatedby&quot;:101,&quot;issotrx&quot;:&quot;Y&quot;,&quot;documentno&quot;:&quot;50000&quot;,&quot;docstatus&quot;:&quot;DR&quot;,&quot;docaction&quot;:&quot;CO&quot;,&quot;processing&quot;:&quot;N&quot;,&quot;processed&quot;:&quot;N&quot;,&quot;c_doctype_id&quot;:0,&quot;c_doctypetarget_id&quot;:132,&quot;description&quot;:null,&quot;isapproved&quot;:&quot;N&quot;,&quot;iscreditapproved&quot;:&quot;N&quot;,&quot;isdelivered&quot;:&quot;N&quot;,&quot;isinvoiced&quot;:&quot;N&quot;,&quot;isprinted&quot;:&quot;N&quot;,&quot;istransferred&quot;:&quot;N&quot;,&quot;isselected&quot;:&quot;N&quot;,&quot;salesrep_id&quot;:101,&quot;dateordered&quot;:&quot;2026-11-16 00:00:00&quot;,&quot;datepromised&quot;:&quot;2026-11-16 00:00:00&quot;,&quot;dateprinted&quot;:null,&quot;dateacct&quot;:&quot;2026-11-16 00:00:00&quot;,&quot;c_bpartner_id&quot;:112,&quot;c_bpartner_location_id&quot;:108,&quot;poreference&quot;:null,&quot;isdiscountprinted&quot;:&quot;Y&quot;,&quot;c_currency_id&quot;:100,&quot;paymentrule&quot;:&quot;P&quot;,&quot;c_paymentterm_id&quot;:105,&quot;invoicerule&quot;:&quot;D&quot;,&quot;deliveryrule&quot;:&quot;A&quot;,&quot;freightcostrule&quot;:&quot;I&quot;,&quot;freightamt&quot;:0,&quot;deliveryviarule&quot;:&quot;P&quot;,&quot;m_shipper_id&quot;:null,&quot;c_charge_id&quot;:null,&quot;chargeamt&quot;:0,&quot;priorityrule&quot;:&quot;5&quot;,&quot;totallines&quot;:6,&quot;grandtotal&quot;:6,&quot;m_warehouse_id&quot;:103,&quot;m_pricelist_id&quot;:101,&quot;istaxincluded&quot;:&quot;N&quot;,&quot;c_campaign_id&quot;:null,&quot;c_project_id&quot;:null,&quot;c_activity_id&quot;:null,&quot;posted&quot;:&quot;N&quot;,&quot;c_payment_id&quot;:null,&quot;c_cashline_id&quot;:null,&quot;sendemail&quot;:&quot;N&quot;,&quot;ad_user_id&quot;:null,&quot;copyfrom&quot;:&quot;N&quot;,&quot;isselfservice&quot;:&quot;N&quot;,&quot;ad_orgtrx_id&quot;:null,&quot;user1_id&quot;:null,&quot;user2_id&quot;:null,&quot;c_conversiontype_id&quot;:114,&quot;bill_bpartner_id&quot;:112,&quot;bill_location_id&quot;:108,&quot;bill_user_id&quot;:null,&quot;pay_bpartner_id&quot;:null,&quot;pay_location_id&quot;:null,&quot;ref_order_id&quot;:null,&quot;isdropship&quot;:&quot;N&quot;,&quot;volume&quot;:0,&quot;weight&quot;:0,&quot;ordertype&quot;:null,&quot;c_pos_id&quot;:null,&quot;amounttendered&quot;:0,&quot;amountrefunded&quot;:0,&quot;link_order_id&quot;:null,&quot;m_freightcategory_id&quot;:null,&quot;dropship_bpartner_id&quot;:null,&quot;dropship_location_id&quot;:null,&quot;dropship_user_id&quot;:null,&quot;promotioncode&quot;:null,&quot;c_ordersource_id&quot;:null,&quot;processedon&quot;:0,&quot;ispayschedulevalid&quot;:&quot;N&quot;,&quot;c_cashplanline_id&quot;:null,&quot;c_order_uu&quot;:&quot;c72be278-7cf1-4062-a2c4-e0dee631a168&quot;,&quot;shippingrateinquiry&quot;:&quot;N&quot;,&quot;ispriviledgedrate&quot;:&quot;N&quot;,&quot;c_opportunity_id&quot;:null,&quot;quotationorder_id&quot;:null,&quot;c_department_id&quot;:null,&quot;c_costcenter_id&quot;:null}
-children: [{&quot;kind&quot;:&quot;Sales Order Line&quot;,&quot;rows&quot;:[{&quot;c_orderline_id&quot;:120002710,&quot;ad_client_id&quot;:11,&quot;ad_org_id&quot;:11,&quot;isactive&quot;:&quot;Y&quot;,&quot;created&quot;:&quot;2026-11-16 12:01:34&quot;,&quot;createdby&quot;:101,&quot;updated&quot;:&quot;2026-11-16 12:01:34&quot;,&quot;updatedby&quot;:101,&quot;c_order_id&quot;:1500004,&quot;line&quot;:10,&quot;c_bpartner_id&quot;:112,&quot;c_bpartner_location_id&quot;:108,&quot;dateordered&quot;:&quot;2026-11-16 00:00:00&quot;,&quot;datepromised&quot;:&quot;2026-11-16 00:00:00&quot;,&quot;datedelivered&quot;:null,&quot;dateinvoiced&quot;:null,&quot;description&quot;:null,&quot;m_product_id&quot;:137,&quot;m_warehouse_id&quot;:103,&quot;c_uom_id&quot;:100,&quot;qtyordered&quot;:2,&quot;qtyreserved&quot;:0,&quot;qtydelivered&quot;:0,&quot;qtyinvoiced&quot;:0,&quot;m_shipper_id&quot;:null,&quot;c_currency_id&quot;:100,&quot;pricelist&quot;:3,&quot;priceactual&quot;:3,&quot;pricelimit&quot;:2.7,&quot;linenetamt&quot;:6,&quot;discount&quot;:0,&quot;freightamt&quot;:0,&quot;c_charge_id&quot;:null,&quot;c_tax_id&quot;:104,&quot;s_resourceassignment_id&quot;:null,&quot;ref_orderline_id&quot;:null,&quot;m_attributesetinstance_id&quot;:0,&quot;isdescription&quot;:&quot;N&quot;,&quot;processed&quot;:&quot;N&quot;,&quot;qtyentered&quot;:2,&quot;priceentered&quot;:3,&quot;c_project_id&quot;:null,&quot;pricecost&quot;:0,&quot;qtylostsales&quot;:0,&quot;c_projectphase_id&quot;:null,&quot;c_projecttask_id&quot;:null,&quot;rrstartdate&quot;:null,&quot;rramt&quot;:0,&quot;c_campaign_id&quot;:null,&quot;c_activity_id&quot;:null,&quot;user1_id&quot;:null,&quot;user2_id&quot;:null,&quot;ad_orgtrx_id&quot;:null,&quot;link_orderline_id&quot;:null,&quot;pp_cost_collector_id&quot;:null,&quot;m_promotion_id&quot;:null,&quot;c_orderline_uu&quot;:&quot;ebc4bda0-3e8c-426b-a9cd-1829c8c56a83&quot;,&quot;createshipment&quot;:&quot;N&quot;,&quot;createproduction&quot;:&quot;N&quot;,&quot;c_department_id&quot;:null,&quot;c_costcenter_id&quot;:null}]},{&quot;kind&quot;:&quot;Order Tax&quot;,&quot;rows&quot;:[]},{&quot;kind&quot;:&quot;Order Payment Schedule&quot;,&quot;rows&quot;:[]},{&quot;kind&quot;:&quot;POS Payment&quot;,&quot;rows&quot;:[]}]
-</code></pre></div>
-<p><code>erp.new</code> 是一个 <code>writes</code> 动词。由终端前的人运行它。AI 的 <code>erp.new</code> 会被当作待确认请求挂起，在有人确认之前什么都不会写入（见“什么是待确认请求”）。这些代码块使用一个临时的操作日志（op-log，<code>/tmp/fast_guide_new.ops</code>，先清空），所以运行它们不会触及你自己的数据。</p>
-<h2 id="mis">处理任何表：<code>mis.*</code> 动词<a class="headerlink" href="#mis" title="Permanent link">&para;</a></h2>
-<p><strong>MIS 是基础。ERP 就是 MIS 加上单据的生命周期</strong>。列出、读取、创建、修改、删除和载入记录，对字典里的每一张表都是一样的：客户、产品、你自己建的表。这些动词叫作 <code>mis.*</code>。只有单据才有的操作（完成、作废、关闭、冲销）仍属于 <code>erp.*</code>。较早的名字 <code>erp.list</code>、<code>erp.read</code>、<code>erp.describe</code>、<code>erp.sum</code>、<code>erp.group</code> 和 <code>erp.new</code> 依然可用：每个都是对应 <code>mis.*</code> 动词的旧名，给出同样的答案，所以你早先写的脚本不需要改动。</p>
-<p>每一个会写入的 <code>mis.*</code> 动词，做的都是 ERP 自己窗口所做的事。它不会去编辑底层的数据库。默认值和回调（callout）会运行，检查会运行，拒绝时会说明原因，并且只要有任何一处被拒绝，就不会写入任何东西。</p>
-<p><strong>还缺什么？</strong> <code>mis.new … dry=Y</code> 运行除保存之外的一切，并且什么都不写入。它回答在套用默认值之后哪些必填列仍然为空，让你知道该给出什么：</p>
-<!-- run: mis_dry cut=330 -->
-<div class="highlight"><pre><span></span><code>$ rm -f /tmp/fast_guide_mis.ops; BIM_OBJECT_OPLOG=/tmp/fast_guide_mis.ops node common/door/door.js --list &#39;mis.new kind=C_BPartner dry=Y&#39;
-dry: true
-kind: Business Partner
-table: c_bpartner
-mandatory: [&quot;Value&quot;,&quot;Name&quot;]
-needs: []
-given: []
-defaulted: 32
-filled: [&quot;ad_client_id&quot;,&quot;ad_org_id&quot;,&quot;c_bp_group_id&quot;,&quot;iscustomer&quot;,&quot;isvendor&quot;,&quot;isemployee&quot;,&quot;isprospect&quot;,&quot;issalesrep&quot;,&quot;so_creditlimit&quot;,&quot;totalopenbalance&quot;,&quot;istaxexempt&quot;,&quot;ispotaxexempt&quot;,&quot;issummary&quot;,&quot;isactive&quot;,&quot;c_paymentterm_id&quot;,&quot;m_pricelist_id&quot;,&quot;flatdiscount&quot;,&quot;c_dunning_id&quot;,&quot;shelflifeminpct&quot;,&quot;ismanufacturer&quot;,&quot;is1099vendor&quot;,&quot;documentc…
-ops: []
-</code></pre></div>
-<p><strong>创建、修改、读取</strong>。持有另一条记录的列，可以按名字给出。<code>mis.list … names=Y</code> 把这样的列显示为名字，就像窗口的网格那样：</p>
-<!-- run: mis_new cut=330 -->
-<div class="highlight"><pre><span></span><code>$ BIM_OBJECT_OPLOG=/tmp/fast_guide_mis.ops node common/door/door.js --list &#39;mis.new kind=C_BPartner Value=GD100 Name=&quot;Guide Partner One&quot;&#39;
-number: Guide Partner One
-kind: Business Partner
-table: c_bpartner
-id: 1600010
-docStatus: 
-given: [&quot;Value&quot;,&quot;Name&quot;]
-defaulted: 32
-filled: [&quot;ad_client_id&quot;,&quot;ad_org_id&quot;,&quot;c_bp_group_id&quot;,&quot;iscustomer&quot;,&quot;isvendor&quot;,&quot;isemployee&quot;,&quot;isprospect&quot;,&quot;issalesrep&quot;,&quot;so_creditlimit&quot;,&quot;totalopenbalance&quot;,&quot;istaxexempt&quot;,&quot;ispotaxexempt&quot;,&quot;issummary&quot;,&quot;isactive&quot;,&quot;c_paymentterm_id&quot;,&quot;m_pricelist_id&quot;,&quot;flatdiscount&quot;,&quot;c_dunning_id&quot;,&quot;shelflifeminpct&quot;,&quot;ismanufacturer&quot;,&quot;is1099vendor&quot;,&quot;documentc…
-record: {&quot;c_bpartner_id&quot;:1600010,&quot;ad_client_id&quot;:11,&quot;ad_org_id&quot;:11,&quot;isactive&quot;:&quot;Y&quot;,&quot;created&quot;:&quot;2026-11-16 12:01:52&quot;,&quot;createdby&quot;:101,&quot;updated&quot;:&quot;2026-11-16 12:01:52&quot;,&quot;updatedby&quot;:101,&quot;value&quot;:&quot;GD100&quot;,&quot;name&quot;:&quot;Guide Partner One&quot;,&quot;name2&quot;:null,&quot;description&quot;:null,&quot;issummary&quot;:&quot;N&quot;,&quot;c_bp_group_id&quot;:103,&quot;isonetime&quot;:&quot;N&quot;,&quot;isprospect&quot;:&quot;N&quot;,&quot;isvendor…
-ops: [{&quot;op_type&quot;:&quot;CRUD_CREATE&quot;,&quot;table&quot;:&quot;c_bpartner&quot;},{&quot;op_type&quot;:&quot;CRUD_CREATE&quot;,&quot;table&quot;:&quot;ad_treenodebp&quot;},{&quot;op_type&quot;:&quot;CRUD_CREATE&quot;,&quot;table&quot;:&quot;c_bp_customer_acct&quot;},{&quot;op_type&quot;:&quot;CRUD_CREATE&quot;,&quot;table&quot;:&quot;c_bp_customer_acct&quot;},{&quot;op_type&quot;:&quot;CRUD_CREATE&quot;,&quot;table&quot;:&quot;c_bp_vendor_acct&quot;},{&quot;op_type&quot;:&quot;CRUD_CREATE&quot;,&quot;table&quot;:&quot;c_bp_vendor_acct&quot;}]
-</code></pre></div>
-<!-- run: mis_update cut=330 -->
-<div class="highlight"><pre><span></span><code>$ BIM_OBJECT_OPLOG=/tmp/fast_guide_mis.ops node common/door/door.js --list &#39;mis.update kind=C_BPartner number=&quot;Guide Partner One&quot; description=&quot;first supplier&quot;&#39; | grep -E &#39;^(noop|given|changed|derived):&#39;
-noop: false
-given: [&quot;Description&quot;]
-changed: [&quot;description&quot;]
-derived: []
-</code></pre></div>
-<!-- run: mis_list -->
-<div class="highlight"><pre><span></span><code>$ BIM_OBJECT_OPLOG=/tmp/fast_guide_mis.ops node common/door/door.js --list &#39;mis.list kind=C_BPartner value=GD100 columns=Value,Name,Description,C_BP_Group_ID names=Y&#39;
-Value  Name               Description     C_BP_Group_ID
-GD100  Guide Partner One  first supplier  Standard Customers
-shown 1 of 1
-</code></pre></div>
-<p><code>mis.update</code> 只发送你给出的列；给出记录里已有的值不会改变任何东西，答案会说 <code>noop</code>。窗口不允许人编辑的列（只读字段，或已完成单据的任何列）会被拒绝，答案会指出规则。用值 <code>&lt;null&gt;</code> 清空一列。</p>
-<p><strong>指向另一条记录的列</strong>（业务伙伴、产品、仓库）必须指明一条存在、并且你的公司可以使用的记录。<code>mis.new</code> 检查每一个这样的列，<code>mis.update</code> 检查你所修改的那些，错误的值会被拒绝，并用旧版 ERP 自己的话，例如 <code>Cannot save record in C_Order: Foreign ID 999999 not found in C_BPartner_ID</code>，或者对另一家公司的记录给出 <code>Cross tenant ID … not allowed in …</code>。超出某个查找验证规则（窗口会提供的那份列表）的值不会被拒绝：旧版 ERP 也会保存它，因为这条规则只决定窗口提供什么。</p>
-<p><strong>删除</strong>。<code>mis.delete</code> 就是窗口的 Delete（删除）。窗口拒绝的，它也拒绝，并用引擎自己的话说明，而且不写入任何东西。标准业务伙伴被其他记录使用着：</p>
-<!-- run: mis_refuse cut=300 -->
-<div class="highlight"><pre><span></span><code>$ BIM_OBJECT_OPLOG=/tmp/fast_guide_mis.ops node common/door/door.js --list &#39;mis.delete kind=C_BPartner id=112&#39;
-refused: true
-reason: Business Partner Standard is not deleted: Record not deleted - dependent record found; nothing was written
-</code></pre></div>
-<!-- run: mis_delete cut=300 -->
-<div class="highlight"><pre><span></span><code>$ BIM_OBJECT_OPLOG=/tmp/fast_guide_mis.ops node common/door/door.js --list &#39;mis.delete kind=C_BPartner number=&quot;Guide Partner One&quot;&#39; | grep -E &#39;^(gone|opSummary):&#39;
-gone: true
-opSummary: {&quot;delete:c_bp_customer_acct&quot;:2,&quot;delete:c_bp_vendor_acct&quot;:2,&quot;delete:c_bpartner&quot;:1,&quot;delete:ad_treenodebp&quot;:1}
-</code></pre></div>
-<p><strong>从 CSV 载入多条</strong>。<code>mis.load</code> 读取一个 <code>.csv</code>（第一行是列名，每行一条记录），并对它运行 ERP 自己的 Migrate Excel Data（迁移 Excel 数据）流程。该流程要么全做要么全不做，所以 <code>mis.load</code> 先做<strong>检查</strong>（<code>dry=Y</code>，默认值），并且什么都不写入：它统计行数，并指出每一个有问题的行。它会在你的文件旁边写出 <code>….rejected.csv</code>（有问题的行及原因）和 <code>….ok.csv</code>（没问题的行）：</p>
-<!-- run: mis_load cut=330 -->
-<div class="highlight"><pre><span></span><code>$ printf &#39;Value,Name,C_BP_Group_ID\nGD201,Guide Two,Standard Customers\nGD202,Guide Three,Nowhere\n&#39; &gt; /tmp/fast_guide_mis.csv; rm -f /tmp/fast_guide_mis.rejected.csv /tmp/fast_guide_mis.ok.csv; BIM_OBJECT_OPLOG=/tmp/fast_guide_mis.ops node common/door/door.js --list &#39;mis.load kind=C_BPartner file=/tmp/fast_guide_mis.csv&#39;
-kind: Business Partner
-table: c_bpartner
-file: /tmp/fast_guide_mis.csv
-rows: 2
-ok: 1
-rejected: [{&quot;row&quot;:2,&quot;why&quot;:[&quot;C_BP_Group_ID: no C_BP_Group with Name=\&quot;Nowhere\&quot;&quot;]}]
-unplaced: []
-dry: true
-loaded: false
-files: {&quot;rejected&quot;:&quot;/tmp/fast_guide_mis.rejected.csv&quot;,&quot;ok&quot;:&quot;/tmp/fast_guide_mis.ok.csv&quot;}
-summary: Nothing migrated: 1 row error(s). c_bpartner row 3 C_BP_Group_ID: no C_BP_Group with Name=&quot;Nowhere&quot;
-</code></pre></div>
-<!-- run: mis_rejected -->
-<div class="highlight"><pre><span></span><code>$ cat /tmp/fast_guide_mis.rejected.csv
-Value,Name,C_BP_Group_ID,rejected_because
-GD202,Guide Three,Nowhere,&quot;C_BP_Group_ID: no C_BP_Group with Name=&quot;&quot;Nowhere&quot;&quot;&quot;
-</code></pre></div>
-<p>当还有任何一行有问题时，用 <code>dry=N</code> 载入原文件会被拒绝。请修正有问题的行，或者载入没问题的行，那是另一次要么全做要么全不做的载入：</p>
-<!-- run: mis_load_ok cut=330 -->
-<div class="highlight"><pre><span></span><code>$ BIM_OBJECT_OPLOG=/tmp/fast_guide_mis.ops node common/door/door.js --list &#39;mis.load kind=C_BPartner dry=N file=/tmp/fast_guide_mis.ok.csv&#39;
-kind: Business Partner
-table: c_bpartner
-file: /tmp/fast_guide_mis.ok.csv
-rows: 1
-ok: 1
-rejected: []
-unplaced: []
-dry: false
-loaded: true
-files: {}
-summary: No worksheets : 1(C_BPartner = 1 records) 
-ops: 6
-opSummary: {&quot;create:c_bpartner&quot;:1,&quot;create:ad_treenodebp&quot;:1,&quot;create:c_bp_customer_acct&quot;:2,&quot;create:c_bp_vendor_acct&quot;:2}
-keys: [1600010]
-</code></pre></div>
-<p>AI 的 <code>mis.new</code>、<code>mis.update</code>、<code>mis.delete</code> 或 <code>mis.load</code> 会像 <code>erp.new</code> 一样被当作待确认请求挂起：在有人确认之前什么都不会写入。不提供对现有记录的批量更新；请对每条记录分别使用 <code>mis.update</code>，这样窗口的检查才会运行。</p>
-<h3 id="_8">以某个角色查看和修改记录<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
-<p>每一个 <code>mis.*</code> 动词都接受 <code>role=</code>，即 ERP 中某个角色（role）的编号。<strong>不带角色时，什么都不过滤</strong>：你会看到所有客户（client）的所有记录。带上角色，你得到的就是该角色在它被授权的窗口里所得到的：它自己的客户和组织的记录，并且只有它的访问行所允许的记录和列。合计只统计这些记录。角色写在这一行里。它不是登录。</p>
-<!-- run: mis_role -->
-<div class="highlight"><pre><span></span><code>$ for r in &#39;&#39; &#39; role=103&#39; &#39; role=12000&#39;; do BIM_OBJECT_OPLOG=/tmp/fast_guide_mis.ops node common/door/door.js --list &quot;mis.sum kind=C_Order column=GrandTotal$r&quot; | grep -E &#39;^(n|sum):&#39; | tr &#39;\n&#39; &#39; &#39;; echo; done
-n: 43 sum: 74936.76 
-n: 8 sum: 9914.07 
-n: 27 sum: 55108.62
-</code></pre></div>
-<p>角色记录范围之外的记录，得到的回答与不存在的记录完全一样。角色只能读的列不能被修改。角色没有对应窗口的类别会被拒绝；角色 103 没有显示 Tax（税）的窗口：</p>
-<!-- run: mis_role_refuse cut=200 -->
-<div class="highlight"><pre><span></span><code>$ BIM_OBJECT_OPLOG=/tmp/fast_guide_mis.ops node common/door/door.js --list &#39;mis.list kind=C_Tax role=103&#39;
-refused: true
-reason: role 103 (GardenWorld User) is not granted a window that shows Tax (AD_Window_Access)
-</code></pre></div>
-<p>有五条规则目前还没有判定，使用其中任何一条的角色会被拒绝，而不是只检查一半：对某条记录的个人锁定、表的验证规则、其组织来自用户的角色、在组织树中带有汇总组织的角色，以及“依赖实体”（dependent entities）的记录访问。<code>mis.load</code> 不接受角色。</p>
-<h2 id="misadd_window">建一张你自己的表：<code>mis.add_window</code><a class="headerlink" href="#misadd_window" title="Permanent link">&para;</a></h2>
-<p>你放在电子表格里的一张表，可以变成一个真正的窗口：一张表、一个表单、一个菜单项和角色访问权限，而且无需为它写任何代码。用一个小的 <code>.csv</code> 描述它的各列，每列一行。只有 <code>Column</code> 是必填的。主键、客户和组织、有效标志以及审计列都会替你加上：</p>
-<!-- run: win_sheet -->
-<div class="highlight"><pre><span></span><code>$ printf &#39;Column,Type,Length,Mandatory,Default,List,Help\nName,String,60,Y,,,Its name\nPurchaseDate,Date,,,,,When it was bought\nCost,Amount,,,,,\nCondition,List,,,GOOD,&quot;GOOD=Good,FAIR=Fair,POOR=Poor&quot;,\nIsInsured,,,,,,\n&#39; &gt; AST_Asset.csv; cat AST_Asset.csv
-Column,Type,Length,Mandatory,Default,List,Help
-Name,String,60,Y,,,Its name
-PurchaseDate,Date,,,,,When it was bought
-Cost,Amount,,,,,
-Condition,List,,,GOOD,&quot;GOOD=Good,FAIR=Fair,POOR=Poor&quot;,
-IsInsured,,,,,,
-</code></pre></div>
-<p>一行就能建出窗口（这里把表格又写了一遍，使这一行可以单独运行，在装有 <code>common/</code> 的文件夹里）。表以文件名命名。<code>dry=Y</code> 检查这张表格，什么都不写入。有问题的表格会被拒绝，并列出每一处问题及其所在行，什么都不写入：</p>
-<!-- run: win_add cut=200 -->
-<div class="highlight"><pre><span></span><code>$ printf &#39;Column,Type,Length,Mandatory,Default,List,Help\nName,String,60,Y,,,Its name\nPurchaseDate,Date,,,,,When it was bought\nCost,Amount,,,,,\nCondition,List,,,GOOD,&quot;GOOD=Good,FAIR=Fair,POOR=Poor&quot;,\nIsInsured,,,,,,\n&#39; &gt; AST_Asset.csv; rm -f /tmp/fast_guide_win.ops; BIM_OBJECT_OPLOG=/tmp/fast_guide_win.ops node common/door/door.js --list &#39;mis.add_window file=AST_Asset.csv&#39; | grep -E &#39;^(table|window|columns|lists|ops):&#39;
-table: AST_Asset
-window: {&quot;id&quot;:7100001,&quot;name&quot;:&quot;AST Asset&quot;}
-columns: [&quot;Name&quot;,&quot;PurchaseDate&quot;,&quot;Cost&quot;,&quot;Condition&quot;,&quot;IsInsured&quot;]
-lists: [{&quot;column&quot;:&quot;Condition&quot;,&quot;values&quot;:[&quot;GOOD&quot;,&quot;FAIR&quot;,&quot;POOR&quot;]}]
-ops: 47
-</code></pre></div>
-<p>新的类别立刻可用于每一个 <code>mis.*</code> 动词，也可用于 <code>mis.js</code>。必填列会被要求填写，默认值会被填入，超出表格所列清单的值会被拒绝：</p>
-<!-- run: win_use cut=200 -->
-<div class="highlight"><pre><span></span><code>$ D=&#39;BIM_OBJECT_OPLOG=/tmp/fast_guide_win.ops node common/door/door.js --list&#39;; eval &quot;$D &#39;mis.new kind=AST_Asset Name=Tractor Cost=1200.50&#39;&quot; | grep -E &#39;^(number|filled):&#39;; eval &quot;$D &#39;mis.new kind=AST_Asset Cost=5&#39;&quot; | grep reason; eval &quot;$D &#39;mis.new kind=AST_Asset Name=Plough Condition=BAD&#39;&quot; | grep reason; eval &quot;$D &#39;mis.list kind=AST_Asset columns=Name,Cost,Condition&#39;&quot;; rm -f AST_Asset.csv
-number: Tractor
-filled: [&quot;ad_client_id&quot;,&quot;ad_org_id&quot;,&quot;isactive&quot;,&quot;condition&quot;,&quot;isinsured&quot;]
-reason: mandatory and still empty after the defaults and callouts: Name (give them as column=value)
-reason: Condition Invalid value - BAD - Reference_ID=9541005 - FAIR - GOOD - POOR; nothing was written
-Name     Cost    Condition
-Tractor  1200.5  GOOD
-shown 1 of 1
-</code></pre></div>
-<p>类型有 String、Quantity、Amount、YesNo、Date、DateTime、Text 和 List。名字以 <code>_ID</code> 结尾的列是指向那张表的查找，以 <code>Is</code> 开头的列是是/否。主表之下的明细表要用工作簿来做：见下一节。</p>
-<h2 id="ninjaexec">一行建出整个工作簿：<code>ninja.exec</code><a class="headerlink" href="#ninjaexec" title="Permanent link">&para;</a></h2>
-<p>从一个 <code>.csv</code> 建一张表，只是小的情形。一个 <strong>Ninja 工作簿</strong>一次包含许多张表，说明哪张表在哪张表之下，还可以带上它们的第一批行。一行就能把这一切都建出来。</p>
-<p>工作簿是一个普通的电子表格文件（<code>.xlsx</code> 或 <code>.xls</code>）：</p>
-<table>
-<thead>
-<tr>
-<th>工作表</th>
-<th>它包含什么</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>1_RO_ModelHeader</code></td>
-<td>整套内容的名称，写在 <code>Name</code> 之下的第一个单元格里</td>
-</tr>
-<tr>
-<td><code>2_RO_ModelMaker</code></td>
-<td>每张表一行：<code>Master</code>（它所属的上级表，或为空）、<code>Name</code>（这张表）、<code>ColumnSet</code>（它的各列，用逗号分隔）</td>
-</tr>
-<tr>
-<td>名字与某张表完全相同的工作表</td>
-<td>要载入的行：第 1 行是列名</td>
-</tr>
-</tbody>
-</table>
-<p>在 <code>ColumnSet</code> 里，普通的名字是文本。加前缀则表示另一种类型：<code>D#</code> 日期，<code>A#</code> 金额，<code>Q#</code> 数量，<code>T#</code> 长文本，<code>Y#</code> 是/否，<code>L#Name=a/b/c</code> 则是一份固定取值的清单。<code>Master</code> 是工作簿里另一张表的表，会成为那张表的窗口里的一个页签。</p>
-<p>一个练习用的工作簿随入口一起提供：<code>common/door/samples/Ninja_Practice.xlsx</code>（一位患者、该患者的就诊、一次就诊的药品、一个房间，以及一个挂在 Business Partner 之下的转介）。<code>dry=Y</code> 读取它，说明它会建出什么，并且什么都不写入：</p>
-<!-- run: nx_dry cut=230 -->
-<div class="highlight"><pre><span></span><code>$ cp common/door/samples/Ninja_Practice.xlsx . ; rm -f /tmp/fast_guide_ninja.ops; BIM_OBJECT_OPLOG=/tmp/fast_guide_ninja.ops node common/door/door.js --list &#39;ninja.exec file=Ninja_Practice.xlsx dry=Y&#39; | grep -E &#39;^(bundle|tables|dataSheets|skipped|dry):&#39;
-bundle: Practice
-tables: [{&quot;table&quot;:&quot;PR_Patient&quot;,&quot;master&quot;:null,&quot;columns&quot;:4,&quot;lists&quot;:[&quot;BloodGroup&quot;]},{&quot;table&quot;:&quot;PR_Visit&quot;,&quot;master&quot;:&quot;PR_Patient&quot;,&quot;columns&quot;:5,&quot;lists&quot;:[]},{&quot;table&quot;:&quot;PR_Medicine&quot;,&quot;master&quot;:&quot;PR_Visit&quot;,&quot;columns&quot;:3,&quot;lists&quot;:[]},{&quot;table&quot;:&quot;PR_Roo…
-dataSheets: [{&quot;sheet&quot;:&quot;PR_Patient&quot;,&quot;rows&quot;:3},{&quot;sheet&quot;:&quot;PR_Room&quot;,&quot;rows&quot;:2}]
-skipped: []
-dry: true
-</code></pre></div>
-<p>不带 <code>dry=Y</code>，同样的一行就会把它建出来：窗口、页签、列表、菜单项、角色访问权限，然后是各数据工作表的行。再运行第二次，什么都不会写入：</p>
-<!-- run: nx_run cut=230 -->
-<div class="highlight"><pre><span></span><code>$ cp common/door/samples/Ninja_Practice.xlsx . ; D=&#39;BIM_OBJECT_OPLOG=/tmp/fast_guide_ninja.ops node common/door/door.js --list&#39;; eval &quot;$D &#39;ninja.exec file=Ninja_Practice.xlsx&#39;&quot; | grep -E &#39;^(windows|detailTabs|dataSheets|ops):&#39;; eval &quot;$D &#39;ninja.exec file=Ninja_Practice.xlsx&#39;&quot; | grep -E &#39;^(alreadyStaged|ops|summary):&#39;
-dataSheets: [{&quot;sheet&quot;:&quot;PR_Patient&quot;,&quot;rows&quot;:3,&quot;loaded&quot;:3,&quot;ops&quot;:3},{&quot;sheet&quot;:&quot;PR_Room&quot;,&quot;rows&quot;:2,&quot;loaded&quot;:2,&quot;ops&quot;:2}]
-windows: [{&quot;id&quot;:7100001,&quot;name&quot;:&quot;PR Patient&quot;},{&quot;id&quot;:7100004,&quot;name&quot;:&quot;PR Room&quot;}]
-detailTabs: 3
-ops: 151
-alreadyStaged: true
-ops: 0
-summary: this workbook is already staged (5 tables); nothing was written
-</code></pre></div>
-<p>每一张表都立刻可用于 <code>mis.*</code> 动词。上级之下的一条记录要写出上级的编号（这样对上级运行 <code>mis.read</code> 就会显示它之下的内容），清单之外的值会被拒绝：</p>
-<!-- run: nx_use cut=200 -->
-<div class="highlight"><pre><span></span><code>$ D=&#39;BIM_OBJECT_OPLOG=/tmp/fast_guide_ninja.ops node common/door/door.js --list&#39;; eval &quot;$D &#39;mis.list kind=PR_Patient&#39;&quot;; eval &quot;$D &#39;mis.new kind=PR_Visit Name=Checkup PR_Patient_ID=1 Fee=50&#39;&quot; | grep -E &#39;^(number|id):&#39;; eval &quot;$D &#39;mis.new kind=PR_Medicine Name=Paracetamol PR_Visit_ID=1 Qty=10&#39;&quot; | grep -E &#39;^(number|id):&#39;; eval &quot;$D &#39;mis.list kind=PR_Visit columns=Name,Fee,PR_Patient_ID&#39;&quot;; eval &quot;$D &#39;mis.update kind=PR_Patient id=1 BloodGroup=Z&#39;&quot; | grep reason; rm -f Ninja_Practice.xlsx
-PR_Patient_ID  Name
-1              Aminah
-2              Boon
-3              Chandra
-shown 3 of 3
-number: Checkup
-id: 1
-number: Paracetamol
-id: 1
-Name     Fee  PR_Patient_ID
-Checkup  50   1
-shown 1 of 1
-reason: BloodGroup Invalid value - Z - Reference_ID=9541005 - A - AB - B - O; nothing was written
-</code></pre></div>
-<p><strong>已经存在的表</strong>。当工作簿提到系统里已有的表时，不会重复创建。如果工作表给这张表指定了 <code>Master</code>，这张表会被复用：工作表里的列被添加到它上面，并且它成为该上级之下的一个页签。如果工作表没有给它指定 <code>Master</code>，这一行就不去动它。答案会把两种情况都列出来（<code>reused</code>、<code>leftAlone</code>）。iDempiere 的 Ninja 也是这样做的。被复用的表保留它自己的规则，所以它的一条记录仍然必须填满这张表自己的必填列。</p>
-<p>显示在两个窗口里的表，通过它自己的窗口写入，除非你用 <code>window=</code>（它的名称或编号）指明另一个窗口。对属于另一个窗口的列所作的拒绝，会告诉你该指明哪个窗口。</p>
-<p><strong>已有窗口上的一个页签</strong>。<code>Master</code> 不必是工作簿里的表。指明系统里已有的一张表，你的表就会成为那张表所在窗口的一个页签，排在已有页签之后，并且没有自己的窗口或菜单项。练习用的工作簿只用一行就做到了：<code>PR_Referral</code>，它的 <code>Master</code> 是 <code>C_BPartner</code>，所以一次转介就是 Business Partner（业务伙伴）窗口的一个页签。这同样是 iDempiere 的 Ninja 的规则：</p>
-<!-- run: nx_att cut=200 -->
-<div class="highlight"><pre><span></span><code>$ cp common/door/samples/Ninja_Practice.xlsx . ; rm -f /tmp/fast_guide_att.ops; D=&#39;BIM_OBJECT_OPLOG=/tmp/fast_guide_att.ops node common/door/door.js --list&#39;; eval &quot;$D &#39;ninja.exec file=Ninja_Practice.xlsx&#39;&quot; | grep -E &#39;^(attached|detailTabs):&#39;; eval &quot;$D &#39;mis.new kind=PR_Referral Name=Checkup C_BPartner_ID=112&#39;&quot; | grep -E &#39;^(number|id):&#39;; eval &quot;$D &#39;mis.list kind=PR_Referral columns=Name,C_BPartner_ID names=Y&#39;&quot;; rm -f Ninja_Practice.xlsx
-attached: [{&quot;table&quot;:&quot;PR_Referral&quot;,&quot;master&quot;:&quot;C_BPartner&quot;,&quot;window&quot;:&quot;Business Partner&quot;,&quot;windowId&quot;:123}]
-detailTabs: 3
-number: Checkup
-id: 1
-Name     C_BPartner_ID
-Checkup  Standard
-shown 1 of 1
-</code></pre></div>
-<p>它会拒绝下面这些情况，并且什么都不写入：第二个工作簿提到了另一个工作簿所建的表；一个工作簿里的表全都已经存在、又没有上级；一个 <code>Master</code> 既不在工作簿里，也不是这里有窗口的表；以及带有它不认识的前缀的 <code>ColumnSet</code>。名字与某张表的名字不完全相同的工作表会被跳过，并在答案里指出。答案的 <code>notChecked</code> 列出没有判定的内容。</p>
-<h3 id="csv-ninjaexec-filetablecsv">从普通 CSV 建一张表：<code>ninja.exec file=&lt;Table&gt;.csv</code><a class="headerlink" href="#csv-ninjaexec-filetablecsv" title="Permanent link">&para;</a></h3>
-<p>用 <code>.csv</code> 代替工作簿，得到的是一张表，它的表头就是模型，读取的方式与旧版 Ninja 读取它的方式相同。表就是文件的名字（<code>table=</code> 可指定另一个名字）。每个表头单元格按它的名字取类型，取第一条符合的规则：包含 <code>Date</code> → 日期；<code>Qty</code> → 数量；<code>Amount</code> → 金额；以 <code>Is</code> 或 <code>In</code> 开头 → 是/否（所以 <code>Income</code> 也是是/否，与旧版 Ninja 一样）；以 <code>_ID</code> 结尾 → 查找，其单元格是该记录的 Name；含有 <code>=</code> 和 <code>/</code>（<code>Plan=Basic/Gold</code>）→ 清单；其他一律 → 文本。像 <code>C_BPartner_ID&gt;Value</code> 或 <code>Code=X</code> 这样的单元格，会建出位于 <code>&gt;</code> 或 <code>=</code> 之前的那一列。其余各行就是数据行。表和它的行一起建出：如果有一行载入失败，则什么都不建，并且答案会指出是哪一行。前两列已经存在的行会被跳过，所以同一个文件再运行一次什么都不写入，而行数更多的文件只会添加新的行。对于已经存在的表，该文件只添加行，表头里不是该表某一列的内容会被拒绝。</p>
-<!-- run: nx_csv cut=200 -->
-<div class="highlight"><pre><span></span><code>$ printf &#39;Name,Join Date,Visits Qty,Fee Amount,IsMember,Plan=Basic/Gold\nAmir,2026-01-05,2,50,Y,Ba\nBea,2026-01-06,1,80,N,Go\n&#39; &gt; CL_Client.csv; rm -f /tmp/fast_guide_csv.ops; D=&#39;BIM_OBJECT_OPLOG=/tmp/fast_guide_csv.ops node common/door/door.js --list&#39;; eval &quot;$D &#39;ninja.exec file=CL_Client.csv&#39;&quot; | grep -E &#39;^(tables|dataSheets):&#39;; eval &quot;$D &#39;mis.list kind=CL_Client columns=Name,JoinDate,VisitsQty,FeeAmount,IsMember,Plan&#39;&quot;; eval &quot;$D &#39;ninja.exec file=CL_Client.csv&#39;&quot; | grep -E &#39;^(ops|summary):&#39;; printf &#39;Cara,2026-01-07,3,50,N,Ba\n&#39; &gt;&gt; CL_Client.csv; eval &quot;$D &#39;ninja.exec file=CL_Client.csv&#39;&quot; | grep -E &#39;^summary:&#39;; rm -f CL_Client.csv
-tables: [{&quot;table&quot;:&quot;CL_Client&quot;,&quot;master&quot;:null,&quot;columns&quot;:6,&quot;lists&quot;:[&quot;Plan&quot;]}]
-dataSheets: [{&quot;sheet&quot;:&quot;CL_Client&quot;,&quot;rows&quot;:2,&quot;loaded&quot;:2,&quot;ops&quot;:2}]
-Name  JoinDate             VisitsQty  FeeAmount  IsMember  Plan
-Amir  2026-01-05 00:00:00  2          50         Y         Ba
-Bea   2026-01-06 00:00:00  1          80         N         Go
-shown 2 of 2
-ops: 0
-summary: every line of CL_Client.csv is there already (2 skipped); nothing was written
-summary: 1 line loaded into CL_Client, 2 skipped (already there)
-</code></pre></div>
-<h3 id="ninjaworkflow">给一张表加上单据列：<code>ninja.workflow</code><a class="headerlink" href="#ninjaworkflow" title="Permanent link">&para;</a></h3>
-<p>一项功能可以在以后针对某一张表打开，而不必动工作簿。<code>ninja.workflow</code> 给一张表加上五个单据列（<code>DocStatus</code>、<code>DocAction</code>、<code>Processed</code>、<code>DocumentNo</code>、<code>IsApproved</code>），连同它们的清单和默认值，把它们显示在它的页签上，并填好已有的记录。它先查看，只添加缺少的部分，所以第二次运行什么都不写入：</p>
-<!-- run: nx_wf cut=200 -->
-<div class="highlight"><pre><span></span><code>$ cp common/door/samples/Ninja_Practice.xlsx . ; rm -f /tmp/fast_guide_wf.ops; D=&#39;BIM_OBJECT_OPLOG=/tmp/fast_guide_wf.ops node common/door/door.js --list&#39;; eval &quot;$D &#39;ninja.exec file=Ninja_Practice.xlsx&#39;&quot; | grep -E &#39;^ops:&#39;; eval &quot;$D &#39;mis.new kind=PR_Visit Name=Before PR_Patient_ID=1&#39;&quot; | grep -E &#39;^number:&#39;; eval &quot;$D &#39;ninja.workflow table=PR_Visit&#39;&quot; | grep -E &#39;^(added|fields|rowsFilled|ops):&#39;; eval &quot;$D &#39;ninja.workflow table=PR_Visit&#39;&quot; | grep -E &#39;^(alreadyDone|ops):&#39;; eval &quot;$D &#39;mis.new kind=PR_Visit Name=After PR_Patient_ID=1&#39;&quot; | grep -E &#39;^docStatus:&#39;; eval &quot;$D &#39;mis.list kind=PR_Visit columns=Name,DocStatus,DocAction,Processed&#39;&quot;; eval &quot;$D &#39;erp.complete kind=PR_Visit id=1&#39;&quot; | grep reason; rm -f Ninja_Practice.xlsx
-ops: 151
-number: Before
-added: [&quot;DocStatus&quot;,&quot;DocAction&quot;,&quot;Processed&quot;,&quot;DocumentNo&quot;,&quot;IsApproved&quot;]
-fields: 5
-rowsFilled: 1
-ops: 11
-alreadyDone: true
-ops: 0
-docStatus: DR
-Name    DocStatus  DocAction  Processed
-Before  DR         CO         N
-After   DR         CO         N
-shown 2 of 2
-reason: Complete was not done: PR Visit has the document columns but no document class yet, so nothing says what Complete does on it (DocStatus stays DR)
-</code></pre></div>
-<p>它还不会说明 <em>Complete</em>（完成）在这样的表上做什么：答案里的 <code>notMade</code> 指出还缺什么，在那之前 <code>erp.complete</code> 会用平实的话被拒绝。系统自带的表会被拒绝。</p>
-<h3 id="ninjarollbackninjaexport">撤销一个工作簿包，并把它写回工作簿：<code>ninja.rollback</code>、<code>ninja.export</code><a class="headerlink" href="#ninjarollbackninjaexport" title="Permanent link">&para;</a></h3>
-<p>有两行把工作簿的流程闭合起来。<code>ninja.rollback bundle=&lt;name&gt;</code> 一次关闭一个工作簿所建的全部内容（它的窗口、页签、字段、列、表和菜单项，以及这个包自己的菜单节点），在日志里作为同一组。与旧版 Ninja 一样，有记录的表会阻止这一操作，并指出该表及其记录数；<code>dry=Y</code> 说明哪些内容会被关闭。系统自带的表保留自身，只失去这个包加到它上面的内容（Business Partner 上的页签会消失，Business Partner 保留）。运行两次，第二次什么都不写入；之后在同一个工作簿上运行 <code>ninja.exec</code>，就会把这个包带回来。<code>ninja.export</code> 把一个包、一个窗口或一张表写回成 <code>ninja.exec</code> 能读取的工作簿：表、<code>Master</code> 链接、带类型的列，以及每份清单的取值。编辑这份工作表后再次运行，或把模型作为文件带到另一台机器上。它只写模型，绝不写数据行；已存在的文件绝不会被覆盖；必须给出一个选择器（<code>bundle=</code>、<code>window=</code> 或 <code>table=</code>）。</p>
-<!-- run: nx_rb cut=200 -->
-<div class="highlight"><pre><span></span><code>$ cp common/door/samples/Ninja_Practice.xlsx . ; rm -f /tmp/fast_guide_rb.ops Practice_out.xlsx; D=&#39;BIM_OBJECT_OPLOG=/tmp/fast_guide_rb.ops node common/door/door.js --list&#39;; eval &quot;$D &#39;ninja.exec file=Ninja_Practice.xlsx data=N&#39;&quot; | grep -E &#39;^ops:&#39;; eval &quot;$D &#39;ninja.export bundle=Practice file=Practice_out.xlsx&#39;&quot; | grep -E &#39;^(file|lists|summary):&#39;; eval &quot;$D &#39;ninja.rollback bundle=Practice dry=Y&#39;&quot; | grep -E &#39;^(dry|wouldSwitchOff):&#39;; eval &quot;$D &#39;ninja.rollback bundle=Practice&#39;&quot; | grep -E &#39;^(ops|summary):&#39;; eval &quot;$D &#39;ninja.rollback bundle=Practice&#39;&quot; | grep -E &#39;^(alreadyDone|ops):&#39;; eval &quot;$D &#39;ninja.export bundle=Practice file=Practice_out.xlsx&#39;&quot; | grep reason; rm -f Ninja_Practice.xlsx Practice_out.xlsx
-ops: 151
-file: Practice_out.xlsx
-lists: 1
-summary: wrote the model of 5 tables to Practice_out.xlsx
-dry: true
-wouldSwitchOff: 119
-ops: 119
-summary: Practice is rolled back: 119 dictionary rows switched off
-ops: 0
-alreadyDone: true
-reason: Practice_out.xlsx exists already and is never overwritten. Nothing was written
-</code></pre></div>
-<p>导出不会带出的内容：验证规则和回调（暂存器 stager 从未把它们写进模型）。回滚是把行关闭，而不是删除它们，所以日志保留着它的历史。</p>
-<h2 id="mastermisdiff">一条记录之下的记录，以及用一张表格对照数据表：<code>master=</code>、<code>mis.diff</code><a class="headerlink" href="#mastermisdiff" title="Permanent link">&para;</a></h2>
-<p><code>master=Table/record</code> 用在 <code>mis.list</code>、<code>mis.sum</code> 或 <code>mis.group</code> 上，只保留该记录之下的行，也就是它之下的页签所显示的行：<code>mis.list kind=PR_Visit master=PR_Patient/Aminah</code> 就是 Aminah 的就诊记录。斜线之后的记录是一个编号，或一个单据编号、名称或值，读取方式与 <code>mis.update number=</code> 读取它的方式相同。答案与普通筛选条件 <code>PR_Patient_ID=1</code> 的答案相同。不是该上级之下页签的表会被拒绝并附上原因，不存在的记录或两条记录共用的名字也一样（这时请给出编号）。之下没有任何内容的记录，得到的是真正的零，而不是一个空的问题。</p>
-<p><code>mis.diff kind=&lt;table&gt; file=&lt;sheet.csv&gt;</code> 在你载入之前，把一张表格与数据表作比较，并且什么都不写入。表格的每一行按它的单据编号匹配，否则按名称，否则按值（<code>key=</code> 可指定另一列），答案把它们分类：<code>new</code>（没有任何记录有这个键）、<code>changed</code>（某一列不同；已存的值和表格里的值都会显示）、<code>same</code>，以及 <code>missing</code>（表格没有提到的有效记录）。表格里重复的键、匹配多条记录的键，以及没有键的行，会被单独指出，不作比较。数字按数字相等（<code>1200.50</code> 与 <code>1200.5</code>），日期等于已存的日期，查找单元格则按已存的编号所指向的那条记录的名称来比较。<code>mis.load</code> 能否找到那个名称，这里不去问：那是 <code>mis.load dry=Y</code> 做的事。</p>
-<!-- run: mis_md cut=200 -->
-<div class="highlight"><pre><span></span><code>$ cp common/door/samples/Ninja_Practice.xlsx . ; printf &#39;Name,BloodGroup\nAminah,A\nBoon,B\nDevi,O\n&#39; &gt; patients.csv; rm -f /tmp/fast_guide_md.ops; D=&#39;BIM_OBJECT_OPLOG=/tmp/fast_guide_md.ops node common/door/door.js --list&#39;; eval &quot;$D &#39;ninja.exec file=Ninja_Practice.xlsx&#39;&quot; | grep -E &#39;^ops:&#39;; eval &quot;$D &#39;mis.update kind=PR_Patient number=Aminah BloodGroup=A&#39;&quot; | grep -E &#39;^changed:&#39;; for v in &#39;Name=Checkup PR_Patient_ID=1 Fee=50&#39; &#39;Name=Follow-up PR_Patient_ID=1 Fee=30&#39; &#39;Name=Checkup PR_Patient_ID=2 Fee=50&#39;; do eval &quot;$D &#39;mis.new kind=PR_Visit $v&#39;&quot; | grep -E &#39;^id:&#39;; done; eval &quot;$D &#39;mis.list kind=PR_Visit master=PR_Patient/Aminah columns=Name,Fee&#39;&quot;; eval &quot;$D &#39;mis.sum kind=PR_Visit column=Fee master=PR_Patient/1&#39;&quot; | grep -E &#39;^summary:&#39;; eval &quot;$D &#39;mis.group kind=PR_Visit by=Name master=PR_Patient/2&#39;&quot;; eval &quot;$D &#39;mis.list kind=PR_Visit master=PR_Room/1&#39;&quot; | grep -E &#39;^reason:&#39;; eval &quot;$D &#39;mis.diff kind=PR_Patient file=patients.csv&#39;&quot; | grep -E &#39;^(new|changed|missing|ops|summary):&#39;; rm -f Ninja_Practice.xlsx patients.csv
-ops: 151
-changed: [&quot;bloodgroup&quot;]
-id: 1
-id: 2
-id: 3
-Name       Fee
-Checkup    50
-Follow-up  30
-shown 2 of 2
-summary: 80 = sum of Fee over 2 PR Visit
-Name     count
-Checkup  1
-shown 1 of 1
-reason: PR Visit is not a detail of PR Room: it has no link column PR_Room_ID (the parent link of a tab). Nothing was listed
-new: [{&quot;row&quot;:3,&quot;key&quot;:&quot;Devi&quot;}]
-changed: [{&quot;row&quot;:2,&quot;key&quot;:&quot;Boon&quot;,&quot;changes&quot;:[{&quot;column&quot;:&quot;BloodGroup&quot;,&quot;table&quot;:&quot;&quot;,&quot;sheet&quot;:&quot;B&quot;}]}]
-missing: [&quot;Chandra&quot;]
-ops: 0
-summary: 1 new, 1 changed, 1 the same, 1 in the table and not in the file; nothing was written
-</code></pre></div>
-<p><code>mis.diff</code> 不作比较的内容：数据表里表格没有提到的列。键是一列。上溯两级的上级（药品的患者）会被拒绝：它不是该药品的页签上级。</p>
-<h3 id="mis-script-dry">一个 MIS 行的文件，先试运行：<code>--script … --dry</code><a class="headerlink" href="#mis-script-dry" title="Permanent link">&para;</a></h3>
-<p>一套你想重复使用的设置（一个工作簿、它的第一批记录、一次检查）就是一个用 <code>--script</code> 运行的行文件，如<a href="#a-script-several-lines-a-named-result">脚本</a>中所述：它在遇到第一行不是 ok 的地方停下，之后的行不会运行。加上 <code>--dry</code> 可以先试运行整个文件。这时文件运行在你的操作日志（<code>BIM_OBJECT_OPLOG</code> 必须指明它）和这个文件夹里各文件的一个用完即弃的副本上，所以后面的行看到的是前面的行所做的，与真正运行时完全一样，并得到真正运行时的答案。最后副本会被删除：你的操作日志、你的文件和日志都与之前一样。子文件夹里的文件不会被复制。作用于操作日志之外的行（Modeller 会话、旧版服务器、打包）无法被拦住，所以在试运行里它会被拒绝，文件就在那里停下。</p>
-<!-- run: script_dry cut=200 -->
-<div class="highlight"><pre><span></span><code>$ cp common/door/samples/Ninja_Practice.xlsx . ; printf -- &#39;-- the tables, a patient, a visit of hers, and the fees under her\nninja.exec file=Ninja_Practice.xlsx data=N\nmis.new kind=PR_Patient Name=Devi BloodGroup=O\nmis.new kind=PR_Visit Name=Checkup PR_Patient_ID=1 Fee=50\nmis.sum kind=PR_Visit column=Fee master=PR_Patient/Devi\n&#39; &gt; setup.door; rm -f /tmp/fast_guide_dry.ops; export BIM_OBJECT_OPLOG=/tmp/fast_guide_dry.ops; node common/door/door.js --list --script setup.door --dry | grep -E &#39;^(tablesMade|id|summary):&#39;; test -e /tmp/fast_guide_dry.ops &amp;&amp; echo &#39;op-log: written&#39; || echo &#39;op-log: not written&#39;; node common/door/door.js --list --script setup.door | grep -E &#39;^summary:&#39;; echo &quot;op-log: $(wc -l &lt; /tmp/fast_guide_dry.ops) ops&quot;; rm -f Ninja_Practice.xlsx setup.door
-tablesMade: 5
-id: 1
-id: 1
-summary: 50 = sum of Fee over 1 PR Visit
-op-log: not written
-summary: 50 = sum of Fee over 1 PR Visit
-op-log: 153 ops
-</code></pre></div>
-<h2 id="mis_1">速查表：练习 MIS 的各行<a class="headerlink" href="#mis_1" title="Permanent link">&para;</a></h2>
-<p>这里的一切都是在<strong>你自己的副本</strong>上练习：第一行指定一个保存你所做操作的文件，没有任何东西会触及真实公司的账簿。删除那个文件就能从零重新开始。请在装有 <code>common/</code> 的文件夹（一份 <code>bim-ootb</code> 检出）里运行这些行。</p>
-<table>
-<thead>
-<tr>
-<th>步骤</th>
-<th>输入这个</th>
-<th>你得到什么</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>设置</td>
-<td><code>export BIM_OBJECT_OPLOG=~/practice.ops</code></td>
-<td>下面每一行现在都把它的工作保存在那个文件里</td>
-</tr>
-<tr>
-<td>重新开始</td>
-<td><code>rm -f ~/practice.ops</code></td>
-<td>又是一份空的练习</td>
-</tr>
-<tr>
-<td>少打字</td>
-<td><code>alias d='node common/door/door.js --list'</code></td>
-<td>之后一行就写成 <code>d '&lt;verb&gt; &lt;inputs&gt;'</code></td>
-</tr>
-<tr>
-<td>询问有什么</td>
-<td><code>d 'help all'</code></td>
-<td>每个动词及其输入</td>
-</tr>
-<tr>
-<td>建五张表</td>
-<td><code>cp common/door/samples/Ninja_Practice.xlsx . ; d 'ninja.exec file=Ninja_Practice.xlsx'</code></td>
-<td>患者、就诊、药品、房间和转介，并载入了 3 位患者和 2 个房间</td>
-</tr>
-<tr>
-<td>建之前先试</td>
-<td><code>d 'ninja.exec file=Ninja_Practice.xlsx dry=Y'</code></td>
-<td>它会建出什么；什么都不写入</td>
-</tr>
-<tr>
-<td>建一张表</td>
-<td><code>d 'mis.add_window file=AST_Asset.csv'</code></td>
-<td>用一个列出各列的 <code>.csv</code> 建出一个窗口（见上面的一节）</td>
-</tr>
-<tr>
-<td>列出</td>
-<td><code>d 'mis.list kind=PR_Patient'</code></td>
-<td>各行</td>
-</tr>
-<tr>
-<td>列出部分列</td>
-<td><code>d 'mis.list kind=PR_Visit columns=Name,Fee'</code></td>
-<td>只有那些列</td>
-</tr>
-<tr>
-<td>它能容纳什么</td>
-<td><code>d 'mis.describe kind=PR_Patient'</code></td>
-<td>它的列、类型和清单</td>
-</tr>
-<tr>
-<td>添加</td>
-<td><code>d 'mis.new kind=PR_Patient Name=Devi BloodGroup=O'</code></td>
-<td>一条新记录及其编号</td>
-</tr>
-<tr>
-<td>在上级之下添加</td>
-<td><code>d 'mis.new kind=PR_Visit Name=Checkup PR_Patient_ID=1 Fee=50'</code></td>
-<td>患者 1 的一次就诊</td>
-</tr>
-<tr>
-<td>再往下一级添加</td>
-<td><code>d 'mis.new kind=PR_Medicine Name=Paracetamol PR_Visit_ID=1 Qty=10'</code></td>
-<td>就诊 1 的一种药品</td>
-</tr>
-<tr>
-<td>读取一条及其之下的内容</td>
-<td><code>d 'mis.read kind=PR_Patient id=1'</code></td>
-<td>该患者和就诊记录</td>
-</tr>
-<tr>
-<td>修改</td>
-<td><code>d 'mis.update kind=PR_Patient id=1 BloodGroup=AB'</code></td>
-<td>修改后的记录</td>
-</tr>
-<tr>
-<td>看一次拒绝</td>
-<td><code>d 'mis.update kind=PR_Patient id=1 BloodGroup=Z'</code></td>
-<td>被拒绝：<code>Z</code> 不在清单里</td>
-</tr>
-<tr>
-<td>删除</td>
-<td><code>d 'mis.delete kind=PR_Room id=2'</code></td>
-<td>该记录没有了</td>
-</tr>
-<tr>
-<td>求和</td>
-<td><code>d 'mis.sum kind=PR_Visit column=Fee'</code></td>
-<td>合计</td>
-</tr>
-<tr>
-<td>按某一列计数</td>
-<td><code>d 'mis.group kind=PR_Patient by=BloodGroup'</code></td>
-<td>每个取值各一个计数</td>
-</tr>
-<tr>
-<td>载入多行</td>
-<td><code>d 'mis.load kind=PR_Room file=rooms.csv'</code></td>
-<td>一份预览；加上 <code>dry=N</code> 才真正载入</td>
-</tr>
-<tr>
-<td>在屏幕上操作</td>
-<td><code>node common/door/mis.js kind=PR_Patient</code></td>
-<td>一份用按键移动的列表；<code>+</code> 添加，Enter 编辑</td>
-</tr>
-<tr>
-<td>换一个角色</td>
-<td>在一行上加 <code>role=102</code></td>
-<td>该角色可以看到和做什么</td>
-</tr>
-<tr>
-<td>在系统的一张表之下添加</td>
-<td><code>d 'mis.new kind=PR_Referral Name=Checkup C_BPartner_ID=112'</code></td>
-<td>业务伙伴 112 上的一次转介（Business Partner 窗口的一个页签）</td>
-</tr>
-<tr>
-<td>给一张表加上单据列</td>
-<td><code>d 'ninja.workflow table=PR_Visit'</code></td>
-<td>每次就诊（新旧都有）上都有一个状态（<code>DR</code>）</td>
-</tr>
-<tr>
-<td>撤销一个工作簿的包</td>
-<td><code>d 'ninja.rollback bundle=Practice'</code></td>
-<td>它建出的一切都被关闭（表里有记录时被阻止）；先用 <code>dry=Y</code></td>
-</tr>
-<tr>
-<td>把一个包写回成工作簿</td>
-<td><code>d 'ninja.export bundle=Practice file=Practice_out.xlsx'</code></td>
-<td>模型，可以编辑后再次运行</td>
-</tr>
-<tr>
-<td>一条记录之下</td>
-<td><code>d 'mis.list kind=PR_Visit master=PR_Patient/1'</code></td>
-<td>只有患者 1 的就诊；<code>mis.sum</code> 和 <code>mis.group</code> 上也可以</td>
-</tr>
-<tr>
-<td>载入前对照一张表格</td>
-<td><code>d 'mis.diff kind=PR_Patient file=patients.csv'</code></td>
-<td>新增、已改、相同和缺失的行；什么都不写入</td>
-</tr>
-<tr>
-<td>保持一个 Modeller 打开</td>
-<td><code>d 'model.open sheets=shed type="Farming Shed" file=shed.db'</code>，然后 <code>d model.convert</code>、<code>d 'model.addbay end=high'</code>、<code>d model.undo</code>、<code>d model.close</code></td>
-<td>2D 图纸变成 3D ，加上一个开间再撤回；每一行几秒钟；关闭时保存到 shed.db</td>
-</tr>
-<tr>
-<td>立即保存模型</td>
-<td><code>d model.save</code>（第一次用 <code>d 'model.save file=shed.db'</code>）</td>
-<td>先做碰撞检查，再写出 shed.db；有 RED 碰撞时被拒绝</td>
-</tr>
-<tr>
-<td>不保存就关闭</td>
-<td><code>d 'model.close discard=Y'</code></td>
-<td>有意丢弃这些改动（没有保存文件时，普通的关闭会被拒绝）</td>
-</tr>
-<tr>
-<td>先试运行整个文件</td>
-<td><code>node common/door/door.js --list --script setup.door --dry</code></td>
-<td>每一行的真实答案；什么都不保留（需要 <code>BIM_OBJECT_OPLOG</code>）</td>
-</tr>
-<tr>
-<td>从 CSV 建一张表</td>
-<td><code>d 'ninja.exec file=CL_Client.csv'</code></td>
-<td>从表头建出这张表，并载入它的各行；再运行一次，只载入新的行</td>
-</tr>
-<tr>
-<td>屏幕上的菜单</td>
-<td><code>d menu</code>（或 <code>d 'menu role=102'</code>）</td>
-<td>ERP 菜单；Enter 打开一个窗口的列表，Esc 返回，<code>/</code> 查找</td>
-</tr>
-<tr>
-<td>找一个菜单项</td>
-<td><code>d 'mis.menu role=102 find=partner'</code></td>
-<td>名称里含有“partner”的菜单项，连同它们所在的文件夹</td>
-</tr>
-<tr>
-<td>在另一个窗口里操作</td>
-<td>加上 <code>window=&lt;name or id&gt;</code>，用于 <code>mis.new</code>、<code>mis.update</code> 或 <code>mis.delete</code></td>
-<td>该窗口页签的字段，用于显示在两个窗口里的表</td>
-</tr>
-</tbody>
-</table>
-<p><strong>速度</strong>。在一个大型工作簿之后，入口会保存一份操作日志所建内容的映像，这样之后的行就不必把每一个操作再应用一遍；只有当你的操作日志文件的开头仍与原来完全一样时才会使用它，<code>ERP_OPIMAGE=off</code> 可以把它关掉。</p>
-<p>你自己的工作簿：复制那个练习文件，把 <code>2_RO_ModelMaker</code> 的各行改成你自己的表（用你自己的前缀，例如 <code>MY_</code>，可以把它们与已有的表区分开；系统里已有的名字会被复用，而不是重复创建），并在它上面运行 <code>ninja.exec</code>，先带上 <code>dry=Y</code>。这张表里的各行，就是上面各节中运行过的动词；这张表本身不会被本页的测试重新运行，灰色的代码块才会。</p>
-<h2 id="misjs">在终端里操作：<code>mis.js</code><a class="headerlink" href="#misjs" title="Permanent link">&para;</a></h2>
-<p>如果你更愿意选而不是打字，<code>mis.js</code> 会显示一个带指针的列表。它只是一个前端：每一次按键都会编译成上面某<strong>一条</strong>入口行，经过同一个入口运行（有日志记录，经过待确认请求检查），并且屏幕在运行它之前先打印这一行。上和下移动指针。左和右在指针所在行的按钮之间移动（对记录是 <code>[U Edit] [D Delete] [C Copy]</code>；对单据则是引擎现在允许的操作，例如 <code>[C Complete] [V Void]</code>，并且一旦完成就没有 Delete）。回车运行高亮的按钮。<code>+</code> 开始一条新记录，Delete 会询问 <code>y/N</code>，Esc 退出并且什么都不写入。</p>
-<p>在终端里，它用方向键绘制界面。使用 <code>--plain</code> 时，它从管道读取按键名，所以脚本、读屏软件和 AI 看到的，与人看到的完全一样：</p>
-<!-- run: mis_screen cut=150 -->
-<div class="highlight"><pre><span></span><code>$ printf &#39;Down Right Esc\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_mis.ops node common/door/mis.js kind=C_BPartner name=Standard limit=3 --plain 2&gt;/dev/null
--&gt; mis.describe kind=C_BPartner
--&gt; mis.list kind=C_BPartner columns=C_BPartner_ID,Value,Name,Logo_ID,C_BP_Group_ID names=Y limit=3 offset=0 name=Standard
-C_BPartner (name=Standard)   shown 1-2 of 2   [+ New]   no role: nothing is filtered
-   C_BPartner_ID  Value     Name      Logo_ID  C_BP_Group_ID     
- &gt; 112            Standard  Standard           Standard Customers &gt;[U Edit]&lt; [D Delete] [C Copy]
-   1300112        Standard  Standard           Standard Customers
-the line it will run: mis.read kind=C_BPartner id=112
- Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit
-key Down
-C_BPartner (name=Standard)   shown 1-2 of 2   [+ New]   no role: nothing is filtered
-   C_BPartner_ID  Value     Name      Logo_ID  C_BP_Group_ID     
-   112            Standard  Standard           Standard Customers
- &gt; 1300112        Standard  Standard           Standard Customers &gt;[U Edit]&lt; [D Delete] [C Copy]
-the line it will run: mis.read kind=C_BPartner id=1300112
- Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit
-key Right
-C_BPartner (name=Standard)   shown 1-2 of 2   [+ New]   no role: nothing is filtered
-   C_BPartner_ID  Value     Name      Logo_ID  C_BP_Group_ID     
-   112            Standard  Standard           Standard Customers
- &gt; 1300112        Standard  Standard           Standard Customers [U Edit] &gt;[D Delete]&lt; [C Copy]
-the line it will run: mis.delete kind=C_BPartner id=1300112
- Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit
-key Esc
-C_BPartner (name=Standard)   shown 1-2 of 2   [+ New]   no role: nothing is filtered
-   C_BPartner_ID  Value     Name      Logo_ID  C_BP_Group_ID     
-   112            Standard  Standard           Standard Customers
- &gt; 1300112        Standard  Standard           Standard Customers [U Edit] &gt;[D Delete]&lt; [C Copy]
-the line it will run: mis.delete kind=C_BPartner id=1300112
- Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit
-</code></pre></div>
-<p>给命令加上 <code>role=103</code>，屏幕发出的每一行都会带上这个角色；标题行会指明它。没有角色时，标题行会说明什么都没有过滤。</p>
-<p>表单只询问引擎无法填写的内容（即上面的试运行）。键入内容就填入字段，Tab 或 Enter 移到下一项，在最后一个字段上按 Enter 会显示它将要运行的那一行。以 <code>=</code> 开头的行是键入的文字。这里是整个会话，缩减为它所运行的入口行：</p>
-<!-- run: mis_form cut=200 -->
-<div class="highlight"><pre><span></span><code>$ printf &#39;+\n=GD300\nTab\n=Guide Four\nEnter\ny\nEsc\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_mis.ops node common/door/mis.js kind=C_BPartner value=GD300 --plain 2&gt;/dev/null | grep &#39;^-&gt;&#39;
--&gt; mis.describe kind=C_BPartner
--&gt; mis.list kind=C_BPartner columns=C_BPartner_ID,Value,Name,Logo_ID,C_BP_Group_ID names=Y limit=10 offset=0 value=GD300
--&gt; mis.new kind=C_BPartner dry=Y
--&gt; mis.new kind=C_BPartner Value=GD300 Name=&quot;Guide Four&quot;
--&gt; mis.list kind=C_BPartner columns=C_BPartner_ID,Value,Name,Logo_ID,C_BP_Group_ID names=Y limit=10 offset=0 value=GD300
-</code></pre></div>
-<p>编辑的做法相同：它只显示窗口允许人编辑的列，查找列显示为名字，并且只发送你改动的部分。复制是从指针所在的那一条开始新建一条记录，所以必须修改应当唯一的内容（重复的会被拒绝，而你键入的内容会保留）。设置 <code>MIS_SESSION_FILE=session.door</code>，终端会话就会把它运行过的各行记录下来，每行一条，成为一个你可以阅读并再次运行的脚本。</p>
-<h3 id="menu-mismenu">屏幕上的菜单：<code>menu</code> 和 <code>mis.menu</code><a class="headerlink" href="#menu-mismenu" title="Permanent link">&para;</a></h3>
-<p><code>node common/door/door.js menu</code>（用速查表里的别名是 <code>d menu</code>；在 red1 shell 里是 <code>menu</code>）在终端里打开 ERP 菜单，就是浏览器版 ERP 所显示的同一份菜单，文件夹相同，顺序相同。加上角色（<code>d 'menu role=102'</code>），你就只会看到该角色可以打开的内容。上和下，或一个数字，选取一个菜单项；Enter 打开一个文件夹，或一个窗口的列表屏幕（即上面的 <code>mis.js</code> 屏幕，作用于该窗口第一个页签的表）；Esc 返回上一级，在最顶层则退出；<code>/</code> 按名称查找菜单项；<code>?</code> 显示按键。流程、报表或表单会说明它在浏览器版 ERP 里打开，并且不运行任何东西。和本页其他各处一样，屏幕只是替你键入入口行，并在运行每一行之前把它打印出来（那些 <code>-&gt;</code> 行），所以你在屏幕上做的事，也可以自己键入，或者放进脚本里。</p>
-<p>菜单本身就是一条入口行，<code>mis.menu [role=] [find=]</code>。这里用键入的按键来驱动屏幕（<code>--plain</code> 从输入读取它们），查找“partner”并打开第三个匹配项：</p>
-<!-- run: menu_screen cut=200 -->
-<div class="highlight"><pre><span></span><code>$ rm -f /tmp/fast_guide_menu.ops; printf &#39;/\n=partner\nEnter\n3\nEsc\nEsc\nq\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_menu.ops node common/door/door.js &#39;menu role=102&#39; --plain | grep -E &#39;^(-&gt; |key |Menu|find|&gt; )&#39;
--&gt; mis.menu role=102
-Menu   (role 102)   295 windows
-&gt; 1  ▸ System Admin
-key /
-Menu   (role 102)   295 windows
-&gt; 1  ▸ System Admin
-find: _   (Enter search, Esc cancel)
-key =partner
-Menu   (role 102)   295 windows
-&gt; 1  ▸ System Admin
-find: partner_   (Enter search, Esc cancel)
-key Enter
--&gt; mis.menu find=partner role=102
-find &quot;partner&quot;   (role 102)   295 windows
-&gt; 1    System Admin &gt; Data &gt; Data Import &gt; Import Business Partner
-key 3
--&gt; (open Business Partner Group: the list screen on C_BP_Group)
--&gt; mis.describe kind=C_BP_Group role=102
--&gt; mis.list kind=C_BP_Group columns=C_BP_Group_ID,Value,Name,Description names=Y limit=10 offset=0 role=102
-key Esc
-find &quot;partner&quot;   (role 102)   295 windows
-&gt; 3    Partner Relations &gt; Business Partner Rules &gt; Business Partner Group
-key Esc
-Menu   (role 102)   295 windows
-&gt; 1  ▸ System Admin
-key q
-Menu   (role 102)   295 windows
-&gt; 1  ▸ System Admin
-</code></pre></div>
-<h2 id="_9">选择答案如何显示，并把它保存下来<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h2>
-<p>除非你另有要求，回复就是 JSON 信封。有三个开关，把答案的行显示成人或电子表格能读懂的样子；入口所记录的仍然是信封：</p>
-<ul>
-<li><code>--list</code>：一张对齐的表，结尾是 <code>shown N of TOTAL</code>。只有一条记录的回复显示为 <code>field: value</code> 的行。</li>
-<li><code>--csv</code>：把各行输出为 CSV（RFC 4180：含有逗号、引号或换行的单元格会加引号；数字与引擎返回的完全一致）。</li>
-<li><code>--out FILE</code> 把所选的形式写入当前文件夹里的一个文件，而不是显示在屏幕上。被拒绝、被挂起或无法判定的行不会写出文件，并会如此说明。</li>
-</ul>
-<!-- run: csv_orders -->
-<div class="highlight"><pre><span></span><code>$ node common/door/door.js --csv &#39;erp.list kind=Order docstatus=CO limit=3 columns=DocumentNo,DocStatus,GrandTotal sort=-DocumentNo&#39;
-DocumentNo,DocStatus,GrandTotal
-80001,CO,100.7
-80001,CO,100.7
-800002,CO,2160
-</code></pre></div>
-<p>在脚本里，在一行的末尾加上 <code>&gt; file</code>，可以把那一行的答案送入脚本所在文件夹里的一个文件（<code>&gt;&gt; file</code> 是追加）。形式随文件名而定：<code>.csv</code> 是 CSV，<code>.json</code> 是信封，其他都是列表。离开脚本所在文件夹的路径会被拒绝。</p>
-<p>这些开关位于第五个文件 <code>render.js</code> 里；当你从下载的文件使用它们时，把它放在 <code>door.js</code> 旁边：</p>
-<div class="highlight"><pre><span></span><code>curl -O https://red1oon.github.io/bim-ootb/common/door/render.js
-</code></pre></div>
-<h2 id="help">向入口求助：<code>help</code><a class="headerlink" href="#help" title="Permanent link">&para;</a></h2>
-<p>输入 <code>help</code> 可以看到常用的命令，每条都是一行你可以运行的命令。<code>help erp</code> 列出一个应用的所有动词，<code>help erp.find</code> 完整显示一个动词（它做什么、每个输入、它可能改变什么、谁可以运行它），<code>help all</code> 列出全部。帮助是从与下表相同的动词清单生成的，不读取任何东西，不运行任何东西，也不记录在日志里。</p>
-<!-- run: help_verb -->
-<div class="highlight"><pre><span></span><code>$ node common/door/door.js &#39;help erp.find&#39;
-erp.find — Find a document
-
-Find a document by its number, the way a window&#39;s Find does (DocumentNo, else Name or Value). Returns every match with its key, DocStatus and DocAction. Nothing is changed. Kinds: any document table of the dictionary (34).
-
-Inputs:
-  kind (required, string) e.g. Order — The kind of document, as the dictionary names it (an AD_Table with a DocAction column), e.g. &quot;Order&quot;. 34 kinds exist; an unknown kind or a table that is not a document is refused naming the reason.
-  number (required, string) e.g. 50000 — The document number (DocumentNo) as shown in the window; if two documents carry it, name one with id.
-
-Harm: read (reads only)
-Who may run it: human, ai
-Example: erp.find kind=Order number=50000
-</code></pre></div>
-<h2 id="_10">给开发者：对照旧版检查孪生版<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h2>
-<p>这些动词是给负责让 ERP 孪生版（twin）与真正的 iDempiere 保持一致的人用的。它们需要一份 bim-ootb 检出，并且前四个还需要旧版测试环境正在运行（一个 docker Postgres 和试点服务器），旁边还要有 iDempiere 源码。当缺少某一部分时，它们回答 <code>inconclusive</code> 并指出缺哪一部分：对于它们无法查看的东西，它们绝不回答空列表或“相同”。</p>
-<p><code>legacy.status</code> 询问环境是否已启动。它不启动任何东西；有东西没启动时，它会打印启动它的命令：</p>
-<!-- run: legacy_status -->
-<div class="highlight"><pre><span></span><code>$ node common/door/door.js --list &#39;legacy.status&#39;
-verdict: UP
-postgres: {&quot;container&quot;:&quot;postgres&quot;,&quot;database&quot;:&quot;idempiere_pilot&quot;,&quot;state&quot;:&quot;ready&quot;}
-pilot: {&quot;url&quot;:&quot;http://localhost:8088/webui/&quot;,&quot;http&quot;:200,&quot;state&quot;:&quot;up&quot;}
-summary: legacy UP: postgres ready, pilot up
-next: []
-</code></pre></div>
-<p><code>erp.column</code> 回答“谁来填写这一列”，从孪生版的字典和旧版的字典并排对照而来：列默认值、验证规则、字段默认值，以及登录默认值（iDempiere 在登录时把被引用表的 <code>IsDefault</code> 行放入上下文）。当两边不一致时，它会说 <code>DIFFERENT</code> 并指出是哪一部分：</p>
-<!-- run: column_docaction -->
-<div class="highlight"><pre><span></span><code>$ node common/door/door.js --list &#39;erp.column kind=Order column=DocAction&#39;
-kind: Order
-table: C_Order
-column: DocAction
-twin: {&quot;found&quot;:true,&quot;table&quot;:&quot;C_Order&quot;,&quot;column&quot;:&quot;DocAction&quot;,&quot;reference&quot;:28,&quot;mandatory&quot;:&quot;Y&quot;,&quot;updateable&quot;:&quot;Y&quot;,&quot;defaultValue&quot;:&quot;CO&quot;,&quot;validationRule&quot;:null,&quot;fieldDefaults&quot;:[],&quot;loginDefault&quot;:null,&quot;filledBy&quot;:&quot;the column default CO&quot;}
-legacy: {&quot;found&quot;:true,&quot;table&quot;:&quot;C_Order&quot;,&quot;column&quot;:&quot;DocAction&quot;,&quot;reference&quot;:28,&quot;mandatory&quot;:&quot;Y&quot;,&quot;updateable&quot;:&quot;Y&quot;,&quot;defaultValue&quot;:&quot;CO&quot;,&quot;validationRule&quot;:null,&quot;fieldDefaults&quot;:[],&quot;loginDefault&quot;:null,&quot;filledBy&quot;:&quot;the column default CO&quot;}
-differs: []
-verdict: SAME
-notChecked: []
-summary: C_Order.DocAction: SAME; twin fills it by the column default CO; legacy by the column default CO
-</code></pre></div>
-<p><code>idempiere.where</code> 在 iDempiere 源码中查找一个名称，并回答文件、行号和该行的文字，这样关于旧版行为的说法就可以引用它的出处。除非 <code>limit</code> 另有指定，它显示 25 行，并且始终给出总数；<code>in=callout</code> 只保留路径包含该文字的文件：</p>
-<!-- run: where_invoicerule -->
-<div class="highlight"><pre><span></span><code>$ node common/door/door.js --list &#39;idempiere.where symbol=InvoiceRule in=CalloutOrder limit=2&#39;
-symbol: InvoiceRule
-hits: [{&quot;file&quot;:&quot;org.adempiere.base.callout/src/org/compiere/model/CalloutOrder.java&quot;,&quot;line&quot;:50,&quot;text&quot;:&quot;*\t\t- InvoiceRule/DeliveryRule/PaymentRule&quot;},{&quot;file&quot;:&quot;org.adempiere.base.callout/src/org/compiere/model/CalloutOrder.java&quot;,&quot;line&quot;:131,&quot;text&quot;:&quot;mTab.setValue (\&quot;InvoiceRule\&quot;, X_C_Order.INVOICERULE_Immediate);&quot;}]
-shown: 2
-total: 20
-files: 1
-verdict: OK
-summary: InvoiceRule: 20 lines in 1 files (showing 2)
-</code></pre></div>
-<p>这些旁边还有三个动词。<code>legacy.query table=c_order ad_client_id=11 limit=5</code> 从旧版的一张表读取行（只读；表和每一列都对照旧版的字典检查，并且始终给出总数）。<code>erp.compare kind=Order number=50000 legacy=50981</code> 读取孪生版上的一条记录和旧版上与之匹配的那一条，并逐个单元格地比较；旧版为空而孪生版有默认值的单元格会被标为 <code>NULL-VS-DEFAULT</code>，对原因不作任何说明。<code>witness.run name=erp_new</code> 从代码树里运行一个 witness（验证脚本），保存它的完整日志，并给出它自己的结论行（PASS、FAIL 或 INCONCLUSIVE）；不打印结论行的 witness 是一个错误，因为退出码不是证据，而 <code>witness.last</code> 读取最近一次记录的运行，不再运行一遍。</p>
-<h3 id="idempiere-osgi-2pack">为旧版 iDempiere 制作插件（OSGi 和 2Pack）<a class="headerlink" href="#idempiere-osgi-2pack" title="Permanent link">&para;</a></h3>
-<p>这是写给把 ERP 数据模型放到真正的 iDempiere 服务器上的人。数据模型是一个工作簿（Excel）：每张 Application Dictionary（应用字典）表一张工作表（<code>AD_Table</code>、<code>AD_Column</code>、<code>AD_Window</code>、<code>AD_Tab</code>、<code>AD_Field</code>、<code>AD_Menu</code> 等等），每条记录一行，第一行是 AD 列名，并有一个 <code>Key</code> 列给每一行命名。指向工作簿里另一行的单元格写作 <code>ref:&lt;Key&gt;</code>；指向服务器上已有的一行的单元格写作 <code>existing:AD_Table:C_ProjectTask</code>。名为 <code>Plugin</code> 的工作表带有插件的编号、版本和说明。这里的实例是 BIM Document 模型，即 <code>erp/plugins/models/BIM_Document.xlsx</code>，位于 <code>bim-ootb</code> 仓库中。</p>
-<p>从这一个工作簿生成两样东西，并且它们相互分开：</p>
-<table>
-<thead>
-<tr>
-<th>生成的</th>
-<th>它包含什么</th>
-<th>它放在哪里</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>2Pack zip</strong></td>
-<td>只有元数据：字典的行，以及任何流程的类<em>名称</em>。没有程序代码。一个包版本只应用一次，绝不更改，所以同一版本换了不同的行会被拒绝</td>
-<td>插件的 <code>META-INF</code> 文件夹，插件启动时 iDempiere 自己的包激活器会从那里取走它</td>
-</tr>
-<tr>
-<td><strong>Java 模型类</strong></td>
-<td>工作簿所创建的每张表的 <code>I_&lt;Table&gt;</code> 和 <code>X_&lt;Table&gt;</code>，形式与 iDempiere 自己的生成器写出的相同</td>
-<td>插件的 <code>src</code> 文件夹</td>
-</tr>
-</tbody>
-</table>
-<p>工作簿无法生成的是规则：这张表的单据操作，以及任何流程的代码。它们要像在任何 iDempiere 插件里一样，手工写在插件的 <code>src</code> 文件夹里。</p>
-<p>入口动词 <code>erp.pack book=&lt;workbook.xlsx&gt; version=&lt;x.y.z&gt; out=&lt;plugin&gt;/META-INF</code> 只写出 zip，并回答它的 sha256、每张字典表的行数，以及它所指向的流程类的名称。用同一个版本和同样的行再次运行，它回答 <code>unchanged</code>；同一个版本但工作簿被编辑过，则被拒绝，因为已发布的包绝不更改。再加上 <code>java=&lt;plugin&gt;/src package=&lt;java package&gt;</code>，Java 模型类也会一并写出。由人运行；AI 的调用会被当作待确认请求挂起，直到有人确认。其下的脚本仍然是 <code>node erp/tools/xlsx_pack.js</code>，它为写出的每个文件打印一行 <code>§XLSX-PACK</code>。第二个动词 <code>erp.legacy_plugin book=&lt;workbook.xlsx&gt; version=&lt;x.y.z&gt;</code>，是在本地旧版测试实例上走完整条路线的一行命令。它运行五行，第一个不是 ok 的就会让它停下：<code>legacy.up</code>（如果共用的 docker Postgres 已停止，就启动它）、<code>erp.pack</code>（生成 zip）、<code>legacy.refresh</code>（用基础种子数据重建测试数据库，安装插件，启动服务器并等到包安装完毕，大约两分钟）、<code>legacy.check</code>（用 SQL 把工作簿的每一行从测试数据库读回来）和 <code>legacy.witness</code>（通过服务器的控制台运行服务器内的检查，并给出它的结论和计数）。每一步都可以单独运行。实例、它的数据库和脚本都是固定的：不从调用者那里取任何东西，试点的数据库会被拒绝。由人运行；AI 的调用会被当作待确认请求挂起，直到有人确认。</p>
-<p><code>legacy.check</code> 是只读的那一个，它回答每一类各找到了多少行，对照工作簿里有多少行：</p>
-<!-- run: legacy_check -->
-<div class="highlight"><pre><span></span><code>$ node common/door/door.js --list &#39;legacy.check book=erp/plugins/models/BIM_Document.xlsx&#39;
-database: idempiere_bimdoc
-book: erp/plugins/models/BIM_Document.xlsx
-checks: [{&quot;what&quot;:&quot;AD_Table rows&quot;,&quot;expected&quot;:1,&quot;found&quot;:1,&quot;ok&quot;:true},{&quot;what&quot;:&quot;physical tables&quot;,&quot;expected&quot;:1,&quot;found&quot;:1,&quot;ok&quot;:true},{&quot;what&quot;:&quot;AD_Column rows&quot;,&quot;expected&quot;:34,&quot;found&quot;:34,&quot;ok&quot;:true},{&quot;what&quot;:&quot;AD_Window rows&quot;,&quot;expected&quot;:1,&quot;found&quot;:1,&quot;ok&quot;:true},{&quot;what&quot;:&quot;AD_Tab rows&quot;,&quot;expected&quot;:3,&quot;found&quot;:3,&quot;ok&quot;:true},{&quot;what&quot;:&quot;AD_Menu rows&quot;,&quot;expected&quot;:1,&quot;found&quot;:1,&quot;ok&quot;:true},{&quot;what&quot;:&quot;AD_Process rows with the same class name&quot;,&quot;expected&quot;:2,&quot;found&quot;:2,&quot;ok&quot;:true},{&quot;what&quot;:&quot;AD_Reference rows&quot;,&quot;expected&quot;:4,&quot;found&quot;:4,&quot;ok&quot;:true}]
-pack: {&quot;compared&quot;:false,&quot;note&quot;:&quot;no version given: the installed pack was not compared with a fresh one&quot;}
-missing: []
-verdict: ALL-FOUND
-summary: test DB idempiere_bimdoc: ALL-FOUND (8/8 kinds of row); no version given: the installed pack was not compared with a fresh one
-</code></pre></div>
-<p>也给它加上 <code>version=&lt;x.y.z&gt;</code>，它就会把安装在插件里的 2Pack 与刚刚由工作簿生成的包作比较，并在两者不同时明确地说出来：刷新安装的是已提交的插件包原样，所以在插件包重新构建之前，两者可能会逐渐不一致。</p>
-<h2 id="viewer">来自普通下载的 Viewer 问题<a class="headerlink" href="#viewer" title="Permanent link">&para;</a></h2>
-<p>两个 Viewer 动词，<code>viewer.counts</code> 和 <code>viewer.clashes</code>，没有检出也能使用。在那六个文件旁边再放两个文件：</p>
-<div class="highlight"><pre><span></span><code>curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_verbs.js
-curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_driver.js
-</code></pre></div>
-<p>磁盘上没有页面文件时，该工具在处理器上用一个隐藏的浏览器打开在线的 Viewer 页面，加载该站点提供的建筑，并询问 Viewer 自己的 Find（查找）面板。答案里的 <code>page</code> 说明用的是哪个页面：</p>
-<!-- run: viewer_flat -->
-<div class="highlight"><pre><span></span><code>$ node door.js &#39;viewer.counts building=Duplex&#39; | grep -o &#39;&quot;summary&quot;:&quot;[^&quot;]*&quot;\|&quot;page&quot;:&quot;[a-z]*&quot;&#39;
-&quot;summary&quot;:&quot;1119 elements: MEP 904, ARC 196, STR 19&quot;
-&quot;page&quot;:&quot;live&quot;
-</code></pre></div>
-<p>大约需要半分钟。这些数字是所提供建筑的，所以可能与检出里较旧的副本不同。进度计划动词、<code>viewer.film_path</code>、对象动词和 <code>modeller.walk</code> 仍然需要检出；表里写明了这一点。</p>
-<h2 id="the-red1-shell-short-words-at-one-prompt">red1 shell：同一个提示符下的短词<a class="headerlink" href="#the-red1-shell-short-words-at-one-prompt" title="Permanent link">&para;</a></h2>
-<p><code>red1</code> 是给坐在键盘前的人用的入口。输入 <code>node common/door/red1.js</code>（或者输入 <code>red1</code>，只需在检出里先执行一次 <code>npm link</code>），你就得到一个 <code>red1&gt;</code> 提示符。每个短词都变成一条入口行，并且在运行之前把这一行打印出来，放在 <code>→</code> 之后。所以这个 shell 在你使用的过程中把完整的行教给你，而脚本或 AI 完全不用 shell，也可以运行同一行。在提示符下键入完整的入口行，仍然照常有效。</p>
-<p><code>cd</code> 告诉你身在何处，所以你不必重复它：一栋建筑（<code>cd Duplex</code>），它的一个类别（<code>cd Element</code>），或一个 ERP 类别（<code>cd Order</code>）。提示符会显示它（<code>red1 Duplex/Element&gt;</code>），<code>pwd</code> 则把它打印成入口的键。在一次性运行中，<code>;</code> 分隔各个短词：</p>
-<!-- run: red1_lines -->
-<div class="highlight"><pre><span></span><code>$ node common/door/red1.js &#39;cd Duplex; cd Element; count discipline=ARC&#39; 2&gt;&amp;1 | grep &#39;^→&#39;
-→ object.describe building=Duplex kind=Element
-→ object.count building=Duplex kind=Element discipline=ARC
-</code></pre></div>
-<p>把同样的短词键入提示符（这里从管道输入，所以答案是打印出来的，不是绘制出来的）：</p>
+<p>请把六个文件放在同一个文件夹里。<code>door.js</code> 从 <code>verbs.json</code> 读取动词列表，从 <code>messages.json</code>（经由 <code>msg_core.js</code>）读取其消息，并运行 <code>edit_cli.js</code>，后者无窗口地打开在线的 Modeller 页面。如果缺少某个文件，门会说明是哪个并打印它的 <code>curl</code> 行。本页其余的一切都需要完整检出；<a href="#the-verbs">动词表</a>说明每个动词需要什么。</p>
+<h2 id="_2">您最常用的词<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>下面每一部分都会说明您将要做什么以及为什么，然后展示一次真实运行以及要看什么。每个代码块都使用一个临时的操作日志（孪生体保存其更改的文件），先清空，所以运行它们不会触及您自己的数据。</p>
+<h3 id="bim">bim：建筑和模型<a class="headerlink" href="#bim" title="Permanent link">&para;</a></h3>
+<p><strong>按列计数。</strong> <code>cd Duplex</code> 然后 <code>cd Element</code> 进入建筑的构件；<code>group storey</code> 按某一列计数。请看各分组及其数量，以及显示词背后门动词的 <code>→</code> 行：</p>
 <!-- run: red1_group -->
 <div class="highlight"><pre><span></span><code>$ printf &#39;cd Duplex\ncd Element\ngroup storey\n&#39; | node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39;
 building Duplex
@@ -5340,7 +3751,7 @@ Level 1  62
 T/FDN    14
 Roof     8
 </code></pre></div>
-<p><strong>用通配符查找</strong>。<code>*</code> 表示任意一串字符，<code>?</code> 表示一个字符，<code>[abc]</code> 表示其中之一；大小写无关。在一个类别里，写出列名：<code>ls element_name=*bath*</code>。同样的筛选条件对每一个列表动词都有效（<code>mis.list</code>、<code>object.list</code>、<code>object.count</code>），对 ERP 的表和对建筑都一样。不带通配符的值仍然是精确匹配。</p>
+<p><strong>用通配符查找。</strong> <code>ls</code> 列出这里有什么；添加 <code>column=value</code> 来缩小范围。<code>*</code> 是任意一串字符，<code>?</code> 是一个字符，<code>[abc]</code> 是其中之一；不区分大小写。请看 <code>shown 6 of 6</code>：red1 说明有多少行匹配、显示了多少行。</p>
 <!-- run: red1_find -->
 <div class="highlight"><pre><span></span><code>$ printf &#39;cd Duplex\ncd Element\nls element_name=*bath*\n&#39; | node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39;
 building Duplex
@@ -5357,7 +3768,7 @@ elements_meta_uu        guid                    ifc_class        element_name
 1YLPoi73z0fvdanmaXQreg  1YLPoi73z0fvdanmaXQreg  IfcFlowTerminal  M_Bath Tub:1525 mmx760 mm - Private:1525 mmx760 mm - Private:582924
 2h405XijT83A$BX7w5ki4b  2h405XijT83A$BX7w5ki4b  IfcFlowTerminal  M_Bath Tub:1525 mmx760 mm - Private:1525 mmx760 mm - Private:582931
 </code></pre></div>
-<p><strong>碰撞，画出来</strong>。在一栋建筑里，<code>clash ARC MEP</code> 询问 Viewer，并把答案自己的数字画成一个漏斗（只有各部分加起来相符时才会画）。<code>ls</code> 随后列出来自同一个答案的碰撞行，不再询问，而 <code>ls *Bath*</code> 保留某个单元格匹配的行。单独输入 <code>clash</code> 会打开该建筑各专业的菜单（方向键或一个数字，然后按 Return；Esc 取消）。在一个会话里，Viewer 页面保持打开，所以第一行之后，一次碰撞查询大约一秒就能得到答案。</p>
+<p><strong>碰撞。</strong> <code>clash ARC MEP</code> 向 Viewer 询问两个专业之间的重叠，并把答复自己的数字画成漏斗。单独输入时，<code>clash</code> 会打开建筑各专业的菜单。随后 <code>ls</code> 会列出同一答复中的 393 行，无需再次询问。请看各部分如何相加：393 = 291 + 102。</p>
 <!-- run: red1_clash -->
 <div class="highlight"><pre><span></span><code>$ printf &#39;cd Duplex\nclash ARC MEP\n&#39; | node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39;
 building Duplex
@@ -5372,24 +3783,233 @@ ok · viewer.clashes
 └─   0 not judged
 ls lists the 393 rows
 </code></pre></div>
-<p><strong>一份单据接下来可以做什么</strong>。在一个 ERP 类别里，<code>next &lt;number&gt;</code> 画出引擎现在允许的操作，并把每个有对应短词的操作指向运行它的那一行：</p>
-<!-- run: red1_next -->
-<div class="highlight"><pre><span></span><code>$ printf &#39;cd Order\nnext S00002\n&#39; | node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39;
-→ mis.describe kind=Order
-Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
-→ erp.actions kind=Order number=S00002
-ok · erp.actions
-Order S00002  status DR
-├─ CO  → do complete S00002
-├─ PR  (no red1 word for it yet)
-└─ VO  → do void S00002
+<p><strong>成本。</strong> <code>cost discipline</code> 像 Viewer 的查找面板那样为建筑的构件计价：模型中的工程量乘以费率包。先是分组，然后是数量和合计；<code>ls</code> 列出已计价的行。也可以按 <code>phase</code>、<code>task</code>、<code>storey</code> 或 <code>class</code> 分组。请看最后一行：因为建筑还没有 ERP 订单，red1 提出下一步。这个会话在没有回答的情况下结束，所以什么也不会过账：</p>
+<!-- run: chain_cost -->
+<div class="highlight"><pre><span></span><code>$ rm -f /tmp/fast_guide_chain.ops; printf &#39;cd Duplex\ncost discipline\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_chain.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_chain.journal node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39;
+building Duplex
+→ viewer.cost building=Duplex by=discipline
+ok · viewer.cost
+1190 elements · 1054482 total (71 with no rate); 3 with no size, not priced
+discipline  elements  cost
+ARC         267       532432
+ELEC        81        283500
+MEP         809       153825
+PLB         14        49000
+STR         19        35725
+ls lists the 32 priced rows
+Ready to post to ERP Project Order? y/N → erp.process name=&quot;Fold from BIM&quot; Building=Duplex
 </code></pre></div>
-<p><code>help</code> 列出各个短词；<code>help verbs</code> 列出每个入口动词。<strong>在 JavaScript 里</strong>，同样的动词是一个对象，由词汇表生成（新动词不需要新代码）：</p>
+<h3 id="mis">mis：记录、表、文件<a class="headerlink" href="#mis" title="Permanent link">&para;</a></h3>
+<p><strong>查找记录。</strong> 在 <code>Business Partner</code> 这样的 ERP 类型中，可以使用与建筑里相同的词：<code>ls</code>、<code>count</code>、<code>cat</code>，通配符也相同。<code>cd</code> 接受类型的名称，名称含空格时要加引号。</p>
+<p><strong>创建一条并修改一条。</strong> <code>new</code> 像窗口那样创建记录：您给出已知的列，其余由引擎填充（默认值、序列号），字典中没有的列会被拒绝并列出真实的列。<code>set &lt;id&gt; Column=value</code> 修改一条。请看 <code>id</code> 答复中的 <code>new</code>（<code>set</code> 接下来要用它）、第二个答复中的 <code>changed</code>，以及末尾的列表。（答复还会列出它填充的每一列和所做的更改；这里省略了这些行。）</p>
+<!-- run: mis_edit -->
+<div class="highlight"><pre><span></span><code>$ printf &#39;cd &quot;Business Partner&quot;\nnew Value=GD100 Name=&quot;Guide Partner One&quot;\nset 1600010 Description=&quot;first supplier&quot;\nls Value=GD*\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_mis2.ops node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39; | grep -E &#39;^(→|ok|refused|id|changed|shown|C_BPartner_ID|[0-9]{7} )&#39;
+→ mis.describe kind=&quot;Business Partner&quot;
+→ mis.new kind=&quot;Business Partner&quot; Value=GD100 Name=&quot;Guide Partner One&quot;
+ok · mis.new
+id: 1600010
+→ mis.update kind=&quot;Business Partner&quot; id=1600010 Description=&quot;first supplier&quot;
+ok · mis.update
+id: 1600010
+changed: [&quot;description&quot;]
+→ mis.list kind=&quot;Business Partner&quot; columns=C_BPartner_ID,Value,Name,Logo_ID,C_BP_Group_ID limit=20 names=Y Value=GD*
+ok · mis.list
+shown 1 of 1 Business Partner
+C_BPartner_ID  Value  Name               Logo_ID  C_BP_Group_ID
+1600010        GD100  Guide Partner One           Standard Customers
+</code></pre></div>
+<p><code>rm &lt;id&gt;</code> 删除一条，<code>load &lt;file.csv&gt;</code> 和 <code>diff &lt;file.csv&gt;</code> 从文件加载行，并将文件与记录比较。<a href="../FastScriptReference/">参考页</a>展示了每一个及其输出。</p>
+<h3 id="erp">erp：单据和流程<a class="headerlink" href="#erp" title="Permanent link">&para;</a></h3>
+<p><strong>创建单据并完成它。</strong> 在 <code>new</code> 中 <code>Order</code> 会创建一张草稿订单并打印其编号。完整的门行在提示符下同样可用，所以订单行用 <code>mis.new</code> 添加（一个产品和一个数量）。<code>next &lt;number&gt;</code> 画出该单据现在可以做什么，并为每个有对应词的操作指出执行它的那一行。<code>do CO &lt;number&gt;</code> 完成它；传统的 DocAction 代码是 <code>CO</code> 完成、<code>VO</code> 作废、<code>CL</code> 关闭、<code>RC</code> 冲销（<code>do complete</code>、<code>do void</code> … 也可以）。请看 <code>new</code> 打印的编号、每个 <code>next</code> 树中的状态，以及 <code>CO</code> 之后发生变化的操作。（<code>grep</code> 只保留这些行；完整答复还会列出每个填充的列。）</p>
+<!-- run: erp_order -->
+<div class="highlight"><pre><span></span><code>$ printf &#39;cd Order\nnew issotrx=Y C_DocTypeTarget_ID=132 C_BPartner_ID=112 SalesRep_ID=101\nmis.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2\nnext 50000\ndo CO 50000\nnext 50000\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_erp.ops node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39; | grep -E &#39;^(→|ok|refused|number|Order [0-9]|[├└])&#39;
+→ mis.describe kind=Order
+→ mis.new kind=Order issotrx=Y C_DocTypeTarget_ID=132 C_BPartner_ID=112 SalesRep_ID=101
+ok · mis.new
+number: 50000
+→ mis.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2
+ok · mis.new
+number: 
+→ erp.actions kind=Order number=50000
+ok · erp.actions
+Order 50000  status DR
+├─ CO  → do complete 50000
+├─ PR  (no red1 word for it yet)
+└─ VO  → do void 50000
+→ erp.complete kind=Order number=50000
+ok · erp.complete
+→ erp.actions kind=Order number=50000
+ok · erp.actions
+Order 50000  status CO
+├─ CL  → do close 50000
+├─ VO  → do void 50000
+└─ RE  (no red1 word for it yet)
+</code></pre></div>
+<p><strong>运行流程。</strong> <code>run "&lt;process&gt;"</code> 像其窗口按钮那样运行 ERP 字典中的一个流程。您没有输入的参数会逐个被询问，顺序就是该流程自己的参数行的顺序（回车保留默认值；查找项会打开一个按该列验证规则缩小范围的选择列表；<code>(leave it out)</code> 跳过可选项）。然后 red1 打印完整的 <code>→ erp.process …</code> 行并运行它。摘要会列出生成的单据和流程日志，就像传统的流程对话框那样。这里项目是直接输入的，其余三个问题用回车回答。（在终端里，每个问题都会画出它的选择列表；<code>grep</code> 只保留问题和答案。）请看诚实的答复：种子数据中的 Hospital 项目没有供应商价格，所以<strong>不会生成采购订单</strong>，日志对每一行说明了原因：</p>
+<!-- run: erp_po -->
+<div class="highlight"><pre><span></span><code>$ printf &#39;cd Project\nrun &quot;Generate PO from Project&quot; C_Project_ID=990000\n\n\n\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_erp2.ops node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39; | grep -E &#39;^(→|run:|C_|Consolidate|ok|refused|Generate|  Product)&#39;
+→ mis.describe kind=Project
+→ mis.list kind=AD_Process_Para columns=ColumnName,Name,IsMandatory,DefaultValue,SeqNo,AD_Reference_ID sort=SeqNo limit=50 master=&quot;Process/Generate PO from Project&quot;
+→ mis.lookup column=C_ProjectPhase_ID process=&quot;Generate PO from Project&quot; limit=50 C_Project_ID=990000
+run: pick Project Phase (C_ProjectPhase_ID, 7)
+C_ProjectPhase_ID: left out
+→ mis.lookup column=C_ProjectLine_ID process=&quot;Generate PO from Project&quot; limit=50 C_Project_ID=990000
+run: pick Project Line (C_ProjectLine_ID, 28)
+C_ProjectLine_ID: left out
+Consolidate to one Document (ConsolidateDocument)? [Y]
+→ erp.process name=&quot;Generate PO from Project&quot; kind=Project C_Project_ID=990000 ConsolidateDocument=Y
+ok · erp.process
+Generate PO from Project: done · no document made
+  Product has no PO record  (×28)
+</code></pre></div>
+<p>在单行或对 AI 而言，不会询问任何内容：缺少必填参数就是一次点名该参数的拒绝。孪生体还没有移植的流程会被拒绝，并给出其类名，red1 会这样说明。</p>
+<p><strong>报告缺口。</strong> 有些答复表明 red1 缺少某些东西，而不是您输错了。引擎会标记这些情况，在会话中 red1 会在答复后打印一行。打字错误或传统的拒绝不是缺口，不会多打印什么。<code>report</code> 随后显示一份草稿（该行、原因、red1 版本、平台、最后几行日志，您的路径已被遮盖），并提供 GitHub issue 或电子邮件；red1 自己不发送任何东西，由您自己的浏览器或邮件程序发送：</p>
+<!-- run: red1_gap -->
+<div class="highlight"><pre><span></span><code>$ printf &#39;cd Project\nrun &quot;Renumber&quot;\n&#39; | node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39;
+→ mis.describe kind=Project
+Project: 48 properties; ls shows C_Project_ID, Value, Name, Processed, SalesRep_ID
+→ mis.list kind=AD_Process_Para columns=ColumnName,Name,IsMandatory,DefaultValue,SeqNo,AD_Reference_ID sort=SeqNo limit=50 master=Process/Renumber
+run: Renumber has no parameter to ask (none in the dictionary)
+→ erp.process name=Renumber kind=Project
+refused · erp.process · Renumber was not run: it has no JS port yet (class org.compiere.process.DiscountSchemaReSeq)
+{
+ &quot;refused&quot;: true,
+ &quot;reason&quot;: &quot;Renumber was not run: it has no JS port yet (class org.compiere.process.DiscountSchemaReSeq)&quot;,
+ &quot;gap&quot;: true,
+ &quot;gapKind&quot;: &quot;no-port&quot;
+}
+This is a gap in red1, not your mistake. Type report to send it to us (email or GitHub issue).
+</code></pre></div>
+<h3 id="_3">从建筑到订单：成本、提议、过账<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<p>这是把建筑带入其 ERP 项目订单的链条。它在上面已经开始：<code>cost discipline</code> 以一个提议 <code>Ready to post to ERP Project Order? y/N</code> 结束，后面是它将执行的确切一行。提议是引擎自己的下一步，绝不是手工输入的。在会话中，<code>y</code> 会准确执行那一行，<code>n</code> 或空回车什么也不执行；在单行或对 AI 而言，不会询问，该行在答复的 <code>next</code> 中。回答 <code>y</code> 就是 <code>post</code>：它把建筑已计价的选择折叠为项目订单，阶段和任务取自建筑的 4D 计划以及项目行，作为一组更改，要么全部成功要么全部不做。请看生成了什么，以及第二个提议，即 <code>cd project</code>：</p>
+<!-- run: chain_post -->
+<div class="highlight"><pre><span></span><code>$ printf &#39;cd Duplex\ncost discipline\ny\nn\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_chain.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_chain.journal node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39;
+building Duplex
+→ viewer.cost building=Duplex by=discipline
+ok · viewer.cost
+1190 elements · 1054482 total (71 with no rate); 3 with no size, not priced
+discipline  elements  cost
+ARC         267       532432
+ELEC        81        283500
+MEP         809       153825
+PLB         14        49000
+STR         19        35725
+ls lists the 32 priced rows
+Ready to post to ERP Project Order? y/N → erp.process name=&quot;Fold from BIM&quot; Building=Duplex
+→ erp.process name=&quot;Fold from BIM&quot; Building=Duplex
+ok · erp.process
+Posted Duplex: Project 990001, PlannedAmt 1054482.22784, 81 change(s) · no document made
+81 change(s) kept: create:c_project 1, create:c_projectphase 8, create:c_projecttask 19, create:c_projectline 43, create:m_product 7, create:m_product_category 1, create:m_product_category_acct 2
+Open the project? y/N → cd project
+not done: cd project
+</code></pre></div>
+<p>过账金额 1054482.22784 保持订单自己的行规则（单价乘数量，不取整），而 <code>cost</code> 把每组取整到整数（1054482）：精确到元是同一个数，但不是精确到分。<code>post</code> 这个词不需要前面的 <code>cost</code> 也能做同样的事，并先问 <code>run it? y/N</code>；对已经在其订单中的建筑再次过账不会改变任何东西。从新项目出发，<code>run "Generate PO from Project"</code> 是采购一侧，其答复与上面的 Hospital 项目相同：过账所创建的产品没有供应商价格。这些步骤及其输出在<a href="../FastScriptReference/">参考页</a>中。</p>
+<h2 id="_4">所有的词<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<p>上面的词是最先要学的。其余的，每一个都是某个门动词的简短形式（<code>help &lt;word&gt;</code> 显示它的那一行）：</p>
+<table>
+<thead>
+<tr>
+<th>词</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pwd</code> · <code>cd ..</code> · <code>history</code> · <code>role &lt;id&gt;</code></td>
+<td>您在哪里；返回；输入过的行；以某个角色行事</td>
+</tr>
+<tr>
+<td><code>sum &lt;column&gt;</code> · <code>cat &lt;id&gt;</code> · <code>rm &lt;id&gt;</code></td>
+<td>对一列求和；显示一条记录；删除一条</td>
+</tr>
+<tr>
+<td><code>ninja &lt;file&gt;</code> · <code>load &lt;file.csv&gt;</code> · <code>diff &lt;file.csv&gt;</code></td>
+<td>准备 Ninja 工作簿或 CSV；从文件加载行；将文件与记录比较</td>
+</tr>
+<tr>
+<td><code>menu</code></td>
+<td>屏幕上的 ERP 菜单</td>
+</tr>
+<tr>
+<td><code>cd Project 990000</code> · <code>ls</code> · <code>cd Phase</code></td>
+<td>把一条记录当作一个位置进入：<code>ls</code> 列出它的标签页及其记录数，<code>cd &lt;tab&gt;</code> 打开一个，<code>cd ..</code> 回到上一级</td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td>在项目中：它的挣值（每个阶段的 PV、EV、AC、SPI 和 CPI）</td>
+</tr>
+<tr>
+<td><code>vo</code></td>
+<td>在建筑中：把模型与其项目订单之间的差异，作为变更单（Variation Order）发出（询问 y/N；用 <code>do CO &lt;number&gt;</code> 批准）</td>
+</tr>
+<tr>
+<td><code>claim</code></td>
+<td>在项目中：对已完成但尚未开票的阶段开票，生成一张发票草稿及其会计分录预览（询问 y/N）</td>
+</tr>
+<tr>
+<td><code>grid</code> · <code>walk FP</code> · <code>day 5</code> · <code>compare 24</code></td>
+<td>建筑的轴网线；遍历一个专业；某一天的进度；两天对比</td>
+</tr>
+<tr>
+<td><code>open marked</code> · <code>bay high</code> · <code>undo</code> · <code>save shed.db</code> · <code>close</code></td>
+<td>在各行之间保持打开的 Modeller</td>
+</tr>
+<tr>
+<td><code>help &lt;word&gt;</code> · <code>help verbs</code> · <code>level student</code> · <code>report</code> · <code>exit</code></td>
+<td>帮助；每个门动词；更完整的帮助；向所有者报告缺口；退出</td>
+</tr>
+</tbody>
+</table>
+<h2 id="what-is-not-checked">未检查的内容<a class="headerlink" href="#what-is-not-checked" title="Permanent link">&para;</a></h2>
+<p>答复会列出其检查没有覆盖的内容。同样的话适用于任何答复：重叠首先是包围盒，检查只覆盖发生移动的部分，而且<strong>承载能力从不检查</strong>。没有红色的答复绝不意味着安全。Modeller 编辑报告的完整列表在<a href="../FastScriptReference/#what-is-not-checked">参考页</a>中。</p>
+<h2 id="_5">故障排除<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>你看到什么</th>
+<th>怎么办</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>edit_cli is not at …</code></td>
+<td>六个文件中缺了一个。消息会打印出 <code>curl</code> 行</td>
+</tr>
+<tr>
+<td><code>puppeteer not found</code></td>
+<td>在同一个文件夹里运行 <code>npm install puppeteer@24</code></td>
+</tr>
+<tr>
+<td><code>unknown verb</code></td>
+<td>消息会列出每个动词。对照<a href="#the-verbs">表</a>检查拼写</td>
+</tr>
+<tr>
+<td><code>missing input: …</code></td>
+<td>动词需要那个键。表里列出了各项输入</td>
+</tr>
+<tr>
+<td><code>The Viewer tools need a bim-ootb checkout</code></td>
+<td>在完整检出里以 <code>node common/door/door.js</code> 运行它</td>
+</tr>
+<tr>
+<td><code>exit 1</code> 并带有 Chrome 的消息</td>
+<td>Chrome 的系统库在 Linux 上缺失。Puppeteer 的故障排除页面列出了它们</td>
+</tr>
+</tbody>
+</table>
+<p><strong>需要预先考虑的限制</strong>。每次 Modeller 调用都会打开整栋建筑：在 HospitalGarage 上大约 10 到 40 秒。这是一个测量工具，不是有正常运行时间保证的服务。一个含有多条 Modeller 行的脚本，每行都会打开一次建筑。</p>
+<h2 id="_6">面向开发者<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<p><strong>门行。</strong> 每个词都变成一条门行，<code>app.verb key=value key=value</code>，red1 在 <code>→</code> 之后打印它。您可以直接在提示符下输入门行，也可以一次性运行：<code>red1 'object.count building=Duplex kind=Element'</code> 打印答复，<code>--json</code> 打印完整的信封。单行中的多个词用 <code>;</code> 分隔（<code>red1 'cd Duplex; count'</code>）；<code>red1 -f FILE</code> 运行一个行文件，以 <code>--</code> 开头的行是注释，<code>--dry</code> 先试运行。门会对照固定的动词列表检查每一行，调用应用自己的代码，并连同未检查的内容一起返回答复。与任何动词都不匹配的行绝不会被猜测，而是以问题的形式返回。</p>
+<p><img alt="一扇门。左侧的参与者说同样的动词；门负责解析、检查、绑定、调用和答复；由应用自己的检查来决定。" src="../../figs/one_door.svg" /></p>
+<p>请从左到右读这张图：<strong>参与者</strong>（终端前的人，或通过工具连接的 AI）；<strong>通道</strong>，一份动词列表，每个动词都有通俗的描述、输入和<em>危害</em>类别；<strong>门</strong>，负责解析、检查、把这一行绑定到提问者、调用并答复；<strong>应用</strong>，由它自己的检查来决定，增加新问题的更改会连同原因被撤销。连接 AI 的方法见 <a href="../ProposerGuide/#connect-your-ai">AI 提议指南</a>。</p>
+<p>每个动词都有一个<strong>危害等级</strong>（harm class）：<code>read</code>（不做任何更改）、<code>trial</code>（在一次性副本上做出的更改，经过判定，从不保存）、<code>writes</code>、<code>posts</code> 或 <code>sends</code>。等级只在动词清单中写一次，所以任何参与者都无法用话语绕过它。终端前的人对所有等级都受信任；AI 只对 <code>read</code> 和 <code>trial</code> 受信任，因此来自 AI 的 <code>writes</code> 或 <code>posts</code> 行会被保留为一项申请，由人来确认（<a href="../FastScriptReference/">参考页</a> 中有一个例子）。</p>
+<p><strong>在 JavaScript 中</strong>，同样的动词是一个对象，由词汇表生成（新动词不需要新代码）：</p>
 <!-- run: red1_api -->
 <div class="highlight"><pre><span></span><code>$ node -e &quot;require(&#39;./common/door/red1.js&#39;).api().object.count({building:&#39;Duplex&#39;,kind:&#39;Element&#39;}).then(e=&gt;{console.log(e.line+&#39; -&gt; &#39;+e.answer.summary);process.exit(0)})&quot; 2&gt;/dev/null
 object.count building=Duplex kind=Element -&gt; 1193 Element
 </code></pre></div>
 <p><strong>限制</strong>。对象短词（<code>cd Element</code>、<code>ls</code>、<code>group</code>）需要带有对象字典的模型；这里的建筑中，只有 Duplex 有。比终端更高的列表每页会停下（Space、q）；管道则得到每一行。</p>
+<p><strong>参考页。</strong> 每条命令及其真实输出、Modeller 的故事（一个 13 m 的开间被应用自己的理由拒绝）、带命名结果的脚本、Ninja 工作簿、MIS 终端、与传统系统的对比，以及索赔与确认流程，都在 <a href="../FastScriptReference/">Fast Script 参考页</a>中。</p>
 <h2 id="the-verbs">动词<a class="headerlink" href="#the-verbs" title="Permanent link">&para;</a></h2>
 <p>这张表是<strong>由词汇表文件生成的</strong>（<code>common/door/verbs.json</code>），并且有一项测试逐个动词检查它与词汇表一致。它与 AI 的工具菜单所用的是同一份清单。<em>危害</em>（Harm）在上面已经解释；<em>需要</em>（Needs）说明这两种下载中的哪一种能运行该动词。</p>
 <!-- GEN:verbs -->
@@ -5710,6 +4330,22 @@ object.count building=Duplex kind=Element -&gt; 1193 Element
 <td>一份 bim-ootb 检出</td>
 </tr>
 <tr>
+<td><code>erp.order_state</code></td>
+<td>ERP 为某栋建筑的选择所持有的内容，以及接下来允许什么</td>
+<td><code>building</code>，更多 <code>column=value</code> 筛选条件（可选）</td>
+<td>read</td>
+<td>human, ai</td>
+<td>一份 bim-ootb 检出</td>
+</tr>
+<tr>
+<td><code>erp.project_status</code></td>
+<td>项目的挣值状态</td>
+<td><code>id</code>（可选）, <code>number</code>（可选）, <code>asof</code>（可选）</td>
+<td>read</td>
+<td>human, ai</td>
+<td>一份 bim-ootb 检出</td>
+</tr>
+<tr>
 <td><code>mis.lookup</code></td>
 <td>某一列或某个流程参数的合法取值</td>
 <td><code>column</code>，<code>kind</code>（可选）, <code>process</code>（可选）, <code>id</code>（可选）, <code>limit</code>（可选）, <code>role</code>（可选）, 更多 <code>column=value</code> 筛选条件（可选）</td>
@@ -5985,52 +4621,9 @@ object.count building=Duplex kind=Element -&gt; 1193 Element
 </table>
 <!-- /GEN:verbs -->
 
-<p><strong>目前的覆盖范围</strong>。这份清单有意保持很小：62 个动词涵盖了 Modeller 的轴网编辑、它的布置器以及在各行之间保持打开的 Modeller，一些 Viewer 的问题，进度计划，通用的对象读取、计数和写入，以及最初的几个 ERP 单据动词。Viewer 有 64 个人可以按的操作，而入口提供 6 个 Viewer 动词。ERP 有 1158 种单据和流程，而入口为单据的生命周期提供 7 个 ERP 动词，为适用于任何表的操作提供 15 个 MIS 动词，并保留 10 个旧名，使早先的行仍能运行。所以这是一个开头，不是全部菜单。</p>
-<h2 id="what-is-not-checked">哪些没有检查<a class="headerlink" href="#what-is-not-checked" title="Permanent link">&para;</a></h2>
-<p>回复会列出它的检查没有覆盖的内容。对于 Modeller 的编辑报告，这份清单是：</p>
-<!-- run: notchecked cut=520 -->
-<div class="highlight"><pre><span></span><code>$ grep -o &#39;&quot;notChecked&quot;:\[[^]]*\]&#39; widen.json | tail -1
-&quot;notChecked&quot;:[&quot;duplicate ids&quot;,&quot;elements changed outside the edit&#39;s own list&quot;,&quot;floating or unsupported elements&quot;,&quot;grid lines placed on top of each other&quot;,&quot;invalid coordinates&quot;,&quot;real beams: only girders walked from columns are span-checked&quot;,&quot;unknown element types&quot;,&quot;wrong units or absurd sizes, unless they hit something&quot;,&quot;zero-size elements&quot;,&quot;load capacity&quot;,&quot;beam and column rules (Regulatory Report only)&quot;]
-</code></pre></div>
-<p>同样的话适用于任何答案：重叠首先按包围盒判断，检查只覆盖移动过的部分，<strong>承载能力从不检查</strong>。没有红色的回复绝不意味着安全。</p>
-<h2 id="_11">故障排除<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>你看到什么</th>
-<th>怎么办</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>edit_cli is not at …</code></td>
-<td>六个文件中缺了一个。消息会打印出 <code>curl</code> 行</td>
-</tr>
-<tr>
-<td><code>puppeteer not found</code></td>
-<td>在同一个文件夹里运行 <code>npm install puppeteer@24</code></td>
-</tr>
-<tr>
-<td><code>unknown verb</code></td>
-<td>消息会列出每个动词。对照<a href="#the-verbs">表</a>检查拼写</td>
-</tr>
-<tr>
-<td><code>missing input: …</code></td>
-<td>动词需要那个键。表里列出了各项输入</td>
-</tr>
-<tr>
-<td><code>The Viewer tools need a bim-ootb checkout</code></td>
-<td>在完整检出里以 <code>node common/door/door.js</code> 运行它</td>
-</tr>
-<tr>
-<td><code>exit 1</code> 并带有 Chrome 的消息</td>
-<td>Chrome 的系统库在 Linux 上缺失。Puppeteer 的故障排除页面列出了它们</td>
-</tr>
-</tbody>
-</table>
-<p><strong>需要预先考虑的限制</strong>。每次 Modeller 调用都会打开整栋建筑：在 HospitalGarage 上大约 10 到 40 秒。这是一个测量工具，不是有正常运行时间保证的服务。一个含有多条 Modeller 行的脚本，每行都会打开一次建筑。</p>
-<h2 id="_12">本页为何保持真实<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h2>
-<p>上面每个灰色代码块里的命令都运行过，它下面的输出就是该命令打印的内容。一项测试 <strong>W-FAST-SCRIPT-GUIDE</strong>（位于 <code>bim-ootb</code> 仓库）会从一份干净的四文件下载重新运行它们，对照这些运行检查本页的每一个数字，并检查动词表与 <code>verbs.json</code> 相等。如果这里某个数字过时了，那项测试就会失败。</p>
+<p><strong>目前的覆盖范围。</strong> 这份列表有意保持很小：64 个动词覆盖 Modeller 的轴网编辑、它的 walker 以及在各行之间保持打开的 Modeller、少量 Viewer 问题、进度、通用的对象读取、计数和写入、一次选择的成本、ERP 单据动词，以及 ERP 字典中任何已移植的流程。Viewer 有 64 个人可以按下的操作，门提供 6 个 Viewer 动词。ERP 有 1158 个单据和流程，门为单据的生命周期提供 9 个 ERP 动词，为任意表提供 15 个 MIS 动词，并保留 10 个旧名称，使以前的行仍能运行。所以这只是一个开始，不是完整的菜单。</p>
+<h2 id="_7">本页为何保持真实<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<p>本页和<a href="../FastScriptReference/">参考页</a>灰色代码块中的每条命令都已运行过，下面的输出就是该命令打印的内容。<code>bim-ootb</code> 仓库中的测试 <strong>W-FAST-SCRIPT-GUIDE</strong> 会从下载和检出再次运行它们，把本页的每个数字与运行结果核对，并检查动词表等于 <code>verbs.json</code>。如果这里的某个数字过时，该测试就会失败。</p>
 <p>相关：<a href="../ProposerGuide/">AI 提议者指南</a>（把 AI 连接到同一个入口，以及 AI 用这些检查做了什么），以及 <a href="../ModellerGuide/">Modeller 指南</a>。</p>
 
 
