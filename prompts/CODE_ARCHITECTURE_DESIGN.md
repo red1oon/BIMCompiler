@@ -794,6 +794,22 @@ at a worktree on `origin/master` (e.g. `/tmp/wt-bridge`) until the default is de
 - **Witness of the step itself (red control):** the step's `run:` script, read from `ci.yml` and run by `bash` in the clean clone, must exit 0. In a copy with a planted defect, it must exit 1 and name the witness that failed. **Done when:** both local runs behave, and the PR's own CI run shows the step green on GitHub.
 - **Not in this PR:** ADVICE C2 (the version stamp at pack time) and C3 (the stale "138" texts), one PR each after this.
 
+### F.25 The installed X0 copy knows when it is stale (ADVICE C2; no decision needed; spec 2026-11-16)
+- **Issue proved:** `package.json` says `0.1.0` for every build, so an installed X0 cannot tell that the source changed after a pull (or an edit), and the developer runs old hovers without knowing.
+- **Why a content hash and not the commit:** `pack.js` is deterministic (same input, same bytes, kept by W-X0-INSTALL). A hash of the packed files keeps that, catches uncommitted edits, and needs no git. Bumping the version number would also change the file name and the install list for no reason.
+- **Build:**
+  - `x0-navigator/lib/build_stamp.js` (packed, node only): `listFiles` moves here from `pack.js` (ONE listing rule: no `tests/`, `node_modules/` or dot-folders). `sourceHash(dir)` is the sha-256 of each relative path plus its bytes, in sorted order, leaving out `built.json`. `compare(extensionPath, sourceRoot)` → `{ state: 'same' | 'stale' | 'unknown', built, source, reason }`. `unknown` comes with a reason (no `built.json` = a build from before this change; no `devtools/vscode/x0-navigator` in the open folder) and never says `same` when nothing was compared.
+  - `pack.js` adds `extension/built.json` = `{ "sourceHash": … }`.
+  - `extension.js` `activate`: one output line `§X0_STAMP state= built= source=`. Only on `stale`, one warning: *"X0 Navigator is older than devtools/vscode/x0-navigator in this folder: run node devtools/vscode/pack.js --install, then reload the window."* Nothing is shown on `same` or `unknown` (ADVICE D: keep it quiet).
+  - The `vscode` stub moves from `witness_x0_activate.js` into `tests/vscode_stub.js`, shared by both witnesses (one stub, not two).
+- **Witness W-X0-STAMP** (`tests/witness_x0_stamp.js`, node):
+  - S1: a packed temp copy carries `extension/built.json`, whose hash equals `sourceHash` of that copy.
+  - S2: two packs of the same input give the same bytes.
+  - S3: an unpacked copy compared with the same source gives `same`. Editing one packed file in the source gives `stale` (the red control: the judge must flip). An edit under `tests/` stays `same`, since tests are not packed, so there is no false alarm.
+  - S4: no `built.json` gives `unknown`, and so does no source folder. Neither gives `same`.
+  - S5 (wiring, through the shared stub): `activate` with a stale `extensionPath` shows the warning once; with a matching one it shows none.
+  - Before/after: `witness_x0_activate` and the realvsc install suite keep their verdicts.
+
 ## ADVICE — from the session that built Part F, for the owner and the sessions that follow (2026-11-14)
 
 Owner: *"Put in your advice as you know VSC and software better"*. **These are recommendations, not decisions.** A decision is only
