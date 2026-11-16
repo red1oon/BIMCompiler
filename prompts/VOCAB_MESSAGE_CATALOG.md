@@ -9,7 +9,8 @@ Background, measurements and prior art are in `prompts/DOCS_I18N.md` §4b-§4d (
 - (a) decided: bSI's official bSDD text, verbatim (§14 (a) DECIDED).
 - Step 1 'This element' was already built in `#info-panel` (§14 FINDING).
 - Step 3, class text in the info panel: BUILT and live, bim-ootb #3150, W-CLASS-HELP PASS (§14.1 RESULT).
-- **NEXT = step 2, How To in the `?` panel** (from `verbs.json` + the BIM guide). Spec it in §14 first.
+- Step 2, How To in the `?` palette: BUILT, bim-ootb #3156, W-HOWTO PASS (§14.3 RESULT).
+- **NEXT:** the dock + `common/help/` move, or the Modeller overlays (§14.3 RESULT, last line). Spec first.
 - Three owner items are open in §14.1 RESULT.
 1. **(a) CHECKED 2026-11-17, see §14 (a) RESULT:** CC BY-ND 4.0. Verbatim English with attribution is usable. A translation needs bSI's written consent. **DECIDED 2026-11-17: use bSI's own official translations from bSDD, verbatim; coverage measured, see §14 (a) DECIDED.** Original task: may buildingSMART's IFC class definitions (the IFC4 / IFC4.3 documentation text) be shown, translated and redistributed inside our pages?
    - Read the actual licence or terms on buildingSMART's own site, save the copy into the session's prior folder, and cite the clause.
@@ -932,6 +933,27 @@ The written spec follows the agreement made in chat and comes before the merge; 
    - the `find` entry shows the 3 CLI lines;
    - in de_DE the bullets are German and the guide label says it is English.
 5. **Coverage printed:** guide X/N, CLI pills, guide gaps by id.
+
+### 14.3 RESULT (2026-11-17): BUILT, bim-ootb #3156 (`feat/howto-palette`)
+- **Coverage** (`§HOWTO_BUILD`): 44 pills (the spec said 38: the first pattern missed ids with capitals or hyphens, `roleFilter` `cam-reset` …; W-HOWTO H4a caught it).
+  - 35/44 have a guide link.
+  - **Guide gaps** (no section names them): `lod400`, `hbaFM` (the section says "HR_BIM_Asset", not "Human-Asset"), `sanity`, `egress`, `sched4d`, `gi-preview`, `dlodnav`, `issues`.
+  - `walk` is excluded.
+  - CLI on 2 pills (find: 3 lines, tm: 1). `howto.json` is 11 kB.
+- **Rule refined while building:** a section whose HEADING names the pill wins; otherwise the body with most mentions. Body-only counting sent "Settings" to the 4D-rates section and missed "Pick Walk".
+- **W-HOWTO PASS** (`viewer/tests/witness_howto.js`):
+  - H1 `--check` same;
+  - H2/H3 contract 5/0 over 44 rows, red control caught;
+  - H4a: page pill list == file pill list (44);
+  - H4b: 35 guide links shown, hrefs into the live guide;
+  - H4c: "native" (only in a Save bullet) finds Save, opened;
+  - H4d: Find shows its 3 CLI lines;
+  - H4e: de_DE label "Handbuch (Englisch)", bullets German.
+- **W-VIEWER-I18N** (de_DE): fail=3, the same 3 that pre-exist on main. Leaks 23/310, unchanged.
+  - The first run counted 8 new leaks: the 4 CLI lines and their 4 English verb titles. The CLI line is a pinned command, English by the §0 rule; it gets its own class `cmd-howto-cli-line`, added to the witness's skip list with that reason.
+  - The English verb titles were dropped from the page.
+- **Owner items (guide content, not this lane's code):** the 8 tools above have no guide section. Adding sections to `docs/BIMUserGuide.md` would raise the count; `build_howto.js` picks them up on its next run (W-HOWTO H1 fails until it is re-run, by design).
+- **Next:** the dock (right panel on desktop, sheet on mobile) + the move of `field_help.js` / `help_search.js` to `common/help/` (§14 design), or the Modeller's two overlays.
 
 ## 15. NOT URGENT, to think about (owner 2026-11-16: *"You mean we can mis.<translated verb>? Note in prompt then we shall think about it not urgent."*)
 Two terminal ideas. Neither is built and nothing is decided.
