@@ -24,14 +24,20 @@ Read the picture from left to right.
 
 | Type | What it does |
 |---|---|
-| `red1` | open the `red1>` prompt (`node common/door/red1.js`, or `red1` after `npm link` once) |
+| `red1` | open the `red1>` prompt (`node common/door/red1.js`, or `red1` after `npm link` once). On a terminal it greets you once and shows a tip; `red1 --version` prints the version line |
+| `help` · `bim` · `mis` · `erp` | the words in three groups: buildings and models, records and files, document actions. `level student`, then `help <word>`, explains one word in full |
+| grey text while you type | a suggestion from the dictionary: Tab or → takes it, Enter runs what you typed. A typo gets a hint, never a silent fix |
 | `cd Duplex` · `cd Element` · `cd Order` · `cd ..` · `pwd` | go to a building, a kind of it, or an ERP kind; back; where you are |
 | `count` · `ls` · `group storey` · `sum <column>` · `cat <id>` | count, list, group, add up, show one record, here |
 | `ls element_name=*bath*` | Find with wildcards: `*` any run, `?` one character, `[abc]` one of them |
 | `clash ARC MEP` · then `ls` · `ls *Bath*` | clashes drawn as a funnel; their rows; the rows that match |
 | `clash` | a menu of the building's disciplines opens: arrows or a digit, then Return |
-| `next <number>` · `do complete <number>` | what a document may do now; do it |
-| `menu` · `help` · `help verbs` · `exit` | the ERP menu; the words; every door verb; leave |
+| `cost discipline` · then `ls` | in a building: the Find panel's cost of a selection, the groups first, the priced rows with `ls` |
+| `post` · `post discipline=ARC` | post the building's priced selection to its ERP Project Order (asks y/N). After `cost` the prompt offers it: `Ready to post to ERP Project Order? y/N` |
+| `cd Project` · `run "Generate PO from Project"` | run a process of the ERP dictionary: red1 asks its questions in the legacy dialog's order, then shows the documents made and the process log |
+| `next <number>` · `do CO <number>` | what a document may do now; do it. `do` takes the legacy DocAction codes `CO` `VO` `CL` `RC` (and `complete`, `void`, `close`, `reverse`) |
+| `report` | a gap in red1 (not your typo) becomes a GitHub-issue or email draft, paths masked; red1 sends nothing itself |
+| `menu` · `help verbs` · `exit` | the ERP menu; every door verb; leave |
 | `red1 'cd Duplex; count'` | the same words from a script, one shot |
 
 ## Get the door
@@ -428,28 +434,28 @@ A Sales or Purchase document needs `issotrx=Y` or `N`. A partner or product may 
 
 <!-- run: new_order -->
 ```text
-$ rm -f /tmp/fast_guide_new.ops; BIM_OBJECT_OPLOG=/tmp/fast_guide_new.ops node common/door/door.js 'erp.new kind=Order issotrx=Y c_doctypetarget_id=132 c_bpartner_id=112 salesrep_id=101'
-{"request":"d-mwhmq2lp-2280086-1","verb":"erp.new","actor":"human","status":"ok","answer":{"number":"50000","kind":"Order","table":"c_order","id":1500004,"docStatus":"DR","given":["IsSOTrx","C_DocTypeTarget_ID","C_BPartner_ID","SalesRep_ID"],"defaulted":52,"filled":["ad_client_id","ad_org_id","documentno","isselfservice","dateordered","datepromised","bill_bpartner_id","c_bpartner_location_id","bill_location_id","deliveryrule","priorityrule","m_warehouse_id","isdropship","deliveryviarule","freightcostrule","freightamt","ispriviledgedrate","shippingrateinquiry","invoicerule","m_pricelist_id","c_currency_id","c_conversiontype_id","isdiscountprinted","chargeamt","paymentrule","c_paymentterm_id","totallines","grandtotal","docstatus","c_doctype_id","ispayschedulevalid","copyfrom","docaction","posted","isdelivered","dateacct","amountrefunded","isapproved","processed","processing","istaxincluded","isinvoiced","isselected","isprinted","sendemail","istransferred","iscreditapproved","isactive","processedon","amounttendered","volume","weight"],"record":{"c_order_id":1500004,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-15 17:25:44","createdby":101,"updated":"2026-11-15 17:25:44","updatedby":101,"issotrx":"Y","documentno":"50000","docstatus":"DR","docaction":"CO","processing":"N","processed":"N","c_doctype_id":0,"c_doctypetarget_id":132,"description":null,"isapproved":"N","iscreditapproved":"N","isdelivered":"N","isinvoiced":"N","isprinted":"N","istransferred":"N","isselected":"N","salesrep_id":101,"dateordered":"2026-11-15 00:00:00","datepromised":"2026-11-15 00:00:00","dateprinted":null,"dateacct":"2026-11-15 00:00:00","c_bpartner_id":112,"c_bpartner_location_id":108,"poreference":null,"isdiscountprinted":"Y","c_currency_id":100,"paymentrule":"P","c_paymentterm_id":105,"invoicerule":"D","deliveryrule":"A","freightcostrule":"I","freightamt":0,"deliveryviarule":"P","m_shipper_id":null,"c_charge_id":null,"chargeamt":0,"priorityrule":"5","totallines":0,"grandtotal":0,"m_warehouse_id":103,"m_pricelist_id":101,"istaxincluded":"N","c_campaign_id":null,"c_project_id":null,"c_activity_id":null,"posted":"N","c_payment_id":null,"c_cashline_id":null,"sendemail":"N","ad_user_id":null,"copyfrom":"N","isselfservice":"N","ad_orgtrx_id":null,"user1_id":null,"user2_id":null,"c_conversiontype_id":114,"bill_bpartner_id":112,"bill_location_id":108,"bill_user_id":null,"pay_bpartner_id":null,"pay_location_id":null,"ref_order_id":null,"isdropship":"N","volume":0,"weight":0,"ordertype":null,"c_pos_id":null,"amounttendered":0,"amountrefunded":0,"link_order_id":null,"m_freightcategory_id":null,"dropship_bpartner_id":null,"dropship_location_id":null,"dropship_user_id":null,"promotioncode":null,"c_ordersource_id":null,"processedon":0,"ispayschedulevalid":"N","c_cashplanline_id":null,"c_order_uu":"c1be6519-1439-4618-a5b3-7c7af36acfe9","shippingrateinquiry":"N","ispriviledgedrate":"N","c_opportunity_id":null,"quotationorder_id":null,"c_department_id":null,"c_costcenter_id":null},"ops":[{"op_type":"CRUD_UPDATE","table":"ad_sequence"},{"op_type":"CRUD_CREATE","table":"c_order"}]},"why":null,"notChecked":[],"ops":[{"op_type":"CRUD_UPDATE","table":"ad_sequence"},{"op_type":"CRUD_CREATE","table":"c_order"}],"next":[],"ms":6973}
+$ rm -f /tmp/fast_guide_new.ops; BIM_OBJECT_OPLOG=/tmp/fast_guide_new.ops node common/door/door.js 'erp.new kind=Order issotrx=Y c_doctypetarget_id=132 c_bpartner_id=112 salesrep_id=101' | sed -E 's/[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9:]{8}/T/g; s/"([a-z_]+_uu)":"[^"]*"/"\1":"U"/g'
+{"request":"d-mwira146-3236859-1","verb":"erp.new","actor":"human","status":"ok","answer":{"number":"50000","kind":"Order","table":"c_order","id":1500004,"docStatus":"DR","given":["IsSOTrx","C_DocTypeTarget_ID","C_BPartner_ID","SalesRep_ID"],"defaulted":52,"filled":["ad_client_id","ad_org_id","documentno","isselfservice","dateordered","datepromised","bill_bpartner_id","c_bpartner_location_id","bill_location_id","deliveryrule","priorityrule","m_warehouse_id","isdropship","deliveryviarule","freightcostrule","freightamt","ispriviledgedrate","shippingrateinquiry","invoicerule","m_pricelist_id","c_currency_id","c_conversiontype_id","isdiscountprinted","chargeamt","paymentrule","c_paymentterm_id","totallines","grandtotal","docstatus","c_doctype_id","ispayschedulevalid","copyfrom","docaction","posted","isdelivered","dateacct","amountrefunded","isapproved","processed","processing","istaxincluded","isinvoiced","isselected","isprinted","sendemail","istransferred","iscreditapproved","isactive","processedon","amounttendered","volume","weight"],"record":{"c_order_id":1500004,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"T","createdby":101,"updated":"T","updatedby":101,"issotrx":"Y","documentno":"50000","docstatus":"DR","docaction":"CO","processing":"N","processed":"N","c_doctype_id":0,"c_doctypetarget_id":132,"description":null,"isapproved":"N","iscreditapproved":"N","isdelivered":"N","isinvoiced":"N","isprinted":"N","istransferred":"N","isselected":"N","salesrep_id":101,"dateordered":"T","datepromised":"T","dateprinted":null,"dateacct":"T","c_bpartner_id":112,"c_bpartner_location_id":108,"poreference":null,"isdiscountprinted":"Y","c_currency_id":100,"paymentrule":"P","c_paymentterm_id":105,"invoicerule":"D","deliveryrule":"A","freightcostrule":"I","freightamt":0,"deliveryviarule":"P","m_shipper_id":null,"c_charge_id":null,"chargeamt":0,"priorityrule":"5","totallines":0,"grandtotal":0,"m_warehouse_id":103,"m_pricelist_id":101,"istaxincluded":"N","c_campaign_id":null,"c_project_id":null,"c_activity_id":null,"posted":"N","c_payment_id":null,"c_cashline_id":null,"sendemail":"N","ad_user_id":null,"copyfrom":"N","isselfservice":"N","ad_orgtrx_id":null,"user1_id":null,"user2_id":null,"c_conversiontype_id":114,"bill_bpartner_id":112,"bill_location_id":108,"bill_user_id":null,"pay_bpartner_id":null,"pay_location_id":null,"ref_order_id":null,"isdropship":"N","volume":0,"weight":0,"ordertype":null,"c_pos_id":null,"amounttendered":0,"amountrefunded":0,"link_order_id":null,"m_freightcategory_id":null,"dropship_bpartner_id":null,"dropship_location_id":null,"dropship_user_id":null,"promotioncode":null,"c_ordersource_id":null,"processedon":0,"ispayschedulevalid":"N","c_cashplanline_id":null,"c_order_uu":"U","shippingrateinquiry":"N","ispriviledgedrate":"N","c_opportunity_id":null,"quotationorder_id":null,"c_department_id":null,"c_costcenter_id":null},"ops":[{"op_type":"CRUD_UPDATE","table":"ad_sequence"},{"op_type":"CRUD_CREATE","table":"c_order"}]},"why":null,"notChecked":[],"ops":[{"op_type":"CRUD_UPDATE","table":"ad_sequence"},{"op_type":"CRUD_CREATE","table":"c_order"}],"next":[],"ms":8071}
 ```
 
 <!-- run: new_line -->
 ```text
-$ BIM_OBJECT_OPLOG=/tmp/fast_guide_new.ops node common/door/door.js 'erp.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2'
-{"request":"d-mwhmq849-2280142-1","verb":"erp.new","actor":"human","status":"ok","answer":{"number":null,"kind":"Sales Order Line","table":"c_orderline","id":120002710,"docStatus":null,"given":["M_Product_ID","QtyEntered","C_Order_ID"],"defaulted":31,"filled":["ad_client_id","ad_org_id","c_bpartner_id","c_bpartner_location_id","datepromised","dateordered","line","m_warehouse_id","m_attributesetinstance_id","c_uom_id","qtyordered","qtydelivered","qtyreserved","qtyinvoiced","priceentered","priceactual","pricelist","freightamt","c_tax_id","discount","linenetamt","qtylostsales","processed","createshipment","createproduction","rramt","pricecost","pricelimit","c_currency_id","isactive","isdescription"],"record":{"c_orderline_id":120002710,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-15 17:25:52","createdby":101,"updated":"2026-11-15 17:25:52","updatedby":101,"c_order_id":1500004,"line":10,"c_bpartner_id":112,"c_bpartner_location_id":108,"dateordered":"2026-11-15 00:00:00","datepromised":"2026-11-15 00:00:00","datedelivered":null,"dateinvoiced":null,"description":null,"m_product_id":137,"m_warehouse_id":103,"c_uom_id":100,"qtyordered":2,"qtyreserved":0,"qtydelivered":0,"qtyinvoiced":0,"m_shipper_id":null,"c_currency_id":100,"pricelist":3,"priceactual":3,"pricelimit":2.7,"linenetamt":6,"discount":0,"freightamt":0,"c_charge_id":null,"c_tax_id":104,"s_resourceassignment_id":null,"ref_orderline_id":null,"m_attributesetinstance_id":0,"isdescription":"N","processed":"N","qtyentered":2,"priceentered":3,"c_project_id":null,"pricecost":0,"qtylostsales":0,"c_projectphase_id":null,"c_projecttask_id":null,"rrstartdate":null,"rramt":0,"c_campaign_id":null,"c_activity_id":null,"user1_id":null,"user2_id":null,"ad_orgtrx_id":null,"link_orderline_id":null,"pp_cost_collector_id":null,"m_promotion_id":null,"c_orderline_uu":"337b125f-adeb-4412-bbb9-5584c995f8fa","createshipment":"N","createproduction":"N","c_department_id":null,"c_costcenter_id":null},"ops":[{"op_type":"CRUD_CREATE","table":"c_orderline"},{"op_type":"CRUD_UPDATE","table":"c_order"}]},"why":null,"notChecked":[],"ops":[{"op_type":"CRUD_CREATE","table":"c_orderline"},{"op_type":"CRUD_UPDATE","table":"c_order"}],"next":[],"ms":7403}
+$ BIM_OBJECT_OPLOG=/tmp/fast_guide_new.ops node common/door/door.js 'erp.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2' | sed -E 's/[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9:]{8}/T/g; s/"([a-z_]+_uu)":"[^"]*"/"\1":"U"/g'
+{"request":"d-mwira7sj-3237334-1","verb":"erp.new","actor":"human","status":"ok","answer":{"number":null,"kind":"Sales Order Line","table":"c_orderline","id":120002710,"docStatus":null,"given":["M_Product_ID","QtyEntered","C_Order_ID"],"defaulted":31,"filled":["ad_client_id","ad_org_id","c_bpartner_id","c_bpartner_location_id","datepromised","dateordered","line","m_warehouse_id","m_attributesetinstance_id","c_uom_id","qtyordered","qtydelivered","qtyreserved","qtyinvoiced","priceentered","priceactual","pricelist","freightamt","c_tax_id","discount","linenetamt","qtylostsales","processed","createshipment","createproduction","rramt","pricecost","pricelimit","c_currency_id","isactive","isdescription"],"record":{"c_orderline_id":120002710,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"T","createdby":101,"updated":"T","updatedby":101,"c_order_id":1500004,"line":10,"c_bpartner_id":112,"c_bpartner_location_id":108,"dateordered":"T","datepromised":"T","datedelivered":null,"dateinvoiced":null,"description":null,"m_product_id":137,"m_warehouse_id":103,"c_uom_id":100,"qtyordered":2,"qtyreserved":0,"qtydelivered":0,"qtyinvoiced":0,"m_shipper_id":null,"c_currency_id":100,"pricelist":3,"priceactual":3,"pricelimit":2.7,"linenetamt":6,"discount":0,"freightamt":0,"c_charge_id":null,"c_tax_id":104,"s_resourceassignment_id":null,"ref_orderline_id":null,"m_attributesetinstance_id":0,"isdescription":"N","processed":"N","qtyentered":2,"priceentered":3,"c_project_id":null,"pricecost":0,"qtylostsales":0,"c_projectphase_id":null,"c_projecttask_id":null,"rrstartdate":null,"rramt":0,"c_campaign_id":null,"c_activity_id":null,"user1_id":null,"user2_id":null,"ad_orgtrx_id":null,"link_orderline_id":null,"pp_cost_collector_id":null,"m_promotion_id":null,"c_orderline_uu":"U","createshipment":"N","createproduction":"N","c_department_id":null,"c_costcenter_id":null},"ops":[{"op_type":"CRUD_CREATE","table":"c_orderline"},{"op_type":"CRUD_UPDATE","table":"c_order"}]},"why":null,"notChecked":[],"ops":[{"op_type":"CRUD_CREATE","table":"c_orderline"},{"op_type":"CRUD_UPDATE","table":"c_order"}],"next":[],"ms":8401}
 ```
 
-The order is a draft until someone completes it. Because the line was given the order's number, the order's totals follow without a second step: `totallines` and `grandtotal` in the record below are the line's amount (6). The list of the order's own lines is not filled in by `erp.read`.
+The order is a draft until someone completes it. Because the line was given the order's number, the order's totals follow without a second step: `totallines` and `grandtotal` in the record below are the line's amount (6). `erp.read` hands back the order's own lines as well: the `children` list below holds the Sales Order Line just made (and the order's tax, payment schedule and POS payment lists, empty here).
 
 <!-- run: new_read -->
 ```text
-$ BIM_OBJECT_OPLOG=/tmp/fast_guide_new.ops node common/door/door.js --list 'erp.read kind=Order number=50000'
+$ BIM_OBJECT_OPLOG=/tmp/fast_guide_new.ops node common/door/door.js --list 'erp.read kind=Order number=50000' | sed -E 's/[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9:]{8}/T/g; s/"([a-z_]+_uu)":"[^"]*"/"\1":"U"/g'
 kind: Order
 uu: 1500004
-record: {"c_order_id":1500004,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-15 17:25:44","createdby":101,"updated":"2026-11-15 17:25:44","updatedby":101,"issotrx":"Y","documentno":"50000","docstatus":"DR","docaction":"CO","processing":"N","processed":"N","c_doctype_id":0,"c_doctypetarget_id":132,"description":null,"isapproved":"N","iscreditapproved":"N","isdelivered":"N","isinvoiced":"N","isprinted":"N","istransferred":"N","isselected":"N","salesrep_id":101,"dateordered":"2026-11-15 00:00:00","datepromised":"2026-11-15 00:00:00","dateprinted":null,"dateacct":"2026-11-15 00:00:00","c_bpartner_id":112,"c_bpartner_location_id":108,"poreference":null,"isdiscountprinted":"Y","c_currency_id":100,"paymentrule":"P","c_paymentterm_id":105,"invoicerule":"D","deliveryrule":"A","freightcostrule":"I","freightamt":0,"deliveryviarule":"P","m_shipper_id":null,"c_charge_id":null,"chargeamt":0,"priorityrule":"5","totallines":6,"grandtotal":6,"m_warehouse_id":103,"m_pricelist_id":101,"istaxincluded":"N","c_campaign_id":null,"c_project_id":null,"c_activity_id":null,"posted":"N","c_payment_id":null,"c_cashline_id":null,"sendemail":"N","ad_user_id":null,"copyfrom":"N","isselfservice":"N","ad_orgtrx_id":null,"user1_id":null,"user2_id":null,"c_conversiontype_id":114,"bill_bpartner_id":112,"bill_location_id":108,"bill_user_id":null,"pay_bpartner_id":null,"pay_location_id":null,"ref_order_id":null,"isdropship":"N","volume":0,"weight":0,"ordertype":null,"c_pos_id":null,"amounttendered":0,"amountrefunded":0,"link_order_id":null,"m_freightcategory_id":null,"dropship_bpartner_id":null,"dropship_location_id":null,"dropship_user_id":null,"promotioncode":null,"c_ordersource_id":null,"processedon":0,"ispayschedulevalid":"N","c_cashplanline_id":null,"c_order_uu":"c1be6519-1439-4618-a5b3-7c7af36acfe9","shippingrateinquiry":"N","ispriviledgedrate":"N","c_opportunity_id":null,"quotationorder_id":null,"c_department_id":null,"c_costcenter_id":null}
-children: [{"kind":"Sales Order Line","rows":[{"c_orderline_id":120002710,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-15 17:25:52","createdby":101,"updated":"2026-11-15 17:25:52","updatedby":101,"c_order_id":1500004,"line":10,"c_bpartner_id":112,"c_bpartner_location_id":108,"dateordered":"2026-11-15 00:00:00","datepromised":"2026-11-15 00:00:00","datedelivered":null,"dateinvoiced":null,"description":null,"m_product_id":137,"m_warehouse_id":103,"c_uom_id":100,"qtyordered":2,"qtyreserved":0,"qtydelivered":0,"qtyinvoiced":0,"m_shipper_id":null,"c_currency_id":100,"pricelist":3,"priceactual":3,"pricelimit":2.7,"linenetamt":6,"discount":0,"freightamt":0,"c_charge_id":null,"c_tax_id":104,"s_resourceassignment_id":null,"ref_orderline_id":null,"m_attributesetinstance_id":0,"isdescription":"N","processed":"N","qtyentered":2,"priceentered":3,"c_project_id":null,"pricecost":0,"qtylostsales":0,"c_projectphase_id":null,"c_projecttask_id":null,"rrstartdate":null,"rramt":0,"c_campaign_id":null,"c_activity_id":null,"user1_id":null,"user2_id":null,"ad_orgtrx_id":null,"link_orderline_id":null,"pp_cost_collector_id":null,"m_promotion_id":null,"c_orderline_uu":"337b125f-adeb-4412-bbb9-5584c995f8fa","createshipment":"N","createproduction":"N","c_department_id":null,"c_costcenter_id":null}]},{"kind":"Order Tax","rows":[]},{"kind":"Order Payment Schedule","rows":[]},{"kind":"POS Payment","rows":[]}]
+record: {"c_order_id":1500004,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"T","createdby":101,"updated":"T","updatedby":101,"issotrx":"Y","documentno":"50000","docstatus":"DR","docaction":"CO","processing":"N","processed":"N","c_doctype_id":0,"c_doctypetarget_id":132,"description":null,"isapproved":"N","iscreditapproved":"N","isdelivered":"N","isinvoiced":"N","isprinted":"N","istransferred":"N","isselected":"N","salesrep_id":101,"dateordered":"T","datepromised":"T","dateprinted":null,"dateacct":"T","c_bpartner_id":112,"c_bpartner_location_id":108,"poreference":null,"isdiscountprinted":"Y","c_currency_id":100,"paymentrule":"P","c_paymentterm_id":105,"invoicerule":"D","deliveryrule":"A","freightcostrule":"I","freightamt":0,"deliveryviarule":"P","m_shipper_id":null,"c_charge_id":null,"chargeamt":0,"priorityrule":"5","totallines":6,"grandtotal":6,"m_warehouse_id":103,"m_pricelist_id":101,"istaxincluded":"N","c_campaign_id":null,"c_project_id":null,"c_activity_id":null,"posted":"N","c_payment_id":null,"c_cashline_id":null,"sendemail":"N","ad_user_id":null,"copyfrom":"N","isselfservice":"N","ad_orgtrx_id":null,"user1_id":null,"user2_id":null,"c_conversiontype_id":114,"bill_bpartner_id":112,"bill_location_id":108,"bill_user_id":null,"pay_bpartner_id":null,"pay_location_id":null,"ref_order_id":null,"isdropship":"N","volume":0,"weight":0,"ordertype":null,"c_pos_id":null,"amounttendered":0,"amountrefunded":0,"link_order_id":null,"m_freightcategory_id":null,"dropship_bpartner_id":null,"dropship_location_id":null,"dropship_user_id":null,"promotioncode":null,"c_ordersource_id":null,"processedon":0,"ispayschedulevalid":"N","c_cashplanline_id":null,"c_order_uu":"U","shippingrateinquiry":"N","ispriviledgedrate":"N","c_opportunity_id":null,"quotationorder_id":null,"c_department_id":null,"c_costcenter_id":null}
+children: [{"kind":"Sales Order Line","rows":[{"c_orderline_id":120002710,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"T","createdby":101,"updated":"T","updatedby":101,"c_order_id":1500004,"line":10,"c_bpartner_id":112,"c_bpartner_location_id":108,"dateordered":"T","datepromised":"T","datedelivered":null,"dateinvoiced":null,"description":null,"m_product_id":137,"m_warehouse_id":103,"c_uom_id":100,"qtyordered":2,"qtyreserved":0,"qtydelivered":0,"qtyinvoiced":0,"m_shipper_id":null,"c_currency_id":100,"pricelist":3,"priceactual":3,"pricelimit":2.7,"linenetamt":6,"discount":0,"freightamt":0,"c_charge_id":null,"c_tax_id":104,"s_resourceassignment_id":null,"ref_orderline_id":null,"m_attributesetinstance_id":0,"isdescription":"N","processed":"N","qtyentered":2,"priceentered":3,"c_project_id":null,"pricecost":0,"qtylostsales":0,"c_projectphase_id":null,"c_projecttask_id":null,"rrstartdate":null,"rramt":0,"c_campaign_id":null,"c_activity_id":null,"user1_id":null,"user2_id":null,"ad_orgtrx_id":null,"link_orderline_id":null,"pp_cost_collector_id":null,"m_promotion_id":null,"c_orderline_uu":"U","createshipment":"N","createproduction":"N","c_department_id":null,"c_costcenter_id":null}]},{"kind":"Order Tax","rows":[]},{"kind":"Order Payment Schedule","rows":[]},{"kind":"POS Payment","rows":[]}]
 ```
 
-`erp.new` is a `writes` verb. A person at the terminal runs it. An AI's `erp.new` is held as a claim and nothing is written until a person confirms it (see "What is a claim"). These blocks use a scratch op-log (`/tmp/fast_guide_new.ops`, emptied first), so running them does not touch your own data.
+`erp.new` is a `writes` verb. A person at the terminal runs it. An AI's `erp.new` is held as a claim and nothing is written until a person confirms it (see "What is a claim"). These blocks use a scratch op-log (`/tmp/fast_guide_new.ops`, emptied first), so running them does not touch your own data. Dates and times (`T`) and the `_uu` keys (`U`) change on every run, so the three blocks print them as those letters.
 
 ## Work with any table: the `mis.*` verbs
 
@@ -1205,7 +1211,286 @@ Order S00002  status DR
 └─ VO  → do void S00002
 ```
 
-`help` lists the words; `help verbs` lists every door verb. **From JavaScript**, the same verbs are one object, generated from the vocabulary (a new verb needs no new code):
+### Open it, and ask for help
+
+On a terminal, `red1` greets you once before the first prompt: the version, how many door verbs and short words it has, the commit when it runs from a checkout, and a tip about `level student`. A pipe, a one-shot line and `-f FILE` print no greeting, so a script reads the same bytes as before. `red1 --version` prints the version line alone. The copyright text in front of it and the commit after it are cut off below (the commit changes with every commit):
+
+<!-- run: red1_version -->
+```text
+$ node common/door/red1.js --version | sed -e 's/^Copyright[^·]*· //' -e 's/ · [0-9a-f]\{8\}$//'
+red1 1.0.0 · 73 verbs · 26 words
+```
+
+The `§` log lines that the shell and the door write do not appear on a terminal screen. They go to `~/.cache/red1/red1.log`, with the time; `RED1_LOG=stderr` puts them back on the screen. A pipe, a one-shot line and `-f` keep them on stderr, where a script can read them.
+
+`help` shows the words in three groups, read from the verbs each word expands to. `bim`, `mis` or `erp` alone list that group's words, each with one typed example; a word that has a form in two groups is listed in both:
+
+<!-- run: red1_help -->
+```text
+$ node common/door/red1.js help 2>/dev/null
+red1: type a short word; red1 prints the full line it runs (→ …), then runs it.
+  bim   buildings and models             start with: cd Duplex   (16 words)
+  mis   records, tables, files, Ninja    start with: cd Order   (11 words)
+  erp   document actions (CO VO CL RC)   start with: cd Order   (4 words)
+  everywhere: cd <place> · pwd · role <id> · history · report · exit
+Type bim, mis or erp for its words · help <word> for one word (level student first for the full explanation) · help verbs for the full door lines.
+```
+
+<!-- run: red1_help_erp -->
+```text
+$ node common/door/red1.js erp 2>/dev/null
+erp: document actions (CO VO CL RC) (start with: cd Order)
+ in a building:
+  post discipline=ARC  post the building's priced selection to its ERP Project Order
+ in an ERP kind:
+  do CO 50000                                         a document action
+  run "Set Project Type" 990000 C_ProjectType_ID=103  run a process of the dictionary
+  next 50000                                          what a document may do next
+```
+
+**The Student level.** `level student` in a session, or `--level student` on one line, makes `help <word>` explain the word in full: what it does, what you type, what is taken from where you are, and an example. The text is the verb's own description from `verbs.json`, so it cannot drift from the table below:
+
+<!-- run: red1_help_student -->
+```text
+$ node common/door/red1.js --level student 'help cost' 2>/dev/null
+cost: the cost of a selection: cost [phase|task|storey|discipline|class] [column=value …]
+  in a building: cost discipline   → viewer.cost
+    what it does: Price a selection of a building's elements as the Viewer's Find panel does: quantities from the model × the rate pack, grouped by 4D phase, task, storey, discipline or IFC class; a selection is column=value (wildcards * ? [] allowed) over the elements' columns. Phases and tasks come from the persisted 4D run. Reports elements with no rate and with no size. Changes nothing.
+    you type: by (phase (default), task, storey, discipline or class.)
+    taken from where you are: building
+    e.g. in Duplex: viewer.cost building=Duplex by=discipline
+```
+
+### Grey suggestions while you type
+
+At the prompt of a terminal, grey text after the cursor suggests what comes next. The source is the dictionary, chosen by where you are in the line: the first word (the red1 words and the door verbs); after `cd`, the buildings and the ERP kinds (`cd Busi` suggests `cd "Business Partner"`); after `do`, the DocAction codes; then the column names of the kind you are in; after `key=`, the legal values. **Tab** or **→** takes the suggestion; typing on ignores it; **Return always runs what you typed**, never the suggestion. A misspelt name gets a hint (`▸ Value`) that Tab can take, never a silent fix. In a one-shot line, a script or an AI there is no suggestion, and a wrong column is a refusal that names the nearest ones:
+
+<!-- run: red1_typo -->
+```text
+$ printf 'cd Project\nls Valu=Hospital\n' | node common/door/red1.js 2>/dev/null | sed 's/ · [0-9]* ms//'
+→ mis.describe kind=Project
+Project: 48 properties; ls shows C_Project_ID, Value, Name, Processed, SalesRep_ID
+→ mis.list kind=Project columns=C_Project_ID,Value,Name,Processed,SalesRep_ID limit=20 names=Y Valu=Hospital
+refused · mis.list · kind Project has no property "Valu"; nearest: Value
+{
+ "refused": true,
+ "reason": "kind Project has no property \"Valu\"; nearest: Value"
+}
+```
+
+### The legal values of a column: `mis.lookup`
+
+`mis.lookup` answers what a column may hold, the way the legacy window's drop-down does: the rows of the table the column points to, narrowed by the column's validation rule and by the role. A rule that needs a value you have not given (`@C_Project_ID@`) answers no rows and names the missing value; it never shows the unfiltered list. The process `Generate PO from Project` asks for a Project Phase; with a project given, only that project's phases come back, and the rule's own text is in the answer:
+
+<!-- run: red1_lookup cut=700 -->
+```text
+$ BIM_OBJECT_OPLOG=/tmp/fast_guide_empty.ops node common/door/door.js 'mis.lookup process="Generate PO from Project" column=C_ProjectPhase_ID C_Project_ID=990000'
+{"request":"d-mwir4ben-3223761-1","verb":"mis.lookup","actor":"human","status":"ok","answer":{"column":"C_ProjectPhase_ID","reference":19,"valRule":{"id":165,"code":"C_ProjectPhase.C_Project_ID=@C_Project_ID@","sql":"C_ProjectPhase.C_Project_ID=990000"},"refWhere":null,"unresolved":[],"table":"C_ProjectPhase","rows":[{"value":990000,"name":"1 · Substructure"},{"value":990001,"name":"2 · Superstructure"},{"value":990002,"name":"5 · MEP Rough-in"},{"value":990003,"name":"6 · Architecture"},{"value":990004,"name":"9 · MEP Final"},{"value":990005,"name":"10 · Finishes"},{"value":990006,"name":"99 · Unsequenced"}],"shown":7,"total":7},"why":null,"notChecked":[],"ops":[],"next":[],"ms":1351}
+```
+
+### Run a process of the dictionary: `run`
+
+`run "<process>" [record] [Name=value …]` runs one process of the ERP dictionary (`erp.process`), by its search key, name or id. A parameter you do not type is asked, one at a time, in the order of the process's own parameter rows, with its default (Return keeps it); a lookup opens a pick list narrowed by `mis.lookup`, and `(leave it out)` skips an optional one. After the questions red1 prints the full `→ erp.process …` line, then runs it. In a one-shot line or for an AI nothing is asked: a missing mandatory parameter is a refusal that names it. A process that the twin has no port for yet is refused with the name of its class. These blocks use a scratch op-log, emptied first:
+
+<!-- run: red1_run -->
+```text
+$ rm -f /tmp/fast_guide_run.ops; printf 'cd Project\nrun "Set Project Type" 990000 C_ProjectType_ID=103\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide_run.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_run.journal node common/door/red1.js 2>/dev/null | sed 's/ · [0-9]* ms//'
+→ mis.describe kind=Project
+Project: 48 properties; ls shows C_Project_ID, Value, Name, Processed, SalesRep_ID
+→ mis.list kind=AD_Process_Para columns=ColumnName,Name,IsMandatory,DefaultValue,SeqNo,AD_Reference_ID sort=SeqNo limit=50 master="Process/Set Project Type"
+→ erp.process name="Set Project Type" record=990000 kind=Project C_ProjectType_ID=103
+ok · erp.process
+Set Project Type: done · no document made
+1 change(s) kept: update:c_project 1
+```
+
+The summary says what the process did and which documents it made, then its process log, as the legacy process dialog does. The longer `Generate PO from Project` dialog is in the worked chain below.
+
+### Document actions: `do CO`, `do VO`, `do CL`, `do RC`
+
+`do` takes the legacy DocAction codes (`CO` complete, `VO` void, `CL` close, `RC` reverse) as well as the words `complete`, `void`, `close` and `reverse`. `next` lists what the document may do now; after `CO` the list has moved on. This continues the order made in "Create a record" above (the same scratch op-log). The block leaves out the `ops:` line, whose keys are random:
+
+<!-- run: red1_do -->
+```text
+$ printf 'cd Order\nnext 50000\ndo CO 50000\nnext 50000\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide_new.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_new.journal node common/door/red1.js 2>/dev/null | sed 's/ · [0-9]* ms//' | grep -v '^ops:'
+→ mis.describe kind=Order
+Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
+→ erp.actions kind=Order number=50000
+ok · erp.actions
+Order 50000  status DR
+├─ CO  → do complete 50000
+├─ PR  (no red1 word for it yet)
+└─ VO  → do void 50000
+→ erp.complete kind=Order number=50000
+ok · erp.complete
+document: {"kind":"Order","id":1500004,"number":"50000","docStatus":"CO","docAction":"CL","doctypeId":132,"doctypeTargetId":132,"org":11}
+before: {"docStatus":"DR"}
+after: {"docStatus":"CO","docAction":"CL","processed":"Y","grandTotal":6}
+opSummary: {"create:ad_wf_process":1,"create:ad_wf_activity":3,"create:ad_wf_eventaudit":3,"update:c_acctschema":1,"update:c_order":1,"create:m_storagereservation":1,"create:m_storagereservationlog":1,"update:c_orderline":1,"create:c_ordertax":1}
+related: []
+facts: []
+engine: ["§MODEL-POST table=c_order id=1500004 posted=Y facts=0","§MODEL-WF table=c_order id=1500004 workflow=116 path=183>185>186 state=CC"]
+actions: ["CL","VO","RE"]
+→ erp.actions kind=Order number=50000
+ok · erp.actions
+Order 50000  status CO
+├─ CL  → do close 50000
+├─ VO  → do void 50000
+└─ RE  (no red1 word for it yet)
+```
+
+### A gap goes to the owner: `report`
+
+Some answers say that red1 lacks something, as opposed to you having mistyped: a process with no port yet, a document with no document class, an engine that cannot answer. The engine marks those `gap`, and in a session red1 prints one line after the answer. A typo or a legacy refusal is not a gap and prints nothing extra:
+
+<!-- run: red1_gap -->
+```text
+$ printf 'cd Project\nrun "Renumber"\n' | node common/door/red1.js 2>/dev/null | sed 's/ · [0-9]* ms//'
+→ mis.describe kind=Project
+Project: 48 properties; ls shows C_Project_ID, Value, Name, Processed, SalesRep_ID
+→ mis.list kind=AD_Process_Para columns=ColumnName,Name,IsMandatory,DefaultValue,SeqNo,AD_Reference_ID sort=SeqNo limit=50 master=Process/Renumber
+run: Renumber has no parameter to ask (none in the dictionary)
+→ erp.process name=Renumber kind=Project
+refused · erp.process · Renumber was not run: it has no JS port yet (class org.compiere.process.DiscountSchemaReSeq)
+{
+ "refused": true,
+ "reason": "Renumber was not run: it has no JS port yet (class org.compiere.process.DiscountSchemaReSeq)",
+ "gap": true,
+ "gapKind": "no-port"
+}
+This is a gap in red1, not your mistake. Type report to send it to us (email or GitHub issue).
+```
+
+`report` then shows the draft (the line, the reason, the red1 version, the platform and the last log lines; the paths on your disk are masked) and offers `1 GitHub issue · 2 email · q cancel`. The two drafts have the same shape as the Viewer's bug reporter. red1 prints the link and hands it to your system's opener on a terminal; **nothing is sent by red1**: your own browser or mail program sends it. One-shot and AI answers carry `"gap": true` and ask nothing.
+
+### From a building to its ERP order: `cost`, the offer, `post`, `run`
+
+This chain runs a building into its ERP Project Order and on to a purchase order. Every block uses a scratch op-log (`/tmp/fast_guide_chain.ops`, emptied by the first block), so running them does not touch your own data. In a building, `cost` prices a selection the way the Viewer's Find panel does (quantities from the model times the rate pack) and prints the groups first, with the count and the total; `ls` lists the priced rows. With no group named it groups by phase; here by discipline. Because the building has no ERP order yet, the answer ends with an offer. The session below ends without answering it, so nothing is posted:
+
+<!-- run: chain_cost -->
+```text
+$ rm -f /tmp/fast_guide_chain.ops; printf 'cd Duplex\ncost discipline\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide_chain.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_chain.journal node common/door/red1.js 2>/dev/null | sed 's/ · [0-9]* ms//'
+building Duplex
+→ viewer.cost building=Duplex by=discipline
+ok · viewer.cost
+1190 elements · 1054482 total (71 with no rate); 3 with no size, not priced
+discipline  elements  cost
+ARC         267       532432
+ELEC        81        283500
+MEP         809       153825
+PLB         14        49000
+STR         19        35725
+ls lists the 32 priced rows
+Ready to post to ERP Project Order? y/N → erp.process name="Fold from BIM" Building=Duplex
+```
+
+The offer is the engine's own next step, read from `erp.order_state` (below), never typed by hand. In a session, `y` runs exactly the line the offer shows, and `n` or an empty Return runs nothing. In a one-shot line or for an AI nothing is asked and the line is in the answer's `next`. Answering `y` is `post`: it folds the building's priced selection into a Project Order, with its phases and tasks taken from the building's 4D programme (the programme is the source of the phase dates), and the project lines. The plugin that carries the process is started by the door itself (see the last part of this section). The whole post is kept as one group of changes, or none:
+
+<!-- run: chain_post -->
+```text
+$ printf 'cd Duplex\ncost discipline\ny\nn\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide_chain.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_chain.journal node common/door/red1.js 2>/dev/null | sed 's/ · [0-9]* ms//'
+building Duplex
+→ viewer.cost building=Duplex by=discipline
+ok · viewer.cost
+1190 elements · 1054482 total (71 with no rate); 3 with no size, not priced
+discipline  elements  cost
+ARC         267       532432
+ELEC        81        283500
+MEP         809       153825
+PLB         14        49000
+STR         19        35725
+ls lists the 32 priced rows
+Ready to post to ERP Project Order? y/N → erp.process name="Fold from BIM" Building=Duplex
+→ erp.process name="Fold from BIM" Building=Duplex
+ok · erp.process
+Posted Duplex: Project 990001, PlannedAmt 1054482.22784, 81 change(s) · no document made
+81 change(s) kept: create:c_project 1, create:c_projectphase 8, create:c_projecttask 19, create:c_projectline 43, create:m_product 7, create:m_product_category 1, create:m_product_category_acct 2
+Open the project? y/N → cd project
+not done: cd project
+```
+
+The posted amount, 1054482.22784, keeps the order's own line rule (price times quantity, unrounded), while `cost` rounds each group to a whole unit (1054482). The two are the same figure to the unit, not to the cent. The closing offer, `Open the project?`, is `cd project`; the `n` above declined it. The word `post` does the same without the `cost` before it, and asks `run it? y/N` first. Posting a building that is already in its order changes nothing:
+
+<!-- run: chain_post_again -->
+```text
+$ printf 'cd Duplex\npost\ny\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide_chain.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_chain.journal node common/door/red1.js 2>/dev/null | sed 's/ · [0-9]* ms//'
+building Duplex
+erp.process name="Fold from BIM" Building=Duplex   run it? y/N
+→ erp.process name="Fold from BIM" Building=Duplex
+ok · erp.process
+Nothing to post: Duplex is already in its Project Order (model 6236207b3ea3) · no document made
+Open the project? y/N → cd project
+```
+
+Now the purchase side. In the ERP kind `Project`, `run "Generate PO from Project"` asks its parameters in the dictionary's order: the project, an optional phase (the pick list holds only that project's phases), an optional project line, and whether to consolidate into one document (default `Y`). The session below types the project and answers the other three with Return (leave out, leave out, keep `Y`):
+
+<!-- run: chain_po -->
+```text
+$ printf 'cd Project\nrun "Generate PO from Project" C_Project_ID=990001\n\n\n\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide_chain.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_chain.journal node common/door/red1.js 2>/dev/null | sed 's/ · [0-9]* ms//'
+→ mis.describe kind=Project
+Project: 48 properties; ls shows C_Project_ID, Value, Name, Processed, SalesRep_ID
+→ mis.list kind=AD_Process_Para columns=ColumnName,Name,IsMandatory,DefaultValue,SeqNo,AD_Reference_ID sort=SeqNo limit=50 master="Process/Generate PO from Project"
+→ mis.lookup column=C_ProjectPhase_ID process="Generate PO from Project" limit=50 C_Project_ID=990001
+run: pick Project Phase (C_ProjectPhase_ID, 8)
+> 1    (leave it out)
+  2    1 · Substructure · 990007
+  3    2 · Superstructure · 990008
+  4    5 · Architecture Envelope · 990009
+  5    7 · MEP Rough-in · 990010
+  6    8 · Architecture Closeup · 990011
+  7    9 · MEP Final · 990012
+  8    10 · Finishes · 990013
+  9    99 · Unsequenced · 990014
+Up/Down or 1-9 pick · Enter choose · Esc cancel
+C_ProjectPhase_ID: left out
+→ mis.lookup column=C_ProjectLine_ID process="Generate PO from Project" limit=50 C_Project_ID=990001
+run: pick Project Line (C_ProjectLine_ID, 43)
+> 1    (leave it out)
+  2    10 · 990000 · 990028
+  3    10 · 990004 · 990031
+  4    10 · 990002 · 990035
+  5    10 · 1600228 · 990046
+  6    10 · 990013 · 990057
+  7    10 · 1600231 · 990059
+  8    10 · 1600232 · 990062
+  9    10 · 1600233 · 990069
+       20 · 990004 · 990029
+       20 · 990005 · 990032
+       20 · 990017 · 990036
+       20 · 1600229 · 990047
+       20 · 990013 · 990058
+       20 · 1600231 · 990060
+  1-15 of 44  (PageDown / PageUp)
+Up/Down or 1-9 pick · Enter choose · Esc cancel
+C_ProjectLine_ID: left out
+Consolidate to one Document (ConsolidateDocument)? [Y]
+→ erp.process name="Generate PO from Project" kind=Project C_Project_ID=990001 ConsolidateDocument=Y
+ok · erp.process
+Generate PO from Project: done · no document made
+  Product has no PO record  (×43)
+```
+
+**The honest answer is that no purchase order is made.** The products the post created carry no vendor price (no "PO record"), and the process says so for each of the 43 lines instead of answering a bare `ok`. With vendor prices on the products it would make the orders and list their numbers. The seed's own Hospital project is in the same state until it is given a warehouse, a customer, a payment term, a price list and lines of products that have vendors. The film "Fast Script ERP" ran six setup lines into a scratch op-log first (`mis.update` on the project, four `mis.new kind="Project Line"`), and the same `run` then made three purchase orders from four lines. Those lines are the film's, not part of this guide.
+
+### The door starts the core plugins
+
+The BIM Document window, with the process `Fold from BIM` that `post` runs, belongs to a core plugin. The door starts the core plugins itself, from the same list the browser reads (`erp/plugins/builtins.json`), and keeps their dictionary in memory only: nothing of it reaches your op-log or the seed. So a plugin's window answers at the door like any other:
+
+<!-- run: door_bimdoc cut=420 -->
+```text
+$ BIM_OBJECT_OPLOG=/tmp/fast_guide_empty.ops node common/door/door.js 'mis.describe kind=BIM_Document'
+{"request":"d-mwir4cvs-3223827-1","verb":"mis.describe","actor":"human","status":"ok","answer":{"kind":"BIM Document","table":"BIM_Document","uu":"bimdoc-table-9541001","key":"BIM_Document_ID","highVolume":false,"properties":[{"name":"BIM_Document_ID","label":"BIM Document","type":"id","mandatory":true,"updateable":false,"key":true,"parent":false,"length":22,"displayed":false,"seq":10},{"name":"AD_Client_ID","label":…
+```
+
+`erp.order_state` is the read behind the offer: for a building and a selection it says whether its ERP order is generated, what the engine allows next (`generate`, or a Variation Order when the model has changed under a committed order) and the exact line that does it. It changes nothing. Here it reads against an empty scratch op-log, so the building has no order yet:
+
+<!-- run: door_order_state -->
+```text
+$ BIM_OBJECT_OPLOG=/tmp/fast_guide_empty.ops node common/door/door.js 'erp.order_state building=Duplex'
+{"request":"d-mwir4e5l-3223895-1","verb":"erp.order_state","actor":"human","status":"ok","answer":{"building":"Duplex","key":"Ifc2x3_Duplex_Federated","state":{"generated":false,"projectId":null,"plannedAmt":null},"decision":{"kind":"not-generated","actions":["generate"]},"offer":{"key":"generate","line":"erp.process name=\"Fold from BIM\" Building=Duplex"}},"why":null,"notChecked":[],"ops":[],"next":[],"ms":1388}
+```
+
+`help verbs` lists every door verb with its full line. **From JavaScript**, the same verbs are one object, generated from the vocabulary (a new verb needs no new code):
 
 <!-- run: red1_api -->
 ```text
@@ -1259,6 +1544,10 @@ This table is **generated from the vocabulary file** (`common/door/verbs.json`) 
 | `model.undo` | Undo the last model change | none | trial | human, ai | a bim-ootb checkout |
 | `model.save` | Save the open model | `file` (optional) | writes | human, ai | a bim-ootb checkout |
 | `model.close` | Close the Modeller session | `discard` (optional) | trial | human, ai | a bim-ootb checkout |
+| `erp.process` | Run a dictionary process | `name`, `record` (optional), `kind` (optional), `dry` (optional), `role` (optional), further `column=value` filters (optional) | writes | human, ai | a bim-ootb checkout |
+| `erp.order_state` | What the ERP holds for a building's selection, and what is legal next | `building`, further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
+| `mis.lookup` | The legal values of a column or a process parameter | `column`, `kind` (optional), `process` (optional), `id` (optional), `limit` (optional), `role` (optional), further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
+| `viewer.cost` | The cost of a selection of a building | `building`, `by` (optional), further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
 | `erp.find` | Find a document | `kind`, `number` | read | human, ai | a bim-ootb checkout |
 | `erp.actions` | What can be done to a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | read | human, ai | a bim-ootb checkout |
 | `erp.complete` | Complete a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | posts | human, ai | a bim-ootb checkout |
@@ -1293,7 +1582,7 @@ This table is **generated from the vocabulary file** (`common/door/verbs.json`) 
 | `erp.new` | Create a record (old name of mis.new) | `kind`, `dry` (optional), `role` (optional), `window` (optional), further `column=value` filters (optional) | writes | human, ai | a bim-ootb checkout |
 <!-- /GEN:verbs -->
 
-**Coverage today.** The list is small on purpose: 59 verbs cover the Modeller's grid edits, its walker and a Modeller kept open between lines, a few Viewer questions, the schedule, generic object reading, counting and writing, and the first ERP document verbs. The Viewer has 64 actions a person can press, and the door offers 5 Viewer verbs. The ERP has 1157 documents and processes, and the door offers 6 ERP verbs for a document's life and 14 MIS verbs that work on any table, and keeps 10 old names so earlier lines still run. So this is a start, not the whole menu.
+**Coverage today.** The list is small on purpose: 63 verbs cover the Modeller's grid edits, its walker and a Modeller kept open between lines, a few Viewer questions, the schedule, generic object reading, counting and writing, the cost of a selection, the ERP document verbs, and any process of the ERP dictionary that has a port. The Viewer has 64 actions a person can press, and the door offers 6 Viewer verbs. The ERP has 1158 documents and processes, and the door offers 8 ERP verbs for a document's life and 15 MIS verbs that work on any table, and keeps 10 old names so earlier lines still run. So this is a start, not the whole menu.
 
 ## What is not checked
 
