@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 276f5bede717d2ac
+source_sha: 73eac880daff6273
 lang: id
 ---
 
@@ -69,7 +69,7 @@ Satu baris, satu verb, pasangan `key=value` tanpa spasi di sekitar `=`. Tanyakan
 <!-- run: lines cut=700 -->
 ```text
 $ node door.js 'modeller.lines building=HospitalGarage'
-{"request":"d-mwhmmeq9-2276636-1","verb":"modeller.lines","actor":"human","status":"ok","answer":{"ok":true,"building":"HospitalGarage","edits":[],"ms":16010,"model":{"grid_source":"column-derived","system":"column-framed","material":"RC","mixed":true,"girders":228,"rotation_deg":-2,"frame":"building","lines":[{"id":"gx0","axis":"x","pos":128.131,"world":132.184},{"id":"gx1","axis":"x","pos":129.223,"world":133.277},{"id":"gx2","axis":"x","pos":133.277,"world":137.334},{"id":"gx3","axis":"x","pos":133.795,"world":137.851},{"id":"gx4","axis":"x","pos":134.811,"world":138.868},{"id":"gx5","axis":"x","pos":145.987,"world":150.051},{"id":"gx6","axis":"x","pos":157.163,"world":161.234},{"id":"gx7…
+{"request":"d-mwiqhn1b-3186337-1","verb":"modeller.lines","actor":"human","status":"ok","answer":{"ok":true,"building":"HospitalGarage","edits":[],"ms":15019,"model":{"grid_source":"column-derived","system":"column-framed","material":"RC","mixed":true,"girders":228,"rotation_deg":-2,"frame":"building","lines":[{"id":"gx0","axis":"x","pos":128.131,"world":132.184},{"id":"gx1","axis":"x","pos":129.223,"world":133.277},{"id":"gx2","axis":"x","pos":133.277,"world":137.334},{"id":"gx3","axis":"x","pos":133.795,"world":137.851},{"id":"gx4","axis":"x","pos":134.811,"world":138.868},{"id":"gx5","axis":"x","pos":145.987,"world":150.051},{"id":"gx6","axis":"x","pos":157.163,"world":161.234},{"id":"gx7…
 ```
 
 Perintah itu membuka Modeller dan bangunannya, sehingga memerlukan 10 sampai 40 detik. Yang Anda lihat adalah satu baris JSON, sebuah **envelope** (amplop). Hanya bagian awalnya yang ditampilkan di sini; grid-nya memiliki lebih banyak garis daripada yang muat. Jawabannya adalah jawaban asli aplikasi, tidak diubah, di dalam `answer`. Di sini `gx5` berada di 145.987 m dan `gx6` di 157.163 m pada grid milik bangunan itu sendiri. `status` adalah `ok`.
@@ -92,9 +92,9 @@ Kode keluar adalah jawaban pertama: `0` berarti ok, `3` berarti aplikasi memberi
 <!-- run: widen_steps cut=200 -->
 ```text
 $ grep -o '"request":"[^"]*","verb":"[^"]*","actor":"[^"]*","status":"[^"]*"' widen.json
-"request":"d-mwhmmrdh-2276921-1","verb":"modeller.widen_bay","actor":"human","status":"refused"
-"request":"d-mwhmmrdh-2276921-1.1","verb":"modeller.lines","actor":"human","status":"ok"
-"request":"d-mwhmmrdh-2276921-1.2","verb":"modeller.try_shift","actor":"human","status":"refused"
+"request":"d-mwiqhyza-3186904-1","verb":"modeller.widen_bay","actor":"human","status":"refused"
+"request":"d-mwiqhyza-3186904-1.1","verb":"modeller.lines","actor":"human","status":"ok"
+"request":"d-mwiqhyza-3186904-1.2","verb":"modeller.try_shift","actor":"human","status":"refused"
 ```
 
 Langkah pertama membaca grid. Langkah itu menemukan bay saat ini:
@@ -166,8 +166,8 @@ Skrip berjalan dari atas ke bawah dan **berhenti pada baris pertama yang tidak o
 <!-- run: script_status -->
 ```text
 $ grep -o '"request":"[^"]*","verb":"[^"]*","actor":"[^"]*","status":"[^"]*"' bay.json
-"request":"d-mwhmni28-2277438-2","verb":"modeller.lines","actor":"human","status":"ok"
-"request":"d-mwhmntjy-2277438-3","verb":"modeller.try_shift","actor":"human","status":"ok"
+"request":"d-mwiqis8z-3188092-2","verb":"modeller.lines","actor":"human","status":"ok"
+"request":"d-mwiqj50r-3188092-3","verb":"modeller.try_shift","actor":"human","status":"ok"
 ```
 
 Tepat pada 12 m, aplikasi tidak menemukan masalah baru: jumlah bentang balok yang melewati batas tetap seperti semula.
@@ -197,7 +197,7 @@ Baris terakhir itu disengaja. Teks yang tidak cocok dengan verb mana pun **tidak
 <!-- run: question -->
 ```text
 $ node door.js 'please widen the bay'
-{"request":"d-mwhmo809-2277927-1","verb":null,"actor":"human","status":"refused","answer":{"question":"I could not read that as a command. A command is app.verb key=value … Which one do you mean? Type help.","verbs":["modeller.lines","modeller.try_shift","viewer.counts","viewer.clashes","viewer.film_path","viewer.schedule_at","viewer.schedule_compare","modeller.widen_bay","modeller.walk","object.describe","object.read","object.history","object.update","object.attach","object.count","object.list","object.sum","object.group","witness.run","witness.last","legacy.status","legacy.query","mis.column","legacy.compare","idempiere.where","mis.pack","legacy.up","legacy.refresh","legacy.witness","legacy.check","legacy.plugin","model.open","model.convert","model.addbay","model.undo","model.save","model.close","erp.find","erp.actions","erp.complete","erp.void","erp.close","erp.reverse","mis.describe","mis.read","mis.list","mis.sum","mis.group","mis.new","mis.update","mis.delete","mis.load","mis.add_window","ninja.exec","ninja.workflow","mis.diff","mis.menu","ninja.rollback","ninja.export","erp.column","erp.compare","erp.pack","erp.legacy_plugin","erp.describe","erp.read","erp.list","erp.sum","erp.group","erp.new"]},"why":"not a command: \"please widen the bay\"","notChecked":[],"ops":[],"next":[],"ms":0}
+{"request":"d-mwiqjlcw-3189389-1","verb":null,"actor":"human","status":"refused","answer":{"question":"I could not read that as a command. A command is app.verb key=value … Which one do you mean? Type help.","verbs":["modeller.lines","modeller.try_shift","viewer.counts","viewer.clashes","viewer.film_path","viewer.schedule_at","viewer.schedule_compare","modeller.widen_bay","modeller.walk","object.describe","object.read","object.history","object.update","object.attach","object.count","object.list","object.sum","object.group","witness.run","witness.last","legacy.status","legacy.query","mis.column","legacy.compare","idempiere.where","mis.pack","legacy.up","legacy.refresh","legacy.witness","legacy.check","legacy.plugin","model.open","model.convert","model.addbay","model.undo","model.save","model.close","erp.process","mis.lookup","viewer.cost","erp.find","erp.actions","erp.complete","erp.void","erp.close","erp.reverse","mis.describe","mis.read","mis.list","mis.sum","mis.group","mis.new","mis.update","mis.delete","mis.load","mis.add_window","ninja.exec","ninja.workflow","mis.diff","mis.menu","ninja.rollback","ninja.export","erp.column","erp.compare","erp.pack","erp.legacy_plugin","erp.describe","erp.read","erp.list","erp.sum","erp.group","erp.new"]},"why":"not a command: \"please widen the bay\"","notChecked":[],"ops":[],"next":[],"ms":8}
 ```
 
 ## Membaca balasan
@@ -226,7 +226,7 @@ Kelima status, masing-masing dari proses yang sungguh dijalankan:
 <!-- run: error -->
 ```text
 $ node door.js 'modeller.lines'
-{"request":"d-mwhmo856-2277937-1","verb":"modeller.lines","actor":"human","status":"error","answer":null,"why":"missing input: building","notChecked":[],"ops":[],"next":[],"ms":2}
+{"request":"d-mwiqjlky-3189400-1","verb":"modeller.lines","actor":"human","status":"error","answer":null,"why":"missing input: building","notChecked":[],"ops":[],"next":[],"ms":6}
 ```
 
 **claim.** Baris itu dipahami, tetapi aktor tidak memiliki bukti yang mengizinkannya, sehingga pintu **menahannya dan tidak menjalankannya**. Ini adalah aturan keselamatan untuk AI, dan berasal dari verb, bukan dari aktor. Lihat [Apa itu klaim](#what-is-a-claim).
@@ -234,7 +234,7 @@ $ node door.js 'modeller.lines'
 <!-- run: claim -->
 ```text
 $ node door.js --actor ai --request ai-1 'object.update building=Duplex kind=Element uu=abc column=Name value=x'
-{"request":"ai-1","verb":"object.update","actor":"ai","status":"claim","answer":null,"why":"actor ai has proof \"local-user\", which allows read/trial verbs; object.update is writes. Held as a claim, not run. A person confirms it with: door.js --confirm ai-1","notChecked":[],"ops":[],"next":[],"ms":5}
+{"request":"ai-1","verb":"object.update","actor":"ai","status":"claim","answer":null,"why":"actor ai has proof \"local-user\", which allows read/trial verbs; object.update is writes. Held as a claim, not run. A person confirms it with: door.js --confirm ai-1","notChecked":[],"ops":[],"next":[],"ms":11}
 ```
 
 **inconclusive.** Aplikasi tidak dapat menilai, dan menyatakannya. Status ini tidak pernah diubah menjadi `ok`. Di sini Viewer tidak memiliki aturan clash untuk pasangan ARC dan ZZZ. Yang ini memerlukan checkout:
@@ -242,7 +242,7 @@ $ node door.js --actor ai --request ai-1 'object.update building=Duplex kind=Ele
 <!-- run: inconclusive -->
 ```text
 $ node common/door/door.js 'viewer.clashes building=Duplex discA=ARC discB=ZZZ'
-{"request":"d-mwhmo8hh-2277957-1","verb":"viewer.clashes","actor":"human","status":"inconclusive","answer":null,"why":"the Viewer could not answer (exit 1): the Viewer says INCONCLUSIVE: no rule for ARC/ZZZ in clash_rules.json","notChecked":[],"ops":[],"next":[],"ms":24342}
+{"request":"d-mwiqjly7-3189440-1","verb":"viewer.clashes","actor":"human","status":"inconclusive","answer":null,"why":"the Viewer could not answer (exit 1): the Viewer says INCONCLUSIVE: no rule for ARC/ZZZ in clash_rules.json","notChecked":[],"ops":[],"next":[],"ms":19539}
 ```
 
 ### Apa itu klaim {#what-is-a-claim}
@@ -254,7 +254,7 @@ Setiap aktor memiliki bukti. Seseorang di terminal dipercaya untuk setiap kelas.
 <!-- run: claim_email -->
 ```text
 $ node door.js --actor email --request mail-0 'modeller.try_shift building=HospitalGarage line=gx6 move=1.824'
-{"request":"mail-0","verb":"modeller.try_shift","actor":"email","status":"claim","answer":null,"why":"actor email has proof \"none\", which allows read verbs; modeller.try_shift is trial. Held as a claim, not run. A person confirms it with: door.js --confirm mail-0","notChecked":[],"ops":[],"next":[],"ms":2}
+{"request":"mail-0","verb":"modeller.try_shift","actor":"email","status":"claim","answer":null,"why":"actor email has proof \"none\", which allows read verbs; modeller.try_shift is trial. Held as a claim, not run. A person confirms it with: door.js --confirm mail-0","notChecked":[],"ops":[],"next":[],"ms":7}
 ```
 
 Klaim yang ditahan tidak dijalankan, tidak diantrekan, dan tidak hilang: ia ada di jurnal, di bawah id request-nya. Pintu tidak mengonfirmasi apa pun atas nama siapa pun.
@@ -266,7 +266,7 @@ Seseorang meloloskan klaim yang ditahan **menurut id request-nya**, sehingga bar
 <!-- run: confirm_claim -->
 ```text
 $ node door.js --journal claims.jsonl --actor email --request mail-1 'modeller.try_shift building=HospitalGarage line=gx6 move=0.824'
-{"request":"mail-1","verb":"modeller.try_shift","actor":"email","status":"claim","answer":null,"why":"actor email has proof \"none\", which allows read verbs; modeller.try_shift is trial. Held as a claim, not run. A person confirms it with: door.js --confirm mail-1","notChecked":[],"ops":[],"next":[],"ms":2}
+{"request":"mail-1","verb":"modeller.try_shift","actor":"email","status":"claim","answer":null,"why":"actor email has proof \"none\", which allows read verbs; modeller.try_shift is trial. Held as a claim, not run. A person confirms it with: door.js --confirm mail-1","notChecked":[],"ops":[],"next":[],"ms":7}
 ```
 
 `--claims` mendaftar apa yang sedang ditahan:
@@ -308,7 +308,7 @@ Sebuah verb juga dapat menanyakan kepada model itu sendiri apa isinya. `object.d
 <!-- run: describe cut=520 -->
 ```text
 $ node common/door/door.js 'object.describe building=Duplex kind=Element'
-{"request":"d-mwhmp6f0-2278556-1","verb":"object.describe","actor":"human","status":"ok","answer":{"kind":"Element","table":"elements_meta","uu":"3027c2ed-8cb6-5ccb-ae8c-fd7df2eca264","key":"elements_meta_uu","highVolume":true,"properties":[{"name":"guid","label":"GUID","type":"string","mandatory":true,"updateable":false,"key":false,"parent":false,"length":255,"displayed":true,"seq":10,"fieldReadOnly":true,"allowCopy":false},{"name":"ifc_class","label":"IFC Class","type":"list","mandatory":false,"updateable":true,"…
+{"request":"d-mwiqkdzw-3190928-1","verb":"object.describe","actor":"human","status":"ok","answer":{"kind":"Element","table":"elements_meta","uu":"3027c2ed-8cb6-5ccb-ae8c-fd7df2eca264","key":"elements_meta_uu","highVolume":true,"properties":[{"name":"guid","label":"GUID","type":"string","mandatory":true,"updateable":false,"key":false,"parent":false,"length":255,"displayed":true,"seq":10,"fieldReadOnly":true,"allowCopy":false},{"name":"ifc_class","label":"IFC Class","type":"list","mandatory":false,"updateable":true,"…
 ```
 
 Metode apa yang boleh dipakai sebuah `Element`?
@@ -328,7 +328,7 @@ Jenis yang tidak dikenal adalah error yang mendaftar jenis-jenis yang dimiliki m
 <!-- run: count_rooms -->
 ```text
 $ node common/door/door.js 'object.count building=Duplex kind=Room'
-{"request":"d-mwhmp7mf-2278599-1","verb":"object.count","actor":"human","status":"ok","answer":{"kind":"Room","table":"model_room","filters":[],"count":5,"population":5,"verdict":"OK","summary":"5 Room"},"why":null,"notChecked":[],"ops":[],"next":[],"ms":594}
+{"request":"d-mwiqkfde-3190996-1","verb":"object.count","actor":"human","status":"ok","answer":{"kind":"Room","table":"model_room","filters":[],"count":5,"population":5,"verdict":"OK","summary":"5 Room"},"why":null,"notChecked":[],"ops":[],"next":[],"ms":614}
 ```
 
 Tambahkan `column=value` untuk mempersempit hitungan. Kolom itu harus properti dari jenisnya (`object.describe` mendaftarnya), dan jawabannya menyimpan **populasi**, yaitu angka sebelum dipersempit:
@@ -336,15 +336,15 @@ Tambahkan `column=value` untuk mempersempit hitungan. Kolom itu harus properti d
 <!-- run: count_storey -->
 ```text
 $ node common/door/door.js 'object.count building=Duplex kind=Room storey="Level 1"'
-{"request":"d-mwhmp87z-2278619-1","verb":"object.count","actor":"human","status":"ok","answer":{"kind":"Room","table":"model_room","filters":[{"column":"storey","value":"Level 1"}],"count":2,"population":5,"verdict":"OK","summary":"2 Room where storey = Level 1 (of 5)"},"why":null,"notChecked":[],"ops":[],"next":[],"ms":569}
+{"request":"d-mwiqkg0w-3191055-1","verb":"object.count","actor":"human","status":"ok","answer":{"kind":"Room","table":"model_room","filters":[{"column":"storey","value":"Level 1"}],"count":2,"population":5,"verdict":"OK","summary":"2 Room where storey = Level 1 (of 5)"},"why":null,"notChecked":[],"ops":[],"next":[],"ms":714}
 ```
 
-Kolom yang tidak dimiliki jenis itu adalah error yang menyebut namanya dan mendaftar kolom yang sebenarnya. Tidak pernah dibaca sebagai "tidak ada yang cocok":
+Kolom yang tidak dimiliki jenis itu ditolak, dan jawabannya menyebut namanya dan mendaftar kolom yang sebenarnya. Tidak pernah dibaca sebagai "tidak ada yang cocok":
 
 <!-- run: count_badcol cut=330 -->
 ```text
 $ node common/door/door.js 'object.count building=Duplex kind=Room floor=1'
-{"request":"d-mwhmp8u8-2278641-1","verb":"object.count","actor":"human","status":"error","answer":null,"why":"the object engine could not answer (exit 1): kind Room has no property \"floor\" (its properties: guid, type, name, parent_guid, object_type, predefined_type, center_x, center_y, center_z, size_x, size_y, size_z, room_gu…
+{"request":"d-mwiqkgro-3191109-1","verb":"object.count","actor":"human","status":"refused","answer":{"refused":true,"reason":"kind Room has no property \"floor\"; none is close, its properties: guid, type, name, parent_guid, object_type, predefined_type, center_x, center_y, center_z, size_x, size_y, size_z, room_guid, elevation,…
 ```
 
 Model tanpa satu ruangan pun tidak menjawab `0`. Ia menjawab `inconclusive`, karena tidak ada yang dihitung. Nol yang dapat Anda percaya adalah hitungan yang dipersempit di dalam populasi yang tidak kosong.
@@ -437,13 +437,13 @@ Dokumen Sales atau Purchase (penjualan atau pembelian) memerlukan `issotrx=Y` at
 <!-- run: new_order -->
 ```text
 $ rm -f /tmp/fast_guide_new.ops; BIM_OBJECT_OPLOG=/tmp/fast_guide_new.ops node common/door/door.js 'erp.new kind=Order issotrx=Y c_doctypetarget_id=132 c_bpartner_id=112 salesrep_id=101'
-{"request":"d-mwhmq2lp-2280086-1","verb":"erp.new","actor":"human","status":"ok","answer":{"number":"50000","kind":"Order","table":"c_order","id":1500004,"docStatus":"DR","given":["IsSOTrx","C_DocTypeTarget_ID","C_BPartner_ID","SalesRep_ID"],"defaulted":52,"filled":["ad_client_id","ad_org_id","documentno","isselfservice","dateordered","datepromised","bill_bpartner_id","c_bpartner_location_id","bill_location_id","deliveryrule","priorityrule","m_warehouse_id","isdropship","deliveryviarule","freightcostrule","freightamt","ispriviledgedrate","shippingrateinquiry","invoicerule","m_pricelist_id","c_currency_id","c_conversiontype_id","isdiscountprinted","chargeamt","paymentrule","c_paymentterm_id","totallines","grandtotal","docstatus","c_doctype_id","ispayschedulevalid","copyfrom","docaction","posted","isdelivered","dateacct","amountrefunded","isapproved","processed","processing","istaxincluded","isinvoiced","isselected","isprinted","sendemail","istransferred","iscreditapproved","isactive","processedon","amounttendered","volume","weight"],"record":{"c_order_id":1500004,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-15 17:25:44","createdby":101,"updated":"2026-11-15 17:25:44","updatedby":101,"issotrx":"Y","documentno":"50000","docstatus":"DR","docaction":"CO","processing":"N","processed":"N","c_doctype_id":0,"c_doctypetarget_id":132,"description":null,"isapproved":"N","iscreditapproved":"N","isdelivered":"N","isinvoiced":"N","isprinted":"N","istransferred":"N","isselected":"N","salesrep_id":101,"dateordered":"2026-11-15 00:00:00","datepromised":"2026-11-15 00:00:00","dateprinted":null,"dateacct":"2026-11-15 00:00:00","c_bpartner_id":112,"c_bpartner_location_id":108,"poreference":null,"isdiscountprinted":"Y","c_currency_id":100,"paymentrule":"P","c_paymentterm_id":105,"invoicerule":"D","deliveryrule":"A","freightcostrule":"I","freightamt":0,"deliveryviarule":"P","m_shipper_id":null,"c_charge_id":null,"chargeamt":0,"priorityrule":"5","totallines":0,"grandtotal":0,"m_warehouse_id":103,"m_pricelist_id":101,"istaxincluded":"N","c_campaign_id":null,"c_project_id":null,"c_activity_id":null,"posted":"N","c_payment_id":null,"c_cashline_id":null,"sendemail":"N","ad_user_id":null,"copyfrom":"N","isselfservice":"N","ad_orgtrx_id":null,"user1_id":null,"user2_id":null,"c_conversiontype_id":114,"bill_bpartner_id":112,"bill_location_id":108,"bill_user_id":null,"pay_bpartner_id":null,"pay_location_id":null,"ref_order_id":null,"isdropship":"N","volume":0,"weight":0,"ordertype":null,"c_pos_id":null,"amounttendered":0,"amountrefunded":0,"link_order_id":null,"m_freightcategory_id":null,"dropship_bpartner_id":null,"dropship_location_id":null,"dropship_user_id":null,"promotioncode":null,"c_ordersource_id":null,"processedon":0,"ispayschedulevalid":"N","c_cashplanline_id":null,"c_order_uu":"c1be6519-1439-4618-a5b3-7c7af36acfe9","shippingrateinquiry":"N","ispriviledgedrate":"N","c_opportunity_id":null,"quotationorder_id":null,"c_department_id":null,"c_costcenter_id":null},"ops":[{"op_type":"CRUD_UPDATE","table":"ad_sequence"},{"op_type":"CRUD_CREATE","table":"c_order"}]},"why":null,"notChecked":[],"ops":[{"op_type":"CRUD_UPDATE","table":"ad_sequence"},{"op_type":"CRUD_CREATE","table":"c_order"}],"next":[],"ms":6973}
+{"request":"d-mwiqksoh-3192036-1","verb":"erp.new","actor":"human","status":"ok","answer":{"number":"50000","kind":"Order","table":"c_order","id":1500004,"docStatus":"DR","given":["IsSOTrx","C_DocTypeTarget_ID","C_BPartner_ID","SalesRep_ID"],"defaulted":52,"filled":["ad_client_id","ad_org_id","documentno","isselfservice","dateordered","datepromised","bill_bpartner_id","c_bpartner_location_id","bill_location_id","deliveryrule","priorityrule","m_warehouse_id","isdropship","deliveryviarule","freightcostrule","freightamt","ispriviledgedrate","shippingrateinquiry","invoicerule","m_pricelist_id","c_currency_id","c_conversiontype_id","isdiscountprinted","chargeamt","paymentrule","c_paymentterm_id","totallines","grandtotal","docstatus","c_doctype_id","ispayschedulevalid","copyfrom","docaction","posted","isdelivered","dateacct","amountrefunded","isapproved","processed","processing","istaxincluded","isinvoiced","isselected","isprinted","sendemail","istransferred","iscreditapproved","isactive","processedon","amounttendered","volume","weight"],"record":{"c_order_id":1500004,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-16 12:01:24","createdby":101,"updated":"2026-11-16 12:01:24","updatedby":101,"issotrx":"Y","documentno":"50000","docstatus":"DR","docaction":"CO","processing":"N","processed":"N","c_doctype_id":0,"c_doctypetarget_id":132,"description":null,"isapproved":"N","iscreditapproved":"N","isdelivered":"N","isinvoiced":"N","isprinted":"N","istransferred":"N","isselected":"N","salesrep_id":101,"dateordered":"2026-11-16 00:00:00","datepromised":"2026-11-16 00:00:00","dateprinted":null,"dateacct":"2026-11-16 00:00:00","c_bpartner_id":112,"c_bpartner_location_id":108,"poreference":null,"isdiscountprinted":"Y","c_currency_id":100,"paymentrule":"P","c_paymentterm_id":105,"invoicerule":"D","deliveryrule":"A","freightcostrule":"I","freightamt":0,"deliveryviarule":"P","m_shipper_id":null,"c_charge_id":null,"chargeamt":0,"priorityrule":"5","totallines":0,"grandtotal":0,"m_warehouse_id":103,"m_pricelist_id":101,"istaxincluded":"N","c_campaign_id":null,"c_project_id":null,"c_activity_id":null,"posted":"N","c_payment_id":null,"c_cashline_id":null,"sendemail":"N","ad_user_id":null,"copyfrom":"N","isselfservice":"N","ad_orgtrx_id":null,"user1_id":null,"user2_id":null,"c_conversiontype_id":114,"bill_bpartner_id":112,"bill_location_id":108,"bill_user_id":null,"pay_bpartner_id":null,"pay_location_id":null,"ref_order_id":null,"isdropship":"N","volume":0,"weight":0,"ordertype":null,"c_pos_id":null,"amounttendered":0,"amountrefunded":0,"link_order_id":null,"m_freightcategory_id":null,"dropship_bpartner_id":null,"dropship_location_id":null,"dropship_user_id":null,"promotioncode":null,"c_ordersource_id":null,"processedon":0,"ispayschedulevalid":"N","c_cashplanline_id":null,"c_order_uu":"c72be278-7cf1-4062-a2c4-e0dee631a168","shippingrateinquiry":"N","ispriviledgedrate":"N","c_opportunity_id":null,"quotationorder_id":null,"c_department_id":null,"c_costcenter_id":null},"ops":[{"op_type":"CRUD_UPDATE","table":"ad_sequence"},{"op_type":"CRUD_CREATE","table":"c_order"}]},"why":null,"notChecked":[],"ops":[{"op_type":"CRUD_UPDATE","table":"ad_sequence"},{"op_type":"CRUD_CREATE","table":"c_order"}],"next":[],"ms":8305}
 ```
 
 <!-- run: new_line -->
 ```text
 $ BIM_OBJECT_OPLOG=/tmp/fast_guide_new.ops node common/door/door.js 'erp.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2'
-{"request":"d-mwhmq849-2280142-1","verb":"erp.new","actor":"human","status":"ok","answer":{"number":null,"kind":"Sales Order Line","table":"c_orderline","id":120002710,"docStatus":null,"given":["M_Product_ID","QtyEntered","C_Order_ID"],"defaulted":31,"filled":["ad_client_id","ad_org_id","c_bpartner_id","c_bpartner_location_id","datepromised","dateordered","line","m_warehouse_id","m_attributesetinstance_id","c_uom_id","qtyordered","qtydelivered","qtyreserved","qtyinvoiced","priceentered","priceactual","pricelist","freightamt","c_tax_id","discount","linenetamt","qtylostsales","processed","createshipment","createproduction","rramt","pricecost","pricelimit","c_currency_id","isactive","isdescription"],"record":{"c_orderline_id":120002710,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-15 17:25:52","createdby":101,"updated":"2026-11-15 17:25:52","updatedby":101,"c_order_id":1500004,"line":10,"c_bpartner_id":112,"c_bpartner_location_id":108,"dateordered":"2026-11-15 00:00:00","datepromised":"2026-11-15 00:00:00","datedelivered":null,"dateinvoiced":null,"description":null,"m_product_id":137,"m_warehouse_id":103,"c_uom_id":100,"qtyordered":2,"qtyreserved":0,"qtydelivered":0,"qtyinvoiced":0,"m_shipper_id":null,"c_currency_id":100,"pricelist":3,"priceactual":3,"pricelimit":2.7,"linenetamt":6,"discount":0,"freightamt":0,"c_charge_id":null,"c_tax_id":104,"s_resourceassignment_id":null,"ref_orderline_id":null,"m_attributesetinstance_id":0,"isdescription":"N","processed":"N","qtyentered":2,"priceentered":3,"c_project_id":null,"pricecost":0,"qtylostsales":0,"c_projectphase_id":null,"c_projecttask_id":null,"rrstartdate":null,"rramt":0,"c_campaign_id":null,"c_activity_id":null,"user1_id":null,"user2_id":null,"ad_orgtrx_id":null,"link_orderline_id":null,"pp_cost_collector_id":null,"m_promotion_id":null,"c_orderline_uu":"337b125f-adeb-4412-bbb9-5584c995f8fa","createshipment":"N","createproduction":"N","c_department_id":null,"c_costcenter_id":null},"ops":[{"op_type":"CRUD_CREATE","table":"c_orderline"},{"op_type":"CRUD_UPDATE","table":"c_order"}]},"why":null,"notChecked":[],"ops":[{"op_type":"CRUD_CREATE","table":"c_orderline"},{"op_type":"CRUD_UPDATE","table":"c_order"}],"next":[],"ms":7403}
+{"request":"d-mwiqkza1-3192368-1","verb":"erp.new","actor":"human","status":"ok","answer":{"number":null,"kind":"Sales Order Line","table":"c_orderline","id":120002710,"docStatus":null,"given":["M_Product_ID","QtyEntered","C_Order_ID"],"defaulted":31,"filled":["ad_client_id","ad_org_id","c_bpartner_id","c_bpartner_location_id","datepromised","dateordered","line","m_warehouse_id","m_attributesetinstance_id","c_uom_id","qtyordered","qtydelivered","qtyreserved","qtyinvoiced","priceentered","priceactual","pricelist","freightamt","c_tax_id","discount","linenetamt","qtylostsales","processed","createshipment","createproduction","rramt","pricecost","pricelimit","c_currency_id","isactive","isdescription"],"record":{"c_orderline_id":120002710,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-16 12:01:34","createdby":101,"updated":"2026-11-16 12:01:34","updatedby":101,"c_order_id":1500004,"line":10,"c_bpartner_id":112,"c_bpartner_location_id":108,"dateordered":"2026-11-16 00:00:00","datepromised":"2026-11-16 00:00:00","datedelivered":null,"dateinvoiced":null,"description":null,"m_product_id":137,"m_warehouse_id":103,"c_uom_id":100,"qtyordered":2,"qtyreserved":0,"qtydelivered":0,"qtyinvoiced":0,"m_shipper_id":null,"c_currency_id":100,"pricelist":3,"priceactual":3,"pricelimit":2.7,"linenetamt":6,"discount":0,"freightamt":0,"c_charge_id":null,"c_tax_id":104,"s_resourceassignment_id":null,"ref_orderline_id":null,"m_attributesetinstance_id":0,"isdescription":"N","processed":"N","qtyentered":2,"priceentered":3,"c_project_id":null,"pricecost":0,"qtylostsales":0,"c_projectphase_id":null,"c_projecttask_id":null,"rrstartdate":null,"rramt":0,"c_campaign_id":null,"c_activity_id":null,"user1_id":null,"user2_id":null,"ad_orgtrx_id":null,"link_orderline_id":null,"pp_cost_collector_id":null,"m_promotion_id":null,"c_orderline_uu":"ebc4bda0-3e8c-426b-a9cd-1829c8c56a83","createshipment":"N","createproduction":"N","c_department_id":null,"c_costcenter_id":null},"ops":[{"op_type":"CRUD_CREATE","table":"c_orderline"},{"op_type":"CRUD_UPDATE","table":"c_order"}]},"why":null,"notChecked":[],"ops":[{"op_type":"CRUD_CREATE","table":"c_orderline"},{"op_type":"CRUD_UPDATE","table":"c_order"}],"next":[],"ms":9220}
 ```
 
 Pesanan itu berupa draf sampai seseorang menyelesaikannya. Karena baris itu diberi nomor pesanan, total pesanan mengikuti tanpa langkah kedua: `totallines` dan `grandtotal` dalam rekaman di bawah adalah jumlah baris itu (6). Daftar baris milik pesanan itu sendiri tidak diisi oleh `erp.read`.
@@ -453,8 +453,8 @@ Pesanan itu berupa draf sampai seseorang menyelesaikannya. Karena baris itu dibe
 $ BIM_OBJECT_OPLOG=/tmp/fast_guide_new.ops node common/door/door.js --list 'erp.read kind=Order number=50000'
 kind: Order
 uu: 1500004
-record: {"c_order_id":1500004,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-15 17:25:44","createdby":101,"updated":"2026-11-15 17:25:44","updatedby":101,"issotrx":"Y","documentno":"50000","docstatus":"DR","docaction":"CO","processing":"N","processed":"N","c_doctype_id":0,"c_doctypetarget_id":132,"description":null,"isapproved":"N","iscreditapproved":"N","isdelivered":"N","isinvoiced":"N","isprinted":"N","istransferred":"N","isselected":"N","salesrep_id":101,"dateordered":"2026-11-15 00:00:00","datepromised":"2026-11-15 00:00:00","dateprinted":null,"dateacct":"2026-11-15 00:00:00","c_bpartner_id":112,"c_bpartner_location_id":108,"poreference":null,"isdiscountprinted":"Y","c_currency_id":100,"paymentrule":"P","c_paymentterm_id":105,"invoicerule":"D","deliveryrule":"A","freightcostrule":"I","freightamt":0,"deliveryviarule":"P","m_shipper_id":null,"c_charge_id":null,"chargeamt":0,"priorityrule":"5","totallines":6,"grandtotal":6,"m_warehouse_id":103,"m_pricelist_id":101,"istaxincluded":"N","c_campaign_id":null,"c_project_id":null,"c_activity_id":null,"posted":"N","c_payment_id":null,"c_cashline_id":null,"sendemail":"N","ad_user_id":null,"copyfrom":"N","isselfservice":"N","ad_orgtrx_id":null,"user1_id":null,"user2_id":null,"c_conversiontype_id":114,"bill_bpartner_id":112,"bill_location_id":108,"bill_user_id":null,"pay_bpartner_id":null,"pay_location_id":null,"ref_order_id":null,"isdropship":"N","volume":0,"weight":0,"ordertype":null,"c_pos_id":null,"amounttendered":0,"amountrefunded":0,"link_order_id":null,"m_freightcategory_id":null,"dropship_bpartner_id":null,"dropship_location_id":null,"dropship_user_id":null,"promotioncode":null,"c_ordersource_id":null,"processedon":0,"ispayschedulevalid":"N","c_cashplanline_id":null,"c_order_uu":"c1be6519-1439-4618-a5b3-7c7af36acfe9","shippingrateinquiry":"N","ispriviledgedrate":"N","c_opportunity_id":null,"quotationorder_id":null,"c_department_id":null,"c_costcenter_id":null}
-children: [{"kind":"Sales Order Line","rows":[{"c_orderline_id":120002710,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-15 17:25:52","createdby":101,"updated":"2026-11-15 17:25:52","updatedby":101,"c_order_id":1500004,"line":10,"c_bpartner_id":112,"c_bpartner_location_id":108,"dateordered":"2026-11-15 00:00:00","datepromised":"2026-11-15 00:00:00","datedelivered":null,"dateinvoiced":null,"description":null,"m_product_id":137,"m_warehouse_id":103,"c_uom_id":100,"qtyordered":2,"qtyreserved":0,"qtydelivered":0,"qtyinvoiced":0,"m_shipper_id":null,"c_currency_id":100,"pricelist":3,"priceactual":3,"pricelimit":2.7,"linenetamt":6,"discount":0,"freightamt":0,"c_charge_id":null,"c_tax_id":104,"s_resourceassignment_id":null,"ref_orderline_id":null,"m_attributesetinstance_id":0,"isdescription":"N","processed":"N","qtyentered":2,"priceentered":3,"c_project_id":null,"pricecost":0,"qtylostsales":0,"c_projectphase_id":null,"c_projecttask_id":null,"rrstartdate":null,"rramt":0,"c_campaign_id":null,"c_activity_id":null,"user1_id":null,"user2_id":null,"ad_orgtrx_id":null,"link_orderline_id":null,"pp_cost_collector_id":null,"m_promotion_id":null,"c_orderline_uu":"337b125f-adeb-4412-bbb9-5584c995f8fa","createshipment":"N","createproduction":"N","c_department_id":null,"c_costcenter_id":null}]},{"kind":"Order Tax","rows":[]},{"kind":"Order Payment Schedule","rows":[]},{"kind":"POS Payment","rows":[]}]
+record: {"c_order_id":1500004,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-16 12:01:24","createdby":101,"updated":"2026-11-16 12:01:24","updatedby":101,"issotrx":"Y","documentno":"50000","docstatus":"DR","docaction":"CO","processing":"N","processed":"N","c_doctype_id":0,"c_doctypetarget_id":132,"description":null,"isapproved":"N","iscreditapproved":"N","isdelivered":"N","isinvoiced":"N","isprinted":"N","istransferred":"N","isselected":"N","salesrep_id":101,"dateordered":"2026-11-16 00:00:00","datepromised":"2026-11-16 00:00:00","dateprinted":null,"dateacct":"2026-11-16 00:00:00","c_bpartner_id":112,"c_bpartner_location_id":108,"poreference":null,"isdiscountprinted":"Y","c_currency_id":100,"paymentrule":"P","c_paymentterm_id":105,"invoicerule":"D","deliveryrule":"A","freightcostrule":"I","freightamt":0,"deliveryviarule":"P","m_shipper_id":null,"c_charge_id":null,"chargeamt":0,"priorityrule":"5","totallines":6,"grandtotal":6,"m_warehouse_id":103,"m_pricelist_id":101,"istaxincluded":"N","c_campaign_id":null,"c_project_id":null,"c_activity_id":null,"posted":"N","c_payment_id":null,"c_cashline_id":null,"sendemail":"N","ad_user_id":null,"copyfrom":"N","isselfservice":"N","ad_orgtrx_id":null,"user1_id":null,"user2_id":null,"c_conversiontype_id":114,"bill_bpartner_id":112,"bill_location_id":108,"bill_user_id":null,"pay_bpartner_id":null,"pay_location_id":null,"ref_order_id":null,"isdropship":"N","volume":0,"weight":0,"ordertype":null,"c_pos_id":null,"amounttendered":0,"amountrefunded":0,"link_order_id":null,"m_freightcategory_id":null,"dropship_bpartner_id":null,"dropship_location_id":null,"dropship_user_id":null,"promotioncode":null,"c_ordersource_id":null,"processedon":0,"ispayschedulevalid":"N","c_cashplanline_id":null,"c_order_uu":"c72be278-7cf1-4062-a2c4-e0dee631a168","shippingrateinquiry":"N","ispriviledgedrate":"N","c_opportunity_id":null,"quotationorder_id":null,"c_department_id":null,"c_costcenter_id":null}
+children: [{"kind":"Sales Order Line","rows":[{"c_orderline_id":120002710,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-16 12:01:34","createdby":101,"updated":"2026-11-16 12:01:34","updatedby":101,"c_order_id":1500004,"line":10,"c_bpartner_id":112,"c_bpartner_location_id":108,"dateordered":"2026-11-16 00:00:00","datepromised":"2026-11-16 00:00:00","datedelivered":null,"dateinvoiced":null,"description":null,"m_product_id":137,"m_warehouse_id":103,"c_uom_id":100,"qtyordered":2,"qtyreserved":0,"qtydelivered":0,"qtyinvoiced":0,"m_shipper_id":null,"c_currency_id":100,"pricelist":3,"priceactual":3,"pricelimit":2.7,"linenetamt":6,"discount":0,"freightamt":0,"c_charge_id":null,"c_tax_id":104,"s_resourceassignment_id":null,"ref_orderline_id":null,"m_attributesetinstance_id":0,"isdescription":"N","processed":"N","qtyentered":2,"priceentered":3,"c_project_id":null,"pricecost":0,"qtylostsales":0,"c_projectphase_id":null,"c_projecttask_id":null,"rrstartdate":null,"rramt":0,"c_campaign_id":null,"c_activity_id":null,"user1_id":null,"user2_id":null,"ad_orgtrx_id":null,"link_orderline_id":null,"pp_cost_collector_id":null,"m_promotion_id":null,"c_orderline_uu":"ebc4bda0-3e8c-426b-a9cd-1829c8c56a83","createshipment":"N","createproduction":"N","c_department_id":null,"c_costcenter_id":null}]},{"kind":"Order Tax","rows":[]},{"kind":"Order Payment Schedule","rows":[]},{"kind":"POS Payment","rows":[]}]
 ```
 
 `erp.new` adalah verb `writes`. Seseorang di terminal yang menjalankannya. `erp.new` milik AI ditahan sebagai klaim dan tidak ada yang ditulis sampai seseorang mengonfirmasinya (lihat "Apa itu klaim"). Blok-blok ini memakai op-log sementara (`/tmp/fast_guide_new.ops`, dikosongkan lebih dulu), sehingga menjalankannya tidak menyentuh data Anda sendiri.
@@ -494,7 +494,7 @@ docStatus:
 given: ["Value","Name"]
 defaulted: 32
 filled: ["ad_client_id","ad_org_id","c_bp_group_id","iscustomer","isvendor","isemployee","isprospect","issalesrep","so_creditlimit","totalopenbalance","istaxexempt","ispotaxexempt","issummary","isactive","c_paymentterm_id","m_pricelist_id","flatdiscount","c_dunning_id","shelflifeminpct","ismanufacturer","is1099vendor","documentc…
-record: {"c_bpartner_id":1600010,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-15 17:26:07","createdby":101,"updated":"2026-11-15 17:26:07","updatedby":101,"value":"GD100","name":"Guide Partner One","name2":null,"description":null,"issummary":"N","c_bp_group_id":103,"isonetime":"N","isprospect":"N","isvendor…
+record: {"c_bpartner_id":1600010,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-16 12:01:52","createdby":101,"updated":"2026-11-16 12:01:52","updatedby":101,"value":"GD100","name":"Guide Partner One","name2":null,"description":null,"issummary":"N","c_bp_group_id":103,"isonetime":"N","isprospect":"N","isvendor…
 ops: [{"op_type":"CRUD_CREATE","table":"c_bpartner"},{"op_type":"CRUD_CREATE","table":"ad_treenodebp"},{"op_type":"CRUD_CREATE","table":"c_bp_customer_acct"},{"op_type":"CRUD_CREATE","table":"c_bp_customer_acct"},{"op_type":"CRUD_CREATE","table":"c_bp_vendor_acct"},{"op_type":"CRUD_CREATE","table":"c_bp_vendor_acct"}]
 ```
 
@@ -641,7 +641,7 @@ $ D='BIM_OBJECT_OPLOG=/tmp/fast_guide_win.ops node common/door/door.js --list'; 
 number: Tractor
 filled: ["ad_client_id","ad_org_id","isactive","condition","isinsured"]
 reason: mandatory and still empty after the defaults and callouts: Name (give them as column=value)
-reason: Condition Invalid value - BAD - Reference_ID=200277 - FAIR - GOOD - POOR; nothing was written
+reason: Condition Invalid value - BAD - Reference_ID=9541005 - FAIR - GOOD - POOR; nothing was written
 Name     Cost    Condition
 Tractor  1200.5  GOOD
 shown 1 of 1
@@ -706,7 +706,7 @@ id: 1
 Name     Fee  PR_Patient_ID
 Checkup  50   1
 shown 1 of 1
-reason: BloodGroup Invalid value - Z - Reference_ID=200277 - A - AB - B - O; nothing was written
+reason: BloodGroup Invalid value - Z - Reference_ID=9541005 - A - AB - B - O; nothing was written
 ```
 
 **Tabel yang sudah ada.** Bila buku kerja menyebut tabel yang sudah dimiliki sistem, tidak ada yang dibuat dua kali. Jika lembar memberi tabel itu sebuah `Master`, tabel itu dipakai ulang: kolom-kolom lembar ditambahkan padanya dan ia menjadi tab di bawah master tersebut. Jika lembar tidak memberinya `Master`, barisnya dibiarkan. Jawabannya mendaftar keduanya (`reused`, `leftAlone`). Inilah yang dilakukan Ninja milik iDempiere. Tabel yang dipakai ulang mempertahankan aturannya sendiri, sehingga rekamannya tetap harus mengisi kolom wajib milik tabel itu sendiri.
@@ -955,32 +955,32 @@ Menu itu sendiri adalah sebuah baris pintu, `mis.menu [role=] [find=]`. Di sini 
 ```text
 $ rm -f /tmp/fast_guide_menu.ops; printf '/\n=partner\nEnter\n3\nEsc\nEsc\nq\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide_menu.ops node common/door/door.js 'menu role=102' --plain | grep -E '^(-> |key |Menu|find|> )'
 -> mis.menu role=102
-Menu   (role 102)   294 windows
+Menu   (role 102)   295 windows
 > 1  ▸ System Admin
 key /
-Menu   (role 102)   294 windows
+Menu   (role 102)   295 windows
 > 1  ▸ System Admin
 find: _   (Enter search, Esc cancel)
 key =partner
-Menu   (role 102)   294 windows
+Menu   (role 102)   295 windows
 > 1  ▸ System Admin
 find: partner_   (Enter search, Esc cancel)
 key Enter
 -> mis.menu find=partner role=102
-find "partner"   (role 102)   294 windows
+find "partner"   (role 102)   295 windows
 > 1    System Admin > Data > Data Import > Import Business Partner
 key 3
 -> (open Business Partner Group: the list screen on C_BP_Group)
 -> mis.describe kind=C_BP_Group role=102
 -> mis.list kind=C_BP_Group columns=C_BP_Group_ID,Value,Name,Description names=Y limit=10 offset=0 role=102
 key Esc
-find "partner"   (role 102)   294 windows
+find "partner"   (role 102)   295 windows
 > 3    Partner Relations > Business Partner Rules > Business Partner Group
 key Esc
-Menu   (role 102)   294 windows
+Menu   (role 102)   295 windows
 > 1  ▸ System Admin
 key q
-Menu   (role 102)   294 windows
+Menu   (role 102)   295 windows
 > 1  ▸ System Admin
 ```
 
@@ -1267,6 +1267,9 @@ Tabel ini **dihasilkan dari berkas kosakata** (`common/door/verbs.json`) dan seb
 | `model.undo` | Membatalkan perubahan model yang terakhir | tidak ada | trial | human, ai | checkout bim-ootb |
 | `model.save` | Menyimpan model yang terbuka | `file` (opsional) | writes | human, ai | checkout bim-ootb |
 | `model.close` | Menutup sesi Modeller | `discard` (opsional) | trial | human, ai | checkout bim-ootb |
+| `erp.process` | Menjalankan sebuah proses dari kamus | `name`, `record` (opsional), `kind` (opsional), `dry` (opsional), `role` (opsional), filter `column=value` lainnya (opsional) | writes | human, ai | checkout bim-ootb |
+| `mis.lookup` | Nilai yang sah untuk sebuah kolom atau parameter proses | `column`, `kind` (opsional), `process` (opsional), `id` (opsional), `limit` (opsional), `role` (opsional), filter `column=value` lainnya (opsional) | read | human, ai | checkout bim-ootb |
+| `viewer.cost` | Biaya dari sebuah pilihan pada satu bangunan | `building`, `by` (opsional), filter `column=value` lainnya (opsional) | read | human, ai | checkout bim-ootb |
 | `erp.find` | Mencari sebuah dokumen | `kind`, `number` | read | human, ai | checkout bim-ootb |
 | `erp.actions` | Apa yang dapat dilakukan pada sebuah dokumen | `kind`, `id` (opsional), `number` (opsional), `role` (opsional) | read | human, ai | checkout bim-ootb |
 | `erp.complete` | Menyelesaikan sebuah dokumen | `kind`, `id` (opsional), `number` (opsional), `role` (opsional) | posts | human, ai | checkout bim-ootb |
@@ -1301,7 +1304,7 @@ Tabel ini **dihasilkan dari berkas kosakata** (`common/door/verbs.json`) dan seb
 | `erp.new` | Membuat sebuah rekaman (nama lama dari mis.new) | `kind`, `dry` (opsional), `role` (opsional), `window` (opsional), filter `column=value` lainnya (opsional) | writes | human, ai | checkout bim-ootb |
 <!-- /GEN:verbs -->
 
-**Cakupan saat ini.** Daftarnya kecil dengan sengaja: 59 verb mencakup pengeditan grid Modeller, walker-nya dan sebuah Modeller yang dibiarkan terbuka di antara baris, beberapa pertanyaan Viewer, jadwal, pembacaan objek generik, penghitungan dan penulisan, serta verb dokumen ERP yang pertama. Viewer memiliki 64 tindakan yang dapat ditekan seseorang, dan pintu menawarkan 5 verb Viewer. ERP memiliki 1157 dokumen dan proses, dan pintu menawarkan 6 verb ERP untuk daur hidup sebuah dokumen dan 14 verb MIS yang berfungsi pada tabel apa pun, serta mempertahankan 10 nama lama agar baris-baris sebelumnya tetap berjalan. Jadi ini sebuah permulaan, bukan menu yang lengkap.
+**Cakupan saat ini.** Daftarnya kecil dengan sengaja: 62 verb mencakup pengeditan grid Modeller, walker-nya dan sebuah Modeller yang dibiarkan terbuka di antara baris, beberapa pertanyaan Viewer, jadwal, pembacaan objek generik, penghitungan dan penulisan, serta verb dokumen ERP yang pertama. Viewer memiliki 64 tindakan yang dapat ditekan seseorang, dan pintu menawarkan 6 verb Viewer. ERP memiliki 1158 dokumen dan proses, dan pintu menawarkan 7 verb ERP untuk daur hidup sebuah dokumen dan 15 verb MIS yang berfungsi pada tabel apa pun, serta mempertahankan 10 nama lama agar baris-baris sebelumnya tetap berjalan. Jadi ini sebuah permulaan, bukan menu yang lengkap.
 
 ## Apa yang tidak diperiksa {#what-is-not-checked}
 

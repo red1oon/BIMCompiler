@@ -59,7 +59,8 @@ function sync(oldB, newB, trB, brk) {
         for (const [x] of pairsT) if (LN.count(t, x) !== LN.count(oldB[was], x)) ok = false;
         if (ok) { // swap each changed token (all its occurrences change together, as in the English line)
           const uniq = new Map(); pairsT.forEach(([x, y]) => { if (uniq.has(x) && uniq.get(x) !== y) ok = false; uniq.set(x, y); });
-          if (ok) { uniq.forEach((y, x) => { t = t.split(x).join('\u0001' + y + '\u0002'); }); t = t.replace(/[\u0001\u0002]/g, ''); out.push(t); rep.patched++; cls.push('patched'); continue; }
+          if (ok && brk === 'substring') { uniq.forEach((y, x) => { t = t.split(x).join('\u0001' + y + '\u0002'); }); t = t.replace(/[\u0001\u0002]/g, ''); out.push(t); rep.patched++; cls.push('patched'); continue; }   // W-I18N-SYNC falsifier: the old substring swap (must FAIL Y7)
+          if (ok) { out.push(LN.swap(t, uniq)); rep.patched++; cls.push('patched'); continue; }   // whole tokens, one pass (DOCS_I18N.md §6f FIX)
         }
       }
     }
