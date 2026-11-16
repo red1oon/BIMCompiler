@@ -1052,6 +1052,55 @@ Two terminal ideas. Neither is built and nothing is decided.
    - What could be translated is the red1 WORD a person types. The CLI session owns `words.json` and decides; this lane would supply the names from the packs.
    - Open questions: where the localized word lives (a per-language word table vs the help pack), and whether a word may collide with a dictionary name.
 
+## 16. RESEARCH: help and search methods to learn from (owner 2026-11-17, relayed by the CLI session bim-compiler-ef)
+**Owner, verbatim (in the CLI session):** *"research if there are cutting edge search and help methods to learn from"*, then *"help and search belongs to another session. So pose to it there to segregate."*
+**Split agreed with the CLI session:** this lane = help and search (`erp.ask`, `erp/help_search.js`, `help_catalog.js`, help text, the `?` panels). The CLI lane = type assist (whole-line completion, next-command / intent prediction; `CLI_ERP_IVR.md` §1d). So fish/zsh autosuggest, PowerShell predictors, Warp/Fig specs and atuin/McFly are NOT judged here. Anything on the line (a did-you-mean that hands over to help) is agreed with the CLI session first.
+
+**Judged against:** (1) no AI inside; (2) offline; (3) pure SQLite; (4) nothing new in the browser; (5) vocabulary from the dictionary; (6) the 6 guide languages, with CJK / Thai.
+
+**Measured here first (2026-11-17):**
+- The BROWSER's SQLite (`common/lib/sql-wasm.wasm`, sql.js) is 3.38.5 with `ENABLE_FTS3`, `FTS3_PARENTHESIS`, `RTREE`. **FTS4 yes, FTS5 NO** ("no such module: fts5"), so no trigram tokenizer.
+- The CLI's Node SQLite (better-sqlite3) is 3.53.1, with FTS5 + trigram.
+- So any SQLite-FTS answer would differ between the CLI and the browser.
+- `Intl.Segmenter` (built into Node and the browsers, no model, ICU dictionaries) splits words with no spaces:
+  - Thai: `ผนังรับน้ำหนัก` → `ผนัง|รับ|น้ำ|หนัก`;
+  - Chinese: `如何创建销售订单` → `如何|创建|销售|订单`.
+- Today `help_search.js` reads CJK as characters / character pairs (§12) and ranks how-to rows "BM25-like" by shared words.
+
+| Method (source) | What it does | Verdict here |
+|---|---|---|
+| **Did-you-mean by edit distance** (git `help.autocorrect`: weighted edit distance, suggest / prompt / never; SymSpell: precomputed DELETES of dictionary terms, Damerau / OSA distance) | A mistyped word suggests the nearest dictionary word | **ADOPT.** All 6 pass: the deletes are built from the dictionary's own names at build time into the help pack; the lookup is plain JS. Suggest, never auto-run (git's `prompt`, not its timer). Write our own from the algorithm (SymSpell code is LGPL-3.0). Where the CLI hands an unknown word to help, agree it with the CLI session. |
+| **Example-first help** (tldr pages: a one-line description, then a few concrete runnable examples with `{{placeholders}}`; a linter enforces the shape) | The answer leads with the line to type | **ADOPT** for the card shape: the CLI line + what it does first, then the reference. Examples only from `verbs.json` `examples` and the how-to rows (never written for the card). A witness can lint the shape (tldr-lint idea). |
+| **Search names + descriptions + search terms** (nushell `help --find`: matches command names, descriptions and "search terms") | Finds a command by what it does, not only its name | **ADOPT.** Index the AD Description / Help and the verb descriptions too, not only names. Search terms = the element's names in all 6 languages (AD_Element_Trl), so a word typed in one language finds the entry. |
+| **One box for everything** (Frappe Awesome Bar: type a DocType → its list, a record name → the record, "new task" → create, shown only with create permission) | Navigate, open a record and act from one search | **ADOPT, in steps.** The card already gives window + action. Next: a document number opens that record, and "new <window>" creates, both through the existing role access gate. The witness counts X of N windows. |
+| **Typed prefixes** (Odoo Ctrl+K palette: `/` menus/apps, `@` users, `#` channels, `?` knowledge articles) | One character says what kind of thing you want | **ASK OWNER.** Deterministic and cheap, but it is a UI choice. A proposal: `?` help, `/` windows/menus, `#` document number. |
+| **Word segmentation without a model** (`Intl.Segmenter`: Baseline 2024, Firefox 125+, Safari 14.1+, Chromium 87+) | Real words for zh / ja / th | **ADOPT, with a guard.** It is built in (nothing new loaded). Risk: different browsers ship different ICU dictionaries, so the same text may split differently. Plan: segment the DICTIONARY terms once at build time (Node, pinned) and keep the character-pair match as the fallback; the witness pins the expected splits. Thai is measured in Node only; Firefox Thai is unverified. |
+| **Proper BM25** (FTS4 `matchinfo(t,'pcnalx')` + a ranking function, k1 = 1.2, b = 0.75) | Better ranking of the how-to rows | **ADOPT the formula, not SQLite FTS.** FTS4 exists in both, but its tokenizers cannot split CJK / Thai, and FTS5 exists only in the CLI. One JS BM25 over our own tokens (field weights: name > description > help) gives the browser and the CLI the SAME answer (one implementation). The corpus is small (thousands of rows): an in-memory index is enough. |
+| **SQLite FTS5 trigram** (substring search, LIKE/GLOB acceleration, since about 3.34) | Substring search | **REJECT here:** CLI-only (the browser build has no FTS5), so the two would answer differently. |
+| **MiniSearch / Lunr / Pagefind** (client search libraries / static indexes) | Ready-made search | **REJECT:** each is a new library in the browser. (The MkDocs guides keep their own built-in search; that is not this box.) |
+
+**Proposed order (for the owner; nothing is built):**
+1. Did-you-mean over the dictionary, ERP box + BIM panel. Agree the CLI hand-off with the CLI session.
+2. The index also covers descriptions and the 6-language names (cross-language find).
+3. `Intl.Segmenter` terms at build time + character-pair fallback.
+4. One exact BM25 with field weights.
+5. The example-first card shape, with a shape linter.
+6. Awesome-bar steps (open a document number; "new <window>").
+7. Prefixes, only on the owner's word.
+
+Every step gets a witness with a falsifier (e.g. did-you-mean: N misspellings derived from dictionary names, each must return its source word; a made-up word must return nothing).
+
+**Sources:**
+- [Frappe Awesomebar](https://docs.frappe.io/erpnext/awesomebar-global-search), [Frappe Desk](https://docs.frappe.io/framework/user/en/desk)
+- [Odoo 17 keyboard shortcuts / command palette](https://www.odoo.com/documentation/17.0/applications/essentials/keyboard_shortcuts.html)
+- [SymSpell](https://github.com/tablesmit/symspell), [symspell_rs (OSA vs Damerau)](https://docs.rs/symspell_rs)
+- [tldr style guide](https://github.com/jvns/tldr/blob/main/contributing-guides/style-guide.md), [tldr client spec](https://github.com/tldr-pages/tldr/blob/v1.3/CLIENT-SPECIFICATION.md)
+- [sqlite-fts4 BM25 over matchinfo](https://github.com/simonw/sqlite-fts4)
+- [Intl.Segmenter Baseline](https://web.dev/blog/intl-segmenter), [MDN Intl.Segmenter](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Intl/Segmenter)
+- [nushell help](https://www.nushell.sh/commands/docs/help.html), [nushell help commands](https://www.nushell.sh/commands/docs/help_commands.html)
+- [git autocorrect](https://adamj.eu/tech/2022/10/26/git-how-to-enable-autocorrect/), [help.autocorrect=prompt patch](https://code.googlesource.com/git/+/dc66e3c799cd5d8f3e664e26899bca200ffdfd7b%5E%21/)
+- [SQLite trigram forum](https://sqlite.org/forum/forumpost/76b444bebe?t=c)
+
 ## STATUS
 2026-11-16 (session bim-compiler-41): P1b, §10-§13 built and merged; films EN v4 / ZH v5 / DE v1 made (not pushed); ERP User Guide help section LIVE. Next: §14 (BIM help panel), check (a) first.
 2026-11-16: P1 built and witnessed (5/0), merged as bim-ootb #3079. P2a built and witnessed (W-MSG-CATALOG 4/0), merged as bim-ootb #3082. P3a built and witnessed (W-HELP-STUDENT 5/0), merged as bim-ootb #3083. P3a-1 (help footer + opening tip, `red1 --fast`), bim-ootb #3084. P2b (W-MSG-DOOR 5/0) #3108. P1b (W-FIELD-HELP 13/0) #3126. Depends on `prompts/DOCS_I18N.md`, `prompts/CLI_ERP_IVR.md` (CLI session owns), `prompts/ERP_UI_LOCALES.md`.
