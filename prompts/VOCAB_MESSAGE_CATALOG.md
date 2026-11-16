@@ -11,7 +11,8 @@ Background, measurements and prior art are in `prompts/DOCS_I18N.md` §4b-§4d (
 - Step 3, class text in the info panel: BUILT and live, bim-ootb #3150, W-CLASS-HELP PASS (§14.1 RESULT).
 - Step 2, How To in the `?` palette: BUILT, bim-ootb #3156, W-HOWTO PASS (§14.3 RESULT).
 - The help panel itself (left, stays open, amber, draggable, reopens as left): BUILT, bim-ootb #3160, W-HELP-DOCK PASS (§14.4 RESULT).
-- **NEXT:** the Modeller gets the same panel + the `common/help/` move: SPEC WRITTEN, §14.5 (owner's placement decided). Build it.
+- §14.5 step 1 (shared panel + drag helper in `common/`): BUILT, bim-ootb #3165.
+- **NEXT:** §14.5 STEP 2, the Modeller adapter: every fact is measured in the ▶ STEP 2 block under §14.5 RESULT. Then the prefixes, box side (§16 item 7: owner agreed `?` / `#<number>`; the CLI session specs the shell side as CLI_ERP_IVR §41).
 - Three owner items are open in §14.1 RESULT.
 1. **(a) CHECKED 2026-11-17, see §14 (a) RESULT:** CC BY-ND 4.0. Verbatim English with attribution is usable. A translation needs bSI's written consent. **DECIDED 2026-11-17: use bSI's own official translations from bSDD, verbatim; coverage measured, see §14 (a) DECIDED.** Original task: may buildingSMART's IFC class definitions (the IFC4 / IFC4.3 documentation text) be shown, translated and redistributed inside our pages?
    - Read the actual licence or terms on buildingSMART's own site, save the copy into the session's prior folder, and cite the clause.
@@ -1063,6 +1064,39 @@ This REPLACES the §14 design's "right dock".
   - M7: position remembered across a reload;
   - M8: phone sheet.
 - **Regression:** W-HELP-DOCK, W-HOWTO, W-CLASS-HELP and W-VIEWER-I18N unchanged. Every viewer caller of `A._makeDraggable` still drags: a sweep drags each one that the witness can open and reports X of N. W-X0-APPDEF: regenerate `APP_SURFACE.md`.
+
+### 14.5 RESULT step 1 (2026-11-17): shared panel + drag helper, bim-ootb #3165 (`feat/help-panel-common`)
+- **`common/drag.js`:** `A._makeDraggable` moved VERBATIM. The viewer name delegates, so its 13 callers are unchanged. It gains the opt-in `_dragOnDrop(rect)`.
+- **`common/help/help_panel.js`:** the dock moved out of `viewer/scene.js` (`HelpPanel.toggle(cfg)`). It adds a `howto.text` block for in-app guide paragraphs.
+- **`scene.js` `showCommandPalette`** is now the Viewer adapter: same ids (`#cmd-palette` …), same log lines.
+- **Size:** 5 files, +144 / −404 lines, plus the two new common files.
+- **Witnesses on the moved code:**
+  - W-HELP-DOCK 14/14, W-HOWTO PASS, W-ABOUT-HELP-RESTORE 9/9;
+  - W-X0 appdef / isolation / lens PASS (`APP_SURFACE.md` regenerated);
+  - W-VIEWER-I18N de_DE: the same 3 failures as main, leaks 23/310;
+  - lint 0 errors.
+- **Drag-caller sweep:** 2 of 13 callers were judged (the help panel; `#info-panel` in W-HELP-DOCK D3b). The other 11 run the same moved function, but were NOT individually dragged by a witness.
+
+**▶ STEP 2 for the next session (the Modeller), facts already measured:**
+- **`modeller/modeller.html`:**
+  - the `?` overlay is built at about lines 6580-6617 (`const help` … `hpanel` … `buildHelp()` … outside-click close);
+  - the keyboard rows are Undo Ctrl+Z, Redo Ctrl+⇧Z, Cancel current mode Esc, Copy Ctrl+C, Paste (click to place) Ctrl+V, Drawing metadata Shift+D, This help ?, Snap-to-geometry on/off (while moving) G, Arm rotate ring (turn, in Move) T, Arm scale cubes (in Move) S;
+  - the guide is `initGuide()` (`#b-guide`, 11 `SECTIONS` as [title, html]).
+  - Load `../common/drag.js` + `../common/help/help_panel.js`.
+- **Adapter:**
+  - entries = live `#bar` buttons (icon `.ic` outerHTML, name span, `SHORTCUTS[id]`, action = button click) + the 10 keyboard rows + the 11 guide sections as entries with `howto.text`;
+  - place = the outliner's strip `{ left: 0, top: 0, width: 240, height: innerHeight }`. 240 so it does not cover `#bar` at `left: 252px`.
+  - **HIDE the outliner with `visibility: hidden`, NOT `body.ol-collapsed`:** that class also moves `#hist`, `#stat`, `#ins-panel` and `#dim-row` to `left: 12px` (`modeller.html` about line 104), under the panel.
+  - `onDrop(rect)`: left ≥ 240 → outliner visible, else hidden. `onOpen`: the same test on the restored position. `onClose`: visible.
+  - Background `#14161c` (`modeller.html:459`).
+- **Six tests read the old overlays and must move to the new panel** (selectors only, claims unchanged):
+  - `modeller/tests/witness_modeller_pill_verbs.js:66-75` (D5: the guide count == the source `SECTIONS` count);
+  - `modeller/tests/witness_clipboard_keys.js:118` (`#m-help-panel .hp-row` Copy / Paste);
+  - `modeller/tests/pill_declutter_live.js:47`;
+  - `modeller/tests/witness_dxf_panel_pill.js:59` (`?` → `#m-help-panel` `display === 'block'`; the new panel is `display: flex`);
+  - `modeller/tests/witness_guide_text_updates.js:36` (`#m-guide-panel` innerHTML);
+  - `viewer/tests/witness_modeller_i18n.js:148` (judges `#m-help-panel` in de_DE).
+- Then W-HELP-DOCK-M as specced (M1-M8), and the PR states lines +/−.
 
 ## 15. NOT URGENT, to think about (owner 2026-11-16: *"You mean we can mis.<translated verb>? Note in prompt then we shall think about it not urgent."*)
 Two terminal ideas. Neither is built and nothing is decided.
