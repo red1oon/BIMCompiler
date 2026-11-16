@@ -91,7 +91,7 @@ Owner, closing 2026-11-15: *"get it well documented in the prompts/# consolidate
 - **`rm` with a relative glob after a `cd` is blocked by the safety check** (the whole command does not run, edits included): never chain a removal onto an edit.
 - `< /dev/null` on every `node` in a loop; wait on processes, not on a log marker from the previous run; `*.log` is gitignored (`git add -f` the logs a spec commits); bim-compiler has no auto-merge (merge by hand), bim-ootb does (`--auto --squash`, wait for MERGED, re-run on `main`); the bim-compiler checkout is on another branch (read `git show origin/master:…`, edit in a `/tmp/wt-*` worktree); never `git stash` (shared), never `--force` a worktree path.
 - **Measure before quoting** (a `§` line and its command); check the visible effect before choosing a film example.
-- **The parity gate's full bridge takes ~25 min, its limit is 15** (`bump.js:185`): it times out with `verdicts=0`. M3/FA judge bim-compiler's engine, never the bumped bim-ootb tree. Link all 39 untracked `build/erp/*.db` into a fresh bridge worktree and DD/DDS judge (and pass).
+- **The parity gate's full bridge takes ~25 min, its limit is 15** (`bump.js:185`): it times out with `verdicts=0`. 6 of its 16 witnesses load the bumped tree (M3 among them: check by `grep BRIDGE_OOTB`, never from memory, this lane got it wrong once). Link all 39 untracked `build/erp/*.db` into a fresh bridge worktree and DD/DDS judge (and pass).
 
 ## ▶ START HERE (fresh session)
 
@@ -648,14 +648,17 @@ after, one local clock, legacy's.
 - **Parity gate: OVERRIDE with reason** (`--no-parity`, F-16's own exception path). The gate's first run gave `verdicts=0 … why=bridge_error(spawnSync bash
   ETIMEDOUT)`: the full bridge now takes **25 min** (`~/.cache/bim_bridge/run_20261117_021326.log`; `witness_fa_gap` alone ~25 min of it), the gate's limit is
   15 min (`scripts/bump.js:185`). The full run on the branch: DD PASS, DDS PASS (both were known FAILs: the 39 linked `build/erp/*.db` made them judge),
-  CTX FAIL (known), **M3 HARNESS-FAIL and FA FAIL, which load only bim-compiler's own `scripts/erp_engine.js` / `doc_poster.js` (`witness_m3_gap.js:15-17`,
-  `witness_fa_gap.js:13-14`), never the bim-ootb tree**: they cannot judge a bim-ootb bump. **Finding for this lane (F-16 / §F.30):** the gate should run only
+  CTX FAIL (known), M3 HARNESS-FAIL and FA FAIL. ~~Both load only bim-compiler's own engine~~ **CORRECTION (same day, after merge): FA does
+  (`witness_fa_gap.js:13-14`), but M3 ALSO loads the bumped tree** on its AD-window path (`witness_m3_gap.js:166-171`, `BRIDGE_OOTB` → `erp/model_order.js`).
+  M3 re-run before (`ed092608`) and after (`674cdf72`): identical `§M3_VERDICT HARNESS-FAIL fails=1 inconclusive=1 findings=18`, the same 88 `§GAP` lines
+  (4 differ only in values that drift with the pilot's accumulated data: NEG-bs ending 57535 → 59089, NEG-pi stock −38 → −43). So this PR changed nothing M3 judges.
+  Of the 16 bridge witnesses in `run_all.sh`, 6 load the bumped tree (attachment_parity, lf_parity, m3_gap, product_icons, soda_parity, soda_receipt_parity). **Finding for this lane (F-16 / §F.30):** the gate should run only
   the witnesses that load the bumped tree (`BRIDGE_OOTB`/`OOTB`), or carry a longer limit; until then a full-bridge gate on an ERP file times out every time.
 
 **OWNERS OF THE OPEN ITEMS (checked 2026-11-17, owner asked "which prompts/# owns those issues"):**
 | Item | Owner file | Note |
 |---|---|---|
-| `witness_fa_gap` slow (~25 min) / FA FAIL, M3 HARNESS-FAIL | bim-compiler `prompts/SQLiteIDEMPIERE.md` (FA scenarios `:1361`, D7/D8; FA = extra, not core) | judges bim-compiler's engine, not bim-ootb |
+| `witness_fa_gap` slow (~25 min) / FA FAIL, M3 HARNESS-FAIL | bim-compiler `prompts/SQLiteIDEMPIERE.md` (FA scenarios `:1361`, D7/D8; FA = extra, not core) | FA judges bim-compiler's engine only; M3 also loads bim-ootb (unchanged by #3149). Cause of the slowness + reset advice: that file's 2026-11-17 notes |
 | `erp/ws_kernel.js` (A3-CLOCK-2 must install the edge there) | bim-compiler `prompts/ERP_WS_API.md` (S2 built it; last touched 2026-11-09) | recent edits by the CLI + Project-process work: ask the live session first, record in `ERP_WS_API.md` |
 | "15 of 51 `ws_kernel.js` witnesses fail on unedited main" (RESUME 7) | **none: no source.** The archive holds no such list and no prompts file in either repo names it | RESUME 7 corrected: re-measure before quoting |
 | 4D cache `witness.log` has no `§LOG_STAMP` | split: `§LOG_STAMP` is this lane's (§F.7, F-11); `scripts/cache_4d_run.js` is `prompts/4D_MODEL_INTEGRITY.md`'s (PRIMAL LAW 5, §I) | the 4D lane's file and cache key: hand over as information |

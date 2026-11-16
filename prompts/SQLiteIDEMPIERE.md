@@ -2599,3 +2599,15 @@ Verdicts of that run: `§FA_VERDICT FAIL fails=1 inconclusive=1 findings=8`, `§
 **Options for this lane (not decided here):** (a) load the handover of the scenario's own asset group/period only; (b) dispose/void the witness's
 own assets at the end of each run; (c) run W-FA against a pilot restored from a snapshot. Until then, a bump gate on a bim-ootb ERP file cannot finish
 (the code-design lane will scope its gate to the witnesses that load the bumped tree, see `CODE_ARCHITECTURE_DESIGN.md`).
+**2026-11-17 NOTE, addendum (same session; owner asked "slowness on legacy or kernel? grow each run or reset/tear down?").**
+- **Mostly the LEGACY side.** Before each scenario W-FA reads, one web-service call at a time, three things per earlier asset (`witness_fa_gap.js:159-160`:
+  `QueryAAsset`, `QueryADepreciationWorkfile`, `QueryADepreciationExp`). Measured: `§WS_LATENCY calls=60 ms_per_call=53 assets_in_pilot=395` → ~319 assets x 3 x
+  12 loads ≈ 11,500 calls ≈ 10 of the ~25 min. Not yet measured (the log has no timestamps): legacy's own Depreciation Entry, which processes every pending row
+  of the month for all those assets, and `postedOf` waits (up to 10 x 1.5 s per entry). The kernel side is a local SQLite scratch copy; it grows too
+  (`expAll()` re-parses every row on each check, `:54`) but is local.
+- **It should not grow.** The handover exists only because legacy's monthly entry picks up every pending asset the earlier runs left behind; from a clean
+  start it is near zero. M3 shows the same drift: its NEG-* control values move between two runs an hour apart (bank-statement ending 57535 → 59089,
+  stock −38 → −43) because the pilot keeps every run's documents.
+- **Advice: RESET, not tear-down.** Legacy will not simply delete an asset with posted depreciation (removing it means a disposal document, which posts and
+  leaves more history). Take one snapshot of the pilot DB in a known clean state and restore it at the start of `run_all.sh`; every bridge witness then
+  starts equal. The pilot is shared (other lanes write into it on :8088), so the restore-on-run is this lane's and the owner's decision.
