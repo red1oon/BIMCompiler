@@ -2,7 +2,7 @@
 Scope: **SPEC and phase ledger** for ONE vocabulary the CLI and the guides both read: a keyed message catalog and a help catalog over the Application Dictionary, with a short/long level and a locale. Read the log after every run (exit code is not evidence). Spec first, witness with a falsifier next, code last; honour until this file is marked DONE.
 Background, measurements and prior art are in `prompts/DOCS_I18N.md` §4b-§4d (owner ideas of 2026-11-16: shared vocabulary for CLI and guides, a `Student` level = the long text, reuse the legacy element/message model, remove the copied Help). This file owns the BUILD; that file keeps the findings.
 
-## ▶▶ RESUME HERE FIRST (2026-11-16, end of session bim-compiler-41; the next "resume message" session starts here)
+## ▶▶ RESUME HERE FIRST (updated 2026-11-17 at session close; the next "resume message" session starts here)
 **Owner, 2026-11-16 (verbatim, binding):** *"Agree. Update prompt to resume new session. We check (a) and agree your b and c."*
 **Next task: the BIM help panel (Viewer + Modeller), §14.** Spec before code; the design below is AGREED, the one open item is (a).
 **STATE 2026-11-17 (read first):**
@@ -13,7 +13,11 @@ Background, measurements and prior art are in `prompts/DOCS_I18N.md` §4b-§4d (
 - The help panel itself (left, stays open, amber, draggable, reopens as left): BUILT, bim-ootb #3160, W-HELP-DOCK PASS (§14.4 RESULT).
 - §14.5 step 1 (shared panel + drag helper in `common/`): BUILT, bim-ootb #3165.
 - **NEXT:** §14.5 STEP 2, the Modeller adapter: every fact is measured in the ▶ STEP 2 block under §14.5 RESULT. Then the prefixes, box side (§16 item 7: owner agreed `?` / `#<number>`; the CLI session specs the shell side as CLI_ERP_IVR §41).
-- Three owner items are open in §14.1 RESULT.
+- The three §14.1 owner items were ANSWERED in §14.2 (ISO note kept; type classes via their cited occurrence class; our sentence in 15 languages, all built, #3152).
+- **Open owner question:** 8 Viewer tools have no section in the BIM User Guide (§14.3 RESULT), so they get no guide link until the guide has a section.
+- **Waiting on the CLI session (no action here):** §42 S3, the short-name limit fix in `assist_core.nearest()` (§16 item 1). It will message when merged. After that, the help box calls `nearest()` (no second edit-distance function).
+- **Known gap:** §14.5 step 1 dragged only 2 of the 13 `A._makeDraggable` callers in a witness (§14.5 RESULT step 1).
+- **Research kept:** §16. The licence copies and the bSDD fetch live in `~/bim-compiler/build/bim_help_prior/` (not tracked).
 1. **(a) CHECKED 2026-11-17, see §14 (a) RESULT:** CC BY-ND 4.0. Verbatim English with attribution is usable. A translation needs bSI's written consent. **DECIDED 2026-11-17: use bSI's own official translations from bSDD, verbatim; coverage measured, see §14 (a) DECIDED.** Original task: may buildingSMART's IFC class definitions (the IFC4 / IFC4.3 documentation text) be shown, translated and redistributed inside our pages?
    - Read the actual licence or terms on buildingSMART's own site, save the copy into the session's prior folder, and cite the clause.
    - If the terms are unclear, say "not usable yet". Never assume.
