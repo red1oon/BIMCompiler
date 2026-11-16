@@ -3674,7 +3674,7 @@ red1: type a short word; red1 prints the full line it runs (→ …), then runs 
   bim   buildings and models             start with: cd Duplex   (16 words)
   mis   records, tables, files, Ninja    start with: cd Order   (11 words)
   erp   document actions (CO VO CL RC)   start with: cd Order   (7 words)
-  everywhere: cd &lt;place&gt; · pwd · role &lt;id&gt; · history · report · exit
+  everywhere: cd &lt;place&gt; · pwd · role &lt;id&gt; · login &lt;user&gt; · history · report · exit
 Type bim, mis or erp for its words · help &lt;word&gt; for one word (level student first for the full explanation) · help verbs for the full door lines.
 </code></pre></div>
 <p>グループは、その言葉を、打てる例とともに一覧にします。いちばん短いのは <code>erp</code> です：</p>
@@ -3915,8 +3915,8 @@ not done: cd project
 </thead>
 <tbody>
 <tr>
-<td><code>pwd</code> · <code>cd ..</code> · <code>history</code> · <code>role &lt;id&gt;</code></td>
-<td>今いる場所、戻る、入力した行、ロールとして動く</td>
+<td><code>pwd</code> · <code>cd ..</code> · <code>history</code> · <code>role &lt;id&gt;</code> · <code>login &lt;user&gt;</code></td>
+<td>今いる場所、戻る、入力した行、ロールとして動く、自分が誰かを伝える（メールを持つユーザーが複数いるクライアントでだけ求められる。新しいレコードにはあなたのユーザーが記録される）</td>
 </tr>
 <tr>
 <td><code>sum &lt;column&gt;</code> · <code>cat &lt;id&gt;</code> · <code>rm &lt;id&gt;</code></td>
