@@ -1,0 +1,15 @@
+{
+ "note": "Only sources this lane READ. A repo row names the file, the line and a text that must be on that line (idempiere = the local legacy source, read from disk; bim-ootb = origin/main); a web row names the URL and the copy fetched into out/prior/ (2026-11-16) and a text that must be in that copy. guard.js check P fails a row whose text is not there. Nothing from memory.",
+ "items": [
+  { "name": "iDempiere WEditor", "where": { "repo": "idempiere", "path": "org.adempiere.ui.zk/WEB-INF/src/org/adempiere/webui/editor/WEditor.java", "line": 333, "text": "label.setTooltiptext(description);" },
+    "does": "a field's tooltip is its Description, on label and editor", "took": "the twin's one tooltip setter (W-FIELD-HELP F1)" },
+  { "name": "iDempiere HelpController", "where": { "repo": "idempiere", "path": "org.adempiere.ui.zk/WEB-INF/src/org/adempiere/webui/panel/HelpController.java", "line": 146, "text": "onFieldTooltip" },
+    "does": "the East Tool Tip panel: header, description, help", "took": "the same panel and its blank-line rules (F3)" },
+  { "name": "iDempiere SynchronizeTerminology", "where": { "repo": "idempiere", "path": "org.adempiere.base.process/src/org/compiere/process/SynchronizeTerminology.java", "line": 167, "text": "Description = (SELECT e.Description FROM AD_ELEMENT_TRL e" },
+    "does": "a field takes its element's translated Description", "took": "the rule that builds the help pack per language" },
+  { "name": "the published de_DE language pack", "where": { "repo": "bim-ootb", "path": "erp/tools/build_i18n.py", "line": 35, "text": "github.com/bxservice/tbayen.translations@c88fe319 de_DE (T. Bayen / Team Germany)" },
+    "does": "German translations of the dictionary, by Team Germany", "took": "the German text, unchanged (S1 28,176/28,176)" },
+  { "name": "McKinsey Global Institute, The social economy (2012)", "where": { "url": "https://www.mckinsey.com/industries/technology-media-and-telecommunications/our-insights/the-social-economy", "saved": "out/prior/mckinsey_the_social_economy.html", "text": "nearly 20 percent looking for internal information or tracking down colleagues who can help with specific tasks" },
+    "does": "measured how much of a workweek goes into finding information", "took": "why help belongs inside the window, where the question is asked" }
+ ]
+}
