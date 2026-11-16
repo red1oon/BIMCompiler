@@ -15,7 +15,7 @@ Background, measurements and prior art are in `prompts/DOCS_I18N.md` §4b-§4d (
   - The SHAPE stays legacy's: tooltip = Description (§7), and the extra content appears in the right panel where legacy shows Context Help.
   - It supersedes the "ship it to a real iDempiere as a 2Pack" lines in §8 and §9.
 - **D4 Extra how-to content = this lane's big task** ("HELP is major boost"). Writing it is this lane's job, not an open question.
-**State (2026-11-16, session after bim-compiler-75):** P2b DONE (§6). **P1b BUILT, W-FIELD-HELP 13/0** (bim-ootb #3126 `feat/field-help-twin`, §7 RESULT): tooltip = the field's own Description, one setter `erp/field_help.js`, the East Tool Tip panel. **Next = the help pack format and loader (step 5 below)**, through `ErpI18n.loadPack` (D1), pilot fr/de/ja/zh (D2).
+**State (2026-11-16, session after bim-compiler-75):** P2b DONE (§6). **§10 showcase slice BUILT, W-HELP-SHOWCASE 13/0** (bim-ootb #3128: help pack per language, question search, auto-links, 4 how-to rows; §10 RESULT). **P1b BUILT, W-FIELD-HELP 13/0** (bim-ootb #3126 `feat/field-help-twin`, §7 RESULT): tooltip = the field's own Description, one setter `erp/field_help.js`, the East Tool Tip panel. **Next = the help pack format and loader (step 5 below)**, through `ErpI18n.loadPack` (D1), pilot fr/de/ja/zh (D2).
 **Facts measured this session (cite them, do not re-derive):**
 - Legacy tooltip = Description (`WEditor.java:247/333/339-340`). Help goes to the RIGHT panel on focus (`ADTabpanel.java:840`, `GridTabRowRenderer.java:637-641`, `HelpController.renderToolTip:186-230`).
 - Live `adempiere.ad_field_v` = `f.name, f.description, f.help` (the field's own text only).
@@ -434,6 +434,35 @@ Sources: [SAP Web Assistant](https://www.sap.com/design-system/fiori-design-web/
 - **S3 the search answers.** A fixed question set of real phrasings (e.g. "How do I close a Sales Order?", "complete an invoice", "void a payment") → expected window and action (X of N). Falsifier `nophrase` (no phrase matching) FAILS S3.
 - **S4 the links work.** Every link in the how-to text points at a window on the role's menu (X of N); clicking the answer card's window link opens that window (`§IDEMPIERE window=` log). Falsifier `deadlink` FAILS S4.
 - **S5 the how-to text is traceable.** Each how-to row names its source, and its guide sentences occur in the guide file (X of N rows).
+### §10 RESULT (2026-11-16, bim-ootb #3128 `feat/help-showcase`; logs `erp/tests/logs/witness_help_showcase*.log`, `build_help_pack.log`)
+**W-HELP-SHOWCASE 13 pass / 0 fail / 0 inconclusive** (real page served from the repo root, GardenAdmin, 0 page errors):
+- **S1:** every pack text found in the published XML by the witness's own reader: de_DE 28,176/28,176 · fr_FR 26,208/26,208 · zh_CN 12,336/12,336 · ja_JP 3,656/3,656.
+- **S2:** de_DE on the Sales Order header (tab 186, 60 fields): tooltip 54/54 and Tool Tip panel 54/54 German; 6/6 without a German text show English; back to English byte-identical (60 fields).
+- **S3:** 8/8 questions → expected window + action. E.g. "How do I close a Sales Order?" → 143 / CL / `erp.close kind=Order number=<Document No>`; "complete an invoice" → 167 / CO, CLI note "erp.complete is offered for Order (C_Order), not for Invoice".
+- **S4:** 9/9 rendered links on the role's menu. Clicking the card link opens window 195 (`§IDEMPIERE window=Payment and Receipt(195)`), and the How To widget follows it (`§HELP_CTX window=195 howto=4`).
+- **S5:** 4/4 how-to rows = their guide section word for word.
+- **Falsifiers FAIL as claimed:** `tamper` S1 in all 4 languages; `nophrase` S3 0/8 (and S4); `deadlink` S4 4/9.
+- **Regressions:** W-FIELD-HELP still 13/0; W-ERP-I18N 7/4, identical to main before this PR.
+
+**Pack (`build_help_pack.log`):**
+
+| Language | Fields with a translation | Distinct texts | Bytes | Stale English original |
+|---|---|---|---|---|
+| de_DE | 14,961 of 18,153 | 3,374 | 523 KB | 251 |
+| fr_FR | 14,262 | 2,860 | 452 KB | 3,494 |
+| zh_CN | 9,315 | 835 | 189 KB | 3,256 |
+| ja_JP | 3,537 | 81 | 60 KB | 2,020 |
+
+- en_US: 4 how-to rows, 5 links, 13 actions.
+- Each text is stored once (the first format was 6.5 MB).
+- "Stale English original" = the pack's English source differs from today's English. The translation is applied by id, as legacy does. French and Chinese packs are old (3.5.2), so many are stale.
+
+**Measured / decided while building:**
+- `sqlite3 -json` keeps a column's own case when an alias equals the column name (`name` came back as `Name`): use distinct aliases.
+- The linker is case-sensitive: lowercase "menu"/"product"/"customer" are words, not windows. A table term links only as a whole bold/code guide term, never to a System-only table ("Process" button ≠ AD_Process).
+- Search: several window phrases → the LAST wins (English head noun: "customer payment"); "Re-activate" also matches "reactivate" (hyphen dropped, no synonym); "reverse" names both Reverse actions.
+- **Film:** de_DE is the strongest pilot (2,528 element Descriptions). Japanese is too thin.
+
 **Not in this slice (named):** process-parameter translations; the prebuilt search index (built at load here, small); how-to text in other languages; how-to beyond the four windows; Japanese is too thin to film (17 Descriptions).
 
 ## STATUS
