@@ -20,6 +20,8 @@ Owner, closing 2026-11-15: *"get it well documented in the prompts/# consolidate
 
 **0. ✅ DONE 2026-11-15 (fourth session): F-18 answered, the provenance hover built and merged — §F.23 (bim-ootb #3064 + tooltip-in-window fix #3069); FILM 3 built (`prompts/FILM_IMMERSIVE_SOFTWARE.md` FILM 3 STATUS, awaiting the owner's review); the default-key + truss findings handed to the DXF2BIM lane (bim-ootb `prompts/DXF2BIM_ARCHITECT_REVIEW.md` §D113, #3070). NEXT = the X0 "New witness for this file" command (§F.21 OPEN), or Part A's remaining A2 (item 2).** The text below is the original hand-over.
 
+**0j. 2026-11-16 (sixth session, later):** owner asked again for the browser-memory monitor of the three pages in VS Code → **§F.31** spec written (tier 3 of §F.3), decisions **F-20, F-21, F-22** open; F-20 asked first. Guide §0.1 now says plainly that a witness is a unit test of one item, for developers, never called by a user. Part A's next item (the value reads) is unchanged.
+
 **0i. 2026-11-16 (sixth session):** **A2-TIMING-3 built (bim-ootb #3124)**: `common/room_graph.js` + `viewer/schedule_inject.js` time through `CoreEdge`, the Modeller page installs the edge too; all timing reads of RESUME 2 are done. **NEXT:** the VALUE reads `schedule_author.js` / `schedule_sync.js` (A2-TIMING-3 RESULT names the lines), then the EDGE producers, then A3. Also this session, at the owner's request: `docs/DeveloperGuide.md` **§0.1 Witnesses** (how a witness tests the shipped file, and what is and is not deployed, checked on the live site).
 
 **0h. 2026-11-16 (fifth session):** A-6 asked and answered (*"Option 1 (Recommended)"*: one global `CoreEdge`, Part A DECISIONS) and **A2-TIMING-2 built (bim-ootb #3122)**: the 4D pair times through the viewer's new edge, 4D cache identical. **NEXT:** `common/room_graph.js` + `viewer/schedule_inject.js` (timing), then `schedule_author.js` / `schedule_sync.js` (values), then the EDGE producers, then A3 (A2-TIMING-2 RESULT lists the traps).
@@ -944,6 +946,34 @@ at a worktree on `origin/master` (e.g. `/tmp/wt-bridge`) until the default is de
   - S5 (wiring, through the shared stub): `activate` with a stale `extensionPath` shows the warning once; with a matching one it shows none.
   - Before/after: `witness_x0_activate` and the realvsc install suite keep their verdicts.
 - **RESULT 2026-11-16: ✅ DONE (witness), bim-ootb #3091 / PR #3092, merged `186d80ae`.** On `main`: `§X0_STAMP_W files=13 stamp=1c3372cfee90 deterministic=Y checks=10 failed=0 verdict=PASS`. S5 activates the PACKED `extension.js`: stale gives `§X0_STAMP state=stale built=1c3372cfee90 source=4ed593f6e739 warnings=1`, restored gives `state=same … warnings=0`. **Red run on the old code** (the new witness with `main`'s old `pack.js`/`extension.js`): exit 1, S1 `null = f56ea15ddad5`, S3 `state=unknown`. The stub refactor is neutral: `witness_x0_activate` gives the same 30 PASS checks and the same `§X0_ACTIVATE definition=1 hover=2 commands=8 fresh=Y checks_failed=0 verdict=PASS`. Also PASS on the branch and on `main`: isolation (`deps=0`), lens, appdef, deploy_cost, context. `pack.js` prints `source=<hash12>`. **Not run:** the realvsc install suite (it starts a real VS Code; owner's go first). **For the owner's own copy:** the next `node devtools/vscode/pack.js --install` is the first build that carries a stamp. Copies installed before it report `unknown` and show no warning.
+
+### F.31 Browser memory of the three pages, shown in VS Code (owner 2026-11-16; tier 3 of §F.3; decisions **F-20..F-22**; not built)
+Owner, 2026-11-16: *"reminder, i did suggest before that we have some monitor in the VSC showing what is the mem load on browser of the differing
+URL trilogy so dev knows if code is getting bulky"*. This is tier 3 of the perf-impact monitor (§F.3, "Measured, only with the owner's go"). Tier 1
+is built (§F.12a `devtools/vscode/x0-navigator/lib/deploy_cost.js`: static start-up and offline-cache **bytes** per app, working tree vs a git ref,
+no browser). **Nothing in VS Code shows browser memory today.**
+- **The trilogy:** `viewer/viewer.html`, `erp/idempiere.html`, `modeller/modeller.html`, the three apps with a `sw.js`, the same set `deploy_cost.js`
+  finds from the files.
+- **What exists to reuse (bim-ootb `main` @ `9b7d2f86`):** `scripts/probe_activation_memory.js` reads Chrome's own `JSHeapUsedSize` (`page.metrics()`,
+  the DevTools Performance domain) at named points; `scripts/probe_memory.js` breaks a live scene's memory down (JS heap, three.js geometry bytes,
+  textures, the sql.js WASM heap). Both are probes for one building, run by hand; neither compares two trees or reaches VS Code.
+- **Shape proposed:** a headless run of each page, working tree vs `main` (two local servers, the X0 "Run local" pattern), software GL, service worker
+  blocked. It reads at the page's ready point: JS heap (`JSHeapUsedSize`), the WASM heap, the script bytes actually fetched, and the boot time. It
+  prints `§HEAP_IMPACT page= tree= jsMB= wasmMB= scriptKB= bootMs=` and a `delta` line per page. X0 shows one row per page: *Viewer 84 MB (+3 vs main)*.
+  **Witness W-HEAP-IMPACT:** a planted 5 MB array in a boot script raises that page's jsMB by about 5 and leaves the other two unchanged (red control:
+  an unchanged tree gives |delta| within the measured run-to-run noise, measured first, not assumed); INCONCLUSIVE if a page never reaches its ready point.
+- **Thresholds are NOT set here:** F-2 already decided to observe until 2026-11-30 and then propose ceilings. This tool adds the memory column to that.
+**OPEN DECISIONS (ask one at a time):**
+- **F-20 — what the number measures.** (1) Each page booted with **no model**, or with the one smallest fixed sample, so the number is the weight of
+  the CODE (what "getting bulky" means), steady from run to run. (2) With a reference building loaded: real user load, but geometry dominates it
+  (the heap fit is ≈ 0.17 GB per million vertices and the largest reference building peaks at 3.4–3.8 GB, `docs/BrowserScaleBenchmark.md`;
+  the code's own share has never been measured, which is what this tool would add) and the bake logs already track it. **Recommendation: (1);
+  (2) stays the bake logs' and BrowserScaleBenchmark's job.**
+- **F-21 — when it runs.** A button only (F-1's rule: a headless browser only when the owner presses it), or also on every save/commit. **Recommendation:
+  a button (*X0: Memory of the three pages*), plus the last result kept in the status bar until the code changes; never beside a live bake or GPU work.**
+- **F-22 — where it shows.** **Recommendation:** the X0 panel row under "Cost if deployed" (bytes and memory side by side), and the `§HEAP_IMPACT` lines
+  pasted into the PR body as F-2 already asks for the bytes.
+**DECISIONS:** *(none yet)*
 
 ### F.30 The parity gate judged the shared checkout, not the tree it bumps (found 2026-11-16 by A2-TIMING-1; a defect in F-16, no decision)
 - **Issue proved:** `scripts/bump.js` (F-16) caches its verdict under the BUMPED tree (`HEAD` plus `git diff`), but spawns the bridge (`bash run_all.sh`) with no tree setting, so every bridge witness falls back to `~/bim-ootb`. The bridge log of the A2-TIMING-1 bump says `§SODAP_CTX ootb=/home/red1/bim-ootb` while the bump ran in `/tmp/wt-a2t`. **A PASS is therefore filed under a tree that was never judged (scope-blind, PRIMAL LAW 4).** It also showed a second instrument trap: a fresh bim-compiler worktree has no `node_modules`, so five bridge witnesses printed `Cannot find module 'sql.js'`. The gate counted those as five NEW FAILs, which were the instrument's fault, not real mismatches.
