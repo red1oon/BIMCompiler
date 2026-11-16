@@ -180,3 +180,10 @@ clash: <the short help, unchanged>
 
 ## STATUS
 2026-11-16: P1 built and witnessed (5/0), merged as bim-ootb #3079. P2a built and witnessed (W-MSG-CATALOG 4/0), merged as bim-ootb #3082. P3a built and witnessed (W-HELP-STUDENT 5/0), merged as bim-ootb #3083. P3a-1 (help footer + opening tip, `red1 --fast`), bim-ootb #3084. Depends on `prompts/DOCS_I18N.md`, `prompts/CLI_ERP_IVR.md` (CLI session owns), `prompts/ERP_UI_LOCALES.md`.
+
+## Note from the code-design lane (2026-11-16): `msg_keys.scan` also reads calls inside comments
+Found while building F-19 (`prompts/CODE_ARCHITECTURE_DESIGN.md` §F.28, bim-ootb #3103). `scan()` matched `M('key', …)` written in a
+header COMMENT and reported a use of the key `key`. That gave a false unknown-key once the file was tracked. X0 now blanks comments
+first with the repo's one tokenizer, `scripts/lib/js_scan.js` (`scan(src).code`, same length and lines), and only then calls `scan`. **No
+effect on W-MSG-CATALOG M3 today:** it scans only `words_core.js` and `red1.js`, which have no such comments. If M3's file list widens,
+the same `js_scan` step keeps it from counting prose. Left for this lane to decide; nothing in `common/door` was changed.
