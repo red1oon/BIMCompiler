@@ -1,0 +1,6 @@
+§FACTS bc red1oon/BIMCompiler origin/master@bd245ef4a PUBLIC MIT License first_line="MIT License" "Copyright (c) 2025-2026 Redhuan D. Oon" prompts=369 witness_files=358 docs_md=323
+§FACTS oo red1oon/bim-ootb origin/main@186d80ae PUBLIC MIT License first_line="MIT License" "Copyright (c) 2026 Redhuan D. Oon" prompts=70 witness_files=1425
+§FACTS guide languages (mkdocs.yml i18n, build:true) en=English | es=Español (Latinoamérica) | fr=Français | de=Deutsch | id=Bahasa Indonesia | ja=日本語 | zh=简体中文 -> besides English: 6; docs/FastScriptGuide.<lang>.md: de,es,fr,id,ja,zh same_as_mkdocs=true
+§FACTS clone exit=0 first line="Cloning into 'BIMCompiler'..."
+§FACTS totals prompts_both=439 witness_files_both=1783
+§FACTS VERDICT PASS bad=0
