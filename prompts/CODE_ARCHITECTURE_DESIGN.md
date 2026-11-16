@@ -20,6 +20,8 @@ Owner, closing 2026-11-15: *"get it well documented in the prompts/# consolidate
 
 **0. ✅ DONE 2026-11-15 (fourth session): F-18 answered, the provenance hover built and merged — §F.23 (bim-ootb #3064 + tooltip-in-window fix #3069); FILM 3 built (`prompts/FILM_IMMERSIVE_SOFTWARE.md` FILM 3 STATUS, awaiting the owner's review); the default-key + truss findings handed to the DXF2BIM lane (bim-ootb `prompts/DXF2BIM_ARCHITECT_REVIEW.md` §D113, #3070). NEXT = the X0 "New witness for this file" command (§F.21 OPEN), or Part A's remaining A2 (item 2).** The text below is the original hand-over.
 
+**0l. 2026-11-16 (sixth session, end):** owner "proceed" → **A2-EDGE-2 built (bim-ootb #3140)**: `crud_overlay._modelEnv` and `plugin_overlay`'s env are views of the one edge clock; `genesis.js` already pure. **A2 is complete. NEXT: A3 W-CORE-PURE**, then ask the owner about the `pipo_packin.js` UTC fallback (A2-EDGE-2 SPEC finding).
+
 **0k. 2026-11-16 (sixth session, last):** owner "proceed" → **A2-VALUE-1 built (bim-ootb #3135)**: the viewer core's last clock/RNG reads (baseline `set_at`, cache recency stamp, tab id) go through `CoreEdge`; 4D cache identical. **NEXT:** the EDGE producers (`crud_overlay._modelEnv`, `plugin_overlay._localNow`, `genesis.js:729` LAST), then A3 W-CORE-PURE.
 
 **0j. 2026-11-16 (sixth session, later):** owner asked again for the browser-memory monitor of the three pages in VS Code → **§F.31** decided (F-20 code only, F-21 button only, F-22 X0 panel + PR body, all as recommended) and **built (bim-ootb #3131, W-HEAP-IMPACT 12/0, red control +5.00 MB on ERP only)**. From now on an X0-lane PR pastes its `§HEAP_IMPACT_DELTA` lines beside `§PERF_IMPACT` (F-2 observation to 2026-11-30). Guide §0.1 now says plainly that a witness is a unit test of one item, for developers, never called by a user. Part A's next item (the value reads) is unchanged.
@@ -520,6 +522,22 @@ and its behaviour but takes the instant from the installed edge and the text fro
   W-CORE-CLOCK-READS, W-ENV-VIEWS unchanged; the parity gate verdict set unchanged.
 **Issue proved:** two edge producers each kept their own copy of the local-stamp code, read the wall clock and the RNG directly, and one read the clock twice;
 after, both are views of the one edge clock through `Env.stamp`, so a page's model env follows the installed edge.
+
+**A2-EDGE-2 RESULT (2026-11-16): ✅ DONE (witness), bim-ootb #3139 / PR #3140.** +114 / −13, 6 files (+15 / −9 in the two producers). Logs read:
+- W-EDGE-PRODUCERS `§EDGE_PRODUCERS checks=5 failed=0 verdict=PASS` on the real page: E1 env `{"date":"2026-11-20 00:00:00","now":"2026-11-20 10:15:00","nowMillis":1795140900000,
+  "id":"11111111-…"}` = the fake edge · E2 a real `packInClient` (`§PACKIN-CLIENT … ok=true processed=225 unresolved=0`), `AD_Package_Imp` created/updated =
+  `2026-11-20 10:15:00` · E3 (espree, by function name) 0 clock calls in `_modelEnv`, `_localNow`, `_clientEnv`.
+- **Red:** `EP_REPO=<main worktree>` 5/5 FAIL (`now=2026-11-16 19:44:40`, a crypto id, Pack In stamped `2026-11-16 19:44:46`, 2 + 1 + 2 calls).
+- Before/after (detached `main` worktree): W-TD-PACKIN-WINDOW `VERDICT PASS judged=4` both sides · W-RULE-FOLD-EDGE 4/0 both, and 5/0 with the page row on the
+  branch (`§ENV_EDGE_lines=1 §ENV_NO_DATE=0 chainOk=Y`) · W-ENV-VIEWS 7/0 · W-CORE-CLOCK-READS 4/0 · `audit_sw_precache` 268/268.
+- Parity gate (`scripts/bump.js`, erp/sw.js v1091 → v1092, `crud_overlay.js` 44 → 45 and 20 → 21 in `glassbowl.html`, `plugin_overlay.js` 10 → 11):
+  `§BUMP_PARITY mode=block verdicts=13 new=[] known=[DD:FAIL,CTX:FAIL,DDS:HARNESS-FAIL] tree=/tmp/wt-a2e scoped=partial verdict=PASS`; log: 0 `sql.js`
+  errors (a `node_modules` symlink into the fresh bridge worktree), every witness on `ootb=/tmp/wt-a2e`.
+- **New instrument trap (for §8):** in a FRESH bim-compiler bridge worktree, DD and DDS fail on `ENOENT … copyfile '<bridge>/build/erp/ad_seed_fullwidth.db'`:
+  that DB is untracked and exists only in the shared `~/bim-compiler`. Both are on the gate's known list, so the verdict holds, but in such a run they judged
+  nothing. Copy or link that DB into the bridge worktree before a gate run that must judge DD/DDS.
+- **Remaining A2:** none in the A-1 list (`genesis.js` needs no change). **NEXT: A3 W-CORE-PURE** (the AST scan over the A-1 list that replaces
+  `witness_core_clock_reads.js`'s hand list), then the `pipo_packin.js` UTC finding to the owner (one message).
 
 ---
 
@@ -1290,7 +1308,7 @@ Ask the owner **one decision per message, with the recommendation** (START HERE 
 
 | Part | What | State |
 |---|---|---|
-| A | pure core + Env | **A0 ✅** · **A-1..A-5 ✅** · **A1 ✅** (#3007) · **A2** done for 15 files (#3010 #3013 #3016 #3021 #3026 #3030 #3033) + A2-TIMING-1 (#3110) + A-6 / A2-TIMING-2 (#3122) + A2-TIMING-3 (bim-ootb #3124) + A2-VALUE-1 (#3135), remaining: the EDGE producers, then A3 |
+| A | pure core + Env | **A0 ✅** · **A-1..A-5 ✅** · **A1 ✅** (#3007) · **A2** done for 15 files (#3010 #3013 #3016 #3021 #3026 #3030 #3033) + A2-TIMING-1 (#3110) + A-6 / A2-TIMING-2 (#3122) + A2-TIMING-3 (bim-ootb #3124) + A2-VALUE-1 (#3135) + A2-EDGE-2 (#3140): **A2 complete**; next A3 |
 | B | manifest per app | not started · B0 ready · open: B-1 to B-4 |
 | C | named APP parts | not started · open: C-1, C-2 |
 | D | owner table | not started · open: D-1, D-2 |
