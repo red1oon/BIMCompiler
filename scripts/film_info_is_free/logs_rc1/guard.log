@@ -1,0 +1,14 @@
+§GUARD OK   beat=clone bc.license="MIT License" expect=MIT License spoken="m i t"
+§GUARD OK   beat=prompts bc.prompts=369 expect=369 spoken="three hundred sixty-nine"
+§GUARD OK   beat=prompts oo.prompts=70 expect=70 spoken="seventy more"
+§GUARD OK   beat=docs bc.docsMd=323 expect=323 spoken="three hundred twenty-three"
+§GUARD OK   beat=fsg bc.guideLanguagesBesidesEnglish=6 expect=6 spoken="six more languages"
+§GUARD OK   beat=license bc.license="MIT License" expect=MIT License spoken="m i t"
+§GUARD digits in the voice text (numbers are spelled in words): none
+§GUARD beats with no Latin character: none
+§GUARD superlative / proof talk said as a fact: none
+§GUARD claim worded as a claim ("We know of no other project that gives out more"): OK
+§GUARD_MANTRA OK spec_lines=3 rendered_lines=3 byte_equal=true/true/true bytes=37/31/42 | ["Information Is Free ... U HAVE 2 KNOW","People Are Not ... U HAVE 2 PAY","Contributors Are Priceless ... U HAVE 2 BE"]
+§GUARD_CREDITS OK all 9 items on the card
+§GUARD_COVER OK
+§GUARD_VERDICT PASS judged=10 bad=0

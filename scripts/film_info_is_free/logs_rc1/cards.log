@@ -1,0 +1,10 @@
+§CARD beat=cover stills=1 overflow_px=0 (full card)
+§CARD beat=clone stills=51 overflow_px=0 page_pictures=gh_repo:1920x537 typed=48 before=gh_repo
+§CARD beat=prompts stills=26 overflow_px=0 page_pictures=gh_spec:1920x537 typed=23 before=gh_repo
+§CARD beat=docs stills=33 overflow_px=0 page_pictures=site_home:1920x537 typed=30 before=gh_spec
+§CARD beat=fsg stills=35 overflow_px=0 page_pictures=guide_en:1920x537,guide_menu:1920x537,guide_es:1920x537,guide_ja:1920x537,guide_de:1920x537 typed=28 before=site_home
+§CARD beat=login stills=4 overflow_px=0 page_pictures=login_en:1920x537,login_es:1920x537,login_ja:1920x537,login_zh:1920x537 (no command)
+§CARD beat=license stills=18 overflow_px=0 page_pictures=gh_license:1920x537 typed=15 before=login_zh
+§CARD beat=mantra stills=1 overflow_px=0 (full card)
+§CARD beat=credits stills=1 overflow_px=0 (full card)
+§CARDS_DONE beats=9 stills=170 too_tall=0 key_stills=144 return_stills=5 bottom230_dirty=0 mantra_lines_rendered=3
