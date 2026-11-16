@@ -1021,6 +1021,7 @@ This REPLACES the §14 design's "right dock".
   - D4: 35 guide links. D5: phone 390×844, does not move. D6a / D6b: reopens as left.
 - **Witness finding (not a product change):** `A._makeDraggable` arms on pointerdown but captures the pointer only on its first ≥4 px move seen ON the element, so a tap still reaches header controls. A drag whose first step lands off the panel is lost. A hand stays on it; the witness's coarse 98-px first step did not, and "D3d" passed vacuously until the drag was made hand-like and a D3d-move check was added.
 - **Regressions:** W-HOWTO PASS, W-CLASS-HELP PASS, W-ABOUT-HELP-RESTORE 9/9. W-VIEWER-I18N de_DE fail=3 (the same 3 as main), leaks 23/310. Lint 0 errors. sw v1719.
+- **CI note (merged as `9f7e88c6`):** the first CI run failed W-X0-APPDEF (the code-design lane's X0 Navigator). It samples `internal/APP_SURFACE.md` "written at" lines, and the scene.js / measure.js edits shifted two of them. The fix was a regenerate, not a hand edit: `node scripts/gen_app_surface.js`, then verdict=PASS. The index had last been generated on 2026-11-14 (3251 files; 3374 now). Any edit that moves lines in a viewer file holding `A.x =` writes can trip this gate the same way.
 - **Next:** the Modeller gets the same panel (its `#m-help-panel` + `#m-guide-panel` merge into it), and the help code moves to `common/help/` (§14 design). Spec first.
 
 ## 15. NOT URGENT, to think about (owner 2026-11-16: *"You mean we can mis.<translated verb>? Note in prompt then we shall think about it not urgent."*)
