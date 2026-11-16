@@ -1,0 +1,20 @@
+§FILM_CUE beat=cover t=0.000 frames=96 typing=0 answer_hold_frames=96 x1
+§FILM_CUE beat=start t=4.000 frames=264 typing=28 answer_hold_frames=236 x1
+§FILM_CUE beat=help t=15.000 frames=325 typing=92 answer_hold_frames=233 x1
+§FILM_CUE beat=level t=28.542 frames=310 typing=120 answer_hold_frames=190 x1
+§FILM_CUE beat=bp t=41.458 frames=431 typing=164 answer_hold_frames=267 x1
+§FILM_CUE beat=po1 t=59.417 frames=417 typing=158 answer_hold_frames=259 x1
+§FILM_CUE beat=po2 t=76.792 frames=171 typing=12 answer_hold_frames=159 x1
+§FILM_CUE beat=po3 t=83.917 frames=141 typing=12 answer_hold_frames=129 x1
+§FILM_CUE beat=po4 t=89.792 frames=360 typing=80 answer_hold_frames=280 x1
+§FILM_CUE beat=ord t=104.792 frames=302 typing=144 answer_hold_frames=158 x1
+§FILM_CUE beat=co t=117.375 frames=291 typing=64 answer_hold_frames=227 x1
+§FILM_CUE beat=next t=129.500 frames=280 typing=62 answer_hold_frames=218 x1
+§FILM_CUE beat=gap t=141.167 frames=311 typing=68 answer_hold_frames=243 x1
+§FILM_CUE beat=report t=154.125 frames=207 typing=52 answer_hold_frames=155 x1
+§FILM_CUE beat=url t=162.750 frames=267 typing=42 answer_hold_frames=225 x1
+§FILM_CUE beat=cost t=173.875 frames=558 typing=126 answer_hold_frames=432 x1
+§FILM_CUE beat=exit t=197.125 frames=156 typing=28 answer_hold_frames=128 x1
+§FILM_CUE beat=end t=203.625 frames=216 typing=0 answer_hold_frames=216 x1
+§FILM_KEYS typed=203 returns=23
+§FILM_DONE dur=212.625 frames=5103 planned=5103
