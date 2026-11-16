@@ -20,6 +20,8 @@ Owner, closing 2026-11-15: *"get it well documented in the prompts/# consolidate
 
 **0. ✅ DONE 2026-11-15 (fourth session): F-18 answered, the provenance hover built and merged — §F.23 (bim-ootb #3064 + tooltip-in-window fix #3069); FILM 3 built (`prompts/FILM_IMMERSIVE_SOFTWARE.md` FILM 3 STATUS, awaiting the owner's review); the default-key + truss findings handed to the DXF2BIM lane (bim-ootb `prompts/DXF2BIM_ARCHITECT_REVIEW.md` §D113, #3070). NEXT = the X0 "New witness for this file" command (§F.21 OPEN), or Part A's remaining A2 (item 2).** The text below is the original hand-over.
 
+**0h. 2026-11-16 (fifth session):** A-6 asked and answered (Option 1, one global `CoreEdge`); A2-TIMING-2 spec written (the 4D pair). Status lines follow in the RESULT.
+
 **0g. 2026-11-16, the owner's go for the NEXT session:** *"U can do browser run for those items new session"* (to: the parked items that need a browser: the F-1 headless Fetch back button and Part A's browser witnesses). That covers headless-browser runs for those items: one at a time, `nice -n 19`, never beside a live bake or GPU work. A witness that needs a legacy server another lane uses (W-DASH-SYNC writes into the 8088 pilot) still waits until that lane is asked. The local servers were cleaned up the same day: 3 orphaned till-film relays and 2 orphaned W-MODEL-SAVE daemons with their headless Chromes (source folders deleted, parent systemd); the iDempiere pilot and bimdoc servers were left running.
 
 **0f. 2026-11-16, owner "proceed" (Part A):** A2-TIMING-1 (#3110, the ERP pair through `Env.elapsed`) and §F.30 (#3112, the parity gate now judges the tree it bumps) built. **NEXT:** the viewer/4D timing items of RESUME 2. They touch the 4D lane's files and the 4D cache key (`schedule_gate.js`), so check `ListAgents` and the 4D lane first and re-run `cache_4d_run.js` once. Then the EDGE producers, then A3 W-CORE-PURE.
@@ -274,6 +276,12 @@ FAILs as it should.
 - 2026-11-15, owner, on **A-5** (how a standalone core module with no transaction, `rule_fold.js` and `processes/PackIn.js`, gets its clock and id;
   advice given: Option 1, the shell installs the edge once): *"Go with your advice on Option 1."* → **A-5 = `Env.setEdge({nowMs, uuid, perfMs})`,
   installed once by the page; core modules ask `Env.edge()`; no edge installed = `§ENV_NO_DATE` + throw (A-3).** Spec: A2-EDGE below.
+- 2026-11-16, owner, on **A-6** (the viewer and `common/` files never load `erp/ad_callout.js`, so they have no `Env.edge()`; where does their edge come from?
+  advice given: Option 1, one shared global edge): chose *"Option 1 (Recommended)"*. → **A-6 = one global `CoreEdge` `{nowMs, uuid, perfMs}`, installed
+  once by each shell: `viewer/viewer.html` with a small inline `<script>` (no new file, so no precache / `?v=` list grows), `erp/ad_callout.js`
+  `Env.setEdge` stores into that same global (one holder), and Node runners (`scripts/cache_4d_run.js`, probes) install it the same way. Core reads it
+  at call time. No edge: a timing prints `ms=?`; a missing date or id fails loudly (A-3).** Rejected: loading the ERP file in the viewer (a big file on
+  every boot, against lazy loading); passing `opts.edge` through every call (every caller changes). Spec: A2-TIMING-2 below.
 
 **A2-EDGE SPEC (2026-11-15, decision A-5; bim-ootb tracker issue opened with the PR).** Measured on bim-ootb `main` @ `27ac46cc`:
 `erp/rule_fold.js:94` `commitEdit` mints the op uuid with `crypto.randomUUID()`, else `'rule:'+nextTs()` (a fallback that can collide across
@@ -320,6 +328,36 @@ which no longer exists, and FAIL on unedited `main` (left to the ERP lane, not f
   - Before/after: `witness_core_clock_reads` (15 → 16 files, `clockReads=0`) and `witness_rule_fold_edge` stay PASS. **The browser witnesses are not run:** W-GOAL-STORE needs the 8098 legacy instance (down) and W-DASH-SYNC writes into the 8088 pilot another lane is using. This item changes only which clock times a log line, and T2/T3 prove that exactly.
 
 **A2-TIMING-1 RESULT (2026-11-16): ✅ DONE (witness), bim-ootb #3109 / PR #3110.** `§CORE_TIMING checks=6 failed=0 verdict=PASS`: no edge gives `ms=?` and nulls with no throw; the fake edge gives `§LOGINCTX … ms=42` and `§GOAL_STORE … ms=42`. **Red run on main's files: 6/6 FAIL** (wall-clock `ms=1`, `ms=2`). `witness_core_clock_reads` `pass=4 fail=0`, ran 21 → 22 (`model_pa.js clockReads=0`); `witness_rule_fold_edge` `VERDICT PASS rows=4`. Cache bump `erp/sw.js` v1084 → v1085, parity gate `verdicts=14 new=[] verdict=PASS`. Doing that bump found **§F.30** (the gate judged `~/bim-ootb`, not the bumped tree) and the `sql.js` instrument trap. The CLI lane was told the door can install an edge for its timings. **Remaining A2 (RESUME 2):** `viewer/cpm_schedule.js`, `viewer/schedule_gate.js` (4D cache key: re-run `scripts/cache_4d_run.js` once), `common/room_graph.js`, `viewer/schedule_inject.js`, `viewer/schedule_author.js`, `viewer/schedule_sync.js`, then the EDGE producers, then A3.
+
+**A2-TIMING-2 SPEC (2026-11-16, decisions A-4 + A-6; bim-ootb tracker issue with the PR).** The 4D pair of RESUME 2, both in the 4D cache key, so one
+cache re-run covers them. Measured on bim-ootb `main` @ `8f2dc6b5`:
+- `viewer/cpm_schedule.js` `run()`: `t0 :965`, `t1 :967`, `t2c :990`, `t2 :1019`, `t3 :1021`, all `Date.now()`. They feed `§CELL_RUN … ms={contact,axis+solve,total}`,
+  `§CPM_RUN … ms={contact,build,solve,total}` and the returned `ms` object, whose only reader is `scripts/probe_cpm_schedule.js:337/347` (a `§CPM_TIMING`
+  line). `viewer/schedule_gate.js` `:849` `_t0` → `:1007` `§GEO_ORDER … orderMs=`. No code parses any of these values (`git grep`). Loaded by
+  `viewer/viewer.html:1062/1070` (`?v=4`, `?v=3`); in Node by `scripts/cache_4d_run.js:206/209` (`require`, globals on `globalThis`) and ~20 probes.
+- The ERP edge lives in a closure (`erp/ad_callout.js:113` `var _edge`), so a viewer file cannot reach it.
+**Build (one PR):**
+1. `erp/ad_callout.js` `Env`: `setEdge` keeps its checks and its `§ENV_EDGE` line, and stores the edge in `global.CoreEdge`; `edge()` and `perfMs()` read
+   `global.CoreEdge`. The `_edge` closure goes. Same behaviour for every ERP caller; the door's `setEdge` (#3113) now also serves `common/` code in Node.
+2. `viewer/viewer.html`: an inline `<script>` before `schedule_gate.js` sets `window.CoreEdge = { nowMs, uuid, perfMs }` (the same three as
+   `erp/idempiere.html:686`, `uuid` = `crypto.randomUUID` or a v4 from `getRandomValues`) and logs `§CORE_EDGE set by=viewer.html`. It does not overwrite
+   an edge already installed.
+3. `cpm_schedule.js` / `schedule_gate.js`: a file-local `_perf()` = `global.CoreEdge.perfMs()` or `null`. The `§` lines print each ms, or `?` when
+   there is no timer; the returned `ms` fields are numbers or `null`. Nothing else in either file changes.
+4. `scripts/cache_4d_run.js` and `scripts/probe_cpm_schedule.js` install `globalThis.CoreEdge` (Node `Date.now`, `crypto.randomUUID`,
+   `performance.now`) before they load the pipeline; they are edges. Other probes print `ms=?` until they install one.
+5. Bumps: `viewer.html` `?v=` for the two files, `viewer/sw.js` and `erp/sw.js` `CACHE_VERSION` through `scripts/bump.js` (parity gate on, §F.30).
+**Witness W-CORE-TIMING, extended** (`erp/tests/witness_core_timing.js`; the viewer copies come from `CORE_TIMING_VIEWER_DIR` for the red run):
+- T4 one holder: `Env.setEdge(fake)` → `globalThis.CoreEdge === fake`; with `CoreEdge` set directly, `Env.perfMs()` reads it.
+- T5 `CpmSchedule.run` on a small item set: under the +42 fake edge, every `§CPM_RUN` ms is a multiple of 42 and `total` = 3×42; with no edge every ms is `?`
+  and `res.ms.total === null`.
+- T6 the gate's `§GEO_ORDER`: `orderMs=42` under the fake, `orderMs=?` with no edge.
+- T7 neither viewer file has a `Date.now`/`performance.now` call left (`witness_core_clock_reads.js` gains both names, parser-based, `clockReads=0`).
+- **Red control:** main's `cpm_schedule.js` / `schedule_gate.js` under the same fake do not print 42s: `CORE_TIMING_VIEWER_DIR=<main>/viewer` must FAIL T5-T7.
+- **Before/after, 4D:** `scripts/cache_4d_run.js` on the 4 buildings, re-run once under `nice -n 19 ionice -c3`. The `witness.log` of each must equal
+  the cached `main` run (`9098b76bb1ef_*`, 2026-11-14) line for line once ms values are masked, and `run.json` must be byte-identical apart from timings.
+  Any other difference is investigated before merge. **Issue proved:** the 4D core timed its own § lines with the wall clock and the viewer had no
+  edge; after, the timer comes from one installed edge, and schedules are unchanged.
 
 ---
 
