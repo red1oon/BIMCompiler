@@ -539,6 +539,32 @@ after, both are views of the one edge clock through `Env.stamp`, so a page's mod
 - **Remaining A2:** none in the A-1 list (`genesis.js` needs no change). **NEXT: A3 W-CORE-PURE** (the AST scan over the A-1 list that replaces
   `witness_core_clock_reads.js`'s hand list), then the `pipo_packin.js` UTC finding to the owner (one message).
 
+**A2-PIPO SPEC (2026-11-16; owner, asked for advice on the `pipo_packin.js` UTC fallback: advice given "fix it, legacy source first, stop if legacy
+disagrees", owner *"ok"*; bim-ootb tracker issue with the PR).**
+- **Legacy, read first (the oracle):** `PO.java:1985` gives a new record `Created`/`Updated` = `new Timestamp(System.currentTimeMillis())`, `:3341` the same for
+  `Updated` on save, written through `DB.TO_DATE(now, false)`; `DB_PostgreSQL.java` `TO_DATE` writes `time.toString()`, which Java prints in the JVM's DEFAULT
+  zone. **So legacy stamps the server's LOCAL wall clock**; the twin's UTC fallback is a divergence (twin rule), not a quirk. `PackInHandler.java:171` creates
+  the `AD_Package_Imp` row through that PO path.
+- **The twin, measured on bim-ootb `main` @ `fa5b942c`:** `erp/pipo_packin.js:55` (`apply`) and `:270` (`recordImport`) default `now` to
+  `new Date().toISOString()…` = **UTC**; `:148` mints ids with `crypto.randomUUID` (or `null`) when no `opts.uuid` is given. The bundle path
+  (`plugin_overlay._packApply` → `PipoPackIn.incremental` `:307-308`) passes no `now`, so every bundle Pack In row and its `AD_Package_Imp` row are stamped in UTC:
+  in +08 eight hours behind, and the previous DAY between 00:00 and 08:00. The client path passes `_localNow()`, so `AD_Package_Imp` mixes two clocks.
+  `erp/plugin_overlay.js:71` `_packOpts().uuid` is also `crypto.randomUUID` (an RNG read A2-EDGE-2 missed). Loaded by `erp/idempiere.html:635` only; no Node
+  caller (`git grep`).
+**Build (one PR):** `pipo_packin.js` `now` defaults to `AdCallout.Env.stamp(Env.edge().nowMs()).now` (local, the one stamp), `uuid()` defaults to
+`Env.edge().uuid()`; no `AdCallout` or no edge = `§ENV_NO_DATE` + throw (A-3). `plugin_overlay._packOpts().uuid` = the edge's uuid. Bump through `scripts/bump.js`
+(parity gate on, the fresh-bridge DD/DDS trap handled by linking `build/erp/ad_seed_fullwidth.db`).
+**Witness W-PIPO-LOCAL** (`erp/tests/witness_pipo_local.js`, the real `erp/idempiere.html`, headless, `timezoneId: Asia/Kuala_Lumpur`, the page clock fixed at
+2026-11-13 00:30 local with Playwright's `page.clock.setFixedTime`, so the old and the new code see the SAME instant and only the zone differs):
+- P1 a bundle Pack In through `PipoPackIn.incremental` with no `now` (the CAPEX test 2Pack, as a bundle): its `AD_Package_Imp` row and the
+  `ad_package_uuid_map` rows it wrote say `created = updated = '2026-11-13 00:30:00'` (local), not `2026-11-12 16:30:00` (UTC).
+- P2 the ids it minted come from the installed edge (a counting wrapper on `CoreEdge.uuid`): count > 0 and each `ad_package_uuid_map` uuid is one the wrapper returned.
+- P3 parser: no `new Date()` / `Date.now()` / `randomUUID` left in `pipo_packin.js` or in `plugin_overlay._packOpts`.
+- **Red control:** `PL_REPO=<main worktree>` must FAIL P1 (the UTC day `2026-11-12`), P2 (count 0) and P3.
+- **Before/after:** W-PACKIN (`erp/tests/witness_packin.js`), W-TD-PACKIN-WINDOW, W-EDGE-PRODUCERS, the parity gate.
+**Issue proved:** bundle Pack In stamped every row in UTC (yesterday's date before 08:00 at +08) while legacy and the client path stamp local time; after, one
+local clock from the installed edge, and the ids from the edge too.
+
 ---
 
 ## PART B — One manifest per app   (fixes P2, declares half of P1)
