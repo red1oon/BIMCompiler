@@ -1,0 +1,545 @@
+{
+ "made": "2026-11-16T23:47:06.343Z",
+ "tree": "d68e0f71",
+ "shots": {
+  "klass_en": {
+   "file": "pages/klass_en.png",
+   "rects": {
+    "#cmd-palette": null,
+    "#cmd-head": null,
+    "#cmd-search": null,
+    "#cmd-list": null,
+    "#info-panel": {
+     "x": 1452,
+     "y": 547,
+     "w": 384,
+     "h": 473
+    },
+    "#info-class-help": {
+     "x": 1472,
+     "y": 756,
+     "w": 343,
+     "h": 248
+    }
+   }
+  },
+  "pal_open": {
+   "file": "pages/pal_open.png",
+   "rects": {
+    "#cmd-palette": {
+     "x": 19,
+     "y": 19,
+     "w": 384,
+     "h": 1042
+    },
+    "#cmd-head": {
+     "x": 20,
+     "y": 20,
+     "w": 382,
+     "h": 40
+    },
+    "#cmd-search": {
+     "x": 37,
+     "y": 72,
+     "w": 348,
+     "h": 40
+    },
+    "#cmd-list": {
+     "x": 20,
+     "y": 125,
+     "w": 382,
+     "h": 895
+    },
+    "#info-panel": {
+     "x": 1452,
+     "y": 547,
+     "w": 384,
+     "h": 473
+    },
+    "#info-class-help": {
+     "x": 1472,
+     "y": 756,
+     "w": 343,
+     "h": 248
+    }
+   }
+  },
+  "pal_native": {
+   "file": "pages/pal_native.png",
+   "rects": {
+    "#cmd-palette": {
+     "x": 19,
+     "y": 19,
+     "w": 384,
+     "h": 1042
+    },
+    "#cmd-head": {
+     "x": 20,
+     "y": 20,
+     "w": 382,
+     "h": 40
+    },
+    "#cmd-search": {
+     "x": 37,
+     "y": 72,
+     "w": 348,
+     "h": 40
+    },
+    "#cmd-list": {
+     "x": 20,
+     "y": 125,
+     "w": 382,
+     "h": 895
+    },
+    "#info-panel": {
+     "x": 1452,
+     "y": 547,
+     "w": 384,
+     "h": 473
+    },
+    "#info-class-help": {
+     "x": 1472,
+     "y": 756,
+     "w": 343,
+     "h": 248
+    }
+   }
+  },
+  "pal_find": {
+   "file": "pages/pal_find.png",
+   "rects": {
+    "#cmd-palette": {
+     "x": 19,
+     "y": 19,
+     "w": 384,
+     "h": 1042
+    },
+    "#cmd-head": {
+     "x": 20,
+     "y": 20,
+     "w": 382,
+     "h": 40
+    },
+    "#cmd-search": {
+     "x": 37,
+     "y": 72,
+     "w": 348,
+     "h": 40
+    },
+    "#cmd-list": {
+     "x": 20,
+     "y": 125,
+     "w": 382,
+     "h": 895
+    },
+    "#info-panel": {
+     "x": 1452,
+     "y": 547,
+     "w": 384,
+     "h": 473
+    },
+    "#info-class-help": {
+     "x": 1472,
+     "y": 756,
+     "w": 343,
+     "h": 248
+    },
+    "#film-find-row": {
+     "x": 20,
+     "y": 125,
+     "w": 382,
+     "h": 43
+    },
+    "#film-find-body": {
+     "x": 37,
+     "y": 168,
+     "w": 365,
+     "h": 224
+    }
+   }
+  },
+  "dock_moved": {
+   "file": "pages/dock_moved.png",
+   "rects": {
+    "#cmd-palette": {
+     "x": 691,
+     "y": 38,
+     "w": 384,
+     "h": 1042
+    },
+    "#cmd-head": {
+     "x": 692,
+     "y": 40,
+     "w": 382,
+     "h": 40
+    },
+    "#cmd-search": {
+     "x": 709,
+     "y": 91,
+     "w": 348,
+     "h": 40
+    },
+    "#cmd-list": {
+     "x": 692,
+     "y": 144,
+     "w": 382,
+     "h": 895
+    },
+    "#info-panel": {
+     "x": 1452,
+     "y": 547,
+     "w": 384,
+     "h": 473
+    },
+    "#info-class-help": {
+     "x": 1472,
+     "y": 756,
+     "w": 343,
+     "h": 248
+    }
+   }
+  },
+  "dock_closed": {
+   "file": "pages/dock_closed.png",
+   "rects": {
+    "#info-panel": {
+     "x": 1452,
+     "y": 547,
+     "w": 384,
+     "h": 473
+    }
+   }
+  },
+  "dock_reopen": {
+   "file": "pages/dock_reopen.png",
+   "rects": {
+    "#cmd-palette": {
+     "x": 691,
+     "y": 38,
+     "w": 384,
+     "h": 1042
+    },
+    "#cmd-head": {
+     "x": 692,
+     "y": 40,
+     "w": 382,
+     "h": 40
+    },
+    "#cmd-search": {
+     "x": 709,
+     "y": 91,
+     "w": 348,
+     "h": 40
+    },
+    "#cmd-list": {
+     "x": 692,
+     "y": 144,
+     "w": 382,
+     "h": 895
+    },
+    "#info-panel": {
+     "x": 1452,
+     "y": 547,
+     "w": 384,
+     "h": 473
+    },
+    "#info-class-help": {
+     "x": 1472,
+     "y": 756,
+     "w": 343,
+     "h": 248
+    }
+   }
+  },
+  "klass_de_DE": {
+   "file": "pages/klass_de_DE.png",
+   "rects": {
+    "#cmd-palette": null,
+    "#cmd-head": null,
+    "#cmd-search": null,
+    "#cmd-list": null,
+    "#info-panel": {
+     "x": 1452,
+     "y": 409,
+     "w": 384,
+     "h": 611
+    },
+    "#info-class-help": {
+     "x": 1472,
+     "y": 618,
+     "w": 343,
+     "h": 386
+    }
+   }
+  },
+  "klass_zh_CN": {
+   "file": "pages/klass_zh_CN.png",
+   "rects": {
+    "#cmd-palette": null,
+    "#cmd-head": null,
+    "#cmd-search": null,
+    "#cmd-list": null,
+    "#info-panel": {
+     "x": 1452,
+     "y": 524,
+     "w": 384,
+     "h": 496
+    },
+    "#info-class-help": {
+     "x": 1472,
+     "y": 733,
+     "w": 343,
+     "h": 271
+    }
+   }
+  }
+ },
+ "lines": {
+  "classEn": "§CLASS_HELP guid=\"2O2Fr$t4X7Zf8NOew3FKau\" class=IfcWall ours=Y ifc=Y ifc_lang=EN fallback=N locale=en",
+  "dockOpen": "§HELP_DOCK open left=16 top=16 w=320 h=868 mobile=false filter=\"\" open=0",
+  "howtoLoad": "§HOWTO_LOAD pills=44",
+  "palNative": "§HOWTO_PALETTE entries=2 guide=2 cli=0 loaded=true filter=\"native\"",
+  "dragSave": "§DRAG_SAVE key=bim_help_dock_pos left=576 top=32",
+  "close": "§KBD_HELP close via=x",
+  "reopen": "§HELP_DOCK open left=576 top=32 w=320 h=868 mobile=false filter=\"\" open=1",
+  "restore": "§DRAG_RESTORE key=bim_help_dock_pos left=576 top=32",
+  "class_de_DE": "§CLASS_HELP guid=\"2O2Fr$t4X7Zf8NOew3FKau\" class=IfcWall ours=Y ifc=Y ifc_lang=de-DE fallback=N locale=de",
+  "trl_de_DE": "§TRL_LABELS locale=de_DE keys=1028 src=fetched translated=939 untranslated=89",
+  "class_zh_CN": "§CLASS_HELP guid=\"2O2Fr$t4X7Zf8NOew3FKau\" class=IfcWall ours=Y ifc=Y ifc_lang=EN fallback=Y locale=zh",
+  "trl_zh_CN": "§TRL_LABELS locale=zh_CN keys=1028 src=fetched translated=921 untranslated=107"
+ },
+ "errors": [],
+ "en": {
+  "picked": {
+   "i": 21,
+   "of": 50
+  },
+  "block": {
+   "text": "What this is A wall: a vertical element that divides or encloses spaces; it may or may not carry load. IFC definition The wall represents a vertical construction that may bound or subdivide spaces. Wall are usually vertical, or nearly vertical, planar elements, often designed to bear structural loads. A wall is however not required to be load bearing. buildingSMART IFC 4.3 (bSDD), CC BY-ND 4.0",
+   "ours": "A wall: a vertical element that divides or encloses spaces; it may or may not carry load.",
+   "ifc": "IFC definition The wall represents a vertical construction that may bound or subdivide spaces. Wall are usually vertical, or nearly vertical, planar elements, often designed to bear structural loads. A wall is however not required to be load bearing. buildingSMART IFC 4.3 (bSDD), CC BY-ND 4.0",
+   "fallback": null,
+   "credit": "buildingSMART IFC 4.3 (bSDD), CC BY-ND 4.0",
+   "parts": [
+    "ours",
+    "ifc",
+    "credit"
+   ]
+  },
+  "findMoved": {
+   "find": [
+    1308,
+    54,
+    1588,
+    475
+   ],
+   "info": [
+    1210,
+    570,
+    1530,
+    850
+   ],
+   "clear": true
+  }
+ },
+ "word": {
+  "w": "native",
+  "inName": false,
+  "holders": [
+   {
+    "id": "save",
+    "name": "Save Building",
+    "bullet": "Native Save As… dialog — pick name + folder"
+   },
+   {
+    "id": "open",
+    "name": "Open Building",
+    "bullet": "Native Open… dialog"
+   }
+  ]
+ },
+ "found": [
+  {
+   "name": "Save BuildingCTRL+S",
+   "open": true,
+   "body": "Save the open building to a .db file Native Save As… dialog — pick name + folder Re-openable with Open (Ctrl+O) Guide"
+  },
+  {
+   "name": "Open BuildingCTRL+O",
+   "open": true,
+   "body": "Open a saved .db file Native Open… dialog Replaces the current scene Guide"
+  }
+ ],
+ "find": {
+  "name": "Find / NavigateF",
+  "open": true,
+  "guide": "https://red1oon.github.io/BIMCompiler/BIMUserGuide/#find-panel-search-voice-query-and-axis-lenses",
+  "cliLabel": "Same at the CLI",
+  "cli": [
+   "viewer.counts building=<building>",
+   "viewer.clashes building=<building> discA=<discA> discB=<discB>",
+   "viewer.cost building=<building>"
+  ]
+ },
+ "dock": {
+  "before": {
+   "l": 16,
+   "t": 16
+  },
+  "moved": {
+   "l": 576,
+   "t": 32
+  },
+  "reopened": {
+   "l": 576,
+   "t": 32
+  },
+  "keptOpen": true
+ },
+ "de_DE": {
+  "picked": {
+   "i": 21,
+   "of": 50
+  },
+  "block": {
+   "text": "Was das ist Eine Wand: ein senkrechtes Bauteil, das Räume trennt oder umschließt; sie kann tragend sein oder nicht. IFC-Definition Vertikale Konstruktion zur Abgrenzung oder Unterteilung von Räumen. In der Regel handelt es sich um senkrechte oder nahezu senkrechte Flächenelemente, die häufig zur Aufnahme von Bauwerkslasten dienen. Sie müssen jedoch nicht tragend sein. Anmerkung: Nach ISO 6707-1 ist eine vertikale Konstruktion in der Regel aus Mauerwerk oder Beton, die ein Bauwerk begrenzt oder unterteilt und eine tragende oder stützende Funktion erfüllt. buildingSMART IFC 4.3 (bSDD), CC BY-ND 4.0",
+   "ours": "Eine Wand: ein senkrechtes Bauteil, das Räume trennt oder umschließt; sie kann tragend sein oder nicht.",
+   "ifc": "IFC-Definition Vertikale Konstruktion zur Abgrenzung oder Unterteilung von Räumen. In der Regel handelt es sich um senkrechte oder nahezu senkrechte Flächenelemente, die häufig zur Aufnahme von Bauwerkslasten dienen. Sie müssen jedoch nicht tragend sein. Anmerkung: Nach ISO 6707-1 ist eine vertikale Konstruktion in der Regel aus Mauerwerk oder Beton, die ein Bauwerk begrenzt oder unterteilt und eine tragende oder stützende Funktion erfüllt. buildingSMART IFC 4.3 (bSDD), CC BY-ND 4.0",
+   "fallback": null,
+   "credit": "buildingSMART IFC 4.3 (bSDD), CC BY-ND 4.0",
+   "parts": [
+    "ours",
+    "ifc",
+    "credit"
+   ]
+  },
+  "findMoved": {
+   "find": [
+    1308,
+    54,
+    1588,
+    475
+   ],
+   "info": [
+    1210,
+    551,
+    1530,
+    850
+   ],
+   "clear": true
+  }
+ },
+ "zh_CN": {
+  "picked": {
+   "i": 21,
+   "of": 50
+  },
+  "block": {
+   "text": "这是什么 墙：分隔或围合空间的竖向构件，可以是承重墙，也可以不是。 IFC 定义 英文：没有您所用语言的官方译文 The wall represents a vertical construction that may bound or subdivide spaces. Wall are usually vertical, or nearly vertical, planar elements, often designed to bear structural loads. A wall is however not required to be load bearing. buildingSMART IFC 4.3 (bSDD), CC BY-ND 4.0",
+   "ours": "墙：分隔或围合空间的竖向构件，可以是承重墙，也可以不是。",
+   "ifc": "IFC 定义 英文：没有您所用语言的官方译文 The wall represents a vertical construction that may bound or subdivide spaces. Wall are usually vertical, or nearly vertical, planar elements, often designed to bear structural loads. A wall is however not required to be load bearing. buildingSMART IFC 4.3 (bSDD), CC BY-ND 4.0",
+   "fallback": "英文：没有您所用语言的官方译文",
+   "credit": "buildingSMART IFC 4.3 (bSDD), CC BY-ND 4.0",
+   "parts": [
+    "ours",
+    "ifc",
+    "fallback",
+    "credit"
+   ]
+  },
+  "findMoved": {
+   "find": [
+    1308,
+    54,
+    1588,
+    478
+   ],
+   "info": [
+    1210,
+    570,
+    1530,
+    850
+   ],
+   "clear": true
+  }
+ },
+ "cli": {
+  "line": "viewer.counts building=Duplex",
+  "exit": 0,
+  "status": "ok",
+  "summary": "1193 elements: MEP 809, ARC 270, ELEC 81, STR 19, PLB 14",
+  "total": 1193,
+  "viewerLine": "§ASK_ANSWER id=counts verdict=OK value={\"total\":1193,\"by\":\"discipline\",\"groups\":{\"MEP\":809,\"ARC\":270,\"ELEC\":81,\"STR\":19,\"PLB\":14}}",
+  "door": "§DOOR request=d-mwjx4nst-166520-1 actor=human verb=viewer.counts status=ok ms=10751",
+  "ms": 10751
+ },
+ "files": {
+  "viewer/help/howto.json": 11001,
+  "viewer/info_class_help.js": 5474,
+  "common/help/help_panel.js": 13408,
+  "common/drag.js": 6617
+ },
+ "howtoCliFind": [
+  {
+   "verb": "viewer.counts",
+   "title": "Count elements",
+   "line": "viewer.counts building=<building>",
+   "cite": "the same answer the Viewer's Find panel gives"
+  },
+  {
+   "verb": "viewer.clashes",
+   "title": "List clashes between two disciplines",
+   "line": "viewer.clashes building=<building> discA=<discA> discB=<discB>",
+   "cite": "the same answer the Viewer's Find panel gives"
+  },
+  {
+   "verb": "viewer.cost",
+   "title": "The cost of a selection of a building",
+   "line": "viewer.cost building=<building>",
+   "cite": "as the Viewer's Find panel does"
+  }
+ ],
+ "quote": {
+  "text": "The average interaction worker spends an estimated 28 percent of the workweek managing e-mail and nearly 20 percent looking for internal information or tracking down colleagues who can help with specific tasks.",
+  "stat": "nearly 20 percent",
+  "title": "The social economy: Unlocking value and productivity through social technologies",
+  "date": "July 2012",
+  "who": "McKinsey Global Institute · Michael Chui, James Manyika et al.",
+  "url": "mckinsey.com/…/our-insights/the-social-economy",
+  "fetched": "2026-11-16"
+ },
+ "verdicts": {
+  "classHelp": "W-CLASS-HELP PASS",
+  "howto": "W-HOWTO PASS",
+  "dock": "W-HELP-DOCK PASS"
+ },
+ "verdictTree": "d68e0f71",
+ "credentials": {
+  "licence": "MIT License",
+  "repo": "github.com/red1oon/bim-ootb",
+  "prs": [
+   {
+    "n": 3150,
+    "state": "MERGED feat(viewer): class text in the info panel - our sentence + bSI IFC definition verbatim (W-CLASS-HELP)"
+   },
+   {
+    "n": 3152,
+    "state": "MERGED feat(viewer): class text for type classes + our sentence in 10 more languages"
+   },
+   {
+    "n": 3156,
+    "state": "MERGED feat(viewer): How To in the ? palette - guide section + CLI line per tool (W-HOWTO)"
+   },
+   {
+    "n": 3160,
+    "state": "MERGED feat(viewer): help becomes a left panel - stays open, amber glass, draggable (W-HELP-DOCK)"
+   },
+   {
+    "n": 3165,
+    "state": "MERGED refactor(help): help panel + drag helper move to common/ (step 1 of the Modeller help panel)"
+   }
+  ],
+  "paperPriority": "2026-03-30",
+  "bsddFetched": "2026-11-16"
+ }
+}
