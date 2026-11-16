@@ -465,6 +465,30 @@ Sources: [SAP Web Assistant](https://www.sap.com/design-system/fiori-design-web/
 
 **Not in this slice (named):** process-parameter translations; the prebuilt search index (built at load here, small); how-to text in other languages; how-to beyond the four windows; Japanese is too thin to film (17 Descriptions).
 
+## 11. Film: "Help that answers" (owner 2026-11-16: *"Do the film, if in foreign language, give English subtitles. Remember the closing card credentials"* · *"Closing card also give a citation how important good Help screens are in an app"* · *"Or as opening card, single quote, cite with stats be good, perhaps from a McKinsey level"*)
+**Issue it removes:** the help work of §7 and §10 is live but nobody can see it without being walked through it. A short film shows each piece once, on the real page, with nothing claimed that a log does not say.
+**Form:**
+- House style (prompts/FILM_NARRATION.md):
+  - two frames: above, the typed line and the page's own § log lines; below, the REAL ERP page (headless on the CPU) with the help panel cut from the same pixels, enlarged and labelled;
+  - real key sounds on the typing, the voice after the return key (K2);
+  - English voice (Kokoro, local), English subtitles.
+  - The German screen text is shown beside its English original from the dictionary, so a viewer without German reads both.
+- Pipeline: `scripts/film_help_showcase/` (copied from `film_immersive_software`). `shots.js` takes the pictures and the facts from bim-ootb main; `guard.js` fails the build if a spoken fact, a picture or a cited source is not as stated. Films are never pushed; the scripts and logs are.
+**Beats:**
+1. Cover.
+2. **Opening card, one quote with a statistic:** McKinsey Global Institute, *The social economy* (July 2012), *"The average interaction worker spends an estimated 28 percent of the workweek managing e-mail and nearly 20 percent looking for internal information or tracking down colleagues who can help with specific tasks."* The words are checked in the copy fetched from mckinsey.com (Wayback, `out/prior/`); the year is shown.
+3. Before → after: the old tooltip line (`ColumnName · referenceType`, from git), then the field's own Description and the Tool Tip panel (W-FIELD-HELP F4 15,849/15,849).
+4. Typed question "How do I close a Sales Order?" → the answer card (`§HELP_SEARCH`).
+5. The card's window link opens Sales Order with its how-to beside it (`§HELP_LINK`, `§HELP_CTX`).
+6. Typed question "How can I void a payment?" → Payment, Void, and the honest CLI note.
+7. Deutsch: the same field's Description in German (`§HELP_PACK loaded lang=de_DE fields=14961`), its longer Help still English where the pack has none.
+8. **Last card** (HOUSE STYLE):
+   - prior art read (legacy `WEditor.java:333`, `HelpController.java:146`, `SynchronizeTerminology.java:166`, the published de_DE pack, the McKinsey report);
+   - credentials (#3126, #3128 merged, W-FIELD-HELP 13/0 and W-HELP-SHOWCASE 13/0 on main, MIT, the paper's priority date);
+   - measured cost (help pack bytes; heap with / without the German pack after a forced GC);
+   - the key-sound credit.
+**Not said:** no "AI", "live", "faster", "every language"; Japanese is not shown (too thin).
+
 ## STATUS
 2026-11-16: P1 built and witnessed (5/0), merged as bim-ootb #3079. P2a built and witnessed (W-MSG-CATALOG 4/0), merged as bim-ootb #3082. P3a built and witnessed (W-HELP-STUDENT 5/0), merged as bim-ootb #3083. P3a-1 (help footer + opening tip, `red1 --fast`), bim-ootb #3084. P2b (W-MSG-DOOR 5/0) #3108. P1b (W-FIELD-HELP 13/0) #3126. Depends on `prompts/DOCS_I18N.md`, `prompts/CLI_ERP_IVR.md` (CLI session owns), `prompts/ERP_UI_LOCALES.md`.
 
