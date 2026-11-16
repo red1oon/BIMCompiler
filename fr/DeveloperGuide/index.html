@@ -1751,6 +1751,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="0. Read this first: what is unusual here">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#01-witnesses-how-the-proof-works-and-why-it-costs-the-user-nothing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0.1 Witnesses: how the proof works, and why it costs the user nothing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -3605,6 +3622,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="0. Read this first: what is unusual here">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#01-witnesses-how-the-proof-works-and-why-it-costs-the-user-nothing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0.1 Witnesses: how the proof works, and why it costs the user nothing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -4099,6 +4133,113 @@ JavaScript app, several things will look broken when they are not. Ten things to
 <li><strong>It is free and open source (MIT), and changes go through the tracker.</strong> Open an issue first, then a pull request that
   links it. See §10.</li>
 </ul>
+<h3 id="01-witnesses-how-the-proof-works-and-why-it-costs-the-user-nothing">0.1 Witnesses: how the proof works, and why it costs the user nothing<a class="headerlink" href="#01-witnesses-how-the-proof-works-and-why-it-costs-the-user-nothing" title="Permanent link">&para;</a></h3>
+<p>A <strong>witness</strong> is this project's test: a plain Node script, <code>witness_*.js</code>, about 1,350 of them. Each one names the issue it proves
+or disproves, and each can say <strong>FAIL</strong> and <strong>INCONCLUSIVE</strong> (nothing was judged), not only PASS. Run one with <code>node &lt;file&gt;</code> from
+anywhere. It exits 0 (pass), 1 (fail) or 2 (inconclusive). There is no test runner and no build.</p>
+<p><strong>How it can test the app without a browser.</strong> Most app files end with a small tail (pattern 4 in the table above):
+<code>if (typeof module !== 'undefined' &amp;&amp; module.exports) module.exports = API; else global.ScheduleInject = API;</code>
+(<code>viewer/schedule_inject.js:259</code>). So the <strong>same file</strong> the browser loads
+can also be <code>require</code>d by Node. A witness loads the real file, feeds it a known input, and judges the output. Example:
+<code>erp/tests/witness_core_timing.js</code> requires <code>viewer/schedule_inject.js</code> and <code>viewer/egress_sanity.js</code>, runs them under a fake clock, and
+checks every <code>ms=</code> it prints. Nothing is copied, so the code that passes is the code the user gets.</p>
+<p><strong>How it judges: the <code>§</code> line.</strong> App code prints tagged lines, <code>console.log('§GEO_ORDER n=… orderMs=…')</code>. A witness catches those
+lines and checks the values in them. A saved witness log starts with <code>§LOG_STAMP</code> (the commit that made it, §6).</p>
+<p><strong>What is deployed, and what is not</strong> (checked on the live site, 2026-11-16):</p>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Reaches the user's browser?</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Witness files (<code>*/tests/</code>, <code>witness/</code>, <code>witness_kit/</code>)</td>
+<td><strong>Never loaded.</strong> No page has a <code>&lt;script&gt;</code> that points at them, and no service-worker precache list holds one, so a page load fetches 0 bytes of witness code.</td>
+<td>They run in Node on a developer's machine, or in CI.</td>
+</tr>
+<tr>
+<td>The same witness files, by URL</td>
+<td><strong>They can be fetched, but only if someone asks for that URL.</strong> The Pages deploy uploads the whole repository (<code>.github/workflows/deploy-pages.yml</code>, <code>path: '.'</code>), so <code>…/bim-ootb/erp/tests/witness_env_views.js</code> answers 200. The minifier skips <code>tests/</code> folders (<code>scripts/minify_pages.js</code>).</td>
+<td>The repository is open source, and every tracked file is public anyway.</td>
+</tr>
+<tr>
+<td>The <code>§</code> lines inside app code</td>
+<td><strong>Yes, they ship and run.</strong> They are ordinary <code>console.log</code> calls in the app files. The live <code>viewer/schedule_gate.js</code> holds <code>\xA7GEO_ORDER</code> (the minifier writes <code>§</code> as <code>\xA7</code>).</td>
+<td>They are the evidence. The same line a witness checks also prints in a user's browser console, so a problem in the field leaves the same trail. The cost is a few bytes and a console call per line, and nothing shows on the page.</td>
+</tr>
+</tbody>
+</table>
+<p>So proof adds no weight to a page load: the witnesses sit beside the app, never inside it. The only part of the proof
+that ships is the <code>§</code> lines, and those are part of the code anyway.</p>
+<p><strong>The whole picture: the dev side beside the deployed side</strong> (bim-ootb <code>main</code> @ <code>9b7d2f86</code>, 2026-11-16).</p>
+<pre class="mermaid"><code>flowchart LR
+  subgraph DEV["DEV SIDE: a developer's machine or CI (never loaded by a page)"]
+    W["Witnesses&lt;br/&gt;1,403 witness_*.js&lt;br/&gt;2,112 JS files in test folders&lt;br/&gt;284,795 lines"]
+    T["Dev tools&lt;br/&gt;devtools/ (VS Code X0): 52 files, 5,385 lines&lt;br/&gt;scripts/: 133 files, 17,400 lines"]
+    N["node witness_x.js&lt;br/&gt;exit 0 / 1 / 2&lt;br/&gt;log in logs/, line 1 = §LOG_STAMP"]
+    W --&gt; N
+    T --&gt; N
+  end
+  subgraph APP["THE SAME FILES: the app code"]
+    C["App code&lt;br/&gt;1,004 JS files, 313,887 lines&lt;br/&gt;63 HTML pages&lt;br/&gt;22,429 lines carry a § tag"]
+    V["Vendored libraries&lt;br/&gt;127 files, 30.1 MB"]
+  end
+  subgraph LIVE["DEPLOYED SIDE: github.io, then the user's browser"]
+    D["Deploy (deploy-pages.yml)&lt;br/&gt;minifies its own JS: 644 files&lt;br/&gt;16.6 MB to 8.6 MB, gzip 5.4 MB to 2.8 MB"]
+    P["Page load&lt;br/&gt;service-worker precache:&lt;br/&gt;viewer 268, ERP 403, Modeller 157 entries&lt;br/&gt;witness entries: 0&lt;br/&gt;the rest loads lazily, on use"]
+    K["Browser console&lt;br/&gt;the § lines print here too"]
+    D --&gt; P --&gt; K
+  end
+  N -- "require() the real file&lt;br/&gt;and read its § lines" --&gt; C
+  C --&gt; D
+  V --&gt; D</code></pre>
+<table>
+<thead>
+<tr>
+<th>Number</th>
+<th>Value</th>
+<th>Where it comes from</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Witness files</td>
+<td>1,403 named <code>witness_*.js</code>; 2,112 JS files in test folders (with helpers and fixtures), 284,795 lines, 23.4 MB</td>
+<td><code>git ls-files</code> at <code>9b7d2f86</code></td>
+</tr>
+<tr>
+<td>App code</td>
+<td>1,004 JS files, 313,887 lines, 23.6 MB, plus 63 HTML pages (38,399 lines)</td>
+<td>the same, without test folders, <code>scripts/</code>, <code>devtools/</code>, <code>docs/</code>, <code>prompts/</code> and vendored <code>lib/</code></td>
+</tr>
+<tr>
+<td>What the deploy ships of its own JS</td>
+<td>644 files; 16,959 KB to 8,841 KB minified; 5,543 KB to 2,831 KB gzipped</td>
+<td>the deploy's own log line, <code>§PAYLOAD-MIN-TOTAL</code>, run <code>43830642465</code></td>
+</tr>
+<tr>
+<td>What a page caches up front</td>
+<td>viewer 268, ERP 403, Modeller 157 precache entries; <strong>0</strong> of them a witness</td>
+<td><code>PRECACHE_ASSETS</code> in the three <code>sw.js</code></td>
+</tr>
+<tr>
+<td><code>§</code> lines that ship</td>
+<td>22,429 lines of app code contain <code>§</code> (a text count: comments that mention a tag count too)</td>
+<td>grep over the app files</td>
+</tr>
+</tbody>
+</table>
+<p>The two sides share one set of files. A developer's witness runs that exact file in Node. A user's browser runs it from the site, minified,
+with no witness beside it. Re-measure with <code>bim-compiler/scripts/code_arch/size_stack.sh &lt;bim-ootb tree&gt;</code>; it prints one <code>§STACK_SIZE</code> line per number.</p>
+<p><strong>Why this shape.</strong> (1) The proof runs on the exact file that ships, with no test copy that can drift. (2) No build step and no test
+framework, which keeps the project's no-install rule (§3). (3) A test that cannot fail is not a test. Every new witness carries a
+<strong>red control</strong>, a case that must FAIL, and it is run once against the old code to show that it does.</p>
+<p><strong>Limits, said plainly.</strong> A witness depends on the checkout: it <code>require</code>s files by path, and the ones built on <code>witness_kit/contract.js</code>
+need <code>npm install</code> once. Many still hard-code the author's home folder (§8). Browser witnesses exist too (they say so in their header),
+but the default is Node. How to write one: §6.</p>
 <hr />
 <h2 id="1-the-picture-parts-and-patterns">1. The picture: parts and patterns<a class="headerlink" href="#1-the-picture-parts-and-patterns" title="Permanent link">&para;</a></h2>
 <h3 id="11-the-parts">1.1 The parts<a class="headerlink" href="#11-the-parts" title="Permanent link">&para;</a></h3>
