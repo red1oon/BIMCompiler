@@ -5,7 +5,7 @@ Background, measurements and prior art are in `prompts/DOCS_I18N.md` §4b-§4d (
 ## ▶▶ RESUME HERE FIRST (2026-11-16, end of session bim-compiler-41; the next "resume message" session starts here)
 **Owner, 2026-11-16 (verbatim, binding):** *"Agree. Update prompt to resume new session. We check (a) and agree your b and c."*
 **Next task: the BIM help panel (Viewer + Modeller), §14.** Spec before code; the design below is AGREED, the one open item is (a).
-1. **(a) CHECKED 2026-11-17, see §14 (a) RESULT:** CC BY-ND 4.0. Verbatim English with attribution is usable. A translation needs bSI's written consent. Awaiting the owner's choice. Original task: may buildingSMART's IFC class definitions (the IFC4 / IFC4.3 documentation text) be shown, translated and redistributed inside our pages?
+1. **(a) CHECKED 2026-11-17, see §14 (a) RESULT:** CC BY-ND 4.0. Verbatim English with attribution is usable. A translation needs bSI's written consent. **DECIDED 2026-11-17: use bSI's own official translations from bSDD, verbatim; coverage measured, see §14 (a) DECIDED.** Original task: may buildingSMART's IFC class definitions (the IFC4 / IFC4.3 documentation text) be shown, translated and redistributed inside our pages?
    - Read the actual licence or terms on buildingSMART's own site, save the copy into the session's prior folder, and cite the clause.
    - If the terms are unclear, say "not usable yet". Never assume.
 2. **AGREED (b):** our own small element dictionary: a Description and a Help per IFC class / element kind, written once and owned by us.
@@ -735,6 +735,16 @@ These are legacy's own words in that language; the twin shows them unchanged.
 - **Not read (gap, said plainly):** the bSI IP Policy PDF the cover page refers to. The CDN gave 403 and the web archive gave 429. The verdict rests on the licence text alone; read the IP Policy before relying on anything beyond verbatim English.
 - **What it means for the design (an owner choice, not decided):** (b) is the only route to a translated class text. (a) can at most be an English-only "IFC definition" quote, or just a link to the class's bSI page. A link is always allowed.
 - **Saved copies:** `~/bim-compiler/build/bim_help_prior/` (not tracked): the cover page in two copies (repo `cover.md` + archived IFC4.3 HTML), the dev repo's LICENSE.md + README, the CC BY-ND 4.0 legal code (html + txt), and `fetched_at.txt`.
+
+**(a) DECIDED (owner, 2026-11-17, verbatim):** *"We proceed with community licensed IFC info as we are a FOSS non commercial prototype. https://forums.buildingsmart.org/t/proper-way-to-access-translations-of-ifc-entities/4092"*
+- **The thread's answer** (post 4, buildingSMART 2022-02-09): official translations are made on `translations.buildingsmart.org` and published on GitHub, in bSDD and through an API. We therefore COPY buildingSMART's own published translations, word for word. We never translate IFC text ourselves. This keeps both the Prime Rule (extract) and ND (we share their material, not an adaptation).
+- **Source = bSDD IFC 4.3**, `https://identifier.buildingsmart.org/uri/buildingsmart/ifc/4.3`, licence `CC BY-ND 4.0` per the API, status `Preview`, released 2024-01-11. It lists 18 languages: EN de-DE es-ES ja-JP nl-NL no-NO pt-PT ru-RU zh-CN it-IT pl-PL da-DK cs-CZ pt-BR sv-SE hr-HR is-IS tr-TR. Fetch: `GET api.bsdd.buildingsmart.org/api/Class/v1?Uri=…/class/<IfcClass>&languageCode=<code>`. A missing language comes back as the English text, so "translated" = it differs from EN.
+- **MEASURED 2026-11-17** (`build/bim_help_prior/bsdd_cov.log`, data `bsdd_ifc43_shipped_classes.json`; population = 51 distinct `ifc_class` over the 11 shipped `viewer/buildings/*_extracted.db`, list in `shipped_ifc_classes_distinct.txt`):
+  - In bSDD 4.3: 48/51. Missing: `IfcWallStandardCase`, `IfcFlowInstrumentType`, `IfcSensorType` (IFC2x3 names). Mapping them to a 4.3 class needs a cited rule, never a guess.
+  - Definition translated, of 48: **pt-BR 46, es-ES 31, de-DE 9, ja-JP 9, zh-CN 0, fr-FR 0** (fr is not in bSDD's list; zh-CN is listed but empty for all 48).
+  - Viewer locales that bSDD covers at all: de, es, zh, ja, pt_BR. Not covered: fr, ms, th, ko, ar, id, bn, bl, af.
+- **Consequence for the panel:** the class text shows in the chosen language where bSI has it; otherwise in English, with a visible "English (no official translation)" label. It is never machine-translated. Attribution line on every card. (b) stays for our own Help, the things IFC does not say.
+- **Next to spec:** the cached pack (the bSDD rows written once into a file per language at build time, never fetched live by the page); the label rule; the witness (X of N shipped classes with a text; per language: X translated; falsifier = a zh-CN card that claims to be translated).
 
 **Decisions:** the design in RESUME HERE FIRST (owner "Agree", 2026-11-16).
 - (b) our own element dictionary — AGREED;
