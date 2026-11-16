@@ -742,6 +742,19 @@ Two terminal ideas. Neither is built and nothing is decided.
    - Idea: the field's own Description / Help answered from the SAME help pack in the chosen language (`lang_rule.js`).
    - E.g. `erp.ask` given a column, or `help <column>` inside `cd Order`.
    - Spec it here when picked up.
+   - **How it would work in CLI form** (owner 2026-11-16: *"How would it work in CLI form? Note in prompt."*). There is no panel; the same text comes up where the browser shows it:
+     - **(i) Asking about a field = the Tool Tip panel.** `cd Order; help DocumentNo` prints the header, the Description, the Help, with the same blank-line rules as `HelpController`, plus the dictionary facts (mandatory, type, list values; the P1 `student` level). It is the field of the kind's window header tab, its own text as AD_Field_v (no inheritance, §7 F4), translated from the help pack.
+     - **(ii) Being asked for a value = the tooltip.** When red1 prompts for a column (`new`, `run` parameters, the `"ask": "params"` forms), the field's Description shows as the one-line hint under the prompt; `?` typed at that prompt prints the full Help.
+     - **(iii) Optional:** `mis.describe` adds each property's Description, read only.
+   - **Why it is a small step:**
+     - the data exists: AD_Field description / help, already read by `ad_parser.getFields`;
+     - the translations exist: `erp/i18n/help/<lang>/help.json` `fields`;
+     - the language rule exists: `common/door/lang_rule.js`;
+     - the label rule exists: `erp_cli.js ask`'s `T()`.
+
+     Only the read subcommand and the prompt hint are new.
+   - **Witness idea:** for N fields of the shipped windows, the CLI's text equals the browser panel's (W-FIELD-HELP's oracle, so the terminal is a third reader of the same row), in en and one pack language. Falsifier: the column's text used instead of the field's.
+   - **Ownership:** `help <word>` and the prompts are the CLI session's (`words_core.js`, `red1.js`). Agree the word with it first; `help <column>` must not collide with `help <word>` (a column name vs a word name).
 2. **Verbs / words in the person's own language** (the question asked: "mis.<translated verb>"). Today every verb and red1 word is English; only the answers translate.
    - The idea is already a STUB in the CLI session's `prompts/CLI_ERP_IVR.md` (line ~78: "red1 words in the person's own language … a localized word expands to the SAME printed door line").
    - The door verbs themselves (`mis.describe`, …) stay English: they are the envelope and the journal, pinned for AI and scripts (§0 rule).
