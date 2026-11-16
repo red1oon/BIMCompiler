@@ -35,6 +35,41 @@ Two more habits run through every file:
 - **It is free and open source (MIT), and changes go through the tracker.** Open an issue first, then a pull request that
   links it. See §10.
 
+### 0.1 Witnesses: how the proof works, and why it costs the user nothing
+
+A **witness** is this project's test: a plain Node script, `witness_*.js`, about 1,350 of them. Each one names the issue it proves
+or disproves, and each can say **FAIL** and **INCONCLUSIVE** (nothing was judged), not only PASS. Run one with `node <file>` from
+anywhere. It exits 0 (pass), 1 (fail) or 2 (inconclusive). There is no test runner and no build.
+
+**How it can test the app without a browser.** Most app files end with a small tail (pattern 4 in the table above):
+`if (typeof module !== 'undefined' && module.exports) module.exports = API; else global.ScheduleInject = API;`
+(`viewer/schedule_inject.js:259`). So the **same file** the browser loads
+can also be `require`d by Node. A witness loads the real file, feeds it a known input, and judges the output. Example:
+`erp/tests/witness_core_timing.js` requires `viewer/schedule_inject.js` and `viewer/egress_sanity.js`, runs them under a fake clock, and
+checks every `ms=` it prints. Nothing is copied, so the code that passes is the code the user gets.
+
+**How it judges: the `§` line.** App code prints tagged lines, `console.log('§GEO_ORDER n=… orderMs=…')`. A witness catches those
+lines and checks the values in them. A saved witness log starts with `§LOG_STAMP` (the commit that made it, §6).
+
+**What is deployed, and what is not** (checked on the live site, 2026-11-16):
+
+| Part | Reaches the user's browser? | Why |
+|---|---|---|
+| Witness files (`*/tests/`, `witness/`, `witness_kit/`) | **Never loaded.** No page has a `<script>` that points at them, and no service-worker precache list holds one, so a page load fetches 0 bytes of witness code. | They run in Node on a developer's machine, or in CI. |
+| The same witness files, by URL | **They can be fetched, but only if someone asks for that URL.** The Pages deploy uploads the whole repository (`.github/workflows/deploy-pages.yml`, `path: '.'`), so `…/bim-ootb/erp/tests/witness_env_views.js` answers 200. The minifier skips `tests/` folders (`scripts/minify_pages.js`). | The repository is open source, and every tracked file is public anyway. |
+| The `§` lines inside app code | **Yes, they ship and run.** They are ordinary `console.log` calls in the app files. The live `viewer/schedule_gate.js` holds `\xA7GEO_ORDER` (the minifier writes `§` as `\xA7`). | They are the evidence. The same line a witness checks also prints in a user's browser console, so a problem in the field leaves the same trail. The cost is a few bytes and a console call per line, and nothing shows on the page. |
+
+So proof adds no weight to a page load: the witnesses sit beside the app, never inside it. The only part of the proof
+that ships is the `§` lines, and those are part of the code anyway.
+
+**Why this shape.** (1) The proof runs on the exact file that ships, with no test copy that can drift. (2) No build step and no test
+framework, which keeps the project's no-install rule (§3). (3) A test that cannot fail is not a test. Every new witness carries a
+**red control**, a case that must FAIL, and it is run once against the old code to show that it does.
+
+**Limits, said plainly.** A witness depends on the checkout: it `require`s files by path, and the ones built on `witness_kit/contract.js`
+need `npm install` once. Many still hard-code the author's home folder (§8). Browser witnesses exist too (they say so in their header),
+but the default is Node. How to write one: §6.
+
 ---
 
 ## 1. The picture: parts and patterns
