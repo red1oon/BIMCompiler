@@ -20,6 +20,8 @@ Owner, closing 2026-11-15: *"get it well documented in the prompts/# consolidate
 
 **0. ✅ DONE 2026-11-15 (fourth session): F-18 answered, the provenance hover built and merged — §F.23 (bim-ootb #3064 + tooltip-in-window fix #3069); FILM 3 built (`prompts/FILM_IMMERSIVE_SOFTWARE.md` FILM 3 STATUS, awaiting the owner's review); the default-key + truss findings handed to the DXF2BIM lane (bim-ootb `prompts/DXF2BIM_ARCHITECT_REVIEW.md` §D113, #3070). NEXT = the X0 "New witness for this file" command (§F.21 OPEN), or Part A's remaining A2 (item 2).** The text below is the original hand-over.
 
+**0i. 2026-11-16 (sixth session):** **A2-TIMING-3 built (bim-ootb #3124)**: `common/room_graph.js` + `viewer/schedule_inject.js` time through `CoreEdge`, the Modeller page installs the edge too; all timing reads of RESUME 2 are done. **NEXT:** the VALUE reads `schedule_author.js` / `schedule_sync.js` (A2-TIMING-3 RESULT names the lines), then the EDGE producers, then A3. Also this session, at the owner's request: `docs/DeveloperGuide.md` **§0.1 Witnesses** (how a witness tests the shipped file, and what is and is not deployed, checked on the live site).
+
 **0h. 2026-11-16 (fifth session):** A-6 asked and answered (*"Option 1 (Recommended)"*: one global `CoreEdge`, Part A DECISIONS) and **A2-TIMING-2 built (bim-ootb #3122)**: the 4D pair times through the viewer's new edge, 4D cache identical. **NEXT:** `common/room_graph.js` + `viewer/schedule_inject.js` (timing), then `schedule_author.js` / `schedule_sync.js` (values), then the EDGE producers, then A3 (A2-TIMING-2 RESULT lists the traps).
 
 **0g. 2026-11-16, the owner's go for the NEXT session:** *"U can do browser run for those items new session"* (to: the parked items that need a browser: the F-1 headless Fetch back button and Part A's browser witnesses). That covers headless-browser runs for those items: one at a time, `nice -n 19`, never beside a live bake or GPU work. A witness that needs a legacy server another lane uses (W-DASH-SYNC writes into the 8088 pilot) still waits until that lane is asked. The local servers were cleaned up the same day: 3 orphaned till-film relays and 2 orphaned W-MODEL-SAVE daemons with their headless Chromes (source folders deleted, parent systemd); the iDempiere pilot and bimdoc servers were left running.
@@ -376,6 +378,57 @@ cache re-run covers them. Measured on bim-ootb `main` @ `8f2dc6b5`:
   `_legalizeStats.ms` is read by `viewer/egress_sanity.js:552` with `.toFixed`, so a no-edge `null` must be handled there too), `viewer/schedule_inject.js`
   (`materializeMs`/`persistMs`, read by `viewer/tests/witness_s7_inject_persist.js:166`), then the VALUE reads `schedule_author.js:3115/3448`,
   `schedule_sync.js:36` (they need `CoreEdge.nowMs`/`uuid`, the viewer edge now exists), then the EDGE producers, then A3.
+
+**A2-TIMING-3 SPEC (2026-11-16, decisions A-4 + A-6; bim-ootb tracker issue with the PR).** The last two TIMING reads of RESUME 2. Measured on bim-ootb
+`main` @ `bbb7dfb2`:
+- `common/room_graph.js` `_legalizePath`: `_legT0 = Date.now()` (`:1692`) and `_legSt.ms += Date.now() - _legT0` (`:1773`), accumulated on
+  `graph._legalizeStats`. Its one reader is `viewer/egress_sanity.js:552-557`, which prints `§PATH_LEGAL_NO_RASTER … ms=` + `_lgSt.ms.toFixed(1)` only when the
+  building has no `storey_walkable_raster` (Duplex/Clinic/LTU_AHouse `_meta.db` have none; Hospital/Terminal do). The file is loaded lazily by the viewer
+  (`viewer/main.js:205`) **and by the Modeller** (`modeller/reg_report_ui.js:16`), and in Node by `tests/test_egress_sanity_rules.js`, `modeller/dxf2bim_cli.js`,
+  three `witness/witness_egress_*.js`. In Node `ROOT` is `{}`, so the edge is read from `globalThis.CoreEdge`.
+- `viewer/schedule_inject.js` `_now()` (`:55`, `performance.now` else `Date.now`) → `materializeMs` (`:147`) and `persistMs` (`:179`), printed by
+  `§SCHED_INJECT_FAIL ms=`, `§SCHED_INJECT materialized … ms=`, `§SCHED_INJECT_RESULT materializeMs= persistMs=`, and returned. Readers: only
+  `viewer/tests/witness_s7_inject_persist.js:166-167`, which already guards both (`|| 0`, `!= null`). `viewer/panels.js:1484` does not read them.
+  Loaded by `viewer/viewer.html:1122`, after the A-6 installer (`:1062`).
+**Build (one PR):**
+1. `room_graph.js`: a file-local `_perf()` = `(globalThis or ROOT).CoreEdge.perfMs()` or `null`. A call with no timer at start or end makes
+   `_legalizeStats.ms` `null` from then on (an unknown part makes the sum unknown; never a wall clock). Nothing else in the file changes.
+2. `egress_sanity.js`: prints `ms=?` when `_lgSt.ms` is `null` (today it would throw `null.toFixed`).
+3. `schedule_inject.js`: `_now()` is replaced by the same `_perf()`; each `ms` prints its rounded value or `?`; the returned fields are numbers or `null`.
+4. **`modeller/modeller.html`: the same inline installer as `viewer/viewer.html`** (A-6: "installed once by each shell"; the Modeller is a shell that loads
+   `room_graph.js`), logging `§CORE_EDGE set by=modeller.html`. No new file. Without it the Modeller's report would print `ms=?`.
+5. Bumps through `scripts/bump.js`: `room_graph.js?v=13` → 14 in `viewer/main.js`, `schedule_inject.js?v=3` → 4 and `egress_sanity.js` in `viewer.html`,
+   `viewer/sw.js` + `modeller/sw.js` `CACHE_VERSION` (parity gate on, §F.30).
+**Witness W-CORE-TIMING, extended** (`erp/tests/witness_core_timing.js`; red copies from `CORE_TIMING_VIEWER_DIR` / `CORE_TIMING_COMMON_DIR`):
+- T8 `RoomGraph.shortestPath` on a 2-room graph, 3 calls, under the +42 fake edge: `_legalizeStats = {calls:3, ms:126}`; with no edge `ms === null`.
+- T9 the REAL reader: `EgressSanity.evaluate` on `buildings/Duplex_meta.db` (no raster): under the fake edge the `§PATH_LEGAL_NO_RASTER` line says
+  `ms=` exactly `42 × calls` (calls is on the same line, so the check has an independent count); with no edge it says `ms=?` and does not throw.
+  INCONCLUSIVE when the db is absent or the line does not appear (nothing judged).
+- T10 `ScheduleInject.inject` with stub `A` / `scheduleAuthor` / `progress`: fake edge → `§SCHED_INJECT materialized … ms=42`,
+  `§SCHED_INJECT_RESULT materializeMs=42 persistMs=42`, `res.materializeMs === 42`; no edge → `ms=?` and `null`s.
+- T11 neither `room_graph.js` nor `schedule_inject.js` has a `Date.now`/`performance.now` call left; `witness_core_clock_reads.js` gains both (parser-based).
+- **Red controls:** main's `room_graph.js` / `schedule_inject.js` under the fake must FAIL T8, T9, T10, T11; the NEW `room_graph.js` with main's
+  `egress_sanity.js` and no edge must throw (that is why step 2 exists).
+- **Before/after, unchanged verdicts:** `tests/test_egress_sanity_rules.js` (baseline on `main`: `6 passed, 0 failed`, Hospital counts 440/7/136/136),
+  `viewer/tests/witness_s7_inject.js`, `viewer/tests/witness_s7_inject_guard.js`, `witness_core_clock_reads`, `witness_env_views`. `room_graph.js` is not in
+  the 4D cache key (`scripts/cache_4d_run.js`), so no 4D re-run. **Issue proved:** the room router and the 4D inject still timed their § lines with
+  the wall clock, and the Modeller had no edge; after, both read the one installed edge and say `?` without it, and every route and schedule is unchanged.
+
+**A2-TIMING-3 RESULT (2026-11-16): ✅ DONE (witness), bim-ootb #3123 / PR #3124.** +119 / −19, 10 files. Logs read:
+- W-CORE-TIMING `§CORE_TIMING checks=22 failed=0 verdict=PASS`: T8 `{calls:3, ms:126}` / no edge `ms=null`; T9 Clinic egress `legalizations=14901 calls=2636
+  ms=110712.0` (= 42 × 2636) / no edge `ms=?`, no throw; T10 `ms=42`, `materializeMs=42 persistMs=42`, `res 42/42` / no edge `?` and `null/null`; T11 0 clock calls.
+- **Red:** main's copies FAIL 8 (`ms:0`, Clinic `ms=90849.0`, inject `ms=7`, 2 + 2 clock calls). New router + main's `egress_sanity.js`, no edge:
+  `Cannot read properties of null (reading 'toFixed')`, so step 2 is needed.
+- **Spec deviations, said here:** (1) T9 uses `Clinic_meta.db`: `Duplex_meta.db` is a 0-byte stub (no `element_transforms`). (2) T10's first run found a defect
+  in the edit itself: `schedule_inject.js`'s wrapper passes `this` = `module.exports` as `global` in Node, so `global.CoreEdge` missed; `_perf` reads `globalThis` first.
+- Before/after on a detached `main` worktree: W-EGRESS-SANITY 6/0, log identical with ms masked · W-S7-INJECT 24/0 (now `ms=?`: it runs in Node with no edge, as
+  the spec allows) · W-S7-INJECT-GUARD 17/0 (its row hash differs run to run on BOTH sides: `§GANTT_SET_BASELINE setAt=` is a wall-clock value, the next item,
+  `schedule_author.js`) · W-CORE-CLOCK-READS 4/0, ran 24 → 26 · W-ENV-VIEWS 7/0 · `audit_sw_precache` 268/268, 0 unlisted.
+- Headless (owner's 0g go, no GPU, SW blocked): `§CORE_EDGE set by=modeller.html nowMs=Y uuid=Y perfMs=Y` and `by=viewer.html`, `CoreEdge.uuid()` a v4.
+- Bumps: `scripts/bump.js` (viewer v1710 → v1711, `room_graph.js` 13 → 14 in `main.js`, `schedule_inject.js` + `egress_sanity.js` 3 → 4, `main.js` 61 → 62);
+  `modeller/sw.js` v277 → v278 by hand (`bump.js` takes loaded files, not a page). Not ERP, so no parity gate.
+- **Remaining A2:** the VALUE reads `schedule_author.js:3115/3448` (incl. the baseline `setAt`), `schedule_sync.js:36`, then the EDGE producers
+  (`crud_overlay._modelEnv`, `plugin_overlay._localNow`, `genesis.js:729` LAST), then A3 W-CORE-PURE.
 
 ---
 
@@ -1039,6 +1092,7 @@ Ask the owner **one decision per message, with the recommendation** (START HERE 
 |---|---|
 | APP fields / phantoms | `node scripts/gen_app_surface.js` → header of `internal/APP_SURFACE.md` |
 | script tags per page | `grep -cE '<script[^>]+src=' viewer/viewer.html erp/idempiere.html modeller/modeller.html` |
+| dev side vs deployed side (DeveloperGuide §0.1 diagram) | `bash <bim-compiler>/scripts/code_arch/size_stack.sh <bim-ootb tree>` → `§STACK_SIZE` lines. @`9b7d2f86` 2026-11-16: app_js 1,004 / 313,887 lines · witness_js 2,112 / 284,795 · witness_named 1,403 · precache viewer 268 / erp 403 / modeller 157, tests 0. Shipped-JS bytes: the deploy log's `§PAYLOAD-MIN-TOTAL` (`gh run view <id> --log`) |
 | clock/random/network calls | `node <bim-compiler>/scripts/code_arch/clock_probe.js <bim-ootb root> [pathspec …]` (committed 2026-11-13, #602; espree AST, comments never count; needs bim-ootb `node_modules`). Baseline @`a7c329e5`: default `erp/*.js` → `files=301 with_calls=58 calls=160`; the A-1 core pathspecs (`'erp/processes/*.js' 'erp/callouts/*.js' erp/ad_callout.js erp/doc_poster.js 'erp/model_*.js' erp/rule_fold.js erp/crud_core.js erp/kernel_ops.js`) → `112 / 19 / 32` (7 of them in `kernel_ops.js`); the viewer/4D set (`viewer/cpm_schedule.js 'viewer/schedule_*.js' viewer/tm_core.js common/room_graph.js`) → `11 / 7 / 32`. A3's W-CORE-PURE ports this probe into bim-ootb |
 | printed `§TAG`s found in saved logs; logs with a code stamp (§F.6) | `node <bim-compiler>/scripts/code_arch/lens_precheck.js [<bim-ootb root>] [<bim-compiler root>]` (read-only, ~1 min; needs bim-ootb `node_modules` for espree) |
 | UMD globals F12 can follow | `node scripts/tests/witness_global_types.js` |
@@ -1065,7 +1119,7 @@ Ask the owner **one decision per message, with the recommendation** (START HERE 
 
 | Part | What | State |
 |---|---|---|
-| A | pure core + Env | **A0 ✅** · **A-1..A-5 ✅** · **A1 ✅** (#3007) · **A2** done for 15 files (#3010 #3013 #3016 #3021 #3026 #3030 #3033) + A2-TIMING-1 (#3110) + A-6 / A2-TIMING-2 (#3122), remaining listed in RESUME 2, then A3 |
+| A | pure core + Env | **A0 ✅** · **A-1..A-5 ✅** · **A1 ✅** (#3007) · **A2** done for 15 files (#3010 #3013 #3016 #3021 #3026 #3030 #3033) + A2-TIMING-1 (#3110) + A-6 / A2-TIMING-2 (#3122) + A2-TIMING-3 (bim-ootb #3124), remaining: the value reads + EDGE producers (A2-TIMING-3 RESULT), then A3 |
 | B | manifest per app | not started · B0 ready · open: B-1 to B-4 |
 | C | named APP parts | not started · open: C-1, C-2 |
 | D | owner table | not started · open: D-1, D-2 |
