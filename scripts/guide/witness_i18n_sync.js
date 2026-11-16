@@ -8,7 +8,8 @@
 //   Y4 ISSUE (a changed sentence silently kept in its old translation): every new English prose line found nowhere in the old English is patched or to-do, never kept.
 //   Y5 ISSUE (the result is not a valid page): the same line structure as the new English (I11), and over all prose the same code spans and numbers (I3, I4).
 //   Y6 ISSUE (no saving): the to-do lines are at most the changed prose lines, stated against a full retranslation.
-//   Falsifier: SYNC_BREAK=keepstale (a changed line keeps its old translation: must FAIL Y4).
+//   Y7 ISSUE (a number inside another, or a chained swap, corrupts a patched line; DOCS_I18N.md §6f FIX): a synthetic nested-number line patches to exactly the new numbers.
+//   Falsifiers: SYNC_BREAK=keepstale (a changed line keeps its old translation: must FAIL Y4) · SYNC_BREAK=substring (the old substring swap: must FAIL Y7).
 //   Run: node scripts/guide/witness_i18n_sync.js > build/witness_i18n_sync.log 2>&1
 'use strict';
 const fs = require('fs'), path = require('path'), cp = require('child_process');
@@ -48,6 +49,11 @@ if (other) langs.forEach(lang => {
   if (bag(pt(out, kOut).filter(t => t.startsWith('`'))) !== bag(pt(newB, kNew).filter(t => t.startsWith('`')))) bad.Y5.push(lang + ' code spans');
   if (r.rep.todo > r.rep.changedProse) bad.Y6.push(lang + ' todo ' + r.rep.todo + ' > changed prose ' + r.rep.changedProse);
 });
+// Y7 (DOCS_I18N.md §6f FIX) nested numbers: a number inside another (5 in 1157, 6 in 64) and a swap whose result is a later swap's input (5->6, 6->7)
+{ const o = ['**N.** 59 a 5 b 1157 c 6 d 14 and 64'], n = ['**N.** 62 a 6 b 1158 c 7 d 15 and 64'], t = ['**N.** 14 d 6 c 1157 b 5 a 59 und 64'];
+  const r = SY.sync(o, n, t, BRK), want = bag(LN.tokens(n[0]).toks), got = bag(LN.tokens(r.out[0]).toks);
+  L('Y7 nested numbers: class=' + r.cls[0] + ' out=' + JSON.stringify(r.out[0]) + ' want numbers ' + want);
+  chk('Y7 a patched line swaps whole numbers only, in one pass (5 inside 1157 and 6 inside 64 untouched; 5->6 then 6->7 not chained)', r.cls[0] === 'patched' && got === want, 'got ' + got); }
 if (!judged) incon('Y', 'VACUOUS: no translation judged');
 else {
   L('total over ' + judged + ' languages: lines=' + totalLines + ' kept=' + kept + ' carried=' + carried + ' patched=' + patched + ' to translate=' + totalTodo + ' (' + (100 * totalTodo / totalLines).toFixed(1) + '% of a full retranslation)');
