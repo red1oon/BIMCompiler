@@ -210,6 +210,18 @@ Cost of each English edit is now up to six translations: the staleness check (§
   - Falsifier `SYNC_BREAK=substring` (the old swap) must FAIL Y7.
 - **Also found:** the step "run `--apply` again" (step 3 below) is REFUSED after an edit that adds lines. The translation then has the new line count, while its `source_sha` still names the old English. The working second step is `i18n_sync.js <Page> --old-english docs/<Page>.md --apply`: every line pairs with itself, 0 to-do, and `source_sha` moves on.
 
+## 6g. Rule: whoever touches an English page owns its translations (owner, 2026-11-16, binding)
+> *"once those pages are touched, translations automatically done, without your session been active. Responsibility belongs to whichever session touches them."*
+- Any session that changes an English page that has translations (`docs/<Page>.md` beside `docs/<Page>.<lang>.md`; today `FastScriptGuide`, `index`, `USER_GUIDE`) brings every translation of it up to date **in the same change**: the same PR and the same docs deploy. It does not wait for, ask, or hand off to the session that made the translations.
+- **How:**
+  1. `node scripts/guide/i18n_sync.js <Page> --apply`
+  2. translate only the lines in `docs/<Page>.<lang>.todo.json`
+  3. `node scripts/guide/i18n_sync.js <Page> --old-english docs/<Page>.md --apply`
+  4. W-DOCS-I18N green on a fresh `mkdocs build`
+- **Done means:** every translated page's `source_sha` is the new English hash, no `.todo.json` is left, and W-DOCS-I18N passes.
+- This applies to generated edits too (`gen_fast_script_guide.js --refresh` rewrites the English page).
+- A translated page left "out of date" is a defect of the change that caused it, not of the translation lane.
+
 ## 7. Open, one question at a time (owner)
 1. ~~Reviewers~~: decided, none (§6b).
 2. ~~Pilot~~: decided, the CLI user guide `FastScriptGuide.md`, every language progressively (§6b).
