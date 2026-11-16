@@ -58,7 +58,7 @@ Owner, closing 2026-11-15: *"get it well documented in the prompts/# consolidate
 
 **5. Films (never committed; scripts + logs are).** CH 0 · Immersive Software (`prompts/FILM_IMMERSIVE_SOFTWARE.md`, scripts `scripts/film_immersive_software/`, `scripts/film_erp_layers/`): film 1 the BIM hover `~/Videos/Immersive_Software_CH0_EN_AFTER_2026-11-15_v1.mp4` · film 2 the ERP field `~/Videos/Immersive_Software_CH0_ERP_Field_EN_AFTER_2026-11-15_v1.mp4` + Mandarin `_ZH_` (see the film file's status) · film 3 = BIM with layers (after 0). Both EN films were sent to the owner's phone (SendUserFile). Earlier CH 0 "VSC Hot Edit" films: `prompts/FILM_IDE_ERP_DEBUG.md`. Rebuild recipes are in each film file (removing a film worktree deletes its ignored pictures; the recipe recreates them).
 
-**6. Open with the owner.** F-18 ✅ (§F.23) · F-19 ✅ "Go" 2026-11-16 (§F.28) · F-1 (Fetch back runs a headless browser?) · F-2 (size and speed budgets) · F-7 (hosted preview per PR) · F-12 step 2 (a deploy token only he can create) · a status-bar Bump button (suggested, not built) · the parity gate's default bridge path (above) · his hands-on dry run (`~/VSCcheatsheet.txt`, 29 steps; `~/bim-ootb-dryrun` not created) · a bake on his go (check a "last:" line after #2977).
+**6. Open with the owner.** F-18 ✅ (§F.23) · F-19 ✅ "Go" 2026-11-16 (§F.28) · F-1 ✅ *"Agree with you"* (plain by default, headless only as a separate button) · F-2 (size and speed budgets) · F-7 (hosted preview per PR) · F-12 step 2 (a deploy token only he can create) · a status-bar Bump button (suggested, not built) · the parity gate's default bridge path (above) · his hands-on dry run (`~/VSCcheatsheet.txt`, 29 steps; `~/bim-ootb-dryrun` not created) · a bake on his go (check a "last:" line after #2977).
 
 **7. Open, no owner needed.** 15 of 51 `ws_kernel.js` witnesses fail on unedited `main` (ERP lane's; list in the archive) · the Modeller runner on this machine: `§ALLWITNESS PASS=106 FAIL=10 SKIP=5 ENV=12 of 133` before the shed inputs were restored; inputs RESTORED 2026-11-15 to `~/Videos/dxf2bim_film_work/why/{raw,cli/marked}` (README there), and some witnesses need `SHED_RAW_DIR=~/Videos/dxf2bim_film_work/why/raw` set · 11 `PHANTOM?` fields (§F.17, a Part C question) · the 4D cache's `witness.log` has no `§LOG_STAMP` · bim-ootb #2974/#2975 texts still say "138 of 281" (true: 130).
 
@@ -446,7 +446,7 @@ with the owner's go (GPU/VRAM contention with a live session is a known crash, m
 Witness `W-SHIP-PANEL` (node, fixtures): a sandbox repo where (a) a planted syntax error stops at Check, (b) a precached file changed without a bump stops
 at Check, (c) a fake "live" server returning an old `CACHE_VERSION` makes Fetch back FAIL, (d) a live `version.json` whose `sha` is not the merged commit makes
 Fetch back FAIL. **Red control:** compare against a wrong hash, which must FAIL.
-OPEN DECISION F-1: does Fetch back run a headless browser for the boot `§` lines, or only HTTP + version + hash? Proposal: HTTP + version + hash by
+DECIDED F-1 (2026-11-16, *"Agree with you"*): does Fetch back run a headless browser for the boot `§` lines, or only HTTP + version + hash? Proposal: HTTP + version + hash by
 default. Headless is a button the owner enables.
 
 ### F.3 What advanced teams built, adapted here + a "what will this cost if deployed" monitor   (owner: *"suggest things that advanced devs have done in tools that can help here"* · *"with monitors that can tell its perf impact if deployed"*)
@@ -573,7 +573,7 @@ PR, deploy), budgets and a hosted preview wait for F-1, F-2, F-7. DEV_TOOLKIT's 
 later (a) too · F-4, F-5 by DEV_TOOLKIT §8/§10 · F-6 *"go for one click"* · F-8 *"advice me and proceed"* → own providers, no TypeScript
 plugin · F-9 closed "not next", then built as F.12b once logs were stamped · F-10 and F-11 *"Go with your advice."* · F-12 *"Both."* (step 1
 applied on *"yes do it"*) · F-13 *"ok"*, then *"Follow your yes advice."* · film 1 *"Past film is OK as it delivers the idea."* · film 2
-*"This one again is a conceptual idea. Proceed."* **Still open in F: F-1, F-2, F-7.**
+*"This one again is a conceptual idea. Proceed."* · F-18 and F-19 (§F.23, §F.28) · **F-1, 2026-11-16: *"Agree with you"*** (to: plain HTTP + version + commit by default, the headless-browser check only as a separate button the owner presses). The default is already built (§F.2); the button is unbuilt and needs a browser run to witness, so it waits for the owner's go for that run. **Still open in F: F-2, F-7, F-12 step 2.**
 
 ### F.21 Hover in the app, jump VS Code to the code   (owner idea 2026-11-14; decision **F-14**; not built)
 - 2026-11-15, owner, on **F-14** (which surface first; advice given: the ERP window): *"About experimental browser hover, let's go for Modeller
