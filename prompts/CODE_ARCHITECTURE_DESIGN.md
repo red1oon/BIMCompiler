@@ -486,6 +486,41 @@ fallback); after, all three come from the one installed edge, and a missing edge
   14 → 15. (2) The witness's first run never exited: `ScheduleSync.create()` opens a real `BroadcastChannel` in Node; T14 closes every handle it makes.
 - **Remaining A2:** the EDGE producers (`crud_overlay._modelEnv`, `plugin_overlay._localNow`, `genesis.js:729` LAST), then A3 W-CORE-PURE.
 
+**A2-EDGE-2 SPEC (2026-11-16, owner "proceed"; decisions A-2 + A-6; bim-ootb tracker issue with the PR).** The env PRODUCERS: edge code that builds the
+transaction env with its own copy of the local-stamp code. A-2 says the trx env is a VIEW of the one login-context clock, so each producer keeps its fields
+and its behaviour but takes the instant from the installed edge and the text from `Env.stamp` (one implementation). Measured on bim-ootb `main` @ `1d2acabd`:
+- `erp/crud_overlay.js:1904` `_modelEnv()`: `new Date()` + a hand `pad`, `uuid` = `crypto.randomUUID` or `null`. Callers: 6, every one behind a `ModelLayer`
+  check (`:1951 :1988 :2686 :2739 :2882 :3388`). Pages: `erp/idempiere.html:842` (edge installed at `:708`) and `erp/glassbowl.html:882` (no edge, but it loads
+  no `ModelLayer`, so `_modelEnv` is never reached there). In Node, `require('crud_overlay.js')` returns the pure core only; `_modelEnv` is not loaded.
+- `erp/plugin_overlay.js:114` `_localNow()` (a second copy of the same stamp) and `:115` `_clientEnv(r)`, which reads the clock TWICE (`_localNow()` and
+  `Date.now()`), so `now` and `nowMillis` can disagree. Used by `packInClient` (`:132`, the `AD_Package_Imp` row's `created`/`updated`) and the client-pack
+  replay (`:162`). Loaded by `erp/idempiere.html:637` only.
+- `erp/genesis.js:729`: **reads no clock and no RNG** (a fixed 09:00 on the posting date, a counter for ids): already pure. **No change.** Folding it into
+  `Env.modelEnv` would change what it returns: `Env.stamp` gives the LOCAL text of an instant, while this env pairs `now = 'D 09:00:00'` with
+  `nowMillis = Date.parse('DT09:00:00Z')` (09:00 UTC). That pair disagrees by the zone offset: a finding, recorded here, not changed.
+- **Probe on `main` (real page, headless, Asia/Kuala_Lumpur, a fake `CoreEdge` set before the call):** `__crud.withModelTrx` hands the env
+  `{"date":"2026-11-16 00:00:00","now":"2026-11-16 19:42:00","nowMillis":1794829320100,"id":"93315523-…"}`: the wall clock and `crypto`, not the edge.
+- **Finding, NOT in this item (not in A-1's list):** `erp/pipo_packin.js:55` and `:270` fall back to a **UTC** stamp (`new Date().toISOString()…`) when a caller
+  passes no `now`, and the bundle Pack In path does not pass one (`:308` `recordImport(db, bundle, p.version, st)`). Same defect class as the door stamp (0b).
+  Ask the owner before changing it.
+**Build (one PR):**
+1. `_modelEnv()`: `var E = AdCallout.Env, edge = E.edge(), ms = edge.nowMs(), st = E.stamp(ms)` → `date: st.day + ' 00:00:00'`, `now: st.now`, `nowMillis: ms`,
+   `uuid: edge.uuid`. Every other field unchanged. No `AdCallout` or no edge: `§ENV_NO_DATE` + throw (A-3; unreachable on both pages, measured above).
+2. `_localNow()` = `Env.stamp(Env.edge().nowMs()).now`; `_clientEnv(r)` reads the edge ONCE (`now` and `nowMillis` from the same instant) and `uuid: edge.uuid`.
+3. Bumps through `scripts/bump.js` (ERP: the parity gate runs, `BUMP_PARITY_BRIDGE` at a bim-compiler `origin/master` worktree, §F.30).
+**Witness W-EDGE-PRODUCERS** (`erp/tests/witness_edge_producers.js`, the real `erp/idempiere.html`, headless, no GPU, `timezoneId: Asia/Kuala_Lumpur`; served from
+`EP_REPO`, default this checkout):
+- E1 `__crud.withModelTrx` under a fake `CoreEdge` (`nowMs` = 2026-11-20 10:15:00 local, a fixed uuid): `date = '2026-11-20 00:00:00'`, `now = '2026-11-20 10:15:00'`,
+  `nowMillis` = the fake's ms, `uuid()` = the fake's id.
+- E2 `PluginEngine.packInClient` with the CAPEX test 2Pack (`capex/plugin/testdata_2pack/*_GardenWorld_CAPEXTestData.zip`, client 11) under the same fake:
+  the new `AD_Package_Imp` row has `created = updated = '2026-11-20 10:15:00'`, and `ok` is true.
+- E3 the producers have no `new Date()` / `Date.now()` / `randomUUID` left (the function bodies, parsed by name from the file).
+- **Red control:** `EP_REPO=<a main worktree>` must FAIL E1–E3 (the probe above already shows E1's wall clock).
+- **Before/after:** W-TD-PACKIN-WINDOW (the Pack In button, `capex/tests/witness_td_packin_window.js`) `VERDICT PASS`, W-RULE-FOLD-EDGE, W-CORE-TIMING,
+  W-CORE-CLOCK-READS, W-ENV-VIEWS unchanged; the parity gate verdict set unchanged.
+**Issue proved:** two edge producers each kept their own copy of the local-stamp code, read the wall clock and the RNG directly, and one read the clock twice;
+after, both are views of the one edge clock through `Env.stamp`, so a page's model env follows the installed edge.
+
 ---
 
 ## PART B — One manifest per app   (fixes P2, declares half of P1)
