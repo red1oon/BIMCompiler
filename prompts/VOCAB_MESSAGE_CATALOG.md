@@ -168,6 +168,15 @@ clash: <the short help, unchanged>
 **W-MSG-CATALOG M3 uses it,** with the same verdicts as before, plus the static `arg-count`. New falsifiers:
 - `MSG_BREAK=extraarg`: one call passes one argument too many. M3 must FAIL with `arg-count`.
 - `MSG_BREAK=computedkey`: one key is built at run time. M3 must FAIL with `computed-key`.
+**P2a-1 RESULT (2026-11-16, bim-ootb #3097; logs read):**
+- `msg_keys.js` on the real code: 73 uses (`words_core.js` + `red1.js`), 72 keys, 0 findings.
+- W-MSG-CATALOG 5/0: M1 2,260 of 2,260 steps, and M3 through the module.
+- Falsifiers:
+  - `extraarg` FAILs M3: `arg-count words.not_done words_core.js:142 passes 2, the template takes 1`.
+  - `computedkey` FAILs M3: `computed-key words_core.js:153`.
+  - `renamekey`, `unledgered` and `edittemplate` still FAIL their claims.
+- W-HELP-STUDENT 6/0, W-RED1-HELP 5/0 and W-RED1-WORDS 3/0 stay green.
+- The code-design session (X0 Navigator, F-19) requires it unchanged.
 
 ## STATUS
 2026-11-16: P1 built and witnessed (5/0), merged as bim-ootb #3079. P2a built and witnessed (W-MSG-CATALOG 4/0), merged as bim-ootb #3082. P3a built and witnessed (W-HELP-STUDENT 5/0), merged as bim-ootb #3083. P3a-1 (help footer + opening tip, `red1 --fast`), bim-ootb #3084. Depends on `prompts/DOCS_I18N.md`, `prompts/CLI_ERP_IVR.md` (CLI session owns), `prompts/ERP_UI_LOCALES.md`.
