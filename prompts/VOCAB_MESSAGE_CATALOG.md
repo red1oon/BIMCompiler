@@ -2,6 +2,43 @@
 Scope: **SPEC and phase ledger** for ONE vocabulary the CLI and the guides both read: a keyed message catalog and a help catalog over the Application Dictionary, with a short/long level and a locale. Read the log after every run (exit code is not evidence). Spec first, witness with a falsifier next, code last; honour until this file is marked DONE.
 Background, measurements and prior art are in `prompts/DOCS_I18N.md` §4b-§4d (owner ideas of 2026-11-16: shared vocabulary for CLI and guides, a `Student` level = the long text, reuse the legacy element/message model, remove the copied Help). This file owns the BUILD; that file keeps the findings.
 
+## ▶ RESUME HERE (2026-11-16, end of session bim-compiler-75; the next "resume message" session starts here)
+**Owner, 2026-11-16 (verbatim):** *"New session 'resume message' will continue organise Help and tooltip content, but see if it can be in a help-pack_(language).zip loaded during login choice to lazy load its large content. Then we can pack lots of useful content. Note that in legacy the Help is on the right panel thus in twin it shold be so too. Look at improving the search function in it perhaps combination of words or a sentence ie 'How do i close a Sales Order?' it should give more useful info, auto hyperlink to jump more easily."*
+**State:** P2b DONE (door.js answers from the catalog, live, §6). P1b SPEC merged (§7). WIP: bim-ootb branch `feat/field-help-twin` @ `3cb8e4c6`, no PR. `help_catalog.legacyField(fieldId)` returns AD_Field_v's own `{header, description, help, entityType}` with no inheritance. It loads in the page (`window.HelpCatalog`), and `FH_BREAK=fallback` is the F4 falsifier. W-HELP-CATALOG is still 5/0. **W-FIELD-HELP is not written yet; that is the next step.**
+**Facts measured this session (cite them, do not re-derive):**
+- Legacy tooltip = Description (`WEditor.java:247/333/339-340`). Help goes to the RIGHT panel on focus (`ADTabpanel.java:840`, `GridTabRowRenderer.java:637-641`, `HelpController.renderToolTip:186-230`).
+- Live `adempiere.ad_field_v` = `f.name, f.description, f.help` (the field's own text only).
+- Legacy DBs (docker `postgres`, schema `adempiere`): `idempiere`/`_pilot`/`_test` have 21,432 fields; `ad_field_trl` 21,432 rows, system language `es_CO`. The twin seed has 20,988 fields (it also has plugin ids) and NO `_trl` rows.
+- **Legacy already has the content store this asks for:** `AD_CtxHelp` (bound to tab / process / form / info window / workflow / task / table; `ctxtype`) → `AD_CtxHelpMsg` (the text) → `AD_CtxHelpMsg_Trl` (per language), plus `AD_CtxHelpSuggestion` (a user's proposed text). `HelpController.renderCtxHelp` shows it in the same right panel (`HelpController.java:169`, the Home help).
+  - The local legacy holds 1 row of each, so the store exists and is nearly empty.
+**Design to take forward (this session's analysis; the owner asked for it to be discussed, not built):**
+1. **Help pack = Context Help rows, per language, lazy.**
+   - `help-pack_<lang>.zip` carries:
+     - (a) the dictionary's own translations (`AD_Field_Trl`, `AD_Element_Trl`, `AD_Process_Para_Trl`), from published iDempiere language packs;
+     - (b) the "lots of useful content" as `AD_CtxHelp` + `AD_CtxHelpMsg(_Trl)` rows;
+     - (c) a prebuilt search index.
+   - It is fetched once, after the login has chosen the language. The language rule is the CLI session's (`CLI_ERP_IVR.md`): `AD_Preference` 'Language' → LANG / browser → System client.
+   - The pack is cached by the service worker and applied as a READ overlay, like the patches. The seed is never rewritten.
+   - Content as Context Help keeps the twin equal to legacy, because legacy shows the same rows in the same panel. The same pack can be shipped to a real iDempiere as a 2Pack.
+   - Help text that is not a legacy record would be a divergence (CARDINAL rule), so it never goes there.
+2. **The right panel in the twin** = a port of `HelpController`: field help on focus, plus the Context Help of the tab, window or process in view. One panel, generic (AD-LAYER LAW), witnessed X of N windows.
+3. **Search ("How do I close a Sales Order?") is knowledge retrieval, deterministic, with no AI inside** (positioning rule):
+   - **Parse:** lowercase, drop the stop words ("how do i … ?"). Match phrases against dictionary names longest-first: window "Sales Order", document action "Close" = `CL` from the DocAction list, process names, field names, plus guide headings.
+   - **Rank:** an inverted index (BM25-like) over Context Help text, field help, window and process descriptions, guide sections, and `words.json` / `verbs.json`, built when the pack is made.
+   - **Answer card**, each part extracted, not written:
+     - "Sales Order" → open the window (zoom link);
+     - "Close" → the document action, with its preconditions from the doc-action table (`ad_docfsm`);
+     - the CLI line: `erp.close kind=Order number=<n>`;
+     - the guide section anchor.
+   - **Auto-hyperlink:** inside any help text, a term equal to a window, process or field name becomes a link (window → open, field → its help, guide term → its section). One linker, run when the pack is built, not at display time.
+   - **Witness:** a question set of real phrasings (EN + each pack language) → expected top hit (X of N). A falsifier drops the phrase matcher and must FAIL.
+4. **Order of work:** finish P1b (W-FIELD-HELP F1-F5, the tooltip setter, the right panel). Then the pack format and loader. Then the search index and linker. The content itself comes last, and it is just data.
+**Owned elsewhere, don't redo:**
+- The locale/login rule: the CLI session.
+- The FastScriptGuide translations: the CLI session; the rule is in DOCS_I18N §6g.
+- The ERP order blocks that need their own op-log: the CLI session.
+- The status@erp witness failures on main: reported to the CLI session.
+
 ## 0. Rules (owner, 2026-11-16; binding)
 - **Student is a LEVEL beside the language** (`ja` + student), not a language value. Short text = `AD_Message.MsgText` / `AD_Element.Description`; long = `MsgTip` / `Help` (legacy `Msg.java` L169-232, L375-398).
 - **English is byte-identical by default.** The door's envelope, journal, `verbs.json` and what an AI or script receives never change; only text meant for a person is looked up, and only when a level or locale is set.
