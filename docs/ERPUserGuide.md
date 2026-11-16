@@ -489,6 +489,58 @@ built-in pre-release test harness (§15).
 - **Editable fields**: tap a field to edit. Changes are staged in a CRUD overlay. Hit **Save** to
   commit as a signed sidecar op.
 
+### Help on every field, and a question box *(LIVE)*
+
+- **Hover a field** to see its own description, the same text legacy iDempiere shows (the field's
+  Description in the dictionary). A field with no description shows no tooltip, as legacy does.
+- **Click into a field** and the **Tool Tip** panel on the right shows its name, its description and its
+  longer help. With nothing focused it says *Place your cursor into a field on the screen*. Click the panel's
+  title to fold it.
+- **How To**, under the Tool Tip, shows the steps for the window you have open (Sales Order, Shipment,
+  Invoice, Payment), taken word for word from the trade-cycle steps of this guide
+  ([The standard flow](#the-standard-flow-order-to-cash-procure-to-pay-books-to-reports)), with a link to the section. A window name in
+  the steps opens that window.
+- **Ask a question** in the box at the top of How To, in plain words, then press Enter, for example
+  *How do I close a Sales Order?* The answer card names the window (click it to open), the document action,
+  the statuses it is allowed from, the command line that does it where one is offered, and the guide
+  section. Every part is read from the dictionary; there is no AI inside.
+- **In your language:** choose it in the header (or at login). Field help comes from the published iDempiere
+  language packs: French, German, Chinese and Japanese today. A field the pack does not cover stays in
+  English, as in legacy. Questions can be asked in that language too, e.g. *如何关闭销售订单？*. The How To
+  steps are in Chinese as well; they were translated by the build, not by a native speaker, and say so. The
+  pack's own words are shown unchanged, even where they read oddly (the Chinese pack calls Void 空白).
+- **At the command line**, the same question works: `ask "How do I close a Sales Order?"` at the `red1`
+  prompt, or the door line `erp.ask question="…"`. The language is your saved preference when you are
+  logged in, else your terminal's `LANG`, else the system's; `lang=zh_CN` chooses one. It only reads.
+
+> *Proven by* **W-FIELD-HELP** (every displayed field's text equals the real legacy `AD_Field_v`, 15,849 of
+> 15,849), **W-HELP-SHOWCASE** (packs extracted from the published packs, the question sets in English and
+> Chinese, the links) and **W-ERP-ASK** (the same answers at the command line, and the language order).
+
+#### Developer note: how the help is organised in its own files
+
+Help content never goes into `ad_seed.db` and never into legacy iDempiere: it lives in the ERP twin as
+separate files, one per language, fetched only when that language is chosen. Each concern has one file.
+
+| File (bim-ootb) | What it holds or does |
+|---|---|
+| `erp/field_help.js` | The ONE tooltip setter and the Tool Tip panel (a port of legacy `WEditor` / `HelpController`). Every field-render path calls it. |
+| `erp/help_search.js` | The question box: a question becomes an answer card. `indexFrom()` builds the index from the dictionary and a help pack; the page, the witnesses and `erp.ask` all call it. No page code, so it runs in Node. |
+| `erp/i18n/help/<lang>/help.json` | The help pack of one language. `en_US`: the how-to rows and the document actions. Other languages: field Description/Help (each text stored once, fields point at it), the names of windows, tables, actions and statuses, and translated how-to rows where they exist. Loaded by `ErpI18n.loadHelp(lang)`, cached by the service worker. |
+| `erp/tools/build_help_pack.js` | Builds every pack: the published language packs (the same pinned sources as `build_i18n.py`, legacy's `SynchronizeTerminology` rule), `ad_seed.db`, `common/door/verbs.json`, and the trade-cycle sections of this guide. |
+| `erp/tools/help_howto_<lang>.json` | A translated how-to source (today `zh_CN`), marked as the build's translation, its English sentences kept beside it. |
+| `erp/i18n/chrome.json` (`help.*` keys) | The answer card's labels: the dictionary's own names where one exists (Window, Document Action), otherwise marked machine entries. |
+| `common/door/lang_rule.js` | The command line's language order (preference, `LANG`, system), written once. |
+| `common/door/erp_cli.js` (`ask`) and `common/door/vocab/hand.json` (`erp.ask`) | The command-line verb; `verbs.json` is composed from `hand.json` by `scripts/compose_door_verbs.js`. |
+| `erp/tests/fixtures/help_questions.json` | The question sets (English, Chinese) that the page and the command-line witnesses both read. |
+
+**To add a language:** add its pinned source to `SOURCES` in `build_help_pack.js`, run
+`node erp/tools/build_help_pack.js` and read its `§HELP_PACK` lines, then run
+`node erp/tests/witness_help_showcase.js` (S1 checks every text against the published pack).
+**To add how-to steps:** write the section in this guide, add its window and heading to `HOWTO` in the
+builder; for a translation, add a row to `help_howto_<lang>.json`. Spec and results:
+`prompts/VOCAB_MESSAGE_CATALOG.md` §7 and §10–§13.
+
 ---
 
 ## 6. The Process Button
