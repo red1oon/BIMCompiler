@@ -13,10 +13,13 @@ const page = fs.readFileSync(path.join(OUT, 'prior', 'mckinsey_the_social_econom
 const facts = {
   'quote.found': F.quote && page.indexOf(F.quote.text) >= 0 && F.quote.text.indexOf('nearly 20 percent') >= 0 ? 'Y' : 'N', 'quote.source': F.quote && /^McKinsey Global Institute/.test(F.quote.who) ? 'McKinsey Global Institute' : 'N',
   'old.tooltip': /^v\.title = f\.columnName \+ ' · ' \+ f\.referenceType;$/.test(F.oldTooltip.text || '') ? 'Y' : 'N',
-  'f4.n': f4 && f4[1] === f4[2] ? f4[1] : 'N', 'field.panel': enP.length >= 3 && enP[0] === 'Document No' && enP[1] === F.docNoEnglish ? 'Y' : 'N',
-  'ask1.window': g(F.ask1.line, / window=(\d+)/), 'ask1.action': g(F.ask1.line, / action=(\w+)/), 'ask1.allowed': g(F.ask1.card, /Allowed when the document is: ([^\n]+)/), 'ask1.cli': g(F.ask1.line, / cli="([^"]+)"/),
-  's5': s5 ? s5[1] : 'N', 'link.opened': g(F.link.opened, /\((\d+)\)/), 'link.ctx': /§HELP_CTX window=143 howto=\d+/.test(F.link.ctx || '') ? 'Y' : 'N',
-  'ask2.window': g(F.ask2.line, / window=(\d+)/), 'ask2.action': g(F.ask2.line, / action=(\w+)/), 'ask2.cli_note': /erp\.void is offered for Order \(C_Order\), not for Payment/.test(F.ask2.line || '') ? 'Y' : 'N',
+  'f4.n': f4 && f4[1] === f4[2] ? f4[1] : 'N', 'field.panel': (F.ui ? enP.length >= 3 && enP[1] === F.lb.packText[0] : enP.length >= 3 && enP[0] === 'Document No' && enP[1] === F.docNoEnglish) ? 'Y' : 'N',
+  // the v2 cut (screen language from login): the focused field's description is the pack's text for it, not the English
+  'ui.desc_translated': F.ui && enP.length >= 2 && F.lb.packText && F.lb.packText[0] != null && enP[1] === F.lb.packText[0] && enP[1] !== F.lb.english[0] ? 'Y' : 'N', 'ask1.lang': g(F.ask1.line, / lang=(\S+)/),
+  'ask1.window': g(F.ask1.line, / window=(\d+)/), 'ask1.action': g(F.ask1.line, / action=(\w+)/), 'ask1.allowed': g(F.ask1.card, /(?:Allowed when the document is|单据处于以下状态时可用): ([^\n]+)/), 'ask1.cli': g(F.ask1.line, / cli="([^"]+)"/),
+  's5': s5 ? s5[1] : 'N', 'link.opened': g(F.link.opened, /\((\d+)\)/), 'link.ctx': /§HELP_CTX window=143 howto=\d+/.test(F.link.ctx || '') ? 'Y' : 'N', 'link.ctx_lang': g(F.link.ctx, / lang=(\S+)/), 'w.s7': /✅ S7 with 中文 chosen, Sales Order shows the zh_CN how-to row/.test(W2) ? 'Y' : 'N',
+  'ask2.window': g(F.ask2.line, / window=(\d+)/), 'ask2.action': g(F.ask2.line, / action=(\w+)/), 'ask2.cli_note': /erp\.(void|complete) is offered for Order \(C_Order\), not for (Payment|Invoice)/.test(F.ask2.line || '') ? 'Y' : 'N',
+  'cli.window': F.cliAsk && F.cliAsk.status === 'ok' && F.cliAsk.window ? String(F.cliAsk.window.id) : 'N', 'cli.action': F.cliAsk ? String(F.cliAsk.action) : 'N', 'cli.lang': F.cliAsk ? F.cliAsk.lang + '/' + F.cliAsk.langBy : 'N', 'cli.harm': F.cliAsk ? String(F.cliAsk.harm) : 'N',
   // the language beat: the panel's description = the pack's text for that field and not the English; its help translated (= the pack's) or still the English; Document No's fallback to English
   //   (the panel writes the dictionary text raw, as legacy: the browser drops a tag-like run such as <TableName>, so both sides are compared after that same step)
   'lb.lang': F.lb.lang, 'lb.fields': g(F.lb.pack, /fields=(\d+)/),
@@ -27,11 +30,13 @@ let bad = 0; const L = (m) => console.log('§FILM_GUARD ' + m);
 N.beats.forEach((b) => (b.says || []).forEach(([k, want, word]) => { const got = facts[k], ok = String(got) === want; if (!ok) bad++; L((ok ? 'OK   ' : 'FAIL ') + b.id + ' says "' + word + '" <- ' + k + ' expected ' + want + ' got ' + got); }));
 const must = [
   ['no page error in the session', (F.errors || []).length === 0],
-  ['every picture the cards need exists', ['idle', 'ask_close', 'link_open', 'field_en', 'ask_void', 'field_lb'].every((n) => F.shots[n] && fs.existsSync(path.join(OUT, F.shots[n].file)))],
+  ['every picture the cards need exists', (F.ui ? ['idle', 'ask_close', 'link_open', 'field_ui', 'ask_2'] : ['idle', 'ask_close', 'link_open', 'field_en', 'ask_2', 'field_lb']).every((n) => F.shots[n] && fs.existsSync(path.join(OUT, F.shots[n].file)))],
   ['the memory was measured after a forced GC in both sessions, the pack present in one only', F.memory.withPack.gc && F.memory.without.gc && F.memory.withPack.pack === true && F.memory.without.pack === false],
-  ['credentials: MIT, both PRs merged, the paper states its priority date', F.credentials.licence === 'MIT License' && /^MERGED/.test(F.credentials.pr3126) && /^MERGED/.test(F.credentials.pr3128) && /^\d{4}-\d\d-\d\d$/.test(F.credentials.paperPriority || '')],
+  ['credentials: MIT, every PR the film shows merged, the paper states its priority date', F.credentials.licence === 'MIT License' && (F.credentials.prs || []).length >= 2 && F.credentials.prs.every((x) => /^MERGED/.test(x.state)) && /^\d{4}-\d\d-\d\d$/.test(F.credentials.paperPriority || '')],
+  ['the verdicts on the card are PASS lines of the logs run on the same tree (W-ERP-ASK too when the film shows the CLI)', /PASS$/.test(F.verdicts.fieldHelp) && /PASS$/.test(F.verdicts.showcase) && (!F.cliAsk || /PASS$/.test(F.verdicts.erpAsk || ''))],
   ['the verdicts on the card are PASS lines of the logs run on the same tree', /PASS$/.test(F.verdicts.fieldHelp) && /PASS$/.test(F.verdicts.showcase)],
-  ['the language-beat pack loaded is the one chosen, and S1 (every pack text in the published pack) passed on main for it', new RegExp('^§HELP_PACK loaded lang=' + F.lb.lang + ' ').test(F.lb.pack || '') && new RegExp('✅ S1 ' + F.lb.lang + ' every pack text occurs').test(W2)]];
+  ['the language-beat pack loaded is the one chosen, and S1 (every pack text in the published pack) passed on main for it', (F.ui || new RegExp('^§HELP_PACK loaded lang=' + F.lb.lang + ' ').test(F.lb.pack || '')) && new RegExp('✅ S1 ' + F.lb.lang + ' every pack text occurs').test(W2)],
+  ['the v2 cut: the CLI card printed is the Chinese one (dictionary labels), from the real door', !F.ui || !F.cliAsk || /^窗口: /.test(F.cliAsk.summary || '')]];
 must.forEach(([t, ok]) => { if (!ok) bad++; L((ok ? 'OK   ' : 'FAIL ') + t); });
 // P prior art: a repo row = the text ON the cited line (idempiere: the local legacy source on disk; bim-ootb: origin/main); a web row = the text inside the copy saved in out/prior/ (tags stripped)
 const PA = require('./priorart.json');

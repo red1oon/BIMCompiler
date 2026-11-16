@@ -18,14 +18,15 @@ F.quote = { text: qm[0], stat: 'nearly 20 percent', title: tm[0], date: dm[0], w
 L('quote ' + JSON.stringify(F.quote));
 // 2. the witness verdicts on the same tree
 const v = (f, re) => (fs.readFileSync(path.join(OUT, f), 'utf8').match(re) || [''])[0];
-F.verdicts = { fieldHelp: v('witness_field_help_main.log', /§WITNESS_FIELD_HELP pass=\d+ fail=\d+ inconclusive=\d+ verdict=\S+/).replace('§WITNESS_', 'W-').replace(/_/g, '-'),
+F.verdicts = { erpAsk: fs.existsSync(path.join(OUT, 'witness_erp_ask_main.log')) ? v('witness_erp_ask_main.log', /§WITNESS_ERP_ASK pass=\d+ fail=\d+ inconclusive=\d+ verdict=\S+/).replace('§WITNESS_', 'W-').replace(/_/g, '-') : null, fieldHelp: v('witness_field_help_main.log', /§WITNESS_FIELD_HELP pass=\d+ fail=\d+ inconclusive=\d+ verdict=\S+/).replace('§WITNESS_', 'W-').replace(/_/g, '-'),
   showcase: v('witness_help_showcase_main.log', /§WITNESS_HELP_SHOWCASE pass=\d+ fail=\d+ inconclusive=\d+ verdict=\S+/).replace('§WITNESS_', 'W-').replace(/_/g, '-') };
 L('verdicts ' + JSON.stringify(F.verdicts));
 // 3. credentials
 const pr = (n) => (spawnSync('gh', ['pr', 'view', String(n), '-R', 'red1oon/bim-ootb', '--json', 'state,title', '-q', '.state + " " + .title'], { encoding: 'utf8' }).stdout || '').trim();
 const paper = flat(fs.readFileSync(path.join(OUT, 'prior', 'spatial_compilation_paper.html'), 'utf8'));
-F.credentials = { licence: fs.readFileSync(path.join(TREE, 'LICENSE'), 'utf8').split('\n')[0].trim(), repo: 'github.com/red1oon/bim-ootb', pr3126: pr(3126), pr3128: pr(3128), paperPriority: (/Priority date: (\d{4}-\d\d-\d\d)/.exec(paper) || [])[1] || null };
+const PRS = (process.env.PRS || '3126,3128').split(',').map(Number);   // the PRs the film shows (the v2 cut adds #3133 and the erp.ask PR)
+F.credentials = { licence: fs.readFileSync(path.join(TREE, 'LICENSE'), 'utf8').split('\n')[0].trim(), repo: 'github.com/red1oon/bim-ootb', prs: PRS.map((n) => ({ n, state: pr(n) })), pr3126: pr(3126), pr3128: pr(3128), paperPriority: (/Priority date: (\d{4}-\d\d-\d\d)/.exec(paper) || [])[1] || null };
 L('credentials ' + JSON.stringify(F.credentials));
 fs.writeFileSync(path.join(OUT, 'facts.json'), JSON.stringify(F, null, 1));
-const ok = /PASS$/.test(F.verdicts.fieldHelp) && /PASS$/.test(F.verdicts.showcase) && /^MERGED/.test(F.credentials.pr3126) && /^MERGED/.test(F.credentials.pr3128) && F.credentials.licence === 'MIT License' && !!F.credentials.paperPriority;
+const ok = /PASS$/.test(F.verdicts.fieldHelp) && /PASS$/.test(F.verdicts.showcase) && (F.verdicts.erpAsk == null || /PASS$/.test(F.verdicts.erpAsk)) && F.credentials.prs.every((x) => /^MERGED/.test(x.state)) && F.credentials.licence === 'MIT License' && !!F.credentials.paperPriority;
 L('VERDICT ' + (ok ? 'PASS' : 'FAIL')); process.exit(ok ? 0 : 1);
