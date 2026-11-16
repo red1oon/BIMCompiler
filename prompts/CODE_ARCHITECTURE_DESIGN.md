@@ -1296,6 +1296,22 @@ new failure blocks.
 - **Shape (to spec in full when built):** `bump.js --check` runs both gates with no write and stores the verdict by tree identity (the bridge part already
   caches its PASS by tree, `parityGate`; §F.33 gains the same) · the extension runs it with `spawn` (async), status bar: hollow `Bump: checking… n/N`,
   solid `Bump ✓`, red `Bump ✗ <witness>` (click opens the log) · a press on solid runs `--write`, which reads the stored PASS and writes in a second.
+- **BUILD SPEC (2026-11-17, owner "yes"):**
+  1. `scripts/bump.js --changed`: the targets = every file changed against the merge-base with `origin/main` (committed + working tree + untracked) that a
+     page or loader references with `?v=` (the files a bump can raise); the rest (prompts, tests, tools) are skipped and counted. `--check`: run both gates,
+     write nothing, `§BUMP_CHECK verdict=PASS|BLOCKED key=<tree key>`, exit 0 / 3. Both gates print a plan line first (`§BUMP_PARITY_PLAN witnesses=`,
+     `§BUMP_TOUCH_PLAN witnesses= budget_s=`) so a caller can show progress. The touch gate caches a PASS by tree key + changed set, as the bridge does, so
+     `--write` right after a passing `--check` on the same tree re-runs nothing.
+  2. Extension (`extension.js`), one status-bar item made at activation, text only (no timer, no listener but the save one already pinned): idle
+     `$(circle-outline) Bump` → press: `$(sync~spin) Bump: bridge n/N` then `witnesses n/N` (an async `spawn` of `bump.js --changed --check`, never
+     `spawnSync`) → exit 0: `$(pass-filled) Bump ✓` · exit 3: `$(error) Bump ✗ <first new_fail or verdict>` · press on ✓: `bump.js --changed --write`,
+     then back to idle. A save of a file in the source root while ✓/✗ puts it back to idle (tooltip "changed since the check"). The ERP quick fix
+     (`bumpThisFile`, `ship.bump` = `spawnSync` 60 s) for a file under the gate's `applies_to` starts the button instead.
+  3. **Witnesses:** W-BUMP-PARITY gains C1 (`--check` writes nothing; `--write` after it re-runs neither gate: bridge marker 1, touch marker 1) · C2 (an
+     edit between check and write re-runs both) · C3 (`--changed` in a temp git repo picks the changed referenced file and skips a changed `.md`).
+     NEW `witness_x0_bump_button.js` (vscode stub, a fixture `scripts/bump.js` that prints the plan/run lines and exits by env): B1 idle text · B2 a press
+     shows progress and ends ✓, the fixture saw `--changed --check` · B3 a press on ✓ runs `--write` · B4 exit 3 → ✗ with the witness name · B5 a save resets
+     to idle · B6 the ERP quick fix starts the button, not `ship.bump`. Red control: main's extension has no `x0Navigator.bumpButton` command (B1-B6 FAIL).
 
 ### F.31 Browser memory of the three pages, shown in VS Code (owner 2026-11-16; tier 3 of §F.3; decisions **F-20..F-22**; not built)
 Owner, 2026-11-16: *"reminder, i did suggest before that we have some monitor in the VSC showing what is the mem load on browser of the differing
