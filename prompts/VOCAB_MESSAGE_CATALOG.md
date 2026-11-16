@@ -746,6 +746,16 @@ These are legacy's own words in that language; the twin shows them unchanged.
 - **Consequence for the panel:** the class text shows in the chosen language where bSI has it; otherwise in English, with a visible "English (no official translation)" label. It is never machine-translated. Attribution line on every card. (b) stays for our own Help, the things IFC does not say.
 - **Next to spec:** the cached pack (the bSDD rows written once into a file per language at build time, never fetched live by the page); the label rule; the witness (X of N shipped classes with a text; per language: X translated; falsifier = a zh-CN card that claims to be translated).
 
+**Build order (owner "Agree", 2026-11-17):** 1 "This element" (c) → 2 How To → 3 class text = our own (b) on top, bSI's official (a) beneath (chosen language where bSI has it, else English labelled).
+**FINDING 2026-11-17: step 1 (c) is ALREADY BUILT, in the Viewer's `#info-panel` (bim-ootb `origin/main` `ed092608`). Do not build a second one.**
+- Base rows: class, name, GUID, building, storey, discipline, material (`viewer.html:521-527`), plus a `· provisional` mark (`ProvTotals`, `nf_panel_search.js:687`, `picking.js:628`).
+- Sibling blocks, each with ONE renderer that both picks call, and each hidden when there is no row:
+  - `#info-cost`: the cost line (`NF._showClassCost`, §FIND_INFO_COST);
+  - `#info-4d`: the 4D task window (`info_4d_panel.js` via `NF._show4DWindow`);
+  - `#info-dxf2bim`: drawing provenance drawn / derived / assumed, source sheet and handle, size basis (`info_dxf2bim.js`; callers `picking.js:652`, `find_erp_push.js:248`).
+- So (c) = this panel. A help-dock "This element" part that copied it would be a second implementation of one responsibility.
+- **Proposed instead (for the owner):** the class text (b)+(a) becomes one more sibling block, `#info-class-help`, with its renderer in the `info_dxf2bim.js` convention (dual-mode, both picks delegate, hidden when there is no row). The `?` dock keeps How To + the question box and refers to the selection instead of repeating it.
+
 **Decisions:** the design in RESUME HERE FIRST (owner "Agree", 2026-11-16).
 - (b) our own element dictionary — AGREED;
 - (c) per-element provenance — AGREED;
