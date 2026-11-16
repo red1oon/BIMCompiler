@@ -20,6 +20,8 @@ Owner, closing 2026-11-15: *"get it well documented in the prompts/# consolidate
 
 **0. ✅ DONE 2026-11-15 (fourth session): F-18 answered, the provenance hover built and merged — §F.23 (bim-ootb #3064 + tooltip-in-window fix #3069); FILM 3 built (`prompts/FILM_IMMERSIVE_SOFTWARE.md` FILM 3 STATUS, awaiting the owner's review); the default-key + truss findings handed to the DXF2BIM lane (bim-ootb `prompts/DXF2BIM_ARCHITECT_REVIEW.md` §D113, #3070). NEXT = the X0 "New witness for this file" command (§F.21 OPEN), or Part A's remaining A2 (item 2).** The text below is the original hand-over.
 
+**0m. 2026-11-16 (sixth session, close):** owner asked for advice on the `pipo_packin.js` UTC fallback, advice "fix it, legacy first", owner *"ok"* → legacy read (`PO.java:1985/:3341`, `DB_PostgreSQL.TO_DATE`: LOCAL clock) → **A2-PIPO built (bim-ootb #3143)**: bundle Pack In stamps local time. **NEXT: A3 W-CORE-PURE.**
+
 **0l. 2026-11-16 (sixth session, end):** owner "proceed" → **A2-EDGE-2 built (bim-ootb #3140)**: `crud_overlay._modelEnv` and `plugin_overlay`'s env are views of the one edge clock; `genesis.js` already pure. **A2 is complete. NEXT: A3 W-CORE-PURE**, then ask the owner about the `pipo_packin.js` UTC fallback (A2-EDGE-2 SPEC finding).
 
 **0k. 2026-11-16 (sixth session, last):** owner "proceed" → **A2-VALUE-1 built (bim-ootb #3135)**: the viewer core's last clock/RNG reads (baseline `set_at`, cache recency stamp, tab id) go through `CoreEdge`; 4D cache identical. **NEXT:** the EDGE producers (`crud_overlay._modelEnv`, `plugin_overlay._localNow`, `genesis.js:729` LAST), then A3 W-CORE-PURE.
@@ -538,6 +540,46 @@ after, both are views of the one edge clock through `Env.stamp`, so a page's mod
   nothing. Copy or link that DB into the bridge worktree before a gate run that must judge DD/DDS.
 - **Remaining A2:** none in the A-1 list (`genesis.js` needs no change). **NEXT: A3 W-CORE-PURE** (the AST scan over the A-1 list that replaces
   `witness_core_clock_reads.js`'s hand list), then the `pipo_packin.js` UTC finding to the owner (one message).
+
+**A2-PIPO SPEC (2026-11-16; owner, asked for advice on the `pipo_packin.js` UTC fallback: advice given "fix it, legacy source first, stop if legacy
+disagrees", owner *"ok"*; bim-ootb tracker issue with the PR).**
+- **Legacy, read first (the oracle):** `PO.java:1985` gives a new record `Created`/`Updated` = `new Timestamp(System.currentTimeMillis())`, `:3341` the same for
+  `Updated` on save, written through `DB.TO_DATE(now, false)`; `DB_PostgreSQL.java` `TO_DATE` writes `time.toString()`, which Java prints in the JVM's DEFAULT
+  zone. **So legacy stamps the server's LOCAL wall clock**; the twin's UTC fallback is a divergence (twin rule), not a quirk. `PackInHandler.java:171` creates
+  the `AD_Package_Imp` row through that PO path.
+- **The twin, measured on bim-ootb `main` @ `fa5b942c`:** `erp/pipo_packin.js:55` (`apply`) and `:270` (`recordImport`) default `now` to
+  `new Date().toISOString()…` = **UTC**; `:148` mints ids with `crypto.randomUUID` (or `null`) when no `opts.uuid` is given. The bundle path
+  (`plugin_overlay._packApply` → `PipoPackIn.incremental` `:307-308`) passes no `now`, so every bundle Pack In row and its `AD_Package_Imp` row are stamped in UTC:
+  in +08 eight hours behind, and the previous DAY between 00:00 and 08:00. The client path passes `_localNow()`, so `AD_Package_Imp` mixes two clocks.
+  `erp/plugin_overlay.js:71` `_packOpts().uuid` is also `crypto.randomUUID` (an RNG read A2-EDGE-2 missed). Loaded by `erp/idempiere.html:635` only; no Node
+  caller (`git grep`).
+**Build (one PR):** `pipo_packin.js` `now` defaults to `AdCallout.Env.stamp(Env.edge().nowMs()).now` (local, the one stamp), `uuid()` defaults to
+`Env.edge().uuid()`; no `AdCallout` or no edge = `§ENV_NO_DATE` + throw (A-3). `plugin_overlay._packOpts().uuid` = the edge's uuid. Bump through `scripts/bump.js`
+(parity gate on, the fresh-bridge DD/DDS trap handled by linking `build/erp/ad_seed_fullwidth.db`).
+**Witness W-PIPO-LOCAL** (`erp/tests/witness_pipo_local.js`, the real `erp/idempiere.html`, headless, `timezoneId: Asia/Kuala_Lumpur`, the page clock fixed at
+2026-11-13 00:30 local with Playwright's `page.clock.setFixedTime`, so the old and the new code see the SAME instant and only the zone differs):
+- P1 a bundle Pack In through `PipoPackIn.incremental` with no `now` (the CAPEX test 2Pack, as a bundle): its `AD_Package_Imp` row and the
+  `ad_package_uuid_map` rows it wrote say `created = updated = '2026-11-13 00:30:00'` (local), not `2026-11-12 16:30:00` (UTC).
+- P2 the ids it minted come from the installed edge (a counting wrapper on `CoreEdge.uuid`): count > 0 and each `ad_package_uuid_map` uuid is one the wrapper returned.
+- P3 parser: no `new Date()` / `Date.now()` / `randomUUID` left in `pipo_packin.js` or in `plugin_overlay._packOpts`.
+- **Red control:** `PL_REPO=<main worktree>` must FAIL P1 (the UTC day `2026-11-12`), P2 (count 0) and P3.
+- **Before/after:** W-PACKIN (`erp/tests/witness_packin.js`), W-TD-PACKIN-WINDOW, W-EDGE-PRODUCERS, the parity gate.
+**Issue proved:** bundle Pack In stamped every row in UTC (yesterday's date before 08:00 at +08) while legacy and the client path stamp local time; after, one
+local clock from the installed edge, and the ids from the edge too.
+
+**A2-PIPO RESULT (2026-11-16): ✅ DONE (witness), bim-ootb #3142 / PR #3143.** +98 / −7, 5 files (+12 / −4 in the two files). Logs read:
+- W-PIPO-LOCAL `§PIPO_LOCAL checks=4 failed=0 verdict=PASS`, page clock `Fri Nov 13 2026 00:30:00 GMT+0800`, walk `[{"ok":true,"processed":225}]`: P1
+  `AD_Package_Imp` `["2026-11-13 00:30:00","2026-11-13 00:30:00"]` · P1b 12 `C_Project` rows at `2026-11-13 00:30:00`, 0 at the UTC stamp · P3 0 clock/RNG calls.
+- **Red (main's files): 4/4 FAIL**, the defect shown: `AD_Package_Imp` `["2026-11-12 16:30:00", …]` and 12 `C_Project` rows at `2026-11-12 16:30:00` (UTC, the
+  previous day); 3 calls in `pipo_packin.js`, 1 in `_packOpts`.
+- **Spec deviation, said here:** P2 (ids from the edge) has no behavioural population: the CAPEX test pack carries its own UUs, so 0 ids were minted (measured).
+  The id default is proven by P3 (parser) only. A pack with records lacking UUs would make P2 real.
+- Before/after (detached `main` worktree): W-PACKIN `§WPK_VERDICT GREEN judged=6 failed=0` both · W-TD-PACKIN-WINDOW 4/0 both · W-EDGE-PRODUCERS 5/0 both · precache 268/268.
+- Parity gate: `§BUMP_PARITY mode=block verdicts=13 new=[] tree=/tmp/wt-pipo scoped=partial verdict=PASS`, 0 `sql.js` errors (erp/sw.js v1092 → v1093,
+  `pipo_packin.js` 4 → 5, `plugin_overlay.js` 11 → 12).
+- **Trap correction (supersedes the A2-EDGE-2 note):** linking `build/erp/ad_seed_fullwidth.db` is not enough; DD and DDS then fail on `build/erp/glassbowl_data.db`.
+  The shared `~/bim-compiler` holds **39 untracked `build/erp/*.db`** (`git ls-files --others --ignored -- 'build/erp/*.db'`) and the bridge reaches them
+  indirectly. Link ALL of them into a fresh bridge worktree before a gate run that must judge DD/DDS. In this run DD/DDS judged nothing (both on the known list).
 
 ---
 
@@ -1308,7 +1350,7 @@ Ask the owner **one decision per message, with the recommendation** (START HERE 
 
 | Part | What | State |
 |---|---|---|
-| A | pure core + Env | **A0 ✅** · **A-1..A-5 ✅** · **A1 ✅** (#3007) · **A2** done for 15 files (#3010 #3013 #3016 #3021 #3026 #3030 #3033) + A2-TIMING-1 (#3110) + A-6 / A2-TIMING-2 (#3122) + A2-TIMING-3 (bim-ootb #3124) + A2-VALUE-1 (#3135) + A2-EDGE-2 (#3140): **A2 complete**; next A3 |
+| A | pure core + Env | **A0 ✅** · **A-1..A-5 ✅** · **A1 ✅** (#3007) · **A2** done for 15 files (#3010 #3013 #3016 #3021 #3026 #3030 #3033) + A2-TIMING-1 (#3110) + A-6 / A2-TIMING-2 (#3122) + A2-TIMING-3 (bim-ootb #3124) + A2-VALUE-1 (#3135) + A2-EDGE-2 (#3140) + A2-PIPO (#3143): **A2 complete**; next A3 |
 | B | manifest per app | not started · B0 ready · open: B-1 to B-4 |
 | C | named APP parts | not started · open: C-1, C-2 |
 | D | owner table | not started · open: D-1, D-2 |
