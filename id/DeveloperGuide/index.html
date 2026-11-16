@@ -1849,6 +1849,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#deploying-from-vs-code-what-you-need" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deploying from VS Code: what you need
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3692,6 +3703,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#deploying-from-vs-code-what-you-need" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deploying from VS Code: what you need
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -4390,9 +4412,9 @@ folder its <code>extensions.json</code> does not list, so nothing loads and noth
 <td>the specs and the source</td>
 </tr>
 <tr>
-<td>Explorer side bar ▸ <strong>Run &amp; Ship</strong> (4 steps, also as commands)</td>
-<td><em>Run local</em>: the serve task plus each app's URL and cache version on disk. <em>Check</em>: <code>node --check</code> on the JS that differs from <code>origin/main</code>, the precache audit, and the bump rule. <em>Cost if deployed</em>: see next row. <em>Fetch back</em>: is the live site on <code>main</code>'s versions and commit?</td>
-<td>the repo's own scripts and git; Fetch back reads the live site (the only step that uses the network)</td>
+<td>Explorer side bar ▸ <strong>Run &amp; Ship</strong> (5 steps, also as commands)</td>
+<td><em>Run local</em>: the serve task plus each app's URL and cache version on disk. <em>Check</em>: <code>node --check</code> on the JS that differs from <code>origin/main</code>, the precache audit, and the bump rule. <em>Cost if deployed</em>: see next row. <em>Fetch back</em>: is the live site on <code>main</code>'s versions and commit? <em>Deploy main now</em>: publishes <code>main</code> to the live site with your own GitHub login (it asks first; see <em>Deploying from VS Code</em> below)</td>
+<td>the repo's own scripts and git; Fetch back reads the live site and Deploy starts GitHub's Pages build (the only two steps that use the network)</td>
 </tr>
 <tr>
 <td>Status bar, and command <strong>Cost if deployed</strong></td>
@@ -4499,8 +4521,23 @@ file reaches a user: <code>viewer: start-up · 234 KB</code>.</p>
 <p><strong>11. The value beside the code.</strong> The grey line above line 143 is what that line last printed, with the log and commit it came from.
 It appears only when that can be proven.</p>
 <p><img alt="A grey line above console.log: &quot;last: §APP_SURFACE files=… fields=1693 …&quot;, with the log name and commit" src="../../figs/x0/13_value_beside_code.png" /></p>
-<p><strong>The last three rows are first versions (2026-11-13). What they do not do yet:</strong> Run &amp; Ship does not commit, open a PR, merge or deploy,
-and runs no browser. Cost counts raw bytes (not minified), all of an app's pages together, with no budget. The grey value line appears only
+<h4 id="deploying-from-vs-code-what-you-need">Deploying from VS Code: what you need<a class="headerlink" href="#deploying-from-vs-code-what-you-need" title="Permanent link">&para;</a></h4>
+<p><em>Deploy main now</em> (step 5 of Run &amp; Ship, added 2026-11-16) publishes the repo's <code>main</code> branch to the live site. It does not publish your
+own branch: get your change merged first. Nothing else is needed, and no extra key or secret: it uses the login already on your machine.</p>
+<ol>
+<li><strong>Write access</strong> to the repo on GitHub (you can push to it or merge its pull requests).</li>
+<li><strong>The GitHub CLI</strong>, installed (<a href="https://cli.github.com">https://cli.github.com</a>) and logged in on this machine: run <code>gh auth login</code> once and pick the GitHub
+   account that has that access. <code>gh auth status</code> should say <em>Logged in</em>.</li>
+<li><strong>The X0 Navigator extension</strong>, installed (§4.1) and on a current build (it warns when it is older than the source, §4.1).</li>
+<li>Press <strong>4 · Fetch back</strong>. If it says the live site is behind <code>main</code> (a version or the commit differs), press <strong>5 · Deploy main now</strong>
+   and confirm <strong>Deploy</strong>. The output prints <code>§SHIP_DEPLOY started=Y</code> and a link to the run on GitHub.</li>
+<li>Wait one to two minutes, then press <strong>Fetch back</strong> again: it must say PASS.</li>
+</ol>
+<p>If something is missing, the output says what to do, and nothing is started: <em>install the GitHub CLI</em>, <em>run gh auth login</em>, or <em>this
+workflow has no workflow_dispatch</em>. <strong>Why it is needed:</strong> a pull request that CI's bot merges starts no deploy (GitHub runs no workflow
+for a merge made with the workflow's own token), so the live site stays on the last deploy until someone publishes <code>main</code>.</p>
+<p><strong>The last three rows are first versions (2026-11-13). What they do not do yet:</strong> Run &amp; Ship does not commit, open a PR or merge; it
+deploys only when you press <em>Deploy main now</em>, and it runs no browser. Cost counts raw bytes (not minified), all of an app's pages together, with no budget. The grey value line appears only
 when the log names its commit and the file that prints the tag is unchanged since; otherwise it shows nothing, so expect few at first.
 It reads the checkout's <code>logs/</code> and the folders in the setting <code>bimDevtools.extraLogDirs</code> (default <code>~/.cache/bim4d</code>, where bake logs are
 kept; read-only). A bake log counts from the first bake after 2026-11-14, when the bake script began writing the <code>§LOG_STAMP</code> line.
@@ -5040,8 +5077,8 @@ no dependency, and its witness (<code>witness_x0_lens.js</code>) holds a red con
 </tr>
 <tr>
 <td>A PR auto-merged by CI's bot (bim-ootb)</td>
-<td>The <em>Deploy to GitHub Pages</em> workflow does not start for a merge made with the workflow's own token. Only GitHub's plain branch build publishes: raw files, no <code>erp/version.json</code>. Seen live 2026-11-13</td>
-<td>Enable auto-merge yourself right after opening the PR (<code>gh pr merge &lt;n&gt; --auto --squash</code>), then press <strong>Fetch back</strong> (§4.1) a minute or two after the merge: it must say PASS</td>
+<td>The <em>Deploy to GitHub Pages</em> workflow does not start for a merge made with the workflow's own token, so the live site stays on the last deploy (seen 2026-11-13; 4 bot merges on 2026-11-16 started no deploy)</td>
+<td>Press <strong>Fetch back</strong> (§4.1); if it says the site is behind, press <strong>Deploy main now</strong> and Fetch back again (<em>Deploying from VS Code</em>, §4.1). Or enable auto-merge yourself right after opening the PR (<code>gh pr merge &lt;n&gt; --auto --squash</code>): a merge you start does deploy</td>
 </tr>
 <tr>
 <td>Two numbers in a squash title, <code>… (#issue) (#pr)</code></td>
