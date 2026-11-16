@@ -1,0 +1,343 @@
+{
+ "made": "2026-11-16T11:45:04.942Z",
+ "tree": "f869e430",
+ "shots": {
+  "idle": {
+   "file": "pages/idle.png",
+   "rects": {
+    "panel": {
+     "x": 1560,
+     "y": 69,
+     "w": 360,
+     "h": 1011
+    },
+    "tooltip": {
+     "x": 1562,
+     "y": 116,
+     "w": 359,
+     "h": 77
+    },
+    "tipTitle": {
+     "x": 1562,
+     "y": 69,
+     "w": 359,
+     "h": 47
+    },
+    "howtoTitle": {
+     "x": 1562,
+     "y": 193,
+     "w": 359,
+     "h": 47
+    },
+    "card": null,
+    "ctx": null
+   }
+  },
+  "ask_close": {
+   "file": "pages/ask_close.png",
+   "rects": {
+    "panel": {
+     "x": 1560,
+     "y": 69,
+     "w": 360,
+     "h": 1011
+    },
+    "tooltip": {
+     "x": 1562,
+     "y": 116,
+     "w": 359,
+     "h": 77
+    },
+    "tipTitle": {
+     "x": 1562,
+     "y": 69,
+     "w": 359,
+     "h": 47
+    },
+    "howtoTitle": {
+     "x": 1562,
+     "y": 193,
+     "w": 359,
+     "h": 47
+    },
+    "card": {
+     "x": 1577,
+     "y": 296,
+     "w": 329,
+     "h": 589
+    },
+    "ctx": null
+   }
+  },
+  "link_open": {
+   "file": "pages/link_open.png",
+   "rects": {
+    "panel": {
+     "x": 1560,
+     "y": 69,
+     "w": 360,
+     "h": 1011
+    },
+    "tooltip": {
+     "x": 1562,
+     "y": 116,
+     "w": 359,
+     "h": 77
+    },
+    "tipTitle": {
+     "x": 1562,
+     "y": 69,
+     "w": 359,
+     "h": 47
+    },
+    "howtoTitle": {
+     "x": 1562,
+     "y": 193,
+     "w": 359,
+     "h": 47
+    },
+    "card": {
+     "x": 1577,
+     "y": 296,
+     "w": 329,
+     "h": 589
+    },
+    "ctx": {
+     "x": 1577,
+     "y": 897,
+     "w": 329,
+     "h": 369
+    }
+   }
+  },
+  "field_ui": {
+   "file": "pages/field_ui.png",
+   "rects": {
+    "panel": {
+     "x": 1560,
+     "y": 69,
+     "w": 360,
+     "h": 1011
+    },
+    "tooltip": {
+     "x": 1562,
+     "y": 116,
+     "w": 359,
+     "h": 171
+    },
+    "tipTitle": {
+     "x": 1562,
+     "y": 69,
+     "w": 359,
+     "h": 47
+    },
+    "howtoTitle": {
+     "x": 1562,
+     "y": 286,
+     "w": 359,
+     "h": 47
+    },
+    "card": {
+     "x": 1577,
+     "y": 390,
+     "w": 329,
+     "h": 589
+    },
+    "ctx": {
+     "x": 1577,
+     "y": 991,
+     "w": 329,
+     "h": 369
+    }
+   }
+  },
+  "ask_2": {
+   "file": "pages/ask_2.png",
+   "rects": {
+    "panel": {
+     "x": 1560,
+     "y": 69,
+     "w": 360,
+     "h": 1011
+    },
+    "tooltip": null,
+    "tipTitle": {
+     "x": 1562,
+     "y": 69,
+     "w": 359,
+     "h": 47
+    },
+    "howtoTitle": {
+     "x": 1562,
+     "y": 116,
+     "w": 359,
+     "h": 47
+    },
+    "card": {
+     "x": 1577,
+     "y": 219,
+     "w": 329,
+     "h": 765
+    },
+    "ctx": {
+     "x": 1577,
+     "y": 996,
+     "w": 329,
+     "h": 369
+    }
+   }
+  }
+ },
+ "lines": {
+  "index": "§HELP_SEARCH index lang=de_DE windows=295 tables=573 actions=13 statuses=12 howto=4 (de_DE) phrases=1200",
+  "panelBound": "§FIELD_HELP panel bound collapsed=false tech=false",
+  "fieldFocus": "§FIELD_HELP focus=Description · text header=\"Beschreibung\" desc=42 help=47"
+ },
+ "idle": {
+  "panel": "(Setzen Sie den Mauszeiger in ein Feld auf dem Bildschirm)",
+  "toolTitle": "Tool Tip",
+  "howtoTitle": "How To"
+ },
+ "ui": "de_DE",
+ "ask1": {
+  "q": "Wie kann ich einen Auftrag schließen?",
+  "line": "§HELP_SEARCH ask=\"Wie kann ich einen Auftrag schließen?\" lang=de_DE window=143 action=CL cli=\"erp.close kind=Order number=<Document No>\" howto=1 matched=[\"window:auftrag\",\"action:schließen\"]",
+  "card": "FensterAuftrag\nAktionSchließen — Finally close this transaction. It cannot be re-activated.\nErlaubt, wenn der Beleg diesen Status hat: Fertiggestellt, Zurückgehaltene Zahlung\nCLIerp.close kind=Order number=<Document No>\nLeitfaden1 · Auftrag\n\nÖffnen Sie Auftrag im Menü (⌂ → Vertrieb), legen Sie eine oder zwei Positionen an und drücken Sie die Schaltfläche Verarbeiten (§6) → Fertigstellen. Fertigstellen ist mehr als ein Statuswechsel: completeIt erzeugt die folgende Lieferung und Rechnung in DERSELBEN signierten Operationsgruppe.\n\nVon der Build-Sitzung übersetzt, nicht von Muttersprachlern geprüft"
+ },
+ "link": {
+  "link": "§HELP_LINK window=143 onMenu=true",
+  "opened": "§IDEMPIERE window=Auftrag(143) tabs=5 source=sqlite",
+  "ctx": "§HELP_CTX window=143 howto=1 lang=de_DE",
+  "howto": "1 · Auftrag\n\nÖffnen Sie Auftrag im Menü (⌂ → Vertrieb), legen Sie eine oder zwei Positionen an und drücken Sie die Schaltfläche Verarbeiten (§6) → Fertigstellen. Fertigstellen ist mehr als ein Statuswechsel: completeIt erzeugt die folgende Lieferung und Rechnung in DERSELBEN signierten Operationsgruppe.\n\nVon der Build-Sitzung übersetzt, nicht von Muttersprachlern geprüft\ndocs/ERPUserGuide.md · 1 · Sales Order"
+ },
+ "field": {
+  "tag": "INPUT",
+  "panel": "Beschreibung\n\nOptionale Kurzbeschreibung des Datensatzes\n\nEine Beschreibung ist auf 255 Zeichen begrenzt.",
+  "x": 456,
+  "y": 400
+ },
+ "ask2": {
+  "q": "Wie kann ich eine Rechnung fertigstellen?",
+  "line": "§HELP_SEARCH ask=\"Wie kann ich eine Rechnung fertigstellen?\" lang=de_DE window=167 action=CO cli=\"erp.complete is offered for Order (C_Order), not for Invoice\" howto=3 matched=[\"action:fertigstellen\",\"window~rechnungkunde (1 shared)\"]",
+  "card": "FensterRechnung (Kunde)\nAktionFertigstellen — Generate documents and complete transaction\nErlaubt, wenn der Beleg diesen Status hat: Entwurf, In Bearbeitung, Ungültig, Freigegeben, Nicht genehmigt, Wartet auf Bestätigung, Zurückgehaltene Zahlung\nCLIerp.complete gibt es nur für Order (C_Order), nicht für Invoice\nLeitfaden3 · Kundenrechnung → Forderungen\n\nDie Rechnung (Kunde), die dasselbe Fertigstellen erzeugt hat, bucht Soll Forderungen / Haben Erlöse (je Position) / Haben Umsatzsteuer. Öffnen Sie die Buchungsvorschau der Rechnung (jeder fertiggestellte Beleg hat sie), um genau diese Buchung zu sehen, bevor Sie uns glauben — es ist DIESELBE Herleitung, die die Buchungsvorschau des Leitfadens live ausführt, keine separate Berichtsberechnung.\n\nVon der Build-Sitzung übersetzt, nicht von Muttersprachlern geprüft"
+ },
+ "lb": {
+  "lang": "de_DE",
+  "col": "Description",
+  "fieldId": 1086,
+  "english": [
+   "Optional short description of the record",
+   "A description is limited to 255 characters."
+  ],
+  "packText": [
+   "Optionale Kurzbeschreibung des Datensatzes",
+   "Eine Beschreibung ist auf 255 Zeichen begrenzt."
+  ],
+  "docNoHasPack": true
+ },
+ "errors": [],
+ "memory": {
+  "withPack": {
+   "gc": true,
+   "used": 50099125,
+   "pack": true
+  },
+  "without": {
+   "gc": true,
+   "used": 48806677,
+   "pack": false
+  },
+  "deltaBytes": 1292448
+ },
+ "packs": {
+  "de_DE": {
+   "bytes": 539457,
+   "fields": 14961,
+   "howto": 4
+  },
+  "fr_FR": {
+   "bytes": 471170,
+   "fields": 14262,
+   "howto": 0
+  },
+  "zh_CN": {
+   "bytes": 201869,
+   "fields": 9315,
+   "howto": 4
+  },
+  "ja_JP": {
+   "bytes": 70507,
+   "fields": 3537,
+   "howto": 0
+  },
+  "en_US": {
+   "bytes": 6888,
+   "fields": 0,
+   "howto": 4
+  }
+ },
+ "docNoEnglish": "Document sequence number of the document",
+ "cliAsk": {
+  "line": "cd Order; ask \"Wie kann ich einen Auftrag schließen?\"",
+  "arrow": "→ erp.ask question=\"Wie kann ich einen Auftrag schließen?\"",
+  "status": "ok",
+  "harm": "read",
+  "lang": "de_DE",
+  "langBy": "LANG",
+  "howtoLang": "de_DE",
+  "window": {
+   "id": 143,
+   "name": "Auftrag"
+  },
+  "action": "CL",
+  "summary": "Fenster: Auftrag\nAktion: Schließen — Finally close this transaction. It cannot be re-activated.\n  Erlaubt, wenn der Beleg diesen Status hat: Fertiggestellt, Zurückgehaltene Zahlung\nCLI: erp.close kind=Order number=<Document No>\nLeitfaden: 1 · Auftrag https://red1oon.github.io/BIMCompiler/ERPUserGuide/#1-sales-order\n\nÖffnen Sie Auftrag im Menü (⌂ → Vertrieb), legen Sie eine oder zwei Positionen an und drücken Sie die Schaltfläche Verarbeiten (§6) → Fertigstellen. Fertigstellen ist mehr als ein Statuswechsel: completeIt erzeugt die folgende Lieferung und Rechnung in DERSELBEN signierten Operationsgruppe.\n(Von der Build-Sitzung übersetzt, nicht von Muttersprachlern geprüft)"
+ },
+ "oldTooltip": {
+  "commit": "9b7d2f86",
+  "line": 5323,
+  "text": "v.title = f.columnName + ' · ' + f.referenceType;"
+ },
+ "quote": {
+  "text": "The average interaction worker spends an estimated 28 percent of the workweek managing e-mail and nearly 20 percent looking for internal information or tracking down colleagues who can help with specific tasks.",
+  "stat": "nearly 20 percent",
+  "title": "The social economy: Unlocking value and productivity through social technologies",
+  "date": "July 2012",
+  "who": "McKinsey Global Institute · Michael Chui, James Manyika et al.",
+  "url": "mckinsey.com/…/our-insights/the-social-economy",
+  "fetched": "2026-11-16"
+ },
+ "verdicts": {
+  "erpAsk": "W-ERP-ASK pass=11 fail=0 inconclusive=0 verdict=PASS",
+  "fieldHelp": "W-FIELD-HELP pass=13 fail=0 inconclusive=0 verdict=PASS",
+  "showcase": "W-HELP-SHOWCASE pass=23 fail=0 inconclusive=0 verdict=PASS"
+ },
+ "credentials": {
+  "licence": "MIT License",
+  "repo": "github.com/red1oon/bim-ootb",
+  "prs": [
+   {
+    "n": 3126,
+    "state": "MERGED help: field tooltips = AD Description + East Tool Tip panel, as legacy (P1b, W-FIELD-HELP 13/0)"
+   },
+   {
+    "n": 3128,
+    "state": "MERGED help: showcase slice - help pack per language, question search, auto-links, how-to (§10, W-HELP-SHOWCASE 13/0)"
+   },
+   {
+    "n": 3133,
+    "state": "MERGED help: the help in the chosen language - Chinese questions, names per language, zh_CN how-to (§12, W-HELP-SHOWCASE 20/0)"
+   },
+   {
+    "n": 3136,
+    "state": "MERGED door: erp.ask - ask the help a question at the terminal, in the chosen language (§13, W-ERP-ASK 10/0)"
+   },
+   {
+    "n": 3138,
+    "state": "MERGED help: German - how-to rows, labels, German questions (W-HELP-SHOWCASE 23/0, W-ERP-ASK 11/0)"
+   }
+  ],
+  "pr3126": "MERGED help: field tooltips = AD Description + East Tool Tip panel, as legacy (P1b, W-FIELD-HELP 13/0)",
+  "pr3128": "MERGED help: showcase slice - help pack per language, question search, auto-links, how-to (§10, W-HELP-SHOWCASE 13/0)",
+  "paperPriority": "2026-03-30"
+ }
+}
