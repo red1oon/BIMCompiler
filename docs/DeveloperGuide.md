@@ -190,7 +190,7 @@ folder its `extensions.json` does not list, so nothing loads and nothing warns y
 | **F12** on `APP.camera` (also `A.x` / `app.x` in a file that binds that name) | a jump to the line where the field is written | the APP field index made by `scripts/gen_app_surface.js` |
 | Hover the same field | `written at <file:line> · N writes · N reads` | the same index |
 | Hover a `§TAG` in any `.js` file | up to 5 places in `prompts/` and `docs/` of both repos that name the tag (headings first), then up to 5 lines of code that print it | the specs and the source |
-| Explorer side bar ▸ **Run & Ship** (4 steps, also as commands) | *Run local*: the serve task plus each app's URL and cache version on disk. *Check*: `node --check` on the JS that differs from `origin/main`, the precache audit, and the bump rule. *Cost if deployed*: see next row. *Fetch back*: is the live site on `main`'s versions and commit? | the repo's own scripts and git; Fetch back reads the live site (the only step that uses the network) |
+| Explorer side bar ▸ **Run & Ship** (5 steps, also as commands) | *Run local*: the serve task plus each app's URL and cache version on disk. *Check*: `node --check` on the JS that differs from `origin/main`, the precache audit, and the bump rule. *Cost if deployed*: see next row. *Fetch back*: is the live site on `main`'s versions and commit? *Deploy main now*: publishes `main` to the live site with your own GitHub login (it asks first; see *Deploying from VS Code* below) | the repo's own scripts and git; Fetch back reads the live site and Deploy starts GitHub's Pages build (the only two steps that use the network) |
 | Status bar, and command **Cost if deployed** | `viewer: start-up · 103 KB` for the open file; the command prints, per app, start-up and offline-cache bytes of your tree against `origin/main` | each `sw.js` cache list and the pages' script tags |
 | **Shift+F12** (Find All References) on the same field | every place the field is written and read, under any of its spellings; VS Code's own JavaScript support cannot give this, because the object is written under one name and read under another | every site the repo's generator recorded, kept beside X0's own fresh index (nothing added to the repo) |
 | A warning on line 1 after you save an edited file the offline cache serves, with a quick fix (the light bulb, or **Ctrl+.**) | *Bump the cache version for this file* (one click: the repo's `scripts/bump.js --write`), or *Show what the bump would change* (the dry run). Never done silently | the *Check* step's own bump rule, for this one file |
@@ -272,8 +272,25 @@ It appears only when that can be proven.
 
 ![A grey line above console.log: "last: §APP_SURFACE files=… fields=1693 …", with the log name and commit](figs/x0/13_value_beside_code.png)
 
-**The last three rows are first versions (2026-11-13). What they do not do yet:** Run & Ship does not commit, open a PR, merge or deploy,
-and runs no browser. Cost counts raw bytes (not minified), all of an app's pages together, with no budget. The grey value line appears only
+#### Deploying from VS Code: what you need
+
+*Deploy main now* (step 5 of Run & Ship, added 2026-11-16) publishes the repo's `main` branch to the live site. It does not publish your
+own branch: get your change merged first. Nothing else is needed, and no extra key or secret: it uses the login already on your machine.
+
+1. **Write access** to the repo on GitHub (you can push to it or merge its pull requests).
+2. **The GitHub CLI**, installed (<https://cli.github.com>) and logged in on this machine: run `gh auth login` once and pick the GitHub
+   account that has that access. `gh auth status` should say *Logged in*.
+3. **The X0 Navigator extension**, installed (§4.1) and on a current build (it warns when it is older than the source, §4.1).
+4. Press **4 · Fetch back**. If it says the live site is behind `main` (a version or the commit differs), press **5 · Deploy main now**
+   and confirm **Deploy**. The output prints `§SHIP_DEPLOY started=Y` and a link to the run on GitHub.
+5. Wait one to two minutes, then press **Fetch back** again: it must say PASS.
+
+If something is missing, the output says what to do, and nothing is started: *install the GitHub CLI*, *run gh auth login*, or *this
+workflow has no workflow_dispatch*. **Why it is needed:** a pull request that CI's bot merges starts no deploy (GitHub runs no workflow
+for a merge made with the workflow's own token), so the live site stays on the last deploy until someone publishes `main`.
+
+**The last three rows are first versions (2026-11-13). What they do not do yet:** Run & Ship does not commit, open a PR or merge; it
+deploys only when you press *Deploy main now*, and it runs no browser. Cost counts raw bytes (not minified), all of an app's pages together, with no budget. The grey value line appears only
 when the log names its commit and the file that prints the tag is unchanged since; otherwise it shows nothing, so expect few at first.
 It reads the checkout's `logs/` and the folders in the setting `bimDevtools.extraLogDirs` (default `~/.cache/bim4d`, where bake logs are
 kept; read-only). A bake log counts from the first bake after 2026-11-14, when the bake script began writing the `§LOG_STAMP` line.
@@ -589,7 +606,7 @@ The core idea still holds: **a building is a Bill of Materials.** One parent, N 
 | Witness paths assume one machine | Many witnesses hard-code the author's home folder | Expect to adjust paths on a new machine; a shared resolver is an open item |
 | A saved log with no `§LOG_STAMP` line | Its values look current but may come from code that has since changed. Measured 2026-11-13: almost no saved log said which code made it | Read line 1 of the log (§6). No stamp, an old commit, or the printing file listed as dirty: re-run the witness |
 | A copy of the tree inside the tree (an agent worktree under `.claude/worktrees/`, a nested clone) | A tool that walks folders reads the copy as source. `gen_app_surface.js` once put 1,082 rows pointing into such a copy, so F12 opened the stale file | A dev tool skips any sub-folder that holds a `.git` entry, and its witness also runs on a checkout that looks like a working one, not only a clean one |
-| A PR auto-merged by CI's bot (bim-ootb) | The *Deploy to GitHub Pages* workflow does not start for a merge made with the workflow's own token. Only GitHub's plain branch build publishes: raw files, no `erp/version.json`. Seen live 2026-11-13 | Enable auto-merge yourself right after opening the PR (`gh pr merge <n> --auto --squash`), then press **Fetch back** (§4.1) a minute or two after the merge: it must say PASS |
+| A PR auto-merged by CI's bot (bim-ootb) | The *Deploy to GitHub Pages* workflow does not start for a merge made with the workflow's own token, so the live site stays on the last deploy (seen 2026-11-13; 4 bot merges on 2026-11-16 started no deploy) | Press **Fetch back** (§4.1); if it says the site is behind, press **Deploy main now** and Fetch back again (*Deploying from VS Code*, §4.1). Or enable auto-merge yourself right after opening the PR (`gh pr merge <n> --auto --squash`): a merge you start does deploy |
 | Two numbers in a squash title, `… (#issue) (#pr)` | Until 2026-11-13 the deploy wrote both into `erp/version.json` and the file was not valid JSON | Fixed in the workflow (it takes the last number). Put `Fixes #N` in the PR body, not in the title |
 
 ---
