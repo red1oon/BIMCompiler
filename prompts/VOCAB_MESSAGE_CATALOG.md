@@ -11,7 +11,7 @@ Background, measurements and prior art are in `prompts/DOCS_I18N.md` §4b-§4d (
 - Step 3, class text in the info panel: BUILT and live, bim-ootb #3150, W-CLASS-HELP PASS (§14.1 RESULT).
 - Step 2, How To in the `?` palette: BUILT, bim-ootb #3156, W-HOWTO PASS (§14.3 RESULT).
 - The help panel itself (left, stays open, amber, draggable, reopens as left): BUILT, bim-ootb #3160, W-HELP-DOCK PASS (§14.4 RESULT).
-- **NEXT:** the Modeller gets the same panel + the `common/help/` move (§14.4 RESULT, last line). Spec first.
+- **NEXT:** the Modeller gets the same panel + the `common/help/` move: SPEC WRITTEN, §14.5 (owner's placement decided). Build it.
 - Three owner items are open in §14.1 RESULT.
 1. **(a) CHECKED 2026-11-17, see §14 (a) RESULT:** CC BY-ND 4.0. Verbatim English with attribution is usable. A translation needs bSI's written consent. **DECIDED 2026-11-17: use bSI's own official translations from bSDD, verbatim; coverage measured, see §14 (a) DECIDED.** Original task: may buildingSMART's IFC class definitions (the IFC4 / IFC4.3 documentation text) be shown, translated and redistributed inside our pages?
    - Read the actual licence or terms on buildingSMART's own site, save the copy into the session's prior folder, and cite the clause.
@@ -1023,6 +1023,46 @@ This REPLACES the §14 design's "right dock".
 - **Regressions:** W-HOWTO PASS, W-CLASS-HELP PASS, W-ABOUT-HELP-RESTORE 9/9. W-VIEWER-I18N de_DE fail=3 (the same 3 as main), leaks 23/310. Lint 0 errors. sw v1719.
 - **CI note (merged as `9f7e88c6`):** the first CI run failed W-X0-APPDEF (the code-design lane's X0 Navigator). It samples `internal/APP_SURFACE.md` "written at" lines, and the scene.js / measure.js edits shifted two of them. The fix was a regenerate, not a hand edit: `node scripts/gen_app_surface.js`, then verdict=PASS. The index had last been generated on 2026-11-14 (3251 files; 3374 now). Any edit that moves lines in a viewer file holding `A.x =` writes can trip this gate the same way.
 - **Next:** the Modeller gets the same panel (its `#m-help-panel` + `#m-guide-panel` merge into it), and the help code moves to `common/help/` (§14 design). Spec first.
+
+## 14.5 SPEC: the same help panel in the Modeller (owner 2026-11-17)
+**Owner, verbatim:**
+- *"u proceed with your lane"*;
+- on where to put it: *"I think collapsing another temporarily can be considered if the user does not need to pay attnetion to others while seeking Help or querying. But why not let its panel be draggable so user decides?"*
+
+**Correction recorded:** §14.4 said the Modeller's left is free. MEASURED, it is not (bim-ootb origin/main):
+- **Left:** `#bonsai-outliner` (`bonsai_outliner.js:108`, `position:fixed; left:0; width:240px; height:100vh`, collapsible via `body.ol-collapsed`). Beside it at `left:252px`: `#bar` (`modeller.html:14`), `#ins-panel` (`top:60px`, 244 px wide) and `#stat`.
+- **Right:** the rail; `#pp-panel` (`props_panel.js:85`, `top:60px; right:70px; width:300px`); `#hist`; and the two help overlays (`#m-help-panel` `modeller.html:75`, and `#m-guide-panel`).
+
+**Decision (the owner's two ideas together):**
+1. Help opens by default IN THE OUTLINER'S PLACE (left edge), and the outliner collapses while it is open.
+2. The panel is draggable and remembered (the §14.4 switches). Dragged off the outliner's strip (its left edge ≥ 240 px), the outliner comes back. Dragged back onto it, the outliner collapses again.
+3. Closing help restores the outliner's OWN prior state (a user who had collapsed it keeps it collapsed).
+4. Phone: full-screen sheet (the Modeller has no phone layout yet; the sheet does not depend on one).
+
+**Build: one panel, two apps (§14 "one shared module"):**
+- **`common/help/help_panel.js`**, moved out of `viewer/scene.js` `showCommandPalette`. It owns:
+  - the dock (amber glass, stays open, × / Esc, reopen-as-left state, search over names + bullets + CLI titles, How To blocks);
+  - and NOTHING app-specific.
+  - Each app gives an adapter: `entries()`, `howto` (optional), placement, drag function, storage key.
+  - The Viewer keeps `#cmd-palette` and every id, so W-HELP-DOCK and W-HOWTO run unchanged.
+- **The drag helper moves to `common/drag.js`**, from `viewer/measure.js` `A._makeDraggable`. The Viewer's `A._makeDraggable` becomes that same function, so there is ONE implementation; its 13 viewer callers are unchanged. The Modeller has no drag helper today.
+- **Modeller adapter:**
+  - entries = the live `#bar` buttons (icon, name, `SHORTCUTS`) + the keyboard-only rows that `buildHelp()` lists today;
+  - the 11 guide `SECTIONS` become How To text under their entries, or a "Guide" group. They stay English until translated, like any untranslated row (the Modeller translates by exact string through the Viewer dictionary).
+  - `#m-help-panel` and `#m-guide-panel` are deleted; `?` and `#b-guide` open the new panel.
+  - The PR states its lines +/−.
+
+**Witness:**
+- **W-HELP-DOCK-M** (`modeller/tests/witness_help_dock_m.js`):
+  - M1: `?` opens it at the left, outliner collapsed, `#pp-panel` not covered;
+  - M2: drag right past 240 px → outliner back; drag back → collapsed;
+  - M3: close → the outliner's prior state (both cases: it was open; it was collapsed by the user);
+  - M4: contrast ≥ 4.5 on the Modeller's background(s), with the 0.10 falsifier;
+  - M5: every `#bar` tool and every keyboard row that `buildHelp()` listed is in the panel (X of N, N from the live `#bar`);
+  - M6: the 11 guide sections are present;
+  - M7: position remembered across a reload;
+  - M8: phone sheet.
+- **Regression:** W-HELP-DOCK, W-HOWTO, W-CLASS-HELP and W-VIEWER-I18N unchanged. Every viewer caller of `A._makeDraggable` still drags: a sweep drags each one that the witness can open and reports X of N. W-X0-APPDEF: regenerate `APP_SURFACE.md`.
 
 ## 15. NOT URGENT, to think about (owner 2026-11-16: *"You mean we can mis.<translated verb>? Note in prompt then we shall think about it not urgent."*)
 Two terminal ideas. Neither is built and nothing is decided.
