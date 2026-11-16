@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 7d5bc6c7099243c8
+source_sha: 37bce684713d1698
 lang: ja
 ---
 
@@ -22,7 +22,7 @@ SQL のステロイド版だと考えてください。一行でレコードを�
 $ (sleep 4; printf 'exit\r') | RED1_LOG=/tmp/fast_guide_greet.log RED1_HISTORY=/tmp/fast_guide_greet.hist BIM_DOOR_JOURNAL=/tmp/fast_guide_greet.journal script -qec 'node common/door/red1.js' /dev/null | tr -d '\r' | sed -e 's/\x1b\[[0-9;?]*[a-zA-Z]//g' -e 's/ · [0-9a-f]\{8\}$//'
 Welcome to red1, the scripting door into BIM and ERP, stored in SQLite.
 REMEMBER THE NAME.
-Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 74 verbs · 28 words
+Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 74 verbs · 29 words
 Type help for the list of commands (or bim, mis, erp for one group).
 Tip: type level student for fuller help on each word (red1 --fast opens without tips).
 
@@ -43,7 +43,7 @@ $ node common/door/red1.js help 2>/dev/null
 red1: type a short word; red1 prints the full line it runs (→ …), then runs it.
   bim   buildings and models             start with: cd Duplex   (16 words)
   mis   records, tables, files, Ninja    start with: cd Order   (11 words)
-  erp   document actions (CO VO CL RC)   start with: cd Order   (6 words)
+  erp   document actions (CO VO CL RC)   start with: cd Order   (7 words)
   everywhere: cd <place> · pwd · role <id> · history · report · exit
 Type bim, mis or erp for its words · help <word> for one word (level student first for the full explanation) · help verbs for the full door lines.
 ```
@@ -89,7 +89,7 @@ node common/door/red1.js
 <!-- run: red1_version -->
 ```text
 $ node common/door/red1.js --version | sed -e 's/^Copyright[^·]*· //' -e 's/ · [0-9a-f]\{8\}$//'
-red1 1.0.0 · 74 verbs · 28 words
+red1 1.0.0 · 74 verbs · 29 words
 ```
 
 **六ファイルのダウンロード**は、チェックアウトなしで、ドアと Modeller 動詞だけを使う場合のものです。空のフォルダーを作り、Modeller が必要とするブラウザーエンジンをインストールして、六つのファイルを取得します：
@@ -329,6 +329,8 @@ not done: cd project
 | `menu` | ERP メニューを画面で |
 | `cd Project 990000` · `ls` · `cd Phase` | レコードを場所として開く：`ls` はそのタブをレコード件数とともに一覧し、`cd <tab>` でタブを開き、`cd ..` で上へ戻る |
 | `status` | プロジェクトの中で：そのアーンドバリュー（フェーズごとの PV、EV、AC、SPI、CPI） |
+| `vo` | 建物の中で：モデルとそのプロジェクトオーダーの差分を、変更指示（Variation Order）として発行する（y/N を確認；承認は `do CO <number>`） |
+| `claim` | プロジェクトの中で：完了してまだ請求していないフェーズを請求する。請求書の下書きと、その会計仕訳のプレビュー（y/N を確認） |
 | `grid` · `walk FP` · `day 5` · `compare 24` | 建物の通り芯、専門分野をたどる、ある日の工程、二日の比較 |
 | `open marked` · `bay high` · `undo` · `save shed.db` · `close` | 行の間も開いたままの Modeller |
 | `help <word>` · `help verbs` · `level student` · `report` · `exit` | ヘルプ、すべてのドア動詞、より詳しい説明、オーナーへの不足報告、終了 |
@@ -340,6 +342,8 @@ not done: cd project
 ![ひとつのドア。左の主体は同じ動詞を話し、ドアが解析・確認・結び付け・呼び出し・返答を行い、アプリ自身の確認が決める。](figs/one_door.svg)
 
 図は左から右へ読みます。**主体**（ターミナルの人、またはツール接続経由の AI）、**チャネル**（動詞の一覧。それぞれに平易な説明、入力、*危害*クラスがある）、**ドア**（解析し、確認し、行を尋ねた人に結び付け、呼び出し、返答する）、**アプリ**（自身の確認が決める。新しい問題を増やす変更は理由とともに元に戻される）。AI の接続方法は [AI 提案ガイド](ProposerGuide.md#connect-your-ai)にあります。
+
+各動詞には **影響クラス**（harm class）があります：`read`（何も変更しない）、`trial`（使い捨てのコピー上で行い、判定し、保存しない変更）、`writes`、`posts`、`sends`。クラスは動詞一覧に一度だけ書かれるので、どのアクターも言葉でそれを回避できません。ターミナルの人はすべてのクラスで信頼されます。AI は `read` と `trial` だけなので、AI からの `writes` や `posts` の行は、人が確認する申し出（claim）として保留されます（[リファレンス](FastScriptReference.md) に例があります）。
 
 **JavaScript から**は、同じ動詞がひとつのオブジェクトになっており、語彙から生成されます（新しい動詞に新しいコードは要りません）：
 

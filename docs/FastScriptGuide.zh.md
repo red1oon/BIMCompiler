@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 7d5bc6c7099243c8
+source_sha: 37bce684713d1698
 lang: zh-CN
 ---
 
@@ -22,7 +22,7 @@ lang: zh-CN
 $ (sleep 4; printf 'exit\r') | RED1_LOG=/tmp/fast_guide_greet.log RED1_HISTORY=/tmp/fast_guide_greet.hist BIM_DOOR_JOURNAL=/tmp/fast_guide_greet.journal script -qec 'node common/door/red1.js' /dev/null | tr -d '\r' | sed -e 's/\x1b\[[0-9;?]*[a-zA-Z]//g' -e 's/ · [0-9a-f]\{8\}$//'
 Welcome to red1, the scripting door into BIM and ERP, stored in SQLite.
 REMEMBER THE NAME.
-Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 74 verbs · 28 words
+Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 74 verbs · 29 words
 Type help for the list of commands (or bim, mis, erp for one group).
 Tip: type level student for fuller help on each word (red1 --fast opens without tips).
 
@@ -43,7 +43,7 @@ $ node common/door/red1.js help 2>/dev/null
 red1: type a short word; red1 prints the full line it runs (→ …), then runs it.
   bim   buildings and models             start with: cd Duplex   (16 words)
   mis   records, tables, files, Ninja    start with: cd Order   (11 words)
-  erp   document actions (CO VO CL RC)   start with: cd Order   (6 words)
+  erp   document actions (CO VO CL RC)   start with: cd Order   (7 words)
   everywhere: cd <place> · pwd · role <id> · history · report · exit
 Type bim, mis or erp for its words · help <word> for one word (level student first for the full explanation) · help verbs for the full door lines.
 ```
@@ -89,7 +89,7 @@ node common/door/red1.js
 <!-- run: red1_version -->
 ```text
 $ node common/door/red1.js --version | sed -e 's/^Copyright[^·]*· //' -e 's/ · [0-9a-f]\{8\}$//'
-red1 1.0.0 · 74 verbs · 28 words
+red1 1.0.0 · 74 verbs · 29 words
 ```
 
 **六文件下载**用于只要门和 Modeller 动词、不需要检出的情况。新建一个空文件夹，安装 Modeller 所需的浏览器引擎，然后获取这六个文件：
@@ -329,6 +329,8 @@ not done: cd project
 | `menu` | 屏幕上的 ERP 菜单 |
 | `cd Project 990000` · `ls` · `cd Phase` | 把一条记录当作一个位置进入：`ls` 列出它的标签页及其记录数，`cd <tab>` 打开一个，`cd ..` 回到上一级 |
 | `status` | 在项目中：它的挣值（每个阶段的 PV、EV、AC、SPI 和 CPI） |
+| `vo` | 在建筑中：把模型与其项目订单之间的差异，作为变更单（Variation Order）发出（询问 y/N；用 `do CO <number>` 批准） |
+| `claim` | 在项目中：对已完成但尚未开票的阶段开票，生成一张发票草稿及其会计分录预览（询问 y/N） |
 | `grid` · `walk FP` · `day 5` · `compare 24` | 建筑的轴网线；遍历一个专业；某一天的进度；两天对比 |
 | `open marked` · `bay high` · `undo` · `save shed.db` · `close` | 在各行之间保持打开的 Modeller |
 | `help <word>` · `help verbs` · `level student` · `report` · `exit` | 帮助；每个门动词；更完整的帮助；向所有者报告缺口；退出 |
@@ -340,6 +342,8 @@ not done: cd project
 ![一扇门。左侧的参与者说同样的动词；门负责解析、检查、绑定、调用和答复；由应用自己的检查来决定。](figs/one_door.svg)
 
 请从左到右读这张图：**参与者**（终端前的人，或通过工具连接的 AI）；**通道**，一份动词列表，每个动词都有通俗的描述、输入和*危害*类别；**门**，负责解析、检查、把这一行绑定到提问者、调用并答复；**应用**，由它自己的检查来决定，增加新问题的更改会连同原因被撤销。连接 AI 的方法见 [AI 提议指南](ProposerGuide.md#connect-your-ai)。
+
+每个动词都有一个**危害等级**（harm class）：`read`（不做任何更改）、`trial`（在一次性副本上做出的更改，经过判定，从不保存）、`writes`、`posts` 或 `sends`。等级只在动词清单中写一次，所以任何参与者都无法用话语绕过它。终端前的人对所有等级都受信任；AI 只对 `read` 和 `trial` 受信任，因此来自 AI 的 `writes` 或 `posts` 行会被保留为一项申请，由人来确认（[参考页](FastScriptReference.md) 中有一个例子）。
 
 **在 JavaScript 中**，同样的动词是一个对象，由词汇表生成（新动词不需要新代码）：
 

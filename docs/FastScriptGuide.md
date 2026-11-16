@@ -16,7 +16,7 @@ On a terminal `red1` greets you once, then waits at its prompt. This is exactly 
 $ (sleep 4; printf 'exit\r') | RED1_LOG=/tmp/fast_guide_greet.log RED1_HISTORY=/tmp/fast_guide_greet.hist BIM_DOOR_JOURNAL=/tmp/fast_guide_greet.journal script -qec 'node common/door/red1.js' /dev/null | tr -d '\r' | sed -e 's/\x1b\[[0-9;?]*[a-zA-Z]//g' -e 's/ · [0-9a-f]\{8\}$//'
 Welcome to red1, the scripting door into BIM and ERP, stored in SQLite.
 REMEMBER THE NAME.
-Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 74 verbs · 28 words
+Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 74 verbs · 29 words
 Type help for the list of commands (or bim, mis, erp for one group).
 Tip: type level student for fuller help on each word (red1 --fast opens without tips).
 
@@ -37,7 +37,7 @@ $ node common/door/red1.js help 2>/dev/null
 red1: type a short word; red1 prints the full line it runs (→ …), then runs it.
   bim   buildings and models             start with: cd Duplex   (16 words)
   mis   records, tables, files, Ninja    start with: cd Order   (11 words)
-  erp   document actions (CO VO CL RC)   start with: cd Order   (6 words)
+  erp   document actions (CO VO CL RC)   start with: cd Order   (7 words)
   everywhere: cd <place> · pwd · role <id> · history · report · exit
 Type bim, mis or erp for its words · help <word> for one word (level student first for the full explanation) · help verbs for the full door lines.
 ```
@@ -83,7 +83,7 @@ Type `exit` to leave. To type just `red1` from anywhere, run `npm link` once in 
 <!-- run: red1_version -->
 ```text
 $ node common/door/red1.js --version | sed -e 's/^Copyright[^·]*· //' -e 's/ · [0-9a-f]\{8\}$//'
-red1 1.0.0 · 74 verbs · 28 words
+red1 1.0.0 · 74 verbs · 29 words
 ```
 
 **The six-file download** is for the door alone with the Modeller verbs, no checkout. Make an empty folder, install the browser engine the Modeller needs, and fetch the six files:
@@ -323,6 +323,8 @@ The words above are the ones to learn first. The rest, each a short form of a do
 | `menu` | the ERP menu, on a screen |
 | `cd Project 990000` · `ls` · `cd Phase` | enter a record as a place: `ls` lists its tabs with their record counts, `cd <tab>` opens one, `cd ..` goes back up |
 | `status` | in a project: its earned value (PV, EV, AC, SPI and CPI per phase) |
+| `vo` | in a building: the change between the model and its Project Order, issued as a Variation Order (asks y/N; approve it with `do CO <number>`) |
+| `claim` | in a project: bill the completed phases not yet billed, a draft invoice and the preview of its accounting (asks y/N) |
 | `grid` · `walk FP` · `day 5` · `compare 24` | the building's grid lines; walk a discipline; the schedule on a day; two days compared |
 | `open marked` · `bay high` · `undo` · `save shed.db` · `close` | the Modeller kept open between lines |
 | `help <word>` · `help verbs` · `level student` · `report` · `exit` | help; every door verb; fuller help; a gap to the owner; leave |
@@ -334,6 +336,8 @@ The words above are the ones to learn first. The rest, each a short form of a do
 ![One door. Actors on the left speak the same verbs; the door parses, checks, binds, calls and replies; the app's own checks decide.](figs/one_door.svg)
 
 Read the picture from left to right: the **actor** (a person at a terminal, or an AI through a tool connection); the **channel**, one list of verbs, each with a plain description, its inputs and a *harm* class; the **door**, which parses, checks, binds the line to who is asking, calls and replies; the **app**, whose own checks decide, and a change that adds a new problem is undone with the reason. Connecting an AI is in the [AI Proposer Guide](ProposerGuide.md#connect-your-ai).
+
+Each verb has a **harm class**: `read` (changes nothing), `trial` (a change made on a throwaway copy, judged, never saved), `writes`, `posts` or `sends`. The class is written once, in the verb list, so no actor can talk its way around it. A person at the terminal is trusted for every class; an AI for `read` and `trial` only, so a `writes` or `posts` line from an AI is held as a claim for a person to confirm ([the reference](FastScriptReference.md) shows one).
 
 **From JavaScript** the same verbs are one object, generated from the vocabulary (a new verb needs no new code):
 

@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 7d5bc6c7099243c8
+source_sha: 37bce684713d1698
 lang: id
 ---
 
@@ -22,7 +22,7 @@ Di terminal, `red1` menyapa Anda sekali, lalu menunggu di promptnya. Inilah pers
 $ (sleep 4; printf 'exit\r') | RED1_LOG=/tmp/fast_guide_greet.log RED1_HISTORY=/tmp/fast_guide_greet.hist BIM_DOOR_JOURNAL=/tmp/fast_guide_greet.journal script -qec 'node common/door/red1.js' /dev/null | tr -d '\r' | sed -e 's/\x1b\[[0-9;?]*[a-zA-Z]//g' -e 's/ · [0-9a-f]\{8\}$//'
 Welcome to red1, the scripting door into BIM and ERP, stored in SQLite.
 REMEMBER THE NAME.
-Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 74 verbs · 28 words
+Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 74 verbs · 29 words
 Type help for the list of commands (or bim, mis, erp for one group).
 Tip: type level student for fuller help on each word (red1 --fast opens without tips).
 
@@ -43,7 +43,7 @@ $ node common/door/red1.js help 2>/dev/null
 red1: type a short word; red1 prints the full line it runs (→ …), then runs it.
   bim   buildings and models             start with: cd Duplex   (16 words)
   mis   records, tables, files, Ninja    start with: cd Order   (11 words)
-  erp   document actions (CO VO CL RC)   start with: cd Order   (6 words)
+  erp   document actions (CO VO CL RC)   start with: cd Order   (7 words)
   everywhere: cd <place> · pwd · role <id> · history · report · exit
 Type bim, mis or erp for its words · help <word> for one word (level student first for the full explanation) · help verbs for the full door lines.
 ```
@@ -89,7 +89,7 @@ Ketik `exit` untuk keluar. Agar cukup mengetik `red1` dari mana saja, jalankan `
 <!-- run: red1_version -->
 ```text
 $ node common/door/red1.js --version | sed -e 's/^Copyright[^·]*· //' -e 's/ · [0-9a-f]\{8\}$//'
-red1 1.0.0 · 74 verbs · 28 words
+red1 1.0.0 · 74 verbs · 29 words
 ```
 
 **Unduhan enam berkas** untuk pintu saja dengan kata kerja Modeller, tanpa checkout. Buat folder kosong, pasang mesin peramban yang dibutuhkan Modeller, lalu ambil enam berkas:
@@ -329,6 +329,8 @@ Kata-kata di atas adalah yang perlu dipelajari lebih dulu. Sisanya, masing-masin
 | `menu` | menu ERP, di layar |
 | `cd Project 990000` · `ls` · `cd Phase` | memasuki rekaman sebagai tempat: `ls` mendaftar tab-nya beserta jumlah rekaman, `cd <tab>` membuka satu, `cd ..` naik kembali |
 | `status` | dalam sebuah proyek: nilai hasil (earned value)-nya (PV, EV, AC, SPI, dan CPI per fase) |
+| `vo` | dalam sebuah bangunan: perubahan antara model dan Project Order-nya, diterbitkan sebagai Variation Order (bertanya y/N; setujui dengan `do CO <number>`) |
+| `claim` | dalam sebuah proyek: menagih fase yang sudah selesai dan belum ditagih, sebuah draf faktur dan pratinjau akuntansinya (bertanya y/N) |
 | `grid` · `walk FP` · `day 5` · `compare 24` | garis grid bangunan; menelusuri sebuah disiplin; jadwal pada suatu hari; dua hari dibandingkan |
 | `open marked` · `bay high` · `undo` · `save shed.db` · `close` | Modeller yang dibiarkan terbuka di antara baris |
 | `help <word>` · `help verbs` · `level student` · `report` · `exit` | bantuan; setiap kata kerja pintu; bantuan lebih lengkap; celah ke pemilik; keluar |
@@ -340,6 +342,8 @@ Kata-kata di atas adalah yang perlu dipelajari lebih dulu. Sisanya, masing-masin
 ![Satu pintu. Para aktor di kiri berbicara dengan kata kerja yang sama; pintu mengurai, memeriksa, mengikat, memanggil, dan menjawab; pemeriksaan milik aplikasi yang menentukan.](figs/one_door.svg)
 
 Bacalah gambar dari kiri ke kanan: **aktor** (seseorang di terminal, atau AI lewat sambungan alat); **saluran**, satu daftar kata kerja, masing-masing dengan deskripsi sederhana, masukannya, dan kelas *bahaya*; **pintu**, yang mengurai, memeriksa, mengikat baris ke penanya, memanggil, dan menjawab; **aplikasi**, yang pemeriksaannya sendiri menentukan, dan perubahan yang menambah masalah baru dibatalkan beserta alasannya. Cara menyambungkan AI ada di [Panduan Pengusul AI](ProposerGuide.md#connect-your-ai).
+
+Setiap verb memiliki **kelas bahaya** (harm class): `read` (tidak mengubah apa pun), `trial` (perubahan yang dibuat pada salinan sekali pakai, dinilai, tidak pernah disimpan), `writes`, `posts`, atau `sends`. Kelas itu ditulis sekali, di daftar verb, sehingga tidak ada aktor yang bisa berkelit darinya dengan kata-kata. Orang di terminal dipercaya untuk setiap kelas; AI hanya untuk `read` dan `trial`, jadi baris `writes` atau `posts` dari AI ditahan sebagai klaim yang dikonfirmasi oleh seseorang ([referensi](FastScriptReference.md) menunjukkan satu).
 
 **Dari JavaScript**, kata kerja yang sama adalah satu objek, dibangkitkan dari kosakata (kata kerja baru tidak butuh kode baru):
 

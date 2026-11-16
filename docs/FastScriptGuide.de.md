@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 7d5bc6c7099243c8
+source_sha: 37bce684713d1698
 lang: de
 ---
 
@@ -22,7 +22,7 @@ An einem Terminal begrüßt Sie `red1` einmal und wartet dann an seinem Prompt. 
 $ (sleep 4; printf 'exit\r') | RED1_LOG=/tmp/fast_guide_greet.log RED1_HISTORY=/tmp/fast_guide_greet.hist BIM_DOOR_JOURNAL=/tmp/fast_guide_greet.journal script -qec 'node common/door/red1.js' /dev/null | tr -d '\r' | sed -e 's/\x1b\[[0-9;?]*[a-zA-Z]//g' -e 's/ · [0-9a-f]\{8\}$//'
 Welcome to red1, the scripting door into BIM and ERP, stored in SQLite.
 REMEMBER THE NAME.
-Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 74 verbs · 28 words
+Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 74 verbs · 29 words
 Type help for the list of commands (or bim, mis, erp for one group).
 Tip: type level student for fuller help on each word (red1 --fast opens without tips).
 
@@ -43,7 +43,7 @@ $ node common/door/red1.js help 2>/dev/null
 red1: type a short word; red1 prints the full line it runs (→ …), then runs it.
   bim   buildings and models             start with: cd Duplex   (16 words)
   mis   records, tables, files, Ninja    start with: cd Order   (11 words)
-  erp   document actions (CO VO CL RC)   start with: cd Order   (6 words)
+  erp   document actions (CO VO CL RC)   start with: cd Order   (7 words)
   everywhere: cd <place> · pwd · role <id> · history · report · exit
 Type bim, mis or erp for its words · help <word> for one word (level student first for the full explanation) · help verbs for the full door lines.
 ```
@@ -89,7 +89,7 @@ Tippen Sie `exit`, um zu beenden. Um nur `red1` von überall zu tippen, führen 
 <!-- run: red1_version -->
 ```text
 $ node common/door/red1.js --version | sed -e 's/^Copyright[^·]*· //' -e 's/ · [0-9a-f]\{8\}$//'
-red1 1.0.0 · 74 verbs · 28 words
+red1 1.0.0 · 74 verbs · 29 words
 ```
 
 **Der Sechs-Dateien-Download** ist für die Tür allein mit den Modeller-Verben, ohne Checkout. Legen Sie einen leeren Ordner an, installieren Sie die Browser-Engine, die der Modeller braucht, und laden Sie die sechs Dateien:
@@ -329,6 +329,8 @@ Die Wörter oben sind die, die Sie zuerst lernen sollten. Die übrigen, jedes ei
 | `menu` | das ERP-Menü auf einem Bildschirm |
 | `cd Project 990000` · `ls` · `cd Phase` | einen Datensatz als Ort betreten: `ls` listet seine Reiter mit ihrer Datensatzzahl, `cd <tab>` öffnet einen, `cd ..` geht wieder hoch |
 | `status` | in einem Projekt: sein Earned Value (PV, EV, AC, SPI und CPI je Phase) |
+| `vo` | in einem Gebäude: die Änderung zwischen dem Modell und seinem Projektauftrag, ausgestellt als Nachtragsauftrag (Variation Order; fragt y/N; genehmigen mit `do CO <number>`) |
+| `claim` | in einem Projekt: die abgeschlossenen, noch nicht abgerechneten Phasen abrechnen, ein Rechnungsentwurf und die Vorschau seiner Buchung (fragt y/N) |
 | `grid` · `walk FP` · `day 5` · `compare 24` | die Rasterlinien des Gebäudes; eine Disziplin ablaufen; der Zeitplan an einem Tag; zwei Tage verglichen |
 | `open marked` · `bay high` · `undo` · `save shed.db` · `close` | der zwischen den Zeilen offen gehaltene Modeller |
 | `help <word>` · `help verbs` · `level student` · `report` · `exit` | Hilfe; jedes Tür-Verb; ausführlichere Hilfe; eine Lücke an den Eigentümer; beenden |
@@ -340,6 +342,8 @@ Die Wörter oben sind die, die Sie zuerst lernen sollten. Die übrigen, jedes ei
 ![Eine Tür. Akteure links sprechen dieselben Verben; die Tür parst, prüft, bindet, ruft auf und antwortet; die eigenen Prüfungen der App entscheiden.](figs/one_door.svg)
 
 Lesen Sie das Bild von links nach rechts: der **Akteur** (eine Person am Terminal oder eine KI über eine Werkzeugverbindung); der **Kanal**, eine Liste von Verben, jedes mit einer einfachen Beschreibung, seinen Eingaben und einer *Schadensklasse*; die **Tür**, die parst, prüft, die Zeile an den Fragenden bindet, aufruft und antwortet; die **App**, deren eigene Prüfungen entscheiden, und eine Änderung, die ein neues Problem hinzufügt, wird mit der Begründung rückgängig gemacht. Das Anbinden einer KI steht im [KI-Vorschlagshandbuch](ProposerGuide.md#connect-your-ai).
+
+Jedes Verb hat eine **Schadensklasse** (harm class): `read` (ändert nichts), `trial` (eine Änderung auf einer Wegwerfkopie, beurteilt, nie gespeichert), `writes`, `posts` oder `sends`. Die Klasse steht einmal, in der Verbliste, sodass kein Akteur sich um sie herumreden kann. Eine Person am Terminal ist für jede Klasse vertrauenswürdig; eine KI nur für `read` und `trial`, daher wird eine `writes`- oder `posts`-Zeile einer KI als Antrag festgehalten, den eine Person bestätigt ([die Referenz](FastScriptReference.md) zeigt einen).
 
 **Aus JavaScript** sind dieselben Verben ein Objekt, aus dem Vokabular erzeugt (ein neues Verb braucht keinen neuen Code):
 

@@ -1179,7 +1179,7 @@ $ BIM_OBJECT_OPLOG=/tmp/fast_guide_empty.ops node common/door/door.js 'mis.descr
 <!-- run: door_order_state -->
 ```text
 $ BIM_OBJECT_OPLOG=/tmp/fast_guide_empty.ops node common/door/door.js 'erp.order_state building=Duplex'
-{"request":"d-mwir4e5l-3223895-1","verb":"erp.order_state","actor":"human","status":"ok","answer":{"building":"Duplex","key":"Ifc2x3_Duplex_Federated","state":{"generated":false,"projectId":null,"plannedAmt":null},"decision":{"kind":"not-generated","actions":["generate"]},"offer":{"key":"generate","line":"erp.process name=\"Fold from BIM\" Building=Duplex"}},"why":null,"notChecked":[],"ops":[],"next":[],"ms":1388}
+{"request":"d-mwizct3m-3399173-1","verb":"erp.order_state","actor":"human","status":"ok","answer":{"building":"Duplex","key":"Ifc2x3_Duplex_Federated","state":{"generated":false,"projectId":null,"plannedAmt":null},"decision":{"kind":"not-generated","actions":["generate"]},"delta":null,"offer":{"key":"generate","line":"erp.process name=\"Fold from BIM\" Building=Duplex"}},"why":null,"notChecked":[],"ops":[],"next":[],"ms":589}
 ```
 
 ## What is not checked

@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 7d5bc6c7099243c8
+source_sha: 37bce684713d1698
 lang: es-419
 ---
 
@@ -22,7 +22,7 @@ En un terminal, `red1` le saluda una vez y luego espera en su prompt. Esto es ex
 $ (sleep 4; printf 'exit\r') | RED1_LOG=/tmp/fast_guide_greet.log RED1_HISTORY=/tmp/fast_guide_greet.hist BIM_DOOR_JOURNAL=/tmp/fast_guide_greet.journal script -qec 'node common/door/red1.js' /dev/null | tr -d '\r' | sed -e 's/\x1b\[[0-9;?]*[a-zA-Z]//g' -e 's/ · [0-9a-f]\{8\}$//'
 Welcome to red1, the scripting door into BIM and ERP, stored in SQLite.
 REMEMBER THE NAME.
-Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 74 verbs · 28 words
+Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 74 verbs · 29 words
 Type help for the list of commands (or bim, mis, erp for one group).
 Tip: type level student for fuller help on each word (red1 --fast opens without tips).
 
@@ -43,7 +43,7 @@ $ node common/door/red1.js help 2>/dev/null
 red1: type a short word; red1 prints the full line it runs (→ …), then runs it.
   bim   buildings and models             start with: cd Duplex   (16 words)
   mis   records, tables, files, Ninja    start with: cd Order   (11 words)
-  erp   document actions (CO VO CL RC)   start with: cd Order   (6 words)
+  erp   document actions (CO VO CL RC)   start with: cd Order   (7 words)
   everywhere: cd <place> · pwd · role <id> · history · report · exit
 Type bim, mis or erp for its words · help <word> for one word (level student first for the full explanation) · help verbs for the full door lines.
 ```
@@ -89,7 +89,7 @@ Escriba `exit` para salir. Para escribir solo `red1` desde cualquier sitio, ejec
 <!-- run: red1_version -->
 ```text
 $ node common/door/red1.js --version | sed -e 's/^Copyright[^·]*· //' -e 's/ · [0-9a-f]\{8\}$//'
-red1 1.0.0 · 74 verbs · 28 words
+red1 1.0.0 · 74 verbs · 29 words
 ```
 
 **La descarga de seis archivos** es para la puerta sola con los verbos del Modeller, sin copia completa. Cree una carpeta vacía, instale el motor de navegador que necesita el Modeller y descargue los seis archivos:
@@ -329,6 +329,8 @@ Las palabras de arriba son las que conviene aprender primero. Las demás, cada u
 | `menu` | el menú ERP, en una pantalla |
 | `cd Project 990000` · `ls` · `cd Phase` | entrar en un registro como en un lugar: `ls` lista sus pestañas con su número de registros, `cd <tab>` abre una, `cd ..` vuelve arriba |
 | `status` | en un proyecto: su valor ganado (PV, EV, AC, SPI y CPI por fase) |
+| `vo` | en un edificio: el cambio entre el modelo y su orden de proyecto, emitido como orden de variación (Variation Order; pregunta y/N; se aprueba con `do CO <number>`) |
+| `claim` | en un proyecto: facturar las fases terminadas aún no facturadas, un borrador de factura y la vista previa de su contabilidad (pregunta y/N) |
 | `grid` · `walk FP` · `day 5` · `compare 24` | las líneas de rejilla del edificio; recorrer una disciplina; el calendario en un día; dos días comparados |
 | `open marked` · `bay high` · `undo` · `save shed.db` · `close` | el Modeller mantenido abierto entre líneas |
 | `help <word>` · `help verbs` · `level student` · `report` · `exit` | ayuda; cada verbo de la puerta; ayuda más completa; una laguna al propietario; salir |
@@ -340,6 +342,8 @@ Las palabras de arriba son las que conviene aprender primero. Las demás, cada u
 ![Una puerta. Los actores a la izquierda hablan los mismos verbos; la puerta analiza, comprueba, vincula, llama y responde; deciden las comprobaciones propias de la aplicación.](figs/one_door.svg)
 
 Lea la imagen de izquierda a derecha: el **actor** (una persona en un terminal, o una IA mediante una conexión de herramientas); el **canal**, una lista de verbos, cada uno con una descripción sencilla, sus entradas y una clase de *daño*; la **puerta**, que analiza, comprueba, vincula la línea a quien pregunta, llama y responde; la **aplicación**, cuyas comprobaciones propias deciden, y un cambio que añade un problema nuevo se deshace con el motivo. Conectar una IA está en la [Guía del Proponente de IA](ProposerGuide.md#connect-your-ai).
+
+Cada verbo tiene una **clase de daño** (harm class): `read` (no cambia nada), `trial` (un cambio hecho en una copia desechable, juzgado, nunca guardado), `writes`, `posts` o `sends`. La clase se escribe una sola vez, en la lista de verbos, así que ningún actor puede esquivarla con palabras. Una persona en la terminal tiene confianza para todas las clases; una IA solo para `read` y `trial`, así que una línea `writes` o `posts` de una IA queda retenida como una solicitud que una persona confirma ([la referencia](FastScriptReference.md) muestra una).
 
 **Desde JavaScript** los mismos verbos son un solo objeto, generado del vocabulario (un verbo nuevo no necesita código nuevo):
 
