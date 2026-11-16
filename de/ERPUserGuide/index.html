@@ -1577,6 +1577,40 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="5. Forms, Tabs, and Fields">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#help-on-every-field-and-a-question-box-live" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Help on every field, and a question box (LIVE)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Help on every field, and a question box (LIVE)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#developer-note-how-the-help-is-organised-in-its-own-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Developer note: how the help is organised in its own files
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -4261,6 +4295,40 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="5. Forms, Tabs, and Fields">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#help-on-every-field-and-a-question-box-live" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Help on every field, and a question box (LIVE)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Help on every field, and a question box (LIVE)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#developer-note-how-the-help-is-organised-in-its-own-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Developer note: how the help is organised in its own files
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -5538,6 +5606,90 @@ built-in pre-release test harness (§15).</p>
 <li><strong>Editable fields</strong>: tap a field to edit. Changes are staged in a CRUD overlay. Hit <strong>Save</strong> to
   commit as a signed sidecar op.</li>
 </ul>
+<h3 id="help-on-every-field-and-a-question-box-live">Help on every field, and a question box <em>(LIVE)</em><a class="headerlink" href="#help-on-every-field-and-a-question-box-live" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Hover a field</strong> to see its own description, the same text legacy iDempiere shows (the field's
+  Description in the dictionary). A field with no description shows no tooltip, as legacy does.</li>
+<li><strong>Click into a field</strong> and the <strong>Tool Tip</strong> panel on the right shows its name, its description and its
+  longer help. With nothing focused it says <em>Place your cursor into a field on the screen</em>. Click the panel's
+  title to fold it.</li>
+<li><strong>How To</strong>, under the Tool Tip, shows the steps for the window you have open (Sales Order, Shipment,
+  Invoice, Payment), taken word for word from the trade-cycle steps of this guide
+  (<a href="#the-standard-flow-order-to-cash-procure-to-pay-books-to-reports">The standard flow</a>), with a link to the section. A window name in
+  the steps opens that window.</li>
+<li><strong>Ask a question</strong> in the box at the top of How To, in plain words, then press Enter, for example
+  <em>How do I close a Sales Order?</em> The answer card names the window (click it to open), the document action,
+  the statuses it is allowed from, the command line that does it where one is offered, and the guide
+  section. Every part is read from the dictionary; there is no AI inside.</li>
+<li><strong>In your language:</strong> choose it in the header (or at login). Field help comes from the published iDempiere
+  language packs: French, German, Chinese and Japanese today. A field the pack does not cover stays in
+  English, as in legacy. Questions can be asked in that language too, e.g. <em>如何关闭销售订单？</em>. The How To
+  steps are in Chinese as well; they were translated by the build, not by a native speaker, and say so. The
+  pack's own words are shown unchanged, even where they read oddly (the Chinese pack calls Void 空白).</li>
+<li><strong>At the command line</strong>, the same question works: <code>ask "How do I close a Sales Order?"</code> at the <code>red1</code>
+  prompt, or the door line <code>erp.ask question="…"</code>. The language is your saved preference when you are
+  logged in, else your terminal's <code>LANG</code>, else the system's; <code>lang=zh_CN</code> chooses one. It only reads.</li>
+</ul>
+<blockquote>
+<p><em>Proven by</em> <strong>W-FIELD-HELP</strong> (every displayed field's text equals the real legacy <code>AD_Field_v</code>, 15,849 of
+15,849), <strong>W-HELP-SHOWCASE</strong> (packs extracted from the published packs, the question sets in English and
+Chinese, the links) and <strong>W-ERP-ASK</strong> (the same answers at the command line, and the language order).</p>
+</blockquote>
+<h4 id="developer-note-how-the-help-is-organised-in-its-own-files">Developer note: how the help is organised in its own files<a class="headerlink" href="#developer-note-how-the-help-is-organised-in-its-own-files" title="Permanent link">&para;</a></h4>
+<p>Help content never goes into <code>ad_seed.db</code> and never into legacy iDempiere: it lives in the ERP twin as
+separate files, one per language, fetched only when that language is chosen. Each concern has one file.</p>
+<table>
+<thead>
+<tr>
+<th>File (bim-ootb)</th>
+<th>What it holds or does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>erp/field_help.js</code></td>
+<td>The ONE tooltip setter and the Tool Tip panel (a port of legacy <code>WEditor</code> / <code>HelpController</code>). Every field-render path calls it.</td>
+</tr>
+<tr>
+<td><code>erp/help_search.js</code></td>
+<td>The question box: a question becomes an answer card. <code>indexFrom()</code> builds the index from the dictionary and a help pack; the page, the witnesses and <code>erp.ask</code> all call it. No page code, so it runs in Node.</td>
+</tr>
+<tr>
+<td><code>erp/i18n/help/&lt;lang&gt;/help.json</code></td>
+<td>The help pack of one language. <code>en_US</code>: the how-to rows and the document actions. Other languages: field Description/Help (each text stored once, fields point at it), the names of windows, tables, actions and statuses, and translated how-to rows where they exist. Loaded by <code>ErpI18n.loadHelp(lang)</code>, cached by the service worker.</td>
+</tr>
+<tr>
+<td><code>erp/tools/build_help_pack.js</code></td>
+<td>Builds every pack: the published language packs (the same pinned sources as <code>build_i18n.py</code>, legacy's <code>SynchronizeTerminology</code> rule), <code>ad_seed.db</code>, <code>common/door/verbs.json</code>, and the trade-cycle sections of this guide.</td>
+</tr>
+<tr>
+<td><code>erp/tools/help_howto_&lt;lang&gt;.json</code></td>
+<td>A translated how-to source (today <code>zh_CN</code>), marked as the build's translation, its English sentences kept beside it.</td>
+</tr>
+<tr>
+<td><code>erp/i18n/chrome.json</code> (<code>help.*</code> keys)</td>
+<td>The answer card's labels: the dictionary's own names where one exists (Window, Document Action), otherwise marked machine entries.</td>
+</tr>
+<tr>
+<td><code>common/door/lang_rule.js</code></td>
+<td>The command line's language order (preference, <code>LANG</code>, system), written once.</td>
+</tr>
+<tr>
+<td><code>common/door/erp_cli.js</code> (<code>ask</code>) and <code>common/door/vocab/hand.json</code> (<code>erp.ask</code>)</td>
+<td>The command-line verb; <code>verbs.json</code> is composed from <code>hand.json</code> by <code>scripts/compose_door_verbs.js</code>.</td>
+</tr>
+<tr>
+<td><code>erp/tests/fixtures/help_questions.json</code></td>
+<td>The question sets (English, Chinese) that the page and the command-line witnesses both read.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>To add a language:</strong> add its pinned source to <code>SOURCES</code> in <code>build_help_pack.js</code>, run
+<code>node erp/tools/build_help_pack.js</code> and read its <code>§HELP_PACK</code> lines, then run
+<code>node erp/tests/witness_help_showcase.js</code> (S1 checks every text against the published pack).
+<strong>To add how-to steps:</strong> write the section in this guide, add its window and heading to <code>HOWTO</code> in the
+builder; for a translation, add a row to <code>help_howto_&lt;lang&gt;.json</code>. Spec and results:
+<code>prompts/VOCAB_MESSAGE_CATALOG.md</code> §7 and §10–§13.</p>
 <hr />
 <h2 id="6-the-process-button">6. The Process Button<a class="headerlink" href="#6-the-process-button" title="Permanent link">&para;</a></h2>
 <p>When a menu leaf or a form has a <strong>▶ Process</strong> button (type P/R in the menu), tapping it:</p>
