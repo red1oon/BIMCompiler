@@ -304,6 +304,17 @@ which no longer exists, and FAIL on unedited `main` (left to the ERP lane, not f
   average of 22 it timed out at `page.goto` (load, not code): run it alone.
 - `witness_core_clock_reads`: `ran=19` → `ran=21`, `rule_fold.js` and `processes/PackIn.js` `clockReads=0`; `witness_env_views` § lines identical.
 
+**A2-TIMING-1 SPEC (2026-11-16, decision A-4; bim-ootb tracker issue with the PR).** The first two timing reads of RESUME 2's list, the ERP pair: `erp/ad_callout.js` `sessionContext` (`var t0 = Date.now()` for the `§LOGINCTX build … ms=` line; the list said `:995`, it is now `:1023`) and `erp/model_pa.js` `storeDue` (`:23` t0, `:27` the `§GOAL_STORE … ms=` line). Both times only a `§` line, and A-4 says that still goes through the edge.
+- **Measured:** the edge is installed only by `erp/idempiere.html:686` (`Env.setEdge({nowMs, uuid, perfMs: performance.now})`). `sessionContext` also runs in **Node with no edge** (`common/door/erp_cli.js:490/566`, `erp/ad_process.js:1096`). No code parses either `ms=` value (`git grep` of `LOGINCTX…ms` / `GOAL_STORE…ms=` outside the two files finds 0).
+- **Build:** `Env.perfMs()` returns the installed edge's `perfMs()`, or `null` when there is no edge or it has no `perfMs`. `Env.elapsed(t0)` returns that minus `t0`, or `null`. Neither throws, because timing is not a date: A-3's throw is for a missing DATE, while a missing timer just means the line cannot say how long it took. The two sites print `ms=<rounded>` from `Env.elapsed`, or **`ms=?`** with no edge (never a wall clock). `model_pa.js` reads `root.AdCallout.Env` at call time (the page loads it before `ad_callout.js`). `model_pa.js` then has no clock read left and joins `witness_core_clock_reads.js`'s MIGRATED list (16 files). `ad_callout.js` does not, since it still has `getDay(null)` and the `Env.now` fallback, both outside this item.
+- **Consequence for the CLI door (the CLI lane's file, so told, not edited):** in Node, `§LOGINCTX` prints `ms=?` until the door installs an edge once (`A.Env.setEdge({ nowMs: Date.now, uuid: crypto.randomUUID, perfMs: performance.now })`, the A-5 pattern).
+- **Witness W-CORE-TIMING** (`erp/tests/witness_core_timing.js`, node, no browser):
+  - T1: with no edge, `Env.perfMs()` and `Env.elapsed(5)` are `null` and the call does not throw.
+  - T2: with a fake edge whose `perfMs` returns 1000 and then 1042, `sessionContext` prints `§LOGINCTX build … ms=42`.
+  - T3: `model_pa.js`, run in a `vm` sandbox with stub `ModelLayer`/`GoalEngine`/`__crud` and the same fake edge, prints `§GOAL_STORE … ms=42`; with no edge it prints `ms=?`.
+  - **Red control:** the OLD `model_pa.js` / `ad_callout.js` under the same fake edge do NOT print `ms=42` (their wall-clock reading is unrelated to the fake). Run against `main`'s files, it must FAIL.
+  - Before/after: `witness_core_clock_reads` (15 → 16 files, `clockReads=0`) and `witness_rule_fold_edge` stay PASS. **The browser witnesses are not run:** W-GOAL-STORE needs the 8098 legacy instance (down) and W-DASH-SYNC writes into the 8088 pilot another lane is using. This item changes only which clock times a log line, and T2/T3 prove that exactly.
+
 ---
 
 ## PART B — One manifest per app   (fixes P2, declares half of P1)
