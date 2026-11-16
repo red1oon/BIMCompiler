@@ -955,6 +955,52 @@ The written spec follows the agreement made in chat and comes before the merge; 
 - **Owner items (guide content, not this lane's code):** the 8 tools above have no guide section. Adding sections to `docs/BIMUserGuide.md` would raise the count; `build_howto.js` picks them up on its next run (W-HOWTO H1 fails until it is re-run, by design).
 - **Next:** the dock (right panel on desktop, sheet on mobile) + the move of `field_help.js` / `help_search.js` to `common/help/` (§14 design), or the Modeller's two overlays.
 
+## 14.4 SPEC: the help panel's place, look and drag (owner 2026-11-17)
+**Owner, verbatim:**
+- *"Discuss how best to position that extra help panel?"* → *"Agree to all."* (left side, stays open, phone = full sheet);
+- *"May i add for aesthetic feel, that a different colored translucent feel when it is used? But only if u agree it is attractive to users"* → amber, measured contrast: *"Agreed."*;
+- *"If it is draggable, the user can move it to proper contrasting spot to read output clearly."*
+
+This REPLACES the §14 design's "right dock".
+
+**Measured layout (bim-ootb origin/main):**
+- The Viewer's right edge is the tool rail. The column beside it holds Find (`top:54px; right:70px`), Issues (`top:60px; right:70px; width:340px`) and `#info-panel` (`bottom:50px; right:70px`).
+- The left holds only `#hud` (`top:16px; left:16px`).
+- The Modeller's right is fuller still (pp-panel, its two help overlays, history).
+- Phone (`max-width:600px`): Find takes the top half; info is a 180 px box bottom-right.
+
+**Decisions:**
+1. **Place:**
+   - Desktop: a column on the LEFT, below `#hud`, about 320 px wide, with a close button.
+   - It never covers Find / Issues / info, so help and the selected element are read side by side.
+   - Phone: a full-screen sheet with a close button, not draggable.
+   - The Modeller uses the same side, and its two right-side overlays move into it (later step).
+2. **Behaviour:** the `?` / F1 popup BECOMES this panel: same search box, same entries with How To (§14.3), same `renderList`.
+   - F1 / `?` toggle it.
+   - It STAYS OPEN while the user works: a click in the 3D view does not close it. Esc or × closes it.
+3. **Look:**
+   - The same frosted glass as the other panels, tinted warm AMBER (the data panels are cool blue), so help reads as guidance, not model data.
+   - Amber headings/links, white text.
+   - Less see-through than `#info-panel` (0.50), because it holds paragraphs.
+4. **Drag:** by its header, through the Viewer's ONE drag helper `A._makeDraggable` (`viewer/measure.js`; also used by Issues, Clash Matrix, CPE, grid, HBA). The helper today neither remembers a position nor keeps a panel on screen. It gains two OPT-IN switches beside its existing `el._dragStrip`:
+   - `el._dragRemember = '<key>'`: save left/top on drop (browser storage, a per-viewer convenience; read in try/catch);
+   - `el._dragClamp = true`: keep the whole header inside the window on drop and on resize.
+   - Panels that do not set them behave exactly as today.
+
+**Witness W-HELP-DOCK (`viewer/tests/witness_help_dock.js`):**
+1. **D1 place:** on a 1600×900 page, F1 opens `#help-dock`. Its box is left of the centre and does not overlap `#find-panel`, `#issues-panel` or `#info-panel` (each shown first). A click on the 3D canvas leaves it open; Esc closes it.
+2. **D2 contrast** (the readability standard, WCAG 2.x contrast ratio ≥ 4.5:1 for body text):
+   - the panel's text colour against its effective background, composited from its rgba over the page's dark AND light background colours (the Background toggle's two values, read from the page), both ≥ 4.5;
+   - falsifier: the same maths on a 0.10-alpha copy must FAIL on the light background.
+3. **D3 drag:**
+   - a pointer drag on the header by (+200, +120) px moves the panel by that amount ±1 px;
+   - the position is saved; after a reload + F1 it opens there;
+   - a drag far off-screen ends with the header fully inside the window;
+   - a panel WITHOUT the switches (Issues) is not saved (no key written).
+4. **D4 content:** the How To entries are the same as the §14.3 palette (W-HOWTO H4 assertions re-run against `#help-dock`).
+5. **D5 phone** (390×844, mobile flag): the panel fills the width and height, and does not move when dragged.
+6. **Regression:** W-HOWTO, W-CLASS-HELP and W-VIEWER-I18N (no new leaks) stay as they are.
+
 ## 15. NOT URGENT, to think about (owner 2026-11-16: *"You mean we can mis.<translated verb>? Note in prompt then we shall think about it not urgent."*)
 Two terminal ideas. Neither is built and nothing is decided.
 1. **Field help at the terminal.** The browser's per-field tooltip / Tool Tip panel has no terminal equivalent: today only `mis.describe` (a kind's fields) and `help <word>` exist.
