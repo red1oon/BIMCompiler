@@ -14,7 +14,8 @@ Background, measurements and prior art are in `prompts/DOCS_I18N.md` §4b-§4d (
 |---|---|---|---|
 | P0 | Inventory and measurement (CLI strings ~235 in 10 files; Help duplication; derived-tip candidates) | docs only | DONE 2026-11-16, DOCS_I18N §4b-§4c |
 | **P1** | **Help read layer** over the dictionary: resolve Help/Description by level through element → column → field, derive a tip where none is written | new files in bim-ootb `erp/` only | BUILT 2026-11-16, W-HELP-CATALOG 5/0 (bim-ootb `feat/help-catalog`), see P1 RESULT |
-| P2 | `Msg` pass-through for CLI strings (no behavior change), then file by file; stable key per message; `explain <key>` | `common/door/*` | **P2a BUILT 2026-11-16** (`words_core.js`, W-MSG-CATALOG 4/0, §3); **P2b BUILT 2026-11-16** (`door.js`, W-MSG-DOOR 5/0, §6; merge waits on the guides' six-file download) |
+| P1b | Field tooltips + the Help panel in twin windows = legacy (`WEditor`, `HelpController`, `AD_Field_v`); one setter, one panel | `erp/help_catalog.js`, the field-render paths | SPEC 2026-11-16 (§7) |
+| P2 | `Msg` pass-through for CLI strings (no behavior change), then file by file; stable key per message; `explain <key>` | `common/door/*` | **P2a BUILT 2026-11-16** (`words_core.js`, W-MSG-CATALOG 4/0, §3); **P2b DONE 2026-11-16** (`door.js`, W-MSG-DOOR 5/0, §6; MERGED bim-ootb #3108 `f18ae08c` after the guides listed six files, bim-compiler #798, deployed) |
 | P3 | Student level for `help <word>` from the vocabulary (P3a); hint lines on the most-hit refusals (person's terminal, level set) (P3b) | `words_core.js`, `red1.js`, door render | **P3a BUILT 2026-11-16** (W-HELP-STUDENT 5/0, §4 RESULT; no `words.json` edit was needed); P3b after P2b |
 | P4 | Guides pull terms from the same keys at build time | `docs/`, MkDocs | after P2 |
 | P5 | Translations (six languages, `DOCS_I18N.md`), reviewer banner | catalog + docs | after P4 |
@@ -232,6 +233,43 @@ clash: <the short help, unchanged>
 - **Open (⛔ owner):** the guides' "four files" become six (FastScriptGuide ×7 languages, ProposerGuide). Hold the bim-ootb merge until the guides list the six, or merge first. Both files are already live (200), so updating the guides first is harmless.
 **Next:** `match(text)` (envelope `why` → key) and P3b hint lines.
 
+## 7. P1b spec: field tooltips and the Help panel in the twin windows, the same as legacy (owner 2026-11-16: *"Your focus is more on the bad HELP tool tip construct to improve further"*)
+**Issue it removes (measured on bim-ootb `origin/main`, read against the local iDempiere source):** the twin's field help is a developer construct, not legacy's. That breaks the TWIN rule (look and feel included).
+1. **Read-only form:** each value's tooltip is `ColumnName · referenceType` (`erp/idempiere.html:5323`).
+   - Legacy shows the field's **Description** on both the label and the editor (`WEditor.java:247`, `:333`, `:339-340`).
+2. **Inline editor:** the editing surface (`erp/crud_overlay.js` `renderInline` `:1553`) sets **no** tooltip at all.
+3. **Process parameters:** the tooltip is `ColumnName · type · mandatory` (`erp/idempiere.html:4829`).
+   - Legacy builds each parameter with the same `WEditor` (`ProcessParameterPanel.java:443`), so it also shows its Description.
+4. **No Help panel.** Legacy fills its Help panel when a field gets focus, in the form (`ADTabpanel.java:840`) and in the grid (`GridTabRowRenderer.java:637-641`).
+   - It shows the header, the Description and the Help, each line only when not blank (`HelpController.renderToolTip`, `HelpController.java:186-230`).
+   - The entity type is shown only when "show technical info on help" is on.
+   - With no field focused it shows the message `PlaceCursorIntoField`.
+5. **The P1 resolver does not answer legacy's rule.** P1 falls back field → column → element.
+   - Legacy reads the FIELD's own text only: `AD_Field_v` selects `f.description, f.help` (`migration/i8.2/postgresql/202106031340_IDEMPIERE-4479.sql:84-85`).
+   - In another language it reads `AD_Field_Trl` (`:166-167`).
+   - So the 94 displayed fields P1 found with no Help of their own (§2 RESULT) show nothing in legacy, and P1 would show the column's text.
+- **Already the same as legacy, keep:** the grid's row indicator says `Edit Record` (`idempiere.html:3185` = `GridTabRowRenderer.java:608`). A grid cell's tooltip is its full text only when it is cut short (`GridTabRowRenderer.setLabelText` `:431-441`); this is to be checked, not assumed.
+**Fix (AD-LAYER LAW: one generic implementation, no per-window code):**
+- `erp/help_catalog.js` gains the level `legacy` for a field. It returns `{header, description, help}` exactly as `AD_Field_v` gives them: the field's own columns, no fallback.
+  - When the UI language is not the base language, they come from `AD_Field_Trl`. When the seed has no `_Trl` rows (measured: it has none), it falls back to the base text, as legacy does.
+  - `short` and `student` (the inheritance and the derived tips) stay for the CLI and the guides only.
+- **One tooltip setter** used by every field-render path: the read-only form, the inline editor, process parameters, and the grid editors on focus.
+  - It sets `title` = the Description, or no `title` when the Description is blank.
+  - The two developer strings are DELETED (deletion budget).
+- **One Help panel** (a port of `HelpController`), filled when a field gets focus. Same rules: header, description, help, each only when not blank; entity type only with "show technical info"; `PlaceCursorIntoField` when nothing is focused.
+- The developer's view of `ColumnName · referenceType` moves to the § log line (`§FIELD_HELP`), never to the person's tooltip.
+- **Not in P1b:** rewriting any Help text, or showing derived tips or a Student level in a twin window. A twin window shows exactly legacy's text. Better text reaches people through the CLI (`help <word>`, level student) and the guides, never by changing an AD row.
+**Claims, witness W-FIELD-HELP (bim-ootb `erp/tests/witness_field_help.js`; X of N, with N from `ad_seed.db`; falsifier `FH_BREAK=`):**
+- **F1 the tooltip is the Description.** For every displayed field of every window the role can open, the label's and the editor's tooltip equals `AD_Field.Description`, and there is none when it is blank.
+  - Rendered headless through the real form and inline-editor paths. X of N fields; N = the displayed fields counted from the dictionary.
+  - VACUOUS if no field is rendered.
+- **F2 no developer tooltip left.** 0 rendered tooltips have the form `<ColumnName> · …`, across form, inline editor, process parameters and grid. Falsifier `devtitle` (the old string restored) FAILS F1 and F2.
+- **F3 the Help panel answers like `HelpController`.** On focus of each rendered field the panel shows header / description / help with the blank-line rules, and `PlaceCursorIntoField` with no focus. Falsifier `nohelp` FAILS F3.
+- **F4 the legacy oracle.** For every displayed field, the twin resolver's `{description, help}` equals the real iDempiere `AD_Field_v` row, read from the local legacy postgres. X of N.
+  - INCONCLUSIVE when legacy is not running, never PASS.
+  - Falsifier `fallback` (field → column inheritance in the window) FAILS F4, naming the count (about 94 Help fields).
+- **F5 process parameters.** Every parameter of every process the role can run has the tooltip `AD_Process_Para.Description` (X of N).
+
 ## STATUS
 2026-11-16: P1 built and witnessed (5/0), merged as bim-ootb #3079. P2a built and witnessed (W-MSG-CATALOG 4/0), merged as bim-ootb #3082. P3a built and witnessed (W-HELP-STUDENT 5/0), merged as bim-ootb #3083. P3a-1 (help footer + opening tip, `red1 --fast`), bim-ootb #3084. Depends on `prompts/DOCS_I18N.md`, `prompts/CLI_ERP_IVR.md` (CLI session owns), `prompts/ERP_UI_LOCALES.md`.
 
@@ -241,3 +279,4 @@ header COMMENT and reported a use of the key `key`. That gave a false unknown-ke
 first with the repo's one tokenizer, `scripts/lib/js_scan.js` (`scan(src).code`, same length and lines), and only then calls `scan`. **No
 effect on W-MSG-CATALOG M3 today:** it scans only `words_core.js` and `red1.js`, which have no such comments. If M3's file list widens,
 the same `js_scan` step keeps it from counting prose. Left for this lane to decide; nothing in `common/door` was changed.
+2026-11-16 (P2b closed): bim-ootb #3108 merged (`f18ae08c`). The guides list the six-file download in 7 languages + ProposerGuide (#798, deployed, all 8 pages checked live). W-MSG-DOOR baseline moved to the `main` it merged (`304a30a0`); D4 treats `say()` as the § log. Merges with the CLI session's work were unions of `messages.json` only. W-RED1-WORDS R1 / W-HELP-STUDENT S4 on `status@erp` fail on clean main since #3117 (reported to the CLI session). Locale (login language from `AD_Preference`, then LANG, then the System client) handed to the CLI session (`CLI_ERP_IVR.md`). Next: P1b (§7).
