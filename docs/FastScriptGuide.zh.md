@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: aba1131ca2a01781
+source_sha: 7065b49039438599
 lang: zh-CN
 ---
 
@@ -22,7 +22,7 @@ lang: zh-CN
 $ (sleep 4; printf 'exit\r') | RED1_LOG=/tmp/fast_guide_greet.log RED1_HISTORY=/tmp/fast_guide_greet.hist BIM_DOOR_JOURNAL=/tmp/fast_guide_greet.journal script -qec 'node common/door/red1.js' /dev/null | tr -d '\r' | sed -e 's/\x1b\[[0-9;?]*[a-zA-Z]//g' -e 's/ · [0-9a-f]\{8\}$//'
 Welcome to red1, the scripting door into BIM and ERP, stored in SQLite.
 REMEMBER THE NAME.
-Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 74 verbs · 29 words
+Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 75 verbs · 30 words
 Type help for the list of commands (or bim, mis, erp for one group).
 Tip: type level student for fuller help on each word (red1 --fast opens without tips).
 
@@ -43,7 +43,7 @@ $ node common/door/red1.js help 2>/dev/null
 red1: type a short word; red1 prints the full line it runs (→ …), then runs it.
   bim   buildings and models             start with: cd Duplex   (16 words)
   mis   records, tables, files, Ninja    start with: cd Order   (11 words)
-  erp   document actions (CO VO CL RC)   start with: cd Order   (7 words)
+  erp   document actions (CO VO CL RC)   start with: cd Order   (8 words)
   everywhere: cd <place> · pwd · role <id> · login <user> · history · report · exit
 Type bim, mis or erp for its words · help <word> for one word (level student first for the full explanation) · help verbs for the full door lines.
 ```
@@ -63,6 +63,7 @@ erp: document actions (CO VO CL RC) (start with: cd Order)
   do CO 50000                                         a document action
   run "Set Project Type" 990000 C_ProjectType_ID=103  run a process of the dictionary
   next 50000                                          what a document may do next
+  ask "How do I close a Sales Order?"                 ask the help a question, in your language
 ```
 
 `help` 不打印门动词，只打印这些词。`help verbs` 列出每个门动词及其完整一行。若要了解某个词的更完整说明，切换到 Student 级别：在会话中输入 `level student`，或在一行里用 `--level student`，然后 `help <word>` 会说明该词做什么、您输入什么、red1 从您所在位置取什么，并给出一个示例。文字取自该动词自己的描述，所以不会与末尾的表产生偏差：
@@ -77,6 +78,27 @@ cost: the cost of a selection: cost [phase|task|storey|discipline|class] [column
     taken from where you are: building
     e.g. in Duplex: viewer.cost building=Duplex by=discipline
 ```
+
+**用您自己的语言获得帮助。** `ask "<question>"` 用普通的话向与浏览器 ERP 问题框相同的帮助提问，在 ERP 类型中（`cd Order`）可用。答复会给出窗口、单据动作及其允许的状态、执行它的命令行，以及指南的章节。它读自词典和已发布的 iDempiere 语言包；里面没有 AI，而且只读不写。语言是您用 `lang=zh_CN` 选择的，否则是您登录时（`login`）保存的偏好，否则是终端的 `LANG`，否则是系统的语言。语言包没有覆盖的文字保持英文，与 legacy 相同（下面动作的说明）。这里终端是中文：
+
+<!-- run: red1_ask_zh -->
+```text
+$ printf 'cd Order\nask "如何关闭销售订单？"\n' | LANG=zh_CN.UTF-8 node common/door/red1.js 2>/dev/null | sed 's/ · [0-9]* ms//'
+→ mis.describe kind=Order
+Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
+→ erp.ask question=如何关闭销售订单？
+ok · erp.ask
+窗口: 销售订单
+文档动作: 结束 — Finally close this transaction. It cannot be re-activated.
+  单据处于以下状态时可用: 完成, 等候付款
+CLI: erp.close kind=Order number=<Document No>
+指南: 1 · 销售订单 https://red1oon.github.io/BIMCompiler/ERPUserGuide/#1-sales-order
+
+从菜单（⌂ → 销售）打开销售订单，建一两行，然后按处理按钮（§6）→ 完成。完成不只是改变状态：completeIt 会在同一个已签名的操作组里，接着生成后面的出货单和发票。
+(由构建会话翻译，未经母语者审校)
+```
+
+浏览器 ERP 在每个字段上都有同样的帮助、How To 步骤和问题框，使用您在页头选择的语言：见 ERP 用户指南中的 [Help on every field, and a question box](ERPUserGuide.md#help-on-every-field-and-a-question-box-live)。
 
 现在看一个词。`cd` 记住您在哪里，所以无需重复。在 `cd Duplex` 和 `cd Element` 之后，`count` 只需要那一个新的内容。`→` 行是 red1 发给门的内容；这一行就是该词的长格式：
 
@@ -106,7 +128,7 @@ node common/door/red1.js
 <!-- run: red1_version -->
 ```text
 $ node common/door/red1.js --version | sed -e 's/^Copyright[^·]*· //' -e 's/ · [0-9a-f]\{8\}$//'
-red1 1.0.0 · 74 verbs · 29 words
+red1 1.0.0 · 75 verbs · 30 words
 ```
 
 **六文件下载**用于只要门和 Modeller 动词、不需要检出的情况。新建一个空文件夹，安装 Modeller 所需的浏览器引擎，然后获取这六个文件：
@@ -296,12 +318,6 @@ Project: 48 properties; ls shows C_Project_ID, Value, Name, Processed, SalesRep_
 run: Renumber has no parameter to ask (none in the dictionary)
 → erp.process name=Renumber kind=Project
 refused · erp.process · Renumber was not run: it has no JS port yet (class org.compiere.process.DiscountSchemaReSeq)
-{
- "refused": true,
- "reason": "Renumber was not run: it has no JS port yet (class org.compiere.process.DiscountSchemaReSeq)",
- "gap": true,
- "gapKind": "no-port"
-}
 This is a gap in red1, not your mistake. Type report to send it to us (email or GitHub issue).
 ```
 
@@ -439,6 +455,7 @@ object.count building=Duplex kind=Element -> 1193 Element
 | `erp.process` | 运行字典中的一个流程 | `name`，`record`（可选）, `kind`（可选）, `dry`（可选）, `role`（可选）, 更多 `column=value` 筛选条件（可选） | writes | human, ai | 一份 bim-ootb 检出 |
 | `erp.order_state` | ERP 为某栋建筑的选择所持有的内容，以及接下来允许什么 | `building`，更多 `column=value` 筛选条件（可选） | read | human, ai | 一份 bim-ootb 检出 |
 | `erp.project_status` | 项目的挣值状态 | `id`（可选）, `number`（可选）, `asof`（可选） | read | human, ai | 一份 bim-ootb 检出 |
+| `erp.ask` | 向帮助提一个问题 | `question`，`lang`（可选）, `role`（可选） | read | human, ai | 一份 bim-ootb 检出 |
 | `mis.lookup` | 某一列或某个流程参数的合法取值 | `column`，`kind`（可选）, `process`（可选）, `id`（可选）, `limit`（可选）, `role`（可选）, 更多 `column=value` 筛选条件（可选） | read | human, ai | 一份 bim-ootb 检出 |
 | `viewer.cost` | 建筑中所选部分的成本 | `building`，`by`（可选）, 更多 `column=value` 筛选条件（可选） | read | human, ai | 一份 bim-ootb 检出 |
 | `erp.find` | 查找一份单据 | `kind`，`number` | read | human, ai | 一份 bim-ootb 检出 |
@@ -475,7 +492,7 @@ object.count building=Duplex kind=Element -> 1193 Element
 | `erp.new` | 创建一条记录（mis.new 的旧名） | `kind`，`dry`（可选）, `role`（可选）, `window`（可选）, 更多 `column=value` 筛选条件（可选） | writes | human, ai | 一份 bim-ootb 检出 |
 <!-- /GEN:verbs -->
 
-**目前的覆盖范围。** 这份列表有意保持很小：64 个动词覆盖 Modeller 的轴网编辑、它的 walker 以及在各行之间保持打开的 Modeller、少量 Viewer 问题、进度、通用的对象读取、计数和写入、一次选择的成本、ERP 单据动词，以及 ERP 字典中任何已移植的流程。Viewer 有 64 个人可以按下的操作，门提供 6 个 Viewer 动词。ERP 有 1158 个单据和流程，门为单据的生命周期提供 9 个 ERP 动词，为任意表提供 15 个 MIS 动词，并保留 10 个旧名称，使以前的行仍能运行。所以这只是一个开始，不是完整的菜单。
+**目前的覆盖范围。** 这份列表有意保持很小：65 个动词覆盖 Modeller 的轴网编辑、它的 walker 以及在各行之间保持打开的 Modeller、少量 Viewer 问题、进度、通用的对象读取、计数和写入、一次选择的成本、ERP 单据动词，以及 ERP 字典中任何已移植的流程。Viewer 有 64 个人可以按下的操作，门提供 6 个 Viewer 动词。ERP 有 1158 个单据和流程，门为单据的生命周期提供 10 个 ERP 动词，为任意表提供 15 个 MIS 动词，并保留 10 个旧名称，使以前的行仍能运行。所以这只是一个开始，不是完整的菜单。
 
 
 ## 本页为何保持真实
