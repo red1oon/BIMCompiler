@@ -1080,7 +1080,7 @@ Two terminal ideas. Neither is built and nothing is decided.
 | **MiniSearch / Lunr / Pagefind** (client search libraries / static indexes) | Ready-made search | **REJECT:** each is a new library in the browser. (The MkDocs guides keep their own built-in search; that is not this box.) |
 
 **Proposed order (for the owner; nothing is built):**
-1. Did-you-mean over the dictionary, ERP box + BIM panel. Agree the CLI hand-off with the CLI session.
+1. Did-you-mean over the dictionary, ERP box + BIM panel. **ON HOLD (CLI session, 2026-11-17):** the shell already has its own typo policy (`CLI_ERP_IVR.md` §25 D14, `words_core.js`). Two indexes for one job would break AD-LAYER LAW 5, so it must be ONE suggester over ONE name index, used by both the shell and help. This lane's design (built at build time, suggest only, never auto-run) matches the shell's rule and may become the shared one. The CLI session puts the choice to the owner and messages the answer. Build neither until then.
 2. The index also covers descriptions and the 6-language names (cross-language find).
 3. `Intl.Segmenter` terms at build time + character-pair fallback.
 4. One exact BM25 with field weights.
