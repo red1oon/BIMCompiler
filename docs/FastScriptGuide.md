@@ -23,7 +23,7 @@ Tip: type level student for fuller help on each word (red1 --fast opens without 
 red1> exit
 ```
 
-Read it as a map. The version line says how many door verbs (the long form) and short words red1 has. `help` shows the short words in three groups; type `bim`, `mis` or `erp` alone to see one group:
+Read it as a map. The version line says how many door verbs (the long form) and short words red1 has. `help` shows the short words in three groups; `help bim`, `help mis` or `help erp` (or the group's name alone) shows one group:
 
 | Group | What it is for | Start with |
 |---|---|---|
@@ -40,6 +40,23 @@ red1: type a short word; red1 prints the full line it runs (→ …), then runs 
   erp   document actions (CO VO CL RC)   start with: cd Order   (7 words)
   everywhere: cd <place> · pwd · role <id> · history · report · exit
 Type bim, mis or erp for its words · help <word> for one word (level student first for the full explanation) · help verbs for the full door lines.
+```
+
+One group lists its words, each with an example you can type. `erp` is the shortest:
+
+<!-- run: red1_help_erp -->
+```text
+$ node common/door/red1.js 'help erp' 2>/dev/null
+erp: document actions (CO VO CL RC) (start with: cd Order)
+ in a building:
+  post discipline=ARC  post the building's priced selection to its ERP Project Order
+  vo discipline=ARC    issue the change between the model and the Project Order as a Variation Order
+ in an ERP kind:
+  status                                              a Project's earned value (PV, EV, AC, SPI, CPI per phase)
+  claim                                               bill the project's completed phases not yet billed
+  do CO 50000                                         a document action
+  run "Set Project Type" 990000 C_ProjectType_ID=103  run a process of the dictionary
+  next 50000                                          what a document may do next
 ```
 
 `help` prints no door verbs, only the words. `help verbs` lists every door verb with its full line. For fuller help on one word, switch to the Student level: `level student` in a session, or `--level student` on one line, then `help <word>` tells you what the word does, what you type, what red1 takes from where you are, and an example. The text is the verb's own description, so it cannot drift from the table at the end:
@@ -212,17 +229,17 @@ C_BPartner_ID  Value  Name               Logo_ID  C_BP_Group_ID
 
 ### erp: documents and processes
 
-**Make a document and complete it.** `new` in `Order` makes a draft order and prints its number. A full door line works at the prompt too, so the order's line is added with `erp.new` (a product and a quantity). `next <number>` draws what the document may do now, and points each action that has a word at the line that runs it. `do CO <number>` completes it; the legacy DocAction codes are `CO` complete, `VO` void, `CL` close, `RC` reverse (`do complete`, `do void` … work too). Look at the number `new` prints, at the status in each `next` tree, and at the actions that moved on after `CO`. (The `grep` keeps only those lines; the full answers also list every column filled.)
+**Make a document and complete it.** `new` in `Order` makes a draft order and prints its number. A full door line works at the prompt too, so the order's line is added with `mis.new` (a product and a quantity). `next <number>` draws what the document may do now, and points each action that has a word at the line that runs it. `do CO <number>` completes it; the legacy DocAction codes are `CO` complete, `VO` void, `CL` close, `RC` reverse (`do complete`, `do void` … work too). Look at the number `new` prints, at the status in each `next` tree, and at the actions that moved on after `CO`. (The `grep` keeps only those lines; the full answers also list every column filled.)
 
 <!-- run: erp_order -->
 ```text
-$ printf 'cd Order\nnew issotrx=Y C_DocTypeTarget_ID=132 C_BPartner_ID=112 SalesRep_ID=101\nerp.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2\nnext 50000\ndo CO 50000\nnext 50000\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide_erp.ops node common/door/red1.js 2>/dev/null | sed 's/ · [0-9]* ms//' | grep -E '^(→|ok|refused|number|Order [0-9]|[├└])'
+$ printf 'cd Order\nnew issotrx=Y C_DocTypeTarget_ID=132 C_BPartner_ID=112 SalesRep_ID=101\nmis.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2\nnext 50000\ndo CO 50000\nnext 50000\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide_erp.ops node common/door/red1.js 2>/dev/null | sed 's/ · [0-9]* ms//' | grep -E '^(→|ok|refused|number|Order [0-9]|[├└])'
 → mis.describe kind=Order
 → mis.new kind=Order issotrx=Y C_DocTypeTarget_ID=132 C_BPartner_ID=112 SalesRep_ID=101
 ok · mis.new
 number: 50000
-→ erp.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2
-ok · erp.new
+→ mis.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2
+ok · mis.new
 number: 
 → erp.actions kind=Order number=50000
 ok · erp.actions
@@ -328,6 +345,24 @@ The words above are the ones to learn first. The rest, each a short form of a do
 | `grid` · `walk FP` · `day 5` · `compare 24` | the building's grid lines; walk a discipline; the schedule on a day; two days compared |
 | `open marked` · `bay high` · `undo` · `save shed.db` · `close` | the Modeller kept open between lines |
 | `help <word>` · `help verbs` · `level student` · `report` · `exit` | help; every door verb; fuller help; a gap to the owner; leave |
+
+## What is not checked
+
+A reply lists what its check did not cover. The same words apply to any answer: overlaps are bounding boxes first, a check covers only what moved, and **load capacity is never checked**. A reply with no red never means safe. The full list for the Modeller's edit report is in [the reference](FastScriptReference.md#what-is-not-checked).
+
+## Troubleshooting
+
+| What you see | What to do |
+|---|---|
+| `edit_cli is not at …` | One of the six files is missing. The message prints the `curl` line |
+| `puppeteer not found` | Run `npm install puppeteer@24` in the same folder |
+| `unknown verb` | The message lists every verb. Check the spelling against the [table](#the-verbs) |
+| `missing input: …` | The verb needs that key. The table lists the inputs |
+| `The Viewer tools need a bim-ootb checkout` | Run it as `node common/door/door.js` from a full checkout |
+| `exit 1` with a Chrome message | Chrome's system libraries are missing on Linux. Puppeteer's troubleshooting page lists them |
+
+**Limits to plan for.** Each Modeller call opens the whole building: about 10 to 40 seconds on the HospitalGarage. This is a measuring tool, not a service with uptime. A script with several Modeller lines opens the building once per line.
+
 
 ## For developers
 
@@ -435,24 +470,6 @@ This table is **generated from the vocabulary file** (`common/door/verbs.json`) 
 <!-- /GEN:verbs -->
 
 **Coverage today.** The list is small on purpose: 64 verbs cover the Modeller's grid edits, its walker and a Modeller kept open between lines, a few Viewer questions, the schedule, generic object reading, counting and writing, the cost of a selection, the ERP document verbs, and any process of the ERP dictionary that has a port. The Viewer has 64 actions a person can press, and the door offers 6 Viewer verbs. The ERP has 1158 documents and processes, and the door offers 9 ERP verbs for a document's life and 15 MIS verbs that work on any table, and keeps 10 old names so earlier lines still run. So this is a start, not the whole menu.
-
-
-## What is not checked
-
-A reply lists what its check did not cover. The same words apply to any answer: overlaps are bounding boxes first, a check covers only what moved, and **load capacity is never checked**. A reply with no red never means safe. The full list for the Modeller's edit report is in [the reference](FastScriptReference.md#what-is-not-checked).
-
-## Troubleshooting
-
-| What you see | What to do |
-|---|---|
-| `edit_cli is not at …` | One of the six files is missing. The message prints the `curl` line |
-| `puppeteer not found` | Run `npm install puppeteer@24` in the same folder |
-| `unknown verb` | The message lists every verb. Check the spelling against the [table](#the-verbs) |
-| `missing input: …` | The verb needs that key. The table lists the inputs |
-| `The Viewer tools need a bim-ootb checkout` | Run it as `node common/door/door.js` from a full checkout |
-| `exit 1` with a Chrome message | Chrome's system libraries are missing on Linux. Puppeteer's troubleshooting page lists them |
-
-**Limits to plan for.** Each Modeller call opens the whole building: about 10 to 40 seconds on the HospitalGarage. This is a measuring tool, not a service with uptime. A script with several Modeller lines opens the building once per line.
 
 
 ## How this page stays true

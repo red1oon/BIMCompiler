@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 37bce684713d1698
+source_sha: 21c77ee61a2b9adf
 lang: id
 ---
 
@@ -29,7 +29,7 @@ Tip: type level student for fuller help on each word (red1 --fast opens without 
 red1> exit
 ```
 
-Bacalah sebagai peta. Baris versi menyebut berapa banyak kata kerja pintu (bentuk panjang) dan kata pendek yang dimiliki red1. `help` menampilkan kata-kata pendek dalam tiga kelompok; ketik `bim`, `mis`, atau `erp` saja untuk melihat satu kelompok:
+Bacalah sebagai peta. Baris versi menyebut berapa banyak kata kerja pintu (bentuk panjang) dan kata pendek yang dimiliki red1. `help` menampilkan kata-kata pendek dalam tiga kelompok; `help bim`, `help mis`, atau `help erp` (atau nama kelompoknya saja) menampilkan satu kelompok:
 
 | Kelompok | Untuk apa | Mulai dengan |
 |---|---|---|
@@ -46,6 +46,23 @@ red1: type a short word; red1 prints the full line it runs (→ …), then runs 
   erp   document actions (CO VO CL RC)   start with: cd Order   (7 words)
   everywhere: cd <place> · pwd · role <id> · history · report · exit
 Type bim, mis or erp for its words · help <word> for one word (level student first for the full explanation) · help verbs for the full door lines.
+```
+
+Satu kelompok mendaftar kata-katanya, masing-masing dengan contoh yang bisa Anda ketik. `erp` yang paling pendek:
+
+<!-- run: red1_help_erp -->
+```text
+$ node common/door/red1.js 'help erp' 2>/dev/null
+erp: document actions (CO VO CL RC) (start with: cd Order)
+ in a building:
+  post discipline=ARC  post the building's priced selection to its ERP Project Order
+  vo discipline=ARC    issue the change between the model and the Project Order as a Variation Order
+ in an ERP kind:
+  status                                              a Project's earned value (PV, EV, AC, SPI, CPI per phase)
+  claim                                               bill the project's completed phases not yet billed
+  do CO 50000                                         a document action
+  run "Set Project Type" 990000 C_ProjectType_ID=103  run a process of the dictionary
+  next 50000                                          what a document may do next
 ```
 
 `help` tidak mencetak kata kerja pintu, hanya kata-katanya. `help verbs` mendaftar setiap kata kerja pintu dengan baris lengkapnya. Untuk bantuan lebih lengkap tentang satu kata, pindah ke tingkat Student: `level student` dalam sesi, atau `--level student` pada satu baris, lalu `help <word>` menjelaskan apa yang dilakukan kata itu, apa yang Anda ketik, apa yang diambil red1 dari tempat Anda berada, dan sebuah contoh. Teksnya adalah deskripsi kata kerja itu sendiri, jadi tidak bisa menyimpang dari tabel di akhir:
@@ -218,17 +235,17 @@ C_BPartner_ID  Value  Name               Logo_ID  C_BP_Group_ID
 
 ### erp: dokumen dan proses
 
-**Membuat dokumen dan menyelesaikannya.** `new` di `Order` membuat pesanan draf dan mencetak nomornya. Baris pintu lengkap juga bekerja di prompt, jadi baris pesanan ditambahkan dengan `erp.new` (sebuah produk dan sebuah kuantitas). `next <number>` menggambar apa yang boleh dilakukan dokumen sekarang, dan menunjuk setiap aksi yang punya kata ke baris yang menjalankannya. `do CO <number>` menyelesaikannya; kode DocAction lama adalah `CO` selesaikan, `VO` batalkan, `CL` tutup, `RC` balik (`do complete`, `do void` … juga bisa). Perhatikan nomor yang dicetak `new`, status pada setiap pohon `next`, dan aksi yang bergeser setelah `CO`. (`grep` hanya menyimpan baris-baris itu; jawaban lengkap juga mendaftar setiap kolom yang diisi.)
+**Membuat dokumen dan menyelesaikannya.** `new` di `Order` membuat pesanan draf dan mencetak nomornya. Baris pintu lengkap juga bekerja di prompt, jadi baris pesanan ditambahkan dengan `mis.new` (sebuah produk dan sebuah kuantitas). `next <number>` menggambar apa yang boleh dilakukan dokumen sekarang, dan menunjuk setiap aksi yang punya kata ke baris yang menjalankannya. `do CO <number>` menyelesaikannya; kode DocAction lama adalah `CO` selesaikan, `VO` batalkan, `CL` tutup, `RC` balik (`do complete`, `do void` … juga bisa). Perhatikan nomor yang dicetak `new`, status pada setiap pohon `next`, dan aksi yang bergeser setelah `CO`. (`grep` hanya menyimpan baris-baris itu; jawaban lengkap juga mendaftar setiap kolom yang diisi.)
 
 <!-- run: erp_order -->
 ```text
-$ printf 'cd Order\nnew issotrx=Y C_DocTypeTarget_ID=132 C_BPartner_ID=112 SalesRep_ID=101\nerp.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2\nnext 50000\ndo CO 50000\nnext 50000\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide_erp.ops node common/door/red1.js 2>/dev/null | sed 's/ · [0-9]* ms//' | grep -E '^(→|ok|refused|number|Order [0-9]|[├└])'
+$ printf 'cd Order\nnew issotrx=Y C_DocTypeTarget_ID=132 C_BPartner_ID=112 SalesRep_ID=101\nmis.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2\nnext 50000\ndo CO 50000\nnext 50000\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide_erp.ops node common/door/red1.js 2>/dev/null | sed 's/ · [0-9]* ms//' | grep -E '^(→|ok|refused|number|Order [0-9]|[├└])'
 → mis.describe kind=Order
 → mis.new kind=Order issotrx=Y C_DocTypeTarget_ID=132 C_BPartner_ID=112 SalesRep_ID=101
 ok · mis.new
 number: 50000
-→ erp.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2
-ok · erp.new
+→ mis.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2
+ok · mis.new
 number: 
 → erp.actions kind=Order number=50000
 ok · erp.actions
@@ -334,6 +351,24 @@ Kata-kata di atas adalah yang perlu dipelajari lebih dulu. Sisanya, masing-masin
 | `grid` · `walk FP` · `day 5` · `compare 24` | garis grid bangunan; menelusuri sebuah disiplin; jadwal pada suatu hari; dua hari dibandingkan |
 | `open marked` · `bay high` · `undo` · `save shed.db` · `close` | Modeller yang dibiarkan terbuka di antara baris |
 | `help <word>` · `help verbs` · `level student` · `report` · `exit` | bantuan; setiap kata kerja pintu; bantuan lebih lengkap; celah ke pemilik; keluar |
+
+## Yang tidak diperiksa {#what-is-not-checked}
+
+Sebuah jawaban mendaftar apa yang tidak tercakup oleh pemeriksaannya. Kata-kata yang sama berlaku untuk setiap jawaban: tumpang tindih pertama-tama adalah kotak pembatas, pemeriksaan hanya mencakup apa yang bergerak, dan **daya dukung beban tidak pernah diperiksa**. Jawaban tanpa merah tidak pernah berarti aman. Daftar lengkap untuk laporan edit Modeller ada di [referensi](FastScriptReference.md#what-is-not-checked).
+
+## Pemecahan masalah
+
+| Yang Anda lihat | Yang harus dilakukan |
+|---|---|
+| `edit_cli is not at …` | Salah satu dari keenam berkas hilang. Pesannya mencetak baris `curl` |
+| `puppeteer not found` | Jalankan `npm install puppeteer@24` di folder yang sama |
+| `unknown verb` | Pesannya mendaftar setiap verb. Periksa ejaannya terhadap [tabel](#the-verbs) |
+| `missing input: …` | Verb memerlukan kunci itu. Tabel mendaftar input-nya |
+| `The Viewer tools need a bim-ootb checkout` | Jalankan sebagai `node common/door/door.js` dari checkout lengkap |
+| `exit 1` dengan pesan Chrome | Pustaka sistem Chrome tidak ada di Linux. Halaman pemecahan masalah Puppeteer mendaftarkannya |
+
+**Batas yang perlu direncanakan.** Setiap panggilan Modeller membuka seluruh bangunan: sekitar 10 sampai 40 detik pada HospitalGarage. Ini alat ukur, bukan layanan dengan jaminan uptime. Skrip dengan beberapa baris Modeller membuka bangunan satu kali per baris.
+
 
 ## Untuk pengembang
 
@@ -441,24 +476,6 @@ Tabel ini **dihasilkan dari berkas kosakata** (`common/door/verbs.json`) dan seb
 <!-- /GEN:verbs -->
 
 **Cakupan saat ini.** Daftarnya sengaja kecil: 64 kata kerja mencakup pengeditan grid Modeller, walker-nya, dan Modeller yang dibiarkan terbuka di antara baris, beberapa pertanyaan Viewer, jadwal, pembacaan, penghitungan, dan penulisan objek generik, biaya sebuah pilihan, kata kerja dokumen ERP, dan proses apa pun dari kamus ERP yang punya port. Viewer punya 64 aksi yang bisa ditekan seseorang, dan pintu menawarkan 6 kata kerja Viewer. ERP punya 1158 dokumen dan proses, dan pintu menawarkan 9 kata kerja ERP untuk kehidupan sebuah dokumen dan 15 kata kerja MIS yang bekerja pada tabel apa pun, serta menyimpan 10 nama lama agar baris-baris sebelumnya tetap jalan. Jadi ini sebuah permulaan, bukan seluruh menu.
-
-
-## Yang tidak diperiksa {#what-is-not-checked}
-
-Sebuah jawaban mendaftar apa yang tidak tercakup oleh pemeriksaannya. Kata-kata yang sama berlaku untuk setiap jawaban: tumpang tindih pertama-tama adalah kotak pembatas, pemeriksaan hanya mencakup apa yang bergerak, dan **daya dukung beban tidak pernah diperiksa**. Jawaban tanpa merah tidak pernah berarti aman. Daftar lengkap untuk laporan edit Modeller ada di [referensi](FastScriptReference.md#what-is-not-checked).
-
-## Pemecahan masalah
-
-| Yang Anda lihat | Yang harus dilakukan |
-|---|---|
-| `edit_cli is not at …` | Salah satu dari keenam berkas hilang. Pesannya mencetak baris `curl` |
-| `puppeteer not found` | Jalankan `npm install puppeteer@24` di folder yang sama |
-| `unknown verb` | Pesannya mendaftar setiap verb. Periksa ejaannya terhadap [tabel](#the-verbs) |
-| `missing input: …` | Verb memerlukan kunci itu. Tabel mendaftar input-nya |
-| `The Viewer tools need a bim-ootb checkout` | Jalankan sebagai `node common/door/door.js` dari checkout lengkap |
-| `exit 1` dengan pesan Chrome | Pustaka sistem Chrome tidak ada di Linux. Halaman pemecahan masalah Puppeteer mendaftarkannya |
-
-**Batas yang perlu direncanakan.** Setiap panggilan Modeller membuka seluruh bangunan: sekitar 10 sampai 40 detik pada HospitalGarage. Ini alat ukur, bukan layanan dengan jaminan uptime. Skrip dengan beberapa baris Modeller membuka bangunan satu kali per baris.
 
 
 ## Bagaimana halaman ini tetap benar

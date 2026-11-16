@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 37bce684713d1698
+source_sha: 21c77ee61a2b9adf
 lang: fr
 ---
 
@@ -29,7 +29,7 @@ Tip: type level student for fuller help on each word (red1 --fast opens without 
 red1> exit
 ```
 
-Lisez-le comme une carte. La ligne de version dit combien de verbes de la porte (la forme longue) et de mots courts red1 possède. `help` montre les mots courts en trois groupes ; tapez `bim`, `mis` ou `erp` seul pour voir un groupe :
+Lisez-le comme une carte. La ligne de version dit combien de verbes de la porte (la forme longue) et de mots courts red1 possède. `help` montre les mots courts en trois groupes ; `help bim`, `help mis` ou `help erp` (ou le nom du groupe seul) montre un groupe :
 
 | Groupe | À quoi il sert | Commencer par |
 |---|---|---|
@@ -46,6 +46,23 @@ red1: type a short word; red1 prints the full line it runs (→ …), then runs 
   erp   document actions (CO VO CL RC)   start with: cd Order   (7 words)
   everywhere: cd <place> · pwd · role <id> · history · report · exit
 Type bim, mis or erp for its words · help <word> for one word (level student first for the full explanation) · help verbs for the full door lines.
+```
+
+Un groupe liste ses mots, chacun avec un exemple à taper. `erp` est le plus court :
+
+<!-- run: red1_help_erp -->
+```text
+$ node common/door/red1.js 'help erp' 2>/dev/null
+erp: document actions (CO VO CL RC) (start with: cd Order)
+ in a building:
+  post discipline=ARC  post the building's priced selection to its ERP Project Order
+  vo discipline=ARC    issue the change between the model and the Project Order as a Variation Order
+ in an ERP kind:
+  status                                              a Project's earned value (PV, EV, AC, SPI, CPI per phase)
+  claim                                               bill the project's completed phases not yet billed
+  do CO 50000                                         a document action
+  run "Set Project Type" 990000 C_ProjectType_ID=103  run a process of the dictionary
+  next 50000                                          what a document may do next
 ```
 
 `help` n'affiche pas de verbes de la porte, seulement les mots. `help verbs` liste chaque verbe de la porte avec sa ligne complète. Pour une aide plus complète sur un mot, passez au niveau Student : `level student` dans une session, ou `--level student` sur une ligne, puis `help <word>` dit ce que fait le mot, ce que vous tapez, ce que red1 prend de l'endroit où vous êtes, et un exemple. Le texte est la description propre du verbe, donc il ne peut pas diverger du tableau de la fin :
@@ -218,17 +235,17 @@ C_BPartner_ID  Value  Name               Logo_ID  C_BP_Group_ID
 
 ### erp : documents et processus
 
-**Créer un document et le terminer.** `new` dans `Order` crée une commande brouillon et affiche son numéro. Une ligne complète de la porte marche aussi à l'invite, donc la ligne de la commande s'ajoute avec `erp.new` (un produit et une quantité). `next <number>` dessine ce que le document peut faire maintenant, et pointe chaque action qui a un mot vers la ligne qui l'exécute. `do CO <number>` le termine ; les codes DocAction historiques sont `CO` terminer, `VO` annuler, `CL` clore, `RC` extourner (`do complete`, `do void` … marchent aussi). Regardez le numéro qu'affiche `new`, l'état dans chaque arbre `next`, et les actions qui ont avancé après `CO`. (Le `grep` ne garde que ces lignes ; les réponses complètes listent aussi chaque colonne remplie.)
+**Créer un document et le terminer.** `new` dans `Order` crée une commande brouillon et affiche son numéro. Une ligne complète de la porte marche aussi à l'invite, donc la ligne de la commande s'ajoute avec `mis.new` (un produit et une quantité). `next <number>` dessine ce que le document peut faire maintenant, et pointe chaque action qui a un mot vers la ligne qui l'exécute. `do CO <number>` le termine ; les codes DocAction historiques sont `CO` terminer, `VO` annuler, `CL` clore, `RC` extourner (`do complete`, `do void` … marchent aussi). Regardez le numéro qu'affiche `new`, l'état dans chaque arbre `next`, et les actions qui ont avancé après `CO`. (Le `grep` ne garde que ces lignes ; les réponses complètes listent aussi chaque colonne remplie.)
 
 <!-- run: erp_order -->
 ```text
-$ printf 'cd Order\nnew issotrx=Y C_DocTypeTarget_ID=132 C_BPartner_ID=112 SalesRep_ID=101\nerp.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2\nnext 50000\ndo CO 50000\nnext 50000\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide_erp.ops node common/door/red1.js 2>/dev/null | sed 's/ · [0-9]* ms//' | grep -E '^(→|ok|refused|number|Order [0-9]|[├└])'
+$ printf 'cd Order\nnew issotrx=Y C_DocTypeTarget_ID=132 C_BPartner_ID=112 SalesRep_ID=101\nmis.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2\nnext 50000\ndo CO 50000\nnext 50000\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide_erp.ops node common/door/red1.js 2>/dev/null | sed 's/ · [0-9]* ms//' | grep -E '^(→|ok|refused|number|Order [0-9]|[├└])'
 → mis.describe kind=Order
 → mis.new kind=Order issotrx=Y C_DocTypeTarget_ID=132 C_BPartner_ID=112 SalesRep_ID=101
 ok · mis.new
 number: 50000
-→ erp.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2
-ok · erp.new
+→ mis.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2
+ok · mis.new
 number: 
 → erp.actions kind=Order number=50000
 ok · erp.actions
@@ -334,6 +351,24 @@ Les mots ci-dessus sont ceux à apprendre en premier. Les autres, chacun une for
 | `grid` · `walk FP` · `day 5` · `compare 24` | les lignes de trame du bâtiment ; parcourir une discipline ; le planning un jour donné ; deux jours comparés |
 | `open marked` · `bay high` · `undo` · `save shed.db` · `close` | le Modeller gardé ouvert entre les lignes |
 | `help <word>` · `help verbs` · `level student` · `report` · `exit` | l'aide ; chaque verbe de la porte ; une aide plus complète ; une lacune au propriétaire ; quitter |
+
+## Ce qui n'est pas vérifié {#what-is-not-checked}
+
+Une réponse liste ce que sa vérification n'a pas couvert. Les mêmes mots valent pour toute réponse : les chevauchements sont d'abord des boîtes englobantes, une vérification ne couvre que ce qui a bougé, et **la capacité portante n'est jamais vérifiée**. Une réponse sans rouge ne signifie jamais sûre. La liste complète du rapport d'édition du Modeller est dans [la référence](FastScriptReference.md#what-is-not-checked).
+
+## Dépannage
+
+| Ce que vous voyez | Que faire |
+|---|---|
+| `edit_cli is not at …` | Un des six fichiers manque. Le message affiche la ligne `curl` |
+| `puppeteer not found` | Lancez `npm install puppeteer@24` dans le même dossier |
+| `unknown verb` | Le message liste chaque verbe. Vérifiez l'orthographe par rapport au [tableau](#the-verbs) |
+| `missing input: …` | Le verbe a besoin de cette clé. Le tableau liste les entrées |
+| `The Viewer tools need a bim-ootb checkout` | Lancez-le avec `node common/door/door.js` depuis une copie complète |
+| `exit 1` avec un message Chrome | Les bibliothèques système de Chrome manquent sous Linux. La page de dépannage de Puppeteer les liste |
+
+**Limites à prévoir.** Chaque appel Modeller ouvre le bâtiment entier : environ 10 à 40 secondes sur le HospitalGarage. C'est un outil de mesure, pas un service avec disponibilité garantie. Un script avec plusieurs lignes Modeller ouvre le bâtiment une fois par ligne.
+
 
 ## Pour les développeurs
 
@@ -441,24 +476,6 @@ Ce tableau est **généré à partir du fichier de vocabulaire** (`common/door/v
 <!-- /GEN:verbs -->
 
 **Couverture actuelle.** La liste est petite à dessein : 64 verbes couvrent les modifications de trame du Modeller, son walker et un Modeller gardé ouvert entre les lignes, quelques questions du Viewer, le planning, la lecture, le comptage et l'écriture génériques d'objets, le coût d'une sélection, les verbes de documents ERP et tout processus du dictionnaire ERP qui a un port. Le Viewer a 64 actions qu'une personne peut presser, et la porte offre 6 verbes du Viewer. L'ERP a 1158 documents et processus, et la porte offre 9 verbes ERP pour la vie d'un document et 15 verbes MIS qui marchent sur n'importe quelle table, et garde 10 anciens noms pour que les lignes antérieures fonctionnent encore. C'est donc un début, pas le menu complet.
-
-
-## Ce qui n'est pas vérifié {#what-is-not-checked}
-
-Une réponse liste ce que sa vérification n'a pas couvert. Les mêmes mots valent pour toute réponse : les chevauchements sont d'abord des boîtes englobantes, une vérification ne couvre que ce qui a bougé, et **la capacité portante n'est jamais vérifiée**. Une réponse sans rouge ne signifie jamais sûre. La liste complète du rapport d'édition du Modeller est dans [la référence](FastScriptReference.md#what-is-not-checked).
-
-## Dépannage
-
-| Ce que vous voyez | Que faire |
-|---|---|
-| `edit_cli is not at …` | Un des six fichiers manque. Le message affiche la ligne `curl` |
-| `puppeteer not found` | Lancez `npm install puppeteer@24` dans le même dossier |
-| `unknown verb` | Le message liste chaque verbe. Vérifiez l'orthographe par rapport au [tableau](#the-verbs) |
-| `missing input: …` | Le verbe a besoin de cette clé. Le tableau liste les entrées |
-| `The Viewer tools need a bim-ootb checkout` | Lancez-le avec `node common/door/door.js` depuis une copie complète |
-| `exit 1` avec un message Chrome | Les bibliothèques système de Chrome manquent sous Linux. La page de dépannage de Puppeteer les liste |
-
-**Limites à prévoir.** Chaque appel Modeller ouvre le bâtiment entier : environ 10 à 40 secondes sur le HospitalGarage. C'est un outil de mesure, pas un service avec disponibilité garantie. Un script avec plusieurs lignes Modeller ouvre le bâtiment une fois par ligne.
 
 
 ## Comment cette page reste vraie

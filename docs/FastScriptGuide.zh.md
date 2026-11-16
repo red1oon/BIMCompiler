@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 37bce684713d1698
+source_sha: 21c77ee61a2b9adf
 lang: zh-CN
 ---
 
@@ -29,7 +29,7 @@ Tip: type level student for fuller help on each word (red1 --fast opens without 
 red1> exit
 ```
 
-把它当作一张地图来读。版本行说明 red1 有多少个门动词（长格式）和短词。`help` 把短词分成三组显示；单独输入 `bim`、`mis` 或 `erp` 可查看一组：
+把它当作一张地图来读。版本行说明 red1 有多少个门动词（长格式）和短词。`help` 把短词分成三组显示；`help bim`、`help mis` 或 `help erp`（或只输入组名）可查看一组：
 
 | 分组 | 用途 | 从这里开始 |
 |---|---|---|
@@ -46,6 +46,23 @@ red1: type a short word; red1 prints the full line it runs (→ …), then runs 
   erp   document actions (CO VO CL RC)   start with: cd Order   (7 words)
   everywhere: cd <place> · pwd · role <id> · history · report · exit
 Type bim, mis or erp for its words · help <word> for one word (level student first for the full explanation) · help verbs for the full door lines.
+```
+
+一个组列出它的词，每个词附一个可以输入的例子。`erp` 组最短：
+
+<!-- run: red1_help_erp -->
+```text
+$ node common/door/red1.js 'help erp' 2>/dev/null
+erp: document actions (CO VO CL RC) (start with: cd Order)
+ in a building:
+  post discipline=ARC  post the building's priced selection to its ERP Project Order
+  vo discipline=ARC    issue the change between the model and the Project Order as a Variation Order
+ in an ERP kind:
+  status                                              a Project's earned value (PV, EV, AC, SPI, CPI per phase)
+  claim                                               bill the project's completed phases not yet billed
+  do CO 50000                                         a document action
+  run "Set Project Type" 990000 C_ProjectType_ID=103  run a process of the dictionary
+  next 50000                                          what a document may do next
 ```
 
 `help` 不打印门动词，只打印这些词。`help verbs` 列出每个门动词及其完整一行。若要了解某个词的更完整说明，切换到 Student 级别：在会话中输入 `level student`，或在一行里用 `--level student`，然后 `help <word>` 会说明该词做什么、您输入什么、red1 从您所在位置取什么，并给出一个示例。文字取自该动词自己的描述，所以不会与末尾的表产生偏差：
@@ -218,17 +235,17 @@ C_BPartner_ID  Value  Name               Logo_ID  C_BP_Group_ID
 
 ### erp：单据和流程
 
-**创建单据并完成它。** 在 `new` 中 `Order` 会创建一张草稿订单并打印其编号。完整的门行在提示符下同样可用，所以订单行用 `erp.new` 添加（一个产品和一个数量）。`next <number>` 画出该单据现在可以做什么，并为每个有对应词的操作指出执行它的那一行。`do CO <number>` 完成它；传统的 DocAction 代码是 `CO` 完成、`VO` 作废、`CL` 关闭、`RC` 冲销（`do complete`、`do void` … 也可以）。请看 `new` 打印的编号、每个 `next` 树中的状态，以及 `CO` 之后发生变化的操作。（`grep` 只保留这些行；完整答复还会列出每个填充的列。）
+**创建单据并完成它。** 在 `new` 中 `Order` 会创建一张草稿订单并打印其编号。完整的门行在提示符下同样可用，所以订单行用 `mis.new` 添加（一个产品和一个数量）。`next <number>` 画出该单据现在可以做什么，并为每个有对应词的操作指出执行它的那一行。`do CO <number>` 完成它；传统的 DocAction 代码是 `CO` 完成、`VO` 作废、`CL` 关闭、`RC` 冲销（`do complete`、`do void` … 也可以）。请看 `new` 打印的编号、每个 `next` 树中的状态，以及 `CO` 之后发生变化的操作。（`grep` 只保留这些行；完整答复还会列出每个填充的列。）
 
 <!-- run: erp_order -->
 ```text
-$ printf 'cd Order\nnew issotrx=Y C_DocTypeTarget_ID=132 C_BPartner_ID=112 SalesRep_ID=101\nerp.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2\nnext 50000\ndo CO 50000\nnext 50000\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide_erp.ops node common/door/red1.js 2>/dev/null | sed 's/ · [0-9]* ms//' | grep -E '^(→|ok|refused|number|Order [0-9]|[├└])'
+$ printf 'cd Order\nnew issotrx=Y C_DocTypeTarget_ID=132 C_BPartner_ID=112 SalesRep_ID=101\nmis.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2\nnext 50000\ndo CO 50000\nnext 50000\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide_erp.ops node common/door/red1.js 2>/dev/null | sed 's/ · [0-9]* ms//' | grep -E '^(→|ok|refused|number|Order [0-9]|[├└])'
 → mis.describe kind=Order
 → mis.new kind=Order issotrx=Y C_DocTypeTarget_ID=132 C_BPartner_ID=112 SalesRep_ID=101
 ok · mis.new
 number: 50000
-→ erp.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2
-ok · erp.new
+→ mis.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2
+ok · mis.new
 number: 
 → erp.actions kind=Order number=50000
 ok · erp.actions
@@ -334,6 +351,24 @@ not done: cd project
 | `grid` · `walk FP` · `day 5` · `compare 24` | 建筑的轴网线；遍历一个专业；某一天的进度；两天对比 |
 | `open marked` · `bay high` · `undo` · `save shed.db` · `close` | 在各行之间保持打开的 Modeller |
 | `help <word>` · `help verbs` · `level student` · `report` · `exit` | 帮助；每个门动词；更完整的帮助；向所有者报告缺口；退出 |
+
+## 未检查的内容 {#what-is-not-checked}
+
+答复会列出其检查没有覆盖的内容。同样的话适用于任何答复：重叠首先是包围盒，检查只覆盖发生移动的部分，而且**承载能力从不检查**。没有红色的答复绝不意味着安全。Modeller 编辑报告的完整列表在[参考页](FastScriptReference.md#what-is-not-checked)中。
+
+## 故障排除
+
+| 你看到什么 | 怎么办 |
+|---|---|
+| `edit_cli is not at …` | 六个文件中缺了一个。消息会打印出 `curl` 行 |
+| `puppeteer not found` | 在同一个文件夹里运行 `npm install puppeteer@24` |
+| `unknown verb` | 消息会列出每个动词。对照[表](#the-verbs)检查拼写 |
+| `missing input: …` | 动词需要那个键。表里列出了各项输入 |
+| `The Viewer tools need a bim-ootb checkout` | 在完整检出里以 `node common/door/door.js` 运行它 |
+| `exit 1` 并带有 Chrome 的消息 | Chrome 的系统库在 Linux 上缺失。Puppeteer 的故障排除页面列出了它们 |
+
+**需要预先考虑的限制**。每次 Modeller 调用都会打开整栋建筑：在 HospitalGarage 上大约 10 到 40 秒。这是一个测量工具，不是有正常运行时间保证的服务。一个含有多条 Modeller 行的脚本，每行都会打开一次建筑。
+
 
 ## 面向开发者
 
@@ -441,24 +476,6 @@ object.count building=Duplex kind=Element -> 1193 Element
 <!-- /GEN:verbs -->
 
 **目前的覆盖范围。** 这份列表有意保持很小：64 个动词覆盖 Modeller 的轴网编辑、它的 walker 以及在各行之间保持打开的 Modeller、少量 Viewer 问题、进度、通用的对象读取、计数和写入、一次选择的成本、ERP 单据动词，以及 ERP 字典中任何已移植的流程。Viewer 有 64 个人可以按下的操作，门提供 6 个 Viewer 动词。ERP 有 1158 个单据和流程，门为单据的生命周期提供 9 个 ERP 动词，为任意表提供 15 个 MIS 动词，并保留 10 个旧名称，使以前的行仍能运行。所以这只是一个开始，不是完整的菜单。
-
-
-## 未检查的内容 {#what-is-not-checked}
-
-答复会列出其检查没有覆盖的内容。同样的话适用于任何答复：重叠首先是包围盒，检查只覆盖发生移动的部分，而且**承载能力从不检查**。没有红色的答复绝不意味着安全。Modeller 编辑报告的完整列表在[参考页](FastScriptReference.md#what-is-not-checked)中。
-
-## 故障排除
-
-| 你看到什么 | 怎么办 |
-|---|---|
-| `edit_cli is not at …` | 六个文件中缺了一个。消息会打印出 `curl` 行 |
-| `puppeteer not found` | 在同一个文件夹里运行 `npm install puppeteer@24` |
-| `unknown verb` | 消息会列出每个动词。对照[表](#the-verbs)检查拼写 |
-| `missing input: …` | 动词需要那个键。表里列出了各项输入 |
-| `The Viewer tools need a bim-ootb checkout` | 在完整检出里以 `node common/door/door.js` 运行它 |
-| `exit 1` 并带有 Chrome 的消息 | Chrome 的系统库在 Linux 上缺失。Puppeteer 的故障排除页面列出了它们 |
-
-**需要预先考虑的限制**。每次 Modeller 调用都会打开整栋建筑：在 HospitalGarage 上大约 10 到 40 秒。这是一个测量工具，不是有正常运行时间保证的服务。一个含有多条 Modeller 行的脚本，每行都会打开一次建筑。
 
 
 ## 本页为何保持真实

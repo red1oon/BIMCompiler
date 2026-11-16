@@ -1,8 +1,12 @@
 # Fast Script Reference
 
-Every command of the [Fast Script Guide](FastScriptGuide.md) with its real output, for developers who want the shape of each answer. Start with the guide: it explains the words you use most. Each block here was run and its output pasted; the guide's test runs both pages.
+Every command of the [Fast Script Guide](FastScriptGuide.md) with its real output, for developers who want the shape of each answer. Start with the guide: it explains the words you use most. This page follows the guide's map: the door itself first, then **bim**, **mis** and **erp**, then the tools for developers. Each block here was run and its output pasted; the guide's test runs both pages.
 
-## Your first command
+## The door: lines, answers, scripts
+
+How the door reads a line, what an answer carries, and how to run several lines. These blocks call `door.js`, the program red1 hands each line to.
+
+### Your first command
 
 One line, one verb, `key=value` pairs with no spaces around the `=`. Ask the HospitalGarage for its grid:
 
@@ -17,7 +21,7 @@ It opens the Modeller and the building, so it takes 10 to 40 seconds. What you s
 !!! note "Where does the 'request' come from?"
     Every line gets a request id (`"request":"d-…"`) and is written to a journal before it runs, in `~/.cache/bim_door/journal.jsonl`. Send the same id twice and you get the first answer back, so a retry never repeats a change. The door also prints one `§DOOR …` line on the error stream; this guide shows only the standard output.
 
-## One verb for a whole request
+### One verb for a whole request
 
 A request such as *"make the bay between gx5 and gx6 13 m wide"* is several steps: read the grid, work out the move, try the shift. The verb `modeller.widen_bay` does all three. Its inputs are the two lines and the width you want:
 
@@ -72,7 +76,7 @@ $ grep -o '"bay":"gx5-gx6"[^}]*' widen.json
 
 The bay went from 11.176 m to 13 m, over this building's 12 m limit for a concrete beam (`limit` and `material` come from the building itself). That is the whole story of the Garage request: a 13 m bay needs another column line.
 
-## A script: several lines, a named result
+### A script: several lines, a named result
 
 A script is a text file with one command per line. A line may start with a **name** and an `=`, which keeps its answer for the lines below. Anything after `--` is a comment. Save this as `bay.door`:
 
@@ -120,7 +124,7 @@ $ grep -o '"label":"Beam spans over limit","scope":"[^"]*","state":"JUDGED","bef
 
 So the same building, asked for 13 m, is stopped, and asked for 12 m, stands. An `ok` is not a promise that the building is good: the same [list of what is not checked](#what-is-not-checked) applies.
 
-### The line grammar
+#### The line grammar
 
 | Part | Rule |
 |---|---|
@@ -140,7 +144,7 @@ $ node door.js 'please widen the bay'
 {"request":"d-mwisb23s-3329856-1","verb":null,"actor":"human","status":"refused","answer":{"question":"I could not read that as a command. A command is app.verb key=value … Which one do you mean? Type help.","verbs":["modeller.lines","modeller.try_shift","viewer.counts","viewer.clashes","viewer.film_path","viewer.schedule_at","viewer.schedule_compare","modeller.widen_bay","modeller.walk","object.describe","object.read","object.history","object.update","object.attach","object.count","object.list","object.sum","object.group","witness.run","witness.last","legacy.status","legacy.query","mis.column","legacy.compare","idempiere.where","mis.pack","legacy.up","legacy.refresh","legacy.witness","legacy.check","legacy.plugin","model.open","model.convert","model.addbay","model.undo","model.save","model.close","erp.process","erp.order_state","erp.project_status","mis.lookup","viewer.cost","erp.find","erp.actions","erp.complete","erp.void","erp.close","erp.reverse","mis.describe","mis.read","mis.list","mis.sum","mis.group","mis.new","mis.update","mis.delete","mis.load","mis.add_window","ninja.exec","ninja.workflow","mis.diff","mis.menu","ninja.rollback","ninja.export","erp.column","erp.compare","erp.pack","erp.legacy_plugin","erp.describe","erp.read","erp.list","erp.sum","erp.group","erp.new"]},"why":"not a command: \"please widen the bay\"","notChecked":[],"ops":[],"next":[],"ms":3}
 ```
 
-## Reading the reply
+### Reading the reply
 
 Every line, from every actor, gets the same envelope. Read these in order.
 
@@ -185,7 +189,7 @@ $ node common/door/door.js 'viewer.clashes building=Duplex discA=ARC discB=ZZZ'
 {"request":"d-mwiqjly7-3189440-1","verb":"viewer.clashes","actor":"human","status":"inconclusive","answer":null,"why":"the Viewer could not answer (exit 1): the Viewer says INCONCLUSIVE: no rule for ARC/ZZZ in clash_rules.json","notChecked":[],"ops":[],"next":[],"ms":19539}
 ```
 
-### What is a claim
+#### What is a claim
 
 Each verb has a **harm class**: `read` (changes nothing), `trial` (a change made on a throwaway copy, judged, never saved), `writes`, `posts` or `sends`. The class is written once, in the verb list, so no actor can talk its way around it.
 
@@ -199,7 +203,7 @@ $ node door.js --actor email --request mail-0 'modeller.try_shift building=Hospi
 
 A held claim is not run, not queued and not lost: it is in the journal, under its request id. The door does not confirm anything on anyone's behalf.
 
-### Confirm a claim
+#### Confirm a claim
 
 A person lets a held claim through **by its request id**, so the line that runs is exactly the line that was proposed. Nobody re-types it. Here a mail asks for a trial move and is held:
 
@@ -237,11 +241,77 @@ Three rules hold. Only a person at the terminal may confirm: `--actor ai --confi
 
 **What this does not prove.** The door trusts whoever is at the local terminal. An AI that is allowed to run shell commands on your machine could type `--confirm` itself, just as it could type a line as you. Keep an AI's access to its tool connection if that matters.
 
-## Use the door from a script of your own
+### Use the door from a script of your own
 
 Everything above is `door.js`, the same file the AI connection uses. From your own program, call it as a command and read its JSON: the exit code (`0`, `3`, `1`, `2`) says whether to read an answer or a problem, and `status` says which. `--actor human` is the default; `--actor ai` makes the door treat the line as an AI's.
 
-## Ask what a thing is: `object.describe`
+### Choose how the answer is shown, and keep it
+
+The reply is the JSON envelope unless you ask otherwise. Three switches show the rows of an answer as something a person or a spreadsheet can read; the envelope is still what the door records:
+
+- `--list`: an aligned table, ending `shown N of TOTAL`. A reply that is one record shows `field: value` lines.
+- `--csv`: the rows as CSV (RFC 4180: a cell with a comma, a quote or a new line is quoted; numbers are exactly as the engine returned them).
+- `--out FILE` writes the chosen form to a file in the current folder instead of the screen. A line that is refused, held or inconclusive writes no file and says so.
+
+<!-- run: csv_orders -->
+```text
+$ node common/door/door.js --csv 'mis.list kind=Order docstatus=CO limit=3 columns=DocumentNo,DocStatus,GrandTotal sort=-DocumentNo'
+DocumentNo,DocStatus,GrandTotal
+80001,CO,100.7
+80001,CO,100.7
+800002,CO,2160
+```
+
+In a script, end a line with `> file` to send that line's answer to a file in the script's folder (`>> file` adds to it). The form follows the name: `.csv` is CSV, `.json` is the envelope, anything else is the list. A path that leaves the script's folder is refused.
+
+These switches live in a fifth file, `render.js`; put it beside `door.js` when you use them from a download:
+
+```text
+curl -O https://red1oon.github.io/bim-ootb/common/door/render.js
+```
+
+### Ask the door: `help`
+
+The door has a `help` of its own, over the door verbs (red1's `help` shows the short words in their groups instead). `door.js help` shows the common commands, each as a line you can run. `door.js help erp` lists every `erp.*` door verb, which is not red1's `help erp` word group; `help erp.find` shows one verb whole (what it does, each input, what it may change, who may run it), and `help all` lists everything. Help is generated from the same verb list as the table below, reads nothing, runs nothing and is not recorded in the journal.
+
+<!-- run: help_verb -->
+```text
+$ node common/door/door.js 'help erp.find'
+erp.find — Find a document
+
+Find a document by its number, the way a window's Find does (DocumentNo, else Name or Value). Returns every match with its key, DocStatus and DocAction. Nothing is changed. Kinds: any document table of the dictionary (34).
+
+Inputs:
+  kind (required, string) e.g. Order — The kind of document, as the dictionary names it (an AD_Table with a DocAction column), e.g. "Order". 34 kinds exist; an unknown kind or a table that is not a document is refused naming the reason.
+  number (required, string) e.g. 50000 — The document number (DocumentNo) as shown in the window; if two documents carry it, name one with id.
+
+Harm: read (reads only)
+Who may run it: human, ai
+Example: erp.find kind=Order number=50000
+```
+
+### Grey suggestions while you type
+
+At the prompt of a terminal, grey text after the cursor suggests what comes next. The source is the dictionary, chosen by where you are in the line: the first word (the red1 words and the door verbs); after `cd`, the buildings and the ERP kinds (`cd Busi` suggests `cd "Business Partner"`); after `do`, the DocAction codes; then the column names of the kind you are in; after `key=`, the legal values. **Tab** or **→** takes the suggestion; typing on ignores it; **Return always runs what you typed**, never the suggestion. A misspelt name gets a hint (`▸ Value`) that Tab can take, never a silent fix. In a one-shot line, a script or an AI there is no suggestion, and a wrong column is a refusal that names the nearest ones:
+
+<!-- run: red1_typo -->
+```text
+$ printf 'cd Project\nls Valu=Hospital\n' | node common/door/red1.js 2>/dev/null | sed 's/ · [0-9]* ms//'
+→ mis.describe kind=Project
+Project: 48 properties; ls shows C_Project_ID, Value, Name, Processed, SalesRep_ID
+→ mis.list kind=Project columns=C_Project_ID,Value,Name,Processed,SalesRep_ID limit=20 names=Y Valu=Hospital
+refused · mis.list · kind Project has no property "Valu"; nearest: Value
+{
+ "refused": true,
+ "reason": "kind Project has no property \"Valu\"; nearest: Value"
+}
+```
+
+## bim: buildings and models
+
+Reading a building's model, the walker, a Modeller kept open between lines, and the Viewer's questions.
+
+### Ask what a thing is: `object.describe`
 
 A verb can also ask the model itself what it holds. `object.describe` is **reflection**: it reads the model's own dictionary and says which properties a kind of object has, which child tabs, and which generic methods are legal for it. It reads dictionary rows only; no element is opened. It needs a checkout, and a building whose model carries its own dictionary (the Duplex does).
 
@@ -261,7 +331,7 @@ $ node common/door/door.js 'object.describe building=Duplex kind=Element' | grep
 
 An unknown kind is an error that lists the kinds the model has, so a wrong guess teaches the right name.
 
-## Count things: `object.count`
+### Count things: `object.count`
 
 `object.count` answers "how many": how many records of a kind the model holds. The Duplex names its rooms as the kind `Room`. It needs a checkout.
 
@@ -289,7 +359,7 @@ $ node common/door/door.js 'object.count building=Duplex kind=Room floor=1'
 
 A model with no room at all does not answer `0`. It answers `inconclusive`, because nothing was counted. A zero you can trust is a narrowed count inside a population that is not empty.
 
-## What the walker would place: `modeller.walk`
+### What the walker would place: `modeller.walk`
 
 The Modeller has a *walker* that places the fittings of one discipline (sprinklers, lights, outlets) by rules measured from real buildings. `modeller.walk` is a **dry run** of it: it says what the walker would place and changes nothing. The model file is the same, byte for byte, afterwards, and the answer says so. It needs a checkout. The full reply is long, so this shows its main numbers:
 
@@ -304,7 +374,7 @@ $ node common/door/door.js 'modeller.walk building=Duplex discipline=FP' | grep 
 
 `count` is everything the walk would place. `provisional` are positions the walker itself marks as not final, for example a fitting with no ceiling found above it. `rules` is the rule set the building's class uses: a house walks the residential rules. A walk that places nothing answers `inconclusive` with the walker's reason.
 
-## Keep a Modeller open between lines: `model.open`, `model.convert`, `model.addbay`, `model.undo`, `model.save`, `model.close`
+### Keep a Modeller open between lines: `model.open`, `model.convert`, `model.addbay`, `model.undo`, `model.save`, `model.close`
 
 These lines drive ONE Modeller page kept open in the background (headless, on the CPU, no graphics card), so each line acts on what the line before left. `model.open sheets=<folder or a.dxf,b.dxf> type="Farming Shed"` opens the 2D sheets, `model.convert` makes the 3D model (the page's own Convert), `model.addbay end=high|low` adds one bay at that end of a repeating-bay building, `model.undo` takes the last change back, and `model.close` stops the page. The page does all the work with its own functions; the line presses what a person presses and prints the page's own answer. The model lives in that page until you save it: `model.save` writes it to a `.db` file in this folder, and `model.close` saves first when the model changed and a save file is known. They need a `bim-ootb` checkout, and the folder you run them from holds the session (a file `.model_session.json`; the port listens on this machine only and every request carries a one-time token).
 
@@ -323,15 +393,39 @@ error: no session in this folder: model.open first
 
 `model.addbay end=low` adds the bay at the other end (a different hinge, the same 29 copies). Not checked by these lines: the cost against an independent count (a separate test does that), and more than one session in one folder.
 
-## Lists, sums and groups: `erp.list`, `erp.sum`, `erp.group`
+### Viewer questions from a plain download
+
+Two Viewer verbs, `viewer.counts` and `viewer.clashes`, also work without a checkout. Put two more files beside the six:
+
+```text
+curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_verbs.js
+curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_driver.js
+```
+
+With no page files on your disk, the tool opens the live Viewer page with the building the site serves, in a hidden browser on the processor, and asks the Viewer's own Find panel. `page` in the answer says which page was used:
+
+<!-- run: viewer_flat -->
+```text
+$ node door.js 'viewer.counts building=Duplex' | grep -o '"summary":"[^"]*"\|"page":"[a-z]*"'
+"summary":"1119 elements: MEP 904, ARC 196, STR 19"
+"page":"live"
+```
+
+It takes about half a minute. The numbers are the served building's, so they can differ from an older copy in a checkout. The schedule verbs, `viewer.film_path`, the object verbs and `modeller.walk` still need a checkout; the table says which.
+
+## mis: records, tables, files, Ninja
+
+Any table of the dictionary: list, create, change, delete and load records; tables of your own; Ninja workbooks; the terminal screen.
+
+### Lists, sums and groups: `mis.list`, `mis.sum`, `mis.group`
 
 `count` answers "how many". Three more read-only verbs answer "which ones", "how much" and "how many of each". They take any kind of the ERP's dictionary (and the same three exist for a building's model as `object.list`, `object.sum`, `object.group`). They need a checkout.
 
-`erp.list` shows rows. Every column, filter and sort is checked against the dictionary, so a wrong name is an error that lists the real ones. Add `column=value` to narrow the list. The list shows at most 50 rows unless `limit` says otherwise (up to 1000), and the answer always carries the **total**, so a short list is never mistaken for the whole. Page through a long one with `offset`:
+`mis.list` shows rows. Every column, filter and sort is checked against the dictionary, so a wrong name is an error that lists the real ones. Add `column=value` to narrow the list. The list shows at most 50 rows unless `limit` says otherwise (up to 1000), and the answer always carries the **total**, so a short list is never mistaken for the whole. Page through a long one with `offset`:
 
 <!-- run: list_orders -->
 ```text
-$ node common/door/door.js --list 'erp.list kind=Order docstatus=CO limit=3 columns=DocumentNo,DocStatus,GrandTotal sort=-DocumentNo'
+$ node common/door/door.js --list 'mis.list kind=Order docstatus=CO limit=3 columns=DocumentNo,DocStatus,GrandTotal sort=-DocumentNo'
 DocumentNo  DocStatus  GrandTotal
 80001       CO         100.7
 80001       CO         100.7
@@ -339,11 +433,11 @@ DocumentNo  DocStatus  GrandTotal
 shown 3 of 14
 ```
 
-`erp.sum` adds a number column up exactly. Decimals are added as decimals, never as floating point, so money does not drift. `erp.group` counts the records for each value of a column, most common first:
+`mis.sum` adds a number column up exactly. Decimals are added as decimals, never as floating point, so money does not drift. `mis.group` counts the records for each value of a column, most common first:
 
 <!-- run: sum_orders -->
 ```text
-$ node common/door/door.js --list 'erp.sum kind=Order column=GrandTotal docstatus=CO'
+$ node common/door/door.js --list 'mis.sum kind=Order column=GrandTotal docstatus=CO'
 kind: Order
 table: C_Order
 column: GrandTotal
@@ -357,7 +451,7 @@ summary: 19505.9 = sum of GrandTotal over 14 Order
 
 <!-- run: group_orders -->
 ```text
-$ node common/door/door.js --list 'erp.group kind=Order by=DocStatus'
+$ node common/door/door.js --list 'mis.group kind=Order by=DocStatus'
 DocStatus  count
 IP         22
 CO         14
@@ -368,38 +462,38 @@ shown 4 of 4
 
 A kind with no records at all does not answer `0` or an empty list. It answers `inconclusive`, because nothing was judged.
 
-## Create a record: `erp.new`
+### Create a record: `mis.new`
 
-`erp.new` makes a record the way the ERP's own window makes it. You name the kind and the columns you know; the engine fills the rest the way the window does (defaults, the choices a partner brings with it, the Document No from the sequence). A column the dictionary does not have is refused and the reply lists the real ones. A mandatory column still empty after that is refused by name, and nothing is written. The reply starts with `number`: the Document No, which is what you use next.
+`mis.new` makes a record the way the ERP's own window makes it. You name the kind and the columns you know; the engine fills the rest the way the window does (defaults, the choices a partner brings with it, the Document No from the sequence). A column the dictionary does not have is refused and the reply lists the real ones. A mandatory column still empty after that is refused by name, and nothing is written. The reply starts with `number`: the Document No, which is what you use next.
 
 A Sales or Purchase document needs `issotrx=Y` or `N`. A partner or product may be given by name; a name that matches no record, or more than one, is refused. A line names its document by number:
 
 <!-- run: new_order -->
 ```text
-$ rm -f /tmp/fast_guide_new.ops; BIM_OBJECT_OPLOG=/tmp/fast_guide_new.ops node common/door/door.js 'erp.new kind=Order issotrx=Y c_doctypetarget_id=132 c_bpartner_id=112 salesrep_id=101' | sed -E 's/[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9:]{8}/T/g; s/"([a-z_]+_uu)":"[^"]*"/"\1":"U"/g'
-{"request":"d-mwira146-3236859-1","verb":"erp.new","actor":"human","status":"ok","answer":{"number":"50000","kind":"Order","table":"c_order","id":1500004,"docStatus":"DR","given":["IsSOTrx","C_DocTypeTarget_ID","C_BPartner_ID","SalesRep_ID"],"defaulted":52,"filled":["ad_client_id","ad_org_id","documentno","isselfservice","dateordered","datepromised","bill_bpartner_id","c_bpartner_location_id","bill_location_id","deliveryrule","priorityrule","m_warehouse_id","isdropship","deliveryviarule","freightcostrule","freightamt","ispriviledgedrate","shippingrateinquiry","invoicerule","m_pricelist_id","c_currency_id","c_conversiontype_id","isdiscountprinted","chargeamt","paymentrule","c_paymentterm_id","totallines","grandtotal","docstatus","c_doctype_id","ispayschedulevalid","copyfrom","docaction","posted","isdelivered","dateacct","amountrefunded","isapproved","processed","processing","istaxincluded","isinvoiced","isselected","isprinted","sendemail","istransferred","iscreditapproved","isactive","processedon","amounttendered","volume","weight"],"record":{"c_order_id":1500004,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"T","createdby":101,"updated":"T","updatedby":101,"issotrx":"Y","documentno":"50000","docstatus":"DR","docaction":"CO","processing":"N","processed":"N","c_doctype_id":0,"c_doctypetarget_id":132,"description":null,"isapproved":"N","iscreditapproved":"N","isdelivered":"N","isinvoiced":"N","isprinted":"N","istransferred":"N","isselected":"N","salesrep_id":101,"dateordered":"T","datepromised":"T","dateprinted":null,"dateacct":"T","c_bpartner_id":112,"c_bpartner_location_id":108,"poreference":null,"isdiscountprinted":"Y","c_currency_id":100,"paymentrule":"P","c_paymentterm_id":105,"invoicerule":"D","deliveryrule":"A","freightcostrule":"I","freightamt":0,"deliveryviarule":"P","m_shipper_id":null,"c_charge_id":null,"chargeamt":0,"priorityrule":"5","totallines":0,"grandtotal":0,"m_warehouse_id":103,"m_pricelist_id":101,"istaxincluded":"N","c_campaign_id":null,"c_project_id":null,"c_activity_id":null,"posted":"N","c_payment_id":null,"c_cashline_id":null,"sendemail":"N","ad_user_id":null,"copyfrom":"N","isselfservice":"N","ad_orgtrx_id":null,"user1_id":null,"user2_id":null,"c_conversiontype_id":114,"bill_bpartner_id":112,"bill_location_id":108,"bill_user_id":null,"pay_bpartner_id":null,"pay_location_id":null,"ref_order_id":null,"isdropship":"N","volume":0,"weight":0,"ordertype":null,"c_pos_id":null,"amounttendered":0,"amountrefunded":0,"link_order_id":null,"m_freightcategory_id":null,"dropship_bpartner_id":null,"dropship_location_id":null,"dropship_user_id":null,"promotioncode":null,"c_ordersource_id":null,"processedon":0,"ispayschedulevalid":"N","c_cashplanline_id":null,"c_order_uu":"U","shippingrateinquiry":"N","ispriviledgedrate":"N","c_opportunity_id":null,"quotationorder_id":null,"c_department_id":null,"c_costcenter_id":null},"ops":[{"op_type":"CRUD_UPDATE","table":"ad_sequence"},{"op_type":"CRUD_CREATE","table":"c_order"}]},"why":null,"notChecked":[],"ops":[{"op_type":"CRUD_UPDATE","table":"ad_sequence"},{"op_type":"CRUD_CREATE","table":"c_order"}],"next":[],"ms":8071}
+$ rm -f /tmp/fast_guide_new.ops; BIM_OBJECT_OPLOG=/tmp/fast_guide_new.ops node common/door/door.js 'mis.new kind=Order issotrx=Y c_doctypetarget_id=132 c_bpartner_id=112 salesrep_id=101' | sed -E 's/[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9:]{8}/T/g; s/"([a-z_]+_uu)":"[^"]*"/"\1":"U"/g'
+{"request":"d-mwj00si6-3425233-1","verb":"mis.new","actor":"human","status":"ok","answer":{"number":"50000","kind":"Order","table":"c_order","id":1500004,"docStatus":"DR","given":["IsSOTrx","C_DocTypeTarget_ID","C_BPartner_ID","SalesRep_ID"],"defaulted":52,"filled":["ad_client_id","ad_org_id","documentno","isselfservice","dateordered","datepromised","bill_bpartner_id","c_bpartner_location_id","bill_location_id","deliveryrule","priorityrule","m_warehouse_id","isdropship","deliveryviarule","freightcostrule","freightamt","ispriviledgedrate","shippingrateinquiry","invoicerule","m_pricelist_id","c_currency_id","c_conversiontype_id","isdiscountprinted","chargeamt","paymentrule","c_paymentterm_id","totallines","grandtotal","docstatus","c_doctype_id","ispayschedulevalid","copyfrom","docaction","posted","isdelivered","dateacct","amountrefunded","isapproved","processed","processing","istaxincluded","isinvoiced","isselected","isprinted","sendemail","istransferred","iscreditapproved","isactive","processedon","amounttendered","volume","weight"],"record":{"c_order_id":1500004,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"T","createdby":101,"updated":"T","updatedby":101,"issotrx":"Y","documentno":"50000","docstatus":"DR","docaction":"CO","processing":"N","processed":"N","c_doctype_id":0,"c_doctypetarget_id":132,"description":null,"isapproved":"N","iscreditapproved":"N","isdelivered":"N","isinvoiced":"N","isprinted":"N","istransferred":"N","isselected":"N","salesrep_id":101,"dateordered":"T","datepromised":"T","dateprinted":null,"dateacct":"T","c_bpartner_id":112,"c_bpartner_location_id":108,"poreference":null,"isdiscountprinted":"Y","c_currency_id":100,"paymentrule":"P","c_paymentterm_id":105,"invoicerule":"D","deliveryrule":"A","freightcostrule":"I","freightamt":0,"deliveryviarule":"P","m_shipper_id":null,"c_charge_id":null,"chargeamt":0,"priorityrule":"5","totallines":0,"grandtotal":0,"m_warehouse_id":103,"m_pricelist_id":101,"istaxincluded":"N","c_campaign_id":null,"c_project_id":null,"c_activity_id":null,"posted":"N","c_payment_id":null,"c_cashline_id":null,"sendemail":"N","ad_user_id":null,"copyfrom":"N","isselfservice":"N","ad_orgtrx_id":null,"user1_id":null,"user2_id":null,"c_conversiontype_id":114,"bill_bpartner_id":112,"bill_location_id":108,"bill_user_id":null,"pay_bpartner_id":null,"pay_location_id":null,"ref_order_id":null,"isdropship":"N","volume":0,"weight":0,"ordertype":null,"c_pos_id":null,"amounttendered":0,"amountrefunded":0,"link_order_id":null,"m_freightcategory_id":null,"dropship_bpartner_id":null,"dropship_location_id":null,"dropship_user_id":null,"promotioncode":null,"c_ordersource_id":null,"processedon":0,"ispayschedulevalid":"N","c_cashplanline_id":null,"c_order_uu":"U","shippingrateinquiry":"N","ispriviledgedrate":"N","c_opportunity_id":null,"quotationorder_id":null,"c_department_id":null,"c_costcenter_id":null},"ops":[{"op_type":"CRUD_UPDATE","table":"ad_sequence"},{"op_type":"CRUD_CREATE","table":"c_order"}]},"why":null,"notChecked":[],"ops":[{"op_type":"CRUD_UPDATE","table":"ad_sequence"},{"op_type":"CRUD_CREATE","table":"c_order"}],"next":[],"ms":3994}
 ```
 
 <!-- run: new_line -->
 ```text
-$ BIM_OBJECT_OPLOG=/tmp/fast_guide_new.ops node common/door/door.js 'erp.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2' | sed -E 's/[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9:]{8}/T/g; s/"([a-z_]+_uu)":"[^"]*"/"\1":"U"/g'
-{"request":"d-mwira7sj-3237334-1","verb":"erp.new","actor":"human","status":"ok","answer":{"number":null,"kind":"Sales Order Line","table":"c_orderline","id":120002710,"docStatus":null,"given":["M_Product_ID","QtyEntered","C_Order_ID"],"defaulted":31,"filled":["ad_client_id","ad_org_id","c_bpartner_id","c_bpartner_location_id","datepromised","dateordered","line","m_warehouse_id","m_attributesetinstance_id","c_uom_id","qtyordered","qtydelivered","qtyreserved","qtyinvoiced","priceentered","priceactual","pricelist","freightamt","c_tax_id","discount","linenetamt","qtylostsales","processed","createshipment","createproduction","rramt","pricecost","pricelimit","c_currency_id","isactive","isdescription"],"record":{"c_orderline_id":120002710,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"T","createdby":101,"updated":"T","updatedby":101,"c_order_id":1500004,"line":10,"c_bpartner_id":112,"c_bpartner_location_id":108,"dateordered":"T","datepromised":"T","datedelivered":null,"dateinvoiced":null,"description":null,"m_product_id":137,"m_warehouse_id":103,"c_uom_id":100,"qtyordered":2,"qtyreserved":0,"qtydelivered":0,"qtyinvoiced":0,"m_shipper_id":null,"c_currency_id":100,"pricelist":3,"priceactual":3,"pricelimit":2.7,"linenetamt":6,"discount":0,"freightamt":0,"c_charge_id":null,"c_tax_id":104,"s_resourceassignment_id":null,"ref_orderline_id":null,"m_attributesetinstance_id":0,"isdescription":"N","processed":"N","qtyentered":2,"priceentered":3,"c_project_id":null,"pricecost":0,"qtylostsales":0,"c_projectphase_id":null,"c_projecttask_id":null,"rrstartdate":null,"rramt":0,"c_campaign_id":null,"c_activity_id":null,"user1_id":null,"user2_id":null,"ad_orgtrx_id":null,"link_orderline_id":null,"pp_cost_collector_id":null,"m_promotion_id":null,"c_orderline_uu":"U","createshipment":"N","createproduction":"N","c_department_id":null,"c_costcenter_id":null},"ops":[{"op_type":"CRUD_CREATE","table":"c_orderline"},{"op_type":"CRUD_UPDATE","table":"c_order"}]},"why":null,"notChecked":[],"ops":[{"op_type":"CRUD_CREATE","table":"c_orderline"},{"op_type":"CRUD_UPDATE","table":"c_order"}],"next":[],"ms":8401}
+$ BIM_OBJECT_OPLOG=/tmp/fast_guide_new.ops node common/door/door.js 'mis.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2' | sed -E 's/[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9:]{8}/T/g; s/"([a-z_]+_uu)":"[^"]*"/"\1":"U"/g'
+{"request":"d-mwj00voh-3425320-1","verb":"mis.new","actor":"human","status":"ok","answer":{"number":null,"kind":"Sales Order Line","table":"c_orderline","id":120002710,"docStatus":null,"given":["M_Product_ID","QtyEntered","C_Order_ID"],"defaulted":31,"filled":["ad_client_id","ad_org_id","c_bpartner_id","c_bpartner_location_id","datepromised","dateordered","line","m_warehouse_id","m_attributesetinstance_id","c_uom_id","qtyordered","qtydelivered","qtyreserved","qtyinvoiced","priceentered","priceactual","pricelist","freightamt","c_tax_id","discount","linenetamt","qtylostsales","processed","createshipment","createproduction","rramt","pricecost","pricelimit","c_currency_id","isactive","isdescription"],"record":{"c_orderline_id":120002710,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"T","createdby":101,"updated":"T","updatedby":101,"c_order_id":1500004,"line":10,"c_bpartner_id":112,"c_bpartner_location_id":108,"dateordered":"T","datepromised":"T","datedelivered":null,"dateinvoiced":null,"description":null,"m_product_id":137,"m_warehouse_id":103,"c_uom_id":100,"qtyordered":2,"qtyreserved":0,"qtydelivered":0,"qtyinvoiced":0,"m_shipper_id":null,"c_currency_id":100,"pricelist":3,"priceactual":3,"pricelimit":2.7,"linenetamt":6,"discount":0,"freightamt":0,"c_charge_id":null,"c_tax_id":104,"s_resourceassignment_id":null,"ref_orderline_id":null,"m_attributesetinstance_id":0,"isdescription":"N","processed":"N","qtyentered":2,"priceentered":3,"c_project_id":null,"pricecost":0,"qtylostsales":0,"c_projectphase_id":null,"c_projecttask_id":null,"rrstartdate":null,"rramt":0,"c_campaign_id":null,"c_activity_id":null,"user1_id":null,"user2_id":null,"ad_orgtrx_id":null,"link_orderline_id":null,"pp_cost_collector_id":null,"m_promotion_id":null,"c_orderline_uu":"U","createshipment":"N","createproduction":"N","c_department_id":null,"c_costcenter_id":null},"ops":[{"op_type":"CRUD_CREATE","table":"c_orderline"},{"op_type":"CRUD_UPDATE","table":"c_order"}]},"why":null,"notChecked":[],"ops":[{"op_type":"CRUD_CREATE","table":"c_orderline"},{"op_type":"CRUD_UPDATE","table":"c_order"}],"next":[],"ms":4329}
 ```
 
-The order is a draft until someone completes it. Because the line was given the order's number, the order's totals follow without a second step: `totallines` and `grandtotal` in the record below are the line's amount (6). `erp.read` hands back the order's own lines as well: the `children` list below holds the Sales Order Line just made (and the order's tax, payment schedule and POS payment lists, empty here).
+The order is a draft until someone completes it. Because the line was given the order's number, the order's totals follow without a second step: `totallines` and `grandtotal` in the record below are the line's amount (6). `mis.read` hands back the order's own lines as well: the `children` list below holds the Sales Order Line just made (and the order's tax, payment schedule and POS payment lists, empty here).
 
 <!-- run: new_read -->
 ```text
-$ BIM_OBJECT_OPLOG=/tmp/fast_guide_new.ops node common/door/door.js --list 'erp.read kind=Order number=50000' | sed -E 's/[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9:]{8}/T/g; s/"([a-z_]+_uu)":"[^"]*"/"\1":"U"/g'
+$ BIM_OBJECT_OPLOG=/tmp/fast_guide_new.ops node common/door/door.js --list 'mis.read kind=Order number=50000' | sed -E 's/[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9:]{8}/T/g; s/"([a-z_]+_uu)":"[^"]*"/"\1":"U"/g'
 kind: Order
 uu: 1500004
 record: {"c_order_id":1500004,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"T","createdby":101,"updated":"T","updatedby":101,"issotrx":"Y","documentno":"50000","docstatus":"DR","docaction":"CO","processing":"N","processed":"N","c_doctype_id":0,"c_doctypetarget_id":132,"description":null,"isapproved":"N","iscreditapproved":"N","isdelivered":"N","isinvoiced":"N","isprinted":"N","istransferred":"N","isselected":"N","salesrep_id":101,"dateordered":"T","datepromised":"T","dateprinted":null,"dateacct":"T","c_bpartner_id":112,"c_bpartner_location_id":108,"poreference":null,"isdiscountprinted":"Y","c_currency_id":100,"paymentrule":"P","c_paymentterm_id":105,"invoicerule":"D","deliveryrule":"A","freightcostrule":"I","freightamt":0,"deliveryviarule":"P","m_shipper_id":null,"c_charge_id":null,"chargeamt":0,"priorityrule":"5","totallines":6,"grandtotal":6,"m_warehouse_id":103,"m_pricelist_id":101,"istaxincluded":"N","c_campaign_id":null,"c_project_id":null,"c_activity_id":null,"posted":"N","c_payment_id":null,"c_cashline_id":null,"sendemail":"N","ad_user_id":null,"copyfrom":"N","isselfservice":"N","ad_orgtrx_id":null,"user1_id":null,"user2_id":null,"c_conversiontype_id":114,"bill_bpartner_id":112,"bill_location_id":108,"bill_user_id":null,"pay_bpartner_id":null,"pay_location_id":null,"ref_order_id":null,"isdropship":"N","volume":0,"weight":0,"ordertype":null,"c_pos_id":null,"amounttendered":0,"amountrefunded":0,"link_order_id":null,"m_freightcategory_id":null,"dropship_bpartner_id":null,"dropship_location_id":null,"dropship_user_id":null,"promotioncode":null,"c_ordersource_id":null,"processedon":0,"ispayschedulevalid":"N","c_cashplanline_id":null,"c_order_uu":"U","shippingrateinquiry":"N","ispriviledgedrate":"N","c_opportunity_id":null,"quotationorder_id":null,"c_department_id":null,"c_costcenter_id":null}
 children: [{"kind":"Sales Order Line","rows":[{"c_orderline_id":120002710,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"T","createdby":101,"updated":"T","updatedby":101,"c_order_id":1500004,"line":10,"c_bpartner_id":112,"c_bpartner_location_id":108,"dateordered":"T","datepromised":"T","datedelivered":null,"dateinvoiced":null,"description":null,"m_product_id":137,"m_warehouse_id":103,"c_uom_id":100,"qtyordered":2,"qtyreserved":0,"qtydelivered":0,"qtyinvoiced":0,"m_shipper_id":null,"c_currency_id":100,"pricelist":3,"priceactual":3,"pricelimit":2.7,"linenetamt":6,"discount":0,"freightamt":0,"c_charge_id":null,"c_tax_id":104,"s_resourceassignment_id":null,"ref_orderline_id":null,"m_attributesetinstance_id":0,"isdescription":"N","processed":"N","qtyentered":2,"priceentered":3,"c_project_id":null,"pricecost":0,"qtylostsales":0,"c_projectphase_id":null,"c_projecttask_id":null,"rrstartdate":null,"rramt":0,"c_campaign_id":null,"c_activity_id":null,"user1_id":null,"user2_id":null,"ad_orgtrx_id":null,"link_orderline_id":null,"pp_cost_collector_id":null,"m_promotion_id":null,"c_orderline_uu":"U","createshipment":"N","createproduction":"N","c_department_id":null,"c_costcenter_id":null}]},{"kind":"Order Tax","rows":[]},{"kind":"Order Payment Schedule","rows":[]},{"kind":"POS Payment","rows":[]}]
 ```
 
-`erp.new` is a `writes` verb. A person at the terminal runs it. An AI's `erp.new` is held as a claim and nothing is written until a person confirms it (see "What is a claim"). These blocks use a scratch op-log (`/tmp/fast_guide_new.ops`, emptied first), so running them does not touch your own data. Dates and times (`T`) and the `_uu` keys (`U`) change on every run, so the three blocks print them as those letters.
+`mis.new` is a `writes` verb. A person at the terminal runs it. An AI's `mis.new` is held as a claim and nothing is written until a person confirms it (see "What is a claim"). These blocks use a scratch op-log (`/tmp/fast_guide_new.ops`, emptied first), so running them does not touch your own data. Dates and times (`T`) and the `_uu` keys (`U`) change on every run, so the three blocks print them as those letters.
 
-## Work with any table: the `mis.*` verbs
+### Work with any table: the `mis.*` verbs
 
 **MIS is the base. ERP is MIS plus a document's life.** Listing, reading, creating, changing, deleting and loading records is the same on every table of the dictionary, a customer, a product, a table you made yourself. Those verbs are called `mis.*`. What only a document has (complete, void, close, reverse) stays `erp.*`. The older names `erp.list`, `erp.read`, `erp.describe`, `erp.sum`, `erp.group` and `erp.new` still work: each is an old name for its `mis.*` verb and gives the same answer, so a script you wrote earlier does not change.
 
@@ -521,9 +615,9 @@ opSummary: {"create:c_bpartner":1,"create:ad_treenodebp":1,"create:c_bp_customer
 keys: [1600010]
 ```
 
-An AI's `mis.new`, `mis.update`, `mis.delete` or `mis.load` is held as a claim, like `erp.new`: nothing is written until a person confirms it. Updating existing records in bulk is not offered; use `mis.update` for each, so the window's checks run.
+An AI's `mis.new`, `mis.update`, `mis.delete` or `mis.load` is held as a claim, like any `writes` verb: nothing is written until a person confirms it. Updating existing records in bulk is not offered; use `mis.update` for each, so the window's checks run.
 
-### See and change records as a role
+#### See and change records as a role
 
 Every `mis.*` verb takes `role=`, the id of a role of the ERP. **Without a role nothing is filtered:** you see every record of every client. With a role you get what that role gets in the window it is granted: the records of its own client and organisations, and only the records and columns its access rows allow. The totals count only those records. The role is stated on the line. It is not a sign-in.
 
@@ -546,7 +640,7 @@ reason: role 103 (GardenWorld User) is not granted a window that shows Tax (AD_W
 
 Five rules are not judged yet, and a role that uses one of them is refused instead of half-checked: a personal lock on a record, a table validation rule, a role whose organisations come from the user, a role with a summary organisation in an organisation tree, and "dependent entities" record access. `mis.load` takes no role.
 
-## Make a table of your own: `mis.add_window`
+### Make a table of your own: `mis.add_window`
 
 A table you keep in a spreadsheet can become a real window: a table, a form, a menu entry and role access, with no code written for it. Describe its columns in a small `.csv`, one line per column. Only `Column` is required. The key, the client and organisation, the active flag and the audit columns are added for you:
 
@@ -589,7 +683,7 @@ shown 1 of 1
 
 The types are String, Quantity, Amount, YesNo, Date, DateTime, Text and List. A column whose name ends in `_ID` is a lookup to that table, and one that starts with `Is` is a yes/no. A detail table under a master comes with a workbook: the next section.
 
-## A whole workbook in one line: `ninja.exec`
+### A whole workbook in one line: `ninja.exec`
 
 One table from a `.csv` is the small case. A **Ninja workbook** holds many tables at once, says which table sits under which, and can carry their first rows. One line makes all of it.
 
@@ -669,7 +763,7 @@ shown 1 of 1
 
 What it refuses, with nothing written: a second workbook that names tables another workbook made, a workbook whose tables are all already there with no master, a `Master` that is neither in the workbook nor a table with a window here, and a `ColumnSet` with a prefix it does not know. A sheet whose name is not exactly a table's name is skipped and named in the answer. The answer's `notChecked` lists what was not judged.
 
-### One table from a plain CSV: `ninja.exec file=<Table>.csv`
+#### One table from a plain CSV: `ninja.exec file=<Table>.csv`
 
 A `.csv` instead of a workbook is ONE table whose header is the model, read the way the older Ninja reads one. The table is the file's name (`table=` names another). Each header cell takes its type from its name, by the first rule that fits: it contains `Date` → a date; `Qty` → a quantity; `Amount` → an amount; it starts with `Is` or `In` → Yes/No (so `Income` is Yes/No too, as in the older Ninja); it ends with `_ID` → a lookup, whose cells are the Name of the record; it holds `=` and `/` (`Plan=Basic/Gold`) → a list; anything else → text. A cell such as `C_BPartner_ID>Value` or `Code=X` makes the column before the `>` or `=`. The lines are the rows. The table and its rows are made together: if one line does not load, nothing is made and the answer names the line. A line whose first two columns are there already is skipped, so the same file run again writes nothing, and a file with more lines adds only the new ones. On a table that is there already, the file only adds lines, and a header that is not a column of it is refused.
 
@@ -687,7 +781,7 @@ summary: every line of CL_Client.csv is there already (2 skipped); nothing was w
 summary: 1 line loaded into CL_Client, 2 skipped (already there)
 ```
 
-### Give a table the document columns: `ninja.workflow`
+#### Give a table the document columns: `ninja.workflow`
 
 A feature can be switched on later, for one table, without touching the workbook. `ninja.workflow` gives a table the five document columns (`DocStatus`, `DocAction`, `Processed`, `DocumentNo`, `IsApproved`) with their lists and defaults, shows them on its tabs, and fills the records that are already there. It looks first and adds only what is missing, so a second run writes nothing:
 
@@ -712,7 +806,7 @@ reason: Complete was not done: PR Visit has the document columns but no document
 
 It does not yet say what *Complete* does on such a table: the answer's `notMade` names what is still missing, and `erp.complete` is refused in plain words until then. A table that came with the system is refused.
 
-### Undo a bundle, and write one back as a workbook: `ninja.rollback`, `ninja.export`
+#### Undo a bundle, and write one back as a workbook: `ninja.rollback`, `ninja.export`
 
 Two lines close the loop on a workbook. `ninja.rollback bundle=<name>` switches off everything one workbook made (its windows, tabs, fields, columns, tables and menu entries, and the bundle's own menu node) in one group of the log. As in the older Ninja, a table that holds records blocks it, and it names the table and its record count; `dry=Y` says what would go off. A table that came with the system keeps itself and loses only what the bundle added to it (a tab on Business Partner goes, Business Partner stays). Run twice, the second writes nothing; `ninja.exec` on the same workbook afterwards brings the bundle back. `ninja.export` writes a bundle, a window or a table back as a workbook that `ninja.exec` reads: tables, `Master` links, columns with their types and the values of each list. Edit the sheet and run it again, or carry the model to another machine as a file. It writes the model only, never rows; a file that exists is never overwritten; one selector (`bundle=`, `window=` or `table=`) is required.
 
@@ -734,7 +828,7 @@ reason: Practice_out.xlsx exists already and is never overwritten. Nothing was w
 
 Not carried by the export: validation rules and callouts (the stager never wrote them into the model). A rollback switches rows off, it does not delete them, so the log keeps its history.
 
-## The records under one record, and a sheet against the table: `master=`, `mis.diff`
+### The records under one record, and a sheet against the table: `master=`, `mis.diff`
 
 `master=Table/record` on `mis.list`, `mis.sum` or `mis.group` keeps only the rows under that record, the rows a tab under it shows: `mis.list kind=PR_Visit master=PR_Patient/Aminah` is the visits of Aminah. The record after the slash is an id, or a Document No, Name or Value, read as `mis.update number=` reads it. The answer is the same as the plain filter `PR_Patient_ID=1`. A table that is not a tab under the master is refused with the reason, and so is a record that does not exist or a name two records share (then give the id). A record with nothing under it is a true zero, not an empty question.
 
@@ -766,7 +860,7 @@ summary: 1 new, 1 changed, 1 the same, 1 in the table and not in the file; nothi
 
 Not compared by `mis.diff`: a column of the table that the sheet does not name. The key is one column. A master two levels up (the patient of a medicine) is refused: it is not the medicine's tab parent.
 
-### A file of MIS lines, tried first: `--script … --dry`
+#### A file of MIS lines, tried first: `--script … --dry`
 
 A set-up you want to repeat (a workbook, its first records, a check) is a file of lines run with `--script`, as in [A script](#a-script-several-lines-a-named-result): it stops at the first line that is not ok, and the lines after it are not run. Add `--dry` to try the whole file first. The file then runs on a throw-away copy of your op-log (`BIM_OBJECT_OPLOG` must name it) and of the files of this folder, so a later line sees what an earlier line made, exactly as in the real run, and gets the real run's answer. At the end the copy is deleted: your op-log, your files and the journal are as before. Files in subfolders are not copied. A line that acts outside the op-log (a Modeller session, a legacy server, a pack) cannot be held back, so in a dry run it is refused and the file stops there.
 
@@ -782,7 +876,7 @@ summary: 50 = sum of Fee over 1 PR Visit
 op-log: 153 ops
 ```
 
-## Cheatsheet: practise the MIS lines
+### Cheatsheet: practise the MIS lines
 
 Everything here is practice on **your own copy**: the first line names a file that keeps what you do, and nothing reaches a real company's books. Delete that file to start again from nothing. Run the lines from the folder that holds `common/` (a `bim-ootb` checkout).
 
@@ -829,7 +923,7 @@ Everything here is practice on **your own copy**: the first line names a file th
 
 A workbook of your own: copy the practice file, change the rows of `2_RO_ModelMaker` to your tables (a prefix of your own, such as `MY_`, keeps them apart from the tables that are already there; a name the system already has is reused, not made twice), and run `ninja.exec` on it with `dry=Y` first. The lines of this table are the verbs shown run in the sections above; the table itself is not re-run by this page's test, the grey blocks are.
 
-## Work at the terminal: `mis.js`
+### Work at the terminal: `mis.js`
 
 If you would rather pick than type, `mis.js` shows a list with a pointer. It is a front end only: every key compiles into **one** of the door lines above, runs through the same door (journalled, claim-checked), and the screen prints the line before it runs. Up and Down move the pointer. Left and Right move along the buttons on the pointed row (`[U Edit] [D Delete] [C Copy]` for a record; for a document, the actions the engine allows now, such as `[C Complete] [V Void]`, and no Delete once it is completed). Enter runs the highlighted button. `+` starts a new record, Delete asks `y/N`, and Esc backs out and writes nothing.
 
@@ -885,7 +979,7 @@ $ printf '+\n=GD300\nTab\n=Guide Four\nEnter\ny\nEsc\n' | BIM_OBJECT_OPLOG=/tmp/
 
 Edit works the same way: it shows only the columns the window lets a person edit, with lookups as names, and sends only what you changed. Copy starts a new record from the pointed one, so you must change what must be unique (a duplicate is refused and your typing is kept). Set `MIS_SESSION_FILE=session.door` and a terminal session records the lines it ran, one per line, as a script you can read and run again.
 
-### The menu on a screen: `menu` and `mis.menu`
+#### The menu on a screen: `menu` and `mis.menu`
 
 `node common/door/door.js menu` (with the cheatsheet's alias, `d menu`; in the red1 shell, `menu`) opens the ERP menu on the terminal, the same menu the browser ERP shows, with the same folders in the same order. Add a role (`d 'menu role=102'`) and you see only what that role may open. Up and Down, or a number, pick an entry; Enter opens a folder, or a window's list screen (the `mis.js` screen above, on the table of the window's first tab); Esc goes back up, and from the top it quits; `/` finds an entry by name; `?` shows the keys. A process, report or form says that it opens in the browser ERP, and runs nothing. As everywhere on this page, the screen only types door lines for you, and it prints each one before it runs it (the `->` lines), so what you do on the screen you can also type, or put in a script.
 
@@ -924,169 +1018,6 @@ Menu   (role 102)   295 windows
 > 1  ▸ System Admin
 ```
 
-## Choose how the answer is shown, and keep it
-
-The reply is the JSON envelope unless you ask otherwise. Three switches show the rows of an answer as something a person or a spreadsheet can read; the envelope is still what the door records:
-
-- `--list`: an aligned table, ending `shown N of TOTAL`. A reply that is one record shows `field: value` lines.
-- `--csv`: the rows as CSV (RFC 4180: a cell with a comma, a quote or a new line is quoted; numbers are exactly as the engine returned them).
-- `--out FILE` writes the chosen form to a file in the current folder instead of the screen. A line that is refused, held or inconclusive writes no file and says so.
-
-<!-- run: csv_orders -->
-```text
-$ node common/door/door.js --csv 'erp.list kind=Order docstatus=CO limit=3 columns=DocumentNo,DocStatus,GrandTotal sort=-DocumentNo'
-DocumentNo,DocStatus,GrandTotal
-80001,CO,100.7
-80001,CO,100.7
-800002,CO,2160
-```
-
-In a script, end a line with `> file` to send that line's answer to a file in the script's folder (`>> file` adds to it). The form follows the name: `.csv` is CSV, `.json` is the envelope, anything else is the list. A path that leaves the script's folder is refused.
-
-These switches live in a fifth file, `render.js`; put it beside `door.js` when you use them from a download:
-
-```text
-curl -O https://red1oon.github.io/bim-ootb/common/door/render.js
-```
-
-## Ask the door: `help`
-
-Type `help` to see the common commands, each as a line you can run. `help erp` lists every verb of one app, `help erp.find` shows one verb whole (what it does, each input, what it may change, who may run it), and `help all` lists everything. Help is generated from the same verb list as the table below, reads nothing, runs nothing and is not recorded in the journal.
-
-<!-- run: help_verb -->
-```text
-$ node common/door/door.js 'help erp.find'
-erp.find — Find a document
-
-Find a document by its number, the way a window's Find does (DocumentNo, else Name or Value). Returns every match with its key, DocStatus and DocAction. Nothing is changed. Kinds: any document table of the dictionary (34).
-
-Inputs:
-  kind (required, string) e.g. Order — The kind of document, as the dictionary names it (an AD_Table with a DocAction column), e.g. "Order". 34 kinds exist; an unknown kind or a table that is not a document is refused naming the reason.
-  number (required, string) e.g. 50000 — The document number (DocumentNo) as shown in the window; if two documents carry it, name one with id.
-
-Harm: read (reads only)
-Who may run it: human, ai
-Example: erp.find kind=Order number=50000
-```
-
-## For developers: check the twin against legacy
-
-These verbs are for the person who keeps the ERP twin equal to the real iDempiere. They need a bim-ootb checkout, and for the first four the legacy test stack running (a docker Postgres and the pilot server) and the iDempiere source beside it. When a part is missing they answer `inconclusive` and say which part: they never answer an empty list or "same" for something they could not look at.
-
-`legacy.status` asks whether the stack is up. It starts nothing; when something is down it prints the commands that start it:
-
-<!-- run: legacy_status -->
-```text
-$ node common/door/door.js --list 'legacy.status'
-verdict: UP
-postgres: {"container":"postgres","database":"idempiere_pilot","state":"ready"}
-pilot: {"url":"http://localhost:8088/webui/","http":200,"state":"up"}
-summary: legacy UP: postgres ready, pilot up
-next: []
-```
-
-`erp.column` answers "who fills this column", from the twin's dictionary and legacy's side by side: the column default, the validation rule, the field default, and the login default (iDempiere puts the `IsDefault` row of a referenced table into the context at login). When the two sides disagree it says `DIFFERENT` and which part:
-
-<!-- run: column_docaction -->
-```text
-$ node common/door/door.js --list 'erp.column kind=Order column=DocAction'
-kind: Order
-table: C_Order
-column: DocAction
-twin: {"found":true,"table":"C_Order","column":"DocAction","reference":28,"mandatory":"Y","updateable":"Y","defaultValue":"CO","validationRule":null,"fieldDefaults":[],"loginDefault":null,"filledBy":"the column default CO"}
-legacy: {"found":true,"table":"C_Order","column":"DocAction","reference":28,"mandatory":"Y","updateable":"Y","defaultValue":"CO","validationRule":null,"fieldDefaults":[],"loginDefault":null,"filledBy":"the column default CO"}
-differs: []
-verdict: SAME
-notChecked: []
-summary: C_Order.DocAction: SAME; twin fills it by the column default CO; legacy by the column default CO
-```
-
-`idempiere.where` finds a name in the iDempiere source and answers the file, the line and the line's text, so a claim about legacy behaviour can quote where it comes from. It shows 25 lines unless `limit` says otherwise and always gives the total; `in=callout` keeps only files whose path contains that text:
-
-<!-- run: where_invoicerule -->
-```text
-$ node common/door/door.js --list 'idempiere.where symbol=InvoiceRule in=CalloutOrder limit=2'
-symbol: InvoiceRule
-hits: [{"file":"org.adempiere.base.callout/src/org/compiere/model/CalloutOrder.java","line":50,"text":"*\t\t- InvoiceRule/DeliveryRule/PaymentRule"},{"file":"org.adempiere.base.callout/src/org/compiere/model/CalloutOrder.java","line":131,"text":"mTab.setValue (\"InvoiceRule\", X_C_Order.INVOICERULE_Immediate);"}]
-shown: 2
-total: 20
-files: 1
-verdict: OK
-summary: InvoiceRule: 20 lines in 1 files (showing 2)
-```
-
-Three more verbs sit beside these. `legacy.query table=c_order ad_client_id=11 limit=5` reads rows from a legacy table (read only; the table and every column are checked against legacy's dictionary, and the total is always given). `erp.compare kind=Order number=50000 legacy=50981` reads one record on the twin and the matching one on legacy and compares them cell for cell; a cell where legacy is empty and the twin holds a default is labelled `NULL-VS-DEFAULT` and nothing is said about why. `witness.run name=erp_new` runs a witness from the tree, keeps its whole log, and answers its own verdict line (PASS, FAIL or INCONCLUSIVE); a witness that prints no verdict line is an error, because an exit code is not evidence, and `witness.last` reads the last recorded run without running it again.
-
-### Make a plugin for a legacy iDempiere (OSGi and 2Pack)
-
-For the person who puts an ERP data model on a real iDempiere server. The data model is a workbook (Excel): one sheet per Application Dictionary table (`AD_Table`, `AD_Column`, `AD_Window`, `AD_Tab`, `AD_Field`, `AD_Menu`, and so on), one row per record, the first row the AD column names, and a `Key` column that names each row. A cell that points at another row of the workbook reads `ref:<Key>`; one that points at a row the server already has reads `existing:AD_Table:C_ProjectTask`. A sheet `Plugin` carries the plugin id, version and description. The worked example is the BIM Document model, `erp/plugins/models/BIM_Document.xlsx` in the `bim-ootb` repository.
-
-Two things are made from the one workbook, and they are kept apart:
-
-| Made | What it holds | Where it goes |
-|---|---|---|
-| **The 2Pack zip** | Metadata only: the dictionary rows, and the class *names* of any process. No program code. A pack version is applied once and never changed, so the same version with different rows is refused | The plugin's `META-INF` folder, where iDempiere's own pack activator picks it up when the plugin starts |
-| **The Java model classes** | `I_<Table>` and `X_<Table>` for each table the workbook creates, in the shape iDempiere's own generator writes | The plugin's `src` folder |
-
-What the workbook cannot make is the rules: the document action of the table, and any process's code. Those are written by hand in the plugin's `src` folder, as in any iDempiere plugin.
-
-The door verb `erp.pack book=<workbook.xlsx> version=<x.y.z> out=<plugin>/META-INF` writes just the zip, and answers its sha256, the rows per dictionary table and the names of the process classes it points at. Run again with the same version and the same rows it answers `unchanged`; the same version with an edited workbook is refused, because a released pack is never changed. Add `java=<plugin>/src package=<java package>` and the Java model classes are written too. A person runs it; an AI's call is held as a claim until a person confirms. The script underneath is still `node erp/tools/xlsx_pack.js`, which prints a `§XLSX-PACK` line for each file it writes. The second verb, `erp.legacy_plugin book=<workbook.xlsx> version=<x.y.z>`, is the whole route on the local legacy test instance in one line. It runs five lines, and the first one that is not ok stops it: `legacy.up` (start the shared docker Postgres if it is stopped), `erp.pack` (make the zip), `legacy.refresh` (rebuild the test database from the base seed, install the plugin, start the server and wait until the pack is installed, about two minutes), `legacy.check` (read every row of the workbook back from the test database by SQL) and `legacy.witness` (run the in-server check over the server's console and answer its verdict and counts). Every step can be run alone. The instance, its database and the scripts are fixed: nothing is taken from the caller, and the pilot's databases are refused. A person runs it; an AI's call is held as a claim until a person confirms.
-
-`legacy.check` is the read-only one, and it answers how many rows of each kind were found against how many the workbook holds:
-
-<!-- run: legacy_check -->
-```text
-$ node common/door/door.js --list 'legacy.check book=erp/plugins/models/BIM_Document.xlsx'
-database: idempiere_bimdoc
-book: erp/plugins/models/BIM_Document.xlsx
-checks: [{"what":"AD_Table rows","expected":1,"found":1,"ok":true},{"what":"physical tables","expected":1,"found":1,"ok":true},{"what":"AD_Column rows","expected":34,"found":34,"ok":true},{"what":"AD_Window rows","expected":1,"found":1,"ok":true},{"what":"AD_Tab rows","expected":3,"found":3,"ok":true},{"what":"AD_Menu rows","expected":1,"found":1,"ok":true},{"what":"AD_Process rows with the same class name","expected":2,"found":2,"ok":true},{"what":"AD_Reference rows","expected":4,"found":4,"ok":true}]
-pack: {"compared":false,"note":"no version given: the installed pack was not compared with a fresh one"}
-missing: []
-verdict: ALL-FOUND
-summary: test DB idempiere_bimdoc: ALL-FOUND (8/8 kinds of row); no version given: the installed pack was not compared with a fresh one
-```
-
-Give it `version=<x.y.z>` as well and it compares the 2Pack installed in the plugin with the pack just made from the workbook, and says plainly when they differ: the refresh installs the plugin bundle as it is committed, so the two can drift apart until the bundle is rebuilt.
-
-## Viewer questions from a plain download
-
-Two Viewer verbs, `viewer.counts` and `viewer.clashes`, also work without a checkout. Put two more files beside the six:
-
-```text
-curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_verbs.js
-curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_driver.js
-```
-
-With no page files on your disk, the tool opens the live Viewer page with the building the site serves, in a hidden browser on the processor, and asks the Viewer's own Find panel. `page` in the answer says which page was used:
-
-<!-- run: viewer_flat -->
-```text
-$ node door.js 'viewer.counts building=Duplex' | grep -o '"summary":"[^"]*"\|"page":"[a-z]*"'
-"summary":"1119 elements: MEP 904, ARC 196, STR 19"
-"page":"live"
-```
-
-It takes about half a minute. The numbers are the served building's, so they can differ from an older copy in a checkout. The schedule verbs, `viewer.film_path`, the object verbs and `modeller.walk` still need a checkout; the table says which.
-
-## More of the red1 shell
-
-### Grey suggestions while you type
-
-At the prompt of a terminal, grey text after the cursor suggests what comes next. The source is the dictionary, chosen by where you are in the line: the first word (the red1 words and the door verbs); after `cd`, the buildings and the ERP kinds (`cd Busi` suggests `cd "Business Partner"`); after `do`, the DocAction codes; then the column names of the kind you are in; after `key=`, the legal values. **Tab** or **→** takes the suggestion; typing on ignores it; **Return always runs what you typed**, never the suggestion. A misspelt name gets a hint (`▸ Value`) that Tab can take, never a silent fix. In a one-shot line, a script or an AI there is no suggestion, and a wrong column is a refusal that names the nearest ones:
-
-<!-- run: red1_typo -->
-```text
-$ printf 'cd Project\nls Valu=Hospital\n' | node common/door/red1.js 2>/dev/null | sed 's/ · [0-9]* ms//'
-→ mis.describe kind=Project
-Project: 48 properties; ls shows C_Project_ID, Value, Name, Processed, SalesRep_ID
-→ mis.list kind=Project columns=C_Project_ID,Value,Name,Processed,SalesRep_ID limit=20 names=Y Valu=Hospital
-refused · mis.list · kind Project has no property "Valu"; nearest: Value
-{
- "refused": true,
- "reason": "kind Project has no property \"Valu\"; nearest: Value"
-}
-```
-
 ### The legal values of a column: `mis.lookup`
 
 `mis.lookup` answers what a column may hold, the way the legacy window's drop-down does: the rows of the table the column points to, narrowed by the column's validation rule and by the role. A rule that needs a value you have not given (`@C_Project_ID@`) answers no rows and names the missing value; it never shows the unfiltered list. The process `Generate PO from Project` asks for a Project Phase; with a project given, only that project's phases come back, and the rule's own text is in the answer:
@@ -1096,6 +1027,10 @@ refused · mis.list · kind Project has no property "Valu"; nearest: Value
 $ BIM_OBJECT_OPLOG=/tmp/fast_guide_empty.ops node common/door/door.js 'mis.lookup process="Generate PO from Project" column=C_ProjectPhase_ID C_Project_ID=990000'
 {"request":"d-mwir4ben-3223761-1","verb":"mis.lookup","actor":"human","status":"ok","answer":{"column":"C_ProjectPhase_ID","reference":19,"valRule":{"id":165,"code":"C_ProjectPhase.C_Project_ID=@C_Project_ID@","sql":"C_ProjectPhase.C_Project_ID=990000"},"refWhere":null,"unresolved":[],"table":"C_ProjectPhase","rows":[{"value":990000,"name":"1 · Substructure"},{"value":990001,"name":"2 · Superstructure"},{"value":990002,"name":"5 · MEP Rough-in"},{"value":990003,"name":"6 · Architecture"},{"value":990004,"name":"9 · MEP Final"},{"value":990005,"name":"10 · Finishes"},{"value":990006,"name":"99 · Unsequenced"}],"shown":7,"total":7},"why":null,"notChecked":[],"ops":[],"next":[],"ms":1351}
 ```
+
+## erp: documents and processes
+
+The chain from a building to its ERP Project Order, after the guide's `cost` and `post`.
 
 ### More of the building-to-order chain
 
@@ -1181,6 +1116,89 @@ $ BIM_OBJECT_OPLOG=/tmp/fast_guide_empty.ops node common/door/door.js 'mis.descr
 $ BIM_OBJECT_OPLOG=/tmp/fast_guide_empty.ops node common/door/door.js 'erp.order_state building=Duplex'
 {"request":"d-mwizct3m-3399173-1","verb":"erp.order_state","actor":"human","status":"ok","answer":{"building":"Duplex","key":"Ifc2x3_Duplex_Federated","state":{"generated":false,"projectId":null,"plannedAmt":null},"decision":{"kind":"not-generated","actions":["generate"]},"delta":null,"offer":{"key":"generate","line":"erp.process name=\"Fold from BIM\" Building=Duplex"}},"why":null,"notChecked":[],"ops":[],"next":[],"ms":589}
 ```
+
+## For developers
+
+Keeping the ERP twin equal to the real iDempiere, and making a plugin for a legacy iDempiere.
+
+### Check the twin against legacy
+
+These verbs are for the person who keeps the ERP twin equal to the real iDempiere. They need a bim-ootb checkout, and for the first four the legacy test stack running (a docker Postgres and the pilot server) and the iDempiere source beside it. When a part is missing they answer `inconclusive` and say which part: they never answer an empty list or "same" for something they could not look at.
+
+`legacy.status` asks whether the stack is up. It starts nothing; when something is down it prints the commands that start it:
+
+<!-- run: legacy_status -->
+```text
+$ node common/door/door.js --list 'legacy.status'
+verdict: UP
+postgres: {"container":"postgres","database":"idempiere_pilot","state":"ready"}
+pilot: {"url":"http://localhost:8088/webui/","http":200,"state":"up"}
+summary: legacy UP: postgres ready, pilot up
+next: []
+```
+
+`erp.column` answers "who fills this column", from the twin's dictionary and legacy's side by side: the column default, the validation rule, the field default, and the login default (iDempiere puts the `IsDefault` row of a referenced table into the context at login). When the two sides disagree it says `DIFFERENT` and which part:
+
+<!-- run: column_docaction -->
+```text
+$ node common/door/door.js --list 'erp.column kind=Order column=DocAction'
+kind: Order
+table: C_Order
+column: DocAction
+twin: {"found":true,"table":"C_Order","column":"DocAction","reference":28,"mandatory":"Y","updateable":"Y","defaultValue":"CO","validationRule":null,"fieldDefaults":[],"loginDefault":null,"filledBy":"the column default CO"}
+legacy: {"found":true,"table":"C_Order","column":"DocAction","reference":28,"mandatory":"Y","updateable":"Y","defaultValue":"CO","validationRule":null,"fieldDefaults":[],"loginDefault":null,"filledBy":"the column default CO"}
+differs: []
+verdict: SAME
+notChecked: []
+summary: C_Order.DocAction: SAME; twin fills it by the column default CO; legacy by the column default CO
+```
+
+`idempiere.where` finds a name in the iDempiere source and answers the file, the line and the line's text, so a claim about legacy behaviour can quote where it comes from. It shows 25 lines unless `limit` says otherwise and always gives the total; `in=callout` keeps only files whose path contains that text:
+
+<!-- run: where_invoicerule -->
+```text
+$ node common/door/door.js --list 'idempiere.where symbol=InvoiceRule in=CalloutOrder limit=2'
+symbol: InvoiceRule
+hits: [{"file":"org.adempiere.base.callout/src/org/compiere/model/CalloutOrder.java","line":50,"text":"*\t\t- InvoiceRule/DeliveryRule/PaymentRule"},{"file":"org.adempiere.base.callout/src/org/compiere/model/CalloutOrder.java","line":131,"text":"mTab.setValue (\"InvoiceRule\", X_C_Order.INVOICERULE_Immediate);"}]
+shown: 2
+total: 20
+files: 1
+verdict: OK
+summary: InvoiceRule: 20 lines in 1 files (showing 2)
+```
+
+Three more verbs sit beside these. `legacy.query table=c_order ad_client_id=11 limit=5` reads rows from a legacy table (read only; the table and every column are checked against legacy's dictionary, and the total is always given). `erp.compare kind=Order number=50000 legacy=50981` reads one record on the twin and the matching one on legacy and compares them cell for cell; a cell where legacy is empty and the twin holds a default is labelled `NULL-VS-DEFAULT` and nothing is said about why. `witness.run name=erp_new` runs a witness from the tree, keeps its whole log, and answers its own verdict line (PASS, FAIL or INCONCLUSIVE); a witness that prints no verdict line is an error, because an exit code is not evidence, and `witness.last` reads the last recorded run without running it again.
+
+#### Make a plugin for a legacy iDempiere (OSGi and 2Pack)
+
+For the person who puts an ERP data model on a real iDempiere server. The data model is a workbook (Excel): one sheet per Application Dictionary table (`AD_Table`, `AD_Column`, `AD_Window`, `AD_Tab`, `AD_Field`, `AD_Menu`, and so on), one row per record, the first row the AD column names, and a `Key` column that names each row. A cell that points at another row of the workbook reads `ref:<Key>`; one that points at a row the server already has reads `existing:AD_Table:C_ProjectTask`. A sheet `Plugin` carries the plugin id, version and description. The worked example is the BIM Document model, `erp/plugins/models/BIM_Document.xlsx` in the `bim-ootb` repository.
+
+Two things are made from the one workbook, and they are kept apart:
+
+| Made | What it holds | Where it goes |
+|---|---|---|
+| **The 2Pack zip** | Metadata only: the dictionary rows, and the class *names* of any process. No program code. A pack version is applied once and never changed, so the same version with different rows is refused | The plugin's `META-INF` folder, where iDempiere's own pack activator picks it up when the plugin starts |
+| **The Java model classes** | `I_<Table>` and `X_<Table>` for each table the workbook creates, in the shape iDempiere's own generator writes | The plugin's `src` folder |
+
+What the workbook cannot make is the rules: the document action of the table, and any process's code. Those are written by hand in the plugin's `src` folder, as in any iDempiere plugin.
+
+The door verb `erp.pack book=<workbook.xlsx> version=<x.y.z> out=<plugin>/META-INF` writes just the zip, and answers its sha256, the rows per dictionary table and the names of the process classes it points at. Run again with the same version and the same rows it answers `unchanged`; the same version with an edited workbook is refused, because a released pack is never changed. Add `java=<plugin>/src package=<java package>` and the Java model classes are written too. A person runs it; an AI's call is held as a claim until a person confirms. The script underneath is still `node erp/tools/xlsx_pack.js`, which prints a `§XLSX-PACK` line for each file it writes. The second verb, `erp.legacy_plugin book=<workbook.xlsx> version=<x.y.z>`, is the whole route on the local legacy test instance in one line. It runs five lines, and the first one that is not ok stops it: `legacy.up` (start the shared docker Postgres if it is stopped), `erp.pack` (make the zip), `legacy.refresh` (rebuild the test database from the base seed, install the plugin, start the server and wait until the pack is installed, about two minutes), `legacy.check` (read every row of the workbook back from the test database by SQL) and `legacy.witness` (run the in-server check over the server's console and answer its verdict and counts). Every step can be run alone. The instance, its database and the scripts are fixed: nothing is taken from the caller, and the pilot's databases are refused. A person runs it; an AI's call is held as a claim until a person confirms.
+
+`legacy.check` is the read-only one, and it answers how many rows of each kind were found against how many the workbook holds:
+
+<!-- run: legacy_check -->
+```text
+$ node common/door/door.js --list 'legacy.check book=erp/plugins/models/BIM_Document.xlsx'
+database: idempiere_bimdoc
+book: erp/plugins/models/BIM_Document.xlsx
+checks: [{"what":"AD_Table rows","expected":1,"found":1,"ok":true},{"what":"physical tables","expected":1,"found":1,"ok":true},{"what":"AD_Column rows","expected":34,"found":34,"ok":true},{"what":"AD_Window rows","expected":1,"found":1,"ok":true},{"what":"AD_Tab rows","expected":3,"found":3,"ok":true},{"what":"AD_Menu rows","expected":1,"found":1,"ok":true},{"what":"AD_Process rows with the same class name","expected":2,"found":2,"ok":true},{"what":"AD_Reference rows","expected":4,"found":4,"ok":true}]
+pack: {"compared":false,"note":"no version given: the installed pack was not compared with a fresh one"}
+missing: []
+verdict: ALL-FOUND
+summary: test DB idempiere_bimdoc: ALL-FOUND (8/8 kinds of row); no version given: the installed pack was not compared with a fresh one
+```
+
+Give it `version=<x.y.z>` as well and it compares the 2Pack installed in the plugin with the pack just made from the workbook, and says plainly when they differ: the refresh installs the plugin bundle as it is committed, so the two can drift apart until the bundle is rebuilt.
 
 ## What is not checked
 

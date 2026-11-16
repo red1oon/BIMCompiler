@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 37bce684713d1698
+source_sha: 21c77ee61a2b9adf
 lang: ja
 ---
 
@@ -29,7 +29,7 @@ Tip: type level student for fuller help on each word (red1 --fast opens without 
 red1> exit
 ```
 
-地図として読んでください。バージョン行は、red1 にドア動詞（長い形）と短い言葉がいくつあるかを示します。`help` は短い言葉を三つのグループで表示します。`bim`、`mis`、`erp` だけを打つと、そのグループを見られます：
+地図として読んでください。バージョン行は、red1 にドア動詞（長い形）と短い言葉がいくつあるかを示します。`help` は短い言葉を三つのグループで表示します。`help bim`、`help mis`、`help erp`（またはグループ名だけ）で、そのグループを見られます：
 
 | グループ | 何のためか | 最初に打つもの |
 |---|---|---|
@@ -46,6 +46,23 @@ red1: type a short word; red1 prints the full line it runs (→ …), then runs 
   erp   document actions (CO VO CL RC)   start with: cd Order   (7 words)
   everywhere: cd <place> · pwd · role <id> · history · report · exit
 Type bim, mis or erp for its words · help <word> for one word (level student first for the full explanation) · help verbs for the full door lines.
+```
+
+グループは、その言葉を、打てる例とともに一覧にします。いちばん短いのは `erp` です：
+
+<!-- run: red1_help_erp -->
+```text
+$ node common/door/red1.js 'help erp' 2>/dev/null
+erp: document actions (CO VO CL RC) (start with: cd Order)
+ in a building:
+  post discipline=ARC  post the building's priced selection to its ERP Project Order
+  vo discipline=ARC    issue the change between the model and the Project Order as a Variation Order
+ in an ERP kind:
+  status                                              a Project's earned value (PV, EV, AC, SPI, CPI per phase)
+  claim                                               bill the project's completed phases not yet billed
+  do CO 50000                                         a document action
+  run "Set Project Type" 990000 C_ProjectType_ID=103  run a process of the dictionary
+  next 50000                                          what a document may do next
 ```
 
 `help` はドア動詞を表示せず、言葉だけを表示します。`help verbs` は、すべてのドア動詞を完全な行で一覧にします。ひとつの言葉についてさらに詳しい説明が必要なら、Student レベルに切り替えます。セッションでは `level student`、一行なら `--level student` を使い、そのあと `help <word>` で、その言葉が何をするか、何を打つか、red1 が今いる場所から何を取るか、そして例が示されます。テキストは動詞自身の説明なので、末尾の表からずれることはありません：
@@ -218,17 +235,17 @@ C_BPartner_ID  Value  Name               Logo_ID  C_BP_Group_ID
 
 ### erp：伝票とプロセス
 
-**伝票を作って完了する。** `new` の中で `Order` を打つと、下書きの注文が作られ、その番号が表示されます。ドアの完全な行はプロンプトでも使えるので、注文の明細は `erp.new`（商品と数量）で追加します。`next <number>` は伝票が今できることを描き、言葉のあるアクションには、それを実行する行を示します。`do CO <number>` で完了します。従来の DocAction コードは `CO` 完了、`VO` 無効、`CL` クローズ、`RC` 取消（反転）です（`do complete`、`do void` … も使えます）。`new` が表示する番号、各 `next` ツリーのステータス、`CO` のあとで進んだアクションを見てください。（`grep` はそれらの行だけを残します。完全な答えには、埋めた列すべても一覧されます。）
+**伝票を作って完了する。** `new` の中で `Order` を打つと、下書きの注文が作られ、その番号が表示されます。ドアの完全な行はプロンプトでも使えるので、注文の明細は `mis.new`（商品と数量）で追加します。`next <number>` は伝票が今できることを描き、言葉のあるアクションには、それを実行する行を示します。`do CO <number>` で完了します。従来の DocAction コードは `CO` 完了、`VO` 無効、`CL` クローズ、`RC` 取消（反転）です（`do complete`、`do void` … も使えます）。`new` が表示する番号、各 `next` ツリーのステータス、`CO` のあとで進んだアクションを見てください。（`grep` はそれらの行だけを残します。完全な答えには、埋めた列すべても一覧されます。）
 
 <!-- run: erp_order -->
 ```text
-$ printf 'cd Order\nnew issotrx=Y C_DocTypeTarget_ID=132 C_BPartner_ID=112 SalesRep_ID=101\nerp.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2\nnext 50000\ndo CO 50000\nnext 50000\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide_erp.ops node common/door/red1.js 2>/dev/null | sed 's/ · [0-9]* ms//' | grep -E '^(→|ok|refused|number|Order [0-9]|[├└])'
+$ printf 'cd Order\nnew issotrx=Y C_DocTypeTarget_ID=132 C_BPartner_ID=112 SalesRep_ID=101\nmis.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2\nnext 50000\ndo CO 50000\nnext 50000\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide_erp.ops node common/door/red1.js 2>/dev/null | sed 's/ · [0-9]* ms//' | grep -E '^(→|ok|refused|number|Order [0-9]|[├└])'
 → mis.describe kind=Order
 → mis.new kind=Order issotrx=Y C_DocTypeTarget_ID=132 C_BPartner_ID=112 SalesRep_ID=101
 ok · mis.new
 number: 50000
-→ erp.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2
-ok · erp.new
+→ mis.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2
+ok · mis.new
 number: 
 → erp.actions kind=Order number=50000
 ok · erp.actions
@@ -334,6 +351,24 @@ not done: cd project
 | `grid` · `walk FP` · `day 5` · `compare 24` | 建物の通り芯、専門分野をたどる、ある日の工程、二日の比較 |
 | `open marked` · `bay high` · `undo` · `save shed.db` · `close` | 行の間も開いたままの Modeller |
 | `help <word>` · `help verbs` · `level student` · `report` · `exit` | ヘルプ、すべてのドア動詞、より詳しい説明、オーナーへの不足報告、終了 |
+
+## 確認されないこと {#what-is-not-checked}
+
+答えは、その確認がカバーしなかったことを一覧にします。同じ言葉がどの答えにも当てはまります。重なりはまずバウンディングボックスであり、確認は動いたものだけをカバーし、**耐荷重は決して確認されません**。赤のない答えは、決して安全を意味しません。Modeller の編集レポートの完全な一覧は[リファレンス](FastScriptReference.md#what-is-not-checked)にあります。
+
+## トラブルシューティング
+
+| 見えるもの | すること |
+|---|---|
+| `edit_cli is not at …` | 六つのファイルのうちひとつが足りません。メッセージが`curl`の行を表示します |
+| `puppeteer not found` | 同じフォルダで`npm install puppeteer@24`を実行します |
+| `unknown verb` | メッセージがすべての動詞を一覧します。[表](#the-verbs)と綴りを照らし合わせてください |
+| `missing input: …` | その動詞にはそのキーが必要です。表に入力が一覧されています |
+| `The Viewer tools need a bim-ootb checkout` | 完全なチェックアウトから`node common/door/door.js`として実行します |
+| `exit 1`と Chrome のメッセージ | Linux で Chrome のシステムライブラリが足りません。Puppeteer のトラブルシューティングページに一覧があります |
+
+**計画しておくべき制限。** Modeller の呼び出しは、そのつど建物全体を開きます。HospitalGarage で約 10〜40 秒です。これは測定ツールであり、稼働時間を保証するサービスではありません。Modeller の行が複数あるスクリプトは、行ごとに建物を一度開きます。
+
 
 ## 開発者向け
 
@@ -441,24 +476,6 @@ object.count building=Duplex kind=Element -> 1193 Element
 <!-- /GEN:verbs -->
 
 **現在のカバー範囲。** 一覧は意図的に小さくしてあります。64個の動詞が、Modeller のグリッド編集、そのウォーカー、行の間も開いたままの Modeller、いくつかの Viewer の質問、工程、汎用のオブジェクトの読み取り・カウント・書き込み、選択のコスト、ERP の伝票動詞、そしてポートのある ERP 辞書のあらゆるプロセスをカバーしています。Viewer には人が押せるアクションが64個あり、ドアは6個の Viewer 動詞を提供します。ERP には1158個の伝票とプロセスがあり、ドアは伝票の一生のための9個の ERP 動詞と、どのテーブルにも使える15個の MIS 動詞を提供し、以前の行が動き続けるよう10個の旧名を残しています。つまりこれは出発点であって、メニューのすべてではありません。
-
-
-## 確認されないこと {#what-is-not-checked}
-
-答えは、その確認がカバーしなかったことを一覧にします。同じ言葉がどの答えにも当てはまります。重なりはまずバウンディングボックスであり、確認は動いたものだけをカバーし、**耐荷重は決して確認されません**。赤のない答えは、決して安全を意味しません。Modeller の編集レポートの完全な一覧は[リファレンス](FastScriptReference.md#what-is-not-checked)にあります。
-
-## トラブルシューティング
-
-| 見えるもの | すること |
-|---|---|
-| `edit_cli is not at …` | 六つのファイルのうちひとつが足りません。メッセージが`curl`の行を表示します |
-| `puppeteer not found` | 同じフォルダで`npm install puppeteer@24`を実行します |
-| `unknown verb` | メッセージがすべての動詞を一覧します。[表](#the-verbs)と綴りを照らし合わせてください |
-| `missing input: …` | その動詞にはそのキーが必要です。表に入力が一覧されています |
-| `The Viewer tools need a bim-ootb checkout` | 完全なチェックアウトから`node common/door/door.js`として実行します |
-| `exit 1`と Chrome のメッセージ | Linux で Chrome のシステムライブラリが足りません。Puppeteer のトラブルシューティングページに一覧があります |
-
-**計画しておくべき制限。** Modeller の呼び出しは、そのつど建物全体を開きます。HospitalGarage で約 10〜40 秒です。これは測定ツールであり、稼働時間を保証するサービスではありません。Modeller の行が複数あるスクリプトは、行ごとに建物を一度開きます。
 
 
 ## このページが正しさを保つ仕組み
