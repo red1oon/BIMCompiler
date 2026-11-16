@@ -768,6 +768,48 @@ These are legacy's own words in that language; the twin shows them unchanged.
 - the move to `common/help/` without changing the ERP's witnessed behaviour (W-FIELD-HELP 13/0, W-HELP-SHOWCASE 23/0, W-ERP-ASK 11/0 must stay green);
 - the witness: X of N pills with How To text; X of N element classes in the shipped buildings with a (b) entry; (c) shown for a sample of selected elements; the question set per app; the mobile sheet.
 
+## 14.1 SPEC: the class-text block in the Viewer info panel (owner 2026-11-17: chose "Info panel" for the class text)
+**Issue it removes:** clicking an element tells you WHERE it is, WHAT it costs and WHEN it is built (`#info-panel`, §14 FINDING), but never what this KIND of element is. No class description exists anywhere in viewer/, modeller/, common/ or erp/ (§14 survey).
+
+**Where:** a new sibling block `#info-class-help` in `#info-panel`, right under the base rows. ONE renderer `viewer/info_class_help.js`, in the `info_dxf2bim.js` convention:
+- dual-mode (browser global `InfoClassHelp` + `require()`);
+- called by BOTH picks, next to `InfoDxf2Bim.render` (`picking.js:652`, `find_erp_push.js:248`);
+- hidden when the class has no row, never an empty box.
+- Viewer only. The Modeller has no info panel; it comes with the `?` dock.
+
+**Data: rows in the ONE existing label pipeline, no second loader, no loader change.** Rows are added with `viewer/tools/trl_add_batch.js` to `ad_message_base.csv` + `AD_Message_Trl_<lang>.xml`, then `build_trl.js` builds the packs. Per IFC class `<C>`:
+| key | text | translated rows (`trl="Y"`) |
+|---|---|---|
+| `ifccls_<C>` | (b) OUR one or two plain sentences: what this kind of element is, for a site or office user | pilot fr_FR de_DE ja_JP zh_CN (machine, Claude, labelled in the XML header as every Viewer batch is); other locales `trl="N"` = English, counted |
+| `ifcdef_<C>` | (a) buildingSMART's definition, VERBATIM from bSDD IFC 4.3 | ONLY where bSDD has an official text differing from EN (measured: de 9, es 31, ja 9, pt_BR 46, zh 0, fr 0); every other locale `trl="N"` |
+| `ifcdef_<C>_lang` | the bSDD language code of the shown (a) text: base `EN`; `de-DE` etc. where the official text is used | same rows as `ifcdef_<C>` |
+
+UI words (ours, translated like any label): the heading for (b), the heading "IFC definition", the line "English: no official translation in your language", the credit line "buildingSMART IFC 4.3 (bSDD), CC BY-ND 4.0" with the class's bSDD link.
+
+**Population:** the 51 distinct `ifc_class` of the 11 shipped `viewer/buildings/*_extracted.db` (`build/bim_help_prior/shipped_ifc_classes_distinct.txt`). (a) exists for 48: `IfcWallStandardCase`, `IfcFlowInstrumentType` and `IfcSensorType` are not in bSDD 4.3 and get (b) only. A class outside the 51 (an imported IFC) gets no block and logs `skip reason=no_row`.
+
+**The label rule (one place, in the renderer):**
+- (a) is shown with the "English: no official translation…" line iff `_trl('ifcdef_<C>_lang')` is `EN` and the chosen locale is not English.
+- The credit line is always shown under (a).
+- (a) is never reworded, shortened or machine-translated.
+
+**Size:** (a) English is 10.8 kB for 48 classes (longest 588 chars). It goes into each label pack, about 45 kB today.
+
+**Log:** `§CLASS_HELP guid=… class=… ours=Y|N ifc=Y|N ifc_lang=<code> locale=<code>`, one line per render.
+
+**Witness W-CLASS-HELP (`viewer/tests/witness_class_help.js`), each check naming the issue it proves:**
+1. **Coverage:** X of N shipped classes have `ifccls_` (expect 51/51) and `ifcdef_` (expect 48/51). N is counted from the DBs at run time, never typed in. N = 0 → INCONCLUSIVE.
+2. **Verbatim (a):** every `ifcdef_<C>` text in every pack equals bSDD's text for that class and language, byte for byte. Oracle: `bsdd_ifc43_shipped_classes.json`, copied into the repo as the batch's source. Falsifier: change one character and the check must FAIL.
+3. **Honest coverage:** per locale, the count of `trl="Y"` `ifcdef_` rows equals the bSDD measured count.
+4. **Label rule, rendered in node with a fake DOM:**
+   - IfcWall in de_DE → German text, no fallback line;
+   - IfcWall in zh_CN → English text + the fallback line;
+   - IfcWallStandardCase → (b) only, no (a);
+   - an unknown class → hidden.
+   - Falsifier: a zh card without the fallback line must FAIL.
+5. **Both picks call the renderer:** the two call sites are present, and a live page pick logs `§CLASS_HELP`.
+6. **No regression:** `build_trl.js --check` and W-VIEWER-I18N stay green.
+
 ## 15. NOT URGENT, to think about (owner 2026-11-16: *"You mean we can mis.<translated verb>? Note in prompt then we shall think about it not urgent."*)
 Two terminal ideas. Neither is built and nothing is decided.
 1. **Field help at the terminal.** The browser's per-field tooltip / Tool Tip panel has no terminal equivalent: today only `mis.describe` (a kind's fields) and `help <word>` exist.
