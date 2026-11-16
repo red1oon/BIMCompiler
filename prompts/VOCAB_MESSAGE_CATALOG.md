@@ -15,7 +15,7 @@ Background, measurements and prior art are in `prompts/DOCS_I18N.md` §4b-§4d (
   - The SHAPE stays legacy's: tooltip = Description (§7), and the extra content appears in the right panel where legacy shows Context Help.
   - It supersedes the "ship it to a real iDempiere as a 2Pack" lines in §8 and §9.
 - **D4 Extra how-to content = this lane's big task** ("HELP is major boost"). Writing it is this lane's job, not an open question.
-**State:** P2b DONE (door.js answers from the catalog, live, §6). P1b SPEC merged (§7). WIP: bim-ootb branch `feat/field-help-twin` @ `3cb8e4c6`, no PR. `help_catalog.legacyField(fieldId)` returns AD_Field_v's own `{header, description, help, entityType}` with no inheritance. It loads in the page (`window.HelpCatalog`), and `FH_BREAK=fallback` is the F4 falsifier. W-HELP-CATALOG is still 5/0. **W-FIELD-HELP is not written yet; that is the next step.**
+**State (2026-11-16, session after bim-compiler-75):** P2b DONE (§6). **P1b BUILT, W-FIELD-HELP 13/0** (bim-ootb #3126 `feat/field-help-twin`, §7 RESULT): tooltip = the field's own Description, one setter `erp/field_help.js`, the East Tool Tip panel. **Next = the help pack format and loader (step 5 below)**, through `ErpI18n.loadPack` (D1), pilot fr/de/ja/zh (D2).
 **Facts measured this session (cite them, do not re-derive):**
 - Legacy tooltip = Description (`WEditor.java:247/333/339-340`). Help goes to the RIGHT panel on focus (`ADTabpanel.java:840`, `GridTabRowRenderer.java:637-641`, `HelpController.renderToolTip:186-230`).
 - Live `adempiere.ad_field_v` = `f.name, f.description, f.help` (the field's own text only).
@@ -44,7 +44,7 @@ Background, measurements and prior art are in `prompts/DOCS_I18N.md` §4b-§4d (
    - **Auto-hyperlink:** inside any help text, a term equal to a window, process or field name becomes a link (window → open, field → its help, guide term → its section). One linker, run when the pack is built, not at display time.
    - **Witness:** a question set of real phrasings (EN + each pack language) → expected top hit (X of N). A falsifier drops the phrase matcher and must FAIL.
 4. **Research §8 (what leading apps do) is the input for the open question below; read it before speccing the content. §9 is the storage advice (text sources per language, a separate in-browser help DB, legacy table shapes; not folded into the seed).**
-5. **Order of work:** finish P1b (W-FIELD-HELP F1-F5, the tooltip setter, the right panel). Then the pack format and loader. Then the search index and linker. The content itself comes last, and it is just data.
+5. **Order of work:** ~~finish P1b~~ DONE (§7 RESULT). Next: the pack format and loader. Then the search index and linker. The content itself comes last, and it is just data.
 **Owned elsewhere, don't redo:**
 - The locale/login rule: the CLI session.
 - The FastScriptGuide translations: the CLI session; the rule is in DOCS_I18N §6g.
@@ -63,7 +63,7 @@ Background, measurements and prior art are in `prompts/DOCS_I18N.md` §4b-§4d (
 |---|---|---|---|
 | P0 | Inventory and measurement (CLI strings ~235 in 10 files; Help duplication; derived-tip candidates) | docs only | DONE 2026-11-16, DOCS_I18N §4b-§4c |
 | **P1** | **Help read layer** over the dictionary: resolve Help/Description by level through element → column → field, derive a tip where none is written | new files in bim-ootb `erp/` only | BUILT 2026-11-16, W-HELP-CATALOG 5/0 (bim-ootb `feat/help-catalog`), see P1 RESULT |
-| P1b | Field tooltips + the Help panel in twin windows = legacy (`WEditor`, `HelpController`, `AD_Field_v`); one setter, one panel | `erp/help_catalog.js`, the field-render paths | SPEC 2026-11-16 (§7) |
+| P1b | Field tooltips + the Help panel in twin windows = legacy (`WEditor`, `HelpController`, `AD_Field_v`); one setter, one panel | `erp/field_help.js`, the field-render paths | **BUILT 2026-11-16**, W-FIELD-HELP 13/0, bim-ootb #3126 (§7 RESULT) |
 | P2 | `Msg` pass-through for CLI strings (no behavior change), then file by file; stable key per message; `explain <key>` | `common/door/*` | **P2a BUILT 2026-11-16** (`words_core.js`, W-MSG-CATALOG 4/0, §3); **P2b DONE 2026-11-16** (`door.js`, W-MSG-DOOR 5/0, §6; MERGED bim-ootb #3108 `f18ae08c` after the guides listed six files, bim-compiler #798, deployed) |
 | P3 | Student level for `help <word>` from the vocabulary (P3a); hint lines on the most-hit refusals (person's terminal, level set) (P3b) | `words_core.js`, `red1.js`, door render | **P3a BUILT 2026-11-16** (W-HELP-STUDENT 5/0, §4 RESULT; no `words.json` edit was needed); P3b after P2b |
 | P4 | Guides pull terms from the same keys at build time | `docs/`, MkDocs | after P2 |
@@ -319,6 +319,29 @@ clash: <the short help, unchanged>
   - Falsifier `fallback` (field → column inheritance in the window) FAILS F4, naming the count (about 94 Help fields).
 - **F5 process parameters.** Every parameter of every process the role can run has the tooltip `AD_Process_Para.Description` (X of N).
 
+### §7 RESULT (2026-11-16, bim-ootb #3126 `feat/field-help-twin`; log `erp/tests/logs/witness_field_help.log`)
+**W-FIELD-HELP 13 pass / 0 fail / 0 inconclusive** (GardenAdmin, real page, the real render functions through `window.__idmpFieldHelp`):
+- **F4:** 15,849 of 15,849 displayed fields (1,120 tabs) have description AND help equal to the live legacy `adempiere.ad_field_v` (docker `postgres`). 0 twin-only ids among displayed fields.
+- **F1:**
+  - read-only form: 11,052 of 11,052 displayed non-key fields over 294 menu windows / 745 tabs, label and value; rendered = the dictionary count;
+  - inline editor (`renderInline`, windows 143/169/167/195): 234 of 234 rows, editor and label.
+- **F3:** idle panel = `(Place your cursor into a field on the screen)` from AD_Message, panel titled `Tool Tip`, shown (HelpCollapsed default N). Focus → panel = HelpController markup: 11,052 of 11,052 form fields, 88 of 88 focusable inline editors.
+- **F5:** 545 of 545 parameters of 131 menu processes with parameters (137 on the menu), editor and label.
+- **F2:** 0 developer tooltips out of 21,280 seen.
+- **Falsifiers, each FAILs as claimed:** `devtitle` F1+F2 (0/11052, 23,662 of 23,662 developer tooltips); `nohelp` F3 (0/11052, 0/88, idle); `fallback` F4 (help 93 wrong, description 56 wrong; the spec guessed about 94).
+
+**Built:** `erp/field_help.js` (tooltip setter + HelpController port), wired into `_appendReadonlyFields`, `renderProcParamForm`, `crud_overlay.renderInline` and `editCell` (through `opts.fieldFor` → the tab's AD field model), the East `<aside id="idmp-help">`. `ad_parser.getFields` now reads `f.Help, f.EntityType`; `ad_process.readProcess` reads the parameter's `description, help, entitytype`. sw v1088.
+**Deleted (budget +364 / −13):** `ColumnName · referenceType`, `ColumnName · type · mandatory`, and `derived — read-only` tooltips.
+**Changed from the spec, with the reason:** no `help_catalog` level `legacy` / `legacyField`. `ad_parser.getFields` already IS the twin window's `AD_Field_v` reader (field's own Description, now Help). A second reader would break AD-LAYER LAW rule 5. The WIP commit's `legacyField` was dropped. F4 judges the window's own reader, and its falsifier mutates a throwaway in-memory copy (as W-HELP-CATALOG's `dropoverride` does), not the code.
+**Measured facts:**
+- Legacy writes panel text RAW (`HelpController.java:136-150`), so does the twin; 372 field Helps contain `<`, e.g. `DocumentNo_<TableName>`, which the browser swallows in both.
+- Inline-row labels differ from `AD_Field.Name` on 5 of 234 rows (a curated crud label); the panel header follows legacy (`GridField.getHeader` = the field name).
+**Open, named (not claimed):**
+- (a) The grid cell editor (`editCell`) is wired to the same setter but W-FIELD-HELP does not drive it yet.
+- (b) The twin's read-only inline editors are `disabled` (47 of 234 rows), so they take no focus and the panel cannot follow them. Legacy's read-only Textbox is `readonly` and still focusable; combos are disabled in both. A divergence to close on the crud side (TWIN rule), not here.
+- (c) QuickInfo and HowTo (Context Help) panels of the legacy East region: HowTo is the help-pack step.
+- (d) Already failing on main, unchanged by this PR (run on main `bbb7dfb2`): `poc_parity_fieldset_live` (timeout opening the c_invoice row), `witness_erp_i18n` 7/4, `poc_ad_folded_crud` 27/29.
+
 ## 8. Help as knowledge: what leading apps do, and what we take (research 2026-11-16, 9 web searches; owner: *"Exlore what powerful help function advanced apps have that we can learn from"*; the open question below is the one the owner wants this prompt to spec and tackle)
 **What the leaders do** (vendor docs unless marked; vendor-marketing claims excluded):
 | App | Help function | The idea worth taking |
@@ -393,7 +416,7 @@ Sources: [SAP Web Assistant](https://www.sap.com/design-system/fiori-design-web/
 **Decided (owner, 2026-11-16):** D1-D4 in ▶ RESUME HERE. Storage accepted; pilot languages fr_FR, de_DE, ja_JP, zh_CN; twin kernel only; the how-to content is this lane's task.
 
 ## STATUS
-2026-11-16: P1 built and witnessed (5/0), merged as bim-ootb #3079. P2a built and witnessed (W-MSG-CATALOG 4/0), merged as bim-ootb #3082. P3a built and witnessed (W-HELP-STUDENT 5/0), merged as bim-ootb #3083. P3a-1 (help footer + opening tip, `red1 --fast`), bim-ootb #3084. Depends on `prompts/DOCS_I18N.md`, `prompts/CLI_ERP_IVR.md` (CLI session owns), `prompts/ERP_UI_LOCALES.md`.
+2026-11-16: P1 built and witnessed (5/0), merged as bim-ootb #3079. P2a built and witnessed (W-MSG-CATALOG 4/0), merged as bim-ootb #3082. P3a built and witnessed (W-HELP-STUDENT 5/0), merged as bim-ootb #3083. P3a-1 (help footer + opening tip, `red1 --fast`), bim-ootb #3084. P2b (W-MSG-DOOR 5/0) #3108. P1b (W-FIELD-HELP 13/0) #3126. Depends on `prompts/DOCS_I18N.md`, `prompts/CLI_ERP_IVR.md` (CLI session owns), `prompts/ERP_UI_LOCALES.md`.
 
 ## Note from the code-design lane (2026-11-16): `msg_keys.scan` also reads calls inside comments
 Found while building F-19 (`prompts/CODE_ARCHITECTURE_DESIGN.md` §F.28, bim-ootb #3103). `scan()` matched `M('key', …)` written in a
