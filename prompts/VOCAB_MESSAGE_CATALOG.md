@@ -12,6 +12,7 @@ Background, measurements and prior art are in `prompts/DOCS_I18N.md` §4b-§4d (
 - Step 2, How To in the `?` palette: BUILT, bim-ootb #3156, W-HOWTO PASS (§14.3 RESULT).
 - The help panel itself (left, stays open, amber, draggable, reopens as left): BUILT, bim-ootb #3160, W-HELP-DOCK PASS (§14.4 RESULT).
 - §14.5 step 1 (shared panel + drag helper in `common/`): BUILT, bim-ootb #3165.
+- **Also queued (owner "ok" to note it):** §17, the EN film sequel "Help that answers" in the Viewer. Make it in a fresh session; the outline and its rules are in §17.
 - **NEXT:** §14.5 STEP 2, the Modeller adapter: every fact is measured in the ▶ STEP 2 block under §14.5 RESULT. Then the prefixes, box side (§16 item 7: owner agreed `?` / `#<number>`; the CLI session specs the shell side as CLI_ERP_IVR §41).
 - The three §14.1 owner items were ANSWERED in §14.2 (ISO note kept; type classes via their cited occurrence class; our sentence in 15 languages, all built, #3152).
 - **Open owner question:** 8 Viewer tools have no section in the BIM User Guide (§14.3 RESULT), so they get no guide link until the guide has a section.
@@ -1191,6 +1192,27 @@ Every step gets a witness with a falsifier (e.g. did-you-mean: N misspellings de
 - [nushell help](https://www.nushell.sh/commands/docs/help.html), [nushell help commands](https://www.nushell.sh/commands/docs/help_commands.html)
 - [git autocorrect](https://adamj.eu/tech/2022/10/26/git-how-to-enable-autocorrect/), [help.autocorrect=prompt patch](https://code.googlesource.com/git/+/dc66e3c799cd5d8f3e664e26899bca200ffdfd7b%5E%21/)
 - [SQLite trigram forum](https://sqlite.org/forum/forumpost/76b444bebe?t=c)
+
+## 17. FILM STUB: "Help that answers" sequel, in the Viewer (EN) (owner 2026-11-17: *"before exiting sufficient to make a EN flim sequel to show Help in Viewer?"* → outline → *"ok"* to note it)
+**Not made yet; make it in a fresh session.** Everything shown is live and witnessed (§14.1-§14.5).
+
+**Story** (about 2 min, house style per feedback memory: split screen, typed terminal strip above + the real Viewer below, REAL key sounds, voice after the return key):
+1. Click a wall (Duplex). The info panel shows "What this is" and the folded IFC definition with the bSI credit (W-CLASS-HELP C5).
+2. Switch to de_DE: the official German bSI text. Switch to zh_CN: our Chinese sentence + the English bSI text + the "no official translation" line (the honesty beat).
+3. F1: the amber panel on the left, beside the info panel. Type "native": Save is found from a bullet word, opened (W-HOWTO H4c).
+4. Open Find: its Guide link (the exact section), and "Same at the CLI" `viewer.counts building=<building>`, typed and run in the terminal strip. This is the CLI beat.
+5. Drag the panel to a darker spot, close, reopen: it comes back as left (W-HELP-DOCK D3 / D6).
+
+**Make it from:**
+- **`scripts/film_cli_in_action/`** (house style; real samples only, `~/.local/share/film_narration/keys_eklee/`, credit on the end card; check K2 must pass).
+- **The shot / caption checks of `scripts/film_help_showcase/`** (`capcheck.py`; keep turns ≤ about 95 chars). Its `shots.js` drives only `erp/idempiere.html`: new shots are needed for `viewer.html?db=…`, captured on the CPU (swiftshader, as the witnesses do), never the GPU.
+- **Opening / closing cards** as §11 (credentials; the McKinsey quote may be reused or replaced, on the owner's word).
+
+**Rules:**
+- Leave out what is not built: the Modeller help, the `?` / `#` prefixes, did-you-mean, and the 8 tools with no guide section.
+- EN only; other languages on the owner's word.
+- The film is never pushed, only its scripts.
+- Read `prompts/FILM_NARRATION.md` ▶ PLAYBOOK first.
 
 ## STATUS
 2026-11-16 (session bim-compiler-41): P1b, §10-§13 built and merged; films EN v4 / ZH v5 / DE v1 made (not pushed); ERP User Guide help section LIVE. Next: §14 (BIM help panel), check (a) first.
