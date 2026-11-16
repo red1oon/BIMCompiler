@@ -364,6 +364,20 @@ Measured on bim-ootb main `7b1f668b`. Every run used a temporary op-log, journal
 - **KL4** A Completed order dragged to In Progress is refused (PR is not valid from CO) and is NOT re-activated: the record stays CO.
 - Existing Kanban witnesses (`poc_idmp_kanban.js`, `poc_kanban_chrome.js`, `poc_kanban_write.js`, `poc_kanban_marvel.js`, `poc_kanban_persist.js`, `poc_critic_lensswap_live.js`) run before and after. Any of them that asserted the wfmc edge rule is updated in the same PR, citing this section; no other new failure.
 
+## 39. `!` history at the red1 prompt, as a normal shell has it (2026-11-17, owner: *"since normal CLI has !history i guess we shuld at least have that - simple and intuitive"*; spec before the code)
+**Today (read, `common/door/red1.js`):** Up-arrow recalls the last 1,000 lines of `~/.red1_history` (`$RED1_HISTORY`), read only on a terminal (`:129-130`). The lines are appended at exit (`:280`). `history` lists THIS session's lines only (`:266`). There is no `!` expansion. The owner's wider idea, offering whole blocks of repeated history, waits for the type-assist study (`reports/CLI type assist and intent prediction methods.md`); this item is the plain bash subset only.
+**Build (bim-ootb, one PR):**
+- **H1** `history` lists the saved lines of earlier sessions plus this session's, numbered oldest first, as bash does. `history N` lists the last N.
+- **H2** At the start of a line: `!!` = the last line, `!n` = line n of `history`, `!-n` = the n-th line back, `!text` = the newest line that starts with `text`. The expanded line is printed first (`→ <line>`, the shell's own echo) and then runs exactly as if typed: the same door, journal and claim rules. History keeps the expanded line, never the `!` form.
+- **H3** No match: `!text` / `!n` say so naming what was asked ("no earlier line starts with …"), and nothing runs. A `!` that is not at the start of the line, or inside quotes, is left as typed (no surprise expansion inside a value).
+- **H4** The expansion is a pure function in `words_core.js` (history array + line → `{line}` or `{none}`), so it is witnessed without a terminal. `red1.js` reads the history file when `RED1_HISTORY` is set even without a terminal, so a script or a witness can drive it.
+- **H5** The new words go into `vocab/words.json` + `messages.json` (the help groups and the 6 guide languages), not into code strings.
+**Witness W-RED1-BANG** (`common/door/tests/witness_red1_bang.js`; temp `RED1_HISTORY`, op-log and journal):
+- **B1** The pure function over a fixed history: `!!`, `!3`, `!-2`, `!mis.s` each give the expected line; `!zz` gives none; `x !! y` and `"!!"` are left as typed.
+- **B2** A piped session: `history` numbers the file's lines followed by this session's; `!!` re-runs the previous line, and its `→` echo shows the expanded text; the journal records the expanded line.
+- **B3** `!nothing-like-this` runs no door line (the journal does not grow) and prints the no-match message.
+- **Falsifier** `RED1_BREAK=nobang` (expansion off): B1 and B2 must FAIL.
+
 ## Note from the message lane (2026-11-16, session bim-compiler-41): `erp.ask` is being added to the door (owner's go: *"u can take it on after informing the CLI session, as it be resting"*)
 **What changes in your files:**
 - `common/door/verbs.json`: one new READ verb, `erp.ask question=<text> [lang=<code>]`, calling `erp_cli.js ask`;
