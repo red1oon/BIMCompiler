@@ -1,0 +1,16 @@
+start	0.00	999.00	narr.js start facts greet.verbs,greet.words	F: 怎么开始？ | M: 输入 red one。问候语会数出它的动词和词：七十二个动词，二十五个词。然后是提示行。	F: 怎么开始？ | M: 输入 red one。问候语会数出它的动词和词：七十二个动词，二十五个词。然后是提示行。
+help	0.00	999.00	narr.js help facts help.groups,help.erpN	F: 它能做什么？ | M: 三个组：BIM、MIS 和 ERP。ERP 组有三个词：do、run 和 next。	F: 它能做什么？ | M: 三个组：BIM、MIS 和 ERP。ERP 组有三个词：do、run 和 next。
+level	0.00	999.00	narr.js level (no figures)	F: 它会解释每个词吗？ | M: 先输入 level student，再输入 help run。它会说明这个词做什么，以及它运行的那行命令。	F: 它会解释每个词吗？ | M: 先输入 level student，再输入 help run。它会说明这个词做什么，以及它运行的那行命令。
+bp	0.00	999.00	narr.js bp facts bp.of,bp.shown	F: 怎么进入表格？ | M: 先输入几个字母。灰色的建议会出现，按 Tab 就能接受。然后输入 ls：共一百一十三个业务伙伴，显示二十个。	F: 怎么进入表格？ | M: 先输入几个字母。灰色的建议会出现，按 Tab 就能接受。然后输入 ls：共一百一十三个业务伙伴，显示二十个。
+po1	0.00	999.00	narr.js po1 facts po.project.n	F: 它能运行流程吗？ | M: 输入 run 和流程的名称。它按字典里的顺序提问。先问项目：有三个可选。	F: 它能运行流程吗？ | M: 输入 run 和流程的名称。它按字典里的顺序提问。先问项目：有三个可选。
+po2	0.00	999.00	narr.js po2 facts po.phase.n	F: 阶段呢？ | M: 只提供这个项目自己的七个阶段。我跳过它。	F: 阶段呢？ | M: 只提供这个项目自己的七个阶段。我跳过它。
+po3	0.00	999.00	narr.js po3 facts po.line.n	F: 项目行呢？ | M: 共三十二行。这个也跳过。	F: 项目行呢？ | M: 共三十二行。这个也跳过。
+po4	0.00	999.00	narr.js po4 facts po.run.orders,po.run.orderLines	F: 最后的问题呢？ | M: 合并选项保持默认，选是。按回车，它运行的完整命令就打印出来。生成了三张采购订单，来自四行订单行。	F: 最后的问题呢？ | M: 合并选项保持默认，选是。按回车，它运行的完整命令就打印出来。生成了三张采购订单，来自四行订单行。
+ord	0.00	999.00	narr.js ord facts ord.rows	F: 它们在哪里？ | M: 输入 cd Order，再按描述列出。三张订单，全是草稿。	F: 它们在哪里？ | M: 输入 cd Order，再按描述列出。三张订单，全是草稿。
+co	0.00	999.00	narr.js co facts co.total	F: 能完成订单吗？ | M: 输入 do CO 和订单号。状态从 D R 变成 C O，总计是八十一。	F: 能完成订单吗？ | M: 输入 do CO 和订单号。状态从 D R 变成 C O，总计是八十一。
+next	0.00	999.00	narr.js next facts next.withWord,next.noWord	F: 现在它还能做什么？ | M: next 加订单号。合法的下一步，画成树状图。关闭和作废有对应的词。R E 还没有词。	F: 现在它还能做什么？ | M: next 加订单号。合法的下一步，画成树状图。关闭和作废有对应的词。R E 还没有词。
+gap	0.00	999.00	narr.js gap facts gap.process	F: 它不能运行的流程呢？ | M: Renumber 还没有 J S 移植。red one 会这样告诉你，缺口在 red one，不是你的错。	F: 它不能运行的流程呢？ | M: Renumber 还没有 J S 移植。red one 会这样告诉你，缺口在 red one，不是你的错。
+report	0.00	999.00	narr.js report (no figures)	F: 我能告诉开发者吗？ | M: report 会显示草稿。你打开它之前，什么都不会发送。	F: 我能告诉开发者吗？ | M: report 会显示草稿。你打开它之前，什么都不会发送。
+url	0.00	999.00	narr.js url facts url.chars	F: 怎么发送？ | M: 选择 GitHub 议题，链接就打印出来：六千九百八十一个字符。要不要打开，由你决定。	F: 怎么发送？ | M: 选择 GitHub 议题，链接就打印出来：六千九百八十一个字符。要不要打开，由你决定。
+cost	0.00	999.00	narr.js cost facts cost.elements,cost.total	F: 回到建筑里呢？ | M: Duplex。按专业计价，一千一百九十个构件，一共一百零五万四千四百八十二。各行加起来就是总数。把这笔成本过账到 ERP 项目订单，正在开发中。	F: 回到建筑里呢？ | M: Duplex。按专业计价，一千一百九十个构件，一共一百零五万四千四百八十二。各行加起来就是总数。把这笔成本过账到 ERP 项目订单，正在开发中。
+exit	0.00	999.00	narr.js exit (no figures)	M: 输入 exit，就回到了 shell。 | F: 记住这个名字。 | M: red one。	M: 输入 exit，就回到了 shell。 | F: 记住这个名字。 | M: red one。

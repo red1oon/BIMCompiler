@@ -6,16 +6,17 @@
 'use strict';
 const fs = require('fs'), path = require('path'), os = require('os'), R = require('./render.js'), N = require('./narr.js');
 const puppeteer = require(process.env.PUPPETEER_PATH || path.join(os.homedir(), 'bim-compiler', 'node_modules', 'puppeteer'));
+const LG = process.env.FILM_LANG === 'zh' ? 'zh' : 'en', tr = (en, zh) => (LG === 'zh' ? zh : en);   // zh: translated by the build session (2026-11-16), NOT reviewed by a native speaker; only the title/end cards carry words, the screens are the shell's own English
 const OD = process.env.OUTD || 'out', rec = JSON.parse(fs.readFileSync(path.join(__dirname, OD, 'rec', 'frames.json'), 'utf8')), out = path.resolve(process.argv[2] || OD + '/cards'); fs.mkdirSync(out, { recursive: true });
 const AREA_W = 1860, AREA_H = 880, MIN_FONT = 13, MAX_FONT = 26, CW = 0.602, LH = 1.27;
 const byStep = {}; rec.frames.forEach(f => { (byStep[f.step] = byStep[f.step] || []).push(f); });
 const order = rec.frames.map(f => f.step).filter((s, i, a) => a.indexOf(s) === i);
 const used = (f) => { let c = 0, r = 0; f.text.forEach((l, y) => { if (l.trim()) { c = Math.max(c, l.length); r = Math.max(r, y + 1); } }); if (!f.hidden) { c = Math.max(c, f.cx + 1); r = Math.max(r, f.cy + 1); } return [c, r]; };
-const CHCSS = `*{margin:0;padding:0;box-sizing:border-box} body{width:1920px;height:1080px;background:#0b0f17;color:#F3EEE8;font-family:'DejaVu Sans',sans-serif;overflow:hidden} .ch{text-align:center;margin-top:300px} .k{font-size:34px;color:#FF6B78;letter-spacing:6px;font-weight:700} .t1{font-size:136px;font-weight:700;margin-top:40px;line-height:1.1} .t2{font-size:44px;color:#94a3b8;margin-top:36px} .m{font-family:'DejaVu Sans Mono',monospace}`;
+const CHCSS = `*{margin:0;padding:0;box-sizing:border-box} body{width:1920px;height:1080px;background:#0b0f17;color:#F3EEE8;font-family:${LG === 'zh' ? "'Noto Sans CJK SC','DejaVu Sans'" : "'DejaVu Sans'"},sans-serif;overflow:hidden} .ch{text-align:center;margin-top:300px} .k{font-size:34px;color:#FF6B78;letter-spacing:6px;font-weight:700} .t1{font-size:136px;font-weight:700;margin-top:40px;line-height:1.1} .t2{font-size:44px;color:#94a3b8;margin-top:36px} .m{font-family:'DejaVu Sans Mono',monospace}`;
 const card = (inner) => '<!doctype html><html><head><meta charset="utf-8"><style>' + CHCSS + '</style></head><body>' + inner + '</body></html>';
 const cards = {
-  cover: card('<div class="ch"><div class="k">KEYBOARD ONLY  ·  ERP</div><div class="t1">Fast Script ERP</div><div class="t2 m">red1</div></div>'),
-  end: card('<div class="ch"><div class="t1 m" style="font-size:200px;margin-top:60px">red1</div><div class="t2">the scripting door into BIM and ERP</div></div>')
+  cover: card('<div class="ch"><div class="k">' + tr('KEYBOARD ONLY  ·  ERP', '只用键盘  ·  ERP') + '</div><div class="t1">' + tr('Fast Script ERP', '极速脚本 ERP') + '</div><div class="t2 m">red1</div></div>'),
+  end: card('<div class="ch"><div class="t1 m" style="font-size:200px;margin-top:60px">red1</div><div class="t2">' + tr('the scripting door into BIM and ERP', '通往 BIM 与 ERP 的脚本入口') + '</div></div>')
 };
 function screenHtml(f, fs_, cursor) {   // the 220x50 grid drawn at font fs_, from its top-left corner
   const h = R.html(f, { cursor }); return h.replace(/font-size:22px;line-height:28px/, 'font-size:' + fs_ + 'px;line-height:' + Math.round(fs_ * LH) + 'px').replace(/\.r\{height:28px/, '.r{height:' + Math.round(fs_ * LH) + 'px').replace(/left:33px;top:14px/, 'left:30px;top:16px');

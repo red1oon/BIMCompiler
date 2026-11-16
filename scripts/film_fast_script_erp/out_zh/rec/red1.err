@@ -1,0 +1,60 @@
+2026-11-16T01:01:27.162Z §RED1 welcome lines=4 tips=1 version="Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 72 verbs · 25 words · 8c3f0af6"
+2026-11-16T01:01:27.163Z §RED1 session tty=true journal=/tmp/fse_scratch__0l4ibkd/journal.jsonl verbs=72 words=25
+2026-11-16T01:01:28.033Z §DOOR request=d-mwik5jo4-2886860-1 actor=human verb=mis.list status=ok ms=906
+2026-11-16T01:01:28.034Z §RED1 assist kinds=845 with-window=780
+2026-11-16T01:01:29.347Z §RED1 help topic="" words=1
+2026-11-16T01:01:30.394Z §RED1 help topic="erp" words=1
+2026-11-16T01:01:33.092Z §RED1 typed n=3 where="red1>"
+2026-11-16T01:01:34.526Z §RED1 help topic="run" words=1
+2026-11-16T01:01:37.776Z §RED1 assist take from="Busi" to="\"Business Partner\""
+2026-11-16T01:01:39.783Z §DOOR request=d-mwik5skw-2886860-2 actor=human verb=mis.describe status=ok ms=1105
+2026-11-16T01:01:39.783Z §RED1 line verb=mis.describe status=ok request=d-mwik5skw-2886860-2 line="mis.describe kind=\"Business Partner\""
+2026-11-16T01:01:39.786Z §RED1 typed n=5 where="red1 Business Partner>"
+2026-11-16T01:01:41.521Z §DOOR request=d-mwik5u5m-2886860-3 actor=human verb=mis.list status=ok ms=804
+2026-11-16T01:01:41.521Z §RED1 line verb=mis.list status=ok request=d-mwik5u5m-2886860-3 line="mis.list kind=\"Business Partner\" columns=C_BPartner_ID,Value,Name,Logo_ID,C_BP_Group_ID limit=20 names=Y"
+2026-11-16T01:01:41.524Z §RED1 typed n=6 where="red1 Business Partner>"
+2026-11-16T01:01:45.189Z §DOOR request=d-mwik5ww0-2886860-4 actor=human verb=mis.describe status=ok ms=932
+2026-11-16T01:01:45.189Z §RED1 line verb=mis.describe status=ok request=d-mwik5ww0-2886860-4 line="mis.describe kind=Project"
+2026-11-16T01:01:45.190Z §RED1 typed n=7 where="red1 Project>"
+2026-11-16T01:01:48.870Z §DOOR request=d-mwik5zu3-2886860-5 actor=human verb=mis.list status=ok ms=795
+2026-11-16T01:01:48.870Z §RED1 line verb=mis.list status=ok request=d-mwik5zu3-2886860-5 line="mis.list kind=AD_Process_Para columns=ColumnName,Name,IsMandatory,DefaultValue,SeqNo,AD_Reference_ID sort=SeqNo limit=50 master=\"Process/Generate PO from Project\""
+2026-11-16T01:01:49.636Z §DOOR request=d-mwik60g8-2886860-6 actor=human verb=mis.lookup status=ok ms=763
+2026-11-16T01:01:49.636Z §RED1 line verb=mis.lookup status=ok request=d-mwik60g8-2886860-6 line="mis.lookup column=C_Project_ID process=\"Generate PO from Project\" limit=50"
+2026-11-16T01:01:49.638Z §RED1 typed n=8 where="red1 Project>"
+2026-11-16T01:01:51.535Z §DOOR request=d-mwik61vc-2886860-7 actor=human verb=mis.lookup status=ok ms=821
+2026-11-16T01:01:51.535Z §RED1 line verb=mis.lookup status=ok request=d-mwik61vc-2886860-7 line="mis.lookup column=C_ProjectPhase_ID process=\"Generate PO from Project\" limit=50 C_Project_ID=990000"
+2026-11-16T01:01:51.537Z §RED1 typed n=9 where="red1 Project>"
+2026-11-16T01:01:53.481Z §DOOR request=d-mwik63cs-2886860-8 actor=human verb=mis.lookup status=ok ms=843
+2026-11-16T01:01:53.481Z §RED1 line verb=mis.lookup status=ok request=d-mwik63cs-2886860-8 line="mis.lookup column=C_ProjectLine_ID process=\"Generate PO from Project\" limit=50 C_Project_ID=990000"
+2026-11-16T01:01:53.481Z §RED1 typed n=10 where="red1 Project>"
+2026-11-16T01:01:54.573Z §RED1 typed n=11 where="red1 Project>"
+2026-11-16T01:02:04.845Z §DOOR request=d-mwik667h-2886860-9 actor=human verb=erp.process status=ok ms=8511
+2026-11-16T01:02:04.845Z §RED1 line verb=erp.process status=ok request=d-mwik667h-2886860-9 line="erp.process name=\"Generate PO from Project\" kind=Project C_Project_ID=990000 ConsolidateDocument=Y"
+2026-11-16T01:02:04.847Z §RED1 typed n=12 where="red1 Project>"
+2026-11-16T01:02:09.670Z §DOOR request=d-mwik6foe-2886860-10 actor=human verb=mis.describe status=ok ms=1062
+2026-11-16T01:02:09.670Z §RED1 line verb=mis.describe status=ok request=d-mwik6foe-2886860-10 line="mis.describe kind=Order"
+2026-11-16T01:02:09.671Z §RED1 typed n=13 where="red1 Order>"
+2026-11-16T01:02:13.150Z §DOOR request=d-mwik6ig2-2886860-11 actor=human verb=mis.list status=ok ms=954
+2026-11-16T01:02:13.150Z §RED1 line verb=mis.list status=ok request=d-mwik6ig2-2886860-11 line="mis.list kind=Order columns=C_Order_ID,DocumentNo,DocStatus,Processed,POReference,Description limit=20 names=Y Description=*Hospital*"
+2026-11-16T01:02:13.151Z §RED1 typed n=14 where="red1 Order>"
+2026-11-16T01:02:25.764Z §DOOR request=d-mwik6le9-2886860-12 actor=human verb=erp.complete status=ok ms=9746
+2026-11-16T01:02:25.764Z §RED1 line verb=erp.complete status=ok request=d-mwik6le9-2886860-12 line="erp.complete kind=Order number=800003"
+2026-11-16T01:02:25.764Z §RED1 typed n=15 where="red1 Order>"
+2026-11-16T01:02:30.563Z §DOOR request=d-mwik6vvz-2886860-13 actor=human verb=erp.actions status=ok ms=947
+2026-11-16T01:02:30.563Z §RED1 line verb=erp.actions status=ok request=d-mwik6vvz-2886860-13 line="erp.actions kind=Order number=800003"
+2026-11-16T01:02:30.610Z §RED1 draw tree lines=4 legal=["CL","VO","RE"]
+2026-11-16T01:02:30.611Z §RED1 typed n=16 where="red1 Order>"
+2026-11-16T01:02:35.282Z §DOOR request=d-mwik6zeb-2886860-14 actor=human verb=mis.list status=ok ms=1119
+2026-11-16T01:02:35.282Z §RED1 line verb=mis.list status=ok request=d-mwik6zeb-2886860-14 line="mis.list kind=AD_Process_Para columns=ColumnName,Name,IsMandatory,DefaultValue,SeqNo,AD_Reference_ID sort=SeqNo limit=50 master=Process/Renumber"
+2026-11-16T01:02:36.279Z §DOOR request=d-mwik709g-2886860-15 actor=human verb=erp.process status=refused ms=994 why="Renumber was not run: it has no JS port yet (class org.compiere.process.DiscountSchemaReSeq)"
+2026-11-16T01:02:36.279Z §RED1 line verb=erp.process status=refused request=d-mwik709g-2886860-15 line="erp.process name=Renumber kind=Order"
+2026-11-16T01:02:36.279Z §RED1 gap line="erp.process name=Renumber kind=Order" kind=no-port
+2026-11-16T01:02:36.279Z §RED1 typed n=17 where="red1 Order>"
+2026-11-16T01:02:39.825Z §RED1 report draft gap=true
+2026-11-16T01:02:42.137Z §RED1 assist not-taken line="1" hint={"from":"1","to":"cd"}
+2026-11-16T01:02:42.138Z §RED1 report via=github chars=6981
+2026-11-16T01:02:44.987Z §RED1 typed n=20 where="red1 Duplex>"
+2026-11-16T01:02:47.378Z §DOOR request=d-mwik794x-2886860-16 actor=human verb=viewer.cost status=ok ms=592
+2026-11-16T01:02:47.378Z §RED1 line verb=viewer.cost status=ok request=d-mwik794x-2886860-16 line="viewer.cost building=Duplex by=discipline"
+2026-11-16T01:02:47.379Z §RED1 typed n=21 where="red1 Duplex>"
+2026-11-16T01:02:49.806Z §RED1 session end lines=22

@@ -11,7 +11,14 @@ function words(n) {   // 0..999,999,999, English, as spoken: 1193 -> one thousan
   if (n < 1e6) return words(Math.floor(n / 1000)) + ' thousand' + (n % 1000 ? (n % 1000 < 100 ? ' and ' : ' ') + words(n % 1000) : '');
   return words(Math.floor(n / 1e6)) + ' million' + (n % 1e6 ? (n % 1e6 < 100 ? ' and ' : ' ') + words(n % 1e6) : '');
 }
-const w = words, S = (p, v, word) => [p, String(v), word];
+const DG = '零一二三四五六七八九';
+function zhw(n) {   // 0..999,999,999 in Chinese numerals as spoken: 1054482 -> 一百零五万四千四百八十二 ; 6980 -> 六千九百八十 ; 113 -> 一百一十三
+  const sec = (m) => { let s = '', z = false; [Math.floor(m / 1000) % 10, Math.floor(m / 100) % 10, Math.floor(m / 10) % 10, m % 10].forEach((x, i) => { if (x === 0) { if (s) z = true; } else { if (z) { s += '零'; z = false; } s += DG[x] + ['千', '百', '十', ''][i]; } }); return s; };
+  if (n === 0) return '零'; if (n < 20 && n >= 10) return '十' + (n % 10 ? DG[n % 10] : '');
+  if (n < 10000) return sec(n); const hi = Math.floor(n / 10000), lo = n % 10000;
+  return (hi < 10000 ? sec(hi) : zhw(hi)) + '万' + (lo ? (lo < 1000 ? '零' : '') + sec(lo) : '');
+}
+const LANG = process.env.FILM_LANG === 'zh' ? 'zh' : 'en', w = LANG === 'zh' ? zhw : words, S = (p, v, word) => [p, String(v), word];
 const EN = [
   { id: 'cover', hold: 4 },
   { id: 'start', text: 'F: How do I start? | M: Type red one. The greeting counts its verbs and its words: ' + w(F.greet.verbs) + ' verbs, ' + w(F.greet.words) + ' words. Then a tip.', says: [S('greet.verbs', F.greet.verbs, w(F.greet.verbs) + ' verbs'), S('greet.words', F.greet.words, w(F.greet.words) + ' words')] },
@@ -32,5 +39,27 @@ const EN = [
   { id: 'exit', text: 'M: Exit, and you are back in the shell. | F: Remember the name. | M: Red one.', says: [] },
   { id: 'end', hold: 9 }   // the end card, silent: the voice tool's own credit line takes the last seconds
 ];
-EN.forEach(b => { if (b.text) b.text = b.text.replace(/(^|[.?!] |: )([a-z])/g, (m, a, c) => a + c.toUpperCase()); });   // a spoken number opens a sentence: the caption shows it capitalised
-exports.lang = 'en'; exports.beats = EN; exports.words = words;
+[EN].forEach(a => a.forEach(b => { if (b.text) b.text = b.text.replace(/(^|[.?!] |: )([a-z])/g, (m, a, c) => a + c.toUpperCase()); }));   // a spoken number opens a sentence: the caption shows it capitalised
+// FILM_LANG=zh: the Mandarin narration, translated by the build session (2026-11-16), NOT reviewed by a native speaker. The same beats, the same facts (every figure is written from facts.json through zhw());
+// Latin words stay Latin (BIM, MIS, ERP, GitHub, red one, the command words), the way the Edge voice reads them. "明细" and the other words of guard.js's not-said list are not used.
+const ZH = [
+  { id: 'cover', hold: 4 },
+  { id: 'start', text: 'F: 怎么开始？ | M: 输入 red one。问候语会数出它的动词和词：' + w(F.greet.verbs) + '个动词，' + w(F.greet.words) + '个词。然后是提示行。', says: [S('greet.verbs', F.greet.verbs, w(F.greet.verbs) + '个动词'), S('greet.words', F.greet.words, w(F.greet.words) + '个词')] },
+  { id: 'help', text: 'F: 它能做什么？ | M: ' + w(F.help.groups) + '个组：BIM、MIS 和 ERP。ERP 组有' + w(F.help.erpN) + '个词：do、run 和 next。', says: [S('help.groups', F.help.groups, w(F.help.groups) + '个组'), S('help.erpN', F.help.erpN, w(F.help.erpN) + '个词')] },
+  { id: 'level', text: 'F: 它会解释每个词吗？ | M: 先输入 level student，再输入 help run。它会说明这个词做什么，以及它运行的那行命令。', says: [] },
+  { id: 'bp', text: 'F: 怎么进入表格？ | M: 先输入几个字母。灰色的建议会出现，按 Tab 就能接受。然后输入 ls：共' + w(F.bp.of) + '个业务伙伴，显示' + w(F.bp.shown) + '个。', says: [S('bp.of', F.bp.of, '共' + w(F.bp.of) + '个业务伙伴'), S('bp.shown', F.bp.shown, '显示' + w(F.bp.shown) + '个')] },
+  { id: 'po1', text: 'F: 它能运行流程吗？ | M: 输入 run 和流程的名称。它按字典里的顺序提问。先问项目：有' + w(F.po.project.n) + '个可选。', says: [S('po.project.n', F.po.project.n, '有' + w(F.po.project.n) + '个可选')] },
+  { id: 'po2', text: 'F: 阶段呢？ | M: 只提供这个项目自己的' + w(F.po.phase.n) + '个阶段。我跳过它。', says: [S('po.phase.n', F.po.phase.n, w(F.po.phase.n) + '个阶段')] },
+  { id: 'po3', text: 'F: 项目行呢？ | M: 共' + w(F.po.line.n) + '行。这个也跳过。', says: [S('po.line.n', F.po.line.n, '共' + w(F.po.line.n) + '行')] },
+  { id: 'po4', text: 'F: 最后的问题呢？ | M: 合并选项保持默认，选是。按回车，它运行的完整命令就打印出来。生成了' + w(F.po.run.orders) + '张采购订单，来自' + w(F.po.run.orderLines) + '行订单行。', says: [S('po.run.orders', F.po.run.orders, w(F.po.run.orders) + '张采购订单'), S('po.run.orderLines', F.po.run.orderLines, w(F.po.run.orderLines) + '行订单行')] },
+  { id: 'ord', text: 'F: 它们在哪里？ | M: 输入 cd Order，再按描述列出。' + w(F.ord.rows) + '张订单，全是草稿。', says: [S('ord.rows', F.ord.rows, w(F.ord.rows) + '张订单')] },
+  { id: 'co', text: 'F: 能完成订单吗？ | M: 输入 do CO 和订单号。状态从 D R 变成 C O，总计是' + w(F.co.total) + '。', says: [S('co.total', F.co.total, '总计是' + w(F.co.total))] },
+  { id: 'next', text: 'F: 现在它还能做什么？ | M: next 加订单号。合法的下一步，画成树状图。关闭和作废有对应的词。R E 还没有词。', says: [S('next.withWord', F.next.withWord.join(','), '关闭和作废'), S('next.noWord', F.next.noWord.join(','), 'r e 还没有词')] },
+  { id: 'gap', text: 'F: 它不能运行的流程呢？ | M: ' + F.gap.process + ' 还没有 J S 移植。red one 会这样告诉你，缺口在 red one，不是你的错。', says: [S('gap.process', F.gap.process, F.gap.process.toLowerCase())] },
+  { id: 'report', text: 'F: 我能告诉开发者吗？ | M: report 会显示草稿。你打开它之前，什么都不会发送。', says: [] },
+  { id: 'url', text: 'F: 怎么发送？ | M: 选择 GitHub 议题，链接就打印出来：' + w(F.url.chars) + '个字符。要不要打开，由你决定。', says: [S('url.chars', F.url.chars, w(F.url.chars) + '个字符')] },
+  { id: 'cost', text: 'F: 回到建筑里呢？ | M: Duplex。按专业计价，' + w(F.cost.elements) + '个构件，一共' + w(F.cost.total) + '。各行加起来就是总数。把这笔成本过账到 ERP 项目订单，正在开发中。', says: [S('cost.elements', F.cost.elements, w(F.cost.elements) + '个构件'), S('cost.total', F.cost.total, '一共' + w(F.cost.total))] },
+  { id: 'exit', text: 'M: 输入 exit，就回到了 shell。 | F: 记住这个名字。 | M: red one。', says: [] },
+  { id: 'end', hold: 9 }
+];
+exports.lang = LANG; exports.beats = { en: EN, zh: ZH }[LANG]; exports.words = words; exports.zhw = zhw;
