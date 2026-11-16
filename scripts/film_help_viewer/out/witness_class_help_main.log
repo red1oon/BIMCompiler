@@ -1,0 +1,109 @@
+§CLASS_HELP_POP buildings=11 classes=51 dir=/home/red1/bim-ootb/viewer/buildings
+  PASS population-nonempty (918 rows)
+  PASS schema-valid (all 918 rows)
+  PASS C1 coverage: (b) for every shipped class in every pack; (a) iff the class (or its cited occurrence class) is in bSDD
+  PASS C2 verbatim: every (a) text == bSDD text of its declared language
+  PASS C3 honest: non-English (a) exactly where bSDD has an official translation
+  PASS C4 label: fallback line iff EN text on a non-English page; credit under every (a)
+  PASS C6 types: a type shows its cited occurrence class, named in heading + link
+  PASS redControl-detected (witness can fail)
+§WITNESS_CLASS_HELP pass=8 fail=0 ran=918
+§CLASS_HELP_COV locale=de_DE ours=51/51 ifc=50/51 ifc_official=9 ifc_fallback=41
+§CLASS_HELP_COV locale=es_ES ours=51/51 ifc=50/51 ifc_official=31 ifc_fallback=19
+§CLASS_HELP_COV locale=ja_JP ours=51/51 ifc=50/51 ifc_official=9 ifc_fallback=41
+§CLASS_HELP_COV locale=pt_BR ours=51/51 ifc=50/51 ifc_official=48 ifc_fallback=2
+§CLASS_HELP_COV locale=zh_CN ours=51/51 ifc=50/51 ifc_official=0 ifc_fallback=50
+§CLASS_HELP_COV locale=fr_FR ours=51/51 ifc=50/51 ifc_official=0 ifc_fallback=50
+§CLASS_HELP_COV locale=en_MY ours=51/51 ifc=50/51 ifc_official=0 ifc_fallback=0
+§PASS C4a IfcWall de_DE: German bSI text, no fallback line
+§PASS C4b IfcWall zh_CN: English bSI text + fallback line
+§PASS C4c IfcWallStandardCase: (b) only, no (a)
+§PASS C4d unknown class: no block
+§CLASS_HELP_TRL locale=en_US ours_translated=0/51
+§CLASS_HELP_TRL locale=en_GB ours_translated=0/51
+§CLASS_HELP_TRL locale=en_AU ours_translated=0/51
+§CLASS_HELP_TRL locale=ms_MY ours_translated=51/51
+§CLASS_HELP_TRL locale=de_DE ours_translated=51/51
+§CLASS_HELP_TRL locale=fr_FR ours_translated=51/51
+§CLASS_HELP_TRL locale=es_ES ours_translated=51/51
+§CLASS_HELP_TRL locale=zh_CN ours_translated=51/51
+§CLASS_HELP_TRL locale=th_TH ours_translated=51/51
+§CLASS_HELP_TRL locale=ja_JP ours_translated=51/51
+§CLASS_HELP_TRL locale=ko_KR ours_translated=51/51
+§CLASS_HELP_TRL locale=ar_SA ours_translated=51/51
+§CLASS_HELP_TRL locale=pt_BR ours_translated=51/51
+§CLASS_HELP_TRL locale=id_ID ours_translated=51/51
+§CLASS_HELP_TRL locale=bn_BD ours_translated=51/51
+§CLASS_HELP_TRL locale=bl_BD ours_translated=51/51
+§CLASS_HELP_TRL locale=af_ZA ours_translated=51/51
+§PASS C7 our sentence translated in every non-English locale, none in en_*
+§PASS C8 fill tool re-run fills 0 (true), overwrite REFUSED with XML untouched (true)
+§PASS C6a IfcSensorType: pt_BR official IfcSensor text; ja_JP English IfcSensor text + fallback line; heading/link name IfcSensor
+§CLASS_HELP_404 /favicon.ico
+§CLASS_HELP_404 /viewer/buildings/WitnessClassHelp_meta.db
+§CLASS_HELP_404 /viewer/buildings/WitnessClassHelp_positions.bin
+§CLASS_HELP_404 /viewer/buildings/patches/WitnessClassHelp_extracted.db.sql
+§CLASS_HELP_404 /viewer/buildings/patches/WitnessClassHelp_extracted.db.lightfield.bin
+§CLASS_HELP_404 /viewer/buildings/patches/WitnessClassHelp_extracted.db.qto.sql
+§CLASS_HELP_404 /viewer/buildings/patches/WitnessClassHelp_extracted.db.prebake.json
+§CLASS_HELP_404 /viewer/buildings/patches/Ifc2x3_Duplex_Federated_meta.db.lightfield.bin
+§CLASS_HELP_404 /viewer/buildings/patches/Ifc2x3_Duplex_Federated_extracted.db.lightfield.bin
+§CLASS_HELP_PICK locale=de_DE result=21 of=50
+  §TRL_LABELS locale=de_DE keys=1028 src=fetched translated=939 untranslated=89
+  §CLASS_HELP guid="2O2Fr$t4X7Zf8NOew3FNtn" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=de
+  §CLASS_HELP guid="2O2Fr$t4X7Zf8NOew3FNqI" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=de
+  §CLASS_HELP guid="2O2Fr$t4X7Zf8NOew3FNr2" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=de
+  §CLASS_HELP guid="2O2Fr$t4X7Zf8NOew3FNhv" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=de
+  §CLASS_HELP guid="0iEHWY1$XA8eQeeULq4jZ1" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=de
+  §CLASS_HELP guid="0iEHWY1$XA8eQeeULq4j_U" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=de
+  §CLASS_HELP guid="0iEHWY1$XA8eQeeULq4jDb" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=de
+  §CLASS_HELP guid="0iEHWY1$XA8eQeeULq4jE6" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=de
+  §CLASS_HELP guid="2O2Fr$t4X7Zf8NOew3FNld" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=de
+  §CLASS_HELP guid="2O2Fr$t4X7Zf8NOew3FNau" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=de
+  §CLASS_HELP guid="2O2Fr$t4X7Zf8NOew3FKST" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=de
+  §CLASS_HELP guid="2O2Fr$t4X7Zf8NOew3FKIu" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=de
+  §CLASS_HELP guid="2O2Fr$t4X7Zf8NOew3FKGS" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=de
+  §CLASS_HELP guid="2O2Fr$t4X7Zf8NOew3FLTF" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=de
+  §CLASS_HELP guid="2O2Fr$t4X7Zf8NOew3FL8v" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=de
+  §CLASS_HELP guid="0iEHWY1$XA8eQeeULq4jpl" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=de
+  §CLASS_HELP guid="1aj$VJZFn2TxepZUBcKpee" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=de
+  §CLASS_HELP guid="1aj$VJZFn2TxepZUBcKphf" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=de
+  §CLASS_HELP guid="2O2Fr$t4X7Zf8NOew3FNbT" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=de
+  §CLASS_HELP guid="2O2Fr$t4X7Zf8NOew3FKRi" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=de
+  §CLASS_HELP guid="2O2Fr$t4X7Zf8NOew3FKRH" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=de
+  §CLASS_HELP guid="2O2Fr$t4X7Zf8NOew3FKau" class=IfcWall ours=Y ifc=Y ifc_lang=de-DE fallback=N locale=de
+§PASS C5 de_DE page Find pick: {"vis":true,"text":"Was das ist Eine Wand: ein senkrechtes Bauteil, das Räume trennt oder umschließt; sie kann tragend sein oder nicht. IFC-Definition Vertikale Konstruktion zur Abgrenzung oder Unterteilung von Räumen. In der Regel handelt es sich um senkrechte oder nahezu senkrechte Flächenelemente, die häufig zur Aufnahme von Bauwerkslasten dienen. Sie müssen jedoch nicht tragend sein. Anmerkung: Nach ISO 6707-1 is","fallback":false,"credit":true}
+§CLASS_HELP_404 /viewer/buildings/WitnessClassHelp_meta.db
+§CLASS_HELP_404 /viewer/buildings/WitnessClassHelp_positions.bin
+§CLASS_HELP_404 /viewer/buildings/patches/WitnessClassHelp_extracted.db.sql
+§CLASS_HELP_404 /viewer/buildings/patches/WitnessClassHelp_extracted.db.lightfield.bin
+§CLASS_HELP_404 /viewer/buildings/patches/WitnessClassHelp_extracted.db.qto.sql
+§CLASS_HELP_404 /viewer/buildings/patches/WitnessClassHelp_extracted.db.prebake.json
+§CLASS_HELP_404 /viewer/buildings/patches/Ifc2x3_Duplex_Federated_meta.db.lightfield.bin
+§CLASS_HELP_404 /viewer/buildings/patches/Ifc2x3_Duplex_Federated_extracted.db.lightfield.bin
+§CLASS_HELP_PICK locale=zh_CN result=21 of=50
+  §TRL_LABELS locale=zh_CN keys=1028 src=fetched translated=921 untranslated=107
+  §CLASS_HELP guid="2O2Fr$t4X7Zf8NOew3FNtn" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=zh
+  §CLASS_HELP guid="2O2Fr$t4X7Zf8NOew3FNqI" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=zh
+  §CLASS_HELP guid="2O2Fr$t4X7Zf8NOew3FNr2" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=zh
+  §CLASS_HELP guid="2O2Fr$t4X7Zf8NOew3FNhv" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=zh
+  §CLASS_HELP guid="0iEHWY1$XA8eQeeULq4jZ1" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=zh
+  §CLASS_HELP guid="0iEHWY1$XA8eQeeULq4j_U" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=zh
+  §CLASS_HELP guid="0iEHWY1$XA8eQeeULq4jDb" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=zh
+  §CLASS_HELP guid="0iEHWY1$XA8eQeeULq4jE6" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=zh
+  §CLASS_HELP guid="2O2Fr$t4X7Zf8NOew3FNld" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=zh
+  §CLASS_HELP guid="2O2Fr$t4X7Zf8NOew3FNau" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=zh
+  §CLASS_HELP guid="2O2Fr$t4X7Zf8NOew3FKST" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=zh
+  §CLASS_HELP guid="2O2Fr$t4X7Zf8NOew3FKIu" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=zh
+  §CLASS_HELP guid="2O2Fr$t4X7Zf8NOew3FKGS" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=zh
+  §CLASS_HELP guid="2O2Fr$t4X7Zf8NOew3FLTF" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=zh
+  §CLASS_HELP guid="2O2Fr$t4X7Zf8NOew3FL8v" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=zh
+  §CLASS_HELP guid="0iEHWY1$XA8eQeeULq4jpl" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=zh
+  §CLASS_HELP guid="1aj$VJZFn2TxepZUBcKpee" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=zh
+  §CLASS_HELP guid="1aj$VJZFn2TxepZUBcKphf" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=zh
+  §CLASS_HELP guid="2O2Fr$t4X7Zf8NOew3FNbT" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=zh
+  §CLASS_HELP guid="2O2Fr$t4X7Zf8NOew3FKRi" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=zh
+  §CLASS_HELP guid="2O2Fr$t4X7Zf8NOew3FKRH" class=IfcWallStandardCase ours=Y ifc=N ifc_lang=- fallback=N locale=zh
+  §CLASS_HELP guid="2O2Fr$t4X7Zf8NOew3FKau" class=IfcWall ours=Y ifc=Y ifc_lang=EN fallback=Y locale=zh
+§PASS C5 zh_CN page Find pick: {"vis":true,"text":"这是什么 墙：分隔或围合空间的竖向构件，可以是承重墙，也可以不是。 IFC 定义 英文：没有您所用语言的官方译文 The wall represents a vertical construction that may bound or subdivide spaces. Wall are usually vertical, or nearly vertical, planar elements, often designed to bear structural loads. A wall is however not required to be load bearing. buildingSMART IFC 4.3 (bSDD), CC BY-ND 4.0","fallback":true,"credit":true}
+§W-CLASS-HELP PASS

@@ -12,8 +12,9 @@ Background, measurements and prior art are in `prompts/DOCS_I18N.md` §4b-§4d (
 - Step 2, How To in the `?` palette: BUILT, bim-ootb #3156, W-HOWTO PASS (§14.3 RESULT).
 - The help panel itself (left, stays open, amber, draggable, reopens as left): BUILT, bim-ootb #3160, W-HELP-DOCK PASS (§14.4 RESULT).
 - §14.5 step 1 (shared panel + drag helper in `common/`): BUILT, bim-ootb #3165.
-- **Also queued (owner "ok" to note it):** §17, the EN film sequel "Help that answers" in the Viewer. Make it in a fresh session; the outline and its rules are in §17.
-- **NEXT:** §14.5 STEP 2, the Modeller adapter: every fact is measured in the ▶ STEP 2 block under §14.5 RESULT. Then the prefixes, box side (§16 item 7: owner agreed `?` / `#<number>`; the CLI session specs the shell side as CLI_ERP_IVR §41).
+- §14.5 step 2, the Modeller adapter: BUILT, bim-ootb #3171, W-HELP-DOCK-M PASS (§14.5 RESULT step 2).
+- §17 film: MADE, `~/Videos/Help_that_answers_Viewer_EN_AFTER_2026-11-17_v2.mp4` (§17.1 RESULT). Other languages on the owner's word.
+- **NEXT:** the 6 Modeller guide titles (+ paragraphs) into the dictionary (§14.5 RESULT step 2, Open); then the prefixes, box side (§16 item 7: owner agreed `?` / `#<number>`; the CLI session specs the shell side as CLI_ERP_IVR §41).
 - The three §14.1 owner items were ANSWERED in §14.2 (ISO note kept; type classes via their cited occurrence class; our sentence in 15 languages, all built, #3152).
 - **Open owner question:** 8 Viewer tools have no section in the BIM User Guide (§14.3 RESULT), so they get no guide link until the guide has a section.
 - **Waiting on the CLI session (no action here):** §42 S3, the short-name limit fix in `assist_core.nearest()` (§16 item 1). It will message when merged. After that, the help box calls `nearest()` (no second edit-distance function).
@@ -1103,6 +1104,16 @@ This REPLACES the §14 design's "right dock".
   - `viewer/tests/witness_modeller_i18n.js:148` (judges `#m-help-panel` in de_DE).
 - Then W-HELP-DOCK-M as specced (M1-M8), and the PR states lines +/−.
 
+### 14.5 RESULT step 2 (2026-11-17): the Modeller adapter, bim-ootb #3171 (`feat/help-panel-modeller`)
+- **Built as specced:** `?` and the Guide pill open `common/help/help_panel.js` (`#cmd-palette`) on the outliner's strip (0–240 px, width − its 1 px border). Entries = live `#bar` pills + the 10 keyboard rows + the 11 guide `SECTIONS`. Outliner hidden with `visibility` (never `ol-collapsed`); dragged off the strip it returns; closing restores the user's own state. `#m-help-panel`, `#m-guide-panel` and their CSS deleted. +116 −94 in 12 files + the witness.
+- **Two decisions made while building (each witnessed):**
+  - `cfg.noAutoFocus` (opt-in, shared panel): the Viewer focuses the search box on open; in the Modeller that swallowed `?` / `O` / `E` / `D` (W-DXF-PANEL-PILL P6c went red). With it, `?` toggles as before and a click in the box searches. Typing `?` IN the box stays possible, so the agreed `?` prefix (§16 item 7) is not blocked. W-HELP-DOCK-M M9.
+  - A folded guide section is its title row alone; its paragraph enters the page only when opened or searched (W-HELP-DOCK-M M6d). Without it, W-MODELLER-I18N counted 60 hidden English paragraphs as leaks (10 → 70).
+  - Search also reads `howto.text` (M6c: "turns green" finds only 3D Grid; falsifier finds 0).
+- **Witnesses (logs read):** W-HELP-DOCK-M PASS (M0–M9, 20 checks) · W-UX-VERBS 9/0 · W-GUIDE-TEXT-UPDATES 5/0 · W-DXF-PANEL-PILL 18/0 · W-HELP-DOCK, W-HOWTO, W-CLASS-HELP PASS · W-ABOUT-HELP-RESTORE 9/9 · W-X0 appdef/isolation/lens PASS · eslint 0 errors (the repo's eslint; `npx eslint` pulls v10, which crashes on Node 18 — a tool error, not a result).
+- **Same as main, not this change:** W-CLIPBOARD-KEYS K1 "no empty ground point in view" (so its K7 help check is never reached; M5b covers Copy/Paste); `pill_declutter_live` "initSqlJs is not a function".
+- **Open (named, not hidden):** W-MODELLER-I18N de_DE was FAIL on main (10 leaks); now 16. The +6 are guide section titles not in the Viewer dictionary: "2D drawings → model", "Outliner — ARC leads, ONE Disc tab", "Disc = walker", "Conformity Gate", "Author", "Move & Manipulate". Translating them (and the paragraphs) is the next item for this panel.
+
 ## 15. NOT URGENT, to think about (owner 2026-11-16: *"You mean we can mis.<translated verb>? Note in prompt then we shall think about it not urgent."*)
 Two terminal ideas. Neither is built and nothing is decided.
 1. **Field help at the terminal.** The browser's per-field tooltip / Tool Tip panel has no terminal equivalent: today only `mis.describe` (a kind's fields) and `help <word>` exist.
@@ -1214,7 +1225,50 @@ Every step gets a witness with a falsifier (e.g. did-you-mean: N misspellings de
 - The film is never pushed, only its scripts.
 - Read `prompts/FILM_NARRATION.md` ▶ PLAYBOOK first.
 
+### 17.1 BUILD SPEC (2026-11-17, owner: *"proceed as you plan"* — the plan said: finish §14.5 step 2, then make the §17 film in this session)
+**Issue it removes:** the Viewer's help (§14.1-§14.4) is live and witnessed, but nothing shows it; the first film (§11) is ERP only.
+**Pipeline:** `scripts/film_help_viewer/`, copied from `scripts/film_help_showcase/` (same build.sh steps: shots → facts → guard → cards → voice measure → beat lengths → silent picture → fit → two-pass mux → key sounds → K2 → C). Work folder `~/Videos/help_viewer_film_work/out` (never in git). EN only, Kokoro voice (local CPU).
+**Pictures (`shots.js`):** the REAL `viewer/viewer.html?db=…Duplex…` from a bim-ootb `origin/main` tree, headless Chromium on the CPU (swiftshader, as the witnesses), 1280x720 at device scale 1.5. Every rectangle the cards crop is read from the page (`getBoundingClientRect`), never placed by hand. The same steps the witnesses use: Find `IfcWall` and click results until `#info-class` reads IfcWall (W-CLASS-HELP C5); F1 (W-HELP-DOCK); the search box filled (W-HOWTO H4c); the header dragged (W-HELP-DOCK D3).
+**Beats (narr.js; F asks, M answers, short):**
+| id | top strip (real lines only) | lower frame | facts the voice speaks |
+|---|---|---|---|
+| cover | — | title card | — |
+| quote | — | the §11 McKinsey card, same saved copies | `quote.found` |
+| klass | the page's `§CLASS_HELP guid=… class=IfcWall ours=Y ifc=Y` line | info panel, `#info-class-help` opened | our sentence shown; bSI text + credit shown |
+| lang | `§TRL_LABELS locale=de_DE` + `§CLASS_HELP` lines of both sessions | de_DE block, then zh_CN block | German text is bSDD's de-DE (byte-equal to the saved `bsdd_IfcWall_de-DE.json`); zh shows the fallback line |
+| ask | `native` TYPED into the help box (key sounds), then `§HOWTO_PALETTE … filter="native"` | the panel before, then Save Building opened | the word is in no pill name; the entry found is Save |
+| cli | `viewer.counts building=Duplex` TYPED at the `red1 ❯` prompt, then its real envelope (total, per discipline) | the panel's Find entry opened: its Guide link + "Same at the CLI" lines | the count = the envelope's number; the CLI line in the panel = `howto.json`'s |
+| dock | the page's `§DRAG_SAVE` / `§KBD_HELP close` / `§HELP_DOCK open` lines | moved, closed, reopened in the same place | reopen place == saved place (±1 px) |
+| close | — | cost (measured), prior art (only sources this lane read), credentials (PRs + verdict lines run on the same tree), the bSI attribution (CC BY-ND 4.0, §14 (a)), key-sound credit | — |
+**Guard (`guard.js`, fails the build):** every `says` fact resolved from facts.json / the witness logs / saved copies; no page error; every picture present; every PR on the card MERGED; the verdicts on the card are PASS lines of W-CLASS-HELP, W-HOWTO, W-HELP-DOCK run on the same tree; prior-art rows' text found where cited (check P); **not-said list:** live/real-time, faster/speed, first/novel/unique, the Modeller, prefixes, did-you-mean, any language but German and Chinese.
+**Checks after the mux (numbers, not a viewing):** K2 (no voice over typing, keys audible), C (captions in the bottom 170 px), frames = the silent picture's, longest silence ≤ ~7 s, ≈ −16 LUFS. Output `~/Videos/Help_that_answers_Viewer_EN_AFTER_<date>_v1.mp4`, never overwritten; not pushed.
+
+### 17.1 RESULT (2026-11-17): `~/Videos/Help_that_answers_Viewer_EN_AFTER_2026-11-17_v2.mp4` (111.4 s, 2,674 frames, −16.6 LUFS; not pushed, films stay on the machine)
+- **Pictures and facts:** `shots.js` on bim-ootb main `d68e0f71` (after #3171) drove the real Viewer + Duplex headless on the CPU, 0 page errors. `red1 'viewer.counts building=Duplex'` answered `1193 elements: MEP 809, ARC 270, ELEC 81, STR 19, PLB 14` (10.8 s). `facts.js` VERDICT PASS.
+- **Witnessed on that same tree:** W-CLASS-HELP PASS, W-HOWTO PASS, W-HELP-DOCK PASS (logs in `scripts/film_help_viewer/out/`).
+- **Checks of the build** (logs in `out/`):
+
+  | Check | Result |
+  |---|---|
+  | guard (25 spoken facts, 7 musts incl. a planted-count red control, 3 prior-art rows, 7 not-said) | PASS |
+  | cards (no overflow) | 48 stills, 0 too tall |
+  | voice fit | 6/6 DETAIL, 6/6 question tones OK |
+  | K2 (no voice over the typing, keys audible) | PASS, keys 18.6 dB under the voice |
+  | keys | 35/35 typed + 2/2 returns |
+  | frames | planned = encoded (2,674) |
+  | C, captions in the bottom 170 px | PASS 22/22; falsifier `CAP_Y=960` FAILs 21/22 |
+  | silences ≥ 4 s | the silent cover 4.8 s and the silent end card 19.1 s only (the §11 film's end card measures the same 19.1 s) |
+
+- **Defects found and fixed while building (each a rule for the next film):**
+  - (1) "native" finds TWO entries (Save Building and Open Building, W-HOWTO H4c `rows=2`): the voice names both, and the guard checks the rows shown are exactly the entries holding the word;
+  - (2) at 1280×720 the Find panel covers the info panel's top, so the class text was hidden in the crop. Shot at the witnesses' 1600×900 (scale 1.2, still 1920×1080 pixels); the guard checks Find covers neither the info panel nor the help panel's place;
+  - (3) a WH question rose ("What if I do not know what a tool is called?", §NARR_TONE WRONG): reworded as a yes/no question;
+  - (4) the card overflow check counted a crop's clipped picture as overflow: a crop is judged by its box only.
+- **Observed, not this lane's (Find panel lane):** at 1280×720 a mouse drag inside the Find panel's 64 px drag strip (`nf_ui_history.js:268`) did not move it, while the same drag moves `#info-panel` (W-HELP-DOCK D3b). Its `pointerdown` handler stops propagation (`:271`). Not diagnosed further; not claimed as a bug.
+- v1 (same day) had defect (3); kept on the machine, superseded by v2.
+
 ## STATUS
+2026-11-17: §14.5 step 2 (Modeller help in the shared panel) built + merged, bim-ootb #3171 (W-HELP-DOCK-M PASS). §17 film made: `Help_that_answers_Viewer_EN_AFTER_2026-11-17_v2.mp4` (§17.1 RESULT), pipeline `scripts/film_help_viewer/`. Next: the 6 Modeller guide titles into the dictionary, then the prefixes (box side).
 2026-11-16 (session bim-compiler-41): P1b, §10-§13 built and merged; films EN v4 / ZH v5 / DE v1 made (not pushed); ERP User Guide help section LIVE. Next: §14 (BIM help panel), check (a) first.
 2026-11-16: P1 built and witnessed (5/0), merged as bim-ootb #3079. P2a built and witnessed (W-MSG-CATALOG 4/0), merged as bim-ootb #3082. P3a built and witnessed (W-HELP-STUDENT 5/0), merged as bim-ootb #3083. P3a-1 (help footer + opening tip, `red1 --fast`), bim-ootb #3084. P2b (W-MSG-DOOR 5/0) #3108. P1b (W-FIELD-HELP 13/0) #3126. Depends on `prompts/DOCS_I18N.md`, `prompts/CLI_ERP_IVR.md` (CLI session owns), `prompts/ERP_UI_LOCALES.md`.
 

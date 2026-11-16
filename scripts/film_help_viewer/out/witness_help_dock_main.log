@@ -1,0 +1,40 @@
+§PASS D1a opens left ({"l":16,"t":16,"w":320,"h":868}), overlaps none of find+info+issues
+§PASS D1b a click in the 3D view leaves it open
+§PASS D2 min contrast dark=6.31 white=5.26 over 90 text nodes (worst white: Save Building color=rgb(224, 224, 224))
+§PASS D2-red falsifier: alpha 0.10 on white → min 1.01 (Save Building color=rgb(224, 224, 224)) must be < 4.5
+§PASS D4 guide links in the panel 35 == howto.json 35
+§PASS D3a moved by (200,16), expected (200,16 = clamp room), saved={"left":216,"top":32}
+§PASS D3b info panel (A._makeDraggable, panels.js, no switches) dragged -120 px without the switches: no storage key written (true)
+§PASS D3c pushed past the corner then clamped: {"l":1280,"t":32,"r":1600,"b":900} whole panel inside 1600x900, §DRAG_CLAMP logged 1
+§PASS D3d-move dragged back from the right edge to left=300 (want 300)
+§PASS D3d after reload it opens where it was left: {"l":300,"t":32} vs {"l":300,"t":32}
+§PASS D6a Share opened by hand (true), × closed (true), reopened with Share still open (true)
+§PASS D6b typed search comes back after × + F1: "native"
+§PASS D1c Esc closes it
+  §KBD_HELP open
+  §HELP_DOCK open left=16 top=16 w=320 h=868 mobile=false filter="" open=0
+  §HOWTO_LOAD pills=44
+  §DRAG_CLAMP id=cmd-palette left=216 top=32
+  §DRAG_SAVE key=bim_help_dock_pos left=216 top=32
+  §DRAG_CLAMP id=cmd-palette left=1280 top=32
+  §DRAG_SAVE key=bim_help_dock_pos left=1280 top=32
+  §DRAG_CLAMP id=cmd-palette left=300 top=32
+  §DRAG_SAVE key=bim_help_dock_pos left=300 top=32
+  §KBD_HELP open
+  §DRAG_RESTORE key=bim_help_dock_pos left=300 top=32
+  §HELP_DOCK open left=300 top=32 w=320 h=868 mobile=false filter="" open=0
+  §HOWTO_LOAD pills=44
+  §KBD_HELP close via=x
+  §KBD_HELP open
+  §DRAG_RESTORE key=bim_help_dock_pos left=300 top=32
+  §HELP_DOCK open left=300 top=32 w=320 h=868 mobile=false filter="" open=1
+  §KBD_HELP close via=x
+  §KBD_HELP open
+  §DRAG_RESTORE key=bim_help_dock_pos left=300 top=32
+  §HELP_DOCK open left=300 top=32 w=320 h=868 mobile=false filter="native" open=1
+  §KBD_HELP close via=x
+§PASS D5 phone 390x844 mobile=true: {"l":0,"t":0,"w":390,"h":844}, after drag top=0
+  §KBD_HELP open
+  §HELP_DOCK open left=0 top=0 w=390 h=844 mobile=true filter="" open=0
+  §HOWTO_LOAD pills=44
+§W-HELP-DOCK PASS
