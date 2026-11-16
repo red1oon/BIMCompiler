@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 7065b49039438599
+source_sha: 72198f6f900235d2
 lang: zh-CN
 ---
 
@@ -22,7 +22,7 @@ lang: zh-CN
 $ (sleep 4; printf 'exit\r') | RED1_LOG=/tmp/fast_guide_greet.log RED1_HISTORY=/tmp/fast_guide_greet.hist BIM_DOOR_JOURNAL=/tmp/fast_guide_greet.journal script -qec 'node common/door/red1.js' /dev/null | tr -d '\r' | sed -e 's/\x1b\[[0-9;?]*[a-zA-Z]//g' -e 's/ · [0-9a-f]\{8\}$//'
 Welcome to red1, the scripting door into BIM and ERP, stored in SQLite.
 REMEMBER THE NAME.
-Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 75 verbs · 30 words
+Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 76 verbs · 30 words
 Type help for the list of commands (or bim, mis, erp for one group).
 Tip: type level student for fuller help on each word (red1 --fast opens without tips).
 
@@ -128,7 +128,7 @@ node common/door/red1.js
 <!-- run: red1_version -->
 ```text
 $ node common/door/red1.js --version | sed -e 's/^Copyright[^·]*· //' -e 's/ · [0-9a-f]\{8\}$//'
-red1 1.0.0 · 75 verbs · 30 words
+red1 1.0.0 · 76 verbs · 30 words
 ```
 
 **六文件下载**用于只要门和 Modeller 动词、不需要检出的情况。新建一个空文件夹，安装 Modeller 所需的浏览器引擎，然后获取这六个文件：
@@ -273,7 +273,7 @@ number:
 ok · erp.actions
 Order 50000  status DR
 ├─ CO  → do complete 50000
-├─ PR  (no red1 word for it yet)
+├─ PR  → do prepare 50000
 └─ VO  → do void 50000
 → erp.complete kind=Order number=50000
 ok · erp.complete
@@ -464,6 +464,7 @@ object.count building=Duplex kind=Element -> 1193 Element
 | `erp.void` | 作废一份单据 | `kind`，`id`（可选）, `number`（可选）, `role`（可选） | writes | human, ai | 一份 bim-ootb 检出 |
 | `erp.close` | 关闭一份单据 | `kind`，`id`（可选）, `number`（可选）, `role`（可选） | writes | human, ai | 一份 bim-ootb 检出 |
 | `erp.reverse` | 冲销 - 更正一份单据 | `kind`，`id`（可选）, `number`（可选）, `role`（可选） | posts | human, ai | 一份 bim-ootb 检出 |
+| `erp.prepare` | 准备一份单据 | `kind`，`id`（可选）, `number`（可选）, `role`（可选） | writes | human, ai | 一份 bim-ootb 检出 |
 | `mis.describe` | 描述一类 ERP 记录 | `kind`，`role`（可选） | read | human, ai | 一份 bim-ootb 检出 |
 | `mis.read` | 读取一条 ERP 记录 | `kind`，`id`（可选）, `number`（可选）, `role`（可选） | read | human, ai | 一份 bim-ootb 检出 |
 | `mis.list` | 列出记录 | `kind`，`columns`（可选）, `sort`（可选）, `limit`（可选）, `offset`（可选）, `names`（可选）, `role`（可选）, 更多 `column=value` 筛选条件（可选） | read | human, ai | 一份 bim-ootb 检出 |
@@ -492,7 +493,7 @@ object.count building=Duplex kind=Element -> 1193 Element
 | `erp.new` | 创建一条记录（mis.new 的旧名） | `kind`，`dry`（可选）, `role`（可选）, `window`（可选）, 更多 `column=value` 筛选条件（可选） | writes | human, ai | 一份 bim-ootb 检出 |
 <!-- /GEN:verbs -->
 
-**目前的覆盖范围。** 这份列表有意保持很小：65 个动词覆盖 Modeller 的轴网编辑、它的 walker 以及在各行之间保持打开的 Modeller、少量 Viewer 问题、进度、通用的对象读取、计数和写入、一次选择的成本、ERP 单据动词，以及 ERP 字典中任何已移植的流程。Viewer 有 64 个人可以按下的操作，门提供 6 个 Viewer 动词。ERP 有 1158 个单据和流程，门为单据的生命周期提供 10 个 ERP 动词，为任意表提供 15 个 MIS 动词，并保留 10 个旧名称，使以前的行仍能运行。所以这只是一个开始，不是完整的菜单。
+**目前的覆盖范围。** 这份列表有意保持很小：66 个动词覆盖 Modeller 的轴网编辑、它的 walker 以及在各行之间保持打开的 Modeller、少量 Viewer 问题、进度、通用的对象读取、计数和写入、一次选择的成本、ERP 单据动词，以及 ERP 字典中任何已移植的流程。Viewer 有 64 个人可以按下的操作，门提供 6 个 Viewer 动词。ERP 有 1158 个单据和流程，门为单据的生命周期提供 11 个 ERP 动词，为任意表提供 15 个 MIS 动词，并保留 10 个旧名称，使以前的行仍能运行。所以这只是一个开始，不是完整的菜单。
 
 
 ## 本页为何保持真实

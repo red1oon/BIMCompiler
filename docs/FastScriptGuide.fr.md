@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 7065b49039438599
+source_sha: 72198f6f900235d2
 lang: fr
 ---
 
@@ -22,7 +22,7 @@ Sur un terminal, `red1` vous accueille une fois, puis attend à son invite. Voic
 $ (sleep 4; printf 'exit\r') | RED1_LOG=/tmp/fast_guide_greet.log RED1_HISTORY=/tmp/fast_guide_greet.hist BIM_DOOR_JOURNAL=/tmp/fast_guide_greet.journal script -qec 'node common/door/red1.js' /dev/null | tr -d '\r' | sed -e 's/\x1b\[[0-9;?]*[a-zA-Z]//g' -e 's/ · [0-9a-f]\{8\}$//'
 Welcome to red1, the scripting door into BIM and ERP, stored in SQLite.
 REMEMBER THE NAME.
-Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 75 verbs · 30 words
+Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 76 verbs · 30 words
 Type help for the list of commands (or bim, mis, erp for one group).
 Tip: type level student for fuller help on each word (red1 --fast opens without tips).
 
@@ -128,7 +128,7 @@ Tapez `exit` pour quitter. Pour taper simplement `red1` de n'importe où, lancez
 <!-- run: red1_version -->
 ```text
 $ node common/door/red1.js --version | sed -e 's/^Copyright[^·]*· //' -e 's/ · [0-9a-f]\{8\}$//'
-red1 1.0.0 · 75 verbs · 30 words
+red1 1.0.0 · 76 verbs · 30 words
 ```
 
 **Le téléchargement de six fichiers** sert à la porte seule avec les verbes du Modeller, sans copie complète. Créez un dossier vide, installez le moteur de navigateur dont le Modeller a besoin, et récupérez les six fichiers :
@@ -273,7 +273,7 @@ number:
 ok · erp.actions
 Order 50000  status DR
 ├─ CO  → do complete 50000
-├─ PR  (no red1 word for it yet)
+├─ PR  → do prepare 50000
 └─ VO  → do void 50000
 → erp.complete kind=Order number=50000
 ok · erp.complete
@@ -464,6 +464,7 @@ Ce tableau est **généré à partir du fichier de vocabulaire** (`common/door/v
 | `erp.void` | Annuler un document | `kind`, `id` (facultatif), `number` (facultatif), `role` (facultatif) | writes | human, ai | une copie complète de bim-ootb |
 | `erp.close` | Clore un document | `kind`, `id` (facultatif), `number` (facultatif), `role` (facultatif) | writes | human, ai | une copie complète de bim-ootb |
 | `erp.reverse` | Extourner - Corriger un document | `kind`, `id` (facultatif), `number` (facultatif), `role` (facultatif) | posts | human, ai | une copie complète de bim-ootb |
+| `erp.prepare` | Préparer un document | `kind`, `id` (facultatif), `number` (facultatif), `role` (facultatif) | writes | human, ai | une copie complète de bim-ootb |
 | `mis.describe` | Décrire un type d'enregistrement ERP | `kind`, `role` (facultatif) | read | human, ai | une copie complète de bim-ootb |
 | `mis.read` | Lire un enregistrement ERP | `kind`, `id` (facultatif), `number` (facultatif), `role` (facultatif) | read | human, ai | une copie complète de bim-ootb |
 | `mis.list` | Lister des enregistrements | `kind`, `columns` (facultatif), `sort` (facultatif), `limit` (facultatif), `offset` (facultatif), `names` (facultatif), `role` (facultatif), autres filtres `column=value` (facultatif) | read | human, ai | une copie complète de bim-ootb |
@@ -492,7 +493,7 @@ Ce tableau est **généré à partir du fichier de vocabulaire** (`common/door/v
 | `erp.new` | Créer un enregistrement (ancien nom de mis.new) | `kind`, `dry` (facultatif), `role` (facultatif), `window` (facultatif), autres filtres `column=value` (facultatif) | writes | human, ai | une copie complète de bim-ootb |
 <!-- /GEN:verbs -->
 
-**Couverture actuelle.** La liste est petite à dessein : 65 verbes couvrent les modifications de trame du Modeller, son walker et un Modeller gardé ouvert entre les lignes, quelques questions du Viewer, le planning, la lecture, le comptage et l'écriture génériques d'objets, le coût d'une sélection, les verbes de documents ERP et tout processus du dictionnaire ERP qui a un port. Le Viewer a 64 actions qu'une personne peut presser, et la porte offre 6 verbes du Viewer. L'ERP a 1158 documents et processus, et la porte offre 10 verbes ERP pour la vie d'un document et 15 verbes MIS qui marchent sur n'importe quelle table, et garde 10 anciens noms pour que les lignes antérieures fonctionnent encore. C'est donc un début, pas le menu complet.
+**Couverture actuelle.** La liste est petite à dessein : 66 verbes couvrent les modifications de trame du Modeller, son walker et un Modeller gardé ouvert entre les lignes, quelques questions du Viewer, le planning, la lecture, le comptage et l'écriture génériques d'objets, le coût d'une sélection, les verbes de documents ERP et tout processus du dictionnaire ERP qui a un port. Le Viewer a 64 actions qu'une personne peut presser, et la porte offre 6 verbes du Viewer. L'ERP a 1158 documents et processus, et la porte offre 11 verbes ERP pour la vie d'un document et 15 verbes MIS qui marchent sur n'importe quelle table, et garde 10 anciens noms pour que les lignes antérieures fonctionnent encore. C'est donc un début, pas le menu complet.
 
 
 ## Comment cette page reste vraie

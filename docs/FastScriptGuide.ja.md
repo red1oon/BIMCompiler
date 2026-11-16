@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 7065b49039438599
+source_sha: 72198f6f900235d2
 lang: ja
 ---
 
@@ -22,7 +22,7 @@ SQL のステロイド版だと考えてください。一行でレコードを�
 $ (sleep 4; printf 'exit\r') | RED1_LOG=/tmp/fast_guide_greet.log RED1_HISTORY=/tmp/fast_guide_greet.hist BIM_DOOR_JOURNAL=/tmp/fast_guide_greet.journal script -qec 'node common/door/red1.js' /dev/null | tr -d '\r' | sed -e 's/\x1b\[[0-9;?]*[a-zA-Z]//g' -e 's/ · [0-9a-f]\{8\}$//'
 Welcome to red1, the scripting door into BIM and ERP, stored in SQLite.
 REMEMBER THE NAME.
-Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 75 verbs · 30 words
+Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 76 verbs · 30 words
 Type help for the list of commands (or bim, mis, erp for one group).
 Tip: type level student for fuller help on each word (red1 --fast opens without tips).
 
@@ -128,7 +128,7 @@ node common/door/red1.js
 <!-- run: red1_version -->
 ```text
 $ node common/door/red1.js --version | sed -e 's/^Copyright[^·]*· //' -e 's/ · [0-9a-f]\{8\}$//'
-red1 1.0.0 · 75 verbs · 30 words
+red1 1.0.0 · 76 verbs · 30 words
 ```
 
 **六ファイルのダウンロード**は、チェックアウトなしで、ドアと Modeller 動詞だけを使う場合のものです。空のフォルダーを作り、Modeller が必要とするブラウザーエンジンをインストールして、六つのファイルを取得します：
@@ -273,7 +273,7 @@ number:
 ok · erp.actions
 Order 50000  status DR
 ├─ CO  → do complete 50000
-├─ PR  (no red1 word for it yet)
+├─ PR  → do prepare 50000
 └─ VO  → do void 50000
 → erp.complete kind=Order number=50000
 ok · erp.complete
@@ -464,6 +464,7 @@ object.count building=Duplex kind=Element -> 1193 Element
 | `erp.void` | 伝票を無効にする | `kind`, `id` （任意）, `number` （任意）, `role` （任意） | writes | human, ai | bim-ootb のチェックアウト |
 | `erp.close` | 伝票をクローズする | `kind`, `id` （任意）, `number` （任意）, `role` （任意） | writes | human, ai | bim-ootb のチェックアウト |
 | `erp.reverse` | 伝票を取り消す（修正する） | `kind`, `id` （任意）, `number` （任意）, `role` （任意） | posts | human, ai | bim-ootb のチェックアウト |
+| `erp.prepare` | 伝票を準備する | `kind`, `id` （任意）, `number` （任意）, `role` （任意） | writes | human, ai | bim-ootb のチェックアウト |
 | `mis.describe` | ERP レコードの種類を説明する | `kind`, `role` （任意） | read | human, ai | bim-ootb のチェックアウト |
 | `mis.read` | ERP レコードを読む | `kind`, `id` （任意）, `number` （任意）, `role` （任意） | read | human, ai | bim-ootb のチェックアウト |
 | `mis.list` | レコードを一覧する | `kind`, `columns` （任意）, `sort` （任意）, `limit` （任意）, `offset` （任意）, `names` （任意）, `role` （任意）, その他の`column=value`フィルタ（任意） | read | human, ai | bim-ootb のチェックアウト |
@@ -492,7 +493,7 @@ object.count building=Duplex kind=Element -> 1193 Element
 | `erp.new` | レコードを作る（mis.new の古い名前） | `kind`, `dry` （任意）, `role` （任意）, `window` （任意）, その他の`column=value`フィルタ（任意） | writes | human, ai | bim-ootb のチェックアウト |
 <!-- /GEN:verbs -->
 
-**現在のカバー範囲。** 一覧は意図的に小さくしてあります。65個の動詞が、Modeller のグリッド編集、そのウォーカー、行の間も開いたままの Modeller、いくつかの Viewer の質問、工程、汎用のオブジェクトの読み取り・カウント・書き込み、選択のコスト、ERP の伝票動詞、そしてポートのある ERP 辞書のあらゆるプロセスをカバーしています。Viewer には人が押せるアクションが64個あり、ドアは6個の Viewer 動詞を提供します。ERP には1158個の伝票とプロセスがあり、ドアは伝票の一生のための10個の ERP 動詞と、どのテーブルにも使える15個の MIS 動詞を提供し、以前の行が動き続けるよう10個の旧名を残しています。つまりこれは出発点であって、メニューのすべてではありません。
+**現在のカバー範囲。** 一覧は意図的に小さくしてあります。66個の動詞が、Modeller のグリッド編集、そのウォーカー、行の間も開いたままの Modeller、いくつかの Viewer の質問、工程、汎用のオブジェクトの読み取り・カウント・書き込み、選択のコスト、ERP の伝票動詞、そしてポートのある ERP 辞書のあらゆるプロセスをカバーしています。Viewer には人が押せるアクションが64個あり、ドアは6個の Viewer 動詞を提供します。ERP には1158個の伝票とプロセスがあり、ドアは伝票の一生のための11個の ERP 動詞と、どのテーブルにも使える15個の MIS 動詞を提供し、以前の行が動き続けるよう10個の旧名を残しています。つまりこれは出発点であって、メニューのすべてではありません。
 
 
 ## このページが正しさを保つ仕組み
