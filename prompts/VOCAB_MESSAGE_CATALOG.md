@@ -736,6 +736,18 @@ These are legacy's own words in that language; the twin shows them unchanged.
 - the move to `common/help/` without changing the ERP's witnessed behaviour (W-FIELD-HELP 13/0, W-HELP-SHOWCASE 23/0, W-ERP-ASK 11/0 must stay green);
 - the witness: X of N pills with How To text; X of N element classes in the shipped buildings with a (b) entry; (c) shown for a sample of selected elements; the question set per app; the mobile sheet.
 
+## 15. NOT URGENT, to think about (owner 2026-11-16: *"You mean we can mis.<translated verb>? Note in prompt then we shall think about it not urgent."*)
+Two terminal ideas. Neither is built and nothing is decided.
+1. **Field help at the terminal.** The browser's per-field tooltip / Tool Tip panel has no terminal equivalent: today only `mis.describe` (a kind's fields) and `help <word>` exist.
+   - Idea: the field's own Description / Help answered from the SAME help pack in the chosen language (`lang_rule.js`).
+   - E.g. `erp.ask` given a column, or `help <column>` inside `cd Order`.
+   - Spec it here when picked up.
+2. **Verbs / words in the person's own language** (the question asked: "mis.<translated verb>"). Today every verb and red1 word is English; only the answers translate.
+   - The idea is already a STUB in the CLI session's `prompts/CLI_ERP_IVR.md` (line ~78: "red1 words in the person's own language … a localized word expands to the SAME printed door line").
+   - The door verbs themselves (`mis.describe`, …) stay English: they are the envelope and the journal, pinned for AI and scripts (§0 rule).
+   - What could be translated is the red1 WORD a person types. The CLI session owns `words.json` and decides; this lane would supply the names from the packs.
+   - Open questions: where the localized word lives (a per-language word table vs the help pack), and whether a word may collide with a dictionary name.
+
 ## STATUS
 2026-11-16 (session bim-compiler-41): P1b, §10-§13 built and merged; films EN v4 / ZH v5 / DE v1 made (not pushed); ERP User Guide help section LIVE. Next: §14 (BIM help panel), check (a) first.
 2026-11-16: P1 built and witnessed (5/0), merged as bim-ootb #3079. P2a built and witnessed (W-MSG-CATALOG 4/0), merged as bim-ootb #3082. P3a built and witnessed (W-HELP-STUDENT 5/0), merged as bim-ootb #3083. P3a-1 (help footer + opening tip, `red1 --fast`), bim-ootb #3084. P2b (W-MSG-DOOR 5/0) #3108. P1b (W-FIELD-HELP 13/0) #3126. Depends on `prompts/DOCS_I18N.md`, `prompts/CLI_ERP_IVR.md` (CLI session owns), `prompts/ERP_UI_LOCALES.md`.
