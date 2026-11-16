@@ -32,7 +32,7 @@ Background, measurements and prior art are in `prompts/DOCS_I18N.md` §4b-§4d (
      - the guide section anchor.
    - **Auto-hyperlink:** inside any help text, a term equal to a window, process or field name becomes a link (window → open, field → its help, guide term → its section). One linker, run when the pack is built, not at display time.
    - **Witness:** a question set of real phrasings (EN + each pack language) → expected top hit (X of N). A falsifier drops the phrase matcher and must FAIL.
-4. **Research §8 (what leading apps do) is the input for the open question below; read it before speccing the content.**
+4. **Research §8 (what leading apps do) is the input for the open question below; read it before speccing the content. §9 is the storage advice (text sources per language, a separate in-browser help DB, legacy table shapes; not folded into the seed).**
 5. **Order of work:** finish P1b (W-FIELD-HELP F1-F5, the tooltip setter, the right panel). Then the pack format and loader. Then the search index and linker. The content itself comes last, and it is just data.
 **Owned elsewhere, don't redo:**
 - The locale/login rule: the CLI session.
@@ -349,6 +349,37 @@ clash: <the short help, unchanged>
 - **Languages already paid for:** the guides (en, id, zh, fr, ja, es-419, de) and the ERP UI packs (en, fr, es_ES, de, ar, zh_CN, ja, ms_MY, th). The overlap is fr, de, ja, zh (+ es variants).
 - The next session writes a short spec with options and the owner picks. It does not decide either question itself.
 Sources: [SAP Web Assistant](https://www.sap.com/design-system/fiori-design-web/v1-96/foundations/writing-and-wording/web-assistant) · [Office Tell Me](https://support.microsoft.com/en-au/office/d6b60e8f-0530-43bf-b688-e99d36cf5663) · [macOS Help menu](https://support.apple.com/en-asia/guide/mac-help/hlpvw003/10.15/mac) · [JetBrains Search Everywhere](https://jetbrains.com/help/idea/searching-everywhere.html) · [Business Central user assistance](https://learn.microsoft.com/id-id/dynamics365/business-central/dev-itpro/user-assistance) · [BC teaching tips](https://learn.microsoft.com/en-ca/dynamics365/business-central/dev-itpro/administration/onboarding-teaching-tips-tours) · [Dynamics 365 guided help](https://learn.microsoft.com/en-us/powerapps/maker/data-platform/create-custom-help-pages) · [Salesforce In-App Guidance](https://trailhead.salesforce.com/content/learn/modules/user-engagement/create-in-app-prompts) · [Oracle Guided Learning](https://docs.oracle.com/en/education/customer-success/guided-learning/user-guide/introduction-overview-oracle-guided-learning.html) · [Odoo debug tooltip (3rd party)](https://deploymonkey.com/blog/odoo-debug-developer-mode-guide)
+
+## 9. Storage: how help content grows without breaking the DB and NO-LFS rules (advice 2026-11-16; owner: *"as we grow will it be 'folded' into (same or new SQLite DB) as migration scripts and organised without breaking the LFS rule in GIthub? Do advice if u have better idea how the DB is organised."*)
+**Measured:**
+- One language's field translations in legacy (`es_CO`): 21,432 rows, **2,860,334 characters**; element translations: 6,026 rows, 411,933 characters. About **3.3 MB of text per language**, before any Context Help.
+- The seed `ad_seed.db` is 27 MB (P1, §2).
+- Pages for bim-ootb publishes the **tracked** files; a merge made by the CI token starts only the branch build (`deploy-pages.yml` comment). So anything a browser fetches must be a committed file, not a deploy-time build product.
+**Advice: do NOT fold help content into `ad_seed.db`, and do not ship it as ledger migrations.**
+- Folding it in grows the one DB every user downloads by about 3.3 MB per language, plus Context Help.
+- Ledger migrations (append-only) would replay every past edit of every text forever.
+- Help is content that is regenerated and translated, like the guides. It is not schema.
+**Instead (text sources in git, a separate per-language DB in the browser, legacy table shapes):**
+1. **Source of truth = text, one record per line, in git** (no binary, so NO-LFS is untouched):
+   - `erp/help/<lang>/ad_field_trl.jsonl`, `ad_element_trl.jsonl`, `ad_process_para_trl.jsonl`, `ad_ctxhelp.jsonl`, `ad_ctxhelpmsg.jsonl`;
+   - sorted by the record's UU (stable key), so a change is a small reviewable diff.
+   - English Context Help lives under `erp/help/en/`. Each translated record carries the `source_sha` of the English it was made from, so staleness shows. This is the i18n_sync idea (DOCS_I18N §6f) applied to records, not lines.
+2. **Legacy table names and columns,** so the twin reads them the way legacy does, and the same records can be exported as a 2Pack to a real iDempiere (§8). Origin: the published iDempiere language packs for `*_Trl` (extracted, never typed). Context Help comes from accepted suggestions and owner-approved text.
+3. **A separate DB in the browser, not the seed:**
+   - After the login has chosen the language (CLI session's rule), the page fetches that language's files once. They are compressed on the wire by the web server, so a zip adds nothing: the "help-pack" is one folder per language.
+   - The page loads them into its own `help_<lang>` SQLite (in-browser storage) and `ATTACH`es it beside the seed. The seed is never rewritten.
+   - The service worker caches the folder. A `manifest.json` per language (file list + sha) lets the client refetch only what changed: the same self-heal idea as `patches/*.sql`.
+4. **The search index is built from the same sources and committed** (`erp/help/<lang>/index.json`), and a witness checks it equals a rebuild. This is the rule the guide's verb table follows (generated, committed, checked).
+5. **Writes by users** (a help suggestion) go through the door as `AD_CtxHelpSuggestion` ops in the op-log, like any record. Accepting one is the step that copies it into `erp/help/<lang>/ad_ctxhelpmsg.jsonl` (a reviewed PR).
+6. **The CLI reads the same files** (Node, no browser): `help <word>` and the how-to search use one index, one loader.
+**Why this is better than one growing DB:**
+- The download is per language and only on demand.
+- Every change is a text diff.
+- No binary is ever committed.
+- Translations show their staleness.
+- Legacy and the twin read the same records.
+- Help content can never corrupt the business data.
+**Open (owner):** this storage plan; who writes content and which languages first (§8).
 
 ## STATUS
 2026-11-16: P1 built and witnessed (5/0), merged as bim-ootb #3079. P2a built and witnessed (W-MSG-CATALOG 4/0), merged as bim-ootb #3082. P3a built and witnessed (W-HELP-STUDENT 5/0), merged as bim-ootb #3083. P3a-1 (help footer + opening tip, `red1 --fast`), bim-ootb #3084. Depends on `prompts/DOCS_I18N.md`, `prompts/CLI_ERP_IVR.md` (CLI session owns), `prompts/ERP_UI_LOCALES.md`.
