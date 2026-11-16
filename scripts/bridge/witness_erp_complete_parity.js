@@ -4,6 +4,7 @@
 //   (2) the SQLite twin: a draft keyed into the twin's op-log, then `erp.complete` run by the DOOR (bim-ootb common/door/door.js, actor human). Compared, per scenario: DocStatus, header and line
 //   amounts, line qty ordered/reserved/delivered/invoiced, the related documents the Complete created (count + status), tax, and Fact_Acct folded per account in BOTH accounting schemas
 //   for the order and every document it created. A scenario that cannot be judged says INCONCLUSIVE with the reason; the verdict is never PASS when nothing was compared.
+// FOLLOW-UP 3 (2026-11-17, CLI_ERP_IVR §33): Prepare (PR) of a DRAFT Sales Order, the same pair line (`action=PR`); legacy set_docaction PR on the draft, twin `erp.prepare` through the door.
 // FOLLOW-UP 2 (2026-11-10): the same comparison for Void (VO), Close (CL) and Reverse-Correct (RC) of a Sales Order, each with its OWN pair line `§A5_PAIR table=C_Order action=<A> verdict=`. Legacy: SyncOrder + CompleteOrder, wait until the
 //   generated shipment/invoice are posted, then set_docaction (pilot service type BridgeDocActionCOrder, the one shopday_more.js SD-17 uses). Twin: the door lines erp.complete then erp.void|erp.close|erp.reverse (actor human). Compared in addition:
 //   DocAction, header/line descriptions (MOrder.voidIt "Voided (old)", closeIt "Close (old)"), every shipment and invoice with its status (originals and reversals) and its books, per account, in both schemas.
@@ -20,7 +21,7 @@ const C = require('./client_ctx').ctx;
 const OOTB = process.env.BRIDGE_OOTB;
 const BREAK = process.env.A5_BREAK === '1';
 const out = (s) => console.log(s);
-const VERB = { VO: 'void', CL: 'close', RC: 'reverse' };
+const VERB = { VO: 'void', CL: 'close', RC: 'reverse', PR: 'prepare' };
 const cents = v => Math.round(Number(v) * 100);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 if (!OOTB || !fs.existsSync(path.join(OOTB, 'common/door/erp_cli.js'))) { out('§A5 INCONCLUSIVE BRIDGE_OOTB must name a bim-ootb checkout that has common/door/erp_cli.js (git -C ~/bim-ootb worktree list); nothing was compared'); out('§A5_VERDICT INCONCLUSIVE'); process.exit(2); }
@@ -43,7 +44,7 @@ const DESC = (f) => ({ composite: 'SyncOrder',
   docAction: f.noComplete ? undefined : { serviceType: 'CompleteOrder', table: 'C_Order', action: 'CO' } });
 async function legacyFacts(table, id, schema, postedType) {
   const h0 = (await query(cfg, postedType[0], `${postedType[1]}=${id}`))[0];
-  const gone = h0 && ['VO', 'CL', 'RE'].includes(h0.DocStatus);   // a voided/closed order's books were deleted (MOrder.voidIt MFactAcct.deleteEx, Posted=N): nothing to wait for
+  const gone = h0 && ['VO', 'CL', 'RE', 'DR', 'IP', 'IN'].includes(h0.DocStatus);   // a voided/closed order's books were deleted (MOrder.voidIt MFactAcct.deleteEx, Posted=N); a document not completed (DR/IP/IN) is never posted (DocumentEngine.processIt posts after CO only, :349-372): nothing to wait for (§33)
   let fa = []; for (let i = 0; i < (gone ? 1 : 6) && !fa.length; i++) { fa = await query(cfg, 'QueryFactAcct', `AD_Table_ID=${table} AND Record_ID=${id} AND C_AcctSchema_ID=${schema}`); if (!fa.length && !gone) await sleep(1500); }
   if (fa.length) return fold(fa.map(f => ({ acct: f.Account_ID, dr: f.AmtAcctDr, cr: f.AmtAcctCr })));
   const h = (await query(cfg, postedType[0], `${postedType[1]}=${id}`))[0];
@@ -159,9 +160,11 @@ async function main() {
     Object.assign({ name: 'SO-STD-137x2-CL', product: C.prod.mulch, qty: 2, action: 'CL' }, std),
     Object.assign({ name: 'SO-POS-137x1-CL', product: C.prod.mulch, qty: 1, action: 'CL' }, pos),
     Object.assign({ name: 'SO-STD-136x3-RC', product: C.prod.fertilizer, qty: 3, action: 'RC' }, std),
+    Object.assign({ name: 'SO-STD-137x2-PR', product: C.prod.mulch, qty: 2, action: 'PR', noComplete: true }, std),   // CLI_ERP_IVR §33: a draft prepared (MOrder.prepareIt: IP, stock reserved, no books)
+    Object.assign({ name: 'SO-POS-137x1-PR', product: C.prod.mulch, qty: 1, action: 'PR', noComplete: true }, pos),
     Object.assign({ name: 'SO-POS-137x1-RC', product: C.prod.mulch, qty: 1, action: 'RC' }, pos)
   ];
-  const ACTS = (process.env.A5_ACTIONS || 'CO,VO,CL,RC').split(',');
+  const ACTS = (process.env.A5_ACTIONS || 'CO,VO,CL,RC,PR').split(',');
   const SCN = SCN_ALL.filter(s => ACTS.includes(s.action) && (!process.env.A5_ONLY || s.name === process.env.A5_ONLY));
   let match = 0, diff = 0, inc = 0; const res = {};
   for (const f of SCN) {
