@@ -14,7 +14,7 @@ Background, measurements and prior art are in `prompts/DOCS_I18N.md` §4b-§4d (
 |---|---|---|---|
 | P0 | Inventory and measurement (CLI strings ~235 in 10 files; Help duplication; derived-tip candidates) | docs only | DONE 2026-11-16, DOCS_I18N §4b-§4c |
 | **P1** | **Help read layer** over the dictionary: resolve Help/Description by level through element → column → field, derive a tip where none is written | new files in bim-ootb `erp/` only | BUILT 2026-11-16, W-HELP-CATALOG 5/0 (bim-ootb `feat/help-catalog`), see P1 RESULT |
-| P2 | `Msg` pass-through for CLI strings (no behavior change), then file by file; stable key per message; `explain <key>` | `common/door/*` | **P2a BUILT 2026-11-16** (`words_core.js`, W-MSG-CATALOG 4/0, see §3 RESULT); next file `door.js` (P2b) |
+| P2 | `Msg` pass-through for CLI strings (no behavior change), then file by file; stable key per message; `explain <key>` | `common/door/*` | **P2a BUILT 2026-11-16** (`words_core.js`, W-MSG-CATALOG 4/0, §3); **P2b BUILT 2026-11-16** (`door.js`, W-MSG-DOOR 5/0, §6; merge waits on the guides' six-file download) |
 | P3 | Student level for `help <word>` from the vocabulary (P3a); hint lines on the most-hit refusals (person's terminal, level set) (P3b) | `words_core.js`, `red1.js`, door render | **P3a BUILT 2026-11-16** (W-HELP-STUDENT 5/0, §4 RESULT; no `words.json` edit was needed); P3b after P2b |
 | P4 | Guides pull terms from the same keys at build time | `docs/`, MkDocs | after P2 |
 | P5 | Translations (six languages, `DOCS_I18N.md`), reviewer banner | catalog + docs | after P4 |
@@ -177,6 +177,60 @@ clash: <the short help, unchanged>
   - `renamekey`, `unledgered` and `edittemplate` still FAIL their claims.
 - W-HELP-STUDENT 6/0, W-RED1-HELP 5/0 and W-RED1-WORDS 3/0 stay green.
 - The code-design session (X0 Navigator, F-19) requires it unchanged.
+
+## 6. P2b spec: `door.js` to the catalog (bim-ootb `feat/msg-door`, 2026-11-16; owner: "do message for door.js to catalog only this session")
+**Scope of this session: the move only.** `match(text)`, a level, a locale and the P3b hint lines are NOT in P2b; they are the next items.
+**Issue it removes:** the door's refusals (missing input, `is not key=value`, unknown verb, the claim and confirm answers, the `{expr}` errors) are literals in `door.js`. A person's terminal cannot show them at a level or in a language. These are the most-read refusals of the CLI.
+**What moves (person-facing text):** every literal sentence that reaches a person or an AI as an ANSWER:
+- the envelope's `why` (validator, line grammar, `{expr}`, `decide`, `composed`, `engineResult`, confirm),
+- the `question` text of a line that is not a command,
+- the `what` words of the input types,
+- the `verbs.json:` load errors (the vocabulary author reads them),
+- the usage line, the `--dry` refusal and the three `§DOOR FAIL` sentences: the sentence moves, the `§DOOR FAIL` tag stays in the code.
+- Fallback words (`no output`, `refused`, `none`, `the app`, `field`, `never answered`, `nothing was judged`) are keys too.
+**What stays in code, by rule:** the `§DOOR <event> key=value` log lines (the witness instrument, grepped by W-DOOR-*). Also the regexes that read other programs' stderr (they read data), the punctuation that joins lists (`, ` `; ` ` > `) and the `curl -O` lines (commands).
+**The envelope stays English, always.** The door's catalog reader is pinned to `en`, now and after a locale exists. Translating a `why` is the person's terminal's job, through `match(text)`, so the envelope, the journal and what an AI receives never change (§0).
+**Braces:** a template may not hold `{` or `}` (`msg_core.js`). Where the text shows the person's own expression (`in {a+b}`) or the `{` character itself, the brace is DATA and is passed as an argument.
+**Conditional tails:** each is a second whole-sentence key (§3 rule). Example: `door.plain_number`, `_unit`, `_hint`, `_unit_hint`.
+**Loading, no silent fallback:** `door.js` reads `msg_core.js` and `messages.json` through its ONE resolver (`locate`): beside `door.js` first, then the repo layout. `FILES` gains `msg_core.js` (`common/door/msg_core.js`) and `messages.json` (`common/door/vocab/messages.json`). The catalog is read once, on the first message. When either file is missing:
+- the CLI stops at start and names the file with its `curl` line (the `render.js` pattern);
+- `bim_mcp.js` adds both to `DL` and to its start check;
+- the one literal left is the guard that says the catalog is missing. It is a named exemption, as in P2a.
+**Public download consequence (needs the owner):** the guides' "four files" (FastScriptGuide in 7 languages, ProposerGuide) become six. Both files are already served live (P2a), so updating the guides first is harmless. W-MCP-DOWNLOAD `LISTED` and its D3 loop, and `gen_fast_script_guide.js` `FLAT`, gain the two files.
+**Claims, witness W-MSG-DOOR (`common/door/tests/witness_msg_door.js`; falsifier `MSG_BREAK=`):**
+- **D1 byte-identical.** Issue: moving text changes an envelope, the journal or a replay. The pre-change `door.js` (git `DOOR_BASE`, the `origin/main` this branch starts from) and the new one, sibling copies in `common/door/`, get the SAME corpus. Every result must match byte for byte (X of N steps), with `ms` and the request ids normalised:
+  - the exported `validate`, `coerce`, `parseLine`, `tokenize` and `evalExpr` over typed and bad inputs;
+  - `createDoor().runLine` and `confirm` with stub programs, for every `decide` and `engineResult` branch;
+  - `loadVocab` and `checkComposed` on broken vocabularies;
+  - the CLI usage and `--dry` refusal, spawned.
+  - No baseline from git → INCONCLUSIVE.
+  - Falsifier `edittemplate`: one character changed in one `door.*` template in a catalog copy → D1 FAILS, naming the key.
+- **D2 every key reached.** `door.*` keys reached X of N; an unreached key → INCONCLUSIVE naming it.
+- **D3 keys both ways** through `msg_keys.js` (prefix `door.`): unknown, unused, template, arg-count and computed-key findings all 0. Falsifier `renamekey`: one key renamed in a copy of `door.js` only → D3 FAILS.
+- **D4 no literal left (deletion budget).** The person-facing literal patterns (`why:` sentences, `throw new Error('…`, `return '…`, `what: '…`, `question: '…`, `fail('…`, `|| '…` fallbacks, `usage:`) counted before and after; after = 0 except the named guard. The `§DOOR` log sentences left by rule are listed in the log, not counted.
+- **D5 the flat download.** A folder holding only the listed files (now six) runs a door line. With `msg_core.js` or `messages.json` removed, `door.js` exits 1 and names the file with its `curl` line. (W-MCP-DOWNLOAD `--local` D1-D3 run as well.)
+- Unchanged witnesses run and logs read: W-DOOR-* (all), W-DSL, W-REPLY-HONEST, W-MSG-CATALOG, W-HELP-STUDENT, W-RED1-*, W-ERP-VERBS-DOOR, W-VOCAB-COMPOSE, W-X0-CATALOG.
+
+**P2b RESULT (2026-11-16, bim-ootb `feat/msg-door` @ `9272d6c3`; logs read: `common/door/tests/logs/msg_door*.log`, `p2b_*.log`, `cmp_*.log`):** W-MSG-DOOR **5 pass / 0 fail**.
+- D1: the pre-change `door.js` (`f541cde7`) and the new one answer 151 of 151 steps byte for byte. The steps cover the functions, broken vocabularies, every engine branch, confirm, the journal, the § say lines and 10 CLI runs from a flat folder.
+- D2: 85 of 85 `door.*` keys reached. D3: 101 uses, 0 findings. D4: person-facing literals 98 before, 0 after. The guard `catalogMissing` is named; 16 `§DOOR` log lines stay by rule.
+- D5: the 6-file folder runs a line, and the connector lists its 4 tools. Without `msg_core.js` or `messages.json`, `door.js` and `bim_mcp.js` each exit 1 and print that file's curl line.
+- Falsifiers: `edittemplate` FAILs D1 (`given twice` against `given twise`, 4 steps). `renamekey` FAILs D1 and D3 (`unknown-key door.input_twicee`, `unused-key door.input_twice`).
+- **Instrument errors found by reading the log, fixed:**
+  1. Claim timestamps (`t`) were not normalised.
+  2. D4 counted the status code `'error'` and the actor id `'human'` as words. Codes are now excluded.
+  3. The spawned CLI exits inside its main, so a key-count hook appended at the file's end never registered. It now sits at the top.
+  4. `--dry` alone reaches usage first, and a script needs `render.js` first. So the CLI corpus has a second flat folder with `render.js`.
+- Unchanged witnesses green: W-DOOR-CONFIRM/-HELP/-LIST/-OUT/-PLUGINS/-ROWS/-SCRIPT/-STAMP/-DUP/-HONEST/-SAME/-STATIC, W-DSL 21/0, W-MCP-DOWNLOAD `--local` 7/0 (now 5 D3 files), W-ERP-VERBS-DOOR 46/0, W-VOCAB-COMPOSE, W-MSG-CATALOG 5/0, W-HELP-STUDENT 6/0, W-RED1-*, W-MIS-LOOKUP, W-X0-CATALOG (174 key hovers).
+- **Failing on `main` too, not this lane** (base `f541cde7` and branch give identical failing lines):
+  - W-LEGACY-PLUGIN P5b: the in-server witness is 12/0, the check wants 8/0.
+  - W-MIS-TAB P1: C_ProjectPhase/C_ProjectTask displayed fields 22/19 and 20/14.
+  - W-MIS-TAB P3: `object_cli.js:85` orders tabs beside `tabsOf`.
+  - W-NINJA-EXEC E11a: tab placement in the Business Partner window.
+- **Run environment:** a fresh worktree has no `node_modules`. Witnesses ran with `NODE_PATH=~/bim-ootb/node_modules:~/bim-compiler/node_modules`, because puppeteer is installed only in bim-compiler. Without that path, 3 witnesses crash with `puppeteer not found` / `sql.js` not found. That is not a defect.
+- **Found, not fixed (flat-download hole, older than P2b):** `validate` requires `./assist_core.js` when a missing input has a near-miss key. `assist_core.js` is not in the download, so that case throws `Cannot find module` in a flat folder.
+- **Open (⛔ owner):** the guides' "four files" become six (FastScriptGuide ×7 languages, ProposerGuide). Hold the bim-ootb merge until the guides list the six, or merge first. Both files are already live (200), so updating the guides first is harmless.
+**Next:** `match(text)` (envelope `why` → key) and P3b hint lines.
 
 ## STATUS
 2026-11-16: P1 built and witnessed (5/0), merged as bim-ootb #3079. P2a built and witnessed (W-MSG-CATALOG 4/0), merged as bim-ootb #3082. P3a built and witnessed (W-HELP-STUDENT 5/0), merged as bim-ootb #3083. P3a-1 (help footer + opening tip, `red1 --fast`), bim-ootb #3084. Depends on `prompts/DOCS_I18N.md`, `prompts/CLI_ERP_IVR.md` (CLI session owns), `prompts/ERP_UI_LOCALES.md`.
