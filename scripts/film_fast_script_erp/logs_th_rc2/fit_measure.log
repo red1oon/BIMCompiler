@@ -1,0 +1,98 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§EDGE_RETRY attempt=1 voice=th-TH-PremwadeeNeural text="เริ่มต้นอย่างไร?"
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=16 -> 902104c529
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=95 -> 9648eef10d
+§NARR_FIT start cue=0.00 room=998.70 dur=7.62 -> DETAIL slack=+991.08 detailDur=7.62 words=10
+§NARR_TONE start#0 F WH own=-6.4st rose=0st endDelta=-6.4st want=report OK "เริ่มต้นอย่างไร?"
+§EDGE_RETRY attempt=1 voice=th-TH-PremwadeeNeural text="ทำอะไรได้บ้าง?"
+§EDGE_RETRY attempt=2 voice=th-TH-PremwadeeNeural text="ทำอะไรได้บ้าง?"
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=14 -> 09f95add57
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=82 -> 90b8e03c99
+§NARR_FIT help cue=0.00 room=998.70 dur=8.63 -> DETAIL slack=+990.07 detailDur=8.63 words=26
+§NARR_TONE help#0 F WH own=-0.0st rose=0st endDelta=-0.0st want=report OK "ทำอะไรได้บ้าง?"
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=15 -> 4358a6782a
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=75 -> 7c0492ecf2
+§NARR_FIT level cue=0.00 room=998.70 dur=6.23 -> DETAIL slack=+992.47 detailDur=6.23 words=8
+§NARR_TONE level#0 F YN own=-4.3st rose=0st endDelta=-4.3st want=report OK "อธิบายคำได้ไหม?"
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=18 -> 28ab12e434
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=117 -> 9177a1d7a7
+§NARR_FIT bp cue=0.00 room=998.70 dur=8.85 -> DETAIL slack=+989.85 detailDur=8.85 words=14
+§NARR_TONE bp#0 F WH own=-3.5st rose=0st endDelta=-3.5st want=report OK "ไปที่ตารางอย่างไร?"
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=19 -> c86336ba63
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=87 -> bd4019c8ed
+§NARR_FIT po1 cue=0.00 room=998.70 dur=8.55 -> DETAIL slack=+990.15 detailDur=8.55 words=8
+§NARR_TONE po1#0 F YN own=-5.1st rose=0st endDelta=-5.1st want=report OK "รันกระบวนการได้ไหม?"
+§EDGE_RETRY attempt=1 voice=th-TH-PremwadeeNeural text="แล้วระยะล่ะ?"
+§EDGE_RETRY attempt=2 voice=th-TH-PremwadeeNeural text="แล้วระยะล่ะ?"
+§EDGE_RETRY attempt=3 voice=th-TH-PremwadeeNeural text="แล้วระยะล่ะ?"
+§EDGE_RETRY attempt=4 voice=th-TH-PremwadeeNeural text="แล้วระยะล่ะ?"
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=12 -> b6344459ba
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=41 -> ce7d835c8b
+§NARR_FIT po2 cue=0.00 room=998.70 dur=3.79 -> DETAIL slack=+994.91 detailDur=3.79 words=5
+§NARR_TONE po2#0 F YN own=-0.6st rose=0st endDelta=-0.6st want=report OK "แล้วระยะล่ะ?"
+§EDGE_RETRY attempt=1 voice=th-TH-PremwadeeNeural text="แล้วบรรทัดโครงการ?"
+§EDGE_RETRY attempt=2 voice=th-TH-PremwadeeNeural text="แล้วบรรทัดโครงการ?"
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=18 -> 2cab8c2a89
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=38 -> 94bbc171ce
+§NARR_FIT po3 cue=0.00 room=998.70 dur=3.86 -> DETAIL slack=+994.84 detailDur=3.86 words=4
+§NARR_TONE po3#0 F YN own=-6.3st rose=0st endDelta=-6.3st want=report OK "แล้วบรรทัดโครงการ?"
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=17 -> 9f4fc7370c
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=148 -> ae7810edf6
+§NARR_FIT po4 cue=0.00 room=998.70 dur=10.86 -> DETAIL slack=+987.84 detailDur=10.86 words=15
+§NARR_TONE po4#0 F YN own=-2.1st rose=0st endDelta=-2.1st want=report OK "แล้วคำถามสุดท้าย?"
+§EDGE_RETRY attempt=1 voice=th-TH-PremwadeeNeural text="ทำให้ใบสั่งเสร็จได้อย่างไร?"
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=27 -> 9e91ca38f0
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=90 -> dbf64beadf
+§NARR_FIT co cue=0.00 room=998.70 dur=7.55 -> DETAIL slack=+991.15 detailDur=7.55 words=15
+§NARR_TONE co#0 F WH own=-6.2st rose=0st endDelta=-6.2st want=report OK "ทำให้ใบสั่งเสร็จได้อย่างไร?"
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=19 -> 7a51631267
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=89 -> bc2b4523a7
+§NARR_FIT next cue=0.00 room=998.70 dur=6.84 -> DETAIL slack=+991.86 detailDur=6.84 words=12
+§NARR_TONE next#0 F WH own=+0.1st rose=0st endDelta=+0.1st want=report OK "ตอนนี้ทำอะไรต่อได้?"
+§EDGE_RETRY attempt=1 voice=th-TH-PremwadeeNeural text="แล้วกระบวนการที่รันไม่ได้?"
+§EDGE_RETRY attempt=2 voice=th-TH-PremwadeeNeural text="แล้วกระบวนการที่รันไม่ได้?"
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=26 -> 42bee6d24e
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=102 -> d0cf96153c
+§NARR_FIT gap cue=0.00 room=998.70 dur=8.34 -> DETAIL slack=+990.36 detailDur=8.34 words=12
+§NARR_TONE gap#0 F YN own=-0.2st rose=0st endDelta=-0.2st want=report OK "แล้วกระบวนการที่รันไม่ได้?"
+§EDGE_RETRY attempt=1 voice=th-TH-PremwadeeNeural text="แจ้งเจ้าของได้ไหม?"
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=18 -> bc48358591
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=56 -> c89639f800
+§NARR_FIT report cue=0.00 room=998.70 dur=5.26 -> DETAIL slack=+993.44 detailDur=5.26 words=5
+§NARR_TONE report#0 F YN own=-6.7st rose=0st endDelta=-6.7st want=report OK "แจ้งเจ้าของได้ไหม?"
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=17 -> 318b648df0
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=101 -> 5e8a91560b
+§NARR_FIT url cue=0.00 room=998.70 dur=8.19 -> DETAIL slack=+990.51 detailDur=8.19 words=9
+§NARR_TONE url#0 F WH own=-1.6st rose=0st endDelta=-1.6st want=report OK "แล้วจะส่งอย่างไร?"
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=19 -> 6413f63372
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=138 -> 41ab40c190
+§NARR_FIT cost cue=0.00 room=998.70 dur=12.30 -> DETAIL slack=+986.40 detailDur=12.30 words=16
+§NARR_TONE cost#0 F YN own=-4.3st rose=0st endDelta=-4.3st want=report OK "แล้วกลับมาที่อาคาร?"
+§EDGE_RETRY attempt=1 voice=th-TH-PremwadeeNeural text="ถ้าฉันตอบใช่?"
+§EDGE_RETRY attempt=2 voice=th-TH-PremwadeeNeural text="ถ้าฉันตอบใช่?"
+§EDGE_RETRY attempt=3 voice=th-TH-PremwadeeNeural text="ถ้าฉันตอบใช่?"
+§EDGE_RETRY attempt=4 voice=th-TH-PremwadeeNeural text="ถ้าฉันตอบใช่?"
+§EDGE_RETRY attempt=5 voice=th-TH-PremwadeeNeural text="ถ้าฉันตอบใช่?"
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=13 -> 0689844aa4
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=171 -> 57a0ebbcca
+§NARR_FIT post cue=0.00 room=998.70 dur=12.07 -> DETAIL slack=+986.63 detailDur=12.07 words=19
+§NARR_TONE post#0 F YN own=-3.1st rose=0st endDelta=-3.1st want=report OK "ถ้าฉันตอบใช่?"
+§EDGE_RETRY attempt=1 voice=th-TH-PremwadeeNeural text="ดูได้ไหม?"
+§EDGE_RETRY attempt=2 voice=th-TH-PremwadeeNeural text="ดูได้ไหม?"
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=9 -> 22681c6db5
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=73 -> 4bf15ed110
+§NARR_FIT proj cue=0.00 room=998.70 dur=6.14 -> DETAIL slack=+992.56 detailDur=6.14 words=6
+§NARR_TONE proj#0 F YN own=-2.9st rose=0st endDelta=-2.9st want=report OK "ดูได้ไหม?"
+§EDGE_RETRY attempt=1 voice=th-TH-PremwadeeNeural text="แล้วรายการ?"
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=11 -> b9d04518f0
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=41 -> c87afe52b6
+§NARR_FIT ls cue=0.00 room=998.70 dur=3.78 -> DETAIL slack=+994.92 detailDur=3.78 words=6
+§NARR_TONE ls#0 F YN own=-4.7st rose=0st endDelta=-4.7st want=report OK "แล้วรายการ?"
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=29 -> fc9063913c
+§EDGE_RETRY attempt=1 voice=th-TH-PremwadeeNeural text="จำชื่อนี้ไว้"
+§EDGE_RETRY attempt=2 voice=th-TH-PremwadeeNeural text="จำชื่อนี้ไว้"
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=12 -> 60d3a172cf
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=7 -> 542498d411
+§NARR_FIT exit cue=0.00 room=998.70 dur=3.96 -> DETAIL slack=+994.74 detailDur=3.96 words=6

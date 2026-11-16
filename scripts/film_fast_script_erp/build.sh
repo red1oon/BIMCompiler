@@ -5,10 +5,11 @@
 set -e; cd "$(dirname "$0")"
 FILM_LANG="${FILM_LANG:-en}"; export FILM_LANG; OD=out; [ "$FILM_LANG" = en ] || OD=out_$FILM_LANG; export OUTD=$OD   # zh: the SAME recording (out/rec, copied to out_zh/rec: the shell's text is English), only the voice, the captions and the title/end cards change
 mkdir -p $OD/work/fm $OD/work/fit
-OUTMP4="${OUTMP4:-$HOME/Videos/Fast_Script_ERP_$(echo $FILM_LANG | tr a-z A-Z)_rc1.mp4}"; [ -e "$OUTMP4" ] && { echo "§REFUSED $OUTMP4 exists (never overwritten); set OUTMP4="; exit 5; }
+OUTMP4="${OUTMP4:-$HOME/Videos/Fast_Script_ERP_$(echo $FILM_LANG | tr a-z A-Z)_rc2.mp4}"; [ -e "$OUTMP4" ] && { echo "§REFUSED $OUTMP4 exists (never overwritten); set OUTMP4="; exit 5; }
 PY=~/.local/share/film_narration/venv/bin/python; FIT=../film_replication_engine/film6/fit6/fit_kokoro_v3_k.py; MUX=../film_replication_engine/film6/fit6/mux_two_pass.py; HEAD=../../prompts/film_narration_ass_head.txt
 export CUDA_VISIBLE_DEVICES=""
 FTAG=en; FARG=1.15; [ "$FILM_LANG" = en ] || { FIT=../../prompts/film_narration_fit_edge.py; FTAG=$FILM_LANG; FARG=$FILM_LANG; }   # zh: the narration text goes to Microsoft Edge TTS (free, cached by text, as the earlier Mandarin films); English stays the local Kokoro
+[ "$FILM_LANG" = th ] && { fc-list | grep -qi "Noto Sans Thai" && echo "§FONT Noto Sans Thai present" > $OD/font.log || { echo "§FONT_FAIL no Noto Sans Thai"; exit 3; }; export FIT_MAXSPEED=1.0; }   # Thai: NO speed-up (the playbook: fit by shortening the translation)
 [ "$FILM_LANG" = en ] || { [ -d out/rec ] || { echo "§ZH_NEEDS out/rec (the English recording)"; exit 3; }; mkdir -p $OD; rm -rf $OD/rec; cp -r out/rec $OD/rec; SKIP_REC=1; }
 # a step that comes back empty/late under load is RE-RECORDED, never shipped: up to 3 recordings, each must pass facts.js (the logs of failed attempts are kept in out/attempts/)
 mkdir -p $OD/attempts; export OOTB="${OOTB:-/tmp/wt-film-fse-ootb}"

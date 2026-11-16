@@ -1,0 +1,52 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1920
+PlayResY: 1080
+WrapStyle: 0
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: F,DejaVu Sans,46,&H00B4F0FF,&H00FFFFFF,&H90000000,&H00000000,0,0,0,0,100,100,0,0,1,2.6,0,2,260,260,48,1
+Style: M,DejaVu Sans,46,&H00FFE6B4,&H00FFFFFF,&H90000000,&H00000000,0,0,0,0,100,100,0,0,1,2.6,0,2,260,260,48,1
+Style: Credit,DejaVu Sans,30,&H00DDDDDD,&H00FFFFFF,&H90000000,&H00000000,0,1,0,0,100,100,0,0,1,2,0,8,200,200,36,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:05.47,0:00:06.77,F,start#0,0,0,0,,How do I start?
+Dialogue: 0,0:00:06.82,0:00:14.22,M,start#1,0,0,0,,Type red one. The greeting counts its verbs and its words: Seventy-three verbs, twenty-six words. Then a tip.
+Dialogue: 0,0:00:19.22,0:00:20.33,F,help#0,0,0,0,,What can it do?
+Dialogue: 0,0:00:20.38,0:00:28.35,M,help#1,0,0,0,,Three groups: B I M, M I S and E R P. The E R P group has four words: Post, do, run and next.
+Dialogue: 0,0:00:34.51,0:00:36.00,F,level#0,0,0,0,,Can it explain a word?
+Dialogue: 0,0:00:36.05,0:00:41.26,M,level#1,0,0,0,,Level student, then help run. It says what the word does, and the line it runs.
+Dialogue: 0,0:00:49.34,0:00:50.90,F,bp#0,0,0,0,,How do I get to a table?
+Dialogue: 0,0:00:50.95,0:00:59.30,M,bp#1,0,0,0,,Type a few letters. A grey suggestion appears, and Tab takes it. Then ls: Twenty of one hundred and thirteen business partners.
+Dialogue: 0,0:01:07.05,0:01:08.48,F,po1#0,0,0,0,,Can it run a process?
+Dialogue: 0,0:01:08.53,0:01:16.70,M,po1#1,0,0,0,,Run, and the name of the process. It asks its questions in the order of the dictionary. The project comes first: Three to pick from.
+Dialogue: 0,0:01:18.34,0:01:19.45,F,po2#0,0,0,0,,And the phase?
+Dialogue: 0,0:01:19.50,0:01:23.80,M,po2#1,0,0,0,,Only the seven phases of that project are offered. I leave it out.
+Dialogue: 0,0:01:25.47,0:01:26.75,F,po3#0,0,0,0,,The project line?
+Dialogue: 0,0:01:26.80,0:01:29.70,M,po3#1,0,0,0,,Thirty-two lines. I leave this out too.
+Dialogue: 0,0:01:34.18,0:01:35.57,F,po4#0,0,0,0,,And the last question?
+Dialogue: 0,0:01:35.62,0:01:46.07,M,po4#1,0,0,0,,Consolidate keeps its default, yes. Enter, and the full line it runs is printed, then a summary: Three purchase orders made, by number, from four order lines.
+Dialogue: 0,0:01:52.13,0:01:53.76,F,co#0,0,0,0,,How do I complete an order?
+Dialogue: 0,0:01:53.81,0:02:02.67,M,co#1,0,0,0,,Cd order, then do C O and the number from the summary. The status goes from D R to C O, and the grand total is eighty-one.
+Dialogue: 0,0:02:06.43,0:02:07.72,F,next#0,0,0,0,,What may it do now?
+Dialogue: 0,0:02:07.77,0:02:14.36,M,next#1,0,0,0,,Next, and the number. The legal moves come as a tree. Close and void have words. R E has none yet.
+Dialogue: 0,0:02:18.34,0:02:20.16,F,gap#0,0,0,0,,And a process it cannot run?
+Dialogue: 0,0:02:20.21,0:02:27.30,M,gap#1,0,0,0,,Renumber has no J S port yet. Red one says so, and says the gap is in red one, not your mistake.
+Dialogue: 0,0:02:30.63,0:02:32.10,F,report#0,0,0,0,,Can I tell the owners?
+Dialogue: 0,0:02:32.15,0:02:35.94,M,report#1,0,0,0,,Report shows the draft. Nothing is sent until you open it.
+Dialogue: 0,0:02:38.84,0:02:39.97,F,url#0,0,0,0,,And to send it?
+Dialogue: 0,0:02:40.02,0:02:47.35,M,url#1,0,0,0,,Choose the GitHub issue, and the link prints: Six thousand eight hundred and thirty-eight characters. Opening it is your move.
+Dialogue: 0,0:02:53.76,0:02:55.16,F,cost#0,0,0,0,,And back in the building?
+Dialogue: 0,0:02:55.21,0:03:08.16,M,cost#1,0,0,0,,Duplex. Cost by discipline shows its groups first: Five disciplines, one million fifty-four thousand four hundred and eighty-two in all. Then it offers to post to the E R P project order.
+Dialogue: 0,0:03:16.97,0:03:18.35,F,post#0,0,0,0,,And if I say yes?
+Dialogue: 0,0:03:18.40,0:03:31.88,M,post#1,0,0,0,,It posts, and the wait is real: Seven seconds here. A project is made, with eighty-one changes. The planned amount is one million fifty-four thousand four hundred and eighty-two point two two seven eight four.
+Dialogue: 0,0:03:33.97,0:03:35.10,F,proj#0,0,0,0,,Can I see it?
+Dialogue: 0,0:03:35.15,0:03:40.82,M,proj#1,0,0,0,,It offers to open the project. Yes, and the prompt moves there: Forty-eight properties.
+Dialogue: 0,0:03:43.80,0:03:44.83,F,ls#0,0,0,0,,And the list?
+Dialogue: 0,0:03:44.88,0:03:48.55,M,ls#1,0,0,0,,Ls shows four projects. The new project is there.
+Dialogue: 0,0:03:50.88,0:03:52.82,M,exit#0,0,0,0,,Exit, and you are back in the shell.
+Dialogue: 0,0:03:52.84,0:03:53.95,F,exit#1,0,0,0,,Remember the name.
+Dialogue: 0,0:03:53.97,0:03:55.06,M,exit#2,0,0,0,,Red one.
+Dialogue: 0,0:03:56.92,0:04:04.82,Credit,,0,0,0,,Voices: AI-generated (Kokoro, local)  ·  Script directed by red1
