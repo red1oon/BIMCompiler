@@ -15,7 +15,7 @@ Background, measurements and prior art are in `prompts/DOCS_I18N.md` §4b-§4d (
   - The SHAPE stays legacy's: tooltip = Description (§7), and the extra content appears in the right panel where legacy shows Context Help.
   - It supersedes the "ship it to a real iDempiere as a 2Pack" lines in §8 and §9.
 - **D4 Extra how-to content = this lane's big task** ("HELP is major boost"). Writing it is this lane's job, not an open question.
-**State (2026-11-16, session after bim-compiler-75):** P2b DONE (§6). **P1b BUILT, W-FIELD-HELP 13/0** (bim-ootb #3126 `feat/field-help-twin`, §7 RESULT): tooltip = the field's own Description, one setter `erp/field_help.js`, the East Tool Tip panel. **Next = the help pack format and loader (step 5 below)**, through `ErpI18n.loadPack` (D1), pilot fr/de/ja/zh (D2).
+**State (2026-11-16, session after bim-compiler-75):** P2b DONE (§6). **§10 showcase slice BUILT, W-HELP-SHOWCASE 13/0** (bim-ootb #3128: help pack per language, question search, auto-links, 4 how-to rows; §10 RESULT). **P1b BUILT, W-FIELD-HELP 13/0** (bim-ootb #3126 `feat/field-help-twin`, §7 RESULT): tooltip = the field's own Description, one setter `erp/field_help.js`, the East Tool Tip panel. **Next = the help pack format and loader (step 5 below)**, through `ErpI18n.loadPack` (D1), pilot fr/de/ja/zh (D2).
 **Facts measured this session (cite them, do not re-derive):**
 - Legacy tooltip = Description (`WEditor.java:247/333/339-340`). Help goes to the RIGHT panel on focus (`ADTabpanel.java:840`, `GridTabRowRenderer.java:637-641`, `HelpController.renderToolTip:186-230`).
 - Live `adempiere.ad_field_v` = `f.name, f.description, f.help` (the field's own text only).
@@ -414,6 +414,56 @@ Sources: [SAP Web Assistant](https://www.sap.com/design-system/fiori-design-web/
 - Legacy and the twin read the same records.
 - Help content can never corrupt the business data.
 **Decided (owner, 2026-11-16):** D1-D4 in ▶ RESUME HERE. Storage accepted; pilot languages fr_FR, de_DE, ja_JP, zh_CN; twin kernel only; the how-to content is this lane's task.
+
+## 10. Help showcase: a thin slice of all four (owner 2026-11-16: *"Try to do all 4 at least a thin slice just to showcase"*)
+**Issue it removes:** P1b made the twin's help equal to legacy's, but there is nothing to show beyond that. The four pieces the RESUME HERE design names (help pack per language, question search, auto-links, how-to content) do not exist, so a film has no story. This slice builds each one end to end, small, on real data, so it can be shown and witnessed. It is not the full build; the full build stays in RESUME HERE order.
+**Sources (extracted, never invented):**
+- Translated field help: the published language packs already used by `erp/tools/build_i18n.py` (cache `~/.cache/erp_trl`, same pinned SOURCES).
+  - Measured 2026-11-16, translated element Description / Help (text present and not equal to the English original): de_DE 2,528 / 1,690; fr_FR 1,939 / 1,482 (ADempiere 3.5.2 pack) + 354 / 247 (iDempiere 12 pack); zh_CN 754 / 222; ja_JP 17 / 23.
+  - Field resolution = legacy's: a centrally maintained field takes its column's AD_Element translation (SynchronizeTerminology, the rule `erp_i18n.js` already applies to names); otherwise its own AD_Field_Trl row. A field whose translation is missing shows the English text, as legacy does.
+- How-to text: `docs/ERPUserGuide.md` "The standard flow" §1-§4 (Sales Order, Shipment, Customer Invoice, Receipt), the sentences copied, the proof asides left out, each row carrying its guide section link.
+- Document actions: AD_Ref_List 135 (name, description); statuses: AD_Ref_List 131; when an action is allowed: `AdDocFsm.TRANSITION[action]` (the DocumentEngine port); the CLI line: `common/door/verbs.json`, the verb whose description says `Runs DocAction <code>`, with its own input names.
+**What is built (bim-ootb):**
+- **H1 help pack + loader.** `erp/tools/build_help_pack.js` writes `erp/i18n/help/<lang>/help.json` for the pilot languages (fr_FR, de_DE, ja_JP, zh_CN) and `en_US` (the how-to rows). Loaded through `ErpI18n` (one loader, D1): `ErpI18n.loadHelp(lang)` when the language is chosen, cached by the service worker. `ErpI18n.applyWindow` puts the translated Description/Help on each field model, keeping the English on `_enDesc`/`_enHelp`, so the P1b setter and panel show them unchanged.
+- **H2 question search.** `erp/help_search.js` (pure, page + node): lowercase, drop stop words, match phrases longest-first against the menu's window names and the DocAction names, then rank the how-to rows by term overlap (BM25-like). Answer card: open the window (link), the action (name, description, "allowed when the document is …" from the FSM), the CLI line, the guide section, the best how-to.
+- **H3 auto-links.** At pack build time, a window name in how-to text becomes a link to that window (longest name first, whole words). One linker. Legacy dictionary text in the Tool Tip panel is NOT linked (it stays legacy's).
+- **H4 how-to content.** `AD_CtxHelp`-shaped rows (`ctxtype` W, `ad_window_id`, name, text, source) for the four trade-cycle windows (143 Sales Order, 169 Shipment, 167 Invoice, 195 Payment). Shown in a second East widget titled AD_Message `HowTo`, where legacy shows Context Help (`HelpController.renderCtxHelp`), for the window in view; the question box sits at its top (a twin extra, allowed by D3). English only in this slice: another language shows the English row marked as English.
+**Claims, witness W-HELP-SHOWCASE (bim-ootb `erp/tests/witness_help_showcase.js`; falsifier `HS_BREAK=`):**
+- **S1 the pack is extracted.** Every translated text in every pilot pack equals the source pack's text for that row, re-read from the XML by the witness (X of N per language). VACUOUS if a pack is empty. Falsifier `tamper` (one pack value changed in memory) FAILS S1.
+- **S2 the language reaches the help.** In the real page, after switching to de_DE, each field of the Sales Order header tab that has a German pack entry shows the German Description as tooltip and in the Tool Tip panel (X of N); a field without one shows the English text. Back to English: byte-identical to before.
+- **S3 the search answers.** A fixed question set of real phrasings (e.g. "How do I close a Sales Order?", "complete an invoice", "void a payment") → expected window and action (X of N). Falsifier `nophrase` (no phrase matching) FAILS S3.
+- **S4 the links work.** Every link in the how-to text points at a window on the role's menu (X of N); clicking the answer card's window link opens that window (`§IDEMPIERE window=` log). Falsifier `deadlink` FAILS S4.
+- **S5 the how-to text is traceable.** Each how-to row names its source, and its guide sentences occur in the guide file (X of N rows).
+### §10 RESULT (2026-11-16, bim-ootb #3128 `feat/help-showcase`; logs `erp/tests/logs/witness_help_showcase*.log`, `build_help_pack.log`)
+**W-HELP-SHOWCASE 13 pass / 0 fail / 0 inconclusive** (real page served from the repo root, GardenAdmin, 0 page errors):
+- **S1:** every pack text found in the published XML by the witness's own reader: de_DE 28,176/28,176 · fr_FR 26,208/26,208 · zh_CN 12,336/12,336 · ja_JP 3,656/3,656.
+- **S2:** de_DE on the Sales Order header (tab 186, 60 fields): tooltip 54/54 and Tool Tip panel 54/54 German; 6/6 without a German text show English; back to English byte-identical (60 fields).
+- **S3:** 8/8 questions → expected window + action. E.g. "How do I close a Sales Order?" → 143 / CL / `erp.close kind=Order number=<Document No>`; "complete an invoice" → 167 / CO, CLI note "erp.complete is offered for Order (C_Order), not for Invoice".
+- **S4:** 9/9 rendered links on the role's menu. Clicking the card link opens window 195 (`§IDEMPIERE window=Payment and Receipt(195)`), and the How To widget follows it (`§HELP_CTX window=195 howto=4`).
+- **S5:** 4/4 how-to rows = their guide section word for word.
+- **Falsifiers FAIL as claimed:** `tamper` S1 in all 4 languages; `nophrase` S3 0/8 (and S4); `deadlink` S4 4/9.
+- **Regressions:** W-FIELD-HELP still 13/0; W-ERP-I18N 7/4, identical to main before this PR.
+
+**Pack (`build_help_pack.log`):**
+
+| Language | Fields with a translation | Distinct texts | Bytes | Stale English original |
+|---|---|---|---|---|
+| de_DE | 14,961 of 18,153 | 3,374 | 523 KB | 251 |
+| fr_FR | 14,262 | 2,860 | 452 KB | 3,494 |
+| zh_CN | 9,315 | 835 | 189 KB | 3,256 |
+| ja_JP | 3,537 | 81 | 60 KB | 2,020 |
+
+- en_US: 4 how-to rows, 5 links, 13 actions.
+- Each text is stored once (the first format was 6.5 MB).
+- "Stale English original" = the pack's English source differs from today's English. The translation is applied by id, as legacy does. French and Chinese packs are old (3.5.2), so many are stale.
+
+**Measured / decided while building:**
+- `sqlite3 -json` keeps a column's own case when an alias equals the column name (`name` came back as `Name`): use distinct aliases.
+- The linker is case-sensitive: lowercase "menu"/"product"/"customer" are words, not windows. A table term links only as a whole bold/code guide term, never to a System-only table ("Process" button ≠ AD_Process).
+- Search: several window phrases → the LAST wins (English head noun: "customer payment"); "Re-activate" also matches "reactivate" (hyphen dropped, no synonym); "reverse" names both Reverse actions.
+- **Film:** de_DE is the strongest pilot (2,528 element Descriptions). Japanese is too thin.
+
+**Not in this slice (named):** process-parameter translations; the prebuilt search index (built at load here, small); how-to text in other languages; how-to beyond the four windows; Japanese is too thin to film (17 Descriptions).
 
 ## STATUS
 2026-11-16: P1 built and witnessed (5/0), merged as bim-ootb #3079. P2a built and witnessed (W-MSG-CATALOG 4/0), merged as bim-ootb #3082. P3a built and witnessed (W-HELP-STUDENT 5/0), merged as bim-ootb #3083. P3a-1 (help footer + opening tip, `red1 --fast`), bim-ootb #3084. P2b (W-MSG-DOOR 5/0) #3108. P1b (W-FIELD-HELP 13/0) #3126. Depends on `prompts/DOCS_I18N.md`, `prompts/CLI_ERP_IVR.md` (CLI session owns), `prompts/ERP_UI_LOCALES.md`.
