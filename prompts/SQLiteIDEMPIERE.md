@@ -2586,3 +2586,16 @@ and `BRIDGE_UI_DB` = its `erp/ad_seed.db` (bim-ootb #3112, `prompts/CODE_ARCHITE
 setting. Giving them the same `BRIDGE_OOTB` setting would make the gate fully scoped. That is this lane's call, and nothing here was changed.
 **Instrument trap:** a fresh bim-compiler worktree has no `node_modules`, so five witnesses print `Cannot find module 'sql.js'`, and the gate
 counts that as NEW fails. Run the bridge from a checkout that has `node_modules`.
+
+---
+**2026-11-17 NOTE from the code-design lane (`prompts/CODE_ARCHITECTURE_DESIGN.md` A3-CLOCK-1 RESULT; information for this lane, nothing here was changed).**
+W-FA (`scripts/bridge/witness_fa_gap.js`) now takes **~25 min** of the full bridge run (`~/.cache/bim_bridge/run_20261117_021326.log`), so a full
+`run_all.sh` takes ~25 min and the bim-ootb bump parity gate (limit 15 min, bim-ootb `scripts/bump.js:185`) times out with `verdicts=0`.
+**Cause, measured from its own `§FA_PENDING_SYNC` lines:** every run creates new assets in the shared legacy pilot and leaves them there, and each of
+the 12 scenarios re-loads the pending depreciation rows of EVERY earlier asset (`loadHandover`, `:224`, logged `:271`). The load grows with every run:
+`other_assets=0 rows_loaded=0` (2026-10-10, `run_20261010_051940.log`) → `305 / 34,680` (2026-11-17 01:06) → `319 / 36,300` (02:13, one run later: +14 assets).
+12 such loads per run ≈ 435,000 rows read through the web service each run, rising ~1,700 rows per scenario per run. It never stops growing on its own.
+Verdicts of that run: `§FA_VERDICT FAIL fails=1 inconclusive=1 findings=8`, `§M3_VERDICT HARNESS-FAIL fails=1 inconclusive=1 findings=18`.
+**Options for this lane (not decided here):** (a) load the handover of the scenario's own asset group/period only; (b) dispose/void the witness's
+own assets at the end of each run; (c) run W-FA against a pilot restored from a snapshot. Until then, a bump gate on a bim-ootb ERP file cannot finish
+(the code-design lane will scope its gate to the witnesses that load the bumped tree, see `CODE_ARCHITECTURE_DESIGN.md`).
