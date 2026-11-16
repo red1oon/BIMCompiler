@@ -15,7 +15,7 @@ Background, measurements and prior art are in `prompts/DOCS_I18N.md` §4b-§4d (
   - The SHAPE stays legacy's: tooltip = Description (§7), and the extra content appears in the right panel where legacy shows Context Help.
   - It supersedes the "ship it to a real iDempiere as a 2Pack" lines in §8 and §9.
 - **D4 Extra how-to content = this lane's big task** ("HELP is major boost"). Writing it is this lane's job, not an open question.
-**State (2026-11-16, session after bim-compiler-75):** P2b DONE (§6). **§10 showcase slice BUILT, W-HELP-SHOWCASE 13/0** (bim-ootb #3128: help pack per language, question search, auto-links, 4 how-to rows; §10 RESULT). **P1b BUILT, W-FIELD-HELP 13/0** (bim-ootb #3126 `feat/field-help-twin`, §7 RESULT): tooltip = the field's own Description, one setter `erp/field_help.js`, the East Tool Tip panel. **Next = the help pack format and loader (step 5 below)**, through `ErpI18n.loadPack` (D1), pilot fr/de/ja/zh (D2).
+**State (2026-11-16, session after bim-compiler-75):** P2b DONE (§6). **Film "Help that answers" EN v4 made (§11 RESULT).** **§10 showcase slice BUILT, W-HELP-SHOWCASE 13/0** (bim-ootb #3128: help pack per language, question search, auto-links, 4 how-to rows; §10 RESULT). **P1b BUILT, W-FIELD-HELP 13/0** (bim-ootb #3126 `feat/field-help-twin`, §7 RESULT): tooltip = the field's own Description, one setter `erp/field_help.js`, the East Tool Tip panel. **Next = the help pack format and loader (step 5 below)**, through `ErpI18n.loadPack` (D1), pilot fr/de/ja/zh (D2).
 **Facts measured this session (cite them, do not re-derive):**
 - Legacy tooltip = Description (`WEditor.java:247/333/339-340`). Help goes to the RIGHT panel on focus (`ADTabpanel.java:840`, `GridTabRowRenderer.java:637-641`, `HelpController.renderToolTip:186-230`).
 - Live `adempiere.ad_field_v` = `f.name, f.description, f.help` (the field's own text only).
@@ -464,6 +464,52 @@ Sources: [SAP Web Assistant](https://www.sap.com/design-system/fiori-design-web/
 - **Film:** de_DE is the strongest pilot (2,528 element Descriptions). Japanese is too thin.
 
 **Not in this slice (named):** process-parameter translations; the prebuilt search index (built at load here, small); how-to text in other languages; how-to beyond the four windows; Japanese is too thin to film (17 Descriptions).
+
+## 11. Film: "Help that answers" (owner 2026-11-16: *"Do the film, if in foreign language, give English subtitles. Remember the closing card credentials"* · *"Closing card also give a citation how important good Help screens are in an app"* · *"Or as opening card, single quote, cite with stats be good, perhaps from a McKinsey level"*)
+**Issue it removes:** the help work of §7 and §10 is live but nobody can see it without being walked through it. A short film shows each piece once, on the real page, with nothing claimed that a log does not say.
+**Form:**
+- House style (prompts/FILM_NARRATION.md):
+  - two frames: above, the typed line and the page's own § log lines; below, the REAL ERP page (headless on the CPU) with the help panel cut from the same pixels, enlarged and labelled;
+  - real key sounds on the typing, the voice after the return key (K2);
+  - English voice (Kokoro, local), English subtitles.
+  - The German screen text is shown beside its English original from the dictionary, so a viewer without German reads both.
+- Pipeline: `scripts/film_help_showcase/` (copied from `film_immersive_software`). `shots.js` takes the pictures and the facts from bim-ootb main; `guard.js` fails the build if a spoken fact, a picture or a cited source is not as stated. Films are never pushed; the scripts and logs are.
+**Beats:**
+1. Cover.
+2. **Opening card, one quote with a statistic:** McKinsey Global Institute, *The social economy* (July 2012), *"The average interaction worker spends an estimated 28 percent of the workweek managing e-mail and nearly 20 percent looking for internal information or tracking down colleagues who can help with specific tasks."* The words are checked in the copy fetched from mckinsey.com (Wayback, `out/prior/`); the year is shown.
+3. Before → after: the old tooltip line (`ColumnName · referenceType`, from git), then the field's own Description and the Tool Tip panel (W-FIELD-HELP F4 15,849/15,849).
+4. Typed question "How do I close a Sales Order?" → the answer card (`§HELP_SEARCH`).
+5. The card's window link opens Sales Order with its how-to beside it (`§HELP_LINK`, `§HELP_CTX`).
+6. Typed question "How can I void a payment?" → Payment, Void, and the honest CLI note.
+7. Deutsch: the same field's Description in German (`§HELP_PACK loaded lang=de_DE fields=14961`), its longer Help still English where the pack has none.
+8. **Last card** (HOUSE STYLE):
+   - prior art read (legacy `WEditor.java:333`, `HelpController.java:146`, `SynchronizeTerminology.java:166`, the published de_DE pack, the McKinsey report);
+   - credentials (#3126, #3128 merged, W-FIELD-HELP 13/0 and W-HELP-SHOWCASE 13/0 on main, MIT, the paper's priority date);
+   - measured cost (help pack bytes; heap with / without the German pack after a forced GC);
+   - the key-sound credit.
+**Not said:** no "AI", "live", "faster", "every language"; Japanese is not shown (too thin).
+### §11 RESULT (2026-11-16): `~/Videos/Help_that_answers_ERP_EN_AFTER_2026-11-16_v4.mp4` (117.2 s, 2,813 frames, −16.6 LUFS; not pushed, films stay on the machine)
+- **Pictures and facts:** `shots.js` on bim-ootb main `216a3607` drove the real page headless (CPU, 1280×720 at 1.5× scale), 0 page errors; `facts.js` VERDICT PASS (the quote found in the saved McKinsey page; title, authors and date on the saved report's title pages; #3126 and #3128 MERGED; MIT; paper priority date 2026-03-30).
+- **Witnessed on that tree:** W-FIELD-HELP 13/0, W-HELP-SHOWCASE 13/0 (logs in `scripts/film_help_showcase/out/`).
+- **Checks of the build** (logs in `out/`):
+
+  | Check | Result |
+  |---|---|
+  | guard (18 spoken facts, 6 musts, 5 prior-art rows, 4 not-said) | PASS |
+  | cards (no overflow) | 0 too tall |
+  | voice fit | 6/6 question tones OK, 0 SHORT / SKIP |
+  | K2 (no voice over the typing, keys audible) | PASS, keys 19 dB under the voice |
+  | keys | 54/54 typed + 2/2 returns |
+  | frames | planned = encoded |
+  | **C, captions stay in the bottom 170 px** (`capcheck.py`) | PASS 24/24 cues; falsifier `CAP_Y=960` FAILs 23/24 |
+
+- **Measured cost on the last card:** heap of a German session with the help pack 47.1 MB vs 46.5 MB without (+629 KB, forced GC, one run each).
+- **Defects found and fixed while building (each a rule for the next film):**
+  - (1) a *wh*-question rose at its end (§NARR_TONE WRONG): reworded;
+  - (2) the voice's letter-spelling ("A I", "E R P") showed in the subtitles: `written.js` writes the caption as "AI" / "ERP", times untouched;
+  - (3) a long answer became a four-line subtitle over the picture: every turn ≤ about 95 characters (two lines at 46 px), and check C added;
+  - (4) `performance.memory` is rounded to the same bucket without `--enable-precise-memory-info` (both sessions read 50,400,000).
+
 
 ## STATUS
 2026-11-16: P1 built and witnessed (5/0), merged as bim-ootb #3079. P2a built and witnessed (W-MSG-CATALOG 4/0), merged as bim-ootb #3082. P3a built and witnessed (W-HELP-STUDENT 5/0), merged as bim-ootb #3083. P3a-1 (help footer + opening tip, `red1 --fast`), bim-ootb #3084. P2b (W-MSG-DOOR 5/0) #3108. P1b (W-FIELD-HELP 13/0) #3126. Depends on `prompts/DOCS_I18N.md`, `prompts/CLI_ERP_IVR.md` (CLI session owns), `prompts/ERP_UI_LOCALES.md`.

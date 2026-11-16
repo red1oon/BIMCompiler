@@ -1,0 +1,342 @@
+{
+ "made": "2026-11-16T09:45:25.377Z",
+ "tree": "216a3607",
+ "shots": {
+  "idle": {
+   "file": "pages/idle.png",
+   "rects": {
+    "panel": {
+     "x": 1560,
+     "y": 69,
+     "w": 360,
+     "h": 1011
+    },
+    "tooltip": {
+     "x": 1562,
+     "y": 116,
+     "w": 359,
+     "h": 77
+    },
+    "tipTitle": {
+     "x": 1562,
+     "y": 69,
+     "w": 359,
+     "h": 47
+    },
+    "howtoTitle": {
+     "x": 1562,
+     "y": 193,
+     "w": 359,
+     "h": 47
+    },
+    "card": null,
+    "ctx": null
+   }
+  },
+  "ask_close": {
+   "file": "pages/ask_close.png",
+   "rects": {
+    "panel": {
+     "x": 1560,
+     "y": 69,
+     "w": 360,
+     "h": 1011
+    },
+    "tooltip": {
+     "x": 1562,
+     "y": 116,
+     "w": 359,
+     "h": 77
+    },
+    "tipTitle": {
+     "x": 1562,
+     "y": 69,
+     "w": 359,
+     "h": 47
+    },
+    "howtoTitle": {
+     "x": 1562,
+     "y": 193,
+     "w": 359,
+     "h": 47
+    },
+    "card": {
+     "x": 1577,
+     "y": 296,
+     "w": 329,
+     "h": 488
+    },
+    "ctx": null
+   }
+  },
+  "link_open": {
+   "file": "pages/link_open.png",
+   "rects": {
+    "panel": {
+     "x": 1560,
+     "y": 69,
+     "w": 360,
+     "h": 1011
+    },
+    "tooltip": {
+     "x": 1562,
+     "y": 116,
+     "w": 359,
+     "h": 77
+    },
+    "tipTitle": {
+     "x": 1562,
+     "y": 69,
+     "w": 359,
+     "h": 47
+    },
+    "howtoTitle": {
+     "x": 1562,
+     "y": 193,
+     "w": 359,
+     "h": 47
+    },
+    "card": {
+     "x": 1577,
+     "y": 296,
+     "w": 329,
+     "h": 488
+    },
+    "ctx": {
+     "x": 1577,
+     "y": 797,
+     "w": 329,
+     "h": 268
+    }
+   }
+  },
+  "field_en": {
+   "file": "pages/field_en.png",
+   "rects": {
+    "panel": {
+     "x": 1560,
+     "y": 69,
+     "w": 360,
+     "h": 1011
+    },
+    "tooltip": {
+     "x": 1562,
+     "y": 116,
+     "w": 359,
+     "h": 624
+    },
+    "tipTitle": {
+     "x": 1562,
+     "y": 69,
+     "w": 359,
+     "h": 47
+    },
+    "howtoTitle": {
+     "x": 1562,
+     "y": 740,
+     "w": 359,
+     "h": 47
+    },
+    "card": {
+     "x": 1577,
+     "y": 843,
+     "w": 329,
+     "h": 488
+    },
+    "ctx": {
+     "x": 1577,
+     "y": 1344,
+     "w": 329,
+     "h": 268
+    }
+   }
+  },
+  "ask_void": {
+   "file": "pages/ask_void.png",
+   "rects": {
+    "panel": {
+     "x": 1560,
+     "y": 69,
+     "w": 360,
+     "h": 1011
+    },
+    "tooltip": null,
+    "tipTitle": {
+     "x": 1562,
+     "y": 69,
+     "w": 359,
+     "h": 47
+    },
+    "howtoTitle": {
+     "x": 1562,
+     "y": 116,
+     "w": 359,
+     "h": 47
+    },
+    "card": {
+     "x": 1577,
+     "y": 219,
+     "w": 329,
+     "h": 564
+    },
+    "ctx": {
+     "x": 1577,
+     "y": 795,
+     "w": 329,
+     "h": 268
+    }
+   }
+  },
+  "field_de": {
+   "file": "pages/field_de.png",
+   "rects": {
+    "panel": {
+     "x": 1560,
+     "y": 69,
+     "w": 360,
+     "h": 1011
+    },
+    "tooltip": {
+     "x": 1562,
+     "y": 116,
+     "w": 359,
+     "h": 624
+    },
+    "tipTitle": {
+     "x": 1562,
+     "y": 69,
+     "w": 359,
+     "h": 47
+    },
+    "howtoTitle": {
+     "x": 1562,
+     "y": 740,
+     "w": 359,
+     "h": 47
+    },
+    "card": {
+     "x": 1577,
+     "y": 843,
+     "w": 329,
+     "h": 564
+    },
+    "ctx": {
+     "x": 1577,
+     "y": 1419,
+     "w": 329,
+     "h": 303
+    }
+   }
+  }
+ },
+ "lines": {
+  "index": "§HELP_SEARCH index windows=295 tables=573 actions=13 howto=4 phrases=895",
+  "panelBound": "§FIELD_HELP panel bound collapsed=false tech=false",
+  "fieldFocus": "§FIELD_HELP focus=DocumentNo · string header=\"Document No\" desc=40 help=695",
+  "fieldFocusDe": "§FIELD_HELP focus=DocumentNo · string header=\"Belegnr.\" desc=37 help=695"
+ },
+ "idle": {
+  "panel": "(Place your cursor into a field on the screen)",
+  "toolTitle": "Tool Tip",
+  "howtoTitle": "How To"
+ },
+ "ask1": {
+  "q": "How do I close a Sales Order?",
+  "line": "§HELP_SEARCH ask=\"How do I close a Sales Order?\" window=143 action=CL cli=\"erp.close kind=Order number=<Document No>\" howto=1 matched=[\"action:close\",\"window:sales order\"]",
+  "card": "WindowSales Order\nActionClose — Finally close this transaction. It cannot be re-activated.\nAllowed when the document is: Completed, Waiting Payment\nCLIerp.close kind=Order number=<Document No>\nGuide1 · Sales Order\n\nOpen Sales Order from the menu (⌂ → Sales), create a line or two, and press the Process button (§6) → Complete. Completion is not just a status flip: completeIt fans out into the shipment and invoice that follow it, in the SAME signed op-group."
+ },
+ "link": {
+  "link": "§HELP_LINK window=143 onMenu=true",
+  "opened": "§IDEMPIERE window=Sales Order(143) tabs=5 source=sqlite",
+  "ctx": "§HELP_CTX window=143 howto=1",
+  "howto": "1 · Sales Order\n\nOpen Sales Order from the menu (⌂ → Sales), create a line or two, and press the Process button (§6) → Complete. Completion is not just a status flip: completeIt fans out into the shipment and invoice that follow it, in the SAME signed op-group.\n\ndocs/ERPUserGuide.md · 1 · Sales Order"
+ },
+ "field": {
+  "tag": "INPUT",
+  "panel": "Document No\n\nDocument sequence number of the document\n\nThe document number is usually automatically generated by the system and determined by the document type of the document. If the document is not saved, the preliminary number is displayed in \"<>\". If the document type of your document has no automatic document sequence defined, the field is empty if you create a new document. This is for documents which usually have an external number (like vendor invoice). If you leave the field empty, the system will generate a document number for you. The document sequence used for this fallback number is defined in the \"Maintain Sequence\" window with the name \"DocumentNo_\", where TableName is the actual name of the table (e.g. C_Order).",
+  "x": 531.515625,
+  "y": 226
+ },
+ "ask2": {
+  "q": "How can I void a payment?",
+  "line": "§HELP_SEARCH ask=\"How can I void a payment?\" window=195 action=VO cli=\"erp.void is offered for Order (C_Order), not for Payment\" howto=4 matched=[\"action:void\",\"window:payment (table Payment)\"]",
+  "card": "WindowPayment and Receipt\nActionVoid — Set all quantities to zero and complete transaction\nAllowed when the document is: Drafted, In Progress, Invalid, Approved, Not Approved, Completed, Waiting Confirmation, Waiting Payment\nCLIerp.void is offered for Order (C_Order), not for Payment\nGuide4 · Receipt & Allocation\n\nRecord the customer's Payment (⌂ → Sales → Payment) against the invoice, then run Allocation to match payment to invoice. A real allocation is rarely an exact match — it can carry a discount, a write-off, and (because tax rides the discounted portion too) a VAT correction, all in the same posting."
+ },
+ "de": {
+  "pack": "§HELP_PACK loaded lang=de_DE fields=14961 howto=0",
+  "i18n": "§I18N lang=de_DE labels=746/792 dir=ltr ms=363 menu=545/588 window=1/1 tab=5/5 field=138/141 help=125/141 chrome=57/57 src=pack:727,machine:19 packRows=Element:3607,Field:163,Form:44,Menu:46,Message:2021,Process:433,Ref_List:1272,Tab:1064,Window:351",
+  "field": {
+   "tag": "INPUT",
+   "panel": "Belegnr.\n\nDie Nummer des Belegs im Nummernkreis\n\nThe document number is usually automatically generated by the system and determined by the document type of the document. If the document is not saved, the preliminary number is displayed in \"<>\". If the document type of your document has no automatic document sequence defined, the field is empty if you create a new document. This is for documents which usually have an external number (like vendor invoice). If you leave the field empty, the system will generate a document number for you. The document sequence used for this fallback number is defined in the \"Maintain Sequence\" window with the name \"DocumentNo_\", where TableName is the actual name of the table (e.g. C_Order).",
+   "x": 456,
+   "y": 226
+  }
+ },
+ "errors": [],
+ "memory": {
+  "withPack": {
+   "gc": true,
+   "used": 49397336,
+   "pack": true
+  },
+  "without": {
+   "gc": true,
+   "used": 48753253,
+   "pack": false
+  },
+  "deltaBytes": 644083
+ },
+ "packs": {
+  "de_DE": {
+   "bytes": 523240,
+   "fields": 14961,
+   "howto": 0
+  },
+  "fr_FR": {
+   "bytes": 451622,
+   "fields": 14262,
+   "howto": 0
+  },
+  "zh_CN": {
+   "bytes": 188608,
+   "fields": 9315,
+   "howto": 0
+  },
+  "ja_JP": {
+   "bytes": 60443,
+   "fields": 3537,
+   "howto": 0
+  },
+  "en_US": {
+   "bytes": 6888,
+   "fields": 0,
+   "howto": 4
+  }
+ },
+ "docNoEnglish": "Document sequence number of the document",
+ "oldTooltip": {
+  "commit": "9b7d2f86",
+  "line": 5323,
+  "text": "v.title = f.columnName + ' · ' + f.referenceType;"
+ },
+ "quote": {
+  "text": "The average interaction worker spends an estimated 28 percent of the workweek managing e-mail and nearly 20 percent looking for internal information or tracking down colleagues who can help with specific tasks.",
+  "stat": "nearly 20 percent",
+  "title": "The social economy: Unlocking value and productivity through social technologies",
+  "date": "July 2012",
+  "who": "McKinsey Global Institute · Michael Chui, James Manyika et al.",
+  "url": "mckinsey.com/…/our-insights/the-social-economy",
+  "fetched": "2026-11-16"
+ },
+ "verdicts": {
+  "fieldHelp": "W-FIELD-HELP pass=13 fail=0 inconclusive=0 verdict=PASS",
+  "showcase": "W-HELP-SHOWCASE pass=13 fail=0 inconclusive=0 verdict=PASS"
+ },
+ "credentials": {
+  "licence": "MIT License",
+  "repo": "github.com/red1oon/bim-ootb",
+  "pr3126": "MERGED help: field tooltips = AD Description + East Tool Tip panel, as legacy (P1b, W-FIELD-HELP 13/0)",
+  "pr3128": "MERGED help: showcase slice - help pack per language, question search, auto-links, how-to (§10, W-HELP-SHOWCASE 13/0)",
+  "paperPriority": "2026-03-30"
+ }
+}

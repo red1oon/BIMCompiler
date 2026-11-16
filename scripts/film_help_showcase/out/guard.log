@@ -1,0 +1,34 @@
+§FILM_GUARD OK   quote says "nearly twenty percent" <- quote.found expected Y got Y
+§FILM_GUARD OK   quote says "McKinsey" <- quote.source expected McKinsey Global Institute got McKinsey Global Institute
+§FILM_GUARD OK   before says "its column name and its type" <- old.tooltip expected Y got Y
+§FILM_GUARD OK   before says "fifteen thousand eight hundred and forty-nine" <- f4.n expected 15849 got 15849
+§FILM_GUARD OK   before says "its name, its description and its help" <- field.panel expected Y got Y
+§FILM_GUARD OK   ask1 says "the Sales Order window" <- ask1.window expected 143 got 143
+§FILM_GUARD OK   ask1 says "the Close action" <- ask1.action expected CL got CL
+§FILM_GUARD OK   ask1 says "completed or waiting payment" <- ask1.allowed expected Completed, Waiting Payment got Completed, Waiting Payment
+§FILM_GUARD OK   ask1 says "the command line that does it" <- ask1.cli expected erp.close kind=Order number=<Document No> got erp.close kind=Order number=<Document No>
+§FILM_GUARD OK   link says "word for word" <- s5 expected 4/4 got 4/4
+§FILM_GUARD OK   link says "the window opens" <- link.opened expected 143 got 143
+§FILM_GUARD OK   link says "its how-to beside it" <- link.ctx expected Y got Y
+§FILM_GUARD OK   ask2 says "The Payment window" <- ask2.window expected 195 got 195
+§FILM_GUARD OK   ask2 says "Void" <- ask2.action expected VO got VO
+§FILM_GUARD OK   ask2 says "offered for orders only" <- ask2.cli_note expected Y got Y
+§FILM_GUARD OK   german says "nearly fifteen thousand fields" <- de.fields expected 14961 got 14961
+§FILM_GUARD OK   german says "description is now German" <- de.desc_german expected Y got Y
+§FILM_GUARD OK   german says "stays English" <- de.help_english expected Y got Y
+§FILM_GUARD OK   no page error in the session
+§FILM_GUARD OK   every picture the cards need exists
+§FILM_GUARD OK   the memory was measured after a forced GC in both sessions, the pack present in one only
+§FILM_GUARD OK   credentials: MIT, both PRs merged, the paper states its priority date
+§FILM_GUARD OK   the verdicts on the card are PASS lines of the logs run on the same tree
+§FILM_GUARD OK   the German line shown is the pack's text for that field (S2 passed on main)
+§FILM_GUARD OK   prior art "iDempiere WEditor" <- idempiere:org.adempiere.ui.zk/WEB-INF/src/org/adempiere/webui/editor/WEditor.java:333
+§FILM_GUARD OK   prior art "iDempiere HelpController" <- idempiere:org.adempiere.ui.zk/WEB-INF/src/org/adempiere/webui/panel/HelpController.java:146
+§FILM_GUARD OK   prior art "iDempiere SynchronizeTerminology" <- idempiere:org.adempiere.base.process/src/org/compiere/process/SynchronizeTerminology.java:167
+§FILM_GUARD OK   prior art "the published de_DE language pack" <- bim-ootb:erp/tools/build_i18n.py:35
+§FILM_GUARD OK   prior art "McKinsey Global Institute, The social economy (2012)" <- out/prior/mckinsey_the_social_economy.html
+§FILM_GUARD OK   not said: the page pictures are taken, not streamed
+§FILM_GUARD OK   not said: no speed was measured
+§FILM_GUARD OK   not said: only German is shown
+§FILM_GUARD OK   not said: no priority is claimed
+§FILM_GUARD VERDICT PASS
