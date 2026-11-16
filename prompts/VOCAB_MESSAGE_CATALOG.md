@@ -10,7 +10,8 @@ Background, measurements and prior art are in `prompts/DOCS_I18N.md` §4b-§4d (
 - Step 1 'This element' was already built in `#info-panel` (§14 FINDING).
 - Step 3, class text in the info panel: BUILT and live, bim-ootb #3150, W-CLASS-HELP PASS (§14.1 RESULT).
 - Step 2, How To in the `?` palette: BUILT, bim-ootb #3156, W-HOWTO PASS (§14.3 RESULT).
-- **NEXT:** the dock + `common/help/` move, or the Modeller overlays (§14.3 RESULT, last line). Spec first.
+- The help panel itself (left, stays open, amber, draggable, reopens as left): BUILT, bim-ootb #3160, W-HELP-DOCK PASS (§14.4 RESULT).
+- **NEXT:** the Modeller gets the same panel + the `common/help/` move (§14.4 RESULT, last line). Spec first.
 - Three owner items are open in §14.1 RESULT.
 1. **(a) CHECKED 2026-11-17, see §14 (a) RESULT:** CC BY-ND 4.0. Verbatim English with attribution is usable. A translation needs bSI's written consent. **DECIDED 2026-11-17: use bSI's own official translations from bSDD, verbatim; coverage measured, see §14 (a) DECIDED.** Original task: may buildingSMART's IFC class definitions (the IFC4 / IFC4.3 documentation text) be shown, translated and redistributed inside our pages?
    - Read the actual licence or terms on buildingSMART's own site, save the copy into the session's prior folder, and cite the clause.
@@ -984,7 +985,7 @@ This REPLACES the §14 design's "right dock".
    - Less see-through than `#info-panel` (0.50), because it holds paragraphs.
 4. **Drag:** by its header, through the Viewer's ONE drag helper `A._makeDraggable` (`viewer/measure.js`; also used by Issues, Clash Matrix, CPE, grid, HBA). The helper today neither remembers a position nor keeps a panel on screen. It gains two OPT-IN switches beside its existing `el._dragStrip`:
    - `el._dragRemember = '<key>'`: save left/top on drop (browser storage, a per-viewer convenience; read in try/catch);
-   - `el._dragClamp = true`: keep the whole header inside the window on drop and on resize.
+   - `el._dragClamp = true`: keep the WHOLE panel inside the window when it fits (else its top-left at 0,0), on drop and on resize. Built first as "the header inside"; W-HELP-DOCK showed that a panel pushed to the corner then hung its list below the window, so it was changed.
    - Panels that do not set them behave exactly as today.
 
 **Witness W-HELP-DOCK (`viewer/tests/witness_help_dock.js`):**
@@ -999,7 +1000,28 @@ This REPLACES the §14 design's "right dock".
    - a panel WITHOUT the switches (Issues) is not saved (no key written).
 4. **D4 content:** the How To entries are the same as the §14.3 palette (W-HOWTO H4 assertions re-run against `#help-dock`).
 5. **D5 phone** (390×844, mobile flag): the panel fills the width and height, and does not move when dragged.
+7. **D6 reopen as left** (owner 2026-11-17: no Back/Forward, no recent list, no timeline entries; *"Agreed"*): an entry the user opened by hand, and the typed search text, are both back after × + F1, within the page session.
 6. **Regression:** W-HOWTO, W-CLASS-HELP and W-VIEWER-I18N (no new leaks) stay as they are.
+
+### 14.4 RESULT (2026-11-17): BUILT, bim-ootb #3160 (`feat/help-dock`)
+- **What changed:** `#cmd-palette` (scene.js) is now:
+  - a left column below `#hud` (desktop; 320 px wide, the window's height less margins), or a full-screen sheet on a phone;
+  - open until Esc / F1 / ? / × (new `#cmd-close`). A 3D click no longer closes it, and running a tool from it keeps it open.
+- **Keyboard:** the viewer's shortcuts now work beside it. `§KBD_ROUTE` passes keys to the panel only while focus is INSIDE it. Before, every shortcut was off whenever the popup existed.
+- **Look:** amber glass `rgba(48,30,6,0.85)`; text #e0e0e0 / #d0d0d0; links #ffb74d. 85% is the lowest of the alphas computed (0.50 / 0.72 / 0.80 / 0.85) at which white text passes 4.5:1 over the white background; #aaa / #888 fail on white even at 0.85.
+- **Drag:** `measure.js` `A._makeDraggable` gained `_dragRemember` / `_dragClamp` (logs `§DRAG_SAVE`, `§DRAG_RESTORE`, `§DRAG_CLAMP`).
+- **Reopen state:** module memory `_helpState { filter, open }`.
+- **W-HELP-DOCK PASS 14/14** (`viewer/tests/witness_help_dock.js`):
+  - D1a: left 16, 320×868, overlaps none of Find, info, Issues. D1b: stays open after a 3D click. D1c: Esc closes.
+  - D2: min contrast 6.31 dark / 5.26 white over 90 text nodes. Falsifier at alpha 0.10: 1.01.
+  - D3a: (+200, +16); 16 is the clamp room, since the panel is nearly full height.
+  - D3b: `#info-panel` dragged −120 px, no key written.
+  - D3c: clamped at (1280, 32)–(1600, 900).
+  - D3d: dragged back to 300; it reopens there after a reload.
+  - D4: 35 guide links. D5: phone 390×844, does not move. D6a / D6b: reopens as left.
+- **Witness finding (not a product change):** `A._makeDraggable` arms on pointerdown but captures the pointer only on its first ≥4 px move seen ON the element, so a tap still reaches header controls. A drag whose first step lands off the panel is lost. A hand stays on it; the witness's coarse 98-px first step did not, and "D3d" passed vacuously until the drag was made hand-like and a D3d-move check was added.
+- **Regressions:** W-HOWTO PASS, W-CLASS-HELP PASS, W-ABOUT-HELP-RESTORE 9/9. W-VIEWER-I18N de_DE fail=3 (the same 3 as main), leaks 23/310. Lint 0 errors. sw v1719.
+- **Next:** the Modeller gets the same panel (its `#m-help-panel` + `#m-guide-panel` merge into it), and the help code moves to `common/help/` (§14 design). Spec first.
 
 ## 15. NOT URGENT, to think about (owner 2026-11-16: *"You mean we can mis.<translated verb>? Note in prompt then we shall think about it not urgent."*)
 Two terminal ideas. Neither is built and nothing is decided.
