@@ -4,7 +4,7 @@
 // Usage: node facts.js <bim-ootb main tree>
 'use strict';
 const fs = require('fs'), path = require('path'), { spawnSync } = require('child_process');
-const TREE = path.resolve(process.argv[2]), OUT = path.join(__dirname, 'out'), L = (m) => console.log('§FACTS ' + m), fail = (m) => { L('FAIL ' + m); process.exit(1); };
+const TREE = path.resolve(process.argv[2]), OUT = path.join(__dirname, process.env.OUTD || 'out'), L = (m) => console.log('§FACTS ' + m), fail = (m) => { L('FAIL ' + m); process.exit(1); };
 const F = JSON.parse(fs.readFileSync(path.join(OUT, 'facts.json'), 'utf8'));
 const flat = (s) => s.replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&#39;|&rsquo;/g, "'").replace(/\s+/g, ' ');
 // 1. the opening quote: the sentence as it stands on the saved page; the report's own title page (pdftotext of the saved PDF) for title, authors, date

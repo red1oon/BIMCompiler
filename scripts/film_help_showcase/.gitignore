@@ -1,3 +1,6 @@
 out/*
 !out/*.log
 !out/facts.json
+out_zh/*
+!out_zh/*.log
+!out_zh/facts.json

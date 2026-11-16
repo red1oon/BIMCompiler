@@ -1,4 +1,4 @@
-§W-FIELD-HELP seed=/tmp/wt-film-help-ootb/erp/ad_seed.db break=none
+§W-FIELD-HELP seed=/tmp/wt-film-zh-ootb/erp/ad_seed.db break=none
 §W-FIELD-HELP F4 tabs=1120 displayed fields judged=15849 twin-only (plugin ids, not in legacy, not judged)=0 legacy rows=20871
   ✅ F4 description = AD_Field_v.description  15849/15849
   ✅ F4 help = AD_Field_v.help  15849/15849
