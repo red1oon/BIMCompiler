@@ -20,6 +20,8 @@ Owner, closing 2026-11-15: *"get it well documented in the prompts/# consolidate
 
 **0. ✅ DONE 2026-11-15 (fourth session): F-18 answered, the provenance hover built and merged — §F.23 (bim-ootb #3064 + tooltip-in-window fix #3069); FILM 3 built (`prompts/FILM_IMMERSIVE_SOFTWARE.md` FILM 3 STATUS, awaiting the owner's review); the default-key + truss findings handed to the DXF2BIM lane (bim-ootb `prompts/DXF2BIM_ARCHITECT_REVIEW.md` §D113, #3070). NEXT = the X0 "New witness for this file" command (§F.21 OPEN), or Part A's remaining A2 (item 2).** The text below is the original hand-over.
 
+**0k. 2026-11-16 (sixth session, last):** owner "proceed" → **A2-VALUE-1 built (bim-ootb #3135)**: the viewer core's last clock/RNG reads (baseline `set_at`, cache recency stamp, tab id) go through `CoreEdge`; 4D cache identical. **NEXT:** the EDGE producers (`crud_overlay._modelEnv`, `plugin_overlay._localNow`, `genesis.js:729` LAST), then A3 W-CORE-PURE.
+
 **0j. 2026-11-16 (sixth session, later):** owner asked again for the browser-memory monitor of the three pages in VS Code → **§F.31** decided (F-20 code only, F-21 button only, F-22 X0 panel + PR body, all as recommended) and **built (bim-ootb #3131, W-HEAP-IMPACT 12/0, red control +5.00 MB on ERP only)**. From now on an X0-lane PR pastes its `§HEAP_IMPACT_DELTA` lines beside `§PERF_IMPACT` (F-2 observation to 2026-11-30). Guide §0.1 now says plainly that a witness is a unit test of one item, for developers, never called by a user. Part A's next item (the value reads) is unchanged.
 
 **0i. 2026-11-16 (sixth session):** **A2-TIMING-3 built (bim-ootb #3124)**: `common/room_graph.js` + `viewer/schedule_inject.js` time through `CoreEdge`, the Modeller page installs the edge too; all timing reads of RESUME 2 are done. **NEXT:** the VALUE reads `schedule_author.js` / `schedule_sync.js` (A2-TIMING-3 RESULT names the lines), then the EDGE producers, then A3. Also this session, at the owner's request: `docs/DeveloperGuide.md` **§0.1 Witnesses** (how a witness tests the shipped file, and what is and is not deployed, checked on the live site).
@@ -469,6 +471,20 @@ files of A-1. Measured on bim-ootb `main` @ `bd5b543c` (parser-free `grep` first
   (`nice -n 19 ionice -c3`): `witness.log` identical with ms masked, `run.json` differing only in `builtAt` + `codeKey` (the A2-TIMING-2 method).
 **Issue proved:** the 4D core still stamped a stored baseline and the cache with the wall clock and minted a tab id with `Math.random` (with a colliding
 fallback); after, all three come from the one installed edge, and a missing edge says so instead of guessing.
+
+**A2-VALUE-1 RESULT (2026-11-16): ✅ DONE (witness), bim-ootb #3134 / PR #3135.** +97 / −14, 12 files. Logs read:
+- W-CORE-TIMING `§CORE_TIMING checks=31 failed=0 verdict=PASS`: T12 `setAt=2026-11-16T03:00:00.000Z` on the `§` line and all 3 `set_at`, `opts.setAt` wins,
+  no edge `{"ok":false,"reason":"no_clock"}` with 0 rows · T13 the `timestamps` put = the edge's ms (`1794798000000`), no edge = blob put, 0 stamps, `§ENV_NO_DATE`,
+  resolves `true` · T14 `tab_11111111-2222-4333-8444-555555555555`, no edge throws, `create({tabId:'tabA'})` works · T15 0 clock/RNG calls in both files.
+- **Red:** main's copies FAIL 9 (wall-clock `setAt=2026-11-16T10:41:39.867Z`, `Date.now` stamp, `tab_tqwdvyb`, no failure with no edge, 2 + 1 calls).
+- Before/after (detached `main` worktree): W-BASELINE 11/0 · W-S7-INJECT · W-S7-INJECT-GUARD · W-SCHED-SYNC 11/11, all logs identical with timestamps
+  masked · W-CORE-CLOCK-READS 4/0, ran 26 → 28 · W-ENV-VIEWS 7/0 · `audit_sw_precache` 268/268.
+- **4D cache, one re-run** (`6cb996db41e8_*` vs main's `7fa3d835d478_*`, same db keys): `witness.log` 0 differing lines on Duplex 55, HHS 51, Hospital 65,
+  Terminal 75 lines (ms fields masked); `run.json` differs ONLY in `builtAt` + `codeKey`.
+- **Spec corrections, said here:** (1) a THIRD loader exists: `modeller/edit_delta_ui.js:10` lazy-loads `../viewer/schedule_author.js` (read-only use; the
+  Modeller page has had the edge since A2-TIMING-3), found by `scripts/bump.js`; bumps were viewer v1712 → v1713, modeller v279 → v280, `edit_delta_ui.js`
+  14 → 15. (2) The witness's first run never exited: `ScheduleSync.create()` opens a real `BroadcastChannel` in Node; T14 closes every handle it makes.
+- **Remaining A2:** the EDGE producers (`crud_overlay._modelEnv`, `plugin_overlay._localNow`, `genesis.js:729` LAST), then A3 W-CORE-PURE.
 
 ---
 
@@ -1239,7 +1255,7 @@ Ask the owner **one decision per message, with the recommendation** (START HERE 
 
 | Part | What | State |
 |---|---|---|
-| A | pure core + Env | **A0 ✅** · **A-1..A-5 ✅** · **A1 ✅** (#3007) · **A2** done for 15 files (#3010 #3013 #3016 #3021 #3026 #3030 #3033) + A2-TIMING-1 (#3110) + A-6 / A2-TIMING-2 (#3122) + A2-TIMING-3 (bim-ootb #3124), remaining: the value reads + EDGE producers (A2-TIMING-3 RESULT), then A3 |
+| A | pure core + Env | **A0 ✅** · **A-1..A-5 ✅** · **A1 ✅** (#3007) · **A2** done for 15 files (#3010 #3013 #3016 #3021 #3026 #3030 #3033) + A2-TIMING-1 (#3110) + A-6 / A2-TIMING-2 (#3122) + A2-TIMING-3 (bim-ootb #3124) + A2-VALUE-1 (#3135), remaining: the EDGE producers, then A3 |
 | B | manifest per app | not started · B0 ready · open: B-1 to B-4 |
 | C | named APP parts | not started · open: C-1, C-2 |
 | D | owner table | not started · open: D-1, D-2 |
