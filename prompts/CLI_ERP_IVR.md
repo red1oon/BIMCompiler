@@ -215,5 +215,17 @@ D10 `help` (session = one-shot, same bytes) prints the three groups and the ever
 **§30 LOGIN RESULT (2026-11-16, bim-ootb #3132):** L1-L4 built as specced. **W-RED1-LOGIN 5/0**: G1 roles 102 (client 11) and 12000 (client 12) ask nothing; G2 role 1300102 (client 13) asks once, `cd` + `ls` refused, the journal holds only the role's two reads; G3 `role 103`, `login GardenUser`, `new` in Business Partner -> createdby **102**, journal user 102; G4 GardenUser under 1300102 refused naming 1300103; G5 the ask == an independent SQL count for all 5 clients > 11 (12: 1, 13: 3, 14-16: 1). Falsifiers `nogate` FAILs G2, `nostamp` FAILs G3 (createdby 101). **Found by the smoke run and fixed in the build:** a user's Name repeats across clients (GardenAdmin = 101 in client 11 and 1300101 in 13; GardenUser = 102 and 1300102): the first match was the wrong user; now the session client's user wins, a single match is taken, otherwise red1 lists the ids (`login_which`), as legacy's login picks the client. The journal's `started` row of `runLine` is `door.js:379` (not `:441`). W-MSG-CATALOG M1 now excuses exactly the 12 `role 102` steps (their new read line) and hands the `login_*` keys to W-RED1-LOGIN. **Found, not changed (a door gap, its own item):** every new record is made in client 11 (`erp_cli.js:502`), so under a client-13 role `new` is refused by the role's own canUpdate; the login's stamp is witnessed in client 11. The guide's `red1_help` block (now listing `login <user>`) is refreshed after the merge.
 **Witness (when built), W-RED1-LANG:** L1 the order (preference > LANG > client 0) on three set-ups, each against an independent SQL; L2 `language ja` writes exactly one AD_Preference row the web UI reads back; L3 the envelope bytes are identical in every language (only the screen changes); L4 an untranslated key falls back to English and says so. Falsifier: the envelope translated (L3 must FAIL).
 
+## Note from the message lane (2026-11-16, session bim-compiler-41): `erp.ask` is being added to the door (owner's go: *"u can take it on after informing the CLI session, as it be resting"*)
+**What changes in your files:**
+- `common/door/verbs.json`: one new READ verb, `erp.ask question=<text> [lang=<code>]`, calling `erp_cli.js ask`;
+- `common/door/erp_cli.js`: the `ask` subcommand, which calls `erp/help_search.js` `indexFrom()` (the same index the page's How To box uses) over the dictionary and the help pack of the chosen language;
+- `common/door/lang_rule.js` (new): your §30 order, written once. It is (1) the logged-in user's AD_Preference 'Language' (only when a user is stated), (2) `LANG`, (3) client 0's `ad_language`, with `--lang` overriding all three.
+**What does not change:**
+- no other verb's output;
+- no envelope field;
+- no existing words, messages or wording.
+**When you build §30, call `lang_rule.js`; do not write a second copy of the order.**
+Spec: `prompts/VOCAB_MESSAGE_CATALOG.md` §13. Witness: W-ERP-ASK (`common/door/tests/witness_erp_ask.js`).
+
 ## STATUS
 2026-11-16: consolidated (incl. the other session's unpushed §1d.1 RESULT commit `e3f2890ed`); §24 help groups built (#3074); §1d.1 prompt part built (#3075); §23 measured; §25 is the next spec to build. Depends on: MIS M5/M6 (done), NEURO A6 (done, §17), `prompts/ERP_MIS_WINDOW_FROM_CSV.md` (Ninja, `mis.add_window`, §12 `ninja.exec`/`ninja.workflow`, op-log image), `prompts/FILM_COMMAND_LINE_ERP.md` (CH 0-2 films), `prompts/FILM_NARRATION.md` (house style).

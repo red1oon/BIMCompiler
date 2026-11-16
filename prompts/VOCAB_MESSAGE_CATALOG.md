@@ -536,6 +536,53 @@ Sources: [SAP Web Assistant](https://www.sap.com/design-system/fiori-design-web/
   - (3) the guard compared raw dictionary text with the panel. The panel shows it as the browser does (`<TableName>` dropped, whitespace collapsed), so the guard compares after that same step (`asShown`).
   - (4) the narration named Document No as 单据号, but the screen says 文档号: the voice now uses the on-screen name.
 
+## 12. The help in the chosen language: names, questions, how-to (owner 2026-11-16: *"Isn't there a Mandarin version of the Help content? The Mandarin should show in Mandarin on the app too"*)
+**Issue it removes:** with the screen in 中文, the field help is Chinese (§10), but the How To widget is not:
+- the question box matches English names only, and a Chinese question finds nothing;
+- the answer card's labels and the how-to rows are English.
+
+**Sources (extracted):**
+- the same published packs as §10: AD_Window_Trl, AD_Table_Trl, AD_Ref_List_Trl (DocAction 135, DocStatus 131), names only;
+- the descriptions in the zh_CN pack are untranslated English (measured: the Close row's Description equals its original), so the English description shows, as legacy shows it;
+- labels: the dictionary's own element names where one exists (AD_Window_ID 窗口, DocAction 文档动作), otherwise a labelled machine entry in `i18n/chrome.json` (the existing convention).
+
+**Measured pack quality, said and not hidden:**
+- the zh_CN pack (ADempiere 3.5.2, 2008) names Close 结束, Void 空白, Post 职位, Prepare 程序, Reverse-Correct untranslated;
+- its statuses are Closed 关闭, Completed 完成, Voided 空虚.
+
+These are legacy's own words in that language; the twin shows them unchanged.
+
+**Built (bim-ootb):**
+- **H1b, per-language names in the help pack:**
+  - `names.windows`, `names.tables`, `names.actions` (code → name), `names.statuses` (code → name), each from that language's XML;
+  - `howto` rows for zh_CN: the four §10 rows translated by the build session (source `erp/tools/help_howto_zh_CN.json`, each row `translated: build session, not reviewed`, its English source sentences kept), window names linked by the same linker with the Chinese names.
+- **H2b, the search in the screen language:**
+  - the index takes the language's names beside the English ones;
+  - a question containing CJK text is matched on characters (phrase = substring, longest first), not on spaces;
+  - a status name also finds the action that reaches it (`AdDocFsm.TRANSITION`: Closed ← Close, Voided ← Void, Completed ← Complete), a dictionary relation, not a synonym list;
+  - no exact window phrase: the window sharing the most character pairs (ties as before).
+- **H4b:** the How To widget shows the screen language's how-to row when the pack has one, otherwise the English row marked "(English)". The card's labels follow the language. The index is rebuilt when the language changes.
+
+**Claims, W-HELP-SHOWCASE S6-S7 (falsifier `HS_BREAK=nocjk` → S6 FAILs):**
+- **S6:** a fixed set of Chinese questions → expected window + action (X of N).
+- **S7:** with zh_CN chosen, the How To widget of Sales Order shows the zh_CN row, and every link in it points at a window on the menu.
+- **S1 extended:** every name in a pack occurs in its published XML.
+
+## 13. The CLI asks in the chosen language: `erp.ask` (owner 2026-11-16: *"can its CLI also asks in Mandarin or local chosen language?"* · *"u can take it on after informing the CLI session, as it be resting"*)
+**Issue it removes:** the question box exists only in the page; a person at the terminal (or `red1`) cannot ask "How do I close a Sales Order?" or 「如何关闭销售订单？」.
+**Design:**
+- the door gets one read verb, `erp.ask question=<text>`, that calls the SAME `erp/help_search.js` over the same dictionary and the same help pack of the CLI's chosen language;
+- the language follows the CLI's own rule (owned by the CLI session, `CLI_ERP_IVR.md`: AD_Preference Language → LANG → System);
+- the answer prints the card as lines: window, action and when it is allowed, the CLI line, the guide link, the how-to text (tags stripped);
+- English output stays byte-identical for every other verb.
+
+**Coordination:** the CLI session owns `common/door`. It is resting (not running, 2026-11-16), so it is informed by a dated note in its own prompt file `prompts/CLI_ERP_IVR.md` before any door file is touched (owner's instruction above).
+**Claims, witness W-ERP-ASK:**
+- A1: the English question set gives the same window and action as the page's S3;
+- A2: the Chinese set (LANG=zh_CN) gives S6's answers;
+- A3: verbs.json lists the verb and the door's download includes help_search.js.
+- Falsifier `ASK_BREAK=nolang` (the pack's names ignored): A2 FAILs.
+
 ## STATUS
 2026-11-16: P1 built and witnessed (5/0), merged as bim-ootb #3079. P2a built and witnessed (W-MSG-CATALOG 4/0), merged as bim-ootb #3082. P3a built and witnessed (W-HELP-STUDENT 5/0), merged as bim-ootb #3083. P3a-1 (help footer + opening tip, `red1 --fast`), bim-ootb #3084. P2b (W-MSG-DOOR 5/0) #3108. P1b (W-FIELD-HELP 13/0) #3126. Depends on `prompts/DOCS_I18N.md`, `prompts/CLI_ERP_IVR.md` (CLI session owns), `prompts/ERP_UI_LOCALES.md`.
 
