@@ -2576,3 +2576,12 @@ has none for + the draft-order projection. Regression 21 witnesses + poc_sd16 --
 **§POSTING-PARITY step 5 CLOSED.** Named, not fixed: (a) the born tenant has no AD_ClientInfo → its facts carry no C_Period_ID (legacy
 InitialClientSetup creates one); (b) `poc_genesis_resident_live.js` hard-codes 18 GardenWorld partners (seed has 24) and its static server cannot serve
 `../common/`; (c) from step 5: vendor return receipts, BackDateDay reprocessing, costQtyUpdates' G-SD10 rule.
+
+## Note from the code-design lane (2026-11-16): which bim-ootb tree the bridge judges
+`bim-ootb scripts/bump.js` (the F-16 parity gate) now runs `scripts/bridge/run_all.sh` with `OOTB` / `BRIDGE_OOTB` = the tree being bumped
+and `BRIDGE_UI_DB` = its `erp/ad_seed.db` (bim-ootb #3112, `prompts/CODE_ARCHITECTURE_DESIGN.md` §F.30). Before that, every witness judged
+`~/bim-ootb` while the verdict was cached under the bumped tree. **Still reading `~/bim-ootb` (or a fixed path) only, so the gate says
+`scoped=partial`:** `dict_census_stage2.js`, `run_erp_witnesses.sh`, `fn_census_legacy.js` (argv default), and the witnesses with no tree
+setting. Giving them the same `BRIDGE_OOTB` setting would make the gate fully scoped. That is this lane's call, and nothing here was changed.
+**Instrument trap:** a fresh bim-compiler worktree has no `node_modules`, so five witnesses print `Cannot find module 'sql.js'`, and the gate
+counts that as NEW fails. Run the bridge from a checkout that has `node_modules`.
