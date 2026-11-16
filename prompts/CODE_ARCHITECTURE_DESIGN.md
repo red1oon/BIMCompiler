@@ -20,6 +20,8 @@ Owner, closing 2026-11-15: *"get it well documented in the prompts/# consolidate
 
 **0. ✅ DONE 2026-11-15 (fourth session): F-18 answered, the provenance hover built and merged — §F.23 (bim-ootb #3064 + tooltip-in-window fix #3069); FILM 3 built (`prompts/FILM_IMMERSIVE_SOFTWARE.md` FILM 3 STATUS, awaiting the owner's review); the default-key + truss findings handed to the DXF2BIM lane (bim-ootb `prompts/DXF2BIM_ARCHITECT_REVIEW.md` §D113, #3070). NEXT = the X0 "New witness for this file" command (§F.21 OPEN), or Part A's remaining A2 (item 2).** The text below is the original hand-over.
 
+**0n. 2026-11-17 (seventh session):** A3 PRE-MEASURE: 6 clock/RNG calls left in the A-1 list, and a probe proved the process-path SYSDATE was UTC and froze the page clock → **A3-CLOCK-1 built (bim-ootb #3149, merged)**, which also fixed InventoryCountCreate's scrambled INSERT … SELECT rows (#3146). **A-7 answered** (*"Values only (Recommended)"*). Owners of the open items: table OWNERS OF THE OPEN ITEMS. **NEXT: A3-CLOCK-2** (spec drafted; `ws_kernel.js` is `ERP_WS_API.md`'s, ask first), **then A3 W-CORE-PURE** (spec written). The parity gate times out on the 25-min full bridge (A3-CLOCK-1 RESULT finding).
+
 **0m. 2026-11-16 (sixth session, close):** owner asked for advice on the `pipo_packin.js` UTC fallback, advice "fix it, legacy first", owner *"ok"* → legacy read (`PO.java:1985/:3341`, `DB_PostgreSQL.TO_DATE`: LOCAL clock) → **A2-PIPO built (bim-ootb #3143)**: bundle Pack In stamps local time. **NEXT: A3 W-CORE-PURE.**
 
 **0l. 2026-11-16 (sixth session, end):** owner "proceed" → **A2-EDGE-2 built (bim-ootb #3140)**: `crud_overlay._modelEnv` and `plugin_overlay`'s env are views of the one edge clock; `genesis.js` already pure. **A2 is complete. NEXT: A3 W-CORE-PURE**, then ask the owner about the `pipo_packin.js` UTC fallback (A2-EDGE-2 SPEC finding).
@@ -78,7 +80,7 @@ Owner, closing 2026-11-15: *"get it well documented in the prompts/# consolidate
 
 **6. Open with the owner.** F-18 ✅ (§F.23) · F-19 ✅ "Go" 2026-11-16 (§F.28) · F-1 ✅ *"Agree with you"* (plain by default, headless only as a separate button) · F-2 ✅ *"agreed"* (observe to 2026-11-30, then set) · F-7 ✅ *"agreed"* (no preview host) · F-12 step 2 withdrawn → §F.29 Deploy button · a status-bar Bump button (suggested, not built) · the parity gate's default bridge path (above) · his hands-on dry run (`~/VSCcheatsheet.txt`, 29 steps; `~/bim-ootb-dryrun` not created) · a bake on his go (check a "last:" line after #2977).
 
-**7. Open, no owner needed.** 15 of 51 `ws_kernel.js` witnesses fail on unedited `main` (ERP lane's; list in the archive) · the Modeller runner on this machine: `§ALLWITNESS PASS=106 FAIL=10 SKIP=5 ENV=12 of 133` before the shed inputs were restored; inputs RESTORED 2026-11-15 to `~/Videos/dxf2bim_film_work/why/{raw,cli/marked}` (README there), and some witnesses need `SHED_RAW_DIR=~/Videos/dxf2bim_film_work/why/raw` set · 11 `PHANTOM?` fields (§F.17, a Part C question) · the 4D cache's `witness.log` has no `§LOG_STAMP` · bim-ootb #2974/#2975 texts still say "138 of 281" (true: 130).
+**7. Open, no owner needed.** ~~15 of 51 `ws_kernel.js` witnesses fail on unedited `main`~~ (2026-11-17: no source for this claim anywhere, see OWNERS OF THE OPEN ITEMS; re-measure before quoting) · the Modeller runner on this machine: `§ALLWITNESS PASS=106 FAIL=10 SKIP=5 ENV=12 of 133` before the shed inputs were restored; inputs RESTORED 2026-11-15 to `~/Videos/dxf2bim_film_work/why/{raw,cli/marked}` (README there), and some witnesses need `SHED_RAW_DIR=~/Videos/dxf2bim_film_work/why/raw` set · 11 `PHANTOM?` fields (§F.17, a Part C question) · the 4D cache's `witness.log` has no `§LOG_STAMP` · bim-ootb #2974/#2975 texts still say "138 of 281" (true: 130).
 
 **8. Traps this lane has paid for.**
 - **A registry's own summary is not the truth:** `describe()` missed directly-put classes (§F.22 defect a). Ask the code path that RUNS (the engine's lookup), and give the witness an independent source.
@@ -89,6 +91,7 @@ Owner, closing 2026-11-15: *"get it well documented in the prompts/# consolidate
 - **`rm` with a relative glob after a `cd` is blocked by the safety check** (the whole command does not run, edits included): never chain a removal onto an edit.
 - `< /dev/null` on every `node` in a loop; wait on processes, not on a log marker from the previous run; `*.log` is gitignored (`git add -f` the logs a spec commits); bim-compiler has no auto-merge (merge by hand), bim-ootb does (`--auto --squash`, wait for MERGED, re-run on `main`); the bim-compiler checkout is on another branch (read `git show origin/master:…`, edit in a `/tmp/wt-*` worktree); never `git stash` (shared), never `--force` a worktree path.
 - **Measure before quoting** (a `§` line and its command); check the visible effect before choosing a film example.
+- **The parity gate's full bridge takes ~25 min, its limit is 15** (`bump.js:185`): it times out with `verdicts=0`. M3/FA judge bim-compiler's engine, never the bumped bim-ootb tree. Link all 39 untracked `build/erp/*.db` into a fresh bridge worktree and DD/DDS judge (and pass).
 
 ## ▶ START HERE (fresh session)
 
@@ -292,6 +295,10 @@ FAILs as it should.
   `Env.setEdge` stores into that same global (one holder), and Node runners (`scripts/cache_4d_run.js`, probes) install it the same way. Core reads it
   at call time. No edge: a timing prints `ms=?`; a missing date or id fails loudly (A-3).** Rejected: loading the ERP file in the viewer (a big file on
   every boot, against lazy loading); passing `opts.edge` through every call (every caller changes). Spec: A2-TIMING-2 below.
+- 2026-11-17, owner, on **A-7** (what W-CORE-PURE fails on; measured on `main` @ `249fb934` over the 125 A-1 files: clock/RNG 6, network 0, storage 2
+  (`schedule_author.js` IndexedDB cache), `window` 330 = the UMD wrapper, `console` 246 = the `§` lines, `document` 26 in 3 files; a literal ban fails
+  ~600 lines, none a determinism bug; advice: values only): chose *"Values only (Recommended)"*. → **A-7 = W-CORE-PURE FAILS on clock, random and network
+  calls (goal `forbidden=0`); storage, `document` and `console` are printed as per-file INFO counts for Part C; the wrapper's `window` is not counted.**
 
 **A2-EDGE SPEC (2026-11-15, decision A-5; bim-ootb tracker issue opened with the PR).** Measured on bim-ootb `main` @ `27ac46cc`:
 `erp/rule_fold.js:94` `commitEdit` mints the op uuid with `crypto.randomUUID()`, else `'rule:'+nextTs()` (a fallback that can collide across
@@ -580,6 +587,112 @@ local clock from the installed edge, and the ids from the edge too.
 - **Trap correction (supersedes the A2-EDGE-2 note):** linking `build/erp/ad_seed_fullwidth.db` is not enough; DD and DDS then fail on `build/erp/glassbowl_data.db`.
   The shared `~/bim-compiler` holds **39 untracked `build/erp/*.db`** (`git ls-files --others --ignored -- 'build/erp/*.db'`) and the bridge reaches them
   indirectly. Link ALL of them into a fresh bridge worktree before a gate run that must judge DD/DDS. In this run DD/DDS judged nothing (both on the known list).
+
+**A3 PRE-MEASURE (2026-11-17, seventh session, bim-ootb `main` @ `249fb934`).** Before W-CORE-PURE can say `forbidden=0`, the A-1 list must have no
+clock/RNG call left. `clock_probe.js` over the A-1 pathspecs: `§CLOCK_PROBE files=125 with_calls=2 calls=6 parse_fail=0`:
+`erp/ad_callout.js` `Date.now@51` (`TimeUtil.getDay(null)`), `Date.now@208` (`Env.getContextAsDate` empty-context fallback), `new Date()@896` (`RUNTIME.now`,
+the ERP's SQL clock: `getdate()`/`SYSDATE` `callouts/sqlfn.js:19,:269`, `@SysDate@` `:718`, the login `#Date` `:984`) · `erp/callouts/sqlfn.js` `Date.now@440`,
+`crypto.getRandomValues@442`, `Math.random@442` (`generate_uuid()`). Legacy, read: `TimeUtil.java:61-62` `getDay(null)` and `Env.java:989-990`
+`getContextAsDate` empty both use `System.currentTimeMillis()` in the JVM's zone (LOCAL).
+**Defect found by the code read and proved by a probe** (`TZ=Asia/Kuala_Lumpur`, clock fixed at 2026-11-13 00:30 local, `A.bind` as the page and as
+`ad_process.js:1091` `runJava` call it): `§PROBE_SYSDATE phase=page_default runtimeNow=2026-11-13 00:30:00` ·
+`phase=inside_runJava(env.nowMillis) runtimeNow=2026-11-12 16:30:00` · `phase=page_after_rebind_no_now runtimeNow=2026-11-12 16:30:00` (UTC: all three
+`2026-11-13 00:30:00`). Two faults: (1) `runJava` binds the SQL clock to `env.nowMillis`, a true epoch, while the twin's `Timestamp` holds LOCAL wall-clock
+fields as UTC ms (`ad_callout.js:22-41`, `:890-896`), so inside a Java process `getdate()` is the UTC wall clock: 8 h behind at +08, the previous day
+before 08:00; (2) it puts the clock back only when it ran in a caller's trx (`:1095` `if (kept)`), so after a stand-alone process the page's SQL clock
+stays frozen at that process's instant (`crud_overlay.js:428` rebinds without `now`). A twin divergence (legacy SYSDATE = the DB server's local clock),
+fixed on the SQLite side; no owner decision (CARDINAL RULE; A-3 local day).
+**Plan, three PRs:** A3-CLOCK-1 (this defect + the two UTC fallbacks) · A3-CLOCK-2 (`RUNTIME.now` and `generate_uuid` read the installed edge; every
+host that loads `ad_callout.js` installs one, per A-3/A-6) · A3 W-CORE-PURE (the scan; its ban list needs owner decision **A-7**, below A3-CLOCK-2).
+
+**A3-CLOCK-1 SPEC (2026-11-17; twin rule + A-3; bim-ootb tracker issue with the PR).**
+**Build:** (a) `erp/ad_process.js` `runJava`: the process's SQL clock is the env's LOCAL stamp, `new A.Timestamp(A.Env.nowStamp(env)).ms`
+(`nowStamp` prefers `env.now`, the local text every producer sets: `Env.modelEnv`, `crud_overlay._modelEnv`, `ws_kernel env()`, `plugin_overlay._clientEnv`,
+genesis), and the binding it replaced is put back in `finally` in BOTH cases (`now` + `Env.now`; `DB`/`PO`/`log` keep today's behaviour). An env
+with no clock keeps the page's clock (no `now` passed), as today. (b) `ad_callout.js:51` `getDay(null)` and `:208` `getContextAsDate` empty both take
+`RUNTIME.now()` (the local wall clock, legacy's), not `Date.now()` (UTC). Callers: `callouts/currency.js:84` (ConvDate null = today),
+`InOutGenerate.js:37`, `InvoiceGenerate.js:37`, `OrderLineCreateShipment.js:20`.
+(c) **Found by the first S1 run (added to this spec before the fix, 2026-11-17):** the 63 `M_StorageOnHand` rows a real InventoryCountCreate (`QtyRange '='`)
+inserted had `ad_client_id=0`, `created='Y'`, `isactive=50000`, `updated=50008`, `m_locator_id=null`, `m_product_id='2026-11-16 00:00:00'`, on `main` too.
+`ad_process.js:1034` maps an `INSERT … SELECT` by `Object.keys(row)`: the SELECT list `l.AD_CLIENT_ID, l.AD_ORG_ID, 'Y', getDate(), 0, getDate(), 0, …`
+has duplicate result names (`0` x4, `getDate()` x2), which collapse in a row object, and `0` is an integer-like key that JavaScript orders first. Every
+value after that lands in the wrong column. Fix: alias each top-level SELECT expression `(<e>) AS __vN`, the way the VALUES branch already does (`:1033`)
+and the `UPDATE … SET (…) = (SELECT …)` branch splits its list (`:1014` `_topIdx` + `_splitTop`); a leading `DISTINCT` is kept outside the aliases. Own
+tracker issue. Legacy runs the SQL in PostgreSQL, which maps by position.
+**Witness W-PROC-SYSDATE** (`erp/tests/witness_proc_sysdate.js`, node, `witness_kit/contract.js`, `TZ=Asia/Kuala_Lumpur`, clock fixed at
+2026-11-13 00:30 local before the kernel loads, as W-REPLAY-CLOCK does), population from the seed company (client 11, `ws_kernel` `K.load()`):
+- S1 a REAL process run through `AP.runInTrx`: InventoryCountCreate (process 105, `QtyRange '='`, the "null storage" INSERT with `getDate()` and
+  `trunc(getdate())`, `InventoryCountCreate.js:44`) on a new `M_Inventory`: every `M_StorageOnHand` row it inserted has `created`/`updated` =
+  `2026-11-13 00:30:..` and `datematerialpolicy` (= `trunc(getdate())`) day `2026-11-13` *(spec said `datelastinventory`; the SQL sets that NULL, as legacy's does: corrected after the first run)*. **INCONCLUSIVE** if it inserted 0 rows.
+- S0 (part c) every inserted row's columns are the SELECT's, by position: `ad_client_id=11`, `isactive='Y'`, `m_locator_id` = a default locator of that
+  warehouse, `m_product_id` = a stocked item product, `qtyonhand=0`, `m_storageonhand_uu` a v7 uuid; plus a unit row: `INSERT INTO t (a,b,c) SELECT 0, 0, 'x'`
+  through the process DB gives `a=0, b=0, c='x'`.
+- S2 after that process, the page's SQL clock (`getdate()` through the bound runtime) is the live clock again, not the process's instant (tick the fake
+  clock by 1 h between the run and the read: must read 01:30).
+- S3 `TimeUtil.getDay(null)` = day `2026-11-13`; `Env.getContextAsDate(emptyCtx, '#Date')` = `2026-11-13 00:30:..`.
+- **Red control:** the same run with `OOTB=<main worktree>` must FAIL S1 (`2026-11-12 16:30`), S2 (frozen) and S3 (`2026-11-12`). Also UTC: S1–S3 pass on
+  both trees (equality on UTC proves nothing; +08 00:30 is the test).
+- **Before/after (detached main worktree):** W-REPLAY-CLOCK, W-LOCAL-TIME, W-ENV-VIEWS, W-FN-PARITY, W-CORE-CLOCK-READS, W-CORE-TIMING; the parity gate on the bump.
+**Issue proved:** inside a Java process the twin's SYSDATE was the UTC wall clock and stayed frozen afterwards, and two "today" fallbacks took the UTC day;
+after, one local clock, legacy's.
+
+**A3-CLOCK-1 RESULT (2026-11-17): ✅ DONE (witness), bim-ootb #3145 + #3146 / PR #3149, merged `674cdf72`.** +29 / −6 in `ad_process.js` + `ad_callout.js`. Logs read:
+- W-PROC-SYSDATE (`erp/tests/witness_proc_sysdate.js`, a real InventoryCountCreate on client 11, 63 rows): `§PROC_SYSDATE checks=4 failed=0 inserted=63 verdict=PASS`
+  at +08 and at UTC, on the branch AND re-run on merged `main` @ `674cdf72`. **Red (main before):** +08 4/4 FAIL (S0 `ad_client_id=0, created='Y', isactive=50000`,
+  S1 `2026-11-12 16:30`, S2 frozen at `2026-11-12 16:30:00`, S3 `2026-11-12`); UTC 3/4 FAIL (S3 cannot show at UTC, as the spec says).
+- Before/after, same verdicts: W-FN-PARITY 48/48 PASS (incl. `generate_uuid`) · W-LOCAL-TIME 4/4 · W-ENV-VIEWS 7/0 · W-REPLAY-CLOCK 4/0 `match=Y` both zones
+  (hashes differ run to run, A0 finding 2) · W-CORE-CLOCK-READS 4/0 · W-CORE-TIMING 31/0 · `audit_sw_precache` 268/268. Bump erp/sw.js v1093 → v1094,
+  `ad_process.js` 22 → 23, `ad_callout.js` 8 → 9 (also in `capex/index.html`, which has no sw).
+- **Spec deviations, said here:** S0's unit row (`INSERT … SELECT 0, 0, 'x'`) was dropped: `processDB` is not exported; S0 judges the 63 real rows against the
+  locators/products read independently. S1 judges `datematerialpolicy` (corrected above). INSERT … SELECT has ONE user in the ported processes (`git grep`).
+- **Parity gate: OVERRIDE with reason** (`--no-parity`, F-16's own exception path). The gate's first run gave `verdicts=0 … why=bridge_error(spawnSync bash
+  ETIMEDOUT)`: the full bridge now takes **25 min** (`~/.cache/bim_bridge/run_20261117_021326.log`; `witness_fa_gap` alone ~25 min of it), the gate's limit is
+  15 min (`scripts/bump.js:185`). The full run on the branch: DD PASS, DDS PASS (both were known FAILs: the 39 linked `build/erp/*.db` made them judge),
+  CTX FAIL (known), **M3 HARNESS-FAIL and FA FAIL, which load only bim-compiler's own `scripts/erp_engine.js` / `doc_poster.js` (`witness_m3_gap.js:15-17`,
+  `witness_fa_gap.js:13-14`), never the bim-ootb tree**: they cannot judge a bim-ootb bump. **Finding for this lane (F-16 / §F.30):** the gate should run only
+  the witnesses that load the bumped tree (`BRIDGE_OOTB`/`OOTB`), or carry a longer limit; until then a full-bridge gate on an ERP file times out every time.
+
+**OWNERS OF THE OPEN ITEMS (checked 2026-11-17, owner asked "which prompts/# owns those issues"):**
+| Item | Owner file | Note |
+|---|---|---|
+| `witness_fa_gap` slow (~25 min) / FA FAIL, M3 HARNESS-FAIL | bim-compiler `prompts/SQLiteIDEMPIERE.md` (FA scenarios `:1361`, D7/D8; FA = extra, not core) | judges bim-compiler's engine, not bim-ootb |
+| `erp/ws_kernel.js` (A3-CLOCK-2 must install the edge there) | bim-compiler `prompts/ERP_WS_API.md` (S2 built it; last touched 2026-11-09) | recent edits by the CLI + Project-process work: ask the live session first, record in `ERP_WS_API.md` |
+| "15 of 51 `ws_kernel.js` witnesses fail on unedited main" (RESUME 7) | **none: no source.** The archive holds no such list and no prompts file in either repo names it | RESUME 7 corrected: re-measure before quoting |
+| 4D cache `witness.log` has no `§LOG_STAMP` | split: `§LOG_STAMP` is this lane's (§F.7, F-11); `scripts/cache_4d_run.js` is `prompts/4D_MODEL_INTEGRITY.md`'s (PRIMAL LAW 5, §I) | the 4D lane's file and cache key: hand over as information |
+| F-2 cost ceilings, due 2026-11-30 | this file, §F.3 | — |
+
+**A3-CLOCK-2 SPEC (2026-11-17, draft; decisions A-3 + A-5 + A-6; not built).** The last two clock owners in the A-1 list read the wall clock instead of the
+installed edge, so a page with a fake or replayed edge still gets the real clock for SQL `SYSDATE`, `@SysDate@` and the login `#Date`:
+`ad_callout.js:896` `RUNTIME.now` (`new Date()`) and `callouts/sqlfn.js:440-442` `generate_uuid()` (`Date.now()`, `crypto.getRandomValues`, `Math.random`).
+**Build:** `RUNTIME.now` = the local wall-clock form of `Env.edge().nowMs()` (`ms - new Date(ms).getTimezoneOffset()*60000`; `new Date(ms)` with an argument
+reads no clock); `generate_uuid(null)` takes its ms from `Env.edge().nowMs()` and its 10 random bytes from the hex of `Env.edge().uuid()` (a v4 id: hex
+0-11 + 18-25, the random positions). No edge = `§ENV_NO_DATE` + throw (A-3). **Hosts that load `ad_callout.js` and must install the edge first (A-6),
+measured on `main` @ `249fb934`:** pages `erp/idempiere.html` (has it, `:708`), `viewer/viewer.html` (has `CoreEdge`), `capex/index.html` (NONE); Node
+`common/door/erp_cli.js:43` (has it), `erp/ws_kernel.js` (NONE: the ERP lane's file, ask first), `common/door/door_plugins.js`, `capex/tools/migration_apply.js`,
+`devtools/hover/erp_*.js`, bim-compiler `scripts/bridge/ad_shipped_fixture.js` (each to be checked), and 57 `*/tests/*.js` that require it.
+**Method:** run every Node witness that requires `ad_callout.js` before/after; any new `§ENV_NO_DATE` is a host that must install the edge (one shared
+Node helper, not 57 copies). **Witness:** W-PROC-SYSDATE gains S4 (`getdate()` under a fake `CoreEdge` = the fake's local stamp) and S5 (`generate_uuid()`
+under the fake = its ms prefix, random part from its uuid); red control = main.
+
+**A3 W-CORE-PURE SPEC (2026-11-17; decisions A-1 + A-4 + A-7; lands AFTER A3-CLOCK-2, whose fix is what makes `forbidden=0` true).**
+File `erp/tests/witness_core_pure.js` (bim-ootb), node only, espree AST from bim-ootb's own `node_modules` (a port of bim-compiler `scripts/code_arch/clock_probe.js`:
+comments and strings never count).
+- **Population = the A-1 list, by pathspec, so a new file in it is judged with no edit:** `erp/processes/*.js`, `erp/callouts/*.js`, `erp/ad_callout.js`,
+  `erp/doc_poster.js`, `erp/model_*.js`, `erp/rule_fold.js`, `erp/crud_core.js`, `viewer/cpm_schedule.js`, `viewer/schedule_*.js`, `common/room_graph.js`
+  (`git ls-files`, tests excluded). 125 files on `249fb934`. No exemption list: after A3-CLOCK-2 even the Env owner (`ad_callout.js`) reads only the edge.
+- **FAILS on (A-7, values only):** clock `Date.now()`, `new Date()` / `new Date` with no argument, `Date()` called, `performance.now()` (A-4); random
+  `Math.random()`, `crypto.randomUUID()`, `crypto.getRandomValues()`; network `fetch()`, `new XMLHttpRequest`, `new WebSocket`, `new EventSource`,
+  `navigator.sendBeacon()`. One `§CORE_PURE_HIT file= line= call=` per hit.
+- **INFO only (A-7):** per file `§CORE_PURE_INFO file= storage= document= console=` (`localStorage`/`sessionStorage`/`indexedDB` references, `document`,
+  `console`), for Part C. The UMD wrapper's `window` is not counted.
+- **Verdict:** `§CORE_PURE files= parse_fail= forbidden= verdict=PASS|FAIL|INCONCLUSIVE`; INCONCLUSIVE when `files=0` or any file fails to parse (it is
+  listed, never dropped).
+- **Red control (in the same run):** a copy of a real core file (`erp/processes/InvoiceGenerate.js`) with a planted `Date.now()` → 1 hit, a planted
+  `performance.now()` → 1 hit, the same text inside a comment and inside a string → 0 hits. The red control must FAIL for the verdict to count.
+- **Deletion budget:** `erp/tests/witness_core_clock_reads.js` loses its hand list (`MIGRATED`, 22 files) and its regex scan; it keeps only its Env helper
+  checks (`nowStamp`/`nowMs` and `§ENV_NO_DATE`). One scanner, one list.
+**Issue proved:** "a core file reads a clock, random numbers or the network itself instead of the installed edge", judged over the whole A-1 list by
+pathspec, not a hand list that a new file can miss.
 
 ---
 
