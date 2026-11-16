@@ -894,6 +894,45 @@ The written spec follows the agreement made in chat and comes before the merge; 
   - Negligible beside a building's MB of DBs. A lazy class-text file would need a second loader (ruled out).
 - LOCALE_VERSION 9→10, sw v1716→v1717.
 
+## 14.3 SPEC: step 2, How To in the Viewer's `?` palette (owner 2026-11-17: *"Proceed"*)
+**Issue it removes:** the `?` / F1 palette (`viewer/scene.js` `showCommandPalette`) lists every pill with its key and its short bullets (`children`, translated `pillc_*`). It links only to the WHOLE user guide (`#cmd-docs`). It never says where in the guide a tool is explained, or what the same answer is at the CLI. Its search matches only names and keys, so a word that is only in a bullet ("distance") finds nothing.
+
+**Slice (the dock is later):** the palette IS the agreed question box (§14 design). This slice adds the How To content INSIDE each palette entry. The right dock / mobile sheet and the move to `common/help/` come later and are not part of this slice.
+
+**Data, generated, never hand-typed: `viewer/help/howto.json`, built by `viewer/tools/build_howto.js`:**
+- **Guide link:** for each pill in `panels.js` (`{ id, name }` of the main pill actions, 38 today), the BIM User Guide section (h2-h4 of the LIVE page `red1oon.github.io/BIMCompiler/BIMUserGuide/`, the page the palette already links) whose body names the pill's English name most often; ties go to the first.
+  - Measured 2026-11-17: 31/38 have one.
+  - No section names `lod400`, `sanity`, `egress`, `sched4d`, `dlodnav` or `issues`. These are guide gaps, listed, not linked.
+  - `walk` (the mobile Walk pill) only matches the FILM's walk-mode sections. That is a different feature, so it is excluded, with the reason stored in the file.
+- **CLI lines:** a door verb attaches to a pill only by a phrase quoted from the verb's OWN `description` in `common/door/verbs.json`:
+  - `find` ← `viewer.counts`, `viewer.clashes` ("the same answer the Viewer's Find panel gives"), `viewer.cost` ("as the Viewer's Find panel does");
+  - `tm` ← `viewer.schedule_at` ("the Time Machine scrubber").
+  - The line is `<verb> <required input>=<input>`, the ERP help's form (`erp/help_search.js`). Verbs and lines stay English (§0 rule).
+  - The tool refuses to build if a quoted phrase is missing.
+- **Size:** a few kB. Fetched once when the palette first opens. `verbs.json` (154 kB) is never loaded by the page.
+
+**Palette (`scene.js`):**
+- An entry with a How To record becomes expandable (the existing +/− child block). Under its bullets it shows:
+  - "Guide" + the section link (labelled "(English)" on a non-English page, since the guide is English only);
+  - "Same at the CLI" + the line(s).
+- The search also matches bullet text and verb titles.
+- New words `ui_howto_guide`, `ui_howto_guide_en`, `ui_howto_cli`, translated in the 14 non-English languages (machine, labelled).
+- Log: `§HOWTO_PALETTE entries=… guide=… cli=… filter="…"`.
+
+**Witness W-HOWTO (`viewer/tests/witness_howto.js`), each check naming the issue it proves:**
+1. **H1 drift:** `howto.json` == the generator's output on today's inputs (live guide, `panels.js`, `verbs.json`). A guide edit that moves a section fails here. Live guide unreachable → INCONCLUSIVE, not PASS.
+2. **H2 links are true:** every anchor exists on the live guide, and its section names the pill. Falsifier: a made-up anchor, or a section that does not name the pill, must FAIL.
+3. **H3 CLI lines are true:**
+   - each quoted phrase is in that verb's description;
+   - the line's inputs are exactly the verb's required inputs.
+   - Falsifier: a phrase that is not there.
+4. **H4 page:** on `viewer.html` + Duplex, F1 opens the palette:
+   - X of N entries have a guide link (N = the page's own `_mainPillActions`, compared with the file's pill count);
+   - typing a word that appears only in a bullet finds that pill;
+   - the `find` entry shows the 3 CLI lines;
+   - in de_DE the bullets are German and the guide label says it is English.
+5. **Coverage printed:** guide X/N, CLI pills, guide gaps by id.
+
 ## 15. NOT URGENT, to think about (owner 2026-11-16: *"You mean we can mis.<translated verb>? Note in prompt then we shall think about it not urgent."*)
 Two terminal ideas. Neither is built and nothing is decided.
 1. **Field help at the terminal.** The browser's per-field tooltip / Tool Tip panel has no terminal equivalent: today only `mis.describe` (a kind's fields) and `help <word>` exist.
