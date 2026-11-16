@@ -5,7 +5,7 @@ Background, measurements and prior art are in `prompts/DOCS_I18N.md` §4b-§4d (
 ## ▶▶ RESUME HERE FIRST (2026-11-16, end of session bim-compiler-41; the next "resume message" session starts here)
 **Owner, 2026-11-16 (verbatim, binding):** *"Agree. Update prompt to resume new session. We check (a) and agree your b and c."*
 **Next task: the BIM help panel (Viewer + Modeller), §14.** Spec before code; the design below is AGREED, the one open item is (a).
-1. **Check (a) FIRST, then report it to the owner before using it:** may buildingSMART's IFC class definitions (the IFC4 / IFC4.3 documentation text) be shown, translated and redistributed inside our pages?
+1. **(a) CHECKED 2026-11-17, see §14 (a) RESULT:** CC BY-ND 4.0. Verbatim English with attribution is usable. A translation needs bSI's written consent. Awaiting the owner's choice. Original task: may buildingSMART's IFC class definitions (the IFC4 / IFC4.3 documentation text) be shown, translated and redistributed inside our pages?
    - Read the actual licence or terms on buildingSMART's own site, save the copy into the session's prior folder, and cite the clause.
    - If the terms are unclear, say "not usable yet". Never assume.
 2. **AGREED (b):** our own small element dictionary: a Description and a Help per IFC class / element kind, written once and owned by us.
@@ -723,6 +723,18 @@ These are legacy's own words in that language; the twin shows them unchanged.
   - `erp/field_help.js` (`window.FieldHelp`, no deps; `attach(el, f)` is generic, `attachIn` is ERP-crud markup) and `erp/help_search.js` (`makeIndex` / `indexFrom`, no DOM) are portable logic.
   - The panel DOM, pack loading and card rendering live in `erp/idempiere.html` and would be extracted.
   - A new JS file must be added to `viewer/sw.js` and `modeller/sw.js` shell lists.
+
+**(a) RESULT, licence checked 2026-11-17 (reported to the owner; nothing built on it yet):**
+- **The terms.** buildingSMART's own IFC documentation cover page (`content/cover.md` in `buildingSMART/IFC4.x-development`, last changed 2026-10-01, `23bea5e6d0`; same text on the IFC4.3 HTML cover page): *"The Industry Foundation Classes are published under Creative Commons Attribution-NoDerivatives 4.0 International (CC BY-ND 4.0)."* and *"Prior written consent is required if you want to use IFC and/or the documentation in situations that are not covered by the CC BY-ND 4.0 license."* The IFC4.3 repo README says the same for the formal releases.
+- **CC BY-ND 4.0, the clauses that decide it:** §1(a) *"Adapted Material … in which the Licensed Material is **translated**, altered, arranged, transformed, or otherwise modified"*; §2(a)(1) we may *"reproduce and Share the Licensed Material, in whole or in part; and produce and reproduce, but **not Share, Adapted Material**"*; §3 *"You do not have permission under this Public License to Share Adapted Material."*
+- **Verdict:**
+  - **Shown in English, word for word, in whole or in part: USABLE**, with attribution (buildingSMART International, CC BY-ND 4.0, licence link, link to the source page; IFC™ credited as a trademark).
+  - **Translated into any of our languages: NOT USABLE** without buildingSMART's prior written consent (contact@buildingsmart.org). A translation is Adapted Material, and we may not share it.
+  - **Reworded or shortened into our own sentences: NOT USABLE** as their text. That is (b): we write our own.
+  - **Not covered:** the parts the cover page marks as based on other standards are outside buildingSMART's copyright; their own terms apply.
+- **Not read (gap, said plainly):** the bSI IP Policy PDF the cover page refers to. The CDN gave 403 and the web archive gave 429. The verdict rests on the licence text alone; read the IP Policy before relying on anything beyond verbatim English.
+- **What it means for the design (an owner choice, not decided):** (b) is the only route to a translated class text. (a) can at most be an English-only "IFC definition" quote, or just a link to the class's bSI page. A link is always allowed.
+- **Saved copies:** `~/bim-compiler/build/bim_help_prior/` (not tracked): the cover page in two copies (repo `cover.md` + archived IFC4.3 HTML), the dev repo's LICENSE.md + README, the CC BY-ND 4.0 legal code (html + txt), and `fetched_at.txt`.
 
 **Decisions:** the design in RESUME HERE FIRST (owner "Agree", 2026-11-16).
 - (b) our own element dictionary — AGREED;
