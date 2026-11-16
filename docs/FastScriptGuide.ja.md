@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 07df04bc24c68a3f
+source_sha: aba1131ca2a01781
 lang: ja
 ---
 
@@ -44,7 +44,7 @@ red1: type a short word; red1 prints the full line it runs (→ …), then runs 
   bim   buildings and models             start with: cd Duplex   (16 words)
   mis   records, tables, files, Ninja    start with: cd Order   (11 words)
   erp   document actions (CO VO CL RC)   start with: cd Order   (7 words)
-  everywhere: cd <place> · pwd · role <id> · history · report · exit
+  everywhere: cd <place> · pwd · role <id> · login <user> · history · report · exit
 Type bim, mis or erp for its words · help <word> for one word (level student first for the full explanation) · help verbs for the full door lines.
 ```
 
@@ -340,7 +340,7 @@ not done: cd project
 
 | 言葉 | 何をするか |
 |---|---|
-| `pwd` · `cd ..` · `history` · `role <id>` | 今いる場所、戻る、入力した行、ロールとして動く |
+| `pwd` · `cd ..` · `history` · `role <id>` · `login <user>` | 今いる場所、戻る、入力した行、ロールとして動く、自分が誰かを伝える（メールを持つユーザーが複数いるクライアントでだけ求められる。新しいレコードにはあなたのユーザーが記録される） |
 | `sum <column>` · `cat <id>` · `rm <id>` | 列を合計する、レコードを一件表示する、一件削除する |
 | `ninja <file>` · `load <file.csv>` · `diff <file.csv>` | Ninja ブックまたは CSV を用意する、ファイルから行を読み込む、ファイルとレコードを比較する |
 | `menu` | ERP メニューを画面で |
