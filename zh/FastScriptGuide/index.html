@@ -3635,7 +3635,7 @@
 <div class="highlight"><pre><span></span><code>$ (sleep 4; printf &#39;exit\r&#39;) | RED1_LOG=/tmp/fast_guide_greet.log RED1_HISTORY=/tmp/fast_guide_greet.hist BIM_DOOR_JOURNAL=/tmp/fast_guide_greet.journal script -qec &#39;node common/door/red1.js&#39; /dev/null | tr -d &#39;\r&#39; | sed -e &#39;s/\x1b\[[0-9;?]*[a-zA-Z]//g&#39; -e &#39;s/ · [0-9a-f]\{8\}$//&#39;
 Welcome to red1, the scripting door into BIM and ERP, stored in SQLite.
 REMEMBER THE NAME.
-Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 74 verbs · 29 words
+Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 75 verbs · 30 words
 Type help for the list of commands (or bim, mis, erp for one group).
 Tip: type level student for fuller help on each word (red1 --fast opens without tips).
 
@@ -3673,7 +3673,7 @@ red1&gt; exit
 red1: type a short word; red1 prints the full line it runs (→ …), then runs it.
   bim   buildings and models             start with: cd Duplex   (16 words)
   mis   records, tables, files, Ninja    start with: cd Order   (11 words)
-  erp   document actions (CO VO CL RC)   start with: cd Order   (7 words)
+  erp   document actions (CO VO CL RC)   start with: cd Order   (8 words)
   everywhere: cd &lt;place&gt; · pwd · role &lt;id&gt; · login &lt;user&gt; · history · report · exit
 Type bim, mis or erp for its words · help &lt;word&gt; for one word (level student first for the full explanation) · help verbs for the full door lines.
 </code></pre></div>
@@ -3690,6 +3690,7 @@ erp: document actions (CO VO CL RC) (start with: cd Order)
   do CO 50000                                         a document action
   run &quot;Set Project Type&quot; 990000 C_ProjectType_ID=103  run a process of the dictionary
   next 50000                                          what a document may do next
+  ask &quot;How do I close a Sales Order?&quot;                 ask the help a question, in your language
 </code></pre></div>
 <p><code>help</code> 不打印门动词，只打印这些词。<code>help verbs</code> 列出每个门动词及其完整一行。若要了解某个词的更完整说明，切换到 Student 级别：在会话中输入 <code>level student</code>，或在一行里用 <code>--level student</code>，然后 <code>help &lt;word&gt;</code> 会说明该词做什么、您输入什么、red1 从您所在位置取什么，并给出一个示例。文字取自该动词自己的描述，所以不会与末尾的表产生偏差：</p>
 <!-- run: red1_help_student cut=170 -->
@@ -3701,6 +3702,23 @@ cost: the cost of a selection: cost [phase|task|storey|discipline|class] [column
     taken from where you are: building
     e.g. in Duplex: viewer.cost building=Duplex by=discipline
 </code></pre></div>
+<p><strong>用您自己的语言获得帮助。</strong> <code>ask "&lt;question&gt;"</code> 用普通的话向与浏览器 ERP 问题框相同的帮助提问，在 ERP 类型中（<code>cd Order</code>）可用。答复会给出窗口、单据动作及其允许的状态、执行它的命令行，以及指南的章节。它读自词典和已发布的 iDempiere 语言包；里面没有 AI，而且只读不写。语言是您用 <code>lang=zh_CN</code> 选择的，否则是您登录时（<code>login</code>）保存的偏好，否则是终端的 <code>LANG</code>，否则是系统的语言。语言包没有覆盖的文字保持英文，与 legacy 相同（下面动作的说明）。这里终端是中文：</p>
+<!-- run: red1_ask_zh -->
+<div class="highlight"><pre><span></span><code>$ printf &#39;cd Order\nask &quot;如何关闭销售订单？&quot;\n&#39; | LANG=zh_CN.UTF-8 node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39;
+→ mis.describe kind=Order
+Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
+→ erp.ask question=如何关闭销售订单？
+ok · erp.ask
+窗口: 销售订单
+文档动作: 结束 — Finally close this transaction. It cannot be re-activated.
+  单据处于以下状态时可用: 完成, 等候付款
+CLI: erp.close kind=Order number=&lt;Document No&gt;
+指南: 1 · 销售订单 https://red1oon.github.io/BIMCompiler/ERPUserGuide/#1-sales-order
+
+从菜单（⌂ → 销售）打开销售订单，建一两行，然后按处理按钮（§6）→ 完成。完成不只是改变状态：completeIt 会在同一个已签名的操作组里，接着生成后面的出货单和发票。
+(由构建会话翻译，未经母语者审校)
+</code></pre></div>
+<p>浏览器 ERP 在每个字段上都有同样的帮助、How To 步骤和问题框，使用您在页头选择的语言：见 ERP 用户指南中的 <a href="../ERPUserGuide/#help-on-every-field-and-a-question-box-live">Help on every field, and a question box</a>。</p>
 <p>现在看一个词。<code>cd</code> 记住您在哪里，所以无需重复。在 <code>cd Duplex</code> 和 <code>cd Element</code> 之后，<code>count</code> 只需要那一个新的内容。<code>→</code> 行是 red1 发给门的内容；这一行就是该词的长格式：</p>
 <!-- run: red1_lines -->
 <div class="highlight"><pre><span></span><code>$ node common/door/red1.js &#39;cd Duplex; cd Element; count discipline=ARC&#39; 2&gt;&amp;1 | grep &#39;^→&#39;
@@ -3718,7 +3736,7 @@ node<span class="w"> </span>common/door/red1.js
 <p>输入 <code>exit</code> 退出。若想在任何位置只输入 <code>red1</code>，请在该文件夹中运行一次 <code>npm link</code>。要检查它是否工作，请查看它的版本行：</p>
 <!-- run: red1_version -->
 <div class="highlight"><pre><span></span><code>$ node common/door/red1.js --version | sed -e &#39;s/^Copyright[^·]*· //&#39; -e &#39;s/ · [0-9a-f]\{8\}$//&#39;
-red1 1.0.0 · 74 verbs · 29 words
+red1 1.0.0 · 75 verbs · 30 words
 </code></pre></div>
 <p><strong>六文件下载</strong>用于只要门和 Modeller 动词、不需要检出的情况。新建一个空文件夹，安装 Modeller 所需的浏览器引擎，然后获取这六个文件：</p>
 <div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>fastscript<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>fastscript
@@ -3872,12 +3890,6 @@ Project: 48 properties; ls shows C_Project_ID, Value, Name, Processed, SalesRep_
 run: Renumber has no parameter to ask (none in the dictionary)
 → erp.process name=Renumber kind=Project
 refused · erp.process · Renumber was not run: it has no JS port yet (class org.compiere.process.DiscountSchemaReSeq)
-{
- &quot;refused&quot;: true,
- &quot;reason&quot;: &quot;Renumber was not run: it has no JS port yet (class org.compiere.process.DiscountSchemaReSeq)&quot;,
- &quot;gap&quot;: true,
- &quot;gapKind&quot;: &quot;no-port&quot;
-}
 This is a gap in red1, not your mistake. Type report to send it to us (email or GitHub issue).
 </code></pre></div>
 <h3 id="_3">从建筑到订单：成本、提议、过账<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
@@ -4346,6 +4358,14 @@ object.count building=Duplex kind=Element -&gt; 1193 Element
 <td>一份 bim-ootb 检出</td>
 </tr>
 <tr>
+<td><code>erp.ask</code></td>
+<td>向帮助提一个问题</td>
+<td><code>question</code>，<code>lang</code>（可选）, <code>role</code>（可选）</td>
+<td>read</td>
+<td>human, ai</td>
+<td>一份 bim-ootb 检出</td>
+</tr>
+<tr>
 <td><code>mis.lookup</code></td>
 <td>某一列或某个流程参数的合法取值</td>
 <td><code>column</code>，<code>kind</code>（可选）, <code>process</code>（可选）, <code>id</code>（可选）, <code>limit</code>（可选）, <code>role</code>（可选）, 更多 <code>column=value</code> 筛选条件（可选）</td>
@@ -4621,7 +4641,7 @@ object.count building=Duplex kind=Element -&gt; 1193 Element
 </table>
 <!-- /GEN:verbs -->
 
-<p><strong>目前的覆盖范围。</strong> 这份列表有意保持很小：64 个动词覆盖 Modeller 的轴网编辑、它的 walker 以及在各行之间保持打开的 Modeller、少量 Viewer 问题、进度、通用的对象读取、计数和写入、一次选择的成本、ERP 单据动词，以及 ERP 字典中任何已移植的流程。Viewer 有 64 个人可以按下的操作，门提供 6 个 Viewer 动词。ERP 有 1158 个单据和流程，门为单据的生命周期提供 9 个 ERP 动词，为任意表提供 15 个 MIS 动词，并保留 10 个旧名称，使以前的行仍能运行。所以这只是一个开始，不是完整的菜单。</p>
+<p><strong>目前的覆盖范围。</strong> 这份列表有意保持很小：65 个动词覆盖 Modeller 的轴网编辑、它的 walker 以及在各行之间保持打开的 Modeller、少量 Viewer 问题、进度、通用的对象读取、计数和写入、一次选择的成本、ERP 单据动词，以及 ERP 字典中任何已移植的流程。Viewer 有 64 个人可以按下的操作，门提供 6 个 Viewer 动词。ERP 有 1158 个单据和流程，门为单据的生命周期提供 10 个 ERP 动词，为任意表提供 15 个 MIS 动词，并保留 10 个旧名称，使以前的行仍能运行。所以这只是一个开始，不是完整的菜单。</p>
 <h2 id="_7">本页为何保持真实<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
 <p>本页和<a href="../FastScriptReference/">参考页</a>灰色代码块中的每条命令都已运行过，下面的输出就是该命令打印的内容。<code>bim-ootb</code> 仓库中的测试 <strong>W-FAST-SCRIPT-GUIDE</strong> 会从下载和检出再次运行它们，把本页的每个数字与运行结果核对，并检查动词表等于 <code>verbs.json</code>。如果这里的某个数字过时，该测试就会失败。</p>
 <p>相关：<a href="../ProposerGuide/">AI 提议者指南</a>（把 AI 连接到同一个入口，以及 AI 用这些检查做了什么），以及 <a href="../ModellerGuide/">Modeller 指南</a>。</p>

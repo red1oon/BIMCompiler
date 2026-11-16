@@ -3635,7 +3635,7 @@
 <div class="highlight"><pre><span></span><code>$ (sleep 4; printf &#39;exit\r&#39;) | RED1_LOG=/tmp/fast_guide_greet.log RED1_HISTORY=/tmp/fast_guide_greet.hist BIM_DOOR_JOURNAL=/tmp/fast_guide_greet.journal script -qec &#39;node common/door/red1.js&#39; /dev/null | tr -d &#39;\r&#39; | sed -e &#39;s/\x1b\[[0-9;?]*[a-zA-Z]//g&#39; -e &#39;s/ · [0-9a-f]\{8\}$//&#39;
 Welcome to red1, the scripting door into BIM and ERP, stored in SQLite.
 REMEMBER THE NAME.
-Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 74 verbs · 29 words
+Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 75 verbs · 30 words
 Type help for the list of commands (or bim, mis, erp for one group).
 Tip: type level student for fuller help on each word (red1 --fast opens without tips).
 
@@ -3673,7 +3673,7 @@ red1&gt; exit
 red1: type a short word; red1 prints the full line it runs (→ …), then runs it.
   bim   buildings and models             start with: cd Duplex   (16 words)
   mis   records, tables, files, Ninja    start with: cd Order   (11 words)
-  erp   document actions (CO VO CL RC)   start with: cd Order   (7 words)
+  erp   document actions (CO VO CL RC)   start with: cd Order   (8 words)
   everywhere: cd &lt;place&gt; · pwd · role &lt;id&gt; · login &lt;user&gt; · history · report · exit
 Type bim, mis or erp for its words · help &lt;word&gt; for one word (level student first for the full explanation) · help verbs for the full door lines.
 </code></pre></div>
@@ -3690,6 +3690,7 @@ erp: document actions (CO VO CL RC) (start with: cd Order)
   do CO 50000                                         a document action
   run &quot;Set Project Type&quot; 990000 C_ProjectType_ID=103  run a process of the dictionary
   next 50000                                          what a document may do next
+  ask &quot;How do I close a Sales Order?&quot;                 ask the help a question, in your language
 </code></pre></div>
 <p><code>help</code> はドア動詞を表示せず、言葉だけを表示します。<code>help verbs</code> は、すべてのドア動詞を完全な行で一覧にします。ひとつの言葉についてさらに詳しい説明が必要なら、Student レベルに切り替えます。セッションでは <code>level student</code>、一行なら <code>--level student</code> を使い、そのあと <code>help &lt;word&gt;</code> で、その言葉が何をするか、何を打つか、red1 が今いる場所から何を取るか、そして例が示されます。テキストは動詞自身の説明なので、末尾の表からずれることはありません：</p>
 <!-- run: red1_help_student cut=170 -->
@@ -3701,6 +3702,23 @@ cost: the cost of a selection: cost [phase|task|storey|discipline|class] [column
     taken from where you are: building
     e.g. in Duplex: viewer.cost building=Duplex by=discipline
 </code></pre></div>
+<p><strong>自分の言語でヘルプ。</strong> <code>ask "&lt;question&gt;"</code> は、ブラウザ版 ERP の質問ボックスと同じヘルプに、ふつうの言葉で質問します。ERP の種類の中（<code>cd Order</code>）で使えます。答えは、ウィンドウ、ドキュメントアクションとそれが許されるステータス、それを行うコマンドライン、ガイドの節を示します。辞書と公開されている iDempiere の言語パックから読み取ります。中に AI はなく、読むだけです。言語は <code>lang=zh_CN</code> で選んだもの、なければログインしているときの保存された設定（<code>login</code>）、なければ端末の <code>LANG</code>、なければシステムのものです。パックにない文は、レガシーと同じく英語のままです（下のアクションの説明）。ここでは端末が中国語です：</p>
+<!-- run: red1_ask_zh -->
+<div class="highlight"><pre><span></span><code>$ printf &#39;cd Order\nask &quot;如何关闭销售订单？&quot;\n&#39; | LANG=zh_CN.UTF-8 node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39;
+→ mis.describe kind=Order
+Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
+→ erp.ask question=如何关闭销售订单？
+ok · erp.ask
+窗口: 销售订单
+文档动作: 结束 — Finally close this transaction. It cannot be re-activated.
+  单据处于以下状态时可用: 完成, 等候付款
+CLI: erp.close kind=Order number=&lt;Document No&gt;
+指南: 1 · 销售订单 https://red1oon.github.io/BIMCompiler/ERPUserGuide/#1-sales-order
+
+从菜单（⌂ → 销售）打开销售订单，建一两行，然后按处理按钮（§6）→ 完成。完成不只是改变状态：completeIt 会在同一个已签名的操作组里，接着生成后面的出货单和发票。
+(由构建会话翻译，未经母语者审校)
+</code></pre></div>
+<p>ブラウザ版 ERP にも、すべての項目のヘルプ、How To の手順、質問ボックスが、ヘッダーで選んだ言語であります：ERP ユーザーガイドの <a href="../ERPUserGuide/#help-on-every-field-and-a-question-box-live">Help on every field, and a question box</a> を見てください。</p>
 <p>では、ひとつの言葉を。<code>cd</code> は今いる場所を覚えているので、繰り返す必要はありません。<code>cd Duplex</code> と <code>cd Element</code> のあとの <code>count</code> には、新しい部分だけが必要です。<code>→</code> の行は red1 がドアに送ったものです。その行が、その言葉の長い形です：</p>
 <!-- run: red1_lines -->
 <div class="highlight"><pre><span></span><code>$ node common/door/red1.js &#39;cd Duplex; cd Element; count discipline=ARC&#39; 2&gt;&amp;1 | grep &#39;^→&#39;
@@ -3718,7 +3736,7 @@ node<span class="w"> </span>common/door/red1.js
 <p><code>exit</code> で終了します。どこからでも <code>red1</code> だけで起動したいときは、そのフォルダーで一度 <code>npm link</code> を実行します。動作確認には、バージョン行を表示させます：</p>
 <!-- run: red1_version -->
 <div class="highlight"><pre><span></span><code>$ node common/door/red1.js --version | sed -e &#39;s/^Copyright[^·]*· //&#39; -e &#39;s/ · [0-9a-f]\{8\}$//&#39;
-red1 1.0.0 · 74 verbs · 29 words
+red1 1.0.0 · 75 verbs · 30 words
 </code></pre></div>
 <p><strong>六ファイルのダウンロード</strong>は、チェックアウトなしで、ドアと Modeller 動詞だけを使う場合のものです。空のフォルダーを作り、Modeller が必要とするブラウザーエンジンをインストールして、六つのファイルを取得します：</p>
 <div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>fastscript<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>fastscript
@@ -3872,12 +3890,6 @@ Project: 48 properties; ls shows C_Project_ID, Value, Name, Processed, SalesRep_
 run: Renumber has no parameter to ask (none in the dictionary)
 → erp.process name=Renumber kind=Project
 refused · erp.process · Renumber was not run: it has no JS port yet (class org.compiere.process.DiscountSchemaReSeq)
-{
- &quot;refused&quot;: true,
- &quot;reason&quot;: &quot;Renumber was not run: it has no JS port yet (class org.compiere.process.DiscountSchemaReSeq)&quot;,
- &quot;gap&quot;: true,
- &quot;gapKind&quot;: &quot;no-port&quot;
-}
 This is a gap in red1, not your mistake. Type report to send it to us (email or GitHub issue).
 </code></pre></div>
 <h3 id="_3">建物から注文へ：コスト、提案、転記<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
@@ -4346,6 +4358,14 @@ object.count building=Duplex kind=Element -&gt; 1193 Element
 <td>bim-ootb のチェックアウト</td>
 </tr>
 <tr>
+<td><code>erp.ask</code></td>
+<td>ヘルプに質問する</td>
+<td><code>question</code>, <code>lang</code> （任意）, <code>role</code> （任意）</td>
+<td>read</td>
+<td>human, ai</td>
+<td>bim-ootb のチェックアウト</td>
+</tr>
+<tr>
 <td><code>mis.lookup</code></td>
 <td>列またはプロセスのパラメータに使える値</td>
 <td><code>column</code>, <code>kind</code> （任意）, <code>process</code> （任意）, <code>id</code> （任意）, <code>limit</code> （任意）, <code>role</code> （任意）, その他の<code>column=value</code>フィルタ（任意）</td>
@@ -4621,7 +4641,7 @@ object.count building=Duplex kind=Element -&gt; 1193 Element
 </table>
 <!-- /GEN:verbs -->
 
-<p><strong>現在のカバー範囲。</strong> 一覧は意図的に小さくしてあります。64個の動詞が、Modeller のグリッド編集、そのウォーカー、行の間も開いたままの Modeller、いくつかの Viewer の質問、工程、汎用のオブジェクトの読み取り・カウント・書き込み、選択のコスト、ERP の伝票動詞、そしてポートのある ERP 辞書のあらゆるプロセスをカバーしています。Viewer には人が押せるアクションが64個あり、ドアは6個の Viewer 動詞を提供します。ERP には1158個の伝票とプロセスがあり、ドアは伝票の一生のための9個の ERP 動詞と、どのテーブルにも使える15個の MIS 動詞を提供し、以前の行が動き続けるよう10個の旧名を残しています。つまりこれは出発点であって、メニューのすべてではありません。</p>
+<p><strong>現在のカバー範囲。</strong> 一覧は意図的に小さくしてあります。65個の動詞が、Modeller のグリッド編集、そのウォーカー、行の間も開いたままの Modeller、いくつかの Viewer の質問、工程、汎用のオブジェクトの読み取り・カウント・書き込み、選択のコスト、ERP の伝票動詞、そしてポートのある ERP 辞書のあらゆるプロセスをカバーしています。Viewer には人が押せるアクションが64個あり、ドアは6個の Viewer 動詞を提供します。ERP には1158個の伝票とプロセスがあり、ドアは伝票の一生のための10個の ERP 動詞と、どのテーブルにも使える15個の MIS 動詞を提供し、以前の行が動き続けるよう10個の旧名を残しています。つまりこれは出発点であって、メニューのすべてではありません。</p>
 <h2 id="_7">このページが正しさを保つ仕組み<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
 <p>このページと<a href="../FastScriptReference/">リファレンス</a>の灰色のブロックにあるコマンドはすべて実行されており、その下の出力は、コマンドが実際に表示したものです。<code>bim-ootb</code> リポジトリのテスト <strong>W-FAST-SCRIPT-GUIDE</strong> が、ダウンロードとチェックアウトからそれらを再実行し、このページのすべての数字を実行結果と照合し、動詞の表が <code>verbs.json</code> と等しいことを確認します。ここの数字が古くなれば、そのテストは失敗します。</p>
 <p>関連：<a href="../ProposerGuide/">AI Proposer ガイド</a>（同じドアに AI をつなぐ方法と、AI がチェックで何をしたか）、そして<a href="../ModellerGuide/">Modeller ガイド</a>。</p>

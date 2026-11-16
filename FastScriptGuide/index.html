@@ -3635,7 +3635,7 @@
 <div class="highlight"><pre><span></span><code>$ (sleep 4; printf &#39;exit\r&#39;) | RED1_LOG=/tmp/fast_guide_greet.log RED1_HISTORY=/tmp/fast_guide_greet.hist BIM_DOOR_JOURNAL=/tmp/fast_guide_greet.journal script -qec &#39;node common/door/red1.js&#39; /dev/null | tr -d &#39;\r&#39; | sed -e &#39;s/\x1b\[[0-9;?]*[a-zA-Z]//g&#39; -e &#39;s/ · [0-9a-f]\{8\}$//&#39;
 Welcome to red1, the scripting door into BIM and ERP, stored in SQLite.
 REMEMBER THE NAME.
-Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 74 verbs · 29 words
+Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 75 verbs · 30 words
 Type help for the list of commands (or bim, mis, erp for one group).
 Tip: type level student for fuller help on each word (red1 --fast opens without tips).
 
@@ -3673,7 +3673,7 @@ red1&gt; exit
 red1: type a short word; red1 prints the full line it runs (→ …), then runs it.
   bim   buildings and models             start with: cd Duplex   (16 words)
   mis   records, tables, files, Ninja    start with: cd Order   (11 words)
-  erp   document actions (CO VO CL RC)   start with: cd Order   (7 words)
+  erp   document actions (CO VO CL RC)   start with: cd Order   (8 words)
   everywhere: cd &lt;place&gt; · pwd · role &lt;id&gt; · login &lt;user&gt; · history · report · exit
 Type bim, mis or erp for its words · help &lt;word&gt; for one word (level student first for the full explanation) · help verbs for the full door lines.
 </code></pre></div>
@@ -3690,6 +3690,7 @@ erp: document actions (CO VO CL RC) (start with: cd Order)
   do CO 50000                                         a document action
   run &quot;Set Project Type&quot; 990000 C_ProjectType_ID=103  run a process of the dictionary
   next 50000                                          what a document may do next
+  ask &quot;How do I close a Sales Order?&quot;                 ask the help a question, in your language
 </code></pre></div>
 <p><code>help</code> prints no door verbs, only the words. <code>help verbs</code> lists every door verb with its full line. For fuller help on one word, switch to the Student level: <code>level student</code> in a session, or <code>--level student</code> on one line, then <code>help &lt;word&gt;</code> tells you what the word does, what you type, what red1 takes from where you are, and an example. The text is the verb's own description, so it cannot drift from the table at the end:</p>
 <!-- run: red1_help_student cut=170 -->
@@ -3701,6 +3702,23 @@ cost: the cost of a selection: cost [phase|task|storey|discipline|class] [column
     taken from where you are: building
     e.g. in Duplex: viewer.cost building=Duplex by=discipline
 </code></pre></div>
+<p><strong>Help in your own language.</strong> <code>ask "&lt;question&gt;"</code> puts a question to the same help as the browser ERP's question box, in plain words, and works in an ERP kind (<code>cd Order</code>). The answer names the window, the document action and the statuses it is allowed from, the command line that does it, and the guide section. It is read from the dictionary and the published iDempiere language packs; there is no AI inside, and it only reads. The language is the one you chose with <code>lang=zh_CN</code>, else your saved preference when you are logged in (<code>login</code>), else your terminal's <code>LANG</code>, else the system's. A text the pack does not cover stays in English, as in legacy (the action's description below). Here the terminal is Chinese:</p>
+<!-- run: red1_ask_zh -->
+<div class="highlight"><pre><span></span><code>$ printf &#39;cd Order\nask &quot;如何关闭销售订单？&quot;\n&#39; | LANG=zh_CN.UTF-8 node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39;
+→ mis.describe kind=Order
+Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
+→ erp.ask question=如何关闭销售订单？
+ok · erp.ask
+窗口: 销售订单
+文档动作: 结束 — Finally close this transaction. It cannot be re-activated.
+  单据处于以下状态时可用: 完成, 等候付款
+CLI: erp.close kind=Order number=&lt;Document No&gt;
+指南: 1 · 销售订单 https://red1oon.github.io/BIMCompiler/ERPUserGuide/#1-sales-order
+
+从菜单（⌂ → 销售）打开销售订单，建一两行，然后按处理按钮（§6）→ 完成。完成不只是改变状态：completeIt 会在同一个已签名的操作组里，接着生成后面的出货单和发票。
+(由构建会话翻译，未经母语者审校)
+</code></pre></div>
+<p>The browser ERP has the same help on every field, the How To steps and the question box, in the language you choose in its header: see <a href="../ERPUserGuide/#help-on-every-field-and-a-question-box-live">Help on every field, and a question box</a> in the ERP User Guide.</p>
 <p>Now one word. <code>cd</code> says where you are, so you do not repeat it. After <code>cd Duplex</code> and <code>cd Element</code>, a <code>count</code> needs only the one thing that is new. The <code>→</code> line is what red1 sent to the door; that line is the long form of the word:</p>
 <!-- run: red1_lines -->
 <div class="highlight"><pre><span></span><code>$ node common/door/red1.js &#39;cd Duplex; cd Element; count discipline=ARC&#39; 2&gt;&amp;1 | grep &#39;^→&#39;
@@ -3718,7 +3736,7 @@ node<span class="w"> </span>common/door/red1.js
 <p>Type <code>exit</code> to leave. To type just <code>red1</code> from anywhere, run <code>npm link</code> once in that folder. To check that it works, ask for its version line:</p>
 <!-- run: red1_version -->
 <div class="highlight"><pre><span></span><code>$ node common/door/red1.js --version | sed -e &#39;s/^Copyright[^·]*· //&#39; -e &#39;s/ · [0-9a-f]\{8\}$//&#39;
-red1 1.0.0 · 74 verbs · 29 words
+red1 1.0.0 · 75 verbs · 30 words
 </code></pre></div>
 <p><strong>The six-file download</strong> is for the door alone with the Modeller verbs, no checkout. Make an empty folder, install the browser engine the Modeller needs, and fetch the six files:</p>
 <div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>fastscript<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>fastscript
@@ -3872,12 +3890,6 @@ Project: 48 properties; ls shows C_Project_ID, Value, Name, Processed, SalesRep_
 run: Renumber has no parameter to ask (none in the dictionary)
 → erp.process name=Renumber kind=Project
 refused · erp.process · Renumber was not run: it has no JS port yet (class org.compiere.process.DiscountSchemaReSeq)
-{
- &quot;refused&quot;: true,
- &quot;reason&quot;: &quot;Renumber was not run: it has no JS port yet (class org.compiere.process.DiscountSchemaReSeq)&quot;,
- &quot;gap&quot;: true,
- &quot;gapKind&quot;: &quot;no-port&quot;
-}
 This is a gap in red1, not your mistake. Type report to send it to us (email or GitHub issue).
 </code></pre></div>
 <h3 id="from-a-building-to-its-order-cost-the-offer-post">From a building to its order: cost, the offer, post<a class="headerlink" href="#from-a-building-to-its-order-cost-the-offer-post" title="Permanent link">&para;</a></h3>
@@ -4346,6 +4358,14 @@ object.count building=Duplex kind=Element -&gt; 1193 Element
 <td>a bim-ootb checkout</td>
 </tr>
 <tr>
+<td><code>erp.ask</code></td>
+<td>Ask the help a question</td>
+<td><code>question</code>, <code>lang</code> (optional), <code>role</code> (optional)</td>
+<td>read</td>
+<td>human, ai</td>
+<td>a bim-ootb checkout</td>
+</tr>
+<tr>
 <td><code>mis.lookup</code></td>
 <td>The legal values of a column or a process parameter</td>
 <td><code>column</code>, <code>kind</code> (optional), <code>process</code> (optional), <code>id</code> (optional), <code>limit</code> (optional), <code>role</code> (optional), further <code>column=value</code> filters (optional)</td>
@@ -4621,7 +4641,7 @@ object.count building=Duplex kind=Element -&gt; 1193 Element
 </table>
 <!-- /GEN:verbs -->
 
-<p><strong>Coverage today.</strong> The list is small on purpose: 64 verbs cover the Modeller's grid edits, its walker and a Modeller kept open between lines, a few Viewer questions, the schedule, generic object reading, counting and writing, the cost of a selection, the ERP document verbs, and any process of the ERP dictionary that has a port. The Viewer has 64 actions a person can press, and the door offers 6 Viewer verbs. The ERP has 1158 documents and processes, and the door offers 9 ERP verbs for a document's life and 15 MIS verbs that work on any table, and keeps 10 old names so earlier lines still run. So this is a start, not the whole menu.</p>
+<p><strong>Coverage today.</strong> The list is small on purpose: 65 verbs cover the Modeller's grid edits, its walker and a Modeller kept open between lines, a few Viewer questions, the schedule, generic object reading, counting and writing, the cost of a selection, the ERP document verbs, and any process of the ERP dictionary that has a port. The Viewer has 64 actions a person can press, and the door offers 6 Viewer verbs. The ERP has 1158 documents and processes, and the door offers 10 ERP verbs for a document's life and 15 MIS verbs that work on any table, and keeps 10 old names so earlier lines still run. So this is a start, not the whole menu.</p>
 <h2 id="how-this-page-stays-true">How this page stays true<a class="headerlink" href="#how-this-page-stays-true" title="Permanent link">&para;</a></h2>
 <p>Every command in a grey block on this page and on the <a href="../FastScriptReference/">reference</a> was run, and the output under it is what the command printed. A test, <strong>W-FAST-SCRIPT-GUIDE</strong> in the <code>bim-ootb</code> repository, runs them again from the download and the checkout, checks every number on this page against the runs, and checks that the verb table equals <code>verbs.json</code>. If a number here goes stale, that test fails.</p>
 <p>Related: the <a href="../ProposerGuide/">AI Proposer Guide</a> (connect an AI to the same door, and what an AI did with the checks), and the <a href="../ModellerGuide/">Modeller guide</a>.</p>
