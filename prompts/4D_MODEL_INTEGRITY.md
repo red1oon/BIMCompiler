@@ -3285,3 +3285,11 @@ is built after it. R1's "column 2, beam 3, slab 4" is true only of the slab on t
   **Owner questions (D5):** (1) adopt variant B (one hop beyond the spec'd rule) or keep A? (2) the same gate-2 question as D2, for this one window.
 - **Left open, named:** the 10 transfer-beam columns; why `groundworkSlabs` does not claim the
   Level 1 slab; Clinic, LTU, JKR not measured.
+
+---
+**2026-11-17 NOTE from the code-design lane (`prompts/CODE_ARCHITECTURE_DESIGN.md` §F.7 / decision F-11; information for this lane, nothing here was changed).**
+Every saved log in bim-ootb is meant to start with a `§LOG_STAMP commit=… dirty=…` line (`scripts/log_stamp.js`), so a reader (and the X0
+`§`-lens, `devtools/vscode/x0-navigator/lib/lens_index.js:8`) can tell WHICH code produced it. The persisted 4D cache log does not:
+`scripts/cache_4d_run.js:316` writes `witness.log` from the pipeline lines only. The cache KEY already pins the code (PRIMAL LAW 5), so this is
+a reading aid, not a correctness bug. **Ask:** prepend the stamp line at `:316` when this lane next touches `cache_4d_run.js`. It changes no
+cache key input; existing caches stay valid and simply lack the line.
