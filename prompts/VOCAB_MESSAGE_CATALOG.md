@@ -1155,6 +1155,11 @@ Two terminal ideas. Neither is built and nothing is decided.
 
 **Proposed order (for the owner; nothing is built):**
 1. Did-you-mean over the dictionary, ERP box + BIM panel. **ON HOLD (CLI session, 2026-11-17):** the shell already has its own typo policy (`CLI_ERP_IVR.md` §25 D14, `words_core.js`). Two indexes for one job would break AD-LAYER LAW 5, so it must be ONE suggester over ONE name index, used by both the shell and help. This lane's design (built at build time, suggest only, never auto-run) matches the shell's rule and may become the shared one. The CLI session puts the choice to the owner and messages the answer. Build neither until then.
+   - **DECIDED (owner "Agree on all", 2026-11-17, via the CLI session):** ONE suggester, the existing `common/door/assist_core.js` `nearest(typed, names, n)` (CLI_ERP_IVR §42, BIMCompiler #866). The help box passes its own names (help pack windows / actions / statuses for the language) and shows the top n. There is no second edit-distance function in erp/.
+   - **Checked 2026-11-17 on the packs** (a one-character substitution mid-name):
+     - names of 3+ characters: top-1 de 354/354, zh 214/216, ja 292/293; mean 1.1-1.6 suggestions; `rule` never fires (names have no `_`). No segmenter is needed for names: an IME homophone slip is a one-character substitution.
+     - **2-character names:** lim = 2 matches every short name (zh: mean 51 suggestions; ja: 15). Top-1 is still right (46/49, 14/15), but the rest is noise.
+     - Proposed to the CLI session: lim = min(max(2, ⌊len/3⌋), len−1). Its change, its witness. Thai not tested (no th pack).
 2. The index also covers descriptions and the 6-language names (cross-language find).
 3. `Intl.Segmenter` terms at build time + character-pair fallback.
 4. One exact BM25 with field weights.
