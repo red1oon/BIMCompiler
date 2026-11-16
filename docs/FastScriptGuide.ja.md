@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 21c77ee61a2b9adf
+source_sha: 07df04bc24c68a3f
 lang: ja
 ---
 
@@ -196,14 +196,14 @@ $ rm -f /tmp/fast_guide_chain.ops; printf 'cd Duplex\ncost discipline\n' | BIM_O
 building Duplex
 → viewer.cost building=Duplex by=discipline
 ok · viewer.cost
-1190 elements · 1054482 total (71 with no rate); 3 with no size, not priced
+1190 elements · 1054482.23 total (71 with no rate); 3 with no size, not priced
 discipline  elements  cost
-ARC         267       532432
-ELEC        81        283500
-MEP         809       153825
-PLB         14        49000
-STR         19        35725
-ls lists the 32 priced rows
+ARC         267       532431.28
+ELEC        81        283500.00
+MEP         809       153825.40
+PLB         14        49000.00
+STR         19        35725.55
+ls lists the 50 priced rows
 Ready to post to ERP Project Order? y/N → erp.process name="Fold from BIM" Building=Duplex
 ```
 
@@ -315,14 +315,14 @@ $ printf 'cd Duplex\ncost discipline\ny\nn\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide
 building Duplex
 → viewer.cost building=Duplex by=discipline
 ok · viewer.cost
-1190 elements · 1054482 total (71 with no rate); 3 with no size, not priced
+1190 elements · 1054482.23 total (71 with no rate); 3 with no size, not priced
 discipline  elements  cost
-ARC         267       532432
-ELEC        81        283500
-MEP         809       153825
-PLB         14        49000
-STR         19        35725
-ls lists the 32 priced rows
+ARC         267       532431.28
+ELEC        81        283500.00
+MEP         809       153825.40
+PLB         14        49000.00
+STR         19        35725.55
+ls lists the 50 priced rows
 Ready to post to ERP Project Order? y/N → erp.process name="Fold from BIM" Building=Duplex
 → erp.process name="Fold from BIM" Building=Duplex
 ok · erp.process
@@ -332,7 +332,7 @@ Open the project? y/N → cd project
 not done: cd project
 ```
 
-転記された金額 1054482.22784 は、注文自身の明細ルール（単価×数量、丸めなし）を保ちます。一方 `cost` は各グループを整数に丸めます（1054482）。単位までは同じ数字で、セントまでは同じではありません。`post` という言葉は、前に `cost` がなくても同じことをし、先に `run it? y/N` と尋ねます。すでに注文にある建物を転記しても、何も変わりません。新しいプロジェクトから見ると、`run "Generate PO from Project"` が購買側で、上の Hospital プロジェクトと同じように答えます。転記で作られた商品には仕入先価格がありません。これらの手順と出力は[リファレンス](FastScriptReference.md)にあります。
+転記された金額 1054482.22784 は、注文自身の明細ルール（単価×数量、丸めなし）です。`cost` は同じ明細で計算し、注文の通貨のセントまで表示します（1054482.23）。つまり `post` の前に見る数字が、注文に入る金額です。`post` という言葉は、前に `cost` がなくても同じことをし、先に `run it? y/N` と尋ねます。すでに注文にある建物を転記しても、何も変わりません。新しいプロジェクトから見ると、`run "Generate PO from Project"` が購買側で、上の Hospital プロジェクトと同じように答えます。転記で作られた商品には仕入先価格がありません。これらの手順と出力は[リファレンス](FastScriptReference.md)にあります。
 
 ## すべての言葉
 

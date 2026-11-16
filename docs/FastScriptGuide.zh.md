@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 21c77ee61a2b9adf
+source_sha: 07df04bc24c68a3f
 lang: zh-CN
 ---
 
@@ -196,14 +196,14 @@ $ rm -f /tmp/fast_guide_chain.ops; printf 'cd Duplex\ncost discipline\n' | BIM_O
 building Duplex
 → viewer.cost building=Duplex by=discipline
 ok · viewer.cost
-1190 elements · 1054482 total (71 with no rate); 3 with no size, not priced
+1190 elements · 1054482.23 total (71 with no rate); 3 with no size, not priced
 discipline  elements  cost
-ARC         267       532432
-ELEC        81        283500
-MEP         809       153825
-PLB         14        49000
-STR         19        35725
-ls lists the 32 priced rows
+ARC         267       532431.28
+ELEC        81        283500.00
+MEP         809       153825.40
+PLB         14        49000.00
+STR         19        35725.55
+ls lists the 50 priced rows
 Ready to post to ERP Project Order? y/N → erp.process name="Fold from BIM" Building=Duplex
 ```
 
@@ -315,14 +315,14 @@ $ printf 'cd Duplex\ncost discipline\ny\nn\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide
 building Duplex
 → viewer.cost building=Duplex by=discipline
 ok · viewer.cost
-1190 elements · 1054482 total (71 with no rate); 3 with no size, not priced
+1190 elements · 1054482.23 total (71 with no rate); 3 with no size, not priced
 discipline  elements  cost
-ARC         267       532432
-ELEC        81        283500
-MEP         809       153825
-PLB         14        49000
-STR         19        35725
-ls lists the 32 priced rows
+ARC         267       532431.28
+ELEC        81        283500.00
+MEP         809       153825.40
+PLB         14        49000.00
+STR         19        35725.55
+ls lists the 50 priced rows
 Ready to post to ERP Project Order? y/N → erp.process name="Fold from BIM" Building=Duplex
 → erp.process name="Fold from BIM" Building=Duplex
 ok · erp.process
@@ -332,7 +332,7 @@ Open the project? y/N → cd project
 not done: cd project
 ```
 
-过账金额 1054482.22784 保持订单自己的行规则（单价乘数量，不取整），而 `cost` 把每组取整到整数（1054482）：精确到元是同一个数，但不是精确到分。`post` 这个词不需要前面的 `cost` 也能做同样的事，并先问 `run it? y/N`；对已经在其订单中的建筑再次过账不会改变任何东西。从新项目出发，`run "Generate PO from Project"` 是采购一侧，其答复与上面的 Hospital 项目相同：过账所创建的产品没有供应商价格。这些步骤及其输出在[参考页](FastScriptReference.md)中。
+过账金额 1054482.22784 是订单自己的行规则（单价乘数量，不取整）。`cost` 按同样的行计算，并显示到订单币种的分（1054482.23），所以你在 `post` 之前看到的就是订单里的金额。`post` 这个词不需要前面的 `cost` 也能做同样的事，并先问 `run it? y/N`；对已经在其订单中的建筑再次过账不会改变任何东西。从新项目出发，`run "Generate PO from Project"` 是采购一侧，其答复与上面的 Hospital 项目相同：过账所创建的产品没有供应商价格。这些步骤及其输出在[参考页](FastScriptReference.md)中。
 
 ## 所有的词
 

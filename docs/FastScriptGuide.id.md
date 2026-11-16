@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 21c77ee61a2b9adf
+source_sha: 07df04bc24c68a3f
 lang: id
 ---
 
@@ -196,14 +196,14 @@ $ rm -f /tmp/fast_guide_chain.ops; printf 'cd Duplex\ncost discipline\n' | BIM_O
 building Duplex
 → viewer.cost building=Duplex by=discipline
 ok · viewer.cost
-1190 elements · 1054482 total (71 with no rate); 3 with no size, not priced
+1190 elements · 1054482.23 total (71 with no rate); 3 with no size, not priced
 discipline  elements  cost
-ARC         267       532432
-ELEC        81        283500
-MEP         809       153825
-PLB         14        49000
-STR         19        35725
-ls lists the 32 priced rows
+ARC         267       532431.28
+ELEC        81        283500.00
+MEP         809       153825.40
+PLB         14        49000.00
+STR         19        35725.55
+ls lists the 50 priced rows
 Ready to post to ERP Project Order? y/N → erp.process name="Fold from BIM" Building=Duplex
 ```
 
@@ -315,14 +315,14 @@ $ printf 'cd Duplex\ncost discipline\ny\nn\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide
 building Duplex
 → viewer.cost building=Duplex by=discipline
 ok · viewer.cost
-1190 elements · 1054482 total (71 with no rate); 3 with no size, not priced
+1190 elements · 1054482.23 total (71 with no rate); 3 with no size, not priced
 discipline  elements  cost
-ARC         267       532432
-ELEC        81        283500
-MEP         809       153825
-PLB         14        49000
-STR         19        35725
-ls lists the 32 priced rows
+ARC         267       532431.28
+ELEC        81        283500.00
+MEP         809       153825.40
+PLB         14        49000.00
+STR         19        35725.55
+ls lists the 50 priced rows
 Ready to post to ERP Project Order? y/N → erp.process name="Fold from BIM" Building=Duplex
 → erp.process name="Fold from BIM" Building=Duplex
 ok · erp.process
@@ -332,7 +332,7 @@ Open the project? y/N → cd project
 not done: cd project
 ```
 
-Jumlah yang diposting, 1054482.22784, mempertahankan aturan baris milik pesanan (harga kali kuantitas, tidak dibulatkan), sedangkan `cost` membulatkan setiap kelompok ke satuan utuh (1054482): angka yang sama sampai satuan, bukan sampai sen. Kata `post` melakukan hal yang sama tanpa `cost` sebelumnya dan bertanya `run it? y/N` terlebih dahulu; memposting bangunan yang sudah ada di pesanannya tidak mengubah apa pun. Dari proyek baru, `run "Generate PO from Project"` adalah sisi pembelian dan menjawab seperti proyek Hospital di atas: produk yang dibuat oleh posting tidak punya harga pemasok. Langkah-langkah itu, dengan keluarannya, ada di [referensi](FastScriptReference.md).
+Jumlah yang diposting, 1054482.22784, adalah aturan baris milik pesanan (harga kali kuantitas, tidak dibulatkan). `cost` menghitung dengan baris yang sama dan menampilkan angkanya sampai sen mata uang pesanan (1054482.23), jadi yang Anda lihat sebelum `post` adalah isi pesanan. Kata `post` melakukan hal yang sama tanpa `cost` sebelumnya dan bertanya `run it? y/N` terlebih dahulu; memposting bangunan yang sudah ada di pesanannya tidak mengubah apa pun. Dari proyek baru, `run "Generate PO from Project"` adalah sisi pembelian dan menjawab seperti proyek Hospital di atas: produk yang dibuat oleh posting tidak punya harga pemasok. Langkah-langkah itu, dengan keluarannya, ada di [referensi](FastScriptReference.md).
 
 ## Semua kata
 

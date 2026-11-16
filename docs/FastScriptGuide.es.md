@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 21c77ee61a2b9adf
+source_sha: 07df04bc24c68a3f
 lang: es-419
 ---
 
@@ -196,14 +196,14 @@ $ rm -f /tmp/fast_guide_chain.ops; printf 'cd Duplex\ncost discipline\n' | BIM_O
 building Duplex
 → viewer.cost building=Duplex by=discipline
 ok · viewer.cost
-1190 elements · 1054482 total (71 with no rate); 3 with no size, not priced
+1190 elements · 1054482.23 total (71 with no rate); 3 with no size, not priced
 discipline  elements  cost
-ARC         267       532432
-ELEC        81        283500
-MEP         809       153825
-PLB         14        49000
-STR         19        35725
-ls lists the 32 priced rows
+ARC         267       532431.28
+ELEC        81        283500.00
+MEP         809       153825.40
+PLB         14        49000.00
+STR         19        35725.55
+ls lists the 50 priced rows
 Ready to post to ERP Project Order? y/N → erp.process name="Fold from BIM" Building=Duplex
 ```
 
@@ -315,14 +315,14 @@ $ printf 'cd Duplex\ncost discipline\ny\nn\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide
 building Duplex
 → viewer.cost building=Duplex by=discipline
 ok · viewer.cost
-1190 elements · 1054482 total (71 with no rate); 3 with no size, not priced
+1190 elements · 1054482.23 total (71 with no rate); 3 with no size, not priced
 discipline  elements  cost
-ARC         267       532432
-ELEC        81        283500
-MEP         809       153825
-PLB         14        49000
-STR         19        35725
-ls lists the 32 priced rows
+ARC         267       532431.28
+ELEC        81        283500.00
+MEP         809       153825.40
+PLB         14        49000.00
+STR         19        35725.55
+ls lists the 50 priced rows
 Ready to post to ERP Project Order? y/N → erp.process name="Fold from BIM" Building=Duplex
 → erp.process name="Fold from BIM" Building=Duplex
 ok · erp.process
@@ -332,7 +332,7 @@ Open the project? y/N → cd project
 not done: cd project
 ```
 
-El importe contabilizado, 1054482.22784, conserva la regla de línea propia del pedido (precio por cantidad, sin redondear), mientras que `cost` redondea cada grupo a una unidad entera (1054482): la misma cifra a la unidad, no al céntimo. La palabra `post` hace lo mismo sin el `cost` previo y pregunta primero `run it? y/N`; contabilizar un edificio que ya está en su pedido no cambia nada. Desde el proyecto nuevo, `run "Generate PO from Project"` es el lado de compras y responde como el proyecto Hospital de arriba: los productos que creó la contabilización no llevan precio de proveedor. Esos pasos, con su salida, están en [la referencia](FastScriptReference.md).
+El importe contabilizado, 1054482.22784, es la regla de línea propia del pedido (precio por cantidad, sin redondear). `cost` calcula con las mismas líneas y muestra la cifra al céntimo de la moneda del pedido (1054482.23), así que lo que ve antes de `post` es lo que contiene el pedido. La palabra `post` hace lo mismo sin el `cost` previo y pregunta primero `run it? y/N`; contabilizar un edificio que ya está en su pedido no cambia nada. Desde el proyecto nuevo, `run "Generate PO from Project"` es el lado de compras y responde como el proyecto Hospital de arriba: los productos que creó la contabilización no llevan precio de proveedor. Esos pasos, con su salida, están en [la referencia](FastScriptReference.md).
 
 ## Todas las palabras
 

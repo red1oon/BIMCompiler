@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 21c77ee61a2b9adf
+source_sha: 07df04bc24c68a3f
 lang: de
 ---
 
@@ -196,14 +196,14 @@ $ rm -f /tmp/fast_guide_chain.ops; printf 'cd Duplex\ncost discipline\n' | BIM_O
 building Duplex
 → viewer.cost building=Duplex by=discipline
 ok · viewer.cost
-1190 elements · 1054482 total (71 with no rate); 3 with no size, not priced
+1190 elements · 1054482.23 total (71 with no rate); 3 with no size, not priced
 discipline  elements  cost
-ARC         267       532432
-ELEC        81        283500
-MEP         809       153825
-PLB         14        49000
-STR         19        35725
-ls lists the 32 priced rows
+ARC         267       532431.28
+ELEC        81        283500.00
+MEP         809       153825.40
+PLB         14        49000.00
+STR         19        35725.55
+ls lists the 50 priced rows
 Ready to post to ERP Project Order? y/N → erp.process name="Fold from BIM" Building=Duplex
 ```
 
@@ -315,14 +315,14 @@ $ printf 'cd Duplex\ncost discipline\ny\nn\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide
 building Duplex
 → viewer.cost building=Duplex by=discipline
 ok · viewer.cost
-1190 elements · 1054482 total (71 with no rate); 3 with no size, not priced
+1190 elements · 1054482.23 total (71 with no rate); 3 with no size, not priced
 discipline  elements  cost
-ARC         267       532432
-ELEC        81        283500
-MEP         809       153825
-PLB         14        49000
-STR         19        35725
-ls lists the 32 priced rows
+ARC         267       532431.28
+ELEC        81        283500.00
+MEP         809       153825.40
+PLB         14        49000.00
+STR         19        35725.55
+ls lists the 50 priced rows
 Ready to post to ERP Project Order? y/N → erp.process name="Fold from BIM" Building=Duplex
 → erp.process name="Fold from BIM" Building=Duplex
 ok · erp.process
@@ -332,7 +332,7 @@ Open the project? y/N → cd project
 not done: cd project
 ```
 
-Der gebuchte Betrag, 1054482.22784, behält die eigene Zeilenregel des Auftrags (Preis mal Menge, ungerundet), während `cost` jede Gruppe auf eine ganze Einheit rundet (1054482): dieselbe Zahl auf die Einheit, nicht auf den Cent. Das Wort `post` tut dasselbe ohne das `cost` davor und fragt zuerst `run it? y/N`; ein Gebäude zu buchen, das schon in seinem Auftrag ist, ändert nichts. Vom neuen Projekt aus ist `run "Generate PO from Project"` die Einkaufsseite und antwortet wie das Hospital-Projekt oben: Die Produkte, die das Buchen angelegt hat, tragen keinen Lieferantenpreis. Diese Schritte mit ihrer Ausgabe stehen in [der Referenz](FastScriptReference.md).
+Der gebuchte Betrag, 1054482.22784, ist die eigene Zeilenregel des Auftrags (Preis mal Menge, ungerundet). `cost` rechnet mit denselben Zeilen und zeigt die Zahl auf den Cent der Auftragswährung (1054482.23), sodass Sie vor `post` sehen, was der Auftrag enthält. Das Wort `post` tut dasselbe ohne das `cost` davor und fragt zuerst `run it? y/N`; ein Gebäude zu buchen, das schon in seinem Auftrag ist, ändert nichts. Vom neuen Projekt aus ist `run "Generate PO from Project"` die Einkaufsseite und antwortet wie das Hospital-Projekt oben: Die Produkte, die das Buchen angelegt hat, tragen keinen Lieferantenpreis. Diese Schritte mit ihrer Ausgabe stehen in [der Referenz](FastScriptReference.md).
 
 ## Alle Wörter
 

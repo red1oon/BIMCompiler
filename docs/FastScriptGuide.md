@@ -190,14 +190,14 @@ $ rm -f /tmp/fast_guide_chain.ops; printf 'cd Duplex\ncost discipline\n' | BIM_O
 building Duplex
 → viewer.cost building=Duplex by=discipline
 ok · viewer.cost
-1190 elements · 1054482 total (71 with no rate); 3 with no size, not priced
+1190 elements · 1054482.23 total (71 with no rate); 3 with no size, not priced
 discipline  elements  cost
-ARC         267       532432
-ELEC        81        283500
-MEP         809       153825
-PLB         14        49000
-STR         19        35725
-ls lists the 32 priced rows
+ARC         267       532431.28
+ELEC        81        283500.00
+MEP         809       153825.40
+PLB         14        49000.00
+STR         19        35725.55
+ls lists the 50 priced rows
 Ready to post to ERP Project Order? y/N → erp.process name="Fold from BIM" Building=Duplex
 ```
 
@@ -309,14 +309,14 @@ $ printf 'cd Duplex\ncost discipline\ny\nn\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide
 building Duplex
 → viewer.cost building=Duplex by=discipline
 ok · viewer.cost
-1190 elements · 1054482 total (71 with no rate); 3 with no size, not priced
+1190 elements · 1054482.23 total (71 with no rate); 3 with no size, not priced
 discipline  elements  cost
-ARC         267       532432
-ELEC        81        283500
-MEP         809       153825
-PLB         14        49000
-STR         19        35725
-ls lists the 32 priced rows
+ARC         267       532431.28
+ELEC        81        283500.00
+MEP         809       153825.40
+PLB         14        49000.00
+STR         19        35725.55
+ls lists the 50 priced rows
 Ready to post to ERP Project Order? y/N → erp.process name="Fold from BIM" Building=Duplex
 → erp.process name="Fold from BIM" Building=Duplex
 ok · erp.process
@@ -326,7 +326,7 @@ Open the project? y/N → cd project
 not done: cd project
 ```
 
-The posted amount, 1054482.22784, keeps the order's own line rule (price times quantity, unrounded), while `cost` rounds each group to a whole unit (1054482): the same figure to the unit, not to the cent. The word `post` does the same without the `cost` before it and asks `run it? y/N` first; posting a building that is already in its order changes nothing. From the new project, `run "Generate PO from Project"` is the purchase side, and answers as the Hospital project did above: the products the post created carry no vendor price. Those steps, with their output, are in [the reference](FastScriptReference.md).
+The posted amount, 1054482.22784, is the order's own line rule (price times quantity, unrounded). `cost` prices on the same lines and shows the figure to the cent of the order's currency (1054482.23), so what you see before `post` is what the order holds. The word `post` does the same without the `cost` before it and asks `run it? y/N` first; posting a building that is already in its order changes nothing. From the new project, `run "Generate PO from Project"` is the purchase side, and answers as the Hospital project did above: the products the post created carry no vendor price. Those steps, with their output, are in [the reference](FastScriptReference.md).
 
 ## All the words
 
