@@ -2,7 +2,32 @@
 Scope: **SPEC and phase ledger** for ONE vocabulary the CLI and the guides both read: a keyed message catalog and a help catalog over the Application Dictionary, with a short/long level and a locale. Read the log after every run (exit code is not evidence). Spec first, witness with a falsifier next, code last; honour until this file is marked DONE.
 Background, measurements and prior art are in `prompts/DOCS_I18N.md` §4b-§4d (owner ideas of 2026-11-16: shared vocabulary for CLI and guides, a `Student` level = the long text, reuse the legacy element/message model, remove the copied Help). This file owns the BUILD; that file keeps the findings.
 
-## ▶ RESUME HERE (2026-11-16, end of session bim-compiler-75; the next "resume message" session starts here)
+## ▶▶ RESUME HERE FIRST (2026-11-16, end of session bim-compiler-41; the next "resume message" session starts here)
+**Owner, 2026-11-16 (verbatim, binding):** *"Agree. Update prompt to resume new session. We check (a) and agree your b and c."*
+**Next task: the BIM help panel (Viewer + Modeller), §14.** Spec before code; the design below is AGREED, the one open item is (a).
+1. **Check (a) FIRST, then report it to the owner before using it:** may buildingSMART's IFC class definitions (the IFC4 / IFC4.3 documentation text) be shown, translated and redistributed inside our pages?
+   - Read the actual licence or terms on buildingSMART's own site, save the copy into the session's prior folder, and cite the clause.
+   - If the terms are unclear, say "not usable yet". Never assume.
+2. **AGREED (b):** our own small element dictionary: a Description and a Help per IFC class / element kind, written once and owned by us.
+   - Translated through the Viewer's existing 18-locale AD_Message pipeline (`viewer/i18n/`, `locale_loader.js`), never a second loader.
+   - Shaped like the ERP's AD rows, so the same `field_help.js` reads it.
+3. **AGREED (c):** what we already know per element, with no prose: its rule, its source (sheet / IFC / LOD), its cost line. Shown in the panel's "This element" part. Ready today from existing data.
+
+**The agreed design (owner "Agree" to the proposal in this session):**
+- **Where:** open it from the EXISTING `?` pill (Viewer `{id:'help', key:'F1'}`, `viewer/panels.js:1355`; Modeller `#m-help`), NOT the Find panel. An answer may OFFER a Find query as a link.
+- **Parts, as the ERP panel:**
+  - **This element:** on select / hover, from (b) + (c).
+  - **How To:** for the current tool / pill, from `common/door/verbs.json` descriptions + examples and the BIM guide sections.
+  - **The question box:** the existing command palette (`showCommandPalette`, `viewer/scene.js:2907`) becomes it. One search, not two.
+- **One shared module:** move `erp/field_help.js` and `erp/help_search.js` to `common/help/`, with one adapter per app (ERP: its dictionary; Viewer: pills + verbs + classes; Modeller: tools + verbs + rules).
+  - The Modeller's two hard-coded overlays (`#m-help-panel` and `#m-guide-panel`) merge into it.
+  - `ask` at the CLI covers every app.
+- **Layout:** a right dock on desktop; a full-height sheet on mobile (the Viewer's right side is tight; the Modeller has no mobile layout).
+- **Facts already surveyed (do not redo):** see §14 below.
+
+---
+
+## ▶ RESUME HERE (2026-11-16, end of session bim-compiler-75; DONE since: P1b, §10-§13; kept for its decisions D1-D4)
 **Owner, 2026-11-16 (verbatim):** *"New session 'resume message' will continue organise Help and tooltip content, but see if it can be in a help-pack_(language).zip loaded during login choice to lazy load its large content. Then we can pack lots of useful content. Note that in legacy the Help is on the right panel thus in twin it shold be so too. Look at improving the search function in it perhaps combination of words or a sentence ie 'How do i close a Sales Order?' it should give more useful info, auto hyperlink to jump more easily."*
 **DECIDED by the owner, 2026-11-16 (verbatim, binding):** *"Yes i agree not to fold into first loaded ad_seed.db but a separate upon login or lazy and cached or on machine. For app languges we already set a number as in BIM chooser, let's stick to that, but for initial pilot poc, accept as u said of the 4 already with guide and ERP screen. We do it in kernel ERP twin not legacy to avoid confusion when we need to compare with original. Extra how-to will be your lane's big task as HELP is major boost."*
 - **D1 Storage:** §9 is accepted. Help content is NOT in `ad_seed.db`. It is a separate store, loaded at login or lazily, then cached or kept on the machine.
@@ -671,7 +696,48 @@ These are legacy's own words in that language; the twin shows them unchanged.
   - fail identically on main `14ade155` (local setup): W-MCP-DOWNLOAD (puppeteer), W-RED1-REPORT (`sql.js`).
 - **Defect found and fixed:** a JSON rewrite of `words.json` reflowed the CLI session's hand-aligned file (+572 / −71). It was reverted, and the entry inserted as text in the file's own style (+3 / −1).
 
+## 14. The BIM help panel (Viewer + Modeller): SPEC STUB, owner-agreed design, (a) to check (2026-11-16)
+**Issue it removes:** the ERP now has field help, How To, a question box and languages (§7, §10-§13). The BIM apps have only:
+- a pill palette (Viewer);
+- an English-only toolbar sheet and a hard-coded English guide overlay (Modeller);
+- no description of any element class at all.
+
+**Surveyed facts (read-only survey of bim-ootb origin/main, 2026-11-16; cite, do not re-derive):**
+- **Viewer:**
+  - Help pill `{id:'help', key:'F1'}` (`viewer/panels.js:1355`) opens the command palette (`viewer/scene.js:2907`), a search over pill actions (`_mainPillActions` about `scene.js:2985`) with a guide link (`scene.js:2952`). F1 and `?` both open it (`scene.js:3635`, `:3734`).
+  - Pill bullets `children:[{name}]` (`panels.js:1340-1365`), translated as `pillc_<id>_<n>` (`panels.js:1580-1583`).
+  - Tooltips `data-trl-title` (`viewer.html:576-586`, keys `ui_tt_*`).
+  - `#info-panel` shows the selection: class, name, GUID, storey, discipline, material (`viewer.html:515-535`, filled by `nf_panel_search.js:680`). It sits at bottom 50px / right 70px; on mobile it is 120-180 px wide (`viewer.html:157-166`, `:408`, `:461`).
+  - `viewer/hover_name.js`: an opt-in hover label (`'` key).
+  - 18 locales (`viewer/locale_loader.js` `AVAILABLE_LOCALES`), labels in `viewer/i18n/<code>.json`, built from AD_Message base + `AD_Message_Trl_<lang>.xml`; `window._trl`.
+- **Modeller:**
+  - `#m-help` / `#m-help-panel` (`modeller.html:74-87`, `:6571-6617`): the toolbar registry + hard-coded `SHORTCUTS` (`:6572`).
+  - `#b-guide` / `#m-guide-panel` (`:181`, `:6365-6420`): about 11 hard-coded `SECTIONS`.
+  - `modeller/props_panel.js` `#pp-panel` shows the selection.
+  - Hover fires `dagevu:hover {fid}` (`modeller.html:1723-1731`); its only consumer is `edit_delta_ui.js:82`.
+  - The right side is crowded (`right:70px`: pp-panel, help, guide, hist). No mobile media queries.
+  - Translates by exact-string match through the Viewer's dictionary (`modeller.html:325-326`, `locale_loader.js:439+`), no `_trl()` calls.
+- **No help-grade element / class description data exists** in viewer/, modeller/, common/ or erp/ (`dagevu_catalog.json` has labels only).
+  - Real descriptions exist only in: `common/door/verbs.json` (title, description, input descriptions, examples), `vocab/words.json`, `modeller/element_defaults.json` labels and notes, and the pill bullets.
+- **Reuse:**
+  - `erp/field_help.js` (`window.FieldHelp`, no deps; `attach(el, f)` is generic, `attachIn` is ERP-crud markup) and `erp/help_search.js` (`makeIndex` / `indexFrom`, no DOM) are portable logic.
+  - The panel DOM, pack loading and card rendering live in `erp/idempiere.html` and would be extracted.
+  - A new JS file must be added to `viewer/sw.js` and `modeller/sw.js` shell lists.
+
+**Decisions:** the design in RESUME HERE FIRST (owner "Agree", 2026-11-16).
+- (b) our own element dictionary — AGREED;
+- (c) per-element provenance — AGREED;
+- (a) IFC documentation text — CHECK THE LICENCE FIRST and report.
+
+**To spec next (before code):**
+- the element dictionary's shape (rows keyed by IFC class, PredefinedType where it matters; Description, Help; source per row; written once);
+- its first content (the classes the shipped buildings actually hold, counted from their DBs);
+- the adapters;
+- the move to `common/help/` without changing the ERP's witnessed behaviour (W-FIELD-HELP 13/0, W-HELP-SHOWCASE 23/0, W-ERP-ASK 11/0 must stay green);
+- the witness: X of N pills with How To text; X of N element classes in the shipped buildings with a (b) entry; (c) shown for a sample of selected elements; the question set per app; the mobile sheet.
+
 ## STATUS
+2026-11-16 (session bim-compiler-41): P1b, §10-§13 built and merged; films EN v4 / ZH v5 / DE v1 made (not pushed); ERP User Guide help section LIVE. Next: §14 (BIM help panel), check (a) first.
 2026-11-16: P1 built and witnessed (5/0), merged as bim-ootb #3079. P2a built and witnessed (W-MSG-CATALOG 4/0), merged as bim-ootb #3082. P3a built and witnessed (W-HELP-STUDENT 5/0), merged as bim-ootb #3083. P3a-1 (help footer + opening tip, `red1 --fast`), bim-ootb #3084. P2b (W-MSG-DOOR 5/0) #3108. P1b (W-FIELD-HELP 13/0) #3126. Depends on `prompts/DOCS_I18N.md`, `prompts/CLI_ERP_IVR.md` (CLI session owns), `prompts/ERP_UI_LOCALES.md`.
 
 ## Note from the code-design lane (2026-11-16): `msg_keys.scan` also reads calls inside comments
