@@ -841,6 +841,59 @@ UI words (ours, translated like any label): the heading for (b), the heading "IF
   - (iii) (b) in the 13 non-pilot languages: on the owner's word.
 - **Next in the agreed order:** step 2, How To in the `?` panel.
 
+## 14.2 SPEC + RESULT: type classes and the other 10 languages (owner 2026-11-17: *"Your advice on all 3."* then *"proceed"*)
+**Owner answers on the three §14.1 open items:**
+- (i) The ISO 6707-1 note in the German IfcWall text: KEEP, verbatim. No change.
+- (ii) Type classes: borrow the occurrence class's bSDD text, and SAY SO on screen.
+- (iii) Our sentence in the other languages: translate now, machine, no human review (the guides rule).
+
+The written spec follows the agreement made in chat and comes before the merge; it records what was agreed.
+
+**(ii) Type classes.**
+- **Rule (cited, not guessed):** each type's own IFC 4.3 page says *"Occurrences of **IfcSensorType** are represented by instances of _IfcSensor_"*, and the same for `IfcFlowInstrumentType` → `IfcFlowInstrument` (`docs/schemas/domain/IfcBuildingControlsDomain/Entities/<Type>.md` in buildingSMART/IFC4.3.x-development, copies saved in `viewer/tools/ifc_class_help/`).
+- The mapping lives in `type_of.json`: type → occurrence class + cited sentence + saved file. The batch refuses to build if the sentence is missing from the saved page.
+- **Rows:** `ifcdef_<Type>` = the occurrence class's bSDD text, verbatim (`bsdd_ifc43_type_of_classes.json`). `ifcdef_<Type>_lang` = its language. `ifcdef_<Type>_of` = the occurrence class.
+- **Panel:** the heading is "IFC definition of {cls}" (new word `ui_cls_ifcdef_of`, 14 languages), and the bSDD link goes to the occurrence class.
+- **bSDD measured:** IfcSensor and IfcFlowInstrument are official in pt-BR only.
+- `IfcWallStandardCase` stays (b) only: it was removed from IFC 4.3 and bSDD has no row for it.
+
+**(iii) Ten more languages.** ms_MY es_ES th_TH ko_KR ar_SA pt_BR id_ID bn_BD bl_BD af_ZA, one Sonnet agent per language.
+- The agents read the English, looked up building words in each language's existing Viewer XML, and wrote JSON verified at 51/51 keys.
+- English synonym pairs such as "lift (elevator)" are not carried into translations.
+- **New tool `viewer/tools/trl_fill_batch.js`:** it fills `trl="N"` rows of EXISTING keys. `trl_add_batch.js` only adds new keys. The fill tool:
+  - is idempotent;
+  - REFUSES to overwrite an existing translation (edit the XML for that);
+  - keeps untouched rows byte-identical;
+  - adds a source line to the XML header.
+
+**Witness W-CLASS-HELP, extended:**
+- C1-C3 are type-aware.
+- **C6:** a type shows its cited occurrence class, named in the heading and the link.
+- **C7:** `ifccls_` rows are trl=Y for all shipped classes in every non-English XML, and in none of the en_* XMLs.
+- **C8:** a fill re-run fills 0, and an overwrite is REFUSED with every XML hash unchanged.
+- Red control: also a type card hiding its source class.
+
+**RESULT 2026-11-17 (bim-ootb `feat/class-help-types-langs`):**
+- **W-CLASS-HELP PASS:** contract 8/0 over 918 rows, red control caught; C4a-d, C6a, C7, C8 pass; C5 real Find pick de_DE + zh_CN.
+- **Coverage:**
+  - `§CLASS_HELP_COV`: (a) 50/51 (was 48); official: pt_BR 48, es 31, de 9, ja 9, zh 0, fr 0.
+  - `§CLASS_HELP_TRL`: our sentence 51/51 in all 15 non-English locales.
+- **W-VIEWER-I18N** (th_TH, pt_BR): fail=3, the same 3 that pre-exist on main (§14.1 RESULT). Format passes. Leaks 23/309 and 23/312.
+- **Pack sizes** (`§TRL_PACK_SIZE`, owner asked 2026-11-17):
+
+  | locale | raw | gzip |
+  |---|---|---|
+  | en_MY | 63.6 kB | 20.7 kB |
+  | de_DE | 68.6 kB | 23.2 kB |
+  | th_TH | 102 kB | 24.5 kB |
+  | bn_BD | 104 kB | 25.0 kB |
+
+  - Before §14.1 a pack was about 42-50 kB raw and 15-17 kB gzip.
+  - The site serves gzip (live de_DE content-length 23302).
+  - A pack is fetched once per language, then cached 7 days + by the SW.
+  - Negligible beside a building's MB of DBs. A lazy class-text file would need a second loader (ruled out).
+- LOCALE_VERSION 9→10, sw v1716→v1717.
+
 ## 15. NOT URGENT, to think about (owner 2026-11-16: *"You mean we can mis.<translated verb>? Note in prompt then we shall think about it not urgent."*)
 Two terminal ideas. Neither is built and nothing is decided.
 1. **Field help at the terminal.** The browser's per-field tooltip / Tool Tip panel has no terminal equivalent: today only `mis.describe` (a kind's fields) and `help <word>` exist.
