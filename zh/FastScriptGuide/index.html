@@ -3635,7 +3635,7 @@
 <div class="highlight"><pre><span></span><code>$ (sleep 4; printf &#39;exit\r&#39;) | RED1_LOG=/tmp/fast_guide_greet.log RED1_HISTORY=/tmp/fast_guide_greet.hist BIM_DOOR_JOURNAL=/tmp/fast_guide_greet.journal script -qec &#39;node common/door/red1.js&#39; /dev/null | tr -d &#39;\r&#39; | sed -e &#39;s/\x1b\[[0-9;?]*[a-zA-Z]//g&#39; -e &#39;s/ · [0-9a-f]\{8\}$//&#39;
 Welcome to red1, the scripting door into BIM and ERP, stored in SQLite.
 REMEMBER THE NAME.
-Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 75 verbs · 30 words
+Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 76 verbs · 30 words
 Type help for the list of commands (or bim, mis, erp for one group).
 Tip: type level student for fuller help on each word (red1 --fast opens without tips).
 
@@ -3736,7 +3736,7 @@ node<span class="w"> </span>common/door/red1.js
 <p>输入 <code>exit</code> 退出。若想在任何位置只输入 <code>red1</code>，请在该文件夹中运行一次 <code>npm link</code>。要检查它是否工作，请查看它的版本行：</p>
 <!-- run: red1_version -->
 <div class="highlight"><pre><span></span><code>$ node common/door/red1.js --version | sed -e &#39;s/^Copyright[^·]*· //&#39; -e &#39;s/ · [0-9a-f]\{8\}$//&#39;
-red1 1.0.0 · 75 verbs · 30 words
+red1 1.0.0 · 76 verbs · 30 words
 </code></pre></div>
 <p><strong>六文件下载</strong>用于只要门和 Modeller 动词、不需要检出的情况。新建一个空文件夹，安装 Modeller 所需的浏览器引擎，然后获取这六个文件：</p>
 <div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>fastscript<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>fastscript
@@ -3852,7 +3852,7 @@ number:
 ok · erp.actions
 Order 50000  status DR
 ├─ CO  → do complete 50000
-├─ PR  (no red1 word for it yet)
+├─ PR  → do prepare 50000
 └─ VO  → do void 50000
 → erp.complete kind=Order number=50000
 ok · erp.complete
@@ -4430,6 +4430,14 @@ object.count building=Duplex kind=Element -&gt; 1193 Element
 <td>一份 bim-ootb 检出</td>
 </tr>
 <tr>
+<td><code>erp.prepare</code></td>
+<td>准备一份单据</td>
+<td><code>kind</code>，<code>id</code>（可选）, <code>number</code>（可选）, <code>role</code>（可选）</td>
+<td>writes</td>
+<td>human, ai</td>
+<td>一份 bim-ootb 检出</td>
+</tr>
+<tr>
 <td><code>mis.describe</code></td>
 <td>描述一类 ERP 记录</td>
 <td><code>kind</code>，<code>role</code>（可选）</td>
@@ -4641,7 +4649,7 @@ object.count building=Duplex kind=Element -&gt; 1193 Element
 </table>
 <!-- /GEN:verbs -->
 
-<p><strong>目前的覆盖范围。</strong> 这份列表有意保持很小：65 个动词覆盖 Modeller 的轴网编辑、它的 walker 以及在各行之间保持打开的 Modeller、少量 Viewer 问题、进度、通用的对象读取、计数和写入、一次选择的成本、ERP 单据动词，以及 ERP 字典中任何已移植的流程。Viewer 有 64 个人可以按下的操作，门提供 6 个 Viewer 动词。ERP 有 1158 个单据和流程，门为单据的生命周期提供 10 个 ERP 动词，为任意表提供 15 个 MIS 动词，并保留 10 个旧名称，使以前的行仍能运行。所以这只是一个开始，不是完整的菜单。</p>
+<p><strong>目前的覆盖范围。</strong> 这份列表有意保持很小：66 个动词覆盖 Modeller 的轴网编辑、它的 walker 以及在各行之间保持打开的 Modeller、少量 Viewer 问题、进度、通用的对象读取、计数和写入、一次选择的成本、ERP 单据动词，以及 ERP 字典中任何已移植的流程。Viewer 有 64 个人可以按下的操作，门提供 6 个 Viewer 动词。ERP 有 1158 个单据和流程，门为单据的生命周期提供 11 个 ERP 动词，为任意表提供 15 个 MIS 动词，并保留 10 个旧名称，使以前的行仍能运行。所以这只是一个开始，不是完整的菜单。</p>
 <h2 id="_7">本页为何保持真实<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
 <p>本页和<a href="../FastScriptReference/">参考页</a>灰色代码块中的每条命令都已运行过，下面的输出就是该命令打印的内容。<code>bim-ootb</code> 仓库中的测试 <strong>W-FAST-SCRIPT-GUIDE</strong> 会从下载和检出再次运行它们，把本页的每个数字与运行结果核对，并检查动词表等于 <code>verbs.json</code>。如果这里的某个数字过时，该测试就会失败。</p>
 <p>相关：<a href="../ProposerGuide/">AI 提议者指南</a>（把 AI 连接到同一个入口，以及 AI 用这些检查做了什么），以及 <a href="../ModellerGuide/">Modeller 指南</a>。</p>

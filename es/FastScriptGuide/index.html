@@ -3635,7 +3635,7 @@
 <div class="highlight"><pre><span></span><code>$ (sleep 4; printf &#39;exit\r&#39;) | RED1_LOG=/tmp/fast_guide_greet.log RED1_HISTORY=/tmp/fast_guide_greet.hist BIM_DOOR_JOURNAL=/tmp/fast_guide_greet.journal script -qec &#39;node common/door/red1.js&#39; /dev/null | tr -d &#39;\r&#39; | sed -e &#39;s/\x1b\[[0-9;?]*[a-zA-Z]//g&#39; -e &#39;s/ · [0-9a-f]\{8\}$//&#39;
 Welcome to red1, the scripting door into BIM and ERP, stored in SQLite.
 REMEMBER THE NAME.
-Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 75 verbs · 30 words
+Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 76 verbs · 30 words
 Type help for the list of commands (or bim, mis, erp for one group).
 Tip: type level student for fuller help on each word (red1 --fast opens without tips).
 
@@ -3736,7 +3736,7 @@ node<span class="w"> </span>common/door/red1.js
 <p>Escriba <code>exit</code> para salir. Para escribir solo <code>red1</code> desde cualquier sitio, ejecute <code>npm link</code> una vez en esa carpeta. Para comprobar que funciona, pida su línea de versión:</p>
 <!-- run: red1_version -->
 <div class="highlight"><pre><span></span><code>$ node common/door/red1.js --version | sed -e &#39;s/^Copyright[^·]*· //&#39; -e &#39;s/ · [0-9a-f]\{8\}$//&#39;
-red1 1.0.0 · 75 verbs · 30 words
+red1 1.0.0 · 76 verbs · 30 words
 </code></pre></div>
 <p><strong>La descarga de seis archivos</strong> es para la puerta sola con los verbos del Modeller, sin copia completa. Cree una carpeta vacía, instale el motor de navegador que necesita el Modeller y descargue los seis archivos:</p>
 <div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>fastscript<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>fastscript
@@ -3852,7 +3852,7 @@ number:
 ok · erp.actions
 Order 50000  status DR
 ├─ CO  → do complete 50000
-├─ PR  (no red1 word for it yet)
+├─ PR  → do prepare 50000
 └─ VO  → do void 50000
 → erp.complete kind=Order number=50000
 ok · erp.complete
@@ -4430,6 +4430,14 @@ object.count building=Duplex kind=Element -&gt; 1193 Element
 <td>una copia completa de bim-ootb</td>
 </tr>
 <tr>
+<td><code>erp.prepare</code></td>
+<td>Preparar un documento</td>
+<td><code>kind</code>, <code>id</code> (opcional), <code>number</code> (opcional), <code>role</code> (opcional)</td>
+<td>writes</td>
+<td>human, ai</td>
+<td>una copia completa de bim-ootb</td>
+</tr>
+<tr>
 <td><code>mis.describe</code></td>
 <td>Describir un tipo de registro del ERP</td>
 <td><code>kind</code>, <code>role</code> (opcional)</td>
@@ -4641,7 +4649,7 @@ object.count building=Duplex kind=Element -&gt; 1193 Element
 </table>
 <!-- /GEN:verbs -->
 
-<p><strong>Cobertura actual.</strong> La lista es pequeña a propósito: 65 verbos cubren las ediciones de rejilla del Modeller, su walker y un Modeller mantenido abierto entre líneas, unas pocas preguntas del Viewer, el calendario, la lectura, el recuento y la escritura genéricos de objetos, el coste de una selección, los verbos de documentos ERP y cualquier proceso del diccionario ERP que tenga un port. El Viewer tiene 64 acciones que una persona puede pulsar, y la puerta ofrece 6 verbos del Viewer. El ERP tiene 1158 documentos y procesos, y la puerta ofrece 10 verbos ERP para la vida de un documento y 15 verbos MIS que funcionan en cualquier tabla, y conserva 10 nombres antiguos para que las líneas anteriores sigan funcionando. Así que esto es un comienzo, no el menú completo.</p>
+<p><strong>Cobertura actual.</strong> La lista es pequeña a propósito: 66 verbos cubren las ediciones de rejilla del Modeller, su walker y un Modeller mantenido abierto entre líneas, unas pocas preguntas del Viewer, el calendario, la lectura, el recuento y la escritura genéricos de objetos, el coste de una selección, los verbos de documentos ERP y cualquier proceso del diccionario ERP que tenga un port. El Viewer tiene 64 acciones que una persona puede pulsar, y la puerta ofrece 6 verbos del Viewer. El ERP tiene 1158 documentos y procesos, y la puerta ofrece 11 verbos ERP para la vida de un documento y 15 verbos MIS que funcionan en cualquier tabla, y conserva 10 nombres antiguos para que las líneas anteriores sigan funcionando. Así que esto es un comienzo, no el menú completo.</p>
 <h2 id="como-se-mantiene-fiel-esta-pagina">Cómo se mantiene fiel esta página<a class="headerlink" href="#como-se-mantiene-fiel-esta-pagina" title="Permanent link">&para;</a></h2>
 <p>Cada comando de un bloque gris de esta página y de la <a href="../FastScriptReference/">referencia</a> se ejecutó, y la salida debajo es lo que imprimió el comando. Una prueba, <strong>W-FAST-SCRIPT-GUIDE</strong> en el repositorio <code>bim-ootb</code>, los ejecuta de nuevo desde la descarga y la copia completa, comprueba cada número de esta página contra las ejecuciones y comprueba que la tabla de verbos es igual a <code>verbs.json</code>. Si un número de aquí caduca, esa prueba falla.</p>
 <p>Relacionado: la <a href="../ProposerGuide/">Guía del proponente de IA</a> (conecte una IA a la misma puerta, y qué hizo una IA con las verificaciones), y la <a href="../ModellerGuide/">guía del Modeller</a>.</p>

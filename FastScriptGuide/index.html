@@ -3635,7 +3635,7 @@
 <div class="highlight"><pre><span></span><code>$ (sleep 4; printf &#39;exit\r&#39;) | RED1_LOG=/tmp/fast_guide_greet.log RED1_HISTORY=/tmp/fast_guide_greet.hist BIM_DOOR_JOURNAL=/tmp/fast_guide_greet.journal script -qec &#39;node common/door/red1.js&#39; /dev/null | tr -d &#39;\r&#39; | sed -e &#39;s/\x1b\[[0-9;?]*[a-zA-Z]//g&#39; -e &#39;s/ · [0-9a-f]\{8\}$//&#39;
 Welcome to red1, the scripting door into BIM and ERP, stored in SQLite.
 REMEMBER THE NAME.
-Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 75 verbs · 30 words
+Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 76 verbs · 30 words
 Type help for the list of commands (or bim, mis, erp for one group).
 Tip: type level student for fuller help on each word (red1 --fast opens without tips).
 
@@ -3736,7 +3736,7 @@ node<span class="w"> </span>common/door/red1.js
 <p>Type <code>exit</code> to leave. To type just <code>red1</code> from anywhere, run <code>npm link</code> once in that folder. To check that it works, ask for its version line:</p>
 <!-- run: red1_version -->
 <div class="highlight"><pre><span></span><code>$ node common/door/red1.js --version | sed -e &#39;s/^Copyright[^·]*· //&#39; -e &#39;s/ · [0-9a-f]\{8\}$//&#39;
-red1 1.0.0 · 75 verbs · 30 words
+red1 1.0.0 · 76 verbs · 30 words
 </code></pre></div>
 <p><strong>The six-file download</strong> is for the door alone with the Modeller verbs, no checkout. Make an empty folder, install the browser engine the Modeller needs, and fetch the six files:</p>
 <div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>fastscript<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>fastscript
@@ -3852,7 +3852,7 @@ number:
 ok · erp.actions
 Order 50000  status DR
 ├─ CO  → do complete 50000
-├─ PR  (no red1 word for it yet)
+├─ PR  → do prepare 50000
 └─ VO  → do void 50000
 → erp.complete kind=Order number=50000
 ok · erp.complete
@@ -4430,6 +4430,14 @@ object.count building=Duplex kind=Element -&gt; 1193 Element
 <td>a bim-ootb checkout</td>
 </tr>
 <tr>
+<td><code>erp.prepare</code></td>
+<td>Prepare a document</td>
+<td><code>kind</code>, <code>id</code> (optional), <code>number</code> (optional), <code>role</code> (optional)</td>
+<td>writes</td>
+<td>human, ai</td>
+<td>a bim-ootb checkout</td>
+</tr>
+<tr>
 <td><code>mis.describe</code></td>
 <td>Describe a kind of ERP record</td>
 <td><code>kind</code>, <code>role</code> (optional)</td>
@@ -4641,7 +4649,7 @@ object.count building=Duplex kind=Element -&gt; 1193 Element
 </table>
 <!-- /GEN:verbs -->
 
-<p><strong>Coverage today.</strong> The list is small on purpose: 65 verbs cover the Modeller's grid edits, its walker and a Modeller kept open between lines, a few Viewer questions, the schedule, generic object reading, counting and writing, the cost of a selection, the ERP document verbs, and any process of the ERP dictionary that has a port. The Viewer has 64 actions a person can press, and the door offers 6 Viewer verbs. The ERP has 1158 documents and processes, and the door offers 10 ERP verbs for a document's life and 15 MIS verbs that work on any table, and keeps 10 old names so earlier lines still run. So this is a start, not the whole menu.</p>
+<p><strong>Coverage today.</strong> The list is small on purpose: 66 verbs cover the Modeller's grid edits, its walker and a Modeller kept open between lines, a few Viewer questions, the schedule, generic object reading, counting and writing, the cost of a selection, the ERP document verbs, and any process of the ERP dictionary that has a port. The Viewer has 64 actions a person can press, and the door offers 6 Viewer verbs. The ERP has 1158 documents and processes, and the door offers 11 ERP verbs for a document's life and 15 MIS verbs that work on any table, and keeps 10 old names so earlier lines still run. So this is a start, not the whole menu.</p>
 <h2 id="how-this-page-stays-true">How this page stays true<a class="headerlink" href="#how-this-page-stays-true" title="Permanent link">&para;</a></h2>
 <p>Every command in a grey block on this page and on the <a href="../FastScriptReference/">reference</a> was run, and the output under it is what the command printed. A test, <strong>W-FAST-SCRIPT-GUIDE</strong> in the <code>bim-ootb</code> repository, runs them again from the download and the checkout, checks every number on this page against the runs, and checks that the verb table equals <code>verbs.json</code>. If a number here goes stale, that test fails.</p>
 <p>Related: the <a href="../ProposerGuide/">AI Proposer Guide</a> (connect an AI to the same door, and what an AI did with the checks), and the <a href="../ModellerGuide/">Modeller guide</a>.</p>

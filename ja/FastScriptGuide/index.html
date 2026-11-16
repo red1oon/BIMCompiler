@@ -3635,7 +3635,7 @@
 <div class="highlight"><pre><span></span><code>$ (sleep 4; printf &#39;exit\r&#39;) | RED1_LOG=/tmp/fast_guide_greet.log RED1_HISTORY=/tmp/fast_guide_greet.hist BIM_DOOR_JOURNAL=/tmp/fast_guide_greet.journal script -qec &#39;node common/door/red1.js&#39; /dev/null | tr -d &#39;\r&#39; | sed -e &#39;s/\x1b\[[0-9;?]*[a-zA-Z]//g&#39; -e &#39;s/ · [0-9a-f]\{8\}$//&#39;
 Welcome to red1, the scripting door into BIM and ERP, stored in SQLite.
 REMEMBER THE NAME.
-Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 75 verbs · 30 words
+Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 76 verbs · 30 words
 Type help for the list of commands (or bim, mis, erp for one group).
 Tip: type level student for fuller help on each word (red1 --fast opens without tips).
 
@@ -3736,7 +3736,7 @@ node<span class="w"> </span>common/door/red1.js
 <p><code>exit</code> で終了します。どこからでも <code>red1</code> だけで起動したいときは、そのフォルダーで一度 <code>npm link</code> を実行します。動作確認には、バージョン行を表示させます：</p>
 <!-- run: red1_version -->
 <div class="highlight"><pre><span></span><code>$ node common/door/red1.js --version | sed -e &#39;s/^Copyright[^·]*· //&#39; -e &#39;s/ · [0-9a-f]\{8\}$//&#39;
-red1 1.0.0 · 75 verbs · 30 words
+red1 1.0.0 · 76 verbs · 30 words
 </code></pre></div>
 <p><strong>六ファイルのダウンロード</strong>は、チェックアウトなしで、ドアと Modeller 動詞だけを使う場合のものです。空のフォルダーを作り、Modeller が必要とするブラウザーエンジンをインストールして、六つのファイルを取得します：</p>
 <div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>fastscript<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>fastscript
@@ -3852,7 +3852,7 @@ number:
 ok · erp.actions
 Order 50000  status DR
 ├─ CO  → do complete 50000
-├─ PR  (no red1 word for it yet)
+├─ PR  → do prepare 50000
 └─ VO  → do void 50000
 → erp.complete kind=Order number=50000
 ok · erp.complete
@@ -4430,6 +4430,14 @@ object.count building=Duplex kind=Element -&gt; 1193 Element
 <td>bim-ootb のチェックアウト</td>
 </tr>
 <tr>
+<td><code>erp.prepare</code></td>
+<td>伝票を準備する</td>
+<td><code>kind</code>, <code>id</code> （任意）, <code>number</code> （任意）, <code>role</code> （任意）</td>
+<td>writes</td>
+<td>human, ai</td>
+<td>bim-ootb のチェックアウト</td>
+</tr>
+<tr>
 <td><code>mis.describe</code></td>
 <td>ERP レコードの種類を説明する</td>
 <td><code>kind</code>, <code>role</code> （任意）</td>
@@ -4641,7 +4649,7 @@ object.count building=Duplex kind=Element -&gt; 1193 Element
 </table>
 <!-- /GEN:verbs -->
 
-<p><strong>現在のカバー範囲。</strong> 一覧は意図的に小さくしてあります。65個の動詞が、Modeller のグリッド編集、そのウォーカー、行の間も開いたままの Modeller、いくつかの Viewer の質問、工程、汎用のオブジェクトの読み取り・カウント・書き込み、選択のコスト、ERP の伝票動詞、そしてポートのある ERP 辞書のあらゆるプロセスをカバーしています。Viewer には人が押せるアクションが64個あり、ドアは6個の Viewer 動詞を提供します。ERP には1158個の伝票とプロセスがあり、ドアは伝票の一生のための10個の ERP 動詞と、どのテーブルにも使える15個の MIS 動詞を提供し、以前の行が動き続けるよう10個の旧名を残しています。つまりこれは出発点であって、メニューのすべてではありません。</p>
+<p><strong>現在のカバー範囲。</strong> 一覧は意図的に小さくしてあります。66個の動詞が、Modeller のグリッド編集、そのウォーカー、行の間も開いたままの Modeller、いくつかの Viewer の質問、工程、汎用のオブジェクトの読み取り・カウント・書き込み、選択のコスト、ERP の伝票動詞、そしてポートのある ERP 辞書のあらゆるプロセスをカバーしています。Viewer には人が押せるアクションが64個あり、ドアは6個の Viewer 動詞を提供します。ERP には1158個の伝票とプロセスがあり、ドアは伝票の一生のための11個の ERP 動詞と、どのテーブルにも使える15個の MIS 動詞を提供し、以前の行が動き続けるよう10個の旧名を残しています。つまりこれは出発点であって、メニューのすべてではありません。</p>
 <h2 id="_7">このページが正しさを保つ仕組み<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
 <p>このページと<a href="../FastScriptReference/">リファレンス</a>の灰色のブロックにあるコマンドはすべて実行されており、その下の出力は、コマンドが実際に表示したものです。<code>bim-ootb</code> リポジトリのテスト <strong>W-FAST-SCRIPT-GUIDE</strong> が、ダウンロードとチェックアウトからそれらを再実行し、このページのすべての数字を実行結果と照合し、動詞の表が <code>verbs.json</code> と等しいことを確認します。ここの数字が古くなれば、そのテストは失敗します。</p>
 <p>関連：<a href="../ProposerGuide/">AI Proposer ガイド</a>（同じドアに AI をつなぐ方法と、AI がチェックで何をしたか）、そして<a href="../ModellerGuide/">Modeller ガイド</a>。</p>

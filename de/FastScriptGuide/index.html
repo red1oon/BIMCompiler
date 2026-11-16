@@ -3635,7 +3635,7 @@
 <div class="highlight"><pre><span></span><code>$ (sleep 4; printf &#39;exit\r&#39;) | RED1_LOG=/tmp/fast_guide_greet.log RED1_HISTORY=/tmp/fast_guide_greet.hist BIM_DOOR_JOURNAL=/tmp/fast_guide_greet.journal script -qec &#39;node common/door/red1.js&#39; /dev/null | tr -d &#39;\r&#39; | sed -e &#39;s/\x1b\[[0-9;?]*[a-zA-Z]//g&#39; -e &#39;s/ · [0-9a-f]\{8\}$//&#39;
 Welcome to red1, the scripting door into BIM and ERP, stored in SQLite.
 REMEMBER THE NAME.
-Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 75 verbs · 30 words
+Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 76 verbs · 30 words
 Type help for the list of commands (or bim, mis, erp for one group).
 Tip: type level student for fuller help on each word (red1 --fast opens without tips).
 
@@ -3736,7 +3736,7 @@ node<span class="w"> </span>common/door/red1.js
 <p>Tippen Sie <code>exit</code>, um zu beenden. Um nur <code>red1</code> von überall zu tippen, führen Sie einmal <code>npm link</code> in diesem Ordner aus. Um zu prüfen, ob es funktioniert, fragen Sie nach seiner Versionszeile:</p>
 <!-- run: red1_version -->
 <div class="highlight"><pre><span></span><code>$ node common/door/red1.js --version | sed -e &#39;s/^Copyright[^·]*· //&#39; -e &#39;s/ · [0-9a-f]\{8\}$//&#39;
-red1 1.0.0 · 75 verbs · 30 words
+red1 1.0.0 · 76 verbs · 30 words
 </code></pre></div>
 <p><strong>Der Sechs-Dateien-Download</strong> ist für die Tür allein mit den Modeller-Verben, ohne Checkout. Legen Sie einen leeren Ordner an, installieren Sie die Browser-Engine, die der Modeller braucht, und laden Sie die sechs Dateien:</p>
 <div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>fastscript<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>fastscript
@@ -3852,7 +3852,7 @@ number:
 ok · erp.actions
 Order 50000  status DR
 ├─ CO  → do complete 50000
-├─ PR  (no red1 word for it yet)
+├─ PR  → do prepare 50000
 └─ VO  → do void 50000
 → erp.complete kind=Order number=50000
 ok · erp.complete
@@ -4430,6 +4430,14 @@ object.count building=Duplex kind=Element -&gt; 1193 Element
 <td>ein bim-ootb-Checkout</td>
 </tr>
 <tr>
+<td><code>erp.prepare</code></td>
+<td>Einen Beleg vorbereiten</td>
+<td><code>kind</code>, <code>id</code> (optional), <code>number</code> (optional), <code>role</code> (optional)</td>
+<td>writes</td>
+<td>human, ai</td>
+<td>ein bim-ootb-Checkout</td>
+</tr>
+<tr>
 <td><code>mis.describe</code></td>
 <td>Eine Art von ERP-Datensatz beschreiben</td>
 <td><code>kind</code>, <code>role</code> (optional)</td>
@@ -4641,7 +4649,7 @@ object.count building=Duplex kind=Element -&gt; 1193 Element
 </table>
 <!-- /GEN:verbs -->
 
-<p><strong>Abdeckung heute.</strong> Die Liste ist mit Absicht klein: 65 Verben decken die Rasterbearbeitungen des Modellers, seinen Walker und einen zwischen den Zeilen offen gehaltenen Modeller ab, einige Viewer-Fragen, den Zeitplan, das generische Lesen, Zählen und Schreiben von Objekten, die Kosten einer Auswahl, die ERP-Belegverben und jeden Prozess des ERP-Wörterbuchs, der einen Port hat. Der Viewer hat 64 Aktionen, die eine Person drücken kann, und die Tür bietet 6 Viewer-Verben. Das ERP hat 1158 Belege und Prozesse, und die Tür bietet 10 ERP-Verben für das Leben eines Belegs und 15 MIS-Verben, die auf jeder Tabelle arbeiten, und behält 10 alte Namen, damit frühere Zeilen weiter laufen. Das ist also ein Anfang, nicht die ganze Speisekarte.</p>
+<p><strong>Abdeckung heute.</strong> Die Liste ist mit Absicht klein: 66 Verben decken die Rasterbearbeitungen des Modellers, seinen Walker und einen zwischen den Zeilen offen gehaltenen Modeller ab, einige Viewer-Fragen, den Zeitplan, das generische Lesen, Zählen und Schreiben von Objekten, die Kosten einer Auswahl, die ERP-Belegverben und jeden Prozess des ERP-Wörterbuchs, der einen Port hat. Der Viewer hat 64 Aktionen, die eine Person drücken kann, und die Tür bietet 6 Viewer-Verben. Das ERP hat 1158 Belege und Prozesse, und die Tür bietet 11 ERP-Verben für das Leben eines Belegs und 15 MIS-Verben, die auf jeder Tabelle arbeiten, und behält 10 alte Namen, damit frühere Zeilen weiter laufen. Das ist also ein Anfang, nicht die ganze Speisekarte.</p>
 <h2 id="wie-diese-seite-wahr-bleibt">Wie diese Seite wahr bleibt<a class="headerlink" href="#wie-diese-seite-wahr-bleibt" title="Permanent link">&para;</a></h2>
 <p>Jeder Befehl in einem grauen Block auf dieser Seite und in der <a href="../FastScriptReference/">Referenz</a> wurde ausgeführt, und die Ausgabe darunter ist das, was der Befehl ausgegeben hat. Ein Test, <strong>W-FAST-SCRIPT-GUIDE</strong> im <code>bim-ootb</code>-Repository, führt sie erneut aus dem Download und dem Checkout aus, prüft jede Zahl dieser Seite gegen die Läufe und prüft, dass die Verbtabelle <code>verbs.json</code> entspricht. Wenn eine Zahl hier veraltet, schlägt dieser Test fehl.</p>
 <p>Siehe auch: das <a href="../ProposerGuide/">Handbuch für KI-Vorschläge</a> (eine KI an dieselbe Tür anschließen und was eine KI mit den Prüfungen gemacht hat) und das <a href="../ModellerGuide/">Modeller-Handbuch</a>.</p>
