@@ -1086,7 +1086,15 @@ Two terminal ideas. Neither is built and nothing is decided.
 4. One exact BM25 with field weights.
 5. The example-first card shape, with a shape linter.
 6. Awesome-bar steps (open a document number; "new <window>").
-7. Prefixes, only on the owner's word.
+7. Prefixes. **OWNER AGREED 2026-11-17:** *"Agree with the leading char idea. Wonder if it is applicable to CLI too?"*
+   - **Shell facts (bim-ootb origin/main):**
+     - `?` already means help at the start of a red1 line (`common/door/red1.js:40`, `/^\s*(help|\?)/`), the same meaning as proposed;
+     - `#` has no meaning in red1, but is a bash comment in an unquoted `red1 '…'` one-liner;
+     - `/` already separates location segments (`erp/Order/…`, `building/kind`, `words_core.js:30-31`), so a leading `/` may read as a path;
+     - `@` is unused.
+   - **Rule proposed:** one character, one meaning, in the help panel, the ERP box and the shell, defined ONCE in the shared vocabulary.
+   - The shell line is the CLI session's: it decides `/` and `#` there. Sent to bim-compiler-ef 2026-11-17.
+   - Spec the box side (W-PREFIX, with falsifiers) when picked up.
 
 Every step gets a witness with a falsifier (e.g. did-you-mean: N misspellings derived from dictionary names, each must return its source word; a made-up word must return nothing).
 
