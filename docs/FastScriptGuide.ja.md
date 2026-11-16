@@ -44,7 +44,7 @@ lang: ja
 
 Node 18 以上が必要です。この手順は Node 18.19 で実行しました。
 
-**Modeller の動詞には四つのファイルが必要です。** 空のフォルダを作り、ブラウザエンジンをインストールして、ファイルをダウンロードします。
+**Modeller の動詞には六つのファイルが必要です。** 空のフォルダを作り、ブラウザエンジンをインストールして、ファイルをダウンロードします。
 
 ```bash
 mkdir fastscript && cd fastscript
@@ -54,11 +54,13 @@ curl -O https://red1oon.github.io/bim-ootb/modeller/tools/edit_cli.js
 curl -O https://red1oon.github.io/bim-ootb/modeller/tools/bim_mcp.js
 curl -O https://red1oon.github.io/bim-ootb/common/door/door.js
 curl -O https://red1oon.github.io/bim-ootb/common/door/verbs.json
+curl -O https://red1oon.github.io/bim-ootb/common/door/msg_core.js
+curl -O https://red1oon.github.io/bim-ootb/common/door/vocab/messages.json
 ```
 
-四つとも同じフォルダに置いてください。`door.js`は`verbs.json`から動詞の一覧を読み、`edit_cli.js`を実行し、これがライブの Modeller ページをウィンドウなしで開きます。ファイルが足りないと、ドアはどれが足りないかを知らせ、その`curl`の行を表示します。`bim_mcp.js`は AI をつなぐときだけ使います。このページのコマンドでは使いません。
+六つとも同じフォルダに置いてください。`door.js`は`verbs.json`から動詞の一覧を、`messages.json`から（`msg_core.js`を通して）メッセージを読み、`edit_cli.js`を実行し、これがライブの Modeller ページをウィンドウなしで開きます。ファイルが足りないと、ドアはどれが足りないかを知らせ、その`curl`の行を表示します。`bim_mcp.js`は AI をつなぐときだけ使います。このページのコマンドでは使いません。
 
-**Viewer、オブジェクト、スケジュールの動詞には、完全なチェックアウトが必要です。** これらは四つのファイルには含まれません。`bim-ootb`リポジトリ全体（`git clone https://github.com/red1oon/bim-ootb`）を取得し、`node door.js`の代わりに、その最上位のフォルダから`node common/door/door.js`を実行してください。[動詞の表](#the-verbs)には、各動詞がどちらを必要とするかが書かれています。Viewer 用の一ファイル版ダウンロードは、まだ作られていません。
+**Viewer、オブジェクト、スケジュールの動詞には、完全なチェックアウトが必要です。** これらは六つのファイルには含まれません。`bim-ootb`リポジトリ全体（`git clone https://github.com/red1oon/bim-ootb`）を取得し、`node door.js`の代わりに、その最上位のフォルダから`node common/door/door.js`を実行してください。[動詞の表](#the-verbs)には、各動詞がどちらを必要とするかが書かれています。Viewer 用の一ファイル版ダウンロードは、まだ作られていません。
 
 ## 最初のコマンド
 
@@ -1108,7 +1110,7 @@ summary: test DB idempiere_bimdoc: ALL-FOUND (8/8 kinds of row); no version give
 
 ## ふつうのダウンロードで Viewer に尋ねる
 
-二つの Viewer 動詞`viewer.counts`と`viewer.clashes`は、チェックアウトなしでも動きます。四つのファイルの隣に、さらに二つのファイルを置いてください。
+二つの Viewer 動詞`viewer.counts`と`viewer.clashes`は、チェックアウトなしでも動きます。六つのファイルの隣に、さらに二つのファイルを置いてください。
 
 ```text
 curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_verbs.js
@@ -1228,14 +1230,14 @@ object.count building=Duplex kind=Element -> 1193 Element
 <!-- GEN:verbs -->
 | 動詞 | できること | 入力 | 影響 | 使える人 | 必要なもの |
 |---|---|---|---|---|---|
-| `modeller.lines` | グリッドを読む | `building` | read | human, ai | 4ファイルのダウンロード |
-| `modeller.try_shift` | グリッド線のずらしを試す | `building`, `line`, `move` （メートル） | trial | human, ai | 4ファイルのダウンロード |
-| `viewer.counts` | 要素を数える | `building`, `by` （任意） | read | human, ai | 4ファイル + Viewer の 2ファイル |
-| `viewer.clashes` | 二つの分野の間の衝突を一覧する | `building`, `discA`, `discB`, `rows` （任意） | read | human, ai | 4ファイル + Viewer の 2ファイル |
+| `modeller.lines` | グリッドを読む | `building` | read | human, ai | 6ファイルのダウンロード |
+| `modeller.try_shift` | グリッド線のずらしを試す | `building`, `line`, `move` （メートル） | trial | human, ai | 6ファイルのダウンロード |
+| `viewer.counts` | 要素を数える | `building`, `by` （任意） | read | human, ai | 6ファイル + Viewer の 2ファイル |
+| `viewer.clashes` | 二つの分野の間の衝突を一覧する | `building`, `discA`, `discB`, `rows` （任意） | read | human, ai | 6ファイル + Viewer の 2ファイル |
 | `viewer.film_path` | フィルムパスの可視性 | `db`, `path` （任意） | read | human, ai | bim-ootb のチェックアウト |
 | `viewer.schedule_at` | ある日のスケジュールの状態 | `building`, `day` （日数） | read | human, ai | bim-ootb のチェックアウト |
 | `viewer.schedule_compare` | スケジュールエンジンを基準と比べる | `building`, `shift_hours` （時間） （任意） | read | human, ai | bim-ootb のチェックアウト |
-| `modeller.widen_bay` | ベイを目標の幅に広げる | `building`, `from`, `to`, `target` （メートル） | trial | human, ai | 4ファイルのダウンロード |
+| `modeller.widen_bay` | ベイを目標の幅に広げる | `building`, `from`, `to`, `target` （メートル） | trial | human, ai | 6ファイルのダウンロード |
 | `modeller.walk` | ウォーカーが何を配置するか | `building`, `discipline` | read | human, ai | bim-ootb のチェックアウト |
 | `object.describe` | オブジェクトの種類を説明する | `building`, `kind`, `uu` （任意） | read | human, ai | bim-ootb のチェックアウト |
 | `object.read` | オブジェクトを読む | `building`, `kind`, `uu` | read | human, ai | bim-ootb のチェックアウト |
@@ -1317,7 +1319,7 @@ $ grep -o '"notChecked":\[[^]]*\]' widen.json | tail -1
 
 | 見えるもの | すること |
 |---|---|
-| `edit_cli is not at …` | 四つのファイルのうちひとつが足りません。メッセージが`curl`の行を表示します |
+| `edit_cli is not at …` | 六つのファイルのうちひとつが足りません。メッセージが`curl`の行を表示します |
 | `puppeteer not found` | 同じフォルダで`npm install puppeteer@24`を実行します |
 | `unknown verb` | メッセージがすべての動詞を一覧します。[表](#the-verbs)と綴りを照らし合わせてください |
 | `missing input: …` | その動詞にはそのキーが必要です。表に入力が一覧されています |

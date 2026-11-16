@@ -44,7 +44,7 @@ Bacalah gambar dari kiri ke kanan.
 
 Anda memerlukan Node 18 atau yang lebih baru. Langkah-langkah ini dijalankan di Node 18.19.
 
-**Verb Modeller memerlukan empat berkas.** Buat folder kosong, pasang mesin browser, lalu unduh berkas-berkasnya:
+**Verb Modeller memerlukan enam berkas.** Buat folder kosong, pasang mesin browser, lalu unduh berkas-berkasnya:
 
 ```bash
 mkdir fastscript && cd fastscript
@@ -54,11 +54,13 @@ curl -O https://red1oon.github.io/bim-ootb/modeller/tools/edit_cli.js
 curl -O https://red1oon.github.io/bim-ootb/modeller/tools/bim_mcp.js
 curl -O https://red1oon.github.io/bim-ootb/common/door/door.js
 curl -O https://red1oon.github.io/bim-ootb/common/door/verbs.json
+curl -O https://red1oon.github.io/bim-ootb/common/door/msg_core.js
+curl -O https://red1oon.github.io/bim-ootb/common/door/vocab/messages.json
 ```
 
-Simpan keempatnya di folder yang sama. `door.js` membaca daftar verb dari `verbs.json` dan menjalankan `edit_cli.js`, yang membuka halaman Modeller yang aktif tanpa jendela. Jika ada berkas yang hilang, pintu menyebutkan berkas mana dan mencetak baris `curl`-nya. `bim_mcp.js` hanya untuk menghubungkan AI; perintah di halaman ini tidak memakainya.
+Simpan keenamnya di folder yang sama. `door.js` membaca daftar verb dari `verbs.json` dan pesan-pesannya dari `messages.json` (melalui `msg_core.js`), lalu menjalankan `edit_cli.js`, yang membuka halaman Modeller yang aktif tanpa jendela. Jika ada berkas yang hilang, pintu menyebutkan berkas mana dan mencetak baris `curl`-nya. `bim_mcp.js` hanya untuk menghubungkan AI; perintah di halaman ini tidak memakainya.
 
-**Verb Viewer, objek, dan jadwal memerlukan checkout lengkap.** Verb-verb itu tidak ada dalam keempat berkas tadi. Ambil seluruh repositori `bim-ootb` (`git clone https://github.com/red1oon/bim-ootb`) lalu jalankan `node common/door/door.js` dari folder paling atasnya, bukan `node door.js`. [Tabel verb](#the-verbs) menyebutkan, untuk setiap verb, mana dari keduanya yang diperlukan. Unduhan satu berkas untuk Viewer belum dibuat.
+**Verb Viewer, objek, dan jadwal memerlukan checkout lengkap.** Verb-verb itu tidak ada dalam keenam berkas tadi. Ambil seluruh repositori `bim-ootb` (`git clone https://github.com/red1oon/bim-ootb`) lalu jalankan `node common/door/door.js` dari folder paling atasnya, bukan `node door.js`. [Tabel verb](#the-verbs) menyebutkan, untuk setiap verb, mana dari keduanya yang diperlukan. Unduhan satu berkas untuk Viewer belum dibuat.
 
 ## Perintah pertama Anda
 
@@ -1108,7 +1110,7 @@ Beri juga `version=<x.y.z>` dan ia membandingkan 2Pack yang terpasang di plugin 
 
 ## Pertanyaan Viewer dari unduhan biasa
 
-Dua verb Viewer, `viewer.counts` dan `viewer.clashes`, juga berfungsi tanpa checkout. Letakkan dua berkas lagi di samping keempat berkas tadi:
+Dua verb Viewer, `viewer.counts` dan `viewer.clashes`, juga berfungsi tanpa checkout. Letakkan dua berkas lagi di samping keenam berkas tadi:
 
 ```text
 curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_verbs.js
@@ -1228,14 +1230,14 @@ Tabel ini **dihasilkan dari berkas kosakata** (`common/door/verbs.json`) dan seb
 <!-- GEN:verbs -->
 | Verb | Fungsinya | Input | Bahaya | Siapa yang boleh memakainya | Memerlukan |
 |---|---|---|---|---|---|
-| `modeller.lines` | Membaca grid | `building` | read | human, ai | unduhan 4 berkas |
-| `modeller.try_shift` | Mencoba menggeser sebuah garis grid | `building`, `line`, `move` (meter) | trial | human, ai | unduhan 4 berkas |
-| `viewer.counts` | Menghitung elemen | `building`, `by` (opsional) | read | human, ai | 4 berkas + 2 berkas Viewer |
-| `viewer.clashes` | Mendaftar clash antara dua disiplin | `building`, `discA`, `discB`, `rows` (opsional) | read | human, ai | 4 berkas + 2 berkas Viewer |
+| `modeller.lines` | Membaca grid | `building` | read | human, ai | unduhan 6 berkas |
+| `modeller.try_shift` | Mencoba menggeser sebuah garis grid | `building`, `line`, `move` (meter) | trial | human, ai | unduhan 6 berkas |
+| `viewer.counts` | Menghitung elemen | `building`, `by` (opsional) | read | human, ai | 6 berkas + 2 berkas Viewer |
+| `viewer.clashes` | Mendaftar clash antara dua disiplin | `building`, `discA`, `discB`, `rows` (opsional) | read | human, ai | 6 berkas + 2 berkas Viewer |
 | `viewer.film_path` | Visibilitas jalur film | `db`, `path` (opsional) | read | human, ai | checkout bim-ootb |
 | `viewer.schedule_at` | Keadaan jadwal pada suatu hari | `building`, `day` (nomor hari) | read | human, ai | checkout bim-ootb |
 | `viewer.schedule_compare` | Mesin jadwal terhadap acuannya | `building`, `shift_hours` (jam) (opsional) | read | human, ai | checkout bim-ootb |
-| `modeller.widen_bay` | Melebarkan sebuah bay ke lebar sasaran | `building`, `from`, `to`, `target` (meter) | trial | human, ai | unduhan 4 berkas |
+| `modeller.widen_bay` | Melebarkan sebuah bay ke lebar sasaran | `building`, `from`, `to`, `target` (meter) | trial | human, ai | unduhan 6 berkas |
 | `modeller.walk` | Apa yang akan ditempatkan walker | `building`, `discipline` | read | human, ai | checkout bim-ootb |
 | `object.describe` | Menjelaskan satu jenis objek | `building`, `kind`, `uu` (opsional) | read | human, ai | checkout bim-ootb |
 | `object.read` | Membaca sebuah objek | `building`, `kind`, `uu` | read | human, ai | checkout bim-ootb |
@@ -1317,7 +1319,7 @@ Kata-kata yang sama berlaku untuk jawaban apa pun: tumpang tindih pada awalnya a
 
 | Yang Anda lihat | Yang harus dilakukan |
 |---|---|
-| `edit_cli is not at …` | Salah satu dari keempat berkas hilang. Pesannya mencetak baris `curl` |
+| `edit_cli is not at …` | Salah satu dari keenam berkas hilang. Pesannya mencetak baris `curl` |
 | `puppeteer not found` | Jalankan `npm install puppeteer@24` di folder yang sama |
 | `unknown verb` | Pesannya mendaftar setiap verb. Periksa ejaannya terhadap [tabel](#the-verbs) |
 | `missing input: …` | Verb memerlukan kunci itu. Tabel mendaftar input-nya |

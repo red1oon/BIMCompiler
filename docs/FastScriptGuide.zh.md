@@ -44,7 +44,7 @@ lang: zh-CN
 
 你需要 Node 18 或更新的版本。这些步骤是在 Node 18.19 上运行的。
 
-**Modeller 动词需要四个文件**。新建一个空文件夹，安装浏览器引擎，然后下载这四个文件：
+**Modeller 动词需要六个文件**。新建一个空文件夹，安装浏览器引擎，然后下载这六个文件：
 
 ```bash
 mkdir fastscript && cd fastscript
@@ -54,11 +54,13 @@ curl -O https://red1oon.github.io/bim-ootb/modeller/tools/edit_cli.js
 curl -O https://red1oon.github.io/bim-ootb/modeller/tools/bim_mcp.js
 curl -O https://red1oon.github.io/bim-ootb/common/door/door.js
 curl -O https://red1oon.github.io/bim-ootb/common/door/verbs.json
+curl -O https://red1oon.github.io/bim-ootb/common/door/msg_core.js
+curl -O https://red1oon.github.io/bim-ootb/common/door/vocab/messages.json
 ```
 
-这四个文件要放在同一个文件夹里。`door.js` 从 `verbs.json` 读取动词清单，并运行 `edit_cli.js`，后者会在没有窗口的情况下打开在线的 Modeller 页面。如果缺少某个文件，入口会指出是哪一个，并打印出它的 `curl` 行。`bim_mcp.js` 只用于连接 AI；本页的命令用不到它。
+这六个文件要放在同一个文件夹里。`door.js` 从 `verbs.json` 读取动词清单，从 `messages.json`（通过 `msg_core.js`）读取消息，并运行 `edit_cli.js`，后者会在没有窗口的情况下打开在线的 Modeller 页面。如果缺少某个文件，入口会指出是哪一个，并打印出它的 `curl` 行。`bim_mcp.js` 只用于连接 AI；本页的命令用不到它。
 
-**Viewer、对象和进度计划相关的动词需要完整检出（checkout）**。它们不在这四个文件里。请取得整个 `bim-ootb` 仓库（`git clone https://github.com/red1oon/bim-ootb`），并在它的顶层文件夹里运行 `node common/door/door.js`，而不是 `node door.js`。[动词表](#the-verbs)会写明每个动词需要这两种方式中的哪一种。针对 Viewer 的单文件下载尚未做好。
+**Viewer、对象和进度计划相关的动词需要完整检出（checkout）**。它们不在这六个文件里。请取得整个 `bim-ootb` 仓库（`git clone https://github.com/red1oon/bim-ootb`），并在它的顶层文件夹里运行 `node common/door/door.js`，而不是 `node door.js`。[动词表](#the-verbs)会写明每个动词需要这两种方式中的哪一种。针对 Viewer 的单文件下载尚未做好。
 
 ## 你的第一条命令
 
@@ -1108,7 +1110,7 @@ summary: test DB idempiere_bimdoc: ALL-FOUND (8/8 kinds of row); no version give
 
 ## 来自普通下载的 Viewer 问题
 
-两个 Viewer 动词，`viewer.counts` 和 `viewer.clashes`，没有检出也能使用。在那四个文件旁边再放两个文件：
+两个 Viewer 动词，`viewer.counts` 和 `viewer.clashes`，没有检出也能使用。在那六个文件旁边再放两个文件：
 
 ```text
 curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_verbs.js
@@ -1228,14 +1230,14 @@ object.count building=Duplex kind=Element -> 1193 Element
 <!-- GEN:verbs -->
 | 动词 | 作用 | 输入 | 危害 | 谁可以使用 | 需要 |
 |---|---|---|---|---|---|
-| `modeller.lines` | 读取轴网 | `building` | read | human, ai | 4 个文件的下载 |
-| `modeller.try_shift` | 试平移一条轴线 | `building`，`line`，`move`（米） | trial | human, ai | 4 个文件的下载 |
-| `viewer.counts` | 统计构件数量 | `building`，`by`（可选） | read | human, ai | 4 个文件 + 2 个 Viewer 文件 |
-| `viewer.clashes` | 列出两个专业之间的碰撞 | `building`，`discA`，`discB`，`rows`（可选） | read | human, ai | 4 个文件 + 2 个 Viewer 文件 |
+| `modeller.lines` | 读取轴网 | `building` | read | human, ai | 6 个文件的下载 |
+| `modeller.try_shift` | 试平移一条轴线 | `building`，`line`，`move`（米） | trial | human, ai | 6 个文件的下载 |
+| `viewer.counts` | 统计构件数量 | `building`，`by`（可选） | read | human, ai | 6 个文件 + 2 个 Viewer 文件 |
+| `viewer.clashes` | 列出两个专业之间的碰撞 | `building`，`discA`，`discB`，`rows`（可选） | read | human, ai | 6 个文件 + 2 个 Viewer 文件 |
 | `viewer.film_path` | 影片路径可见性 | `db`，`path`（可选） | read | human, ai | 一份 bim-ootb 检出 |
 | `viewer.schedule_at` | 某一天的进度计划状态 | `building`，`day`（天数） | read | human, ai | 一份 bim-ootb 检出 |
 | `viewer.schedule_compare` | 进度计划引擎与其参照结果的对照 | `building`，`shift_hours`（小时）（可选） | read | human, ai | 一份 bim-ootb 检出 |
-| `modeller.widen_bay` | 把开间加宽到目标宽度 | `building`，`from`，`to`，`target`（米） | trial | human, ai | 4 个文件的下载 |
+| `modeller.widen_bay` | 把开间加宽到目标宽度 | `building`，`from`，`to`，`target`（米） | trial | human, ai | 6 个文件的下载 |
 | `modeller.walk` | 布置器会放置什么 | `building`，`discipline` | read | human, ai | 一份 bim-ootb 检出 |
 | `object.describe` | 描述一个对象类别 | `building`，`kind`，`uu`（可选） | read | human, ai | 一份 bim-ootb 检出 |
 | `object.read` | 读取一个对象 | `building`，`kind`，`uu` | read | human, ai | 一份 bim-ootb 检出 |
@@ -1317,7 +1319,7 @@ $ grep -o '"notChecked":\[[^]]*\]' widen.json | tail -1
 
 | 你看到什么 | 怎么办 |
 |---|---|
-| `edit_cli is not at …` | 四个文件中缺了一个。消息会打印出 `curl` 行 |
+| `edit_cli is not at …` | 六个文件中缺了一个。消息会打印出 `curl` 行 |
 | `puppeteer not found` | 在同一个文件夹里运行 `npm install puppeteer@24` |
 | `unknown verb` | 消息会列出每个动词。对照[表](#the-verbs)检查拼写 |
 | `missing input: …` | 动词需要那个键。表里列出了各项输入 |

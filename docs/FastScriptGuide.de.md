@@ -44,7 +44,7 @@ Lesen Sie das Bild von links nach rechts.
 
 Sie brauchen Node 18 oder neuer. Diese Schritte wurden mit Node 18.19 ausgeführt.
 
-**Die Modeller-Verben brauchen vier Dateien.** Legen Sie einen leeren Ordner an, installieren Sie die Browser-Engine und laden Sie die Dateien herunter:
+**Die Modeller-Verben brauchen sechs Dateien.** Legen Sie einen leeren Ordner an, installieren Sie die Browser-Engine und laden Sie die Dateien herunter:
 
 ```bash
 mkdir fastscript && cd fastscript
@@ -54,11 +54,13 @@ curl -O https://red1oon.github.io/bim-ootb/modeller/tools/edit_cli.js
 curl -O https://red1oon.github.io/bim-ootb/modeller/tools/bim_mcp.js
 curl -O https://red1oon.github.io/bim-ootb/common/door/door.js
 curl -O https://red1oon.github.io/bim-ootb/common/door/verbs.json
+curl -O https://red1oon.github.io/bim-ootb/common/door/msg_core.js
+curl -O https://red1oon.github.io/bim-ootb/common/door/vocab/messages.json
 ```
 
-Behalten Sie alle vier im selben Ordner. `door.js` liest die Verbliste aus `verbs.json` und startet `edit_cli.js`, das die laufende Modeller-Seite ohne Fenster öffnet. Fehlt eine Datei, sagt die Tür, welche, und gibt ihre `curl`-Zeile aus. `bim_mcp.js` dient nur dem Anschluss einer KI; die Befehle auf dieser Seite brauchen es nicht.
+Behalten Sie alle sechs im selben Ordner. `door.js` liest die Verbliste aus `verbs.json` und seine Meldungen aus `messages.json` (über `msg_core.js`) und startet `edit_cli.js`, das die laufende Modeller-Seite ohne Fenster öffnet. Fehlt eine Datei, sagt die Tür, welche, und gibt ihre `curl`-Zeile aus. `bim_mcp.js` dient nur dem Anschluss einer KI; die Befehle auf dieser Seite brauchen es nicht.
 
-**Die Verben für Viewer, Objekte und Zeitplan brauchen einen vollständigen Checkout.** Sie sind nicht in den vier Dateien enthalten. Holen Sie sich das ganze `bim-ootb`-Repository (`git clone https://github.com/red1oon/bim-ootb`) und führen Sie `node common/door/door.js` statt `node door.js` aus dessen oberstem Ordner aus. Die [Verbtabelle](#the-verbs) nennt zu jedem Verb, welche der beiden Möglichkeiten es braucht. Ein Download aus einer einzigen Datei für den Viewer ist noch nicht gebaut.
+**Die Verben für Viewer, Objekte und Zeitplan brauchen einen vollständigen Checkout.** Sie sind nicht in den sechs Dateien enthalten. Holen Sie sich das ganze `bim-ootb`-Repository (`git clone https://github.com/red1oon/bim-ootb`) und führen Sie `node common/door/door.js` statt `node door.js` aus dessen oberstem Ordner aus. Die [Verbtabelle](#the-verbs) nennt zu jedem Verb, welche der beiden Möglichkeiten es braucht. Ein Download aus einer einzigen Datei für den Viewer ist noch nicht gebaut.
 
 ## Ihr erster Befehl
 
@@ -1108,7 +1110,7 @@ Geben Sie zusätzlich `version=<x.y.z>` an, und es vergleicht das im Plugin inst
 
 ## Viewer-Fragen aus einem einfachen Download
 
-Zwei Viewer-Verben, `viewer.counts` und `viewer.clashes`, funktionieren auch ohne Checkout. Legen Sie zwei weitere Dateien neben die vier:
+Zwei Viewer-Verben, `viewer.counts` und `viewer.clashes`, funktionieren auch ohne Checkout. Legen Sie zwei weitere Dateien neben die sechs:
 
 ```text
 curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_verbs.js
@@ -1228,14 +1230,14 @@ Diese Tabelle wird **aus der Vokabeldatei erzeugt** (`common/door/verbs.json`), 
 <!-- GEN:verbs -->
 | Verb | Was es tut | Eingaben | Schadensklasse | Wer es nutzen darf | Braucht |
 |---|---|---|---|---|---|
-| `modeller.lines` | Das Raster lesen | `building` | read | human, ai | der Download aus 4 Dateien |
-| `modeller.try_shift` | Eine Rasterlinie probeweise verschieben | `building`, `line`, `move` (Meter) | trial | human, ai | der Download aus 4 Dateien |
-| `viewer.counts` | Elemente zählen | `building`, `by` (optional) | read | human, ai | die 4 Dateien + die 2 Viewer-Dateien |
-| `viewer.clashes` | Kollisionen zwischen zwei Disziplinen auflisten | `building`, `discA`, `discB`, `rows` (optional) | read | human, ai | die 4 Dateien + die 2 Viewer-Dateien |
+| `modeller.lines` | Das Raster lesen | `building` | read | human, ai | der Download aus 6 Dateien |
+| `modeller.try_shift` | Eine Rasterlinie probeweise verschieben | `building`, `line`, `move` (Meter) | trial | human, ai | der Download aus 6 Dateien |
+| `viewer.counts` | Elemente zählen | `building`, `by` (optional) | read | human, ai | die 6 Dateien + die 2 Viewer-Dateien |
+| `viewer.clashes` | Kollisionen zwischen zwei Disziplinen auflisten | `building`, `discA`, `discB`, `rows` (optional) | read | human, ai | die 6 Dateien + die 2 Viewer-Dateien |
 | `viewer.film_path` | Sichtbarkeit des Filmpfads | `db`, `path` (optional) | read | human, ai | ein bim-ootb-Checkout |
 | `viewer.schedule_at` | Zeitplanstand an einem Tag | `building`, `day` (Tagesnummer) | read | human, ai | ein bim-ootb-Checkout |
 | `viewer.schedule_compare` | Zeitplan-Engine gegen ihre Referenz | `building`, `shift_hours` (Stunden) (optional) | read | human, ai | ein bim-ootb-Checkout |
-| `modeller.widen_bay` | Ein Feld auf eine Zielbreite verbreitern | `building`, `from`, `to`, `target` (Meter) | trial | human, ai | der Download aus 4 Dateien |
+| `modeller.widen_bay` | Ein Feld auf eine Zielbreite verbreitern | `building`, `from`, `to`, `target` (Meter) | trial | human, ai | der Download aus 6 Dateien |
 | `modeller.walk` | Was der Walker platzieren würde | `building`, `discipline` | read | human, ai | ein bim-ootb-Checkout |
 | `object.describe` | Eine Objektart beschreiben | `building`, `kind`, `uu` (optional) | read | human, ai | ein bim-ootb-Checkout |
 | `object.read` | Ein Objekt lesen | `building`, `kind`, `uu` | read | human, ai | ein bim-ootb-Checkout |
@@ -1317,7 +1319,7 @@ Dieselben Worte gelten für jede Antwort: Überlappungen sind zunächst Bounding
 
 | Was Sie sehen | Was zu tun ist |
 |---|---|
-| `edit_cli is not at …` | Eine der vier Dateien fehlt. Die Meldung gibt die `curl`-Zeile aus |
+| `edit_cli is not at …` | Eine der sechs Dateien fehlt. Die Meldung gibt die `curl`-Zeile aus |
 | `puppeteer not found` | Führen Sie `npm install puppeteer@24` im selben Ordner aus |
 | `unknown verb` | Die Meldung listet jedes Verb auf. Prüfen Sie die Schreibweise anhand der [Tabelle](#the-verbs) |
 | `missing input: …` | Das Verb braucht diesen Schlüssel. Die Tabelle listet die Eingaben auf |

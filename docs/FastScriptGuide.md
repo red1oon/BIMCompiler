@@ -38,7 +38,7 @@ Read the picture from left to right.
 
 You need Node 18 or newer. These steps were run on Node 18.19.
 
-**The Modeller verbs need four files.** Make an empty folder, install the browser engine, and download them:
+**The Modeller verbs need six files.** Make an empty folder, install the browser engine, and download them:
 
 ```bash
 mkdir fastscript && cd fastscript
@@ -48,11 +48,13 @@ curl -O https://red1oon.github.io/bim-ootb/modeller/tools/edit_cli.js
 curl -O https://red1oon.github.io/bim-ootb/modeller/tools/bim_mcp.js
 curl -O https://red1oon.github.io/bim-ootb/common/door/door.js
 curl -O https://red1oon.github.io/bim-ootb/common/door/verbs.json
+curl -O https://red1oon.github.io/bim-ootb/common/door/msg_core.js
+curl -O https://red1oon.github.io/bim-ootb/common/door/vocab/messages.json
 ```
 
-Keep all four in the same folder. `door.js` reads the verb list from `verbs.json` and runs `edit_cli.js`, which opens the live Modeller page with no window. If a file is missing, the door says which one and prints its `curl` line. `bim_mcp.js` is only for connecting an AI; the commands on this page do not use it.
+Keep all six in the same folder. `door.js` reads the verb list from `verbs.json` and its messages from `messages.json` (through `msg_core.js`), and runs `edit_cli.js`, which opens the live Modeller page with no window. If a file is missing, the door says which one and prints its `curl` line. `bim_mcp.js` is only for connecting an AI; the commands on this page do not use it.
 
-**The Viewer, object and schedule verbs need a full checkout.** They are not in the four files. Get the whole `bim-ootb` repository (`git clone https://github.com/red1oon/bim-ootb`) and run `node common/door/door.js` from its top folder instead of `node door.js`. The [verb table](#the-verbs) says, for each verb, which of the two it needs. A one-file download for the Viewer is not built yet.
+**The Viewer, object and schedule verbs need a full checkout.** They are not in the six files. Get the whole `bim-ootb` repository (`git clone https://github.com/red1oon/bim-ootb`) and run `node common/door/door.js` from its top folder instead of `node door.js`. The [verb table](#the-verbs) says, for each verb, which of the two it needs. A one-file download for the Viewer is not built yet.
 
 ## Your first command
 
@@ -1102,7 +1104,7 @@ Give it `version=<x.y.z>` as well and it compares the 2Pack installed in the plu
 
 ## Viewer questions from a plain download
 
-Two Viewer verbs, `viewer.counts` and `viewer.clashes`, also work without a checkout. Put two more files beside the four:
+Two Viewer verbs, `viewer.counts` and `viewer.clashes`, also work without a checkout. Put two more files beside the six:
 
 ```text
 curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_verbs.js
@@ -1222,14 +1224,14 @@ This table is **generated from the vocabulary file** (`common/door/verbs.json`) 
 <!-- GEN:verbs -->
 | Verb | What it does | Inputs | Harm | Who may use it | Needs |
 |---|---|---|---|---|---|
-| `modeller.lines` | Read the grid | `building` | read | human, ai | the 4-file download |
-| `modeller.try_shift` | Try shifting a grid line | `building`, `line`, `move` (metres) | trial | human, ai | the 4-file download |
-| `viewer.counts` | Count elements | `building`, `by` (optional) | read | human, ai | the 4 files + the 2 Viewer files |
-| `viewer.clashes` | List clashes between two disciplines | `building`, `discA`, `discB`, `rows` (optional) | read | human, ai | the 4 files + the 2 Viewer files |
+| `modeller.lines` | Read the grid | `building` | read | human, ai | the 6-file download |
+| `modeller.try_shift` | Try shifting a grid line | `building`, `line`, `move` (metres) | trial | human, ai | the 6-file download |
+| `viewer.counts` | Count elements | `building`, `by` (optional) | read | human, ai | the 6 files + the 2 Viewer files |
+| `viewer.clashes` | List clashes between two disciplines | `building`, `discA`, `discB`, `rows` (optional) | read | human, ai | the 6 files + the 2 Viewer files |
 | `viewer.film_path` | Film path visibility | `db`, `path` (optional) | read | human, ai | a bim-ootb checkout |
 | `viewer.schedule_at` | Schedule state at a day | `building`, `day` (day number) | read | human, ai | a bim-ootb checkout |
 | `viewer.schedule_compare` | Schedule engine against its reference | `building`, `shift_hours` (hours) (optional) | read | human, ai | a bim-ootb checkout |
-| `modeller.widen_bay` | Widen a bay to a target width | `building`, `from`, `to`, `target` (metres) | trial | human, ai | the 4-file download |
+| `modeller.widen_bay` | Widen a bay to a target width | `building`, `from`, `to`, `target` (metres) | trial | human, ai | the 6-file download |
 | `modeller.walk` | What the walker would place | `building`, `discipline` | read | human, ai | a bim-ootb checkout |
 | `object.describe` | Describe an object kind | `building`, `kind`, `uu` (optional) | read | human, ai | a bim-ootb checkout |
 | `object.read` | Read an object | `building`, `kind`, `uu` | read | human, ai | a bim-ootb checkout |
@@ -1311,7 +1313,7 @@ The same words apply to any answer: overlaps are bounding boxes first, a check c
 
 | What you see | What to do |
 |---|---|
-| `edit_cli is not at …` | One of the four files is missing. The message prints the `curl` line |
+| `edit_cli is not at …` | One of the six files is missing. The message prints the `curl` line |
 | `puppeteer not found` | Run `npm install puppeteer@24` in the same folder |
 | `unknown verb` | The message lists every verb. Check the spelling against the [table](#the-verbs) |
 | `missing input: …` | The verb needs that key. The table lists the inputs |

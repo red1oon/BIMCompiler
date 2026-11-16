@@ -44,7 +44,7 @@ Lea la imagen de izquierda a derecha.
 
 Necesita Node 18 o superior. Estos pasos se ejecutaron en Node 18.19.
 
-**Los verbos del Modeller necesitan cuatro archivos.** Cree una carpeta vacía, instale el motor del navegador y descárguelos:
+**Los verbos del Modeller necesitan seis archivos.** Cree una carpeta vacía, instale el motor del navegador y descárguelos:
 
 ```bash
 mkdir fastscript && cd fastscript
@@ -54,11 +54,13 @@ curl -O https://red1oon.github.io/bim-ootb/modeller/tools/edit_cli.js
 curl -O https://red1oon.github.io/bim-ootb/modeller/tools/bim_mcp.js
 curl -O https://red1oon.github.io/bim-ootb/common/door/door.js
 curl -O https://red1oon.github.io/bim-ootb/common/door/verbs.json
+curl -O https://red1oon.github.io/bim-ootb/common/door/msg_core.js
+curl -O https://red1oon.github.io/bim-ootb/common/door/vocab/messages.json
 ```
 
-Mantenga los cuatro en la misma carpeta. `door.js` lee la lista de verbos de `verbs.json` y ejecuta `edit_cli.js`, que abre la página en vivo del Modeller sin ventana. Si falta un archivo, la puerta dice cuál y muestra su línea `curl`. `bim_mcp.js` sirve solo para conectar una IA; los comandos de esta página no lo usan.
+Mantenga los seis en la misma carpeta. `door.js` lee la lista de verbos de `verbs.json` y sus mensajes de `messages.json` (mediante `msg_core.js`), y ejecuta `edit_cli.js`, que abre la página en vivo del Modeller sin ventana. Si falta un archivo, la puerta dice cuál y muestra su línea `curl`. `bim_mcp.js` sirve solo para conectar una IA; los comandos de esta página no lo usan.
 
-**Los verbos del Viewer, de objetos y de cronograma necesitan una copia completa (checkout).** No están en los cuatro archivos. Obtenga todo el repositorio `bim-ootb` (`git clone https://github.com/red1oon/bim-ootb`) y ejecute `node common/door/door.js` desde su carpeta superior, en lugar de `node door.js`. La [tabla de verbos](#the-verbs) indica, para cada verbo, cuál de las dos opciones necesita. Todavía no existe una descarga de un solo archivo para el Viewer.
+**Los verbos del Viewer, de objetos y de cronograma necesitan una copia completa (checkout).** No están en los seis archivos. Obtenga todo el repositorio `bim-ootb` (`git clone https://github.com/red1oon/bim-ootb`) y ejecute `node common/door/door.js` desde su carpeta superior, en lugar de `node door.js`. La [tabla de verbos](#the-verbs) indica, para cada verbo, cuál de las dos opciones necesita. Todavía no existe una descarga de un solo archivo para el Viewer.
 
 ## Su primer comando
 
@@ -1108,7 +1110,7 @@ Dele también `version=<x.y.z>` y compara el 2Pack instalado en el plugin con el
 
 ## Preguntas al Viewer desde una descarga simple
 
-Dos verbos del Viewer, `viewer.counts` y `viewer.clashes`, también funcionan sin una copia completa. Ponga dos archivos más junto a los cuatro:
+Dos verbos del Viewer, `viewer.counts` y `viewer.clashes`, también funcionan sin una copia completa. Ponga dos archivos más junto a los seis:
 
 ```text
 curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_verbs.js
@@ -1228,14 +1230,14 @@ Esta tabla se **genera a partir del archivo de vocabulario** (`common/door/verbs
 <!-- GEN:verbs -->
 | Verbo | Qué hace | Entradas | Daño | Quién puede usarlo | Necesita |
 |---|---|---|---|---|---|
-| `modeller.lines` | Leer la cuadrícula | `building` | read | human, ai | la descarga de 4 archivos |
-| `modeller.try_shift` | Probar el desplazamiento de una línea de la cuadrícula | `building`, `line`, `move` (metros) | trial | human, ai | la descarga de 4 archivos |
-| `viewer.counts` | Contar elementos | `building`, `by` (opcional) | read | human, ai | los 4 archivos + los 2 archivos del Viewer |
-| `viewer.clashes` | Listar las colisiones entre dos disciplinas | `building`, `discA`, `discB`, `rows` (opcional) | read | human, ai | los 4 archivos + los 2 archivos del Viewer |
+| `modeller.lines` | Leer la cuadrícula | `building` | read | human, ai | la descarga de 6 archivos |
+| `modeller.try_shift` | Probar el desplazamiento de una línea de la cuadrícula | `building`, `line`, `move` (metros) | trial | human, ai | la descarga de 6 archivos |
+| `viewer.counts` | Contar elementos | `building`, `by` (opcional) | read | human, ai | los 6 archivos + los 2 archivos del Viewer |
+| `viewer.clashes` | Listar las colisiones entre dos disciplinas | `building`, `discA`, `discB`, `rows` (opcional) | read | human, ai | los 6 archivos + los 2 archivos del Viewer |
 | `viewer.film_path` | Visibilidad de la ruta de la película | `db`, `path` (opcional) | read | human, ai | una copia completa de bim-ootb |
 | `viewer.schedule_at` | Estado del cronograma en un día | `building`, `day` (número de día) | read | human, ai | una copia completa de bim-ootb |
 | `viewer.schedule_compare` | Motor de cronograma frente a su referencia | `building`, `shift_hours` (horas) (opcional) | read | human, ai | una copia completa de bim-ootb |
-| `modeller.widen_bay` | Ensanchar un vano hasta un ancho objetivo | `building`, `from`, `to`, `target` (metros) | trial | human, ai | la descarga de 4 archivos |
+| `modeller.widen_bay` | Ensanchar un vano hasta un ancho objetivo | `building`, `from`, `to`, `target` (metros) | trial | human, ai | la descarga de 6 archivos |
 | `modeller.walk` | Qué colocaría el walker | `building`, `discipline` | read | human, ai | una copia completa de bim-ootb |
 | `object.describe` | Describir un tipo de objeto | `building`, `kind`, `uu` (opcional) | read | human, ai | una copia completa de bim-ootb |
 | `object.read` | Leer un objeto | `building`, `kind`, `uu` | read | human, ai | una copia completa de bim-ootb |
@@ -1317,7 +1319,7 @@ Las mismas palabras se aplican a cualquier respuesta: las superposiciones son pr
 
 | Lo que ve | Qué hacer |
 |---|---|
-| `edit_cli is not at …` | Falta uno de los cuatro archivos. El mensaje imprime la línea `curl` |
+| `edit_cli is not at …` | Falta uno de los seis archivos. El mensaje imprime la línea `curl` |
 | `puppeteer not found` | Ejecute `npm install puppeteer@24` en la misma carpeta |
 | `unknown verb` | El mensaje lista todos los verbos. Compare la ortografía con la [tabla](#the-verbs) |
 | `missing input: …` | El verbo necesita esa clave. La tabla lista las entradas |
