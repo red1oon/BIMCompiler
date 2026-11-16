@@ -32,7 +32,8 @@ Background, measurements and prior art are in `prompts/DOCS_I18N.md` §4b-§4d (
      - the guide section anchor.
    - **Auto-hyperlink:** inside any help text, a term equal to a window, process or field name becomes a link (window → open, field → its help, guide term → its section). One linker, run when the pack is built, not at display time.
    - **Witness:** a question set of real phrasings (EN + each pack language) → expected top hit (X of N). A falsifier drops the phrase matcher and must FAIL.
-4. **Order of work:** finish P1b (W-FIELD-HELP F1-F5, the tooltip setter, the right panel). Then the pack format and loader. Then the search index and linker. The content itself comes last, and it is just data.
+4. **Research §8 (what leading apps do) is the input for the open question below; read it before speccing the content.**
+5. **Order of work:** finish P1b (W-FIELD-HELP F1-F5, the tooltip setter, the right panel). Then the pack format and loader. Then the search index and linker. The content itself comes last, and it is just data.
 **Owned elsewhere, don't redo:**
 - The locale/login rule: the CLI session.
 - The FastScriptGuide translations: the CLI session; the rule is in DOCS_I18N §6g.
@@ -306,6 +307,48 @@ clash: <the short help, unchanged>
   - INCONCLUSIVE when legacy is not running, never PASS.
   - Falsifier `fallback` (field → column inheritance in the window) FAILS F4, naming the count (about 94 Help fields).
 - **F5 process parameters.** Every parameter of every process the role can run has the tooltip `AD_Process_Para.Description` (X of N).
+
+## 8. Help as knowledge: what leading apps do, and what we take (research 2026-11-16, 9 web searches; owner: *"Exlore what powerful help function advanced apps have that we can learn from"*; the open question below is the one the owner wants this prompt to spec and tackle)
+**What the leaders do** (vendor docs unless marked; vendor-marketing claims excluded):
+| App | Help function | The idea worth taking |
+|---|---|---|
+| Microsoft Office "Tell me" / Search | type what you want to do, get the matching commands and run one from the list; also "Get Help on <phrase>" | a search box that **does**, not only finds |
+| macOS Help menu | search lists menu items AND help topics; hovering a menu item opens the menu and **points an arrow at the command** | **show me where** it is, on the real UI |
+| JetBrains Find Action / Search Everywhere | one box over actions, settings, files and symbols; **synonyms** ("toggle presentation mode" finds Enter Presentation Mode); `/` scopes to settings | synonyms + scopes, one box |
+| SAP Fiori Web Assistant (now SAP Companion) | **hotspots** mark elements that have help; context help + **guided tours**; content kept apart, tied to the app by metadata; SAP's own rule: help is not a crutch for a weak screen | help keyed to elements, stored apart from the app |
+| Business Central | each tooltip ends with **Learn more** → the Help pane on this page's topic; Ctrl+F1; **teaching tips** and tours (a tour = a sequence of tips); rule: a tip says the **outcome**, not the steps; falls back to a landing page when no mapping exists | tooltip → deeper help in one key; outcome-first wording |
+| Dynamics 365 custom help panes | a side pane per app, entity, form and **language**; balloons / coach marks point at elements; known weakness: they break when the page changes | per-language panes, and a lesson: anchor by a stable key, not by position |
+| Salesforce In-App Guidance | prompts and walkthroughs (up to 10 steps) per page, user and time; the Help menu takes your own links; **completion metrics** | measure whether help is used |
+| Oracle Guided Learning | **Smart Tips** on fields and buttons, process guides, beacons; views and drop-off reporting | per-field tips beside the process view |
+| Odoo | technical tooltip (field name, type, model, relation) in **debug mode** only | the developer view is separate from the person's |
+**What we already have that maps onto these, and where each can live without breaking the TWIN rule (look and feel = legacy):**
+- **Content store = legacy Context Help** (`AD_CtxHelp` per tab, process, form, info window, workflow, task or table; `AD_CtxHelpMsg` + `_Trl`). It is shown by legacy's own right panel (`HelpController.renderCtxHelp`). This is SAP's "content kept apart, tied by metadata" and Dynamics' "pane per form and language", and legacy already has it.
+- **Feedback loop = legacy `AD_CtxHelpSuggestion`** (a user proposes help text; an admin accepts it). That is the authoring answer Salesforce and Oracle sell as a separate product.
+- **Developer view apart:** Odoo's debug tooltip = legacy's "show technical info on help" (entity type in the panel) + our `§FIELD_HELP` log line. The person's tooltip stays the Description (§7).
+- **Stable anchors:** our hooks are keyed (`data-ad-table` / `data-ad-column`, `help_overlay.js` "attaches by KEY"), so Dynamics' "balloons break when the page changes" does not apply.
+- **Proven examples:** every worked example can be a door line replayed by a witness, as W-HELP-STUDENT S3 already does. Help that cannot go stale is something none of the leaders above claim.
+- **Show me / tours:** `help_overlay.js` (ReadMe / ShowMe: reveal, pulse, steps from a keyed store) is an opt-in overlay. When it is off, the twin is byte for byte the legacy screen.
+**Search ("How do I close a Sales Order?"):** the leaders combine (1) phrase → action matching with synonyms, (2) show-where, and (3) run-it. Ours, deterministic, no AI:
+- Match dictionary names (window "Sales Order"; document action "Close" = `CL`) plus a synonym table kept as data.
+- The answer card carries:
+  - open the window;
+  - **show where**: pulse the document-action button, via ShowMe;
+  - **when it is allowed**: preconditions from `ad_docfsm`;
+  - **do it from the CLI**: `erp.close kind=Order number=<n>`;
+  - **learn more**: the guide anchor.
+- **Open design point (the next session reads the legacy source first, then decides):** where the search box lives.
+  - Legacy has a global search (menus and documents) but no how-to search.
+  - A how-to box in the twin's chrome would differ from legacy. Answers shown as Context Help content in the right panel would not.
+**THE OPEN QUESTION this prompt is to spec and tackle (owner): who writes the extra help content, and in which languages first.** Facts for the decision:
+- **Writable with no author (extract, never invent):**
+  - (a) legacy's own text, plus the published iDempiere language packs for `AD_*_Trl` (the seed has none today; the legacy DB holds 21,432 field translations for `es_CO`);
+  - (b) derived tips from dictionary facts (P1: 997 fields);
+  - (c) worked examples from witness-replayed door lines;
+  - (d) links to the existing guide sections (7 languages live).
+- **Needs a person:** outcome-first "what is this window for" texts, and how-to answers that no table holds. Legacy's own channel for that is `AD_CtxHelpSuggestion` → accepted → `AD_CtxHelpMsg`.
+- **Languages already paid for:** the guides (en, id, zh, fr, ja, es-419, de) and the ERP UI packs (en, fr, es_ES, de, ar, zh_CN, ja, ms_MY, th). The overlap is fr, de, ja, zh (+ es variants).
+- The next session writes a short spec with options and the owner picks. It does not decide either question itself.
+Sources: [SAP Web Assistant](https://www.sap.com/design-system/fiori-design-web/v1-96/foundations/writing-and-wording/web-assistant) · [Office Tell Me](https://support.microsoft.com/en-au/office/d6b60e8f-0530-43bf-b688-e99d36cf5663) · [macOS Help menu](https://support.apple.com/en-asia/guide/mac-help/hlpvw003/10.15/mac) · [JetBrains Search Everywhere](https://jetbrains.com/help/idea/searching-everywhere.html) · [Business Central user assistance](https://learn.microsoft.com/id-id/dynamics365/business-central/dev-itpro/user-assistance) · [BC teaching tips](https://learn.microsoft.com/en-ca/dynamics365/business-central/dev-itpro/administration/onboarding-teaching-tips-tours) · [Dynamics 365 guided help](https://learn.microsoft.com/en-us/powerapps/maker/data-platform/create-custom-help-pages) · [Salesforce In-App Guidance](https://trailhead.salesforce.com/content/learn/modules/user-engagement/create-in-app-prompts) · [Oracle Guided Learning](https://docs.oracle.com/en/education/customer-success/guided-learning/user-guide/introduction-overview-oracle-guided-learning.html) · [Odoo debug tooltip (3rd party)](https://deploymonkey.com/blog/odoo-debug-developer-mode-guide)
 
 ## STATUS
 2026-11-16: P1 built and witnessed (5/0), merged as bim-ootb #3079. P2a built and witnessed (W-MSG-CATALOG 4/0), merged as bim-ootb #3082. P3a built and witnessed (W-HELP-STUDENT 5/0), merged as bim-ootb #3083. P3a-1 (help footer + opening tip, `red1 --fast`), bim-ootb #3084. Depends on `prompts/DOCS_I18N.md`, `prompts/CLI_ERP_IVR.md` (CLI session owns), `prompts/ERP_UI_LOCALES.md`.
