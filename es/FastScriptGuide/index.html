@@ -3789,14 +3789,14 @@ ls lists the 393 rows
 building Duplex
 → viewer.cost building=Duplex by=discipline
 ok · viewer.cost
-1190 elements · 1054482 total (71 with no rate); 3 with no size, not priced
+1190 elements · 1054482.23 total (71 with no rate); 3 with no size, not priced
 discipline  elements  cost
-ARC         267       532432
-ELEC        81        283500
-MEP         809       153825
-PLB         14        49000
-STR         19        35725
-ls lists the 32 priced rows
+ARC         267       532431.28
+ELEC        81        283500.00
+MEP         809       153825.40
+PLB         14        49000.00
+STR         19        35725.55
+ls lists the 50 priced rows
 Ready to post to ERP Project Order? y/N → erp.process name=&quot;Fold from BIM&quot; Building=Duplex
 </code></pre></div>
 <h3 id="mis-registros-tablas-archivos">mis: registros, tablas, archivos<a class="headerlink" href="#mis-registros-tablas-archivos" title="Permanent link">&para;</a></h3>
@@ -3887,14 +3887,14 @@ This is a gap in red1, not your mistake. Type report to send it to us (email or 
 building Duplex
 → viewer.cost building=Duplex by=discipline
 ok · viewer.cost
-1190 elements · 1054482 total (71 with no rate); 3 with no size, not priced
+1190 elements · 1054482.23 total (71 with no rate); 3 with no size, not priced
 discipline  elements  cost
-ARC         267       532432
-ELEC        81        283500
-MEP         809       153825
-PLB         14        49000
-STR         19        35725
-ls lists the 32 priced rows
+ARC         267       532431.28
+ELEC        81        283500.00
+MEP         809       153825.40
+PLB         14        49000.00
+STR         19        35725.55
+ls lists the 50 priced rows
 Ready to post to ERP Project Order? y/N → erp.process name=&quot;Fold from BIM&quot; Building=Duplex
 → erp.process name=&quot;Fold from BIM&quot; Building=Duplex
 ok · erp.process
@@ -3903,7 +3903,7 @@ Posted Duplex: Project 990001, PlannedAmt 1054482.22784, 81 change(s) · no docu
 Open the project? y/N → cd project
 not done: cd project
 </code></pre></div>
-<p>El importe contabilizado, 1054482.22784, conserva la regla de línea propia del pedido (precio por cantidad, sin redondear), mientras que <code>cost</code> redondea cada grupo a una unidad entera (1054482): la misma cifra a la unidad, no al céntimo. La palabra <code>post</code> hace lo mismo sin el <code>cost</code> previo y pregunta primero <code>run it? y/N</code>; contabilizar un edificio que ya está en su pedido no cambia nada. Desde el proyecto nuevo, <code>run "Generate PO from Project"</code> es el lado de compras y responde como el proyecto Hospital de arriba: los productos que creó la contabilización no llevan precio de proveedor. Esos pasos, con su salida, están en <a href="../FastScriptReference/">la referencia</a>.</p>
+<p>El importe contabilizado, 1054482.22784, es la regla de línea propia del pedido (precio por cantidad, sin redondear). <code>cost</code> calcula con las mismas líneas y muestra la cifra al céntimo de la moneda del pedido (1054482.23), así que lo que ve antes de <code>post</code> es lo que contiene el pedido. La palabra <code>post</code> hace lo mismo sin el <code>cost</code> previo y pregunta primero <code>run it? y/N</code>; contabilizar un edificio que ya está en su pedido no cambia nada. Desde el proyecto nuevo, <code>run "Generate PO from Project"</code> es el lado de compras y responde como el proyecto Hospital de arriba: los productos que creó la contabilización no llevan precio de proveedor. Esos pasos, con su salida, están en <a href="../FastScriptReference/">la referencia</a>.</p>
 <h2 id="todas-las-palabras">Todas las palabras<a class="headerlink" href="#todas-las-palabras" title="Permanent link">&para;</a></h2>
 <p>Las palabras de arriba son las que conviene aprender primero. Las demás, cada una una forma corta de un verbo de la puerta (<code>help &lt;word&gt;</code> muestra su línea):</p>
 <table>
