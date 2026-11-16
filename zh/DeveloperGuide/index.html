@@ -4587,7 +4587,7 @@ folder its <code>extensions.json</code> does not list, so nothing loads and noth
 <td>the specs and the source</td>
 </tr>
 <tr>
-<td>Explorer side bar ▸ <strong>Run &amp; Ship</strong> (5 steps, also as commands)</td>
+<td>Explorer side bar ▸ <strong>Run &amp; Ship</strong> (6 steps, also as commands)</td>
 <td><em>Run local</em>: the serve task plus each app's URL and cache version on disk. <em>Check</em>: <code>node --check</code> on the JS that differs from <code>origin/main</code>, the precache audit, and the bump rule. <em>Cost if deployed</em>: see next row. <em>Fetch back</em>: is the live site on <code>main</code>'s versions and commit? <em>Deploy main now</em>: publishes <code>main</code> to the live site with your own GitHub login (it asks first; see <em>Deploying from VS Code</em> below)</td>
 <td>the repo's own scripts and git; Fetch back reads the live site and Deploy starts GitHub's Pages build (the only two steps that use the network)</td>
 </tr>
@@ -4595,6 +4595,11 @@ folder its <code>extensions.json</code> does not list, so nothing loads and noth
 <td>Status bar, and command <strong>Cost if deployed</strong></td>
 <td><code>viewer: start-up · 103 KB</code> for the open file; the command prints, per app, start-up and offline-cache bytes of your tree against <code>origin/main</code></td>
 <td>each <code>sw.js</code> cache list and the pages' script tags</td>
+</tr>
+<tr>
+<td>Run &amp; Ship ▸ <strong>3m · Memory of the three pages</strong> (command <em>Memory of the three pages</em>)</td>
+<td>boots the viewer, ERP and Modeller pages headless, your tree and <code>origin/main</code> side by side, and prints the JS heap each holds after boot: <code>§HEAP_IMPACT_DELTA page=erp/idempiere.html jsMB=+0.0 … verdict=SAME</code>. The status bar keeps the last result, <code>MB V 18.4 · E 4.2 · M 10.9</code>, marked <em>(stale)</em> after a save. A few minutes; <strong>runs only when you press it</strong>; needs the Playwright that <code>tests/</code> installs</td>
+<td>a headless Chromium on this machine (software GL, service worker off); the same building data on both sides, so the delta is the code's (§F.31)</td>
 </tr>
 <tr>
 <td><strong>Shift+F12</strong> (Find All References) on the same field</td>
