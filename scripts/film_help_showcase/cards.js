@@ -4,27 +4,52 @@
 'use strict';
 const fs = require('fs'), path = require('path'), os = require('os');
 const puppeteer = require(process.env.PUPPETEER_PATH || path.join(os.homedir(), 'bim-compiler', 'node_modules', 'puppeteer'));
-const OUT = path.join(__dirname, 'out'), out = path.resolve(process.argv[2] || 'out/cards'); fs.mkdirSync(out, { recursive: true });
+const OUT = path.join(__dirname, process.env.OUTD || 'out'), out = path.resolve(process.argv[2] || path.join(OUT, 'cards')); fs.mkdirSync(out, { recursive: true });
 const F = JSON.parse(fs.readFileSync(path.join(OUT, 'facts.json'), 'utf8'));
 const W1 = fs.readFileSync(path.join(OUT, 'witness_field_help_main.log'), 'utf8'), W2 = fs.readFileSync(path.join(OUT, 'witness_help_showcase_main.log'), 'utf8');
+const ZH = (process.env.FILM_LANG || 'en') === 'zh', LB = F.lb;
+// the words of the cards, per cut. Code, log lines, file names and the names of sources stay as they are in both; the Mandarin cut's words are translated by the build session (said on the last card).
+const T = ZH ? {
+  bar: (st) => `▲ <b>输入</b>到“操作说明”框中的内容，以及页面自己的 § 日志 &nbsp;·&nbsp; ▼ <b>ERP 孪生系统</b>，真实页面 &nbsp;·&nbsp; ${st}`,
+  lab: (sc) => '帮助面板：页面自己的像素，' + (sc === 1 ? '原尺寸' : (sc > 1 ? '放大 ' : '缩小为 ') + sc.toFixed(2).replace(/0$/, '') + ' 倍'),
+  kicker: 'KERNEL-ERP · 帮助', title: '会' + '<span style="color:#FF6B78">回答问题</span>' + '的帮助', sub: '字段帮助、提问框和操作说明，都在窗口里', line: '真实页面，无头浏览器 · 普通话（英文字幕）',
+  quoteZh: '“一般的交互型员工估计把每周工作时间的 28% 用于处理电子邮件，近 20% 用于查找内部信息，或寻找能帮助完成具体任务的同事。”', quoteZhNote: '中文译文由构建会话翻译，未经母语者审校',
+  fetched: '副本取于', before1: '以前（#3126 之前）：', now1: '现在：字段自己的说明，与原版一致（WEditor.java:333）；列名 · 类型只写进日志：',
+  st: { before: '点进“Document No”：提示面板', idle: '尚未聚焦任何字段', card: '回答卡片，来自字典', link: '卡片的链接打开了销售订单：旁边是它的操作说明，来自指南', open: '销售订单已打开', pay: '付款的回答卡片', lb: '选择了中文：同一个订单' },
+  lbLang: '中文', english: '英文原文（字典）：', fallback: '文档号：中文语言包里没有它的文字，所以显示英文：',
+  h1: '代价、' + '<span style="color:#FF6B78">借鉴</span>' + '、以及背后的项目', cost: '代价（实测）', prior: '借鉴的先例', cred: '项目凭证',
+  heap: (a, b, d) => '<b>中文会话的内存</b>（强制回收后，各测一次）<br>有帮助包 ' + a + ' · 没有 ' + b + ' · <i>' + d + '</i>', packs: '<b>帮助包，每种语言只下载一次</b>', fields: '<b>有翻译的字段</b>', seed: '<b>从不放进种子数据库</b><br>单独的文件，只下载所选语言',
+  feature: '<b>本功能</b><br>#3126 字段帮助 · #3128 帮助包、搜索、操作说明（已合并）', witnessed: '<b>在 main 上见证 ', guide: '<b>ERP 用户指南</b>', paper: '<b>论文</b>：确定性空间编译<br>优先权日期 ',
+  credit: '开场引语：麦肯锡全球研究院，<i>The social economy</i>，2012 年 7 月 · 中文文字：已发布的 zh_CN 语言包，未改动 · 旁白、字幕和卡片中文由构建会话翻译，未经母语者审校 · 按键声：eklee 与 qubodup，OpenGameArt “Single Key Press Sounds”，CC BY 3.0 · 画面：真实 ERP 页面，CPU 上的无头浏览器' }
+: {
+  bar: (st) => `▲ <b>typed</b> into the How To box, and the page's own § log &nbsp;·&nbsp; ▼ <b>the ERP twin</b>, the real page &nbsp;·&nbsp; ${st}`,
+  lab: (sc) => 'the help panel, the page\'s own pixels, ' + (sc === 1 ? 'at 1x' : (sc > 1 ? 'enlarged ' : 'reduced ') + sc.toFixed(2).replace(/0$/, '') + 'x'),
+  kicker: 'KERNEL-ERP · HELP', title: 'Help that <span style="color:#FF6B78">answers</span>', sub: 'Field help, a question box and how-to, inside the window', line: 'The real page, headless · English',
+  quoteZh: null, fetched: 'copy fetched', before1: 'before (#3126), ', now1: 'now: the field\'s own Description, as legacy (WEditor.java:333) — the column · type goes to the log only:',
+  st: { before: 'click into Document No: the Tool Tip panel', idle: 'nothing focused yet', card: 'the answer card, from the dictionary', link: 'the card\'s link opened Sales Order: its how-to, from the guide', open: 'Sales Order open', pay: 'the answer card for a payment', lb: 'Deutsch chosen: the same field' },
+  lbLang: 'Deutsch', english: 'English original (the dictionary): ', fallback: null,
+  h1: 'What it costs, <span style="color:#FF6B78">what we learned</span>, who stands behind it', cost: 'cost, measured', prior: 'prior art: the lesson', cred: 'project credentials',
+  heap: (a, b, d) => '<b>Heap, German session</b> (forced GC, one run each)<br>with the help pack ' + a + ' · without ' + b + ' · <i>' + d + '</i>', packs: '<b>Help pack, fetched once per language</b>', fields: '<b>Fields with a translation</b>', seed: '<b>Never in the seed</b><br>a separate file, only the chosen language',
+  feature: '<b>This feature</b><br>#3126 field help · #3128 the help pack, search, how-to (merged)', witnessed: '<b>Witnessed on main ', guide: '<b>ERP User Guide</b>', paper: '<b>Paper</b>: Deterministic Spatial Compilation<br>priority date ',
+  credit: 'Opening quote: McKinsey Global Institute, <i>The social economy</i>, July 2012 · German text: the published de_DE pack (Team Germany), unchanged · Key sounds: eklee and qubodup, OpenGameArt "Single Key Press Sounds", CC BY 3.0 · pictures: the real ERP page, headless on the CPU' };
 const wline = (txt, re) => ((txt.split('\n').find((l) => re.test(l)) || '').trim());
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;'), cut = (s, n) => (s.length > n ? s.slice(0, n - 1) + '…' : s);
 const b64 = (f) => 'data:image/png;base64,' + fs.readFileSync(f).toString('base64'), pics = {}, img = (f) => pics[f] || (pics[f] = b64(f));
 const TOP = 260, BAR = 30, MT = TOP + BAR, MH = 620, PW = 1080 * MH / 1080 * 1920 / 1080;   // page band: the whole 1920x1080 page scaled to MH tall
-const CSS = `*{box-sizing:border-box;margin:0;padding:0} body{width:1920px;height:1080px;background:#0f172a;color:#F3EEE8;font-family:'DejaVu Sans',sans-serif;overflow:hidden}
-.term{position:absolute;left:0;top:0;width:1920px;height:${TOP}px;background:#0b0f17;padding:16px 34px;font-family:'DejaVu Sans Mono',monospace;font-size:23px;line-height:1.4;overflow:hidden;border-bottom:2px solid #334155}
+const CSS = `*{box-sizing:border-box;margin:0;padding:0} body{width:1920px;height:1080px;background:#0f172a;color:#F3EEE8;font-family:'DejaVu Sans','Noto Sans CJK SC',sans-serif;overflow:hidden}
+.term{position:absolute;left:0;top:0;width:1920px;height:${TOP}px;background:#0b0f17;padding:16px 34px;font-family:'DejaVu Sans Mono','Noto Sans CJK SC',monospace;font-size:23px;line-height:1.4;overflow:hidden;border-bottom:2px solid #334155}
 .cmd{white-space:pre;color:#F3EEE8} .cmd:before{content:'? ';color:#4ade80} .ans{white-space:pre-wrap;color:#fbbf24;overflow-wrap:anywhere} .good{color:#4ade80} .bad{color:#f87171} .dim{color:#94a3b8;white-space:pre}
 .de{color:#7dd3fc;white-space:pre-wrap} .cur{display:inline-block;width:14px;height:26px;background:#4ade80;vertical-align:-5px;margin-left:2px}
 .bar{position:absolute;left:0;right:0;top:${TOP}px;height:${BAR}px;background:#1e293b;color:#94a3b8;font-size:19px;line-height:${BAR}px;padding:0 28px;letter-spacing:1px} .bar b{color:#7dd3fc}
 .pg{position:absolute;left:30px;top:${MT}px;height:${MH}px;border:1px solid #334155} .crop{position:absolute;top:${MT}px;overflow:hidden;border:3px solid #FF6B78;background:#fff} .crop img{position:absolute}
 .lab{position:absolute;background:#FF6B78;color:#0b0f17;font-size:17px;font-weight:700;padding:2px 8px}`;
-const bar = (st) => `<div class="bar">▲ <b>typed</b> into the How To box, and the page's own § log &nbsp;·&nbsp; ▼ <b>the ERP twin</b>, the real page &nbsp;·&nbsp; ${esc(st)}</div>`;
+const bar = (st) => `<div class="bar">${T.bar(esc(st))}</div>`;
 // the lower band: the whole page (scaled), and the panel part [y0,y1) of the SAME png at the scale that fits the band (at most 1.5x)
 const lower = (shotName, y0, y1) => {
   const s = F.shots[shotName], png = path.join(OUT, s.file), pageW = Math.round(MH * 1920 / 1080), px = s.rects.panel.x, pw = s.rects.panel.w;
   const CH0 = MH - 40, sc = Math.min(1.5, CH0 / (y1 - y0)), cw = Math.round(pw * sc), ch = Math.round((y1 - y0) * sc), left = 30 + pageW + 40;   // 40 px under the crop for its label, above the captions
   return `<img class="pg" src="${img(png)}"><div class="crop" style="left:${left}px;width:${cw + 6}px;height:${Math.min(CH0, ch) + 6}px"><img src="${img(png)}" style="width:${Math.round(1920 * sc)}px;left:${-Math.round(px * sc)}px;top:${-Math.round(y0 * sc)}px"></div>` +
-    `<div class="lab" style="left:${left}px;top:${MT + Math.min(CH0, ch) + 6}px">the help panel, the page's own pixels, ${sc === 1 ? 'at 1x' : (sc > 1 ? 'enlarged ' : 'reduced ') + sc.toFixed(2).replace(/0$/, '') + 'x'}</div>`;
+    `<div class="lab" style="left:${left}px;top:${MT + Math.min(CH0, ch) + 6}px">${T.lab(sc)}</div>`;
 };
 const crop = { // each beat's panel part, from the rects shots.js recorded (never placed by hand)
   idle: (r) => [r.tipTitle.y, r.howtoTitle.y + r.howtoTitle.h + 120],
@@ -39,35 +64,37 @@ const typed = (cmd, lines, lowBefore, lowAfter, st1, st2) => { const s = [{ html
   for (let k = 1; k <= cmd.length; k++) s.push({ html: frame(termTyped(cmd, k, false, ''), lowBefore, st1), frames: 2, key: 'k' });
   s.push({ html: frame(termTyped(cmd, cmd.length, false, ''), lowBefore, st1), frames: 8, key: 'r' }); s.push({ html: frame(termTyped(cmd, cmd.length, true, lines), lowAfter, st2), frames: null }); return s; };
 const ans = (l) => `<div class="ans">${esc(cut(l, 300))}</div>`, dim = (l) => `<div class="dim">${esc(l)}</div>`, good = (l) => `<div class="ans good">${esc(cut(l, 300))}</div>`;
-const CH = `*{box-sizing:border-box;margin:0;padding:0} body{width:1920px;height:1080px;background:#0b0f17;color:#F3EEE8;font-family:'DejaVu Sans',sans-serif;overflow:hidden} .ch{text-align:center;margin-top:250px}
+const CH = `*{box-sizing:border-box;margin:0;padding:0} body{width:1920px;height:1080px;background:#0b0f17;color:#F3EEE8;font-family:'DejaVu Sans','Noto Sans CJK SC',sans-serif;overflow:hidden} .ch{text-align:center;margin-top:250px}
 .k{font-size:34px;color:#FF6B78;letter-spacing:6px} .t1{font-size:104px;font-weight:700;margin-top:24px} .s{font-size:40px;color:#cbd5e1;margin-top:34px} .c{font-size:24px;color:#94a3b8;margin-top:60px}
 .q{margin:150px 170px 0;font-size:50px;line-height:1.38;font-weight:600} .q .big{color:#FF6B78} .qa{margin:40px 170px 0;font-size:27px;color:#cbd5e1;line-height:1.45} .qs{margin:16px 170px 0;font-size:20px;color:#94a3b8}`;
 const full = (inner) => `<!doctype html><html><head><meta charset="utf-8"><style>${CH}</style></head><body>${inner}</body></html>`;
 const CO = '<span style="color:#FF6B78">', CE = '</span>', cards = {};
-cards.cover = [{ html: full('<div class="ch"><div class="k">KERNEL-ERP · HELP</div><div class="t1">Help that ' + CO + 'answers' + CE + '</div><div class="s">Field help, a question box and how-to, inside the window</div><div class="c">The real page, headless · English</div></div>'), frames: null }];
-{ const Q = F.quote; cards.quote = [{ html: full('<div class="q">“' + esc(Q.text).replace(esc(Q.stat), '<span class="big">' + esc(Q.stat) + '</span>') + '”</div><div class="qa">' + esc(Q.who) + '<br><i>' + esc(Q.title) + '</i>, ' + esc(Q.date) + '</div><div class="qs">' + esc(Q.url) + ' · copy fetched ' + esc(Q.fetched) + ' (web.archive.org)</div>'), frames: null }]; }
-cards.before = [{ html: frame(term(dim('before (#3126), erp/idempiere.html:' + F.oldTooltip.line + ' at ' + F.oldTooltip.commit + ':') + `<div class="ans bad">${esc(F.oldTooltip.text)}</div>` + dim('now: the field\'s own Description, as legacy (WEditor.java:333) — the column · type goes to the log only:') + ans(F.lines.fieldFocus) + good(wline(W1, /F4 description = AD_Field_v\.description/))),
-  band('field_en', 'tip'), 'click into Document No: the Tool Tip panel'), frames: null }];
-cards.ask1 = typed(F.ask1.q, ans(F.ask1.line), band('idle', 'idle'), band('ask_close', 'card'), 'nothing focused yet', 'the answer card, from the dictionary');
-cards.link = [{ html: frame(term(ans(F.link.link) + ans(F.link.opened) + ans(F.link.ctx) + good(wline(W2, /S5 every how-to row/))), band('link_open', 'ctx'), 'the card\'s link opened Sales Order: its how-to, from the guide'), frames: null }];
-cards.ask2 = typed(F.ask2.q, ans(F.ask2.line), band('link_open', 'ctx'), band('ask_void', 'card'), 'Sales Order open', 'the answer card for a payment');
-{ const de = F.de.field.panel.split('\n').filter(Boolean);
-  cards.german = [{ html: frame(term(ans(F.de.pack) + `<div class="de">Deutsch: ${esc(de[1])}</div><div class="dim">English original (the dictionary): ${esc(F.docNoEnglish)}</div>` + ans(F.lines.fieldFocusDe) + good(wline(W2, /S2 de_DE Tool Tip panel/))),
-    band('field_de', 'tip'), 'Deutsch chosen: the same field'), frames: null }]; }
+cards.cover = [{ html: full('<div class="ch"><div class="k">' + T.kicker + '</div><div class="t1">' + T.title + '</div><div class="s">' + T.sub + '</div><div class="c">' + T.line + '</div></div>'), frames: null }];
+{ const Q = F.quote, zq = T.quoteZh ? '<div class="qa" style="margin-top:22px;color:#F3EEE8;font-size:30px">' + esc(T.quoteZh) + '<br><span style="font-size:19px;color:#94a3b8">' + esc(T.quoteZhNote) + '</span></div>' : '';
+  cards.quote = [{ html: full('<div class="q"' + (ZH ? ' style="margin-top:90px;font-size:42px"' : '') + '>“' + esc(Q.text).replace(esc(Q.stat), '<span class="big">' + esc(Q.stat) + '</span>') + '”</div>' + zq + '<div class="qa">' + esc(Q.who) + '<br><i>' + esc(Q.title) + '</i>, ' + esc(Q.date) + '</div><div class="qs">' + esc(Q.url) + ' · ' + T.fetched + ' ' + esc(Q.fetched) + ' (web.archive.org)</div>'), frames: null }]; }
+cards.before = [{ html: frame(term(dim(T.before1 + 'erp/idempiere.html:' + F.oldTooltip.line + ' @ ' + F.oldTooltip.commit + ':') + `<div class="ans bad">${esc(F.oldTooltip.text)}</div>` + dim(T.now1) + ans(F.lines.fieldFocus) + good(wline(W1, /F4 description = AD_Field_v\.description/))),
+  band('field_en', 'tip'), T.st.before), frames: null }];
+cards.ask1 = typed(F.ask1.q, ans(F.ask1.line), band('idle', 'idle'), band('ask_close', 'card'), T.st.idle, T.st.card);
+cards.link = [{ html: frame(term(ans(F.link.link) + ans(F.link.opened) + ans(F.link.ctx) + good(wline(W2, /S5 every how-to row/))), band('link_open', 'ctx'), T.st.link), frames: null }];
+cards.ask2 = typed(F.ask2.q, ans(F.ask2.line), band('link_open', 'ctx'), band('ask_void', 'card'), T.st.open, T.st.pay);
+{ const lp = LB.field.panel.split('\n').filter(Boolean), dn = (LB.docNo && LB.docNo.panel || '').split('\n').filter(Boolean);
+  cards.german = [{ html: frame(term(ans(LB.pack) + `<div class="de">${esc(T.lbLang)}: ${esc(lp[1])}</div><div class="dim">${esc(T.english)}${esc(LB.english[0])}</div>` + ans(F.lines.fieldFocusLb) +
+      (T.fallback ? `<div class="dim">${esc(T.fallback)}${esc(dn[1] || '')}</div>` : good(wline(W2, /S2 de_DE Tool Tip panel/)))),
+    band('field_lb', 'tip'), T.st.lb), frames: null }]; }
 { const PA = require('./priorart.json'), M = F.memory, kb = (b) => (b / 1024).toFixed(0) + ' KB', P = F.packs, C = F.credentials;
   const css = `<style>.lc{margin:44px 60px 0} .lc h1{font-size:46px} .lc h1 span{color:#FF6B78} .cols{display:grid;grid-template-columns:470px 760px 500px;gap:40px;margin-top:24px}
     .col h2{font-size:21px;color:#94a3b8;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px} .r{font-size:21px;line-height:1.33;padding:7px 0;border-top:1px solid #334155;overflow-wrap:anywhere} .r b{color:#7dd3fc} .r i{color:#fbbf24;font-style:normal}
     .cr{position:absolute;left:60px;bottom:186px;font-size:17px;color:#94a3b8;width:1800px}</style>`;
   const sign = M.deltaBytes >= 0 ? '+' : '−';
-  const mem = ['<b>Heap, German session</b> (forced GC, one run each)<br>with the help pack ' + (M.withPack.used / 1048576).toFixed(1) + ' MB · without ' + (M.without.used / 1048576).toFixed(1) + ' MB · <i>' + sign + kb(Math.abs(M.deltaBytes)) + '</i>',
-    '<b>Help pack, fetched once per language</b><br>de ' + kb(P.de_DE.bytes) + ' · fr ' + kb(P.fr_FR.bytes) + ' · zh ' + kb(P.zh_CN.bytes) + ' · ja ' + kb(P.ja_JP.bytes) + ' · how-to ' + kb(P.en_US.bytes),
-    '<b>Fields with a translation</b><br>de ' + P.de_DE.fields + ' · fr ' + P.fr_FR.fields + ' · zh ' + P.zh_CN.fields + ' · ja ' + P.ja_JP.fields, '<b>Never in the seed</b><br>a separate file, only the chosen language'];
-  const pa = PA.items.map((i) => '<b>' + esc(i.name) + '</b><br>' + esc(i.does) + '<br><i>→ ' + esc(i.took) + '</i>');
-  const cred = ['<b>' + esc(C.repo) + '</b><br>' + esc(C.licence), '<b>This feature</b><br>#3126 field help · #3128 the help pack, search, how-to (merged)', '<b>Witnessed on main ' + esc(F.tree) + '</b><br>' + esc(F.verdicts.fieldHelp) + '<br>' + esc(F.verdicts.showcase),
-    '<b>ERP User Guide</b><br>red1oon.github.io/BIMCompiler/ERPUserGuide/', '<b>Paper</b>: Deterministic Spatial Compilation<br>priority date ' + esc(C.paperPriority) + ' · red1oon.github.io/BIMCompiler/SpatialCompilationPaper/'];
+  const mem = [T.heap((M.withPack.used / 1048576).toFixed(1) + ' MB', (M.without.used / 1048576).toFixed(1) + ' MB', sign + kb(Math.abs(M.deltaBytes))),
+    T.packs + '<br>de ' + kb(P.de_DE.bytes) + ' · fr ' + kb(P.fr_FR.bytes) + ' · zh ' + kb(P.zh_CN.bytes) + ' · ja ' + kb(P.ja_JP.bytes) + ' · how-to ' + kb(P.en_US.bytes),
+    T.fields + '<br>de ' + P.de_DE.fields + ' · fr ' + P.fr_FR.fields + ' · zh ' + P.zh_CN.fields + ' · ja ' + P.ja_JP.fields, T.seed];
+  const pa = PA.items.filter((i) => !i.lang || i.lang === LB.lang).map((i) => '<b>' + esc(i.name) + '</b><br>' + esc(ZH ? i.does_zh : i.does) + '<br><i>→ ' + esc(ZH ? i.took_zh : i.took) + '</i>');
+  const cred = ['<b>' + esc(C.repo) + '</b><br>' + esc(C.licence), T.feature, T.witnessed + esc(F.tree) + '</b><br>' + esc(F.verdicts.fieldHelp) + '<br>' + esc(F.verdicts.showcase),
+    T.guide + '<br>red1oon.github.io/BIMCompiler/ERPUserGuide/', T.paper + esc(C.paperPriority) + ' · red1oon.github.io/BIMCompiler/SpatialCompilationPaper/'];
   const col = (h, rows) => '<div class="col"><h2>' + h + '</h2>' + rows.map((r) => '<div class="r">' + r + '</div>').join('') + '</div>';
-  cards.close = [{ html: full(css + '<div class="lc"><h1>What it costs, ' + CO + 'what we learned' + CE + ', who stands behind it</h1><div class="cols">' + col('cost, measured', mem) + col('prior art: the lesson', pa) + col('project credentials', cred) +
-    '</div><div class="cr">Opening quote: McKinsey Global Institute, <i>The social economy</i>, July 2012 · German text: the published de_DE pack (Team Germany), unchanged · Key sounds: eklee and qubodup, OpenGameArt "Single Key Press Sounds", CC BY 3.0 · pictures: the real ERP page, headless on the CPU</div></div>'), frames: null }]; }
+  cards.close = [{ html: full(css + '<div class="lc"><h1>' + T.h1 + '</h1><div class="cols">' + col(T.cost, mem) + col(T.prior, pa) + col(T.cred, cred) +
+    '</div><div class="cr">' + T.credit + '</div></div>'), frames: null }]; }
 const order = require('./narr.js').beats.map((b) => b.id);
 (async () => {
   const br = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-gpu', '--allow-file-access-from-files', '--window-size=1920,1080'] }), pg = await br.newPage(); await pg.setViewport({ width: 1920, height: 1080 });

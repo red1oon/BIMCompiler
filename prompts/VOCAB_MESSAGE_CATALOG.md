@@ -511,6 +511,31 @@ Sources: [SAP Web Assistant](https://www.sap.com/design-system/fiori-design-web/
   - (4) `performance.memory` is rounded to the same bucket without `--enable-precise-memory-info` (both sessions read 50,400,000).
 
 
+### §11 RESULT, Mandarin cut (2026-11-16): `~/Videos/Help_that_answers_ERP_ZH_AFTER_2026-11-16_v4.mp4` (119.3 s, 2,864 frames, −16.6 LUFS), sent to the owner's phone (Remote Control file card)
+- **Form:**
+  - Mandarin voice (Edge TTS, zh-CN Xiaoxiao / Yunxi; the text goes to Microsoft, free, cached);
+  - Chinese subtitles with the English line under each (owner: *"if in foreign language, give English subtitles"*);
+  - the language beat is 中文 (zh_CN) on the Sales Order **Description** field: the pack has its description and its help. Document No has no Chinese text and is shown falling back to English (measured, guard `lb.fallback`).
+- **The same pipeline serves both cuts:** `LB_LANG` / `LB_COL` / `OUTD` / `FILM_LANG`. The cards carry a string table (Chinese labels, source names and code unchanged); prior-art rows carry `does_zh` / `took_zh`, and a `lang` row per language pack. The last card says the Chinese words are the build session's, not a native speaker's.
+- **Witnessed on the tree the film shows (main `bd5b543c`):** W-FIELD-HELP 13/0, W-HELP-SHOWCASE 13/0.
+- **Checks:**
+
+  | Check | Result |
+  |---|---|
+  | guard | PASS (the English cut's guard re-run after the refactor: PASS) |
+  | K2 | PASS |
+  | keys | 54/54 + 2/2 |
+  | gloss | 23/23 turns carry their English |
+  | ass_noverlap | 27 events clamped, 0 overlaps left |
+  | check C | 34/34; falsifier `CAP_Y=960` FAILs 33/34 |
+  | heap | +682 KB with the zh_CN pack |
+
+- **Defects found and fixed (rules for the next cut):**
+  - (1) a Chinese line and its English as TWO events: libass stacks overlapping events and one lands on the picture (C failed 24, then 39 cues). One event per piece, `中文\N{\fs26}English`, fixes it.
+  - (2) the fitter's turns overlap by up to 0.13 s, and libass keeps a pushed-up event there for its whole life. The Mandarin path now runs `ass_noverlap.py` like the English one.
+  - (3) the guard compared raw dictionary text with the panel. The panel shows it as the browser does (`<TableName>` dropped, whitespace collapsed), so the guard compares after that same step (`asShown`).
+  - (4) the narration named Document No as 单据号, but the screen says 文档号: the voice now uses the on-screen name.
+
 ## STATUS
 2026-11-16: P1 built and witnessed (5/0), merged as bim-ootb #3079. P2a built and witnessed (W-MSG-CATALOG 4/0), merged as bim-ootb #3082. P3a built and witnessed (W-HELP-STUDENT 5/0), merged as bim-ootb #3083. P3a-1 (help footer + opening tip, `red1 --fast`), bim-ootb #3084. P2b (W-MSG-DOOR 5/0) #3108. P1b (W-FIELD-HELP 13/0) #3126. Depends on `prompts/DOCS_I18N.md`, `prompts/CLI_ERP_IVR.md` (CLI session owns), `prompts/ERP_UI_LOCALES.md`.
 
