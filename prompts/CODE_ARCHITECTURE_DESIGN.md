@@ -20,6 +20,8 @@ Owner, closing 2026-11-15: *"get it well documented in the prompts/# consolidate
 
 **0. ✅ DONE 2026-11-15 (fourth session): F-18 answered, the provenance hover built and merged — §F.23 (bim-ootb #3064 + tooltip-in-window fix #3069); FILM 3 built (`prompts/FILM_IMMERSIVE_SOFTWARE.md` FILM 3 STATUS, awaiting the owner's review); the default-key + truss findings handed to the DXF2BIM lane (bim-ootb `prompts/DXF2BIM_ARCHITECT_REVIEW.md` §D113, #3070). NEXT = the X0 "New witness for this file" command (§F.21 OPEN), or Part A's remaining A2 (item 2).** The text below is the original hand-over.
 
+**0p. 2026-11-17 (seventh session, last):** §F.33 (the changed file's own witnesses, F-23 + F-23b 10-min budget) built and measured; **F-24 decided: the Bump button (§F.34)**, which also fixes the VS Code bump that has failed on every ERP file since F-16 (60 s `spawnSync`). NEXT: merge §F.33, build §F.34, then A3-CLOCK-2, then W-CORE-PURE.
+
 **0o. 2026-11-17 (seventh session, later):** §F.32 built (bim-ootb #3154): the parity gate runs the 5 bridge witnesses that read the bumped tree (~5.5 min, was a 25-min timeout); FA out, M3 (sales/purchase cycle + books) in. **Open with the owner: F-23** (the gate also runs the witnesses of the exact file touched; §F.32 RESULT has the counts). NEXT unchanged: A3-CLOCK-2, then W-CORE-PURE.
 
 **0n. 2026-11-17 (seventh session):** A3 PRE-MEASURE: 6 clock/RNG calls left in the A-1 list, and a probe proved the process-path SYSDATE was UTC and froze the page clock → **A3-CLOCK-1 built (bim-ootb #3149, merged)**, which also fixed InventoryCountCreate's scrambled INSERT … SELECT rows (#3146). **A-7 answered** (*"Values only (Recommended)"*). Owners of the open items: table OWNERS OF THE OPEN ITEMS. **NEXT: A3-CLOCK-2** (spec drafted; `ws_kernel.js` is `ERP_WS_API.md`'s, ask first), **then A3 W-CORE-PURE** (spec written). The parity gate times out on the 25-min full bridge (A3-CLOCK-1 RESULT finding).
@@ -82,7 +84,7 @@ Owner, closing 2026-11-15: *"get it well documented in the prompts/# consolidate
 
 **6. Open with the owner.** F-18 ✅ (§F.23) · F-19 ✅ "Go" 2026-11-16 (§F.28) · F-1 ✅ *"Agree with you"* (plain by default, headless only as a separate button) · F-2 ✅ *"agreed"* (observe to 2026-11-30, then set) · F-7 ✅ *"agreed"* (no preview host) · F-12 step 2 withdrawn → §F.29 Deploy button · a status-bar Bump button (suggested, not built) · the parity gate's default bridge path (above) · his hands-on dry run (`~/VSCcheatsheet.txt`, 29 steps; `~/bim-ootb-dryrun` not created) · a bake on his go (check a "last:" line after #2977).
 
-**7. Open, no owner needed.** ~~15 of 51 `ws_kernel.js` witnesses fail on unedited `main`~~ (2026-11-17: no source for this claim anywhere, see OWNERS OF THE OPEN ITEMS; re-measure before quoting) · the Modeller runner on this machine: `§ALLWITNESS PASS=106 FAIL=10 SKIP=5 ENV=12 of 133` before the shed inputs were restored; inputs RESTORED 2026-11-15 to `~/Videos/dxf2bim_film_work/why/{raw,cli/marked}` (README there), and some witnesses need `SHED_RAW_DIR=~/Videos/dxf2bim_film_work/why/raw` set · 11 `PHANTOM?` fields (§F.17, a Part C question) · the 4D cache's `witness.log` has no `§LOG_STAMP` · bim-ootb #2974/#2975 texts still say "138 of 281" (true: 130).
+**7. Open, no owner needed.** ~~15 of 51 `ws_kernel.js` witnesses fail on unedited `main`~~ (no source) → **re-measured 2026-11-17 (§F.33 first run): 9 of the 51 node witnesses that load `ad_callout.js` fail on main** (list in §F.33) · the Modeller runner on this machine: `§ALLWITNESS PASS=106 FAIL=10 SKIP=5 ENV=12 of 133` before the shed inputs were restored; inputs RESTORED 2026-11-15 to `~/Videos/dxf2bim_film_work/why/{raw,cli/marked}` (README there), and some witnesses need `SHED_RAW_DIR=~/Videos/dxf2bim_film_work/why/raw` set · 11 `PHANTOM?` fields (§F.17, a Part C question) · the 4D cache's `witness.log` has no `§LOG_STAMP` · bim-ootb #2974/#2975 texts still say "138 of 281" (true: 130).
 
 **8. Traps this lane has paid for.**
 - **A registry's own summary is not the truth:** `describe()` missed directly-put classes (§F.22 defect a). Ask the code path that RUNS (the engine's lookup), and give the witness an independent source.
@@ -1243,6 +1245,57 @@ at a worktree on `origin/master` (e.g. `/tmp/wt-bridge`) until the default is de
   cycle with books compared (O2C1-SO … O2C4-PAY, P2P, POS, payments, invoices, inventory, 50+ scenarios). **"The exact item touched" is NOT done yet:**
   the gate does not pick checks by the changed file. Measured: `ad_process.js` / `ad_callout.js` are each required by 53 `erp/tests` witnesses,
   `model_order.js` by 1, `crud_overlay.js` by 2 (of 303). Open as decision **F-23** (ask the owner, one message).
+- **DECISION F-23 (2026-11-17, owner):** asked whether the gate also runs the witnesses of the exact file changed (recommendation: yes, a new-fail rule):
+  chose *"Yes, new-fail rule (Recommended)"*. → **F-23 = the gate also runs every node witness under `*/tests/` that loads a changed file, on the change
+  and on main; it blocks only on pass-on-main / fail-on-change; main's results are cached per main commit; browser witnesses are left out.** Spec: §F.33.
+
+### F.33 The gate also runs the changed file's own witnesses, new failures only (decision F-23; spec 2026-11-17)
+- **Changed files** = the bump's targets under `applies_to` (`erp/`), the files whose `?v=` it raises (the author names them; the same set the gate already uses).
+- **Their witnesses** = `git ls-files '*/tests/witness_*.js'` in the bumped tree whose source has `require(` … `'<name>.js'` / `'./<name>'` for a changed
+  file, minus browser ones (`playwright|chromium|puppeteer` in the source). Measured 2026-11-17: `ad_process.js` 53 (1 browser), `ad_callout.js` 53 (1),
+  `model_order.js` 1, `crud_overlay.js` 2.
+- **Run** each with `node <tests>/<w>.js`, cwd = the folder above `tests/` (the convention the ERP witnesses document, e.g. `witness_local_time.js`),
+  `< /dev/null`, 5 min each, on the bumped tree and on the BASE = `git merge-base HEAD origin/main`, checked out once as a detached worktree under
+  `~/.cache/bim_bridge/touch_base/<sha>` (reused; its `node_modules` linked to the bumped tree's). The base result per (sha, witness) is cached in JSON.
+- **Judged by exit code** (0 = pass), the one signal all 303 witnesses share; each witness's last `§…VERDICT…`/`verdict=` line is printed beside it so the
+  reader reads the log, not the code. **New fail** = base exit 0 and change non-0, re-run once on the change to rule out a flake (both must fail).
+- **Lines:** `§BUMP_TOUCH_RUN w= base=0|1 change=0|1 secs= last="…"` per witness, then `§BUMP_TOUCH files= witnesses= browser_skipped= new_fail=[…]
+  pre_fail=[…] secs= verdict=PASS|BLOCKED|WARN|INCONCLUSIVE`. Mode, `--no-parity "<reason>"` and `BUMP_PARITY=warn|off` apply as for the bridge.
+  INCONCLUSIVE (blocks in block mode) if the base cannot be checked out. 0 witnesses for a file = said (`witnesses=0`), not a failure.
+- **Witness W-BUMP-PARITY rows:** T1 a stub tree whose `erp/tests` holds a witness that requires the changed file and FAILS only on the change (the base
+  passes): BLOCKED, `new_fail=[that]`. T2 one that fails on both: `pre_fail`, PASS. T3 one that does not require the file: never run. T4 a flaky one (fails
+  once, then passes): not a new fail. Red control: main's `bump.js` gives no `§BUMP_TOUCH` line at all.
+- **Cost to measure on the first real run** (the owner's recommendation said so): the 53-witness core files, both trees, cold cache.
+**Issue proved:** a bump could ship a change that breaks the changed file's own witness while every bridge check passed; after, that witness is run and a
+new failure blocks.
+- **First real run (2026-11-17, `erp/ad_callout.js`, base `5caf16f501d3`):** `§BUMP_TOUCH files=erp/ad_callout.js witnesses=51 browser_skipped=2 new_fail=[]
+  pre_fail=[witness_docno,witness_master_save_rules,witness_post_error,witness_post_invoice_diff,witness_post_matchinv_diff,witness_post_movement_diff,
+  witness_script_validator,witness_shopday_model_path,witness_views_parity] secs=2053 verdict=PASS` (+ the bridge, 2373 s in all). **So 9 of the 51
+  `ad_callout.js` witnesses fail on main** (this replaces RESUME 7's struck-out "15 of 51"). Time: 34 under 10 s, 12 at 10-60 s, 5 at 74-300 s
+  (`witness_docno` hits the 5-min limit on both trees); passing ones 813 s, the 9 failing ones 413 s per pass, and the spec's re-run-then-base order ran them
+  three times (~20 of the 34 min). **Changed (no verdict changes): base FIRST, re-run only on pass-on-base** (a witness failing on the base cannot be a new fail).
+- **DECISION F-23b (2026-11-17, owner)**, asked with the measured cost (~20 min warm / 27 cold for a core file, against the "several minutes" estimate given
+  for F-23; recommendation: a 10-min budget): chose *"10-min budget (Recommended)"*. → **The changed file's witnesses run fastest-first by their recorded
+  durations (`~/.cache/bim_bridge/touch_durations.json`, written every run, seeded from this first run: 49 of 51 fit), never-measured ones first; no new
+  witness starts after 10 min (`BUMP_TOUCH_BUDGET_S`); every one not reached is NAMED (`unrun=[…]`), not failed.** W-BUMP-PARITY T6.
+- **RESULT 2026-11-17: ✅ DONE (witness), bim-ootb #3158 / PR #3159, merged `7b1f668b`.** W-BUMP-PARITY `PASS judged=21 failed=0` (T1 new fail blocks · T2
+  pre-fail does not · T4 flake · T5 no base = INCONCLUSIVE · T6 budget); red: main's `bump.js` fails T1-T5. **Real run with the budget** (`ad_callout.js`, warm base):
+  `witnesses=51 browser_skipped=2 new_fail=[] pre_fail=[8] unrun=[witness_core_timing,witness_docno] budget_s=600 secs=784 verdict=PASS`, 1,089 s with the bridge
+  (was 2,373 s). The budget is a START limit: the last witness started inside 600 s finishes after (784 s). Spec deviation: base is run only for a witness
+  that failed on the change (a pass cannot be a new fail), so "on both trees" holds for every failure, not every witness.
+
+### F.34 The Bump button: check in the background, solid when it passes, one press to write (owner idea 2026-11-17; decision F-24; not built)
+- **Owner:** *"I thot we have a bump button, perhaps after the budget time, it appears solid for user to press it?"* · on when the check starts, asked with
+  the recommendation "on first press": chose *"On first press (Recommended)"*, then added *"or after sufficient feature completion"*.
+  → **DECISION F-24: nothing heavy starts by itself. The author presses Bump when the feature is complete; that press starts ONE background check of every
+  changed file of the branch (the diff against the merge-base with `origin/main`), and a press on the solid button writes.** Editing after the check makes it
+  hollow again (the result is keyed on the exact tree).
+- **Defect this also fixes (measured 2026-11-17):** `devtools/vscode/x0-navigator/lib/ship.js:129` runs `scripts/bump.js` with `spawnSync` and a 60 s
+  timeout, inside the extension host. Every `erp/` bump runs the parity gate (F-16: ~70 s when built, ~5.5 min after §F.32, up to ~16 min with §F.33), so
+  since F-16 the VS Code bump of an ERP file freezes the extension for 60 s and then fails. The terminal path works.
+- **Shape (to spec in full when built):** `bump.js --check` runs both gates with no write and stores the verdict by tree identity (the bridge part already
+  caches its PASS by tree, `parityGate`; §F.33 gains the same) · the extension runs it with `spawn` (async), status bar: hollow `Bump: checking… n/N`,
+  solid `Bump ✓`, red `Bump ✗ <witness>` (click opens the log) · a press on solid runs `--write`, which reads the stored PASS and writes in a second.
 
 ### F.31 Browser memory of the three pages, shown in VS Code (owner 2026-11-16; tier 3 of §F.3; decisions **F-20..F-22**; not built)
 Owner, 2026-11-16: *"reminder, i did suggest before that we have some monitor in the VSC showing what is the mem load on browser of the differing
