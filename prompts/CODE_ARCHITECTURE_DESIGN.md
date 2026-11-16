@@ -1243,6 +1243,29 @@ at a worktree on `origin/master` (e.g. `/tmp/wt-bridge`) until the default is de
   cycle with books compared (O2C1-SO … O2C4-PAY, P2P, POS, payments, invoices, inventory, 50+ scenarios). **"The exact item touched" is NOT done yet:**
   the gate does not pick checks by the changed file. Measured: `ad_process.js` / `ad_callout.js` are each required by 53 `erp/tests` witnesses,
   `model_order.js` by 1, `crud_overlay.js` by 2 (of 303). Open as decision **F-23** (ask the owner, one message).
+- **DECISION F-23 (2026-11-17, owner):** asked whether the gate also runs the witnesses of the exact file changed (recommendation: yes, a new-fail rule):
+  chose *"Yes, new-fail rule (Recommended)"*. → **F-23 = the gate also runs every node witness under `*/tests/` that loads a changed file, on the change
+  and on main; it blocks only on pass-on-main / fail-on-change; main's results are cached per main commit; browser witnesses are left out.** Spec: §F.33.
+
+### F.33 The gate also runs the changed file's own witnesses, new failures only (decision F-23; spec 2026-11-17)
+- **Changed files** = the bump's targets under `applies_to` (`erp/`), the files whose `?v=` it raises (the author names them; the same set the gate already uses).
+- **Their witnesses** = `git ls-files '*/tests/witness_*.js'` in the bumped tree whose source has `require(` … `'<name>.js'` / `'./<name>'` for a changed
+  file, minus browser ones (`playwright|chromium|puppeteer` in the source). Measured 2026-11-17: `ad_process.js` 53 (1 browser), `ad_callout.js` 53 (1),
+  `model_order.js` 1, `crud_overlay.js` 2.
+- **Run** each with `node <tests>/<w>.js`, cwd = the folder above `tests/` (the convention the ERP witnesses document, e.g. `witness_local_time.js`),
+  `< /dev/null`, 5 min each, on the bumped tree and on the BASE = `git merge-base HEAD origin/main`, checked out once as a detached worktree under
+  `~/.cache/bim_bridge/touch_base/<sha>` (reused; its `node_modules` linked to the bumped tree's). The base result per (sha, witness) is cached in JSON.
+- **Judged by exit code** (0 = pass), the one signal all 303 witnesses share; each witness's last `§…VERDICT…`/`verdict=` line is printed beside it so the
+  reader reads the log, not the code. **New fail** = base exit 0 and change non-0, re-run once on the change to rule out a flake (both must fail).
+- **Lines:** `§BUMP_TOUCH_RUN w= base=0|1 change=0|1 secs= last="…"` per witness, then `§BUMP_TOUCH files= witnesses= browser_skipped= new_fail=[…]
+  pre_fail=[…] secs= verdict=PASS|BLOCKED|WARN|INCONCLUSIVE`. Mode, `--no-parity "<reason>"` and `BUMP_PARITY=warn|off` apply as for the bridge.
+  INCONCLUSIVE (blocks in block mode) if the base cannot be checked out. 0 witnesses for a file = said (`witnesses=0`), not a failure.
+- **Witness W-BUMP-PARITY rows:** T1 a stub tree whose `erp/tests` holds a witness that requires the changed file and FAILS only on the change (the base
+  passes): BLOCKED, `new_fail=[that]`. T2 one that fails on both: `pre_fail`, PASS. T3 one that does not require the file: never run. T4 a flaky one (fails
+  once, then passes): not a new fail. Red control: main's `bump.js` gives no `§BUMP_TOUCH` line at all.
+- **Cost to measure on the first real run** (the owner's recommendation said so): the 53-witness core files, both trees, cold cache.
+**Issue proved:** a bump could ship a change that breaks the changed file's own witness while every bridge check passed; after, that witness is run and a
+new failure blocks.
 
 ### F.31 Browser memory of the three pages, shown in VS Code (owner 2026-11-16; tier 3 of §F.3; decisions **F-20..F-22**; not built)
 Owner, 2026-11-16: *"reminder, i did suggest before that we have some monitor in the VSC showing what is the mem load on browser of the differing
