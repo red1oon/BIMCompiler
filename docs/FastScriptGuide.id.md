@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 350fcb5d75d00db5
+source_sha: 7d5bc6c7099243c8
 lang: id
 ---
 
@@ -50,12 +50,12 @@ Type bim, mis or erp for its words · help <word> for one word (level student fi
 
 `help` tidak mencetak kata kerja pintu, hanya kata-katanya. `help verbs` mendaftar setiap kata kerja pintu dengan baris lengkapnya. Untuk bantuan lebih lengkap tentang satu kata, pindah ke tingkat Student: `level student` dalam sesi, atau `--level student` pada satu baris, lalu `help <word>` menjelaskan apa yang dilakukan kata itu, apa yang Anda ketik, apa yang diambil red1 dari tempat Anda berada, dan sebuah contoh. Teksnya adalah deskripsi kata kerja itu sendiri, jadi tidak bisa menyimpang dari tabel di akhir:
 
-<!-- run: red1_help_student -->
+<!-- run: red1_help_student cut=170 -->
 ```text
 $ node common/door/red1.js --level student 'help cost' 2>/dev/null
 cost: the cost of a selection: cost [phase|task|storey|discipline|class] [column=value …]
   in a building: cost discipline   → viewer.cost
-    what it does: Price a selection of a building's elements as the Viewer's Find panel does: quantities from the model × the rate pack, grouped by 4D phase, task, storey, discipline or IFC class; a selection is column=value (wildcards * ? [] allowed) over the elements' columns. Phases and tasks come from the persisted 4D run. Reports elements with no rate and with no size. Changes nothing.
+    what it does: Price a selection of a building's elements as the Viewer's Find panel does: quantities from the model × the rate pack, grouped by 4D phase, task, storey…
     you type: by (phase (default), task, storey, discipline or class.)
     taken from where you are: building
     e.g. in Duplex: viewer.cost building=Duplex by=discipline
