@@ -20,6 +20,8 @@ Owner, closing 2026-11-15: *"get it well documented in the prompts/# consolidate
 
 **0. ✅ DONE 2026-11-15 (fourth session): F-18 answered, the provenance hover built and merged — §F.23 (bim-ootb #3064 + tooltip-in-window fix #3069); FILM 3 built (`prompts/FILM_IMMERSIVE_SOFTWARE.md` FILM 3 STATUS, awaiting the owner's review); the default-key + truss findings handed to the DXF2BIM lane (bim-ootb `prompts/DXF2BIM_ARCHITECT_REVIEW.md` §D113, #3070). NEXT = the X0 "New witness for this file" command (§F.21 OPEN), or Part A's remaining A2 (item 2).** The text below is the original hand-over.
 
+**0o. 2026-11-17 (seventh session, later):** §F.32 built (bim-ootb #3154): the parity gate runs the 5 bridge witnesses that read the bumped tree (~5.5 min, was a 25-min timeout); FA out, M3 (sales/purchase cycle + books) in. **Open with the owner: F-23** (the gate also runs the witnesses of the exact file touched; §F.32 RESULT has the counts). NEXT unchanged: A3-CLOCK-2, then W-CORE-PURE.
+
 **0n. 2026-11-17 (seventh session):** A3 PRE-MEASURE: 6 clock/RNG calls left in the A-1 list, and a probe proved the process-path SYSDATE was UTC and froze the page clock → **A3-CLOCK-1 built (bim-ootb #3149, merged)**, which also fixed InventoryCountCreate's scrambled INSERT … SELECT rows (#3146). **A-7 answered** (*"Values only (Recommended)"*). Owners of the open items: table OWNERS OF THE OPEN ITEMS. **NEXT: A3-CLOCK-2** (spec drafted; `ws_kernel.js` is `ERP_WS_API.md`'s, ask first), **then A3 W-CORE-PURE** (spec written). The parity gate times out on the 25-min full bridge (A3-CLOCK-1 RESULT finding).
 
 **0m. 2026-11-16 (sixth session, close):** owner asked for advice on the `pipo_packin.js` UTC fallback, advice "fix it, legacy first", owner *"ok"* → legacy read (`PO.java:1985/:3341`, `DB_PostgreSQL.TO_DATE`: LOCAL clock) → **A2-PIPO built (bim-ootb #3143)**: bundle Pack In stamps local time. **NEXT: A3 W-CORE-PURE.**
@@ -1211,6 +1213,36 @@ at a worktree on `origin/master` (e.g. `/tmp/wt-bridge`) until the default is de
   - S5 (wiring, through the shared stub): `activate` with a stale `extensionPath` shows the warning once; with a matching one it shows none.
   - Before/after: `witness_x0_activate` and the realvsc install suite keep their verdicts.
 - **RESULT 2026-11-16: ✅ DONE (witness), bim-ootb #3091 / PR #3092, merged `186d80ae`.** On `main`: `§X0_STAMP_W files=13 stamp=1c3372cfee90 deterministic=Y checks=10 failed=0 verdict=PASS`. S5 activates the PACKED `extension.js`: stale gives `§X0_STAMP state=stale built=1c3372cfee90 source=4ed593f6e739 warnings=1`, restored gives `state=same … warnings=0`. **Red run on the old code** (the new witness with `main`'s old `pack.js`/`extension.js`): exit 1, S1 `null = f56ea15ddad5`, S3 `state=unknown`. The stub refactor is neutral: `witness_x0_activate` gives the same 30 PASS checks and the same `§X0_ACTIVATE definition=1 hover=2 commands=8 fresh=Y checks_failed=0 verdict=PASS`. Also PASS on the branch and on `main`: isolation (`deps=0`), lens, appdef, deploy_cost, context. `pack.js` prints `source=<hash12>`. **Not run:** the realvsc install suite (it starts a real VS Code; owner's go first). **For the owner's own copy:** the next `node devtools/vscode/pack.js --install` is the first build that carries a stamp. Copies installed before it report `unknown` and show no warning.
+
+### F.32 The parity gate runs only the bridge witnesses that read the bumped tree (found 2026-11-17 by A3-CLOCK-1; a defect in F-16, no decision; owner: *"Go with your plan to sort it out"*)
+- **Measured:** the gate (`scripts/bump.js` `parityGate`) runs the whole `run_all.sh` with a 15-min limit (`:185`). The full bridge now takes ~25 min
+  (W-FA alone grows every run: bim-compiler `prompts/SQLiteIDEMPIERE.md` 2026-11-17 notes), so every ERP bump ends `verdicts=0 … ETIMEDOUT`, blocked.
+  The gate hands the bridge three settings (`OOTB`, `BRIDGE_OOTB`, `BRIDGE_UI_DB`, `:184`). Of the 16 witnesses `run_all.sh` names, **5** read one of them,
+  directly or through a local `require` (transitive): `witness_lf_parity`, `witness_m3_gap`, `witness_product_icons`, `witness_soda_parity`,
+  `witness_soda_receipt_parity`. The other 11 (incl. FA, and DD/DDS/CTX behind the 3 `known` FAILs) judge bim-compiler's own engine and DBs: a bim-ootb
+  change cannot move them, so the gate gains nothing from them and pays ~20 min.
+- **Build (bump.js only; `run_all.sh` stays the parity lane's and stays the list of record):** read the witness names from the configured bridge script
+  (`witness_[a-z0-9_]+`, files that exist beside it), keep those whose source or local requires read a tree setting, run each as `run_all.sh` does
+  (`node <w>.js`, cwd = the bridge folder, the same env), 10 min each. One `§BUMP_PARITY_RUN w= secs= verdicts=` line per witness, and the `§BUMP_PARITY`
+  line says `scoped=tree witnesses=5 skipped=11` instead of `scoped=partial`. A bridge script that names no witness file (a stub, a custom runner) is run
+  whole, as before (`scoped=script`). The cache key is unchanged (tree identity); `known` is unchanged (the 3 entries simply no longer occur).
+- **Witness W-BUMP-PARITY gains rows (red control: main's `bump.js`):** S1 a stub bridge folder whose `run_all.sh` names two stub witnesses, one reading
+  `BRIDGE_OOTB` and printing `§SA_VERDICT FAIL`, one not reading it and printing `§SB_VERDICT FAIL`: the gate runs ONLY the first (marker file) and blocks on
+  `SA:FAIL`. S2 the same with SA passing: verdict PASS, `SB` never ran. Main's gate runs the whole script, so S2 blocks on `SB:FAIL` (red). The existing rows
+  (stub with no witness files) must pass unchanged.
+**Issue proved:** an ERP bump's parity gate timed out on 11 witnesses that cannot judge the bumped tree; after, it runs the 5 that can, and says which.
+- **RESULT 2026-11-17: ✅ DONE (witness), bim-ootb #3153 / PR #3154, merged `7e4d163c`.** +80 / −15, 3 files. `§BUMP_PARITY_W_VERDICT PASS judged=17 failed=0
+  real_row=run`: `§BUMP_PARITY_RUN w=witness_m3_gap secs=265` · `lf_parity 38` · `soda_parity 10` · `soda_receipt_parity 11` · `product_icons 12` (~5.5 min);
+  R `verdicts=4 new=[] known=[M3:HARNESS-FAIL] scoped=tree witnesses=5 skipped=11 verdict=PASS`. Re-run on `main` @ `5caf16f5`: 16/0 (R opt-in, skipped).
+  **Red (main's bump.js + the new witness):** P10 ran `[sa,sb]`, P11 blocked by `SB:FAIL` (3 FAIL, P9 only its `partial`→`script` label).
+  **Known list:** `["M3:HARNESS-FAIL"]` (measured identical before/after #3149); DD/CTX/DDS dropped (their witnesses never read this tree).
+  **Instrument defect found and fixed in the witness:** its real row bumped a 6-file temp copy, so the tree-reading witnesses crashed in 0 s
+  (`Cannot find module …/erp/tests/dd_common.js`, SODAP/SODAR FAIL, product_icons 0 verdicts). It now bumps an OVERLAY (edited files copied, the rest linked).
+- **Owner, 2026-11-17, during this item:** *"Must FA be the choice of regression? Conventionally devs usually check a Sales Order cycle and posting. Besides
+  parity on the exact item that is touched."* → FA is no longer run by the gate (it never read bim-ootb). M3, which the gate keeps, IS the sales/purchase
+  cycle with books compared (O2C1-SO … O2C4-PAY, P2P, POS, payments, invoices, inventory, 50+ scenarios). **"The exact item touched" is NOT done yet:**
+  the gate does not pick checks by the changed file. Measured: `ad_process.js` / `ad_callout.js` are each required by 53 `erp/tests` witnesses,
+  `model_order.js` by 1, `crud_overlay.js` by 2 (of 303). Open as decision **F-23** (ask the owner, one message).
 
 ### F.31 Browser memory of the three pages, shown in VS Code (owner 2026-11-16; tier 3 of §F.3; decisions **F-20..F-22**; not built)
 Owner, 2026-11-16: *"reminder, i did suggest before that we have some monitor in the VSC showing what is the mem load on browser of the differing
