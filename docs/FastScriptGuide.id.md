@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: aba1131ca2a01781
+source_sha: 7065b49039438599
 lang: id
 ---
 
@@ -22,7 +22,7 @@ Di terminal, `red1` menyapa Anda sekali, lalu menunggu di promptnya. Inilah pers
 $ (sleep 4; printf 'exit\r') | RED1_LOG=/tmp/fast_guide_greet.log RED1_HISTORY=/tmp/fast_guide_greet.hist BIM_DOOR_JOURNAL=/tmp/fast_guide_greet.journal script -qec 'node common/door/red1.js' /dev/null | tr -d '\r' | sed -e 's/\x1b\[[0-9;?]*[a-zA-Z]//g' -e 's/ · [0-9a-f]\{8\}$//'
 Welcome to red1, the scripting door into BIM and ERP, stored in SQLite.
 REMEMBER THE NAME.
-Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 74 verbs · 29 words
+Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 75 verbs · 30 words
 Type help for the list of commands (or bim, mis, erp for one group).
 Tip: type level student for fuller help on each word (red1 --fast opens without tips).
 
@@ -43,7 +43,7 @@ $ node common/door/red1.js help 2>/dev/null
 red1: type a short word; red1 prints the full line it runs (→ …), then runs it.
   bim   buildings and models             start with: cd Duplex   (16 words)
   mis   records, tables, files, Ninja    start with: cd Order   (11 words)
-  erp   document actions (CO VO CL RC)   start with: cd Order   (7 words)
+  erp   document actions (CO VO CL RC)   start with: cd Order   (8 words)
   everywhere: cd <place> · pwd · role <id> · login <user> · history · report · exit
 Type bim, mis or erp for its words · help <word> for one word (level student first for the full explanation) · help verbs for the full door lines.
 ```
@@ -63,6 +63,7 @@ erp: document actions (CO VO CL RC) (start with: cd Order)
   do CO 50000                                         a document action
   run "Set Project Type" 990000 C_ProjectType_ID=103  run a process of the dictionary
   next 50000                                          what a document may do next
+  ask "How do I close a Sales Order?"                 ask the help a question, in your language
 ```
 
 `help` tidak mencetak kata kerja pintu, hanya kata-katanya. `help verbs` mendaftar setiap kata kerja pintu dengan baris lengkapnya. Untuk bantuan lebih lengkap tentang satu kata, pindah ke tingkat Student: `level student` dalam sesi, atau `--level student` pada satu baris, lalu `help <word>` menjelaskan apa yang dilakukan kata itu, apa yang Anda ketik, apa yang diambil red1 dari tempat Anda berada, dan sebuah contoh. Teksnya adalah deskripsi kata kerja itu sendiri, jadi tidak bisa menyimpang dari tabel di akhir:
@@ -77,6 +78,27 @@ cost: the cost of a selection: cost [phase|task|storey|discipline|class] [column
     taken from where you are: building
     e.g. in Duplex: viewer.cost building=Duplex by=discipline
 ```
+
+**Bantuan dalam bahasa Anda sendiri.** `ask "<question>"` mengajukan pertanyaan ke bantuan yang sama dengan kotak pertanyaan ERP di browser, dengan kata-kata biasa, dan berfungsi di sebuah jenis ERP (`cd Order`). Jawabannya menyebut jendela, aksi dokumen dan status yang mengizinkannya, baris perintah yang menjalankannya, dan bagian panduan. Dibaca dari kamus dan paket bahasa iDempiere yang diterbitkan; tidak ada AI di dalamnya, dan ia hanya membaca. Bahasanya adalah yang Anda pilih dengan `lang=zh_CN`, jika tidak preferensi tersimpan Anda saat Anda masuk (`login`), jika tidak `LANG` terminal Anda, jika tidak bahasa sistem. Teks yang tidak dicakup paket tetap dalam bahasa Inggris, seperti di legacy (deskripsi aksi di bawah). Di sini terminalnya berbahasa Tionghoa:
+
+<!-- run: red1_ask_zh -->
+```text
+$ printf 'cd Order\nask "如何关闭销售订单？"\n' | LANG=zh_CN.UTF-8 node common/door/red1.js 2>/dev/null | sed 's/ · [0-9]* ms//'
+→ mis.describe kind=Order
+Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
+→ erp.ask question=如何关闭销售订单？
+ok · erp.ask
+窗口: 销售订单
+文档动作: 结束 — Finally close this transaction. It cannot be re-activated.
+  单据处于以下状态时可用: 完成, 等候付款
+CLI: erp.close kind=Order number=<Document No>
+指南: 1 · 销售订单 https://red1oon.github.io/BIMCompiler/ERPUserGuide/#1-sales-order
+
+从菜单（⌂ → 销售）打开销售订单，建一两行，然后按处理按钮（§6）→ 完成。完成不只是改变状态：completeIt 会在同一个已签名的操作组里，接着生成后面的出货单和发票。
+(由构建会话翻译，未经母语者审校)
+```
+
+ERP di browser memiliki bantuan yang sama di setiap field, langkah How To, dan kotak pertanyaan, dalam bahasa yang Anda pilih di kepalanya: lihat [Help on every field, and a question box](ERPUserGuide.md#help-on-every-field-and-a-question-box-live) di Panduan Pengguna ERP.
 
 Sekarang satu kata. `cd` menyatakan di mana Anda berada, jadi Anda tidak mengulanginya. Setelah `cd Duplex` dan `cd Element`, sebuah `count` hanya butuh satu hal yang baru. Baris `→` adalah yang dikirim red1 ke pintu; baris itu adalah bentuk panjang dari kata tersebut:
 
@@ -106,7 +128,7 @@ Ketik `exit` untuk keluar. Agar cukup mengetik `red1` dari mana saja, jalankan `
 <!-- run: red1_version -->
 ```text
 $ node common/door/red1.js --version | sed -e 's/^Copyright[^·]*· //' -e 's/ · [0-9a-f]\{8\}$//'
-red1 1.0.0 · 74 verbs · 29 words
+red1 1.0.0 · 75 verbs · 30 words
 ```
 
 **Unduhan enam berkas** untuk pintu saja dengan kata kerja Modeller, tanpa checkout. Buat folder kosong, pasang mesin peramban yang dibutuhkan Modeller, lalu ambil enam berkas:
@@ -296,12 +318,6 @@ Project: 48 properties; ls shows C_Project_ID, Value, Name, Processed, SalesRep_
 run: Renumber has no parameter to ask (none in the dictionary)
 → erp.process name=Renumber kind=Project
 refused · erp.process · Renumber was not run: it has no JS port yet (class org.compiere.process.DiscountSchemaReSeq)
-{
- "refused": true,
- "reason": "Renumber was not run: it has no JS port yet (class org.compiere.process.DiscountSchemaReSeq)",
- "gap": true,
- "gapKind": "no-port"
-}
 This is a gap in red1, not your mistake. Type report to send it to us (email or GitHub issue).
 ```
 
@@ -439,6 +455,7 @@ Tabel ini **dihasilkan dari berkas kosakata** (`common/door/verbs.json`) dan seb
 | `erp.process` | Menjalankan sebuah proses dari kamus | `name`, `record` (opsional), `kind` (opsional), `dry` (opsional), `role` (opsional), filter `column=value` lainnya (opsional) | writes | human, ai | checkout bim-ootb |
 | `erp.order_state` | Apa yang dipegang ERP untuk pilihan sebuah bangunan, dan apa yang sah berikutnya | `building`, filter `column=value` lainnya (opsional) | read | human, ai | checkout bim-ootb |
 | `erp.project_status` | Status nilai hasil (earned value) sebuah proyek | `id` (opsional), `number` (opsional), `asof` (opsional) | read | human, ai | checkout bim-ootb |
+| `erp.ask` | Mengajukan pertanyaan ke bantuan | `question`, `lang` (opsional), `role` (opsional) | read | human, ai | checkout bim-ootb |
 | `mis.lookup` | Nilai yang sah untuk sebuah kolom atau parameter proses | `column`, `kind` (opsional), `process` (opsional), `id` (opsional), `limit` (opsional), `role` (opsional), filter `column=value` lainnya (opsional) | read | human, ai | checkout bim-ootb |
 | `viewer.cost` | Biaya dari sebuah pilihan pada satu bangunan | `building`, `by` (opsional), filter `column=value` lainnya (opsional) | read | human, ai | checkout bim-ootb |
 | `erp.find` | Mencari sebuah dokumen | `kind`, `number` | read | human, ai | checkout bim-ootb |
@@ -475,7 +492,7 @@ Tabel ini **dihasilkan dari berkas kosakata** (`common/door/verbs.json`) dan seb
 | `erp.new` | Membuat sebuah rekaman (nama lama dari mis.new) | `kind`, `dry` (opsional), `role` (opsional), `window` (opsional), filter `column=value` lainnya (opsional) | writes | human, ai | checkout bim-ootb |
 <!-- /GEN:verbs -->
 
-**Cakupan saat ini.** Daftarnya sengaja kecil: 64 kata kerja mencakup pengeditan grid Modeller, walker-nya, dan Modeller yang dibiarkan terbuka di antara baris, beberapa pertanyaan Viewer, jadwal, pembacaan, penghitungan, dan penulisan objek generik, biaya sebuah pilihan, kata kerja dokumen ERP, dan proses apa pun dari kamus ERP yang punya port. Viewer punya 64 aksi yang bisa ditekan seseorang, dan pintu menawarkan 6 kata kerja Viewer. ERP punya 1158 dokumen dan proses, dan pintu menawarkan 9 kata kerja ERP untuk kehidupan sebuah dokumen dan 15 kata kerja MIS yang bekerja pada tabel apa pun, serta menyimpan 10 nama lama agar baris-baris sebelumnya tetap jalan. Jadi ini sebuah permulaan, bukan seluruh menu.
+**Cakupan saat ini.** Daftarnya sengaja kecil: 65 kata kerja mencakup pengeditan grid Modeller, walker-nya, dan Modeller yang dibiarkan terbuka di antara baris, beberapa pertanyaan Viewer, jadwal, pembacaan, penghitungan, dan penulisan objek generik, biaya sebuah pilihan, kata kerja dokumen ERP, dan proses apa pun dari kamus ERP yang punya port. Viewer punya 64 aksi yang bisa ditekan seseorang, dan pintu menawarkan 6 kata kerja Viewer. ERP punya 1158 dokumen dan proses, dan pintu menawarkan 10 kata kerja ERP untuk kehidupan sebuah dokumen dan 15 kata kerja MIS yang bekerja pada tabel apa pun, serta menyimpan 10 nama lama agar baris-baris sebelumnya tetap jalan. Jadi ini sebuah permulaan, bukan seluruh menu.
 
 
 ## Bagaimana halaman ini tetap benar

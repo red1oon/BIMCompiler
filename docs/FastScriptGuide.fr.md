@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: aba1131ca2a01781
+source_sha: 7065b49039438599
 lang: fr
 ---
 
@@ -22,7 +22,7 @@ Sur un terminal, `red1` vous accueille une fois, puis attend à son invite. Voic
 $ (sleep 4; printf 'exit\r') | RED1_LOG=/tmp/fast_guide_greet.log RED1_HISTORY=/tmp/fast_guide_greet.hist BIM_DOOR_JOURNAL=/tmp/fast_guide_greet.journal script -qec 'node common/door/red1.js' /dev/null | tr -d '\r' | sed -e 's/\x1b\[[0-9;?]*[a-zA-Z]//g' -e 's/ · [0-9a-f]\{8\}$//'
 Welcome to red1, the scripting door into BIM and ERP, stored in SQLite.
 REMEMBER THE NAME.
-Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 74 verbs · 29 words
+Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 75 verbs · 30 words
 Type help for the list of commands (or bim, mis, erp for one group).
 Tip: type level student for fuller help on each word (red1 --fast opens without tips).
 
@@ -43,7 +43,7 @@ $ node common/door/red1.js help 2>/dev/null
 red1: type a short word; red1 prints the full line it runs (→ …), then runs it.
   bim   buildings and models             start with: cd Duplex   (16 words)
   mis   records, tables, files, Ninja    start with: cd Order   (11 words)
-  erp   document actions (CO VO CL RC)   start with: cd Order   (7 words)
+  erp   document actions (CO VO CL RC)   start with: cd Order   (8 words)
   everywhere: cd <place> · pwd · role <id> · login <user> · history · report · exit
 Type bim, mis or erp for its words · help <word> for one word (level student first for the full explanation) · help verbs for the full door lines.
 ```
@@ -63,6 +63,7 @@ erp: document actions (CO VO CL RC) (start with: cd Order)
   do CO 50000                                         a document action
   run "Set Project Type" 990000 C_ProjectType_ID=103  run a process of the dictionary
   next 50000                                          what a document may do next
+  ask "How do I close a Sales Order?"                 ask the help a question, in your language
 ```
 
 `help` n'affiche pas de verbes de la porte, seulement les mots. `help verbs` liste chaque verbe de la porte avec sa ligne complète. Pour une aide plus complète sur un mot, passez au niveau Student : `level student` dans une session, ou `--level student` sur une ligne, puis `help <word>` dit ce que fait le mot, ce que vous tapez, ce que red1 prend de l'endroit où vous êtes, et un exemple. Le texte est la description propre du verbe, donc il ne peut pas diverger du tableau de la fin :
@@ -77,6 +78,27 @@ cost: the cost of a selection: cost [phase|task|storey|discipline|class] [column
     taken from where you are: building
     e.g. in Duplex: viewer.cost building=Duplex by=discipline
 ```
+
+**L'aide dans votre propre langue.** `ask "<question>"` pose une question à la même aide que la boîte à questions de l'ERP du navigateur, en mots simples, et fonctionne dans un type de l'ERP (`cd Order`). La réponse nomme la fenêtre, l'action du document et les statuts d'où elle est permise, la ligne de commande qui la fait et la section du guide. Elle est lue dans le dictionnaire et les packs de langue publiés d'iDempiere ; il n'y a pas d'IA dedans, et elle ne fait que lire. La langue est celle choisie avec `lang=zh_CN`, sinon votre préférence enregistrée quand vous êtes connecté (`login`), sinon le `LANG` de votre terminal, sinon celle du système. Un texte que le pack ne couvre pas reste en anglais, comme dans legacy (la description de l'action ci-dessous). Ici le terminal est en chinois :
+
+<!-- run: red1_ask_zh -->
+```text
+$ printf 'cd Order\nask "如何关闭销售订单？"\n' | LANG=zh_CN.UTF-8 node common/door/red1.js 2>/dev/null | sed 's/ · [0-9]* ms//'
+→ mis.describe kind=Order
+Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
+→ erp.ask question=如何关闭销售订单？
+ok · erp.ask
+窗口: 销售订单
+文档动作: 结束 — Finally close this transaction. It cannot be re-activated.
+  单据处于以下状态时可用: 完成, 等候付款
+CLI: erp.close kind=Order number=<Document No>
+指南: 1 · 销售订单 https://red1oon.github.io/BIMCompiler/ERPUserGuide/#1-sales-order
+
+从菜单（⌂ → 销售）打开销售订单，建一两行，然后按处理按钮（§6）→ 完成。完成不只是改变状态：completeIt 会在同一个已签名的操作组里，接着生成后面的出货单和发票。
+(由构建会话翻译，未经母语者审校)
+```
+
+L'ERP du navigateur a la même aide sur chaque champ, les étapes How To et la boîte à questions, dans la langue choisie dans son en-tête : voir [Help on every field, and a question box](ERPUserGuide.md#help-on-every-field-and-a-question-box-live) dans le Guide utilisateur de l'ERP.
 
 Maintenant un mot. `cd` dit où vous êtes, donc vous ne le répétez pas. Après `cd Duplex` et `cd Element`, un `count` n'a besoin que de la seule chose nouvelle. La ligne `→` est ce que red1 a envoyé à la porte ; cette ligne est la forme longue du mot :
 
@@ -106,7 +128,7 @@ Tapez `exit` pour quitter. Pour taper simplement `red1` de n'importe où, lancez
 <!-- run: red1_version -->
 ```text
 $ node common/door/red1.js --version | sed -e 's/^Copyright[^·]*· //' -e 's/ · [0-9a-f]\{8\}$//'
-red1 1.0.0 · 74 verbs · 29 words
+red1 1.0.0 · 75 verbs · 30 words
 ```
 
 **Le téléchargement de six fichiers** sert à la porte seule avec les verbes du Modeller, sans copie complète. Créez un dossier vide, installez le moteur de navigateur dont le Modeller a besoin, et récupérez les six fichiers :
@@ -296,12 +318,6 @@ Project: 48 properties; ls shows C_Project_ID, Value, Name, Processed, SalesRep_
 run: Renumber has no parameter to ask (none in the dictionary)
 → erp.process name=Renumber kind=Project
 refused · erp.process · Renumber was not run: it has no JS port yet (class org.compiere.process.DiscountSchemaReSeq)
-{
- "refused": true,
- "reason": "Renumber was not run: it has no JS port yet (class org.compiere.process.DiscountSchemaReSeq)",
- "gap": true,
- "gapKind": "no-port"
-}
 This is a gap in red1, not your mistake. Type report to send it to us (email or GitHub issue).
 ```
 
@@ -439,6 +455,7 @@ Ce tableau est **généré à partir du fichier de vocabulaire** (`common/door/v
 | `erp.process` | Lancer un processus du dictionnaire | `name`, `record` (facultatif), `kind` (facultatif), `dry` (facultatif), `role` (facultatif), autres filtres `column=value` (facultatif) | writes | human, ai | une copie complète de bim-ootb |
 | `erp.order_state` | Ce que l'ERP détient pour la sélection d'un bâtiment et ce qui est permis ensuite | `building`, autres filtres `column=value` (facultatif) | read | human, ai | une copie complète de bim-ootb |
 | `erp.project_status` | L'état de valeur acquise d'un projet | `id` (facultatif), `number` (facultatif), `asof` (facultatif) | read | human, ai | une copie complète de bim-ootb |
+| `erp.ask` | Poser une question à l'aide | `question`, `lang` (facultatif), `role` (facultatif) | read | human, ai | une copie complète de bim-ootb |
 | `mis.lookup` | Les valeurs permises d'une colonne ou d'un paramètre de processus | `column`, `kind` (facultatif), `process` (facultatif), `id` (facultatif), `limit` (facultatif), `role` (facultatif), autres filtres `column=value` (facultatif) | read | human, ai | une copie complète de bim-ootb |
 | `viewer.cost` | Le coût d'une sélection d'un bâtiment | `building`, `by` (facultatif), autres filtres `column=value` (facultatif) | read | human, ai | une copie complète de bim-ootb |
 | `erp.find` | Trouver un document | `kind`, `number` | read | human, ai | une copie complète de bim-ootb |
@@ -475,7 +492,7 @@ Ce tableau est **généré à partir du fichier de vocabulaire** (`common/door/v
 | `erp.new` | Créer un enregistrement (ancien nom de mis.new) | `kind`, `dry` (facultatif), `role` (facultatif), `window` (facultatif), autres filtres `column=value` (facultatif) | writes | human, ai | une copie complète de bim-ootb |
 <!-- /GEN:verbs -->
 
-**Couverture actuelle.** La liste est petite à dessein : 64 verbes couvrent les modifications de trame du Modeller, son walker et un Modeller gardé ouvert entre les lignes, quelques questions du Viewer, le planning, la lecture, le comptage et l'écriture génériques d'objets, le coût d'une sélection, les verbes de documents ERP et tout processus du dictionnaire ERP qui a un port. Le Viewer a 64 actions qu'une personne peut presser, et la porte offre 6 verbes du Viewer. L'ERP a 1158 documents et processus, et la porte offre 9 verbes ERP pour la vie d'un document et 15 verbes MIS qui marchent sur n'importe quelle table, et garde 10 anciens noms pour que les lignes antérieures fonctionnent encore. C'est donc un début, pas le menu complet.
+**Couverture actuelle.** La liste est petite à dessein : 65 verbes couvrent les modifications de trame du Modeller, son walker et un Modeller gardé ouvert entre les lignes, quelques questions du Viewer, le planning, la lecture, le comptage et l'écriture génériques d'objets, le coût d'une sélection, les verbes de documents ERP et tout processus du dictionnaire ERP qui a un port. Le Viewer a 64 actions qu'une personne peut presser, et la porte offre 6 verbes du Viewer. L'ERP a 1158 documents et processus, et la porte offre 10 verbes ERP pour la vie d'un document et 15 verbes MIS qui marchent sur n'importe quelle table, et garde 10 anciens noms pour que les lignes antérieures fonctionnent encore. C'est donc un début, pas le menu complet.
 
 
 ## Comment cette page reste vraie
