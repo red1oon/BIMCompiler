@@ -20,6 +20,8 @@ Owner, closing 2026-11-15: *"get it well documented in the prompts/# consolidate
 
 **0. ✅ DONE 2026-11-15 (fourth session): F-18 answered, the provenance hover built and merged — §F.23 (bim-ootb #3064 + tooltip-in-window fix #3069); FILM 3 built (`prompts/FILM_IMMERSIVE_SOFTWARE.md` FILM 3 STATUS, awaiting the owner's review); the default-key + truss findings handed to the DXF2BIM lane (bim-ootb `prompts/DXF2BIM_ARCHITECT_REVIEW.md` §D113, #3070). NEXT = the X0 "New witness for this file" command (§F.21 OPEN), or Part A's remaining A2 (item 2).** The text below is the original hand-over.
 
+**0l. 2026-11-16 (sixth session, end):** owner "proceed" → **A2-EDGE-2 built (bim-ootb #3140)**: `crud_overlay._modelEnv` and `plugin_overlay`'s env are views of the one edge clock; `genesis.js` already pure. **A2 is complete. NEXT: A3 W-CORE-PURE**, then ask the owner about the `pipo_packin.js` UTC fallback (A2-EDGE-2 SPEC finding).
+
 **0k. 2026-11-16 (sixth session, last):** owner "proceed" → **A2-VALUE-1 built (bim-ootb #3135)**: the viewer core's last clock/RNG reads (baseline `set_at`, cache recency stamp, tab id) go through `CoreEdge`; 4D cache identical. **NEXT:** the EDGE producers (`crud_overlay._modelEnv`, `plugin_overlay._localNow`, `genesis.js:729` LAST), then A3 W-CORE-PURE.
 
 **0j. 2026-11-16 (sixth session, later):** owner asked again for the browser-memory monitor of the three pages in VS Code → **§F.31** decided (F-20 code only, F-21 button only, F-22 X0 panel + PR body, all as recommended) and **built (bim-ootb #3131, W-HEAP-IMPACT 12/0, red control +5.00 MB on ERP only)**. From now on an X0-lane PR pastes its `§HEAP_IMPACT_DELTA` lines beside `§PERF_IMPACT` (F-2 observation to 2026-11-30). Guide §0.1 now says plainly that a witness is a unit test of one item, for developers, never called by a user. Part A's next item (the value reads) is unchanged.
@@ -485,6 +487,57 @@ fallback); after, all three come from the one installed edge, and a missing edge
   Modeller page has had the edge since A2-TIMING-3), found by `scripts/bump.js`; bumps were viewer v1712 → v1713, modeller v279 → v280, `edit_delta_ui.js`
   14 → 15. (2) The witness's first run never exited: `ScheduleSync.create()` opens a real `BroadcastChannel` in Node; T14 closes every handle it makes.
 - **Remaining A2:** the EDGE producers (`crud_overlay._modelEnv`, `plugin_overlay._localNow`, `genesis.js:729` LAST), then A3 W-CORE-PURE.
+
+**A2-EDGE-2 SPEC (2026-11-16, owner "proceed"; decisions A-2 + A-6; bim-ootb tracker issue with the PR).** The env PRODUCERS: edge code that builds the
+transaction env with its own copy of the local-stamp code. A-2 says the trx env is a VIEW of the one login-context clock, so each producer keeps its fields
+and its behaviour but takes the instant from the installed edge and the text from `Env.stamp` (one implementation). Measured on bim-ootb `main` @ `1d2acabd`:
+- `erp/crud_overlay.js:1904` `_modelEnv()`: `new Date()` + a hand `pad`, `uuid` = `crypto.randomUUID` or `null`. Callers: 6, every one behind a `ModelLayer`
+  check (`:1951 :1988 :2686 :2739 :2882 :3388`). Pages: `erp/idempiere.html:842` (edge installed at `:708`) and `erp/glassbowl.html:882` (no edge, but it loads
+  no `ModelLayer`, so `_modelEnv` is never reached there). In Node, `require('crud_overlay.js')` returns the pure core only; `_modelEnv` is not loaded.
+- `erp/plugin_overlay.js:114` `_localNow()` (a second copy of the same stamp) and `:115` `_clientEnv(r)`, which reads the clock TWICE (`_localNow()` and
+  `Date.now()`), so `now` and `nowMillis` can disagree. Used by `packInClient` (`:132`, the `AD_Package_Imp` row's `created`/`updated`) and the client-pack
+  replay (`:162`). Loaded by `erp/idempiere.html:637` only.
+- `erp/genesis.js:729`: **reads no clock and no RNG** (a fixed 09:00 on the posting date, a counter for ids): already pure. **No change.** Folding it into
+  `Env.modelEnv` would change what it returns: `Env.stamp` gives the LOCAL text of an instant, while this env pairs `now = 'D 09:00:00'` with
+  `nowMillis = Date.parse('DT09:00:00Z')` (09:00 UTC). That pair disagrees by the zone offset: a finding, recorded here, not changed.
+- **Probe on `main` (real page, headless, Asia/Kuala_Lumpur, a fake `CoreEdge` set before the call):** `__crud.withModelTrx` hands the env
+  `{"date":"2026-11-16 00:00:00","now":"2026-11-16 19:42:00","nowMillis":1794829320100,"id":"93315523-…"}`: the wall clock and `crypto`, not the edge.
+- **Finding, NOT in this item (not in A-1's list):** `erp/pipo_packin.js:55` and `:270` fall back to a **UTC** stamp (`new Date().toISOString()…`) when a caller
+  passes no `now`, and the bundle Pack In path does not pass one (`:308` `recordImport(db, bundle, p.version, st)`). Same defect class as the door stamp (0b).
+  Ask the owner before changing it.
+**Build (one PR):**
+1. `_modelEnv()`: `var E = AdCallout.Env, edge = E.edge(), ms = edge.nowMs(), st = E.stamp(ms)` → `date: st.day + ' 00:00:00'`, `now: st.now`, `nowMillis: ms`,
+   `uuid: edge.uuid`. Every other field unchanged. No `AdCallout` or no edge: `§ENV_NO_DATE` + throw (A-3; unreachable on both pages, measured above).
+2. `_localNow()` = `Env.stamp(Env.edge().nowMs()).now`; `_clientEnv(r)` reads the edge ONCE (`now` and `nowMillis` from the same instant) and `uuid: edge.uuid`.
+3. Bumps through `scripts/bump.js` (ERP: the parity gate runs, `BUMP_PARITY_BRIDGE` at a bim-compiler `origin/master` worktree, §F.30).
+**Witness W-EDGE-PRODUCERS** (`erp/tests/witness_edge_producers.js`, the real `erp/idempiere.html`, headless, no GPU, `timezoneId: Asia/Kuala_Lumpur`; served from
+`EP_REPO`, default this checkout):
+- E1 `__crud.withModelTrx` under a fake `CoreEdge` (`nowMs` = 2026-11-20 10:15:00 local, a fixed uuid): `date = '2026-11-20 00:00:00'`, `now = '2026-11-20 10:15:00'`,
+  `nowMillis` = the fake's ms, `uuid()` = the fake's id.
+- E2 `PluginEngine.packInClient` with the CAPEX test 2Pack (`capex/plugin/testdata_2pack/*_GardenWorld_CAPEXTestData.zip`, client 11) under the same fake:
+  the new `AD_Package_Imp` row has `created = updated = '2026-11-20 10:15:00'`, and `ok` is true.
+- E3 the producers have no `new Date()` / `Date.now()` / `randomUUID` left (the function bodies, parsed by name from the file).
+- **Red control:** `EP_REPO=<a main worktree>` must FAIL E1–E3 (the probe above already shows E1's wall clock).
+- **Before/after:** W-TD-PACKIN-WINDOW (the Pack In button, `capex/tests/witness_td_packin_window.js`) `VERDICT PASS`, W-RULE-FOLD-EDGE, W-CORE-TIMING,
+  W-CORE-CLOCK-READS, W-ENV-VIEWS unchanged; the parity gate verdict set unchanged.
+**Issue proved:** two edge producers each kept their own copy of the local-stamp code, read the wall clock and the RNG directly, and one read the clock twice;
+after, both are views of the one edge clock through `Env.stamp`, so a page's model env follows the installed edge.
+
+**A2-EDGE-2 RESULT (2026-11-16): ✅ DONE (witness), bim-ootb #3139 / PR #3140.** +114 / −13, 6 files (+15 / −9 in the two producers). Logs read:
+- W-EDGE-PRODUCERS `§EDGE_PRODUCERS checks=5 failed=0 verdict=PASS` on the real page: E1 env `{"date":"2026-11-20 00:00:00","now":"2026-11-20 10:15:00","nowMillis":1795140900000,
+  "id":"11111111-…"}` = the fake edge · E2 a real `packInClient` (`§PACKIN-CLIENT … ok=true processed=225 unresolved=0`), `AD_Package_Imp` created/updated =
+  `2026-11-20 10:15:00` · E3 (espree, by function name) 0 clock calls in `_modelEnv`, `_localNow`, `_clientEnv`.
+- **Red:** `EP_REPO=<main worktree>` 5/5 FAIL (`now=2026-11-16 19:44:40`, a crypto id, Pack In stamped `2026-11-16 19:44:46`, 2 + 1 + 2 calls).
+- Before/after (detached `main` worktree): W-TD-PACKIN-WINDOW `VERDICT PASS judged=4` both sides · W-RULE-FOLD-EDGE 4/0 both, and 5/0 with the page row on the
+  branch (`§ENV_EDGE_lines=1 §ENV_NO_DATE=0 chainOk=Y`) · W-ENV-VIEWS 7/0 · W-CORE-CLOCK-READS 4/0 · `audit_sw_precache` 268/268.
+- Parity gate (`scripts/bump.js`, erp/sw.js v1091 → v1092, `crud_overlay.js` 44 → 45 and 20 → 21 in `glassbowl.html`, `plugin_overlay.js` 10 → 11):
+  `§BUMP_PARITY mode=block verdicts=13 new=[] known=[DD:FAIL,CTX:FAIL,DDS:HARNESS-FAIL] tree=/tmp/wt-a2e scoped=partial verdict=PASS`; log: 0 `sql.js`
+  errors (a `node_modules` symlink into the fresh bridge worktree), every witness on `ootb=/tmp/wt-a2e`.
+- **New instrument trap (for §8):** in a FRESH bim-compiler bridge worktree, DD and DDS fail on `ENOENT … copyfile '<bridge>/build/erp/ad_seed_fullwidth.db'`:
+  that DB is untracked and exists only in the shared `~/bim-compiler`. Both are on the gate's known list, so the verdict holds, but in such a run they judged
+  nothing. Copy or link that DB into the bridge worktree before a gate run that must judge DD/DDS.
+- **Remaining A2:** none in the A-1 list (`genesis.js` needs no change). **NEXT: A3 W-CORE-PURE** (the AST scan over the A-1 list that replaces
+  `witness_core_clock_reads.js`'s hand list), then the `pipo_packin.js` UTC finding to the owner (one message).
 
 ---
 
@@ -1255,7 +1308,7 @@ Ask the owner **one decision per message, with the recommendation** (START HERE 
 
 | Part | What | State |
 |---|---|---|
-| A | pure core + Env | **A0 ✅** · **A-1..A-5 ✅** · **A1 ✅** (#3007) · **A2** done for 15 files (#3010 #3013 #3016 #3021 #3026 #3030 #3033) + A2-TIMING-1 (#3110) + A-6 / A2-TIMING-2 (#3122) + A2-TIMING-3 (bim-ootb #3124) + A2-VALUE-1 (#3135), remaining: the EDGE producers, then A3 |
+| A | pure core + Env | **A0 ✅** · **A-1..A-5 ✅** · **A1 ✅** (#3007) · **A2** done for 15 files (#3010 #3013 #3016 #3021 #3026 #3030 #3033) + A2-TIMING-1 (#3110) + A-6 / A2-TIMING-2 (#3122) + A2-TIMING-3 (bim-ootb #3124) + A2-VALUE-1 (#3135) + A2-EDGE-2 (#3140): **A2 complete**; next A3 |
 | B | manifest per app | not started · B0 ready · open: B-1 to B-4 |
 | C | named APP parts | not started · open: C-1, C-2 |
 | D | owner table | not started · open: D-1, D-2 |
