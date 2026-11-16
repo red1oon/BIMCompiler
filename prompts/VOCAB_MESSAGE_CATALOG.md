@@ -743,8 +743,11 @@ Two terminal ideas. Neither is built and nothing is decided.
    - E.g. `erp.ask` given a column, or `help <column>` inside `cd Order`.
    - Spec it here when picked up.
    - **How it would work in CLI form** (owner 2026-11-16: *"How would it work in CLI form? Note in prompt."*). There is no panel; the same text comes up where the browser shows it:
-     - **(i) Asking about a field = the Tool Tip panel.** `cd Order; help DocumentNo` prints the header, the Description, the Help, with the same blank-line rules as `HelpController`, plus the dictionary facts (mandatory, type, list values; the P1 `student` level). It is the field of the kind's window header tab, its own text as AD_Field_v (no inheritance, §7 F4), translated from the help pack.
-     - **(ii) Being asked for a value = the tooltip.** When red1 prompts for a column (`new`, `run` parameters, the `"ask": "params"` forms), the field's Description shows as the one-line hint under the prompt; `?` typed at that prompt prints the full Help.
+     - **(i) Asking about a field, by the LEVEL the CLI already has (§0: Student is a level beside the language; owner: *"i thot longer msg is 'student' mode?"*).**
+       - default (`short`): `cd Order; help DocumentNo` prints the header and the Description, the tooltip;
+       - `level student` adds the Help and the dictionary facts (mandatory, type, list values), the Tool Tip panel, with `HelpController`'s blank-line rules.
+       - It is the field of the kind's window header tab, its own text as AD_Field_v (no inheritance, §7 F4), translated from the help pack.
+     - **(ii) Being asked for a value.** When red1 prompts for a column (`new`, `run` parameters, the `"ask": "params"` forms), the field's Description shows as the one-line hint under the prompt (short level). In student level the Help shows too. `?` typed at that prompt prints the full Help at any level.
      - **(iii) Optional:** `mis.describe` adds each property's Description, read only.
    - **Why it is a small step:**
      - the data exists: AD_Field description / help, already read by `ad_parser.getFields`;
