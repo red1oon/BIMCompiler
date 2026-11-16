@@ -20,7 +20,7 @@ Owner, closing 2026-11-15: *"get it well documented in the prompts/# consolidate
 
 **0. ✅ DONE 2026-11-15 (fourth session): F-18 answered, the provenance hover built and merged — §F.23 (bim-ootb #3064 + tooltip-in-window fix #3069); FILM 3 built (`prompts/FILM_IMMERSIVE_SOFTWARE.md` FILM 3 STATUS, awaiting the owner's review); the default-key + truss findings handed to the DXF2BIM lane (bim-ootb `prompts/DXF2BIM_ARCHITECT_REVIEW.md` §D113, #3070). NEXT = the X0 "New witness for this file" command (§F.21 OPEN), or Part A's remaining A2 (item 2).** The text below is the original hand-over.
 
-**0j. 2026-11-16 (sixth session, later):** owner asked again for the browser-memory monitor of the three pages in VS Code → **§F.31** spec written (tier 3 of §F.3), decisions **F-20, F-21, F-22** open; F-20 asked first. Guide §0.1 now says plainly that a witness is a unit test of one item, for developers, never called by a user. Part A's next item (the value reads) is unchanged.
+**0j. 2026-11-16 (sixth session, later):** owner asked again for the browser-memory monitor of the three pages in VS Code → **§F.31** decided (F-20 code only, F-21 button only, F-22 X0 panel + PR body, all as recommended) and **built (bim-ootb #3131, W-HEAP-IMPACT 12/0, red control +5.00 MB on ERP only)**. From now on an X0-lane PR pastes its `§HEAP_IMPACT_DELTA` lines beside `§PERF_IMPACT` (F-2 observation to 2026-11-30). Guide §0.1 now says plainly that a witness is a unit test of one item, for developers, never called by a user. Part A's next item (the value reads) is unchanged.
 
 **0i. 2026-11-16 (sixth session):** **A2-TIMING-3 built (bim-ootb #3124)**: `common/room_graph.js` + `viewer/schedule_inject.js` time through `CoreEdge`, the Modeller page installs the edge too; all timing reads of RESUME 2 are done. **NEXT:** the VALUE reads `schedule_author.js` / `schedule_sync.js` (A2-TIMING-3 RESULT names the lines), then the EDGE producers, then A3. Also this session, at the owner's request: `docs/DeveloperGuide.md` **§0.1 Witnesses** (how a witness tests the shipped file, and what is and is not deployed, checked on the live site).
 
@@ -973,7 +973,59 @@ no browser). **Nothing in VS Code shows browser memory today.**
   a button (*X0: Memory of the three pages*), plus the last result kept in the status bar until the code changes; never beside a live bake or GPU work.**
 - **F-22 — where it shows.** **Recommendation:** the X0 panel row under "Cost if deployed" (bytes and memory side by side), and the `§HEAP_IMPACT` lines
   pasted into the PR body as F-2 already asks for the bytes.
-**DECISIONS:** *(none yet)*
+**DECISIONS:**
+- 2026-11-16, owner, on **F-20** (what the number measures): chose *"Code only (Recommended)"*. → each page boots with no building or the one small
+  fixed sample; big-building memory stays the bake logs' job.
+- 2026-11-16, owner, on **F-21** (when it runs): chose *"Button only (Recommended)"*. → a command the developer presses; the last result stays in the
+  status bar until the code changes; never runs on its own.
+- 2026-11-16, owner, on **F-22** (where it shows): chose *"X0 panel + PR body (Recommended)"*. → a Run & Ship row beside Cost if deployed, the status
+  bar line, and the `§HEAP_IMPACT` lines pasted into the PR body (F-2's observation until 2026-11-30).
+
+**FACTS measured before the build (2026-11-16, bim-ootb `main` @ `9b7d2f86`, headless shell, software GL, service worker blocked, GC forced before reading;
+probe kept at the session scratchpad, its lines quoted here):** 3 runs per page, `JSHeapUsedSize` after load + network idle + 3 s:
+viewer **18.1 / 18.4 / 18.5 MB** (scripts fetched 12,587 KB raw, 320 requests, load 13.8–18.3 s) · ERP **4.2 / 4.2 / 4.2 MB** (4,780 KB, 257) ·
+Modeller **10.9 / 10.9 / 10.9 MB** (8,487 KB, 74). So run-to-run noise is ≤ 0.4 MB, and a few-MB growth is visible.
+- **The bare viewer URL is already "the small fixed sample":** it loads `Duplex_extracted.db` (14,608 KB) by default. Its 9 × 404 are all building DATA
+  the viewer tries and skips (7 git-ignored `.db`/`.bin`, 2 optional patches that do not exist), 0 page errors. **Consequence:** data files are
+  untracked, so both trees must serve the SAME data, or the delta would measure data, not code.
+
+**BUILD SPEC (F-20/F-21/F-22 decided; bim-ootb tracker issue with the PR).** Dev side only (§13 guard): nothing new reaches the browser.
+1. `devtools/vscode/x0-navigator/lib/find_browser.js`: Playwright's `chromium` from `$PLAYWRIGHT`, else `<root>/tests/node_modules/playwright` (already in
+   `tests/package.json`, via `@playwright/test`), else `null`. Never downloads, never installs (the `scripts/lib/find_ts.js` pattern). The extension keeps 0 npm deps.
+2. `devtools/vscode/x0-navigator/lib/heap_impact.js` (pure node, no `vscode` import; also a CLI: `node lib/heap_impact.js <root> [ref]`):
+   - two local servers. **work** = the files on disk. **base** = each TRACKED file as it is at `ref` (`git cat-file --batch`, one process); an untracked
+     file (building data) comes from disk, the same bytes as **work**.
+   - pages = setting `bimDevtools.heapPages`, default `viewer/viewer.html`, `erp/idempiere.html`, `modeller/modeller.html` (the trilogy, named by the owner).
+   - per page and tree, `runs` (default 3) fresh contexts: SW blocked, `--use-gl=swiftshader`; `load`, network idle (60 s cap), 3 s, `HeapProfiler.collectGarbage`,
+     `Performance.getMetrics` → `JSHeapUsedSize`; plus script bytes fetched, requests, load ms.
+   - prints `§HEAP_IMPACT page= tree=work|<ref> jsMB=<median> spreadMB=<max−min> scriptKB= requests= loadMs=` and
+     `§HEAP_IMPACT_DELTA page= jsMB=±x.x scriptKB=±n noiseMB= verdict=SAME|GREW|SHRANK|INCONCLUSIVE`, where noise = the larger spread + 0.2 MB (a noise band,
+     not a budget: F-2 sets budgets on 2026-11-30). INCONCLUSIVE when no browser was found or a page did not load; then `§HEAP_IMPACT verdict=INCONCLUSIVE reason=`.
+   - an `overlay` option (path → text) replaces a work file's bytes in memory: for the witness only, so a test never edits the tree.
+3. `extension.js`: command `x0Navigator.heapImpact` (*X0 Navigator: Memory of the three pages (headless, vs main)*), run as a child `node` process,
+   lines streamed to the X0 output channel; Run & Ship row `3m · Memory of the three pages`; a status-bar item `$(pulse) MB V 18.3 · E 4.2 · M 10.9`
+   (deltas when not SAME) kept until a file in the tree is saved, then marked `(stale)`. The ref is the existing `bimDevtools.costBaseRef`.
+4. **Witness W-HEAP-IMPACT** (`devtools/vscode/x0-navigator/tests/witness_x0_heap_impact.js`):
+   - H1 base server: a tracked file answers its `ref` bytes (equal to `git show`), an untracked data file answers the disk bytes.
+   - H2 unchanged tree vs `HEAD`: all three pages `verdict=SAME`.
+   - H3 **red control:** an overlay appending a 5 MB packed-double array to one ERP boot script: ERP `jsMB` rises by 4–6.5 and says GREW; viewer and
+     Modeller say SAME.
+   - H4 no browser (`$PLAYWRIGHT` pointing nowhere, fallbacks off) → `verdict=INCONCLUSIVE reason=…`, exit 2, nothing thrown.
+   - H5 the extension: the command and the Run & Ship row are registered (`witness_x0_activate` pattern); `witness_x0_isolation` stays `deps=0`.
+   Headless runs only under `nice -n 19`, one at a time, never beside a bake (F-21 / 0g).
+
+**RESULT 2026-11-16: ✅ BUILT (witness), bim-ootb #3130 / PR #3131.** ~+250 / −4, devtools only. Logs read:
+- W-HEAP-IMPACT `§HEAP_W checks=12 failed=0 runs=3 verdict=PASS`: H1 a changed tracked file answers its HEAD bytes (29,827 = 29,827), an ignored data
+  file the disk bytes · H2 unchanged code SAME on all three (`jsMB` +0.04 / 0.00 / 0.00) · **H3 red control: 5 MB planted in `erp/ad_callout.js` (in
+  memory) → ERP `jsMB=+5.00 verdict=GREW`, viewer SAME, Modeller SAME, the file unchanged on disk** · H4 no browser → `verdict=INCONCLUSIVE reason=…`
+  · H5 command + row `3m · Memory of the three pages` + status `MB V 18.4 · E 4.2 · M 10.9`.
+- Other X0 witnesses PASS: activate (commands 10 → 11; Run & Ship rows 5 → 6, both counts updated in that witness and in `witness_x0_deploy` D3),
+  isolation `deps=0`, appdef, catalog, context, deploy_cost, fresh, lens, newwit, refs, ship, stamp; taghover PASS with `--compiler-root ~/bim-compiler`
+  (INCONCLUSIVE without it in a `/tmp` worktree: its default looks for `../bim-compiler`, an instrument path, not this change).
+- **Spec deviations, said here:** the status-bar item and its save listener are created on the FIRST run, not at activation, so `witness_x0_activate`'s
+  other counts (4 save listeners, the one status item it reads) stay as they were. Not added to CI: its X0 list is explicit, and F-21 is button only.
+- **Known limit, measured:** with no options the viewer downloads its default Duplex sample (14,608 KB) from the project's object-storage bucket, so
+  the viewer row needs the network; both sides fetch the same bytes, so the delta is still the code's. ERP and Modeller fetched no database.
 
 ### F.30 The parity gate judged the shared checkout, not the tree it bumps (found 2026-11-16 by A2-TIMING-1; a defect in F-16, no decision)
 - **Issue proved:** `scripts/bump.js` (F-16) caches its verdict under the BUMPED tree (`HEAD` plus `git diff`), but spawns the bridge (`bash run_all.sh`) with no tree setting, so every bridge witness falls back to `~/bim-ootb`. The bridge log of the A2-TIMING-1 bump says `§SODAP_CTX ootb=/home/red1/bim-ootb` while the bump ran in `/tmp/wt-a2t`. **A PASS is therefore filed under a tree that was never judged (scope-blind, PRIMAL LAW 4).** It also showed a second instrument trap: a fresh bim-compiler worktree has no `node_modules`, so five bridge witnesses printed `Cannot find module 'sql.js'`. The gate counted those as five NEW FAILs, which were the instrument's fault, not real mismatches.
