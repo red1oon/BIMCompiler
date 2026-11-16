@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 07df04bc24c68a3f
+source_sha: aba1131ca2a01781
 lang: id
 ---
 
@@ -44,7 +44,7 @@ red1: type a short word; red1 prints the full line it runs (→ …), then runs 
   bim   buildings and models             start with: cd Duplex   (16 words)
   mis   records, tables, files, Ninja    start with: cd Order   (11 words)
   erp   document actions (CO VO CL RC)   start with: cd Order   (7 words)
-  everywhere: cd <place> · pwd · role <id> · history · report · exit
+  everywhere: cd <place> · pwd · role <id> · login <user> · history · report · exit
 Type bim, mis or erp for its words · help <word> for one word (level student first for the full explanation) · help verbs for the full door lines.
 ```
 
@@ -340,7 +340,7 @@ Kata-kata di atas adalah yang perlu dipelajari lebih dulu. Sisanya, masing-masin
 
 | Kata | Fungsinya |
 |---|---|
-| `pwd` · `cd ..` · `history` · `role <id>` | di mana Anda berada; kembali; baris yang diketik; bertindak sebagai sebuah peran |
+| `pwd` · `cd ..` · `history` · `role <id>` · `login <user>` | di mana Anda berada; kembali; baris yang diketik; bertindak sebagai sebuah peran; menyatakan siapa Anda (hanya diminta di klien dengan lebih dari satu pengguna ber-email; rekaman baru membawa pengguna Anda) |
 | `sum <column>` · `cat <id>` · `rm <id>` | menjumlahkan kolom; menampilkan satu rekaman; menghapus satu |
 | `ninja <file>` · `load <file.csv>` · `diff <file.csv>` | menyiapkan buku kerja Ninja atau CSV; memuat baris dari berkas; membandingkan berkas dengan rekaman |
 | `menu` | menu ERP, di layar |

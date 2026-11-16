@@ -38,7 +38,7 @@ red1: type a short word; red1 prints the full line it runs (→ …), then runs 
   bim   buildings and models             start with: cd Duplex   (16 words)
   mis   records, tables, files, Ninja    start with: cd Order   (11 words)
   erp   document actions (CO VO CL RC)   start with: cd Order   (7 words)
-  everywhere: cd <place> · pwd · role <id> · history · report · exit
+  everywhere: cd <place> · pwd · role <id> · login <user> · history · report · exit
 Type bim, mis or erp for its words · help <word> for one word (level student first for the full explanation) · help verbs for the full door lines.
 ```
 
@@ -334,7 +334,7 @@ The words above are the ones to learn first. The rest, each a short form of a do
 
 | Word | What it does |
 |---|---|
-| `pwd` · `cd ..` · `history` · `role <id>` | where you are; back; the lines typed; act as a role |
+| `pwd` · `cd ..` · `history` · `role <id>` · `login <user>` | where you are; back; the lines typed; act as a role; say who you are (asked only in a client with more than one user with an email; new records carry your user) |
 | `sum <column>` · `cat <id>` · `rm <id>` | add a column; show one record; delete one |
 | `ninja <file>` · `load <file.csv>` · `diff <file.csv>` | stage a Ninja workbook or CSV; load rows from a file; compare a file with the records |
 | `menu` | the ERP menu, on a screen |

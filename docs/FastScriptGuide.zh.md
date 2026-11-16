@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 07df04bc24c68a3f
+source_sha: aba1131ca2a01781
 lang: zh-CN
 ---
 
@@ -44,7 +44,7 @@ red1: type a short word; red1 prints the full line it runs (→ …), then runs 
   bim   buildings and models             start with: cd Duplex   (16 words)
   mis   records, tables, files, Ninja    start with: cd Order   (11 words)
   erp   document actions (CO VO CL RC)   start with: cd Order   (7 words)
-  everywhere: cd <place> · pwd · role <id> · history · report · exit
+  everywhere: cd <place> · pwd · role <id> · login <user> · history · report · exit
 Type bim, mis or erp for its words · help <word> for one word (level student first for the full explanation) · help verbs for the full door lines.
 ```
 
@@ -340,7 +340,7 @@ not done: cd project
 
 | 词 | 作用 |
 |---|---|
-| `pwd` · `cd ..` · `history` · `role <id>` | 您在哪里；返回；输入过的行；以某个角色行事 |
+| `pwd` · `cd ..` · `history` · `role <id>` · `login <user>` | 您在哪里；返回；输入过的行；以某个角色行事；说明您是谁（只在有多个带邮箱用户的客户中要求；新记录会记上您的用户） |
 | `sum <column>` · `cat <id>` · `rm <id>` | 对一列求和；显示一条记录；删除一条 |
 | `ninja <file>` · `load <file.csv>` · `diff <file.csv>` | 准备 Ninja 工作簿或 CSV；从文件加载行；将文件与记录比较 |
 | `menu` | 屏幕上的 ERP 菜单 |
