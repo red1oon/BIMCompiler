@@ -20,6 +20,8 @@ Owner, closing 2026-11-15: *"get it well documented in the prompts/# consolidate
 
 **0. ✅ DONE 2026-11-15 (fourth session): F-18 answered, the provenance hover built and merged — §F.23 (bim-ootb #3064 + tooltip-in-window fix #3069); FILM 3 built (`prompts/FILM_IMMERSIVE_SOFTWARE.md` FILM 3 STATUS, awaiting the owner's review); the default-key + truss findings handed to the DXF2BIM lane (bim-ootb `prompts/DXF2BIM_ARCHITECT_REVIEW.md` §D113, #3070). NEXT = the X0 "New witness for this file" command (§F.21 OPEN), or Part A's remaining A2 (item 2).** The text below is the original hand-over.
 
+**0m. 2026-11-16 (sixth session, close):** owner asked for advice on the `pipo_packin.js` UTC fallback, advice "fix it, legacy first", owner *"ok"* → legacy read (`PO.java:1985/:3341`, `DB_PostgreSQL.TO_DATE`: LOCAL clock) → **A2-PIPO built (bim-ootb #3143)**: bundle Pack In stamps local time. **NEXT: A3 W-CORE-PURE.**
+
 **0l. 2026-11-16 (sixth session, end):** owner "proceed" → **A2-EDGE-2 built (bim-ootb #3140)**: `crud_overlay._modelEnv` and `plugin_overlay`'s env are views of the one edge clock; `genesis.js` already pure. **A2 is complete. NEXT: A3 W-CORE-PURE**, then ask the owner about the `pipo_packin.js` UTC fallback (A2-EDGE-2 SPEC finding).
 
 **0k. 2026-11-16 (sixth session, last):** owner "proceed" → **A2-VALUE-1 built (bim-ootb #3135)**: the viewer core's last clock/RNG reads (baseline `set_at`, cache recency stamp, tab id) go through `CoreEdge`; 4D cache identical. **NEXT:** the EDGE producers (`crud_overlay._modelEnv`, `plugin_overlay._localNow`, `genesis.js:729` LAST), then A3 W-CORE-PURE.
@@ -564,6 +566,20 @@ disagrees", owner *"ok"*; bim-ootb tracker issue with the PR).**
 - **Before/after:** W-PACKIN (`erp/tests/witness_packin.js`), W-TD-PACKIN-WINDOW, W-EDGE-PRODUCERS, the parity gate.
 **Issue proved:** bundle Pack In stamped every row in UTC (yesterday's date before 08:00 at +08) while legacy and the client path stamp local time; after, one
 local clock from the installed edge, and the ids from the edge too.
+
+**A2-PIPO RESULT (2026-11-16): ✅ DONE (witness), bim-ootb #3142 / PR #3143.** +98 / −7, 5 files (+12 / −4 in the two files). Logs read:
+- W-PIPO-LOCAL `§PIPO_LOCAL checks=4 failed=0 verdict=PASS`, page clock `Fri Nov 13 2026 00:30:00 GMT+0800`, walk `[{"ok":true,"processed":225}]`: P1
+  `AD_Package_Imp` `["2026-11-13 00:30:00","2026-11-13 00:30:00"]` · P1b 12 `C_Project` rows at `2026-11-13 00:30:00`, 0 at the UTC stamp · P3 0 clock/RNG calls.
+- **Red (main's files): 4/4 FAIL**, the defect shown: `AD_Package_Imp` `["2026-11-12 16:30:00", …]` and 12 `C_Project` rows at `2026-11-12 16:30:00` (UTC, the
+  previous day); 3 calls in `pipo_packin.js`, 1 in `_packOpts`.
+- **Spec deviation, said here:** P2 (ids from the edge) has no behavioural population: the CAPEX test pack carries its own UUs, so 0 ids were minted (measured).
+  The id default is proven by P3 (parser) only. A pack with records lacking UUs would make P2 real.
+- Before/after (detached `main` worktree): W-PACKIN `§WPK_VERDICT GREEN judged=6 failed=0` both · W-TD-PACKIN-WINDOW 4/0 both · W-EDGE-PRODUCERS 5/0 both · precache 268/268.
+- Parity gate: `§BUMP_PARITY mode=block verdicts=13 new=[] tree=/tmp/wt-pipo scoped=partial verdict=PASS`, 0 `sql.js` errors (erp/sw.js v1092 → v1093,
+  `pipo_packin.js` 4 → 5, `plugin_overlay.js` 11 → 12).
+- **Trap correction (supersedes the A2-EDGE-2 note):** linking `build/erp/ad_seed_fullwidth.db` is not enough; DD and DDS then fail on `build/erp/glassbowl_data.db`.
+  The shared `~/bim-compiler` holds **39 untracked `build/erp/*.db`** (`git ls-files --others --ignored -- 'build/erp/*.db'`) and the bridge reaches them
+  indirectly. Link ALL of them into a fresh bridge worktree before a gate run that must judge DD/DDS. In this run DD/DDS judged nothing (both on the known list).
 
 ---
 
@@ -1334,7 +1350,7 @@ Ask the owner **one decision per message, with the recommendation** (START HERE 
 
 | Part | What | State |
 |---|---|---|
-| A | pure core + Env | **A0 ✅** · **A-1..A-5 ✅** · **A1 ✅** (#3007) · **A2** done for 15 files (#3010 #3013 #3016 #3021 #3026 #3030 #3033) + A2-TIMING-1 (#3110) + A-6 / A2-TIMING-2 (#3122) + A2-TIMING-3 (bim-ootb #3124) + A2-VALUE-1 (#3135) + A2-EDGE-2 (#3140): **A2 complete**; next A3 |
+| A | pure core + Env | **A0 ✅** · **A-1..A-5 ✅** · **A1 ✅** (#3007) · **A2** done for 15 files (#3010 #3013 #3016 #3021 #3026 #3030 #3033) + A2-TIMING-1 (#3110) + A-6 / A2-TIMING-2 (#3122) + A2-TIMING-3 (bim-ootb #3124) + A2-VALUE-1 (#3135) + A2-EDGE-2 (#3140) + A2-PIPO (#3143): **A2 complete**; next A3 |
 | B | manifest per app | not started · B0 ready · open: B-1 to B-4 |
 | C | named APP parts | not started · open: C-1, C-2 |
 | D | owner table | not started · open: D-1, D-2 |
