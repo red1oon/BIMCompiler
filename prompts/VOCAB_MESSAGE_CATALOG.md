@@ -740,7 +740,7 @@ These are legacy's own words in that language; the twin shows them unchanged.
 - **The thread's answer** (post 4, buildingSMART 2022-02-09): official translations are made on `translations.buildingsmart.org` and published on GitHub, in bSDD and through an API. We therefore COPY buildingSMART's own published translations, word for word. We never translate IFC text ourselves. This keeps both the Prime Rule (extract) and ND (we share their material, not an adaptation).
 - **Source = bSDD IFC 4.3**, `https://identifier.buildingsmart.org/uri/buildingsmart/ifc/4.3`, licence `CC BY-ND 4.0` per the API, status `Preview`, released 2024-01-11. It lists 18 languages: EN de-DE es-ES ja-JP nl-NL no-NO pt-PT ru-RU zh-CN it-IT pl-PL da-DK cs-CZ pt-BR sv-SE hr-HR is-IS tr-TR. Fetch: `GET api.bsdd.buildingsmart.org/api/Class/v1?Uri=…/class/<IfcClass>&languageCode=<code>`. A missing language comes back as the English text, so "translated" = it differs from EN.
 - **MEASURED 2026-11-17** (`build/bim_help_prior/bsdd_cov.log`, data `bsdd_ifc43_shipped_classes.json`; population = 51 distinct `ifc_class` over the 11 shipped `viewer/buildings/*_extracted.db`, list in `shipped_ifc_classes_distinct.txt`):
-  - In bSDD 4.3: 48/51. Missing: `IfcWallStandardCase`, `IfcFlowInstrumentType`, `IfcSensorType` (IFC2x3 names). Mapping them to a 4.3 class needs a cited rule, never a guess.
+  - In bSDD 4.3: 48/51. Missing: `IfcWallStandardCase` (removed from IFC 4.3), plus `IfcFlowInstrumentType` and `IfcSensorType`. **Corrected 2026-11-17:** those two are not old names; bSDD leaves out every `…Type` class (`IfcWallType`, `IfcBeamType` and `IfcSensorType` all return 400; `IfcSensor` and `IfcFlowInstrument` return 200). Mapping a type to its occurrence class needs a cited rule, never a guess.
   - Definition translated, of 48: **pt-BR 46, es-ES 31, de-DE 9, ja-JP 9, zh-CN 0, fr-FR 0** (fr is not in bSDD's list; zh-CN is listed but empty for all 48).
   - Viewer locales that bSDD covers at all: de, es, zh, ja, pt_BR. Not covered: fr, ms, th, ko, ar, id, bn, bl, af.
 - **Consequence for the panel:** the class text shows in the chosen language where bSI has it; otherwise in English, with a visible "English (no official translation)" label. It is never machine-translated. Attribution line on every card. (b) stays for our own Help, the things IFC does not say.
@@ -809,6 +809,31 @@ UI words (ours, translated like any label): the heading for (b), the heading "IF
    - Falsifier: a zh card without the fallback line must FAIL.
 5. **Both picks call the renderer:** the two call sites are present, and a live page pick logs `§CLASS_HELP`.
 6. **No regression:** `build_trl.js --check` and W-VIEWER-I18N stay green.
+
+### 14.1 RESULT (2026-11-17): BUILT, bim-ootb #3150 (`feat/class-help-info`)
+- **Files:**
+  - `viewer/info_class_help.js` (renderer, `model()` / `html()` exported for the witness);
+  - `#info-class-help` in `viewer.html`;
+  - calls in `picking.js` and `find_erp_push.js`;
+  - batches `viewer/tools/trl_batch_2026-11-17_ifcdef.js` (generated from `ifc_class_help/bsdd_ifc43_shipped_classes.json`, the bSDD copy, which is also the witness's oracle) and `trl_batch_2026-11-17_ifccls.js` (our 51 sentences, fr/de/ja/zh + 3 panel words in 14 languages);
+  - LOCALE_VERSION 8→9, sw v1715→v1716.
+- **(a) is folded** (`<details>`, closed): the bSI texts run up to 588 chars, and the info panel is 120-180 px wide on mobile.
+- **W-CLASS-HELP PASS** (`viewer/tests/witness_class_help.js`):
+  - contract kit 7/0 over 918 rows (51 classes × 18 packs), red control caught (one character changed in the German IfcWall text; a zh card without its fallback line);
+  - `§CLASS_HELP_COV`: de 9 official / 39 fallback, es 31/17, ja 9/39, pt_BR 46/2, zh 0/48, fr 0/48;
+  - C4a-d named cases;
+  - C5 real Find pick on Duplex: de_DE shows the German bSI text, no fallback line; zh_CN shows our Chinese sentence + English bSI text + fallback line. Credit is shown in both.
+  - The pick loop clicks results until `#info-class` reads `IfcWall`, because the Find list mixes in IfcWallStandardCase.
+- **Found on main, fixed in the same PR:** bim-ootb #1937 added 4 `pill_roadstd` rows to `ad_message_base.csv` but to no `AD_Message_Trl_*.xml`, so `build_trl.js` threw on main since 2026-10-07. They were added as `trl="N"`.
+- **W-VIEWER-I18N** (de_DE, zh_CN): clean main fail=5, branch fail=3. Leaks are unchanged (23/308, 23/310). The 3 left pre-exist and are other lanes':
+  - (3b) unknown keys `ui_export_bcf`, `wi_store_changed`;
+  - (3c) `pillc_lod400_*` not in the CSV;
+  - erp9-zero-leaks (roadstd untranslated + 19 uncatalogued).
+- **Open (owner):**
+  - (i) The German bSI IfcWall text cites ISO 6707-1 (1 of 48 × 6 languages mentions ISO). The cover page's Copyright Exclusion Notice says such parts sit outside bSI's copyright. Shown verbatim for now.
+  - (ii) Type classes (`IfcSensorType`, `IfcFlowInstrumentType`): map to their occurrence class only with a cited rule.
+  - (iii) (b) in the 13 non-pilot languages: on the owner's word.
+- **Next in the agreed order:** step 2, How To in the `?` panel.
 
 ## 15. NOT URGENT, to think about (owner 2026-11-16: *"You mean we can mis.<translated verb>? Note in prompt then we shall think about it not urgent."*)
 Two terminal ideas. Neither is built and nothing is decided.
