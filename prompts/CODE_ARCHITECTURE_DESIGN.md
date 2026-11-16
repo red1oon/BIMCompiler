@@ -815,6 +815,23 @@ at a worktree on `origin/master` (e.g. `/tmp/wt-bridge`) until the default is de
   - Before/after: `witness_x0_activate` and the realvsc install suite keep their verdicts.
 - **RESULT 2026-11-16: ✅ DONE (witness), bim-ootb #3091 / PR #3092, merged `186d80ae`.** On `main`: `§X0_STAMP_W files=13 stamp=1c3372cfee90 deterministic=Y checks=10 failed=0 verdict=PASS`. S5 activates the PACKED `extension.js`: stale gives `§X0_STAMP state=stale built=1c3372cfee90 source=4ed593f6e739 warnings=1`, restored gives `state=same … warnings=0`. **Red run on the old code** (the new witness with `main`'s old `pack.js`/`extension.js`): exit 1, S1 `null = f56ea15ddad5`, S3 `state=unknown`. The stub refactor is neutral: `witness_x0_activate` gives the same 30 PASS checks and the same `§X0_ACTIVATE definition=1 hover=2 commands=8 fresh=Y checks_failed=0 verdict=PASS`. Also PASS on the branch and on `main`: isolation (`deps=0`), lens, appdef, deploy_cost, context. `pack.js` prints `source=<hash12>`. **Not run:** the realvsc install suite (it starts a real VS Code; owner's go first). **For the owner's own copy:** the next `node devtools/vscode/pack.js --install` is the first build that carries a stamp. Copies installed before it report `unknown` and show no warning.
 
+### F.26 X0 "New witness for this file" (§F.21 OPEN; no decision needed, owner "Go" 2026-11-16; spec 2026-11-16)
+- **Issue proved:** a new witness starts from a blank `witness` snippet, so the writer must look up by hand what the index already knows about the file: the spec its header cites, the `§` tags it prints with their last values, and the APP fields it writes. The archive's rule still holds: **never pre-fill tests from the file's functions** (that is a guess). Pre-fill only FACTS, and leave the claim, the population and the red control to a person.
+- **Build (bim-ootb `devtools/vscode/x0-navigator`):**
+  - `lib/witness_stub.js`, pure node. `make(root, rel, facts)` → `{ path, text }` or `{ refused: reason }`.
+    - **Template:** ONE template, the `witness` body in `.vscode/witness.code-snippets`, read and expanded here. `${n:default}` gets the values below, `${RELATIVE_FILEPATH}` the new path, `$0` nothing. No second copy of the skeleton.
+    - **Values:** NAME is `W-` plus the basename, upper-case, `_` → `-`. Spec is the first `prompts/…md §…` citation found in the file's own header (`file_context.headerOf`); with none, it says `NO SPEC in this file's header: write it first (Spec-First)` and does not invent one. The contract path is `witness_kit/contract` relative to the new file. ISSUE, POPULATION and RED CONTROL stay as the snippet's placeholder words.
+    - **A comment block `FACTS FROM X0`:** the `§` tags the file prints, each with its spec (`tag_index`) and last value (`lens_index`), or the reason it is not shown; the APP fields it writes; and the line *"which witnesses already prove this file: not indexed yet (Part E)"*. All of it comes from `file_context.build(...).facts` and the same lookups, so there is nothing new to keep in sync.
+    - **Where:** `<first folder>/tests/witness_<basename>.js`. If that exists, `_2`, `_3` … are added: **never overwrite**. A file already under a `tests/` folder, or not a `.js`, is refused with a reason.
+  - `extension.js`: command `x0Navigator.newWitnessForFile` (*"X0 Navigator: New witness for this file (facts pre-filled; FAILs until you fill it)"*). It writes the file and opens it, and says why when refused. `package.json` lists it.
+- **Witness W-X0-NEWWIT** (`tests/witness_x0_newwit.js`, node):
+  - N1: for `erp/model_pa.js` (it prints `§GOAL_STORE`), the stub names the file and lists exactly the tags an independent regex finds in the file's `console.log('§…` literals. Its spec line equals the header's citation, or says NO SPEC.
+  - N2: the generated file, run with the real `witness_kit`, exits non-zero and prints `population-nonempty` (it can never PASS unedited). Red control: the same file with ONE real row and a real red control filled in must PASS, proving the run can see a PASS.
+  - N3: a second `make` while the first file exists gives `_2`, and the first file's bytes are unchanged.
+  - N4: a file with no header gives NO SPEC, not an invented one. A `tests/` file and a `.json` are refused.
+  - N5 (wiring, shared stub): `activate` registers the command (the count in `witness_x0_activate` goes 8 → 9). Running it on an active editor writes the file and opens it once.
+  - Red run on the old code: no command, no lib, so N5 FAILs.
+
 ## ADVICE — from the session that built Part F, for the owner and the sessions that follow (2026-11-14)
 
 Owner: *"Put in your advice as you know VSC and software better"*. **These are recommendations, not decisions.** A decision is only
