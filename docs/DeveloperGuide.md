@@ -37,9 +37,12 @@ Two more habits run through every file:
 
 ### 0.1 Witnesses: how the proof works, and why it costs the user nothing
 
-A **witness** is this project's test: a plain Node script, `witness_*.js`, about 1,350 of them. Each one names the issue it proves
-or disproves, and each can say **FAIL** and **INCONCLUSIVE** (nothing was judged), not only PASS. Run one with `node <file>` from
-anywhere. It exits 0 (pass), 1 (fail) or 2 (inconclusive). There is no test runner and no build.
+A **witness** is this project's test: a plain Node script, `witness_*.js`, 1,403 of them. Each one is a **unit test of one item**: one
+function, one rule, one bug. It names the issue it proves or disproves, and it can say **FAIL** and **INCONCLUSIVE** (nothing was judged),
+not only PASS. Run one with `node <file>` from anywhere. It exits 0 (pass), 1 (fail) or 2 (inconclusive). There is no test runner and no build.
+
+> **For developers only.** You run a witness while you change the item it covers, and CI runs a set of them on every pull request.
+> **A normal user never calls one:** the app pages do not load them, so using the app runs no witness code (the table below shows how).
 
 **How it can test the app without a browser.** Most app files end with a small tail (pattern 4 in the table above):
 `if (typeof module !== 'undefined' && module.exports) module.exports = API; else global.ScheduleInject = API;`
