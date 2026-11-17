@@ -5,6 +5,7 @@
 #   bar geometry, with every value traced to the drawing and only cover/hook (and a few named layout choices) as defaults, on a COPY
 #   of the model DB, identically on every run? Plus build 3: truss fillet welds at every member / gusset-plate contact (end and through).
 # Usage: rebar_from_schedule.py <source.db> <out.db> <out.txt> [--defaults rebar_defaults.json] [--callouts <details.dxf>]
+#        second source (section 7): --schedule-json <marks.json> --mark-regex <regex on element_name, group 1 = mark> [--host-class IfcBeam] [--beam-defaults rebar_beam_defaults.json]  (rebar_beams.py; prefix §PJRB_, break switch PJRB_BREAK=1)
 #                               [--expect-db-sha <hex> --expect-txt-sha <hex>]
 #   SHEDRB_BREAK=1 in the environment drops the cover offset when placing bars (the INSIDE witness must then FAIL).
 # Reads the source DB read-only. Deterministic: no random, no clock; every loop is over sorted keys. Prints §SHEDRB_* lines;
@@ -17,9 +18,13 @@ ap = argparse.ArgumentParser()
 ap.add_argument('src'); ap.add_argument('out'); ap.add_argument('txt')
 ap.add_argument('--defaults', default=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'rebar_defaults.json'))
 ap.add_argument('--callouts', default=None); ap.add_argument('--expect-db-sha', default=None); ap.add_argument('--expect-txt-sha', default=None)
+# second schedule source (section 7, build 2): a marks JSON joined to host elements by a regex on element_name; handled by rebar_beams.py
+ap.add_argument('--schedule-json', default=None); ap.add_argument('--mark-regex', default=None); ap.add_argument('--host-class', default='IfcBeam')
+ap.add_argument('--beam-defaults', default=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'rebar_beam_defaults.json'))
 A = ap.parse_args()
 SRC, OUT, TXT, DEF = A.src, A.out, A.txt, A.defaults
-BREAK = os.environ.get('SHEDRB_BREAK') == '1'
+BREAK = os.environ.get('PJRB_BREAK' if A.schedule_json else 'SHEDRB_BREAK') == '1'
+if A.schedule_json and not A.mark_regex: ap.error('--schedule-json needs --mark-regex')
 assert os.path.realpath(OUT) != os.path.realpath(SRC), 'refuse: never write the source DB'
 assert os.path.realpath(TXT) != os.path.realpath(SRC)
 sha = lambda p: hashlib.sha256(open(p, 'rb').read()).hexdigest()
@@ -29,7 +34,7 @@ COVER_F = rv('footing_cover_mm') / 1000.0; COVER_C = rv('column_cover_mm') / 100
 STOCK = rv('stock_length_mm') / 1000.0; END_TOL = rv('weld_contact_end_tol_mm') / 1000.0
 ZONE_STATED = rv('column_zone_A_stated_in') * IN
 PLACE_F = 0.0 if BREAK else COVER_F; PLACE_C = 0.0 if BREAK else COVER_C   # the break switch changes PLACEMENT only; the witnesses judge against the rule rows
-print(f'§SHEDRB_MODE break={int(BREAK)} cover_footing_rule_mm={COVER_F * 1000:g} cover_column_rule_mm={COVER_C * 1000:g} placement_cover_footing_mm={PLACE_F * 1000:g} placement_cover_column_mm={PLACE_C * 1000:g}')
+if not A.schedule_json: print(f'§SHEDRB_MODE break={int(BREAK)} cover_footing_rule_mm={COVER_F * 1000:g} cover_column_rule_mm={COVER_C * 1000:g} placement_cover_footing_mm={PLACE_F * 1000:g} placement_cover_column_mm={PLACE_C * 1000:g}')
 
 # ---------------------------------------------------------------- copy + load
 if os.path.exists(OUT): os.remove(OUT)
@@ -55,7 +60,8 @@ def world(c, guid):
     return np.frombuffer(r[0], np.float32).reshape(-1, 3).astype(float) + np.array(r[1:4])
 META = {g: (c, n or '', s, d, b, m) for g, c, n, s, d, b, m in cur.execute("select guid,ifc_class,element_name,storey,discipline,building,material_rgba from elements_meta order by guid")}
 ST = collections.defaultdict(dict)
-for g, n, v in cur.execute("select guid,name,value from element_dxf2bim order by guid,name"): ST[g][n] = v
+if cur.execute("select count(*) from sqlite_master where name='element_dxf2bim'").fetchone()[0]:     # the DXF-attached schedule rows (Shed); a drawing-table source has none
+    for g, n, v in cur.execute("select guid,name,value from element_dxf2bim order by guid,name"): ST[g][n] = v
 def by_class(*cl): return sorted(g for g, m in META.items() if m[0] in cl)
 def aabb(V): return V.min(0), V.max(0)
 def mesh_volume(V):
@@ -117,8 +123,11 @@ def bead(c0, c1, s_leg, n_hat, t_out):
 
 # ---------------------------------------------------------------- output rows
 cur.execute("CREATE TABLE IF NOT EXISTS element_parts (parent_guid TEXT, child_guid TEXT, parent_class TEXT, child_class TEXT, PRIMARY KEY (parent_guid, child_guid))")
-cur.execute("CREATE TABLE upgrade_changes (seq INTEGER PRIMARY KEY, change TEXT, guid TEXT, ifc_class TEXT, host_guid TEXT, rule TEXT, detail TEXT)")
+if not cur.execute("select count(*) from sqlite_master where name='upgrade_changes'").fetchone()[0]:     # a source that already has an upgrade_changes keeps its rows; new rows are appended
+    cur.execute("CREATE TABLE upgrade_changes (seq INTEGER PRIMARY KEY, change TEXT, guid TEXT, ifc_class TEXT, host_guid TEXT, rule TEXT, detail TEXT)")
 HAS_RTREE = cur.execute("select count(*) from sqlite_master where name='elements_rtree'").fetchone()[0] > 0
+HAS_WBBOX = cur.execute("select count(*) from sqlite_master where name='element_world_bbox'").fetchone()[0] > 0
+N_TCOL = len(cur.execute("pragma table_info(element_transforms)").fetchall()); N_GCOL = len(cur.execute("pragma table_info(component_geometries)").fetchall())
 CH = []; ADDED_GUIDS = []; ADDED_HASHES = set(); ADDED_VERTS = 0
 RB_RGBA, WD_RGBA = '0.45,0.20,0.12,1.000', '0.40,0.34,0.30,1.000'
 def write_part(guid, cls, name, storey, disc, building, tris, rgba, parents=()):
@@ -126,11 +135,16 @@ def write_part(guid, cls, name, storey, disc, building, tris, rgba, parents=()):
     W = np.asarray(tris, float).reshape(-1, 3); lo, hi = W.min(0), W.max(0); c = (lo + hi) / 2
     vv = (W - c).astype(np.float32).tobytes(); gh = ('rb' if cls == 'IfcReinforcingBar' else 'wd') + hashlib.sha1(vv).hexdigest()[:14]
     assert cur.execute("select count(*) from component_geometries where geometry_hash=?", (gh,)).fetchone()[0] == 0 or gh in ADDED_HASHES, 'hash collision with a source row'
-    cur.execute("insert or replace into component_geometries values(?,?,?,?)", (gh, vv, np.arange(len(W), dtype=np.uint32).tobytes(), building)); ADDED_HASHES.add(gh)
+    gfaces = np.arange(len(W), dtype=np.uint32).tobytes()
+    if N_GCOL == 5:                                      # source with a normals column: flat per-triangle normals of the stored (centred) soup
+        Wc = (W - c).astype(np.float32).reshape(-1, 3, 3); nn = np.cross(Wc[:, 1] - Wc[:, 0], Wc[:, 2] - Wc[:, 0]); nn = nn / np.where(np.linalg.norm(nn, axis=1) == 0, 1, np.linalg.norm(nn, axis=1))[:, None]
+        cur.execute("insert or replace into component_geometries values(?,?,?,?,?)", (gh, vv, gfaces, np.repeat(nn, 3, 0).astype(np.float32).tobytes(), building))
+    else: cur.execute("insert or replace into component_geometries values(?,?,?,?)", (gh, vv, gfaces, building))
+    ADDED_HASHES.add(gh)
     cur.execute("insert into elements_meta values(?,?,?,?,?,?,?,?)", (guid, cls, name, storey, disc, 'Steel (generated)', rgba, building))
-    cur.execute("insert into element_transforms values(?,?,?,?,?,?,?,?,?,?)", (guid, *c.tolist(), 0.0, 0.0, 0.0, *(hi - lo).tolist()))
+    cur.execute("insert into element_transforms values(" + ",".join("?" * N_TCOL) + ")", (guid, *c.tolist(), 0.0, 0.0, 0.0, *(hi - lo).tolist()) + (('lod400:rebar',) if N_TCOL == 11 else ()))
     cur.execute("insert into element_instances values(?,?)", (guid, gh))
-    cur.execute("insert into element_world_bbox values(?,?,?,?,?,?,?)", (guid, lo[0], hi[0], lo[1], hi[1], lo[2], hi[2]))
+    if HAS_WBBOX: cur.execute("insert into element_world_bbox values(?,?,?,?,?,?,?)", (guid, lo[0], hi[0], lo[1], hi[1], lo[2], hi[2]))
     if HAS_RTREE:
         rid = cur.execute("select rowid from elements_meta where guid=?", (guid,)).fetchone()[0]
         cur.execute("insert into elements_rtree values(?,?,?,?,?,?,?)", (rid, lo[0], hi[0], lo[1], hi[1], lo[2], hi[2]))
@@ -138,6 +152,11 @@ def write_part(guid, cls, name, storey, disc, building, tris, rgba, parents=()):
     ADDED_GUIDS.append(guid); ADDED_VERTS += len(W)
     return len(W)
 def change(kind, guid, cls, host, rule, detail): CH.append((kind, guid, cls, host, rule, detail))
+
+# ---------------------------------------------------------------- second schedule source: marks JSON joined by a regex on element_name (section 7)
+if A.schedule_json:
+    import rebar_beams
+    rebar_beams.run(globals())              # builds, judges, writes, exits; the DXF-attached path below is not run for this source
 
 # ---------------------------------------------------------------- A. footings and columns
 RB_LOG = []                                            # per-set facts for the witnesses (re-derived from the DB there; kept here for printing only)

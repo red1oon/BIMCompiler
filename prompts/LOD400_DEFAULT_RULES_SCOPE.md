@@ -169,3 +169,62 @@ Steel grade (PJAM: not stated), concrete cover on PJAM until ACI 318-19 is read,
 - **Output:** a copy `JPAM_rebar.db` built from `JPAM.db` (JPAM.db unchanged), with one `IfcReinforcingBar` per beam × set and `element_parts` beam → set. Its change list `JPAM_rebar_changes.txt` is in the same format as `JPAM_changes.txt`.
 
 **Witnesses (`§PJRB_*`):** IDENT · JOIN (beams 92, joined 92, unjoined listed) · STATED (each set's n, dia, spacing = the mark row) · INSIDE (every bar inside its beam's TRUE mesh box with ≥ cover − 1 mm, not the DB rtree: known bad) · LAYERS (second layers counted, with the spacing that forced each) · LAP (bars > 12 m listed) · COST (verts, heap) · DETERMINISM (two builds, same SHA-256) · break switch `PJRB_BREAK=1` drops cover, so INSIDE must FAIL. INCONCLUSIVE if nothing joined.
+
+### §7 RESULT 2026-11-18 (BUILD 2 run on the PJAM model; `scripts/lod/rebar_from_schedule.py` + `scripts/lod/rebar_beams.py` + `scripts/lod/rebar_beam_defaults.json` + `scripts/lod/s401_marks.py`)
+**Verdict: 8 of 9 spec witnesses PASS (IDENT, JOIN, INSIDE, LAYERS, LAP, COST, DETERMINISM on run 2, BREAK_CHECK); STATED FAILS: 7 set mismatches on 2 of the 92 beams. The FAIL is reported as a result, not tuned away.** Run 2 is byte-identical (DB and change list). The break switch makes INSIDE fail as required. Build 1 was re-run after the engine change: its DB and change list are byte-identical to the §6 run (`db_sha256=13ff08698dd29442`, `txt_sha256=c053303a9d8dd5b4`, DETERMINISM PASS; the §6 run used the details-sheet option `--callouts` with the Shed's 5_DETAILS sheet, without it the change list differs by the callout texts only). Private outputs (DB, change lists, logs) stay under the local project folder, never in git.
+
+**The schedule reader (`s401_marks.py`, generic: table JSON in, marks JSON out), verbatim:**
+```
+§PJRB_MARKS source_sheet=S-401-SCHEDULES & DETAILS - 02.dxf beam_tables=3 marks=22 skipped_rows=0 unparsed_cells=0  -> PASS
+§PJRB_MARKS_FIELDS with_stirrup=22 with_side=15 with_hanger_C=22 balance_differs_from_end=7 ['FB12', 'FB13', 'FB6', 'FB7', 'RB1', 'RB4', 'RB7'] with_inner_legs_text=11
+§PJRB_MARKS_XCHECK reference_marks=22 compared=22 mismatches=0 extra_marks_not_in_reference=0  -> PASS
+```
+**Run 1 log, verbatim (`§` lines):**
+```
+§PJRB_MODE break=0 cover_rule_mm=40 placement_cover_mm=40 min_clear_mm=25 layer_clear_mm=25 sample_step_mm=10
+§PJRB_INPUT host_class=IfcBeam hosts=92 schedule_marks=22 marks_used=22 marks_unused=[]
+§PJRB_BUILT beams_built=92 sets_added=306 bar_lines=1345 bar_lines_placed=1336 stirrup_positions=4247 stirrup_loops_placed=4013
+§PJRB_ASSUMED anchorage=no stirrup_hooks=no laps=no stock_checked_bars=1336 hanger_C_built=no hanger_C_marks=22 balance_zone_differs_marks=['FB12', 'FB13', 'FB6', 'FB7', 'RB1', 'RB4', 'RB7'] inner_legs_marks=11
+§PJRB_SIDE_PARSE {'kind': 'count', 'n': 10, 'dia': 25, 'pitch': None} x1 | {'kind': 'count', 'n': 8, 'dia': 25, 'pitch': None} x7 | {'kind': 'pitch', 'n': 2, 'dia': 12, 'pitch': 300} x33
+§PJRB_IDENT source_tables_compared=21 (rtree shadow tables skipped: 3) tables_identical=True src_elements=6828 out_elements=7134 added=306 source_upgrade_rows_kept=563 -> PASS
+§PJRB_JOIN beams=92 joined=92 unjoined=0 listed_as_not_built=0 by_mark={'CFB1': 4, 'CRB1': 2, 'FB1': 2, 'FB10': 1, 'FB11': 1, 'FB12': 2, 'FB13': 2, 'FB2': 1, 'FB3': 4, 'FB4': 1, 'FB5': 8, 'FB6': 2, 'FB7': 4, 'GB1': 34, 'GB2': 14, 'GB3': 1, 'RB1': 1, 'RB2': 1, 'RB4': 1, 'RB5': 3, 'RB6': 2, 'RB7': 1} -> PASS
+§PJRB_STATED beams_judged=92 set_mismatches=7 by_set={'SIDE': 6, 'TOP': 1} beams_affected=2 (mark, Revit id)=[('FB13', '2467901'), ('RB2', '2832505')] stirrup_gaps_checked=3921 skipped_positions_inside_gaps=71 first=('3ZaBg3G5TAQ96SNNNXP2tj', 'TOP', 'bars placed {} != stated {16: 5}') -> FAIL
+§PJRB_INSIDE sets=306 distinct_vertices=152464 violating_vertices=0 sets_violating=0 min_margin_mm=40.099 (worst set GEN-RB-1b8Jj2ZrrDcfIh1jybnK5$-TOP) required>=cover-1mm (cover 40) -> PASS
+§PJRB_LAYERS bar_sets_judged=177 by (set,layers)={'BOT:1': 85, 'BOT:2': 7, 'TOP:1': 24, 'TOP:2': 55, 'TOP:3': 6} multi_layer_sets=68 min_clear_rule_mm=25 forcing (mark,set,layers,one-layer clear mm)=[('FB11', 'TOP', 3, np.float64(-1.4)), ('FB12', 'TOP', 2, np.float64(-0.1)), ('FB3', 'BOT', 2, np.float64(24.0)), ('FB3', 'TOP', 2, np.float64(5.1)), ('FB5', 'TOP', 2, np.float64(2.5)), ('FB6', 'TOP', 2, np.float64(9.0)), ('FB7', 'TOP', 2, np.float64(-0.1)), ('GB1', 'TOP', 2, np.float64(5.7)), ('RB1', 'BOT', 2, np.float64(19.4)), ('RB1', 'TOP', 3, np.float64(-4.2)), ('RB2', 'BOT', 2, np.float64(15.2)), ('RB2', 'TOP', 3, np.float64(-0.4)), ('RB4', 'BOT', 2, np.float64(24.0)), ('RB4', 'TOP', 2, np.float64(24.0)), ('RB6', 'TOP', 3, np.float64(-1.7)), ('RB7', 'TOP', 3, np.float64(-2.2))] -> PASS
+§PJRB_LAP bars_judged=1336 over_12m=90 in_beams=3 unflagged=0 list(mark,set,dia,length_m)=[('FB1', 'BOT', 25, 27.924), ('FB1', 'SIDE', 25, 27.924), ('FB1', 'SIDE', 25, 28.124), ('FB1', 'TOP', 25, 28.124), ('FB4', 'BOT', 25, 37.625), ('FB4', 'SIDE', 25, 37.625), ('FB4', 'SIDE', 25, 37.629), ('FB4', 'SIDE', 25, 38.061), ('FB4', 'TOP', 25, 38.061), ('RB2', 'BOT', 20, 32.02), ('RB2', 'TOP', 20, 32.02)] ... -> PASS
+§PJRB_SIZE beams=92 width_within_5mm_of_stated=92 width_max_dev_mm=0.0 | depth stated minus mesh body (modal section) mm histogram={0: 31, 46: 2, 150: 33, 200: 8, 250: 8, 350: 5, 400: 5} | stated minus mesh bounding box={0: 44, 100: 1, 150: 28, 200: 7, 250: 10, 400: 2} | beams whose section changes along the axis=18 (the mesh is the truth for placement; the stated depth is reported, not used)
+§PJRB_COVERAGE bar_lines=1345 placed=1336 not_placed=9 | stirrup_positions=4247 placed=4013 skipped=234 beams_with_zero_loops=0 | longest_bar_over_beam_length: min=0.17 median=0.97
+§PJRB_COST added_elements=306 added_vertices=898752 source_vertices=4878557 added_pct=18.42 est_heap_added_MB=152.79 (0.17 GB per M vertices) of_which_loops=92 sets -> PASS
+§PJRB_LOG txt_data_lines=408 table_rows_added=408 -> PASS
+§PJRB_WRITTEN db_sha256=09f44ab753f708ec txt_sha256=5bdad7b9926763b5 db_sha256_full=09f44ab753f708ec24a78b33f43454111ad5eda840188dce4c6797fc03a8369b txt_sha256_full=5bdad7b9926763b5c302c056933b04a4f7f868e5da2de259c479ff38c6e80087
+§PJRB_DETERMINISM single build; pass --expect-db-sha / --expect-txt-sha from an earlier run -> INCONCLUSIVE
+§PJRB_SUMMARY failed_witnesses=STATED added=306 not_built=92 refused=10
+```
+**Run 2 (same inputs, `--expect-db-sha`/`--expect-txt-sha` from run 1):**
+```
+§PJRB_WRITTEN db_sha256=09f44ab753f708ec txt_sha256=5bdad7b9926763b5 db_sha256_full=09f44ab753f708ec24a78b33f43454111ad5eda840188dce4c6797fc03a8369b txt_sha256_full=5bdad7b9926763b5c302c056933b04a4f7f868e5da2de259c479ff38c6e80087
+§PJRB_DETERMINISM this_db=09f44ab753f708ec expected_db=09f44ab753f708ec this_txt=5bdad7b9926763b5 expected_txt=5bdad7b9926763b5 -> PASS
+§PJRB_SUMMARY failed_witnesses=STATED added=306 not_built=92 refused=10
+```
+**Break run (`PJRB_BREAK=1`, placement cover dropped, witnesses still judge against the rule row):**
+```
+§PJRB_MODE break=1 cover_rule_mm=40 placement_cover_mm=0 min_clear_mm=25 layer_clear_mm=25 sample_step_mm=10
+§PJRB_STATED beams_judged=92 set_mismatches=6 by_set={'SIDE': 6} beams_affected=2 (mark, Revit id)=[('FB13', '2467901'), ('RB2', '2832505')] stirrup_gaps_checked=3967 skipped_positions_inside_gaps=69 first=('3ZaBg3G5TAQ96SNNNXP2tj', 'SIDE', 'levels per face 2/2 != expected 3 from the stored bottom/top bars') -> FAIL
+§PJRB_INSIDE sets=311 distinct_vertices=154962 violating_vertices=154962 sets_violating=311 min_margin_mm=-0.001 (worst set GEN-RB-1b8Jj2ZrrDcfIh1jybnK5$-TOP) required>=cover-1mm (cover 40) -> FAIL
+§PJRB_BREAK_CHECK switch=on expected INSIDE=FAIL got INSIDE=FAIL -> PASS
+§PJRB_SUMMARY failed_witnesses=STATED,INSIDE added=311 not_built=92 refused=4
+```
+
+**What was built (numbers from the log):** 306 `IfcReinforcingBar` sets on 92 of 92 concrete beams (92 stirrup sets + bottom, top and side sets): 1,336 of 1,345 stated bar lines placed, 4,013 of 4,247 stirrup positions placed (234 skipped where the modelled section is cut). 22 of 22 schedule marks used; 92 of 92 beams joined by the mark in the element name. 68 bar sets needed more than one layer (up to 3 on a 250-400 mm web: a single layer would clear -4.2 .. 24.0 mm against the 25 mm rule). 90 bars are over 12 m (FB1, FB4, RB2), each flagged `needs lap (not modelled)`. Cost +898,752 vertices on 4,878,557 (+18.4 %), est. +152.8 MB heap.
+
+**The 2 failing beams (STATED):** mark FB13 (Revit id 2467901): all 5 top bars T16 and 2 side-bar lines T12 could not be placed; mark RB2 (Revit id 2832505): 2 side-bar lines T12 could not be placed. The 4 missing side lines show as 6 SIDE mismatches (levels per face, pitch gaps) plus 1 TOP. Cause, measured for FB13: the mesh is composite (a 0.6 m deep lower part plus a narrow upper part, 70 % of its bounding-box volume, RB2 also 70 %), so no bar line at the schedule section lies inside the mesh with the cover kept. Nothing was loosened to make them pass; each is a REFUSED row in the change list with the stated value.
+
+**Deviations from the §7 text, and why:**
+1. **Beam rule rows are in `rebar_beam_defaults.json`, not added to `rebar_defaults.json`.** The build-1 change list embeds that file's hash and row count; adding rows would have changed build 1's outputs. Shared rows (`bar_sides`, `inside_tol_mm`, `stock_length_mm`) are still read from `rebar_defaults.json`. 12 beam rows, all `default: ours`.
+2. **One engine, second source as a module.** `rebar_from_schedule.py` takes `--schedule-json --mark-regex [--host-class] [--beam-defaults]` and calls `rebar_beams.run(globals())`, sharing the copy, row writers, bar and tie geometry and IDENT digests. Section 6 code is untouched (diff: argument and schema guards only: a source that already has `upgrade_changes` keeps its rows, `element_world_bbox` / the normals column / the 11th transform column are written only when the source has them).
+3. **Reference section = the body, not the bounding box.** Almost every beam mesh is not a box (91 of 92 fail a box test: columns, slabs and joins cut them; 18 change section along the axis; the stated depth equals the mesh depth on only 44 of 92). A first run used the bounding box and had 44 STATED mismatches (a stub 0.4 m long set the top bar level); the layout now uses the most common vertical extent measured along the beam (`modal_zrange`). A second fix: that extent was first rounded to 1 mm, which pushed 25 beams' stirrups 0.4 mm inside the cover line, so none fitted; it is now used at full precision. The bounding-box first-attempt log is kept privately. Bar ends, and every bar and stirrup, are fitted to the true mesh (distance to the surface plus ray parity), not to a box.
+4. **Top bars = columns D + E only; hanger column C is not built.** The spec lists bottom/top/side/stirrups and the earlier hand parser also leaves C out. C is on all 22 marks and is reported as NOT_BUILT per beam. **Open question for the owner:** mark CRB1 (2 beams) states `7T25` only in C, so it gets no top steel in this build.
+5. **Stirrup spacing = the end-zone value over the whole length.** The balance-zone spacing differs on 7 marks (FB6, FB7, FB12, FB13, RB1, RB4, RB7) and 11 marks carry inner legs; their zone lengths are not stated, so both are recorded as NOT_BUILT, not modelled.
+6. **Side-bar string reading:** `2T12-300` = one bar per face per level at most 300 mm apart between the outermost bar centres; `8T25`/`10T25` (no pitch) = n/2 per face evenly spaced. Logged in `§PJRB_SIDE_PARSE`.
+7. **The source's earlier 563 `upgrade_changes` rows are kept;** this run's 408 rows are appended from 564 and the txt lists only those.
+8. **Witness limits:** INSIDE re-measures every stored vertex against the host mesh read back from the output DB in the world frame, but it uses the same distance + ray-parity primitive as the fit, so it is not an independent algorithm. SIZE and COVERAGE are reports with no verdict. LAYERS min-clear is judged on stored bar positions.
