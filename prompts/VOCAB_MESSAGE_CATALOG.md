@@ -16,7 +16,7 @@ Background, measurements and prior art are in `prompts/DOCS_I18N.md` §4b-§4d (
 2. **W-VIEWER-I18N: 23 leaks on `main`** (de_DE 23/310, the same 3 failures as before today). First READ which strings they are (`viewer/tests/logs/witness_viewer_i18n.log`), then the §14.5.1 method (batch file + `trl_add_batch.js` + `build_trl.js` + a witness with N from the live source). Do not guess it is one batch until read.
 3. Modeller guide PARAGRAPHS (§14.5.1: 59 nodes, ~830 translations): owner's call; advice = skip.
 4. §14.5 step-1 gap: only 2 of the 13 `A._makeDraggable` callers are dragged by a witness.
-5. Other film languages: owner's word only.
+5. ~~Other film languages~~ **CLOSED (owner 2026-11-17, binding): *"no other languages films as they are adhoc occasions only. Main is EN only."*** Films of this lane are made in English only. A film in another language is made only when the owner asks for that one occasion; it is never a backlog item and no session offers or plans one.
 **Waiting on the CLI session (message it; never edit its files):** the shell side of the prefixes (`CLI_ERP_IVR.md` §41) and the `nearest()` short-name limit (§42 S3, `assist_core.js`). The box side of the prefixes is §18 Q4.
 **Lessons from today (each cost a retry):** (a) a build script that `grep`s its own log must match the full tag plus a space (`§FRAME_BAR ` vs `§FRAME_BARS_RECORDED`); (b) the Viewer's `Home` is not a fit for a small model, measure with a projected box and wait for OrbitControls to stop; (c) a printed key chip is a claim: `InputReg.checkShortcuts` and `§SHORTCUT_AUDIT` both passed while `S` printed for Sanity took a screenshot, only a cross-check of pill key vs handler tool caught it (now `checkPillKeys` + W-PILL-KEYS); (d) a witness table that quotes the source (W-GUIDE-VIEWER8) fails the day the source changes, which is the point; (e) auto-merge + a Monitor on the PR state is the whole merge loop, no polling.
 **Worktrees left:** `/tmp/wt-film-v3` (docs branch work + the untracked film work files under `scripts/film_help_viewer/out/`; keep). Everything else removed. Never `worktree remove --force`.
@@ -1538,6 +1538,7 @@ The design is the spec of record; each step below names only its scope, its file
 **Not in this step:** Did-you-mean (step 5), `#<number>` (step 6: in the BIM apps it selects the IFC element, owner Q2).
 
 ## STATUS
+2026-11-17 (night): owner: films are EN only, other languages ad hoc on request (RESUME item 5 closed).
 2026-11-17 (night): §18 design accepted (7/7 checks), 3 owner questions open; §14.8 the 23 W-VIEWER-I18N leaks built (result below once the witness is read).
 2026-11-17 (late): RESUME block rewritten for an Opus session; §18 = the Fable brief (one query core, hard budget). Session work: film v3, tie rule, Modeller + guide dictionary, 8 guide sections, real keys.
 2026-11-17 (tie rule): bim-ootb #3172 merged, W-HOWTO H1 passes again (§14.3.2 RESULT).
