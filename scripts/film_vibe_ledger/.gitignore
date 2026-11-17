@@ -1,0 +1,6 @@
+out/cards/
+out/prior/
+out/rec/
+out/work/
+*.wav
+*.mp4
