@@ -4,8 +4,8 @@
 // Issue it proves/disproves: "the guide says something the tool does not do". The sections are DERIVED, so each claim must trace to the tool's own text.
 //   V1 TRACE  — every row of scripts/guide/viewer8_sources.json: the guide phrase is in docs/BIMUserGuide.md AND its source phrase is in the named bim-ootb file (whitespace folded). X of N printed, N = the table.
 //   V1b NAMES — each of the 8 palette names is a heading of the guide (7) or named in the FM / Operate section (Human-Asset): the very test build_howto.js applies (heading match, else body mention).
-//   V4 LIVE   — (with --live) the real Viewer + Duplex, headless on the CPU: F1, type Sanity / Egress, Enter -> the checklist panel opens and names it; key I -> the Issues panel is active. These are the three
-//               ways of opening the guide's text states, so a wrong "how to open" fails here. (Not claimed: the keys S and E that the help panel prints for Sanity / Egress — see the log's §KEY_NOTE.)
+//   V4 LIVE   — (with --live) the real Viewer + Duplex, headless on the CPU: key Y / key E, and F1 + type Sanity / Egress + Enter -> the checklist panel opens and names it; key I -> the Issues panel is active. These are
+//               the ways of opening the guide's text states, so a wrong "how to open" fails here (§14.7 gave Sanity and Egress real keys; before it the help printed S, which took a screenshot).
 //   RED CONTROL — a planted guide phrase absent from the guide and a planted source phrase absent from its file must FAIL, or V1 proves nothing.
 // usage: NODE_PATH=<bim-ootb>/node_modules:~/bim-compiler/node_modules node scripts/guide/witness_guide_viewer8.js <bim-ootb tree> [--live]
 'use strict';
@@ -56,11 +56,15 @@ Object.keys(NAMES).forEach((id) => {
         const t = await page.evaluate(() => { const p = document.getElementById('rule-checklist-panel'); return p && getComputedStyle(p).display !== 'none' ? p.innerText.replace(/\s+/g, ' ').slice(0, 160) : null; });
         ck('V4 F1, type "' + word + '", Enter opens the checklist and names it', !!t && want.test(t) && !err.length, 'panel=' + JSON.stringify(t) + ' pageErrors=' + err.length); await page.close();
       }
+      for (const [key, want, what] of [['y', /Sanity/, 'Sanity'], ['e', /Egress/, 'Egress']]) {
+        const { page, err } = await open(); await blur(page); await page.keyboard.press(key);
+        await page.waitForFunction(() => { const p = document.getElementById('rule-checklist-panel'); return !!p && getComputedStyle(p).display !== 'none' && p.innerText.length > 20; }, { timeout: 60000 }).catch(() => {});
+        const t = await page.evaluate(() => { const p = document.getElementById('rule-checklist-panel'); return p && getComputedStyle(p).display !== 'none' ? p.innerText.replace(/\s+/g, ' ').slice(0, 160) : null; });
+        ck('V4 key ' + key.toUpperCase() + ' opens the ' + what + ' checklist and names it', !!t && want.test(t) && !err.length, 'panel=' + JSON.stringify(t) + ' pageErrors=' + err.length); await page.close();
+      }
       { const { page, err } = await open(); await blur(page); await page.keyboard.press('i'); await sleep(1500);
         const on = await page.evaluate(() => { const p = document.getElementById('issues-panel'); return !!p && p.classList.contains('active'); });
         ck('V4 key I opens the Issues panel', on && !err.length, 'issues-panel.active=' + on + ' pageErrors=' + err.length); await page.close(); }
-      { const { page } = await open(); const k = await page.evaluate(() => ({ s: !!(window._shortcuts && window._shortcuts['s']), e: !!(window._shortcuts && window._shortcuts['e']) }));
-        console.log('§KEY_NOTE the help panel prints key S for Sanity and E for Egress; _shortcuts has s=' + k.s + ' (scene.js: screenshot) and e=' + k.e + ' — not claimed in the guide, reported'); await page.close(); }
     } finally { await br.close(); srv.close(); try { fs.unlinkSync(VDB); } catch (e) { /* ignore */ } }
   } else console.log('§V4 LIVE not judged (no --live)');
   console.log('§W-GUIDE-VIEWER8 ' + (fails ? 'FAIL ' + fails : (LIVE ? 'PASS' : 'PASS (live not judged)'))); process.exit(fails ? 1 : 0);

@@ -772,7 +772,7 @@ logged. **Save Building** keeps the result (see [Save & Open a building](#save-o
 ### Sanity and Egress — rule checks
 
 Two rule checks read the loaded building and list what they find in one checklist panel. Neither is on the
-toolbar rail: open the **F1** help, type **Sanity** or **Egress**, and press **Enter**.
+toolbar rail: press **Y** for Sanity or **E** for Egress, or open the **F1** help, type the name and press **Enter**.
 
 - **Sanity** — *Floating Member* (STR beams), *Span/Depth* (advisory) and *Column Continuity*.
 - **Egress** — *Isolated Room* (no measured route out), *Circulation Distance* (to a real exit; falls back to the
@@ -897,6 +897,9 @@ Kernel-ERP; the Viewer does not carry the toggle.
 | **Alt+S** | [Photographic still](#sun-sky-and-shadow-while-the-film-records) — stages the sun/sky/shadow pass, then refines the frozen frame over 16 sub-pixel samples |
 | **Alt+J** | Bounce-light (GI) pass — optional, off by default, not used while recording a film |
 | **Alt+G** | GI Preview — ambient-occlusion preview (desktop only) |
+| **Y** / **E** | Sanity / Egress — the rule checks ([Sanity and Egress](#sanity-and-egress-rule-checks)) |
+| **D** | Role View — cycles the discipline filter |
+| **U** / **K** | Earthworks / Roadworks (civil-works models only) |
 | **Alt+P** | Populate — adds staffage (people, trees and cars) to the scene |
 | **Click the flight tube** (in the Film-Maker) | Add a stick — a new band you can drag |
 | **Ctrl+Z / Ctrl+Shift+Z** (in the Film-Maker) | Undo / redo a path edit |

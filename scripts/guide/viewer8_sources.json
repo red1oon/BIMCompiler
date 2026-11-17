@@ -71,7 +71,7 @@
    "guide": "Neither is on the\ntoolbar rail",
    "kind": "code (pill:false, in no drawer list)",
    "file": "viewer/panels.js",
-   "source": "{ id: 'sanity',     name: 'Sanity',          key: 's', pill: false"
+   "source": "{ id: 'sanity',     name: 'Sanity',          key: 'y', pill: false"
   },
   {
    "guide": "*Isolated Room* (no measured route out)",
@@ -276,6 +276,60 @@
    "kind": "the pill's name",
    "file": "viewer/panels.js",
    "source": "name: 'Human-Asset'"
+  },
+  {
+   "guide": "press **Y** for Sanity",
+   "kind": "code",
+   "file": "viewer/panels.js",
+   "source": "name: 'Sanity',          key: 'y'"
+  },
+  {
+   "guide": "press **Y** for Sanity",
+   "kind": "code",
+   "file": "viewer/scene.js",
+   "source": "'y':  function() { A._pillRun('sanity'); }"
+  },
+  {
+   "guide": "**E** for Egress",
+   "kind": "code",
+   "file": "viewer/panels.js",
+   "source": "name: 'Egress',          key: 'e'"
+  },
+  {
+   "guide": "**E** for Egress",
+   "kind": "code",
+   "file": "viewer/scene.js",
+   "source": "'e':  function() { A._pillRun('egress'); }"
+  },
+  {
+   "guide": "| **D** | Role View — cycles the discipline filter |",
+   "kind": "code",
+   "file": "viewer/panels.js",
+   "source": "name: 'Role View',       key: 'd'"
+  },
+  {
+   "guide": "| **D** | Role View — cycles the discipline filter |",
+   "kind": "code",
+   "file": "viewer/scene.js",
+   "source": "'d':  function() { A._pillRun('roleFilter'); }"
+  },
+  {
+   "guide": "| **U** / **K** | Earthworks / Roadworks (civil-works models only) |",
+   "kind": "code",
+   "file": "viewer/panels.js",
+   "source": "name: 'Earthworks',      key: 'u'"
+  },
+  {
+   "guide": "| **U** / **K** | Earthworks / Roadworks (civil-works models only) |",
+   "kind": "code",
+   "file": "viewer/panels.js",
+   "source": "name: 'Roadworks',       key: 'k'"
+  },
+  {
+   "guide": "| **U** / **K** | Earthworks / Roadworks (civil-works models only) |",
+   "kind": "code",
+   "file": "viewer/earthworks_overlay.js",
+   "source": "VACUOUS not a civil model"
   }
  ]
 }
