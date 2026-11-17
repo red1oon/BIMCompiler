@@ -28,8 +28,9 @@ One heavy job at a time on this machine, under `nice -n 19 ionice -c3`. Headless
 2026-11-16: *"U can do browser run for those items new session"*), one at a time, never beside a live bake or GPU work.
 
 **1. NEXT, in order.**
-1. **B1, the modeller first** (every Part B decision is answered): the manifest becomes the source, the generated sections sit between markers, and the output is byte-identical,
-   using today's `?v=` numbers (B-1) and each module's precache flag as it is today (B-2). Write its build spec first. Its `deps` come from a tool-made candidate list that a person confirms for the app (B-5). Each module also carries its `owner` and `witnesses` (B-3).
+1. **B1, the modeller first: its build spec is written** (Part B, "B1 BUILD SPEC", 2026-11-18; re-measured on bim-ootb `560b3541`: 99 modules, 104 sites, precache 164).
+   **Next: ask the owner B1-Q1, then B1-Q2, then B1-Q3, one per message** (where the comments between generated lines live · may a bump also raise the 17 inline numbers · who confirms the
+   dependency list). The build starts only after B1-Q1; the spec is written for its answer A, and answer B or C changes sections 2 and 5. Then build B1 as one small bim-ootb PR series behind a tracker issue.
 2. E's `witness_kit/paths.js` (no decision, §READY).
 3. **2026-11-30:** propose the F-2 cost ceilings (§F.3).
 
@@ -37,7 +38,7 @@ One heavy job at a time on this machine, under `nice -n 19 ionice -c3`. Headless
 | Part | State | Next step |
 |---|---|---|
 | A | ✅ DONE 2026-11-17: A0, A-1..A-7, A1, A2, A3 (W-CORE-PURE PASS, `forbidden=0`, in CI). Results: Part A RESULT INDEX | none |
-| B | **B0 ✅** (#3200, W-MANIFEST-ROUNDTRIP in CI) · **B-1 ✅** 2026-11-18 content hashes, own step · **B-2 ✅** 2026-11-18 per-module flag as today · **B-5 ✅** tool proposes deps, a person confirms · **B-3 ✅** owner + witnesses per module · **B-4 ✅** plugin precache derived, `BUILTINS` untouched | B1 (modeller): build spec, then build |
+| B | **B0 ✅** (#3200, W-MANIFEST-ROUNDTRIP in CI) · **B-1 ✅** 2026-11-18 content hashes, own step · **B-2 ✅** 2026-11-18 per-module flag as today · **B-5 ✅** tool proposes deps, a person confirms · **B-3 ✅** owner + witnesses per module · **B-4 ✅** plugin precache derived, `BUILTINS` untouched | B1 (modeller): build spec written; ask B1-Q1..Q3, then build |
 | C, D | not started; wait on B | — |
 | E | not started | `witness_kit/paths.js` (§READY), then ask E-1 |
 | F | every row that needs no data from B to E is built (§F index, F.0 to F.35) | F-2 ceilings on 2026-11-30; the F-1 headless Fetch-back button (unbuilt, browser go given); rows waiting on B/D/E data |
@@ -261,7 +262,7 @@ when anything it covers changed. The page stays a static file. **No build step a
 them from it is **byte-identical** to what is committed. No file changes. B1 switch one app (smallest first: modeller, 59 tags) to "manifest is the
 source", generated sections between markers, byte-identical again. B2 erp, B3 viewer. `tests/audit_sw_precache.js` stays green throughout.
 
-**OPEN DECISIONS:** none. B-1 to B-5 are answered (DECISIONS).
+**OPEN DECISIONS:** B-1 to B-5 are answered (DECISIONS). Open since the B1 build spec (2026-11-18): **B1-Q1, B1-Q2, B1-Q3** (at the end of "B1 BUILD SPEC").
 
 **Witnesses:** W-MANIFEST-ROUNDTRIP (manifest → generated text byte-identical to committed; red control: swap two dependent modules → generator
 refuses) · `audit_sw_precache.js` · page boot witnesses unchanged.
@@ -366,7 +367,124 @@ a lazy+precache rule (B-2); pages outside the three apps, `oplogpic/`, importmap
   (5) `libs` / `assets` rows were left out of the manifest (nothing in B0 reads them); `§MANIFEST_BLOCK` (comment runs inside the tag span) is not printed: B1 measures it when it places markers.
 - **Scope of the claim:** the three apps' own pages, loaders and service workers. Not judged: load order (no deps declared), the 46 pages outside the apps, `oplogpic/`,
   lazy list entries with no `?v=`, `_GANTT_CACHE_VERSION`.
-- **NEXT in Part B:** B1, modeller first, on today's numbers (RESUME 1). The content-hash switch (B-1) is its own announced step after B3.
+- **NEXT in Part B:** B1, modeller first, on today's numbers (RESUME 1; its build spec is the next block). The content-hash switch (B-1) is its own announced step after B3.
+
+**B1 BUILD SPEC (2026-11-18; spec only, no bim-ootb change yet; three owner questions at the end, B1-Q1 to B1-Q3).** Scope: `modeller/` only becomes "the manifest is the
+source". Viewer and ERP stay exactly as B0 left them (check mode). Every number below was re-measured on bim-ootb `main` @ `560b3541`, read-only, with B0's own readers
+(`node scripts/gen_manifest.js --check --out <scratch>`) and three scratch probes that live in no repo (their output lines are quoted with a `§B1_` tag).
+
+**Baseline (it moved since B0, so B0's "94 modules, 99 sites, precache 159" is stale).**
+- `§MANIFEST_APP app=modeller pages=2 loaders=11 modules=99 boot=68 lazy=31 sites=104 tag=68 asset=0 inline=17 lazy_sites=19 precache=164 cacheVersion=v285`
+- `§MANIFEST_VERSIONS app=modeller versioned_modules=95 one_version=95 disagree=0 sites_below_max=0` · `§MANIFEST_UNVERSIONED app=modeller tags_without_v=4`
+- `§MANIFEST_LAZY_PRECACHE app=modeller lazy_precached=21 lazy_not_precached=10 boot_not_precached=7 precached_not_referenced=81 dup_entries=1` (the duplicate is `dxf2bim/ifc_extract_core.js`; it stays, B-2)
+- Sites per file: `modeller.html` 67 tags + 17 inline literals, `load_summary.html` 1 tag, 11 loaders 19 literals (1 to 4 each). 36 of the 99 modules live outside `modeller/` (`common/`, `viewer/`, `geomapping/`). 63 tags carry an `onerror`.
+- Whole check, three apps: `§MANIFEST_CHECK apps=3 files=54 identical=54/54 sites=805 … precache=871 order_check=NOT-JUDGED deps_declared=0 written=0 verdict=PASS`.
+
+**1. The manifest file: `modeller/modules.json`** (not `manifest.json`: `erp/manifest.json` and the root `manifest.json` are web-app manifests already). Committed, dev-side: no page, loader or
+`sw.js` names it, and it is not in `PRECACHE_ASSETS` (witness claim C12). One record per line, keys in a fixed order, so two sessions that add different modules merge without a conflict.
+```
+{ "app": "modeller", "schema": 1, "sw": "modeller/sw.js", "cacheVersion": "v286", "depsDeclared": true,
+  "depsReview": { "by": "", "on": "", "tool": "<sha-256 of the candidate list that was reviewed>" },
+  "modules": {            // keyed by repo-relative file, sorted by key, one line each
+    "modeller/bom_tree_outliner.js": { "v": 3, "load": "boot", "lazyGroup": null, "precache": true,
+        "deps": ["modeller/bom_tree.js"], "uses": [], "notDeps": [], "owner": "", "witnesses": [] }, … },
+  "order": {              // per owned file, its sites in file order, one line each; the place of a site is its index (B0's `at`)
+    "modeller/modeller.html": [ { "kind": "tag", "as": "cut_move.js", "onerror": "console.warn(…)" }, … , { "kind": "inline", "as": "reg_report_ui.js" }, … ],
+    "modeller/edit_delta_ui.js": [ { "kind": "lazy", "as": "../viewer/rates.js" }, … ] },
+  "precacheOrder": [ "modeller.html", "rules_editor.js", … ] }
+```
+| Field | Rule in B1 |
+|---|---|
+| `v` | **One number per module, no per-site number.** B0's D3 kept the site as the unit because numbers disagreed; the modeller has `disagree=0`, so one `v` reproduces today's bytes. `null` = today's 4 tags with no `?v=`. A site-level `v` is refused in this app (ERP and viewer will need it until B4-HASH; the schema keeps the optional field for them). Numbers stay numbers (B-1) |
+| `load`, `lazyGroup`, `precache` | Copied as today (B-2). `load` is `boot` when any site is a tag. `precache` must agree with `precacheOrder`; a mismatch is refused |
+| `deps` / `uses` / `notDeps` | Section 3. `deps` forces order, `uses` does not, `notDeps` is a candidate a person turned down |
+| `owner` | **Extracted or empty, never written by guess.** Source: the `prompts/*.md` file the module's own header comment names. Measured: `§B1_OWNER_PROBE js_modules=93 header_names_a_prompts_file=64 of_which_names_2plus=13 … names_none=29`. So 51 modules get one owner, 13 get the list of files their header names (a person picks one later), 29 stay `""`. The 29 are printed by name on every run as `§MANIFEST_OWNER_GAP`; that list is the gap, and Part D closes it. There is no CODEOWNERS file |
+| `witnesses` | **Extracted or empty.** Source: tracked test files whose text names the module's file inside a string (a `require`, a read, a path). Measured: `§B1_WITNESS_PROBE test_files=1912 with_a_PROVES_header=21 js_modules=93 modules_named_by_1plus_test=74 named_by_0=19 links=613 median=2 max=84`. "Names the file" is weaker than "proves it" (Part E's `PROVES:` header exists on 21 test files only), so the field is written by `gen_manifest.js --witnesses` (a refresh, never by hand), and the 19 with none are printed as `§MANIFEST_WITNESS_GAP`. Part E replaces the source later, not the field |
+
+**2. Markers, and the answer to B0's `§MANIFEST_BLOCK` question.** Measured (probe, B0's readers):
+- `§B1_BLOCK_TAGS page=modeller/modeller.html tags=67 span_lines=224..363 runs=30 comments_in_span=32 inline_scripts_in_span=4 runs_of_one=14` · `§B1_BLOCK_LINES … lines_with_a_tag=65 lines_with_2plus_tags=1 tag_lines_with_a_comment=0`
+- `§B1_BLOCK_INLINE page=modeller/modeller.html inline_bodies=10 bodies_with_sites=3 sites_per_body=6,1,10 body_start_lines=364,382,391` (the last inline literal is on line 6508, inside the page's big module script)
+- `§B1_BLOCK_SW file=modeller/sw.js entries=164 lines=61..202 gaps_not_plain_comma=56 comment_marks_in_gaps=59 cache_version_line=31 value=v285`
+- Loaders: 19 literals in 11 files, never more than 4 together.
+
+So no list is one clean block: 32 comments and 4 inline scripts sit between the page's tags, 59 comment marks sit between the precache entries, and the inline literals are spread over 6,100 lines.
+**This spec is written for answer A of B1-Q1** (the owner decides): the generator keeps owning whole sites in place, as B0 proved, and the hand-written comments stay in the file between them. Markers say where the generated sites are and where a new one may be written:
+| File | Marker (exact place) | Bytes changed |
+|---|---|---|
+| `modeller/modeller.html` | `<!-- §MANIFEST:BEGIN modeller tags (script tags here are written by scripts/gen_manifest.js from modeller/modules.json; comments are yours) -->` on its own line before line 221 (the first comment of the span), `<!-- §MANIFEST:END modeller tags -->` after line 363 | +2 lines |
+| `modeller/sw.js` | `// §MANIFEST:BEGIN precache …` after line 60 (`const PRECACHE_ASSETS = [`), `// §MANIFEST:END precache` before the closing `];`; the comment on line 31 becomes `// §MANIFEST cacheVersion (written by gen_manifest.js; edit modeller/modules.json)` | +2 lines, 1 changed |
+| `load_summary.html`, the 11 loaders, the 17 inline literals | **No marker.** The site is owned in place and listed in `order`. A marker line in a loader would change a file that is loaded with `?v=`, and force a bump of all 11 for a comment | 0 |
+
+Rules: a `<script src>` outside the page's marker pair, or a precache entry outside the `sw.js` pair, is refused. A site in the file that the manifest does not list, or the reverse, is refused in `--check`.
+`--write` puts a new site on its own line after the site before it in `order` (same indent), and removes a deleted site's line; a comment on a removed line is printed (`§MANIFEST_DROPPED_COMMENT`), never dropped in silence.
+The marker PR changes `modeller.html` and `sw.js`, both served offline, so it raises `CACHE_VERSION` once (v285 → the next number at build time). That is the only version that moves in B1.
+
+**3. The `deps` candidate tool (B-5): `scripts/gen_deps_candidates.js <app>`**, dev-side, parser only (espree + eslint-scope, both already in `node_modules`).
+- **Evidence.** Module R **publishes** a name when it assigns `window.N` / `globalThis.N` / `self.N` (or through an IIFE parameter bound to one of those) or declares it at the top level of a classic script. R **reads** N when N is a free identifier or `window.N` in R. An edge R → P is a candidate when exactly one other module of the app publishes N. `import` and `importScripts` of a literal path are edges too, already proven.
+- **When the read happens is the class.** `load` = at top level, in an IIFE, or in the factory handed to an IIFE (the UMD shape): the publisher must already have run, so order matters. `call` = inside any other function: the publisher must exist by the time of the call, tag order does not matter. `-guarded` = under `typeof`, on the left of `&&` / `||` / `??`, in an `if` test, or optional-chained.
+- **Measured on the modeller (scratch probe, read-only):** `§B1_DEPS_PROBE app=modeller modules=99 read=93 skipped_not_js_or_lib=6 parse_fail=0` · `§B1_DEPS_EDGES candidates=97 load=7 load_guarded=1 call=80 call_guarded=9 import_or_importScripts=9 mutual_pairs=5` ·
+  `§B1_DEPS_ORDER page=modeller/modeller.html both_are_tags=53 agree_with_tag_order=35 against_tag_order=18 of_which_load_unguarded=0 guarded_or_call=18` · `§B1_DEPS_SCOPE from_lazy_module=28 to_lazy_module=32 modules_with_0_edges_out=53`.
+  So about **106 edges to look at, of which 17 can force an order** (7 load, 1 guarded load, 9 imports; 5 of the 9 imports point at files that are not manifest modules). No unguarded load read runs against today's tag order, which is what a working page predicts; the 18 that do are all call-time or guarded.
+- **Blind spot, measured:** `§B1_DEPS_NAMES published=242 published_by_2plus=6 ambiguous_names_read=5`. A name with several publishers gives no edge. `Bonsai` has 12 publishers and 11 reader modules (`§B1_DEPS_AMBIG name=Bonsai publishers=12 reader_modules_dropped=11`); the other four are `__arcFidByGuid`, `__arcGuidByFid`, `swXEdges`, `TEAM_PLAN_TRUST`.
+  The tool must therefore go one level down for a shared name (`Bonsai.x` written by one file, read by another) and print what is left as `§DEPS_AMBIGUOUS`. **Not measured:** the edge count at that member level, and the load-time reads of the page's own inline scripts (the tool reads those bodies as readers placed at their spot in the page, so the order check covers them).
+- **What it prints.** One line per edge: `§DEPS_CAND from= to= class=load|load-guarded|call|call-guarded|import names= at=<file:line of the first read> order=ok|AGAINST|n/a state=new|deps|uses|notDeps`, then `§DEPS_SUMMARY app= candidates= load= call= import= ambiguous= new= reviewed= sha=`. `--out` writes the list for review; nothing is written to the manifest by this tool.
+- **How the confirmation is recorded.** A person moves each candidate into one of three lists on the reader's manifest line: `deps` (order is forced), `uses` (real, no order), `notDeps` (not a dependency). Then `depsReview` gets the reviewer, the date and the `sha` of the list that was reviewed, and `depsDeclared` becomes `true`.
+  A dependency the tool did not find may be added to `deps` by hand; it is printed as `§DEPS_HAND` on every run. When the code changes and the tool finds an edge that is in none of the three lists, the order check prints `INCONCLUSIVE unreviewed=N`, never PASS (who reviews: B1-Q3).
+- **What the generator refuses once deps are declared:** a `deps` target that loads after its reader on a page where both are tags; a boot module that `deps` on a lazy one; a cycle in `deps`; an unknown file.
+
+**4. `scripts/bump.js` after B1.** The command lines, the exit codes and every `§BUMP…` line stay as they are, so the X0 Bump button keeps working unchanged: it calls `bump.js --changed --check|--write --root <tree>`, and the one-file quick fix calls `ship.bump()` = `bump.js <file> --root <tree> [--write]`, reading `§BUMP sw=… CACHE_VERSION v…->v…` and the exit code (`devtools/vscode/x0-navigator/extension.js:541`, `lib/ship.js:126-134`).
+- Inside, bump becomes **mixed**: a referrer owned by an app that has a committed `modules.json` is not edited by regex. Bump raises that module's `v` and the app's `cacheVersion` in the JSON, then calls the generator for that app. Any other referrer (viewer, ERP, the pages outside the apps) goes through today's regex path, untouched. A shared file (`viewer/rates.js`, in both apps) takes both paths in one run.
+- The parity gate and the changed-file witnesses (`parityGate`, `touchGate`) are not touched. `needsBump` in X0 reads `sw.js` with its own parser (`lib/js_facts.js`); a comment line inside the array does not change what it reads (W-X0-SHIP and `§X0_BUMP_BUTTON` are in the unchanged list).
+- **One intended behaviour change (B1-Q2):** with one `v` per module, a modeller bump also raises the 17 literals in inline page scripts that today's bump cannot see.
+
+**5. Concurrent sessions.** Today's rule (keep both precache additions, take the higher `CACHE_VERSION`) becomes: (1) merge `modeller/modules.json` (one record per line; keep both sides' lines, take the higher `cacheVersion`); (2) in the generated files keep both sides' comment lines and do not hand-fix a tag or an entry; (3) run `node scripts/gen_manifest.js --write modeller`; (4) `--check` must print PASS.
+Stability the generator must have: the manifest is rewritten in canonical form on every `--write` (`--check` refuses a manifest that is not canonical); a second `--write` changes 0 bytes; the output does not depend on the clock, the machine or the order files are read in. Under answer A the output is a function of the manifest AND the file's hand-kept text, so two sessions get the same bytes only from the same merged tree. That is the cost of A; answer B does not have it (B1-Q1).
+
+**6. Witnesses.** W-MANIFEST-ROUNDTRIP is extended, not replaced (same file, same CI step, same verdict line with new fields). Its B0 claims keep running for all three apps. New claims, modeller only:
+| Claim | What it says | Judged against (never the generator itself) |
+|---|---|---|
+| C8 | The committed manifest is the source: generating from `modules.json` gives the committed bytes of all 15 owned files (2 pages, 11 loaders, `sw.js`, and the manifest itself in canonical form) | the committed files |
+| C9 | The switch moved nothing: the switch commit minus its marker lines and the one `CACHE_VERSION` step equals its parent, byte for byte (pinned to that commit, so it stays true later) | `git show <parent>:<file>` |
+| C10 | The manifest equals the files as a second reader sees them: sites = B0's `buildApp` read of the tree; precache list and version = the `vm` run of `sw.js`; `§BUMP` lines of a dry run of every target | B0 reader, `vm`, `bump.js` |
+| C11 | A second `--write` changes 0 bytes, on the real tree and on a copy where two sites were added in the two possible merge orders | a temp copy |
+| C12 | Nothing new reaches the browser: `modules.json` is named by no page, loader or `sw.js`, and is not in `PRECACHE_ASSETS` | a text search of the app + the `vm` list |
+| C13 | Every candidate edge is reviewed: each `§DEPS_CAND` is in `deps`, `uses` or `notDeps`; `depsReview.tool` equals the tool's `sha` today | `gen_deps_candidates.js` |
+| C14 | The order holds: 0 refusals on the committed manifest, `order_check=PASS deps_declared=N` with N > 0 | `checkOrder` |
+| C15 | `owner` and `witnesses` equal what their extractors print today; a value no extractor gives is a FAIL | the two extractors |
+
+**Red controls (same run, on a temp copy, each must FAIL):** R6 **swap two dependent modules**: take a real confirmed `deps` pair that are both tags of `modeller.html`, swap their places in `order` → the generator refuses (`synthetic=N`; B0's R5 stays as the synthetic one) ·
+R7 edit one generated tag by hand in the page → `--check` FAIL naming file and line · R8 a `<script src>` planted outside the markers → refused · R9 a manifest with the keys of one line reordered → "not canonical" ·
+R10 a `deps` entry on a module that loads later, and a boot module that `deps` on a lazy one → refused · R11 an `owner` typed by hand that no header names → C15 FAIL · R12 one candidate edge removed from all three lists → `order_check=INCONCLUSIVE unreviewed=1`.
+**Red on the old code:** W-BUMP's new case "an inline literal goes up with its module" must FAIL on today's `bump.js` (it prints no line for an inline site) and PASS after (only if B1-Q2 = yes).
+**INCONCLUSIVE, never PASS, when:** `modules.json` is missing or has 0 modules; no confirmed `deps` pair exists where both are tags of one page (R6 would judge nothing); the candidate tool read 0 modules or failed to parse one; any red control did not fail; the parent commit of C9 cannot be read; C13 has unreviewed edges.
+`§MANIFEST_ROUNDTRIP apps=3 source=modeller files= sites= … identical=N/N driven=N/N claims=15/15 red=12/12 order_check=PASS|INCONCLUSIVE deps_declared= unreviewed= owner_gap= witness_gap= verdict=`
+**Runs that must be unchanged, before (on `main`) and after (on the branch), logs kept and read:** `node tests/audit_sw_precache.js` (viewer; same summary lines) · `node modeller/tests/run_all_witnesses.js` (the `§ALLWITNESS …` line and the pinned status list identical; 216 files under `modeller/tests/` name `modeller.html` and 2 name `sw.js`, so a marker line could move one of them) ·
+`node scripts/tests/witness_bump.js` (`§BUMP_W_VERDICT PASS judged=6 failed=0`, plus the new case) · `node tests/witness_bump_parity.js` · `§X0_BUMP_BUTTON` and W-X0-SHIP · W-CORE-PURE · the full W-MANIFEST-ROUNDTRIP with C7 (not `--skip-c7`) · after the merge, the Pages deploy green and the live `modeller/sw.js` fetched back showing the new `CACHE_VERSION`.
+**Issue proved:** "the modeller's module lists cannot be owned by one committed manifest, with declared load order, without changing a byte the browser gets".
+
+**7. Deletion budget (stated honestly: B1 adds more than it removes).**
+| Hand-kept today | After B1 |
+|---|---|
+| 68 script tags, 17 inline literals, 19 loader literals (104 sites in 13 files) | generated; a hand edit is refused in CI |
+| 164 `PRECACHE_ASSETS` entries and `CACHE_VERSION` in `modeller/sw.js` | generated |
+| Load order (tag order, nothing says why) | declared: `deps` per module, checked |
+| `owner`, `witnesses` | new, extracted; nothing existed |
+Lines: about +380 for `modules.json` (99 module lines, 104 site lines, 164 precache lines, a few header lines: an estimate, not measured), +4 marker lines, 1 changed; the generator's write mode, the deps tool, the bump change and the new claims are new code, counted in the build's result. **Removed in B1: 0 lines of pages or lists** (byte-identical is the point), and `bump.js` cannot lose its regex path while viewer and ERP still use it. The deletions come at B3 (bump's regex path) and B4-HASH (`bump.js` itself).
+
+**8. Risks.**
+- A modeller test that reads the page by line number or counts comments moves with the 2 marker lines: caught by the `§ALLWITNESS` before/after, fixed in the test.
+- The first bump after B1 is where a user would first see a mistake: the build PR ends with a real dry-run and a real `--write` bump of one modeller file on the branch, diffed against what the old `bump.js` writes for the same file (must be the same bytes, plus the inline literals if B1-Q2 = yes).
+- A session on an old branch edits a tag by hand: CI fails with the file, the line and "edit modeller/modules.json". Tell live sessions before the switch merges (START HERE 4).
+- A false `deps` edge would later refuse a legal reorder (B0's D5 worry): that is why `deps` holds only edges a person confirmed, and why `uses` never forces order.
+- The `witnesses` field can go stale between refreshes: C15 fails the CI step until `--witnesses` is run. If that proves noisy, the refresh moves into the Bump button (not decided here).
+
+**Not in B1:** viewer and ERP as a source (B2, B3) · content hashes and retiring `bump.js` (B4-HASH) · any change to what is precached, the duplicate entry included (B-2) · plugin entries (B-4) · moving, re-ordering or deleting any tag or comment · the `sw.js` change-log comments (`// v285 …`, 18 lines, still written by hand) ·
+Part D's question table and `"extends"` marks · Part E's `PROVES:` headers · new X0 rows that read the manifest ("owner warning", "run the witnesses for this file") · the test fixtures under `modeller/tests/fixtures/*.html` (not owned pages).
+
+**Owner questions (one per message, START HERE 2). The build does not start before B1-Q1 is answered.**
+- **B1-Q1: where do the hand-written comments between the generated lines live?** There are 32 comments and 4 inline scripts between the page's tags, and 59 comment marks between the precache entries. **A (recommended):** they stay in the files; the generator rewrites only the tags and entries around them; +4 marker lines; today's bytes are kept. Cost: the result depends on the manifest and the file together. **B:** they move into the manifest as text and the whole block is generated from the manifest alone (the design's "same manifest in, same bytes out" in full). Cost: 91 pieces of comment text and 4 small scripts are from then on edited inside JSON. **C:** one marker pair around every unbroken run: 30 pairs in the page and 57 in `sw.js`, 174 marker lines.
+- **B1-Q2: may a modeller bump also raise the 17 version numbers in inline page scripts that today's bump skips?** Recommended: yes. They are the same files, today's numbers agree everywhere (`disagree=0`), and one number per module is what makes the manifest small. "No" means the manifest keeps a number per site and the first bump makes them disagree.
+- **B1-Q3: who confirms the modeller's dependency list?** Recommended: the building session reads each of the 17 order-forcing edges in the code and writes its file:line beside it; the owner confirms that short list in one message; the roughly 89 call-time edges are recorded as `uses` (they force no order) on the tool's evidence alone.
 
 ---
 
@@ -630,7 +748,7 @@ first. C is long and best done slowly, module by module, after B/D make ownershi
 | Part | Starts with no decision | Next decision to ask | Why that one |
 |---|---|---|---|
 | A | ✅ done 2026-11-17 (W-CORE-PURE in CI) | none | — |
-| B | B1 (modeller): every Part B decision is answered (B-1 to B-5, 2026-11-18) | none | |
+| B | nothing until B1-Q1 is answered (B1 BUILD SPEC, 2026-11-18) | B1-Q1, B1-Q2, B1-Q3 | |
 | C | nothing; waits on B and D | C-1 part names + owners | |
 | D | nothing new; the multi-publisher list already exists (`types/globals.gen.d.ts`) | D-1 where the questions list lives | needs B's `owner` field |
 | E | `witness_kit/paths.js` (no behaviour change; witness: the same suite verdicts before and after) | E-1 the `PROVES:` header format | |
