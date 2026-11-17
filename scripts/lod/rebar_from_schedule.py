@@ -3,7 +3,7 @@
 # Implementing LOD400_DEFAULT_RULES_SCOPE.md §6 — Witness: §SHEDRB_*
 # Issue proved/disproved: can the stated schedules already attached to each element by the Modeller's table reader become real
 #   bar geometry, with every value traced to the drawing and only cover/hook (and a few named layout choices) as defaults, on a COPY
-#   of the model DB, identically on every run? Plus build 3: truss fillet welds at member-end / gusset-plate contacts.
+#   of the model DB, identically on every run? Plus build 3: truss fillet welds at every member / gusset-plate contact (end and through).
 # Usage: rebar_from_schedule.py <source.db> <out.db> <out.txt> [--defaults rebar_defaults.json] [--callouts <details.dxf>]
 #                               [--expect-db-sha <hex> --expect-txt-sha <hex>]
 #   SHEDRB_BREAK=1 in the environment drops the cover offset when placing bars (the INSIDE witness must then FAIL).
@@ -357,10 +357,10 @@ def thick_in(name, pat):
 def weld_min(t_mm):
     for up, w in rv('weld_min_table_mm'):
         if t_mm <= up: return w
-contacts = []; mid_contacts = []; touch_only = 0; no_contact = []; weld_info = {}; skipped_keys = set()
+contacts = []; touch_only = 0; no_contact = []; weld_info = {}; skipped_keys = set()
 for gm in MEM:
     VM = MV[gm]; c0, a = member_axis(VM)
-    s_all = (VM - c0) @ a; slo, shi = s_all.min(), s_all.max(); mlo, mhi = aabb(VM); n_end = 0
+    s_all = (VM - c0) @ a; slo, shi = s_all.min(), s_all.max(); mlo, mhi = aabb(VM); n_con = 0
     for gp in PLT:
         R, cp, lo, hi = PF[gp]; plo, phi = aabb(PV[gp])
         if np.any(mhi < plo - 1e-6) or np.any(mlo > phi + 1e-6): continue
@@ -374,12 +374,12 @@ for gm in MEM:
         if not pts: continue
         al = R.T @ a; c0l = (c0 - cp) @ R; ss = [(p - c0l) @ al for p in pts]; s0, s1 = min(ss), max(ss)
         if s1 - s0 < 1e-6: touch_only += 1; continue
-        end = ('A' if s0 <= slo + END_TOL else '') + ('B' if s1 >= shi - END_TOL else '')
+        end = ('A' if s0 <= slo + END_TOL else '') + ('B' if s1 >= shi - END_TOL else '') or 'T'      # T = through (mid-span) contact
         rec = dict(m=gm, p=gp, s0=s0, s1=s1, end=end, a=a, c0=c0, slo=slo, shi=shi)
-        if end: contacts.append(rec); n_end += 1
-        else: mid_contacts.append(rec)
-    if n_end == 0: no_contact.append(gm)
-print(f'§SHEDRB_WELD_SCAN members={len(MEM)} plates={len(PLT)} end_contacts={len(contacts)} mid_span_contacts_not_welded={len(mid_contacts)} touch_only={touch_only} members_without_end_contact={len(no_contact)}')
+        contacts.append(rec); n_con += 1
+    if n_con == 0: no_contact.append(gm)
+n_endc = sum(1 for r in contacts if r['end'] != 'T'); n_thr = len(contacts) - n_endc
+print(f'§SHEDRB_WELD_SCAN members={len(MEM)} plates={len(PLT)} contacts={len(contacts)} end_contacts={n_endc} through_contacts={n_thr} touch_only={touch_only} members_without_any_contact={len(no_contact)}')
 n_weld = 0; weld_skipped = []
 for rec in sorted(contacts, key=lambda r: (r['m'], r['p'])):
     gm, gp = rec['m'], rec['p']; R, cp, lo, hi = PF[gp]; VM = MV[gm]
@@ -387,15 +387,14 @@ for rec in sorted(contacts, key=lambda r: (r['m'], r['p'])):
     if tp is None: tp = float((hi - lo)[2])                               # measured, only if the name gives none
     thin = min(x for x in (tp, tm) if x is not None); wsz = weld_min(thin * 1000.0)
     a_l = R.T @ rec['a']; c0l = (rec['c0'] - cp) @ R; n_l = np.array([0, 0, 1.0])
-    if abs(a_l[2]) > 0.05: weld_skipped.append((gm, gp, 'member axis not parallel to the plate plane (member end lies against the plate face; the spec has no bead rule for it)')); skipped_keys.add((gm, rec['end'], gp)); continue
+    if abs(a_l[2]) > 0.05: weld_skipped.append((gm, gp, 'member axis not parallel to the plate plane (member lies across or against the plate face; the spec has no bead rule for it)')); skipped_keys.add((gm, rec['end'], gp)); continue
     t_l = np.cross(n_l, a_l); t_l /= np.linalg.norm(t_l); TM = ((VM - cp) @ R).reshape(-1, 3, 3); zpl = hi[2]
     seam = []
     for T in TM:
         for i in range(3):
             p, q = T[i], T[(i + 1) % 3]
             if (p[2] - zpl) * (q[2] - zpl) < 0:
-                pt = p + (q - p) * ((zpl - p[2]) / (q[2] - p[2])); s = (pt - c0l) @ a_l
-                if rec['s0'] - 1e-6 <= s <= rec['s1'] + 1e-6: seam.append(pt @ t_l)
+                pt = p + (q - p) * ((zpl - p[2]) / (q[2] - p[2])); seam.append(pt @ t_l)       # the member is a prism: its section in the plate-face plane is the same along the whole length
     if not seam: weld_skipped.append((gm, gp, 'the member does not reach the plate face: no seam')); skipped_keys.add((gm, rec['end'], gp)); continue
     t_hi, t_lo = max(seam), min(seam); tc = c0l @ t_l
     corner = lambda s, t_ext: c0l + a_l * s + t_l * (t_ext - tc) + n_l * (zpl - (c0l + a_l * s)[2])
@@ -404,14 +403,12 @@ for rec in sorted(contacts, key=lambda r: (r['m'], r['p'])):
         c0w = corner(rec['s0'], t_ext) @ R.T + cp; c1w = corner(rec['s1'], t_ext) @ R.T + cp
         tris += bead(c0w, c1w, wsz / 1000.0, R @ n_l, R @ t_out)
     Lw = rec['s1'] - rec['s0']; guid = f'GEN-WD-{gm}-{rec["end"]}-{gp}'
-    write_part(guid, 'IfcFastener', f'2 fillet welds {wsz:g} mm x {Lw * 1000:.0f} mm, member end {rec["end"]} to gusset plate', META[gm][2], META[gm][3], META[gm][4], tris, WD_RGBA)
+    write_part(guid, 'IfcFastener', f'2 fillet welds {wsz:g} mm x {Lw * 1000:.0f} mm, member {"through contact" if rec["end"] == "T" else "end " + rec["end"]} to gusset plate', META[gm][2], META[gm][3], META[gm][4], tris, WD_RGBA)
     change('ADDED', guid, 'IfcFastener', gm, f'Fillet weld, AISC 360-16 Table J2.4 minimum for the thinner part ({thin * 1000:.2f} mm -> {wsz:g} mm) [{RULES["weld_min_table_mm"]["source"]}]; length = overlap length [default: ours]',
-           f'member "{META[gm][1]}" end {rec["end"]} -> gusset plate {gp} "{META[gp][1]}" | overlap along the member {Lw * 1000:.1f} mm | beads on the +face of the plate at the two outer edges of the member | plate t={tp * 1000:.2f} mm, member leg t={"-" if tm is None else f"{tm * 1000:.2f} mm"} | storey {META[gm][2]}')
+           f'member "{META[gm][1]}" {"through contact (mid-span, clipped overlap with the plate box)" if rec["end"] == "T" else "end " + rec["end"]} -> gusset plate {gp} "{META[gp][1]}" | overlap along the member {Lw * 1000:.1f} mm | beads on the +face of the plate at the two outer edges of the member | plate t={tp * 1000:.2f} mm, member leg t={"-" if tm is None else f"{tm * 1000:.2f} mm"} | storey {META[gm][2]}')
     weld_info[guid] = (gm, rec['end'], gp, wsz, Lw); n_weld += 1
 for gm in sorted(no_contact):
-    change('NOT_BUILT', gm, 'IfcMember', gm, 'Weld: member has no end in contact with a gusset plate', f'"{META[gm][1]}" | counted, not welded')
-for rec in sorted(mid_contacts, key=lambda r: (r['m'], r['p'])):
-    change('NOT_BUILT', rec['m'], 'IfcMember', rec['m'], 'Weld: gusset contact is mid-span, not at a member end', f'"{META[rec["m"]][1]}" overlaps plate {rec["p"]} from {rec["s0"] * 1000:.0f} to {rec["s1"] * 1000:.0f} mm along the member (member length {(rec["shi"] - rec["slo"]) * 1000:.0f} mm) | counted, not welded (spec: member ends)')
+    change('NOT_BUILT', gm, 'IfcMember', gm, 'Weld: member has no contact with a gusset plate', f'"{META[gm][1]}" | counted, not welded')
 for gm, gp, why in weld_skipped: change('REFUSED', gm, 'IfcMember', gm, 'Weld', f'plate {gp}: {why}')
 print(f'§SHEDRB_WELD_BUILT welds={n_weld} skipped={len(weld_skipped)}')
 
@@ -564,14 +561,17 @@ verdict('COUNTS', None if cnt_n == 0 else not cnt_bad,
         f'footing_sets={cnt_n} count_mismatches={len(cnt_bad)} formula floor((side-2*cover-d)/spacing)+1 (the spec formula without the -d term would give {dict((str(k), v) for k, v in sorted(spec_lit.items()))} as (placed, spec-literal))' + (f' first={cnt_bad[0]}' if cnt_bad else ''))
 
 # --- WELDS
-rec_set = set()                              # independent recount: SAT of each member's END-CAP triangles against the plate box (the clip above used the whole mesh)
+rec_set = set()                              # independent recount, two tests that do not use the clipper: end contact = SAT of the member's END-CAP triangles vs the plate box; through contact = SAT of the whole mesh vs the plate box with no cap hit
 for gm in MEM:
-    VM = MV[gm]; c0, a = member_axis(VM); T3 = VM.reshape(-1, 3, 3); S3 = (T3 - c0) @ a; slo, shi = S3.min(), S3.max()
+    VM = MV[gm]; c0, a = member_axis(VM); T3 = VM.reshape(-1, 3, 3); S3 = (T3 - c0) @ a; slo, shi = S3.min(), S3.max(); mlo, mhi = aabb(VM)
     caps = {'A': T3[np.all(S3 <= slo + END_TOL, 1)], 'B': T3[np.all(S3 >= shi - END_TOL, 1)]}
     for gp in PLT:
-        R, cp, lo, hi = PF[gp]; mid = (lo + hi) / 2; h = (hi - lo) / 2 + END_TOL
+        R, cp, lo, hi = PF[gp]; plo, phi = aabb(PV[gp])
+        if np.any(mhi < plo - 1e-6) or np.any(mlo > phi + 1e-6): continue
+        mid = (lo + hi) / 2; h = (hi - lo) / 2 + END_TOL
         hit = [e for e, T in caps.items() if len(T) and tri_box(((T.reshape(-1, 3) - cp) @ R).reshape(-1, 3, 3), mid, h).any()]
         if hit: rec_set.add((gm, ''.join(hit), gp))
+        elif tri_box(((VM - cp) @ R).reshape(-1, 3, 3), mid, (hi - lo) / 2 + 1e-9).any(): rec_set.add((gm, 'T', gp))
 built = {(v[0], v[1], v[2]) for v in weld_info.values()}
 size_bad = []; len_bad = []
 for guid, (gm, end, gp, wsz, Lw) in sorted(weld_info.items()):
@@ -579,8 +579,8 @@ for guid, (gm, end, gp, wsz, Lw) in sorted(weld_info.items()):
     tp = thick_in(META[gp][1], r'(\d+(?:/\d+)?)"\s*Thickness'); tm = thick_in(META[gm][1], r'x(\d+/\d+)"'); thin = min(x for x in (tp, tm) if x is not None)
     if abs(leg * 1000 - weld_min(thin * 1000)) > 0.01: size_bad.append((guid, leg * 1000))
 nw = len(weld_info); only_rec = sorted(rec_set - built - skipped_keys); only_built = sorted((built | skipped_keys) - rec_set)
-verdict('WELDS', None if (nw == 0 and not rec_set) else (not only_built and not only_rec and not size_bad and nw == len(contacts) - len(weld_skipped)),
-        f'welds={nw} end_contacts_by_clip={len(contacts)} end_contacts_by_independent_end_cap_test={len(rec_set)} only_in_welds={len(only_built)} only_in_recount={len(only_rec)} size_mismatches={len(size_bad)} table_row_for_6.35mm={weld_min(6.35)}mm skipped={len(weld_skipped)}'
+verdict('WELDS', None if (nw == 0 and not rec_set) else (not only_built and not only_rec and not size_bad and nw == len(contacts) - len(weld_skipped) and nw + len(weld_skipped) == len(rec_set)),
+        f'welds={nw} contacts_by_clip={len(contacts)} (end {n_endc}, through {n_thr}) contacts_by_independent_sat={len(rec_set)} (end {sum(1 for r in rec_set if r[1] != 'T')}, through {sum(1 for r in rec_set if r[1] == 'T')}) only_in_welds={len(only_built)} only_in_recount={len(only_rec)} size_mismatches={len(size_bad)} table_row_for_6.35mm={weld_min(6.35)}mm skipped={len(weld_skipped)}'
         + (f' first_only_recount={only_rec[0]}' if only_rec else '') + (f' first_only_welds={only_built[0]}' if only_built else ''))
 
 # --- COST
