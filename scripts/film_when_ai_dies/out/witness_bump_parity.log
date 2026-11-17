@@ -1,0 +1,26 @@
+§BUMP_PARITY_W P1-new-fail-blocks PASS exit=3 unchanged=true ?v=1 kept=true mode=block verdicts=8 new=[ATTACH:FAIL] known=[DD:FAIL,CTX:FAIL,DDS:HARNESS-FAIL] log=/tmp/witness_bump_parity_30xyKM/home/bump_parity_20261117200039_923921.log cached=N tree=/tmp/witness_bump_parity_30xyKM/root scoped=script verdict=BLOCKED
+§BUMP_PARITY_W P1b-fail-not-cached PASS exit=3 bridge_runs=2 (want 2)
+§BUMP_PARITY_W P1c-witness-id-before-word PASS exit=3 mode=block verdicts=8 new=[SPLIT:FAIL] known=[DD:FAIL,CTX:FAIL,DDS:HARNESS-FAIL] log=/tmp/witness_bump_parity_30xyKM/home/bump_parity_20261117200040_923985.log cached=N tree=/tmp/witness_bump_parity_30xyKM/root scoped=script verdict=BLOCKED
+§BUMP_PARITY_W P2-known-fails-pass PASS exit=0 ?v=1->2 written=true sw v1101->v1102 mode=block verdicts=7 new=[] known=[DD:FAIL,CTX:FAIL,DDS:HARNESS-FAIL] log=/tmp/witness_bump_parity_30xyKM/home/bump_parity_20261117200040_924019.log cached=N tree=/tmp/witness_bump_parity_30xyKM/root scoped=script verdict=PASS
+§BUMP_PARITY_W P3-warn-writes PASS exit=0 written=true mode=warn verdicts=4 new=[ATTACH:FAIL] known=[DD:FAIL,CTX:FAIL,DDS:HARNESS-FAIL] log=/tmp/witness_bump_parity_30xyKM/home/bump_parity_20261117200040_924055.log cached=N tree=/tmp/witness_bump_parity_30xyKM/root scoped=script verdict=WARN
+§BUMP_PARITY_W P4-off-not-run PASS exit=0 bridge_runs=0 written=true
+§BUMP_PARITY_W P4b-config-off PASS exit=0 bridge_runs=0
+§BUMP_PARITY_W P5-non-erp-and-dry-run-not-run PASS non_erp_exit=0 written=true parity_line=false dry_run_parity_line=false bridge_runs=0
+§BUMP_PARITY_W P6a-no-parity-without-reason-refused PASS exit=1/1 unchanged=true
+§BUMP_PARITY_W P6b-no-parity-with-reason-overrides PASS exit=0 written=true bridge_runs=0 §BUMP_PARITY mode=block verdict=OVERRIDE reason="legacy DD mismatch is the known PO window gap" (put the reason in the c
+§BUMP_PARITY_W P7-zero-verdicts-inconclusive-blocks PASS exit=3 unchanged=true mode=block verdicts=0 new=[] known=[] log=/tmp/witness_bump_parity_30xyKM/home/bump_parity_20261117200042_924201.log cached=N tree=/tmp/witness_bump_parity_30xy
+§BUMP_PARITY_W P7b-missing-bridge-inconclusive PASS exit=3
+§BUMP_PARITY_W P8-same-tree-cached PASS first cached=N second cached=Y bridge_runs_after_2nd=1 (want 1) changed_tree cached=N runs=2 (want 2)
+§BUMP_PARITY_W P9-bridge-judges-the-bumped-tree PASS bridge saw "OOTB=/tmp/witness_bump_parity_30xyKM/root|BRIDGE_OOTB=/tmp/witness_bump_parity_30xyKM/root|BRIDGE_UI_DB=/tmp/witness_bump_parity_30xyKM/root/erp/ad_seed.db" (want the bumped root) · § line tree=/tmp/witness_bump_parity_30xyKM/root scoped=script
+§BUMP_PARITY_W P10-runs-only-tree-witnesses-and-blocks-on-them PASS exit=3 ran=[sa] (want sa) mode=block verdicts=1 new=[SA:FAIL] known=[] log=/tmp/witness_bump_parity_30xyKM/home/bump_parity_20261117200043_924413.log cached=N tree=/tmp/witness_bump_parity_30xyKM/root scoped=tree witnesses=1 skipped=1 verdict=BLOCKED
+§BUMP_PARITY_W P11-a-witness-that-cannot-judge-the-tree-never-blocks PASS exit=0 ran=[sa] written=true mode=block verdicts=1 new=[] known=[] log=/tmp/witness_bump_parity_30xyKM/home/bump_parity_20261117200044_924455.log cached=N tree=/tmp/witness_bump_parity_30xyKM/root scoped=tree witnesses=1 skipped=1 verdict=PASS
+§BUMP_PARITY_W T1-new-fail-on-the-changed-files-witness-blocks PASS exit=3 ran=[t1:change,t1:base,t1:change] (want change, base, change re-run; t3 never) files=erp/error_beacon.js witnesses=1 browser_skipped=0 new_fail=[witness_t1] pre_fail=[] unjudged=[] unrun=[] budget_s=600 base=dir secs=0 verdict=BLOCKED
+§BUMP_PARITY_W T2-a-failure-that-main-already-has-does-not-block PASS exit=0 ran=[t2:change,t2:base] (want no re-run: main already fails it) files=erp/error_beacon.js witnesses=1 browser_skipped=0 new_fail=[] pre_fail=[witness_t2] unjudged=[] unrun=[] budget_s=600 base=dir secs=0 verdict=PASS
+§BUMP_PARITY_W T4-a-flake-is-not-a-new-fail PASS exit=0 ran=[t4,t4:base,t4] files=erp/error_beacon.js witnesses=1 browser_skipped=0 new_fail=[] pre_fail=[] unjudged=[] unrun=[] budget_s=600 base=dir secs=0 verdict=PASS
+§BUMP_PARITY_W T5-a-failure-with-no-base-is-inconclusive-not-a-pass PASS exit=3 files=erp/error_beacon.js witnesses=1 browser_skipped=0 new_fail=[] pre_fail=[] unjudged=[witness_t5] unrun=[] budget_s=600 base=- secs=0 verdict=INCONCLUSIVE why=base_unavailable(Command failed: git merge-base HEAD origin/main)
+§BUMP_PARITY_W T6-budget-runs-fastest-first-and-names-the-unrun PASS exit=0 ran=[t6a] (want t6a only) files=erp/error_beacon.js witnesses=2 browser_skipped=0 new_fail=[] pre_fail=[] unjudged=[] unrun=[witness_t6b] budget_s=1 base=dir secs=2 verdict=PASS
+§BUMP_PARITY_W C1-check-writes-nothing-and-a-write-after-it-reruns-nothing PASS check exit=0 unchanged=true · write exit=0 written=true bridge_runs=1 (want 1) touch_ran=[c1] (want c1 once)
+§BUMP_PARITY_W C2-an-edit-after-the-check-reruns-both-gates PASS bridge_runs=2 (want 2) touch_ran=[c1,c1] (want c1 twice)
+§BUMP_PARITY_W C3-changed-picks-the-loaded-file-and-skips-the-rest PASS exit=0 base=705e7753b654 changed=2 bumpable=1 skipped=1 files=erp/error_beacon.js
+§BUMP_PARITY_W R-real-bridge SKIPPED (opt-in: BUMP_PARITY_REAL=1; ~70 s, writes throwaway clients to the pilot)
+§BUMP_PARITY_W_VERDICT PASS judged=24 failed=0 real_row=skipped

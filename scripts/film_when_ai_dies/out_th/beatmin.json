@@ -1,0 +1,22 @@
+{
+ "before": 13.38,
+ "before_speech": 11.88,
+ "q1": 14.92,
+ "q1_speech": 13.42,
+ "q2": 21.65,
+ "q2_speech": 20.15,
+ "q3": 16.27,
+ "q3_speech": 14.77,
+ "q4": 18.05,
+ "q4_speech": 16.55,
+ "q5": 14.09,
+ "q5_speech": 12.59,
+ "why": 17.62,
+ "why_speech": 16.12,
+ "passenger": 10.76,
+ "passenger_speech": 9.26,
+ "roadmap": 10.66,
+ "roadmap_speech": 9.16,
+ "close": 16.28,
+ "close_speech": 14.78
+}

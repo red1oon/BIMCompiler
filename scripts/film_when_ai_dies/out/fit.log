@@ -1,0 +1,25 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT before cue=7.42 room=13.41 dur=12.49 -> DETAIL slack=+0.92 words=38
+§NARR_TONE before#0 F WH rose=0st endDelta=-0.6st want=fall OK "What if the assistant just stops answering?"
+§NARR_FIT q1 cue=23.30 room=14.90 dur=13.99 -> DETAIL slack=+0.91 words=38
+§NARR_TONE q1#0 F WH rose=0st endDelta=-6.2st want=fall OK "Where is this field used?"
+§NARR_FIT q2 cue=41.26 room=21.77 dur=20.88 -> DETAIL slack=+0.89 words=61
+§NARR_TONE q2#0 F WH rose=0st endDelta=-3.4st want=fall OK "What runs when I change a field?"
+§NARR_TONE q2#2 F YN rose=5.0st endDelta=+2.9st want=rise OK "Is it ever wrong?"
+§NARR_FIT q3 cue=66.09 room=15.53 dur=14.63 -> DETAIL slack=+0.90 words=44
+§NARR_TONE q3#0 F WH rose=0st endDelta=-1.6st want=fall OK "What did this line print last time?"
+§NARR_FIT q4 cue=83.55 room=14.23 dur=13.35 -> DETAIL slack=+0.88 words=38
+§NARR_TONE q4#0 F YN rose=5.0st endDelta=+2.0st want=rise OK "Am I breaking replay?"
+§NARR_FIT q5 cue=99.97 room=15.48 dur=14.60 -> DETAIL slack=+0.88 words=41
+§NARR_TONE q5#0 F YN rose=5.0st endDelta=+4.9st want=rise OK "Did I ship it right?"
+§NARR_FIT why cue=116.05 room=19.82 dur=18.93 -> DETAIL slack=+0.89 words=59
+§NARR_TONE why#0 F WH rose=0st endDelta=-0.6st want=fall OK "Why can it not be wrong about my code?"
+§NARR_FIT passenger cue=139.26 room=11.61 dur=10.70 -> DETAIL slack=+0.91 words=31
+§NARR_TONE passenger#0 F WH rose=0st endDelta=-4.8st want=fall OK "And when the assistant comes back?"
+§NARR_FIT roadmap cue=151.47 room=10.27 dur=9.36 -> DETAIL slack=+0.91 words=27
+§NARR_TONE roadmap#0 F WH rose=0st endDelta=-2.9st want=fall OK "What is not built yet?"
+§NARR_FIT close cue=162.34 room=17.53 dur=16.62 -> DETAIL slack=+0.91 words=51
+§NARR_TONE close#0 F YN rose=5.0st endDelta=+1.3st want=rise OK "Dies?"
+§NARR_TONE close#2 F WH rose=0st endDelta=-4.9st want=fall OK "Where do I read more?"
