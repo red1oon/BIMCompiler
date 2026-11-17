@@ -5,8 +5,8 @@
 'use strict';
 const EN = [
   { id: 'cover', hold: 4.5 },
-  { id: 'quote', text: 'F: How much of the week goes into just looking things up? | M: McKinsey estimated nearly twenty percent of it. | M: Looking for internal information, or tracking down a colleague who can help.',
-    says: [['quote.found', 'Y', 'nearly twenty percent'], ['quote.source', 'McKinsey Global Institute', 'McKinsey']] },
+  { id: 'quote', text: 'F: Does an app need help at all? | M: Jakob Nielsen\'s tenth usability heuristic is about exactly that. | M: Help should be easy to search, and focused on the user\'s task. | M: Short, with concrete steps.',
+    says: [['quote.source', 'Jakob Nielsen · Nielsen Norman Group', 'Jakob Nielsen'], ['quote.h10', 'Y', 'tenth usability heuristic'], ['quote.found', 'Y', 'easy to search, and focused on the user\'s task'], ['quote.steps', 'Y', 'Short, with concrete steps']] },
   { id: 'klass', text: 'F: So, in the BIM Viewer: I click a wall. What is it? | M: The info panel now says so, in one plain sentence. | M: Under it, the official IFC definition from buildingSMART, word for word, with its credit.',
     says: [['klass.class', 'IfcWall', 'I click a wall'], ['klass.ours', 'Y', 'one plain sentence'], ['klass.ifc', 'Y', 'the official IFC definition from buildingSMART'], ['w.c2', 'Y', 'word for word'], ['klass.credit', 'Y', 'with its credit']] },
   { id: 'lang', text: 'F: And in my own language? | M: In German, buildingSMART publishes its own text, and that is what you get. | M: In Chinese, our sentence is Chinese. | M: buildingSMART has no Chinese text for a wall yet, so the panel shows the English, and says so.',

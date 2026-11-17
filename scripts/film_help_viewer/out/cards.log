@@ -6,4 +6,5 @@
 §CARD beat=cli entries=32 overflow_px=0
 §CARD beat=dock entries=3 overflow_px=0
 §CARD beat=close entries=1 overflow_px=0
+§FRAME_BARS_RECORDED stills=45 frame_bar_fails=0
 §CARDS_DONE beats=8 stills=48 too_tall=0 key_cues=35 return_cues=2

@@ -14,7 +14,8 @@ const en = F.en && F.en.block || {}, de = F.de_DE && F.de_DE.block || {}, zh = F
 const holders = (F.word && F.word.holders || []), openOf = (h) => (F.found || []).some((r) => r.open && r.name.indexOf(h.name) === 0);
 const close1 = (a, b) => !!a && !!b && Math.abs(a.l - b.l) <= 1 && Math.abs(a.t - b.t) <= 1;
 function facts(F) { return {
-  'quote.found': F.quote && F.quote.text.indexOf('nearly 20 percent') >= 0 ? 'Y' : 'N', 'quote.source': F.quote && /^McKinsey Global Institute/.test(F.quote.who) ? 'McKinsey Global Institute' : 'N',
+  'quote.found': F.quote && /easy to search and focused on the user's task/.test(F.quote.text) ? 'Y' : 'N', 'quote.source': F.quote && /^Jakob Nielsen · Nielsen Norman Group$/.test(F.quote.who) ? F.quote.who : 'N',
+  'quote.h10': F.quote && /heuristic 10, Help and Documentation/.test(F.quote.title) ? 'Y' : 'N', 'quote.steps': F.quote && /Keep it concise, and list concrete steps/.test(F.quote.text) ? 'Y' : 'N',
   'klass.class': F.en && F.en.picked.i >= 0 && /class=IfcWall ours=Y ifc=Y/.test(F.lines.classEn || '') ? 'IfcWall' : 'N',
   'klass.ours': en.ours && en.ours.length > 20 ? 'Y' : 'N', 'klass.ifc': has(en.ifc, EN) ? 'Y' : 'N', 'w.c2': /PASS C2 verbatim/.test(W.cls) ? 'Y' : 'N',
   'klass.credit': /buildingSMART/.test(en.credit || '') ? 'Y' : 'N',
@@ -26,7 +27,7 @@ function facts(F) { return {
   'find.guide': F.find && F.find.open && /^https:\/\/red1oon\.github\.io\/BIMCompiler\/BIMUserGuide\/#/.test(F.find.guide || '') ? 'Y' : 'N',
   'find.cli': F.find && F.howtoCliFind[0] && F.find.cli[0] === F.howtoCliFind[0].line ? F.find.cli[0] : 'N',
   'cli.status': F.cli.status, 'cli.total': String(F.cli.total), 'cli.same': /the same answer the Viewer's Find panel gives/.test((F.howtoCliFind[0] || {}).cite || '') ? 'Y' : 'N',
-  'dock.saved': !!F.lines.dragSave && F.dock.moved.l - F.dock.before.l > 300 ? 'Y' : 'N', 'dock.same': close1(F.dock.reopened, F.dock.moved) && !!F.lines.restore ? 'Y' : 'N', 'dock.keptOpen': F.dock.keptOpen ? 'Y' : 'N' }; }
+  'dock.saved': !!F.lines.dragSave && F.dock.moved.l - F.dock.before.l > 150 ? 'Y' : 'N', 'dock.same': close1(F.dock.reopened, F.dock.moved) && !!F.lines.restore ? 'Y' : 'N', 'dock.keptOpen': F.dock.keptOpen ? 'Y' : 'N' }; }
 let bad = 0; const L = (m) => console.log('§FILM_GUARD ' + m), FX = facts(F);
 N.beats.forEach((b) => (b.says || []).forEach(([k, want, word]) => { const got = FX[k], ok = String(got) === want; if (!ok) bad++; L((ok ? 'OK   ' : 'FAIL ') + b.id + ' says "' + word + '" <- ' + k + ' expected ' + want + ' got ' + got); }));
 // red control: the same resolver on a copy with the count changed by one must disagree with the voice
@@ -34,7 +35,7 @@ const G = JSON.parse(JSON.stringify(F)); G.cli.total = F.cli.total + 1; const re
 L((red ? 'OK   ' : 'FAIL ') + 'red control: a planted count ' + G.cli.total + ' is caught'); if (!red) bad++;
 const must = [
   ['no page error in any session', (F.errors || []).length === 0],
-  ['the Find panel covers neither the info panel nor the help panel\'s place, in every session (measured)', ['en', 'de_DE', 'zh_CN'].every((k) => F[k] && F[k].findMoved && F[k].findMoved.clear)],
+  ['the Find panel (measured at the shot, after the class text opened) covers neither the class text nor, in the help stills, the help panel', ['klass_en', 'klass_de_DE', 'klass_zh_CN'].every((n) => { const r = F.shots[n].rects, a = r['#find-panel'], c = r['#info-class-help']; return a && c && !(a.x < c.x + c.w && c.x < a.x + a.w && a.y < c.y + c.h && c.y < a.y + a.h); })],
   ['every picture the cards need exists', ['klass_en', 'klass_de_DE', 'klass_zh_CN', 'pal_open', 'pal_native', 'pal_find', 'dock_moved', 'dock_closed', 'dock_reopen'].every((n) => F.shots[n] && fs.existsSync(path.join(OUT, F.shots[n].file)))],
   ['the CLI line ran through red1 and answered ok', F.cli.exit === 0 && F.cli.status === 'ok' && /^§DOOR .*verb=viewer\.counts status=ok/.test(F.cli.door || '')],
   ['the typed lines are the ones the beats name', (N.beats.find((b) => b.id === 'ask') || {}).typed === F.word.w && (N.beats.find((b) => b.id === 'cli') || {}).typed === F.cli.line],

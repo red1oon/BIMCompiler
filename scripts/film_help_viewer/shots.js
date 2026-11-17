@@ -2,6 +2,8 @@
 //   none typed by hand: the REAL Viewer page (a bim-ootb main tree, served from its root as live) on the Duplex model, headless Chromium on the CPU (swiftshader, as the witnesses), 1600x900 (the witnesses' viewport) at
 //   device scale 1.2 (1920x1080 pixels). The steps are the witnesses' own: Find IfcWall + click until #info-class reads IfcWall (W-CLASS-HELP C5), F1 (W-HELP-DOCK), the search box filled (W-HOWTO H4c),
 //   the header dragged (W-HELP-DOCK D3). Every rectangle the cards crop is read from the page. The CLI line is run for real through red1. READ out/shots.log.
+// v3 (VOCAB_MESSAGE_CATALOG §17.3): shot at device scale DSF (default 2.4) so the cards can zoom in sharp; rectangles are in CSS px; after the wall is picked the Viewer's OWN fit (the Home key,
+//   scene.js _homeFillFrame) frames the model, and §FILM_FRAME logs the model's projected box against the canvas and the open panels (F1).
 // Usage: node shots.js <bim-ootb main tree> [<dir holding Duplex_extracted.db>, default ~/bim-ootb/viewer/buildings]
 'use strict';
 const fs = require('fs'), path = require('path'), os = require('os'), http = require('http'), { spawnSync } = require('child_process');
@@ -13,10 +15,11 @@ const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/jav
 const DBN = 'FilmHelpViewer_extracted.db', VDB = path.join(TREE, 'viewer', 'buildings', DBN);
 const serve = () => new Promise((r) => { const s = http.createServer((req, res) => { const p = decodeURIComponent(req.url.split('?')[0]); fs.readFile(path.join(TREE, p), (e, b) => { if (e) { res.writeHead(404); res.end(); return; } res.writeHead(200, { 'Content-Type': MIME[path.extname(p)] || 'application/octet-stream' }); res.end(b); }); }); s.listen(0, '127.0.0.1', () => r(s)); });
 const F = { made: new Date().toISOString(), tree: spawnSync('git', ['-C', TREE, 'rev-parse', '--short', 'HEAD'], { encoding: 'utf8' }).stdout.trim(), shots: {}, lines: {}, errors: [] };
+const DSF = +(process.env.DSF || 2.4), VW = 1600, VH = 900;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const RE = /§CLASS_HELP|§TRL_LABELS|§HELP_DOCK|§KBD_HELP|§HOWTO_PALETTE|§HOWTO_LOAD|§DRAG_|§KBD_PALETTE_RUN|§LOAD_FAIL/;
+const RE = /§ROOM_HOME|§ZOOM|§CLASS_HELP|§TRL_LABELS|§HELP_DOCK|§KBD_HELP|§HOWTO_PALETTE|§HOWTO_LOAD|§DRAG_|§KBD_PALETTE_RUN|§LOAD_FAIL/;
 async function session(br, port, lang) {
-  const page = await br.newPage(); await page.setViewport({ width: 1600, height: 900, deviceScaleFactor: 1.2 });
+  const page = await br.newPage(); await page.setViewport({ width: VW, height: VH, deviceScaleFactor: DSF });
   const con = []; page.on('console', (m) => { const t = m.text(); if (RE.test(t)) con.push(t); }); page.on('pageerror', (e) => F.errors.push(lang + ': ' + String(e).slice(0, 200)));
   await page.goto('http://127.0.0.1:' + port + '/viewer/viewer.html?db=buildings/' + DBN + '&lang=' + lang, { waitUntil: 'load', timeout: 120000 });
   await page.waitForFunction('window.APP && window.APP.db && window._TRL_READY && window._mainPillActions && window.showCommandPalette', { timeout: 240000 });
@@ -24,13 +27,43 @@ async function session(br, port, lang) {
   return { page, con };
 }
 const last = (con, re) => { const ls = con.filter((l) => re.test(l)); return ls.length ? ls[ls.length - 1] : null; };
-// the rectangles the cards crop, in the PNG's own pixels (x1.2), read from the page
+// the rectangles the cards crop, in CSS px (the PNG is DSF x that), read from the page; and the model's box: every visible mesh's AABB corners projected through the page's camera (F1)
+const BOX = () => { const A = window.APP, T = window.THREE, cv = A.renderer.domElement, r = cv.getBoundingClientRect(), ms = A.collectMeshes((o) => o.isMesh), v = new T.Vector3(), bb = new T.Box3();
+  let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9; A.camera.updateMatrixWorld();
+  ms.forEach((m) => { bb.setFromObject(m); for (let i = 0; i < 8; i++) { v.set(i & 1 ? bb.max.x : bb.min.x, i & 2 ? bb.max.y : bb.min.y, i & 4 ? bb.max.z : bb.min.z).project(A.camera); if (v.z > 1 || v.z < -1) continue;
+    const px = (v.x + 1) / 2 * r.width + r.left, py = (1 - v.y) / 2 * r.height + r.top; x0 = Math.min(x0, px); x1 = Math.max(x1, px); y0 = Math.min(y0, py); y1 = Math.max(y1, py); } });
+  return { canvas: { x: r.left, y: r.top, w: r.width, h: r.height }, meshes: ms.length, box: ms.length ? { x: x0, y: y0, w: x1 - x0, h: y1 - y0 } : null }; };
 async function shot(page, name, ids) {
   await sleep(500); await page.screenshot({ path: path.join(PAGES, name + '.png') });
   const r = await page.evaluate((ids) => { const o = {}; ids.forEach((id) => { const e = document.querySelector(id); if (!e || !e.getClientRects().length) { o[id] = null; return; } const b = e.getBoundingClientRect();
-    o[id] = b.width && b.height ? { x: Math.round(b.x * 1.2), y: Math.round(b.y * 1.2), w: Math.round(b.width * 1.2), h: Math.round(b.height * 1.2) } : null; }); return o; }, ids);
-  F.shots[name] = { file: 'pages/' + name + '.png', rects: r }; L('§FILM_SHOT name=' + name + ' rects=' + JSON.stringify(r));
+    o[id] = b.width && b.height ? { x: +b.x.toFixed(1), y: +b.y.toFixed(1), w: +b.width.toFixed(1), h: +b.height.toFixed(1) } : null; }); return o; }, ids);
+  const bx = await page.evaluate(BOX);
+  // the smallest font size (CSS px) of the visible text inside each rectangle, for the cards' legibility bar
+  const fs = await page.evaluate((ids) => { const o = {}; ids.forEach((id) => { const e = document.querySelector(id); if (!e || !e.getClientRects().length) { o[id] = null; return; } let m = 1e9;
+    const w = document.createTreeWalker(e, NodeFilter.SHOW_TEXT); let n; while ((n = w.nextNode())) { if (!n.textContent.trim()) continue; const p = n.parentElement, cs = getComputedStyle(p); if (cs.display === 'none' || cs.visibility === 'hidden' || !p.getClientRects().length) continue; m = Math.min(m, parseFloat(cs.fontSize)); }
+    o[id] = m < 1e9 ? m : null; }); return o; }, ids);
+  F.dsf = DSF; F.shots[name] = { file: 'pages/' + name + '.png', rects: r, minFont: fs, building: bx };
+  L('§FILM_SHOT name=' + name + ' rects=' + JSON.stringify(r)); L('§FILM_FRAME name=' + name + ' canvas=' + JSON.stringify(bx.canvas) + ' meshes=' + bx.meshes + ' box=' + JSON.stringify(bx.box) + ' box_h/canvas_h=' + (bx.box ? (bx.box.h / bx.canvas.h).toFixed(3) : null) + ' box_w/canvas_w=' + (bx.box ? (bx.box.w / bx.canvas.w).toFixed(3) : null) + ' panels=' + JSON.stringify(Object.fromEntries(['#cmd-palette', '#info-panel'].map((k) => [k, r[k] ? [r[k].x, r[k].x + r[k].w].map(Math.round) : null]))) + ' minFont=' + JSON.stringify(fs));
 }
+// the Viewer's OWN fit, zoom and pan, never a hand-placed camera (F1): Home (scene.js _homeFillFrame; its 80 m floor leaves a small building small), then the user's own gestures on the canvas — the mouse wheel (OrbitControls dolly)
+// and a right-button drag (pan) — repeated until the MEASURED box (every mesh's AABB through the page's camera) reaches the band's target. The band is 1920x620 at z = BAND_Z band px per CSS px, so the model's box is aimed at
+// TARGET_H CSS px high (0.9 of the band) and at the top of the canvas, level with the help panel's first rows. OrbitControls damps, so every measurement waits until the box stops moving. Each step is logged.
+const KLASS_CY = 610;   // the info panel sits at the bottom right (CSS y 341-850): for the class-text stills the model is panned down beside it, so one band holds both
+const BAND_Z = 1.3, TARGET_H = Math.round(0.9 * 620 / BAND_Z), TARGET_CY = Math.round(16 + TARGET_H / 2 + 14), TARGET_CX = 773;   // 773 = the middle of the free strip between the help panel (336) and the info panel (1210)
+const settled = async (page) => { let prev = null; for (let i = 0; i < 24; i++) { await sleep(350); const b = await page.evaluate(BOX); if (prev && b.box && prev.box && Math.abs(b.box.x - prev.box.x) < 0.5 && Math.abs(b.box.y - prev.box.y) < 0.5 && Math.abs(b.box.h - prev.box.h) < 0.5) return b; prev = b; } return prev; };
+const homeKey = async (page) => { await page.evaluate(() => { if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); }); await page.keyboard.press('Home'); };
+const freePoint = (page) => page.evaluate(() => { const cv = window.APP.renderer.domElement; for (let y = 450; y <= 880; y += 40) for (let x = 760; x <= 1180; x += 40) if (document.elementFromPoint(x, y) === cv) return { x, y }; return null; });
+const fitModel = async (page, con, tag, cy, home) => {
+  const CY = cy || TARGET_CY;
+  const lg = (m, b) => L('§FILM_FIT ' + tag + ' ' + m + ' box=' + (b.box ? [b.box.x, b.box.y, b.box.w, b.box.h].map((v) => Math.round(v)).join(',') : null) + ' box_h/canvas_h=' + (b.box ? (b.box.h / b.canvas.h).toFixed(3) : null));
+  let b; if (home !== false) { await homeKey(page); b = await settled(page); lg('home ' + (last(con, /^§ROOM_HOME/) || ''), b); } else { b = await settled(page); lg('start (no Home, the framing of the step before)', b); }
+  const fp = await freePoint(page); if (!fp) throw new Error('no free canvas point to put the mouse on'); L('§FILM_FIT ' + tag + ' mouse at ' + fp.x + ',' + fp.y + ' (the canvas itself is the element there)'); await page.mouse.move(fp.x, fp.y); let n = 0, p = 0;
+  for (let it = 0; it < 40; it++) { const eh = b.box.h - TARGET_H, dx = TARGET_CX - (b.box.x + b.box.w / 2), dy = CY - (b.box.y + b.box.h / 2);
+    if (Math.abs(eh) <= 30 && Math.abs(dx) < 12 && Math.abs(dy) < 12) break;
+    if (Math.abs(eh) > 30) { await page.mouse.move(fp.x, fp.y); await page.mouse.wheel({ deltaY: (eh < 0 ? -1 : 1) * (Math.abs(eh) > TARGET_H * 0.25 ? 360 : 120) }); n++; b = await settled(page); lg('wheel ' + n + ' (h ' + Math.round(eh) + ' px off target)', b); }
+    else { await page.mouse.move(fp.x, fp.y); await page.mouse.down({ button: 'right' }); for (let i = 1; i <= 12; i++) await page.mouse.move(fp.x + dx * i / 12 / 1.5, fp.y + dy * i / 12 / 1.5); await page.mouse.up({ button: 'right' }); p++; b = await settled(page); lg('pan ' + p + ' dx=' + Math.round(dx) + ' dy=' + Math.round(dy), b); } }
+  lg('DONE wheels=' + n + ' pans=' + p + ' target_h=' + TARGET_H + ' target_c=' + TARGET_CX + ',' + CY, b); return { wheels: n, pans: p, box: b.box, canvas: b.canvas, targetH: TARGET_H };
+};
 // W-CLASS-HELP C5: Find 'IfcWall', click results the way a user does until the info panel's class row reads IfcWall; open the IFC definition
 async function pickWall(page) {
   await page.evaluate(() => window.APP.openFindPanel('IfcWall')); await sleep(3000);
@@ -48,7 +81,7 @@ async function pickWall(page) {
   return { picked, block: t, findMoved: fq };
 }
 const blur = (page) => page.evaluate(() => { if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); });
-const PAL = ['#cmd-palette', '#cmd-head', '#cmd-search', '#cmd-list', '#info-panel', '#info-class-help'];
+const PAL = ['#find-panel', '#cmd-palette', '#cmd-head', '#cmd-search', '#cmd-list', '#info-panel', '#info-class-help'];
 (async () => {
   fs.copyFileSync(fs.realpathSync(path.join(BLD, 'Duplex_extracted.db')), VDB);
   const srv = await serve(), port = srv.address().port;
@@ -57,9 +90,10 @@ const PAL = ['#cmd-palette', '#cmd-head', '#cmd-search', '#cmd-list', '#info-pan
     // ---- the English session: the wall, the panel, the search word, the Find entry, the dock
     const S = await session(br, port, 'en_MY'), { page, con } = S;
     await page.evaluate(() => localStorage.removeItem('bim_help_dock_pos'));
-    F.en = await pickWall(page); F.lines.classEn = last(con, /^§CLASS_HELP guid=/); await shot(page, 'klass_en', PAL);
+    F.en = await pickWall(page); F.fit_en = await fitModel(page, con, 'en-klass', KLASS_CY); F.lines.classEn = last(con, /^§CLASS_HELP guid=/); await shot(page, 'klass_en', PAL);
     await blur(page); await page.keyboard.press('F1'); await sleep(600);
     await page.waitForFunction(() => document.querySelectorAll('#cmd-palette .cmd-howto-guide').length > 0, { timeout: 30000 }).catch(() => {});
+    F.fit_pal = await fitModel(page, con, 'en-help', TARGET_CY, false);   // the help panel's stills: the model panned up, level with the panel's first rows; the size is already right
     F.lines.dockOpen = last(con, /^§HELP_DOCK open/); F.lines.howtoLoad = last(con, /^§HOWTO_LOAD/); await shot(page, 'pal_open', PAL);
     // W-HOWTO H4c: a word that is in some pill's bullets but in no pill name — the film uses 'native'; the facts record that it is in no name and which bullet holds it
     const WORD = 'native';
@@ -80,10 +114,10 @@ const PAL = ['#cmd-palette', '#cmd-head', '#cmd-search', '#cmd-list', '#info-pan
     // the dock: drag the header right, close with ×, F1 again
     const hd = await page.evaluate(() => { const b = document.getElementById('cmd-head').getBoundingClientRect(); return { x: b.left + 40, y: b.top + b.height / 2 }; });
     const before = await page.evaluate(() => { const b = document.getElementById('cmd-palette').getBoundingClientRect(); return { l: b.left, t: b.top }; });
-    await page.mouse.move(hd.x, hd.y); await page.mouse.down(); for (let i = 1; i <= 40; i++) await page.mouse.move(hd.x + 560 * i / 40, hd.y + 20 * i / 40); await page.mouse.up(); await sleep(500);
+    await page.mouse.move(hd.x, hd.y); await page.mouse.down(); for (let i = 1; i <= 40; i++) await page.mouse.move(hd.x + 200 * i / 40, hd.y + 30 * i / 40); await page.mouse.up(); await sleep(500);
     const moved = await page.evaluate(() => { const b = document.getElementById('cmd-palette').getBoundingClientRect(); return { l: b.left, t: b.top }; });
     F.lines.dragSave = last(con, /^§DRAG_SAVE key=bim_help_dock_pos/); await shot(page, 'dock_moved', PAL);
-    await page.click('#cmd-close'); await sleep(500); F.lines.close = last(con, /^§KBD_HELP close/); await shot(page, 'dock_closed', ['#info-panel']);
+    await page.click('#cmd-close'); await sleep(500); F.lines.close = last(con, /^§KBD_HELP close/); await shot(page, 'dock_closed', ['#info-panel', '#find-panel']);
     await blur(page); await page.keyboard.press('F1'); await sleep(800);
     const re = await page.evaluate(() => { const b = document.getElementById('cmd-palette').getBoundingClientRect(); return { l: b.left, t: b.top }; });
     F.lines.reopen = last(con, /^§HELP_DOCK open/); F.lines.restore = last(con, /^§DRAG_RESTORE key=bim_help_dock_pos/); await shot(page, 'dock_reopen', PAL);
@@ -91,7 +125,7 @@ const PAL = ['#cmd-palette', '#cmd-head', '#cmd-search', '#cmd-list', '#info-pan
     F.dock = { before, moved, reopened: re, keptOpen };
     await page.evaluate(() => localStorage.removeItem('bim_help_dock_pos')); await page.close();
     // ---- the language beat: the same pick in de_DE and zh_CN (W-CLASS-HELP C5)
-    for (const lang of ['de_DE', 'zh_CN']) { const s = await session(br, port, lang); F[lang] = await pickWall(s.page); F.lines['class_' + lang] = last(s.con, /^§CLASS_HELP guid=/); F.lines['trl_' + lang] = last(s.con, /^§TRL_LABELS/); await shot(s.page, 'klass_' + lang, PAL); await s.page.close(); }
+    for (const lang of ['de_DE', 'zh_CN']) { const s = await session(br, port, lang); F[lang] = await pickWall(s.page); F['fit_' + lang] = await fitModel(s.page, s.con, lang + '-klass', KLASS_CY); F.lines['class_' + lang] = last(s.con, /^§CLASS_HELP guid=/); F.lines['trl_' + lang] = last(s.con, /^§TRL_LABELS/); await shot(s.page, 'klass_' + lang, PAL); await s.page.close(); }
   } finally { await br.close(); srv.close(); try { fs.unlinkSync(VDB); } catch (e) {} }
   // ---- the CLI beat: the line the panel offers, run for real at the red1 prompt (it opens its own headless Viewer on the CPU)
   const line = 'viewer.counts building=Duplex', r = spawnSync(process.execPath, [path.join(TREE, 'common', 'door', 'red1.js'), line], { cwd: TREE, encoding: 'utf8', timeout: 300000 });
