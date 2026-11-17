@@ -321,3 +321,81 @@ Witness additions:
 6. The "wall 249 mm" refusal is not explained; no check was loosened to remove it.
 
 **Files (private, not committed):** `~/Projects/Jebel/lod_sandbox/conn_rules/gen_gussets.py`, `gusset_rules.json`, `gus_probe.py`; outputs `jpam/JPAM_gussets.db`, `JPAM_gussets_changes.txt`, `run2_gussets/`, `break_gussets/`; logs `jpam/log/gus_run1.log`, `gus_run2.log`, `gus_break.log`, `gus_probe.log`.
+
+## 9. BUILD 5 SPEC (2026-11-18, owner: "can export the rebar and gussets in IFCs"): add-on IFCs for the rebar and gussets
+**Issue it proves or disproves:** can the parts built in §6-§8 leave our DBs as IFC that the receiving team opens on top of its own model? That means at the right place, with every value traceable, valid, and identical on every export.
+**Generic exporter** `scripts/lod/export_parts_ifc.py <db> <out.ifc> --select <guid prefix>[,...] --schema IFC2X3|IFC4 [--frame frame.json]`:
+- **Content:** writes ONLY the selected generated elements. It is an add-on file, like the delta IFC of 2026-11-17 (`ifc_delta/export_delta_ifc.py`), whose conventions it follows: fixed header timestamp, GlobalId = compressed UUID5 of our element id (stable, unique), storeys by the host's storey name.
+- **Frame:** `--frame` gives a site placement and storey elevations. Without it, the DB frame is written as is and the file says so in its description.
+- **Geometry:** the element's own DB mesh, written as IfcFacetedBrep (IFC2X3) or IfcTriangulatedFaceSet (IFC4).
+- **Class map:**
+  - `IfcReinforcingBar`, with NominalDiameter, CrossSectionArea and BarLength from the set, and BarRole MAIN (longitudinal, mesh) or LIGATURE (ties, stirrups); IFC4 PredefinedType the same.
+  - `IfcPlate`, `IfcMechanicalFastener`, `IfcFastener`, grouped in an `IfcElementAssembly` per joint.
+- **Material:** steel grade only as stated (the Shed: fy 500 MPa), else "grade not stated".
+- **Pset `BIMC_Upgrade`:** HostGlobalId, Rule, Detail (the `upgrade_changes` row text, including the stated value and its source handle), Status ("configuration only, capacity not checked" for steel joints).
+
+**Three files:**
+1. **PJAM rebar:** `JPAM_rebar.db`, prefix `GEN-RB`, IFC2X3, their site frame. The frame is the same as the delta IFC: combined DB frame + measured shift = their shared coordinates, their IfcSite placement and storey elevations. Overlays their STR model.
+2. **PJAM gussets:** `JPAM_gussets.db`, prefix of the generated gusset parts, IFC2X3, the same frame. It holds 1 joint, as built.
+3. **Shed rebar + welds:** `SHED_rebar.db`, prefixes of the rebar sets and welds, IFC4, the DB frame. The Shed has no authored IFC with a site placement. Its frame is checked against the Modeller's own IFC export of the Shed.
+
+**Witnesses (`§PIFC_*`, per file):**
+- ROUNDTRIP: reopen with ifcopenshell; counts per class = DB counts; GlobalIds unique; `ifcopenshell.validate` 0 errors.
+- FRAME: PJAM, each exported part's bbox within its host element's bbox from THEIR OWN IFC, + cover tolerance; Shed, against the Modeller IFC's host.
+- VALUES: every NominalDiameter = the set's stated diameter.
+- DETERMINISM: two exports, same SHA-256.
+- INCONCLUSIVE if 0 exported.
+
+### §9 RESULT 2026-11-18 (BUILD 5, generic `scripts/lod/export_parts_ifc.py`; private frame file and outputs, not committed)
+**Headline: both PJAM add-on IFCs pass every witness and are byte-identical on a second export. The Shed IFC is written, but its welds fail the solid check and its frame check against the Modeller IFC FAILS, because that IFC is an older build than the DB.**
+
+**File 1, PJAM rebar** (IFC2X3, their frame; 46,734,172 bytes; SHA-256 `72c67a8805673ff1…`; run 2 identical):
+```
+§PIFC_SELECT schema=IFC2X3 elements=306 classes={'IfcReinforcingBar': 306} frame=given
+§PIFC_TRACE elements=306 with_ADDED_row=306 untraced=0 -> PASS
+§PIFC_MESH components_closed=5349 open=0 wound_inward_flipped=0 degenerate_triangles=0 -> PASS
+§PIFC_ROUNDTRIP counts={'IfcReinforcingBar': 317} db_elements={'IfcReinforcingBar': 306} extra_parts_from_splitting_mixed_diameter_elements={'IfcReinforcingBar': 11} globalids=966 unique=966 validate_errors=0 -> PASS
+§PIFC_SOLIDS breps=5349 invalid=0 -> PASS
+§PIFC_VALUES parts_checked=317 mixed_diameter_elements_split=11 mismatches=0 -> PASS
+§PIFC_VALUES_MIX mixed_elements=11 with_all_bars_placed=11 bars_per_diameter_from_mesh_equal_stated_counts=11 -> PASS
+§PIFC_VALUES_MESH bars_measured=5349 mesh_thickness_over_stated: min=0.9999 max=1.0002 outside=0 -> PASS
+§PIFC_BARLEN elements_with_stated_length=214 measured_vs_stated_mm max=1.500 median=0.235
+§PIFC_SITE site_matrix_max_dev=1.40e-09 storeys=4 elevation_max_dev_m=1.33e-15 -> PASS
+§PIFC_FRAME_FILE parts=306 file_vs_db_bbox_mm max=0.0007 -> PASS
+§PIFC_FRAME_HOSTS hosts_named=92 found_in_their_ifc=92 their_host_vs_ours_bbox_mm max=0.014 over_tol=0 by_host_class={'IfcBeam': (92, 0.014)} -> PASS
+§PIFC_FRAME_INSIDE parts_compared=306 overshoot_beyond_host_bbox_mm max=0.000 over_tol=0 tol_mm=1.0 -> PASS
+§PIFC_FRAME_KERNEL sample=12 hand_bbox_vs_geometry_kernel_mm max=0.0000 -> PASS
+§PIFC_DETERMINISM (run 2) this=72c67a8805673ff1 expected=72c67a8805673ff1 -> PASS
+```
+**File 2, PJAM gussets** (IFC2X3, their frame; 65,462 bytes; SHA-256 `1507ee24cdfd7af0…`; run 2 identical): 1 joint = IfcElementAssembly 1 + IfcPlate 1 + IfcMechanicalFastener 1 + IfcFastener 1; ROUNDTRIP PASS (validate_errors=0, GlobalIds 20 unique), SOLIDS breps=13 invalid=0, VALUES PASS (M20), FRAME_FILE max 0.0006 mm, FRAME_HOSTS (brace + support, both found) max 0.000 mm, FRAME_INSIDE max overshoot 0.000 mm, DETERMINISM PASS.
+**File 3, Shed rebar + welds** (IFC4, DB frame as is; 3,130,014 bytes; SHA-256 `7d2c878374fd0740…`; run 2 identical):
+```
+§PIFC_SELECT schema=IFC4 elements=594 classes={'IfcFastener': 338, 'IfcReinforcingBar': 256} frame=DB frame as is
+§PIFC_TRACE elements=594 with_ADDED_row=594 untraced=0 -> PASS
+§PIFC_MESH components_closed=1440 open=676 of_which_every_edge_has_2_triangles_but_winding_inconsistent=676 -> FAIL
+§PIFC_ROUNDTRIP counts={'IfcReinforcingBar': 256, 'IfcFastener': 338} (= DB counts) globalids=1792 unique=1792 validate_errors=0 -> PASS
+§PIFC_SOLIDS facesets=594 invalid=338 {'not closed or not consistently wound': 338} -> FAIL
+§PIFC_VALUES parts_checked=256 mismatches=0 -> PASS      §PIFC_VALUES_MESH bars_measured=1440 min=0.9242 max=1.0000 outside=0 -> PASS
+§PIFC_BARLEN elements_with_stated_length=96 measured_vs_stated_mm max=0.039
+§PIFC_FRAME_FILE parts=594 file_vs_db_bbox_mm max=0.0005 -> PASS
+§PIFC_FRAME_HOSTS hosts_named=399 found=399 their_host_vs_ours_bbox_mm max_xy=36591.896 over_tol=335 by_host_class_max_mm={'IfcColumn': (95, 15265.403), 'IfcDoor': (1, 36253.075), 'IfcFooting': (32, 0.028), 'IfcMember': (156, 36591.896), 'IfcPlate': (114, 36576.021), 'IfcSlab': (1, 36398.201)} -> FAIL
+§PIFC_FRAME_INSIDE parts_compared=594 over_tol=434 by_first_host_class_max_mm={'IfcColumn': (189, 15200.003), 'IfcFooting': (64, 0.0), 'IfcMember': (147, 36553.796), 'IfcPlate': (190, 36553.796), ...} -> FAIL
+§PIFC_DETERMINISM (run 2) this=7d2c878374fd0740 expected=7d2c878374fd0740 -> PASS
+```
+**Break run** (`PIFC_BREAK=1`, every part written 10 mm off in x, gussets): `§PIFC_FRAME_FILE file_vs_db_bbox_mm max=10.0001 -> FAIL`, verdict FAIL, as it must. FRAME_INSIDE still passes in that run: it tests containment in the host bbox, so 10 mm of shift inside the cover is not seen by it. FRAME_FILE is the witness that sees a shift.
+
+**What the numbers say:**
+- **PJAM frame is exact.** Their host beams vs ours: max 0.014 mm over 92 hosts (rebar) and 0.000 mm (gusset brace and support). The shift used is the measured one of the delta IFC; it was re-measured on 12 rebar hosts (spread 0).
+- **Rebar values are consistent three ways:** NominalDiameter read back = stated diameter on all 317 parts; the measured bar thickness is 0.9999-1.0002 of it on all 5349 bars; BarLength from the mesh volume agrees with the length in the upgrade row within 1.5 mm.
+- **Shed welds are not closed solids as stored.** All 676 weld beads (338 welds x 2) have every edge shared by exactly two triangles but inconsistent winding on some faces. The defect is in the DB meshes of the build-3 welds, not in the export. They are written as stored; no repair.
+- **Shed frame check FAILS against `ShedDrawing_512.ifc`.** Footings match to 0.028 mm, but columns (up to 15.27 m), members and plates (up to 36.6 m) do not: that IFC is the 19 Oct build (`ShedDrawing_512_extracted.db`, 512 elements, column 668.89 / -95.85) while `SHED_rebar.db` derives from the 15 Nov export (`SHED_extracted_2026-11-15.db`, same column at -111.12). It is not only stale column tops. No IFC of the 15 Nov export exists on disk, so the Shed frame is proven only on its 32 footings (64 footing-bar parts overshoot 0.000 mm).
+
+**Deviations from §9 and why:**
+1. **11 PJAM beam elements hold bars of two diameters** (e.g. `14T25 + 6T20`). IFC2X3 IfcReinforcingBar requires one NominalDiameter, so one DB element becomes one IfcReinforcingBar per diameter: 306 DB elements give 317 IfcReinforcingBar (+11). Each bar is assigned to a stated diameter from its measured thickness; per-diameter bar counts equal the stated counts on all 11 (`§PIFC_VALUES_MIX`). A first export left the diameter unset and produced 22 schema errors, so it was not kept.
+2. **FRAME tolerance is 1 mm (the frame accuracy), not the cover tolerance**: stricter, chosen before the runs.
+3. **Gusset hosts = the brace plus the support named in the upgrade row text**; Shed welds likewise the member plus the named plate.
+4. **Shed frame check verdict is over x/y only** (`--frame-axes xy`, as the spec allows). The 15 Nov / 19 Oct mismatch above is large in x/y too.
+5. **Steel grade:** the Shed rebar carries `fy 500 MPa (stated)` from the host's `Note_fy_MPa` (513 occurrences in the file); every other part says "grade not stated".
+6. GlobalIds use the fixed UUID5 namespace of the delta IFC, so a part has the same GlobalId in every add-on file.
+
+**Files (private, not committed):** frame `~/Projects/Jebel/lod_sandbox/ifc_delta/pjam_frame.json`; outputs `~/Projects/Jebel/reports/send_2026-11-18/PJAM_rebar_addon.ifc`, `PJAM_gussets_addon.ifc` (+ `run2/`), `~/Projects/SYSNOVA/DXF2BIM/ShedDrawing/lod/SHED_rebar_welds_addon.ifc` (+ `run2/`); logs `ifc_delta/log/pifc_rebar.log`, `pifc_gussets.log`, `pifc_gussets_break.log`, `*_run2.log`, `lod/log/pifc_shed.log`, `pifc_shed_run2.log`.
