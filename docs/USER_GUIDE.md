@@ -51,7 +51,7 @@ New here recently? Check **[What's New](WhatsNew.md)** for a running log of ship
 
     Real iDempiere in the browser — POS, financial statements, the full Application Dictionary from SQLite. No Java, no server, no install.
 
-    _Front door → the **ERP** icon (above)_ · [Open](https://red1oon.github.io/bim-ootb/erp/erp.html) · [Guide](ERPUserGuide.md) · [Teams overlay](TeamsOverlayGuide.md)
+    _Front door → the **ERP** icon (above)_ · [Open](https://red1oon.github.io/bim-ootb/erp/erp.html) · [Guide](ERPUserGuide.md) · [Till & Kitchen (POS, uniCenta twin)](TillUserGuide.md) · [Other lenses](ERPUserGuide.md#other-views-of-the-same-log-the-lens-family) · [Migrate from Odoo / Business Central](MigrationGuide.md) · [Command line (Fast Script)](FastScriptGuide.md) · [Teams overlay](TeamsOverlayGuide.md)
 
 </div>
 

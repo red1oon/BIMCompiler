@@ -1,0 +1,5 @@
+§K2 OK   beat=back return=59.79 voice_start=60.59 ass_start=60.59 | voice-only track in typing window -180.0 dB vs in voice -17.2 dB (gap 162.8) | mixed in typing: peak -9.5 dBFS rms -34.3 dB
+§K2_LEVEL keys (mixed, typing windows) mean rms -33.4 dB, mean peak -9.2 dBFS; voice mean rms -16.6 dB -> keys are 16.9 dB under the voice rms
+§K2_VERDICT PASS beats=6 bad=0 audible=True
+§BUILD_DONE /home/red1/Videos/Command_Line_ERP_CH2_MIS_Menu_Driven_MS_rc3.mp4
+exit=0

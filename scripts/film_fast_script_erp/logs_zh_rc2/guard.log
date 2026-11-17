@@ -1,0 +1,47 @@
+§GUARD OK   beat=start greet.verbs=73 expect=73 spoken="七十三个动词"
+§GUARD OK   beat=start greet.words=26 expect=26 spoken="二十六个词"
+§GUARD OK   beat=help help.groups=3 expect=3 spoken="三个组"
+§GUARD OK   beat=help help.erpN=4 expect=4 spoken="四个词"
+§GUARD OK   beat=bp bp.of=113 expect=113 spoken="共一百一十三个业务伙伴"
+§GUARD OK   beat=bp bp.shown=20 expect=20 spoken="显示二十个"
+§GUARD OK   beat=po1 po.project.n=3 expect=3 spoken="有三个可选"
+§GUARD OK   beat=po2 po.phase.n=7 expect=7 spoken="七个阶段"
+§GUARD OK   beat=po3 po.line.n=32 expect=32 spoken="共三十二行"
+§GUARD OK   beat=po4 po.run.orders=3 expect=3 spoken="三张采购订单"
+§GUARD OK   beat=po4 po.run.orderLines=4 expect=4 spoken="四行订单行"
+§GUARD OK   beat=co co.total=81 expect=81 spoken="总计是八十一"
+§GUARD OK   beat=next next.withWord=["CL","VO"] expect=CL,VO spoken="关闭和作废"
+§GUARD OK   beat=next next.noWord=["RE"] expect=RE spoken="r e 还没有词"
+§GUARD OK   beat=gap gap.process="Renumber" expect=Renumber spoken="renumber"
+§GUARD OK   beat=url url.chars=6838 expect=6838 spoken="六千八百三十八个字符"
+§GUARD OK   beat=cost cost.discs=5 expect=5 spoken="五个专业"
+§GUARD OK   beat=cost cost.total=1054482 expect=1054482 spoken="一共一百零五万四千四百八十二"
+§GUARD OK   beat=post post.sec=7 expect=7 spoken="七秒"
+§GUARD OK   beat=post post.changes=81 expect=81 spoken="共有八十一项更改"
+§GUARD OK   beat=post post.planned="1054482.22784" expect=1054482.22784 spoken="一百零五万四千四百八十二点二二七八四"
+§GUARD OK   beat=proj proj.props=48 expect=48 spoken="四十八个属性"
+§GUARD OK   beat=ls ls.rows=4 expect=4 spoken="显示四个项目"
+§GUARD OK   beat=start numerals not covered by a fact=0 typed digits=0
+§GUARD OK   beat=help numerals not covered by a fact=0 typed digits=0
+§GUARD OK   beat=level numerals not covered by a fact=0 typed digits=0
+§GUARD OK   beat=bp numerals not covered by a fact=0 typed digits=0
+§GUARD OK   beat=po1 numerals not covered by a fact=0 typed digits=0
+§GUARD OK   beat=po2 numerals not covered by a fact=0 typed digits=0
+§GUARD OK   beat=po3 numerals not covered by a fact=0 typed digits=0
+§GUARD OK   beat=po4 numerals not covered by a fact=0 typed digits=0
+§GUARD OK   beat=co numerals not covered by a fact=0 typed digits=0
+§GUARD OK   beat=next numerals not covered by a fact=0 typed digits=0
+§GUARD OK   beat=gap numerals not covered by a fact=0 typed digits=0
+§GUARD OK   beat=report numerals not covered by a fact=0 typed digits=0
+§GUARD OK   beat=url numerals not covered by a fact=0 typed digits=0
+§GUARD OK   beat=cost numerals not covered by a fact=0 typed digits=0
+§GUARD OK   beat=post numerals not covered by a fact=0 typed digits=0
+§GUARD OK   beat=proj numerals not covered by a fact=0 typed digits=0
+§GUARD OK   beat=ls numerals not covered by a fact=0 typed digits=0
+§GUARD OK   beat=exit numerals not covered by a fact=0 typed digits=0
+§GUARD proof talk or first/novel/unique: none
+§GUARD not-said N (a live link to a browser, or a thing not built), named in the voice: none
+§GUARD next-step talk ("being built", owner-allowed, only on the cost beat): none
+§GUARD language=zh
+§GUARD facts verdict in facts.json: bad=0 missing=0
+§GUARD_VERDICT PASS facts=23 bad=0

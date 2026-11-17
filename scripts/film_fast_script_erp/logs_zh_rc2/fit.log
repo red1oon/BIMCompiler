@@ -1,0 +1,21 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT start cue=5.47 room=10.06 dur=9.17 -> DETAIL slack=+0.89 detailDur=9.17 words=4
+§NARR_FIT help cue=19.97 room=10.31 dur=9.40 -> DETAIL slack=+0.91 detailDur=9.40 words=7
+§NARR_FIT level cue=35.88 room=10.24 dur=9.33 -> DETAIL slack=+0.91 detailDur=9.33 words=6
+§NARR_FIT bp cue=53.63 room=13.49 dur=12.59 -> DETAIL slack=+0.90 detailDur=12.59 words=5
+§NARR_FIT po1 cue=74.30 room=9.28 dur=8.36 -> DETAIL slack=+0.92 detailDur=8.36 words=4
+§NARR_FIT po2 cue=84.67 room=5.74 dur=4.85 -> DETAIL slack=+0.89 detailDur=4.85 words=2
+§NARR_FIT po3 cue=91.51 room=4.73 dur=3.82 -> DETAIL slack=+0.91 detailDur=3.82 words=2
+§NARR_FIT po4 cue=100.18 room=14.94 dur=14.04 -> DETAIL slack=+0.90 detailDur=14.04 words=2
+§NARR_FIT co cue=120.63 room=11.11 dur=10.19 -> DETAIL slack=+0.92 detailDur=10.19 words=12
+§NARR_FIT next cue=134.93 room=11.98 dur=11.08 -> DETAIL slack=+0.90 detailDur=11.08 words=5
+§NARR_FIT gap cue=150.34 room=9.90 dur=8.99 -> DETAIL slack=+0.91 detailDur=8.99 words=10
+§NARR_FIT report cue=163.01 room=7.19 dur=6.27 -> DETAIL slack=+0.92 detailDur=6.27 words=3
+§NARR_FIT url cue=172.55 room=8.94 dur=8.06 -> DETAIL slack=+0.88 detailDur=8.06 words=4
+§NARR_FIT cost cue=187.34 room=14.11 dur=13.22 -> DETAIL slack=+0.89 detailDur=13.22 words=4
+§NARR_FIT post cue=209.72 room=13.77 dur=12.88 -> DETAIL slack=+0.89 detailDur=12.88 words=2
+§NARR_FIT proj cue=225.01 room=8.02 dur=7.14 -> DETAIL slack=+0.88 detailDur=7.14 words=2
+§NARR_FIT ls cue=235.47 room=5.31 dur=4.41 -> DETAIL slack=+0.91 detailDur=4.41 words=3
+§NARR_FIT exit cue=242.55 room=5.48 dur=4.59 -> DETAIL slack=+0.89 detailDur=4.59 words=6

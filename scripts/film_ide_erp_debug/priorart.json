@@ -1,0 +1,14 @@
+{
+ "note": "Only sources this lane READ. Each item names the file, the line and a text that must be on that line (guard.js check P); a row with no entry, or whose text is not on that line, fails the build. Nothing from memory.",
+ "guide": { "name": "Developer Guide", "url": "https://red1oon.github.io/BIMCompiler/DeveloperGuide/", "sections": "4.1 the editor tools · 5.1 bump · 5.6 the clock rule" },
+ "items": [
+  { "name": "iDempiere, web-service login", "where": { "file": "~/idempiere-dev-setup/idempiere/org.idempiere.webservices/WEB-INF/src/org/idempiere/adinterface/CompiereService.java", "line": 283, "text": "Env.setContext( getCtx(), Env.DATE" },
+    "does": "sets the session date once, from the server's own local clock", "took": "one session date, taken as the local day (Env.stamp, trx.env.date)" },
+  { "name": "iDempiere, InvoiceGenerate", "where": { "file": "~/idempiere-dev-setup/idempiere/org.adempiere.base.process/src/org/compiere/process/InvoiceGenerate.java", "line": 135, "text": "p_DateInvoiced = new Timestamp(System.currentTimeMillis())" },
+    "does": "a missing invoice date defaults to the clock's local day", "took": "the same default day, but asked of the session; no clock means a refusal, never a guess" },
+  { "name": "this repo's editor study", "where": { "repo": "bim-compiler", "path": "prompts/EDITOR_MAINTAINABILITY_STUDY.md", "line": 91, "text": "there is no \"bump\" command" },
+    "does": "named the biggest hand-editing trap: forget the cache bump and users get the old code", "took": "scripts/bump.js, and the bump offered in the editor on save" },
+  { "name": "this repo's dev-toolkit plan", "where": { "repo": "bim-ootb", "path": "prompts/DEV_TOOLKIT_NO_AI.md", "line": 17, "text": "localhost SW-bypass launch config" },
+    "does": "planned a local launch that bypasses the service worker, never measured", "took": "measured it: a saved edit does not show on a plain reload (film spec, CH 0 v2 plan); the editor's answers made a hot deploy unnecessary" }
+ ]
+}

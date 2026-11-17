@@ -1,0 +1,57 @@
+{
+ "note": "Only sources this lane READ. A file row names the file, the line and a text that must be on that line; a web row names the URL and the copy fetched into out/prior/ (2026-11-15) and a text that must be in that copy. guard.js check P fails a row whose text is not there. Nothing from memory.",
+ "items": [
+  {
+   "name": "iDempiere, the field tooltip",
+   "where": {
+    "file": "~/idempiere-dev-setup/idempiere/org.adempiere.ui.zk/WEB-INF/src/org/adempiere/webui/adwindow/ADTabpanel.java",
+    "line": 837,
+    "text": "Env.IsShowTechnicalInfOnHelp(Env.getCtx())"
+   },
+   "does": "with a user preference on, adds the field's Entity Type: who owns it",
+   "took": "the owner on every layer (base, plugin, rank)",
+   "name_zh": "iDempiere 字段提示",
+   "does_zh": "打开用户偏好后，加上字段的实体类型：谁拥有它",
+   "took_zh": "每一层都标出所有者（基础、插件、等级）"
+  },
+  {
+   "name": "iDempiere, Field Record Info",
+   "where": {
+    "file": "~/idempiere-dev-setup/idempiere/org.adempiere.ui.zk/WEB-INF/src/org/adempiere/webui/window/WFieldRecordInfo.java",
+    "line": 176,
+    "text": "if (Env.IsShowTechnicalInfOnHelp(Env.getCtx()))"
+   },
+   "does": "shows Table.Column='value' and the owner, not the code that runs",
+   "took": "the code that runs, in firing order",
+   "name_zh": "iDempiere 字段记录信息",
+   "does_zh": "显示 Table.Column='值' 和所有者，不显示运行的代码",
+   "took_zh": "按触发顺序列出运行的代码"
+  },
+  {
+   "name": "Odoo developer mode",
+   "where": {
+    "url": "https://www.odoo.com/documentation/17.0/applications/general/developer_mode.html",
+    "saved": "out/prior/odoo_devmode.html",
+    "text": "technical data"
+   },
+   "does": "a per-session switch (?debug=1) that opens a field's technical data",
+   "took": "a dev-only switch: a bookmark in one tab",
+   "name_zh": "Odoo 开发者模式",
+   "does_zh": "按会话开启的开关（?debug=1），显示字段的技术数据",
+   "took_zh": "仅限开发的开关：一个标签页里的一个书签"
+  },
+  {
+   "name": "click-to-component (React)",
+   "where": {
+    "url": "https://github.com/ericclemmons/click-to-component",
+    "saved": "out/prior/click_to_component_README.md",
+    "text": "a Component in the browser to **instantly** goto the source in your editor"
+   },
+   "does": "click a component, the editor opens on its source",
+   "took": "Alt+n opens the line of layer n",
+   "name_zh": "click-to-component（React）",
+   "does_zh": "点击一个组件，编辑器打开它的源代码",
+   "took_zh": "Alt+n 打开第 n 层的那一行"
+  }
+ ]
+}

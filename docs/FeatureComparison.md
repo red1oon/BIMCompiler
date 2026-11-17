@@ -237,6 +237,23 @@ model. When a user needs a feature served by a table not yet loaded
 (e.g., C_Commission), the manifest defines its structure and data is
 fetched on demand. See ERP.md §16.6.
 
+#### How closely the kernel matches legacy iDempiere
+
+The kernel is checked against a **live legacy iDempiere instance used as the oracle**
+([method](LegacyOracleAdapterSpec.md)). The same scenario is run on both sides and compared:
+documents, books, stock, cost and refusals. What is and is not claimed:
+
+- **Measured (run of 2026-10-12):** the shop-day suite (a fresh client, sale to return) matched
+  **25 of 25** scenarios, with every negative control correctly failing. Across the whole suite,
+  **19 of the 34** dictionary document tables had at least one compared scenario.
+- **Not claimed:** the other 15 document tables are unmeasured, and known gaps are tracked in the
+  project's parity log (for example return reversal and void). "Matches legacy" holds only for the scenarios
+  that were run. It is not a claim of byte-identical behaviour across the whole system.
+- **Version dependence:** parity is established against one iDempiere build. iDempiere 13 is a
+  long-term-support release ([release post](https://idempiere.org/?p=3658)) and the project
+  keeps moving, so the comparison has to be re-run against the version a client actually uses
+  before relying on it.
+
 ## Comparison
 
 | Capability | BIM OOTB | Autodesk APS (Forge) | IFC.js / ThatOpen | Trimble Connect |
@@ -247,7 +264,7 @@ fetched on demand. See ERP.md §16.6.
 | Install required | **None** | None | npm build | Desktop or web |
 | IFC colour fidelity | **IfcSurfaceStyle extracted** | Proprietary conversion | WASM parse | Proprietary |
 | IFC export from browser | **Yes (STEP format)** | No | No | No |
-| Max elements (smooth) | **125K** | ~50K (server tiles) | ~20K | Server-rendered |
+| Max elements (smooth) | **125K**¹ | ~50K (server tiles) | ~20K | Server-rendered |
 | Load from cache | **<1 second** | N/A (cloud) | N/A | N/A |
 | 4D scheduling | **Integrated** | Separate product | No | Separate |
 | 5D cost | **Integrated** | Separate product | No | Separate |
@@ -261,6 +278,8 @@ fetched on demand. See ERP.md §16.6.
 | ERP integration | **Built-in (AD engine)** | None | None | None |
 | Construction scheduling | **4D in same viewer** | None | None | None |
 | Browser authoring (B-rep) | **DAGeVu (spine-proven, op-log fold)** | No | No | No |
+
+¹ **Viewing and importing are different limits.** 125K is a pre-extracted building database viewed from cache. In-browser IFC *import* is bounded by the wasm32 4 GB ceiling and fails at about 63,600 elements in a Web Worker ([Architecture Overview](ArchitectureOverview.md)). A larger IFC is extracted once, natively, and then viewed in the browser. The browser is the viewer and the kernel, not the importer of very large models.
 
 ### Key Differences
 

@@ -1,0 +1,339 @@
+{
+ "made": "2026-11-16T11:22:01.155Z",
+ "tree": "f79058ee",
+ "shots": {
+  "idle": {
+   "file": "pages/idle.png",
+   "rects": {
+    "panel": {
+     "x": 1560,
+     "y": 69,
+     "w": 360,
+     "h": 1011
+    },
+    "tooltip": {
+     "x": 1562,
+     "y": 117,
+     "w": 359,
+     "h": 77
+    },
+    "tipTitle": {
+     "x": 1562,
+     "y": 69,
+     "w": 359,
+     "h": 48
+    },
+    "howtoTitle": {
+     "x": 1562,
+     "y": 194,
+     "w": 359,
+     "h": 48
+    },
+    "card": null,
+    "ctx": null
+   }
+  },
+  "ask_close": {
+   "file": "pages/ask_close.png",
+   "rects": {
+    "panel": {
+     "x": 1560,
+     "y": 69,
+     "w": 360,
+     "h": 1011
+    },
+    "tooltip": {
+     "x": 1562,
+     "y": 117,
+     "w": 359,
+     "h": 77
+    },
+    "tipTitle": {
+     "x": 1562,
+     "y": 69,
+     "w": 359,
+     "h": 48
+    },
+    "howtoTitle": {
+     "x": 1562,
+     "y": 194,
+     "w": 359,
+     "h": 48
+    },
+    "card": {
+     "x": 1577,
+     "y": 299,
+     "w": 329,
+     "h": 438
+    },
+    "ctx": null
+   }
+  },
+  "link_open": {
+   "file": "pages/link_open.png",
+   "rects": {
+    "panel": {
+     "x": 1560,
+     "y": 69,
+     "w": 360,
+     "h": 1011
+    },
+    "tooltip": {
+     "x": 1562,
+     "y": 117,
+     "w": 359,
+     "h": 77
+    },
+    "tipTitle": {
+     "x": 1562,
+     "y": 69,
+     "w": 359,
+     "h": 48
+    },
+    "howtoTitle": {
+     "x": 1562,
+     "y": 194,
+     "w": 359,
+     "h": 48
+    },
+    "card": {
+     "x": 1577,
+     "y": 299,
+     "w": 329,
+     "h": 438
+    },
+    "ctx": {
+     "x": 1577,
+     "y": 749,
+     "w": 329,
+     "h": 243
+    }
+   }
+  },
+  "field_ui": {
+   "file": "pages/field_ui.png",
+   "rects": {
+    "panel": {
+     "x": 1560,
+     "y": 69,
+     "w": 360,
+     "h": 1011
+    },
+    "tooltip": {
+     "x": 1562,
+     "y": 117,
+     "w": 359,
+     "h": 121
+    },
+    "tipTitle": {
+     "x": 1562,
+     "y": 69,
+     "w": 359,
+     "h": 48
+    },
+    "howtoTitle": {
+     "x": 1562,
+     "y": 238,
+     "w": 359,
+     "h": 48
+    },
+    "card": {
+     "x": 1577,
+     "y": 343,
+     "w": 329,
+     "h": 438
+    },
+    "ctx": {
+     "x": 1577,
+     "y": 793,
+     "w": 329,
+     "h": 243
+    }
+   }
+  },
+  "ask_2": {
+   "file": "pages/ask_2.png",
+   "rects": {
+    "panel": {
+     "x": 1560,
+     "y": 69,
+     "w": 360,
+     "h": 1011
+    },
+    "tooltip": null,
+    "tipTitle": {
+     "x": 1562,
+     "y": 69,
+     "w": 359,
+     "h": 48
+    },
+    "howtoTitle": {
+     "x": 1562,
+     "y": 117,
+     "w": 359,
+     "h": 48
+    },
+    "card": {
+     "x": 1577,
+     "y": 222,
+     "w": 329,
+     "h": 514
+    },
+    "ctx": {
+     "x": 1577,
+     "y": 748,
+     "w": 329,
+     "h": 243
+    }
+   }
+  }
+ },
+ "lines": {
+  "index": "§HELP_SEARCH index lang=zh_CN windows=295 tables=576 actions=13 statuses=12 howto=4 (zh_CN) phrases=1119",
+  "panelBound": "§FIELD_HELP panel bound collapsed=false tech=false",
+  "fieldFocus": "§FIELD_HELP focus=Description · text header=\"描述\" desc=8 help=14"
+ },
+ "idle": {
+  "panel": "(Place your cursor into a field on the screen)",
+  "toolTitle": "Tool Tip",
+  "howtoTitle": "How To"
+ },
+ "ui": "zh_CN",
+ "ask1": {
+  "q": "如何关闭销售订单？",
+  "line": "§HELP_SEARCH ask=\"如何关闭销售订单？\" lang=zh_CN window=143 action=CL cli=\"erp.close kind=Order number=<Document No>\" howto=1 matched=[\"action:关闭 (status 关闭)\",\"window:销售订单\"]",
+  "card": "窗口销售订单\n文档动作结束 — Finally close this transaction. It cannot be re-activated.\n单据处于以下状态时可用: 完成, 等候付款\nCLIerp.close kind=Order number=<Document No>\n指南1 · 销售订单\n\n从菜单（⌂ → 销售）打开销售订单，建一两行，然后按处理按钮（§6）→ 完成。完成不只是改变状态：completeIt 会在同一个已签名的操作组里，接着生成后面的出货单和发票。\n\n由构建会话翻译，未经母语者审校"
+ },
+ "link": {
+  "link": "§HELP_LINK window=143 onMenu=true",
+  "opened": "§IDEMPIERE window=销售订单(143) tabs=5 source=sqlite",
+  "ctx": "§HELP_CTX window=143 howto=1 lang=zh_CN",
+  "howto": "1 · 销售订单\n\n从菜单（⌂ → 销售）打开销售订单，建一两行，然后按处理按钮（§6）→ 完成。完成不只是改变状态：completeIt 会在同一个已签名的操作组里，接着生成后面的出货单和发票。\n\n由构建会话翻译，未经母语者审校\ndocs/ERPUserGuide.md · 1 · Sales Order"
+ },
+ "field": {
+  "tag": "INPUT",
+  "panel": "描述\n\n该记录的可选描述\n\n描述最多为 255 个字符。",
+  "x": 456,
+  "y": 402
+ },
+ "ask2": {
+  "q": "怎样完成一张发票？",
+  "line": "§HELP_SEARCH ask=\"怎样完成一张发票？\" lang=zh_CN window=167 action=CO cli=\"erp.complete is offered for Order (C_Order), not for Invoice\" howto=3 matched=[\"action:完成\",\"window~发票客户公司 (1 pairs)\"]",
+  "card": "窗口发票(客户/公司)\n文档动作完成 — Generate documents and complete transaction\n单据处于以下状态时可用: 起草, 过程中, 未活动的, 已批准, 未核准, 等待确认, 等候付款\nCLIerp.complete 目前只支持 Order (C_Order)，不支持 Invoice\n指南3 · 客户发票 → 应收\n\n同一次完成生成的发票(客户/公司)记账：借应收账款 / 贷收入（按行）/ 贷应交税金。在发票上打开记账预览（任何已完成的单据都有）——先看这张分录，再相信我们的说法；它和指南里的记账预览面板实时运行的是同一个推导，不是单独的报表计算。\n\n由构建会话翻译，未经母语者审校"
+ },
+ "lb": {
+  "lang": "zh_CN",
+  "col": "Description",
+  "fieldId": 1086,
+  "english": [
+   "Optional short description of the record",
+   "A description is limited to 255 characters."
+  ],
+  "packText": [
+   "该记录的可选描述",
+   "描述最多为 255 个字符。"
+  ],
+  "docNoHasPack": false
+ },
+ "errors": [],
+ "memory": {
+  "withPack": {
+   "gc": true,
+   "used": 48555301,
+   "pack": true
+  },
+  "without": {
+   "gc": true,
+   "used": 48412986,
+   "pack": false
+  },
+  "deltaBytes": 142315
+ },
+ "packs": {
+  "de_DE": {
+   "bytes": 533374,
+   "fields": 14961,
+   "howto": 0
+  },
+  "fr_FR": {
+   "bytes": 471170,
+   "fields": 14262,
+   "howto": 0
+  },
+  "zh_CN": {
+   "bytes": 201869,
+   "fields": 9315,
+   "howto": 4
+  },
+  "ja_JP": {
+   "bytes": 70507,
+   "fields": 3537,
+   "howto": 0
+  },
+  "en_US": {
+   "bytes": 6888,
+   "fields": 0,
+   "howto": 4
+  }
+ },
+ "docNoEnglish": "Document sequence number of the document",
+ "cliAsk": {
+  "line": "cd Order; ask 如何关闭销售订单？",
+  "arrow": "→ erp.ask question=如何关闭销售订单？",
+  "status": "ok",
+  "harm": "read",
+  "lang": "zh_CN",
+  "langBy": "LANG",
+  "howtoLang": "zh_CN",
+  "window": {
+   "id": 143,
+   "name": "销售订单"
+  },
+  "action": "CL",
+  "summary": "窗口: 销售订单\n文档动作: 结束 — Finally close this transaction. It cannot be re-activated.\n  单据处于以下状态时可用: 完成, 等候付款\nCLI: erp.close kind=Order number=<Document No>\n指南: 1 · 销售订单 https://red1oon.github.io/BIMCompiler/ERPUserGuide/#1-sales-order\n\n从菜单（⌂ → 销售）打开销售订单，建一两行，然后按处理按钮（§6）→ 完成。完成不只是改变状态：completeIt 会在同一个已签名的操作组里，接着生成后面的出货单和发票。\n(由构建会话翻译，未经母语者审校)"
+ },
+ "oldTooltip": {
+  "commit": "9b7d2f86",
+  "line": 5323,
+  "text": "v.title = f.columnName + ' · ' + f.referenceType;"
+ },
+ "quote": {
+  "text": "The average interaction worker spends an estimated 28 percent of the workweek managing e-mail and nearly 20 percent looking for internal information or tracking down colleagues who can help with specific tasks.",
+  "stat": "nearly 20 percent",
+  "title": "The social economy: Unlocking value and productivity through social technologies",
+  "date": "July 2012",
+  "who": "McKinsey Global Institute · Michael Chui, James Manyika et al.",
+  "url": "mckinsey.com/…/our-insights/the-social-economy",
+  "fetched": "2026-11-16"
+ },
+ "verdicts": {
+  "erpAsk": "W-ERP-ASK pass=10 fail=0 inconclusive=0 verdict=PASS",
+  "fieldHelp": "W-FIELD-HELP pass=13 fail=0 inconclusive=0 verdict=PASS",
+  "showcase": "W-HELP-SHOWCASE pass=20 fail=0 inconclusive=0 verdict=PASS"
+ },
+ "credentials": {
+  "licence": "MIT License",
+  "repo": "github.com/red1oon/bim-ootb",
+  "prs": [
+   {
+    "n": 3126,
+    "state": "MERGED help: field tooltips = AD Description + East Tool Tip panel, as legacy (P1b, W-FIELD-HELP 13/0)"
+   },
+   {
+    "n": 3128,
+    "state": "MERGED help: showcase slice - help pack per language, question search, auto-links, how-to (§10, W-HELP-SHOWCASE 13/0)"
+   },
+   {
+    "n": 3133,
+    "state": "MERGED help: the help in the chosen language - Chinese questions, names per language, zh_CN how-to (§12, W-HELP-SHOWCASE 20/0)"
+   },
+   {
+    "n": 3136,
+    "state": "MERGED door: erp.ask - ask the help a question at the terminal, in the chosen language (§13, W-ERP-ASK 10/0)"
+   }
+  ],
+  "pr3126": "MERGED help: field tooltips = AD Description + East Tool Tip panel, as legacy (P1b, W-FIELD-HELP 13/0)",
+  "pr3128": "MERGED help: showcase slice - help pack per language, question search, auto-links, how-to (§10, W-HELP-SHOWCASE 13/0)",
+  "paperPriority": "2026-03-30"
+ }
+}

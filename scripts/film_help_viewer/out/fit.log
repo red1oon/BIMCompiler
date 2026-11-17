@@ -1,0 +1,15 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT quote cue=4.80 room=12.48 dur=11.60 -> DETAIL slack=+0.88 words=32
+§NARR_TONE quote#0 F YN rose=11.0st endDelta=+2.0st want=rise OK "Does an app need help at all?"
+§NARR_FIT klass cue=17.88 room=13.74 dur=12.82 -> DETAIL slack=+0.92 words=36
+§NARR_TONE klass#0 F WH rose=0st endDelta=-4.4st want=fall OK "What is it?"
+§NARR_FIT lang cue=32.22 room=15.77 dur=14.87 -> DETAIL slack=+0.90 words=42
+§NARR_TONE lang#0 F YN rose=5.0st endDelta=+4.2st want=rise OK "And in my own language?"
+§NARR_FIT ask cue=50.01 room=15.32 dur=14.41 -> DETAIL slack=+0.91 words=49
+§NARR_TONE ask#0 F YN rose=11.0st endDelta=+0.6st want=rise OK "Can I find a tool without knowing its name?"
+§NARR_FIT cli cue=69.26 room=15.61 dur=14.72 -> DETAIL slack=+0.89 words=45
+§NARR_TONE cli#0 F YN rose=5.0st endDelta=+1.7st want=rise OK "And at the command line?"
+§NARR_FIT dock cue=85.47 room=9.19 dur=8.28 -> DETAIL slack=+0.91 words=29
+§NARR_TONE dock#0 F YN rose=5.0st endDelta=+1.9st want=rise OK "Does it cover my model?"

@@ -1,0 +1,62 @@
+§BIM_LAYERS_W index §DXF_HOVER_INDEX keys=28 defaults=99 root=/tmp/wt-ootb-film3 out=/tmp/wt-ootb-film3/devtools/hover/trace_index.json
+§BIM_LAYERS_W oracle cli_exit=0 traced=513 bodies=512
+§BIM_LAYERS_W page-shaped inserts=511 cuts=2 els=512 trace_map=513
+§BIM_LAYERS_W L1 inserts=511 wrong=0
+PASS L1 every insert: layer 1 = the oracle trace key, its line = the parse  511 inserts
+§BIM_LAYERS_W L2 synthetic chain=dxf2beams:beam > dxf2bim_import:column > dxf2bim_import:fill items=2 shed_chains=0 -> VACUOUS on the shed (judged on the synthetic chain only)
+PASS L2 a chain a > b > c: layer 1 = a, layer 2 = b, c, each at its parsed line
+§BIM_LAYERS_W L3 inserts=511 wrong=0 by_source={"label":376,"default":122,"inherited":98,"drawn":25,"schedule":64}
+§BIM_LAYERS_W L3 default_sides linked=12 not_recorded=110
+PASS L3 every insert: side:source = the op SizeBasis, numbers = the oracle bodies.json, defaults linked only by their recorded key
+§BIM_LAYERS_W L4 cuts=2 listed_under_hosts=2 wrong=0
+PASS L4 every cut under exactly its host (Σ = cuts), every fill names its host  2 cuts
+§BIM_LAYERS_W L5 A=#2 ["#9001 GEOM_MOVE  d=0.5,0,0"] B=#3 ["#9002 GEOM_GRID_MOVE  TRANSLATE x 1.2"] C=#4 ["#9003 GEOM_SCALE  f=2,1,1"] wrong=0 past_cursor_op=#9004 (not in ctx.ops: base=513)
+PASS L5 edits: A, B, C list exactly theirs (via EditDelta.netEdits), no other body lists any, the past-cursor op nowhere
+§BIM_LAYERS_W L6 inserts=511 wrong=0
+PASS L6 evidence handle / layer / sheet = the oracle bodies.json
+§BIM_LAYERS_W K keys_tried=3066 links=523 dangling=0
+PASS K every key 1-6 link is vscode://file/<root>/<existing line> or absent
+  §BIM_LAYERS_W SAMPLE #17 | IfcColumn  #17  handle 39C  layer Col  sheet 0_FLOOR_PLAN_marked.dxf  derived
+  §BIM_LAYERS_W SAMPLE #17 | 1 BUILDER  [1]
+  §BIM_LAYERS_W SAMPLE #17 |     dxf2bodies:body  modeller/dxf2bodies.js:422
+  §BIM_LAYERS_W SAMPLE #17 | 2 PASS-THROUGH
+  §BIM_LAYERS_W SAMPLE #17 |     none
+  §BIM_LAYERS_W SAMPLE #17 | 3 SIZES  [3]
+  §BIM_LAYERS_W SAMPLE #17 |     x 0.3048  label rule single
+  §BIM_LAYERS_W SAMPLE #17 |     y 0.3048  label rule single
+  §BIM_LAYERS_W SAMPLE #17 |     top 3.0988  default  column.top_under_beam  modeller/element_defaults.json:5
+  §BIM_LAYERS_W SAMPLE #17 |     height  elevation
+  §BIM_LAYERS_W SAMPLE #17 | 4 CUTS
+  §BIM_LAYERS_W SAMPLE #17 |     none
+  §BIM_LAYERS_W SAMPLE #17 | 5 EDITS
+  §BIM_LAYERS_W SAMPLE #17 |     none
+  §BIM_LAYERS_W SAMPLE #17 | 6 EVIDENCE
+  §BIM_LAYERS_W SAMPLE #17 |     handle 39C  layer Col  sheet 0_FLOOR_PLAN_marked.dxf  prov derived  run e30b6478
+  §BIM_LAYERS_W SAMPLE #17 |     Note CastingRatio  5_DETAILS_marked.dxf#2E2
+  §BIM_LAYERS_W SAMPLE #17 |     Note fc_MPa  5_DETAILS_marked.dxf#2E1
+  §BIM_LAYERS_W SAMPLE #17 |     Note fy_MPa  5_DETAILS_marked.dxf#2E1
+  §BIM_LAYERS_W SAMPLE #17 |     Sched column  5_DETAILS_marked.dxf#2CA
+  §BIM_LAYERS_W SAMPLE #17 | 1-6 open a layer's line · V = builder
+  §BIM_LAYERS_W SAMPLE #100 | IfcWall  #100  handle CC-L0+CC-L1  layer Wall  sheet 1N_ELEV_NORTH_marked.dxf  derived
+  §BIM_LAYERS_W SAMPLE #100 | 1 BUILDER  [1]
+  §BIM_LAYERS_W SAMPLE #100 |     dxf2bim_import:wall-line  modeller/dxf2bim_import.js:716
+  §BIM_LAYERS_W SAMPLE #100 | 2 PASS-THROUGH
+  §BIM_LAYERS_W SAMPLE #100 |     none
+  §BIM_LAYERS_W SAMPLE #100 | 3 SIZES
+  §BIM_LAYERS_W SAMPLE #100 |     t inherited
+  §BIM_LAYERS_W SAMPLE #100 | 4 CUTS
+  §BIM_LAYERS_W SAMPLE #100 |     #512 GEOM_CUT door-gap:353  rule D88B door gap  holds #159
+  §BIM_LAYERS_W SAMPLE #100 |     #513 GEOM_CUT door-gap:33B  rule D88B door gap  holds #158
+  §BIM_LAYERS_W SAMPLE #100 | 5 EDITS
+  §BIM_LAYERS_W SAMPLE #100 |     none
+  §BIM_LAYERS_W SAMPLE #100 | 6 EVIDENCE
+  §BIM_LAYERS_W SAMPLE #100 |     handle CC-L0+CC-L1  layer Wall  sheet 1N_ELEV_NORTH_marked.dxf  prov derived  run e30b6478
+  §BIM_LAYERS_W SAMPLE #100 | 1-6 open a layer's line · V = builder
+§BIM_LAYERS_W bodies_with_layer {"builder":511,"pass":0,"sizes":511,"cuts":3,"edits":0,"evidence":511} of 511
+§BIM_LAYERS_W R1 slice-2 resolve() as the hover: L3_wrong=511 L4_wrong=511 L6_wrong=511
+PASS R1 red control: the single-line hover fails L3, L4 and L6
+§BIM_LAYERS_W R2 SizeBasis corrupted on #1 -> L3 wrong=[1]
+PASS R2 red control: one corrupted SizeBasis -> L3 catches exactly that body
+§BIM_LAYERS_W R3 cursor before the edits -> L5 wrong=3 (A, B, C list nothing)
+PASS R3 red control: the cursor before the edits -> L5 fails on A, B, C
+§BIM_LAYERS_W VERDICT PASS fail=0 inserts=511 cuts=2

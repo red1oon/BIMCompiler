@@ -1,0 +1,14 @@
+{
+ "wrong": 6.97,
+ "wrong_speech": 5.47,
+ "hover": 7.61,
+ "hover_speech": 6.11,
+ "find": 10.63,
+ "find_speech": 9.13,
+ "fix": 6.88,
+ "fix_speech": 5.38,
+ "proof": 7.64,
+ "proof_speech": 6.14,
+ "close": 8.07,
+ "close_speech": 6.57
+}

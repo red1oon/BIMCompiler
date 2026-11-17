@@ -17,6 +17,7 @@ unknown is a ⛔ in §9, not a guess. Honour until DONE.
 4. **UX is not "later = never".** The user parked UX for sequencing only (2026-10-09 "leave UX for now"); it stays on the ledger as a parity gap (F2 …) and is closed in turn.
 5. **Never ask the user to approve a divergence** (Q-S7, Q-S13 were wrong questions; answered by this rule). Questions are for undecidable facts only (P16).
 6. Every agent brief, witness, and report restates this rule; a witness that classifies a difference as acceptable without an `exemption` is itself a defect.
+7. **Recorded exemption, HELP CONTENT ONLY (user's own words, 2026-11-16):** *"We do it in kernel ERP twin not legacy to avoid confusion when we need to compare with original. Extra how-to will be your lane's big task as HELP is major boost."* The twin may show MORE help than legacy: extra how-to and Context Help text, search, and help packs per language. They live in the twin kernel only and are never installed into legacy, which stays the untouched original. NOT exempt, still equal to legacy: the field tooltip (= `AD_Field.Description`, `WEditor.java:333`), the right-panel shape (`HelpController`), every operation, result and book. Owner: `prompts/VOCAB_MESSAGE_CATALOG.md` ▶ RESUME HERE D1-D4, §7-§9.
 
 # ▶ RESUME HERE (written 2026-10-10 at session close; supersedes older "Next" notes — read the CARDINAL RULE above first)
 **2026-10-13 (newer than the lines below): cycle 1 of the DEPTH lane is DONE and merged (bim-ootb #1988: POS Order cycle in the UI, Zoom/Posted/Info Product/Void/Aging/Trial Balance tip-read fixes, Info Product ported — 10 gaps repaired, list in `prompts/ERP_DEPTH_FILM.md` §2). NEXT CYCLE = §NEWCLIENT-DEPTH (new client built in depth through the UI windows: calendar & period setting first, then period control, numbering, accounting schema, tax, price lists, roles…) — read `prompts/ERP_DEPTH_FILM.md` ▶ RESUME HERE, then the §SHOPDAY series here (SD-00..SD-24 already cover client creation + period open/close through the harness; the new part is the UI path + depth).**
@@ -2576,3 +2577,37 @@ has none for + the draft-order projection. Regression 21 witnesses + poc_sd16 --
 **§POSTING-PARITY step 5 CLOSED.** Named, not fixed: (a) the born tenant has no AD_ClientInfo → its facts carry no C_Period_ID (legacy
 InitialClientSetup creates one); (b) `poc_genesis_resident_live.js` hard-codes 18 GardenWorld partners (seed has 24) and its static server cannot serve
 `../common/`; (c) from step 5: vendor return receipts, BackDateDay reprocessing, costQtyUpdates' G-SD10 rule.
+
+## Note from the code-design lane (2026-11-16): which bim-ootb tree the bridge judges
+`bim-ootb scripts/bump.js` (the F-16 parity gate) now runs `scripts/bridge/run_all.sh` with `OOTB` / `BRIDGE_OOTB` = the tree being bumped
+and `BRIDGE_UI_DB` = its `erp/ad_seed.db` (bim-ootb #3112, `prompts/CODE_ARCHITECTURE_DESIGN.md` §F.30). Before that, every witness judged
+`~/bim-ootb` while the verdict was cached under the bumped tree. **Still reading `~/bim-ootb` (or a fixed path) only, so the gate says
+`scoped=partial`:** `dict_census_stage2.js`, `run_erp_witnesses.sh`, `fn_census_legacy.js` (argv default), and the witnesses with no tree
+setting. Giving them the same `BRIDGE_OOTB` setting would make the gate fully scoped. That is this lane's call, and nothing here was changed.
+**Instrument trap:** a fresh bim-compiler worktree has no `node_modules`, so five witnesses print `Cannot find module 'sql.js'`, and the gate
+counts that as NEW fails. Run the bridge from a checkout that has `node_modules`.
+
+---
+**2026-11-17 NOTE from the code-design lane (`prompts/CODE_ARCHITECTURE_DESIGN.md` A3-CLOCK-1 RESULT; information for this lane, nothing here was changed).**
+W-FA (`scripts/bridge/witness_fa_gap.js`) now takes **~25 min** of the full bridge run (`~/.cache/bim_bridge/run_20261117_021326.log`), so a full
+`run_all.sh` takes ~25 min and the bim-ootb bump parity gate (limit 15 min, bim-ootb `scripts/bump.js:185`) times out with `verdicts=0`.
+**Cause, measured from its own `§FA_PENDING_SYNC` lines:** every run creates new assets in the shared legacy pilot and leaves them there, and each of
+the 12 scenarios re-loads the pending depreciation rows of EVERY earlier asset (`loadHandover`, `:224`, logged `:271`). The load grows with every run:
+`other_assets=0 rows_loaded=0` (2026-10-10, `run_20261010_051940.log`) → `305 / 34,680` (2026-11-17 01:06) → `319 / 36,300` (02:13, one run later: +14 assets).
+12 such loads per run ≈ 435,000 rows read through the web service each run, rising ~1,700 rows per scenario per run. It never stops growing on its own.
+Verdicts of that run: `§FA_VERDICT FAIL fails=1 inconclusive=1 findings=8`, `§M3_VERDICT HARNESS-FAIL fails=1 inconclusive=1 findings=18`.
+**Options for this lane (not decided here):** (a) load the handover of the scenario's own asset group/period only; (b) dispose/void the witness's
+own assets at the end of each run; (c) run W-FA against a pilot restored from a snapshot. Until then, a bump gate on a bim-ootb ERP file cannot finish
+(the code-design lane will scope its gate to the witnesses that load the bumped tree, see `CODE_ARCHITECTURE_DESIGN.md`).
+**2026-11-17 NOTE, addendum (same session; owner asked "slowness on legacy or kernel? grow each run or reset/tear down?").**
+- **Mostly the LEGACY side.** Before each scenario W-FA reads, one web-service call at a time, three things per earlier asset (`witness_fa_gap.js:159-160`:
+  `QueryAAsset`, `QueryADepreciationWorkfile`, `QueryADepreciationExp`). Measured: `§WS_LATENCY calls=60 ms_per_call=53 assets_in_pilot=395` → ~319 assets x 3 x
+  12 loads ≈ 11,500 calls ≈ 10 of the ~25 min. Not yet measured (the log has no timestamps): legacy's own Depreciation Entry, which processes every pending row
+  of the month for all those assets, and `postedOf` waits (up to 10 x 1.5 s per entry). The kernel side is a local SQLite scratch copy; it grows too
+  (`expAll()` re-parses every row on each check, `:54`) but is local.
+- **It should not grow.** The handover exists only because legacy's monthly entry picks up every pending asset the earlier runs left behind; from a clean
+  start it is near zero. M3 shows the same drift: its NEG-* control values move between two runs an hour apart (bank-statement ending 57535 → 59089,
+  stock −38 → −43) because the pilot keeps every run's documents.
+- **Advice: RESET, not tear-down.** Legacy will not simply delete an asset with posted depreciation (removing it means a disposal document, which posts and
+  leaves more history). Take one snapshot of the pilot DB in a known clean state and restore it at the start of `run_all.sh`; every bridge witness then
+  starts equal. The pilot is shared (other lanes write into it on :8088), so the restore-on-run is this lane's and the owner's decision.

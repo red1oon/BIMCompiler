@@ -1,0 +1,9 @@
+§CARD beat=cover entries=1 overflow_px=0
+§CARD beat=quote entries=1 overflow_px=0
+§CARD beat=before entries=1 overflow_px=0
+§CARD beat=ask1 entries=12 overflow_px=0
+§CARD beat=link entries=1 overflow_px=0
+§CARD beat=ask2 entries=12 overflow_px=0
+§CARD beat=cli entries=26 overflow_px=0
+§CARD beat=close entries=1 overflow_px=0
+§CARDS_DONE beats=8 stills=52 too_tall=0 key_cues=41 return_cues=3

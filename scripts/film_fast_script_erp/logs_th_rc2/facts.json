@@ -1,0 +1,318 @@
+{
+ "made": "2026-11-16T02:41:19.881Z",
+ "ootb": "490fe3c2",
+ "noport": {
+  "name": "Renumber",
+  "class": "org.compiere.process.DiscountSchemaReSeq",
+  "count": "162"
+ },
+ "setup": {
+  "lines": 5,
+  "ok": 5
+ },
+ "isolation": {
+  "sceneRequests": 48,
+  "leaked": 0,
+  "realOpLogFiles": 0
+ },
+ "greet": {
+  "version": "1.0.0",
+  "verbs": 73,
+  "words": 26,
+  "commit": "490fe3c2",
+  "tip": true,
+  "welcome": true,
+  "name": true,
+  "hint": true
+ },
+ "help": {
+  "groups": 3,
+  "list": [
+   {
+    "g": "bim",
+    "title": "buildings and models",
+    "n": 16
+   },
+   {
+    "g": "mis",
+    "title": "records, tables, files, Ninja",
+    "n": 11
+   },
+   {
+    "g": "erp",
+    "title": "document actions (CO VO CL RC)",
+    "n": 4
+   }
+  ],
+  "erpWords": [
+   "post",
+   "do",
+   "run",
+   "next"
+  ],
+  "erpN": 4
+ },
+ "level": {
+  "set": true,
+  "what": true,
+  "line": true,
+  "taken": true
+ },
+ "bp": {
+  "ghost": true,
+  "ghostText": "\"Business Partner\"  (ERP kind · window)",
+  "tabLine": "cd \"Business Partner\"",
+  "props": 74,
+  "shown": 20,
+  "of": 113,
+  "ms": 1061
+ },
+ "po": {
+  "asked": [
+   "C_Project_ID",
+   "C_ProjectPhase_ID",
+   "C_ProjectLine_ID",
+   "ConsolidateDocument"
+  ],
+  "consolidateDefault": "Y",
+  "project": {
+   "n": 3,
+   "items": [
+    "Hospital · BIM: Hospital · 990000",
+    "Landscape · Landcape for New Complex · 101",
+    "Standard · Standard · 100"
+   ],
+   "picked": "Hospital · BIM: Hospital",
+   "id": 990000
+  },
+  "phase": {
+   "n": 7,
+   "ids": [
+    990000,
+    990001,
+    990002,
+    990003,
+    990004,
+    990005,
+    990006
+   ],
+   "projectInArrow": 990000,
+   "leftOut": true,
+   "mine": [
+    990000,
+    990001,
+    990002,
+    990003,
+    990004,
+    990005,
+    990006
+   ],
+   "otherProjectsPhases": 0
+  },
+  "line": {
+   "n": 32,
+   "leftOut": true
+  },
+  "run": {
+   "id": 990000,
+   "ms": 8066,
+   "sec": 8,
+   "numbers": [
+    "800003",
+    "800004",
+    "800005"
+   ],
+   "orders": 3,
+   "orderLines": 4,
+   "projectLines": 4,
+   "changes": 12,
+   "poLines": 4,
+   "skippedNoPo": 28
+  },
+  "dictionary": [
+   "C_Project_ID",
+   "C_ProjectPhase_ID",
+   "C_ProjectLine_ID",
+   "ConsolidateDocument"
+  ],
+  "numbersMade": [
+   "800003",
+   "800004",
+   "800005"
+  ],
+  "opLogOrderCreates": 3
+ },
+ "co": {
+  "number": "800003",
+  "before": "DR",
+  "after": "CO",
+  "total": 81,
+  "doc": "800003",
+  "ms": 9071,
+  "sec": 9
+ },
+ "next": {
+  "number": "800003",
+  "head": "800003",
+  "status": "CO",
+  "moves": [
+   {
+    "code": "CL",
+    "what": "→ do close 800003"
+   },
+   {
+    "code": "VO",
+    "what": "→ do void 800003"
+   },
+   {
+    "code": "RE",
+    "what": "(no red1 word for it yet)"
+   }
+  ],
+  "legalLog": [
+   "CL",
+   "VO",
+   "RE"
+  ],
+  "withWord": [
+   "CL",
+   "VO"
+  ],
+  "noWord": [
+   "RE"
+  ]
+ },
+ "gap": {
+  "arrowName": "Renumber",
+  "reasonName": "Renumber",
+  "klass": "org.compiere.process.DiscountSchemaReSeq",
+  "hint": true,
+  "kind": "no-port",
+  "process": "Renumber",
+  "noPortCount": 162,
+  "hintFrames": 1,
+  "firstHintFrame": 184,
+  "runReturnFrame": 183,
+  "logLines": 1,
+  "nonOkDoorLines": [
+   {
+    "verb": "erp.process",
+    "status": "refused"
+   },
+   {
+    "verb": "object.describe",
+    "status": "error"
+   }
+  ]
+ },
+ "report": {
+  "draft": true,
+  "line": "erp.process name=Renumber kind=Order",
+  "send": true,
+  "answer": "refused (gap: no-port)"
+ },
+ "url": {
+  "chars": 6838,
+  "joined": 6838,
+  "host": true,
+  "rowsWide": 34,
+  "via": "github",
+  "logChars": 6838,
+  "masked": true,
+  "decodedChars": 4843
+ },
+ "cost": {
+  "elements": 1190,
+  "total": 1054482,
+  "noRate": 71,
+  "noSize": 3,
+  "ms": 497,
+  "groups": 5,
+  "groupSum": 1054482,
+  "groupElements": 1190,
+  "byDisc": {
+   "ARC": 532432,
+   "ELEC": 283500,
+   "MEP": 153825,
+   "PLB": 49000,
+   "STR": 35725
+  },
+  "byN": {
+   "ARC": 267,
+   "ELEC": 81,
+   "MEP": 809,
+   "PLB": 14,
+   "STR": 19
+  },
+  "discs": 5,
+  "pricedRows": 32,
+  "offerLines": 1,
+  "arrow": true,
+  "door": {
+   "total": 1054482,
+   "elements": 1190,
+   "groups": 5,
+   "groupSum": 1054482,
+   "rows": 32
+  },
+  "byDiscDoor": {
+   "ARC": 532432,
+   "ELEC": 283500,
+   "MEP": 153825,
+   "PLB": 49000,
+   "STR": 35725
+  }
+ },
+ "post": {
+  "arrow": true,
+  "building": "Duplex",
+  "project": 990001,
+  "planned": "1054482.22784",
+  "plannedWhole": 1054482,
+  "changes": 81,
+  "kept": {
+   "create:c_project": 1,
+   "create:c_projectphase": 8,
+   "create:c_projecttask": 19,
+   "create:c_projectline": 43,
+   "create:m_product": 7,
+   "create:m_product_category": 1,
+   "create:m_product_category_acct": 2
+  },
+  "keptChanges": 81,
+  "ms": 7114,
+  "sec": 7,
+  "openOffer": 1,
+  "waited": 7.1,
+  "recordPlanned": 1054482.22784,
+  "recordName": "BIM: Ifc2x3_Duplex_Federated"
+ },
+ "proj": {
+  "props": 48,
+  "arrows": 2
+ },
+ "ls": {
+  "rows": 4,
+  "shown": 4,
+  "of": 4,
+  "posted": "BIM: Ifc2x3_Duplex_Federated",
+  "names": [
+   "Standard",
+   "Landcape for New Complex",
+   "BIM: Hospital",
+   "BIM: Ifc2x3_Duplex_Federated"
+  ]
+ },
+ "duplexElements": 0,
+ "vacuous": [
+  "C4b"
+ ],
+ "checks": {
+  "bad": 0,
+  "missing": 0,
+  "frames": 248,
+  "rows": 50,
+  "cols": 200,
+  "buildingsChecked": 8
+ }
+}

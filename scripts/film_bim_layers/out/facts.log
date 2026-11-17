@@ -1,0 +1,12 @@
+§FACTS index §DXF_HOVER_INDEX keys=28 defaults=99 root=<bim-ootb>
+§FACTS cli bodies=512 inserts=511 untraced=0/0 wall=73c6343db3ed416fd182ec8c0a7c8272
+§FACTS session new ran
+§FACTS session plain ran
+§FACTS page installed="§DXF_HOVER installed index_keys=28 defaults=99 trace_map=on edit_delta=loading" inserts=511 errors=0
+§FACTS col fid=22 cls=IfcColumn counts=1,0,4,0,0,5 key 3 opened=["vscode://file/tmp/wt-ootb-film3/modeller/element_defaults.json:5"] tip_in_view=true | §DXF_HOVER fid=22 guid=body-column-0-3A1 key=dxf2bodies:body at=modeller/dxf2bodies.js:422 layers=1,0,4,0,0,5
+§FACTS wall fid=100 cls=IfcWall counts=1,0,1,2,0,1 key 1 opened=["vscode://file/tmp/wt-ootb-film3/modeller/dxf2bim_import.js:716"] tip_in_view=true | §DXF_HOVER fid=100 guid=73c6343db3ed416fd182ec8c0a7c8272 key=dxf2bim_import:wall-line at=modeller/dxf2bim_import.js:716 layers=1,0,1,2,0,1
+§FACTS bar fid=248 cls=IfcMember counts=1,0,3,0,0,1 key 3 opened=[] tip_in_view=true | §DXF_HOVER fid=248 guid=body-bar-0-1C1-S10 key=dxf2section:bar at=modeller/dxf2section.js:89 layers=1,0,3,0,0,1
+§FACTS memory with=45467755 without=45594070 delta=-126315 trace_entries=513 gc=true overlay_bytes=16120 index_bytes=7636
+§FACTS witness {"blVerdict":"§BIM_LAYERS_W VERDICT PASS fail=0 inserts=511 cuts=2","l3":"§BIM_LAYERS_W L3 inserts=511 wrong=0 by_source={\"label\":376,\"default\":122,\"inherited\":98,\"drawn\":25,\"schedule\":64}","l3def":"§BIM_LAYERS_W L3 default_sides linked=12 not_recorded=110","l4":"§BIM_LAYERS_W L4 cuts=2 listed_under_hosts=2 wrong=0","dhVerdict":"§DXF_HOVER_W VERDICT PASS fail=0","h2b":"§DXF_HOVER_W H2b nextId=1 hovered=14 counts_differ=0","linked":12,"notRecorded":110,"cuts":2}
+§FACTS credentials {"licence":"MIT License","repo":"github.com/red1oon/bim-ootb","pr3043":"MERGED feat(dxf2bim): --trace names the line that built each body (F.21 slice 1)","pr3047":"MERGED feat(devtools): hover a Modeller body to see the line that built it (F.21 slice 2)","pr3064":"MERGED feat(devtools): provenance hover - six layers behind a BIM body (F.23)","paperPriority":"2026-03-30"}
+§FACTS VERDICT PASS

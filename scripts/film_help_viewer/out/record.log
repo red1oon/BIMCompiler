@@ -1,0 +1,10 @@
+§FILM_CUE beat=cover t=0.000 frames=108 typing=0 answer_hold_frames=108 x1
+§FILM_CUE beat=quote t=4.500 frames=314 typing=0 answer_hold_frames=314 x1
+§FILM_CUE beat=klass t=17.583 frames=344 typing=0 answer_hold_frames=344 x1
+§FILM_CUE beat=lang t=31.917 frames=393 typing=0 answer_hold_frames=196 x2
+§FILM_CUE beat=ask t=48.292 frames=416 typing=34 answer_hold_frames=382 x1
+§FILM_CUE beat=cli t=65.625 frames=469 typing=80 answer_hold_frames=389 x1
+§FILM_CUE beat=dock t=85.167 frames=235 typing=0 answer_hold_frames=78 x3
+§FILM_CUE beat=close t=94.958 frames=432 typing=0 answer_hold_frames=432 x1
+§FILM_KEYS typed=35 returns=2
+§FILM_DONE dur=112.958 frames=2711 planned=2711

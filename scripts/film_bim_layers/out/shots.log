@@ -1,0 +1,6 @@
+§FILM_TREE new=5e01bc3d
+§FILM_STILL name=v_col geometry=1440x900+240+90 bytes=137725
+§FILM_SHOT name=v_col link="vscode://file/tmp/wt-ootb-film3/modeller/element_defaults.json:5" file="element_defaults.json" line=5 text="\"column.top_under_beam\": {"
+§FILM_STILL name=v_wall geometry=1440x900+240+90 bytes=381604
+§FILM_SHOT name=v_wall link="vscode://file/tmp/wt-ootb-film3/modeller/dxf2bim_import.js:716" file="dxf2bim_import.js" line=716 text="_trace('dxf2bim_import:wall-line', { guid: gid });   // F.21: a NEW body (its members' panels joined into one wall line) exists only as this insert, so it is stamped here"
+§FILM_SHOOT stills=2 errors=0

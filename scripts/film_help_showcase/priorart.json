@@ -1,0 +1,96 @@
+{
+ "note": "Only sources this lane READ. A repo row names the file, the line and a text that must be on that line (idempiere = the local legacy source, read from disk; bim-ootb = origin/main); a web row names the URL and the copy fetched into out/prior/ (2026-11-16) and a text that must be in that copy. guard.js check P fails a row whose text is not there. Nothing from memory. A row with `lang` is shown only in the cut whose language beat is that language. *_zh = the Mandarin cut's words (translated by the build session).",
+ "items": [
+  {
+   "name": "iDempiere WEditor",
+   "where": {
+    "repo": "idempiere",
+    "path": "org.adempiere.ui.zk/WEB-INF/src/org/adempiere/webui/editor/WEditor.java",
+    "line": 333,
+    "text": "label.setTooltiptext(description);"
+   },
+   "does": "a field's tooltip is its Description, on label and editor",
+   "took": "the twin's one tooltip setter (W-FIELD-HELP F1)",
+   "does_zh": "字段的提示就是它的说明，标签和编辑框上都一样",
+   "took_zh": "孪生系统唯一的提示设置函数（W-FIELD-HELP F1）",
+   "does_de": "der Tooltip eines Felds ist seine Beschreibung, an Beschriftung und Eingabe",
+   "took_de": "der eine Tooltip-Setzer des Zwillings (W-FIELD-HELP F1)"
+  },
+  {
+   "name": "iDempiere HelpController",
+   "where": {
+    "repo": "idempiere",
+    "path": "org.adempiere.ui.zk/WEB-INF/src/org/adempiere/webui/panel/HelpController.java",
+    "line": 146,
+    "text": "onFieldTooltip"
+   },
+   "does": "the East Tool Tip panel: header, description, help",
+   "took": "the same panel and its blank-line rules (F3)",
+   "does_zh": "右侧的提示面板：标题、说明、帮助",
+   "took_zh": "同样的面板和空行规则（F3）",
+   "does_de": "das Tool-Tip-Fenster rechts: Titel, Beschreibung, Hilfe",
+   "took_de": "dasselbe Fenster und seine Leerzeilen-Regeln (F3)"
+  },
+  {
+   "name": "iDempiere SynchronizeTerminology",
+   "where": {
+    "repo": "idempiere",
+    "path": "org.adempiere.base.process/src/org/compiere/process/SynchronizeTerminology.java",
+    "line": 167,
+    "text": "Description = (SELECT e.Description FROM AD_ELEMENT_TRL e"
+   },
+   "does": "a field takes its element's translated Description",
+   "took": "the rule that builds the help pack per language",
+   "does_zh": "字段采用其元素的已翻译说明",
+   "took_zh": "按语言生成帮助包的规则",
+   "does_de": "ein Feld übernimmt die übersetzte Beschreibung seines Elements",
+   "took_de": "die Regel, die das Hilfepaket je Sprache baut"
+  },
+  {
+   "lang": "de_DE",
+   "name": "the published de_DE language pack",
+   "where": {
+    "repo": "bim-ootb",
+    "path": "erp/tools/build_i18n.py",
+    "line": 35,
+    "text": "github.com/bxservice/tbayen.translations@c88fe319 de_DE (T. Bayen / Team Germany)"
+   },
+   "does": "German translations of the dictionary, by Team Germany",
+   "took": "the German text, unchanged (S1 28,176/28,176)",
+   "does_zh": "Team Germany 翻译的德文字典",
+   "took_zh": "德文文字，未改动（S1 28,176/28,176）",
+   "does_de": "deutsche Übersetzungen des Wörterbuchs, von Team Germany",
+   "took_de": "der deutsche Text, unverändert (S1 28.176/28.176)"
+  },
+  {
+   "lang": "zh_CN",
+   "name": "the published zh_CN language pack (ADempiere 3.5.2)",
+   "where": {
+    "repo": "bim-ootb",
+    "path": "erp/tools/build_i18n.py",
+    "line": 38,
+    "text": "sourceforge.net/projects/adempiere/files/Language Packs/Chinese/Release 352 Packages/zh_CN.zip (ADempiere 3.5.2, 2008-08-20)"
+   },
+   "does": "Chinese translations of the dictionary",
+   "took": "the Chinese text, unchanged (S1 12,336/12,336)",
+   "does_zh": "已发布的中文字典翻译",
+   "took_zh": "中文文字，未改动（S1 12,336/12,336）",
+   "does_de": "chinesische Übersetzungen des Wörterbuchs",
+   "took_de": "der chinesische Text, unverändert (S1 12.336/12.336)"
+  },
+  {
+   "name": "McKinsey Global Institute, The social economy (2012)",
+   "where": {
+    "url": "https://www.mckinsey.com/industries/technology-media-and-telecommunications/our-insights/the-social-economy",
+    "saved": "out/prior/mckinsey_the_social_economy.html",
+    "text": "nearly 20 percent looking for internal information or tracking down colleagues who can help with specific tasks"
+   },
+   "does": "measured how much of a workweek goes into finding information",
+   "took": "why help belongs inside the window, where the question is asked",
+   "does_zh": "测算了每周有多少时间用于查找信息",
+   "took_zh": "帮助应该放在窗口里，就在提问的地方",
+   "does_de": "maß, wie viel einer Arbeitswoche in die Suche nach Information geht",
+   "took_de": "Hilfe gehört ins Fenster, dorthin, wo die Frage gestellt wird"
+  }
+ ]
+}

@@ -1,0 +1,26 @@
+# ⚠ DO NOT REMOVE — the per-language lines the i18n hook adds to a page (prompts/DOCS_I18N.md §6b, §6d V1). {en} = the English page's URL.
+# One line per case; a language gets its row when its first page is built. Wording of each row is drafted in the session (owner: no review, §6b).
+es:   # Latin-American Spanish (es-419); the plugin locale is es (DOCS_I18N.md §6d)
+  not_translated: 'Esta página aún no está traducida; se muestra en inglés. <a href="{en}">Página en inglés</a>.'
+  translated: 'Traducida de la página en inglés; la página en inglés es la referencia. <a href="{en}">Ver en inglés</a>.'
+  stale: 'La página en inglés cambió después de esta traducción, así que puede estar desactualizada. <a href="{en}">Ver en inglés</a>.'
+fr:
+  not_translated: 'Cette page n''est pas encore traduite ; elle s''affiche en anglais. <a href="{en}">Page en anglais</a>.'
+  translated: 'Traduit de la page anglaise ; la page anglaise fait référence. <a href="{en}">Voir en anglais</a>.'
+  stale: 'La page anglaise a changé depuis cette traduction, qui peut donc être dépassée. <a href="{en}">Voir en anglais</a>.'
+de:
+  not_translated: 'Diese Seite ist noch nicht übersetzt; sie wird auf Englisch angezeigt. <a href="{en}">Englische Seite</a>.'
+  translated: 'Übersetzt aus der englischen Seite; maßgeblich ist die englische Seite. <a href="{en}">Auf Englisch ansehen</a>.'
+  stale: 'Die englische Seite hat sich seit dieser Übersetzung geändert; sie kann daher veraltet sein. <a href="{en}">Auf Englisch ansehen</a>.'
+id:
+  not_translated: 'Halaman ini belum diterjemahkan; ditampilkan dalam bahasa Inggris. <a href="{en}">Halaman bahasa Inggris</a>.'
+  translated: 'Diterjemahkan dari halaman bahasa Inggris; halaman bahasa Inggris adalah acuannya. <a href="{en}">Lihat dalam bahasa Inggris</a>.'
+  stale: 'Halaman bahasa Inggris telah berubah sejak terjemahan ini, jadi terjemahan ini mungkin sudah usang. <a href="{en}">Lihat dalam bahasa Inggris</a>.'
+ja:
+  not_translated: 'このページはまだ翻訳されていません。英語のまま表示しています。<a href="{en}">英語のページ</a>。'
+  translated: '英語のページから翻訳したものです。基準は英語のページです。<a href="{en}">英語で見る</a>。'
+  stale: 'この翻訳の後に英語のページが変更されたため、内容が古い可能性があります。<a href="{en}">英語で見る</a>。'
+zh:
+  not_translated: '本页尚未翻译，以英文显示。<a href="{en}">英文页面</a>。'
+  translated: '译自英文页面；以英文页面为准。<a href="{en}">查看英文</a>。'
+  stale: '英文页面在本译文之后已更改，因此本译文可能已过时。<a href="{en}">查看英文</a>。'

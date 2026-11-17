@@ -1,0 +1,10 @@
+§CARD beat=cover stills=1 overflow_px=0
+§CARD beat=still1 stills=55 overflow_px=0
+§CARD beat=still2 stills=67 overflow_px=0
+§CARD beat=menu stills=14 overflow_px=0
+§CARD beat=find stills=11 overflow_px=0
+§CARD beat=open stills=3 overflow_px=0
+§CARD beat=back stills=5 overflow_px=0
+§CARD beat=close stills=1 overflow_px=0
+§CARD beat=end stills=1 overflow_px=0
+§CARDS_DONE beats=9 stills=158 too_tall=0 key_stills=136 return_stills=7

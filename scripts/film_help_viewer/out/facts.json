@@ -1,0 +1,882 @@
+{
+ "made": "2026-11-17T04:30:01.910Z",
+ "tree": "2989f8f5",
+ "shots": {
+  "klass_en": {
+   "file": "pages/klass_en.png",
+   "rects": {
+    "#find-panel": {
+     "x": 1308,
+     "y": 54,
+     "w": 280,
+     "h": 421
+    },
+    "#cmd-palette": null,
+    "#cmd-head": null,
+    "#cmd-search": null,
+    "#cmd-list": null,
+    "#info-panel": {
+     "x": 1210,
+     "y": 455.8,
+     "w": 320,
+     "h": 394.2
+    },
+    "#info-class-help": {
+     "x": 1227,
+     "y": 630.3,
+     "w": 286,
+     "h": 206.7
+    }
+   },
+   "minFont": {
+    "#find-panel": 9,
+    "#cmd-palette": null,
+    "#cmd-head": null,
+    "#cmd-search": null,
+    "#cmd-list": null,
+    "#info-panel": 10,
+    "#info-class-help": 10
+   },
+   "building": {
+    "canvas": {
+     "x": 0,
+     "y": 0,
+     "w": 1600,
+     "h": 900
+    },
+    "meshes": 92,
+    "box": {
+     "x": 545.0099779042763,
+     "y": 394.3089642941011,
+     "w": 460.8773965513426,
+     "h": 446.47648622165957
+    }
+   }
+  },
+  "pal_open": {
+   "file": "pages/pal_open.png",
+   "rects": {
+    "#find-panel": {
+     "x": 1308,
+     "y": 54,
+     "w": 280,
+     "h": 421
+    },
+    "#cmd-palette": {
+     "x": 16,
+     "y": 16,
+     "w": 320,
+     "h": 868
+    },
+    "#cmd-head": {
+     "x": 17,
+     "y": 17,
+     "w": 318,
+     "h": 33
+    },
+    "#cmd-search": {
+     "x": 31,
+     "y": 60,
+     "w": 290,
+     "h": 33
+    },
+    "#cmd-list": {
+     "x": 17,
+     "y": 104,
+     "w": 318,
+     "h": 746
+    },
+    "#info-panel": {
+     "x": 1210,
+     "y": 455.8,
+     "w": 320,
+     "h": 394.2
+    },
+    "#info-class-help": {
+     "x": 1227,
+     "y": 630.3,
+     "w": 286,
+     "h": 206.7
+    }
+   },
+   "minFont": {
+    "#find-panel": 9,
+    "#cmd-palette": 12,
+    "#cmd-head": 13,
+    "#cmd-search": null,
+    "#cmd-list": 12,
+    "#info-panel": 10,
+    "#info-class-help": 10
+   },
+   "building": {
+    "canvas": {
+     "x": 0,
+     "y": 0,
+     "w": 1600,
+     "h": 900
+    },
+    "meshes": 92,
+    "box": {
+     "x": 485.9003289817156,
+     "y": 37.41602324273071,
+     "w": 577.6855997933831,
+     "h": 438.81774629845586
+    }
+   }
+  },
+  "pal_native": {
+   "file": "pages/pal_native.png",
+   "rects": {
+    "#find-panel": {
+     "x": 1308,
+     "y": 54,
+     "w": 280,
+     "h": 421
+    },
+    "#cmd-palette": {
+     "x": 16,
+     "y": 16,
+     "w": 320,
+     "h": 868
+    },
+    "#cmd-head": {
+     "x": 17,
+     "y": 17,
+     "w": 318,
+     "h": 33
+    },
+    "#cmd-search": {
+     "x": 31,
+     "y": 60,
+     "w": 290,
+     "h": 33
+    },
+    "#cmd-list": {
+     "x": 17,
+     "y": 104,
+     "w": 318,
+     "h": 746
+    },
+    "#info-panel": {
+     "x": 1210,
+     "y": 455.8,
+     "w": 320,
+     "h": 394.2
+    },
+    "#info-class-help": {
+     "x": 1227,
+     "y": 630.3,
+     "w": 286,
+     "h": 206.7
+    }
+   },
+   "minFont": {
+    "#find-panel": 9,
+    "#cmd-palette": 12,
+    "#cmd-head": 13,
+    "#cmd-search": null,
+    "#cmd-list": 12,
+    "#info-panel": 10,
+    "#info-class-help": 10
+   },
+   "building": {
+    "canvas": {
+     "x": 0,
+     "y": 0,
+     "w": 1600,
+     "h": 900
+    },
+    "meshes": 92,
+    "box": {
+     "x": 485.5905503257301,
+     "y": 35.486148572335196,
+     "w": 577.763119598911,
+     "h": 437.9477366440125
+    }
+   }
+  },
+  "pal_find": {
+   "file": "pages/pal_find.png",
+   "rects": {
+    "#find-panel": {
+     "x": 1308,
+     "y": 54,
+     "w": 280,
+     "h": 421
+    },
+    "#cmd-palette": {
+     "x": 16,
+     "y": 16,
+     "w": 320,
+     "h": 868
+    },
+    "#cmd-head": {
+     "x": 17,
+     "y": 17,
+     "w": 318,
+     "h": 33
+    },
+    "#cmd-search": {
+     "x": 31,
+     "y": 60,
+     "w": 290,
+     "h": 33
+    },
+    "#cmd-list": {
+     "x": 17,
+     "y": 104,
+     "w": 318,
+     "h": 746
+    },
+    "#info-panel": {
+     "x": 1210,
+     "y": 455.8,
+     "w": 320,
+     "h": 394.2
+    },
+    "#info-class-help": {
+     "x": 1227,
+     "y": 630.3,
+     "w": 286,
+     "h": 206.7
+    },
+    "#film-find-row": {
+     "x": 17,
+     "y": 104,
+     "w": 318,
+     "h": 36
+    },
+    "#film-find-body": {
+     "x": 31,
+     "y": 140,
+     "w": 304,
+     "h": 187
+    }
+   },
+   "minFont": {
+    "#find-panel": 9,
+    "#cmd-palette": 11,
+    "#cmd-head": 13,
+    "#cmd-search": null,
+    "#cmd-list": 11,
+    "#info-panel": 10,
+    "#info-class-help": 10,
+    "#film-find-row": 12,
+    "#film-find-body": 11
+   },
+   "building": {
+    "canvas": {
+     "x": 0,
+     "y": 0,
+     "w": 1600,
+     "h": 900
+    },
+    "meshes": 92,
+    "box": {
+     "x": 485.4539895682164,
+     "y": 34.63539548846931,
+     "w": 577.7972929131813,
+     "h": 437.5642073880119
+    }
+   }
+  },
+  "dock_moved": {
+   "file": "pages/dock_moved.png",
+   "rects": {
+    "#find-panel": {
+     "x": 1308,
+     "y": 54,
+     "w": 280,
+     "h": 421
+    },
+    "#cmd-palette": {
+     "x": 216,
+     "y": 32,
+     "w": 320,
+     "h": 868
+    },
+    "#cmd-head": {
+     "x": 217,
+     "y": 33,
+     "w": 318,
+     "h": 33
+    },
+    "#cmd-search": {
+     "x": 231,
+     "y": 76,
+     "w": 290,
+     "h": 33
+    },
+    "#cmd-list": {
+     "x": 217,
+     "y": 120,
+     "w": 318,
+     "h": 746
+    },
+    "#info-panel": {
+     "x": 1210,
+     "y": 455.8,
+     "w": 320,
+     "h": 394.2
+    },
+    "#info-class-help": {
+     "x": 1227,
+     "y": 630.3,
+     "w": 286,
+     "h": 206.7
+    }
+   },
+   "minFont": {
+    "#find-panel": 9,
+    "#cmd-palette": 11,
+    "#cmd-head": 13,
+    "#cmd-search": null,
+    "#cmd-list": 11,
+    "#info-panel": 10,
+    "#info-class-help": 10
+   },
+   "building": {
+    "canvas": {
+     "x": 0,
+     "y": 0,
+     "w": 1600,
+     "h": 900
+    },
+    "meshes": 92,
+    "box": {
+     "x": 485.32835367130394,
+     "y": 33.852702651312434,
+     "w": 577.82873236231,
+     "h": 437.2113604724914
+    }
+   }
+  },
+  "dock_closed": {
+   "file": "pages/dock_closed.png",
+   "rects": {
+    "#info-panel": {
+     "x": 1210,
+     "y": 455.8,
+     "w": 320,
+     "h": 394.2
+    },
+    "#find-panel": {
+     "x": 1308,
+     "y": 54,
+     "w": 280,
+     "h": 421
+    }
+   },
+   "minFont": {
+    "#info-panel": 10,
+    "#find-panel": 9
+   },
+   "building": {
+    "canvas": {
+     "x": 0,
+     "y": 0,
+     "w": 1600,
+     "h": 900
+    },
+    "meshes": 92,
+    "box": {
+     "x": 485.21276864614424,
+     "y": 33.13262524112845,
+     "w": 577.8576566555084,
+     "h": 436.8867413102126
+    }
+   }
+  },
+  "dock_reopen": {
+   "file": "pages/dock_reopen.png",
+   "rects": {
+    "#find-panel": {
+     "x": 1308,
+     "y": 54,
+     "w": 280,
+     "h": 421
+    },
+    "#cmd-palette": {
+     "x": 216,
+     "y": 32,
+     "w": 320,
+     "h": 868
+    },
+    "#cmd-head": {
+     "x": 217,
+     "y": 33,
+     "w": 318,
+     "h": 33
+    },
+    "#cmd-search": {
+     "x": 231,
+     "y": 76,
+     "w": 290,
+     "h": 33
+    },
+    "#cmd-list": {
+     "x": 217,
+     "y": 120,
+     "w": 318,
+     "h": 746
+    },
+    "#info-panel": {
+     "x": 1210,
+     "y": 455.8,
+     "w": 320,
+     "h": 394.2
+    },
+    "#info-class-help": {
+     "x": 1227,
+     "y": 630.3,
+     "w": 286,
+     "h": 206.7
+    }
+   },
+   "minFont": {
+    "#find-panel": 9,
+    "#cmd-palette": 11,
+    "#cmd-head": 13,
+    "#cmd-search": null,
+    "#cmd-list": 11,
+    "#info-panel": 10,
+    "#info-class-help": 10
+   },
+   "building": {
+    "canvas": {
+     "x": 0,
+     "y": 0,
+     "w": 1600,
+     "h": 900
+    },
+    "meshes": 92,
+    "box": {
+     "x": 485.10643042299773,
+     "y": 32.47015402375889,
+     "w": 577.8842670052508,
+     "h": 436.58809168091597
+    }
+   }
+  },
+  "klass_de_DE": {
+   "file": "pages/klass_de_DE.png",
+   "rects": {
+    "#find-panel": {
+     "x": 1308,
+     "y": 54,
+     "w": 280,
+     "h": 421
+    },
+    "#cmd-palette": null,
+    "#cmd-head": null,
+    "#cmd-search": null,
+    "#cmd-list": null,
+    "#info-panel": {
+     "x": 1210,
+     "y": 340.7,
+     "w": 320,
+     "h": 509.3
+    },
+    "#info-class-help": {
+     "x": 1227,
+     "y": 515.2,
+     "w": 286,
+     "h": 321.8
+    }
+   },
+   "minFont": {
+    "#find-panel": 9,
+    "#cmd-palette": null,
+    "#cmd-head": null,
+    "#cmd-search": null,
+    "#cmd-list": null,
+    "#info-panel": 10,
+    "#info-class-help": 10
+   },
+   "building": {
+    "canvas": {
+     "x": 0,
+     "y": 0,
+     "w": 1600,
+     "h": 900
+    },
+    "meshes": 92,
+    "box": {
+     "x": 545.0077938798566,
+     "y": 394.2976236538932,
+     "w": 460.8778440354116,
+     "h": 446.47268003193597
+    }
+   }
+  },
+  "klass_zh_CN": {
+   "file": "pages/klass_zh_CN.png",
+   "rects": {
+    "#find-panel": {
+     "x": 1308,
+     "y": 54,
+     "w": 280,
+     "h": 424
+    },
+    "#cmd-palette": null,
+    "#cmd-head": null,
+    "#cmd-search": null,
+    "#cmd-list": null,
+    "#info-panel": {
+     "x": 1210,
+     "y": 436.6,
+     "w": 320,
+     "h": 413.4
+    },
+    "#info-class-help": {
+     "x": 1227,
+     "y": 611.1,
+     "w": 286,
+     "h": 225.9
+    }
+   },
+   "minFont": {
+    "#find-panel": 9,
+    "#cmd-palette": null,
+    "#cmd-head": null,
+    "#cmd-search": null,
+    "#cmd-list": null,
+    "#info-panel": 10,
+    "#info-class-help": 10
+   },
+   "building": {
+    "canvas": {
+     "x": 0,
+     "y": 0,
+     "w": 1600,
+     "h": 900
+    },
+    "meshes": 92,
+    "box": {
+     "x": 545.0096819933417,
+     "y": 394.30879363474804,
+     "w": 460.8774571804404,
+     "h": 446.47642894430516
+    }
+   }
+  }
+ },
+ "lines": {
+  "classEn": "§CLASS_HELP guid=\"2O2Fr$t4X7Zf8NOew3FKau\" class=IfcWall ours=Y ifc=Y ifc_lang=EN fallback=N locale=en",
+  "dockOpen": "§HELP_DOCK open left=16 top=16 w=320 h=868 mobile=false filter=\"\" open=0",
+  "howtoLoad": "§HOWTO_LOAD pills=44",
+  "palNative": "§HOWTO_PALETTE entries=2 guide=2 cli=0 loaded=true filter=\"native\"",
+  "dragSave": "§DRAG_SAVE key=bim_help_dock_pos left=216 top=32",
+  "close": "§KBD_HELP close via=x",
+  "reopen": "§HELP_DOCK open left=216 top=32 w=320 h=868 mobile=false filter=\"\" open=1",
+  "restore": "§DRAG_RESTORE key=bim_help_dock_pos left=216 top=32",
+  "class_de_DE": "§CLASS_HELP guid=\"2O2Fr$t4X7Zf8NOew3FKau\" class=IfcWall ours=Y ifc=Y ifc_lang=de-DE fallback=N locale=de",
+  "trl_de_DE": "§TRL_LABELS locale=de_DE keys=1028 src=fetched translated=939 untranslated=89",
+  "class_zh_CN": "§CLASS_HELP guid=\"2O2Fr$t4X7Zf8NOew3FKau\" class=IfcWall ours=Y ifc=Y ifc_lang=EN fallback=Y locale=zh",
+  "trl_zh_CN": "§TRL_LABELS locale=zh_CN keys=1028 src=fetched translated=921 untranslated=107"
+ },
+ "errors": [],
+ "en": {
+  "picked": {
+   "i": 21,
+   "of": 50
+  },
+  "block": {
+   "text": "What this is A wall: a vertical element that divides or encloses spaces; it may or may not carry load. IFC definition The wall represents a vertical construction that may bound or subdivide spaces. Wall are usually vertical, or nearly vertical, planar elements, often designed to bear structural loads. A wall is however not required to be load bearing. buildingSMART IFC 4.3 (bSDD), CC BY-ND 4.0",
+   "ours": "A wall: a vertical element that divides or encloses spaces; it may or may not carry load.",
+   "ifc": "IFC definition The wall represents a vertical construction that may bound or subdivide spaces. Wall are usually vertical, or nearly vertical, planar elements, often designed to bear structural loads. A wall is however not required to be load bearing. buildingSMART IFC 4.3 (bSDD), CC BY-ND 4.0",
+   "fallback": null,
+   "credit": "buildingSMART IFC 4.3 (bSDD), CC BY-ND 4.0",
+   "parts": [
+    "ours",
+    "ifc",
+    "credit"
+   ]
+  },
+  "findMoved": {
+   "find": [
+    1308,
+    54,
+    1588,
+    475
+   ],
+   "info": [
+    1210,
+    570,
+    1530,
+    850
+   ],
+   "clear": true
+  }
+ },
+ "fit_en": {
+  "wheels": 16,
+  "pans": 3,
+  "box": {
+   "x": 545.0099779042763,
+   "y": 394.3089642941011,
+   "w": 460.8773965513426,
+   "h": 446.47648622165957
+  },
+  "canvas": {
+   "x": 0,
+   "y": 0,
+   "w": 1600,
+   "h": 900
+  },
+  "targetH": 429
+ },
+ "dsf": 2.4,
+ "fit_pal": {
+  "wheels": 10,
+  "pans": 6,
+  "box": {
+   "x": 485.9003289817156,
+   "y": 37.41602324273071,
+   "w": 577.6855997933831,
+   "h": 438.81774629845586
+  },
+  "canvas": {
+   "x": 0,
+   "y": 0,
+   "w": 1600,
+   "h": 900
+  },
+  "targetH": 429
+ },
+ "word": {
+  "w": "native",
+  "inName": false,
+  "holders": [
+   {
+    "id": "save",
+    "name": "Save Building",
+    "bullet": "Native Save As… dialog — pick name + folder"
+   },
+   {
+    "id": "open",
+    "name": "Open Building",
+    "bullet": "Native Open… dialog"
+   }
+  ]
+ },
+ "found": [
+  {
+   "name": "Save BuildingCTRL+S",
+   "open": true,
+   "body": "Save the open building to a .db file Native Save As… dialog — pick name + folder Re-openable with Open (Ctrl+O) Guide"
+  },
+  {
+   "name": "Open BuildingCTRL+O",
+   "open": true,
+   "body": "Open a saved .db file Native Open… dialog Replaces the current scene Guide"
+  }
+ ],
+ "find": {
+  "name": "Find / NavigateF",
+  "open": true,
+  "guide": "https://red1oon.github.io/BIMCompiler/BIMUserGuide/#find-panel-search-voice-query-and-axis-lenses",
+  "cliLabel": "Same at the CLI",
+  "cli": [
+   "viewer.counts building=<building>",
+   "viewer.clashes building=<building> discA=<discA> discB=<discB>",
+   "viewer.cost building=<building>"
+  ]
+ },
+ "dock": {
+  "before": {
+   "l": 16,
+   "t": 16
+  },
+  "moved": {
+   "l": 216,
+   "t": 32
+  },
+  "reopened": {
+   "l": 216,
+   "t": 32
+  },
+  "keptOpen": true
+ },
+ "de_DE": {
+  "picked": {
+   "i": 21,
+   "of": 50
+  },
+  "block": {
+   "text": "Was das ist Eine Wand: ein senkrechtes Bauteil, das Räume trennt oder umschließt; sie kann tragend sein oder nicht. IFC-Definition Vertikale Konstruktion zur Abgrenzung oder Unterteilung von Räumen. In der Regel handelt es sich um senkrechte oder nahezu senkrechte Flächenelemente, die häufig zur Aufnahme von Bauwerkslasten dienen. Sie müssen jedoch nicht tragend sein. Anmerkung: Nach ISO 6707-1 ist eine vertikale Konstruktion in der Regel aus Mauerwerk oder Beton, die ein Bauwerk begrenzt oder unterteilt und eine tragende oder stützende Funktion erfüllt. buildingSMART IFC 4.3 (bSDD), CC BY-ND 4.0",
+   "ours": "Eine Wand: ein senkrechtes Bauteil, das Räume trennt oder umschließt; sie kann tragend sein oder nicht.",
+   "ifc": "IFC-Definition Vertikale Konstruktion zur Abgrenzung oder Unterteilung von Räumen. In der Regel handelt es sich um senkrechte oder nahezu senkrechte Flächenelemente, die häufig zur Aufnahme von Bauwerkslasten dienen. Sie müssen jedoch nicht tragend sein. Anmerkung: Nach ISO 6707-1 ist eine vertikale Konstruktion in der Regel aus Mauerwerk oder Beton, die ein Bauwerk begrenzt oder unterteilt und eine tragende oder stützende Funktion erfüllt. buildingSMART IFC 4.3 (bSDD), CC BY-ND 4.0",
+   "fallback": null,
+   "credit": "buildingSMART IFC 4.3 (bSDD), CC BY-ND 4.0",
+   "parts": [
+    "ours",
+    "ifc",
+    "credit"
+   ]
+  },
+  "findMoved": {
+   "find": [
+    1308,
+    54,
+    1588,
+    475
+   ],
+   "info": [
+    1210,
+    551,
+    1530,
+    850
+   ],
+   "clear": true
+  }
+ },
+ "fit_de_DE": {
+  "wheels": 16,
+  "pans": 3,
+  "box": {
+   "x": 545.0077938798566,
+   "y": 394.2976236538932,
+   "w": 460.8778440354116,
+   "h": 446.47268003193597
+  },
+  "canvas": {
+   "x": 0,
+   "y": 0,
+   "w": 1600,
+   "h": 900
+  },
+  "targetH": 429
+ },
+ "zh_CN": {
+  "picked": {
+   "i": 21,
+   "of": 50
+  },
+  "block": {
+   "text": "这是什么 墙：分隔或围合空间的竖向构件，可以是承重墙，也可以不是。 IFC 定义 英文：没有您所用语言的官方译文 The wall represents a vertical construction that may bound or subdivide spaces. Wall are usually vertical, or nearly vertical, planar elements, often designed to bear structural loads. A wall is however not required to be load bearing. buildingSMART IFC 4.3 (bSDD), CC BY-ND 4.0",
+   "ours": "墙：分隔或围合空间的竖向构件，可以是承重墙，也可以不是。",
+   "ifc": "IFC 定义 英文：没有您所用语言的官方译文 The wall represents a vertical construction that may bound or subdivide spaces. Wall are usually vertical, or nearly vertical, planar elements, often designed to bear structural loads. A wall is however not required to be load bearing. buildingSMART IFC 4.3 (bSDD), CC BY-ND 4.0",
+   "fallback": "英文：没有您所用语言的官方译文",
+   "credit": "buildingSMART IFC 4.3 (bSDD), CC BY-ND 4.0",
+   "parts": [
+    "ours",
+    "ifc",
+    "fallback",
+    "credit"
+   ]
+  },
+  "findMoved": {
+   "find": [
+    1308,
+    54,
+    1588,
+    478
+   ],
+   "info": [
+    1210,
+    570,
+    1530,
+    850
+   ],
+   "clear": true
+  }
+ },
+ "fit_zh_CN": {
+  "wheels": 16,
+  "pans": 3,
+  "box": {
+   "x": 545.0096819933417,
+   "y": 394.30879363474804,
+   "w": 460.8774571804404,
+   "h": 446.47642894430516
+  },
+  "canvas": {
+   "x": 0,
+   "y": 0,
+   "w": 1600,
+   "h": 900
+  },
+  "targetH": 429
+ },
+ "cli": {
+  "line": "viewer.counts building=Duplex",
+  "exit": 0,
+  "status": "ok",
+  "summary": "1193 elements: MEP 809, ARC 270, ELEC 81, STR 19, PLB 14",
+  "total": 1193,
+  "viewerLine": "§ASK_ANSWER id=counts verdict=OK value={\"total\":1193,\"by\":\"discipline\",\"groups\":{\"MEP\":809,\"ARC\":270,\"ELEC\":81,\"STR\":19,\"PLB\":14}}",
+  "door": "§DOOR request=d-mwk7rk9s-228083-1 actor=human verb=viewer.counts status=ok ms=8950",
+  "ms": 8950
+ },
+ "files": {
+  "viewer/help/howto.json": 11001,
+  "viewer/info_class_help.js": 5474,
+  "common/help/help_panel.js": 13408,
+  "common/drag.js": 6617
+ },
+ "howtoCliFind": [
+  {
+   "verb": "viewer.counts",
+   "title": "Count elements",
+   "line": "viewer.counts building=<building>",
+   "cite": "the same answer the Viewer's Find panel gives"
+  },
+  {
+   "verb": "viewer.clashes",
+   "title": "List clashes between two disciplines",
+   "line": "viewer.clashes building=<building> discA=<discA> discB=<discB>",
+   "cite": "the same answer the Viewer's Find panel gives"
+  },
+  {
+   "verb": "viewer.cost",
+   "title": "The cost of a selection of a building",
+   "line": "viewer.cost building=<building>",
+   "cite": "as the Viewer's Find panel does"
+  }
+ ],
+ "quote": {
+  "text": "Help and documentation content should be easy to search and focused on the user's task. Keep it concise, and list concrete steps that need to be carried out.",
+  "stat": "easy to search and focused on the user's task",
+  "title": "10 Usability Heuristics for User Interface Design · heuristic 10, Help and Documentation",
+  "date": "April 24, 1994 (last reviewed Jan. 30, 2024)",
+  "who": "Jakob Nielsen · Nielsen Norman Group",
+  "url": "nngroup.com/articles/ten-usability-heuristics/",
+  "fetched": "2026-11-17"
+ },
+ "verdicts": {
+  "classHelp": "W-CLASS-HELP PASS",
+  "howto": "W-HOWTO H2 H3 H4a-H4e PASS",
+  "howtoH1": "FAIL H1",
+  "dock": "W-HELP-DOCK PASS"
+ },
+ "verdictTree": "2989f8f5",
+ "credentials": {
+  "licence": "MIT License",
+  "repo": "github.com/red1oon/bim-ootb",
+  "prs": [
+   {
+    "n": 3150,
+    "state": "MERGED feat(viewer): class text in the info panel - our sentence + bSI IFC definition verbatim (W-CLASS-HELP)"
+   },
+   {
+    "n": 3152,
+    "state": "MERGED feat(viewer): class text for type classes + our sentence in 10 more languages"
+   },
+   {
+    "n": 3156,
+    "state": "MERGED feat(viewer): How To in the ? palette - guide section + CLI line per tool (W-HOWTO)"
+   },
+   {
+    "n": 3160,
+    "state": "MERGED feat(viewer): help becomes a left panel - stays open, amber glass, draggable (W-HELP-DOCK)"
+   },
+   {
+    "n": 3165,
+    "state": "MERGED refactor(help): help panel + drag helper move to common/ (step 1 of the Modeller help panel)"
+   }
+  ],
+  "paperPriority": "2026-03-30",
+  "bsddFetched": "2026-11-16"
+ }
+}

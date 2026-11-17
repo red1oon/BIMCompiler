@@ -35,6 +35,81 @@ Two more habits run through every file:
 - **It is free and open source (MIT), and changes go through the tracker.** Open an issue first, then a pull request that
   links it. See §10.
 
+### 0.1 Witnesses: how the proof works, and why it costs the user nothing
+
+A **witness** is this project's test: a plain Node script, `witness_*.js`, 1,403 of them. Each one is a **unit test of one item**: one
+function, one rule, one bug. It names the issue it proves or disproves, and it can say **FAIL** and **INCONCLUSIVE** (nothing was judged),
+not only PASS. Run one with `node <file>` from anywhere. It exits 0 (pass), 1 (fail) or 2 (inconclusive). There is no test runner and no build.
+
+> **For developers only.** You run a witness while you change the item it covers, and CI runs a set of them on every pull request.
+> **A normal user never calls one:** the app pages do not load them, so using the app runs no witness code (the table below shows how).
+
+**How it can test the app without a browser.** Most app files end with a small tail (pattern 4 in the table above):
+`if (typeof module !== 'undefined' && module.exports) module.exports = API; else global.ScheduleInject = API;`
+(`viewer/schedule_inject.js:259`). So the **same file** the browser loads
+can also be `require`d by Node. A witness loads the real file, feeds it a known input, and judges the output. Example:
+`erp/tests/witness_core_timing.js` requires `viewer/schedule_inject.js` and `viewer/egress_sanity.js`, runs them under a fake clock, and
+checks every `ms=` it prints. Nothing is copied, so the code that passes is the code the user gets.
+
+**How it judges: the `§` line.** App code prints tagged lines, `console.log('§GEO_ORDER n=… orderMs=…')`. A witness catches those
+lines and checks the values in them. A saved witness log starts with `§LOG_STAMP` (the commit that made it, §6).
+
+**What is deployed, and what is not** (checked on the live site, 2026-11-16):
+
+| Part | Reaches the user's browser? | Why |
+|---|---|---|
+| Witness files (`*/tests/`, `witness/`, `witness_kit/`) | **Never loaded.** No page has a `<script>` that points at them, and no service-worker precache list holds one, so a page load fetches 0 bytes of witness code. | They run in Node on a developer's machine, or in CI. |
+| The same witness files, by URL | **They can be fetched, but only if someone asks for that URL.** The Pages deploy uploads the whole repository (`.github/workflows/deploy-pages.yml`, `path: '.'`), so `…/bim-ootb/erp/tests/witness_env_views.js` answers 200. The minifier skips `tests/` folders (`scripts/minify_pages.js`). | The repository is open source, and every tracked file is public anyway. |
+| The `§` lines inside app code | **Yes, they ship and run.** They are ordinary `console.log` calls in the app files. The live `viewer/schedule_gate.js` holds `\xA7GEO_ORDER` (the minifier writes `§` as `\xA7`). | They are the evidence. The same line a witness checks also prints in a user's browser console, so a problem in the field leaves the same trail. The cost is a few bytes and a console call per line, and nothing shows on the page. |
+
+So proof adds no weight to a page load: the witnesses sit beside the app, never inside it. The only part of the proof
+that ships is the `§` lines, and those are part of the code anyway.
+
+**The whole picture: the dev side beside the deployed side** (bim-ootb `main` @ `9b7d2f86`, 2026-11-16).
+
+```mermaid
+flowchart LR
+  subgraph DEV["DEV SIDE: a developer's machine or CI (never loaded by a page)"]
+    W["Witnesses<br/>1,403 witness_*.js<br/>2,112 JS files in test folders<br/>284,795 lines"]
+    T["Dev tools<br/>devtools/ (VS Code X0): 52 files, 5,385 lines<br/>scripts/: 133 files, 17,400 lines"]
+    N["node witness_x.js<br/>exit 0 / 1 / 2<br/>log in logs/, line 1 = §LOG_STAMP"]
+    W --> N
+    T --> N
+  end
+  subgraph APP["THE SAME FILES: the app code"]
+    C["App code<br/>1,004 JS files, 313,887 lines<br/>63 HTML pages<br/>22,429 lines carry a § tag"]
+    V["Vendored libraries<br/>127 files, 30.1 MB"]
+  end
+  subgraph LIVE["DEPLOYED SIDE: github.io, then the user's browser"]
+    D["Deploy (deploy-pages.yml)<br/>minifies its own JS: 644 files<br/>16.6 MB to 8.6 MB, gzip 5.4 MB to 2.8 MB"]
+    P["Page load<br/>service-worker precache:<br/>viewer 268, ERP 403, Modeller 157 entries<br/>witness entries: 0<br/>the rest loads lazily, on use"]
+    K["Browser console<br/>the § lines print here too"]
+    D --> P --> K
+  end
+  N -- "require() the real file<br/>and read its § lines" --> C
+  C --> D
+  V --> D
+```
+
+| Number | Value | Where it comes from |
+|---|---|---|
+| Witness files | 1,403 named `witness_*.js`; 2,112 JS files in test folders (with helpers and fixtures), 284,795 lines, 23.4 MB | `git ls-files` at `9b7d2f86` |
+| App code | 1,004 JS files, 313,887 lines, 23.6 MB, plus 63 HTML pages (38,399 lines) | the same, without test folders, `scripts/`, `devtools/`, `docs/`, `prompts/` and vendored `lib/` |
+| What the deploy ships of its own JS | 644 files; 16,959 KB to 8,841 KB minified; 5,543 KB to 2,831 KB gzipped | the deploy's own log line, `§PAYLOAD-MIN-TOTAL`, run `43830642465` |
+| What a page caches up front | viewer 268, ERP 403, Modeller 157 precache entries; **0** of them a witness | `PRECACHE_ASSETS` in the three `sw.js` |
+| `§` lines that ship | 22,429 lines of app code contain `§` (a text count: comments that mention a tag count too) | grep over the app files |
+
+The two sides share one set of files. A developer's witness runs that exact file in Node. A user's browser runs it from the site, minified,
+with no witness beside it. Re-measure with `bim-compiler/scripts/code_arch/size_stack.sh <bim-ootb tree>`; it prints one `§STACK_SIZE` line per number.
+
+**Why this shape.** (1) The proof runs on the exact file that ships, with no test copy that can drift. (2) No build step and no test
+framework, which keeps the project's no-install rule (§3). (3) A test that cannot fail is not a test. Every new witness carries a
+**red control**, a case that must FAIL, and it is run once against the old code to show that it does.
+
+**Limits, said plainly.** A witness depends on the checkout: it `require`s files by path, and the ones built on `witness_kit/contract.js`
+need `npm install` once. Many still hard-code the author's home folder (§8). Browser witnesses exist too (they say so in their header),
+but the default is Node. How to write one: §6.
+
 ---
 
 ## 1. The picture: parts and patterns
@@ -155,6 +230,7 @@ The app's only runtime dependency is `sql.js`, which is already vendored.
 | Where a function or global is defined | **F12** works for true globals (`setupScene` → `viewer/scene.js`) and, through `types/globals.gen.d.ts`, for about 6 in 10 UMD globals' members (`ADParser.init` → `erp/ad_parser.js`). The rest: search for `X = ` or `function X`. |
 | Where an `APP.x` / `A.x` field is set | With X0 Navigator (§4.1): **F12** or hover on the field. Without it: `internal/APP_SURFACE.md`. Its "phantom" list (107 fields read in production but never written, counted 2026-11-14; 11 more are flagged "untied write" and are probably live) is a list of dead guards. Check before relying on one. |
 | What a `§TAG` means | With X0 Navigator (§4.1): hover the tag. Without it: search the tag. The code that prints it is the definition, and its spec is usually named in the same file's header. |
+| Which code built a body on the Modeller canvas, or runs on an ERP field | The provenance hover (§4.3): hover it, press a number to open that line in VS Code. |
 | What a spec section says (`§S59`, `W-BUMP`) | Search `prompts/` in both repos for the section or witness name. |
 | A file cited as `file:line` in an old prompt | Line numbers drift (the big files were split in 2026-10). **Search for the function name instead.** |
 | Which page loads a file | Search the HTML pages for the file name; for lazy parts, `viewer/main.js` `modules[]`. |
@@ -189,8 +265,9 @@ folder its `extensions.json` does not list, so nothing loads and nothing warns y
 | **F12** on `APP.camera` (also `A.x` / `app.x` in a file that binds that name) | a jump to the line where the field is written | the APP field index made by `scripts/gen_app_surface.js` |
 | Hover the same field | `written at <file:line> · N writes · N reads` | the same index |
 | Hover a `§TAG` in any `.js` file | up to 5 places in `prompts/` and `docs/` of both repos that name the tag (headings first), then up to 5 lines of code that print it | the specs and the source |
-| Explorer side bar ▸ **Run & Ship** (4 steps, also as commands) | *Run local*: the serve task plus each app's URL and cache version on disk. *Check*: `node --check` on the JS that differs from `origin/main`, the precache audit, and the bump rule. *Cost if deployed*: see next row. *Fetch back*: is the live site on `main`'s versions and commit? | the repo's own scripts and git; Fetch back reads the live site (the only step that uses the network) |
+| Explorer side bar ▸ **Run & Ship** (6 steps, also as commands) | *Run local*: the serve task plus each app's URL and cache version on disk. *Check*: `node --check` on the JS that differs from `origin/main`, the precache audit, and the bump rule. *Cost if deployed*: see next row. *Fetch back*: is the live site on `main`'s versions and commit? *Deploy main now*: publishes `main` to the live site with your own GitHub login (it asks first; see *Deploying from VS Code* below) | the repo's own scripts and git; Fetch back reads the live site and Deploy starts GitHub's Pages build (the only two steps that use the network) |
 | Status bar, and command **Cost if deployed** | `viewer: start-up · 103 KB` for the open file; the command prints, per app, start-up and offline-cache bytes of your tree against `origin/main` | each `sw.js` cache list and the pages' script tags |
+| Run & Ship ▸ **3m · Memory of the three pages** (command *Memory of the three pages*) | boots the viewer, ERP and Modeller pages headless, your tree and `origin/main` side by side, and prints the JS heap each holds after boot: `§HEAP_IMPACT_DELTA page=erp/idempiere.html jsMB=+0.0 … verdict=SAME`. The status bar keeps the last result, `MB V 18.4 · E 4.2 · M 10.9`, marked *(stale)* after a save. A few minutes; **runs only when you press it**; needs the Playwright that `tests/` installs | a headless Chromium on this machine (software GL, service worker off); the same building data on both sides, so the delta is the code's (§F.31) |
 | **Shift+F12** (Find All References) on the same field | every place the field is written and read, under any of its spellings; VS Code's own JavaScript support cannot give this, because the object is written under one name and read under another | every site the repo's generator recorded, kept beside X0's own fresh index (nothing added to the repo) |
 | A warning on line 1 after you save an edited file the offline cache serves, with a quick fix (the light bulb, or **Ctrl+.**) | *Bump the cache version for this file* (one click: the repo's `scripts/bump.js --write`), or *Show what the bump would change* (the dry run). Never done silently | the *Check* step's own bump rule, for this one file |
 | A grey line above code that prints a `§TAG` | `last: <the line a saved log holds for that tag> · <log> @ <commit>`; click it to open the log | `logs/*.log` whose first line is a `§LOG_STAMP` (§6) |
@@ -271,8 +348,25 @@ It appears only when that can be proven.
 
 ![A grey line above console.log: "last: §APP_SURFACE files=… fields=1693 …", with the log name and commit](figs/x0/13_value_beside_code.png)
 
-**The last three rows are first versions (2026-11-13). What they do not do yet:** Run & Ship does not commit, open a PR, merge or deploy,
-and runs no browser. Cost counts raw bytes (not minified), all of an app's pages together, with no budget. The grey value line appears only
+#### Deploying from VS Code: what you need
+
+*Deploy main now* (step 5 of Run & Ship, added 2026-11-16) publishes the repo's `main` branch to the live site. It does not publish your
+own branch: get your change merged first. Nothing else is needed, and no extra key or secret: it uses the login already on your machine.
+
+1. **Write access** to the repo on GitHub (you can push to it or merge its pull requests).
+2. **The GitHub CLI**, installed (<https://cli.github.com>) and logged in on this machine: run `gh auth login` once and pick the GitHub
+   account that has that access. `gh auth status` should say *Logged in*.
+3. **The X0 Navigator extension**, installed (§4.1) and on a current build (it warns when it is older than the source, §4.1).
+4. Press **4 · Fetch back**. If it says the live site is behind `main` (a version or the commit differs), press **5 · Deploy main now**
+   and confirm **Deploy**. The output prints `§SHIP_DEPLOY started=Y` and a link to the run on GitHub.
+5. Wait one to two minutes, then press **Fetch back** again: it must say PASS.
+
+If something is missing, the output says what to do, and nothing is started: *install the GitHub CLI*, *run gh auth login*, or *this
+workflow has no workflow_dispatch*. **Why it is needed:** a pull request that CI's bot merges starts no deploy (GitHub runs no workflow
+for a merge made with the workflow's own token), so the live site stays on the last deploy until someone publishes `main`.
+
+**The last three rows are first versions (2026-11-13). What they do not do yet:** Run & Ship does not commit, open a PR or merge; it
+deploys only when you press *Deploy main now*, and it runs no browser. Cost counts raw bytes (not minified), all of an app's pages together, with no budget. The grey value line appears only
 when the log names its commit and the file that prints the tag is unchanged since; otherwise it shows nothing, so expect few at first.
 It reads the checkout's `logs/` and the folders in the setting `bimDevtools.extraLogDirs` (default `~/.cache/bim4d`, where bake logs are
 kept; read-only). A bake log counts from the first bake after 2026-11-14, when the bake script began writing the `§LOG_STAMP` line.
@@ -354,6 +448,79 @@ window, item by item. A terminal status line can show cost and context percentag
 documented: a status line inside the VS Code panel.
 ---
 
+### 4.3 The provenance hover: the code behind what you see on the page
+
+X0 Navigator (§4.1) works inside the editor. The provenance hover works the other way round: you point at something on the page and it
+tells you which code made it, then opens that line in VS Code. There are two: one for a body in the **Modeller**, one for a field in the **ERP**.
+Both live in bim-ootb `devtools/hover/` (part of BIM DevTools).
+
+**It is a developer tool.** You load it into one browser tab with a bookmark. No shipped page loads it, so users never see it. Reload the
+tab and it is gone. Nothing is guessed: when the data does not name a line, the tooltip says so and opens nothing.
+
+#### In the Modeller: a body's six layers
+
+1. In bim-ootb, run `node devtools/hover/gen_trace_index.js`. It prints `§DXF_HOVER_INDEX keys=28 defaults=99` (counted 2026-11-15) and writes
+   `devtools/hover/trace_index.json`. That file holds your machine's folder path, so it is git-ignored. Run it again after you edit a builder or
+   `modeller/element_defaults.json`.
+2. Serve the repo (VS Code task **Serve repo**, `http://localhost:8000`) and open `/modeller/modeller.html`.
+3. Make a bookmark whose address is:
+   `javascript:(function(){var s=document.createElement('script');s.src='/devtools/hover/dxf_hover.js?'+Date.now();document.head.appendChild(s)})()`
+   Click it **before** you Convert. The console prints `§DXF_HOVER installed index_keys=28 defaults=99`.
+4. Open the DXF sheets and press **Convert**.
+5. Hover a body. The tooltip shows a title line (class, feature id, DXF handle, layer, sheet, provenance), then six numbered layers in the order
+   they happened. Every layer is always listed; an empty one says `none`.
+6. Press a number **1-6** to open that layer's first line in VS Code (**Alt+1-6** while you are typing in a field). **V** opens the builder line.
+
+| Key | Layer | What it tells you |
+|---|---|---|
+| 1 | BUILDER | the line of code that built the body |
+| 2 | PASS-THROUGH | any later code that touched it |
+| 3 | SIZES | each size, its number, and where it came from (`label`, `drawn`, `schedule`, `inherited`, `default`, …). A default that records which one links its row in `modeller/element_defaults.json`, the setting a user can change |
+| 4 | CUTS | the openings cut into it and the fill each one holds; for a door, the opening it fills |
+| 5 | EDITS | moves, resizes and grid moves after Convert (an undone edit is not listed) |
+| 6 | EVIDENCE | the DXF handle, layer, sheet and provenance, and each drawn note or schedule row the converter attached |
+
+**A column whose top is a default.** Layer 3 says the top, 3.0988 m, is the default `column.top_under_beam`; key 3 opens
+`modeller/element_defaults.json` at that row.
+
+![The provenance hover on a column: six layers; in SIZES the top is a default, column.top_under_beam, element_defaults.json:5](figs/hover/01_column_sizes_default.png)
+
+**A wall with two door openings.** Layer 4 lists the two door-gap cuts and the door each one holds. Layer 1 names the line that joined the
+wall's two drawn pieces into one.
+
+![The provenance hover on the north wall: layer 4 lists two GEOM_CUT door gaps, each holding its door](figs/hover/02_wall_cuts.png)
+
+**When it does not know, it says so.** This truss bar's width is a default, but the body does not record which default. The tooltip says
+*which default is not recorded on the body* and key 3 opens nothing. On the sample shed, 110 of 122 default sizes are like this (counted
+2026-11-15); the DXF2BIM lane has the proposal to record them (bim-ootb `prompts/DXF2BIM_ARCHITECT_REVIEW.md` §D113).
+
+![The provenance hover on a truss bar: its width is a default, "which default is not recorded on the body"](figs/hover/03_bar_default_not_recorded.png)
+
+#### In the ERP: every layer of code behind a field
+
+1. Run `node devtools/hover/gen_erp_index.js` (writes the git-ignored `devtools/hover/erp_index.json`).
+2. Serve the repo, open `/erp/idempiere.html`, log in and open a window.
+3. Bookmark: `javascript:(function(){var s=document.createElement('script');s.src='/devtools/hover/erp_hover.js?'+Date.now();document.head.appendChild(s)})()`
+4. Hover a field. You get its layers in the order they fire: the field's dictionary row, then on change its callouts, then the picker's
+   validation rule, then on save the model hooks, doc action and validators, then the button's process. Each layer shows its owner, the
+   line that registered it, and the iDempiere Java file it was ported from. A layer with nothing registered says `UNPORTED`.
+5. Keys **1-9** open that layer's line in VS Code (**Alt+1-9** in a text field).
+
+#### If something looks wrong
+
+| You see | It means | Do this |
+|---|---|---|
+| *convert again (the trace is on now)* | the body was converted before you clicked the bookmark | Convert again |
+| *no trace key* | the code that built this body has no trace stamp | run `modeller/tests/witness_dxf_trace.js`; it lists such bodies |
+| *line not in the index* | the index is older than your edit | run the index command (step 1) again |
+| a number key does nothing | that layer names no line (data, or not recorded) | read the layer's text: it says why |
+| VS Code does not open | your system has no handler for `vscode://` links | on Linux, check `xdg-mime query default x-scheme-handler/vscode` |
+
+**What proves it** (bim-ootb, node unless marked): `devtools/hover/tests/witness_bim_layers.js` checks every body of the sample shed against a
+separate converter run (W-BIM-LAYERS); `devtools/hover/tests/witness_dxf_hover.js` moves a real mouse over the real Modeller page, headless,
+and checks the tooltip against the same answer and that it stays inside the window (W-DXF-HOVER); `devtools/hover/tests/witness_erp_hover.js`
+covers every field of every active ERP window (W-ERP-HOVER). Spec: bim-compiler `prompts/CODE_ARCHITECTURE_DESIGN.md` §F.21–§F.23.
+
 ## 5. Changing things
 
 ### 5.1 Any edit to a file the browser loads
@@ -402,11 +569,31 @@ The largest viewer files were split in 2026-10 by a generator that keeps every s
 
 ---
 
+### 5.6 The clock rule: time, dates and ids in ERP code
+
+**The rule (owner decisions A-2, A-3, A-4, 2026-11-14).** Code that calculates (ERP processes, callouts, posting, the op-log fold, the schedule maths) never asks the machine for the time. The **shell** (the page, the service worker, the web-service kernel) reads the clock once, and everything else asks the transaction's env. Replaying a recorded operation must give the same rows on any day, in any time zone; a hidden `new Date()` breaks that quietly.
+
+| You need | Ask | Never |
+|---|---|---|
+| the session's day (what legacy calls `#Date`) | `trx.env.date` (the login context's `#Date` is the source) | `new Date().toISOString().slice(0, 10)` |
+| a time stamp for a new row | `A.Env.nowStamp(trx.env)` (the local wall-clock string) | `new Date()` |
+| milliseconds | `A.Env.nowMs(trx.env)` | `Date.now()` |
+| the local day of an instant you were given | `A.Env.stamp(ms).day` (also `.now`, `.millis`) | cutting the day out of `toISOString()` |
+| a transaction env, in the shell | `A.Env.modelEnv(loginContext, { nowMs, uuid, perfMs })` | building the object by hand |
+
+`A` is `X.A` (`AdCallout`) inside a process. If the env has no clock the call **throws and logs `§ENV_NO_DATE`**: that is the design, the core never falls back to a wall clock.
+
+**The day is the LOCAL day, never the UTC day.** Legacy dates by the server's local day (the reference: iDempiere's web-service login sets `#Date` from the JVM's local time). `toISOString()` is UTC, so between local midnight and the zone offset the date comes out as *yesterday*. That was bim-ootb #2996: the headless kernel dated an invoice made at 00:30 in a +08 zone the 12th instead of the 13th. Test any date change at **00:30 in a +08 zone**; a test that only runs in UTC proves nothing here.
+
+**Prove it:** `node erp/tests/witness_core_clock_reads.js` scans the files already migrated for a clock call and must print `clockReads=0` on every line, ending `§WITNESS_CORE_CLOCK_READS … fail=0`; `node erp/tests/witness_env_views.js` checks the day in UTC and Asia/Kuala_Lumpur (`§ENV_VIEWS … same=Y`); `node erp/tests/witness_replay_clock.js` replays a journal three days later (`§REPLAY_CLOCK … match=Y`). Both new witnesses carry a red control: a planted clock read must make them fail.
+**Where it stands:** the migration is in progress, one file per pull request, and the files still to do are listed in `prompts/CODE_ARCHITECTURE_DESIGN.md` Part A (timing reads and a few id sources remain). Until it is finished, a file not in the witness's list may still read the clock; do not add new reads to any file under `erp/processes/`, `erp/callouts/`, `erp/model_*.js` or the schedule maths.
+
 ## 6. Proving it
 
 - **Witnesses** live in `viewer/tests/`, `erp/tests/`, `modeller/tests/`, `tests/`, `witness/` and `scripts/tests/`. Run one with
   `node <file>` (or the editor task) and **read the log**. `npm test` runs the headless suite (`tests/run_witness_suite.js`;
   browser witnesses only with `--browser`, report-only because they are timing-sensitive).
+- **What a witness is.** A plain Node script: `node erp/tests/witness_env_views.js`. No test runner, no build, no browser unless the witness drives one (those say so in their header). It works from any directory, prints `§` lines, and exits **0** on pass, **1** on fail, **2** on INCONCLUSIVE (nothing was judged). Two honest limits: the files carry a `#!/usr/bin/env node` line but are **not marked executable** (run them with `node`, not `./file`), and they are **not independent of the repo**: they `require` files in the checkout, and every witness built on `witness_kit/contract.js` needs the `ajv` package (`npm install` once). A film or a demo that shows the command shows only the lines that matter; a real run prints more and can take minutes.
 - **New witness:** start from `witness_kit/contract.js` and the example
   `viewer/tests/witness_tm_schedule_output_of_truth.js`. Name the issue. Make it able to print FAIL and INCONCLUSIVE. Add a
   red control (a case that must fail) so you know it can.
@@ -484,6 +671,7 @@ The core idea still holds: **a building is a Bill of Materials.** One parent, N 
 
 | Trap | What happens | Do instead |
 |---|---|---|
+| A date taken from `toISOString().slice(0, 10)` or `new Date()` in ERP code | The UTC day, or today's wall clock: wrong near midnight, and a replay on another day gives other rows (#2996) | `trx.env.date`, `A.Env.nowStamp(trx.env)` (§5.6); test at 00:30 in a +08 zone |
 | Edited a precached file, reloaded, "nothing changed" | Service worker served the old file | `bump.js` (§5.1), or DevTools ▸ Application ▸ "Update on reload" while debugging |
 | Opened the copy instead of the source | 329 stale copies in this repo | Edit in bim-ootb. Check the path before you save |
 | Trusted a `file:line` from an old prompt | Lines moved in the 2026-10 splits | Search for the function name |
@@ -494,7 +682,7 @@ The core idea still holds: **a building is a Bill of Materials.** One parent, N 
 | Witness paths assume one machine | Many witnesses hard-code the author's home folder | Expect to adjust paths on a new machine; a shared resolver is an open item |
 | A saved log with no `§LOG_STAMP` line | Its values look current but may come from code that has since changed. Measured 2026-11-13: almost no saved log said which code made it | Read line 1 of the log (§6). No stamp, an old commit, or the printing file listed as dirty: re-run the witness |
 | A copy of the tree inside the tree (an agent worktree under `.claude/worktrees/`, a nested clone) | A tool that walks folders reads the copy as source. `gen_app_surface.js` once put 1,082 rows pointing into such a copy, so F12 opened the stale file | A dev tool skips any sub-folder that holds a `.git` entry, and its witness also runs on a checkout that looks like a working one, not only a clean one |
-| A PR auto-merged by CI's bot (bim-ootb) | The *Deploy to GitHub Pages* workflow does not start for a merge made with the workflow's own token. Only GitHub's plain branch build publishes: raw files, no `erp/version.json`. Seen live 2026-11-13 | Enable auto-merge yourself right after opening the PR (`gh pr merge <n> --auto --squash`), then press **Fetch back** (§4.1) a minute or two after the merge: it must say PASS |
+| A PR auto-merged by CI's bot (bim-ootb) | The *Deploy to GitHub Pages* workflow does not start for a merge made with the workflow's own token, so the live site stays on the last deploy (seen 2026-11-13; 4 bot merges on 2026-11-16 started no deploy) | Press **Fetch back** (§4.1); if it says the site is behind, press **Deploy main now** and Fetch back again (*Deploying from VS Code*, §4.1). Or enable auto-merge yourself right after opening the PR (`gh pr merge <n> --auto --squash`): a merge you start does deploy |
 | Two numbers in a squash title, `… (#issue) (#pr)` | Until 2026-11-13 the deploy wrote both into `erp/version.json` and the file was not valid JSON | Fixed in the workflow (it takes the last number). Put `Fixes #N` in the PR body, not in the title |
 
 ---

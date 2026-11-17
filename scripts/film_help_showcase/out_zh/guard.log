@@ -1,0 +1,40 @@
+§FILM_GUARD OK   quote says "将近百分之二十" <- quote.found expected Y got Y
+§FILM_GUARD OK   quote says "麦肯锡" <- quote.source expected McKinsey Global Institute got McKinsey Global Institute
+§FILM_GUARD OK   before says "只有列名和类型" <- old.tooltip expected Y got Y
+§FILM_GUARD OK   before says "一万五千八百四十九" <- f4.n expected 15849 got 15849
+§FILM_GUARD OK   before says "这里是中文" <- ui.desc_translated expected Y got Y
+§FILM_GUARD OK   before says "名称、说明和帮助" <- field.panel expected Y got Y
+§FILM_GUARD OK   ask1 says "用中文问" <- ask1.lang expected zh_CN got zh_CN
+§FILM_GUARD OK   ask1 says "销售订单窗口" <- ask1.window expected 143 got 143
+§FILM_GUARD OK   ask1 says "结束操作" <- ask1.action expected CL got CL
+§FILM_GUARD OK   ask1 says "完成或等候付款" <- ask1.allowed expected 完成, 等候付款 got 完成, 等候付款
+§FILM_GUARD OK   ask1 says "命令行" <- ask1.cli expected erp.close kind=Order number=<Document No> got erp.close kind=Order number=<Document No>
+§FILM_GUARD OK   link says "窗口打开" <- link.opened expected 143 got 143
+§FILM_GUARD OK   link says "中文的操作说明" <- link.ctx_lang expected zh_CN got zh_CN
+§FILM_GUARD OK   link says "由构建会话译成中文" <- w.s7 expected Y got Y
+§FILM_GUARD OK   ask2 says "发票窗口" <- ask2.window expected 167 got 167
+§FILM_GUARD OK   ask2 says "完成操作" <- ask2.action expected CO got CO
+§FILM_GUARD OK   ask2 says "目前只支持订单" <- ask2.cli_note expected Y got Y
+§FILM_GUARD OK   cli says "同样的问题" <- cli.window expected 143 got 143
+§FILM_GUARD OK   cli says "同样的字典" <- cli.action expected CL got CL
+§FILM_GUARD OK   cli says "终端的语言是中文" <- cli.lang expected zh_CN/LANG got zh_CN/LANG
+§FILM_GUARD OK   cli says "只读不写" <- cli.harm expected read got read
+§FILM_GUARD OK   no page error in the session
+§FILM_GUARD OK   every picture the cards need exists
+§FILM_GUARD OK   the memory was measured after a forced GC in both sessions, the pack present in one only
+§FILM_GUARD OK   credentials: MIT, every PR the film shows merged, the paper states its priority date
+§FILM_GUARD OK   the verdicts on the card are PASS lines of the logs run on the same tree (W-ERP-ASK too when the film shows the CLI)
+§FILM_GUARD OK   the verdicts on the card are PASS lines of the logs run on the same tree
+§FILM_GUARD OK   the language-beat pack loaded is the one chosen, and S1 (every pack text in the published pack) passed on main for it
+§FILM_GUARD OK   the v2 cut: the CLI card printed is the Chinese one (dictionary labels), from the real door
+§FILM_GUARD OK   prior art "iDempiere WEditor" <- idempiere:org.adempiere.ui.zk/WEB-INF/src/org/adempiere/webui/editor/WEditor.java:333
+§FILM_GUARD OK   prior art "iDempiere HelpController" <- idempiere:org.adempiere.ui.zk/WEB-INF/src/org/adempiere/webui/panel/HelpController.java:146
+§FILM_GUARD OK   prior art "iDempiere SynchronizeTerminology" <- idempiere:org.adempiere.base.process/src/org/compiere/process/SynchronizeTerminology.java:167
+§FILM_GUARD OK   prior art "the published de_DE language pack" <- bim-ootb:erp/tools/build_i18n.py:35
+§FILM_GUARD OK   prior art "the published zh_CN language pack (ADempiere 3.5.2)" <- bim-ootb:erp/tools/build_i18n.py:38
+§FILM_GUARD OK   prior art "McKinsey Global Institute, The social economy (2012)" <- out/prior/mckinsey_the_social_economy.html
+§FILM_GUARD OK   not said: the page pictures are taken, not streamed
+§FILM_GUARD OK   not said: no speed was measured
+§FILM_GUARD OK   not said: only the language of the beat is shown
+§FILM_GUARD OK   not said: no priority is claimed
+§FILM_GUARD VERDICT PASS

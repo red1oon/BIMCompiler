@@ -1,0 +1,6 @@
+§FILM_TREE new=460c6eea
+§FILM_STILL name=v_bar geometry=1440x900+240+90 bytes=371370
+§FILM_SHOT name=v_bar link="vscode://file/tmp/wt-film-new/modeller/dxf2section.js:89" file="dxf2section.js" line=89 text="els.push(D.P.trace('dxf2section:bar', { guid: c.id + '-S' + ni, class: P.ifcType('bar').ifc_class, storey: 'Level 1', vertices: m.vertices, faces: m.faces, handle: c.e.handle + '-S' + ni, layer: c.e.l"
+§FILM_STILL name=v_wall geometry=1440x900+240+90 bytes=382555
+§FILM_SHOT name=v_wall link="vscode://file/tmp/wt-film-new/modeller/dxf2bim_import.js:716" file="dxf2bim_import.js" line=716 text="_trace('dxf2bim_import:wall-line', { guid: gid });   // F.21: a NEW body (its members' panels joined into one wall line) exists only as this insert, so it is stamped here"
+§FILM_SHOOT stills=2 errors=0

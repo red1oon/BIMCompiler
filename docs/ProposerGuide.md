@@ -37,7 +37,7 @@ The AI's sums were right. What it did not know is this building's 12 m span limi
 
 This makes the app's actions a menu your AI can use by itself. It works with any AI app that supports MCP, the open standard that Claude, among others, uses to connect to tools.
 
-**1. Make a folder, install the browser engine, and download the four files.**
+**1. Make a folder, install the browser engine, and download the six files.**
 
 ```bash
 mkdir proposer && cd proposer
@@ -47,9 +47,11 @@ curl -O https://red1oon.github.io/bim-ootb/modeller/tools/edit_cli.js
 curl -O https://red1oon.github.io/bim-ootb/modeller/tools/bim_mcp.js
 curl -O https://red1oon.github.io/bim-ootb/common/door/door.js
 curl -O https://red1oon.github.io/bim-ootb/common/door/verbs.json
+curl -O https://red1oon.github.io/bim-ootb/common/door/msg_core.js
+curl -O https://red1oon.github.io/bim-ootb/common/door/vocab/messages.json
 ```
 
-Keep all four in the same folder: the connector hands every call to `door.js`, which reads the verb list from `verbs.json` and runs `edit_cli.js`. If one is missing, the connector says which and prints its `curl` line.
+Keep all six in the same folder: the connector hands every call to `door.js`, which reads the verb list from `verbs.json` and its messages from `messages.json` (through `msg_core.js`), and runs `edit_cli.js`. If one is missing, the connector says which and prints its `curl` line.
 
 **2. Add it to your AI app.**
 

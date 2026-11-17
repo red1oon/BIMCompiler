@@ -82,7 +82,7 @@ _run_guard() {  # $1=live_manifest_file  $2=new_manifest_file
 }
 
 # === build the two manifests, from real sources or test hooks ====================================
-WORK="$(mktemp -d)"; trap 'rm -rf "$WORK"' EXIT
+WORK="$(mktemp -d)"; PRINTED=""; trap 'rm -rf "$WORK"; for f in $PRINTED; do rm -f "$f"; done' EXIT   # PRINTED: the docs/<Name>.pdf step 2b wrote (untracked; gone after the publish)
 LIVE_MAN="$WORK/live.man"; NEW_MAN="$WORK/new.man"
 
 _log "§DEPLOY-START safe_gh_deploy SHRINK_TOL=${SHRINK_TOL}% GUARD_ONLY=${GUARD_ONLY:-0} DRY_RUN=${DRY_RUN:-0}"
@@ -104,12 +104,39 @@ if [ -n "${GUARD_NEW_DIR:-}" ]; then
   _log "§STEP2 new tree = injected GUARD_NEW_DIR=$GUARD_NEW_DIR"
   _manifest_from_dir "$GUARD_NEW_DIR" > "$NEW_MAN"
 else
+  # the language chooser needs its plugin (prompts/DOCS_I18N.md §6d); a missing plugin aborts here, before any comparison, never a half build
+  python3 -c "import mkdocs_static_i18n" 2>/dev/null || _abort "mkdocs-static-i18n is not installed for this mkdocs: pip install --user mkdocs-static-i18n==1.3.1"
   _log "§STEP2 mkdocs build -> $WORK/site_new"
   ( cd "$REPO" && mkdocs build -q -d "$WORK/site_new" ) >>"$LOG" 2>&1 || _abort "mkdocs build failed"
   # Native `mkdocs gh-deploy` auto-creates .nojekyll on every publish (tells GitHub Pages not to
   # run Jekyll over the mkdocs output); a plain `mkdocs build` does not. Without it here, this guard
   # would abort EVERY future deploy as a false "would delete .nojekyll" — not a one-off content issue.
   touch "$WORK/site_new/.nojekyll"
+  # Step 2b — printable guides (prompts/DOCS_DEPLOY_GUARD.md §"Printable guides"): every docs/<Name>.md that carries window.print()
+  # gets ONE PDF made from this very build, checked (W-GUIDE-PRINT), written to docs/<Name>.pdf so step 5's rebuild publishes it at /<Name>.pdf.
+  # A page byte-identical to the live one reuses the live PDF (no new blob on gh-pages). A FAIL aborts; no tools = rc 3 aborts unless ALLOW_NO_PDF=1
+  # (and then the DELETE guard still refuses to drop a live PDF).
+  for md in "$REPO"/docs/*.md; do
+    grep -q 'window.print()' "$md" || continue
+    name="$(basename "$md" .md)"; pdf="$REPO/docs/$name.pdf"; built="$WORK/site_new/$name/index.html"
+    git -C "$REPO" ls-files --error-unmatch "docs/$name.pdf" >/dev/null 2>&1 && _abort "printable guide $name: docs/$name.pdf is a TRACKED file; step 2b will not overwrite it"
+    [ -f "$built" ] || { _log "§STEP2b $name: not built, skipped"; continue; }
+    if git -C "$REPO" cat-file -e "origin/gh-pages:$name.pdf" 2>/dev/null && git -C "$REPO" cat-file -e "origin/gh-pages:$name/index.html" 2>/dev/null \
+       && [ "$(git -C "$REPO" show "origin/gh-pages:$name/index.html" | sha256sum)" = "$(sha256sum < "$built")" ]; then
+      git -C "$REPO" show "origin/gh-pages:$name.pdf" > "$pdf"; PRINTED="$PRINTED $pdf"
+      _log "§STEP2b $name: the page is unchanged since the live publish -> the live PDF is reused ($(wc -c < "$pdf")B)"
+    else
+      _log "§STEP2b $name: printing the built page to PDF and checking it (W-GUIDE-PRINT)"
+      node "$REPO/scripts/guide/print_check.js" --site "$WORK/site_new" --page "$name" --out "$pdf" > "$WORK/print_$name.log" 2>&1; rc=$?
+      grep '§PRINT' "$WORK/print_$name.log" | while IFS= read -r l; do _log "  $l"; done
+      if [ "$rc" -ne 0 ]; then rm -f "$pdf"
+        if [ "$rc" = 3 ] && [ "${ALLOW_NO_PDF:-0}" = "1" ]; then _log "§STEP2b $name: no PDF made (ALLOW_NO_PDF=1)"; continue; fi
+        _abort "printable guide $name: the PDF check did not pass (rc=$rc, the §PRINT lines above)"
+      fi
+      PRINTED="$PRINTED $pdf"
+    fi
+    cp "$pdf" "$WORK/site_new/$name.pdf"
+  done
   _manifest_from_dir "$WORK/site_new" > "$NEW_MAN"
 fi
 
@@ -151,4 +178,10 @@ for c in $CANARIES; do
   [ "$code" = "200" ] && _log "  canary $c -> 200" || { _log "  §CANARY-FAIL $c -> $code"; fail=$((fail+1)); }
 done
 [ "$fail" -gt 0 ] && _log "§STEP6 WARNING $fail canary page(s) not 200 — investigate $LOG" || _log "§STEP6 all canaries 200"
+# Step 6b — each printable guide's PDF, fetched back from the live site and compared to the one just made (Pages can take a few minutes)
+for pdf in $PRINTED; do
+  name="$(basename "$pdf" .pdf)"; want="$(sha256sum < "$pdf")"; got=""
+  for i in $(seq 1 18); do got="$(curl -s "$BASE_URL/$name.pdf?cb=$RANDOM" | sha256sum)"; [ "$got" = "$want" ] && break; sleep 10; done
+  [ "$got" = "$want" ] && _log "§STEP6b $name.pdf live == the checked PDF ($(wc -c < "$pdf")B)" || _log "§STEP6b WARNING $name.pdf live differs from the checked PDF after 3 min — fetch $BASE_URL/$name.pdf again"
+done
 _log "§DEPLOY-DONE published + canaries checked"

@@ -1,0 +1,5 @@
+mis.update kind=Project id=990000 M_Warehouse_ID=103 SalesRep_ID=101 C_BPartner_ID=117 C_BPartner_Location_ID=112 C_PaymentTerm_ID=105 M_PriceList_Version_ID=103
+mis.new kind="Project Line" C_Project_ID=990000 M_Product_ID=133 PlannedQty=1 PlannedPrice=33.75
+mis.new kind="Project Line" C_Project_ID=990000 M_Product_ID=134 PlannedQty=1 PlannedPrice=67.5
+mis.new kind="Project Line" C_Project_ID=990000 M_Product_ID=124 PlannedQty=1 PlannedPrice=30
+mis.new kind="Project Line" C_Project_ID=990000 M_Product_ID=125 PlannedQty=1 PlannedPrice=40

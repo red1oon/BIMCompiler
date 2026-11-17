@@ -36,7 +36,7 @@ The [film](https://youtu.be/hnLYNcRihzs) shows the two halves as one.
 
 | | |
 |:---|:---|
-| **35 buildings** compiled (126K elements largest) | **90K lines** of browser code (JS + HTML) |
+| **35 buildings** compiled (126K elements largest) | **~1.06M lines** of JS + HTML in 3,330 files, tests and witnesses included (measured 2026-11-15) |
 | **1M elements** federated in browser | **6 mathematical gates** prove every output |
 | **Multi-format import** — IFC, OBJ, DAE, GLB, FBX, STL | **Auto-classifies** mesh names to IFC schema |
 | **Clash detection** — R-tree spatial index, per-pair analysis | **18 languages** — localized from day one |
@@ -114,10 +114,12 @@ lifecycle (7D), and safety plans (8D) from the same compiled database. 37 buildi
 A companion line of work forks the iDempiere lineage into the browser. State is a *deterministic fold over an append-only, signed operation log* — a fact is computed by replaying the log, never stored as a guarded scalar — so an accounting kernel runs serverless, over SQLite, and keeps working while offline.
 
 - **AD → five relations** — iDempiere's Application Dictionary (≈925 tables) reduces to *documents, lines, journal, containers, items* plus a small verb set, validated by diffing the kernel's projection against iDempiere's executed records (the GardenWorld dataset).
+- **Parity runner** — `scripts/bridge/run_all.sh` submits the same scenarios to a live legacy iDempiere and to the kernel and compares documents, books, stock, cost and refusals; every difference is a numbered finding fixed on the kernel side. It needs a legacy iDempiere to compare against (a local pilot with the GardenWorld seed today). Method: [Legacy-as-Oracle Adapter](https://red1oon.github.io/BIMCompiler/LegacyOracleAdapterSpec/); where it sits: [Strategic Positioning](https://red1oon.github.io/BIMCompiler/StrategicIndustryPositioning/).
+- **Lenses over the one log** — a uniCenta-style [till and kitchen screen](https://red1oon.github.io/BIMCompiler/TillUserGuide/), Kanban, Chat, Pivot, the Teams overlay, Tenancy and Warehouse Walk all read the same signed log; [the table of lenses](https://red1oon.github.io/BIMCompiler/ERPUserGuide/#other-views-of-the-same-log-the-lens-family) says which are shipped and which are concept demos.
 - **One substrate** — the same operation log drives the BIM model; a building folds into a Project Order through the same kernel.
 - **Witnessed, not asserted** — op-group atomicity, period-close checkpointing (compaction as balance-carried-forward), and a single compare-and-set class for the one shared resource are proven by `§`-tagged POCs (`scripts/poc_showstopper.js`, `poc_volume.js`, `diff_oracle.js`).
 
-This is a proven kernel and architecture, not a finished ERP. The constituent techniques are established — event sourcing / Datomic, hash-chained ledgers / QLDB / immudb, single-writer-at-the-edge / Durable Objects, local-first / CRDT — and the contribution is their composition under ERP semantics together with the BIM↔ERP unification. No head-to-head benchmark against iDempiere is claimed.
+This is a proven kernel and architecture, not a finished ERP. The constituent techniques are established — event sourcing / Datomic, hash-chained ledgers / QLDB / immudb, single-writer-at-the-edge / Durable Objects, local-first / CRDT — and the contribution is their composition under ERP semantics together with the BIM↔ERP unification. No head-to-head benchmark against iDempiere is claimed. Parity with legacy iDempiere is measured scenario by scenario against a live instance (25 of 25 shop-day scenarios, 19 of 34 document tables with a compared scenario, as of 2026-10-12) and has to be re-run per iDempiere version — see [how closely the kernel matches](https://red1oon.github.io/BIMCompiler/FeatureComparison/#how-closely-the-kernel-matches-legacy-idempiere).
 
 **Read** the [technical abstract](https://red1oon.github.io/BIMCompiler/OpLogERP/) · **explore** the [engine as data — Glassbowl](https://red1oon.github.io/BIMCompiler/glassbowl.html) · **specs:** [AD-in-Browser](https://red1oon.github.io/BIMCompiler/ERP/), [The Holy Grail](https://red1oon.github.io/BIMCompiler/HolyGrail/), [Distributed ERP](https://red1oon.github.io/BIMCompiler/DistributedERP/).
 
@@ -156,7 +158,9 @@ mvn compile -q                                        # Compile all modules
 
 **https://red1oon.github.io/BIMCompiler/**
 
-50 specs with full-text search, dark mode, and sidebar navigation. Live demos and the film are in [Live & Online](#live--online) above.
+73 pages with full-text search, dark mode, and sidebar navigation. Live demos and the film are in [Live & Online](#live--online) above.
+
+Where to start: the [User Guide](https://red1oon.github.io/BIMCompiler/USER_GUIDE/) for everyone; the [Fast Script Guide](https://red1oon.github.io/BIMCompiler/FastScriptGuide/) to drive the apps from the command line or with an AI; the [Migration User Guide](https://red1oon.github.io/BIMCompiler/MigrationGuide/) to move a company in from Odoo, Business Central or SAP Business One; the [Developer Guide](https://red1oon.github.io/BIMCompiler/DeveloperGuide/) to read or change the code.
 
 ## Project Structure
 
@@ -192,14 +196,16 @@ Led [ADempiere](https://www.adempierebr.com/User:Red1) (2006), paved the way for
 
 | | |
 |:---|:---|
-| **BIM OOTB (Browser)** | 331 files, ~311K lines (JS + HTML), 53 Playwright spec files |
+| **BIM OOTB (Browser)** | 3,330 JS + HTML files, ~1.06M lines tracked (app code about 2,600 files / 780K lines: viewer, modeller, erp, common, teams, capex; the rest is tests, witnesses, sandbox, scripts; `common/lib` holds third-party code), 53 Playwright spec files |
 | **Java Compiler** | 1,207 files, 278K lines across 10 Maven modules |
 | **Java Tests** | 201 test classes; gate baseline 382 PASS / 94 intentional RED / 1 SKIP |
-| **SQL** | 178 migration scripts (append-only) |
+| **SQL** | 365 migration scripts (append-only) |
 | **Databases** | 35 per-building single DBs (0.1-173 MB each) |
-| **Specifications** | 50 docs, governed by SystemContract.md |
+| **Documentation** | 73 published pages (the spec set is governed by SystemContract.md) |
 | **Buildings** | 35 compiled (34 extracted + 1 generative) |
 | **Scale** | 1,063,563 elements federated, 35 buildings, 6 disciplines |
+
+*Re-measured 2026-11-15: the BIM OOTB, SQL and documentation rows. The other rows (Java, tests, databases, buildings, scale) predate that and have not been re-measured.*
 
 ---
 

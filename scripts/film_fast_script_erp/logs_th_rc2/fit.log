@@ -1,0 +1,38 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT start cue=5.47 room=8.52 dur=7.62 -> DETAIL slack=+0.90 detailDur=7.62 words=10
+§NARR_TONE start#0 F WH own=-6.4st rose=0st endDelta=-6.4st want=report OK "เริ่มต้นอย่างไร?"
+§NARR_FIT help cue=18.43 room=9.52 dur=8.63 -> DETAIL slack=+0.89 detailDur=8.63 words=26
+§NARR_TONE help#0 F WH own=-0.0st rose=0st endDelta=-0.0st want=report OK "ทำอะไรได้บ้าง?"
+§NARR_FIT level cue=33.55 room=7.15 dur=6.23 -> DETAIL slack=+0.92 detailDur=6.23 words=8
+§NARR_TONE level#0 F YN own=-4.3st rose=0st endDelta=-4.3st want=report OK "อธิบายคำได้ไหม?"
+§NARR_FIT bp cue=48.22 room=9.73 dur=8.85 -> DETAIL slack=+0.88 detailDur=8.85 words=14
+§NARR_TONE bp#0 F WH own=-3.5st rose=0st endDelta=-3.5st want=report OK "ไปที่ตารางอย่างไร?"
+§NARR_FIT po1 cue=65.13 room=9.45 dur=8.55 -> DETAIL slack=+0.90 detailDur=8.55 words=8
+§NARR_TONE po1#0 F YN own=-5.1st rose=0st endDelta=-5.1st want=report OK "รันกระบวนการได้ไหม?"
+§NARR_FIT po2 cue=75.67 room=4.70 dur=3.79 -> DETAIL slack=+0.91 detailDur=3.79 words=5
+§NARR_TONE po2#0 F YN own=-0.6st rose=0st endDelta=-0.6st want=report OK "แล้วระยะล่ะ?"
+§NARR_FIT po3 cue=81.47 room=4.77 dur=3.86 -> DETAIL slack=+0.91 detailDur=3.86 words=4
+§NARR_TONE po3#0 F YN own=-6.3st rose=0st endDelta=-6.3st want=report OK "แล้วบรรทัดโครงการ?"
+§NARR_FIT po4 cue=90.18 room=11.77 dur=10.86 -> DETAIL slack=+0.91 detailDur=10.86 words=15
+§NARR_TONE po4#0 F YN own=-2.1st rose=0st endDelta=-2.1st want=report OK "แล้วคำถามสุดท้าย?"
+§NARR_FIT co cue=107.47 room=8.44 dur=7.55 -> DETAIL slack=+0.89 detailDur=7.55 words=15
+§NARR_TONE co#0 F WH own=-6.2st rose=0st endDelta=-6.2st want=report OK "ทำให้ใบสั่งเสร็จได้อย่างไร?"
+§NARR_FIT next cue=119.09 room=7.74 dur=6.84 -> DETAIL slack=+0.90 detailDur=6.84 words=12
+§NARR_TONE next#0 F WH own=+0.1st rose=0st endDelta=+0.1st want=report OK "ตอนนี้ทำอะไรต่อได้?"
+§NARR_FIT gap cue=130.26 room=9.23 dur=8.34 -> DETAIL slack=+0.89 detailDur=8.34 words=12
+§NARR_TONE gap#0 F YN own=-0.2st rose=0st endDelta=-0.2st want=report OK "แล้วกระบวนการที่รันไม่ได้?"
+§NARR_FIT report cue=142.26 room=6.15 dur=5.26 -> DETAIL slack=+0.89 detailDur=5.26 words=5
+§NARR_TONE report#0 F YN own=-6.7st rose=0st endDelta=-6.7st want=report OK "แจ้งเจ้าของได้ไหม?"
+§NARR_FIT url cue=150.76 room=9.11 dur=8.19 -> DETAIL slack=+0.92 detailDur=8.19 words=9
+§NARR_TONE url#0 F WH own=-1.6st rose=0st endDelta=-1.6st want=report OK "แล้วจะส่งอย่างไร?"
+§NARR_FIT cost cue=165.72 room=13.19 dur=12.30 -> DETAIL slack=+0.89 detailDur=12.30 words=16
+§NARR_TONE cost#0 F YN own=-4.3st rose=0st endDelta=-4.3st want=report OK "แล้วกลับมาที่อาคาร?"
+§NARR_FIT post cue=187.17 room=12.99 dur=12.07 -> DETAIL slack=+0.92 detailDur=12.07 words=19
+§NARR_TONE post#0 F YN own=-3.1st rose=0st endDelta=-3.1st want=report OK "ถ้าฉันตอบใช่?"
+§NARR_FIT proj cue=201.67 room=7.03 dur=6.14 -> DETAIL slack=+0.89 detailDur=6.14 words=6
+§NARR_TONE proj#0 F YN own=-2.9st rose=0st endDelta=-2.9st want=report OK "ดูได้ไหม?"
+§NARR_FIT ls cue=211.13 room=4.70 dur=3.78 -> DETAIL slack=+0.92 detailDur=3.78 words=6
+§NARR_TONE ls#0 F YN own=-4.7st rose=0st endDelta=-4.7st want=report OK "แล้วรายการ?"
+§NARR_FIT exit cue=217.59 room=4.86 dur=3.96 -> DETAIL slack=+0.90 detailDur=3.96 words=6

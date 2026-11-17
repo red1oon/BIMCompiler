@@ -1,7 +1,7 @@
 # CAPEX UAT Guide — from 2D drawings to the dashboard
 
-<div class="uat-noprint" markdown="0"><button type="button" class="md-button md-button--primary" onclick="window.print()">🖨 Print this guide / Save as PDF</button>
-<span style="margin-left:.6em;font-size:.8em">Print it, tick the boxes by hand, sign the last page and hand it in. In the print dialog choose <b>Save as PDF</b> to keep a file.</span></div>
+<div class="uat-noprint" markdown="0"><a class="md-button md-button--primary" href="../CapexUATGuide.pdf" download>⬇ Download the PDF</a> <button type="button" class="md-button" onclick="window.print()">🖨 Print from the browser</button>
+<span style="margin-left:.6em;font-size:.8em">The PDF is made from this page each time it is published, and checked: the checklist on a sheet of its own, each chapter on a new page, no table row split or cut off. Print it, tick the boxes by hand, sign the last page and hand it in.</span></div>
 <style>
 @media print {
   .md-header, .md-tabs, .md-sidebar, .md-footer, .md-top, .md-source, .uat-noprint, .md-content__button, .headerlink { display: none !important; }
@@ -15,6 +15,11 @@
   .md-typeset img { max-width: 100%; max-height: 105mm; }
   a[href]::after { content: none !important; }
   @page { margin: 14mm 12mm; }
+  .uat-sheet { break-before: page; page-break-before: always; break-after: page; page-break-after: always; font-size: 9pt; }
+  .uat-sheet table:not([class]) { font-size: 8pt; }
+  .uat-sheet table:not([class]) th, .uat-sheet table:not([class]) td { padding: 1.5pt 4pt; }
+  .uat-sheet p { margin: 3pt 0; }
+  .uat-sheet h2 { break-before: auto; page-break-before: auto; }
 }
 </style>
 
@@ -24,6 +29,44 @@ A hands-on test script for the testers of the pilot client (Sysnova). Each step 
 Work top to bottom: every chapter uses what the one before produced. Write anything that differs on the **Notes** line at the end of each chapter.
 
 Dates in the test data are set for **13 November 2026**. Testing well after that day still works, but the colours on the dashboard (on time, late, over budget) drift with the calendar.
+
+<div class="uat-sheet" markdown="1">
+
+## Checklist: who does what
+
+Three roles run this test. Tick a part when all its steps pass, and initial it.
+
+| Role | Who | Needs |
+|---|---|---|
+| **System Setup** | your iDempiere administrator | `psql` and a server restart, the GardenWorld Admin login, Node.js (D's read job) |
+| **BIM** | a BIM / QS tester; your **drafter** for B00 | a desktop browser; the drafter: BricsCAD |
+| **Project Mgmt Accounting** | a project / accounting user | the GardenWorld Admin login, a desktop browser |
+
+**Order:** System Setup first. BIM may start at once (public apps, not your iDempiere). Project Mgmt Accounting after A; D after C.
+
+| Part | Role | Done in | Needs first | Hands over | Steps | Done / initials |
+|---|---|---|---|---|---|---|
+| A1 · Own web copy (optional) | System Setup | web server | — | your copy of the apps | 4 | ☐ |
+| A2 · Install the dashboard | System Setup | `psql`, server restart | — | the dashboard's scripts in iDempiere | 3 | ☐ |
+| A3 · Load the test data | System Setup | Pack In, `psql` | A2 | 12 projects, 10 products | 6 | ☐ |
+| A4 · ERP model check | System Setup | iDempiere | A3 | vendor, stock, products | 4 | ☐ |
+| B00 · Export the sheets as DXF | BIM (drafter) | BricsCAD | the drawing | nine `.dxf` | 3 | ☐ |
+| B0 · To the marked set | BIM | Modeller | B00 or pack `sheets/` | nine `_marked.dxf` | 11 | ☐ |
+| B1 · The sheets one at a time | BIM | Modeller | B0 | — | 4 | ☐ |
+| B2 · Arrange and convert | BIM | Modeller, Viewer | B0 | `SHED_extracted.db` | 11 | ☐ |
+| B3 · 4D and 5D | BIM | Viewer | B2 | total cost, finish date | 6 | ☐ |
+| B4 · Project Order | BIM | Viewer, browser ERP | B2 | project **SHED** | 4 | ☐ |
+| B5 · Mark your run | BIM | Run Checker | B0.9 B2.8 B2.9 B3.1 | `uat_result.json` | 4 | ☐ |
+| C1 · Purchase orders | Project Mgmt Accounting | iDempiere | A3, A4 | orders | 2 | ☐ |
+| C2 · Material receipt | Project Mgmt Accounting | iDempiere | C1 | goods received | 1 | ☐ |
+| C3 · Invoice and payment | Project Mgmt Accounting | iDempiere | C2 | invoices, payments | 2 | ☐ |
+| C4 · Issue to site | Project Mgmt Accounting | iDempiere | A3 | project spending | 4 | ☐ |
+| C5 · Tick a phase | Project Mgmt Accounting | iDempiere | A3 | a phase completed | 1 | ☐ |
+| D · The dashboard | Project Mgmt Accounting | browser | C; read job (System Setup) | figures signed off | 10 | ☐ |
+
+Steps: A 17 · B 43 (29 if given the marked copies: skip B00, B0) · C 10 · D 10, as on the sign-off.
+
+</div>
 
 **What you need**
 
@@ -35,7 +78,9 @@ Dates in the test data are set for **13 November 2026**. Testing well after that
 | The test-data pack | [202611131200_GardenWorld_CAPEXTestData.zip](https://github.com/red1oon/bim-ootb/raw/main/capex/plugin/testdata_2pack/202611131200_GardenWorld_CAPEXTestData.zip) |
 | The construction-products script (10 materials at standard cost) | [202611141500_CAPEX-TD-CONSTRUCTION-PRODUCTS.sql](https://github.com/red1oon/bim-ootb/blob/main/capex/plugin/testdata_2pack/202611141500_CAPEX-TD-CONSTRUCTION-PRODUCTS.sql) |
 | The dashboard's scripts for iDempiere | listed in chapter A2, all in the [bim-ootb repository](https://github.com/red1oon/bim-ootb/tree/main/capex/legacy) |
-| The **Shed** drawing set: nine 2D sheets (.dxf) with their settings written in | the nine `…_marked.dxf` files supplied for this test, listed in chapter B1 |
+| The **Shed** drawing set: nine 2D sheets as **DXF** files, one per sheet | exported from BricsCAD by your drafter as in chapter **B00** (a `.dwg` cannot be opened); chapter B0 then turns them into the nine `…_marked.dxf` files that chapters B1 onward open (a tester given the `…_marked.dxf` copies skips B00 and B0) |
+| The **reference pack** (to mark your run, chapter B5) | [Shed_UAT_pack_20261115.zip](https://objectstorage.ap-kulai-2.oraclecloud.com/n/ax3cp6tzwuy2/b/bim-ootb/o/uat/Shed_UAT_pack_20261115.zip): the nine sheets as B00 exports them, the supplied marked copies, the reference Viewer database and the expected values |
+| The **UAT Run Checker** | [check.html](https://red1oon.github.io/bim-ootb/capex/uat/check.html) in your browser: it reads your files locally, nothing is uploaded |
 
 The nine Shed sheets are the pilot client's own work, so its testers may use them. Any other drawing set goes through the same way once its sheets carry their settings (levels, datums and layer meanings), which the Modeller's **Drawing metadata** panel records.
 
@@ -57,18 +102,11 @@ The nine Shed sheets are the pilot client's own work, so its testers may use the
 | Purchase Invoice and Credit/Debit Note | Requisition-to-Invoice (Purchasing) ▸ Purchase Invoice and Credit/Debit Note |
 | Payment and Receipt | Open Items (Financial Movements and Aging) ▸ Payment and Receipt |
 
-**Who does what**
-
-| Chapter | Who |
-|---|---|
-| A · Set up | your iDempiere administrator, once |
-| B · BIM: drawings to a priced model | a BIM / QS tester |
-| C · ERP: buying and issuing to site | an ERP tester, as GardenWorld Admin |
-| D · The dashboard | everyone |
+**Who does what:** see the checklist sheet above.
 
 ---
 
-## A · Set up (administrator, once)
+## A · Set up (System Setup, once)
 
 ### A1 · The BIM apps on your own server (optional)
 
@@ -134,13 +172,15 @@ GardenWorld already has the vendor, the warehouse and the locator; the products 
 
 ---
 
-## B · BIM: the Shed, from 2D drawings to a priced model
+## B · BIM: the Shed, from 2D drawings to a priced model (BIM)
 
 This chapter uses **your own Shed drawing set**: the single-storey farm shed, drawn as nine 2D sheets. You will see each drawing on its own first, then the nine arranged in place, then the 3D model built from them.
 
+**The drawings are shortened, so the model is too.** The real shed is **410 ft × 50 ft** (124.97 m × 15.24 m): 41 bays of 10 ft, grid lines 01 to 42. The drawings show only grids **01–06** and **35–42**, with the expansion joint drawn between 06 and 35; the length dimension is drawn 130 ft long and its text is written over to read *410'-0"*. The Modeller builds what is drawn: **13 bays, 39.62 m long**. Every quantity and cost in B2b to B4 is for those 13 bays, about a third of the real shed's length. The 50 ft width is drawn to scale.
+
 The pictures were taken from the real Modeller with these same nine files. The label at the top of each picture and the red ring around a button were added for this guide; in the canvas-only pictures the drawing lines are shown at full strength so that they print clearly.
 
-**The nine sheets** (open the `…_marked.dxf` copies: they carry the levels, heights and layer meanings the Modeller needs)
+**The nine sheets.** From B1 on you open the `…_marked.dxf` copies: they carry the levels, heights and layer meanings the Modeller needs. You make them yourself from the nine sheets as drawn in **B0**; the result is the same, mark for mark, as the copies supplied for this test.
 
 | Sheet file | What it is | Role the Modeller shows |
 |---|---|---|
@@ -153,6 +193,95 @@ The pictures were taken from the real Modeller with these same nine files. The l
 | `7_ELEV_EAST_marked.dxf` | East elevation | ELEV |
 | `8_SECTION_AA_TRUSS_marked.dxf` | Section A-A, the roof truss | SECTION |
 | `5_DETAILS_marked.dxf` | Details and general notes | NOTES |
+
+### B00 · For the drafter: export the nine sheets from BricsCAD as DXF
+
+*This step is for whoever holds the drawing in BricsCAD.* Send the testers **DXF files, one per sheet**, not the `.dwg`: the Modeller opens `.dxf` files only. BricsCAD writes a DXF with its **DXFOUT** command, whose options are *Entities* (which entities to export), *Binary* (leave it off: the file is then written as ASCII text), *Version*, and the number of decimal places (see the [BricsCAD help for DXFOUT](https://help.bricsys.com/en-us/document/command-reference/d/dxfout-command)).
+
+**Settings**
+
+| Setting | Use | Why |
+|---|---|---|
+| File type | **DXF, ASCII** (text) | A **binary** DXF is refused by the Modeller |
+| DXF version | **2018** (any of 2000, 2004, 2007, 2010, 2013, 2018 gives the same model) | **R12** is refused: it has no drawing units and no hatches, and the gable walls are hatches |
+| Files | **one DXF per sheet** | The whole drawing in one file gives no model: the Modeller cannot tell the sheets apart |
+| Drawing units | **Inches** (system variable `INSUNITS`; the Shed drawing already has it) | A file without its units gives no model |
+| Decimal places | **16** (the most DXFOUT offers) | keeps the coordinates as exact as in the drawing |
+| Position | **as drawn**: do not move, rotate or scale a sheet before exporting it | B0 types levels and one box in the drawing's own coordinates |
+| Layers, dimensions, hatches | **as drawn**: do not explode, rename or merge them | The Modeller reads the grid lines from the dimensions, the gable walls from the hatches, and each element type from its layer name (B0.4) |
+
+| # | Do | Confirm on screen | Result |
+|---|---|---|---|
+| B00.1 | Open the Shed drawing in BricsCAD. Check that the drawing units are **Inches** | `INSUNITS` reads 1 (Inches) | ☐ Pass ☐ Fail |
+| B00.2 | For each row of the table below: type **DXFOUT**, choose **Entities**, select everything inside that sheet's frame (a window from one corner of the frame to the other), and confirm. Leave **Binary** off, choose version **2018** and **16** decimal places, and save under the file name in the table | One `.dxf` file per row, nine in all | ☐ Pass ☐ Fail |
+| B00.3 | Send the nine `.dxf` files to the testers | The testers open them in B0.1, which is the check: **All defaults** must list **34** yellow rows, then **113** after B0.2. Other counts mean the export differs from the drawings this guide was proven on: check the settings above and export again | ☐ Pass ☐ Fail |
+
+| Frame in the drawing (its title) | Save as |
+|---|---|
+| Shed Floor Plan | `0_FLOOR_PLAN.dxf` |
+| Beam Lay out Plan | `3_BEAM_LAYOUT.dxf` |
+| Foundation Lay out Plan | `4_FOUNDATION_LAYOUT.dxf` |
+| North and South Elevation (one frame, two drawings): the **upper** drawing, North | `1N_ELEV_NORTH.dxf` |
+| the same frame, the **lower** drawing, South | `1S_ELEV_SOUTH.dxf` |
+| West Elevation | `2_ELEV_WEST.dxf` |
+| East Elevation | `7_ELEV_EAST.dxf` |
+| Section A-A (Truss Detail) | `8_SECTION_AA_TRUSS.dxf` |
+| the details frame (footing, column and grade-beam casting ratios, long sections of the beams) | `5_DETAILS.dxf` |
+
+The general *Section A-A* frame is not used in this test.
+
+*Proven by measurement (witness W-UAT-SHED-SOURCE, 2026-11-15) with files written in each DXF version by a DXF library, not by BricsCAD itself: ASCII 2000 to 2018 give the same model, 512 bodies, identical; R12, binary DXF, the whole drawing in one file, and a file without its units give no model. The settings above follow from that; the DXFOUT options are quoted from BricsCAD's help.*
+
+### B0 · From the drawings as drawn to the marked set
+
+*No export from your drafter yet?* The reference pack's `sheets/` folder holds the nine sheets exactly as B00 writes them; start B0 from those.
+
+The nine sheets as drawn carry no settings: the Modeller cannot tell which CAD layer is a column, how deep the footings go, or where the expansion joint is. In this step you tell it, in the **Drawing metadata** panel, and save the result as nine `…_marked.dxf` copies. Every value below is read from the drawings (the source is named in each row); nothing is invented. Type the numbers exactly as written.
+
+The panel has sections you open by clicking their title: **All defaults** (the yellow list), **Sheets** (one card per sheet), **Layers**, **Body heights**, **Exclude areas**. The badge at the top says **Blocked · n** (n things still missing) or **Qualifies**.
+
+| # | Do | Confirm on screen | Result |
+|---|---|---|---|
+| B0.1 | Open [the Modeller](https://red1oon.github.io/bim-ootb/modeller/modeller.html). **📂 Open → Open 2D drawings (.dxf)…** and select **all nine** sheets exported in B00: `0_FLOOR_PLAN.dxf`, `3_BEAM_LAYOUT.dxf`, `4_FOUNDATION_LAYOUT.dxf`, `1N_ELEV_NORTH.dxf`, `1S_ELEV_SOUTH.dxf`, `2_ELEV_WEST.dxf`, `7_ELEV_EAST.dxf`, `8_SECTION_AA_TRUSS.dxf`, `5_DETAILS.dxf` | The **Drawing metadata** panel opens. The badge reads **Blocked** with a number (58 or 99 on the two exports this guide was proven on: the number depends on how the sheets were cut and is not a check). **All defaults** lists **34** yellow rows: what the Modeller read from the files (units, sheet roles and names, grid lines) | ☐ Pass ☐ Fail |
+| B0.2 | In **All defaults**, press **Accept stated + read** | The list grows to **113** yellow rows: the grid lines, level lines and roles that follow from the first ones | ☐ Pass ☐ Fail |
+| B0.2b | Press **Accept all** | **0** yellow rows. The badge still reads **Blocked** with a smaller number (48 or 89). In **Sheets**, eight cards now show a role (3 PLAN, 4 ELEV, 1 SECTION); `5_DETAILS` is the notes sheet | ☐ Pass ☐ Fail |
+| B0.3 | In **Sheets**, open any card. In its **Set** field replace `BUILD-NAME` with **SHED** and press Enter | Every sheet's **Set** reads **SHED** (typing it once fills all nine) | ☐ Pass ☐ Fail |
+| B0.4 | Open **Layers**. Under each heading, pick the meaning of each CAD layer from its list, as in the table below. Where the table says *one sheet only*, press the small arrow at the right of the layer's row (**Type this layer sheet by sheet**) and pick the meaning on that sheet's line only | After **PLAN · Col = column** the badge reads **Blocked · 1**; after **ELEV · Wall = panel** it reads **Qualifies**. When all ten are set, **All defaults** shows **14** yellow rows (sizes the Modeller assumes, such as the fan depth) | ☐ Pass ☐ Fail |
+| B0.4b | In **All defaults**, press **Accept all** | **0** yellow rows | ☐ Pass ☐ Fail |
+| B0.5 | Open **Body heights**. It lists **footing** and **beam** as waiting (no elevation shows them). Type **footing**: z0 `-1.4478`, z1 `-1.143`, **Add**. Type **beam**: z0 `3.098794`, z1 `3.352794`, **Add** | Two rows: `@BODYZ=footing,-1.4478,-1.143` and `@BODYZ=beam,3.098794,3.352794`. The badge still reads **Qualifies** | ☐ Pass ☐ Fail |
+| B0.6 | In **Sheets**, open each elevation and the section card in turn. Under **Level datums (@Z)**, type the height `0.6096` in the first box and the card's y (table below) in **y where drawn**, then **Add** | Each of the five cards lists a new `@Z=0.6096` row beside the two it read itself (`@Z=0` and the eave or ridge height). The badge still reads **Qualifies** | ☐ Pass ☐ Fail |
+| B0.7 | Open **Exclude areas**. Choose **3_BEAM_LAYOUT** in its list and press **Exclude area** (the button now reads **Drag a box**). On the canvas, zoom to the bay between grid **06** and grid **35**: the beam layout's **expansion joint** is the pair of close vertical lines (about 22 cm apart) running across all four rows A to D. Drag a box from above row A to below row D that holds both lines and the small break marks beside them: start about half a metre left of the left line (not more than 1 m: two short beam ends start 1.05 m to the left) and stop about 25 cm right of the right line. The break marks reach 18 cm out from the lines; the beams of the right-hand block start 37 cm right of the right line, so the box must stop before them. Press **Drag a box** again to leave the tool | **Exclude areas** lists one row, `3_BEAM_LAYOUT @EXCLUDE=…` with the box's four numbers. Without it the joint's two lines are read as four extra beams (B2b would then read 515 elements, not 511) | ☐ Pass ☐ Fail |
+| B0.8 | Read the top of the panel | The badge reads **Qualifies**; **All defaults** has **0** yellow rows | ☐ Pass ☐ Fail |
+| B0.9 | Press **Save marked copies** (at the foot of the panel) | Your browser downloads nine files named `0_FLOOR_PLAN_marked.dxf` … `5_DETAILS_marked.dxf`, the names used from B1 on. The panel says **Downloaded: …**; the files you opened are unchanged | ☐ Pass ☐ Fail |
+
+**B0.4 · the ten layer meanings**
+
+| Heading in Layers | CAD layer | Pick | Where it is read from |
+|---|---|---|---|
+| PLAN sheets | `Col` | column | the 12"×12" column squares on the plans |
+| PLAN sheets | `Fo` | footing | the F-1 footing outlines on the foundation layout |
+| PLAN sheets | `Dim` | beam, **3_BEAM_LAYOUT only** (one sheet only) | the B-1 / B-2 beam lines of the beam layout (on the other plans the layer is left unread) |
+| PLAN sheets | `Rod` | doorswing | the door arcs of the floor plan (`Rod` is on the floor plan only, so its row has no arrow) |
+| ELEV sheets | `Wall` | panel | the brick-wall hatches of the gable ends |
+| ELEV sheets | `Rod` | fan | the exhaust fans drawn on the elevations |
+| ELEV sheets | `Dim` | net | the zigzag nets above the low bays |
+| ELEV sheets | `Win` | door | the meaning the supplied set carries; it changes no element count in this test |
+| ELEV sheets | `0` | column, **1S_ELEV_SOUTH only** (one sheet only) | the columns drawn on the south elevation |
+| SECTION sheets | `Fo` | bar | the truss members of section A-A |
+
+**B0.6 · the five level datums** (`0.6096` m = 24 in, the plinth level *PL*: on every elevation the PL line is drawn 24 in above the ground line)
+
+| Card | y where drawn |
+|---|---|
+| `1S_ELEV_SOUTH` | `-4446.6` |
+| `1N_ELEV_NORTH` | `-3895.2` |
+| `2_ELEV_WEST` | `-4515.7264` |
+| `7_ELEV_EAST` | `-3766.442` |
+| `8_SECTION_AA_TRUSS` | `-3726.416` |
+
+**B0.5 · where the body heights come from.** Footing F-1 is 12 in thick, its top 45 in below the finished ground (z −1.143 m to −1.4478 m). The beams run from 122 in to 132 in above the ground (3.0988 m to 3.3528 m), as the section's lines give them; the elevations draw the beam soffit at 120 in, a 2 in difference the drawings leave open and this test does not settle.
+
+*Proven (witness W-UAT-B0, 2026-11-15): these steps, done in the real Modeller on the nine sheets as drawn, reach **Qualifies**, save nine copies equal mark for mark to the supplied `…_marked.dxf` set, and B2b's **Convert** then reads the same `Converted: 511 elements (0 door/window fills), 2 openings cut.` The datum y values are typed, not picked with the **Pick** button; picking was not part of the proof.*
 
 ### B1 · Get to know the drawings: one sheet at a time
 
@@ -245,7 +374,7 @@ The schedule and the cost come from reference files the Viewer ships with. You e
 
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|
-| B3.1 | Note the Viewer’s total cost (Find panel: `total cost`) and the schedule’s finish date (**Time Machine**, key **T**) | Write both down: ________ / ________ | ☐ Pass ☐ Fail |
+| B3.1 | Note the Viewer’s total cost (Find panel: `total cost`; it is the cost of the 13 drawn bays, see the note at the top of chapter B) and the schedule’s finish date (**Time Machine**, key **T**) | With the shipped rates the total reads **USD 96,839 (RM 372,457) — total building cost** (the digits may be grouped differently in your browser's language). A higher figure, such as USD 97,979, means the B0.7 exclude box missed the expansion joint. Write the total and the finish date down: ________ / ________ | ☐ Pass ☐ Fail |
 | B3.2 | Make the rate edit and the lag edit above. Your copy is saved in this browser as you type | The form keeps your value; a list shown as JSON text must stay valid JSON | ☐ Pass ☐ Fail |
 | B3.3 | **Reload the Viewer tab**, so it reads your copies | The building opens again | ☐ Pass ☐ Fail |
 | B3.4 | Read the total cost again | It moved in the direction of your rate edit | ☐ Pass ☐ Fail |
@@ -265,11 +394,24 @@ Do this in the **Viewer**, on the Shed you opened in B2.9. (In the Modeller, **E
 | B4.3 | Press **› ERP** again | *Project Order: 0 lines*: nothing new is added, the order is keyed by the model's name (**SHED**) | ☐ Pass ☐ Fail |
 | B4.4 | Click **open ↗**. On the Kernel ERP sign-in page choose **GardenAdmin**, then **Log In** | The ERP opens on the project **SHED** (*BIM: SHED*) with its planned amount; its **Phase**, **Task** and **Project Line** tabs hold the rows from the model | ☐ Pass ☐ Fail |
 
+### B5 · Mark your run against the reference pack
+
+The **UAT Run Checker** compares what your run produced with the run this guide was proven on, stage by stage. It reads your files in your browser; nothing is uploaded. Keep the files from B0.9 and B2.8 and the two lines from B2.9 and B3.1 for this step.
+
+| # | Do | Confirm on screen | Result |
+|---|---|---|---|
+| B5.1 | Download the **reference pack** (link in *What you need*) and open the [UAT Run Checker](https://red1oon.github.io/bim-ootb/capex/uat/check.html). In box **1** choose the pack's `.zip` | Under box 1: *Pack intact: 19 files checked, built 2026-11-15 …*. A damaged or wrong file is refused, and **Mark my run** stays off | ☐ Pass ☐ Fail |
+| B5.2 | In box **2** select your nine `…_marked.dxf` from B0.9 (all at once); in box **3** your `SHED_extracted.db` from B2.8; in box **4** paste the Viewer's status line from B2.9; in box **5** the total-cost line from B3.1 (before your rate edit) | The boxes hold your files and lines | ☐ Pass ☐ Fail |
+| B5.3 | Press **Mark my run** | One row per stage: **B0.9** marked sheets, **B2.8** Viewer database, **B2.9** status line, **B3.1** total cost, each **PASS**, **FAIL** or **NOT GIVEN**, with the reason under it. Your run reads **PASS** when all four pass. A tester who skipped B00 and B0 has no marked files: B0.9 reads NOT GIVEN and the run **PARTIAL PASS** | ☐ Pass ☐ Fail |
+| B5.4 | Press **Download result (uat_result.json)** and attach the file to this sign-off | The file is saved | ☐ Pass ☐ Fail |
+
+*Proven (witness W-UAT-CHECK, 2026-11-15) on the pack as it is served: a run equal to the proven one marks PASS on all four rows; a run whose B0.7 exclude box was skipped marks FAIL on all four (515 elements, USD 97,979); an empty form marks INCONCLUSIVE; a pack with one file changed is refused.*
+
 **Notes (chapter B):** ______________________________________________
 
 ---
 
-## C · ERP: the hands-on exercise (GardenWorld Admin)
+## C · ERP: the hands-on exercise (Project Mgmt Accounting, as GardenWorld Admin)
 
 Use the 12 test projects. The table says, per project, what to make. The products are the **Construction** products of A3.6 (**not** GardenWorld's own); use any GardenWorld vendor, the *Purchase* price list and *HQ Warehouse*. Do not type a price: the order line takes it from the price list, which is the product's standard cost. On each document, set **Project** to the test project (the windows do not ask for a phase).
 
@@ -343,7 +485,7 @@ This is done in two parts, once per test project that has an issue in the table 
 
 ---
 
-## D · The dashboard
+## D · The dashboard (Project Mgmt Accounting; the read job: System Setup)
 
 The dashboard reads a file that a small read job writes from your iDempiere. Run the job first, and again whenever you want fresh figures (it needs Node.js; the full line with user, password, tenant and role is in the [Developer's note](CapexDashboardGuide.md#developers-note)):
 
@@ -382,9 +524,9 @@ It writes the file `capex/legacy_snapshot.json` inside your copy of the reposito
 
 ## Sign-off
 
-| Chapter | Tester | Date | Passed / total | Signature |
+| Chapter | Role / name | Date | Passed / total | Signature |
 |---|---|---|---|---|
-| A · Set up | | | / 17 | |
-| B · BIM | | | / 25 | |
-| C · ERP | | | / 10 | |
-| D · Dashboard | | | / 10 | |
+| A · Set up | System Setup: | | / 17 | |
+| B · BIM | BIM: | | / 43 (29 if you were given the marked copies and skipped B00 and B0) | |
+| C · ERP | Project Mgmt Accounting: | | / 10 | |
+| D · Dashboard | Project Mgmt Accounting: | | / 10 | |

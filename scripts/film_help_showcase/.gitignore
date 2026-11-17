@@ -1,0 +1,9 @@
+out/*
+!out/*.log
+!out/facts.json
+out_zh/*
+!out_zh/*.log
+!out_zh/facts.json
+out_de/*
+!out_de/*.log
+!out_de/facts.json

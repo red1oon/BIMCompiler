@@ -1,0 +1,17 @@
+§FILM_CUE beat=cover t=0.000 frames=96 typing=0 answer_hold_frames=96 x1
+§FILM_CUE beat=start t=4.000 frames=163 typing=28 answer_hold_frames=135 x1
+§FILM_CUE beat=help t=10.792 frames=169 typing=28 answer_hold_frames=141 x1
+§FILM_CUE beat=cd t=17.833 frames=204 typing=58 answer_hold_frames=146 x1
+§FILM_CUE beat=count t=26.333 frames=305 typing=30 answer_hold_frames=275 x1
+§FILM_CUE beat=clash t=39.042 frames=420 typing=66 answer_hold_frames=354 x1
+§FILM_CUE beat=ls t=56.542 frames=297 typing=38 answer_hold_frames=259 x1
+§FILM_CUE beat=menu t=68.917 frames=199 typing=50 answer_hold_frames=149 x1
+§FILM_CUE beat=pick t=77.208 frames=398 typing=98 answer_hold_frames=300 x1
+§FILM_CUE beat=element t=93.792 frames=249 typing=60 answer_hold_frames=189 x1
+§FILM_CUE beat=lsel t=104.167 frames=262 typing=64 answer_hold_frames=198 x1
+§FILM_CUE beat=group t=115.083 frames=304 typing=44 answer_hold_frames=260 x1
+§FILM_CUE beat=pwd t=127.750 frames=176 typing=26 answer_hold_frames=150 x1
+§FILM_CUE beat=exit t=135.083 frames=156 typing=28 answer_hold_frames=128 x1
+§FILM_CUE beat=end t=141.583 frames=216 typing=0 answer_hold_frames=216 x1
+§FILM_KEYS typed=108 returns=14
+§FILM_DONE dur=150.583 frames=3614 planned=3614

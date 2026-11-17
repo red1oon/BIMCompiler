@@ -1,0 +1,14 @@
+§DXF_HOVER_W H1 §DXF_HOVER_INDEX keys=28 root=/tmp/wt-dxf-hover out=/tmp/wt-dxf-hover/devtools/hover/trace_index.json parse_keys=28 same=Y
+PASS H1 the index = a fresh parse, one line per key
+§DXF_HOVER_W oracle cli_exit=0 traced=513 §DXF_TRACE elements=512 traced=512 untraced=0 keys=11
+  §DXF_HOVER_W H2 fid=22 key=dxf2bodies:body at=modeller/dxf2bodies.js:422 oracle=dxf2bodies:body link=vscode://file/tmp/wt-dxf-hover/modeller/dxf2bodies.js:422
+  §DXF_HOVER_W H2 fid=47 key=dxf2bodies:body at=modeller/dxf2bodies.js:422 oracle=dxf2bodies:body link=vscode://file/tmp/wt-dxf-hover/modeller/dxf2bodies.js:422
+  §DXF_HOVER_W H2 fid=73 key=dxf2bodies:body at=modeller/dxf2bodies.js:422 oracle=dxf2bodies:body link=vscode://file/tmp/wt-dxf-hover/modeller/dxf2bodies.js:422
+  §DXF_HOVER_W H2 fid=95 key=dxf2bodies:body at=modeller/dxf2bodies.js:422 oracle=dxf2bodies:body link=vscode://file/tmp/wt-dxf-hover/modeller/dxf2bodies.js:422
+  §DXF_HOVER_W H2 fid=100 key=dxf2bim_import:wall-line at=modeller/dxf2bim_import.js:716 oracle=dxf2bim_import:wall-line link=vscode://file/tmp/wt-dxf-hover/modeller/dxf2bim_import.js:716
+  §DXF_HOVER_W H2 fid=131 key=dxf2panels:net at=modeller/dxf2panels.js:178 oracle=dxf2panels:net link=vscode://file/tmp/wt-dxf-hover/modeller/dxf2panels.js:178
+§DXF_HOVER_W H2 hovered=15 keys={"dxf2bodies:body":4,"dxf2bim_import:wall-line":1,"dxf2panels:net":1,"dxf2panels:fan":1,"dxf2panels:panel":2,"dxf2section:member":3,"dxf2synth:column":1,"dxf2synth:roof":2} wrong=0 page_hover_lines=24 page_errors=0
+PASS H2 every hovered body shows its key = page map = Node CLI trace, its file:line = the index, and the V link  15 bodies, 8 keys
+§DXF_HOVER_W H3 red-control hovered=15 claimed_a_line=0
+PASS H3 red control: converted before the overlay -> every hovered body says convert again, 0 lines claimed
+§DXF_HOVER_W VERDICT PASS fail=0

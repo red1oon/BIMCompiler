@@ -6,6 +6,42 @@ A running log of shipped, user-visible changes across the Modeller, Viewer, ERP/
 module. Internal engineering work (kernel hardening, data-model migrations, CI fixes) isn't listed here —
 only things you'd actually notice using the app. See each app's guide for full how-to detail.
 
+## 2026-11-15
+
+*Catch-up for 3–15 November, read from the merged change log. Each item names the guide that covers it.*
+
+**Command line — the one door** ([Fast Script Guide](FastScriptGuide.md))
+- `ninja.exec` stages a whole Ninja workbook in one line; `ninja.rollback` undoes one staged bundle,
+  `ninja.export` writes a bundle back as a workbook, `ninja.workflow` shows the document columns of a staged table.
+- `mis.add_window` makes a window from a CSV, `mis.diff` compares a CSV with the table without changing it, and
+  `mis.list` / `mis.sum` / `mis.group` take `master=Table/record` for the rows of one parent. A window made at the
+  terminal used to show an empty grid in the browser; it now shows its rows.
+- `model.open`, `convert`, `addbay`, `undo` and `close` drive the Modeller from a line, and `--script FILE --dry`
+  runs a whole file on a throw-away copy first.
+- A tab on any window: a master outside the sheet is looked up in the dictionary, as legacy Ninja does, and a table
+  the dictionary already holds is reused.
+
+**ERP**
+- **Till & Kitchen**: selling now happens on a standalone uniCenta-style till and kitchen screen (the in-ERP POS pill was
+  removed on 2026-11-03); head office imports the sales and closes the branch day. See the **[Till & Kitchen User Guide](TillUserGuide.md)**,
+  and the table of every lens in the **[ERP guide](ERPUserGuide.md#other-views-of-the-same-log-the-lens-family)**.
+- **Attachments** on every window's tab; large files go to the shared browser file store.
+- **BIM Document** window, with **Open in Modeller / Viewer** from the record.
+- **Migrate from Odoo** (a form in the ERP, hardened for a real company's data, not the demo) and **Migrate from
+  Business Central (alpha)**. One guide covers every source: **[Migration User Guide](MigrationGuide.md)**.
+- Construction products at standard cost, and a payment now belongs to a project through its invoice, in the CAPEX
+  demonstrator (**[CAPEX guide](CapexDashboardGuide.md)**, **[UAT guide](CapexUATGuide.md)**; sample data, not official).
+
+**Modeller and Viewer**
+- **Keep** and **Accept all** now clear the assumptions the reading modules raised on a 2D drawing set.
+- **ERP ▸ Project Order** on a model made in the Modeller now says why it cannot price and names the Viewer route.
+- Both IFC routes land a file in **one local frame** with the offset recorded, and the IFC's own grid is kept.
+- Walked devices that only borrow a density are marked **provisional** and left out of totals and quantities.
+
+**For developers** ([Developer Guide](DeveloperGuide.md))
+- The VS Code helper (X0 Navigator): go to definition and hover for `APP.x`, the last value a tag logged, cost if
+  deployed, Find All References, a one-click cache bump, and an optional local read-only facts server for AI assistants.
+
 ## 2026-11-02
 
 **Modeller — 2D drawings to BIM**

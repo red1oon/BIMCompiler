@@ -1,0 +1,11 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT wrong cue=6.38 room=6.36 dur=5.47 -> DETAIL slack=+0.89 words=18
+§NARR_FIT hover cue=13.34 room=7.03 dur=6.11 -> DETAIL slack=+0.92 words=23
+§NARR_TONE hover#0 F WH rose=0st endDelta=-3.7st want=fall OK "What is that line in the test?"
+§NARR_FIT find cue=20.97 room=10.02 dur=9.13 -> DETAIL slack=+0.89 words=29
+§NARR_TONE find#0 F WH rose=0st endDelta=-1.8st want=fall OK "Where does the date come from?"
+§NARR_FIT fix cue=37.13 room=6.28 dur=5.38 -> DETAIL slack=+0.90 words=14
+§NARR_FIT proof cue=46.51 room=7.02 dur=6.14 -> DETAIL slack=+0.88 words=19
+§NARR_FIT close cue=54.13 room=7.49 dur=6.57 -> DETAIL slack=+0.92 words=23
