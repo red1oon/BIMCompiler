@@ -20,6 +20,8 @@ Owner, closing 2026-11-15: *"get it well documented in the prompts/# consolidate
 
 **0. ✅ DONE 2026-11-15 (fourth session): F-18 answered, the provenance hover built and merged — §F.23 (bim-ootb #3064 + tooltip-in-window fix #3069); FILM 3 built (`prompts/FILM_IMMERSIVE_SOFTWARE.md` FILM 3 STATUS, awaiting the owner's review); the default-key + truss findings handed to the DXF2BIM lane (bim-ootb `prompts/DXF2BIM_ARCHITECT_REVIEW.md` §D113, #3070). NEXT = the X0 "New witness for this file" command (§F.21 OPEN), or Part A's remaining A2 (item 2).** The text below is the original hand-over.
 
+**0r. 2026-11-17 (seventh session, CLOSE) — START HERE:** A3-CLOCK-2 is built and witnessed, **PR bim-ootb #3168 open, auto-merge off**: step 1 is the gate check of its last merged tree, then merge (A3-CLOCK-2 RESULT says exactly how). Also done this session: the real-VS-Code witness presses the Bump button (#3163, PASS with `--compiler-root` at a current bim-compiler; the default `~/bim-compiler` on another branch fails the unrelated tag-spec row). **Then W-CORE-PURE** (spec written; `forbidden=0` is already true: `calls=0`), which closes Part A; then B0. F-2 ceilings due 2026-11-30.
+
 **0q. 2026-11-17 (seventh session, end):** §F.34 the Bump button built (bim-ootb #3162, merged): press when the feature is done, background check, ✓ then press to write; the VS Code ERP bump works again. **NEXT: A3-CLOCK-2** (spec drafted; tell the live sessions before merging, it makes `ad_callout.js` hosts install an edge), **then W-CORE-PURE** (closes Part A), then B0.
 
 **0p. 2026-11-17 (seventh session, last):** §F.33 (the changed file's own witnesses, F-23 + F-23b 10-min budget) built and measured; **F-24 decided: the Bump button (§F.34)**, which also fixes the VS Code bump that has failed on every ERP file since F-16 (60 s `spawnSync`). NEXT: merge §F.33, build §F.34, then A3-CLOCK-2, then W-CORE-PURE.
@@ -682,6 +684,24 @@ measured on `main` @ `249fb934`:** pages `erp/idempiere.html` (has it, `:708`), 
 **Method:** run every Node witness that requires `ad_callout.js` before/after; any new `§ENV_NO_DATE` is a host that must install the edge (one shared
 Node helper, not 57 copies). **Witness:** W-PROC-SYSDATE gains S4 (`getdate()` under a fake `CoreEdge` = the fake's local stamp) and S5 (`generate_uuid()`
 under the fake = its ms prefix, random part from its uuid); red control = main.
+
+**A3-CLOCK-2 RESULT (2026-11-17, seventh session): BUILT + WITNESSED, PR bim-ootb #3168 OPEN (Fixes #3167), auto-merge OFF on purpose — the next session finishes it.**
+- Change: `RUNTIME.now` and `generate_uuid()` read the edge; new pure `Env.hasEdge()` (the ONE holder is `window.CoreEdge` when a window exists, else
+  `globalThis.CoreEdge`: a Node script that defines `global.window` puts it on that object — the first host checks used `globalThis.CoreEdge` and
+  missed it; W-PROC-SYSDATE S4/S5 caught it). Hosts install it: `erp/ws_kernel.js`, `capex/index.html`, `erp/tests/dd_common.js`, `witness_fn_parity`,
+  `witness_docno_till`. `§CLOCK_PROBE files=125 with_calls=0 calls=0` (was 6). The viewer does NOT load `ad_callout.js` (its mention is a comment).
+- Measured with the §F.33 gate (all 51): first `new_fail=[witness_fn_parity,witness_docno_till,witness_pa_ctx]` (each `Env.edge: no edge installed`),
+  after the installs `new_fail=[]`; bridge `new=[] known=[M3:HARNESS-FAIL]`. W-PROC-SYSDATE 6/0 (S4 `getdate()` under a fake edge `2026-11-20 10:15:00`,
+  S5 uuid = edge ms + edge id hex); red main 2 FAIL (`2026-11-13 00:30:55`). Headless: capex + ERP `hasEdge=true`, local time, 0 no-edge lines.
+  W-ERP-ASK 11/0 both sides (help lane asked) · W-X0-APPDEF PASS. Live lanes asked first; CLI lane overlap agreed (keep both, higher `?v=`).
+- **Two merges of a moving main:** after the first, re-check of the merged tree PASS (bridge new=[], 47/51 + 4 unrun by budget, new_fail=[]),
+  re-bump `ad_callout.js` 10 → 11, sw v1096 → v1097 (main's own `?v=10` held other content). Main then reached v1097 itself; the second merge
+  (`origin/main` @ `d68e0f71`, CLI legacy-indexes + door containers + modeller help) was resolved by hand: pages keep `?v=11` / sqlfn `?v=3` + the
+  edge block, **sw `v1098`**. **That last merged tree has NOT been through the gates.**
+- **NEXT SESSION, step 1:** in a worktree of `fix/a3-clock-2` run `BUMP_PARITY_BRIDGE=<bim-compiler origin/master worktree>/scripts/bridge/run_all.sh
+  node scripts/bump.js erp/ad_callout.js --check` (~16 min; link the 39 `build/erp/*.db` into a fresh bridge worktree, §8 trap). PASS → re-run
+  W-PROC-SYSDATE, `gh pr merge 3168 --auto --squash`, wait MERGED, re-run it on `main`. If main moved again: merge it, and if its `sw.js` or
+  `ad_callout.js ?v=` caught up, bump again (`bump.js --changed --write` after a `--check`). A new failure → fix, never `--no-parity`.
 
 **A3 W-CORE-PURE SPEC (2026-11-17; decisions A-1 + A-4 + A-7; lands AFTER A3-CLOCK-2, whose fix is what makes `forbidden=0` true).**
 File `erp/tests/witness_core_pure.js` (bim-ootb), node only, espree AST from bim-ootb's own `node_modules` (a port of bim-compiler `scripts/code_arch/clock_probe.js`:
