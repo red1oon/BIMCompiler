@@ -628,7 +628,7 @@ first. C is long and best done slowly, module by module, after B/D make ownershi
 | Part | Starts with no decision | Next decision to ask | Why that one |
 |---|---|---|---|
 | A | ✅ done 2026-11-17 (W-CORE-PURE in CI) | none | — |
-| B | B0 ✅ 2026-11-17; B-1, B-2, B-5 ✅ 2026-11-18. B1 (modeller) can be specced and built now | B-3 owner + witnesses in the manifest | it decides which fields B1's manifest carries |
+| B | B0 ✅ 2026-11-17; B-1, B-2, B-5 ✅ 2026-11-18. B1 (modeller) can be specced now; built after B-3 | B-3 owner + witnesses in the manifest | it decides which fields B1's manifest carries |
 | C | nothing; waits on B and D | C-1 part names + owners | |
 | D | nothing new; the multi-publisher list already exists (`types/globals.gen.d.ts`) | D-1 where the questions list lives | needs B's `owner` field |
 | E | `witness_kit/paths.js` (no behaviour change; witness: the same suite verdicts before and after) | E-1 the `PROVES:` header format | |
