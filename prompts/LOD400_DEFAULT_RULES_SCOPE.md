@@ -93,3 +93,60 @@ Steel grade (PJAM: not stated), concrete cover on PJAM until ACI 318-19 is read,
 - COST: added vertices and estimated heap (PERF BUDGET).
 - DETERMINISM: two builds give the same SHA-256.
 - Break switch `SHEDRB_BREAK=1` drops the cover offset: INSIDE must FAIL.
+
+### §6 RESULT 2026-11-18 (BUILD 1 run on the Shed export; `scripts/lod/rebar_from_schedule.py` + `scripts/lod/rebar_defaults.json`)
+**Verdict: every `§SHEDRB_*` witness PASSES on run 1; run 2 is byte-identical (DETERMINISM PASS); the break switch makes INSIDE FAIL as required.** Three places where the spec as written could not be followed to the letter are listed under "Deviations" (the first one matters). Private outputs (DB, change list, logs) stay under the local project folder, never in git.
+
+**Run 1 log, verbatim (`§` lines):**
+```
+§SHEDRB_MODE break=0 cover_footing_rule_mm=75 cover_column_rule_mm=40 placement_cover_footing_mm=75 placement_cover_column_mm=40
+§SHEDRB_INPUT footings_with_schedule=32 column_pieces_with_schedule=96 boxes_ok=128 refused=0
+§SHEDRB_FOOTING sets_added=64 footings=32 bars=512
+§SHEDRB_COLGROUP drawn_columns=32 pieces_per_column={3: 32} -> PASS
+§SHEDRB_ZONE columns=32 governs={'L/6': 32} (stated 20in=0.5080 m; L/6 per column logged in the change list) sample_L=4.2418 L/6=0.7070
+§SHEDRB_ASSUMED tie_hooks=no cross_ties=no laps=no stock_checked_bars=96
+§SHEDRB_BEAMS beams=35 without_schedule_row=35 not_built=35 details_sheet_rebar_texts=21 -> PASS
+§SHEDRB_WELD_SCAN members=168 plates=117 end_contacts=225 mid_span_contacts_not_welded=139 touch_only=0 members_without_end_contact=49
+§SHEDRB_WELD_BUILT welds=221 skipped=4
+§SHEDRB_IDENT source_tables=19 tables_identical=True src_elements=513 out_elements=990 added=477 -> PASS
+§SHEDRB_STATED elements_with_schedule=128 sets_checked=256 diameter_spacing_mismatches=0 missing_expected_sets=0 -> PASS
+§SHEDRB_STATED_TIE_SPACING columns=32 violations=0 max_B_gap_mm=240.150 (stated B spacing 254.000) -> PASS
+§SHEDRB_SIZE_CHECK stated sizes vs mesh boxes: elements=96 max_dev_mm=0.0519 -> PASS
+§SHEDRB_INSIDE sets=256 vertices=208896 violating_vertices=0 min_margin_mm=40.000 (worst set GEN-RB-0R0XHocG_1t$2Oh7AAAAHT-MAIN) required>=cover-1mm (footing 75, column 40) -> PASS
+§SHEDRB_COUNTS footing_sets=64 count_mismatches=0 formula floor((side-2*cover-d)/spacing)+1 (the spec formula without the -d term would give {'(7, 8)': 32, '(9, 10)': 32} as (placed, spec-literal)) -> PASS
+§SHEDRB_WELDS welds=221 end_contacts_by_clip=225 end_contacts_by_independent_end_cap_test=225 only_in_welds=0 only_in_recount=0 size_mismatches=0 table_row_for_6.35mm=5mm skipped=4 -> PASS
+§SHEDRB_COST added_elements=477 added_vertices=219504 source_vertices=33168 added_pct=661.79 est_heap_added_MB=37.32 (0.17 GB per M vertices) of_which_rebar=256 welds=221 -> PASS
+§SHEDRB_LOG txt_data_lines=704 table_rows=704 -> PASS
+§SHEDRB_WRITTEN db_sha256=53a3de9a4df69175 txt_sha256=2cb48b302c74eaba db_sha256_full=53a3de9a4df6917540e1f4076495599fa64a8e3ca40c2a05e435d0aeec9efef9 txt_sha256_full=2cb48b302c74eabab12536958680dcaf4d3dbddf67b84f637e7c223004341d5d
+§SHEDRB_DETERMINISM single build; pass --expect-db-sha / --expect-txt-sha from an earlier run -> INCONCLUSIVE
+§SHEDRB_SUMMARY failed_witnesses=none added=477 not_built=223 refused=4
+```
+**Run 2 (same inputs, `--expect-db-sha`/`--expect-txt-sha` from run 1):**
+```
+§SHEDRB_WRITTEN db_sha256=53a3de9a4df69175 txt_sha256=2cb48b302c74eaba
+§SHEDRB_DETERMINISM this_db=53a3de9a4df69175 expected_db=53a3de9a4df69175 this_txt=2cb48b302c74eaba expected_txt=2cb48b302c74eaba -> PASS
+```
+**Break run (`SHEDRB_BREAK=1`, placement cover dropped, witnesses still judge against the rule rows):**
+```
+§SHEDRB_INSIDE sets=256 vertices=215040 violating_vertices=215040 min_margin_mm=-0.000 (worst set GEN-RB-007izrUd4u9uIpn7AAAABL-L) required>=cover-1mm (footing 75, column 40) -> FAIL
+§SHEDRB_COUNTS footing_sets=64 count_mismatches=64 formula floor((side-2*cover-d)/spacing)+1 (the spec formula without the -d term would give {'(8, 8)': 20, '(8, 9)': 12, '(10, 10)': 14, '(10, 11)': 18} as (placed, spec-literal)) first=('007izrUd4u9uIpn7AAAABL', 'L', 8, 7) -> FAIL
+§SHEDRB_BREAK_CHECK switch=on expected INSIDE=FAIL got INSIDE=FAIL -> PASS
+§SHEDRB_SUMMARY failed_witnesses=INSIDE,COUNTS added=477 not_built=223 refused=4
+```
+
+**What was built (numbers from the log and the change list, 704 rows):**
+- 128 schedule-bearing elements (32 IfcFooting + 96 IfcColumn pieces) -> 256 IfcReinforcingBar sets: 64 footing sets (224 L bars + 288 S bars), 32 column main sets (192 bars), 64 tie-(A) sets (384 loops) and 96 tie-(B) sets (352 loops). All 96 column pieces group into 32 drawn columns of exactly 3 pieces by plan position (`§SHEDRB_COLGROUP`). Stated sizes vs mesh boxes: max deviation 0.052 mm (`§SHEDRB_SIZE_CHECK`, extra witness).
+- Tie (A) zone: `max(stated 20 in = 508 mm, L/6)`; **L/6 governed on all 32 columns** (L = 4.2418 m, L/6 = 707 mm). Zone rule row stays `default: ours`; the 20" is `stated: 5_DETAILS_marked.dxf#25B/#263`.
+- Welds: AISC 360-16 Table J2.4 row for 6.35 mm = 5 mm (all 221 measured, 0 size mismatches). 225 member-end/gusset contacts found by clipping the member mesh to the plate's oriented box; an independent recount (SAT of each member's end-cap triangles against the plate box) finds the same 225 pairs.
+- Not built (all in `upgrade_changes`, 223 NOT_BUILT + 4 REFUSED): 35 IfcBeam without a schedule row (change-list rows carry the 21 rebar-like texts of the details sheet by drawing handle; the DB cannot attribute them to a beam, scope item 1b); 49 truss members with no end touching a plate; 139 mid-span contacts; 4 refused welds.
+- Cost: +219,504 vertices on 33,168 source vertices (+662 %), est. +37.3 MB heap at 0.17 GB per M vertices. Bars are 96 vertices each (8-sided prism, capped); tie loops 192. A viewer that wants this at scale needs a shared-geometry or LOD route for bars (PERF BUDGET).
+
+**Deviations from §6 as written, and what the spec did not anticipate:**
+1. **Footing bar count formula.** `floor((side - 2*cover)/spacing) + 1` treats cover as distance to the bar *centre*; INSIDE demands `>= cover - 1 mm` to the bar *surface*. Both cannot hold: the literal formula gives 8 L bars / 10 S bars, but the 8th bar's surface would be 4.8 mm inside the cover line. Implemented `floor((side - 2*cover - d)/spacing) + 1` = 7 L / 9 S (bars centred in the cover-bounded span), logged as `(placed, spec-literal)` in `§SHEDRB_COUNTS` and per set in the change list. **Needs the owner's call**: keep clear-cover-to-surface (current), or define cover to the bar centre and relax INSIDE.
+2. **Main bars are one element per drawn column** (3 pieces), with `element_parts` rows from each of the 3 pieces to it; the spec's "per host x set" cannot split a continuous bar at piece joints. They sit at cover + tie + d/2 from the faces of the *smallest* piece (12"), so the 14" piece has more cover. Bottom end = top of the footing's two-layer mesh (`footing mesh top` read as the mesh, not the concrete top, so the bars land on the mesh); top end = column top minus cover (needed to satisfy INSIDE; the spec only says "to the column top").
+3. **Two layout rows added to the defaults file, not in the spec's default list:** `footing_bottom_layer` = L bars lowest, and `column_bar_face_normal_axis` = the 3 + 3 main bars sit on the two faces normal to x. Neither is drawn. Also rows `bar_sides`, `stock_length_mm` (12 m), `weld_contact_end_tol_mm` (1 mm), `inside_tol_mm` (1 mm). Of 15 rule rows, 14 are defaults, 1 is stated.
+4. **Tie placement choices:** ties start at cover + d/2 above the column bottom and end the same below the top; (A) ties at the stated spacing from each end through the zone; (B) ties evenly spaced between the two zones with spacing <= stated (max 240.2 mm vs 254 mm), not at exactly 254 mm. Ties are assigned to the piece that contains their centre (half-open), one (A) and one (B) element per piece when non-empty.
+5. **Weld contact definition.** Spec text says "member end"; its witness says "member-gusset contacts". Implemented the strict end reading (overlap interval reaches within 1 mm of a member end): this leaves **all 26 chords (2 - 2"x2"x1/4") with no weld at all** (their 91 contacts are mid-span, at gussets along the chord) plus 26 + 22 mid-span contacts on webs and the long 'Section run' members. The 4 refused welds are 'Section run' ends lying *against* a plate face (axis perpendicular to the plate; no bead rule in the spec). **Needs the owner's call**: weld mid-span contacts too (139 more welds)?
+6. Beads: two triangular beads per weld element, both on the plate's +normal face, at the two outer edges where the member meets the plate (leg = table size, length = overlap length). Weld/member clash is not checked (not in the spec).
+7. Witness additions beyond the spec's list: `STATED_TIE_SPACING` (loop gaps measured from the stored geometry) and `SIZE_CHECK`. DETERMINISM is judged by `--expect-*-sha` on the second run (run 1 prints INCONCLUSIVE by design, nothing to compare). The break run also fails COUNTS (64 sets) as a side effect of dropping the cover; that is expected, INSIDE is the required one.
+8. `element_world_bbox` rows are added for new elements; the source has no `elements_rtree`, so none is created. `element_transforms` has 10 columns here (no tag column as in the PJAM DB).
