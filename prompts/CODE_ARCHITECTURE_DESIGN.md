@@ -20,7 +20,9 @@ Owner, closing 2026-11-15: *"get it well documented in the prompts/# consolidate
 
 **0. ✅ DONE 2026-11-15 (fourth session): F-18 answered, the provenance hover built and merged — §F.23 (bim-ootb #3064 + tooltip-in-window fix #3069); FILM 3 built (`prompts/FILM_IMMERSIVE_SOFTWARE.md` FILM 3 STATUS, awaiting the owner's review); the default-key + truss findings handed to the DXF2BIM lane (bim-ootb `prompts/DXF2BIM_ARCHITECT_REVIEW.md` §D113, #3070). NEXT = the X0 "New witness for this file" command (§F.21 OPEN), or Part A's remaining A2 (item 2).** The text below is the original hand-over.
 
-**0s. 2026-11-17 (eighth session) — START HERE: PART A IS DONE.** (1) bim-ootb #3168 (A3-CLOCK-2) was already MERGED when this session opened: the github-actions bot turned auto-merge on and merged it 4 minutes after the last push (`2989f8f5`, 00:13Z), before the gate check 0r asked for. The check was run after the fact on `main` @ `b732d923` and PASSES (A3-CLOCK-2 POST-MERGE CHECK). **Lesson: "auto-merge off" does not hold in bim-ootb, the bot re-enables it; to hold a PR back, open it as a DRAFT.** (2) **W-CORE-PURE built and merged (bim-ootb #3180 / PR #3181, `7c26856d`), and it runs in CI fast-checks**: `§CORE_PURE files=125 parse_fail=0 forbidden=0 red_control=detected verdict=PASS` (A3 W-CORE-PURE RESULT). **NEXT: Part B, B0** (the manifest generator in check mode, no decision needed, no file changes; write its build spec first), then ask B-1. Also unblocked, small: the core-purity squiggle in X0 (Part F table row; reuse `witness_core_pure.js`'s scan, do not write a second scanner). F-2 ceilings due 2026-11-30. Owner, this session: *"if u hit a code design or spec problem use a well scoped Fable agent to resolve"* (workers otherwise stay on Sonnet).
+**0t. 2026-11-17 (eighth session, later) — START HERE: B0 IS BUILT (bim-ootb #3200), Part B now waits on the owner.** `§MANIFEST_ROUNDTRIP apps=3 files=54 sites=788 … identical=54/54 driven=715/715 sw_vm=3/3 claims=7/7 red=5/5 order_check=NOT-JUDGED verdict=PASS`, and it runs in CI fast-checks (Part B, B0 BUILD SPEC + B0 RESULT). The design problem it hit (27 files with different `?v=` in different referrers, no declared dependencies) went to one scoped Fable agent, as the owner said. **NEXT, in order:** (1) **ask B-1** (one message, with B0's counts: unify numbers = 17 sites change inside the apps, content hashes = all 715 once), then B-2, B-5 (new: who declares deps), B-3, B-4; (2) no decision needed: the core-purity squiggle in X0 (the bump defect C7 found, bim-ootb #3201, where the Bump button stopped when a loader and a lazy module it lists changed together, is FIXED: #3204); (3) E's `witness_kit/paths.js` (§READY). F-2 ceilings due 2026-11-30.
+
+**0s. 2026-11-17 (eighth session): PART A IS DONE.** (1) bim-ootb #3168 (A3-CLOCK-2) was already MERGED when this session opened: the github-actions bot turned auto-merge on and merged it 4 minutes after the last push (`2989f8f5`, 00:13Z), before the gate check 0r asked for. The check was run after the fact on `main` @ `b732d923` and PASSES (A3-CLOCK-2 POST-MERGE CHECK). **Lesson: "auto-merge off" does not hold in bim-ootb, the bot re-enables it; to hold a PR back, open it as a DRAFT.** (2) **W-CORE-PURE built and merged (bim-ootb #3180 / PR #3181, `7c26856d`), and it runs in CI fast-checks**: `§CORE_PURE files=125 parse_fail=0 forbidden=0 red_control=detected verdict=PASS` (A3 W-CORE-PURE RESULT). **NEXT: Part B, B0** (the manifest generator in check mode, no decision needed, no file changes; write its build spec first), then ask B-1. Also unblocked, small: the core-purity squiggle in X0 (Part F table row; reuse `witness_core_pure.js`'s scan, do not write a second scanner). F-2 ceilings due 2026-11-30. Owner, this session: *"if u hit a code design or spec problem use a well scoped Fable agent to resolve"* (workers otherwise stay on Sonnet).
 
 **0r. 2026-11-17 (seventh session, CLOSE):** A3-CLOCK-2 is built and witnessed, **PR bim-ootb #3168 open, auto-merge off**: step 1 is the gate check of its last merged tree, then merge (A3-CLOCK-2 RESULT says exactly how). Also done this session: the real-VS-Code witness presses the Bump button (#3163, PASS with `--compiler-root` at a current bim-compiler; the default `~/bim-compiler` on another branch fails the unrelated tag-spec row). **Then W-CORE-PURE** (spec written; `forbidden=0` is already true: `calls=0`), which closes Part A; then B0. F-2 ceilings due 2026-11-30.
 
@@ -79,7 +81,7 @@ Owner, closing 2026-11-15: *"get it well documented in the prompts/# consolidate
 | Part | State | Next step |
 |---|---|---|
 | A | ✅ DONE 2026-11-17: A0, A-1..A-7, A1, A2, A3 (W-CORE-PURE PASS, `forbidden=0`, in CI) | none; the door stamp is the CLI lane's (0c) |
-| B | not started | B0 needs no decision (§READY), then ask B-1 |
+| B | **B0 ✅ 2026-11-17** (#3200, W-MANIFEST-ROUNDTRIP in CI) | ask B-1, then B-2, B-5, B-3, B-4; B1 waits on B-1 |
 | C, D | not started; wait on B | — |
 | E | not started | `witness_kit/paths.js` needs no decision (§READY), then ask E-1 |
 | F | §F index rows + §F.21 (BIM trace + hover) + §F.22 (ERP hover) + F-16 gate built | **the BIM layered hover (0)**, then the X0 "New witness for this file" command (§F.21 OPEN; a skeleton pre-filled from facts the index has, population + red control left empty so it FAILs until a person fills them) |
@@ -797,6 +799,87 @@ refuses) · `audit_sw_precache.js` · page boot witnesses unchanged.
 **Done when:** all three apps generated from their manifests, round-trip identical, `bump.js` retired or reduced to "edit `v`", and the Pages
 deploy workflow still green on the first merge after each switch (fetch `erp/version.json`, §F.2 Fetch back).
 **DECISIONS:** *(none yet)*
+
+**B0 BUILD SPEC (2026-11-17, eighth session; bim-ootb #3195; no owner decision).** Owner, this session: *"if u hit a code design or spec problem use a well
+scoped Fable agent to resolve"* → the measuring and the design below came from one such agent (read-only), then checked here. Measured on bim-ootb `main` @ `695d16fe`:
+- **Tags** (a tag reader, comments and inline bodies skipped): viewer.html 252 (249 with `?v=`), idempiere.html 226 (224), modeller.html 62 (59). `grep -c` counts LINES
+  (250/212/61, the numbers P2 quotes). Two shapes only: `<script src="X"></script>`, and the same with one `onerror="…"`. The tags are not one block: the first-to-last
+  span holds 27/70/32 comments and 6/7/4 inline scripts. A raw regex also hits a `document.write('<script src=…` inside an inline script (idempiere.html:847, modeller.html:360).
+- **Versions `bump.js` cannot see:** inline page scripts hold whole `'file?v=N'` literals (at least 1 viewer, 17 erp, 7 modeller).
+- **Service workers:** `PRECACHE_ASSETS` 272 / 405 / 159 entries, all plain string literals, no `?v=`; modeller has 1 duplicate; one `CACHE_VERSION` each. Running each
+  `sw.js` in a Node `vm` with stubs returns the same list a parser extracts. erp precaches 29 `plugins/*.mjs` of 36 tracked. Only the viewer has a precache audit.
+- **Versions disagree:** 582 files are referenced with `?v=`, 81 from more than one place, **27 with different numbers in different referrers (11 inside one app, 16 only
+  across apps)**; 34 sites sit below their file's highest number. So "one `v` per module" cannot reproduce today's bytes. 11 referenced targets do not exist, all from referrers outside the three apps.
+- **Nothing records a dependency today.** Load order is tag order.
+
+**Decisions taken inside B0 (each with the alternative rejected):**
+| # | Decision | Rejected |
+|---|---|---|
+| D1 | An **app** = a folder with a tracked `sw.js` named in Part B (`viewer/`, `erp/`, `modeller/`); its pages are every tracked `.html` under it; its loaders the `.js` under it that hold a whole `'file?v=N'` literal. Everything else is counted as outside, never owned | only the three main pages (hides the 11 same-app disagreements; `bump.js` could never retire) |
+| D2 | A module is keyed by repo-relative file and listed in every app that references it | one global manifest |
+| D3 | The unit is the **site** (one reference in one referrer). A module's `v` is set only when all the app's sites agree, else `null` and each site keeps its own. Any B-1 answer turns every `null` into a value | "take the highest" (a decision, and not byte-identical) |
+| D4 | The generator owns **whole sites** (the whole tag with its `onerror`, the whole string literal, the whole `CACHE_VERSION` literal) and writes each from manifest fields by one fixed template per kind. The rest of the file is the frame. No markers in B0 | digits only (a tautology); whole blocks (impossible today, see the span fact) |
+| D5 | `deps` is `[]` everywhere, `"depsDeclared": false`; the order check prints `order_check=NOT-JUDGED`, never PASS | deriving deps from "reads a global another file publishes" (precision unmeasured; a false edge would later refuse a legal reorder) |
+| D6 | The manifest stays in memory; `--out <file>` writes it outside the tree on request; no `--write` in B0 | a committed manifest nothing reads yet (P2 again) |
+| D7 | `bump.js` and the audits are not touched: their parsers are the independent second readers. The new readers live once in `scripts/lib/page_refs.js`; bump and the audits move onto it in the B-step that makes the manifest the source | refactoring bump now |
+| D8 | Plugin `.mjs` precache entries are counted, never interpreted (B-4 is open) | reading each plugin's `manifest` export |
+
+**Manifest (in memory, ajv-checked):** `{ app, sw, cacheVersion, depsDeclared:false, pages[], modules[], precacheOrder[] }`; a module is
+`{ file, deps:[], load:"boot"|"lazy", lazyGroup, precache, v, sites[] }`; a site is `{ in, at, kind:"tag"|"asset"|"inline"|"lazy", as, v, onerror?, q? }`
+(`at` = its place in the file `in`; `load` is `boot` when any site is a `tag`; `lazyGroup` in B0 is the loader file; `precache` = the file is in that app's `PRECACHE_ASSETS`).
+**Readers (`scripts/lib/page_refs.js`):** HTML by a small state machine (comments skipped whole, `script`/`style`/`textarea`/`title` bodies raw to the closing tag, quoted
+attributes, byte ranges); inline script bodies, loaders and `sw.js` by espree only; a site is a string literal whose WHOLE value is `path.(js|css|json|wasm|mjs)?v=digits`;
+any other `?v=` literal is counted as partial, never owned. **Generator (`scripts/gen_manifest.js --check`):** regenerate = frame + each site rendered from the manifest
+after a JSON round trip; exit 1 on a file that differs from the committed bytes (file, line, the canonical spelling), a non-literal `PRECACHE_ASSETS` element, a schema
+failure, or two runs giving different manifest bytes.
+**Witness W-MANIFEST-ROUNDTRIP (`scripts/tests/witness_manifest_roundtrip.js`):** population = every owned file of the three apps by `git ls-files`; denominator = sites per kind per app. Claims, each with its own source:
+C1 every script tag is a site (raw `<script[^>]+src=` count on the page minus on the frame; the hits left must lie in inline bodies; bump's PAGE_REF hits) ·
+C2 the precache list and `CACHE_VERSION` (the `vm` run of the committed `sw.js`) · C3 loader sites (bump's JS_REF hits against the parser's literals) ·
+C4 the frame holds no module data (frame re-read: 0 sites) · C5 the manifest drives the output (for EVERY versioned site: +1 in the manifest, regenerate, the bytes differ in that site's range only) ·
+C6 the viewer counts equal `tests/audit_sw_precache.js`'s own summary · C7 the sites equal what a `bump.js` dry run of every target prints.
+**Red controls, same run, each must FAIL:** R1 swap the places of two adjacent tags in the manifest · R2 drop one precache entry · R3 change `CACHE_VERSION` ·
+R4 reader fixtures on a copy of the real modeller.html (a tag in a comment and in an inline string adds 0 sites, a planted real tag adds 1, a non-canonical tag is refused) ·
+R5 the order checker on a synthetic edge between two adjacent real modules, then swapped (`synthetic=Y`: it proves the refusal code, not any dependency).
+**The lane's red control "swap two dependent modules" becomes real only when deps are declared** (new decision **B-5**, to ask after B-1: who declares `deps`? advice: a tool-derived candidate list, confirmed by hand per app in B1 to B3).
+**INCONCLUSIVE** when any app has 0 sites, any parse fails, any red control does not fail, the `vm` run throws, the bump dry run or the audit prints no summary, or C5 judged 0 sites.
+`§MANIFEST_ROUNDTRIP apps=3 files= sites= tag= asset= inline= lazy= precache= identical=N/N driven=N/N sw_vm=3/3 red=5/5 order_check=NOT-JUDGED verdict=`.
+**Findings printed, never a failure (they feed B-1, B-2, B-4):** `§MANIFEST_VERSIONS` (disagreements, sites below max) · `§MANIFEST_UNVERSIONED` · `§MANIFEST_INLINE_SITES` ·
+`§MANIFEST_MISSING` · `§MANIFEST_LAZY_PRECACHE` (lazy+precached, boot not precached, duplicates) · `§MANIFEST_PLUGINS` · `§MANIFEST_OUTSIDE`.
+**Not in B0:** any write to a page, loader or `sw.js`; markers; a committed manifest; dependency data; owner/witness fields (B-3); plugin reading (B-4); unifying versions or hashes (B-1);
+a lazy+precache rule (B-2); pages outside the three apps, `oplogpic/`, importmaps, `_GANTT_CACHE_VERSION`. **CI:** one fast-checks step, beside W-CORE-PURE.
+**Issue proved:** "the module lists kept by hand in pages, lazy lists and service workers cannot be rebuilt from one manifest per app without losing or changing a byte".
+
+**B0 RESULT (2026-11-17, eighth session): ✅ DONE (witness), bim-ootb #3195 / PR #3200, merged `7ee6a108`.** +568 lines, 0 removed; no page, loader, `sw.js` or `bump.js` changed. Logs read:
+- Full run on `main` @ `695d16fe`: `§MANIFEST_ROUNDTRIP apps=3 files=54 sites=788 tag=667 asset=0 inline=42 lazy=79 precache=836 identical=54/54 driven=715/715
+  sw_vm=3/3 claims=7/7 red=5/5 order_check=NOT-JUDGED verdict=PASS` (`§WITNESS_MANIFEST_ROUNDTRIP pass=5 fail=0 ran=54`). CI (`--skip-c7`): `claims=6/6 c7=NOT-RUN … verdict=PASS`. Re-run on merged `main` @ `7ee6a108` (which had moved): `sites=790 … identical=54/54 driven=717/717 … verdict=PASS`.
+- Claims: C1 raw tag hits 669, 2 left in frames (the two inline `document.write` texts), tag sites 667 · C2 `vm` run of each `sw.js` same list, order and version 3/3 ·
+  C3 JS_REF hits 79 = lazy sites 79 · C4 every frame re-read holds 0 sites · C5 driven 715/715 · C6 audit 272 / 247 / 214 = manifest 272 / 247 / 214 ·
+  C7 bump dry run: 666 lines in owned files = 666 manifest sites, 0 missing, 0 extra.
+- Red controls R1 to R5 all detected (`§MANIFEST_RED`). **Red on real files** (edit, run, revert): two spaces before `src` → `§MANIFEST_FAIL modeller/modeller.html:224
+  differs from what the manifest writes …` `identical=53/54 verdict=FAIL`; a non-literal precache entry → `§MANIFEST_FAIL modeller/sw.js: 1 PRECACHE_ASSETS element(s) are not plain string literals`.
+- Per app (`§MANIFEST_APP`): viewer 5 pages, 15 loaders, 302 modules (261 boot, 41 lazy), 337 sites, precache 272 · erp 13 / 5 / 283 (260, 23) / 352 / 405 ·
+  modeller 2 / 11 / 94 (63, 31) / 99 / 159.
+- **Findings for the open decisions (printed on every run, never a failure):**
+  - **B-1** `§MANIFEST_VERSIONS`: inside an app, viewer 3 modules disagree (3 sites below the highest), erp 10 (14 sites), modeller 0. So unifying numbers inside the apps
+    would change 17 sites; content hashes change all 715 versioned sites once.
+  - **B-1** `§MANIFEST_INLINE_SITES`: 42 versioned literals sit in inline page scripts (viewer 2, erp 23, modeller 17), which `bump.js` cannot see; tags with no `?v=`: 13 / 56 / 4.
+  - **B-2** `§MANIFEST_LAZY_PRECACHE`: lazy AND precached viewer 15, erp 22, modeller 21 · lazy, not precached 26 / 1 / 10 · boot but NOT precached 43 / 13 / 7 ·
+    precached but referenced by no site 39 / 136 / 81 · duplicate entries 0 / 0 / 1. Part B's "viewer lazy = not precached (today's rule)" does not match the files: 15 viewer modules that no page loads by a tag are precached (not looked at one by one here).
+  - **B-4** `§MANIFEST_PLUGINS precached_mjs=29 on_disk=36`.
+- **A defect in today's bump, found by C7 (bim-ootb #3201; ✅ FIXED the same session, PR #3204, merged `c5bdc601`, see below):** `node scripts/bump.js viewer/main.js viewer/nf_room.js` → `§BUMP_ERR
+  not_loaded_by_any_page_or_loader=viewer/nf_room.js written=0`, although `viewer/main.js:240` lists it. `bump.js` skips a WHOLE loader in the round where the loader is
+  itself a target, so the Bump button stops (exit 2, nothing written) when a PR changes a loader and a lazy module it lists. Fix: skip only the literal that points at the loader itself; W-BUMP gains the case.
+- **#3201 fix (PR #3204, +2 / −2 in `scripts/bump.js`):** only the literal that points at the loader itself is skipped. W-BUMP new case C6, red on the old code
+  (`§BUMP_W C6-loader-with-its-lazy-module FAIL … exit=2 list_line=0 page_line=1 err=true`), then `PASS … exit=0 list_line=1 page_line=1 err=false`,
+  `§BUMP_W_VERDICT PASS judged=6 failed=0` (re-run on merged `main`). W-MANIFEST-ROUNDTRIP C7 lost its batching workaround: one dry run, `668 = 668`, `claims=7/7 verdict=PASS`.
+  `§X0_BUMP_BUTTON checks=6 failed=0 verdict=PASS`; W-X0-SHIP all `Y`.
+- **Deviations from the spec, said here:** (1) order lives in each site's `at` (its place in its file), so R1 swaps two `at` values, not two array rows: one module order cannot
+  serve several pages. (2) a page with no site is not owned (54 files, not 60). (3) a CDN URL is keyed by the URL, not counted missing (2 sites, `viewer/clash_report.html`).
+  (4) C7 takes ~57 s (bump re-reads 1,208 loader files per target), so CI passes `--skip-c7` and prints `c7=NOT-RUN`; run the full witness before a merge that touches the generator.
+  (5) `libs` / `assets` rows were left out of the manifest (nothing in B0 reads them); `§MANIFEST_BLOCK` (comment runs inside the tag span) is not printed: B1 measures it when it places markers.
+- **Scope of the claim:** the three apps' own pages, loaders and service workers. Not judged: load order (no deps declared), the 46 pages outside the apps, `oplogpic/`,
+  lazy list entries with no `?v=`, `_GANTT_CACHE_VERSION`.
+- **NEXT in Part B:** ask the owner **B-1** (numbers or content hashes) with the counts above, one message; then B-2, B-5 (who declares deps), B-3, B-4. B1 (modeller first) may not start before B-1.
 
 ---
 
@@ -1586,7 +1669,7 @@ first, as §F.4, the next session's bounded task**; A0 runs in parallel if a sec
 | Part | Starts with no decision | Next decision to ask | Why that one |
 |---|---|---|---|
 | A | ✅ done 2026-11-17 (W-CORE-PURE in CI) | none | — |
-| B | **B0: generator in check mode** (manifest built from today's files, regenerate, byte-compare; no file changes) | B-1 `?v=` numbers or hashes | B1 writes `?v=`; B0 does not |
+| B | B0 ✅ done 2026-11-17; nothing more without a decision | B-1 `?v=` numbers or hashes | B1 writes `?v=`; B0 measured what each choice changes (B0 RESULT) |
 | C | nothing; waits on B and D | C-1 part names + owners | |
 | D | nothing new; the multi-publisher list already exists (`types/globals.gen.d.ts`) | D-1 where the questions list lives | needs B's `owner` field |
 | E | `witness_kit/paths.js` (no behaviour change; witness: the same suite verdicts before and after) | E-1 the `PROVES:` header format | |
@@ -1601,6 +1684,7 @@ Ask the owner **one decision per message, with the recommendation** (START HERE 
 | APP fields / phantoms | `node scripts/gen_app_surface.js` → header of `internal/APP_SURFACE.md` |
 | script tags per page | `grep -cE '<script[^>]+src=' viewer/viewer.html erp/idempiere.html modeller/modeller.html` |
 | dev side vs deployed side (DeveloperGuide §0.1 diagram) | `bash <bim-compiler>/scripts/code_arch/size_stack.sh <bim-ootb tree>` → `§STACK_SIZE` lines. @`9b7d2f86` 2026-11-16: app_js 1,004 / 313,887 lines · witness_js 2,112 / 284,795 · witness_named 1,403 · precache viewer 268 / erp 403 / modeller 157, tests 0. Shipped-JS bytes: the deploy log's `§PAYLOAD-MIN-TOTAL` (`gh run view <id> --log`) |
+| module lists per app (sites, versions that disagree, lazy vs precache) | `node scripts/gen_manifest.js --check` → `§MANIFEST_*` lines (2 s); the witness: `node scripts/tests/witness_manifest_roundtrip.js` (~1 min) |
 | core purity (A-1 list) | `node erp/tests/witness_core_pure.js` → `§CORE_PURE files= forbidden= verdict=` (2026-11-17: 125 / 0 / PASS) |
 | clock/random/network calls | `node <bim-compiler>/scripts/code_arch/clock_probe.js <bim-ootb root> [pathspec …]` (committed 2026-11-13, #602; espree AST, comments never count; needs bim-ootb `node_modules`). Baseline @`a7c329e5`: default `erp/*.js` → `files=301 with_calls=58 calls=160`; the A-1 core pathspecs (`'erp/processes/*.js' 'erp/callouts/*.js' erp/ad_callout.js erp/doc_poster.js 'erp/model_*.js' erp/rule_fold.js erp/crud_core.js erp/kernel_ops.js`) → `112 / 19 / 32` (7 of them in `kernel_ops.js`); the viewer/4D set (`viewer/cpm_schedule.js 'viewer/schedule_*.js' viewer/tm_core.js common/room_graph.js`) → `11 / 7 / 32`. A3's W-CORE-PURE ports this probe into bim-ootb |
 | printed `§TAG`s found in saved logs; logs with a code stamp (§F.6) | `node <bim-compiler>/scripts/code_arch/lens_precheck.js [<bim-ootb root>] [<bim-compiler root>]` (read-only, ~1 min; needs bim-ootb `node_modules` for espree) |
@@ -1629,7 +1713,7 @@ Ask the owner **one decision per message, with the recommendation** (START HERE 
 | Part | What | State |
 |---|---|---|
 | A | pure core + Env | **A0 ✅** · **A-1..A-5 ✅** · **A1 ✅** (#3007) · **A2** done for 15 files (#3010 #3013 #3016 #3021 #3026 #3030 #3033) + A2-TIMING-1 (#3110) + A-6 / A2-TIMING-2 (#3122) + A2-TIMING-3 (bim-ootb #3124) + A2-VALUE-1 (#3135) + A2-EDGE-2 (#3140) + A2-PIPO (#3143): **A2 complete** · **A3 ✅** A3-CLOCK-1 (#3149), A3-CLOCK-2 (#3168), W-CORE-PURE (#3181, in CI): **PART A DONE 2026-11-17** |
-| B | manifest per app | not started · B0 ready · open: B-1 to B-4 |
+| B | manifest per app | **B0 ✅** (#3200: `scripts/gen_manifest.js --check`, W-MANIFEST-ROUNDTRIP in CI) · open: B-1 to B-5 |
 | C | named APP parts | not started · open: C-1, C-2 |
 | D | owner table | not started · open: D-1, D-2 |
 | E | proof map | not started · `paths.js` ready · open: E-1, E-2 |
