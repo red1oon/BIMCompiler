@@ -16,7 +16,7 @@ Background, measurements and prior art are in `prompts/DOCS_I18N.md` §4b-§4d (
 - §17 film: **v3 MADE 2026-11-17** (`~/Videos/Help_that_answers_Viewer_EN_AFTER_2026-11-17_v3.mp4`, framed bigger, new Jakob Nielsen quote, §17.3 RESULT; v2 kept). Other languages on the owner's word.
 - **W-HOWTO H1 failure on main FIXED 2026-11-17** (bim-ootb #3172 merged, §14.3.2 RESULT): a tie in the guide-link choice now goes to the heading sharing a word with the tool, not the first section in the page.
 - BIM User Guide: a basic Help section (Viewer, Modeller, and what the command line does and does not have) added 2026-11-17 (BIMCompiler docs/bim-help-basic).
-- **NEXT:** (1) DONE 2026-11-17: the Modeller guide titles are in the dictionary (§14.5.1 RESULT, bim-ootb #3173); open from it: the 10 older uncatalogued Modeller strings (one more batch, W-MODELLER-I18N (2)) and the guide PARAGRAPHS (owner's call, ~830 translations); then the prefixes, box side (§16 item 7: owner agreed `?` / `#<number>`; the CLI session specs the shell side as CLI_ERP_IVR §41).
+- **NEXT:** (1) DONE 2026-11-17: the Modeller guide titles (§14.5.1, bim-ootb #3173) and the ten older uncatalogued strings (§14.5.2, bim-ootb #3174): W-MODELLER-I18N PASS 15/0. Left from it: the guide PARAGRAPHS (owner's call, ~830 translations); then the prefixes, box side (§16 item 7: owner agreed `?` / `#<number>`; the CLI session specs the shell side as CLI_ERP_IVR §41).
 - The three §14.1 owner items were ANSWERED in §14.2 (ISO note kept; type classes via their cited occurrence class; our sentence in 15 languages, all built, #3152).
 - **Open owner question:** 8 Viewer tools have no section in the BIM User Guide (§14.3 RESULT), so they get no guide link until the guide has a section.
 - **Waiting on the CLI session (no action here):** §42 S3, the short-name limit fix in `assist_core.nearest()` (§16 item 1). It will message when merged. After that, the help box calls `nearest()` (no second edit-distance function).
@@ -1156,6 +1156,12 @@ This REPLACES the §14 design's "right dock".
 - T1 W-MODELLER-I18N de_DE and ja_JP: `§MDL_LEAK` uncatalogued **10 → 0** and (2) PASSES; no string that was translated before turns English;
 - T2 W-MODELLER-GUIDE-TITLES gains **G3**: every base row added by this lane's 2026-11-17 Modeller batches (ids ≥ 1001028) is a `trl="Y"` row with text in the 14 non-English locales (X of N printed, N from the base file); the red control must still fail;
 - T3 (4), the in-place flag switch (leaks=4, `retranslated=-1`) is NOT claimed fixed; its count is recorded before and after, so a change is visible either way.
+
+### 14.5.2 RESULT (2026-11-17): BUILT, bim-ootb #3174 MERGED (`f9e2c6cf`)
+- **Batch:** `viewer/tools/trl_batch_2026-11-17_modeller_uncat10.js`: the 10 strings x 14 locales, ids 1001036-1001045, append-only, machine translations by Claude (labelled; NO speaker review). No Modeller code changed.
+- **Witnessed (logs read): W-MODELLER-I18N PASS 15/0 for the first time since the Modeller trailer work** — `§MDL_LEAK` de_DE 0/142, ja_JP 0/136, ar_SA 0/143 (uncat 10 → 0, T1); W-MODELLER-GUIDE-TITLES PASS with the new **G3** (18 batch rows x 14 locales = 252 cells, red control detected, T2); W-VIEWER-I18N unchanged (de_DE 23/310, the same 3 failures as `main`).
+- **T3 came out better than claimed:** the in-place flag switch (4) went `leaks=4` → `leaks=0` and the Help built after the switch `leaks=11 (5 after §14.5.1)` → `0`: those leaks were the same ten strings, not a separate switch fault, so there was nothing to fix in the switch (`retranslated=-1` is still printed and was never the cause).
+- **Left:** the guide PARAGRAPHS (59 nodes, ~830 translations, owner's call) and the 23 W-VIEWER-I18N leaks on `main` (the Viewer's own, not this lane's Modeller work).
 
 ## 15. NOT URGENT, to think about (owner 2026-11-16: *"You mean we can mis.<translated verb>? Note in prompt then we shall think about it not urgent."*)
 Two terminal ideas. Neither is built and nothing is decided.
