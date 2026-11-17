@@ -1328,6 +1328,78 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lod400-upgrade" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LOD400 Upgrade
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sanity-and-egress-rule-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sanity and Egress — rule checks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4d-window" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4D Window
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Issues
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gi-preview-ao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GI Preview (AO)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nav-lod-large-bldgs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nav LOD (large bldgs)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#save-open-a-building" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3865,6 +3937,78 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lod400-upgrade" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LOD400 Upgrade
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sanity-and-egress-rule-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sanity and Egress — rule checks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4d-window" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4D Window
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Issues
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gi-preview-ao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GI Preview (AO)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nav-lod-large-bldgs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nav LOD (large bldgs)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#save-open-a-building" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4219,8 +4363,7 @@ python3<span class="w"> </span>-m<span class="w"> </span>http.server<span class=
   entries open.</li>
 <li>It lists every tool with its key. Type in its box to find a tool by its name, or by a word from its steps:
   <em>native</em> finds Save Building and Open Building.</li>
-<li>Open a tool's entry to see its steps and a <strong>Guide</strong> link to its section in this guide (35 of the 44 tools
-  have one). Find and the Time Machine also show <strong>Same at the CLI</strong>: the command line that gives the same
+<li>Open a tool's entry to see its steps and a <strong>Guide</strong> link to its section in this guide. Find and the Time Machine also show <strong>Same at the CLI</strong>: the command line that gives the same
   answer.</li>
 <li><strong>Click an element</strong>: the info panel says <strong>What this is</strong> in one plain sentence, and under it the official
   <strong>IFC definition</strong> from buildingSMART (bSDD), word for word, with its credit (CC BY-ND 4.0). Where
@@ -4909,6 +5052,53 @@ sliders, plus four more toggles appended below them:</p>
 <li><strong>Cache Info</strong> — see how much this building's data is using in IndexedDB, and clear it.</li>
 </ul>
 <p><img alt="The full Settings panel, Pill Icons section open — every toolbar action listed with its visibility and shortcut" src="../../img/viewer/pill-settings-panel.png" /></p>
+<h3 id="lod400-upgrade">LOD400 Upgrade<a class="headerlink" href="#lod400-upgrade" title="Permanent link">&para;</a></h3>
+<p>The <strong>LOD400 Upgrade</strong> pill (box icon, on the toolbar rail) opens a panel that cleans up the open building's
+geometry: it welds duplicate vertices and smooths curved surfaces. Revit IFC meshes arrive as flat-shaded
+triangle soups, so the same triangles, area and size need far fewer vertices; the tool's own measurement is
+about 70–80 % fewer on curved parts. No element is added, removed or renamed, and every number is counted and
+logged. <strong>Save Building</strong> keeps the result (see <a href="#save-open-a-building">Save &amp; Open a building</a>).</p>
+<p><em>Written from the tool's own help text and code header, 2026-11-17. No screenshot yet.</em></p>
+<h3 id="sanity-and-egress-rule-checks">Sanity and Egress — rule checks<a class="headerlink" href="#sanity-and-egress-rule-checks" title="Permanent link">&para;</a></h3>
+<p>Two rule checks read the loaded building and list what they find in one checklist panel. Neither is on the
+toolbar rail: open the <strong>F1</strong> help, type <strong>Sanity</strong> or <strong>Egress</strong>, and press <strong>Enter</strong>.</p>
+<ul>
+<li><strong>Sanity</strong> — <em>Floating Member</em> (STR beams), <em>Span/Depth</em> (advisory) and <em>Column Continuity</em>.</li>
+<li><strong>Egress</strong> — <em>Isolated Room</em> (no measured route out), <em>Circulation Distance</em> (to a real exit; falls back to the
+  circulation spine) and <em>Door Width</em> (advisory).</li>
+</ul>
+<p>Each Egress distance row says which target it measured, the exit or the circulation fallback, so the panel never
+claims more than it measured. The limits the code cites: a door clear width of 0.813 m (IBC 2021 §1010.1.1) and a
+travel distance of 60.96 m (IBC 2021 Table 1017.2, Group I-2, sprinklered). The warning levels (0.85 m and 45.7 m)
+are early-heads-up buffers the code does not cite, and because the model carries no occupancy class, the stricter
+hospital door width is not applied.</p>
+<p><em>Written from the tool's own help text and code header, 2026-11-17. No screenshot yet.</em></p>
+<h3 id="4d-window">4D Window<a class="headerlink" href="#4d-window" title="Permanent link">&para;</a></h3>
+<p>The <strong>4D Window</strong> pill (calendar icon) puts the construction schedule next to the model. It appears on the toolbar
+rail when the schedule engine is loaded, and it is always in the <strong>F1</strong> help. With a schedule loaded, hover or click
+any element: the info panel shows its task name and start → finish, its trade and float, and a critical-path marker;
+hovering adds one extra line. If the building has no schedule yet, tap it to generate one on the fly (its tooltip then
+reads <em>4D Window — tap to generate a programme</em>). The full timeline, playback and What-if are the <strong>Time Machine</strong>
+(key <strong>T</strong>), in the <a href="#inspect-drawer-measure-clash-x-ray-section-time-machine-4d5d-fly-tour">Inspect drawer</a>.</p>
+<p><em>Written from the tool's own help text and code header, 2026-11-17. No screenshot yet.</em></p>
+<h3 id="issues">Issues<a class="headerlink" href="#issues" title="Permanent link">&para;</a></h3>
+<p>The <strong>Issues</strong> panel (key <strong>I</strong>) is the building's issue log: one list per building, each entry a snag with its photo
+and annotation. Open an entry for its detail view; a clash snag also carries a deep link that flies to that clash.
+<strong>Export Excel</strong> and <strong>Export BCF</strong> write the list out, and <strong>Clear All</strong> deletes every logged issue after a
+confirmation. The log is kept in this browser (IndexedDB), not on a server. An empty list says <em>Use Site Camera to snap
+and save photos</em>: the camera is the mobile tool described under <strong>Mobile-only</strong> below.</p>
+<p><em>Written from the tool's own help text and code header, 2026-11-17. No screenshot yet.</em></p>
+<h4 id="gi-preview-ao">GI Preview (AO)<a class="headerlink" href="#gi-preview-ao" title="Permanent link">&para;</a></h4>
+<p><strong>GI Preview (AO)</strong> (<strong>Alt+G</strong>, desktop only) turns on an ambient-occlusion preview using the N8AO effect. The help lists
+it as a research spike, and it is disabled on mobile because of memory. It sits in the
+<a href="#camera-view-drawer">Camera / View drawer</a>.</p>
+<p><em>Written from the tool's own help text and code header, 2026-11-17.</em></p>
+<h4 id="nav-lod-large-bldgs">Nav LOD (large bldgs)<a class="headerlink" href="#nav-lod-large-bldgs" title="Permanent link">&para;</a></h4>
+<p><strong>Nav LOD (large bldgs)</strong> (key <strong>O</strong>, in the Navigate drawer) keeps flying and orbiting smooth on a large building: while
+you move, it draws far or off-screen elements as boxes and keeps the real mesh only within 50 m and in view. It is off by
+default, does nothing on a building under 50,000 elements (it shows a message instead), and is switched off during the
+Time Machine, a Find isolate and Cinema.</p>
+<p><em>Written from the tool's own help text and code header, 2026-11-17.</em></p>
 <h3 id="save-open-a-building">Save &amp; Open a building<a class="headerlink" href="#save-open-a-building" title="Permanent link">&para;</a></h3>
 <p>Two toolbar pills, both native-dialog verbs — distinct from the Hub's building-open flow in
 <a href="#quick-start-your-first-building">Quick Start</a>:</p>
@@ -4933,7 +5123,7 @@ a bin's QR/type code, and record a signed pick group per bin. Not covered furthe
 warehouse-class building loaded to demonstrate, outside this general viewer guide's scope.</p>
 <p><a id="find-lenses-tenancy"></a></p>
 <h3 id="fm-operate-lenses-hr_bim_asset-alpha">FM / Operate lenses — HR_BIM_Asset  <em>(ALPHA)</em><a class="headerlink" href="#fm-operate-lenses-hr_bim_asset-alpha" title="Permanent link">&para;</a></h3>
-<p>The viewer carries one <strong><code>FM / Operate</code></strong> toolbar pill (a building glyph) that opens a wake-aware drawer of
+<p>The viewer carries one <strong><code>FM / Operate</code></strong> toolbar pill (a building glyph; its entry in the <strong>F1</strong> help is labelled <strong>Human-Asset</strong>) that opens a wake-aware drawer of
 operate-phase lenses — <strong>Occupancy</strong> (incl. lease status) · <strong>Presence</strong> · <strong>Unit class</strong> · <strong>Assets / IoT</strong> ·
 <strong>Dashboard</strong>. It appears only when the loaded building carries operate data, and each lens is enabled only when
 <em>its</em> data exists (else greyed) — no data, no clutter.</p>
