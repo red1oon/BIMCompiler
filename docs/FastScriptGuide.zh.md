@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 72198f6f900235d2
+source_sha: 313ef235970d6dfd
 lang: zh-CN
 ---
 
@@ -29,7 +29,7 @@ Tip: type level student for fuller help on each word (red1 --fast opens without 
 red1> exit
 ```
 
-把它当作一张地图来读。版本行说明 red1 有多少个门动词（长格式）和短词。`help` 把短词分成三组显示；`help bim`、`help mis` 或 `help erp`（或只输入组名）可查看一组：
+把它当作一张地图来读。版本行说明 red1 有多少个门动词（长格式）和短词。`help` 把短词分成三组显示；`help bim`、`help mis` 或 `help erp` 可查看一组：
 
 | 分组 | 用途 | 从这里开始 |
 |---|---|---|
@@ -44,7 +44,7 @@ red1: type a short word; red1 prints the full line it runs (→ …), then runs 
   bim   buildings and models             start with: cd Duplex   (16 words)
   mis   records, tables, files, Ninja    start with: cd Order   (11 words)
   erp   document actions (CO VO CL RC)   start with: cd Order   (8 words)
-  everywhere: cd <place> · pwd · role <id> · login <user> · history · report · exit
+  everywhere: cd <place> · pwd · role <id> · login <user> · history [N] · report · exit
 Type bim, mis or erp for its words · help <word> for one word (level student first for the full explanation) · help verbs for the full door lines.
 ```
 
@@ -65,6 +65,8 @@ erp: document actions (CO VO CL RC) (start with: cd Order)
   next 50000                                          what a document may do next
   ask "How do I close a Sales Order?"                 ask the help a question, in your language
 ```
+
+单独输入一个组名（`bim`、`mis` 或 `erp`）会打印同样的列表，并把您带进这个组：提示符变成 `red1 erp>`，帮助、Tab 和灰色建议只提供这个组的词。它从不阻止一行运行：完整的门命令行在任何组里照样运行。`cd ..` 后退一步（先离开一个位置，再离开组），Shift+Tab 也一样（red1 会打印 `→ cd ..`，所以会话读起来就是文本）。
 
 `help` 不打印门动词，只打印这些词。`help verbs` 列出每个门动词及其完整一行。若要了解某个词的更完整说明，切换到 Student 级别：在会话中输入 `level student`，或在一行里用 `--level student`，然后 `help <word>` 会说明该词做什么、您输入什么、red1 从您所在位置取什么，并给出一个示例。文字取自该动词自己的描述，所以不会与末尾的表产生偏差：
 
@@ -307,6 +309,70 @@ Generate PO from Project: done · no document made
 
 在单行或对 AI 而言，不会询问任何内容：缺少必填参数就是一次点名该参数的拒绝。孪生体还没有移植的流程会被拒绝，并给出其类名，red1 会这样说明。
 
+**记录只提供它自己的。** 在一条记录里，red1 提供的都是这条记录的，从它窗口的字典中读取：`do` 之后，只有它现在可以做的操作（按您的角色）；`cd` 之后，它的标签页；`run` 之后，它自己的流程按钮；它的字段则作为 `Column=` 键。进入记录时会打印它可以做什么：
+
+<!-- run: erp_record_offers -->
+```text
+$ printf 'cd Order 100\n' | node common/door/red1.js 2>/dev/null
+→ mis.describe kind="Order 100"
+→ mis.describe kind=Order
+→ mis.read kind=Order number=100
+→ mis.read kind=Order id=100
+Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls shows them, cd <tab> opens one, cat reads the record
+→ erp.actions kind=Order id=100
+it may do: CL, VO, RE (do <code>; next shows the tree)
+```
+
+在那里，`do ` 之后的 Tab 只提供 `CL` 和 `VO`（`RE` 还没有 red1 词），`run Co` 会补全为 `"Copy Lines"`，即订单窗口自己的按钮。
+
+**浏览菜单。** `menu` 把 ERP 菜单显示为位置：`cd <folder>` 进入（只有一个条目以此开头时，名字的开头就够了），窗口条目会带您到它的种类，`cd ..`（或 Shift+Tab）回到上一级文件夹。提示符显示路径。每个条目都有标记：▸ 文件夹（里面有多少条目），W 窗口（及其表），P 流程，R 报表，X 表单，F 工作流。单独的 `red1 menu` 仍然在整个屏幕上打开菜单。
+
+<!-- run: red1_menu_walk -->
+```text
+$ printf 'menu\ncd Quote\ncd "Sales Orders"\ncd "Sales Order"\npwd\n' | node common/door/red1.js 2>/dev/null
+→ mis.menu
+menu: 15 entries; cd <name> goes in, cd .. goes back
+  ▸ System Admin (6)
+  ▸ Application Dictionary (40)
+  ▸ Partner Relations (7)
+  ▸ Quote-to-Invoice (Sales) (6)
+  ▸ Requisition-to-Invoice (Purchasing) (16)
+  ▸ Returns (5)
+  ▸ Open Items (Financial Movements and Aging) (32)
+  ▸ Material Management and Pricing (22)
+  ▸ Project Management (14)
+  ▸ Performance Analysis and Accounting (17)
+  ▸ Assets (6)
+  ▸ Manufacturing (10)
+  ▸ Maintenance Request (3)
+  W Cost Center · C_CostCenter
+  W Department · C_Department
+Quote-to-Invoice (Sales): 6 entries; cd <name> goes in, cd .. goes back
+  ▸ Sales and Marketing (9)
+  ▸ Sales Orders (13)
+  ▸ Shipments (7)
+  ▸ Sales Invoices (5)
+  ▸ Invoice Inquiry (13)
+  ▸ Sales Management (6)
+Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd <name> goes in, cd .. goes back
+  W Sales Order · C_Order
+  R Order Detail
+  R Open Orders
+  R Order Transactions
+  P Quote convert
+  P RePrice Order/Invoice
+  P Generate PO from Sales Order
+  P Reopen Order
+  P Order Batch Process
+  W POS Key Layout · C_POSKeyLayout
+  P POS Key Generate
+  W POS Terminal · C_POS
+  W POS Payment · C_POSPayment
+→ mis.describe kind=C_Order
+Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
+menu="Quote-to-Invoice (Sales)/Sales Orders" kind=Order
+```
+
 **报告缺口。** 有些答复表明 red1 缺少某些东西，而不是您输错了。引擎会标记这些情况，在会话中 red1 会在答复后打印一行。打字错误或传统的拒绝不是缺口，不会多打印什么。`report` 随后显示一份草稿（该行、原因、red1 版本、平台、最后几行日志，您的路径已被遮盖），并提供 GitHub issue 或电子邮件；red1 自己不发送任何东西，由您自己的浏览器或邮件程序发送：
 
 <!-- run: red1_gap -->
@@ -356,10 +422,11 @@ not done: cd project
 
 | 词 | 作用 |
 |---|---|
-| `pwd` · `cd ..` · `history` · `role <id>` · `login <user>` | 您在哪里；返回；输入过的行；以某个角色行事；说明您是谁（只在有多个带邮箱用户的客户中要求；新记录会记上您的用户） |
+| `pwd` · `cd ..` · `history` · `!!` · `!3` · `role <id>` · `login <user>` | 您在哪里；返回；输入过的行（也包括以前的会话，带编号）；再运行最后一行；运行第 3 行；以某个角色行事；说明您是谁（只在有多个带邮箱用户的客户中要求；新记录会记上您的用户） |
 | `sum <column>` · `cat <id>` · `rm <id>` | 对一列求和；显示一条记录；删除一条 |
 | `ninja <file>` · `load <file.csv>` · `diff <file.csv>` | 准备 Ninja 工作簿或 CSV；从文件加载行；将文件与记录比较 |
-| `menu` | 屏幕上的 ERP 菜单 |
+| `bim` · `mis` · `erp` | 进入一个组：帮助、Tab 和建议只提供它的词（`cd ..` 或 Shift+Tab 退出） |
+| `menu` | ERP 菜单，用 `cd` 像文件夹一样浏览；`red1 menu` 在整个屏幕上打开它 |
 | `cd Project 990000` · `ls` · `cd Phase` | 把一条记录当作一个位置进入：`ls` 列出它的标签页及其记录数，`cd <tab>` 打开一个，`cd ..` 回到上一级 |
 | `status` | 在项目中：它的挣值（每个阶段的 PV、EV、AC、SPI 和 CPI） |
 | `vo` | 在建筑中：把模型与其项目订单之间的差异，作为变更单（Variation Order）发出（询问 y/N；用 `do CO <number>` 批准） |
