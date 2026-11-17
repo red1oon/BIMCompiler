@@ -1101,6 +1101,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#help-f1-the-info-panel-and-the-command-line-live" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Help — F1, the info panel, and the command line (LIVE)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#find-panel-search-voice-query-and-axis-lenses" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3627,6 +3638,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#help-f1-the-info-panel-and-the-command-line-live" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Help — F1, the info panel, and the command line (LIVE)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#find-panel-search-voice-query-and-axis-lenses" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4189,6 +4211,62 @@ python3<span class="w"> </span>-m<span class="w"> </span>http.server<span class=
 - Deep-link URL — camera + building state encoded in hash, shareable
 - IndexedDB cache — download once, instant on revisit
 - City mode — 786 building bboxes, click to download + stream on demand</p>
+<h3 id="help-f1-the-info-panel-and-the-command-line-live">Help — F1, the info panel, and the command line <em>(LIVE)</em><a class="headerlink" href="#help-f1-the-info-panel-and-the-command-line-live" title="Permanent link">&para;</a></h3>
+<p><strong>In the Viewer</strong></p>
+<ul>
+<li><strong>F1</strong> (or the Help pill) opens the help panel on the left. It stays open while you work. Drag it by its
+  header; close it with × or Esc. It opens again where you left it, with the same search text and the same
+  entries open.</li>
+<li>It lists every tool with its key. Type in its box to find a tool by its name, or by a word from its steps:
+  <em>native</em> finds Save Building and Open Building.</li>
+<li>Open a tool's entry to see its steps and a <strong>Guide</strong> link to its section in this guide (35 of the 44 tools
+  have one). Find and the Time Machine also show <strong>Same at the CLI</strong>: the command line that gives the same
+  answer.</li>
+<li><strong>Click an element</strong>: the info panel says <strong>What this is</strong> in one plain sentence, and under it the official
+  <strong>IFC definition</strong> from buildingSMART (bSDD), word for word, with its credit (CC BY-ND 4.0). Where
+  buildingSMART publishes a translation (German, for example) you get theirs; otherwise the English, with a
+  line saying there is no official translation in your language.</li>
+</ul>
+<p><strong>In the <a href="../ModellerGuide/">Modeller</a></strong>, <strong>?</strong> and the Guide pill open the same panel, in the outliner's place.
+The outliner comes back when you drag the panel away or close it. The guide's sections are inside the panel.</p>
+<p><strong>At the command line (<code>red1</code>)</strong>: the help panel is part of the page, so it is not at the command line. This
+is what the command line does have for BIM:</p>
+<table>
+<thead>
+<tr>
+<th>You want</th>
+<th>At the command line</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The list of BIM words</td>
+<td><code>help bim</code></td>
+</tr>
+<tr>
+<td>One word explained</td>
+<td><code>help count</code>; type <code>level student</code> first for a fuller explanation</td>
+</tr>
+<tr>
+<td>The same answer as a Viewer tool</td>
+<td>The line its help shows, e.g. <code>viewer.counts building=Duplex</code> (it counts the model, the same answer as Find)</td>
+</tr>
+<tr>
+<td>Ask a question in plain words</td>
+<td><strong>Not for BIM yet.</strong> <code>ask</code> answers ERP questions only, inside an ERP kind (e.g. <code>cd "Business Partner"</code>)</td>
+</tr>
+<tr>
+<td>What an element is (the class text, the IFC definition)</td>
+<td><strong>Viewer only</strong>, in the info panel</td>
+</tr>
+</tbody>
+</table>
+<p>The command line itself is explained in the <a href="../FastScriptGuide/">Fast Script Guide</a>.</p>
+<blockquote>
+<p><em>Proven by</em> <strong>W-HELP-DOCK</strong> (place, drag, reopen, phone), <strong>W-HOWTO</strong> (guide links, the word search, the
+command lines), <strong>W-CLASS-HELP</strong> (the class text and the bSDD text, byte for byte), and <strong>W-HELP-DOCK-M</strong>
+(the Modeller).</p>
+</blockquote>
 <h3 id="find-panel-search-voice-query-and-axis-lenses">Find panel — search, voice query, and axis lenses<a class="headerlink" href="#find-panel-search-voice-query-and-axis-lenses" title="Permanent link">&para;</a></h3>
 <blockquote>
 <p><strong>New: Ask.</strong> Pick a question, get a computed answer, save the answers as one Excel file for your own AI —
@@ -4951,7 +5029,7 @@ Kernel-ERP; the Viewer does not carry the toggle.
 </tr>
 <tr>
 <td><strong>F1</strong></td>
-<td>Help — the full, live list of every toolbar action and its shortcut key</td>
+<td>Help — the panel on the left: every tool and its key, search, steps, guide links (<a href="#help-f1-the-info-panel-and-the-command-line-live">Help</a>)</td>
 </tr>
 </tbody>
 </table>
