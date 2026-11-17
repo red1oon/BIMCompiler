@@ -1,5 +1,5 @@
 {
- "made": "2026-11-17T23:03:17.078Z",
+ "made": "2026-11-17T23:11:15.456Z",
  "trees": {
   "T": {
    "path": "/tmp/wt-film-ootb",
@@ -8,7 +8,7 @@
   },
   "C": {
    "path": "/tmp/wt-film-build",
-   "commit": "6ce0258ea",
+   "commit": "6e61170b0",
    "dirty": 0
   },
   "I": {
@@ -204,7 +204,7 @@
   },
   "ci.total": {
    "val": "20",
-   "src": "cmd c2 names + the loop names, as one set"
+   "src": "derived: the c2 names + the ci.yml loop names, as one set"
   },
   "idem.lines": {
    "val": "1427147",

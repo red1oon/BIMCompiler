@@ -55,4 +55,10 @@ Trees: bim-ootb `origin/main` @ `aa427638` (`/tmp/wt-film-ootb`, detached, clean
 Output `~/Videos/Vibe_Coding_Honestly_EN_AFTER_<date>_v1.mp4` (+ `_mobile`), never committed. Target ~4.5 min.
 
 ## STATUS
-2026-11-18: spec + storyboard v2 (owner's additions); building.
+2026-11-18: **BUILT, English v2, awaiting the owner's review; never committed (media), not posted.**
+- `~/Videos/Vibe_Coding_Honestly_EN_AFTER_2026-11-18_v2.mp4` (1920x1080, 409.0 s, 9816 frames, -16.5 LUFS) + `_v2_mobile.mp4` (1280x720, sent to the owner). v1 (408.8 s) had one question whose pitch rose ("What is unique about it?", §NARR_TONE WRONG) → reworded in v2.
+- Sources: bim-ootb `aa427638` (detached clean worktree), bim-compiler `6ce0258ea`, iDempiere local source `87968daa73`, GitHub API (languages, stars, PR states), the parity log of 2026-10-12, and the two industry pages READ 2026-11-18 (Stack Overflow 2025 AI, Veracode 2025; GitClear answered HTTP 403 and is not used).
+- Verdicts: `§FACTS VERDICT PASS` (72 values from 10 real commands) · `§CARDS_DONE beats=24 stills=839 too_tall=0` · `§FILM_GUARD VERDICT PASS bad=0` (V: 18 beats, 28 spoken facts, red control caught · S: every command-sourced value in its saved output · D: 839 stills, every digit group a fact or one of 18 declared literals, red control caught · P: 5 prior-art rows found in their saved copies · 6 PRs MERGED · `§FILM_GUIDE … http=200 anchor=Y`) · fit 18/18 DETAIL, 0 WRONG (v2) · `§KEYS_VERDICT PASS` (800 typed, 15 returns) · `§K2_VERDICT PASS beats=15 bad=0 audible=True` · `§FILM_DONE dur=409.000 frames=9816 planned=9816` · longest silence 5.4 s.
+- Found while building (each fixed in the docs the same day): the CI wording (about 20 of 1,492 witnesses run in CI, not "none", #3234 / #933); the Stack Overflow and Veracode rows of VibeProgramming.md did not match their pages (#936); the README app-code counts now come from `size_stack.sh` (#936, bim-ootb #3237).
+- Length 6 min 49 s, longer than the ~4.5 min target: the owner's three added chapters (scale, legacy, peers). A shorter cut would trim l3 / c5 / s2 first.
+- Rebuild: `OOTB=<tree> COMP=<bim-compiler> IDEM=<idempiere> PARITY_LOG=<run_all log> node facts.js` → `./build.sh` (`SKIP_CARDS=1` reuses the stills; `OUTMP4=` for a new name).

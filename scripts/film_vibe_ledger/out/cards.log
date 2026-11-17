@@ -1,5 +1,5 @@
 §CARD beat=cover entries=1 overflow_px=0
-§CARD beat=before entries=23 overflow_px=126 TOO-TALL
+§CARD beat=before entries=23 overflow_px=0
 §CARD beat=after entries=28 overflow_px=0
 §CARD beat=ch1 entries=1 overflow_px=0
 §CARD beat=u1 entries=51 overflow_px=0
@@ -22,4 +22,4 @@
 §CARD beat=aid entries=29 overflow_px=0
 §CARD beat=roadmap entries=1 overflow_px=0
 §CARD beat=close entries=1 overflow_px=0
-§CARDS_DONE beats=24 stills=839 too_tall=1 key_cues=800 return_cues=15
+§CARDS_DONE beats=24 stills=839 too_tall=0 key_cues=800 return_cues=15

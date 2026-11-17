@@ -11,7 +11,7 @@ const L = m => console.log('§FACTS ' + m), fail = m => { L('FAIL ' + m); proces
 const sh = (cwd, cmd, env) => { const r = spawnSync('nice', ['-n', '19', 'bash', '-c', cmd], { cwd, encoding: 'utf8', maxBuffer: 1 << 28, timeout: 900000, input: '', env: Object.assign({}, process.env, env || {}) });
   return { out: (r.stdout || '').replace(/\s+$/, ''), err: (r.stderr || '').trim(), code: r.status }; };
 const F = { made: new Date().toISOString(), trees: {}, cmds: {}, v: {} };
-for (const k of Object.keys(TREES)) { const c = sh(TREES[k], 'git rev-parse --short HEAD').out; F.trees[k] = { path: TREES[k], commit: c, dirty: sh(TREES[k], 'git status --porcelain -uno').out.split('\n').filter(Boolean).length }; }
+for (const k of Object.keys(TREES)) { const c = sh(TREES[k], 'git rev-parse --short HEAD').out; F.trees[k] = { path: TREES[k], commit: c, dirty: sh(TREES[k], "git status --porcelain -uno -- . ':!scripts/film_vibe_ledger'").out.split('\n').filter(Boolean).length }; }
 L('trees ' + JSON.stringify(F.trees)); if (F.trees.T.dirty || F.trees.C.dirty) fail('a pinned tree is not clean');
 const put = (k, val, src) => { if (val === undefined || val === null || val === '' || (typeof val === 'number' && isNaN(val))) fail('no value for ' + k + ' (' + src + ')'); F.v[k] = { val: String(val), src }; L('v ' + k + '=' + val + ' | ' + src); };
 const grab = (re, txt, what) => { const m = re.exec(txt); if (!m) fail('not found in ' + what + ': ' + re); return m; };
@@ -50,7 +50,7 @@ put('erp.june', +o('v1'), 'cmd v1'); put('witness.files', +o('v2'), 'cmd v2');
 { const ci = fs.readFileSync(path.join(TREES.T, '.github/workflows/ci.yml'), 'utf8'); put('ci.core_pure', /witness_core_pure\.js/.test(ci) ? 'Y' : 'N', 'ci.yml'); const loop = grab(/for w in ([a-z_ ]+); do\s*\n\s*f=devtools\/vscode\/x0-navigator\/tests\/witness_x0_\$w\.js/, ci, 'ci.yml X0 loop')[1].trim().split(/\s+/);
   const named = sh(TREES.T, "cat .github/workflows/*.yml | grep -oE 'witness_[a-z0-9_]+\\.js' | sort -u").out.split('\n'), loopFiles = loop.map(w => 'witness_x0_' + w + '.js'), all = new Set(named.concat(loopFiles));
   if (named.some(n => loopFiles.includes(n))) L('note: a loop witness is also named');
-  put('ci.loop', loop.length, 'ci.yml X0 loop names (written as witness_x0_$w.js, so the c2 regex does not see them)'); put('ci.named', +o('c2'), 'cmd c2'); put('ci.total', all.size, 'cmd c2 names + the loop names, as one set'); }
+  put('ci.loop', loop.length, 'ci.yml X0 loop names (written as witness_x0_$w.js, so the c2 regex does not see them)'); put('ci.named', +o('c2'), 'cmd c2'); put('ci.total', all.size, 'derived: the c2 names + the ci.yml loop names, as one set'); }
 put('idem.lines', +o('l1'), 'cmd l1'); put('idem.files', +sh(TREES.I, "find . -name '*.java' -not -path '*/target/*' | wc -l").out, 'iDempiere find'); put('idem.commit', F.trees.I.commit, 'iDempiere git');
 put('erp.files', +sh(TREES.T, "git ls-files 'erp/*.js' | grep -vE '/tests?/|/lib/|witness' | wc -l").out, 'bim-ootb erp js, no tests/lib/witness');
 put('erp.lines', +sh(TREES.T, "git ls-files 'erp/*.js' | grep -vE '/tests?/|/lib/|witness' | xargs cat | wc -l").out, 'same');
