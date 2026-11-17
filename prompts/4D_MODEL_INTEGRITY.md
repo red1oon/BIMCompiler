@@ -3529,3 +3529,12 @@ footings on soil · stair flight under a slab · ties follow solve     0        
 - Delete the cell engine (item 3). Edit round-trip on a large building (Q.9.3 item 6). `scripts/run_4d_gates.sh`. `§LOG_STAMP` in `cache_4d_run.js`.
 - `witness_gantt_edit_coherence` runs with `§D6_HANG_FILING INACTIVE` (no `CpmSchedule` in its sandbox).
 **Instruments added (this repo):** `scripts/probe_4d_residue.js` (`§RESID`), `probe_4d_judged_coverage.js` (`§COVERAGE`), `probe_4d_one_lift.js` (`§RING`).
+
+## §Q.14 RESUME 4D, 2026-11-18 — WORKING §Q.13.3 (the still-red list), one item at a time
+### Q.14.1 SPEC — `witness_midair_zero` learns the two named sets, then is re-locked ONCE
+**Issue it proves or disproves:** does any element appear before the first thing it touches, OTHER than the elements the engine openly names as having no elected support (`§STRUCT_NO_SUPPORT`, `§CONTACT_ONLY`)? Today W-MZ-2 cannot say: its census counts both together, against locks from the cell-engine era (dead since §GRAPH_EVERYWHERE).
+- **The census stays independent** (§I row "is anything floating?", copy 4). It is not replaced by the engine's judge.
+- **W-MZ-2n (new).** The witness re-derives the two named sets ITSELF from its own contact lists and `ScheduleGate.supportPool` (the one owner of "is it structure"): *struct-no-support* = structural, not a ground seed, no pool contact bearing-below or embedded; *contact-only* = not structural, every contact a non-pool box of a later class sequence. It asserts its sets equal the engine's (`designatedSupport(...).structNoSupport` / `.contactOnly`) by membership, not count. A mismatch is red — the engine may not excuse an element the witness cannot re-derive.
+- **W-MZ-2 (changed).** census midair is split: `named` (in either set) and `unnamed` (the rest). BOTH are locked per building (`midair`, `midair_unnamed` in `baselines/midair.json`). `§MZ_SPLIT` prints total / named-struct / named-contact / unnamed and the classes of the unnamed.
+- **W-MZ-8** float lock re-taken once (same run). No engine code changes; no schedule time moves.
+- **Not vacuous:** W-MZ-7 unchanged (a dragged element must still be caught, and it must land in `unnamed`).
