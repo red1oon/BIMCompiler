@@ -1517,6 +1517,16 @@ The design is the spec of record; each step below names only its scope, its file
 - **Deviations from the design (named, accepted):** (1) fold = NFKD, lower, strip U+0300-U+036F, NFC (design's NFKC was wrong, corrected in the design file; `Util.deleteAccents` uses the same range); (2) BM25 integer scale 1e9, not 1e6 (1e6 rounding broke the 1e-6 test on common-word top hits); (3) `allowed(gate, rec)` also gets the record; (4) window descriptions not indexed (no pack holds them; processes/doctypes English-only, action descriptions English in every language); (5) COST build-half red controls `eager` + `bloat`.
 - **Left for later steps:** query half of COST (p95, heap), Thai (Q3).
 
+### 19.3 Step 3: wire the ERP box and `erp.ask` to the core (design §6 step 3)
+**Issue it removes:** after #3192 the core exists but the ERP How To box (`erp/idempiere.html:3107-3130`) and the shell's `erp.ask` (`common/door/erp_cli.js:427` requires `erp/help_search.js`) still rank with `help_search.js`'s own loop, so two rankers answer the same question.
+**Change:**
+- `erp/help_search.js` keeps its PUBLIC API (`indexFrom`, the card it returns, the module/`root.HelpSearch` export) so `erp_cli.js` (the CLI session's file) is NOT edited; inside, ranking goes to `HelpQuery` (`common/help/help_query.js`, `require` in Node, `window.HelpQuery` in the page; `idempiere.html` loads it before `help_search.js`, both `?v=` bumped, `erp/sw.js` precache + version bump).
+- **One record builder:** the runtime `indexFrom` and the build-time `erp/tools/help_records.js` must make records with the SAME pure function (move it where both can call it, e.g. `erp/help_records_core.js`); no second record shape.
+- **Deletion budget (AD-LAYER LAW 4):** from `help_search.js` remove the ranking loop, `pairs()`, the `STOP` list, the shared-word window fallback and the `+100` bonus; PR states lines + / -.
+- The role gate stays the existing one (`windowIds` from the role's menu), applied AFTER ranking (design D3).
+**Claims:** W-HQ-LEGACY-SUPERSET (what legacy's menu filter shows for a probe is inside our list; `legacyFilter` gives legacy's set and order; N = the role's menu windows x 2 probes; red `HQ_BREAK=nolegacytier`); W-HQ-COST query half (`§HQ_QUERY` p95 ms and heap delta over the RANK-TWIN query set, budgets of design D8, OVER printed not hidden; red `HQ_BREAK=eager`); W-HQ-BOX (new: the box's top-5 for every RANK-TWIN query == `HelpQuery` top-5 directly, page and Node via `erp.ask`; red: a reversed list in one place); W-HELP-SHOWCASE and W-ERP-ASK green (any changed expected answer is listed with old and new, never silently re-baselined).
+**Not in this step:** Viewer/Modeller (step 4), Did-you-mean (step 5), `#` actions (step 6).
+
 ## STATUS
 2026-11-17 (night): §18 design accepted (7/7 checks), 3 owner questions open; §14.8 the 23 W-VIEWER-I18N leaks built (result below once the witness is read).
 2026-11-17 (late): RESUME block rewritten for an Opus session; §18 = the Fable brief (one query core, hard budget). Session work: film v3, tie rule, Modeller + guide dictionary, 8 guide sections, real keys.
