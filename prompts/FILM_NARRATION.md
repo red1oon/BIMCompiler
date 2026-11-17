@@ -224,6 +224,13 @@ Every film ends on ONE last card with what the "Immersive Software" films' last 
 3. **Measured cost where it applies** (memory with / without the feature after a forced GC, time of the slow step), never estimated; and the key-sound credit; and "translated by the build session, not reviewed by a native speaker" on a translated cut.
 Fonts and width checked by `cards.js` (no overflow: the card check measures width and height). **Films already built need not be redone** (owner): Fast Script ERP EN/ZH/MS/TH rc2 (2026-11-16) keep their end card; the rule applies from the next film or the next rebuild.
 
+## ▶ HOUSE STYLE — ALWAYS GIVE A GUIDE LINK (owner, 2026-11-18: *"Note in the FILM_NARRATION to always give a guide link"* · *"No need to put in done films"*)
+Every new film carries the live user/developer guide link for what it shows: (1) on its last card, beside the credentials; (2) in the hand-over
+message to the owner, ready to paste into a posting. The link is the github.io page with the section anchor (e.g.
+`https://red1oon.github.io/BIMCompiler/DeveloperGuide/#41-x0-navigator-the-repos-own-vs-code-extension`), and the build checks it: HTTP 200 and the
+anchor id present in the fetched page, logged as `§FILM_GUIDE url= http= anchor=Y|N`. A feature the film shows that the guide does not describe yet
+is a gap to close in the guide before the film is posted (say so; never link a page that does not cover it). **Films already built are not redone.**
+
 ## ▶ PLAYBOOK — "make a narrated / dialogue film" (read this first; written 2026-10-03 after 7 films shipped)
 **What red1 likes (settled, don't re-ask):** a LIVELY two-voice DIALOGUE (F asks/reacts, M explains), not a monologue
 readout. Every pause filled where the picture allows. Questions must sound like questions (measured, §NARR_TONE).
