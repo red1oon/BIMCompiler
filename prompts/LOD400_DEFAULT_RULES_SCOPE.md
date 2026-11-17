@@ -228,3 +228,96 @@ Steel grade (PJAM: not stated), concrete cover on PJAM until ACI 318-19 is read,
 6. **Side-bar string reading:** `2T12-300` = one bar per face per level at most 300 mm apart between the outermost bar centres; `8T25`/`10T25` (no pitch) = n/2 per face evenly spaced. Logged in `§PJRB_SIDE_PARSE`.
 7. **The source's earlier 563 `upgrade_changes` rows are kept;** this run's 408 rows are appended from 564 and the txt lists only those.
 8. **Witness limits:** INSIDE re-measures every stored vertex against the host mesh read back from the output DB in the world frame, but it uses the same distance + ray-parity primitive as the fit, so it is not an independent algorithm. SIZE and COVERAGE are reports with no verdict. LAYERS min-clear is judged on stored bar positions.
+
+## 8. BUILD 4 SPEC (2026-11-18): PJAM bracing gusset connections (the 57 STEEL_SKEW ends)
+**Issue it proves or disproves:** can every angle brace end of the model get a rule-based gusset connection? That means a gusset welded to the supporting beam and the angle bolted to it, laid out to AISC 360-16 detailing limits. Every joint that would clash is refused and counted, and the author's members are never moved.
+**Measured inputs (2026-11-18):** the joint survey (`joint_survey.json`, §AD.2) classes 57 ends as STEEL_SKEW (30-60 deg to their support).
+- **Braces:** L100x100x8 ×31, L200x200x16 ×18, L120x120x12 ×8.
+- **Supports:** UB254x146x43 ×22, UB457x191x98 ×16, BU-500x300x50x25 ×12, BU BOX HSS 990X300X25 ×4.
+- **Gussets in the model:** none. Its 495 IfcPlate are cladding and panels.
+- **Engineer's details:** none. S-006..S-008 standard details are not in the package.
+
+**AISC 360-16 read 2026-11-18 (local copy):**
+- §J4 gives the STRENGTH of gussets (tensile yield and rupture, Whitmore section, block shear). It needs loads, which we do not have, so **no capacity check, and §J4 gives no size**.
+- §J1.1: *"Where the gravity axes of intersecting axially loaded members do not intersect at one point, the effects of eccentricity shall be considered"*. The author's geometry is kept, so the eccentricity is MEASURED and reported per joint, never corrected.
+- Detailing rows reuse `conn_rules.json`: M20 bolts, standard holes (Table J3.3M), pitch (§J3.3), edge distance (Table J3.4M, §J3.5), fillet min/max (Table J2.4, §J2.2b).
+
+**Rules** (new rows marked `default: ours` unless a clause is named):
+- **Gusset plane:** the plane of the angle leg that lies in the plane of the brace axis and the support axis. A joint where neither leg qualifies within 10 deg is refused (`AMBIGUOUS_PLANE`).
+- **Gusset attachment:** the support flange face that the brace axis meets (top or bottom flange), welded along its contact edge. Weld = Table J2.4 minimum for the thinner part, both sides of the plate.
+- **Bolts:** in the connected leg, on one gauge line at `leg/2` (ours; the AISC Manual gauge table not read), along the brace axis. Count `bolts_min` 2 (ours), pitch 60, end edge 35.
+- **Gusset outline:** the smallest convex plate that holds the bolt group with the edge distance and reaches the flange edge. Thickness = max(angle leg thickness, 10 mm) (ours).
+- **Clash:** the gusset, bolts and welds must not enter any element but the welded flange and the bolted angle. TRUE mesh boxes are used, not the DB rtree. A failing joint is refused (`REFUSED_CLASH`) with what it hit.
+- **Output:** a copy `JPAM_gussets.db` built from `JPAM.db` (JPAM.db unchanged). Per joint, one assembly of IfcPlate (gusset) + IfcMechanicalFastener (bolt group) + IfcFastener (welds), each named "configuration only, capacity not checked". Change list `JPAM_gussets_changes.txt` in the PJAM change-list format.
+
+**Witnesses (`§GUS_*`):** SURVEY (57 judged) · IDENT · RULES (every generated dimension = its row or clause, and each clause's own min/max holds) · CLEAR + CLEAR_POST (re-checked on the written DB) · ECCENT (eccentricity per joint, mm, reported: not a pass/fail) · COUNTS (generated + refused by reason = 57) · DETERMINISM (two builds, same SHA-256) · break switch `GUS_BREAK=1` disables the clash refusal, so CLEAR_POST must FAIL. INCONCLUSIVE if 0 generated.
+
+### §8.1 Spec correction 2026-11-18 (after the probe, before any generator code)
+**Probe (read-only):**
+- The plane rule qualifies on 57 of 57 ends.
+- The brace AXIS meets a flange face on only 6 ends. 51 axes pass between the flanges (web or box wall), and 1 meets nothing.
+- The in-plane leg's thickness band overlaps a flange band on 47 ends and misses every flange on 10.
+- So §8's "the flange face the axis meets" is replaced. Attachment follows the **leg plane**, not the axis.
+
+The three open choices are decided as labelled defaults (`default: ours`), under the owner's ruling of 2026-11-18 that industry defaults may stand in where nothing is stated. The owner or engineer can override any of them as a rule row:
+1. **Which face:** the gusset sits on the face of the in-plane leg AWAY from the outstanding leg, so it never meets the brace's own other leg.
+2. **Contact and gap:** the gusset is OURS, so it is placed touching the support face it attaches to: flange face (lap, fillet along the flange edge) or web / box-wall face (T-joint, fillets both sides). The author's angle is never moved.
+   - The measured gap between the gusset and the angle leg becomes a **filler**, recorded per joint.
+   - AISC 360-16 §J5.2, read: a bolt through fillers ≤ 6 mm takes no shear reduction; above 6 mm a reduction or development applies. So each filler is tagged `≤ 6 mm` or `> 6 mm: engineer to check (§J5.2)`.
+   - A gap above `filler_max_mm` 25 (ours) is refused (`GAP_TOO_LARGE`).
+3. **No flange in the leg plane (10 ends):** attach to the web or box-wall face the leg plane meets, within the support's depth. If the plane meets no face of the support within `support_reach_mm`, refuse (`NO_ATTACHMENT`).
+
+Witness additions:
+- `§GUS_ATTACH`: count by attachment (flange lap / web T / box wall) and refused by reason.
+- `§GUS_FILLER`: filler thickness min / median / max, and how many are over 6 mm.
+- COUNTS must still add to 57.
+
+### §8 RESULT 2026-11-18 (BUILD 4 run on the PJAM model; private generator + `gusset_rules.json`, 12 new rule rows, all `default: ours` or AISC-read)
+**Headline: 1 of 57 brace ends got a gusset. 56 are refused, each with a counted reason. No witness failed on the real run; the break run failed CLEAR_POST as it must.**
+
+**Run 1 (verbatim `§GUS_*`):**
+```
+§GUS_SURVEY judged=57 (STEEL_SKEW ends of joint_survey.json) present_in_model=57 braces={'L120x120x12.0': 8, 'L100x100x8.0': 31, 'L200x200x16.0': 18}
+§GUS_IDENT source_tables_compared=21 identical=True src_elements=6828 out_elements=6831 added=3 (3 x 1 joints) source_upgrade_rows_kept=563 -> PASS
+§GUS_RULES joints=1 clause_failures=0 (measured on the built meshes; checks per joint=14) -> PASS
+§GUS_CLEAR_POST parts_checked=3 failures=0 (surface points of each written part vs every neighbour solid, ray parity, on the written DB; brace exempt; support exempt only where welded) -> PASS
+§GUS_CLEAR judged=23 shipped=1 refused_for_clash=22 neighbours_tested_per_joint min=8 max=8 -> PASS
+§GUS_REFUSED_CLASH plate x IfcSlab Slab - Concrete - 150mm (M) 2 joints=18
+§GUS_REFUSED_CLASH weld x IfcMember L100x100x8.0 joints=4
+§GUS_ECCENT (reported, not a pass/fail; J1.1 measured distance between the brace gravity axis and the support axis) generated: min=36.0 median=36.0 max=36.0 | all 57 judged ends: min=7.3 median=103.4 max=222.9 -> PASS
+§GUS_ATTACH generated_by_attachment={'web T': 1} refused_by_reason={'REFUSED_CLASH': 22, 'NO_ATTACHMENT': 13, 'GAP_TOO_LARGE': 4, 'NO_ROOM': 17}
+§GUS_FILLER generated=1 filler_mm min=0.0 median=0.0 max=0.0 | zero=1 | 0<f<=6 (no J5.2 reduction)=0 | >6 engineer to check=0 | gusset enters author angle (overlap_mm) n=0 none
+§GUS_COUNTS generated=1 refused={'REFUSED_CLASH': 22, 'NO_ATTACHMENT': 13, 'GAP_TOO_LARGE': 4, 'NO_ROOM': 17} total=57 of 57 judged -> PASS
+§GUS_WRITTEN db_sha256=c71e4e8e626f1923 txt_sha256=9e44c64765f46c3c
+```
+**Run 2 (same inputs, expected hashes from run 1):**
+```
+§GUS_DETERMINISM this_db=c71e4e8e626f1923 expected_db=c71e4e8e626f1923 this_txt=9e44c64765f46c3c expected_txt=9e44c64765f46c3c -> PASS
+```
+**Break run (`GUS_BREAK=1`, clash refusal off, witnesses unchanged):**
+```
+§GUS_IDENT ... out_elements=6897 added=69 (3 x 23 joints) -> PASS
+§GUS_RULES joints=23 clause_failures=13 ... first=[('3D5QSRXD', 1, ['contact_le_tol']), ...] -> FAIL
+§GUS_CLEAR_POST parts_checked=69 failures=56 ... -> FAIL
+§GUS_CLEAR judged=23 shipped=23 refused_for_clash=0 ... BREAK=on ignored_clashes=22 -> FAIL
+§GUS_BREAK_CHECK switch=on clash refusal disabled; clashing joints written=22; expected CLEAR_POST=FAIL got CLEAR_POST=FAIL -> PASS
+```
+
+**What the numbers say (from the logs):**
+- **The roof slab decides most joints.** 18 of 22 clashes are the gusset plate against the 150 mm concrete roof slab. Its bottom face passes through the plate level (H 36-48 mm above the leg centroid axis), because the author's braces and top flanges sit at the slab underside. §8.1 rule 1 puts the gusset on the face away from the outstanding leg, i.e. up, so every flange-lap gusset is inside the slab. The other 4 clashes are a weld bead against a neighbouring L100x100x8 member.
+- **17 NO_ROOM.** The contact face is within 26 mm of the angle's own end at the leg plane, so the first bolt cannot keep the edge distance to the end of the angle.
+- **13 NO_ATTACHMENT:** 10 where the leg plane meets no support face within `support_reach_mm` 300, 2 where the contact slice found no face, 1 `web T: wall 249 mm is not a plate` (cause not investigated; the measured wall along the face normal is 249 mm, which an I-section web cannot give).
+- **4 GAP_TOO_LARGE:** flange-lap fillers of 57.1-57.6 mm against `filler_max_mm` 25.
+- **The one generated joint** is a web T: gusset 10 mm, plate 185 mm long, fillet 5 mm, filler 0, eccentricity 36.0 mm. Its 14 clause checks pass (pitch, edges, weld min/max, plate thickness, bolts inside the angle leg, contact gap).
+- **Eccentricity over all 57 ends:** min 7.3, median 103.4, max 222.9 mm. Reported, not corrected (AISC J1.1).
+- **Break run:** 22 clashing joints written, CLEAR_POST fails on 56 of 69 parts, so the clash check is able to fail. RULES also fails in the break run (13 joints, `contact_le_tol`), because the slab-clashing lap gussets sit on a flange face that the plate no longer touches within 5 mm.
+
+**Deviations from §8 / §8.1, and why:**
+1. New refusal reasons `NO_SECTION` (end cap unreadable), `NO_ROOM` (above) and `LEG_OVERLAP` (the gusset may enter the author's angle by less than its own thickness, since §8 lets the gusset enter the bolted angle; more is refused). NO_SECTION and LEG_OVERLAP were not hit on the 57.
+2. Flange vs wall is decided by the material interval along the plate normal at the contact: flange if <= 0.25 x section depth (row `flange_interval_max_fraction`, ours). A lap is `max(5 x thinner part, 25 mm)` long (AISC 360-16 J2.2b(f), read) with two fillets along the lapped plate's lateral edges.
+3. The brace gravity axis is the end-cap area centroid; the support axis is the vertex mean of the support mesh, so ECCENT is approximate for asymmetric sections.
+4. Clash neighbours exclude `GEN-LY-` and `GEN-RB-` parts (duplicates of their hosts), and include `GEN-CR-` and earlier `GEN-GU-` parts. The brace is exempt; the support is exempt only for the welds and, for a lap, the plate.
+5. Parity (swallowed-whole) test is skipped for 4 large shell elements (cables, mesh, curtain, roof coping); their surfaces are still tested.
+6. The "wall 249 mm" refusal is not explained; no check was loosened to remove it.
+
+**Files (private, not committed):** `~/Projects/Jebel/lod_sandbox/conn_rules/gen_gussets.py`, `gusset_rules.json`, `gus_probe.py`; outputs `jpam/JPAM_gussets.db`, `JPAM_gussets_changes.txt`, `run2_gussets/`, `break_gussets/`; logs `jpam/log/gus_run1.log`, `gus_run2.log`, `gus_break.log`, `gus_probe.log`.
