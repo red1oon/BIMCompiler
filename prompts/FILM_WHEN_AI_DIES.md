@@ -31,7 +31,7 @@ by rule); "300k lines" and "54+ files" are numbers to re-measure, not quote (§M
 | why | — | card: "It cannot drift: X0 holds no knowledge of the code; it reads what the repo generates" + the honest proof below | `§X0_OFFLINE` (below) |
 | passenger | `# the AI is back. give it facts, not guesses.` | *Context for this file* output beside the code (§F.16) | `§X0_CONTEXT` |
 | roadmap | — | card "not built yet": B1 manifest (next), C named parts, D owner table, E proof map | — |
-| close | — | last card: prior art (rows read by check P) + credentials (PR numbers + witness verdicts from this build's logs) + key-sound credit | facts.json |
+| close | — | last card: prior art (rows read by check P) + credentials (PR numbers + witness verdicts from this build's logs) + the guide link (below) + key-sound credit | facts.json, `§FILM_GUIDE` |
 
 **The honest proof for "no AI, no network" (new check, film-side, `scripts/film_when_ai_dies/offline.js`, read-only over the bim-ootb tree):**
 this machine cannot cut one process off the network without root (measured 2026-11-18: `unshare -rn` → *uid_map: Operation not permitted*;
@@ -42,6 +42,10 @@ this machine cannot cut one process off the network without root (measured 2026-
 purity, context) must have 0; the Run & Ship features (Deploy, Fetch back, PR) are EXPECTED to talk to GitHub and the film says so. Red control: a
 planted `fetch()` in a copy of a hover file must be counted. Empty population → INCONCLUSIVE. Plus `§X0_ISOLATION … deps=0` (nothing reaches the
 browser, no dependencies) and the shoot profile's `"chat.disableAIFeatures": true`.
+
+**Guide link (FILM_NARRATION house style, owner 2026-11-18):** `https://red1oon.github.io/BIMCompiler/DeveloperGuide/#41-x0-navigator-the-repos-own-vs-code-extension`
+(HTTP 200 and anchor present, checked 2026-11-18). **Gap found the same day:** the live guide (= `docs/DeveloperGuide.md` on master) does not yet describe
+the Bump button (§F.34) or the core-purity warning (§F.35), both shown in q4/q5. Close that gap in §4.1 before the film is posted.
 
 ## Build plan (each step has its log; CPU only: headless + Xvfb + `--disable-gpu`, `nice -n 19`, never the GPU lock, ONE session at a time)
 1. `facts.js <bim-ootb tree>`: runs the witnesses named above on a fresh `origin/main` worktree and writes `out/facts.json` from their `§` lines.
