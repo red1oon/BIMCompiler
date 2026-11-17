@@ -17,7 +17,7 @@ numbers are measured, the five decisions (D1–D5) are MADE. **Implement; do not
    GPU or browser runs without the owner's go; agents on Sonnet; results go in §Q.6 / §Q.7 only;
    the witness, never the owner's eyes, is the test.
 
-**Status (update this line as steps land):** step 0 ✅ (#3018) · D2 ✅ (#3022) · D5 ✅ (variant B, #3023) · D1 ☐ NEXT · D3 ☐ · D4 ☐ — owner rulings 2026-11-14: D2/D5 merged with their cross-level near misses NAMED (§Q.6/§Q.7 RESULTS); D5 = variant B. Open, named: §Q.8. **Once-over 2026-11-17: §Q.9 — gate 4 is RED on main (repair first); most out-of-order play is cross-task, outside D1–D4; 3 owner decisions — ✅ decided 2026-11-17 as D6/D7/D8 (§Q.9.4), which also sets the order of work after D5.** **Gate-4 repair ✅ (bim-ootb #3177, §Q.10); NEXT = assembly-order witness, then D1.**
+**Status (update this line as steps land):** step 0 ✅ (#3018) · D2 ✅ (#3022) · D5 ✅ (variant B, #3023) · D1 ☐ NEXT · D3 ☐ · D4 ☐ — owner rulings 2026-11-14: D2/D5 merged with their cross-level near misses NAMED (§Q.6/§Q.7 RESULTS); D5 = variant B. Open, named: §Q.8. **Once-over 2026-11-17: §Q.9 — gate 4 is RED on main (repair first); most out-of-order play is cross-task, outside D1–D4; 3 owner decisions — ✅ decided 2026-11-17 as D6/D7/D8 (§Q.9.4), which also sets the order of work after D5.** **Gate-4 repair ✅ (bim-ootb #3177, §Q.10); assembly-order witness ✅ (#3178); D1 built + measured, ⛔ HELD on gate 2 (§Q.11, branch `fix/4d-d1-bearing-walls`, no PR). NEXT = D3 with the cell packing term → D6 → D1 → D7 → D8 → D4 (§Q.11.3).**
 
 ---
 
@@ -3405,3 +3405,46 @@ witness_midair_zero            before: exit 1, 7 of 7 buildings "produced nothin
 - **Reading (Claude, on the owner's 2026-11-17 instruction to decide):** D2 stays — a beam must not hang from its slab. Three populations, three owners: *wall below* → **D1** (target: Duplex W-MZ-2 8 → 0, read from this witness); *contacts above only* (a column or deck on unmodelled support) → correct to start first, the judge must follow D2's rule for structural T and NAME them instead of calling them midair; *pipe / railing / door below* → §E row 1, never elected, named.
 - **Not done here, on purpose:** no lock in `baselines/midair.json` was moved. The CELL-path locks and W-MZ-8 drifted before step 0 as well (unattributed, some of it the 2026-10/11 datum and population changes). They are re-locked ONCE, after D1, with this table as the written reason (§Q.6 gate 4's own rule).
 - **Status of §Q.9.4's order:** gate-4 repair ✅ (#3177) → **NEXT: assembly-order witness + unjudged count** → D1 → D3 → D6 → D7 → D8 → D4.
+
+## §Q.11 RESUME 4D, 2026-11-17 — ASSEMBLY-ORDER WITNESS ✅ · D1 MEASURED AND ⛔ HELD ON GATE 2 · ORDER OF WORK CORRECTED
+### Q.11.1 `witness_tm_assembly_order.js` — bim-ootb #3178, MERGED (Q.9.3 items 2 + 3)
+Per building, per class, on the played layer of the persisted run, owners called: **A0** recount == the run · **A1** midair per class does not rise · **A2** structural with no elected support does not rise · **A3** `§FILING_PARITY` does not rise. A fall prints `IMPROVED` + the re-lock line; cache miss / no lock = `INCONCLUSIVE`; no beams / columns = `VACUOUS`. Lock: `viewer/tests/baselines/assembly_order.json`, taken from main `539d4cb385be` (midair 429 / 2,395 / 247 / 144 · filing parity 105 / 2,180 / 245 / 83). Red control proven (a lock lowered by 1 → `FAIL A1 Hospital — midair ROSE: IfcBeam 88->89`). `§ASM_VERDICT claims=16 PASS=16`. **This replaces `probe_4d_step_gates.js` gate 2 from here on.**
+
+### Q.11.2 D1 — rule as built (bim-ootb branch `fix/4d-d1-bearing-walls`, pushed, **NO PR**)
+`ScheduleGate.bearingWalls(els)` + `applyBearingWalls(els, who)` (`§BEARING_WALL`), called by ALL THREE element recipes (`schedule_author`, `tm_gantt_build`, `tm_sched_xray._buildXrayElements`). A wall is promoted (Superstructure, seq 2; trade, rate, install time untouched) iff a structural element rests on its TOP (§S64's bound, per §Q.8 item 3) and that element has no bearing-below contact in the pool; fixpoint for wall on wall.
+**Population, measured before wiring (the §Q.8 item 3 worry — "every roof's walls" — did not happen):** Hospital 132 of 1,468 walls (9.0 %) · Terminal 17 of 333 (5.1 %) · HHS 6 of 160 (3.8 %) · **Duplex 33 of 57 (57.9 %)** — the bearing-wall house is the one that reads as bearing-wall.
+```
+before = main 539d4cb385be   after = D1 105fc53eb129   self-check MATCH on all four, both runs
+                         Hospital        Terminal          Duplex         HHS
+midair, all classes      429 -> 562      2395 -> 2384      247 -> 138     144 -> 144
+midair IfcBeam           89 -> 51        41 -> 41          0 -> 0         VACUOUS
+unjudged IfcBeam         30 -> 13        26 -> 19          8 -> 0         —
+§STRUCT_NO_SUPPORT       46 -> 28        671 -> 555        9 -> 0         32 -> 27
+§FILING_PARITY           105 -> 245      2180 -> 2121      245 -> 134     83 -> 83
+totalDays                339 -> 346      102 -> 101        12 -> 12       53 -> 53
+stack piles >= 20        0 -> 0 on all four (GREEN)        CELL/GRAPH path unchanged on all four
+gate 4: witness_gantt_lock_integrity 20/0 · witness_gantt_edit_coherence 11/0 · witness_tm_edit_exception 23/0 — all PASS on D1
+        witness_midair_zero W-MZ-2 (independent judge): Duplex 8 -> 1 (the 8 beams gone; 1 IfcSlab left) · HHS 15 -> 14
+⛔ gate 2 (A1) RED on all four:
+   Hospital  IfcBuildingElementProxy 34->115 · IfcWindow 0->56 · IfcColumn 6->29 · IfcWallStandardCase 15->27 · IfcWall 4->17
+   Terminal  IfcDuctFitting 137->152 · IfcPipeFitting 795->808 · IfcPipeSegment 590->603 · IfcDuctSegment 74->83 · IfcFlowTerminal 11->12
+   Duplex    IfcWallStandardCase 4->5        HHS  IfcSlab 29->30 · IfcWallStandardCase 2->3
+```
+**Predictions (§Q.6):** *Duplex midair beams → 0* — MET, and now for the right reason (8 beams judged and in order; unjudged 8 → 0). *Hospital and Terminal wall-borne beams no longer midair (15 and 15)* — **PARTLY**: Hospital beams 89 → 51 and unjudged 30 → 13; Terminal unjudged 26 → 19 only, because the wall-at-its-top bound rejects a beam built INTO a wall taller than its seat. Recorded as partly failed.
+**The reds, attributed** (`scripts/probe_4d_step_attribution.js`, `§D1_ATTR`; elements midair after and not before):
+| mechanism | Hospital (188 new) | Terminal (62) | whose job |
+|---|---:|---:|---|
+| hung from a beam / slab / plate of ANOTHER task; elected support unchanged — the Superstructure bar it hangs from grew by the promoted walls and now starts or runs later | 140 | 59 | **D6** (it is `§FILING_PARITY` +140 exactly) |
+| column ← promoted wall, same task, same sequence, DIFFERENT crew — `solveCells` orders a cell by (`bz`, guid) but each member starts at its own crew's free slot, so order of processing is not order of start (Q.9 F7) | 22 | 0 | **the cell packing term (D3)** |
+| the promoted wall itself stands on a beam (seq 3 after seq 2) — a wall on a transfer beam | 25 | 0 | same class as §Q.7's 10 transfer-beam columns — undecided there, undecided here |
+| other (beam on beam, member on member, stair) | 1 | 3 | D3 |
+Duplex's 4 and HHS's 2 are the same three shapes (wall ← stair flight cross-task 2, wall embedded in a promoted wall 2; slab ← promoted wall 1, wall ← slab 1).
+**Verdict: D1 is HELD, not merged, not re-baselined.** The rule does what it was specified to do; it is the first step that adds members to the Superstructure bars, and that exposes two gaps that were already named: the cell solve has no support term, and hung elements are filed in a different bar from their carrier.
+
+### Q.11.3 ORDER OF WORK — CORRECTED BY THIS MEASUREMENT (Claude, on the owner's 2026-11-17 instruction to decide)
+§Q.9.4 put D1 first. The measurement says D1 cannot go green until the two gaps under it are closed. New order, each one bim-ootb PR, each judged by `witness_tm_assembly_order` + the gate-4 four:
+1. **D3 with the cell packing term** — inside a cell, members sort by support rank, AND a member starts no earlier than its in-cell elected support starts (`st = max(cell start, crew slot, support start)`). Prediction: Hospital beam-on-beam 47 + 42 → ≤ 5; no class rises.
+2. **D6** — measure how many elements change bar, then one filing for the solve and the task grid. Prediction: `§FILING_PARITY` Terminal 2,180 → ≤ 127.
+3. **D1** — rebase `fix/4d-d1-bearing-walls` on 1 + 2 and re-measure. Prediction: the 140 + 59 and the 22 do not appear; what is left is the transfer class (≤ 25 + the 10 columns), which then gets its own decision.
+4. D7 → D8 → D4, as before.
+**Status line for the top block:** step 0 ✅ · D2 ✅ · D5 ✅ · gate-4 repair ✅ (#3177) · assembly-order witness ✅ (#3178) · **D1 ⛔ built + measured, held on gate 2 (branch pushed)** · NEXT = D3 with the cell packing term.
