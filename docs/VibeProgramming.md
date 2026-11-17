@@ -34,7 +34,7 @@ The shift is real. These are the numbers the sceptics should weigh:
 | Code suggestions accepted (Copilot) | ~30% | GitHub Blog, 2023-2024 |
 | Developer task completion speed with AI | 55% faster | GitHub/Microsoft Research, 2023 |
 | AI-generated code share in enabled repos | ~46% | GitHub Octoverse 2024 |
-| Code churn (new code revised within 2 weeks) | 3.1% (2020) → 5.7% (2024) → 7.1% (2025) | GitClear, 211M-line study, 2025-2026 reports |
+| Code churn (new code revised within 2 weeks) | 3.1% (2020) → 5.7% (2024) → 7.1% (2025) | GitClear, 211M-line study, 2025-2026 reports (as first cited; the page answered HTTP 403 on 2026-11-18, so not re-checked) |
 
 That churn trajectory is the one that matters — and it kept climbing after this paper first cited it. Adoption went up; stability did not follow. More usage produced more code, written faster, more of which got rewritten within two weeks. This is the central risk — and the central problem this project solved.
 
@@ -52,13 +52,13 @@ The trend data backs the lament:
 
 | Metric | Figure | Source |
 |--------|--------|--------|
-| Developer trust in AI code accuracy | 40% (2024) → 29% (2025) | Stack Overflow Developer Survey 2025 |
-| Developers with a favorable opinion of AI tools | 72% (2024) → 60% (2025) | Stack Overflow Developer Survey 2025 |
+| Developers who distrust vs trust the accuracy of AI tools | 46% distrust · 33% trust (2025) | Stack Overflow Developer Survey 2025, survey.stackoverflow.co/2025/ai (read 2026-11-18; corrects an earlier "40% → 29%" row that page does not contain) |
+| Developers with a positive opinion of AI tools | 70%+ (2023 and 2024) → 60% (2025) | same page (corrects an earlier "72% (2024)") |
 | Cite "almost right, but not quite" as their #1 AI frustration | 45% | Stack Overflow Developer Survey 2025 |
 | Spend more time fixing AI output than writing it themselves | 66% | Stack Overflow Developer Survey 2025 |
-| Copy-pasted code, share of all lines | 8.3% (2020) → 12.3% (2024) | GitClear AI Copilot Code Quality 2025 |
-| Refactored ("moved") code, share of all lines | 24.1% (2020) → 9.5% (2024) | GitClear AI Copilot Code Quality 2025 |
-| AI-generated code samples failing security tests | 45% overall, 72% for Java | Veracode, 100+ LLMs / 80 coding tasks, 2025-2026 |
+| Copy-pasted code, share of all lines | 8.3% (2020) → 12.3% (2024) | GitClear AI Copilot Code Quality 2025 (not re-checked, see above) |
+| Refactored ("moved") code, share of all lines | 24.1% (2020) → 9.5% (2024) | GitClear AI Copilot Code Quality 2025 (not re-checked, see above) |
+| AI-generated code that introduced risky security flaws | in 45% of tests | Veracode, 2025 GenAI Code Security Report page (read 2026-11-18; it names no Java figure, so the earlier "72% for Java" is withdrawn) |
 | Enterprise tech leaders seeing more production issues from AI code | 81% | CloudBees State of Code Abundance 2026 |
 | ...same leaders still confident shipping it anyway | 92% | CloudBees State of Code Abundance 2026 |
 | Fortune 50 monthly AI-code security findings, Dec 2024 → Jun 2025 | ~1,000 → 10,000+ | Apiiro, via Cloud Security Alliance research note 2026 |
@@ -185,7 +185,7 @@ The concerns are valid. This project has lived through all of them:
 
 **"AI code drifts from architecture."** Yes. Relentlessly. The AI will invent shortcuts, merge concerns that should be separate, and silently change assumptions. [The Drift](LAST_MILE_PROBLEM.md) exists because this happened dozens of times. The solution is not to stop using AI — it's to build gates that catch the drift before it ships.
 
-**"AI code has more bugs."** True, and getting worse, not better — GitClear's code churn climbed from a 3.1% pre-AI baseline to 7.1% by 2025, and Veracode found 45% of AI-generated samples fail security tests outright (see [2026: The Industry Starts Lamenting "Vibe Slop"](#2026-the-industry-starts-lamenting-vibe-slop) above). This project's answer: 6 gates, 408 tests, 35 reference buildings. The bug rate per shipped line is lower than most hand-written projects because the verification is more rigorous, not because the AI writes better code.
+**"AI code has more bugs."** True, and getting worse, not better — GitClear's code churn climbed from a 3.1% pre-AI baseline to 7.1% by 2025, and Veracode found risky security flaws in 45% of its tests of AI-generated code (see [2026: The Industry Starts Lamenting "Vibe Slop"](#2026-the-industry-starts-lamenting-vibe-slop) above). This project's answer: 6 gates, 408 tests, 35 reference buildings. The bug rate per shipped line is lower than most hand-written projects because the verification is more rigorous, not because the AI writes better code.
 
 **"You don't understand your own codebase."** Partially true. The architect understands the *architecture* — what each module does, how data flows, what correct output looks like. He does not memorise every Java method signature. This is a feature, not a bug: the spec is the source of truth, not the code. If the code drifts from spec, the code is wrong — regardless of what it says internally.
 
@@ -238,11 +238,11 @@ What differs from typical vibe coding is what came next. Each failure was writte
 
 **"When a module fails, the blast radius stays in that file."** Too strong. Without a build step there is no bundler or dependency tree to break, which is a real gain. But the modules share globals and one service-worker cache list (`viewer/sw.js`). That file is the repo's main source of merge conflicts, and a stale cache version once served old JavaScript to every open tab.
 
-**The numbers.** *"311,000 lines across 331 files"* comes from a stale README table. Measured on 2026-11-18: about 1,050 JS and HTML files and ~353,000 lines of app code (excluding every `tests/` folder, witnesses and third-party libraries), out of ~3,480 files and ~1.08M lines in the whole repo. *"119 BIM + 89 ERP modules"* was a July 2026 count; there are now 236 JS files directly under `viewer/` and 189 under `erp/`. *"1,200+ commits in two months"* holds for the first two months (1,258 commits by 2026-07-23). The total is 3,501 commits in six months.
+**The numbers.** *"311,000 lines across 331 files"* comes from a stale README table. Measured on 2026-11-18 with the project's own `scripts/code_arch/size_stack.sh`: 1,034 app JS files (316,459 lines) and 63 HTML pages (38,665 lines), out of 4,730 files and 1,087,977 lines in the whole tree. *"119 BIM + 89 ERP modules"* was a July 2026 count; there are now 236 JS files directly under `viewer/` and 189 under `erp/`. *"1,200+ commits in two months"* holds for the first two months (1,258 commits by 2026-07-23). The total is 3,501 commits in six months.
 
 ### What it gets wrong
 
-**"Roughly 45% of unreviewed AI code introduces backend or API security flaws."** The source is the Veracode figure cited [above](#2026-the-industry-starts-lamenting-vibe-slop): 45% of AI-generated code samples failed security tests, of every kind. It is not a figure for backend or API flaws.
+**"Roughly 45% of unreviewed AI code introduces backend or API security flaws."** The source is the Veracode figure cited [above](#2026-the-industry-starts-lamenting-vibe-slop): AI-generated code introduced risky security flaws in 45% of its tests, of every kind. It is not a figure for backend or API flaws.
 
 **"No backend, no cloud API keys, no external connections, so whole classes of bugs are gone by design."** Only partly true. With no app server there is no server-side injection to worry about. But the app does connect out: building databases come from OCI object storage, libraries have a CDN fallback, the Teamwork relay passes through GitHub and Gmail, and the legacy-parity run talks to a real iDempiere over web services. The risk also moves into the browser: script injection, third-party scripts, and signing keys that live in the tab. The attack surface is smaller, not zero.
 

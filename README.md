@@ -196,7 +196,7 @@ Led [ADempiere](https://www.adempierebr.com/User:Red1) (2006), paved the way for
 
 | | |
 |:---|:---|
-| **BIM OOTB (Browser)** | ~3,480 JS + HTML files, ~1.08M lines tracked (app code about 1,050 files / 353K lines: viewer, modeller, erp, common, teams, capex, excluding every `tests/` folder and the third-party `lib/` folders; the rest is tests, witnesses, sandbox, scripts; measured 2026-11-18), 53 Playwright spec files |
+| **BIM OOTB (Browser)** | ~3,480 JS + HTML files, ~1.08M lines tracked (app code 1,034 JS files / 316,459 lines + 63 HTML pages / 38,665 lines, by `scripts/code_arch/size_stack.sh` on 2026-11-18; the rest is witnesses, third-party libraries, tests, sandbox, scripts), 53 Playwright spec files |
 | **Java Compiler** | 1,207 files, 278K lines across 10 Maven modules |
 | **Java Tests** | 201 test classes; gate baseline 382 PASS / 94 intentional RED / 1 SKIP |
 | **SQL** | 365 migration scripts (append-only) |
