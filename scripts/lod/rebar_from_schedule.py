@@ -113,10 +113,12 @@ def tie_loop(cx, cy, z, hx, hy, r):
             k2 = (k + 1) % SIDES; ref = (ref0 + ref1) / 2
             tris.append(tri_out(a[k], a[k2], b[k2], ref)); tris.append(tri_out(a[k], b[k2], b[k], ref))
     return tris
+BREAK_WINDING = os.environ.get('SHEDRB_BREAK_WINDING') == '1'          # reproduces the pre-correction cap winding; §SHEDRB_WELD_WINDING must then FAIL
 def bead(c0, c1, s_leg, n_hat, t_out):
     """triangular fillet bead from corner line c0..c1; legs s_leg along n_hat and t_out. 8 triangles."""
     a = [c0, c0 + s_leg * n_hat, c0 + s_leg * t_out]; b = [c1, c1 + s_leg * n_hat, c1 + s_leg * t_out]; ref = (sum(a) + sum(b)) / 6
-    tris = [tri_out(*a, ref + (c0 - c1)), tri_out(*b, ref + (c1 - c0))]
+    # end caps wound outward from the bead's own centroid (corrected 2026-11-18: the first version measured the caps against a point displaced the wrong way, so both caps faced inward)
+    tris = [tri_out(*a, ref + ((c0 - c1) if BREAK_WINDING else 0)), tri_out(*b, ref + ((c1 - c0) if BREAK_WINDING else 0))]
     for k in range(3):
         k2 = (k + 1) % 3; tris.append(tri_out(a[k], a[k2], b[k2], ref)); tris.append(tri_out(a[k], b[k2], b[k], ref))
     return tris
@@ -601,6 +603,20 @@ nw = len(weld_info); only_rec = sorted(rec_set - built - skipped_keys); only_bui
 verdict('WELDS', None if (nw == 0 and not rec_set) else (not only_built and not only_rec and not size_bad and nw == len(contacts) - len(weld_skipped) and nw + len(weld_skipped) == len(rec_set)),
         f'welds={nw} contacts_by_clip={len(contacts)} (end {n_endc}, through {n_thr}) contacts_by_independent_sat={len(rec_set)} (end {sum(1 for r in rec_set if r[1] != 'T')}, through {sum(1 for r in rec_set if r[1] == 'T')}) only_in_welds={len(only_built)} only_in_recount={len(only_rec)} size_mismatches={len(size_bad)} table_row_for_6.35mm={weld_min(6.35)}mm skipped={len(weld_skipped)}'
         + (f' first_only_recount={only_rec[0]}' if only_rec else '') + (f' first_only_welds={only_built[0]}' if only_built else ''))
+
+# --- WELD_WINDING: each bead (24 vertices = 8 triangles) must be a closed solid wound consistently outward: every directed edge appears exactly once AND its reverse exactly once, signed volume > 0
+wd_bad = []; n_beads = 0; vol_min = None
+for guid in sorted(weld_info):
+    W = gworld(guid); assert len(W) % 24 == 0
+    for bi, B in enumerate(W.reshape(-1, 24, 3)):
+        n_beads += 1; T = B.reshape(-1, 3, 3); key = lambda p: tuple(np.round(p, 6)); dirs = collections.Counter()
+        for t in T:
+            for i in range(3): dirs[(key(t[i]), key(t[(i + 1) % 3]))] += 1
+        once = all(v == 1 for v in dirs.values()); paired = all(dirs.get((b_, a_), 0) == 1 for (a_, b_) in dirs)
+        vol = float(np.einsum('ij,ij->i', T[:, 0], np.cross(T[:, 1], T[:, 2])).sum() / 6.0); vol_min = vol if vol_min is None else min(vol_min, vol)
+        if not (once and paired and vol > 0): wd_bad.append((guid, bi, once, paired, vol))
+verdict('WELD_WINDING', None if n_beads == 0 else not wd_bad,
+        f'beads={n_beads} not_closed_or_inconsistent={len(wd_bad)} min_signed_volume_mm3={(vol_min or 0) * 1e9:.3f}' + (f' first={wd_bad[0]}' if wd_bad else ''))
 
 # --- COST
 src_verts = sum(len(np.frombuffer(b, np.float32)) // 3 for b, in srcdb.execute("select c.vertices from element_instances i join component_geometries c using(geometry_hash)"))

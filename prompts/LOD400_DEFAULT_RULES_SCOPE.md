@@ -82,6 +82,7 @@ Steel grade (PJAM: not stated), concrete cover on PJAM until ACI 318-19 is read,
   - Size = AISC 360-16 Table J2.4 minimum for the thinner part, as already in `conn_rules`: 6.35 mm part → 5 mm. `default: AISC Table J2.4`.
   - Length = the overlap length, `default: ours`.
   - Members with no gusset contact are counted, not welded. A member lying across or against a plate face (axis perpendicular to the plate) has no bead rule: refused and counted with the reason.
+  - **Bead solids (corrected 2026-11-18, found by the build-5 IFC export):** each weld bead (a triangular prism, 8 triangles) must be a closed solid with its faces wound outward, consistently. The first version wound the two end caps inward, so all 676 beads were closed but inconsistently wound and the IFC4 faceted solids were invalid. Witness `§SHEDRB_WELD_WINDING`: every directed edge appears exactly once, its reverse exactly once, signed volume > 0 (`SHEDRB_BREAK_WINDING=1` restores the old caps and the witness must FAIL).
 - **Output:** a copy `SHED_rebar.db` (never the export). One `IfcReinforcingBar` element per host × bar set (footing L, footing S, column main, ties A, ties B), with real bar geometry (8-sided prisms at bar diameter; ties as closed loops). One `IfcFastener` per weld. `element_parts` host → set. An `upgrade_changes` table + a txt written from it (same format as the PJAM change list). Each set's name carries its stated value and source handle.
 
 **Witnesses (`§SHEDRB_*`; INCONCLUSIVE when nothing was judged):**
@@ -94,8 +95,8 @@ Steel grade (PJAM: not stated), concrete cover on PJAM until ACI 318-19 is read,
 - DETERMINISM: two builds give the same SHA-256.
 - Break switch `SHEDRB_BREAK=1` drops the cover offset: INSIDE must FAIL.
 
-### §6 RESULT 2026-11-18 (BUILD 1 run on the Shed export; `scripts/lod/rebar_from_schedule.py` + `scripts/lod/rebar_defaults.json`; re-run after the review corrections to the footing count formula and the weld rule)
-**Verdict: every `§SHEDRB_*` witness PASSES on run 1; run 2 is byte-identical (DETERMINISM PASS, DB and change list); the break switch makes INSIDE FAIL as required.** Private outputs (DB, change list, logs) stay under the local project folder, never in git.
+### §6 RESULT 2026-11-18 (BUILD 1 run on the Shed export; `scripts/lod/rebar_from_schedule.py` + `scripts/lod/rebar_defaults.json`; re-run after the review corrections to the footing count formula and the weld rule, and again after the weld-bead winding fix)
+**Verdict: every `§SHEDRB_*` witness PASSES on run 1 (including `§SHEDRB_WELD_WINDING`, added by the weld-winding fix below); run 2 is byte-identical (DETERMINISM PASS, DB and change list); the break switch makes INSIDE FAIL as required.** Private outputs (DB, change list, logs) stay under the local project folder, never in git.
 
 **Run 1 log, verbatim (`§` lines):**
 ```
@@ -115,21 +116,23 @@ Steel grade (PJAM: not stated), concrete cover on PJAM until ACI 318-19 is read,
 §SHEDRB_INSIDE sets=256 vertices=208896 violating_vertices=0 min_margin_mm=40.000 (worst set GEN-RB-0R0XHocG_1t$2Oh7AAAAHT-MAIN) required>=cover-1mm (footing 75, column 40) -> PASS
 §SHEDRB_COUNTS footing_sets=64 count_mismatches=0 formula floor((side-2*cover-d)/spacing)+1 (the spec formula without the -d term would give {'(7, 8)': 32, '(9, 10)': 32} as (placed, spec-literal)) -> PASS
 §SHEDRB_WELDS welds=338 contacts_by_clip=364 (end 225, through 139) contacts_by_independent_sat=364 (end 225, through 139) only_in_welds=0 only_in_recount=0 size_mismatches=0 table_row_for_6.35mm=5mm skipped=26 -> PASS
+§SHEDRB_WELD_WINDING beads=676 not_closed_or_inconsistent=0 min_signed_volume_mm3=3225.513 -> PASS
 §SHEDRB_COST added_elements=594 added_vertices=225120 source_vertices=33168 added_pct=678.73 est_heap_added_MB=38.27 (0.17 GB per M vertices) of_which_rebar=256 welds=338 -> PASS
 §SHEDRB_LOG txt_data_lines=665 table_rows=665 -> PASS
-§SHEDRB_WRITTEN db_sha256=13ff08698dd29442 txt_sha256=c053303a9d8dd5b4 db_sha256_full=13ff08698dd294426401686314ebc298b98e27c0a6b22cc21f033040067d1ea9 txt_sha256_full=c053303a9d8dd5b46ad4f42f1c5cb0552807109f2586d94fd23c355b57d05f42
+§SHEDRB_WRITTEN db_sha256=504440a5f5b0256c txt_sha256=c053303a9d8dd5b4 db_sha256_full=504440a5f5b0256c8051550bfc5eed7e53ec48dce2b3f7471508ee0626125755 txt_sha256_full=c053303a9d8dd5b46ad4f42f1c5cb0552807109f2586d94fd23c355b57d05f42
 §SHEDRB_DETERMINISM single build; pass --expect-db-sha / --expect-txt-sha from an earlier run -> INCONCLUSIVE
 §SHEDRB_SUMMARY failed_witnesses=none added=594 not_built=45 refused=26
 ```
 **Run 2 (same inputs, `--expect-db-sha`/`--expect-txt-sha` from run 1):**
 ```
-§SHEDRB_WRITTEN db_sha256=13ff08698dd29442 txt_sha256=c053303a9d8dd5b4
-§SHEDRB_DETERMINISM this_db=13ff08698dd29442 expected_db=13ff08698dd29442 this_txt=c053303a9d8dd5b4 expected_txt=c053303a9d8dd5b4 -> PASS
+§SHEDRB_WRITTEN db_sha256=504440a5f5b0256c txt_sha256=c053303a9d8dd5b4
+§SHEDRB_DETERMINISM this_db=504440a5f5b0256c expected_db=504440a5f5b0256c this_txt=c053303a9d8dd5b4 expected_txt=c053303a9d8dd5b4 -> PASS
 ```
 **Break run (`SHEDRB_BREAK=1`, placement cover dropped, witnesses still judge against the rule rows; db sha256 prefix 4c80c9d10c4bd02d):**
 ```
 §SHEDRB_INSIDE sets=256 vertices=215040 violating_vertices=215040 min_margin_mm=-0.000 (worst set GEN-RB-007izrUd4u9uIpn7AAAABL-L) required>=cover-1mm (footing 75, column 40) -> FAIL
 §SHEDRB_COUNTS footing_sets=64 count_mismatches=64 formula floor((side-2*cover-d)/spacing)+1 (the spec formula without the -d term would give {'(8, 8)': 20, '(8, 9)': 12, '(10, 10)': 14, '(10, 11)': 18} as (placed, spec-literal)) first=('007izrUd4u9uIpn7AAAABL', 'L', 8, 7) -> FAIL
+§SHEDRB_WELD_WINDING beads=676 not_closed_or_inconsistent=0 min_signed_volume_mm3=3225.513 -> PASS
 §SHEDRB_BREAK_CHECK switch=on expected INSIDE=FAIL got INSIDE=FAIL -> PASS
 §SHEDRB_SUMMARY failed_witnesses=INSIDE,COUNTS added=594 not_built=45 refused=26
 ```
@@ -148,6 +151,8 @@ Steel grade (PJAM: not stated), concrete cover on PJAM until ACI 318-19 is read,
 4. **Weld beads:** two triangular beads per weld element, both on the plate's +normal face, at the two outer edges where the member section meets that plane (leg = table size, length = overlap length). The member section in the plate plane is taken from the whole prism, so a through contact finds its edges. Weld/member clash is not checked (not in the spec).
 5. **Witness additions:** `STATED_TIE_SPACING` (loop gaps measured from the stored geometry) and `SIZE_CHECK`. DETERMINISM is judged with `--expect-*-sha` on the second run (run 1 prints INCONCLUSIVE by design). The break run also fails COUNTS (64 sets) as a side effect; INSIDE is the required one. Optional `--callouts <details.dxf>` lists the beam-sheet rebar texts in the change list.
 6. `element_world_bbox` rows are added for new elements; the source has no `elements_rtree`, so none is created. `element_transforms` has 10 columns here (no tag column as in the PJAM DB).
+7. **Weld-bead winding fix (found by the build-5 IFC export, §9).** The first version wound each bead's two end caps inward: all 676 beads were closed (every edge shared by two triangles) but inconsistently wound, so the IFC4 faceted solids were invalid. Fixed: caps are wound outward from the bead centroid. New witness `§SHEDRB_WELD_WINDING` (every directed edge exactly once and its reverse exactly once; signed volume > 0). Proof it bites: `SHEDRB_BREAK_WINDING=1` restores the old caps and gives `§SHEDRB_WELD_WINDING beads=676 not_closed_or_inconsistent=676 -> FAIL` (that old build also reproduces the earlier db sha256 prefix 13ff08698dd29442). Only weld geometry changed: the DB sha256 moved from 13ff08698dd29442 to 504440a5f5b0256c, the change-list txt sha256 is unchanged (c053303a9d8dd5b4).
+
 
 ## 7. BUILD 2 SPEC (2026-11-18, owner: "Proceed on build order tasks"): PJAM concrete beam reinforcement from the S-401 schedule
 **Issue it proves or disproves:** can the stated S-401 beam schedule become real bars on every concrete beam of the model? The schedule is joined by the model's own type mark. One engine (`scripts/lod/rebar_from_schedule.py`) must serve both a DXF-attached schedule (the Shed) and a table read from a drawing (PJAM), with no per-building code.
@@ -347,7 +352,7 @@ Witness additions:
 - INCONCLUSIVE if 0 exported.
 
 ### §9 RESULT 2026-11-18 (BUILD 5, generic `scripts/lod/export_parts_ifc.py`; private frame file and outputs, not committed)
-**Headline: both PJAM add-on IFCs pass every witness and are byte-identical on a second export. The Shed IFC is written, but its welds fail the solid check and its frame check against the Modeller IFC FAILS, because that IFC is an older build than the DB.**
+**Headline: both PJAM add-on IFCs pass every witness and are byte-identical on a second export. The Shed IFC now passes MESH and SOLIDS (weld winding fixed 2026-11-18, §6 item 7) and is byte-identical on a second export; its frame check against the Modeller IFC still FAILS, because that IFC is an older build than the DB (open, not touched).**
 
 **File 1, PJAM rebar** (IFC2X3, their frame; 46,734,172 bytes; SHA-256 `72c67a8805673ff1…`; run 2 identical):
 ```
@@ -368,26 +373,28 @@ Witness additions:
 §PIFC_DETERMINISM (run 2) this=72c67a8805673ff1 expected=72c67a8805673ff1 -> PASS
 ```
 **File 2, PJAM gussets** (IFC2X3, their frame; 65,462 bytes; SHA-256 `1507ee24cdfd7af0…`; run 2 identical): 1 joint = IfcElementAssembly 1 + IfcPlate 1 + IfcMechanicalFastener 1 + IfcFastener 1; ROUNDTRIP PASS (validate_errors=0, GlobalIds 20 unique), SOLIDS breps=13 invalid=0, VALUES PASS (M20), FRAME_FILE max 0.0006 mm, FRAME_HOSTS (brace + support, both found) max 0.000 mm, FRAME_INSIDE max overshoot 0.000 mm, DETERMINISM PASS.
-**File 3, Shed rebar + welds** (IFC4, DB frame as is; 3,130,014 bytes; SHA-256 `7d2c878374fd0740…`; run 2 identical):
+**File 3, Shed rebar + welds** (IFC4, DB frame as is; 3,130,014 bytes; SHA-256 `a3a67047433764b8…` after the weld-winding fix of §6 (was `7d2c878374fd0740…`); run 2 identical). `SHED_rebar.db` for this file has sha256 prefix 504440a5f5b0256c:
 ```
-§PIFC_SELECT schema=IFC4 elements=594 classes={'IfcFastener': 338, 'IfcReinforcingBar': 256} frame=DB frame as is
-§PIFC_TRACE elements=594 with_ADDED_row=594 untraced=0 -> PASS
-§PIFC_MESH components_closed=1440 open=676 of_which_every_edge_has_2_triangles_but_winding_inconsistent=676 -> FAIL
-§PIFC_ROUNDTRIP counts={'IfcReinforcingBar': 256, 'IfcFastener': 338} (= DB counts) globalids=1792 unique=1792 validate_errors=0 -> PASS
-§PIFC_SOLIDS facesets=594 invalid=338 {'not closed or not consistently wound': 338} -> FAIL
-§PIFC_VALUES parts_checked=256 mismatches=0 -> PASS      §PIFC_VALUES_MESH bars_measured=1440 min=0.9242 max=1.0000 outside=0 -> PASS
-§PIFC_BARLEN elements_with_stated_length=96 measured_vs_stated_mm max=0.039
-§PIFC_FRAME_FILE parts=594 file_vs_db_bbox_mm max=0.0005 -> PASS
-§PIFC_FRAME_HOSTS hosts_named=399 found=399 their_host_vs_ours_bbox_mm max_xy=36591.896 over_tol=335 by_host_class_max_mm={'IfcColumn': (95, 15265.403), 'IfcDoor': (1, 36253.075), 'IfcFooting': (32, 0.028), 'IfcMember': (156, 36591.896), 'IfcPlate': (114, 36576.021), 'IfcSlab': (1, 36398.201)} -> FAIL
-§PIFC_FRAME_INSIDE parts_compared=594 over_tol=434 by_first_host_class_max_mm={'IfcColumn': (189, 15200.003), 'IfcFooting': (64, 0.0), 'IfcMember': (147, 36553.796), 'IfcPlate': (190, 36553.796), ...} -> FAIL
-§PIFC_DETERMINISM (run 2) this=7d2c878374fd0740 expected=7d2c878374fd0740 -> PASS
+§PIFC_SELECT db=SHED_rebar.db prefixes=['GEN-RB-', 'GEN-WD-'] schema=IFC4 elements=594 classes={'IfcFastener': 338, 'IfcReinforcingBar': 256} frame=DB frame as is
+§PIFC_TRACE elements=594 with_ADDED_row=594 untraced=0 elements_with_more_than_one_ADDED_row=0 -> PASS
+§PIFC_MESH components_closed=2116 open=0 of_which_every_edge_has_2_triangles_but_winding_inconsistent=0 wound_inward_flipped=0 degenerate_triangles=0 -> PASS
+§PIFC_ROUNDTRIP counts={'IfcReinforcingBar': 256, 'IfcFastener': 338} db_elements={'IfcReinforcingBar': 256, 'IfcFastener': 338} extra_parts_from_splitting_mixed_diameter_elements={} expected_in_file={'IfcReinforcingBar': 256, 'IfcFastener': 338} globalids=1792 unique=1792 validate_errors=0 schema=IFC4 -> PASS
+§PIFC_SOLIDS facesets=594 invalid=0 {} -> PASS
+§PIFC_VALUES parts_checked=256 mixed_diameter_elements_split=0 mismatches=0 (NominalDiameter read back from the file vs a diameter stated in the element upgrade row) -> PASS
+§PIFC_VALUES_MESH bars_measured=1440 mesh_thickness_over_stated: min=0.9242 max=1.0000 allowed=[0.9139, 1.0100] outside=0 -> PASS
+§PIFC_BARLEN elements_with_stated_length=96 measured_vs_stated_mm max=0.039 median=0.006 (mesh volume / 8-gon area vs the length in the upgrade row)
+§PIFC_FRAME_FILE parts=594 file_vs_db_bbox_mm max=0.0005 over_0.01mm=0 -> PASS
+§PIFC_FRAME_HOSTS hosts_named=399 found_in_their_ifc=399 missing_in_their_ifc=0 not_in_our_db=0 compared=399 their_host_vs_ours_bbox_mm max_xy=36591.896 max_all_axes=36591.896 over_tol=335 by_host_class_max_mm={'IfcColumn': (95, 15265.403), 'IfcDoor': (1, 36253.075), 'IfcFooting': (32, 0.028), 'IfcMember': (156, 36591.896), 'IfcPlate': (114, 36576.021), 'IfcSlab': (1, 36398.201)} rotated_x_or_y_hosts=0 tol_mm=1.0 -> FAIL
+§PIFC_FRAME_INSIDE parts_compared=594 parts_without_a_host_found=0 overshoot_beyond_host_bbox_mm max_xy=36553.796 max_all_axes=36553.796 over_tol=434 by_first_host_class_max_mm={'IfcColumn': (189, 15200.003), 'IfcDoor': (1, 35589.638), 'IfcFooting': (64, 0.0), 'IfcMember': (147, 36553.796), 'IfcPlate': (190, 36553.796), 'IfcSlab': (3, 112.399)} tol_mm=1.0 worst=GEN-WD-0DDMR1SOBMDZnIWMAAAAEh-A-3prXnlPstzIrqfkvAAAAGW -> FAIL
+§PIFC_FRAME_KERNEL sample=12 hand_bbox_vs_geometry_kernel_mm max=0.0000 -> PASS
+§PIFC_DETERMINISM (run 2) this=a3a67047433764b8 expected=a3a67047433764b8 -> PASS
 ```
 **Break run** (`PIFC_BREAK=1`, every part written 10 mm off in x, gussets): `§PIFC_FRAME_FILE file_vs_db_bbox_mm max=10.0001 -> FAIL`, verdict FAIL, as it must. FRAME_INSIDE still passes in that run: it tests containment in the host bbox, so 10 mm of shift inside the cover is not seen by it. FRAME_FILE is the witness that sees a shift.
 
 **What the numbers say:**
 - **PJAM frame is exact.** Their host beams vs ours: max 0.014 mm over 92 hosts (rebar) and 0.000 mm (gusset brace and support). The shift used is the measured one of the delta IFC; it was re-measured on 12 rebar hosts (spread 0).
 - **Rebar values are consistent three ways:** NominalDiameter read back = stated diameter on all 317 parts; the measured bar thickness is 0.9999-1.0002 of it on all 5349 bars; BarLength from the mesh volume agrees with the length in the upgrade row within 1.5 mm.
-- **Shed welds are not closed solids as stored.** All 676 weld beads (338 welds x 2) have every edge shared by exactly two triangles but inconsistent winding on some faces. The defect is in the DB meshes of the build-3 welds, not in the export. They are written as stored; no repair.
+- **Shed welds (fixed 2026-11-18).** The first export found all 676 weld beads (338 welds x 2) closed but inconsistently wound (`§PIFC_SOLIDS invalid=338`); the defect was in the build-3 weld generator (end caps wound inward), not in the export. Fixed in `rebar_from_schedule.py` (§6 item 7); re-exported with the same arguments: MESH components_closed=2116 open=0, SOLIDS invalid=0, validate_errors=0.
 - **Shed frame check FAILS against `ShedDrawing_512.ifc`.** Footings match to 0.028 mm, but columns (up to 15.27 m), members and plates (up to 36.6 m) do not: that IFC is the 19 Oct build (`ShedDrawing_512_extracted.db`, 512 elements, column 668.89 / -95.85) while `SHED_rebar.db` derives from the 15 Nov export (`SHED_extracted_2026-11-15.db`, same column at -111.12). It is not only stale column tops. No IFC of the 15 Nov export exists on disk, so the Shed frame is proven only on its 32 footings (64 footing-bar parts overshoot 0.000 mm).
 
 **Deviations from §9 and why:**
