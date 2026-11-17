@@ -1,0 +1,8 @@
+  PASS the generator wrote a site list beside the fresh index (1866 fields, index 1866)
+  PASS sampled 61 fields: the site list holds exactly the writes and reads the index counted (61 agree)
+  PASS every returned site (304) is a line that mentions the field, with the column on its dot (304 ok, 0 dropped)
+  PASS a phantom (Ctx) has read sites (1) and no write site
+  PASS red control: a made-up field → not known, no sites
+  PASS red control: PHASE_MAP — its write line moved after the scan → that site is dropped (1 dropped), not returned at the old line; the reads in other files stay (2)
+  PASS red control: the committed index has no site list beside it → no references offered (never a guess)
+§X0_REFS fields=61 counts_agree=Y sites=304 lines_ok=Y phantom_reads_only=Y unknown=Y moved_line_dropped=Y no_list_no_guess=Y gen_ms=7035 verdict=PASS

@@ -1,0 +1,52 @@
+  PASS red control: an unstamped log → all 3 tags say "no stamped log found", no value quoted
+    | # Context for `app/code.js`
+    | 
+    | From this checkout's own indexes (X0 Navigator). Nothing here is a guess; a section with no data says so.
+    | 
+    | - 13 lines · 330 bytes · checkout at b1f88f1 · this file is as committed
+    | 
+    | ## Its own header
+    | 
+    | ```js
+    | // code.js: the fixture header, line one
+    | // line two of the header
+    | ```
+    | 
+    | ## How it reaches a user
+    | 
+    | - app: start-up · 330 B (raw) · every user pays for it when the page opens
+    | 
+    | An edit here needs the cache bump: `node scripts/bump.js app/code.js` (dry run; `--write` applies).
+    | 
+    | ## APP fields whose listed write site is this file
+    | 
+    | - `APP.ctxField` — line 8 (written as `A.ctxField`) · 1 writes · 2 reads
+    | 
+    | ## The § tags it prints
+    | 
+    | - line 9 `§CTX_PROBE_A` — spec: no spec found
+    |   - last value: `§CTX_PROBE_A n=7` [run.log:3 @ b1f88f1]
+    | - line 10 `§CTX_PROBE_B` — spec: no spec found
+    |   - last value: `§CTX_PROBE_B ok` [run.log:4 @ b1f88f1]
+    | - line 11 `§CTX_PROBE_C` — spec: no spec found
+    |   - last value: not shown: tag not in any stamped log
+    | 
+    | ## Not in this block
+    | 
+    | Who owns this file, which witnesses prove it, and which project rules apply: those indexes do not exist yet (design parts D and E).
+  PASS header: the two comment lines, verbatim; the shebang, licence lines and code are not in it
+  PASS load: equals deploy_cost.fileClass (app:start-up), and names the bump command
+  PASS fields: the one field the real generator indexed in this file (ctxField), with its line
+  PASS tags: the 3 printed tags, in order, with lens_index.explain's states (shown,shown,absent): last value of A is n=7, C is "tag not in any stamped log"
+  PASS the file edited after the log → "file changed since the log" twice, no value, and the block says the file has uncommitted changes
+  PASS red control: a bare file → "no header comment", "not loaded at start", "none", "prints no § tag"
+  PASS red control: a file that does not exist → found=false and "no such file"
+  PASS no indexes handed in → those sections say INCONCLUSIVE / not available, never a made-up answer
+  §X0_CONTEXT_REAL file=viewer/cost_panel.js header_lines=3 load=viewer:start-up fields=0 tags=1 shown=0 same_as_lib=Y
+  §X0_CONTEXT_REAL file=viewer/city.js header_lines=6 load=viewer:start-up fields=69 tags=28 shown=0 same_as_lib=Y
+  §X0_CONTEXT_REAL file=viewer/grid_overlay.js header_lines=24 load=viewer:start-up fields=5 tags=73 shown=0 same_as_lib=Y
+  §X0_CONTEXT_REAL file=viewer/schedule_gate.js header_lines=32 load=viewer:start-up fields=0 tags=11 shown=0 same_as_lib=Y
+  §X0_CONTEXT_REAL file=erp/ad_callout.js header_lines=13 load=erp:start-up fields=0 tags=15 shown=0 same_as_lib=Y
+  §X0_CONTEXT_REAL file=scripts/bump.js header_lines=23 load=not-at-start fields=0 tags=27 shown=0 same_as_lib=Y
+  PASS real files: 6 of 6 blocks equal the libs' own answers, section by section; viewer/city.js lists fields (69, db among them)
+§X0_CONTEXT header=Y load=Y fields=Y tags=Y changed_hidden=Y unstamped_no_value=Y empty_says_none=Y missing_file=Y no_index_inconclusive=Y real_files=6 real_same=6 verdict=PASS

@@ -1,0 +1,18 @@
+§ERP_SHOT hovered=36 of 40 form fields; first: C_Order.DocumentNo layers=18 lined=17 | C_Order.DocumentNo layers=18 lined=17 | C_Order.C_BPartner_ID layers=20 lined=18 | C_Order.C_BPartner_ID layers=20 lined=18
+§ERP_SHOT field=C_Order.C_BPartner_ID layers=20 lined=18 steps=field,on change,picker,on save key=Alt+1 opens=vscode://file<bim-ootb>/erp/callouts/CalloutOrder.js:181 tip={"x":388,"y":304,"w":760,"h":276.859375} page_errors=0
+§ERP_SHOT tooltip:
+C_Order.C_BPartner_ID   (20 layers, in the order they fire)
+FIELD
+      dictionary: C_Order.C_BPartner_ID  (entity D)
+        Search · mandatory
+ON CHANGE
+  [1] callout: CalloutOrder.bPartner  (core@0)  erp/callouts/CalloutOrder.js:181  ← CalloutOrder.java
+PICKER
+      validation rule: C_BPartner (Trx)
+        C_BPartner.IsActive='Y' AND C_BPartner.IsSummary='N'
+ON SAVE
+  [2] model: beforeSave,initialClock,initialDefaults  (core@0)  erp/model_order.js:57
+  [3] doc action: C_Order  (core@0)  erp/model_order.js:784
+  [4] model validator: 15 × MOrder.* (issotrxFromWindow, clientNotZero, …)  (base, installed at the first save)  erp/ad_modelval.js:272
+1-4 (or Alt+1-4 while typing) = open that line in VS Code
+§ERP_SHOT done errors=0 opened=Y

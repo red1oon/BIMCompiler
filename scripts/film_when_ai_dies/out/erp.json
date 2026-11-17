@@ -1,0 +1,206 @@
+{
+ "errors": [],
+ "table": "C_Order",
+ "column": "C_BPartner_ID",
+ "layers": [
+  {
+   "step": "field",
+   "kind": "dictionary",
+   "name": "C_Order.C_BPartner_ID",
+   "at": null,
+   "legacy": null,
+   "note": "Search · mandatory"
+  },
+  {
+   "step": "on change",
+   "kind": "callout",
+   "name": "CalloutOrder.bPartner",
+   "at": "erp/callouts/CalloutOrder.js:181",
+   "legacy": "CalloutOrder.java",
+   "note": null
+  },
+  {
+   "step": "picker",
+   "kind": "validation rule",
+   "name": "C_BPartner (Trx)",
+   "at": null,
+   "legacy": null,
+   "note": "C_BPartner.IsActive='Y' AND C_BPartner.IsSummary='N'"
+  },
+  {
+   "step": "on save",
+   "kind": "model",
+   "name": "beforeSave,initialClock,initialDefaults",
+   "at": "erp/model_order.js:57",
+   "legacy": null,
+   "note": null
+  },
+  {
+   "step": "on save",
+   "kind": "doc action",
+   "name": "C_Order",
+   "at": "erp/model_order.js:784",
+   "legacy": null,
+   "note": null
+  },
+  {
+   "step": "on save",
+   "kind": "model validator",
+   "name": "MOrder.issotrxFromWindow (BEFORE_SAVE)",
+   "at": "erp/ad_modelval.js:272",
+   "legacy": null,
+   "note": null
+  },
+  {
+   "step": "on save",
+   "kind": "model validator",
+   "name": "MOrder.clientNotZero (BEFORE_SAVE)",
+   "at": "erp/ad_modelval.js:298",
+   "legacy": null,
+   "note": null
+  },
+  {
+   "step": "on save",
+   "kind": "model validator",
+   "name": "MOrder.warehouseMandatory (BEFORE_SAVE)",
+   "at": "erp/ad_modelval.js:301",
+   "legacy": null,
+   "note": null
+  },
+  {
+   "step": "on save",
+   "kind": "model validator",
+   "name": "MOrder.warehouseOrgCheck (BEFORE_SAVE)",
+   "at": "erp/ad_modelval.js:306",
+   "legacy": null,
+   "note": null
+  },
+  {
+   "step": "on save",
+   "kind": "model validator",
+   "name": "MOrder.bpLocationConsistency (BEFORE_SAVE)",
+   "at": "erp/ad_modelval.js:311",
+   "legacy": null,
+   "note": null
+  },
+  {
+   "step": "on save",
+   "kind": "model validator",
+   "name": "MOrder.bpLocationDefault (BEFORE_SAVE)",
+   "at": "erp/ad_modelval.js:324",
+   "legacy": null,
+   "note": null
+  },
+  {
+   "step": "on save",
+   "kind": "model validator",
+   "name": "MOrder.billDefaults (BEFORE_SAVE)",
+   "at": "erp/ad_modelval.js:351",
+   "legacy": null,
+   "note": null
+  },
+  {
+   "step": "on save",
+   "kind": "model validator",
+   "name": "MOrder.priceListDefault (BEFORE_SAVE)",
+   "at": "erp/ad_modelval.js:360",
+   "legacy": null,
+   "note": null
+  },
+  {
+   "step": "on save",
+   "kind": "model validator",
+   "name": "MOrder.currencyFromPriceList (BEFORE_SAVE)",
+   "at": "erp/ad_modelval.js:372",
+   "legacy": null,
+   "note": null
+  },
+  {
+   "step": "on save",
+   "kind": "model validator",
+   "name": "MOrder.salesRepFromCtx (BEFORE_SAVE)",
+   "at": "erp/ad_modelval.js:381",
+   "legacy": null,
+   "note": null
+  },
+  {
+   "step": "on save",
+   "kind": "model validator",
+   "name": "MOrder.docTypeTargetDefault (BEFORE_SAVE)",
+   "at": "erp/ad_modelval.js:389",
+   "legacy": null,
+   "note": null
+  },
+  {
+   "step": "on save",
+   "kind": "model validator",
+   "name": "MOrder.deliveryInvoiceRuleDefault (BEFORE_SAVE)",
+   "at": "erp/ad_modelval.js:412",
+   "legacy": null,
+   "note": null
+  },
+  {
+   "step": "on save",
+   "kind": "model validator",
+   "name": "MOrder.paymentTermDefault (BEFORE_SAVE)",
+   "at": "erp/ad_modelval.js:428",
+   "legacy": null,
+   "note": null
+  },
+  {
+   "step": "on save",
+   "kind": "model validator",
+   "name": "MOrder.prepayNoCash (BEFORE_SAVE)",
+   "at": "erp/ad_modelval.js:436",
+   "legacy": null,
+   "note": null
+  },
+  {
+   "step": "on save",
+   "kind": "model validator",
+   "name": "MOrder.priceListImmutable (BEFORE_SAVE)",
+   "at": "erp/ad_modelval.js:442",
+   "legacy": null,
+   "note": null
+  }
+ ],
+ "text": "C_Order.C_BPartner_ID   (20 layers, in the order they fire)\nFIELD\n      dictionary: C_Order.C_BPartner_ID  (entity D)\n        Search · mandatory\nON CHANGE\n  [1] callout: CalloutOrder.bPartner  (core@0)  erp/callouts/CalloutOrder.js:181  ← CalloutOrder.java\nPICKER\n      validation rule: C_BPartner (Trx)\n        C_BPartner.IsActive='Y' AND C_BPartner.IsSummary='N'\nON SAVE\n  [2] model: beforeSave,initialClock,initialDefaults  (core@0)  erp/model_order.js:57\n  [3] doc action: C_Order  (core@0)  erp/model_order.js:784\n  [4] model validator: 15 × MOrder.* (issotrxFromWindow, clientNotZero, …)  (base, installed at the first save)  erp/ad_modelval.js:272\n1-4 (or Alt+1-4 while typing) = open that line in VS Code",
+ "tip": {
+  "x": 388,
+  "y": 304,
+  "w": 760,
+  "h": 276.859375
+ },
+ "point": {
+  "x": 372,
+  "y": 288
+ },
+ "shown": [
+  {
+   "n": "1",
+   "at": "erp/callouts/CalloutOrder.js:181",
+   "line": "[1] callout: CalloutOrder.bPartner  (core@0)  erp/callouts/CalloutOrder.js:181  ← CalloutOrder.java"
+  },
+  {
+   "n": "2",
+   "at": "erp/model_order.js:57",
+   "line": "[2] model: beforeSave,initialClock,initialDefaults  (core@0)  erp/model_order.js:57"
+  },
+  {
+   "n": "3",
+   "at": "erp/model_order.js:784",
+   "line": "[3] doc action: C_Order  (core@0)  erp/model_order.js:784"
+  },
+  {
+   "n": "4",
+   "at": "erp/ad_modelval.js:272",
+   "line": "[4] model validator: 15 × MOrder.* (issotrxFromWindow, clientNotZero, …)  (base, installed at the first save)  erp/ad_modelval.js:272"
+  }
+ ],
+ "keyPressed": "Alt+1",
+ "pickedAt": "erp/callouts/CalloutOrder.js:181",
+ "openedLink": "vscode://file/tmp/wt-film-aid-ootb/erp/callouts/CalloutOrder.js:181",
+ "hoverLine": "",
+ "installed": "§ERP_HOVER installed index_entries=305",
+ "pageErrors": []
+}

@@ -1,0 +1,18 @@
+  PASS red control: a log WITHOUT a stamp → nothing shown, nothing even considered (unstamped=1)
+  PASS stamped log + unchanged file → both printed tags get their LAST value (§LENS_PROBE_A n=42 | §LENS_PROBE_B ok), on the printing lines, not the comment
+  PASS the lens title carries the value, the log name and the commit
+  PASS explain: both tags shown, hover line carries value, log line and commit (last value: `§LENS_PROBE_A n=42` — run.log:4 @ dfafc8d)
+  PASS the printing file edited after the log → nothing shown (why: file changed since the log)
+  PASS explain: the edited file → hidden, hover line names the reason (last value not shown: file changed since the log)
+  PASS a log made while the file was dirty (the stamp names it) → nothing shown (why: file was dirty when the log was made)
+  PASS after committing the edit a new log is shown again, and another file being dirty does not hide it
+  PASS a stamp with commit=none is not accepted
+  PASS explain: a tag no stamped log carries → "tag not in any stamped log"; red control: no stamped log at all → "no stamped log found" for both, no value
+  PASS red control: a bake log with only its own commit line (no stamp) → no value, counted unstamped (2)
+  PASS a stamped log in a nested extra folder, stamp on line 4 behind a timestamp → shown (last value: `12:00:00.000 +    0.0s [con] §LENS_PROBE_A n=99` — x0-lens-extra-j1y3Z4/run1/deep/bake.log:5 @ f07b59e)
+  PASS the printing file edited after that log → hidden, "file changed since the log"
+  PASS caps: an oversize log (big=1) and a folder past depth 5 (deep=1) are skipped; only the one real log is read
+  PASS "~" expands to the home folder, a plain path is kept
+  PASS cli_silent_bake.js calls stampLine once (1), inside a try block (1): a stamp cannot stop a bake
+§LENS_REAL stamped_logs=0 unstamped_logs=0 tags_in_stamped_logs=0 (this checkout's logs/, for information)
+§LENS shown=Y hidden_changed=Y hidden_dirty=Y unstamped_ignored=Y explain_shown=Y explain_hidden=Y explain_absent=Y extra_dir=Y extra_changed=Y bake_env_not_a_stamp=Y caps=Y bake_stamps=Y verdict=PASS

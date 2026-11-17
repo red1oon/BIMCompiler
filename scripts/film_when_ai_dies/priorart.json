@@ -1,0 +1,13 @@
+{
+ "note": "Only sources this lane READ (fetched 2026-11-18 into out/prior/). A web row names the URL, the copy and a text that must be in that copy; guard.js check P fails a row whose text is not there. Nothing from memory; none claims to be first.",
+ "items": [
+  { "name": "LSIF (Microsoft, language server index format)", "where": { "url": "https://microsoft.github.io/language-server-protocol/specifications/lsif/0.6.0/specification/", "saved": "out/prior/lsif.html", "text": "answer language server LSP requests for the same workspace without running the language server itself" },
+    "does": "a precomputed dump answers go-to-definition and references without the server", "took": "answers come from a file generated beforehand, not from a live model" },
+  { "name": "Universal Ctags", "where": { "url": "https://docs.ctags.io/en/latest/index.html", "saved": "out/prior/ctags.html", "text": "ctags generates an index (or tag) file of language objects found in source files" },
+    "does": "an index file beside the source that editors look up", "took": "an index the repo can regenerate; a lookup, never a guess" },
+  { "name": "Temporal, Workflow Definition", "where": { "url": "https://docs.temporal.io/workflow-definition", "saved": "out/prior/temporal.html", "text": "A Workflow Definition must be deterministic to support replay" },
+    "does": "replayable code may not read the clock or call out", "took": "the rule behind the core-file warning" },
+  { "name": "Quokka.js", "where": { "url": "https://quokkajs.com/", "saved": "out/prior/quokka.html", "text": "displaying runtime values in your editor as you type" },
+    "does": "live runtime values beside the code, as you type", "took": "a value beside the line; here only a saved one, proven to be from this code" }
+ ]
+}
