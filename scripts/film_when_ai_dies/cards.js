@@ -10,11 +10,11 @@ const { F, S, v, ERP } = FV;
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;'), cut = (s, n) => (s.length > n ? s.slice(0, n - 1) + '…' : s);
 const pics = {}, img = f => pics[f] || (pics[f] = 'data:image/png;base64,' + fs.readFileSync(f).toString('base64'));
 const { TOP, BAR, MH, SC, CROP, TOPCROP } = require('./layout.js'), MT = TOP + BAR, LANG = process.env.FILM_LANG || 'en';
-const FONT = LANG === 'th' ? "'Noto Sans Thai','DejaVu Sans',sans-serif" : "'DejaVu Sans',sans-serif";
+const FONT = LANG === 'th' ? "'Noto Sans Thai','DejaVu Sans',sans-serif" : LANG === 'zh' ? "'DejaVu Sans','Noto Sans CJK SC',sans-serif" : "'DejaVu Sans',sans-serif";
 // where each VS Code still is cut (source px from the top of the 1440x900 window; band = 630/SC = 472 px; the top band 250/SC = 188 px). Chosen from the stills' own geometry; guard.js checks each band lies inside the picture.
 const CSS = `*{box-sizing:border-box;margin:0;padding:0} body{width:1920px;height:1080px;background:#0f172a;color:#F3EEE8;font-family:${FONT};overflow:hidden}
 .top{position:absolute;left:0;top:0;width:1920px;height:${TOP}px;overflow:hidden;background:#1e1e1e} .top img{position:absolute;left:0;width:1920px}
-.term{position:absolute;left:0;top:0;width:1920px;height:${TOP}px;background:#0b0f17;padding:14px 34px;font-family:'DejaVu Sans Mono','Noto Sans Thai',monospace;font-size:27px;line-height:1.42;overflow:hidden;border-bottom:2px solid #334155}
+.term{position:absolute;left:0;top:0;width:1920px;height:${TOP}px;background:#0b0f17;padding:14px 34px;font-family:'DejaVu Sans Mono','Noto Sans Thai','Noto Sans CJK SC',monospace;font-size:27px;line-height:1.42;overflow:hidden;border-bottom:2px solid #334155}
 .cmd{white-space:pre;color:#F3EEE8} .cmd:before{content:'$ ';color:#4ade80} .ans{white-space:pre;color:#fbbf24} .dim{white-space:pre;color:#94a3b8} .good{color:#4ade80;font-weight:700}
 .cur{display:inline-block;width:15px;height:27px;background:#4ade80;vertical-align:-5px;margin-left:2px}
 .bar{position:absolute;left:0;right:0;top:${TOP}px;height:${BAR}px;background:#1e293b;color:#94a3b8;font-size:19px;line-height:${BAR}px;padding:0 28px;letter-spacing:1px;white-space:nowrap;overflow:hidden} .bar b{color:#7dd3fc}
@@ -48,7 +48,7 @@ cards.cover = [{ html: full('<div class="ch"><div class="k">' + esc(t('cover.kic
   s.push({ html: frame(termHtml(t('cmd.q5'), t('cmd.q5').length, true, S.q5r.lines.slice(1, 4).map(l => dim(l.replace(/^§/, ''))).join('') + ans(t('a.q5.ready'))), vsBottom('q5_ready'), t('st.q5c')), frames: null });
   s.push({ html: frame(vsTop('q5_written'), vsBottom('q5_written'), t('st.q5d')), frames: null }); cards.q5 = s; }
 { const css = `.lc{margin:44px 60px 0} .lc h1{font-size:50px;line-height:1.2} .lc h1 span{color:#FF6B78} .lc .sub{font-size:26px;color:#cbd5e1;margin-top:10px} .pf{margin-top:24px;font-size:26px;color:#7dd3fc} .tb{margin-top:12px;width:1800px;border-collapse:collapse;font-size:25px} .tb td{padding:6px 12px;border-top:1px solid #334155;vertical-align:top} .tb .n{color:#4ade80;font-weight:700;white-space:nowrap} .tb .d{color:#fbbf24;font-family:'DejaVu Sans Mono',monospace;font-size:21px} .ft{margin-top:14px;font-size:22px;color:#94a3b8;line-height:1.4}`;
-  const css2 = LANG === 'th' ? '.lc h1{font-size:44px} .tb{font-size:21px} .tb td{padding:4px 12px} .ft{font-size:19px;margin-top:8px} .lc .sub{font-size:22px} .pf{font-size:22px;margin-top:14px}' : '';
+  const css2 = LANG !== 'en' ? '.lc h1{font-size:44px} .tb{font-size:21px} .tb td{padding:4px 12px} .ft{font-size:19px;margin-top:8px} .lc .sub{font-size:22px} .pf{font-size:22px;margin-top:14px}' : '';
   const fk = f => t('feat.' + f.replace(/[^a-z0-9]+/gi, '_').toLowerCase()), O = FV.OFF, row = (f, doors) => '<tr><td>' + esc(f.split(' · ').map(fk).join(' · ')) + '</td><td class="n">' + esc(t('why.doors', { n: String(doors.length) })) + '</td><td class="d">' + esc(doors.join('  ·  ')) + '</td></tr>';
   const und = O.understanding.map(f => row(f, O.traced[f].doors)).join(''), shp = (() => { const g = {}; Object.keys(O.shipDoors).forEach(f => { const k = JSON.stringify(Array.from(new Set(O.shipDoors[f].map(d => d.replace(/^lib\//, ''))))); (g[k] = g[k] || []).push(f); }); return Object.keys(g).map(k => row(g[k].join(' · '), JSON.parse(k))); })()
   const body = '<div class="lc"><h1>' + esc(t('why.h1')) + '</h1><div class="sub">' + esc(t('why.sub')) + '</div><div class="pf">' + esc(t('why.proof')) + '</div><table class="tb"><tr><td colspan="3" class="dim" style="color:#94a3b8">' + esc(t('why.und')) + '</td></tr>' + und + '<tr><td colspan="3" style="color:#94a3b8;padding-top:14px">' + esc(t('why.ship')) + '</td></tr>' + shp.join('') + '</table>' +
@@ -67,7 +67,7 @@ cards.passenger = typed(t('cmd.passenger'), ans(t('a.pass.cmd')) + ans(t('a.pass
     '<b>' + esc(t('cl.limit')) + '</b><br>' + esc(t('cl.limit1')) + '<br>' + esc(t('cl.limit2'))];
   const guide = ['<b>' + esc(t('cl.guide')) + '</b><br>red1oon.github.io/BIMCompiler/DeveloperGuide/<br>#41-x0-navigator-the-repos-own-vs-code-extension', esc(t('cl.guide2')), (t('cl.tr') ? esc(t('cl.tr')) : 'github.com/red1oon/bim-ootb · MIT')];
   const col = (h, rows) => '<div class="col"><h2>' + esc(h) + '</h2>' + rows.map(r => '<div class="r">' + r + '</div>').join('') + '</div>';
-  cards.close = [{ html: full('<div class="lc"><h1>' + CO + esc(t('cl.h1a')) + CE + ' ' + esc(t('cl.h1b')) + '</h1><div class="cols">' + col(t('cl.col1'), pa) + col(t('cl.col2'), cred) + col(t('cl.col3'), guide) + '</div><div class="cr">' + esc(t('cl.keys')) + '</div></div>', css), frames: null }]; }
+  cards.close = [{ html: full('<div class="lc"><h1>' + CO + esc(t('cl.h1a')) + CE + ' ' + esc(t('cl.h1b')) + '</h1><div class="cols">' + col(t('cl.col1'), pa) + col(t('cl.col2'), cred) + col(t('cl.col3'), guide) + '</div><div class="cr">' + esc(t('cl.keys')) + '</div></div>', css + (LANG === 'zh' ? ' .lc{margin:84px 60px 0}' : '')), frames: null }]; }   // zh: the fitter's own voice-credit caption sits in the top 70 px of the last card
 const order = N.beats.map(b => b.id);
 (async () => {
   const br = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-gpu', '--allow-file-access-from-files', '--window-size=1920,1080'] }), pg = await br.newPage(); await pg.setViewport({ width: 1920, height: 1080 });
