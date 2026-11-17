@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: dde1d54bca12dea4
+source_sha: 6bed12d3a178c1fc
 lang: de
 ---
 
@@ -227,7 +227,7 @@ ELEC        81        283500.00
 MEP         809       153825.40
 PLB         14        49000.00
 STR         19        35725.55
-ls lists the 50 priced rows
+ls lists the 49 priced rows
 Ready to post to ERP Project Order? y/N → erp.process name="Fold from BIM" Building=Duplex
 ```
 
@@ -404,12 +404,12 @@ ELEC        81        283500.00
 MEP         809       153825.40
 PLB         14        49000.00
 STR         19        35725.55
-ls lists the 50 priced rows
+ls lists the 49 priced rows
 Ready to post to ERP Project Order? y/N → erp.process name="Fold from BIM" Building=Duplex
 → erp.process name="Fold from BIM" Building=Duplex
 ok · erp.process
-Posted Duplex: Project 990001, PlannedAmt 1054482.08284, 85 change(s) · no document made
-85 change(s) kept: create:c_project 1, create:c_projectphase 8, create:c_projecttask 21, create:c_projectline 45, create:m_product 7, create:m_product_category 1, create:m_product_category_acct 2
+Posted Duplex: Project 990001, PlannedAmt 1054482.08284, 81 change(s) · no document made
+81 change(s) kept: create:c_project 1, create:c_projectphase 8, create:c_projecttask 19, create:c_projectline 43, create:m_product 7, create:m_product_category 1, create:m_product_category_acct 2
 Open the project? y/N → cd project
 not done: cd project
 ```
