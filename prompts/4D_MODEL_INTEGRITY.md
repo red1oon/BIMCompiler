@@ -17,7 +17,7 @@ numbers are measured, the five decisions (D1–D5) are MADE. **Implement; do not
    GPU or browser runs without the owner's go; agents on Sonnet; results go in §Q.6 / §Q.7 only;
    the witness, never the owner's eyes, is the test.
 
-**Status (update this line as steps land):** step 0 ✅ (#3018) · D2 ✅ (#3022) · D5 ✅ (variant B, #3023) · D1 ☐ NEXT · D3 ☐ · D4 ☐ — owner rulings 2026-11-14: D2/D5 merged with their cross-level near misses NAMED (§Q.6/§Q.7 RESULTS); D5 = variant B. Open, named: §Q.8. **Once-over 2026-11-17: §Q.9 — gate 4 is RED on main (repair first); most out-of-order play is cross-task, outside D1–D4; 3 owner decisions — ✅ decided 2026-11-17 as D6/D7/D8 (§Q.9.4), which also sets the order of work after D5.** **Gate-4 repair ✅ (bim-ootb #3177, §Q.10); assembly-order witness ✅ (#3178); D1 built + measured, ⛔ HELD on gate 2 (§Q.11, branch `fix/4d-d1-bearing-walls`, no PR). **ALL D-STEPS MERGED 2026-11-17: D3 #3182 · D6 #3183 · D1 #3184 · D7 #3185 · D8 #3187 · D4 #3188 — played-layer midair 429/2395/247/144 → 245/343/135/40; NOT zero; what is left is named in §Q.12.2 (none of it a D-step) and the harness debt in §Q.12.3. NEXT = §Q.12.3 (dead witnesses, midair_zero re-lock), then §Q.12.2 items 2 and 5.** **CHASE TO ZERO 2026-11-17 (§Q.13): graph engine everywhere (owner ruling), finish slab, transitive filing, one lift, three small rules — bim-ootb #3196 #3199 #3202 #3206 #3208 #3210. Fleet out-of-order on the played layer: 4 elements in 7 buildings (0/0/2/1/0/0/1). What the number does not cover and what is still red: §Q.13.2, §Q.13.3.** **HARNESS TO GREEN 2026-11-18 (§Q.14): midair_zero re-locked with the named sets (70/0, unnamed midair 0), big-element cause bisected to #1551, W-RWB-5, edit-coherence on the shipped grid, `scripts/run_4d_gates.sh` (GREEN 8/8), cell solver deleted with schedules hash-equal on 7 buildings — bim-ootb #3213–#3218. Judge every change with `scripts/run_4d_gates.sh`. What is left: §Q.14.9 (no open owner question; the dead tree bar model is deleted, #3222).**
+**Status (update this line as steps land):** step 0 ✅ (#3018) · D2 ✅ (#3022) · D5 ✅ (variant B, #3023) · D1 ☐ NEXT · D3 ☐ · D4 ☐ — owner rulings 2026-11-14: D2/D5 merged with their cross-level near misses NAMED (§Q.6/§Q.7 RESULTS); D5 = variant B. Open, named: §Q.8. **Once-over 2026-11-17: §Q.9 — gate 4 is RED on main (repair first); most out-of-order play is cross-task, outside D1–D4; 3 owner decisions — ✅ decided 2026-11-17 as D6/D7/D8 (§Q.9.4), which also sets the order of work after D5.** **Gate-4 repair ✅ (bim-ootb #3177, §Q.10); assembly-order witness ✅ (#3178); D1 built + measured, ⛔ HELD on gate 2 (§Q.11, branch `fix/4d-d1-bearing-walls`, no PR). **ALL D-STEPS MERGED 2026-11-17: D3 #3182 · D6 #3183 · D1 #3184 · D7 #3185 · D8 #3187 · D4 #3188 — played-layer midair 429/2395/247/144 → 245/343/135/40; NOT zero; what is left is named in §Q.12.2 (none of it a D-step) and the harness debt in §Q.12.3. NEXT = §Q.12.3 (dead witnesses, midair_zero re-lock), then §Q.12.2 items 2 and 5.** **CHASE TO ZERO 2026-11-17 (§Q.13): graph engine everywhere (owner ruling), finish slab, transitive filing, one lift, three small rules — bim-ootb #3196 #3199 #3202 #3206 #3208 #3210. Fleet out-of-order on the played layer: 4 elements in 7 buildings (0/0/2/1/0/0/1). What the number does not cover and what is still red: §Q.13.2, §Q.13.3.** **HARNESS TO GREEN 2026-11-18 (§Q.14): midair_zero re-locked with the named sets (70/0, unnamed midair 0), big-element cause bisected to #1551, W-RWB-5, edit-coherence on the shipped grid, `scripts/run_4d_gates.sh` (GREEN 8/8), cell solver deleted with schedules hash-equal on 7 buildings — bim-ootb #3213–#3218. Judge every change with `scripts/run_4d_gates.sh`. What is left: §Q.14.9 (no open owner question; the dead tree bar model is deleted, #3222).** **2026-11-18 later (§Q.15): cell display stamp removed (#3225), a real bug in the layer pass fixed — `§TPL_LAYER_SELFCHECK` 0 inverted on 7 buildings, was up to 2,918 (#3226), lock gate proven on Clinic + Hospital (#3227). State and next: §Q.15.4 (next = the drifted DAY-0 pair, §Q.15.2a).**
 
 ---
 
@@ -3628,9 +3628,33 @@ layers  b4 → now  14→25  26→39     →156      →127    40→63    →74 
 - **Now witnessed:** `witness_tm_assembly_order` **A5** reads the run's own `§TPL_LAYER_SELFCHECK` line (PASS 7 of 7; INCONCLUSIVE when the line is absent). The line itself now names the kind of pair it fails on, so the next failure is diagnosed from the log.
 - Gates GREEN 8 / 8; `witness_4d_template_instantiation` 12 / 0, `witness_4d_movie_binds_bars` 7 / 0, `witness_cache_layer_attribution` 5 / 0.
 
-### Q.15.2a SEEN ON THE WAY, NOT FIXED — `witness_day0_integrity` IS RED ON MAIN (played layer)
-`§W_D0_VERDICT layer=played claims=16 PASS=8 FAIL=7 INCONCLUSIVE=1 RED` — it read 14 PASS / 0 FAIL when last locked (#1551). It is not in `run_4d_gates.sh` and nobody has read it since the D-steps. Unchanged by this session's work (the played layer is hash-equal). What it says today:
-- **C4 early MEP:** Duplex 63 pipe segments / fittings filed on `T/FDN` start inside the first 3 days; Terminal 48 on `00 Aras Asas`.
-- **C2 day-0 purity:** Terminal 187 and Hospital 1 are groundwork-promoted elements whose sequence was left behind (phase Substructure, sequence 3–4); Duplex 2 intruders (one wall, one fitting).
-- **C3:** HHS 1 slab waiting on a stair flight. **C1:** Terminal 5 datum collisions among 73 declared storeys.
-None of this is attributed yet. It is the next thing to work.
+### Q.15.2a SEEN ON THE WAY, NOT FIXED — the DAY-0 pair (§J.6) has drifted and is in no gate
+`witness_day0_integrity`: `§W_D0_VERDICT layer=played claims=16 PASS=8 FAIL=7 INCONCLUSIVE=1 RED`. This is NOT new: §J.6.1 attributed 8 played-layer FAILs in September (3 witness defects, 3 modelling facts, 1 real defect, 1 scope). Unchanged by this session (the played layer is hash-equal). What HAS moved since §J.6.1, read today:
+```
+claim · building      §J.6.1 (Sep)     today
+C2 Duplex             bad 3            bad 2   (one wall, one pipe fitting)
+C2 Terminal           bad 9            bad 187 (groundwork-promoted, sequence left behind — A1 says all 187 are the owner's election)
+C2 Hospital           0                bad 1   (same kind, A1 covers it)
+C3 Duplex             bad 1            PASS
+C3 HHS                bad 3            bad 1   (the ground slab waiting on a stair flight)
+C4 Duplex             bad 83           bad 63  (under-slab plumbing on T/FDN, 61 of 63 below grade — A6 PASS)
+C4 Terminal           bad 4            bad 48  (band `00 Aras Asas` now holds 732 elements, not the 4-element phantom band)
+C1 HHS                excess 1         PASS
+```
+`witness_day0_attribution` (the witness that proves each FAIL's cause): `PASS=3 FAIL=3` — **A2** (2 Duplex day-0 defects no longer match the #1551 patterns), **A4** (Terminal's lowest band is no longer the phantom band it was written for), **A5** (C1 baseline). So three of the September attributions no longer describe today's runs. Neither witness is in `run_4d_gates.sh`. **This is the next thing to work:** re-attribute C2 Terminal 9 → 187 and C4 Terminal 4 → 48 (which D-step or filing step moved them), then repair A2 / A4 / A5 or the rules they point at.
+
+### Q.15.3 EDIT ROUND-TRIP ON LARGE BUILDINGS — the lock gate too (bim-ootb #3227)
+`witness_gantt_lock_integrity` takes `LI_BLD` (a missing fixture is now an INCONCLUSIVE FAIL line, not a silent skip). Verify → bad drag refused and NAMED → undo verifies clean:
+```
+            elements   baseline floating / midair   bad drag    after undo        result
+Duplex        1,119        39 / 153                 +1 / +1     39 / 153          20 / 0
+Clinic       16,071       941 / 3,197               +0 / +1     941 / 3,197       20 / 0
+Hospital     63,182     2,572 / 11,645              +0 / +1     2,572 / 11,645    20 / 0
+```
+(Baselines are this witness's raw engine schedule, not the played layer; the gate is a delta.) `LARGE=1 scripts/run_4d_gates.sh` adds edit-coherence and lock-integrity on Clinic and Hospital. **Still owed from Q.9.3 item 6:** the same chain on the `_meta` DB the viewer loads for Hospital / Clinic, and `witness_undo_dot_spawn` beyond Duplex.
+
+### Q.15.4 STATE AFTER THIS SESSION (replaces §Q.14.9)
+- ✅ cell stamp removed (#3225) · ✅ layer pass fixed, self-check witnessed (#3226) · ✅ lock gate on large buildings (#3227) · ✅ dead tree bar model deleted (#3222).
+- **Next:** §Q.15.2a (the DAY-0 pair: re-attribute, repair, then put both in `run_4d_gates.sh`).
+- Owed: edit chain on the `_meta` DB (§Q.15.3).
+- Unchanged from §Q.13.2: the unjudged populations (overhead-only grounded elements, Terminal's 491 roof plates, orphans) and the four out-of-order elements named in §Q.13.
