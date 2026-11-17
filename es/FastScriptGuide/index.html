@@ -3635,7 +3635,7 @@
 <div class="highlight"><pre><span></span><code>$ (sleep 4; printf &#39;exit\r&#39;) | RED1_LOG=/tmp/fast_guide_greet.log RED1_HISTORY=/tmp/fast_guide_greet.hist BIM_DOOR_JOURNAL=/tmp/fast_guide_greet.journal script -qec &#39;node common/door/red1.js&#39; /dev/null | tr -d &#39;\r&#39; | sed -e &#39;s/\x1b\[[0-9;?]*[a-zA-Z]//g&#39; -e &#39;s/ · [0-9a-f]\{8\}$//&#39;
 Welcome to red1, the scripting door into BIM and ERP, stored in SQLite.
 REMEMBER THE NAME.
-Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 76 verbs · 30 words
+Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 77 verbs · 30 words
 Type help for the list of commands (or bim, mis, erp for one group).
 Tip: type level student for fuller help on each word (red1 --fast opens without tips).
 
@@ -3737,7 +3737,7 @@ node<span class="w"> </span>common/door/red1.js
 <p>Escriba <code>exit</code> para salir. Para escribir solo <code>red1</code> desde cualquier sitio, ejecute <code>npm link</code> una vez en esa carpeta. Para comprobar que funciona, pida su línea de versión:</p>
 <!-- run: red1_version -->
 <div class="highlight"><pre><span></span><code>$ node common/door/red1.js --version | sed -e &#39;s/^Copyright[^·]*· //&#39; -e &#39;s/ · [0-9a-f]\{8\}$//&#39;
-red1 1.0.0 · 76 verbs · 30 words
+red1 1.0.0 · 77 verbs · 30 words
 </code></pre></div>
 <p><strong>La descarga de seis archivos</strong> es para la puerta sola con los verbos del Modeller, sin copia completa. Cree una carpeta vacía, instale el motor de navegador que necesita el Modeller y descargue los seis archivos:</p>
 <div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>fastscript<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>fastscript
@@ -3808,9 +3808,9 @@ ls lists the 393 rows
 building Duplex
 → viewer.cost building=Duplex by=discipline
 ok · viewer.cost
-1190 elements · 1054482.23 total (71 with no rate); 3 with no size, not priced
+1190 elements · 1054482.08 total (71 with no rate); 3 with no size, not priced
 discipline  elements  cost
-ARC         267       532431.28
+ARC         267       532431.14
 ELEC        81        283500.00
 MEP         809       153825.40
 PLB         14        49000.00
@@ -3862,7 +3862,7 @@ ok · erp.actions
 Order 50000  status CO
 ├─ CL  → do close 50000
 ├─ VO  → do void 50000
-└─ RE  (no red1 word for it yet)
+└─ RE  → do reactivate 50000
 </code></pre></div>
 <p><strong>Ejecutar un proceso.</strong> <code>run "&lt;process&gt;"</code> ejecuta un proceso del diccionario ERP, como lo hace el botón de su ventana. Un parámetro que no escribe se pregunta, uno a uno, en el orden de las filas de parámetros del propio proceso (Return conserva el valor por defecto; una búsqueda abre una lista de selección acotada por la regla de validación de la columna; <code>(leave it out)</code> omite uno opcional). Luego red1 imprime la línea completa <code>→ erp.process …</code> y la ejecuta. El resumen nombra los documentos creados y el registro del proceso, como hace el diálogo de procesos heredado. Aquí el proyecto está escrito y las otras tres preguntas se responden con Return. (En un terminal cada pregunta dibuja su lista de selección; el <code>grep</code> conserva solo las preguntas y respuestas.) Fíjese en la respuesta honesta: el proyecto Hospital de la semilla no tiene precios de proveedor, así que <strong>no se crea ningún pedido de compra</strong>, y el registro dice por qué para cada línea:</p>
 <!-- run: erp_po -->
@@ -3893,7 +3893,7 @@ Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls s
 → erp.actions kind=Order id=100
 it may do: CL, VO, RE (do &lt;code&gt;; next shows the tree)
 </code></pre></div>
-<p>Allí Tab después de <code>do</code> ofrece solo <code>CL</code> y <code>VO</code> (<code>RE</code> aún no tiene palabra de red1), y <code>run Co</code> se completa a <code>"Copy Lines"</code>, el propio botón de la ventana del pedido.</p>
+<p>Allí Tab después de <code>do</code> ofrece solo <code>CL</code>, <code>VO</code> y <code>RE</code> (<code>RE</code> reactiva el pedido: <code>do RE</code>), y <code>run Co</code> se completa a <code>"Copy Lines"</code>, el propio botón de la ventana del pedido.</p>
 <p><strong>Recorrer el menú.</strong> <code>menu</code> muestra el menú ERP como lugares: <code>cd &lt;folder&gt;</code> entra (basta el comienzo de su nombre cuando solo una entrada empieza así), una entrada de ventana le lleva a su tipo, y <code>cd ..</code> (o Shift+Tab) sube una carpeta. El indicador muestra la ruta. Cada entrada está marcada: ▸ una carpeta (cuántas entradas tiene), W una ventana (y su tabla), P un proceso, R un informe, X un formulario, F un flujo de trabajo. <code>red1 menu</code> por sí solo sigue abriendo el menú en una pantalla completa.</p>
 <!-- run: red1_menu_walk -->
 <div class="highlight"><pre><span></span><code>$ printf &#39;menu\ncd Quote\ncd &quot;Sales Orders&quot;\ncd &quot;Sales Order&quot;\npwd\n&#39; | node common/door/red1.js 2&gt;/dev/null
@@ -3957,9 +3957,9 @@ This is a gap in red1, not your mistake. Type report to send it to us (email or 
 building Duplex
 → viewer.cost building=Duplex by=discipline
 ok · viewer.cost
-1190 elements · 1054482.23 total (71 with no rate); 3 with no size, not priced
+1190 elements · 1054482.08 total (71 with no rate); 3 with no size, not priced
 discipline  elements  cost
-ARC         267       532431.28
+ARC         267       532431.14
 ELEC        81        283500.00
 MEP         809       153825.40
 PLB         14        49000.00
@@ -3968,12 +3968,12 @@ ls lists the 50 priced rows
 Ready to post to ERP Project Order? y/N → erp.process name=&quot;Fold from BIM&quot; Building=Duplex
 → erp.process name=&quot;Fold from BIM&quot; Building=Duplex
 ok · erp.process
-Posted Duplex: Project 990001, PlannedAmt 1054482.22784, 81 change(s) · no document made
-81 change(s) kept: create:c_project 1, create:c_projectphase 8, create:c_projecttask 19, create:c_projectline 43, create:m_product 7, create:m_product_category 1, create:m_product_category_acct 2
+Posted Duplex: Project 990001, PlannedAmt 1054482.08284, 85 change(s) · no document made
+85 change(s) kept: create:c_project 1, create:c_projectphase 8, create:c_projecttask 21, create:c_projectline 45, create:m_product 7, create:m_product_category 1, create:m_product_category_acct 2
 Open the project? y/N → cd project
 not done: cd project
 </code></pre></div>
-<p>El importe contabilizado, 1054482.22784, es la regla de línea propia del pedido (precio por cantidad, sin redondear). <code>cost</code> calcula con las mismas líneas y muestra la cifra al céntimo de la moneda del pedido (1054482.23), así que lo que ve antes de <code>post</code> es lo que contiene el pedido. La palabra <code>post</code> hace lo mismo sin el <code>cost</code> previo y pregunta primero <code>run it? y/N</code>; contabilizar un edificio que ya está en su pedido no cambia nada. Desde el proyecto nuevo, <code>run "Generate PO from Project"</code> es el lado de compras y responde como el proyecto Hospital de arriba: los productos que creó la contabilización no llevan precio de proveedor. Esos pasos, con su salida, están en <a href="../FastScriptReference/">la referencia</a>.</p>
+<p>El importe contabilizado, 1054482.08284, es la regla de línea propia del pedido (precio por cantidad, sin redondear). <code>cost</code> calcula con las mismas líneas y muestra la cifra al céntimo de la moneda del pedido (1054482.08), así que lo que ve antes de <code>post</code> es lo que contiene el pedido. La palabra <code>post</code> hace lo mismo sin el <code>cost</code> previo y pregunta primero <code>run it? y/N</code>; contabilizar un edificio que ya está en su pedido no cambia nada. Desde el proyecto nuevo, <code>run "Generate PO from Project"</code> es el lado de compras y responde como el proyecto Hospital de arriba: los productos que creó la contabilización no llevan precio de proveedor. Esos pasos, con su salida, están en <a href="../FastScriptReference/">la referencia</a>.</p>
 <h2 id="todas-las-palabras">Todas las palabras<a class="headerlink" href="#todas-las-palabras" title="Permanent link">&para;</a></h2>
 <p>Las palabras de arriba son las que conviene aprender primero. Las demás, cada una una forma corta de un verbo de la puerta (<code>help &lt;word&gt;</code> muestra su línea):</p>
 <table>
@@ -4500,6 +4500,14 @@ object.count building=Duplex kind=Element -&gt; 1193 Element
 <td>una copia completa de bim-ootb</td>
 </tr>
 <tr>
+<td><code>erp.reactivate</code></td>
+<td>Reactivar un documento</td>
+<td><code>kind</code>, <code>id</code> (opcional), <code>number</code> (opcional), <code>role</code> (opcional)</td>
+<td>writes</td>
+<td>human, ai</td>
+<td>una copia completa de bim-ootb</td>
+</tr>
+<tr>
 <td><code>mis.describe</code></td>
 <td>Describir un tipo de registro del ERP</td>
 <td><code>kind</code>, <code>role</code> (opcional)</td>
@@ -4711,7 +4719,7 @@ object.count building=Duplex kind=Element -&gt; 1193 Element
 </table>
 <!-- /GEN:verbs -->
 
-<p><strong>Cobertura actual.</strong> La lista es pequeña a propósito: 66 verbos cubren las ediciones de rejilla del Modeller, su walker y un Modeller mantenido abierto entre líneas, unas pocas preguntas del Viewer, el calendario, la lectura, el recuento y la escritura genéricos de objetos, el coste de una selección, los verbos de documentos ERP y cualquier proceso del diccionario ERP que tenga un port. El Viewer tiene 64 acciones que una persona puede pulsar, y la puerta ofrece 6 verbos del Viewer. El ERP tiene 1158 documentos y procesos, y la puerta ofrece 11 verbos ERP para la vida de un documento y 15 verbos MIS que funcionan en cualquier tabla, y conserva 10 nombres antiguos para que las líneas anteriores sigan funcionando. Así que esto es un comienzo, no el menú completo.</p>
+<p><strong>Cobertura actual.</strong> La lista es pequeña a propósito: 67 verbos cubren las ediciones de rejilla del Modeller, su walker y un Modeller mantenido abierto entre líneas, unas pocas preguntas del Viewer, el calendario, la lectura, el recuento y la escritura genéricos de objetos, el coste de una selección, los verbos de documentos ERP y cualquier proceso del diccionario ERP que tenga un port. El Viewer tiene 64 acciones que una persona puede pulsar, y la puerta ofrece 6 verbos del Viewer. El ERP tiene 1158 documentos y procesos, y la puerta ofrece 12 verbos ERP para la vida de un documento y 15 verbos MIS que funcionan en cualquier tabla, y conserva 10 nombres antiguos para que las líneas anteriores sigan funcionando. Así que esto es un comienzo, no el menú completo.</p>
 <h2 id="como-se-mantiene-fiel-esta-pagina">Cómo se mantiene fiel esta página<a class="headerlink" href="#como-se-mantiene-fiel-esta-pagina" title="Permanent link">&para;</a></h2>
 <p>Cada comando de un bloque gris de esta página y de la <a href="../FastScriptReference/">referencia</a> se ejecutó, y la salida debajo es lo que imprimió el comando. Una prueba, <strong>W-FAST-SCRIPT-GUIDE</strong> en el repositorio <code>bim-ootb</code>, los ejecuta de nuevo desde la descarga y la copia completa, comprueba cada número de esta página contra las ejecuciones y comprueba que la tabla de verbos es igual a <code>verbs.json</code>. Si un número de aquí caduca, esa prueba falla.</p>
 <p>Relacionado: la <a href="../ProposerGuide/">Guía del proponente de IA</a> (conecte una IA a la misma puerta, y qué hizo una IA con las verificaciones), y la <a href="../ModellerGuide/">guía del Modeller</a>.</p>

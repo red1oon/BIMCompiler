@@ -3635,7 +3635,7 @@
 <div class="highlight"><pre><span></span><code>$ (sleep 4; printf &#39;exit\r&#39;) | RED1_LOG=/tmp/fast_guide_greet.log RED1_HISTORY=/tmp/fast_guide_greet.hist BIM_DOOR_JOURNAL=/tmp/fast_guide_greet.journal script -qec &#39;node common/door/red1.js&#39; /dev/null | tr -d &#39;\r&#39; | sed -e &#39;s/\x1b\[[0-9;?]*[a-zA-Z]//g&#39; -e &#39;s/ · [0-9a-f]\{8\}$//&#39;
 Welcome to red1, the scripting door into BIM and ERP, stored in SQLite.
 REMEMBER THE NAME.
-Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 76 verbs · 30 words
+Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 77 verbs · 30 words
 Type help for the list of commands (or bim, mis, erp for one group).
 Tip: type level student for fuller help on each word (red1 --fast opens without tips).
 
@@ -3737,7 +3737,7 @@ node<span class="w"> </span>common/door/red1.js
 <p>Ketik <code>exit</code> untuk keluar. Agar cukup mengetik <code>red1</code> dari mana saja, jalankan <code>npm link</code> sekali di folder itu. Untuk memeriksa bahwa semuanya bekerja, minta baris versinya:</p>
 <!-- run: red1_version -->
 <div class="highlight"><pre><span></span><code>$ node common/door/red1.js --version | sed -e &#39;s/^Copyright[^·]*· //&#39; -e &#39;s/ · [0-9a-f]\{8\}$//&#39;
-red1 1.0.0 · 76 verbs · 30 words
+red1 1.0.0 · 77 verbs · 30 words
 </code></pre></div>
 <p><strong>Unduhan enam berkas</strong> untuk pintu saja dengan kata kerja Modeller, tanpa checkout. Buat folder kosong, pasang mesin peramban yang dibutuhkan Modeller, lalu ambil enam berkas:</p>
 <div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>fastscript<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>fastscript
@@ -3808,9 +3808,9 @@ ls lists the 393 rows
 building Duplex
 → viewer.cost building=Duplex by=discipline
 ok · viewer.cost
-1190 elements · 1054482.23 total (71 with no rate); 3 with no size, not priced
+1190 elements · 1054482.08 total (71 with no rate); 3 with no size, not priced
 discipline  elements  cost
-ARC         267       532431.28
+ARC         267       532431.14
 ELEC        81        283500.00
 MEP         809       153825.40
 PLB         14        49000.00
@@ -3862,7 +3862,7 @@ ok · erp.actions
 Order 50000  status CO
 ├─ CL  → do close 50000
 ├─ VO  → do void 50000
-└─ RE  (no red1 word for it yet)
+└─ RE  → do reactivate 50000
 </code></pre></div>
 <p><strong>Menjalankan proses.</strong> <code>run "&lt;process&gt;"</code> menjalankan satu proses dari kamus ERP, seperti tombol jendelanya. Parameter yang tidak Anda ketik ditanyakan satu per satu, menurut urutan baris parameter proses itu sendiri (Return mempertahankan nilai bawaan; pencarian membuka daftar pilihan yang dipersempit oleh aturan validasi kolom; <code>(leave it out)</code> melewati yang opsional). Lalu red1 mencetak baris lengkap <code>→ erp.process …</code> dan menjalankannya. Ringkasannya menyebut dokumen yang dibuat dan log proses, seperti dialog proses lama. Di sini proyeknya diketik dan tiga pertanyaan lain dijawab dengan Return. (Di terminal setiap pertanyaan menggambar daftar pilihannya; <code>grep</code> hanya menyimpan pertanyaan dan jawaban.) Perhatikan jawaban yang jujur: proyek Hospital pada data awal tidak punya harga pemasok, jadi <strong>tidak ada pesanan pembelian yang dibuat</strong>, dan log menyebut alasannya untuk setiap baris:</p>
 <!-- run: erp_po -->
@@ -3893,7 +3893,7 @@ Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls s
 → erp.actions kind=Order id=100
 it may do: CL, VO, RE (do &lt;code&gt;; next shows the tree)
 </code></pre></div>
-<p>Di sana Tab setelah <code>do</code> hanya menawarkan <code>CL</code> dan <code>VO</code> (<code>RE</code> belum punya kata red1), dan <code>run Co</code> dilengkapi menjadi <code>"Copy Lines"</code>, tombol milik jendela pesanan itu sendiri.</p>
+<p>Di sana Tab setelah <code>do</code> hanya menawarkan <code>CL</code>, <code>VO</code>, dan <code>RE</code> (<code>RE</code> mengaktifkan kembali pesanan: <code>do RE</code>), dan <code>run Co</code> dilengkapi menjadi <code>"Copy Lines"</code>, tombol milik jendela pesanan itu sendiri.</p>
 <p><strong>Menjelajahi menu.</strong> <code>menu</code> menampilkan menu ERP sebagai tempat: <code>cd &lt;folder&gt;</code> masuk ke dalamnya (awal namanya sudah cukup bila hanya satu entri yang dimulai begitu), entri jendela membawa Anda ke jenisnya, dan <code>cd ..</code> (atau Shift+Tab) naik satu folder. Prompt menunjukkan jalurnya. Setiap entri diberi tanda: ▸ sebuah folder (berapa entri isinya), W sebuah jendela (dan tabelnya), P sebuah proses, R sebuah laporan, X sebuah formulir, F sebuah alur kerja. <code>red1 menu</code> sendiri tetap membuka menu di satu layar penuh.</p>
 <!-- run: red1_menu_walk -->
 <div class="highlight"><pre><span></span><code>$ printf &#39;menu\ncd Quote\ncd &quot;Sales Orders&quot;\ncd &quot;Sales Order&quot;\npwd\n&#39; | node common/door/red1.js 2&gt;/dev/null
@@ -3957,9 +3957,9 @@ This is a gap in red1, not your mistake. Type report to send it to us (email or 
 building Duplex
 → viewer.cost building=Duplex by=discipline
 ok · viewer.cost
-1190 elements · 1054482.23 total (71 with no rate); 3 with no size, not priced
+1190 elements · 1054482.08 total (71 with no rate); 3 with no size, not priced
 discipline  elements  cost
-ARC         267       532431.28
+ARC         267       532431.14
 ELEC        81        283500.00
 MEP         809       153825.40
 PLB         14        49000.00
@@ -3968,12 +3968,12 @@ ls lists the 50 priced rows
 Ready to post to ERP Project Order? y/N → erp.process name=&quot;Fold from BIM&quot; Building=Duplex
 → erp.process name=&quot;Fold from BIM&quot; Building=Duplex
 ok · erp.process
-Posted Duplex: Project 990001, PlannedAmt 1054482.22784, 81 change(s) · no document made
-81 change(s) kept: create:c_project 1, create:c_projectphase 8, create:c_projecttask 19, create:c_projectline 43, create:m_product 7, create:m_product_category 1, create:m_product_category_acct 2
+Posted Duplex: Project 990001, PlannedAmt 1054482.08284, 85 change(s) · no document made
+85 change(s) kept: create:c_project 1, create:c_projectphase 8, create:c_projecttask 21, create:c_projectline 45, create:m_product 7, create:m_product_category 1, create:m_product_category_acct 2
 Open the project? y/N → cd project
 not done: cd project
 </code></pre></div>
-<p>Jumlah yang diposting, 1054482.22784, adalah aturan baris milik pesanan (harga kali kuantitas, tidak dibulatkan). <code>cost</code> menghitung dengan baris yang sama dan menampilkan angkanya sampai sen mata uang pesanan (1054482.23), jadi yang Anda lihat sebelum <code>post</code> adalah isi pesanan. Kata <code>post</code> melakukan hal yang sama tanpa <code>cost</code> sebelumnya dan bertanya <code>run it? y/N</code> terlebih dahulu; memposting bangunan yang sudah ada di pesanannya tidak mengubah apa pun. Dari proyek baru, <code>run "Generate PO from Project"</code> adalah sisi pembelian dan menjawab seperti proyek Hospital di atas: produk yang dibuat oleh posting tidak punya harga pemasok. Langkah-langkah itu, dengan keluarannya, ada di <a href="../FastScriptReference/">referensi</a>.</p>
+<p>Jumlah yang diposting, 1054482.08284, adalah aturan baris milik pesanan (harga kali kuantitas, tidak dibulatkan). <code>cost</code> menghitung dengan baris yang sama dan menampilkan angkanya sampai sen mata uang pesanan (1054482.08), jadi yang Anda lihat sebelum <code>post</code> adalah isi pesanan. Kata <code>post</code> melakukan hal yang sama tanpa <code>cost</code> sebelumnya dan bertanya <code>run it? y/N</code> terlebih dahulu; memposting bangunan yang sudah ada di pesanannya tidak mengubah apa pun. Dari proyek baru, <code>run "Generate PO from Project"</code> adalah sisi pembelian dan menjawab seperti proyek Hospital di atas: produk yang dibuat oleh posting tidak punya harga pemasok. Langkah-langkah itu, dengan keluarannya, ada di <a href="../FastScriptReference/">referensi</a>.</p>
 <h2 id="semua-kata">Semua kata<a class="headerlink" href="#semua-kata" title="Permanent link">&para;</a></h2>
 <p>Kata-kata di atas adalah yang perlu dipelajari lebih dulu. Sisanya, masing-masing bentuk pendek dari sebuah kata kerja pintu (<code>help &lt;word&gt;</code> menunjukkan barisnya):</p>
 <table>
@@ -4500,6 +4500,14 @@ object.count building=Duplex kind=Element -&gt; 1193 Element
 <td>checkout bim-ootb</td>
 </tr>
 <tr>
+<td><code>erp.reactivate</code></td>
+<td>Mengaktifkan kembali sebuah dokumen</td>
+<td><code>kind</code>, <code>id</code> (opsional), <code>number</code> (opsional), <code>role</code> (opsional)</td>
+<td>writes</td>
+<td>human, ai</td>
+<td>checkout bim-ootb</td>
+</tr>
+<tr>
 <td><code>mis.describe</code></td>
 <td>Menjelaskan satu jenis rekaman ERP</td>
 <td><code>kind</code>, <code>role</code> (opsional)</td>
@@ -4711,7 +4719,7 @@ object.count building=Duplex kind=Element -&gt; 1193 Element
 </table>
 <!-- /GEN:verbs -->
 
-<p><strong>Cakupan saat ini.</strong> Daftarnya sengaja kecil: 66 kata kerja mencakup pengeditan grid Modeller, walker-nya, dan Modeller yang dibiarkan terbuka di antara baris, beberapa pertanyaan Viewer, jadwal, pembacaan, penghitungan, dan penulisan objek generik, biaya sebuah pilihan, kata kerja dokumen ERP, dan proses apa pun dari kamus ERP yang punya port. Viewer punya 64 aksi yang bisa ditekan seseorang, dan pintu menawarkan 6 kata kerja Viewer. ERP punya 1158 dokumen dan proses, dan pintu menawarkan 11 kata kerja ERP untuk kehidupan sebuah dokumen dan 15 kata kerja MIS yang bekerja pada tabel apa pun, serta menyimpan 10 nama lama agar baris-baris sebelumnya tetap jalan. Jadi ini sebuah permulaan, bukan seluruh menu.</p>
+<p><strong>Cakupan saat ini.</strong> Daftarnya sengaja kecil: 67 kata kerja mencakup pengeditan grid Modeller, walker-nya, dan Modeller yang dibiarkan terbuka di antara baris, beberapa pertanyaan Viewer, jadwal, pembacaan, penghitungan, dan penulisan objek generik, biaya sebuah pilihan, kata kerja dokumen ERP, dan proses apa pun dari kamus ERP yang punya port. Viewer punya 64 aksi yang bisa ditekan seseorang, dan pintu menawarkan 6 kata kerja Viewer. ERP punya 1158 dokumen dan proses, dan pintu menawarkan 12 kata kerja ERP untuk kehidupan sebuah dokumen dan 15 kata kerja MIS yang bekerja pada tabel apa pun, serta menyimpan 10 nama lama agar baris-baris sebelumnya tetap jalan. Jadi ini sebuah permulaan, bukan seluruh menu.</p>
 <h2 id="bagaimana-halaman-ini-tetap-benar">Bagaimana halaman ini tetap benar<a class="headerlink" href="#bagaimana-halaman-ini-tetap-benar" title="Permanent link">&para;</a></h2>
 <p>Setiap perintah dalam blok abu-abu di halaman ini dan di <a href="../FastScriptReference/">referensi</a> telah dijalankan, dan keluaran di bawahnya adalah apa yang dicetak perintah itu. Sebuah uji, <strong>W-FAST-SCRIPT-GUIDE</strong> di repositori <code>bim-ootb</code>, menjalankannya lagi dari unduhan dan checkout, memeriksa setiap angka di halaman ini terhadap hasil eksekusi, dan memeriksa bahwa tabel kata kerja sama dengan <code>verbs.json</code>. Jika sebuah angka di sini basi, uji itu gagal.</p>
 <p>Terkait: <a href="../ProposerGuide/">Panduan Pengusul AI</a> (menghubungkan AI ke pintu yang sama, dan apa yang dilakukan AI dengan pemeriksaannya), dan <a href="../ModellerGuide/">Panduan Modeller</a>.</p>

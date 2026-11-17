@@ -3635,7 +3635,7 @@
 <div class="highlight"><pre><span></span><code>$ (sleep 4; printf &#39;exit\r&#39;) | RED1_LOG=/tmp/fast_guide_greet.log RED1_HISTORY=/tmp/fast_guide_greet.hist BIM_DOOR_JOURNAL=/tmp/fast_guide_greet.journal script -qec &#39;node common/door/red1.js&#39; /dev/null | tr -d &#39;\r&#39; | sed -e &#39;s/\x1b\[[0-9;?]*[a-zA-Z]//g&#39; -e &#39;s/ · [0-9a-f]\{8\}$//&#39;
 Welcome to red1, the scripting door into BIM and ERP, stored in SQLite.
 REMEMBER THE NAME.
-Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 76 verbs · 30 words
+Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 77 verbs · 30 words
 Type help for the list of commands (or bim, mis, erp for one group).
 Tip: type level student for fuller help on each word (red1 --fast opens without tips).
 
@@ -3737,7 +3737,7 @@ node<span class="w"> </span>common/door/red1.js
 <p>输入 <code>exit</code> 退出。若想在任何位置只输入 <code>red1</code>，请在该文件夹中运行一次 <code>npm link</code>。要检查它是否工作，请查看它的版本行：</p>
 <!-- run: red1_version -->
 <div class="highlight"><pre><span></span><code>$ node common/door/red1.js --version | sed -e &#39;s/^Copyright[^·]*· //&#39; -e &#39;s/ · [0-9a-f]\{8\}$//&#39;
-red1 1.0.0 · 76 verbs · 30 words
+red1 1.0.0 · 77 verbs · 30 words
 </code></pre></div>
 <p><strong>六文件下载</strong>用于只要门和 Modeller 动词、不需要检出的情况。新建一个空文件夹，安装 Modeller 所需的浏览器引擎，然后获取这六个文件：</p>
 <div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>fastscript<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>fastscript
@@ -3808,9 +3808,9 @@ ls lists the 393 rows
 building Duplex
 → viewer.cost building=Duplex by=discipline
 ok · viewer.cost
-1190 elements · 1054482.23 total (71 with no rate); 3 with no size, not priced
+1190 elements · 1054482.08 total (71 with no rate); 3 with no size, not priced
 discipline  elements  cost
-ARC         267       532431.28
+ARC         267       532431.14
 ELEC        81        283500.00
 MEP         809       153825.40
 PLB         14        49000.00
@@ -3862,7 +3862,7 @@ ok · erp.actions
 Order 50000  status CO
 ├─ CL  → do close 50000
 ├─ VO  → do void 50000
-└─ RE  (no red1 word for it yet)
+└─ RE  → do reactivate 50000
 </code></pre></div>
 <p><strong>运行流程。</strong> <code>run "&lt;process&gt;"</code> 像其窗口按钮那样运行 ERP 字典中的一个流程。您没有输入的参数会逐个被询问，顺序就是该流程自己的参数行的顺序（回车保留默认值；查找项会打开一个按该列验证规则缩小范围的选择列表；<code>(leave it out)</code> 跳过可选项）。然后 red1 打印完整的 <code>→ erp.process …</code> 行并运行它。摘要会列出生成的单据和流程日志，就像传统的流程对话框那样。这里项目是直接输入的，其余三个问题用回车回答。（在终端里，每个问题都会画出它的选择列表；<code>grep</code> 只保留问题和答案。）请看诚实的答复：种子数据中的 Hospital 项目没有供应商价格，所以<strong>不会生成采购订单</strong>，日志对每一行说明了原因：</p>
 <!-- run: erp_po -->
@@ -3893,7 +3893,7 @@ Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls s
 → erp.actions kind=Order id=100
 it may do: CL, VO, RE (do &lt;code&gt;; next shows the tree)
 </code></pre></div>
-<p>在那里，<code>do</code> 之后的 Tab 只提供 <code>CL</code> 和 <code>VO</code>（<code>RE</code> 还没有 red1 词），<code>run Co</code> 会补全为 <code>"Copy Lines"</code>，即订单窗口自己的按钮。</p>
+<p>在那里，<code>do</code> 之后的 Tab 只提供 <code>CL</code>、<code>VO</code> 和 <code>RE</code>（<code>RE</code> 重新激活订单：<code>do RE</code>），<code>run Co</code> 会补全为 <code>"Copy Lines"</code>，即订单窗口自己的按钮。</p>
 <p><strong>浏览菜单。</strong> <code>menu</code> 把 ERP 菜单显示为位置：<code>cd &lt;folder&gt;</code> 进入（只有一个条目以此开头时，名字的开头就够了），窗口条目会带您到它的种类，<code>cd ..</code>（或 Shift+Tab）回到上一级文件夹。提示符显示路径。每个条目都有标记：▸ 文件夹（里面有多少条目），W 窗口（及其表），P 流程，R 报表，X 表单，F 工作流。单独的 <code>red1 menu</code> 仍然在整个屏幕上打开菜单。</p>
 <!-- run: red1_menu_walk -->
 <div class="highlight"><pre><span></span><code>$ printf &#39;menu\ncd Quote\ncd &quot;Sales Orders&quot;\ncd &quot;Sales Order&quot;\npwd\n&#39; | node common/door/red1.js 2&gt;/dev/null
@@ -3957,9 +3957,9 @@ This is a gap in red1, not your mistake. Type report to send it to us (email or 
 building Duplex
 → viewer.cost building=Duplex by=discipline
 ok · viewer.cost
-1190 elements · 1054482.23 total (71 with no rate); 3 with no size, not priced
+1190 elements · 1054482.08 total (71 with no rate); 3 with no size, not priced
 discipline  elements  cost
-ARC         267       532431.28
+ARC         267       532431.14
 ELEC        81        283500.00
 MEP         809       153825.40
 PLB         14        49000.00
@@ -3968,12 +3968,12 @@ ls lists the 50 priced rows
 Ready to post to ERP Project Order? y/N → erp.process name=&quot;Fold from BIM&quot; Building=Duplex
 → erp.process name=&quot;Fold from BIM&quot; Building=Duplex
 ok · erp.process
-Posted Duplex: Project 990001, PlannedAmt 1054482.22784, 81 change(s) · no document made
-81 change(s) kept: create:c_project 1, create:c_projectphase 8, create:c_projecttask 19, create:c_projectline 43, create:m_product 7, create:m_product_category 1, create:m_product_category_acct 2
+Posted Duplex: Project 990001, PlannedAmt 1054482.08284, 85 change(s) · no document made
+85 change(s) kept: create:c_project 1, create:c_projectphase 8, create:c_projecttask 21, create:c_projectline 45, create:m_product 7, create:m_product_category 1, create:m_product_category_acct 2
 Open the project? y/N → cd project
 not done: cd project
 </code></pre></div>
-<p>过账金额 1054482.22784 是订单自己的行规则（单价乘数量，不取整）。<code>cost</code> 按同样的行计算，并显示到订单币种的分（1054482.23），所以你在 <code>post</code> 之前看到的就是订单里的金额。<code>post</code> 这个词不需要前面的 <code>cost</code> 也能做同样的事，并先问 <code>run it? y/N</code>；对已经在其订单中的建筑再次过账不会改变任何东西。从新项目出发，<code>run "Generate PO from Project"</code> 是采购一侧，其答复与上面的 Hospital 项目相同：过账所创建的产品没有供应商价格。这些步骤及其输出在<a href="../FastScriptReference/">参考页</a>中。</p>
+<p>过账金额 1054482.08284 是订单自己的行规则（单价乘数量，不取整）。<code>cost</code> 按同样的行计算，并显示到订单币种的分（1054482.08），所以你在 <code>post</code> 之前看到的就是订单里的金额。<code>post</code> 这个词不需要前面的 <code>cost</code> 也能做同样的事，并先问 <code>run it? y/N</code>；对已经在其订单中的建筑再次过账不会改变任何东西。从新项目出发，<code>run "Generate PO from Project"</code> 是采购一侧，其答复与上面的 Hospital 项目相同：过账所创建的产品没有供应商价格。这些步骤及其输出在<a href="../FastScriptReference/">参考页</a>中。</p>
 <h2 id="_4">所有的词<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
 <p>上面的词是最先要学的。其余的，每一个都是某个门动词的简短形式（<code>help &lt;word&gt;</code> 显示它的那一行）：</p>
 <table>
@@ -4500,6 +4500,14 @@ object.count building=Duplex kind=Element -&gt; 1193 Element
 <td>一份 bim-ootb 检出</td>
 </tr>
 <tr>
+<td><code>erp.reactivate</code></td>
+<td>重新激活一份单据</td>
+<td><code>kind</code>，<code>id</code>（可选）, <code>number</code>（可选）, <code>role</code>（可选）</td>
+<td>writes</td>
+<td>human, ai</td>
+<td>一份 bim-ootb 检出</td>
+</tr>
+<tr>
 <td><code>mis.describe</code></td>
 <td>描述一类 ERP 记录</td>
 <td><code>kind</code>，<code>role</code>（可选）</td>
@@ -4711,7 +4719,7 @@ object.count building=Duplex kind=Element -&gt; 1193 Element
 </table>
 <!-- /GEN:verbs -->
 
-<p><strong>目前的覆盖范围。</strong> 这份列表有意保持很小：66 个动词覆盖 Modeller 的轴网编辑、它的 walker 以及在各行之间保持打开的 Modeller、少量 Viewer 问题、进度、通用的对象读取、计数和写入、一次选择的成本、ERP 单据动词，以及 ERP 字典中任何已移植的流程。Viewer 有 64 个人可以按下的操作，门提供 6 个 Viewer 动词。ERP 有 1158 个单据和流程，门为单据的生命周期提供 11 个 ERP 动词，为任意表提供 15 个 MIS 动词，并保留 10 个旧名称，使以前的行仍能运行。所以这只是一个开始，不是完整的菜单。</p>
+<p><strong>目前的覆盖范围。</strong> 这份列表有意保持很小：67 个动词覆盖 Modeller 的轴网编辑、它的 walker 以及在各行之间保持打开的 Modeller、少量 Viewer 问题、进度、通用的对象读取、计数和写入、一次选择的成本、ERP 单据动词，以及 ERP 字典中任何已移植的流程。Viewer 有 64 个人可以按下的操作，门提供 6 个 Viewer 动词。ERP 有 1158 个单据和流程，门为单据的生命周期提供 12 个 ERP 动词，为任意表提供 15 个 MIS 动词，并保留 10 个旧名称，使以前的行仍能运行。所以这只是一个开始，不是完整的菜单。</p>
 <h2 id="_7">本页为何保持真实<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
 <p>本页和<a href="../FastScriptReference/">参考页</a>灰色代码块中的每条命令都已运行过，下面的输出就是该命令打印的内容。<code>bim-ootb</code> 仓库中的测试 <strong>W-FAST-SCRIPT-GUIDE</strong> 会从下载和检出再次运行它们，把本页的每个数字与运行结果核对，并检查动词表等于 <code>verbs.json</code>。如果这里的某个数字过时，该测试就会失败。</p>
 <p>相关：<a href="../ProposerGuide/">AI 提议者指南</a>（把 AI 连接到同一个入口，以及 AI 用这些检查做了什么），以及 <a href="../ModellerGuide/">Modeller 指南</a>。</p>

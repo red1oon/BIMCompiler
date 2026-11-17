@@ -3635,7 +3635,7 @@
 <div class="highlight"><pre><span></span><code>$ (sleep 4; printf &#39;exit\r&#39;) | RED1_LOG=/tmp/fast_guide_greet.log RED1_HISTORY=/tmp/fast_guide_greet.hist BIM_DOOR_JOURNAL=/tmp/fast_guide_greet.journal script -qec &#39;node common/door/red1.js&#39; /dev/null | tr -d &#39;\r&#39; | sed -e &#39;s/\x1b\[[0-9;?]*[a-zA-Z]//g&#39; -e &#39;s/ · [0-9a-f]\{8\}$//&#39;
 Welcome to red1, the scripting door into BIM and ERP, stored in SQLite.
 REMEMBER THE NAME.
-Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 76 verbs · 30 words
+Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 77 verbs · 30 words
 Type help for the list of commands (or bim, mis, erp for one group).
 Tip: type level student for fuller help on each word (red1 --fast opens without tips).
 
@@ -3737,7 +3737,7 @@ node<span class="w"> </span>common/door/red1.js
 <p><code>exit</code> で終了します。どこからでも <code>red1</code> だけで起動したいときは、そのフォルダーで一度 <code>npm link</code> を実行します。動作確認には、バージョン行を表示させます：</p>
 <!-- run: red1_version -->
 <div class="highlight"><pre><span></span><code>$ node common/door/red1.js --version | sed -e &#39;s/^Copyright[^·]*· //&#39; -e &#39;s/ · [0-9a-f]\{8\}$//&#39;
-red1 1.0.0 · 76 verbs · 30 words
+red1 1.0.0 · 77 verbs · 30 words
 </code></pre></div>
 <p><strong>六ファイルのダウンロード</strong>は、チェックアウトなしで、ドアと Modeller 動詞だけを使う場合のものです。空のフォルダーを作り、Modeller が必要とするブラウザーエンジンをインストールして、六つのファイルを取得します：</p>
 <div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>fastscript<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>fastscript
@@ -3808,9 +3808,9 @@ ls lists the 393 rows
 building Duplex
 → viewer.cost building=Duplex by=discipline
 ok · viewer.cost
-1190 elements · 1054482.23 total (71 with no rate); 3 with no size, not priced
+1190 elements · 1054482.08 total (71 with no rate); 3 with no size, not priced
 discipline  elements  cost
-ARC         267       532431.28
+ARC         267       532431.14
 ELEC        81        283500.00
 MEP         809       153825.40
 PLB         14        49000.00
@@ -3862,7 +3862,7 @@ ok · erp.actions
 Order 50000  status CO
 ├─ CL  → do close 50000
 ├─ VO  → do void 50000
-└─ RE  (no red1 word for it yet)
+└─ RE  → do reactivate 50000
 </code></pre></div>
 <p><strong>プロセスを実行する。</strong> <code>run "&lt;process&gt;"</code> は、ウィンドウのボタンと同じように、ERP 辞書のプロセスを一つ実行します。打たなかったパラメーターは、プロセス自身のパラメーター行の順に、ひとつずつ尋ねられます（Return で既定値を採用。ルックアップは、列の検証ルールで絞り込まれた選択リストを開き、<code>(leave it out)</code> は任意項目を飛ばします）。そのあと red1 は完全な <code>→ erp.process …</code> の行を表示して実行します。要約には、作られた伝票とプロセスログが、従来のプロセスダイアログと同様に示されます。ここではプロジェクトを入力し、ほかの三つの質問は Return で答えています。（ターミナルでは各質問が選択リストを描きます。<code>grep</code> は質問と答えだけを残します。）正直な答えを見てください。シードの Hospital プロジェクトには仕入先価格がないので、<strong>発注書は作られず</strong>、ログがその理由を各行について述べます：</p>
 <!-- run: erp_po -->
@@ -3893,7 +3893,7 @@ Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls s
 → erp.actions kind=Order id=100
 it may do: CL, VO, RE (do &lt;code&gt;; next shows the tree)
 </code></pre></div>
-<p>そこでは <code>do</code> の後の Tab は <code>CL</code> と <code>VO</code> だけを出し（<code>RE</code> にはまだ red1 の言葉がありません）、<code>run Co</code> は注文ウィンドウ自身のボタン <code>"Copy Lines"</code> に補完されます。</p>
+<p>そこでは <code>do</code> の後の Tab は <code>CL</code>、<code>VO</code>、<code>RE</code> だけを出し（<code>RE</code> は注文を再有効化します：<code>do RE</code>）、<code>run Co</code> は注文ウィンドウ自身のボタン <code>"Copy Lines"</code> に補完されます。</p>
 <p><strong>メニューをたどる。</strong> <code>menu</code> は ERP メニューを場所として表示します。<code>cd &lt;folder&gt;</code> で中に入り（その始まり方をする項目が一つだけなら、名前の先頭だけで足ります）、ウィンドウの項目はその種類へ連れて行き、<code>cd ..</code>（または Shift+Tab）で一つ上のフォルダーに戻ります。プロンプトにパスが出ます。各項目には印があります：▸ フォルダー（中の項目数）、W ウィンドウ（とそのテーブル）、P プロセス、R レポート、X フォーム、F ワークフロー。<code>red1 menu</code> 単独では、これまでどおり全画面のメニューが開きます。</p>
 <!-- run: red1_menu_walk -->
 <div class="highlight"><pre><span></span><code>$ printf &#39;menu\ncd Quote\ncd &quot;Sales Orders&quot;\ncd &quot;Sales Order&quot;\npwd\n&#39; | node common/door/red1.js 2&gt;/dev/null
@@ -3957,9 +3957,9 @@ This is a gap in red1, not your mistake. Type report to send it to us (email or 
 building Duplex
 → viewer.cost building=Duplex by=discipline
 ok · viewer.cost
-1190 elements · 1054482.23 total (71 with no rate); 3 with no size, not priced
+1190 elements · 1054482.08 total (71 with no rate); 3 with no size, not priced
 discipline  elements  cost
-ARC         267       532431.28
+ARC         267       532431.14
 ELEC        81        283500.00
 MEP         809       153825.40
 PLB         14        49000.00
@@ -3968,12 +3968,12 @@ ls lists the 50 priced rows
 Ready to post to ERP Project Order? y/N → erp.process name=&quot;Fold from BIM&quot; Building=Duplex
 → erp.process name=&quot;Fold from BIM&quot; Building=Duplex
 ok · erp.process
-Posted Duplex: Project 990001, PlannedAmt 1054482.22784, 81 change(s) · no document made
-81 change(s) kept: create:c_project 1, create:c_projectphase 8, create:c_projecttask 19, create:c_projectline 43, create:m_product 7, create:m_product_category 1, create:m_product_category_acct 2
+Posted Duplex: Project 990001, PlannedAmt 1054482.08284, 85 change(s) · no document made
+85 change(s) kept: create:c_project 1, create:c_projectphase 8, create:c_projecttask 21, create:c_projectline 45, create:m_product 7, create:m_product_category 1, create:m_product_category_acct 2
 Open the project? y/N → cd project
 not done: cd project
 </code></pre></div>
-<p>転記された金額 1054482.22784 は、注文自身の明細ルール（単価×数量、丸めなし）です。<code>cost</code> は同じ明細で計算し、注文の通貨のセントまで表示します（1054482.23）。つまり <code>post</code> の前に見る数字が、注文に入る金額です。<code>post</code> という言葉は、前に <code>cost</code> がなくても同じことをし、先に <code>run it? y/N</code> と尋ねます。すでに注文にある建物を転記しても、何も変わりません。新しいプロジェクトから見ると、<code>run "Generate PO from Project"</code> が購買側で、上の Hospital プロジェクトと同じように答えます。転記で作られた商品には仕入先価格がありません。これらの手順と出力は<a href="../FastScriptReference/">リファレンス</a>にあります。</p>
+<p>転記された金額 1054482.08284 は、注文自身の明細ルール（単価×数量、丸めなし）です。<code>cost</code> は同じ明細で計算し、注文の通貨のセントまで表示します（1054482.08）。つまり <code>post</code> の前に見る数字が、注文に入る金額です。<code>post</code> という言葉は、前に <code>cost</code> がなくても同じことをし、先に <code>run it? y/N</code> と尋ねます。すでに注文にある建物を転記しても、何も変わりません。新しいプロジェクトから見ると、<code>run "Generate PO from Project"</code> が購買側で、上の Hospital プロジェクトと同じように答えます。転記で作られた商品には仕入先価格がありません。これらの手順と出力は<a href="../FastScriptReference/">リファレンス</a>にあります。</p>
 <h2 id="_4">すべての言葉<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
 <p>上の言葉が、最初に覚えるものです。残りは、それぞれドア動詞の短い形です（<code>help &lt;word&gt;</code> でその行を見られます）：</p>
 <table>
@@ -4500,6 +4500,14 @@ object.count building=Duplex kind=Element -&gt; 1193 Element
 <td>bim-ootb のチェックアウト</td>
 </tr>
 <tr>
+<td><code>erp.reactivate</code></td>
+<td>伝票を再有効化する</td>
+<td><code>kind</code>, <code>id</code> （任意）, <code>number</code> （任意）, <code>role</code> （任意）</td>
+<td>writes</td>
+<td>human, ai</td>
+<td>bim-ootb のチェックアウト</td>
+</tr>
+<tr>
 <td><code>mis.describe</code></td>
 <td>ERP レコードの種類を説明する</td>
 <td><code>kind</code>, <code>role</code> （任意）</td>
@@ -4711,7 +4719,7 @@ object.count building=Duplex kind=Element -&gt; 1193 Element
 </table>
 <!-- /GEN:verbs -->
 
-<p><strong>現在のカバー範囲。</strong> 一覧は意図的に小さくしてあります。66個の動詞が、Modeller のグリッド編集、そのウォーカー、行の間も開いたままの Modeller、いくつかの Viewer の質問、工程、汎用のオブジェクトの読み取り・カウント・書き込み、選択のコスト、ERP の伝票動詞、そしてポートのある ERP 辞書のあらゆるプロセスをカバーしています。Viewer には人が押せるアクションが64個あり、ドアは6個の Viewer 動詞を提供します。ERP には1158個の伝票とプロセスがあり、ドアは伝票の一生のための11個の ERP 動詞と、どのテーブルにも使える15個の MIS 動詞を提供し、以前の行が動き続けるよう10個の旧名を残しています。つまりこれは出発点であって、メニューのすべてではありません。</p>
+<p><strong>現在のカバー範囲。</strong> 一覧は意図的に小さくしてあります。67個の動詞が、Modeller のグリッド編集、そのウォーカー、行の間も開いたままの Modeller、いくつかの Viewer の質問、工程、汎用のオブジェクトの読み取り・カウント・書き込み、選択のコスト、ERP の伝票動詞、そしてポートのある ERP 辞書のあらゆるプロセスをカバーしています。Viewer には人が押せるアクションが64個あり、ドアは6個の Viewer 動詞を提供します。ERP には1158個の伝票とプロセスがあり、ドアは伝票の一生のための12個の ERP 動詞と、どのテーブルにも使える15個の MIS 動詞を提供し、以前の行が動き続けるよう10個の旧名を残しています。つまりこれは出発点であって、メニューのすべてではありません。</p>
 <h2 id="_7">このページが正しさを保つ仕組み<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
 <p>このページと<a href="../FastScriptReference/">リファレンス</a>の灰色のブロックにあるコマンドはすべて実行されており、その下の出力は、コマンドが実際に表示したものです。<code>bim-ootb</code> リポジトリのテスト <strong>W-FAST-SCRIPT-GUIDE</strong> が、ダウンロードとチェックアウトからそれらを再実行し、このページのすべての数字を実行結果と照合し、動詞の表が <code>verbs.json</code> と等しいことを確認します。ここの数字が古くなれば、そのテストは失敗します。</p>
 <p>関連：<a href="../ProposerGuide/">AI Proposer ガイド</a>（同じドアに AI をつなぐ方法と、AI がチェックで何をしたか）、そして<a href="../ModellerGuide/">Modeller ガイド</a>。</p>
