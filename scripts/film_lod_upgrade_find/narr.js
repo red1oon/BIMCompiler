@@ -19,8 +19,8 @@ exports.beats = [
     says: [['viewer.hostsHidden', '181', 'one hundred eighty-one']] },
   { id: 'find_layer', typed: true, text: 'F: Layer. | M: The panel lists fifty. The model has two hundred twenty. Click the top row, a ceiling layer, and the Viewer flies to it.',
     says: [['viewer.find_layer.panel', '50', 'fifty'], ['find.layer.total', '220', 'two hundred twenty']] },
-  { id: 'find_fin', typed: true, text: 'F: Fin plate. | M: Fifty, one for each joint. But look. The Find lands two point eight metres from the plate. The stored centre is the beam\'s, not the plate\'s. A data fault, reported. Configuration only. Capacity not checked.',
-    says: [['find.Fin plate.total', '50', 'fifty'], ['viewer.find_fin.miss_round1', '2.8', 'two point eight'], ['centre.conn_center_equals_host_center', '150', 'the beam']] },
+  { id: 'find_fin', typed: true, text: 'F: Fin plate. | M: Fifty, one for each joint. Click the top row and the Find lands on the plate, zero millimetres off. Configuration only. Capacity not checked.',   // rc2 (§AG): the stored centres were set to each part's own centre; rc1 said "two point eight metres off, a data fault"
+    says: [['find.Fin plate.total', '50', 'fifty'], ['viewer.find_fin.fly_mm', '0', 'zero millimetres']] },
   { id: 'find_rebar', typed: true, text: 'F: Reinforcing. | M: Three hundred six bar sets. This is the bottom bars of one beam.',
     says: [['find.reinforcing.total', '306', 'three hundred six']] },
   { id: 'find_gusset', typed: true, text: 'F: Gusset. | M: Two parts, the plate and the bolts of the one joint that was built.',
