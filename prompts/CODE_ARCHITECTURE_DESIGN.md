@@ -28,10 +28,9 @@ One heavy job at a time on this machine, under `nice -n 19 ionice -c3`. Headless
 2026-11-16: *"U can do browser run for those items new session"*), one at a time, never beside a live bake or GPU work.
 
 **1. NEXT, in order.**
-1. Ask **B-5** (who declares `deps`; advice: a tool-derived candidate list, confirmed by hand per app in B1 to B3), then **B-3**, then **B-4**,
-   one per message (the advice for each is in ADVICE A).
+1. Ask **B-3**, then **B-4**, one per message (the advice for each is in ADVICE A).
 2. **B1, the modeller first:** the manifest becomes the source, the generated sections sit between markers, and the output is byte-identical,
-   using today's `?v=` numbers (B-1) and each module's precache flag as it is today (B-2). Write its build spec first. It needs B-5 for `deps`.
+   using today's `?v=` numbers (B-1) and each module's precache flag as it is today (B-2). Write its build spec first. Its `deps` come from a tool-made candidate list that a person confirms for the app (B-5).
 3. E's `witness_kit/paths.js` (no decision, §READY).
 4. **2026-11-30:** propose the F-2 cost ceilings (§F.3).
 
@@ -39,7 +38,7 @@ One heavy job at a time on this machine, under `nice -n 19 ionice -c3`. Headless
 | Part | State | Next step |
 |---|---|---|
 | A | ✅ DONE 2026-11-17: A0, A-1..A-7, A1, A2, A3 (W-CORE-PURE PASS, `forbidden=0`, in CI). Results: Part A RESULT INDEX | none |
-| B | **B0 ✅** (#3200, W-MANIFEST-ROUNDTRIP in CI) · **B-1 ✅** 2026-11-18 content hashes, own step · **B-2 ✅** 2026-11-18 per-module flag as today | ask B-5, B-3, B-4; then B1 (modeller) |
+| B | **B0 ✅** (#3200, W-MANIFEST-ROUNDTRIP in CI) · **B-1 ✅** 2026-11-18 content hashes, own step · **B-2 ✅** 2026-11-18 per-module flag as today · **B-5 ✅** 2026-11-18 tool proposes deps, a person confirms | ask B-3, B-4; then B1 (modeller) |
 | C, D | not started; wait on B | — |
 | E | not started | `witness_kit/paths.js` (§READY), then ask E-1 |
 | F | every row that needs no data from B to E is built (§F index, F.0 to F.35) | F-2 ceilings on 2026-11-30; the F-1 headless Fetch-back button (unbuilt, browser go given); rows waiting on B/D/E data |
@@ -57,7 +56,7 @@ the source (§F.25): reinstall with `node devtools/vscode/pack.js --install`. A 
 built and waiting for the owner's review (see that file's FILM 3 STATUS). Earlier CH 0 "VSC Hot Edit" films: `prompts/FILM_IDE_ERP_DEBUG.md`.
 Rebuild recipes are in each film file.
 
-**5. Open with the owner.** B-5, B-3, B-4 (NEXT 1) · FILM 3 review · his hands-on dry run (`~/VSCcheatsheet.txt`, 29 steps; `~/bim-ootb-dryrun`
+**5. Open with the owner.** B-3, B-4 (NEXT 1) · FILM 3 review · his hands-on dry run (`~/VSCcheatsheet.txt`, 29 steps; `~/bim-ootb-dryrun`
 not created) · a bake on his go (then check a "last:" line, §F.15).
 
 **6. Open, no owner needed.**
@@ -263,9 +262,9 @@ when anything it covers changed. The page stays a static file. **No build step a
 them from it is **byte-identical** to what is committed. No file changes. B1 switch one app (smallest first: modeller, 59 tags) to "manifest is the
 source", generated sections between markers, byte-identical again. B2 erp, B3 viewer. `tests/audit_sw_precache.js` stays green throughout.
 
-**OPEN DECISIONS (ask one at a time; the advice is in ADVICE A):** B-5 who declares `deps` (found by B0, below) · B-3 should the manifest
+**OPEN DECISIONS (ask one at a time; the advice is in ADVICE A):** B-3 should the manifest
 also carry each module's **owner** and **witnesses**? · B-4 ERP plugins (above): does B leave the plugin lists alone, or derive the plugin precache
-entries from the `.mjs` files on disk? B-1 and B-2 are answered (DECISIONS).
+entries from the `.mjs` files on disk? B-1, B-2 and B-5 are answered (DECISIONS).
 
 **Witnesses:** W-MANIFEST-ROUNDTRIP (manifest → generated text byte-identical to committed; red control: swap two dependent modules → generator
 refuses) · `audit_sw_precache.js` · page boot witnesses unchanged.
@@ -278,6 +277,11 @@ deploy workflow still green on the first merge after each switch (fetch `erp/ver
   files) and the recommendation "copy each module's state as it is; choosing one rule, e.g. precache every lazy module, is its own later step, because
   changing what is saved offline in the step that brings in the manifest would hide which change broke something". Owner: *"Agree."* → the manifest
   writes `precache` per module; the generator refuses nothing on lazy + precache in B1 to B3.
+- **B-5 (2026-11-18): who declares `deps` — a tool proposes, a person confirms, once per app.** Asked with B0's finding (nothing records a dependency
+  today; load order is tag order) and three options: a script reads the code and lists each module's likely dependencies, someone checks that list once per
+  app as it switches (modeller, then ERP, then viewer) (recommended) · by hand only (slow across ~680 modules, easy to miss one) · tool only (records what the
+  code seems to need, which can be wrong when an order works by luck). Owner: *"Agree"*. → each of B1 to B3 ships the app's candidate list and the
+  confirmed `deps` together; a dependency the tool cannot prove goes in only once a person confirms it.
 
 **B0 BUILD SPEC (2026-11-17, eighth session; bim-ootb #3195; no owner decision).** Owner, this session: *"if u hit a code design or spec problem use a well
 scoped Fable agent to resolve"* → the measuring and the design below came from one such agent (read-only), then checked here. Measured on bim-ootb `main` @ `695d16fe`:
@@ -319,7 +323,7 @@ C6 the viewer counts equal `tests/audit_sw_precache.js`'s own summary · C7 the 
 **Red controls, same run, each must FAIL:** R1 swap the places of two adjacent tags in the manifest · R2 drop one precache entry · R3 change `CACHE_VERSION` ·
 R4 reader fixtures on a copy of the real modeller.html (a tag in a comment and in an inline string adds 0 sites, a planted real tag adds 1, a non-canonical tag is refused) ·
 R5 the order checker on a synthetic edge between two adjacent real modules, then swapped (`synthetic=Y`: it proves the refusal code, not any dependency).
-**The lane's red control "swap two dependent modules" becomes real only when deps are declared** (new decision **B-5**, to ask after B-1: who declares `deps`? advice: a tool-derived candidate list, confirmed by hand per app in B1 to B3).
+**The lane's red control "swap two dependent modules" becomes real only when deps are declared** (decision **B-5**, answered 2026-11-18, DECISIONS: who declares `deps`? advice: a tool-derived candidate list, confirmed by hand per app in B1 to B3).
 **INCONCLUSIVE** when any app has 0 sites, any parse fails, any red control does not fail, the `vm` run throws, the bump dry run or the audit prints no summary, or C5 judged 0 sites.
 `§MANIFEST_ROUNDTRIP apps=3 files= sites= tag= asset= inline= lazy= precache= identical=N/N driven=N/N sw_vm=3/3 red=5/5 order_check=NOT-JUDGED verdict=`.
 **Findings printed, never a failure (they feed B-1, B-2, B-4):** `§MANIFEST_VERSIONS` (disagreements, sites below max) · `§MANIFEST_UNVERSIONED` · `§MANIFEST_INLINE_SITES` ·
@@ -358,7 +362,7 @@ a lazy+precache rule (B-2); pages outside the three apps, `oplogpic/`, importmap
   (5) `libs` / `assets` rows were left out of the manifest (nothing in B0 reads them); `§MANIFEST_BLOCK` (comment runs inside the tag span) is not printed: B1 measures it when it places markers.
 - **Scope of the claim:** the three apps' own pages, loaders and service workers. Not judged: load order (no deps declared), the 46 pages outside the apps, `oplogpic/`,
   lazy list entries with no `?v=`, `_GANTT_CACHE_VERSION`.
-- **NEXT in Part B:** ask B-5, B-3, B-4 (RESUME 1); then B1, modeller first, on today's numbers. The content-hash switch (B-1) is its own announced step after B3.
+- **NEXT in Part B:** ask B-3, B-4 (RESUME 1); then B1, modeller first, on today's numbers. The content-hash switch (B-1) is its own announced step after B3.
 
 ---
 
@@ -582,7 +586,6 @@ what the owner answers; when he says "follow the advice" on an item, record that
 
 | Decision | Advice | Why |
 |---|---|---|
-| B-5 who declares `deps` | A tool-derived candidate list, confirmed by hand per app in B1 to B3 | B0 found that nothing records a dependency today (load order is tag order, B0 BUILD SPEC) |
 | B-3 owner and witnesses in the manifest | Yes | parts D and E then get their data for free, and three F rows unblock at once |
 | B-4 ERP plugin lists | Derive only the precache entries; leave the host's one list alone | B must not become a second plugin registry |
 | C-2 rename `A` to `APP` while moving | Yes, one module per PR | it removes the whole class of index faults that §F.17 found: the index has to GUESS which local name is the shared object |
@@ -625,7 +628,7 @@ first. C is long and best done slowly, module by module, after B/D make ownershi
 | Part | Starts with no decision | Next decision to ask | Why that one |
 |---|---|---|---|
 | A | ✅ done 2026-11-17 (W-CORE-PURE in CI) | none | — |
-| B | B0 ✅ 2026-11-17; B-1, B-2 ✅ 2026-11-18. B1 can be specced now; it is built after B-5 | B-5 who declares `deps` | B1's generator refuses an order that breaks a dependency, so it needs `deps` |
+| B | B0 ✅ 2026-11-17; B-1, B-2, B-5 ✅ 2026-11-18. B1 (modeller) can be specced and built now | B-3 owner + witnesses in the manifest | it decides which fields B1's manifest carries |
 | C | nothing; waits on B and D | C-1 part names + owners | |
 | D | nothing new; the multi-publisher list already exists (`types/globals.gen.d.ts`) | D-1 where the questions list lives | needs B's `owner` field |
 | E | `witness_kit/paths.js` (no behaviour change; witness: the same suite verdicts before and after) | E-1 the `PROVES:` header format | |
