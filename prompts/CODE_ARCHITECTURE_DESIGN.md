@@ -798,6 +798,55 @@ refuses) · `audit_sw_precache.js` · page boot witnesses unchanged.
 deploy workflow still green on the first merge after each switch (fetch `erp/version.json`, §F.2 Fetch back).
 **DECISIONS:** *(none yet)*
 
+**B0 BUILD SPEC (2026-11-17, eighth session; bim-ootb #3195; no owner decision).** Owner, this session: *"if u hit a code design or spec problem use a well
+scoped Fable agent to resolve"* → the measuring and the design below came from one such agent (read-only), then checked here. Measured on bim-ootb `main` @ `695d16fe`:
+- **Tags** (a tag reader, comments and inline bodies skipped): viewer.html 252 (249 with `?v=`), idempiere.html 226 (224), modeller.html 62 (59). `grep -c` counts LINES
+  (250/212/61, the numbers P2 quotes). Two shapes only: `<script src="X"></script>`, and the same with one `onerror="…"`. The tags are not one block: the first-to-last
+  span holds 27/70/32 comments and 6/7/4 inline scripts. A raw regex also hits a `document.write('<script src=…` inside an inline script (idempiere.html:847, modeller.html:360).
+- **Versions `bump.js` cannot see:** inline page scripts hold whole `'file?v=N'` literals (at least 1 viewer, 17 erp, 7 modeller).
+- **Service workers:** `PRECACHE_ASSETS` 272 / 405 / 159 entries, all plain string literals, no `?v=`; modeller has 1 duplicate; one `CACHE_VERSION` each. Running each
+  `sw.js` in a Node `vm` with stubs returns the same list a parser extracts. erp precaches 29 `plugins/*.mjs` of 36 tracked. Only the viewer has a precache audit.
+- **Versions disagree:** 582 files are referenced with `?v=`, 81 from more than one place, **27 with different numbers in different referrers (11 inside one app, 16 only
+  across apps)**; 34 sites sit below their file's highest number. So "one `v` per module" cannot reproduce today's bytes. 11 referenced targets do not exist, all from referrers outside the three apps.
+- **Nothing records a dependency today.** Load order is tag order.
+
+**Decisions taken inside B0 (each with the alternative rejected):**
+| # | Decision | Rejected |
+|---|---|---|
+| D1 | An **app** = a folder with a tracked `sw.js` named in Part B (`viewer/`, `erp/`, `modeller/`); its pages are every tracked `.html` under it; its loaders the `.js` under it that hold a whole `'file?v=N'` literal. Everything else is counted as outside, never owned | only the three main pages (hides the 11 same-app disagreements; `bump.js` could never retire) |
+| D2 | A module is keyed by repo-relative file and listed in every app that references it | one global manifest |
+| D3 | The unit is the **site** (one reference in one referrer). A module's `v` is set only when all the app's sites agree, else `null` and each site keeps its own. Any B-1 answer turns every `null` into a value | "take the highest" (a decision, and not byte-identical) |
+| D4 | The generator owns **whole sites** (the whole tag with its `onerror`, the whole string literal, the whole `CACHE_VERSION` literal) and writes each from manifest fields by one fixed template per kind. The rest of the file is the frame. No markers in B0 | digits only (a tautology); whole blocks (impossible today, see the span fact) |
+| D5 | `deps` is `[]` everywhere, `"depsDeclared": false`; the order check prints `order_check=NOT-JUDGED`, never PASS | deriving deps from "reads a global another file publishes" (precision unmeasured; a false edge would later refuse a legal reorder) |
+| D6 | The manifest stays in memory; `--out <file>` writes it outside the tree on request; no `--write` in B0 | a committed manifest nothing reads yet (P2 again) |
+| D7 | `bump.js` and the audits are not touched: their parsers are the independent second readers. The new readers live once in `scripts/lib/page_refs.js`; bump and the audits move onto it in the B-step that makes the manifest the source | refactoring bump now |
+| D8 | Plugin `.mjs` precache entries are counted, never interpreted (B-4 is open) | reading each plugin's `manifest` export |
+
+**Manifest (in memory, ajv-checked):** `{ app, sw, cacheVersion, depsDeclared:false, pages[], modules[], precacheOrder[] }`; a module is
+`{ file, deps:[], load:"boot"|"lazy", lazyGroup, precache, v, sites[] }`; a site is `{ in, at, kind:"tag"|"asset"|"inline"|"lazy", as, v, onerror?, q? }`
+(`at` = its place in the file `in`; `load` is `boot` when any site is a `tag`; `lazyGroup` in B0 is the loader file; `precache` = the file is in that app's `PRECACHE_ASSETS`).
+**Readers (`scripts/lib/page_refs.js`):** HTML by a small state machine (comments skipped whole, `script`/`style`/`textarea`/`title` bodies raw to the closing tag, quoted
+attributes, byte ranges); inline script bodies, loaders and `sw.js` by espree only; a site is a string literal whose WHOLE value is `path.(js|css|json|wasm|mjs)?v=digits`;
+any other `?v=` literal is counted as partial, never owned. **Generator (`scripts/gen_manifest.js --check`):** regenerate = frame + each site rendered from the manifest
+after a JSON round trip; exit 1 on a file that differs from the committed bytes (file, line, the canonical spelling), a non-literal `PRECACHE_ASSETS` element, a schema
+failure, or two runs giving different manifest bytes.
+**Witness W-MANIFEST-ROUNDTRIP (`scripts/tests/witness_manifest_roundtrip.js`):** population = every owned file of the three apps by `git ls-files`; denominator = sites per kind per app. Claims, each with its own source:
+C1 every script tag is a site (raw `<script[^>]+src=` count on the page minus on the frame; the hits left must lie in inline bodies; bump's PAGE_REF hits) ·
+C2 the precache list and `CACHE_VERSION` (the `vm` run of the committed `sw.js`) · C3 loader sites (bump's JS_REF hits against the parser's literals) ·
+C4 the frame holds no module data (frame re-read: 0 sites) · C5 the manifest drives the output (for EVERY versioned site: +1 in the manifest, regenerate, the bytes differ in that site's range only) ·
+C6 the viewer counts equal `tests/audit_sw_precache.js`'s own summary · C7 the sites equal what a `bump.js` dry run of every target prints.
+**Red controls, same run, each must FAIL:** R1 swap the places of two adjacent tags in the manifest · R2 drop one precache entry · R3 change `CACHE_VERSION` ·
+R4 reader fixtures on a copy of the real modeller.html (a tag in a comment and in an inline string adds 0 sites, a planted real tag adds 1, a non-canonical tag is refused) ·
+R5 the order checker on a synthetic edge between two adjacent real modules, then swapped (`synthetic=Y`: it proves the refusal code, not any dependency).
+**The lane's red control "swap two dependent modules" becomes real only when deps are declared** (new decision **B-5**, to ask after B-1: who declares `deps`? advice: a tool-derived candidate list, confirmed by hand per app in B1 to B3).
+**INCONCLUSIVE** when any app has 0 sites, any parse fails, any red control does not fail, the `vm` run throws, the bump dry run or the audit prints no summary, or C5 judged 0 sites.
+`§MANIFEST_ROUNDTRIP apps=3 files= sites= tag= asset= inline= lazy= precache= identical=N/N driven=N/N sw_vm=3/3 red=5/5 order_check=NOT-JUDGED verdict=`.
+**Findings printed, never a failure (they feed B-1, B-2, B-4):** `§MANIFEST_VERSIONS` (disagreements, sites below max) · `§MANIFEST_UNVERSIONED` · `§MANIFEST_INLINE_SITES` ·
+`§MANIFEST_MISSING` · `§MANIFEST_LAZY_PRECACHE` (lazy+precached, boot not precached, duplicates) · `§MANIFEST_PLUGINS` · `§MANIFEST_OUTSIDE`.
+**Not in B0:** any write to a page, loader or `sw.js`; markers; a committed manifest; dependency data; owner/witness fields (B-3); plugin reading (B-4); unifying versions or hashes (B-1);
+a lazy+precache rule (B-2); pages outside the three apps, `oplogpic/`, importmaps, `_GANTT_CACHE_VERSION`. **CI:** one fast-checks step, beside W-CORE-PURE.
+**Issue proved:** "the module lists kept by hand in pages, lazy lists and service workers cannot be rebuilt from one manifest per app without losing or changing a byte".
+
 ---
 
 ## PART C — Named APP parts, each with one owner   (fixes the rest of P1; slow, background)
