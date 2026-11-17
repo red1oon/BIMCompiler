@@ -17,7 +17,7 @@ numbers are measured, the five decisions (D1–D5) are MADE. **Implement; do not
    GPU or browser runs without the owner's go; agents on Sonnet; results go in §Q.6 / §Q.7 only;
    the witness, never the owner's eyes, is the test.
 
-**Status (update this line as steps land):** step 0 ✅ (#3018) · D2 ✅ (#3022) · D5 ✅ (variant B, #3023) · D1 ☐ NEXT · D3 ☐ · D4 ☐ — owner rulings 2026-11-14: D2/D5 merged with their cross-level near misses NAMED (§Q.6/§Q.7 RESULTS); D5 = variant B. Open, named: §Q.8. **Once-over 2026-11-17: §Q.9 — gate 4 is RED on main (repair first); most out-of-order play is cross-task, outside D1–D4; 3 owner decisions — ✅ decided 2026-11-17 as D6/D7/D8 (§Q.9.4), which also sets the order of work after D5.**
+**Status (update this line as steps land):** step 0 ✅ (#3018) · D2 ✅ (#3022) · D5 ✅ (variant B, #3023) · D1 ☐ NEXT · D3 ☐ · D4 ☐ — owner rulings 2026-11-14: D2/D5 merged with their cross-level near misses NAMED (§Q.6/§Q.7 RESULTS); D5 = variant B. Open, named: §Q.8. **Once-over 2026-11-17: §Q.9 — gate 4 is RED on main (repair first); most out-of-order play is cross-task, outside D1–D4; 3 owner decisions — ✅ decided 2026-11-17 as D6/D7/D8 (§Q.9.4), which also sets the order of work after D5.** **Gate-4 repair ✅ (bim-ootb #3177, §Q.10); NEXT = assembly-order witness, then D1.**
 
 ---
 
@@ -3381,3 +3381,27 @@ Claude's advice from construction practice, recorded as the spec on that instruc
 - **D7 — contact is not support for services. ADOPTED.** Practice and the template agree: services go in before ceilings and floor finishes. For a non-structural T with no pool contact, a non-pool contact that the template builds later is counted and named on `§CONTACT_ONLY` and is not judged midair. Where the element is inside a formed room the owner's §E ruling already covers it (*"anything that hangs within a well formed room is no issue"*). Structural T is untouched (D2 governs it).
 - **D8 — a stretched bar does not cost more. ADOPTED.** Cost is work content × rate; the template's own `duration_rule` says *the solve ORDERS elements; it does not PRICE the work*. The dashboard donut reads the install-seconds owner (§I row "how long does it take?"), not played duration. Time-related cost (site overheads per day) is not modelled — no data, none invented. `cost_panel.js` `UNIT_RATES` and the 5D export's phase key are named in F8 and NOT decided here.
 - **Order of work, replacing Q.9.3's last line:** gate-4 repair → assembly-order witness + unjudged count → D1 → D3 → **D6 measurement, then D6** → D7 → D8 with `§COST_INVARIANT` → D4 last (it changes the judge; before/after both under the new judge).
+
+## §Q.10 RESUME 4D, 2026-11-17 — STEP "GATE-4 REPAIR" DONE; WHAT THE REPAIRED WITNESS SAYS ABOUT D2
+**Cause of the red gate (isolated, not the October split):** `_buildXrayElements` has called `_scheduledWhere` and `_civilRule` since bim-ootb #1890 (2026-10-06). Neither witness sliced them; the `ReferenceError` was swallowed by a bare `catch (e) { return null; }`. Six weeks, three merged 4D steps (#3018, #3022, #3023) with no working gate 4. A second, older hole: `witness_midair_zero` picked the 0-byte `Duplex_meta.db`.
+**Fix — bim-ootb #3177** (+27/−8): `§XRAY_BUILD_EMPTY reason=` on every empty return; both witnesses slice the delegates and take the owner (`ScheduleAuthor`); `witness_midair_zero` picks the DB by the viewer's split-pair rule and prints `§MZ_INCONCLUSIVE` when it judged nothing.
+```
+witness_gantt_lock_integrity   before: exit 1, G-LI-2a n=0        after: §GANTT_LOCK_INTEGRITY pass=20 fail=0, G-LI-2a n=1122
+witness_midair_zero            before: exit 1, 7 of 7 buildings "produced nothing"
+                               after : judges 7 of 7; §MIDAIR_ZERO_SUMMARY pass=31 fail=19 — ITS LOCKS ARE STALE. NOT re-locked.
+```
+**The stale locks, bisected with the repaired witness on unchanged DBs (W-MZ-2 "strict midair": starts before the first thing it touches appears):**
+| W-MZ-2, locked → got | step 0 (#3018) | D2 (#3022) | main (D2 + D5) |
+|---|---:|---:|---:|
+| HHS (GRAPH) locked 0 | 0 ✅ | **15** | 15 |
+| LTU (GRAPH) locked 0 | 0 ✅ | **365** | 365 |
+| JKR (GRAPH) locked 0 | 0 ✅ | **10** | 10 |
+| Duplex (GRAPH) locked 0 | not judged (0-byte DB) | not judged | **8** (the 8 beams on walls) |
+| Terminal (CELL) locked 684 | 903 | 905 | 842 |
+| Hospital (CELL) locked 218 | 194 | 203 | 196 |
+| Clinic (CELL) locked 422 | 401 | 347 | 341 |
+- **D2 is what moved the GRAPH-path zeros.** Before D2 they held. A structural element D2 leaves with no elected support has no edge at all, and the independent judge (any contact) sees it start first. This is Q.9 F3, now measured by the judge that was built to be independent. Gate 4 would have stopped D2 had it been working.
+- **What those elements are** (`scripts/probe_4d_struct_no_support.js`, `§NOSUP`, persisted runs): Hospital 46 = 44 with a non-pool contact below (wall contacts 103, then stair / railing / pipe / duct) · 2 with contacts above only. Duplex 9 = 9 with a contact below (WallStandardCase 39 contacts). HHS 32 = 19 below (proxy, door, wall) · 9 above only · 4 embedded only. Terminal 671 = 353 below (pipe 206, wall 178, proxy 160) · 318 above only (roof deck plates).
+- **Reading (Claude, on the owner's 2026-11-17 instruction to decide):** D2 stays — a beam must not hang from its slab. Three populations, three owners: *wall below* → **D1** (target: Duplex W-MZ-2 8 → 0, read from this witness); *contacts above only* (a column or deck on unmodelled support) → correct to start first, the judge must follow D2's rule for structural T and NAME them instead of calling them midair; *pipe / railing / door below* → §E row 1, never elected, named.
+- **Not done here, on purpose:** no lock in `baselines/midair.json` was moved. The CELL-path locks and W-MZ-8 drifted before step 0 as well (unattributed, some of it the 2026-10/11 datum and population changes). They are re-locked ONCE, after D1, with this table as the written reason (§Q.6 gate 4's own rule).
+- **Status of §Q.9.4's order:** gate-4 repair ✅ (#3177) → **NEXT: assembly-order witness + unjudged count** → D1 → D3 → D6 → D7 → D8 → D4.
