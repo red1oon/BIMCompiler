@@ -1,0 +1,942 @@
+§GENERICITY PASS (9 layer files, no app words)
+=== witness_changelog_tail
+§CL_POLL from=0 got=4452 fresh=4452 reread=0 events=200 wm=1021830
+§W10_BASE wm=1021830 user=101
+§W10_TRAFFIC order=1002857
+§CL_POLL from=1021630 got=4461 fresh=9 reread=4452 events=2 wm=1021832
+§W10_COMPLETE PASS db=9 tracker=9
+§W10_DOCACTION PASS event=1021832 record=1002857 DocStatus DR->CO trx=ws_modelSetDocAction_01a12ec2-acce-78bf-893f-884812d731cc
+§W10_INSERT_MODE PASS SYSTEM_INSERT_CHANGELOG=N insert_events(order/line)=0 — DRAFT CREATION INVISIBLE, only updates (e.g. DR->CO) are seen
+§W10_OWN PASS own_events=2 of 2
+§CL_POLL from=1021632 got=4455 fresh=0 reread=4455 events=0 wm=1021832
+§W10_IDEMPOTENT PASS fresh=0 reread=4455
+§W10_LATE PASS window=200 caught_N=true · window=0 missed_N=true (negative control must miss)
+§W10_OWN_FOREIGN PASS fixture user=100 trx=fixture own=false
+§W10_VERDICT PASS fails=0 inconclusive=0
+=== witness_m1_outbox
+§PUSH t1 CONFIRMED header=1002858 lines=1
+§PUSH t2 CONFIRMED header=1002859 lines=1
+§PUSH_SUMMARY {"sent":2,"confirmed":2,"rejected":0,"parked":0,"diverged":0,"requeued":0,"stopped":null}
+§M1_W1_ONECALL PASS docs=2 composite_calls=2 server_orders+2 confirmed=2 states=CONFIRMED,CONFIRMED
+§PUSH_SUMMARY {"sent":0,"confirmed":0,"rejected":0,"parked":0,"diverged":0,"requeued":0,"stopped":null}
+§M1_W1_IDEMPOTENT PASS second drain calls+0 orders+0
+§M1_P15_PRICE PASS payload had no price; server line PriceActual=61.75 PriceList(101) std=61.75
+§M1_IDMAP PASS t1 map=[{"tbl":"C_Order","server_id":1002858,"docno":"81331"},{"tbl":"C_OrderLine","server_id":1002543,"docno":null}] (header carries legacy DocumentNo; ids/numbers are legacy's own — twin §21)
+§PUSH bad REJECTED rolledBack=true Cannot save record in C_OrderLine: Foreign ID 999999 not found in M_Product_ID
+§PUSH after-bad CONFIRMED header=1002861 lines=1
+§PUSH_SUMMARY {"sent":2,"confirmed":1,"rejected":1,"parked":0,"diverged":0,"requeued":0,"stopped":null}
+§M1_W4_REJECT PASS bad=REJECTED (Cannot save record in C_OrderLine: Foreign ID 999999 not found in M_Pr) after-bad=CONFIRMED server_orders+1 (expect +1: only the good one)
+§PUSH k1 CONFIRMED header=1002862 lines=1
+§PUSH_SUMMARY {"sent":1,"confirmed":1,"rejected":0,"parked":0,"diverged":0,"requeued":0,"stopped":null}
+§M1_W5_BEFORE PASS server_orders+1 state=CONFIRMED
+§M1_W5_AFTER crash: SIMULATED CRASH after server commit
+§PUSH_SUMMARY {"sent":0,"confirmed":0,"rejected":0,"parked":0,"diverged":0,"requeued":0,"stopped":null}
+§M1_W5_AFTER PASS server_committed=true recovered_parked=1 state=PARKED resend_calls=0 dup_orders=0
+§PUSH n1 NOT_SENT attempts=1
+§PUSH_SUMMARY {"sent":1,"confirmed":0,"rejected":0,"parked":0,"diverged":0,"requeued":1,"stopped":null}
+§M1_NOTSENT_1 PASS after 1 drain: state=QUEUED attempts=1
+§PUSH n1 NOT_SENT attempts=2
+§PUSH_SUMMARY {"sent":1,"confirmed":0,"rejected":0,"parked":0,"diverged":0,"requeued":1,"stopped":null}
+§PUSH n1 NOT_SENT attempts=3
+§PUSH_SUMMARY {"sent":1,"confirmed":0,"rejected":0,"parked":1,"diverged":0,"requeued":0,"stopped":null}
+§M1_NOTSENT_CAP PASS after 3 drains: state=PARKED (capped, not lost)
+§PUSH n2 NOT_SENT attempts=1
+§PUSH_SUMMARY {"sent":1,"confirmed":0,"rejected":0,"parked":0,"diverged":0,"requeued":1,"stopped":null}
+§PUSH n2 CONFIRMED header=1002864 lines=1
+§PUSH_SUMMARY {"sent":1,"confirmed":1,"rejected":0,"parked":0,"diverged":0,"requeued":0,"stopped":null}
+§M1_NOTSENT_RESUME PASS after reconnect: state=CONFIRMED orders+1
+§PUSH STOP auth: §AD_AUTH Error login - User invalid
+§PUSH_SUMMARY {"sent":1,"confirmed":0,"rejected":0,"parked":0,"diverged":0,"requeued":0,"stopped":"AUTH"}
+§M1_AUTH PASS stopped=AUTH login_attempts=1 (must be 1) states=QUEUED,QUEUED,QUEUED
+§M1_W6 INCONCLUSIVE no hand-keyed POS reference document in the pilot to diff against; needs one keyed through the ZK UI (not faked)
+§M1_VERDICT PASS-with-INCONCLUSIVE fails=0 inconclusive=1
+=== witness_m2_replay
+§CL_POLL from=0 got=4481 fresh=4481 reread=0 events=200 wm=1021862
+§REPLAY_BASELINE wm=1021862 rows_skipped=4481 (history is not replayed)
+§M2_BASE wm=1021862 (history before this point is NOT replayed — baseline, §19 C5)
+§PUSH mine CONFIRMED header=1002866 lines=1
+§PUSH_SUMMARY {"sent":1,"confirmed":1,"rejected":0,"parked":0,"diverged":0,"requeued":0,"stopped":null}
+§M2_TRAFFIC legacy-keyed=1002865 bridge-pushed=1002866
+§CL_POLL from=1021662 got=4507 fresh=26 reread=4481 events=7 wm=1021869
+§REPLAY C_Order#1002865 APPLIED lines=1 → local:C_Order:1002865
+§REPLAY C_Order#1002866 OWN-ECHO skipped
+§REPLAY_SUMMARY {"events":7,"candidates":2,"applied":1,"ownSkipped":1,"duplicate":0,"failed":0,"notReady":0} wm=1021869
+§M2_REPLAY PASS candidates=2 applied=1 legacyDoc=1002865 inbox={"tbl":"C_Order","server_id":1002865,"status":"APPLIED","local_ref":"local:C_Order:1002865","error":null,"at":"2026-10-12T06:18:01.791Z"}
+§M2_ENGINE PASS engine ops for legacy doc: CREATE_DOCUMENT+CREATE_LINE+SET_STATUS (erp_engine.buildDoc + status; not a row copy)
+§M2_TOTAL PASS local fold=6175c legacy TotalLines=6175c
+§M2_OWN PASS own-echo skipped=1 replayed_back=false
+§CL_POLL from=1021669 got=4485 fresh=0 reread=4485 events=0 wm=1021869
+§REPLAY_SUMMARY {"events":0,"candidates":0,"applied":0,"ownSkipped":0,"duplicate":0,"failed":0,"notReady":0} wm=1021869
+§M2_DEDUPE_RERUN PASS second run applied=0 duplicate=0
+§CL_POLL from=1021669 got=4485 fresh=0 reread=4485 events=0 wm=1021869
+§REPLAY_SUMMARY {"events":0,"candidates":0,"applied":0,"ownSkipped":0,"duplicate":0,"failed":0,"notReady":0} wm=1021869
+§M2_DEDUPE_RESTART PASS after restart applied=0 duplicate=0 total CREATE_DOCUMENT ops=1
+§CL_POLL from=1021669 got=4485 fresh=0 reread=4485 events=0 wm=1021869
+§REPLAY_BASELINE wm=1021869 rows_skipped=0 (history is not replayed)
+§CL_POLL from=1021669 got=4499 fresh=14 reread=4485 events=4 wm=1021873
+§REPLAY C_Order#1002867 FAILED SIMULATED local rule failure
+§REPLAY C_Order#1002868 APPLIED lines=1 → local:C_Order:1002868
+§REPLAY_SUMMARY {"events":4,"candidates":2,"applied":1,"ownSkipped":0,"duplicate":0,"failed":1,"notReady":0} wm=1021873
+§M2_FAIL PASS L2=FAILED(SIMULATED local rule failure) L3=APPLIED (failure visible, sibling applied)
+§M2_VERDICT PASS fails=0 inconclusive=0
+=== witness_dict_diff
+§DD_TABLE c_doctype legacy=51 local=52 cols_compared=41 onlyLegacy=0 onlyLocal=1 changed_cells=0 onlyLocal_ids=0
+§DD_TABLE c_tax legacy=6 local=6 cols_compared=27 onlyLegacy=0 onlyLocal=0 changed_cells=0
+§DD_TABLE m_pricelist legacy=4 local=4 cols_compared=15 onlyLegacy=0 onlyLocal=0 changed_cells=0
+§DD_COLUMNS m_product_category_acct legacy-has-but-sqlite-lacks=[ad_client_id,ad_org_id,isactive,processing,p_invoicepricevariance_acct,p_tradediscountrec_acct,p_tradediscountgrant_acct,costingmethod,costinglevel,p_costadjustment_acct,p_ratevariance_acct,p_landedcostclearing_acct] (needs ALTER via patch+loader, not a data patch)
+§DD_TABLE m_product_category_acct legacy=28 local=28 cols_compared=9 onlyLegacy=0 onlyLocal=0 changed_cells=0
+§DD_COLUMNS m_costelement legacy-has-but-sqlite-lacks=[ad_client_id,ad_org_id,isactive,name,description,iscalculated] (needs ALTER via patch+loader, not a data patch)
+§DD_TABLE m_costelement legacy=9 local=9 cols_compared=3 onlyLegacy=0 onlyLocal=0 changed_cells=0
+§DD_COLUMNS m_cost legacy-has-but-sqlite-lacks=[ad_client_id,ad_org_id,isactive,futurecostprice,description,m_attributesetinstance_id,percent,currentqty,currentcostpricell,futurecostpricell,iscostfrozen] (needs ALTER via patch+loader, not a data patch)
+§DD_TABLE m_cost legacy=362 local=362 cols_compared=7 onlyLegacy=0 onlyLocal=0 changed_cells=46
+§DICT_GAP m_cost#136|101|100|100.cumulatedamt legacy="1386.00" sqlite=720
+§DICT_GAP m_cost#136|101|100|100.cumulatedqty legacy=77 sqlite=40
+§DICT_GAP m_cost#123|101|100|102.currentcostprice legacy=48.6911 sqlite=51.45
+§DICT_GAP m_cost#123|101|100|102.cumulatedamt legacy=1466.25 sqlite=1286.25
+§DICT_GAP m_cost#123|101|100|102.cumulatedqty legacy=30 sqlite=25
+§DICT_GAP m_cost#139|101|100|102.currentcostprice legacy=7.9645 sqlite=7.65
+§DICT_GAP m_cost#139|101|100|102.cumulatedamt legacy=1106.75 sqlite=114.75
+§DICT_GAP m_cost#139|101|100|102.cumulatedqty legacy=139 sqlite=15
+§DICT_GAP m_cost#139|101|100|103.currentcostprice legacy=7.96463583 sqlite=7.65
+§DICT_GAP m_cost#139|101|100|103.cumulatedamt legacy=1106.75 sqlite=114.75
+§DICT_GAP m_cost#139|101|100|103.cumulatedqty legacy=139 sqlite=15
+§DICT_GAP m_cost#123|200000|100|102.currentcostprice legacy=41.3874 sqlite=43.7324
+§DD_COLUMNS m_product legacy-has-but-sqlite-lacks=[ad_client_id,ad_org_id,isactive,description,issummary,c_uom_id,isstocked,ispurchased,issold,volume,weight,value,c_taxcategory_id,upc,sku,shelfwidth,shelfheight,shelfdepth,unitsperpallet,discontinued,discontinuedat,documentnote,help,classification,salesrep_id,c_revenuerecognition_id,isinvoiceprintdetails,ispicklistprintdetails,isverified,processing,s_expensetype_id,s_resource_id,producttype,imageurl,descriptionurl,r_mailtext_id,versionno,guaranteedays,m_attributeset_id,m_attributesetinstance_id,m_freightcategory_id,m_locator_id,guaranteedaysmin,iswebstorefeatured,isselfservice,c_subscriptiontype_id,isdropship,isexcludeautodelivery,group1,group2,unitsperpack,lowlevel,copyfrom,m_parttype_id,iskanban,ismanufactured,isphantom,isownbox,customstariffnumber,isautoproduce] (needs ALTER via patch+loader, not a data patch)
+§DD_TABLE m_product legacy=55 local=55 cols_compared=4 onlyLegacy=0 onlyLocal=0 changed_cells=0
+§DD_COLUMNS c_acctschema legacy-has-but-sqlite-lacks=[ad_client_id,ad_org_id,isactive,name,description,gaap,isaccrual,autoperiodcontrol,c_period_id,period_openhistory,period_openfuture,separator,hasalias,hascombination,istradediscountposted,isdiscountcorrectstax,costinglevel,isadjustcogs,ad_orgonly_id,ispostservices,isexplicitcostadjustment,processing,isallownegativeposting,backdateday,startdate,enddate] (needs ALTER via patch+loader, not a data patch)
+§DD_TABLE c_acctschema legacy=3 local=2 cols_compared=7 onlyLegacy=1 onlyLocal=0 changed_cells=0
+§DICT_GAP c_acctschema#1009800 missing in SQLite
+§DD_COLUMNS c_cashbook_acct legacy-has-but-sqlite-lacks=[ad_client_id,ad_org_id,isactive,cb_differences_acct,cb_expense_acct] (needs ALTER via patch+loader, not a data patch)
+§DD_TABLE c_cashbook_acct legacy=4 local=4 cols_compared=5 onlyLegacy=0 onlyLocal=0 changed_cells=0
+§DD_COLUMNS ad_sysconfig legacy-has-but-sqlite-lacks=[ad_sysconfig_id,ad_org_id,isactive,description,entitytype,configurationlevel] (needs ALTER via patch+loader, not a data patch)
+§DD_TABLE ad_sysconfig legacy=205 local=1 cols_compared=3 onlyLegacy=204 onlyLocal=0 changed_cells=0
+§DICT_GAP ad_sysconfig#PROJECT_ID_PROJECT|0 missing in SQLite
+§DICT_GAP ad_sysconfig#DICTIONARY_ID_USE_CENTRALIZED_ID|0 missing in SQLite
+§DICT_GAP ad_sysconfig#PROJECT_ID_USE_CENTRALIZED_ID|0 missing in SQLite
+§DICT_GAP ad_sysconfig#PROJECT_ID_USER|0 missing in SQLite
+§DICT_GAP ad_sysconfig#PAYMENT_OVERWRITE_DOCUMENTNO_WITH_CHECK_ON_PAYMENT|0 missing in SQLite
+§DD_COLUMNS ad_sysconfig legacy-has-but-sqlite-lacks=[ad_sysconfig_id,ad_client_id,ad_org_id,created,updated,createdby,updatedby,isactive,name,value,description,entitytype,configurationlevel,ad_sysconfig_uu] (needs ALTER via patch+loader, not a data patch)
+§DD_TABLE ad_sysconfig legacy=205 local=0 cols_compared=0 onlyLegacy=205 onlyLocal=0 changed_cells=0
+§DICT_GAP ad_sysconfig#PROJECT_ID_PROJECT|0 missing in SQLite
+§DICT_GAP ad_sysconfig#DICTIONARY_ID_USE_CENTRALIZED_ID|0 missing in SQLite
+§DICT_GAP ad_sysconfig#PROJECT_ID_USE_CENTRALIZED_ID|0 missing in SQLite
+§DICT_GAP ad_sysconfig#PROJECT_ID_USER|0 missing in SQLite
+§DICT_GAP ad_sysconfig#PAYMENT_OVERWRITE_DOCUMENTNO_WITH_CHECK_ON_PAYMENT|0 missing in SQLite
+§DD_TABLE c_elementvalue legacy=379 local=379 cols_compared=25 onlyLegacy=0 onlyLocal=0 changed_cells=0
+§DD_COLUMNS c_bankaccount legacy-has-but-sqlite-lacks=[c_bank_id,c_currency_id,accountno,creditlimit,ad_client_id,isdefault,bankaccounttype,description,iban,bban,paymentexportclass,value,name] (needs ALTER via patch+loader, not a data patch)
+§DD_TABLE c_bankaccount legacy=3 local=3 cols_compared=4 onlyLegacy=0 onlyLocal=0 changed_cells=1
+§DICT_GAP c_bankaccount#100.currentbalance legacy=451.03 sqlite=148
+§DD_TABLE a_asset_group_acct legacy=6 local=6 cols_compared=36 onlyLegacy=0 onlyLocal=0 changed_cells=6
+§DICT_GAP a_asset_group_acct#200002.uselifeyears legacy="5.000000000000" sqlite=0
+§DICT_GAP a_asset_group_acct#200002.uselifemonths legacy=60 sqlite=0
+§DICT_GAP a_asset_group_acct#200005.uselifeyears legacy="5.000000000000" sqlite=0
+§DICT_GAP a_asset_group_acct#200005.uselifemonths legacy=60 sqlite=0
+§DICT_GAP a_asset_group_acct#200005.uselifeyears_f legacy="5.000000000000" sqlite=0
+§DICT_GAP a_asset_group_acct#200005.uselifemonths_f legacy=60 sqlite=0
+§DD_FINDINGS (see §DD_TABLE/§DICT_GAP above; patches written to scripts/bridge/out/dict_patch_*.sql, NOT applied to any shared seed)
+§DD_DETECT PASS corrupted 135.isautogenerateinout (was Y) detected=true; deleted doctype 148 detected=true
+§DD_PATCH_FIX PASS after patch: 135.isautogenerateinout=Y (legacy value Y), doctype 148 restored, remaining diffs == pre-existing real findings (0 cells, 0 rows)
+§DD_IDEMPOTENT PASS second apply of the same patch changed nothing
+§DD_NO_DELETE PASS generated patches contain no DELETE (onlyLocal rows: 1/0/0/0/0/0/0/0/0/0/0/0/0/0 reported only)
+§DD_SCHEMA_PATCH PASS applied m_product_category_acct:+2col/28stmt m_costelement:+2col/9stmt m_cost:+1col/408stmt m_product:+2col/55stmt c_acctschema:+8col/4stmt c_cashbook_acct:+2col/4stmt ad_sysconfig:+6col/409stmt; re-diff: m_product_category_acct stillMissing=[] changed=0 onlyLegacy=0; m_costelement stillMissing=[] changed=0 onlyLegacy=0; m_cost stillMissing=[] changed=0 onlyLegacy=0; m_product stillMissing=[] changed=0 onlyLegacy=0; c_acctschema stillMissing=[] changed=0 onlyLegacy=0; c_cashbook_acct stillMissing=[] changed=0 onlyLegacy=0; ad_sysconfig stillMissing=[] changed=0 onlyLegacy=0
+§DD_SCHEMA_IDEMPOTENT PASS second apply (ALTERs forced into the text): error=none altered=0/0/0/0/0/0/0 skipped=2/2/1/2/8/2/6 rows unchanged=true
+§DD_CREATE_TABLE PASS ad_sysconfig_seed: legacy=205 created+inserted stmts=206 local_after=205 gaps_after=0 missing_cols_after=0 reapply_unchanged=true
+§DD_COMPOSITE_DETECT PASS corrupted m_cost[125|101|100|100].currentqty detected=true; after patch changed=0
+§DD_VERDICT PASS fails=0 inconclusive=0
+=== witness_link_facade
+§LINK_SUBMIT_DRAIN PASS submit made 0 network calls (must be 0), drain confirmed=1 composite_calls=1 server_orders+1
+§LINK_PERSIST PASS status={"CONFIRMED":1} resend_calls=0
+§LINK_PULL PASS applied=[1002870] (legacy-keyed 1002870); own document 1002869 not replayed back
+§LINK_READ PASS read returned 1 row, DocStatus=CO
+§LINK_COMPARE PASS same=MATCH diff=SQLITE-GAP
+§LINK_ISOMORPHIC PASS 8 layer files have no Node-only top-level module (fs is lazy inside store.js, file path only)
+§LINK_VERDICT PASS fails=0
+=== witness_model_movement
+§MODEL_DATA_ONLY PASS 9 layer files have no uncommitted change
+§MODEL_MOVE PASS state=CONFIRMED legacy movement 1000184 CO|10000110 · locator101 58→57 · locator102 110→111
+§MODEL_READBACK PASS idmap=[{"tbl":"M_Movement","server_id":1000184,"docno":"10000110"},{"tbl":"M_MovementLine","server_id":1000110,"docno":null}]
+§MODEL_REJECT PASS state=REJECTED (Cannot save record in M_MovementLine: Foreign ID 999999 not found in M_Product_I) legacy movements +0
+§MODEL_VERDICT PASS fails=0
+=== witness_d7_second_call
+§D7_SHAPE PASS ON: composite ops=createData,createData call2=1 recordID=501 state=CONFIRMED
+§D7_SHAPE_OFF_CONTROL PASS OFF: composite ops=createData,createData,setDocAction call2=0 (must be 0, one composite incl. setDocAction)
+§D7_IDEMPOTENT PASS after NOT_SENT: state=QUEUED completePending=true header=506; re-drain call1=0 (must be 0) final=CONFIRMED header_maps=1
+§D7_CAP PASS state=PARKED attempts=2 header kept=508
+§D7_REJECT PASS bad=REJECTED (Document must balance) draft=510 next=CONFIRMED
+§D7_AMBIGUOUS PASS state=PARKED calls_on_redrain=0 (must be 0)
+§D7_CRASH PASS recovered=1 state=PARKED resend_calls=0
+§D7_AUTH PASS stopped=AUTH a1=QUEUED call2=1 a2=QUEUED
+§D7_VERDICT PASS judged=8 fails=0
+=== witness_m3_gap
+§FIXTURE_SHIPPED seed=/tmp/wt-ootb-g-sd1/erp/ad_seed.db patch_stmts_ok=2982 failed=0 sql_functions=19 product_prices=149 FIXTURE_HAS_PRICES
+§M3_STATE_SYNC m_product_category_acct:+2col,28stmt,left=0 m_costelement:+2col,9stmt,left=0 m_cost:+1col,408stmt,left=0 m_product:+2col,55stmt,left=0 c_acctschema:+8col,4stmt,left=0 c_cashbook_acct:+2col,4stmt,left=0 ad_sysconfig:+6col,409stmt,left=0 c_bankaccount:+0col,1stmt,left=0
+§F9_HISTORY_SYNC rows=7052 of legacy (details processed=2442)
+§S7_FACTS product=128 legacy_onhand_before=-385 legacy_avg_costed_qty=5 qty=6 warehouse=103
+§SCN S1-pos-sale MATCH compared=17 inconclusive=0
+§SCN S2-product-not-on-pricelist MATCH compared=17 inconclusive=0
+§SCN S3-client-keyed-price MATCH compared=17 inconclusive=0
+§SCN S2b-keyed-price-product-not-on-pricelist MATCH compared=17 inconclusive=0
+§SCN S11-pos-sale-costed-product MATCH compared=17 inconclusive=0
+§SCN S4-unknown-product MATCH compared=17 inconclusive=0
+§SCN S6-standard-order MATCH compared=17 inconclusive=0
+§SCN S13a-pos-sale-over-credit-limit MATCH compared=17 inconclusive=0
+§SCN S13b-standard-order-over-credit-limit MATCH compared=17 inconclusive=0
+§SCN T1-pos-sale-taxed-org12-ct MATCH compared=17 inconclusive=0
+§SCN S14a-pos-order-negative-qty MATCH compared=17 inconclusive=0
+§SCN S14b-standard-order-negative-qty MATCH compared=17 inconclusive=0
+§SCN S14c-pos-order-zero-qty MATCH compared=17 inconclusive=0
+§SCN S13c-pos-sale-large-no-credit-limit MATCH compared=17 inconclusive=0
+§SCN S7a-pos-sale-beyond-onhand MATCH compared=17 inconclusive=0
+§SCN S7b-standard-order-beyond-onhand MATCH compared=17 inconclusive=0
+§SCN S8a-pos-sale-past-dated-open-period MATCH compared=17 inconclusive=0
+§SCN S8b-pos-sale-date-without-period MATCH compared=17 inconclusive=0
+§SCN S8c-pos-sale-beyond-open-future MATCH compared=17 inconclusive=0
+§SCN S8d-pos-sale-before-open-history MATCH compared=17 inconclusive=0
+§RECON_SUMMARY scenarios=20 MATCH=20 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SCN S12-void-pos-sale MATCH compared=18 inconclusive=0
+§SCN S12b-void-taxed-pos-sale MATCH compared=18 inconclusive=0
+§RECON_SUMMARY scenarios=2 MATCH=2 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SCN MV1-move-inter-org MATCH compared=7 inconclusive=0
+§SCN MV-REJ-unknown-product MATCH compared=7 inconclusive=0
+§RECON_SUMMARY scenarios=2 MATCH=2 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SCN PAY1-receipt-settles-invoice MATCH compared=9 inconclusive=0
+§SCN PAY-REJ-unknown-invoice MATCH compared=9 inconclusive=0
+§RECON_SUMMARY scenarios=2 MATCH=2 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SCN INV1-ar-invoice-taxed-direct MATCH compared=9 inconclusive=0
+§SCN INV2-ar-invoice-product-not-on-pricelist MATCH compared=9 inconclusive=0
+§SCN INV-REJ-unknown-product MATCH compared=9 inconclusive=0
+§RECON_SUMMARY scenarios=3 MATCH=3 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§PI_FACTS product=137 locator=101 qtybook=54
+§SCN PI1-physical-inventory-gain MATCH compared=7 inconclusive=0
+§SCN PI2-physical-inventory-loss MATCH compared=7 inconclusive=0
+§SCN PI-REJ-unknown-product MATCH compared=7 inconclusive=0
+§RECON_SUMMARY scenarios=3 MATCH=3 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§O2C_STEP legacy SO order=1002894
+§SCN O2C1-SO MATCH compared=9 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§O2C_STEP legacy SHIP inout=1001770
+§SCN O2C2-SHIP MATCH compared=9 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§O2C_STEP legacy INV invoice=1002022
+§SCN O2C3-INV MATCH compared=12 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§O2C_STEP legacy PAY payment=1000185
+§SCN O2C4-PAY MATCH compared=13 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§O2C_STEP legacy RC-INV reversal=1002023
+§SCN O2C5-RC-INV MATCH compared=13 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§O2C_STEP legacy RC-SHIP reversal=1001771
+§SCN O2C6-RC-SHIP MATCH compared=9 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SCN NEG-o2c-SO MATCH compared=9 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SCN NEG-o2c-SHIP MATCH compared=9 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§GAP scenario=NEG-o2c-INV key=inv_lines legacy="137:2:300:104" sqlite="137:2:301:104" verdict=SQLITE-GAP
+§GAP scenario=NEG-o2c-INV key=invoice_tax legacy="104:600:0" sqlite="104:602:0" verdict=SQLITE-GAP
+§GAP scenario=NEG-o2c-INV key=grand_total legacy=600 sqlite=602 verdict=SQLITE-GAP
+§GAP scenario=NEG-o2c-INV key=books legacy="518:DR600/CR0|758:DR0/CR600" sqlite="518:DR602/CR0|758:DR0/CR602" verdict=SQLITE-GAP
+§GAP scenario=NEG-o2c-INV key=books_euro legacy="518:DR510/CR0|758:DR0/CR510" sqlite="518:DR512/CR0|758:DR0/CR512" verdict=SQLITE-GAP
+§GAP scenario=NEG-o2c-INV key=bp_delta legacy="600/600" sqlite="602/602" verdict=SQLITE-GAP
+§SCN NEG-o2c-INV SQLITE-GAP compared=12 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§P2P_STEP legacy PO order=1002896
+§SCN F9-PO MATCH compared=11 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§P2P_STEP legacy RCPT inout=1001773
+§SCN F9-RCPT MATCH compared=10 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§F9_NOT_VACUOUS PASS history price at 2026-09-15 = 2.55000000 (hid 1007643) vs m_cost price now = 4.36666667
+§SCN F9a-sale-backdated-before-receipt MATCH compared=19 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SCN F9b-second-sale-same-backdate MATCH compared=19 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SCN F9c-sale-today-after-backdated MATCH compared=19 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SCN F9d-backdated-sale-beyond-history-qty MATCH compared=19 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§F9_COMPLETED PASS legacy: a/b/c completed+posted, d refused ⇒ shipments 430:DR255/CR0|742:DR0/CR255 ; 430:DR255/CR0|742:DR0/CR255 ; 430:DR255/CR0|742:DR0/CR255 ; REFUSED:Posted=E
+§GAP scenario=NEG-f9-history-price key=postings_shipment legacy="430:DR255/CR0|742:DR0/CR255" sqlite="430:DR256/CR0|742:DR0/CR256" verdict=SQLITE-GAP
+§GAP scenario=NEG-f9-history-price key=postings_shipment_euro legacy="430:DR217/CR0|742:DR0/CR217" sqlite="430:DR218/CR0|742:DR0/CR218" verdict=SQLITE-GAP
+§GAP scenario=NEG-f9-history-price key=cost_state legacy="101:2.55@1/76.5|200000:2.1675@1/65.025" sqlite="101:2.5599999999999996@1/76.5|200000:2.1774999999999998@1/65.025" verdict=SQLITE-GAP
+§SCN NEG-f9-history-price SQLITE-GAP compared=19 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§F9_NEGATIVE_CONTROL PASS +0.01 on the SQLite history price ⇒ SQLITE-GAP gaps=postings_shipment,postings_shipment_euro,cost_state
+§F9_STATE legacy_cost=101:2.55@1/76.5|200000:2.1675@1/65.025
+§P2P_STEP legacy PO order=1002902
+§SCN P2P1-PO MATCH compared=11 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§P2P_STEP legacy RCPT inout=1001779
+§SCN P2P2-RCPT MATCH compared=10 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§P2P_STEP legacy INV invoice=1002030
+§SCN P2P3-INV MATCH compared=16 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§P2P_STEP legacy PAY payment=1000186
+§SCN P2P4-PAY MATCH compared=13 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SCN NEG-p2p-PO MATCH compared=11 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SCN NEG-p2p-RCPT MATCH compared=10 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§GAP scenario=NEG-p2p-INV key=inv_lines legacy="139:2:800:104" sqlite="139:2:801:104" verdict=SQLITE-GAP
+§GAP scenario=NEG-p2p-INV key=invoice_tax legacy="104:1600:0" sqlite="104:1602:0" verdict=SQLITE-GAP
+§GAP scenario=NEG-p2p-INV key=grand_total legacy=1600 sqlite=1602 verdict=SQLITE-GAP
+§GAP scenario=NEG-p2p-INV key=books legacy="749:DR0/CR1600|780:DR1600/CR0" sqlite="749:DR0/CR1602|780:DR1602/CR0" verdict=SQLITE-GAP
+§GAP scenario=NEG-p2p-INV key=books_euro legacy="749:DR0/CR1360|780:DR1360/CR0" sqlite="749:DR0/CR1362|780:DR1362/CR0" verdict=SQLITE-GAP
+§GAP scenario=NEG-p2p-INV key=books_matchinv legacy="587:DR1600/CR0|780:DR0/CR1600" sqlite="ABSENT:invoice price variance not ported (Doc_MatchInv.java:376-380, ipv=2)" verdict=SQLITE-GAP
+§GAP scenario=NEG-p2p-INV key=books_matchinv_euro legacy="587:DR1360/CR0|780:DR0/CR1360" sqlite="ABSENT:invoice price variance not ported (Doc_MatchInv.java:376-380, ipv=2)" verdict=SQLITE-GAP
+§GAP scenario=NEG-p2p-INV key=bp_delta legacy="-1600/0" sqlite="-1602/0" verdict=SQLITE-GAP
+§SCN NEG-p2p-INV SQLITE-GAP compared=16 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§M3_P2P_NEGATIVE_CONTROL PASS +1¢ on the SQLite AP invoice price ⇒ PO=MATCH RCPT=MATCH INV=SQLITE-GAP gaps=inv_lines,invoice_tax,grand_total,books,books_euro,books_matchinv,books_matchinv_euro,bp_delta
+§M3_O2C_NEGATIVE_CONTROL PASS +1¢ on the SQLite invoice price ⇒ SO=MATCH SHIP=MATCH INV=SQLITE-GAP gaps=inv_lines,invoice_tax,grand_total,books,books_euro,bp_delta
+§SCN REQ1-purchase-requisition MATCH compared=6 inconclusive=0
+§SCN REQ-REJ-no-requester MATCH compared=6 inconclusive=0
+§RECON_SUMMARY scenarios=2 MATCH=2 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§GAP scenario=NEG-req-control key=lines legacy="139:3:765:2295" sqlite="139:3:766:2298" verdict=SQLITE-GAP
+§GAP scenario=NEG-req-control key=total_cents legacy=2295 sqlite=2298 verdict=SQLITE-GAP
+§SCN NEG-req-control SQLITE-GAP compared=6 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§M3_REQ_NEGATIVE_CONTROL PASS +1¢ on the SQLite requisition price ⇒ verdict=SQLITE-GAP gaps=lines,total_cents
+§SCN CASH1-cash-journal-settles-invoice MATCH compared=10 inconclusive=0
+§SCN CASH1c-cash-journal-composite-control MATCH compared=10 inconclusive=0
+§SCN CASH1b-cash-journal-saved-then-completed MATCH compared=10 inconclusive=0
+§SCN CASH-REJ-invoice-not-completed MATCH compared=10 inconclusive=0
+§RECON_SUMMARY scenarios=4 MATCH=4 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§GAP scenario=NEG-cash-control key=statement_diff legacy=300 sqlite=301 verdict=SQLITE-GAP
+§GAP scenario=NEG-cash-control key=allocation legacy="CO:300:cash" sqlite="CO:301:cash" verdict=SQLITE-GAP
+§GAP scenario=NEG-cash-control key=ispaid legacy="Y" sqlite="N" verdict=SQLITE-GAP
+§GAP scenario=NEG-cash-control key=books_cash legacy="515:DR300/CR0|516:DR0/CR300" sqlite="515:DR301/CR0|516:DR0/CR301" verdict=SQLITE-GAP
+§GAP scenario=NEG-cash-control key=books_cash_euro legacy="516:DR0/CR255|698:DR255/CR0" sqlite="516:DR0/CR256|698:DR256/CR0" verdict=SQLITE-GAP
+§GAP scenario=NEG-cash-control key=books_alloc legacy="516:DR300/CR0|518:DR0/CR300" sqlite="516:DR301/CR0|518:DR0/CR301" verdict=SQLITE-GAP
+§GAP scenario=NEG-cash-control key=books_alloc_euro legacy="516:DR255/CR0|518:DR0/CR255" sqlite="516:DR256/CR0|518:DR0/CR256" verdict=SQLITE-GAP
+§GAP scenario=NEG-cash-control key=bp_delta legacy="0/0" sqlite="-1/-1" verdict=SQLITE-GAP
+§SCN NEG-cash-control SQLITE-GAP compared=10 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§M3_CASH_NEGATIVE_CONTROL PASS +1¢ on the SQLite cash line ⇒ verdict=SQLITE-GAP gaps=statement_diff,allocation,ispaid,books_cash,books_cash_euro,books_alloc,books_alloc_euro,bp_delta
+§GAP scenario=NEG-cash-mode-control key=books_alloc legacy="518:DR0/CR300|698:DR300/CR0" sqlite="516:DR300/CR0|518:DR0/CR300" verdict=SQLITE-GAP
+§GAP scenario=NEG-cash-mode-control key=books_alloc_euro legacy="518:DR0/CR255|723:DR255/CR0" sqlite="516:DR255/CR0|518:DR0/CR255" verdict=SQLITE-GAP
+§SCN NEG-cash-mode-control SQLITE-GAP compared=10 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§M3_CASH_MODE_CONTROL PASS synced CLIENT_ACCOUNTING=I; SQLite read as Q on the CASH1 shape ⇒ verdict=SQLITE-GAP gaps=books_alloc,books_alloc_euro (must be exactly the 2 allocation-book keys)
+§SCN GLJ1-gl-journal-balanced MATCH compared=7 inconclusive=0
+§SCN GLJ-UNBAL-suspense-balanced MATCH compared=7 inconclusive=0
+§SCN GLJ-REJ-doc-controlled-account MATCH compared=7 inconclusive=0
+§RECON_SUMMARY scenarios=3 MATCH=3 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§GAP scenario=NEG-glj-control key=total_dr legacy=10000 sqlite=10001 verdict=SQLITE-GAP
+§GAP scenario=NEG-glj-control key=lines legacy="474:10000:0|484:0:10000" sqlite="474:10001:0|484:0:10000" verdict=SQLITE-GAP
+§GAP scenario=NEG-glj-control key=postings legacy="474:DR10000/CR0|484:DR0/CR10000" sqlite="474:DR10001/CR0|484:DR0/CR10000|698:DR0/CR1" verdict=SQLITE-GAP
+§SCN NEG-glj-control SQLITE-GAP compared=7 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§M3_GLJ_NEGATIVE_CONTROL PASS +1¢ on the SQLite journal line ⇒ verdict=SQLITE-GAP gaps=total_dr,lines,postings
+§SCN BS1-bank-statement-matches-receipt MATCH compared=9 inconclusive=0
+§SCN BS-REJ-payment-already-reconciled MATCH compared=9 inconclusive=0
+§RECON_SUMMARY scenarios=2 MATCH=2 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§GAP scenario=NEG-bs-control key=statement_diff legacy=777 sqlite=778 verdict=SQLITE-GAP
+§GAP scenario=NEG-bs-control key=ending legacy=46657 sqlite=46658 verdict=SQLITE-GAP
+§GAP scenario=NEG-bs-control key=bank_balance_delta legacy=777 sqlite=778 verdict=SQLITE-GAP
+§GAP scenario=NEG-bs-control key=postings legacy="508:DR777/CR0|509:DR0/CR777" sqlite="508:DR778/CR0|509:DR0/CR778" verdict=SQLITE-GAP
+§GAP scenario=NEG-bs-control key=postings_euro legacy="508:DR660/CR0|509:DR0/CR660" sqlite="508:DR661/CR0|509:DR0/CR661" verdict=SQLITE-GAP
+§SCN NEG-bs-control SQLITE-GAP compared=9 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§M3_BS_NEGATIVE_CONTROL PASS +1¢ on the SQLite statement line ⇒ verdict=SQLITE-GAP gaps=statement_diff,ending,bank_balance_delta,postings,postings_euro
+§SCN PJI1-project-issue-stocked-item MATCH compared=7 inconclusive=0
+§SCN PJI-REJ-no-product MATCH compared=7 inconclusive=0
+§RECON_SUMMARY scenarios=2 MATCH=2 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§GAP scenario=NEG-pji-control key=stock_delta legacy="{\"139@101\":-1}" sqlite="{\"139@101\":-2}" verdict=SQLITE-GAP
+§GAP scenario=NEG-pji-control key=cost_qty_delta legacy="{\"139\":-1}" sqlite="{\"139\":-2}" verdict=SQLITE-GAP
+§GAP scenario=NEG-pji-control key=project_balance_delta legacy="7.9659" sqlite="15.9318" verdict=SQLITE-GAP
+§GAP scenario=NEG-pji-control key=postings legacy="567:DR797/CR0|742:DR0/CR797" sqlite="567:DR1593/CR0|742:DR0/CR1593" verdict=SQLITE-GAP
+§GAP scenario=NEG-pji-control key=postings_euro legacy="568:DR677/CR0|742:DR0/CR677" sqlite="568:DR1354/CR0|742:DR0/CR1354" verdict=SQLITE-GAP
+§SCN NEG-pji-control SQLITE-GAP compared=7 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§M3_PJI_NEGATIVE_CONTROL PASS +1 qty on the SQLite issue ⇒ verdict=SQLITE-GAP gaps=stock_delta,cost_qty_delta,project_balance_delta,postings,postings_euro
+§SCN DDO1-distribution-order-to-transit MATCH compared=6 inconclusive=0
+§SCN DDO-REJ-date-without-period MATCH compared=6 inconclusive=0
+§RECON_SUMMARY scenarios=2 MATCH=2 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§GAP scenario=NEG-ddo-control key=outcome legacy="REJECTED" sqlite="COMPLETED" verdict=SQLITE-GAP
+§GAP scenario=NEG-ddo-control key=docstatus legacy=undefined sqlite="CO" verdict=SQLITE-GAP
+§GAP scenario=NEG-ddo-control key=lines legacy=undefined sqlite="137:2:2:0" verdict=SQLITE-GAP
+§GAP scenario=NEG-ddo-control key=volume legacy=undefined sqlite=0 verdict=SQLITE-GAP
+§GAP scenario=NEG-ddo-control key=weight legacy=undefined sqlite=0 verdict=SQLITE-GAP
+§GAP scenario=NEG-ddo-control key=stock_delta legacy=undefined sqlite="{}" verdict=SQLITE-GAP
+§SCN NEG-ddo-control SQLITE-GAP compared=6 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§M3_DDO_NEGATIVE_CONTROL PASS the SQLite side read as Q (legacy I refuses: no Doc_DDOrder class) ⇒ verdict=SQLITE-GAP gaps=outcome,docstatus,lines,volume,weight,stock_delta
+§SCN_DETAIL S1-pos-sale legacy={"outcome":"COMPLETED","docstatus":"CO","lines":"123:1:6175","total_cents":6175,"shipments":1,"shipments_completed":1,"invoices":1,"stock_delta":"{\"123\":-1}","postings":"518:DR6175/CR0|758:DR0/CR6175","postings_shipment":"REFUSED:Posted=E","postings_euro":"518:DR5249/CR0|758:DR0/CR5249","postings_shipment_euro":"REFUSED:Posted=E","line_tax":"123:104","order_tax":"104:6175:0","grand_total_cents":6175,"invoice_tax":"104:6175:0","cost_qty_delta":"{}"} sqlite={"outcome":"COMPLETED","docstatus":"CO","lines":"123:1:6175","total_cents":6175,"shipments":1,"shipments_completed":1,"invoices":1,"stock_delta":"{\"123\":-1}","postings":"518:DR6175/CR0|758:DR0/CR6175","postings_shipment":"REFUSED:Posted=E","_refused":"AverageCostingNegativeQty: Product=123, Current Qty=0, New Current Qty=-1, CostElement=103, Schema=101","cost_qty_delta":"{}","postings_euro":"518:DR5249/CR0|758:DR0/CR5249","postings_shipment_euro":"REFUSED:Posted=E","line_tax":"123:104","order_tax":"104:6175:0","grand_total_cents":6175,"invoice_tax":"104:6175:0"}
+§SCN_DETAIL S2-product-not-on-pricelist legacy={"outcome":"REJECTED","reason":"Cannot save record in C_OrderLine: Product is not on Price List -> Line No:10, Product: St"} sqlite={"outcome":"REJECTED"}
+§SCN_DETAIL S3-client-keyed-price legacy={"outcome":"COMPLETED","docstatus":"CO","lines":"123:1:1000","total_cents":1000,"shipments":1,"shipments_completed":1,"invoices":1,"stock_delta":"{\"123\":-1}","postings":"518:DR1000/CR0|758:DR0/CR1000","postings_shipment":"REFUSED:Posted=E","postings_euro":"518:DR850/CR0|758:DR0/CR850","postings_shipment_euro":"REFUSED:Posted=E","line_tax":"123:104","order_tax":"104:1000:0","grand_total_cents":1000,"invoice_tax":"104:1000:0","cost_qty_delta":"{}"} sqlite={"outcome":"COMPLETED","docstatus":"CO","lines":"123:1:1000","total_cents":1000,"shipments":1,"shipments_completed":1,"invoices":1,"stock_delta":"{\"123\":-1}","postings":"518:DR1000/CR0|758:DR0/CR1000","postings_shipment":"REFUSED:Posted=E","_refused":"AverageCostingNegativeQty: Product=123, Current Qty=0, New Current Qty=-1, CostElement=103, Schema=101","cost_qty_delta":"{}","postings_euro":"518:DR850/CR0|758:DR0/CR850","postings_shipment_euro":"REFUSED:Posted=E","line_tax":"123:104","order_tax":"104:1000:0","grand_total_cents":1000,"invoice_tax":"104:1000:0"}
+§SCN_DETAIL S2b-keyed-price-product-not-on-pricelist legacy={"outcome":"REJECTED","reason":"Cannot save record in C_OrderLine: Product is not on Price List -> Line No:10, Product: St"} sqlite={"outcome":"REJECTED","reason":"ProductNotOnPriceList"}
+§SCN_DETAIL S11-pos-sale-costed-product legacy={"outcome":"COMPLETED","docstatus":"CO","lines":"137:1:300","total_cents":300,"shipments":1,"shipments_completed":1,"invoices":1,"stock_delta":"{\"137\":-1}","postings":"518:DR300/CR0|758:DR0/CR300","postings_shipment":"430:DR270/CR0|742:DR0/CR270","postings_euro":"518:DR255/CR0|758:DR0/CR255","postings_shipment_euro":"430:DR230/CR0|742:DR0/CR230","line_tax":"137:104","order_tax":"104:300:0","grand_total_cents":300,"invoice_tax":"104:300:0","cost_qty_delta":"{\"137\":-1}"} sqlite={"outcome":"COMPLETED","docstatus":"CO","lines":"137:1:300","total_cents":300,"shipments":1,"shipments_completed":1,"invoices":1,"stock_delta":"{\"137\":-1}","postings":"518:DR300/CR0|758:DR0/CR300","postings_shipment":"430:DR270/CR0|742:DR0/CR270","cost_qty_delta":"{\"137\":-1}","postings_euro":"518:DR255/CR0|758:DR0/CR255","postings_shipment_euro":"430:DR230/CR0|742:DR0/CR230","line_tax":"137:104","order_tax":"104:300:0","grand_total_cents":300,"invoice_tax":"104:300:0"}
+§SCN_DETAIL S4-unknown-product legacy={"outcome":"REJECTED","reason":"Cannot save record in C_OrderLine: Foreign ID 999999 not found in M_Product_ID"} sqlite={"outcome":"REJECTED"}
+§SCN_DETAIL S6-standard-order legacy={"outcome":"COMPLETED","docstatus":"CO","lines":"123:1:6175","total_cents":6175,"shipments":0,"shipments_completed":0,"invoices":0,"stock_delta":"{}","postings":"none","postings_shipment":"none","postings_euro":"none","postings_shipment_euro":"none","line_tax":"123:104","order_tax":"104:6175:0","grand_total_cents":6175,"invoice_tax":"none","cost_qty_delta":"{}"} sqlite={"outcome":"COMPLETED","docstatus":"CO","lines":"123:1:6175","total_cents":6175,"shipments":0,"shipments_completed":0,"invoices":0,"stock_delta":"{}","postings":"none","postings_shipment":"none","cost_qty_delta":"{}","postings_euro":"none","postings_shipment_euro":"none","line_tax":"123:104","order_tax":"104:6175:0","grand_total_cents":6175,"invoice_tax":"none"}
+§SCN_DETAIL S13a-pos-sale-over-credit-limit legacy={"outcome":"REJECTED","reason":"Failed when processing document: Business Partner with this Order over Credit Hold - Open "} sqlite={"outcome":"REJECTED","reason":"credit-over-hold"}
+§SCN_DETAIL S13b-standard-order-over-credit-limit legacy={"outcome":"REJECTED","reason":"Failed when processing document: Business Partner with this Order over Credit Hold - Open "} sqlite={"outcome":"REJECTED","reason":"credit-over-hold"}
+§SCN_DETAIL T1-pos-sale-taxed-org12-ct legacy={"outcome":"COMPLETED","docstatus":"CO","lines":"123:1:6175","total_cents":6175,"shipments":1,"shipments_completed":1,"invoices":1,"stock_delta":"{\"123\":-1}","postings":"518:DR6546/CR0|596:DR0/CR371|758:DR0/CR6175","postings_shipment":"REFUSED:Posted=E","postings_euro":"518:DR5564/CR0|596:DR0/CR315|758:DR0/CR5249","postings_shipment_euro":"REFUSED:Posted=E","line_tax":"123:105","order_tax":"105:6175:371","grand_total_cents":6546,"invoice_tax":"105:6175:371","cost_qty_delta":"{}"} sqlite={"outcome":"COMPLETED","docstatus":"CO","lines":"123:1:6175","total_cents":6175,"shipments":1,"shipments_completed":1,"invoices":1,"stock_delta":"{\"123\":-1}","postings":"518:DR6546/CR0|596:DR0/CR371|758:DR0/CR6175","postings_shipment":"REFUSED:Posted=E","_refused":"AverageCostingNegativeQty: Product=123, Current Qty=0, New Current Qty=-1, CostElement=103, Schema=101","cost_qty_delta":"{}","postings_euro":"518:DR5564/CR0|596:DR0/CR315|758:DR0/CR5249","postings_shipment_euro":"REFUSED:Posted=E","line_tax":"123:105","order_tax":"105:6175:371","grand_total_cents":6546,"invoice_tax":"105:6175:371"}
+§SCN_DETAIL S14a-pos-order-negative-qty legacy={"outcome":"COMPLETED","docstatus":"CO","lines":"123:-1:6175","total_cents":-6175,"shipments":1,"shipments_completed":1,"invoices":1,"stock_delta":"{\"123\":1}","postings":"518:DR-6175/CR0|758:DR0/CR-6175","postings_shipment":"430:DR-4869/CR0|742:DR0/CR-4869","postings_euro":"518:DR-5249/CR0|758:DR0/CR-5249","postings_shipment_euro":"430:DR-4139/CR0|742:DR0/CR-4139","line_tax":"123:104","order_tax":"104:-6175:0","grand_total_cents":-6175,"invoice_tax":"104:-6175:0","cost_qty_delta":"{\"123\":1}"} sqlite={"outcome":"COMPLETED","docstatus":"CO","lines":"123:-1:6175","total_cents":-6175,"shipments":1,"shipments_completed":1,"invoices":1,"stock_delta":"{\"123\":1}","postings":"518:DR-6175/CR0|758:DR0/CR-6175","postings_shipment":"430:DR-4869/CR0|742:DR0/CR-4869","cost_qty_delta":"{\"123\":1}","postings_euro":"518:DR-5249/CR0|758:DR0/CR-5249","postings_shipment_euro":"430:DR-4139/CR0|742:DR0/CR-4139","line_tax":"123:104","order_tax":"104:-6175:0","grand_total_cents":-6175,"invoice_tax":"104:-6175:0"}
+§SCN_DETAIL S14b-standard-order-negative-qty legacy={"outcome":"COMPLETED","docstatus":"CO","lines":"123:-1:6175","total_cents":-6175,"shipments":0,"shipments_completed":0,"invoices":0,"stock_delta":"{}","postings":"none","postings_shipment":"none","postings_euro":"none","postings_shipment_euro":"none","line_tax":"123:104","order_tax":"104:-6175:0","grand_total_cents":-6175,"invoice_tax":"none","cost_qty_delta":"{}"} sqlite={"outcome":"COMPLETED","docstatus":"CO","lines":"123:-1:6175","total_cents":-6175,"shipments":0,"shipments_completed":0,"invoices":0,"stock_delta":"{}","postings":"none","postings_shipment":"none","cost_qty_delta":"{}","postings_euro":"none","postings_shipment_euro":"none","line_tax":"123:104","order_tax":"104:-6175:0","grand_total_cents":-6175,"invoice_tax":"none"}
+§SCN_DETAIL S14c-pos-order-zero-qty legacy={"outcome":"COMPLETED","docstatus":"CO","lines":"123:0:6175","total_cents":0,"shipments":1,"shipments_completed":1,"invoices":1,"stock_delta":"{}","postings":"none","postings_shipment":"none","postings_euro":"none","postings_shipment_euro":"none","line_tax":"123:104","order_tax":"104:0:0","grand_total_cents":0,"invoice_tax":"104:0:0","cost_qty_delta":"{}"} sqlite={"outcome":"COMPLETED","docstatus":"CO","lines":"123:0:6175","total_cents":0,"shipments":1,"shipments_completed":1,"invoices":1,"stock_delta":"{}","postings":"none","postings_shipment":"none","cost_qty_delta":"{}","postings_euro":"none","postings_shipment_euro":"none","line_tax":"123:104","order_tax":"104:0:0","grand_total_cents":0,"invoice_tax":"104:0:0"}
+§SCN_DETAIL S13c-pos-sale-large-no-credit-limit legacy={"outcome":"COMPLETED","docstatus":"CO","lines":"123:200:6175","total_cents":1235000,"shipments":1,"shipments_completed":1,"invoices":1,"stock_delta":"{\"123\":-200}","postings":"518:DR1235000/CR0|758:DR0/CR1235000","postings_shipment":"REFUSED:Posted=E","postings_euro":"518:DR1049750/CR0|758:DR0/CR1049750","postings_shipment_euro":"REFUSED:Posted=E","line_tax":"123:104","order_tax":"104:1235000:0","grand_total_cents":1235000,"invoice_tax":"104:1235000:0","cost_qty_delta":"{}"} sqlite={"outcome":"COMPLETED","docstatus":"CO","lines":"123:200:6175","total_cents":1235000,"shipments":1,"shipments_completed":1,"invoices":1,"stock_delta":"{\"123\":-200}","postings":"518:DR1235000/CR0|758:DR0/CR1235000","postings_shipment":"REFUSED:Posted=E","_refused":"AverageCostingNegativeQty: Product=123, Current Qty=1, New Current Qty=-199, CostElement=103, Schema=101","cost_qty_delta":"{}","postings_euro":"518:DR1049750/CR0|758:DR0/CR1049750","postings_shipment_euro":"REFUSED:Posted=E","line_tax":"123:104","order_tax":"104:1235000:0","grand_total_cents":1235000,"invoice_tax":"104:1235000:0"}
+§SCN_DETAIL S7a-pos-sale-beyond-onhand legacy={"outcome":"COMPLETED","docstatus":"CO","lines":"128:6:2375","total_cents":14250,"shipments":1,"shipments_completed":1,"invoices":1,"stock_delta":"{\"128\":-6}","postings":"518:DR14250/CR0|758:DR0/CR14250","postings_shipment":"REFUSED:Posted=E","postings_euro":"518:DR12113/CR0|758:DR0/CR12113","postings_shipment_euro":"REFUSED:Posted=E","line_tax":"128:104","order_tax":"104:14250:0","grand_total_cents":14250,"invoice_tax":"104:14250:0","cost_qty_delta":"{}"} sqlite={"outcome":"COMPLETED","docstatus":"CO","lines":"128:6:2375","total_cents":14250,"shipments":1,"shipments_completed":1,"invoices":1,"stock_delta":"{\"128\":-6}","postings":"518:DR14250/CR0|758:DR0/CR14250","postings_shipment":"REFUSED:Posted=E","_refused":"AverageCostingNegativeQty: Product=128, Current Qty=5, New Current Qty=-1, CostElement=103, Schema=101","cost_qty_delta":"{}","postings_euro":"518:DR12113/CR0|758:DR0/CR12113","postings_shipment_euro":"REFUSED:Posted=E","line_tax":"128:104","order_tax":"104:14250:0","grand_total_cents":14250,"invoice_tax":"104:14250:0"}
+§SCN_DETAIL S7b-standard-order-beyond-onhand legacy={"outcome":"COMPLETED","docstatus":"CO","lines":"128:6:2375","total_cents":14250,"shipments":0,"shipments_completed":0,"invoices":0,"stock_delta":"{}","postings":"none","postings_shipment":"none","postings_euro":"none","postings_shipment_euro":"none","line_tax":"128:104","order_tax":"104:14250:0","grand_total_cents":14250,"invoice_tax":"none","cost_qty_delta":"{}"} sqlite={"outcome":"COMPLETED","docstatus":"CO","lines":"128:6:2375","total_cents":14250,"shipments":0,"shipments_completed":0,"invoices":0,"stock_delta":"{}","postings":"none","postings_shipment":"none","cost_qty_delta":"{}","postings_euro":"none","postings_shipment_euro":"none","line_tax":"128:104","order_tax":"104:14250:0","grand_total_cents":14250,"invoice_tax":"none"}
+§SCN_DETAIL S8a-pos-sale-past-dated-open-period legacy={"outcome":"COMPLETED","docstatus":"CO","lines":"123:1:6175","total_cents":6175,"shipments":1,"shipments_completed":1,"invoices":1,"stock_delta":"{\"123\":-1}","postings":"518:DR6175/CR0|758:DR0/CR6175","postings_shipment":"REFUSED:Posted=E","postings_euro":"518:DR5249/CR0|758:DR0/CR5249","postings_shipment_euro":"REFUSED:Posted=E","line_tax":"123:104","order_tax":"104:6175:0","grand_total_cents":6175,"invoice_tax":"104:6175:0","cost_qty_delta":"{}"} sqlite={"outcome":"COMPLETED","docstatus":"CO","lines":"123:1:6175","total_cents":6175,"shipments":1,"shipments_completed":1,"invoices":1,"stock_delta":"{\"123\":-1}","postings":"518:DR6175/CR0|758:DR0/CR6175","postings_shipment":"REFUSED:Posted=E","_refused":"AverageCostingNegativeQty: Product=123, Current Qty=0, New Current Qty=-1, CostElement=103, Schema=101","cost_qty_delta":"{}","postings_euro":"518:DR5249/CR0|758:DR0/CR5249","postings_shipment_euro":"REFUSED:Posted=E","line_tax":"123:104","order_tax":"104:6175:0","grand_total_cents":6175,"invoice_tax":"104:6175:0"}
+§SCN_DETAIL S8b-pos-sale-date-without-period legacy={"outcome":"REJECTED","reason":"Cannot save record in C_OrderLine: Product is not on Price List -> Line No:10, Product: Oa"} sqlite={"outcome":"REJECTED"}
+§SCN_DETAIL S8c-pos-sale-beyond-open-future legacy={"outcome":"REJECTED","reason":"Failed when processing document: Period Closed"} sqlite={"outcome":"REJECTED","reason":"period-closed"}
+§SCN_DETAIL S8d-pos-sale-before-open-history legacy={"outcome":"REJECTED","reason":"Cannot save record in C_OrderLine: Product is not on Price List -> Line No:10, Product: Oa"} sqlite={"outcome":"REJECTED"}
+§SCN_DETAIL S12-void-pos-sale legacy={"outcome":"COMPLETED","docstatus":"VO","order_desc":"** Voided","line_qty":"0","line_desc":"** Voided (1)","total_cents":0,"shipments":"RE,RE","ship_qtys":"-1,1","invoices":"RE,RE","invoice_totals":"-300,300","stock_delta":"{}","post_inv_orig":"518:DR300/CR0|758:DR0/CR300","post_inv_rev":"518:DR-300/CR0|758:DR0/CR-300","invoice_tax_rev":"104:-300:0","post_ship_orig":"430:DR270/CR0|742:DR0/CR270","post_ship_rev":"430:DR0/CR270|742:DR270/CR0","inv_paid":"Y/Y","inv_allocations":"CO:-300:rev:-|CO:300:orig:-"} sqlite={"outcome":"COMPLETED","docstatus":"VO","order_desc":"** Voided","line_qty":"0","line_desc":"** Voided (1)","total_cents":0,"shipments":"RE,RE","ship_qtys":"-1,1","invoices":"RE,RE","invoice_totals":"-300,300","stock_delta":"{}","invoice_tax_rev":"104:-300:0","post_inv_orig":"518:DR300/CR0|758:DR0/CR300","post_inv_rev":"518:DR-300/CR0|758:DR0/CR-300","post_ship_orig":"430:DR270/CR0|742:DR0/CR270","post_ship_rev":"430:DR0/CR270|742:DR270/CR0","inv_paid":"Y/Y","inv_allocations":"CO:-300:rev:-|CO:300:orig:-"}
+§SCN_DETAIL S12b-void-taxed-pos-sale legacy={"outcome":"COMPLETED","docstatus":"VO","order_desc":"** Voided","line_qty":"0","line_desc":"** Voided (1)","total_cents":0,"shipments":"RE,RE","ship_qtys":"-1,1","invoices":"RE,RE","invoice_totals":"-318,318","stock_delta":"{}","post_inv_orig":"518:DR318/CR0|596:DR0/CR18|758:DR0/CR300","post_inv_rev":"518:DR-318/CR0|596:DR0/CR-18|758:DR0/CR-300","invoice_tax_rev":"105:-300:-18","post_ship_orig":"430:DR270/CR0|742:DR0/CR270","post_ship_rev":"430:DR0/CR270|742:DR270/CR0","inv_paid":"Y/Y","inv_allocations":"CO:-318:rev:-|CO:318:orig:-"} sqlite={"outcome":"COMPLETED","docstatus":"VO","order_desc":"** Voided","line_qty":"0","line_desc":"** Voided (1)","total_cents":0,"shipments":"RE,RE","ship_qtys":"-1,1","invoices":"RE,RE","invoice_totals":"-318,318","stock_delta":"{}","invoice_tax_rev":"105:-300:-18","post_inv_orig":"518:DR318/CR0|596:DR0/CR18|758:DR0/CR300","post_inv_rev":"518:DR-318/CR0|596:DR0/CR-18|758:DR0/CR-300","post_ship_orig":"430:DR270/CR0|742:DR0/CR270","post_ship_rev":"430:DR0/CR270|742:DR270/CR0","inv_paid":"Y/Y","inv_allocations":"CO:-318:rev:-|CO:318:orig:-"}
+§SCN_DETAIL MV1-move-inter-org legacy={"outcome":"COMPLETED","docstatus":"CO","lines":"137:1:101:102","stock_delta":"{\"137@101\":-1,\"137@102\":1}","postings":"600:DR0/CR270|741:DR270/CR0|742:DR270/CR270","postings_euro":"600:DR0/CR230|741:DR230/CR0|742:DR230/CR230","cost_qty_delta":"{}"} sqlite={"outcome":"COMPLETED","docstatus":"CO","lines":"137:1:101:102","stock_delta":"{\"137@101\":-1,\"137@102\":1}","postings":"600:DR0/CR270|741:DR270/CR0|742:DR270/CR270","postings_euro":"600:DR0/CR230|741:DR230/CR0|742:DR230/CR230","cost_qty_delta":"{}"}
+§SCN_DETAIL MV-REJ-unknown-product legacy={"outcome":"REJECTED","reason":"Cannot save record in M_MovementLine: Foreign ID 999999 not found in M_Product_ID"} sqlite={"outcome":"REJECTED","reason":"unknown product"}
+§SCN_DETAIL PAY1-receipt-settles-invoice legacy={"outcome":"COMPLETED","docstatus":"CO","isallocated":"Y","invoice_paid":"Y","allocation":"CO:300:0:0:inv","postings_payment":"509:DR300/CR0|511:DR0/CR300","postings_alloc":"511:DR300/CR0|518:DR0/CR300","postings_payment_euro":"509:DR255/CR0|511:DR0/CR255","postings_alloc_euro":"511:DR255/CR0|518:DR0/CR255"} sqlite={"outcome":"COMPLETED","docstatus":"CO","isallocated":"Y","invoice_paid":"Y","allocation":"CO:300:0:0:inv","postings_payment":"509:DR300/CR0|511:DR0/CR300","postings_alloc":"511:DR300/CR0|518:DR0/CR300","postings_payment_euro":"509:DR255/CR0|511:DR0/CR255","postings_alloc_euro":"511:DR255/CR0|518:DR0/CR255"}
+§SCN_DETAIL PAY-REJ-unknown-invoice legacy={"outcome":"REJECTED","reason":"Cannot save record in C_Payment: Foreign ID 999999999 not found in C_Invoice_ID"} sqlite={"outcome":"REJECTED","reason":"invoice not found"}
+§SCN_DETAIL INV1-ar-invoice-taxed-direct legacy={"outcome":"COMPLETED","docstatus":"CO","lines":"137:2:300:105","total_cents":600,"invoice_tax":"105:600:36","grand_total_cents":636,"postings":"518:DR636/CR0|596:DR0/CR36|758:DR0/CR600","postings_euro":"518:DR541/CR0|596:DR0/CR31|758:DR0/CR510","ispaid":"N"} sqlite={"outcome":"COMPLETED","docstatus":"CO","lines":"137:2:300:105","total_cents":600,"invoice_tax":"105:600:36","grand_total_cents":636,"postings":"518:DR636/CR0|596:DR0/CR36|758:DR0/CR600","postings_euro":"518:DR541/CR0|596:DR0/CR31|758:DR0/CR510","ispaid":"N"}
+§SCN_DETAIL INV2-ar-invoice-product-not-on-pricelist legacy={"outcome":"COMPLETED","docstatus":"CO","lines":"122:1:0:105","total_cents":0,"invoice_tax":"105:0:0","grand_total_cents":0,"postings":"none","postings_euro":"none","ispaid":"N"} sqlite={"outcome":"COMPLETED","docstatus":"CO","lines":"122:1:0:105","total_cents":0,"invoice_tax":"105:0:0","grand_total_cents":0,"postings":"none","postings_euro":"none","ispaid":"N"}
+§SCN_DETAIL INV-REJ-unknown-product legacy={"outcome":"REJECTED","reason":"Cannot save record in C_InvoiceLine: Foreign ID 999999 not found in M_Product_ID"} sqlite={"outcome":"REJECTED","reason":"unknown product"}
+§SCN_DETAIL PI1-physical-inventory-gain legacy={"outcome":"COMPLETED","docstatus":"CO","lines":"137:54:56","stock_delta":"{\"137@101\":2}","postings":"439:DR0/CR540|742:DR540/CR0","postings_euro":"439:DR0/CR460|742:DR460/CR0","cost_qty_delta":"{\"137\":2}"} sqlite={"outcome":"COMPLETED","docstatus":"CO","lines":"137:54:56","stock_delta":"{\"137@101\":2}","postings":"439:DR0/CR540|742:DR540/CR0","postings_euro":"439:DR0/CR460|742:DR460/CR0","cost_qty_delta":"{\"137\":2}"}
+§SCN_DETAIL PI2-physical-inventory-loss legacy={"outcome":"COMPLETED","docstatus":"CO","lines":"137:56:55","stock_delta":"{\"137@101\":-1}","postings":"439:DR270/CR0|742:DR0/CR270","postings_euro":"439:DR230/CR0|742:DR0/CR230","cost_qty_delta":"{\"137\":-1}"} sqlite={"outcome":"COMPLETED","docstatus":"CO","lines":"137:56:55","stock_delta":"{\"137@101\":-1}","postings":"439:DR270/CR0|742:DR0/CR270","postings_euro":"439:DR230/CR0|742:DR0/CR230","cost_qty_delta":"{\"137\":-1}"}
+§SCN_DETAIL PI-REJ-unknown-product legacy={"outcome":"REJECTED","reason":"Cannot save record in M_InventoryLine: Foreign ID 999999 not found in M_Product_ID"} sqlite={"outcome":"REJECTED","reason":"unknown product"}
+§SCN_DETAIL O2C1-SO legacy={"outcome":"COMPLETED","docstatus":"CO","lines":"137:2:300:104","order_tax":"104:600:0","grand_total":600,"ol_qty":"137:2/2/0/0","bp_delta":"0/0","stock_delta":"0","cost_qty_delta":"0"} sqlite={"outcome":"COMPLETED","docstatus":"CO","lines":"137:2:300:104","order_tax":"104:600:0","grand_total":600,"ol_qty":"137:2/2/0/0","bp_delta":"0/0","stock_delta":"0","cost_qty_delta":"0"}
+§SCN_DETAIL O2C2-SHIP legacy={"outcome":"COMPLETED","ship_status":"CO","ship_lines":"137:2","books":"430:DR540/CR0|742:DR0/CR540","books_euro":"430:DR460/CR0|742:DR0/CR460","ol_qty":"137:2/0/2/0","bp_delta":"0/0","stock_delta":"-2","cost_qty_delta":"-2"} sqlite={"outcome":"COMPLETED","ship_status":"CO","ship_lines":"137:2","books":"430:DR540/CR0|742:DR0/CR540","books_euro":"430:DR460/CR0|742:DR0/CR460","ol_qty":"137:2/0/2/0","bp_delta":"0/0","stock_delta":"-2","cost_qty_delta":"-2"}
+§SCN_DETAIL O2C3-INV legacy={"outcome":"COMPLETED","inv_status":"CO","inv_lines":"137:2:300:104","invoice_tax":"104:600:0","grand_total":600,"ispaid":"N","books":"518:DR600/CR0|758:DR0/CR600","books_euro":"518:DR510/CR0|758:DR0/CR510","ol_qty":"137:2/0/2/2","bp_delta":"600/600","stock_delta":"-2","cost_qty_delta":"-2"} sqlite={"outcome":"COMPLETED","inv_status":"CO","inv_lines":"137:2:300:104","invoice_tax":"104:600:0","grand_total":600,"ispaid":"N","books":"518:DR600/CR0|758:DR0/CR600","books_euro":"518:DR510/CR0|758:DR0/CR510","ol_qty":"137:2/0/2/2","bp_delta":"600/600","stock_delta":"-2","cost_qty_delta":"-2"}
+§SCN_DETAIL O2C4-PAY legacy={"outcome":"COMPLETED","pay_status":"CO","isallocated":"Y","ispaid":"Y","allocations":"CO:600:inv:pay","books":"509:DR600/CR0|511:DR0/CR600","books_euro":"509:DR510/CR0|511:DR0/CR510","books_alloc":"511:DR600/CR0|518:DR0/CR600","books_alloc_euro":"511:DR510/CR0|518:DR0/CR510","ol_qty":"137:2/0/2/2","bp_delta":"0/0","stock_delta":"-2","cost_qty_delta":"-2"} sqlite={"outcome":"COMPLETED","pay_status":"CO","isallocated":"Y","ispaid":"Y","allocations":"CO:600:inv:pay","books":"509:DR600/CR0|511:DR0/CR600","books_euro":"509:DR510/CR0|511:DR0/CR510","books_alloc":"511:DR600/CR0|518:DR0/CR600","books_alloc_euro":"511:DR510/CR0|518:DR0/CR510","ol_qty":"137:2/0/2/2","bp_delta":"0/0","stock_delta":"-2","cost_qty_delta":"-2"}
+§SCN_DETAIL O2C5-RC-INV legacy={"outcome":"COMPLETED","inv_statuses":"RE/RE","rev_total":-600,"ispaid":"Y/Y","rev_tax":"104:-600:0","books":"518:DR-600/CR0|758:DR0/CR-600","books_euro":"518:DR-510/CR0|758:DR0/CR-510","allocations":"CO:-600:rev:-|CO:600:inv:-|RE:0:inv:pay","pay_isallocated":"N","ol_qty":"137:2/0/2/0","bp_delta":"-600/0","stock_delta":"-2","cost_qty_delta":"-2"} sqlite={"outcome":"COMPLETED","inv_statuses":"RE/RE","rev_total":-600,"ispaid":"Y/Y","rev_tax":"104:-600:0","books":"518:DR-600/CR0|758:DR0/CR-600","books_euro":"518:DR-510/CR0|758:DR0/CR-510","allocations":"CO:-600:rev:-|CO:600:inv:-|RE:0:inv:pay","pay_isallocated":"N","ol_qty":"137:2/0/2/0","bp_delta":"-600/0","stock_delta":"-2","cost_qty_delta":"-2"}
+§SCN_DETAIL O2C6-RC-SHIP legacy={"outcome":"COMPLETED","ship_statuses":"RE/RE","rev_lines":"137:-2","books":"430:DR0/CR540|742:DR540/CR0","books_euro":"430:DR0/CR460|742:DR460/CR0","ol_qty":"137:2/2/0/0","bp_delta":"-600/0","stock_delta":"0","cost_qty_delta":"0"} sqlite={"outcome":"COMPLETED","ship_statuses":"RE/RE","rev_lines":"137:-2","books":"430:DR0/CR540|742:DR540/CR0","books_euro":"430:DR0/CR460|742:DR460/CR0","ol_qty":"137:2/2/0/0","bp_delta":"-600/0","stock_delta":"0","cost_qty_delta":"0"}
+§SCN_DETAIL F9-PO legacy={"outcome":"COMPLETED","docstatus":"CO","lines":"141:2:800:104","order_tax":"104:1600:0","grand_total":1600,"books":"none","books_euro":"none","ol_qty":"141:2/2/0/0","bp_delta":"0/0","stock_delta":"0","cost":"101:2.55@4/76.5|200000:2.1675@4/65.025"} sqlite={"outcome":"COMPLETED","docstatus":"CO","lines":"141:2:800:104","order_tax":"104:1600:0","grand_total":1600,"books":"none","books_euro":"none","ol_qty":"141:2/2/0/0","bp_delta":"0/0","stock_delta":"0","cost":"101:2.55@4/76.5|200000:2.1675@4/65.025"}
+§SCN_DETAIL F9-RCPT legacy={"outcome":"COMPLETED","rcpt_status":"CO","rcpt_lines":"141:2","books":"587:DR0/CR1600|742:DR1600/CR0","books_euro":"587:DR0/CR1360|742:DR1360/CR0","match_po":"2:rcpt:-","ol_qty":"141:2/0/2/0","bp_delta":"0/0","stock_delta":"2","cost":"101:4.36666667@6/92.5|200000:3.71166667@6/78.625"} sqlite={"outcome":"COMPLETED","rcpt_status":"CO","rcpt_lines":"141:2","books":"587:DR0/CR1600|742:DR1600/CR0","books_euro":"587:DR0/CR1360|742:DR1360/CR0","match_po":"2:rcpt:-","ol_qty":"141:2/0/2/0","bp_delta":"0/0","stock_delta":"2","cost":"101:4.36666667@6/92.5|200000:3.71166667@6/78.625"}
+§SCN_DETAIL F9a-sale-backdated-before-receipt legacy={"outcome":"COMPLETED","docstatus":"CO","lines":"141:1:270","total_cents":270,"shipments":1,"shipments_completed":1,"invoices":1,"stock_delta":"{\"141\":-1}","postings":"518:DR270/CR0|758:DR0/CR270","postings_shipment":"430:DR255/CR0|742:DR0/CR255","postings_euro":"518:DR230/CR0|758:DR0/CR230","postings_shipment_euro":"430:DR217/CR0|742:DR0/CR217","line_tax":"141:104","order_tax":"104:270:0","grand_total_cents":270,"invoice_tax":"104:270:0","cost_qty_delta":"{\"141\":-3}","cost_state":"101:2.55@3/76.5|200000:2.1675@3/65.025","books_receipt_after":"587:DR0/CR1600|742:DR1600/CR0"} sqlite={"outcome":"COMPLETED","docstatus":"CO","lines":"141:1:270","total_cents":270,"shipments":1,"shipments_completed":1,"invoices":1,"stock_delta":"{\"141\":-1}","postings":"518:DR270/CR0|758:DR0/CR270","postings_shipment":"430:DR255/CR0|742:DR0/CR255","cost_qty_delta":"{\"141\":-3}","postings_euro":"518:DR230/CR0|758:DR0/CR230","postings_shipment_euro":"430:DR217/CR0|742:DR0/CR217","line_tax":"141:104","order_tax":"104:270:0","grand_total_cents":270,"invoice_tax":"104:270:0","cost_state":"101:2.55@3/76.5|200000:2.1675@3/65.025","books_receipt_after":"587:DR0/CR1600|742:DR1600/CR0"}
+§SCN_DETAIL F9b-second-sale-same-backdate legacy={"outcome":"COMPLETED","docstatus":"CO","lines":"141:1:270","total_cents":270,"shipments":1,"shipments_completed":1,"invoices":1,"stock_delta":"{\"141\":-1}","postings":"518:DR270/CR0|758:DR0/CR270","postings_shipment":"430:DR255/CR0|742:DR0/CR255","postings_euro":"518:DR230/CR0|758:DR0/CR230","postings_shipment_euro":"430:DR217/CR0|742:DR0/CR217","line_tax":"141:104","order_tax":"104:270:0","grand_total_cents":270,"invoice_tax":"104:270:0","cost_qty_delta":"{\"141\":-1}","cost_state":"101:2.55@2/76.5|200000:2.1675@2/65.025","books_receipt_after":"587:DR0/CR1600|742:DR1600/CR0"} sqlite={"outcome":"COMPLETED","docstatus":"CO","lines":"141:1:270","total_cents":270,"shipments":1,"shipments_completed":1,"invoices":1,"stock_delta":"{\"141\":-1}","postings":"518:DR270/CR0|758:DR0/CR270","postings_shipment":"430:DR255/CR0|742:DR0/CR255","cost_qty_delta":"{\"141\":-1}","postings_euro":"518:DR230/CR0|758:DR0/CR230","postings_shipment_euro":"430:DR217/CR0|742:DR0/CR217","line_tax":"141:104","order_tax":"104:270:0","grand_total_cents":270,"invoice_tax":"104:270:0","cost_state":"101:2.55@2/76.5|200000:2.1675@2/65.025","books_receipt_after":"587:DR0/CR1600|742:DR1600/CR0"}
+§SCN_DETAIL F9c-sale-today-after-backdated legacy={"outcome":"COMPLETED","docstatus":"CO","lines":"141:1:270","total_cents":270,"shipments":1,"shipments_completed":1,"invoices":1,"stock_delta":"{\"141\":-1}","postings":"518:DR270/CR0|758:DR0/CR270","postings_shipment":"430:DR255/CR0|742:DR0/CR255","postings_euro":"518:DR230/CR0|758:DR0/CR230","postings_shipment_euro":"430:DR217/CR0|742:DR0/CR217","line_tax":"141:104","order_tax":"104:270:0","grand_total_cents":270,"invoice_tax":"104:270:0","cost_qty_delta":"{\"141\":-1}","cost_state":"101:2.55@1/76.5|200000:2.1675@1/65.025","books_receipt_after":"587:DR0/CR1600|742:DR1600/CR0"} sqlite={"outcome":"COMPLETED","docstatus":"CO","lines":"141:1:270","total_cents":270,"shipments":1,"shipments_completed":1,"invoices":1,"stock_delta":"{\"141\":-1}","postings":"518:DR270/CR0|758:DR0/CR270","postings_shipment":"430:DR255/CR0|742:DR0/CR255","cost_qty_delta":"{\"141\":-1}","postings_euro":"518:DR230/CR0|758:DR0/CR230","postings_shipment_euro":"430:DR217/CR0|742:DR0/CR217","line_tax":"141:104","order_tax":"104:270:0","grand_total_cents":270,"invoice_tax":"104:270:0","cost_state":"101:2.55@1/76.5|200000:2.1675@1/65.025","books_receipt_after":"587:DR0/CR1600|742:DR1600/CR0"}
+§SCN_DETAIL F9d-backdated-sale-beyond-history-qty legacy={"outcome":"COMPLETED","docstatus":"CO","lines":"141:1000:270","total_cents":270000,"shipments":1,"shipments_completed":1,"invoices":1,"stock_delta":"{\"141\":-1000}","postings":"518:DR270000/CR0|758:DR0/CR270000","postings_shipment":"REFUSED:Posted=E","postings_euro":"518:DR229500/CR0|758:DR0/CR229500","postings_shipment_euro":"REFUSED:Posted=E","line_tax":"141:104","order_tax":"104:270000:0","grand_total_cents":270000,"invoice_tax":"104:270000:0","cost_qty_delta":"{}","cost_state":"101:2.55@1/76.5|200000:2.1675@1/65.025","books_receipt_after":"587:DR0/CR1600|742:DR1600/CR0"} sqlite={"outcome":"COMPLETED","docstatus":"CO","lines":"141:1000:270","total_cents":270000,"shipments":1,"shipments_completed":1,"invoices":1,"stock_delta":"{\"141\":-1000}","postings":"518:DR270000/CR0|758:DR0/CR270000","postings_shipment":"REFUSED:Posted=E","_refused":"AverageCostingNegativeQty: Product=141, Current Qty=2, New Current Qty=-998, CostElement=103, Schema=101","cost_qty_delta":"{}","postings_euro":"518:DR229500/CR0|758:DR0/CR229500","postings_shipment_euro":"REFUSED:Posted=E","line_tax":"141:104","order_tax":"104:270000:0","grand_total_cents":270000,"invoice_tax":"104:270000:0","cost_state":"101:2.55@1/76.5|200000:2.1675@1/65.025","books_receipt_after":"587:DR0/CR1600|742:DR1600/CR0"}
+§SCN_DETAIL P2P1-PO legacy={"outcome":"COMPLETED","docstatus":"CO","lines":"139:2:800:104","order_tax":"104:1600:0","grand_total":1600,"books":"none","books_euro":"none","ol_qty":"139:2/2/0/0","bp_delta":"0/0","stock_delta":"0","cost":"101:7.96463583@110/1106.75|200000:6.76994045@110/940.7375"} sqlite={"outcome":"COMPLETED","docstatus":"CO","lines":"139:2:800:104","order_tax":"104:1600:0","grand_total":1600,"books":"none","books_euro":"none","ol_qty":"139:2/2/0/0","bp_delta":"0/0","stock_delta":"0","cost":"101:7.96463583@110/1106.75|200000:6.76994045@110/940.7375"}
+§SCN_DETAIL P2P2-RCPT legacy={"outcome":"COMPLETED","rcpt_status":"CO","rcpt_lines":"139:2","books":"587:DR0/CR1600|742:DR1600/CR0","books_euro":"587:DR0/CR1360|742:DR1360/CR0","match_po":"2:rcpt:-","ol_qty":"139:2/0/2/0","bp_delta":"0/0","stock_delta":"2","cost":"101:7.96526733@112/1122.75|200000:6.77047723@112/954.3375"} sqlite={"outcome":"COMPLETED","rcpt_status":"CO","rcpt_lines":"139:2","books":"587:DR0/CR1600|742:DR1600/CR0","books_euro":"587:DR0/CR1360|742:DR1360/CR0","match_po":"2:rcpt:-","ol_qty":"139:2/0/2/0","bp_delta":"0/0","stock_delta":"2","cost":"101:7.96526733@112/1122.75|200000:6.77047723@112/954.3375"}
+§SCN_DETAIL P2P3-INV legacy={"outcome":"COMPLETED","inv_status":"CO","inv_lines":"139:2:800:104","invoice_tax":"104:1600:0","grand_total":1600,"ispaid":"N","books":"749:DR0/CR1600|780:DR1600/CR0","books_euro":"749:DR0/CR1360|780:DR1360/CR0","match_inv":"2","books_matchinv":"587:DR1600/CR0|780:DR0/CR1600","books_matchinv_euro":"587:DR1360/CR0|780:DR0/CR1360","match_po":"2:rcpt:inv","ol_qty":"139:2/0/2/2","bp_delta":"-1600/0","stock_delta":"2","cost":"101:7.96526733@112/1122.75|200000:6.77047723@112/954.3375"} sqlite={"outcome":"COMPLETED","inv_status":"CO","inv_lines":"139:2:800:104","invoice_tax":"104:1600:0","grand_total":1600,"ispaid":"N","books":"749:DR0/CR1600|780:DR1600/CR0","books_euro":"749:DR0/CR1360|780:DR1360/CR0","match_inv":"2","books_matchinv":"587:DR1600/CR0|780:DR0/CR1600","books_matchinv_euro":"587:DR1360/CR0|780:DR0/CR1360","match_po":"2:rcpt:inv","ol_qty":"139:2/0/2/2","bp_delta":"-1600/0","stock_delta":"2","cost":"101:7.96526733@112/1122.75|200000:6.77047723@112/954.3375"}
+§SCN_DETAIL P2P4-PAY legacy={"outcome":"COMPLETED","pay_status":"CO","isallocated":"Y","ispaid":"Y","allocations":"-1600:inv","books":"509:DR0/CR1600|589:DR1600/CR0","books_euro":"509:DR0/CR1360|589:DR1360/CR0","books_alloc":"589:DR0/CR1600|749:DR1600/CR0","books_alloc_euro":"589:DR0/CR1360|749:DR1360/CR0","ol_qty":"139:2/0/2/2","bp_delta":"0/0","stock_delta":"2","cost":"101:7.96526733@112/1122.75|200000:6.77047723@112/954.3375"} sqlite={"outcome":"COMPLETED","pay_status":"CO","isallocated":"Y","ispaid":"Y","allocations":"-1600:inv","books":"509:DR0/CR1600|589:DR1600/CR0","books_euro":"509:DR0/CR1360|589:DR1360/CR0","books_alloc":"589:DR0/CR1600|749:DR1600/CR0","books_alloc_euro":"589:DR0/CR1360|749:DR1360/CR0","ol_qty":"139:2/0/2/2","bp_delta":"0/0","stock_delta":"2","cost":"101:7.96526733@112/1122.75|200000:6.77047723@112/954.3375"}
+§SCN_DETAIL REQ1-purchase-requisition legacy={"outcome":"COMPLETED","docstatus":"CO","lines":"139:3:765:2295","total_cents":2295,"postings":"none","postings_euro":"none"} sqlite={"outcome":"COMPLETED","docstatus":"CO","lines":"139:3:765:2295","total_cents":2295,"postings":"none","postings_euro":"none"}
+§SCN_DETAIL REQ-REJ-no-requester legacy={"outcome":"REJECTED","reason":"Cannot save record in M_Requisition: DBExecuteError:ERROR: null value in column \"ad_user_id\" of relation \"m_requisition\""} sqlite={"outcome":"REJECTED","reason":"Invalid"}
+§SCN_DETAIL CASH1-cash-journal-settles-invoice legacy={"outcome":"COMPLETED","cash_status":"CO","statement_diff":300,"allocation":"CO:300:cash","ispaid":"Y","books_cash":"515:DR300/CR0|516:DR0/CR300","books_cash_euro":"516:DR0/CR255|698:DR255/CR0","books_alloc":"516:DR300/CR0|518:DR0/CR300","books_alloc_euro":"516:DR255/CR0|518:DR0/CR255","bp_delta":"0/0"} sqlite={"outcome":"COMPLETED","cash_status":"CO","statement_diff":300,"allocation":"CO:300:cash","ispaid":"Y","books_cash":"515:DR300/CR0|516:DR0/CR300","books_cash_euro":"516:DR0/CR255|698:DR255/CR0","books_alloc":"516:DR300/CR0|518:DR0/CR300","books_alloc_euro":"516:DR255/CR0|518:DR0/CR255","bp_delta":"0/0"}
+§SCN_DETAIL CASH1c-cash-journal-composite-control legacy={"outcome":"COMPLETED","cash_status":"CO","statement_diff":300,"allocation":"CO:300:cash","ispaid":"Y","books_cash":"515:DR300/CR0|516:DR0/CR300","books_cash_euro":"516:DR0/CR255|698:DR255/CR0","books_alloc":"518:DR0/CR300|698:DR300/CR0","books_alloc_euro":"518:DR0/CR255|723:DR255/CR0","bp_delta":"0/0"} sqlite={"outcome":"COMPLETED","cash_status":"CO","statement_diff":300,"allocation":"CO:300:cash","ispaid":"Y","books_cash":"515:DR300/CR0|516:DR0/CR300","books_cash_euro":"516:DR0/CR255|698:DR255/CR0","books_alloc":"518:DR0/CR300|698:DR300/CR0","books_alloc_euro":"518:DR0/CR255|723:DR255/CR0","bp_delta":"0/0"}
+§SCN_DETAIL CASH1b-cash-journal-saved-then-completed legacy={"outcome":"COMPLETED","cash_status":"CO","statement_diff":300,"allocation":"CO:300:cash","ispaid":"Y","books_cash":"515:DR300/CR0|516:DR0/CR300","books_cash_euro":"516:DR0/CR255|698:DR255/CR0","books_alloc":"516:DR300/CR0|518:DR0/CR300","books_alloc_euro":"516:DR255/CR0|518:DR0/CR255","bp_delta":"0/0"} sqlite={"outcome":"COMPLETED","cash_status":"CO","statement_diff":300,"allocation":"CO:300:cash","ispaid":"Y","books_cash":"515:DR300/CR0|516:DR0/CR300","books_cash_euro":"516:DR0/CR255|698:DR255/CR0","books_alloc":"516:DR300/CR0|518:DR0/CR300","books_alloc_euro":"516:DR255/CR0|518:DR0/CR255","bp_delta":"0/0"}
+§SCN_DETAIL CASH-REJ-invoice-not-completed legacy={"outcome":"REJECTED","reason":"Failed when processing document: Line No 10: Document must be completed first"} sqlite={"outcome":"REJECTED","reason":"InvoiceCreateDocNotCompleted"}
+§SCN_DETAIL GLJ1-gl-journal-balanced legacy={"outcome":"COMPLETED","docstatus":"CO","total_dr":10000,"total_cr":10000,"lines":"474:10000:0|484:0:10000","postings":"474:DR10000/CR0|484:DR0/CR10000","postings_euro":"none"} sqlite={"outcome":"COMPLETED","docstatus":"CO","total_dr":10000,"total_cr":10000,"lines":"474:10000:0|484:0:10000","postings":"474:DR10000/CR0|484:DR0/CR10000","postings_euro":"none"}
+§SCN_DETAIL GLJ-UNBAL-suspense-balanced legacy={"outcome":"COMPLETED","docstatus":"CO","total_dr":10000,"total_cr":9000,"lines":"474:10000:0|484:0:9000","postings":"474:DR10000/CR0|484:DR0/CR9000|698:DR0/CR1000","postings_euro":"none"} sqlite={"outcome":"COMPLETED","docstatus":"CO","total_dr":10000,"total_cr":9000,"lines":"474:10000:0|484:0:9000","postings":"474:DR10000/CR0|484:DR0/CR9000|698:DR0/CR1000","postings_euro":"none"}
+§SCN_DETAIL GLJ-REJ-doc-controlled-account legacy={"outcome":"REJECTED","reason":"Failed when processing document: Account used is Document Controlled - Do not use for manual Journals. - Line No=10 - 11"} sqlite={"outcome":"REJECTED","reason":"@DocControlledError@ - @Line@=10"}
+§SCN_DETAIL BS1-bank-statement-matches-receipt legacy={"outcome":"COMPLETED","docstatus":"CO","beginning":45103,"statement_diff":777,"ending":45880,"payment_reconciled":"Y","bank_balance_delta":777,"postings":"508:DR777/CR0|509:DR0/CR777","postings_euro":"508:DR660/CR0|509:DR0/CR660"} sqlite={"outcome":"COMPLETED","docstatus":"CO","beginning":45103,"statement_diff":777,"ending":45880,"payment_reconciled":"Y","bank_balance_delta":777,"postings":"508:DR777/CR0|509:DR0/CR777","postings_euro":"508:DR660/CR0|509:DR0/CR660"}
+§SCN_DETAIL BS-REJ-payment-already-reconciled legacy={"outcome":"REJECTED","reason":"Failed when processing document: Payment is already Reconciled MPayment[1000187-400152,Receipt=true,PayAmt=7.77,Discount"} sqlite={"outcome":"REJECTED","reason":"PaymentIsAlreadyReconciled"}
+§SCN_DETAIL PJI1-project-issue-stocked-item legacy={"outcome":"COMPLETED","docstatus":"CO","stock_delta":"{\"139@101\":-1}","cost_qty_delta":"{\"139\":-1}","project_balance_delta":"7.9659","postings":"567:DR797/CR0|742:DR0/CR797","postings_euro":"568:DR677/CR0|742:DR0/CR677"} sqlite={"outcome":"COMPLETED","docstatus":"CO","stock_delta":"{\"139@101\":-1}","cost_qty_delta":"{\"139\":-1}","project_balance_delta":"7.9659","postings":"567:DR797/CR0|742:DR0/CR797","postings_euro":"568:DR677/CR0|742:DR0/CR677"}
+§SCN_DETAIL PJI-REJ-no-product legacy={"outcome":"REJECTED","reason":"Cannot save record in C_ProjectIssue: DBExecuteError:ERROR: null value in column \"m_product_id\" of relation \"c_projectis"} sqlite={"outcome":"REJECTED","reason":"No Product"}
+§SCN_DETAIL DDO1-distribution-order-to-transit legacy={"outcome":"REJECTED","reason":"UserError: Doc Class invalid: org.compiere.acct.Doc_DDOrder (java.lang.ClassNotFoundException: org.compiere.acct.Doc_DDO"} sqlite={"outcome":"REJECTED","reason":"Doc Class invalid: Doc_DDOrder"}
+§SCN_DETAIL DDO-REJ-date-without-period legacy={"outcome":"REJECTED","reason":"Failed when processing document: Period Closed"} sqlite={"outcome":"REJECTED","reason":"@PeriodClosed@"}
+§M3_NO_ERROR PASS errors=none
+§M3_NOT_VACUOUS PASS scenarios where legacy completed a document=44 of 63
+§QUIRK_REFUSED x/k — no user exemption (cardinal rule: SQLite cannot differ from legacy); stays SQLITE-GAP
+§M3_QUIRK_NEEDS_EXEMPTION PASS no exemption ⇒ SQLITE-GAP; with the user's exemption ⇒ LEGACY-QUIRK
+§GAP scenario=NEG-control key=total_cents legacy=6175 sqlite=6176 verdict=SQLITE-GAP
+§GAP scenario=NEG-control key=postings legacy="518:DR6175/CR0|758:DR0/CR6175" sqlite="518:DR6176/CR0|758:DR0/CR6176" verdict=SQLITE-GAP
+§GAP scenario=NEG-control key=grand_total_cents legacy=6175 sqlite=6176 verdict=SQLITE-GAP
+§GAP scenario=NEG-control key=postings_euro legacy="518:DR5249/CR0|758:DR0/CR5249" sqlite="518:DR5250/CR0|758:DR0/CR5250" verdict=SQLITE-GAP
+§SCN NEG-control SQLITE-GAP compared=17 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§M3_NEGATIVE_CONTROL PASS +1 cent on the SQLite side ⇒ verdict=SQLITE-GAP (must be SQLITE-GAP on total_cents AND postings)
+§GAP scenario=NEG-void-control key=post_inv_orig legacy="518:DR300/CR0|758:DR0/CR300" sqlite="518:DR301/CR0|758:DR0/CR300" verdict=SQLITE-GAP
+§SCN NEG-void-control SQLITE-GAP compared=18 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§M3_VOID_NEGATIVE_CONTROL PASS +1 cent on the SQLite invoice ⇒ verdict=SQLITE-GAP (must be SQLITE-GAP on post_inv_orig)
+§GAP scenario=NEG-move-control key=lines legacy="137:1:101:102" sqlite="137:2:101:102" verdict=SQLITE-GAP
+§GAP scenario=NEG-move-control key=stock_delta legacy="{\"137@101\":-1,\"137@102\":1}" sqlite="{\"137@101\":-2,\"137@102\":2}" verdict=SQLITE-GAP
+§GAP scenario=NEG-move-control key=postings legacy="600:DR0/CR270|741:DR270/CR0|742:DR270/CR270" sqlite="600:DR0/CR540|741:DR540/CR0|742:DR540/CR540" verdict=SQLITE-GAP
+§GAP scenario=NEG-move-control key=postings_euro legacy="600:DR0/CR230|741:DR230/CR0|742:DR230/CR230" sqlite="600:DR0/CR460|741:DR460/CR0|742:DR460/CR460" verdict=SQLITE-GAP
+§SCN NEG-move-control SQLITE-GAP compared=7 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§M3_MOVE_NEGATIVE_CONTROL PASS +1 qty on the SQLite move ⇒ verdict=SQLITE-GAP gaps=lines,stock_delta,postings,postings_euro
+§GAP scenario=NEG-pay-control key=invoice_paid legacy="Y" sqlite="N" verdict=SQLITE-GAP
+§GAP scenario=NEG-pay-control key=allocation legacy="CO:300:0:0:inv" sqlite="CO:301:0:0:inv" verdict=SQLITE-GAP
+§GAP scenario=NEG-pay-control key=postings_payment legacy="509:DR300/CR0|511:DR0/CR300" sqlite="509:DR301/CR0|511:DR0/CR301" verdict=SQLITE-GAP
+§GAP scenario=NEG-pay-control key=postings_alloc legacy="511:DR300/CR0|518:DR0/CR300" sqlite="511:DR301/CR0|518:DR0/CR301" verdict=SQLITE-GAP
+§GAP scenario=NEG-pay-control key=postings_payment_euro legacy="509:DR255/CR0|511:DR0/CR255" sqlite="509:DR256/CR0|511:DR0/CR256" verdict=SQLITE-GAP
+§GAP scenario=NEG-pay-control key=postings_alloc_euro legacy="511:DR255/CR0|518:DR0/CR255" sqlite="511:DR256/CR0|518:DR0/CR256" verdict=SQLITE-GAP
+§SCN NEG-pay-control SQLITE-GAP compared=9 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§M3_PAY_NEGATIVE_CONTROL PASS +1¢ on the SQLite receipt ⇒ verdict=SQLITE-GAP gaps=invoice_paid,allocation,postings_payment,postings_alloc,postings_payment_euro,postings_alloc_euro
+§GAP scenario=NEG-inv-control key=total_cents legacy=600 sqlite=601 verdict=SQLITE-GAP
+§GAP scenario=NEG-inv-control key=invoice_tax legacy="105:600:36" sqlite="105:601:36" verdict=SQLITE-GAP
+§GAP scenario=NEG-inv-control key=grand_total_cents legacy=636 sqlite=637 verdict=SQLITE-GAP
+§GAP scenario=NEG-inv-control key=postings legacy="518:DR636/CR0|596:DR0/CR36|758:DR0/CR600" sqlite="518:DR637/CR0|596:DR0/CR36|758:DR0/CR601" verdict=SQLITE-GAP
+§GAP scenario=NEG-inv-control key=postings_euro legacy="518:DR541/CR0|596:DR0/CR31|758:DR0/CR510" sqlite="518:DR541/CR0|596:DR0/CR31|724:DR0/CR-1|758:DR0/CR511" verdict=SQLITE-GAP
+§SCN NEG-inv-control SQLITE-GAP compared=9 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§M3_INV_NEGATIVE_CONTROL PASS +1¢ on the SQLite invoice line ⇒ verdict=SQLITE-GAP gaps=total_cents,invoice_tax,grand_total_cents,postings,postings_euro
+§GAP scenario=NEG-pi-control key=lines legacy="137:51:52" sqlite="137:51:53" verdict=SQLITE-GAP
+§GAP scenario=NEG-pi-control key=stock_delta legacy="{\"137@101\":1}" sqlite="{\"137@101\":2}" verdict=SQLITE-GAP
+§GAP scenario=NEG-pi-control key=postings legacy="439:DR0/CR270|742:DR270/CR0" sqlite="439:DR0/CR540|742:DR540/CR0" verdict=SQLITE-GAP
+§GAP scenario=NEG-pi-control key=postings_euro legacy="439:DR0/CR230|742:DR230/CR0" sqlite="439:DR0/CR460|742:DR460/CR0" verdict=SQLITE-GAP
+§GAP scenario=NEG-pi-control key=cost_qty_delta legacy="{\"137\":1}" sqlite="{\"137\":2}" verdict=SQLITE-GAP
+§SCN NEG-pi-control SQLITE-GAP compared=7 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§M3_PI_NEGATIVE_CONTROL PASS +1 counted on the SQLite side ⇒ verdict=SQLITE-GAP gaps=lines,stock_delta,postings,postings_euro,cost_qty_delta
+§M3_PERIOD_RULE PASS noPeriod=false beforeHistory=false today=true today+200=false standardControl(open?/status)=false/N
+§M3_F12_ORACLE2 PASS schema 101: fold=518:DR26924/CR0|596:DR0/CR1524|758:DR0/CR25400 captured=518:DR26924/CR0|596:DR0/CR1524|758:DR0/CR25400 ; schema 200000: fold=518:DR22885/CR0|596:DR0/CR1295|758:DR0/CR21590 captured=518:DR22885/CR0|596:DR0/CR1295|758:DR0/CR21590
+§M3_F16_ORACLE2 PASS captured legacy books: MATCH=7 ABSENT=1 DIFF=0 C_AllocationHdr#101@200000:ABSENT(allocation rounding correction not ported (Doc_AllocationHdr)
+§M3_F27_ORACLE2 PASS captured invoice books ARI:MATCH=8/ABSENT=0/DIFF=0 API:MATCH=8/ABSENT=0/DIFF=0 ARC:MATCH=0/ABSENT=0/DIFF=0(none captured) APC:MATCH=0/ABSENT=0/DIFF=0(none captured) 
+§CASH_MODE_ORACLE PASS captured cash allocations=100; Q/sameTrx #100@101:MATCH(want MATCH) ; Q/sameTrx #100@200000:MATCH(want MATCH) ; I/committed #100@101:MATCH(want MATCH) ; I/committed #100@200000:MATCH(want MATCH) ; I/sameTrx #100@101:DIFF(want DIFF) fold=518:DR0/CR5035|698:DR5035/CR0 captured=516:DR5035/CR0|518:DR0/CR5035 ; I/sameTrx #100@200000:DIFF(want DIFF) fold=518:DR0/CR4280|723:DR4280/CR0 captured=516:DR4280/CR0|518:DR0/CR4280
+§M3_QUIRK_NEEDS_EVIDENCE PASS a quirk entry with no evidence is refused
+§M3_INCONCLUSIVE_KEYS none
+§M3_FINDINGS sqlite_gaps=0 (none) — these are the parallel-run product, not harness failures
+§M3_VERDICT HARNESS-PASS fails=0 inconclusive=0 findings=0 inconclusive_keys=0
+=== witness_fa_gap
+§FA_FACTS role=102 IsCanApproveOwnDoc=Y today=2026-10-12 seed_rows={"a_asset_group":9,"a_asset_group_acct":6,"a_depreciation":11}
+§FA_STATE_SYNC a_asset_group_acct changed_cells=6 (200002.uselifeyears:0→5.000000000000 200002.uselifemonths:0→60 200005.uselifeyears:0→5.000000000000 200005.uselifemonths:0→60 200005.uselifeyears_f:0→5.000000000000 200005.uselifemonths_f:0→60) missing_rows=0 ran=6 left=0
+§FA_GROUP_LIFE_SQLITE group=50007 101:C60/F60 200000:C60/F60
+§FA_GROUP_LIFE_SQLITE group=50006 101:C0/F60 200000:C0/F0
+§FA_LEGACY FA1-equipment-60m asset=1000265 addition=1000265
+§FA_LEGACY_ENTRY FA1-equipment-60m schema=101 entry=1000252 pending_other_assets=1000263 lines=2
+§FA_LEGACY_ENTRY FA1-equipment-60m schema=200000 entry=1000253 pending_other_assets=1000263 lines=2
+§FA_PENDING_SYNC FA1-equipment-60m schema=101 other_assets=1 pending_rows=1 rows_loaded=120
+§FA_PENDING_SYNC FA1-equipment-60m schema=200000 other_assets=1 pending_rows=1 rows_loaded=120
+§SCN FA1-equipment-60m MATCH compared=33 inconclusive=0
+§FA_LEGACY FA0-vehicles-zero-c-life asset=1000266 addition=1000266
+§FA_LEGACY_ENTRY FA0-vehicles-zero-c-life schema=101 entry=1000254 pending_other_assets=none lines=1
+§FA_LEGACY_ENTRY FA0-vehicles-zero-c-life schema=200000 entry=1000255 pending_other_assets=none lines=0
+§FA_PENDING_SYNC FA0-vehicles-zero-c-life schema=101 other_assets=0 pending_rows=0 rows_loaded=0
+§FA_PENDING_SYNC FA0-vehicles-zero-c-life schema=200000 other_assets=0 pending_rows=0 rows_loaded=0
+§SCN FA0-vehicles-zero-c-life MATCH compared=33 inconclusive=0
+§SCN FA-REJ-unknown-group MATCH compared=33 inconclusive=0
+§SCN FA-REJ2-zero-amount MATCH compared=33 inconclusive=0
+§FA_LEGACY FAD1-disposal-simple asset=1000268 addition=1000268
+§FA_LEGACY_DISPOSAL FAD1-disposal-simple asset=1000268 disposal=1000052 posted=Y
+§SCN FAD1-disposal-simple MATCH compared=33 inconclusive=0
+§FA_LEGACY FAD-REJ-already-depreciated asset=1000269 addition=1000269
+§FA_LEGACY_ENTRY FAD-REJ-already-depreciated schema=101 entry=1000256 pending_other_assets=none lines=1
+§FA_LEGACY_ENTRY FAD-REJ-already-depreciated schema=200000 entry=1000257 pending_other_assets=none lines=1
+§FA_LEGACY_DISPOSAL FAD-REJ-already-depreciated asset=1000269 REJECTED org.idempiere.fa.exceptions.AssetAlreadyDepreciatedException: AssetAlreadyDepreciated
+§FA_PENDING_SYNC FAD-REJ-already-depreciated schema=101 other_assets=0 pending_rows=0 rows_loaded=0
+§FA_PENDING_SYNC FAD-REJ-already-depreciated schema=200000 other_assets=0 pending_rows=0 rows_loaded=0
+§SCN FAD-REJ-already-depreciated MATCH compared=33 inconclusive=0
+§FA_LEGACY FAR1-revaluation asset=1000270 addition=1000270
+§FA_LEGACY_ENTRY FAR1-revaluation schema=101 entry=1000258 pending_other_assets=none lines=1
+§FA_LEGACY_ENTRY FAR1-revaluation schema=200000 entry=1000259 pending_other_assets=none lines=1
+§FA_LEGACY_REVAL FAR1-revaluation asset=1000270 reval=1000051 CO:posted=i 
+§FA_PENDING_SYNC FAR1-revaluation schema=101 other_assets=0 pending_rows=0 rows_loaded=0
+§FA_PENDING_SYNC FAR1-revaluation schema=200000 other_assets=0 pending_rows=0 rows_loaded=0
+§SCN FAR1-revaluation MATCH compared=33 inconclusive=0
+§FA_LEGACY FAR-REJ-not-depreciated asset=1000271 addition=1000271
+§FA_LEGACY_REVAL FAR-REJ-not-depreciated asset=1000271 reval=null REJECTED org.adempiere.exceptions.AdempiereException: Asset is not depreciated at this moment
+§SCN FAR-REJ-not-depreciated MATCH compared=33 inconclusive=0
+§FA_LEGACY FAT1-transfer-accounts asset=1000272 addition=1000272
+§FA_LEGACY_TRANSFER_IN FAT1-transfer-accounts mode=ok date=2026-10-12 asset_rows=1 validfrom=1970-01-01 cur={"asset":200013,"accum":200004,"dep":200001,"drev":200005,"dloss":200006} new={"asset":200014,"accum":200015,"dep":200001,"drev":200005,"dloss":200006}
+§FA_LEGACY_TRANSFER FAT1-transfer-accounts asset=1000272 transfer=1000059 CO:posted=Y 
+§SCN FAT1-transfer-accounts MATCH compared=33 inconclusive=0
+§FA_LEGACY FAT-REJ-unchanged asset=1000273 addition=1000273
+§FA_LEGACY_TRANSFER_IN FAT-REJ-unchanged mode=unchanged date=2026-10-12 asset_rows=1 validfrom=1970-01-01 cur={"asset":200013,"accum":200004,"dep":200001,"drev":200005,"dloss":200006} new={"asset":200013,"accum":200004,"dep":200001,"drev":200005,"dloss":200006}
+§FA_LEGACY_TRANSFER FAT-REJ-unchanged asset=1000273 transfer=null REJECTED:UNCHANGED org.adempiere.exceptions.AdempiereException: An account has been changed
+§SCN FAT-REJ-unchanged MATCH compared=33 inconclusive=0
+§FA_LEGACY FAT-REJ-changed-meanwhile asset=1000274 addition=1000274
+§FA_LEGACY_TRANSFER_IN FAT-REJ-changed-meanwhile mode=changed date=2026-10-12 asset_rows=1 validfrom=1970-01-01 cur={"asset":200014,"accum":200004,"dep":200001,"drev":200005,"dloss":200006} new={"asset":200014,"accum":200015,"dep":200001,"drev":200005,"dloss":200006}
+§FA_LEGACY_TRANSFER FAT-REJ-changed-meanwhile asset=1000274 transfer=null REJECTED:ACCOUNTS-CHANGED org.adempiere.exceptions.AdempiereException: The accounts have been changed
+§SCN FAT-REJ-changed-meanwhile MATCH compared=33 inconclusive=0
+§FA_LEGACY FAT-REJ-last-day asset=1000275 addition=1000275
+§FA_LEGACY_TRANSFER_IN FAT-REJ-last-day mode=lastday date=2026-10-31 asset_rows=1 validfrom=1970-01-01 cur={"asset":200013,"accum":200004,"dep":200001,"drev":200005,"dloss":200006} new={"asset":200014,"accum":200015,"dep":200001,"drev":200005,"dloss":200006}
+§FA_LEGACY_TRANSFER FAT-REJ-last-day asset=1000275 transfer=null REJECTED:LAST-DAY org.adempiere.exceptions.AdempiereException: Last day of month. Accounts will be changed next month
+§SCN FAT-REJ-last-day MATCH compared=33 inconclusive=0
+§FA_LEGACY FAT-REJ-depreciated asset=1000276 addition=1000276
+§FA_LEGACY_TRANSFER_IN FAT-REJ-depreciated mode=depr date=2026-09-15 asset_rows=1 validfrom=1970-01-01 cur={"asset":200013,"accum":200004,"dep":200001,"drev":200005,"dloss":200006} new={"asset":200014,"accum":200015,"dep":200001,"drev":200005,"dloss":200006}
+§FA_LEGACY_TRANSFER FAT-REJ-depreciated asset=1000276 transfer=null REJECTED:DEPRECIATED org.idempiere.fa.exceptions.AssetAlreadyDepreciatedException: AssetAlreadyDepreciated
+§SCN FAT-REJ-depreciated MATCH compared=33 inconclusive=0
+§FA_LEGACY FAT-REJ-unprocessed asset=1000277 addition=1000277
+§FA_LEGACY_TRANSFER_IN FAT-REJ-unprocessed mode=unproc date=2026-11-15 asset_rows=1 validfrom=1970-01-01 cur={"asset":200013,"accum":200004,"dep":200001,"drev":200005,"dloss":200006} new={"asset":200014,"accum":200015,"dep":200001,"drev":200005,"dloss":200006}
+§FA_LEGACY_TRANSFER FAT-REJ-unprocessed asset=1000277 transfer=null REJECTED:UNPROCESSED org.idempiere.fa.exceptions.AssetException: There are unprocessed records to date
+§SCN FAT-REJ-unprocessed MATCH compared=33 inconclusive=0
+§FA_LEGACY FAT-REJ-period asset=1000278 addition=1000278
+§FA_LEGACY_TRANSFER_IN FAT-REJ-period mode=period date=2027-03-11 asset_rows=1 validfrom=1970-01-01 cur={"asset":200013,"accum":200004,"dep":200001,"drev":200005,"dloss":200006} new={"asset":200014,"accum":200015,"dep":200001,"drev":200005,"dloss":200006}
+§FA_LEGACY_TRANSFER FAT-REJ-period asset=1000278 transfer=null REJECTED:PERIOD org.adempiere.exceptions.PeriodClosedException: Period Closed Date=2027-03-11 00:00:00.0, Document Base Type=GL Journal
+§SCN FAT-REJ-period MATCH compared=33 inconclusive=0
+§RECON_SUMMARY scenarios=15 MATCH=15 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SCN_DETAIL FA1-equipment-60m legacy={"outcome":"COMPLETED","asset":"AC:2026-10-12","addition":"CO:create","wk_101":"120000:60/60:60:1:2026-10-31","sched_101":"n=60|first=1:2026-10-31:2000/2000|last=60:2031-09-30:2000/2000|sum=120000/120000","books_add_101":"431:DR0/CR120000|563:DR120000/CR0","wk_200000":"102000:60/60:60:1:2026-10-31","sched_200000":"n=60|first=1:2026-10-31:1700/1700|last=60:2031-09-30:1700/1700|sum=102000/102000","books_add_200000":"431:DR0/CR102000|563:DR102000/CR0","entry_101":"CO:n=2:own=1:2000/2000:P","books_dep_101":"501:DR4000/CR0|574:DR0/CR4000","wk_after_101":"2000/2000:2:2026-11-30","entry_200000":"CO:n=2:own=1:1700/1700:P","books_dep_200000":"501:DR3400/CR0|574:DR0/CR3400","wk_after_200000":"1700/1700:2:2026-11-30","rev":"n/a","rev_wk_101":"n/a","books_rev_101":"n/a","rev_wk_200000":"n/a","books_rev_200000":"n/a","tr":"n/a","tr_acct_101":"n/a","books_tr_101":"n/a","tr_acct_200000":"n/a","books_tr_200000":"n/a","disp":"n/a","disp_open_exp":"n/a","disp_change_101":"n/a","disp_wk_101":"n/a","books_dis_101":"n/a","disp_change_200000":"n/a","disp_wk_200000":"n/a","books_dis_200000":"n/a"} sqlite={"outcome":"COMPLETED","asset":"AC:2026-10-12","addition":"CO:create","wk_101":"120000:60/60:60:1:2026-10-31","sched_101":"n=60|first=1:2026-10-31:2000/2000|last=60:2031-09-30:2000/2000|sum=120000/120000","books_add_101":"431:DR0/CR120000|563:DR120000/CR0","wk_200000":"102000:60/60:60:1:2026-10-31","sched_200000":"n=60|first=1:2026-10-31:1700/1700|last=60:2031-09-30:1700/1700|sum=102000/102000","books_add_200000":"431:DR0/CR102000|563:DR102000/CR0","entry_101":"CO:n=2:own=1:2000/2000:P","books_dep_101":"501:DR4000/CR0|574:DR0/CR4000","wk_after_101":"2000/2000:2:2026-11-30","entry_200000":"CO:n=2:own=1:1700/1700:P","books_dep_200000":"501:DR3400/CR0|574:DR0/CR3400","wk_after_200000":"1700/1700:2:2026-11-30","rev":"n/a","rev_wk_101":"n/a","books_rev_101":"n/a","rev_wk_200000":"n/a","books_rev_200000":"n/a","tr":"n/a","tr_acct_101":"n/a","books_tr_101":"n/a","tr_acct_200000":"n/a","books_tr_200000":"n/a","disp":"n/a","disp_open_exp":"n/a","disp_change_101":"n/a","disp_wk_101":"n/a","books_dis_101":"n/a","disp_change_200000":"n/a","disp_wk_200000":"n/a","books_dis_200000":"n/a"}
+§SCN_DETAIL FA0-vehicles-zero-c-life legacy={"outcome":"COMPLETED","asset":"AC:2026-10-12","addition":"CO:create","wk_101":"120000:0/60:0:1:2026-10-31","sched_101":"n=60|first=1:2026-10-31:0/2000|last=60:2031-09-30:0/2000|sum=0/120000","books_add_101":"431:DR0/CR120000|564:DR120000/CR0","wk_200000":"102000:0/0:0:1:2026-10-31","sched_200000":"none","books_add_200000":"431:DR0/CR102000|564:DR102000/CR0","entry_101":"CO:n=1:own=1:0/2000:P","books_dep_101":"none","wk_after_101":"0/2000:2:2026-11-30","entry_200000":"CO:n=0:own=none","books_dep_200000":"none","wk_after_200000":"0/0:1:2026-10-31","rev":"n/a","rev_wk_101":"n/a","books_rev_101":"n/a","rev_wk_200000":"n/a","books_rev_200000":"n/a","tr":"n/a","tr_acct_101":"n/a","books_tr_101":"n/a","tr_acct_200000":"n/a","books_tr_200000":"n/a","disp":"n/a","disp_open_exp":"n/a","disp_change_101":"n/a","disp_wk_101":"n/a","books_dis_101":"n/a","disp_change_200000":"n/a","disp_wk_200000":"n/a","books_dis_200000":"n/a"} sqlite={"outcome":"COMPLETED","asset":"AC:2026-10-12","addition":"CO:create","wk_101":"120000:0/60:0:1:2026-10-31","sched_101":"n=60|first=1:2026-10-31:0/2000|last=60:2031-09-30:0/2000|sum=0/120000","books_add_101":"431:DR0/CR120000|564:DR120000/CR0","wk_200000":"102000:0/0:0:1:2026-10-31","sched_200000":"none","books_add_200000":"431:DR0/CR102000|564:DR102000/CR0","entry_101":"CO:n=1:own=1:0/2000:P","books_dep_101":"none","wk_after_101":"0/2000:2:2026-11-30","entry_200000":"CO:n=0:own=none","books_dep_200000":"none","wk_after_200000":"0/0:1:2026-10-31","rev":"n/a","rev_wk_101":"n/a","books_rev_101":"n/a","rev_wk_200000":"n/a","books_rev_200000":"n/a","tr":"n/a","tr_acct_101":"n/a","books_tr_101":"n/a","tr_acct_200000":"n/a","books_tr_200000":"n/a","disp":"n/a","disp_open_exp":"n/a","disp_change_101":"n/a","disp_wk_101":"n/a","books_dis_101":"n/a","disp_change_200000":"n/a","disp_wk_200000":"n/a","books_dis_200000":"n/a"}
+§SCN_DETAIL FA-REJ-unknown-group legacy={"outcome":"REJECTED","reason":"Cannot save record in A_Asset: Foreign ID 999999 not found in A_Asset_Group_ID"} sqlite={"outcome":"REJECTED","reason":"unknown-asset-group"}
+§SCN_DETAIL FA-REJ2-zero-amount legacy={"outcome":"REJECTED","reason":"Failed when processing document: Invalid: Asset value=0"} sqlite={"outcome":"REJECTED","reason":"Invalid AssetValueAmt=0"}
+§SCN_DETAIL FAD1-disposal-simple legacy={"outcome":"COMPLETED","asset":"AC:2026-10-12","addition":"CO:create","wk_101":"120000:60/60:60:1:2026-10-31","sched_101":"n=60|first=1:2026-10-31:2000/2000|last=60:2031-09-30:2000/2000|sum=120000/120000","books_add_101":"431:DR0/CR120000|563:DR120000/CR0","wk_200000":"102000:60/60:60:1:2026-10-31","sched_200000":"n=60|first=1:2026-10-31:1700/1700|last=60:2031-09-30:1700/1700|sum=102000/102000","books_add_200000":"431:DR0/CR102000|563:DR102000/CR0","entry_101":"skipped","books_dep_101":"skipped","wk_after_101":"skipped","entry_200000":"skipped","books_dep_200000":"skipped","wk_after_200000":"skipped","rev":"n/a","rev_wk_101":"n/a","books_rev_101":"n/a","rev_wk_200000":"n/a","books_rev_200000":"n/a","tr":"n/a","tr_acct_101":"n/a","books_tr_101":"n/a","tr_acct_200000":"n/a","books_tr_200000":"n/a","disp":"CO:DI:120000:0:120000","disp_open_exp":0,"disp_change_101":"120000:120000:0","disp_wk_101":"0:0:0","books_dis_101":"563:DR0/CR120000|726:DR120000/CR0","disp_change_200000":"102000:102000:0","disp_wk_200000":"0:0:0","books_dis_200000":"563:DR0/CR102000|726:DR102000/CR0"} sqlite={"outcome":"COMPLETED","asset":"AC:2026-10-12","addition":"CO:create","wk_101":"120000:60/60:60:1:2026-10-31","sched_101":"n=60|first=1:2026-10-31:2000/2000|last=60:2031-09-30:2000/2000|sum=120000/120000","books_add_101":"431:DR0/CR120000|563:DR120000/CR0","wk_200000":"102000:60/60:60:1:2026-10-31","sched_200000":"n=60|first=1:2026-10-31:1700/1700|last=60:2031-09-30:1700/1700|sum=102000/102000","books_add_200000":"431:DR0/CR102000|563:DR102000/CR0","entry_101":"skipped","books_dep_101":"skipped","wk_after_101":"skipped","entry_200000":"skipped","books_dep_200000":"skipped","wk_after_200000":"skipped","rev":"n/a","rev_wk_101":"n/a","books_rev_101":"n/a","rev_wk_200000":"n/a","books_rev_200000":"n/a","tr":"n/a","tr_acct_101":"n/a","books_tr_101":"n/a","tr_acct_200000":"n/a","books_tr_200000":"n/a","disp":"CO:DI:120000:0:120000","disp_open_exp":0,"disp_change_101":"120000:120000:0","disp_wk_101":"0:0:0","books_dis_101":"563:DR0/CR120000|726:DR120000/CR0","disp_change_200000":"102000:102000:0","disp_wk_200000":"0:0:0","books_dis_200000":"563:DR0/CR102000|726:DR102000/CR0"}
+§SCN_DETAIL FAD-REJ-already-depreciated legacy={"outcome":"COMPLETED","asset":"AC:2026-10-12","addition":"CO:create","wk_101":"120000:60/60:60:1:2026-10-31","sched_101":"n=60|first=1:2026-10-31:2000/2000|last=60:2031-09-30:2000/2000|sum=120000/120000","books_add_101":"431:DR0/CR120000|563:DR120000/CR0","wk_200000":"102000:60/60:60:1:2026-10-31","sched_200000":"n=60|first=1:2026-10-31:1700/1700|last=60:2031-09-30:1700/1700|sum=102000/102000","books_add_200000":"431:DR0/CR102000|563:DR102000/CR0","entry_101":"CO:n=1:own=1:2000/2000:P","books_dep_101":"501:DR2000/CR0|574:DR0/CR2000","wk_after_101":"2000/2000:2:2026-11-30","entry_200000":"CO:n=1:own=1:1700/1700:P","books_dep_200000":"501:DR1700/CR0|574:DR0/CR1700","wk_after_200000":"1700/1700:2:2026-11-30","rev":"n/a","rev_wk_101":"n/a","books_rev_101":"n/a","rev_wk_200000":"n/a","books_rev_200000":"n/a","tr":"n/a","tr_acct_101":"n/a","books_tr_101":"n/a","tr_acct_200000":"n/a","books_tr_200000":"n/a","disp":"REJECTED","disp_open_exp":118,"disp_change_101":"none","disp_wk_101":"120000:2000:118000","books_dis_101":"none","disp_change_200000":"none","disp_wk_200000":"102000:1700:100300","books_dis_200000":"none"} sqlite={"outcome":"COMPLETED","asset":"AC:2026-10-12","addition":"CO:create","wk_101":"120000:60/60:60:1:2026-10-31","sched_101":"n=60|first=1:2026-10-31:2000/2000|last=60:2031-09-30:2000/2000|sum=120000/120000","books_add_101":"431:DR0/CR120000|563:DR120000/CR0","wk_200000":"102000:60/60:60:1:2026-10-31","sched_200000":"n=60|first=1:2026-10-31:1700/1700|last=60:2031-09-30:1700/1700|sum=102000/102000","books_add_200000":"431:DR0/CR102000|563:DR102000/CR0","entry_101":"CO:n=1:own=1:2000/2000:P","books_dep_101":"501:DR2000/CR0|574:DR0/CR2000","wk_after_101":"2000/2000:2:2026-11-30","entry_200000":"CO:n=1:own=1:1700/1700:P","books_dep_200000":"501:DR1700/CR0|574:DR0/CR1700","wk_after_200000":"1700/1700:2:2026-11-30","rev":"n/a","rev_wk_101":"n/a","books_rev_101":"n/a","rev_wk_200000":"n/a","books_rev_200000":"n/a","tr":"n/a","tr_acct_101":"n/a","books_tr_101":"n/a","tr_acct_200000":"n/a","books_tr_200000":"n/a","disp":"REJECTED","disp_open_exp":118,"disp_change_101":"none","disp_wk_101":"120000:2000:118000","books_dis_101":"none","disp_change_200000":"none","disp_wk_200000":"102000:1700:100300","books_dis_200000":"none"}
+§SCN_DETAIL FAR1-revaluation legacy={"outcome":"COMPLETED","asset":"AC:2026-10-12","addition":"CO:create","wk_101":"120000:60/60:60:1:2026-10-31","sched_101":"n=60|first=1:2026-10-31:2000/2000|last=60:2031-09-30:2000/2000|sum=120000/120000","books_add_101":"431:DR0/CR120000|563:DR120000/CR0","wk_200000":"102000:60/60:60:1:2026-10-31","sched_200000":"n=60|first=1:2026-10-31:1700/1700|last=60:2031-09-30:1700/1700|sum=102000/102000","books_add_200000":"431:DR0/CR102000|563:DR102000/CR0","entry_101":"CO:n=1:own=1:2000/2000:P","books_dep_101":"501:DR2000/CR0|574:DR0/CR2000","wk_after_101":"2000/2000:2:2026-11-30","entry_200000":"CO:n=1:own=1:1700/1700:P","books_dep_200000":"501:DR1700/CR0|574:DR0/CR1700","wk_after_200000":"1700/1700:2:2026-11-30","rev":"CO:posted=i","rev_wk_101":"150000:2500:147500","books_rev_101":"none","rev_wk_200000":"102000:1700:100300","books_rev_200000":"none","tr":"n/a","tr_acct_101":"n/a","books_tr_101":"n/a","tr_acct_200000":"n/a","books_tr_200000":"n/a","disp":"n/a","disp_open_exp":"n/a","disp_change_101":"n/a","disp_wk_101":"n/a","books_dis_101":"n/a","disp_change_200000":"n/a","disp_wk_200000":"n/a","books_dis_200000":"n/a"} sqlite={"outcome":"COMPLETED","asset":"AC:2026-10-12","addition":"CO:create","wk_101":"120000:60/60:60:1:2026-10-31","sched_101":"n=60|first=1:2026-10-31:2000/2000|last=60:2031-09-30:2000/2000|sum=120000/120000","books_add_101":"431:DR0/CR120000|563:DR120000/CR0","wk_200000":"102000:60/60:60:1:2026-10-31","sched_200000":"n=60|first=1:2026-10-31:1700/1700|last=60:2031-09-30:1700/1700|sum=102000/102000","books_add_200000":"431:DR0/CR102000|563:DR102000/CR0","entry_101":"CO:n=1:own=1:2000/2000:P","books_dep_101":"501:DR2000/CR0|574:DR0/CR2000","wk_after_101":"2000/2000:2:2026-11-30","entry_200000":"CO:n=1:own=1:1700/1700:P","books_dep_200000":"501:DR1700/CR0|574:DR0/CR1700","wk_after_200000":"1700/1700:2:2026-11-30","rev":"CO:posted=i","rev_wk_101":"150000:2500:147500","books_rev_101":"none","rev_wk_200000":"102000:1700:100300","books_rev_200000":"none","tr":"n/a","tr_acct_101":"n/a","books_tr_101":"n/a","tr_acct_200000":"n/a","books_tr_200000":"n/a","disp":"n/a","disp_open_exp":"n/a","disp_change_101":"n/a","disp_wk_101":"n/a","books_dis_101":"n/a","disp_change_200000":"n/a","disp_wk_200000":"n/a","books_dis_200000":"n/a"}
+§SCN_DETAIL FAR-REJ-not-depreciated legacy={"outcome":"COMPLETED","asset":"AC:2026-10-12","addition":"CO:create","wk_101":"120000:60/60:60:1:2026-10-31","sched_101":"n=60|first=1:2026-10-31:2000/2000|last=60:2031-09-30:2000/2000|sum=120000/120000","books_add_101":"431:DR0/CR120000|563:DR120000/CR0","wk_200000":"102000:60/60:60:1:2026-10-31","sched_200000":"n=60|first=1:2026-10-31:1700/1700|last=60:2031-09-30:1700/1700|sum=102000/102000","books_add_200000":"431:DR0/CR102000|563:DR102000/CR0","entry_101":"skipped","books_dep_101":"skipped","wk_after_101":"skipped","entry_200000":"skipped","books_dep_200000":"skipped","wk_after_200000":"skipped","rev":"REJECTED","rev_wk_101":"120000:0:120000","books_rev_101":"none","rev_wk_200000":"102000:0:102000","books_rev_200000":"none","tr":"n/a","tr_acct_101":"n/a","books_tr_101":"n/a","tr_acct_200000":"n/a","books_tr_200000":"n/a","disp":"n/a","disp_open_exp":"n/a","disp_change_101":"n/a","disp_wk_101":"n/a","books_dis_101":"n/a","disp_change_200000":"n/a","disp_wk_200000":"n/a","books_dis_200000":"n/a"} sqlite={"outcome":"COMPLETED","asset":"AC:2026-10-12","addition":"CO:create","wk_101":"120000:60/60:60:1:2026-10-31","sched_101":"n=60|first=1:2026-10-31:2000/2000|last=60:2031-09-30:2000/2000|sum=120000/120000","books_add_101":"431:DR0/CR120000|563:DR120000/CR0","wk_200000":"102000:60/60:60:1:2026-10-31","sched_200000":"n=60|first=1:2026-10-31:1700/1700|last=60:2031-09-30:1700/1700|sum=102000/102000","books_add_200000":"431:DR0/CR102000|563:DR102000/CR0","entry_101":"skipped","books_dep_101":"skipped","wk_after_101":"skipped","entry_200000":"skipped","books_dep_200000":"skipped","wk_after_200000":"skipped","rev":"REJECTED","rev_wk_101":"120000:0:120000","books_rev_101":"none","rev_wk_200000":"102000:0:102000","books_rev_200000":"none","tr":"n/a","tr_acct_101":"n/a","books_tr_101":"n/a","tr_acct_200000":"n/a","books_tr_200000":"n/a","disp":"n/a","disp_open_exp":"n/a","disp_change_101":"n/a","disp_wk_101":"n/a","books_dis_101":"n/a","disp_change_200000":"n/a","disp_wk_200000":"n/a","books_dis_200000":"n/a"}
+§SCN_DETAIL FAT1-transfer-accounts legacy={"outcome":"COMPLETED","asset":"AC:2026-10-12","addition":"CO:create","wk_101":"120000:60/60:60:1:2026-10-31","sched_101":"n=60|first=1:2026-10-31:2000/2000|last=60:2031-09-30:2000/2000|sum=120000/120000","books_add_101":"431:DR0/CR120000|563:DR120000/CR0","wk_200000":"102000:60/60:60:1:2026-10-31","sched_200000":"n=60|first=1:2026-10-31:1700/1700|last=60:2031-09-30:1700/1700|sum=102000/102000","books_add_200000":"431:DR0/CR102000|563:DR102000/CR0","entry_101":"skipped","books_dep_101":"skipped","wk_after_101":"skipped","entry_200000":"skipped","books_dep_200000":"skipped","wk_after_200000":"skipped","rev":"n/a","rev_wk_101":"n/a","books_rev_101":"n/a","rev_wk_200000":"n/a","books_rev_200000":"n/a","tr":"CO:posted=Y","tr_acct_101":"n=2|latest=2026-10-12:200014/200015/200001/200005/200006","books_tr_101":"563:DR0/CR120000|564:DR120000/CR0","tr_acct_200000":"n=1|latest=1970-01-01:200013/200004/200001/200005/200006","books_tr_200000":"563:DR0/CR120000|564:DR120000/CR0","disp":"n/a","disp_open_exp":"n/a","disp_change_101":"n/a","disp_wk_101":"n/a","books_dis_101":"n/a","disp_change_200000":"n/a","disp_wk_200000":"n/a","books_dis_200000":"n/a"} sqlite={"outcome":"COMPLETED","asset":"AC:2026-10-12","addition":"CO:create","wk_101":"120000:60/60:60:1:2026-10-31","sched_101":"n=60|first=1:2026-10-31:2000/2000|last=60:2031-09-30:2000/2000|sum=120000/120000","books_add_101":"431:DR0/CR120000|563:DR120000/CR0","wk_200000":"102000:60/60:60:1:2026-10-31","sched_200000":"n=60|first=1:2026-10-31:1700/1700|last=60:2031-09-30:1700/1700|sum=102000/102000","books_add_200000":"431:DR0/CR102000|563:DR102000/CR0","entry_101":"skipped","books_dep_101":"skipped","wk_after_101":"skipped","entry_200000":"skipped","books_dep_200000":"skipped","wk_after_200000":"skipped","rev":"n/a","rev_wk_101":"n/a","books_rev_101":"n/a","rev_wk_200000":"n/a","books_rev_200000":"n/a","tr":"CO:posted=Y","tr_acct_101":"n=2|latest=2026-10-12:200014/200015/200001/200005/200006","books_tr_101":"563:DR0/CR120000|564:DR120000/CR0","tr_acct_200000":"n=1|latest=1970-01-01:200013/200004/200001/200005/200006","books_tr_200000":"563:DR0/CR120000|564:DR120000/CR0","disp":"n/a","disp_open_exp":"n/a","disp_change_101":"n/a","disp_wk_101":"n/a","books_dis_101":"n/a","disp_change_200000":"n/a","disp_wk_200000":"n/a","books_dis_200000":"n/a"}
+§SCN_DETAIL FAT-REJ-unchanged legacy={"outcome":"COMPLETED","asset":"AC:2026-10-12","addition":"CO:create","wk_101":"120000:60/60:60:1:2026-10-31","sched_101":"n=60|first=1:2026-10-31:2000/2000|last=60:2031-09-30:2000/2000|sum=120000/120000","books_add_101":"431:DR0/CR120000|563:DR120000/CR0","wk_200000":"102000:60/60:60:1:2026-10-31","sched_200000":"n=60|first=1:2026-10-31:1700/1700|last=60:2031-09-30:1700/1700|sum=102000/102000","books_add_200000":"431:DR0/CR102000|563:DR102000/CR0","entry_101":"skipped","books_dep_101":"skipped","wk_after_101":"skipped","entry_200000":"skipped","books_dep_200000":"skipped","wk_after_200000":"skipped","rev":"n/a","rev_wk_101":"n/a","books_rev_101":"n/a","rev_wk_200000":"n/a","books_rev_200000":"n/a","tr":"REJECTED:UNCHANGED","tr_acct_101":"n=1|latest=1970-01-01:200013/200004/200001/200005/200006","books_tr_101":"none","tr_acct_200000":"n=1|latest=1970-01-01:200013/200004/200001/200005/200006","books_tr_200000":"none","disp":"n/a","disp_open_exp":"n/a","disp_change_101":"n/a","disp_wk_101":"n/a","books_dis_101":"n/a","disp_change_200000":"n/a","disp_wk_200000":"n/a","books_dis_200000":"n/a"} sqlite={"outcome":"COMPLETED","asset":"AC:2026-10-12","addition":"CO:create","wk_101":"120000:60/60:60:1:2026-10-31","sched_101":"n=60|first=1:2026-10-31:2000/2000|last=60:2031-09-30:2000/2000|sum=120000/120000","books_add_101":"431:DR0/CR120000|563:DR120000/CR0","wk_200000":"102000:60/60:60:1:2026-10-31","sched_200000":"n=60|first=1:2026-10-31:1700/1700|last=60:2031-09-30:1700/1700|sum=102000/102000","books_add_200000":"431:DR0/CR102000|563:DR102000/CR0","entry_101":"skipped","books_dep_101":"skipped","wk_after_101":"skipped","entry_200000":"skipped","books_dep_200000":"skipped","wk_after_200000":"skipped","rev":"n/a","rev_wk_101":"n/a","books_rev_101":"n/a","rev_wk_200000":"n/a","books_rev_200000":"n/a","tr":"REJECTED:UNCHANGED","tr_acct_101":"n=1|latest=1970-01-01:200013/200004/200001/200005/200006","books_tr_101":"none","tr_acct_200000":"n=1|latest=1970-01-01:200013/200004/200001/200005/200006","books_tr_200000":"none","disp":"n/a","disp_open_exp":"n/a","disp_change_101":"n/a","disp_wk_101":"n/a","books_dis_101":"n/a","disp_change_200000":"n/a","disp_wk_200000":"n/a","books_dis_200000":"n/a"}
+§SCN_DETAIL FAT-REJ-changed-meanwhile legacy={"outcome":"COMPLETED","asset":"AC:2026-10-12","addition":"CO:create","wk_101":"120000:60/60:60:1:2026-10-31","sched_101":"n=60|first=1:2026-10-31:2000/2000|last=60:2031-09-30:2000/2000|sum=120000/120000","books_add_101":"431:DR0/CR120000|563:DR120000/CR0","wk_200000":"102000:60/60:60:1:2026-10-31","sched_200000":"n=60|first=1:2026-10-31:1700/1700|last=60:2031-09-30:1700/1700|sum=102000/102000","books_add_200000":"431:DR0/CR102000|563:DR102000/CR0","entry_101":"skipped","books_dep_101":"skipped","wk_after_101":"skipped","entry_200000":"skipped","books_dep_200000":"skipped","wk_after_200000":"skipped","rev":"n/a","rev_wk_101":"n/a","books_rev_101":"n/a","rev_wk_200000":"n/a","books_rev_200000":"n/a","tr":"REJECTED:ACCOUNTS-CHANGED","tr_acct_101":"n=1|latest=1970-01-01:200013/200004/200001/200005/200006","books_tr_101":"none","tr_acct_200000":"n=1|latest=1970-01-01:200013/200004/200001/200005/200006","books_tr_200000":"none","disp":"n/a","disp_open_exp":"n/a","disp_change_101":"n/a","disp_wk_101":"n/a","books_dis_101":"n/a","disp_change_200000":"n/a","disp_wk_200000":"n/a","books_dis_200000":"n/a"} sqlite={"outcome":"COMPLETED","asset":"AC:2026-10-12","addition":"CO:create","wk_101":"120000:60/60:60:1:2026-10-31","sched_101":"n=60|first=1:2026-10-31:2000/2000|last=60:2031-09-30:2000/2000|sum=120000/120000","books_add_101":"431:DR0/CR120000|563:DR120000/CR0","wk_200000":"102000:60/60:60:1:2026-10-31","sched_200000":"n=60|first=1:2026-10-31:1700/1700|last=60:2031-09-30:1700/1700|sum=102000/102000","books_add_200000":"431:DR0/CR102000|563:DR102000/CR0","entry_101":"skipped","books_dep_101":"skipped","wk_after_101":"skipped","entry_200000":"skipped","books_dep_200000":"skipped","wk_after_200000":"skipped","rev":"n/a","rev_wk_101":"n/a","books_rev_101":"n/a","rev_wk_200000":"n/a","books_rev_200000":"n/a","tr":"REJECTED:ACCOUNTS-CHANGED","tr_acct_101":"n=1|latest=1970-01-01:200013/200004/200001/200005/200006","books_tr_101":"none","tr_acct_200000":"n=1|latest=1970-01-01:200013/200004/200001/200005/200006","books_tr_200000":"none","disp":"n/a","disp_open_exp":"n/a","disp_change_101":"n/a","disp_wk_101":"n/a","books_dis_101":"n/a","disp_change_200000":"n/a","disp_wk_200000":"n/a","books_dis_200000":"n/a"}
+§SCN_DETAIL FAT-REJ-last-day legacy={"outcome":"COMPLETED","asset":"AC:2026-10-12","addition":"CO:create","wk_101":"120000:60/60:60:1:2026-10-31","sched_101":"n=60|first=1:2026-10-31:2000/2000|last=60:2031-09-30:2000/2000|sum=120000/120000","books_add_101":"431:DR0/CR120000|563:DR120000/CR0","wk_200000":"102000:60/60:60:1:2026-10-31","sched_200000":"n=60|first=1:2026-10-31:1700/1700|last=60:2031-09-30:1700/1700|sum=102000/102000","books_add_200000":"431:DR0/CR102000|563:DR102000/CR0","entry_101":"skipped","books_dep_101":"skipped","wk_after_101":"skipped","entry_200000":"skipped","books_dep_200000":"skipped","wk_after_200000":"skipped","rev":"n/a","rev_wk_101":"n/a","books_rev_101":"n/a","rev_wk_200000":"n/a","books_rev_200000":"n/a","tr":"REJECTED:LAST-DAY","tr_acct_101":"n=1|latest=1970-01-01:200013/200004/200001/200005/200006","books_tr_101":"none","tr_acct_200000":"n=1|latest=1970-01-01:200013/200004/200001/200005/200006","books_tr_200000":"none","disp":"n/a","disp_open_exp":"n/a","disp_change_101":"n/a","disp_wk_101":"n/a","books_dis_101":"n/a","disp_change_200000":"n/a","disp_wk_200000":"n/a","books_dis_200000":"n/a"} sqlite={"outcome":"COMPLETED","asset":"AC:2026-10-12","addition":"CO:create","wk_101":"120000:60/60:60:1:2026-10-31","sched_101":"n=60|first=1:2026-10-31:2000/2000|last=60:2031-09-30:2000/2000|sum=120000/120000","books_add_101":"431:DR0/CR120000|563:DR120000/CR0","wk_200000":"102000:60/60:60:1:2026-10-31","sched_200000":"n=60|first=1:2026-10-31:1700/1700|last=60:2031-09-30:1700/1700|sum=102000/102000","books_add_200000":"431:DR0/CR102000|563:DR102000/CR0","entry_101":"skipped","books_dep_101":"skipped","wk_after_101":"skipped","entry_200000":"skipped","books_dep_200000":"skipped","wk_after_200000":"skipped","rev":"n/a","rev_wk_101":"n/a","books_rev_101":"n/a","rev_wk_200000":"n/a","books_rev_200000":"n/a","tr":"REJECTED:LAST-DAY","tr_acct_101":"n=1|latest=1970-01-01:200013/200004/200001/200005/200006","books_tr_101":"none","tr_acct_200000":"n=1|latest=1970-01-01:200013/200004/200001/200005/200006","books_tr_200000":"none","disp":"n/a","disp_open_exp":"n/a","disp_change_101":"n/a","disp_wk_101":"n/a","books_dis_101":"n/a","disp_change_200000":"n/a","disp_wk_200000":"n/a","books_dis_200000":"n/a"}
+§SCN_DETAIL FAT-REJ-depreciated legacy={"outcome":"COMPLETED","asset":"AC:2026-10-12","addition":"CO:create","wk_101":"120000:60/60:60:1:2026-10-31","sched_101":"n=60|first=1:2026-10-31:2000/2000|last=60:2031-09-30:2000/2000|sum=120000/120000","books_add_101":"431:DR0/CR120000|563:DR120000/CR0","wk_200000":"102000:60/60:60:1:2026-10-31","sched_200000":"n=60|first=1:2026-10-31:1700/1700|last=60:2031-09-30:1700/1700|sum=102000/102000","books_add_200000":"431:DR0/CR102000|563:DR102000/CR0","entry_101":"skipped","books_dep_101":"skipped","wk_after_101":"skipped","entry_200000":"skipped","books_dep_200000":"skipped","wk_after_200000":"skipped","rev":"n/a","rev_wk_101":"n/a","books_rev_101":"n/a","rev_wk_200000":"n/a","books_rev_200000":"n/a","tr":"REJECTED:DEPRECIATED","tr_acct_101":"n=1|latest=1970-01-01:200013/200004/200001/200005/200006","books_tr_101":"none","tr_acct_200000":"n=1|latest=1970-01-01:200013/200004/200001/200005/200006","books_tr_200000":"none","disp":"n/a","disp_open_exp":"n/a","disp_change_101":"n/a","disp_wk_101":"n/a","books_dis_101":"n/a","disp_change_200000":"n/a","disp_wk_200000":"n/a","books_dis_200000":"n/a"} sqlite={"outcome":"COMPLETED","asset":"AC:2026-10-12","addition":"CO:create","wk_101":"120000:60/60:60:1:2026-10-31","sched_101":"n=60|first=1:2026-10-31:2000/2000|last=60:2031-09-30:2000/2000|sum=120000/120000","books_add_101":"431:DR0/CR120000|563:DR120000/CR0","wk_200000":"102000:60/60:60:1:2026-10-31","sched_200000":"n=60|first=1:2026-10-31:1700/1700|last=60:2031-09-30:1700/1700|sum=102000/102000","books_add_200000":"431:DR0/CR102000|563:DR102000/CR0","entry_101":"skipped","books_dep_101":"skipped","wk_after_101":"skipped","entry_200000":"skipped","books_dep_200000":"skipped","wk_after_200000":"skipped","rev":"n/a","rev_wk_101":"n/a","books_rev_101":"n/a","rev_wk_200000":"n/a","books_rev_200000":"n/a","tr":"REJECTED:DEPRECIATED","tr_acct_101":"n=1|latest=1970-01-01:200013/200004/200001/200005/200006","books_tr_101":"none","tr_acct_200000":"n=1|latest=1970-01-01:200013/200004/200001/200005/200006","books_tr_200000":"none","disp":"n/a","disp_open_exp":"n/a","disp_change_101":"n/a","disp_wk_101":"n/a","books_dis_101":"n/a","disp_change_200000":"n/a","disp_wk_200000":"n/a","books_dis_200000":"n/a"}
+§SCN_DETAIL FAT-REJ-unprocessed legacy={"outcome":"COMPLETED","asset":"AC:2026-10-12","addition":"CO:create","wk_101":"120000:60/60:60:1:2026-10-31","sched_101":"n=60|first=1:2026-10-31:2000/2000|last=60:2031-09-30:2000/2000|sum=120000/120000","books_add_101":"431:DR0/CR120000|563:DR120000/CR0","wk_200000":"102000:60/60:60:1:2026-10-31","sched_200000":"n=60|first=1:2026-10-31:1700/1700|last=60:2031-09-30:1700/1700|sum=102000/102000","books_add_200000":"431:DR0/CR102000|563:DR102000/CR0","entry_101":"skipped","books_dep_101":"skipped","wk_after_101":"skipped","entry_200000":"skipped","books_dep_200000":"skipped","wk_after_200000":"skipped","rev":"n/a","rev_wk_101":"n/a","books_rev_101":"n/a","rev_wk_200000":"n/a","books_rev_200000":"n/a","tr":"REJECTED:UNPROCESSED","tr_acct_101":"n=1|latest=1970-01-01:200013/200004/200001/200005/200006","books_tr_101":"none","tr_acct_200000":"n=1|latest=1970-01-01:200013/200004/200001/200005/200006","books_tr_200000":"none","disp":"n/a","disp_open_exp":"n/a","disp_change_101":"n/a","disp_wk_101":"n/a","books_dis_101":"n/a","disp_change_200000":"n/a","disp_wk_200000":"n/a","books_dis_200000":"n/a"} sqlite={"outcome":"COMPLETED","asset":"AC:2026-10-12","addition":"CO:create","wk_101":"120000:60/60:60:1:2026-10-31","sched_101":"n=60|first=1:2026-10-31:2000/2000|last=60:2031-09-30:2000/2000|sum=120000/120000","books_add_101":"431:DR0/CR120000|563:DR120000/CR0","wk_200000":"102000:60/60:60:1:2026-10-31","sched_200000":"n=60|first=1:2026-10-31:1700/1700|last=60:2031-09-30:1700/1700|sum=102000/102000","books_add_200000":"431:DR0/CR102000|563:DR102000/CR0","entry_101":"skipped","books_dep_101":"skipped","wk_after_101":"skipped","entry_200000":"skipped","books_dep_200000":"skipped","wk_after_200000":"skipped","rev":"n/a","rev_wk_101":"n/a","books_rev_101":"n/a","rev_wk_200000":"n/a","books_rev_200000":"n/a","tr":"REJECTED:UNPROCESSED","tr_acct_101":"n=1|latest=1970-01-01:200013/200004/200001/200005/200006","books_tr_101":"none","tr_acct_200000":"n=1|latest=1970-01-01:200013/200004/200001/200005/200006","books_tr_200000":"none","disp":"n/a","disp_open_exp":"n/a","disp_change_101":"n/a","disp_wk_101":"n/a","books_dis_101":"n/a","disp_change_200000":"n/a","disp_wk_200000":"n/a","books_dis_200000":"n/a"}
+§SCN_DETAIL FAT-REJ-period legacy={"outcome":"COMPLETED","asset":"AC:2026-10-12","addition":"CO:create","wk_101":"120000:60/60:60:1:2026-10-31","sched_101":"n=60|first=1:2026-10-31:2000/2000|last=60:2031-09-30:2000/2000|sum=120000/120000","books_add_101":"431:DR0/CR120000|563:DR120000/CR0","wk_200000":"102000:60/60:60:1:2026-10-31","sched_200000":"n=60|first=1:2026-10-31:1700/1700|last=60:2031-09-30:1700/1700|sum=102000/102000","books_add_200000":"431:DR0/CR102000|563:DR102000/CR0","entry_101":"skipped","books_dep_101":"skipped","wk_after_101":"skipped","entry_200000":"skipped","books_dep_200000":"skipped","wk_after_200000":"skipped","rev":"n/a","rev_wk_101":"n/a","books_rev_101":"n/a","rev_wk_200000":"n/a","books_rev_200000":"n/a","tr":"REJECTED:PERIOD","tr_acct_101":"n=1|latest=1970-01-01:200013/200004/200001/200005/200006","books_tr_101":"none","tr_acct_200000":"n=1|latest=1970-01-01:200013/200004/200001/200005/200006","books_tr_200000":"none","disp":"n/a","disp_open_exp":"n/a","disp_change_101":"n/a","disp_wk_101":"n/a","books_dis_101":"n/a","disp_change_200000":"n/a","disp_wk_200000":"n/a","books_dis_200000":"n/a"} sqlite={"outcome":"COMPLETED","asset":"AC:2026-10-12","addition":"CO:create","wk_101":"120000:60/60:60:1:2026-10-31","sched_101":"n=60|first=1:2026-10-31:2000/2000|last=60:2031-09-30:2000/2000|sum=120000/120000","books_add_101":"431:DR0/CR120000|563:DR120000/CR0","wk_200000":"102000:60/60:60:1:2026-10-31","sched_200000":"n=60|first=1:2026-10-31:1700/1700|last=60:2031-09-30:1700/1700|sum=102000/102000","books_add_200000":"431:DR0/CR102000|563:DR102000/CR0","entry_101":"skipped","books_dep_101":"skipped","wk_after_101":"skipped","entry_200000":"skipped","books_dep_200000":"skipped","wk_after_200000":"skipped","rev":"n/a","rev_wk_101":"n/a","books_rev_101":"n/a","rev_wk_200000":"n/a","books_rev_200000":"n/a","tr":"REJECTED:PERIOD","tr_acct_101":"n=1|latest=1970-01-01:200013/200004/200001/200005/200006","books_tr_101":"none","tr_acct_200000":"n=1|latest=1970-01-01:200013/200004/200001/200005/200006","books_tr_200000":"none","disp":"n/a","disp_open_exp":"n/a","disp_change_101":"n/a","disp_wk_101":"n/a","books_dis_101":"n/a","disp_change_200000":"n/a","disp_wk_200000":"n/a","books_dis_200000":"n/a"}
+§FA_NO_ERROR PASS errors=none
+§FA_NOT_VACUOUS PASS scenarios where legacy completed a registration AND a depreciation entry with lines=4 of 15
+§FAT_NOT_VACUOUS PASS legacy completed transfers=1, distinct refusal classes judged=6 of 6 (REJECTED:UNCHANGED,REJECTED:ACCOUNTS-CHANGED,REJECTED:LAST-DAY,REJECTED:DEPRECIATED,REJECTED:UNPROCESSED,REJECTED:PERIOD)
+§FA_LEGACY NEG-fa-control asset=1000279 addition=1000279
+§FA_LEGACY_ENTRY NEG-fa-control schema=101 entry=1000260 pending_other_assets=1000271,1000272,1000273,1000274,1000275,1000276,1000277,1000278 lines=9
+§FA_LEGACY_ENTRY NEG-fa-control schema=200000 entry=1000261 pending_other_assets=1000271,1000272,1000273,1000274,1000275,1000276,1000277,1000278 lines=9
+§FA_PENDING_SYNC NEG-fa-control schema=101 other_assets=8 pending_rows=8 rows_loaded=960
+§FA_PENDING_SYNC NEG-fa-control schema=200000 other_assets=8 pending_rows=8 rows_loaded=960
+§GAP scenario=NEG-fa-control key=wk_101 legacy="120000:60/60:60:1:2026-10-31" sqlite="120001:60/60:60:1:2026-10-31" verdict=SQLITE-GAP
+§GAP scenario=NEG-fa-control key=sched_101 legacy="n=60|first=1:2026-10-31:2000/2000|last=60:2031-09-30:2000/2000|sum=120000/120000" sqlite="n=60|first=1:2026-10-31:2000/2000|last=60:2031-09-30:2000/2000|sum=120001/120001" verdict=SQLITE-GAP
+§GAP scenario=NEG-fa-control key=books_add_101 legacy="431:DR0/CR120000|563:DR120000/CR0" sqlite="431:DR0/CR120001|563:DR120001/CR0" verdict=SQLITE-GAP
+§GAP scenario=NEG-fa-control key=entry_101 legacy="CO:n=9:own=1:2000/2000:P" sqlite="CO:n=17:own=1:2000/2000:P" verdict=SQLITE-GAP
+§GAP scenario=NEG-fa-control key=books_dep_101 legacy="501:DR18000/CR0|574:DR0/CR18000" sqlite="501:DR34000/CR0|574:DR0/CR34000" verdict=SQLITE-GAP
+§GAP scenario=NEG-fa-control key=wk_200000 legacy="102000:60/60:60:1:2026-10-31" sqlite="102001:60/60:60:1:2026-10-31" verdict=SQLITE-GAP
+§GAP scenario=NEG-fa-control key=sched_200000 legacy="n=60|first=1:2026-10-31:1700/1700|last=60:2031-09-30:1700/1700|sum=102000/102000" sqlite="n=60|first=1:2026-10-31:1700/1700|last=60:2031-09-30:1700/1700|sum=102001/102001" verdict=SQLITE-GAP
+§GAP scenario=NEG-fa-control key=books_add_200000 legacy="431:DR0/CR102000|563:DR102000/CR0" sqlite="431:DR0/CR102001|563:DR102001/CR0" verdict=SQLITE-GAP
+§GAP scenario=NEG-fa-control key=entry_200000 legacy="CO:n=9:own=1:1700/1700:P" sqlite="CO:n=17:own=1:1700/1700:P" verdict=SQLITE-GAP
+§GAP scenario=NEG-fa-control key=books_dep_200000 legacy="501:DR15300/CR0|574:DR0/CR15300" sqlite="501:DR28900/CR0|574:DR0/CR28900" verdict=SQLITE-GAP
+§SCN NEG-fa-control SQLITE-GAP compared=33 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§FA_NEGATIVE_CONTROL PASS +1¢ on the SQLite addition ⇒ verdict=SQLITE-GAP gaps=wk_101,sched_101,books_add_101,entry_101,books_dep_101,wk_200000,sched_200000,books_add_200000,entry_200000,books_dep_200000
+§FA_LEGACY NEG-far-control asset=1000280 addition=1000280
+§FA_LEGACY_ENTRY NEG-far-control schema=101 entry=1000262 pending_other_assets=none lines=1
+§FA_LEGACY_ENTRY NEG-far-control schema=200000 entry=1000263 pending_other_assets=none lines=1
+§FA_LEGACY_REVAL NEG-far-control asset=1000280 reval=1000053 CO:posted=i 
+§FA_PENDING_SYNC NEG-far-control schema=101 other_assets=0 pending_rows=0 rows_loaded=0
+§FA_PENDING_SYNC NEG-far-control schema=200000 other_assets=0 pending_rows=0 rows_loaded=0
+§GAP scenario=NEG-far-control key=rev_wk_101 legacy="150000:2500:147500" sqlite="150001:2500:147501" verdict=SQLITE-GAP
+§SCN NEG-far-control SQLITE-GAP compared=33 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§FAR_NEGATIVE_CONTROL PASS +1¢ on the SQLite revalued cost ⇒ verdict=SQLITE-GAP gaps=rev_wk_101
+§FA_LEGACY NEG-fat-control asset=1000281 addition=1000281
+§FA_LEGACY_TRANSFER_IN NEG-fat-control mode=ok date=2026-10-12 asset_rows=1 validfrom=1970-01-01 cur={"asset":200013,"accum":200004,"dep":200001,"drev":200005,"dloss":200006} new={"asset":200014,"accum":200015,"dep":200001,"drev":200005,"dloss":200006}
+§FA_LEGACY_TRANSFER NEG-fat-control asset=1000281 transfer=1000066 CO:posted=Y 
+§GAP scenario=NEG-fat-control key=wk_101 legacy="120000:60/60:60:1:2026-10-31" sqlite="120001:60/60:60:1:2026-10-31" verdict=SQLITE-GAP
+§GAP scenario=NEG-fat-control key=sched_101 legacy="n=60|first=1:2026-10-31:2000/2000|last=60:2031-09-30:2000/2000|sum=120000/120000" sqlite="n=60|first=1:2026-10-31:2000/2000|last=60:2031-09-30:2000/2000|sum=120001/120001" verdict=SQLITE-GAP
+§GAP scenario=NEG-fat-control key=books_add_101 legacy="431:DR0/CR120000|563:DR120000/CR0" sqlite="431:DR0/CR120001|563:DR120001/CR0" verdict=SQLITE-GAP
+§GAP scenario=NEG-fat-control key=wk_200000 legacy="102000:60/60:60:1:2026-10-31" sqlite="102001:60/60:60:1:2026-10-31" verdict=SQLITE-GAP
+§GAP scenario=NEG-fat-control key=sched_200000 legacy="n=60|first=1:2026-10-31:1700/1700|last=60:2031-09-30:1700/1700|sum=102000/102000" sqlite="n=60|first=1:2026-10-31:1700/1700|last=60:2031-09-30:1700/1700|sum=102001/102001" verdict=SQLITE-GAP
+§GAP scenario=NEG-fat-control key=books_add_200000 legacy="431:DR0/CR102000|563:DR102000/CR0" sqlite="431:DR0/CR102001|563:DR102001/CR0" verdict=SQLITE-GAP
+§GAP scenario=NEG-fat-control key=books_tr_101 legacy="563:DR0/CR120000|564:DR120000/CR0" sqlite="563:DR0/CR120001|564:DR120001/CR0" verdict=SQLITE-GAP
+§GAP scenario=NEG-fat-control key=books_tr_200000 legacy="563:DR0/CR120000|564:DR120000/CR0" sqlite="563:DR0/CR120001|564:DR120001/CR0" verdict=SQLITE-GAP
+§SCN NEG-fat-control SQLITE-GAP compared=33 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§FAT_NEGATIVE_CONTROL PASS +1¢ on the SQLite addition before the transfer ⇒ verdict=SQLITE-GAP gaps=wk_101,sched_101,books_add_101,wk_200000,sched_200000,books_add_200000,books_tr_101,books_tr_200000
+§FA_LEGACY NEG-fad-control asset=1000282 addition=1000282
+§FA_LEGACY_DISPOSAL NEG-fad-control asset=1000282 disposal=1000054 posted=Y
+§GAP scenario=NEG-fad-control key=wk_101 legacy="120000:60/60:60:1:2026-10-31" sqlite="120001:60/60:60:1:2026-10-31" verdict=SQLITE-GAP
+§GAP scenario=NEG-fad-control key=sched_101 legacy="n=60|first=1:2026-10-31:2000/2000|last=60:2031-09-30:2000/2000|sum=120000/120000" sqlite="n=60|first=1:2026-10-31:2000/2000|last=60:2031-09-30:2000/2000|sum=120001/120001" verdict=SQLITE-GAP
+§GAP scenario=NEG-fad-control key=books_add_101 legacy="431:DR0/CR120000|563:DR120000/CR0" sqlite="431:DR0/CR120001|563:DR120001/CR0" verdict=SQLITE-GAP
+§GAP scenario=NEG-fad-control key=wk_200000 legacy="102000:60/60:60:1:2026-10-31" sqlite="102001:60/60:60:1:2026-10-31" verdict=SQLITE-GAP
+§GAP scenario=NEG-fad-control key=sched_200000 legacy="n=60|first=1:2026-10-31:1700/1700|last=60:2031-09-30:1700/1700|sum=102000/102000" sqlite="n=60|first=1:2026-10-31:1700/1700|last=60:2031-09-30:1700/1700|sum=102001/102001" verdict=SQLITE-GAP
+§GAP scenario=NEG-fad-control key=books_add_200000 legacy="431:DR0/CR102000|563:DR102000/CR0" sqlite="431:DR0/CR102001|563:DR102001/CR0" verdict=SQLITE-GAP
+§GAP scenario=NEG-fad-control key=disp legacy="CO:DI:120000:0:120000" sqlite="CO:DI:120001:0:120001" verdict=SQLITE-GAP
+§GAP scenario=NEG-fad-control key=disp_change_101 legacy="120000:120000:0" sqlite="120001:120001:0" verdict=SQLITE-GAP
+§GAP scenario=NEG-fad-control key=books_dis_101 legacy="563:DR0/CR120000|726:DR120000/CR0" sqlite="563:DR0/CR120001|726:DR120001/CR0" verdict=SQLITE-GAP
+§GAP scenario=NEG-fad-control key=disp_change_200000 legacy="102000:102000:0" sqlite="102001:102001:0" verdict=SQLITE-GAP
+§GAP scenario=NEG-fad-control key=books_dis_200000 legacy="563:DR0/CR102000|726:DR102000/CR0" sqlite="563:DR0/CR102001|726:DR102001/CR0" verdict=SQLITE-GAP
+§SCN NEG-fad-control SQLITE-GAP compared=33 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§FAD_NEGATIVE_CONTROL PASS +1¢ on the SQLite addition before the disposal ⇒ verdict=SQLITE-GAP gaps=wk_101,sched_101,books_add_101,wk_200000,sched_200000,books_add_200000,disp,disp_change_101,books_dis_101,disp_change_200000,books_dis_200000
+§FA_FINDINGS sqlite_gaps=0 (none) — the parallel-run product, not harness failures
+§FA_VERDICT PASS fails=0 inconclusive=0 findings=0
+=== witness_lf_parity
+§LF_TABLE ad_window legacy=458 local=375 cols_compared=19 onlyLegacy=85 onlyLocal=2 changed_cells=3 by_col={"isactive":3}
+§LF_GAP ad_window#316.isactive legacy="N" sqlite="Y"
+§LF_GAP ad_window#53036.isactive legacy="N" sqlite="Y"
+§LF_GAP ad_window#53042.isactive legacy="N" sqlite="Y"
+§LF_ONLY_SQLITE ad_window 7100000:C Attendance | 7800000:Construction
+§LF_TABLE ad_tab legacy=1167 local=1135 cols_compared=42 onlyLegacy=38 onlyLocal=6 changed_cells=2 by_col={"help":2}
+§LF_GAP ad_tab#405.help legacy="" sqlite="Pricelists are created based on Product Purchase and Category Discounts.\nThe parameters listed here allow to copy and calculate pricelists.<BR>\nThe calculation:\n<UL>\n<LI>Copy and convert price from referenced price list\n<LI>result plus Surcharge Amount\n<LI>result minus Discount\n<LI>if resulting price is less than the original limit price plus min Margin, use this price (only if Margin is not zero)\n<LI>if resulting price is more than the original limit price plus max Margin, use this price (only if Margin us not zero)\n<LI>Round resulting price\n</UL>\n<B>The Formula</B> is<BR>\nNewPrice = (Convert(BasePrice) + Surcharge) * (100-Discount) / 100;<BR>\nif MinMargin <> 0 then NewPrice = Max (NewPrice, Convert(OrigLimitPrice) + MinMargin);<BR>\nif MaxMargin <> 0 then NewPrice = Min (NewPrice, Convert(OrigLimitPrice) + MaxMargin);<BR>\n <BR>\n<B>Example:</B> (assuming same currency)<BR>\nOriginal Prices:  List=300, Standard=250, Limit=200;<BR>\nNew List Price: Base=List, Surcharge=0, Discount=0, Round"
+§LF_GAP ad_tab#426.help legacy="" sqlite="Item in the print format maintaining layout information.  The following additional variables are available when printing:\n<p>@*Page@ - the current page number\n<br>@*PageCount@ - the total number of pages\n<br>@*MultiPageInfo@ - \"Page x of y\" - only printed if more than one page\n<br>@*CopyInfo@ - if it is a copy of the document \"Duplicate\" is printed\n<br>@*ReportName@ - name of the report\n<br>@*Header@ - Full Header with user/tenant/org name and connection\n<br>@*CurrentDate@ - the print date\n<br>@*CurrentDateTime@ - the print time\n\n<p>The layout logic for forms is: <br>\n- if not printed: ignore <br>\n- set New Line Position <br>\n- new page <br>\n- new line, if something was printed since last new line<br>\n- format item<br>\n- print it (if not null/empty selected)<br>\n(i.e. suppress null does not prevent new line)"
+§LF_ONLY_SQLITE ad_tab 7200000:C Attendance | 7810000:Warehouse | 7810001:Locator | 7810002:Storage | 7810003:Replenish | 7810004:Accounting
+§LF_TABLE ad_field legacy=21432 local=20988 cols_compared=54 onlyLegacy=521 onlyLocal=77 changed_cells=49 by_col={"help":49}
+§LF_GAP ad_field#344.help legacy="" sqlite="<B>Validation elements:</B>\n \t(Space) any character\n_\tSpace (fixed character)\nl\tany Letter a..Z NO space\nL\tany Letter a..Z NO space converted to upper case\no\tany Letter a..Z or space\nO\tany Letter a..Z or space converted to upper case\na\tany Letters & Digits NO space\nA\tany Letters & Digits NO space converted to upper case\nc\tany Letters & Digits or space\nC\tany Letters & Digits or space converted to upper case\n0\tDigits 0..9 NO space\n9\tDigits 0..9 or space\n\nExample of format \"(000)_000-0000\""
+§LF_GAP ad_field#2581.help legacy="" sqlite="The SO Sub Type indicates the type of sales order this document refers to.  This field only appears when the Document Base Type is Sales Order.  The selection made here will determine which documents will be generated when an order is processed and which documents must be generated manually or in batches.  <br>\nThe following outlines this process.<br>\nSO Sub Type of <b>Standard Order</b> will generate just the <b>Order</b> document when the order is processed.  <br>\nThe <b>Delivery Note</b>, <b>Invoice</b> and <b>Receipt</b> must be generated via other processes.  <br>\nSO Sub Type of <b>Warehouse Order</b> will generate the <b>Order</b> and <b>Delivery Note</b>. <br> The <b>Invoice</b> and <b>Receipt</b> must be generated via other processes.<br>\nSO Sub Type of <b>Credit Order</b> will generate the <b>Order</b>, <b>Delivery Note</b> and <b>Invoice</b>. <br> The <b>Receipt</b> must be generated via other processes.<br>\nSO Sub Type of <b>POS</b> (Point of Sale) will generate all document"
+§LF_GAP ad_field#200753.help legacy="" sqlite="format := {expression} [{logic} {expression}]<br> \nexpression := @{context}@{operand}{value} or @{context}@{operand}{value}<br> \nlogic := {|}|{&}<br>\ncontext := any global or window context <br>\nvalue := strings or numbers<br>\nlogic operators\t:= AND or OR with the previous result from left to right <br>\noperand := eq{=}, gt{&gt;}, le{&lt;}, not{~^!} <br>\nExamples: <br>\n<ul>\n<li> @AD_Table_ID@=14 | @Language@!GERGER</li>\n<li> @PriceLimit@>10 | @PriceList@>@PriceActual@</li>\n<li> @Name@>J</li>\n</ul>\nStrings may be in single quotes (optional)"
+§LF_TABLE ad_column legacy=26519 local=26161 cols_compared=57 onlyLegacy=375 onlyLocal=17 changed_cells=41 by_col={"help":41}
+§LF_GAP ad_column#1229.help legacy="" sqlite="<B>Validation elements:</B>\n \t(Space) any character\n_\tSpace (fixed character)\nl\tany Letter a..Z NO space\nL\tany Letter a..Z NO space converted to upper case\no\tany Letter a..Z or space\nO\tany Letter a..Z or space converted to upper case\na\tany Letters & Digits NO space\nA\tany Letters & Digits NO space converted to upper case\nc\tany Letters & Digits or space\nC\tany Letters & Digits or space converted to upper case\n0\tDigits 0..9 NO space\n9\tDigits 0..9 or space\n\nExample of format \"(000)_000-0000\""
+§LF_GAP ad_column#1227.help legacy="" sqlite="<B>Validation elements:</B>\n \t(Space) any character\n_\tSpace (fixed character)\nl\tany Letter a..Z NO space\nL\tany Letter a..Z NO space converted to upper case\no\tany Letter a..Z or space\nO\tany Letter a..Z or space converted to upper case\na\tany Letters & Digits NO space\nA\tany Letters & Digits NO space converted to upper case\nc\tany Letters & Digits or space\nC\tany Letters & Digits or space converted to upper case\n0\tDigits 0..9 NO space\n9\tDigits 0..9 or space\n\nExample of format \"(000)_000-0000\""
+§LF_GAP ad_column#1226.help legacy="" sqlite="<B>Validation elements:</B>\n \t(Space) any character\n_\tSpace (fixed character)\nl\tany Letter a..Z NO space\nL\tany Letter a..Z NO space converted to upper case\no\tany Letter a..Z or space\nO\tany Letter a..Z or space converted to upper case\na\tany Letters & Digits NO space\nA\tany Letters & Digits NO space converted to upper case\nc\tany Letters & Digits or space\nC\tany Letters & Digits or space converted to upper case\n0\tDigits 0..9 NO space\n9\tDigits 0..9 or space\n\nExample of format \"(000)_000-0000\""
+§LF_TABLE ad_menu legacy=826 local=590 cols_compared=19 onlyLegacy=239 onlyLocal=3 changed_cells=0 by_col={}
+§LF_ONLY_SQLITE ad_menu 7400000:HBA Attendance | 7400001:C Attendance | 7830000:Construction
+§LF_TABLE ad_message MISSING-IN-SQLITE legacy=2099
+§LF_TABLE ad_ref_list legacy=1545 local=1500 cols_compared=11 onlyLegacy=46 onlyLocal=1 changed_cells=0 by_col={}
+§LF_TABLE ad_val_rule legacy=332 local=332 cols_compared=9 onlyLegacy=0 onlyLocal=0 changed_cells=0 by_col={}
+§LF_TABLE ad_process legacy=476 local=476 cols_compared=27 onlyLegacy=0 onlyLocal=0 changed_cells=2 by_col={"help":2}
+§LF_GAP ad_process#200117.help legacy="" sqlite="<p><span style=\"color:#ff0000\"><b>WARNING: This process can be destructive, so please be sure that you have a backup of the database, as well as a backup of your old storage provider.</b></span></p>\n\n<p>The process migrates files between storage providers.</p>\n\n<ul><li><b>Tenant:</b> Optional, select a tenant to migrate, when empty it will migrate all tenants with the Actual Storage Provider</li><li><b>Actual Storage Provider:</b> Alternatively, you can define here the storage provider to migrate</li><li><b>Storage Provider:</b> The new storage provider to migrate the files</li><li><b>Migrate Attachment:</b> Migrate the attachment files</li><li><b>Migrate Archive:</b> Migate the archive files</li><li><b>Migrate Image:</b> Migrate the image  files</li><li><b>Migrate Data:</b> When unchecked, just the storage provider is changed in tenant, but the files are not migrated (they can be migrated in a future execution of this same process)</li><li><b>Record ID Range:</b> Optionally you can define a range of IDs for the records to migrate, so you can run this process in parallel to migrate the data</li><li><b>Delete old/existing files:</b> If enabled, when a file is migrated the program tries to free space deleting the file from the previous storage provider.  <span style=\"color:#ff0000\">Note that migrating from/to a DB storage provider is a destructive action that cannot be recovered, it implies deleting the old/existing files</span>.</li></ul>\n\n<p>In case of failure or timeout, the process can be launched again, it commits on every file migrated.</p>"
+§LF_GAP ad_process#200099.help legacy="" sqlite="<p>This process apply all the pack in files found in a folder recursively - ordered by timestamp.<br />\nThe filename of the pack in files is important, it must follow the following convention:<br />\n[Timestamp]_[ClientValue][_AdditionalInformation].zip</p>\n\n<ul>\n\t<li><strong>Timestamp:</strong> must be in the format yyyymmddHHMM</li>\n\t<li><strong>ClientValue:</strong> case sensitive and compared against AD_Client.Value to find the tenant where the pack in must be applied</li>\n\t<li><strong>AdditionalInformation:</strong> Any additional information to identify the zip file</li>\n</ul>\n\n<p>NOTE that AD_Client.Value must not contain underscore in order for this process to work.<br />\nThere is a special case for ClientValue, if the ClientValue is ALL-CLIENTS then the 2pack is intended to be applied in all active non-system tenants.<br />\nIf there is a need to apply initially in a seed tenant then the ClientValue must take the form ALL-CLIENTS-Seed.<br />\nFor example:<br />\n201803151607_ALL-CLIENTS-GardenWorld_Test123.zip</p>\n"
+§LF_TABLE ad_process_para legacy=1208 local=1208 cols_compared=35 onlyLegacy=0 onlyLocal=0 changed_cells=0 by_col={}
+§LF_TABLES legacy_rows=56062 patches=out/lf_patch_*.sql (NOT applied to any shipped db)
+§LF_WINDOWS pass=350 of N=370 (dictionary-level: tabs + fields + column attributes identical)
+§LF_WINDOWS_REASONS {"tab# field#":19,"tabs 8 vs 7":1}
+§LF_WINDOW_FAIL 131 "GL Category" first-diff: tab#1 field#10 "Document Base Type" columnname "DocBaseType" vs ""
+§LF_WINDOW_FAIL 218 "Report Line Set" first-diff: tab#2 field#5 "Parent" columnname "Parent_ID" vs ""
+§LF_WINDOW_FAIL 306 "Workflow Processor" first-diff: tab#1 field#1 "Frequency Type" columnname "FrequencyType" vs ""
+§LF_WINDOW_FAIL 203 "Request Processor" first-diff: tab#1 field#1 "Frequency" columnname "Frequency" vs ""
+§LF_WINDOW_FAIL 311 "Accounting Processor" first-diff: tab#1 field#1 "Frequency" columnname "Frequency" vs ""
+§LF_WINDOW_FAIL 312 "Alert Processor" first-diff: tab#1 field#3 "Frequency Type" columnname "FrequencyType" vs ""
+§LF_WINDOW_FAIL 53100 "My Profile" first-diff: tab#1 field#29 "Connection Profile" columnname "ConnectionProfile" vs ""
+§LF_WINDOW_FAIL 200000 "Toolbar Button" first-diff: tab#1 field#2 "Classname" columnname "Classname" vs ""
+§LF_NOT_VACUOUS PASS N=370 legacy windows judged
+§LF_NEG PASS window 114 "Task" with field 396 relabelled ⇒ tab#1 field#1 "OS Task" name "OS Task" vs "OS Task X"
+§LF_PATCHED applied=10/10 errors=none pass=370 of N=370
+§LF_PATCH_EFFECT PASS before=350/370 after=370/370 (patches never delete; a remaining FAIL is a row SQLite has that legacy does not, or a column outside the patch)
+§LF_FINDINGS windows_equal=350/370 after_patch=370/370 — the product, not a harness failure
+§LF_VERDICT PASS fails=0 inconclusive=0
+=== witness_client_ctx
+§CTX client literal=11 resolved=11 EQ n=18 via=QueryCBPartner where AD_Client_ID IN (SELECT AD_Client_ID FROM AD_Client WHERE Name='GardenWorld') [AD_Client.Name via a C_BPartner row of that client (no QueryADClient read type)]
+§CTX role literal=102 resolved=102 EQ n=1 via=QueryADRole where Name='GardenWorld Admin' AND AD_Client_ID=11
+§CTX user literal=101 resolved=101 EQ n=1 via=QueryADUser where Name='GardenAdmin' AND AD_Client_ID=11
+§CTX org literal=11 resolved=11 EQ n=1849 via=QueryCOrder where AD_Client_ID=11 AND AD_Org_ID IN (SELECT AD_Org_ID FROM AD_Org WHERE Value='HQ' AND AD_Client_ID=11) [AD_Org.Value via a C_Order row of that org (no QueryADOrg read type)]
+§CTX org2 literal=12 resolved=12 EQ n=462 via=QueryCOrder where AD_Client_ID=11 AND AD_Org_ID IN (SELECT AD_Org_ID FROM AD_Org WHERE Value='Store Central' AND AD_Client_ID=11) [AD_Org.Value via a C_Order row of that org (no QueryADOrg read type)]
+§CTX wh literal=103 resolved=103 EQ n=1287 via=QueryMInOut where AD_Client_ID=11 AND M_Warehouse_ID IN (SELECT M_Warehouse_ID FROM M_Warehouse WHERE Name='HQ Warehouse' AND AD_Client_ID=11) [M_Warehouse.Name via an M_InOut row (no QueryMWarehouse read type)]
+§CTX wh2 literal=104 resolved=104 EQ n=510 via=QueryMInOut where AD_Client_ID=11 AND M_Warehouse_ID IN (SELECT M_Warehouse_ID FROM M_Warehouse WHERE Name='Store Central' AND AD_Client_ID=11) [M_Warehouse.Name via an M_InOut row (no QueryMWarehouse read type)]
+§CTX locator literal=101 resolved=101 EQ n=43 via=QueryStorage where AD_Client_ID=11 AND M_Locator_ID IN (SELECT M_Locator_ID FROM M_Locator WHERE Value='Default HQ Locator' AND M_Warehouse_ID IN (SELECT M_Warehouse_ID FROM M_Warehouse WHERE Name='HQ Warehouse' AND AD_Client_ID=11)) [M_Locator.Value via an M_Storage row (no QueryMLocator read type)]
+§CTX customer literal=112 resolved=112 EQ n=1 via=QueryCBPartner where Value='Standard' AND AD_Client_ID=11
+§CTX customer2 literal=118 resolved=118 EQ n=1 via=QueryCBPartner where Value='JoeBlock' AND AD_Client_ID=11
+§CTX vendor literal=120 resolved=120 EQ n=1 via=QueryCBPartner where Value='SeedFarm' AND AD_Client_ID=11
+§CTX prod.oak literal=123 resolved=123 EQ n=1 via=QueryMProduct where Value='Oak' AND AD_Client_ID=11
+§CTX prod.mulch literal=137 resolved=137 EQ n=1 via=QueryMProduct where Value='Mulch' AND AD_Client_ID=11
+§CTX prod.rake literal=139 resolved=139 EQ n=1 via=QueryMProduct where Value='Rake-Bamboo' AND AD_Client_ID=11
+§CTX prod.weeder literal=141 resolved=141 EQ n=1 via=QueryMProduct where Value='Weeder' AND AD_Client_ID=11
+§CTX prod.azalea literal=128 resolved=128 EQ n=1 via=QueryMProduct where Value='Azalea Bush' AND AD_Client_ID=11
+§CTX prod.fertilizer literal=136 resolved=136 EQ n=1 via=QueryMProduct where Value='Fertilizer#50' AND AD_Client_ID=11
+§CTX prod.patioSet literal=145 resolved=145 EQ n=1 via=QueryMProduct where Value='PatioSet' AND AD_Client_ID=11
+§CTX prod.standard literal=122 resolved=122 EQ n=1 via=QueryMProduct where Value='Standard' AND AD_Client_ID=11
+§CTX dt.std literal=132 resolved=132 EQ n=1 via=QueryCDocType where Name='Standard Order' AND AD_Client_ID=11
+§CTX dt.pos literal=135 resolved=135 EQ n=1 via=QueryCDocType where Name='POS Order' AND AD_Client_ID=11
+§CTX dt.po literal=126 resolved=126 EQ n=1 via=QueryCDocType where Name='Purchase Order' AND AD_Client_ID=11
+§CTX dt.mmReceipt literal=122 resolved=122 EQ n=1 via=QueryCDocType where Name='MM Receipt' AND AD_Client_ID=11
+§CTX dt.mmShipment literal=120 resolved=120 EQ n=1 via=QueryCDocType where Name='MM Shipment' AND AD_Client_ID=11
+§CTX dt.arInvoice literal=116 resolved=116 EQ n=1 via=QueryCDocType where Name='AR Invoice' AND AD_Client_ID=11
+§CTX dt.arReceipt literal=119 resolved=119 EQ n=1 via=QueryCDocType where Name='AR Receipt' AND AD_Client_ID=11
+§CTX dt.apPayment literal=125 resolved=125 EQ n=1 via=QueryCDocType where Name='AP Payment' AND AD_Client_ID=11
+§CTX dt.requisition literal=127 resolved=127 EQ n=1 via=QueryCDocType where Name='Purchase Requisition' AND AD_Client_ID=11
+§CTX dt.movement literal=143 resolved=143 EQ n=1 via=QueryCDocType where Name='Material Movement' AND AD_Client_ID=11
+§CTX dt.physInv literal=144 resolved=144 EQ n=1 via=QueryCDocType where Name='Material Physical Inventory' AND AD_Client_ID=11
+§CTX dt.glJournal literal=115 resolved=115 EQ n=1 via=QueryCDocType where Name='GL Journal' AND AD_Client_ID=11
+§CTX dt.apInvoice literal=123 resolved=123 EQ n=1 via=QueryCDocType where Name='AP Invoice' AND AD_Client_ID=11
+§CTX pl.sales literal=101 resolved=101 EQ n=1 via=QueryMPriceList where Name='Standard' AND IsSOPriceList='Y' AND AD_Client_ID=11
+§CTX pl.purchase literal=102 resolved=102 EQ n=1 via=QueryMPriceList where Name='Purchase' AND IsSOPriceList='N' AND AD_Client_ID=11
+§CTX costElement.avgPO literal=103 resolved=103 EQ n=1 via=QueryMCostElement where CostingMethod='A' AND AD_Client_ID=11
+§CTX schema.primary literal=101 resolved=101 EQ n=1 via=QueryCAcctSchema where AD_Client_ID=11 AND IsActive='Y' AND Name NOT LIKE 'Second%' AND Name NOT LIKE 'CP %' [first active schema of the client that is not a Second*/copy schema (GardenWorld has 3 rows; a fresh client has 1)]
+§CTX schema.second literal=200000 resolved=200000 EQ n=1 via=QueryCAcctSchema where AD_Client_ID=11 AND Name LIKE 'Second Schema%'
+§CTX cur literal=100 resolved=100 EQ n=1 via=QueryMPriceList where Name='Standard' AND IsSOPriceList='Y' AND AD_Client_ID=11 [sales price list currency (no QueryCCurrency read type)]
+§CTX curSecond literal=102 resolved=102 EQ n=1 via=QueryCAcctSchema where AD_Client_ID=11 AND Name LIKE 'Second Schema%' [second schema currency (no QueryCCurrency read type)]
+§CTX bank literal=100 resolved=100 EQ n=1 via=QueryCBankAccount where AccountNo='1234' AND AD_Client_ID=11
+§CTX cashbook literal=101 resolved=101 EQ n=1 via=QueryCCashBook where Name='HQ CashBook' AND AD_Client_ID=11
+§CTX customerLoc literal=108 resolved=null NO_READ_TYPE n=0 via=needs read type for C_BPartner_Location (D6 config row + restart)
+§CTX customer2Loc literal=113 resolved=null NO_READ_TYPE n=0 via=needs read type for C_BPartner_Location (D6 config row + restart)
+§CTX vendorLoc literal=114 resolved=null NO_READ_TYPE n=0 via=needs read type for C_BPartner_Location (D6 config row + restart)
+§CTX glcat literal=108 resolved=null NO_READ_TYPE n=0 via=needs read type for GL_Category (D6 config row + restart)
+§CTX_SUMMARY keys=45 EQ=41 NE=0 AMBIGUOUS=0 UNRESOLVED=0 NO_READ_TYPE=4 unresolved_keys=[customerLoc,customer2Loc,vendorLoc,glcat]
+§CTX_VERDICT PASS 41 keys literal==resolved on GardenWorld; 4 listed as not resolvable by an existing read type
+§CTX_NEG PASS wrong-names->UNRESOLVED=true wrong-client->nothing EQ=true wrong-literal(wh 104 vs resolved 103)->NE=true
+=== witness_dict_scope
+§DDS_FOREIGN c_doctype unscoped lists 1 SQLite row(s) of another client as onlyLocal (ids 0); scoped(11) correctly excludes them -> SAME otherwise
+§DDS_TABLE c_doctype SAME unscoped(legacy=51 local=52 changed=0 onlyLegacy=0 onlyLocal=1) scoped11(legacy=51 local=51 changed=0 onlyLegacy=0 onlyLocal=0) where=[AD_Client_ID=11]
+§DDS_TABLE c_tax SAME unscoped(legacy=6 local=6 changed=0 onlyLegacy=0 onlyLocal=0) scoped11(legacy=6 local=6 changed=0 onlyLegacy=0 onlyLocal=0) where=[AD_Client_ID=11]
+§DDS_TABLE m_pricelist SAME unscoped(legacy=4 local=4 changed=0 onlyLegacy=0 onlyLocal=0) scoped11(legacy=4 local=4 changed=0 onlyLegacy=0 onlyLocal=0) where=[AD_Client_ID=11]
+§DDS_TABLE m_product_category_acct@gb SAME unscoped(legacy=28 local=28 changed=0 onlyLegacy=0 onlyLocal=0) scoped11(legacy=28 local=28 changed=0 onlyLegacy=0 onlyLocal=0) where=[C_AcctSchema_ID IN (101,200000) AND AD_Client_ID=11]
+§DDS_TABLE m_costelement@gb SAME unscoped(legacy=9 local=9 changed=0 onlyLegacy=0 onlyLocal=0) scoped11(legacy=9 local=9 changed=0 onlyLegacy=0 onlyLocal=0) where=[AD_Client_ID=11]
+§DDS_TABLE m_cost@gb SAME unscoped(legacy=362 local=362 changed=46 onlyLegacy=0 onlyLocal=0) scoped11(legacy=362 local=362 changed=46 onlyLegacy=0 onlyLocal=0) where=[AD_Client_ID=11 AND AD_Org_ID=0 AND M_AttributeSetInstance_ID=0 AND C_AcctSchema_ID IN (101,200000)]
+§DDS_TABLE m_product@gb SAME unscoped(legacy=55 local=55 changed=0 onlyLegacy=0 onlyLocal=0) scoped11(legacy=55 local=55 changed=0 onlyLegacy=0 onlyLocal=0) where=[AD_Client_ID=11]
+§DDS_TABLE c_acctschema@gb SAME unscoped(legacy=3 local=2 changed=0 onlyLegacy=1 onlyLocal=0) scoped11(legacy=3 local=2 changed=0 onlyLegacy=1 onlyLocal=0) where=[AD_Client_ID=11]
+§DDS_TABLE c_cashbook_acct@gb SAME unscoped(legacy=4 local=4 changed=0 onlyLegacy=0 onlyLocal=0) scoped11(legacy=4 local=4 changed=0 onlyLegacy=0 onlyLocal=0) where=[AD_Client_ID=11]
+§DDS_TABLE ad_sysconfig@gb SAME unscoped(legacy=205 local=1 changed=0 onlyLegacy=204 onlyLocal=0) scoped11(legacy=205 local=1 changed=0 onlyLegacy=204 onlyLocal=0) where=[AD_Client_ID IN (0,11) AND AD_Org_ID=0]
+§DDS_TABLE ad_sysconfig_seed SAME unscoped(legacy=205 local=0 changed=0 onlyLegacy=205 onlyLocal=0) scoped11(legacy=205 local=0 changed=0 onlyLegacy=205 onlyLocal=0) where=[AD_Client_ID IN (0,11) AND AD_Org_ID=0]
+§DDS_VACUOUS ad_sysconfig_seed scoped legacy=205 local=0 -- this table judged nothing
+§DDS_TABLE c_elementvalue SAME unscoped(legacy=379 local=379 changed=0 onlyLegacy=0 onlyLocal=0) scoped11(legacy=379 local=379 changed=0 onlyLegacy=0 onlyLocal=0) where=[AD_Client_ID=11]
+§DDS_TABLE c_bankaccount@gb SAME unscoped(legacy=3 local=3 changed=1 onlyLegacy=0 onlyLocal=0) scoped11(legacy=3 local=3 changed=1 onlyLegacy=0 onlyLocal=0) where=[AD_Client_ID=11]
+§DDS_TABLE a_asset_group_acct SAME unscoped(legacy=6 local=6 changed=6 onlyLegacy=0 onlyLocal=0) scoped11(legacy=6 local=6 changed=6 onlyLegacy=0 onlyLocal=0) where=[AD_Client_ID=11]
+§DDS_TABLE c_elementvalue SAME unscoped(legacy=379 local=379 changed=0 onlyLegacy=0 onlyLocal=0) scoped11(legacy=379 local=379 changed=0 onlyLegacy=0 onlyLocal=0) where=[AD_Client_ID=11]
+§DDS_TABLE c_acctschema SAME unscoped(legacy=3 local=2 changed=1 onlyLegacy=1 onlyLocal=0) scoped11(legacy=3 local=2 changed=1 onlyLegacy=1 onlyLocal=0) where=[AD_Client_ID=11]
+§DDS_FOREIGN c_doctype unscoped lists 1 SQLite row(s) of another client as onlyLocal (ids 0); scoped(11) correctly excludes them -> SAME otherwise
+§DDS_TABLE c_doctype SAME unscoped(legacy=51 local=52 changed=0 onlyLegacy=0 onlyLocal=1) scoped11(legacy=51 local=51 changed=0 onlyLegacy=0 onlyLocal=0) where=[AD_Client_ID=11]
+§DDS_TABLE m_pricelist SAME unscoped(legacy=4 local=4 changed=0 onlyLegacy=0 onlyLocal=0) scoped11(legacy=4 local=4 changed=0 onlyLegacy=0 onlyLocal=0) where=[AD_Client_ID=11]
+§DDS_TABLE c_tax SAME unscoped(legacy=6 local=6 changed=0 onlyLegacy=0 onlyLocal=0) scoped11(legacy=6 local=6 changed=0 onlyLegacy=0 onlyLocal=0) where=[AD_Client_ID=11]
+§DDS_TABLE c_taxcategory SAME unscoped(legacy=1 local=1 changed=0 onlyLegacy=0 onlyLocal=0) scoped11(legacy=1 local=1 changed=0 onlyLegacy=0 onlyLocal=0) where=[AD_Client_ID=11]
+§DDS_TABLE c_year SAME unscoped(legacy=32 local=30 changed=0 onlyLegacy=2 onlyLocal=0) scoped11(legacy=32 local=30 changed=0 onlyLegacy=2 onlyLocal=0) where=[AD_Client_ID=11]
+§DDS_TABLE c_period SAME unscoped(legacy=384 local=360 changed=0 onlyLegacy=24 onlyLocal=0) scoped11(legacy=384 local=360 changed=0 onlyLegacy=24 onlyLocal=0) where=[AD_Client_ID=11]
+§DDS_TABLE c_periodcontrol SAME unscoped(legacy=11232 local=10464 changed=46 onlyLegacy=768 onlyLocal=0) scoped11(legacy=11232 local=10464 changed=46 onlyLegacy=768 onlyLocal=0) where=[AD_Client_ID=11]
+§DDS_TABLE ad_role SAME unscoped(legacy=4 local=4 changed=0 onlyLegacy=0 onlyLocal=0) scoped11(legacy=4 local=4 changed=0 onlyLegacy=0 onlyLocal=0) where=[AD_Client_ID=11]
+§DDS_SELFTEST PASS 23 tables SAME scoped(11) vs unscoped with rows on both sides, legacy rows judged=13416; vacuous (one side empty, listed not hidden): [ad_sysconfig_seed]
+§DDS_VACUOUS control client=99999 table=c_elementvalue legacy_rows=0 -> reported as vacuous, verdict INCONCLUSIVE (PASS refused)
+§DDS_NATURAL c_elementvalue SAME_COUNTS key=[Value] legacy=379/379 local=379/379 changed=0 onlyLegacy=0 onlyLocal=0 dupNaturalKeys=0 (FK *_id columns not compared in natural mode)
+§DDS_NATURAL c_acctschema SAME_COUNTS key=[Name] legacy=3/3 local=2/2 changed=0 onlyLegacy=1 onlyLocal=0 dupNaturalKeys=0 (FK *_id columns not compared in natural mode)
+§DDS_NATURAL c_doctype SAME_COUNTS key=[Name,DocBaseType,DocSubTypeSO] legacy=51/51 local=51/51 changed=0 onlyLegacy=0 onlyLocal=0 dupNaturalKeys=0 (FK *_id columns not compared in natural mode)
+§DDS_NATURAL m_pricelist SAME_COUNTS key=[Name,IsSOPriceList] legacy=4/4 local=4/4 changed=0 onlyLegacy=0 onlyLocal=0 dupNaturalKeys=0 (FK *_id columns not compared in natural mode)
+§DDS_NATURAL c_tax SAME_COUNTS key=[Name] legacy=6/6 local=6/6 changed=0 onlyLegacy=0 onlyLocal=0 dupNaturalKeys=0 (FK *_id columns not compared in natural mode)
+§DDS_NATURAL c_taxcategory SAME_COUNTS key=[Name] legacy=1/1 local=1/1 changed=0 onlyLegacy=0 onlyLocal=0 dupNaturalKeys=0 (FK *_id columns not compared in natural mode)
+§DDS_NATURAL c_year SAME_COUNTS key=[FiscalYear] legacy=32/32 local=30/30 changed=0 onlyLegacy=2 onlyLocal=0 dupNaturalKeys=0 (FK *_id columns not compared in natural mode)
+§DDS_NATURAL c_period SAME_COUNTS key=[PeriodNo,StartDate] legacy=384/384 local=360/360 changed=0 onlyLegacy=24 onlyLocal=0 dupNaturalKeys=0 (FK *_id columns not compared in natural mode)
+§DDS_NATURAL ad_role SAME_COUNTS key=[Name] legacy=4/4 local=4/4 changed=0 onlyLegacy=0 onlyLocal=0 dupNaturalKeys=0 (FK *_id columns not compared in natural mode)
+§DDS_NEG PASS scoped(11) detects corrupted 135.isautogenerateinout (was Y)=true and deleted doctype 148=true; new changed cells=1
+§DDS_VERDICT PASS
+=== shopday_run
+§SHOPDAY_RUN client=ShopDay1012142417
+§SHOPDAY_STEP SD-00 legacy run_process ok=true 
+§SHOPDAY_ADMIN_LANE grant WS types to the new Admin role: 217 (1 row)
+§SHOPDAY_ADMIN_LANE restart the pilot server now (WS config is cached) and re-run without --create
+§SHOPDAY_RESTART pilot up http=200
+§SHOPDAY_CTX client=ShopDay1012142417(1000000) adminRole=1000000 org=1000000 wh=1000000 user=1000000 today=2026-10-12 template=ShopDayTest(1000000)->ShopDay1012142417
+§SHOPDAY_STEP SD-00 MATCH tables=86 legacy_rows=4528 sqlite_rows=4528 diff_tables=0 born tenant vs InitialClientSetup
+§SHOPDAY_LEGACY SD-01 period 9 Updated #32
+§SHOPDAY_LEGACY SD-01 period 10 Updated #32
+§SHOPDAY_LEGACY SD-01 period 11 Updated #32
+§SHOPDAY_LOCAL SD-01 updated #96 control rows (legacy summary printed above)
+§SHOPDAY_STEP SD-01 MATCH tables=1 legacy_rows=384 sqlite_rows=384 diff_tables=0 G-SD1: PeriodStatus has no shipped SQLite handler (harness-local verb)
+§SHOPDAY_STEP SD-02 MATCH tables=9 legacy_rows=42 sqlite_rows=42 diff_tables=0 
+§SHOPDAY_STEP SD-03 MATCH tables=3 legacy_rows=6 sqlite_rows=6 diff_tables=0 
+§SHOPDAY_STEP SD-04a MATCH tables=2 legacy_rows=3 sqlite_rows=3 diff_tables=0 Q5: costing method Average set through the WS (update_data C_AcctSchema)
+§SHOPDAY_STEP SD-04 MATCH tables=4 legacy_rows=21 sqlite_rows=21 diff_tables=0 
+§SHOPDAY_STEP SD-04b MATCH tables=1 legacy_rows=7 sqlite_rows=7 diff_tables=0 starting average cost set in Product Costs (M_Cost) through the WS
+§SHOPDAY_ADMIN_LANE pilot restarted after the costing-method change (schema cache s_schema, MAcctSchema.java:189) -- no data written
+§SHOPDAY_STEP SD-05 MATCH tables=3 legacy_rows=14 sqlite_rows=14 diff_tables=0 
+§SHOPDAY_IDS_ALIGNED OK 7 keys equal
+§SHOPDAY_STEP SD-05b MATCH tables=1 legacy_rows=6 sqlite_rows=6 diff_tables=0 partners get their price lists
+§SHOPDAY_STEP SD-13a MATCH tables=1 legacy_rows=6 sqlite_rows=6 diff_tables=0 credit check switched on for SD-CUST2 (SOCreditStatus=O)
+§SHOPDAY_LOCAL posting recorder installed (posted flag + fact_acct persisted from every derivePostings of the twin)
+§SCN SD06-opening-stock MATCH compared=7 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SHOPDAY_STEP SD-06 MATCH scenarios=1 match=1 gaps=-
+§SCN SD06z-opening-stock-no-cost MATCH compared=7 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SHOPDAY_STEP SD-06z MATCH scenarios=1 match=1 gaps=-
+§P2P_STEP legacy PO order=1002907
+§SCN P2P1-PO MATCH compared=11 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SHOPDAY_STEP SD-07 MATCH scenarios=1 match=1 gaps=-
+§P2P_STEP legacy RCPT inout=1001785
+§SCN P2P2-RCPT MATCH compared=10 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SHOPDAY_STEP SD-08 MATCH scenarios=1 match=1 gaps=-
+§P2P_STEP legacy INV invoice=1002043
+§SCN P2P3-INV MATCH compared=16 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SHOPDAY_STEP SD-09 MATCH scenarios=1 match=1 gaps=-
+§P2P_STEP legacy PAY payment=1000190
+§SCN P2P4-PAY MATCH compared=13 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SHOPDAY_STEP SD-10 MATCH scenarios=1 match=1 gaps=-
+§SCN SD11-cash-sale MATCH compared=17 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SHOPDAY_STEP SD-11 MATCH scenarios=1 gaps=-
+§SCN O2C-NOPL-SO MATCH compared=1 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SHOPDAY_OUTCOME SD-12z legacy={"outcome":"REJECTED","reason":"Cannot save record in C_Order: Cannot invoke \"org.compiere.model.MPriceList.get_ID()\" because \"pl\" is null"} sqlite={"outcome":"REJECTED","reason":"No active sales price list for the client (legacy: NullPointerException \"pl is null\", MOrder.java:910-911)"}
+§SHOPDAY_STEP SD-12z MATCH legacy=REJECTED sqlite=REJECTED reason_is_pricelist=true
+§O2C_STEP legacy SO order=1002909
+§SCN O2C1-SO MATCH compared=9 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§O2C_STEP legacy SHIP inout=1001787
+§SCN O2C2-SHIP MATCH compared=9 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§O2C_STEP legacy INV invoice=1002045
+§SCN O2C3-INV MATCH compared=12 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§O2C_STEP legacy PAY payment=1000191
+§SCN O2C4-PAY MATCH compared=13 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§O2C_STEP legacy RC-INV reversal=1002046
+§SCN O2C5-RC-INV MATCH compared=13 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§O2C_STEP legacy RC-SHIP reversal=1001788
+§SCN O2C6-RC-SHIP MATCH compared=9 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SHOPDAY_STEP SD-12 MATCH scenarios=3 match=3 gaps=-
+§SHOPDAY_STEP SD-14 MATCH scenarios=1 match=1 gaps=-
+§SHOPDAY_STEP SD-15 MATCH scenarios=2 match=2 gaps=-
+§SCN SD13-credit-refusal MATCH compared=4 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SHOPDAY_OUTCOME SD-13 legacy={"outcome":"REJECTED","reason":"Failed when processing document: Business Partner with this Order over Credit Hold - Open Balance=0.0, Grand Total=660.0"} sqlite={"outcome":"REJECTED","reason":"credit-over-hold"}
+§SHOPDAY_STEP SD-13 MATCH legacy=REJECTED sqlite=REJECTED reasons: legacy="Failed when processing document: Business Partner with this Order over Credit Hold - Open " sqlite="credit-over-hold"
+§SD16_CTX doctypes rma=1000031 mmr=1000015 arc=1000004 alloc=1000010 customer=1000003 product=1000002 locator=1000000
+§SCN SD16-sale MATCH compared=17 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SHOPDAY_STEP SD-16s MATCH scenarios=1 gaps=-
+§SD16_FIXTURE legacy ship=1001789 lines=1001821:1000002:3 inv=1002047 | sqlite ship=71021 lines=7102110:1000002:3@50.00/t1000001
+§P2P_STEP legacy PO order=1002912
+§SCN P2P1-PO MATCH compared=11 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SHOPDAY_STEP SD-16p-PO MATCH scenarios=1 gaps=-
+§P2P_STEP legacy RCPT inout=1001790
+§SCN P2P2-RCPT MATCH compared=10 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SHOPDAY_STEP SD-16p-RCPT MATCH scenarios=1 gaps=-
+§SHOPDAY_STEP SD-16m MATCH tables=1 legacy_rows=1 sqlite_rows=1 diff_tables=0 RMA type master (M_RMAType through the WS)
+§SCN SD16-r1-over-shipped MATCH compared=2 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SD16_OUTCOME r1 legacy={"outcome":"REJECTED","reason":"Cannot save record in M_RMALine: ","reason_code":"AmtReturned>Shipped"}
+§SHOPDAY_STEP SD-16r1 MATCH legacy=REJECTED  gaps=-
+§SD16_STEP legacy RMA id=1000001 status=CO amt=110.00 lines=1000000:1000002:2@50/t1000001/net100
+§SCN SD16-a-rma MATCH compared=9 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SHOPDAY_STEP SD-16a MATCH legacy=COMPLETED  gaps=-
+§SCN SD16-r2-cumulative MATCH compared=2 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SD16_OUTCOME r2 legacy={"outcome":"REJECTED","reason":"Cannot save record in M_RMALine: ","reason_code":"AmtReturned>Shipped"}
+§SHOPDAY_STEP SD-16r2 MATCH legacy=REJECTED  gaps=-
+§SD16_STEP legacy RET id=1001791 status=CO posted=Y type=C+ doctype=1000015 lines=1001823:2
+§SCN SD16-b-return-receipt MATCH compared=9 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SHOPDAY_STEP SD-16b MATCH legacy=COMPLETED books=1000001:DR6541/CR0|1000011:DR0/CR6541 gaps=-
+§SD16_STEP legacy CM id=1002048 status=CO posted=Y doctype=1000004 total=110.00 lines=1000002:2@50
+§SCN SD16-c-credit-memo MATCH compared=11 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SHOPDAY_STEP SD-16c MATCH legacy=COMPLETED books=1000023:DR10000/CR0|1000031:DR0/CR11000|1000053:DR1000/CR0 gaps=-
+§SD16_STEP legacy ALLOC id=1000475 status=CO posted=Y lines=1002047:110,1002048:-110 fact_rows=2 books_raw=none
+§SCN SD16-d-allocation MATCH compared=8 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SHOPDAY_STEP SD-16d MATCH legacy=COMPLETED net=none gaps=-
+§SD16_STEP legacy RET id=1001792 status=CO posted=Y type=C+ doctype=1000015 lines=1001824:3
+§SCN SD16-r3-over-rma-receipt MATCH compared=9 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SD16_OUTCOME r3 legacy.outcome=COMPLETED reason=
+§SHOPDAY_STEP SD-16r3 MATCH legacy=COMPLETED legacy_COMPLETED gaps=-
+§SHOPDAY_NEG_SD16 PASS control==legacy:true; SQLite credit-memo price +1 cent flips [inv_lines,invoice_tax,grand_total]
+§SHOPDAY_STEP SD-16 MATCH parts=s=MATCH p-PO=MATCH p-RCPT=MATCH m=MATCH r1=MATCH a=MATCH r2=MATCH b=MATCH c=MATCH d=MATCH r3=MATCH
+§SCN SD17-void-sale MATCH compared=18 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SHOPDAY_STEP SD-17 MATCH scenarios=1 gaps=-
+§SHOPDAY_LEGACY SD-18 book qty: product 1000001=17 product 1000002=42
+§SCN SD18-count-loss-gain MATCH compared=7 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SHOPDAY_STEP SD-18 MATCH scenarios=1 match=1 gaps=-
+§SHOPDAY_LOCAL ad_sysconfig loaded from legacy client 0 (CLIENT_ACCOUNTING=I)
+§SCN SD19-cash-journal-settles-invoice MATCH compared=10 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SHOPDAY_STEP SD-19 MATCH scenarios=1 gaps=-
+§SCN SD20-bank-statement-matches-receipt MATCH compared=9 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SHOPDAY_OUTCOME SD20-bank-statement-matches-receipt legacy={"outcome":"COMPLETED","docstatus":"CO","beginning":0,"statement_diff":777,"ending":777,"payment_reconciled":"Y","bank_balance_delta":777,"postings":"1000047:DR0/CR777|1000054:DR777/CR0","postings_euro":"1000047:DR0/CR777|1000054:DR777/CR0" sqlite={"outcome":"COMPLETED","docstatus":"CO","beginning":0,"statement_diff":777,"ending":777,"payment_reconciled":"Y","bank_balance_delta":777,"postings":"1000047:DR0/CR777|1000054:DR777/CR0","postings_euro":"1000047:DR0/CR777|1000054:DR777/CR0"
+§SCN SD20r-payment-already-reconciled MATCH compared=9 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SHOPDAY_OUTCOME SD20r-payment-already-reconciled legacy={"outcome":"REJECTED","reason":"Failed when processing document: Payment is already Reconciled MPayment[1000192-1000002,Receipt=true,PayAmt=7.77,Discoun"} sqlite={"outcome":"REJECTED","reason":"PaymentIsAlreadyReconciled"}
+§SHOPDAY_STEP SD-20 MATCH scenarios=2 legacy=COMPLETED/REJECTED gaps=-
+§SCN SD21-backdated-sale MATCH compared=17 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SHOPDAY_OUTCOME SD-21 date=2026-09-15 legacy={"outcome":"COMPLETED","docstatus":"CO","lines":"1000001:1:10000","total_cents":10000,"shipments":1,"shipments_completed":1,"invoices":1,"stock_delta":"{\"1000001\":-1}","postings":"1000023:DR0/CR10000|1000031:DR11000/CR0|1000053:DR0/CR1000","postings_shipment":"REFUSED:Posted=E","postings_euro":"1000023:DR0/CR10000|1000031:DR11000/CR0|1000053:DR0/CR1000","p sqlite={"outcome":"COMPLETED","docstatus":"CO","lines":"1000001:1:10000","total_cents":10000,"shipments":1,"shipments_completed":1,"invoices":1,"stock_delta":"{\"1000001\":-1}","postings":"1000023:DR0/CR10000|1000031:DR11000/CR0|1000053:DR0/CR1000","postings_shipment":"REFUSED:Posted=E","postings_euro":"1000023:DR0/CR10000|1000031:DR11000/CR0|1000053:DR0/CR1000","p
+§SHOPDAY_STEP SD-21 MATCH date=2026-09-15 legacy_shipment_books=REFUSED:Posted=E gaps=-
+§SHOPDAY_OUTCOME SD-22 prev(has the refused back-dated shipment) period 9 legacy=REFUSED Post all Unposted Documents before closing the Period. sqlite=REFUSED PostUnpostedDocs (m_inout)
+§SHOPDAY_OUTCOME SD-22 next(empty) period 11 legacy=OK Updated #32 sqlite=OK @Updated@ #32
+§SHOPDAY_STEP SD-22a MATCH tables=1 legacy_rows=384 sqlite_rows=384 diff_tables=0 after closing prev (refusal expected) and next (empty): control rows equal
+§SHOPDAY_STEP SD-22 MATCH prev_refused_both=true next_closed_both=true
+§SCN SD23a-sale-in-closed-period MATCH compared=1 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SHOPDAY_OUTCOME SD23a-sale legacy={"outcome":"REJECTED","reason":"Failed when processing document: Period Closed"} sqlite={"outcome":"REJECTED","reason":"period-closed"}
+§P2P_STEP legacy PO order=1002916
+§SHOPDAY_LEGACY SD-23b PO for the receipt: MATCH
+§SCN SD23b-receipt-in-closed-period MATCH compared=1 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SHOPDAY_OUTCOME SD23b-goods-receipt legacy={"outcome":"REJECTED","reason":"Failed when processing document: Period Closed"} sqlite={"outcome":"REJECTED","reason":"PeriodClosed"}
+§SCN SD23c-payment-in-closed-period MATCH compared=1 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SHOPDAY_OUTCOME SD23c-customer-receipt legacy={"outcome":"REJECTED","reason":"Failed when processing document: Period Closed"} sqlite={"outcome":"REJECTED","reason":"PeriodClosed"}
+§SCN SD23d-journal-in-closed-period MATCH compared=1 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SHOPDAY_OUTCOME SD23d-gl-journal legacy={"outcome":"REJECTED","reason":"Failed when processing document: Period Closed -> 11/15/2026"} sqlite={"outcome":"REJECTED","reason":"PeriodClosed"}
+§SHOPDAY_STEP SD-23 MATCH refused_both=SD23a-sale:Y,SD23b-goods-receipt:Y,SD23c-customer-receipt:Y,SD23d-gl-journal:Y legacy_reason_is_period=YYYY sqlite_reason_is_period=YYYY
+§SHOPDAY_TB_BY_DOC legacy=[318:n30:Dr1155.00/Cr1155.00 319:n20:Dr1493.52/Cr1493.52 321:n8:Dr2018.11/Cr2018.11 335:n6:Dr557.77/Cr557.77 392:n2:Dr7.77/Cr7.77 407:n2:Dr110.0/Cr110.0 472:n2:Dr300.00/Cr300.00 735:n10:Dr440.0/Cr440.00] sqlite=[318:n30:Dr1155/Cr1155 319:n20:Dr1493.52/Cr1493.52 321:n4:Dr2018.11/Cr2018.11 335:n6:Dr557.77/Cr557.77 392:n2:Dr7.77/Cr7.77 407:n2:Dr110/Cr110 472:n2:Dr300/Cr300 735:n4:Dr440/Cr440]
+§SHOPDAY_TB_DOCDIFF ad_table_id=735 legacy_docs_Dr=[0,0,0,110,330] sqlite_docs_Dr=[110,330]
+§SHOPDAY_TB legacy: accounts=16 rows=80 Dr=608217 Cr=608217 balanced=true | sqlite: accounts=16 rows=70 Dr=608217 Cr=608217 balanced=true | accounts_differing=0
+§SHOPDAY_TB_NEG PASS +1 cent on one SQLite fact row => differing accounts=1
+§SHOPDAY_STEP SD-24 MATCH accounts=16 differing=0 legacy_fact_rows=80 sqlite_fact_rows=70
+§SHOPDAY_NEG_POS PASS SQLite POS invoice +1 cent => SQLITE-GAP price-bearing gap keys=[total_cents,postings,postings_euro,grand_total_cents]
+§SHOPDAY_NEG PASS SQLite invoice +1 cent: extra gap keys at INV=[inv_lines,invoice_tax,grand_total,books,books_euro,bp_delta] (price-bearing: [inv_lines,invoice_tax,grand_total,books,books_euro]); extra before INV=[]
+§SHOPDAY_COVERAGE steps_match=25 of 25 diff=0 blocked=0 inconclusive=0 not_run=0 :: SD-00=MATCH SD-01=MATCH SD-02=MATCH SD-03=MATCH SD-04=MATCH SD-05=MATCH SD-06=MATCH SD-07=MATCH SD-08=MATCH SD-09=MATCH SD-10=MATCH SD-11=MATCH SD-12=MATCH SD-13=MATCH SD-14=MATCH SD-15=MATCH SD-16=MATCH SD-17=MATCH SD-18=MATCH SD-19=MATCH SD-20=MATCH SD-21=MATCH SD-22=MATCH SD-23=MATCH SD-24=MATCH
+§SHOPDAY_VERDICT PASS judged=25 of 25 negative_control=PASS neg_pos=PASS neg_tb=PASS neg_sd16=PASS
+§SHOPDAY_SUMMARY SD-00=MATCH SD-01=MATCH SD-02=MATCH SD-03=MATCH SD-04a=MATCH SD-04=MATCH SD-04b=MATCH SD-04c=MATCH SD-05=MATCH SD-05b=MATCH SD-13a=MATCH SD-06=MATCH SD-06z=MATCH SD-07=MATCH SD-08=MATCH SD-09=MATCH SD-10=MATCH SD-11=MATCH SD-12z=MATCH SD-12=MATCH SD-14=MATCH SD-15=MATCH SD-13=MATCH SD-16s=MATCH SD-16p-PO=MATCH SD-16p-RCPT=MATCH SD-16m=MATCH SD-16r1=MATCH SD-16a=MATCH SD-16r2=MATCH SD-16b=MATCH SD-16c=MATCH SD-16d=MATCH SD-16r3=MATCH SD-16=MATCH SD-17=MATCH SD-18=MATCH SD-19=MATCH SD-20=MATCH SD-21=MATCH SD-22a=MATCH SD-22=MATCH SD-23=MATCH SD-24=MATCH
+§COVERAGE models_with_scenarios=19 of dictionary_doc_tables=34 [A_Asset_Addition,A_Asset_Disposed,A_Asset_Reval,A_Asset_Transfer,A_Depreciation_Entry,C_AllocationHdr,C_BankStatement,C_Cash,C_Invoice,C_Order,C_Payment,C_ProjectIssue,DD_Order,GL_Journal,M_InOut,M_Inventory,M_Movement,M_RMA,M_Requisition] all_scenarios_MATCH=19 of 19 · cycles_covered=2 of 2 [O2C:MATCH 13 steps,P2P:MATCH 10 steps] · windows_identical=350 of 370 (370 of 370 after the generated dict patches, scratch only) · UNMAPPED scenarios (not counted): F9-PO,F9-RCPT,F9a-sale-backdated-before-receipt,F9b-second-sale-same-backdate,F9c-sale-today-after-backdated,F9d-backdated-sale-beyond-history-qty,SD06-opening-stock,SD06z-opening-stock-no-cost,SD11-cash-sale,SD13-credit-refusal,SD17-void-sale,SD18-count-loss-gain,SD19-cash-journal-settles-invoice,SD20-bank-statement-matches-receipt,SD20r-payment-already-reconciled,SD21-backdated-sale,SD23a-sale-in-closed-period,SD23b-receipt-in-closed-period,SD23c-payment-in-closed-period,SD23d-journal-in-closed-period
+§COVERAGE_NOT_COVERED AD_WF_Node,C_BankTransfer,C_DepositBatch,C_DocTypeCounter,GL_JournalBatch,HR_Process,I_FixedAsset,MP_OT,M_InOutConfirm,M_MovementConfirm,M_Production,PP_Cost_Collector,PP_Order,PP_Order_Node,S_TimeExpense

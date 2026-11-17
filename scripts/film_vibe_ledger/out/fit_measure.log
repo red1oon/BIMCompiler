@@ -1,0 +1,48 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT before cue=0.00 room=998.70 dur=19.03 -> DETAIL slack=+979.67 words=49
+§NARR_TONE before#0 F YN rose=5.0st endDelta=+1.9st want=rise OK "Is vibe coding a good idea?"
+§NARR_FIT after cue=0.00 room=998.70 dur=12.61 -> DETAIL slack=+986.09 words=36
+§NARR_TONE after#0 F WH rose=0st endDelta=-3.1st want=fall OK "So why this project?"
+§NARR_TONE after#2 F YN rose=5.0st endDelta=+2.8st want=rise OK "Checked by hand?"
+§NARR_FIT u1 cue=0.00 room=998.70 dur=13.73 -> DETAIL slack=+984.97 words=37
+§NARR_FIT u2 cue=0.00 room=998.70 dur=16.62 -> DETAIL slack=+982.08 words=46
+§NARR_TONE u2#0 F YN rose=5.0st endDelta=+3.5st want=rise OK "Share their data?"
+§NARR_TONE u2#2 F WH rose=0st endDelta=-0.2st want=fall OK "How many checks?"
+§NARR_FIT v1 cue=0.00 room=998.70 dur=20.22 -> DETAIL slack=+978.48 words=52
+§NARR_TONE v1#0 F WH rose=0st endDelta=-3.0st want=fall OK "Why does vibe coding work here?"
+§NARR_TONE v1#2 F YN rose=5.0st endDelta=+3.2st want=rise OK "And the geometry?"
+§NARR_FIT v2 cue=0.00 room=998.70 dur=11.06 -> DETAIL slack=+987.64 words=33
+§NARR_TONE v2#0 F WH rose=0st endDelta=-4.7st want=fall OK "So who checks the guesses?"
+§NARR_FIT s1 cue=0.00 room=998.70 dur=20.24 -> DETAIL slack=+978.46 words=58
+§NARR_TONE s1#0 F YN rose=5.0st endDelta=+2.2st want=rise OK "Does it scale?"
+§NARR_TONE s1#2 F WH rose=0st endDelta=-6.2st want=fall OK "What holds it together?"
+§NARR_FIT s2 cue=0.00 room=998.70 dur=18.13 -> DETAIL slack=+980.57 words=48
+§NARR_TONE s2#0 F WH rose=0st endDelta=-6.7st want=fall OK "What is not there yet?"
+§NARR_FIT l1 cue=0.00 room=998.70 dur=26.78 -> DETAIL slack=+971.92 words=69
+§NARR_TONE l1#0 F WH rose=0st endDelta=-0.7st want=fall OK "How does it compare with iDempiere, where it came from?"
+§NARR_TONE l1#2 F YN rose=5.0st endDelta=+4.8st want=rise OK "Are the books the same?"
+§NARR_FIT l2 cue=0.00 room=998.70 dur=16.39 -> DETAIL slack=+982.31 words=45
+§NARR_TONE l2#0 F YN rose=5.0st endDelta=+2.8st want=rise OK "Next?"
+§NARR_TONE l2#0 F YN rose=5.0st endDelta=+7.4st want=rise OK "Are they P.H.P.?"
+§NARR_FIT l3 cue=0.00 room=998.70 dur=18.23 -> DETAIL slack=+980.47 words=47
+§NARR_TONE l3#0 F YN rose=8.0st endDelta=+2.6st want=rise OK "So is the legacy worse?"
+§NARR_FIT c1 cue=0.00 room=998.70 dur=20.19 -> DETAIL slack=+978.51 words=54
+§NARR_TONE c1#0 F YN rose=5.0st endDelta=+3.2st want=rise OK "Did it ever go wrong?"
+§NARR_TONE c1#2 F WH rose=0st endDelta=-3.0st want=fall OK "So what is different?"
+§NARR_FIT c2 cue=0.00 room=998.70 dur=15.59 -> DETAIL slack=+983.11 words=44
+§NARR_TONE c2#0 F YN rose=5.0st endDelta=+1.6st want=rise OK "Do the checks block a bad commit?"
+§NARR_FIT c3 cue=0.00 room=998.70 dur=16.72 -> DETAIL slack=+981.98 words=47
+§NARR_TONE c3#0 F YN rose=5.0st endDelta=+1.8st want=rise OK "And the numbers in your own README?"
+§NARR_TONE c3#2 F YN rose=5.0st endDelta=+2.3st want=rise OK "Fixed?"
+§NARR_FIT c5 cue=0.00 room=998.70 dur=26.12 -> DETAIL slack=+972.58 words=65
+§NARR_TONE c5#0 F YN rose=5.0st endDelta=+1.1st want=rise OK "No server means nothing to attack?"
+§NARR_TONE c5#2 F YN rose=5.0st endDelta=+3.2st want=rise OK "And for a newcomer?"
+§NARR_FIT aid cue=0.00 room=998.70 dur=14.33 -> DETAIL slack=+984.37 words=42
+§NARR_TONE aid#0 F YN rose=5.0st endDelta=+1.9st want=rise OK "Goes away?"
+§NARR_FIT roadmap cue=0.00 room=998.70 dur=10.26 -> DETAIL slack=+988.44 words=30
+§NARR_TONE roadmap#0 F WH rose=0st endDelta=-2.9st want=fall OK "What is not built yet?"
+§NARR_FIT close cue=0.00 room=998.70 dur=16.51 -> DETAIL slack=+982.19 words=49
+§NARR_TONE close#0 F YN rose=8.0st endDelta=+2.2st want=rise OK "So, does vibe coding work?"
+§NARR_TONE close#2 F WH rose=0st endDelta=-4.9st want=fall OK "Where do I read more?"

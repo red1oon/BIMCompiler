@@ -1,0 +1,15 @@
+§STACK_SIZE commit=aa427638 date=2026-11-18
+§STACK_SIZE set=app_js files=1034 lines=316459 MB=23.9
+§STACK_SIZE set=app_html files=63 lines=38665 MB=3.1
+§STACK_SIZE set=vendored_js files=131 lines=421186 MB=30.2
+§STACK_SIZE set=witness_js files=2151 lines=288521 MB=23.8
+§STACK_SIZE witness_named_files=1442
+§STACK_SIZE set=devtools files=57 lines=5968 MB=0.5
+§STACK_SIZE set=scripts files=138 lines=18176 MB=1.4
+§STACK_SIZE set=tracked_db files=29 lines=0 MB=203.2
+§STACK_SIZE set=whole_tree files=4730 lines=1087977 MB=539.8
+§STACK_SIZE app_lines_with_section_sign=22722
+§STACK_SIZE precache sw=viewer/sw.js entries=296 version=v1742
+§STACK_SIZE precache sw=erp/sw.js entries=411 version=v1101
+§STACK_SIZE precache sw=modeller/sw.js entries=164 version=v286
+§STACK_SIZE precache_entries_pointing_at_tests=0

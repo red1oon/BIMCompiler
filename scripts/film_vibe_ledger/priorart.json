@@ -1,0 +1,15 @@
+{
+ "note": "Only sources this film READ (saved in out/prior/ on 2026-11-18). Each row names where it was read and a text that must be in that copy; guard.js check P fails a row whose text is not there. Nothing from memory; none claims to be first.",
+ "items": [
+  { "name": "Stack Overflow Developer Survey 2025, AI", "where": { "url": "https://survey.stackoverflow.co/2025/ai", "saved": "out/prior/so2025_ai.html", "text": "More developers actively distrust the accuracy of AI tools (46%) than trust it (33%)" },
+    "does": "asks developers how far they trust AI output", "took": "the industry's own doubt, in its own numbers" },
+  { "name": "Veracode, 2025 GenAI Code Security Report", "where": { "url": "https://www.veracode.com/resources/analyst-reports/2025-genai-code-security-report/", "saved": "out/prior/veracode2025.html", "text": "AI-generated code introduced risky security flaws in 45% of tests" },
+    "does": "tests AI-written code for security flaws", "took": "why every claim here needs an outside check" },
+  { "name": "iDempiere source (local checkout)", "where": { "path": "IDEM", "text": "org.adempiere.base" },
+    "does": "the legacy Java ERP, on a server with PostgreSQL", "took": "the oracle: the fold must give the same books" },
+  { "name": "Odoo requirements.txt · Frappe pyproject.toml", "where": { "saved": "out/prior/odoo_requirements.txt", "text": "psycopg2" },
+    "does": "the peers' own dependency files", "took": "their books need a database server" },
+  { "name": "GitHub languages API", "where": { "saved": "out/prior/gh_lang_odoo.json", "text": "JavaScript" },
+    "does": "byte counts per language for each repo", "took": "the language shares on the chart" }
+ ]
+}

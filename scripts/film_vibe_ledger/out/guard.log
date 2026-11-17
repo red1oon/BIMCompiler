@@ -1,0 +1,35 @@
+§GUARD V voice
+  OK   V narration: 18 beats, 28 spoken facts, 0 bad; the plain idiom "one" used 8 times
+  OK   V red control: a planted "seventeen thousand" is caught (2)
+§GUARD S sources
+  OK   S commits=3514 is in out/cmd_after.txt
+  OK   S erp.june=243 is in out/cmd_v1.txt
+  OK   S witness.files=1492 is in out/cmd_v2.txt
+  OK   S size.app_js.files=1034 is in out/cmd_s1.txt
+  OK   S size.app_js.lines=316459 is in out/cmd_s1.txt
+  OK   S size.app_html.files=63 is in out/cmd_s1.txt
+  OK   S size.app_html.lines=38665 is in out/cmd_s1.txt
+  OK   S size.witness_js.files=2151 is in out/cmd_s1.txt
+  OK   S size.witness_js.lines=288521 is in out/cmd_s1.txt
+  OK   S size.vendored_js.files=131 is in out/cmd_s1.txt
+  OK   S size.vendored_js.lines=421186 is in out/cmd_s1.txt
+  OK   S ci.named=16 is in out/cmd_c2.txt
+  OK   S idem.lines=1427147 is in out/cmd_l1.txt
+§GUARD D cards
+  OK   D 839 stills, every digit group is a fact or a declared literal (18 literals) — 0 not
+  OK   D red control: a planted "9,876" on a card is caught
+§GUARD P prior art
+  OK   P Stack Overflow Developer Survey 2025, AI: "More developers actively distrust the accuracy of AI tools (" is in out/prior/so2025_ai.html
+  OK   P Veracode, 2025 GenAI Code Security Report: "AI-generated code introduced risky security flaws in 45% of " is in out/prior/veracode2025.html
+  OK   P iDempiere source (local checkout): "org.adempiere.base" is in the iDempiere tree
+  OK   P Odoo requirements.txt · Frappe pyproject.toml: "psycopg2" is in out/prior/odoo_requirements.txt
+  OK   P GitHub languages API: "JavaScript" is in out/prior/gh_lang_odoo.json
+§GUARD credentials
+  OK   PR BIMCompiler#905 (outside assessment, fact-checked) MERGED
+  OK   PR BIMCompiler#925 (README counts) MERGED
+  OK   PR BIMCompiler#933 (scale check + peers) MERGED
+  OK   PR bim-ootb#3229 (README counts) MERGED
+  OK   PR bim-ootb#3234 (CI witness wording) MERGED
+  OK   PR BIMCompiler#923 (When AI Dies film) MERGED
+§FILM_GUIDE url=https://red1oon.github.io/BIMCompiler/VibeProgramming/#2026-11-an-outside-assessment-fact-checked http=200 anchor=Y
+§FILM_GUARD VERDICT PASS bad=0

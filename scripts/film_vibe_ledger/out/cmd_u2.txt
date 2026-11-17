@@ -1,0 +1,2 @@
+$ node erp/tests/witness_roster_verify.js | tail -1
+🟢 W-ROSTER-VERIFY ALL PASS

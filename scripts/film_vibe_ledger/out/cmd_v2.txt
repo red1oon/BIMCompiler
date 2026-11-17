@@ -1,0 +1,2 @@
+$ git ls-files | grep -cE 'witness[^/]*\.js$'
+1492
