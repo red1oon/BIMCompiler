@@ -1,0 +1,858 @@
+{
+ "made": "2026-11-17T19:16:10.898Z",
+ "ootb": "c6a1631c",
+ "states": {
+  "tree:": {
+   "firstFrame": 6,
+   "step": "start",
+   "kind": "tree",
+   "path": [],
+   "key": "tree:",
+   "file": "erp/tree_.png",
+   "clip": {
+    "x": 0,
+    "y": 87,
+    "width": 356.515625,
+    "height": 412
+   },
+   "dom": {
+    "names": [
+     "System Admin",
+     "Application Dictionary",
+     "Partner Relations",
+     "Quote-to-Invoice (Sales)",
+     "Requisition-to-Invoice (Purchasing)",
+     "Returns",
+     "Open Items (Financial Movements and Aging)",
+     "Material Management and Pricing",
+     "Project Management",
+     "Performance Analysis and Accounting",
+     "Assets",
+     "Manufacturing",
+     "Maintenance Request",
+     "Cost Center",
+     "Department"
+    ],
+    "rowsY": [
+     0,
+     26,
+     52,
+     78,
+     104,
+     130,
+     156,
+     182,
+     208,
+     234,
+     260,
+     286,
+     312,
+     338,
+     365
+    ],
+    "clip": [
+     0,
+     97,
+     336.515625,
+     392
+    ],
+    "children": [
+     "System Admin",
+     "Application Dictionary",
+     "Partner Relations",
+     "Quote-to-Invoice (Sales)",
+     "Requisition-to-Invoice (Purchasing)",
+     "Returns",
+     "Open Items (Financial Movements and Aging)",
+     "Material Management and Pricing",
+     "Project Management",
+     "Performance Analysis and Accounting",
+     "Assets",
+     "Manufacturing",
+     "Maintenance Request",
+     "Cost Center",
+     "Department"
+    ]
+   },
+   "pageErrors": [],
+   "px": [
+    713,
+    824
+   ]
+  },
+  "tree:Quote-to-Invoice (Sales)": {
+   "firstFrame": 26,
+   "step": "quote",
+   "kind": "tree",
+   "path": [
+    "Quote-to-Invoice (Sales)"
+   ],
+   "key": "tree:Quote-to-Invoice (Sales)",
+   "file": "erp/tree_Quote_to_Invoice_Sales_.png",
+   "clip": {
+    "x": 0,
+    "y": 165,
+    "width": 356.515625,
+    "height": 202
+   },
+   "dom": {
+    "names": [
+     "Quote-to-Invoice (Sales)",
+     "Sales and Marketing",
+     "Sales Orders",
+     "Shipments",
+     "Sales Invoices",
+     "Invoice Inquiry",
+     "Sales Management"
+    ],
+    "rowsY": [
+     0,
+     26,
+     52,
+     78,
+     104,
+     130,
+     156
+    ],
+    "clip": [
+     0,
+     175,
+     336.515625,
+     182
+    ],
+    "children": [
+     "Sales and Marketing",
+     "Sales Orders",
+     "Shipments",
+     "Sales Invoices",
+     "Invoice Inquiry",
+     "Sales Management"
+    ]
+   },
+   "pageErrors": [],
+   "px": [
+    713,
+    404
+   ]
+  },
+  "tree:Quote-to-Invoice (Sales)/Sales Orders": {
+   "firstFrame": 47,
+   "step": "orders",
+   "kind": "tree",
+   "path": [
+    "Quote-to-Invoice (Sales)",
+    "Sales Orders"
+   ],
+   "key": "tree:Quote-to-Invoice (Sales)/Sales Orders",
+   "file": "erp/tree_Quote_to_Invoice_Sales_Sales_Orders.png",
+   "clip": {
+    "x": 0,
+    "y": 217,
+    "width": 356.515625,
+    "height": 391
+   },
+   "dom": {
+    "names": [
+     "Sales Orders",
+     "Sales Order",
+     "Order Detail",
+     "Open Orders",
+     "Order Transactions",
+     "Quote convert",
+     "RePrice Order/Invoice",
+     "Generate PO from Sales Order",
+     "Reopen Order",
+     "Order Batch Process",
+     "POS Key Layout",
+     "POS Key Generate",
+     "POS Terminal",
+     "POS Payment"
+    ],
+    "rowsY": [
+     0,
+     26,
+     53,
+     80,
+     107,
+     134,
+     160,
+     186,
+     212,
+     238,
+     264,
+     291,
+     317,
+     344
+    ],
+    "clip": [
+     0,
+     227,
+     336.515625,
+     371
+    ],
+    "children": [
+     "Sales Order",
+     "Order Detail",
+     "Open Orders",
+     "Order Transactions",
+     "Quote convert",
+     "RePrice Order/Invoice",
+     "Generate PO from Sales Order",
+     "Reopen Order",
+     "Order Batch Process",
+     "POS Key Layout",
+     "POS Key Generate",
+     "POS Terminal",
+     "POS Payment"
+    ]
+   },
+   "pageErrors": [],
+   "px": [
+    713,
+    782
+   ]
+  },
+  "win": {
+   "firstFrame": 67,
+   "step": "window",
+   "kind": "win",
+   "key": "win",
+   "file": "erp/win.png",
+   "clip": {
+    "x": 327.515625,
+    "y": 36,
+    "width": 1042.484375,
+    "height": 138
+   },
+   "dom": {
+    "tabs": [
+     "Order",
+     "Order Line",
+     "Order Tax",
+     "Payment Schedule",
+     "POS Payment"
+    ],
+    "clip": [
+     337.515625,
+     46,
+     1022.484375,
+     118
+    ]
+   },
+   "pageErrors": [],
+   "px": [
+    2085,
+    276
+   ]
+  },
+  "rec:0": {
+   "firstFrame": 77,
+   "step": "record",
+   "kind": "rec",
+   "number": "80000",
+   "opn": 0,
+   "key": "rec:0",
+   "file": "erp/rec_0.png",
+   "clip": {
+    "x": 341.515625,
+    "y": 168,
+    "width": 780,
+    "height": 106
+   },
+   "dom": {
+    "chip": "Completed · CO",
+    "chipClass": "chip st-CO",
+    "buttons": [
+     "Close",
+     "Void",
+     "Re-Activate"
+    ],
+    "grandTotal": "50.35",
+    "clip": [
+     351.515625,
+     178,
+     760,
+     86
+    ],
+    "rec": "Record 1 of 1"
+   },
+   "pageErrors": [],
+   "px": [
+    1560,
+    212
+   ],
+   "door": {
+    "docStatus": "CO",
+    "codes": [
+     "CL",
+     "VO",
+     "RE"
+    ]
+   }
+  },
+  "rec:86": {
+   "firstFrame": 91,
+   "step": "re",
+   "kind": "rec",
+   "number": "80000",
+   "opn": 86,
+   "key": "rec:86",
+   "file": "erp/rec_86.png",
+   "clip": {
+    "x": 341.515625,
+    "y": 168,
+    "width": 780,
+    "height": 106
+   },
+   "dom": {
+    "chip": "In Progress · IP",
+    "chipClass": "chip st-IP",
+    "buttons": [
+     "Complete",
+     "Prepare",
+     "Void"
+    ],
+    "grandTotal": "50.35",
+    "clip": [
+     351.515625,
+     178,
+     760,
+     86
+    ],
+    "rec": "Record 1 of 1"
+   },
+   "pageErrors": [],
+   "px": [
+    1560,
+    212
+   ],
+   "door": {
+    "docStatus": "IP",
+    "codes": [
+     "CO",
+     "PR",
+     "VO"
+    ]
+   }
+  },
+  "rec:145": {
+   "firstFrame": 100,
+   "step": "co",
+   "kind": "rec",
+   "number": "80000",
+   "opn": 145,
+   "key": "rec:145",
+   "file": "erp/rec_145.png",
+   "clip": {
+    "x": 341.515625,
+    "y": 168,
+    "width": 780,
+    "height": 106
+   },
+   "dom": {
+    "chip": "Completed · CO",
+    "chipClass": "chip st-CO",
+    "buttons": [
+     "Close",
+     "Void",
+     "Re-Activate"
+    ],
+    "grandTotal": "50.35",
+    "clip": [
+     351.515625,
+     178,
+     760,
+     86
+    ],
+    "rec": "Record 1 of 1"
+   },
+   "pageErrors": [],
+   "px": [
+    1560,
+    212
+   ],
+   "door": {
+    "docStatus": "CO",
+    "codes": [
+     "CL",
+     "VO",
+     "RE"
+    ]
+   }
+  },
+  "rec:215": {
+   "firstFrame": 117,
+   "step": "hist",
+   "kind": "rec",
+   "number": "80000",
+   "opn": 215,
+   "key": "rec:215",
+   "file": "erp/rec_215.png",
+   "clip": {
+    "x": 341.515625,
+    "y": 168,
+    "width": 780,
+    "height": 106
+   },
+   "dom": {
+    "chip": "In Progress · IP",
+    "chipClass": "chip st-IP",
+    "buttons": [
+     "Complete",
+     "Prepare",
+     "Void"
+    ],
+    "grandTotal": "50.35",
+    "clip": [
+     351.515625,
+     178,
+     760,
+     86
+    ],
+    "rec": "Record 1 of 1"
+   },
+   "pageErrors": [],
+   "px": [
+    1560,
+    212
+   ],
+   "door": {
+    "docStatus": "IP",
+    "codes": [
+     "CO",
+     "PR",
+     "VO"
+    ]
+   }
+  }
+ },
+ "frameState": [
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  "tree:",
+  "tree:",
+  "tree:",
+  "tree:",
+  "tree:",
+  "tree:",
+  "tree:",
+  "tree:",
+  "tree:",
+  "tree:",
+  "tree:",
+  "tree:",
+  "tree:",
+  "tree:",
+  "tree:",
+  "tree:",
+  "tree:",
+  "tree:",
+  "tree:",
+  "tree:",
+  "tree:Quote-to-Invoice (Sales)",
+  "tree:Quote-to-Invoice (Sales)",
+  "tree:Quote-to-Invoice (Sales)",
+  "tree:Quote-to-Invoice (Sales)",
+  "tree:Quote-to-Invoice (Sales)",
+  "tree:Quote-to-Invoice (Sales)",
+  "tree:Quote-to-Invoice (Sales)",
+  "tree:Quote-to-Invoice (Sales)",
+  "tree:Quote-to-Invoice (Sales)",
+  "tree:Quote-to-Invoice (Sales)",
+  "tree:Quote-to-Invoice (Sales)",
+  "tree:Quote-to-Invoice (Sales)",
+  "tree:Quote-to-Invoice (Sales)",
+  "tree:Quote-to-Invoice (Sales)",
+  "tree:Quote-to-Invoice (Sales)",
+  "tree:Quote-to-Invoice (Sales)",
+  "tree:Quote-to-Invoice (Sales)",
+  "tree:Quote-to-Invoice (Sales)",
+  "tree:Quote-to-Invoice (Sales)",
+  "tree:Quote-to-Invoice (Sales)",
+  "tree:Quote-to-Invoice (Sales)",
+  "tree:Quote-to-Invoice (Sales)/Sales Orders",
+  "tree:Quote-to-Invoice (Sales)/Sales Orders",
+  "tree:Quote-to-Invoice (Sales)/Sales Orders",
+  "tree:Quote-to-Invoice (Sales)/Sales Orders",
+  "tree:Quote-to-Invoice (Sales)/Sales Orders",
+  "tree:Quote-to-Invoice (Sales)/Sales Orders",
+  "tree:Quote-to-Invoice (Sales)/Sales Orders",
+  "tree:Quote-to-Invoice (Sales)/Sales Orders",
+  "tree:Quote-to-Invoice (Sales)/Sales Orders",
+  "tree:Quote-to-Invoice (Sales)/Sales Orders",
+  "tree:Quote-to-Invoice (Sales)/Sales Orders",
+  "tree:Quote-to-Invoice (Sales)/Sales Orders",
+  "tree:Quote-to-Invoice (Sales)/Sales Orders",
+  "tree:Quote-to-Invoice (Sales)/Sales Orders",
+  "tree:Quote-to-Invoice (Sales)/Sales Orders",
+  "tree:Quote-to-Invoice (Sales)/Sales Orders",
+  "tree:Quote-to-Invoice (Sales)/Sales Orders",
+  "tree:Quote-to-Invoice (Sales)/Sales Orders",
+  "tree:Quote-to-Invoice (Sales)/Sales Orders",
+  "tree:Quote-to-Invoice (Sales)/Sales Orders",
+  "win",
+  "win",
+  "win",
+  "win",
+  "win",
+  "win",
+  "win",
+  "win",
+  "win",
+  "win",
+  "rec:0",
+  "rec:0",
+  "rec:0",
+  "rec:0",
+  "rec:0",
+  "rec:0",
+  "rec:0",
+  "rec:0",
+  "rec:0",
+  "rec:0",
+  "rec:0",
+  "rec:0",
+  "rec:0",
+  "rec:0",
+  "rec:86",
+  "rec:86",
+  "rec:86",
+  "rec:86",
+  "rec:86",
+  "rec:86",
+  "rec:86",
+  "rec:86",
+  "rec:86",
+  "rec:145",
+  "rec:145",
+  "rec:145",
+  "rec:145",
+  "rec:145",
+  "rec:145",
+  "rec:145",
+  "rec:145",
+  "rec:145",
+  "rec:145",
+  "rec:145",
+  "rec:145",
+  "rec:145",
+  "rec:145",
+  "rec:145",
+  "rec:145",
+  "rec:145",
+  "rec:215",
+  "rec:215",
+  "rec:215",
+  "rec:215",
+  "win",
+  "win",
+  "tree:Quote-to-Invoice (Sales)/Sales Orders"
+ ],
+ "menu": {
+  "root": 15,
+  "quote": 6,
+  "orders": 13
+ },
+ "record": {
+  "number": "80000",
+  "tabs": 4,
+  "may": [
+   "CL",
+   "VO",
+   "RE"
+  ],
+  "tabCodes": [
+   "CL",
+   "VO",
+   "RE"
+  ]
+ },
+ "re": {
+  "action": "red1 menu/Quote-to-Invoice (Sales)/Sales Orders/Order/80000> do RE\n→ erp.reactivate kind=Order id=100\nok · erp.reactivate · 890 ms\nRe-activate",
+  "number": "80000",
+  "from": "CO",
+  "to": "IP",
+  "toName": "In Progress",
+  "related": "Invoice 2 (RE 2) · Shipment/Receipt 2 (RE 2)",
+  "changes": 86,
+  "next": [
+   "CO",
+   "PR",
+   "VO"
+  ],
+  "ms": 890,
+  "json": false,
+  "relCounts": [
+   {
+    "kind": "Invoice",
+    "n": 2
+   },
+   {
+    "kind": "Shipment/Receipt",
+    "n": 2
+   }
+  ]
+ },
+ "co": {
+  "action": "red1 menu/Quote-to-Invoice (Sales)/Sales Orders/Order/80000> do CO\n→ erp.complete kind=Order id=100\nok · erp.complete · 916 ms\nComplete",
+  "number": "80000",
+  "from": "IP",
+  "to": "CO",
+  "toName": "Completed",
+  "related": "Invoice 3 (RE 2, CO 1) · Shipment/Receipt 3 (RE 2, CO 1)",
+  "changes": 59,
+  "next": [
+   "CL",
+   "VO",
+   "RE"
+  ],
+  "ms": 916,
+  "json": false
+ },
+ "bang": {
+  "action": "red1 menu/Quote-to-Invoice (Sales)/Sales Orders/Order/80000> history 3\n   5  cd 100\n   6  do RE\n   7  do CO\nred1 menu/Quote-to-Invoice (Sales)/Sales Orders/Order/80000> !6\n→ do RE\n→ erp.reactivate kind=Order id=100\nok · erp.reactivate · 916 ms\nRe-activate",
+  "number": "80000",
+  "from": "CO",
+  "to": "IP",
+  "toName": "In Progress",
+  "related": "Invoice 4 (RE 4) · Shipment/Receipt 4 (RE 4)",
+  "changes": 70,
+  "next": [
+   "CO",
+   "PR",
+   "VO"
+  ],
+  "ms": 916,
+  "json": false
+ },
+ "hist": {
+  "n": "6",
+  "echoed": true
+ },
+ "zoom": [
+  {
+   "from": "tree:",
+   "to": "tree:Quote-to-Invoice (Sales)",
+   "share": 1,
+   "why": "another region (another folder)"
+  },
+  {
+   "from": "tree:Quote-to-Invoice (Sales)",
+   "to": "tree:Quote-to-Invoice (Sales)/Sales Orders",
+   "share": 1,
+   "why": "another region (another folder)"
+  },
+  {
+   "from": "tree:Quote-to-Invoice (Sales)/Sales Orders",
+   "to": "win",
+   "share": 1,
+   "why": "another region"
+  },
+  {
+   "from": "win",
+   "to": "rec:0",
+   "share": 1,
+   "why": "another region"
+  },
+  {
+   "from": "rec:0",
+   "to": "rec:86",
+   "share": 0.0542,
+   "sameSize": true
+  },
+  {
+   "from": "rec:86",
+   "to": "rec:145",
+   "share": 0.0542,
+   "sameSize": true
+  },
+  {
+   "from": "rec:145",
+   "to": "rec:215",
+   "share": 0.0542,
+   "sameSize": true
+  }
+ ],
+ "proof": [
+  {
+   "name": "red1_container",
+   "pass": 10,
+   "fail": 0,
+   "inconclusive": 0,
+   "verdict": "PASS"
+  },
+  {
+   "name": "red1_bang",
+   "pass": 3,
+   "fail": 0,
+   "inconclusive": 0,
+   "verdict": "PASS"
+  },
+  {
+   "name": "red1_record",
+   "pass": 10,
+   "fail": 0,
+   "inconclusive": 0,
+   "verdict": "PASS"
+  },
+  {
+   "name": "red1_act",
+   "pass": 3,
+   "fail": 0,
+   "inconclusive": 0,
+   "verdict": "PASS"
+  }
+ ],
+ "a5": {
+  "cases": {
+   "SO-STD-137x2-RE": {
+    "match": 17,
+    "n": 17
+   },
+   "SO-POS-137x1-RE": {
+    "match": 17,
+    "n": 17
+   }
+  },
+  "base": "http://localhost:8088",
+  "fields": 17,
+  "allMatch": true
+ },
+ "credits": {
+  "licence": "MIT License",
+  "copyright": "Copyright (c) 2026 Redhuan D. Oon"
+ },
+ "costs": {
+  "re": 890,
+  "co": 916,
+  "bang": 916,
+  "node": "v18.19.1",
+  "lines": 10,
+  "linesMs": 6435
+ },
+ "checks": {
+  "bad": 0,
+  "missing": 0,
+  "list": [
+   {
+    "id": "F1 the door lines the film ran: 10, all ok but the two `cd 100` tries the shell makes before the id (describe \"100\", number \"100\")",
+    "ok": "OK",
+    "info": "not ok: [\"mis.describe error\",\"mis.read refused\"]"
+   },
+   {
+    "id": "F2 every action answered ok and drew its summary, never the JSON: re, co, !6",
+    "ok": "OK",
+    "info": "[\"IP\",\"CO\",\"IP\"]"
+   },
+   {
+    "id": "F3 the record offers what its `it may do` line says, and Tab lists the same codes in the same order",
+    "ok": "OK",
+    "info": "[\"CL\",\"VO\",\"RE\"] vs Tab [\"CL\",\"VO\",\"RE\"]"
+   },
+   {
+    "id": "F4 `history` numbered `do RE` and `!6` printed the expanded line before it ran",
+    "ok": "OK",
+    "info": "{\"n\":\"6\",\"echoed\":true}"
+   },
+   {
+    "id": "I isolation: the film's 20 journalled lines are in the scratch journal only, ~/.cache/bim_object unchanged",
+    "ok": "OK",
+    "info": "leaked=0"
+   },
+   {
+    "id": "H no grey suggestion is left on a finished line (§46 A2), over every answer screen",
+    "ok": "OK",
+    "info": "0 []"
+   },
+   {
+    "id": "P tree: the page's folder rows = the shell's listed entries",
+    "ok": "OK",
+    "info": "15 shell vs 15 page"
+   },
+   {
+    "id": "P tree:Quote-to-Invoice (Sales) the page's folder rows = the shell's listed entries",
+    "ok": "OK",
+    "info": "6 shell vs 6 page"
+   },
+   {
+    "id": "P tree:Quote-to-Invoice (Sales)/Sales Orders the page's folder rows = the shell's listed entries",
+    "ok": "OK",
+    "info": "13 shell vs 13 page"
+   },
+   {
+    "id": "P win the window's tabs = Order + the record's child tabs the shell names",
+    "ok": "OK",
+    "info": "[\"Order\",\"Order Line\",\"Order Tax\",\"Payment Schedule\",\"POS Payment\"] vs [\"Order\",\"Order Line\",\"Order Tax\",\"Payment Schedule\",\"POS Payment\"]"
+   },
+   {
+    "id": "P rec:0 the page's status pill = the door's DocStatus (CO), and its action buttons = the shell's `it may do` (CL,VO,RE)",
+    "ok": "OK",
+    "info": "Completed · CO [\"Close\",\"Void\",\"Re-Activate\"]"
+   },
+   {
+    "id": "P rec:86 the page's status pill = the door's DocStatus (IP), and its action buttons = the shell's `it may do` (CO,PR,VO)",
+    "ok": "OK",
+    "info": "In Progress · IP [\"Complete\",\"Prepare\",\"Void\"]"
+   },
+   {
+    "id": "P rec:145 the page's status pill = the door's DocStatus (CO), and its action buttons = the shell's `it may do` (CL,VO,RE)",
+    "ok": "OK",
+    "info": "Completed · CO [\"Close\",\"Void\",\"Re-Activate\"]"
+   },
+   {
+    "id": "P rec:215 the page's status pill = the door's DocStatus (IP), and its action buttons = the shell's `it may do` (CO,PR,VO)",
+    "ok": "OK",
+    "info": "In Progress · IP [\"Complete\",\"Prepare\",\"Void\"]"
+   },
+   {
+    "id": "Z tree: -> tree:Quote-to-Invoice (Sales) the lower frame changed",
+    "ok": "OK",
+    "info": "100.00% of pixels (another region (another folder))"
+   },
+   {
+    "id": "Z tree:Quote-to-Invoice (Sales) -> tree:Quote-to-Invoice (Sales)/Sales Orders the lower frame changed",
+    "ok": "OK",
+    "info": "100.00% of pixels (another region (another folder))"
+   },
+   {
+    "id": "Z tree:Quote-to-Invoice (Sales)/Sales Orders -> win the lower frame changed",
+    "ok": "OK",
+    "info": "100.00% of pixels (another region)"
+   },
+   {
+    "id": "Z win -> rec:0 the lower frame changed",
+    "ok": "OK",
+    "info": "100.00% of pixels (another region)"
+   },
+   {
+    "id": "Z rec:0 -> rec:86 the lower frame changed",
+    "ok": "OK",
+    "info": "5.42% of pixels"
+   },
+   {
+    "id": "Z rec:86 -> rec:145 the lower frame changed",
+    "ok": "OK",
+    "info": "5.42% of pixels"
+   },
+   {
+    "id": "Z rec:145 -> rec:215 the lower frame changed",
+    "ok": "OK",
+    "info": "5.42% of pixels"
+   },
+   {
+    "id": "A5 the re-activate parity log in the checkout: every case MATCH on every field",
+    "ok": "OK",
+    "info": "{\"SO-STD-137x2-RE\":{\"match\":17,\"n\":17},\"SO-POS-137x1-RE\":{\"match\":17,\"n\":17}}"
+   },
+   {
+    "id": "W the witnesses run during this build all PASS",
+    "ok": "OK",
+    "info": "red1_container 10/0 PASS · red1_bang 3/0 PASS · red1_record 10/0 PASS · red1_act 3/0 PASS"
+   }
+  ]
+ }
+}

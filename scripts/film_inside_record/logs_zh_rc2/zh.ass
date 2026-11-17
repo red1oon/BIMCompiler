@@ -1,0 +1,47 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1920
+PlayResY: 1080
+WrapStyle: 0
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: F,Noto Sans CJK SC,46,&H00B4F0FF,&H00FFFFFF,&H90000000,&H00000000,0,0,0,0,100,100,0,0,1,2.6,0,2,260,260,48,1
+Style: M,Noto Sans CJK SC,46,&H00FFE6B4,&H00FFFFFF,&H90000000,&H00000000,0,0,0,0,100,100,0,0,1,2.6,0,2,260,260,48,1
+Style: Credit,Noto Sans CJK SC,30,&H00DDDDDD,&H00FFFFFF,&H90000000,&H00000000,0,1,0,0,100,100,0,0,1,2,0,8,200,200,36,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:04.97,0:00:06.60,F,start#0,0,0,0,,又回到 red one 了？
+Dialogue: 0,0:00:06.47,0:00:10.41,M,start#1,0,0,0,,对。这次我们走进一张订单的里面。
+Dialogue: 0,0:00:15.80,0:00:18.85,F,menu#0,0,0,0,,不知道窗口的名字，也能找到它吗？
+Dialogue: 0,0:00:18.72,0:00:20.20,M,menu#1,0,0,0,,输入 menu。
+Dialogue: 0,0:00:20.20,0:00:23.15,M,menu#1,0,0,0,,这就是 E R P 自己的菜单，
+Dialogue: 0,0:00:23.15,0:00:26.28,M,menu#1,0,0,0,,变成了一个个位置：最上层有十五项。
+Dialogue: 0,0:00:29.76,0:00:33.50,M,quote#0,0,0,0,,cd 进入一个文件夹，名字的开头就够了。
+Dialogue: 0,0:00:33.37,0:00:34.48,F,quote#1,0,0,0,,有六项。
+Dialogue: 0,0:00:40.22,0:00:43.33,M,orders#0,0,0,0,,Sales Orders 里有十三项。
+Dialogue: 0,0:00:43.33,0:00:47.10,M,orders#0,0,0,0,,下面的 E R P 窗口打开的是同一个文件夹。
+Dialogue: 0,0:00:51.26,0:00:54.94,M,window#0,0,0,0,,窗口打开它的类型，提示符保留着路径。
+Dialogue: 0,0:01:03.59,0:01:05.06,F,record#0,0,0,0,,那一张订单呢？
+Dialogue: 0,0:01:04.93,0:01:08.82,M,record#1,0,0,0,,cd 加上它的编号。它可以做三件事：
+Dialogue: 0,0:01:08.82,0:01:11.20,M,record#1,0,0,0,,关闭、作废、重新激活。
+Dialogue: 0,0:01:11.20,0:01:13.57,M,record#1,0,0,0,,Tab 只提供这几项，
+Dialogue: 0,0:01:13.57,0:01:15.95,M,record#1,0,0,0,,顺序和窗口的按钮一样。
+Dialogue: 0,0:01:18.93,0:01:22.02,F,re#0,0,0,0,,上次，重新激活还没有命令。
+Dialogue: 0,0:01:21.89,0:01:22.83,M,re#1,0,0,0,,现在有了。
+Dialogue: 0,0:01:22.83,0:01:26.77,M,re#1,0,0,0,,它从旧版 i Dempiere 逐行移植，
+Dialogue: 0,0:01:26.77,0:01:29.58,M,re#1,0,0,0,,并对照正在运行的旧版做了检查：
+Dialogue: 0,0:01:29.58,0:01:32.02,M,re#1,0,0,0,,十七个字段中，十七个相同。
+Dialogue: 0,0:01:32.02,0:01:33.52,M,re#1,0,0,0,,订单回到进行中，
+Dialogue: 0,0:01:33.52,0:01:36.14,M,re#1,0,0,0,,它的发票和发货单都被冲销了。
+Dialogue: 0,0:01:39.38,0:01:40.74,F,co#0,0,0,0,,再完成一次？
+Dialogue: 0,0:01:40.61,0:01:42.87,M,co#1,0,0,0,,do C O。已完成，
+Dialogue: 0,0:01:42.87,0:01:44.92,M,co#1,0,0,0,,用了九百一十六毫秒。
+Dialogue: 0,0:01:50.72,0:01:53.40,F,hist#0,0,0,0,,再来一次，但不用重新输入？
+Dialogue: 0,0:01:53.27,0:01:56.19,M,hist#1,0,0,0,,history 列出输入过的行。
+Dialogue: 0,0:01:56.19,0:01:58.57,M,hist#1,0,0,0,,叹号加六，会再运行那一行，
+Dialogue: 0,0:01:58.57,0:02:00.21,M,hist#1,0,0,0,,并先把它打印出来。
+Dialogue: 0,0:02:06.84,0:02:09.45,M,up#0,0,0,0,,Shift Tab 每次退回一个位置。
+Dialogue: 0,0:02:09.32,0:02:11.56,F,up#1,0,0,0,,走进订单，再走出来。
+Dialogue: 0,0:02:18.42,0:02:26.32,Credit,,0,0,0,,声音：AI 生成（Microsoft Edge TTS，云端）  ·  脚本导演 red1

@@ -49,13 +49,16 @@ CFG={'ms':dict(VOX={'F':'ms-MY-YasminNeural','M':'ms-MY-OsmanNeural'},
      'yue':dict(VOX={'F':'zh-HK-HiuMaanNeural','M':'zh-HK-WanLungNeural'},   # Cantonese (Hong Kong), Traditional script
                WH=r'(咩|乜|點|幾|邊|誰)',pitch=False,font='Noto Sans CJK HK',
                credit='聲音：AI 生成（Microsoft Edge TTS，雲端）  ·  劇本導演 red1')}[LANG]
-VOX=CFG['VOX']; CACHE=os.path.expanduser('~/.local/share/film_narration/cache_edge'); os.makedirs(CACHE,exist_ok=True)
-def tts(txt,voice,sp):
-    rate=f'{round((sp-1)*100):+d}%'; h=hashlib.sha1(f'{txt}|{voice}|{rate}'.encode()).hexdigest(); w=f'{CACHE}/{h}.wav'
+VOX=dict(CFG['VOX']); PITCH={}
+if os.environ.get('EDGE_VOX_F'): VOX['F']=os.environ['EDGE_VOX_F']; print(f'§EDGE_VOX F={VOX["F"]} (EDGE_VOX_F: the configured F voice gave no audio)',flush=True)   # owner 2026-11-18, Thai CH 3: "Accept any voice that works"
+if os.environ.get('EDGE_PITCH_F'): PITCH['F']=os.environ['EDGE_PITCH_F']; print(f'§EDGE_PITCH F={PITCH["F"]} (F told apart from M when both use one voice)',flush=True)
+CACHE=os.path.expanduser('~/.local/share/film_narration/cache_edge'); os.makedirs(CACHE,exist_ok=True)
+def tts(txt,voice,sp,pitch=None):
+    rate=f'{round((sp-1)*100):+d}%'; h=hashlib.sha1((f'{txt}|{voice}|{rate}'+(f'|{pitch}' if pitch else '')).encode()).hexdigest(); w=f'{CACHE}/{h}.wav'   # a pitch is part of the cache key; no pitch = the key of before
     if not os.path.exists(w):
         mp=w[:-4]+'.mp3'
         for attempt in range(8):   # cloud service: NoAudioReceived/hangs are intermittent (Thai 2026-10-13: 2 lines needed up to 6 tries); 30 s timeout per try, then fail loud
-            try: asyncio.run(asyncio.wait_for(edge_tts.Communicate(txt,voice,rate=rate).save(mp),30)); break
+            try: asyncio.run(asyncio.wait_for((edge_tts.Communicate(txt,voice,rate=rate,pitch=pitch) if pitch else edge_tts.Communicate(txt,voice,rate=rate)).save(mp),30)); break
             except (edge_tts.exceptions.NoAudioReceived,asyncio.TimeoutError) as e:
                 print(f'§EDGE_RETRY attempt={attempt+1} voice={voice} text="{txt}"',flush=True)
                 if attempt==7: raise
@@ -115,7 +118,7 @@ def chunks(txt):   # each question sentence voiced alone; runs of other sentence
 def voice(txt,who,sp):
     parts=[];info=[]
     for c in chunks(txt):
-        a=trim(tts(c,VOX[who],sp*SPK[who]))
+        a=trim(tts(c,VOX[who],sp*SPK[who],PITCH.get(who)))
         kind='WH' if c.endswith('?') and WH.search(c) else 'YN' if c.endswith('?') else '!' if c.endswith('!') else '.'
         rose=0
         p0=f0(a); own=end_delta(p0) if len(p0)>=6 else None
