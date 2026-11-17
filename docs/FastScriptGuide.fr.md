@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 6bed12d3a178c1fc
+source_sha: 2f7cdfa52f77c8e0
 lang: fr
 ---
 
@@ -323,7 +323,7 @@ Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls s
 it may do: CL, VO, RE (do <code>; next shows the tree)
 ```
 
-Là, Tab après `do ` ne propose que `CL`, `VO` et `RE` (`RE` réactive la commande : `do RE`), et `run Co` se complète en `"Copy Lines"`, le bouton propre à la fenêtre de commande.
+Là, Tab après `do ` ne propose que `CL`, `VO` et `RE`, dans l'ordre des boutons propres à la fenêtre (Close, Void, Re-Activate ; `RE` réactive la commande : `do RE`), et `run Co` se complète en `"Copy Lines"`, le bouton propre à la fenêtre de commande.
 
 **Parcourir le menu.** `menu` montre le menu ERP comme des lieux : `cd <folder>` y entre (le début de son nom suffit quand une seule entrée commence ainsi), une entrée de fenêtre vous mène à son type, et `cd ..` (ou Shift+Tab) remonte d'un dossier. L'invite montre le chemin. Chaque entrée est marquée : ▸ un dossier (combien d'entrées il contient), W une fenêtre (et sa table), P un processus, R un rapport, X un formulaire, F un flux de travail. `red1 menu` seul ouvre toujours le menu sur un écran entier.
 
@@ -371,6 +371,36 @@ Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd <name> goes in, cd .. goes
 → mis.describe kind=C_Order
 Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
 menu="Quote-to-Invoice (Sales)/Sales Orders" kind=Order
+```
+
+**Du menu à un enregistrement.** Dans un type, `cd <number>` entre dans cet enregistrement et l'invite garde le chemin du menu ; `cd ..` en ressort. Dans l'enregistrement, `do` et `next` le désignent par son id, si bien qu'un numéro que partagent deux enregistrements (ici 80000) ne pose jamais problème. Une action affiche ce qu'elle a fait : le changement de statut, les documents touchés, le nombre de changements conservés et ce que l'enregistrement peut faire maintenant ; Tab après `do ` propose alors ces nouveaux codes. Les listes de dossiers sont omises dans le bloc ci-dessous :
+
+<!-- run: red1_walk_record -->
+```text
+$ rm -f /tmp/fast_guide_walkrec.ops; printf 'menu\ncd Quote\ncd "Sales Orders"\ncd "Sales Order"\ncd 100\npwd\ndo RE\ndo CO\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide_walkrec.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_walkrec.journal node common/door/red1.js 2>/dev/null | sed 's/ · [0-9]* ms//' | grep -vE '^  [▸WRPXF] '
+→ mis.menu
+menu: 15 entries; cd <name> goes in, cd .. goes back
+Quote-to-Invoice (Sales): 6 entries; cd <name> goes in, cd .. goes back
+Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd <name> goes in, cd .. goes back
+→ mis.describe kind=C_Order
+Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
+→ mis.describe kind=100
+→ mis.read kind=Order number=100
+→ mis.read kind=Order id=100
+Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls shows them, cd <tab> opens one, cat reads the record
+→ erp.actions kind=Order id=100
+it may do: CL, VO, RE (do <code>; next shows the tree)
+menu="Quote-to-Invoice (Sales)/Sales Orders" kind=Order id=100
+→ erp.reactivate kind=Order id=100
+ok · erp.reactivate
+Re-activate: done · Order 80000 CO → IP (In Progress) · grand total 50.35
+  related: Invoice 2 (RE 2) · Shipment/Receipt 2 (RE 2)
+86 change(s) kept · it may do: CO, PR, VO
+→ erp.complete kind=Order id=100
+ok · erp.complete
+Complete: done · Order 80000 IP → CO (Completed) · grand total 50.35
+  related: Invoice 3 (RE 2, CO 1) · Shipment/Receipt 3 (RE 2, CO 1)
+59 change(s) kept · it may do: CL, VO, RE
 ```
 
 **Signaler une lacune.** Certaines réponses disent qu'il manque quelque chose à red1, par opposition à une faute de frappe de votre part. Le moteur les marque, et dans une session red1 affiche une ligne après la réponse. Une faute de frappe ou un refus historique n'est pas une lacune et n'affiche rien de plus. `report` montre alors un brouillon (la ligne, la raison, la version de red1, la plateforme, les dernières lignes du journal, vos chemins masqués) et propose un ticket GitHub ou un courriel ; red1 n'envoie rien lui-même, c'est votre navigateur ou votre messagerie qui le fait :
@@ -427,7 +457,7 @@ Les mots ci-dessus sont ceux à apprendre en premier. Les autres, chacun une for
 | `ninja <file>` · `load <file.csv>` · `diff <file.csv>` | préparer un classeur Ninja ou un CSV ; charger des lignes d'un fichier ; comparer un fichier avec les enregistrements |
 | `bim` · `mis` · `erp` | entrer dans un groupe : l'aide, Tab et les suggestions ne proposent que ses mots (`cd ..` ou Shift+Tab en sort) |
 | `menu` | le menu ERP, parcouru comme des dossiers avec `cd` ; `red1 menu` l'ouvre sur un écran entier |
-| `cd Project 990000` · `ls` · `cd Phase` | entrer dans un enregistrement comme dans un lieu : `ls` liste ses onglets avec leur nombre d'enregistrements, `cd <tab>` en ouvre un, `cd ..` remonte |
+| `cd Project 990000` · `cd 100` · `ls` · `cd Phase` | entrer dans un enregistrement comme dans un lieu (`cd <number>` dans son type, aussi depuis le parcours du menu) : `ls` liste ses onglets avec leur nombre d'enregistrements, `cd <tab>` en ouvre un, `cd ..` remonte |
 | `status` | dans un projet : sa valeur acquise (PV, EV, AC, SPI et CPI par phase) |
 | `vo` | dans un bâtiment : l'écart entre le modèle et sa commande de projet, émis comme ordre de modification (Variation Order ; demande y/N ; on l'approuve avec `do CO <number>`) |
 | `claim` | dans un projet : facturer les phases terminées pas encore facturées, un brouillon de facture et l'aperçu de sa comptabilité (demande y/N) |

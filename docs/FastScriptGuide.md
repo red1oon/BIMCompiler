@@ -317,7 +317,7 @@ Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls s
 it may do: CL, VO, RE (do <code>; next shows the tree)
 ```
 
-There Tab after `do ` offers `CL`, `VO` and `RE` only (`RE` re-activates the order: `do RE`), and `run Co` completes to `"Copy Lines"`, the order window's own button.
+There Tab after `do ` offers `CL`, `VO` and `RE` only, in the order of the window's own buttons (Close, Void, Re-Activate; `RE` re-activates the order: `do RE`), and `run Co` completes to `"Copy Lines"`, the order window's own button.
 
 **Walk the menu.** `menu` shows the ERP menu as places: `cd <folder>` goes in (the start of its name is enough when only one entry starts that way), a window entry takes you to its kind, and `cd ..` (or Shift+Tab) goes back up one folder. The prompt shows the path. Each entry is marked: ▸ a folder (how many entries it holds), W a window (and its table), P a process, R a report, X a form, F a workflow. `red1 menu` on its own still opens the menu on a full screen.
 
@@ -365,6 +365,36 @@ Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd <name> goes in, cd .. goes
 → mis.describe kind=C_Order
 Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
 menu="Quote-to-Invoice (Sales)/Sales Orders" kind=Order
+```
+
+**From the menu into a record.** In a kind, `cd <number>` enters that record and the prompt keeps the menu path; `cd ..` steps back out. Inside the record, `do` and `next` name it by its id, so a number that two records share (here 80000) is never a problem. An action prints what it did: the status change, the documents it touched, how many changes it kept, and what the record may do now; Tab after `do ` then offers those new codes. The folder listings are left out of the block below:
+
+<!-- run: red1_walk_record -->
+```text
+$ rm -f /tmp/fast_guide_walkrec.ops; printf 'menu\ncd Quote\ncd "Sales Orders"\ncd "Sales Order"\ncd 100\npwd\ndo RE\ndo CO\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide_walkrec.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_walkrec.journal node common/door/red1.js 2>/dev/null | sed 's/ · [0-9]* ms//' | grep -vE '^  [▸WRPXF] '
+→ mis.menu
+menu: 15 entries; cd <name> goes in, cd .. goes back
+Quote-to-Invoice (Sales): 6 entries; cd <name> goes in, cd .. goes back
+Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd <name> goes in, cd .. goes back
+→ mis.describe kind=C_Order
+Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
+→ mis.describe kind=100
+→ mis.read kind=Order number=100
+→ mis.read kind=Order id=100
+Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls shows them, cd <tab> opens one, cat reads the record
+→ erp.actions kind=Order id=100
+it may do: CL, VO, RE (do <code>; next shows the tree)
+menu="Quote-to-Invoice (Sales)/Sales Orders" kind=Order id=100
+→ erp.reactivate kind=Order id=100
+ok · erp.reactivate
+Re-activate: done · Order 80000 CO → IP (In Progress) · grand total 50.35
+  related: Invoice 2 (RE 2) · Shipment/Receipt 2 (RE 2)
+86 change(s) kept · it may do: CO, PR, VO
+→ erp.complete kind=Order id=100
+ok · erp.complete
+Complete: done · Order 80000 IP → CO (Completed) · grand total 50.35
+  related: Invoice 3 (RE 2, CO 1) · Shipment/Receipt 3 (RE 2, CO 1)
+59 change(s) kept · it may do: CL, VO, RE
 ```
 
 **Report a gap.** Some answers say that red1 lacks something, as opposed to you having mistyped. The engine marks those, and in a session red1 prints one line after the answer. A typo or a legacy refusal is not a gap and prints nothing extra. `report` then shows a draft (the line, the reason, the red1 version, the platform, the last log lines, your paths masked) and offers a GitHub issue or an email; red1 sends nothing itself, your own browser or mail program does:
@@ -421,7 +451,7 @@ The words above are the ones to learn first. The rest, each a short form of a do
 | `ninja <file>` · `load <file.csv>` · `diff <file.csv>` | stage a Ninja workbook or CSV; load rows from a file; compare a file with the records |
 | `bim` · `mis` · `erp` | go into a group: help, Tab and the suggestions offer only its words (`cd ..` or Shift+Tab backs out) |
 | `menu` | the ERP menu, walked like folders with `cd`; `red1 menu` opens it on a full screen |
-| `cd Project 990000` · `ls` · `cd Phase` | enter a record as a place: `ls` lists its tabs with their record counts, `cd <tab>` opens one, `cd ..` goes back up |
+| `cd Project 990000` · `cd 100` · `ls` · `cd Phase` | enter a record as a place (`cd <number>` inside its kind, also from the menu walk): `ls` lists its tabs with their record counts, `cd <tab>` opens one, `cd ..` goes back up |
 | `status` | in a project: its earned value (PV, EV, AC, SPI and CPI per phase) |
 | `vo` | in a building: the change between the model and its Project Order, issued as a Variation Order (asks y/N; approve it with `do CO <number>`) |
 | `claim` | in a project: bill the completed phases not yet billed, a draft invoice and the preview of its accounting (asks y/N) |
