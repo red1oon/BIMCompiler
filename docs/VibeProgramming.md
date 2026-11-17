@@ -34,7 +34,7 @@ The shift is real. These are the numbers the sceptics should weigh:
 | Code suggestions accepted (Copilot) | ~30% | GitHub Blog, 2023-2024 |
 | Developer task completion speed with AI | 55% faster | GitHub/Microsoft Research, 2023 |
 | AI-generated code share in enabled repos | ~46% | GitHub Octoverse 2024 |
-| Code churn (new code revised within 2 weeks) | 3.1% (2020) → 5.7% (2024) → 7.1% (2025) | GitClear, 211M-line study, 2025-2026 reports |
+| Code churn (new code revised within 2 weeks) | 3.1% (2020) → 5.7% (2024) → 7.1% (2025) | GitClear, 211M-line study, 2025-2026 reports (as first cited; the page answered HTTP 403 on 2026-11-18, so not re-checked) |
 
 That churn trajectory is the one that matters — and it kept climbing after this paper first cited it. Adoption went up; stability did not follow. More usage produced more code, written faster, more of which got rewritten within two weeks. This is the central risk — and the central problem this project solved.
 
@@ -52,13 +52,13 @@ The trend data backs the lament:
 
 | Metric | Figure | Source |
 |--------|--------|--------|
-| Developer trust in AI code accuracy | 40% (2024) → 29% (2025) | Stack Overflow Developer Survey 2025 |
-| Developers with a favorable opinion of AI tools | 72% (2024) → 60% (2025) | Stack Overflow Developer Survey 2025 |
+| Developers who distrust vs trust the accuracy of AI tools | 46% distrust · 33% trust (2025) | Stack Overflow Developer Survey 2025, survey.stackoverflow.co/2025/ai (read 2026-11-18; corrects an earlier "40% → 29%" row that page does not contain) |
+| Developers with a positive opinion of AI tools | 70%+ (2023 and 2024) → 60% (2025) | same page (corrects an earlier "72% (2024)") |
 | Cite "almost right, but not quite" as their #1 AI frustration | 45% | Stack Overflow Developer Survey 2025 |
 | Spend more time fixing AI output than writing it themselves | 66% | Stack Overflow Developer Survey 2025 |
-| Copy-pasted code, share of all lines | 8.3% (2020) → 12.3% (2024) | GitClear AI Copilot Code Quality 2025 |
-| Refactored ("moved") code, share of all lines | 24.1% (2020) → 9.5% (2024) | GitClear AI Copilot Code Quality 2025 |
-| AI-generated code samples failing security tests | 45% overall, 72% for Java | Veracode, 100+ LLMs / 80 coding tasks, 2025-2026 |
+| Copy-pasted code, share of all lines | 8.3% (2020) → 12.3% (2024) | GitClear AI Copilot Code Quality 2025 (not re-checked, see above) |
+| Refactored ("moved") code, share of all lines | 24.1% (2020) → 9.5% (2024) | GitClear AI Copilot Code Quality 2025 (not re-checked, see above) |
+| AI-generated code that introduced risky security flaws | in 45% of tests | Veracode, 2025 GenAI Code Security Report page (read 2026-11-18; it names no Java figure, so the earlier "72% for Java" is withdrawn) |
 | Enterprise tech leaders seeing more production issues from AI code | 81% | CloudBees State of Code Abundance 2026 |
 | ...same leaders still confident shipping it anyway | 92% | CloudBees State of Code Abundance 2026 |
 | Fortune 50 monthly AI-code security findings, Dec 2024 → Jun 2025 | ~1,000 → 10,000+ | Apiiro, via Cloud Security Alliance research note 2026 |
@@ -98,7 +98,7 @@ Every compiled building passes through [6 mathematical gates](https://github.com
 
 The AI cannot cheat these gates. G3 alone — a cryptographic digest of the entire output — means a single wrong coordinate in a 48,428-element building fails the build. There is no "close enough."
 
-> **Correction (2026-11-18):** these gates are a *local* discipline, run before committing. No CI job in either repo runs `RosettaStoneGateTest` or the bim-ootb witness suite. CI runs syntax checks, lint, a handful of wiring audits and `scripts/system_is_real.sh`. "Must pass before a commit lands" is a working habit, not a mechanical block.
+> **Correction (2026-11-18):** these gates are a *local* discipline, run before committing. No CI job in either repo runs `RosettaStoneGateTest` or the full bim-ootb witness suite. CI runs syntax checks, lint, wiring audits, `scripts/system_is_real.sh`, and about 20 of bim-ootb's 1,491 witness scripts (X0 Navigator, core purity, the manifest round-trip, the BIM tools; counted from the workflow files 2026-11-18). "Must pass before a commit lands" is a working habit, not a mechanical block.
 
 ### 3. The Drift is tracked, not hidden
 
@@ -185,7 +185,7 @@ The concerns are valid. This project has lived through all of them:
 
 **"AI code drifts from architecture."** Yes. Relentlessly. The AI will invent shortcuts, merge concerns that should be separate, and silently change assumptions. [The Drift](LAST_MILE_PROBLEM.md) exists because this happened dozens of times. The solution is not to stop using AI — it's to build gates that catch the drift before it ships.
 
-**"AI code has more bugs."** True, and getting worse, not better — GitClear's code churn climbed from a 3.1% pre-AI baseline to 7.1% by 2025, and Veracode found 45% of AI-generated samples fail security tests outright (see [2026: The Industry Starts Lamenting "Vibe Slop"](#2026-the-industry-starts-lamenting-vibe-slop) above). This project's answer: 6 gates, 408 tests, 35 reference buildings. The bug rate per shipped line is lower than most hand-written projects because the verification is more rigorous, not because the AI writes better code.
+**"AI code has more bugs."** True, and getting worse, not better — GitClear's code churn climbed from a 3.1% pre-AI baseline to 7.1% by 2025, and Veracode found risky security flaws in 45% of its tests of AI-generated code (see [2026: The Industry Starts Lamenting "Vibe Slop"](#2026-the-industry-starts-lamenting-vibe-slop) above). This project's answer: 6 gates, 408 tests, 35 reference buildings. The bug rate per shipped line is lower than most hand-written projects because the verification is more rigorous, not because the AI writes better code.
 
 **"You don't understand your own codebase."** Partially true. The architect understands the *architecture* — what each module does, how data flows, what correct output looks like. He does not memorise every Java method signature. This is a feature, not a bug: the spec is the source of truth, not the code. If the code drifts from spec, the code is wrong — regardless of what it says internally.
 
@@ -232,19 +232,53 @@ In November 2026 an AI-written assessment of the browser repo, [bim-ootb](https:
 
 What differs from typical vibe coding is what came next. Each failure was written down as a rule that the next session reads, and the faulty check was rebuilt so it can report "nothing judged" instead of passing. Collapse is the default. Here the guardrails catch it, usually on a branch, sometimes later.
 
-**"Geometry verified to 0.000 mm by witness scripts that must pass before any commit lands."** The README makes this claim, but nothing enforces it mechanically. bim-ootb CI runs syntax checks, eslint and a few wiring audits. It does not run the witness suite. In this repo, no CI job runs the G1–G6 `RosettaStoneGateTest`. "Must pass" is a habit kept by each session, and in August a session found that a day of new checks had never been wired into CI at all.
+**"Geometry verified to 0.000 mm by witness scripts that must pass before any commit lands."** The README makes this claim, but nothing enforces it mechanically. bim-ootb CI runs syntax checks, eslint, wiring audits and about 20 of its 1,491 witness scripts (the code-structure and tool checks). The geometry witnesses behind the 0.000 mm claim are not among them. In this repo, no CI job runs the G1–G6 `RosettaStoneGateTest`. "Must pass" is a habit kept by each session, and in August a session found that a day of new checks had never been wired into CI at all.
 
 **"An agent can change one lens without corrupting global state."** The op-log makes state replayable and makes tampering detectable. It does not stop an agent from writing a wrong fold: the master→detail breakage above happened on top of this same log. What keeps changes contained is the rule of one generic engine, not the log by itself.
 
 **"When a module fails, the blast radius stays in that file."** Too strong. Without a build step there is no bundler or dependency tree to break, which is a real gain. But the modules share globals and one service-worker cache list (`viewer/sw.js`). That file is the repo's main source of merge conflicts, and a stale cache version once served old JavaScript to every open tab.
 
-**The numbers.** *"311,000 lines across 331 files"* comes from a stale README table. Measured on 2026-11-18: about 1,050 JS and HTML files and ~353,000 lines of app code (excluding every `tests/` folder, witnesses and third-party libraries), out of ~3,480 files and ~1.08M lines in the whole repo. *"119 BIM + 89 ERP modules"* was a July 2026 count; there are now 236 JS files directly under `viewer/` and 189 under `erp/`. *"1,200+ commits in two months"* holds for the first two months (1,258 commits by 2026-07-23). The total is 3,501 commits in six months.
+**The numbers.** *"311,000 lines across 331 files"* comes from a stale README table. Measured on 2026-11-18 with the project's own `scripts/code_arch/size_stack.sh`: 1,034 app JS files (316,459 lines) and 63 HTML pages (38,665 lines), out of 4,730 files and 1,087,977 lines in the whole tree. *"119 BIM + 89 ERP modules"* was a July 2026 count; there are now 236 JS files directly under `viewer/` and 189 under `erp/`. *"1,200+ commits in two months"* holds for the first two months (1,258 commits by 2026-07-23). The total is 3,501 commits in six months.
 
 ### What it gets wrong
 
-**"Roughly 45% of unreviewed AI code introduces backend or API security flaws."** The source is the Veracode figure cited [above](#2026-the-industry-starts-lamenting-vibe-slop): 45% of AI-generated code samples failed security tests, of every kind. It is not a figure for backend or API flaws.
+**"Roughly 45% of unreviewed AI code introduces backend or API security flaws."** The source is the Veracode figure cited [above](#2026-the-industry-starts-lamenting-vibe-slop): AI-generated code introduced risky security flaws in 45% of its tests, of every kind. It is not a figure for backend or API flaws.
 
 **"No backend, no cloud API keys, no external connections, so whole classes of bugs are gone by design."** Only partly true. With no app server there is no server-side injection to worry about. But the app does connect out: building databases come from OCI object storage, libraries have a CDN fallback, the Teamwork relay passes through GitHub and Gmail, and the legacy-parity run talks to a real iDempiere over web services. The risk also moves into the browser: script injection, third-party scripts, and signing keys that live in the tab. The attack surface is smaller, not zero.
+
+### A second outside view: does it scale?
+
+A second AI review (Gemini, also November 2026) looked at scale. Its claims were checked the same day against bim-ootb `origin/main` @ `aa427638`, using the project's own measuring command (`scripts/code_arch/size_stack.sh`).
+
+| Claim | Check |
+|---|---|
+| *"~288,000 lines across ~3,300 files"* | That was this page's own first, wrong figure, corrected the same day. Measured: **1,034 app JS files, 316,459 lines**, plus 63 HTML pages, 38,665 lines. There are also 2,151 witness files (288,521 lines) and 131 third-party library files (421,186 lines). The whole tree is 4,730 files, 1,087,977 lines. |
+| *"Most no-build JavaScript projects hit a wall around 30,000–50,000 lines"* | No source given, so not repeated here. |
+| Part A's pure core: *"125 files, forbidden=0"* | True, and it runs in CI (W-CORE-PURE). |
+| *"Parts B, C and D give you the same guarantees: explicit dependency graphs, typed namespaces with @typedefs, single-owner rules"* | **Not yet.** Part B has only its check (B0, in CI); the first manifest (B1, the Modeller) has a build spec and is not built. Parts C and D are not started. There are no typed namespaces. Generated declarations (`types/globals.gen.d.ts`) only let the editor follow globals. |
+| Part F, the X0 Navigator, works with no AI | True: that is the film *When AI Dies*. |
+| *"AST-enforced via espree and TypeScript's parser in CI"* | Partly. W-CORE-PURE and W-MANIFEST-ROUNDTRIP parse with espree in CI. The two X0 witnesses that need TypeScript's parser run locally only, because a CI runner does not have the copy inside VS Code. |
+| Bottleneck 1: slow checks (*C7 ~57 s re-reading 1,208 loader files; the parity gate 5.5–16 min*) | True, quoted correctly from `prompts/CODE_ARCHITECTURE_DESIGN.md`. CI skips C7 for that reason. |
+| Bottleneck 2: one global scope and one precache list per app, with a ceiling *"around 400–500 modules"* | The shared scope is real: 255 script tags in the viewer page, 212 in the ERP page, 66 in the Modeller. The ceiling is a guess, but the ERP's precache list already holds **411 entries** (viewer 296, Modeller 164). The boot-byte budgets it relies on (§F.3) are not set yet; they are due to be proposed on 2026-11-30. |
+| Bottleneck 3: onboarding is hard | True. Same as the learning-curve point above. |
+
+### Against the legacy and the peers
+
+The Kernel ERP is a JavaScript fold of iDempiere, so the fair comparison is with iDempiere itself and with the two best-known open-source ERPs. Language shares are GitHub's own byte counts (`gh api repos/<repo>/languages`, read 2026-11-18). iDempiere's size comes from the local source checkout (`87968daa73`, 2026-01-16); the others' databases come from their own dependency files.
+
+| | iDempiere (legacy) | Odoo | ERPNext (on Frappe) | Kernel ERP (this) |
+|---|---|---|---|---|
+| Main languages | Java 81.9 %, JavaScript 11.4 % | Python 52.5 %, JavaScript 43.2 % | Python 82.6 %, JavaScript 11.8 % (Frappe: Python 52.5 %, JavaScript 26.4 %) | JavaScript 93.7 %, HTML 5.7 % |
+| Where the books live | a Java server (OSGi, Jetty, ZK web UI) | a Python server | a Python server | the browser tab, no server |
+| Database | PostgreSQL or Oracle | PostgreSQL (`psycopg2`) | MariaDB (`PyMySQL`), PostgreSQL (`psycopg`) | SQLite in the browser (WebAssembly) |
+| Developer tools | Eclipse: static types, a compiler, a debugger | Python tooling | Python tooling | VS Code + X0 Navigator; no static types, by rule |
+| Size | 4,465 Java files, 1,427,147 lines | — | — | `erp/`: 318 JS files, 70,362 lines |
+| GitHub stars | 677 | 55,875 | 41,393 | 17 (bim-ootb) |
+| Proof of equal results | the oracle | — | — | 113 of 113 scenarios match legacy books, 0 differ; 19 of 34 document tables covered; 350 of 370 windows identical (parallel run log, 2026-10-12) |
+
+**What the choice of JavaScript buys:** the browser runs only JavaScript (and WebAssembly), so one language covers the screen *and* the books, and the whole ERP works offline in a tab. Odoo and ERPNext already write a large share of their code in JavaScript for the screen, but their books still need a server and a database server.
+
+**What it costs:** no static types and no compiler to catch a wrong call before it runs, which is iDempiere's strongest point; that gap is filled by witnesses and X0, not by the language. Money needs exact decimals (`bigdecimal.js`), because JavaScript numbers are floating point. One tab has the memory of one tab: the measured cost is about 0.17 GB of heap per million vertices on the BIM side, fitted over three buildings and so only indicative ([BrowserScaleBenchmark](BrowserScaleBenchmark.md)). And the peers have communities thousands of times larger.
 
 ---
 
