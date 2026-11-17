@@ -1251,6 +1251,10 @@ Neither existing audit sees it: `§SHORTCUT_AUDIT` in `panels.js` only asks "is 
 - **W-HOWTO gains H6 DICT (H4, H5 exist):** every distinct `guide.anchor` in `howto.json` has a base row `howto_gh_<key>` whose msgtext == its heading (X of N, N read from the file); red control: a heading changed in a copy of the file must FAIL. So a regenerated `howto.json` with a new section fails until its row exists.
 **Claims:** T1 W-VIEWER-I18N full run ends `§W-VIEWER-I18N PASS` (fr_FR and en_* 0 uncatalogued); T2 W-HOWTO H6 20/20 + red control; T3 W-HELP-DOCK and W-HELP-DOCK-M stay green (logs read).
 
+### 14.8.1 RESULT (2026-11-17): BUILT, bim-ootb #3193 (`fix/howto-heading-trl`)
+- `help_panel.js` looks the heading up as `howto_gh_<anchor>` (`ghKey`, one rule shared with W-HOWTO H6 and the batch); `?v=3` in viewer.html + modeller.html; `sw.js` v1726. Batch `viewer/tools/trl_batch_2026-11-17_howto_headings.js`: 20 keys, ids 1001066-1001085; 13 machine-translated by Claude (labelled, no speaker review, composed from the pills' own dictionary words), 7 reuse an existing row verbatim.
+- **Witnessed (logs read):** T1 `§W-VIEWER-I18N PASS pass=91 fail=0`, all 18 locales 0 leaks, controls (4) 6/6 and (6) 15/136 still fail when broken — **the first full green of this witness since the pills added after S226**. T2 W-HOWTO H6: before the batch `§FAIL H6a 0 of 20`, after `20 of 20`, H6b `280 of 280`, red (renamed heading) `19 of 20`; `§W-HOWTO PASS` with the page. T3 `§W-HELP-DOCK PASS`, `§W-HELP-DOCK-M PASS`.
+
 ## 15. NOT URGENT, to think about (owner 2026-11-16: *"You mean we can mis.<translated verb>? Note in prompt then we shall think about it not urgent."*)
 Two terminal ideas. Neither is built and nothing is decided.
 1. **Field help at the terminal.** The browser's per-field tooltip / Tool Tip panel has no terminal equivalent: today only `mis.describe` (a kind's fields) and `help <word>` exist.
