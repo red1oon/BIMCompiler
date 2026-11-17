@@ -17,7 +17,7 @@ numbers are measured, the five decisions (D1–D5) are MADE. **Implement; do not
    GPU or browser runs without the owner's go; agents on Sonnet; results go in §Q.6 / §Q.7 only;
    the witness, never the owner's eyes, is the test.
 
-**Status (update this line as steps land):** step 0 ✅ (#3018) · D2 ✅ (#3022) · D5 ✅ (variant B, #3023) · D1 ☐ NEXT · D3 ☐ · D4 ☐ — owner rulings 2026-11-14: D2/D5 merged with their cross-level near misses NAMED (§Q.6/§Q.7 RESULTS); D5 = variant B. Open, named: §Q.8. **Once-over 2026-11-17: §Q.9 — gate 4 is RED on main (repair first); most out-of-order play is cross-task, outside D1–D4; 3 owner decisions — ✅ decided 2026-11-17 as D6/D7/D8 (§Q.9.4), which also sets the order of work after D5.** **Gate-4 repair ✅ (bim-ootb #3177, §Q.10); assembly-order witness ✅ (#3178); D1 built + measured, ⛔ HELD on gate 2 (§Q.11, branch `fix/4d-d1-bearing-walls`, no PR). **ALL D-STEPS MERGED 2026-11-17: D3 #3182 · D6 #3183 · D1 #3184 · D7 #3185 · D8 #3187 · D4 #3188 — played-layer midair 429/2395/247/144 → 245/343/135/40; NOT zero; what is left is named in §Q.12.2 (none of it a D-step) and the harness debt in §Q.12.3. NEXT = §Q.12.3 (dead witnesses, midair_zero re-lock), then §Q.12.2 items 2 and 5.** **CHASE TO ZERO 2026-11-17 (§Q.13): graph engine everywhere (owner ruling), finish slab, transitive filing, one lift, three small rules — bim-ootb #3196 #3199 #3202 #3206 #3208 #3210. Fleet out-of-order on the played layer: 4 elements in 7 buildings (0/0/2/1/0/0/1). What the number does not cover and what is still red: §Q.13.2, §Q.13.3.**
+**Status (update this line as steps land):** step 0 ✅ (#3018) · D2 ✅ (#3022) · D5 ✅ (variant B, #3023) · D1 ☐ NEXT · D3 ☐ · D4 ☐ — owner rulings 2026-11-14: D2/D5 merged with their cross-level near misses NAMED (§Q.6/§Q.7 RESULTS); D5 = variant B. Open, named: §Q.8. **Once-over 2026-11-17: §Q.9 — gate 4 is RED on main (repair first); most out-of-order play is cross-task, outside D1–D4; 3 owner decisions — ✅ decided 2026-11-17 as D6/D7/D8 (§Q.9.4), which also sets the order of work after D5.** **Gate-4 repair ✅ (bim-ootb #3177, §Q.10); assembly-order witness ✅ (#3178); D1 built + measured, ⛔ HELD on gate 2 (§Q.11, branch `fix/4d-d1-bearing-walls`, no PR). **ALL D-STEPS MERGED 2026-11-17: D3 #3182 · D6 #3183 · D1 #3184 · D7 #3185 · D8 #3187 · D4 #3188 — played-layer midair 429/2395/247/144 → 245/343/135/40; NOT zero; what is left is named in §Q.12.2 (none of it a D-step) and the harness debt in §Q.12.3. NEXT = §Q.12.3 (dead witnesses, midair_zero re-lock), then §Q.12.2 items 2 and 5.** **CHASE TO ZERO 2026-11-17 (§Q.13): graph engine everywhere (owner ruling), finish slab, transitive filing, one lift, three small rules — bim-ootb #3196 #3199 #3202 #3206 #3208 #3210. Fleet out-of-order on the played layer: 4 elements in 7 buildings (0/0/2/1/0/0/1). What the number does not cover and what is still red: §Q.13.2, §Q.13.3.** **HARNESS TO GREEN 2026-11-18 (§Q.14): midair_zero re-locked with the named sets (70/0, unnamed midair 0), big-element cause bisected to #1551, W-RWB-5, edit-coherence on the shipped grid, `scripts/run_4d_gates.sh` (GREEN 8/8), cell solver deleted with schedules hash-equal on 7 buildings — bim-ootb #3213–#3218. Judge every change with `scripts/run_4d_gates.sh`. What is left: §Q.14.9 (one owner question in §Q.14.5).**
 
 ---
 
@@ -3588,3 +3588,21 @@ One command: rebuild the seven persisted runs (a cache hit is instant), run the 
 - **Proof nothing moved (`§NOCELL_IDENTITY`):** all seven runs rebuilt under the new code key; `els`, `sched`, `play`, `playStats`, `storeys`, `tasks` hash-equal to the pre-deletion runs — 7 of 7 buildings, every layer EQUAL.
 - `§GATES_VERDICT GREEN red=0 missing=0 gates=8`: assembly order 5/0 · midair_zero 70/0 · lock integrity 20/0 · edit coherence 12/0 · edit exception 23/0 · reveal 22/0 · big-element 36/0 · curtain wall 5/5. `witness_gantt_model` 21/0.
 - **Owed next (named, not done):** the per-cell DISPLAY stamp only the cell path could fill — `_displayTimeline._lastCell`, the `_cell` op parameter, `GanttModel.groupKeyOf`'s `C:` branch, `witness_midair_zero` W-S51a/b/c, `witness_s50_cell_engine`, `witness_s55_identity_vs_cell` (already INCONCLUSIVE, no population). It touches the Gantt drawer's grouping, so it is its own PR.
+
+### Q.14.8 EDIT ROUND-TRIP ON A LARGE BUILDING (Q.9.3 item 6) — MEASURED, half closed
+`COH_BLD=<building> node tests/witness_gantt_edit_coherence.js` (the witness already took the building from the environment), on the shipped grid (G-COH-11):
+```
+                 bars   ops     move 20 d                      resize −1 d                          result
+Duplex            20    1,119   outside 0 collapsed 0 inv 0    outside 9   collapsed 0 inv 0        12 / 0
+Clinic            34   16,071   outside 0 collapsed 0 inv 0    outside 103 collapsed 0 inv 0        12 / 0
+Hospital          45   63,182   outside 0 collapsed 0 inv 0    outside 555 collapsed 0 inv 0        12 / 0
+```
+- Covered now on large buildings: a bar is moved / resized → its elements are re-timed inside the new window, order kept, no zero duration.
+- **Still owed from item 6:** both judges re-scoring the edited timeline and undo restoring byte-equal, on a large building (`witness_gantt_lock_integrity` and `witness_undo_dot_spawn` are still Duplex only). Both runs here read `<bld>_extracted.db`, not the `_meta` half the viewer loads for Hospital and Clinic. A Hospital run takes about five minutes, so it is not in `run_4d_gates.sh`.
+
+### Q.14.9 STATE AFTER THIS SESSION — what is still red or owed (replaces §Q.13.3)
+- ⛔ `witness_bar_schedule` `band-monotonic-holds` — the one owner question in §Q.14.5.
+- The per-cell display stamp and its two witnesses (§Q.14.7, owed next).
+- `§TPL_LAYER_SELFCHECK … FAIL` on all seven persisted runs, read by no witness (§Q.14.4).
+- Edit round-trip: judges + undo on a large building, and on the `_meta` DB (§Q.14.8).
+- Unchanged from §Q.13.2: the unjudged populations (overhead-only grounded elements, Terminal's 491 roof plates, orphans) and the four out-of-order elements named in §Q.13.
