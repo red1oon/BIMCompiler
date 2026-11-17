@@ -1,6 +1,6 @@
-  §HOWTO_BUILD pills=44 guide=35 cli_pills=2 gaps=lod400,hbaFM,sanity,egress,sched4d,gi-preview,dlodnav,issues excluded=walk bytes=11001
-  §HOWTO_BUILD check same
-§PASS H1 howto.json == generator output on today's inputs
+  §HOWTO_BUILD pills=44 guide=35 cli_pills=2 gaps=lod400,hbaFM,sanity,egress,sched4d,gi-preview,dlodnav,issues excluded=walk bytes=11174
+  §HOWTO_BUILD check DIFFERS
+§FAIL H1 howto.json == generator output on today's inputs
   PASS population-nonempty (44 rows)
   PASS schema-valid (all 44 rows)
   PASS H2 every guide link exists on the live guide and its section names the pill
@@ -23,4 +23,4 @@
 §PASS H4c bullet-only word "native" finds "Save Building", shown opened: {"rows":2,"hit":true,"open":true}
 §PASS H4d Find shows its 3 CLI lines: {"label":"Same at the CLI","lines":["viewer.counts building=<building>","viewer.clashes building=<building> discA=<discA> discB=<discB>","viewer.cost building=<building>"]}
 §PASS H4e de_DE: label "Handbuch (Englisch)", bullet "save: Geöffnetes Gebäude in .db-Datei speichern" vs en "save: Save the open building to a .db file"
-§W-HOWTO PASS
+§W-HOWTO FAIL 1

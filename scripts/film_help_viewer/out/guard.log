@@ -1,5 +1,7 @@
-§FILM_GUARD OK   quote says "nearly twenty percent" <- quote.found expected Y got Y
-§FILM_GUARD OK   quote says "McKinsey" <- quote.source expected McKinsey Global Institute got McKinsey Global Institute
+§FILM_GUARD OK   quote says "Jakob Nielsen" <- quote.source expected Jakob Nielsen · Nielsen Norman Group got Jakob Nielsen · Nielsen Norman Group
+§FILM_GUARD OK   quote says "tenth usability heuristic" <- quote.h10 expected Y got Y
+§FILM_GUARD OK   quote says "easy to search, and focused on the user's task" <- quote.found expected Y got Y
+§FILM_GUARD OK   quote says "Short, with concrete steps" <- quote.steps expected Y got Y
 §FILM_GUARD OK   klass says "I click a wall" <- klass.class expected IfcWall got IfcWall
 §FILM_GUARD OK   klass says "one plain sentence" <- klass.ours expected Y got Y
 §FILM_GUARD OK   klass says "the official IFC definition from buildingSMART" <- klass.ifc expected Y got Y
@@ -25,7 +27,7 @@
 §FILM_GUARD OK   dock says "still showing what you had open" <- dock.keptOpen expected Y got Y
 §FILM_GUARD OK   red control: a planted count 1194 is caught
 §FILM_GUARD OK   no page error in any session
-§FILM_GUARD OK   the Find panel covers neither the info panel nor the help panel's place, in every session (measured)
+§FILM_GUARD OK   the Find panel (measured at the shot, after the class text opened) covers neither the class text nor, in the help stills, the help panel
 §FILM_GUARD OK   every picture the cards need exists
 §FILM_GUARD OK   the CLI line ran through red1 and answered ok
 §FILM_GUARD OK   the typed lines are the ones the beats name
