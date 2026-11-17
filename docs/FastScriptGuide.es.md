@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 313ef235970d6dfd
+source_sha: dde1d54bca12dea4
 lang: es-419
 ---
 
@@ -22,7 +22,7 @@ En un terminal, `red1` le saluda una vez y luego espera en su prompt. Esto es ex
 $ (sleep 4; printf 'exit\r') | RED1_LOG=/tmp/fast_guide_greet.log RED1_HISTORY=/tmp/fast_guide_greet.hist BIM_DOOR_JOURNAL=/tmp/fast_guide_greet.journal script -qec 'node common/door/red1.js' /dev/null | tr -d '\r' | sed -e 's/\x1b\[[0-9;?]*[a-zA-Z]//g' -e 's/ · [0-9a-f]\{8\}$//'
 Welcome to red1, the scripting door into BIM and ERP, stored in SQLite.
 REMEMBER THE NAME.
-Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 76 verbs · 30 words
+Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 77 verbs · 30 words
 Type help for the list of commands (or bim, mis, erp for one group).
 Tip: type level student for fuller help on each word (red1 --fast opens without tips).
 
@@ -130,7 +130,7 @@ Escriba `exit` para salir. Para escribir solo `red1` desde cualquier sitio, ejec
 <!-- run: red1_version -->
 ```text
 $ node common/door/red1.js --version | sed -e 's/^Copyright[^·]*· //' -e 's/ · [0-9a-f]\{8\}$//'
-red1 1.0.0 · 76 verbs · 30 words
+red1 1.0.0 · 77 verbs · 30 words
 ```
 
 **La descarga de seis archivos** es para la puerta sola con los verbos del Modeller, sin copia completa. Cree una carpeta vacía, instale el motor de navegador que necesita el Modeller y descargue los seis archivos:
@@ -220,9 +220,9 @@ $ rm -f /tmp/fast_guide_chain.ops; printf 'cd Duplex\ncost discipline\n' | BIM_O
 building Duplex
 → viewer.cost building=Duplex by=discipline
 ok · viewer.cost
-1190 elements · 1054482.23 total (71 with no rate); 3 with no size, not priced
+1190 elements · 1054482.08 total (71 with no rate); 3 with no size, not priced
 discipline  elements  cost
-ARC         267       532431.28
+ARC         267       532431.14
 ELEC        81        283500.00
 MEP         809       153825.40
 PLB         14        49000.00
@@ -284,7 +284,7 @@ ok · erp.actions
 Order 50000  status CO
 ├─ CL  → do close 50000
 ├─ VO  → do void 50000
-└─ RE  (no red1 word for it yet)
+└─ RE  → do reactivate 50000
 ```
 
 **Ejecutar un proceso.** `run "<process>"` ejecuta un proceso del diccionario ERP, como lo hace el botón de su ventana. Un parámetro que no escribe se pregunta, uno a uno, en el orden de las filas de parámetros del propio proceso (Return conserva el valor por defecto; una búsqueda abre una lista de selección acotada por la regla de validación de la columna; `(leave it out)` omite uno opcional). Luego red1 imprime la línea completa `→ erp.process …` y la ejecuta. El resumen nombra los documentos creados y el registro del proceso, como hace el diálogo de procesos heredado. Aquí el proyecto está escrito y las otras tres preguntas se responden con Return. (En un terminal cada pregunta dibuja su lista de selección; el `grep` conserva solo las preguntas y respuestas.) Fíjese en la respuesta honesta: el proyecto Hospital de la semilla no tiene precios de proveedor, así que **no se crea ningún pedido de compra**, y el registro dice por qué para cada línea:
@@ -323,7 +323,7 @@ Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls s
 it may do: CL, VO, RE (do <code>; next shows the tree)
 ```
 
-Allí Tab después de `do ` ofrece solo `CL` y `VO` (`RE` aún no tiene palabra de red1), y `run Co` se completa a `"Copy Lines"`, el propio botón de la ventana del pedido.
+Allí Tab después de `do ` ofrece solo `CL`, `VO` y `RE` (`RE` reactiva el pedido: `do RE`), y `run Co` se completa a `"Copy Lines"`, el propio botón de la ventana del pedido.
 
 **Recorrer el menú.** `menu` muestra el menú ERP como lugares: `cd <folder>` entra (basta el comienzo de su nombre cuando solo una entrada empieza así), una entrada de ventana le lleva a su tipo, y `cd ..` (o Shift+Tab) sube una carpeta. El indicador muestra la ruta. Cada entrada está marcada: ▸ una carpeta (cuántas entradas tiene), W una ventana (y su tabla), P un proceso, R un informe, X un formulario, F un flujo de trabajo. `red1 menu` por sí solo sigue abriendo el menú en una pantalla completa.
 
@@ -397,9 +397,9 @@ $ printf 'cd Duplex\ncost discipline\ny\nn\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide
 building Duplex
 → viewer.cost building=Duplex by=discipline
 ok · viewer.cost
-1190 elements · 1054482.23 total (71 with no rate); 3 with no size, not priced
+1190 elements · 1054482.08 total (71 with no rate); 3 with no size, not priced
 discipline  elements  cost
-ARC         267       532431.28
+ARC         267       532431.14
 ELEC        81        283500.00
 MEP         809       153825.40
 PLB         14        49000.00
@@ -408,13 +408,13 @@ ls lists the 50 priced rows
 Ready to post to ERP Project Order? y/N → erp.process name="Fold from BIM" Building=Duplex
 → erp.process name="Fold from BIM" Building=Duplex
 ok · erp.process
-Posted Duplex: Project 990001, PlannedAmt 1054482.22784, 81 change(s) · no document made
-81 change(s) kept: create:c_project 1, create:c_projectphase 8, create:c_projecttask 19, create:c_projectline 43, create:m_product 7, create:m_product_category 1, create:m_product_category_acct 2
+Posted Duplex: Project 990001, PlannedAmt 1054482.08284, 85 change(s) · no document made
+85 change(s) kept: create:c_project 1, create:c_projectphase 8, create:c_projecttask 21, create:c_projectline 45, create:m_product 7, create:m_product_category 1, create:m_product_category_acct 2
 Open the project? y/N → cd project
 not done: cd project
 ```
 
-El importe contabilizado, 1054482.22784, es la regla de línea propia del pedido (precio por cantidad, sin redondear). `cost` calcula con las mismas líneas y muestra la cifra al céntimo de la moneda del pedido (1054482.23), así que lo que ve antes de `post` es lo que contiene el pedido. La palabra `post` hace lo mismo sin el `cost` previo y pregunta primero `run it? y/N`; contabilizar un edificio que ya está en su pedido no cambia nada. Desde el proyecto nuevo, `run "Generate PO from Project"` es el lado de compras y responde como el proyecto Hospital de arriba: los productos que creó la contabilización no llevan precio de proveedor. Esos pasos, con su salida, están en [la referencia](FastScriptReference.md).
+El importe contabilizado, 1054482.08284, es la regla de línea propia del pedido (precio por cantidad, sin redondear). `cost` calcula con las mismas líneas y muestra la cifra al céntimo de la moneda del pedido (1054482.08), así que lo que ve antes de `post` es lo que contiene el pedido. La palabra `post` hace lo mismo sin el `cost` previo y pregunta primero `run it? y/N`; contabilizar un edificio que ya está en su pedido no cambia nada. Desde el proyecto nuevo, `run "Generate PO from Project"` es el lado de compras y responde como el proyecto Hospital de arriba: los productos que creó la contabilización no llevan precio de proveedor. Esos pasos, con su salida, están en [la referencia](FastScriptReference.md).
 
 ## Todas las palabras
 
@@ -532,6 +532,7 @@ Esta tabla se **genera a partir del archivo de vocabulario** (`common/door/verbs
 | `erp.close` | Cerrar un documento | `kind`, `id` (opcional), `number` (opcional), `role` (opcional) | writes | human, ai | una copia completa de bim-ootb |
 | `erp.reverse` | Revertir - Corregir un documento | `kind`, `id` (opcional), `number` (opcional), `role` (opcional) | posts | human, ai | una copia completa de bim-ootb |
 | `erp.prepare` | Preparar un documento | `kind`, `id` (opcional), `number` (opcional), `role` (opcional) | writes | human, ai | una copia completa de bim-ootb |
+| `erp.reactivate` | Reactivar un documento | `kind`, `id` (opcional), `number` (opcional), `role` (opcional) | writes | human, ai | una copia completa de bim-ootb |
 | `mis.describe` | Describir un tipo de registro del ERP | `kind`, `role` (opcional) | read | human, ai | una copia completa de bim-ootb |
 | `mis.read` | Leer un registro del ERP | `kind`, `id` (opcional), `number` (opcional), `role` (opcional) | read | human, ai | una copia completa de bim-ootb |
 | `mis.list` | Listar registros | `kind`, `columns` (opcional), `sort` (opcional), `limit` (opcional), `offset` (opcional), `names` (opcional), `role` (opcional), más filtros `column=value` (opcional) | read | human, ai | una copia completa de bim-ootb |
@@ -560,7 +561,7 @@ Esta tabla se **genera a partir del archivo de vocabulario** (`common/door/verbs
 | `erp.new` | Crear un registro (nombre antiguo de mis.new) | `kind`, `dry` (opcional), `role` (opcional), `window` (opcional), más filtros `column=value` (opcional) | writes | human, ai | una copia completa de bim-ootb |
 <!-- /GEN:verbs -->
 
-**Cobertura actual.** La lista es pequeña a propósito: 66 verbos cubren las ediciones de rejilla del Modeller, su walker y un Modeller mantenido abierto entre líneas, unas pocas preguntas del Viewer, el calendario, la lectura, el recuento y la escritura genéricos de objetos, el coste de una selección, los verbos de documentos ERP y cualquier proceso del diccionario ERP que tenga un port. El Viewer tiene 64 acciones que una persona puede pulsar, y la puerta ofrece 6 verbos del Viewer. El ERP tiene 1158 documentos y procesos, y la puerta ofrece 11 verbos ERP para la vida de un documento y 15 verbos MIS que funcionan en cualquier tabla, y conserva 10 nombres antiguos para que las líneas anteriores sigan funcionando. Así que esto es un comienzo, no el menú completo.
+**Cobertura actual.** La lista es pequeña a propósito: 67 verbos cubren las ediciones de rejilla del Modeller, su walker y un Modeller mantenido abierto entre líneas, unas pocas preguntas del Viewer, el calendario, la lectura, el recuento y la escritura genéricos de objetos, el coste de una selección, los verbos de documentos ERP y cualquier proceso del diccionario ERP que tenga un port. El Viewer tiene 64 acciones que una persona puede pulsar, y la puerta ofrece 6 verbos del Viewer. El ERP tiene 1158 documentos y procesos, y la puerta ofrece 12 verbos ERP para la vida de un documento y 15 verbos MIS que funcionan en cualquier tabla, y conserva 10 nombres antiguos para que las líneas anteriores sigan funcionando. Así que esto es un comienzo, no el menú completo.
 
 
 ## Cómo se mantiene fiel esta página

@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 313ef235970d6dfd
+source_sha: dde1d54bca12dea4
 lang: ja
 ---
 
@@ -22,7 +22,7 @@ SQL のステロイド版だと考えてください。一行でレコードを�
 $ (sleep 4; printf 'exit\r') | RED1_LOG=/tmp/fast_guide_greet.log RED1_HISTORY=/tmp/fast_guide_greet.hist BIM_DOOR_JOURNAL=/tmp/fast_guide_greet.journal script -qec 'node common/door/red1.js' /dev/null | tr -d '\r' | sed -e 's/\x1b\[[0-9;?]*[a-zA-Z]//g' -e 's/ · [0-9a-f]\{8\}$//'
 Welcome to red1, the scripting door into BIM and ERP, stored in SQLite.
 REMEMBER THE NAME.
-Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 76 verbs · 30 words
+Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 77 verbs · 30 words
 Type help for the list of commands (or bim, mis, erp for one group).
 Tip: type level student for fuller help on each word (red1 --fast opens without tips).
 
@@ -130,7 +130,7 @@ node common/door/red1.js
 <!-- run: red1_version -->
 ```text
 $ node common/door/red1.js --version | sed -e 's/^Copyright[^·]*· //' -e 's/ · [0-9a-f]\{8\}$//'
-red1 1.0.0 · 76 verbs · 30 words
+red1 1.0.0 · 77 verbs · 30 words
 ```
 
 **六ファイルのダウンロード**は、チェックアウトなしで、ドアと Modeller 動詞だけを使う場合のものです。空のフォルダーを作り、Modeller が必要とするブラウザーエンジンをインストールして、六つのファイルを取得します：
@@ -220,9 +220,9 @@ $ rm -f /tmp/fast_guide_chain.ops; printf 'cd Duplex\ncost discipline\n' | BIM_O
 building Duplex
 → viewer.cost building=Duplex by=discipline
 ok · viewer.cost
-1190 elements · 1054482.23 total (71 with no rate); 3 with no size, not priced
+1190 elements · 1054482.08 total (71 with no rate); 3 with no size, not priced
 discipline  elements  cost
-ARC         267       532431.28
+ARC         267       532431.14
 ELEC        81        283500.00
 MEP         809       153825.40
 PLB         14        49000.00
@@ -284,7 +284,7 @@ ok · erp.actions
 Order 50000  status CO
 ├─ CL  → do close 50000
 ├─ VO  → do void 50000
-└─ RE  (no red1 word for it yet)
+└─ RE  → do reactivate 50000
 ```
 
 **プロセスを実行する。** `run "<process>"` は、ウィンドウのボタンと同じように、ERP 辞書のプロセスを一つ実行します。打たなかったパラメーターは、プロセス自身のパラメーター行の順に、ひとつずつ尋ねられます（Return で既定値を採用。ルックアップは、列の検証ルールで絞り込まれた選択リストを開き、`(leave it out)` は任意項目を飛ばします）。そのあと red1 は完全な `→ erp.process …` の行を表示して実行します。要約には、作られた伝票とプロセスログが、従来のプロセスダイアログと同様に示されます。ここではプロジェクトを入力し、ほかの三つの質問は Return で答えています。（ターミナルでは各質問が選択リストを描きます。`grep` は質問と答えだけを残します。）正直な答えを見てください。シードの Hospital プロジェクトには仕入先価格がないので、**発注書は作られず**、ログがその理由を各行について述べます：
@@ -323,7 +323,7 @@ Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls s
 it may do: CL, VO, RE (do <code>; next shows the tree)
 ```
 
-そこでは `do ` の後の Tab は `CL` と `VO` だけを出し（`RE` にはまだ red1 の言葉がありません）、`run Co` は注文ウィンドウ自身のボタン `"Copy Lines"` に補完されます。
+そこでは `do ` の後の Tab は `CL`、`VO`、`RE` だけを出し（`RE` は注文を再有効化します：`do RE`）、`run Co` は注文ウィンドウ自身のボタン `"Copy Lines"` に補完されます。
 
 **メニューをたどる。** `menu` は ERP メニューを場所として表示します。`cd <folder>` で中に入り（その始まり方をする項目が一つだけなら、名前の先頭だけで足ります）、ウィンドウの項目はその種類へ連れて行き、`cd ..`（または Shift+Tab）で一つ上のフォルダーに戻ります。プロンプトにパスが出ます。各項目には印があります：▸ フォルダー（中の項目数）、W ウィンドウ（とそのテーブル）、P プロセス、R レポート、X フォーム、F ワークフロー。`red1 menu` 単独では、これまでどおり全画面のメニューが開きます。
 
@@ -397,9 +397,9 @@ $ printf 'cd Duplex\ncost discipline\ny\nn\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide
 building Duplex
 → viewer.cost building=Duplex by=discipline
 ok · viewer.cost
-1190 elements · 1054482.23 total (71 with no rate); 3 with no size, not priced
+1190 elements · 1054482.08 total (71 with no rate); 3 with no size, not priced
 discipline  elements  cost
-ARC         267       532431.28
+ARC         267       532431.14
 ELEC        81        283500.00
 MEP         809       153825.40
 PLB         14        49000.00
@@ -408,13 +408,13 @@ ls lists the 50 priced rows
 Ready to post to ERP Project Order? y/N → erp.process name="Fold from BIM" Building=Duplex
 → erp.process name="Fold from BIM" Building=Duplex
 ok · erp.process
-Posted Duplex: Project 990001, PlannedAmt 1054482.22784, 81 change(s) · no document made
-81 change(s) kept: create:c_project 1, create:c_projectphase 8, create:c_projecttask 19, create:c_projectline 43, create:m_product 7, create:m_product_category 1, create:m_product_category_acct 2
+Posted Duplex: Project 990001, PlannedAmt 1054482.08284, 85 change(s) · no document made
+85 change(s) kept: create:c_project 1, create:c_projectphase 8, create:c_projecttask 21, create:c_projectline 45, create:m_product 7, create:m_product_category 1, create:m_product_category_acct 2
 Open the project? y/N → cd project
 not done: cd project
 ```
 
-転記された金額 1054482.22784 は、注文自身の明細ルール（単価×数量、丸めなし）です。`cost` は同じ明細で計算し、注文の通貨のセントまで表示します（1054482.23）。つまり `post` の前に見る数字が、注文に入る金額です。`post` という言葉は、前に `cost` がなくても同じことをし、先に `run it? y/N` と尋ねます。すでに注文にある建物を転記しても、何も変わりません。新しいプロジェクトから見ると、`run "Generate PO from Project"` が購買側で、上の Hospital プロジェクトと同じように答えます。転記で作られた商品には仕入先価格がありません。これらの手順と出力は[リファレンス](FastScriptReference.md)にあります。
+転記された金額 1054482.08284 は、注文自身の明細ルール（単価×数量、丸めなし）です。`cost` は同じ明細で計算し、注文の通貨のセントまで表示します（1054482.08）。つまり `post` の前に見る数字が、注文に入る金額です。`post` という言葉は、前に `cost` がなくても同じことをし、先に `run it? y/N` と尋ねます。すでに注文にある建物を転記しても、何も変わりません。新しいプロジェクトから見ると、`run "Generate PO from Project"` が購買側で、上の Hospital プロジェクトと同じように答えます。転記で作られた商品には仕入先価格がありません。これらの手順と出力は[リファレンス](FastScriptReference.md)にあります。
 
 ## すべての言葉
 
@@ -532,6 +532,7 @@ object.count building=Duplex kind=Element -> 1193 Element
 | `erp.close` | 伝票をクローズする | `kind`, `id` （任意）, `number` （任意）, `role` （任意） | writes | human, ai | bim-ootb のチェックアウト |
 | `erp.reverse` | 伝票を取り消す（修正する） | `kind`, `id` （任意）, `number` （任意）, `role` （任意） | posts | human, ai | bim-ootb のチェックアウト |
 | `erp.prepare` | 伝票を準備する | `kind`, `id` （任意）, `number` （任意）, `role` （任意） | writes | human, ai | bim-ootb のチェックアウト |
+| `erp.reactivate` | 伝票を再有効化する | `kind`, `id` （任意）, `number` （任意）, `role` （任意） | writes | human, ai | bim-ootb のチェックアウト |
 | `mis.describe` | ERP レコードの種類を説明する | `kind`, `role` （任意） | read | human, ai | bim-ootb のチェックアウト |
 | `mis.read` | ERP レコードを読む | `kind`, `id` （任意）, `number` （任意）, `role` （任意） | read | human, ai | bim-ootb のチェックアウト |
 | `mis.list` | レコードを一覧する | `kind`, `columns` （任意）, `sort` （任意）, `limit` （任意）, `offset` （任意）, `names` （任意）, `role` （任意）, その他の`column=value`フィルタ（任意） | read | human, ai | bim-ootb のチェックアウト |
@@ -560,7 +561,7 @@ object.count building=Duplex kind=Element -> 1193 Element
 | `erp.new` | レコードを作る（mis.new の古い名前） | `kind`, `dry` （任意）, `role` （任意）, `window` （任意）, その他の`column=value`フィルタ（任意） | writes | human, ai | bim-ootb のチェックアウト |
 <!-- /GEN:verbs -->
 
-**現在のカバー範囲。** 一覧は意図的に小さくしてあります。66個の動詞が、Modeller のグリッド編集、そのウォーカー、行の間も開いたままの Modeller、いくつかの Viewer の質問、工程、汎用のオブジェクトの読み取り・カウント・書き込み、選択のコスト、ERP の伝票動詞、そしてポートのある ERP 辞書のあらゆるプロセスをカバーしています。Viewer には人が押せるアクションが64個あり、ドアは6個の Viewer 動詞を提供します。ERP には1158個の伝票とプロセスがあり、ドアは伝票の一生のための11個の ERP 動詞と、どのテーブルにも使える15個の MIS 動詞を提供し、以前の行が動き続けるよう10個の旧名を残しています。つまりこれは出発点であって、メニューのすべてではありません。
+**現在のカバー範囲。** 一覧は意図的に小さくしてあります。67個の動詞が、Modeller のグリッド編集、そのウォーカー、行の間も開いたままの Modeller、いくつかの Viewer の質問、工程、汎用のオブジェクトの読み取り・カウント・書き込み、選択のコスト、ERP の伝票動詞、そしてポートのある ERP 辞書のあらゆるプロセスをカバーしています。Viewer には人が押せるアクションが64個あり、ドアは6個の Viewer 動詞を提供します。ERP には1158個の伝票とプロセスがあり、ドアは伝票の一生のための12個の ERP 動詞と、どのテーブルにも使える15個の MIS 動詞を提供し、以前の行が動き続けるよう10個の旧名を残しています。つまりこれは出発点であって、メニューのすべてではありません。
 
 
 ## このページが正しさを保つ仕組み

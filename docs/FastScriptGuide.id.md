@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 313ef235970d6dfd
+source_sha: dde1d54bca12dea4
 lang: id
 ---
 
@@ -22,7 +22,7 @@ Di terminal, `red1` menyapa Anda sekali, lalu menunggu di promptnya. Inilah pers
 $ (sleep 4; printf 'exit\r') | RED1_LOG=/tmp/fast_guide_greet.log RED1_HISTORY=/tmp/fast_guide_greet.hist BIM_DOOR_JOURNAL=/tmp/fast_guide_greet.journal script -qec 'node common/door/red1.js' /dev/null | tr -d '\r' | sed -e 's/\x1b\[[0-9;?]*[a-zA-Z]//g' -e 's/ · [0-9a-f]\{8\}$//'
 Welcome to red1, the scripting door into BIM and ERP, stored in SQLite.
 REMEMBER THE NAME.
-Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 76 verbs · 30 words
+Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 77 verbs · 30 words
 Type help for the list of commands (or bim, mis, erp for one group).
 Tip: type level student for fuller help on each word (red1 --fast opens without tips).
 
@@ -130,7 +130,7 @@ Ketik `exit` untuk keluar. Agar cukup mengetik `red1` dari mana saja, jalankan `
 <!-- run: red1_version -->
 ```text
 $ node common/door/red1.js --version | sed -e 's/^Copyright[^·]*· //' -e 's/ · [0-9a-f]\{8\}$//'
-red1 1.0.0 · 76 verbs · 30 words
+red1 1.0.0 · 77 verbs · 30 words
 ```
 
 **Unduhan enam berkas** untuk pintu saja dengan kata kerja Modeller, tanpa checkout. Buat folder kosong, pasang mesin peramban yang dibutuhkan Modeller, lalu ambil enam berkas:
@@ -220,9 +220,9 @@ $ rm -f /tmp/fast_guide_chain.ops; printf 'cd Duplex\ncost discipline\n' | BIM_O
 building Duplex
 → viewer.cost building=Duplex by=discipline
 ok · viewer.cost
-1190 elements · 1054482.23 total (71 with no rate); 3 with no size, not priced
+1190 elements · 1054482.08 total (71 with no rate); 3 with no size, not priced
 discipline  elements  cost
-ARC         267       532431.28
+ARC         267       532431.14
 ELEC        81        283500.00
 MEP         809       153825.40
 PLB         14        49000.00
@@ -284,7 +284,7 @@ ok · erp.actions
 Order 50000  status CO
 ├─ CL  → do close 50000
 ├─ VO  → do void 50000
-└─ RE  (no red1 word for it yet)
+└─ RE  → do reactivate 50000
 ```
 
 **Menjalankan proses.** `run "<process>"` menjalankan satu proses dari kamus ERP, seperti tombol jendelanya. Parameter yang tidak Anda ketik ditanyakan satu per satu, menurut urutan baris parameter proses itu sendiri (Return mempertahankan nilai bawaan; pencarian membuka daftar pilihan yang dipersempit oleh aturan validasi kolom; `(leave it out)` melewati yang opsional). Lalu red1 mencetak baris lengkap `→ erp.process …` dan menjalankannya. Ringkasannya menyebut dokumen yang dibuat dan log proses, seperti dialog proses lama. Di sini proyeknya diketik dan tiga pertanyaan lain dijawab dengan Return. (Di terminal setiap pertanyaan menggambar daftar pilihannya; `grep` hanya menyimpan pertanyaan dan jawaban.) Perhatikan jawaban yang jujur: proyek Hospital pada data awal tidak punya harga pemasok, jadi **tidak ada pesanan pembelian yang dibuat**, dan log menyebut alasannya untuk setiap baris:
@@ -323,7 +323,7 @@ Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls s
 it may do: CL, VO, RE (do <code>; next shows the tree)
 ```
 
-Di sana Tab setelah `do ` hanya menawarkan `CL` dan `VO` (`RE` belum punya kata red1), dan `run Co` dilengkapi menjadi `"Copy Lines"`, tombol milik jendela pesanan itu sendiri.
+Di sana Tab setelah `do ` hanya menawarkan `CL`, `VO`, dan `RE` (`RE` mengaktifkan kembali pesanan: `do RE`), dan `run Co` dilengkapi menjadi `"Copy Lines"`, tombol milik jendela pesanan itu sendiri.
 
 **Menjelajahi menu.** `menu` menampilkan menu ERP sebagai tempat: `cd <folder>` masuk ke dalamnya (awal namanya sudah cukup bila hanya satu entri yang dimulai begitu), entri jendela membawa Anda ke jenisnya, dan `cd ..` (atau Shift+Tab) naik satu folder. Prompt menunjukkan jalurnya. Setiap entri diberi tanda: ▸ sebuah folder (berapa entri isinya), W sebuah jendela (dan tabelnya), P sebuah proses, R sebuah laporan, X sebuah formulir, F sebuah alur kerja. `red1 menu` sendiri tetap membuka menu di satu layar penuh.
 
@@ -397,9 +397,9 @@ $ printf 'cd Duplex\ncost discipline\ny\nn\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide
 building Duplex
 → viewer.cost building=Duplex by=discipline
 ok · viewer.cost
-1190 elements · 1054482.23 total (71 with no rate); 3 with no size, not priced
+1190 elements · 1054482.08 total (71 with no rate); 3 with no size, not priced
 discipline  elements  cost
-ARC         267       532431.28
+ARC         267       532431.14
 ELEC        81        283500.00
 MEP         809       153825.40
 PLB         14        49000.00
@@ -408,13 +408,13 @@ ls lists the 50 priced rows
 Ready to post to ERP Project Order? y/N → erp.process name="Fold from BIM" Building=Duplex
 → erp.process name="Fold from BIM" Building=Duplex
 ok · erp.process
-Posted Duplex: Project 990001, PlannedAmt 1054482.22784, 81 change(s) · no document made
-81 change(s) kept: create:c_project 1, create:c_projectphase 8, create:c_projecttask 19, create:c_projectline 43, create:m_product 7, create:m_product_category 1, create:m_product_category_acct 2
+Posted Duplex: Project 990001, PlannedAmt 1054482.08284, 85 change(s) · no document made
+85 change(s) kept: create:c_project 1, create:c_projectphase 8, create:c_projecttask 21, create:c_projectline 45, create:m_product 7, create:m_product_category 1, create:m_product_category_acct 2
 Open the project? y/N → cd project
 not done: cd project
 ```
 
-Jumlah yang diposting, 1054482.22784, adalah aturan baris milik pesanan (harga kali kuantitas, tidak dibulatkan). `cost` menghitung dengan baris yang sama dan menampilkan angkanya sampai sen mata uang pesanan (1054482.23), jadi yang Anda lihat sebelum `post` adalah isi pesanan. Kata `post` melakukan hal yang sama tanpa `cost` sebelumnya dan bertanya `run it? y/N` terlebih dahulu; memposting bangunan yang sudah ada di pesanannya tidak mengubah apa pun. Dari proyek baru, `run "Generate PO from Project"` adalah sisi pembelian dan menjawab seperti proyek Hospital di atas: produk yang dibuat oleh posting tidak punya harga pemasok. Langkah-langkah itu, dengan keluarannya, ada di [referensi](FastScriptReference.md).
+Jumlah yang diposting, 1054482.08284, adalah aturan baris milik pesanan (harga kali kuantitas, tidak dibulatkan). `cost` menghitung dengan baris yang sama dan menampilkan angkanya sampai sen mata uang pesanan (1054482.08), jadi yang Anda lihat sebelum `post` adalah isi pesanan. Kata `post` melakukan hal yang sama tanpa `cost` sebelumnya dan bertanya `run it? y/N` terlebih dahulu; memposting bangunan yang sudah ada di pesanannya tidak mengubah apa pun. Dari proyek baru, `run "Generate PO from Project"` adalah sisi pembelian dan menjawab seperti proyek Hospital di atas: produk yang dibuat oleh posting tidak punya harga pemasok. Langkah-langkah itu, dengan keluarannya, ada di [referensi](FastScriptReference.md).
 
 ## Semua kata
 
@@ -532,6 +532,7 @@ Tabel ini **dihasilkan dari berkas kosakata** (`common/door/verbs.json`) dan seb
 | `erp.close` | Menutup sebuah dokumen | `kind`, `id` (opsional), `number` (opsional), `role` (opsional) | writes | human, ai | checkout bim-ootb |
 | `erp.reverse` | Membalik - Mengoreksi sebuah dokumen | `kind`, `id` (opsional), `number` (opsional), `role` (opsional) | posts | human, ai | checkout bim-ootb |
 | `erp.prepare` | Menyiapkan sebuah dokumen | `kind`, `id` (opsional), `number` (opsional), `role` (opsional) | writes | human, ai | checkout bim-ootb |
+| `erp.reactivate` | Mengaktifkan kembali sebuah dokumen | `kind`, `id` (opsional), `number` (opsional), `role` (opsional) | writes | human, ai | checkout bim-ootb |
 | `mis.describe` | Menjelaskan satu jenis rekaman ERP | `kind`, `role` (opsional) | read | human, ai | checkout bim-ootb |
 | `mis.read` | Membaca sebuah rekaman ERP | `kind`, `id` (opsional), `number` (opsional), `role` (opsional) | read | human, ai | checkout bim-ootb |
 | `mis.list` | Mendaftar rekaman | `kind`, `columns` (opsional), `sort` (opsional), `limit` (opsional), `offset` (opsional), `names` (opsional), `role` (opsional), filter `column=value` lainnya (opsional) | read | human, ai | checkout bim-ootb |
@@ -560,7 +561,7 @@ Tabel ini **dihasilkan dari berkas kosakata** (`common/door/verbs.json`) dan seb
 | `erp.new` | Membuat sebuah rekaman (nama lama dari mis.new) | `kind`, `dry` (opsional), `role` (opsional), `window` (opsional), filter `column=value` lainnya (opsional) | writes | human, ai | checkout bim-ootb |
 <!-- /GEN:verbs -->
 
-**Cakupan saat ini.** Daftarnya sengaja kecil: 66 kata kerja mencakup pengeditan grid Modeller, walker-nya, dan Modeller yang dibiarkan terbuka di antara baris, beberapa pertanyaan Viewer, jadwal, pembacaan, penghitungan, dan penulisan objek generik, biaya sebuah pilihan, kata kerja dokumen ERP, dan proses apa pun dari kamus ERP yang punya port. Viewer punya 64 aksi yang bisa ditekan seseorang, dan pintu menawarkan 6 kata kerja Viewer. ERP punya 1158 dokumen dan proses, dan pintu menawarkan 11 kata kerja ERP untuk kehidupan sebuah dokumen dan 15 kata kerja MIS yang bekerja pada tabel apa pun, serta menyimpan 10 nama lama agar baris-baris sebelumnya tetap jalan. Jadi ini sebuah permulaan, bukan seluruh menu.
+**Cakupan saat ini.** Daftarnya sengaja kecil: 67 kata kerja mencakup pengeditan grid Modeller, walker-nya, dan Modeller yang dibiarkan terbuka di antara baris, beberapa pertanyaan Viewer, jadwal, pembacaan, penghitungan, dan penulisan objek generik, biaya sebuah pilihan, kata kerja dokumen ERP, dan proses apa pun dari kamus ERP yang punya port. Viewer punya 64 aksi yang bisa ditekan seseorang, dan pintu menawarkan 6 kata kerja Viewer. ERP punya 1158 dokumen dan proses, dan pintu menawarkan 12 kata kerja ERP untuk kehidupan sebuah dokumen dan 15 kata kerja MIS yang bekerja pada tabel apa pun, serta menyimpan 10 nama lama agar baris-baris sebelumnya tetap jalan. Jadi ini sebuah permulaan, bukan seluruh menu.
 
 
 ## Bagaimana halaman ini tetap benar
