@@ -1,6 +1,17 @@
 # ⚠ DO NOT REMOVE
 SCOPE: ONE film. The Palm Jebel Ali Mosque (PJAM; name released by the owner 2026-11-18) on canvas: first the Modeller's own LOD feature (layer split drawn per layer), then the Viewer's Find panel locating each kind of added work and flying to it. House style: `prompts/FILM_NARRATION.md` (split screen, typed line + REAL key sounds, voice after return, two-colour cover card, last card with prior art + credentials + guide link, lower frame cropped/zoomed to the part that changes). Read the log after every run; the exit code is not evidence. Films are never pushed; only scripts and this file are.
 
+## ▶ RESUME HERE (2026-11-18, design session bim-compiler-28)
+- **Gaps:** G1 CLOSED (`JPAM_film.db`, 679 added, SHA d6f6a992). G3 CLOSED (terms below). G2, G4a and G4b are being fixed in bim-ootb, one PR each, from the specs S-G2 / S-G4a / S-G4b in this file. Capture (G5) waits for them.
+- **Beat 2 decision (design lane):** there is NO in-Modeller "upgrade LOD" button. The upgrade IS the rule scripts. So beat 2 uses the house split screen as intended:
+  - the top strip types the real commands (`build_jpam.py`, `rebar_from_schedule.py --schedule-json ...`, `gen_gussets.py`) with their § verdict lines;
+  - the bottom shows the Modeller on the result, once S-G2 lands.
+  
+  A missing in-app button is stated plainly, never implied.
+- **Find terms:** while S-G4b is open, type single words: `layer` 220 · `plate` · `bolt` 51 · `fillet` 51 · `reinforcing` 306 · `gusset` 2.
+- **Card rule:** the rebar card must not say "matches the schedule everywhere": §PJRB_STATED FAILs on 2 beams.
+- **GPU:** peers bim-compiler-8e and bim-compiler-f8 acked give-way; 9b has not replied. Message all three "capture done" afterwards.
+
 ## Owner brief (2026-11-18, verbatim)
 *"Do a film, showing the Jebel mosque on canvas and how the Find can locate the added work, smoothly navigating to each. Ensure illustration is clear or zoom into frame for legibility of the Find panel. Show first the Modeller side, feature that upgrades LOD. Fix any gaps before that. Ask other sessions to give way if you need the GPU."*
 
