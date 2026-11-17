@@ -20,7 +20,7 @@ Owner, closing 2026-11-15: *"get it well documented in the prompts/# consolidate
 
 **0. ✅ DONE 2026-11-15 (fourth session): F-18 answered, the provenance hover built and merged — §F.23 (bim-ootb #3064 + tooltip-in-window fix #3069); FILM 3 built (`prompts/FILM_IMMERSIVE_SOFTWARE.md` FILM 3 STATUS, awaiting the owner's review); the default-key + truss findings handed to the DXF2BIM lane (bim-ootb `prompts/DXF2BIM_ARCHITECT_REVIEW.md` §D113, #3070). NEXT = the X0 "New witness for this file" command (§F.21 OPEN), or Part A's remaining A2 (item 2).** The text below is the original hand-over.
 
-**0t. 2026-11-17 (eighth session, later) — START HERE: B0 IS BUILT (bim-ootb #3200), Part B now waits on the owner.** `§MANIFEST_ROUNDTRIP apps=3 files=54 sites=788 … identical=54/54 driven=715/715 sw_vm=3/3 claims=7/7 red=5/5 order_check=NOT-JUDGED verdict=PASS`, and it runs in CI fast-checks (Part B, B0 BUILD SPEC + B0 RESULT). The design problem it hit (27 files with different `?v=` in different referrers, no declared dependencies) went to one scoped Fable agent, as the owner said. **NEXT, in order:** (1) **ask B-1** (one message, with B0's counts: unify numbers = 17 sites change inside the apps, content hashes = all 715 once), then B-2, B-5 (new: who declares deps), B-3, B-4; (2) no decision needed: the core-purity squiggle in X0 (the bump defect C7 found, bim-ootb #3201, where the Bump button stopped when a loader and a lazy module it lists changed together, is FIXED: #3204); (3) E's `witness_kit/paths.js` (§READY). F-2 ceilings due 2026-11-30.
+**0t. 2026-11-17 (eighth session, later) — START HERE: B0 IS BUILT (bim-ootb #3200), Part B now waits on the owner.** `§MANIFEST_ROUNDTRIP apps=3 files=54 sites=788 … identical=54/54 driven=715/715 sw_vm=3/3 claims=7/7 red=5/5 order_check=NOT-JUDGED verdict=PASS`, and it runs in CI fast-checks (Part B, B0 BUILD SPEC + B0 RESULT). The design problem it hit (27 files with different `?v=` in different referrers, no declared dependencies) went to one scoped Fable agent, as the owner said. **NEXT, in order:** (1) **ask B-1** (one message, with B0's counts: unify numbers = 17 sites change inside the apps, content hashes = all 715 once), then B-2, B-5 (new: who declares deps), B-3, B-4; (2) the core-purity warning in X0 is BUILT (§F.35, bim-ootb #3209; reinstall X0 to get it) (the bump defect C7 found, bim-ootb #3201, where the Bump button stopped when a loader and a lazy module it lists changed together, is FIXED: #3204); (3) E's `witness_kit/paths.js` (§READY). F-2 ceilings due 2026-11-30.
 
 **0s. 2026-11-17 (eighth session): PART A IS DONE.** (1) bim-ootb #3168 (A3-CLOCK-2) was already MERGED when this session opened: the github-actions bot turned auto-merge on and merged it 4 minutes after the last push (`2989f8f5`, 00:13Z), before the gate check 0r asked for. The check was run after the fact on `main` @ `b732d923` and PASSES (A3-CLOCK-2 POST-MERGE CHECK). **Lesson: "auto-merge off" does not hold in bim-ootb, the bot re-enables it; to hold a PR back, open it as a DRAFT.** (2) **W-CORE-PURE built and merged (bim-ootb #3180 / PR #3181, `7c26856d`), and it runs in CI fast-checks**: `§CORE_PURE files=125 parse_fail=0 forbidden=0 red_control=detected verdict=PASS` (A3 W-CORE-PURE RESULT). **NEXT: Part B, B0** (the manifest generator in check mode, no decision needed, no file changes; write its build spec first), then ask B-1. Also unblocked, small: the core-purity squiggle in X0 (Part F table row; reuse `witness_core_pure.js`'s scan, do not write a second scanner). F-2 ceilings due 2026-11-30. Owner, this session: *"if u hit a code design or spec problem use a well scoped Fable agent to resolve"* (workers otherwise stay on Sonnet).
 
@@ -959,7 +959,7 @@ itself**: it only reads the generated files, so it cannot drift from the code.
 | Bump on save (or a quick-fix "this precached file changed: bump?") | "Did I forget the cache bump?" | `scripts/bump.js` today, manifest (B) later | now |
 | "Run the witnesses for this file", with the verdict in the Testing panel | "Did I break it?" | proof map (E), suite runner | E |
 | Owner warning: "a second implementation of *what is today*" | "Am I duplicating an owner?" | owner table (D) | D (also unparks DEV_TOOLKIT T6 Owner Trace) |
-| Core-purity squiggle: `Date.now()` in a core file | "Am I breaking determinism?" | W-CORE-PURE rule (A3) | A ✅ 2026-11-17: unblocked, not built (CI already fails the PR; reuse the scan in bim-ootb `erp/tests/witness_core_pure.js`) |
+| Core-purity squiggle: `Date.now()` in a core file | "Am I breaking determinism?" | W-CORE-PURE rule (A3) | A ✅ · **built 2026-11-17, §F.35 (bim-ootb #3209)**; the scan lives in bim-ootb `scripts/lib/core_pure.js` |
 | Lazy/boot badge in the status bar for the open file | "Will this load at start?" | manifest (B) | B |
 
 ### F.2 Run & Ship: localhost, commit, deploy, fetch back from github.io   (owner: *"The VSC tool aid can help control launch in localhost or deploy and fetch etc"* · *"helps commit to github and run from the standard project URL github.io/"*)
@@ -1436,6 +1436,18 @@ new failure blocks.
 - C4 the same text in a comment → 0; the same planted call in a file OUTSIDE the list (`erp/kernel_ops.js`, the minting point) → 0.
 - INCONCLUSIVE when the list is empty or the parser is missing. Line: `§X0_CORE_PURE_W core_files= judged= failed= verdict=`. In CI with the other node-only X0 witnesses.
 **Issue proved:** "a forbidden call in a core file says nothing in the editor until CI runs".
+
+**F.35 RESULT (2026-11-17/18, eighth session): ✅ DONE (witness), bim-ootb #3207 / PR #3209, merged `3095c8be`.** Dev-side only, no bump. Logs read (also in the PR's CI log):
+- `§X0_CORE_PURE_W core_files=125 tracked_js=3395 judged=9 failed=0 verdict=PASS`: C1 125 core files clean · C2 `isCore()` = `git ls-files <pathspecs>` for every tracked
+  `.js`, 0 differ · C3 red: a planted `Date.now()` in `InvoiceGenerate.js` → one warning at its line and column (`Date.now()@192:24`), plus a planted `fetch()` → two, the
+  second `network`; restoring clears it · C4 a comment, a string, a file that does not parse → none; the same call in `erp/kernel_ops.js` (outside the list; the bare scan
+  finds 8 there) → none.
+- **One scanner:** `scripts/lib/core_pure.js` now holds the scan and the list; `erp/tests/witness_core_pure.js` calls it (106 → 60 lines), same verdict
+  (`files=125 forbidden=0 PASS`; a pre-#3168 tree still `forbidden=4 FAIL`).
+- Other X0 witnesses re-run PASS: activate (its save-handler count 4 → 5, updated), appdef, catalog, isolation, lens, stamp, refs, newwit, fresh, context, bump_button.
+  CI's X0 step now checks 4 (`§X0_CI checked=4 verdict=PASS`).
+- **For the owner's machine:** the installed X0 copy is now older than the source; its stale-copy note (§F.25) says so. Reinstall to get the warning.
+- Not proven: how VS Code draws it (the witness runs on the `vscode` stub; the real-VS-Code suite was not extended).
 
 ### F.34 The Bump button: check in the background, solid when it passes, one press to write (owner idea 2026-11-17; decision F-24; not built)
 - **Owner:** *"I thot we have a bump button, perhaps after the budget time, it appears solid for user to press it?"* · on when the check starts, asked with
