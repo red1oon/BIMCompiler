@@ -23,7 +23,7 @@ Tip: type level student for fuller help on each word (red1 --fast opens without 
 red1> exit
 ```
 
-Read it as a map. The version line says how many door verbs (the long form) and short words red1 has. `help` shows the short words in three groups; `help bim`, `help mis` or `help erp` (or the group's name alone) shows one group:
+Read it as a map. The version line says how many door verbs (the long form) and short words red1 has. `help` shows the short words in three groups; `help bim`, `help mis` or `help erp` shows one group:
 
 | Group | What it is for | Start with |
 |---|---|---|
@@ -38,7 +38,7 @@ red1: type a short word; red1 prints the full line it runs (→ …), then runs 
   bim   buildings and models             start with: cd Duplex   (16 words)
   mis   records, tables, files, Ninja    start with: cd Order   (11 words)
   erp   document actions (CO VO CL RC)   start with: cd Order   (8 words)
-  everywhere: cd <place> · pwd · role <id> · login <user> · history · report · exit
+  everywhere: cd <place> · pwd · role <id> · login <user> · history [N] · report · exit
 Type bim, mis or erp for its words · help <word> for one word (level student first for the full explanation) · help verbs for the full door lines.
 ```
 
@@ -59,6 +59,8 @@ erp: document actions (CO VO CL RC) (start with: cd Order)
   next 50000                                          what a document may do next
   ask "How do I close a Sales Order?"                 ask the help a question, in your language
 ```
+
+A group's name typed alone (`bim`, `mis` or `erp`) prints the same list and takes you into the group: the prompt reads `red1 erp>`, and help, Tab and the grey suggestions offer only that group's words. It never stops a line from running: a full door line still runs from any group. `cd ..` backs out one step (out of a place, then out of the group), and Shift+Tab does the same (red1 prints `→ cd ..`, so the session reads as text).
 
 `help` prints no door verbs, only the words. `help verbs` lists every door verb with its full line. For fuller help on one word, switch to the Student level: `level student` in a session, or `--level student` on one line, then `help <word>` tells you what the word does, what you type, what red1 takes from where you are, and an example. The text is the verb's own description, so it cannot drift from the table at the end:
 
@@ -301,6 +303,70 @@ Generate PO from Project: done · no document made
 
 In a one-shot line, or for an AI, nothing is asked: a missing mandatory parameter is a refusal that names it. A process the twin has no port for yet is refused with the name of its class, and red1 says so.
 
+**A record offers its own.** Inside a record, what red1 offers is that record's, read from the dictionary for its window: after `do`, only the actions it may take now (for your role); after `cd`, its tabs; after `run`, its own process buttons; and its fields as `Column=` keys. Entering the record prints what it may do:
+
+<!-- run: erp_record_offers -->
+```text
+$ printf 'cd Order 100\n' | node common/door/red1.js 2>/dev/null
+→ mis.describe kind="Order 100"
+→ mis.describe kind=Order
+→ mis.read kind=Order number=100
+→ mis.read kind=Order id=100
+Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls shows them, cd <tab> opens one, cat reads the record
+→ erp.actions kind=Order id=100
+it may do: CL, VO, RE (do <code>; next shows the tree)
+```
+
+There Tab after `do ` offers `CL` and `VO` only (`RE` has no red1 word yet), and `run Co` completes to `"Copy Lines"`, the order window's own button.
+
+**Walk the menu.** `menu` shows the ERP menu as places: `cd <folder>` goes in (the start of its name is enough when only one entry starts that way), a window entry takes you to its kind, and `cd ..` (or Shift+Tab) goes back up one folder. The prompt shows the path. Each entry is marked: ▸ a folder (how many entries it holds), W a window (and its table), P a process, R a report, X a form, F a workflow. `red1 menu` on its own still opens the menu on a full screen.
+
+<!-- run: red1_menu_walk -->
+```text
+$ printf 'menu\ncd Quote\ncd "Sales Orders"\ncd "Sales Order"\npwd\n' | node common/door/red1.js 2>/dev/null
+→ mis.menu
+menu: 15 entries; cd <name> goes in, cd .. goes back
+  ▸ System Admin (6)
+  ▸ Application Dictionary (40)
+  ▸ Partner Relations (7)
+  ▸ Quote-to-Invoice (Sales) (6)
+  ▸ Requisition-to-Invoice (Purchasing) (16)
+  ▸ Returns (5)
+  ▸ Open Items (Financial Movements and Aging) (32)
+  ▸ Material Management and Pricing (22)
+  ▸ Project Management (14)
+  ▸ Performance Analysis and Accounting (17)
+  ▸ Assets (6)
+  ▸ Manufacturing (10)
+  ▸ Maintenance Request (3)
+  W Cost Center · C_CostCenter
+  W Department · C_Department
+Quote-to-Invoice (Sales): 6 entries; cd <name> goes in, cd .. goes back
+  ▸ Sales and Marketing (9)
+  ▸ Sales Orders (13)
+  ▸ Shipments (7)
+  ▸ Sales Invoices (5)
+  ▸ Invoice Inquiry (13)
+  ▸ Sales Management (6)
+Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd <name> goes in, cd .. goes back
+  W Sales Order · C_Order
+  R Order Detail
+  R Open Orders
+  R Order Transactions
+  P Quote convert
+  P RePrice Order/Invoice
+  P Generate PO from Sales Order
+  P Reopen Order
+  P Order Batch Process
+  W POS Key Layout · C_POSKeyLayout
+  P POS Key Generate
+  W POS Terminal · C_POS
+  W POS Payment · C_POSPayment
+→ mis.describe kind=C_Order
+Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
+menu="Quote-to-Invoice (Sales)/Sales Orders" kind=Order
+```
+
 **Report a gap.** Some answers say that red1 lacks something, as opposed to you having mistyped. The engine marks those, and in a session red1 prints one line after the answer. A typo or a legacy refusal is not a gap and prints nothing extra. `report` then shows a draft (the line, the reason, the red1 version, the platform, the last log lines, your paths masked) and offers a GitHub issue or an email; red1 sends nothing itself, your own browser or mail program does:
 
 <!-- run: red1_gap -->
@@ -350,10 +416,11 @@ The words above are the ones to learn first. The rest, each a short form of a do
 
 | Word | What it does |
 |---|---|
-| `pwd` · `cd ..` · `history` · `role <id>` · `login <user>` | where you are; back; the lines typed; act as a role; say who you are (asked only in a client with more than one user with an email; new records carry your user) |
+| `pwd` · `cd ..` · `history` · `!!` · `!3` · `role <id>` · `login <user>` | where you are; back; the lines typed (earlier sessions too, numbered); run the last line again; run line 3; act as a role; say who you are (asked only in a client with more than one user with an email; new records carry your user) |
 | `sum <column>` · `cat <id>` · `rm <id>` | add a column; show one record; delete one |
 | `ninja <file>` · `load <file.csv>` · `diff <file.csv>` | stage a Ninja workbook or CSV; load rows from a file; compare a file with the records |
-| `menu` | the ERP menu, on a screen |
+| `bim` · `mis` · `erp` | go into a group: help, Tab and the suggestions offer only its words (`cd ..` or Shift+Tab backs out) |
+| `menu` | the ERP menu, walked like folders with `cd`; `red1 menu` opens it on a full screen |
 | `cd Project 990000` · `ls` · `cd Phase` | enter a record as a place: `ls` lists its tabs with their record counts, `cd <tab>` opens one, `cd ..` goes back up |
 | `status` | in a project: its earned value (PV, EV, AC, SPI and CPI per phase) |
 | `vo` | in a building: the change between the model and its Project Order, issued as a Variation Order (asks y/N; approve it with `do CO <number>`) |
