@@ -2,19 +2,20 @@
 Scope: **SPEC and phase ledger** for ONE vocabulary the CLI and the guides both read: a keyed message catalog and a help catalog over the Application Dictionary, with a short/long level and a locale. Read the log after every run (exit code is not evidence). Spec first, witness with a falsifier next, code last; honour until this file is marked DONE.
 Background, measurements and prior art are in `prompts/DOCS_I18N.md` §4b-§4d (owner ideas of 2026-11-16: shared vocabulary for CLI and guides, a `Student` level = the long text, reuse the legacy element/message model, remove the copied Help). This file owns the BUILD; that file keeps the findings.
 
-## ▶▶▶ RESUME HERE (written 2026-11-18, updated the same day after items 2 and 6; the next "resume message" session starts here)
+## ▶▶▶ RESUME HERE (written 2026-11-18, updated the same day after items 1, 2, 5 and 6; left: items 3 and 4 wait on another session or a Thai pack; the only small item free to take is item 5's drag-witness gap; the next "resume message" session starts here)
 **Start:** (1) read this block; (2) `git fetch origin` in `~/bim-compiler` and `~/bim-ootb` (ff-only, clean tree) and `git worktree list` BEFORE any `git worktree add`; (3) say in one line what you will do; spec before code, a witness with a falsifier, read the log not the exit code.
 **State (all MERGED, each with a §-RESULT in this file):**
 - **The one query core is COMPLETE** (§18 design `prompts/HELP_QUERY_CORE_DESIGN.md`, §19.1-§19.6): grammar #3189, core + ERP index #3192, ERP box + `erp.ask` #3197, Viewer/Modeller panels #3203, Did-you-mean #3211, `#<number>`/New/GlobalId #3212. Witnesses: W-PREFIX, W-HQ-GENERIC/SELF/WORDS/BM25/RANK-TWIN/COST/LEGACY-SUPERSET/BOX/DYM/DOC/NEW/GUID, H-SUPERSET.
 - **Viewer i18n 0 leaks in all 18 locales** (§14.8 #3190, §14.8.1 #3193): `§W-VIEWER-I18N PASS 91/0`.
 - Owner decisions 2026-11-17: Q1 `#` for documents (legacy `/` only in a GlobalSearch port); Q2 superseded → `#` + GlobalId prefix in the BIM apps; Q3 default Thai after packed languages; **films EN only, other languages ad hoc on request** (item 5 closed).
 **Open, advised order:**
-1. **Owner's call, OPEN:** "Table" ranking (§19.3 RESULT): (a) keep score order inside tiers 1/2, or (b) legacy's label order (`MenuSearchController.java:187`) inside tiers 1/2, the score only for tier 3. Advice (b). 980 of 5,526 name queries changed their top card when the core went in.
+1. ~~"Table" ranking~~ **DONE 2026-11-18** (owner "agree" to (b); §19.7 RESULT, bim-ootb #3233): legacy's label order inside tiers 1 and 2, alias-only hits after; first window = legacy's on 1,800 of 1,800 starts-with probes (was 951).
 2. ~~Hand to the ERP parity lane~~ **DONE 2026-11-18**: written into `ERP_IDEMPIERE_UX_PARITY.md` ▶ START HERE, Open not blocked (toolbar New ignores `winSet[w].rw`; the seed grants every role read-write).
 3. **Waiting on the CLI session** (notified 2026-11-17 of D4/D5; checked 2026-11-18: `assist_core.js` unchanged on main, still waiting): §42 S3 (`assist_core.js:29` short-name limit) → then delete `GUARD_MIN_CHARS` in `common/help/help_dym.js` (one line); the shell side of `#` (§41).
 4. Thai help pack (Q3 default) when a Thai pack exists; process/doctype records are indexed but the window-only role gate hides them (§19.3 caveat).
-5. Modeller guide PARAGRAPHS (§14.5.1, ~830 translations): owner's call, advice skip. §14.5 step-1 gap: 2 of 13 `A._makeDraggable` callers dragged by a witness.
+5. ~~Modeller guide PARAGRAPHS~~ **CLOSED 2026-11-18, skipped** (owner "agree" to the advice). Still open from that line: §14.5 step-1 gap, 2 of 13 `A._makeDraggable` callers dragged by a witness.
 6. ~~Witness defect named in §14.8 RESULT~~ **DONE 2026-11-18** (§14.8.2 RESULT, bim-ootb #3220): the contract's lines now reach the witness's own .log via `run(sink)`; the 25 bare callers and the W-ERP-I18N failures on main are handed to their lanes.
+**Lesson (2026-11-18), (a) broken again:** §19.3 gave the owner a legacy example ("Table and Column first") that was never checked against legacy's comparator or the role's menu. Before an owner's call, run the legacy rule (`HelpQuery.legacyFilter`) on the example first.
 **Lessons (2026-11-17):** (a) a spec premise stated to the owner must be checked in the DATA first (Q2 assumed IFC numbers were stored; they are not); (b) `sw.js` conflicts on every PR in a busy day: merge `origin/main` right before push, take max+1; (c) a bot may enable auto-merge on an agent's PR: verify before, not after, it can land.
 
 ## ▶▶ (earlier on 2026-11-17) the state list and the AGREED design — superseded by the block above, kept for the design and decisions
@@ -1583,6 +1584,31 @@ Both boxes read input through `HelpGrammar.parse`. **6a ERP:** `#<number>` searc
 - **Found for the ERP parity lane (NOT fixed here, twin rule):** (1) the TOOLBAR's New ignores `winSet[w].rw` (the help box's New does not); (2) the shipped `ad_seed.db` grants every role read-write on every window, so the role gate is vacuous on shipped data: W-HQ-DOC/NEW prove it on a role-patched copy.
 
 **THE QUERY CORE IS COMPLETE (design §6 steps 1-6 all merged: #3189, #3192, #3197, #3203, #3211, #3212).**
+
+### 19.7 Step 7: legacy's label order inside tiers 1 and 2 (owner 2026-11-18: *"agree"* to RESUME item 1 (b) and item 5 skip)
+**Issue it removes:** inside tiers 1 and 2 the core orders by BM25 score, while legacy's menu search orders the same names by label (`MenuSearchController.java:186-191`, `o1.getLabel().compareTo(o2.getLabel())`). (§19.3 RESULT: 980 of 5,526 name queries changed their top card when the core went in.) **CORRECTED 2026-11-18, measured before code, lesson (a) again:** §19.3's example was wrong. Java's `compareTo` is case-sensitive and `'A'` (0x41) sorts before `'a'` (0x61), so legacy also lists *Table Attribute Instance* before *Table and Column*. For 3+ characters legacy's first card is a "contains" hit: over all windows it is *Depreciation Tables*, and window 100 is not in role 102's menu at all. The measured gap is the one below (§HQ_FIRST_VS_LEGACY): before this step the box's first window equals legacy's first on 951 of 1,800 starts-with probes.
+**Rule (agreed (b)):** tier first, as now. **Inside tier 1 and inside tier 2, the rows whose tier comes from their own label come first, ordered by the label `n` (raw text, before folding) by UTF-16 code unit** (`lt`, which is Java's `String.compareTo`). These are exactly legacy's rows. **Rows lifted into the tier only by an alias come after them, by score** (legacy would not show them, so legacy has no order for them; MEASURED: sorting them by label too put *Bill of Materials and Formula* first for "ma", by its alias "Manufacturing Order BOM"). After that come kind order, then id, as now. Tier 0 and tier 3 keep the score order. One comparator in `common/help/help_query.js`, so the ERP box, `erp.ask`, and the Viewer and Modeller panels all change together (generic, no app branch).
+**Known differences from legacy, stated and not hidden:** (1) for 3+ characters legacy mixes "starts with" and "contains" in one label-sorted list, and we keep tier 1 (starts) before tier 2 (contains), as the agreed tiers of design D3 say. (2) Legacy then moves the user's recent items to the top (`moveRecentItems()`, :180); the twin has no recent-items list, so this is not ported. (3) We also match aliases and descriptions; the order applies to whatever lands in tiers 1 and 2.
+**Claims (extend W-HQ-LEGACY-SUPERSET; falsifier `HQ_BREAK=scoretier` = the score order back inside tiers 1 and 2):**
+- **L3 the order is legacy's.** For every probe (N = the role's menu windows x 2 probes x the built languages, as for L2), and for each of tiers 1 and 2: the box's windows that legacy also shows and whose OWN label puts them in that tier (the witness's own reading), in the box's order, equal legacy's order of the same windows. The result is X of N judged tiers (a tier holding 2+ such windows), and the first mismatch is named. `scoretier` FAILS L3. If no tier is judged, the verdict is INCONCLUSIVE.
+- **L4 the first card.** For every probe that legacy filters by "starts with" (accent-deleted length under 3 UTF-16 units), the box's first window is legacy's first window, X of N. A tier-0 exact name is excepted and counted. `scoretier` FAILS L4.
+- **L5 changed answers, stated (printed, not pass/fail):** first-window agreement with legacy, now vs `scoretier` (= main's order), split into starts-with and contains probes; plus en_US "Table" both ways.
+- **Regressions:** W-HQ-RANK-TWIN (browser == Node), W-HQ-SELF, W-HQ-BOX, W-HQ-DYM, W-HQ-DOC, W-HQ-NEW, W-HELP-SHOWCASE and W-ERP-ASK are re-run. Any changed expected answer is listed with the old and the new answer, never re-baselined silently.
+**Item 5 (Modeller guide paragraphs, ~830 translations): CLOSED, skipped** (owner 2026-11-18 *"agree"* to the advice).
+
+### 19.7 RESULT (2026-11-18): BUILT + MERGED, bim-ootb #3233 (`d7816022`)
+- `common/help/help_query.js`: `tierOf` also says whether the tier came from the label itself. Inside tiers 1 and 2: label hits first by raw label (`lt`), then alias-only hits by score. Falsifier `HQ_BREAK=scoretier`. `help_query.js?v=2`; sw erp v1102, modeller v287, viewer v1743.
+- **Witnessed (logs read), W-HQ-LEGACY-SUPERSET `pass=4 fail=0`:**
+  - L1 3,297/3,297 and L2 3,297/3,297 (22,860 legacy hits inside).
+  - **L3 label order: 2,476 of 2,476 judged tiers.**
+  - **L4 first window = legacy's first on starts-with probes: 1,800 of 1,800 (before: 951).**
+  - L5: contains probes 1,185 vs 958 of 1,345 (they differ by design, the tier split). Role 102 "Table": now *Depreciation Tables* = legacy's first (before: *Print Table Format*).
+  - Red `scoretier`: L3 1,763/2,476 and L4 951/1,800 FAIL. Red `nolegacytier`: L2 and L4 FAIL.
+- **Regressions, branch vs main, 16 witnesses, all green on the branch; no expected answer changed:**
+  - HQ_SELF 82, RANK_TWIN 42, BOX 4, DYM 24, DOC 5, NEW 4, GUID 12, COST 37, BM25 6, WORDS 6, GENERIC 4.
+  - W-PREFIX 21; H_SUPERSET 46 (main gave 43 + 1 INCONCLUSIVE, a zh page timeout); HELP_SHOWCASE 23; ERP_ASK 11; W-HOWTO 5 + page H4a-e.
+- **Named, not fixed:** W-HOWTO's page half needs `NODE_PATH=~/bim-compiler/node_modules` (puppeteer), on main too; with the bim-ootb path only it prints `§FAIL W-HOWTO Error: Cannot find module 'puppeteer'` and exits 1 while its summary line reads `pass=5 fail=0`.
+- **Owner's call made on a wrong example:** the owner said "agree" to (b) after §19.3's claim that legacy shows *Table and Column* first. The data says it does not (case-sensitive compareTo, and the window is not in role 102's menu). The rule built is still (b), and the measured gain is L4 above.
 
 ## STATUS
 2026-11-18: query core COMPLETE (§19.6 #3212); RESUME block rewritten.
