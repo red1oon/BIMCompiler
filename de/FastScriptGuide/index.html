@@ -3893,7 +3893,7 @@ Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls s
 → erp.actions kind=Order id=100
 it may do: CL, VO, RE (do &lt;code&gt;; next shows the tree)
 </code></pre></div>
-<p>Dort bietet Tab nach <code>do</code> nur <code>CL</code>, <code>VO</code> und <code>RE</code> an (<code>RE</code> reaktiviert den Auftrag: <code>do RE</code>), und <code>run Co</code> wird zu <code>"Copy Lines"</code> ergänzt, der eigenen Schaltfläche des Auftragsfensters.</p>
+<p>Dort bietet Tab nach <code>do</code> nur <code>CL</code>, <code>VO</code> und <code>RE</code> an, in der Reihenfolge der eigenen Schaltflächen des Fensters (Close, Void, Re-Activate; <code>RE</code> reaktiviert den Auftrag: <code>do RE</code>), und <code>run Co</code> wird zu <code>"Copy Lines"</code> ergänzt, der eigenen Schaltfläche des Auftragsfensters.</p>
 <p><strong>Das Menü durchgehen.</strong> <code>menu</code> zeigt das ERP-Menü als Orte: <code>cd &lt;folder&gt;</code> geht hinein (der Anfang des Namens genügt, wenn nur ein Eintrag so beginnt), ein Fenster-Eintrag bringt Sie zu seiner Art, und <code>cd ..</code> (oder Shift+Tab) geht einen Ordner zurück. Die Eingabezeile zeigt den Pfad. Jeder Eintrag ist markiert: ▸ ein Ordner (wie viele Einträge er hat), W ein Fenster (und seine Tabelle), P ein Prozess, R ein Bericht, X ein Formular, F ein Workflow. <code>red1 menu</code> allein öffnet das Menü weiterhin auf einem ganzen Bildschirm.</p>
 <!-- run: red1_menu_walk -->
 <div class="highlight"><pre><span></span><code>$ printf &#39;menu\ncd Quote\ncd &quot;Sales Orders&quot;\ncd &quot;Sales Order&quot;\npwd\n&#39; | node common/door/red1.js 2&gt;/dev/null
@@ -3938,6 +3938,33 @@ Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd &lt;name&gt; goes in, cd .
 → mis.describe kind=C_Order
 Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
 menu=&quot;Quote-to-Invoice (Sales)/Sales Orders&quot; kind=Order
+</code></pre></div>
+<p><strong>Vom Menü in einen Datensatz.</strong> In einer Art betritt <code>cd &lt;number&gt;</code> diesen Datensatz, und die Eingabeaufforderung behält den Menüpfad; <code>cd ..</code> geht wieder hinaus. Im Datensatz benennen <code>do</code> und <code>next</code> ihn über seine ID, sodass eine Nummer, die zwei Datensätze teilen (hier 80000), nie ein Problem ist. Eine Aktion gibt aus, was sie getan hat: die Statusänderung, die berührten Belege, wie viele Änderungen sie behalten hat und was der Datensatz jetzt tun darf; Tab nach <code>do</code> bietet dann diese neuen Codes an. Die Ordnerlisten sind im Block unten weggelassen:</p>
+<!-- run: red1_walk_record -->
+<div class="highlight"><pre><span></span><code>$ rm -f /tmp/fast_guide_walkrec.ops; printf &#39;menu\ncd Quote\ncd &quot;Sales Orders&quot;\ncd &quot;Sales Order&quot;\ncd 100\npwd\ndo RE\ndo CO\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_walkrec.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_walkrec.journal node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39; | grep -vE &#39;^  [▸WRPXF] &#39;
+→ mis.menu
+menu: 15 entries; cd &lt;name&gt; goes in, cd .. goes back
+Quote-to-Invoice (Sales): 6 entries; cd &lt;name&gt; goes in, cd .. goes back
+Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd &lt;name&gt; goes in, cd .. goes back
+→ mis.describe kind=C_Order
+Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
+→ mis.describe kind=100
+→ mis.read kind=Order number=100
+→ mis.read kind=Order id=100
+Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls shows them, cd &lt;tab&gt; opens one, cat reads the record
+→ erp.actions kind=Order id=100
+it may do: CL, VO, RE (do &lt;code&gt;; next shows the tree)
+menu=&quot;Quote-to-Invoice (Sales)/Sales Orders&quot; kind=Order id=100
+→ erp.reactivate kind=Order id=100
+ok · erp.reactivate
+Re-activate: done · Order 80000 CO → IP (In Progress) · grand total 50.35
+  related: Invoice 2 (RE 2) · Shipment/Receipt 2 (RE 2)
+86 change(s) kept · it may do: CO, PR, VO
+→ erp.complete kind=Order id=100
+ok · erp.complete
+Complete: done · Order 80000 IP → CO (Completed) · grand total 50.35
+  related: Invoice 3 (RE 2, CO 1) · Shipment/Receipt 3 (RE 2, CO 1)
+59 change(s) kept · it may do: CL, VO, RE
 </code></pre></div>
 <p><strong>Eine Lücke melden.</strong> Manche Antworten sagen, dass red1 etwas fehlt, im Gegensatz dazu, dass Sie sich vertippt haben. Die Engine markiert diese, und in einer Sitzung gibt red1 nach der Antwort eine Zeile aus. Ein Tippfehler oder eine Legacy-Ablehnung ist keine Lücke und gibt nichts Zusätzliches aus. <code>report</code> zeigt dann einen Entwurf (die Zeile, den Grund, die red1-Version, die Plattform, die letzten Protokollzeilen, Ihre Pfade maskiert) und bietet ein GitHub-Issue oder eine E-Mail an; red1 sendet nichts selbst, Ihr eigener Browser oder Ihr Mailprogramm tut es:</p>
 <!-- run: red1_gap -->
@@ -4005,8 +4032,8 @@ not done: cd project
 <td>das ERP-Menü, wie Ordner mit <code>cd</code> durchgegangen; <code>red1 menu</code> öffnet es auf einem ganzen Bildschirm</td>
 </tr>
 <tr>
-<td><code>cd Project 990000</code> · <code>ls</code> · <code>cd Phase</code></td>
-<td>einen Datensatz als Ort betreten: <code>ls</code> listet seine Reiter mit ihrer Datensatzzahl, <code>cd &lt;tab&gt;</code> öffnet einen, <code>cd ..</code> geht wieder hoch</td>
+<td><code>cd Project 990000</code> · <code>cd 100</code> · <code>ls</code> · <code>cd Phase</code></td>
+<td>einen Datensatz als Ort betreten (<code>cd &lt;number&gt;</code> innerhalb seiner Art, auch aus dem Menü-Rundgang): <code>ls</code> listet seine Reiter mit ihrer Datensatzzahl, <code>cd &lt;tab&gt;</code> öffnet einen, <code>cd ..</code> geht wieder hoch</td>
 </tr>
 <tr>
 <td><code>status</code></td>

@@ -3893,7 +3893,7 @@ Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls s
 → erp.actions kind=Order id=100
 it may do: CL, VO, RE (do &lt;code&gt;; next shows the tree)
 </code></pre></div>
-<p>そこでは <code>do</code> の後の Tab は <code>CL</code>、<code>VO</code>、<code>RE</code> だけを出し（<code>RE</code> は注文を再有効化します：<code>do RE</code>）、<code>run Co</code> は注文ウィンドウ自身のボタン <code>"Copy Lines"</code> に補完されます。</p>
+<p>そこでは <code>do</code> の後の Tab は <code>CL</code>、<code>VO</code>、<code>RE</code> だけを、ウィンドウ自身のボタンの順（Close、Void、Re-Activate）で出し（<code>RE</code> は注文を再有効化します：<code>do RE</code>）、<code>run Co</code> は注文ウィンドウ自身のボタン <code>"Copy Lines"</code> に補完されます。</p>
 <p><strong>メニューをたどる。</strong> <code>menu</code> は ERP メニューを場所として表示します。<code>cd &lt;folder&gt;</code> で中に入り（その始まり方をする項目が一つだけなら、名前の先頭だけで足ります）、ウィンドウの項目はその種類へ連れて行き、<code>cd ..</code>（または Shift+Tab）で一つ上のフォルダーに戻ります。プロンプトにパスが出ます。各項目には印があります：▸ フォルダー（中の項目数）、W ウィンドウ（とそのテーブル）、P プロセス、R レポート、X フォーム、F ワークフロー。<code>red1 menu</code> 単独では、これまでどおり全画面のメニューが開きます。</p>
 <!-- run: red1_menu_walk -->
 <div class="highlight"><pre><span></span><code>$ printf &#39;menu\ncd Quote\ncd &quot;Sales Orders&quot;\ncd &quot;Sales Order&quot;\npwd\n&#39; | node common/door/red1.js 2&gt;/dev/null
@@ -3938,6 +3938,33 @@ Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd &lt;name&gt; goes in, cd .
 → mis.describe kind=C_Order
 Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
 menu=&quot;Quote-to-Invoice (Sales)/Sales Orders&quot; kind=Order
+</code></pre></div>
+<p><strong>メニューからレコードへ。</strong> 種類の中で <code>cd &lt;number&gt;</code> を打つとそのレコードに入り、プロンプトはメニューのパスを保ちます。<code>cd ..</code> で外へ戻ります。レコードの中では <code>do</code> と <code>next</code> がそれを ID で指すので、二つのレコードが同じ番号（ここでは 80000）を持っていても問題になりません。アクションは何をしたかを表示します：ステータスの変化、触れた伝票、保持した変更の数、そしてレコードが今できること。その後 <code>do</code> の後の Tab はその新しいコードを出します。下のブロックではフォルダの一覧を省いています：</p>
+<!-- run: red1_walk_record -->
+<div class="highlight"><pre><span></span><code>$ rm -f /tmp/fast_guide_walkrec.ops; printf &#39;menu\ncd Quote\ncd &quot;Sales Orders&quot;\ncd &quot;Sales Order&quot;\ncd 100\npwd\ndo RE\ndo CO\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_walkrec.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_walkrec.journal node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39; | grep -vE &#39;^  [▸WRPXF] &#39;
+→ mis.menu
+menu: 15 entries; cd &lt;name&gt; goes in, cd .. goes back
+Quote-to-Invoice (Sales): 6 entries; cd &lt;name&gt; goes in, cd .. goes back
+Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd &lt;name&gt; goes in, cd .. goes back
+→ mis.describe kind=C_Order
+Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
+→ mis.describe kind=100
+→ mis.read kind=Order number=100
+→ mis.read kind=Order id=100
+Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls shows them, cd &lt;tab&gt; opens one, cat reads the record
+→ erp.actions kind=Order id=100
+it may do: CL, VO, RE (do &lt;code&gt;; next shows the tree)
+menu=&quot;Quote-to-Invoice (Sales)/Sales Orders&quot; kind=Order id=100
+→ erp.reactivate kind=Order id=100
+ok · erp.reactivate
+Re-activate: done · Order 80000 CO → IP (In Progress) · grand total 50.35
+  related: Invoice 2 (RE 2) · Shipment/Receipt 2 (RE 2)
+86 change(s) kept · it may do: CO, PR, VO
+→ erp.complete kind=Order id=100
+ok · erp.complete
+Complete: done · Order 80000 IP → CO (Completed) · grand total 50.35
+  related: Invoice 3 (RE 2, CO 1) · Shipment/Receipt 3 (RE 2, CO 1)
+59 change(s) kept · it may do: CL, VO, RE
 </code></pre></div>
 <p><strong>不足を報告する。</strong> 答えの中には、あなたの打ち間違いではなく、red1 に何かが足りないと告げるものがあります。エンジンがそれに印を付け、セッションでは red1 が答えのあとに一行表示します。打ち間違いや従来の拒否は不足ではなく、余計な表示はありません。<code>report</code> はそのあと下書き（行、理由、red1 のバージョン、プラットフォーム、最後のログ行、パスは伏せ字）を示し、GitHub の issue かメールを提案します。red1 自身は何も送らず、送るのはあなたのブラウザーまたはメールソフトです：</p>
 <!-- run: red1_gap -->
@@ -4005,8 +4032,8 @@ not done: cd project
 <td>ERP メニューを <code>cd</code> でフォルダーのようにたどる。<code>red1 menu</code> は全画面で開く</td>
 </tr>
 <tr>
-<td><code>cd Project 990000</code> · <code>ls</code> · <code>cd Phase</code></td>
-<td>レコードを場所として開く：<code>ls</code> はそのタブをレコード件数とともに一覧し、<code>cd &lt;tab&gt;</code> でタブを開き、<code>cd ..</code> で上へ戻る</td>
+<td><code>cd Project 990000</code> · <code>cd 100</code> · <code>ls</code> · <code>cd Phase</code></td>
+<td>レコードを場所として開く（その種類の中で <code>cd &lt;number&gt;</code>、メニューを歩いた先からも）：<code>ls</code> はそのタブをレコード件数とともに一覧し、<code>cd &lt;tab&gt;</code> でタブを開き、<code>cd ..</code> で上へ戻る</td>
 </tr>
 <tr>
 <td><code>status</code></td>

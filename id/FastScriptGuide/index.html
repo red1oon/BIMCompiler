@@ -3893,7 +3893,7 @@ Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls s
 → erp.actions kind=Order id=100
 it may do: CL, VO, RE (do &lt;code&gt;; next shows the tree)
 </code></pre></div>
-<p>Di sana Tab setelah <code>do</code> hanya menawarkan <code>CL</code>, <code>VO</code>, dan <code>RE</code> (<code>RE</code> mengaktifkan kembali pesanan: <code>do RE</code>), dan <code>run Co</code> dilengkapi menjadi <code>"Copy Lines"</code>, tombol milik jendela pesanan itu sendiri.</p>
+<p>Di sana Tab setelah <code>do</code> hanya menawarkan <code>CL</code>, <code>VO</code>, dan <code>RE</code>, sesuai urutan tombol jendela itu sendiri (Close, Void, Re-Activate; <code>RE</code> mengaktifkan kembali pesanan: <code>do RE</code>), dan <code>run Co</code> dilengkapi menjadi <code>"Copy Lines"</code>, tombol milik jendela pesanan itu sendiri.</p>
 <p><strong>Menjelajahi menu.</strong> <code>menu</code> menampilkan menu ERP sebagai tempat: <code>cd &lt;folder&gt;</code> masuk ke dalamnya (awal namanya sudah cukup bila hanya satu entri yang dimulai begitu), entri jendela membawa Anda ke jenisnya, dan <code>cd ..</code> (atau Shift+Tab) naik satu folder. Prompt menunjukkan jalurnya. Setiap entri diberi tanda: ▸ sebuah folder (berapa entri isinya), W sebuah jendela (dan tabelnya), P sebuah proses, R sebuah laporan, X sebuah formulir, F sebuah alur kerja. <code>red1 menu</code> sendiri tetap membuka menu di satu layar penuh.</p>
 <!-- run: red1_menu_walk -->
 <div class="highlight"><pre><span></span><code>$ printf &#39;menu\ncd Quote\ncd &quot;Sales Orders&quot;\ncd &quot;Sales Order&quot;\npwd\n&#39; | node common/door/red1.js 2&gt;/dev/null
@@ -3938,6 +3938,33 @@ Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd &lt;name&gt; goes in, cd .
 → mis.describe kind=C_Order
 Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
 menu=&quot;Quote-to-Invoice (Sales)/Sales Orders&quot; kind=Order
+</code></pre></div>
+<p><strong>Dari menu ke sebuah rekaman.</strong> Di dalam suatu jenis, <code>cd &lt;number&gt;</code> memasuki rekaman itu dan prompt tetap menyimpan jalur menu; <code>cd ..</code> keluar lagi. Di dalam rekaman, <code>do</code> dan <code>next</code> menyebutnya dengan id-nya, sehingga nomor yang dimiliki dua rekaman (di sini 80000) tidak pernah menjadi masalah. Sebuah aksi mencetak apa yang dilakukannya: perubahan status, dokumen yang disentuhnya, berapa perubahan yang disimpan, dan apa yang boleh dilakukan rekaman itu sekarang; Tab setelah <code>do</code> lalu menawarkan kode-kode baru itu. Daftar folder dihilangkan dari blok di bawah:</p>
+<!-- run: red1_walk_record -->
+<div class="highlight"><pre><span></span><code>$ rm -f /tmp/fast_guide_walkrec.ops; printf &#39;menu\ncd Quote\ncd &quot;Sales Orders&quot;\ncd &quot;Sales Order&quot;\ncd 100\npwd\ndo RE\ndo CO\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_walkrec.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_walkrec.journal node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39; | grep -vE &#39;^  [▸WRPXF] &#39;
+→ mis.menu
+menu: 15 entries; cd &lt;name&gt; goes in, cd .. goes back
+Quote-to-Invoice (Sales): 6 entries; cd &lt;name&gt; goes in, cd .. goes back
+Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd &lt;name&gt; goes in, cd .. goes back
+→ mis.describe kind=C_Order
+Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
+→ mis.describe kind=100
+→ mis.read kind=Order number=100
+→ mis.read kind=Order id=100
+Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls shows them, cd &lt;tab&gt; opens one, cat reads the record
+→ erp.actions kind=Order id=100
+it may do: CL, VO, RE (do &lt;code&gt;; next shows the tree)
+menu=&quot;Quote-to-Invoice (Sales)/Sales Orders&quot; kind=Order id=100
+→ erp.reactivate kind=Order id=100
+ok · erp.reactivate
+Re-activate: done · Order 80000 CO → IP (In Progress) · grand total 50.35
+  related: Invoice 2 (RE 2) · Shipment/Receipt 2 (RE 2)
+86 change(s) kept · it may do: CO, PR, VO
+→ erp.complete kind=Order id=100
+ok · erp.complete
+Complete: done · Order 80000 IP → CO (Completed) · grand total 50.35
+  related: Invoice 3 (RE 2, CO 1) · Shipment/Receipt 3 (RE 2, CO 1)
+59 change(s) kept · it may do: CL, VO, RE
 </code></pre></div>
 <p><strong>Melaporkan celah.</strong> Beberapa jawaban menyatakan bahwa red1 kekurangan sesuatu, bukan Anda yang salah ketik. Mesin menandainya, dan dalam sesi red1 mencetak satu baris setelah jawaban. Salah ketik atau penolakan lama bukan celah dan tidak mencetak tambahan. <code>report</code> lalu menampilkan draf (barisnya, alasannya, versi red1, platform, baris log terakhir, jalur Anda disamarkan) dan menawarkan isu GitHub atau email; red1 tidak mengirim apa pun sendiri, peramban atau program surel Anda yang mengirim:</p>
 <!-- run: red1_gap -->
@@ -4005,8 +4032,8 @@ not done: cd project
 <td>menu ERP, dijelajahi seperti folder dengan <code>cd</code>; <code>red1 menu</code> membukanya di satu layar penuh</td>
 </tr>
 <tr>
-<td><code>cd Project 990000</code> · <code>ls</code> · <code>cd Phase</code></td>
-<td>memasuki rekaman sebagai tempat: <code>ls</code> mendaftar tab-nya beserta jumlah rekaman, <code>cd &lt;tab&gt;</code> membuka satu, <code>cd ..</code> naik kembali</td>
+<td><code>cd Project 990000</code> · <code>cd 100</code> · <code>ls</code> · <code>cd Phase</code></td>
+<td>memasuki rekaman sebagai tempat (<code>cd &lt;number&gt;</code> di dalam jenisnya, juga dari penelusuran menu): <code>ls</code> mendaftar tab-nya beserta jumlah rekaman, <code>cd &lt;tab&gt;</code> membuka satu, <code>cd ..</code> naik kembali</td>
 </tr>
 <tr>
 <td><code>status</code></td>

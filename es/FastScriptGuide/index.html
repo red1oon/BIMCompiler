@@ -3893,7 +3893,7 @@ Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls s
 → erp.actions kind=Order id=100
 it may do: CL, VO, RE (do &lt;code&gt;; next shows the tree)
 </code></pre></div>
-<p>Allí Tab después de <code>do</code> ofrece solo <code>CL</code>, <code>VO</code> y <code>RE</code> (<code>RE</code> reactiva el pedido: <code>do RE</code>), y <code>run Co</code> se completa a <code>"Copy Lines"</code>, el propio botón de la ventana del pedido.</p>
+<p>Allí Tab después de <code>do</code> ofrece solo <code>CL</code>, <code>VO</code> y <code>RE</code>, en el orden de los propios botones de la ventana (Close, Void, Re-Activate; <code>RE</code> reactiva el pedido: <code>do RE</code>), y <code>run Co</code> se completa a <code>"Copy Lines"</code>, el propio botón de la ventana del pedido.</p>
 <p><strong>Recorrer el menú.</strong> <code>menu</code> muestra el menú ERP como lugares: <code>cd &lt;folder&gt;</code> entra (basta el comienzo de su nombre cuando solo una entrada empieza así), una entrada de ventana le lleva a su tipo, y <code>cd ..</code> (o Shift+Tab) sube una carpeta. El indicador muestra la ruta. Cada entrada está marcada: ▸ una carpeta (cuántas entradas tiene), W una ventana (y su tabla), P un proceso, R un informe, X un formulario, F un flujo de trabajo. <code>red1 menu</code> por sí solo sigue abriendo el menú en una pantalla completa.</p>
 <!-- run: red1_menu_walk -->
 <div class="highlight"><pre><span></span><code>$ printf &#39;menu\ncd Quote\ncd &quot;Sales Orders&quot;\ncd &quot;Sales Order&quot;\npwd\n&#39; | node common/door/red1.js 2&gt;/dev/null
@@ -3938,6 +3938,33 @@ Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd &lt;name&gt; goes in, cd .
 → mis.describe kind=C_Order
 Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
 menu=&quot;Quote-to-Invoice (Sales)/Sales Orders&quot; kind=Order
+</code></pre></div>
+<p><strong>Del menú a un registro.</strong> En un tipo, <code>cd &lt;number&gt;</code> entra en ese registro y el indicador conserva la ruta del menú; <code>cd ..</code> vuelve a salir. Dentro del registro, <code>do</code> y <code>next</code> lo nombran por su id, así que un número que comparten dos registros (aquí 80000) nunca es un problema. Una acción imprime lo que hizo: el cambio de estado, los documentos que tocó, cuántos cambios guardó y lo que el registro puede hacer ahora; Tab después de <code>do</code> ofrece entonces esos códigos nuevos. Las listas de carpetas se omiten en el bloque de abajo:</p>
+<!-- run: red1_walk_record -->
+<div class="highlight"><pre><span></span><code>$ rm -f /tmp/fast_guide_walkrec.ops; printf &#39;menu\ncd Quote\ncd &quot;Sales Orders&quot;\ncd &quot;Sales Order&quot;\ncd 100\npwd\ndo RE\ndo CO\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_walkrec.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_walkrec.journal node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39; | grep -vE &#39;^  [▸WRPXF] &#39;
+→ mis.menu
+menu: 15 entries; cd &lt;name&gt; goes in, cd .. goes back
+Quote-to-Invoice (Sales): 6 entries; cd &lt;name&gt; goes in, cd .. goes back
+Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd &lt;name&gt; goes in, cd .. goes back
+→ mis.describe kind=C_Order
+Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
+→ mis.describe kind=100
+→ mis.read kind=Order number=100
+→ mis.read kind=Order id=100
+Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls shows them, cd &lt;tab&gt; opens one, cat reads the record
+→ erp.actions kind=Order id=100
+it may do: CL, VO, RE (do &lt;code&gt;; next shows the tree)
+menu=&quot;Quote-to-Invoice (Sales)/Sales Orders&quot; kind=Order id=100
+→ erp.reactivate kind=Order id=100
+ok · erp.reactivate
+Re-activate: done · Order 80000 CO → IP (In Progress) · grand total 50.35
+  related: Invoice 2 (RE 2) · Shipment/Receipt 2 (RE 2)
+86 change(s) kept · it may do: CO, PR, VO
+→ erp.complete kind=Order id=100
+ok · erp.complete
+Complete: done · Order 80000 IP → CO (Completed) · grand total 50.35
+  related: Invoice 3 (RE 2, CO 1) · Shipment/Receipt 3 (RE 2, CO 1)
+59 change(s) kept · it may do: CL, VO, RE
 </code></pre></div>
 <p><strong>Informar de una laguna.</strong> Algunas respuestas dicen que a red1 le falta algo, en lugar de que usted se haya equivocado al escribir. El motor las marca, y en una sesión red1 imprime una línea tras la respuesta. Un error de tecleo o un rechazo heredado no es una laguna y no imprime nada extra. <code>report</code> muestra entonces un borrador (la línea, el motivo, la versión de red1, la plataforma, las últimas líneas del registro, sus rutas enmascaradas) y ofrece una incidencia de GitHub o un correo; red1 no envía nada por sí mismo, lo hace su propio navegador o programa de correo:</p>
 <!-- run: red1_gap -->
@@ -4005,8 +4032,8 @@ not done: cd project
 <td>el menú ERP, recorrido como carpetas con <code>cd</code>; <code>red1 menu</code> lo abre en una pantalla completa</td>
 </tr>
 <tr>
-<td><code>cd Project 990000</code> · <code>ls</code> · <code>cd Phase</code></td>
-<td>entrar en un registro como en un lugar: <code>ls</code> lista sus pestañas con su número de registros, <code>cd &lt;tab&gt;</code> abre una, <code>cd ..</code> vuelve arriba</td>
+<td><code>cd Project 990000</code> · <code>cd 100</code> · <code>ls</code> · <code>cd Phase</code></td>
+<td>entrar en un registro como en un lugar (<code>cd &lt;number&gt;</code> dentro de su tipo, también desde el recorrido del menú): <code>ls</code> lista sus pestañas con su número de registros, <code>cd &lt;tab&gt;</code> abre una, <code>cd ..</code> vuelve arriba</td>
 </tr>
 <tr>
 <td><code>status</code></td>
