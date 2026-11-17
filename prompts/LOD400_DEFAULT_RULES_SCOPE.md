@@ -251,3 +251,23 @@ Steel grade (PJAM: not stated), concrete cover on PJAM until ACI 318-19 is read,
 - **Output:** a copy `JPAM_gussets.db` built from `JPAM.db` (JPAM.db unchanged). Per joint, one assembly of IfcPlate (gusset) + IfcMechanicalFastener (bolt group) + IfcFastener (welds), each named "configuration only, capacity not checked". Change list `JPAM_gussets_changes.txt` in the PJAM change-list format.
 
 **Witnesses (`§GUS_*`):** SURVEY (57 judged) · IDENT · RULES (every generated dimension = its row or clause, and each clause's own min/max holds) · CLEAR + CLEAR_POST (re-checked on the written DB) · ECCENT (eccentricity per joint, mm, reported: not a pass/fail) · COUNTS (generated + refused by reason = 57) · DETERMINISM (two builds, same SHA-256) · break switch `GUS_BREAK=1` disables the clash refusal, so CLEAR_POST must FAIL. INCONCLUSIVE if 0 generated.
+
+### §8.1 Spec correction 2026-11-18 (after the probe, before any generator code)
+**Probe (read-only):**
+- The plane rule qualifies on 57 of 57 ends.
+- The brace AXIS meets a flange face on only 6 ends. 51 axes pass between the flanges (web or box wall), and 1 meets nothing.
+- The in-plane leg's thickness band overlaps a flange band on 47 ends and misses every flange on 10.
+- So §8's "the flange face the axis meets" is replaced. Attachment follows the **leg plane**, not the axis.
+
+The three open choices are decided as labelled defaults (`default: ours`), under the owner's ruling of 2026-11-18 that industry defaults may stand in where nothing is stated. The owner or engineer can override any of them as a rule row:
+1. **Which face:** the gusset sits on the face of the in-plane leg AWAY from the outstanding leg, so it never meets the brace's own other leg.
+2. **Contact and gap:** the gusset is OURS, so it is placed touching the support face it attaches to: flange face (lap, fillet along the flange edge) or web / box-wall face (T-joint, fillets both sides). The author's angle is never moved.
+   - The measured gap between the gusset and the angle leg becomes a **filler**, recorded per joint.
+   - AISC 360-16 §J5.2, read: a bolt through fillers ≤ 6 mm takes no shear reduction; above 6 mm a reduction or development applies. So each filler is tagged `≤ 6 mm` or `> 6 mm: engineer to check (§J5.2)`.
+   - A gap above `filler_max_mm` 25 (ours) is refused (`GAP_TOO_LARGE`).
+3. **No flange in the leg plane (10 ends):** attach to the web or box-wall face the leg plane meets, within the support's depth. If the plane meets no face of the support within `support_reach_mm`, refuse (`NO_ATTACHMENT`).
+
+Witness additions:
+- `§GUS_ATTACH`: count by attachment (flange lap / web T / box wall) and refused by reason.
+- `§GUS_FILLER`: filler thickness min / median / max, and how many are over 6 mm.
+- COUNTS must still add to 57.
