@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 72198f6f900235d2
+source_sha: 313ef235970d6dfd
 lang: ja
 ---
 
@@ -29,7 +29,7 @@ Tip: type level student for fuller help on each word (red1 --fast opens without 
 red1> exit
 ```
 
-地図として読んでください。バージョン行は、red1 にドア動詞（長い形）と短い言葉がいくつあるかを示します。`help` は短い言葉を三つのグループで表示します。`help bim`、`help mis`、`help erp`（またはグループ名だけ）で、そのグループを見られます：
+地図として読んでください。バージョン行は、red1 にドア動詞（長い形）と短い言葉がいくつあるかを示します。`help` は短い言葉を三つのグループで表示します。`help bim`、`help mis`、`help erp` で、そのグループを見られます：
 
 | グループ | 何のためか | 最初に打つもの |
 |---|---|---|
@@ -44,7 +44,7 @@ red1: type a short word; red1 prints the full line it runs (→ …), then runs 
   bim   buildings and models             start with: cd Duplex   (16 words)
   mis   records, tables, files, Ninja    start with: cd Order   (11 words)
   erp   document actions (CO VO CL RC)   start with: cd Order   (8 words)
-  everywhere: cd <place> · pwd · role <id> · login <user> · history · report · exit
+  everywhere: cd <place> · pwd · role <id> · login <user> · history [N] · report · exit
 Type bim, mis or erp for its words · help <word> for one word (level student first for the full explanation) · help verbs for the full door lines.
 ```
 
@@ -65,6 +65,8 @@ erp: document actions (CO VO CL RC) (start with: cd Order)
   next 50000                                          what a document may do next
   ask "How do I close a Sales Order?"                 ask the help a question, in your language
 ```
+
+グループ名だけを入力すると（`bim`、`mis`、`erp`）、同じ一覧が表示され、そのグループの中に入ります。プロンプトは `red1 erp>` になり、help、Tab、灰色の候補はそのグループの言葉だけを出します。行の実行を止めることはありません。完全なドアの行は、どのグループからでもそのまま実行されます。`cd ..` で一歩戻り（場所から出て、次にグループから出る）、Shift+Tab でも同じです（red1 は `→ cd ..` と表示するので、セッションはテキストとして読めます）。
 
 `help` はドア動詞を表示せず、言葉だけを表示します。`help verbs` は、すべてのドア動詞を完全な行で一覧にします。ひとつの言葉についてさらに詳しい説明が必要なら、Student レベルに切り替えます。セッションでは `level student`、一行なら `--level student` を使い、そのあと `help <word>` で、その言葉が何をするか、何を打つか、red1 が今いる場所から何を取るか、そして例が示されます。テキストは動詞自身の説明なので、末尾の表からずれることはありません：
 
@@ -307,6 +309,70 @@ Generate PO from Project: done · no document made
 
 単発の行や AI の場合は何も尋ねられません。必須パラメーターが欠けていれば、それを名指しする拒否になります。ツインにまだポートがないプロセスは、そのクラス名とともに拒否され、red1 がそう伝えます。
 
+**レコードは自分のものを出します。** レコードの中では、red1 が出すのはそのレコードのものです。そのウィンドウの辞書から読みます。`do` の後には今できるアクションだけ（あなたのロールで）、`cd` の後にはそのタブ、`run` の後にはそのレコード自身のプロセスボタン、そしてフィールドは `Column=` キーとして出ます。レコードに入ると、できることが表示されます：
+
+<!-- run: erp_record_offers -->
+```text
+$ printf 'cd Order 100\n' | node common/door/red1.js 2>/dev/null
+→ mis.describe kind="Order 100"
+→ mis.describe kind=Order
+→ mis.read kind=Order number=100
+→ mis.read kind=Order id=100
+Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls shows them, cd <tab> opens one, cat reads the record
+→ erp.actions kind=Order id=100
+it may do: CL, VO, RE (do <code>; next shows the tree)
+```
+
+そこでは `do ` の後の Tab は `CL` と `VO` だけを出し（`RE` にはまだ red1 の言葉がありません）、`run Co` は注文ウィンドウ自身のボタン `"Copy Lines"` に補完されます。
+
+**メニューをたどる。** `menu` は ERP メニューを場所として表示します。`cd <folder>` で中に入り（その始まり方をする項目が一つだけなら、名前の先頭だけで足ります）、ウィンドウの項目はその種類へ連れて行き、`cd ..`（または Shift+Tab）で一つ上のフォルダーに戻ります。プロンプトにパスが出ます。各項目には印があります：▸ フォルダー（中の項目数）、W ウィンドウ（とそのテーブル）、P プロセス、R レポート、X フォーム、F ワークフロー。`red1 menu` 単独では、これまでどおり全画面のメニューが開きます。
+
+<!-- run: red1_menu_walk -->
+```text
+$ printf 'menu\ncd Quote\ncd "Sales Orders"\ncd "Sales Order"\npwd\n' | node common/door/red1.js 2>/dev/null
+→ mis.menu
+menu: 15 entries; cd <name> goes in, cd .. goes back
+  ▸ System Admin (6)
+  ▸ Application Dictionary (40)
+  ▸ Partner Relations (7)
+  ▸ Quote-to-Invoice (Sales) (6)
+  ▸ Requisition-to-Invoice (Purchasing) (16)
+  ▸ Returns (5)
+  ▸ Open Items (Financial Movements and Aging) (32)
+  ▸ Material Management and Pricing (22)
+  ▸ Project Management (14)
+  ▸ Performance Analysis and Accounting (17)
+  ▸ Assets (6)
+  ▸ Manufacturing (10)
+  ▸ Maintenance Request (3)
+  W Cost Center · C_CostCenter
+  W Department · C_Department
+Quote-to-Invoice (Sales): 6 entries; cd <name> goes in, cd .. goes back
+  ▸ Sales and Marketing (9)
+  ▸ Sales Orders (13)
+  ▸ Shipments (7)
+  ▸ Sales Invoices (5)
+  ▸ Invoice Inquiry (13)
+  ▸ Sales Management (6)
+Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd <name> goes in, cd .. goes back
+  W Sales Order · C_Order
+  R Order Detail
+  R Open Orders
+  R Order Transactions
+  P Quote convert
+  P RePrice Order/Invoice
+  P Generate PO from Sales Order
+  P Reopen Order
+  P Order Batch Process
+  W POS Key Layout · C_POSKeyLayout
+  P POS Key Generate
+  W POS Terminal · C_POS
+  W POS Payment · C_POSPayment
+→ mis.describe kind=C_Order
+Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
+menu="Quote-to-Invoice (Sales)/Sales Orders" kind=Order
+```
+
 **不足を報告する。** 答えの中には、あなたの打ち間違いではなく、red1 に何かが足りないと告げるものがあります。エンジンがそれに印を付け、セッションでは red1 が答えのあとに一行表示します。打ち間違いや従来の拒否は不足ではなく、余計な表示はありません。`report` はそのあと下書き（行、理由、red1 のバージョン、プラットフォーム、最後のログ行、パスは伏せ字）を示し、GitHub の issue かメールを提案します。red1 自身は何も送らず、送るのはあなたのブラウザーまたはメールソフトです：
 
 <!-- run: red1_gap -->
@@ -356,10 +422,11 @@ not done: cd project
 
 | 言葉 | 何をするか |
 |---|---|
-| `pwd` · `cd ..` · `history` · `role <id>` · `login <user>` | 今いる場所、戻る、入力した行、ロールとして動く、自分が誰かを伝える（メールを持つユーザーが複数いるクライアントでだけ求められる。新しいレコードにはあなたのユーザーが記録される） |
+| `pwd` · `cd ..` · `history` · `!!` · `!3` · `role <id>` · `login <user>` | 今いる場所、戻る、入力した行（以前のセッションの分も、番号付き）、最後の行をもう一度実行、3 行目を実行、ロールとして動く、自分が誰かを伝える（メールを持つユーザーが複数いるクライアントでだけ求められる。新しいレコードにはあなたのユーザーが記録される） |
 | `sum <column>` · `cat <id>` · `rm <id>` | 列を合計する、レコードを一件表示する、一件削除する |
 | `ninja <file>` · `load <file.csv>` · `diff <file.csv>` | Ninja ブックまたは CSV を用意する、ファイルから行を読み込む、ファイルとレコードを比較する |
-| `menu` | ERP メニューを画面で |
+| `bim` · `mis` · `erp` | グループに入る：help、Tab、候補はその言葉だけを出す（`cd ..` または Shift+Tab で出る） |
+| `menu` | ERP メニューを `cd` でフォルダーのようにたどる。`red1 menu` は全画面で開く |
 | `cd Project 990000` · `ls` · `cd Phase` | レコードを場所として開く：`ls` はそのタブをレコード件数とともに一覧し、`cd <tab>` でタブを開き、`cd ..` で上へ戻る |
 | `status` | プロジェクトの中で：そのアーンドバリュー（フェーズごとの PV、EV、AC、SPI、CPI） |
 | `vo` | 建物の中で：モデルとそのプロジェクトオーダーの差分を、変更指示（Variation Order）として発行する（y/N を確認；承認は `do CO <number>`） |

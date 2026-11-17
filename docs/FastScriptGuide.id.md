@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 72198f6f900235d2
+source_sha: 313ef235970d6dfd
 lang: id
 ---
 
@@ -29,7 +29,7 @@ Tip: type level student for fuller help on each word (red1 --fast opens without 
 red1> exit
 ```
 
-Bacalah sebagai peta. Baris versi menyebut berapa banyak kata kerja pintu (bentuk panjang) dan kata pendek yang dimiliki red1. `help` menampilkan kata-kata pendek dalam tiga kelompok; `help bim`, `help mis`, atau `help erp` (atau nama kelompoknya saja) menampilkan satu kelompok:
+Bacalah sebagai peta. Baris versi menyebut berapa banyak kata kerja pintu (bentuk panjang) dan kata pendek yang dimiliki red1. `help` menampilkan kata-kata pendek dalam tiga kelompok; `help bim`, `help mis`, atau `help erp` menampilkan satu kelompok:
 
 | Kelompok | Untuk apa | Mulai dengan |
 |---|---|---|
@@ -44,7 +44,7 @@ red1: type a short word; red1 prints the full line it runs (→ …), then runs 
   bim   buildings and models             start with: cd Duplex   (16 words)
   mis   records, tables, files, Ninja    start with: cd Order   (11 words)
   erp   document actions (CO VO CL RC)   start with: cd Order   (8 words)
-  everywhere: cd <place> · pwd · role <id> · login <user> · history · report · exit
+  everywhere: cd <place> · pwd · role <id> · login <user> · history [N] · report · exit
 Type bim, mis or erp for its words · help <word> for one word (level student first for the full explanation) · help verbs for the full door lines.
 ```
 
@@ -65,6 +65,8 @@ erp: document actions (CO VO CL RC) (start with: cd Order)
   next 50000                                          what a document may do next
   ask "How do I close a Sales Order?"                 ask the help a question, in your language
 ```
+
+Nama kelompok yang diketik sendiri (`bim`, `mis`, atau `erp`) mencetak daftar yang sama dan membawa Anda masuk ke kelompok itu: prompt menjadi `red1 erp>`, dan bantuan, Tab, serta saran abu-abu hanya menawarkan kata-kata kelompok itu. Ini tidak pernah menghentikan sebuah baris berjalan: baris pintu yang lengkap tetap berjalan dari kelompok mana pun. `cd ..` mundur satu langkah (keluar dari sebuah tempat, lalu keluar dari kelompok), dan Shift+Tab melakukan hal yang sama (red1 mencetak `→ cd ..`, sehingga sesi terbaca sebagai teks).
 
 `help` tidak mencetak kata kerja pintu, hanya kata-katanya. `help verbs` mendaftar setiap kata kerja pintu dengan baris lengkapnya. Untuk bantuan lebih lengkap tentang satu kata, pindah ke tingkat Student: `level student` dalam sesi, atau `--level student` pada satu baris, lalu `help <word>` menjelaskan apa yang dilakukan kata itu, apa yang Anda ketik, apa yang diambil red1 dari tempat Anda berada, dan sebuah contoh. Teksnya adalah deskripsi kata kerja itu sendiri, jadi tidak bisa menyimpang dari tabel di akhir:
 
@@ -307,6 +309,70 @@ Generate PO from Project: done · no document made
 
 Pada baris tunggal, atau untuk AI, tidak ada yang ditanyakan: parameter wajib yang hilang adalah penolakan yang menyebutnya. Proses yang belum punya port di kembaran ditolak dengan menyebut nama kelasnya, dan red1 mengatakannya.
 
+**Sebuah rekaman menawarkan miliknya sendiri.** Di dalam sebuah rekaman, yang ditawarkan red1 adalah milik rekaman itu, dibaca dari kamus jendelanya: setelah `do`, hanya tindakan yang boleh dilakukannya sekarang (untuk peran Anda); setelah `cd`, tab-tabnya; setelah `run`, tombol proses miliknya sendiri; dan kolom-kolomnya sebagai kunci `Column=`. Saat dimasuki, rekaman itu mencetak apa yang boleh dilakukannya:
+
+<!-- run: erp_record_offers -->
+```text
+$ printf 'cd Order 100\n' | node common/door/red1.js 2>/dev/null
+→ mis.describe kind="Order 100"
+→ mis.describe kind=Order
+→ mis.read kind=Order number=100
+→ mis.read kind=Order id=100
+Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls shows them, cd <tab> opens one, cat reads the record
+→ erp.actions kind=Order id=100
+it may do: CL, VO, RE (do <code>; next shows the tree)
+```
+
+Di sana Tab setelah `do ` hanya menawarkan `CL` dan `VO` (`RE` belum punya kata red1), dan `run Co` dilengkapi menjadi `"Copy Lines"`, tombol milik jendela pesanan itu sendiri.
+
+**Menjelajahi menu.** `menu` menampilkan menu ERP sebagai tempat: `cd <folder>` masuk ke dalamnya (awal namanya sudah cukup bila hanya satu entri yang dimulai begitu), entri jendela membawa Anda ke jenisnya, dan `cd ..` (atau Shift+Tab) naik satu folder. Prompt menunjukkan jalurnya. Setiap entri diberi tanda: ▸ sebuah folder (berapa entri isinya), W sebuah jendela (dan tabelnya), P sebuah proses, R sebuah laporan, X sebuah formulir, F sebuah alur kerja. `red1 menu` sendiri tetap membuka menu di satu layar penuh.
+
+<!-- run: red1_menu_walk -->
+```text
+$ printf 'menu\ncd Quote\ncd "Sales Orders"\ncd "Sales Order"\npwd\n' | node common/door/red1.js 2>/dev/null
+→ mis.menu
+menu: 15 entries; cd <name> goes in, cd .. goes back
+  ▸ System Admin (6)
+  ▸ Application Dictionary (40)
+  ▸ Partner Relations (7)
+  ▸ Quote-to-Invoice (Sales) (6)
+  ▸ Requisition-to-Invoice (Purchasing) (16)
+  ▸ Returns (5)
+  ▸ Open Items (Financial Movements and Aging) (32)
+  ▸ Material Management and Pricing (22)
+  ▸ Project Management (14)
+  ▸ Performance Analysis and Accounting (17)
+  ▸ Assets (6)
+  ▸ Manufacturing (10)
+  ▸ Maintenance Request (3)
+  W Cost Center · C_CostCenter
+  W Department · C_Department
+Quote-to-Invoice (Sales): 6 entries; cd <name> goes in, cd .. goes back
+  ▸ Sales and Marketing (9)
+  ▸ Sales Orders (13)
+  ▸ Shipments (7)
+  ▸ Sales Invoices (5)
+  ▸ Invoice Inquiry (13)
+  ▸ Sales Management (6)
+Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd <name> goes in, cd .. goes back
+  W Sales Order · C_Order
+  R Order Detail
+  R Open Orders
+  R Order Transactions
+  P Quote convert
+  P RePrice Order/Invoice
+  P Generate PO from Sales Order
+  P Reopen Order
+  P Order Batch Process
+  W POS Key Layout · C_POSKeyLayout
+  P POS Key Generate
+  W POS Terminal · C_POS
+  W POS Payment · C_POSPayment
+→ mis.describe kind=C_Order
+Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
+menu="Quote-to-Invoice (Sales)/Sales Orders" kind=Order
+```
+
 **Melaporkan celah.** Beberapa jawaban menyatakan bahwa red1 kekurangan sesuatu, bukan Anda yang salah ketik. Mesin menandainya, dan dalam sesi red1 mencetak satu baris setelah jawaban. Salah ketik atau penolakan lama bukan celah dan tidak mencetak tambahan. `report` lalu menampilkan draf (barisnya, alasannya, versi red1, platform, baris log terakhir, jalur Anda disamarkan) dan menawarkan isu GitHub atau email; red1 tidak mengirim apa pun sendiri, peramban atau program surel Anda yang mengirim:
 
 <!-- run: red1_gap -->
@@ -356,10 +422,11 @@ Kata-kata di atas adalah yang perlu dipelajari lebih dulu. Sisanya, masing-masin
 
 | Kata | Fungsinya |
 |---|---|
-| `pwd` · `cd ..` · `history` · `role <id>` · `login <user>` | di mana Anda berada; kembali; baris yang diketik; bertindak sebagai sebuah peran; menyatakan siapa Anda (hanya diminta di klien dengan lebih dari satu pengguna ber-email; rekaman baru membawa pengguna Anda) |
+| `pwd` · `cd ..` · `history` · `!!` · `!3` · `role <id>` · `login <user>` | di mana Anda berada; kembali; baris yang diketik (juga dari sesi sebelumnya, bernomor); jalankan lagi baris terakhir; jalankan baris 3; bertindak sebagai sebuah peran; menyatakan siapa Anda (hanya diminta di klien dengan lebih dari satu pengguna ber-email; rekaman baru membawa pengguna Anda) |
 | `sum <column>` · `cat <id>` · `rm <id>` | menjumlahkan kolom; menampilkan satu rekaman; menghapus satu |
 | `ninja <file>` · `load <file.csv>` · `diff <file.csv>` | menyiapkan buku kerja Ninja atau CSV; memuat baris dari berkas; membandingkan berkas dengan rekaman |
-| `menu` | menu ERP, di layar |
+| `bim` · `mis` · `erp` | masuk ke sebuah kelompok: bantuan, Tab, dan saran hanya menawarkan kata-katanya (`cd ..` atau Shift+Tab keluar) |
+| `menu` | menu ERP, dijelajahi seperti folder dengan `cd`; `red1 menu` membukanya di satu layar penuh |
 | `cd Project 990000` · `ls` · `cd Phase` | memasuki rekaman sebagai tempat: `ls` mendaftar tab-nya beserta jumlah rekaman, `cd <tab>` membuka satu, `cd ..` naik kembali |
 | `status` | dalam sebuah proyek: nilai hasil (earned value)-nya (PV, EV, AC, SPI, dan CPI per fase) |
 | `vo` | dalam sebuah bangunan: perubahan antara model dan Project Order-nya, diterbitkan sebagai Variation Order (bertanya y/N; setujui dengan `do CO <number>`) |

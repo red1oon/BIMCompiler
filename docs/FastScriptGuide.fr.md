@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 72198f6f900235d2
+source_sha: 313ef235970d6dfd
 lang: fr
 ---
 
@@ -29,7 +29,7 @@ Tip: type level student for fuller help on each word (red1 --fast opens without 
 red1> exit
 ```
 
-Lisez-le comme une carte. La ligne de version dit combien de verbes de la porte (la forme longue) et de mots courts red1 possède. `help` montre les mots courts en trois groupes ; `help bim`, `help mis` ou `help erp` (ou le nom du groupe seul) montre un groupe :
+Lisez-le comme une carte. La ligne de version dit combien de verbes de la porte (la forme longue) et de mots courts red1 possède. `help` montre les mots courts en trois groupes ; `help bim`, `help mis` ou `help erp` montre un groupe :
 
 | Groupe | À quoi il sert | Commencer par |
 |---|---|---|
@@ -44,7 +44,7 @@ red1: type a short word; red1 prints the full line it runs (→ …), then runs 
   bim   buildings and models             start with: cd Duplex   (16 words)
   mis   records, tables, files, Ninja    start with: cd Order   (11 words)
   erp   document actions (CO VO CL RC)   start with: cd Order   (8 words)
-  everywhere: cd <place> · pwd · role <id> · login <user> · history · report · exit
+  everywhere: cd <place> · pwd · role <id> · login <user> · history [N] · report · exit
 Type bim, mis or erp for its words · help <word> for one word (level student first for the full explanation) · help verbs for the full door lines.
 ```
 
@@ -65,6 +65,8 @@ erp: document actions (CO VO CL RC) (start with: cd Order)
   next 50000                                          what a document may do next
   ask "How do I close a Sales Order?"                 ask the help a question, in your language
 ```
+
+Le nom d'un groupe tapé seul (`bim`, `mis` ou `erp`) affiche la même liste et vous fait entrer dans le groupe : l'invite indique `red1 erp>`, et l'aide, Tab et les suggestions grises ne proposent que les mots de ce groupe. Il n'empêche jamais une ligne de s'exécuter : une ligne complète de la porte s'exécute toujours depuis n'importe quel groupe. `cd ..` recule d'un pas (hors d'un lieu, puis hors du groupe), et Shift+Tab fait de même (red1 affiche `→ cd ..`, ainsi la session se lit comme du texte).
 
 `help` n'affiche pas de verbes de la porte, seulement les mots. `help verbs` liste chaque verbe de la porte avec sa ligne complète. Pour une aide plus complète sur un mot, passez au niveau Student : `level student` dans une session, ou `--level student` sur une ligne, puis `help <word>` dit ce que fait le mot, ce que vous tapez, ce que red1 prend de l'endroit où vous êtes, et un exemple. Le texte est la description propre du verbe, donc il ne peut pas diverger du tableau de la fin :
 
@@ -307,6 +309,70 @@ Generate PO from Project: done · no document made
 
 Sur une ligne isolée, ou pour une IA, rien n'est demandé : un paramètre obligatoire manquant est un refus qui le nomme. Un processus pour lequel le jumeau n'a pas encore de port est refusé avec le nom de sa classe, et red1 le dit.
 
+**Un enregistrement propose ce qui est à lui.** Dans un enregistrement, ce que red1 propose est à cet enregistrement, lu dans le dictionnaire de sa fenêtre : après `do`, seulement les actions qu'il peut faire maintenant (pour votre rôle) ; après `cd`, ses onglets ; après `run`, ses propres boutons de processus ; et ses champs comme clés `Column=`. En y entrant, l'enregistrement affiche ce qu'il peut faire :
+
+<!-- run: erp_record_offers -->
+```text
+$ printf 'cd Order 100\n' | node common/door/red1.js 2>/dev/null
+→ mis.describe kind="Order 100"
+→ mis.describe kind=Order
+→ mis.read kind=Order number=100
+→ mis.read kind=Order id=100
+Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls shows them, cd <tab> opens one, cat reads the record
+→ erp.actions kind=Order id=100
+it may do: CL, VO, RE (do <code>; next shows the tree)
+```
+
+Là, Tab après `do ` ne propose que `CL` et `VO` (`RE` n'a pas encore de mot red1), et `run Co` se complète en `"Copy Lines"`, le bouton propre à la fenêtre de commande.
+
+**Parcourir le menu.** `menu` montre le menu ERP comme des lieux : `cd <folder>` y entre (le début de son nom suffit quand une seule entrée commence ainsi), une entrée de fenêtre vous mène à son type, et `cd ..` (ou Shift+Tab) remonte d'un dossier. L'invite montre le chemin. Chaque entrée est marquée : ▸ un dossier (combien d'entrées il contient), W une fenêtre (et sa table), P un processus, R un rapport, X un formulaire, F un flux de travail. `red1 menu` seul ouvre toujours le menu sur un écran entier.
+
+<!-- run: red1_menu_walk -->
+```text
+$ printf 'menu\ncd Quote\ncd "Sales Orders"\ncd "Sales Order"\npwd\n' | node common/door/red1.js 2>/dev/null
+→ mis.menu
+menu: 15 entries; cd <name> goes in, cd .. goes back
+  ▸ System Admin (6)
+  ▸ Application Dictionary (40)
+  ▸ Partner Relations (7)
+  ▸ Quote-to-Invoice (Sales) (6)
+  ▸ Requisition-to-Invoice (Purchasing) (16)
+  ▸ Returns (5)
+  ▸ Open Items (Financial Movements and Aging) (32)
+  ▸ Material Management and Pricing (22)
+  ▸ Project Management (14)
+  ▸ Performance Analysis and Accounting (17)
+  ▸ Assets (6)
+  ▸ Manufacturing (10)
+  ▸ Maintenance Request (3)
+  W Cost Center · C_CostCenter
+  W Department · C_Department
+Quote-to-Invoice (Sales): 6 entries; cd <name> goes in, cd .. goes back
+  ▸ Sales and Marketing (9)
+  ▸ Sales Orders (13)
+  ▸ Shipments (7)
+  ▸ Sales Invoices (5)
+  ▸ Invoice Inquiry (13)
+  ▸ Sales Management (6)
+Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd <name> goes in, cd .. goes back
+  W Sales Order · C_Order
+  R Order Detail
+  R Open Orders
+  R Order Transactions
+  P Quote convert
+  P RePrice Order/Invoice
+  P Generate PO from Sales Order
+  P Reopen Order
+  P Order Batch Process
+  W POS Key Layout · C_POSKeyLayout
+  P POS Key Generate
+  W POS Terminal · C_POS
+  W POS Payment · C_POSPayment
+→ mis.describe kind=C_Order
+Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
+menu="Quote-to-Invoice (Sales)/Sales Orders" kind=Order
+```
+
 **Signaler une lacune.** Certaines réponses disent qu'il manque quelque chose à red1, par opposition à une faute de frappe de votre part. Le moteur les marque, et dans une session red1 affiche une ligne après la réponse. Une faute de frappe ou un refus historique n'est pas une lacune et n'affiche rien de plus. `report` montre alors un brouillon (la ligne, la raison, la version de red1, la plateforme, les dernières lignes du journal, vos chemins masqués) et propose un ticket GitHub ou un courriel ; red1 n'envoie rien lui-même, c'est votre navigateur ou votre messagerie qui le fait :
 
 <!-- run: red1_gap -->
@@ -356,10 +422,11 @@ Les mots ci-dessus sont ceux à apprendre en premier. Les autres, chacun une for
 
 | Mot | Ce qu'il fait |
 |---|---|
-| `pwd` · `cd ..` · `history` · `role <id>` · `login <user>` | où vous êtes ; retour ; les lignes tapées ; agir comme un rôle ; dire qui vous êtes (demandé seulement dans un client avec plus d'un utilisateur ayant un e-mail ; les nouveaux enregistrements portent votre utilisateur) |
+| `pwd` · `cd ..` · `history` · `!!` · `!3` · `role <id>` · `login <user>` | où vous êtes ; retour ; les lignes tapées (aussi celles des sessions précédentes, numérotées) ; relancer la dernière ligne ; lancer la ligne 3 ; agir comme un rôle ; dire qui vous êtes (demandé seulement dans un client avec plus d'un utilisateur ayant un e-mail ; les nouveaux enregistrements portent votre utilisateur) |
 | `sum <column>` · `cat <id>` · `rm <id>` | additionner une colonne ; montrer un enregistrement ; en supprimer un |
 | `ninja <file>` · `load <file.csv>` · `diff <file.csv>` | préparer un classeur Ninja ou un CSV ; charger des lignes d'un fichier ; comparer un fichier avec les enregistrements |
-| `menu` | le menu ERP, sur un écran |
+| `bim` · `mis` · `erp` | entrer dans un groupe : l'aide, Tab et les suggestions ne proposent que ses mots (`cd ..` ou Shift+Tab en sort) |
+| `menu` | le menu ERP, parcouru comme des dossiers avec `cd` ; `red1 menu` l'ouvre sur un écran entier |
 | `cd Project 990000` · `ls` · `cd Phase` | entrer dans un enregistrement comme dans un lieu : `ls` liste ses onglets avec leur nombre d'enregistrements, `cd <tab>` en ouvre un, `cd ..` remonte |
 | `status` | dans un projet : sa valeur acquise (PV, EV, AC, SPI et CPI par phase) |
 | `vo` | dans un bâtiment : l'écart entre le modèle et sa commande de projet, émis comme ordre de modification (Variation Order ; demande y/N ; on l'approuve avec `do CO <number>`) |
