@@ -14,9 +14,9 @@ Background, measurements and prior art are in `prompts/DOCS_I18N.md` §4b-§4d (
 - §14.5 step 1 (shared panel + drag helper in `common/`): BUILT, bim-ootb #3165.
 - §14.5 step 2, the Modeller adapter: BUILT, bim-ootb #3171, W-HELP-DOCK-M PASS (§14.5 RESULT step 2).
 - §17 film: **v3 MADE 2026-11-17** (`~/Videos/Help_that_answers_Viewer_EN_AFTER_2026-11-17_v3.mp4`, framed bigger, new Jakob Nielsen quote, §17.3 RESULT; v2 kept). Other languages on the owner's word.
-- **Found, not fixed (film-only session):** W-HOWTO H1 FAILS on clean main: the live guide's new Help section now wins the Save/Open tie in `build_howto.js` (§17.3 RESULT); a bim-ootb PR is needed (tie rule, regenerate `howto.json`).
+- **W-HOWTO H1 failure on main FIXED 2026-11-17** (bim-ootb #3172 merged, §14.3.2 RESULT): a tie in the guide-link choice now goes to the heading sharing a word with the tool, not the first section in the page.
 - BIM User Guide: a basic Help section (Viewer, Modeller, and what the command line does and does not have) added 2026-11-17 (BIMCompiler docs/bim-help-basic).
-- **NEXT:** (1) the `build_howto.js` tie-rule fix above; (2) the 6 Modeller guide titles (+ paragraphs) into the dictionary (§14.5 RESULT step 2, Open); then the prefixes, box side (§16 item 7: owner agreed `?` / `#<number>`; the CLI session specs the shell side as CLI_ERP_IVR §41).
+- **NEXT:** (1) the 6 Modeller guide titles (+ paragraphs) into the dictionary (§14.5 RESULT step 2, Open); then the prefixes, box side (§16 item 7: owner agreed `?` / `#<number>`; the CLI session specs the shell side as CLI_ERP_IVR §41).
 - The three §14.1 owner items were ANSWERED in §14.2 (ISO note kept; type classes via their cited occurrence class; our sentence in 15 languages, all built, #3152).
 - **Open owner question:** 8 Viewer tools have no section in the BIM User Guide (§14.3 RESULT), so they get no guide link until the guide has a section.
 - **Waiting on the CLI session (no action here):** §42 S3, the short-name limit fix in `assist_core.nearest()` (§16 item 1). It will message when merged. After that, the help box calls `nearest()` (no second edit-distance function).
@@ -965,6 +965,23 @@ The written spec follows the agreement made in chat and comes before the merge; 
 - **Owner items (guide content, not this lane's code):** the 8 tools above have no guide section. Adding sections to `docs/BIMUserGuide.md` would raise the count; `build_howto.js` picks them up on its next run (W-HOWTO H1 fails until it is re-run, by design).
 - **Next:** the dock (right panel on desktop, sheet on mobile) + the move of `field_help.js` / `help_search.js` to `common/help/` (§14 design), or the Modeller's two overlays.
 
+### 14.3.2 SPEC: the How To guide link, tie rule (2026-11-17, owner: *"proceed on open item"*; found while making the §17.3 film)
+**Issue it removes:** W-HOWTO H1 FAILS on clean bim-ootb `main` (`2989f8f5`, log `scripts/film_help_viewer/out/witness_howto_main.log`): the live BIM User Guide gained "Help — F1, the info panel, and the command line (LIVE)", and `build_howto.js` (`score = heading match 1e6 + mentions`, strict `>`, so a tie goes to the FIRST section in the page) now links **Save Building and Open Building to that Help section** instead of "Save & Open a building" (each is named once in both). The same rule would send any future tie to whatever section happens to come first.
+**Rule (change):** `score = (name in heading ? 1e6 : 0) + mentions x 1000 + shared`, where `shared` = the number of words (3+ letters, case-folded, split on non-letters/digits) that are in BOTH the section heading and the pill's English name. Mentions still dominate (`shared` is always < 1000), a heading that holds the whole name still wins; only EQUAL-mention ties change. A tie that also shares no word keeps the old order (first in the page). No section text is invented: the choice stays a count over the live page.
+**Claims (W-HOWTO H5, new, offline, no guide fetch):**
+- H5a a synthetic page with two sections naming a pill once each, the SECOND sharing a word with the pill's name, links the second;
+- H5b the same page with the sections swapped still links the sharing section (order does not decide);
+- H5c a section naming the pill twice beats a sharing section naming it once (mentions dominate);
+- H5d two ties with no shared word keep the first in the page (the old behaviour, written down);
+- red control: the OLD rule (re-implemented inline in the witness, `1e6 + n`, first wins) must FAIL H5a, or H5 proves nothing.
+**Expected diff of `howto.json` on today's guide** (checked against the generator's own `--check` before and after): Save Building and Open Building back to `save-open-a-building`; the `Help` pill to the new Help section (`in_heading: true`, it is named there). Any other pill moving = stop and read why.
+**Then:** H1 PASS again on a clean `main` run; the rest of W-HOWTO unchanged.
+
+### 14.3.2 RESULT (2026-11-17): BUILT, bim-ootb #3172 MERGED (`a62d401b`)
+- `build_howto.js`: `score = heading 1e6 + mentions x 1000 + shared words`; **one thing the spec did not foresee, found by its own "any other pill moving = stop" clause:** the first cut gave two pills with ZERO mentions (`hbaFM`, `gi-preview`) a link, because a shared word alone made the score positive. Fixed: a section must name the pill (heading or body) to be a candidate; claim H5f pins it. Final `howto.json` diff on today's guide = only the `Help` pill (now its own Help section, `in_heading: true`); Save Building and Open Building stay on `save-open-a-building`; 35 guide links, as before.
+- Witnessed on the branch (read in the logs, not the exit code): **W-HOWTO PASS** incl. `§PASS H1 howto.json == generator output on today's inputs` and the new `H5a`-`H5f` (H5-red: the old rule picks `help` where the new one picks `save-open`, so H5a can fail); **W-HELP-DOCK PASS** (its D4 count of guide links in the panel == `howto.json` still holds).
+- The §17.3 film's card says "W-HOWTO H2 H3 H4a-H4e PASS" because H1 failed the day it was made; a future film on a tree with #3172 can say "W-HOWTO PASS".
+
 ## 14.4 SPEC: the help panel's place, look and drag (owner 2026-11-17)
 **Owner, verbatim:**
 - *"Discuss how best to position that extra help panel?"* → *"Agree to all."* (left side, stays open, phone = full sheet);
@@ -1314,6 +1331,7 @@ Every step gets a witness with a falsifier (e.g. did-you-mean: N misspellings de
 - **Rules learnt:** (1) a build script's `grep` of its own log matched a progress line (`§FRAME_BARS_RECORDED` vs `§FRAME_BAR`) and killed a good build: match the full tag plus a space; (2) the Viewer's `Home` is not a fit for a small model, and `BOX` over only the *visible* meshes flickers with DLOD: measure all meshes and wait until the box stops; (3) a Find panel stays open and sits over the info panel's header once the class text opens (19 px): the guard now checks it against the class text, measured at the shot.
 
 ## STATUS
+2026-11-17 (tie rule): bim-ootb #3172 merged, W-HOWTO H1 passes again (§14.3.2 RESULT).
 2026-11-17 (film v3): `Help_that_answers_Viewer_EN_AFTER_2026-11-17_v3.mp4` made, framed bigger, new Nielsen quote (§17.3 RESULT). Found: W-HOWTO H1 fails on main (guide's new Help section wins the Save/Open tie). Next unchanged: the 6 Modeller guide titles, then prefixes.
 2026-11-17 (close): BIM User Guide Help section added; §17.2 film REDO specced for a new session (owner: frame the building and the panel bigger).
 2026-11-17: §14.5 step 2 (Modeller help in the shared panel) built + merged, bim-ootb #3171 (W-HELP-DOCK-M PASS). §17 film made: `Help_that_answers_Viewer_EN_AFTER_2026-11-17_v2.mp4` (§17.1 RESULT), pipeline `scripts/film_help_viewer/`. Next: the 6 Modeller guide titles into the dictionary, then the prefixes (box side).
