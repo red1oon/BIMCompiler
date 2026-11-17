@@ -1420,6 +1420,23 @@ new failure blocks.
   (was 2,373 s). The budget is a START limit: the last witness started inside 600 s finishes after (784 s). Spec deviation: base is run only for a witness
   that failed on the change (a pass cannot be a new fail), so "on both trees" holds for every failure, not every witness.
 
+### F.35 The core-purity warning in the editor (Part F table row "Core-purity squiggle"; unblocked by A3; no decision; spec 2026-11-17, bim-ootb #3207)
+
+**Problem.** W-CORE-PURE fails a PR in CI when a core file calls a clock, random numbers or the network itself. The developer learns it from CI, minutes later.
+**Build (dev-side only, nothing reaches the browser):**
+- **One scanner, one list.** The scan and the A-1 list move out of `erp/tests/witness_core_pure.js` into `scripts/lib/core_pure.js`: `CORE` (the pathspecs),
+  `isCore(relPath)`, `scan(src)` → hits with line AND column. The witness keeps its population, red controls and verdict and calls the module.
+- **X0 Navigator:** on open and on save of a core file, one `x0-core-pure` Warning per hit, on the call, saying what was called and what to use instead
+  (`Env.edge()` / `CoreEdge`, `Env.elapsed()` for a timing). X0 loads the module from the checkout, as it loads `msg_keys.js` (§F.28). No parser there
+  (no `node_modules`) → no warning and one `§X0_CORE_PURE unavailable` line in the output channel, never a guess.
+**Witness W-X0-CORE-PURE** (`devtools/vscode/x0-navigator/tests/witness_x0_core_pure.js`, node, the `vscode` stub):
+- C1 every core file (by `git ls-files <pathspecs>`, the independent list) opened as it is committed: 0 warnings.
+- C2 `isCore(f)` equals membership in that `git ls-files` list for EVERY tracked `.js` (a list that drifts from the witness's is the defect to catch).
+- C3 RED: a planted `Date.now()` in a real core file → exactly 1 warning, on that line and column; restoring the text clears it.
+- C4 the same text in a comment → 0; the same planted call in a file OUTSIDE the list (`erp/kernel_ops.js`, the minting point) → 0.
+- INCONCLUSIVE when the list is empty or the parser is missing. Line: `§X0_CORE_PURE_W core_files= judged= failed= verdict=`. In CI with the other node-only X0 witnesses.
+**Issue proved:** "a forbidden call in a core file says nothing in the editor until CI runs".
+
 ### F.34 The Bump button: check in the background, solid when it passes, one press to write (owner idea 2026-11-17; decision F-24; not built)
 - **Owner:** *"I thot we have a bump button, perhaps after the budget time, it appears solid for user to press it?"* · on when the check starts, asked with
   the recommendation "on first press": chose *"On first press (Recommended)"*, then added *"or after sufficient feature completion"*.
