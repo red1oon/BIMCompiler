@@ -28,17 +28,16 @@ One heavy job at a time on this machine, under `nice -n 19 ionice -c3`. Headless
 2026-11-16: *"U can do browser run for those items new session"*), one at a time, never beside a live bake or GPU work.
 
 **1. NEXT, in order.**
-1. Ask **B-3**, then **B-4**, one per message (the advice for each is in ADVICE A).
-2. **B1, the modeller first:** the manifest becomes the source, the generated sections sit between markers, and the output is byte-identical,
-   using today's `?v=` numbers (B-1) and each module's precache flag as it is today (B-2). Write its build spec first. Its `deps` come from a tool-made candidate list that a person confirms for the app (B-5).
-3. E's `witness_kit/paths.js` (no decision, §READY).
-4. **2026-11-30:** propose the F-2 cost ceilings (§F.3).
+1. **B1, the modeller first** (every Part B decision is answered): the manifest becomes the source, the generated sections sit between markers, and the output is byte-identical,
+   using today's `?v=` numbers (B-1) and each module's precache flag as it is today (B-2). Write its build spec first. Its `deps` come from a tool-made candidate list that a person confirms for the app (B-5). Each module also carries its `owner` and `witnesses` (B-3).
+2. E's `witness_kit/paths.js` (no decision, §READY).
+3. **2026-11-30:** propose the F-2 cost ceilings (§F.3).
 
 **2. Where each part stands.**
 | Part | State | Next step |
 |---|---|---|
 | A | ✅ DONE 2026-11-17: A0, A-1..A-7, A1, A2, A3 (W-CORE-PURE PASS, `forbidden=0`, in CI). Results: Part A RESULT INDEX | none |
-| B | **B0 ✅** (#3200, W-MANIFEST-ROUNDTRIP in CI) · **B-1 ✅** 2026-11-18 content hashes, own step · **B-2 ✅** 2026-11-18 per-module flag as today · **B-5 ✅** 2026-11-18 tool proposes deps, a person confirms | ask B-3, B-4; then B1 (modeller) |
+| B | **B0 ✅** (#3200, W-MANIFEST-ROUNDTRIP in CI) · **B-1 ✅** 2026-11-18 content hashes, own step · **B-2 ✅** 2026-11-18 per-module flag as today · **B-5 ✅** tool proposes deps, a person confirms · **B-3 ✅** owner + witnesses per module · **B-4 ✅** plugin precache derived, `BUILTINS` untouched | B1 (modeller): build spec, then build |
 | C, D | not started; wait on B | — |
 | E | not started | `witness_kit/paths.js` (§READY), then ask E-1 |
 | F | every row that needs no data from B to E is built (§F index, F.0 to F.35) | F-2 ceilings on 2026-11-30; the F-1 headless Fetch-back button (unbuilt, browser go given); rows waiting on B/D/E data |
@@ -56,7 +55,7 @@ the source (§F.25): reinstall with `node devtools/vscode/pack.js --install`. A 
 built and waiting for the owner's review (see that file's FILM 3 STATUS). Earlier CH 0 "VSC Hot Edit" films: `prompts/FILM_IDE_ERP_DEBUG.md`.
 Rebuild recipes are in each film file.
 
-**5. Open with the owner.** B-3, B-4 (NEXT 1) · FILM 3 review · his hands-on dry run (`~/VSCcheatsheet.txt`, 29 steps; `~/bim-ootb-dryrun`
+**5. Open with the owner.** FILM 3 review · his hands-on dry run (`~/VSCcheatsheet.txt`, 29 steps; `~/bim-ootb-dryrun`
 not created) · a bake on his go (then check a "last:" line, §F.15).
 
 **6. Open, no owner needed.**
@@ -262,9 +261,7 @@ when anything it covers changed. The page stays a static file. **No build step a
 them from it is **byte-identical** to what is committed. No file changes. B1 switch one app (smallest first: modeller, 59 tags) to "manifest is the
 source", generated sections between markers, byte-identical again. B2 erp, B3 viewer. `tests/audit_sw_precache.js` stays green throughout.
 
-**OPEN DECISIONS (ask one at a time; the advice is in ADVICE A):** B-3 should the manifest
-also carry each module's **owner** and **witnesses**? · B-4 ERP plugins (above): does B leave the plugin lists alone, or derive the plugin precache
-entries from the `.mjs` files on disk? B-1, B-2 and B-5 are answered (DECISIONS).
+**OPEN DECISIONS:** none. B-1 to B-5 are answered (DECISIONS).
 
 **Witnesses:** W-MANIFEST-ROUNDTRIP (manifest → generated text byte-identical to committed; red control: swap two dependent modules → generator
 refuses) · `audit_sw_precache.js` · page boot witnesses unchanged.
@@ -282,6 +279,13 @@ deploy workflow still green on the first merge after each switch (fetch `erp/ver
   app as it switches (modeller, then ERP, then viewer) (recommended) · by hand only (slow across ~680 modules, easy to miss one) · tool only (records what the
   code seems to need, which can be wrong when an order works by luck). Owner: *"Agree"*. → each of B1 to B3 ships the app's candidate list and the
   confirmed `deps` together; a dependency the tool cannot prove goes in only once a person confirms it.
+- **B-3 and B-4 (2026-11-18).** Asked B-3 (should each module's entry also carry its owner and the witnesses that check it; recommendation yes: parts D and
+  E get their data for free, and the F rows "owner warning" and "run the witnesses for this file" can be built; no = separate hand-kept lists later).
+  B-4's recommendation was the one already written in ADVICE A (derive only the plugin precache entries from the `.mjs` files on disk; leave `BUILTINS` /
+  `INSTALL_ONLY` in `erp/plugin_overlay.js` as the host's one list, so B never becomes a second plugin registry). Owner: *"Agree on your recommendations"*
+  (plural, so it is recorded for both). → **B-3 = yes**: `owner` and `witnesses` fields per module. **B-4 = derive the precache entries only.**
+  Plan note (from B0's `§MANIFEST_PLUGINS precached_mjs=29 on_disk=36`): deriving from disk would add 7 entries to ERP's precache, which changes what is
+  saved offline, so by B-2's reasoning it is its own step after B2, not part of B2's byte-identical switch.
 
 **B0 BUILD SPEC (2026-11-17, eighth session; bim-ootb #3195; no owner decision).** Owner, this session: *"if u hit a code design or spec problem use a well
 scoped Fable agent to resolve"* → the measuring and the design below came from one such agent (read-only), then checked here. Measured on bim-ootb `main` @ `695d16fe`:
@@ -305,7 +309,7 @@ scoped Fable agent to resolve"* → the measuring and the design below came from
 | D5 | `deps` is `[]` everywhere, `"depsDeclared": false`; the order check prints `order_check=NOT-JUDGED`, never PASS | deriving deps from "reads a global another file publishes" (precision unmeasured; a false edge would later refuse a legal reorder) |
 | D6 | The manifest stays in memory; `--out <file>` writes it outside the tree on request; no `--write` in B0 | a committed manifest nothing reads yet (P2 again) |
 | D7 | `bump.js` and the audits are not touched: their parsers are the independent second readers. The new readers live once in `scripts/lib/page_refs.js`; bump and the audits move onto it in the B-step that makes the manifest the source | refactoring bump now |
-| D8 | Plugin `.mjs` precache entries are counted, never interpreted (B-4 is open) | reading each plugin's `manifest` export |
+| D8 | Plugin `.mjs` precache entries are counted, never interpreted (B0; B-4 since answered: derive them, in their own step) | reading each plugin's `manifest` export |
 
 **Manifest (in memory, ajv-checked):** `{ app, sw, cacheVersion, depsDeclared:false, pages[], modules[], precacheOrder[] }`; a module is
 `{ file, deps:[], load:"boot"|"lazy", lazyGroup, precache, v, sites[] }`; a site is `{ in, at, kind:"tag"|"asset"|"inline"|"lazy", as, v, onerror?, q? }`
@@ -362,7 +366,7 @@ a lazy+precache rule (B-2); pages outside the three apps, `oplogpic/`, importmap
   (5) `libs` / `assets` rows were left out of the manifest (nothing in B0 reads them); `§MANIFEST_BLOCK` (comment runs inside the tag span) is not printed: B1 measures it when it places markers.
 - **Scope of the claim:** the three apps' own pages, loaders and service workers. Not judged: load order (no deps declared), the 46 pages outside the apps, `oplogpic/`,
   lazy list entries with no `?v=`, `_GANTT_CACHE_VERSION`.
-- **NEXT in Part B:** ask B-3, B-4 (RESUME 1); then B1, modeller first, on today's numbers. The content-hash switch (B-1) is its own announced step after B3.
+- **NEXT in Part B:** B1, modeller first, on today's numbers (RESUME 1). The content-hash switch (B-1) is its own announced step after B3.
 
 ---
 
@@ -586,8 +590,6 @@ what the owner answers; when he says "follow the advice" on an item, record that
 
 | Decision | Advice | Why |
 |---|---|---|
-| B-3 owner and witnesses in the manifest | Yes | parts D and E then get their data for free, and three F rows unblock at once |
-| B-4 ERP plugin lists | Derive only the precache entries; leave the host's one list alone | B must not become a second plugin registry |
 | C-2 rename `A` to `APP` while moving | Yes, one module per PR | it removes the whole class of index faults that §F.17 found: the index has to GUESS which local name is the shared object |
 | D-2 a namespace extended by several files | Allowed when the manifest marks it | forbidding it would force a refactor nobody asked for |
 | E-2 keep the suite's verdicts | Yes, a small JSON per run, stamped like any log | the proof map can then show "last verdict" under the same provenance rule as values beside the code |
@@ -628,7 +630,7 @@ first. C is long and best done slowly, module by module, after B/D make ownershi
 | Part | Starts with no decision | Next decision to ask | Why that one |
 |---|---|---|---|
 | A | ✅ done 2026-11-17 (W-CORE-PURE in CI) | none | — |
-| B | B0 ✅ 2026-11-17; B-1, B-2, B-5 ✅ 2026-11-18. B1 (modeller) can be specced now; built after B-3 | B-3 owner + witnesses in the manifest | it decides which fields B1's manifest carries |
+| B | B1 (modeller): every Part B decision is answered (B-1 to B-5, 2026-11-18) | none | |
 | C | nothing; waits on B and D | C-1 part names + owners | |
 | D | nothing new; the multi-publisher list already exists (`types/globals.gen.d.ts`) | D-1 where the questions list lives | needs B's `owner` field |
 | E | `witness_kit/paths.js` (no behaviour change; witness: the same suite verdicts before and after) | E-1 the `PROVES:` header format | |
