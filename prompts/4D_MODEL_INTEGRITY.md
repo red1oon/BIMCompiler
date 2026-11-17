@@ -3612,3 +3612,25 @@ Hospital          45   63,182   outside 0 collapsed 0 inv 0    outside 555 colla
 - Remove: the `_displayTimeline._lastCell` writer (`tm_sched_xray.js`), the `_cellMap` / `_cell` stamp (`tm_gantt_build.js`), the `C:` group key and `cell` field (`gantt_model.js`: `groupKeyOf(taskId, storey, phase)`), `witness_s50_cell_engine`, `witness_s55_identity_vs_cell`, `witness_midair_zero` W-S51a/b and its cell columns.
 - **No `_GANTT_CACHE_VERSION` bump.** A schedule persisted while the cell path still ran carries `_cell` in its ops; with the reader gone it is an ignored parameter. An op with a task identity groups by `T:` first (unchanged); an op without one falls to `storey|phase`, the rule every graph-path building always used.
 - **Proof:** persisted runs hash-equal on seven buildings (`els / sched / play / playStats / storeys / tasks`); `GanttModel.buildTasks` over each run's played ops gives the same bars (count, ids, start, end) before and after; `run_4d_gates.sh` GREEN; `witness_gantt_model` green with W-GM-1 rewritten to the two-step precedence.
+**Q.15.1 RESULT — bim-ootb #3225, MERGED (+25 / −533, sw v1739).** `§NOSTAMP_IDENTITY`: every layer of the seven persisted runs EQUAL before and after. `§BARS_DIFF none`: `GanttModel.buildTasks` over each run's played ops gives the same bars, authored (19 / 16 / 37 / 69 / 18 / 24 / 86 for Duplex / HHS / Hospital / Terminal / Clinic / JKR / LTU) and un-authored. `§GATES_VERDICT GREEN red=0 gates=8`; `witness_midair_zero` 68 / 0 (two source-text cell claims removed); `witness_gantt_model` 20 / 0.
+
+### Q.15.2 `§TPL_LAYER_SELFCHECK` — A REAL BUG IN THE LAYER PASS, FIXED (bim-ootb #3226)
+**Issue:** the shipped line printed `FAIL support order still violated inside a task` on all seven runs (§Q.14.4) and no witness read it.
+- **Measured before reasoning (the line was instrumented first):** every failing pair on every building was `supportedInSAMElayer` — 0 lower, 0 higher, 0 same-lift. Bearing-below is strict in height, so a correct topological layering cannot put a load in its support's layer.
+- **Cause:** the Kahn sweep in `schedule_author.js` (`§TPL_LAYER_ORDER`) tested `lay[support] < 0` only. A support placed earlier in the SAME round already has a layer, so a load scanned after it was "ready" and took the same layer; the tiler then laid the two side by side in solve order. One condition added (`|| lb === cur`).
+```
+                  Duplex   HHS   Hospital  Terminal  Clinic   JKR     LTU
+stillInverted b4     6      53     1,650     1,041     137     58    2,918
+stillInverted now    0       0         0         0       0      0        0     PASS on all seven
+layers  b4 → now  14→25  26→39     →156      →127    40→63    →74     →126
+```
+- **What moved, proved on the persisted runs:** `sched` (the authored `displaySchedule`) DIFF on all seven, as intended; `play`, `playStats`, `tasks`, `storeys`, `els` EQUAL on all seven. The Time Machine does not read `displaySchedule` (§I), so nothing on screen moves.
+- **Now witnessed:** `witness_tm_assembly_order` **A5** reads the run's own `§TPL_LAYER_SELFCHECK` line (PASS 7 of 7; INCONCLUSIVE when the line is absent). The line itself now names the kind of pair it fails on, so the next failure is diagnosed from the log.
+- Gates GREEN 8 / 8; `witness_4d_template_instantiation` 12 / 0, `witness_4d_movie_binds_bars` 7 / 0, `witness_cache_layer_attribution` 5 / 0.
+
+### Q.15.2a SEEN ON THE WAY, NOT FIXED — `witness_day0_integrity` IS RED ON MAIN (played layer)
+`§W_D0_VERDICT layer=played claims=16 PASS=8 FAIL=7 INCONCLUSIVE=1 RED` — it read 14 PASS / 0 FAIL when last locked (#1551). It is not in `run_4d_gates.sh` and nobody has read it since the D-steps. Unchanged by this session's work (the played layer is hash-equal). What it says today:
+- **C4 early MEP:** Duplex 63 pipe segments / fittings filed on `T/FDN` start inside the first 3 days; Terminal 48 on `00 Aras Asas`.
+- **C2 day-0 purity:** Terminal 187 and Hospital 1 are groundwork-promoted elements whose sequence was left behind (phase Substructure, sequence 3–4); Duplex 2 intruders (one wall, one fitting).
+- **C3:** HHS 1 slab waiting on a stair flight. **C1:** Terminal 5 datum collisions among 73 declared storeys.
+None of this is attributed yet. It is the next thing to work.
