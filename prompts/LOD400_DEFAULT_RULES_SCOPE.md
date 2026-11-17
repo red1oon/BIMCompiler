@@ -148,3 +148,24 @@ Steel grade (PJAM: not stated), concrete cover on PJAM until ACI 318-19 is read,
 4. **Weld beads:** two triangular beads per weld element, both on the plate's +normal face, at the two outer edges where the member section meets that plane (leg = table size, length = overlap length). The member section in the plate plane is taken from the whole prism, so a through contact finds its edges. Weld/member clash is not checked (not in the spec).
 5. **Witness additions:** `STATED_TIE_SPACING` (loop gaps measured from the stored geometry) and `SIZE_CHECK`. DETERMINISM is judged with `--expect-*-sha` on the second run (run 1 prints INCONCLUSIVE by design). The break run also fails COUNTS (64 sets) as a side effect; INSIDE is the required one. Optional `--callouts <details.dxf>` lists the beam-sheet rebar texts in the change list.
 6. `element_world_bbox` rows are added for new elements; the source has no `elements_rtree`, so none is created. `element_transforms` has 10 columns here (no tag column as in the PJAM DB).
+
+## 7. BUILD 2 SPEC (2026-11-18, owner: "Proceed on build order tasks"): PJAM concrete beam reinforcement from the S-401 schedule
+**Issue it proves or disproves:** can the stated S-401 beam schedule become real bars on every concrete beam of the model? The schedule is joined by the model's own type mark. One engine (`scripts/lod/rebar_from_schedule.py`) must serve both a DXF-attached schedule (the Shed) and a table read from a drawing (PJAM), with no per-building code.
+**Measured inputs (2026-11-18):**
+- **Schedule:** S-401 is machine-read as `S-401.json` (259 cells) and parsed by `beam_rules.py` (`bars()`) into 22 marks: CFB1, CRB1, FB1-FB7, FB10-FB13, GB1-GB3, RB1, RB2, RB4-RB7. Each mark has width, depth, bottom bars, top bars, side bars (e.g. `2T12-300`) and stirrups (dia, spacing).
+- **Model:** 92 concrete beams in `JPAM.db`. Each carries a type mark in its name (`Beam - Concrete - Rectangular (M):GB1(300x600):<id>`), and the mark also sits in `Pset_BeamCommon.Reference`. **92 of 92 join** to a schedule mark (GB1 34, GB2 14, FB5 8, …).
+- **Code stated (S-001):** ACI 318-19. Its cover and spacing clauses were NOT read here; their values below are therefore `default: ours`.
+
+**Engine change (generic):**
+- **Second schedule source:** `--schedule-json <marks.json> --mark-regex '<regex on element_name>'`. Rows `{mark: {bottom:[[n,dia]...], top:[...], side:'...', stirrup:[dia, spacing], w, h, source}}` are written by a small reader beside `beam_rules.py`, citing S-401.
+- **Same output path as the DXF-attached rows:** a stated row wins; a mark with no row is reported, never guessed.
+
+**Rules:**
+- **Bottom and top bars:** one layer each at cover + stirrup + d/2, evenly across the width. A second layer only where one layer breaks the minimum clear spacing (R110, stated); minimum clear spacing = `default: ours` 25 mm, logged per beam.
+- **Bar length:** the beam's own modelled length minus cover at each end. No anchorage into supports is modelled (logged). A bar over 12 m is flagged `needs lap (not modelled)`.
+- **Side-face bars:** as stated per mark, each face, at the stated pitch over the web depth (R105). The parse of the stated string is logged.
+- **Stirrups:** closed loops at the stated dia and spacing over the clear length. Hooks are not modelled (logged).
+- **Defaults** (`default: ours`, ACI 318-19 not read): cover 40 mm to the stirrup; minimum clear spacing 25 mm.
+- **Output:** a copy `JPAM_rebar.db` built from `JPAM.db` (JPAM.db unchanged), with one `IfcReinforcingBar` per beam × set and `element_parts` beam → set. Its change list `JPAM_rebar_changes.txt` is in the same format as `JPAM_changes.txt`.
+
+**Witnesses (`§PJRB_*`):** IDENT · JOIN (beams 92, joined 92, unjoined listed) · STATED (each set's n, dia, spacing = the mark row) · INSIDE (every bar inside its beam's TRUE mesh box with ≥ cover − 1 mm, not the DB rtree: known bad) · LAYERS (second layers counted, with the spacing that forced each) · LAP (bars > 12 m listed) · COST (verts, heap) · DETERMINISM (two builds, same SHA-256) · break switch `PJRB_BREAK=1` drops cover, so INSIDE must FAIL. INCONCLUSIVE if nothing joined.
