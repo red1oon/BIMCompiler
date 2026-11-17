@@ -228,3 +228,26 @@ Steel grade (PJAM: not stated), concrete cover on PJAM until ACI 318-19 is read,
 6. **Side-bar string reading:** `2T12-300` = one bar per face per level at most 300 mm apart between the outermost bar centres; `8T25`/`10T25` (no pitch) = n/2 per face evenly spaced. Logged in `§PJRB_SIDE_PARSE`.
 7. **The source's earlier 563 `upgrade_changes` rows are kept;** this run's 408 rows are appended from 564 and the txt lists only those.
 8. **Witness limits:** INSIDE re-measures every stored vertex against the host mesh read back from the output DB in the world frame, but it uses the same distance + ray-parity primitive as the fit, so it is not an independent algorithm. SIZE and COVERAGE are reports with no verdict. LAYERS min-clear is judged on stored bar positions.
+
+## 8. BUILD 4 SPEC (2026-11-18): PJAM bracing gusset connections (the 57 STEEL_SKEW ends)
+**Issue it proves or disproves:** can every angle brace end of the model get a rule-based gusset connection? That means a gusset welded to the supporting beam and the angle bolted to it, laid out to AISC 360-16 detailing limits. Every joint that would clash is refused and counted, and the author's members are never moved.
+**Measured inputs (2026-11-18):** the joint survey (`joint_survey.json`, §AD.2) classes 57 ends as STEEL_SKEW (30-60 deg to their support).
+- **Braces:** L100x100x8 ×31, L200x200x16 ×18, L120x120x12 ×8.
+- **Supports:** UB254x146x43 ×22, UB457x191x98 ×16, BU-500x300x50x25 ×12, BU BOX HSS 990X300X25 ×4.
+- **Gussets in the model:** none. Its 495 IfcPlate are cladding and panels.
+- **Engineer's details:** none. S-006..S-008 standard details are not in the package.
+
+**AISC 360-16 read 2026-11-18 (local copy):**
+- §J4 gives the STRENGTH of gussets (tensile yield and rupture, Whitmore section, block shear). It needs loads, which we do not have, so **no capacity check, and §J4 gives no size**.
+- §J1.1: *"Where the gravity axes of intersecting axially loaded members do not intersect at one point, the effects of eccentricity shall be considered"*. The author's geometry is kept, so the eccentricity is MEASURED and reported per joint, never corrected.
+- Detailing rows reuse `conn_rules.json`: M20 bolts, standard holes (Table J3.3M), pitch (§J3.3), edge distance (Table J3.4M, §J3.5), fillet min/max (Table J2.4, §J2.2b).
+
+**Rules** (new rows marked `default: ours` unless a clause is named):
+- **Gusset plane:** the plane of the angle leg that lies in the plane of the brace axis and the support axis. A joint where neither leg qualifies within 10 deg is refused (`AMBIGUOUS_PLANE`).
+- **Gusset attachment:** the support flange face that the brace axis meets (top or bottom flange), welded along its contact edge. Weld = Table J2.4 minimum for the thinner part, both sides of the plate.
+- **Bolts:** in the connected leg, on one gauge line at `leg/2` (ours; the AISC Manual gauge table not read), along the brace axis. Count `bolts_min` 2 (ours), pitch 60, end edge 35.
+- **Gusset outline:** the smallest convex plate that holds the bolt group with the edge distance and reaches the flange edge. Thickness = max(angle leg thickness, 10 mm) (ours).
+- **Clash:** the gusset, bolts and welds must not enter any element but the welded flange and the bolted angle. TRUE mesh boxes are used, not the DB rtree. A failing joint is refused (`REFUSED_CLASH`) with what it hit.
+- **Output:** a copy `JPAM_gussets.db` built from `JPAM.db` (JPAM.db unchanged). Per joint, one assembly of IfcPlate (gusset) + IfcMechanicalFastener (bolt group) + IfcFastener (welds), each named "configuration only, capacity not checked". Change list `JPAM_gussets_changes.txt` in the PJAM change-list format.
+
+**Witnesses (`§GUS_*`):** SURVEY (57 judged) · IDENT · RULES (every generated dimension = its row or clause, and each clause's own min/max holds) · CLEAR + CLEAR_POST (re-checked on the written DB) · ECCENT (eccentricity per joint, mm, reported: not a pass/fail) · COUNTS (generated + refused by reason = 57) · DETERMINISM (two builds, same SHA-256) · break switch `GUS_BREAK=1` disables the clash refusal, so CLEAR_POST must FAIL. INCONCLUSIVE if 0 generated.
