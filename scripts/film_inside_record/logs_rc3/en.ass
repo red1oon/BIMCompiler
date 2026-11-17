@@ -1,0 +1,33 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1920
+PlayResY: 1080
+WrapStyle: 0
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: F,DejaVu Sans,46,&H00B4F0FF,&H00FFFFFF,&H90000000,&H00000000,0,0,0,0,100,100,0,0,1,2.6,0,2,260,260,48,1
+Style: M,DejaVu Sans,46,&H00FFE6B4,&H00FFFFFF,&H90000000,&H00000000,0,0,0,0,100,100,0,0,1,2.6,0,2,260,260,48,1
+Style: Credit,DejaVu Sans,30,&H00DDDDDD,&H00FFFFFF,&H90000000,&H00000000,0,1,0,0,100,100,0,0,1,2,0,8,200,200,36,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:04.97,0:00:06.13,F,start#0,0,0,0,,Back in red one?
+Dialogue: 0,0:00:06.18,0:00:08.88,M,start#1,0,0,0,,Yes. This time we go inside one order.
+Dialogue: 0,0:00:14.30,0:00:16.85,F,menu#0,0,0,0,,Can I find a window without knowing its name?
+Dialogue: 0,0:00:16.90,0:00:22.90,M,menu#1,0,0,0,,Type menu. It is the E R P's own menu, as places: fifteen entries at the top.
+Dialogue: 0,0:00:26.38,0:00:30.32,M,quote#0,0,0,0,,cd goes into a folder, and the start of its name is enough.
+Dialogue: 0,0:00:30.34,0:00:31.51,F,quote#1,0,0,0,,six entries.
+Dialogue: 0,0:00:37.26,0:00:42.70,M,orders#0,0,0,0,,Sales Orders holds thirteen. The E R P window below opens the same folder.
+Dialogue: 0,0:00:46.84,0:00:50.60,M,window#0,0,0,0,,A window opens its kind, and the prompt keeps the path.
+Dialogue: 0,0:00:59.26,0:01:00.40,F,record#0,0,0,0,,And one order?
+Dialogue: 0,0:01:00.45,0:01:09.81,M,record#1,0,0,0,,cd and its number. It may do three things: close, void and re-activate. Tab offers only those, in the order of the window's buttons.
+Dialogue: 0,0:01:12.80,0:01:14.93,F,re#0,0,0,0,,Last time re-activate had no word.
+Dialogue: 0,0:01:14.95,0:01:28.60,M,re#1,0,0,0,,Now it does, copied line for line from legacy i Dempiere, and checked against it running: seventeen of seventeen fields the same. The order is in progress again, and its invoice and shipment are reversed.
+Dialogue: 0,0:01:31.84,0:01:33.21,F,co#0,0,0,0,,And complete it again?
+Dialogue: 0,0:01:33.26,0:01:37.76,M,co#1,0,0,0,,do C O. Completed, in nine hundred and sixteen milliseconds.
+Dialogue: 0,0:01:43.59,0:01:45.40,F,hist#0,0,0,0,,And again, without typing it?
+Dialogue: 0,0:01:45.45,0:01:50.36,M,hist#1,0,0,0,,history shows the lines. Bang six runs that line again, and prints it first.
+Dialogue: 0,0:01:57.01,0:01:59.96,M,up#0,0,0,0,,Shift Tab climbs back, one place at a time.
+Dialogue: 0,0:01:59.98,0:02:01.82,F,up#1,0,0,0,,Into the record, and out again.
+Dialogue: 0,0:02:08.67,0:02:16.57,Credit,,0,0,0,,Voices: AI-generated (Kokoro, local)  ·  Script directed by red1

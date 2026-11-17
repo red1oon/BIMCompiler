@@ -1042,7 +1042,7 @@ building Duplex
 erp.process name="Fold from BIM" Building=Duplex   run it? y/N
 → erp.process name="Fold from BIM" Building=Duplex
 ok · erp.process
-Nothing to post: Duplex is already in its Project Order (model acd69333e2fc) · no document made
+Nothing to post: Duplex is already in its Project Order (model be8ad1765614) · no document made
 Open the project? y/N → cd project
 ```
 
@@ -1068,7 +1068,7 @@ run: pick Project Phase (C_ProjectPhase_ID, 8)
 Up/Down or 1-9 pick · Enter choose · Esc cancel
 C_ProjectPhase_ID: left out
 → mis.lookup column=C_ProjectLine_ID process="Generate PO from Project" limit=50 C_Project_ID=990001
-run: pick Project Line (C_ProjectLine_ID, 45)
+run: pick Project Line (C_ProjectLine_ID, 43)
 > 1    (leave it out)
   2    10 · 990000 · 990028
   3    10 · 990017 · 990031
@@ -1076,25 +1076,25 @@ run: pick Project Line (C_ProjectLine_ID, 45)
   5    10 · 1600228 · 990047
   6    10 · 990013 · 990057
   7    10 · 1600231 · 990059
-  8    10 · 1600232 · 990063
-  9    10 · 1600233 · 990071
+  8    10 · 1600232 · 990062
+  9    10 · 1600233 · 990069
        20 · 990004 · 990029
        20 · 990004 · 990032
        20 · 990014 · 990039
        20 · 1600229 · 990048
        20 · 990013 · 990058
        20 · 1600231 · 990060
-  1-15 of 46  (PageDown / PageUp)
+  1-15 of 44  (PageDown / PageUp)
 Up/Down or 1-9 pick · Enter choose · Esc cancel
 C_ProjectLine_ID: left out
 Consolidate to one Document (ConsolidateDocument)? [Y]
 → erp.process name="Generate PO from Project" kind=Project C_Project_ID=990001 ConsolidateDocument=Y
 ok · erp.process
 Generate PO from Project: done · no document made
-  Product has no PO record  (×45)
+  Product has no PO record  (×43)
 ```
 
-**The honest answer is that no purchase order is made.** The products the post created carry no vendor price (no "PO record"), and the process says so for each of the 45 lines instead of answering a bare `ok`. With vendor prices on the products it would make the orders and list their numbers. The seed's own Hospital project is in the same state until it is given a warehouse, a customer, a payment term, a price list and lines of products that have vendors. The film "Fast Script ERP" ran six setup lines into a scratch op-log first (`mis.update` on the project, four `mis.new kind="Project Line"`), and the same `run` then made three purchase orders from four lines. Those lines are the film's, not part of this guide.
+**The honest answer is that no purchase order is made.** The products the post created carry no vendor price (no "PO record"), and the process says so for each of the 43 lines instead of answering a bare `ok`. With vendor prices on the products it would make the orders and list their numbers. The seed's own Hospital project is in the same state until it is given a warehouse, a customer, a payment term, a price list and lines of products that have vendors. The film "Fast Script ERP" ran six setup lines into a scratch op-log first (`mis.update` on the project, four `mis.new kind="Project Line"`), and the same `run` then made three purchase orders from four lines. Those lines are the film's, not part of this guide.
 
 ### The door starts the core plugins
 
