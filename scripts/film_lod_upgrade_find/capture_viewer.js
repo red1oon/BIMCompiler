@@ -13,8 +13,9 @@ const TERMS = [
   { id: 'find_layer', term: 'layer', pick: 0 },       // the first hit is a ceiling layer; every wall layer inside the first 50 rows carries a vendor prefix of the model, so no wall row is flown to (stated on the card)
   { id: 'find_fin', term: 'Fin plate', pick: 0 },
   { id: 'find_rebar', term: 'reinforcing', pick: 0 },
-  { id: 'find_gusset', term: 'gusset', pick: 0 }
-];
+  { id: 'find_gusset', term: 'gusset', pick: 0 },
+  { id: 'find_plate', term: 'plate', pick: 0, witness: true }   // §AG FLY witness only (run with BEATS=find_plate): the one-word term the Find box takes; never a film beat
+].filter((b) => (process.env.BEATS ? process.env.BEATS.split(',').includes(b.id) : !b.witness));   // BEATS=find_fin re-captures that beat alone (film rc2); the default is the four rc1 beats
 const J = { made: new Date().toISOString(), viewport: { w: VW, h: VH, dsf: DSF }, beats: {}, iso: [] };
 const log = (m) => console.log(m);
 (async () => {
