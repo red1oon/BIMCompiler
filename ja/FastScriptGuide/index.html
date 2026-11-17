@@ -3641,7 +3641,7 @@ Tip: type level student for fuller help on each word (red1 --fast opens without 
 
 red1&gt; exit
 </code></pre></div>
-<p>地図として読んでください。バージョン行は、red1 にドア動詞（長い形）と短い言葉がいくつあるかを示します。<code>help</code> は短い言葉を三つのグループで表示します。<code>help bim</code>、<code>help mis</code>、<code>help erp</code>（またはグループ名だけ）で、そのグループを見られます：</p>
+<p>地図として読んでください。バージョン行は、red1 にドア動詞（長い形）と短い言葉がいくつあるかを示します。<code>help</code> は短い言葉を三つのグループで表示します。<code>help bim</code>、<code>help mis</code>、<code>help erp</code> で、そのグループを見られます：</p>
 <table>
 <thead>
 <tr>
@@ -3674,7 +3674,7 @@ red1: type a short word; red1 prints the full line it runs (→ …), then runs 
   bim   buildings and models             start with: cd Duplex   (16 words)
   mis   records, tables, files, Ninja    start with: cd Order   (11 words)
   erp   document actions (CO VO CL RC)   start with: cd Order   (8 words)
-  everywhere: cd &lt;place&gt; · pwd · role &lt;id&gt; · login &lt;user&gt; · history · report · exit
+  everywhere: cd &lt;place&gt; · pwd · role &lt;id&gt; · login &lt;user&gt; · history [N] · report · exit
 Type bim, mis or erp for its words · help &lt;word&gt; for one word (level student first for the full explanation) · help verbs for the full door lines.
 </code></pre></div>
 <p>グループは、その言葉を、打てる例とともに一覧にします。いちばん短いのは <code>erp</code> です：</p>
@@ -3692,6 +3692,7 @@ erp: document actions (CO VO CL RC) (start with: cd Order)
   next 50000                                          what a document may do next
   ask &quot;How do I close a Sales Order?&quot;                 ask the help a question, in your language
 </code></pre></div>
+<p>グループ名だけを入力すると（<code>bim</code>、<code>mis</code>、<code>erp</code>）、同じ一覧が表示され、そのグループの中に入ります。プロンプトは <code>red1 erp&gt;</code> になり、help、Tab、灰色の候補はそのグループの言葉だけを出します。行の実行を止めることはありません。完全なドアの行は、どのグループからでもそのまま実行されます。<code>cd ..</code> で一歩戻り（場所から出て、次にグループから出る）、Shift+Tab でも同じです（red1 は <code>→ cd ..</code> と表示するので、セッションはテキストとして読めます）。</p>
 <p><code>help</code> はドア動詞を表示せず、言葉だけを表示します。<code>help verbs</code> は、すべてのドア動詞を完全な行で一覧にします。ひとつの言葉についてさらに詳しい説明が必要なら、Student レベルに切り替えます。セッションでは <code>level student</code>、一行なら <code>--level student</code> を使い、そのあと <code>help &lt;word&gt;</code> で、その言葉が何をするか、何を打つか、red1 が今いる場所から何を取るか、そして例が示されます。テキストは動詞自身の説明なので、末尾の表からずれることはありません：</p>
 <!-- run: red1_help_student cut=170 -->
 <div class="highlight"><pre><span></span><code>$ node common/door/red1.js --level student &#39;help cost&#39; 2&gt;/dev/null
@@ -3881,6 +3882,63 @@ Generate PO from Project: done · no document made
   Product has no PO record  (×28)
 </code></pre></div>
 <p>単発の行や AI の場合は何も尋ねられません。必須パラメーターが欠けていれば、それを名指しする拒否になります。ツインにまだポートがないプロセスは、そのクラス名とともに拒否され、red1 がそう伝えます。</p>
+<p><strong>レコードは自分のものを出します。</strong> レコードの中では、red1 が出すのはそのレコードのものです。そのウィンドウの辞書から読みます。<code>do</code> の後には今できるアクションだけ（あなたのロールで）、<code>cd</code> の後にはそのタブ、<code>run</code> の後にはそのレコード自身のプロセスボタン、そしてフィールドは <code>Column=</code> キーとして出ます。レコードに入ると、できることが表示されます：</p>
+<!-- run: erp_record_offers -->
+<div class="highlight"><pre><span></span><code>$ printf &#39;cd Order 100\n&#39; | node common/door/red1.js 2&gt;/dev/null
+→ mis.describe kind=&quot;Order 100&quot;
+→ mis.describe kind=Order
+→ mis.read kind=Order number=100
+→ mis.read kind=Order id=100
+Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls shows them, cd &lt;tab&gt; opens one, cat reads the record
+→ erp.actions kind=Order id=100
+it may do: CL, VO, RE (do &lt;code&gt;; next shows the tree)
+</code></pre></div>
+<p>そこでは <code>do</code> の後の Tab は <code>CL</code> と <code>VO</code> だけを出し（<code>RE</code> にはまだ red1 の言葉がありません）、<code>run Co</code> は注文ウィンドウ自身のボタン <code>"Copy Lines"</code> に補完されます。</p>
+<p><strong>メニューをたどる。</strong> <code>menu</code> は ERP メニューを場所として表示します。<code>cd &lt;folder&gt;</code> で中に入り（その始まり方をする項目が一つだけなら、名前の先頭だけで足ります）、ウィンドウの項目はその種類へ連れて行き、<code>cd ..</code>（または Shift+Tab）で一つ上のフォルダーに戻ります。プロンプトにパスが出ます。各項目には印があります：▸ フォルダー（中の項目数）、W ウィンドウ（とそのテーブル）、P プロセス、R レポート、X フォーム、F ワークフロー。<code>red1 menu</code> 単独では、これまでどおり全画面のメニューが開きます。</p>
+<!-- run: red1_menu_walk -->
+<div class="highlight"><pre><span></span><code>$ printf &#39;menu\ncd Quote\ncd &quot;Sales Orders&quot;\ncd &quot;Sales Order&quot;\npwd\n&#39; | node common/door/red1.js 2&gt;/dev/null
+→ mis.menu
+menu: 15 entries; cd &lt;name&gt; goes in, cd .. goes back
+  ▸ System Admin (6)
+  ▸ Application Dictionary (40)
+  ▸ Partner Relations (7)
+  ▸ Quote-to-Invoice (Sales) (6)
+  ▸ Requisition-to-Invoice (Purchasing) (16)
+  ▸ Returns (5)
+  ▸ Open Items (Financial Movements and Aging) (32)
+  ▸ Material Management and Pricing (22)
+  ▸ Project Management (14)
+  ▸ Performance Analysis and Accounting (17)
+  ▸ Assets (6)
+  ▸ Manufacturing (10)
+  ▸ Maintenance Request (3)
+  W Cost Center · C_CostCenter
+  W Department · C_Department
+Quote-to-Invoice (Sales): 6 entries; cd &lt;name&gt; goes in, cd .. goes back
+  ▸ Sales and Marketing (9)
+  ▸ Sales Orders (13)
+  ▸ Shipments (7)
+  ▸ Sales Invoices (5)
+  ▸ Invoice Inquiry (13)
+  ▸ Sales Management (6)
+Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd &lt;name&gt; goes in, cd .. goes back
+  W Sales Order · C_Order
+  R Order Detail
+  R Open Orders
+  R Order Transactions
+  P Quote convert
+  P RePrice Order/Invoice
+  P Generate PO from Sales Order
+  P Reopen Order
+  P Order Batch Process
+  W POS Key Layout · C_POSKeyLayout
+  P POS Key Generate
+  W POS Terminal · C_POS
+  W POS Payment · C_POSPayment
+→ mis.describe kind=C_Order
+Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
+menu=&quot;Quote-to-Invoice (Sales)/Sales Orders&quot; kind=Order
+</code></pre></div>
 <p><strong>不足を報告する。</strong> 答えの中には、あなたの打ち間違いではなく、red1 に何かが足りないと告げるものがあります。エンジンがそれに印を付け、セッションでは red1 が答えのあとに一行表示します。打ち間違いや従来の拒否は不足ではなく、余計な表示はありません。<code>report</code> はそのあと下書き（行、理由、red1 のバージョン、プラットフォーム、最後のログ行、パスは伏せ字）を示し、GitHub の issue かメールを提案します。red1 自身は何も送らず、送るのはあなたのブラウザーまたはメールソフトです：</p>
 <!-- run: red1_gap -->
 <div class="highlight"><pre><span></span><code>$ printf &#39;cd Project\nrun &quot;Renumber&quot;\n&#39; | node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39;
@@ -3927,8 +3985,8 @@ not done: cd project
 </thead>
 <tbody>
 <tr>
-<td><code>pwd</code> · <code>cd ..</code> · <code>history</code> · <code>role &lt;id&gt;</code> · <code>login &lt;user&gt;</code></td>
-<td>今いる場所、戻る、入力した行、ロールとして動く、自分が誰かを伝える（メールを持つユーザーが複数いるクライアントでだけ求められる。新しいレコードにはあなたのユーザーが記録される）</td>
+<td><code>pwd</code> · <code>cd ..</code> · <code>history</code> · <code>!!</code> · <code>!3</code> · <code>role &lt;id&gt;</code> · <code>login &lt;user&gt;</code></td>
+<td>今いる場所、戻る、入力した行（以前のセッションの分も、番号付き）、最後の行をもう一度実行、3 行目を実行、ロールとして動く、自分が誰かを伝える（メールを持つユーザーが複数いるクライアントでだけ求められる。新しいレコードにはあなたのユーザーが記録される）</td>
 </tr>
 <tr>
 <td><code>sum &lt;column&gt;</code> · <code>cat &lt;id&gt;</code> · <code>rm &lt;id&gt;</code></td>
@@ -3939,8 +3997,12 @@ not done: cd project
 <td>Ninja ブックまたは CSV を用意する、ファイルから行を読み込む、ファイルとレコードを比較する</td>
 </tr>
 <tr>
+<td><code>bim</code> · <code>mis</code> · <code>erp</code></td>
+<td>グループに入る：help、Tab、候補はその言葉だけを出す（<code>cd ..</code> または Shift+Tab で出る）</td>
+</tr>
+<tr>
 <td><code>menu</code></td>
-<td>ERP メニューを画面で</td>
+<td>ERP メニューを <code>cd</code> でフォルダーのようにたどる。<code>red1 menu</code> は全画面で開く</td>
 </tr>
 <tr>
 <td><code>cd Project 990000</code> · <code>ls</code> · <code>cd Phase</code></td>

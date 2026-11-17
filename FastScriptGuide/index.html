@@ -3641,7 +3641,7 @@ Tip: type level student for fuller help on each word (red1 --fast opens without 
 
 red1&gt; exit
 </code></pre></div>
-<p>Read it as a map. The version line says how many door verbs (the long form) and short words red1 has. <code>help</code> shows the short words in three groups; <code>help bim</code>, <code>help mis</code> or <code>help erp</code> (or the group's name alone) shows one group:</p>
+<p>Read it as a map. The version line says how many door verbs (the long form) and short words red1 has. <code>help</code> shows the short words in three groups; <code>help bim</code>, <code>help mis</code> or <code>help erp</code> shows one group:</p>
 <table>
 <thead>
 <tr>
@@ -3674,7 +3674,7 @@ red1: type a short word; red1 prints the full line it runs (→ …), then runs 
   bim   buildings and models             start with: cd Duplex   (16 words)
   mis   records, tables, files, Ninja    start with: cd Order   (11 words)
   erp   document actions (CO VO CL RC)   start with: cd Order   (8 words)
-  everywhere: cd &lt;place&gt; · pwd · role &lt;id&gt; · login &lt;user&gt; · history · report · exit
+  everywhere: cd &lt;place&gt; · pwd · role &lt;id&gt; · login &lt;user&gt; · history [N] · report · exit
 Type bim, mis or erp for its words · help &lt;word&gt; for one word (level student first for the full explanation) · help verbs for the full door lines.
 </code></pre></div>
 <p>One group lists its words, each with an example you can type. <code>erp</code> is the shortest:</p>
@@ -3692,6 +3692,7 @@ erp: document actions (CO VO CL RC) (start with: cd Order)
   next 50000                                          what a document may do next
   ask &quot;How do I close a Sales Order?&quot;                 ask the help a question, in your language
 </code></pre></div>
+<p>A group's name typed alone (<code>bim</code>, <code>mis</code> or <code>erp</code>) prints the same list and takes you into the group: the prompt reads <code>red1 erp&gt;</code>, and help, Tab and the grey suggestions offer only that group's words. It never stops a line from running: a full door line still runs from any group. <code>cd ..</code> backs out one step (out of a place, then out of the group), and Shift+Tab does the same (red1 prints <code>→ cd ..</code>, so the session reads as text).</p>
 <p><code>help</code> prints no door verbs, only the words. <code>help verbs</code> lists every door verb with its full line. For fuller help on one word, switch to the Student level: <code>level student</code> in a session, or <code>--level student</code> on one line, then <code>help &lt;word&gt;</code> tells you what the word does, what you type, what red1 takes from where you are, and an example. The text is the verb's own description, so it cannot drift from the table at the end:</p>
 <!-- run: red1_help_student cut=170 -->
 <div class="highlight"><pre><span></span><code>$ node common/door/red1.js --level student &#39;help cost&#39; 2&gt;/dev/null
@@ -3881,6 +3882,63 @@ Generate PO from Project: done · no document made
   Product has no PO record  (×28)
 </code></pre></div>
 <p>In a one-shot line, or for an AI, nothing is asked: a missing mandatory parameter is a refusal that names it. A process the twin has no port for yet is refused with the name of its class, and red1 says so.</p>
+<p><strong>A record offers its own.</strong> Inside a record, what red1 offers is that record's, read from the dictionary for its window: after <code>do</code>, only the actions it may take now (for your role); after <code>cd</code>, its tabs; after <code>run</code>, its own process buttons; and its fields as <code>Column=</code> keys. Entering the record prints what it may do:</p>
+<!-- run: erp_record_offers -->
+<div class="highlight"><pre><span></span><code>$ printf &#39;cd Order 100\n&#39; | node common/door/red1.js 2&gt;/dev/null
+→ mis.describe kind=&quot;Order 100&quot;
+→ mis.describe kind=Order
+→ mis.read kind=Order number=100
+→ mis.read kind=Order id=100
+Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls shows them, cd &lt;tab&gt; opens one, cat reads the record
+→ erp.actions kind=Order id=100
+it may do: CL, VO, RE (do &lt;code&gt;; next shows the tree)
+</code></pre></div>
+<p>There Tab after <code>do</code> offers <code>CL</code> and <code>VO</code> only (<code>RE</code> has no red1 word yet), and <code>run Co</code> completes to <code>"Copy Lines"</code>, the order window's own button.</p>
+<p><strong>Walk the menu.</strong> <code>menu</code> shows the ERP menu as places: <code>cd &lt;folder&gt;</code> goes in (the start of its name is enough when only one entry starts that way), a window entry takes you to its kind, and <code>cd ..</code> (or Shift+Tab) goes back up one folder. The prompt shows the path. Each entry is marked: ▸ a folder (how many entries it holds), W a window (and its table), P a process, R a report, X a form, F a workflow. <code>red1 menu</code> on its own still opens the menu on a full screen.</p>
+<!-- run: red1_menu_walk -->
+<div class="highlight"><pre><span></span><code>$ printf &#39;menu\ncd Quote\ncd &quot;Sales Orders&quot;\ncd &quot;Sales Order&quot;\npwd\n&#39; | node common/door/red1.js 2&gt;/dev/null
+→ mis.menu
+menu: 15 entries; cd &lt;name&gt; goes in, cd .. goes back
+  ▸ System Admin (6)
+  ▸ Application Dictionary (40)
+  ▸ Partner Relations (7)
+  ▸ Quote-to-Invoice (Sales) (6)
+  ▸ Requisition-to-Invoice (Purchasing) (16)
+  ▸ Returns (5)
+  ▸ Open Items (Financial Movements and Aging) (32)
+  ▸ Material Management and Pricing (22)
+  ▸ Project Management (14)
+  ▸ Performance Analysis and Accounting (17)
+  ▸ Assets (6)
+  ▸ Manufacturing (10)
+  ▸ Maintenance Request (3)
+  W Cost Center · C_CostCenter
+  W Department · C_Department
+Quote-to-Invoice (Sales): 6 entries; cd &lt;name&gt; goes in, cd .. goes back
+  ▸ Sales and Marketing (9)
+  ▸ Sales Orders (13)
+  ▸ Shipments (7)
+  ▸ Sales Invoices (5)
+  ▸ Invoice Inquiry (13)
+  ▸ Sales Management (6)
+Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd &lt;name&gt; goes in, cd .. goes back
+  W Sales Order · C_Order
+  R Order Detail
+  R Open Orders
+  R Order Transactions
+  P Quote convert
+  P RePrice Order/Invoice
+  P Generate PO from Sales Order
+  P Reopen Order
+  P Order Batch Process
+  W POS Key Layout · C_POSKeyLayout
+  P POS Key Generate
+  W POS Terminal · C_POS
+  W POS Payment · C_POSPayment
+→ mis.describe kind=C_Order
+Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
+menu=&quot;Quote-to-Invoice (Sales)/Sales Orders&quot; kind=Order
+</code></pre></div>
 <p><strong>Report a gap.</strong> Some answers say that red1 lacks something, as opposed to you having mistyped. The engine marks those, and in a session red1 prints one line after the answer. A typo or a legacy refusal is not a gap and prints nothing extra. <code>report</code> then shows a draft (the line, the reason, the red1 version, the platform, the last log lines, your paths masked) and offers a GitHub issue or an email; red1 sends nothing itself, your own browser or mail program does:</p>
 <!-- run: red1_gap -->
 <div class="highlight"><pre><span></span><code>$ printf &#39;cd Project\nrun &quot;Renumber&quot;\n&#39; | node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39;
@@ -3927,8 +3985,8 @@ not done: cd project
 </thead>
 <tbody>
 <tr>
-<td><code>pwd</code> · <code>cd ..</code> · <code>history</code> · <code>role &lt;id&gt;</code> · <code>login &lt;user&gt;</code></td>
-<td>where you are; back; the lines typed; act as a role; say who you are (asked only in a client with more than one user with an email; new records carry your user)</td>
+<td><code>pwd</code> · <code>cd ..</code> · <code>history</code> · <code>!!</code> · <code>!3</code> · <code>role &lt;id&gt;</code> · <code>login &lt;user&gt;</code></td>
+<td>where you are; back; the lines typed (earlier sessions too, numbered); run the last line again; run line 3; act as a role; say who you are (asked only in a client with more than one user with an email; new records carry your user)</td>
 </tr>
 <tr>
 <td><code>sum &lt;column&gt;</code> · <code>cat &lt;id&gt;</code> · <code>rm &lt;id&gt;</code></td>
@@ -3939,8 +3997,12 @@ not done: cd project
 <td>stage a Ninja workbook or CSV; load rows from a file; compare a file with the records</td>
 </tr>
 <tr>
+<td><code>bim</code> · <code>mis</code> · <code>erp</code></td>
+<td>go into a group: help, Tab and the suggestions offer only its words (<code>cd ..</code> or Shift+Tab backs out)</td>
+</tr>
+<tr>
 <td><code>menu</code></td>
-<td>the ERP menu, on a screen</td>
+<td>the ERP menu, walked like folders with <code>cd</code>; <code>red1 menu</code> opens it on a full screen</td>
 </tr>
 <tr>
 <td><code>cd Project 990000</code> · <code>ls</code> · <code>cd Phase</code></td>

@@ -3641,7 +3641,7 @@ Tip: type level student for fuller help on each word (red1 --fast opens without 
 
 red1&gt; exit
 </code></pre></div>
-<p>Lisez-le comme une carte. La ligne de version dit combien de verbes de la porte (la forme longue) et de mots courts red1 possède. <code>help</code> montre les mots courts en trois groupes ; <code>help bim</code>, <code>help mis</code> ou <code>help erp</code> (ou le nom du groupe seul) montre un groupe :</p>
+<p>Lisez-le comme une carte. La ligne de version dit combien de verbes de la porte (la forme longue) et de mots courts red1 possède. <code>help</code> montre les mots courts en trois groupes ; <code>help bim</code>, <code>help mis</code> ou <code>help erp</code> montre un groupe :</p>
 <table>
 <thead>
 <tr>
@@ -3674,7 +3674,7 @@ red1: type a short word; red1 prints the full line it runs (→ …), then runs 
   bim   buildings and models             start with: cd Duplex   (16 words)
   mis   records, tables, files, Ninja    start with: cd Order   (11 words)
   erp   document actions (CO VO CL RC)   start with: cd Order   (8 words)
-  everywhere: cd &lt;place&gt; · pwd · role &lt;id&gt; · login &lt;user&gt; · history · report · exit
+  everywhere: cd &lt;place&gt; · pwd · role &lt;id&gt; · login &lt;user&gt; · history [N] · report · exit
 Type bim, mis or erp for its words · help &lt;word&gt; for one word (level student first for the full explanation) · help verbs for the full door lines.
 </code></pre></div>
 <p>Un groupe liste ses mots, chacun avec un exemple à taper. <code>erp</code> est le plus court :</p>
@@ -3692,6 +3692,7 @@ erp: document actions (CO VO CL RC) (start with: cd Order)
   next 50000                                          what a document may do next
   ask &quot;How do I close a Sales Order?&quot;                 ask the help a question, in your language
 </code></pre></div>
+<p>Le nom d'un groupe tapé seul (<code>bim</code>, <code>mis</code> ou <code>erp</code>) affiche la même liste et vous fait entrer dans le groupe : l'invite indique <code>red1 erp&gt;</code>, et l'aide, Tab et les suggestions grises ne proposent que les mots de ce groupe. Il n'empêche jamais une ligne de s'exécuter : une ligne complète de la porte s'exécute toujours depuis n'importe quel groupe. <code>cd ..</code> recule d'un pas (hors d'un lieu, puis hors du groupe), et Shift+Tab fait de même (red1 affiche <code>→ cd ..</code>, ainsi la session se lit comme du texte).</p>
 <p><code>help</code> n'affiche pas de verbes de la porte, seulement les mots. <code>help verbs</code> liste chaque verbe de la porte avec sa ligne complète. Pour une aide plus complète sur un mot, passez au niveau Student : <code>level student</code> dans une session, ou <code>--level student</code> sur une ligne, puis <code>help &lt;word&gt;</code> dit ce que fait le mot, ce que vous tapez, ce que red1 prend de l'endroit où vous êtes, et un exemple. Le texte est la description propre du verbe, donc il ne peut pas diverger du tableau de la fin :</p>
 <!-- run: red1_help_student cut=170 -->
 <div class="highlight"><pre><span></span><code>$ node common/door/red1.js --level student &#39;help cost&#39; 2&gt;/dev/null
@@ -3881,6 +3882,63 @@ Generate PO from Project: done · no document made
   Product has no PO record  (×28)
 </code></pre></div>
 <p>Sur une ligne isolée, ou pour une IA, rien n'est demandé : un paramètre obligatoire manquant est un refus qui le nomme. Un processus pour lequel le jumeau n'a pas encore de port est refusé avec le nom de sa classe, et red1 le dit.</p>
+<p><strong>Un enregistrement propose ce qui est à lui.</strong> Dans un enregistrement, ce que red1 propose est à cet enregistrement, lu dans le dictionnaire de sa fenêtre : après <code>do</code>, seulement les actions qu'il peut faire maintenant (pour votre rôle) ; après <code>cd</code>, ses onglets ; après <code>run</code>, ses propres boutons de processus ; et ses champs comme clés <code>Column=</code>. En y entrant, l'enregistrement affiche ce qu'il peut faire :</p>
+<!-- run: erp_record_offers -->
+<div class="highlight"><pre><span></span><code>$ printf &#39;cd Order 100\n&#39; | node common/door/red1.js 2&gt;/dev/null
+→ mis.describe kind=&quot;Order 100&quot;
+→ mis.describe kind=Order
+→ mis.read kind=Order number=100
+→ mis.read kind=Order id=100
+Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls shows them, cd &lt;tab&gt; opens one, cat reads the record
+→ erp.actions kind=Order id=100
+it may do: CL, VO, RE (do &lt;code&gt;; next shows the tree)
+</code></pre></div>
+<p>Là, Tab après <code>do</code> ne propose que <code>CL</code> et <code>VO</code> (<code>RE</code> n'a pas encore de mot red1), et <code>run Co</code> se complète en <code>"Copy Lines"</code>, le bouton propre à la fenêtre de commande.</p>
+<p><strong>Parcourir le menu.</strong> <code>menu</code> montre le menu ERP comme des lieux : <code>cd &lt;folder&gt;</code> y entre (le début de son nom suffit quand une seule entrée commence ainsi), une entrée de fenêtre vous mène à son type, et <code>cd ..</code> (ou Shift+Tab) remonte d'un dossier. L'invite montre le chemin. Chaque entrée est marquée : ▸ un dossier (combien d'entrées il contient), W une fenêtre (et sa table), P un processus, R un rapport, X un formulaire, F un flux de travail. <code>red1 menu</code> seul ouvre toujours le menu sur un écran entier.</p>
+<!-- run: red1_menu_walk -->
+<div class="highlight"><pre><span></span><code>$ printf &#39;menu\ncd Quote\ncd &quot;Sales Orders&quot;\ncd &quot;Sales Order&quot;\npwd\n&#39; | node common/door/red1.js 2&gt;/dev/null
+→ mis.menu
+menu: 15 entries; cd &lt;name&gt; goes in, cd .. goes back
+  ▸ System Admin (6)
+  ▸ Application Dictionary (40)
+  ▸ Partner Relations (7)
+  ▸ Quote-to-Invoice (Sales) (6)
+  ▸ Requisition-to-Invoice (Purchasing) (16)
+  ▸ Returns (5)
+  ▸ Open Items (Financial Movements and Aging) (32)
+  ▸ Material Management and Pricing (22)
+  ▸ Project Management (14)
+  ▸ Performance Analysis and Accounting (17)
+  ▸ Assets (6)
+  ▸ Manufacturing (10)
+  ▸ Maintenance Request (3)
+  W Cost Center · C_CostCenter
+  W Department · C_Department
+Quote-to-Invoice (Sales): 6 entries; cd &lt;name&gt; goes in, cd .. goes back
+  ▸ Sales and Marketing (9)
+  ▸ Sales Orders (13)
+  ▸ Shipments (7)
+  ▸ Sales Invoices (5)
+  ▸ Invoice Inquiry (13)
+  ▸ Sales Management (6)
+Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd &lt;name&gt; goes in, cd .. goes back
+  W Sales Order · C_Order
+  R Order Detail
+  R Open Orders
+  R Order Transactions
+  P Quote convert
+  P RePrice Order/Invoice
+  P Generate PO from Sales Order
+  P Reopen Order
+  P Order Batch Process
+  W POS Key Layout · C_POSKeyLayout
+  P POS Key Generate
+  W POS Terminal · C_POS
+  W POS Payment · C_POSPayment
+→ mis.describe kind=C_Order
+Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
+menu=&quot;Quote-to-Invoice (Sales)/Sales Orders&quot; kind=Order
+</code></pre></div>
 <p><strong>Signaler une lacune.</strong> Certaines réponses disent qu'il manque quelque chose à red1, par opposition à une faute de frappe de votre part. Le moteur les marque, et dans une session red1 affiche une ligne après la réponse. Une faute de frappe ou un refus historique n'est pas une lacune et n'affiche rien de plus. <code>report</code> montre alors un brouillon (la ligne, la raison, la version de red1, la plateforme, les dernières lignes du journal, vos chemins masqués) et propose un ticket GitHub ou un courriel ; red1 n'envoie rien lui-même, c'est votre navigateur ou votre messagerie qui le fait :</p>
 <!-- run: red1_gap -->
 <div class="highlight"><pre><span></span><code>$ printf &#39;cd Project\nrun &quot;Renumber&quot;\n&#39; | node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39;
@@ -3927,8 +3985,8 @@ not done: cd project
 </thead>
 <tbody>
 <tr>
-<td><code>pwd</code> · <code>cd ..</code> · <code>history</code> · <code>role &lt;id&gt;</code> · <code>login &lt;user&gt;</code></td>
-<td>où vous êtes ; retour ; les lignes tapées ; agir comme un rôle ; dire qui vous êtes (demandé seulement dans un client avec plus d'un utilisateur ayant un e-mail ; les nouveaux enregistrements portent votre utilisateur)</td>
+<td><code>pwd</code> · <code>cd ..</code> · <code>history</code> · <code>!!</code> · <code>!3</code> · <code>role &lt;id&gt;</code> · <code>login &lt;user&gt;</code></td>
+<td>où vous êtes ; retour ; les lignes tapées (aussi celles des sessions précédentes, numérotées) ; relancer la dernière ligne ; lancer la ligne 3 ; agir comme un rôle ; dire qui vous êtes (demandé seulement dans un client avec plus d'un utilisateur ayant un e-mail ; les nouveaux enregistrements portent votre utilisateur)</td>
 </tr>
 <tr>
 <td><code>sum &lt;column&gt;</code> · <code>cat &lt;id&gt;</code> · <code>rm &lt;id&gt;</code></td>
@@ -3939,8 +3997,12 @@ not done: cd project
 <td>préparer un classeur Ninja ou un CSV ; charger des lignes d'un fichier ; comparer un fichier avec les enregistrements</td>
 </tr>
 <tr>
+<td><code>bim</code> · <code>mis</code> · <code>erp</code></td>
+<td>entrer dans un groupe : l'aide, Tab et les suggestions ne proposent que ses mots (<code>cd ..</code> ou Shift+Tab en sort)</td>
+</tr>
+<tr>
 <td><code>menu</code></td>
-<td>le menu ERP, sur un écran</td>
+<td>le menu ERP, parcouru comme des dossiers avec <code>cd</code> ; <code>red1 menu</code> l'ouvre sur un écran entier</td>
 </tr>
 <tr>
 <td><code>cd Project 990000</code> · <code>ls</code> · <code>cd Phase</code></td>

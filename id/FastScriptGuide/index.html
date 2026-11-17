@@ -3641,7 +3641,7 @@ Tip: type level student for fuller help on each word (red1 --fast opens without 
 
 red1&gt; exit
 </code></pre></div>
-<p>Bacalah sebagai peta. Baris versi menyebut berapa banyak kata kerja pintu (bentuk panjang) dan kata pendek yang dimiliki red1. <code>help</code> menampilkan kata-kata pendek dalam tiga kelompok; <code>help bim</code>, <code>help mis</code>, atau <code>help erp</code> (atau nama kelompoknya saja) menampilkan satu kelompok:</p>
+<p>Bacalah sebagai peta. Baris versi menyebut berapa banyak kata kerja pintu (bentuk panjang) dan kata pendek yang dimiliki red1. <code>help</code> menampilkan kata-kata pendek dalam tiga kelompok; <code>help bim</code>, <code>help mis</code>, atau <code>help erp</code> menampilkan satu kelompok:</p>
 <table>
 <thead>
 <tr>
@@ -3674,7 +3674,7 @@ red1: type a short word; red1 prints the full line it runs (→ …), then runs 
   bim   buildings and models             start with: cd Duplex   (16 words)
   mis   records, tables, files, Ninja    start with: cd Order   (11 words)
   erp   document actions (CO VO CL RC)   start with: cd Order   (8 words)
-  everywhere: cd &lt;place&gt; · pwd · role &lt;id&gt; · login &lt;user&gt; · history · report · exit
+  everywhere: cd &lt;place&gt; · pwd · role &lt;id&gt; · login &lt;user&gt; · history [N] · report · exit
 Type bim, mis or erp for its words · help &lt;word&gt; for one word (level student first for the full explanation) · help verbs for the full door lines.
 </code></pre></div>
 <p>Satu kelompok mendaftar kata-katanya, masing-masing dengan contoh yang bisa Anda ketik. <code>erp</code> yang paling pendek:</p>
@@ -3692,6 +3692,7 @@ erp: document actions (CO VO CL RC) (start with: cd Order)
   next 50000                                          what a document may do next
   ask &quot;How do I close a Sales Order?&quot;                 ask the help a question, in your language
 </code></pre></div>
+<p>Nama kelompok yang diketik sendiri (<code>bim</code>, <code>mis</code>, atau <code>erp</code>) mencetak daftar yang sama dan membawa Anda masuk ke kelompok itu: prompt menjadi <code>red1 erp&gt;</code>, dan bantuan, Tab, serta saran abu-abu hanya menawarkan kata-kata kelompok itu. Ini tidak pernah menghentikan sebuah baris berjalan: baris pintu yang lengkap tetap berjalan dari kelompok mana pun. <code>cd ..</code> mundur satu langkah (keluar dari sebuah tempat, lalu keluar dari kelompok), dan Shift+Tab melakukan hal yang sama (red1 mencetak <code>→ cd ..</code>, sehingga sesi terbaca sebagai teks).</p>
 <p><code>help</code> tidak mencetak kata kerja pintu, hanya kata-katanya. <code>help verbs</code> mendaftar setiap kata kerja pintu dengan baris lengkapnya. Untuk bantuan lebih lengkap tentang satu kata, pindah ke tingkat Student: <code>level student</code> dalam sesi, atau <code>--level student</code> pada satu baris, lalu <code>help &lt;word&gt;</code> menjelaskan apa yang dilakukan kata itu, apa yang Anda ketik, apa yang diambil red1 dari tempat Anda berada, dan sebuah contoh. Teksnya adalah deskripsi kata kerja itu sendiri, jadi tidak bisa menyimpang dari tabel di akhir:</p>
 <!-- run: red1_help_student cut=170 -->
 <div class="highlight"><pre><span></span><code>$ node common/door/red1.js --level student &#39;help cost&#39; 2&gt;/dev/null
@@ -3881,6 +3882,63 @@ Generate PO from Project: done · no document made
   Product has no PO record  (×28)
 </code></pre></div>
 <p>Pada baris tunggal, atau untuk AI, tidak ada yang ditanyakan: parameter wajib yang hilang adalah penolakan yang menyebutnya. Proses yang belum punya port di kembaran ditolak dengan menyebut nama kelasnya, dan red1 mengatakannya.</p>
+<p><strong>Sebuah rekaman menawarkan miliknya sendiri.</strong> Di dalam sebuah rekaman, yang ditawarkan red1 adalah milik rekaman itu, dibaca dari kamus jendelanya: setelah <code>do</code>, hanya tindakan yang boleh dilakukannya sekarang (untuk peran Anda); setelah <code>cd</code>, tab-tabnya; setelah <code>run</code>, tombol proses miliknya sendiri; dan kolom-kolomnya sebagai kunci <code>Column=</code>. Saat dimasuki, rekaman itu mencetak apa yang boleh dilakukannya:</p>
+<!-- run: erp_record_offers -->
+<div class="highlight"><pre><span></span><code>$ printf &#39;cd Order 100\n&#39; | node common/door/red1.js 2&gt;/dev/null
+→ mis.describe kind=&quot;Order 100&quot;
+→ mis.describe kind=Order
+→ mis.read kind=Order number=100
+→ mis.read kind=Order id=100
+Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls shows them, cd &lt;tab&gt; opens one, cat reads the record
+→ erp.actions kind=Order id=100
+it may do: CL, VO, RE (do &lt;code&gt;; next shows the tree)
+</code></pre></div>
+<p>Di sana Tab setelah <code>do</code> hanya menawarkan <code>CL</code> dan <code>VO</code> (<code>RE</code> belum punya kata red1), dan <code>run Co</code> dilengkapi menjadi <code>"Copy Lines"</code>, tombol milik jendela pesanan itu sendiri.</p>
+<p><strong>Menjelajahi menu.</strong> <code>menu</code> menampilkan menu ERP sebagai tempat: <code>cd &lt;folder&gt;</code> masuk ke dalamnya (awal namanya sudah cukup bila hanya satu entri yang dimulai begitu), entri jendela membawa Anda ke jenisnya, dan <code>cd ..</code> (atau Shift+Tab) naik satu folder. Prompt menunjukkan jalurnya. Setiap entri diberi tanda: ▸ sebuah folder (berapa entri isinya), W sebuah jendela (dan tabelnya), P sebuah proses, R sebuah laporan, X sebuah formulir, F sebuah alur kerja. <code>red1 menu</code> sendiri tetap membuka menu di satu layar penuh.</p>
+<!-- run: red1_menu_walk -->
+<div class="highlight"><pre><span></span><code>$ printf &#39;menu\ncd Quote\ncd &quot;Sales Orders&quot;\ncd &quot;Sales Order&quot;\npwd\n&#39; | node common/door/red1.js 2&gt;/dev/null
+→ mis.menu
+menu: 15 entries; cd &lt;name&gt; goes in, cd .. goes back
+  ▸ System Admin (6)
+  ▸ Application Dictionary (40)
+  ▸ Partner Relations (7)
+  ▸ Quote-to-Invoice (Sales) (6)
+  ▸ Requisition-to-Invoice (Purchasing) (16)
+  ▸ Returns (5)
+  ▸ Open Items (Financial Movements and Aging) (32)
+  ▸ Material Management and Pricing (22)
+  ▸ Project Management (14)
+  ▸ Performance Analysis and Accounting (17)
+  ▸ Assets (6)
+  ▸ Manufacturing (10)
+  ▸ Maintenance Request (3)
+  W Cost Center · C_CostCenter
+  W Department · C_Department
+Quote-to-Invoice (Sales): 6 entries; cd &lt;name&gt; goes in, cd .. goes back
+  ▸ Sales and Marketing (9)
+  ▸ Sales Orders (13)
+  ▸ Shipments (7)
+  ▸ Sales Invoices (5)
+  ▸ Invoice Inquiry (13)
+  ▸ Sales Management (6)
+Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd &lt;name&gt; goes in, cd .. goes back
+  W Sales Order · C_Order
+  R Order Detail
+  R Open Orders
+  R Order Transactions
+  P Quote convert
+  P RePrice Order/Invoice
+  P Generate PO from Sales Order
+  P Reopen Order
+  P Order Batch Process
+  W POS Key Layout · C_POSKeyLayout
+  P POS Key Generate
+  W POS Terminal · C_POS
+  W POS Payment · C_POSPayment
+→ mis.describe kind=C_Order
+Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
+menu=&quot;Quote-to-Invoice (Sales)/Sales Orders&quot; kind=Order
+</code></pre></div>
 <p><strong>Melaporkan celah.</strong> Beberapa jawaban menyatakan bahwa red1 kekurangan sesuatu, bukan Anda yang salah ketik. Mesin menandainya, dan dalam sesi red1 mencetak satu baris setelah jawaban. Salah ketik atau penolakan lama bukan celah dan tidak mencetak tambahan. <code>report</code> lalu menampilkan draf (barisnya, alasannya, versi red1, platform, baris log terakhir, jalur Anda disamarkan) dan menawarkan isu GitHub atau email; red1 tidak mengirim apa pun sendiri, peramban atau program surel Anda yang mengirim:</p>
 <!-- run: red1_gap -->
 <div class="highlight"><pre><span></span><code>$ printf &#39;cd Project\nrun &quot;Renumber&quot;\n&#39; | node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39;
@@ -3927,8 +3985,8 @@ not done: cd project
 </thead>
 <tbody>
 <tr>
-<td><code>pwd</code> · <code>cd ..</code> · <code>history</code> · <code>role &lt;id&gt;</code> · <code>login &lt;user&gt;</code></td>
-<td>di mana Anda berada; kembali; baris yang diketik; bertindak sebagai sebuah peran; menyatakan siapa Anda (hanya diminta di klien dengan lebih dari satu pengguna ber-email; rekaman baru membawa pengguna Anda)</td>
+<td><code>pwd</code> · <code>cd ..</code> · <code>history</code> · <code>!!</code> · <code>!3</code> · <code>role &lt;id&gt;</code> · <code>login &lt;user&gt;</code></td>
+<td>di mana Anda berada; kembali; baris yang diketik (juga dari sesi sebelumnya, bernomor); jalankan lagi baris terakhir; jalankan baris 3; bertindak sebagai sebuah peran; menyatakan siapa Anda (hanya diminta di klien dengan lebih dari satu pengguna ber-email; rekaman baru membawa pengguna Anda)</td>
 </tr>
 <tr>
 <td><code>sum &lt;column&gt;</code> · <code>cat &lt;id&gt;</code> · <code>rm &lt;id&gt;</code></td>
@@ -3939,8 +3997,12 @@ not done: cd project
 <td>menyiapkan buku kerja Ninja atau CSV; memuat baris dari berkas; membandingkan berkas dengan rekaman</td>
 </tr>
 <tr>
+<td><code>bim</code> · <code>mis</code> · <code>erp</code></td>
+<td>masuk ke sebuah kelompok: bantuan, Tab, dan saran hanya menawarkan kata-katanya (<code>cd ..</code> atau Shift+Tab keluar)</td>
+</tr>
+<tr>
 <td><code>menu</code></td>
-<td>menu ERP, di layar</td>
+<td>menu ERP, dijelajahi seperti folder dengan <code>cd</code>; <code>red1 menu</code> membukanya di satu layar penuh</td>
 </tr>
 <tr>
 <td><code>cd Project 990000</code> · <code>ls</code> · <code>cd Phase</code></td>
