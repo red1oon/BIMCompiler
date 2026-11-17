@@ -20,7 +20,9 @@ Owner, closing 2026-11-15: *"get it well documented in the prompts/# consolidate
 
 **0. ✅ DONE 2026-11-15 (fourth session): F-18 answered, the provenance hover built and merged — §F.23 (bim-ootb #3064 + tooltip-in-window fix #3069); FILM 3 built (`prompts/FILM_IMMERSIVE_SOFTWARE.md` FILM 3 STATUS, awaiting the owner's review); the default-key + truss findings handed to the DXF2BIM lane (bim-ootb `prompts/DXF2BIM_ARCHITECT_REVIEW.md` §D113, #3070). NEXT = the X0 "New witness for this file" command (§F.21 OPEN), or Part A's remaining A2 (item 2).** The text below is the original hand-over.
 
-**0r. 2026-11-17 (seventh session, CLOSE) — START HERE:** A3-CLOCK-2 is built and witnessed, **PR bim-ootb #3168 open, auto-merge off**: step 1 is the gate check of its last merged tree, then merge (A3-CLOCK-2 RESULT says exactly how). Also done this session: the real-VS-Code witness presses the Bump button (#3163, PASS with `--compiler-root` at a current bim-compiler; the default `~/bim-compiler` on another branch fails the unrelated tag-spec row). **Then W-CORE-PURE** (spec written; `forbidden=0` is already true: `calls=0`), which closes Part A; then B0. F-2 ceilings due 2026-11-30.
+**0s. 2026-11-17 (eighth session) — START HERE: PART A IS DONE.** (1) bim-ootb #3168 (A3-CLOCK-2) was already MERGED when this session opened: the github-actions bot turned auto-merge on and merged it 4 minutes after the last push (`2989f8f5`, 00:13Z), before the gate check 0r asked for. The check was run after the fact on `main` @ `b732d923` and PASSES (A3-CLOCK-2 POST-MERGE CHECK). **Lesson: "auto-merge off" does not hold in bim-ootb, the bot re-enables it; to hold a PR back, open it as a DRAFT.** (2) **W-CORE-PURE built and merged (bim-ootb #3180 / PR #3181, `7c26856d`), and it runs in CI fast-checks**: `§CORE_PURE files=125 parse_fail=0 forbidden=0 red_control=detected verdict=PASS` (A3 W-CORE-PURE RESULT). **NEXT: Part B, B0** (the manifest generator in check mode, no decision needed, no file changes; write its build spec first), then ask B-1. Also unblocked, small: the core-purity squiggle in X0 (Part F table row; reuse `witness_core_pure.js`'s scan, do not write a second scanner). F-2 ceilings due 2026-11-30. Owner, this session: *"if u hit a code design or spec problem use a well scoped Fable agent to resolve"* (workers otherwise stay on Sonnet).
+
+**0r. 2026-11-17 (seventh session, CLOSE):** A3-CLOCK-2 is built and witnessed, **PR bim-ootb #3168 open, auto-merge off**: step 1 is the gate check of its last merged tree, then merge (A3-CLOCK-2 RESULT says exactly how). Also done this session: the real-VS-Code witness presses the Bump button (#3163, PASS with `--compiler-root` at a current bim-compiler; the default `~/bim-compiler` on another branch fails the unrelated tag-spec row). **Then W-CORE-PURE** (spec written; `forbidden=0` is already true: `calls=0`), which closes Part A; then B0. F-2 ceilings due 2026-11-30.
 
 **0q. 2026-11-17 (seventh session, end):** §F.34 the Bump button built (bim-ootb #3162, merged): press when the feature is done, background check, ✓ then press to write; the VS Code ERP bump works again. **NEXT: A3-CLOCK-2** (spec drafted; tell the live sessions before merging, it makes `ad_callout.js` hosts install an edge), **then W-CORE-PURE** (closes Part A), then B0.
 
@@ -76,7 +78,7 @@ Owner, closing 2026-11-15: *"get it well documented in the prompts/# consolidate
 **3. Where each part stands.**
 | Part | State | Next step |
 |---|---|---|
-| A | A-1..A-5 ✅, A2 done for 15 files | remaining A2 (above; browser witnesses, on the owner's go) → A3; the door stamp is the CLI lane's (0c) |
+| A | ✅ DONE 2026-11-17: A0, A-1..A-7, A1, A2, A3 (W-CORE-PURE PASS, `forbidden=0`, in CI) | none; the door stamp is the CLI lane's (0c) |
 | B | not started | B0 needs no decision (§READY), then ask B-1 |
 | C, D | not started; wait on B | — |
 | E | not started | `witness_kit/paths.js` needs no decision (§READY), then ask E-1 |
@@ -723,6 +725,35 @@ comments and strings never count).
 **Issue proved:** "a core file reads a clock, random numbers or the network itself instead of the installed edge", judged over the whole A-1 list by
 pathspec, not a hand list that a new file can miss.
 
+**A3-CLOCK-2 POST-MERGE CHECK (2026-11-17, eighth session; bim-ootb `main` @ `b732d923`, which holds #3168 as `2989f8f5`).** The PR merged before its
+last tree was gated (RESUME 0s), so the gate ran on `main` itself: `BUMP_PARITY_BRIDGE=/tmp/wt-bridge-a3/scripts/bridge/run_all.sh node scripts/bump.js
+erp/ad_callout.js --check`, log read:
+- `§BUMP_PARITY mode=block verdicts=4 new=[] known=[M3:HARNESS-FAIL] … witnesses=5 skipped=11 verdict=PASS`
+- `§BUMP_TOUCH files=erp/ad_callout.js witnesses=51 browser_skipped=2 new_fail=[] pre_fail=[8] unjudged=[] unrun=[witness_period_status,witness_core_timing,witness_docno]
+  budget_s=600 base=b732d9234f34 secs=644 verdict=PASS` · `§BUMP_CHECK verdict=PASS`.
+- **That `new_fail=[]` judges nothing about #3168** (tree = base, so change and base are the same commit). What does judge it: the 8 `pre_fail` names are
+  the §F.33 first-run list of 9 from BEFORE #3168, minus `witness_docno` (unrun here; it was on that list). No name is new. The three unrun, run alone:
+  `§PS_VERDICT PASS cases=32`, `§CORE_TIMING checks=31 failed=0 verdict=PASS`, `§DOCNO-VERDICT PASS judged=20 failed=0` (it FAILED on the pre-#3168 list; not traced to a cause here, ~10 min alone).
+- W-PROC-SYSDATE on `main`: `§PROC_SYSDATE checks=6 failed=0 inserted=63 verdict=PASS` at +08 and at UTC.
+- No re-bump needed: `main` carries `ad_callout.js ?v=11`, sw `v1098`, as the PR's last merge set them. Issue #3167 stayed open after the bot's merge; closed by hand with these lines.
+
+**A3 W-CORE-PURE RESULT (2026-11-17, eighth session): ✅ DONE (witness), bim-ootb #3180 / PR #3181, merged `7c26856d`. PART A IS DONE.** +130 / −16, no shipped file, no bump. Logs read:
+- `main` (re-run after the merge, @ `c22ba2c2`): `§CORE_PURE files=125 parse_fail=0 forbidden=0 red_control=detected verdict=PASS` · `§WITNESS_CORE_PURE pass=5 fail=0 ran=125`; the same line in the PR's CI log.
+- **Red control, same run** (`§CORE_PURE_RED`, a copy of the real `InvoiceGenerate.js`): planted `Date.now()` +1 · planted `performance.now()` +1 · the same text in a
+  comment 0 · in a string 0 · a method named like `Object.prototype` 0.
+- **Red run on real code** (`OOTB=<tree>`, three trees from before #3168, `~/.cache/bim_bridge/touch_base/{5caf16f5,776375d9,e9951727}`): each
+  `forbidden=4 verdict=FAIL`: `erp/ad_callout.js:896 new Date()`, `erp/callouts/sqlfn.js:440 Date.now()`, `:442 crypto.getRandomValues()`, `:442 Math.random()`,
+  the four lines the A3 PRE-MEASURE named as left after A3-CLOCK-1.
+- **Independent agreement:** INFO totals `document=26 console=246` equal A-7's earlier measure made with another script; `storage=3` (A-7 said 2: this scan
+  counts each reference, all in `viewer/schedule_author.js`).
+- **A defect of the first draft, caught by that agreement:** the lookup tables were plain objects, so `constructor`/`toString`/`valueOf` counted as storage
+  (`storage=163`). Now `Set`s, with a red case that keeps it from coming back.
+- **Deletion budget:** `witness_core_clock_reads.js` lost its hand list (`MIGRATED`, 22 files) and its regex; it keeps the 6 Env helper checks: `pass=4 fail=0 ran=6`.
+- **Added to the spec (said here):** (1) **CI**: fast-checks runs it and requires `verdict=PASS`, so a PR that puts `Date.now()` in a core file fails. That is the
+  "we enforce a rule" half of Part A. (2) `OOTB=<tree>` scans another tree with this scanner (the red run above). (3) `window.` / `globalThis.` / `self.` / `global.`
+  in front of a banned call is the same call. (4) `git ls-files` means an untracked new core file is judged once it is added.
+- **Scope of the claim:** direct calls in the 125 files. A core file that calls a helper outside the list which itself reads the clock is not seen (no data-flow, A-4).
+
 ---
 
 ## PART B — One manifest per app   (fixes P2, declares half of P1)
@@ -845,7 +876,7 @@ itself**: it only reads the generated files, so it cannot drift from the code.
 | Bump on save (or a quick-fix "this precached file changed: bump?") | "Did I forget the cache bump?" | `scripts/bump.js` today, manifest (B) later | now |
 | "Run the witnesses for this file", with the verdict in the Testing panel | "Did I break it?" | proof map (E), suite runner | E |
 | Owner warning: "a second implementation of *what is today*" | "Am I duplicating an owner?" | owner table (D) | D (also unparks DEV_TOOLKIT T6 Owner Trace) |
-| Core-purity squiggle: `Date.now()` in a core file | "Am I breaking determinism?" | W-CORE-PURE rule (A3) | A |
+| Core-purity squiggle: `Date.now()` in a core file | "Am I breaking determinism?" | W-CORE-PURE rule (A3) | A ✅ 2026-11-17: unblocked, not built (CI already fails the PR; reuse the scan in bim-ootb `erp/tests/witness_core_pure.js`) |
 | Lazy/boot badge in the status bar for the open file | "Will this load at start?" | manifest (B) | B |
 
 ### F.2 Run & Ship: localhost, commit, deploy, fetch back from github.io   (owner: *"The VSC tool aid can help control launch in localhost or deploy and fetch etc"* · *"helps commit to github and run from the standard project URL github.io/"*)
@@ -1554,7 +1585,7 @@ first, as §F.4, the next session's bounded task**; A0 runs in parallel if a sec
 
 | Part | Starts with no decision | Next decision to ask | Why that one |
 |---|---|---|---|
-| A | A0 ✅, A-1..A-5 ✅, A1 ✅ | none | the remaining A2 files (RESUME 2) |
+| A | ✅ done 2026-11-17 (W-CORE-PURE in CI) | none | — |
 | B | **B0: generator in check mode** (manifest built from today's files, regenerate, byte-compare; no file changes) | B-1 `?v=` numbers or hashes | B1 writes `?v=`; B0 does not |
 | C | nothing; waits on B and D | C-1 part names + owners | |
 | D | nothing new; the multi-publisher list already exists (`types/globals.gen.d.ts`) | D-1 where the questions list lives | needs B's `owner` field |
@@ -1570,6 +1601,7 @@ Ask the owner **one decision per message, with the recommendation** (START HERE 
 | APP fields / phantoms | `node scripts/gen_app_surface.js` → header of `internal/APP_SURFACE.md` |
 | script tags per page | `grep -cE '<script[^>]+src=' viewer/viewer.html erp/idempiere.html modeller/modeller.html` |
 | dev side vs deployed side (DeveloperGuide §0.1 diagram) | `bash <bim-compiler>/scripts/code_arch/size_stack.sh <bim-ootb tree>` → `§STACK_SIZE` lines. @`9b7d2f86` 2026-11-16: app_js 1,004 / 313,887 lines · witness_js 2,112 / 284,795 · witness_named 1,403 · precache viewer 268 / erp 403 / modeller 157, tests 0. Shipped-JS bytes: the deploy log's `§PAYLOAD-MIN-TOTAL` (`gh run view <id> --log`) |
+| core purity (A-1 list) | `node erp/tests/witness_core_pure.js` → `§CORE_PURE files= forbidden= verdict=` (2026-11-17: 125 / 0 / PASS) |
 | clock/random/network calls | `node <bim-compiler>/scripts/code_arch/clock_probe.js <bim-ootb root> [pathspec …]` (committed 2026-11-13, #602; espree AST, comments never count; needs bim-ootb `node_modules`). Baseline @`a7c329e5`: default `erp/*.js` → `files=301 with_calls=58 calls=160`; the A-1 core pathspecs (`'erp/processes/*.js' 'erp/callouts/*.js' erp/ad_callout.js erp/doc_poster.js 'erp/model_*.js' erp/rule_fold.js erp/crud_core.js erp/kernel_ops.js`) → `112 / 19 / 32` (7 of them in `kernel_ops.js`); the viewer/4D set (`viewer/cpm_schedule.js 'viewer/schedule_*.js' viewer/tm_core.js common/room_graph.js`) → `11 / 7 / 32`. A3's W-CORE-PURE ports this probe into bim-ootb |
 | printed `§TAG`s found in saved logs; logs with a code stamp (§F.6) | `node <bim-compiler>/scripts/code_arch/lens_precheck.js [<bim-ootb root>] [<bim-compiler root>]` (read-only, ~1 min; needs bim-ootb `node_modules` for espree) |
 | UMD globals F12 can follow | `node scripts/tests/witness_global_types.js` |
@@ -1596,7 +1628,7 @@ Ask the owner **one decision per message, with the recommendation** (START HERE 
 
 | Part | What | State |
 |---|---|---|
-| A | pure core + Env | **A0 ✅** · **A-1..A-5 ✅** · **A1 ✅** (#3007) · **A2** done for 15 files (#3010 #3013 #3016 #3021 #3026 #3030 #3033) + A2-TIMING-1 (#3110) + A-6 / A2-TIMING-2 (#3122) + A2-TIMING-3 (bim-ootb #3124) + A2-VALUE-1 (#3135) + A2-EDGE-2 (#3140) + A2-PIPO (#3143): **A2 complete**; next A3 |
+| A | pure core + Env | **A0 ✅** · **A-1..A-5 ✅** · **A1 ✅** (#3007) · **A2** done for 15 files (#3010 #3013 #3016 #3021 #3026 #3030 #3033) + A2-TIMING-1 (#3110) + A-6 / A2-TIMING-2 (#3122) + A2-TIMING-3 (bim-ootb #3124) + A2-VALUE-1 (#3135) + A2-EDGE-2 (#3140) + A2-PIPO (#3143): **A2 complete** · **A3 ✅** A3-CLOCK-1 (#3149), A3-CLOCK-2 (#3168), W-CORE-PURE (#3181, in CI): **PART A DONE 2026-11-17** |
 | B | manifest per app | not started · B0 ready · open: B-1 to B-4 |
 | C | named APP parts | not started · open: C-1, C-2 |
 | D | owner table | not started · open: D-1, D-2 |
