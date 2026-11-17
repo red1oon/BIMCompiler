@@ -1179,6 +1179,23 @@ This REPLACES the §14 design's "right dock".
 - **V2 palette links:** `build_howto.js` on the LIVE guide: `gaps=` empty, 43 of 44 linked (walk stays excluded), and exactly those 8 pills changed, no other. W-HOWTO PASS incl. H1, H2, H4b (43/44); W-HELP-DOCK PASS (D4 43 == 43). bim-ootb #3175.
 - **Found, reported, NOT claimed and NOT fixed (a product question for the owner):** the help panel prints key **S** for Sanity and **E** for Egress (`panels.js` `key:`), but `scene.js` binds **S** to screenshot (`A.screenshot`) and has no **E**; Sanity and Egress are `pill:false` and in no drawer, so the only working path is F1 + name + Enter. The guide says exactly that and quotes no key for them. The startup `§SHORTCUT_AUDIT` does not catch the S case because it only checks that a key exists in `_shortcuts`, not that it runs the same tool.
 
+## 14.7 SPEC: real keys for the five tools whose printed key was not real (owner 2026-11-17: *"Yes give real keys and solve any admin issue related."*)
+**Issue it removes:** the F1 help prints a key for every tool (`panels.js` `key:`), and for five of them the keyboard does not do that. Measured 2026-11-17 by a static cross-check of `viewer/panels.js` pill keys against `viewer/scene.js` `_shortcuts` and the pill's own tool (bim-ootb `16e44c1c`):
+- **Sanity** `s` runs `A.screenshot` (a different tool); **Egress** `e`, **Earthworks** `u`, **Roadworks** `k`: no handler at all;
+- **Role View** `r`: two pills declare `r` (Role View and Road report); the handler runs Road report (civil model) or the room cycle, never Role View.
+Neither existing audit sees it: `§SHORTCUT_AUDIT` in `panels.js` only asks "is the key in `_shortcuts`" (true for `s`), and `InputReg.checkShortcuts` only asks "does the handler's target function exist" (`A.screenshot` does).
+**Change:**
+1. `scene.js` `_shortcuts`: new entries `y`, `e`, `d`, `u`, `k`, each a `_pillKey(id)` handler that calls THE PILL'S OWN `fn` from `window._mainPillActions` (one source of truth: the key, the pill and the F1 chip cannot diverge). `s` stays the screenshot; `r` stays Road report / room cycle.
+2. `panels.js`: Sanity's key `s` → **`y`**, Role View's key `r` → **`d`** (free letters; `d`, `e`, `y`, `u`, `k` are bound nowhere else in the Viewer, grep read 2026-11-17). Egress `e`, Earthworks `u`, Roadworks `k` keep their keys, which become real.
+3. Audit that sees the class: `InputReg.checkPillKeys()` (log-only, run after the pills are built) prints `§PILLKEY id= key= status=ok|missing|clash|other-tool` per keyed pill and a `§PILLKEY_AUDIT` summary: `clash` = two pills share a key, `missing` = no handler, `other-tool` = the handler is neither a `_pillKey` of that pill nor shares a called tool name with the pill's `fn` (the same name extraction as `checkShortcuts`).
+4. Guide: the Sanity and Egress section and the Cheat-Sheet table state the keys; the `viewer8_sources.json` rows follow.
+**Claims (read in the logs): W-PILL-KEYS** (`viewer/tests/witness_pill_keys.js`):
+- K1 static, over every keyed pill (N read from `panels.js`): no two pills share a key; each key has a handler; the handler is the pill's tool (the §14.7 rule). Red control: the OLD `panels.js` (Sanity `s`, Role View `r`) FAILS it, with the 5 findings named — so K1 can fail;
+- K2 live, real Viewer + Duplex: `y` opens *Structural Sanity*, `e` opens *Egress*, `d` changes the Role View, `u` and `k` each call `toggleEarthworksPanel` / `toggleRoadworksPanel`; `s` still calls `A.screenshot` exactly once and `r` still runs Road report / room cycle (unchanged);
+- K3 `§PILLKEY_AUDIT` at page load prints `ok` for all keyed pills, `missing=0 clash=0 other-tool=0`, and 0 page errors;
+- W-GUIDE-VIEWER8 and W-HOWTO, W-HELP-DOCK unchanged PASS.
+**Not in this item:** the Alt+key pills with no `_shortcuts` entry (`xray` Alt+Z, `gi-preview` Alt+G, `fullscreen` F11, `precision` Caps Lock, `help` F1) are handled by their own listeners, not `_shortcuts`: K1 lists them as `own-listener` and does not judge them (named, not hidden).
+
 ## 15. NOT URGENT, to think about (owner 2026-11-16: *"You mean we can mis.<translated verb>? Note in prompt then we shall think about it not urgent."*)
 Two terminal ideas. Neither is built and nothing is decided.
 1. **Field help at the terminal.** The browser's per-field tooltip / Tool Tip panel has no terminal equivalent: today only `mis.describe` (a kind's fields) and `help <word>` exist.
