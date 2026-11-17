@@ -271,3 +271,53 @@ Witness additions:
 - `§GUS_ATTACH`: count by attachment (flange lap / web T / box wall) and refused by reason.
 - `§GUS_FILLER`: filler thickness min / median / max, and how many are over 6 mm.
 - COUNTS must still add to 57.
+
+### §8 RESULT 2026-11-18 (BUILD 4 run on the PJAM model; private generator + `gusset_rules.json`, 12 new rule rows, all `default: ours` or AISC-read)
+**Headline: 1 of 57 brace ends got a gusset. 56 are refused, each with a counted reason. No witness failed on the real run; the break run failed CLEAR_POST as it must.**
+
+**Run 1 (verbatim `§GUS_*`):**
+```
+§GUS_SURVEY judged=57 (STEEL_SKEW ends of joint_survey.json) present_in_model=57 braces={'L120x120x12.0': 8, 'L100x100x8.0': 31, 'L200x200x16.0': 18}
+§GUS_IDENT source_tables_compared=21 identical=True src_elements=6828 out_elements=6831 added=3 (3 x 1 joints) source_upgrade_rows_kept=563 -> PASS
+§GUS_RULES joints=1 clause_failures=0 (measured on the built meshes; checks per joint=14) -> PASS
+§GUS_CLEAR_POST parts_checked=3 failures=0 (surface points of each written part vs every neighbour solid, ray parity, on the written DB; brace exempt; support exempt only where welded) -> PASS
+§GUS_CLEAR judged=23 shipped=1 refused_for_clash=22 neighbours_tested_per_joint min=8 max=8 -> PASS
+§GUS_REFUSED_CLASH plate x IfcSlab Slab - Concrete - 150mm (M) 2 joints=18
+§GUS_REFUSED_CLASH weld x IfcMember L100x100x8.0 joints=4
+§GUS_ECCENT (reported, not a pass/fail; J1.1 measured distance between the brace gravity axis and the support axis) generated: min=36.0 median=36.0 max=36.0 | all 57 judged ends: min=7.3 median=103.4 max=222.9 -> PASS
+§GUS_ATTACH generated_by_attachment={'web T': 1} refused_by_reason={'REFUSED_CLASH': 22, 'NO_ATTACHMENT': 13, 'GAP_TOO_LARGE': 4, 'NO_ROOM': 17}
+§GUS_FILLER generated=1 filler_mm min=0.0 median=0.0 max=0.0 | zero=1 | 0<f<=6 (no J5.2 reduction)=0 | >6 engineer to check=0 | gusset enters author angle (overlap_mm) n=0 none
+§GUS_COUNTS generated=1 refused={'REFUSED_CLASH': 22, 'NO_ATTACHMENT': 13, 'GAP_TOO_LARGE': 4, 'NO_ROOM': 17} total=57 of 57 judged -> PASS
+§GUS_WRITTEN db_sha256=c71e4e8e626f1923 txt_sha256=9e44c64765f46c3c
+```
+**Run 2 (same inputs, expected hashes from run 1):**
+```
+§GUS_DETERMINISM this_db=c71e4e8e626f1923 expected_db=c71e4e8e626f1923 this_txt=9e44c64765f46c3c expected_txt=9e44c64765f46c3c -> PASS
+```
+**Break run (`GUS_BREAK=1`, clash refusal off, witnesses unchanged):**
+```
+§GUS_IDENT ... out_elements=6897 added=69 (3 x 23 joints) -> PASS
+§GUS_RULES joints=23 clause_failures=13 ... first=[('3D5QSRXD', 1, ['contact_le_tol']), ...] -> FAIL
+§GUS_CLEAR_POST parts_checked=69 failures=56 ... -> FAIL
+§GUS_CLEAR judged=23 shipped=23 refused_for_clash=0 ... BREAK=on ignored_clashes=22 -> FAIL
+§GUS_BREAK_CHECK switch=on clash refusal disabled; clashing joints written=22; expected CLEAR_POST=FAIL got CLEAR_POST=FAIL -> PASS
+```
+
+**What the numbers say (from the logs):**
+- **The roof slab decides most joints.** 18 of 22 clashes are the gusset plate against the 150 mm concrete roof slab. Its bottom face passes through the plate level (H 36-48 mm above the leg centroid axis), because the author's braces and top flanges sit at the slab underside. §8.1 rule 1 puts the gusset on the face away from the outstanding leg, i.e. up, so every flange-lap gusset is inside the slab. The other 4 clashes are a weld bead against a neighbouring L100x100x8 member.
+- **17 NO_ROOM.** The contact face is within 26 mm of the angle's own end at the leg plane, so the first bolt cannot keep the edge distance to the end of the angle.
+- **13 NO_ATTACHMENT:** 10 where the leg plane meets no support face within `support_reach_mm` 300, 2 where the contact slice found no face, 1 `web T: wall 249 mm is not a plate` (cause not investigated; the measured wall along the face normal is 249 mm, which an I-section web cannot give).
+- **4 GAP_TOO_LARGE:** flange-lap fillers of 57.1-57.6 mm against `filler_max_mm` 25.
+- **The one generated joint** is a web T: gusset 10 mm, plate 185 mm long, fillet 5 mm, filler 0, eccentricity 36.0 mm. Its 14 clause checks pass (pitch, edges, weld min/max, plate thickness, bolts inside the angle leg, contact gap).
+- **Eccentricity over all 57 ends:** min 7.3, median 103.4, max 222.9 mm. Reported, not corrected (AISC J1.1).
+- **Break run:** 22 clashing joints written, CLEAR_POST fails on 56 of 69 parts, so the clash check is able to fail. RULES also fails in the break run (13 joints, `contact_le_tol`), because the slab-clashing lap gussets sit on a flange face that the plate no longer touches within 5 mm.
+
+**Deviations from §8 / §8.1, and why:**
+1. New refusal reasons `NO_SECTION` (end cap unreadable), `NO_ROOM` (above) and `LEG_OVERLAP` (the gusset may enter the author's angle by less than its own thickness, since §8 lets the gusset enter the bolted angle; more is refused). NO_SECTION and LEG_OVERLAP were not hit on the 57.
+2. Flange vs wall is decided by the material interval along the plate normal at the contact: flange if <= 0.25 x section depth (row `flange_interval_max_fraction`, ours). A lap is `max(5 x thinner part, 25 mm)` long (AISC 360-16 J2.2b(f), read) with two fillets along the lapped plate's lateral edges.
+3. The brace gravity axis is the end-cap area centroid; the support axis is the vertex mean of the support mesh, so ECCENT is approximate for asymmetric sections.
+4. Clash neighbours exclude `GEN-LY-` and `GEN-RB-` parts (duplicates of their hosts), and include `GEN-CR-` and earlier `GEN-GU-` parts. The brace is exempt; the support is exempt only for the welds and, for a lap, the plate.
+5. Parity (swallowed-whole) test is skipped for 4 large shell elements (cables, mesh, curtain, roof coping); their surfaces are still tested.
+6. The "wall 249 mm" refusal is not explained; no check was loosened to remove it.
+
+**Files (private, not committed):** `~/Projects/Jebel/lod_sandbox/conn_rules/gen_gussets.py`, `gusset_rules.json`, `gus_probe.py`; outputs `jpam/JPAM_gussets.db`, `JPAM_gussets_changes.txt`, `run2_gussets/`, `break_gussets/`; logs `jpam/log/gus_run1.log`, `gus_run2.log`, `gus_break.log`, `gus_probe.log`.
