@@ -27,15 +27,16 @@ problem may go to one well-scoped Fable agent (owner 2026-11-17: *"if u hit a co
 One heavy job at a time on this machine, under `nice -n 19 ionice -c3`. Headless-browser runs are allowed for this lane's parked browser items (owner
 2026-11-16: *"U can do browser run for those items new session"*), one at a time, never beside a live bake or GPU work.
 
-**0. SESSION CLOSE 2026-11-18 (ninth session; owner: *"Wrap up, update context to close this session"*).** Done and merged this session: dangling-work check (nothing unpushed) · B-1..B-5 answered (#909, #913, #914) · this file consolidated 1,754 → ~670 lines (#911) · B1 BUILD SPEC by one Fable agent (#918) · Developer Guide §4.1 gains the Bump button + core-purity warning, §5.6 status = done, the network sentence made exact (#915; live, fetched back) · the Fast Script Guide refresh of #916 published (it had landed after a deploy; live in 7 languages) · FILM_NARRATION house rule *always give a guide link* (#915) · film **"When AI Dies"** EN/TH/ZH built and sent to the owner's phone (`prompts/FILM_WHEN_AI_DIES.md`, #923, #926; `§X0_OFFLINE … understanding_features_net=0 ship_features_net=6 … verdict=PASS`). The bim-ootb prompts quick-access copy of this file is refreshed after every merge (`~/bim-ootb/prompts/`, untracked). **Asked and NOT answered: B1-Q1** (A recommended), then B1-Q2, B1-Q3. **New, no decision needed:** `devtools/mcp/x0-facts/tests/witness_x0_mcp.js` is red on bim-ootb main (`§X0_MCP … network_modules=1 verdict=FAIL`): it counts `lib/heap_impact.js`'s `require('http')`, which serves only 127.0.0.1; fix the witness to classify a local listener as the film's `offline.js` does (one PR, red control). **Offered, not answered:** a plain `x0` terminal command over the same lib (owner asked whether the typed CLI can work with VS Code: today only the facts server (MCP), `bump.js`, `witness_core_pure.js` and `code --goto` do). A witness-discipline film was proposed; the owner said another session already made it.
+**0. SESSION CLOSE 2026-11-18 (ninth session; owner: *"Wrap up, update context to close this session"*).** Done and merged this session: dangling-work check (nothing unpushed) · B-1..B-5 answered (#909, #913, #914) · this file consolidated 1,754 → ~670 lines (#911) · B1 BUILD SPEC by one Fable agent (#918) · Developer Guide §4.1 gains the Bump button + core-purity warning, §5.6 status = done, the network sentence made exact (#915; live, fetched back) · the Fast Script Guide refresh of #916 published (it had landed after a deploy; live in 7 languages) · FILM_NARRATION house rule *always give a guide link* (#915) · film **"When AI Dies"** EN/TH/ZH built and sent to the owner's phone (`prompts/FILM_WHEN_AI_DIES.md`, #923, #926; `§X0_OFFLINE … understanding_features_net=0 ship_features_net=6 … verdict=PASS`). The bim-ootb prompts quick-access copy of this file is refreshed after every merge (`~/bim-ootb/prompts/`, untracked). **Asked and NOT answered: B1-Q1** (A recommended), then B1-Q2, B1-Q3. **New, no decision needed:** `devtools/mcp/x0-facts/tests/witness_x0_mcp.js` is red on bim-ootb main (`§X0_MCP … network_modules=1 verdict=FAIL`): it counts `lib/heap_impact.js`'s `require('http')`, which serves only 127.0.0.1; fix the witness to classify a local listener as the film's `offline.js` does (one PR, red control). **Answered (F-25, below): a plain `x0` terminal command** over the same lib (owner asked whether the typed CLI can work with VS Code: today only the facts server (MCP), `bump.js`, `witness_core_pure.js` and `code --goto` do). A witness-discipline film was proposed; the owner said another session already made it.
 
 **1. NEXT, in order.**
 1. **B1, the modeller first: its build spec is written** (Part B, "B1 BUILD SPEC", 2026-11-18; re-measured on bim-ootb `560b3541`: 99 modules, 104 sites, precache 164).
    **Next: ask the owner B1-Q1, then B1-Q2, then B1-Q3, one per message** (where the comments between generated lines live · may a bump also raise the 17 inline numbers · who confirms the
    dependency list). The build starts only after B1-Q1; the spec is written for its answer A, and answer B or C changes sections 2 and 5. Then build B1 as one small bim-ootb PR series behind a tracker issue.
-2. Fix W-X0-MCP's false FAIL on main (0 above; no decision).
-3. E's `witness_kit/paths.js` (no decision, §READY).
-4. **2026-11-30:** propose the F-2 cost ceilings (§F.3).
+2. **Spec then build F-25, the `x0` terminal command** (decision in the §F index decisions line; spec as a new §F.36 first).
+3. Fix W-X0-MCP's false FAIL on main (0 above; no decision).
+4. E's `witness_kit/paths.js` (no decision, §READY).
+5. **2026-11-30:** propose the F-2 cost ceilings (§F.3).
 
 **2. Where each part stands.**
 | Part | State | Next step |
@@ -59,7 +60,7 @@ the source (§F.25): reinstall with `node devtools/vscode/pack.js --install`. A 
 built and waiting for the owner's review (see that file's FILM 3 STATUS). Earlier CH 0 "VSC Hot Edit" films: `prompts/FILM_IDE_ERP_DEBUG.md`.
 Rebuild recipes are in each film file.
 
-**5. Open with the owner.** B1-Q1 (asked 2026-11-18), B1-Q2, B1-Q3 · the `x0` terminal command idea · FILM 3 review · "When AI Dies" EN/TH/ZH review · his hands-on dry run (`~/VSCcheatsheet.txt`, 29 steps; `~/bim-ootb-dryrun`
+**5. Open with the owner.** B1-Q1 (asked 2026-11-18), B1-Q2, B1-Q3 · FILM 3 review · "When AI Dies" EN/TH/ZH review · his hands-on dry run (`~/VSCcheatsheet.txt`, 29 steps; `~/bim-ootb-dryrun`
 not created) · a bake on his go (then check a "last:" line, §F.15).
 
 **6. Open, no owner needed.**
@@ -700,7 +701,7 @@ film 1 *"Past film is OK as it delivers the idea."* · film 2 *"This one again i
 *"go with (b)"* (§F.21) · F-17 *"Go with your layering tool tip idea"* (§F.22) · F-18 (§F.23) · F-19 *"Go"* (§F.28) · **F-1** *"Agree with you"*
 (plain HTTP + version + commit by default, the headless check only as a separate button) · **F-2** *"agreed"* (observe until 2026-11-30, then
 ceilings = observed + margin; §F.3) · **F-7** *"agreed"* (no preview host; Run local is the preview) · F-20..F-22 as recommended (§F.31) ·
-F-23 (§F.33) · F-24 the Bump button (§F.34).
+F-23 (§F.33) · F-24 the Bump button (§F.34) · **F-25 (2026-11-18): an `x0` terminal command, its OWN help, NOT a fourth group beside `bim`/`mis`/`erp` in the `red1` help.** Asked: owner *"x0 terminal CLI sounds good, will it add to the Help besides bim/erp/mis with 'x0'?"*; advice: no, because the `red1` help (`common/door/words_core.js`) is loaded by `erp/idempiere.html`, `viewer/viewer.html`, `modeller/modeller.html` and their `sw.js` (measured 2026-11-18), so an `x0` group would ship dev tooling to every user (minimalism §13); x0 needs repo files a browser does not have; the `red1` help is the CLI and message lanes' (Student level, 6 languages). Instead: `x0 help` with the same layout, `x0 where|uses|tag|context|pure|bump`, the SAME lib as the X0 Navigator and the facts server (one implementation), in `devtools/`, loaded by no page, listed in Developer Guide §4.1. Owner: *"Agreed"*.
 
 ## ADVICE — from the session that built Part F, for the owner and the sessions that follow (2026-11-14)
 
