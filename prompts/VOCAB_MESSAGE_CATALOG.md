@@ -965,6 +965,18 @@ The written spec follows the agreement made in chat and comes before the merge; 
 - **Owner items (guide content, not this lane's code):** the 8 tools above have no guide section. Adding sections to `docs/BIMUserGuide.md` would raise the count; `build_howto.js` picks them up on its next run (W-HOWTO H1 fails until it is re-run, by design).
 - **Next:** the dock (right panel on desktop, sheet on mobile) + the move of `field_help.js` / `help_search.js` to `common/help/` (§14 design), or the Modeller's two overlays.
 
+### 14.3.2 SPEC: the How To guide link, tie rule (2026-11-17, owner: *"proceed on open item"*; found while making the §17.3 film)
+**Issue it removes:** W-HOWTO H1 FAILS on clean bim-ootb `main` (`2989f8f5`, log `scripts/film_help_viewer/out/witness_howto_main.log`): the live BIM User Guide gained "Help — F1, the info panel, and the command line (LIVE)", and `build_howto.js` (`score = heading match 1e6 + mentions`, strict `>`, so a tie goes to the FIRST section in the page) now links **Save Building and Open Building to that Help section** instead of "Save & Open a building" (each is named once in both). The same rule would send any future tie to whatever section happens to come first.
+**Rule (change):** `score = (name in heading ? 1e6 : 0) + mentions x 1000 + shared`, where `shared` = the number of words (3+ letters, case-folded, split on non-letters/digits) that are in BOTH the section heading and the pill's English name. Mentions still dominate (`shared` is always < 1000), a heading that holds the whole name still wins; only EQUAL-mention ties change. A tie that also shares no word keeps the old order (first in the page). No section text is invented: the choice stays a count over the live page.
+**Claims (W-HOWTO H5, new, offline, no guide fetch):**
+- H5a a synthetic page with two sections naming a pill once each, the SECOND sharing a word with the pill's name, links the second;
+- H5b the same page with the sections swapped still links the sharing section (order does not decide);
+- H5c a section naming the pill twice beats a sharing section naming it once (mentions dominate);
+- H5d two ties with no shared word keep the first in the page (the old behaviour, written down);
+- red control: the OLD rule (re-implemented inline in the witness, `1e6 + n`, first wins) must FAIL H5a, or H5 proves nothing.
+**Expected diff of `howto.json` on today's guide** (checked against the generator's own `--check` before and after): Save Building and Open Building back to `save-open-a-building`; the `Help` pill to the new Help section (`in_heading: true`, it is named there). Any other pill moving = stop and read why.
+**Then:** H1 PASS again on a clean `main` run; the rest of W-HOWTO unchanged.
+
 ## 14.4 SPEC: the help panel's place, look and drag (owner 2026-11-17)
 **Owner, verbatim:**
 - *"Discuss how best to position that extra help panel?"* → *"Agree to all."* (left side, stays open, phone = full sheet);
