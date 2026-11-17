@@ -17,7 +17,7 @@ numbers are measured, the five decisions (D1–D5) are MADE. **Implement; do not
    GPU or browser runs without the owner's go; agents on Sonnet; results go in §Q.6 / §Q.7 only;
    the witness, never the owner's eyes, is the test.
 
-**Status (update this line as steps land):** step 0 ✅ (#3018) · D2 ✅ (#3022) · D5 ✅ (variant B, #3023) · D1 ☐ NEXT · D3 ☐ · D4 ☐ — owner rulings 2026-11-14: D2/D5 merged with their cross-level near misses NAMED (§Q.6/§Q.7 RESULTS); D5 = variant B. Open, named: §Q.8. **Once-over 2026-11-17: §Q.9 — gate 4 is RED on main (repair first); most out-of-order play is cross-task, outside D1–D4; 3 owner decisions — ✅ decided 2026-11-17 as D6/D7/D8 (§Q.9.4), which also sets the order of work after D5.** **Gate-4 repair ✅ (bim-ootb #3177, §Q.10); assembly-order witness ✅ (#3178); D1 built + measured, ⛔ HELD on gate 2 (§Q.11, branch `fix/4d-d1-bearing-walls`, no PR). NEXT = D3 with the cell packing term → D6 → D1 → D7 → D8 → D4 (§Q.11.3).**
+**Status (update this line as steps land):** step 0 ✅ (#3018) · D2 ✅ (#3022) · D5 ✅ (variant B, #3023) · D1 ☐ NEXT · D3 ☐ · D4 ☐ — owner rulings 2026-11-14: D2/D5 merged with their cross-level near misses NAMED (§Q.6/§Q.7 RESULTS); D5 = variant B. Open, named: §Q.8. **Once-over 2026-11-17: §Q.9 — gate 4 is RED on main (repair first); most out-of-order play is cross-task, outside D1–D4; 3 owner decisions — ✅ decided 2026-11-17 as D6/D7/D8 (§Q.9.4), which also sets the order of work after D5.** **Gate-4 repair ✅ (bim-ootb #3177, §Q.10); assembly-order witness ✅ (#3178); D1 built + measured, ⛔ HELD on gate 2 (§Q.11, branch `fix/4d-d1-bearing-walls`, no PR). **ALL D-STEPS MERGED 2026-11-17: D3 #3182 · D6 #3183 · D1 #3184 · D7 #3185 · D8 #3187 · D4 #3188 — played-layer midair 429/2395/247/144 → 245/343/135/40; NOT zero; what is left is named in §Q.12.2 (none of it a D-step) and the harness debt in §Q.12.3. NEXT = §Q.12.3 (dead witnesses, midair_zero re-lock), then §Q.12.2 items 2 and 5.**
 
 ---
 
@@ -3448,3 +3448,49 @@ Duplex's 4 and HHS's 2 are the same three shapes (wall ← stair flight cross-ta
 3. **D1** — rebase `fix/4d-d1-bearing-walls` on 1 + 2 and re-measure. Prediction: the 140 + 59 and the 22 do not appear; what is left is the transfer class (≤ 25 + the 10 columns), which then gets its own decision.
 4. D7 → D8 → D4, as before.
 **Status line for the top block:** step 0 ✅ · D2 ✅ · D5 ✅ · gate-4 repair ✅ (#3177) · assembly-order witness ✅ (#3178) · **D1 ⛔ built + measured, held on gate 2 (branch pushed)** · NEXT = D3 with the cell packing term.
+
+## §Q.12 RESUME 4D, 2026-11-17 — D3, D6, D1, D7, D8, D4 ALL MERGED (owner: *"just proceed thru all the Ds until zero"*). NOT ZERO — what is left is named.
+Every step: one bim-ootb PR, the persisted runs rebuilt, judged by `witness_tm_assembly_order` (per class) + the edit-chain witnesses
+(`witness_gantt_lock_integrity` 20/0, `witness_gantt_edit_coherence` 11/0, `witness_tm_edit_exception` 23/0 on EVERY step) + stacking
+(piles ≥ 20: 0 on every step) + Σ install seconds (EQUAL on every step). Self-check MATCH on all four buildings in every run.
+```
+played-layer midair              Hospital   Terminal   Duplex   HHS     PR      what the step is
+main before this session            429       2395      247     144
+D3  main beams first, in-bar order  299       2352      247     140    #3182   §D3_MAIN_BEFORE_SECONDARY + §D3_CELL_SUPPORT_ORDER
+D6  one filing (hung -> carrier)    306        423      240     133    #3183   §D6_HANG_FILING
+D1  bearing walls                   314        377      137     133    #3184   §BEARING_WALL
+D7  contact is not support          260        346      135      69    #3185   §CONTACT_ONLY (+ witness claim A4)
+D8  cost = work content             260        346      135      69    #3187   §D8_COST_IS_WORK + witness_dash_cost_is_work (no time moved)
+D4  support must be FINISHED        245        343      135      40    #3188   §D4_SUPPORT_FINISHED (finish judge on both sides)
+                                   -43 %      -86 %    -45 %    -72 %
+IfcBeam midair                     89 -> 1    41 -> 16   0 -> 0   VACUOUS      unjudged IfcBeam  30 -> 13 · 26 -> 19 · 8 -> 0
+IfcColumn midair                    6 -> 6     0 -> 0   VACUOUS    3 -> 0
+§FILING_PARITY                    105 -> 23  2180 -> 293  245 -> 131  83 -> 9
+totalDays                         339 -> 343  102 -> 98   12 -> 14   53 -> 53
+```
+**What each step turned out to need beyond its spec line (deviations, all measured):**
+- **D3.** (a) The election does NOT leave a mutual same-depth pair unelected (that would have moved 5 / 36 / 45 structural elements out of the judged population — the Q.9 F3 hole again); it prefers the embedded contact that itself bears on structure, and a ring is placed as ONE LIFT (shared start). (b) The spec's "cell" is (level, sequence); the code's cell adds the room. First run at room grain: Hospital bearing ← beam 42 → 42, untouched. Bound at (level, trade): `IfcBeam 89 → 1`. (c) Sorting was not enough — the support is PLACED first and bounds the start.
+- **D6.** Carrier-above only (the ruling's own words); a bearing / embedded support on a higher-ranked label is left (Terminal 363, Duplex 34). Moved between bars: Hospital 7,042 · Terminal 6,860 · Duplex 616 · HHS 162. Prediction *Terminal parity ≤ 127* — NOT met at D6 (381), 293 at the end.
+- **D1.** Re-measured on D3 + D6: the 140 + 59 cross-bar cases of §Q.11 did not appear (prediction MET). A promoted wall that stands on a beam takes sequence 3 (Hospital 26, Terminal 7, HHS 1) — without it 25 Hospital walls went before their transfer beam.
+- **D7.** The later-built contact is made ineligible in the ELECTION (so the solve stops chasing it too), not only skipped by the judge; the best remaining contact is elected. Contact-only, named: 13 / 3 / 2 / 27.
+- **D8.** `_GANTT_CACHE_VERSION` 42 → 43 (persisted schedules regenerate under the new order and carry `_secs`); `sw.js` v1721 → v1724 across D7 / D8 / D4. An op without `_secs` keeps duration pricing and is COUNTED on `§DASH_DONUTS`.
+- **D4.** §Q.4's first unknown is ANSWERED: on the played layer NO element starts while its elected support is in progress — 0 on all four, before and after (`supportStartedButNOTFinished=0`). The within-task tiling is already finish-to-start, so the finish judge reads exactly what the start judge read on the pre-D4 runs (260 / 346 / 135 / 69). The gain (245 / 343 / 135 / 40) comes from the solve's order.
+**Per-class rises accepted and named on the way** (each ≤ +11 in a class, with the totals above falling; lock re-taken at each step with this table as the written reason): D3 Hospital IfcDuctSegment +1, IfcMember +1 · Terminal IfcPipeSegment +6, IfcDuctFitting +1, IfcBuildingElementProxy +1. D6 Hospital Proxy +2, FireSuppressionTerminal +2, Member +1, PipeFitting +1, Wall +1, parity +10. D1 Hospital IfcColumn 6 → 14, IfcWallStandardCase 15 → 26, IfcWall 5 → 7 (D4 then took these to 6 / 22 / 3) · Terminal IfcBeam 14 → 16 · Duplex WallStandardCase 2 → 5 · HHS Slab +1, WallStandardCase +1. D7 Hospital DuctFitting +1. D4 Hospital PipeSegment +1.
+
+### Q.12.1 THE DONE BAR (§Q.6 / §Q.7) — read honestly
+| bar | result |
+|---|---|
+| IfcBeam midair 0 on Hospital and Duplex, ≤ 4 on Terminal | Duplex **0 ✅** · Hospital **1 ⛔** · Terminal **16 ⛔** (12 of the 16 are cross-task) |
+| IfcColumn ≤ 10 Hospital, 0 Terminal, ≤ 3 HHS | **6 ✅ · 0 ✅ · 0 ✅** |
+| all gates green | stacking ✅ · gate 4 edit chain ✅ · programme length reported ✅ · per-class gate: small named rises (above) |
+### Q.12.2 WHAT IS LEFT, BY SIZE — none of it is a D-step
+1. **Terminal IfcPlate 213 (205 cross-task) + 491 unjudged plates** — the `Metal Deck` roof sheets of §GROUND_CONNECTED: a data finding (deck sheets with nothing modelled under them), not an ordering rule.
+2. **Duplex 125 services ← a slab in the Finishes bar.** The pool admits ANY `IfcSlab` with sequence > 4 (`schedule_gate.js supportPool`, written for the promoted ROOF slab), so a floor-finish slab outranks everything as a service's support and D7 cannot touch it (D7 only removes non-pool contacts). A classification leak in the pool — needs its own decision.
+3. **Hospital IfcMember 63 (61 same-task) ← IfcPlate** — curtain-wall mullion vs its glazing; declared out of scope in §Q.6.
+4. **Unjudged structural, named:** Hospital beams 13 / columns 14 · Terminal beams 19 · HHS members 18. A beam built INTO a wall taller than its seat is not "on the wall's top" (§S64's bound) — D1 leaves it.
+5. **The solve's level and the task's level are still two things** (§I.3): Hospital's remaining column / wall cases are same-task pairs the (level, trade) rule does not see because the solve files them on different levels.
+### Q.12.3 HARNESS DEBT FOUND ON THE WAY (not fixed here, each is small)
+- **Seven more witnesses are dead from the gate-4 cause** (they slice `_buildXrayElements` without `_scheduledWhere` / `_civilRule`, some also pick the 0-byte DB): `witness_big_element_support_coverage`, `witness_curtain_wall_opening`, `witness_hosted_before_host`, `witness_s55_identity_vs_cell` (3 FAIL on main), `witness_tm_geo_order_cycles`, `witness_kernel_ops_sched_version` (8 FAIL on main), `witness_zone_index`. `witness_s50_cell_engine` was the eighth and is repaired (#3182).
+- **`witness_midair_zero` locks are still stale** (`baselines/midair.json`). W-MZ-2 on GRAPH buildings now reads Duplex 1 · HHS 22 (structural with no bearer + contact-only, all NAMED by the engine). Re-lock once, with §Q.10's table + this section as the reason; teach it the two named sets.
+- **`witness_gantt_edit_coherence` runs with D6 INACTIVE** (`§D6_HANG_FILING INACTIVE — CpmSchedule not loaded` in its sandbox) and only on Duplex (GRAPH path). The edit round-trip on a CELL-path building (Q.9.3 item 6) is still owed.
+- `scripts/run_4d_gates.sh` (Q.9.3 item 8) not written; `cache_4d_run.js` still lacks `§LOG_STAMP`.
