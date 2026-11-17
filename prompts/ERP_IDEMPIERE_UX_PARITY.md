@@ -37,6 +37,7 @@ CACHE_VERSION bump in the SAME PR as any shipped erp/ change.
 - W-PACKOUT arm O6 fails on untouched main (form fields absent in the Pack Out window): untraced.
 - For the MIGRATE_INSTALL_TENANT lane: the three "Migrate from …" bundles need "Ninja data migration" started but declare nothing (`requires: {}`); and a bundle that ships a window must not also insert its own access rows (the host stages them since bim-ootb `b305c211`; that collision stopped BIM Document from starting).
 - Tell the NEURO lane: N_proc moved by 1 (the export process); Open now declares `harm: 'writes'`, the export `read`.
+- **From the VOCAB lane, 2026-11-18 (`VOCAB_MESSAGE_CATALOG.md` §19.6 RESULT; found, NOT fixed there, twin rule):** (1) the TOOLBAR's New ignores the role's window access `winSet[w].rw` (the help box's New already checks it, bim-ootb #3212); legacy offers New only on a read-write window access, check the oracle for the exact gate before porting. (2) The shipped `ad_seed.db` grants every role read-write on every window, so any role gate is vacuous on shipped data; W-HQ-DOC/W-HQ-NEW prove the gate only on a role-patched copy. A fix needs a witness that runs on a role with a read-only window and drives the real toolbar.
 
 ## Rules that still bind this lane
 - **CLAUDE.md §AD-LAYER LAW and §TWIN CARDINAL RULE**: generic, no table named in the host; legacy is the oracle.
