@@ -151,8 +151,7 @@ All panels collapse with **−/+**.
   entries open.
 - It lists every tool with its key. Type in its box to find a tool by its name, or by a word from its steps:
   *native* finds Save Building and Open Building.
-- Open a tool's entry to see its steps and a **Guide** link to its section in this guide (35 of the 44 tools
-  have one). Find and the Time Machine also show **Same at the CLI**: the command line that gives the same
+- Open a tool's entry to see its steps and a **Guide** link to its section in this guide. Find and the Time Machine also show **Same at the CLI**: the command line that gives the same
   answer.
 - **Click an element**: the info panel says **What this is** in one plain sentence, and under it the official
   **IFC definition** from buildingSMART (bSDD), word for word, with its credit (CC BY-ND 4.0). Where
@@ -760,6 +759,71 @@ The **Settings** pill (key **=**) opens a panel with four sections:
 
   ![The full Settings panel, Pill Icons section open — every toolbar action listed with its visibility and shortcut](img/viewer/pill-settings-panel.png)
 
+### LOD400 Upgrade
+
+The **LOD400 Upgrade** pill (box icon, on the toolbar rail) opens a panel that cleans up the open building's
+geometry: it welds duplicate vertices and smooths curved surfaces. Revit IFC meshes arrive as flat-shaded
+triangle soups, so the same triangles, area and size need far fewer vertices; the tool's own measurement is
+about 70–80 % fewer on curved parts. No element is added, removed or renamed, and every number is counted and
+logged. **Save Building** keeps the result (see [Save & Open a building](#save-open-a-building)).
+
+*Written from the tool's own help text and code header, 2026-11-17. No screenshot yet.*
+
+### Sanity and Egress — rule checks
+
+Two rule checks read the loaded building and list what they find in one checklist panel. Neither is on the
+toolbar rail: open the **F1** help, type **Sanity** or **Egress**, and press **Enter**.
+
+- **Sanity** — *Floating Member* (STR beams), *Span/Depth* (advisory) and *Column Continuity*.
+- **Egress** — *Isolated Room* (no measured route out), *Circulation Distance* (to a real exit; falls back to the
+  circulation spine) and *Door Width* (advisory).
+
+Each Egress distance row says which target it measured, the exit or the circulation fallback, so the panel never
+claims more than it measured. The limits the code cites: a door clear width of 0.813 m (IBC 2021 §1010.1.1) and a
+travel distance of 60.96 m (IBC 2021 Table 1017.2, Group I-2, sprinklered). The warning levels (0.85 m and 45.7 m)
+are early-heads-up buffers the code does not cite, and because the model carries no occupancy class, the stricter
+hospital door width is not applied.
+
+*Written from the tool's own help text and code header, 2026-11-17. No screenshot yet.*
+
+### 4D Window
+
+The **4D Window** pill (calendar icon) puts the construction schedule next to the model. It appears on the toolbar
+rail when the schedule engine is loaded, and it is always in the **F1** help. With a schedule loaded, hover or click
+any element: the info panel shows its task name and start → finish, its trade and float, and a critical-path marker;
+hovering adds one extra line. If the building has no schedule yet, tap it to generate one on the fly (its tooltip then
+reads *4D Window — tap to generate a programme*). The full timeline, playback and What-if are the **Time Machine**
+(key **T**), in the [Inspect drawer](#inspect-drawer-measure-clash-x-ray-section-time-machine-4d5d-fly-tour).
+
+*Written from the tool's own help text and code header, 2026-11-17. No screenshot yet.*
+
+### Issues
+
+The **Issues** panel (key **I**) is the building's issue log: one list per building, each entry a snag with its photo
+and annotation. Open an entry for its detail view; a clash snag also carries a deep link that flies to that clash.
+**Export Excel** and **Export BCF** write the list out, and **Clear All** deletes every logged issue after a
+confirmation. The log is kept in this browser (IndexedDB), not on a server. An empty list says *Use Site Camera to snap
+and save photos*: the camera is the mobile tool described under **Mobile-only** below.
+
+*Written from the tool's own help text and code header, 2026-11-17. No screenshot yet.*
+
+#### GI Preview (AO)
+
+**GI Preview (AO)** (**Alt+G**, desktop only) turns on an ambient-occlusion preview using the N8AO effect. The help lists
+it as a research spike, and it is disabled on mobile because of memory. It sits in the
+[Camera / View drawer](#camera-view-drawer).
+
+*Written from the tool's own help text and code header, 2026-11-17.*
+
+#### Nav LOD (large bldgs)
+
+**Nav LOD (large bldgs)** (key **O**, in the Navigate drawer) keeps flying and orbiting smooth on a large building: while
+you move, it draws far or off-screen elements as boxes and keeps the real mesh only within 50 m and in view. It is off by
+default, does nothing on a building under 50,000 elements (it shows a message instead), and is switched off during the
+Time Machine, a Find isolate and Cinema.
+
+*Written from the tool's own help text and code header, 2026-11-17.*
+
 ### Save & Open a building
 
 Two toolbar pills, both native-dialog verbs — distinct from the Hub's building-open flow in
@@ -792,7 +856,7 @@ warehouse-class building loaded to demonstrate, outside this general viewer guid
 <a id="find-lenses-tenancy"></a>
 ### FM / Operate lenses — HR_BIM_Asset  *(ALPHA)*
 
-The viewer carries one **`FM / Operate`** toolbar pill (a building glyph) that opens a wake-aware drawer of
+The viewer carries one **`FM / Operate`** toolbar pill (a building glyph; its entry in the **F1** help is labelled **Human-Asset**) that opens a wake-aware drawer of
 operate-phase lenses — **Occupancy** (incl. lease status) · **Presence** · **Unit class** · **Assets / IoT** ·
 **Dashboard**. It appears only when the loaded building carries operate data, and each lens is enabled only when
 *its* data exists (else greyed) — no data, no clutter.
