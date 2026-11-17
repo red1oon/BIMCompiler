@@ -137,8 +137,8 @@ rest     := any characters, may be empty
 | `@name` | `reserved` in the box and in the shell: the same refusal. | MEASURED: §41 "`@x` is refused as reserved" |
 | The Modeller's `?` key toggles the panel | The grammar reads the input VALUE, never a key press. With `cfg.noAutoFocus` the box is not focused on open, so `?` still toggles; a `?` typed IN the box is the prefix. | MEASURED: VOCAB §14.5 RESULT step 2 (`noAutoFocus`, W-HELP-DOCK-M M9, "the agreed `?` prefix is not blocked") |
 | The Viewer focuses the box on open | `?` typed there goes into the box (the prefix); F1, Esc and × close the panel. | MEASURED: `help_panel.js` header + §14.5 RESULT |
-| `#<number>` in the Viewer / Modeller, where there are no documents | UNDECIDED: owner question 2 (an IFC file also writes its entity ids as `#123`). Until answered the BIM adapters answer "no documents in this app". | PROPOSED |
-| Legacy's `/` for document search | Not in this grammar. Owner question 1. | MEASURED: `GlobalSearch.java:62` |
+| `#<number>` in the Viewer / Modeller, where there are no documents | DECIDED (owner 2026-11-17, Q2 (a)): selects + frames the element whose IFC id is that number in the open model; a model with no IFC ids answers "no element #<number>". | DECIDED |
+| Legacy's `/` for document search | Not in this grammar. DECIDED (owner 2026-11-17, Q1 (a)): `/TransactionCode` only inside a port of legacy's GlobalSearch box. | MEASURED: `GlobalSearch.java:62` |
 
 ---
 
@@ -255,6 +255,8 @@ Handed to another lane, not a step here: the port of legacy's GlobalSearch box (
 ---
 
 ## 7. Owner questions (three; each is a choice this design cannot derive)
+
+**ANSWERED 2026-11-17 (owner: *"agree with you"* to Q1, *"agree with all, proceed to implement"* to Q2; full record in VOCAB_MESSAGE_CATALOG.md §18 RESULT):** Q1 = `#` in the help box and shell, `/` only in a legacy GlobalSearch port · Q2 = `#<number>` selects the IFC element in the Viewer/Modeller · Q3 = DEFAULT taken (no advice was shown): Thai after the packed languages.
 1. **`/` or `#` for a document in the ERP.** Legacy iDempiere already has this feature and its key is `/` (`GlobalSearch.java:62`; `/TransactionCode text`, `DocumentSearchController.java:613-617`). `#<number>` was agreed (§16 item 7, §41) before that was read, and in the shell `/` is the path separator. Which holds for the ERP box: (a) `#` in the help box and the shell, and `/` only inside the port of legacy's own search box; (b) the ERP box accepts both, `/` exactly as legacy; (c) other?
 2. **`#<number>` in the Viewer and the Modeller.** There are no documents there. Should it (a) mean nothing ("no documents in this app"), or (b) select the element with that number (an IFC file writes its entity ids as `#123`)?
 3. **Thai.** D2 covers Thai by design, but there is no Thai help pack and Thai was measured in Node only (§16). Is Thai in the first build (it then needs a pack and a browser check first), or after the languages that have packs?
