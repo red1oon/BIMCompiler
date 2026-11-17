@@ -3605,3 +3605,10 @@ Hospital          45   63,182   outside 0 collapsed 0 inv 0    outside 555 colla
 - `§TPL_LAYER_SELFCHECK … FAIL` on all seven persisted runs, read by no witness (§Q.14.4).
 - Edit round-trip: judges + undo on a large building, and on the `_meta` DB (§Q.14.8).
 - Unchanged from §Q.13.2: the unjudged populations (overhead-only grounded elements, Terminal's 491 roof plates, orphans) and the four out-of-order elements named in §Q.13.
+
+## §Q.15 RESUME 4D, 2026-11-18 (owner: *"Proceed"*) — WORKING §Q.14.9, in its order
+### Q.15.1 SPEC — the per-cell display stamp goes with the cell solver
+**Issue it proves or disproves:** does any Gantt bar or played instant change when the stamp only the cell solver could fill is removed?
+- Remove: the `_displayTimeline._lastCell` writer (`tm_sched_xray.js`), the `_cellMap` / `_cell` stamp (`tm_gantt_build.js`), the `C:` group key and `cell` field (`gantt_model.js`: `groupKeyOf(taskId, storey, phase)`), `witness_s50_cell_engine`, `witness_s55_identity_vs_cell`, `witness_midair_zero` W-S51a/b and its cell columns.
+- **No `_GANTT_CACHE_VERSION` bump.** A schedule persisted while the cell path still ran carries `_cell` in its ops; with the reader gone it is an ignored parameter. An op with a task identity groups by `T:` first (unchanged); an op without one falls to `storey|phase`, the rule every graph-path building always used.
+- **Proof:** persisted runs hash-equal on seven buildings (`els / sched / play / playStats / storeys / tasks`); `GanttModel.buildTasks` over each run's played ops gives the same bars (count, ids, start, end) before and after; `run_4d_gates.sh` GREEN; `witness_gantt_model` green with W-GM-1 rewritten to the two-step precedence.
