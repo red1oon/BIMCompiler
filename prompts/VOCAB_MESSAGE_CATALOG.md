@@ -13,8 +13,9 @@ Background, measurements and prior art are in `prompts/DOCS_I18N.md` §4b-§4d (
 - The help panel itself (left, stays open, amber, draggable, reopens as left): BUILT, bim-ootb #3160, W-HELP-DOCK PASS (§14.4 RESULT).
 - §14.5 step 1 (shared panel + drag helper in `common/`): BUILT, bim-ootb #3165.
 - §14.5 step 2, the Modeller adapter: BUILT, bim-ootb #3171, W-HELP-DOCK-M PASS (§14.5 RESULT step 2).
-- §17 film: MADE, `~/Videos/Help_that_answers_Viewer_EN_AFTER_2026-11-17_v2.mp4` (§17.1 RESULT). Other languages on the owner's word.
-- **NEXT:** the 6 Modeller guide titles (+ paragraphs) into the dictionary (§14.5 RESULT step 2, Open); then the prefixes, box side (§16 item 7: owner agreed `?` / `#<number>`; the CLI session specs the shell side as CLI_ERP_IVR §41).
+- §17 film: v2 MADE (`~/Videos/Help_that_answers_Viewer_EN_AFTER_2026-11-17_v2.mp4`, §17.1 RESULT), but **the owner wants it REDONE bigger: §17.2 REDO SPEC is the next task.** Other languages on the owner's word.
+- BIM User Guide: a basic Help section (Viewer, Modeller, and what the command line does and does not have) added 2026-11-17 (BIMCompiler docs/bim-help-basic).
+- **NEXT:** (1) §17.2, redo the film framed bigger; (2) the 6 Modeller guide titles (+ paragraphs) into the dictionary (§14.5 RESULT step 2, Open); then the prefixes, box side (§16 item 7: owner agreed `?` / `#<number>`; the CLI session specs the shell side as CLI_ERP_IVR §41).
 - The three §14.1 owner items were ANSWERED in §14.2 (ISO note kept; type classes via their cited occurrence class; our sentence in 15 languages, all built, #3152).
 - **Open owner question:** 8 Viewer tools have no section in the BIM User Guide (§14.3 RESULT), so they get no guide link until the guide has a section.
 - **Waiting on the CLI session (no action here):** §42 S3, the short-name limit fix in `assist_core.nearest()` (§16 item 1). It will message when merged. After that, the help box calls `nearest()` (no second edit-distance function).
@@ -1267,7 +1268,25 @@ Every step gets a witness with a falsifier (e.g. did-you-mean: N misspellings de
 - **Observed, not this lane's (Find panel lane):** at 1280×720 a mouse drag inside the Find panel's 64 px drag strip (`nf_ui_history.js:268`) did not move it, while the same drag moves `#info-panel` (W-HELP-DOCK D3b). Its `pointerdown` handler stops propagation (`:271`). Not diagnosed further; not claimed as a bug.
 - v1 (same day) had defect (3); kept on the machine, superseded by v2.
 
+### 17.2 REDO SPEC (owner 2026-11-17, for a NEW session): frame it bigger
+**Owner, verbatim:** *"The film update the prompt in new session to redo because the canvas for Duplex is not large enough. Both building on canvas and the left panel should zoom in and fill up much empty space on sides to frame visibly."*
+**Issue:** in v2 the subject is small. Measured from `scripts/film_help_viewer/cards.js` + `out/shots.log`:
+- the lower band shows the WHOLE page scaled to 620 px tall (1,102 px wide, x 30–1132), with a crop on the right (at most 718 px wide); below 1,080 px, only the bottom 170 px are for captions;
+- the Duplex sits small in the middle of the 3D canvas (shot as the page opens, no framing step);
+- the help panel crop is reduced 0.76× (palette 576 px wide, top 760 px); the info-panel crops 1.03–1.49×.
+**Redo (v3), keep everything else** (beats, voice TSV, guard, K2, C, the main tree rule):
+1. **The building fills its canvas:** before each shot, frame the model with the Viewer's OWN fit/zoom (find the call in the next session; never hand-placed camera numbers). Log, per shot, the model's projected box height / canvas height and the box's left/right edges against the open panels.
+2. **The panel and the building fill the frame:** drop the "whole page small + crop" layout. Each still = ONE cropped region of the page (the panel + the building beside it, or the info panel + the building), scaled to fill the 1920 width and the band height, with no wide empty side margins.
+3. **Witness it with numbers, not a look:** per still, (a) the share of the lower band that is page pixels (not the `#0f172a` background) and (b) the building's box height / band height. Set the two bars from a first measurement of v2 vs a v3 trial, print both, and FAIL a still below the bar. Text in the crop must stay ≥ the §11 film's smallest legible glyph (measure it).
+4. Output `~/Videos/Help_that_answers_Viewer_EN_AFTER_<date>_v3.mp4`; v2 stays on the machine.
+5. **A new opening quote (owner, verbatim):** *"need not use the 20% stats in start of film, try another quote perhaps from media expert of forum feedback about need for good Help in apps"*.
+   - Drop the McKinsey 20 % card (and its `quote` beat's words).
+   - Find ONE real quote on why good in-app help matters: from a recognised UX / media expert, or real user feedback in a public forum. Fetch the page, save the copy in `out/prior/` (as §11 did), and keep the exact words, the author, the date and the URL.
+   - `facts.js` must find the quote verbatim in the saved copy, or the build fails. Never paraphrase, never write one. If no fetched source holds a usable sentence, say so and ask the owner; no card is made up.
+   - The narration beat and the end card's credit change with it (the guard's `quote.*` facts too).
+
 ## STATUS
+2026-11-17 (close): BIM User Guide Help section added; §17.2 film REDO specced for a new session (owner: frame the building and the panel bigger).
 2026-11-17: §14.5 step 2 (Modeller help in the shared panel) built + merged, bim-ootb #3171 (W-HELP-DOCK-M PASS). §17 film made: `Help_that_answers_Viewer_EN_AFTER_2026-11-17_v2.mp4` (§17.1 RESULT), pipeline `scripts/film_help_viewer/`. Next: the 6 Modeller guide titles into the dictionary, then the prefixes (box side).
 2026-11-16 (session bim-compiler-41): P1b, §10-§13 built and merged; films EN v4 / ZH v5 / DE v1 made (not pushed); ERP User Guide help section LIVE. Next: §14 (BIM help panel), check (a) first.
 2026-11-16: P1 built and witnessed (5/0), merged as bim-ootb #3079. P2a built and witnessed (W-MSG-CATALOG 4/0), merged as bim-ootb #3082. P3a built and witnessed (W-HELP-STUDENT 5/0), merged as bim-ootb #3083. P3a-1 (help footer + opening tip, `red1 --fast`), bim-ootb #3084. P2b (W-MSG-DOOR 5/0) #3108. P1b (W-FIELD-HELP 13/0) #3126. Depends on `prompts/DOCS_I18N.md`, `prompts/CLI_ERP_IVR.md` (CLI session owns), `prompts/ERP_UI_LOCALES.md`.
