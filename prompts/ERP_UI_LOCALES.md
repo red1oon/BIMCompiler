@@ -172,3 +172,7 @@ un-minified — the legacy `pages build and deployment` run published after `Dep
   Extend `i18n/machine/<lang>.json` (labelled) and rebuild if the film needs more.
 * zh_CN uses the 2008 ADempiere pack; the current "99%" iDempiere zh_CN pack (gitee idchina) is private — swap it in
   `fetch_i18n_packs.sh`/`build_i18n.py` SOURCES if access is granted.
+
+## Note from the VOCAB lane (2026-11-18): W-ERP-I18N fails on main
+Found while re-running it for `VOCAB_MESSAGE_CATALOG.md` §14.8.2 (log read; the same 4 fails from main's unchanged copy, so they predate that change): `§WITNESS_ERP_I18N pass=7 fail=4 ran=9`. The 4 fails are: no locale FAILs, every non-English locale PASSes, 0 mismatches, and session+window+record kept. The log lines behind them: `§W-ERP-I18N login-steps HARNESS Cannot read properties of undefined (reading '0')`; `session mismatches=3` in all 9 locales (`FIRST=menu:m9541001="BIM Document…`, a plugin menu row); en_US `packRows=0`; `kept=false record=1500003` on fr/de/zh/ms. Not diagnosed here. Since bim-ootb #3220 the contract lines are in `erp/tests/witness_erp_i18n.log` too.
+
