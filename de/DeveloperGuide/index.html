@@ -4548,7 +4548,8 @@ The app's only runtime dependency is <code>sql.js</code>, which is already vendo
 files open read-only. Edit the generator named on their first line instead.</p>
 <h3 id="41-x0-navigator-the-repos-own-vs-code-extension">4.1 X0 Navigator: the repo's own VS Code extension<a class="headerlink" href="#41-x0-navigator-the-repos-own-vs-code-extension" title="Permanent link">&para;</a></h3>
 <p>It lives in bim-ootb <code>devtools/vscode/x0-navigator/</code>. It is plain JavaScript with no dependencies and no build step, it never
-calls a model or the network, and no page loads it. It answers two questions from the repo's own files (table below).</p>
+calls an AI model, and no page loads it. Only <em>Fetch back</em> and <em>Deploy main now</em> talk to the network (GitHub). Everything else is
+answered from the repo's own files (table below), so it keeps working with no AI assistant and no connection.</p>
 <p><strong>Install it</strong> (proven in VS Code 1.146.0 by <code>devtools/vscode/x0-navigator/tests/realvsc/install.js</code>):</p>
 <ol>
 <li>In the bim-ootb folder: <code>node devtools/vscode/pack.js</code>. It writes <code>devtools/vscode/dist/x0-navigator-0.1.0.vsix</code> (plain node, no npm, no internet).</li>
@@ -4608,8 +4609,18 @@ folder its <code>extensions.json</code> does not list, so nothing loads and noth
 </tr>
 <tr>
 <td>A warning on line 1 after you save an edited file the offline cache serves, with a quick fix (the light bulb, or <strong>Ctrl+.</strong>)</td>
-<td><em>Bump the cache version for this file</em> (one click: the repo's <code>scripts/bump.js --write</code>), or <em>Show what the bump would change</em> (the dry run). Never done silently</td>
+<td><em>Bump the cache version for this file</em> (one click: the repo's <code>scripts/bump.js --write</code>), or <em>Show what the bump would change</em> (the dry run). Never done silently. For an ERP file the quick fix starts the <strong>Bump</strong> button instead (next row), because its checks take minutes</td>
 <td>the <em>Check</em> step's own bump rule, for this one file</td>
+</tr>
+<tr>
+<td>Status bar ▸ <strong>Bump</strong> (press when your feature is complete)</td>
+<td>one background check of every file your branch changed that a page loads: the legacy-parity check and each changed file's own witnesses. You can keep working. It shows <code>Bump: checking n/N</code>, then <strong>Bump ✓</strong> (press again: the cache bump is written in a second, nothing re-runs) or <strong>Bump ✗</strong> with the first failing check (its lines are in the <em>X0 Navigator</em> output). Saving a file after the check puts it back to plain <strong>Bump</strong></td>
+<td><code>scripts/bump.js --changed --check</code>, then <code>--write</code></td>
+</tr>
+<tr>
+<td>A yellow underline on a clock, random or network call in a <strong>core</strong> file, when you open or save it</td>
+<td>the reason (<code>… reads the clock itself, so a replay or a test gets a different value</code>) and what to call instead (<code>Env.edge().nowMs()</code>, <code>Env.edge().uuid()</code>, <code>Env.elapsed()</code> for a timing); CI fails the same call (W-CORE-PURE). A comment, a string or a file outside the core list gets no warning</td>
+<td>the one scanner and core list in bim-ootb <code>scripts/lib/core_pure.js</code> (§5.6)</td>
 </tr>
 <tr>
 <td>A grey line above code that prints a <code>§TAG</code></td>
@@ -5049,7 +5060,7 @@ oracle. The SQLite kernel must behave like legacy iDempiere, look and feel inclu
 <p><code>A</code> is <code>X.A</code> (<code>AdCallout</code>) inside a process. If the env has no clock the call <strong>throws and logs <code>§ENV_NO_DATE</code></strong>: that is the design, the core never falls back to a wall clock.</p>
 <p><strong>The day is the LOCAL day, never the UTC day.</strong> Legacy dates by the server's local day (the reference: iDempiere's web-service login sets <code>#Date</code> from the JVM's local time). <code>toISOString()</code> is UTC, so between local midnight and the zone offset the date comes out as <em>yesterday</em>. That was bim-ootb #2996: the headless kernel dated an invoice made at 00:30 in a +08 zone the 12th instead of the 13th. Test any date change at <strong>00:30 in a +08 zone</strong>; a test that only runs in UTC proves nothing here.</p>
 <p><strong>Prove it:</strong> <code>node erp/tests/witness_core_clock_reads.js</code> scans the files already migrated for a clock call and must print <code>clockReads=0</code> on every line, ending <code>§WITNESS_CORE_CLOCK_READS … fail=0</code>; <code>node erp/tests/witness_env_views.js</code> checks the day in UTC and Asia/Kuala_Lumpur (<code>§ENV_VIEWS … same=Y</code>); <code>node erp/tests/witness_replay_clock.js</code> replays a journal three days later (<code>§REPLAY_CLOCK … match=Y</code>). Both new witnesses carry a red control: a planted clock read must make them fail.
-<strong>Where it stands:</strong> the migration is in progress, one file per pull request, and the files still to do are listed in <code>prompts/CODE_ARCHITECTURE_DESIGN.md</code> Part A (timing reads and a few id sources remain). Until it is finished, a file not in the witness's list may still read the clock; do not add new reads to any file under <code>erp/processes/</code>, <code>erp/callouts/</code>, <code>erp/model_*.js</code> or the schedule maths.</p>
+<strong>Where it stands (2026-11-17): done.</strong> Every core file asks the installed edge; <code>node erp/tests/witness_core_pure.js</code> parses the whole core list (bim-ootb <code>scripts/lib/core_pure.js</code>, 125 files) and prints <code>§CORE_PURE … forbidden=0 … verdict=PASS</code>. CI runs it on every pull request, and X0 Navigator underlines the same call in the editor as you save (§4.1), so you hear about it before CI does.</p>
 <h2 id="6-proving-it">6. Proving it<a class="headerlink" href="#6-proving-it" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>Witnesses</strong> live in <code>viewer/tests/</code>, <code>erp/tests/</code>, <code>modeller/tests/</code>, <code>tests/</code>, <code>witness/</code> and <code>scripts/tests/</code>. Run one with
