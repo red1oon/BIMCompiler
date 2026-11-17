@@ -8,7 +8,7 @@ const words = n => { n = Number(n); if (n < 20) return ONES[n]; if (n < 100) ret
   return words(Math.floor(n / 1000)) + ' thousand' + (n % 1000 ? (n % 1000 < 100 ? ' and ' : ' ') + words(n % 1000) : ''); };
 // the roadmap card's items (prompts/CODE_ARCHITECTURE_DESIGN.md §0 table, read by guard.js): the count the voice says is the length of this list
 const ROADMAP = [['B1', 'the Modeller\'s module manifest (next: its build spec is written; B0, the check, is built)'], ['C', 'named parts of the shared object, each with one owner'], ['D', 'an owner table: which file answers which question'], ['E', 'a proof map: which test proves which rule']];
-const mk = (id, build, extra) => { const says = [], n = (k, w) => { const val = k === 'roadmap.items' ? String(ROADMAP.length) : V.v(k); const sp = w ? w(val) : (lang === 'th' ? val : words(val)); says.push([k, val, sp]); return sp; };
+const mk = (id, build, extra) => { const says = [], n = (k, w) => { const val = k === 'roadmap.items' ? String(ROADMAP.length) : V.v(k); const sp = w ? w(val) : (lang !== 'en' ? val : words(val)); says.push([k, val, sp]); return sp; };
   const cap = t => t.replace(/(^F: |M: |[.?!] )([a-z])/g, (m, a, b) => a + b.toUpperCase());
   return Object.assign({ id, text: cap(build(n)), says }, extra || {}); };
 const EN = [
@@ -24,4 +24,4 @@ const EN = [
   mk('roadmap', n => 'F: What is not built yet? | M: ' + n('roadmap.items') + ' things, and they are only designed. The Modeller\'s manifest comes next, then named parts, an owner table and a proof map.', { plain: [] }),
   mk('close', n => 'F: So what is left when the A.I. dies? | M: What your tools know. Where it is used, what runs, what it printed, whether replay breaks, whether you shipped it right. | F: Where do I read more? | M: The Developer Guide, the X0 Navigator section. The link and the prior art are on this card.')
 ];
-exports.lang = lang; exports.beats = lang === 'th' ? require('./narr_th.js')(V, ROADMAP, mk) : EN; exports.words = words; exports.ROADMAP = ROADMAP;
+exports.lang = lang; exports.beats = lang === 'th' ? require('./narr_th.js')(V, ROADMAP, mk) : lang === 'zh' ? require('./narr_zh.js')(V, ROADMAP, mk) : EN; exports.words = words; exports.ROADMAP = ROADMAP;

@@ -9,3 +9,5 @@ if (mode === 'build') fs.readFileSync(a2, 'utf8').split('\n').forEach(l => { con
 const ix = N.beats.map(b => b.id), rows = N.beats.filter(b => b.text).map(b => { let s = 0, e = 999; if (mode === 'build') { s = cues[b.id] + typingS(b.id) + 0.3; const nx = ix[ix.indexOf(b.id) + 1]; e = nx ? cues[nx] : endT; }
   return [b.id, s.toFixed(2), e.toFixed(2), 'narr.js ' + b.id + ((b.says || []).length ? ' facts ' + b.says.map(x => x[0]).join(',') : ' (no figures)'), b.text, b.text].join('\t'); });
 fs.writeFileSync(path.join(work, 'narration_en.tsv'), rows.join('\n') + '\n'); console.log('§TSV mode=' + mode + ' narrated=' + rows.length + ' beats=' + N.beats.length + (mode === 'build' ? ' film_s=' + endT : ''));
+// caption copy (Mandarin, PLAYBOOK C): the voice text spells A-I / E-R-P letter by letter; the captions keep AI / ERP. Format for the fitter's 4th argument: id <TAB> text.
+fs.writeFileSync(path.join(work, 'narration_cap.tsv'), N.beats.filter(b => b.text).map(b => b.id + '\t' + b.text.replace(/A-I/g, 'AI').replace(/E-R-P/g, 'ERP')).join('\n') + '\n');

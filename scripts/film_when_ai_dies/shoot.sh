@@ -38,7 +38,9 @@ cat > "$prof/user/User/settings.json" <<JSON
   "editor.codeLens": true,
   "editor.wordWrap": "off",
   "editor.hover.delay": 200,
-  "bimDevtools.compilerRoot": "$COMP"
+  "bimDevtools.compilerRoot": "$COMP",
+  "bimDevtools.costBaseRef": "$(git -C "$NEW" rev-parse HEAD)",
+  "bimDevtools.extraLogDirs": ["${FILM_LOGDIR:-$HOME/.cache/bim4d/LTU_AHouse/3379cbf0b211_4c8212a3a98b_meta}"]
 }
 JSON
 ( env -u ELECTRON_RUN_AS_NODE DISPLAY=$DISP FILM_OUT="$OUT" FILM_TREE="$NEW" FILM_SETTINGS="$prof/user/User/settings.json" nice -n 19 timeout 600 "$BIN" --no-sandbox --disable-gpu --disable-workspace-trust --skip-welcome --skip-release-notes \
