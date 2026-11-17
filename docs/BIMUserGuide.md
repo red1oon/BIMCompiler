@@ -142,6 +142,43 @@ All panels collapse with **−/+**.
 - IndexedDB cache — download once, instant on revisit
 - City mode — 786 building bboxes, click to download + stream on demand
 
+### Help — F1, the info panel, and the command line *(LIVE)*
+
+**In the Viewer**
+
+- **F1** (or the Help pill) opens the help panel on the left. It stays open while you work. Drag it by its
+  header; close it with × or Esc. It opens again where you left it, with the same search text and the same
+  entries open.
+- It lists every tool with its key. Type in its box to find a tool by its name, or by a word from its steps:
+  *native* finds Save Building and Open Building.
+- Open a tool's entry to see its steps and a **Guide** link to its section in this guide (35 of the 44 tools
+  have one). Find and the Time Machine also show **Same at the CLI**: the command line that gives the same
+  answer.
+- **Click an element**: the info panel says **What this is** in one plain sentence, and under it the official
+  **IFC definition** from buildingSMART (bSDD), word for word, with its credit (CC BY-ND 4.0). Where
+  buildingSMART publishes a translation (German, for example) you get theirs; otherwise the English, with a
+  line saying there is no official translation in your language.
+
+**In the [Modeller](ModellerGuide.md)**, **?** and the Guide pill open the same panel, in the outliner's place.
+The outliner comes back when you drag the panel away or close it. The guide's sections are inside the panel.
+
+**At the command line (`red1`)**: the help panel is part of the page, so it is not at the command line. This
+is what the command line does have for BIM:
+
+| You want | At the command line |
+|---|---|
+| The list of BIM words | `help bim` |
+| One word explained | `help count`; type `level student` first for a fuller explanation |
+| The same answer as a Viewer tool | The line its help shows, e.g. `viewer.counts building=Duplex` (it counts the model, the same answer as Find) |
+| Ask a question in plain words | **Not for BIM yet.** `ask` answers ERP questions only, inside an ERP kind (e.g. `cd "Business Partner"`) |
+| What an element is (the class text, the IFC definition) | **Viewer only**, in the info panel |
+
+The command line itself is explained in the [Fast Script Guide](FastScriptGuide.md).
+
+> *Proven by* **W-HELP-DOCK** (place, drag, reopen, phone), **W-HOWTO** (guide links, the word search, the
+> command lines), **W-CLASS-HELP** (the class text and the bSDD text, byte for byte), and **W-HELP-DOCK-M**
+> (the Modeller).
+
 ### Find panel — search, voice query, and axis lenses
 
 > **New: Ask.** Pick a question, get a computed answer, save the answers as one Excel file for your own AI —
@@ -800,7 +837,7 @@ Kernel-ERP; the Viewer does not carry the toggle.
 | **Click the flight tube** (in the Film-Maker) | Add a stick — a new band you can drag |
 | **Ctrl+Z / Ctrl+Shift+Z** (in the Film-Maker) | Undo / redo a path edit |
 | **F11** | Toggle fullscreen |
-| **F1** | Help — the full, live list of every toolbar action and its shortcut key |
+| **F1** | Help — the panel on the left: every tool and its key, search, steps, guide links ([Help](#help-f1-the-info-panel-and-the-command-line-live)) |
 
 > Authoring — editing the structural grid, sketching, extruding — lives in the **[DAGeVu Modeller](ModellerGuide.md)**, not the Viewer.
 
