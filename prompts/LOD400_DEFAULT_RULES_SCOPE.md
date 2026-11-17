@@ -321,3 +321,27 @@ Witness additions:
 6. The "wall 249 mm" refusal is not explained; no check was loosened to remove it.
 
 **Files (private, not committed):** `~/Projects/Jebel/lod_sandbox/conn_rules/gen_gussets.py`, `gusset_rules.json`, `gus_probe.py`; outputs `jpam/JPAM_gussets.db`, `JPAM_gussets_changes.txt`, `run2_gussets/`, `break_gussets/`; logs `jpam/log/gus_run1.log`, `gus_run2.log`, `gus_break.log`, `gus_probe.log`.
+
+## 9. BUILD 5 SPEC (2026-11-18, owner: "can export the rebar and gussets in IFCs"): add-on IFCs for the rebar and gussets
+**Issue it proves or disproves:** can the parts built in §6-§8 leave our DBs as IFC that the receiving team opens on top of its own model? That means at the right place, with every value traceable, valid, and identical on every export.
+**Generic exporter** `scripts/lod/export_parts_ifc.py <db> <out.ifc> --select <guid prefix>[,...] --schema IFC2X3|IFC4 [--frame frame.json]`:
+- **Content:** writes ONLY the selected generated elements. It is an add-on file, like the delta IFC of 2026-11-17 (`ifc_delta/export_delta_ifc.py`), whose conventions it follows: fixed header timestamp, GlobalId = compressed UUID5 of our element id (stable, unique), storeys by the host's storey name.
+- **Frame:** `--frame` gives a site placement and storey elevations. Without it, the DB frame is written as is and the file says so in its description.
+- **Geometry:** the element's own DB mesh, written as IfcFacetedBrep (IFC2X3) or IfcTriangulatedFaceSet (IFC4).
+- **Class map:**
+  - `IfcReinforcingBar`, with NominalDiameter, CrossSectionArea and BarLength from the set, and BarRole MAIN (longitudinal, mesh) or LIGATURE (ties, stirrups); IFC4 PredefinedType the same.
+  - `IfcPlate`, `IfcMechanicalFastener`, `IfcFastener`, grouped in an `IfcElementAssembly` per joint.
+- **Material:** steel grade only as stated (the Shed: fy 500 MPa), else "grade not stated".
+- **Pset `BIMC_Upgrade`:** HostGlobalId, Rule, Detail (the `upgrade_changes` row text, including the stated value and its source handle), Status ("configuration only, capacity not checked" for steel joints).
+
+**Three files:**
+1. **PJAM rebar:** `JPAM_rebar.db`, prefix `GEN-RB`, IFC2X3, their site frame. The frame is the same as the delta IFC: combined DB frame + measured shift = their shared coordinates, their IfcSite placement and storey elevations. Overlays their STR model.
+2. **PJAM gussets:** `JPAM_gussets.db`, prefix of the generated gusset parts, IFC2X3, the same frame. It holds 1 joint, as built.
+3. **Shed rebar + welds:** `SHED_rebar.db`, prefixes of the rebar sets and welds, IFC4, the DB frame. The Shed has no authored IFC with a site placement. Its frame is checked against the Modeller's own IFC export of the Shed.
+
+**Witnesses (`§PIFC_*`, per file):**
+- ROUNDTRIP: reopen with ifcopenshell; counts per class = DB counts; GlobalIds unique; `ifcopenshell.validate` 0 errors.
+- FRAME: PJAM, each exported part's bbox within its host element's bbox from THEIR OWN IFC, + cover tolerance; Shed, against the Modeller IFC's host.
+- VALUES: every NominalDiameter = the set's stated diameter.
+- DETERMINISM: two exports, same SHA-256.
+- INCONCLUSIVE if 0 exported.
