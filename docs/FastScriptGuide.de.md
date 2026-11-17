@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 6bed12d3a178c1fc
+source_sha: 2f7cdfa52f77c8e0
 lang: de
 ---
 
@@ -323,7 +323,7 @@ Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls s
 it may do: CL, VO, RE (do <code>; next shows the tree)
 ```
 
-Dort bietet Tab nach `do ` nur `CL`, `VO` und `RE` an (`RE` reaktiviert den Auftrag: `do RE`), und `run Co` wird zu `"Copy Lines"` ergänzt, der eigenen Schaltfläche des Auftragsfensters.
+Dort bietet Tab nach `do ` nur `CL`, `VO` und `RE` an, in der Reihenfolge der eigenen Schaltflächen des Fensters (Close, Void, Re-Activate; `RE` reaktiviert den Auftrag: `do RE`), und `run Co` wird zu `"Copy Lines"` ergänzt, der eigenen Schaltfläche des Auftragsfensters.
 
 **Das Menü durchgehen.** `menu` zeigt das ERP-Menü als Orte: `cd <folder>` geht hinein (der Anfang des Namens genügt, wenn nur ein Eintrag so beginnt), ein Fenster-Eintrag bringt Sie zu seiner Art, und `cd ..` (oder Shift+Tab) geht einen Ordner zurück. Die Eingabezeile zeigt den Pfad. Jeder Eintrag ist markiert: ▸ ein Ordner (wie viele Einträge er hat), W ein Fenster (und seine Tabelle), P ein Prozess, R ein Bericht, X ein Formular, F ein Workflow. `red1 menu` allein öffnet das Menü weiterhin auf einem ganzen Bildschirm.
 
@@ -371,6 +371,36 @@ Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd <name> goes in, cd .. goes
 → mis.describe kind=C_Order
 Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
 menu="Quote-to-Invoice (Sales)/Sales Orders" kind=Order
+```
+
+**Vom Menü in einen Datensatz.** In einer Art betritt `cd <number>` diesen Datensatz, und die Eingabeaufforderung behält den Menüpfad; `cd ..` geht wieder hinaus. Im Datensatz benennen `do` und `next` ihn über seine ID, sodass eine Nummer, die zwei Datensätze teilen (hier 80000), nie ein Problem ist. Eine Aktion gibt aus, was sie getan hat: die Statusänderung, die berührten Belege, wie viele Änderungen sie behalten hat und was der Datensatz jetzt tun darf; Tab nach `do ` bietet dann diese neuen Codes an. Die Ordnerlisten sind im Block unten weggelassen:
+
+<!-- run: red1_walk_record -->
+```text
+$ rm -f /tmp/fast_guide_walkrec.ops; printf 'menu\ncd Quote\ncd "Sales Orders"\ncd "Sales Order"\ncd 100\npwd\ndo RE\ndo CO\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide_walkrec.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_walkrec.journal node common/door/red1.js 2>/dev/null | sed 's/ · [0-9]* ms//' | grep -vE '^  [▸WRPXF] '
+→ mis.menu
+menu: 15 entries; cd <name> goes in, cd .. goes back
+Quote-to-Invoice (Sales): 6 entries; cd <name> goes in, cd .. goes back
+Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd <name> goes in, cd .. goes back
+→ mis.describe kind=C_Order
+Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
+→ mis.describe kind=100
+→ mis.read kind=Order number=100
+→ mis.read kind=Order id=100
+Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls shows them, cd <tab> opens one, cat reads the record
+→ erp.actions kind=Order id=100
+it may do: CL, VO, RE (do <code>; next shows the tree)
+menu="Quote-to-Invoice (Sales)/Sales Orders" kind=Order id=100
+→ erp.reactivate kind=Order id=100
+ok · erp.reactivate
+Re-activate: done · Order 80000 CO → IP (In Progress) · grand total 50.35
+  related: Invoice 2 (RE 2) · Shipment/Receipt 2 (RE 2)
+86 change(s) kept · it may do: CO, PR, VO
+→ erp.complete kind=Order id=100
+ok · erp.complete
+Complete: done · Order 80000 IP → CO (Completed) · grand total 50.35
+  related: Invoice 3 (RE 2, CO 1) · Shipment/Receipt 3 (RE 2, CO 1)
+59 change(s) kept · it may do: CL, VO, RE
 ```
 
 **Eine Lücke melden.** Manche Antworten sagen, dass red1 etwas fehlt, im Gegensatz dazu, dass Sie sich vertippt haben. Die Engine markiert diese, und in einer Sitzung gibt red1 nach der Antwort eine Zeile aus. Ein Tippfehler oder eine Legacy-Ablehnung ist keine Lücke und gibt nichts Zusätzliches aus. `report` zeigt dann einen Entwurf (die Zeile, den Grund, die red1-Version, die Plattform, die letzten Protokollzeilen, Ihre Pfade maskiert) und bietet ein GitHub-Issue oder eine E-Mail an; red1 sendet nichts selbst, Ihr eigener Browser oder Ihr Mailprogramm tut es:
@@ -427,7 +457,7 @@ Die Wörter oben sind die, die Sie zuerst lernen sollten. Die übrigen, jedes ei
 | `ninja <file>` · `load <file.csv>` · `diff <file.csv>` | eine Ninja-Arbeitsmappe oder CSV bereitstellen; Zeilen aus einer Datei laden; eine Datei mit den Datensätzen vergleichen |
 | `bim` · `mis` · `erp` | in eine Gruppe gehen: Hilfe, Tab und die Vorschläge bieten nur ihre Wörter an (`cd ..` oder Shift+Tab geht zurück) |
 | `menu` | das ERP-Menü, wie Ordner mit `cd` durchgegangen; `red1 menu` öffnet es auf einem ganzen Bildschirm |
-| `cd Project 990000` · `ls` · `cd Phase` | einen Datensatz als Ort betreten: `ls` listet seine Reiter mit ihrer Datensatzzahl, `cd <tab>` öffnet einen, `cd ..` geht wieder hoch |
+| `cd Project 990000` · `cd 100` · `ls` · `cd Phase` | einen Datensatz als Ort betreten (`cd <number>` innerhalb seiner Art, auch aus dem Menü-Rundgang): `ls` listet seine Reiter mit ihrer Datensatzzahl, `cd <tab>` öffnet einen, `cd ..` geht wieder hoch |
 | `status` | in einem Projekt: sein Earned Value (PV, EV, AC, SPI und CPI je Phase) |
 | `vo` | in einem Gebäude: die Änderung zwischen dem Modell und seinem Projektauftrag, ausgestellt als Nachtragsauftrag (Variation Order; fragt y/N; genehmigen mit `do CO <number>`) |
 | `claim` | in einem Projekt: die abgeschlossenen, noch nicht abgerechneten Phasen abrechnen, ein Rechnungsentwurf und die Vorschau seiner Buchung (fragt y/N) |

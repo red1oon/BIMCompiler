@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 6bed12d3a178c1fc
+source_sha: 2f7cdfa52f77c8e0
 lang: id
 ---
 
@@ -323,7 +323,7 @@ Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls s
 it may do: CL, VO, RE (do <code>; next shows the tree)
 ```
 
-Di sana Tab setelah `do ` hanya menawarkan `CL`, `VO`, dan `RE` (`RE` mengaktifkan kembali pesanan: `do RE`), dan `run Co` dilengkapi menjadi `"Copy Lines"`, tombol milik jendela pesanan itu sendiri.
+Di sana Tab setelah `do ` hanya menawarkan `CL`, `VO`, dan `RE`, sesuai urutan tombol jendela itu sendiri (Close, Void, Re-Activate; `RE` mengaktifkan kembali pesanan: `do RE`), dan `run Co` dilengkapi menjadi `"Copy Lines"`, tombol milik jendela pesanan itu sendiri.
 
 **Menjelajahi menu.** `menu` menampilkan menu ERP sebagai tempat: `cd <folder>` masuk ke dalamnya (awal namanya sudah cukup bila hanya satu entri yang dimulai begitu), entri jendela membawa Anda ke jenisnya, dan `cd ..` (atau Shift+Tab) naik satu folder. Prompt menunjukkan jalurnya. Setiap entri diberi tanda: ▸ sebuah folder (berapa entri isinya), W sebuah jendela (dan tabelnya), P sebuah proses, R sebuah laporan, X sebuah formulir, F sebuah alur kerja. `red1 menu` sendiri tetap membuka menu di satu layar penuh.
 
@@ -371,6 +371,36 @@ Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd <name> goes in, cd .. goes
 → mis.describe kind=C_Order
 Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
 menu="Quote-to-Invoice (Sales)/Sales Orders" kind=Order
+```
+
+**Dari menu ke sebuah rekaman.** Di dalam suatu jenis, `cd <number>` memasuki rekaman itu dan prompt tetap menyimpan jalur menu; `cd ..` keluar lagi. Di dalam rekaman, `do` dan `next` menyebutnya dengan id-nya, sehingga nomor yang dimiliki dua rekaman (di sini 80000) tidak pernah menjadi masalah. Sebuah aksi mencetak apa yang dilakukannya: perubahan status, dokumen yang disentuhnya, berapa perubahan yang disimpan, dan apa yang boleh dilakukan rekaman itu sekarang; Tab setelah `do ` lalu menawarkan kode-kode baru itu. Daftar folder dihilangkan dari blok di bawah:
+
+<!-- run: red1_walk_record -->
+```text
+$ rm -f /tmp/fast_guide_walkrec.ops; printf 'menu\ncd Quote\ncd "Sales Orders"\ncd "Sales Order"\ncd 100\npwd\ndo RE\ndo CO\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide_walkrec.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_walkrec.journal node common/door/red1.js 2>/dev/null | sed 's/ · [0-9]* ms//' | grep -vE '^  [▸WRPXF] '
+→ mis.menu
+menu: 15 entries; cd <name> goes in, cd .. goes back
+Quote-to-Invoice (Sales): 6 entries; cd <name> goes in, cd .. goes back
+Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd <name> goes in, cd .. goes back
+→ mis.describe kind=C_Order
+Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
+→ mis.describe kind=100
+→ mis.read kind=Order number=100
+→ mis.read kind=Order id=100
+Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls shows them, cd <tab> opens one, cat reads the record
+→ erp.actions kind=Order id=100
+it may do: CL, VO, RE (do <code>; next shows the tree)
+menu="Quote-to-Invoice (Sales)/Sales Orders" kind=Order id=100
+→ erp.reactivate kind=Order id=100
+ok · erp.reactivate
+Re-activate: done · Order 80000 CO → IP (In Progress) · grand total 50.35
+  related: Invoice 2 (RE 2) · Shipment/Receipt 2 (RE 2)
+86 change(s) kept · it may do: CO, PR, VO
+→ erp.complete kind=Order id=100
+ok · erp.complete
+Complete: done · Order 80000 IP → CO (Completed) · grand total 50.35
+  related: Invoice 3 (RE 2, CO 1) · Shipment/Receipt 3 (RE 2, CO 1)
+59 change(s) kept · it may do: CL, VO, RE
 ```
 
 **Melaporkan celah.** Beberapa jawaban menyatakan bahwa red1 kekurangan sesuatu, bukan Anda yang salah ketik. Mesin menandainya, dan dalam sesi red1 mencetak satu baris setelah jawaban. Salah ketik atau penolakan lama bukan celah dan tidak mencetak tambahan. `report` lalu menampilkan draf (barisnya, alasannya, versi red1, platform, baris log terakhir, jalur Anda disamarkan) dan menawarkan isu GitHub atau email; red1 tidak mengirim apa pun sendiri, peramban atau program surel Anda yang mengirim:
@@ -427,7 +457,7 @@ Kata-kata di atas adalah yang perlu dipelajari lebih dulu. Sisanya, masing-masin
 | `ninja <file>` · `load <file.csv>` · `diff <file.csv>` | menyiapkan buku kerja Ninja atau CSV; memuat baris dari berkas; membandingkan berkas dengan rekaman |
 | `bim` · `mis` · `erp` | masuk ke sebuah kelompok: bantuan, Tab, dan saran hanya menawarkan kata-katanya (`cd ..` atau Shift+Tab keluar) |
 | `menu` | menu ERP, dijelajahi seperti folder dengan `cd`; `red1 menu` membukanya di satu layar penuh |
-| `cd Project 990000` · `ls` · `cd Phase` | memasuki rekaman sebagai tempat: `ls` mendaftar tab-nya beserta jumlah rekaman, `cd <tab>` membuka satu, `cd ..` naik kembali |
+| `cd Project 990000` · `cd 100` · `ls` · `cd Phase` | memasuki rekaman sebagai tempat (`cd <number>` di dalam jenisnya, juga dari penelusuran menu): `ls` mendaftar tab-nya beserta jumlah rekaman, `cd <tab>` membuka satu, `cd ..` naik kembali |
 | `status` | dalam sebuah proyek: nilai hasil (earned value)-nya (PV, EV, AC, SPI, dan CPI per fase) |
 | `vo` | dalam sebuah bangunan: perubahan antara model dan Project Order-nya, diterbitkan sebagai Variation Order (bertanya y/N; setujui dengan `do CO <number>`) |
 | `claim` | dalam sebuah proyek: menagih fase yang sudah selesai dan belum ditagih, sebuah draf faktur dan pratinjau akuntansinya (bertanya y/N) |

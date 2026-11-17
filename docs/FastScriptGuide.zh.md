@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 6bed12d3a178c1fc
+source_sha: 2f7cdfa52f77c8e0
 lang: zh-CN
 ---
 
@@ -323,7 +323,7 @@ Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls s
 it may do: CL, VO, RE (do <code>; next shows the tree)
 ```
 
-在那里，`do ` 之后的 Tab 只提供 `CL`、`VO` 和 `RE`（`RE` 重新激活订单：`do RE`），`run Co` 会补全为 `"Copy Lines"`，即订单窗口自己的按钮。
+在那里，`do ` 之后的 Tab 只提供 `CL`、`VO` 和 `RE`，顺序与窗口自己的按钮相同（Close、Void、Re-Activate；`RE` 重新激活订单：`do RE`），`run Co` 会补全为 `"Copy Lines"`，即订单窗口自己的按钮。
 
 **浏览菜单。** `menu` 把 ERP 菜单显示为位置：`cd <folder>` 进入（只有一个条目以此开头时，名字的开头就够了），窗口条目会带您到它的种类，`cd ..`（或 Shift+Tab）回到上一级文件夹。提示符显示路径。每个条目都有标记：▸ 文件夹（里面有多少条目），W 窗口（及其表），P 流程，R 报表，X 表单，F 工作流。单独的 `red1 menu` 仍然在整个屏幕上打开菜单。
 
@@ -371,6 +371,36 @@ Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd <name> goes in, cd .. goes
 → mis.describe kind=C_Order
 Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
 menu="Quote-to-Invoice (Sales)/Sales Orders" kind=Order
+```
+
+**从菜单进入一条记录。** 在一个类型里，`cd <number>` 进入那条记录，提示符保留菜单路径；`cd ..` 退出。在记录里，`do` 和 `next` 用它的 id 指定它，所以两条记录共用的编号（这里是 80000）不会造成问题。一个动作会打印它做了什么：状态的变化、它涉及的单据、保留了多少处更改，以及记录现在可以做什么；随后 `do ` 之后的 Tab 提供这些新的代码。下面的代码块省略了文件夹列表：
+
+<!-- run: red1_walk_record -->
+```text
+$ rm -f /tmp/fast_guide_walkrec.ops; printf 'menu\ncd Quote\ncd "Sales Orders"\ncd "Sales Order"\ncd 100\npwd\ndo RE\ndo CO\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide_walkrec.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_walkrec.journal node common/door/red1.js 2>/dev/null | sed 's/ · [0-9]* ms//' | grep -vE '^  [▸WRPXF] '
+→ mis.menu
+menu: 15 entries; cd <name> goes in, cd .. goes back
+Quote-to-Invoice (Sales): 6 entries; cd <name> goes in, cd .. goes back
+Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd <name> goes in, cd .. goes back
+→ mis.describe kind=C_Order
+Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
+→ mis.describe kind=100
+→ mis.read kind=Order number=100
+→ mis.read kind=Order id=100
+Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls shows them, cd <tab> opens one, cat reads the record
+→ erp.actions kind=Order id=100
+it may do: CL, VO, RE (do <code>; next shows the tree)
+menu="Quote-to-Invoice (Sales)/Sales Orders" kind=Order id=100
+→ erp.reactivate kind=Order id=100
+ok · erp.reactivate
+Re-activate: done · Order 80000 CO → IP (In Progress) · grand total 50.35
+  related: Invoice 2 (RE 2) · Shipment/Receipt 2 (RE 2)
+86 change(s) kept · it may do: CO, PR, VO
+→ erp.complete kind=Order id=100
+ok · erp.complete
+Complete: done · Order 80000 IP → CO (Completed) · grand total 50.35
+  related: Invoice 3 (RE 2, CO 1) · Shipment/Receipt 3 (RE 2, CO 1)
+59 change(s) kept · it may do: CL, VO, RE
 ```
 
 **报告缺口。** 有些答复表明 red1 缺少某些东西，而不是您输错了。引擎会标记这些情况，在会话中 red1 会在答复后打印一行。打字错误或传统的拒绝不是缺口，不会多打印什么。`report` 随后显示一份草稿（该行、原因、red1 版本、平台、最后几行日志，您的路径已被遮盖），并提供 GitHub issue 或电子邮件；red1 自己不发送任何东西，由您自己的浏览器或邮件程序发送：
@@ -427,7 +457,7 @@ not done: cd project
 | `ninja <file>` · `load <file.csv>` · `diff <file.csv>` | 准备 Ninja 工作簿或 CSV；从文件加载行；将文件与记录比较 |
 | `bim` · `mis` · `erp` | 进入一个组：帮助、Tab 和建议只提供它的词（`cd ..` 或 Shift+Tab 退出） |
 | `menu` | ERP 菜单，用 `cd` 像文件夹一样浏览；`red1 menu` 在整个屏幕上打开它 |
-| `cd Project 990000` · `ls` · `cd Phase` | 把一条记录当作一个位置进入：`ls` 列出它的标签页及其记录数，`cd <tab>` 打开一个，`cd ..` 回到上一级 |
+| `cd Project 990000` · `cd 100` · `ls` · `cd Phase` | 把一条记录当作一个位置进入（在它的类型里用 `cd <number>`，从菜单逐级进入时也可以）：`ls` 列出它的标签页及其记录数，`cd <tab>` 打开一个，`cd ..` 回到上一级 |
 | `status` | 在项目中：它的挣值（每个阶段的 PV、EV、AC、SPI 和 CPI） |
 | `vo` | 在建筑中：把模型与其项目订单之间的差异，作为变更单（Variation Order）发出（询问 y/N；用 `do CO <number>` 批准） |
 | `claim` | 在项目中：对已完成但尚未开票的阶段开票，生成一张发票草稿及其会计分录预览（询问 y/N） |

@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 6bed12d3a178c1fc
+source_sha: 2f7cdfa52f77c8e0
 lang: ja
 ---
 
@@ -323,7 +323,7 @@ Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls s
 it may do: CL, VO, RE (do <code>; next shows the tree)
 ```
 
-そこでは `do ` の後の Tab は `CL`、`VO`、`RE` だけを出し（`RE` は注文を再有効化します：`do RE`）、`run Co` は注文ウィンドウ自身のボタン `"Copy Lines"` に補完されます。
+そこでは `do ` の後の Tab は `CL`、`VO`、`RE` だけを、ウィンドウ自身のボタンの順（Close、Void、Re-Activate）で出し（`RE` は注文を再有効化します：`do RE`）、`run Co` は注文ウィンドウ自身のボタン `"Copy Lines"` に補完されます。
 
 **メニューをたどる。** `menu` は ERP メニューを場所として表示します。`cd <folder>` で中に入り（その始まり方をする項目が一つだけなら、名前の先頭だけで足ります）、ウィンドウの項目はその種類へ連れて行き、`cd ..`（または Shift+Tab）で一つ上のフォルダーに戻ります。プロンプトにパスが出ます。各項目には印があります：▸ フォルダー（中の項目数）、W ウィンドウ（とそのテーブル）、P プロセス、R レポート、X フォーム、F ワークフロー。`red1 menu` 単独では、これまでどおり全画面のメニューが開きます。
 
@@ -371,6 +371,36 @@ Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd <name> goes in, cd .. goes
 → mis.describe kind=C_Order
 Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
 menu="Quote-to-Invoice (Sales)/Sales Orders" kind=Order
+```
+
+**メニューからレコードへ。** 種類の中で `cd <number>` を打つとそのレコードに入り、プロンプトはメニューのパスを保ちます。`cd ..` で外へ戻ります。レコードの中では `do` と `next` がそれを ID で指すので、二つのレコードが同じ番号（ここでは 80000）を持っていても問題になりません。アクションは何をしたかを表示します：ステータスの変化、触れた伝票、保持した変更の数、そしてレコードが今できること。その後 `do ` の後の Tab はその新しいコードを出します。下のブロックではフォルダの一覧を省いています：
+
+<!-- run: red1_walk_record -->
+```text
+$ rm -f /tmp/fast_guide_walkrec.ops; printf 'menu\ncd Quote\ncd "Sales Orders"\ncd "Sales Order"\ncd 100\npwd\ndo RE\ndo CO\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide_walkrec.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_walkrec.journal node common/door/red1.js 2>/dev/null | sed 's/ · [0-9]* ms//' | grep -vE '^  [▸WRPXF] '
+→ mis.menu
+menu: 15 entries; cd <name> goes in, cd .. goes back
+Quote-to-Invoice (Sales): 6 entries; cd <name> goes in, cd .. goes back
+Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd <name> goes in, cd .. goes back
+→ mis.describe kind=C_Order
+Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
+→ mis.describe kind=100
+→ mis.read kind=Order number=100
+→ mis.read kind=Order id=100
+Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls shows them, cd <tab> opens one, cat reads the record
+→ erp.actions kind=Order id=100
+it may do: CL, VO, RE (do <code>; next shows the tree)
+menu="Quote-to-Invoice (Sales)/Sales Orders" kind=Order id=100
+→ erp.reactivate kind=Order id=100
+ok · erp.reactivate
+Re-activate: done · Order 80000 CO → IP (In Progress) · grand total 50.35
+  related: Invoice 2 (RE 2) · Shipment/Receipt 2 (RE 2)
+86 change(s) kept · it may do: CO, PR, VO
+→ erp.complete kind=Order id=100
+ok · erp.complete
+Complete: done · Order 80000 IP → CO (Completed) · grand total 50.35
+  related: Invoice 3 (RE 2, CO 1) · Shipment/Receipt 3 (RE 2, CO 1)
+59 change(s) kept · it may do: CL, VO, RE
 ```
 
 **不足を報告する。** 答えの中には、あなたの打ち間違いではなく、red1 に何かが足りないと告げるものがあります。エンジンがそれに印を付け、セッションでは red1 が答えのあとに一行表示します。打ち間違いや従来の拒否は不足ではなく、余計な表示はありません。`report` はそのあと下書き（行、理由、red1 のバージョン、プラットフォーム、最後のログ行、パスは伏せ字）を示し、GitHub の issue かメールを提案します。red1 自身は何も送らず、送るのはあなたのブラウザーまたはメールソフトです：
@@ -427,7 +457,7 @@ not done: cd project
 | `ninja <file>` · `load <file.csv>` · `diff <file.csv>` | Ninja ブックまたは CSV を用意する、ファイルから行を読み込む、ファイルとレコードを比較する |
 | `bim` · `mis` · `erp` | グループに入る：help、Tab、候補はその言葉だけを出す（`cd ..` または Shift+Tab で出る） |
 | `menu` | ERP メニューを `cd` でフォルダーのようにたどる。`red1 menu` は全画面で開く |
-| `cd Project 990000` · `ls` · `cd Phase` | レコードを場所として開く：`ls` はそのタブをレコード件数とともに一覧し、`cd <tab>` でタブを開き、`cd ..` で上へ戻る |
+| `cd Project 990000` · `cd 100` · `ls` · `cd Phase` | レコードを場所として開く（その種類の中で `cd <number>`、メニューを歩いた先からも）：`ls` はそのタブをレコード件数とともに一覧し、`cd <tab>` でタブを開き、`cd ..` で上へ戻る |
 | `status` | プロジェクトの中で：そのアーンドバリュー（フェーズごとの PV、EV、AC、SPI、CPI） |
 | `vo` | 建物の中で：モデルとそのプロジェクトオーダーの差分を、変更指示（Variation Order）として発行する（y/N を確認；承認は `do CO <number>`） |
 | `claim` | プロジェクトの中で：完了してまだ請求していないフェーズを請求する。請求書の下書きと、その会計仕訳のプレビュー（y/N を確認） |
