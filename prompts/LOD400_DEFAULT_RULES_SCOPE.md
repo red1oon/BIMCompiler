@@ -57,3 +57,39 @@ Steel grade (PJAM: not stated), concrete cover on PJAM until ACI 318-19 is read,
 3. **Shed truss welds** (2 rows).
 4. **PJAM bracing gussets** (57 ends): AISC §J4 read first.
 5. Carry the Terminal's REB groups into its Viewer DB (a patch + self-heal loader, never a binary).
+
+## 6. BUILD 1 SPEC (2026-11-18, owner: "Proceed"): Shed reinforcement from its stated schedules, + build 3 (truss welds)
+**Issue it proves or disproves:** can the stated schedules already attached to each element by the Modeller's table reader become real bar geometry, with every value traced to the drawing and only cover/hook as defaults, on a copy of the Shed DB, identically on every run?
+**Measured inputs (2026-11-18, Modeller export of 2026-11-15, 511 bodies):** `element_dxf2bim` already holds, per element, with source handles in `5_DETAILS_marked.dxf`:
+- **96 IfcColumn** (32 columns × 3 pieces: below grade 14"×14" z −1.143..0, grade to base 12"×12" 0..0.61, above grade 12"×12" to the beam soffit): `Sched_Column_Type C-1`, `Main_Bar 6-16dia`, `Stirrup_A 10dia @ 5" C/C (A)`, `Stirrup_B 10dia @ 10" C/C (B)`.
+- **32 IfcFooting** (1.219 × 1.524 × 0.305 m): `F-1`, `L_Bar` and `S_Bar 12 mm dia @ 6" C/C`, `T 12"`.
+- **164 concrete elements:** `Note_fc_MPa 24`, `Note_fy_MPa 500`.
+- **35 IfcBeam carry NO schedule row.** Their callouts are on long sections, not in a table. They are not built here; they are reported with the callout texts (a reader task, §5 item 1b).
+- **Truss:** 168 IfcMember (angles 1.5"×1.5"×1/4", chords 2 - 2"×2"×1/4") and 117 IfcPlate 1/4" gussets; sheet 8 text "Welded".
+
+**Rules (stated first; each default is a row in `scripts/lod/rebar_defaults.json` with its source):**
+- **Footing:** a bottom mesh at the stated spacing both ways. L-bars run along the long side, S-bars along the short side. Bars are straight, with cover at both ends. Counts = floor((side − 2·cover)/spacing) + 1, logged.
+- **Column:** the 6 main bars are continuous from the footing mesh top to the column top. They run through all three pieces, which are one drawn column found by plan position. The arrangement is 3 bars on each of two opposite faces (corners + mid), bar centres at cover + tie + d/2.
+- **Column ties** are perimeter ties. The (A) spacing applies for the end-zone length from each end of the column's clear height (footing top to beam soffit), the (B) spacing between.
+  - The end-zone length is the stated `20"` next to (A) on the typical long section.
+  - The drawing also writes `L` / `4L/6`. Rule row `zone_A = max(20", L/6)`, `default: ours` (reading of the two labels). The run logs both values and which governs.
+- **Defaults** (`default: ours`, industry practice, no clause read):
+  - footing cover 75 mm (cast against earth), column cover 40 mm;
+  - tie hooks not modelled (logged);
+  - no cross-ties (logged);
+  - no laps (every bar is shorter than a 12 m stock length: checked and logged per bar).
+- **Truss welds (build 3):** for every member end whose mesh overlaps a gusset plate's box, one fillet weld element along the two outer edges of the overlap.
+  - Size = AISC 360-16 Table J2.4 minimum for the thinner part, as already in `conn_rules`: 6.35 mm part → 5 mm. `default: AISC Table J2.4`.
+  - Length = the overlap length, `default: ours`.
+  - Members with no gusset contact are counted, not welded.
+- **Output:** a copy `SHED_rebar.db` (never the export). One `IfcReinforcingBar` element per host × bar set (footing L, footing S, column main, ties A, ties B), with real bar geometry (8-sided prisms at bar diameter; ties as closed loops). One `IfcFastener` per weld. `element_parts` host → set. An `upgrade_changes` table + a txt written from it (same format as the PJAM change list). Each set's name carries its stated value and source handle.
+
+**Witnesses (`§SHEDRB_*`; INCONCLUSIVE when nothing was judged):**
+- IDENT: every source row unchanged; out = in + added.
+- STATED: every element with a `Sched_*` row got its sets, and each set's bar diameter and spacing equal the parsed stated value.
+- INSIDE: every bar lies inside its host's mesh box with ≥ cover − 1 mm to the faces.
+- COUNTS: bars per set = the count formula.
+- WELDS: welds = member–gusset contacts; size = the table row.
+- COST: added vertices and estimated heap (PERF BUDGET).
+- DETERMINISM: two builds give the same SHA-256.
+- Break switch `SHEDRB_BREAK=1` drops the cover offset: INSIDE must FAIL.
