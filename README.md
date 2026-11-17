@@ -13,7 +13,7 @@
 [![Java 17+](https://img.shields.io/badge/Java-17+-orange.svg)](https://openjdk.org/)
 [![SQLite](https://img.shields.io/badge/Database-SQLite-003B57.svg)](https://www.sqlite.org/)
 [![Tests](https://img.shields.io/badge/Tests-382_PASS_%2F_94_intentional_RED-brightgreen.svg)](#project-stats)
-[![Docs](https://img.shields.io/badge/Docs-50_specs-8CA1AF.svg)](https://red1oon.github.io/BIMCompiler/)
+[![Docs](https://img.shields.io/badge/Docs-78_pages-8CA1AF.svg)](https://red1oon.github.io/BIMCompiler/)
 
 ### [Try It Live — drop IFC or OBJ in your browser, zero install](https://objectstorage.ap-kulai-2.oraclecloud.com/n/ax3cp6tzwuy2/b/bim-ootb-live/o/index.html)
 
@@ -36,7 +36,7 @@ The [film](https://youtu.be/hnLYNcRihzs) shows the two halves as one.
 
 | | |
 |:---|:---|
-| **35 buildings** compiled (126K elements largest) | **~1.06M lines** of JS + HTML in 3,330 files, tests and witnesses included (measured 2026-11-15) |
+| **35 buildings** compiled (126K elements largest) | **~1.08M lines** of JS + HTML in ~3,480 files, tests and witnesses included (measured 2026-11-18) |
 | **1M elements** federated in browser | **6 mathematical gates** prove every output |
 | **Multi-format import** — IFC, OBJ, DAE, GLB, FBX, STL | **Auto-classifies** mesh names to IFC schema |
 | **Clash detection** — R-tree spatial index, per-pair analysis | **18 languages** — localized from day one |
@@ -132,7 +132,7 @@ This is a proven kernel and architecture, not a finished ERP. The constituent te
 | [BIM OOTB viewer](https://objectstorage.ap-kulai-2.oraclecloud.com/n/ax3cp6tzwuy2/b/bim-ootb-live/o/index.html) | Drop IFC/OBJ in the browser, zero install |
 | [Glassbowl](https://red1oon.github.io/BIMCompiler/glassbowl.html) | The ERP engine rendered from its own data |
 | [Op-Log ERP abstract](https://red1oon.github.io/BIMCompiler/OpLogERP/) | The fold-over-a-signed-log engine, technical |
-| [Documentation](https://red1oon.github.io/BIMCompiler/) | 50 specs, full-text search |
+| [Documentation](https://red1oon.github.io/BIMCompiler/) | 78 pages, full-text search |
 | [The film](https://youtu.be/hnLYNcRihzs) | BIM and ERP, one engine |
 | [Viewer source (bim-ootb)](https://github.com/red1oon/bim-ootb) | The browser viewer code repository |
 | [Pair-programming walkthrough](https://youtu.be/bOcwiILBVUE) | How the Creator pairs with Claude |
@@ -181,7 +181,7 @@ bim-compiler/
 ├── migration/             # SQL migration scripts (append-only)
 ├── scripts/               # Build, test, docs, audit — and the op-log ERP POCs (poc_*.js, erp_kernel.js)
 ├── build/erp/             # Glassbowl (engine-as-data explorer) + GardenWorld oracle (ad_full.db)
-└── docs/                  # 50 specifications (mkdocs site source)
+└── docs/                  # docs site source (78 pages in the nav)
 ```
 
 ## About
@@ -196,12 +196,12 @@ Led [ADempiere](https://www.adempierebr.com/User:Red1) (2006), paved the way for
 
 | | |
 |:---|:---|
-| **BIM OOTB (Browser)** | 3,330 JS + HTML files, ~1.06M lines tracked (app code about 2,600 files / 780K lines: viewer, modeller, erp, common, teams, capex; the rest is tests, witnesses, sandbox, scripts; `common/lib` holds third-party code), 53 Playwright spec files |
+| **BIM OOTB (Browser)** | ~3,480 JS + HTML files, ~1.08M lines tracked (app code about 1,050 files / 353K lines: viewer, modeller, erp, common, teams, capex, excluding every `tests/` folder and the third-party `lib/` folders; the rest is tests, witnesses, sandbox, scripts; measured 2026-11-18), 53 Playwright spec files |
 | **Java Compiler** | 1,207 files, 278K lines across 10 Maven modules |
 | **Java Tests** | 201 test classes; gate baseline 382 PASS / 94 intentional RED / 1 SKIP |
 | **SQL** | 365 migration scripts (append-only) |
 | **Databases** | 35 per-building single DBs (0.1-173 MB each) |
-| **Documentation** | 73 published pages (the spec set is governed by SystemContract.md) |
+| **Documentation** | 78 pages in the site nav, measured 2026-11-18 (the spec set is governed by SystemContract.md) |
 | **Buildings** | 35 compiled (34 extracted + 1 generative) |
 | **Scale** | 1,063,563 elements federated, 35 buildings, 6 disciplines |
 
