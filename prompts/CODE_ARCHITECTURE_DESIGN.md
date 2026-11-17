@@ -20,6 +20,8 @@ Owner, closing 2026-11-15: *"get it well documented in the prompts/# consolidate
 
 **0. ✅ DONE 2026-11-15 (fourth session): F-18 answered, the provenance hover built and merged — §F.23 (bim-ootb #3064 + tooltip-in-window fix #3069); FILM 3 built (`prompts/FILM_IMMERSIVE_SOFTWARE.md` FILM 3 STATUS, awaiting the owner's review); the default-key + truss findings handed to the DXF2BIM lane (bim-ootb `prompts/DXF2BIM_ARCHITECT_REVIEW.md` §D113, #3070). NEXT = the X0 "New witness for this file" command (§F.21 OPEN), or Part A's remaining A2 (item 2).** The text below is the original hand-over.
 
+**0u. 2026-11-18 (ninth session) — START HERE: B-1 ANSWERED, ask B-2 next.** The session opened with a dangling-work check: every VSC-lane branch in both repos is pushed, no VSC PR is open, no VSC worktree is left. (A stale 2026-11-14 copy of this file sat uncommitted in the shared `~/bim-compiler` checkout on an unrelated branch; nothing in it was missing from master, so it was backed up and reverted.) B-1 was put to the owner as the 0t message wrote it (numbers: 17 sites change, still hand-bumped; hashes: all 715 change once, one full re-download) with the recommendation "content hashes, as its own announced step on a quiet day"; owner: *"proceed"* → recorded in Part B DECISIONS. **NEXT, in order:** ask **B-2**, then B-5, B-3, B-4 (one per message). B1 (modeller first) may start once B-2 is answered; it stays byte-identical on today's numbers, and the hash switch is its own step after B3.
+
 **0t. 2026-11-17 (eighth session, later) — START HERE: B0 IS BUILT (bim-ootb #3200), Part B now waits on the owner.** `§MANIFEST_ROUNDTRIP apps=3 files=54 sites=788 … identical=54/54 driven=715/715 sw_vm=3/3 claims=7/7 red=5/5 order_check=NOT-JUDGED verdict=PASS`, and it runs in CI fast-checks (Part B, B0 BUILD SPEC + B0 RESULT). The design problem it hit (27 files with different `?v=` in different referrers, no declared dependencies) went to one scoped Fable agent, as the owner said. **NEXT, in order:** (1) **ask B-1** (one message, with B0's counts: unify numbers = 17 sites change inside the apps, content hashes = all 715 once), then B-2, B-5 (new: who declares deps), B-3, B-4; (2) the core-purity warning in X0 is BUILT (§F.35, bim-ootb #3209; reinstall X0 to get it) (the bump defect C7 found, bim-ootb #3201, where the Bump button stopped when a loader and a lazy module it lists changed together, is FIXED: #3204); (3) E's `witness_kit/paths.js` (§READY). F-2 ceilings due 2026-11-30.
 
 **0s. 2026-11-17 (eighth session): PART A IS DONE.** (1) bim-ootb #3168 (A3-CLOCK-2) was already MERGED when this session opened: the github-actions bot turned auto-merge on and merged it 4 minutes after the last push (`2989f8f5`, 00:13Z), before the gate check 0r asked for. The check was run after the fact on `main` @ `b732d923` and PASSES (A3-CLOCK-2 POST-MERGE CHECK). **Lesson: "auto-merge off" does not hold in bim-ootb, the bot re-enables it; to hold a PR back, open it as a DRAFT.** (2) **W-CORE-PURE built and merged (bim-ootb #3180 / PR #3181, `7c26856d`), and it runs in CI fast-checks**: `§CORE_PURE files=125 parse_fail=0 forbidden=0 red_control=detected verdict=PASS` (A3 W-CORE-PURE RESULT). **NEXT: Part B, B0** (the manifest generator in check mode, no decision needed, no file changes; write its build spec first), then ask B-1. Also unblocked, small: the core-purity squiggle in X0 (Part F table row; reuse `witness_core_pure.js`'s scan, do not write a second scanner). F-2 ceilings due 2026-11-30. Owner, this session: *"if u hit a code design or spec problem use a well scoped Fable agent to resolve"* (workers otherwise stay on Sonnet).
@@ -81,7 +83,7 @@ Owner, closing 2026-11-15: *"get it well documented in the prompts/# consolidate
 | Part | State | Next step |
 |---|---|---|
 | A | ✅ DONE 2026-11-17: A0, A-1..A-7, A1, A2, A3 (W-CORE-PURE PASS, `forbidden=0`, in CI) | none; the door stamp is the CLI lane's (0c) |
-| B | **B0 ✅ 2026-11-17** (#3200, W-MANIFEST-ROUNDTRIP in CI) | ask B-1, then B-2, B-5, B-3, B-4; B1 waits on B-1 |
+| B | **B0 ✅ 2026-11-17** (#3200, W-MANIFEST-ROUNDTRIP in CI) · **B-1 answered 2026-11-18** (content hashes, own step) | ask B-2, then B-5, B-3, B-4; B1 waits on B-2 |
 | C, D | not started; wait on B | — |
 | E | not started | `witness_kit/paths.js` needs no decision (§READY), then ask E-1 |
 | F | §F index rows + §F.21 (BIM trace + hover) + §F.22 (ERP hover) + F-16 gate built | **the BIM layered hover (0)**, then the X0 "New witness for this file" command (§F.21 OPEN; a skeleton pre-filled from facts the index has, population + red control left empty so it FAILs until a person fills them) |
@@ -798,7 +800,8 @@ host's one list (B must not become a second plugin registry).
 refuses) · `audit_sw_precache.js` · page boot witnesses unchanged.
 **Done when:** all three apps generated from their manifests, round-trip identical, `bump.js` retired or reduced to "edit `v`", and the Pages
 deploy workflow still green on the first merge after each switch (fetch `erp/version.json`, §F.2 Fetch back).
-**DECISIONS:** *(none yet)*
+**DECISIONS:**
+- **B-1 (2026-11-18): content hashes, as their own announced step.** Asked with B0's counts (unify numbers inside the apps = 17 sites change, still hand-bumped, 42 inline literals `bump.js` cannot see; content hashes = all 715 versioned sites change once, every user re-downloads every tagged file once, offline installs on slow links included) and the recommendation "content hashes, done as its own announced step on a quiet day". Owner: *"proceed"*. **What it means for the plan:** B1 to B3 keep today's numbers and stay byte-identical (the manifest is introduced alone, so a break points at one cause); then one separate step, B4-HASH, switches every `?v=` to an 8-hex content hash, announced to the owner beforehand with its date, and `bump.js` is retired. The hash step's spec (which bytes are hashed: git source or the minified deploy output; how `CACHE_VERSION` follows) is written before B4-HASH, not now.
 
 **B0 BUILD SPEC (2026-11-17, eighth session; bim-ootb #3195; no owner decision).** Owner, this session: *"if u hit a code design or spec problem use a well
 scoped Fable agent to resolve"* → the measuring and the design below came from one such agent (read-only), then checked here. Measured on bim-ootb `main` @ `695d16fe`:
@@ -1698,7 +1701,7 @@ first, as §F.4, the next session's bounded task**; A0 runs in parallel if a sec
 | Part | Starts with no decision | Next decision to ask | Why that one |
 |---|---|---|---|
 | A | ✅ done 2026-11-17 (W-CORE-PURE in CI) | none | — |
-| B | B0 ✅ done 2026-11-17; nothing more without a decision | B-1 `?v=` numbers or hashes | B1 writes `?v=`; B0 measured what each choice changes (B0 RESULT) |
+| B | B0 ✅ done 2026-11-17; B-1 answered 2026-11-18 (hashes, own step) | B-2 lazy + precache rule | B1 writes each module's precache flag; B0 measured that the viewer has no single rule today (B0 RESULT, `§MANIFEST_LAZY_PRECACHE`) |
 | C | nothing; waits on B and D | C-1 part names + owners | |
 | D | nothing new; the multi-publisher list already exists (`types/globals.gen.d.ts`) | D-1 where the questions list lives | needs B's `owner` field |
 | E | `witness_kit/paths.js` (no behaviour change; witness: the same suite verdicts before and after) | E-1 the `PROVES:` header format | |
