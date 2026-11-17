@@ -3538,3 +3538,43 @@ footings on soil · stair flight under a slab · ties follow solve     0        
 - **W-MZ-2 (changed).** census midair is split: `named` (in either set) and `unnamed` (the rest). BOTH are locked per building (`midair`, `midair_unnamed` in `baselines/midair.json`). `§MZ_SPLIT` prints total / named-struct / named-contact / unnamed and the classes of the unnamed.
 - **W-MZ-8** float lock re-taken once (same run). No engine code changes; no schedule time moves.
 - **Not vacuous:** W-MZ-7 unchanged (a dragged element must still be caught, and it must land in `unnamed`).
+**Q.14.1 RESULT — bim-ootb #3213, MERGED.** `§MIDAIR_ZERO_SUMMARY pass=35 fail=21` → **`pass=70 fail=0`**. No engine code changed.
+```
+W-MZ-2, this witness's own census      Terminal Hospital Duplex  HHS  Clinic   LTU   JKR
+census midair (locked)                    533      33      1     22     50    541    23
+ named struct-no-support                  532      27      0     15     46    300    14
+ named contact-only                         1       6      0      7      2    238     9
+ ground seed (rests on soil, §I row 2)      0       0      1      0      2      3     0
+ UNNAMED (locked, W-MZ-2u)                  0       0      0      0      0      0     0
+sets, witness vs engine (W-MZ-2n)      555=555  29=29   0=0   27=27  88=88 558=558 89=89   struct-no-support
+                                         3=3    13=13   2=2   27=27   8=8  977=977 11=11   contact-only
+W-MZ-8 float (re-locked)                  759    1414      7    404    171   3110   433
+```
+- The witness's own re-derivation equals the engine's sets **member for member** on all seven (0 only-witness, 0 only-engine). So every element the independent judge sees start before its first contact is one the engine openly names, or a footing/slab on soil.
+- A third bucket was needed and is the §I owner rule, not a new one: a ground seed (sequence 1 / Substructure) waits for nothing. 6 elements.
+- W-MZ-7 now requires the moved element ITSELF to be flagged (7 of 7).
+- The witness's pipeline reads Hospital 29 / Clinic 88 / JKR 89 / LTU 558 struct-no-support where §Q.13.2 (persisted runs) reads 28 / 82 / 85 / 542. Two pipelines (witness: raw `computeSchedule` → `_displayTimeline`; cache: `materializeZones`); not chased.
+
+### Q.14.2 `witness_big_element_support_coverage` — CAUSE FOUND, re-locked (bim-ootb #3216)
+**Issue:** Hospital 172 vs lock 177, Clinic 21 vs 22, "cause older and unattributed" (§Q.13.3).
+- Old code (`afb61d71`, the lock's own commit) on TODAY's DB files still reads 177 / 22 → a code change, not data.
+- `git bisect` over 1,668 commits, reading `§BIG_SUPPORT_COVERAGE bld=Hospital` at each: first changed commit = **bim-ootb #1551** (`59736505`, 2026-09-02, the three name overrides). Parent reads 4314 / 177, the commit reads 4290 / 172.
+- **Hospital, element by element:** the override `foundation_wall_substructure` matches 28 walls; 24 have a box over 1.556 m³ and became Substructure-exempt (big 4314 − 24 = 4290). The 5 elements that LEFT the unchecked set are interior partitions (`Basic Wall:Interior - 123mm Partition` ×4, `Blockwork 190` ×1); each has one of those foundation walls bearing directly below it (177 − 5 = 172). Nothing entered.
+- **Clinic:** same commit (parent 440 / 22, commit 425 / 21). Set change: 3 stair `IfcMember` and 1 `IfcRampFlight` out, the 3 `IfcStairFlight` of the same three stairs in. Commit attributed; the per-element mechanism on Clinic is not isolated further.
+- Re-locked 172 / 21. `§BIG_SUPPORT_COVERAGE_SUMMARY pass=36 fail=0`.
+
+### Q.14.3 `witness_tm_reveal_within_bar` W-RWB-5 (bim-ootb #3214, MERGED)
+**Issue:** Duplex "groups with >50 % in one decile" 4 (affine) → 6 (tiled), red since the filing steps.
+- New `§W_RWB_CLUMP` names every such group with its own share and extent of the bar. Duplex's 6: four have an extent under one tenth of the bar (Finishes L2 `IfcSlab` n=8 = 2.4 % of the bar, 8 distinct starts; Finishes L1 `IfcSlab` 3.4 %; two `IfcCovering` groups 8.7 % / 6.8 %).
+- **Arithmetic, not a tolerance:** a group whose whole extent is under one decile width lies in at most two adjacent deciles, so one holds half of it whatever the layout. Those are reported as FORCED and left out of the comparison; the gate is FREE ≤ the affine's count. The acceptance half (every element its own start) is unchanged.
+- Duplex 4 · 6 = 4 forced + 2 free · HHS 11 · 7 = 1 + 6 · Hospital 76 · 38 = 11 + 27. `§W_RWB_SUMMARY pass=22 fail=0`.
+- ⚠ **Claude's reading, open to the owner's veto:** this changes what W-RWB-5 gates. If small finish groups landing inside one tenth of a bar is itself unwanted, the fix is in the tiler (interleave classes inside a bar), not in this witness.
+
+### Q.14.4 `witness_gantt_edit_coherence` edits the SHIPPED grid (bim-ootb #3215)
+**Issue:** the witness loaded neither `CpmSchedule` nor `SupportSweep`: `§D6_HANG_FILING INACTIVE` and `§TPL_LAYER_ORDER_FAIL SupportSweep not loaded` — the bar it dragged was not the bar the viewer draws.
+- Both real modules registered. **G-COH-11 (new)** fails if either pass reports INACTIVE. After: `§D6_HANG_FILING elements=1119 … movedToCarrierLevel=456`, `§TPL_LAYER_ORDER layers=14`, `§W-COH RESULT pass=12 fail=0`.
+- **Seen on the way, NOT fixed, named:** `§TPL_LAYER_SELFCHECK … stillInverted=N FAIL` prints on EVERY persisted run — Duplex 6 · Hospital 1,650 · Terminal 1,041 · HHS 53 · Clinic 137 · JKR 58 · LTU 2,918. It judges `displaySchedule` (the authored map, which `time_machine.js` does not read — §I), so it is not what plays; but it is a shipped line saying FAIL on seven buildings and no witness reads it.
+
+### Q.14.5 `band-monotonic-holds` (`witness_bar_schedule`) — ⛔ NOT TOUCHED, one question
+It judges `bar_model.js`, the tree model §A / §J.3 ruled dead ("D — dead lane, out of scope", §I.5). Its `≤ 20` bound now reads Duplex 29 · Hospital 128 · Terminal 106 because the shared inputs moved under it. A hook blocks edits to `bar_model.js`, and §J.3 says its findings "still read well" — so it was left alone (a deletion was staged and reverted, never committed).
+**⛔ BLOCKED: delete the dead tree model with its three witnesses (11 files, −1,738 lines, no served file), or keep it as reference and accept this one red line?**
