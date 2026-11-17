@@ -3578,3 +3578,13 @@ W-MZ-8 float (re-locked)                  759    1414      7    404    171   311
 ### Q.14.5 `band-monotonic-holds` (`witness_bar_schedule`) — ⛔ NOT TOUCHED, one question
 It judges `bar_model.js`, the tree model §A / §J.3 ruled dead ("D — dead lane, out of scope", §I.5). Its `≤ 20` bound now reads Duplex 29 · Hospital 128 · Terminal 106 because the shared inputs moved under it. A hook blocks edits to `bar_model.js`, and §J.3 says its findings "still read well" — so it was left alone (a deletion was staged and reverted, never committed).
 **⛔ BLOCKED: delete the dead tree model with its three witnesses (11 files, −1,738 lines, no served file), or keep it as reference and accept this one red line?**
+
+### Q.14.6 `scripts/run_4d_gates.sh` + `§LOG_STAMP` (bim-ootb #3217, MERGED) — Q.9.3 item 8
+One command: rebuild the seven persisted runs (a cache hit is instant), run the eight gate witnesses, write ONE stamped log (`logs/4d_gates_<UTC>.log`), print `§GATES_ROW` per witness and `§GATES_VERDICT GREEN | RED | INCONCLUSIVE`. CPU only. `cache_4d_run.js` now writes `§LOG_STAMP commit= dirty= branch= at=` as line 1 of `witness.log` (not a cache-key input).
+**This replaces the hand-typed list in the resume memory: every 4D change is judged with `scripts/run_4d_gates.sh`.**
+
+### Q.14.7 THE CELL SOLVER IS DELETED (bim-ootb #3218) — §Q.13.1 item 3
+`solveCells` and the unreachable `path === 'CELL'` branch of `CpmSchedule.run`: **+4 / −217**, `sw.js` v1736. The gate is still measured and printed (`wouldHaveBeen=`).
+- **Proof nothing moved (`§NOCELL_IDENTITY`):** all seven runs rebuilt under the new code key; `els`, `sched`, `play`, `playStats`, `storeys`, `tasks` hash-equal to the pre-deletion runs — 7 of 7 buildings, every layer EQUAL.
+- `§GATES_VERDICT GREEN red=0 missing=0 gates=8`: assembly order 5/0 · midair_zero 70/0 · lock integrity 20/0 · edit coherence 12/0 · edit exception 23/0 · reveal 22/0 · big-element 36/0 · curtain wall 5/5. `witness_gantt_model` 21/0.
+- **Owed next (named, not done):** the per-cell DISPLAY stamp only the cell path could fill — `_displayTimeline._lastCell`, the `_cell` op parameter, `GanttModel.groupKeyOf`'s `C:` branch, `witness_midair_zero` W-S51a/b/c, `witness_s50_cell_engine`, `witness_s55_identity_vs_cell` (already INCONCLUSIVE, no population). It touches the Gantt drawer's grouping, so it is its own PR.
