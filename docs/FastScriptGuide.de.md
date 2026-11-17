@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 313ef235970d6dfd
+source_sha: dde1d54bca12dea4
 lang: de
 ---
 
@@ -22,7 +22,7 @@ An einem Terminal begrüßt Sie `red1` einmal und wartet dann an seinem Prompt. 
 $ (sleep 4; printf 'exit\r') | RED1_LOG=/tmp/fast_guide_greet.log RED1_HISTORY=/tmp/fast_guide_greet.hist BIM_DOOR_JOURNAL=/tmp/fast_guide_greet.journal script -qec 'node common/door/red1.js' /dev/null | tr -d '\r' | sed -e 's/\x1b\[[0-9;?]*[a-zA-Z]//g' -e 's/ · [0-9a-f]\{8\}$//'
 Welcome to red1, the scripting door into BIM and ERP, stored in SQLite.
 REMEMBER THE NAME.
-Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 76 verbs · 30 words
+Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 77 verbs · 30 words
 Type help for the list of commands (or bim, mis, erp for one group).
 Tip: type level student for fuller help on each word (red1 --fast opens without tips).
 
@@ -130,7 +130,7 @@ Tippen Sie `exit`, um zu beenden. Um nur `red1` von überall zu tippen, führen 
 <!-- run: red1_version -->
 ```text
 $ node common/door/red1.js --version | sed -e 's/^Copyright[^·]*· //' -e 's/ · [0-9a-f]\{8\}$//'
-red1 1.0.0 · 76 verbs · 30 words
+red1 1.0.0 · 77 verbs · 30 words
 ```
 
 **Der Sechs-Dateien-Download** ist für die Tür allein mit den Modeller-Verben, ohne Checkout. Legen Sie einen leeren Ordner an, installieren Sie die Browser-Engine, die der Modeller braucht, und laden Sie die sechs Dateien:
@@ -220,9 +220,9 @@ $ rm -f /tmp/fast_guide_chain.ops; printf 'cd Duplex\ncost discipline\n' | BIM_O
 building Duplex
 → viewer.cost building=Duplex by=discipline
 ok · viewer.cost
-1190 elements · 1054482.23 total (71 with no rate); 3 with no size, not priced
+1190 elements · 1054482.08 total (71 with no rate); 3 with no size, not priced
 discipline  elements  cost
-ARC         267       532431.28
+ARC         267       532431.14
 ELEC        81        283500.00
 MEP         809       153825.40
 PLB         14        49000.00
@@ -284,7 +284,7 @@ ok · erp.actions
 Order 50000  status CO
 ├─ CL  → do close 50000
 ├─ VO  → do void 50000
-└─ RE  (no red1 word for it yet)
+└─ RE  → do reactivate 50000
 ```
 
 **Einen Prozess ausführen.** `run "<process>"` führt einen Prozess des ERP-Wörterbuchs aus, wie es seine Fensterschaltfläche tut. Ein Parameter, den Sie nicht tippen, wird einzeln erfragt, in der Reihenfolge der eigenen Parameterzeilen des Prozesses (Return behält den Vorgabewert; eine Nachschlageliste öffnet eine Auswahl, eingeschränkt durch die Gültigkeitsregel der Spalte; `(leave it out)` überspringt einen optionalen). Dann gibt red1 die vollständige Zeile `→ erp.process …` aus und führt sie aus. Die Zusammenfassung nennt die erzeugten Belege und das Prozessprotokoll, wie es der Legacy-Prozessdialog tut. Hier ist das Projekt getippt, und die drei anderen Fragen sind mit Return beantwortet. (An einem Terminal zeichnet jede Frage ihre Auswahlliste; das `grep` behält nur Fragen und Antworten.) Achten Sie auf die ehrliche Antwort: Das Hospital-Projekt des Seeds hat keine Lieferantenpreise, also wird **keine Bestellung erzeugt**, und das Protokoll sagt für jede Zeile, warum:
@@ -323,7 +323,7 @@ Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls s
 it may do: CL, VO, RE (do <code>; next shows the tree)
 ```
 
-Dort bietet Tab nach `do ` nur `CL` und `VO` an (`RE` hat noch kein red1-Wort), und `run Co` wird zu `"Copy Lines"` ergänzt, der eigenen Schaltfläche des Auftragsfensters.
+Dort bietet Tab nach `do ` nur `CL`, `VO` und `RE` an (`RE` reaktiviert den Auftrag: `do RE`), und `run Co` wird zu `"Copy Lines"` ergänzt, der eigenen Schaltfläche des Auftragsfensters.
 
 **Das Menü durchgehen.** `menu` zeigt das ERP-Menü als Orte: `cd <folder>` geht hinein (der Anfang des Namens genügt, wenn nur ein Eintrag so beginnt), ein Fenster-Eintrag bringt Sie zu seiner Art, und `cd ..` (oder Shift+Tab) geht einen Ordner zurück. Die Eingabezeile zeigt den Pfad. Jeder Eintrag ist markiert: ▸ ein Ordner (wie viele Einträge er hat), W ein Fenster (und seine Tabelle), P ein Prozess, R ein Bericht, X ein Formular, F ein Workflow. `red1 menu` allein öffnet das Menü weiterhin auf einem ganzen Bildschirm.
 
@@ -397,9 +397,9 @@ $ printf 'cd Duplex\ncost discipline\ny\nn\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide
 building Duplex
 → viewer.cost building=Duplex by=discipline
 ok · viewer.cost
-1190 elements · 1054482.23 total (71 with no rate); 3 with no size, not priced
+1190 elements · 1054482.08 total (71 with no rate); 3 with no size, not priced
 discipline  elements  cost
-ARC         267       532431.28
+ARC         267       532431.14
 ELEC        81        283500.00
 MEP         809       153825.40
 PLB         14        49000.00
@@ -408,13 +408,13 @@ ls lists the 50 priced rows
 Ready to post to ERP Project Order? y/N → erp.process name="Fold from BIM" Building=Duplex
 → erp.process name="Fold from BIM" Building=Duplex
 ok · erp.process
-Posted Duplex: Project 990001, PlannedAmt 1054482.22784, 81 change(s) · no document made
-81 change(s) kept: create:c_project 1, create:c_projectphase 8, create:c_projecttask 19, create:c_projectline 43, create:m_product 7, create:m_product_category 1, create:m_product_category_acct 2
+Posted Duplex: Project 990001, PlannedAmt 1054482.08284, 85 change(s) · no document made
+85 change(s) kept: create:c_project 1, create:c_projectphase 8, create:c_projecttask 21, create:c_projectline 45, create:m_product 7, create:m_product_category 1, create:m_product_category_acct 2
 Open the project? y/N → cd project
 not done: cd project
 ```
 
-Der gebuchte Betrag, 1054482.22784, ist die eigene Zeilenregel des Auftrags (Preis mal Menge, ungerundet). `cost` rechnet mit denselben Zeilen und zeigt die Zahl auf den Cent der Auftragswährung (1054482.23), sodass Sie vor `post` sehen, was der Auftrag enthält. Das Wort `post` tut dasselbe ohne das `cost` davor und fragt zuerst `run it? y/N`; ein Gebäude zu buchen, das schon in seinem Auftrag ist, ändert nichts. Vom neuen Projekt aus ist `run "Generate PO from Project"` die Einkaufsseite und antwortet wie das Hospital-Projekt oben: Die Produkte, die das Buchen angelegt hat, tragen keinen Lieferantenpreis. Diese Schritte mit ihrer Ausgabe stehen in [der Referenz](FastScriptReference.md).
+Der gebuchte Betrag, 1054482.08284, ist die eigene Zeilenregel des Auftrags (Preis mal Menge, ungerundet). `cost` rechnet mit denselben Zeilen und zeigt die Zahl auf den Cent der Auftragswährung (1054482.08), sodass Sie vor `post` sehen, was der Auftrag enthält. Das Wort `post` tut dasselbe ohne das `cost` davor und fragt zuerst `run it? y/N`; ein Gebäude zu buchen, das schon in seinem Auftrag ist, ändert nichts. Vom neuen Projekt aus ist `run "Generate PO from Project"` die Einkaufsseite und antwortet wie das Hospital-Projekt oben: Die Produkte, die das Buchen angelegt hat, tragen keinen Lieferantenpreis. Diese Schritte mit ihrer Ausgabe stehen in [der Referenz](FastScriptReference.md).
 
 ## Alle Wörter
 
@@ -532,6 +532,7 @@ Diese Tabelle wird **aus der Vokabeldatei erzeugt** (`common/door/verbs.json`), 
 | `erp.close` | Einen Beleg schließen | `kind`, `id` (optional), `number` (optional), `role` (optional) | writes | human, ai | ein bim-ootb-Checkout |
 | `erp.reverse` | Einen Beleg umkehren - korrigieren | `kind`, `id` (optional), `number` (optional), `role` (optional) | posts | human, ai | ein bim-ootb-Checkout |
 | `erp.prepare` | Einen Beleg vorbereiten | `kind`, `id` (optional), `number` (optional), `role` (optional) | writes | human, ai | ein bim-ootb-Checkout |
+| `erp.reactivate` | Einen Beleg reaktivieren | `kind`, `id` (optional), `number` (optional), `role` (optional) | writes | human, ai | ein bim-ootb-Checkout |
 | `mis.describe` | Eine Art von ERP-Datensatz beschreiben | `kind`, `role` (optional) | read | human, ai | ein bim-ootb-Checkout |
 | `mis.read` | Einen ERP-Datensatz lesen | `kind`, `id` (optional), `number` (optional), `role` (optional) | read | human, ai | ein bim-ootb-Checkout |
 | `mis.list` | Datensätze auflisten | `kind`, `columns` (optional), `sort` (optional), `limit` (optional), `offset` (optional), `names` (optional), `role` (optional), weitere `column=value`-Filter (optional) | read | human, ai | ein bim-ootb-Checkout |
@@ -560,7 +561,7 @@ Diese Tabelle wird **aus der Vokabeldatei erzeugt** (`common/door/verbs.json`), 
 | `erp.new` | Einen Datensatz anlegen (alter Name von mis.new) | `kind`, `dry` (optional), `role` (optional), `window` (optional), weitere `column=value`-Filter (optional) | writes | human, ai | ein bim-ootb-Checkout |
 <!-- /GEN:verbs -->
 
-**Abdeckung heute.** Die Liste ist mit Absicht klein: 66 Verben decken die Rasterbearbeitungen des Modellers, seinen Walker und einen zwischen den Zeilen offen gehaltenen Modeller ab, einige Viewer-Fragen, den Zeitplan, das generische Lesen, Zählen und Schreiben von Objekten, die Kosten einer Auswahl, die ERP-Belegverben und jeden Prozess des ERP-Wörterbuchs, der einen Port hat. Der Viewer hat 64 Aktionen, die eine Person drücken kann, und die Tür bietet 6 Viewer-Verben. Das ERP hat 1158 Belege und Prozesse, und die Tür bietet 11 ERP-Verben für das Leben eines Belegs und 15 MIS-Verben, die auf jeder Tabelle arbeiten, und behält 10 alte Namen, damit frühere Zeilen weiter laufen. Das ist also ein Anfang, nicht die ganze Speisekarte.
+**Abdeckung heute.** Die Liste ist mit Absicht klein: 67 Verben decken die Rasterbearbeitungen des Modellers, seinen Walker und einen zwischen den Zeilen offen gehaltenen Modeller ab, einige Viewer-Fragen, den Zeitplan, das generische Lesen, Zählen und Schreiben von Objekten, die Kosten einer Auswahl, die ERP-Belegverben und jeden Prozess des ERP-Wörterbuchs, der einen Port hat. Der Viewer hat 64 Aktionen, die eine Person drücken kann, und die Tür bietet 6 Viewer-Verben. Das ERP hat 1158 Belege und Prozesse, und die Tür bietet 12 ERP-Verben für das Leben eines Belegs und 15 MIS-Verben, die auf jeder Tabelle arbeiten, und behält 10 alte Namen, damit frühere Zeilen weiter laufen. Das ist also ein Anfang, nicht die ganze Speisekarte.
 
 
 ## Wie diese Seite wahr bleibt

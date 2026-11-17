@@ -141,7 +141,7 @@ The last row is deliberate. Text that matches no verb is **never guessed at**:
 <!-- run: question -->
 ```text
 $ node door.js 'please widen the bay'
-{"request":"d-mwjpx4ha-3983540-1","verb":null,"actor":"human","status":"refused","answer":{"question":"I could not read that as a command. A command is app.verb key=value … Which one do you mean? Type help.","verbs":["modeller.lines","modeller.try_shift","viewer.counts","viewer.clashes","viewer.film_path","viewer.schedule_at","viewer.schedule_compare","modeller.widen_bay","modeller.walk","object.describe","object.read","object.history","object.update","object.attach","object.count","object.list","object.sum","object.group","witness.run","witness.last","legacy.status","legacy.query","mis.column","legacy.compare","idempiere.where","mis.pack","legacy.up","legacy.refresh","legacy.witness","legacy.check","legacy.plugin","model.open","model.convert","model.addbay","model.undo","model.save","model.close","erp.process","erp.order_state","erp.project_status","erp.ask","mis.lookup","viewer.cost","erp.find","erp.actions","erp.complete","erp.void","erp.close","erp.reverse","erp.prepare","mis.describe","mis.read","mis.list","mis.sum","mis.group","mis.new","mis.update","mis.delete","mis.load","mis.add_window","ninja.exec","ninja.workflow","mis.diff","mis.menu","ninja.rollback","ninja.export","erp.column","erp.compare","erp.pack","erp.legacy_plugin","erp.describe","erp.read","erp.list","erp.sum","erp.group","erp.new"]},"why":"not a command: \"please widen the bay\"","notChecked":[],"ops":[],"next":[],"ms":3}
+{"request":"d-mwki01a9-505390-1","verb":null,"actor":"human","status":"refused","answer":{"question":"I could not read that as a command. A command is app.verb key=value … Which one do you mean? Type help.","verbs":["modeller.lines","modeller.try_shift","viewer.counts","viewer.clashes","viewer.film_path","viewer.schedule_at","viewer.schedule_compare","modeller.widen_bay","modeller.walk","object.describe","object.read","object.history","object.update","object.attach","object.count","object.list","object.sum","object.group","witness.run","witness.last","legacy.status","legacy.query","mis.column","legacy.compare","idempiere.where","mis.pack","legacy.up","legacy.refresh","legacy.witness","legacy.check","legacy.plugin","model.open","model.convert","model.addbay","model.undo","model.save","model.close","erp.process","erp.order_state","erp.project_status","erp.ask","mis.lookup","viewer.cost","erp.find","erp.actions","erp.complete","erp.void","erp.close","erp.reverse","erp.prepare","erp.reactivate","mis.describe","mis.read","mis.list","mis.sum","mis.group","mis.new","mis.update","mis.delete","mis.load","mis.add_window","ninja.exec","ninja.workflow","mis.diff","mis.menu","ninja.rollback","ninja.export","erp.column","erp.compare","erp.pack","erp.legacy_plugin","erp.describe","erp.read","erp.list","erp.sum","erp.group","erp.new"]},"why":"not a command: \"please widen the bay\"","notChecked":[],"ops":[],"next":[],"ms":3}
 ```
 
 ### Reading the reply
@@ -1042,7 +1042,7 @@ building Duplex
 erp.process name="Fold from BIM" Building=Duplex   run it? y/N
 → erp.process name="Fold from BIM" Building=Duplex
 ok · erp.process
-Nothing to post: Duplex is already in its Project Order (model 6236207b3ea3) · no document made
+Nothing to post: Duplex is already in its Project Order (model acd69333e2fc) · no document made
 Open the project? y/N → cd project
 ```
 
@@ -1068,33 +1068,33 @@ run: pick Project Phase (C_ProjectPhase_ID, 8)
 Up/Down or 1-9 pick · Enter choose · Esc cancel
 C_ProjectPhase_ID: left out
 → mis.lookup column=C_ProjectLine_ID process="Generate PO from Project" limit=50 C_Project_ID=990001
-run: pick Project Line (C_ProjectLine_ID, 43)
+run: pick Project Line (C_ProjectLine_ID, 45)
 > 1    (leave it out)
   2    10 · 990000 · 990028
-  3    10 · 990004 · 990031
-  4    10 · 990002 · 990035
-  5    10 · 1600228 · 990046
+  3    10 · 990017 · 990031
+  4    10 · 990002 · 990038
+  5    10 · 1600228 · 990047
   6    10 · 990013 · 990057
   7    10 · 1600231 · 990059
-  8    10 · 1600232 · 990062
-  9    10 · 1600233 · 990069
+  8    10 · 1600232 · 990063
+  9    10 · 1600233 · 990071
        20 · 990004 · 990029
-       20 · 990005 · 990032
-       20 · 990017 · 990036
-       20 · 1600229 · 990047
+       20 · 990004 · 990032
+       20 · 990014 · 990039
+       20 · 1600229 · 990048
        20 · 990013 · 990058
        20 · 1600231 · 990060
-  1-15 of 44  (PageDown / PageUp)
+  1-15 of 46  (PageDown / PageUp)
 Up/Down or 1-9 pick · Enter choose · Esc cancel
 C_ProjectLine_ID: left out
 Consolidate to one Document (ConsolidateDocument)? [Y]
 → erp.process name="Generate PO from Project" kind=Project C_Project_ID=990001 ConsolidateDocument=Y
 ok · erp.process
 Generate PO from Project: done · no document made
-  Product has no PO record  (×43)
+  Product has no PO record  (×45)
 ```
 
-**The honest answer is that no purchase order is made.** The products the post created carry no vendor price (no "PO record"), and the process says so for each of the 43 lines instead of answering a bare `ok`. With vendor prices on the products it would make the orders and list their numbers. The seed's own Hospital project is in the same state until it is given a warehouse, a customer, a payment term, a price list and lines of products that have vendors. The film "Fast Script ERP" ran six setup lines into a scratch op-log first (`mis.update` on the project, four `mis.new kind="Project Line"`), and the same `run` then made three purchase orders from four lines. Those lines are the film's, not part of this guide.
+**The honest answer is that no purchase order is made.** The products the post created carry no vendor price (no "PO record"), and the process says so for each of the 45 lines instead of answering a bare `ok`. With vendor prices on the products it would make the orders and list their numbers. The seed's own Hospital project is in the same state until it is given a warehouse, a customer, a payment term, a price list and lines of products that have vendors. The film "Fast Script ERP" ran six setup lines into a scratch op-log first (`mis.update` on the project, four `mis.new kind="Project Line"`), and the same `run` then made three purchase orders from four lines. Those lines are the film's, not part of this guide.
 
 ### The door starts the core plugins
 

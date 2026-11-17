@@ -16,7 +16,7 @@ On a terminal `red1` greets you once, then waits at its prompt. This is exactly 
 $ (sleep 4; printf 'exit\r') | RED1_LOG=/tmp/fast_guide_greet.log RED1_HISTORY=/tmp/fast_guide_greet.hist BIM_DOOR_JOURNAL=/tmp/fast_guide_greet.journal script -qec 'node common/door/red1.js' /dev/null | tr -d '\r' | sed -e 's/\x1b\[[0-9;?]*[a-zA-Z]//g' -e 's/ · [0-9a-f]\{8\}$//'
 Welcome to red1, the scripting door into BIM and ERP, stored in SQLite.
 REMEMBER THE NAME.
-Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 76 verbs · 30 words
+Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 77 verbs · 30 words
 Type help for the list of commands (or bim, mis, erp for one group).
 Tip: type level student for fuller help on each word (red1 --fast opens without tips).
 
@@ -124,7 +124,7 @@ Type `exit` to leave. To type just `red1` from anywhere, run `npm link` once in 
 <!-- run: red1_version -->
 ```text
 $ node common/door/red1.js --version | sed -e 's/^Copyright[^·]*· //' -e 's/ · [0-9a-f]\{8\}$//'
-red1 1.0.0 · 76 verbs · 30 words
+red1 1.0.0 · 77 verbs · 30 words
 ```
 
 **The six-file download** is for the door alone with the Modeller verbs, no checkout. Make an empty folder, install the browser engine the Modeller needs, and fetch the six files:
@@ -214,9 +214,9 @@ $ rm -f /tmp/fast_guide_chain.ops; printf 'cd Duplex\ncost discipline\n' | BIM_O
 building Duplex
 → viewer.cost building=Duplex by=discipline
 ok · viewer.cost
-1190 elements · 1054482.23 total (71 with no rate); 3 with no size, not priced
+1190 elements · 1054482.08 total (71 with no rate); 3 with no size, not priced
 discipline  elements  cost
-ARC         267       532431.28
+ARC         267       532431.14
 ELEC        81        283500.00
 MEP         809       153825.40
 PLB         14        49000.00
@@ -278,7 +278,7 @@ ok · erp.actions
 Order 50000  status CO
 ├─ CL  → do close 50000
 ├─ VO  → do void 50000
-└─ RE  (no red1 word for it yet)
+└─ RE  → do reactivate 50000
 ```
 
 **Run a process.** `run "<process>"` runs one process of the ERP dictionary, as its window button does. A parameter you do not type is asked, one at a time, in the order of the process's own parameter rows (Return keeps the default; a lookup opens a pick list narrowed by the column's validation rule; `(leave it out)` skips an optional one). Then red1 prints the full `→ erp.process …` line and runs it. The summary names the documents made and the process log, as the legacy process dialog does. Here the project is typed and the three other questions are answered with Return. (On a terminal each question draws its pick list; the `grep` keeps the questions and answers only.) Look at the honest answer: the seed's Hospital project has no vendor prices, so **no purchase order is made**, and the log says why for each line:
@@ -317,7 +317,7 @@ Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls s
 it may do: CL, VO, RE (do <code>; next shows the tree)
 ```
 
-There Tab after `do ` offers `CL` and `VO` only (`RE` has no red1 word yet), and `run Co` completes to `"Copy Lines"`, the order window's own button.
+There Tab after `do ` offers `CL`, `VO` and `RE` only (`RE` re-activates the order: `do RE`), and `run Co` completes to `"Copy Lines"`, the order window's own button.
 
 **Walk the menu.** `menu` shows the ERP menu as places: `cd <folder>` goes in (the start of its name is enough when only one entry starts that way), a window entry takes you to its kind, and `cd ..` (or Shift+Tab) goes back up one folder. The prompt shows the path. Each entry is marked: ▸ a folder (how many entries it holds), W a window (and its table), P a process, R a report, X a form, F a workflow. `red1 menu` on its own still opens the menu on a full screen.
 
@@ -391,9 +391,9 @@ $ printf 'cd Duplex\ncost discipline\ny\nn\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide
 building Duplex
 → viewer.cost building=Duplex by=discipline
 ok · viewer.cost
-1190 elements · 1054482.23 total (71 with no rate); 3 with no size, not priced
+1190 elements · 1054482.08 total (71 with no rate); 3 with no size, not priced
 discipline  elements  cost
-ARC         267       532431.28
+ARC         267       532431.14
 ELEC        81        283500.00
 MEP         809       153825.40
 PLB         14        49000.00
@@ -402,13 +402,13 @@ ls lists the 50 priced rows
 Ready to post to ERP Project Order? y/N → erp.process name="Fold from BIM" Building=Duplex
 → erp.process name="Fold from BIM" Building=Duplex
 ok · erp.process
-Posted Duplex: Project 990001, PlannedAmt 1054482.22784, 81 change(s) · no document made
-81 change(s) kept: create:c_project 1, create:c_projectphase 8, create:c_projecttask 19, create:c_projectline 43, create:m_product 7, create:m_product_category 1, create:m_product_category_acct 2
+Posted Duplex: Project 990001, PlannedAmt 1054482.08284, 85 change(s) · no document made
+85 change(s) kept: create:c_project 1, create:c_projectphase 8, create:c_projecttask 21, create:c_projectline 45, create:m_product 7, create:m_product_category 1, create:m_product_category_acct 2
 Open the project? y/N → cd project
 not done: cd project
 ```
 
-The posted amount, 1054482.22784, is the order's own line rule (price times quantity, unrounded). `cost` prices on the same lines and shows the figure to the cent of the order's currency (1054482.23), so what you see before `post` is what the order holds. The word `post` does the same without the `cost` before it and asks `run it? y/N` first; posting a building that is already in its order changes nothing. From the new project, `run "Generate PO from Project"` is the purchase side, and answers as the Hospital project did above: the products the post created carry no vendor price. Those steps, with their output, are in [the reference](FastScriptReference.md).
+The posted amount, 1054482.08284, is the order's own line rule (price times quantity, unrounded). `cost` prices on the same lines and shows the figure to the cent of the order's currency (1054482.08), so what you see before `post` is what the order holds. The word `post` does the same without the `cost` before it and asks `run it? y/N` first; posting a building that is already in its order changes nothing. From the new project, `run "Generate PO from Project"` is the purchase side, and answers as the Hospital project did above: the products the post created carry no vendor price. Those steps, with their output, are in [the reference](FastScriptReference.md).
 
 ## All the words
 
@@ -526,6 +526,7 @@ This table is **generated from the vocabulary file** (`common/door/verbs.json`) 
 | `erp.close` | Close a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | writes | human, ai | a bim-ootb checkout |
 | `erp.reverse` | Reverse - Correct a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | posts | human, ai | a bim-ootb checkout |
 | `erp.prepare` | Prepare a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | writes | human, ai | a bim-ootb checkout |
+| `erp.reactivate` | Re-activate a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | writes | human, ai | a bim-ootb checkout |
 | `mis.describe` | Describe a kind of ERP record | `kind`, `role` (optional) | read | human, ai | a bim-ootb checkout |
 | `mis.read` | Read an ERP record | `kind`, `id` (optional), `number` (optional), `role` (optional) | read | human, ai | a bim-ootb checkout |
 | `mis.list` | List records | `kind`, `columns` (optional), `sort` (optional), `limit` (optional), `offset` (optional), `names` (optional), `role` (optional), further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
@@ -554,7 +555,7 @@ This table is **generated from the vocabulary file** (`common/door/verbs.json`) 
 | `erp.new` | Create a record (old name of mis.new) | `kind`, `dry` (optional), `role` (optional), `window` (optional), further `column=value` filters (optional) | writes | human, ai | a bim-ootb checkout |
 <!-- /GEN:verbs -->
 
-**Coverage today.** The list is small on purpose: 66 verbs cover the Modeller's grid edits, its walker and a Modeller kept open between lines, a few Viewer questions, the schedule, generic object reading, counting and writing, the cost of a selection, the ERP document verbs, and any process of the ERP dictionary that has a port. The Viewer has 64 actions a person can press, and the door offers 6 Viewer verbs. The ERP has 1158 documents and processes, and the door offers 11 ERP verbs for a document's life and 15 MIS verbs that work on any table, and keeps 10 old names so earlier lines still run. So this is a start, not the whole menu.
+**Coverage today.** The list is small on purpose: 67 verbs cover the Modeller's grid edits, its walker and a Modeller kept open between lines, a few Viewer questions, the schedule, generic object reading, counting and writing, the cost of a selection, the ERP document verbs, and any process of the ERP dictionary that has a port. The Viewer has 64 actions a person can press, and the door offers 6 Viewer verbs. The ERP has 1158 documents and processes, and the door offers 12 ERP verbs for a document's life and 15 MIS verbs that work on any table, and keeps 10 old names so earlier lines still run. So this is a start, not the whole menu.
 
 
 ## How this page stays true
