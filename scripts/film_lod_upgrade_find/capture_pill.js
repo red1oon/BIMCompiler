@@ -38,7 +38,15 @@ const J = { made: new Date().toISOString(), model: MODEL, db: path.basename(DB),
     c.set = (on) => { if (on && !c.on) { c.vt = rn() + c.off; c.on = true; } else if (!on && c.on) { c.off = c.vt - rn(); c.on = false; const q = Array.from(c.map.values()); c.map.clear(); q.forEach((cb) => rr(cb)); } };
     window.__step = (ms) => { c.vt += (ms == null ? 1000 / 24 : ms); const q = Array.from(c.map.values()); c.map.clear(); q.forEach((cb) => { try { cb(c.vt); } catch (e) { /* the app's own handling */ } }); return q.length; }; });
   const clock = (on) => pg.evaluate((o) => window.__clock.set(o), on), step = (n, ms) => pg.evaluate((k, m) => { for (let i = 0; i < k; i++) window.__step(m); }, n || 1, ms);
-  let nShot = 0; const shot = async (rel, type) => { if (!SHOTS) return null; nShot++; await pg.screenshot({ path: path.join(OUT, rel), type: type || 'png', quality: type === 'jpeg' ? 92 : undefined }); return rel; };
+  let nShot = 0; const shot = async (rel, type) => { if (!SHOTS) return null; nShot++;
+    // rc4 S3: the dialog as its own clip, then the scene with the dialog hidden (so the scene pane can show the whole canvas); the clip is <rel>.panel.png
+    const pr = await pg.evaluate(() => { const P = document.getElementById('m-lodup-panel'); if (!P || P.style.display === 'none' || P.style.visibility === 'hidden') return null; const r = P.getBoundingClientRect(); return { x: r.x, y: r.y, width: r.width, height: r.height }; });
+    if (pr) { await pg.screenshot({ path: path.join(OUT, rel + '.panel.png'), clip: pr }); await pg.evaluate(() => { document.getElementById('m-lodup-panel').style.visibility = 'hidden'; }); await step(1, 0); }
+    await pg.screenshot({ path: path.join(OUT, rel), type: type || 'png', quality: type === 'jpeg' ? 92 : undefined });
+    if (pr) { await pg.evaluate(() => { document.getElementById('m-lodup-panel').style.visibility = ''; }); await step(1, 0); }
+    return rel; };
+  // rc4 S2: the Modeller's Zoom to fit frames the SELECTION when there is one (fitView, modeller.html l.553): press Escape first (its own deselect, l.4335)
+  const fitAll = async () => { await pg.keyboard.press('Escape'); await step(2); await pg.click('#b-fit'); await step(40, 50); await step(4); };
   const rects = () => pg.evaluate(() => { const R = (e) => { if (!e) return null; const r = e.getBoundingClientRect(); return { x: r.x, y: r.y, w: r.width, h: r.height }; }; return { panel: R(document.getElementById('m-lodup-panel')), canvas: R(document.querySelector('canvas')), pill: R(document.getElementById('b-lodup')) }; });
   const panelState = () => pg.evaluate(() => { const P = document.getElementById('m-lodup-panel'); if (!P) return null; return { shown: P.style.display !== 'none', rows: [...P.querySelectorAll('.lu-row')].map((r) => ({ id: r.dataset.id, label: (r.querySelector('b') || {}).textContent, applies: (r.querySelector('[data-k=applies]') || {}).textContent, text: (r.querySelector('.lu-s') || {}).textContent, status: (P.querySelector('[data-st="' + r.dataset.id + '"]') || {}).textContent })), ifc: (P.querySelector('[data-st-ifc]') || {}).textContent, ifcBtn: (() => { const b = P.querySelector('.lu-ifc'); return b ? { disabled: b.disabled, title: b.title } : null; })() }; });
   const rowRect = (id) => pg.evaluate((i) => { const e = i === 'ifc' ? document.querySelector('#m-lodup-panel .lu-ifcrow') : document.querySelector('#m-lodup-panel .lu-row[data-id="' + i + '"]'); if (!e) return null; const r = e.getBoundingClientRect(), d = i === 'ifc' ? document.querySelector('#m-lodup-panel [data-st-ifc]') : null, rd = d ? d.getBoundingClientRect() : null; return { x: r.x, y: r.y, w: r.width, h: (rd ? rd.bottom : r.bottom) - r.y }; }, id);
@@ -50,13 +58,13 @@ const J = { made: new Date().toISOString(), model: MODEL, db: path.basename(DB),
   // ---- beat: the dialog (B only)
   const runBeat = async (id, pack, extra) => {
     const b = J.beats[id] = { id, pack }; await clock(true);
-    await pg.evaluate(() => window.Bonsai.setAllVisible && window.Bonsai.setAllVisible()); await pg.click('#b-fit'); await step(40, 50); await step(4);   // every run starts from the Modeller's own Zoom to fit (the whole model in view while it runs)
+    await pg.evaluate(() => window.Bonsai.setAllVisible && window.Bonsai.setAllVisible()); await fitAll();   // every run starts from the whole model (Escape, then the Modeller's own Zoom to fit)
     await showRow(pack); await step(2); b.before = await shot('p/' + id + '_before.png'); b.panel_before = await panelState(); b.row_before = await rowRect(pack);
     if (extra) await extra(b);
     const n0 = con.length, tr = Date.now(); await clock(false);
     await pg.evaluate((p) => document.querySelector('#m-lodup-panel .lu-run[data-run="' + p + '"]').click(), pack);
     const live = []; let k = 0;
-    while (Date.now() - tr < 1500000) { await L.sleep(SHOTS ? 50 : 500); if (con.slice(n0).some((l) => /§LODUP_COST pack=|§LODUP_RUN failed|VACUOUS/.test(l))) break; if (SHOTS && id === 'mod_beambars') { k++; live.push({ t: +((Date.now() - tr) / 1000).toFixed(2), f: await shot('p/' + id + '_run_' + String(k).padStart(3, '0') + '.jpg', 'jpeg'), status: (await panelState()).rows.find((r) => r.id === pack).status }); } }
+    while (Date.now() - tr < 1500000) { await L.sleep(SHOTS ? 50 : 500); if (con.slice(n0).some((l) => /§LODUP_COST pack=|§LODUP_RUN failed|VACUOUS/.test(l))) break; if (SHOTS && id === 'mod_beambars') { k++; await L.sleep(250); live.push({ t: +((Date.now() - tr) / 1000).toFixed(2), f: await shot('p/' + id + '_run_' + String(k).padStart(3, '0') + '.jpg', 'jpeg'), status: (await panelState()).rows.find((r) => r.id === pack).status }); } }
     b.run_s = +((Date.now() - tr) / 1000).toFixed(2); b.live = live; await L.sleep(2500); await clock(true); await step(6);
     b.lines = linesSince(n0); b.panel_after = await panelState(); await showRow(pack); await step(2); b.after_panel = await shot('p/' + id + '_after.png'); b.row_after = await rowRect(pack); b.panel_rect = (await rects()).panel;
     log('§FILM_PILL_RUN beat=' + id + ' pack=' + pack + ' run_s=' + b.run_s + ' live_frames=' + live.length + ' status="' + ((b.panel_after.rows.find((r) => r.id === pack) || {}).status || '') + '" lines=' + b.lines.length);
@@ -91,7 +99,10 @@ const J = { made: new Date().toISOString(), model: MODEL, db: path.basename(DB),
       b.panel_loaded = await panelState(); b.loaded = await shot('p/mod_beambars_loaded.png'); b.row_loaded = await rowRect('beambars'); const r = b.panel_loaded.rows.find((x) => x.id === 'beambars'); log('§FILM_PILL_SCHEDULE loaded applies="' + (r.applies || '').trim() + '" text="' + (r.text || '').slice(0, 160) + '"'); });
     await frameBeat('mod_beambars');
     // the Add-on IFC: IFC2X3 (the default), no frame file; the browser's own download
-    const ib = J.beats.mod_ifc = { id: 'mod_ifc' }; await clock(true); await pg.click('#b-fit'); await step(40, 50); await step(4); await showRow('ifc'); await step(2); ib.before = await shot('p/mod_ifc_before.png'); ib.panel_before = await panelState(); ib.row_before = await rowRect('ifc');
+    const ib = J.beats.mod_ifc = { id: 'mod_ifc' }; await clock(true); await pg.evaluate(() => window.Bonsai.setAllVisible && window.Bonsai.setAllVisible()); await fitAll();
+    // rc4 S4: show on the canvas what goes in the file: every original element hidden with the Outliner eye's own call, only the added parts stay
+    ib.hidden_originals = await pg.evaluate(() => { let n = 0; Object.keys(window.__arcFidByGuid).forEach((g) => { if (!/^GEN-/.test(g) && window.Bonsai.setFeatureVisible(window.__arcFidByGuid[g], false)) n++; }); return n; }); await step(6);
+    ib.shown_added = await pg.evaluate(() => Object.keys(window.__arcFidByGuid).filter((g) => /^GEN-/.test(g)).length); log('§FILM_PILL_IFC_SHOWN originals_hidden=' + ib.hidden_originals + ' added_parts_shown=' + ib.shown_added + ' (the Outliner eye call, Bonsai.setFeatureVisible)'); await showRow('ifc'); await step(2); ib.before = await shot('p/mod_ifc_before.png'); ib.panel_before = await panelState(); ib.row_before = await rowRect('ifc');
     // first press: the writer refuses when a storey has no elevation (none is invented); kept on screen
     const r0 = con.length; await clock(false); await pg.evaluate(() => document.querySelector('#m-lodup-panel .lu-ifc').click()); await pg.waitForFunction(() => /no elevation|parts,/.test((document.querySelector('#m-lodup-panel [data-st-ifc]') || {}).textContent || ''), { timeout: 600000 }); await L.sleep(1500);
     await clock(true); await step(4); ib.refusal_lines = linesSince(r0); ib.panel_refused = await panelState(); await showRow('ifc'); await step(2); ib.refused = await shot('p/mod_ifc_refused.png'); ib.row_refused = await rowRect('ifc');

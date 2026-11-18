@@ -8,6 +8,7 @@ const puppeteer = require(process.env.PUPPETEER_PATH || path.join(os.homedir(), 
 const OUTD = path.resolve(process.env.OUTD || path.join(__dirname, 'out')), F = JSON.parse(fs.readFileSync(path.join(OUTD, 'facts.json'), 'utf8'));
 const WORK = path.resolve(process.argv[2]), out = path.resolve(process.argv[3] || path.join(OUTD, 'cards')); fs.mkdirSync(out, { recursive: true });
 const V = JSON.parse(fs.readFileSync(path.join(WORK, 'viewer.json'), 'utf8')), PA = JSON.parse(fs.readFileSync(path.join(WORK, 'pill_A.json'), 'utf8')), PB = JSON.parse(fs.readFileSync(path.join(WORK, 'pill_B.json'), 'utf8'));   // rc3: the Upgrade pill captures (capture_pill.js)
+const BLANK = (() => { try { return JSON.parse(fs.readFileSync(path.join(WORK, 'blank_frames.json'), 'utf8')); } catch (e) { return {}; } })();   // rc4 S2
 const FONT = "'DejaVu Sans'", url = (rel) => pathToFileURL(path.join(WORK, rel)).href;
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const nf = (n) => Number(n).toLocaleString('en-US');
@@ -38,15 +39,21 @@ const lfFindFly = (b, rel, cam, kindWord, storey) => { const n = flyNums(cam, b.
 const lfViewerWhole = () => '<div class="lf"><div class="lp"></div><div class="big" style="left:24px;top:26px;width:520px;height:480px;background:none"><span class="am">PARTS VIEW</span><br><b>' + nf(F.viewer.hostsHidden) + '</b> hosts hidden<br><b>' + nf(F.viewer.partsShown) + '</b> parts shown<br><span class="mono" style="font-size:26px;line-height:36px">isolate ' + nf(F.viewer.isolate_start) + ' of ' + nf(F.viewer.elements) + ' elements</span></div>' + scenePane(V.whole) + '</div>';
 
 // ---- rc3: the Upgrade pill beats (clicked, not typed). Left: the dialog row the click is on, at zoom; right: the Modeller's scene (left of the dialog while it is open, centred on the canvas while framing)
-const OUTL = 242;   // the Outliner's right edge (CSS px of the 1280x720 capture): the scene crops start right of it
-const panelPane = (rel, panel, row) => { const z = 560 / panel.w, h = 537 / z, y0 = row ? Math.max(panel.y, Math.min(row.y - 24, row.y + row.h + 16 - h)) : panel.y; return '<div style="left:0;top:0;width:560px;height:537px;' + bg(rel, z, panel.x, y0) + '"></div>'; };
-const sceneBox = (rel, x0, w) => { const z = 1360 / w; return '<div style="left:560px;top:0;width:1360px;height:537px;' + bg(rel, z, x0, 360 - 537 / z / 2) + '"></div>'; };
-const sceneLeft = (rel, panel) => sceneBox(rel, OUTL, panel.x - 8 - OUTL);
-const sceneMid = (rel, canvas) => sceneBox(rel, OUTL, 2 * (canvas.x + canvas.w / 2 - OUTL));   // centred on the canvas centre, where the Modeller frames a part
-const PZ = 560 / PB.rects.panel.w, SZ = 1360 / (PB.rects.panel.x - 8 - OUTL);
-const lfPill = (rel, J, row, mid, leftRel) => '<div class="lf"><div class="lp"></div>' + panelPane(leftRel || rel, J.rects.panel, row) + (mid ? sceneMid(rel, J.rects.canvas) : sceneLeft(rel, J.rects.panel)) + '</div>';
+const OUTL = 242;   // the Outliner's right edge (CSS px of the 1280x720 capture)
+// rc4 S3: the dialog comes from its own clip (<shot>.panel.png); the scene shot has the dialog hidden, so the scene pane shows the whole canvas right of the Outliner
+const clipOf = (rel) => rel && fs.existsSync(path.join(WORK, rel + '.panel.png')) ? rel + '.panel.png' : null;
+const panelPane = (rel, panel, row) => { const c = clipOf(rel); if (!c) return ''; const z = 560 / panel.w, h = 537 / z, y0 = row ? Math.max(0, Math.min(row.y - panel.y - 24, row.y - panel.y + row.h + 16 - h)) : 0;
+  return '<div style="left:0;top:0;width:560px;height:537px;background-image:url(' + url(c) + ');background-repeat:no-repeat;background-size:' + (panel.w * z) + 'px ' + (panel.h * z) + 'px;background-position:0px ' + (-y0 * z) + 'px"></div>'; };
+const SZ = 1360 / (1280 - OUTL);
+const sceneBox = (rel) => '<div style="left:560px;top:0;width:1360px;height:537px;' + bg(rel, SZ, OUTL, 360 - 537 / SZ / 2) + '"></div>';
+const lfPill = (rel, J, row, mid, leftRel) => '<div class="lf"><div class="lp"></div>' + panelPane(clipOf(rel) ? rel : leftRel, J.rects.panel, row) + sceneBox(rel) + '</div>';
+const PZ = 560 / PB.rects.panel.w;
+// rc4 S1: the toolbar with the arrow ringed, before the dialog opens (how to reach the pill)
+const lfPillIcon = (rel, J) => { const pr = J.rects.pill, z = 1.75, x0 = 1280 - 320, y0 = 0; return '<div class="lf"><div class="lp"></div><div style="left:0;top:0;width:560px;height:537px;' + bg(rel, z, x0, y0) + '"></div>'
+  + '<div style="left:' + ((pr.x - x0) * z - 10) + 'px;top:' + ((pr.y - y0) * z - 10) + 'px;width:' + (pr.w * z + 20) + 'px;height:' + (pr.h * z + 20) + 'px;border:6px solid #fbbf24;border-radius:50%;background:none"></div>'
+  + '<div class="am big" style="left:20px;top:440px;width:520px;height:90px;background:none">the arrow: <b>Upgrade</b></div>' + sceneBox(rel) + '</div>'; };
 const P = F.pill, pageLine = (l) => '<span>' + hl(String(l || '').replace(/^§LODUP (?=§)/, '')) + '</span>';
-const CLICK = { mod_open: ['B', 'Upgrade (the arrow)'], mod_layers: ['A', 'Run · Layers'], mod_joints: ['B', 'Run · Steel joints'], mod_gussets: ['B', 'Run · Bracing gussets'], mod_beambars: ['B', 'Load schedule… · Run · Beam rebar (schedule)'], mod_ifc: ['B', 'Add-on IFC · Load frame… · Add-on IFC'] };
+const CLICK = { mod_open: ['B', 'Upgrade (the arrow, top right)'], mod_layers: ['A', 'Run · Layers'], mod_joints: ['B', 'Run · Steel joints'], mod_gussets: ['B', 'Run · Bracing gussets'], mod_beambars: ['B', 'Load schedule… · Run · Beam rebar (schedule)'], mod_ifc: ['B', 'Add-on IFC · Load frame… · Add-on IFC'] };
 const LIVE_SPEED = 4;   // the beam rebar run is shown 4 times faster than it ran (said on the bar)
 function pillBeat(id) {
   const [m, label] = CLICK[id], J = m === 'A' ? PA : PB, b = J.beats[id], kind = 'mod' + m, list = [];
@@ -54,17 +61,17 @@ function pillBeat(id) {
   const fr = (pfx) => b.frames.map((f) => f);
   if (id === 'mod_open') {
     const rowsTxt = b.panel.rows.map((r) => '<b>' + esc(r.label) + '</b>: applies to <b>' + esc(String(r.applies).trim()) + '</b>');
-    add([], lfPill(b.before, J, null, false), 18); add([], lfPill(b.before, J, null, false), 6, null, true);
+    add([], lfPillIcon(b.before, J), 42, 'the Upgrade pill: the up arrow at the top right of the toolbar'); add([], lfPillIcon(b.before, J), 6, 'the Upgrade pill: the up arrow at the top right of the toolbar', true);
     add([pageLine(b.lines.find((l) => /§LODUP_PANEL open=true/.test(l)))].concat(rowsTxt), lfPill(b.after, J, null, false), null);
     return { id, kind, label, list };
   }
   const ansRun = { mod_layers: [P.lines.layers_built, P.lines.layers, b.lines.find((l) => /§LODUP_YIELD/.test(l))], mod_joints: [P.lines.joints_rules, P.lines.joints_clear, P.lines.joints, 'configuration only, capacity not checked'],
     mod_gussets: [P.lines.gussets, b.lines.find((l) => /§LODUP_GUSSET_RULES/.test(l)), 'configuration only, capacity not checked'], mod_beambars: [P.lines.beambars_built, P.lines.beambars, P.lines.beambars_yield] }[id];
   if (id === 'mod_ifc') {
-    add([], lfPill(b.before, J, b.row_before, false), 18); add([], lfPill(b.before, J, b.row_before, false), 6, null, true);
-    add([pageLine(P.lines.ifc_refused)], lfPill(b.refused, J, b.row_refused, false), 60);
-    add([pageLine(P.lines.ifc_refused), '<b>Load frame…</b> ' + esc(P.ifc.frame_text || '') + ' <span class="tag">(storey heights only: no site placement, no shift)</span>'], lfPill(b.framed, J, b.row_framed, false), 48);
-    add([pageLine(P.lines.ifc_refused), '<b>Load frame…</b> ' + esc(P.ifc.frame_text || ''), pageLine(P.lines.ifc_mesh), pageLine(P.lines.ifc), '<span class="tag">downloaded file, witness_lodup_ifc_check.py:</span> ' + P.ifc.check.map((l) => esc(l.replace(/^§LODUP_IFC_PY_(\w+) .*-> (\w+)$/, '$1 $2'))).join(' · ')], lfPill(b.after, J, b.row_after, false), null);
+    add([], lfPill(b.before, J, b.row_before, false), 30, 'shown: only the ' + P.ifc.elements + ' added parts (the model hidden with the Outliner eye): every one goes in the file'); add([], lfPill(b.before, J, b.row_before, false), 6, 'shown: only the ' + P.ifc.elements + ' added parts (the model hidden with the Outliner eye): every one goes in the file', true);
+    add([pageLine(P.lines.ifc_refused)], lfPill(b.refused, J, b.row_refused, false), 60, 'shown: only the ' + P.ifc.elements + ' added parts (the model hidden with the Outliner eye): every one goes in the file');
+    add([pageLine(P.lines.ifc_refused), '<b>Load frame…</b> ' + esc(P.ifc.frame_text || '') + ' <span class="tag">(storey heights only: no site placement, no shift)</span>'], lfPill(b.framed, J, b.row_framed, false), 48, 'shown: only the ' + P.ifc.elements + ' added parts (the model hidden with the Outliner eye): every one goes in the file');
+    add([pageLine(P.lines.ifc_refused), '<b>Load frame…</b> ' + esc(P.ifc.frame_text || ''), pageLine(P.lines.ifc_mesh), pageLine(P.lines.ifc), '<span class="tag">downloaded file, witness_lodup_ifc_check.py:</span> ' + P.ifc.check.map((l) => esc(l.replace(/^§LODUP_IFC_PY_(\w+) .*-> (\w+)$/, '$1 $2'))).join(' · '), '<b>saved as</b> <span class="tag">' + esc(P.ifc.file || '') + '</span> (' + P.ifc.mb + ' MB, the browser\'s download folder)'], lfPill(b.after, J, b.row_after, false), null, 'shown: only the ' + P.ifc.elements + ' added parts (the model hidden with the Outliner eye): every one goes in the file');
     return { id, kind, label, list };
   }
   const ans = ansRun.filter(Boolean).map((l) => /^§/.test(l) ? pageLine(l) : '<b>' + esc(l) + '</b>');
@@ -99,7 +106,8 @@ const MODFLY = (b, id) => b.frames.map((f) => ({ lf: lfModeller(f) }));
 function build() {
   Object.keys(CLICK).forEach((id) => { B[id] = { pill: pillBeat(id) }; });
   Object.keys(termKey).forEach((id) => { const b = V.beats[id], tk = termKey[id], total = F.find[tk].total, o = { cmd: tk, find: true, kind: 'view', ans: findAns(id), before: lfFindBefore(b) }; const bt = typedBeat(id, o);
-    bt.result = lfFindResult(b, total, kindWord[id]); bt.fly = b.fly.frames.map((f, i) => ({ lf: lfFindFly(b, f, b.fly.cams[i], kindWord[id], b.target.storey), n: 1 }));
+    bt.result = lfFindResult(b, total, kindWord[id]); const BL = BLANK; bt.fly = b.fly.frames.map((f, i) => ({ f, i })).filter((x) => !(BL[x.f] != null && BL[x.f] < 0.02)).map((x) => ({ lf: lfFindFly(b, x.f, b.fly.cams[x.i], kindWord[id], b.target.storey), n: 1 }));
+    console.log('§FILM_BLANK_DROP beat=' + id + ' fly_frames=' + b.fly.frames.length + ' dropped=' + (b.fly.frames.length - bt.fly.length) + ' (the isolated part is under 2 % of the scene: empty sky; blank_scan.py viewer)');
     let lastCam = b.fly.cams[b.fly.cams.length - 1];
     bt.afterLf = lfFindFly(b, b.after, lastCam, kindWord[id], b.target.storey); bt.find = true; });
 }
@@ -130,10 +138,10 @@ const CARDS = {
     return '<div class="w"><div class="k">WHAT THIS FILM READ AND USED</div><h1>Added by rule, found by Find</h1><div class="two">'
     + '<div><h3>PRIOR ART READ</h3><span class="g">bim-ootb viewer/nf_panel_search.js</span>: Find\'s own search and its fly-to step (0.02 per frame), reused for the frames<br><span class="g">viewer/parts_view.js</span>: a host that has parts is hidden<br><span class="g">modeller/modeller.html</span>: the Modeller\'s own 1100 ms framing<br><span class="g">modeller/lod/</span>: the Upgrade button, the same rules as the Python runs<br><span class="g">AISC 360-16 J2.4, J5.2</span>: read by the upgrade lane (LOD400 scope §8)<br><span class="g">scripts/film_cli_in_action</span>: the split screen and typed-line house style'
     + '<h3 style="margin-top:14px">KEY SOUNDS</h3>eklee, qubodup (CC BY 3.0, opengameart.org)</div>'
-    + '<div><h3>CREDENTIALS</h3>bim-ootb <span class="y">#3219</span> unique ids on Save as IFC · <span class="y">#3223</span> parts view · <span class="y">#3231</span> Find keeps it, space in the box · <span class="y">#3232</span> Modeller seeds the parts · Upgrade button <span class="y">#3238 #3241 #3243 #3248 #3252 #3260 #3268</span><br>BIMCompiler <span class="y">#910</span> rebar from schedules · <span class="y">#919</span> PJAM beam rebar · <span class="y">#924</span> gussets · <span class="y">#927</span> add-on IFC · <span class="y">#928</span> weld winding<br>'
+    + '<div><h3>CREDENTIALS</h3>bim-ootb <span class="y">#3219</span> unique ids on Save as IFC · <span class="y">#3223</span> parts view · <span class="y">#3231</span> Find keeps it, space in the box · <span class="y">#3232</span> Modeller seeds the parts · Upgrade button <span class="y">#3238 #3241 #3243 #3248 #3252 #3260 #3268 #3276 #3282</span><br>BIMCompiler <span class="y">#910</span> rebar from schedules · <span class="y">#919</span> PJAM beam rebar · <span class="y">#924</span> gussets · <span class="y">#927</span> add-on IFC · <span class="y">#928</span> weld winding<br>'
     + '<span class="g">verdicts, read from the logs:</span><br>' + ['FILMDB_IDENT', 'FILMDB_COUNTS', 'JPAM_IDENT', 'CONN_RULES', 'PJRB_INSIDE', 'GUS_RULES', 'GUS_COUNTS'].map((t) => '<span class="' + (verdict(t) === 'PASS' ? 'ok' : 'red') + '">' + vs(t) + '</span>').join(' · ')
     + '<br><span class="red">' + vs('PJRB_STATED') + '</span> <span class="g">(' + F.rebar.mismatches + ' sets, ' + F.rebar.beams_affected + ' beams)</span><br><span class="g">this film:</span> <span class="ok">§FILM_PANEL_CHECK ' + Object.keys(V.beats).filter((k) => V.beats[k].panel_check.ok).length + '/' + Object.keys(V.beats).length + ' PASS</span> · camera on the part ' + Object.keys(V.beats).filter((k) => V.beats[k].fly.miss_m <= 0.06).length + '/' + Object.keys(V.beats).length + ' <span class="ok">(fin plate: the Find landed ' + (V.beats.find_fin.fly.miss_m * 1000).toFixed(0) + ' mm from the part)</span>'
-    + '<h3 style="margin-top:14px">GUIDE</h3>' + (g.covers_the_added_work ? esc(g.url) : '<span class="y">No guide section covers this yet</span>: the guide\'s LOD400 Upgrade section describes the geometry weld only. A gap to close before posting.<br><span class="g">§FILM_GUIDE ' + esc(g.url) + ' http=' + g.http + ' anchor=' + (g.anchor_find_panel ? 'Y' : 'N') + ' (Find panel only)</span>') + '</div></div></div>'; })()
+    + '<h3 style="margin-top:14px">GUIDE</h3>' + (g.covers_the_added_work ? '<span class="ok">The Modeller guide has the Upgrade section</span> (packs, Run, Rules, Load schedule, change list, Add-on IFC)<br><span class="g">§FILM_GUIDE http=' + g.http + ' section anchor=' + (g.anchor_find_panel ? 'Y' : 'N') + '</span>' : '<span class="y">No guide section covers this yet</span>: the guide\'s LOD400 Upgrade section describes the geometry weld only. A gap to close before posting.<br><span class="g">§FILM_GUIDE ' + esc(g.url) + ' http=' + g.http + ' anchor=' + (g.anchor_find_panel ? 'Y' : 'N') + ' (Find panel only)</span>') + '</div></div>' + (g.covers_the_added_work ? '<div style="position:absolute;left:0;right:0;top:766px;font-size:28px;color:#7dd3fc;border-top:2px solid #1e293b;padding-top:10px;font-family:DejaVu Sans Mono,monospace">Guide: ' + esc(g.link) + '</div>' : '') + '</div>'; })()
 };
 // ---- render
 (async () => {

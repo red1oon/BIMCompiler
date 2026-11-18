@@ -6,13 +6,15 @@
 set -e; cd "$(dirname "$0")"
 BASE=~/Videos/film_lod_upgrade_find; WORK="${WORK:-$BASE/work}"; OD="${OD:-$BASE/out}"; export OUTD=$OD
 mkdir -p $OD/work/fm $OD/work/fit
-OUTMP4="${OUTMP4:-$BASE/LOD400_Upgrade_Finding_the_added_work_EN_rc1.mp4}"; [ -e "$OUTMP4" ] && { echo "§REFUSED $OUTMP4 exists (never overwritten); set OUTMP4="; exit 5; }
+OUTMP4="${OUTMP4:-$BASE/LOD400_Upgrade_Finding_the_added_work_EN_rc4.mp4}"; [ -e "$OUTMP4" ] && { echo "§REFUSED $OUTMP4 exists (never overwritten); set OUTMP4="; exit 5; }
 PY=~/.local/share/film_narration/venv/bin/python; FIT=../film_replication_engine/film6/fit6/fit_kokoro_v3_k.py; MUX=../film_replication_engine/film6/fit6/mux_two_pass.py; HEAD=../../prompts/film_narration_ass_head.txt
 export CUDA_VISIBLE_DEVICES=""
 HERE=$(pwd); FARG=1.15; KEYVOL="${KEYVOL:-0.8}"
 node facts.js $WORK > $OD/facts.log 2>&1 || { echo "§FACTS_FAIL see $OD/facts.log"; exit 3; }
 node guard.js > $OD/guard.log 2>&1 || { echo "§GUARD_FAIL see $OD/guard.log"; exit 3; }
+python3 blank_scan.py viewer $WORK > $OD/blank_rate.log 2>&1 || { echo "§BLANK_RATE_FAIL see $OD/blank_rate.log"; exit 3; }
 rm -rf $OD/cards; node cards.js $WORK $OD/cards > $OD/cards.log 2>&1 || { echo "§CARDS_FAIL see $OD/cards.log"; exit 3; }
+python3 blank_scan.py stills $OD > $OD/blank_scan.log 2>&1 || { echo "§BLANK_SCAN_FAIL see $OD/blank_scan.log"; exit 3; }
 node tsv.js measure $OD/work > $OD/tsv_measure.log 2>&1
 cp $HEAD $OD/work/fm/ass_head.txt; (cd $OD/work/fm && rm -f *.wav && FILM_SEC=600 $PY $HERE/$FIT ../narration_en.tsv m $FARG > ../../fit_measure.log 2>&1)
 node ../film_terms/beatmin.js $OD/fit_measure.log $OD/beatmin.json > $OD/beatmin.log 2>&1
