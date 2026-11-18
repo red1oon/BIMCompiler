@@ -66,7 +66,7 @@ the source (§F.25): reinstall with `node devtools/vscode/pack.js --install`. A 
 built and waiting for the owner's review (see that file's FILM 3 STATUS). Earlier CH 0 "VSC Hot Edit" films: `prompts/FILM_IDE_ERP_DEBUG.md`.
 Rebuild recipes are in each film file.
 
-**5. Open with the owner.** F-26 (session summary, first question asked) · D-2 (`"extends"`) · FILM 3 review · "When AI Dies" EN/TH/ZH review · his hands-on dry run (`~/VSCcheatsheet.txt`, 29 steps; `~/bim-ootb-dryrun`
+**5. Open with the owner.** D-2 (`"extends"`) · FILM 3 review · "When AI Dies" EN/TH/ZH review · his hands-on dry run (`~/VSCcheatsheet.txt`, 29 steps; `~/bim-ootb-dryrun`
 not created) · a bake on his go (then check a "last:" line, §F.15).
 
 **6. Open, no owner needed.**
@@ -809,6 +809,20 @@ this session (`48fd266f…`, 2026-11-17T18:05Z → 11-18T02:04Z): `replies=218 i
 URL load size: X0's `cost_if_deployed` computes it on demand from the diff; no history. Design (open, one question at a time): a dev-side `x0 session [last|<id>]` that reads the transcript
 (tokens, time span) and the session's git changes (`cost` = bytes added to what users load, PRs, witnesses run), appends one line per session to `~/.cache/bim_x0/sessions.jsonl` (history),
 and prints a short summary at session end; local files only, no network, no model call, no money figures (no invented prices).
+
+
+**F-26 decision (2026-11-18):** asked where the summary appears (terminal at session end + an `x0` command / an X0 panel / both). Owner: **"Terminal + x0 command (Recommended)"**.
+**§F.37 BUILD SPEC — `x0 session` (F-26).** Dev-side, in `devtools/x0/` (no page, no network, no model call, no money figures).
+- **Reads only local files:** the Claude Code transcript (`--transcript <path>`, the `transcript_path` a hook passes on stdin with `--hook`, or `last` = the newest `*.jsonl` in
+  `~/.claude/projects/<cwd with / → ->/>`). Tokens = per-reply `message.usage`, each reply counted once (by `message.id`): input, cache write, cache read, output; replies; model(s); first → last timestamp.
+- **What the session shipped:** PR links (`github.com/<owner>/<repo>/pull/N`) found in the session's tool output, by repo; witness scripts it ran (distinct `witness_*.js` in its shell commands).
+- **URL load size:** for each bim-ootb PR, its squash commit on the local `origin/main` (subject ends `(#N)`, as of the last fetch); X0's `deploy_cost` measures that commit against its parent:
+  per app, start-up bytes delta and offline-cache bytes delta, summed over the session's commits. A PR not on the local `origin/main` is listed `not merged (as of last fetch)`.
+- **History:** one JSON line per session in `~/.cache/bim_x0/sessions.jsonl` (a re-run replaces its line); `x0 session history [N]` prints the last N.
+- **Terminal at session end:** a `SessionEnd` hook in the owner's local Claude settings runs `node <bim-ootb>/devtools/x0/x0.js session --hook` (shape per the Claude Code hook docs).
+- **Witness W-X0-SESSION:** a synthetic transcript with known numbers (two streamed copies of one reply must count once; a PR link; two witness runs) → exact totals; a temp git repo with a
+  squash commit `(#7)` growing a precached file by a known number of bytes → that delta; history replace-not-append on a re-run; red controls: a reply counted twice and a PR missing
+  from `origin/main` must be reported, not hidden. Verdict `§X0_SESSION_W … verdict=`.
 
 ## ADVICE — from the session that built Part F, for the owner and the sessions that follow (2026-11-14)
 
