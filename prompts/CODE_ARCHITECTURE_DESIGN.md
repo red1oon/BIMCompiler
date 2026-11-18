@@ -30,8 +30,7 @@ One heavy job at a time on this machine, under `nice -n 19 ionice -c3`. Headless
 **0. SESSION CLOSE 2026-11-18 (ninth session; owner: *"Wrap up, update context to close this session"*).** Done and merged this session: dangling-work check (nothing unpushed) · B-1..B-5 answered (#909, #913, #914) · this file consolidated 1,754 → ~670 lines (#911) · B1 BUILD SPEC by one Fable agent (#918) · Developer Guide §4.1 gains the Bump button + core-purity warning, §5.6 status = done, the network sentence made exact (#915; live, fetched back) · the Fast Script Guide refresh of #916 published (it had landed after a deploy; live in 7 languages) · FILM_NARRATION house rule *always give a guide link* (#915) · film **"When AI Dies"** EN/TH/ZH built and sent to the owner's phone (`prompts/FILM_WHEN_AI_DIES.md`, #923, #926; `§X0_OFFLINE … understanding_features_net=0 ship_features_net=6 … verdict=PASS`). The bim-ootb prompts quick-access copy of this file is refreshed after every merge (`~/bim-ootb/prompts/`, untracked). **Asked and NOT answered: B1-Q1** (A recommended), then B1-Q2, B1-Q3. **New, no decision needed:** `devtools/mcp/x0-facts/tests/witness_x0_mcp.js` is red on bim-ootb main (`§X0_MCP … network_modules=1 verdict=FAIL`): it counts `lib/heap_impact.js`'s `require('http')`, which serves only 127.0.0.1; fix the witness to classify a local listener as the film's `offline.js` does (one PR, red control). **Answered (F-25, below): a plain `x0` terminal command** over the same lib (owner asked whether the typed CLI can work with VS Code: today only the facts server (MCP), `bump.js`, `witness_core_pure.js` and `code --goto` do). A witness-discipline film was proposed; the owner said another session already made it.
 
 **1. NEXT, in order.**
-1. **B1, the modeller first: its build spec is written** (Part B, "B1 BUILD SPEC", 2026-11-18; re-measured on bim-ootb `560b3541`: 99 modules, 104 sites, precache 164).
-   **B1-Q1..Q3 ANSWERED 2026-11-18 (tenth session): A / yes / session cites + owner OK** (Part B DECISIONS); the spec stands as written. Then build B1 as one small bim-ootb PR series behind a tracker issue.
+1. ✅ **B1 DONE 2026-11-18** (tenth session; #3245 deps tool, #3250 the switch; Part B "B1 PART 2 RESULT"). Next in Part B: **B2, ERP as a source app** — write its build spec first (ERP has numbers that disagree across sites, so its manifest keeps a site-level `v` until B4-HASH, B-1).
 2. **Spec then build F-25, the `x0` terminal command** (decision in the §F index decisions line; spec as a new §F.36 first).
 3. Fix W-X0-MCP's false FAIL on main (0 above; no decision).
 4. E's `witness_kit/paths.js` (no decision, §READY).
@@ -41,7 +40,7 @@ One heavy job at a time on this machine, under `nice -n 19 ionice -c3`. Headless
 | Part | State | Next step |
 |---|---|---|
 | A | ✅ DONE 2026-11-17: A0, A-1..A-7, A1, A2, A3 (W-CORE-PURE PASS, `forbidden=0`, in CI). Results: Part A RESULT INDEX | none |
-| B | **B0 ✅** (#3200, W-MANIFEST-ROUNDTRIP in CI) · **B-1 ✅** 2026-11-18 content hashes, own step · **B-2 ✅** 2026-11-18 per-module flag as today · **B-5 ✅** tool proposes deps, a person confirms · **B-3 ✅** owner + witnesses per module · **B-4 ✅** plugin precache derived, `BUILTINS` untouched | B1 (modeller): spec written, B1-Q1..Q3 answered; build |
+| B | **B0 ✅** (#3200, W-MANIFEST-ROUNDTRIP in CI) · **B1 ✅** 2026-11-18 (#3245, #3250: modeller written from modules.json, 25 deps declared) · **B-1 ✅** 2026-11-18 content hashes, own step · **B-2 ✅** 2026-11-18 per-module flag as today · **B-5 ✅** tool proposes deps, a person confirms · **B-3 ✅** owner + witnesses per module · **B-4 ✅** plugin precache derived, `BUILTINS` untouched | B2 (ERP as a source app); first measure ERP's numbers that disagree (B-1 keeps them until B4-HASH) |
 | C, D | not started; wait on B | — |
 | E | not started | `witness_kit/paths.js` (§READY), then ask E-1 |
 | F | every row that needs no data from B to E is built (§F index, F.0 to F.35) | F-2 ceilings on 2026-11-30; the F-1 headless Fetch-back button (unbuilt, browser go given); rows waiting on B/D/E data |
@@ -524,6 +523,26 @@ known blind spot) must be caught; on the real modeller every cited file:line hol
   `OrbitControls.module.js`, `three-mesh-bvh.module.js`, `georef_frame.js`, `ifc_grid_read.js`, `ifc_open_db.js`), so no tag order can be checked for them.
 - **`uses` (170 call-time edges, 83 call + 87 call-guarded):** on the tool's evidence alone (B1-Q3). **§DEPS_AMBIGUOUS 18** (mostly `Bonsai.*` members with 2+ writers): printed, not edges.
 - **OWNER CONFIRMED 2026-11-18:** asked with the four groups above; owner: **"Confirm as proposed (Recommended)"** → 26 `deps`, 1 `notDeps`, 180 `uses`; `depsReview.by` = owner, tool sha recorded at build.
+
+**B1 PART 2 RESULT — ✅ DONE 2026-11-18 (bim-ootb #3250 → main `b9b2e522`, Fixes #3244).** The modeller is a SOURCE app: `modeller/modules.json` writes its 68 tags,
+22 inline + 19 loader literals, 177 precache entries and `CACHE_VERSION` (`scripts/lib/manifest_source.js`; `gen_manifest.js --write modeller` / `--init`; `bump.js` mixed path).
+- **Correction to the confirmed list, made by the generator's own rule:** `modeller.html#inline9 → common/file_store.js` moved from `deps` to `uses` (the page lazy-loads
+  it itself at the read, `sc.src = '../common/file_store.js?v=1'`; a boot page cannot depend on a lazy module). Final: **25 deps, 1 notDeps, 181 uses**, review sha `5be36e57…`.
+- **Bytes:** +2 marker lines in `modeller.html`, +2 in `sw.js`, `CACHE_VERSION` v294 → v295 once (main moved v285 → v294 during the build; merged twice, review sha unchanged).
+- **bump.js vs the old one, 4 real targets** (`arc_editable.js`, `edit_report.js`, `viewer/rates.js`, `reg_report_ui.js`): same bytes plus only the inline literals the old one
+  could not see; `edit_report.js` the old bump could not bump at all (inline-only).
+- **Design choices made in the build (no owner decision, recorded here):** inline page bodies are readers keyed `<page>#inline<n>` in a manifest `inline` section · `--write`
+  refreshes `owner` / `witnesses` and records new call-time edges as `uses` (B1-Q3: tool evidence alone); only order-forcing edges (load / load-guarded / import) need a person,
+  and the review sha covers those only · a lazy or inline literal is placed in the code by hand and listed in `order` (the generator inserts / removes tags and precache entries only) ·
+  CI runs `--skip-c7 --skip-c9` (C9 needs git history; a shallow checkout has none).
+- Logs on main `b9b2e522`: `§MANIFEST_ROUNDTRIP apps=3 source=modeller files=54 … identical=54/54 driven=737/737 sw_vm=3/3 claims=15/15 red=12/12 order_check=PASS deps_declared=25 unreviewed=0 owner_gap=32 witness_gap=24 verdict=PASS`
+  (C9 `switch=b9b2e5225395 files=14`) · `§BUMP_W_VERDICT PASS judged=7 failed=0` (C7 on the old bump.js: FAIL exit=2) · `§DEPS_W cases=16 agree=16/16 … verdict=PASS` · audit `296 found, 0 missing` ·
+  `§BUMP_PARITY_W_VERDICT PASS judged=24` · `§CORE_PURE … verdict=PASS` · `§X0_BUMP_BUTTON checks=6 failed=0` · `§SHIP_PANEL … verdict=PASS` · `§X0_APPDEF … verdict=PASS` · Pages deploy green,
+  live `modeller/sw.js` fetched back: `CACHE_VERSION = 'v295'` + both markers.
+- `§ALLWITNESS PASS=118 FAIL=7 ENV=9 of 134` on the branch; the 7 FAILs (`dxf_accept_page`, `dxf_airgap`, `dxf_datum_pick`, `dxf_edefaults`, `dxf_libtypes`, `dxf_zdim`,
+  `viewer_db_export`) fail identically on unedited main `43218701`: not B1's, handed to the modeller lane as information.
+- Live sessions told before the merge (5 peers); the LOD Upgrade pill lane (P5–P7 open) was told how lazy `lod/*.js` packs are listed (precacheOrder only, unless a `?v=` site names them).
+- Note: `modeller/modules.json` is served by Pages as a static file (HTTP 200) because Pages serves tracked files; nothing fetches or precaches it (C12).
 
 ---
 
