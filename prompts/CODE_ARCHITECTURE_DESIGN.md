@@ -27,14 +27,22 @@ problem may go to one well-scoped Fable agent (owner 2026-11-17: *"if u hit a co
 One heavy job at a time on this machine, under `nice -n 19 ionice -c3`. Headless-browser runs are allowed for this lane's parked browser items (owner
 2026-11-16: *"U can do browser run for those items new session"*), one at a time, never beside a live bake or GPU work.
 
-**0. SESSION CLOSE 2026-11-18 (ninth session; owner: *"Wrap up, update context to close this session"*).** Done and merged this session: dangling-work check (nothing unpushed) · B-1..B-5 answered (#909, #913, #914) · this file consolidated 1,754 → ~670 lines (#911) · B1 BUILD SPEC by one Fable agent (#918) · Developer Guide §4.1 gains the Bump button + core-purity warning, §5.6 status = done, the network sentence made exact (#915; live, fetched back) · the Fast Script Guide refresh of #916 published (it had landed after a deploy; live in 7 languages) · FILM_NARRATION house rule *always give a guide link* (#915) · film **"When AI Dies"** EN/TH/ZH built and sent to the owner's phone (`prompts/FILM_WHEN_AI_DIES.md`, #923, #926; `§X0_OFFLINE … understanding_features_net=0 ship_features_net=6 … verdict=PASS`). The bim-ootb prompts quick-access copy of this file is refreshed after every merge (`~/bim-ootb/prompts/`, untracked). **Asked and NOT answered: B1-Q1** (A recommended), then B1-Q2, B1-Q3. **New, no decision needed:** `devtools/mcp/x0-facts/tests/witness_x0_mcp.js` is red on bim-ootb main (`§X0_MCP … network_modules=1 verdict=FAIL`): it counts `lib/heap_impact.js`'s `require('http')`, which serves only 127.0.0.1; fix the witness to classify a local listener as the film's `offline.js` does (one PR, red control). **Answered (F-25, below): a plain `x0` terminal command** over the same lib (owner asked whether the typed CLI can work with VS Code: today only the facts server (MCP), `bump.js`, `witness_core_pure.js` and `code --goto` do). A witness-discipline film was proposed; the owner said another session already made it.
+**0. SESSION CLOSE 2026-11-18 (tenth session; owner: "resume VSC" → "proceed").** Done, merged, verified on main:
+B1-Q1..Q3 answered (A / yes / session cites + owner OK; #944) · the 37 order edges read in code and confirmed by the owner (#947) · **B1 ✅**: deps tool + W-DEPS-CAND (bim-ootb #3245),
+the modeller written from `modeller/modules.json` (#3250 → `b9b2e522`; `§MANIFEST_ROUNDTRIP … claims=15/15 red=12/12 order_check=PASS deps_declared=25 verdict=PASS`; live `modeller/sw.js` v295 fetched back;
+5 live sessions told first; the LOD pill lane's P5 (#3252) then merged through `modules.json` cleanly, check PASS on main) · **W-X0-MCP false FAIL fixed** (#3254: a 127.0.0.1 listener counted apart,
+`network_modules=0 local_listeners=1 verdict=PASS`) · **E0 ✅** `witness_kit/paths.js` + W-PATHS (#3256, `§PATHS judged=10 same=10/10 red=3/3 verdict=PASS`; a worktree has no `tests/node_modules`,
+so `nodeModule()` falls back to the shared checkout's installs; not in CI by design: every row is a /home path) · **F-25 ✅** the `x0` terminal command (§F.36, #3259,
+`§X0_CLI verbs=8 same=8/8 red=2/2 verdict=PASS`; `cost [base]` and `last <file>` follow the tools' real arguments) · Developer Guide §4.1 (x0) + §5.1/§5.2 (modules.json) live, fetched back
+(the docs guard aborted once on `glassbowl_data.db`, live but untracked: published with the live file's own bytes, nothing removed). Nothing unpushed.
+Handed over as information (not this lane's): 7 modeller witnesses fail identically on unedited main (`dxf_accept_page`, `dxf_airgap`, `dxf_datum_pick`, `dxf_edefaults`, `dxf_libtypes`, `dxf_zdim`, `viewer_db_export`).
 
 **1. NEXT, in order.**
-1. ✅ **B1 DONE 2026-11-18** (tenth session; #3245 deps tool, #3250 the switch; Part B "B1 PART 2 RESULT"). Next in Part B: **B2, ERP as a source app** — write its build spec first (ERP has numbers that disagree across sites, so its manifest keeps a site-level `v` until B4-HASH, B-1).
-2. **Build F-25, the `x0` terminal command** (§F.36 BUILD SPEC, after the §F index decisions line).
-3. Fix W-X0-MCP's false FAIL on main (0 above; no decision).
-4. E's `witness_kit/paths.js` (no decision, §READY).
-5. **2026-11-30:** propose the F-2 cost ceilings (§F.3).
+1. **B2, ERP as a source app:** write its build spec first (measure with `node scripts/gen_manifest.js --check`: ERP's numbers disagree across sites, so its manifest keeps a site-level `v`
+   until B4-HASH, B-1; plugin precache stays B-4's later step). Then the viewer (B3), then B4-HASH (announced to the owner with its date).
+2. **E-1:** ask the owner the `PROVES:` header format (recommendation in Part E / ADVICE), then the proof map; converting the 326 hard-coded witnesses to `witness_kit/paths.js` rides on it.
+3. **D-1:** where the questions list lives (now unblocked: B1 gives every modeller module an `owner`, 32 still empty = `§MANIFEST_OWNER_GAP`).
+4. **2026-11-30:** propose the F-2 cost ceilings (§F.3). The F-1 headless Fetch-back button (browser go given) is still unbuilt.
 
 **2. Where each part stands.**
 | Part | State | Next step |
@@ -42,7 +50,7 @@ One heavy job at a time on this machine, under `nice -n 19 ionice -c3`. Headless
 | A | ✅ DONE 2026-11-17: A0, A-1..A-7, A1, A2, A3 (W-CORE-PURE PASS, `forbidden=0`, in CI). Results: Part A RESULT INDEX | none |
 | B | **B0 ✅** (#3200, W-MANIFEST-ROUNDTRIP in CI) · **B1 ✅** 2026-11-18 (#3245, #3250: modeller written from modules.json, 25 deps declared) · **B-1 ✅** 2026-11-18 content hashes, own step · **B-2 ✅** 2026-11-18 per-module flag as today · **B-5 ✅** tool proposes deps, a person confirms · **B-3 ✅** owner + witnesses per module · **B-4 ✅** plugin precache derived, `BUILTINS` untouched | B2 (ERP as a source app); first measure ERP's numbers that disagree (B-1 keeps them until B4-HASH) |
 | C, D | not started; wait on B | — |
-| E | not started | `witness_kit/paths.js` (§READY), then ask E-1 |
+| E | **E0 ✅** 2026-11-18 `witness_kit/paths.js` (#3256) | ask E-1 (the `PROVES:` header) |
 | F | every row that needs no data from B to E is built (§F index, F.0 to F.35) | F-2 ceilings on 2026-11-30; the F-1 headless Fetch-back button (unbuilt, browser go given); rows waiting on B/D/E data |
 
 **3. The tools (bim-ootb `devtools/`; Developer Guide §4.1, §4.2, §5.6, §6, §6.1 live).** X0 Navigator: F12 / hover / Find All References on
@@ -58,7 +66,7 @@ the source (§F.25): reinstall with `node devtools/vscode/pack.js --install`. A 
 built and waiting for the owner's review (see that file's FILM 3 STATUS). Earlier CH 0 "VSC Hot Edit" films: `prompts/FILM_IDE_ERP_DEBUG.md`.
 Rebuild recipes are in each film file.
 
-**5. Open with the owner.** FILM 3 review · "When AI Dies" EN/TH/ZH review · his hands-on dry run (`~/VSCcheatsheet.txt`, 29 steps; `~/bim-ootb-dryrun`
+**5. Open with the owner.** E-1 (next to ask) · FILM 3 review · "When AI Dies" EN/TH/ZH review · his hands-on dry run (`~/VSCcheatsheet.txt`, 29 steps; `~/bim-ootb-dryrun`
 not created) · a bake on his go (then check a "last:" line, §F.15).
 
 **6. Open, no owner needed.**
@@ -838,10 +846,10 @@ first. C is long and best done slowly, module by module, after B/D make ownershi
 | Part | Starts with no decision | Next decision to ask | Why that one |
 |---|---|---|---|
 | A | ✅ done 2026-11-17 (W-CORE-PURE in CI) | none | — |
-| B | B1 build (B1 BUILD SPEC, 2026-11-18; answered 2026-11-18) | none | |
+| B | the B2 (ERP) build spec | none until the spec raises one | |
 | C | nothing; waits on B and D | C-1 part names + owners | |
 | D | nothing new; the multi-publisher list already exists (`types/globals.gen.d.ts`) | D-1 where the questions list lives | needs B's `owner` field |
-| E | `witness_kit/paths.js` (E0 BUILD SPEC in Part E) | E-1 the `PROVES:` header format | |
+| E | nothing; E0 done | E-1 the `PROVES:` header format | |
 | F | the F-1 headless Fetch-back button (browser-run go given 2026-11-16) | none (F-2 ceilings on 2026-11-30) | |
 
 Ask the owner **one decision per message, with the recommendation** (START HERE 2). The recommendations are in each part and in ADVICE A.
