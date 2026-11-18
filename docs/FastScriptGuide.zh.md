@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 31152ab2c5944f96
+source_sha: 7fd58a7ca9d6af6d
 lang: zh-CN
 ---
 
@@ -12,6 +12,42 @@ lang: zh-CN
 
 !!! warning "好答案并不意味着什么"
     没有问题的答复**绝不意味着安全、合规或良好**。每个答复都会列出未检查的内容，[未检查的内容](#what-is-not-checked)会再说一遍。最终决定权在结构工程师。
+
+## 如何安装
+
+您需要 Node 18 或更新版本（这些步骤在 Node 18.19 上运行过）。有两种进入方式。
+
+**完整检出**为您提供 red1、BIM、ERP、Viewer 以及下面的一切。克隆它，然后从其顶层文件夹启动 red1：
+
+```bash
+git clone https://github.com/red1oon/bim-ootb
+cd bim-ootb
+node common/door/red1.js
+```
+
+输入 `exit` 退出。若想在任何位置只输入 `red1`，请在该文件夹中运行一次 `npm link`。要检查它是否工作，请查看它的版本行：
+
+<!-- run: red1_version -->
+```text
+$ node common/door/red1.js --version | sed -e 's/^Copyright[^·]*· //' -e 's/ · [0-9a-f]\{8\}$//'
+red1 1.0.0 · 78 verbs · 30 words
+```
+
+**六文件下载**用于只要门和 Modeller 动词、不需要检出的情况。新建一个空文件夹，安装 Modeller 所需的浏览器引擎，然后获取这六个文件：
+
+```bash
+mkdir fastscript && cd fastscript
+npm init -y
+npm install puppeteer@24
+curl -O https://red1oon.github.io/bim-ootb/modeller/tools/edit_cli.js
+curl -O https://red1oon.github.io/bim-ootb/modeller/tools/bim_mcp.js
+curl -O https://red1oon.github.io/bim-ootb/common/door/door.js
+curl -O https://red1oon.github.io/bim-ootb/common/door/verbs.json
+curl -O https://red1oon.github.io/bim-ootb/common/door/msg_core.js
+curl -O https://red1oon.github.io/bim-ootb/common/door/vocab/messages.json
+```
+
+请把六个文件放在同一个文件夹里。`door.js` 从 `verbs.json` 读取动词列表，从 `messages.json`（经由 `msg_core.js`）读取其消息，并运行 `edit_cli.js`，后者无窗口地打开在线的 Modeller 页面。如果缺少某个文件，门会说明是哪个并打印它的 `curl` 行。本页其余的一切都需要完整检出；[动词表](#the-verbs)说明每个动词需要什么。
 
 ## 从 red1 开始
 
@@ -29,6 +65,8 @@ Tip: type level student for fuller help on each word (red1 --fast opens without 
 red1> exit
 ```
 
+**如何阅读本页的代码块。** `$` 后面那一行是本页测试运行命令的方式：它使用临时文件（先清空，所以运行绝不会碰到你自己的数据），去掉耗时并隐藏日志。在你自己的提示符下，只需输入这些词，例如 `cd Duplex`。下面就是 red1 打印出的原样内容。
+
 把它当作一张地图来读。版本行说明 red1 有多少个门动词（长格式）和短词。`help` 把短词分成三组显示；`help bim`、`help mis` 或 `help erp` 可查看一组：
 
 | 分组 | 用途 | 从这里开始 |
@@ -41,9 +79,9 @@ red1> exit
 ```text
 $ node common/door/red1.js help 2>/dev/null
 red1: type a short word; red1 prints the full line it runs (→ …), then runs it.
-  bim   buildings and models             start with: cd Duplex   (16 words)
-  mis   records, tables, files, Ninja    start with: cd Order   (11 words)
-  erp   document actions (CO VO CL RC)   start with: cd Order   (8 words)
+  bim   buildings and models            start with: cd Duplex   (16 words)
+  mis   records, tables, files, Ninja   start with: cd Order   (11 words)
+  erp   documents and processes         start with: cd Order   (8 words)
   everywhere: cd <place> · #<number> · pwd · role <id> · login <user> · history [N] · report · exit
 Type bim, mis or erp for its words · help <word> for one word (level student first for the full explanation) · help verbs for the full door lines.
 ```
@@ -53,7 +91,7 @@ Type bim, mis or erp for its words · help <word> for one word (level student fi
 <!-- run: red1_help_erp -->
 ```text
 $ node common/door/red1.js 'help erp' 2>/dev/null
-erp: document actions (CO VO CL RC) (start with: cd Order)
+erp: documents and processes (start with: cd Order)
  in a building:
   post discipline=ARC  post the building's priced selection to its ERP Project Order
   vo discipline=ARC    issue the change between the model and the Project Order as a Variation Order
@@ -113,45 +151,9 @@ $ node common/door/red1.js 'cd Duplex; cd Element; count discipline=ARC' 2>&1 | 
 
 您输入词、位置或列时，光标后会出现灰色文字：来自字典的建议。**Tab** 或 **→** 接受它；**回车始终执行您输入的内容**，绝不执行建议。拼错会得到提示，绝不会被悄悄改正（`ls Valu=…` 被拒绝，并指出 `Value`）。
 
-## 如何安装
-
-您需要 Node 18 或更新版本（这些步骤在 Node 18.19 上运行过）。有两种进入方式。
-
-**完整检出**为您提供 red1、BIM、ERP、Viewer 以及下面的一切。克隆它，然后从其顶层文件夹启动 red1：
-
-```bash
-git clone https://github.com/red1oon/bim-ootb
-cd bim-ootb
-node common/door/red1.js
-```
-
-输入 `exit` 退出。若想在任何位置只输入 `red1`，请在该文件夹中运行一次 `npm link`。要检查它是否工作，请查看它的版本行：
-
-<!-- run: red1_version -->
-```text
-$ node common/door/red1.js --version | sed -e 's/^Copyright[^·]*· //' -e 's/ · [0-9a-f]\{8\}$//'
-red1 1.0.0 · 78 verbs · 30 words
-```
-
-**六文件下载**用于只要门和 Modeller 动词、不需要检出的情况。新建一个空文件夹，安装 Modeller 所需的浏览器引擎，然后获取这六个文件：
-
-```bash
-mkdir fastscript && cd fastscript
-npm init -y
-npm install puppeteer@24
-curl -O https://red1oon.github.io/bim-ootb/modeller/tools/edit_cli.js
-curl -O https://red1oon.github.io/bim-ootb/modeller/tools/bim_mcp.js
-curl -O https://red1oon.github.io/bim-ootb/common/door/door.js
-curl -O https://red1oon.github.io/bim-ootb/common/door/verbs.json
-curl -O https://red1oon.github.io/bim-ootb/common/door/msg_core.js
-curl -O https://red1oon.github.io/bim-ootb/common/door/vocab/messages.json
-```
-
-请把六个文件放在同一个文件夹里。`door.js` 从 `verbs.json` 读取动词列表，从 `messages.json`（经由 `msg_core.js`）读取其消息，并运行 `edit_cli.js`，后者无窗口地打开在线的 Modeller 页面。如果缺少某个文件，门会说明是哪个并打印它的 `curl` 行。本页其余的一切都需要完整检出；[动词表](#the-verbs)说明每个动词需要什么。
-
 ## 您最常用的词
 
-下面每一部分都会说明您将要做什么以及为什么，然后展示一次真实运行以及要看什么。每个代码块都使用一个临时的操作日志（孪生体保存其更改的文件），先清空，所以运行它们不会触及您自己的数据。
+下面每一部分都会说明你将要做什么、为什么，然后给出一次真实运行，以及其中要看的地方。
 
 ### bim：建筑和模型
 
@@ -212,24 +214,7 @@ ok · viewer.clashes
 ls lists the 393 rows
 ```
 
-**成本。** `cost discipline` 像 Viewer 的查找面板那样为建筑的构件计价：模型中的工程量乘以费率包。先是分组，然后是数量和合计；`ls` 列出已计价的行。也可以按 `phase`、`task`、`storey` 或 `class` 分组。请看最后一行：因为建筑还没有 ERP 订单，red1 提出下一步。这个会话在没有回答的情况下结束，所以什么也不会过账：
-
-<!-- run: chain_cost -->
-```text
-$ rm -f /tmp/fast_guide_chain.ops; printf 'cd Duplex\ncost discipline\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide_chain.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_chain.journal node common/door/red1.js 2>/dev/null | sed 's/ · [0-9]* ms//'
-building Duplex
-→ viewer.cost building=Duplex by=discipline
-ok · viewer.cost
-1190 elements · 1054482.08 total (71 with no rate); 3 with no size, not priced
-discipline  elements  cost
-ARC         267       532431.14
-ELEC        81        283500.00
-MEP         809       153825.40
-PLB         14        49000.00
-STR         19        35725.55
-ls lists the 49 priced rows
-Ready to post to ERP Project Order? y/N → erp.process name="Fold from BIM" Building=Duplex
-```
+**成本。** `cost discipline` 按照 Viewer 的 Find 面板的方式为建筑的构件计价：模型中的数量乘以费率包。它的运行见 [从建筑到它的订单](#from-a-building-to-its-order-cost-the-offer-post)，在那里它接着通向订单。
 
 ### mis：记录、表、文件
 
@@ -259,7 +244,7 @@ C_BPartner_ID  Value  Name               Logo_ID  C_BP_Group_ID
 
 ### erp：单据和流程
 
-**创建单据并完成它。** 在 `new` 中 `Order` 会创建一张草稿订单并打印其编号。完整的门行在提示符下同样可用，所以订单行用 `mis.new` 添加（一个产品和一个数量）。`next <number>` 画出该单据现在可以做什么，并为每个有对应词的操作指出执行它的那一行。`do CO <number>` 完成它；传统的 DocAction 代码是 `CO` 完成、`VO` 作废、`CL` 关闭、`RC` 冲销（`do complete`、`do void` … 也可以）。请看 `new` 打印的编号、每个 `next` 树中的状态，以及 `CO` 之后发生变化的操作。（`grep` 只保留这些行；完整答复还会列出每个填充的列。）
+**创建一个单据并完成它。** 在 `Order` 中用 `new` 会创建一张草稿订单并打印它的编号。在提示符下也可以输入完整的门命令行，所以订单行用 `mis.new`（一个产品和一个数量）添加。`next <number>` 画出单据现在可以做什么，并为每个有对应词的动作指出运行它的那一行。`do CO <number>` 完成它；旧系统的 DocAction 代码是 `CO` 完成、`PR` 准备、`VO` 作废、`CL` 关闭、`RC` 冲销、`RE` 重新激活（`do complete`、`do void` … 也可以）。请看 `new` 打印的编号、每个 `next` 树中的状态，以及 `CO` 之后变化了的动作。（`grep` 只保留这些行；完整的答复还会列出每个被填写的列。）
 
 <!-- run: erp_order -->
 ```text
@@ -270,7 +255,6 @@ ok · mis.new
 number: 50000
 → mis.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2
 ok · mis.new
-number: 
 → erp.actions kind=Order number=50000
 ok · erp.actions
 Order 50000  status DR
@@ -309,23 +293,7 @@ Generate PO from Project: done · no document made
 
 在单行或对 AI 而言，不会询问任何内容：缺少必填参数就是一次点名该参数的拒绝。孪生体还没有移植的流程会被拒绝，并给出其类名，red1 会这样说明。
 
-**记录只提供它自己的。** 在一条记录里，red1 提供的都是这条记录的，从它窗口的字典中读取：`do` 之后，只有它现在可以做的操作（按您的角色）；`cd` 之后，它的标签页；`run` 之后，它自己的流程按钮；它的字段则作为 `Column=` 键。进入记录时会打印它可以做什么：
-
-<!-- run: erp_record_offers -->
-```text
-$ printf 'cd Order 100\n' | node common/door/red1.js 2>/dev/null
-→ mis.describe kind="Order 100"
-→ mis.describe kind=Order
-→ mis.read kind=Order number=100
-→ mis.read kind=Order id=100
-Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls shows them, cd <tab> opens one, cat reads the record
-→ erp.actions kind=Order id=100
-it may do: CL, VO, RE (do <code>; next shows the tree)
-```
-
-在那里，`do ` 之后的 Tab 只提供 `CL`、`VO` 和 `RE`，顺序与窗口自己的按钮相同（Close、Void、Re-Activate；`RE` 重新激活订单：`do RE`），`run Co` 会补全为 `"Copy Lines"`，即订单窗口自己的按钮。
-
-**浏览菜单。** `menu` 把 ERP 菜单显示为位置：`cd <folder>` 进入（只有一个条目以此开头时，名字的开头就够了），窗口条目会带您到它的种类，`cd ..`（或 Shift+Tab）回到上一级文件夹。提示符显示路径。每个条目都有标记：▸ 文件夹（里面有多少条目），W 窗口（及其表），P 流程，R 报表，X 表单，F 工作流。单独的 `red1 menu` 仍然在整个屏幕上打开菜单。
+**菜单，以及作为位置的记录。** `menu` 把 ERP 菜单显示为位置：`cd <folder>` 进入（只有一个条目以此开头时，名称的开头就够了），窗口条目会带你到它的种类，`cd ..`（或 Shift+Tab）向上退回一个文件夹。提示符显示路径。每个条目都有标记：▸ 文件夹（它包含多少条目），W 窗口（及其表），P 流程，R 报表，X 表单，F 工作流。单独运行 `red1 menu` 仍会全屏打开菜单。
 
 <!-- run: red1_menu_walk -->
 ```text
@@ -373,7 +341,7 @@ Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POR
 menu="Quote-to-Invoice (Sales)/Sales Orders" kind=Order
 ```
 
-**从菜单进入一条记录。** 在一个类型里，`cd <number>` 进入那条记录，提示符保留菜单路径；`cd ..` 退出。在记录里，`do` 和 `next` 用它的 id 指定它，所以两条记录共用的编号（这里是 80000）不会造成问题。一个动作会打印它做了什么：状态的变化、它涉及的单据、保留了多少处更改，以及记录现在可以做什么；随后 `do ` 之后的 Tab 提供这些新的代码。下面的代码块省略了文件夹列表：
+在一个种类中，`cd <number>` 进入那条记录，提示符保留菜单路径；`cd ..` 再退出来（在任何地方，`cd Order 100` 都做同样的事）。在一条记录里，red1 提供的是这条记录自己的东西，按它的窗口从字典中读取：在 `do` 之后，只有它现在可以做的动作，按你的角色、按窗口自己按钮的顺序；在 `cd` 之后，是它的页签；在 `run` 之后，是它自己的流程按钮（`run Co` 补全为 `"Copy Lines"`）；还有它的字段，作为 `Column=` 键。`do` 和 `next` 按 ID 指代这条记录，所以两条记录共用一个编号（这里是 80000）从来不是问题。一个动作会打印它做了什么：状态变化、它涉及的单据、保留了多少处更改，以及这条记录现在可以做什么；之后在 `do ` 后按 Tab 会提供这些新代码。下面的代码块省略了文件夹列表：
 
 <!-- run: red1_walk_record -->
 ```text
@@ -384,8 +352,6 @@ Quote-to-Invoice (Sales): 6 entries; cd <name> goes in, cd .. goes back
 Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd <name> goes in, cd .. goes back
 → mis.describe kind=C_Order
 Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
-→ mis.describe kind=100
-→ mis.read kind=Order number=100
 → mis.read kind=Order id=100
 Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls shows them, cd <tab> opens one, cat reads the record
 → erp.actions kind=Order id=100
@@ -432,13 +398,13 @@ refused · erp.process · Renumber was not run: it has no JS port yet (class org
 This is a gap in red1, not your mistake. Type report to send it to us (email or GitHub issue).
 ```
 
-### 从建筑到订单：成本、提议、过账
+### 从建筑到订单：成本、提议、过账 {#from-a-building-to-its-order-cost-the-offer-post}
 
-这是把建筑带入其 ERP 项目订单的链条。它在上面已经开始：`cost discipline` 以一个提议 `Ready to post to ERP Project Order? y/N` 结束，后面是它将执行的确切一行。提议是引擎自己的下一步，绝不是手工输入的。在会话中，`y` 会准确执行那一行，`n` 或空回车什么也不执行；在单行或对 AI 而言，不会询问，该行在答复的 `next` 中。回答 `y` 就是 `post`：它把建筑已计价的选择折叠为项目订单，阶段和任务取自建筑的 4D 计划以及项目行，作为一组更改，要么全部成功要么全部不做。请看生成了什么，以及第二个提议，即 `cd project`：
+这是把一栋建筑带入它的 ERP 项目订单的链条。`cost discipline` 先打印分组，然后是数量和合计；`ls` 列出已计价的行，成本也可以按 `phase`、`task`、`storey` 或 `class` 分组。由于这栋建筑还没有 ERP 订单，它最后给出一个提议 `Ready to post to ERP Project Order? y/N`，后面跟着它将运行的确切命令行。这个提议是引擎自己的下一步，从不是手工输入的。在会话中，`y` 正好运行那一行，`n` 或空的回车什么都不运行；在单次命令行或对 AI 而言，什么都不问，那一行在答复的 `next` 里。回答 `y` 就是 `post`：它把建筑已计价的选择折叠进一张项目订单，其阶段和任务取自建筑的 4D 进度计划和项目行，作为一组更改，要么全部生效要么都不生效。请看创建了什么，以及第二个提议，也就是 `cd project`：
 
 <!-- run: chain_post -->
 ```text
-$ printf 'cd Duplex\ncost discipline\ny\nn\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide_chain.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_chain.journal node common/door/red1.js 2>/dev/null | sed 's/ · [0-9]* ms//'
+$ rm -f /tmp/fast_guide_chain.ops; printf 'cd Duplex\ncost discipline\ny\nn\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide_chain.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_chain.journal node common/door/red1.js 2>/dev/null | sed 's/ · [0-9]* ms//'
 building Duplex
 → viewer.cost building=Duplex by=discipline
 ok · viewer.cost
@@ -595,19 +561,11 @@ object.count building=Duplex kind=Element -> 1193 Element
 | `mis.menu` | 读取菜单 | `role`（可选）, `find`（可选） | read | human, ai | 一份 bim-ootb 检出 |
 | `ninja.rollback` | 撤销一个 Ninja 包 | `bundle`，`dry`（可选） | writes | human, ai | 一份 bim-ootb 检出 |
 | `ninja.export` | 把一个 Ninja 包写回成工作簿 | `bundle`（可选）, `window`（可选）, `table`（可选）, `file` | writes | human, ai | 一份 bim-ootb 检出 |
-| `erp.column` | 谁来填写一列：孪生版与旧版并排对照（mis.column 的旧名） | `kind`，`column` | read | human, ai | 一份 bim-ootb 检出 |
-| `erp.compare` | 在孪生版和旧版上比较同一条记录（legacy.compare 的旧名） | `kind`，`number`，`legacy`（可选） | read | human, ai | 一份 bim-ootb 检出 |
-| `erp.pack` | 用数据模型工作簿生成 2Pack zip（mis.pack 的旧名） | `book`，`version`，`out`（可选）, `java`（可选）, `package`（可选） | writes | human, ai | 一份 bim-ootb 检出 |
-| `erp.legacy_plugin` | 把数据模型插件装到旧版测试实例上，并在那里核对（legacy.plugin 的旧名） | `book`，`version` | writes | human, ai | 一份 bim-ootb 检出 |
-| `erp.describe` | 描述一类 ERP 记录（mis.describe 的旧名） | `kind`，`role`（可选） | read | human, ai | 一份 bim-ootb 检出 |
-| `erp.read` | 读取一条 ERP 记录（mis.read 的旧名） | `kind`，`id`（可选）, `number`（可选）, `role`（可选） | read | human, ai | 一份 bim-ootb 检出 |
-| `erp.list` | 列出记录（mis.list 的旧名） | `kind`，`columns`（可选）, `sort`（可选）, `limit`（可选）, `offset`（可选）, `names`（可选）, `role`（可选）, 更多 `column=value` 筛选条件（可选） | read | human, ai | 一份 bim-ootb 检出 |
-| `erp.sum` | 把一列求和（mis.sum 的旧名） | `kind`，`column`，`role`（可选）, 更多 `column=value` 筛选条件（可选） | read | human, ai | 一份 bim-ootb 检出 |
-| `erp.group` | 按某一列计数（mis.group 的旧名） | `kind`，`by`，`role`（可选）, `window`（可选）, 更多 `column=value` 筛选条件（可选） | read | human, ai | 一份 bim-ootb 检出 |
-| `erp.new` | 创建一条记录（mis.new 的旧名） | `kind`，`dry`（可选）, `role`（可选）, `window`（可选）, 更多 `column=value` 筛选条件（可选） | writes | human, ai | 一份 bim-ootb 检出 |
+
+仍可运行的旧名称，每个都等同于它所指向的动词：`erp.column` → `mis.column` · `erp.compare` → `legacy.compare` · `erp.pack` → `mis.pack` · `erp.legacy_plugin` → `legacy.plugin` · `erp.describe` → `mis.describe` · `erp.read` → `mis.read` · `erp.list` → `mis.list` · `erp.sum` → `mis.sum` · `erp.group` → `mis.group` · `erp.new` → `mis.new`
 <!-- /GEN:verbs -->
 
-**目前的覆盖范围。** 这份列表有意保持很小：68 个动词覆盖 Modeller 的轴网编辑、它的 walker 以及在各行之间保持打开的 Modeller、少量 Viewer 问题、进度、通用的对象读取、计数和写入、一次选择的成本、ERP 单据动词，以及 ERP 字典中任何已移植的流程。Viewer 有 64 个人可以按下的操作，门提供 6 个 Viewer 动词。ERP 有 1158 个单据和流程，门为单据的生命周期提供 13 个 ERP 动词，为任意表提供 15 个 MIS 动词，并保留 10 个旧名称，使以前的行仍能运行。所以这只是一个开始，不是完整的菜单。
+**目前的覆盖范围。** 这个列表是有意保持精简的：68 个动词覆盖 Modeller 的轴网编辑、它的 walker 和在多行之间保持打开的 Modeller、几个 Viewer 问题、进度计划、通用的对象读取、计数和写入、一个选择集的成本、ERP 单据动词，以及 ERP 字典中任何已有移植的流程。Viewer 有 64 个可以由人按下的动作，门提供 6 个 Viewer 动词。ERP 有 1158 个单据和流程，门为单据的生命周期提供 13 个 ERP 动词和 15 个可在任何表上工作的 MIS 动词，并保留 10 个旧名称，让以前的命令行继续可用（版本行中的数量包括它们）。所以这只是一个开始，而不是整个菜单。
 
 
 ## 本页为何保持真实
