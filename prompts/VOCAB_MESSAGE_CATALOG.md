@@ -1657,6 +1657,21 @@ Both boxes read input through `HelpGrammar.parse`. **6a ERP:** `#<number>` searc
 - **Regressions green:** W-HQ-BOX 4/0, W-HELP-SHOWCASE 23/0, W-ASSIST-NEAREST 5/0, W-HQ-SELF 82/0, W-ERP-ASK 11/0; eslint 0.
 - Tooling note: a bim-ootb worktree has no `node_modules`; `scripts/bump.js` needs `espree` by path, so link `~/bim-ootb/node_modules` into the worktree (git-ignored).
 
+### 19.9 Step 9: the role's menu processes and reports in the ERP help box (2026-11-18; owner: "proceed" after the §19.3 caveat was named as pending)
+**Issue it removes:** legacy's menu search lists EVERY leaf of the role's menu tree (`MenuSearchController.java:160-176` walks the tree, `addTreeItem` skips only folders; the kinds are set in `AbstractMenuPanel.java:204-228`: window, report, process, workflow, form, info, task). The twin's help box admits windows only: `help_search.js` `indexFrom`'s gate is `gate[0] === 'window'`, and the card shows only a Window row. So a person typing "Generate Invoices" gets no process at all, although the process records are built and ranked (`help_records_core.js:44`). Under the CARDINAL rule this is a divergence, fixed on the twin side.
+**Measured (seed, 2026-11-18):** active menu leaves are W 332, P 90, R 69, X (form) 24, F (workflow) 12, I (info) 4, T (task) 3. Role 102 has 406 process-access rows. The page already knows the role's menu processes and reports: `window.__idmpFieldHelp.menu().processes` (`idempiere.html:3249`, filled at :1675 from the P/R leaves). It opens them through the menu's own `openProcess(id, name)` (:4677).
+**Change (generic, no window or process named):**
+- `indexFrom({ …, processIds })`: the gate admits `['process', id]` when `id` is in `processIds`. It is optional; without it the gate is windows-only as today, so `common/door/erp_cli.js` (`erp.ask`, the CLI session's file) is unchanged until that session opts in.
+- The card gains `process`: the best-ranked admitted process in the top 5 hits, `{id, name, report}`. The page shows a "Process" row (or "Report" when `isreport='Y'`, the menu's own kind) whose link calls the menu's `openProcess`. Nothing runs until the person presses the process dialog's own button, as from the menu.
+- Falsifier `HS_BREAK=winonly` (the file's own `HS_BREAK` switch, like `nophrase`): the gate goes back to windows only.
+- The row labels are dictionary elements, like Window (`help.window` = `el:143`): `help.process` = `el:117` (AD_Process_ID "Process"), `help.report` = `el:1022` (IsReport "Report"), in `erp/i18n/chrome.json`.
+**Not in this step, counted and stated:** forms (24), workflows (12), info windows (4) and tasks (3) are not indexed at all (no record kind); process names are English in every help pack (CORRECTED at build: the ERP screen packs DO carry `AD_Process_Trl` and `AD_Menu_Trl` (`erp/i18n/fr_FR.json` …), but `build_help_pack.js` writes only window, table, action and status names, so the help box shows the record's English name; adding processes to the help pack is a follow-up); the CLI's `erp.ask` until the CLI session passes `processIds`.
+**Claims (extend W-HQ-LEGACY-SUPERSET; falsifier `HS_BREAK=winonly`):**
+- **L6 processes are inside the box's list.** For each process or report of role 102's menu (N from the dictionary: active P/R menu leaves whose process the role can access) x 2 probes x the built languages, every one legacy's filter shows is in the box's list. X of N probes. `winonly` FAILS.
+- **L7 the card names it.** For each such process, asking its exact name gives `card.process.id` = it. X of N.
+- **L8 the gate holds:** a process NOT in the role's menu never appears in any list of L6 (0 expected), and a process asked by name that the role lacks gives no Process row. Printed population; VACUOUS if every process is in the menu.
+- **Page (W-HELP-SHOWCASE or W-HQ-BOX):** in the real page, the box's Process row for one menu process calls `openProcess` (the `§AD-PROC` log line of the menu path), and `menu().processes` equals the witness's SQL set.
+
 ## STATUS
 2026-11-18: query core COMPLETE (§19.6 #3212); RESUME block rewritten.
 2026-11-17 (night): owner: films are EN only, other languages ad hoc on request (RESUME item 5 closed).
