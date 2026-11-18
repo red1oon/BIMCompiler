@@ -277,7 +277,7 @@ of the count, open it once with `?ignore-me` at the end of the address.
 2. **Code Facts is in the Extensions view** (the repo's own add-on, §4.1). Hover a shared field such as `A.camera` in `viewer/grid_views.js`: every write and read is listed. Without VS Code, the same facts: `node devtools/code-facts/code-facts.js help`.
 3. **Terminal ▸ Run Task** lists the tasks of `.vscode/tasks.json` (6 today, table below).
 4. **Snippets:** type `witness`, `slog` or `spec` in a `.js` file and press Tab (table below).
-5. **F5 / Run ▸ Start Debugging** offers **Viewer in Chrome**, ERP, Modeller and **Node: this witness / script** (`.vscode/launch.json`).
+5. **F5 / Run ▸ Start Debugging** offers **Viewer in Chrome**, ERP, Modeller, **This page in Chrome** (any `.html` page open in the editor) and **Node: this witness / script** (`.vscode/launch.json`).
 6. **Recommended extensions:** ESLint is listed in `.vscode/extensions.json`; VS Code offers it on first open, and `--install` installs it.
 
 **Editor tasks** (Terminal ▸ Run Task):
@@ -287,9 +287,16 @@ of the count, open it once with `?ignore-me` at the end of the address.
 | Serve repo (http://localhost:8000) | `python3 -m http.server 8000` in the background |
 | Lint viewer (no-undef gate) | `npx eslint viewer` |
 | Lint as CI does (viewer + modeller) | `npx eslint viewer modeller`: the `no-undef` check that catches a missing global |
-| Run this witness (full log → logs/) | `node <current file>`; full output to `logs/<name>.log`, last 20 lines and the exit code on screen. Line 1 of the log is a `§LOG_STAMP` (§6) |
+| Run this witness (full log → logs/) | `node <current file>` (a `.sh` file runs with `bash`); full output to `logs/<name>.log`, last 20 lines and the exit code on screen. Line 1 of the log is a `§LOG_STAMP` (§6) |
 | Run viewer witness suite (full log → logs/) | the headless witness suite (also `npm test`) |
+| Run Modeller witnesses (full log → logs/) | `modeller/tests/run_all_witnesses.js`; full output to `logs/modeller_witnesses.log` |
+| red1 shell (ERP + BIM door) | the `red1` command line in the terminal panel |
+| Set up this folder (node scripts/setup.js) | step 1 above, from inside VS Code |
 | Regenerate editor indexes | the committed `internal/APP_SURFACE.md` and `types/globals.gen.d.ts`. Code Facts does not need this: it keeps its own fresh copy (§4.1) |
+
+**Everything runnable is runnable from the folder you opened.** Every app page, command, runner and the setup script has a route above: a named
+task or launch, or a generic one for the file open in the editor. `node scripts/tests/witness_vsc_operational.js` checks all of them (39 on
+2026-11-19) and fails when a new one has no route, so a PR that adds a page, a command or a runner adds its route too.
 
 **Editor snippets** (type the word, press Tab; `.vscode/witness.code-snippets`):
 
