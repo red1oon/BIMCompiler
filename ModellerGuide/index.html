@@ -1645,10 +1645,54 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#change-list-and-add-on-ifc" class="md-nav__link">
+  <a href="#1-open-the-upgrade-panel" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Change list and Add-on IFC
+        1. Open the Upgrade panel
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-see-what-each-pack-can-do-on-this-building" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. See what each pack can do on this building
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-run-a-pack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Run a pack
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-export-ifc-send-what-this-upgrade-added" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Export (IFC): send what this upgrade added
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#beam-schedules-where-they-come-from-and-other-firms-layouts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Beam schedules — where they come from, and other firms' layouts
       
     </span>
   </a>
@@ -4392,10 +4436,54 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#change-list-and-add-on-ifc" class="md-nav__link">
+  <a href="#1-open-the-upgrade-panel" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Change list and Add-on IFC
+        1. Open the Upgrade panel
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-see-what-each-pack-can-do-on-this-building" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. See what each pack can do on this building
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-run-a-pack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Run a pack
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-export-ifc-send-what-this-upgrade-added" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Export (IFC): send what this upgrade added
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#beam-schedules-where-they-come-from-and-other-firms-layouts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Beam schedules — where they come from, and other firms' layouts
       
     </span>
   </a>
@@ -5457,10 +5545,17 @@ doors, up risers between storeys.</p>
 <p><img alt="The Duplex after Route ▶ — a real ELEC trunk is now rendered (0→3,922 segments, verified by framebuffer diff), threaded through the walked fixtures and recoloured magenta for this shot (its real default is gold, the same family as the ELEC fixture boxes, which read as low-contrast clutter against the wall in a static frame); the important thing this proves is that nothing renders outside the building anymore" src="../img/modeller/seedtrunk-trunk.png" /></p>
 <hr />
 <h2 id="upgrade-add-rule-based-detail-lod-400">Upgrade — add rule-based detail (LOD 400)<a class="headerlink" href="#upgrade-add-rule-based-detail-lod-400" title="Permanent link">&para;</a></h2>
-<p>The <strong>↑ Upgrade</strong> pill (an up arrow, top right) adds detail to the open building by rule: it reads what the
-model and its drawings already state, applies a published rule where they say nothing, and adds the parts.
-It does not change the parts that are already there.</p>
-<p>Tap the arrow. The Upgrade panel lists the rule packs, one row each:</p>
+<p>The <strong>↑ Upgrade</strong> arrow adds detail to the open building by rule: it reads what the model and its drawings
+already state, applies a published rule where they say nothing, and adds the parts (rebar, welds, material
+layers, steel joints, gussets). It never changes or removes a part that is already there.</p>
+<h3 id="1-open-the-upgrade-panel">1. Open the Upgrade panel<a class="headerlink" href="#1-open-the-upgrade-panel" title="Permanent link">&para;</a></h3>
+<p>Open your building (<strong>📂 Open</strong>), then tap the <strong>↑ arrow</strong> at the top right of the toolbar.</p>
+<p><img alt="The Upgrade arrow, top right of the Modeller toolbar" src="../img/modeller/upgrade-1-arrow.png" /></p>
+<h3 id="2-see-what-each-pack-can-do-on-this-building">2. See what each pack can do on this building<a class="headerlink" href="#2-see-what-each-pack-can-do-on-this-building" title="Permanent link">&para;</a></h3>
+<p>The panel lists the rule packs, one row each. Every row says what it <strong>applies to</strong> on the open building (or
+<em>0 not applicable here</em>), how many <strong>rule rows</strong> are stated, default or unset (<strong>Rules</strong> opens them), and
+what the <strong>last run</strong> added, refused and did not build.</p>
+<p><img alt="The Upgrade panel: one row per rule pack, each with what it applies to, its rule rows and its last run" src="../img/modeller/upgrade-2-panel.png" /></p>
 <table>
 <thead>
 <tr>
@@ -5473,7 +5568,7 @@ It does not change the parts that are already there.</p>
 <tr>
 <td><strong>Rebar (from schedules)</strong></td>
 <td>bar sets in footings and columns</td>
-<td>schedules attached to the elements by a 2D conversion (<a href="../DXF2BIMGuide/">DXF2BIM</a>)</td>
+<td>schedules attached by a 2D conversion (<a href="../DXF2BIMGuide/">DXF2BIM</a>)</td>
 </tr>
 <tr>
 <td><strong>Truss welds</strong></td>
@@ -5498,40 +5593,47 @@ It does not change the parts that are already there.</p>
 <tr>
 <td><strong>Beam rebar (schedule)</strong></td>
 <td>bars and stirrups in concrete beams</td>
-<td>a beam bar schedule you load (the reinforcement table of the drawings, as a marks file)</td>
+<td>the beam schedule: tap <strong>Load schedule…</strong> first (below)</td>
 </tr>
 </tbody>
 </table>
-<p>Each row says what it <strong>applies to</strong> on the open model (for example <em>applies to 106 beam ends</em>, or
-<em>0 not applicable here</em>), how many <strong>rule rows</strong> are stated, default or unset, and what the <strong>last run</strong>
-added, refused and did not build.</p>
+<h3 id="3-run-a-pack">3. Run a pack<a class="headerlink" href="#3-run-a-pack" title="Permanent link">&para;</a></h3>
+<p>Tap <strong>Run</strong> on a row. A long run shows its progress in the row (<em>Beam rebar: beam 50 of 92</em>) and the page keeps
+working. When it ends, the row and the status line say what was added, and the parts are in the model.
+<strong>Ctrl+Z</strong> removes the whole run in one step.</p>
+<p><img alt="After Run on Rebar (from schedules): the row says added 256 / refused 0 / not built 35; the status line says Ctrl+Z removes it all" src="../img/modeller/upgrade-3-run.png" /></p>
+<p>Where a rule cannot be applied, the part is <strong>refused</strong> with its reason (for example <em>would clash with a
+neighbouring element</em>); nothing is guessed. Steel joints and gussets are <strong>configuration only: capacity is not
+checked</strong>, a starting detail for the engineer, not a design.</p>
+<h3 id="4-export-ifc-send-what-this-upgrade-added">4. Export (IFC): send what this upgrade added<a class="headerlink" href="#4-export-ifc-send-what-this-upgrade-added" title="Permanent link">&para;</a></h3>
+<p>At the bottom of the panel:</p>
 <ol>
-<li>Tap <strong>Run</strong> on a row. A long run shows its progress in the row (<em>Beam rebar: beam 50 of 92</em>) and the page
-   keeps working while it runs.</li>
-<li>The added parts appear in the model. A wall split into layers is drawn as its layers.</li>
-<li><strong>Ctrl+Z</strong> removes the whole run in one step.</li>
+<li>Pick the schema beside <strong>Export (IFC) as</strong>: <strong>IFC2X3</strong> or <strong>IFC4</strong>.</li>
+<li>Tap <strong>Export (IFC)</strong> (hover: <em>Exports out what was added from this upgrade</em>). It is greyed out until a run
+   has added parts.</li>
+<li>The browser saves the file to your downloads folder, named after the model:
+   <code>&lt;model&gt;_upgrade_IFC2X3.ifc</code>. The line under the buttons says what went in:</li>
 </ol>
-<p><strong>Rules</strong> opens the pack's rule rows (value, unit, source). A value you enter with a stated source wins over
-a default; run again to see the new result. Nothing is guessed: where a rule cannot be applied the part is
-<strong>refused</strong> with its reason (for example <em>would clash with a neighbouring element</em>), and the refusals are
-listed with the added parts.</p>
-<p><strong>Beam rebar (schedule):</strong> tap <strong>Load schedule…</strong> and pick the marks file (one row per beam mark: width,
-depth, bottom and top bars, side bars, stirrups). The row then says how many beams it applies to. The run
-reports any beam whose body cannot hold the stated bars, and does not bend the bars to fit.</p>
-<p>Steel joints and gussets are <strong>configuration only: capacity is not checked</strong>. They are a starting detail for
-the engineer, not a design.</p>
-<h3 id="change-list-and-add-on-ifc">Change list and Add-on IFC<a class="headerlink" href="#change-list-and-add-on-ifc" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Change list (.txt)</strong> downloads every added, refused and not-built row of the runs, in plain text.</li>
-<li><strong>Add-on IFC</strong> writes <strong>only the added parts</strong> of every pack that ran (not the model), as IFC2X3 or IFC4 (the
-  menu beside it), to send next to the original model. It is enabled once a run has added parts. The file is
-  named after the model, for example <code>JPAM_base_addon_IFC2X3.ifc</code>.</li>
-<li>Every storey the parts sit on needs an elevation. If the model does not carry one, the button says which
-  storeys have none and writes nothing (no elevation is invented). <strong>Load frame…</strong> reads a small JSON file
-  with <code>storey_elevations_m</code> (and, optionally, the site placement and shift of the original model), so the
-  add-on lands in the original's coordinates.</li>
-<li>Bar sets with mixed bar sizes are written as one IFC bar element per size.</li>
-</ul>
+<p><img alt="The bottom of the panel: Export (IFC) as IFC2X3, Load frame…, Change list (.txt), Export (IFC), and the line &quot;Export (IFC, IFC2X3): 256 parts, 10.5 MB&quot;" src="../img/modeller/upgrade-4-export.png" /></p>
+<p>The file holds <strong>only what this upgrade added</strong>, every part of every pack you ran (no discipline is picked; Undo a
+run to leave it out), and nothing of the model itself. Send it with the original model: the receiving team lays
+it over their own. For the <strong>whole building</strong> as IFC, use <strong>Export ▸ IFC</strong> on the toolbar instead.</p>
+<p><strong>Change list (.txt)</strong>, beside it, downloads the same runs as a plain list: every added, refused and not-built row.</p>
+<p><strong>If Export (IFC) refuses</strong> with <em>Storey "…" has no elevation</em>: the model does not carry its storey heights, and
+none is invented. Tap <strong>Load frame…</strong> and pick a small JSON file with them, then tap <strong>Export (IFC)</strong> again:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="w"> </span><span class="nt">&quot;frame_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;storey heights from the author&#39;s IFC&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;storey_elevations_m&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;GROUND FLOOR&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;LEVEL 1&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">4.8</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;ROOF&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">9.05</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+<p>The file may also hold <code>site</code> (the original model's site placement) and <code>shift_m</code> (the move from this model's
+coordinates to the original's), so the export lands exactly on the original.</p>
+<h3 id="beam-schedules-where-they-come-from-and-other-firms-layouts">Beam schedules — where they come from, and other firms' layouts<a class="headerlink" href="#beam-schedules-where-they-come-from-and-other-firms-layouts" title="Permanent link">&para;</a></h3>
+<p><strong>Load schedule…</strong> (in the <strong>Beam rebar (schedule)</strong> row) takes the drawing's <strong>schedule sheet as a <code>.dxf</code></strong> (the
+beam table is read from the sheet itself) or a <strong>marks file (<code>.json</code>)</strong> made from it. The row then says what it
+read, for example <em>22 marks read from the drawing (format revit-s401-style, one building)</em>.</p>
+<p>How a table is read (which heading is which bar, how <code>8T25</code> or <code>2T10-150</code> is read) and how a beam finds its row
+(its type mark in the element name) is <strong>data, not code</strong>: tap <strong>Formats</strong> in the same row to see and edit it. A
+schedule with other headings is refused with the headings it found; one new entry in <strong>Formats</strong> for that layout
+is enough to read it. <strong>Download edits</strong> saves your formats to share.</p>
 <h2 id="history-the-slider-is-the-timeline">History — the slider <em>is</em> the timeline<a class="headerlink" href="#history-the-slider-is-the-timeline" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Drag the <strong>history scrubber</strong> back to undo, forward to redo — it scrubs the signed op-log and re-folds the
@@ -5712,7 +5814,7 @@ whole batch of detected clashes as one topic set.</p>
 </tr>
 <tr>
 <td><strong>↑ Upgrade</strong></td>
-<td>Add rule-based detail: rebar, welds, layers, steel joints, gussets, beam bars; change list and Add-on IFC (see <a href="#upgrade-add-rule-based-detail-lod-400">Upgrade</a>)</td>
+<td>Add rule-based detail: rebar, welds, layers, steel joints, gussets, beam bars; change list and <strong>Export (IFC)</strong> of what was added (see <a href="#upgrade-add-rule-based-detail-lod-400">Upgrade</a>)</td>
 </tr>
 <tr>
 <td><strong>Move Grid</strong></td>
