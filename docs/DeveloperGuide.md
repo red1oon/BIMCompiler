@@ -385,6 +385,11 @@ For bim-compiler specs to show in a `§TAG` hover, keep the two clones side by s
 `bimDevtools.compilerRoot`. Its witnesses (node only, no VS Code needed) are listed in its `README.md`.
 
 
+**The same facts in a terminal: `x0`.** `node devtools/x0/x0.js help` lists its verbs: `where <field>`, `uses <field>`, `tag <§TAG>`,
+`loaded <file>`, `cost [base]`, `last <file>`, `context <file>`, `check [base]`, `pure`, `bump …`. It runs the same code as X0 Navigator and the
+x0-facts server, so all three give the same answer (W-X0-CLI checks each verb against the server). It is read-only except `bump`, which is
+`scripts/bump.js`. No page loads it.
+
 ### 4.2 Working with an AI assistant in VS Code (optional)
 
 Nothing in this project needs an AI assistant, and X0 Navigator never calls one. If you choose to use one, this is how it fits. The facts
@@ -540,11 +545,21 @@ There are three service workers, each with its own `CACHE_VERSION`: `viewer/sw.j
 reason for a bump in the commit message, not in the `sw.js` line. The 4D schedule also has its own cache key,
 `_GANTT_CACHE_VERSION` in `viewer/tm_dash.js`. If you change how a schedule is built, bump it by hand (`bump.js` does not).
 
+**The Modeller is written from `modeller/modules.json`** (since 2026-11-18). There `bump.js` raises the module's one version number in
+`modules.json` and the app's `CACHE_VERSION`, then writes the page, the lazy lists and `sw.js` from it, including the `?v=` inside the page's
+own scripts. Do not edit a Modeller script tag, a `?v=` or a `PRECACHE_ASSETS` entry by hand: CI (W-MANIFEST-ROUNDTRIP) fails with the
+file, the line and the command to run. Comments between the tags stay yours.
+
 ### 5.2 Adding a new browser file
 
 Add its `<script src="name.js?v=1">` in the right place in the page (order matters, §0 #2), add it to that app's
 `PRECACHE_ASSETS` in `sw.js` **unless it is lazy on purpose**, bump `CACHE_VERSION`, and add any new shared global name to
 `eslint.globals.json`.
+
+**In the Modeller,** add the module's line to `modeller/modules.json` instead (its `v`, `load`, `precache`; its tag in `order` at the place it
+must load; its entry in `precacheOrder` unless it is lazy on purpose), then run `node scripts/gen_manifest.js --write modeller`: it writes the
+tag and the precache entry on their own lines. If the new file reads another module while it loads, `--check` lists that as an unreviewed
+order edge (`§DEPS_UNREVIEWED`) until a person puts it in `deps`, `uses` or `notDeps`.
 
 ### 5.3 Changing data
 
