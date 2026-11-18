@@ -262,3 +262,20 @@ Made after W-RESTORE-DRILL is green; every number on screen from the witness log
 
 **What the CLI lane builds after your yes:** `team.status` (outbox, unsent, local-only with reasons, the last sync, base check) and `team.inbox` (fetched, not yet applied), over that file. Each gets a witness, an independent SQL oracle and a falsifier. `team.send` waits.
 **Open question for this lane:** does part 1 change the Team BASE hash or any wire format? (The CLI lane expects not, since the log is device-local.)
+
+## §54 W-DOCNO-TILL's TILL legacy arm — spec (2026-11-18, owner: *"yes run it"*; the §48.10 arm that has printed INCONCLUSIVE since 2026-10-31)
+**The issue:** D1-D6 prove the twin numbers `Org-Till-n` per till (the prefix `@AD_Org_ID.Value/K@-@C_POS_ID.Name/K@-`). But legacy never ran that format. The witness only checked that `scripts/bridge/out/docno_till_legacy.json` EXISTS, so producing the file alone would have turned INCONCLUSIVE into a pass with nothing judged (scope-blind).
+- **L1 the legacy run** is `scripts/bridge/docno_till_legacy.js`, built like `docno_station_legacy.js` (local pilot only, throwaway rows):
+  - one sequence `DTLT-<tag>` with the twin's exact row: prefix, StartNo 1, CurrentNext 1, DecimalPattern `000000`, not org-level;
+  - one doc type cloned from 132 that numbers with it;
+  - three C_POS rows cloned from the pilot's own 100: `T1` and `T2` in HQ (11), `N1` in Store North (50002);
+  - then draft Sales Orders through the real web service as GardenAdmin (role 102), in the twin's order: T1, T2, T1, T1, T2, N1, then one with NO till (D6);
+  - each order's DocumentNo and the `AD_Sequence_No` keys and next values are read back and written to the JSON.
+- **L2 the comparison** (bim-ootb `erp/tests/witness_docno_till.js`, replacing the existence check): the twin device A's 7 numbers equal legacy's at every position. The twin's `AD_Sequence_No` keys and next values for that sequence equal legacy's. A missing file stays INCONCLUSIVE.
+- **Falsifier:** `DT_BREAK=tillorder` swaps two twin positions, and L2 must FAIL.
+**§54 RESULT ✅ (witness, 2026-11-18):** L1 ran on the local pilot (`scripts/bridge/out/docno_till_legacy.log`; seq 1000219, doc type 1000059, C_POS 1000000-1000002, draft orders 1010580-1010586).
+- **Legacy numbered:** `HQ-T1-000001, HQ-T2-000001, HQ-T1-000002, HQ-T1-000003, HQ-T2-000002, Store North-N1-000001, HQ--000001`.
+- **Legacy's keys:** `HQ-T1=4, HQ-T2=3, HQ=2, Store North-N1=2`.
+- **L2 PASS:** the twin gives the same at all 7 positions, with the same 4 keys and next values. W-DOCNO-TILL is PASS judged=25 fails=0 **inconclusive=0**; it was 1 INCONCLUSIVE since 2026-10-31. D20 (the station arm) is still PASS.
+- **Falsifier** `DT_BREAK=tillorder` FAILs L2 (exit 1).
+- **Measured, not judged:** an order with no till numbers `HQ--n` on BOTH sides. That is legacy's behaviour (an empty key part), not a twin divergence.
