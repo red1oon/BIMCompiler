@@ -598,6 +598,23 @@ verdicts? Proposal: yes, a small JSON per run.
 in a witness that the map lists.
 **DECISIONS:** *(none yet)*
 
+**E0 BUILD SPEC — `witness_kit/paths.js` (2026-11-18, tenth session; §READY, no owner decision).** Measured on bim-ootb main `b9b2e522`:
+`git ls-files` witness files under `tests/` = 1,320, of which **326 hard-code `/home/red1/`**; the roots they name: `bim-compiler/node_modules` 125 · `bim-ootb/tests` 108 ·
+`bim-ootb/node_modules` 98 · `bim-compiler/deploy` 23 · `bim-ootb` 20 · `bim-ootb/buildings` 16 · `bim-compiler/scripts` 9 · `Downloads/OPEN…` 4 · others ≤ 3; plus `os.homedir()`
+joins (`bim-ootb/buildings` 30, `Videos/dxf2bim_film_work/why/cli/marked` 27, `Downloads/JALAN JELAPANG IFC` 17, `bim-compiler/node_modules/puppeteer` 11 …).
+A hard-coded `/home/red1/bim-ootb/…` also makes a witness run in a `/tmp/wt-*` worktree read the SHARED checkout's files, not the tree under test.
+- **What E0 builds:** one dev-side module, `witness_kit/paths.js`, no dependency, nothing reaches the browser. Roots: `ootb()` = the tree the module itself lives in
+  (so a worktree resolves to itself) · `compiler()` = `$BIM_COMPILER_ROOT`, else `~/bim-compiler` · `home(...parts)` · `cache(name)` = `~/.cache/<name>` ·
+  `input(name)` = a named outside input (`shed_raw`, `shed_marked`, `jelapang_ifc`, …) from its env variable (`SHED_RAW_DIR` …) else today's default folder ·
+  `nodeModule(name)` = the first of `<ootb>/node_modules`, `<ootb>/tests/node_modules`, `<compiler>/node_modules` that holds it (the three places witnesses load from today) ·
+  `need(path, why)` = the path, or a thrown error whose message starts `MISSING input` (the runner already reads that as ENV). Every resolver prints nothing; `describe()` returns the table.
+- **No behaviour change in E0:** no existing witness is edited. Converting the 326 files is a later mechanical step, done by the proof map (Part E, after E-1).
+- **Witness W-PATHS** (`witness_kit/tests/witness_paths.js`): (1) on this machine every measured hard-coded root equals what the resolver returns for it (`/home/red1/bim-compiler/node_modules`
+  = `nodeModule` dir for a module that lives there, etc.), judged by `fs.realpathSync` on both sides; (2) in a worktree `ootb()` is the worktree, not `~/bim-ootb`;
+  (3) env overrides win (`BIM_COMPILER_ROOT`, `SHED_RAW_DIR`) in a child process; (4) red controls: an unknown input name throws; `need()` on a missing path throws `MISSING input …`;
+  a module found in none of the three places throws naming all three. INCONCLUSIVE when a measured root does not exist on this machine (a CI runner): that row is NOT-JUDGED, never PASS.
+  Verdict line: `§PATHS roots= judged= same= env_override= red= verdict=`.
+
 ---
 
 ## PART F — A VS Code extension for this codebase   (owner: *"a plugin or addon that specifically handles this codebase elegantly and dev help really"*)
@@ -809,7 +826,7 @@ first. C is long and best done slowly, module by module, after B/D make ownershi
 | B | B1 build (B1 BUILD SPEC, 2026-11-18; answered 2026-11-18) | none | |
 | C | nothing; waits on B and D | C-1 part names + owners | |
 | D | nothing new; the multi-publisher list already exists (`types/globals.gen.d.ts`) | D-1 where the questions list lives | needs B's `owner` field |
-| E | `witness_kit/paths.js` (no behaviour change; witness: the same suite verdicts before and after) | E-1 the `PROVES:` header format | |
+| E | `witness_kit/paths.js` (E0 BUILD SPEC in Part E) | E-1 the `PROVES:` header format | |
 | F | the F-1 headless Fetch-back button (browser-run go given 2026-11-16) | none (F-2 ceilings on 2026-11-30) | |
 
 Ask the owner **one decision per message, with the recommendation** (START HERE 2). The recommendations are in each part and in ADVICE A.
