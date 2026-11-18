@@ -4,6 +4,8 @@ Scope: **SPEC and built-step ledger** for the CLI front ends on the door: the MI
 
 ## ▶▶▶ RESUME HERE — 'resume CLI' (2026-11-18)
 
+**▶ FROM THE HELP LANE (2026-11-18, VOCAB_MESSAGE_CATALOG §19.9 / §19.10; open for this lane, not blocking):** `HelpSearch.indexFrom` (`erp/help_search.js`) now takes `processIds` (the role's menu processes and reports). With it the card gains `card.process` `{id, name, report}`, and from §19.10 the name is in the screen language. `erp.ask` (`common/door/erp_cli.js`) does not pass it yet, so the door's `ask` is windows-only while the page lists processes: a divergence between the two ends. To close it, pass the same set the page's `menu().processes` holds: active P/R menu leaves whose process the role can access (the SQL is in `common/help/tests/witness_hq_legacy_superset.js` `pids`). Then show the Process row at the prompt. Witness: W-ERP-ASK plus a red control that leaves `processIds` out. Also from §19.10: the ERP `i18n/help/<lang>/index.json` now holds its HEADER ONLY. Records come from `HelpRecords.build` (as `indexFrom` already does), so nothing in the door should read `index.json` `.records`. A grep found no reader.
+
 **▶ SESSION CLOSE 2026-11-18 (late, read FIRST):** **§41 BUILT + MERGED** (bim-ootb #3239, `e3295b00`):
 - `#<text>` at the prompt is now legacy's Document Search (`/text` in iDempiere's Global Search).
 - `@` is reserved.
