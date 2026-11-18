@@ -474,3 +474,6 @@ DBs — no schema or row content was assumed. If this spec is picked up cold, re
 count and the `M_Warehouse` seed rows haven't changed before trusting the "zero rows" / "no HHS warehouse"
 claims — this is a fast-moving repo (see [[feedback_dont_relitigate_settled_doctrine]] for why re-verification
 before trusting a stale status note is the house discipline here, not paranoia).
+
+## Note from the VOCAB lane (2026-11-18): the HBA family drawer and its transform
+Found by W-DRAG-SWEEP (`VOCAB_MESSAGE_CATALOG.md` §14.5.3a D1): `#hba-fm-drawer` is placed with `top:50%; transform:translateY(-50%)` (`viewer/hba_lens.js:1031`). **Fixed generically in `common/drag.js`:** on drag it used to jump up by half its height (dragged +60, moved −147), and now it follows the pointer. **Still open for this lane:** `A._placePanel(d, { top: d.getBoundingClientRect().top, … })` (`hba_lens.js:1059`) sets `style.top` to the on-screen top while the transform still applies, so the drawer opens half its height higher than the placement means.

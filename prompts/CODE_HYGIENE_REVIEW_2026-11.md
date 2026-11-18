@@ -327,3 +327,6 @@ B-items (viewer caches kept past mode exit, permanent intervals) · A5 legacyDb 
   Doc_AllocationHdr / Doc_BankStatement / Doc_GLJournal and the MatchInv IPV split, and doc_poster is itself a live posting
   path in the twin architecture — recorded as twin work items in `prompts/SQLiteIDEMPIERE.md §POSTING-PARITY 2026-11-03`.
   Retire only after those land.
+
+## Note from the VOCAB lane (2026-11-18): a second drag implementation in `viewer/tm_panel.js`
+Found by W-DRAG-SWEEP (`VOCAB_MESSAGE_CATALOG.md` §14.5.3a D3, `§DRAG_OWN_IMPL`): `viewer/tm_panel.js:664` keeps its own `function makeDraggable`, a copy of the old helper, while every other floating panel uses the one helper `common/drag.js` (`CommonDrag.make` / `A._makeDraggable`). So the Time Machine panel misses the helper's later fixes: tap-through in the strip, `_dragClamp`, `_dragRemember`, and the translated-panel fix of §14.5.3a D1. AD-LAYER LAW 5 says one implementation per responsibility. The fix is to call `A._makeDraggable(TMS._panel)` at `tm_panel.js:367` and delete the local copy. Not changed by the VOCAB lane (TM's file); W-DRAG-SWEEP will then count it as a caller (N 13 → 14).
