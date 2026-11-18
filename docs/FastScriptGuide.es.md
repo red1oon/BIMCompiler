@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 24dfe73f0ea2cdfd
+source_sha: b6044f3db00e8cee
 lang: es-419
 ---
 
@@ -119,7 +119,7 @@ cost: the cost of a selection: cost [phase|task|storey|discipline|class] [column
     e.g. in Duplex: viewer.cost building=Duplex by=discipline
 ```
 
-**Ayuda en su propio idioma.** `ask "<question>"` hace una pregunta a la misma ayuda que el cuadro de preguntas del ERP del navegador, en palabras sencillas, y funciona en un tipo del ERP (`cd Order`). La respuesta nombra la ventana, la acción del documento y los estados desde los que se permite, la línea de comandos que la hace y la sección de la guía. Se lee del diccionario y de los paquetes de idioma publicados de iDempiere; no hay IA dentro, y solo lee. El idioma es el elegido con `lang=zh_CN`, si no su preferencia guardada cuando ha iniciado sesión (`login`), si no el `LANG` de su terminal, si no el del sistema. Un texto que el paquete no cubre queda en inglés, como en legacy (la descripción de la acción abajo). Aquí la terminal está en chino:
+**Ayuda en su propio idioma.** `ask "<question>"` hace una pregunta a la misma ayuda que el cuadro de preguntas del ERP del navegador, en palabras sencillas, y funciona en un tipo del ERP (`cd Order`). La respuesta nombra la ventana, un proceso o informe de su menú cuando alguno coincide (como hace la caja del navegador), la acción del documento y los estados desde los que se permite, la línea de comandos que la hace y la sección de la guía. Se lee del diccionario y de los paquetes de idioma publicados de iDempiere; no hay IA dentro, y solo lee. El idioma es el elegido con `lang=zh_CN`, si no su preferencia guardada cuando ha iniciado sesión (`login`), si no el `LANG` de su terminal, si no el del sistema. Un texto que el paquete no cubre queda en inglés, como en legacy (la descripción de la acción abajo). Aquí la terminal está en chino:
 
 <!-- run: red1_ask_zh -->
 ```text
@@ -129,6 +129,7 @@ Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POR
 → erp.ask question=如何关闭销售订单？
 ok · erp.ask
 窗口: 销售订单
+进程: 由费用产生销售订单
 文档动作: 结束 — Finally close this transaction. It cannot be re-activated.
   单据处于以下状态时可用: 完成, 等候付款
 CLI: erp.close kind=Order number=<Document No>
