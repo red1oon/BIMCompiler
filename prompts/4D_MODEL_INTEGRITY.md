@@ -4309,3 +4309,25 @@ and any DCMA reader see an unresourced, float-less schedule; and nothing measure
 - sw viewer v1762, modeller v310 (`scripts/bump.js --write`); `tests/audit_sw_precache.js` 301 found / 0 missing; manifest refreshed.
 - **Next:** LTU's remaining long MEP Rough-in tasks (PLB + SAN on PLUMBER, 4 tasks, plus the 45-day PIPEFITTER task) → split by zone
   (location axis, `location_axis.js`), sandbox first; then §Q.25.5 items 2-4.
+
+## §Q.29 LTU'S LONG MEP ROUGH-IN TASKS — DUCTWORK ON THE PLUMBER CREW, FOUND BEFORE THE ZONE SPLIT (2026-11-19, owner: *"proceeding here with LTU next tasks"*)
+### Q.29.1 MEASURED (main @ #3322, played layer, read-only probe)
+- LTU long tasks (> 44 d), 5 of 87: MEP_Rough_in Plan_1 114 d · Plan_2 59 d · Plan_3 45 d (PIPEFITTER) · Plan_4 52 d · TAKPLAN 118 d; all others PLUMBER.
+- Their content by `elements_meta.discipline` includes `ACMV` IfcFlowSegment / IfcFlowFitting in every one (Plan_4: ACMV is the largest group).
+- **Those ACMV elements are DUCTWORK, not pipe**, by the model's own type names: LTU ACMV IfcFlowSegment 8,268, of which 7,235 are
+  `Spiro kanaler, Förzinkade` (galvanised spiral duct) / `Rektangulära, Förzinkade` (rectangular duct); the rest are mostly cable trays
+  (`Kabelränna`, `Kabelstege`) and conduit (`Tomrör`). Clinic ACMV (3,138) = Revit `M_Rectangular Elbow / Transition` duct fittings.
+- **Cause:** `IfcFlowSegment` / `IfcFlowFitting` (the IFC2x3 generic classes) route to PLUMBER by class alone (rates.js SEQUENCE_RULES),
+  so ducts modelled as the generic class are laid by plumbers. Ducts modelled as `IfcDuctSegment` already go to HVAC_TECH.
+- Fleet: ACMV on these classes exists only in LTU (14,173) and Clinic (3,138). HHS MEP 2,665; JKR PLB/FP; Terminal PLB; Hospital FP/PLB/MEP — untouched.
+### Q.29.2 SPEC (same method as §Q.28, no new trade, no new number)
+- `SEQUENCE_DISCIPLINE_TRADE.ACMV = 'HVAC_TECH'` (the crew the model's own duct class already goes to).
+- `LABOR_RATES.HVAC_TECH.productivity` gains `IfcFlowSegment: 18`, `IfcFlowFitting: 12` — COPIED from the same crew's own
+  `IfcDuctSegment` / `IfcDuctFitting` rows (a generic flow segment carrying air IS a duct segment). Without it the substring lookup finds no key
+  and every moved element hits the 120 s floor (`§TPL_ZERO_MINUTE ... no-productivity-key`). JSON mirror identical.
+- Known, named, not fixed: the ~1,000 LTU cable-tray / conduit elements tagged ACMV move PLUMBER → HVAC_TECH (both wrong; the right crew is
+  ELECTRICIAN; routing by type name would be a new rule — not in this step).
+- Hours WILL change (by design, unlike §Q.28): duct productivity (18 / 12 per day) differs from pipe (20 / 15). Report the delta, do not hide it.
+- **Proof owed:** sandbox caches main vs branch; `run_4d_gates.sh`; DCMA check 8 per building; `§TPL_ZERO_MINUTE` for HVAC_TECH IfcFlow*: 0;
+  `§PIPE_TRADES` + HVAC_TECH element/hour counts; programme days; buildings without ACMV unchanged (5 of 7).
+- **Then:** if LTU still has tasks > 44 d, the zone split (location axis) — sandbox first.
