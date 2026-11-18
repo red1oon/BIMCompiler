@@ -1633,6 +1633,34 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#upgrade-add-rule-based-detail-lod-400" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Upgrade — add rule-based detail (LOD 400)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Upgrade — add rule-based detail (LOD 400)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#change-list-and-add-on-ifc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Change list and Add-on IFC
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#history-the-slider-is-the-timeline" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4352,6 +4380,34 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#upgrade-add-rule-based-detail-lod-400" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Upgrade — add rule-based detail (LOD 400)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Upgrade — add rule-based detail (LOD 400)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#change-list-and-add-on-ifc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Change list and Add-on IFC
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#history-the-slider-is-the-timeline" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5400,6 +5456,82 @@ Walked fixtures have no drag handle yet (clicking one only identifies it), so th
 doors, up risers between storeys.</p>
 <p><img alt="The Duplex after Route ▶ — a real ELEC trunk is now rendered (0→3,922 segments, verified by framebuffer diff), threaded through the walked fixtures and recoloured magenta for this shot (its real default is gold, the same family as the ELEC fixture boxes, which read as low-contrast clutter against the wall in a static frame); the important thing this proves is that nothing renders outside the building anymore" src="../../img/modeller/seedtrunk-trunk.png" /></p>
 <hr />
+<h2 id="upgrade-add-rule-based-detail-lod-400">Upgrade — add rule-based detail (LOD 400)<a class="headerlink" href="#upgrade-add-rule-based-detail-lod-400" title="Permanent link">&para;</a></h2>
+<p>The <strong>↑ Upgrade</strong> pill (an up arrow, top right) adds detail to the open building by rule: it reads what the
+model and its drawings already state, applies a published rule where they say nothing, and adds the parts.
+It does not change the parts that are already there.</p>
+<p>Tap the arrow. The Upgrade panel lists the rule packs, one row each:</p>
+<table>
+<thead>
+<tr>
+<th>Pack</th>
+<th>Adds</th>
+<th>Needs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Rebar (from schedules)</strong></td>
+<td>bar sets in footings and columns</td>
+<td>schedules attached to the elements by a 2D conversion (<a href="../DXF2BIMGuide/">DXF2BIM</a>)</td>
+</tr>
+<tr>
+<td><strong>Truss welds</strong></td>
+<td>fillet welds where a steel member meets a gusset plate</td>
+<td>members and plates in the model</td>
+</tr>
+<tr>
+<td><strong>Layers</strong></td>
+<td>one part per material layer of a wall, floor or ceiling</td>
+<td>the IFC's layer sets (an extracted architecture model)</td>
+</tr>
+<tr>
+<td><strong>Steel joints</strong></td>
+<td>fin plate, bolts and welds at steel beam ends</td>
+<td>steel beams with I-sections and their supports</td>
+</tr>
+<tr>
+<td><strong>Bracing gussets</strong></td>
+<td>a gusset plate, bolts and welds at brace ends</td>
+<td>diagonal steel braces</td>
+</tr>
+<tr>
+<td><strong>Beam rebar (schedule)</strong></td>
+<td>bars and stirrups in concrete beams</td>
+<td>a beam bar schedule you load (the reinforcement table of the drawings, as a marks file)</td>
+</tr>
+</tbody>
+</table>
+<p>Each row says what it <strong>applies to</strong> on the open model (for example <em>applies to 106 beam ends</em>, or
+<em>0 not applicable here</em>), how many <strong>rule rows</strong> are stated, default or unset, and what the <strong>last run</strong>
+added, refused and did not build.</p>
+<ol>
+<li>Tap <strong>Run</strong> on a row. A long run shows its progress in the row (<em>Beam rebar: beam 50 of 92</em>) and the page
+   keeps working while it runs.</li>
+<li>The added parts appear in the model. A wall split into layers is drawn as its layers.</li>
+<li><strong>Ctrl+Z</strong> removes the whole run in one step.</li>
+</ol>
+<p><strong>Rules</strong> opens the pack's rule rows (value, unit, source). A value you enter with a stated source wins over
+a default; run again to see the new result. Nothing is guessed: where a rule cannot be applied the part is
+<strong>refused</strong> with its reason (for example <em>would clash with a neighbouring element</em>), and the refusals are
+listed with the added parts.</p>
+<p><strong>Beam rebar (schedule):</strong> tap <strong>Load schedule…</strong> and pick the marks file (one row per beam mark: width,
+depth, bottom and top bars, side bars, stirrups). The row then says how many beams it applies to. The run
+reports any beam whose body cannot hold the stated bars, and does not bend the bars to fit.</p>
+<p>Steel joints and gussets are <strong>configuration only: capacity is not checked</strong>. They are a starting detail for
+the engineer, not a design.</p>
+<h3 id="change-list-and-add-on-ifc">Change list and Add-on IFC<a class="headerlink" href="#change-list-and-add-on-ifc" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Change list (.txt)</strong> downloads every added, refused and not-built row of the runs, in plain text.</li>
+<li><strong>Add-on IFC</strong> writes <strong>only the added parts</strong> of every pack that ran (not the model), as IFC2X3 or IFC4 (the
+  menu beside it), to send next to the original model. It is enabled once a run has added parts. The file is
+  named after the model, for example <code>JPAM_base_addon_IFC2X3.ifc</code>.</li>
+<li>Every storey the parts sit on needs an elevation. If the model does not carry one, the button says which
+  storeys have none and writes nothing (no elevation is invented). <strong>Load frame…</strong> reads a small JSON file
+  with <code>storey_elevations_m</code> (and, optionally, the site placement and shift of the original model), so the
+  add-on lands in the original's coordinates.</li>
+<li>Bar sets with mixed bar sizes are written as one IFC bar element per size.</li>
+</ul>
 <h2 id="history-the-slider-is-the-timeline">History — the slider <em>is</em> the timeline<a class="headerlink" href="#history-the-slider-is-the-timeline" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Drag the <strong>history scrubber</strong> back to undo, forward to redo — it scrubs the signed op-log and re-folds the
@@ -5577,6 +5709,10 @@ whole batch of detected clashes as one topic set.</p>
 <tr>
 <td><strong>Grid</strong></td>
 <td>Show / add a construction grid</td>
+</tr>
+<tr>
+<td><strong>↑ Upgrade</strong></td>
+<td>Add rule-based detail: rebar, welds, layers, steel joints, gussets, beam bars; change list and Add-on IFC (see <a href="#upgrade-add-rule-based-detail-lod-400">Upgrade</a>)</td>
 </tr>
 <tr>
 <td><strong>Move Grid</strong></td>
