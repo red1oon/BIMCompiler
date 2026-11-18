@@ -3763,3 +3763,24 @@ fixed — Clinic                                                  941 / 3,197   
 One read changed (`o.start_ts`). `§GANTT_LOCK_BASELINE` prints `opsWithNoStart=` and says INCONCLUSIVE when nothing was judged. G-LI-0 reads the field names off `loadOps`' source so a rename fails in the witness. Gates GREEN 8 / 8; edit-undo 9 / 0, edit-lock 5 / 0, gesture wiring 16 / 0, edit exception 23 / 0.
 **Since when:** not bisected. The gate has been granting every lock for as long as `_ops` has carried `start_ts` without `timestamp`.
 **NEXT: step 2 (`witness_tm_needle_sync`).**
+### Q.19.5 STEP 2 SPEC — `witness_tm_needle_sync` (G-A), written before the witness (2026-11-18)
+**Issue:** nothing checks that the needle, the bars, the slider, the day counter and the ruler read the same instant as the canvas. Read in the code, to be measured, not yet claimed as defects:
+- the bar frame marks a bar active on `start <= cursor <= end` (`drawGanttMini`); the canvas builds on `start <= cursor < end` (§I row "is it on screen at cursor?");
+- the slider writes the cursor at day + 24 h (`onSlide`), and reads it back as the last ladder day at or before the cursor's day (`configSlider`), so the read can land one notch after the write;
+- the slider's ladder is LOCAL midnight; the task windows, the day counter and the ruler's `dN` count 24 h steps from the first instant of the programme (UTC midnight);
+- the display axis starts 1 ms before the first bar (it inherits the "truly empty" 1 ms of `projectStart`), so every ruler tick sits 1 ms before its day;
+- no edit path calls `anchorFromCursor` / `configSlider`, though every one recomputes the ladder.
+**Population:** the persisted played layer of all seven buildings (`cache_4d_run.js`, `layerOf(run)` = played), turned into ops in `loadOps`' own field names and judged through the SHIPPED `GanttModel.buildTasks` / `computeDays` and the shipped panel and drawer functions sliced from source. The edit claims run the shipped `commitGanttDrag` on a real building DB (Duplex; `NS_BLD` for another). Each claim prints the population it judged and says INCONCLUSIVE on an empty one. Time zones: UTC, Asia/Kuala_Lumpur, America/New_York.
+| claim | what must hold | owner called |
+|---|---|---|
+| NS-0 | the fixture is the viewer's shape (op field names read off `loadOps`; every element has one bar) | `loadOps`, `GanttModel.buildTasks` |
+| NS-1 | every element plays inside its own bar: bar start <= start < end <= bar end | played layer, `buildTasks` |
+| NS-2 | no bar is under the needle with nothing of it building: uncovered time per bar <= 1 ms per member (the rounding `W-RWB-1` already allows) | same |
+| NS-3 | the bars the drawer frames as active are exactly the bars that own an element the canvas is building, at every bar boundary and every slider stop | `drawGanttMini` (recording canvas), frontier rule of `renderAtTime` |
+| NS-4 | the needle is never parked while the canvas still builds: display axis covers the playback bounds, and the drawn hairline x lies inside every active bar's drawn rectangle | `computeDays`, `drawGanttMini`, `drawGanttRuler` |
+| NS-5 | one day origin: at any cursor the counter's `DAY n`, the ruler's `dN` under the needle and the slider's notch name the same day; ruler ticks sit exactly on bar-day boundaries | `updateStatus`, `ganttRulerTicks`, `configSlider` |
+| NS-6 | slider round trip: set notch i, slide, read back, the slider still says i (DAY, HR and the finest mode) | `onSlide`, `anchorFromCursor`, `configSlider` |
+| NS-7 | after a committed bar move and a resize: NS-1 to NS-5 hold on the new timeline, and the slider's range and notch equal what a fresh read of the cursor gives | `commitGanttDrag` |
+| NS-R | red control: an element pushed outside its bar, and a bar stretched past its elements, must fail NS-1 / NS-2 | — |
+**Predictions on main:** NS-0, NS-1, NS-2 green (tiling, §TM_REVEAL_TILED); NS-3 red at exact bar ends; NS-5 red (1 ms axis origin in every zone; ladder off the day grid outside UTC); NS-6 red; NS-7 red on the slider refresh. NS-4 unknown.
+**Fix, only for what goes red:** one owner of "which day / hour is this instant" in `gantt_model.js`, on the programme's own day grid, used by the ladder, the counter, the anchor and the slider; the slider writes the last instant of its notch; the ladder recompute refreshes the slider; the active frame uses the canvas's half-open rule; the display axis starts on the first instant. The wall-clock label and the sun keep local time (the sun reads the cursor's local hour; not this step).
