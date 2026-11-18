@@ -1,19 +1,29 @@
-§FILM_TREE work=/home/red1/.cache/film_dev_setup/work base_commit=41b6b676
-§FILM_X0 installed=true active=true version=0.1.0 fresh="§APP_SURFACE files=3470 fields=1869 alias_only=1599 phantom=179 untied=11" vscode=1.146.0
-§FILM_STILL name=b2_hover geometry=1440x900+240+90 bytes=179333
-§FILM_SHOT name=b2_hover file="viewer/grid_views.js" line=83 action="hover" hover="**APP.camera** written at [viewer/grid_views.js:83](file:///home/red1/.cache/film_dev_setup/work/viewer/grid_views.js#L83) · 4 writes · 1247 reads | ```typescript any ```" text="A.camera = cam;"
-§FILM_STILL name=b3_where geometry=1440x900+240+90 bytes=181690
-§FILM_SHOT name=b3_where file="viewer/grid_views.js" line=83 action="select" text="A.camera = cam;"
-§FILM_STILL name=b4_edit geometry=1440x900+240+90 bytes=502741
-§FILM_SHOT name=b4_edit file="modeller/modeller.html" line=290 action="replace" before="<script src=\"arc_editable.js?v=9\" onerror=\"console.warn('§ARC LOAD_FAIL arc_editable.js')\"></script>" saved=true text="<script src=\"arc_editable.js?v=99\" onerror=\"console.warn('§ARC LOAD_FAIL arc_editable.js')\"></script>"
+§FILM_WS_HASH before 3977ec30da918b7365ed88f00db754624df688ec files=4853
+§FILM_TREE work=/home/red1/.cache/film_dev_setup2/dl/bim-ootb-main commit=fce8fdc4 setup_next_args_match=Y
+§FILM_X0 installed=true active=true version=0.1.0 from=setup-extensions-folder fresh="§APP_SURFACE files=3488 fields=1871 alias_only=1600 phantom=179 untied=11" vscode=1.146.0
+§FILM_STILL name=s_vscodedir geometry=1440x900+240+90 bytes=285951
+§FILM_SHOT name=s_vscodedir {"kind":"dir","file":".vscode/tasks.json","line":1,"text":"{","vscode_dir":"extensions.json,launch.json,settings.json,tasks.json,witness.code-snippets"}
+§FILM_STILL name=s_ext geometry=1440x900+240+90 bytes=260360
+§FILM_SHOT name=s_ext {"kind":"ext","installed":"bim-devtools.x0-navigator@0.1.0","active":true}
+§FILM_STILL name=s_tasks geometry=1440x900+240+90 bytes=258553
+§FILM_SHOT name=s_tasks {"kind":"tasks","labels":["Serve repo (http://localhost:8000)","Lint viewer (no-undef gate)","Lint as CI does (viewer + modeller)","Run this witness (full log -> logs/)","Run viewer witness suite (full log -> logs/)","Regenerate editor indexes (APP_SURFACE + global types)"],"count":6}
+§FILM_STILL name=s_snip_suggest geometry=1440x900+240+90 bytes=75397
+§FILM_SHOT name=s_snip_suggest {"kind":"snippet","prefix":"witness","step":"suggest"}
+§FILM_STILL name=s_snip geometry=1440x900+240+90 bytes=201405
+§FILM_SHOT name=s_snip {"kind":"snippet","prefix":"witness","step":"suggest list","via":"suggest","first_line":"#!/usr/bin/env node","lines":23,"unedited_fails":true}
+§FILM_STILL name=s_launch geometry=1440x900+240+90 bytes=276664
+§FILM_SHOT name=s_launch {"kind":"launch","targets":["Viewer in Chrome (localhost:8000)","ERP (iDempiere client) in Chrome","Modeller in Chrome","Node: this witness / script"],"count":4}
+§FILM_STILL name=b2_hover geometry=1440x900+240+90 bytes=240491
+§FILM_SHOT name=b2_hover {"kind":"hover","file":"viewer/grid_views.js","line":83,"hover":"**APP.camera** written at [viewer/grid_views.js:83](file:///home/red1/.cache/film_dev_setup2/dl/bim-ootb-main/viewer/grid_views.js#L83) · 4 writes · 1247 reads | ```typescript any ```","text":"A.camera = cam;"}
+§FILM_STILL name=b4_edit geometry=1440x900+240+90 bytes=538082
+§FILM_SHOT name=b4_edit {"kind":"replace","file":"modeller/modeller.html","line":290,"before":"<script src=\"arc_editable.js?v=9\" onerror=\"console.warn('§ARC LOAD_FAIL arc_editable.js')\"></script>","saved":true,"text":"<script src=\"arc_editable.js?v=99\" onerror=\"console.warn('§ARC LOAD_FAIL arc_editable.js')\"></script>"}
 §FILM_UNDO name=b4_edit restored=true
-§FILM_STILL name=b5_header geometry=1440x900+240+90 bytes=352196
-§FILM_SHOT name=b5_header file="modeller/tests/witness_clipboard.js" line=3 action="select" text="// PROVES: modeller/clipboard.js"
-§FILM_STILL name=b5_proves geometry=1440x900+240+90 bytes=344865
-§FILM_SHOT name=b5_proves file="modeller/tests/witness_clipboard.js" line=4 action="insert" saved=true text="// PROVES: modeller/missing_file.js"
+§FILM_STILL name=b5_header geometry=1440x900+240+90 bytes=423986
+§FILM_SHOT name=b5_header {"kind":"select","file":"modeller/tests/witness_clipboard.js","line":3,"text":"// PROVES: modeller/clipboard.js"}
+§FILM_STILL name=b5_proves geometry=1440x900+240+90 bytes=423982
+§FILM_SHOT name=b5_proves {"kind":"insert","file":"modeller/tests/witness_clipboard.js","line":4,"saved":true,"text":"// PROVES: modeller/missing_file.js"}
 §FILM_UNDO name=b5_proves restored=true
-§FILM_STILL name=b6_ci geometry=1440x900+240+90 bytes=415388
-§FILM_SHOT name=b6_ci file="tests/ci_fast_tier.json" line=46 action="select" text="{\"file\":\"modeller/tests/witness_dxf_bridge_long.js\",\"reason\":\"probe 2026-11-18: FAIL exit=2 — MISSING input: a Node model .db (e.g. CLINIC2.db)\"},"
-§FILM_STILL name=b7_session geometry=1440x900+240+90 bytes=299444
-§FILM_SHOT name=b7_session file="devtools/x0/session.js" line=1 action="select" text="// SPDX-License-Identifier: MIT"
-§FILM_SHOOT stills=7 errors=0
+§FILM_STILL name=b7_session geometry=1440x900+240+90 bytes=329535
+§FILM_SHOT name=b7_session {"kind":"select","file":"devtools/x0/session.js","line":1,"text":"// SPDX-License-Identifier: MIT"}
+§FILM_WS_HASH after 3977ec30da918b7365ed88f00db754624df688ec files=4853
+§FILM_SHOOT stills=12 errors=0

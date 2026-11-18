@@ -1,45 +1,44 @@
-§FILM_GUARD OK   b1 says "four thousand eight hundred sixteen files" <- scratch.files expected 4816 got 4816
-§FILM_GUARD OK   b1 says "five hundred forty-four megabytes" <- scratch.mb expected 544 got 544
-§FILM_GUARD OK   b1 says "no failed request" <- scratch.erp_mod_failed expected 0 got 0
-§FILM_GUARD OK   b1 says "only after it fetches the building from the internet" <- scratch.viewer_online expected Y got Y
-§FILM_GUARD OK   b1b says "Save Building, Control S" <- offline.saved expected Y got Y
-§FILM_GUARD OK   b1b says "only host the page asks for is its visitor counter" <- offline.blocked_only_counter expected Y got Y
-§FILM_GUARD OK   b1b says "The building opens from the file" <- offline.opened expected Y got Y
-§FILM_GUARD OK   b2 says "installs it" <- ext.installed expected Y got Y
-§FILM_GUARD OK   b2 says "four writes" <- hover.writes expected 4 got 4
-§FILM_GUARD OK   b2 says "one thousand two hundred forty-seven reads" <- hover.reads expected 1247 got 1247
-§FILM_GUARD OK   b3 says "Where the camera is written" <- x0.where_line expected 83 got 83
-§FILM_GUARD OK   b3 says "two hundred thirty-eight thousand nine hundred fifty bytes" <- x0.bytes expected 238950 got 238950
-§FILM_GUARD OK   b3 says "at start-up" <- x0.how expected start-up got start-up
-§FILM_GUARD OK   b3 says "its spec lives in a second repository" <- x0.tag_no_spec expected Y got Y
-§FILM_GUARD OK   b4 says "the lint package" <- zip.needs_npm expected Y got Y
-§FILM_GUARD OK   b4 says "a git index" <- zip.needs_git expected Y got Y
-§FILM_GUARD OK   b4 says "the check refuses" <- manifest.red expected FAIL got FAIL
+§FILM_GUARD OK   b1 says "four thousand eight hundred fifty-two files" <- fetch.files expected 4852 got 4852
+§FILM_GUARD OK   b1 says "four steps" <- setup.steps expected 4 got 4
+§FILM_GUARD OK   b1 says "four fine" <- setup.ok expected 4 got 4
+§FILM_GUARD OK   b1 says "no gaps" <- setup.gaps expected 0 got 0
+§FILM_GUARD OK   b1 says "opens the editor" <- setup.opened expected Y got Y
+§FILM_GUARD OK   b2 says "installed by the script and active" <- x0.installed_active expected Y got Y
+§FILM_GUARD OK   b2 says "six tasks" <- tasks.count expected 6 got 6
+§FILM_GUARD OK   b2 says "expands to a skeleton" <- snippet.expanded expected Y got Y
+§FILM_GUARD OK   b2 says "four launch targets" <- launch.count expected 4 got 4
+§FILM_GUARD OK   b2 says "tasks, launch, snippets" <- vscode_dir.has expected Y got Y
+§FILM_GUARD OK   b3 says "four writes" <- hover.writes expected 4 got 4
+§FILM_GUARD OK   b3 says "one thousand two hundred forty-seven reads" <- hover.reads expected 1247 got 1247
+§FILM_GUARD OK   b3 says "same answer" <- x0.same_line expected Y got Y
+§FILM_GUARD OK   b4 says "The check refuses" <- manifest.red expected FAIL got FAIL
 §FILM_GUARD OK   b4 says "names the file and the line" <- manifest.red_names_line expected Y got Y
+§FILM_GUARD OK   b4 says "the check passes" <- manifest.green expected PASS got PASS
 §FILM_GUARD OK   b4 says "files identical" <- manifest.identical expected 55 got 55
 §FILM_GUARD OK   b4 says "dependencies declared" <- manifest.deps expected 25 got 25
-§FILM_GUARD OK   b5 says "one hundred modules" <- proof.modules expected 100 got 100
+§FILM_GUARD OK   b5 says "one hundred one modules" <- proof.modules expected 101 got 101
 §FILM_GUARD OK   b5 says "thirteen have a witness" <- proof.proven expected 13 got 13
-§FILM_GUARD OK   b5 says "sixty-three are only named" <- proof.named_only expected 63 got 63
+§FILM_GUARD OK   b5 says "sixty-four are only named" <- proof.named_only expected 64 got 64
 §FILM_GUARD OK   b5 says "twenty-four have none" <- proof.unproven expected 24 got 24
 §FILM_GUARD OK   b5 says "from zero" <- proof.bad_before expected 0 got 0
 §FILM_GUARD OK   b5 says "to one" <- proof.bad_after expected 1 got 1
-§FILM_GUARD OK   b6 says "one thousand five hundred forty-three witness files" <- ci.files expected 1543 got 1543
-§FILM_GUARD OK   b6 says "forty run on every pull request" <- ci.tier expected 40 got 40
-§FILM_GUARD OK   b6 says "thirty-nine more are kept out" <- ci.excluded expected 39 got 39
-§FILM_GUARD OK   b7 says "one hundred seventeen minutes" <- session.minutes expected 117 got 117
-§FILM_GUARD OK   b7 says "fifteen thousand five hundred forty-two output tokens" <- session.tokens_out expected 15542 got 15542
+§FILM_GUARD OK   b7 says "one hundred eighty-eight minutes" <- session.minutes expected 188 got 188
+§FILM_GUARD OK   b7 says "twenty-nine thousand five hundred eighty-eight output tokens" <- session.tokens_out expected 29588 got 29588
 §FILM_GUARD OK   b7 says "one pull request" <- session.prs expected 1 got 1
 §FILM_GUARD OK   b7 says "nothing added to what users load" <- session.load_nothing expected Y got Y
-§FILM_GUARD OK   the from-scratch witness ran 5/5 and passed
-§FILM_GUARD OK   the pages run passed (three apps ready, Save Building by Ctrl+S, offline open)
-§FILM_GUARD OK   every typed command exited 0 (17 logs)
-§FILM_GUARD OK   the editor reported no error and X0 was installed from the .vsix
-§FILM_GUARD OK   the editor hover (installed add-on) names the field, the line and the counts
-§FILM_GUARD OK   the edits shown were undone in the editor and WORK is clean
+§FILM_GUARD OK   the from-scratch witness ran 5/5, passed, and its setup step passed (the named gaps are its)
+§FILM_GUARD OK   the fetch was the real tarball: a 40-hex commit read from its own header, more than a thousand files
+§FILM_GUARD OK   the editor opened on the download with the arguments setup.js printed (§SETUP_NEXT), and the commit is the fetched one
+§FILM_GUARD OK   every typed command exited 0 (13 logs)
+§FILM_GUARD OK   the typed lines are the Developer Guide's own lines (step 0 and setup.js --open)
+§FILM_GUARD OK   the editor reported no error
+§FILM_GUARD OK   the editor hover (the add-on installed by setup.js) names the field, the line and the counts
+§FILM_GUARD OK   the edits shown were undone in the editor and the download hashes the same before and after the driver ran
+§FILM_GUARD OK   the version the editor shows is exactly what the typed sed made
 §FILM_GUARD OK   the proof header the editor shows is the line the typed sed inserted
-§FILM_GUARD OK   the saved building opens offline with the outside host blocked and the OCI host not asked
 §FILM_GUARD OK   the session figures come from a transcript named on the command line
+§FILM_GUARD OK   the last card's CI figures are counts from the download (witness files, fast tier, excluded)
+§FILM_GUARD OK   setup.js wrote exactly one file outside .setup/ and node_modules/: the packed add-on (the tree grew by one, and that file is the .vsix)
 §FILM_GUARD OK   every picture the cards need exists
 §FILM_GUARD OK   credentials: MIT licence line and every PR merged (from facts, read from GitHub at facts time)
 §FILM_GUARD OK   prior art "GitHub Docs, source code archives" <- out/prior/gh_archives.html

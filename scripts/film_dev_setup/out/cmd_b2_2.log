@@ -1,7 +1,0 @@
-$ code --extensions-dir ../ext --user-data-dir ../user --install-extension devtools/vscode/dist/x0-navigator-0.1.0.vsix
-Installing extensions...
-Extension 'x0-navigator-0.1.0.vsix' was successfully installed.
-(node:2545498) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
-(Use `code --trace-deprecation ...` to show where the warning was created)
-
-§CMD_EXIT 0

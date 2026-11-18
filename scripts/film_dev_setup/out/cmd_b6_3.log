@@ -1,4 +1,0 @@
-$ node -e "const t=require('./tests/ci_fast_tier.json').exclude[1];console.log(t.file+' — '+t.reason.slice(0,100))"
-modeller/tests/witness_dxf_bridge_long.js — probe 2026-11-18: FAIL exit=2 — MISSING input: a Node model .db (e.g. CLINIC2.db)
-
-§CMD_EXIT 0

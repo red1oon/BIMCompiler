@@ -1,11 +1,11 @@
 #!/bin/bash
 # ⚠ DO NOT REMOVE — build film 4 "CH 0 · From an empty folder to a witnessed dev setup" (prompts/FILM_IMMERSIVE_SOFTWARE.md FILM 4; copied from scripts/film_bim_layers/build.sh) end to end, English only, CPU only (CUDA hidden from the voice, Chrome --disable-gpu). No paid call. No server is asked anything.
 # the facts and the VS Code stills are made BEFORE by facts.js and shoot.sh (real data, real editor) -> guard -> cards -> measure the voice -> beat lengths (voice, or typing + hold) -> the silent picture -> fit the voice -> two-pass loudnorm mux -> the key sounds mixed in.
-# READ every log under $OD/; an exit code is not evidence. Usage: [OUTMP4=…] ./build.sh   (run `node facts.js <BASE> <transcript>` and `./shoot.sh` first)
+# READ every log under $OD/; an exit code is not evidence. Usage: [OUTMP4=…] ./build.sh   (run `node facts.js <transcript>` and `./shoot.sh` first)
 set -e; cd "$(dirname "$0")"
 FILM_LANG="${FILM_LANG:-en}"; export FILM_LANG; OD=out; [ "$FILM_LANG" = en ] || OD=out_$FILM_LANG; export OUTD=$OD   # one out folder per language (the lower frame is captured in that language)
 mkdir -p $OD/work/fm $OD/work/fit
-OUTMP4="${OUTMP4:-$HOME/Videos/Dev_Setup_CH0_EN_AFTER_$(date +%F)_v1.mp4}"; [ -e "$OUTMP4" ] && { echo "§REFUSED $OUTMP4 exists (never overwritten); set OUTMP4="; exit 5; }
+OUTMP4="${OUTMP4:-$HOME/Videos/Dev_Setup_CH0_EN_AFTER_$(date +%F)_v2.mp4}"; [ -e "$OUTMP4" ] && { echo "§REFUSED $OUTMP4 exists (never overwritten); set OUTMP4="; exit 5; }
 PY=~/.local/share/film_narration/venv/bin/python; FIT=../film_replication_engine/film6/fit6/fit_kokoro_v3_k.py; MUX=../film_replication_engine/film6/fit6/mux_two_pass.py; HEAD=../../prompts/film_narration_ass_head.txt
 export CUDA_VISIBLE_DEVICES=""
 FTAG=en; FARG=1.15; [ "$FILM_LANG" = en ] || { FIT=../../prompts/film_narration_fit_edge.py; FTAG=$FILM_LANG; FARG=$FILM_LANG; }   # zh / th: the narration text goes to Microsoft Edge TTS (free, cached by text); English stays the local Kokoro
