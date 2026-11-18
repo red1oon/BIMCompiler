@@ -455,7 +455,7 @@ A reply lists what its check did not cover. The same words apply to any answer: 
 | `The Viewer tools need a bim-ootb checkout` | Run it as `node common/door/door.js` from a full checkout |
 | `exit 1` with a Chrome message | Chrome's system libraries are missing on Linux. Puppeteer's troubleshooting page lists them |
 
-**Limits to plan for.** Each Modeller call opens the whole building: about 10 to 40 seconds on the HospitalGarage. This is a measuring tool, not a service with uptime. A script with several Modeller lines opens the building once per line.
+**Limits to plan for.** Each Modeller call opens the whole building: about 10 to 40 seconds on the HospitalGarage. This is a measuring tool, not a service with uptime. A script with several Modeller lines opens the building once per line. **What you make at `red1>` stays in red1's own change log for now:** an order made at the prompt does not show in the browser ERP window, and one made in the window is not seen at the prompt. Joining the two is the next step.
 
 
 ## For developers

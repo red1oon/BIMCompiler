@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 7fd58a7ca9d6af6d
+source_sha: 24dfe73f0ea2cdfd
 lang: ja
 ---
 
@@ -461,7 +461,7 @@ not done: cd project
 | `The Viewer tools need a bim-ootb checkout` | 完全なチェックアウトから`node common/door/door.js`として実行します |
 | `exit 1`と Chrome のメッセージ | Linux で Chrome のシステムライブラリが足りません。Puppeteer のトラブルシューティングページに一覧があります |
 
-**計画しておくべき制限。** Modeller の呼び出しは、そのつど建物全体を開きます。HospitalGarage で約 10〜40 秒です。これは測定ツールであり、稼働時間を保証するサービスではありません。Modeller の行が複数あるスクリプトは、行ごとに建物を一度開きます。
+**計画しておくべき制限。** Modeller の呼び出しは、そのつど建物全体を開きます。HospitalGarage で約 10〜40 秒です。これは測定ツールであり、稼働時間を保証するサービスではありません。Modeller の行が複数あるスクリプトは、行ごとに建物を一度開きます。 **`red1>` で作ったものは、今のところ red1 自身の変更ログにだけ残ります。** プロンプトで作った注文はブラウザーの ERP ウィンドウには表示されず、ウィンドウで作った注文もプロンプトでは見えません。この二つをつなぐことが次の段階です。
 
 
 ## 開発者向け

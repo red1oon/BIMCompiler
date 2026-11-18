@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 7fd58a7ca9d6af6d
+source_sha: 24dfe73f0ea2cdfd
 lang: zh-CN
 ---
 
@@ -461,7 +461,7 @@ not done: cd project
 | `The Viewer tools need a bim-ootb checkout` | 在完整检出里以 `node common/door/door.js` 运行它 |
 | `exit 1` 并带有 Chrome 的消息 | Chrome 的系统库在 Linux 上缺失。Puppeteer 的故障排除页面列出了它们 |
 
-**需要预先考虑的限制**。每次 Modeller 调用都会打开整栋建筑：在 HospitalGarage 上大约 10 到 40 秒。这是一个测量工具，不是有正常运行时间保证的服务。一个含有多条 Modeller 行的脚本，每行都会打开一次建筑。
+**需要预先考虑的限制**。每次 Modeller 调用都会打开整栋建筑：在 HospitalGarage 上大约 10 到 40 秒。这是一个测量工具，不是有正常运行时间保证的服务。一个含有多条 Modeller 行的脚本，每行都会打开一次建筑。 **你在 `red1>` 创建的内容目前只保存在 red1 自己的变更日志里：** 在提示符下创建的订单不会出现在浏览器的 ERP 窗口中，在窗口中创建的订单在提示符下也看不到。把两者合并是下一步。
 
 
 ## 面向开发者
