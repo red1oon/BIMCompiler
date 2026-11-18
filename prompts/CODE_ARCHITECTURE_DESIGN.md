@@ -59,7 +59,7 @@ the source (§F.25): reinstall with `node devtools/vscode/pack.js --install`. A 
 built and waiting for the owner's review (see that file's FILM 3 STATUS). Earlier CH 0 "VSC Hot Edit" films: `prompts/FILM_IDE_ERP_DEBUG.md`.
 Rebuild recipes are in each film file.
 
-**5. Open with the owner.** the B1 dependency list (17 order edges with file:line, B1-Q3) when the build reaches it · FILM 3 review · "When AI Dies" EN/TH/ZH review · his hands-on dry run (`~/VSCcheatsheet.txt`, 29 steps; `~/bim-ootb-dryrun`
+**5. Open with the owner.** FILM 3 review · "When AI Dies" EN/TH/ZH review · his hands-on dry run (`~/VSCcheatsheet.txt`, 29 steps; `~/bim-ootb-dryrun`
 not created) · a bake on his go (then check a "last:" line, §F.15).
 
 **6. Open, no owner needed.**
@@ -495,6 +495,35 @@ Part D's question table and `"extends"` marks · Part E's `PROVES:` headers · n
 - **B1-Q1: where do the hand-written comments between the generated lines live?** There are 32 comments and 4 inline scripts between the page's tags, and 59 comment marks between the precache entries. **A (recommended):** they stay in the files; the generator rewrites only the tags and entries around them; +4 marker lines; today's bytes are kept. Cost: the result depends on the manifest and the file together. **B:** they move into the manifest as text and the whole block is generated from the manifest alone (the design's "same manifest in, same bytes out" in full). Cost: 91 pieces of comment text and 4 small scripts are from then on edited inside JSON. **C:** one marker pair around every unbroken run: 30 pairs in the page and 57 in `sw.js`, 174 marker lines.
 - **B1-Q2: may a modeller bump also raise the 17 version numbers in inline page scripts that today's bump skips?** Recommended: yes. They are the same files, today's numbers agree everywhere (`disagree=0`), and one number per module is what makes the manifest small. "No" means the manifest keeps a number per site and the first bump makes them disagree.
 - **B1-Q3: who confirms the modeller's dependency list?** Recommended: the building session reads each of the 17 order-forcing edges in the code and writes its file:line beside it; the owner confirms that short list in one message; the roughly 89 call-time edges are recorded as `uses` (they force no order) on the tool's evidence alone.
+
+**B1 PART 1 RESULT — the deps candidate tool (2026-11-18, tenth session; bim-ootb #3244, PR #3245).** `scripts/gen_deps_candidates.js <app>` (§3 above) + W-DEPS-CAND
+`scripts/tests/witness_deps_candidates.js` (in CI). The witness judges the tool against RUNNING 16 fixture cases in a Node vm in both orders (reader first throws = load,
+sees less = load-guarded, calling before = throws/fallback = call/call-guarded), never against the tool's output; red control BLIND (a local alias of `window`, the tool's
+known blind spot) must be caught; on the real modeller every cited file:line holds the name. Mutation check (IIFE detection off) → `agree=13/15 verdict=FAIL`.
+- Re-measured on bim-ootb main (moved since the spec: 104 modules, not 99), and the inline page bodies are now read as readers (10 bodies):
+  `§DEPS_SUMMARY app=modeller modules=104 read=98 inline_bodies=10 skipped=6 parse_fail=0 candidates=207 load=9 load_guarded=18 call=83 call_guarded=87 import=10 import_not_module=7 forces_order=37 against=31 against_load_unguarded=0 ambiguous=18 published=248 published_by_2plus=6`
+  `§DEPS_W cases=16 agree=16/16 case_table_matches_vm=16/16 against_seen=Y red=1/1 real_candidates=207 at_cited=207/207 deterministic=Y wrote=0 verdict=PASS`
+- Differences from the spec's probe, on purpose: a guarded read also counts when it sits in the branch of an `if` / `?:` or the right of `&&` whose test names the same
+  thing, inside `try`, or after `if (!X) return;` in the same block (the last one found by reading the real list: `modeller/modeller_history.js:11`, fixture EARLYRET).
+  So the order-forcing count is 37 (9 load + 18 load-guarded + 10 import), not the spec's 17; the extra come from the 10 inline page bodies.
+
+**B1 DEPS REVIEW — the session's reading of the 37 order-forcing edges (B1-Q3; each line read in the code, file:line = the first read).** Proposed lists:
+- **`deps` (9 unguarded load reads; the page or worker throws without this order):**
+  `geomapping/geomap_bridge.js:15` → `classify_geom.js` (UMD factory gets `root.ClassifyGeom`) · `modeller/arc_editable.js:14` → `real_geometry.js` (UMD, `root.RealGeometry`) ·
+  `modeller/bonsai_kernel_worker.js:10` → `cut_move.js` (`self.CutMove` right after `import './cut_move.js'`) · `modeller.html:2060` → `bonsai_grid.js` (`Bonsai.grid.define()`) ·
+  `modeller.html:4353` → `bonsai_outliner.js` (`Bonsai.outliner.mount()`) · `modeller.html:6274` → `str_walker_outliner.js` (`window.STRWalkerOutliner` in `initOpenChooser` IIFE) ·
+  `modeller.html:6698` → `bonsai_oplog.js`, `:7068` → `bonsai_library.js`, `:7653` → `bonsai_sketch.js` (top level of the page's module script, inside `?recipe=` / `?routewalk=` / `?constrain=` demo branches).
+- **`deps` (17 guarded load reads; the wrong order does not throw, it silently turns the feature off):** `common/comm/team_versions.js:12` → `op_versions.js` (`global.ERP && …OpVersions`) ·
+  `modeller/bom_tree_outliner.js:16` → `bom_tree.js` · `modeller/modeller_history.js:11` → `common/history_bar.js` (bails out with `§MHIST_NO_MODULE`) · `modeller_history.js:282` → `bonsai_oplog.js` ·
+  `modeller/str_walker_outliner.js:69` → `geomapping/geomap_bridge.js` · `modeller.html:242` → `common/whole_history.js` · `:359` → `teams_embed.js` · `:843` → `viewer/connect_scene.js` ·
+  `:4435` → `bom_tree_outliner.js` · `:4437` → `dw_instances_outliner.js` · `:4438` → `building_parts_outliner.js` · `:6516` → `dxf_import_ui.js` · `:6517` → `common/file_store.js` ·
+  `:6639` → `common/drag.js` · `:6886` → `bonsai_ifc.js` · `:7710` → `bonsai_gridmove.js` · the `routewalker.js` `rw*` functions (first read in the `?routewalk=` demo branch).
+- **`notDeps` (1):** `viewer/locale_loader.js:418` → `modeller/edit_delta_ui.js` (`__TRL_NO_AUTORUN`, order=AGAINST today). Not a dependency: `edit_delta_ui.js:21-22` sets the flag
+  only when `window._TRL_LOADER` is absent, i.e. on a page WITHOUT the boot loader; the modeller loads `locale_loader.js` at boot (`modeller.html:322`, before `:323`) on purpose (S226 §R3).
+- **`uses` (10 imports):** the `import` / `importScripts` statement itself orders them, and 7 of the 10 targets are not manifest modules (`lib/kernel/index.js`, `three.module.min.js`,
+  `OrbitControls.module.js`, `three-mesh-bvh.module.js`, `georef_frame.js`, `ifc_grid_read.js`, `ifc_open_db.js`), so no tag order can be checked for them.
+- **`uses` (170 call-time edges, 83 call + 87 call-guarded):** on the tool's evidence alone (B1-Q3). **§DEPS_AMBIGUOUS 18** (mostly `Bonsai.*` members with 2+ writers): printed, not edges.
+- **OWNER CONFIRMED 2026-11-18:** asked with the four groups above; owner: **"Confirm as proposed (Recommended)"** → 26 `deps`, 1 `notDeps`, 180 `uses`; `depsReview.by` = owner, tool sha recorded at build.
 
 ---
 
