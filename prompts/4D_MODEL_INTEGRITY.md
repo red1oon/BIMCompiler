@@ -4384,3 +4384,30 @@ and any DCMA reader see an unresourced, float-less schedule; and nothing measure
   bake, and still did not reach the picture.
 - A witness that names the grid the played layer came from (genVersion of the tasks it read vs the tasks now in the DB) and fails on a mismatch.
 - The film DB itself (`HHS_Office_Federated_silent.db`, 2026-09-02) carries the stored genVersion-38 grid; any fix must be checked on it.
+
+## §Q.31 THE PICTURE PLAYS THE SCHEDULE THE GANTT SHOWS — SPEC (2026-11-19, owner on §Q.30: *"The answer is obvious isn't it?"*)
+### Q.31.1 REACH (measured)
+- Shipped viewer DBs (`buildings/*_extracted.db`, `*_meta.db`) carry 0 tasks → every live open generates fresh with today's rules; every 4D
+  gate measures that. Only film DBs carry a stored schedule: `HHS_Office_Federated_silent.db` genVersion 38, `Hospital_silent.db` 39,
+  `BakeFilm_material_extracted.db` 42 (current 43). So the rule work since September is real for any model dropped in; every FILM of these
+  DBs replayed its old task grid (membership + windows), with only the in-task order from current code.
+### Q.31.2 SPEC
+- `tm_gantt_build.js`: the regen block in `buildTaskIndex` becomes ONE function `_regenStaleScheduleNow(db, where)` (exported
+  `TMS._regenStaleScheduleNow`): `activeSchedule(db, {currentGenVersion})`; acts only when `safeToRegen` (stale, authored, no baseline) and not
+  `_tmEditLocked` (§TM_BAKE_LOCK unchanged: never mid-bake). Returns `{ran, ok, reason, id, genVersion}`. `buildTaskIndex` calls it.
+- `tm_lifecycle_api.js _activateAsync`: FIRST, before the IDB `gantt` cache and the kernel_ops checks, if the active schedule is stale:
+  await the rate pack + `_load4DTemplate()` (the same two the cold path awaits before its first materialize), run
+  `_regenStaleScheduleNow(db, 'activate')`; when it ran ok, drop the cached play order (`cacheDel('gantt')`, delete ELEMENT_PLACE rows) —
+  it was derived from the schedule that was just replaced — so the single `injectGantt` pass builds the picture from the regenerated grid.
+  Log `§TM_PLAY_SCHEDULE_FRESH where=activate stale=<0|1> regen=<ran/ok|skip reason> genVersion=<old>-><current> droppedPlayOrder=<0|1>`.
+- Nothing else changes: a current schedule, a captured (imported) one, one with a baseline, or a bake in progress are all left exactly as now.
+### Q.31.3 WITNESS (owed) — `viewer/tests/witness_tm_play_schedule_fresh.js`
+Issue it proves/disproves: *"a DB carrying a stale stored schedule plays the old grid while the Gantt shows the new one."*
+- Source order: in `_activateAsync` the regen is called before `cacheGet('gantt')` results are used and before `_schedOpsAgreementFail`;
+  one regen body in the tree (`materializeZones(` appears in the helper, not in `buildTaskIndex`); the helper calls `_tmEditLocked(`.
+- Real DB: `~/Downloads/HHS_Office_Federated_silent.db` (if present, else INCONCLUSIVE): `activeSchedule` reports stale=true,
+  safeToRegen=true (the path fires on the exact film DB); after the regen the stair landings `1XzmebWuX4vubs_y_zqTop` /
+  `2dAUCOYzH9cAMxESLPrInF` sit in a task that does not start before their own stair's task (the §Q.30 float is gone in the grid the
+  picture will be built from).
+- End-to-end proof (owed, needs the owner's go — GPU): a short clip bake of HHS where `§CPE_BUILDUP_PLACED` puts the Level 2 slab near
+  today's frame (≈19), not the stored grid's 177, and `§TM_PLAY_SCHEDULE_FRESH … regen=ran/ok`.
