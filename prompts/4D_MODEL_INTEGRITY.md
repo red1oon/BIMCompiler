@@ -4045,7 +4045,7 @@ Ifc4_Revit        11,339  37   6      WBDG_Office      6,995  21  0
 ### Q.21.3 §Q.20.3 STEP 3 — CI (found, not built)
 bim-ootb tracks `buildings/HHS_Office_Federated_extracted.db` as a real 75 MB file, so `ci.yml` can run the four editor witnesses with `BLD_DIR=$GITHUB_WORKSPACE/buildings` and `*_BLD=HHS_Office_Federated` (57 to 135 s each on the played layer here). It needs the two witness fixes merged first. The owner allowed handing lesser tasks to Sonnet agents (2026-11-18); this is a fit.
 ### Q.21.4 ORDER OF WORK
-1. Read `fleet_summary.txt` for Hospital and LTU_AHouse; re-run the pipeline witness on JKR is not needed (it passed), re-run nothing that is already green. Settle the `LARGE=1` pair (§Q.21.1), open one PR from the branch, run `scripts/run_4d_gates.sh`, merge.
+1. Read `fleet_summary.txt` for Hospital and LTU_AHouse; re-run nothing that is already green. Settle the `LARGE=1` pair (§Q.21.1), open one PR from the branch, run `scripts/run_4d_gates.sh`, merge.
 2. Read the 16 + 6 out-of-order elements on BimWhale_Advanced and Ifc4_Revit by class and cause (from the persisted runs under `~/.cache/bim4d/<bld>/`, no re-run).
 3. Give `witness_midair_zero` and `witness_tm_assembly_order` a no-lock mode; make `cache_4d_run.js` exit non-zero on `§CACHE_FAIL`.
 4. CI step (§Q.21.3).
