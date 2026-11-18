@@ -71,7 +71,7 @@ the source (§F.25): reinstall with `node devtools/vscode/pack.js --install`. A 
 built and waiting for the owner's review (see that file's FILM 3 STATUS). Earlier CH 0 "VSC Hot Edit" films: `prompts/FILM_IDE_ERP_DEBUG.md`.
 Rebuild recipes are in each film file.
 
-**5. Open with the owner.** the read-through of Developer Guide §3 "Start from scratch" (or the 29-step dry run) before announcing the VS Code setup · whether to ship a small offline sample building (today the first viewer run needs the internet, §F.38) · D-2 (`"extends"`) · FILM 3 review · "When AI Dies" EN/TH/ZH review · his hands-on dry run (`~/VSCcheatsheet.txt`, 29 steps; `~/bim-ootb-dryrun`
+**5. Open with the owner.** the read-through of Developer Guide §3 "Start from scratch" (or the 29-step dry run) before announcing the VS Code setup · D-2 (`"extends"`) · FILM 3 review · "When AI Dies" EN/TH/ZH review · his hands-on dry run (`~/VSCcheatsheet.txt`, 29 steps; `~/bim-ootb-dryrun`
 not created) · a bake on his go (then check a "last:" line, §F.15).
 
 **6. Open, no owner needed.**
@@ -884,7 +884,7 @@ never hidden. Verdict PASS only when every step ran; the gaps are the guide's to
 download 4,798 files / 541 MB / 0 LFS pointers · ERP and Modeller: 0 failed requests, 0 console errors, no outside host · viewer: opens the Duplex (`1,118/1,118`) only after its local
 `viewer/buildings/Duplex_*.db` 404 (not shipped) and it loads them from OCI — **first viewer run needs the internet** (the guide says so) · the viewer also loads GoatCounter (`gc.zgo.at`;
 guide: `?ignore-me`) · X0 packs and installs from the download into a throwaway `--extensions-dir`. **Rollout readiness (owner's question):** the from-scratch path is now proven and written;
-open before announcing: the owner's own read-through (`~/VSCcheatsheet.txt`) and, if wanted, a decision on an offline sample building in the repo (today none: the viewer needs one download).
+open before announcing: the owner's own read-through (`~/VSCcheatsheet.txt`). Offline buildings: **no sample in the repo needed** — owner 2026-11-18: *"the landing page already has buildings the user can download and save DB to access by local code in VSC. Just add a note"* → guide §3 now says: Save Building (Ctrl+S) → put the `.db` in `viewer/buildings/` (git-ignored) → `viewer.html?db=buildings/<name>.db`.
 
 **CI-TIER RESULT — ✅ 2026-11-18 (bim-ootb #3274 → `ac718b1b`).** `tests/ci_fast_tier.json` = 40 modeller witnesses (local < 10 s, PASS, no outside input), 39 excluded with measured reasons
 (probe without outside inputs: 31; first runner pass: 8 — marked shed sheets under ~/Videos, ~/bim-compiler/node_modules, a bim-compiler page, e2e_harness = a browser). CI now runs 61 of 1,512

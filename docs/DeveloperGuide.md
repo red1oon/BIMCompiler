@@ -225,6 +225,12 @@ The viewer's building files are not in the repo (they are large and are not kept
 the same building from the project's file store online. After that it is cached. So: the first viewer run needs a connection; ERP and
 the Modeller do not.
 
+**To work with buildings offline on your own machine:** open any building from the landing page (`http://localhost:8000/`, or the live
+site), press **Save Building** (Ctrl+S) in the viewer: it writes one self-contained `.db` file. Put that file in `bim-ootb/viewer/buildings/`
+and open `http://localhost:8000/viewer/viewer.html?db=buildings/<name>.db`. With no `?db=`, the viewer looks for
+`buildings/Duplex_extracted.db` (`viewer/config.js`), so a saved Duplex under that name opens with no network at all. `*.db` files are
+ignored by git, so a saved building is never committed by accident (building data is not kept in git, §5.3).
+
 The viewer page also loads a small visitor counter (GoatCounter, `gc.zgo.at`), as the live site does. To keep your own visits out
 of the count, open it once with `?ignore-me` at the end of the address.
 
