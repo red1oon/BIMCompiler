@@ -2,7 +2,7 @@
 Scope: **SPEC and phase ledger** for ONE vocabulary the CLI and the guides both read: a keyed message catalog and a help catalog over the Application Dictionary, with a short/long level and a locale. Read the log after every run (exit code is not evidence). Spec first, witness with a falsifier next, code last; honour until this file is marked DONE.
 Background, measurements and prior art are in `prompts/DOCS_I18N.md` §4b-§4d (owner ideas of 2026-11-16: shared vocabulary for CLI and guides, a `Student` level = the long text, reuse the legacy element/message model, remove the copied Help). This file owns the BUILD; that file keeps the findings.
 
-## ▶▶▶ RESUME HERE (written 2026-11-18, updated the same day after items 1, 2, 5 and 6; left: items 3 and 4 wait on another session or a Thai pack; nothing else is open in this lane; the next "resume message" session starts here)
+## ▶▶▶ RESUME HERE (written 2026-11-18, updated the same day after items 1, 2, 3, 5 and 6; left: only item 4 (it waits for a Thai ERP help pack; `erp/i18n/help/` has de fr ja zh + en, 2026-11-18); nothing else is open in this lane; the next "resume message" session starts here)
 **Start:** (1) read this block; (2) `git fetch origin` in `~/bim-compiler` and `~/bim-ootb` (ff-only, clean tree) and `git worktree list` BEFORE any `git worktree add`; (3) say in one line what you will do; spec before code, a witness with a falsifier, read the log not the exit code.
 **State (all MERGED, each with a §-RESULT in this file):**
 - **The one query core is COMPLETE** (§18 design `prompts/HELP_QUERY_CORE_DESIGN.md`, §19.1-§19.6): grammar #3189, core + ERP index #3192, ERP box + `erp.ask` #3197, Viewer/Modeller panels #3203, Did-you-mean #3211, `#<number>`/New/GlobalId #3212. Witnesses: W-PREFIX, W-HQ-GENERIC/SELF/WORDS/BM25/RANK-TWIN/COST/LEGACY-SUPERSET/BOX/DYM/DOC/NEW/GUID, H-SUPERSET.
@@ -11,7 +11,7 @@ Background, measurements and prior art are in `prompts/DOCS_I18N.md` §4b-§4d (
 **Open, advised order:**
 1. ~~"Table" ranking~~ **DONE 2026-11-18** (owner "agree" to (b); §19.7 RESULT, bim-ootb #3233): legacy's label order inside tiers 1 and 2, alias-only hits after; first window = legacy's on 1,800 of 1,800 starts-with probes (was 951).
 2. ~~Hand to the ERP parity lane~~ **DONE 2026-11-18**: written into `ERP_IDEMPIERE_UX_PARITY.md` ▶ START HERE, Open not blocked (toolbar New ignores `winSet[w].rw`; the seed grants every role read-write).
-3. **Waiting on the CLI session** (notified 2026-11-17 of D4/D5; checked 2026-11-18: `assist_core.js` unchanged on main, still waiting): §42 S3 (`assist_core.js:29` short-name limit) → then delete `GUARD_MIN_CHARS` in `common/help/help_dym.js` (one line); the shell side of `#` (§41).
+3. ~~Waiting on the CLI session~~ **DONE 2026-11-18**: §42 S3 landed (bim-ootb #3240), and the guard was removed (§19.8 RESULT, #3257): 184 of 184 short names are offered again, with no flood. Still the CLI session's own: the shell side of `#` (§41).
 4. Thai help pack (Q3 default) when a Thai pack exists; process/doctype records are indexed but the window-only role gate hides them (§19.3 caveat).
 5. ~~Modeller guide PARAGRAPHS~~ **CLOSED 2026-11-18, skipped** (owner "agree"). ~~§14.5 drag-witness gap~~ **DONE 2026-11-18** (§14.5.3 RESULT, bim-ootb #3246): W-DRAG-SWEEP 12 of 12 judged callers drag; it found and fixed 2 drag defects (a translated panel jumped, the Sunglass panel never dragged).
 6. ~~Witness defect named in §14.8 RESULT~~ **DONE 2026-11-18** (§14.8.2 RESULT, bim-ootb #3220): the contract's lines now reach the witness's own .log via `run(sink)`; the 25 bare callers and the W-ERP-I18N failures on main are handed to their lanes.
@@ -1637,6 +1637,25 @@ Both boxes read input through `HelpGrammar.parse`. **6a ERP:** `#<number>` searc
   - W-PREFIX 21; H_SUPERSET 46 (main gave 43 + 1 INCONCLUSIVE, a zh page timeout); HELP_SHOWCASE 23; ERP_ASK 11; W-HOWTO 5 + page H4a-e.
 - **Named, not fixed:** W-HOWTO's page half needs `NODE_PATH=~/bim-compiler/node_modules` (puppeteer), on main too; with the bim-ootb path only it prints `§FAIL W-HOWTO Error: Cannot find module 'puppeteer'` and exits 1 while its summary line reads `pass=5 fail=0`.
 - **Owner's call made on a wrong example:** the owner said "agree" to (b) after §19.3's claim that legacy shows *Table and Column* first. The data says it does not (case-sensitive compareTo, and the window is not in role 102's menu). The rule built is still (b), and the measured gain is L4 above.
+
+### 19.8 Step 8: remove the Did-you-mean guard now that §42 S3 has landed (2026-11-18; RESUME item 3; agreed in design D5: "the guard is one named constant, removed in the PR that follows S3's merge")
+**Issue it removes:** `common/help/help_dym.js` drops every name of 1-2 characters from the suggestion pool (`GUARD_MIN_CHARS = 3`). It did that because `assist_core.js` allowed 2 edits even for a 1-2 character typed text, so a short name matched almost anything. S3 (bim-ootb #3240 `3f4f4c43`, CLI_ERP_IVR §42) caps the limit at `min(max(2, floor(len/3)), len - 1)`. The guard now only hides real short names: a person who types `订单x` or `IDx` is never offered `订单` / `ID`.
+**Change:** delete the constant and its filter in `help_dym.js` (the pool goes to `AssistCore.nearest` whole). Keep a falsifier `HQ_BREAK=guard`, which puts the old filter back. No edit to `common/door/*` (the CLI session's files).
+**Claims (W-HQ-DYM, updated):**
+- **D2** checks against S3's limit (`min(max(2, floor(len/3)), len - 1)`, read from `assist_core.js` after #3240), by the witness's own edit distance.
+- **D3 (new) a short name is offered again.** For every name of 1-2 characters in every pack, typing it with one extra letter (`s + 'x'`) shows it in the line. X of N; a probe whose typed text is itself a name, or starts 3+ other names (the D1c rule), is counted apart. VACUOUS if no pack has a short name. `HQ_BREAK=guard` FAILS D3.
+- **D3b no flood:** across every list any check produced, every name of 1-2 characters shown is within S3's limit of its typed text (own edit distance). Printed: short names per list, before (the guard on) vs after.
+- **Regressions:** W-HQ-DYM D1, D1b (now expected to rise, since a 2-character typo of a 3-character name gets limit 1), D4, D5, and the page checks; W-ASSIST-NEAREST (the CLI session's) unchanged; W-HQ-BOX and W-HELP-SHOWCASE re-run.
+
+### 19.8 RESULT (2026-11-18): BUILT + MERGED, bim-ootb #3257 (`0a5f2d3f`)
+- `common/help/help_dym.js`: `GUARD_MIN_CHARS` and its filter are deleted; the pool goes to `AssistCore.nearest` whole. Falsifier `HQ_BREAK=guard`. Bumped with `scripts/bump.js` (the Modeller manifest of bim-ootb #3250): erp v1103, viewer v1749, modeller v297; `gen_manifest.js --check` verdict=PASS.
+- **Witnessed (logs read), W-HQ-DYM `pass=25 fail=0` with pages** (main: 24; D3b is new):
+  - **D3: 184 of 184 short names offered for a one-letter typo.** Red `guard` gives 0 of 184. Under the guard, ja `職責x` was offered "Tax".
+  - **D3b: 299 short names shown across 11,683 lists, 0 beyond S3's limit.**
+  - D2 1,640/1,640 against S3's limit; D1 unchanged.
+- **The one trade, stated:** D1b erp 48/49 (was 49/49). zh `批制` (typo of `批控制`) is at distance 1 from four names; `批` now takes a slot, and `nearest()`'s code-unit tie-break puts `批控制` 4th. D1b is report-only. The tie-break is the CLI session's (`assist_core.js`), not changed here.
+- **Regressions green:** W-HQ-BOX 4/0, W-HELP-SHOWCASE 23/0, W-ASSIST-NEAREST 5/0, W-HQ-SELF 82/0, W-ERP-ASK 11/0; eslint 0.
+- Tooling note: a bim-ootb worktree has no `node_modules`; `scripts/bump.js` needs `espree` by path, so link `~/bim-ootb/node_modules` into the worktree (git-ignored).
 
 ## STATUS
 2026-11-18: query core COMPLETE (§19.6 #3212); RESUME block rewritten.
