@@ -869,6 +869,16 @@ ENV in its last run), with its measured seconds; (3) one new CI job runs that li
 witness it skipped; (4) W-CI-TIER: the list equals what the generator writes from the cache (no hand edits), a planted slow witness is left out, a planted red one fails the job (red control).
 Heavy and DB witnesses stay local (Bump gate, before commit); the list grows as witnesses get faster.
 
+
+**F-27 (owner 2026-11-18): roll out the enhanced VS Code setup only after a from-scratch path is proven.** Owner asked: *"Does the guide shows 'How to Setup Developer Environment'?"* ·
+*"Also a starting from scratch, ie 'How to Download and Run the Project from local machine'"* · *"Then we should already got a good enough enhaned VSC to roll out?"*. Measured: Developer Guide §3 has 6 steps,
+no prerequisites, no clone link, no building-data step (building DBs are not in git); never walked from an empty folder. Asked what first; owner: **"From-scratch witness, then guide (Recommended)"**.
+**§F.38 BUILD SPEC — W-FROM-SCRATCH** (bim-ootb `scripts/tests/witness_from_scratch.js`, dev-side, no second clone): S1 prerequisites (node, python3, git, `code`, a Chromium — versions printed) ·
+S2 the download = exactly what GitHub "Download ZIP" gives (`git archive origin/main`) into an empty temp folder: files, bytes, LFS pointer files counted · S3 serve it with `python3 -m http.server`
+(Guide §3 step 3) · S4 open `viewer/viewer.html`, `erp/idempiere.html`, `modeller/modeller.html` headless: HTTP failures, console errors, outside hosts contacted, and what a newcomer sees with no
+building · S5 X0: `node devtools/vscode/pack.js` in the download, install into a throwaway `--extensions-dir` (never the owner's profile) · every failure is a GAP line (`§FROM_SCRATCH_GAP step= what=`),
+never hidden. Verdict PASS only when every step ran; the gaps are the guide's to-do list. Then Developer Guide §3 becomes "Start from scratch", written from that run.
+
 ## ADVICE — from the session that built Part F, for the owner and the sessions that follow (2026-11-14)
 
 Owner: *"Put in your advice as you know VSC and software better"*. **These are recommendations, not decisions.** A decision is only
