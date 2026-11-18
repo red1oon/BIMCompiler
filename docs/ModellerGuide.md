@@ -816,6 +816,56 @@ doors, up risers between storeys.
 
 ---
 
+## Upgrade — add rule-based detail (LOD 400)
+
+The **↑ Upgrade** pill (an up arrow, top right) adds detail to the open building by rule: it reads what the
+model and its drawings already state, applies a published rule where they say nothing, and adds the parts.
+It does not change the parts that are already there.
+
+Tap the arrow. The Upgrade panel lists the rule packs, one row each:
+
+| Pack | Adds | Needs |
+|------|------|-------|
+| **Rebar (from schedules)** | bar sets in footings and columns | schedules attached to the elements by a 2D conversion ([DXF2BIM](DXF2BIMGuide.md)) |
+| **Truss welds** | fillet welds where a steel member meets a gusset plate | members and plates in the model |
+| **Layers** | one part per material layer of a wall, floor or ceiling | the IFC's layer sets (an extracted architecture model) |
+| **Steel joints** | fin plate, bolts and welds at steel beam ends | steel beams with I-sections and their supports |
+| **Bracing gussets** | a gusset plate, bolts and welds at brace ends | diagonal steel braces |
+| **Beam rebar (schedule)** | bars and stirrups in concrete beams | a beam bar schedule you load (the reinforcement table of the drawings, as a marks file) |
+
+Each row says what it **applies to** on the open model (for example *applies to 106 beam ends*, or
+*0 not applicable here*), how many **rule rows** are stated, default or unset, and what the **last run**
+added, refused and did not build.
+
+1. Tap **Run** on a row. A long run shows its progress in the row (*Beam rebar: beam 50 of 92*) and the page
+   keeps working while it runs.
+2. The added parts appear in the model. A wall split into layers is drawn as its layers.
+3. **Ctrl+Z** removes the whole run in one step.
+
+**Rules** opens the pack's rule rows (value, unit, source). A value you enter with a stated source wins over
+a default; run again to see the new result. Nothing is guessed: where a rule cannot be applied the part is
+**refused** with its reason (for example *would clash with a neighbouring element*), and the refusals are
+listed with the added parts.
+
+**Beam rebar (schedule):** tap **Load schedule…** and pick the marks file (one row per beam mark: width,
+depth, bottom and top bars, side bars, stirrups). The row then says how many beams it applies to. The run
+reports any beam whose body cannot hold the stated bars, and does not bend the bars to fit.
+
+Steel joints and gussets are **configuration only: capacity is not checked**. They are a starting detail for
+the engineer, not a design.
+
+### Change list and Add-on IFC
+
+- **Change list (.txt)** downloads every added, refused and not-built row of the runs, in plain text.
+- **Add-on IFC** writes **only the added parts** of every pack that ran (not the model), as IFC2X3 or IFC4 (the
+  menu beside it), to send next to the original model. It is enabled once a run has added parts. The file is
+  named after the model, for example `JPAM_base_addon_IFC2X3.ifc`.
+- Every storey the parts sit on needs an elevation. If the model does not carry one, the button says which
+  storeys have none and writes nothing (no elevation is invented). **Load frame…** reads a small JSON file
+  with `storey_elevations_m` (and, optionally, the site placement and shift of the original model), so the
+  add-on lands in the original's coordinates.
+- Bar sets with mixed bar sizes are written as one IFC bar element per size.
+
 ## History — the slider *is* the timeline
 
 - Drag the **history scrubber** back to undo, forward to redo — it scrubs the signed op-log and re-folds the
@@ -998,6 +1048,7 @@ The toolbar is a **⋯ pill rail** at the right edge: the rail starts open (**�
 | **Fit** | Zoom to fit — the selection, or the whole scene (`F`) |
 | **Iso** | Cycle the view: Iso ⇄ Top |
 | **Grid** | Show / add a construction grid |
+| **↑ Upgrade** | Add rule-based detail: rebar, welds, layers, steel joints, gussets, beam bars; change list and Add-on IFC (see [Upgrade](#upgrade-add-rule-based-detail-lod-400)) |
 | **Move Grid** | Drag a gridline — attached walls recompose (`GEOM_GRID_MOVE`); hosted openings hold or ride (see [Grid-Stretch](#grid-stretch)) |
 | **Move** | Transform gizmo — move / scale / rotate the selection (`M`) |
 | **Drag Item** | Free single-item drag for a fixture/fitting, gated by real product data and a real drop surface (see [Item Drag](#item-drag)) |

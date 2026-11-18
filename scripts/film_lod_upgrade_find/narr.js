@@ -14,9 +14,9 @@ exports.beats = [
     says: [['pill.joints.joints', '50', 'fifty'], ['pill.joints.failures', '0', 'zero']] },
   { id: 'mod_gussets', click: true, text: 'F: And the diagonal braces? | M: Bracing gussets. Fifty-seven brace ends judged. One gusset built.',
     says: [['pill.gussets.ends', '57', 'fifty-seven'], ['pill.gussets.joints', '1', 'one gusset']] },
-  { id: 'mod_beambars', click: true, text: 'F: The concrete beams? | M: Load the schedule, then run. Three hundred six bar sets on ninety-two beams, and the page keeps moving while it works. | F: All matching the schedule? | M: No. Seven bar sets on two beams differ. The check says fail.',
+  { id: 'mod_beambars', click: true, text: 'F: The concrete beams? | M: Load the bar table from the drawings, then run. Three hundred six bar sets on ninety-two beams, and the page keeps moving while it works. | F: All matching the bar table? | M: No. Seven bar sets on two beams differ: those beams cannot hold the stated bars. The check says fail.',
     says: [['pill.beambars.sets', '306', 'three hundred six'], ['pill.beambars.beams', '92', 'ninety-two'], ['pill.beambars.mismatches', '7', 'seven'], ['pill.beambars.beams_affected', '2', 'two beams']] },
-  { id: 'mod_ifc', click: true, text: 'F: Can I send it on? | M: Add-on IFC. First it refuses: four storeys have no height, and none is invented. Load the storey heights from the author\'s model, press again. | F: How many parts? | M: Four hundred fifty-nine added parts, written as four hundred seventy, because eleven bar sets of mixed sizes are split by diameter. Only the added work.',
+  { id: 'mod_ifc', click: true, text: 'F: Can I send it on? Which discipline goes in? | M: None is picked. The file takes every part the button added, shown here alone, and leaves the model out. First it refuses: four storeys have no height, and none is invented. Load the storey heights from the author\'s model, press again. | F: How many parts? | M: Four hundred fifty-nine added parts, written as four hundred seventy, because eleven bar sets of mixed sizes are split by diameter. Only the added work.',
     says: [['pill.ifc.refused_storeys', '4', 'four storeys'], ['pill.ifc.elements', '459', 'four hundred fifty-nine'], ['pill.ifc.parts', '470', 'four hundred seventy'], ['pill.ifc.split', '11', 'eleven']] },
   { id: 'added', text: 'M: Six hundred seventy-nine parts were added in all. The steel joints are configuration only. Capacity is not checked.',
     says: [['counts.added', '679', 'six hundred seventy-nine']] },
@@ -32,6 +32,6 @@ exports.beats = [
     says: [['find.gusset.total', '2', 'two parts']] },
   { id: 'gus_card', text: 'F: Why only one of fifty-seven? | M: Twenty-two would clash with a neighbour. Thirteen have nothing to attach to. Seventeen have no room for the bolts. Four have too large a gap.',
     says: [['gusset.refused.REFUSED_CLASH', '22', 'twenty-two'], ['gusset.refused.NO_ATTACHMENT', '13', 'thirteen'], ['gusset.refused.NO_ROOM', '17', 'seventeen'], ['gusset.refused.GAP_TOO_LARGE', '4', 'four have']] },
-  { id: 'close', text: 'M: Every number here was read from a log or from the model database. | F: And the guide? | M: No guide section covers this yet. That is a gap to close before posting.',
-    says: [['guide.covers_the_added_work_word', 'no', 'no guide section']] }
+  { id: 'close', text: 'M: Every number here was read from a log or from the model database. | F: And the guide? | M: The Modeller guide now has an Upgrade section. The link is at the bottom.',
+    says: [['guide.covers_the_added_work_word', 'yes', 'upgrade section']] }
 ];
