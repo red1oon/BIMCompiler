@@ -1,0 +1,25 @@
+§BEATLEN beat=cover voice=0 typing=0.00 -> hold from narr.js
+§BEATLEN beat=before voice=20.32 typing=1.75 -> 22.07 (typing 1.75 + gap 0.3 + voice 18.82 + tail 1.2)
+§BEATLEN beat=after voice=15.4 typing=1.96 -> 17.36 (typing 1.96 + gap 0.3 + voice 13.9 + tail 1.2)
+§BEATLEN beat=ch1 voice=0 typing=0.00 -> hold from narr.js
+§BEATLEN beat=u1 voice=17.65 typing=2.92 -> 20.57 (typing 2.92 + gap 0.3 + voice 16.15 + tail 1.2)
+§BEATLEN beat=u2 voice=19.94 typing=2.96 -> 22.9 (typing 2.96 + gap 0.3 + voice 18.44 + tail 1.2)
+§BEATLEN beat=ch2 voice=0 typing=0.00 -> hold from narr.js
+§BEATLEN beat=v1 voice=23.11 typing=3.83 -> 26.94 (typing 3.83 + gap 0.3 + voice 21.61 + tail 1.2)
+§BEATLEN beat=v2 voice=14.85 typing=2.71 -> 17.56 (typing 2.71 + gap 0.3 + voice 13.35 + tail 1.2)
+§BEATLEN beat=ch3 voice=0 typing=0.00 -> hold from narr.js
+§BEATLEN beat=s1 voice=21.17 typing=5.08 -> 26.25 (typing 5.08 + gap 0.3 + voice 19.67 + tail 1.2)
+§BEATLEN beat=s2 voice=20 typing=1.92 -> 21.92 (typing 1.92 + gap 0.3 + voice 18.5 + tail 1.2)
+§BEATLEN beat=ch4 voice=0 typing=0.00 -> hold from narr.js
+§BEATLEN beat=l1 voice=28.16 typing=4.08 -> 32.24 (typing 4.08 + gap 0.3 + voice 26.66 + tail 1.2)
+§BEATLEN beat=l2 voice=21.91 typing=4.96 -> 26.87 (typing 4.96 + gap 0.3 + voice 20.41 + tail 1.2)
+§BEATLEN beat=l3 voice=22.11 typing=0.00 -> 22.11
+§BEATLEN beat=ch5 voice=0 typing=0.00 -> hold from narr.js
+§BEATLEN beat=c1 voice=24.43 typing=2.04 -> 26.47 (typing 2.04 + gap 0.3 + voice 22.93 + tail 1.2)
+§BEATLEN beat=c2 voice=19.78 typing=4.29 -> 24.07 (typing 4.29 + gap 0.3 + voice 18.28 + tail 1.2)
+§BEATLEN beat=c3 voice=21.03 typing=4.46 -> 25.49 (typing 4.46 + gap 0.3 + voice 19.53 + tail 1.2)
+§BEATLEN beat=c5 voice=28.94 typing=2.13 -> 31.07 (typing 2.13 + gap 0.3 + voice 27.44 + tail 1.2)
+§BEATLEN beat=aid voice=16.42 typing=2.00 -> 18.42 (typing 2.00 + gap 0.3 + voice 14.92 + tail 1.2)
+§BEATLEN beat=roadmap voice=13.35 typing=0.00 -> 13.35
+§BEATLEN beat=close voice=21.82 typing=0.00 -> 21.82
+§BEATLEN_DONE beats=18 total=417.5s

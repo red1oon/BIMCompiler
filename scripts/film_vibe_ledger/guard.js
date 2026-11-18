@@ -18,7 +18,19 @@ const voiceCheck = (beats, quiet) => { let b0 = 0, plainOne = 0; const say = m =
       if (i < 0 && j < 0) { b0++; say('  FAIL V ' + b.id + ' ' + k + ' words "' + w + '" not found in the text'); } else t = j >= 0 ? t.slice(0, j) + ' ' + t.slice(j + w.length + 1) : t.slice(0, i) + ' ' + t.slice(i + w.length + 1); }
     for (const tok of t.split(/[\s-]+/).filter(Boolean)) if (NUMW.includes(tok)) { if (tok === 'one') plainOne++; else { b0++; say('  FAIL V ' + b.id + ' number word "' + tok + '" is not a recorded fact'); } } }
   return { b0, plainOne }; };
-console.log('§GUARD V voice'); { const r = voiceCheck(N.beats); ok(r.b0 === 0, 'V narration: ' + N.beats.filter(b => b.text).length + ' beats, ' + N.beats.reduce((a, b) => a + (b.says || []).length, 0) + ' spoken facts, ' + r.b0 + ' bad; the plain idiom "one" used ' + r.plainOne + ' times');
+// Mandarin: figures are digits; every digit group must be a recorded fact, and no Chinese numeral may stand alone (一 is the plain idiom; 万 only right after a fact's digits)
+const voiceCheckZh = (beats, quiet) => { let b0 = 0, plainOne = 0; const say = m => { if (!quiet) console.log(m); };
+  for (const b of beats.filter(x => x.text)) { let t = b.text;
+    for (const [k, val, mode, w] of b.says) { const re = N.speak(val, mode); if (re !== w) { b0++; say('  FAIL V ' + b.id + ' ' + k + ' spoken "' + w + '" but re-speaks as "' + re + '"'); }
+      if (String(N.val(k)) !== String(val)) { b0++; say('  FAIL V ' + b.id + ' ' + k + ' value ' + val + ' is not the fact ' + N.val(k)); }
+      const i = t.indexOf(w); if (i < 0) { b0++; say('  FAIL V ' + b.id + ' ' + k + ' "' + w + '" not found in the text'); } else t = t.slice(0, i) + ' ' + t.slice(i + w.length); }
+    (t.match(/\d[\d.,]*/g) || []).forEach(d => { b0++; say('  FAIL V ' + b.id + ' digits "' + d + '" are not a recorded fact'); });
+    (t.match(/[二三四五六七八九十百千亿两零万]/g) || []).forEach(c => { b0++; say('  FAIL V ' + b.id + ' Chinese numeral "' + c + '" is not a recorded fact'); });
+    plainOne += (t.match(/一/g) || []).length; if (/[A-Za-z]/.test(t.replace(/A-I|E-R-P|P-H-P|F:|M:|iDempiere|Kernel|JavaScript|Java|PostgreSQL|Python|Odoo|Next|GitHub|Gmail|README|VS Code|When|Dies|Vibe Programming/g, ''))) { b0++; say('  FAIL V ' + b.id + ' English left in the Mandarin voice: ' + t.replace(/[^A-Za-z ]/g, '').trim().slice(0, 60)); } }
+  return { b0, plainOne }; };
+console.log('§GUARD V voice (' + N.lang + ')'); if (N.lang === 'zh') { const r = voiceCheckZh(N.beats); ok(r.b0 === 0, 'V narration (zh): ' + N.beats.filter(b => b.text).length + ' beats, ' + N.beats.reduce((a, b) => a + (b.says || []).length, 0) + ' spoken facts, ' + r.b0 + ' bad; the plain idiom 一 used ' + r.plainOne + ' times');
+  const planted = JSON.parse(JSON.stringify(N.beats.filter(b => b.text))); planted[0].text += '它有 17000 个用户，三个服务器。'; const rc = voiceCheckZh(planted, true); ok(rc.b0 >= 2, 'V red control (zh): a planted "17000" and "三" are caught (' + rc.b0 + ')'); }
+else { const r = voiceCheck(N.beats); ok(r.b0 === 0, 'V narration: ' + N.beats.filter(b => b.text).length + ' beats, ' + N.beats.reduce((a, b) => a + (b.says || []).length, 0) + ' spoken facts, ' + r.b0 + ' bad; the plain idiom "one" used ' + r.plainOne + ' times');
   const planted = JSON.parse(JSON.stringify(N.beats.filter(b => b.text))); planted[0].text += ' It has seventeen thousand users.'; const rc = voiceCheck(planted, true); ok(rc.b0 > 0, 'V red control: a planted "seventeen thousand" is caught (' + rc.b0 + ')'); }
 console.log('§GUARD S sources');
 for (const [k, x] of Object.entries(F.v)) { const m = /^cmd (\w+)/.exec(x.src); if (!m) continue; const txt = fs.readFileSync(path.join(OUT, 'cmd_' + m[1] + '.txt'), 'utf8'); ok(txt.includes(x.val), 'S ' + k + '=' + x.val + ' is in out/cmd_' + m[1] + '.txt'); }

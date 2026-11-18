@@ -7,11 +7,12 @@ const fs = require('fs'), path = require('path'), os = require('os');
 const puppeteer = require(process.env.PUPPETEER_PATH || path.join(os.homedir(), 'bim-compiler', 'node_modules', 'puppeteer'));
 const N = require('./narr.js'), F = N.F, PA = require('./priorart.json'), out = path.resolve(process.argv[2] || 'out/cards'); fs.mkdirSync(out, { recursive: true });
 const v = k => N.val(k), num = k => Number(v(k)), fmt = x => Number(x).toLocaleString('en-US');
+const LANG = process.env.FILM_LANG || 'en', DICT = LANG === 'zh' ? (fs.existsSync(path.join(__dirname, 'i18n_zh.json')) ? JSON.parse(fs.readFileSync(path.join(__dirname, 'i18n_zh.json'), 'utf8')) : {}) : null, COLLECT = process.env.COLLECT === '1', MISSING = new Set();
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
 const TOP = 250, BAR = 30, MT = TOP + BAR, MH = 610;
 // colours (dataviz dark slots, validated 2026-11-18 on #0f172a: CVD ΔE 9.4, normal 26.5, contrast >= 3:1)
 const C = { js: '#3987e5', srv: '#d95926', third: '#199e70', other: '#64748b', bg: '#0f172a', ink: '#F3EEE8', ink2: '#cbd5e1', mute: '#94a3b8', coral: '#FF6B78', sky: '#7dd3fc', good: '#4ade80', amber: '#fbbf24', line: '#334155' };
-const CSS = `*{box-sizing:border-box;margin:0;padding:0} body{width:1920px;height:1080px;background:${C.bg};color:${C.ink};font-family:'DejaVu Sans',sans-serif;overflow:hidden}
+const CSS = `*{box-sizing:border-box;margin:0;padding:0} body{width:1920px;height:1080px;background:${C.bg};color:${C.ink};font-family:'DejaVu Sans'${LANG === 'zh' ? ",'Noto Sans CJK SC'" : ''},sans-serif;overflow:hidden}
 .term{position:absolute;left:0;top:0;width:1920px;height:${TOP}px;background:#0b0f17;padding:14px 34px;font-family:'DejaVu Sans Mono','Noto Color Emoji',monospace;font-size:27px;line-height:1.42;overflow:hidden;border-bottom:2px solid ${C.line}}
 .cmd{white-space:pre-wrap;word-break:break-all;color:${C.ink}} .cmd:before{content:'$ ';color:${C.good}} .ans{white-space:pre-wrap;word-break:break-all;color:${C.amber}} .cur{display:inline-block;width:15px;height:27px;background:${C.good};vertical-align:-5px;margin-left:2px}
 .bar{position:absolute;left:0;right:0;top:${TOP}px;height:${BAR}px;background:#1e293b;color:${C.mute};font-size:19px;line-height:${BAR}px;padding:0 28px;letter-spacing:1px;white-space:nowrap;overflow:hidden} .bar b{color:${C.sky}}
@@ -89,14 +90,19 @@ cards.roadmap = [{ html: page(`<div style="margin:110px 160px 0"><div style="fon
   const cred = ['<b>github.com/red1oon/bim-ootb</b> · ' + esc(F.licence), '<b>PRs</b><br>' + esc(prs.join(' · ')), '<b>Witnessed in this build</b><br>W-ROSTER-VERIFY ' + esc(v('rv.checks')) + '/' + esc(v('rv.red')) + ' · W-CORE-PURE ' + esc(v('pure.verdict')) + '<br>parity ' + esc(v('par.match')) + '/' + esc(v('par.match')) + ' scenarios (' + esc(v('par.date')) + ')', '<b>Limits, said plainly</b><br>the parity log is from ' + esc(v('par.date')) + ', not re-run for this film · GitClear (code churn) could not be read (HTTP 403) and is not used'];
   const guide = ['<b>Vibe Programming, the outside assessments, fact-checked</b><br>red1oon.github.io/BIMCompiler/VibeProgramming/<br>#2026-11-an-outside-assessment-fact-checked', 'the guide is in English', 'trees: bim-ootb ' + esc(F.trees.T.commit) + ' · bim-compiler ' + esc(F.trees.C.commit)];
   const colh = (h, rows) => '<div class="col"><h2>' + esc(h) + '</h2>' + rows.map(r => '<div class="r">' + r + '</div>').join('') + '</div>';
-  cards.close = [{ html: page('<div class="lc"><div class="h" style="font-size:50px">' + CO + 'What we learned,' + CE + ' who stands behind it</div><div class="cols">' + colh('prior art: what this film read', pa) + colh('credentials', cred) + colh('read more', guide) + '</div><div class="cr">Key sounds: eklee and qubodup, OpenGameArt "Single Key Press Sounds", CC BY 3.0 · voices: Kokoro (local) · pictures: real command output and charts drawn from it, on the CPU, no GPU</div></div>', css), frames: null }]; }
+  cards.close = [{ html: page('<div class="lc"><div class="h" style="font-size:50px">' + CO + 'What we learned,' + CE + ' who stands behind it</div><div class="cols">' + colh('prior art: what this film read', pa) + colh('credentials', cred) + colh('read more', guide) + '</div><div class="cr">Key sounds: eklee and qubodup, OpenGameArt "Single Key Press Sounds", CC BY 3.0 · ' + (LANG === 'zh' ? 'voices: Microsoft Edge TTS, zh-CN Xiaoxiao and Yunxi (the text is sent to Microsoft) · translated by the build session, not reviewed by a native speaker' : 'voices: Kokoro (local)') + ' · pictures: real command output and charts drawn from it, on the CPU, no GPU</div></div>', css), frames: null }]; }
 const order = N.beats.map(b => b.id);
 (async () => {
   const br = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-gpu', '--window-size=1920,1080'] }), pg = await br.newPage(); await pg.setViewport({ width: 1920, height: 1080 });
   const planOut = {}, made = {}, texts = {}; let n = 0, tall = 0, keys = 0, rets = 0;
   for (const id of order) { if (!cards[id]) throw new Error('no card for beat ' + id); planOut[id] = []; let worst = 0;
-    for (const c of cards[id]) {
+    for (const c of (COLLECT ? cards[id].slice(-1) : cards[id])) {
       if (!made[c.html]) { const name = id + '_' + String(Object.keys(made).length + 1).padStart(3, '0') + '.png'; await pg.setContent(c.html, { waitUntil: 'load' });
+        if (DICT) { const miss = await pg.evaluate(D => { const miss = [], w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); let nd; const todo = [];   // the Mandarin cut: every text node outside the typed strip and the code goes through the table
+            while ((nd = w.nextNode())) { if (nd.parentElement.closest('.term, .code')) continue; const raw = nd.nodeValue, t = raw.trim(); if (!/[A-Za-z]/.test(t)) continue; const HX = /\b(?=[0-9a-f]*\d)(?=[0-9a-f]*[a-f])[0-9a-f]{7,12}\b/g, NU = /(?<![A-Za-z0-9])\d[\d,.]*(?![A-Za-z0-9])/g;   // commit ids -> @, standalone numbers -> #; digits inside names (B1, X0, red1oon) stay
+              const tq = t.replace(/#/g, '＃'), hx = tq.match(HX) || [], t1 = tq.replace(HX, '@'), nums = t1.match(NU) || [], key = t1.replace(NU, '#');
+              if (!(key in D)) { miss.push(key); continue; } todo.push([nd, D[key].replace(/#/g, () => nums.shift()).replace(/@/g, () => hx.shift()).replace(/＃/g, '#')]); }   // a literal # (a PR number) is kept apart from the placeholder
+            todo.forEach(([n2, v]) => { n2.nodeValue = v; }); return miss; }, DICT); miss.forEach(k => MISSING.add(k)); }
         const m = await pg.evaluate(() => { const t = document.querySelector('.term'), p = document.querySelector('.pan'); let over = 0;
           if (t) over = Math.max(over, t.scrollHeight - t.clientHeight); if (p) over = Math.max(over, p.scrollHeight - p.clientHeight);
           document.querySelectorAll('body *').forEach(e => { const r = e.getBoundingClientRect(); if (r.width && r.height && !e.closest('.term')) { over = Math.max(over, r.right - 1920, r.bottom > 910 && !e.closest('.pan') ? r.bottom - 910 : 0); } if (e.classList && (e.classList.contains('val') || e.classList.contains('seg'))) over = Math.max(over, e.scrollWidth - e.clientWidth); });
@@ -104,6 +110,8 @@ const order = N.beats.map(b => b.id);
         worst = Math.max(worst, m.over); await pg.screenshot({ path: path.join(out, name) }); made[c.html] = name; texts[name] = m.text; n++; }
       const e = { file: made[c.html], frames: c.frames }; if (c.key) { e.key = c.key; if (c.key === 'k') keys++; else rets++; } planOut[id].push(e); }
     if (worst > 0) tall++; console.log('§CARD beat=' + id + ' entries=' + cards[id].length + ' overflow_px=' + Math.max(0, Math.round(worst)) + (worst > 0 ? ' TOO-TALL' : '')); }
-  await br.close(); fs.writeFileSync(path.join(out, 'plan.json'), JSON.stringify(planOut, null, 1)); fs.writeFileSync(path.join(out, 'texts.json'), JSON.stringify(texts, null, 1));
+  await br.close(); if (DICT) { fs.writeFileSync(path.join(out, 'missing.json'), JSON.stringify(Array.from(MISSING), null, 1)); console.log('§I18N lang=zh table=' + Object.keys(DICT).length + ' missing=' + MISSING.size); if (MISSING.size) { console.log('§I18N_FAIL untranslated text on a card: see ' + path.join(out, 'missing.json')); process.exit(4); } }
+  if (COLLECT) { console.log('§COLLECT_DONE'); return; }
+  fs.writeFileSync(path.join(out, 'plan.json'), JSON.stringify(planOut, null, 1)); fs.writeFileSync(path.join(out, 'texts.json'), JSON.stringify(texts, null, 1));
   console.log('§CARDS_DONE beats=' + Object.keys(planOut).length + ' stills=' + n + ' too_tall=' + tall + ' key_cues=' + keys + ' return_cues=' + rets);
 })().catch(e => { console.error('§CARDS_FAIL ' + (e && e.stack || e)); process.exit(1); });
