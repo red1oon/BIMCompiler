@@ -98,7 +98,7 @@ Every compiled building passes through [6 mathematical gates](https://github.com
 
 The AI cannot cheat these gates. G3 alone — a cryptographic digest of the entire output — means a single wrong coordinate in a 48,428-element building fails the build. There is no "close enough."
 
-> **Correction (2026-11-18):** these gates are a *local* discipline, run before committing. No CI job in either repo runs `RosettaStoneGateTest` or the full bim-ootb witness suite. CI runs syntax checks, lint, wiring audits, `scripts/system_is_real.sh`, and about 20 of bim-ootb's 1,491 witness scripts (X0 Navigator, core purity, the manifest round-trip, the BIM tools; counted from the workflow files 2026-11-18). "Must pass before a commit lands" is a working habit, not a mechanical block.
+> **Correction (2026-11-18):** these gates are a *local* discipline, run before committing. No CI job in either repo runs `RosettaStoneGateTest` or the full bim-ootb witness suite. CI runs syntax checks, lint, wiring audits, `scripts/system_is_real.sh`, and about 20 of bim-ootb's 1,491 witness scripts (Code Facts, core purity, the manifest round-trip, the BIM tools; counted from the workflow files 2026-11-18). "Must pass before a commit lands" is a working habit, not a mechanical block.
 
 ### 3. The Drift is tracked, not hidden
 
@@ -256,8 +256,8 @@ A second AI review (Gemini, also November 2026) looked at scale. Its claims were
 | *"Most no-build JavaScript projects hit a wall around 30,000–50,000 lines"* | No source given, so not repeated here. |
 | Part A's pure core: *"125 files, forbidden=0"* | True, and it runs in CI (W-CORE-PURE). |
 | *"Parts B, C and D give you the same guarantees: explicit dependency graphs, typed namespaces with @typedefs, single-owner rules"* | **Not yet.** Part B has only its check (B0, in CI); the first manifest (B1, the Modeller) has a build spec and is not built. Parts C and D are not started. There are no typed namespaces. Generated declarations (`types/globals.gen.d.ts`) only let the editor follow globals. |
-| Part F, the X0 Navigator, works with no AI | True: that is the film *When AI Dies*. |
-| *"AST-enforced via espree and TypeScript's parser in CI"* | Partly. W-CORE-PURE and W-MANIFEST-ROUNDTRIP parse with espree in CI. The two X0 witnesses that need TypeScript's parser run locally only, because a CI runner does not have the copy inside VS Code. |
+| Part F, Code Facts, works with no AI | True: that is the film *When AI Dies*. |
+| *"AST-enforced via espree and TypeScript's parser in CI"* | Partly. W-CORE-PURE and W-MANIFEST-ROUNDTRIP parse with espree in CI. The two Code Facts witnesses that need TypeScript's parser run locally only, because a CI runner does not have the copy inside VS Code. |
 | Bottleneck 1: slow checks (*C7 ~57 s re-reading 1,208 loader files; the parity gate 5.5–16 min*) | True, quoted correctly from `prompts/CODE_ARCHITECTURE_DESIGN.md`. CI skips C7 for that reason. |
 | Bottleneck 2: one global scope and one precache list per app, with a ceiling *"around 400–500 modules"* | The shared scope is real: 255 script tags in the viewer page, 212 in the ERP page, 66 in the Modeller. The ceiling is a guess, but the ERP's precache list already holds **411 entries** (viewer 296, Modeller 164). The boot-byte budgets it relies on (§F.3) are not set yet; they are due to be proposed on 2026-11-30. |
 | Bottleneck 3: onboarding is hard | True. Same as the learning-curve point above. |
@@ -271,14 +271,14 @@ The Kernel ERP is a JavaScript fold of iDempiere, so the fair comparison is with
 | Main languages | Java 81.9 %, JavaScript 11.4 % | Python 52.5 %, JavaScript 43.2 % | Python 82.6 %, JavaScript 11.8 % (Frappe: Python 52.5 %, JavaScript 26.4 %) | JavaScript 93.7 %, HTML 5.7 % |
 | Where the books live | a Java server (OSGi, Jetty, ZK web UI) | a Python server | a Python server | the browser tab, no server |
 | Database | PostgreSQL or Oracle | PostgreSQL (`psycopg2`) | MariaDB (`PyMySQL`), PostgreSQL (`psycopg`) | SQLite in the browser (WebAssembly) |
-| Developer tools | Eclipse: static types, a compiler, a debugger | Python tooling | Python tooling | VS Code + X0 Navigator; no static types, by rule |
+| Developer tools | Eclipse: static types, a compiler, a debugger | Python tooling | Python tooling | VS Code + Code Facts; no static types, by rule |
 | Size | 4,465 Java files, 1,427,147 lines | — | — | `erp/`: 318 JS files, 70,362 lines |
 | GitHub stars | 677 | 55,875 | 41,393 | 17 (bim-ootb) |
 | Proof of equal results | the oracle | — | — | 113 of 113 scenarios match legacy books, 0 differ; 19 of 34 document tables covered; 350 of 370 windows identical (parallel run log, 2026-10-12) |
 
 **What the choice of JavaScript buys:** the browser runs only JavaScript (and WebAssembly), so one language covers the screen *and* the books, and the whole ERP works offline in a tab. Odoo and ERPNext already write a large share of their code in JavaScript for the screen, but their books still need a server and a database server.
 
-**What it costs:** no static types and no compiler to catch a wrong call before it runs, which is iDempiere's strongest point; that gap is filled by witnesses and X0, not by the language. Money needs exact decimals (`bigdecimal.js`), because JavaScript numbers are floating point. One tab has the memory of one tab: the measured cost is about 0.17 GB of heap per million vertices on the BIM side, fitted over three buildings and so only indicative ([BrowserScaleBenchmark](BrowserScaleBenchmark.md)). And the peers have communities thousands of times larger.
+**What it costs:** no static types and no compiler to catch a wrong call before it runs, which is iDempiere's strongest point; that gap is filled by witnesses and Code Facts, not by the language. Money needs exact decimals (`bigdecimal.js`), because JavaScript numbers are floating point. One tab has the memory of one tab: the measured cost is about 0.17 GB of heap per million vertices on the BIM side, fitted over three buildings and so only indicative ([BrowserScaleBenchmark](BrowserScaleBenchmark.md)). And the peers have communities thousands of times larger.
 
 ---
 
