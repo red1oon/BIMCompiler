@@ -838,6 +838,20 @@ cache write 489.5k · 9 PRs · URL load modeller start-up ±0 B, offline +183 B`
 JSON `systemMessage` are discarded; only stderr on exit 2 reaches the user, default timeout 1.5 s. So `--hook` prints to stderr and exits 2; installed in the owner's `~/.claude/settings.json`
 as `SessionEnd`, timeout 30 s, guarded (`[ -f ~/bim-ootb/devtools/x0/x0.js ] || exit 0`); it shows once `~/bim-ootb` has pulled #3266. Pipe-tested: 0.14 s, exit 2, summary on stderr.
 
+**E1 BUILD SPEC — the `PROVES:` line, the result cache, the proof map (2026-11-18, tenth session; from E-1 and E-2).**
+- **`witness_kit/proves.js`:** reads a witness's leading comment block for `PROVES: <repo path>[ <rule ids>], …` (one line; several lines add up). Returns `[{file, rules}]`.
+- **`witness_kit/results.js` (E-2):** `record(witnessFile, {verdict, seconds, line, exit})` writes `~/.cache/bim_witness/<repo-relative path with / → __>.json` = `{file, verdict, line, exit, seconds, head, at}`
+  (`head` = `git rev-parse HEAD` of the tree run). `verdict` = the last `verdict=WORD` / `_VERDICT WORD` in the output, else `PASS`/`FAIL` from the exit code, marked `from_exit`.
+  Written by the two runners that already spawn witnesses and know exit + time: `tests/run_witness_suite.js` and `modeller/tests/run_all_witnesses.js` (one call each, no behaviour change).
+  A witness run by hand is not recorded (said in the map, never guessed).
+- **`scripts/gen_proof_map.js <app>`** (dev-side, prints; `--out FILE` outside the tree): per module of `<app>/modules.json`: **proven by** (witnesses whose `PROVES:` names it) · **named by** (B1's extracted
+  `witnesses`, shown as weaker) · each with its last cached verdict and `stale` when the module or the witness changed since that run's `head`. INCONCLUSIVE is never shown as PASS.
+  `§PROOF_MAP app= modules= proven= named_only= unproven= proves_lines= bad_paths= cached= stale=`.
+- **W-PROOF-MAP** (`scripts/tests/witness_proof_map.js`): every module is proven, named-only or listed unproven (none lost); every `PROVES:` path exists (red control: a planted line naming a missing
+  file → FAIL naming it); a cached INCONCLUSIVE shows as INCONCLUSIVE (red: a fake cache entry); a witness changed after its cached run shows stale.
+- **Modeller batch (E-1 "the modeller first"):** a `// PROVES: <module>` line goes into each witness that is NAMED after a modeller module (`witness_<basename>…`) AND loads it (B1's link) — measured:
+  13 modules, 16 witness files. No other witness is edited by guess.
+
 **CI COVERAGE GAP (reported by session bim-compiler-9b, re-measured here 2026-11-18 on bim-ootb main):** 1,512 witness files; **21 run in CI** (17 named across the workflows + the 4-witness X0 loop) = 1.4%.
 `npm test` = `tests/run_witness_suite.js` (every `viewer/tests/witness_*.js`; headless class gates, browser class report-only, KNOWN_RED list) is not run in CI. The 0.000 mm Rosetta geometry
 witnesses and bim-compiler's RosettaStoneGateTest run before commit by habit only. Already written in `docs/VibeProgramming.md` (#933) and `prompts/FILM_VIBE_CODING_LEDGER.md`. Belongs to Part E
