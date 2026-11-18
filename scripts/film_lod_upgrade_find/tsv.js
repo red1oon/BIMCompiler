@@ -4,7 +4,7 @@
 'use strict';
 const fs = require('fs'), path = require('path'), N = require('./narr.js');
 const [mode, a1, a2, a3] = process.argv.slice(2), work = path.resolve(a1); fs.mkdirSync(work, { recursive: true });
-const cues = {}; let endT = null; const plan = mode === 'build' ? JSON.parse(fs.readFileSync(a3, 'utf8')) : {}, typingS = (id) => { let s = 0; for (const x of (plan[id] || [])) { s += x.frames || 0; if (x.key === 'r') return s / 24; } return 0; };   // K2: the voice of a typed beat starts after its return key
+const cues = {}; let endT = null; const plan = mode === 'build' ? JSON.parse(fs.readFileSync(a3, 'utf8')) : {}, typingS = (id) => { let s = 0; for (const x of (plan[id] || [])) { s += x.frames || 0; if (x.key === 'r' || x.click) return s / 24; } return 0; };   // K2: the voice of a typed beat starts after its return key; of a clicked beat (rc3), after the click still
 if (mode === 'build') fs.readFileSync(a2, 'utf8').split('\n').forEach(l => { const m = /§FILM_CUE beat=(\S+) t=([\d.]+)/.exec(l); if (m) cues[m[1]] = +m[2]; const d = /§FILM_DONE dur=([\d.]+)/.exec(l); if (d) endT = +d[1]; });
 const ix = N.beats.map(b => b.id), rows = N.beats.filter(b => b.text).map(b => { let s = 0, e = 999; if (mode === 'build') { s = cues[b.id] + typingS(b.id) + 0.3; const nx = ix[ix.indexOf(b.id) + 1]; e = nx ? cues[nx] : endT; }
   return [b.id, s.toFixed(2), e.toFixed(2), 'narr.js ' + b.id + ((b.says || []).length ? ' facts ' + b.says.map(x => x[0]).join(',') : ' (no figures)'), b.text, b.text].join('\t'); });
