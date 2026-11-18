@@ -11,7 +11,10 @@
   .md-typeset table:not([class]) th, .md-typeset table:not([class]) td { border: 1px solid #555; padding: 3pt 5pt; }
   .md-typeset tr, .md-typeset img, .md-typeset figure { break-inside: avoid; page-break-inside: avoid; }
   .md-typeset h2 { break-before: page; page-break-before: always; }
-  .md-typeset h3 { break-after: avoid; }
+  .md-typeset h3 { break-after: avoid; break-before: page; page-break-before: always; }
+  .md-typeset h2 + h3, .uat-sheet h3, .uat-cover h3 { break-before: auto; page-break-before: auto; }
+  .uat-cover { break-after: page; page-break-after: always; border: 1.5px solid #333; }
+  .md-typeset h1 { margin-top: 18mm; }
   .md-typeset img { max-width: 100%; max-height: 105mm; }
   a[href]::after { content: none !important; }
   @page { margin: 14mm 12mm; }
@@ -22,6 +25,33 @@
   .uat-sheet h2 { break-before: auto; page-break-before: auto; }
 }
 </style>
+<style>.uat-cover { border: 1px solid #888; border-radius: 4px; padding: .4em 1em .8em; margin: 1em 0 1.6em; } .uat-cover table:not([class]) { width: 100%; }</style>
+
+<div class="uat-cover" markdown="1">
+
+**Document control**
+
+| | |
+|---|---|
+| Document | CAPEX UAT Guide — from 2D drawings to the dashboard |
+| Purpose | The step-by-step test script for the User Acceptance Test of the pilot client (Sysnova): BIM drawings to a priced model, the ERP exercise, the CAPEX dashboard |
+| Revision | **2026-11-19** |
+| Status | Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately. The steps are unchanged in this revision. |
+| Prepared and issued by | Redhuan D. Oon, Project Consultant |
+| For | The pilot client's UAT team: System Setup, BIM, Project Mgmt Accounting |
+| The latest copy | Page: [red1oon.github.io/BIMCompiler/CapexUATGuide](https://red1oon.github.io/BIMCompiler/CapexUATGuide/) · PDF: [CapexUATGuide.pdf](https://red1oon.github.io/BIMCompiler/CapexUATGuide.pdf). The PDF is made from the page at every publish and checked (pages, links). |
+
+**Revision history**
+
+| Revision | What changed |
+|---|---|
+| 2026-11-19 | This cover; each section on a new page; page numbers; every link in the PDF opens the public site |
+| 2026-11-18 | Corrections found by the UAT dry run: A1 links the Developer Guide §3 setup; D2b, D3, D8 figures for a fresh GardenWorld; D9 goals refresh every 30 minutes; B4.4 the model's line under Task Line |
+| 2026-11-15 | Roles and the checklist sheet; B00 export from BricsCAD; B0 from the sheets as drawn to the marked set; B3.1 measured total cost; B5 mark your run with the reference pack; the PDF |
+| 2026-11-14 | Corrections from the full dry run: window names and menu paths, chapter C step by step, C4 Issue to Project, construction products at standard cost, chapter B on the Shed drawing set |
+| 2026-11-13 | First issue |
+
+</div>
 
 A hands-on test script for the testers of the pilot client (Sysnova). Each step says what to **do**, what you should **see**, and has a box to tick.
 **A value is affirmed at its source, not trusted.** Wherever a step gives a number, it also says **Source:** where the number is kept (a record, a field, a formula) and what to open to see it there. Open that source, read the value yourself, and tick *Pass* only if it matches. A figure on the dashboard is never the evidence: the rows behind it are.
