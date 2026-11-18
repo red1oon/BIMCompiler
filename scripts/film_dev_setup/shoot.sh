@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# ⚠ DO NOT REMOVE — SCOPE: film 4 v2 "CH 0 · From an empty folder to a witnessed dev setup" (prompts/FILM_IMMERSIVE_SOFTWARE.md FILM 4). Takes the VS Code stills the typed lines lead to: the REAL VS Code on a private virtual display (Xvfb :96,
-# 1920x1080), opened on the DOWNLOAD that facts.js made with EXACTLY the arguments `node scripts/setup.js --open` printed in its §SETUP_NEXT line (setup's own extensions + user-data folders under <download>/.setup/, X0 Navigator installed there
+# ⚠ DO NOT REMOVE — SCOPE: film 4 v4 "CH 0 · From an empty folder to a witnessed dev setup" (prompts/FILM_IMMERSIVE_SOFTWARE.md FILM 4). Takes the VS Code stills the typed lines lead to: the REAL VS Code on a private virtual display (Xvfb :96,
+# 1920x1080), opened on the DOWNLOAD that facts.js made with EXACTLY the arguments `node scripts/setup.js --open` printed in its §SETUP_NEXT line (setup's own extensions + user-data folders under <download>/.setup/, Code Facts installed there
 # by setup.js): the owner's VS Code profile is not touched. shots_suite.js (the extension-host driver) performs each row of out/facts.json `vsc`. Run facts.js first. Read out/shots.log after every run.
 set -u
-HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; OUT="$HERE/out"; CACHE="$HOME/.cache/film_dev_setup2"; WORK="$CACHE/dl/bim-ootb-main"
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; OUT="$HERE/out"; CACHE="$HOME/.cache/film_dev_setup4"; WORK="$CACHE/dl/bim-ootb-main"
 [ -s "$OUT/facts.json" ] && [ -d "$WORK/.setup/vscode-ext" ] || { echo "§FILM_SHOOT REFUSED: run facts.js first"; exit 2; }
 # the arguments must be the ones setup.js printed (§SETUP_NEXT), else this is not the editor `--open` launches
 NEXT="$(node -e "const F=require('$OUT/facts.json');console.log(JSON.parse(F.setup.next))")"
@@ -14,7 +14,7 @@ hashtree() { node -e "
 const fs=require('fs'),path=require('path'),crypto=require('crypto');const W=process.argv[1];const h=crypto.createHash('sha1');let n=0;
 (function w(p){for(const f of fs.readdirSync(path.join(W,p)).sort()){if(!p&&(f==='node_modules'||f==='.setup'))continue;const r=p?p+'/'+f:f,st=fs.lstatSync(path.join(W,r));if(st.isDirectory())w(r);else{n++;h.update(r+':'+st.size+':'+(st.size<5e6?crypto.createHash('sha1').update(fs.readFileSync(path.join(W,r))).digest('hex'):'')+';');}}})('');
 console.log('§FILM_WS_HASH $1 '+h.digest('hex')+' files='+n);" "$WORK" >> "$OUT/shots.log"; }
-rm -rf "$OUT/shots.log" "$OUT"/done.* "$OUT"/*.req; mkdir -p "$OUT/stills"; rm -f "$OUT"/stills/b*_*.png "$OUT"/stills/s_[!o]*.png
+rm -rf "$OUT/shots.log" "$OUT"/done.* "$OUT"/*.req; mkdir -p "$OUT/stills"; rm -f "$OUT"/stills/h_*.png "$OUT"/stills/b*_*.png "$OUT"/stills/s_[!o]*.png
 BIN="${VSCODE_BIN:-/snap/code/current/usr/share/code/code}"; DISP=":96"
 Xvfb $DISP -screen 0 1920x1080x24 -nolisten tcp >/dev/null 2>&1 & XPID=$!; sleep 2
 hashtree before

@@ -1,0 +1,2 @@
+§STRIP_VIDEO windows=0:4.2,145.75:172.7 frames=62 bar_frames=62 f0001.png@0.0 strip_rows=250..278 f0002.png@0.0 strip_rows=250..278 f0003.png@0.0 strip_rows=250..278
+§STRIP_VIDEO_VERDICT FAIL

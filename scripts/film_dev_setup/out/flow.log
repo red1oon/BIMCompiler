@@ -1,0 +1,15 @@
+§FLOW OK   F4 beat=b1 cue=4.21 first word +5.63 s (needs ≥ 5.63: typing/motion 5.33 + 0.3)
+§FLOW OK   F4 beat=b2 cue=23.13 first word +0.80 s (needs ≥ 0.80: strip lead 0.8)
+§FLOW OK   F5 b1 → b2 silence 1.67 s (needs ≥ 0.6)
+§FLOW OK   F4 beat=b3 cue=39.42 first word +0.80 s (needs ≥ 0.80: strip lead 0.8)
+§FLOW OK   F5 b2 → b3 silence 1.64 s (needs ≥ 0.6)
+§FLOW OK   F4 beat=b4 cue=65.08 first word +2.59 s (needs ≥ 2.59: typing/motion 2.29 + 0.3)
+§FLOW OK   F5 b3 → b4 silence 3.43 s (needs ≥ 0.6)
+§FLOW OK   F4 beat=b5 cue=80.42 first word +2.92 s (needs ≥ 2.92: typing/motion 2.63 + 0.3)
+§FLOW OK   F5 b4 → b5 silence 3.79 s (needs ≥ 0.6)
+§FLOW OK   F4 beat=b6 cue=91.08 first word +9.01 s (needs ≥ 9.01: typing/motion 8.71 + 0.3)
+§FLOW OK   F5 b5 → b6 silence 9.87 s (needs ≥ 0.6)
+§FLOW OK   F4 beat=b7 cue=119.79 first word +4.89 s (needs ≥ 4.88: typing/motion 4.58 + 0.3)
+§FLOW OK   F5 b6 → b7 silence 5.75 s (needs ≥ 0.6)
+§FLOW OK   M b4: the popup is on screen at 66.75 s, the voice starts at 67.67 s
+§FLOW_VERDICT PASS beats=7

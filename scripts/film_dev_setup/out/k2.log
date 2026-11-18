@@ -1,7 +1,6 @@
-§K2 OK   beat=b1 return=9.21 voice_start=9.84 ass_start=9.84 | voice-only track in typing window -180.0 dB vs in voice -18.2 dB (gap 161.8) | mixed in typing: peak -8.9 dBFS rms -35.7 dB
-§K2 OK   beat=b3 return=46.46 voice_start=47.09 ass_start=47.09 | voice-only track in typing window -180.0 dB vs in voice -16.7 dB (gap 163.3) | mixed in typing: peak -9.8 dBFS rms -33.5 dB
-§K2 OK   beat=b4 return=66.25 voice_start=66.88 ass_start=66.88 | voice-only track in typing window -180.0 dB vs in voice -16.9 dB (gap 163.1) | mixed in typing: peak -8.8 dBFS rms -35.5 dB
-§K2 OK   beat=b5 return=88.38 voice_start=89.01 ass_start=89.01 | voice-only track in typing window -180.0 dB vs in voice -16.4 dB (gap 163.6) | mixed in typing: peak -9.0 dBFS rms -35.3 dB
-§K2 OK   beat=b7 return=106.62 voice_start=107.26 ass_start=107.26 | voice-only track in typing window -180.0 dB vs in voice -16.3 dB (gap 163.7) | mixed in typing: peak -8.8 dBFS rms -34.3 dB
-§K2_LEVEL keys (mixed, typing windows) mean rms -34.8 dB, mean peak -9.1 dBFS; voice mean rms -16.9 dB -> keys are 17.9 dB under the voice rms
-§K2_VERDICT PASS beats=5 bad=0 audible=True
+§K2 OK   beat=b1 return=9.21 voice_start=9.84 ass_start=9.84 | voice-only track in typing window -180.0 dB vs in voice -19.1 dB (gap 160.9) | mixed in typing: peak -8.8 dBFS rms -35.5 dB
+§K2 OK   beat=b5 return=82.08 voice_start=83.34 ass_start=83.34 | voice-only track in typing window -180.0 dB vs in voice -16.4 dB (gap 163.6) | mixed in typing: peak -9.3 dBFS rms -33.4 dB
+§K2 OK   beat=b6 return=99.46 voice_start=100.09 ass_start=100.09 | voice-only track in typing window -180.0 dB vs in voice -16.7 dB (gap 163.3) | mixed in typing: peak -8.4 dBFS rms -35.2 dB
+§K2 OK   beat=b7 return=124.04 voice_start=124.68 ass_start=124.68 | voice-only track in typing window -180.0 dB vs in voice -16.4 dB (gap 163.6) | mixed in typing: peak -8.9 dBFS rms -35.5 dB
+§K2_LEVEL keys (mixed, typing windows) mean rms -34.9 dB, mean peak -8.8 dBFS; voice mean rms -17.2 dB -> keys are 17.7 dB under the voice rms
+§K2_VERDICT PASS beats=4 bad=0 audible=True
