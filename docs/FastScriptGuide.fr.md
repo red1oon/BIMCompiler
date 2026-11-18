@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 31152ab2c5944f96
+source_sha: 7fd58a7ca9d6af6d
 lang: fr
 ---
 
@@ -12,6 +12,42 @@ Voyez-y du SQL sous stéroïdes : une ligne lit ou modifie des enregistrements, 
 
 !!! warning "Ce qu'une bonne réponse ne signifie pas"
     Une réponse sans problème ne signifie **jamais sûre, conforme ou bonne**. Chaque réponse liste ce qui n'a pas été vérifié, et [Ce qui n'est pas vérifié](#what-is-not-checked) le redit. Le dernier mot revient à un ingénieur structure.
+
+## Comment l'installer
+
+Il vous faut Node 18 ou plus récent (ces étapes ont tourné sur Node 18.19). Il y a deux façons d'entrer.
+
+**La copie complète** vous donne red1, BIM, ERP, le Viewer et tout ce qui suit. Clonez-la, puis lancez red1 depuis son dossier racine :
+
+```bash
+git clone https://github.com/red1oon/bim-ootb
+cd bim-ootb
+node common/door/red1.js
+```
+
+Tapez `exit` pour quitter. Pour taper simplement `red1` de n'importe où, lancez `npm link` une fois dans ce dossier. Pour vérifier que cela marche, demandez sa ligne de version :
+
+<!-- run: red1_version -->
+```text
+$ node common/door/red1.js --version | sed -e 's/^Copyright[^·]*· //' -e 's/ · [0-9a-f]\{8\}$//'
+red1 1.0.0 · 78 verbs · 30 words
+```
+
+**Le téléchargement de six fichiers** sert à la porte seule avec les verbes du Modeller, sans copie complète. Créez un dossier vide, installez le moteur de navigateur dont le Modeller a besoin, et récupérez les six fichiers :
+
+```bash
+mkdir fastscript && cd fastscript
+npm init -y
+npm install puppeteer@24
+curl -O https://red1oon.github.io/bim-ootb/modeller/tools/edit_cli.js
+curl -O https://red1oon.github.io/bim-ootb/modeller/tools/bim_mcp.js
+curl -O https://red1oon.github.io/bim-ootb/common/door/door.js
+curl -O https://red1oon.github.io/bim-ootb/common/door/verbs.json
+curl -O https://red1oon.github.io/bim-ootb/common/door/msg_core.js
+curl -O https://red1oon.github.io/bim-ootb/common/door/vocab/messages.json
+```
+
+Gardez les six dans un même dossier. `door.js` lit la liste des verbes dans `verbs.json` et ses messages dans `messages.json` (via `msg_core.js`), et lance `edit_cli.js`, qui ouvre la page du Modeller en ligne sans fenêtre. Si un fichier manque, la porte dit lequel et affiche sa ligne `curl`. Tout le reste de cette page demande la copie complète ; le [tableau des verbes](#the-verbs) dit quel verbe demande quoi.
 
 ## Commencez par red1
 
@@ -29,6 +65,8 @@ Tip: type level student for fuller help on each word (red1 --fast opens without 
 red1> exit
 ```
 
+**Comment lire les blocs de cette page.** La ligne après `$` est la façon dont le test de la page lance la commande : il utilise des fichiers jetables (vidés d'abord, pour qu'une exécution ne touche jamais vos propres données), coupe les durées et masque le journal. À votre propre invite, vous tapez seulement les mots, comme `cd Duplex`. En dessous figure exactement ce que red1 a affiché.
+
 Lisez-le comme une carte. La ligne de version dit combien de verbes de la porte (la forme longue) et de mots courts red1 possède. `help` montre les mots courts en trois groupes ; `help bim`, `help mis` ou `help erp` montre un groupe :
 
 | Groupe | À quoi il sert | Commencer par |
@@ -41,9 +79,9 @@ Lisez-le comme une carte. La ligne de version dit combien de verbes de la porte 
 ```text
 $ node common/door/red1.js help 2>/dev/null
 red1: type a short word; red1 prints the full line it runs (→ …), then runs it.
-  bim   buildings and models             start with: cd Duplex   (16 words)
-  mis   records, tables, files, Ninja    start with: cd Order   (11 words)
-  erp   document actions (CO VO CL RC)   start with: cd Order   (8 words)
+  bim   buildings and models            start with: cd Duplex   (16 words)
+  mis   records, tables, files, Ninja   start with: cd Order   (11 words)
+  erp   documents and processes         start with: cd Order   (8 words)
   everywhere: cd <place> · #<number> · pwd · role <id> · login <user> · history [N] · report · exit
 Type bim, mis or erp for its words · help <word> for one word (level student first for the full explanation) · help verbs for the full door lines.
 ```
@@ -53,7 +91,7 @@ Un groupe liste ses mots, chacun avec un exemple à taper. `erp` est le plus cou
 <!-- run: red1_help_erp -->
 ```text
 $ node common/door/red1.js 'help erp' 2>/dev/null
-erp: document actions (CO VO CL RC) (start with: cd Order)
+erp: documents and processes (start with: cd Order)
  in a building:
   post discipline=ARC  post the building's priced selection to its ERP Project Order
   vo discipline=ARC    issue the change between the model and the Project Order as a Variation Order
@@ -113,45 +151,9 @@ $ node common/door/red1.js 'cd Duplex; cd Element; count discipline=ARC' 2>&1 | 
 
 Du texte gris apparaît après votre curseur pendant que vous tapez un mot, un lieu ou une colonne : une suggestion issue du dictionnaire. **Tab** ou **→** la prend ; **Retour exécute toujours ce que vous avez tapé**, jamais la suggestion. Une faute d'orthographe reçoit une indication, jamais une correction silencieuse (`ls Valu=…` est refusé et nomme `Value`).
 
-## Comment l'installer
-
-Il vous faut Node 18 ou plus récent (ces étapes ont tourné sur Node 18.19). Il y a deux façons d'entrer.
-
-**La copie complète** vous donne red1, BIM, ERP, le Viewer et tout ce qui suit. Clonez-la, puis lancez red1 depuis son dossier racine :
-
-```bash
-git clone https://github.com/red1oon/bim-ootb
-cd bim-ootb
-node common/door/red1.js
-```
-
-Tapez `exit` pour quitter. Pour taper simplement `red1` de n'importe où, lancez `npm link` une fois dans ce dossier. Pour vérifier que cela marche, demandez sa ligne de version :
-
-<!-- run: red1_version -->
-```text
-$ node common/door/red1.js --version | sed -e 's/^Copyright[^·]*· //' -e 's/ · [0-9a-f]\{8\}$//'
-red1 1.0.0 · 78 verbs · 30 words
-```
-
-**Le téléchargement de six fichiers** sert à la porte seule avec les verbes du Modeller, sans copie complète. Créez un dossier vide, installez le moteur de navigateur dont le Modeller a besoin, et récupérez les six fichiers :
-
-```bash
-mkdir fastscript && cd fastscript
-npm init -y
-npm install puppeteer@24
-curl -O https://red1oon.github.io/bim-ootb/modeller/tools/edit_cli.js
-curl -O https://red1oon.github.io/bim-ootb/modeller/tools/bim_mcp.js
-curl -O https://red1oon.github.io/bim-ootb/common/door/door.js
-curl -O https://red1oon.github.io/bim-ootb/common/door/verbs.json
-curl -O https://red1oon.github.io/bim-ootb/common/door/msg_core.js
-curl -O https://red1oon.github.io/bim-ootb/common/door/vocab/messages.json
-```
-
-Gardez les six dans un même dossier. `door.js` lit la liste des verbes dans `verbs.json` et ses messages dans `messages.json` (via `msg_core.js`), et lance `edit_cli.js`, qui ouvre la page du Modeller en ligne sans fenêtre. Si un fichier manque, la porte dit lequel et affiche sa ligne `curl`. Tout le reste de cette page demande la copie complète ; le [tableau des verbes](#the-verbs) dit quel verbe demande quoi.
-
 ## Les mots que vous utiliserez le plus
 
-Chaque partie ci-dessous dit ce que vous allez faire et pourquoi, puis montre une exécution réelle et ce qu'il faut y regarder. Chaque bloc utilise un op-log de travail (le fichier où le jumeau garde ses changements), vidé d'abord, donc les exécuter ne touche pas vos propres données.
+Chaque partie ci-dessous dit ce que vous allez faire et pourquoi, puis montre une exécution réelle et ce qu'il faut y regarder.
 
 ### bim : bâtiments et modèles
 
@@ -212,24 +214,7 @@ ok · viewer.clashes
 ls lists the 393 rows
 ```
 
-**Coût.** `cost discipline` chiffre les éléments du bâtiment comme le panneau Rechercher du Viewer : quantités du modèle fois le barème. Les groupes viennent d'abord, puis le nombre et le total ; `ls` liste les lignes chiffrées. On peut aussi grouper par `phase`, `task`, `storey` ou `class`. Regardez la dernière ligne : comme le bâtiment n'a pas encore de commande ERP, red1 propose l'étape suivante. Cette session se termine sans réponse, donc rien n'est comptabilisé :
-
-<!-- run: chain_cost -->
-```text
-$ rm -f /tmp/fast_guide_chain.ops; printf 'cd Duplex\ncost discipline\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide_chain.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_chain.journal node common/door/red1.js 2>/dev/null | sed 's/ · [0-9]* ms//'
-building Duplex
-→ viewer.cost building=Duplex by=discipline
-ok · viewer.cost
-1190 elements · 1054482.08 total (71 with no rate); 3 with no size, not priced
-discipline  elements  cost
-ARC         267       532431.14
-ELEC        81        283500.00
-MEP         809       153825.40
-PLB         14        49000.00
-STR         19        35725.55
-ls lists the 49 priced rows
-Ready to post to ERP Project Order? y/N → erp.process name="Fold from BIM" Building=Duplex
-```
+**Coût.** `cost discipline` chiffre les éléments du bâtiment comme le fait le panneau Find du Viewer : les quantités du modèle multipliées par le barème. Son exécution se trouve dans [Du bâtiment à sa commande](#from-a-building-to-its-order-cost-the-offer-post), où elle mène jusqu'à la commande.
 
 ### mis : enregistrements, tables, fichiers
 
@@ -259,7 +244,7 @@ C_BPartner_ID  Value  Name               Logo_ID  C_BP_Group_ID
 
 ### erp : documents et processus
 
-**Créer un document et le terminer.** `new` dans `Order` crée une commande brouillon et affiche son numéro. Une ligne complète de la porte marche aussi à l'invite, donc la ligne de la commande s'ajoute avec `mis.new` (un produit et une quantité). `next <number>` dessine ce que le document peut faire maintenant, et pointe chaque action qui a un mot vers la ligne qui l'exécute. `do CO <number>` le termine ; les codes DocAction historiques sont `CO` terminer, `VO` annuler, `CL` clore, `RC` extourner (`do complete`, `do void` … marchent aussi). Regardez le numéro qu'affiche `new`, l'état dans chaque arbre `next`, et les actions qui ont avancé après `CO`. (Le `grep` ne garde que ces lignes ; les réponses complètes listent aussi chaque colonne remplie.)
+**Créer un document et le compléter.** `new` dans `Order` crée une commande brouillon et affiche son numéro. Une ligne de porte complète fonctionne aussi à l'invite, donc la ligne de la commande est ajoutée avec `mis.new` (un produit et une quantité). `next <number>` dessine ce que le document peut faire maintenant et renvoie chaque action qui a un mot à la ligne qui l'exécute. `do CO <number>` le complète ; les codes DocAction de l'existant sont `CO` compléter, `PR` préparer, `VO` annuler, `CL` clôturer, `RC` contre-passer, `RE` réactiver (`do complete`, `do void` … marchent aussi). Regardez le numéro qu'affiche `new`, le statut dans chaque arbre `next` et les actions qui ont changé après `CO`. (Le `grep` ne garde que ces lignes ; les réponses complètes listent aussi chaque colonne remplie.)
 
 <!-- run: erp_order -->
 ```text
@@ -270,7 +255,6 @@ ok · mis.new
 number: 50000
 → mis.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2
 ok · mis.new
-number: 
 → erp.actions kind=Order number=50000
 ok · erp.actions
 Order 50000  status DR
@@ -309,23 +293,7 @@ Generate PO from Project: done · no document made
 
 Sur une ligne isolée, ou pour une IA, rien n'est demandé : un paramètre obligatoire manquant est un refus qui le nomme. Un processus pour lequel le jumeau n'a pas encore de port est refusé avec le nom de sa classe, et red1 le dit.
 
-**Un enregistrement propose ce qui est à lui.** Dans un enregistrement, ce que red1 propose est à cet enregistrement, lu dans le dictionnaire de sa fenêtre : après `do`, seulement les actions qu'il peut faire maintenant (pour votre rôle) ; après `cd`, ses onglets ; après `run`, ses propres boutons de processus ; et ses champs comme clés `Column=`. En y entrant, l'enregistrement affiche ce qu'il peut faire :
-
-<!-- run: erp_record_offers -->
-```text
-$ printf 'cd Order 100\n' | node common/door/red1.js 2>/dev/null
-→ mis.describe kind="Order 100"
-→ mis.describe kind=Order
-→ mis.read kind=Order number=100
-→ mis.read kind=Order id=100
-Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls shows them, cd <tab> opens one, cat reads the record
-→ erp.actions kind=Order id=100
-it may do: CL, VO, RE (do <code>; next shows the tree)
-```
-
-Là, Tab après `do ` ne propose que `CL`, `VO` et `RE`, dans l'ordre des boutons propres à la fenêtre (Close, Void, Re-Activate ; `RE` réactive la commande : `do RE`), et `run Co` se complète en `"Copy Lines"`, le bouton propre à la fenêtre de commande.
-
-**Parcourir le menu.** `menu` montre le menu ERP comme des lieux : `cd <folder>` y entre (le début de son nom suffit quand une seule entrée commence ainsi), une entrée de fenêtre vous mène à son type, et `cd ..` (ou Shift+Tab) remonte d'un dossier. L'invite montre le chemin. Chaque entrée est marquée : ▸ un dossier (combien d'entrées il contient), W une fenêtre (et sa table), P un processus, R un rapport, X un formulaire, F un flux de travail. `red1 menu` seul ouvre toujours le menu sur un écran entier.
+**Le menu, et les enregistrements comme des lieux.** `menu` montre le menu de l'ERP comme des lieux : `cd <folder>` y entre (le début du nom suffit quand une seule entrée commence ainsi), une entrée de fenêtre vous mène à son type, et `cd ..` (ou Maj+Tab) remonte d'un dossier. L'invite montre le chemin. Chaque entrée est marquée : ▸ un dossier (combien d'entrées il contient), W une fenêtre (et sa table), P un processus, R un rapport, X un formulaire, F un workflow. `red1 menu` seul ouvre toujours le menu en plein écran.
 
 <!-- run: red1_menu_walk -->
 ```text
@@ -373,7 +341,7 @@ Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POR
 menu="Quote-to-Invoice (Sales)/Sales Orders" kind=Order
 ```
 
-**Du menu à un enregistrement.** Dans un type, `cd <number>` entre dans cet enregistrement et l'invite garde le chemin du menu ; `cd ..` en ressort. Dans l'enregistrement, `do` et `next` le désignent par son id, si bien qu'un numéro que partagent deux enregistrements (ici 80000) ne pose jamais problème. Une action affiche ce qu'elle a fait : le changement de statut, les documents touchés, le nombre de changements conservés et ce que l'enregistrement peut faire maintenant ; Tab après `do ` propose alors ces nouveaux codes. Les listes de dossiers sont omises dans le bloc ci-dessous :
+Dans un type, `cd <number>` entre dans cet enregistrement et l'invite garde le chemin du menu ; `cd ..` en ressort (de n'importe où, `cd Order 100` fait de même). Dans un enregistrement, ce que red1 propose est celui de l'enregistrement, lu dans le dictionnaire pour sa fenêtre : après `do`, seulement les actions qu'il peut faire maintenant, pour votre rôle, dans l'ordre des propres boutons de la fenêtre ; après `cd`, ses onglets ; après `run`, ses propres boutons de processus (`run Co` se complète en `"Copy Lines"`) ; et ses champs comme clés `Column=`. `do` et `next` nomment l'enregistrement par son id, donc un numéro que deux enregistrements partagent (ici 80000) n'est jamais un problème. Une action affiche ce qu'elle a fait : le changement de statut, les documents touchés, combien de changements elle a gardés et ce que l'enregistrement peut faire maintenant ; Tab après `do ` propose alors ces nouveaux codes. Les listes de dossiers sont omises du bloc ci-dessous :
 
 <!-- run: red1_walk_record -->
 ```text
@@ -384,8 +352,6 @@ Quote-to-Invoice (Sales): 6 entries; cd <name> goes in, cd .. goes back
 Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd <name> goes in, cd .. goes back
 → mis.describe kind=C_Order
 Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
-→ mis.describe kind=100
-→ mis.read kind=Order number=100
 → mis.read kind=Order id=100
 Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls shows them, cd <tab> opens one, cat reads the record
 → erp.actions kind=Order id=100
@@ -432,13 +398,13 @@ refused · erp.process · Renumber was not run: it has no JS port yet (class org
 This is a gap in red1, not your mistake. Type report to send it to us (email or GitHub issue).
 ```
 
-### Du bâtiment à sa commande : coût, la proposition, comptabiliser
+### Du bâtiment à sa commande : coût, la proposition, comptabiliser {#from-a-building-to-its-order-cost-the-offer-post}
 
-C'est la chaîne qui porte un bâtiment jusqu'à sa commande de projet ERP. Elle a commencé plus haut : `cost discipline` s'est terminé par une proposition, `Ready to post to ERP Project Order? y/N`, suivie de la ligne exacte qu'elle exécuterait. La proposition est la prochaine étape propre du moteur, jamais tapée à la main. Dans une session, `y` exécute exactement cette ligne, et `n` ou un Retour vide n'exécute rien ; sur une ligne isolée ou pour une IA, rien n'est demandé et la ligne est dans le `next` de la réponse. Répondre `y`, c'est `post` : cela replie la sélection chiffrée du bâtiment dans une commande de projet, avec ses phases et tâches tirées du programme 4D du bâtiment et les lignes de projet, en un groupe de changements ou aucun. Regardez ce qui a été créé, et la deuxième proposition, qui est `cd project` :
+Voici la chaîne qui porte un bâtiment dans sa Commande de Projet de l'ERP. `cost discipline` affiche d'abord les groupes, puis le nombre et le total ; `ls` liste les lignes chiffrées, et un coût peut aussi être groupé par `phase`, `task`, `storey` ou `class`. Comme le bâtiment n'a pas encore de commande dans l'ERP, il se termine par une offre, `Ready to post to ERP Project Order? y/N`, suivie de la ligne exacte qu'il lancerait. L'offre est la propre étape suivante du moteur, jamais tapée à la main. Dans une session, `y` lance exactement cette ligne, et `n` ou un Return vide ne lance rien ; dans une ligne unique ou pour une IA, rien n'est demandé et la ligne figure dans le `next` de la réponse. Répondre `y`, c'est `post` : il replie la sélection chiffrée du bâtiment dans une Commande de Projet, avec ses phases et tâches tirées du programme 4D du bâtiment et les lignes du projet, en un seul groupe de changements ou aucun. Regardez ce qui a été créé, et la seconde offre, qui est `cd project` :
 
 <!-- run: chain_post -->
 ```text
-$ printf 'cd Duplex\ncost discipline\ny\nn\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide_chain.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_chain.journal node common/door/red1.js 2>/dev/null | sed 's/ · [0-9]* ms//'
+$ rm -f /tmp/fast_guide_chain.ops; printf 'cd Duplex\ncost discipline\ny\nn\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide_chain.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_chain.journal node common/door/red1.js 2>/dev/null | sed 's/ · [0-9]* ms//'
 building Duplex
 → viewer.cost building=Duplex by=discipline
 ok · viewer.cost
@@ -595,19 +561,11 @@ Ce tableau est **généré à partir du fichier de vocabulaire** (`common/door/v
 | `mis.menu` | Lire le menu | `role` (facultatif), `find` (facultatif) | read | human, ai | une copie complète de bim-ootb |
 | `ninja.rollback` | Annuler un lot Ninja | `bundle`, `dry` (facultatif) | writes | human, ai | une copie complète de bim-ootb |
 | `ninja.export` | Réécrire un lot Ninja sous forme de classeur | `bundle` (facultatif), `window` (facultatif), `table` (facultatif), `file` | writes | human, ai | une copie complète de bim-ootb |
-| `erp.column` | Qui remplit une colonne : jumeau et legacy côte à côte (ancien nom de mis.column) | `kind`, `column` | read | human, ai | une copie complète de bim-ootb |
-| `erp.compare` | Comparer un enregistrement sur le jumeau et sur le legacy (ancien nom de legacy.compare) | `kind`, `number`, `legacy` (facultatif) | read | human, ai | une copie complète de bim-ootb |
-| `erp.pack` | Créer le zip 2Pack à partir d'un classeur de modèle de données (ancien nom de mis.pack) | `book`, `version`, `out` (facultatif), `java` (facultatif), `package` (facultatif) | writes | human, ai | une copie complète de bim-ootb |
-| `erp.legacy_plugin` | Installer un plugin de modèle de données sur l'instance de test legacy et l'y vérifier (ancien nom de legacy.plugin) | `book`, `version` | writes | human, ai | une copie complète de bim-ootb |
-| `erp.describe` | Décrire un type d'enregistrement ERP (ancien nom de mis.describe) | `kind`, `role` (facultatif) | read | human, ai | une copie complète de bim-ootb |
-| `erp.read` | Lire un enregistrement ERP (ancien nom de mis.read) | `kind`, `id` (facultatif), `number` (facultatif), `role` (facultatif) | read | human, ai | une copie complète de bim-ootb |
-| `erp.list` | Lister des enregistrements (ancien nom de mis.list) | `kind`, `columns` (facultatif), `sort` (facultatif), `limit` (facultatif), `offset` (facultatif), `names` (facultatif), `role` (facultatif), autres filtres `column=value` (facultatif) | read | human, ai | une copie complète de bim-ootb |
-| `erp.sum` | Additionner une colonne (ancien nom de mis.sum) | `kind`, `column`, `role` (facultatif), autres filtres `column=value` (facultatif) | read | human, ai | une copie complète de bim-ootb |
-| `erp.group` | Compter selon une colonne (ancien nom de mis.group) | `kind`, `by`, `role` (facultatif), `window` (facultatif), autres filtres `column=value` (facultatif) | read | human, ai | une copie complète de bim-ootb |
-| `erp.new` | Créer un enregistrement (ancien nom de mis.new) | `kind`, `dry` (facultatif), `role` (facultatif), `window` (facultatif), autres filtres `column=value` (facultatif) | writes | human, ai | une copie complète de bim-ootb |
+
+Anciens noms qui fonctionnent toujours, chacun identique au verbe vers lequel il pointe : `erp.column` → `mis.column` · `erp.compare` → `legacy.compare` · `erp.pack` → `mis.pack` · `erp.legacy_plugin` → `legacy.plugin` · `erp.describe` → `mis.describe` · `erp.read` → `mis.read` · `erp.list` → `mis.list` · `erp.sum` → `mis.sum` · `erp.group` → `mis.group` · `erp.new` → `mis.new`
 <!-- /GEN:verbs -->
 
-**Couverture actuelle.** La liste est petite à dessein : 68 verbes couvrent les modifications de trame du Modeller, son walker et un Modeller gardé ouvert entre les lignes, quelques questions du Viewer, le planning, la lecture, le comptage et l'écriture génériques d'objets, le coût d'une sélection, les verbes de documents ERP et tout processus du dictionnaire ERP qui a un port. Le Viewer a 64 actions qu'une personne peut presser, et la porte offre 6 verbes du Viewer. L'ERP a 1158 documents et processus, et la porte offre 13 verbes ERP pour la vie d'un document et 15 verbes MIS qui marchent sur n'importe quelle table, et garde 10 anciens noms pour que les lignes antérieures fonctionnent encore. C'est donc un début, pas le menu complet.
+**Couverture aujourd'hui.** La liste est petite exprès : 68 verbes couvrent les modifications de grille du Modeller, son walker et un Modeller gardé ouvert entre les lignes, quelques questions au Viewer, le planning, la lecture, le comptage et l'écriture génériques d'objets, le coût d'une sélection, les verbes de documents de l'ERP et tout processus du dictionnaire de l'ERP qui a un portage. Le Viewer a 64 actions qu'une personne peut presser, et la porte offre 6 verbes du Viewer. L'ERP a 1158 documents et processus, et la porte offre 13 verbes de l'ERP pour la vie d'un document et 15 verbes MIS qui travaillent sur n'importe quelle table, et garde 10 anciens noms pour que les lignes d'avant marchent encore (le compte de la ligne de version les inclut). C'est donc un début, pas tout le menu.
 
 
 ## Comment cette page reste vraie
