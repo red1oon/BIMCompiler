@@ -4441,50 +4441,99 @@ not counted). You will not read it all; §6 says what to read first.</p>
 <code>.vscode/settings.json</code> hides most of these copies from search, and makes <code>deploy/live/</code> (the production snapshot) read-only.</p>
 <hr />
 <h2 id="3-start-from-scratch-download-run-set-up-vs-code">3. Start from scratch: download, run, set up VS Code<a class="headerlink" href="#3-start-from-scratch-download-run-set-up-vs-code" title="Permanent link">&para;</a></h2>
-<p>There is nothing to build. Every step below was run from an empty folder on 2026-11-18 by the witness
-<code>scripts/tests/witness_from_scratch.js</code> (W-FROM-SCRATCH, bim-ootb). Run it yourself to check your machine: it prints one line per step.</p>
-<p><strong>What you need</strong> (the versions it ran with):</p>
+<p>There is nothing to build, and you can do all of it from a terminal without visiting GitHub. One script, <code>scripts/setup.js</code>, takes a fresh download to a working setup: the dev
+tools installed and checked, X0 Navigator installed, VS Code opened on the folder. It is proved by the witness <code>scripts/tests/witness_setup.js</code>
+(W-SETUP: 20 checks on 2026-11-18, including a real VS Code that opens the folder with X0 active and the tasks listed) and by
+<code>scripts/tests/witness_from_scratch.js</code> (W-FROM-SCRATCH, every step from an empty folder). Run either to check your own machine.</p>
+<p><strong>What you need</strong></p>
 <table>
 <thead>
 <tr>
 <th>Tool</th>
-<th>Used for</th>
+<th>Needed for</th>
 <th>Ran with</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>git</td>
-<td>getting the code (or use the ZIP below)</td>
-<td>2.43</td>
-</tr>
-<tr>
-<td>Node.js</td>
-<td>the witnesses, the dev tools, X0 Navigator's packer</td>
+<td>Node.js 18 or newer</td>
+<td>the setup script, the dev tools, the witnesses</td>
 <td>18.19 (CI uses 20)</td>
 </tr>
 <tr>
+<td>curl, tar</td>
+<td>step 0 (fetching)</td>
+<td>any</td>
+</tr>
+<tr>
 <td>Python 3</td>
-<td>the local web server (<code>python3 -m http.server</code>)</td>
+<td>serving the pages (<code>--serve</code>), or any static server you prefer</td>
 <td>3.12</td>
 </tr>
 <tr>
-<td>VS Code</td>
-<td>editing, debugging, X0 Navigator</td>
+<td>VS Code, with its <code>code</code> command on your PATH</td>
+<td>the VS Code side (optional)</td>
 <td>1.146</td>
 </tr>
 <tr>
-<td>Chrome or Chromium</td>
-<td>debugging with breakpoints; the headless witnesses use Playwright's copy</td>
-<td>—</td>
+<td>git</td>
+<td>only to contribute a change (§10); setup does not need it</td>
+<td>2.43</td>
 </tr>
 </tbody>
 </table>
-<p><code>npm install</code> is needed only for the lint check (<code>eslint</code>) and the browser witnesses; the app itself needs nothing installed
-(its only runtime library, <code>sql.js</code>, is in the repo).</p>
-<p><strong>1. Get the code.</strong> <code>git clone https://github.com/red1oon/bim-ootb.git</code>, or on that page <strong>Code ▸ Download ZIP</strong> and unzip it.
-Either way you get about 4,800 files, about 540 MB. Clone <strong>BIMCompiler</strong> too only if you need the compiler or the specs. Keep one clone of each.</p>
-<p><strong>2. Serve it.</strong> In the <code>bim-ootb</code> folder: <code>python3 -m http.server 8000</code> (or the VS Code task <strong>Serve repo</strong>).</p>
+<p><strong>0. Fetch the code</strong> (no git, no GitHub account; about 4,800 files, about 540 MB):</p>
+<div class="highlight"><pre><span></span><code>curl -L https://github.com/red1oon/bim-ootb/archive/refs/heads/main.tar.gz | tar xz
+cd bim-ootb-main
+</code></pre></div>
+<p>Why the archive and not <code>git clone</code>: a GitHub archive carries no large-file (LFS) objects, while a clone on a machine with git-lfs installed tries to
+download them, and this project's LFS bandwidth is used up. If you do need a clone: <code>GIT_LFS_SKIP_SMUDGE=1 git clone https://github.com/red1oon/bim-ootb.git</code>.
+The folder has no <code>.git</code>: that is normal, every tool below works without it. (The browser's <strong>Code ▸ Download ZIP</strong> gives the same files.)</p>
+<p><strong>1. Set up</strong> (installs what the dev tools need, checks them, installs X0 Navigator, opens VS Code on the folder):</p>
+<div class="highlight"><pre><span></span><code>node scripts/setup.js --open
+</code></pre></div>
+<p>It prints one <code>§</code> line per step and ends with a verdict. Real output (2026-11-18, shortened):</p>
+<div class="highlight"><pre><span></span><code>§SETUP_PREREQ node=18.19.1 npm=Y python3=Y code=/snap/bin/code
+§SETUP_DEPS npm_ci=ok espree=Y
+§SETUP_TOOLS manifest=PASS proof_map=PASS bump=PASS
+§SETUP_VSC code=/snap/bin/code x0=installed eslint=recommended tasks=6 snippets=3 launch=Y mode=throwaway ext_dir=&lt;folder&gt;/.setup/vscode-ext
+§SETUP steps=4 ok=4 gaps=0 verdict=PASS
+</code></pre></div>
+<p><code>npm ci</code> (about 10 seconds, the one step that needs the network) is needed by the manifest and bump tools (and gives you the lint check). The app itself needs nothing installed. A second run says <code>§SETUP_DEPS skipped=present</code> and changes nothing. A problem is a <code>§SETUP_GAP</code> line with the one-line
+fix, never a silent skip, and <code>verdict=FAIL</code> (exit 1) only when something you asked for did not work.</p>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--open</code></td>
+<td>opens VS Code on the folder (in throwaway mode, with the X0 extensions folder setup made)</td>
+</tr>
+<tr>
+<td><code>--install</code></td>
+<td>the ONLY way your own VS Code profile is touched: X0 and the recommended extensions (ESLint) go into your normal extensions folder, the latter from the Marketplace</td>
+</tr>
+<tr>
+<td><code>--serve [port]</code></td>
+<td>serves the folder on <code>http://localhost:8000</code> (or your port) and prints the three app URLs; leave it running</td>
+</tr>
+<tr>
+<td><code>--no-x0</code></td>
+<td>skip packing and installing X0</td>
+</tr>
+<tr>
+<td><code>--dry-run</code></td>
+<td>print what each step would do, change nothing (<code>verdict=DRY</code>)</td>
+</tr>
+</tbody>
+</table>
+<p>Without <code>--install</code>, VS Code runs from a throwaway extensions and settings folder under <code>&lt;folder&gt;/.setup/</code> (git-ignored): you see X0 and nothing else of yours,
+and your own profile is untouched (W-SETUP T4 checks that nothing is created under your home).</p>
+<p><strong>2. Serve it:</strong> <code>node scripts/setup.js --serve</code> (or <code>python3 -m http.server 8000</code>, or the VS Code task <strong>Serve repo</strong>).</p>
 <p><strong>3. Open the apps</strong> in your browser:</p>
 <table>
 <thead>
@@ -4517,18 +4566,21 @@ Either way you get about 4,800 files, about 540 MB. Clone <strong>BIMCompiler</s
 the same building from the project's file store online. After that it is cached. So: the first viewer run needs a connection; ERP and
 the Modeller do not.</p>
 <p><strong>To work with buildings offline on your own machine:</strong> open any building from the landing page (<code>http://localhost:8000/</code>, or the live
-site), press <strong>Save Building</strong> (Ctrl+S) in the viewer: it writes one self-contained <code>.db</code> file. Put that file in <code>bim-ootb/viewer/buildings/</code>
+site), press <strong>Save Building</strong> (Ctrl+S) in the viewer: it writes one self-contained <code>.db</code> file. Put that file in <code>viewer/buildings/</code>
 and open <code>http://localhost:8000/viewer/viewer.html?db=buildings/&lt;name&gt;.db</code>. With no <code>?db=</code>, the viewer looks for
 <code>buildings/Duplex_extracted.db</code> (<code>viewer/config.js</code>), so a saved Duplex under that name opens with no network at all. <code>*.db</code> files are
 ignored by git, so a saved building is never committed by accident (building data is not kept in git, §5.3).</p>
 <p>The viewer page also loads a small visitor counter (GoatCounter, <code>gc.zgo.at</code>), as the live site does. To keep your own visits out
 of the count, open it once with <code>?ignore-me</code> at the end of the address.</p>
-<p><strong>4. Set up VS Code.</strong> Open the <code>bim-ootb</code> folder. The repo brings its own setup: <code>jsconfig.json</code>, <code>types/</code>, <code>.vscode/settings.json</code>,
-<code>.vscode/tasks.json</code>, <code>.vscode/launch.json</code>, <code>.editorconfig</code>. To debug with breakpoints: Run ▸ <strong>Viewer in Chrome</strong> (also ERP,
-Modeller, and <strong>Node: this witness / script</strong>).</p>
-<p><strong>5. Install X0 Navigator</strong> (the repo's own VS Code add-on, §4.1). In the <code>bim-ootb</code> folder, offline, no npm:
-<code>node devtools/vscode/pack.js</code>, then <code>code --install-extension devtools/vscode/dist/x0-navigator-0.1.0.vsix</code>, then reload VS Code.
-For the same facts in a terminal, without VS Code: <code>node devtools/x0/x0.js help</code>.</p>
+<p><strong>4. The VS Code side: what <code>--open</code> gives you, and where to look.</strong> The repo brings its own setup in <code>.vscode/</code> (and <code>jsconfig.json</code>, <code>types/</code>, <code>.editorconfig</code>); the script only installs the extension and opens the folder.</p>
+<ol>
+<li><strong>The folder is open</strong>, with the editor settings from <code>.vscode/settings.json</code>.</li>
+<li><strong>X0 Navigator is in the Extensions view</strong> (the repo's own add-on, §4.1). Hover a shared field such as <code>A.camera</code> in <code>viewer/grid_views.js</code>: every write and read is listed. Without VS Code, the same facts: <code>node devtools/x0/x0.js help</code>.</li>
+<li><strong>Terminal ▸ Run Task</strong> lists the tasks of <code>.vscode/tasks.json</code> (6 today, table below).</li>
+<li><strong>Snippets:</strong> type <code>witness</code>, <code>slog</code> or <code>spec</code> in a <code>.js</code> file and press Tab (table below).</li>
+<li><strong>F5 / Run ▸ Start Debugging</strong> offers <strong>Viewer in Chrome</strong>, ERP, Modeller and <strong>Node: this witness / script</strong> (<code>.vscode/launch.json</code>).</li>
+<li><strong>Recommended extensions:</strong> ESLint is listed in <code>.vscode/extensions.json</code>; VS Code offers it on first open, and <code>--install</code> installs it.</li>
+</ol>
 <p><strong>Editor tasks</strong> (Terminal ▸ Run Task):</p>
 <table>
 <thead>
@@ -4539,16 +4591,24 @@ For the same facts in a terminal, without VS Code: <code>node devtools/x0/x0.js 
 </thead>
 <tbody>
 <tr>
+<td>Serve repo (http://localhost:8000)</td>
+<td><code>python3 -m http.server 8000</code> in the background</td>
+</tr>
+<tr>
+<td>Lint viewer (no-undef gate)</td>
+<td><code>npx eslint viewer</code></td>
+</tr>
+<tr>
+<td>Lint as CI does (viewer + modeller)</td>
+<td><code>npx eslint viewer modeller</code>: the <code>no-undef</code> check that catches a missing global</td>
+</tr>
+<tr>
 <td>Run this witness (full log → logs/)</td>
 <td><code>node &lt;current file&gt;</code>; full output to <code>logs/&lt;name&gt;.log</code>, last 20 lines and the exit code on screen. Line 1 of the log is a <code>§LOG_STAMP</code> (§6)</td>
 </tr>
 <tr>
-<td>Run viewer witness suite</td>
+<td>Run viewer witness suite (full log → logs/)</td>
 <td>the headless witness suite (also <code>npm test</code>)</td>
-</tr>
-<tr>
-<td>Lint as CI does</td>
-<td><code>npx eslint viewer modeller</code>: the <code>no-undef</code> check that catches a missing global</td>
 </tr>
 <tr>
 <td>Regenerate editor indexes</td>
@@ -4579,6 +4639,9 @@ For the same facts in a terminal, without VS Code: <code>node devtools/x0/x0.js 
 </tr>
 </tbody>
 </table>
+<p><strong>If something fails.</strong> <code>§NEED_DEPS espree is not installed: run node scripts/setup.js</code>: run step 1 (the tools need <code>npm ci</code>). <code>§SETUP_GAP … code command is not on PATH</code>:
+in VS Code, Command Palette ▸ <em>Shell Command: Install 'code' command in PATH</em>, then run step 1 again (the tools part already worked). <code>npm ci failed</code>: check the network and run it again.
+To run the browser witnesses you also need a Chromium (Playwright's copy is used by <code>npm test</code>).</p>
 <hr />
 <h2 id="4-finding-things">4. Finding things<a class="headerlink" href="#4-finding-things" title="Permanent link">&para;</a></h2>
 <table>
