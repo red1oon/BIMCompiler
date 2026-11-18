@@ -3837,3 +3837,21 @@ OCP-4 state after each gesture equals main                      —             
 - `§GATES_VERDICT GREEN red=0 gates=10`; needle witness 149 / 0.
 - **Not covered:** the typed-apply and unlink paths run inside a DOM panel and were not driven (covered by OCP-2 from source only); import and native generate stay on the refold path; a throw inside the pipeline is still recovered per verb (`_tmEditExceptionRecover`), unchanged.
 **NEXT: step 4 (undo covers every edit — `task_sequences` and summary rows in the snapshot; link, unlink and typed dates undoable). The pipeline's `undo` argument is the one place to add it.**
+### Q.19.9 STEP 4 SPEC — undo covers every edit, written before the code (2026-11-18)
+**Issue (read in the code, to be measured):** ↺ Undo restores only what the verb's own snapshot held. (1) Link, unlink and typed dates write NO undo record: the planner cannot take them back, and a typed date or a link after a drag leaves the drag's stale record in place, so Undo then restores the wrong thing. (2) `task_sequences` is never in a snapshot, so no undo can restore a link. (3) The snapshots differ per verb (leaf rows only for drag and pull-back, all rows for ruler shift and link, the selected rows for group shift); the ruler shift writes summary rows too. Seven near-identical snapshot queries.
+**Change:** one snapshot, one restore, through the one pipeline (§Q.19.7).
+- `_tmEditSnapshot(schedId)` — taken by every verb BEFORE its engine call: every `tasks` row of the schedule (summary rows included: start, finish, duration) and every `task_sequences` row whose ends are tasks of the schedule. Replaces the seven queries.
+- `_tmCommitEdit` writes the undo record for EVERY edit (the `undo` argument becomes required): tasks, links, and the touched elements' times.
+- `undoLastGanttEdit` restores all three, then `_tmEditRefresh`. Still single-level. A refused or no-op edit writes no record and leaves the previous one alone (as today).
+**Witness `witness_gantt_undo_every_edit` (before the code), on a real building (Duplex):**
+| claim | what must hold |
+|---|---|
+| UE-1 | for each of the nine edits — move, resize, ruler shift, group shift, pull-back, link, link forcing a move, unlink, typed dates — state before == state after edit + one Undo, where state = every `tasks` row (summary included), every link, every element op in the db and in memory |
+| UE-2 | each of the nine changes the state (else the row is INCONCLUSIVE, not a pass) and leaves an undo record naming that edit |
+| UE-3 | a second Undo changes nothing and says so |
+| UE-4 | a refused edit (a link that would make a cycle) leaves the previous undo record untouched |
+| UE-5 | one snapshot owner: the verbs hold no `SELECT … FROM tasks` snapshot of their own (source), every `_tmCommitEdit(` call passes `undo:` |
+| UE-R | red control: an undo that skips the link restore must fail UE-1 on the link rows |
+The unlink and typed-date edits are driven through the shipped `openGanttProps` with a DOM stub (its real handlers), not re-typed.
+**Predictions on main:** UE-1 red for link, link forcing a move, unlink, typed dates (no record, or the previous record restored instead); green for move, resize, ruler shift, group shift, pull-back unless a verb writes a row its snapshot lacks (to be measured). UE-5 red.
+**Not in this step:** multi-level undo / redo; undo of import or of native generate (refold paths).
