@@ -16,7 +16,7 @@ On a terminal `red1` greets you once, then waits at its prompt. This is exactly 
 $ (sleep 4; printf 'exit\r') | RED1_LOG=/tmp/fast_guide_greet.log RED1_HISTORY=/tmp/fast_guide_greet.hist BIM_DOOR_JOURNAL=/tmp/fast_guide_greet.journal script -qec 'node common/door/red1.js' /dev/null | tr -d '\r' | sed -e 's/\x1b\[[0-9;?]*[a-zA-Z]//g' -e 's/ · [0-9a-f]\{8\}$//'
 Welcome to red1, the scripting door into BIM and ERP, stored in SQLite.
 REMEMBER THE NAME.
-Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 77 verbs · 30 words
+Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 78 verbs · 30 words
 Type help for the list of commands (or bim, mis, erp for one group).
 Tip: type level student for fuller help on each word (red1 --fast opens without tips).
 
@@ -38,7 +38,7 @@ red1: type a short word; red1 prints the full line it runs (→ …), then runs 
   bim   buildings and models             start with: cd Duplex   (16 words)
   mis   records, tables, files, Ninja    start with: cd Order   (11 words)
   erp   document actions (CO VO CL RC)   start with: cd Order   (8 words)
-  everywhere: cd <place> · pwd · role <id> · login <user> · history [N] · report · exit
+  everywhere: cd <place> · #<number> · pwd · role <id> · login <user> · history [N] · report · exit
 Type bim, mis or erp for its words · help <word> for one word (level student first for the full explanation) · help verbs for the full door lines.
 ```
 
@@ -124,7 +124,7 @@ Type `exit` to leave. To type just `red1` from anywhere, run `npm link` once in 
 <!-- run: red1_version -->
 ```text
 $ node common/door/red1.js --version | sed -e 's/^Copyright[^·]*· //' -e 's/ · [0-9a-f]\{8\}$//'
-red1 1.0.0 · 77 verbs · 30 words
+red1 1.0.0 · 78 verbs · 30 words
 ```
 
 **The six-file download** is for the door alone with the Modeller verbs, no checkout. Make an empty folder, install the browser engine the Modeller needs, and fetch the six files:
@@ -397,6 +397,21 @@ Complete: done · Order 80000 IP → CO (Completed) · grand total 50.35
 59 change(s) kept · it may do: CL, VO, RE
 ```
 
+**`#` finds a document by its number.** `#80000` is iDempiere's Document Search (its Global Search box takes `/80000`; here `/` is the path, so it is `#`). It works from any place. The number matches as a prefix, in your login's client, and only in the windows your role may open. One document found is opened. When several are found, each one is listed under its window with the line that opens it, so a sales and a purchase order are never confused. A code in front picks another search: `#O 80000` orders, `#BP Joe` business partners. `@` is reserved. In bash, quote the line: `#` starts a comment there.
+
+<!-- run: red1_hash -->
+```text
+$ rm -f /tmp/fast_guide_hash.ops; BIM_OBJECT_OPLOG=/tmp/fast_guide_hash.ops node common/door/red1.js '#80000' 2>&1 | grep -v '^§'
+→ erp.search text=80000
+#80000: 4 documents in 2 window(s); none is opened, enter one with its line:
+  Sales Order window (Order, Order Search):
+    Order 80000  →  cd Order 100
+  Purchase Order window (Order, Order Search):
+    Order 800000  →  cd Order 104
+    Order 800001  →  cd Order 105
+    Order 800002  →  cd Order 106
+```
+
 **Report a gap.** Some answers say that red1 lacks something, as opposed to you having mistyped. The engine marks those, and in a session red1 prints one line after the answer. A typo or a legacy refusal is not a gap and prints nothing extra. `report` then shows a draft (the line, the reason, the red1 version, the platform, the last log lines, your paths masked) and offers a GitHub issue or an email; red1 sends nothing itself, your own browser or mail program does:
 
 <!-- run: red1_gap -->
@@ -550,6 +565,7 @@ This table is **generated from the vocabulary file** (`common/door/verbs.json`) 
 | `mis.lookup` | The legal values of a column or a process parameter | `column`, `kind` (optional), `process` (optional), `id` (optional), `limit` (optional), `role` (optional), further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
 | `viewer.cost` | The cost of a selection of a building | `building`, `by` (optional), further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
 | `erp.find` | Find a document | `kind`, `number` | read | human, ai | a bim-ootb checkout |
+| `erp.search` | Search documents by number | `text`, `role` (optional) | read | human, ai | a bim-ootb checkout |
 | `erp.actions` | What can be done to a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | read | human, ai | a bim-ootb checkout |
 | `erp.complete` | Complete a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | posts | human, ai | a bim-ootb checkout |
 | `erp.void` | Void a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | writes | human, ai | a bim-ootb checkout |
@@ -585,7 +601,7 @@ This table is **generated from the vocabulary file** (`common/door/verbs.json`) 
 | `erp.new` | Create a record (old name of mis.new) | `kind`, `dry` (optional), `role` (optional), `window` (optional), further `column=value` filters (optional) | writes | human, ai | a bim-ootb checkout |
 <!-- /GEN:verbs -->
 
-**Coverage today.** The list is small on purpose: 67 verbs cover the Modeller's grid edits, its walker and a Modeller kept open between lines, a few Viewer questions, the schedule, generic object reading, counting and writing, the cost of a selection, the ERP document verbs, and any process of the ERP dictionary that has a port. The Viewer has 64 actions a person can press, and the door offers 6 Viewer verbs. The ERP has 1158 documents and processes, and the door offers 12 ERP verbs for a document's life and 15 MIS verbs that work on any table, and keeps 10 old names so earlier lines still run. So this is a start, not the whole menu.
+**Coverage today.** The list is small on purpose: 68 verbs cover the Modeller's grid edits, its walker and a Modeller kept open between lines, a few Viewer questions, the schedule, generic object reading, counting and writing, the cost of a selection, the ERP document verbs, and any process of the ERP dictionary that has a port. The Viewer has 64 actions a person can press, and the door offers 6 Viewer verbs. The ERP has 1158 documents and processes, and the door offers 13 ERP verbs for a document's life and 15 MIS verbs that work on any table, and keeps 10 old names so earlier lines still run. So this is a start, not the whole menu.
 
 
 ## How this page stays true

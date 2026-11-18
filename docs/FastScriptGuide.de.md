@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 2f7cdfa52f77c8e0
+source_sha: 31152ab2c5944f96
 lang: de
 ---
 
@@ -22,7 +22,7 @@ An einem Terminal begrüßt Sie `red1` einmal und wartet dann an seinem Prompt. 
 $ (sleep 4; printf 'exit\r') | RED1_LOG=/tmp/fast_guide_greet.log RED1_HISTORY=/tmp/fast_guide_greet.hist BIM_DOOR_JOURNAL=/tmp/fast_guide_greet.journal script -qec 'node common/door/red1.js' /dev/null | tr -d '\r' | sed -e 's/\x1b\[[0-9;?]*[a-zA-Z]//g' -e 's/ · [0-9a-f]\{8\}$//'
 Welcome to red1, the scripting door into BIM and ERP, stored in SQLite.
 REMEMBER THE NAME.
-Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 77 verbs · 30 words
+Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 78 verbs · 30 words
 Type help for the list of commands (or bim, mis, erp for one group).
 Tip: type level student for fuller help on each word (red1 --fast opens without tips).
 
@@ -44,7 +44,7 @@ red1: type a short word; red1 prints the full line it runs (→ …), then runs 
   bim   buildings and models             start with: cd Duplex   (16 words)
   mis   records, tables, files, Ninja    start with: cd Order   (11 words)
   erp   document actions (CO VO CL RC)   start with: cd Order   (8 words)
-  everywhere: cd <place> · pwd · role <id> · login <user> · history [N] · report · exit
+  everywhere: cd <place> · #<number> · pwd · role <id> · login <user> · history [N] · report · exit
 Type bim, mis or erp for its words · help <word> for one word (level student first for the full explanation) · help verbs for the full door lines.
 ```
 
@@ -130,7 +130,7 @@ Tippen Sie `exit`, um zu beenden. Um nur `red1` von überall zu tippen, führen 
 <!-- run: red1_version -->
 ```text
 $ node common/door/red1.js --version | sed -e 's/^Copyright[^·]*· //' -e 's/ · [0-9a-f]\{8\}$//'
-red1 1.0.0 · 77 verbs · 30 words
+red1 1.0.0 · 78 verbs · 30 words
 ```
 
 **Der Sechs-Dateien-Download** ist für die Tür allein mit den Modeller-Verben, ohne Checkout. Legen Sie einen leeren Ordner an, installieren Sie die Browser-Engine, die der Modeller braucht, und laden Sie die sechs Dateien:
@@ -403,6 +403,21 @@ Complete: done · Order 80000 IP → CO (Completed) · grand total 50.35
 59 change(s) kept · it may do: CL, VO, RE
 ```
 
+**`#` findet einen Beleg über seine Nummer.** `#80000` ist die Belegsuche von iDempiere (in ihrem globalen Suchfeld tippt man `/80000`; hier ist `/` der Pfad, deshalb `#`). Sie funktioniert von jedem Ort aus. Die Nummer passt als Anfang, im Mandanten Ihrer Anmeldung und nur in den Fenstern, die Ihre Rolle öffnen darf. Wird ein Beleg gefunden, wird er geöffnet. Werden mehrere gefunden, steht jeder unter seinem Fenster mit der Zeile, die ihn öffnet, so werden Verkaufs- und Einkaufsauftrag nie verwechselt. Ein Code davor wählt eine andere Suche: `#O 80000` Aufträge, `#BP Joe` Geschäftspartner. `@` ist reserviert. In bash setzen Sie die Zeile in Anführungszeichen: dort beginnt `#` einen Kommentar.
+
+<!-- run: red1_hash -->
+```text
+$ rm -f /tmp/fast_guide_hash.ops; BIM_OBJECT_OPLOG=/tmp/fast_guide_hash.ops node common/door/red1.js '#80000' 2>&1 | grep -v '^§'
+→ erp.search text=80000
+#80000: 4 documents in 2 window(s); none is opened, enter one with its line:
+  Sales Order window (Order, Order Search):
+    Order 80000  →  cd Order 100
+  Purchase Order window (Order, Order Search):
+    Order 800000  →  cd Order 104
+    Order 800001  →  cd Order 105
+    Order 800002  →  cd Order 106
+```
+
 **Eine Lücke melden.** Manche Antworten sagen, dass red1 etwas fehlt, im Gegensatz dazu, dass Sie sich vertippt haben. Die Engine markiert diese, und in einer Sitzung gibt red1 nach der Antwort eine Zeile aus. Ein Tippfehler oder eine Legacy-Ablehnung ist keine Lücke und gibt nichts Zusätzliches aus. `report` zeigt dann einen Entwurf (die Zeile, den Grund, die red1-Version, die Plattform, die letzten Protokollzeilen, Ihre Pfade maskiert) und bietet ein GitHub-Issue oder eine E-Mail an; red1 sendet nichts selbst, Ihr eigener Browser oder Ihr Mailprogramm tut es:
 
 <!-- run: red1_gap -->
@@ -556,6 +571,7 @@ Diese Tabelle wird **aus der Vokabeldatei erzeugt** (`common/door/verbs.json`), 
 | `mis.lookup` | Die zulässigen Werte einer Spalte oder eines Prozessparameters | `column`, `kind` (optional), `process` (optional), `id` (optional), `limit` (optional), `role` (optional), weitere `column=value`-Filter (optional) | read | human, ai | ein bim-ootb-Checkout |
 | `viewer.cost` | Die Kosten einer Auswahl aus einem Gebäude | `building`, `by` (optional), weitere `column=value`-Filter (optional) | read | human, ai | ein bim-ootb-Checkout |
 | `erp.find` | Einen Beleg finden | `kind`, `number` | read | human, ai | ein bim-ootb-Checkout |
+| `erp.search` | Belege über die Nummer suchen | `text`, `role` (optional) | read | human, ai | ein bim-ootb-Checkout |
 | `erp.actions` | Was mit einem Beleg getan werden kann | `kind`, `id` (optional), `number` (optional), `role` (optional) | read | human, ai | ein bim-ootb-Checkout |
 | `erp.complete` | Einen Beleg abschließen | `kind`, `id` (optional), `number` (optional), `role` (optional) | posts | human, ai | ein bim-ootb-Checkout |
 | `erp.void` | Einen Beleg stornieren | `kind`, `id` (optional), `number` (optional), `role` (optional) | writes | human, ai | ein bim-ootb-Checkout |
@@ -591,7 +607,7 @@ Diese Tabelle wird **aus der Vokabeldatei erzeugt** (`common/door/verbs.json`), 
 | `erp.new` | Einen Datensatz anlegen (alter Name von mis.new) | `kind`, `dry` (optional), `role` (optional), `window` (optional), weitere `column=value`-Filter (optional) | writes | human, ai | ein bim-ootb-Checkout |
 <!-- /GEN:verbs -->
 
-**Abdeckung heute.** Die Liste ist mit Absicht klein: 67 Verben decken die Rasterbearbeitungen des Modellers, seinen Walker und einen zwischen den Zeilen offen gehaltenen Modeller ab, einige Viewer-Fragen, den Zeitplan, das generische Lesen, Zählen und Schreiben von Objekten, die Kosten einer Auswahl, die ERP-Belegverben und jeden Prozess des ERP-Wörterbuchs, der einen Port hat. Der Viewer hat 64 Aktionen, die eine Person drücken kann, und die Tür bietet 6 Viewer-Verben. Das ERP hat 1158 Belege und Prozesse, und die Tür bietet 12 ERP-Verben für das Leben eines Belegs und 15 MIS-Verben, die auf jeder Tabelle arbeiten, und behält 10 alte Namen, damit frühere Zeilen weiter laufen. Das ist also ein Anfang, nicht die ganze Speisekarte.
+**Abdeckung heute.** Die Liste ist mit Absicht klein: 68 Verben decken die Rasterbearbeitungen des Modellers, seinen Walker und einen zwischen den Zeilen offen gehaltenen Modeller ab, einige Viewer-Fragen, den Zeitplan, das generische Lesen, Zählen und Schreiben von Objekten, die Kosten einer Auswahl, die ERP-Belegverben und jeden Prozess des ERP-Wörterbuchs, der einen Port hat. Der Viewer hat 64 Aktionen, die eine Person drücken kann, und die Tür bietet 6 Viewer-Verben. Das ERP hat 1158 Belege und Prozesse, und die Tür bietet 13 ERP-Verben für das Leben eines Belegs und 15 MIS-Verben, die auf jeder Tabelle arbeiten, und behält 10 alte Namen, damit frühere Zeilen weiter laufen. Das ist also ein Anfang, nicht die ganze Speisekarte.
 
 
 ## Wie diese Seite wahr bleibt

@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 2f7cdfa52f77c8e0
+source_sha: 31152ab2c5944f96
 lang: zh-CN
 ---
 
@@ -22,7 +22,7 @@ lang: zh-CN
 $ (sleep 4; printf 'exit\r') | RED1_LOG=/tmp/fast_guide_greet.log RED1_HISTORY=/tmp/fast_guide_greet.hist BIM_DOOR_JOURNAL=/tmp/fast_guide_greet.journal script -qec 'node common/door/red1.js' /dev/null | tr -d '\r' | sed -e 's/\x1b\[[0-9;?]*[a-zA-Z]//g' -e 's/ · [0-9a-f]\{8\}$//'
 Welcome to red1, the scripting door into BIM and ERP, stored in SQLite.
 REMEMBER THE NAME.
-Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 77 verbs · 30 words
+Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 78 verbs · 30 words
 Type help for the list of commands (or bim, mis, erp for one group).
 Tip: type level student for fuller help on each word (red1 --fast opens without tips).
 
@@ -44,7 +44,7 @@ red1: type a short word; red1 prints the full line it runs (→ …), then runs 
   bim   buildings and models             start with: cd Duplex   (16 words)
   mis   records, tables, files, Ninja    start with: cd Order   (11 words)
   erp   document actions (CO VO CL RC)   start with: cd Order   (8 words)
-  everywhere: cd <place> · pwd · role <id> · login <user> · history [N] · report · exit
+  everywhere: cd <place> · #<number> · pwd · role <id> · login <user> · history [N] · report · exit
 Type bim, mis or erp for its words · help <word> for one word (level student first for the full explanation) · help verbs for the full door lines.
 ```
 
@@ -130,7 +130,7 @@ node common/door/red1.js
 <!-- run: red1_version -->
 ```text
 $ node common/door/red1.js --version | sed -e 's/^Copyright[^·]*· //' -e 's/ · [0-9a-f]\{8\}$//'
-red1 1.0.0 · 77 verbs · 30 words
+red1 1.0.0 · 78 verbs · 30 words
 ```
 
 **六文件下载**用于只要门和 Modeller 动词、不需要检出的情况。新建一个空文件夹，安装 Modeller 所需的浏览器引擎，然后获取这六个文件：
@@ -403,6 +403,21 @@ Complete: done · Order 80000 IP → CO (Completed) · grand total 50.35
 59 change(s) kept · it may do: CL, VO, RE
 ```
 
+**`#` 按编号找到一份单据。** `#80000` 就是 iDempiere 的单据搜索（它的全局搜索框输入 `/80000`；这里 `/` 是路径，所以用 `#`）。它在任何位置都能用。编号按前缀匹配，只在你登录的客户（client）中、只在你的角色能打开的窗口里查找。只找到一份单据时直接打开它。找到多份时，每一份都列在它的窗口下，并附上打开它的那一行，所以销售订单和采购订单不会混淆。前面加一个代码就换一种搜索：`#O 80000` 找订单，`#BP Joe` 找业务伙伴。`@` 保留未用。在 bash 中请给这一行加引号：`#` 在那里表示注释。
+
+<!-- run: red1_hash -->
+```text
+$ rm -f /tmp/fast_guide_hash.ops; BIM_OBJECT_OPLOG=/tmp/fast_guide_hash.ops node common/door/red1.js '#80000' 2>&1 | grep -v '^§'
+→ erp.search text=80000
+#80000: 4 documents in 2 window(s); none is opened, enter one with its line:
+  Sales Order window (Order, Order Search):
+    Order 80000  →  cd Order 100
+  Purchase Order window (Order, Order Search):
+    Order 800000  →  cd Order 104
+    Order 800001  →  cd Order 105
+    Order 800002  →  cd Order 106
+```
+
 **报告缺口。** 有些答复表明 red1 缺少某些东西，而不是您输错了。引擎会标记这些情况，在会话中 red1 会在答复后打印一行。打字错误或传统的拒绝不是缺口，不会多打印什么。`report` 随后显示一份草稿（该行、原因、red1 版本、平台、最后几行日志，您的路径已被遮盖），并提供 GitHub issue 或电子邮件；red1 自己不发送任何东西，由您自己的浏览器或邮件程序发送：
 
 <!-- run: red1_gap -->
@@ -556,6 +571,7 @@ object.count building=Duplex kind=Element -> 1193 Element
 | `mis.lookup` | 某一列或某个流程参数的合法取值 | `column`，`kind`（可选）, `process`（可选）, `id`（可选）, `limit`（可选）, `role`（可选）, 更多 `column=value` 筛选条件（可选） | read | human, ai | 一份 bim-ootb 检出 |
 | `viewer.cost` | 建筑中所选部分的成本 | `building`，`by`（可选）, 更多 `column=value` 筛选条件（可选） | read | human, ai | 一份 bim-ootb 检出 |
 | `erp.find` | 查找一份单据 | `kind`，`number` | read | human, ai | 一份 bim-ootb 检出 |
+| `erp.search` | 按编号搜索单据 | `text`，`role`（可选） | read | human, ai | 一份 bim-ootb 检出 |
 | `erp.actions` | 一份单据可以做什么 | `kind`，`id`（可选）, `number`（可选）, `role`（可选） | read | human, ai | 一份 bim-ootb 检出 |
 | `erp.complete` | 完成一份单据 | `kind`，`id`（可选）, `number`（可选）, `role`（可选） | posts | human, ai | 一份 bim-ootb 检出 |
 | `erp.void` | 作废一份单据 | `kind`，`id`（可选）, `number`（可选）, `role`（可选） | writes | human, ai | 一份 bim-ootb 检出 |
@@ -591,7 +607,7 @@ object.count building=Duplex kind=Element -> 1193 Element
 | `erp.new` | 创建一条记录（mis.new 的旧名） | `kind`，`dry`（可选）, `role`（可选）, `window`（可选）, 更多 `column=value` 筛选条件（可选） | writes | human, ai | 一份 bim-ootb 检出 |
 <!-- /GEN:verbs -->
 
-**目前的覆盖范围。** 这份列表有意保持很小：67 个动词覆盖 Modeller 的轴网编辑、它的 walker 以及在各行之间保持打开的 Modeller、少量 Viewer 问题、进度、通用的对象读取、计数和写入、一次选择的成本、ERP 单据动词，以及 ERP 字典中任何已移植的流程。Viewer 有 64 个人可以按下的操作，门提供 6 个 Viewer 动词。ERP 有 1158 个单据和流程，门为单据的生命周期提供 12 个 ERP 动词，为任意表提供 15 个 MIS 动词，并保留 10 个旧名称，使以前的行仍能运行。所以这只是一个开始，不是完整的菜单。
+**目前的覆盖范围。** 这份列表有意保持很小：68 个动词覆盖 Modeller 的轴网编辑、它的 walker 以及在各行之间保持打开的 Modeller、少量 Viewer 问题、进度、通用的对象读取、计数和写入、一次选择的成本、ERP 单据动词，以及 ERP 字典中任何已移植的流程。Viewer 有 64 个人可以按下的操作，门提供 6 个 Viewer 动词。ERP 有 1158 个单据和流程，门为单据的生命周期提供 13 个 ERP 动词，为任意表提供 15 个 MIS 动词，并保留 10 个旧名称，使以前的行仍能运行。所以这只是一个开始，不是完整的菜单。
 
 
 ## 本页为何保持真实
