@@ -4428,3 +4428,29 @@ Issue it proves/disproves: *"a DB carrying a stale stored schedule plays the old
   visibility and the traverse's incremental path skips unchanged BatchedMesh objects (tm_core.js header); the same flag showed the Level 1
   slab hidden from frame 2 to 959 in the 1080p film too (MEP_CLASH_REVEAL_MOVIE §88 class). Needs a witness that re-observes every frame.
 - **Found, not this change:** `witness_tm_silent_refusal_tips` W-SRT-0 fails on clean main (brace scanner depth 6 at EOF).
+
+## §Q.32 "STAIRS FIRST, CONNECTING FLOORS MISSING" + WHY IT KEEPS HAPPENING (2026-11-19, owner: *"seems to do stairs first. Missing connecting floors … What is wrong with the original schedule … why this keeps happening after months of work? No fixing but thinking first"*) — MEASURED, NOTHING CHANGED
+### Q.32.1 THE FLOORS (fast bake of §Q.31.4, today's schedule)
+- The renderer holds an element back until its LAST structural carrier finishes (`tm_sched_xray.js:353 _buildXraySupportCache`, pool
+  seq<=4, `maxCarrierEnd`; bake log `§XRAY_EDGES staged=125/6880`). The Level 2 floor slab (`STB 30.0`, 3,529 m², revealed day 1.1) has 370
+  pool carriers under it, 362 finishing after it; the LAST is day 11.0. Level 3 slab (day 11.0): last carrier day 18.0.
+- **Who those carriers are:** L2 — 237 × IfcMember `Rechteckiger Pfosten` (curtain-wall mullions), 110 × IfcColumn, 15 × IfcPlate
+  `Metallpanel`; L3 — 213 × the same mullions. The latest-finishing ones are all mullions. Mullions are IfcMember → class rule → Superstructure
+  (seq<=4), so the renderer treats the façade posts as what carries the floor. On site it is the reverse: the floor carries the curtain wall.
+- Meanwhile the schedule's own repair (`§CROSSTASK_JUDGE_PARITY`, "may not appear before the FIRST thing it touches") passes the slab at
+  day 1.1 (a column is up). Two judges, two rules (first contact vs last carrier) → the schedule says placed, the picture hides it.
+  Stairs have no such hold, so they show first. (`§CPE_BUILDUP_PLACED_SUMMARY neverDrawn=[L1,L2,L3 slab]` is consistent with this.)
+### Q.32.2 WHY IT CANNOT BE RIGHT FIRST TIME, AND WHY IT KEEPS COMING BACK (the evidence of this session)
+1. The formula reads construction ROLE off the IFC CLASS (rates.js `SEQUENCE_RULES`: class → phase / sequence / crew) and the level off the
+   storey. IFC records neither role nor support (BIMEYES_STRUCTURAL_ORACLE §S14: "IFC has no vertical support relation"). The class is the
+   modelling tool's choice, so one table is wrong somewhere on every model: today alone — stair landings authored IfcSlab (filed as floors),
+   carpet/tile layers IfcSlab, ductwork IfcFlowSegment (laid by plumbers, §Q.29), mullions IfcMember (holding floors up, §Q.32.1).
+2. Each mismatch was fixed as one more special rule, one model at a time; the next model's authoring breaks a different row.
+3. Several functions each answer "is this supported?" with a different rule (§I ownership table already flags duplicates): the repair uses
+   first contact, the renderer last carrier, auditFloating a pool. A schedule can pass one and fail the picture.
+4. The witnesses judge the SCHEDULE in node (cache_4d_run mirror); none judges what the renderer draws, and none replayed a film DB's stored
+   schedule (§Q.30). Green gates + a film DB frozen in September = the visual feedback loop was broken; this session reported wrongly twice.
+### Q.32.3 FOR DISCUSSION (owner decides; one detail at a time)
+- One explicit, directed "what carries what" relation per building (bearing / hung / façade-on-slab), computed once, stored, and read by the
+  schedule, the repair, the renderer and the witnesses — instead of class + contact re-derived differently in each.
+- A witness on what the film DRAWS (per-frame visible set from the renderer) judged against that same relation.
