@@ -31,8 +31,7 @@ One heavy job at a time on this machine, under `nice -n 19 ionice -c3`. Headless
 
 **1. NEXT, in order.**
 1. **B1, the modeller first: its build spec is written** (Part B, "B1 BUILD SPEC", 2026-11-18; re-measured on bim-ootb `560b3541`: 99 modules, 104 sites, precache 164).
-   **Next: ask the owner B1-Q1, then B1-Q2, then B1-Q3, one per message** (where the comments between generated lines live · may a bump also raise the 17 inline numbers · who confirms the
-   dependency list). The build starts only after B1-Q1; the spec is written for its answer A, and answer B or C changes sections 2 and 5. Then build B1 as one small bim-ootb PR series behind a tracker issue.
+   **B1-Q1..Q3 ANSWERED 2026-11-18 (tenth session): A / yes / session cites + owner OK** (Part B DECISIONS); the spec stands as written. Then build B1 as one small bim-ootb PR series behind a tracker issue.
 2. **Spec then build F-25, the `x0` terminal command** (decision in the §F index decisions line; spec as a new §F.36 first).
 3. Fix W-X0-MCP's false FAIL on main (0 above; no decision).
 4. E's `witness_kit/paths.js` (no decision, §READY).
@@ -42,7 +41,7 @@ One heavy job at a time on this machine, under `nice -n 19 ionice -c3`. Headless
 | Part | State | Next step |
 |---|---|---|
 | A | ✅ DONE 2026-11-17: A0, A-1..A-7, A1, A2, A3 (W-CORE-PURE PASS, `forbidden=0`, in CI). Results: Part A RESULT INDEX | none |
-| B | **B0 ✅** (#3200, W-MANIFEST-ROUNDTRIP in CI) · **B-1 ✅** 2026-11-18 content hashes, own step · **B-2 ✅** 2026-11-18 per-module flag as today · **B-5 ✅** tool proposes deps, a person confirms · **B-3 ✅** owner + witnesses per module · **B-4 ✅** plugin precache derived, `BUILTINS` untouched | B1 (modeller): build spec written; ask B1-Q1..Q3, then build |
+| B | **B0 ✅** (#3200, W-MANIFEST-ROUNDTRIP in CI) · **B-1 ✅** 2026-11-18 content hashes, own step · **B-2 ✅** 2026-11-18 per-module flag as today · **B-5 ✅** tool proposes deps, a person confirms · **B-3 ✅** owner + witnesses per module · **B-4 ✅** plugin precache derived, `BUILTINS` untouched | B1 (modeller): spec written, B1-Q1..Q3 answered; build |
 | C, D | not started; wait on B | — |
 | E | not started | `witness_kit/paths.js` (§READY), then ask E-1 |
 | F | every row that needs no data from B to E is built (§F index, F.0 to F.35) | F-2 ceilings on 2026-11-30; the F-1 headless Fetch-back button (unbuilt, browser go given); rows waiting on B/D/E data |
@@ -60,7 +59,7 @@ the source (§F.25): reinstall with `node devtools/vscode/pack.js --install`. A 
 built and waiting for the owner's review (see that file's FILM 3 STATUS). Earlier CH 0 "VSC Hot Edit" films: `prompts/FILM_IDE_ERP_DEBUG.md`.
 Rebuild recipes are in each film file.
 
-**5. Open with the owner.** B1-Q1 (asked 2026-11-18), B1-Q2, B1-Q3 · FILM 3 review · "When AI Dies" EN/TH/ZH review · his hands-on dry run (`~/VSCcheatsheet.txt`, 29 steps; `~/bim-ootb-dryrun`
+**5. Open with the owner.** the B1 dependency list (17 order edges with file:line, B1-Q3) when the build reaches it · FILM 3 review · "When AI Dies" EN/TH/ZH review · his hands-on dry run (`~/VSCcheatsheet.txt`, 29 steps; `~/bim-ootb-dryrun`
 not created) · a bake on his go (then check a "last:" line, §F.15).
 
 **6. Open, no owner needed.**
@@ -266,7 +265,7 @@ when anything it covers changed. The page stays a static file. **No build step a
 them from it is **byte-identical** to what is committed. No file changes. B1 switch one app (smallest first: modeller, 59 tags) to "manifest is the
 source", generated sections between markers, byte-identical again. B2 erp, B3 viewer. `tests/audit_sw_precache.js` stays green throughout.
 
-**OPEN DECISIONS:** B-1 to B-5 are answered (DECISIONS). Open since the B1 build spec (2026-11-18): **B1-Q1, B1-Q2, B1-Q3** (at the end of "B1 BUILD SPEC").
+**OPEN DECISIONS:** none. B-1 to B-5 and B1-Q1 to B1-Q3 are answered (DECISIONS).
 
 **Witnesses:** W-MANIFEST-ROUNDTRIP (manifest → generated text byte-identical to committed; red control: swap two dependent modules → generator
 refuses) · `audit_sw_precache.js` · page boot witnesses unchanged.
@@ -291,6 +290,13 @@ deploy workflow still green on the first merge after each switch (fetch `erp/ver
   (plural, so it is recorded for both). → **B-3 = yes**: `owner` and `witnesses` fields per module. **B-4 = derive the precache entries only.**
   Plan note (from B0's `§MANIFEST_PLUGINS precached_mjs=29 on_disk=36`): deriving from disk would add 7 entries to ERP's precache, which changes what is
   saved offline, so by B-2's reasoning it is its own step after B2, not part of B2's byte-identical switch.
+
+- **B1-Q1, B1-Q2, B1-Q3 (2026-11-18, tenth session).** Asked one per message with the B1 BUILD SPEC counts. **B1-Q1** (32 comments + 4 inline scripts between the page's
+  67 tags, 59 comment marks between `sw.js`'s 164 entries; A = they stay in the files, tool rewrites only tags/entries, +4 marker lines; B = into the manifest;
+  C = a marker pair per run, 174 lines): owner picked **"A: stay in files (Recommended)"**. **B1-Q2** (may a modeller bump also raise the 17 inline `?v=`
+  literals so each module has ONE number): owner **"Yes, raise them (Recommended)"**. **B1-Q3** (who confirms the dependency list): owner **"Session cites,
+  you OK (Recommended)"** = the building session cites file:line for each of the 17 order-forcing edges, the owner confirms that short list in one message,
+  the ~89 call-time edges go in as `uses` on the tool's evidence alone. → The B1 BUILD SPEC stands as written (it was written for A / yes / this answer).
 
 **B0 BUILD SPEC (2026-11-17, eighth session; bim-ootb #3195; no owner decision).** Owner, this session: *"if u hit a code design or spec problem use a well
 scoped Fable agent to resolve"* → the measuring and the design below came from one such agent (read-only), then checked here. Measured on bim-ootb `main` @ `695d16fe`:
@@ -485,7 +491,7 @@ Lines: about +380 for `modules.json` (99 module lines, 104 site lines, 164 preca
 **Not in B1:** viewer and ERP as a source (B2, B3) · content hashes and retiring `bump.js` (B4-HASH) · any change to what is precached, the duplicate entry included (B-2) · plugin entries (B-4) · moving, re-ordering or deleting any tag or comment · the `sw.js` change-log comments (`// v285 …`, 18 lines, still written by hand) ·
 Part D's question table and `"extends"` marks · Part E's `PROVES:` headers · new X0 rows that read the manifest ("owner warning", "run the witnesses for this file") · the test fixtures under `modeller/tests/fixtures/*.html` (not owned pages).
 
-**Owner questions (one per message, START HERE 2). The build does not start before B1-Q1 is answered.**
+**Owner questions (ANSWERED 2026-11-18 (tenth session): A / yes / session cites + owner OK; see DECISIONS).**
 - **B1-Q1: where do the hand-written comments between the generated lines live?** There are 32 comments and 4 inline scripts between the page's tags, and 59 comment marks between the precache entries. **A (recommended):** they stay in the files; the generator rewrites only the tags and entries around them; +4 marker lines; today's bytes are kept. Cost: the result depends on the manifest and the file together. **B:** they move into the manifest as text and the whole block is generated from the manifest alone (the design's "same manifest in, same bytes out" in full). Cost: 91 pieces of comment text and 4 small scripts are from then on edited inside JSON. **C:** one marker pair around every unbroken run: 30 pairs in the page and 57 in `sw.js`, 174 marker lines.
 - **B1-Q2: may a modeller bump also raise the 17 version numbers in inline page scripts that today's bump skips?** Recommended: yes. They are the same files, today's numbers agree everywhere (`disagree=0`), and one number per module is what makes the manifest small. "No" means the manifest keeps a number per site and the first bump makes them disagree.
 - **B1-Q3: who confirms the modeller's dependency list?** Recommended: the building session reads each of the 17 order-forcing edges in the code and writes its file:line beside it; the owner confirms that short list in one message; the roughly 89 call-time edges are recorded as `uses` (they force no order) on the tool's evidence alone.
@@ -752,7 +758,7 @@ first. C is long and best done slowly, module by module, after B/D make ownershi
 | Part | Starts with no decision | Next decision to ask | Why that one |
 |---|---|---|---|
 | A | ✅ done 2026-11-17 (W-CORE-PURE in CI) | none | — |
-| B | nothing until B1-Q1 is answered (B1 BUILD SPEC, 2026-11-18) | B1-Q1, B1-Q2, B1-Q3 | |
+| B | B1 build (B1 BUILD SPEC, 2026-11-18; answered 2026-11-18) | none | |
 | C | nothing; waits on B and D | C-1 part names + owners | |
 | D | nothing new; the multi-publisher list already exists (`types/globals.gen.d.ts`) | D-1 where the questions list lives | needs B's `owner` field |
 | E | `witness_kit/paths.js` (no behaviour change; witness: the same suite verdicts before and after) | E-1 the `PROVES:` header format | |
