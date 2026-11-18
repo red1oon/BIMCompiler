@@ -854,17 +854,47 @@ reports any beam whose body cannot hold the stated bars, and does not bend the b
 Steel joints and gussets are **configuration only: capacity is not checked**. They are a starting detail for
 the engineer, not a design.
 
-### Change list and Add-on IFC
+### Change list and Add-on IFC — step by step
 
-- **Change list (.txt)** downloads every added, refused and not-built row of the runs, in plain text.
-- **Add-on IFC** writes **only the added parts** of every pack that ran (not the model), as IFC2X3 or IFC4 (the
-  menu beside it), to send next to the original model. It is enabled once a run has added parts. The file is
-  named after the model, for example `JPAM_base_addon_IFC2X3.ifc`.
-- Every storey the parts sit on needs an elevation. If the model does not carry one, the button says which
-  storeys have none and writes nothing (no elevation is invented). **Load frame…** reads a small JSON file
-  with `storey_elevations_m` (and, optionally, the site placement and shift of the original model), so the
-  add-on lands in the original's coordinates.
-- Bar sets with mixed bar sizes are written as one IFC bar element per size.
+Both buttons are at the **bottom of the Upgrade panel** (the panel the **↑ Upgrade** arrow opens), not in the
+**Export** pill. **Export ▸ IFC** writes the whole building you opened. **Add-on IFC** writes only the parts the
+Upgrade runs added, to send next to the original model.
+
+1. Open the building (**📂 Open**), then tap the **↑ Upgrade** arrow (top right of the toolbar).
+2. **Run** at least one pack (see above). Until a run has added parts, **Add-on IFC** is greyed out and its tip
+   says *Run an upgrade first*.
+3. At the bottom of the panel, pick the schema in the small menu beside **Add-on IFC:** — **IFC2X3** or **IFC4**.
+4. Tap **Add-on IFC**. The browser saves the file to your downloads folder, named after the model, for example
+   `JPAM_base_addon_IFC2X3.ifc`. The line under the buttons says how many parts went in and the size, for example
+   *Add-on IFC (IFC2X3): 470 parts, 50.7 MB*.
+5. **If it refuses** with *Storey "…" has no elevation*, the model does not carry its storey heights (none is
+   invented). Tap **Load frame…** in the same row and pick a small JSON file with the heights:
+
+   ```json
+   { "frame_name": "storey heights from the author's IFC",
+     "storey_elevations_m": { "GROUND FLOOR": 0.0, "LEVEL 1": 4.8, "ROOF": 9.05 } }
+   ```
+
+   It may also hold `site` (the original model's site placement) and `shift_m` (a move from this model's
+   coordinates to the original's), so the add-on lands exactly on the original. Then tap **Add-on IFC** again.
+
+What goes in: every part every pack added in this session (no discipline is picked; Undo a run first to leave it
+out), and nothing of the model itself. A bar set with mixed bar sizes is written as one IFC bar element per size.
+
+**Change list (.txt)**, beside it, downloads every added, refused and not-built row of the runs as plain text.
+
+### Beam schedules — where they come from, and other firms' layouts
+
+**Load schedule…** (in the **Beam rebar (schedule)** row) takes either:
+
+- the drawing's **schedule sheet as a `.dxf`**: the beam table is read from the sheet itself, or
+- a **marks file (`.json`)** already made from it.
+
+The row then says what it read, for example *22 marks read from the drawing (format revit-s401-style, one
+building)*. How a table is read (which heading is which bar, how `8T25` or `2T10-150` is read) and how a beam finds
+its row (its type mark in the element name) is **data, not code**: tap **Formats** in the same row to see and edit
+it. A schedule with other headings is refused with the headings it found; adding one entry for that layout in
+**Formats** is enough to read it. **Download edits** saves your formats to share.
 
 ## History — the slider *is* the timeline
 
