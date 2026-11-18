@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 31152ab2c5944f96
+source_sha: 24dfe73f0ea2cdfd
 lang: ja
 ---
 
@@ -12,6 +12,42 @@ SQL のステロイド版だと考えてください。一行でレコードを�
 
 !!! warning "良い答えが意味しないこと"
     問題のない答えは **安全・適合・良好を決して意味しません**。どの答えも、確認されなかったことを一覧にし、[確認されないこと](#what-is-not-checked)でもう一度述べます。最終判断は構造技術者が行います。
+
+## インストール方法
+
+Node 18 以降が必要です（これらの手順は Node 18.19 で実行しました）。入り口は二つあります。
+
+**フルチェックアウト**なら、red1、BIM、ERP、Viewer、以下のすべてが使えます。クローンして、最上位のフォルダーから red1 を起動します：
+
+```bash
+git clone https://github.com/red1oon/bim-ootb
+cd bim-ootb
+node common/door/red1.js
+```
+
+`exit` で終了します。どこからでも `red1` だけで起動したいときは、そのフォルダーで一度 `npm link` を実行します。動作確認には、バージョン行を表示させます：
+
+<!-- run: red1_version -->
+```text
+$ node common/door/red1.js --version | sed -e 's/^Copyright[^·]*· //' -e 's/ · [0-9a-f]\{8\}$//'
+red1 1.0.0 · 78 verbs · 30 words
+```
+
+**六ファイルのダウンロード**は、チェックアウトなしで、ドアと Modeller 動詞だけを使う場合のものです。空のフォルダーを作り、Modeller が必要とするブラウザーエンジンをインストールして、六つのファイルを取得します：
+
+```bash
+mkdir fastscript && cd fastscript
+npm init -y
+npm install puppeteer@24
+curl -O https://red1oon.github.io/bim-ootb/modeller/tools/edit_cli.js
+curl -O https://red1oon.github.io/bim-ootb/modeller/tools/bim_mcp.js
+curl -O https://red1oon.github.io/bim-ootb/common/door/door.js
+curl -O https://red1oon.github.io/bim-ootb/common/door/verbs.json
+curl -O https://red1oon.github.io/bim-ootb/common/door/msg_core.js
+curl -O https://red1oon.github.io/bim-ootb/common/door/vocab/messages.json
+```
+
+六つを同じフォルダーに置いてください。`door.js` は動詞の一覧を `verbs.json` から、メッセージを `messages.json`（`msg_core.js` 経由）から読み、`edit_cli.js` を実行して、ウィンドウなしでライブの Modeller ページを開きます。ファイルが欠けていると、ドアはどれかを示し、その `curl` 行を表示します。このページのそれ以外はすべてチェックアウトが必要です。どの動詞に何が必要かは[動詞の表](#the-verbs)に載っています。
 
 ## まず red1 から
 
@@ -29,6 +65,8 @@ Tip: type level student for fuller help on each word (red1 --fast opens without 
 red1> exit
 ```
 
+**このページのブロックの読み方。** `$` の後の行は、このページのテストがコマンドを実行する方法です。使い捨てのファイルを使い（事前に空にするので、実行があなた自身のデータに触れることはありません）、所要時間を切り取り、ログを隠します。自分のプロンプトでは、`cd Duplex` のように単語だけを入力します。その下が、red1 が出力したそのままの内容です。
+
 地図として読んでください。バージョン行は、red1 にドア動詞（長い形）と短い言葉がいくつあるかを示します。`help` は短い言葉を三つのグループで表示します。`help bim`、`help mis`、`help erp` で、そのグループを見られます：
 
 | グループ | 何のためか | 最初に打つもの |
@@ -41,9 +79,9 @@ red1> exit
 ```text
 $ node common/door/red1.js help 2>/dev/null
 red1: type a short word; red1 prints the full line it runs (→ …), then runs it.
-  bim   buildings and models             start with: cd Duplex   (16 words)
-  mis   records, tables, files, Ninja    start with: cd Order   (11 words)
-  erp   document actions (CO VO CL RC)   start with: cd Order   (8 words)
+  bim   buildings and models            start with: cd Duplex   (16 words)
+  mis   records, tables, files, Ninja   start with: cd Order   (11 words)
+  erp   documents and processes         start with: cd Order   (8 words)
   everywhere: cd <place> · #<number> · pwd · role <id> · login <user> · history [N] · report · exit
 Type bim, mis or erp for its words · help <word> for one word (level student first for the full explanation) · help verbs for the full door lines.
 ```
@@ -53,7 +91,7 @@ Type bim, mis or erp for its words · help <word> for one word (level student fi
 <!-- run: red1_help_erp -->
 ```text
 $ node common/door/red1.js 'help erp' 2>/dev/null
-erp: document actions (CO VO CL RC) (start with: cd Order)
+erp: documents and processes (start with: cd Order)
  in a building:
   post discipline=ARC  post the building's priced selection to its ERP Project Order
   vo discipline=ARC    issue the change between the model and the Project Order as a Variation Order
@@ -113,45 +151,9 @@ $ node common/door/red1.js 'cd Duplex; cd Element; count discipline=ARC' 2>&1 | 
 
 言葉・場所・列を打っている間、カーソルの後ろに灰色の文字が現れます。辞書からの候補です。**Tab** または **→** で受け入れ、**Return は常に、打ったものを実行します**（候補は決して実行しません）。綴りの間違いにはヒントが出るだけで、黙って直されることはありません（`ls Valu=…` は拒否され、`Value` を示します）。
 
-## インストール方法
-
-Node 18 以降が必要です（これらの手順は Node 18.19 で実行しました）。入り口は二つあります。
-
-**フルチェックアウト**なら、red1、BIM、ERP、Viewer、以下のすべてが使えます。クローンして、最上位のフォルダーから red1 を起動します：
-
-```bash
-git clone https://github.com/red1oon/bim-ootb
-cd bim-ootb
-node common/door/red1.js
-```
-
-`exit` で終了します。どこからでも `red1` だけで起動したいときは、そのフォルダーで一度 `npm link` を実行します。動作確認には、バージョン行を表示させます：
-
-<!-- run: red1_version -->
-```text
-$ node common/door/red1.js --version | sed -e 's/^Copyright[^·]*· //' -e 's/ · [0-9a-f]\{8\}$//'
-red1 1.0.0 · 78 verbs · 30 words
-```
-
-**六ファイルのダウンロード**は、チェックアウトなしで、ドアと Modeller 動詞だけを使う場合のものです。空のフォルダーを作り、Modeller が必要とするブラウザーエンジンをインストールして、六つのファイルを取得します：
-
-```bash
-mkdir fastscript && cd fastscript
-npm init -y
-npm install puppeteer@24
-curl -O https://red1oon.github.io/bim-ootb/modeller/tools/edit_cli.js
-curl -O https://red1oon.github.io/bim-ootb/modeller/tools/bim_mcp.js
-curl -O https://red1oon.github.io/bim-ootb/common/door/door.js
-curl -O https://red1oon.github.io/bim-ootb/common/door/verbs.json
-curl -O https://red1oon.github.io/bim-ootb/common/door/msg_core.js
-curl -O https://red1oon.github.io/bim-ootb/common/door/vocab/messages.json
-```
-
-六つを同じフォルダーに置いてください。`door.js` は動詞の一覧を `verbs.json` から、メッセージを `messages.json`（`msg_core.js` 経由）から読み、`edit_cli.js` を実行して、ウィンドウなしでライブの Modeller ページを開きます。ファイルが欠けていると、ドアはどれかを示し、その `curl` 行を表示します。このページのそれ以外はすべてチェックアウトが必要です。どの動詞に何が必要かは[動詞の表](#the-verbs)に載っています。
-
 ## よく使う言葉
 
-以下の各部分では、これから何をするのかと理由を述べ、実際の実行結果と、そこで何を見るかを示します。どのブロックも、先に空にした作業用の op-log（ツインが変更を保存するファイル）を使うので、実行してもあなた自身のデータには触れません。
+以下の各部分では、これから何をするのか、なぜなのかを述べ、実際の実行と、その中で見るべき点を示します。
 
 ### bim：建物とモデル
 
@@ -212,24 +214,7 @@ ok · viewer.clashes
 ls lists the 393 rows
 ```
 
-**コスト。** `cost discipline` は、Viewer の検索パネルと同じ方法で建物の要素を積算します。モデルの数量にレートパックを掛けます。まずグループ、次に件数と合計が出て、`ls` で積算された行を一覧できます。`phase`、`task`、`storey`、`class` でもグループ化できます。最後の行を見てください。建物にはまだ ERP の注文がないため、red1 は次のステップを提案します。このセッションは答えずに終わるので、何も転記されません：
-
-<!-- run: chain_cost -->
-```text
-$ rm -f /tmp/fast_guide_chain.ops; printf 'cd Duplex\ncost discipline\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide_chain.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_chain.journal node common/door/red1.js 2>/dev/null | sed 's/ · [0-9]* ms//'
-building Duplex
-→ viewer.cost building=Duplex by=discipline
-ok · viewer.cost
-1190 elements · 1054482.08 total (71 with no rate); 3 with no size, not priced
-discipline  elements  cost
-ARC         267       532431.14
-ELEC        81        283500.00
-MEP         809       153825.40
-PLB         14        49000.00
-STR         19        35725.55
-ls lists the 49 priced rows
-Ready to post to ERP Project Order? y/N → erp.process name="Fold from BIM" Building=Duplex
-```
+**コスト。** `cost discipline` は、Viewer の Find パネルと同じ方法で建物の要素に値段を付けます。モデルからの数量に単価パックを掛けます。その実行は [建物からその注文へ](#from-a-building-to-its-order-cost-the-offer-post) にあり、そこから注文へと続きます。
 
 ### mis：レコード、テーブル、ファイル
 
@@ -259,7 +244,7 @@ C_BPartner_ID  Value  Name               Logo_ID  C_BP_Group_ID
 
 ### erp：伝票とプロセス
 
-**伝票を作って完了する。** `new` の中で `Order` を打つと、下書きの注文が作られ、その番号が表示されます。ドアの完全な行はプロンプトでも使えるので、注文の明細は `mis.new`（商品と数量）で追加します。`next <number>` は伝票が今できることを描き、言葉のあるアクションには、それを実行する行を示します。`do CO <number>` で完了します。従来の DocAction コードは `CO` 完了、`VO` 無効、`CL` クローズ、`RC` 取消（反転）です（`do complete`、`do void` … も使えます）。`new` が表示する番号、各 `next` ツリーのステータス、`CO` のあとで進んだアクションを見てください。（`grep` はそれらの行だけを残します。完全な答えには、埋めた列すべても一覧されます。）
+**伝票を作って完了する。** `Order` で `new` を使うと注文の下書きが作られ、その番号が出力されます。プロンプトでは完全なドア行も使えるので、注文の明細は `mis.new`（製品と数量）で追加します。`next <number>` は伝票が今できることを描き、単語を持つ各アクションについて、それを実行する行を示します。`do CO <number>` で完了します。レガシーの DocAction コードは `CO` 完了、`PR` 準備、`VO` 無効化、`CL` クローズ、`RC` 取消、`RE` 再アクティブ化です（`do complete`、`do void` … も使えます）。`new` が出力する番号、各 `next` ツリーのステータス、`CO` の後に変わったアクションを見てください。（`grep` はそれらの行だけを残します。完全な回答には、埋められた全ての列も並びます。）
 
 <!-- run: erp_order -->
 ```text
@@ -270,7 +255,6 @@ ok · mis.new
 number: 50000
 → mis.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2
 ok · mis.new
-number: 
 → erp.actions kind=Order number=50000
 ok · erp.actions
 Order 50000  status DR
@@ -309,23 +293,7 @@ Generate PO from Project: done · no document made
 
 単発の行や AI の場合は何も尋ねられません。必須パラメーターが欠けていれば、それを名指しする拒否になります。ツインにまだポートがないプロセスは、そのクラス名とともに拒否され、red1 がそう伝えます。
 
-**レコードは自分のものを出します。** レコードの中では、red1 が出すのはそのレコードのものです。そのウィンドウの辞書から読みます。`do` の後には今できるアクションだけ（あなたのロールで）、`cd` の後にはそのタブ、`run` の後にはそのレコード自身のプロセスボタン、そしてフィールドは `Column=` キーとして出ます。レコードに入ると、できることが表示されます：
-
-<!-- run: erp_record_offers -->
-```text
-$ printf 'cd Order 100\n' | node common/door/red1.js 2>/dev/null
-→ mis.describe kind="Order 100"
-→ mis.describe kind=Order
-→ mis.read kind=Order number=100
-→ mis.read kind=Order id=100
-Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls shows them, cd <tab> opens one, cat reads the record
-→ erp.actions kind=Order id=100
-it may do: CL, VO, RE (do <code>; next shows the tree)
-```
-
-そこでは `do ` の後の Tab は `CL`、`VO`、`RE` だけを、ウィンドウ自身のボタンの順（Close、Void、Re-Activate）で出し（`RE` は注文を再有効化します：`do RE`）、`run Co` は注文ウィンドウ自身のボタン `"Copy Lines"` に補完されます。
-
-**メニューをたどる。** `menu` は ERP メニューを場所として表示します。`cd <folder>` で中に入り（その始まり方をする項目が一つだけなら、名前の先頭だけで足ります）、ウィンドウの項目はその種類へ連れて行き、`cd ..`（または Shift+Tab）で一つ上のフォルダーに戻ります。プロンプトにパスが出ます。各項目には印があります：▸ フォルダー（中の項目数）、W ウィンドウ（とそのテーブル）、P プロセス、R レポート、X フォーム、F ワークフロー。`red1 menu` 単独では、これまでどおり全画面のメニューが開きます。
+**メニューと、場所としてのレコード。** `menu` は ERP のメニューを場所として表示します。`cd <folder>` で中に入り（その名前で始まる項目が一つだけなら名前の先頭だけで足ります）、ウィンドウの項目はその種類へ移動し、`cd ..`（または Shift+Tab）で一つ上のフォルダーへ戻ります。プロンプトにはパスが表示されます。各項目には印があります。▸ フォルダー（含まれる項目の数）、W ウィンドウ（とそのテーブル）、P プロセス、R レポート、X フォーム、F ワークフロー。`red1 menu` 単独では、引き続きメニューを全画面で開きます。
 
 <!-- run: red1_menu_walk -->
 ```text
@@ -373,7 +341,7 @@ Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POR
 menu="Quote-to-Invoice (Sales)/Sales Orders" kind=Order
 ```
 
-**メニューからレコードへ。** 種類の中で `cd <number>` を打つとそのレコードに入り、プロンプトはメニューのパスを保ちます。`cd ..` で外へ戻ります。レコードの中では `do` と `next` がそれを ID で指すので、二つのレコードが同じ番号（ここでは 80000）を持っていても問題になりません。アクションは何をしたかを表示します：ステータスの変化、触れた伝票、保持した変更の数、そしてレコードが今できること。その後 `do ` の後の Tab はその新しいコードを出します。下のブロックではフォルダの一覧を省いています：
+種類の中で `cd <number>` を使うとそのレコードに入り、プロンプトはメニューのパスを保ちます。`cd ..` で外に戻ります（どこからでも `cd Order 100` で同じことができます）。レコードの中では、red1 が提示するのはそのレコードのもので、そのウィンドウ用の辞書から読み取られます。`do` の後には、あなたのロールで今実行できるアクションだけが、ウィンドウ自身のボタンの順に出ます。`cd` の後にはそのタブ、`run` の後にはそれ自身のプロセスボタン（`run Co` は `"Copy Lines"` に補完されます）、そしてそのフィールドが `Column=` キーとして出ます。`do` と `next` はレコードを ID で指すので、二つのレコードが同じ番号を持っていても（ここでは 80000）問題になりません。アクションは何をしたかを出力します。ステータスの変化、触れた伝票、保持した変更の数、そしてレコードが今できることです。その後 `do ` の後の Tab は、それらの新しいコードを提示します。下のブロックではフォルダーの一覧を省いています。
 
 <!-- run: red1_walk_record -->
 ```text
@@ -384,8 +352,6 @@ Quote-to-Invoice (Sales): 6 entries; cd <name> goes in, cd .. goes back
 Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd <name> goes in, cd .. goes back
 → mis.describe kind=C_Order
 Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
-→ mis.describe kind=100
-→ mis.read kind=Order number=100
 → mis.read kind=Order id=100
 Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls shows them, cd <tab> opens one, cat reads the record
 → erp.actions kind=Order id=100
@@ -432,13 +398,13 @@ refused · erp.process · Renumber was not run: it has no JS port yet (class org
 This is a gap in red1, not your mistake. Type report to send it to us (email or GitHub issue).
 ```
 
-### 建物から注文へ：コスト、提案、転記
+### 建物から注文へ：コスト、提案、転記 {#from-a-building-to-its-order-cost-the-offer-post}
 
-これは、建物を ERP のプロジェクト注文へ運ぶ一連の流れです。上で始まっていました。`cost discipline` は、提案 `Ready to post to ERP Project Order? y/N` と、実行されるそのままの行で終わりました。提案はエンジン自身の次のステップで、手で打つものではありません。セッションでは `y` がその行をそのまま実行し、`n` や空の Return は何も実行しません。単発の行や AI では何も尋ねられず、その行は答えの `next` に入ります。`y` と答えることが `post` です。建物の積算済みの選択を、建物の 4D 工程から取った工程とタスク、およびプロジェクト明細とともに、プロジェクト注文へ折り込み、変更はひとまとまりで、すべてかゼロかです。何が作られたかと、二つ目の提案（`cd project`）を見てください：
+これは、建物をその ERP のプロジェクト注文へと運ぶ流れです。`cost discipline` はまずグループを出力し、次に件数と合計を出力します。`ls` は値段の付いた行を並べ、コストは `phase`、`task`、`storey`、`class` でもグループ化できます。建物にはまだ ERP の注文がないので、最後に提案 `Ready to post to ERP Project Order? y/N` が出て、その後に実行する正確な行が続きます。この提案はエンジン自身の次の一歩で、手で入力されたものではありません。セッションでは `y` でその行がそのまま実行され、`n` または空の Return では何も実行されません。一回限りの行や AI の場合は何も尋ねず、その行は回答の `next` に入ります。`y` と答えることは `post` です。建物の値段付きの選択を、建物の 4D 工程とプロジェクト明細から取ったフェーズとタスクとともに、一つの変更グループとして（またはまったくなしで）プロジェクト注文へまとめます。作られたものと、二つ目の提案 `cd project` を見てください。
 
 <!-- run: chain_post -->
 ```text
-$ printf 'cd Duplex\ncost discipline\ny\nn\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide_chain.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_chain.journal node common/door/red1.js 2>/dev/null | sed 's/ · [0-9]* ms//'
+$ rm -f /tmp/fast_guide_chain.ops; printf 'cd Duplex\ncost discipline\ny\nn\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide_chain.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_chain.journal node common/door/red1.js 2>/dev/null | sed 's/ · [0-9]* ms//'
 building Duplex
 → viewer.cost building=Duplex by=discipline
 ok · viewer.cost
@@ -495,7 +461,7 @@ not done: cd project
 | `The Viewer tools need a bim-ootb checkout` | 完全なチェックアウトから`node common/door/door.js`として実行します |
 | `exit 1`と Chrome のメッセージ | Linux で Chrome のシステムライブラリが足りません。Puppeteer のトラブルシューティングページに一覧があります |
 
-**計画しておくべき制限。** Modeller の呼び出しは、そのつど建物全体を開きます。HospitalGarage で約 10〜40 秒です。これは測定ツールであり、稼働時間を保証するサービスではありません。Modeller の行が複数あるスクリプトは、行ごとに建物を一度開きます。
+**計画しておくべき制限。** Modeller の呼び出しは、そのつど建物全体を開きます。HospitalGarage で約 10〜40 秒です。これは測定ツールであり、稼働時間を保証するサービスではありません。Modeller の行が複数あるスクリプトは、行ごとに建物を一度開きます。 **`red1>` で作ったものは、今のところ red1 自身の変更ログにだけ残ります。** プロンプトで作った注文はブラウザーの ERP ウィンドウには表示されず、ウィンドウで作った注文もプロンプトでは見えません。この二つをつなぐことが次の段階です。
 
 
 ## 開発者向け
@@ -595,19 +561,11 @@ object.count building=Duplex kind=Element -> 1193 Element
 | `mis.menu` | メニューを読む | `role` （任意）, `find` （任意） | read | human, ai | bim-ootb のチェックアウト |
 | `ninja.rollback` | Ninja バンドルを元に戻す | `bundle`, `dry` （任意） | writes | human, ai | bim-ootb のチェックアウト |
 | `ninja.export` | Ninja バンドルをワークブックとして書き戻す | `bundle` （任意）, `window` （任意）, `table` （任意）, `file` | writes | human, ai | bim-ootb のチェックアウト |
-| `erp.column` | 列は誰が埋めるか：ツインとレガシーを並べて（mis.column の古い名前） | `kind`, `column` | read | human, ai | bim-ootb のチェックアウト |
-| `erp.compare` | ツインとレガシーのひとつのレコードを比べる（legacy.compare の古い名前） | `kind`, `number`, `legacy` （任意） | read | human, ai | bim-ootb のチェックアウト |
-| `erp.pack` | データモデルのワークブックから 2Pack の zip を作る（mis.pack の古い名前） | `book`, `version`, `out` （任意）, `java` （任意）, `package` （任意） | writes | human, ai | bim-ootb のチェックアウト |
-| `erp.legacy_plugin` | データモデルのプラグインをレガシーのテスト環境に載せ、そこで確認する（legacy.plugin の古い名前） | `book`, `version` | writes | human, ai | bim-ootb のチェックアウト |
-| `erp.describe` | ERP レコードの種類を説明する（mis.describe の古い名前） | `kind`, `role` （任意） | read | human, ai | bim-ootb のチェックアウト |
-| `erp.read` | ERP レコードを読む（mis.read の古い名前） | `kind`, `id` （任意）, `number` （任意）, `role` （任意） | read | human, ai | bim-ootb のチェックアウト |
-| `erp.list` | レコードを一覧する（mis.list の古い名前） | `kind`, `columns` （任意）, `sort` （任意）, `limit` （任意）, `offset` （任意）, `names` （任意）, `role` （任意）, その他の`column=value`フィルタ（任意） | read | human, ai | bim-ootb のチェックアウト |
-| `erp.sum` | 列を合計する（mis.sum の古い名前） | `kind`, `column`, `role` （任意）, その他の`column=value`フィルタ（任意） | read | human, ai | bim-ootb のチェックアウト |
-| `erp.group` | 列で数える（mis.group の古い名前） | `kind`, `by`, `role` （任意）, `window` （任意）, その他の`column=value`フィルタ（任意） | read | human, ai | bim-ootb のチェックアウト |
-| `erp.new` | レコードを作る（mis.new の古い名前） | `kind`, `dry` （任意）, `role` （任意）, `window` （任意）, その他の`column=value`フィルタ（任意） | writes | human, ai | bim-ootb のチェックアウト |
+
+引き続き動く古い名前（それぞれ指し示す動詞と同じです）：`erp.column` → `mis.column` · `erp.compare` → `legacy.compare` · `erp.pack` → `mis.pack` · `erp.legacy_plugin` → `legacy.plugin` · `erp.describe` → `mis.describe` · `erp.read` → `mis.read` · `erp.list` → `mis.list` · `erp.sum` → `mis.sum` · `erp.group` → `mis.group` · `erp.new` → `mis.new`
 <!-- /GEN:verbs -->
 
-**現在のカバー範囲。** 一覧は意図的に小さくしてあります。68個の動詞が、Modeller のグリッド編集、そのウォーカー、行の間も開いたままの Modeller、いくつかの Viewer の質問、工程、汎用のオブジェクトの読み取り・カウント・書き込み、選択のコスト、ERP の伝票動詞、そしてポートのある ERP 辞書のあらゆるプロセスをカバーしています。Viewer には人が押せるアクションが64個あり、ドアは6個の Viewer 動詞を提供します。ERP には1158個の伝票とプロセスがあり、ドアは伝票の一生のための13個の ERP 動詞と、どのテーブルにも使える15個の MIS 動詞を提供し、以前の行が動き続けるよう10個の旧名を残しています。つまりこれは出発点であって、メニューのすべてではありません。
+**現在の対象範囲。** このリストは意図的に小さくしています。68 の動詞が、Modeller のグリッド編集、そのウォーカー、行の間で開いたままの Modeller、Viewer へのいくつかの質問、スケジュール、オブジェクトの汎用的な読み取り・集計・書き込み、選択範囲のコスト、ERP の伝票動詞、そして移植のある ERP 辞書の全てのプロセスをカバーします。Viewer には人が押せるアクションが 64 あり、ドアは 6 の Viewer 動詞を提供します。ERP には 1158 の伝票とプロセスがあり、ドアは伝票のライフサイクル用に 13 の ERP 動詞と、どのテーブルでも動く 15 の MIS 動詞を提供し、以前の行が引き続き動くよう 10 の古い名前を残しています（バージョン行の数にはそれらも含まれます）。つまりこれは始まりであって、メニュー全体ではありません。
 
 
 ## このページが正しさを保つ仕組み
