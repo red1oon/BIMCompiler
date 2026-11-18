@@ -1,0 +1,19 @@
+§FILM_TREE work=/home/red1/.cache/film_dev_setup/work base_commit=41b6b676
+§FILM_X0 installed=true active=true version=0.1.0 fresh="§APP_SURFACE files=3470 fields=1869 alias_only=1599 phantom=179 untied=11" vscode=1.146.0
+§FILM_STILL name=b2_hover geometry=1440x900+240+90 bytes=179333
+§FILM_SHOT name=b2_hover file="viewer/grid_views.js" line=83 action="hover" hover="**APP.camera** written at [viewer/grid_views.js:83](file:///home/red1/.cache/film_dev_setup/work/viewer/grid_views.js#L83) · 4 writes · 1247 reads | ```typescript any ```" text="A.camera = cam;"
+§FILM_STILL name=b3_where geometry=1440x900+240+90 bytes=181690
+§FILM_SHOT name=b3_where file="viewer/grid_views.js" line=83 action="select" text="A.camera = cam;"
+§FILM_STILL name=b4_edit geometry=1440x900+240+90 bytes=502741
+§FILM_SHOT name=b4_edit file="modeller/modeller.html" line=290 action="replace" before="<script src=\"arc_editable.js?v=9\" onerror=\"console.warn('§ARC LOAD_FAIL arc_editable.js')\"></script>" saved=true text="<script src=\"arc_editable.js?v=99\" onerror=\"console.warn('§ARC LOAD_FAIL arc_editable.js')\"></script>"
+§FILM_UNDO name=b4_edit restored=true
+§FILM_STILL name=b5_header geometry=1440x900+240+90 bytes=352196
+§FILM_SHOT name=b5_header file="modeller/tests/witness_clipboard.js" line=3 action="select" text="// PROVES: modeller/clipboard.js"
+§FILM_STILL name=b5_proves geometry=1440x900+240+90 bytes=344865
+§FILM_SHOT name=b5_proves file="modeller/tests/witness_clipboard.js" line=4 action="insert" saved=true text="// PROVES: modeller/missing_file.js"
+§FILM_UNDO name=b5_proves restored=true
+§FILM_STILL name=b6_ci geometry=1440x900+240+90 bytes=415388
+§FILM_SHOT name=b6_ci file="tests/ci_fast_tier.json" line=46 action="select" text="{\"file\":\"modeller/tests/witness_dxf_bridge_long.js\",\"reason\":\"probe 2026-11-18: FAIL exit=2 — MISSING input: a Node model .db (e.g. CLINIC2.db)\"},"
+§FILM_STILL name=b7_session geometry=1440x900+240+90 bytes=299444
+§FILM_SHOT name=b7_session file="devtools/x0/session.js" line=1 action="select" text="// SPDX-License-Identifier: MIT"
+§FILM_SHOOT stills=7 errors=0

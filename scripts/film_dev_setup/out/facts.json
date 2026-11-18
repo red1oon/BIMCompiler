@@ -1,0 +1,358 @@
+{
+ "made": "2026-11-18T09:19:18.193Z",
+ "base": "/home/red1/.cache/film_dev_setup/fs1/bim-ootb-main",
+ "work": "/home/red1/.cache/film_dev_setup/work",
+ "transcript": "/home/red1/.claude/projects/-home-red1-bim-compiler/a155285d-5e94-4979-9116-5c2647db3f92.jsonl",
+ "steps": {
+  "b2": [
+   {
+    "typed": "node devtools/vscode/pack.js",
+    "exit": 0,
+    "lines": 2,
+    "shown": [
+     "§X0_PACK id=bim-devtools.x0-navigator version=0.1.0 files=17 bytes=57030 source=f4e1b0e5dd79 file=<download>/devtools/vscode/dist/x0-navigator-0.1.0.vsix",
+     "install:  code --install-extension devtools/vscode/dist/x0-navigator-0.1.0.vsix      (or: Extensions view ▸ … ▸ Install from VSIX)"
+    ]
+   },
+   {
+    "typed": "code --extensions-dir ../ext --user-data-dir ../user --install-extension devtools/vscode/dist/x0-navigator-0.1.0.vsix",
+    "exit": 0,
+    "lines": 4,
+    "shown": [
+     "Installing extensions...",
+     "Extension 'x0-navigator-0.1.0.vsix' was successfully installed."
+    ]
+   }
+  ],
+  "b3": [
+   {
+    "typed": "node devtools/x0/x0.js where camera",
+    "exit": 0,
+    "lines": 1,
+    "shown": [
+     "APP.camera is written at viewer/grid_views.js:83 (spelled A.camera there) · 4 writes · 1247 reads. Source: fresh copy (§APP_SURFACE files=3470 fields=1869 alias_only=1599 phantom=179 untied=11)."
+    ]
+   },
+   {
+    "typed": "node devtools/x0/x0.js loaded viewer/scene.js",
+    "exit": 0,
+    "lines": 1,
+    "shown": [
+     "viewer/scene.js: viewer → start-up · 238950 bytes (raw)"
+    ]
+   },
+   {
+    "typed": "node devtools/x0/x0.js tag §MANIFEST_CHECK",
+    "exit": 0,
+    "lines": 7,
+    "shown": [
+     "no spec found",
+     "printed by:",
+     "- `scripts/gen_buildings_manifest.js:121`",
+     "- `scripts/gen_buildings_manifest.js:128`",
+     "- `scripts/gen_manifest.js:248`",
+     "(not searched: bim-compiler — checkout not found)"
+    ]
+   }
+  ],
+  "b4": [
+   {
+    "typed": "npm install --no-audit --no-fund && git init -q && git add -A",
+    "exit": 0,
+    "lines": 2,
+    "shown": [
+     "added 88 packages in 1s",
+     "npm WARN deprecated eslint@9.39.5: This version is no longer supported. Please see https://eslint.org/version-support for other options."
+    ]
+   },
+   {
+    "typed": "sed -i 's/arc_editable.js?v=[0-9]*/arc_editable.js?v=99/' modeller/modeller.html",
+    "exit": 0,
+    "lines": 0,
+    "shown": []
+   },
+   {
+    "typed": "node scripts/gen_manifest.js --check modeller | grep -E \"MANIFEST_(FAIL|CHECK)\"",
+    "exit": 0,
+    "lines": 2,
+    "shown": [
+     "§MANIFEST_FAIL modeller/modeller.html:290 differs from what modules.json writes (a hand edit of a generated site?); edit modeller/modules.json, then run: node scripts/gen_manifest.js --write modeller",
+     "§MANIFEST_CHECK … source=modeller written=0 verdict=FAIL"
+    ]
+   },
+   {
+    "typed": "node scripts/bump.js modeller/arc_editable.js --write",
+    "exit": 0,
+    "lines": 3,
+    "shown": [
+     "§BUMP page=modeller/modeller.html ref=arc_editable.js v=9->10 (manifest modeller/modules.json)",
+     "§BUMP sw=modeller/sw.js CACHE_VERSION v302->v303 (for: modeller/modeller.html) (manifest modeller/modules.json)",
+     "§BUMP_DONE targets=1 pages=1 loaders=0 sw=1 mode=write written=3"
+    ]
+   },
+   {
+    "typed": "node scripts/gen_manifest.js --check modeller | grep -E \"MANIFEST_(FAIL|CHECK)\"",
+    "exit": 0,
+    "lines": 1,
+    "shown": [
+     "§MANIFEST_CHECK apps=3 files=55 identical=55/55 sites=817 tag=689 asset=0 inline=47 lazy=81 precache=893 order_check=PASS deps_declared=25 unreviewed=0 source=modeller written=0 verdict=PASS"
+    ]
+   }
+  ],
+  "b5": [
+   {
+    "typed": "node scripts/gen_proof_map.js modeller | tail -1",
+    "exit": 0,
+    "lines": 1,
+    "shown": [
+     "§PROOF_MAP app=modeller modules=100 proven=13 named_only=63 unproven=24 proves_lines=20 bad_paths=0"
+    ]
+   },
+   {
+    "typed": "sed -i '/^\\/\\/ PROVES:/a // PROVES: modeller/missing_file.js' modeller/tests/witness_clipboard.js",
+    "exit": 0,
+    "lines": 0,
+    "shown": []
+   },
+   {
+    "typed": "node scripts/gen_proof_map.js modeller | tail -1",
+    "exit": 0,
+    "lines": 1,
+    "shown": [
+     "§PROOF_MAP app=modeller modules=100 proven=13 named_only=63 unproven=24 proves_lines=21 bad_paths=1"
+    ]
+   }
+  ],
+  "b6": [
+   {
+    "typed": "git ls-files | grep -cE '(^|/)(witness_|poc_)[^/]*\\.js$'",
+    "exit": 0,
+    "lines": 1,
+    "shown": [
+     "1543"
+    ]
+   },
+   {
+    "typed": "node -e \"const t=require('./tests/ci_fast_tier.json');console.log(t.witnesses.length,'in the fast tier,',t.exclude.length,'excluded')\"",
+    "exit": 0,
+    "lines": 1,
+    "shown": [
+     "40 in the fast tier, 39 excluded"
+    ]
+   },
+   {
+    "typed": "node -e \"const t=require('./tests/ci_fast_tier.json').exclude[1];console.log(t.file+' — '+t.reason.slice(0,100))\"",
+    "exit": 0,
+    "lines": 1,
+    "shown": [
+     "modeller/tests/witness_dxf_bridge_long.js — probe 2026-11-18: FAIL exit=2 — MISSING input: a Node model .db (e.g. CLINIC2.db)"
+    ]
+   }
+  ],
+  "b7": [
+   {
+    "typed": "node devtools/x0/x0.js session --transcript $T",
+    "exit": 0,
+    "lines": 5,
+    "shown": [
+     "Session a155285d · 117 min · 26 replies · claude-sonnet-5-5",
+     "  tokens   output 15.5k · input 56 · cache read 2.3M · cache write 181.0k",
+     "  shipped  BIMCompiler #990 · 1 witness scripts run",
+     "  URL load no change to what users load"
+    ]
+   }
+  ]
+ },
+ "scratch": {
+  "files": 4816,
+  "mb": 544,
+  "lfs": 0,
+  "gaps": 2,
+  "verdict": "PASS",
+  "steps": "5/5",
+  "vsix": "x0-navigator-0.1.0.vsix",
+  "viewerText": "Ifc2x3_Duplex_Federated — 1,118/1,118 (100%)",
+  "viewerFail": 11,
+  "viewerHosts": "gc.zgo.at,objectstorage.ap-kulai-2.oraclecloud.com",
+  "erpFail": 0,
+  "erpErr": 0,
+  "modFail": 0,
+  "modErr": 0
+ },
+ "pages": {
+  "port": 8000,
+  "apps": {
+   "modeller": {
+    "ready": true,
+    "text": "🇺🇸 history 0/0 DAGeVu · MODELLER ready — supported=true 🇺🇸 English (US) — change in ⚙ OUTLINER ⤒ ⇄ DAGeVu Model BOM ",
+    "errors": 0,
+    "png": "pages/modeller.png"
+   },
+   "erp": {
+    "ready": true,
+    "text": "Language English Français Español Deutsch العربية 中文 (简体) 日本語 Bahasa Melayu ไทย Português Bahasa Indonesia Kernel-ERP — ",
+    "errors": 0,
+    "png": "pages/erp.png"
+   },
+   "viewer": {
+    "ready": true,
+    "text": "DONE — Ifc2x3_Duplex_Federated 1,118 elements (30 instanced groups). 1 building(s) rendered.",
+    "errors": 9,
+    "png": "pages/viewer.png"
+   }
+  },
+  "save": {
+   "name": "Ifc2x3_Duplex_Federated.db",
+   "bytes": 14987264,
+   "key": "Control+s",
+   "log": [
+    "§SAVE_EXPORT monolith (A.db holds geometry)",
+    "§SAVE_DONE mode=download name=Ifc2x3_Duplex_Federated.db bytes=14987264"
+   ]
+  },
+  "offline": {
+   "url": "viewer/viewer.html?db=buildings/Ifc2x3_Duplex_Federated.db",
+   "text": "Ifc2x3_Duplex_Federated — 1,118/1,118 (100%)",
+   "blocked": {
+    "gc.zgo.at": 1
+   },
+   "blockedTotal": 1,
+   "http404": 8,
+   "errors": 0,
+   "png": "pages/offline.png"
+  },
+  "ok": true
+ },
+ "ext": {
+  "listed": true
+ },
+ "zipGap": {
+  "espree": "node_modules/espree",
+  "git": "not a git repository",
+  "gitCmd": "git ls-files viewer/"
+ },
+ "manifest": {
+  "redFile": "modeller/modeller.html",
+  "redLine": 290,
+  "redVerdict": "FAIL",
+  "redCommand": true,
+  "greenIdentical": "55 identical=55/55",
+  "greenDeps": 25,
+  "greenOrder": "PASS",
+  "greenVerdict": "PASS",
+  "editedLineText": "<script src=\"arc_editable.js?v=9\" onerror=\"console.warn('§ARC LOAD_FAIL arc_editable.js')\"></script>"
+ },
+ "proof": {
+  "green": {
+   "modules": 100,
+   "proven": 13,
+   "namedOnly": 63,
+   "unproven": 24,
+   "proves": 20,
+   "bad": 0
+  },
+  "red": {
+   "modules": 100,
+   "proven": 13,
+   "namedOnly": 63,
+   "unproven": 24,
+   "proves": 21,
+   "bad": 1
+  },
+  "file": "modeller/tests/witness_clipboard.js",
+  "line": 3
+ },
+ "ci": {
+  "witnessFiles": 1543,
+  "tier": 40,
+  "excluded": 39,
+  "reasonLine": 46,
+  "reasonFile": "modeller/tests/witness_dxf_bridge_long.js",
+  "reasonText": "modeller/tests/witness_dxf_bridge_long.js — probe 2026-11-18: FAIL exit=2 — MISSING input: a Node model .db (e.g. CLINIC2.db)"
+ },
+ "session": {
+  "line": "§X0_SESSION id=a155285d-5e94-4979-9116-5c2647db3f92 minutes=117 replies=26 tokens_in=56 cache_write=181037 cache_read=2339741 tokens_out=15542 prs=1 witnesses=1 load=- not_merged=0 dup_copies=22",
+  "minutes": 117,
+  "replies": 26,
+  "tokensOut": 15542,
+  "prs": 1,
+  "witnesses": 1,
+  "load": "-",
+  "notMerged": 0
+ },
+ "x0": {
+  "whereFile": "viewer/grid_views.js",
+  "whereLine": 83,
+  "writes": 4,
+  "reads": 1247,
+  "bytes": 238950,
+  "how": "start-up",
+  "tagSpec": true,
+  "printers": 3,
+  "notSearched": true
+ },
+ "vsc": [
+  {
+   "name": "b2_hover",
+   "file": "viewer/grid_views.js",
+   "line": 83,
+   "find": "A.camera",
+   "action": "hover"
+  },
+  {
+   "name": "b3_where",
+   "file": "viewer/grid_views.js",
+   "line": 83,
+   "find": "A.camera",
+   "action": "select"
+  },
+  {
+   "name": "b4_edit",
+   "file": "modeller/modeller.html",
+   "line": 290,
+   "action": "replace",
+   "re": "arc_editable.js?v=[0-9]*",
+   "to": "arc_editable.js?v=99"
+  },
+  {
+   "name": "b5_header",
+   "file": "modeller/tests/witness_clipboard.js",
+   "line": 3,
+   "action": "select"
+  },
+  {
+   "name": "b5_proves",
+   "file": "modeller/tests/witness_clipboard.js",
+   "line": 4,
+   "action": "insert",
+   "after": 3,
+   "text": "// PROVES: modeller/missing_file.js"
+  },
+  {
+   "name": "b6_ci",
+   "file": "tests/ci_fast_tier.json",
+   "line": 46,
+   "action": "select"
+  },
+  {
+   "name": "b7_session",
+   "file": "devtools/x0/session.js",
+   "line": 1,
+   "action": "select"
+  }
+ ],
+ "credentials": {
+  "licence": "MIT License",
+  "repo": "github.com/red1oon/bim-ootb",
+  "commit": "41b6b676d53ebe4e81126922d6a591a995f3354d",
+  "prs": {
+   "3245": "MERGED feat(devtools): B1 dependency-candidate tool + W-DEPS-CAND",
+   "3250": "MERGED feat(modeller): B1 — module lists written from modeller/modules.json (deps declared, one v per module)",
+   "3256": "MERGED feat(witness_kit): paths.js resolver + W-PATHS (E0)",
+   "3259": "MERGED feat(devtools): x0 terminal command (F-25) + W-X0-CLI",
+   "3266": "MERGED feat(devtools): x0 session — token use + URL load change per Claude Code session (F-26)",
+   "3274": "MERGED ci: fast witness tier (48 witnesses, < 10 s each, no outside input)",
+   "3280": "MERGED test: W-FROM-SCRATCH — download and run from an empty folder (F-27)"
+  }
+ }
+}

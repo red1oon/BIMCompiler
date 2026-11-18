@@ -1,0 +1,62 @@
+$ node scripts/gen_manifest.js --check modeller   (the ZIP as downloaded)
+node:internal/modules/cjs/loader:1137
+  throw err;
+  ^
+
+Error: Cannot find module '/home/red1/.cache/film_dev_setup/work/node_modules/espree'
+Require stack:
+- /home/red1/.cache/film_dev_setup/work/scripts/lib/page_refs.js
+- /home/red1/.cache/film_dev_setup/work/scripts/gen_manifest.js
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1134:15)
+    at Module._load (node:internal/modules/cjs/loader:975:27)
+    at Module.require (node:internal/modules/cjs/loader:1225:19)
+    at require (node:internal/modules/helpers:177:18)
+    at Object.<anonymous> (/home/red1/.cache/film_dev_setup/work/scripts/lib/page_refs.js:12:16)
+    at Module._compile (node:internal/modules/cjs/loader:1356:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
+    at Module.load (node:internal/modules/cjs/loader:1197:32)
+    at Module._load (node:internal/modules/cjs/loader:1013:12)
+    at Module.require (node:internal/modules/cjs/loader:1225:19) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/home/red1/.cache/film_dev_setup/work/scripts/lib/page_refs.js',
+    '/home/red1/.cache/film_dev_setup/work/scripts/gen_manifest.js'
+  ]
+}
+
+Node.js v18.19.1
+
+$ npm install ... ; node scripts/gen_manifest.js --check modeller   (a throwaway copy: lint package installed, still no git)
+added 88 packages in 4s
+
+fatal: not a git repository (or any of the parent directories): .git
+node:child_process:929
+    throw err;
+    ^
+
+Error: Command failed: git ls-files viewer/
+fatal: not a git repository (or any of the parent directories): .git
+
+    at checkExecSyncError (node:child_process:890:11)
+    at Object.execFileSync (node:child_process:926:15)
+    at buildApp (/home/red1/.cache/film_dev_setup/workp/scripts/gen_manifest.js:94:17)
+    at check (/home/red1/.cache/film_dev_setup/workp/scripts/gen_manifest.js:204:15)
+    at Object.<anonymous> (/home/red1/.cache/film_dev_setup/workp/scripts/gen_manifest.js:283:13)
+    at Module._compile (node:internal/modules/cjs/loader:1356:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
+    at Module.load (node:internal/modules/cjs/loader:1197:32)
+    at Module._load (node:internal/modules/cjs/loader:1013:12) {
+  status: 128,
+  signal: null,
+  output: [
+    null,
+    '',
+    'fatal: not a git repository (or any of the parent directories): .git\n'
+  ],
+  pid: 2546505,
+  stdout: '',
+  stderr: 'fatal: not a git repository (or any of the parent directories): .git\n'
+}
+
+Node.js v18.19.1
+

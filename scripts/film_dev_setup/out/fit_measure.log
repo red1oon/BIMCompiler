@@ -1,0 +1,19 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT b1 cue=0.00 room=998.70 dur=18.66 -> DETAIL slack=+980.04 words=50
+§NARR_TONE b1#0 F YN rose=5.0st endDelta=+2.6st want=rise OK "Can a stranger run this from nothing?"
+§NARR_FIT b1b cue=0.00 room=998.70 dur=12.75 -> DETAIL slack=+985.95 words=35
+§NARR_TONE b1b#0 F YN rose=5.0st endDelta=+3.5st want=rise OK "And offline?"
+§NARR_FIT b2 cue=0.00 room=998.70 dur=13.49 -> DETAIL slack=+985.21 words=35
+§NARR_TONE b2#0 F YN rose=5.0st endDelta=+4.2st want=rise OK "And the editor part?"
+§NARR_FIT b3 cue=0.00 room=998.70 dur=17.53 -> DETAIL slack=+981.17 words=48
+§NARR_TONE b3#0 F YN rose=5.0st endDelta=+3.2st want=rise OK "Without the editor?"
+§NARR_FIT b4 cue=0.00 room=998.70 dur=16.99 -> DETAIL slack=+981.71 words=47
+§NARR_TONE b4#0 F WH rose=0st endDelta=-4.2st want=fall OK "What if I edit a version by hand?"
+§NARR_FIT b5 cue=0.00 room=998.70 dur=14.53 -> DETAIL slack=+984.17 words=41
+§NARR_TONE b5#0 F WH rose=0st endDelta=-3.9st want=fall OK "Which witness proves which file?"
+§NARR_FIT b6 cue=0.00 room=998.70 dur=11.08 -> DETAIL slack=+987.62 words=28
+§NARR_TONE b6#0 F WH rose=0st endDelta=-5.0st want=fall OK "What does CI run?"
+§NARR_FIT b7 cue=0.00 room=998.70 dur=11.12 -> DETAIL slack=+987.58 words=27
+§NARR_TONE b7#0 F WH rose=0st endDelta=-4.0st want=fall OK "What did this session cost?"
