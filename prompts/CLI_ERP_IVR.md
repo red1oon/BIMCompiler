@@ -453,6 +453,31 @@ One character means one thing in the shell, the help panel and the ERP box. `?` 
 
 **§41 RESULT (2026-11-18, bim-ootb #3239, auto-merge):** built as the BUILD SPEC says (with its measured H3 change). **W-RED1-PREFIX 8/0** on the real seed: P1 `#80001` → `erp.search text=80001` → Order 101; P2 `#80000` → 4 hits (Sales Order window 100; Purchase Order window 104, 105, 106), nothing entered; P3 in `cd Order` and in record 100 the same search, 101 / 102; P4 `#99999999` refused naming Order Search and the codes; P5 `@x` reserved, `#` its use; P6 `#O 80001` = P1, `#BP Joe` → Business Partner 114 (the BP query through user "Joe Sales"); P7 role 1300102: held by the login gate, then after `login GardenAdmin` Order 1300101; P8 role 50004: *"no document found for "80001" that role 50004 may open: its windows Sales Order are not granted to it"*. Falsifiers FAIL: `WORDS_BREAK=nohash` 0/8, `ERP_BREAK=noclient` 3/5 (P2 listed 12 records over both clients), `ERP_BREAK=nosearchdef` 1/7. Logs `common/door/tests/logs/red1_prefix*.log`. W-ERP-VERBS 46/0 (pins moved on purpose: 36 dictionary-engine verbs, `search` subcommand; its V5 caught a first draft naming `c_payment`: the sales/purchase split column now comes from the table's own columns, IsSOTrx else IsReceipt, as DocumentSearchController.doSearch asks), W-MSG-CATALOG 5/0 (the six `words.hash_*`/`at_reserved` keys handed to W-RED1-PREFIX), W-VOCAB-COMPOSE 7/0, W-DOOR-SHAPE 29/0, the 27 other red1 witnesses PASS; door_dsl/same/honest PASS with `NODE_PATH` (puppeteer). Verb count 77 → 78. **Not done here:** the Fast Script Guide refresh (verb table, the `#` help line, the bash-quoting note); the page's own `/` search (it gets the same overlay when built).
 
+## 50. The Fast Script Guide made readable: stale lines fixed, duplicates merged (2026-11-18, owner: "Review that it be readable and consolidate, remove stale" -> "All 9"; spec before the code)
+**Measured on the live guide (`docs/FastScriptGuide.md`, 611 lines, origin/master):**
+1. The `erp` group's title says "document actions (CO VO CL RC)" (`common/door/vocab/words.json:32`), but `do` also takes PR and RE (`words.json:90`), and the guide's own `next` trees show them.
+2. A new order line prints `number: ` with nothing after it: `mis.new` answers `number: null` for a kind with no document number (`erp_cli.js:664`, the same at `:723` for an update).
+3. Entering a record prints every guess the shell made: `cd Order 100` shows `→ mis.describe kind="Order 100"`, `→ mis.describe kind=Order`, `→ mis.read kind=Order number=100`, `→ mis.read kind=Order id=100`; in a menu walk `→ mis.describe kind=100`. The chain is in `words_core.js:169-208` (cd-kind → cd-erp → rec-read by number → by id); red1 prints each `→` line before it runs (`red1.js:93`).
+4. The version line says 78 verbs, "Coverage today" says 68: both true (10 are old names), read as a contradiction.
+5. The same `cost discipline` output is shown twice (blocks `chain_cost` and `chain_post`).
+6. Three parts overlap: "A record offers its own" (`erp_record_offers`, enters Order 100), "Walk the menu" and "From the menu into a record" (`red1_walk_record`, enters Order 100 again).
+7. The verb table gives the 10 old names 10 full rows.
+8. Every block's `$` line carries the test's own plumbing (scratch op-log, `| sed` timing cut, `2>/dev/null`) and nothing says so once.
+9. "Start with red1" comes before "How to install".
+
+**Changes:**
+- (1) the `erp` title becomes "documents and processes" (the guide table's own words), so no code list can go stale.
+- (2) `mis.new` / `mis.update` leave `number` out when the kind has no document number; an Order answer still starts with `number` (W-ERP-NEW N1).
+- (3) **One rule, in the core:** an effect that is a GUESS (cd-kind, cd-erp, rec-read) carries `probe: true`. red1 prints a probe's `→` line only once it answered ok; a refused guess goes to the `§` log (`§RED1 probe refused line=…`). When every guess fails, the core's message says so, as today. Falsifier `RED1_BREAK=probes` prints every guess.
+- (4) the version line keeps its count; "Coverage today" says "78 verbs: 68, plus 10 old names kept so earlier lines still run".
+- (5) the bim section shows `cost discipline` with a pointer to the chain; the chain keeps the one full block (`chain_post`). `chain_cost` is removed.
+- (6) one part, "The menu, and records as places": `red1_menu_walk`, then `red1_walk_record`; `erp_record_offers` is removed and its sentence on what Tab offers moves into the merged text.
+- (7) the generated table lists the 68 verbs; one generated line under it names the old names and what each now is (`erp.new` → `mis.new` …). W-FAST-SCRIPT-GUIDE T1/T2 judge the new shape; T3 new: the old-name line equals the vocabulary's `alias_of` entries.
+- (8) one note under the first block: the `$` line is how the test runs it; at your prompt you type only the words.
+- (9) "How to install" moves ahead of "Start with red1".
+
+**Witnesses:** W-RED1-RECORD R11 (new): `cd Order 100` prints exactly `→ mis.describe kind=Order`, `→ mis.read kind=Order id=100`, `→ erp.actions kind=Order id=100`, and the log names the two refused guesses; falsifier `RED1_BREAK=probes` FAILs R11. W-ERP-NEW N3 gains: the line's answer has no `number` key. W-FAST-SCRIPT-GUIDE (refreshed blocks, T1-T3, counts) and W-DOCS-I18N for the 6 translations; then deploy through `scripts/safe_gh_deploy.sh`.
+
 ## 49. §48 step 1: the page keeps the key a door record carries (2026-11-18, owner: "1"; spec before the code)
 **Issue (measured in §48):** the page's fold (`crud_core.listTip`) gives every new record the key `-opId`, overwriting the key the op carries. A door order read by the page loses its lines: `c_project 990001 -> -1`, while `c_projectphase.c_project_id` stays 990001.
 
