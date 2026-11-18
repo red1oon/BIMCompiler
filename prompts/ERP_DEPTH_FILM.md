@@ -747,3 +747,11 @@ Measured on the real window flow (W-DEPTH-CYCLE: Sales Order + Complete, POS ord
 
 ### §DOCACTION-TO-GEAR (owner, 2026-10-17 - LATER, not started)
 Owner: the top-bar `Draft | Complete | Prepare | Void` (the twin's `buildDocActionBar`: status chip + legal DocAction buttons, `erp/idempiere.html`) drifted from legacy verbatim; accepted for now. Move it behind the **Process (gear) icon** later, and do the same for "Create Production From Order" - all of these are processes legacy already arranges through AD_ToolBarButton / AD_Process (the Process button opens the DocAction + process list). Same rule as §TB-ICONS: dictionary-driven, no per-window code, witness X of N windows, keep `data-doc-action` selectors working (or rewrite the ~tests that click them). The status chip: legacy shows DocStatus in the form's DocStatus field + the Process button label; decide then where the up-front status lives (owner liked it as friendlier - keep as an opt-in lens if it cannot stay in the default screen).
+
+## §UDP-4 instrument note (2026-11-18, CLI lane, `prompts/CLI_ERP_IVR.md` §47)
+**W-UDP4-ENGINE FAILs when its two halves read different databases.** The oracle on port 8097 belongs to whichever legacy server bound it first. On 2026-11-18 that was `idempiere-bimdoc`, while the witness's SQL side defaults to `idempiere_pilot`. The run then printed A 321/325 · B 27/62, with legacy showing 0 rows in 46 windows: wrong, because the Java side counted 2 invoices where the pilot has 3,038. With `UDP4_PG_DB=idempiere_bimdoc` it printed A 324/325 · B 61/62.
+**Proposed guard (not built):** the witness reads one fingerprint through BOTH halves (e.g. a client-11 header row count) and prints INCONCLUSIVE when they disagree, instead of FAIL.
+**Open:**
+- window 264 Session Audit (`AD_Session`): legacy 1 row, twin 12;
+- window 1000000 `MP_AssetMeter_Log`: a plugin table absent from the seed, so the twin's count is -1 and it opens on Find.
+
