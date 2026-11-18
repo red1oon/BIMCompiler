@@ -3728,7 +3728,7 @@ cost: the cost of a selection: cost [phase|task|storey|discipline|class] [column
     taken from where you are: building
     e.g. in Duplex: viewer.cost building=Duplex by=discipline
 </code></pre></div>
-<p><strong>Bantuan dalam bahasa Anda sendiri.</strong> <code>ask "&lt;question&gt;"</code> mengajukan pertanyaan ke bantuan yang sama dengan kotak pertanyaan ERP di browser, dengan kata-kata biasa, dan berfungsi di sebuah jenis ERP (<code>cd Order</code>). Jawabannya menyebut jendela, aksi dokumen dan status yang mengizinkannya, baris perintah yang menjalankannya, dan bagian panduan. Dibaca dari kamus dan paket bahasa iDempiere yang diterbitkan; tidak ada AI di dalamnya, dan ia hanya membaca. Bahasanya adalah yang Anda pilih dengan <code>lang=zh_CN</code>, jika tidak preferensi tersimpan Anda saat Anda masuk (<code>login</code>), jika tidak <code>LANG</code> terminal Anda, jika tidak bahasa sistem. Teks yang tidak dicakup paket tetap dalam bahasa Inggris, seperti di legacy (deskripsi aksi di bawah). Di sini terminalnya berbahasa Tionghoa:</p>
+<p><strong>Bantuan dalam bahasa Anda sendiri.</strong> <code>ask "&lt;question&gt;"</code> mengajukan pertanyaan ke bantuan yang sama dengan kotak pertanyaan ERP di browser, dengan kata-kata biasa, dan berfungsi di sebuah jenis ERP (<code>cd Order</code>). Jawabannya menyebut jendela, proses atau laporan dari menu Anda bila ada yang cocok (seperti kotak di peramban), aksi dokumen dan status yang mengizinkannya, baris perintah yang menjalankannya, dan bagian panduan. Dibaca dari kamus dan paket bahasa iDempiere yang diterbitkan; tidak ada AI di dalamnya, dan ia hanya membaca. Bahasanya adalah yang Anda pilih dengan <code>lang=zh_CN</code>, jika tidak preferensi tersimpan Anda saat Anda masuk (<code>login</code>), jika tidak <code>LANG</code> terminal Anda, jika tidak bahasa sistem. Teks yang tidak dicakup paket tetap dalam bahasa Inggris, seperti di legacy (deskripsi aksi di bawah). Di sini terminalnya berbahasa Tionghoa:</p>
 <!-- run: red1_ask_zh -->
 <div class="highlight"><pre><span></span><code>$ printf &#39;cd Order\nask &quot;如何关闭销售订单？&quot;\n&#39; | LANG=zh_CN.UTF-8 node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39;
 → mis.describe kind=Order
@@ -3736,6 +3736,7 @@ Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POR
 → erp.ask question=如何关闭销售订单？
 ok · erp.ask
 窗口: 销售订单
+进程: 由费用产生销售订单
 文档动作: 结束 — Finally close this transaction. It cannot be re-activated.
   单据处于以下状态时可用: 完成, 等候付款
 CLI: erp.close kind=Order number=&lt;Document No&gt;

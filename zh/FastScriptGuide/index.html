@@ -3728,7 +3728,7 @@ cost: the cost of a selection: cost [phase|task|storey|discipline|class] [column
     taken from where you are: building
     e.g. in Duplex: viewer.cost building=Duplex by=discipline
 </code></pre></div>
-<p><strong>用您自己的语言获得帮助。</strong> <code>ask "&lt;question&gt;"</code> 用普通的话向与浏览器 ERP 问题框相同的帮助提问，在 ERP 类型中（<code>cd Order</code>）可用。答复会给出窗口、单据动作及其允许的状态、执行它的命令行，以及指南的章节。它读自词典和已发布的 iDempiere 语言包；里面没有 AI，而且只读不写。语言是您用 <code>lang=zh_CN</code> 选择的，否则是您登录时（<code>login</code>）保存的偏好，否则是终端的 <code>LANG</code>，否则是系统的语言。语言包没有覆盖的文字保持英文，与 legacy 相同（下面动作的说明）。这里终端是中文：</p>
+<p><strong>用您自己的语言获得帮助。</strong> <code>ask "&lt;question&gt;"</code> 用普通的话向与浏览器 ERP 问题框相同的帮助提问，在 ERP 类型中（<code>cd Order</code>）可用。答复会给出窗口、有匹配时您菜单上的进程或报告（与浏览器的框相同）、单据动作及其允许的状态、执行它的命令行，以及指南的章节。它读自词典和已发布的 iDempiere 语言包；里面没有 AI，而且只读不写。语言是您用 <code>lang=zh_CN</code> 选择的，否则是您登录时（<code>login</code>）保存的偏好，否则是终端的 <code>LANG</code>，否则是系统的语言。语言包没有覆盖的文字保持英文，与 legacy 相同（下面动作的说明）。这里终端是中文：</p>
 <!-- run: red1_ask_zh -->
 <div class="highlight"><pre><span></span><code>$ printf &#39;cd Order\nask &quot;如何关闭销售订单？&quot;\n&#39; | LANG=zh_CN.UTF-8 node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39;
 → mis.describe kind=Order
@@ -3736,6 +3736,7 @@ Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POR
 → erp.ask question=如何关闭销售订单？
 ok · erp.ask
 窗口: 销售订单
+进程: 由费用产生销售订单
 文档动作: 结束 — Finally close this transaction. It cannot be re-activated.
   单据处于以下状态时可用: 完成, 等候付款
 CLI: erp.close kind=Order number=&lt;Document No&gt;

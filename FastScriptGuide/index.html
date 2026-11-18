@@ -3728,7 +3728,7 @@ cost: the cost of a selection: cost [phase|task|storey|discipline|class] [column
     taken from where you are: building
     e.g. in Duplex: viewer.cost building=Duplex by=discipline
 </code></pre></div>
-<p><strong>Help in your own language.</strong> <code>ask "&lt;question&gt;"</code> puts a question to the same help as the browser ERP's question box, in plain words, and works in an ERP kind (<code>cd Order</code>). The answer names the window, the document action and the statuses it is allowed from, the command line that does it, and the guide section. It is read from the dictionary and the published iDempiere language packs; there is no AI inside, and it only reads. The language is the one you chose with <code>lang=zh_CN</code>, else your saved preference when you are logged in (<code>login</code>), else your terminal's <code>LANG</code>, else the system's. A text the pack does not cover stays in English, as in legacy (the action's description below). Here the terminal is Chinese:</p>
+<p><strong>Help in your own language.</strong> <code>ask "&lt;question&gt;"</code> puts a question to the same help as the browser ERP's question box, in plain words, and works in an ERP kind (<code>cd Order</code>). The answer names the window, a process or report of your menu when one matches (as the browser's box does), the document action and the statuses it is allowed from, the command line that does it, and the guide section. It is read from the dictionary and the published iDempiere language packs; there is no AI inside, and it only reads. The language is the one you chose with <code>lang=zh_CN</code>, else your saved preference when you are logged in (<code>login</code>), else your terminal's <code>LANG</code>, else the system's. A text the pack does not cover stays in English, as in legacy (the action's description below). Here the terminal is Chinese:</p>
 <!-- run: red1_ask_zh -->
 <div class="highlight"><pre><span></span><code>$ printf &#39;cd Order\nask &quot;如何关闭销售订单？&quot;\n&#39; | LANG=zh_CN.UTF-8 node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39;
 → mis.describe kind=Order
@@ -3736,6 +3736,7 @@ Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POR
 → erp.ask question=如何关闭销售订单？
 ok · erp.ask
 窗口: 销售订单
+进程: 由费用产生销售订单
 文档动作: 结束 — Finally close this transaction. It cannot be re-activated.
   单据处于以下状态时可用: 完成, 等候付款
 CLI: erp.close kind=Order number=&lt;Document No&gt;

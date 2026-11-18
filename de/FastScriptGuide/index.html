@@ -3728,7 +3728,7 @@ cost: the cost of a selection: cost [phase|task|storey|discipline|class] [column
     taken from where you are: building
     e.g. in Duplex: viewer.cost building=Duplex by=discipline
 </code></pre></div>
-<p><strong>Hilfe in Ihrer eigenen Sprache.</strong> <code>ask "&lt;question&gt;"</code> stellt eine Frage an dieselbe Hilfe wie das Fragefeld des Browser-ERP, in einfachen Worten, und funktioniert in einer ERP-Art (<code>cd Order</code>). Die Antwort nennt das Fenster, die Belegaktion und die Status, aus denen sie erlaubt ist, die Befehlszeile, die sie ausführt, und den Abschnitt des Handbuchs. Sie wird aus dem Wörterbuch und den veröffentlichten iDempiere-Sprachpaketen gelesen; es steckt keine KI darin, und sie liest nur. Die Sprache ist die mit <code>lang=zh_CN</code> gewählte, sonst Ihre gespeicherte Einstellung, wenn Sie angemeldet sind (<code>login</code>), sonst das <code>LANG</code> Ihres Terminals, sonst die des Systems. Ein Text, den das Paket nicht abdeckt, bleibt Englisch, wie in Legacy (die Beschreibung der Aktion unten). Hier ist das Terminal chinesisch:</p>
+<p><strong>Hilfe in Ihrer eigenen Sprache.</strong> <code>ask "&lt;question&gt;"</code> stellt eine Frage an dieselbe Hilfe wie das Fragefeld des Browser-ERP, in einfachen Worten, und funktioniert in einer ERP-Art (<code>cd Order</code>). Die Antwort nennt das Fenster, einen Prozess oder Bericht Ihres Menüs, wenn einer passt (wie das Feld im Browser), die Belegaktion und die Status, aus denen sie erlaubt ist, die Befehlszeile, die sie ausführt, und den Abschnitt des Handbuchs. Sie wird aus dem Wörterbuch und den veröffentlichten iDempiere-Sprachpaketen gelesen; es steckt keine KI darin, und sie liest nur. Die Sprache ist die mit <code>lang=zh_CN</code> gewählte, sonst Ihre gespeicherte Einstellung, wenn Sie angemeldet sind (<code>login</code>), sonst das <code>LANG</code> Ihres Terminals, sonst die des Systems. Ein Text, den das Paket nicht abdeckt, bleibt Englisch, wie in Legacy (die Beschreibung der Aktion unten). Hier ist das Terminal chinesisch:</p>
 <!-- run: red1_ask_zh -->
 <div class="highlight"><pre><span></span><code>$ printf &#39;cd Order\nask &quot;如何关闭销售订单？&quot;\n&#39; | LANG=zh_CN.UTF-8 node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39;
 → mis.describe kind=Order
@@ -3736,6 +3736,7 @@ Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POR
 → erp.ask question=如何关闭销售订单？
 ok · erp.ask
 窗口: 销售订单
+进程: 由费用产生销售订单
 文档动作: 结束 — Finally close this transaction. It cannot be re-activated.
   单据处于以下状态时可用: 完成, 等候付款
 CLI: erp.close kind=Order number=&lt;Document No&gt;
