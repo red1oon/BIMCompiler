@@ -1,4 +1,0 @@
-$ node devtools/x0/x0.js where camera
-APP.camera is written at viewer/grid_views.js:83 (spelled A.camera there) · 4 writes · 1247 reads. Source: fresh copy (§APP_SURFACE files=3487 fields=1871 alias_only=1600 phantom=179 untied=11).
-
-§CMD_EXIT 0

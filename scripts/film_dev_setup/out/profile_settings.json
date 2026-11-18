@@ -21,5 +21,10 @@
  "terminal.integrated.gpuAcceleration": "off",
  "files.autoSave": "off",
  "workbench.editor.showTabs": "single",
- "workbench.statusBar.visible": true
+ "workbench.statusBar.visible": true,
+ "editor.renderLineHighlight": "none",
+ "editor.occurrencesHighlight": "off",
+ "editor.selectionHighlight": false,
+ "editor.cursorBlinking": "solid",
+ "editor.matchBrackets": "never"
 }
