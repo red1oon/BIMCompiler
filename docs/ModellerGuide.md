@@ -818,83 +818,84 @@ doors, up risers between storeys.
 
 ## Upgrade — add rule-based detail (LOD 400)
 
-The **↑ Upgrade** pill (an up arrow, top right) adds detail to the open building by rule: it reads what the
-model and its drawings already state, applies a published rule where they say nothing, and adds the parts.
-It does not change the parts that are already there.
+The **↑ Upgrade** arrow adds detail to the open building by rule: it reads what the model and its drawings
+already state, applies a published rule where they say nothing, and adds the parts (rebar, welds, material
+layers, steel joints, gussets). It never changes or removes a part that is already there.
 
-Tap the arrow. The Upgrade panel lists the rule packs, one row each:
+### 1. Open the Upgrade panel
+
+Open your building (**📂 Open**), then tap the **↑ arrow** at the top right of the toolbar.
+
+![The Upgrade arrow, top right of the Modeller toolbar](img/modeller/upgrade-1-arrow.png)
+
+### 2. See what each pack can do on this building
+
+The panel lists the rule packs, one row each. Every row says what it **applies to** on the open building (or
+*0 not applicable here*), how many **rule rows** are stated, default or unset (**Rules** opens them), and
+what the **last run** added, refused and did not build.
+
+![The Upgrade panel: one row per rule pack, each with what it applies to, its rule rows and its last run](img/modeller/upgrade-2-panel.png)
 
 | Pack | Adds | Needs |
 |------|------|-------|
-| **Rebar (from schedules)** | bar sets in footings and columns | schedules attached to the elements by a 2D conversion ([DXF2BIM](DXF2BIMGuide.md)) |
+| **Rebar (from schedules)** | bar sets in footings and columns | schedules attached by a 2D conversion ([DXF2BIM](DXF2BIMGuide.md)) |
 | **Truss welds** | fillet welds where a steel member meets a gusset plate | members and plates in the model |
 | **Layers** | one part per material layer of a wall, floor or ceiling | the IFC's layer sets (an extracted architecture model) |
 | **Steel joints** | fin plate, bolts and welds at steel beam ends | steel beams with I-sections and their supports |
 | **Bracing gussets** | a gusset plate, bolts and welds at brace ends | diagonal steel braces |
-| **Beam rebar (schedule)** | bars and stirrups in concrete beams | a beam bar schedule you load (the reinforcement table of the drawings, as a marks file) |
+| **Beam rebar (schedule)** | bars and stirrups in concrete beams | the beam schedule: tap **Load schedule…** first (below) |
 
-Each row says what it **applies to** on the open model (for example *applies to 106 beam ends*, or
-*0 not applicable here*), how many **rule rows** are stated, default or unset, and what the **last run**
-added, refused and did not build.
+### 3. Run a pack
 
-1. Tap **Run** on a row. A long run shows its progress in the row (*Beam rebar: beam 50 of 92*) and the page
-   keeps working while it runs.
-2. The added parts appear in the model. A wall split into layers is drawn as its layers.
-3. **Ctrl+Z** removes the whole run in one step.
+Tap **Run** on a row. A long run shows its progress in the row (*Beam rebar: beam 50 of 92*) and the page keeps
+working. When it ends, the row and the status line say what was added, and the parts are in the model.
+**Ctrl+Z** removes the whole run in one step.
 
-**Rules** opens the pack's rule rows (value, unit, source). A value you enter with a stated source wins over
-a default; run again to see the new result. Nothing is guessed: where a rule cannot be applied the part is
-**refused** with its reason (for example *would clash with a neighbouring element*), and the refusals are
-listed with the added parts.
+![After Run on Rebar (from schedules): the row says added 256 / refused 0 / not built 35; the status line says Ctrl+Z removes it all](img/modeller/upgrade-3-run.png)
 
-**Beam rebar (schedule):** tap **Load schedule…** and pick the marks file (one row per beam mark: width,
-depth, bottom and top bars, side bars, stirrups). The row then says how many beams it applies to. The run
-reports any beam whose body cannot hold the stated bars, and does not bend the bars to fit.
+Where a rule cannot be applied, the part is **refused** with its reason (for example *would clash with a
+neighbouring element*); nothing is guessed. Steel joints and gussets are **configuration only: capacity is not
+checked**, a starting detail for the engineer, not a design.
 
-Steel joints and gussets are **configuration only: capacity is not checked**. They are a starting detail for
-the engineer, not a design.
+### 4. Export (IFC): send what this upgrade added
 
-### Change list and Add-on IFC — step by step
+At the bottom of the panel:
 
-Both buttons are at the **bottom of the Upgrade panel** (the panel the **↑ Upgrade** arrow opens), not in the
-**Export** pill. **Export ▸ IFC** writes the whole building you opened. **Add-on IFC** writes only the parts the
-Upgrade runs added, to send next to the original model.
+1. Pick the schema beside **Export (IFC) as**: **IFC2X3** or **IFC4**.
+2. Tap **Export (IFC)** (hover: *Exports out what was added from this upgrade*). It is greyed out until a run
+   has added parts.
+3. The browser saves the file to your downloads folder, named after the model:
+   `<model>_upgrade_IFC2X3.ifc`. The line under the buttons says what went in:
 
-1. Open the building (**📂 Open**), then tap the **↑ Upgrade** arrow (top right of the toolbar).
-2. **Run** at least one pack (see above). Until a run has added parts, **Add-on IFC** is greyed out and its tip
-   says *Run an upgrade first*.
-3. At the bottom of the panel, pick the schema in the small menu beside **Add-on IFC:** — **IFC2X3** or **IFC4**.
-4. Tap **Add-on IFC**. The browser saves the file to your downloads folder, named after the model, for example
-   `JPAM_base_addon_IFC2X3.ifc`. The line under the buttons says how many parts went in and the size, for example
-   *Add-on IFC (IFC2X3): 470 parts, 50.7 MB*.
-5. **If it refuses** with *Storey "…" has no elevation*, the model does not carry its storey heights (none is
-   invented). Tap **Load frame…** in the same row and pick a small JSON file with the heights:
+![The bottom of the panel: Export (IFC) as IFC2X3, Load frame…, Change list (.txt), Export (IFC), and the line "Export (IFC, IFC2X3): 256 parts, 10.5 MB"](img/modeller/upgrade-4-export.png)
 
-   ```json
-   { "frame_name": "storey heights from the author's IFC",
-     "storey_elevations_m": { "GROUND FLOOR": 0.0, "LEVEL 1": 4.8, "ROOF": 9.05 } }
-   ```
+The file holds **only what this upgrade added**, every part of every pack you ran (no discipline is picked; Undo a
+run to leave it out), and nothing of the model itself. Send it with the original model: the receiving team lays
+it over their own. For the **whole building** as IFC, use **Export ▸ IFC** on the toolbar instead.
 
-   It may also hold `site` (the original model's site placement) and `shift_m` (a move from this model's
-   coordinates to the original's), so the add-on lands exactly on the original. Then tap **Add-on IFC** again.
+**Change list (.txt)**, beside it, downloads the same runs as a plain list: every added, refused and not-built row.
 
-What goes in: every part every pack added in this session (no discipline is picked; Undo a run first to leave it
-out), and nothing of the model itself. A bar set with mixed bar sizes is written as one IFC bar element per size.
+**If Export (IFC) refuses** with *Storey "…" has no elevation*: the model does not carry its storey heights, and
+none is invented. Tap **Load frame…** and pick a small JSON file with them, then tap **Export (IFC)** again:
 
-**Change list (.txt)**, beside it, downloads every added, refused and not-built row of the runs as plain text.
+```json
+{ "frame_name": "storey heights from the author's IFC",
+  "storey_elevations_m": { "GROUND FLOOR": 0.0, "LEVEL 1": 4.8, "ROOF": 9.05 } }
+```
+
+The file may also hold `site` (the original model's site placement) and `shift_m` (the move from this model's
+coordinates to the original's), so the export lands exactly on the original.
 
 ### Beam schedules — where they come from, and other firms' layouts
 
-**Load schedule…** (in the **Beam rebar (schedule)** row) takes either:
+**Load schedule…** (in the **Beam rebar (schedule)** row) takes the drawing's **schedule sheet as a `.dxf`** (the
+beam table is read from the sheet itself) or a **marks file (`.json`)** made from it. The row then says what it
+read, for example *22 marks read from the drawing (format revit-s401-style, one building)*.
 
-- the drawing's **schedule sheet as a `.dxf`**: the beam table is read from the sheet itself, or
-- a **marks file (`.json`)** already made from it.
-
-The row then says what it read, for example *22 marks read from the drawing (format revit-s401-style, one
-building)*. How a table is read (which heading is which bar, how `8T25` or `2T10-150` is read) and how a beam finds
-its row (its type mark in the element name) is **data, not code**: tap **Formats** in the same row to see and edit
-it. A schedule with other headings is refused with the headings it found; adding one entry for that layout in
-**Formats** is enough to read it. **Download edits** saves your formats to share.
+How a table is read (which heading is which bar, how `8T25` or `2T10-150` is read) and how a beam finds its row
+(its type mark in the element name) is **data, not code**: tap **Formats** in the same row to see and edit it. A
+schedule with other headings is refused with the headings it found; one new entry in **Formats** for that layout
+is enough to read it. **Download edits** saves your formats to share.
 
 ## History — the slider *is* the timeline
 
@@ -1078,7 +1079,7 @@ The toolbar is a **⋯ pill rail** at the right edge: the rail starts open (**�
 | **Fit** | Zoom to fit — the selection, or the whole scene (`F`) |
 | **Iso** | Cycle the view: Iso ⇄ Top |
 | **Grid** | Show / add a construction grid |
-| **↑ Upgrade** | Add rule-based detail: rebar, welds, layers, steel joints, gussets, beam bars; change list and Add-on IFC (see [Upgrade](#upgrade-add-rule-based-detail-lod-400)) |
+| **↑ Upgrade** | Add rule-based detail: rebar, welds, layers, steel joints, gussets, beam bars; change list and **Export (IFC)** of what was added (see [Upgrade](#upgrade-add-rule-based-detail-lod-400)) |
 | **Move Grid** | Drag a gridline — attached walls recompose (`GEOM_GRID_MOVE`); hosted openings hold or ride (see [Grid-Stretch](#grid-stretch)) |
 | **Move** | Transform gizmo — move / scale / rotate the selection (`M`) |
 | **Drag Item** | Free single-item drag for a fixture/fitting, gated by real product data and a real drop surface (see [Item Drag](#item-drag)) |
