@@ -1,8 +1,8 @@
 $ node devtools/x0/x0.js session --transcript $T
-Session a155285d · 117 min · 26 replies · claude-sonnet-5-5
-  tokens   output 15.5k · input 56 · cache read 2.3M · cache write 181.0k
+Session a155285d · 188 min · 45 replies · claude-sonnet-5-5
+  tokens   output 29.6k · input 116 · cache read 5.2M · cache write 205.3k
   shipped  BIMCompiler #990 · 1 witness scripts run
   URL load no change to what users load
-§X0_SESSION id=a155285d-5e94-4979-9116-5c2647db3f92 minutes=117 replies=26 tokens_in=56 cache_write=181037 cache_read=2339741 tokens_out=15542 prs=1 witnesses=1 load=- not_merged=0 dup_copies=22
+§X0_SESSION id=a155285d-5e94-4979-9116-5c2647db3f92 minutes=188 replies=45 tokens_in=116 cache_write=205305 cache_read=5217483 tokens_out=29588 prs=1 witnesses=1 load=- not_merged=0 dup_copies=33
 
 §CMD_EXIT 0
