@@ -74,6 +74,7 @@ Steps: A 17 · B 43 (29 if given the marked copies: skip B00, B0) · C 10 · D 1
 |---|---|
 | A desktop browser (Chrome, Edge or Firefox) | — |
 | The BIM apps | the public site [red1oon.github.io/bim-ootb](https://red1oon.github.io/bim-ootb/index.html), or your own copy (chapter A1) |
+| What to install on your own machine first (git, Node.js, Python 3, a browser; VS Code only for developers) | [Developer Guide §3](DeveloperGuide.md#3-start-from-scratch-download-run-set-up-vs-code) |
 | Your iDempiere, with its **GardenWorld** client and a GardenWorld Admin login | your server |
 | The test-data pack | [202611131200_GardenWorld_CAPEXTestData.zip](https://github.com/red1oon/bim-ootb/raw/main/capex/plugin/testdata_2pack/202611131200_GardenWorld_CAPEXTestData.zip) |
 | The construction-products script (10 materials at standard cost) | [202611141500_CAPEX-TD-CONSTRUCTION-PRODUCTS.sql](https://github.com/red1oon/bim-ootb/blob/main/capex/plugin/testdata_2pack/202611141500_CAPEX-TD-CONSTRUCTION-PRODUCTS.sql) |
@@ -111,6 +112,8 @@ The nine Shed sheets are the pilot client's own work, so its testers may use the
 ### A1 · The BIM apps on your own server (optional)
 
 The Modeller, the Viewer, the Kernel ERP and the dashboard are plain web files: no application server and no database server. Use the public site, or serve your own copy.
+
+**Setting up your own copy from nothing** (what to install first: git, Node.js, Python 3 and a browser; how to download the code, serve it, open the three apps and, for developers, set up VS Code) is written once, in the [Developer Guide, §3 Start from scratch](DeveloperGuide.md#3-start-from-scratch-download-run-set-up-vs-code). Follow it first if your machine is new to the project. Steps A1.1 to A1.4 below are the same download-and-serve steps, with what to confirm for this exercise. Installing iDempiere and its PostgreSQL database is **not** covered by either guide: chapter A2 onward starts from an iDempiere you already run.
 
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|

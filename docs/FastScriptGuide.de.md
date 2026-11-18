@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 7fd58a7ca9d6af6d
+source_sha: 24dfe73f0ea2cdfd
 lang: de
 ---
 
@@ -461,7 +461,7 @@ Eine Antwort listet auf, was ihre Prüfung nicht abgedeckt hat. Dieselben Worte 
 | `The Viewer tools need a bim-ootb checkout` | Führen Sie es als `node common/door/door.js` aus einem vollständigen Checkout aus |
 | `exit 1` mit einer Chrome-Meldung | Die Systembibliotheken von Chrome fehlen unter Linux. Die Fehlerbehebungsseite von Puppeteer listet sie auf |
 
-**Grenzen, mit denen Sie rechnen sollten.** Jeder Modeller-Aufruf öffnet das ganze Gebäude: etwa 10 bis 40 Sekunden bei der HospitalGarage. Dies ist ein Messwerkzeug, kein Dienst mit Verfügbarkeitszusage. Ein Skript mit mehreren Modeller-Zeilen öffnet das Gebäude einmal pro Zeile.
+**Grenzen, mit denen Sie rechnen sollten.** Jeder Modeller-Aufruf öffnet das ganze Gebäude: etwa 10 bis 40 Sekunden bei der HospitalGarage. Dies ist ein Messwerkzeug, kein Dienst mit Verfügbarkeitszusage. Ein Skript mit mehreren Modeller-Zeilen öffnet das Gebäude einmal pro Zeile. **Was Sie an `red1>` anlegen, bleibt vorerst in red1s eigenem Änderungsprotokoll:** ein an der Eingabeaufforderung angelegter Auftrag erscheint nicht im ERP-Fenster des Browsers, und einer aus dem Fenster ist an der Eingabeaufforderung nicht zu sehen. Beide zusammenzuführen ist der nächste Schritt.
 
 
 ## Für Entwickler

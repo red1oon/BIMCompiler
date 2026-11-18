@@ -42,12 +42,12 @@ W-X0-SESSION 8/8) + the SessionEnd hook in `~/.claude/settings.json` (stderr + e
 **Watch:** C15 (`witnesses` equal the extractor) fails any PR that adds a test naming a modeller file until `node scripts/gen_manifest.js --write modeller` is run; it happened once, to this
 session's own PR. If it hits other sessions, move the refresh into `bump.js` (the spec's stated fallback) — tell the owner first.
 
-**1. NEXT, in order.**
-1. ✅ **E1 DONE** (#3272). More `PROVES:` lines are added as witnesses are touched.
-2. **CI tier** (Part E, CI-TIER BUILD SPEC) — needs step 1's cache.
-3. **B2 spec** (ERP as a source app; ERP's site numbers disagree, so a site-level `v` until B4-HASH).
-4. **D spec** (owner table: `<app>/questions.json`, `"extends"` marks, W-OWNER-UNIQUE).
-5. **2026-11-30:** propose the F-2 cost ceilings (§F.3). The F-1 headless Fetch-back button is still unbuilt.
+**1. NEXT, in order** (session closed 2026-11-18 by the owner: *"close, will resume VSC in future"*).
+1. **B2 spec** (ERP as a source app; ERP's site numbers disagree, so a site-level `v` until B4-HASH).
+2. **D spec** (owner table: `<app>/questions.json`, `"extends"` marks, W-OWNER-UNIQUE).
+3. Grow the CI fast tier when a runner has filled the cache (`node scripts/gen_ci_tier.js --write --probe`); add `PROVES:` lines as witnesses are touched.
+4. **2026-11-30:** propose the F-2 cost ceilings (§F.3). The F-1 headless Fetch-back button is still unbuilt.
+Done this session (tenth): B1, E0, E1, F-25 `x0`, F-26 `x0 session` + SessionEnd hook, CI fast tier (61 of 1,512), §F.38 from scratch + guide §3 — results in their sections.
 
 **2. Where each part stands.**
 | Part | State | Next step |
@@ -71,7 +71,7 @@ the source (§F.25): reinstall with `node devtools/vscode/pack.js --install`. A 
 built and waiting for the owner's review (see that file's FILM 3 STATUS). Earlier CH 0 "VSC Hot Edit" films: `prompts/FILM_IDE_ERP_DEBUG.md`.
 Rebuild recipes are in each film file.
 
-**5. Open with the owner.** D-2 (`"extends"`) · FILM 3 review · "When AI Dies" EN/TH/ZH review · his hands-on dry run (`~/VSCcheatsheet.txt`, 29 steps; `~/bim-ootb-dryrun`
+**5. Open with the owner.** the read-through of Developer Guide §3 "Start from scratch" (or the 29-step dry run) before announcing the VS Code setup · D-2 (`"extends"`) · FILM 3 review · "When AI Dies" EN/TH/ZH review · his hands-on dry run (`~/VSCcheatsheet.txt`, 29 steps; `~/bim-ootb-dryrun`
 not created) · a bake on his go (then check a "last:" line, §F.15).
 
 **6. Open, no owner needed.**
@@ -868,6 +868,27 @@ witnesses and bim-compiler's RosettaStoneGateTest run before commit by habit onl
 ENV in its last run), with its measured seconds; (3) one new CI job runs that list through `tests/run_witness_suite.js` (its KNOWN_RED and flaky rules), job budget 10 min, and names every
 witness it skipped; (4) W-CI-TIER: the list equals what the generator writes from the cache (no hand edits), a planted slow witness is left out, a planted red one fails the job (red control).
 Heavy and DB witnesses stay local (Bump gate, before commit); the list grows as witnesses get faster.
+
+
+**F-27 (owner 2026-11-18): roll out the enhanced VS Code setup only after a from-scratch path is proven.** Owner asked: *"Does the guide shows 'How to Setup Developer Environment'?"* ·
+*"Also a starting from scratch, ie 'How to Download and Run the Project from local machine'"* · *"Then we should already got a good enough enhaned VSC to roll out?"*. Measured: Developer Guide §3 has 6 steps,
+no prerequisites, no clone link, no building-data step (building DBs are not in git); never walked from an empty folder. Asked what first; owner: **"From-scratch witness, then guide (Recommended)"**.
+**§F.38 BUILD SPEC — W-FROM-SCRATCH** (bim-ootb `scripts/tests/witness_from_scratch.js`, dev-side, no second clone): S1 prerequisites (node, python3, git, `code`, a Chromium — versions printed) ·
+S2 the download = exactly what GitHub "Download ZIP" gives (`git archive origin/main`) into an empty temp folder: files, bytes, LFS pointer files counted · S3 serve it with `python3 -m http.server`
+(Guide §3 step 3) · S4 open `viewer/viewer.html`, `erp/idempiere.html`, `modeller/modeller.html` headless: HTTP failures, console errors, outside hosts contacted, and what a newcomer sees with no
+building · S5 X0: `node devtools/vscode/pack.js` in the download, install into a throwaway `--extensions-dir` (never the owner's profile) · every failure is a GAP line (`§FROM_SCRATCH_GAP step= what=`),
+never hidden. Verdict PASS only when every step ran; the gaps are the guide's to-do list. Then Developer Guide §3 becomes "Start from scratch", written from that run.
+
+
+**§F.38 RESULT — ✅ 2026-11-18 (bim-ootb #3280; Developer Guide §3 rewritten "Start from scratch", live, fetched back).** `§FROM_SCRATCH steps_ran=5/5 gaps=2 verdict=PASS`:
+download 4,798 files / 541 MB / 0 LFS pointers · ERP and Modeller: 0 failed requests, 0 console errors, no outside host · viewer: opens the Duplex (`1,118/1,118`) only after its local
+`viewer/buildings/Duplex_*.db` 404 (not shipped) and it loads them from OCI — **first viewer run needs the internet** (the guide says so) · the viewer also loads GoatCounter (`gc.zgo.at`;
+guide: `?ignore-me`) · X0 packs and installs from the download into a throwaway `--extensions-dir`. **Rollout readiness (owner's question):** the from-scratch path is now proven and written;
+open before announcing: the owner's own read-through (`~/VSCcheatsheet.txt`). Offline buildings: **no sample in the repo needed** — owner 2026-11-18: *"the landing page already has buildings the user can download and save DB to access by local code in VSC. Just add a note"* → guide §3 now says: Save Building (Ctrl+S) → put the `.db` in `viewer/buildings/` (git-ignored) → `viewer.html?db=buildings/<name>.db`.
+
+**CI-TIER RESULT — ✅ 2026-11-18 (bim-ootb #3274 → `ac718b1b`).** `tests/ci_fast_tier.json` = 40 modeller witnesses (local < 10 s, PASS, no outside input), 39 excluded with measured reasons
+(probe without outside inputs: 31; first runner pass: 8 — marked shed sheets under ~/Videos, ~/bim-compiler/node_modules, a bim-compiler page, e2e_harness = a browser). CI now runs 61 of 1,512
+witness files (was 21). Grow it: run a runner (`modeller/tests/run_all_witnesses.js`, `npm test`) so the cache fills, then `node scripts/gen_ci_tier.js --write --probe`.
 
 ## ADVICE — from the session that built Part F, for the owner and the sessions that follow (2026-11-14)
 

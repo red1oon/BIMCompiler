@@ -189,20 +189,58 @@ not counted). You will not read it all; §6 says what to read first.
 
 ---
 
-## 3. Set up — there is nothing to build
+## 3. Start from scratch: download, run, set up VS Code
 
-1. Clone **bim-ootb** (and BIMCompiler if you need the compiler or the specs). One clone of each.
-2. Open the folder in **VS Code**. The repo ships its editor setup: `jsconfig.json`, `types/`, `.vscode/settings.json`,
-   `.vscode/tasks.json`, `.vscode/launch.json`, `.editorconfig`.
-3. Serve it: task **Serve repo (http://localhost:8000)**, or `python3 -m http.server 8000` in the repo root.
-4. Open `http://localhost:8000/viewer/viewer.html` (or `erp/idempiere.html`, `modeller/modeller.html`).
-5. To debug with breakpoints: Run ▸ **Viewer in Chrome** (also ERP, Modeller, and **Node: this witness / script**).
-6. Optional, recommended: install the repo's own VS Code add-on, **X0 Navigator** (§4.1). Two commands from the bim-ootb folder,
-   offline, no npm: `node devtools/vscode/pack.js`, then `code --install-extension devtools/vscode/dist/x0-navigator-0.1.0.vsix`.
-   Reload VS Code.
+There is nothing to build. Every step below was run from an empty folder on 2026-11-18 by the witness
+`scripts/tests/witness_from_scratch.js` (W-FROM-SCRATCH, bim-ootb). Run it yourself to check your machine: it prints one line per step.
 
-`npm install` is needed only for the lint check (`eslint`, a dev tool) and is never needed by the app.
-The app's only runtime dependency is `sql.js`, which is already vendored.
+**What you need** (the versions it ran with):
+
+| Tool | Used for | Ran with |
+|---|---|---|
+| git | getting the code (or use the ZIP below) | 2.43 |
+| Node.js | the witnesses, the dev tools, X0 Navigator's packer | 18.19 (CI uses 20) |
+| Python 3 | the local web server (`python3 -m http.server`) | 3.12 |
+| VS Code | editing, debugging, X0 Navigator | 1.146 |
+| Chrome or Chromium | debugging with breakpoints; the headless witnesses use Playwright's copy | — |
+
+`npm install` is needed only for the lint check (`eslint`) and the browser witnesses; the app itself needs nothing installed
+(its only runtime library, `sql.js`, is in the repo).
+
+**1. Get the code.** `git clone https://github.com/red1oon/bim-ootb.git`, or on that page **Code ▸ Download ZIP** and unzip it.
+Either way you get about 4,800 files, about 540 MB. Clone **BIMCompiler** too only if you need the compiler or the specs. Keep one clone of each.
+
+**2. Serve it.** In the `bim-ootb` folder: `python3 -m http.server 8000` (or the VS Code task **Serve repo**).
+
+**3. Open the apps** in your browser:
+
+| Page | What you see first | Network |
+|---|---|---|
+| `http://localhost:8000/erp/idempiere.html` | the Kernel-ERP sign-in, with its language list | none needed |
+| `http://localhost:8000/modeller/modeller.html` | the Modeller, empty, "ready" | none needed |
+| `http://localhost:8000/viewer/viewer.html` | the sample building (Duplex), all 1,118 elements | **the first time, internet** |
+
+The viewer's building files are not in the repo (they are large and are not kept in git). On the first visit the viewer asks for
+`viewer/buildings/Duplex_*.db` locally, gets "404 not found" (expected: the browser console shows these as errors), and then loads
+the same building from the project's file store online. After that it is cached. So: the first viewer run needs a connection; ERP and
+the Modeller do not.
+
+**To work with buildings offline on your own machine:** open any building from the landing page (`http://localhost:8000/`, or the live
+site), press **Save Building** (Ctrl+S) in the viewer: it writes one self-contained `.db` file. Put that file in `bim-ootb/viewer/buildings/`
+and open `http://localhost:8000/viewer/viewer.html?db=buildings/<name>.db`. With no `?db=`, the viewer looks for
+`buildings/Duplex_extracted.db` (`viewer/config.js`), so a saved Duplex under that name opens with no network at all. `*.db` files are
+ignored by git, so a saved building is never committed by accident (building data is not kept in git, §5.3).
+
+The viewer page also loads a small visitor counter (GoatCounter, `gc.zgo.at`), as the live site does. To keep your own visits out
+of the count, open it once with `?ignore-me` at the end of the address.
+
+**4. Set up VS Code.** Open the `bim-ootb` folder. The repo brings its own setup: `jsconfig.json`, `types/`, `.vscode/settings.json`,
+`.vscode/tasks.json`, `.vscode/launch.json`, `.editorconfig`. To debug with breakpoints: Run ▸ **Viewer in Chrome** (also ERP,
+Modeller, and **Node: this witness / script**).
+
+**5. Install X0 Navigator** (the repo's own VS Code add-on, §4.1). In the `bim-ootb` folder, offline, no npm:
+`node devtools/vscode/pack.js`, then `code --install-extension devtools/vscode/dist/x0-navigator-0.1.0.vsix`, then reload VS Code.
+For the same facts in a terminal, without VS Code: `node devtools/x0/x0.js help`.
 
 **Editor tasks** (Terminal ▸ Run Task):
 

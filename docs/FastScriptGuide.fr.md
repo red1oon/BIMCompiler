@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 7fd58a7ca9d6af6d
+source_sha: 24dfe73f0ea2cdfd
 lang: fr
 ---
 
@@ -461,7 +461,7 @@ Une réponse liste ce que sa vérification n'a pas couvert. Les mêmes mots vale
 | `The Viewer tools need a bim-ootb checkout` | Lancez-le avec `node common/door/door.js` depuis une copie complète |
 | `exit 1` avec un message Chrome | Les bibliothèques système de Chrome manquent sous Linux. La page de dépannage de Puppeteer les liste |
 
-**Limites à prévoir.** Chaque appel Modeller ouvre le bâtiment entier : environ 10 à 40 secondes sur le HospitalGarage. C'est un outil de mesure, pas un service avec disponibilité garantie. Un script avec plusieurs lignes Modeller ouvre le bâtiment une fois par ligne.
+**Limites à prévoir.** Chaque appel Modeller ouvre le bâtiment entier : environ 10 à 40 secondes sur le HospitalGarage. C'est un outil de mesure, pas un service avec disponibilité garantie. Un script avec plusieurs lignes Modeller ouvre le bâtiment une fois par ligne. **Ce que vous créez à `red1>` reste pour l'instant dans le journal des changements propre à red1 :** une commande créée à l'invite n'apparaît pas dans la fenêtre de l'ERP du navigateur, et une commande créée dans la fenêtre ne se voit pas à l'invite. Réunir les deux est la prochaine étape.
 
 
 ## Pour les développeurs

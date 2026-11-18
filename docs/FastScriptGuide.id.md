@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 7fd58a7ca9d6af6d
+source_sha: 24dfe73f0ea2cdfd
 lang: id
 ---
 
@@ -461,7 +461,7 @@ Sebuah jawaban mendaftar apa yang tidak tercakup oleh pemeriksaannya. Kata-kata 
 | `The Viewer tools need a bim-ootb checkout` | Jalankan sebagai `node common/door/door.js` dari checkout lengkap |
 | `exit 1` dengan pesan Chrome | Pustaka sistem Chrome tidak ada di Linux. Halaman pemecahan masalah Puppeteer mendaftarkannya |
 
-**Batas yang perlu direncanakan.** Setiap panggilan Modeller membuka seluruh bangunan: sekitar 10 sampai 40 detik pada HospitalGarage. Ini alat ukur, bukan layanan dengan jaminan uptime. Skrip dengan beberapa baris Modeller membuka bangunan satu kali per baris.
+**Batas yang perlu direncanakan.** Setiap panggilan Modeller membuka seluruh bangunan: sekitar 10 sampai 40 detik pada HospitalGarage. Ini alat ukur, bukan layanan dengan jaminan uptime. Skrip dengan beberapa baris Modeller membuka bangunan satu kali per baris. **Apa yang Anda buat di `red1>` untuk sementara tetap di log perubahan milik red1 sendiri:** order yang dibuat di prompt tidak tampil di jendela ERP peramban, dan order yang dibuat di jendela tidak terlihat di prompt. Menyatukan keduanya adalah langkah berikutnya.
 
 
 ## Untuk pengembang
