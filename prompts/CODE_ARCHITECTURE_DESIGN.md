@@ -31,7 +31,7 @@ One heavy job at a time on this machine, under `nice -n 19 ionice -c3`. Headless
 
 **1. NEXT, in order.**
 1. ✅ **B1 DONE 2026-11-18** (tenth session; #3245 deps tool, #3250 the switch; Part B "B1 PART 2 RESULT"). Next in Part B: **B2, ERP as a source app** — write its build spec first (ERP has numbers that disagree across sites, so its manifest keeps a site-level `v` until B4-HASH, B-1).
-2. **Spec then build F-25, the `x0` terminal command** (decision in the §F index decisions line; spec as a new §F.36 first).
+2. **Build F-25, the `x0` terminal command** (§F.36 BUILD SPEC, after the §F index decisions line).
 3. Fix W-X0-MCP's false FAIL on main (0 above; no decision).
 4. E's `witness_kit/paths.js` (no decision, §READY).
 5. **2026-11-30:** propose the F-2 cost ceilings (§F.3).
@@ -773,6 +773,21 @@ film 1 *"Past film is OK as it delivers the idea."* · film 2 *"This one again i
 (plain HTTP + version + commit by default, the headless check only as a separate button) · **F-2** *"agreed"* (observe until 2026-11-30, then
 ceilings = observed + margin; §F.3) · **F-7** *"agreed"* (no preview host; Run local is the preview) · F-20..F-22 as recommended (§F.31) ·
 F-23 (§F.33) · F-24 the Bump button (§F.34) · **F-25 (2026-11-18): an `x0` terminal command, its OWN help, NOT a fourth group beside `bim`/`mis`/`erp` in the `red1` help.** Asked: owner *"x0 terminal CLI sounds good, will it add to the Help besides bim/erp/mis with 'x0'?"*; advice: no, because the `red1` help (`common/door/words_core.js`) is loaded by `erp/idempiere.html`, `viewer/viewer.html`, `modeller/modeller.html` and their `sw.js` (measured 2026-11-18), so an `x0` group would ship dev tooling to every user (minimalism §13); x0 needs repo files a browser does not have; the `red1` help is the CLI and message lanes' (Student level, 6 languages). Instead: `x0 help` with the same layout, `x0 where|uses|tag|context|pure|bump`, the SAME lib as the X0 Navigator and the facts server (one implementation), in `devtools/`, loaded by no page, listed in Developer Guide §4.1. Owner: *"Agreed"*.
+
+
+**§F.36 BUILD SPEC — the `x0` terminal command (F-25; 2026-11-18, tenth session).** Owner F-25: an `x0` command with its OWN help, not a group in the `red1` help.
+- **One implementation:** `devtools/mcp/x0-facts/server.js` exports its `TOOLS` (each `{name, run}`) when required, and starts its stdin loop only when run as the server
+  (`require.main === module`); `devtools/x0/x0.js` maps verbs onto those tools and prints the same text the MCP `tools/call` returns. Verbs: `x0 where <field>` (where_is_field_set) ·
+  `uses <field>` (where_is_field_used) · `tag <§TAG>` (what_is_tag) · `loaded <file>` (how_is_file_loaded) · `cost <file>` (cost_if_deployed) · `last <§TAG>` (last_logged_value) ·
+  `context <file>` (context_for_file) · `check [base]` (ship_check) · `pure` (runs `erp/tests/witness_core_pure.js`, prints its verdict line) · `bump …` (runs `scripts/bump.js …`, args passed as given).
+  `x0 help` prints the `red1 help` layout: one header line, one row per verb (verb · what it answers · a typed example), one footer line; `x0 help <verb>` = that verb's tool description.
+  Unknown verb → the help on stderr, exit 1. `--root` / `--compiler-root` as the server takes them.
+- **Minimalism:** dev-side only, in `devtools/`, plain node, no npm, named by no page, loader or `sw.js`; read-only except `bump` (which is `bump.js` itself); no network module.
+- **Witness W-X0-CLI** (`devtools/x0/tests/witness_x0_cli.js`): (1) for every tool verb, `x0 <verb> <arg>` stdout = the text the facts server returns over stdio JSON-RPC for the same
+  tool and argument (the server is spawned, not required: the protocol path is the independent side); (2) `x0 help` lists every TOOLS entry (none missing, none extra) plus `pure` and `bump`;
+  (3) `pure` prints the W-CORE-PURE verdict line; (4) red controls: an unknown verb exits 1 with the help on stderr; a planted extra tool in a copy of the TOOLS list would show as "missing
+  from help" (the help is generated from TOOLS, so the check reads TOOLS from the spawned server's `tools/list`); (5) `x0.js` and its folder are named by no page / loader / `sw.js` and
+  require no network module. Verdict: `§X0_CLI verbs= same= help_rows= red= verdict=`. Listed in Developer Guide §4.1 after the build.
 
 ## ADVICE — from the session that built Part F, for the owner and the sessions that follow (2026-11-14)
 
