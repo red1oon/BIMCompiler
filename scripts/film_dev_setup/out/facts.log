@@ -1,0 +1,36 @@
+§FACTS work=/home/red1/.cache/film_dev_setup/work (copy of /home/red1/.cache/film_dev_setup/fs1/bim-ootb-main)
+§FACTS scratch {"files":4816,"mb":544,"lfs":0,"gaps":2,"verdict":"PASS","steps":"5/5","vsix":"x0-navigator-0.1.0.vsix","viewerText":"Ifc2x3_Duplex_Federated — 1,118/1,118 (100%)","viewerFail":11,"viewerHosts":"gc.zgo.at,objectstorage.ap-kulai-2.oraclecloud.com","erpFail":0,"erpErr":0,"modFail":0,"modErr":0}
+§PAGES app=modeller ready=true text="🇺🇸 history 0/0 DAGeVu · MODELLER ready — supported=true 🇺🇸 English (US) — ch" errors=0
+§PAGES app=erp ready=true text="Language English Français Español Deutsch العربية 中文 (简体) 日本語 Bahasa Melayu ไทย " errors=0
+§PAGES app=viewer ready=true text="DONE — Ifc2x3_Duplex_Federated 1,118 elements (30 instanced groups). 1 building(" errors=9
+§PAGES save name=Ifc2x3_Duplex_Federated.db bytes=14987264 §SAVE_EXPORT monolith (A.db holds geometry) | §SAVE_DONE mode=download name=Ifc2x3_Duplex_Federated.db bytes=14987264
+§PAGES offline url=viewer/viewer.html?db=buildings/Ifc2x3_Duplex_Federated.db text="Ifc2x3_Duplex_Federated — 1,118/1,118 (100%)" blocked={"gc.zgo.at":1} http_4xx=8 errors=0
+§PAGES VERDICT PASS
+§FACTS cmd b2_1 exit=0 lines=2 $ node devtools/vscode/pack.js
+§FACTS cmd b2_2 exit=0 lines=4 $ code --extensions-dir ../ext --user-data-dir ../user --install-extension devtools/vscode/dist/x0-navigator-0.1
+§FACTS ext listed=true
+§FACTS cmd b3_1 exit=0 lines=1 $ node devtools/x0/x0.js where camera
+§FACTS cmd b3_2 exit=0 lines=1 $ node devtools/x0/x0.js loaded viewer/scene.js
+§FACTS cmd b3_3 exit=0 lines=7 $ node devtools/x0/x0.js tag §MANIFEST_CHECK
+§FACTS zip gap {"espree":"node_modules/espree","git":"not a git repository","gitCmd":"git ls-files viewer/"}
+§FACTS cmd b4_1 exit=0 lines=2 $ npm install --no-audit --no-fund && git init -q && git add -A
+§FACTS cmd b4_2 exit=0 lines=0 $ sed -i 's/arc_editable.js?v=[0-9]*/arc_editable.js?v=99/' modeller/modeller.html
+§FACTS cmd b4_3 exit=0 lines=2 $ node scripts/gen_manifest.js --check modeller | grep -E "MANIFEST_(FAIL|CHECK)"
+§FACTS cmd b4_4 exit=0 lines=3 $ node scripts/bump.js modeller/arc_editable.js --write
+§FACTS cmd b4_5 exit=0 lines=1 $ node scripts/gen_manifest.js --check modeller | grep -E "MANIFEST_(FAIL|CHECK)"
+§FACTS restore after b4 tracked_changes=0
+§FACTS manifest {"redFile":"modeller/modeller.html","redLine":290,"redVerdict":"FAIL","redCommand":true,"greenIdentical":"55 identical=55/55","greenDeps":25,"greenOrder":"PASS","greenVerdict":"PASS","editedLineText":"<script src=\"arc_editable.js?v=9\" onerror=\"console.warn('§ARC LOAD_FAIL arc_editable.js')\"></script>"}
+§FACTS cmd b5_1 exit=0 lines=1 $ node scripts/gen_proof_map.js modeller | tail -1
+§FACTS cmd b5_2 exit=0 lines=0 $ sed -i '/^\/\/ PROVES:/a // PROVES: modeller/missing_file.js' modeller/tests/witness_clipboard.js
+§FACTS cmd b5_3 exit=0 lines=1 $ node scripts/gen_proof_map.js modeller | tail -1
+§FACTS restore after b5 tracked_changes=0
+§FACTS proof {"green":{"modules":100,"proven":13,"namedOnly":63,"unproven":24,"proves":20,"bad":0},"red":{"modules":100,"proven":13,"namedOnly":63,"unproven":24,"proves":21,"bad":1},"file":"modeller/tests/witness_clipboard.js","line":3}
+§FACTS cmd b6_1 exit=0 lines=1 $ git ls-files | grep -cE '(^|/)(witness_|poc_)[^/]*\.js$'
+§FACTS cmd b6_2 exit=0 lines=1 $ node -e "const t=require('./tests/ci_fast_tier.json');console.log(t.witnesses.length,'in the fast tier,',t.exc
+§FACTS cmd b6_3 exit=0 lines=1 $ node -e "const t=require('./tests/ci_fast_tier.json').exclude[1];console.log(t.file+' — '+t.reason.slice(0,100
+§FACTS ci {"witnessFiles":1543,"tier":40,"excluded":39,"reasonLine":46,"reasonFile":"modeller/tests/witness_dxf_bridge_long.js","reasonText":"modeller/tests/witness_dxf_bridge_long.js — probe 2026-11-18: FAIL exit=2 — MISSING input: a Node model .db (e.g. CLINIC2.db)"}
+§FACTS cmd b7_1 exit=0 lines=5 $ node devtools/x0/x0.js session --transcript $T
+§FACTS session {"line":"§X0_SESSION id=a155285d-5e94-4979-9116-5c2647db3f92 minutes=117 replies=26 tokens_in=56 cache_write=181037 cache_read=2339741 tokens_out=15542 prs=1 witnesses=1 load=- not_merged=0 dup_copies=22","minutes":117,"replies":26,"tokensOut":15542,"prs":1,"witnesses":1,"load":"-","notMerged":0}
+§FACTS x0 {"whereFile":"viewer/grid_views.js","whereLine":83,"writes":4,"reads":1247,"bytes":238950,"how":"start-up","tagSpec":true,"printers":3,"notSearched":true}
+§FACTS credentials {"licence":"MIT License","repo":"github.com/red1oon/bim-ootb","commit":"41b6b676d53ebe4e81126922d6a591a995f3354d","prs":{"3245":"MERGED feat(devtools): B1 dependency-candidate tool + W-DEPS-CAND","3250":"MERGED feat(modeller): B1 — module lists written from modeller/modules.json (deps declared, one v per module)","3256":"MERGED feat(witness_kit): paths.js resolver + W-PATHS (E0)","3259":"MERGED feat(devtools): x0 terminal command (F-25) + W-X0-CLI","3266":"MERGED feat(devtools): x0 session — token use + URL load change per Claude Code session (F-26)","3274":"MERGED ci: fast witness tier (48 witnesses, < 10 s each, no outside input)","3280":"MERGED test: W-FROM-SCRATCH — download and run from an empty folder (F-27)"}}
+§FACTS VERDICT PASS

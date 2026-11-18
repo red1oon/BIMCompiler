@@ -1,0 +1,6 @@
+§PAGES app=modeller ready=true text="🇺🇸 history 0/0 DAGeVu · MODELLER ready — supported=true 🇺🇸 English (US) — ch" errors=0
+§PAGES app=erp ready=true text="Language English Français Español Deutsch العربية 中文 (简体) 日本語 Bahasa Melayu ไทย " errors=0
+§PAGES app=viewer ready=true text="DONE — Ifc2x3_Duplex_Federated 1,118 elements (30 instanced groups). 1 building(" errors=9
+§PAGES save name=Ifc2x3_Duplex_Federated.db bytes=14987264 §SAVE_EXPORT monolith (A.db holds geometry) | §SAVE_DONE mode=download name=Ifc2x3_Duplex_Federated.db bytes=14987264
+§PAGES offline url=viewer/viewer.html?db=buildings/Ifc2x3_Duplex_Federated.db text="Ifc2x3_Duplex_Federated — 1,118/1,118 (100%)" blocked={"gc.zgo.at":1} http_4xx=8 errors=0
+§PAGES VERDICT PASS

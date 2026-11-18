@@ -1,0 +1,5 @@
+$ node devtools/vscode/pack.js
+§X0_PACK id=bim-devtools.x0-navigator version=0.1.0 files=17 bytes=57030 source=f4e1b0e5dd79 file=/home/red1/.cache/film_dev_setup/work/devtools/vscode/dist/x0-navigator-0.1.0.vsix
+install:  code --install-extension devtools/vscode/dist/x0-navigator-0.1.0.vsix      (or: Extensions view ▸ … ▸ Install from VSIX)
+
+§CMD_EXIT 0

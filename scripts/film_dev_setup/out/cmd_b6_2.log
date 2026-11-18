@@ -1,0 +1,4 @@
+$ node -e "const t=require('./tests/ci_fast_tier.json');console.log(t.witnesses.length,'in the fast tier,',t.exclude.length,'excluded')"
+40 in the fast tier, 39 excluded
+
+§CMD_EXIT 0

@@ -1,0 +1,32 @@
+// ⚠ DO NOT REMOVE — film 4 "CH 0 · From an empty folder to a witnessed dev setup" (prompts/FILM_IMMERSIVE_SOFTWARE.md FILM 4), ENGLISH ONLY: the beats, their narration (F asks, M answers, short: the picture explains)
+// and the facts each beat speaks. The figures in the words are built from out/facts.json (never typed here); each `says` entry is [fact key, the value, the words the voice uses] and guard.js resolves every key
+// INDEPENDENTLY from the raw logs (out/cmd_*.log, out/from_scratch.log, out/pages.log, out/shots.log) and FAILS the build if one is not as stated. READ out/guard.log.
+'use strict';
+const fs = require('fs'), path = require('path');
+let F = null; try { F = JSON.parse(fs.readFileSync(path.join(__dirname, 'out', 'facts.json'), 'utf8')); } catch (e) { /* guard fails when facts.json is missing */ }
+const ONES = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'], TENS = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+const W = n => { n = Math.round(n); if (n < 20) return ONES[n]; if (n < 100) return TENS[Math.floor(n / 10)] + (n % 10 ? '-' + ONES[n % 10] : ''); if (n < 1000) return ONES[Math.floor(n / 100)] + ' hundred' + (n % 100 ? ' ' + W(n % 100) : '');
+  return W(Math.floor(n / 1000)) + ' thousand' + (n % 1000 ? ' ' + W(n % 1000) : ''); };
+const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+const f = F || { scratch: {}, x0: {}, manifest: {}, proof: { green: {}, red: {} }, ci: {}, session: {} };
+const EN = [
+  { id: 'cover', hold: 4.2 },
+  { id: 'b1', text: 'F: Can a stranger run this from nothing? | M: Download the zip: ' + W(f.scratch.files) + ' files, ' + W(f.scratch.mb) + ' megabytes. Serve it. The ERP and the Modeller open with no failed request. The viewer opens the Duplex, but only after it fetches the building from the internet. We say so.',
+    says: [['scratch.files', String(f.scratch.files), W(f.scratch.files) + ' files'], ['scratch.mb', String(f.scratch.mb), W(f.scratch.mb) + ' megabytes'], ['scratch.erp_mod_failed', '0', 'no failed request'], ['scratch.viewer_online', 'Y', 'only after it fetches the building from the internet']] },
+  { id: 'b1b', text: 'F: And offline? | M: Save Building, Control S. The file lands here. Open it by name. The only host the page asks for is its visitor counter, and that is blocked. The building opens from the file.',
+    says: [['offline.saved', 'Y', 'Save Building, Control S'], ['offline.blocked_only_counter', 'Y', 'only host the page asks for is its visitor counter'], ['offline.opened', 'Y', 'The building opens from the file']] },
+  { id: 'b2', text: 'F: And the editor part? | M: One command packs the add-on. One installs it, into a throwaway folder, not your profile. Hover a shared field: where it is written, ' + W(f.x0.writes) + ' writes, ' + W(f.x0.reads) + ' reads.',
+    says: [['ext.installed', 'Y', 'installs it'], ['hover.writes', String(f.x0.writes), W(f.x0.writes) + ' writes'], ['hover.reads', String(f.x0.reads), W(f.x0.reads) + ' reads']] },
+  { id: 'b3', text: 'F: Without the editor? | M: The same facts, typed. Where the camera is written. How a file reaches a user: at start-up, ' + W(f.x0.bytes) + ' bytes. And a tag: it finds its printers, but its spec lives in a second repository this download does not have.',
+    says: [['x0.where_line', String(f.x0.whereLine), 'Where the camera is written'], ['x0.bytes', String(f.x0.bytes), W(f.x0.bytes) + ' bytes'], ['x0.how', 'start-up', 'at start-up'], ['x0.tag_no_spec', 'Y', 'its spec lives in a second repository']] },
+  { id: 'b4', text: 'F: What if I edit a version by hand? | M: The zip lacks two things: the lint package and a git index. Then the check refuses. It names the file and the line, and prints the command. The bump tool does it right. ' + cap(W(f.manifest.greenIdentical ? +/identical=(\d+)/.exec(f.manifest.greenIdentical)[1] : 0)) + ' files identical, ' + W(f.manifest.greenDeps) + ' dependencies declared.',
+    says: [['zip.needs_npm', 'Y', 'the lint package'], ['zip.needs_git', 'Y', 'a git index'], ['manifest.red', 'FAIL', 'the check refuses'], ['manifest.red_names_line', 'Y', 'names the file and the line'], ['manifest.identical', f.manifest.greenIdentical ? /identical=(\d+)/.exec(f.manifest.greenIdentical)[1] : '0', 'files identical'], ['manifest.deps', String(f.manifest.greenDeps), 'dependencies declared']] },
+  { id: 'b5', text: 'F: Which witness proves which file? | M: ' + cap(W(f.proof.green.modules)) + ' modules. ' + cap(W(f.proof.green.proven)) + ' have a witness that says it proves them. ' + cap(W(f.proof.green.namedOnly)) + ' are only named. ' + cap(W(f.proof.green.unproven)) + ' have none. Name a missing file in a proof header, and the bad paths go from zero to one.',
+    says: [['proof.modules', String(f.proof.green.modules), W(f.proof.green.modules) + ' modules'], ['proof.proven', String(f.proof.green.proven), W(f.proof.green.proven) + ' have a witness'], ['proof.named_only', String(f.proof.green.namedOnly), W(f.proof.green.namedOnly) + ' are only named'], ['proof.unproven', String(f.proof.green.unproven), W(f.proof.green.unproven) + ' have none'], ['proof.bad_before', '0', 'from zero'], ['proof.bad_after', '1', 'to one']] },
+  { id: 'b6', text: 'F: What does CI run? | M: Of ' + W(f.ci.witnessFiles) + ' witness files, ' + W(f.ci.tier) + ' run on every pull request. ' + cap(W(f.ci.excluded)) + ' more are kept out, each with its measured reason.',
+    says: [['ci.files', String(f.ci.witnessFiles), W(f.ci.witnessFiles) + ' witness files'], ['ci.tier', String(f.ci.tier), W(f.ci.tier) + ' run on every pull request'], ['ci.excluded', String(f.ci.excluded), W(f.ci.excluded) + ' more are kept out']] },
+  { id: 'b7', text: 'F: What did this session cost? | M: ' + cap(W(f.session.minutes)) + ' minutes, ' + W(f.session.tokensOut) + ' output tokens, ' + W(f.session.prs) + ' pull request shipped, and nothing added to what users load.',
+    says: [['session.minutes', String(f.session.minutes), W(f.session.minutes) + ' minutes'], ['session.tokens_out', String(f.session.tokensOut), W(f.session.tokensOut) + ' output tokens'], ['session.prs', String(f.session.prs), W(f.session.prs) + ' pull request'], ['session.load_nothing', 'Y', 'nothing added to what users load']] },
+  { id: 'close', hold: 22 }
+];
+exports.lang = 'en'; exports.beats = EN; exports.W = W;

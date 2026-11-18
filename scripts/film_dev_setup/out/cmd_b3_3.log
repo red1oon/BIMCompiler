@@ -1,0 +1,12 @@
+$ node devtools/x0/x0.js tag §MANIFEST_CHECK
+§MANIFEST_CHECK
+
+no spec found
+
+printed by:
+- `scripts/gen_buildings_manifest.js:121`
+- `scripts/gen_buildings_manifest.js:128`
+- `scripts/gen_manifest.js:248`
+(not searched: bim-compiler — checkout not found)
+
+§CMD_EXIT 0

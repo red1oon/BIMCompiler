@@ -1,0 +1,4 @@
+$ git ls-files | grep -cE '(^|/)(witness_|poc_)[^/]*\.js$'
+1543
+
+§CMD_EXIT 0

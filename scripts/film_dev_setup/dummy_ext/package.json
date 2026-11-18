@@ -1,0 +1,1 @@
+{ "name": "film-dummy", "publisher": "film", "version": "0.0.0", "engines": { "vscode": "*" }, "main": "./x.js", "activationEvents": [] }
