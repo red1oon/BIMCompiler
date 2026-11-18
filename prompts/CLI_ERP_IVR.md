@@ -4,6 +4,14 @@ Scope: **SPEC and built-step ledger** for the CLI front ends on the door: the MI
 
 ## ▶▶▶ RESUME HERE — 'resume CLI' (2026-11-18)
 
+**▶ LANE CLOSED FOR THE TRIAL VERSION 2026-11-18 (read FIRST).** The owner: *"Is our work with CLI good enough for users and so we can close this lane?"* → *"Tidy up the loose ends u pointed out as we should be rolling this good enough trial version."* Done today, each with its RESULT: §49 the page keeps the key a door record carries (bim-ootb #3269, W-ONE-FOLD 7/0); §50 the Fast Script Guide made readable (#3277, W-FAST-SCRIPT-GUIDE 121/0, W-DOCS-I18N 8/0, DEPLOYED and polled live en + zh); §51 the loose ends (#3278: W-IDLAW green again, help's first tab = windowTabs' rule, the guide says the two change logs are separate).
+**What stays open, outside this lane:**
+- **The one ledger** (§48 steps 2-3: the door signs its ops; one machine file for door and page). The one user-facing gap: an order made at `red1>` is not in the browser ERP window. To be its own lane when the owner says go; §48 is its study, §49 its first step.
+- **§43 `team.status` / `team.inbox`**: waits on the Teamwork lane's answer to TEAMWORK_FRAMEWORK §53.
+- Translations are the build session's (`review: machine`), not native-reviewed.
+A trial user's gap goes through `report` (§28); a reported gap reopens this lane at that item.
+
+
 **▶ FROM THE HELP LANE (2026-11-18, VOCAB_MESSAGE_CATALOG §19.9 / §19.10; open for this lane, not blocking):** `HelpSearch.indexFrom` (`erp/help_search.js`) now takes `processIds` (the role's menu processes and reports). With it the card gains `card.process` `{id, name, report}`, and from §19.10 the name is in the screen language. `erp.ask` (`common/door/erp_cli.js`) does not pass it yet, so the door's `ask` is windows-only while the page lists processes: a divergence between the two ends. To close it, pass the same set the page's `menu().processes` holds: active P/R menu leaves whose process the role can access (the SQL is in `common/help/tests/witness_hq_legacy_superset.js` `pids`). Then show the Process row at the prompt. Witness: W-ERP-ASK plus a red control that leaves `processIds` out. Also from §19.10: the ERP `i18n/help/<lang>/index.json` now holds its HEADER ONLY. Records come from `HelpRecords.build` (as `indexFrom` already does), so nothing in the door should read `index.json` `.records`. A grep found no reader.
 
 **▶ SESSION CLOSE 2026-11-18 (late, read FIRST):** **§41 BUILT + MERGED** (bim-ootb #3239, `e3295b00`):
@@ -462,6 +470,8 @@ One character means one thing in the shell, the help panel and the ERP box. `?` 
 3. **The door and the browser ERP keep separate change logs** (§43, §48). Not built here: that is §48 steps 2-3, to be its own lane. → the guide's "Limits to plan for" says it plainly, in all 7 languages, so a trial user is not surprised.
 4. **§43 `team.*`**: waits on the Teamwork lane's answer to TEAMWORK_FRAMEWORK §53; nothing to tidy on this side.
 5. **Translations by the build session, not by native speakers**: already marked on every page (`review: machine`); nothing to tidy.
+
+**RESULT (bim-ootb #3278; the pages in this PR):** (1) W-IDLAW 8/0, census `bare_key_tests=0` (FAIL on main before); W-RED1-RECORD 11/0 (R9 `do RE` / `do CO`). (2) W-HQ-BOX 7/0, W-HQ-PROC-NAMES 12/0, W-HQ-LEGACY-SUPERSET 7/0, W-HQ-COST 37/0, W-ERP-ASK 11/0. (3) the limits line in 7 languages; source_sha moved to the new English hash by hand (re-running `i18n_sync` writes the English over a reworded line); W-DOCS-I18N 8/0.
 
 ## 50. The Fast Script Guide made readable: stale lines fixed, duplicates merged (2026-11-18, owner: "Review that it be readable and consolidate, remove stale" -> "All 9"; spec before the code)
 **Measured on the live guide (`docs/FastScriptGuide.md`, 611 lines, origin/master):**
