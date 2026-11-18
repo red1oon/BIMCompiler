@@ -3635,7 +3635,7 @@
 <div class="highlight"><pre><span></span><code>$ (sleep 4; printf &#39;exit\r&#39;) | RED1_LOG=/tmp/fast_guide_greet.log RED1_HISTORY=/tmp/fast_guide_greet.hist BIM_DOOR_JOURNAL=/tmp/fast_guide_greet.journal script -qec &#39;node common/door/red1.js&#39; /dev/null | tr -d &#39;\r&#39; | sed -e &#39;s/\x1b\[[0-9;?]*[a-zA-Z]//g&#39; -e &#39;s/ · [0-9a-f]\{8\}$//&#39;
 Welcome to red1, the scripting door into BIM and ERP, stored in SQLite.
 REMEMBER THE NAME.
-Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 77 verbs · 30 words
+Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 78 verbs · 30 words
 Type help for the list of commands (or bim, mis, erp for one group).
 Tip: type level student for fuller help on each word (red1 --fast opens without tips).
 
@@ -3674,7 +3674,7 @@ red1: type a short word; red1 prints the full line it runs (→ …), then runs 
   bim   buildings and models             start with: cd Duplex   (16 words)
   mis   records, tables, files, Ninja    start with: cd Order   (11 words)
   erp   document actions (CO VO CL RC)   start with: cd Order   (8 words)
-  everywhere: cd &lt;place&gt; · pwd · role &lt;id&gt; · login &lt;user&gt; · history [N] · report · exit
+  everywhere: cd &lt;place&gt; · #&lt;number&gt; · pwd · role &lt;id&gt; · login &lt;user&gt; · history [N] · report · exit
 Type bim, mis or erp for its words · help &lt;word&gt; for one word (level student first for the full explanation) · help verbs for the full door lines.
 </code></pre></div>
 <p>Un grupo lista sus palabras, cada una con un ejemplo que puede escribir. <code>erp</code> es el más corto:</p>
@@ -3737,7 +3737,7 @@ node<span class="w"> </span>common/door/red1.js
 <p>Escriba <code>exit</code> para salir. Para escribir solo <code>red1</code> desde cualquier sitio, ejecute <code>npm link</code> una vez en esa carpeta. Para comprobar que funciona, pida su línea de versión:</p>
 <!-- run: red1_version -->
 <div class="highlight"><pre><span></span><code>$ node common/door/red1.js --version | sed -e &#39;s/^Copyright[^·]*· //&#39; -e &#39;s/ · [0-9a-f]\{8\}$//&#39;
-red1 1.0.0 · 77 verbs · 30 words
+red1 1.0.0 · 78 verbs · 30 words
 </code></pre></div>
 <p><strong>La descarga de seis archivos</strong> es para la puerta sola con los verbos del Modeller, sin copia completa. Cree una carpeta vacía, instale el motor de navegador que necesita el Modeller y descargue los seis archivos:</p>
 <div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>fastscript<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>fastscript
@@ -3965,6 +3965,18 @@ ok · erp.complete
 Complete: done · Order 80000 IP → CO (Completed) · grand total 50.35
   related: Invoice 3 (RE 2, CO 1) · Shipment/Receipt 3 (RE 2, CO 1)
 59 change(s) kept · it may do: CL, VO, RE
+</code></pre></div>
+<p><strong><code>#</code> encuentra un documento por su número.</strong> <code>#80000</code> es la búsqueda de documentos de iDempiere (su cuadro de búsqueda global usa <code>/80000</code>; aquí <code>/</code> es la ruta, así que es <code>#</code>). Funciona desde cualquier lugar. El número se compara como prefijo, en el cliente de su inicio de sesión y solo en las ventanas que su rol puede abrir. Si se encuentra un documento, se abre. Si se encuentran varios, cada uno aparece bajo su ventana con la línea que lo abre, así una orden de venta y una de compra nunca se confunden. Un código delante elige otra búsqueda: <code>#O 80000</code> órdenes, <code>#BP Joe</code> socios de negocio. <code>@</code> está reservado. En bash, ponga la línea entre comillas: allí <code>#</code> empieza un comentario.</p>
+<!-- run: red1_hash -->
+<div class="highlight"><pre><span></span><code>$ rm -f /tmp/fast_guide_hash.ops; BIM_OBJECT_OPLOG=/tmp/fast_guide_hash.ops node common/door/red1.js &#39;#80000&#39; 2&gt;&amp;1 | grep -v &#39;^§&#39;
+→ erp.search text=80000
+#80000: 4 documents in 2 window(s); none is opened, enter one with its line:
+  Sales Order window (Order, Order Search):
+    Order 80000  →  cd Order 100
+  Purchase Order window (Order, Order Search):
+    Order 800000  →  cd Order 104
+    Order 800001  →  cd Order 105
+    Order 800002  →  cd Order 106
 </code></pre></div>
 <p><strong>Informar de una laguna.</strong> Algunas respuestas dicen que a red1 le falta algo, en lugar de que usted se haya equivocado al escribir. El motor las marca, y en una sesión red1 imprime una línea tras la respuesta. Un error de tecleo o un rechazo heredado no es una laguna y no imprime nada extra. <code>report</code> muestra entonces un borrador (la línea, el motivo, la versión de red1, la plataforma, las últimas líneas del registro, sus rutas enmascaradas) y ofrece una incidencia de GitHub o un correo; red1 no envía nada por sí mismo, lo hace su propio navegador o programa de correo:</p>
 <!-- run: red1_gap -->
@@ -4479,6 +4491,14 @@ object.count building=Duplex kind=Element -&gt; 1193 Element
 <td>una copia completa de bim-ootb</td>
 </tr>
 <tr>
+<td><code>erp.search</code></td>
+<td>Buscar documentos por número</td>
+<td><code>text</code>, <code>role</code> (opcional)</td>
+<td>read</td>
+<td>human, ai</td>
+<td>una copia completa de bim-ootb</td>
+</tr>
+<tr>
 <td><code>erp.actions</code></td>
 <td>Qué se puede hacer con un documento</td>
 <td><code>kind</code>, <code>id</code> (opcional), <code>number</code> (opcional), <code>role</code> (opcional)</td>
@@ -4746,7 +4766,7 @@ object.count building=Duplex kind=Element -&gt; 1193 Element
 </table>
 <!-- /GEN:verbs -->
 
-<p><strong>Cobertura actual.</strong> La lista es pequeña a propósito: 67 verbos cubren las ediciones de rejilla del Modeller, su walker y un Modeller mantenido abierto entre líneas, unas pocas preguntas del Viewer, el calendario, la lectura, el recuento y la escritura genéricos de objetos, el coste de una selección, los verbos de documentos ERP y cualquier proceso del diccionario ERP que tenga un port. El Viewer tiene 64 acciones que una persona puede pulsar, y la puerta ofrece 6 verbos del Viewer. El ERP tiene 1158 documentos y procesos, y la puerta ofrece 12 verbos ERP para la vida de un documento y 15 verbos MIS que funcionan en cualquier tabla, y conserva 10 nombres antiguos para que las líneas anteriores sigan funcionando. Así que esto es un comienzo, no el menú completo.</p>
+<p><strong>Cobertura actual.</strong> La lista es pequeña a propósito: 68 verbos cubren las ediciones de rejilla del Modeller, su walker y un Modeller mantenido abierto entre líneas, unas pocas preguntas del Viewer, el calendario, la lectura, el recuento y la escritura genéricos de objetos, el coste de una selección, los verbos de documentos ERP y cualquier proceso del diccionario ERP que tenga un port. El Viewer tiene 64 acciones que una persona puede pulsar, y la puerta ofrece 6 verbos del Viewer. El ERP tiene 1158 documentos y procesos, y la puerta ofrece 13 verbos ERP para la vida de un documento y 15 verbos MIS que funcionan en cualquier tabla, y conserva 10 nombres antiguos para que las líneas anteriores sigan funcionando. Así que esto es un comienzo, no el menú completo.</p>
 <h2 id="como-se-mantiene-fiel-esta-pagina">Cómo se mantiene fiel esta página<a class="headerlink" href="#como-se-mantiene-fiel-esta-pagina" title="Permanent link">&para;</a></h2>
 <p>Cada comando de un bloque gris de esta página y de la <a href="../FastScriptReference/">referencia</a> se ejecutó, y la salida debajo es lo que imprimió el comando. Una prueba, <strong>W-FAST-SCRIPT-GUIDE</strong> en el repositorio <code>bim-ootb</code>, los ejecuta de nuevo desde la descarga y la copia completa, comprueba cada número de esta página contra las ejecuciones y comprueba que la tabla de verbos es igual a <code>verbs.json</code>. Si un número de aquí caduca, esa prueba falla.</p>
 <p>Relacionado: la <a href="../ProposerGuide/">Guía del proponente de IA</a> (conecte una IA a la misma puerta, y qué hizo una IA con las verificaciones), y la <a href="../ModellerGuide/">guía del Modeller</a>.</p>
