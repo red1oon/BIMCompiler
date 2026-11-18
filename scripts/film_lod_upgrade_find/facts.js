@@ -69,15 +69,16 @@ TERMS.forEach((t) => L('find term="' + t + '" total=' + R[t].total + ' by_kind='
 const exp = { 'layer': ['GEN-LY-', F.counts.layer], 'Fin plate': ['GEN-CR-', 50], 'reinforcing': ['GEN-RB-', F.counts.rebar], 'gusset': ['GEN-GU-', 2] };
 TERMS.forEach((t) => { const got = R[t].by_kind[exp[t][0]] || 0; const ok = got === exp[t][1] && R[t].total === exp[t][1]; if (!ok) { bad++; L('FAIL term=' + t + ' kind ' + exp[t][0] + '=' + got + ' total=' + R[t].total + ' expected=' + exp[t][1]); } });
 // the guide link (house style: always a guide link, checked): HTTP 200 + anchor id present + whether the page describes the film's content at all
-const GUIDE = 'https://red1oon.github.io/BIMCompiler/BIMUserGuide/', ANCH = 'find-panel-search-voice-query-and-axis-lenses';
+const GUIDE = 'https://red1oon.github.io/BIMCompiler/ModellerGuide/', ANCH = 'upgrade-add-rule-based-detail-lod-400';   // rc4 S6: the Modeller guide's Upgrade section (the film's subject)
 let page = '', http = 0;
 try { page = execFileSync('curl', ['-sS', '-L', '--max-time', '60', '-w', '\n%{http_code}', GUIDE], { encoding: 'utf8', maxBuffer: 1 << 26 }); http = +page.slice(page.lastIndexOf('\n') + 1); page = page.slice(0, page.lastIndexOf('\n')); } catch (e) { L('guide fetch failed ' + String(e).slice(0, 120)); }
 const plain = page.replace(/<[^>]+>/g, ' '), cover = {};
 ['fin plate', 'gusset', 'rebar', 'reinforc', 'element_parts', 'parts view', 'rule-based', 'LOD400 Upgrade'].forEach((k) => { cover[k] = (plain.toLowerCase().split(k.toLowerCase()).length - 1); });
 const lodSec = /LOD400 Upgrade[\s\S]{0,700}/.exec(plain);
 F.guide = { url: GUIDE, http, anchor_find_panel: page.indexOf('id="' + ANCH + '"') >= 0, mentions: cover, lod_section_text: lodSec ? lodSec[0].replace(/\s+/g, ' ').slice(0, 330) : null,
-  covers_the_added_work: (cover['fin plate'] + cover['gusset'] + cover['rebar'] + cover['reinforc'] + cover['element_parts'] + cover['rule-based']) > 0 };
-L('§FILM_GUIDE url=' + GUIDE + ' http=' + http + ' anchor=' + (F.guide.anchor_find_panel ? 'Y' : 'N') + ' (the Find panel section only) mentions=' + JSON.stringify(cover) + ' covers_the_added_work=' + (F.guide.covers_the_added_work ? 'Y' : 'N'));
+  covers_the_added_work: page.indexOf('id="' + ANCH + '"') >= 0 && ['Add-on IFC', 'Steel joints', 'Bracing gussets', 'Beam rebar (schedule)', 'Load schedule', 'Layers'].every((k) => plain.indexOf(k) >= 0) };
+F.guide.link = GUIDE + '#' + ANCH;
+L('§FILM_GUIDE url=' + GUIDE + ' http=' + http + ' anchor=' + (F.guide.anchor_find_panel ? 'Y' : 'N') + ' (the Upgrade section) mentions=' + JSON.stringify(cover) + ' covers_the_added_work=' + (F.guide.covers_the_added_work ? 'Y' : 'N'));
 F.guide.covers_the_added_work_word = F.guide.covers_the_added_work ? 'yes' : 'no';
 // the capture JSON (when present): the numbers the narration speaks that only the browser knows
 const WORK = process.argv[2] && path.resolve(process.argv[2]);
