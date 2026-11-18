@@ -44,7 +44,7 @@ session's own PR. If it hits other sessions, move the refresh into `bump.js` (th
 
 **1. NEXT, in order.**
 1. ✅ **E1 DONE** (#3272). More `PROVES:` lines are added as witnesses are touched.
-2. **CI tier** (Part E, CI-TIER BUILD SPEC) — needs step 1's cache.
+2. ✅ **CI tier** (#3274; 61 of 1,512 in CI). ✅ **From scratch** (§F.38, #3280, guide §3 live).
 3. **B2 spec** (ERP as a source app; ERP's site numbers disagree, so a site-level `v` until B4-HASH).
 4. **D spec** (owner table: `<app>/questions.json`, `"extends"` marks, W-OWNER-UNIQUE).
 5. **2026-11-30:** propose the F-2 cost ceilings (§F.3). The F-1 headless Fetch-back button is still unbuilt.
@@ -878,6 +878,17 @@ S2 the download = exactly what GitHub "Download ZIP" gives (`git archive origin/
 (Guide §3 step 3) · S4 open `viewer/viewer.html`, `erp/idempiere.html`, `modeller/modeller.html` headless: HTTP failures, console errors, outside hosts contacted, and what a newcomer sees with no
 building · S5 X0: `node devtools/vscode/pack.js` in the download, install into a throwaway `--extensions-dir` (never the owner's profile) · every failure is a GAP line (`§FROM_SCRATCH_GAP step= what=`),
 never hidden. Verdict PASS only when every step ran; the gaps are the guide's to-do list. Then Developer Guide §3 becomes "Start from scratch", written from that run.
+
+
+**§F.38 RESULT — ✅ 2026-11-18 (bim-ootb #3280; Developer Guide §3 rewritten "Start from scratch", live, fetched back).** `§FROM_SCRATCH steps_ran=5/5 gaps=2 verdict=PASS`:
+download 4,798 files / 541 MB / 0 LFS pointers · ERP and Modeller: 0 failed requests, 0 console errors, no outside host · viewer: opens the Duplex (`1,118/1,118`) only after its local
+`viewer/buildings/Duplex_*.db` 404 (not shipped) and it loads them from OCI — **first viewer run needs the internet** (the guide says so) · the viewer also loads GoatCounter (`gc.zgo.at`;
+guide: `?ignore-me`) · X0 packs and installs from the download into a throwaway `--extensions-dir`. **Rollout readiness (owner's question):** the from-scratch path is now proven and written;
+open before announcing: the owner's own read-through (`~/VSCcheatsheet.txt`) and, if wanted, a decision on an offline sample building in the repo (today none: the viewer needs one download).
+
+**CI-TIER RESULT — ✅ 2026-11-18 (bim-ootb #3274 → `ac718b1b`).** `tests/ci_fast_tier.json` = 40 modeller witnesses (local < 10 s, PASS, no outside input), 39 excluded with measured reasons
+(probe without outside inputs: 31; first runner pass: 8 — marked shed sheets under ~/Videos, ~/bim-compiler/node_modules, a bim-compiler page, e2e_harness = a browser). CI now runs 61 of 1,512
+witness files (was 21). Grow it: run a runner (`modeller/tests/run_all_witnesses.js`, `npm test`) so the cache fills, then `node scripts/gen_ci_tier.js --write --probe`.
 
 ## ADVICE — from the session that built Part F, for the owner and the sessions that follow (2026-11-14)
 
