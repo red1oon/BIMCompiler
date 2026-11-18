@@ -43,7 +43,7 @@ W-X0-SESSION 8/8) + the SessionEnd hook in `~/.claude/settings.json` (stderr + e
 session's own PR. If it hits other sessions, move the refresh into `bump.js` (the spec's stated fallback) — tell the owner first.
 
 **1. NEXT, in order** (session closed 2026-11-18 by the owner: *"close, will resume VSC in future"*).
-0. **FIRST on resume: write the FILM 4 script** — "From an empty folder to a witnessed dev setup" (owner: *"update prompt on that film script when resume"*): beats, house style and rules in `prompts/FILM_IMMERSIVE_SOFTWARE.md` # FILM 4. Script first; building/capture needs the owner's go.
+0. **FILM 4 script ✅ WRITTEN 2026-11-18 (eleventh session)** in `prompts/FILM_IMMERSIVE_SOFTWARE.md` # FILM 4 (seven beats + offline, typed lines, narration, number sources, build plan). NOT built: the owner's go is needed (headless browser + real VS Code), plus three open questions listed at the end of that section (`x0` alias vs full `node devtools/x0/x0.js`; the go; which beats to cut).
 1. **B2 spec** (ERP as a source app; ERP's site numbers disagree, so a site-level `v` until B4-HASH).
 2. **D spec** (owner table: `<app>/questions.json`, `"extends"` marks, W-OWNER-UNIQUE).
 3. Grow the CI fast tier when a runner has filled the cache (`node scripts/gen_ci_tier.js --write --probe`); add `PROVES:` lines as witnesses are touched.
