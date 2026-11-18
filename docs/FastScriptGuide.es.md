@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 7fd58a7ca9d6af6d
+source_sha: 24dfe73f0ea2cdfd
 lang: es-419
 ---
 
@@ -461,7 +461,7 @@ Una respuesta lista lo que su comprobación no cubrió. Las mismas palabras vale
 | `The Viewer tools need a bim-ootb checkout` | Ejecútelo como `node common/door/door.js` desde una copia completa |
 | `exit 1` con un mensaje de Chrome | Faltan las bibliotecas del sistema de Chrome en Linux. La página de solución de problemas de Puppeteer las lista |
 
-**Límites a tener en cuenta.** Cada llamada al Modeller abre el edificio completo: unos 10 a 40 segundos en HospitalGarage. Esta es una herramienta de medición, no un servicio con disponibilidad garantizada. Un script con varias líneas del Modeller abre el edificio una vez por línea.
+**Límites a tener en cuenta.** Cada llamada al Modeller abre el edificio completo: unos 10 a 40 segundos en HospitalGarage. Esta es una herramienta de medición, no un servicio con disponibilidad garantizada. Un script con varias líneas del Modeller abre el edificio una vez por línea. **Lo que crea en `red1>` se queda por ahora en el registro de cambios propio de red1:** un pedido creado en el indicador no aparece en la ventana del ERP del navegador, y uno creado en la ventana no se ve en el indicador. Unir los dos es el siguiente paso.
 
 
 ## Para desarrolladores
