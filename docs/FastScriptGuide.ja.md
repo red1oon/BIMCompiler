@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 2f7cdfa52f77c8e0
+source_sha: 31152ab2c5944f96
 lang: ja
 ---
 
@@ -22,7 +22,7 @@ SQL のステロイド版だと考えてください。一行でレコードを�
 $ (sleep 4; printf 'exit\r') | RED1_LOG=/tmp/fast_guide_greet.log RED1_HISTORY=/tmp/fast_guide_greet.hist BIM_DOOR_JOURNAL=/tmp/fast_guide_greet.journal script -qec 'node common/door/red1.js' /dev/null | tr -d '\r' | sed -e 's/\x1b\[[0-9;?]*[a-zA-Z]//g' -e 's/ · [0-9a-f]\{8\}$//'
 Welcome to red1, the scripting door into BIM and ERP, stored in SQLite.
 REMEMBER THE NAME.
-Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 77 verbs · 30 words
+Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 78 verbs · 30 words
 Type help for the list of commands (or bim, mis, erp for one group).
 Tip: type level student for fuller help on each word (red1 --fast opens without tips).
 
@@ -44,7 +44,7 @@ red1: type a short word; red1 prints the full line it runs (→ …), then runs 
   bim   buildings and models             start with: cd Duplex   (16 words)
   mis   records, tables, files, Ninja    start with: cd Order   (11 words)
   erp   document actions (CO VO CL RC)   start with: cd Order   (8 words)
-  everywhere: cd <place> · pwd · role <id> · login <user> · history [N] · report · exit
+  everywhere: cd <place> · #<number> · pwd · role <id> · login <user> · history [N] · report · exit
 Type bim, mis or erp for its words · help <word> for one word (level student first for the full explanation) · help verbs for the full door lines.
 ```
 
@@ -130,7 +130,7 @@ node common/door/red1.js
 <!-- run: red1_version -->
 ```text
 $ node common/door/red1.js --version | sed -e 's/^Copyright[^·]*· //' -e 's/ · [0-9a-f]\{8\}$//'
-red1 1.0.0 · 77 verbs · 30 words
+red1 1.0.0 · 78 verbs · 30 words
 ```
 
 **六ファイルのダウンロード**は、チェックアウトなしで、ドアと Modeller 動詞だけを使う場合のものです。空のフォルダーを作り、Modeller が必要とするブラウザーエンジンをインストールして、六つのファイルを取得します：
@@ -403,6 +403,21 @@ Complete: done · Order 80000 IP → CO (Completed) · grand total 50.35
 59 change(s) kept · it may do: CL, VO, RE
 ```
 
+**`#` は番号で伝票を探します。** `#80000` は iDempiere の伝票検索です（そのグローバル検索ボックスでは `/80000` と入力します。ここでは `/` がパスなので `#` を使います）。どの場所からでも使えます。番号は前方一致で、ログインしたクライアントの中だけ、ロールが開けるウィンドウの中だけを探します。伝票が一件だけ見つかればそれを開きます。複数見つかったときは、それぞれをそのウィンドウの下に、開くための行と一緒に並べるので、受注と発注を取り違えることはありません。前にコードを付けると別の検索になります：`#O 80000` は受発注、`#BP Joe` は取引先。`@` は予約済みです。bash ではこの行を引用符で囲んでください。そこでは `#` がコメントの始まりです。
+
+<!-- run: red1_hash -->
+```text
+$ rm -f /tmp/fast_guide_hash.ops; BIM_OBJECT_OPLOG=/tmp/fast_guide_hash.ops node common/door/red1.js '#80000' 2>&1 | grep -v '^§'
+→ erp.search text=80000
+#80000: 4 documents in 2 window(s); none is opened, enter one with its line:
+  Sales Order window (Order, Order Search):
+    Order 80000  →  cd Order 100
+  Purchase Order window (Order, Order Search):
+    Order 800000  →  cd Order 104
+    Order 800001  →  cd Order 105
+    Order 800002  →  cd Order 106
+```
+
 **不足を報告する。** 答えの中には、あなたの打ち間違いではなく、red1 に何かが足りないと告げるものがあります。エンジンがそれに印を付け、セッションでは red1 が答えのあとに一行表示します。打ち間違いや従来の拒否は不足ではなく、余計な表示はありません。`report` はそのあと下書き（行、理由、red1 のバージョン、プラットフォーム、最後のログ行、パスは伏せ字）を示し、GitHub の issue かメールを提案します。red1 自身は何も送らず、送るのはあなたのブラウザーまたはメールソフトです：
 
 <!-- run: red1_gap -->
@@ -556,6 +571,7 @@ object.count building=Duplex kind=Element -> 1193 Element
 | `mis.lookup` | 列またはプロセスのパラメータに使える値 | `column`, `kind` （任意）, `process` （任意）, `id` （任意）, `limit` （任意）, `role` （任意）, その他の`column=value`フィルタ（任意） | read | human, ai | bim-ootb のチェックアウト |
 | `viewer.cost` | 建物の中で選んだ部分のコスト | `building`, `by` （任意）, その他の`column=value`フィルタ（任意） | read | human, ai | bim-ootb のチェックアウト |
 | `erp.find` | 伝票を探す | `kind`, `number` | read | human, ai | bim-ootb のチェックアウト |
+| `erp.search` | 番号で伝票を検索する | `text`, `role` （任意） | read | human, ai | bim-ootb のチェックアウト |
 | `erp.actions` | 伝票に対してできること | `kind`, `id` （任意）, `number` （任意）, `role` （任意） | read | human, ai | bim-ootb のチェックアウト |
 | `erp.complete` | 伝票を完了する | `kind`, `id` （任意）, `number` （任意）, `role` （任意） | posts | human, ai | bim-ootb のチェックアウト |
 | `erp.void` | 伝票を無効にする | `kind`, `id` （任意）, `number` （任意）, `role` （任意） | writes | human, ai | bim-ootb のチェックアウト |
@@ -591,7 +607,7 @@ object.count building=Duplex kind=Element -> 1193 Element
 | `erp.new` | レコードを作る（mis.new の古い名前） | `kind`, `dry` （任意）, `role` （任意）, `window` （任意）, その他の`column=value`フィルタ（任意） | writes | human, ai | bim-ootb のチェックアウト |
 <!-- /GEN:verbs -->
 
-**現在のカバー範囲。** 一覧は意図的に小さくしてあります。67個の動詞が、Modeller のグリッド編集、そのウォーカー、行の間も開いたままの Modeller、いくつかの Viewer の質問、工程、汎用のオブジェクトの読み取り・カウント・書き込み、選択のコスト、ERP の伝票動詞、そしてポートのある ERP 辞書のあらゆるプロセスをカバーしています。Viewer には人が押せるアクションが64個あり、ドアは6個の Viewer 動詞を提供します。ERP には1158個の伝票とプロセスがあり、ドアは伝票の一生のための12個の ERP 動詞と、どのテーブルにも使える15個の MIS 動詞を提供し、以前の行が動き続けるよう10個の旧名を残しています。つまりこれは出発点であって、メニューのすべてではありません。
+**現在のカバー範囲。** 一覧は意図的に小さくしてあります。68個の動詞が、Modeller のグリッド編集、そのウォーカー、行の間も開いたままの Modeller、いくつかの Viewer の質問、工程、汎用のオブジェクトの読み取り・カウント・書き込み、選択のコスト、ERP の伝票動詞、そしてポートのある ERP 辞書のあらゆるプロセスをカバーしています。Viewer には人が押せるアクションが64個あり、ドアは6個の Viewer 動詞を提供します。ERP には1158個の伝票とプロセスがあり、ドアは伝票の一生のための13個の ERP 動詞と、どのテーブルにも使える15個の MIS 動詞を提供し、以前の行が動き続けるよう10個の旧名を残しています。つまりこれは出発点であって、メニューのすべてではありません。
 
 
 ## このページが正しさを保つ仕組み

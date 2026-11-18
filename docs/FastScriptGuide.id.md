@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 2f7cdfa52f77c8e0
+source_sha: 31152ab2c5944f96
 lang: id
 ---
 
@@ -22,7 +22,7 @@ Di terminal, `red1` menyapa Anda sekali, lalu menunggu di promptnya. Inilah pers
 $ (sleep 4; printf 'exit\r') | RED1_LOG=/tmp/fast_guide_greet.log RED1_HISTORY=/tmp/fast_guide_greet.hist BIM_DOOR_JOURNAL=/tmp/fast_guide_greet.journal script -qec 'node common/door/red1.js' /dev/null | tr -d '\r' | sed -e 's/\x1b\[[0-9;?]*[a-zA-Z]//g' -e 's/ · [0-9a-f]\{8\}$//'
 Welcome to red1, the scripting door into BIM and ERP, stored in SQLite.
 REMEMBER THE NAME.
-Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 77 verbs · 30 words
+Copyright (c) 2026 Redhuan D. OON · red1 1.0.0 · 78 verbs · 30 words
 Type help for the list of commands (or bim, mis, erp for one group).
 Tip: type level student for fuller help on each word (red1 --fast opens without tips).
 
@@ -44,7 +44,7 @@ red1: type a short word; red1 prints the full line it runs (→ …), then runs 
   bim   buildings and models             start with: cd Duplex   (16 words)
   mis   records, tables, files, Ninja    start with: cd Order   (11 words)
   erp   document actions (CO VO CL RC)   start with: cd Order   (8 words)
-  everywhere: cd <place> · pwd · role <id> · login <user> · history [N] · report · exit
+  everywhere: cd <place> · #<number> · pwd · role <id> · login <user> · history [N] · report · exit
 Type bim, mis or erp for its words · help <word> for one word (level student first for the full explanation) · help verbs for the full door lines.
 ```
 
@@ -130,7 +130,7 @@ Ketik `exit` untuk keluar. Agar cukup mengetik `red1` dari mana saja, jalankan `
 <!-- run: red1_version -->
 ```text
 $ node common/door/red1.js --version | sed -e 's/^Copyright[^·]*· //' -e 's/ · [0-9a-f]\{8\}$//'
-red1 1.0.0 · 77 verbs · 30 words
+red1 1.0.0 · 78 verbs · 30 words
 ```
 
 **Unduhan enam berkas** untuk pintu saja dengan kata kerja Modeller, tanpa checkout. Buat folder kosong, pasang mesin peramban yang dibutuhkan Modeller, lalu ambil enam berkas:
@@ -403,6 +403,21 @@ Complete: done · Order 80000 IP → CO (Completed) · grand total 50.35
 59 change(s) kept · it may do: CL, VO, RE
 ```
 
+**`#` menemukan dokumen dari nomornya.** `#80000` adalah Pencarian Dokumen iDempiere (kotak Pencarian Globalnya memakai `/80000`; di sini `/` adalah jalur, jadi dipakai `#`). Ini bekerja dari tempat mana pun. Nomor dicocokkan sebagai awalan, di klien login Anda, dan hanya di jendela yang boleh dibuka peran Anda. Satu dokumen yang ditemukan langsung dibuka. Bila ditemukan beberapa, masing-masing didaftar di bawah jendelanya dengan baris yang membukanya, sehingga order penjualan dan order pembelian tidak pernah tertukar. Kode di depan memilih pencarian lain: `#O 80000` order, `#BP Joe` mitra bisnis. `@` dicadangkan. Di bash, beri tanda kutip pada baris itu: di sana `#` memulai komentar.
+
+<!-- run: red1_hash -->
+```text
+$ rm -f /tmp/fast_guide_hash.ops; BIM_OBJECT_OPLOG=/tmp/fast_guide_hash.ops node common/door/red1.js '#80000' 2>&1 | grep -v '^§'
+→ erp.search text=80000
+#80000: 4 documents in 2 window(s); none is opened, enter one with its line:
+  Sales Order window (Order, Order Search):
+    Order 80000  →  cd Order 100
+  Purchase Order window (Order, Order Search):
+    Order 800000  →  cd Order 104
+    Order 800001  →  cd Order 105
+    Order 800002  →  cd Order 106
+```
+
 **Melaporkan celah.** Beberapa jawaban menyatakan bahwa red1 kekurangan sesuatu, bukan Anda yang salah ketik. Mesin menandainya, dan dalam sesi red1 mencetak satu baris setelah jawaban. Salah ketik atau penolakan lama bukan celah dan tidak mencetak tambahan. `report` lalu menampilkan draf (barisnya, alasannya, versi red1, platform, baris log terakhir, jalur Anda disamarkan) dan menawarkan isu GitHub atau email; red1 tidak mengirim apa pun sendiri, peramban atau program surel Anda yang mengirim:
 
 <!-- run: red1_gap -->
@@ -556,6 +571,7 @@ Tabel ini **dihasilkan dari berkas kosakata** (`common/door/verbs.json`) dan seb
 | `mis.lookup` | Nilai yang sah untuk sebuah kolom atau parameter proses | `column`, `kind` (opsional), `process` (opsional), `id` (opsional), `limit` (opsional), `role` (opsional), filter `column=value` lainnya (opsional) | read | human, ai | checkout bim-ootb |
 | `viewer.cost` | Biaya dari sebuah pilihan pada satu bangunan | `building`, `by` (opsional), filter `column=value` lainnya (opsional) | read | human, ai | checkout bim-ootb |
 | `erp.find` | Mencari sebuah dokumen | `kind`, `number` | read | human, ai | checkout bim-ootb |
+| `erp.search` | Mencari dokumen dari nomornya | `text`, `role` (opsional) | read | human, ai | checkout bim-ootb |
 | `erp.actions` | Apa yang dapat dilakukan pada sebuah dokumen | `kind`, `id` (opsional), `number` (opsional), `role` (opsional) | read | human, ai | checkout bim-ootb |
 | `erp.complete` | Menyelesaikan sebuah dokumen | `kind`, `id` (opsional), `number` (opsional), `role` (opsional) | posts | human, ai | checkout bim-ootb |
 | `erp.void` | Membatalkan (void) sebuah dokumen | `kind`, `id` (opsional), `number` (opsional), `role` (opsional) | writes | human, ai | checkout bim-ootb |
@@ -591,7 +607,7 @@ Tabel ini **dihasilkan dari berkas kosakata** (`common/door/verbs.json`) dan seb
 | `erp.new` | Membuat sebuah rekaman (nama lama dari mis.new) | `kind`, `dry` (opsional), `role` (opsional), `window` (opsional), filter `column=value` lainnya (opsional) | writes | human, ai | checkout bim-ootb |
 <!-- /GEN:verbs -->
 
-**Cakupan saat ini.** Daftarnya sengaja kecil: 67 kata kerja mencakup pengeditan grid Modeller, walker-nya, dan Modeller yang dibiarkan terbuka di antara baris, beberapa pertanyaan Viewer, jadwal, pembacaan, penghitungan, dan penulisan objek generik, biaya sebuah pilihan, kata kerja dokumen ERP, dan proses apa pun dari kamus ERP yang punya port. Viewer punya 64 aksi yang bisa ditekan seseorang, dan pintu menawarkan 6 kata kerja Viewer. ERP punya 1158 dokumen dan proses, dan pintu menawarkan 12 kata kerja ERP untuk kehidupan sebuah dokumen dan 15 kata kerja MIS yang bekerja pada tabel apa pun, serta menyimpan 10 nama lama agar baris-baris sebelumnya tetap jalan. Jadi ini sebuah permulaan, bukan seluruh menu.
+**Cakupan saat ini.** Daftarnya sengaja kecil: 68 kata kerja mencakup pengeditan grid Modeller, walker-nya, dan Modeller yang dibiarkan terbuka di antara baris, beberapa pertanyaan Viewer, jadwal, pembacaan, penghitungan, dan penulisan objek generik, biaya sebuah pilihan, kata kerja dokumen ERP, dan proses apa pun dari kamus ERP yang punya port. Viewer punya 64 aksi yang bisa ditekan seseorang, dan pintu menawarkan 6 kata kerja Viewer. ERP punya 1158 dokumen dan proses, dan pintu menawarkan 13 kata kerja ERP untuk kehidupan sebuah dokumen dan 15 kata kerja MIS yang bekerja pada tabel apa pun, serta menyimpan 10 nama lama agar baris-baris sebelumnya tetap jalan. Jadi ini sebuah permulaan, bukan seluruh menu.
 
 
 ## Bagaimana halaman ini tetap benar
