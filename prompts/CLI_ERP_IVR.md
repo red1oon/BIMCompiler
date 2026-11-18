@@ -4,6 +4,16 @@ Scope: **SPEC and built-step ledger** for the CLI front ends on the door: the MI
 
 ## ▶▶▶ RESUME HERE — 'resume CLI' (2026-11-18)
 
+**▶ ONE LEDGER BUILT 2026-11-18 late (read this first; §48 -> §52-§58, all merged: bim-ootb #3285 #3295 #3299 #3303 #3304 #3314).** An order made at `red1>` now shows in the browser ERP window, and the reverse, through ONE signed JSONL file: the door writes signed `kernel_ops` rows (§52), the page reads and appends the same file through a folder handle (§54/§55), a "Ledger" pill attaches the folder (§56), the door's key is pinned by fingerprint (§58). Proven on a REAL disk folder with Chrome's own dialog on a virtual display (§57, W-LEDGER-REAL 7/0 x3); 5 witnesses green: W-DOOR-SIGN 11/0, W-LEDGER-FILE 7/0, W-LEDGER-ATTACH 9/0, W-LEDGER-UI 9/0, W-LEDGER-PIN 7/0.
+**To use it (the owner, once):** (1) pick a folder Chrome accepts, e.g. `~/Documents/red1` (Chrome may refuse the hidden `~/.cache/bim_object`); (2) `export BIM_OBJECT_OPLOG=~/Documents/red1/ad_seed.db.ops.jsonl` for the door; (3) open the ERP page in Chrome, click the "Ledger: off" pill, choose that folder, Allow; (4) run `node common/door/ledger_sign.js key`, then click the orange "Trust key ....?" button if its fingerprint matches. Never run a HEADED browser on the owner's session without `env -u DBUS_SESSION_BUS_ADDRESS` (its folder dialog goes to their desktop portal: §57).
+**Still open, ranked by what I would do next (each is its own spec + witness; none started):**
+1. **Enforce the pin in the fold** (§58 limit): rows that fail `verifyChain` still reach the page's tip fold (`crud_core.listTip`, used by every window). Today the pin is an alarm, not a lock.
+2. **Undo / History scrub in file mode** (guarded off, `§LEDGER unsupported`): fold-back re-appends an existing id and the door numbers new rows from the last id. Needs a row shape for "undone" that is a new row.
+3. **Door-side roster** (the door replays whatever the file holds) and key revocation.
+4. The other guarded paths: Team rebuild, relay `syncNow`, restore `persist`, legacy migration, in file mode.
+5. Whole-log read on every door append (a tail read before 100k ops); the first append seals a legacy log in place (kept as `<log>.pre-seal`).
+6. W-MANIFEST-ROUNDTRIP C15 counts the witnesses that name `common/lib/sql-wasm.js`: a new witness that does needs `node scripts/gen_manifest.js --write modeller`.
+
 **▶ LANE CLOSED FOR THE TRIAL VERSION 2026-11-18 (read FIRST).** The owner: *"Is our work with CLI good enough for users and so we can close this lane?"* → *"Tidy up the loose ends u pointed out as we should be rolling this good enough trial version."* Done today, each with its RESULT: §49 the page keeps the key a door record carries (bim-ootb #3269, W-ONE-FOLD 7/0); §50 the Fast Script Guide made readable (#3277, W-FAST-SCRIPT-GUIDE 121/0, W-DOCS-I18N 8/0, DEPLOYED and polled live en + zh); §51 the loose ends (#3278: W-IDLAW green again, help's first tab = windowTabs' rule, the guide says the two change logs are separate).
 **What stays open, outside this lane:**
 - **The one ledger** (§48 steps 2-3: the door signs its ops; one machine file for door and page). The one user-facing gap: an order made at `red1>` is not in the browser ERP window. To be its own lane when the owner says go; §48 is its study, §49 its first step.
