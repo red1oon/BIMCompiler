@@ -81,6 +81,8 @@ not created) · a bake on his go (then check a "last:" line, §F.15).
 - The Modeller runner on this machine: `§ALLWITNESS PASS=106 FAIL=10 SKIP=5 ENV=12 of 133` was measured before the shed inputs were restored
   (2026-11-15, `~/Videos/dxf2bim_film_work/why/{raw,cli/marked}`, README there). Some witnesses need `SHED_RAW_DIR=~/Videos/dxf2bim_film_work/why/raw`.
 - 11 `PHANTOM?` fields (§F.17, a Part C question).
+- **Code Facts witnesses not PASS before AND after the rename (machine state, not fixed; §F.40 RESULT has the table):** `activate` FAIL, `cli` FAIL (it was `§X0_CLI same=8/8 PASS` when F-25 landed: find what changed), `heap_impact` INCONCLUSIVE, real-VS-Code `bump=N`. Look at `cli` first.
+- Leftover: worktree `/tmp/wt-film-devsetup3` (superseded v3 film, 33 uncommitted files, never pushed): the owner may delete it; the v3 mp4 is in `~/Videos`.
 - Other lanes' items, handed over as information only: the 4D cache's `witness.log` has no `§LOG_STAMP` (`scripts/cache_4d_run.js` is
   `prompts/4D_MODEL_INTEGRITY.md`'s) · `common/door/object_cli.js:212` stamps the model Trx `now` in UTC while `erp_cli.js` stamps local time
   (the CLI lane's, `prompts/CLI_ERP_IVR.md`, owner 2026-11-16: *"Focus on your VSC side, let the others handle as your info"*) ·
