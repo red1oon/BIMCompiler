@@ -751,7 +751,9 @@ Owner: the top-bar `Draft | Complete | Prepare | Void` (the twin's `buildDocActi
 ## §UDP-4 instrument note (2026-11-18, CLI lane, `prompts/CLI_ERP_IVR.md` §47)
 **W-UDP4-ENGINE FAILs when its two halves read different databases.** The oracle on port 8097 belongs to whichever legacy server bound it first. On 2026-11-18 that was `idempiere-bimdoc`, while the witness's SQL side defaults to `idempiere_pilot`. The run then printed A 321/325 · B 27/62, with legacy showing 0 rows in 46 windows: wrong, because the Java side counted 2 invoices where the pilot has 3,038. With `UDP4_PG_DB=idempiere_bimdoc` it printed A 324/325 · B 61/62.
 **Proposed guard (not built):** the witness reads one fingerprint through BOTH halves (e.g. a client-11 header row count) and prints INCONCLUSIVE when they disagree, instead of FAIL.
-**Open:**
-- window 264 Session Audit (`AD_Session`): legacy 1 row, twin 12;
-- window 1000000 `MP_AssetMeter_Log`: a plugin table absent from the seed, so the twin's count is -1 and it opens on Find.
+**Both remaining differences were instrument defects, fixed (bim-ootb #3261):**
+- the SQL half now runs in the host's time zone; it ran in UTC while the server runs +08, which gave window 264 12 vs 1;
+- windows are paired by id AND name (instance-local ids from 1000000 up: id 1000000 is a different window on bimdoc).
+
+Result: **PASS A 324/324 · B 62/62** with `UDP4_PG_DB=idempiere_bimdoc`.
 

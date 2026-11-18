@@ -28,7 +28,7 @@ On the way: in a one-shot `red1 '<words>'` the screen text goes to stderr, so a 
 **Next, in order:**
 1. §43 (2), once Teamwork answers §53.
 2. The ERP one-ledger study.
-3. ~~The TWIN question about `idempiere.html?window=143`~~ ANSWERED §47: no divergence (legacy's only-current-rows rule; W-UDP4-ENGINE window 143 same). Open from it: window 264 Session Audit (1 vs 12) and the oracle DB trap.
+3. ~~The TWIN question about `idempiere.html?window=143`~~ ANSWERED §47: no divergence (legacy's only-current-rows rule; W-UDP4-ENGINE window 143 same). Window 264 and window 1000000 were instrument defects too, fixed (bim-ootb #3261): W-UDP4-ENGINE PASS A 324/324 · B 62/62.
 
 No owner question is open.
 **▶ SESSION CLOSE 2026-11-18 (read FIRST):** the sequel film **CH 3 "Inside the Record" BUILT: EN rc4, ZH rc2 (on the owner's phone), TH rc1 (F with Edge's Niwat voice at +25 Hz: the female Thai voice gave no audio; owner: "Accept any voice that works"); end card = prior art · costs · credentials + red1's mantra + the guide link** (BIMCompiler #916 #921). The Fast Script Guide also gained "From the menu into a record" (`red1_walk_record`, #920, live). The recording and build folders stay in `/tmp/wt-film-fse2/scripts/film_inside_record/out*` (not in git) for any later cut; earlier status note: EN rc2 BUILT (FILM_COMMAND_LINE_ERP.md CH 3 STATUS; owner's framing rules now house style FILM_NARRATION.md 4-6: two-colour CH cover, lower frame cropped/zoomed to what changes, ONE terminal font with slow scroll). Its dry run found six shell defects, fixed as **§45** (a record by its id; `cd <n>` in a kind keeps the walk) and **§46** (an action prints a summary, not JSON; the hint leaves the line; Tab in the record's order; offers follow the record), bim-ootb #3224. The guide's Duplex chain refreshed for the 4D lane's drift (49 priced rows, 43 project lines) and re-deployed. **Next, in order:** (1) §41 `#<number>`; (2) §42 S3 short-name cap; (3) §43 `team.*`; (4) the ERP one-ledger study; (5) the TWIN question CH 3 left open: `idempiere.html?window=143` alone opens one sample order, not the list (compare legacy's opening query). No owner question is open. The legacy pilot still runs on :8088.
@@ -461,9 +461,12 @@ One character means one thing in the shell, the help panel and the ERP box. `?` 
 - **W-UDP4-ENGINE re-run, both halves on the oracle's database** (`UDP4_LOGIN` GardenAdmin, `UDP4_PG_DB=idempiere_bimdoc`): window 143's header rows are the SAME as the real GridTab's. B is 61/62, A 324/325.
 
 **Instrument trap found:** a first run FAILed (A 321/325, B 27/62; for window 143, legacy=0 and twin=453). The cause was the instrument: the oracle port 8097 was held by the **idempiere-bimdoc** server, while the witness's SQL side read `idempiere_pilot` (the Java side counted 2 invoices where the pilot has 3,038). Set `UDP4_PG_DB` to the database of whichever server holds 8097.
-**Not in this question, open:**
-- window 264 Session Audit: legacy 1 row, twin 12. `AD_Session` is live data the running server writes.
-- window 1000000 `MP_AssetMeter_Log`: a maintenance-plugin table the seed lacks, so the twin's count fails and it opens on Find. A non-core module, AD-LAYER LAW 6.
+**Both "open" differences were the instrument too, fixed in the witness (bim-ootb #3261):**
+- window 264 Session Audit (legacy 1, twin 12): the witness's `psql` ran in UTC, while legacy's `Updated>getDate()-1` runs in the server's session zone, +08 (the host's). The page uses local time (`datetime('now','localtime','-1 day')`), as legacy does.
+- window 1000000: ids from 1000000 up are local to each instance (bimdoc's 1000000 is "BIM Document", the seed's is "Meter Log"). The witness now pairs windows by id AND name.
+
+**W-UDP4-ENGINE now: PASS A 324/324 · B 62/62** (1 window skipped and printed). So the twin opens every transaction window on legacy's exact rows.
+**Still open (instrument, proposed in ERP_DEPTH_FILM §UDP-4, not built):** a guard that prints INCONCLUSIVE when the oracle's database is not the SQL side's.
 
 ## 42. One "did you mean" for the shell and help (2026-11-17, owner "Agree on all"; help lane VOCAB_MESSAGE_CATALOG §16 item 1; spec before the code)
 The shell already has ONE suggester: `common/door/assist_core.js` `nearest()`. It is pure plain JS, already used by `door.js:107`, `object_cli.js:30` and `erp_cli.js:1110/1131/1160`. It suggests only and never runs. So the help lane uses this same function in the page (the file already runs unchanged in Node and a browser), with its own candidate names: window, element and action names per language from its help packs. No second suggester and no new index.
