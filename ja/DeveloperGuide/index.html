@@ -4578,7 +4578,7 @@ of the count, open it once with <code>?ignore-me</code> at the end of the addres
 <li><strong>Code Facts is in the Extensions view</strong> (the repo's own add-on, §4.1). Hover a shared field such as <code>A.camera</code> in <code>viewer/grid_views.js</code>: every write and read is listed. Without VS Code, the same facts: <code>node devtools/code-facts/code-facts.js help</code>.</li>
 <li><strong>Terminal ▸ Run Task</strong> lists the tasks of <code>.vscode/tasks.json</code> (6 today, table below).</li>
 <li><strong>Snippets:</strong> type <code>witness</code>, <code>slog</code> or <code>spec</code> in a <code>.js</code> file and press Tab (table below).</li>
-<li><strong>F5 / Run ▸ Start Debugging</strong> offers <strong>Viewer in Chrome</strong>, ERP, Modeller and <strong>Node: this witness / script</strong> (<code>.vscode/launch.json</code>).</li>
+<li><strong>F5 / Run ▸ Start Debugging</strong> offers <strong>Viewer in Chrome</strong>, ERP, Modeller, <strong>This page in Chrome</strong> (any <code>.html</code> page open in the editor) and <strong>Node: this witness / script</strong> (<code>.vscode/launch.json</code>).</li>
 <li><strong>Recommended extensions:</strong> ESLint is listed in <code>.vscode/extensions.json</code>; VS Code offers it on first open, and <code>--install</code> installs it.</li>
 </ol>
 <p><strong>Editor tasks</strong> (Terminal ▸ Run Task):</p>
@@ -4604,11 +4604,23 @@ of the count, open it once with <code>?ignore-me</code> at the end of the addres
 </tr>
 <tr>
 <td>Run this witness (full log → logs/)</td>
-<td><code>node &lt;current file&gt;</code>; full output to <code>logs/&lt;name&gt;.log</code>, last 20 lines and the exit code on screen. Line 1 of the log is a <code>§LOG_STAMP</code> (§6)</td>
+<td><code>node &lt;current file&gt;</code> (a <code>.sh</code> file runs with <code>bash</code>); full output to <code>logs/&lt;name&gt;.log</code>, last 20 lines and the exit code on screen. Line 1 of the log is a <code>§LOG_STAMP</code> (§6)</td>
 </tr>
 <tr>
 <td>Run viewer witness suite (full log → logs/)</td>
 <td>the headless witness suite (also <code>npm test</code>)</td>
+</tr>
+<tr>
+<td>Run Modeller witnesses (full log → logs/)</td>
+<td><code>modeller/tests/run_all_witnesses.js</code>; full output to <code>logs/modeller_witnesses.log</code></td>
+</tr>
+<tr>
+<td>red1 shell (ERP + BIM door)</td>
+<td>the <code>red1</code> command line in the terminal panel</td>
+</tr>
+<tr>
+<td>Set up this folder (node scripts/setup.js)</td>
+<td>step 1 above, from inside VS Code</td>
 </tr>
 <tr>
 <td>Regenerate editor indexes</td>
@@ -4616,6 +4628,9 @@ of the count, open it once with <code>?ignore-me</code> at the end of the addres
 </tr>
 </tbody>
 </table>
+<p><strong>Everything runnable is runnable from the folder you opened.</strong> Every app page, command, runner and the setup script has a route above: a named
+task or launch, or a generic one for the file open in the editor. <code>node scripts/tests/witness_vsc_operational.js</code> checks all of them (39 on
+2026-11-19) and fails when a new one has no route, so a PR that adds a page, a command or a runner adds its route too.</p>
 <p><strong>Editor snippets</strong> (type the word, press Tab; <code>.vscode/witness.code-snippets</code>):</p>
 <table>
 <thead>
