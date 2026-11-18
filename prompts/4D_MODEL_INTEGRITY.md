@@ -3784,7 +3784,7 @@ One read changed (`o.start_ts`). `§GANTT_LOCK_BASELINE` prints `opsWithNoStart=
 | NS-R | red control: an element pushed outside its bar, and a bar stretched past its elements, must fail NS-1 / NS-2 | — |
 **Predictions on main:** NS-0, NS-1, NS-2 green (tiling, §TM_REVEAL_TILED); NS-3 red at exact bar ends; NS-5 red (1 ms axis origin in every zone; ladder off the day grid outside UTC); NS-6 red; NS-7 red on the slider refresh. NS-4 unknown.
 **Fix, only for what goes red:** one owner of "which day / hour is this instant" in `gantt_model.js`, on the programme's own day grid, used by the ladder, the counter, the anchor and the slider; the slider writes the last instant of its notch; the ladder recompute refreshes the slider; the active frame uses the canvas's half-open rule; the display axis starts on the first instant. The wall-clock label and the sun keep local time (the sun reads the cursor's local hour; not this step).
-### Q.19.6 STEP 2 RESULT — needle = canvas (bim-ootb #3247, sw v1746)
+### Q.19.6 STEP 2 RESULT — needle = canvas (bim-ootb #3247, sw v1747)
 ```
 witness_tm_needle_sync, 7 buildings x 3 zones      main                              fixed
 NS-0 fixture is the viewer's shape                 7 PASS                            7 PASS
