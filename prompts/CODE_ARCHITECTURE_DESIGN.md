@@ -40,8 +40,8 @@ Handed over as information (not this lane's): 7 modeller witnesses fail identica
 **1. NEXT, in order.**
 1. **B2, ERP as a source app:** write its build spec first (measure with `node scripts/gen_manifest.js --check`: ERP's numbers disagree across sites, so its manifest keeps a site-level `v`
    until B4-HASH, B-1; plugin precache stays B-4's later step). Then the viewer (B3), then B4-HASH (announced to the owner with its date).
-2. **E-1:** ask the owner the `PROVES:` header format (recommendation in Part E / ADVICE), then the proof map; converting the 326 hard-coded witnesses to `witness_kit/paths.js` rides on it.
-3. **D-1:** where the questions list lives (now unblocked: B1 gives every modeller module an `owner`, 32 still empty = `§MANIFEST_OWNER_GAP`).
+2. **E (answered E-1, E-2):** spec + build the proof map (`PROVES:` line, `~/.cache/bim_witness/`), modeller batch first; converting the 326 hard-coded witnesses to `witness_kit/paths.js` rides on it.
+3. **D (D-1 answered: `<app>/questions.json`):** ask D-2, then spec the owner table.
 4. **2026-11-30:** propose the F-2 cost ceilings (§F.3). The F-1 headless Fetch-back button (browser go given) is still unbuilt.
 
 **2. Where each part stands.**
@@ -66,7 +66,7 @@ the source (§F.25): reinstall with `node devtools/vscode/pack.js --install`. A 
 built and waiting for the owner's review (see that file's FILM 3 STATUS). Earlier CH 0 "VSC Hot Edit" films: `prompts/FILM_IDE_ERP_DEBUG.md`.
 Rebuild recipes are in each film file.
 
-**5. Open with the owner.** E-1 (next to ask) · FILM 3 review · "When AI Dies" EN/TH/ZH review · his hands-on dry run (`~/VSCcheatsheet.txt`, 29 steps; `~/bim-ootb-dryrun`
+**5. Open with the owner.** F-26 (session summary, first question asked) · D-2 (`"extends"`) · FILM 3 review · "When AI Dies" EN/TH/ZH review · his hands-on dry run (`~/VSCcheatsheet.txt`, 29 steps; `~/bim-ootb-dryrun`
 not created) · a bake on his go (then check a "last:" line, §F.15).
 
 **6. Open, no owner needed.**
@@ -586,7 +586,8 @@ files on purpose (`Bonsai.x = …` from 3 files) allowed? Proposal: yes, if the 
 **Witnesses:** W-OWNER-UNIQUE (every question one owner; red control: register a second owner → FAIL).
 **Done when:** the owner table is generated for all three apps, W-OWNER-UNIQUE PASS, its red control FAILs, and each duplicate found today
 (`ERPKernel`, `routewalker.js`, the `Bonsai`/`ERP` publishers) is either marked `"extends"` or has its own tracker issue.
-**DECISIONS:** *(none yet)*
+**DECISIONS:**
+- **D-1 (2026-11-18, tenth session):** asked where the hand-kept question list lives (options `<app>/questions.json` next to modules.json / inside modules.json / one repo-wide file). Owner: **"<app>/questions.json (Recommended)"** → one question per line (question, owner file, where in it), dev-side, joined with modules.json by the generator, which flags a question with two owners. D-2 (`"extends"` marks) still open.
 
 ---
 
@@ -604,7 +605,10 @@ verdicts? Proposal: yes, a small JSON per run.
 **Witnesses:** W-PROOF-MAP (every production module has ≥1 witness or is listed as unproven; red control: a header naming a missing module → FAIL).
 **Done when:** the map is generated from headers plus the suite log, W-PROOF-MAP PASS, red control FAILs, and no hard-coded home folder is left
 in a witness that the map lists.
-**DECISIONS:** *(none yet)*
+**DECISIONS:**
+- **E-1 (2026-11-18, tenth session):** asked with the count (333 of 1,320 witnesses carry an "ISSUE IT PROVES OR DISPROVES" sentence, 0 name the files they prove). Owner: **"One PROVES: line (Recommended)"** →
+  `// PROVES: <repo path>[ <rule ids>], …` under the ISSUE line; a path that does not exist fails W-PROOF-MAP; a witness without it falls back to B1's "names the file" link, shown as weaker; added as files are touched, the modeller first in one batch.
+- **E-2 (2026-11-18):** owner: **"Yes, ~/.cache JSON (Recommended)"** → each witness run writes `~/.cache/bim_witness/<witness>.json` (verdict, verdict line, git HEAD, time); never committed; the map shows it as stale when the code changed since.
 
 **E0 BUILD SPEC — `witness_kit/paths.js` (2026-11-18, tenth session; §READY, no owner decision).** Measured on bim-ootb main `b9b2e522`:
 `git ls-files` witness files under `tests/` = 1,320, of which **326 hard-code `/home/red1/`**; the roots they name: `bim-compiler/node_modules` 125 · `bim-ootb/tests` 108 ·
@@ -796,6 +800,15 @@ F-23 (§F.33) · F-24 the Bump button (§F.34) · **F-25 (2026-11-18): an `x0` t
   (3) `pure` prints the W-CORE-PURE verdict line; (4) red controls: an unknown verb exits 1 with the help on stderr; a planted extra tool in a copy of the TOOLS list would show as "missing
   from help" (the help is generated from TOOLS, so the check reads TOOLS from the spawned server's `tools/list`); (5) `x0.js` and its folder are named by no page / loader / `sw.js` and
   require no network module. Verdict: `§X0_CLI verbs= same= help_rows= red= verdict=`. Listed in Developer Guide §4.1 after the build.
+
+
+**F-26 (asked by the owner 2026-11-18, tenth session): Claude Code token use beside the URL load size, with a history and a session-end summary.** Owner: *"note whether token usage
+during VSC usage with Claude Code is kept track with the URL load size.. can track history too so that each session end user can see some session summary"*.
+Measured: **not tracked today.** Tokens: Claude Code itself records `usage` per reply in its local transcripts (`~/.claude/projects/<repo>/<session>.jsonl`; 165 for bim-compiler);
+this session (`48fd266f…`, 2026-11-17T18:05Z → 11-18T02:04Z): `replies=218 input=482 cache_write=491161 cache_read=53622360 output=162371`. Nothing in X0 reads them (`devtools/`: 0 matches).
+URL load size: X0's `cost_if_deployed` computes it on demand from the diff; no history. Design (open, one question at a time): a dev-side `x0 session [last|<id>]` that reads the transcript
+(tokens, time span) and the session's git changes (`cost` = bytes added to what users load, PRs, witnesses run), appends one line per session to `~/.cache/bim_x0/sessions.jsonl` (history),
+and prints a short summary at session end; local files only, no network, no model call, no money figures (no invented prices).
 
 ## ADVICE — from the session that built Part F, for the owner and the sessions that follow (2026-11-14)
 
