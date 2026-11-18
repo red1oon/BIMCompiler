@@ -3908,9 +3908,27 @@ RO-5 lock gate              PASS  11 committed reorders judged: 6 refused at loc
 RO-6 wiring · RO-R          PASS · PASS
 ```
 - **Two layers, as specified:** the verb refuses what the LINKS forbid (179 of 190 pairs on Duplex); the lock gate refuses what the BUILDING forbids among the rest (6 of 11). The 5 it accepts are reorders the fixture's element layout does not make worse — the fixture lays each task's elements end to end across its window (not the played layer), so "5 are buildable" is a statement about this fixture, not a site ruling.
-- **Engine:** `swapTasks` in `schedule_author.js`; `_leafGraph`, `_cascadePush`, `_writeMoved` extracted from `moveTaskCascade` and shared (the ten `§W_OCP_STATE` lines still equal the pre-lane baseline). `schedule_author.js` +136 / −… net +85 with the new verb.
+- **Engine:** `swapTasks` in `schedule_author.js`; `_leafGraph`, `_cascadePush`, `_writeMoved` extracted from `moveTaskCascade` and shared (the ten `§W_OCP_STATE` lines still equal the pre-lane baseline). `schedule_author.js` 136 lines changed for the new verb and the three shared helpers (PR #3267 diff).
 - **Time Machine:** `swapGanttBars` (lock, verb, tip, `_tmCommitEdit` with `undo: reorder`); Shift-drop in `wireGanttDrag`; "⇄ Swap places with" select in the typed panel; `window.__tmGanttSwap`. Undo witness now 10 of 10 edit kinds; pipeline witness derives the new verb as a lock taker on its own (11 of 11).
 - `§GATES_VERDICT GREEN red=0 gates=12`; `§RO_PLAY_SAME` 0 of 266,954 played instants differ on seven buildings (the generator is untouched).
 - **CI lesson (cost one red run):** `modeller/modules.json` records the witnesses of every module the modeller loads, `viewer/schedule_author.js` among them, so a NEW witness that requires it must be followed by `node scripts/gen_manifest.js --write modeller`; and an edited `viewer/schedule_author.js` is also lazy-loaded by the modeller, so bump with `node scripts/bump.js <files> --write` (it needs `node_modules`: link the shared checkout's into the worktree), not by hand.
 - **Not covered:** no unlinked swappable pair exists on Duplex (the template links every bar), so RO-2's "unlinked pair changes no link" was not exercised; the Shift-drop and the panel row are checked from source, not driven by a pointer; three or more bars at once, and a swap of overlapping bars, are out of scope; the new tip strings are English only (fallback).
 **NEXT: step 6 (group shift and ruler shift check NO link today — a selection dragged across a link that leaves it should be clamped or refused, the same rule a single drag obeys).**
+### Q.19.13 STEP 6 SPEC — group shift and ruler shift respect links that cross the selection, written before the code (2026-11-18)
+**Issue (read in the code, to be measured):** `commitGanttGroupShift` calls `ScheduleAuthor.shiftTasks`, which translates the selected rows and reads no link. A selection dragged EARLIER can land before a predecessor that was not selected; dragged LATER it can overrun a successor that was not selected. A single drag of the same bar is clamped in the first case and pushes the successor in the second (`moveTaskCascade`). The ruler shift moves every row of the schedule by the same days, so no link can cross it — to be shown, not assumed.
+**Change:** one new engine verb, `shiftTasksCascade(db, scheduleId, taskIds, deltaDays, { dryRun })`, on the shared `_leafGraph` / `_cascadePush` / `_writeMoved` (§Q.19.12); `shiftTasks` stays the raw primitive it is witnessed as.
+- The selection moves as ONE body (every selected leaf by the same effective days, so links inside it keep their slack).
+- Earlier: the effective days are clamped by the tightest predecessor OUTSIDE the selection — the engine's own floor (`_earliestStart`) and binding predecessor (`_bindingPred`). Clamped to zero = refused (`blocked`, `blockedBy`, `task`), nothing written.
+- Later (and after any move): successors outside the selection that are now too early are pushed, by the same push-only cascade a drag uses.
+- Result: `{ ok, deltaDays (effective), requested, clamped, blockedBy, task, moved, cascaded }`.
+`commitGanttGroupShift` calls it, says so when the move was clamped or refused, and commits through `_tmCommitEdit` as before. The ruler shift is not changed.
+**Witness `witness_gantt_shift_links` (before the code), Duplex, shipped verbs. "A task sits before its floor" is asked of the OWNER: `moveTaskCascade(…, its own start, { dryRun })` reports `clamped`.**
+| claim | what must hold |
+|---|---|
+| GL-1 | a selection shifted EARLIER past an outside predecessor: no task ends up before its floor; the selection moved as one body by the effective days; the clamp and its `blockedBy` are reported |
+| GL-2 | a selection shifted LATER into an outside successor: the successor is pushed, no task is before its floor, the selection moved as one body |
+| GL-3 | a selection that cannot move earlier at all is refused with `blocked` + `blockedBy`, nothing written, the undo record kept |
+| GL-4 | the ruler shift, both directions: no task before its floor, every leaf moved by exactly the days asked |
+| GL-5 | every element stays inside its bar after each of the above, and one Undo restores each |
+| GL-R | red control: the raw `shiftTasks` on GL-1's selection DOES leave a task before its floor (the defect, reproduced) |
+**Predictions on main:** GL-1 red (a task before its floor), GL-2 red, GL-3 red (it commits), GL-4 green, GL-5 green, GL-R green.
