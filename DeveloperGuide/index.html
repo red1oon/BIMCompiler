@@ -4740,6 +4740,10 @@ a lookup misses after you saved a file. One run takes about 4 seconds in the bac
 nothing to commit and nothing to conflict on. <strong>Do not regenerate and commit <code>APP_SURFACE.md</code> in an unrelated PR</strong> for X0's sake.</p>
 <p>For bim-compiler specs to show in a <code>§TAG</code> hover, keep the two clones side by side (<code>bim-ootb/</code> next to <code>bim-compiler/</code>), or set
 <code>bimDevtools.compilerRoot</code>. Its witnesses (node only, no VS Code needed) are listed in its <code>README.md</code>.</p>
+<p><strong>The same facts in a terminal: <code>x0</code>.</strong> <code>node devtools/x0/x0.js help</code> lists its verbs: <code>where &lt;field&gt;</code>, <code>uses &lt;field&gt;</code>, <code>tag &lt;§TAG&gt;</code>,
+<code>loaded &lt;file&gt;</code>, <code>cost [base]</code>, <code>last &lt;file&gt;</code>, <code>context &lt;file&gt;</code>, <code>check [base]</code>, <code>pure</code>, <code>bump …</code>. It runs the same code as X0 Navigator and the
+x0-facts server, so all three give the same answer (W-X0-CLI checks each verb against the server). It is read-only except <code>bump</code>, which is
+<code>scripts/bump.js</code>. No page loads it.</p>
 <h3 id="42-working-with-an-ai-assistant-in-vs-code-optional">4.2 Working with an AI assistant in VS Code (optional)<a class="headerlink" href="#42-working-with-an-ai-assistant-in-vs-code-optional" title="Permanent link">&para;</a></h3>
 <p>Nothing in this project needs an AI assistant, and X0 Navigator never calls one. If you choose to use one, this is how it fits. The facts
 about Claude Code are from its documentation (code.claude.com/docs, read 2026-11-14).</p>
@@ -4994,10 +4998,18 @@ covers every field of every active ERP window (W-ERP-HOVER). Spec: bim-compiler 
 <p>There are three service workers, each with its own <code>CACHE_VERSION</code>: <code>viewer/sw.js</code>, <code>erp/sw.js</code>, <code>modeller/sw.js</code>. Put the
 reason for a bump in the commit message, not in the <code>sw.js</code> line. The 4D schedule also has its own cache key,
 <code>_GANTT_CACHE_VERSION</code> in <code>viewer/tm_dash.js</code>. If you change how a schedule is built, bump it by hand (<code>bump.js</code> does not).</p>
+<p><strong>The Modeller is written from <code>modeller/modules.json</code></strong> (since 2026-11-18). There <code>bump.js</code> raises the module's one version number in
+<code>modules.json</code> and the app's <code>CACHE_VERSION</code>, then writes the page, the lazy lists and <code>sw.js</code> from it, including the <code>?v=</code> inside the page's
+own scripts. Do not edit a Modeller script tag, a <code>?v=</code> or a <code>PRECACHE_ASSETS</code> entry by hand: CI (W-MANIFEST-ROUNDTRIP) fails with the
+file, the line and the command to run. Comments between the tags stay yours.</p>
 <h3 id="52-adding-a-new-browser-file">5.2 Adding a new browser file<a class="headerlink" href="#52-adding-a-new-browser-file" title="Permanent link">&para;</a></h3>
 <p>Add its <code>&lt;script src="name.js?v=1"&gt;</code> in the right place in the page (order matters, §0 #2), add it to that app's
 <code>PRECACHE_ASSETS</code> in <code>sw.js</code> <strong>unless it is lazy on purpose</strong>, bump <code>CACHE_VERSION</code>, and add any new shared global name to
 <code>eslint.globals.json</code>.</p>
+<p><strong>In the Modeller,</strong> add the module's line to <code>modeller/modules.json</code> instead (its <code>v</code>, <code>load</code>, <code>precache</code>; its tag in <code>order</code> at the place it
+must load; its entry in <code>precacheOrder</code> unless it is lazy on purpose), then run <code>node scripts/gen_manifest.js --write modeller</code>: it writes the
+tag and the precache entry on their own lines. If the new file reads another module while it loads, <code>--check</code> lists that as an unreviewed
+order edge (<code>§DEPS_UNREVIEWED</code>) until a person puts it in <code>deps</code>, <code>uses</code> or <code>notDeps</code>.</p>
 <h3 id="53-changing-data">5.3 Changing data<a class="headerlink" href="#53-changing-data" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>Rules, patterns, schema</strong> (small, regenerable DBs such as <code>duplex_rules.db</code>, <code>terminal_rules.db</code>): a <code>migration/*.sql</code> script
