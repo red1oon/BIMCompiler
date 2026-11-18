@@ -4486,7 +4486,7 @@
 </table>
 <p>The AI cannot cheat these gates. G3 alone — a cryptographic digest of the entire output — means a single wrong coordinate in a 48,428-element building fails the build. There is no "close enough."</p>
 <blockquote>
-<p><strong>Correction (2026-11-18):</strong> these gates are a <em>local</em> discipline, run before committing. No CI job in either repo runs <code>RosettaStoneGateTest</code> or the full bim-ootb witness suite. CI runs syntax checks, lint, wiring audits, <code>scripts/system_is_real.sh</code>, and about 20 of bim-ootb's 1,491 witness scripts (X0 Navigator, core purity, the manifest round-trip, the BIM tools; counted from the workflow files 2026-11-18). "Must pass before a commit lands" is a working habit, not a mechanical block.</p>
+<p><strong>Correction (2026-11-18):</strong> these gates are a <em>local</em> discipline, run before committing. No CI job in either repo runs <code>RosettaStoneGateTest</code> or the full bim-ootb witness suite. CI runs syntax checks, lint, wiring audits, <code>scripts/system_is_real.sh</code>, and about 20 of bim-ootb's 1,491 witness scripts (Code Facts, core purity, the manifest round-trip, the BIM tools; counted from the workflow files 2026-11-18). "Must pass before a commit lands" is a working habit, not a mechanical block.</p>
 </blockquote>
 <h3 id="3-the-drift-is-tracked-not-hidden">3. The Drift is tracked, not hidden<a class="headerlink" href="#3-the-drift-is-tracked-not-hidden" title="Permanent link">&para;</a></h3>
 <p>When AI-generated code drifts from spec — and it does, consistently — the drift is documented. <a href="../LAST_MILE_PROBLEM/">The Drift</a> tracks every known failure mode: walls that don't sit on slabs, columns that overlap, coordinates that shift by millimetres. 11 drift points, each citing the spec section it violates.</p>
@@ -4739,12 +4739,12 @@ Witness green? → next task. Witness red? → fix, or log a new drift point.
 <td><strong>Not yet.</strong> Part B has only its check (B0, in CI); the first manifest (B1, the Modeller) has a build spec and is not built. Parts C and D are not started. There are no typed namespaces. Generated declarations (<code>types/globals.gen.d.ts</code>) only let the editor follow globals.</td>
 </tr>
 <tr>
-<td>Part F, the X0 Navigator, works with no AI</td>
+<td>Part F, Code Facts, works with no AI</td>
 <td>True: that is the film <em>When AI Dies</em>.</td>
 </tr>
 <tr>
 <td><em>"AST-enforced via espree and TypeScript's parser in CI"</em></td>
-<td>Partly. W-CORE-PURE and W-MANIFEST-ROUNDTRIP parse with espree in CI. The two X0 witnesses that need TypeScript's parser run locally only, because a CI runner does not have the copy inside VS Code.</td>
+<td>Partly. W-CORE-PURE and W-MANIFEST-ROUNDTRIP parse with espree in CI. The two Code Facts witnesses that need TypeScript's parser run locally only, because a CI runner does not have the copy inside VS Code.</td>
 </tr>
 <tr>
 <td>Bottleneck 1: slow checks (<em>C7 ~57 s re-reading 1,208 loader files; the parity gate 5.5–16 min</em>)</td>
@@ -4799,7 +4799,7 @@ Witness green? → next task. Witness red? → fix, or log a new drift point.
 <td>Eclipse: static types, a compiler, a debugger</td>
 <td>Python tooling</td>
 <td>Python tooling</td>
-<td>VS Code + X0 Navigator; no static types, by rule</td>
+<td>VS Code + Code Facts; no static types, by rule</td>
 </tr>
 <tr>
 <td>Size</td>
@@ -4825,7 +4825,7 @@ Witness green? → next task. Witness red? → fix, or log a new drift point.
 </tbody>
 </table>
 <p><strong>What the choice of JavaScript buys:</strong> the browser runs only JavaScript (and WebAssembly), so one language covers the screen <em>and</em> the books, and the whole ERP works offline in a tab. Odoo and ERPNext already write a large share of their code in JavaScript for the screen, but their books still need a server and a database server.</p>
-<p><strong>What it costs:</strong> no static types and no compiler to catch a wrong call before it runs, which is iDempiere's strongest point; that gap is filled by witnesses and X0, not by the language. Money needs exact decimals (<code>bigdecimal.js</code>), because JavaScript numbers are floating point. One tab has the memory of one tab: the measured cost is about 0.17 GB of heap per million vertices on the BIM side, fitted over three buildings and so only indicative (<a href="../BrowserScaleBenchmark/">BrowserScaleBenchmark</a>). And the peers have communities thousands of times larger.</p>
+<p><strong>What it costs:</strong> no static types and no compiler to catch a wrong call before it runs, which is iDempiere's strongest point; that gap is filled by witnesses and Code Facts, not by the language. Money needs exact decimals (<code>bigdecimal.js</code>), because JavaScript numbers are floating point. One tab has the memory of one tab: the measured cost is about 0.17 GB of heap per million vertices on the BIM side, fitted over three buildings and so only indicative (<a href="../BrowserScaleBenchmark/">BrowserScaleBenchmark</a>). And the peers have communities thousands of times larger.</p>
 <hr />
 <h2 id="case-study-rtree-federation-viewer-s180s189">Case Study: RTree Federation Viewer (S180–S189)<a class="headerlink" href="#case-study-rtree-federation-viewer-s180s189" title="Permanent link">&para;</a></h2>
 <p>The strongest evidence for vibe programming at scale is the RTree federation viewer — a city-scale BIM viewer built inside Blender's Bonsai addon in ~3 weeks of Claude-assisted sessions.</p>

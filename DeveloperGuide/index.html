@@ -1874,15 +1874,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#41-x0-navigator-the-repos-own-vs-code-extension" class="md-nav__link">
+  <a href="#41-code-facts-the-repos-own-vs-code-extension-and-terminal-command" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4.1 X0 Navigator: the repo's own VS Code extension
+        4.1 Code Facts: the repo's own VS Code extension and terminal command
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="4.1 X0 Navigator: the repo&#39;s own VS Code extension">
+    <nav class="md-nav" aria-label="4.1 Code Facts: the repo&#39;s own VS Code extension and terminal command">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -3745,15 +3745,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#41-x0-navigator-the-repos-own-vs-code-extension" class="md-nav__link">
+  <a href="#41-code-facts-the-repos-own-vs-code-extension-and-terminal-command" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4.1 X0 Navigator: the repo's own VS Code extension
+        4.1 Code Facts: the repo's own VS Code extension and terminal command
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="4.1 X0 Navigator: the repo&#39;s own VS Code extension">
+    <nav class="md-nav" aria-label="4.1 Code Facts: the repo&#39;s own VS Code extension and terminal command">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -4212,7 +4212,7 @@ that ships is the <code>§</code> lines, and those are part of the code anyway.<
 <pre class="mermaid"><code>flowchart LR
   subgraph DEV["DEV SIDE: a developer's machine or CI (never loaded by a page)"]
     W["Witnesses&lt;br/&gt;1,403 witness_*.js&lt;br/&gt;2,112 JS files in test folders&lt;br/&gt;284,795 lines"]
-    T["Dev tools&lt;br/&gt;devtools/ (VS Code X0): 52 files, 5,385 lines&lt;br/&gt;scripts/: 133 files, 17,400 lines"]
+    T["Dev tools&lt;br/&gt;devtools/ (VS Code Code Facts): 52 files, 5,385 lines&lt;br/&gt;scripts/: 133 files, 17,400 lines"]
     N["node witness_x.js&lt;br/&gt;exit 0 / 1 / 2&lt;br/&gt;log in logs/, line 1 = §LOG_STAMP"]
     W --&gt; N
     T --&gt; N
@@ -4442,8 +4442,8 @@ not counted). You will not read it all; §6 says what to read first.</p>
 <hr />
 <h2 id="3-start-from-scratch-download-run-set-up-vs-code">3. Start from scratch: download, run, set up VS Code<a class="headerlink" href="#3-start-from-scratch-download-run-set-up-vs-code" title="Permanent link">&para;</a></h2>
 <p>There is nothing to build, and you can do all of it from a terminal without visiting GitHub. One script, <code>scripts/setup.js</code>, takes a fresh download to a working setup: the dev
-tools installed and checked, X0 Navigator installed, VS Code opened on the folder. It is proved by the witness <code>scripts/tests/witness_setup.js</code>
-(W-SETUP: 20 checks on 2026-11-18, including a real VS Code that opens the folder with X0 active and the tasks listed) and by
+tools installed and checked, Code Facts installed, VS Code opened on the folder. It is proved by the witness <code>scripts/tests/witness_setup.js</code>
+(W-SETUP: 20 checks on 2026-11-18, including a real VS Code that opens the folder with Code Facts active and the tasks listed) and by
 <code>scripts/tests/witness_from_scratch.js</code> (W-FROM-SCRATCH, every step from an empty folder). Run either to check your own machine.</p>
 <p><strong>What you need</strong></p>
 <table>
@@ -4489,14 +4489,14 @@ cd bim-ootb-main
 <p>Why the archive and not <code>git clone</code>: a GitHub archive carries no large-file (LFS) objects, while a clone on a machine with git-lfs installed tries to
 download them, and this project's LFS bandwidth is used up. If you do need a clone: <code>GIT_LFS_SKIP_SMUDGE=1 git clone https://github.com/red1oon/bim-ootb.git</code>.
 The folder has no <code>.git</code>: that is normal, every tool below works without it. (The browser's <strong>Code ▸ Download ZIP</strong> gives the same files.)</p>
-<p><strong>1. Set up</strong> (installs what the dev tools need, checks them, installs X0 Navigator, opens VS Code on the folder):</p>
+<p><strong>1. Set up</strong> (installs what the dev tools need, checks them, installs Code Facts, opens VS Code on the folder):</p>
 <div class="highlight"><pre><span></span><code>node scripts/setup.js --open
 </code></pre></div>
 <p>It prints one <code>§</code> line per step and ends with a verdict. Real output (2026-11-18, shortened):</p>
 <div class="highlight"><pre><span></span><code>§SETUP_PREREQ node=18.19.1 npm=Y python3=Y code=/snap/bin/code
 §SETUP_DEPS npm_ci=ok espree=Y
 §SETUP_TOOLS manifest=PASS proof_map=PASS bump=PASS
-§SETUP_VSC code=/snap/bin/code x0=installed eslint=recommended tasks=6 snippets=3 launch=Y mode=throwaway ext_dir=&lt;folder&gt;/.setup/vscode-ext
+§SETUP_VSC code=/snap/bin/code codefacts=installed eslint=recommended tasks=6 snippets=3 launch=Y mode=throwaway ext_dir=&lt;folder&gt;/.setup/vscode-ext
 §SETUP steps=4 ok=4 gaps=0 verdict=PASS
 </code></pre></div>
 <p><code>npm ci</code> (about 10 seconds, the one step that needs the network) is needed by the manifest and bump tools (and gives you the lint check). The app itself needs nothing installed. A second run says <code>§SETUP_DEPS skipped=present</code> and changes nothing. A problem is a <code>§SETUP_GAP</code> line with the one-line
@@ -4511,19 +4511,19 @@ fix, never a silent skip, and <code>verdict=FAIL</code> (exit 1) only when somet
 <tbody>
 <tr>
 <td><code>--open</code></td>
-<td>opens VS Code on the folder (in throwaway mode, with the X0 extensions folder setup made)</td>
+<td>opens VS Code on the folder (in throwaway mode, with the Code Facts extensions folder setup made)</td>
 </tr>
 <tr>
 <td><code>--install</code></td>
-<td>the ONLY way your own VS Code profile is touched: X0 and the recommended extensions (ESLint) go into your normal extensions folder, the latter from the Marketplace</td>
+<td>the ONLY way your own VS Code profile is touched: Code Facts and the recommended extensions (ESLint) go into your normal extensions folder, the latter from the Marketplace</td>
 </tr>
 <tr>
 <td><code>--serve [port]</code></td>
 <td>serves the folder on <code>http://localhost:8000</code> (or your port) and prints the three app URLs; leave it running</td>
 </tr>
 <tr>
-<td><code>--no-x0</code></td>
-<td>skip packing and installing X0</td>
+<td><code>--no-code-facts</code></td>
+<td>skip packing and installing Code Facts</td>
 </tr>
 <tr>
 <td><code>--dry-run</code></td>
@@ -4531,7 +4531,7 @@ fix, never a silent skip, and <code>verdict=FAIL</code> (exit 1) only when somet
 </tr>
 </tbody>
 </table>
-<p>Without <code>--install</code>, VS Code runs from a throwaway extensions and settings folder under <code>&lt;folder&gt;/.setup/</code> (git-ignored): you see X0 and nothing else of yours,
+<p>Without <code>--install</code>, VS Code runs from a throwaway extensions and settings folder under <code>&lt;folder&gt;/.setup/</code> (git-ignored): you see Code Facts and nothing else of yours,
 and your own profile is untouched (W-SETUP T4 checks that nothing is created under your home).</p>
 <p><strong>2. Serve it:</strong> <code>node scripts/setup.js --serve</code> (or <code>python3 -m http.server 8000</code>, or the VS Code task <strong>Serve repo</strong>).</p>
 <p><strong>3. Open the apps</strong> in your browser:</p>
@@ -4575,7 +4575,7 @@ of the count, open it once with <code>?ignore-me</code> at the end of the addres
 <p><strong>4. The VS Code side: what <code>--open</code> gives you, and where to look.</strong> The repo brings its own setup in <code>.vscode/</code> (and <code>jsconfig.json</code>, <code>types/</code>, <code>.editorconfig</code>); the script only installs the extension and opens the folder.</p>
 <ol>
 <li><strong>The folder is open</strong>, with the editor settings from <code>.vscode/settings.json</code>.</li>
-<li><strong>X0 Navigator is in the Extensions view</strong> (the repo's own add-on, §4.1). Hover a shared field such as <code>A.camera</code> in <code>viewer/grid_views.js</code>: every write and read is listed. Without VS Code, the same facts: <code>node devtools/x0/x0.js help</code>.</li>
+<li><strong>Code Facts is in the Extensions view</strong> (the repo's own add-on, §4.1). Hover a shared field such as <code>A.camera</code> in <code>viewer/grid_views.js</code>: every write and read is listed. Without VS Code, the same facts: <code>node devtools/code-facts/code-facts.js help</code>.</li>
 <li><strong>Terminal ▸ Run Task</strong> lists the tasks of <code>.vscode/tasks.json</code> (6 today, table below).</li>
 <li><strong>Snippets:</strong> type <code>witness</code>, <code>slog</code> or <code>spec</code> in a <code>.js</code> file and press Tab (table below).</li>
 <li><strong>F5 / Run ▸ Start Debugging</strong> offers <strong>Viewer in Chrome</strong>, ERP, Modeller and <strong>Node: this witness / script</strong> (<code>.vscode/launch.json</code>).</li>
@@ -4612,7 +4612,7 @@ of the count, open it once with <code>?ignore-me</code> at the end of the addres
 </tr>
 <tr>
 <td>Regenerate editor indexes</td>
-<td>the committed <code>internal/APP_SURFACE.md</code> and <code>types/globals.gen.d.ts</code>. X0 Navigator does not need this: it keeps its own fresh copy (§4.1)</td>
+<td>the committed <code>internal/APP_SURFACE.md</code> and <code>types/globals.gen.d.ts</code>. Code Facts does not need this: it keeps its own fresh copy (§4.1)</td>
 </tr>
 </tbody>
 </table>
@@ -4658,11 +4658,11 @@ To run the browser witnesses you also need a Chromium (Playwright's copy is used
 </tr>
 <tr>
 <td>Where an <code>APP.x</code> / <code>A.x</code> field is set</td>
-<td>With X0 Navigator (§4.1): <strong>F12</strong> or hover on the field. Without it: <code>internal/APP_SURFACE.md</code>. Its "phantom" list (107 fields read in production but never written, counted 2026-11-14; 11 more are flagged "untied write" and are probably live) is a list of dead guards. Check before relying on one.</td>
+<td>With Code Facts (§4.1): <strong>F12</strong> or hover on the field. Without it: <code>internal/APP_SURFACE.md</code>. Its "phantom" list (107 fields read in production but never written, counted 2026-11-14; 11 more are flagged "untied write" and are probably live) is a list of dead guards. Check before relying on one.</td>
 </tr>
 <tr>
 <td>What a <code>§TAG</code> means</td>
-<td>With X0 Navigator (§4.1): hover the tag. Without it: search the tag. The code that prints it is the definition, and its spec is usually named in the same file's header.</td>
+<td>With Code Facts (§4.1): hover the tag. Without it: search the tag. The code that prints it is the definition, and its spec is usually named in the same file's header.</td>
 </tr>
 <tr>
 <td>Which code built a body on the Modeller canvas, or runs on an ERP field</td>
@@ -4684,22 +4684,23 @@ To run the browser witnesses you also need a Chromium (Playwright's copy is used
 </table>
 <p>Search hides vendored libraries and six generated one-line data files (<code>erp/genesis_dict.js</code>, <code>erp/fk_rules.js</code>, …). Those
 files open read-only. Edit the generator named on their first line instead.</p>
-<h3 id="41-x0-navigator-the-repos-own-vs-code-extension">4.1 X0 Navigator: the repo's own VS Code extension<a class="headerlink" href="#41-x0-navigator-the-repos-own-vs-code-extension" title="Permanent link">&para;</a></h3>
-<p>It lives in bim-ootb <code>devtools/vscode/x0-navigator/</code>. It is plain JavaScript with no dependencies and no build step, it never
+<h3 id="41-code-facts-the-repos-own-vs-code-extension-and-terminal-command">4.1 Code Facts: the repo's own VS Code extension and terminal command<a class="headerlink" href="#41-code-facts-the-repos-own-vs-code-extension-and-terminal-command" title="Permanent link">&para;</a></h3>
+<p>Code Facts answers questions about this code from the repo's own indexes (where a name is written, what a tag means, how a file reaches users, what a change costs). Read-only, no network. Two forms: a VS Code extension (this section) and a terminal command (the end of this part, "The same facts in a terminal"). <em>Formerly X0 (a numbering label from the parked DEV_TOOLKIT_NO_AI's X1–X6); the screenshots below were taken before the rename and still show the old name.</em></p>
+<p>The extension lives in bim-ootb <code>devtools/vscode/code-facts/</code>. It is plain JavaScript with no dependencies and no build step, it never
 calls an AI model, and no page loads it. Only <em>Fetch back</em> and <em>Deploy main now</em> talk to the network (GitHub). Everything else is
 answered from the repo's own files (table below), so it keeps working with no AI assistant and no connection.</p>
-<p><strong>Install it</strong> (proven in VS Code 1.146.0 by <code>devtools/vscode/x0-navigator/tests/realvsc/install.js</code>):</p>
+<p><strong>Install it</strong> (proven in VS Code 1.146.0 by <code>devtools/vscode/code-facts/tests/realvsc/install.js</code>):</p>
 <ol>
-<li>In the bim-ootb folder: <code>node devtools/vscode/pack.js</code>. It writes <code>devtools/vscode/dist/x0-navigator-0.1.0.vsix</code> (plain node, no npm, no internet).</li>
-<li><code>code --install-extension devtools/vscode/dist/x0-navigator-0.1.0.vsix</code>. No <code>code</code> command? In VS Code: Extensions view ▸ <code>…</code> ▸
+<li>In the bim-ootb folder: <code>node devtools/vscode/pack.js</code>. It writes <code>devtools/vscode/dist/code-facts-0.1.0.vsix</code> (plain node, no npm, no internet).</li>
+<li><code>code --install-extension devtools/vscode/dist/code-facts-0.1.0.vsix</code>. No <code>code</code> command? In VS Code: Extensions view ▸ <code>…</code> ▸
    <strong>Install from VSIX…</strong> and pick that file. (<code>node devtools/vscode/pack.js --install</code> does steps 1 and 2.)</li>
 <li>Reload VS Code (<strong>Developer: Reload Window</strong>).</li>
 <li>Check: open any <code>viewer/*.js</code> and hover a field such as <code>APP.db</code>. The hover starts with <code>written at</code>.</li>
 </ol>
-<p><img alt="The Extensions view after the install: &quot;BIM DevTools: X0 Navigator&quot;, publisher bim-devtools" src="../figs/x0/00_installed.png" /></p>
-<p><em>After step 3, the Extensions view (filter <code>@installed X0</code>) lists it.</em></p>
+<p><img alt="The Extensions view after the install: &quot;BIM DevTools: Code Facts&quot;, publisher bim-devtools" src="../figs/x0/00_installed.png" /></p>
+<p><em>After step 3, the Extensions view (filter <code>@installed Code Facts</code>) lists it.</em></p>
 <p>After you pull changes to the add-on, run steps 1–3 again (the installed copy is a copy). Remove it with
-<code>code --uninstall-extension bim-devtools.x0-navigator</code>. <strong>Do not symlink the folder into <code>~/.vscode/extensions/</code>:</strong> VS Code ignores a
+<code>code --uninstall-extension bim-devtools.code-facts</code>. <strong>Do not symlink the folder into <code>~/.vscode/extensions/</code>:</strong> VS Code ignores a
 folder its <code>extensions.json</code> does not list, so nothing loads and nothing warns you (this guide said to symlink until 2026-11-13).</p>
 <table>
 <thead>
@@ -4743,7 +4744,7 @@ folder its <code>extensions.json</code> does not list, so nothing loads and noth
 <tr>
 <td><strong>Shift+F12</strong> (Find All References) on the same field</td>
 <td>every place the field is written and read, under any of its spellings; VS Code's own JavaScript support cannot give this, because the object is written under one name and read under another</td>
-<td>every site the repo's generator recorded, kept beside X0's own fresh index (nothing added to the repo)</td>
+<td>every site the repo's generator recorded, kept beside Code Facts' own fresh index (nothing added to the repo)</td>
 </tr>
 <tr>
 <td>A warning on line 1 after you save an edited file the offline cache serves, with a quick fix (the light bulb, or <strong>Ctrl+.</strong>)</td>
@@ -4752,7 +4753,7 @@ folder its <code>extensions.json</code> does not list, so nothing loads and noth
 </tr>
 <tr>
 <td>Status bar ▸ <strong>Bump</strong> (press when your feature is complete)</td>
-<td>one background check of every file your branch changed that a page loads: the legacy-parity check and each changed file's own witnesses. You can keep working. It shows <code>Bump: checking n/N</code>, then <strong>Bump ✓</strong> (press again: the cache bump is written in a second, nothing re-runs) or <strong>Bump ✗</strong> with the first failing check (its lines are in the <em>X0 Navigator</em> output). Saving a file after the check puts it back to plain <strong>Bump</strong></td>
+<td>one background check of every file your branch changed that a page loads: the legacy-parity check and each changed file's own witnesses. You can keep working. It shows <code>Bump: checking n/N</code>, then <strong>Bump ✓</strong> (press again: the cache bump is written in a second, nothing re-runs) or <strong>Bump ✗</strong> with the first failing check (its lines are in the <em>Code Facts</em> output). Saving a file after the check puts it back to plain <strong>Bump</strong></td>
 <td><code>scripts/bump.js --changed --check</code>, then <code>--write</code></td>
 </tr>
 <tr>
@@ -4771,9 +4772,9 @@ folder its <code>extensions.json</code> does not list, so nothing loads and noth
 <td>the same stamped logs; the grey line stays silent without proof, the hover says why</td>
 </tr>
 <tr>
-<td>Command <strong>X0 Navigator: Context for this file</strong></td>
+<td>Command <strong>Code Facts: Context for this file</strong></td>
 <td>one block of markdown about the open file, opened beside the code and copied: its header comment, how it reaches a user and the bump command, the <code>APP</code> fields set in it, each <code>§TAG</code> it prints with its spec place and last provable value</td>
-<td>all the indexes above. X0 calls no model: you paste the block where you like (§4.2)</td>
+<td>all the indexes above. Code Facts calls no model: you paste the block where you like (§4.2)</td>
 </tr>
 </tbody>
 </table>
@@ -4805,7 +4806,7 @@ folder its <code>extensions.json</code> does not list, so nothing loads and noth
 <tr>
 <td><code>index stale</code>, and F12 does nothing</td>
 <td>the line the index points at no longer mentions the field</td>
-<td>hover again in a few seconds, or run <strong>X0 Navigator: Rebuild indexes</strong></td>
+<td>hover again in a few seconds, or run <strong>Code Facts: Rebuild indexes</strong></td>
 </tr>
 <tr>
 <td><code>no spec found</code> on a <code>§TAG</code></td>
@@ -4821,7 +4822,7 @@ folder its <code>extensions.json</code> does not list, so nothing loads and noth
 <p><strong>2. Before: the editor cannot say where a field is set.</strong> Go to Definition (F12) on <code>APP.db</code> answers "No definition found", because the
 code writes that field as <code>A.db</code>.</p>
 <p><img alt="F12 on APP.db without the add-on: &quot;No definition found for 'db'&quot;" src="../figs/x0/02_before_no_definition.png" /></p>
-<p><strong>3. With X0 Navigator: hover.</strong> The same line now says where the field is written, and how often it is written and read.</p>
+<p><strong>3. With Code Facts: hover.</strong> The same line now says where the field is written, and how often it is written and read.</p>
 <p><img alt="Hover on APP.db: written at viewer/city.js:717, 14 writes, 704 reads" src="../figs/x0/03_hover_written_at.png" /></p>
 <p><strong>4. F12 jumps to that line.</strong></p>
 <p><img alt="After F12: viewer/city.js line 717, A.db = …" src="../figs/x0/04_jumped_to_the_write.png" /></p>
@@ -4842,7 +4843,7 @@ says <code>index stale</code>; a few seconds later the same hover gives the new 
 <p><strong>8. Which code made this log?</strong> A log saved by <em>Run this witness</em> starts with a <code>§LOG_STAMP</code> line. Here it names the commit, and
 <code>viewer/city.js</code> as the one file that had been edited.</p>
 <p><img alt="A saved witness log: line 1 is §LOG_STAMP with commit, dirty=1 and dirty_files=viewer/city.js" src="../figs/x0/10_log_stamp.png" /></p>
-<p><strong>9. Run &amp; Ship.</strong> The list sits at the bottom of the Explorer side bar. <em>Check</em> prints its three steps in the <em>X0 Navigator</em> output.</p>
+<p><strong>9. Run &amp; Ship.</strong> The list sits at the bottom of the Explorer side bar. <em>Check</em> prints its three steps in the <em>Code Facts</em> output.</p>
 <p><img alt="The Run &amp; Ship list (Run local, Check, Cost if deployed, Fetch back) and the output of Check: syntax, audit, bump, verdict PASS" src="../figs/x0/11_run_and_ship_check.png" /></p>
 <p><strong>10. Cost if deployed.</strong> The output lists start-up and offline-cache bytes per app; the status bar (bottom right) says how the open
 file reaches a user: <code>viewer: start-up · 234 KB</code>.</p>
@@ -4857,7 +4858,7 @@ own branch: get your change merged first. Nothing else is needed, and no extra k
 <li><strong>Write access</strong> to the repo on GitHub (you can push to it or merge its pull requests).</li>
 <li><strong>The GitHub CLI</strong>, installed (<a href="https://cli.github.com">https://cli.github.com</a>) and logged in on this machine: run <code>gh auth login</code> once and pick the GitHub
    account that has that access. <code>gh auth status</code> should say <em>Logged in</em>.</li>
-<li><strong>The X0 Navigator extension</strong>, installed (§4.1) and on a current build (it warns when it is older than the source, §4.1).</li>
+<li><strong>The Code Facts extension</strong>, installed (§4.1) and on a current build (it warns when it is older than the source, §4.1).</li>
 <li>Press <strong>4 · Fetch back</strong>. If it says the live site is behind <code>main</code> (a version or the commit differs), press <strong>5 · Deploy main now</strong>
    and confirm <strong>Deploy</strong>. The output prints <code>§SHIP_DEPLOY started=Y</code> and a link to the run on GitHub.</li>
 <li>Wait one to two minutes, then press <strong>Fetch back</strong> again: it must say PASS.</li>
@@ -4873,17 +4874,17 @@ kept; read-only). A bake log counts from the first bake after 2026-11-14, when t
 <em>Fetch back</em> answers INCONCLUSIVE when the live site carries no deploy stamp, and FAIL when a version or the commit differs: right after a
 merge, wait a minute or two and press it again.</p>
 <p><strong>The index looks after itself.</strong> The committed <code>internal/APP_SURFACE.md</code> is only a snapshot: about two merges in three move its line
-numbers (26 of 39, measured 2026-11-13). X0 runs the generator into VS Code's own storage folder when it starts, and again when
+numbers (26 of 39, measured 2026-11-13). Code Facts runs the generator into VS Code's own storage folder when it starts, and again when
 a lookup misses after you saved a file. One run takes about 4 seconds in the background. It never writes inside the repo, so there is
-nothing to commit and nothing to conflict on. <strong>Do not regenerate and commit <code>APP_SURFACE.md</code> in an unrelated PR</strong> for X0's sake.</p>
+nothing to commit and nothing to conflict on. <strong>Do not regenerate and commit <code>APP_SURFACE.md</code> in an unrelated PR</strong> for Code Facts' sake.</p>
 <p>For bim-compiler specs to show in a <code>§TAG</code> hover, keep the two clones side by side (<code>bim-ootb/</code> next to <code>bim-compiler/</code>), or set
 <code>bimDevtools.compilerRoot</code>. Its witnesses (node only, no VS Code needed) are listed in its <code>README.md</code>.</p>
-<p><strong>The same facts in a terminal: <code>x0</code>.</strong> <code>node devtools/x0/x0.js help</code> lists its verbs: <code>where &lt;field&gt;</code>, <code>uses &lt;field&gt;</code>, <code>tag &lt;§TAG&gt;</code>,
-<code>loaded &lt;file&gt;</code>, <code>cost [base]</code>, <code>last &lt;file&gt;</code>, <code>context &lt;file&gt;</code>, <code>check [base]</code>, <code>pure</code>, <code>bump …</code>. It runs the same code as X0 Navigator and the
-x0-facts server, so all three give the same answer (W-X0-CLI checks each verb against the server). It is read-only except <code>bump</code>, which is
-<code>scripts/bump.js</code>. No page loads it.</p>
+<p><strong>The same facts in a terminal: <code>code-facts</code>.</strong> <code>node devtools/code-facts/code-facts.js help</code> lists its verbs: <code>where &lt;field&gt;</code>, <code>uses &lt;field&gt;</code>, <code>tag &lt;§TAG&gt;</code>,
+<code>loaded &lt;file&gt;</code>, <code>cost [base]</code>, <code>last &lt;file&gt;</code>, <code>context &lt;file&gt;</code>, <code>check [base]</code>, <code>pure</code>, <code>bump …</code>. It runs the same code as Code Facts and the
+code-facts server, so all three give the same answer (W-CODEFACTS-CLI checks each verb against the server). It is read-only except <code>bump</code>, which is
+<code>scripts/bump.js</code>. No page loads it. A shorter way to type it, optional (the repo adds no alias and puts nothing on your PATH): from inside <code>devtools/code-facts/</code>, <code>node code-facts.js where camera</code>; or add <code>alias code-facts='node devtools/code-facts/code-facts.js'</code> to your shell.</p>
 <h3 id="42-working-with-an-ai-assistant-in-vs-code-optional">4.2 Working with an AI assistant in VS Code (optional)<a class="headerlink" href="#42-working-with-an-ai-assistant-in-vs-code-optional" title="Permanent link">&para;</a></h3>
-<p>Nothing in this project needs an AI assistant, and X0 Navigator never calls one. If you choose to use one, this is how it fits. The facts
+<p>Nothing in this project needs an AI assistant, and Code Facts never calls one. If you choose to use one, this is how it fits. The facts
 about Claude Code are from its documentation (code.claude.com/docs, read 2026-11-14).</p>
 <p><strong>Two kinds of help, often used together.</strong> An <em>autocomplete</em> assistant (GitHub Copilot's original style) suggests the next lines as grey
 text while you type. An <em>agent</em> (Claude Code) has no grey-text completion: you describe a task, it reads files, runs commands and proposes
@@ -4982,20 +4983,20 @@ diffs in the editor. The terminal has every command; the panel has a subset.</p>
 <p><strong>The three worries, plainly.</strong> <em>Losing control:</em> an agent does what it is allowed to do, so the limits are yours to set: it asks before
 it edits, changes arrive as diffs, work stays on a branch and merges only through a pull request with checks. <em>Runaway cost:</em> cost follows
 session length and the number of helpers started, so keep tasks small, start a new session for a new task, and let free deterministic
-tools answer what they can (the facts server and X0's commands cost nothing). <em>Results that vary:</em> true of the model, not of code. This
+tools answer what they can (the facts server and Code Facts' commands cost nothing). <em>Results that vary:</em> true of the model, not of code. This
 project's answer is to make the model's work checkable by things that do not vary: a parser, a witness with a red control, a <code>§</code> line in
 a log, a commit hash. A result that passes those can be trusted on that evidence, whoever typed it.</p>
-<p><strong>A path that keeps you in charge.</strong> (1) Read and navigate in VS Code with X0 Navigator until you can find anything yourself. (2) Make
+<p><strong>A path that keeps you in charge.</strong> (1) Read and navigate in VS Code with Code Facts until you can find anything yourself. (2) Make
 small edits by hand; run <em>Check</em> before every commit. (3) Give the agent the wide or tedious jobs, one at a time, with a plan first.
 (4) Review every diff as if a new colleague wrote it. (5) Keep what you learn in <code>CLAUDE.md</code>, so the next session starts from it.</p>
-<p><strong>Give the assistant this project's facts (off by default).</strong> <code>devtools/mcp/x0-facts/</code> is a small local server that answers from the same
-code X0 Navigator uses: where an <code>APP</code> field is set, what a <code>§TAG</code> means, how a file is loaded, what a change costs, the last provable
+<p><strong>Give the assistant this project's facts (off by default).</strong> <code>devtools/mcp/code-facts/</code> is a small local server that answers from the same
+code Code Facts uses: where an <code>APP</code> field is set, what a <code>§TAG</code> means, how a file is loaded, what a change costs, the last provable
 logged value, the pre-ship check, and <code>context_for_file</code>: all of that for one file in a single answer (the same block as the editor command
 <em>Context for this file</em>). It is read-only, calls no model and opens no network connection.</p>
 <ul>
-<li>On, from the bim-ootb folder: <code>claude mcp add x0-facts --scope local -- node devtools/mcp/x0-facts/server.js</code> (you, this project only).</li>
-<li>Off: <code>claude mcp remove x0-facts --scope local</code>. Inside a session, <code>/mcp</code> shows it and switches it for that session.</li>
-<li>When no assistant starts it, no process runs. X0 Navigator works the same with it on or off.</li>
+<li>On, from the bim-ootb folder: <code>claude mcp add code-facts --scope local -- node devtools/mcp/code-facts/server.js</code> (you, this project only).</li>
+<li>Off: <code>claude mcp remove code-facts --scope local</code>. Inside a session, <code>/mcp</code> shows it and switches it for that session.</li>
+<li>When no assistant starts it, no process runs. Code Facts works the same with it on or off.</li>
 </ul>
 <p><strong>Seeing what a session uses</strong> (Claude Code documentation, read 2026-11-14). In the VS Code panel: the prompt box shows how full the
 context window is, and <code>/usage</code> opens an <em>Account &amp; usage</em> dialog (plan users see usage bars; API-key users see the session's cost and
@@ -5004,7 +5005,7 @@ window, item by item. A terminal status line can show cost and context percentag
 documented: a status line inside the VS Code panel.</p>
 <hr />
 <h3 id="43-the-provenance-hover-the-code-behind-what-you-see-on-the-page">4.3 The provenance hover: the code behind what you see on the page<a class="headerlink" href="#43-the-provenance-hover-the-code-behind-what-you-see-on-the-page" title="Permanent link">&para;</a></h3>
-<p>X0 Navigator (§4.1) works inside the editor. The provenance hover works the other way round: you point at something on the page and it
+<p>Code Facts (§4.1) works inside the editor. The provenance hover works the other way round: you point at something on the page and it
 tells you which code made it, then opens that line in VS Code. There are two: one for a body in the <strong>Modeller</strong>, one for a field in the <strong>ERP</strong>.
 Both live in bim-ootb <code>devtools/hover/</code> (part of BIM DevTools).</p>
 <p><strong>It is a developer tool.</strong> You load it into one browser tab with a bookmark. No shipped page loads it, so users never see it. Reload the
@@ -5210,7 +5211,7 @@ oracle. The SQLite kernel must behave like legacy iDempiere, look and feel inclu
 <p><code>A</code> is <code>X.A</code> (<code>AdCallout</code>) inside a process. If the env has no clock the call <strong>throws and logs <code>§ENV_NO_DATE</code></strong>: that is the design, the core never falls back to a wall clock.</p>
 <p><strong>The day is the LOCAL day, never the UTC day.</strong> Legacy dates by the server's local day (the reference: iDempiere's web-service login sets <code>#Date</code> from the JVM's local time). <code>toISOString()</code> is UTC, so between local midnight and the zone offset the date comes out as <em>yesterday</em>. That was bim-ootb #2996: the headless kernel dated an invoice made at 00:30 in a +08 zone the 12th instead of the 13th. Test any date change at <strong>00:30 in a +08 zone</strong>; a test that only runs in UTC proves nothing here.</p>
 <p><strong>Prove it:</strong> <code>node erp/tests/witness_core_clock_reads.js</code> scans the files already migrated for a clock call and must print <code>clockReads=0</code> on every line, ending <code>§WITNESS_CORE_CLOCK_READS … fail=0</code>; <code>node erp/tests/witness_env_views.js</code> checks the day in UTC and Asia/Kuala_Lumpur (<code>§ENV_VIEWS … same=Y</code>); <code>node erp/tests/witness_replay_clock.js</code> replays a journal three days later (<code>§REPLAY_CLOCK … match=Y</code>). Both new witnesses carry a red control: a planted clock read must make them fail.
-<strong>Where it stands (2026-11-17): done.</strong> Every core file asks the installed edge; <code>node erp/tests/witness_core_pure.js</code> parses the whole core list (bim-ootb <code>scripts/lib/core_pure.js</code>, 125 files) and prints <code>§CORE_PURE … forbidden=0 … verdict=PASS</code>. CI runs it on every pull request, and X0 Navigator underlines the same call in the editor as you save (§4.1), so you hear about it before CI does.</p>
+<strong>Where it stands (2026-11-17): done.</strong> Every core file asks the installed edge; <code>node erp/tests/witness_core_pure.js</code> parses the whole core list (bim-ootb <code>scripts/lib/core_pure.js</code>, 125 files) and prints <code>§CORE_PURE … forbidden=0 … verdict=PASS</code>. CI runs it on every pull request, and Code Facts underlines the same call in the editor as you save (§4.1), so you hear about it before CI does.</p>
 <h2 id="6-proving-it">6. Proving it<a class="headerlink" href="#6-proving-it" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>Witnesses</strong> live in <code>viewer/tests/</code>, <code>erp/tests/</code>, <code>modeller/tests/</code>, <code>tests/</code>, <code>witness/</code> and <code>scripts/tests/</code>. Run one with
@@ -5296,8 +5297,8 @@ proof cannot be made (this is why a bake's own commit line is not accepted, and 
 shown "probably current": the reason is shown instead.</p>
 <p><strong>What is and is not new.</strong> Showing run-time values in the editor is established (live-process tools do it), and so are frame-capture and
 log viewers. Those tools get freshness for free from a running process, or do not claim it. The piece here is the provenance check on
-an offline log. It is a few lines of code (<code>devtools/vscode/x0-navigator/lib/lens_index.js</code>: <code>parseStamp</code>, <code>whyNot</code>, <code>explain</code>), has
-no dependency, and its witness (<code>witness_x0_lens.js</code>) holds a red control for every refusal above.</p>
+an offline log. It is a few lines of code (<code>devtools/vscode/code-facts/lib/lens_index.js</code>: <code>parseStamp</code>, <code>whyNot</code>, <code>explain</code>), has
+no dependency, and its witness (<code>witness_codefacts_lens.js</code>) holds a red control for every refusal above.</p>
 <hr />
 <h2 id="7-the-compiler-side-this-repo">7. The compiler side (this repo)<a class="headerlink" href="#7-the-compiler-side-this-repo" title="Permanent link">&para;</a></h2>
 <p>What the April guide described is still here, and it is still the compiler. The details are in <code>docs/archive/DEVELOPER_GUIDE.md</code>:</p>
