@@ -3753,3 +3753,13 @@ Duplex · HHS · Hospital · Clinic · JKR     none — every element's crew, pl
 4. **Undo covers every edit** — `task_sequences` and summary rows in the snapshot; link, unlink, typed dates undoable.
 5. **Reorder** — one atomic SA verb that exchanges two bars' places (windows, and the link between them reversed when one exists), through the single pipeline, judged by the lock gate, undone by one Undo. Witness: element sets follow; a physically impossible reorder is refused with the offender named.
 6. **Group / ruler shift respect links that cross the selection.**
+### Q.19.4 STEP 1 RESULT — the lock gate reads the real op (bim-ootb #3240)
+```
+witness_gantt_lock_integrity, ops in loadOps' own shape     baseline floating / midair    bad drag (200 tried)        result
+main                                                              0 / 0                   none detected               18 pass / 3 FAIL
+fixed — Duplex                                                   39 / 153                 detected, element named     22 / 0
+fixed — Clinic                                                  941 / 3,197               detected, element named     22 / 0
+```
+One read changed (`o.start_ts`). `§GANTT_LOCK_BASELINE` prints `opsWithNoStart=` and says INCONCLUSIVE when nothing was judged. G-LI-0 reads the field names off `loadOps`' source so a rename fails in the witness. Gates GREEN 8 / 8; edit-undo 9 / 0, edit-lock 5 / 0, gesture wiring 16 / 0, edit exception 23 / 0.
+**Since when:** not bisected. The gate has been granting every lock for as long as `_ops` has carried `start_ts` without `timestamp`.
+**NEXT: step 2 (`witness_tm_needle_sync`).**
