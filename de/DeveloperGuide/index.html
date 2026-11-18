@@ -4516,6 +4516,11 @@ Either way you get about 4,800 files, about 540 MB. Clone <strong>BIMCompiler</s
 <code>viewer/buildings/Duplex_*.db</code> locally, gets "404 not found" (expected: the browser console shows these as errors), and then loads
 the same building from the project's file store online. After that it is cached. So: the first viewer run needs a connection; ERP and
 the Modeller do not.</p>
+<p><strong>To work with buildings offline on your own machine:</strong> open any building from the landing page (<code>http://localhost:8000/</code>, or the live
+site), press <strong>Save Building</strong> (Ctrl+S) in the viewer: it writes one self-contained <code>.db</code> file. Put that file in <code>bim-ootb/viewer/buildings/</code>
+and open <code>http://localhost:8000/viewer/viewer.html?db=buildings/&lt;name&gt;.db</code>. With no <code>?db=</code>, the viewer looks for
+<code>buildings/Duplex_extracted.db</code> (<code>viewer/config.js</code>), so a saved Duplex under that name opens with no network at all. <code>*.db</code> files are
+ignored by git, so a saved building is never committed by accident (building data is not kept in git, §5.3).</p>
 <p>The viewer page also loads a small visitor counter (GoatCounter, <code>gc.zgo.at</code>), as the live site does. To keep your own visits out
 of the count, open it once with <code>?ignore-me</code> at the end of the address.</p>
 <p><strong>4. Set up VS Code.</strong> Open the <code>bim-ootb</code> folder. The repo brings its own setup: <code>jsconfig.json</code>, <code>types/</code>, <code>.vscode/settings.json</code>,
