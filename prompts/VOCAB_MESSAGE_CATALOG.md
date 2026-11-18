@@ -2,7 +2,7 @@
 Scope: **SPEC and phase ledger** for ONE vocabulary the CLI and the guides both read: a keyed message catalog and a help catalog over the Application Dictionary, with a short/long level and a locale. Read the log after every run (exit code is not evidence). Spec first, witness with a falsifier next, code last; honour until this file is marked DONE.
 Background, measurements and prior art are in `prompts/DOCS_I18N.md` §4b-§4d (owner ideas of 2026-11-16: shared vocabulary for CLI and guides, a `Student` level = the long text, reuse the legacy element/message model, remove the copied Help). This file owns the BUILD; that file keeps the findings.
 
-## ▶▶▶ RESUME HERE (written 2026-11-18, updated the same day after items 1, 2, 3, 5 and 6; left: only item 4 (it waits for a Thai ERP help pack; `erp/i18n/help/` has de fr ja zh + en, 2026-11-18); nothing else is open in this lane; the next "resume message" session starts here)
+## ▶▶▶ RESUME HERE (written 2026-11-18, updated the same day after items 1, 2, 3, 5 and 6; left: item 4 waits for a Thai ERP help pack; items 7 and 8 are open and free to take; the next "resume message" session starts here)
 **Start:** (1) read this block; (2) `git fetch origin` in `~/bim-compiler` and `~/bim-ootb` (ff-only, clean tree) and `git worktree list` BEFORE any `git worktree add`; (3) say in one line what you will do; spec before code, a witness with a falsifier, read the log not the exit code.
 **State (all MERGED, each with a §-RESULT in this file):**
 - **The one query core is COMPLETE** (§18 design `prompts/HELP_QUERY_CORE_DESIGN.md`, §19.1-§19.6): grammar #3189, core + ERP index #3192, ERP box + `erp.ask` #3197, Viewer/Modeller panels #3203, Did-you-mean #3211, `#<number>`/New/GlobalId #3212. Witnesses: W-PREFIX, W-HQ-GENERIC/SELF/WORDS/BM25/RANK-TWIN/COST/LEGACY-SUPERSET/BOX/DYM/DOC/NEW/GUID, H-SUPERSET.
@@ -12,7 +12,9 @@ Background, measurements and prior art are in `prompts/DOCS_I18N.md` §4b-§4d (
 1. ~~"Table" ranking~~ **DONE 2026-11-18** (owner "agree" to (b); §19.7 RESULT, bim-ootb #3233): legacy's label order inside tiers 1 and 2, alias-only hits after; first window = legacy's on 1,800 of 1,800 starts-with probes (was 951).
 2. ~~Hand to the ERP parity lane~~ **DONE 2026-11-18**: written into `ERP_IDEMPIERE_UX_PARITY.md` ▶ START HERE, Open not blocked (toolbar New ignores `winSet[w].rw`; the seed grants every role read-write).
 3. ~~Waiting on the CLI session~~ **DONE 2026-11-18**: §42 S3 landed (bim-ootb #3240), and the guard was removed (§19.8 RESULT, #3257): 184 of 184 short names are offered again, with no flood. Still the CLI session's own: the shell side of `#` (§41).
-4. Thai help pack (Q3 default) when a Thai pack exists; process/doctype records are indexed but the window-only role gate hides them (§19.3 caveat).
+4. Thai help pack (Q3 default) when a Thai ERP help pack exists (`erp/i18n/help/` has de fr ja zh + en). ~~The §19.3 caveat (processes hidden)~~ **DONE 2026-11-18** (§19.9 RESULT, bim-ootb #3263).
+7. **NEW 2026-11-18, this lane's own witness red on main:** W-FIELD-HELP 10/3 (F1 inline-editor tooltip/label 226/234, F3 81/88; §19.9 RESULT). Diagnose first: which change moved inline-editor labels away from `AD_Field.Name`.
+8. **NEW 2026-11-18, from §19.9:** process names into the help packs (`build_help_pack.js` + `AD_Process_Trl` of the screen packs); record kinds for forms / workflows / info windows / tasks (legacy's menu search lists them); tell the CLI session that `indexFrom` takes `processIds` (`erp.ask`).
 5. ~~Modeller guide PARAGRAPHS~~ **CLOSED 2026-11-18, skipped** (owner "agree"). ~~§14.5 drag-witness gap~~ **DONE 2026-11-18** (§14.5.3 RESULT, bim-ootb #3246): W-DRAG-SWEEP 12 of 12 judged callers drag; it found and fixed 2 drag defects (a translated panel jumped, the Sunglass panel never dragged).
 6. ~~Witness defect named in §14.8 RESULT~~ **DONE 2026-11-18** (§14.8.2 RESULT, bim-ootb #3220): the contract's lines now reach the witness's own .log via `run(sink)`; the 25 bare callers and the W-ERP-I18N failures on main are handed to their lanes.
 **Lesson (2026-11-18), (a) broken again:** §19.3 gave the owner a legacy example ("Table and Column first") that was never checked against legacy's comparator or the role's menu. Before an owner's call, run the legacy rule (`HelpQuery.legacyFilter`) on the example first.
@@ -1656,6 +1658,32 @@ Both boxes read input through `HelpGrammar.parse`. **6a ERP:** `#<number>` searc
 - **The one trade, stated:** D1b erp 48/49 (was 49/49). zh `批制` (typo of `批控制`) is at distance 1 from four names; `批` now takes a slot, and `nearest()`'s code-unit tie-break puts `批控制` 4th. D1b is report-only. The tie-break is the CLI session's (`assist_core.js`), not changed here.
 - **Regressions green:** W-HQ-BOX 4/0, W-HELP-SHOWCASE 23/0, W-ASSIST-NEAREST 5/0, W-HQ-SELF 82/0, W-ERP-ASK 11/0; eslint 0.
 - Tooling note: a bim-ootb worktree has no `node_modules`; `scripts/bump.js` needs `espree` by path, so link `~/bim-ootb/node_modules` into the worktree (git-ignored).
+
+### 19.9 Step 9: the role's menu processes and reports in the ERP help box (2026-11-18; owner: "proceed" after the §19.3 caveat was named as pending)
+**Issue it removes:** legacy's menu search lists EVERY leaf of the role's menu tree (`MenuSearchController.java:160-176` walks the tree, `addTreeItem` skips only folders; the kinds are set in `AbstractMenuPanel.java:204-228`: window, report, process, workflow, form, info, task). The twin's help box admits windows only: `help_search.js` `indexFrom`'s gate is `gate[0] === 'window'`, and the card shows only a Window row. So a person typing "Generate Invoices" gets no process at all, although the process records are built and ranked (`help_records_core.js:44`). Under the CARDINAL rule this is a divergence, fixed on the twin side.
+**Measured (seed, 2026-11-18):** active menu leaves are W 332, P 90, R 69, X (form) 24, F (workflow) 12, I (info) 4, T (task) 3. Role 102 has 406 process-access rows. The page already knows the role's menu processes and reports: `window.__idmpFieldHelp.menu().processes` (`idempiere.html:3249`, filled at :1675 from the P/R leaves). It opens them through the menu's own `openProcess(id, name)` (:4677).
+**Change (generic, no window or process named):**
+- `indexFrom({ …, processIds })`: the gate admits `['process', id]` when `id` is in `processIds`. It is optional; without it the gate is windows-only as today, so `common/door/erp_cli.js` (`erp.ask`, the CLI session's file) is unchanged until that session opts in.
+- The card gains `process`: the best-ranked admitted process in the top 5 hits, `{id, name, report}`. The page shows a "Process" row (or "Report" when `isreport='Y'`, the menu's own kind) whose link calls the menu's `openProcess`. Nothing runs until the person presses the process dialog's own button, as from the menu.
+- Falsifier `HS_BREAK=winonly` (the file's own `HS_BREAK` switch, like `nophrase`): the gate goes back to windows only.
+- The row labels are dictionary elements, like Window (`help.window` = `el:143`): `help.process` = `el:117` (AD_Process_ID "Process"), `help.report` = `el:1022` (IsReport "Report"), in `erp/i18n/chrome.json`.
+**Not in this step, counted and stated:** forms (24), workflows (12), info windows (4) and tasks (3) are not indexed at all (no record kind); process names are English in every help pack (CORRECTED at build: the ERP screen packs DO carry `AD_Process_Trl` and `AD_Menu_Trl` (`erp/i18n/fr_FR.json` …), but `build_help_pack.js` writes only window, table, action and status names, so the help box shows the record's English name; adding processes to the help pack is a follow-up); the CLI's `erp.ask` until the CLI session passes `processIds`.
+**Claims (extend W-HQ-LEGACY-SUPERSET; falsifier `HS_BREAK=winonly`):**
+- **L6 processes are inside the box's list.** For each process or report of role 102's menu (N from the dictionary: active P/R menu leaves whose process the role can access) x 2 probes x the built languages, every one legacy's filter shows is in the box's list. X of N probes. `winonly` FAILS.
+- **L7 the card names it.** For each such process, asking its exact name gives `card.process.id` = it. X of N.
+- **L8 the gate holds:** a process NOT in the role's menu never appears in any list of L6 (0 expected), and a process asked by name that the role lacks gives no Process row. Printed population; VACUOUS if every process is in the menu.
+- **Page (W-HELP-SHOWCASE or W-HQ-BOX):** in the real page, the box's Process row for one menu process calls `openProcess` (the `§AD-PROC` log line of the menu path), and `menu().processes` equals the witness's SQL set.
+
+### 19.9 RESULT (2026-11-18): BUILT + MERGED, bim-ootb #3263 (`06cdc893`)
+- `erp/help_search.js`: `indexFrom({processIds})` admits the role's menu processes and reports; `card.process` gives a Process / Report row (`help.process` = `el:117`, `help.report` = `el:1022`) that opens through the menu's `openProcess`. Falsifier `HS_BREAK=winonly`. `idempiere.html` passes `menu().processes`. erp sw v1104 (via `scripts/bump.js`).
+- **Witnessed (logs read):**
+  - **W-HQ-LEGACY-SUPERSET 7/0:** L6 1,370/1,370 probes (7,855 legacy hits inside); L7 685/685; L8 0 off-menu listed and 0 rows for 300 off-menu names. Red `winonly`: L6 and L7 FAIL.
+  - **W-HQ-BOX 7/0:** B2 5,466/5,466 (its page gate now includes the menu's processes); B4a `menu().processes` == the SQL reading, 137 = 137; B4b 137/137 rows; B4c a click gives `§AD-PROC-LIVE open proc=115 "Vendor Selection" report=Y`. Red: B4b 0/137.
+- Regressions green: SHOWCASE 23/0, DYM 25/0, DOC 5/0, NEW 4/0, COST 37/0, ERP_ASK 11/0.
+- **Found, pre-existing on main (this lane's own witness):** W-FIELD-HELP fails 3, the same 3 on main's unchanged copy:
+  - F1 inline editor tooltip 226/234 and label 226/234, e.g. `c_order.c_bpartner_location_id`; also `label != AD_Field.Name`, with `m_inout.c_order_id` showing "Order" where the dictionary has another name;
+  - F3 81/88.
+- **Left, stated:** forms (24), workflows (12), info windows (4) and tasks (3) have no record kind. Process names are English in other languages (the screen packs have `AD_Process_Trl`; `build_help_pack.js` does not write process names). `erp.ask` is windows-only until the CLI session passes `processIds`.
 
 ## STATUS
 2026-11-18: query core COMPLETE (§19.6 #3212); RESUME block rewritten.
