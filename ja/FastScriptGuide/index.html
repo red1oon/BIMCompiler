@@ -4081,7 +4081,7 @@ not done: cd project
 </tr>
 </tbody>
 </table>
-<p><strong>計画しておくべき制限。</strong> Modeller の呼び出しは、そのつど建物全体を開きます。HospitalGarage で約 10〜40 秒です。これは測定ツールであり、稼働時間を保証するサービスではありません。Modeller の行が複数あるスクリプトは、行ごとに建物を一度開きます。</p>
+<p><strong>計画しておくべき制限。</strong> Modeller の呼び出しは、そのつど建物全体を開きます。HospitalGarage で約 10〜40 秒です。これは測定ツールであり、稼働時間を保証するサービスではありません。Modeller の行が複数あるスクリプトは、行ごとに建物を一度開きます。 <strong><code>red1&gt;</code> で作ったものは、今のところ red1 自身の変更ログにだけ残ります。</strong> プロンプトで作った注文はブラウザーの ERP ウィンドウには表示されず、ウィンドウで作った注文もプロンプトでは見えません。この二つをつなぐことが次の段階です。</p>
 <h2 id="_5">開発者向け<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
 <p><strong>ドアの行。</strong> どの言葉も一行のドアの行 <code>app.verb key=value key=value</code> になり、red1 が <code>→</code> のあとに表示します。ドアの行をプロンプトに直接打つことも、単発で実行することもできます。<code>red1 'object.count building=Duplex kind=Element'</code> は答えを表示し、<code>--json</code> はエンベロープ全体を表示します。単発の行に複数の言葉を入れるときは <code>;</code> で区切ります（<code>red1 'cd Duplex; count'</code>）。<code>red1 -f FILE</code> は行のファイルを実行し、<code>--</code> で始まる行はコメント、<code>--dry</code> は先に試します。ドアは、すべての行を固定の動詞一覧と照合し、アプリ自身のコードを呼び、確認されなかったことを添えて答えを返します。どの動詞にも合わない行は、推測されることなく、質問として返ります。</p>
 <p><img alt="ひとつのドア。左の主体は同じ動詞を話し、ドアが解析・確認・結び付け・呼び出し・返答を行い、アプリ自身の確認が決める。" src="../../figs/one_door.svg" /></p>

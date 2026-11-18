@@ -4081,7 +4081,7 @@ not done: cd project
 </tr>
 </tbody>
 </table>
-<p><strong>需要预先考虑的限制</strong>。每次 Modeller 调用都会打开整栋建筑：在 HospitalGarage 上大约 10 到 40 秒。这是一个测量工具，不是有正常运行时间保证的服务。一个含有多条 Modeller 行的脚本，每行都会打开一次建筑。</p>
+<p><strong>需要预先考虑的限制</strong>。每次 Modeller 调用都会打开整栋建筑：在 HospitalGarage 上大约 10 到 40 秒。这是一个测量工具，不是有正常运行时间保证的服务。一个含有多条 Modeller 行的脚本，每行都会打开一次建筑。 <strong>你在 <code>red1&gt;</code> 创建的内容目前只保存在 red1 自己的变更日志里：</strong> 在提示符下创建的订单不会出现在浏览器的 ERP 窗口中，在窗口中创建的订单在提示符下也看不到。把两者合并是下一步。</p>
 <h2 id="_5">面向开发者<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
 <p><strong>门行。</strong> 每个词都变成一条门行，<code>app.verb key=value key=value</code>，red1 在 <code>→</code> 之后打印它。您可以直接在提示符下输入门行，也可以一次性运行：<code>red1 'object.count building=Duplex kind=Element'</code> 打印答复，<code>--json</code> 打印完整的信封。单行中的多个词用 <code>;</code> 分隔（<code>red1 'cd Duplex; count'</code>）；<code>red1 -f FILE</code> 运行一个行文件，以 <code>--</code> 开头的行是注释，<code>--dry</code> 先试运行。门会对照固定的动词列表检查每一行，调用应用自己的代码，并连同未检查的内容一起返回答复。与任何动词都不匹配的行绝不会被猜测，而是以问题的形式返回。</p>
 <p><img alt="一扇门。左侧的参与者说同样的动词；门负责解析、检查、绑定、调用和答复；由应用自己的检查来决定。" src="../../figs/one_door.svg" /></p>
