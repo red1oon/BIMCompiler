@@ -109,3 +109,24 @@ Memory (one run each, forced GC, after Convert): with the tool 45.5 MB, without 
 red on the old overlay `tip_out_of_window=4` of 14 at 1440x900, green `0`, `§DXF_HOVER_W VERDICT PASS fail=0` on main. Also logs `§DXF_HOVER edit_delta=Y` once the edits owner is loaded (seen in `out/ms_new.log`).
 **Card layout lesson:** the tooltip text in the top band first cut lines at 70 characters (it would have hidden `element_defaults.json:5`, move 1's point); `cards.js` now measures every tooltip line's width
 (the check failed at 18 px, passes at 17 px in 820 | 1000 px columns). Rebuild: `node facts.js <tree> <W-BIM-LAYERS log> <W-DXF-HOVER log>`, `./shoot.sh <tree>`, `./build.sh`.
+
+# FILM 4 — "CH 0 · From an empty folder to a witnessed dev setup" (owner 2026-11-18: *"list outline of what achieved since last film"* → *"update prompt on that film script when resume"*)
+
+**STATUS: SCRIPT TO WRITE on the next "resume VSC" (not built).** Covers what the tenth session built after "When AI Dies" (bim-compiler `prompts/CODE_ARCHITECTURE_DESIGN.md`,
+RESUME 0 tenth session). House style binds (bim-compiler `prompts/FILM_NARRATION.md` ▶ HOUSE STYLE): split screen — the terminal strip on top, each line TYPED, the real app below on the data
+that line produced · real recorded key sounds, the voice only after Return · every number spoken or shown comes from a `§` line in the build's `facts.json`, and a stale number FAILS the build
+(`§FILM_GUARD`) · the guide link on the last card (Developer Guide §3, §4.1: `red1oon.github.io/BIMCompiler/DeveloperGuide/`) · the film file is never committed, only its scripts · EN first,
+other languages on the owner's word. No browser/GPU capture without the owner's go; ask other live sessions before using the GPU.
+
+**Beats (proposed; every number re-measured at build time, the ones here are from 2026-11-18):**
+1. **Empty folder → running.** Type `node scripts/tests/witness_from_scratch.js`: the download (`files=4798 mb=541`), serve, the three apps (ERP and Modeller: 0 failed requests, 0 errors),
+   the viewer opening the Duplex `1,118/1,118`; the gap it names honestly (first viewer run needs the internet). Then the offline answer: Save Building (Ctrl+S) → `viewer/buildings/` → `?db=`.
+2. **X0 from the download.** `node devtools/vscode/pack.js` → the `.vsix` → installed; a hover in VS Code on the real code (capture from the live editor, not a mock).
+3. **The same facts in a terminal.** `x0 where camera` · `x0 loaded viewer/scene.js` · `x0 tag §BUMP`: each answer = the facts server's (W-X0-CLI `same=8/8`).
+4. **The manifest refuses a hand edit.** Edit one modeller `?v=` by hand → `node scripts/gen_manifest.js --check` names the file and line and the command; `bump.js` does it right
+   (the inline literal goes up with its module, B1-Q2). Numbers: `deps_declared=25`, `claims=15/15 red=12/12`.
+5. **Proof you can read.** `node scripts/gen_proof_map.js modeller` (`proven=13 named_only=62 unproven=24`); a `PROVES:` line naming a missing file goes red.
+6. **CI that grew.** The fast tier: `61 of 1,512` witness files on every PR (was 21), and why 39 stay local (each with its measured reason).
+7. **The session's own bill.** `x0 session last`: tokens, PRs, witnesses run, and what the session added to what users load (`modeller offline +183 B`). Last card: guide link + credentials.
+
+**Before building:** re-run each beat's command and keep its log (`out/*.log`); pick shots from the real screen state they produce; cut beats the owner drops. Rebuild recipe as FILM 2/3.
