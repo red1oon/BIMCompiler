@@ -587,7 +587,9 @@ files on purpose (`Bonsai.x = …` from 3 files) allowed? Proposal: yes, if the 
 **Done when:** the owner table is generated for all three apps, W-OWNER-UNIQUE PASS, its red control FAILs, and each duplicate found today
 (`ERPKernel`, `routewalker.js`, the `Bonsai`/`ERP` publishers) is either marked `"extends"` or has its own tracker issue.
 **DECISIONS:**
-- **D-1 (2026-11-18, tenth session):** asked where the hand-kept question list lives (options `<app>/questions.json` next to modules.json / inside modules.json / one repo-wide file). Owner: **"<app>/questions.json (Recommended)"** → one question per line (question, owner file, where in it), dev-side, joined with modules.json by the generator, which flags a question with two owners. D-2 (`"extends"` marks) still open.
+- **D-1 (2026-11-18, tenth session):** asked where the hand-kept question list lives (options `<app>/questions.json` next to modules.json / inside modules.json / one repo-wide file). Owner: **"<app>/questions.json (Recommended)"** → one question per line (question, owner file, where in it), dev-side, joined with modules.json by the generator, which flags a question with two owners. 
+- **D-2 (2026-11-18):** asked with `Bonsai` published by 12 modeller files on purpose. Owner: **"Yes, if marked "extends" (Recommended)"** → a file that adds to a shared namespace gets
+  `"extends": "Bonsai"` on its modules.json line; only a member written by two files (`Bonsai.x` from 2 files) is flagged; an unmarked multi-publisher stays red. Part D can be specced.
 
 ---
 
@@ -823,6 +825,18 @@ and prints a short summary at session end; local files only, no network, no mode
 - **Witness W-X0-SESSION:** a synthetic transcript with known numbers (two streamed copies of one reply must count once; a PR link; two witness runs) → exact totals; a temp git repo with a
   squash commit `(#7)` growing a precached file by a known number of bytes → that delta; history replace-not-append on a re-run; red controls: a reply counted twice and a PR missing
   from `origin/main` must be reported, not hidden. Verdict `§X0_SESSION_W … verdict=`.
+
+
+**§F.37 RESULT — ✅ built 2026-11-18 (bim-ootb #3266).** `node devtools/x0/x0.js session last | history [N] | --transcript F | --hook`. W-X0-SESSION `checks=8/8 verdict=PASS`
+(mutation: reply dedupe off → `6/8 FAIL`); local-only like deploy_cost (needs VS Code's TypeScript). First real run (this session): `179 replies · out 201.0k · cache read 48.4M ·
+cache write 489.5k · 9 PRs · URL load modeller start-up ±0 B, offline +183 B` (the B1 marker comments). **Hook:** the Claude Code docs (hooks page) say a SessionEnd hook's stdout and
+JSON `systemMessage` are discarded; only stderr on exit 2 reaches the user, default timeout 1.5 s. So `--hook` prints to stderr and exits 2; installed in the owner's `~/.claude/settings.json`
+as `SessionEnd`, timeout 30 s, guarded (`[ -f ~/bim-ootb/devtools/x0/x0.js ] || exit 0`); it shows once `~/bim-ootb` has pulled #3266. Pipe-tested: 0.14 s, exit 2, summary on stderr.
+
+**CI COVERAGE GAP (reported by session bim-compiler-9b, re-measured here 2026-11-18 on bim-ootb main):** 1,512 witness files; **21 run in CI** (17 named across the workflows + the 4-witness X0 loop) = 1.4%.
+`npm test` = `tests/run_witness_suite.js` (every `viewer/tests/witness_*.js`; headless class gates, browser class report-only, KNOWN_RED list) is not run in CI. The 0.000 mm Rosetta geometry
+witnesses and bim-compiler's RosettaStoneGateTest run before commit by habit only. Already written in `docs/VibeProgramming.md` (#933) and `prompts/FILM_VIBE_CODING_LEDGER.md`. Belongs to Part E
+(one runner). **Owner decision needed: CI time vs coverage** (measurement of one headless suite run in progress; options then go to the owner).
 
 ## ADVICE — from the session that built Part F, for the owner and the sessions that follow (2026-11-14)
 
