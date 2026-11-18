@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 24dfe73f0ea2cdfd
+source_sha: b6044f3db00e8cee
 lang: ja
 ---
 
@@ -119,7 +119,7 @@ cost: the cost of a selection: cost [phase|task|storey|discipline|class] [column
     e.g. in Duplex: viewer.cost building=Duplex by=discipline
 ```
 
-**自分の言語でヘルプ。** `ask "<question>"` は、ブラウザ版 ERP の質問ボックスと同じヘルプに、ふつうの言葉で質問します。ERP の種類の中（`cd Order`）で使えます。答えは、ウィンドウ、ドキュメントアクションとそれが許されるステータス、それを行うコマンドライン、ガイドの節を示します。辞書と公開されている iDempiere の言語パックから読み取ります。中に AI はなく、読むだけです。言語は `lang=zh_CN` で選んだもの、なければログインしているときの保存された設定（`login`）、なければ端末の `LANG`、なければシステムのものです。パックにない文は、レガシーと同じく英語のままです（下のアクションの説明）。ここでは端末が中国語です：
+**自分の言語でヘルプ。** `ask "<question>"` は、ブラウザ版 ERP の質問ボックスと同じヘルプに、ふつうの言葉で質問します。ERP の種類の中（`cd Order`）で使えます。答えは、ウィンドウ、一致するものがあればメニューのプロセスまたはレポート（ブラウザのボックスと同じ）、ドキュメントアクションとそれが許されるステータス、それを行うコマンドライン、ガイドの節を示します。辞書と公開されている iDempiere の言語パックから読み取ります。中に AI はなく、読むだけです。言語は `lang=zh_CN` で選んだもの、なければログインしているときの保存された設定（`login`）、なければ端末の `LANG`、なければシステムのものです。パックにない文は、レガシーと同じく英語のままです（下のアクションの説明）。ここでは端末が中国語です：
 
 <!-- run: red1_ask_zh -->
 ```text
@@ -129,6 +129,7 @@ Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POR
 → erp.ask question=如何关闭销售订单？
 ok · erp.ask
 窗口: 销售订单
+进程: 由费用产生销售订单
 文档动作: 结束 — Finally close this transaction. It cannot be re-activated.
   单据处于以下状态时可用: 完成, 等候付款
 CLI: erp.close kind=Order number=<Document No>

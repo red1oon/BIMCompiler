@@ -113,7 +113,7 @@ cost: the cost of a selection: cost [phase|task|storey|discipline|class] [column
     e.g. in Duplex: viewer.cost building=Duplex by=discipline
 ```
 
-**Help in your own language.** `ask "<question>"` puts a question to the same help as the browser ERP's question box, in plain words, and works in an ERP kind (`cd Order`). The answer names the window, the document action and the statuses it is allowed from, the command line that does it, and the guide section. It is read from the dictionary and the published iDempiere language packs; there is no AI inside, and it only reads. The language is the one you chose with `lang=zh_CN`, else your saved preference when you are logged in (`login`), else your terminal's `LANG`, else the system's. A text the pack does not cover stays in English, as in legacy (the action's description below). Here the terminal is Chinese:
+**Help in your own language.** `ask "<question>"` puts a question to the same help as the browser ERP's question box, in plain words, and works in an ERP kind (`cd Order`). The answer names the window, a process or report of your menu when one matches (as the browser's box does), the document action and the statuses it is allowed from, the command line that does it, and the guide section. It is read from the dictionary and the published iDempiere language packs; there is no AI inside, and it only reads. The language is the one you chose with `lang=zh_CN`, else your saved preference when you are logged in (`login`), else your terminal's `LANG`, else the system's. A text the pack does not cover stays in English, as in legacy (the action's description below). Here the terminal is Chinese:
 
 <!-- run: red1_ask_zh -->
 ```text
@@ -123,6 +123,7 @@ Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POR
 → erp.ask question=如何关闭销售订单？
 ok · erp.ask
 窗口: 销售订单
+进程: 由费用产生销售订单
 文档动作: 结束 — Finally close this transaction. It cannot be re-activated.
   单据处于以下状态时可用: 完成, 等候付款
 CLI: erp.close kind=Order number=<Document No>

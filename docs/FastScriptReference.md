@@ -1042,7 +1042,7 @@ building Duplex
 erp.process name="Fold from BIM" Building=Duplex   run it? y/N
 → erp.process name="Fold from BIM" Building=Duplex
 ok · erp.process
-Nothing to post: Duplex is already in its Project Order (model be8ad1765614) · no document made
+Nothing to post: Duplex is already in its Project Order (model ce1f9d6454f0) · no document made
 Open the project? y/N → cd project
 ```
 
@@ -1071,16 +1071,16 @@ C_ProjectPhase_ID: left out
 run: pick Project Line (C_ProjectLine_ID, 43)
 > 1    (leave it out)
   2    10 · 990000 · 990028
-  3    10 · 990017 · 990031
-  4    10 · 990002 · 990038
+  3    10 · 990002 · 990031
+  4    10 · 990017 · 990040
   5    10 · 1600228 · 990047
   6    10 · 990013 · 990057
   7    10 · 1600231 · 990059
   8    10 · 1600232 · 990062
   9    10 · 1600233 · 990069
        20 · 990004 · 990029
-       20 · 990004 · 990032
-       20 · 990014 · 990039
+       20 · 990017 · 990032
+       20 · 990014 · 990041
        20 · 1600229 · 990048
        20 · 990013 · 990058
        20 · 1600231 · 990060
