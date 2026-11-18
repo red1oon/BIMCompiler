@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 24dfe73f0ea2cdfd
+source_sha: b6044f3db00e8cee
 lang: fr
 ---
 
@@ -119,7 +119,7 @@ cost: the cost of a selection: cost [phase|task|storey|discipline|class] [column
     e.g. in Duplex: viewer.cost building=Duplex by=discipline
 ```
 
-**L'aide dans votre propre langue.** `ask "<question>"` pose une question à la même aide que la boîte à questions de l'ERP du navigateur, en mots simples, et fonctionne dans un type de l'ERP (`cd Order`). La réponse nomme la fenêtre, l'action du document et les statuts d'où elle est permise, la ligne de commande qui la fait et la section du guide. Elle est lue dans le dictionnaire et les packs de langue publiés d'iDempiere ; il n'y a pas d'IA dedans, et elle ne fait que lire. La langue est celle choisie avec `lang=zh_CN`, sinon votre préférence enregistrée quand vous êtes connecté (`login`), sinon le `LANG` de votre terminal, sinon celle du système. Un texte que le pack ne couvre pas reste en anglais, comme dans legacy (la description de l'action ci-dessous). Ici le terminal est en chinois :
+**L'aide dans votre propre langue.** `ask "<question>"` pose une question à la même aide que la boîte à questions de l'ERP du navigateur, en mots simples, et fonctionne dans un type de l'ERP (`cd Order`). La réponse nomme la fenêtre, un processus ou un rapport de votre menu quand l'un correspond (comme la boîte du navigateur), l'action du document et les statuts d'où elle est permise, la ligne de commande qui la fait et la section du guide. Elle est lue dans le dictionnaire et les packs de langue publiés d'iDempiere ; il n'y a pas d'IA dedans, et elle ne fait que lire. La langue est celle choisie avec `lang=zh_CN`, sinon votre préférence enregistrée quand vous êtes connecté (`login`), sinon le `LANG` de votre terminal, sinon celle du système. Un texte que le pack ne couvre pas reste en anglais, comme dans legacy (la description de l'action ci-dessous). Ici le terminal est en chinois :
 
 <!-- run: red1_ask_zh -->
 ```text
@@ -129,6 +129,7 @@ Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POR
 → erp.ask question=如何关闭销售订单？
 ok · erp.ask
 窗口: 销售订单
+进程: 由费用产生销售订单
 文档动作: 结束 — Finally close this transaction. It cannot be re-activated.
   单据处于以下状态时可用: 完成, 等候付款
 CLI: erp.close kind=Order number=<Document No>

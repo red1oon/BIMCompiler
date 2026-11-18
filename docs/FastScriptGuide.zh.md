@@ -1,6 +1,6 @@
 ---
 review: machine
-source_sha: 24dfe73f0ea2cdfd
+source_sha: b6044f3db00e8cee
 lang: zh-CN
 ---
 
@@ -119,7 +119,7 @@ cost: the cost of a selection: cost [phase|task|storey|discipline|class] [column
     e.g. in Duplex: viewer.cost building=Duplex by=discipline
 ```
 
-**用您自己的语言获得帮助。** `ask "<question>"` 用普通的话向与浏览器 ERP 问题框相同的帮助提问，在 ERP 类型中（`cd Order`）可用。答复会给出窗口、单据动作及其允许的状态、执行它的命令行，以及指南的章节。它读自词典和已发布的 iDempiere 语言包；里面没有 AI，而且只读不写。语言是您用 `lang=zh_CN` 选择的，否则是您登录时（`login`）保存的偏好，否则是终端的 `LANG`，否则是系统的语言。语言包没有覆盖的文字保持英文，与 legacy 相同（下面动作的说明）。这里终端是中文：
+**用您自己的语言获得帮助。** `ask "<question>"` 用普通的话向与浏览器 ERP 问题框相同的帮助提问，在 ERP 类型中（`cd Order`）可用。答复会给出窗口、有匹配时您菜单上的进程或报告（与浏览器的框相同）、单据动作及其允许的状态、执行它的命令行，以及指南的章节。它读自词典和已发布的 iDempiere 语言包；里面没有 AI，而且只读不写。语言是您用 `lang=zh_CN` 选择的，否则是您登录时（`login`）保存的偏好，否则是终端的 `LANG`，否则是系统的语言。语言包没有覆盖的文字保持英文，与 legacy 相同（下面动作的说明）。这里终端是中文：
 
 <!-- run: red1_ask_zh -->
 ```text
@@ -129,6 +129,7 @@ Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POR
 → erp.ask question=如何关闭销售订单？
 ok · erp.ask
 窗口: 销售订单
+进程: 由费用产生销售订单
 文档动作: 结束 — Finally close this transaction. It cannot be re-activated.
   单据处于以下状态时可用: 完成, 等候付款
 CLI: erp.close kind=Order number=<Document No>
