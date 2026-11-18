@@ -1266,10 +1266,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#empiece-con-red1" class="md-nav__link">
+  <a href="#como-instalarlo" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Empiece con red1
+        Cómo instalarlo
       
     </span>
   </a>
@@ -1277,10 +1277,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#como-instalarlo" class="md-nav__link">
+  <a href="#empiece-con-red1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Cómo instalarlo
+        Empiece con red1
       
     </span>
   </a>
@@ -1333,7 +1333,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#del-edificio-a-su-pedido-coste-la-oferta-contabilizar" class="md-nav__link">
+  <a href="#from-a-building-to-its-order-cost-the-offer-post" class="md-nav__link">
     <span class="md-ellipsis">
       
         Del edificio a su pedido: coste, la oferta, contabilizar
@@ -3452,10 +3452,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#empiece-con-red1" class="md-nav__link">
+  <a href="#como-instalarlo" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Empiece con red1
+        Cómo instalarlo
       
     </span>
   </a>
@@ -3463,10 +3463,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#como-instalarlo" class="md-nav__link">
+  <a href="#empiece-con-red1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Cómo instalarlo
+        Empiece con red1
       
     </span>
   </a>
@@ -3519,7 +3519,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#del-edificio-a-su-pedido-coste-la-oferta-contabilizar" class="md-nav__link">
+  <a href="#from-a-building-to-its-order-cost-the-offer-post" class="md-nav__link">
     <span class="md-ellipsis">
       
         Del edificio a su pedido: coste, la oferta, contabilizar
@@ -3629,6 +3629,30 @@
 <p class="admonition-title">Lo que una buena respuesta no significa</p>
 <p>Una respuesta sin problemas <strong>nunca significa segura, conforme ni buena</strong>. Cada respuesta lista lo que no se comprobó, y <a href="#what-is-not-checked">Lo que no se comprueba</a> lo repite. La última palabra la tiene un ingeniero estructural.</p>
 </div>
+<h2 id="como-instalarlo">Cómo instalarlo<a class="headerlink" href="#como-instalarlo" title="Permanent link">&para;</a></h2>
+<p>Necesita Node 18 o posterior (estos pasos se ejecutaron en Node 18.19). Hay dos formas de entrar.</p>
+<p><strong>La copia completa</strong> le da red1, BIM, ERP, el Viewer y todo lo que sigue. Clónela y luego inicie red1 desde su carpeta superior:</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/red1oon/bim-ootb
+<span class="nb">cd</span><span class="w"> </span>bim-ootb
+node<span class="w"> </span>common/door/red1.js
+</code></pre></div>
+<p>Escriba <code>exit</code> para salir. Para escribir solo <code>red1</code> desde cualquier sitio, ejecute <code>npm link</code> una vez en esa carpeta. Para comprobar que funciona, pida su línea de versión:</p>
+<!-- run: red1_version -->
+<div class="highlight"><pre><span></span><code>$ node common/door/red1.js --version | sed -e &#39;s/^Copyright[^·]*· //&#39; -e &#39;s/ · [0-9a-f]\{8\}$//&#39;
+red1 1.0.0 · 78 verbs · 30 words
+</code></pre></div>
+<p><strong>La descarga de seis archivos</strong> es para la puerta sola con los verbos del Modeller, sin copia completa. Cree una carpeta vacía, instale el motor de navegador que necesita el Modeller y descargue los seis archivos:</p>
+<div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>fastscript<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>fastscript
+npm<span class="w"> </span>init<span class="w"> </span>-y
+npm<span class="w"> </span>install<span class="w"> </span>puppeteer@24
+curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/modeller/tools/edit_cli.js
+curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/modeller/tools/bim_mcp.js
+curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/door.js
+curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/verbs.json
+curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/msg_core.js
+curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/vocab/messages.json
+</code></pre></div>
+<p>Mantenga los seis en la misma carpeta. <code>door.js</code> lee la lista de verbos de <code>verbs.json</code> y sus mensajes de <code>messages.json</code> (a través de <code>msg_core.js</code>), y ejecuta <code>edit_cli.js</code>, que abre la página del Modeller en vivo sin ventana. Si falta un archivo, la puerta dice cuál e imprime su línea <code>curl</code>. Todo lo demás de esta página necesita la copia completa; la <a href="#the-verbs">tabla de verbos</a> dice qué verbo necesita qué.</p>
 <h2 id="empiece-con-red1">Empiece con red1<a class="headerlink" href="#empiece-con-red1" title="Permanent link">&para;</a></h2>
 <p>En un terminal, <code>red1</code> le saluda una vez y luego espera en su prompt. Esto es exactamente lo que imprime (el commit al final de la línea de versión se ha cortado, porque cambia con cada commit):</p>
 <!-- run: greet -->
@@ -3641,6 +3665,7 @@ Tip: type level student for fuller help on each word (red1 --fast opens without 
 
 red1&gt; exit
 </code></pre></div>
+<p><strong>Cómo leer los bloques de esta página.</strong> La línea tras <code>$</code> es cómo la prueba de la página ejecuta la orden: usa archivos de usar y tirar (vaciados antes, así una ejecución nunca toca sus propios datos), recorta los tiempos y oculta el registro. En su propio indicador solo escribe las palabras, como <code>cd Duplex</code>. Debajo está exactamente lo que red1 imprimió.</p>
 <p>Léalo como un mapa. La línea de versión dice cuántos verbos de la puerta (la forma larga) y palabras cortas tiene red1. <code>help</code> muestra las palabras cortas en tres grupos; <code>help bim</code>, <code>help mis</code> o <code>help erp</code> muestra un grupo:</p>
 <table>
 <thead>
@@ -3671,16 +3696,16 @@ red1&gt; exit
 <!-- run: red1_help -->
 <div class="highlight"><pre><span></span><code>$ node common/door/red1.js help 2&gt;/dev/null
 red1: type a short word; red1 prints the full line it runs (→ …), then runs it.
-  bim   buildings and models             start with: cd Duplex   (16 words)
-  mis   records, tables, files, Ninja    start with: cd Order   (11 words)
-  erp   document actions (CO VO CL RC)   start with: cd Order   (8 words)
+  bim   buildings and models            start with: cd Duplex   (16 words)
+  mis   records, tables, files, Ninja   start with: cd Order   (11 words)
+  erp   documents and processes         start with: cd Order   (8 words)
   everywhere: cd &lt;place&gt; · #&lt;number&gt; · pwd · role &lt;id&gt; · login &lt;user&gt; · history [N] · report · exit
 Type bim, mis or erp for its words · help &lt;word&gt; for one word (level student first for the full explanation) · help verbs for the full door lines.
 </code></pre></div>
 <p>Un grupo lista sus palabras, cada una con un ejemplo que puede escribir. <code>erp</code> es el más corto:</p>
 <!-- run: red1_help_erp -->
 <div class="highlight"><pre><span></span><code>$ node common/door/red1.js &#39;help erp&#39; 2&gt;/dev/null
-erp: document actions (CO VO CL RC) (start with: cd Order)
+erp: documents and processes (start with: cd Order)
  in a building:
   post discipline=ARC  post the building&#39;s priced selection to its ERP Project Order
   vo discipline=ARC    issue the change between the model and the Project Order as a Variation Order
@@ -3727,32 +3752,8 @@ CLI: erp.close kind=Order number=&lt;Document No&gt;
 → object.count building=Duplex kind=Element discipline=ARC
 </code></pre></div>
 <p>Aparece texto gris tras el cursor mientras escribe una palabra, un lugar o una columna: una sugerencia del diccionario. <strong>Tab</strong> o <strong>→</strong> la acepta; <strong>Return siempre ejecuta lo que usted escribió</strong>, nunca la sugerencia. Una falta de ortografía recibe una pista, nunca una corrección silenciosa (<code>ls Valu=…</code> se rechaza y nombra <code>Value</code>).</p>
-<h2 id="como-instalarlo">Cómo instalarlo<a class="headerlink" href="#como-instalarlo" title="Permanent link">&para;</a></h2>
-<p>Necesita Node 18 o posterior (estos pasos se ejecutaron en Node 18.19). Hay dos formas de entrar.</p>
-<p><strong>La copia completa</strong> le da red1, BIM, ERP, el Viewer y todo lo que sigue. Clónela y luego inicie red1 desde su carpeta superior:</p>
-<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/red1oon/bim-ootb
-<span class="nb">cd</span><span class="w"> </span>bim-ootb
-node<span class="w"> </span>common/door/red1.js
-</code></pre></div>
-<p>Escriba <code>exit</code> para salir. Para escribir solo <code>red1</code> desde cualquier sitio, ejecute <code>npm link</code> una vez en esa carpeta. Para comprobar que funciona, pida su línea de versión:</p>
-<!-- run: red1_version -->
-<div class="highlight"><pre><span></span><code>$ node common/door/red1.js --version | sed -e &#39;s/^Copyright[^·]*· //&#39; -e &#39;s/ · [0-9a-f]\{8\}$//&#39;
-red1 1.0.0 · 78 verbs · 30 words
-</code></pre></div>
-<p><strong>La descarga de seis archivos</strong> es para la puerta sola con los verbos del Modeller, sin copia completa. Cree una carpeta vacía, instale el motor de navegador que necesita el Modeller y descargue los seis archivos:</p>
-<div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>fastscript<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>fastscript
-npm<span class="w"> </span>init<span class="w"> </span>-y
-npm<span class="w"> </span>install<span class="w"> </span>puppeteer@24
-curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/modeller/tools/edit_cli.js
-curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/modeller/tools/bim_mcp.js
-curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/door.js
-curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/verbs.json
-curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/msg_core.js
-curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/vocab/messages.json
-</code></pre></div>
-<p>Mantenga los seis en la misma carpeta. <code>door.js</code> lee la lista de verbos de <code>verbs.json</code> y sus mensajes de <code>messages.json</code> (a través de <code>msg_core.js</code>), y ejecuta <code>edit_cli.js</code>, que abre la página del Modeller en vivo sin ventana. Si falta un archivo, la puerta dice cuál e imprime su línea <code>curl</code>. Todo lo demás de esta página necesita la copia completa; la <a href="#the-verbs">tabla de verbos</a> dice qué verbo necesita qué.</p>
 <h2 id="las-palabras-que-mas-usara">Las palabras que más usará<a class="headerlink" href="#las-palabras-que-mas-usara" title="Permanent link">&para;</a></h2>
-<p>Cada parte de abajo dice qué va a hacer y por qué, y luego muestra una ejecución real y en qué fijarse. Cada bloque usa un op-log de prueba (el archivo donde el gemelo guarda sus cambios), vaciado antes, así que ejecutarlos no toca sus propios datos.</p>
+<p>Cada parte de abajo dice lo que va a hacer y por qué, y luego muestra una ejecución real y en qué fijarse.</p>
 <h3 id="bim-edificios-y-modelos">bim: edificios y modelos<a class="headerlink" href="#bim-edificios-y-modelos" title="Permanent link">&para;</a></h3>
 <p><strong>Contar, por una columna.</strong> <code>cd Duplex</code> y luego <code>cd Element</code> va a los elementos del edificio; <code>group storey</code> los cuenta por una columna. Fíjese en los grupos y sus cuentas, y en las líneas <code>→</code> que muestran los verbos de la puerta detrás de las palabras:</p>
 <!-- run: red1_group -->
@@ -3802,22 +3803,7 @@ ok · viewer.clashes
 └─   0 not judged
 ls lists the 393 rows
 </code></pre></div>
-<p><strong>Coste.</strong> <code>cost discipline</code> valora los elementos del edificio como el panel Buscar del Viewer: cantidades del modelo por la tarifa. Primero vienen los grupos, luego la cuenta y el total; <code>ls</code> lista las filas valoradas. También se puede agrupar por <code>phase</code>, <code>task</code>, <code>storey</code> o <code>class</code>. Fíjese en la última línea: como el edificio aún no tiene pedido ERP, red1 ofrece el siguiente paso. Esta sesión termina sin respuesta, así que no se contabiliza nada:</p>
-<!-- run: chain_cost -->
-<div class="highlight"><pre><span></span><code>$ rm -f /tmp/fast_guide_chain.ops; printf &#39;cd Duplex\ncost discipline\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_chain.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_chain.journal node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39;
-building Duplex
-→ viewer.cost building=Duplex by=discipline
-ok · viewer.cost
-1190 elements · 1054482.08 total (71 with no rate); 3 with no size, not priced
-discipline  elements  cost
-ARC         267       532431.14
-ELEC        81        283500.00
-MEP         809       153825.40
-PLB         14        49000.00
-STR         19        35725.55
-ls lists the 49 priced rows
-Ready to post to ERP Project Order? y/N → erp.process name=&quot;Fold from BIM&quot; Building=Duplex
-</code></pre></div>
+<p><strong>Coste.</strong> <code>cost discipline</code> pone precio a los elementos del edificio como lo hace el panel Find del Viewer: cantidades del modelo por el paquete de tarifas. Su ejecución está en <a href="#from-a-building-to-its-order-cost-the-offer-post">Del edificio a su pedido</a>, donde lleva hasta el pedido.</p>
 <h3 id="mis-registros-tablas-archivos">mis: registros, tablas, archivos<a class="headerlink" href="#mis-registros-tablas-archivos" title="Permanent link">&para;</a></h3>
 <p><strong>Buscar registros.</strong> En un tipo de ERP como <code>Business Partner</code> funcionan las mismas palabras que en un edificio: <code>ls</code>, <code>count</code>, <code>cat</code>, con los mismos comodines. <code>cd</code> toma el nombre de un tipo, entre comillas si tiene un espacio.</p>
 <p><strong>Crear uno y cambiar uno.</strong> <code>new</code> crea un registro como lo hace la ventana: usted da las columnas que conoce, el motor rellena el resto (valores por defecto, el número de secuencia), y una columna que el diccionario no tiene se rechaza con las reales listadas. <code>set &lt;id&gt; Column=value</code> cambia uno. Fíjese en el <code>id</code> de la respuesta de <code>new</code>, que es lo que usa <code>set</code> después, en <code>changed</code> de la segunda respuesta y en la lista del final. (Una respuesta también lista cada columna que rellenó y los cambios que hizo; esas líneas se omiten aquí.)</p>
@@ -3839,7 +3825,7 @@ C_BPartner_ID  Value  Name               Logo_ID  C_BP_Group_ID
 </code></pre></div>
 <p><code>rm &lt;id&gt;</code> borra uno, y <code>load &lt;file.csv&gt;</code> y <code>diff &lt;file.csv&gt;</code> cargan filas de un archivo y comparan un archivo con los registros. <a href="../FastScriptReference/">La referencia</a> muestra cada uno con su salida.</p>
 <h3 id="erp-documentos-y-procesos">erp: documentos y procesos<a class="headerlink" href="#erp-documentos-y-procesos" title="Permanent link">&para;</a></h3>
-<p><strong>Crear un documento y completarlo.</strong> <code>new</code> en <code>Order</code> crea un pedido en borrador e imprime su número. Una línea completa de la puerta también funciona en el prompt, así que la línea del pedido se añade con <code>mis.new</code> (un producto y una cantidad). <code>next &lt;number&gt;</code> dibuja lo que el documento puede hacer ahora, y señala cada acción que tiene una palabra con la línea que la ejecuta. <code>do CO &lt;number&gt;</code> lo completa; los códigos DocAction heredados son <code>CO</code> completar, <code>VO</code> anular, <code>CL</code> cerrar, <code>RC</code> revertir (<code>do complete</code>, <code>do void</code> … también sirven). Fíjese en el número que imprime <code>new</code>, en el estado de cada árbol <code>next</code> y en las acciones que avanzaron tras <code>CO</code>. (El <code>grep</code> conserva solo esas líneas; las respuestas completas también listan cada columna rellenada.)</p>
+<p><strong>Crear un documento y completarlo.</strong> <code>new</code> en <code>Order</code> crea un pedido en borrador e imprime su número. Una línea de puerta completa también funciona en el indicador, así que la línea del pedido se añade con <code>mis.new</code> (un producto y una cantidad). <code>next &lt;number&gt;</code> dibuja lo que el documento puede hacer ahora y señala, para cada acción que tiene una palabra, la línea que la ejecuta. <code>do CO &lt;number&gt;</code> lo completa; los códigos DocAction del legado son <code>CO</code> completar, <code>PR</code> preparar, <code>VO</code> anular, <code>CL</code> cerrar, <code>RC</code> revertir, <code>RE</code> reactivar (<code>do complete</code>, <code>do void</code> … también funcionan). Fíjese en el número que imprime <code>new</code>, en el estado de cada árbol <code>next</code> y en las acciones que cambiaron tras <code>CO</code>. (El <code>grep</code> deja solo esas líneas; las respuestas completas también listan cada columna rellenada.)</p>
 <!-- run: erp_order -->
 <div class="highlight"><pre><span></span><code>$ printf &#39;cd Order\nnew issotrx=Y C_DocTypeTarget_ID=132 C_BPartner_ID=112 SalesRep_ID=101\nmis.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2\nnext 50000\ndo CO 50000\nnext 50000\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_erp.ops node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39; | grep -E &#39;^(→|ok|refused|number|Order [0-9]|[├└])&#39;
 → mis.describe kind=Order
@@ -3848,7 +3834,6 @@ ok · mis.new
 number: 50000
 → mis.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2
 ok · mis.new
-number: 
 → erp.actions kind=Order number=50000
 ok · erp.actions
 Order 50000  status DR
@@ -3882,19 +3867,7 @@ Generate PO from Project: done · no document made
   Product has no PO record  (×28)
 </code></pre></div>
 <p>En una línea suelta, o para una IA, no se pregunta nada: un parámetro obligatorio ausente es un rechazo que lo nombra. Un proceso para el que el gemelo aún no tiene port se rechaza con el nombre de su clase, y red1 lo dice.</p>
-<p><strong>Un registro ofrece lo suyo.</strong> Dentro de un registro, lo que red1 ofrece es de ese registro, leído del diccionario de su ventana: después de <code>do</code>, solo las acciones que puede hacer ahora (para su rol); después de <code>cd</code>, sus pestañas; después de <code>run</code>, sus propios botones de proceso; y sus campos como claves <code>Column=</code>. Al entrar, el registro imprime lo que puede hacer:</p>
-<!-- run: erp_record_offers -->
-<div class="highlight"><pre><span></span><code>$ printf &#39;cd Order 100\n&#39; | node common/door/red1.js 2&gt;/dev/null
-→ mis.describe kind=&quot;Order 100&quot;
-→ mis.describe kind=Order
-→ mis.read kind=Order number=100
-→ mis.read kind=Order id=100
-Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls shows them, cd &lt;tab&gt; opens one, cat reads the record
-→ erp.actions kind=Order id=100
-it may do: CL, VO, RE (do &lt;code&gt;; next shows the tree)
-</code></pre></div>
-<p>Allí Tab después de <code>do</code> ofrece solo <code>CL</code>, <code>VO</code> y <code>RE</code>, en el orden de los propios botones de la ventana (Close, Void, Re-Activate; <code>RE</code> reactiva el pedido: <code>do RE</code>), y <code>run Co</code> se completa a <code>"Copy Lines"</code>, el propio botón de la ventana del pedido.</p>
-<p><strong>Recorrer el menú.</strong> <code>menu</code> muestra el menú ERP como lugares: <code>cd &lt;folder&gt;</code> entra (basta el comienzo de su nombre cuando solo una entrada empieza así), una entrada de ventana le lleva a su tipo, y <code>cd ..</code> (o Shift+Tab) sube una carpeta. El indicador muestra la ruta. Cada entrada está marcada: ▸ una carpeta (cuántas entradas tiene), W una ventana (y su tabla), P un proceso, R un informe, X un formulario, F un flujo de trabajo. <code>red1 menu</code> por sí solo sigue abriendo el menú en una pantalla completa.</p>
+<p><strong>El menú, y los registros como lugares.</strong> <code>menu</code> muestra el menú del ERP como lugares: <code>cd &lt;folder&gt;</code> entra (basta el comienzo del nombre cuando solo una entrada empieza así), una entrada de ventana le lleva a su tipo, y <code>cd ..</code> (o Mayús+Tab) sube una carpeta. El indicador muestra la ruta. Cada entrada está marcada: ▸ una carpeta (cuántas entradas tiene), W una ventana (y su tabla), P un proceso, R un informe, X un formulario, F un flujo de trabajo. <code>red1 menu</code> solo sigue abriendo el menú a pantalla completa.</p>
 <!-- run: red1_menu_walk -->
 <div class="highlight"><pre><span></span><code>$ printf &#39;menu\ncd Quote\ncd &quot;Sales Orders&quot;\ncd &quot;Sales Order&quot;\npwd\n&#39; | node common/door/red1.js 2&gt;/dev/null
 → mis.menu
@@ -3939,7 +3912,7 @@ Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd &lt;name&gt; goes in, cd .
 Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
 menu=&quot;Quote-to-Invoice (Sales)/Sales Orders&quot; kind=Order
 </code></pre></div>
-<p><strong>Del menú a un registro.</strong> En un tipo, <code>cd &lt;number&gt;</code> entra en ese registro y el indicador conserva la ruta del menú; <code>cd ..</code> vuelve a salir. Dentro del registro, <code>do</code> y <code>next</code> lo nombran por su id, así que un número que comparten dos registros (aquí 80000) nunca es un problema. Una acción imprime lo que hizo: el cambio de estado, los documentos que tocó, cuántos cambios guardó y lo que el registro puede hacer ahora; Tab después de <code>do</code> ofrece entonces esos códigos nuevos. Las listas de carpetas se omiten en el bloque de abajo:</p>
+<p>En un tipo, <code>cd &lt;number&gt;</code> entra en ese registro y el indicador conserva la ruta del menú; <code>cd ..</code> vuelve a salir (desde cualquier lugar, <code>cd Order 100</code> hace lo mismo). Dentro de un registro, lo que red1 ofrece es del registro, leído del diccionario para su ventana: tras <code>do</code>, solo las acciones que puede hacer ahora, para su rol, en el orden de los propios botones de la ventana; tras <code>cd</code>, sus pestañas; tras <code>run</code>, sus propios botones de proceso (<code>run Co</code> se completa a <code>"Copy Lines"</code>); y sus campos como claves <code>Column=</code>. <code>do</code> y <code>next</code> nombran el registro por su id, así que un número que comparten dos registros (aquí 80000) nunca es un problema. Una acción imprime lo que hizo: el cambio de estado, los documentos que tocó, cuántos cambios guardó y lo que el registro puede hacer ahora; Tab tras <code>do</code> ofrece entonces esos nuevos códigos. Las listas de carpetas se omiten en el bloque de abajo:</p>
 <!-- run: red1_walk_record -->
 <div class="highlight"><pre><span></span><code>$ rm -f /tmp/fast_guide_walkrec.ops; printf &#39;menu\ncd Quote\ncd &quot;Sales Orders&quot;\ncd &quot;Sales Order&quot;\ncd 100\npwd\ndo RE\ndo CO\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_walkrec.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_walkrec.journal node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39; | grep -vE &#39;^  [▸WRPXF] &#39;
 → mis.menu
@@ -3948,8 +3921,6 @@ Quote-to-Invoice (Sales): 6 entries; cd &lt;name&gt; goes in, cd .. goes back
 Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd &lt;name&gt; goes in, cd .. goes back
 → mis.describe kind=C_Order
 Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
-→ mis.describe kind=100
-→ mis.read kind=Order number=100
 → mis.read kind=Order id=100
 Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls shows them, cd &lt;tab&gt; opens one, cat reads the record
 → erp.actions kind=Order id=100
@@ -3989,10 +3960,10 @@ run: Renumber has no parameter to ask (none in the dictionary)
 refused · erp.process · Renumber was not run: it has no JS port yet (class org.compiere.process.DiscountSchemaReSeq)
 This is a gap in red1, not your mistake. Type report to send it to us (email or GitHub issue).
 </code></pre></div>
-<h3 id="del-edificio-a-su-pedido-coste-la-oferta-contabilizar">Del edificio a su pedido: coste, la oferta, contabilizar<a class="headerlink" href="#del-edificio-a-su-pedido-coste-la-oferta-contabilizar" title="Permanent link">&para;</a></h3>
-<p>Esta es la cadena que lleva un edificio a su pedido de proyecto ERP. Empezó arriba: <code>cost discipline</code> terminó con una oferta, <code>Ready to post to ERP Project Order? y/N</code>, seguida de la línea exacta que ejecutaría. La oferta es el siguiente paso propio del motor, nunca escrito a mano. En una sesión, <code>y</code> ejecuta exactamente esa línea, y <code>n</code> o un Return vacío no ejecuta nada; en una línea suelta o para una IA no se pregunta nada y la línea queda en el <code>next</code> de la respuesta. Responder <code>y</code> es <code>post</code>: pliega la selección valorada del edificio en un pedido de proyecto, con sus fases y tareas tomadas del programa 4D del edificio y las líneas de proyecto, como un grupo de cambios o ninguno. Fíjese en lo que se creó, y en la segunda oferta, que es <code>cd project</code>:</p>
+<h3 id="from-a-building-to-its-order-cost-the-offer-post">Del edificio a su pedido: coste, la oferta, contabilizar<a class="headerlink" href="#from-a-building-to-its-order-cost-the-offer-post" title="Permanent link">&para;</a></h3>
+<p>Esta es la cadena que lleva un edificio a su Pedido de Proyecto del ERP. <code>cost discipline</code> imprime primero los grupos, luego el recuento y el total; <code>ls</code> lista las filas con precio, y un coste también puede agruparse por <code>phase</code>, <code>task</code>, <code>storey</code> o <code>class</code>. Como el edificio aún no tiene pedido en el ERP, termina con una oferta, <code>Ready to post to ERP Project Order? y/N</code>, seguida de la línea exacta que ejecutaría. La oferta es el propio siguiente paso del motor, nunca escrita a mano. En una sesión <code>y</code> ejecuta exactamente esa línea, y <code>n</code> o un Return vacío no ejecuta nada; en una línea suelta o para una IA no se pregunta nada y la línea está en el <code>next</code> de la respuesta. Responder <code>y</code> es <code>post</code>: pliega la selección con precio del edificio en un Pedido de Proyecto, con sus fases y tareas tomadas del programa 4D del edificio y las líneas del proyecto, como un solo grupo de cambios o ninguno. Fíjese en lo que se creó y en la segunda oferta, que es <code>cd project</code>:</p>
 <!-- run: chain_post -->
-<div class="highlight"><pre><span></span><code>$ printf &#39;cd Duplex\ncost discipline\ny\nn\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_chain.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_chain.journal node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39;
+<div class="highlight"><pre><span></span><code>$ rm -f /tmp/fast_guide_chain.ops; printf &#39;cd Duplex\ncost discipline\ny\nn\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_chain.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_chain.journal node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39;
 building Duplex
 → viewer.cost building=Duplex by=discipline
 ok · viewer.cost
@@ -4682,91 +4653,12 @@ object.count building=Duplex kind=Element -&gt; 1193 Element
 <td>human, ai</td>
 <td>una copia completa de bim-ootb</td>
 </tr>
-<tr>
-<td><code>erp.column</code></td>
-<td>Quién llena una columna: gemelo y legado lado a lado (nombre antiguo de mis.column)</td>
-<td><code>kind</code>, <code>column</code></td>
-<td>read</td>
-<td>human, ai</td>
-<td>una copia completa de bim-ootb</td>
-</tr>
-<tr>
-<td><code>erp.compare</code></td>
-<td>Comparar un registro en el gemelo y en el legado (nombre antiguo de legacy.compare)</td>
-<td><code>kind</code>, <code>number</code>, <code>legacy</code> (opcional)</td>
-<td>read</td>
-<td>human, ai</td>
-<td>una copia completa de bim-ootb</td>
-</tr>
-<tr>
-<td><code>erp.pack</code></td>
-<td>Crear el zip 2Pack a partir de un libro de trabajo de modelo de datos (nombre antiguo de mis.pack)</td>
-<td><code>book</code>, <code>version</code>, <code>out</code> (opcional), <code>java</code> (opcional), <code>package</code> (opcional)</td>
-<td>writes</td>
-<td>human, ai</td>
-<td>una copia completa de bim-ootb</td>
-</tr>
-<tr>
-<td><code>erp.legacy_plugin</code></td>
-<td>Poner un plugin de modelo de datos en la instancia de pruebas del legado y verificarlo allí (nombre antiguo de legacy.plugin)</td>
-<td><code>book</code>, <code>version</code></td>
-<td>writes</td>
-<td>human, ai</td>
-<td>una copia completa de bim-ootb</td>
-</tr>
-<tr>
-<td><code>erp.describe</code></td>
-<td>Describir un tipo de registro del ERP (nombre antiguo de mis.describe)</td>
-<td><code>kind</code>, <code>role</code> (opcional)</td>
-<td>read</td>
-<td>human, ai</td>
-<td>una copia completa de bim-ootb</td>
-</tr>
-<tr>
-<td><code>erp.read</code></td>
-<td>Leer un registro del ERP (nombre antiguo de mis.read)</td>
-<td><code>kind</code>, <code>id</code> (opcional), <code>number</code> (opcional), <code>role</code> (opcional)</td>
-<td>read</td>
-<td>human, ai</td>
-<td>una copia completa de bim-ootb</td>
-</tr>
-<tr>
-<td><code>erp.list</code></td>
-<td>Listar registros (nombre antiguo de mis.list)</td>
-<td><code>kind</code>, <code>columns</code> (opcional), <code>sort</code> (opcional), <code>limit</code> (opcional), <code>offset</code> (opcional), <code>names</code> (opcional), <code>role</code> (opcional), más filtros <code>column=value</code> (opcional)</td>
-<td>read</td>
-<td>human, ai</td>
-<td>una copia completa de bim-ootb</td>
-</tr>
-<tr>
-<td><code>erp.sum</code></td>
-<td>Sumar una columna (nombre antiguo de mis.sum)</td>
-<td><code>kind</code>, <code>column</code>, <code>role</code> (opcional), más filtros <code>column=value</code> (opcional)</td>
-<td>read</td>
-<td>human, ai</td>
-<td>una copia completa de bim-ootb</td>
-</tr>
-<tr>
-<td><code>erp.group</code></td>
-<td>Contar por una columna (nombre antiguo de mis.group)</td>
-<td><code>kind</code>, <code>by</code>, <code>role</code> (opcional), <code>window</code> (opcional), más filtros <code>column=value</code> (opcional)</td>
-<td>read</td>
-<td>human, ai</td>
-<td>una copia completa de bim-ootb</td>
-</tr>
-<tr>
-<td><code>erp.new</code></td>
-<td>Crear un registro (nombre antiguo de mis.new)</td>
-<td><code>kind</code>, <code>dry</code> (opcional), <code>role</code> (opcional), <code>window</code> (opcional), más filtros <code>column=value</code> (opcional)</td>
-<td>writes</td>
-<td>human, ai</td>
-<td>una copia completa de bim-ootb</td>
-</tr>
 </tbody>
 </table>
+<p>Nombres antiguos que siguen funcionando, cada uno igual al verbo al que apunta: <code>erp.column</code> → <code>mis.column</code> · <code>erp.compare</code> → <code>legacy.compare</code> · <code>erp.pack</code> → <code>mis.pack</code> · <code>erp.legacy_plugin</code> → <code>legacy.plugin</code> · <code>erp.describe</code> → <code>mis.describe</code> · <code>erp.read</code> → <code>mis.read</code> · <code>erp.list</code> → <code>mis.list</code> · <code>erp.sum</code> → <code>mis.sum</code> · <code>erp.group</code> → <code>mis.group</code> · <code>erp.new</code> → <code>mis.new</code></p>
 <!-- /GEN:verbs -->
 
-<p><strong>Cobertura actual.</strong> La lista es pequeña a propósito: 68 verbos cubren las ediciones de rejilla del Modeller, su walker y un Modeller mantenido abierto entre líneas, unas pocas preguntas del Viewer, el calendario, la lectura, el recuento y la escritura genéricos de objetos, el coste de una selección, los verbos de documentos ERP y cualquier proceso del diccionario ERP que tenga un port. El Viewer tiene 64 acciones que una persona puede pulsar, y la puerta ofrece 6 verbos del Viewer. El ERP tiene 1158 documentos y procesos, y la puerta ofrece 13 verbos ERP para la vida de un documento y 15 verbos MIS que funcionan en cualquier tabla, y conserva 10 nombres antiguos para que las líneas anteriores sigan funcionando. Así que esto es un comienzo, no el menú completo.</p>
+<p><strong>Cobertura hoy.</strong> La lista es pequeña a propósito: 68 verbos cubren las ediciones de rejilla del Modeller, su walker y un Modeller abierto entre líneas, unas cuantas preguntas al Viewer, el cronograma, la lectura, el recuento y la escritura genéricos de objetos, el coste de una selección, los verbos de documentos del ERP y cualquier proceso del diccionario del ERP que tenga un port. El Viewer tiene 64 acciones que una persona puede pulsar, y la puerta ofrece 6 verbos del Viewer. El ERP tiene 1158 documentos y procesos, y la puerta ofrece 13 verbos del ERP para la vida de un documento y 15 verbos MIS que funcionan en cualquier tabla, y conserva 10 nombres antiguos para que las líneas anteriores sigan funcionando (la cifra de la línea de versión los incluye). Así que esto es un comienzo, no todo el menú.</p>
 <h2 id="como-se-mantiene-fiel-esta-pagina">Cómo se mantiene fiel esta página<a class="headerlink" href="#como-se-mantiene-fiel-esta-pagina" title="Permanent link">&para;</a></h2>
 <p>Cada comando de un bloque gris de esta página y de la <a href="../FastScriptReference/">referencia</a> se ejecutó, y la salida debajo es lo que imprimió el comando. Una prueba, <strong>W-FAST-SCRIPT-GUIDE</strong> en el repositorio <code>bim-ootb</code>, los ejecuta de nuevo desde la descarga y la copia completa, comprueba cada número de esta página contra las ejecuciones y comprueba que la tabla de verbos es igual a <code>verbs.json</code>. Si un número de aquí caduca, esa prueba falla.</p>
 <p>Relacionado: la <a href="../ProposerGuide/">Guía del proponente de IA</a> (conecte una IA a la misma puerta, y qué hizo una IA con las verificaciones), y la <a href="../ModellerGuide/">guía del Modeller</a>.</p>

@@ -1266,10 +1266,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#red1" class="md-nav__link">
+  <a href="#_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        まず red1 から
+        インストール方法
       
     </span>
   </a>
@@ -1277,10 +1277,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_1" class="md-nav__link">
+  <a href="#red1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        インストール方法
+        まず red1 から
       
     </span>
   </a>
@@ -1333,7 +1333,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#_3" class="md-nav__link">
+  <a href="#from-a-building-to-its-order-cost-the-offer-post" class="md-nav__link">
     <span class="md-ellipsis">
       
         建物から注文へ：コスト、提案、転記
@@ -1349,7 +1349,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_4" class="md-nav__link">
+  <a href="#_3" class="md-nav__link">
     <span class="md-ellipsis">
       
         すべての言葉
@@ -1371,7 +1371,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_5" class="md-nav__link">
+  <a href="#_4" class="md-nav__link">
     <span class="md-ellipsis">
       
         トラブルシューティング
@@ -1382,7 +1382,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_6" class="md-nav__link">
+  <a href="#_5" class="md-nav__link">
     <span class="md-ellipsis">
       
         開発者向け
@@ -1404,7 +1404,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_7" class="md-nav__link">
+  <a href="#_6" class="md-nav__link">
     <span class="md-ellipsis">
       
         このページが正しさを保つ仕組み
@@ -3452,10 +3452,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#red1" class="md-nav__link">
+  <a href="#_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        まず red1 から
+        インストール方法
       
     </span>
   </a>
@@ -3463,10 +3463,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_1" class="md-nav__link">
+  <a href="#red1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        インストール方法
+        まず red1 から
       
     </span>
   </a>
@@ -3519,7 +3519,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#_3" class="md-nav__link">
+  <a href="#from-a-building-to-its-order-cost-the-offer-post" class="md-nav__link">
     <span class="md-ellipsis">
       
         建物から注文へ：コスト、提案、転記
@@ -3535,7 +3535,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_4" class="md-nav__link">
+  <a href="#_3" class="md-nav__link">
     <span class="md-ellipsis">
       
         すべての言葉
@@ -3557,7 +3557,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_5" class="md-nav__link">
+  <a href="#_4" class="md-nav__link">
     <span class="md-ellipsis">
       
         トラブルシューティング
@@ -3568,7 +3568,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_6" class="md-nav__link">
+  <a href="#_5" class="md-nav__link">
     <span class="md-ellipsis">
       
         開発者向け
@@ -3590,7 +3590,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_7" class="md-nav__link">
+  <a href="#_6" class="md-nav__link">
     <span class="md-ellipsis">
       
         このページが正しさを保つ仕組み
@@ -3629,6 +3629,30 @@
 <p class="admonition-title">良い答えが意味しないこと</p>
 <p>問題のない答えは <strong>安全・適合・良好を決して意味しません</strong>。どの答えも、確認されなかったことを一覧にし、<a href="#what-is-not-checked">確認されないこと</a>でもう一度述べます。最終判断は構造技術者が行います。</p>
 </div>
+<h2 id="_1">インストール方法<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>Node 18 以降が必要です（これらの手順は Node 18.19 で実行しました）。入り口は二つあります。</p>
+<p><strong>フルチェックアウト</strong>なら、red1、BIM、ERP、Viewer、以下のすべてが使えます。クローンして、最上位のフォルダーから red1 を起動します：</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/red1oon/bim-ootb
+<span class="nb">cd</span><span class="w"> </span>bim-ootb
+node<span class="w"> </span>common/door/red1.js
+</code></pre></div>
+<p><code>exit</code> で終了します。どこからでも <code>red1</code> だけで起動したいときは、そのフォルダーで一度 <code>npm link</code> を実行します。動作確認には、バージョン行を表示させます：</p>
+<!-- run: red1_version -->
+<div class="highlight"><pre><span></span><code>$ node common/door/red1.js --version | sed -e &#39;s/^Copyright[^·]*· //&#39; -e &#39;s/ · [0-9a-f]\{8\}$//&#39;
+red1 1.0.0 · 78 verbs · 30 words
+</code></pre></div>
+<p><strong>六ファイルのダウンロード</strong>は、チェックアウトなしで、ドアと Modeller 動詞だけを使う場合のものです。空のフォルダーを作り、Modeller が必要とするブラウザーエンジンをインストールして、六つのファイルを取得します：</p>
+<div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>fastscript<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>fastscript
+npm<span class="w"> </span>init<span class="w"> </span>-y
+npm<span class="w"> </span>install<span class="w"> </span>puppeteer@24
+curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/modeller/tools/edit_cli.js
+curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/modeller/tools/bim_mcp.js
+curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/door.js
+curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/verbs.json
+curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/msg_core.js
+curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/vocab/messages.json
+</code></pre></div>
+<p>六つを同じフォルダーに置いてください。<code>door.js</code> は動詞の一覧を <code>verbs.json</code> から、メッセージを <code>messages.json</code>（<code>msg_core.js</code> 経由）から読み、<code>edit_cli.js</code> を実行して、ウィンドウなしでライブの Modeller ページを開きます。ファイルが欠けていると、ドアはどれかを示し、その <code>curl</code> 行を表示します。このページのそれ以外はすべてチェックアウトが必要です。どの動詞に何が必要かは<a href="#the-verbs">動詞の表</a>に載っています。</p>
 <h2 id="red1">まず red1 から<a class="headerlink" href="#red1" title="Permanent link">&para;</a></h2>
 <p>ターミナルでは、<code>red1</code> は一度だけあいさつをして、プロンプトで待ちます。次が表示される内容そのままです（バージョン行の末尾のコミットは、コミットごとに変わるため切り取ってあります）：</p>
 <!-- run: greet -->
@@ -3641,6 +3665,7 @@ Tip: type level student for fuller help on each word (red1 --fast opens without 
 
 red1&gt; exit
 </code></pre></div>
+<p><strong>このページのブロックの読み方。</strong> <code>$</code> の後の行は、このページのテストがコマンドを実行する方法です。使い捨てのファイルを使い（事前に空にするので、実行があなた自身のデータに触れることはありません）、所要時間を切り取り、ログを隠します。自分のプロンプトでは、<code>cd Duplex</code> のように単語だけを入力します。その下が、red1 が出力したそのままの内容です。</p>
 <p>地図として読んでください。バージョン行は、red1 にドア動詞（長い形）と短い言葉がいくつあるかを示します。<code>help</code> は短い言葉を三つのグループで表示します。<code>help bim</code>、<code>help mis</code>、<code>help erp</code> で、そのグループを見られます：</p>
 <table>
 <thead>
@@ -3671,16 +3696,16 @@ red1&gt; exit
 <!-- run: red1_help -->
 <div class="highlight"><pre><span></span><code>$ node common/door/red1.js help 2&gt;/dev/null
 red1: type a short word; red1 prints the full line it runs (→ …), then runs it.
-  bim   buildings and models             start with: cd Duplex   (16 words)
-  mis   records, tables, files, Ninja    start with: cd Order   (11 words)
-  erp   document actions (CO VO CL RC)   start with: cd Order   (8 words)
+  bim   buildings and models            start with: cd Duplex   (16 words)
+  mis   records, tables, files, Ninja   start with: cd Order   (11 words)
+  erp   documents and processes         start with: cd Order   (8 words)
   everywhere: cd &lt;place&gt; · #&lt;number&gt; · pwd · role &lt;id&gt; · login &lt;user&gt; · history [N] · report · exit
 Type bim, mis or erp for its words · help &lt;word&gt; for one word (level student first for the full explanation) · help verbs for the full door lines.
 </code></pre></div>
 <p>グループは、その言葉を、打てる例とともに一覧にします。いちばん短いのは <code>erp</code> です：</p>
 <!-- run: red1_help_erp -->
 <div class="highlight"><pre><span></span><code>$ node common/door/red1.js &#39;help erp&#39; 2&gt;/dev/null
-erp: document actions (CO VO CL RC) (start with: cd Order)
+erp: documents and processes (start with: cd Order)
  in a building:
   post discipline=ARC  post the building&#39;s priced selection to its ERP Project Order
   vo discipline=ARC    issue the change between the model and the Project Order as a Variation Order
@@ -3727,32 +3752,8 @@ CLI: erp.close kind=Order number=&lt;Document No&gt;
 → object.count building=Duplex kind=Element discipline=ARC
 </code></pre></div>
 <p>言葉・場所・列を打っている間、カーソルの後ろに灰色の文字が現れます。辞書からの候補です。<strong>Tab</strong> または <strong>→</strong> で受け入れ、<strong>Return は常に、打ったものを実行します</strong>（候補は決して実行しません）。綴りの間違いにはヒントが出るだけで、黙って直されることはありません（<code>ls Valu=…</code> は拒否され、<code>Value</code> を示します）。</p>
-<h2 id="_1">インストール方法<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
-<p>Node 18 以降が必要です（これらの手順は Node 18.19 で実行しました）。入り口は二つあります。</p>
-<p><strong>フルチェックアウト</strong>なら、red1、BIM、ERP、Viewer、以下のすべてが使えます。クローンして、最上位のフォルダーから red1 を起動します：</p>
-<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/red1oon/bim-ootb
-<span class="nb">cd</span><span class="w"> </span>bim-ootb
-node<span class="w"> </span>common/door/red1.js
-</code></pre></div>
-<p><code>exit</code> で終了します。どこからでも <code>red1</code> だけで起動したいときは、そのフォルダーで一度 <code>npm link</code> を実行します。動作確認には、バージョン行を表示させます：</p>
-<!-- run: red1_version -->
-<div class="highlight"><pre><span></span><code>$ node common/door/red1.js --version | sed -e &#39;s/^Copyright[^·]*· //&#39; -e &#39;s/ · [0-9a-f]\{8\}$//&#39;
-red1 1.0.0 · 78 verbs · 30 words
-</code></pre></div>
-<p><strong>六ファイルのダウンロード</strong>は、チェックアウトなしで、ドアと Modeller 動詞だけを使う場合のものです。空のフォルダーを作り、Modeller が必要とするブラウザーエンジンをインストールして、六つのファイルを取得します：</p>
-<div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>fastscript<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>fastscript
-npm<span class="w"> </span>init<span class="w"> </span>-y
-npm<span class="w"> </span>install<span class="w"> </span>puppeteer@24
-curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/modeller/tools/edit_cli.js
-curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/modeller/tools/bim_mcp.js
-curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/door.js
-curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/verbs.json
-curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/msg_core.js
-curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/vocab/messages.json
-</code></pre></div>
-<p>六つを同じフォルダーに置いてください。<code>door.js</code> は動詞の一覧を <code>verbs.json</code> から、メッセージを <code>messages.json</code>（<code>msg_core.js</code> 経由）から読み、<code>edit_cli.js</code> を実行して、ウィンドウなしでライブの Modeller ページを開きます。ファイルが欠けていると、ドアはどれかを示し、その <code>curl</code> 行を表示します。このページのそれ以外はすべてチェックアウトが必要です。どの動詞に何が必要かは<a href="#the-verbs">動詞の表</a>に載っています。</p>
 <h2 id="_2">よく使う言葉<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
-<p>以下の各部分では、これから何をするのかと理由を述べ、実際の実行結果と、そこで何を見るかを示します。どのブロックも、先に空にした作業用の op-log（ツインが変更を保存するファイル）を使うので、実行してもあなた自身のデータには触れません。</p>
+<p>以下の各部分では、これから何をするのか、なぜなのかを述べ、実際の実行と、その中で見るべき点を示します。</p>
 <h3 id="bim">bim：建物とモデル<a class="headerlink" href="#bim" title="Permanent link">&para;</a></h3>
 <p><strong>列で数える。</strong> <code>cd Duplex</code> に続けて <code>cd Element</code> で建物の要素へ移動し、<code>group storey</code> で列ごとに数えます。グループとその件数、そして言葉の裏にあるドア動詞を示す <code>→</code> の行を見てください：</p>
 <!-- run: red1_group -->
@@ -3802,22 +3803,7 @@ ok · viewer.clashes
 └─   0 not judged
 ls lists the 393 rows
 </code></pre></div>
-<p><strong>コスト。</strong> <code>cost discipline</code> は、Viewer の検索パネルと同じ方法で建物の要素を積算します。モデルの数量にレートパックを掛けます。まずグループ、次に件数と合計が出て、<code>ls</code> で積算された行を一覧できます。<code>phase</code>、<code>task</code>、<code>storey</code>、<code>class</code> でもグループ化できます。最後の行を見てください。建物にはまだ ERP の注文がないため、red1 は次のステップを提案します。このセッションは答えずに終わるので、何も転記されません：</p>
-<!-- run: chain_cost -->
-<div class="highlight"><pre><span></span><code>$ rm -f /tmp/fast_guide_chain.ops; printf &#39;cd Duplex\ncost discipline\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_chain.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_chain.journal node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39;
-building Duplex
-→ viewer.cost building=Duplex by=discipline
-ok · viewer.cost
-1190 elements · 1054482.08 total (71 with no rate); 3 with no size, not priced
-discipline  elements  cost
-ARC         267       532431.14
-ELEC        81        283500.00
-MEP         809       153825.40
-PLB         14        49000.00
-STR         19        35725.55
-ls lists the 49 priced rows
-Ready to post to ERP Project Order? y/N → erp.process name=&quot;Fold from BIM&quot; Building=Duplex
-</code></pre></div>
+<p><strong>コスト。</strong> <code>cost discipline</code> は、Viewer の Find パネルと同じ方法で建物の要素に値段を付けます。モデルからの数量に単価パックを掛けます。その実行は <a href="#from-a-building-to-its-order-cost-the-offer-post">建物からその注文へ</a> にあり、そこから注文へと続きます。</p>
 <h3 id="mis">mis：レコード、テーブル、ファイル<a class="headerlink" href="#mis" title="Permanent link">&para;</a></h3>
 <p><strong>レコードを探す。</strong> <code>Business Partner</code> のような ERP の種類でも、建物と同じ言葉が使えます。<code>ls</code>、<code>count</code>、<code>cat</code>、同じワイルドカードです。<code>cd</code> には種類の名前を渡し、空白を含む場合は引用符で囲みます。</p>
 <p><strong>一件作って一件変更する。</strong> <code>new</code> は、ウィンドウと同じ方法でレコードを作ります。知っている列を渡せば、残り（既定値や連番）はエンジンが埋め、辞書にない列は、実際の列を一覧にして拒否されます。<code>set &lt;id&gt; Column=value</code> で一件を変更します。<code>id</code> の答えにある <code>new</code>（次に <code>set</code> が使うもの）、二つ目の答えの <code>changed</code>、そして最後の一覧を見てください。（答えには、埋めた列すべてと行った変更も一覧されますが、ここでは省いています。）</p>
@@ -3839,7 +3825,7 @@ C_BPartner_ID  Value  Name               Logo_ID  C_BP_Group_ID
 </code></pre></div>
 <p><code>rm &lt;id&gt;</code> は一件を削除し、<code>load &lt;file.csv&gt;</code> と <code>diff &lt;file.csv&gt;</code> は、ファイルから行を読み込み、ファイルとレコードを比較します。<a href="../FastScriptReference/">リファレンス</a>に、それぞれの出力が載っています。</p>
 <h3 id="erp">erp：伝票とプロセス<a class="headerlink" href="#erp" title="Permanent link">&para;</a></h3>
-<p><strong>伝票を作って完了する。</strong> <code>new</code> の中で <code>Order</code> を打つと、下書きの注文が作られ、その番号が表示されます。ドアの完全な行はプロンプトでも使えるので、注文の明細は <code>mis.new</code>（商品と数量）で追加します。<code>next &lt;number&gt;</code> は伝票が今できることを描き、言葉のあるアクションには、それを実行する行を示します。<code>do CO &lt;number&gt;</code> で完了します。従来の DocAction コードは <code>CO</code> 完了、<code>VO</code> 無効、<code>CL</code> クローズ、<code>RC</code> 取消（反転）です（<code>do complete</code>、<code>do void</code> … も使えます）。<code>new</code> が表示する番号、各 <code>next</code> ツリーのステータス、<code>CO</code> のあとで進んだアクションを見てください。（<code>grep</code> はそれらの行だけを残します。完全な答えには、埋めた列すべても一覧されます。）</p>
+<p><strong>伝票を作って完了する。</strong> <code>Order</code> で <code>new</code> を使うと注文の下書きが作られ、その番号が出力されます。プロンプトでは完全なドア行も使えるので、注文の明細は <code>mis.new</code>（製品と数量）で追加します。<code>next &lt;number&gt;</code> は伝票が今できることを描き、単語を持つ各アクションについて、それを実行する行を示します。<code>do CO &lt;number&gt;</code> で完了します。レガシーの DocAction コードは <code>CO</code> 完了、<code>PR</code> 準備、<code>VO</code> 無効化、<code>CL</code> クローズ、<code>RC</code> 取消、<code>RE</code> 再アクティブ化です（<code>do complete</code>、<code>do void</code> … も使えます）。<code>new</code> が出力する番号、各 <code>next</code> ツリーのステータス、<code>CO</code> の後に変わったアクションを見てください。（<code>grep</code> はそれらの行だけを残します。完全な回答には、埋められた全ての列も並びます。）</p>
 <!-- run: erp_order -->
 <div class="highlight"><pre><span></span><code>$ printf &#39;cd Order\nnew issotrx=Y C_DocTypeTarget_ID=132 C_BPartner_ID=112 SalesRep_ID=101\nmis.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2\nnext 50000\ndo CO 50000\nnext 50000\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_erp.ops node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39; | grep -E &#39;^(→|ok|refused|number|Order [0-9]|[├└])&#39;
 → mis.describe kind=Order
@@ -3848,7 +3834,6 @@ ok · mis.new
 number: 50000
 → mis.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2
 ok · mis.new
-number: 
 → erp.actions kind=Order number=50000
 ok · erp.actions
 Order 50000  status DR
@@ -3882,19 +3867,7 @@ Generate PO from Project: done · no document made
   Product has no PO record  (×28)
 </code></pre></div>
 <p>単発の行や AI の場合は何も尋ねられません。必須パラメーターが欠けていれば、それを名指しする拒否になります。ツインにまだポートがないプロセスは、そのクラス名とともに拒否され、red1 がそう伝えます。</p>
-<p><strong>レコードは自分のものを出します。</strong> レコードの中では、red1 が出すのはそのレコードのものです。そのウィンドウの辞書から読みます。<code>do</code> の後には今できるアクションだけ（あなたのロールで）、<code>cd</code> の後にはそのタブ、<code>run</code> の後にはそのレコード自身のプロセスボタン、そしてフィールドは <code>Column=</code> キーとして出ます。レコードに入ると、できることが表示されます：</p>
-<!-- run: erp_record_offers -->
-<div class="highlight"><pre><span></span><code>$ printf &#39;cd Order 100\n&#39; | node common/door/red1.js 2&gt;/dev/null
-→ mis.describe kind=&quot;Order 100&quot;
-→ mis.describe kind=Order
-→ mis.read kind=Order number=100
-→ mis.read kind=Order id=100
-Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls shows them, cd &lt;tab&gt; opens one, cat reads the record
-→ erp.actions kind=Order id=100
-it may do: CL, VO, RE (do &lt;code&gt;; next shows the tree)
-</code></pre></div>
-<p>そこでは <code>do</code> の後の Tab は <code>CL</code>、<code>VO</code>、<code>RE</code> だけを、ウィンドウ自身のボタンの順（Close、Void、Re-Activate）で出し（<code>RE</code> は注文を再有効化します：<code>do RE</code>）、<code>run Co</code> は注文ウィンドウ自身のボタン <code>"Copy Lines"</code> に補完されます。</p>
-<p><strong>メニューをたどる。</strong> <code>menu</code> は ERP メニューを場所として表示します。<code>cd &lt;folder&gt;</code> で中に入り（その始まり方をする項目が一つだけなら、名前の先頭だけで足ります）、ウィンドウの項目はその種類へ連れて行き、<code>cd ..</code>（または Shift+Tab）で一つ上のフォルダーに戻ります。プロンプトにパスが出ます。各項目には印があります：▸ フォルダー（中の項目数）、W ウィンドウ（とそのテーブル）、P プロセス、R レポート、X フォーム、F ワークフロー。<code>red1 menu</code> 単独では、これまでどおり全画面のメニューが開きます。</p>
+<p><strong>メニューと、場所としてのレコード。</strong> <code>menu</code> は ERP のメニューを場所として表示します。<code>cd &lt;folder&gt;</code> で中に入り（その名前で始まる項目が一つだけなら名前の先頭だけで足ります）、ウィンドウの項目はその種類へ移動し、<code>cd ..</code>（または Shift+Tab）で一つ上のフォルダーへ戻ります。プロンプトにはパスが表示されます。各項目には印があります。▸ フォルダー（含まれる項目の数）、W ウィンドウ（とそのテーブル）、P プロセス、R レポート、X フォーム、F ワークフロー。<code>red1 menu</code> 単独では、引き続きメニューを全画面で開きます。</p>
 <!-- run: red1_menu_walk -->
 <div class="highlight"><pre><span></span><code>$ printf &#39;menu\ncd Quote\ncd &quot;Sales Orders&quot;\ncd &quot;Sales Order&quot;\npwd\n&#39; | node common/door/red1.js 2&gt;/dev/null
 → mis.menu
@@ -3939,7 +3912,7 @@ Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd &lt;name&gt; goes in, cd .
 Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
 menu=&quot;Quote-to-Invoice (Sales)/Sales Orders&quot; kind=Order
 </code></pre></div>
-<p><strong>メニューからレコードへ。</strong> 種類の中で <code>cd &lt;number&gt;</code> を打つとそのレコードに入り、プロンプトはメニューのパスを保ちます。<code>cd ..</code> で外へ戻ります。レコードの中では <code>do</code> と <code>next</code> がそれを ID で指すので、二つのレコードが同じ番号（ここでは 80000）を持っていても問題になりません。アクションは何をしたかを表示します：ステータスの変化、触れた伝票、保持した変更の数、そしてレコードが今できること。その後 <code>do</code> の後の Tab はその新しいコードを出します。下のブロックではフォルダの一覧を省いています：</p>
+<p>種類の中で <code>cd &lt;number&gt;</code> を使うとそのレコードに入り、プロンプトはメニューのパスを保ちます。<code>cd ..</code> で外に戻ります（どこからでも <code>cd Order 100</code> で同じことができます）。レコードの中では、red1 が提示するのはそのレコードのもので、そのウィンドウ用の辞書から読み取られます。<code>do</code> の後には、あなたのロールで今実行できるアクションだけが、ウィンドウ自身のボタンの順に出ます。<code>cd</code> の後にはそのタブ、<code>run</code> の後にはそれ自身のプロセスボタン（<code>run Co</code> は <code>"Copy Lines"</code> に補完されます）、そしてそのフィールドが <code>Column=</code> キーとして出ます。<code>do</code> と <code>next</code> はレコードを ID で指すので、二つのレコードが同じ番号を持っていても（ここでは 80000）問題になりません。アクションは何をしたかを出力します。ステータスの変化、触れた伝票、保持した変更の数、そしてレコードが今できることです。その後 <code>do</code> の後の Tab は、それらの新しいコードを提示します。下のブロックではフォルダーの一覧を省いています。</p>
 <!-- run: red1_walk_record -->
 <div class="highlight"><pre><span></span><code>$ rm -f /tmp/fast_guide_walkrec.ops; printf &#39;menu\ncd Quote\ncd &quot;Sales Orders&quot;\ncd &quot;Sales Order&quot;\ncd 100\npwd\ndo RE\ndo CO\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_walkrec.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_walkrec.journal node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39; | grep -vE &#39;^  [▸WRPXF] &#39;
 → mis.menu
@@ -3948,8 +3921,6 @@ Quote-to-Invoice (Sales): 6 entries; cd &lt;name&gt; goes in, cd .. goes back
 Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd &lt;name&gt; goes in, cd .. goes back
 → mis.describe kind=C_Order
 Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
-→ mis.describe kind=100
-→ mis.read kind=Order number=100
 → mis.read kind=Order id=100
 Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls shows them, cd &lt;tab&gt; opens one, cat reads the record
 → erp.actions kind=Order id=100
@@ -3989,10 +3960,10 @@ run: Renumber has no parameter to ask (none in the dictionary)
 refused · erp.process · Renumber was not run: it has no JS port yet (class org.compiere.process.DiscountSchemaReSeq)
 This is a gap in red1, not your mistake. Type report to send it to us (email or GitHub issue).
 </code></pre></div>
-<h3 id="_3">建物から注文へ：コスト、提案、転記<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
-<p>これは、建物を ERP のプロジェクト注文へ運ぶ一連の流れです。上で始まっていました。<code>cost discipline</code> は、提案 <code>Ready to post to ERP Project Order? y/N</code> と、実行されるそのままの行で終わりました。提案はエンジン自身の次のステップで、手で打つものではありません。セッションでは <code>y</code> がその行をそのまま実行し、<code>n</code> や空の Return は何も実行しません。単発の行や AI では何も尋ねられず、その行は答えの <code>next</code> に入ります。<code>y</code> と答えることが <code>post</code> です。建物の積算済みの選択を、建物の 4D 工程から取った工程とタスク、およびプロジェクト明細とともに、プロジェクト注文へ折り込み、変更はひとまとまりで、すべてかゼロかです。何が作られたかと、二つ目の提案（<code>cd project</code>）を見てください：</p>
+<h3 id="from-a-building-to-its-order-cost-the-offer-post">建物から注文へ：コスト、提案、転記<a class="headerlink" href="#from-a-building-to-its-order-cost-the-offer-post" title="Permanent link">&para;</a></h3>
+<p>これは、建物をその ERP のプロジェクト注文へと運ぶ流れです。<code>cost discipline</code> はまずグループを出力し、次に件数と合計を出力します。<code>ls</code> は値段の付いた行を並べ、コストは <code>phase</code>、<code>task</code>、<code>storey</code>、<code>class</code> でもグループ化できます。建物にはまだ ERP の注文がないので、最後に提案 <code>Ready to post to ERP Project Order? y/N</code> が出て、その後に実行する正確な行が続きます。この提案はエンジン自身の次の一歩で、手で入力されたものではありません。セッションでは <code>y</code> でその行がそのまま実行され、<code>n</code> または空の Return では何も実行されません。一回限りの行や AI の場合は何も尋ねず、その行は回答の <code>next</code> に入ります。<code>y</code> と答えることは <code>post</code> です。建物の値段付きの選択を、建物の 4D 工程とプロジェクト明細から取ったフェーズとタスクとともに、一つの変更グループとして（またはまったくなしで）プロジェクト注文へまとめます。作られたものと、二つ目の提案 <code>cd project</code> を見てください。</p>
 <!-- run: chain_post -->
-<div class="highlight"><pre><span></span><code>$ printf &#39;cd Duplex\ncost discipline\ny\nn\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_chain.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_chain.journal node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39;
+<div class="highlight"><pre><span></span><code>$ rm -f /tmp/fast_guide_chain.ops; printf &#39;cd Duplex\ncost discipline\ny\nn\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_chain.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_chain.journal node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39;
 building Duplex
 → viewer.cost building=Duplex by=discipline
 ok · viewer.cost
@@ -4013,7 +3984,7 @@ Open the project? y/N → cd project
 not done: cd project
 </code></pre></div>
 <p>転記された金額 1054482.08284 は、注文自身の明細ルール（単価×数量、丸めなし）です。<code>cost</code> は同じ明細で計算し、注文の通貨のセントまで表示します（1054482.08）。つまり <code>post</code> の前に見る数字が、注文に入る金額です。<code>post</code> という言葉は、前に <code>cost</code> がなくても同じことをし、先に <code>run it? y/N</code> と尋ねます。すでに注文にある建物を転記しても、何も変わりません。新しいプロジェクトから見ると、<code>run "Generate PO from Project"</code> が購買側で、上の Hospital プロジェクトと同じように答えます。転記で作られた商品には仕入先価格がありません。これらの手順と出力は<a href="../FastScriptReference/">リファレンス</a>にあります。</p>
-<h2 id="_4">すべての言葉<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<h2 id="_3">すべての言葉<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
 <p>上の言葉が、最初に覚えるものです。残りは、それぞれドア動詞の短い形です（<code>help &lt;word&gt;</code> でその行を見られます）：</p>
 <table>
 <thead>
@@ -4075,7 +4046,7 @@ not done: cd project
 </table>
 <h2 id="what-is-not-checked">確認されないこと<a class="headerlink" href="#what-is-not-checked" title="Permanent link">&para;</a></h2>
 <p>答えは、その確認がカバーしなかったことを一覧にします。同じ言葉がどの答えにも当てはまります。重なりはまずバウンディングボックスであり、確認は動いたものだけをカバーし、<strong>耐荷重は決して確認されません</strong>。赤のない答えは、決して安全を意味しません。Modeller の編集レポートの完全な一覧は<a href="../FastScriptReference/#what-is-not-checked">リファレンス</a>にあります。</p>
-<h2 id="_5">トラブルシューティング<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<h2 id="_4">トラブルシューティング<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
@@ -4111,7 +4082,7 @@ not done: cd project
 </tbody>
 </table>
 <p><strong>計画しておくべき制限。</strong> Modeller の呼び出しは、そのつど建物全体を開きます。HospitalGarage で約 10〜40 秒です。これは測定ツールであり、稼働時間を保証するサービスではありません。Modeller の行が複数あるスクリプトは、行ごとに建物を一度開きます。</p>
-<h2 id="_6">開発者向け<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<h2 id="_5">開発者向け<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
 <p><strong>ドアの行。</strong> どの言葉も一行のドアの行 <code>app.verb key=value key=value</code> になり、red1 が <code>→</code> のあとに表示します。ドアの行をプロンプトに直接打つことも、単発で実行することもできます。<code>red1 'object.count building=Duplex kind=Element'</code> は答えを表示し、<code>--json</code> はエンベロープ全体を表示します。単発の行に複数の言葉を入れるときは <code>;</code> で区切ります（<code>red1 'cd Duplex; count'</code>）。<code>red1 -f FILE</code> は行のファイルを実行し、<code>--</code> で始まる行はコメント、<code>--dry</code> は先に試します。ドアは、すべての行を固定の動詞一覧と照合し、アプリ自身のコードを呼び、確認されなかったことを添えて答えを返します。どの動詞にも合わない行は、推測されることなく、質問として返ります。</p>
 <p><img alt="ひとつのドア。左の主体は同じ動詞を話し、ドアが解析・確認・結び付け・呼び出し・返答を行い、アプリ自身の確認が決める。" src="../../figs/one_door.svg" /></p>
 <p>図は左から右へ読みます。<strong>主体</strong>（ターミナルの人、またはツール接続経由の AI）、<strong>チャネル</strong>（動詞の一覧。それぞれに平易な説明、入力、<em>危害</em>クラスがある）、<strong>ドア</strong>（解析し、確認し、行を尋ねた人に結び付け、呼び出し、返答する）、<strong>アプリ</strong>（自身の確認が決める。新しい問題を増やす変更は理由とともに元に戻される）。AI の接続方法は <a href="../ProposerGuide/#connect-your-ai">AI 提案ガイド</a>にあります。</p>
@@ -4682,92 +4653,13 @@ object.count building=Duplex kind=Element -&gt; 1193 Element
 <td>human, ai</td>
 <td>bim-ootb のチェックアウト</td>
 </tr>
-<tr>
-<td><code>erp.column</code></td>
-<td>列は誰が埋めるか：ツインとレガシーを並べて（mis.column の古い名前）</td>
-<td><code>kind</code>, <code>column</code></td>
-<td>read</td>
-<td>human, ai</td>
-<td>bim-ootb のチェックアウト</td>
-</tr>
-<tr>
-<td><code>erp.compare</code></td>
-<td>ツインとレガシーのひとつのレコードを比べる（legacy.compare の古い名前）</td>
-<td><code>kind</code>, <code>number</code>, <code>legacy</code> （任意）</td>
-<td>read</td>
-<td>human, ai</td>
-<td>bim-ootb のチェックアウト</td>
-</tr>
-<tr>
-<td><code>erp.pack</code></td>
-<td>データモデルのワークブックから 2Pack の zip を作る（mis.pack の古い名前）</td>
-<td><code>book</code>, <code>version</code>, <code>out</code> （任意）, <code>java</code> （任意）, <code>package</code> （任意）</td>
-<td>writes</td>
-<td>human, ai</td>
-<td>bim-ootb のチェックアウト</td>
-</tr>
-<tr>
-<td><code>erp.legacy_plugin</code></td>
-<td>データモデルのプラグインをレガシーのテスト環境に載せ、そこで確認する（legacy.plugin の古い名前）</td>
-<td><code>book</code>, <code>version</code></td>
-<td>writes</td>
-<td>human, ai</td>
-<td>bim-ootb のチェックアウト</td>
-</tr>
-<tr>
-<td><code>erp.describe</code></td>
-<td>ERP レコードの種類を説明する（mis.describe の古い名前）</td>
-<td><code>kind</code>, <code>role</code> （任意）</td>
-<td>read</td>
-<td>human, ai</td>
-<td>bim-ootb のチェックアウト</td>
-</tr>
-<tr>
-<td><code>erp.read</code></td>
-<td>ERP レコードを読む（mis.read の古い名前）</td>
-<td><code>kind</code>, <code>id</code> （任意）, <code>number</code> （任意）, <code>role</code> （任意）</td>
-<td>read</td>
-<td>human, ai</td>
-<td>bim-ootb のチェックアウト</td>
-</tr>
-<tr>
-<td><code>erp.list</code></td>
-<td>レコードを一覧する（mis.list の古い名前）</td>
-<td><code>kind</code>, <code>columns</code> （任意）, <code>sort</code> （任意）, <code>limit</code> （任意）, <code>offset</code> （任意）, <code>names</code> （任意）, <code>role</code> （任意）, その他の<code>column=value</code>フィルタ（任意）</td>
-<td>read</td>
-<td>human, ai</td>
-<td>bim-ootb のチェックアウト</td>
-</tr>
-<tr>
-<td><code>erp.sum</code></td>
-<td>列を合計する（mis.sum の古い名前）</td>
-<td><code>kind</code>, <code>column</code>, <code>role</code> （任意）, その他の<code>column=value</code>フィルタ（任意）</td>
-<td>read</td>
-<td>human, ai</td>
-<td>bim-ootb のチェックアウト</td>
-</tr>
-<tr>
-<td><code>erp.group</code></td>
-<td>列で数える（mis.group の古い名前）</td>
-<td><code>kind</code>, <code>by</code>, <code>role</code> （任意）, <code>window</code> （任意）, その他の<code>column=value</code>フィルタ（任意）</td>
-<td>read</td>
-<td>human, ai</td>
-<td>bim-ootb のチェックアウト</td>
-</tr>
-<tr>
-<td><code>erp.new</code></td>
-<td>レコードを作る（mis.new の古い名前）</td>
-<td><code>kind</code>, <code>dry</code> （任意）, <code>role</code> （任意）, <code>window</code> （任意）, その他の<code>column=value</code>フィルタ（任意）</td>
-<td>writes</td>
-<td>human, ai</td>
-<td>bim-ootb のチェックアウト</td>
-</tr>
 </tbody>
 </table>
+<p>引き続き動く古い名前（それぞれ指し示す動詞と同じです）：<code>erp.column</code> → <code>mis.column</code> · <code>erp.compare</code> → <code>legacy.compare</code> · <code>erp.pack</code> → <code>mis.pack</code> · <code>erp.legacy_plugin</code> → <code>legacy.plugin</code> · <code>erp.describe</code> → <code>mis.describe</code> · <code>erp.read</code> → <code>mis.read</code> · <code>erp.list</code> → <code>mis.list</code> · <code>erp.sum</code> → <code>mis.sum</code> · <code>erp.group</code> → <code>mis.group</code> · <code>erp.new</code> → <code>mis.new</code></p>
 <!-- /GEN:verbs -->
 
-<p><strong>現在のカバー範囲。</strong> 一覧は意図的に小さくしてあります。68個の動詞が、Modeller のグリッド編集、そのウォーカー、行の間も開いたままの Modeller、いくつかの Viewer の質問、工程、汎用のオブジェクトの読み取り・カウント・書き込み、選択のコスト、ERP の伝票動詞、そしてポートのある ERP 辞書のあらゆるプロセスをカバーしています。Viewer には人が押せるアクションが64個あり、ドアは6個の Viewer 動詞を提供します。ERP には1158個の伝票とプロセスがあり、ドアは伝票の一生のための13個の ERP 動詞と、どのテーブルにも使える15個の MIS 動詞を提供し、以前の行が動き続けるよう10個の旧名を残しています。つまりこれは出発点であって、メニューのすべてではありません。</p>
-<h2 id="_7">このページが正しさを保つ仕組み<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<p><strong>現在の対象範囲。</strong> このリストは意図的に小さくしています。68 の動詞が、Modeller のグリッド編集、そのウォーカー、行の間で開いたままの Modeller、Viewer へのいくつかの質問、スケジュール、オブジェクトの汎用的な読み取り・集計・書き込み、選択範囲のコスト、ERP の伝票動詞、そして移植のある ERP 辞書の全てのプロセスをカバーします。Viewer には人が押せるアクションが 64 あり、ドアは 6 の Viewer 動詞を提供します。ERP には 1158 の伝票とプロセスがあり、ドアは伝票のライフサイクル用に 13 の ERP 動詞と、どのテーブルでも動く 15 の MIS 動詞を提供し、以前の行が引き続き動くよう 10 の古い名前を残しています（バージョン行の数にはそれらも含まれます）。つまりこれは始まりであって、メニュー全体ではありません。</p>
+<h2 id="_6">このページが正しさを保つ仕組み<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
 <p>このページと<a href="../FastScriptReference/">リファレンス</a>の灰色のブロックにあるコマンドはすべて実行されており、その下の出力は、コマンドが実際に表示したものです。<code>bim-ootb</code> リポジトリのテスト <strong>W-FAST-SCRIPT-GUIDE</strong> が、ダウンロードとチェックアウトからそれらを再実行し、このページのすべての数字を実行結果と照合し、動詞の表が <code>verbs.json</code> と等しいことを確認します。ここの数字が古くなれば、そのテストは失敗します。</p>
 <p>関連：<a href="../ProposerGuide/">AI Proposer ガイド</a>（同じドアに AI をつなぐ方法と、AI がチェックで何をしたか）、そして<a href="../ModellerGuide/">Modeller ガイド</a>。</p>
 

@@ -1266,10 +1266,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#mulai-dengan-red1" class="md-nav__link">
+  <a href="#cara-memasang" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Mulai dengan red1
+        Cara memasang
       
     </span>
   </a>
@@ -1277,10 +1277,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#cara-memasang" class="md-nav__link">
+  <a href="#mulai-dengan-red1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Cara memasang
+        Mulai dengan red1
       
     </span>
   </a>
@@ -1333,7 +1333,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#dari-bangunan-ke-pesanannya-biaya-tawaran-posting" class="md-nav__link">
+  <a href="#from-a-building-to-its-order-cost-the-offer-post" class="md-nav__link">
     <span class="md-ellipsis">
       
         Dari bangunan ke pesanannya: biaya, tawaran, posting
@@ -3452,10 +3452,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#mulai-dengan-red1" class="md-nav__link">
+  <a href="#cara-memasang" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Mulai dengan red1
+        Cara memasang
       
     </span>
   </a>
@@ -3463,10 +3463,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#cara-memasang" class="md-nav__link">
+  <a href="#mulai-dengan-red1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Cara memasang
+        Mulai dengan red1
       
     </span>
   </a>
@@ -3519,7 +3519,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#dari-bangunan-ke-pesanannya-biaya-tawaran-posting" class="md-nav__link">
+  <a href="#from-a-building-to-its-order-cost-the-offer-post" class="md-nav__link">
     <span class="md-ellipsis">
       
         Dari bangunan ke pesanannya: biaya, tawaran, posting
@@ -3629,6 +3629,30 @@
 <p class="admonition-title">Hal yang tidak dijamin oleh jawaban yang baik</p>
 <p>Jawaban tanpa masalah <strong>tidak pernah berarti aman, patuh, atau baik</strong>. Setiap jawaban mendaftar apa yang tidak diperiksa, dan <a href="#what-is-not-checked">Yang tidak diperiksa</a> mengatakannya lagi. Keputusan akhir ada pada insinyur struktur.</p>
 </div>
+<h2 id="cara-memasang">Cara memasang<a class="headerlink" href="#cara-memasang" title="Permanent link">&para;</a></h2>
+<p>Anda butuh Node 18 atau lebih baru (langkah-langkah ini dijalankan di Node 18.19). Ada dua cara masuk.</p>
+<p><strong>Checkout penuh</strong> memberi Anda red1, BIM, ERP, Viewer, dan semua yang ada di bawah. Klon, lalu mulai red1 dari folder teratasnya:</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/red1oon/bim-ootb
+<span class="nb">cd</span><span class="w"> </span>bim-ootb
+node<span class="w"> </span>common/door/red1.js
+</code></pre></div>
+<p>Ketik <code>exit</code> untuk keluar. Agar cukup mengetik <code>red1</code> dari mana saja, jalankan <code>npm link</code> sekali di folder itu. Untuk memeriksa bahwa semuanya bekerja, minta baris versinya:</p>
+<!-- run: red1_version -->
+<div class="highlight"><pre><span></span><code>$ node common/door/red1.js --version | sed -e &#39;s/^Copyright[^·]*· //&#39; -e &#39;s/ · [0-9a-f]\{8\}$//&#39;
+red1 1.0.0 · 78 verbs · 30 words
+</code></pre></div>
+<p><strong>Unduhan enam berkas</strong> untuk pintu saja dengan kata kerja Modeller, tanpa checkout. Buat folder kosong, pasang mesin peramban yang dibutuhkan Modeller, lalu ambil enam berkas:</p>
+<div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>fastscript<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>fastscript
+npm<span class="w"> </span>init<span class="w"> </span>-y
+npm<span class="w"> </span>install<span class="w"> </span>puppeteer@24
+curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/modeller/tools/edit_cli.js
+curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/modeller/tools/bim_mcp.js
+curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/door.js
+curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/verbs.json
+curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/msg_core.js
+curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/vocab/messages.json
+</code></pre></div>
+<p>Simpan keenamnya dalam satu folder. <code>door.js</code> membaca daftar kata kerja dari <code>verbs.json</code> dan pesannya dari <code>messages.json</code> (lewat <code>msg_core.js</code>), dan menjalankan <code>edit_cli.js</code>, yang membuka halaman Modeller langsung tanpa jendela. Jika ada berkas yang hilang, pintu menyebut yang mana dan mencetak baris <code>curl</code>-nya. Semua hal lain di halaman ini butuh checkout; <a href="#the-verbs">tabel kata kerja</a> menyebut kata kerja mana butuh apa.</p>
 <h2 id="mulai-dengan-red1">Mulai dengan red1<a class="headerlink" href="#mulai-dengan-red1" title="Permanent link">&para;</a></h2>
 <p>Di terminal, <code>red1</code> menyapa Anda sekali, lalu menunggu di promptnya. Inilah persis yang dicetaknya (commit di akhir baris versi dipotong, karena berubah pada setiap commit):</p>
 <!-- run: greet -->
@@ -3641,6 +3665,7 @@ Tip: type level student for fuller help on each word (red1 --fast opens without 
 
 red1&gt; exit
 </code></pre></div>
+<p><strong>Cara membaca blok di halaman ini.</strong> Baris setelah <code>$</code> adalah cara uji halaman ini menjalankan perintah: memakai berkas sementara (dikosongkan dulu, jadi satu jalannya tidak pernah menyentuh data Anda), memotong waktu tempuh dan menyembunyikan log. Di prompt Anda sendiri, Anda hanya mengetik kata-katanya, seperti <code>cd Duplex</code>. Di bawahnya persis apa yang dicetak red1.</p>
 <p>Bacalah sebagai peta. Baris versi menyebut berapa banyak kata kerja pintu (bentuk panjang) dan kata pendek yang dimiliki red1. <code>help</code> menampilkan kata-kata pendek dalam tiga kelompok; <code>help bim</code>, <code>help mis</code>, atau <code>help erp</code> menampilkan satu kelompok:</p>
 <table>
 <thead>
@@ -3671,16 +3696,16 @@ red1&gt; exit
 <!-- run: red1_help -->
 <div class="highlight"><pre><span></span><code>$ node common/door/red1.js help 2&gt;/dev/null
 red1: type a short word; red1 prints the full line it runs (→ …), then runs it.
-  bim   buildings and models             start with: cd Duplex   (16 words)
-  mis   records, tables, files, Ninja    start with: cd Order   (11 words)
-  erp   document actions (CO VO CL RC)   start with: cd Order   (8 words)
+  bim   buildings and models            start with: cd Duplex   (16 words)
+  mis   records, tables, files, Ninja   start with: cd Order   (11 words)
+  erp   documents and processes         start with: cd Order   (8 words)
   everywhere: cd &lt;place&gt; · #&lt;number&gt; · pwd · role &lt;id&gt; · login &lt;user&gt; · history [N] · report · exit
 Type bim, mis or erp for its words · help &lt;word&gt; for one word (level student first for the full explanation) · help verbs for the full door lines.
 </code></pre></div>
 <p>Satu kelompok mendaftar kata-katanya, masing-masing dengan contoh yang bisa Anda ketik. <code>erp</code> yang paling pendek:</p>
 <!-- run: red1_help_erp -->
 <div class="highlight"><pre><span></span><code>$ node common/door/red1.js &#39;help erp&#39; 2&gt;/dev/null
-erp: document actions (CO VO CL RC) (start with: cd Order)
+erp: documents and processes (start with: cd Order)
  in a building:
   post discipline=ARC  post the building&#39;s priced selection to its ERP Project Order
   vo discipline=ARC    issue the change between the model and the Project Order as a Variation Order
@@ -3727,32 +3752,8 @@ CLI: erp.close kind=Order number=&lt;Document No&gt;
 → object.count building=Duplex kind=Element discipline=ARC
 </code></pre></div>
 <p>Teks abu-abu muncul setelah kursor saat Anda mengetik kata, tempat, atau kolom: sebuah saran dari kamus. <strong>Tab</strong> atau <strong>→</strong> menerimanya; <strong>Return selalu menjalankan apa yang Anda ketik</strong>, tidak pernah sarannya. Salah eja mendapat petunjuk, tidak pernah perbaikan diam-diam (<code>ls Valu=…</code> ditolak dan menyebut <code>Value</code>).</p>
-<h2 id="cara-memasang">Cara memasang<a class="headerlink" href="#cara-memasang" title="Permanent link">&para;</a></h2>
-<p>Anda butuh Node 18 atau lebih baru (langkah-langkah ini dijalankan di Node 18.19). Ada dua cara masuk.</p>
-<p><strong>Checkout penuh</strong> memberi Anda red1, BIM, ERP, Viewer, dan semua yang ada di bawah. Klon, lalu mulai red1 dari folder teratasnya:</p>
-<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/red1oon/bim-ootb
-<span class="nb">cd</span><span class="w"> </span>bim-ootb
-node<span class="w"> </span>common/door/red1.js
-</code></pre></div>
-<p>Ketik <code>exit</code> untuk keluar. Agar cukup mengetik <code>red1</code> dari mana saja, jalankan <code>npm link</code> sekali di folder itu. Untuk memeriksa bahwa semuanya bekerja, minta baris versinya:</p>
-<!-- run: red1_version -->
-<div class="highlight"><pre><span></span><code>$ node common/door/red1.js --version | sed -e &#39;s/^Copyright[^·]*· //&#39; -e &#39;s/ · [0-9a-f]\{8\}$//&#39;
-red1 1.0.0 · 78 verbs · 30 words
-</code></pre></div>
-<p><strong>Unduhan enam berkas</strong> untuk pintu saja dengan kata kerja Modeller, tanpa checkout. Buat folder kosong, pasang mesin peramban yang dibutuhkan Modeller, lalu ambil enam berkas:</p>
-<div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>fastscript<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>fastscript
-npm<span class="w"> </span>init<span class="w"> </span>-y
-npm<span class="w"> </span>install<span class="w"> </span>puppeteer@24
-curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/modeller/tools/edit_cli.js
-curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/modeller/tools/bim_mcp.js
-curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/door.js
-curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/verbs.json
-curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/msg_core.js
-curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/vocab/messages.json
-</code></pre></div>
-<p>Simpan keenamnya dalam satu folder. <code>door.js</code> membaca daftar kata kerja dari <code>verbs.json</code> dan pesannya dari <code>messages.json</code> (lewat <code>msg_core.js</code>), dan menjalankan <code>edit_cli.js</code>, yang membuka halaman Modeller langsung tanpa jendela. Jika ada berkas yang hilang, pintu menyebut yang mana dan mencetak baris <code>curl</code>-nya. Semua hal lain di halaman ini butuh checkout; <a href="#the-verbs">tabel kata kerja</a> menyebut kata kerja mana butuh apa.</p>
 <h2 id="kata-yang-paling-sering-anda-pakai">Kata yang paling sering Anda pakai<a class="headerlink" href="#kata-yang-paling-sering-anda-pakai" title="Permanent link">&para;</a></h2>
-<p>Setiap bagian di bawah menyebut apa yang akan Anda lakukan dan mengapa, lalu menampilkan satu eksekusi nyata dan apa yang perlu diperhatikan. Setiap blok memakai op-log percobaan (berkas tempat kembaran menyimpan perubahannya), dikosongkan dulu, sehingga menjalankannya tidak menyentuh data Anda sendiri.</p>
+<p>Setiap bagian di bawah mengatakan apa yang akan Anda lakukan dan mengapa, lalu menunjukkan satu jalannya nyata dan apa yang perlu dilihat di dalamnya.</p>
 <h3 id="bim-bangunan-dan-model">bim: bangunan dan model<a class="headerlink" href="#bim-bangunan-dan-model" title="Permanent link">&para;</a></h3>
 <p><strong>Menghitung, menurut sebuah kolom.</strong> <code>cd Duplex</code> lalu <code>cd Element</code> pergi ke elemen bangunan; <code>group storey</code> menghitungnya menurut sebuah kolom. Perhatikan kelompok dan jumlahnya, serta baris <code>→</code> yang menunjukkan kata kerja pintu di balik kata-kata itu:</p>
 <!-- run: red1_group -->
@@ -3802,22 +3803,7 @@ ok · viewer.clashes
 └─   0 not judged
 ls lists the 393 rows
 </code></pre></div>
-<p><strong>Biaya.</strong> <code>cost discipline</code> menghargai elemen bangunan seperti panel Cari milik Viewer: kuantitas dari model dikali daftar harga. Kelompok muncul lebih dulu, lalu jumlah dan total; <code>ls</code> mendaftar baris yang dihargai. Pengelompokan juga bisa menurut <code>phase</code>, <code>task</code>, <code>storey</code>, atau <code>class</code>. Perhatikan baris terakhir: karena bangunan belum punya pesanan ERP, red1 menawarkan langkah berikutnya. Sesi ini berakhir tanpa jawaban, jadi tidak ada yang diposting:</p>
-<!-- run: chain_cost -->
-<div class="highlight"><pre><span></span><code>$ rm -f /tmp/fast_guide_chain.ops; printf &#39;cd Duplex\ncost discipline\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_chain.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_chain.journal node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39;
-building Duplex
-→ viewer.cost building=Duplex by=discipline
-ok · viewer.cost
-1190 elements · 1054482.08 total (71 with no rate); 3 with no size, not priced
-discipline  elements  cost
-ARC         267       532431.14
-ELEC        81        283500.00
-MEP         809       153825.40
-PLB         14        49000.00
-STR         19        35725.55
-ls lists the 49 priced rows
-Ready to post to ERP Project Order? y/N → erp.process name=&quot;Fold from BIM&quot; Building=Duplex
-</code></pre></div>
+<p><strong>Biaya.</strong> <code>cost discipline</code> memberi harga elemen bangunan seperti panel Find di Viewer: kuantitas dari model dikali paket tarif. Jalannya ada di <a href="#from-a-building-to-its-order-cost-the-offer-post">Dari bangunan ke ordernya</a>, tempat ia berlanjut ke order.</p>
 <h3 id="mis-rekaman-tabel-berkas">mis: rekaman, tabel, berkas<a class="headerlink" href="#mis-rekaman-tabel-berkas" title="Permanent link">&para;</a></h3>
 <p><strong>Mencari rekaman.</strong> Dalam jenis ERP seperti <code>Business Partner</code>, kata-kata yang sama bekerja seperti di bangunan: <code>ls</code>, <code>count</code>, <code>cat</code>, dengan karakter pengganti yang sama. <code>cd</code> menerima nama sebuah jenis, diberi tanda kutip bila mengandung spasi.</p>
 <p><strong>Membuat satu dan mengubah satu.</strong> <code>new</code> membuat rekaman seperti yang dilakukan jendela: Anda memberi kolom yang Anda tahu, mesin mengisi sisanya (nilai bawaan, nomor urut), dan kolom yang tidak ada di kamus ditolak dengan daftar kolom yang sebenarnya. <code>set &lt;id&gt; Column=value</code> mengubah satu. Perhatikan <code>id</code> dalam jawaban <code>new</code>, yang dipakai <code>set</code> berikutnya, <code>changed</code> dalam jawaban kedua, dan daftar di akhir. (Sebuah jawaban juga mendaftar setiap kolom yang diisi dan perubahan yang dibuat; baris-baris itu dihilangkan di sini.)</p>
@@ -3839,7 +3825,7 @@ C_BPartner_ID  Value  Name               Logo_ID  C_BP_Group_ID
 </code></pre></div>
 <p><code>rm &lt;id&gt;</code> menghapus satu, dan <code>load &lt;file.csv&gt;</code> serta <code>diff &lt;file.csv&gt;</code> memuat baris dari berkas dan membandingkan berkas dengan rekaman. <a href="../FastScriptReference/">Referensi</a> menunjukkan masing-masing dengan keluarannya.</p>
 <h3 id="erp-dokumen-dan-proses">erp: dokumen dan proses<a class="headerlink" href="#erp-dokumen-dan-proses" title="Permanent link">&para;</a></h3>
-<p><strong>Membuat dokumen dan menyelesaikannya.</strong> <code>new</code> di <code>Order</code> membuat pesanan draf dan mencetak nomornya. Baris pintu lengkap juga bekerja di prompt, jadi baris pesanan ditambahkan dengan <code>mis.new</code> (sebuah produk dan sebuah kuantitas). <code>next &lt;number&gt;</code> menggambar apa yang boleh dilakukan dokumen sekarang, dan menunjuk setiap aksi yang punya kata ke baris yang menjalankannya. <code>do CO &lt;number&gt;</code> menyelesaikannya; kode DocAction lama adalah <code>CO</code> selesaikan, <code>VO</code> batalkan, <code>CL</code> tutup, <code>RC</code> balik (<code>do complete</code>, <code>do void</code> … juga bisa). Perhatikan nomor yang dicetak <code>new</code>, status pada setiap pohon <code>next</code>, dan aksi yang bergeser setelah <code>CO</code>. (<code>grep</code> hanya menyimpan baris-baris itu; jawaban lengkap juga mendaftar setiap kolom yang diisi.)</p>
+<p><strong>Membuat dokumen dan menyelesaikannya.</strong> <code>new</code> di <code>Order</code> membuat order draf dan mencetak nomornya. Satu baris pintu lengkap juga berjalan di prompt, jadi baris order ditambahkan dengan <code>mis.new</code> (satu produk dan satu kuantitas). <code>next &lt;number&gt;</code> menggambar apa yang boleh dilakukan dokumen sekarang, dan menunjuk setiap aksi yang punya kata ke baris yang menjalankannya. <code>do CO &lt;number&gt;</code> menyelesaikannya; kode DocAction legacy adalah <code>CO</code> selesaikan, <code>PR</code> siapkan, <code>VO</code> batalkan, <code>CL</code> tutup, <code>RC</code> balikkan, <code>RE</code> aktifkan kembali (<code>do complete</code>, <code>do void</code> … juga berjalan). Lihat nomor yang dicetak <code>new</code>, status di setiap pohon <code>next</code>, dan aksi yang berubah setelah <code>CO</code>. (<code>grep</code> hanya menyisakan baris-baris itu; jawaban lengkapnya juga mendaftar setiap kolom yang diisi.)</p>
 <!-- run: erp_order -->
 <div class="highlight"><pre><span></span><code>$ printf &#39;cd Order\nnew issotrx=Y C_DocTypeTarget_ID=132 C_BPartner_ID=112 SalesRep_ID=101\nmis.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2\nnext 50000\ndo CO 50000\nnext 50000\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_erp.ops node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39; | grep -E &#39;^(→|ok|refused|number|Order [0-9]|[├└])&#39;
 → mis.describe kind=Order
@@ -3848,7 +3834,6 @@ ok · mis.new
 number: 50000
 → mis.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2
 ok · mis.new
-number: 
 → erp.actions kind=Order number=50000
 ok · erp.actions
 Order 50000  status DR
@@ -3882,19 +3867,7 @@ Generate PO from Project: done · no document made
   Product has no PO record  (×28)
 </code></pre></div>
 <p>Pada baris tunggal, atau untuk AI, tidak ada yang ditanyakan: parameter wajib yang hilang adalah penolakan yang menyebutnya. Proses yang belum punya port di kembaran ditolak dengan menyebut nama kelasnya, dan red1 mengatakannya.</p>
-<p><strong>Sebuah rekaman menawarkan miliknya sendiri.</strong> Di dalam sebuah rekaman, yang ditawarkan red1 adalah milik rekaman itu, dibaca dari kamus jendelanya: setelah <code>do</code>, hanya tindakan yang boleh dilakukannya sekarang (untuk peran Anda); setelah <code>cd</code>, tab-tabnya; setelah <code>run</code>, tombol proses miliknya sendiri; dan kolom-kolomnya sebagai kunci <code>Column=</code>. Saat dimasuki, rekaman itu mencetak apa yang boleh dilakukannya:</p>
-<!-- run: erp_record_offers -->
-<div class="highlight"><pre><span></span><code>$ printf &#39;cd Order 100\n&#39; | node common/door/red1.js 2&gt;/dev/null
-→ mis.describe kind=&quot;Order 100&quot;
-→ mis.describe kind=Order
-→ mis.read kind=Order number=100
-→ mis.read kind=Order id=100
-Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls shows them, cd &lt;tab&gt; opens one, cat reads the record
-→ erp.actions kind=Order id=100
-it may do: CL, VO, RE (do &lt;code&gt;; next shows the tree)
-</code></pre></div>
-<p>Di sana Tab setelah <code>do</code> hanya menawarkan <code>CL</code>, <code>VO</code>, dan <code>RE</code>, sesuai urutan tombol jendela itu sendiri (Close, Void, Re-Activate; <code>RE</code> mengaktifkan kembali pesanan: <code>do RE</code>), dan <code>run Co</code> dilengkapi menjadi <code>"Copy Lines"</code>, tombol milik jendela pesanan itu sendiri.</p>
-<p><strong>Menjelajahi menu.</strong> <code>menu</code> menampilkan menu ERP sebagai tempat: <code>cd &lt;folder&gt;</code> masuk ke dalamnya (awal namanya sudah cukup bila hanya satu entri yang dimulai begitu), entri jendela membawa Anda ke jenisnya, dan <code>cd ..</code> (atau Shift+Tab) naik satu folder. Prompt menunjukkan jalurnya. Setiap entri diberi tanda: ▸ sebuah folder (berapa entri isinya), W sebuah jendela (dan tabelnya), P sebuah proses, R sebuah laporan, X sebuah formulir, F sebuah alur kerja. <code>red1 menu</code> sendiri tetap membuka menu di satu layar penuh.</p>
+<p><strong>Menu, dan rekaman sebagai tempat.</strong> <code>menu</code> menampilkan menu ERP sebagai tempat: <code>cd &lt;folder&gt;</code> masuk (awal namanya cukup bila hanya satu entri yang diawali begitu), entri jendela membawa Anda ke jenisnya, dan <code>cd ..</code> (atau Shift+Tab) naik satu folder. Prompt menunjukkan jalurnya. Setiap entri ditandai: ▸ folder (berapa entri isinya), W jendela (dan tabelnya), P proses, R laporan, X formulir, F alur kerja. <code>red1 menu</code> sendiri tetap membuka menu di layar penuh.</p>
 <!-- run: red1_menu_walk -->
 <div class="highlight"><pre><span></span><code>$ printf &#39;menu\ncd Quote\ncd &quot;Sales Orders&quot;\ncd &quot;Sales Order&quot;\npwd\n&#39; | node common/door/red1.js 2&gt;/dev/null
 → mis.menu
@@ -3939,7 +3912,7 @@ Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd &lt;name&gt; goes in, cd .
 Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
 menu=&quot;Quote-to-Invoice (Sales)/Sales Orders&quot; kind=Order
 </code></pre></div>
-<p><strong>Dari menu ke sebuah rekaman.</strong> Di dalam suatu jenis, <code>cd &lt;number&gt;</code> memasuki rekaman itu dan prompt tetap menyimpan jalur menu; <code>cd ..</code> keluar lagi. Di dalam rekaman, <code>do</code> dan <code>next</code> menyebutnya dengan id-nya, sehingga nomor yang dimiliki dua rekaman (di sini 80000) tidak pernah menjadi masalah. Sebuah aksi mencetak apa yang dilakukannya: perubahan status, dokumen yang disentuhnya, berapa perubahan yang disimpan, dan apa yang boleh dilakukan rekaman itu sekarang; Tab setelah <code>do</code> lalu menawarkan kode-kode baru itu. Daftar folder dihilangkan dari blok di bawah:</p>
+<p>Di dalam satu jenis, <code>cd &lt;number&gt;</code> masuk ke rekaman itu dan prompt tetap memegang jalur menu; <code>cd ..</code> keluar lagi (dari mana pun, <code>cd Order 100</code> melakukan hal yang sama). Di dalam rekaman, apa yang ditawarkan red1 adalah milik rekaman itu, dibaca dari kamus untuk jendelanya: setelah <code>do</code>, hanya aksi yang boleh dilakukannya sekarang, untuk peran Anda, dalam urutan tombol jendela itu sendiri; setelah <code>cd</code>, tab-tabnya; setelah <code>run</code>, tombol prosesnya sendiri (<code>run Co</code> dilengkapi menjadi <code>"Copy Lines"</code>); dan field-fieldnya sebagai kunci <code>Column=</code>. <code>do</code> dan <code>next</code> menyebut rekaman dengan id-nya, jadi nomor yang dipakai bersama dua rekaman (di sini 80000) tidak pernah jadi masalah. Satu aksi mencetak apa yang dilakukannya: perubahan status, dokumen yang disentuhnya, berapa perubahan yang disimpan, dan apa yang boleh dilakukan rekaman sekarang; Tab setelah <code>do</code> lalu menawarkan kode-kode baru itu. Daftar folder dihilangkan dari blok di bawah:</p>
 <!-- run: red1_walk_record -->
 <div class="highlight"><pre><span></span><code>$ rm -f /tmp/fast_guide_walkrec.ops; printf &#39;menu\ncd Quote\ncd &quot;Sales Orders&quot;\ncd &quot;Sales Order&quot;\ncd 100\npwd\ndo RE\ndo CO\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_walkrec.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_walkrec.journal node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39; | grep -vE &#39;^  [▸WRPXF] &#39;
 → mis.menu
@@ -3948,8 +3921,6 @@ Quote-to-Invoice (Sales): 6 entries; cd &lt;name&gt; goes in, cd .. goes back
 Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd &lt;name&gt; goes in, cd .. goes back
 → mis.describe kind=C_Order
 Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
-→ mis.describe kind=100
-→ mis.read kind=Order number=100
 → mis.read kind=Order id=100
 Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls shows them, cd &lt;tab&gt; opens one, cat reads the record
 → erp.actions kind=Order id=100
@@ -3989,10 +3960,10 @@ run: Renumber has no parameter to ask (none in the dictionary)
 refused · erp.process · Renumber was not run: it has no JS port yet (class org.compiere.process.DiscountSchemaReSeq)
 This is a gap in red1, not your mistake. Type report to send it to us (email or GitHub issue).
 </code></pre></div>
-<h3 id="dari-bangunan-ke-pesanannya-biaya-tawaran-posting">Dari bangunan ke pesanannya: biaya, tawaran, posting<a class="headerlink" href="#dari-bangunan-ke-pesanannya-biaya-tawaran-posting" title="Permanent link">&para;</a></h3>
-<p>Ini rantai yang membawa bangunan ke Pesanan Proyek ERP-nya. Rantai ini dimulai di atas: <code>cost discipline</code> berakhir dengan tawaran, <code>Ready to post to ERP Project Order? y/N</code>, diikuti baris persis yang akan dijalankannya. Tawaran itu adalah langkah berikutnya milik mesin sendiri, tidak pernah diketik tangan. Dalam sesi, <code>y</code> menjalankan persis baris itu, dan <code>n</code> atau Return kosong tidak menjalankan apa pun; pada baris tunggal atau untuk AI tidak ada yang ditanyakan dan barisnya ada di <code>next</code> jawaban. Menjawab <code>y</code> adalah <code>post</code>: ia melipat pilihan bangunan yang sudah dihargai ke dalam Pesanan Proyek, dengan fase dan tugas yang diambil dari program 4D bangunan dan baris proyek, sebagai satu kelompok perubahan atau tidak sama sekali. Perhatikan apa yang dibuat, dan tawaran kedua, yaitu <code>cd project</code>:</p>
+<h3 id="from-a-building-to-its-order-cost-the-offer-post">Dari bangunan ke pesanannya: biaya, tawaran, posting<a class="headerlink" href="#from-a-building-to-its-order-cost-the-offer-post" title="Permanent link">&para;</a></h3>
+<p>Inilah rantai yang membawa sebuah bangunan ke Order Proyek ERP-nya. <code>cost discipline</code> mencetak kelompoknya dulu, lalu jumlah dan totalnya; <code>ls</code> mendaftar baris yang sudah diberi harga, dan biaya juga bisa dikelompokkan menurut <code>phase</code>, <code>task</code>, <code>storey</code> atau <code>class</code>. Karena bangunan belum punya order ERP, ia berakhir dengan tawaran, <code>Ready to post to ERP Project Order? y/N</code>, diikuti baris persis yang akan dijalankannya. Tawaran itu adalah langkah berikutnya milik mesin sendiri, tidak pernah diketik dengan tangan. Dalam sesi, <code>y</code> menjalankan tepat baris itu, dan <code>n</code> atau Return kosong tidak menjalankan apa pun; dalam baris sekali jalan atau untuk AI tidak ada yang ditanyakan dan barisnya ada di <code>next</code> jawaban. Menjawab <code>y</code> sama dengan <code>post</code>: ia melipat pilihan berharga bangunan ke dalam Order Proyek, dengan fase dan tugasnya diambil dari program 4D bangunan dan baris proyek, sebagai satu kelompok perubahan atau tidak sama sekali. Lihat apa yang dibuat, dan tawaran kedua, yaitu <code>cd project</code>:</p>
 <!-- run: chain_post -->
-<div class="highlight"><pre><span></span><code>$ printf &#39;cd Duplex\ncost discipline\ny\nn\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_chain.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_chain.journal node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39;
+<div class="highlight"><pre><span></span><code>$ rm -f /tmp/fast_guide_chain.ops; printf &#39;cd Duplex\ncost discipline\ny\nn\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_chain.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_chain.journal node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39;
 building Duplex
 → viewer.cost building=Duplex by=discipline
 ok · viewer.cost
@@ -4682,91 +4653,12 @@ object.count building=Duplex kind=Element -&gt; 1193 Element
 <td>human, ai</td>
 <td>checkout bim-ootb</td>
 </tr>
-<tr>
-<td><code>erp.column</code></td>
-<td>Siapa yang mengisi sebuah kolom: kembaran dan legacy berdampingan (nama lama dari mis.column)</td>
-<td><code>kind</code>, <code>column</code></td>
-<td>read</td>
-<td>human, ai</td>
-<td>checkout bim-ootb</td>
-</tr>
-<tr>
-<td><code>erp.compare</code></td>
-<td>Membandingkan satu rekaman pada kembaran dan pada legacy (nama lama dari legacy.compare)</td>
-<td><code>kind</code>, <code>number</code>, <code>legacy</code> (opsional)</td>
-<td>read</td>
-<td>human, ai</td>
-<td>checkout bim-ootb</td>
-</tr>
-<tr>
-<td><code>erp.pack</code></td>
-<td>Membuat zip 2Pack dari buku kerja model data (nama lama dari mis.pack)</td>
-<td><code>book</code>, <code>version</code>, <code>out</code> (opsional), <code>java</code> (opsional), <code>package</code> (opsional)</td>
-<td>writes</td>
-<td>human, ai</td>
-<td>checkout bim-ootb</td>
-</tr>
-<tr>
-<td><code>erp.legacy_plugin</code></td>
-<td>Memasang plugin model data pada instance uji legacy dan memeriksanya di sana (nama lama dari legacy.plugin)</td>
-<td><code>book</code>, <code>version</code></td>
-<td>writes</td>
-<td>human, ai</td>
-<td>checkout bim-ootb</td>
-</tr>
-<tr>
-<td><code>erp.describe</code></td>
-<td>Menjelaskan satu jenis rekaman ERP (nama lama dari mis.describe)</td>
-<td><code>kind</code>, <code>role</code> (opsional)</td>
-<td>read</td>
-<td>human, ai</td>
-<td>checkout bim-ootb</td>
-</tr>
-<tr>
-<td><code>erp.read</code></td>
-<td>Membaca sebuah rekaman ERP (nama lama dari mis.read)</td>
-<td><code>kind</code>, <code>id</code> (opsional), <code>number</code> (opsional), <code>role</code> (opsional)</td>
-<td>read</td>
-<td>human, ai</td>
-<td>checkout bim-ootb</td>
-</tr>
-<tr>
-<td><code>erp.list</code></td>
-<td>Mendaftar rekaman (nama lama dari mis.list)</td>
-<td><code>kind</code>, <code>columns</code> (opsional), <code>sort</code> (opsional), <code>limit</code> (opsional), <code>offset</code> (opsional), <code>names</code> (opsional), <code>role</code> (opsional), filter <code>column=value</code> lainnya (opsional)</td>
-<td>read</td>
-<td>human, ai</td>
-<td>checkout bim-ootb</td>
-</tr>
-<tr>
-<td><code>erp.sum</code></td>
-<td>Menjumlahkan sebuah kolom (nama lama dari mis.sum)</td>
-<td><code>kind</code>, <code>column</code>, <code>role</code> (opsional), filter <code>column=value</code> lainnya (opsional)</td>
-<td>read</td>
-<td>human, ai</td>
-<td>checkout bim-ootb</td>
-</tr>
-<tr>
-<td><code>erp.group</code></td>
-<td>Menghitung menurut sebuah kolom (nama lama dari mis.group)</td>
-<td><code>kind</code>, <code>by</code>, <code>role</code> (opsional), <code>window</code> (opsional), filter <code>column=value</code> lainnya (opsional)</td>
-<td>read</td>
-<td>human, ai</td>
-<td>checkout bim-ootb</td>
-</tr>
-<tr>
-<td><code>erp.new</code></td>
-<td>Membuat sebuah rekaman (nama lama dari mis.new)</td>
-<td><code>kind</code>, <code>dry</code> (opsional), <code>role</code> (opsional), <code>window</code> (opsional), filter <code>column=value</code> lainnya (opsional)</td>
-<td>writes</td>
-<td>human, ai</td>
-<td>checkout bim-ootb</td>
-</tr>
 </tbody>
 </table>
+<p>Nama lama yang masih berjalan, masing-masing sama dengan verba yang ditunjuknya: <code>erp.column</code> → <code>mis.column</code> · <code>erp.compare</code> → <code>legacy.compare</code> · <code>erp.pack</code> → <code>mis.pack</code> · <code>erp.legacy_plugin</code> → <code>legacy.plugin</code> · <code>erp.describe</code> → <code>mis.describe</code> · <code>erp.read</code> → <code>mis.read</code> · <code>erp.list</code> → <code>mis.list</code> · <code>erp.sum</code> → <code>mis.sum</code> · <code>erp.group</code> → <code>mis.group</code> · <code>erp.new</code> → <code>mis.new</code></p>
 <!-- /GEN:verbs -->
 
-<p><strong>Cakupan saat ini.</strong> Daftarnya sengaja kecil: 68 kata kerja mencakup pengeditan grid Modeller, walker-nya, dan Modeller yang dibiarkan terbuka di antara baris, beberapa pertanyaan Viewer, jadwal, pembacaan, penghitungan, dan penulisan objek generik, biaya sebuah pilihan, kata kerja dokumen ERP, dan proses apa pun dari kamus ERP yang punya port. Viewer punya 64 aksi yang bisa ditekan seseorang, dan pintu menawarkan 6 kata kerja Viewer. ERP punya 1158 dokumen dan proses, dan pintu menawarkan 13 kata kerja ERP untuk kehidupan sebuah dokumen dan 15 kata kerja MIS yang bekerja pada tabel apa pun, serta menyimpan 10 nama lama agar baris-baris sebelumnya tetap jalan. Jadi ini sebuah permulaan, bukan seluruh menu.</p>
+<p><strong>Cakupan hari ini.</strong> Daftarnya sengaja kecil: 68 verba mencakup penyuntingan grid Modeller, walker-nya dan Modeller yang tetap terbuka di antara baris, beberapa pertanyaan Viewer, jadwal, pembacaan, penghitungan dan penulisan objek generik, biaya suatu pilihan, verba dokumen ERP, dan setiap proses kamus ERP yang punya port. Viewer punya 64 aksi yang bisa ditekan orang, dan pintu menawarkan 6 verba Viewer. ERP punya 1158 dokumen dan proses, dan pintu menawarkan 13 verba ERP untuk siklus hidup dokumen dan 15 verba MIS yang bekerja pada tabel mana pun, serta menyimpan 10 nama lama agar baris-baris sebelumnya tetap berjalan (angka di baris versi sudah termasuk itu). Jadi ini sebuah awal, bukan seluruh menu.</p>
 <h2 id="bagaimana-halaman-ini-tetap-benar">Bagaimana halaman ini tetap benar<a class="headerlink" href="#bagaimana-halaman-ini-tetap-benar" title="Permanent link">&para;</a></h2>
 <p>Setiap perintah dalam blok abu-abu di halaman ini dan di <a href="../FastScriptReference/">referensi</a> telah dijalankan, dan keluaran di bawahnya adalah apa yang dicetak perintah itu. Sebuah uji, <strong>W-FAST-SCRIPT-GUIDE</strong> di repositori <code>bim-ootb</code>, menjalankannya lagi dari unduhan dan checkout, memeriksa setiap angka di halaman ini terhadap hasil eksekusi, dan memeriksa bahwa tabel kata kerja sama dengan <code>verbs.json</code>. Jika sebuah angka di sini basi, uji itu gagal.</p>
 <p>Terkait: <a href="../ProposerGuide/">Panduan Pengusul AI</a> (menghubungkan AI ke pintu yang sama, dan apa yang dilakukan AI dengan pemeriksaannya), dan <a href="../ModellerGuide/">Panduan Modeller</a>.</p>

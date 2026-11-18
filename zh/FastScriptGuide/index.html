@@ -1266,10 +1266,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#red1" class="md-nav__link">
+  <a href="#_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        从 red1 开始
+        如何安装
       
     </span>
   </a>
@@ -1277,10 +1277,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_1" class="md-nav__link">
+  <a href="#red1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        如何安装
+        从 red1 开始
       
     </span>
   </a>
@@ -1333,7 +1333,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#_3" class="md-nav__link">
+  <a href="#from-a-building-to-its-order-cost-the-offer-post" class="md-nav__link">
     <span class="md-ellipsis">
       
         从建筑到订单：成本、提议、过账
@@ -1349,7 +1349,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_4" class="md-nav__link">
+  <a href="#_3" class="md-nav__link">
     <span class="md-ellipsis">
       
         所有的词
@@ -1371,7 +1371,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_5" class="md-nav__link">
+  <a href="#_4" class="md-nav__link">
     <span class="md-ellipsis">
       
         故障排除
@@ -1382,7 +1382,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_6" class="md-nav__link">
+  <a href="#_5" class="md-nav__link">
     <span class="md-ellipsis">
       
         面向开发者
@@ -1404,7 +1404,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_7" class="md-nav__link">
+  <a href="#_6" class="md-nav__link">
     <span class="md-ellipsis">
       
         本页为何保持真实
@@ -3452,10 +3452,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#red1" class="md-nav__link">
+  <a href="#_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        从 red1 开始
+        如何安装
       
     </span>
   </a>
@@ -3463,10 +3463,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_1" class="md-nav__link">
+  <a href="#red1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        如何安装
+        从 red1 开始
       
     </span>
   </a>
@@ -3519,7 +3519,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#_3" class="md-nav__link">
+  <a href="#from-a-building-to-its-order-cost-the-offer-post" class="md-nav__link">
     <span class="md-ellipsis">
       
         从建筑到订单：成本、提议、过账
@@ -3535,7 +3535,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_4" class="md-nav__link">
+  <a href="#_3" class="md-nav__link">
     <span class="md-ellipsis">
       
         所有的词
@@ -3557,7 +3557,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_5" class="md-nav__link">
+  <a href="#_4" class="md-nav__link">
     <span class="md-ellipsis">
       
         故障排除
@@ -3568,7 +3568,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_6" class="md-nav__link">
+  <a href="#_5" class="md-nav__link">
     <span class="md-ellipsis">
       
         面向开发者
@@ -3590,7 +3590,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_7" class="md-nav__link">
+  <a href="#_6" class="md-nav__link">
     <span class="md-ellipsis">
       
         本页为何保持真实
@@ -3629,6 +3629,30 @@
 <p class="admonition-title">好答案并不意味着什么</p>
 <p>没有问题的答复<strong>绝不意味着安全、合规或良好</strong>。每个答复都会列出未检查的内容，<a href="#what-is-not-checked">未检查的内容</a>会再说一遍。最终决定权在结构工程师。</p>
 </div>
+<h2 id="_1">如何安装<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>您需要 Node 18 或更新版本（这些步骤在 Node 18.19 上运行过）。有两种进入方式。</p>
+<p><strong>完整检出</strong>为您提供 red1、BIM、ERP、Viewer 以及下面的一切。克隆它，然后从其顶层文件夹启动 red1：</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/red1oon/bim-ootb
+<span class="nb">cd</span><span class="w"> </span>bim-ootb
+node<span class="w"> </span>common/door/red1.js
+</code></pre></div>
+<p>输入 <code>exit</code> 退出。若想在任何位置只输入 <code>red1</code>，请在该文件夹中运行一次 <code>npm link</code>。要检查它是否工作，请查看它的版本行：</p>
+<!-- run: red1_version -->
+<div class="highlight"><pre><span></span><code>$ node common/door/red1.js --version | sed -e &#39;s/^Copyright[^·]*· //&#39; -e &#39;s/ · [0-9a-f]\{8\}$//&#39;
+red1 1.0.0 · 78 verbs · 30 words
+</code></pre></div>
+<p><strong>六文件下载</strong>用于只要门和 Modeller 动词、不需要检出的情况。新建一个空文件夹，安装 Modeller 所需的浏览器引擎，然后获取这六个文件：</p>
+<div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>fastscript<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>fastscript
+npm<span class="w"> </span>init<span class="w"> </span>-y
+npm<span class="w"> </span>install<span class="w"> </span>puppeteer@24
+curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/modeller/tools/edit_cli.js
+curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/modeller/tools/bim_mcp.js
+curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/door.js
+curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/verbs.json
+curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/msg_core.js
+curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/vocab/messages.json
+</code></pre></div>
+<p>请把六个文件放在同一个文件夹里。<code>door.js</code> 从 <code>verbs.json</code> 读取动词列表，从 <code>messages.json</code>（经由 <code>msg_core.js</code>）读取其消息，并运行 <code>edit_cli.js</code>，后者无窗口地打开在线的 Modeller 页面。如果缺少某个文件，门会说明是哪个并打印它的 <code>curl</code> 行。本页其余的一切都需要完整检出；<a href="#the-verbs">动词表</a>说明每个动词需要什么。</p>
 <h2 id="red1">从 red1 开始<a class="headerlink" href="#red1" title="Permanent link">&para;</a></h2>
 <p>在终端里，<code>red1</code> 会问候您一次，然后在提示符处等待。下面就是它打印的原样内容（版本行末尾的 commit 已被截掉，因为它随每次提交而变）：</p>
 <!-- run: greet -->
@@ -3641,6 +3665,7 @@ Tip: type level student for fuller help on each word (red1 --fast opens without 
 
 red1&gt; exit
 </code></pre></div>
+<p><strong>如何阅读本页的代码块。</strong> <code>$</code> 后面那一行是本页测试运行命令的方式：它使用临时文件（先清空，所以运行绝不会碰到你自己的数据），去掉耗时并隐藏日志。在你自己的提示符下，只需输入这些词，例如 <code>cd Duplex</code>。下面就是 red1 打印出的原样内容。</p>
 <p>把它当作一张地图来读。版本行说明 red1 有多少个门动词（长格式）和短词。<code>help</code> 把短词分成三组显示；<code>help bim</code>、<code>help mis</code> 或 <code>help erp</code> 可查看一组：</p>
 <table>
 <thead>
@@ -3671,16 +3696,16 @@ red1&gt; exit
 <!-- run: red1_help -->
 <div class="highlight"><pre><span></span><code>$ node common/door/red1.js help 2&gt;/dev/null
 red1: type a short word; red1 prints the full line it runs (→ …), then runs it.
-  bim   buildings and models             start with: cd Duplex   (16 words)
-  mis   records, tables, files, Ninja    start with: cd Order   (11 words)
-  erp   document actions (CO VO CL RC)   start with: cd Order   (8 words)
+  bim   buildings and models            start with: cd Duplex   (16 words)
+  mis   records, tables, files, Ninja   start with: cd Order   (11 words)
+  erp   documents and processes         start with: cd Order   (8 words)
   everywhere: cd &lt;place&gt; · #&lt;number&gt; · pwd · role &lt;id&gt; · login &lt;user&gt; · history [N] · report · exit
 Type bim, mis or erp for its words · help &lt;word&gt; for one word (level student first for the full explanation) · help verbs for the full door lines.
 </code></pre></div>
 <p>一个组列出它的词，每个词附一个可以输入的例子。<code>erp</code> 组最短：</p>
 <!-- run: red1_help_erp -->
 <div class="highlight"><pre><span></span><code>$ node common/door/red1.js &#39;help erp&#39; 2&gt;/dev/null
-erp: document actions (CO VO CL RC) (start with: cd Order)
+erp: documents and processes (start with: cd Order)
  in a building:
   post discipline=ARC  post the building&#39;s priced selection to its ERP Project Order
   vo discipline=ARC    issue the change between the model and the Project Order as a Variation Order
@@ -3727,32 +3752,8 @@ CLI: erp.close kind=Order number=&lt;Document No&gt;
 → object.count building=Duplex kind=Element discipline=ARC
 </code></pre></div>
 <p>您输入词、位置或列时，光标后会出现灰色文字：来自字典的建议。<strong>Tab</strong> 或 <strong>→</strong> 接受它；<strong>回车始终执行您输入的内容</strong>，绝不执行建议。拼错会得到提示，绝不会被悄悄改正（<code>ls Valu=…</code> 被拒绝，并指出 <code>Value</code>）。</p>
-<h2 id="_1">如何安装<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
-<p>您需要 Node 18 或更新版本（这些步骤在 Node 18.19 上运行过）。有两种进入方式。</p>
-<p><strong>完整检出</strong>为您提供 red1、BIM、ERP、Viewer 以及下面的一切。克隆它，然后从其顶层文件夹启动 red1：</p>
-<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/red1oon/bim-ootb
-<span class="nb">cd</span><span class="w"> </span>bim-ootb
-node<span class="w"> </span>common/door/red1.js
-</code></pre></div>
-<p>输入 <code>exit</code> 退出。若想在任何位置只输入 <code>red1</code>，请在该文件夹中运行一次 <code>npm link</code>。要检查它是否工作，请查看它的版本行：</p>
-<!-- run: red1_version -->
-<div class="highlight"><pre><span></span><code>$ node common/door/red1.js --version | sed -e &#39;s/^Copyright[^·]*· //&#39; -e &#39;s/ · [0-9a-f]\{8\}$//&#39;
-red1 1.0.0 · 78 verbs · 30 words
-</code></pre></div>
-<p><strong>六文件下载</strong>用于只要门和 Modeller 动词、不需要检出的情况。新建一个空文件夹，安装 Modeller 所需的浏览器引擎，然后获取这六个文件：</p>
-<div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>fastscript<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>fastscript
-npm<span class="w"> </span>init<span class="w"> </span>-y
-npm<span class="w"> </span>install<span class="w"> </span>puppeteer@24
-curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/modeller/tools/edit_cli.js
-curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/modeller/tools/bim_mcp.js
-curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/door.js
-curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/verbs.json
-curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/msg_core.js
-curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/vocab/messages.json
-</code></pre></div>
-<p>请把六个文件放在同一个文件夹里。<code>door.js</code> 从 <code>verbs.json</code> 读取动词列表，从 <code>messages.json</code>（经由 <code>msg_core.js</code>）读取其消息，并运行 <code>edit_cli.js</code>，后者无窗口地打开在线的 Modeller 页面。如果缺少某个文件，门会说明是哪个并打印它的 <code>curl</code> 行。本页其余的一切都需要完整检出；<a href="#the-verbs">动词表</a>说明每个动词需要什么。</p>
 <h2 id="_2">您最常用的词<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
-<p>下面每一部分都会说明您将要做什么以及为什么，然后展示一次真实运行以及要看什么。每个代码块都使用一个临时的操作日志（孪生体保存其更改的文件），先清空，所以运行它们不会触及您自己的数据。</p>
+<p>下面每一部分都会说明你将要做什么、为什么，然后给出一次真实运行，以及其中要看的地方。</p>
 <h3 id="bim">bim：建筑和模型<a class="headerlink" href="#bim" title="Permanent link">&para;</a></h3>
 <p><strong>按列计数。</strong> <code>cd Duplex</code> 然后 <code>cd Element</code> 进入建筑的构件；<code>group storey</code> 按某一列计数。请看各分组及其数量，以及显示词背后门动词的 <code>→</code> 行：</p>
 <!-- run: red1_group -->
@@ -3802,22 +3803,7 @@ ok · viewer.clashes
 └─   0 not judged
 ls lists the 393 rows
 </code></pre></div>
-<p><strong>成本。</strong> <code>cost discipline</code> 像 Viewer 的查找面板那样为建筑的构件计价：模型中的工程量乘以费率包。先是分组，然后是数量和合计；<code>ls</code> 列出已计价的行。也可以按 <code>phase</code>、<code>task</code>、<code>storey</code> 或 <code>class</code> 分组。请看最后一行：因为建筑还没有 ERP 订单，red1 提出下一步。这个会话在没有回答的情况下结束，所以什么也不会过账：</p>
-<!-- run: chain_cost -->
-<div class="highlight"><pre><span></span><code>$ rm -f /tmp/fast_guide_chain.ops; printf &#39;cd Duplex\ncost discipline\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_chain.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_chain.journal node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39;
-building Duplex
-→ viewer.cost building=Duplex by=discipline
-ok · viewer.cost
-1190 elements · 1054482.08 total (71 with no rate); 3 with no size, not priced
-discipline  elements  cost
-ARC         267       532431.14
-ELEC        81        283500.00
-MEP         809       153825.40
-PLB         14        49000.00
-STR         19        35725.55
-ls lists the 49 priced rows
-Ready to post to ERP Project Order? y/N → erp.process name=&quot;Fold from BIM&quot; Building=Duplex
-</code></pre></div>
+<p><strong>成本。</strong> <code>cost discipline</code> 按照 Viewer 的 Find 面板的方式为建筑的构件计价：模型中的数量乘以费率包。它的运行见 <a href="#from-a-building-to-its-order-cost-the-offer-post">从建筑到它的订单</a>，在那里它接着通向订单。</p>
 <h3 id="mis">mis：记录、表、文件<a class="headerlink" href="#mis" title="Permanent link">&para;</a></h3>
 <p><strong>查找记录。</strong> 在 <code>Business Partner</code> 这样的 ERP 类型中，可以使用与建筑里相同的词：<code>ls</code>、<code>count</code>、<code>cat</code>，通配符也相同。<code>cd</code> 接受类型的名称，名称含空格时要加引号。</p>
 <p><strong>创建一条并修改一条。</strong> <code>new</code> 像窗口那样创建记录：您给出已知的列，其余由引擎填充（默认值、序列号），字典中没有的列会被拒绝并列出真实的列。<code>set &lt;id&gt; Column=value</code> 修改一条。请看 <code>id</code> 答复中的 <code>new</code>（<code>set</code> 接下来要用它）、第二个答复中的 <code>changed</code>，以及末尾的列表。（答复还会列出它填充的每一列和所做的更改；这里省略了这些行。）</p>
@@ -3839,7 +3825,7 @@ C_BPartner_ID  Value  Name               Logo_ID  C_BP_Group_ID
 </code></pre></div>
 <p><code>rm &lt;id&gt;</code> 删除一条，<code>load &lt;file.csv&gt;</code> 和 <code>diff &lt;file.csv&gt;</code> 从文件加载行，并将文件与记录比较。<a href="../FastScriptReference/">参考页</a>展示了每一个及其输出。</p>
 <h3 id="erp">erp：单据和流程<a class="headerlink" href="#erp" title="Permanent link">&para;</a></h3>
-<p><strong>创建单据并完成它。</strong> 在 <code>new</code> 中 <code>Order</code> 会创建一张草稿订单并打印其编号。完整的门行在提示符下同样可用，所以订单行用 <code>mis.new</code> 添加（一个产品和一个数量）。<code>next &lt;number&gt;</code> 画出该单据现在可以做什么，并为每个有对应词的操作指出执行它的那一行。<code>do CO &lt;number&gt;</code> 完成它；传统的 DocAction 代码是 <code>CO</code> 完成、<code>VO</code> 作废、<code>CL</code> 关闭、<code>RC</code> 冲销（<code>do complete</code>、<code>do void</code> … 也可以）。请看 <code>new</code> 打印的编号、每个 <code>next</code> 树中的状态，以及 <code>CO</code> 之后发生变化的操作。（<code>grep</code> 只保留这些行；完整答复还会列出每个填充的列。）</p>
+<p><strong>创建一个单据并完成它。</strong> 在 <code>Order</code> 中用 <code>new</code> 会创建一张草稿订单并打印它的编号。在提示符下也可以输入完整的门命令行，所以订单行用 <code>mis.new</code>（一个产品和一个数量）添加。<code>next &lt;number&gt;</code> 画出单据现在可以做什么，并为每个有对应词的动作指出运行它的那一行。<code>do CO &lt;number&gt;</code> 完成它；旧系统的 DocAction 代码是 <code>CO</code> 完成、<code>PR</code> 准备、<code>VO</code> 作废、<code>CL</code> 关闭、<code>RC</code> 冲销、<code>RE</code> 重新激活（<code>do complete</code>、<code>do void</code> … 也可以）。请看 <code>new</code> 打印的编号、每个 <code>next</code> 树中的状态，以及 <code>CO</code> 之后变化了的动作。（<code>grep</code> 只保留这些行；完整的答复还会列出每个被填写的列。）</p>
 <!-- run: erp_order -->
 <div class="highlight"><pre><span></span><code>$ printf &#39;cd Order\nnew issotrx=Y C_DocTypeTarget_ID=132 C_BPartner_ID=112 SalesRep_ID=101\nmis.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2\nnext 50000\ndo CO 50000\nnext 50000\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_erp.ops node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39; | grep -E &#39;^(→|ok|refused|number|Order [0-9]|[├└])&#39;
 → mis.describe kind=Order
@@ -3848,7 +3834,6 @@ ok · mis.new
 number: 50000
 → mis.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2
 ok · mis.new
-number: 
 → erp.actions kind=Order number=50000
 ok · erp.actions
 Order 50000  status DR
@@ -3882,19 +3867,7 @@ Generate PO from Project: done · no document made
   Product has no PO record  (×28)
 </code></pre></div>
 <p>在单行或对 AI 而言，不会询问任何内容：缺少必填参数就是一次点名该参数的拒绝。孪生体还没有移植的流程会被拒绝，并给出其类名，red1 会这样说明。</p>
-<p><strong>记录只提供它自己的。</strong> 在一条记录里，red1 提供的都是这条记录的，从它窗口的字典中读取：<code>do</code> 之后，只有它现在可以做的操作（按您的角色）；<code>cd</code> 之后，它的标签页；<code>run</code> 之后，它自己的流程按钮；它的字段则作为 <code>Column=</code> 键。进入记录时会打印它可以做什么：</p>
-<!-- run: erp_record_offers -->
-<div class="highlight"><pre><span></span><code>$ printf &#39;cd Order 100\n&#39; | node common/door/red1.js 2&gt;/dev/null
-→ mis.describe kind=&quot;Order 100&quot;
-→ mis.describe kind=Order
-→ mis.read kind=Order number=100
-→ mis.read kind=Order id=100
-Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls shows them, cd &lt;tab&gt; opens one, cat reads the record
-→ erp.actions kind=Order id=100
-it may do: CL, VO, RE (do &lt;code&gt;; next shows the tree)
-</code></pre></div>
-<p>在那里，<code>do</code> 之后的 Tab 只提供 <code>CL</code>、<code>VO</code> 和 <code>RE</code>，顺序与窗口自己的按钮相同（Close、Void、Re-Activate；<code>RE</code> 重新激活订单：<code>do RE</code>），<code>run Co</code> 会补全为 <code>"Copy Lines"</code>，即订单窗口自己的按钮。</p>
-<p><strong>浏览菜单。</strong> <code>menu</code> 把 ERP 菜单显示为位置：<code>cd &lt;folder&gt;</code> 进入（只有一个条目以此开头时，名字的开头就够了），窗口条目会带您到它的种类，<code>cd ..</code>（或 Shift+Tab）回到上一级文件夹。提示符显示路径。每个条目都有标记：▸ 文件夹（里面有多少条目），W 窗口（及其表），P 流程，R 报表，X 表单，F 工作流。单独的 <code>red1 menu</code> 仍然在整个屏幕上打开菜单。</p>
+<p><strong>菜单，以及作为位置的记录。</strong> <code>menu</code> 把 ERP 菜单显示为位置：<code>cd &lt;folder&gt;</code> 进入（只有一个条目以此开头时，名称的开头就够了），窗口条目会带你到它的种类，<code>cd ..</code>（或 Shift+Tab）向上退回一个文件夹。提示符显示路径。每个条目都有标记：▸ 文件夹（它包含多少条目），W 窗口（及其表），P 流程，R 报表，X 表单，F 工作流。单独运行 <code>red1 menu</code> 仍会全屏打开菜单。</p>
 <!-- run: red1_menu_walk -->
 <div class="highlight"><pre><span></span><code>$ printf &#39;menu\ncd Quote\ncd &quot;Sales Orders&quot;\ncd &quot;Sales Order&quot;\npwd\n&#39; | node common/door/red1.js 2&gt;/dev/null
 → mis.menu
@@ -3939,7 +3912,7 @@ Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd &lt;name&gt; goes in, cd .
 Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
 menu=&quot;Quote-to-Invoice (Sales)/Sales Orders&quot; kind=Order
 </code></pre></div>
-<p><strong>从菜单进入一条记录。</strong> 在一个类型里，<code>cd &lt;number&gt;</code> 进入那条记录，提示符保留菜单路径；<code>cd ..</code> 退出。在记录里，<code>do</code> 和 <code>next</code> 用它的 id 指定它，所以两条记录共用的编号（这里是 80000）不会造成问题。一个动作会打印它做了什么：状态的变化、它涉及的单据、保留了多少处更改，以及记录现在可以做什么；随后 <code>do</code> 之后的 Tab 提供这些新的代码。下面的代码块省略了文件夹列表：</p>
+<p>在一个种类中，<code>cd &lt;number&gt;</code> 进入那条记录，提示符保留菜单路径；<code>cd ..</code> 再退出来（在任何地方，<code>cd Order 100</code> 都做同样的事）。在一条记录里，red1 提供的是这条记录自己的东西，按它的窗口从字典中读取：在 <code>do</code> 之后，只有它现在可以做的动作，按你的角色、按窗口自己按钮的顺序；在 <code>cd</code> 之后，是它的页签；在 <code>run</code> 之后，是它自己的流程按钮（<code>run Co</code> 补全为 <code>"Copy Lines"</code>）；还有它的字段，作为 <code>Column=</code> 键。<code>do</code> 和 <code>next</code> 按 ID 指代这条记录，所以两条记录共用一个编号（这里是 80000）从来不是问题。一个动作会打印它做了什么：状态变化、它涉及的单据、保留了多少处更改，以及这条记录现在可以做什么；之后在 <code>do</code> 后按 Tab 会提供这些新代码。下面的代码块省略了文件夹列表：</p>
 <!-- run: red1_walk_record -->
 <div class="highlight"><pre><span></span><code>$ rm -f /tmp/fast_guide_walkrec.ops; printf &#39;menu\ncd Quote\ncd &quot;Sales Orders&quot;\ncd &quot;Sales Order&quot;\ncd 100\npwd\ndo RE\ndo CO\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_walkrec.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_walkrec.journal node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39; | grep -vE &#39;^  [▸WRPXF] &#39;
 → mis.menu
@@ -3948,8 +3921,6 @@ Quote-to-Invoice (Sales): 6 entries; cd &lt;name&gt; goes in, cd .. goes back
 Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd &lt;name&gt; goes in, cd .. goes back
 → mis.describe kind=C_Order
 Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
-→ mis.describe kind=100
-→ mis.read kind=Order number=100
 → mis.read kind=Order id=100
 Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls shows them, cd &lt;tab&gt; opens one, cat reads the record
 → erp.actions kind=Order id=100
@@ -3989,10 +3960,10 @@ run: Renumber has no parameter to ask (none in the dictionary)
 refused · erp.process · Renumber was not run: it has no JS port yet (class org.compiere.process.DiscountSchemaReSeq)
 This is a gap in red1, not your mistake. Type report to send it to us (email or GitHub issue).
 </code></pre></div>
-<h3 id="_3">从建筑到订单：成本、提议、过账<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
-<p>这是把建筑带入其 ERP 项目订单的链条。它在上面已经开始：<code>cost discipline</code> 以一个提议 <code>Ready to post to ERP Project Order? y/N</code> 结束，后面是它将执行的确切一行。提议是引擎自己的下一步，绝不是手工输入的。在会话中，<code>y</code> 会准确执行那一行，<code>n</code> 或空回车什么也不执行；在单行或对 AI 而言，不会询问，该行在答复的 <code>next</code> 中。回答 <code>y</code> 就是 <code>post</code>：它把建筑已计价的选择折叠为项目订单，阶段和任务取自建筑的 4D 计划以及项目行，作为一组更改，要么全部成功要么全部不做。请看生成了什么，以及第二个提议，即 <code>cd project</code>：</p>
+<h3 id="from-a-building-to-its-order-cost-the-offer-post">从建筑到订单：成本、提议、过账<a class="headerlink" href="#from-a-building-to-its-order-cost-the-offer-post" title="Permanent link">&para;</a></h3>
+<p>这是把一栋建筑带入它的 ERP 项目订单的链条。<code>cost discipline</code> 先打印分组，然后是数量和合计；<code>ls</code> 列出已计价的行，成本也可以按 <code>phase</code>、<code>task</code>、<code>storey</code> 或 <code>class</code> 分组。由于这栋建筑还没有 ERP 订单，它最后给出一个提议 <code>Ready to post to ERP Project Order? y/N</code>，后面跟着它将运行的确切命令行。这个提议是引擎自己的下一步，从不是手工输入的。在会话中，<code>y</code> 正好运行那一行，<code>n</code> 或空的回车什么都不运行；在单次命令行或对 AI 而言，什么都不问，那一行在答复的 <code>next</code> 里。回答 <code>y</code> 就是 <code>post</code>：它把建筑已计价的选择折叠进一张项目订单，其阶段和任务取自建筑的 4D 进度计划和项目行，作为一组更改，要么全部生效要么都不生效。请看创建了什么，以及第二个提议，也就是 <code>cd project</code>：</p>
 <!-- run: chain_post -->
-<div class="highlight"><pre><span></span><code>$ printf &#39;cd Duplex\ncost discipline\ny\nn\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_chain.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_chain.journal node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39;
+<div class="highlight"><pre><span></span><code>$ rm -f /tmp/fast_guide_chain.ops; printf &#39;cd Duplex\ncost discipline\ny\nn\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_chain.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_chain.journal node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39;
 building Duplex
 → viewer.cost building=Duplex by=discipline
 ok · viewer.cost
@@ -4013,7 +3984,7 @@ Open the project? y/N → cd project
 not done: cd project
 </code></pre></div>
 <p>过账金额 1054482.08284 是订单自己的行规则（单价乘数量，不取整）。<code>cost</code> 按同样的行计算，并显示到订单币种的分（1054482.08），所以你在 <code>post</code> 之前看到的就是订单里的金额。<code>post</code> 这个词不需要前面的 <code>cost</code> 也能做同样的事，并先问 <code>run it? y/N</code>；对已经在其订单中的建筑再次过账不会改变任何东西。从新项目出发，<code>run "Generate PO from Project"</code> 是采购一侧，其答复与上面的 Hospital 项目相同：过账所创建的产品没有供应商价格。这些步骤及其输出在<a href="../FastScriptReference/">参考页</a>中。</p>
-<h2 id="_4">所有的词<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<h2 id="_3">所有的词<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
 <p>上面的词是最先要学的。其余的，每一个都是某个门动词的简短形式（<code>help &lt;word&gt;</code> 显示它的那一行）：</p>
 <table>
 <thead>
@@ -4075,7 +4046,7 @@ not done: cd project
 </table>
 <h2 id="what-is-not-checked">未检查的内容<a class="headerlink" href="#what-is-not-checked" title="Permanent link">&para;</a></h2>
 <p>答复会列出其检查没有覆盖的内容。同样的话适用于任何答复：重叠首先是包围盒，检查只覆盖发生移动的部分，而且<strong>承载能力从不检查</strong>。没有红色的答复绝不意味着安全。Modeller 编辑报告的完整列表在<a href="../FastScriptReference/#what-is-not-checked">参考页</a>中。</p>
-<h2 id="_5">故障排除<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<h2 id="_4">故障排除<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
@@ -4111,7 +4082,7 @@ not done: cd project
 </tbody>
 </table>
 <p><strong>需要预先考虑的限制</strong>。每次 Modeller 调用都会打开整栋建筑：在 HospitalGarage 上大约 10 到 40 秒。这是一个测量工具，不是有正常运行时间保证的服务。一个含有多条 Modeller 行的脚本，每行都会打开一次建筑。</p>
-<h2 id="_6">面向开发者<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<h2 id="_5">面向开发者<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
 <p><strong>门行。</strong> 每个词都变成一条门行，<code>app.verb key=value key=value</code>，red1 在 <code>→</code> 之后打印它。您可以直接在提示符下输入门行，也可以一次性运行：<code>red1 'object.count building=Duplex kind=Element'</code> 打印答复，<code>--json</code> 打印完整的信封。单行中的多个词用 <code>;</code> 分隔（<code>red1 'cd Duplex; count'</code>）；<code>red1 -f FILE</code> 运行一个行文件，以 <code>--</code> 开头的行是注释，<code>--dry</code> 先试运行。门会对照固定的动词列表检查每一行，调用应用自己的代码，并连同未检查的内容一起返回答复。与任何动词都不匹配的行绝不会被猜测，而是以问题的形式返回。</p>
 <p><img alt="一扇门。左侧的参与者说同样的动词；门负责解析、检查、绑定、调用和答复；由应用自己的检查来决定。" src="../../figs/one_door.svg" /></p>
 <p>请从左到右读这张图：<strong>参与者</strong>（终端前的人，或通过工具连接的 AI）；<strong>通道</strong>，一份动词列表，每个动词都有通俗的描述、输入和<em>危害</em>类别；<strong>门</strong>，负责解析、检查、把这一行绑定到提问者、调用并答复；<strong>应用</strong>，由它自己的检查来决定，增加新问题的更改会连同原因被撤销。连接 AI 的方法见 <a href="../ProposerGuide/#connect-your-ai">AI 提议指南</a>。</p>
@@ -4682,92 +4653,13 @@ object.count building=Duplex kind=Element -&gt; 1193 Element
 <td>human, ai</td>
 <td>一份 bim-ootb 检出</td>
 </tr>
-<tr>
-<td><code>erp.column</code></td>
-<td>谁来填写一列：孪生版与旧版并排对照（mis.column 的旧名）</td>
-<td><code>kind</code>，<code>column</code></td>
-<td>read</td>
-<td>human, ai</td>
-<td>一份 bim-ootb 检出</td>
-</tr>
-<tr>
-<td><code>erp.compare</code></td>
-<td>在孪生版和旧版上比较同一条记录（legacy.compare 的旧名）</td>
-<td><code>kind</code>，<code>number</code>，<code>legacy</code>（可选）</td>
-<td>read</td>
-<td>human, ai</td>
-<td>一份 bim-ootb 检出</td>
-</tr>
-<tr>
-<td><code>erp.pack</code></td>
-<td>用数据模型工作簿生成 2Pack zip（mis.pack 的旧名）</td>
-<td><code>book</code>，<code>version</code>，<code>out</code>（可选）, <code>java</code>（可选）, <code>package</code>（可选）</td>
-<td>writes</td>
-<td>human, ai</td>
-<td>一份 bim-ootb 检出</td>
-</tr>
-<tr>
-<td><code>erp.legacy_plugin</code></td>
-<td>把数据模型插件装到旧版测试实例上，并在那里核对（legacy.plugin 的旧名）</td>
-<td><code>book</code>，<code>version</code></td>
-<td>writes</td>
-<td>human, ai</td>
-<td>一份 bim-ootb 检出</td>
-</tr>
-<tr>
-<td><code>erp.describe</code></td>
-<td>描述一类 ERP 记录（mis.describe 的旧名）</td>
-<td><code>kind</code>，<code>role</code>（可选）</td>
-<td>read</td>
-<td>human, ai</td>
-<td>一份 bim-ootb 检出</td>
-</tr>
-<tr>
-<td><code>erp.read</code></td>
-<td>读取一条 ERP 记录（mis.read 的旧名）</td>
-<td><code>kind</code>，<code>id</code>（可选）, <code>number</code>（可选）, <code>role</code>（可选）</td>
-<td>read</td>
-<td>human, ai</td>
-<td>一份 bim-ootb 检出</td>
-</tr>
-<tr>
-<td><code>erp.list</code></td>
-<td>列出记录（mis.list 的旧名）</td>
-<td><code>kind</code>，<code>columns</code>（可选）, <code>sort</code>（可选）, <code>limit</code>（可选）, <code>offset</code>（可选）, <code>names</code>（可选）, <code>role</code>（可选）, 更多 <code>column=value</code> 筛选条件（可选）</td>
-<td>read</td>
-<td>human, ai</td>
-<td>一份 bim-ootb 检出</td>
-</tr>
-<tr>
-<td><code>erp.sum</code></td>
-<td>把一列求和（mis.sum 的旧名）</td>
-<td><code>kind</code>，<code>column</code>，<code>role</code>（可选）, 更多 <code>column=value</code> 筛选条件（可选）</td>
-<td>read</td>
-<td>human, ai</td>
-<td>一份 bim-ootb 检出</td>
-</tr>
-<tr>
-<td><code>erp.group</code></td>
-<td>按某一列计数（mis.group 的旧名）</td>
-<td><code>kind</code>，<code>by</code>，<code>role</code>（可选）, <code>window</code>（可选）, 更多 <code>column=value</code> 筛选条件（可选）</td>
-<td>read</td>
-<td>human, ai</td>
-<td>一份 bim-ootb 检出</td>
-</tr>
-<tr>
-<td><code>erp.new</code></td>
-<td>创建一条记录（mis.new 的旧名）</td>
-<td><code>kind</code>，<code>dry</code>（可选）, <code>role</code>（可选）, <code>window</code>（可选）, 更多 <code>column=value</code> 筛选条件（可选）</td>
-<td>writes</td>
-<td>human, ai</td>
-<td>一份 bim-ootb 检出</td>
-</tr>
 </tbody>
 </table>
+<p>仍可运行的旧名称，每个都等同于它所指向的动词：<code>erp.column</code> → <code>mis.column</code> · <code>erp.compare</code> → <code>legacy.compare</code> · <code>erp.pack</code> → <code>mis.pack</code> · <code>erp.legacy_plugin</code> → <code>legacy.plugin</code> · <code>erp.describe</code> → <code>mis.describe</code> · <code>erp.read</code> → <code>mis.read</code> · <code>erp.list</code> → <code>mis.list</code> · <code>erp.sum</code> → <code>mis.sum</code> · <code>erp.group</code> → <code>mis.group</code> · <code>erp.new</code> → <code>mis.new</code></p>
 <!-- /GEN:verbs -->
 
-<p><strong>目前的覆盖范围。</strong> 这份列表有意保持很小：68 个动词覆盖 Modeller 的轴网编辑、它的 walker 以及在各行之间保持打开的 Modeller、少量 Viewer 问题、进度、通用的对象读取、计数和写入、一次选择的成本、ERP 单据动词，以及 ERP 字典中任何已移植的流程。Viewer 有 64 个人可以按下的操作，门提供 6 个 Viewer 动词。ERP 有 1158 个单据和流程，门为单据的生命周期提供 13 个 ERP 动词，为任意表提供 15 个 MIS 动词，并保留 10 个旧名称，使以前的行仍能运行。所以这只是一个开始，不是完整的菜单。</p>
-<h2 id="_7">本页为何保持真实<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<p><strong>目前的覆盖范围。</strong> 这个列表是有意保持精简的：68 个动词覆盖 Modeller 的轴网编辑、它的 walker 和在多行之间保持打开的 Modeller、几个 Viewer 问题、进度计划、通用的对象读取、计数和写入、一个选择集的成本、ERP 单据动词，以及 ERP 字典中任何已有移植的流程。Viewer 有 64 个可以由人按下的动作，门提供 6 个 Viewer 动词。ERP 有 1158 个单据和流程，门为单据的生命周期提供 13 个 ERP 动词和 15 个可在任何表上工作的 MIS 动词，并保留 10 个旧名称，让以前的命令行继续可用（版本行中的数量包括它们）。所以这只是一个开始，而不是整个菜单。</p>
+<h2 id="_6">本页为何保持真实<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
 <p>本页和<a href="../FastScriptReference/">参考页</a>灰色代码块中的每条命令都已运行过，下面的输出就是该命令打印的内容。<code>bim-ootb</code> 仓库中的测试 <strong>W-FAST-SCRIPT-GUIDE</strong> 会从下载和检出再次运行它们，把本页的每个数字与运行结果核对，并检查动词表等于 <code>verbs.json</code>。如果这里的某个数字过时，该测试就会失败。</p>
 <p>相关：<a href="../ProposerGuide/">AI 提议者指南</a>（把 AI 连接到同一个入口，以及 AI 用这些检查做了什么），以及 <a href="../ModellerGuide/">Modeller 指南</a>。</p>
 

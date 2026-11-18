@@ -1266,10 +1266,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#beginnen-sie-mit-red1" class="md-nav__link">
+  <a href="#so-installieren-sie-es" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Beginnen Sie mit red1
+        So installieren Sie es
       
     </span>
   </a>
@@ -1277,10 +1277,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#so-installieren-sie-es" class="md-nav__link">
+  <a href="#beginnen-sie-mit-red1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        So installieren Sie es
+        Beginnen Sie mit red1
       
     </span>
   </a>
@@ -1333,7 +1333,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#vom-gebaude-zum-auftrag-kosten-das-angebot-buchen" class="md-nav__link">
+  <a href="#from-a-building-to-its-order-cost-the-offer-post" class="md-nav__link">
     <span class="md-ellipsis">
       
         Vom Gebäude zum Auftrag: Kosten, das Angebot, buchen
@@ -3452,10 +3452,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#beginnen-sie-mit-red1" class="md-nav__link">
+  <a href="#so-installieren-sie-es" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Beginnen Sie mit red1
+        So installieren Sie es
       
     </span>
   </a>
@@ -3463,10 +3463,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#so-installieren-sie-es" class="md-nav__link">
+  <a href="#beginnen-sie-mit-red1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        So installieren Sie es
+        Beginnen Sie mit red1
       
     </span>
   </a>
@@ -3519,7 +3519,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#vom-gebaude-zum-auftrag-kosten-das-angebot-buchen" class="md-nav__link">
+  <a href="#from-a-building-to-its-order-cost-the-offer-post" class="md-nav__link">
     <span class="md-ellipsis">
       
         Vom Gebäude zum Auftrag: Kosten, das Angebot, buchen
@@ -3629,6 +3629,30 @@
 <p class="admonition-title">Was eine gute Antwort nicht bedeutet</p>
 <p>Eine Antwort ohne Problem bedeutet <strong>nie sicher, konform oder gut</strong>. Jede Antwort listet auf, was nicht geprüft wurde, und <a href="#what-is-not-checked">Was nicht geprüft wird</a> sagt es noch einmal. Das letzte Wort hat ein Tragwerksplaner.</p>
 </div>
+<h2 id="so-installieren-sie-es">So installieren Sie es<a class="headerlink" href="#so-installieren-sie-es" title="Permanent link">&para;</a></h2>
+<p>Sie brauchen Node 18 oder neuer (diese Schritte liefen auf Node 18.19). Es gibt zwei Wege hinein.</p>
+<p><strong>Der vollständige Checkout</strong> gibt Ihnen red1, BIM, ERP, den Viewer und alles Folgende. Klonen Sie ihn und starten Sie red1 dann aus seinem obersten Ordner:</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/red1oon/bim-ootb
+<span class="nb">cd</span><span class="w"> </span>bim-ootb
+node<span class="w"> </span>common/door/red1.js
+</code></pre></div>
+<p>Tippen Sie <code>exit</code>, um zu beenden. Um nur <code>red1</code> von überall zu tippen, führen Sie einmal <code>npm link</code> in diesem Ordner aus. Um zu prüfen, ob es funktioniert, fragen Sie nach seiner Versionszeile:</p>
+<!-- run: red1_version -->
+<div class="highlight"><pre><span></span><code>$ node common/door/red1.js --version | sed -e &#39;s/^Copyright[^·]*· //&#39; -e &#39;s/ · [0-9a-f]\{8\}$//&#39;
+red1 1.0.0 · 78 verbs · 30 words
+</code></pre></div>
+<p><strong>Der Sechs-Dateien-Download</strong> ist für die Tür allein mit den Modeller-Verben, ohne Checkout. Legen Sie einen leeren Ordner an, installieren Sie die Browser-Engine, die der Modeller braucht, und laden Sie die sechs Dateien:</p>
+<div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>fastscript<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>fastscript
+npm<span class="w"> </span>init<span class="w"> </span>-y
+npm<span class="w"> </span>install<span class="w"> </span>puppeteer@24
+curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/modeller/tools/edit_cli.js
+curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/modeller/tools/bim_mcp.js
+curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/door.js
+curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/verbs.json
+curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/msg_core.js
+curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/vocab/messages.json
+</code></pre></div>
+<p>Halten Sie alle sechs in einem Ordner. <code>door.js</code> liest die Verbliste aus <code>verbs.json</code> und seine Meldungen aus <code>messages.json</code> (über <code>msg_core.js</code>) und startet <code>edit_cli.js</code>, das die Live-Modeller-Seite ohne Fenster öffnet. Fehlt eine Datei, sagt die Tür, welche, und gibt ihre <code>curl</code>-Zeile aus. Alles andere auf dieser Seite braucht den Checkout; die <a href="#the-verbs">Verbtabelle</a> sagt, welches Verb was braucht.</p>
 <h2 id="beginnen-sie-mit-red1">Beginnen Sie mit red1<a class="headerlink" href="#beginnen-sie-mit-red1" title="Permanent link">&para;</a></h2>
 <p>An einem Terminal begrüßt Sie <code>red1</code> einmal und wartet dann an seinem Prompt. Genau das gibt es aus (der Commit am Ende der Versionszeile ist abgeschnitten, weil er sich mit jedem Commit ändert):</p>
 <!-- run: greet -->
@@ -3641,6 +3665,7 @@ Tip: type level student for fuller help on each word (red1 --fast opens without 
 
 red1&gt; exit
 </code></pre></div>
+<p><strong>So lesen Sie die Blöcke auf dieser Seite.</strong> Die Zeile nach <code>$</code> zeigt, wie der Test der Seite den Befehl ausführt: Er nutzt Wegwerf-Dateien (vorher geleert, damit ein Lauf nie Ihre eigenen Daten berührt), schneidet die Laufzeiten ab und blendet das Protokoll aus. An Ihrer eigenen Eingabeaufforderung tippen Sie nur die Wörter, etwa <code>cd Duplex</code>. Darunter steht genau, was red1 ausgegeben hat.</p>
 <p>Lesen Sie es als Landkarte. Die Versionszeile sagt, wie viele Tür-Verben (die lange Form) und kurze Wörter red1 hat. <code>help</code> zeigt die kurzen Wörter in drei Gruppen; <code>help bim</code>, <code>help mis</code> oder <code>help erp</code> zeigt eine Gruppe:</p>
 <table>
 <thead>
@@ -3671,16 +3696,16 @@ red1&gt; exit
 <!-- run: red1_help -->
 <div class="highlight"><pre><span></span><code>$ node common/door/red1.js help 2&gt;/dev/null
 red1: type a short word; red1 prints the full line it runs (→ …), then runs it.
-  bim   buildings and models             start with: cd Duplex   (16 words)
-  mis   records, tables, files, Ninja    start with: cd Order   (11 words)
-  erp   document actions (CO VO CL RC)   start with: cd Order   (8 words)
+  bim   buildings and models            start with: cd Duplex   (16 words)
+  mis   records, tables, files, Ninja   start with: cd Order   (11 words)
+  erp   documents and processes         start with: cd Order   (8 words)
   everywhere: cd &lt;place&gt; · #&lt;number&gt; · pwd · role &lt;id&gt; · login &lt;user&gt; · history [N] · report · exit
 Type bim, mis or erp for its words · help &lt;word&gt; for one word (level student first for the full explanation) · help verbs for the full door lines.
 </code></pre></div>
 <p>Eine Gruppe listet ihre Wörter, jedes mit einem Beispiel zum Eintippen. <code>erp</code> ist die kürzeste:</p>
 <!-- run: red1_help_erp -->
 <div class="highlight"><pre><span></span><code>$ node common/door/red1.js &#39;help erp&#39; 2&gt;/dev/null
-erp: document actions (CO VO CL RC) (start with: cd Order)
+erp: documents and processes (start with: cd Order)
  in a building:
   post discipline=ARC  post the building&#39;s priced selection to its ERP Project Order
   vo discipline=ARC    issue the change between the model and the Project Order as a Variation Order
@@ -3727,32 +3752,8 @@ CLI: erp.close kind=Order number=&lt;Document No&gt;
 → object.count building=Duplex kind=Element discipline=ARC
 </code></pre></div>
 <p>Grauer Text erscheint hinter Ihrem Cursor, während Sie ein Wort, einen Ort oder eine Spalte tippen: ein Vorschlag aus dem Wörterbuch. <strong>Tab</strong> oder <strong>→</strong> übernimmt ihn; <strong>Return führt immer aus, was Sie getippt haben</strong>, nie den Vorschlag. Eine falsche Schreibweise bekommt einen Hinweis, nie eine stille Korrektur (<code>ls Valu=…</code> wird abgelehnt und nennt <code>Value</code>).</p>
-<h2 id="so-installieren-sie-es">So installieren Sie es<a class="headerlink" href="#so-installieren-sie-es" title="Permanent link">&para;</a></h2>
-<p>Sie brauchen Node 18 oder neuer (diese Schritte liefen auf Node 18.19). Es gibt zwei Wege hinein.</p>
-<p><strong>Der vollständige Checkout</strong> gibt Ihnen red1, BIM, ERP, den Viewer und alles Folgende. Klonen Sie ihn und starten Sie red1 dann aus seinem obersten Ordner:</p>
-<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/red1oon/bim-ootb
-<span class="nb">cd</span><span class="w"> </span>bim-ootb
-node<span class="w"> </span>common/door/red1.js
-</code></pre></div>
-<p>Tippen Sie <code>exit</code>, um zu beenden. Um nur <code>red1</code> von überall zu tippen, führen Sie einmal <code>npm link</code> in diesem Ordner aus. Um zu prüfen, ob es funktioniert, fragen Sie nach seiner Versionszeile:</p>
-<!-- run: red1_version -->
-<div class="highlight"><pre><span></span><code>$ node common/door/red1.js --version | sed -e &#39;s/^Copyright[^·]*· //&#39; -e &#39;s/ · [0-9a-f]\{8\}$//&#39;
-red1 1.0.0 · 78 verbs · 30 words
-</code></pre></div>
-<p><strong>Der Sechs-Dateien-Download</strong> ist für die Tür allein mit den Modeller-Verben, ohne Checkout. Legen Sie einen leeren Ordner an, installieren Sie die Browser-Engine, die der Modeller braucht, und laden Sie die sechs Dateien:</p>
-<div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>fastscript<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>fastscript
-npm<span class="w"> </span>init<span class="w"> </span>-y
-npm<span class="w"> </span>install<span class="w"> </span>puppeteer@24
-curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/modeller/tools/edit_cli.js
-curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/modeller/tools/bim_mcp.js
-curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/door.js
-curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/verbs.json
-curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/msg_core.js
-curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/vocab/messages.json
-</code></pre></div>
-<p>Halten Sie alle sechs in einem Ordner. <code>door.js</code> liest die Verbliste aus <code>verbs.json</code> und seine Meldungen aus <code>messages.json</code> (über <code>msg_core.js</code>) und startet <code>edit_cli.js</code>, das die Live-Modeller-Seite ohne Fenster öffnet. Fehlt eine Datei, sagt die Tür, welche, und gibt ihre <code>curl</code>-Zeile aus. Alles andere auf dieser Seite braucht den Checkout; die <a href="#the-verbs">Verbtabelle</a> sagt, welches Verb was braucht.</p>
 <h2 id="die-worter-die-sie-am-meisten-brauchen">Die Wörter, die Sie am meisten brauchen<a class="headerlink" href="#die-worter-die-sie-am-meisten-brauchen" title="Permanent link">&para;</a></h2>
-<p>Jeder Teil unten sagt, was Sie gleich tun und warum, und zeigt dann einen echten Lauf und worauf Sie darin achten sollten. Jeder Block nutzt ein Scratch-Op-Log (die Datei, in der der Zwilling seine Änderungen führt), vorher geleert, sodass das Ausführen Ihre eigenen Daten nicht berührt.</p>
+<p>Jeder Teil unten sagt, was Sie gleich tun und warum, zeigt dann einen echten Lauf und worauf Sie darin achten sollten.</p>
 <h3 id="bim-gebaude-und-modelle">bim: Gebäude und Modelle<a class="headerlink" href="#bim-gebaude-und-modelle" title="Permanent link">&para;</a></h3>
 <p><strong>Zählen, nach einer Spalte.</strong> <code>cd Duplex</code> und dann <code>cd Element</code> führt zu den Elementen des Gebäudes; <code>group storey</code> zählt sie nach einer Spalte. Achten Sie auf die Gruppen und ihre Anzahl sowie auf die <code>→</code>-Zeilen, die die Tür-Verben hinter den Wörtern zeigen:</p>
 <!-- run: red1_group -->
@@ -3802,22 +3803,7 @@ ok · viewer.clashes
 └─   0 not judged
 ls lists the 393 rows
 </code></pre></div>
-<p><strong>Kosten.</strong> <code>cost discipline</code> bepreist die Elemente des Gebäudes wie das Find-Panel des Viewers: Mengen aus dem Modell mal Preisliste. Zuerst kommen die Gruppen, dann Anzahl und Summe; <code>ls</code> listet die bepreisten Zeilen. Eine Zahl kann auch nach <code>phase</code>, <code>task</code>, <code>storey</code> oder <code>class</code> gruppiert werden. Achten Sie auf die letzte Zeile: Weil das Gebäude noch keinen ERP-Auftrag hat, bietet red1 den nächsten Schritt an. Diese Sitzung endet ohne Antwort, also wird nichts gebucht:</p>
-<!-- run: chain_cost -->
-<div class="highlight"><pre><span></span><code>$ rm -f /tmp/fast_guide_chain.ops; printf &#39;cd Duplex\ncost discipline\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_chain.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_chain.journal node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39;
-building Duplex
-→ viewer.cost building=Duplex by=discipline
-ok · viewer.cost
-1190 elements · 1054482.08 total (71 with no rate); 3 with no size, not priced
-discipline  elements  cost
-ARC         267       532431.14
-ELEC        81        283500.00
-MEP         809       153825.40
-PLB         14        49000.00
-STR         19        35725.55
-ls lists the 49 priced rows
-Ready to post to ERP Project Order? y/N → erp.process name=&quot;Fold from BIM&quot; Building=Duplex
-</code></pre></div>
+<p><strong>Kosten.</strong> <code>cost discipline</code> bepreist die Elemente des Gebäudes so, wie es das Find-Panel des Viewers tut: Mengen aus dem Modell mal das Tarifpaket. Sein Lauf steht in <a href="#from-a-building-to-its-order-cost-the-offer-post">Vom Gebäude zum Auftrag</a>, wo er weiter zum Auftrag führt.</p>
 <h3 id="mis-datensatze-tabellen-dateien">mis: Datensätze, Tabellen, Dateien<a class="headerlink" href="#mis-datensatze-tabellen-dateien" title="Permanent link">&para;</a></h3>
 <p><strong>Datensätze suchen.</strong> In einer ERP-Art wie <code>Business Partner</code> funktionieren dieselben Wörter wie in einem Gebäude: <code>ls</code>, <code>count</code>, <code>cat</code>, mit denselben Platzhaltern. <code>cd</code> nimmt den Namen einer Art, in Anführungszeichen, wenn er ein Leerzeichen enthält.</p>
 <p><strong>Einen anlegen und einen ändern.</strong> <code>new</code> legt einen Datensatz an, wie es das Fenster tut: Sie nennen die Spalten, die Sie kennen, die Engine füllt den Rest (Vorgaben, die laufende Nummer), und eine Spalte, die das Wörterbuch nicht hat, wird mit den echten aufgelistet abgelehnt. <code>set &lt;id&gt; Column=value</code> ändert einen. Achten Sie auf die <code>id</code> in der Antwort von <code>new</code>, die <code>set</code> als Nächstes nutzt, auf <code>changed</code> in der zweiten Antwort und auf die Liste am Ende. (Eine Antwort listet auch jede gefüllte Spalte und die gemachten Änderungen auf; diese Zeilen sind hier weggelassen.)</p>
@@ -3839,7 +3825,7 @@ C_BPartner_ID  Value  Name               Logo_ID  C_BP_Group_ID
 </code></pre></div>
 <p><code>rm &lt;id&gt;</code> löscht einen, und <code>load &lt;file.csv&gt;</code> und <code>diff &lt;file.csv&gt;</code> laden Zeilen aus einer Datei und vergleichen eine Datei mit den Datensätzen. <a href="../FastScriptReference/">Die Referenz</a> zeigt jedes mit seiner Ausgabe.</p>
 <h3 id="erp-belege-und-prozesse">erp: Belege und Prozesse<a class="headerlink" href="#erp-belege-und-prozesse" title="Permanent link">&para;</a></h3>
-<p><strong>Einen Beleg anlegen und abschließen.</strong> <code>new</code> in <code>Order</code> legt einen Entwurfsauftrag an und gibt seine Nummer aus. Eine vollständige Tür-Zeile funktioniert auch am Prompt, also wird die Zeile des Auftrags mit <code>mis.new</code> hinzugefügt (ein Produkt und eine Menge). <code>next &lt;number&gt;</code> zeichnet, was der Beleg jetzt tun darf, und verweist bei jeder Aktion, die ein Wort hat, auf die Zeile, die sie ausführt. <code>do CO &lt;number&gt;</code> schließt ihn ab; die Legacy-DocAction-Codes sind <code>CO</code> abschließen, <code>VO</code> stornieren, <code>CL</code> schließen, <code>RC</code> umkehren (<code>do complete</code>, <code>do void</code> … gehen auch). Achten Sie auf die Nummer, die <code>new</code> ausgibt, auf den Status in jedem <code>next</code>-Baum und auf die Aktionen, die nach <code>CO</code> weitergerückt sind. (Das <code>grep</code> behält nur diese Zeilen; die vollständigen Antworten listen auch jede gefüllte Spalte auf.)</p>
+<p><strong>Einen Beleg anlegen und fertigstellen.</strong> <code>new</code> in <code>Order</code> legt einen Auftragsentwurf an und gibt seine Nummer aus. Eine vollständige Tür-Zeile funktioniert an der Eingabeaufforderung ebenso, daher wird die Zeile des Auftrags mit <code>mis.new</code> hinzugefügt (ein Produkt und eine Menge). <code>next &lt;number&gt;</code> zeichnet, was der Beleg jetzt tun darf, und verweist jede Aktion, die ein Wort hat, auf die Zeile, die sie ausführt. <code>do CO &lt;number&gt;</code> stellt ihn fertig; die DocAction-Codes von Legacy sind <code>CO</code> fertigstellen, <code>PR</code> vorbereiten, <code>VO</code> stornieren, <code>CL</code> schließen, <code>RC</code> umkehren, <code>RE</code> reaktivieren (<code>do complete</code>, <code>do void</code> … gehen auch). Achten Sie auf die Nummer, die <code>new</code> ausgibt, auf den Status in jedem <code>next</code>-Baum und auf die Aktionen, die sich nach <code>CO</code> geändert haben. (Das <code>grep</code> behält nur diese Zeilen; die vollständigen Antworten listen auch jede gefüllte Spalte auf.)</p>
 <!-- run: erp_order -->
 <div class="highlight"><pre><span></span><code>$ printf &#39;cd Order\nnew issotrx=Y C_DocTypeTarget_ID=132 C_BPartner_ID=112 SalesRep_ID=101\nmis.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2\nnext 50000\ndo CO 50000\nnext 50000\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_erp.ops node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39; | grep -E &#39;^(→|ok|refused|number|Order [0-9]|[├└])&#39;
 → mis.describe kind=Order
@@ -3848,7 +3834,6 @@ ok · mis.new
 number: 50000
 → mis.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2
 ok · mis.new
-number: 
 → erp.actions kind=Order number=50000
 ok · erp.actions
 Order 50000  status DR
@@ -3882,19 +3867,7 @@ Generate PO from Project: done · no document made
   Product has no PO record  (×28)
 </code></pre></div>
 <p>In einer Einzelzeile oder für eine KI wird nichts erfragt: Ein fehlender Pflichtparameter ist eine Ablehnung, die ihn nennt. Ein Prozess, für den der Zwilling noch keinen Port hat, wird mit dem Namen seiner Klasse abgelehnt, und red1 sagt es.</p>
-<p><strong>Ein Datensatz bietet das Seine an.</strong> In einem Datensatz bietet red1 an, was zu diesem Datensatz gehört, gelesen aus dem Wörterbuch seines Fensters: nach <code>do</code> nur die Aktionen, die er jetzt ausführen darf (für Ihre Rolle); nach <code>cd</code> seine Reiter; nach <code>run</code> seine eigenen Prozess-Schaltflächen; und seine Felder als <code>Column=</code>-Schlüssel. Beim Betreten zeigt der Datensatz, was er tun darf:</p>
-<!-- run: erp_record_offers -->
-<div class="highlight"><pre><span></span><code>$ printf &#39;cd Order 100\n&#39; | node common/door/red1.js 2&gt;/dev/null
-→ mis.describe kind=&quot;Order 100&quot;
-→ mis.describe kind=Order
-→ mis.read kind=Order number=100
-→ mis.read kind=Order id=100
-Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls shows them, cd &lt;tab&gt; opens one, cat reads the record
-→ erp.actions kind=Order id=100
-it may do: CL, VO, RE (do &lt;code&gt;; next shows the tree)
-</code></pre></div>
-<p>Dort bietet Tab nach <code>do</code> nur <code>CL</code>, <code>VO</code> und <code>RE</code> an, in der Reihenfolge der eigenen Schaltflächen des Fensters (Close, Void, Re-Activate; <code>RE</code> reaktiviert den Auftrag: <code>do RE</code>), und <code>run Co</code> wird zu <code>"Copy Lines"</code> ergänzt, der eigenen Schaltfläche des Auftragsfensters.</p>
-<p><strong>Das Menü durchgehen.</strong> <code>menu</code> zeigt das ERP-Menü als Orte: <code>cd &lt;folder&gt;</code> geht hinein (der Anfang des Namens genügt, wenn nur ein Eintrag so beginnt), ein Fenster-Eintrag bringt Sie zu seiner Art, und <code>cd ..</code> (oder Shift+Tab) geht einen Ordner zurück. Die Eingabezeile zeigt den Pfad. Jeder Eintrag ist markiert: ▸ ein Ordner (wie viele Einträge er hat), W ein Fenster (und seine Tabelle), P ein Prozess, R ein Bericht, X ein Formular, F ein Workflow. <code>red1 menu</code> allein öffnet das Menü weiterhin auf einem ganzen Bildschirm.</p>
+<p><strong>Das Menü und Datensätze als Orte.</strong> <code>menu</code> zeigt das ERP-Menü als Orte: <code>cd &lt;folder&gt;</code> geht hinein (der Anfang des Namens genügt, wenn nur ein Eintrag so beginnt), ein Fenster-Eintrag führt Sie zu seiner Art, und <code>cd ..</code> (oder Umschalt+Tab) geht einen Ordner zurück nach oben. Die Eingabeaufforderung zeigt den Pfad. Jeder Eintrag ist markiert: ▸ ein Ordner (wie viele Einträge er enthält), W ein Fenster (und seine Tabelle), P ein Prozess, R ein Bericht, X ein Formular, F ein Workflow. <code>red1 menu</code> allein öffnet das Menü weiterhin auf einem ganzen Bildschirm.</p>
 <!-- run: red1_menu_walk -->
 <div class="highlight"><pre><span></span><code>$ printf &#39;menu\ncd Quote\ncd &quot;Sales Orders&quot;\ncd &quot;Sales Order&quot;\npwd\n&#39; | node common/door/red1.js 2&gt;/dev/null
 → mis.menu
@@ -3939,7 +3912,7 @@ Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd &lt;name&gt; goes in, cd .
 Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
 menu=&quot;Quote-to-Invoice (Sales)/Sales Orders&quot; kind=Order
 </code></pre></div>
-<p><strong>Vom Menü in einen Datensatz.</strong> In einer Art betritt <code>cd &lt;number&gt;</code> diesen Datensatz, und die Eingabeaufforderung behält den Menüpfad; <code>cd ..</code> geht wieder hinaus. Im Datensatz benennen <code>do</code> und <code>next</code> ihn über seine ID, sodass eine Nummer, die zwei Datensätze teilen (hier 80000), nie ein Problem ist. Eine Aktion gibt aus, was sie getan hat: die Statusänderung, die berührten Belege, wie viele Änderungen sie behalten hat und was der Datensatz jetzt tun darf; Tab nach <code>do</code> bietet dann diese neuen Codes an. Die Ordnerlisten sind im Block unten weggelassen:</p>
+<p>In einer Art betritt <code>cd &lt;number&gt;</code> diesen Datensatz, und die Eingabeaufforderung behält den Menüpfad; <code>cd ..</code> geht wieder hinaus (von überall tut <code>cd Order 100</code> dasselbe). In einem Datensatz ist das, was red1 anbietet, das des Datensatzes, aus dem Wörterbuch für sein Fenster gelesen: nach <code>do</code> nur die Aktionen, die er jetzt ausführen darf, für Ihre Rolle, in der Reihenfolge der eigenen Schaltflächen des Fensters; nach <code>cd</code> seine Registerkarten; nach <code>run</code> seine eigenen Prozess-Schaltflächen (<code>run Co</code> ergänzt zu <code>"Copy Lines"</code>); und seine Felder als <code>Column=</code>-Schlüssel. <code>do</code> und <code>next</code> benennen den Datensatz über seine ID, sodass eine Nummer, die zwei Datensätze teilen (hier 80000), nie ein Problem ist. Eine Aktion gibt aus, was sie getan hat: die Statusänderung, die berührten Belege, wie viele Änderungen sie behalten hat und was der Datensatz jetzt tun darf; Tab nach <code>do</code> bietet dann diese neuen Codes an. Die Ordnerlisten sind im Block unten weggelassen:</p>
 <!-- run: red1_walk_record -->
 <div class="highlight"><pre><span></span><code>$ rm -f /tmp/fast_guide_walkrec.ops; printf &#39;menu\ncd Quote\ncd &quot;Sales Orders&quot;\ncd &quot;Sales Order&quot;\ncd 100\npwd\ndo RE\ndo CO\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_walkrec.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_walkrec.journal node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39; | grep -vE &#39;^  [▸WRPXF] &#39;
 → mis.menu
@@ -3948,8 +3921,6 @@ Quote-to-Invoice (Sales): 6 entries; cd &lt;name&gt; goes in, cd .. goes back
 Quote-to-Invoice (Sales)/Sales Orders: 13 entries; cd &lt;name&gt; goes in, cd .. goes back
 → mis.describe kind=C_Order
 Order: 93 properties; ls shows C_Order_ID, DocumentNo, DocStatus, Processed, POReference, Description
-→ mis.describe kind=100
-→ mis.read kind=Order number=100
 → mis.read kind=Order id=100
 Order 80000: 4 tabs (Order Line, Order Tax, Payment Schedule, POS Payment); ls shows them, cd &lt;tab&gt; opens one, cat reads the record
 → erp.actions kind=Order id=100
@@ -3989,10 +3960,10 @@ run: Renumber has no parameter to ask (none in the dictionary)
 refused · erp.process · Renumber was not run: it has no JS port yet (class org.compiere.process.DiscountSchemaReSeq)
 This is a gap in red1, not your mistake. Type report to send it to us (email or GitHub issue).
 </code></pre></div>
-<h3 id="vom-gebaude-zum-auftrag-kosten-das-angebot-buchen">Vom Gebäude zum Auftrag: Kosten, das Angebot, buchen<a class="headerlink" href="#vom-gebaude-zum-auftrag-kosten-das-angebot-buchen" title="Permanent link">&para;</a></h3>
-<p>Das ist die Kette, die ein Gebäude in seinen ERP-Projektauftrag trägt. Sie begann oben: <code>cost discipline</code> endete mit einem Angebot, <code>Ready to post to ERP Project Order? y/N</code>, gefolgt von der genauen Zeile, die es ausführen würde. Das Angebot ist der eigene nächste Schritt der Engine, nie von Hand getippt. In einer Sitzung führt <code>y</code> genau diese Zeile aus, und <code>n</code> oder ein leeres Return führt nichts aus; in einer Einzelzeile oder für eine KI wird nichts erfragt, und die Zeile steht in <code>next</code> der Antwort. <code>y</code> zu antworten ist <code>post</code>: Es faltet die bepreiste Auswahl des Gebäudes in einen Projektauftrag, mit Phasen und Aufgaben aus dem 4D-Programm des Gebäudes und den Projektzeilen, als eine Gruppe von Änderungen oder gar keine. Achten Sie darauf, was erzeugt wurde, und auf das zweite Angebot, das <code>cd project</code> ist:</p>
+<h3 id="from-a-building-to-its-order-cost-the-offer-post">Vom Gebäude zum Auftrag: Kosten, das Angebot, buchen<a class="headerlink" href="#from-a-building-to-its-order-cost-the-offer-post" title="Permanent link">&para;</a></h3>
+<p>Das ist die Kette, die ein Gebäude in seinen ERP-Projektauftrag trägt. <code>cost discipline</code> gibt zuerst die Gruppen aus, dann die Anzahl und die Summe; <code>ls</code> listet die bepreisten Zeilen auf, und Kosten lassen sich auch nach <code>phase</code>, <code>task</code>, <code>storey</code> oder <code>class</code> gruppieren. Weil das Gebäude noch keinen ERP-Auftrag hat, endet es mit einem Angebot, <code>Ready to post to ERP Project Order? y/N</code>, gefolgt von der genauen Zeile, die es ausführen würde. Das Angebot ist der eigene nächste Schritt der Engine, nie von Hand getippt. In einer Sitzung führt <code>y</code> genau diese Zeile aus, und <code>n</code> oder ein leeres Return führt nichts aus; in einer Einzelzeile oder für eine KI wird nichts gefragt, und die Zeile steht im <code>next</code> der Antwort. <code>y</code> zu antworten ist <code>post</code>: Es faltet die bepreiste Auswahl des Gebäudes in einen Projektauftrag, mit seinen Phasen und Aufgaben aus dem 4D-Programm des Gebäudes und den Projektzeilen, als eine Gruppe von Änderungen oder keine. Achten Sie darauf, was entstanden ist, und auf das zweite Angebot, das <code>cd project</code> ist:</p>
 <!-- run: chain_post -->
-<div class="highlight"><pre><span></span><code>$ printf &#39;cd Duplex\ncost discipline\ny\nn\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_chain.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_chain.journal node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39;
+<div class="highlight"><pre><span></span><code>$ rm -f /tmp/fast_guide_chain.ops; printf &#39;cd Duplex\ncost discipline\ny\nn\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_chain.ops BIM_DOOR_JOURNAL=/tmp/fast_guide_chain.journal node common/door/red1.js 2&gt;/dev/null | sed &#39;s/ · [0-9]* ms//&#39;
 building Duplex
 → viewer.cost building=Duplex by=discipline
 ok · viewer.cost
@@ -4682,91 +4653,12 @@ object.count building=Duplex kind=Element -&gt; 1193 Element
 <td>human, ai</td>
 <td>ein bim-ootb-Checkout</td>
 </tr>
-<tr>
-<td><code>erp.column</code></td>
-<td>Wer eine Spalte füllt: Zwilling und Legacy nebeneinander (alter Name von mis.column)</td>
-<td><code>kind</code>, <code>column</code></td>
-<td>read</td>
-<td>human, ai</td>
-<td>ein bim-ootb-Checkout</td>
-</tr>
-<tr>
-<td><code>erp.compare</code></td>
-<td>Einen Datensatz auf dem Zwilling und auf Legacy vergleichen (alter Name von legacy.compare)</td>
-<td><code>kind</code>, <code>number</code>, <code>legacy</code> (optional)</td>
-<td>read</td>
-<td>human, ai</td>
-<td>ein bim-ootb-Checkout</td>
-</tr>
-<tr>
-<td><code>erp.pack</code></td>
-<td>Das 2Pack-Zip aus einer Datenmodell-Arbeitsmappe erzeugen (alter Name von mis.pack)</td>
-<td><code>book</code>, <code>version</code>, <code>out</code> (optional), <code>java</code> (optional), <code>package</code> (optional)</td>
-<td>writes</td>
-<td>human, ai</td>
-<td>ein bim-ootb-Checkout</td>
-</tr>
-<tr>
-<td><code>erp.legacy_plugin</code></td>
-<td>Ein Datenmodell-Plugin auf die Legacy-Testinstanz bringen und dort prüfen (alter Name von legacy.plugin)</td>
-<td><code>book</code>, <code>version</code></td>
-<td>writes</td>
-<td>human, ai</td>
-<td>ein bim-ootb-Checkout</td>
-</tr>
-<tr>
-<td><code>erp.describe</code></td>
-<td>Eine Art von ERP-Datensatz beschreiben (alter Name von mis.describe)</td>
-<td><code>kind</code>, <code>role</code> (optional)</td>
-<td>read</td>
-<td>human, ai</td>
-<td>ein bim-ootb-Checkout</td>
-</tr>
-<tr>
-<td><code>erp.read</code></td>
-<td>Einen ERP-Datensatz lesen (alter Name von mis.read)</td>
-<td><code>kind</code>, <code>id</code> (optional), <code>number</code> (optional), <code>role</code> (optional)</td>
-<td>read</td>
-<td>human, ai</td>
-<td>ein bim-ootb-Checkout</td>
-</tr>
-<tr>
-<td><code>erp.list</code></td>
-<td>Datensätze auflisten (alter Name von mis.list)</td>
-<td><code>kind</code>, <code>columns</code> (optional), <code>sort</code> (optional), <code>limit</code> (optional), <code>offset</code> (optional), <code>names</code> (optional), <code>role</code> (optional), weitere <code>column=value</code>-Filter (optional)</td>
-<td>read</td>
-<td>human, ai</td>
-<td>ein bim-ootb-Checkout</td>
-</tr>
-<tr>
-<td><code>erp.sum</code></td>
-<td>Eine Spalte addieren (alter Name von mis.sum)</td>
-<td><code>kind</code>, <code>column</code>, <code>role</code> (optional), weitere <code>column=value</code>-Filter (optional)</td>
-<td>read</td>
-<td>human, ai</td>
-<td>ein bim-ootb-Checkout</td>
-</tr>
-<tr>
-<td><code>erp.group</code></td>
-<td>Nach einer Spalte zählen (alter Name von mis.group)</td>
-<td><code>kind</code>, <code>by</code>, <code>role</code> (optional), <code>window</code> (optional), weitere <code>column=value</code>-Filter (optional)</td>
-<td>read</td>
-<td>human, ai</td>
-<td>ein bim-ootb-Checkout</td>
-</tr>
-<tr>
-<td><code>erp.new</code></td>
-<td>Einen Datensatz anlegen (alter Name von mis.new)</td>
-<td><code>kind</code>, <code>dry</code> (optional), <code>role</code> (optional), <code>window</code> (optional), weitere <code>column=value</code>-Filter (optional)</td>
-<td>writes</td>
-<td>human, ai</td>
-<td>ein bim-ootb-Checkout</td>
-</tr>
 </tbody>
 </table>
+<p>Alte Namen, die weiter laufen, jeder gleich dem Verb, auf das er zeigt: <code>erp.column</code> → <code>mis.column</code> · <code>erp.compare</code> → <code>legacy.compare</code> · <code>erp.pack</code> → <code>mis.pack</code> · <code>erp.legacy_plugin</code> → <code>legacy.plugin</code> · <code>erp.describe</code> → <code>mis.describe</code> · <code>erp.read</code> → <code>mis.read</code> · <code>erp.list</code> → <code>mis.list</code> · <code>erp.sum</code> → <code>mis.sum</code> · <code>erp.group</code> → <code>mis.group</code> · <code>erp.new</code> → <code>mis.new</code></p>
 <!-- /GEN:verbs -->
 
-<p><strong>Abdeckung heute.</strong> Die Liste ist mit Absicht klein: 68 Verben decken die Rasterbearbeitungen des Modellers, seinen Walker und einen zwischen den Zeilen offen gehaltenen Modeller ab, einige Viewer-Fragen, den Zeitplan, das generische Lesen, Zählen und Schreiben von Objekten, die Kosten einer Auswahl, die ERP-Belegverben und jeden Prozess des ERP-Wörterbuchs, der einen Port hat. Der Viewer hat 64 Aktionen, die eine Person drücken kann, und die Tür bietet 6 Viewer-Verben. Das ERP hat 1158 Belege und Prozesse, und die Tür bietet 13 ERP-Verben für das Leben eines Belegs und 15 MIS-Verben, die auf jeder Tabelle arbeiten, und behält 10 alte Namen, damit frühere Zeilen weiter laufen. Das ist also ein Anfang, nicht die ganze Speisekarte.</p>
+<p><strong>Abdeckung heute.</strong> Die Liste ist mit Absicht klein: 68 Verben decken die Rasteränderungen des Modellers ab, seinen Walker und einen zwischen Zeilen offen gehaltenen Modeller, einige Fragen an den Viewer, den Zeitplan, generisches Lesen, Zählen und Schreiben von Objekten, die Kosten einer Auswahl, die ERP-Belegverben und jeden Prozess des ERP-Wörterbuchs, der eine Portierung hat. Der Viewer hat 64 Aktionen, die eine Person drücken kann, und die Tür bietet 6 Viewer-Verben. Das ERP hat 1158 Belege und Prozesse, und die Tür bietet 13 ERP-Verben für das Leben eines Belegs und 15 MIS-Verben, die auf jeder Tabelle arbeiten, und behält 10 alte Namen, damit frühere Zeilen weiter laufen (die Zahl in der Versionszeile schließt sie ein). Das ist also ein Anfang, nicht das ganze Menü.</p>
 <h2 id="wie-diese-seite-wahr-bleibt">Wie diese Seite wahr bleibt<a class="headerlink" href="#wie-diese-seite-wahr-bleibt" title="Permanent link">&para;</a></h2>
 <p>Jeder Befehl in einem grauen Block auf dieser Seite und in der <a href="../FastScriptReference/">Referenz</a> wurde ausgeführt, und die Ausgabe darunter ist das, was der Befehl ausgegeben hat. Ein Test, <strong>W-FAST-SCRIPT-GUIDE</strong> im <code>bim-ootb</code>-Repository, führt sie erneut aus dem Download und dem Checkout aus, prüft jede Zahl dieser Seite gegen die Läufe und prüft, dass die Verbtabelle <code>verbs.json</code> entspricht. Wenn eine Zahl hier veraltet, schlägt dieser Test fehl.</p>
 <p>Siehe auch: das <a href="../ProposerGuide/">Handbuch für KI-Vorschläge</a> (eine KI an dieselbe Tür anschließen und was eine KI mit den Prüfungen gemacht hat) und das <a href="../ModellerGuide/">Modeller-Handbuch</a>.</p>
