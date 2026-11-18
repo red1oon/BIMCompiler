@@ -39,12 +39,11 @@ Handed over as information (not this lane's): 7 modeller witnesses fail identica
 **Later the same session (owner "proceed", "resume"):** E-1, E-2, D-1, D-2, F-26 and the CI tier answered (each in its part's DECISIONS) · **F-26 ✅** `x0 session` (#3266 → `ca609a2b`;
 W-X0-SESSION 8/8) + the SessionEnd hook in `~/.claude/settings.json` (stderr + exit 2, the only way the docs allow; checked end-to-end after `~/bim-ootb` pulled) · a B1 extractor bug found by
 #3266's own CI and fixed there (a bare `'sw.js'` in any test counted as a modeller witness; 433 → 343 links) · CI coverage gap measured (21 of 1,512) and its tier decided.
-**Watch:** C15 (`witnesses` equal the extractor) fails any PR that adds a test naming a modeller file until `node scripts/gen_manifest.js --write modeller` is run; it happened once, to this
-session's own PR. If it hits other sessions, move the refresh into `bump.js` (the spec's stated fallback) — tell the owner first.
+**C15 watch item ✅ CLOSED 2026-11-19** (§B-3R RESULT): `modules.json` no longer stores `witnesses`, so a test-only PR needs no refresh commit. A module's tests: `node scripts/gen_manifest.js --witnesses <file>`.
 
 **1. NEXT, in order** (session closed 2026-11-18 by the owner: *"close, will resume VSC in future"*).
 00. **RENAME ✅ 2026-11-18: X0 / x0 → Code Facts / code-facts** (§F.40 SPEC + RESULT; bim-ootb #3317). Everything below that says X0 / x0 means this tool under its old name. Docs: Developer Guide §3/§4.1 rewritten, first sentence is the owner's. Film 4 v4 is the owner's next step, from the SCRIPT v4 section of `prompts/FILM_IMMERSIVE_SOFTWARE.md` (another agent).
-0. **FILM 4 v4 ✅ BUILT 2026-11-18 (owner: "Lets do it")**: current file `~/Videos/Dev_Setup_CH0_EN_AFTER_2026-11-18_v4c.mp4`, 172.5 s (over the ~150 s target; the session beat is cut), scripts `scripts/film_dev_setup/` (v2 = git history). All gates PASS (`§FILM_GUARD`, `§K2`, `§KEYS`, `§FLOW`, `§STRIP_VIDEO`, voice 0 WRONG); one name on screen (Code Facts), a progress strip, three fixed cues, an animated pointer drawn to the token's real pixel rectangle. The owner's first v4 cut had a leftover top bar over the last cards (found by watching; fixed, check S in cards and on the encoded file). Details, defects, rebuild recipe in `prompts/FILM_IMMERSIVE_SOFTWARE.md` # FILM 4 STATUS. Waiting on the owner: review of v4c and a cut list (about 22 s over), the C15 fix (move the manifest refresh into `bump.js`?), F-27 (published installer: not now).
+0. **FILM 4 v4 ✅ BUILT 2026-11-18 (owner: "Lets do it")**: current file `~/Videos/Dev_Setup_CH0_EN_AFTER_2026-11-18_v4c.mp4`, 172.5 s (over the ~150 s target; the session beat is cut), scripts `scripts/film_dev_setup/` (v2 = git history). All gates PASS (`§FILM_GUARD`, `§K2`, `§KEYS`, `§FLOW`, `§STRIP_VIDEO`, voice 0 WRONG); one name on screen (Code Facts), a progress strip, three fixed cues, an animated pointer drawn to the token's real pixel rectangle. The owner's first v4 cut had a leftover top bar over the last cards (found by watching; fixed, check S in cards and on the encoded file). Details, defects, rebuild recipe in `prompts/FILM_IMMERSIVE_SOFTWARE.md` # FILM 4 STATUS. Waiting on the owner: review of v4c and a cut list (about 22 s over), F-27 (published installer: not now).
 1. **B2 spec** (ERP as a source app; ERP's site numbers disagree, so a site-level `v` until B4-HASH).
 2. **D spec** (owner table: `<app>/questions.json`, `"extends"` marks, W-OWNER-UNIQUE).
 3. Grow the CI fast tier when a runner has filled the cache (`node scripts/gen_ci_tier.js --write --probe`); add `PROVES:` lines as witnesses are touched.
@@ -982,6 +981,22 @@ T0 *the documented fetch URL is alive*: `curl -sIL https://github.com/red1oon/bi
 - **Must stay identical:** every generated page, loader and `sw.js` byte for byte (C8, C10, C11), `§MANIFEST_ROUNDTRIP … identical=55/55 … verdict=PASS`,
   W-BUMP, the proof map's "proven by" rows. Deletion budget: the PR states lines +/−; the stored field, its refresh line and its C15 half are removed.
 - **Not in this step:** viewer/ERP manifests (B2/B3 simply never get the field), the `owner` field, Code Facts.
+
+**§B-3R RESULT — ✅ 2026-11-19 (bim-ootb #3327 → `248cefdc`, issue #3326; spec PR bim-compiler #1043).** +164 / −129 lines (scripts +57 / −22; the 107 module lines of
+`modeller/modules.json` each lose the key, nothing else: checked by `diff` against the old file with the key stripped; 55 KB → 39 KB). Logs read:
+- `§MANIFEST_ROUNDTRIP … identical=55/55 driven=751/751 sw_vm=3/3 claims=15/15 red=15/15 order_check=PASS … verdict=PASS` (full run, C7 and C9 included; CI and
+  `main` after the merge: `claims=13/13 red=15/15 … verdict=PASS` with the CI skips).
+- **R13** `a test-only change (zz_r13/tests/witness_zz_r13_plant.js names common/comm/op_versions.js), modules.json untouched: extractor_sees_it=Y
+  --witnesses_sees_it=Y owner_mismatch=0 witnesses_mismatch=0 check_fails=0`. **Red on the old code** (the new witness run in a worktree at the pre-change
+  `origin/main`): `R13 detected=N … witnesses_mismatch=1`, `red=12/15 verdict=INCONCLUSIVE`. R13 builds a non-git temp folder of symlinks to the tree's
+  top-level entries plus the planted test (so `tracked_files.js` walks it and the real tree is never written); the round trip went to ~31 s locally.
+- **R14** `"witnesses":[]` typed back → `schema: … should NOT have additional properties`; **R15** `--witnesses` on a non-module exits 1 with `§MANIFEST_ERR`.
+- `§PROOF_MAP_W checks=8/8 verdict=PASS` (new `named_live_not_stored`: the fixture stores no list; a test that names a file only in a comment is not counted).
+- `--witnesses` (one-file call) equals the old stored list for **107/107** modules (`stored!=extractor 0`, `one-file!=all 0`).
+- Unchanged: `§BUMP_W_VERDICT PASS judged=7 failed=0`, `§DEPS_W … agree=16/16 … verdict=PASS`, `gen_manifest --check … verdict=PASS`.
+- **Not this change:** `witness_ci_tier` `committed=DIFFERS verdict=FAIL` here, the same on unedited `main` (the local run cache differs from the committed list).
+- Live sessions told before and after (4D lane `fix/4d-ltu-zone-split`, Viewer export `feat/viewer-export-d` will touch the file: `git merge origin/main`, then
+  `node scripts/gen_manifest.js --write modeller`, which drops the key). Nothing reaches the browser: C12 (nothing fetches `modules.json`), no `sw.js` change.
 
 ## ADVICE — from the session that built Part F, for the owner and the sessions that follow (2026-11-14)
 
