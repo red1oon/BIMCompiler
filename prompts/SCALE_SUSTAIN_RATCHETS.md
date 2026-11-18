@@ -36,6 +36,10 @@ Fable designs. Sonnet agents (`model: sonnet`) measure. Spot-check every number 
 6. **Close.** A script checks every cited file:line at the SHA → log → read it → `cites=N ok=N`. Branch, PR, merge, confirm it's on master.
    Add a one-line pointer in the CODE_ARCHITECTURE_DESIGN RESUME block.
 
+**4D fence:** another Fable session owns the 4D schedule lane (`prompts/4D_MODEL_INTEGRITY.md`; `schedule_*`, `support_sweep`, `cpm_schedule`,
+`rates`, `4D_template.json`, the Gantt/`tm_*` editor). Measure those files, but write no levers on them. List what you find there under
+`⛔ QUESTIONS` as `→ 4D lane`.
+
 **Stop rule:** once you have the scorecard, the ratchet spec and 3 levers, write up. A number that needs a browser or bake run becomes a
 lever that measures it. Don't run it.
 
