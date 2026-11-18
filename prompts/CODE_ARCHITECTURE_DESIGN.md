@@ -43,7 +43,7 @@ W-X0-SESSION 8/8) + the SessionEnd hook in `~/.claude/settings.json` (stderr + e
 session's own PR. If it hits other sessions, move the refresh into `bump.js` (the spec's stated fallback) — tell the owner first.
 
 **1. NEXT, in order.**
-1. **E build:** the `PROVES:` line + E-2's result cache (`~/.cache/bim_witness/`, verdict + seconds) + W-PROOF-MAP; modeller batch first (spec it from Part E's decisions).
+1. ✅ **E1 DONE** (#3272). More `PROVES:` lines are added as witnesses are touched.
 2. **CI tier** (Part E, CI-TIER BUILD SPEC) — needs step 1's cache.
 3. **B2 spec** (ERP as a source app; ERP's site numbers disagree, so a site-level `v` until B4-HASH).
 4. **D spec** (owner table: `<app>/questions.json`, `"extends"` marks, W-OWNER-UNIQUE).
@@ -851,6 +851,11 @@ as `SessionEnd`, timeout 30 s, guarded (`[ -f ~/bim-ootb/devtools/x0/x0.js ] || 
   file → FAIL naming it); a cached INCONCLUSIVE shows as INCONCLUSIVE (red: a fake cache entry); a witness changed after its cached run shows stale.
 - **Modeller batch (E-1 "the modeller first"):** a `// PROVES: <module>` line goes into each witness that is NAMED after a modeller module (`witness_<basename>…`) AND loads it (B1's link) — measured:
   13 modules, 16 witness files. No other witness is edited by guess.
+
+**E1 RESULT — ✅ DONE 2026-11-18 (bim-ootb #3272 → `6cd994b5`).** `witness_kit/proves.js`, `witness_kit/results.js` (written by `tests/run_witness_suite.js` and `modeller/tests/run_all_witnesses.js`),
+`scripts/gen_proof_map.js <app>`, W-PROOF-MAP in CI. `§PROOF_MAP app=modeller modules=99 proven=13 named_only=62 unproven=24 proves_lines=15 bad_paths=0` · `§PROOF_MAP_W checks=7/7 verdict=PASS`.
+Batch: 15 witness files got `// PROVES: <module>` (placed just before the ISSUE line, or as the first line of a `/** */` header); re-run: unchanged (`witness_team_versions.js` times out at 120 s on main too).
+A witness run by hand is not recorded; the map says `no run recorded`.
 
 **CI COVERAGE GAP (reported by session bim-compiler-9b, re-measured here 2026-11-18 on bim-ootb main):** 1,512 witness files; **21 run in CI** (17 named across the workflows + the 4-witness X0 loop) = 1.4%.
 `npm test` = `tests/run_witness_suite.js` (every `viewer/tests/witness_*.js`; headless class gates, browser class report-only, KNOWN_RED list) is not run in CI. The 0.000 mm Rosetta geometry
