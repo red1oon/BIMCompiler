@@ -47,7 +47,7 @@ W-X0-SESSION 8/8) + the SessionEnd hook in `~/.claude/settings.json` (stderr + e
 1. **B2 spec** (ERP as a source app; ERP's site numbers disagree, so a site-level `v` until B4-HASH).
 2. **D spec** (owner table: `<app>/questions.json`, `"extends"` marks, W-OWNER-UNIQUE).
 3. Grow the CI fast tier when a runner has filled the cache (`node scripts/gen_ci_tier.js --write --probe`); add `PROVES:` lines as witnesses are touched.
-4. **§F.41 W-VSC-OPERATIONAL** (owner 2026-11-18: a standing check that all operational code runs from VS Code): spec written, NOT built; ask the owner for the go, then build RED first (known gaps: `red1`, the modeller runner, `setup.js` have no VS Code route).
+4. **§F.41 W-VSC-OPERATIONAL ✅ 2026-11-19** (#3332): 39 entry points, all routed, 27 run, 12 not run by design (browser / heavy, named); local, ~90 s. Run it before a PR that adds a page, command or runner.
 5. **2026-11-30:** propose the F-2 cost ceilings (§F.3). The F-1 headless Fetch-back button is still unbuilt.
 Done this session (tenth): B1, E0, E1, F-25 `x0`, F-26 `x0 session` + SessionEnd hook, CI fast tier (61 of 1,512), §F.38 from scratch + guide §3 — results in their sections.
 
@@ -953,7 +953,7 @@ T0 *the documented fetch URL is alive*: `curl -sIL https://github.com/red1oon/bi
 **Left as written (history):** bim-ootb `CHANGELOG.md`, `*.log`, the LOD-pill lane's dated "Built:" records (5 files hold an old name on purpose, each named in the witness's allowlist); bim-compiler 76 prompt/doc/script files that describe the X0 era (archive, dated entries, other lanes, films 1–4 scripts).
 **Outside the repos:** the SessionEnd hook command in `~/.claude/settings.json` now runs `…/devtools/code-facts/code-facts.js session --hook` (only that string changed; dry `--hook` call exits 2 and prints the summary, as designed); `~/.cache/bim_x0/sessions.jsonl` moved to `~/.cache/bim_codefacts/`; `code --list-extensions` shows no old or new add-on installed in the owner's own profile (nothing to uninstall).
 
-**§F.41 SPEC — W-VSC-OPERATIONAL: every operational entry point can be run from VS Code (owner 2026-11-18: *"update the prompt to check in future that all operational code can work from the VSC"*). SPEC ONLY, NOT BUILT; the owner has not yet said go.**
+**§F.41 SPEC — W-VSC-OPERATIONAL: every operational entry point can be run from VS Code (owner 2026-11-18: *"update the prompt to check in future that all operational code can work from the VSC"*). SPEC; owner go 2026-11-19 (DECISIONS below).**
 - **Claim (an invariant over a denominator, as the AD-LAYER LAW asks, never a hand-picked list):** of the N operational entry points of the bim-ootb download, M have BOTH (a) a route a developer can start from VS Code (a task in `.vscode/tasks.json`, a launch in `.vscode/launch.json`, or a Code Facts command) AND (b) a headless check that the route really starts it and prints its `§` verdict. Verdict `§VSC_OPERATIONAL entry_points=N routed=M run_ok=K gaps=N-M verdict=PASS|FAIL|INCONCLUSIVE`; PASS only when `routed=run_ok=N`; every miss is a `§VSC_OPERATIONAL_GAP entry=<name> what=<routed|run>` line, never hidden.
 - **The denominator is DERIVED, never typed:** (1) every app page named by a `modules.json`/manifest app (today: viewer, ERP `erp/idempiere.html`, modeller = 3; `§MANIFEST_CHECK apps=3`); (2) every `package.json` `bin` (today: `red1`) and every `devtools/*` command (today: `code-facts`); (3) the runners the repo names in `package.json` scripts (today: `npm test` = `tests/run_witness_suite.js`, `npm run lint`) and the modeller runner `modeller/tests/run_all_witnesses.js`; (4) `scripts/setup.js` itself. The witness prints the derived list with its source for each row, so a reader can see what N is.
 - **What exists today (measured 2026-11-18 on `origin/main`):** launch configs: Viewer / ERP / Modeller in Chrome + `Node: this witness / script`; tasks: Serve repo, Lint viewer, Lint as CI does, Run this witness, Run viewer witness suite, Regenerate editor indexes. **Known gap, to be found by the witness, not assumed:** the `red1` command line has no VS Code route; the modeller witness runner has none; no task runs `node scripts/setup.js`. Do not fix them in the spec: the witness reports them first (RED), then each gap is closed with the smallest task/launch entry.
@@ -961,6 +961,43 @@ T0 *the documented fetch URL is alive*: `curl -sIL https://github.com/red1oon/bi
 - **Witness shape (each test names the issue it proves):** V1 *a new entry point added without a VS Code route is caught*: red run adds a fake page to a throwaway manifest copy, must FAIL with the gap line. V2 *a route that exists but does not start the thing is caught*: red run breaks a task's command in a throwaway copy, must FAIL on `run`. V3 *an empty derived population is INCONCLUSIVE, never PASS* (`§D0_VACUOUS` style). V4 *scope-blind guard*: the headless run must observe the entry's own verdict/URL answering (HTTP 200 for a page, exit 0 and a `§` line for a CLI), not just that the task file parses. Runs on a fresh `git archive` download after `node scripts/setup.js` (extends W-FROM-SCRATCH / W-SETUP; browser pieces headless on the CPU, one at a time).
 - **STANDING RULE (the point of the request, "in future"):** any PR that adds an operational entry point (a new app page, a `bin`, a runner) must add its VS Code route in the same PR, and this witness is what fails otherwise; add it to the CI fast tier when it runs in under the tier's limit, else keep it local and list it in `tests/ci_fast_tier.json` with its measured reason. The Developer Guide §4 gets one line: "everything runnable is runnable from the folder you opened".
 - **Cost, to measure before building:** the derived N today is about 3 apps + 2 commands + 3 runners + setup = about 9; each headless start is seconds; total expected well under the heavy-job budget, but measure, do not assume.
+- **DECISIONS (2026-11-19, eleventh session).** **F-41 go:** asked "build it red first, it should report the three gaps"; owner: *"Agree"*. Measured before building
+  (bim-ootb `020c9700`), the spec's own rule gives **39** entry points, not ~9: 20 app pages (every page of each manifest app: ERP 13, Viewer 5, Modeller 2), 2 commands
+  (`red1`, Code Facts), 2 package scripts, 14 runners (`*/tests/run_*`, `scripts/run_*`: 5 `.js`, 9 `.sh`), `scripts/setup.js`; 6 have a NAMED route. **F-41-Q1, how to
+  close the gaps:** asked: generic routes (one launch "This page in Chrome" for the open `.html`; "Run this witness" also runs `.sh`) + named tasks only for daily
+  tools (`red1`, setup, the Modeller runner), the witness counting a generic route but listing generic-only rows apart (recommended) · or one named entry per
+  entry point (33). Owner: *"Follow you."*
+- **BUILD NOTES (from the decision and the measurement):** a route is NAMED (a task/launch whose command or url names the entry; the Code Facts extension for its
+  command) or GENERIC (a `${file}`/`${relativeFile}` task or launch whose file kind fits). `routed` = named or generic; `§VSC_OPERATIONAL_GENERIC_ONLY` lists the
+  rest. **run_ok**, judged headless: a page = HTTP 200 from the Serve task's own command (its port swapped for a free one, said in the line) for the URL its route
+  opens; a command or runner = its route's command run with stdin closed, `run_ok` when it exits 0 or prints its own verdict/`§` line. **Never run by the witness**
+  (machine safety, the lane's no-browser/GPU-without-go rule): a runner whose source launches a browser or a benchmark (`chromium`/`playwright`/`puppeteer`/
+  `run_bench`) is `run=not-run reason=browser` and counts as INCONCLUSIVE for that row, never as PASS; long runners run with a timeout and count `run=started` when they
+  printed their first line before it. `setup.js` runs with `--dry-run`. The download in V4 is a clean worktree of `origin/main` (tracked files = the archive's).
+
+**§F.41 RESULT — ✅ 2026-11-19 (bim-ootb #3332 → `f2a34bf8`, issue #3330; spec/decision PR bim-compiler #1052).** +241 / −10 lines in 6 files
+(`scripts/tests/witness_vsc_operational.js` new; `scripts/lib/jsonc.js` = setup.js's JSONC reader moved out, setup.js −8; `.vscode/tasks.json` +3 named tasks and
+"Run this witness" runs a `.sh` with bash; `.vscode/launch.json` + "This page in Chrome (the open .html)"; `tests/ci_fast_tier.json` one exclude row). Logs read:
+- **RED** (before the route edits): `§VSC_OPERATIONAL entry_points=39 (page:20 cli:2 script:2 runner:14 setup:1) routed=13 named=6 generic_only=7 run_judged=10 run_ok=10
+  not_run=3 gaps=26 red=4/4 verdict=FAIL`.
+- **After**, on a fresh worktree of `main` `f2a34bf8`: `routed=39 named=9 generic_only=30 run_judged=27 run_ok=27 not_run=12 gaps=0 red=5/5 verdict=PASS`, 88 s.
+  `run=started` (killed at 30 s after printing): the Modeller runner; the 20 pages answer HTTP 200 from the Serve task's own command on a swapped port.
+- **not-run, each with its reason (12):** `npm test` and both `run_bench*` (Playwright in the code), 6 `tests/run_history*`/`run_status_just`/`run_universal_history`
+  (Playwright in the probe they call), `run_migration_lane.sh` (Chromium), `run_4d_gates.sh` (`cache_4d_run`), `run_regression.sh` (starts programs through a variable).
+- **Red controls:** V1 planted entry with no route → gap · V2 every lint task given a bad option → `exit=2`, run fail · V3 empty → INCONCLUSIVE · V4 server on an empty
+  folder → `http=404` · **V5** a run asking Playwright for a browser → `BLOCKED … Executable doesn't exist` (the backstop).
+- **Found while building (fixed before the PR; nothing harmed):** (1) the first `setup` row put `--dry-run` on log_stamp's argument, so setup ran for real once in the
+  worktree: `§SETUP_DEPS skipped=present` (no `npm ci`; the shared `node_modules`, reached through the worktree's symlink, unchanged since 2026-08-25), Code Facts
+  packed into the worktree's own `.setup/` only; now only the `node …setup.js` call gets `--dry-run`, and no such call = not run. (2) `tests/run_regression.sh` passed
+  the word scan (it calls `node "tests/$1"`), was started once and killed at 30 s; its first step is a Playwright probe; nothing of it was left running (no listener on
+  its port 8150; the headless browsers seen afterwards belonged to another session's `witness_hq_box.js`). Since then: shell runners with a variable call are not run,
+  every run is its own session killed whole (`timeout` moves its child to its own process group, so a group kill missed it), and browser paths are empty (V5).
+- **Trap for this lane:** a worktree's `node_modules` symlink points into the shared checkout, so any `npm ci` started in a worktree would rewrite the shared installs.
+- Unchanged: `witness_log_stamp` PASS (it replays the edited "Run this witness" command) · `witness_editor_zero_code` task/snippet checks identical to `main` (its
+  workspace check is INCONCLUSIVE in `/tmp`, no `../bim-compiler` beside it) · `setup.js --dry-run` reads `tasks=9 launch=Y` · `witness_ci_tier` `committed=DIFFERS`
+  exactly as on unedited `main` (local run cache).
+- Not in CI: ~90 s against the tier's 10 s limit; listed in `tests/ci_fast_tier.json` `exclude` with that reason. Developer Guide §3 has the routes and the rule
+  (put beside the task table, where a reader looks for them, not in §4).
 
 **§B-3R SPEC — the `witnesses` field leaves `modules.json`; the extractor answers instead (owner B-3 REVISED 2026-11-19, Part B DECISIONS).**
 - **Issue it fixes:** C15 (W-MANIFEST-ROUNDTRIP, in CI) fails every PR that adds a test whose text names a modeller-side file, until someone runs
