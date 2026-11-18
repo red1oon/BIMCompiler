@@ -557,3 +557,32 @@ Frame: bind light to the WORLD (zones/probes/stable cascades), render each film 
 - ORDER (§4 of the original L605-633): F0 + leak check -> F8/F7 instruments -> F4 sub-passes -> F1 + F5 -> F3 -> F6 in parallel with Alt+S lanes. WAIT for Alt+S: F2 (§STILL_SHADOW_EDGE), F1 zone BINDING in films (§ZONE_OPEN_SKY + §SOURCED_DAYLIGHT, else films go black indoors as exteriors did at v1337), the fill-default flip (red1's call). Then re-cut parity clips (Terminal facade, Hospital interior, 5 s, 1080p24, control + parity) with per-frame lines and the cost projection before any full film.
 - Open decisions (L635-641): F (12 frames) and D_in/D_out fixed from the first clip's `§FILM_LIGHTS` churn line; film shadow radius (1 vs the still's 1.5) decided with F2; eye light in films (off under parity once F1 binds zones; until then part of the judged eb3a41c1 look).
 - Still-vs-film gaps measured in the old inventory that remain unrecorded as fixed: film ground reads warmer/darker than Alt+S at the same pose/sun (cause not found; 85 ground uniforms equal) L344; frame-reuse key carries no lamp/portal state L370; lights-off window covers 60.6% (Hospital) / 74.5% (Terminal) of the film L372; Alt+S fill default RESTORE flips under red1's principle 1 (red1's decision).
+
+## §ALTC_FRESH_BUILD — Alt+C must bake the CURRENT build, and the log must say the compass was shown (2026-11-19, owner: *"Ensure the alt-c path takes latest version where the azimuth compass is showing as previous bakes seems to fetch older version."*)
+### MEASURED (read-only, 2026-11-19)
+- The headless path is already guarded: `cli_silent_bake.js` §CLI_BAKE_SW_PURGE (since 2026-09-08) unregisters the service worker, deletes
+  its caches and reloads. Today's HHS bake: `§CLI_BAKE_ENV commit=4c79d1a8 sw=v1763`, `§CLI_BAKE_SW_PURGE unregistered=1 cachesDeleted=1`,
+  `§SUN_COMPASS built lat=48.133 lon=11.583`, `--sun-compass` on. No unmerged branch carries newer compass code (`cpe_sun_compass.js` last
+  changed on main 2026-09-22, #1754).
+- **The LIVE-TAB path has no guard.** `viewer/sw.js` installs with `skipWaiting()` + `clients.claim()`, but a page loaded before a deploy keeps
+  executing the scripts it loaded until it is reloaded. Pressing Alt+C in such a tab bakes the OLD code. Nothing in `maxq_start.js start()`
+  compares the running build with the server's.
+- **The compass has no "shown" witness.** `§SUN_COMPASS built` proves it was built; `§SUN_COMPASS_HELD` fires once per freeze; no line counts
+  the frames on which the rose was visible, so a film where it never showed reads the same as one where it always did.
+### SPEC
+1. `viewer/build_fresh.js` (new, UMD, pure): `BuildFresh.diff(servedHtml, loaded)` — `loaded` = the `src` of every `<script>` in the page.
+   For each script the served html also names with a `?v=N`, compare N. Returns `{compared, stale: [{file, loaded, served}]}`.
+   `BuildFresh.check(doc, fetchFn)` fetches the page's own html with `cache: 'no-store'` (sw.js serves .html network-first, so this is the
+   server's copy) and returns `{state: 'ok'|'stale'|'unknown', compared, stale, reason}`.
+2. `maxq_start.js start()`: before `MQS._active = true`, await the check.
+   - `stale` → `§ALTC_STALE_BUILD files=<n> [file:loaded->served,...]`, status line *"🎬 This page is an older build than the server — reload
+     the page, then press Alt+C again"*, and **return without baking**.
+   - `ok` → `§ALTC_FRESH_BUILD ok compared=<n>`. `compared=0` is printed as `INCONCLUSIVE` (nothing judged), and the bake proceeds.
+   - `unknown` (offline, fetch failed, module missing) → `§ALTC_FRESH_BUILD UNKNOWN reason=<r>`; proceeds (an offline page cannot reach a
+     newer build anyway).
+3. `cpe_sun_compass.js`: count frames shown / held per bake (reset at build). At the true end of the bake (beside §COST_ODOMETER_FINAL),
+   `maxq_start.js` prints `§SUN_COMPASS_SHOWN on=<0|1> shown=<n> held=<m> => PASS|FAIL|OFF` — FAIL when on and shown=0, OFF when not built.
+4. Witness `viewer/tests/witness_altc_fresh_build.js` (node, no browser). Issue it proves/disproves: *"Alt+C in a stale tab bakes old code
+   without saying so."* Cases: stale html → state stale with the file named; identical → ok with compared>0; fetch throws → unknown;
+   no versioned scripts → compared 0 (INCONCLUSIVE, the vacuous case); source asserts: start() awaits the check BEFORE `MQS._active = true`
+   and returns on stale; §SUN_COMPASS_SHOWN is printed in the end-of-bake block.
