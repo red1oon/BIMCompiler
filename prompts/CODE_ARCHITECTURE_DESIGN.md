@@ -36,13 +36,18 @@ so `nodeModule()` falls back to the shared checkout's installs; not in CI by des
 `§X0_CLI verbs=8 same=8/8 red=2/2 verdict=PASS`; `cost [base]` and `last <file>` follow the tools' real arguments) · Developer Guide §4.1 (x0) + §5.1/§5.2 (modules.json) live, fetched back
 (the docs guard aborted once on `glassbowl_data.db`, live but untracked: published with the live file's own bytes, nothing removed). Nothing unpushed.
 Handed over as information (not this lane's): 7 modeller witnesses fail identically on unedited main (`dxf_accept_page`, `dxf_airgap`, `dxf_datum_pick`, `dxf_edefaults`, `dxf_libtypes`, `dxf_zdim`, `viewer_db_export`).
+**Later the same session (owner "proceed", "resume"):** E-1, E-2, D-1, D-2, F-26 and the CI tier answered (each in its part's DECISIONS) · **F-26 ✅** `x0 session` (#3266 → `ca609a2b`;
+W-X0-SESSION 8/8) + the SessionEnd hook in `~/.claude/settings.json` (stderr + exit 2, the only way the docs allow; checked end-to-end after `~/bim-ootb` pulled) · a B1 extractor bug found by
+#3266's own CI and fixed there (a bare `'sw.js'` in any test counted as a modeller witness; 433 → 343 links) · CI coverage gap measured (21 of 1,512) and its tier decided.
+**Watch:** C15 (`witnesses` equal the extractor) fails any PR that adds a test naming a modeller file until `node scripts/gen_manifest.js --write modeller` is run; it happened once, to this
+session's own PR. If it hits other sessions, move the refresh into `bump.js` (the spec's stated fallback) — tell the owner first.
 
 **1. NEXT, in order.**
-1. **B2, ERP as a source app:** write its build spec first (measure with `node scripts/gen_manifest.js --check`: ERP's numbers disagree across sites, so its manifest keeps a site-level `v`
-   until B4-HASH, B-1; plugin precache stays B-4's later step). Then the viewer (B3), then B4-HASH (announced to the owner with its date).
-2. **E (answered E-1, E-2):** spec + build the proof map (`PROVES:` line, `~/.cache/bim_witness/`), modeller batch first; converting the 326 hard-coded witnesses to `witness_kit/paths.js` rides on it.
-3. **D (D-1 answered: `<app>/questions.json`):** ask D-2, then spec the owner table.
-4. **2026-11-30:** propose the F-2 cost ceilings (§F.3). The F-1 headless Fetch-back button (browser go given) is still unbuilt.
+1. **E build:** the `PROVES:` line + E-2's result cache (`~/.cache/bim_witness/`, verdict + seconds) + W-PROOF-MAP; modeller batch first (spec it from Part E's decisions).
+2. **CI tier** (Part E, CI-TIER BUILD SPEC) — needs step 1's cache.
+3. **B2 spec** (ERP as a source app; ERP's site numbers disagree, so a site-level `v` until B4-HASH).
+4. **D spec** (owner table: `<app>/questions.json`, `"extends"` marks, W-OWNER-UNIQUE).
+5. **2026-11-30:** propose the F-2 cost ceilings (§F.3). The F-1 headless Fetch-back button is still unbuilt.
 
 **2. Where each part stands.**
 | Part | State | Next step |
@@ -833,10 +838,31 @@ cache write 489.5k · 9 PRs · URL load modeller start-up ±0 B, offline +183 B`
 JSON `systemMessage` are discarded; only stderr on exit 2 reaches the user, default timeout 1.5 s. So `--hook` prints to stderr and exits 2; installed in the owner's `~/.claude/settings.json`
 as `SessionEnd`, timeout 30 s, guarded (`[ -f ~/bim-ootb/devtools/x0/x0.js ] || exit 0`); it shows once `~/bim-ootb` has pulled #3266. Pipe-tested: 0.14 s, exit 2, summary on stderr.
 
+**E1 BUILD SPEC — the `PROVES:` line, the result cache, the proof map (2026-11-18, tenth session; from E-1 and E-2).**
+- **`witness_kit/proves.js`:** reads a witness's leading comment block for `PROVES: <repo path>[ <rule ids>], …` (one line; several lines add up). Returns `[{file, rules}]`.
+- **`witness_kit/results.js` (E-2):** `record(witnessFile, {verdict, seconds, line, exit})` writes `~/.cache/bim_witness/<repo-relative path with / → __>.json` = `{file, verdict, line, exit, seconds, head, at}`
+  (`head` = `git rev-parse HEAD` of the tree run). `verdict` = the last `verdict=WORD` / `_VERDICT WORD` in the output, else `PASS`/`FAIL` from the exit code, marked `from_exit`.
+  Written by the two runners that already spawn witnesses and know exit + time: `tests/run_witness_suite.js` and `modeller/tests/run_all_witnesses.js` (one call each, no behaviour change).
+  A witness run by hand is not recorded (said in the map, never guessed).
+- **`scripts/gen_proof_map.js <app>`** (dev-side, prints; `--out FILE` outside the tree): per module of `<app>/modules.json`: **proven by** (witnesses whose `PROVES:` names it) · **named by** (B1's extracted
+  `witnesses`, shown as weaker) · each with its last cached verdict and `stale` when the module or the witness changed since that run's `head`. INCONCLUSIVE is never shown as PASS.
+  `§PROOF_MAP app= modules= proven= named_only= unproven= proves_lines= bad_paths= cached= stale=`.
+- **W-PROOF-MAP** (`scripts/tests/witness_proof_map.js`): every module is proven, named-only or listed unproven (none lost); every `PROVES:` path exists (red control: a planted line naming a missing
+  file → FAIL naming it); a cached INCONCLUSIVE shows as INCONCLUSIVE (red: a fake cache entry); a witness changed after its cached run shows stale.
+- **Modeller batch (E-1 "the modeller first"):** a `// PROVES: <module>` line goes into each witness that is NAMED after a modeller module (`witness_<basename>…`) AND loads it (B1's link) — measured:
+  13 modules, 16 witness files. No other witness is edited by guess.
+
 **CI COVERAGE GAP (reported by session bim-compiler-9b, re-measured here 2026-11-18 on bim-ootb main):** 1,512 witness files; **21 run in CI** (17 named across the workflows + the 4-witness X0 loop) = 1.4%.
 `npm test` = `tests/run_witness_suite.js` (every `viewer/tests/witness_*.js`; headless class gates, browser class report-only, KNOWN_RED list) is not run in CI. The 0.000 mm Rosetta geometry
 witnesses and bim-compiler's RosettaStoneGateTest run before commit by habit only. Already written in `docs/VibeProgramming.md` (#933) and `prompts/FILM_VIBE_CODING_LEDGER.md`. Belongs to Part E
-(one runner). **Owner decision needed: CI time vs coverage** (measurement of one headless suite run in progress; options then go to the owner).
+(one runner). Measured for the decision: `tests/run_witness_suite.js` = 289 headless + 38 browser viewer witnesses; one local run on main `2a6371e2` (nice 19) finished **5 of 289 in ~25 min**
+(the 4D witnesses sort first, up to 150 s each) and was stopped; a runner also lacks the untracked building DBs.
+**CI-TIER decision (2026-11-18):** asked fast tier on every PR / nightly full run / both / leave as is. Owner: **"Fast tier on every PR (Recommended)"**.
+**CI-TIER BUILD SPEC (after E-2's cache exists):** (1) E-2's `witness_kit` result writer records each run's verdict AND wall seconds in `~/.cache/bim_witness/<witness>.json`; (2) `scripts/gen_ci_tier.js`
+(dev-side) writes the committed list `tests/ci_fast_tier.json` = every headless witness whose last local runs were PASS in under 10 s and that needs no untracked input (no `MISSING input` /
+ENV in its last run), with its measured seconds; (3) one new CI job runs that list through `tests/run_witness_suite.js` (its KNOWN_RED and flaky rules), job budget 10 min, and names every
+witness it skipped; (4) W-CI-TIER: the list equals what the generator writes from the cache (no hand edits), a planted slow witness is left out, a planted red one fails the job (red control).
+Heavy and DB witnesses stay local (Bump gate, before commit); the list grows as witnesses get faster.
 
 ## ADVICE — from the session that built Part F, for the owner and the sessions that follow (2026-11-14)
 
