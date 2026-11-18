@@ -63,6 +63,9 @@ Start: (1) read this file top to bottom; (2) `git -C ~/bim-ootb fetch origin`; `
 - **Decisions to confirm (owner):** (1) a person who explicitly picks `English` (en_US) in the ERP now stores `bim.lang=en_US`, so the Viewer opens en_US (USD rates) where before the ERP base never reached it; booting the ERP never writes it. (2) The ERP writes `bim.lang` only; `erp.lang` is no longer written (read once for migration). (3) The Viewer still writes the `bim_ootb_config.locale` mirror (toast + `rates.js`).
 - **Not mine, found on main:** `tests/test_s284_packager.js` 23/4 (3.1, 9.1, 10.1, 10.2) on main and here; W-VIEWER-I18N `(3b)` unknown keys in `tm_gantt_edit.js`; W-MODELLER-I18N uncatalogued LOD Upgrade pill strings (above).
 
+- **Owner decision (2026-11-18, verbatim):** *"yes, en_US pick saving for all three is fine"*: picking English in the ERP stores `bim.lang=en_US` for all three apps (the Viewer then opens en_US, USD rates). Booting the ERP without a pick writes nothing. Checked by the owner; not to be re-asked.
+- **Verified by the lead session (2026-11-18):** W-TRILOGY-LANG re-run on main `pass=19 fail=0 verdict=PASS`; red `TRL_BREAK=ownkey` `pass=7 fail=12 verdict=FAIL`.
+
 ### T2 The terminology category in the Viewer (S-2)
 - **Issue:** IFC class names and definitions, standards and other terms are messages, so a term cannot be shared or reviewed as a term.
 - **Change:**
