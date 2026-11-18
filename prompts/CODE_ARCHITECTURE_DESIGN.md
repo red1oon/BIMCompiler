@@ -310,6 +310,13 @@ deploy workflow still green on the first merge after each switch (fetch `erp/ver
   (plural, so it is recorded for both). → **B-3 = yes**: `owner` and `witnesses` fields per module. **B-4 = derive the precache entries only.**
   Plan note (from B0's `§MANIFEST_PLUGINS precached_mjs=29 on_disk=36`): deriving from disk would add 7 entries to ERP's precache, which changes what is
   saved offline, so by B-2's reasoning it is its own step after B2, not part of B2's byte-identical switch.
+- **B-3 REVISED (2026-11-19, eleventh session): a module's witnesses are worked out when asked, not stored; `owner` stays stored.** First asked: should the
+  refresh move into `bump.js` (the watch item of the tenth session; advice yes). Owner: *"Folow your advice"*. Reading the code before building showed that
+  advice did not fit the failures that happened: four other-lane PRs on 2026-11-18 (#3269, #3285, #3295, #3298) each needed an extra "refresh modeller
+  witnesses" commit, and each one only ADDED A TEST naming a modeller-side file (`common/lib/sql-wasm.js`, `modeller/arc_editable.js`), and a test-only PR
+  never runs `bump.js`. Asked again: keep the stored list (refresh in bump + C15 a warning; the file then holds a list that is sometimes stale) or work it
+  out when asked (recommended; the extractor already exists, one reader `scripts/gen_proof_map.js:39` moves onto it). Owner: *"Follow your advice"*.
+  → §B-3R SPEC below.
 
 - **B1-Q1, B1-Q2, B1-Q3 (2026-11-18, tenth session).** Asked one per message with the B1 BUILD SPEC counts. **B1-Q1** (32 comments + 4 inline scripts between the page's
   67 tags, 59 comment marks between `sw.js`'s 164 entries; A = they stay in the files, tool rewrites only tags/entries, +4 marker lines; B = into the manifest;
@@ -955,6 +962,26 @@ T0 *the documented fetch URL is alive*: `curl -sIL https://github.com/red1oon/bi
 - **Witness shape (each test names the issue it proves):** V1 *a new entry point added without a VS Code route is caught*: red run adds a fake page to a throwaway manifest copy, must FAIL with the gap line. V2 *a route that exists but does not start the thing is caught*: red run breaks a task's command in a throwaway copy, must FAIL on `run`. V3 *an empty derived population is INCONCLUSIVE, never PASS* (`§D0_VACUOUS` style). V4 *scope-blind guard*: the headless run must observe the entry's own verdict/URL answering (HTTP 200 for a page, exit 0 and a `§` line for a CLI), not just that the task file parses. Runs on a fresh `git archive` download after `node scripts/setup.js` (extends W-FROM-SCRATCH / W-SETUP; browser pieces headless on the CPU, one at a time).
 - **STANDING RULE (the point of the request, "in future"):** any PR that adds an operational entry point (a new app page, a `bin`, a runner) must add its VS Code route in the same PR, and this witness is what fails otherwise; add it to the CI fast tier when it runs in under the tier's limit, else keep it local and list it in `tests/ci_fast_tier.json` with its measured reason. The Developer Guide §4 gets one line: "everything runnable is runnable from the folder you opened".
 - **Cost, to measure before building:** the derived N today is about 3 apps + 2 commands + 3 runners + setup = about 9; each headless start is seconds; total expected well under the heavy-job budget, but measure, do not assume.
+
+**§B-3R SPEC — the `witnesses` field leaves `modules.json`; the extractor answers instead (owner B-3 REVISED 2026-11-19, Part B DECISIONS).**
+- **Issue it fixes:** C15 (W-MANIFEST-ROUNDTRIP, in CI) fails every PR that adds a test whose text names a modeller-side file, until someone runs
+  `node scripts/gen_manifest.js --write modeller` and commits the regenerated `modeller/modules.json`. Measured: 4 other-lane PRs paid that commit on
+  2026-11-18. The stored list is a cache of `witnessesOf()` (`scripts/lib/manifest_source.js:195`) that every new test anywhere makes stale.
+- **Change (bim-ootb):** (1) `witnesses` leaves `MOD_KEYS` and the schema; `init` and `refresh` stop writing it; every line of `modeller/modules.json` loses
+  the key (written by the serializer, not by hand). (2) `witnessesOf()` stays the ONE extractor. Its callers: `check` (the `§MANIFEST_WITNESS_GAP` line,
+  now from the extractor), `scripts/gen_proof_map.js` ("named by", now live), and a new `node scripts/gen_manifest.js --witnesses <file> [--app A]` that
+  prints `§MANIFEST_WITNESSES app=A file=F n=N` then one witness per line (exit 1 with `§MANIFEST_ERR` when the file is no module of a source app).
+  (3) C15 judges `owner` only; its line keeps `witness_gap=`. (4) A `witnesses` key typed back into `modules.json` is refused as not canonical (the schema).
+  Code Facts is not changed in this step (its `context` text "not indexed yet" is a separate, later row).
+- **Witness (each case names the issue):** W-MANIFEST-ROUNDTRIP new **R13** *"a test-only change fails CI"*: in a temp copy of the tree, add one test that
+  names a modeller module and leave `modules.json` alone → C15 must stay ok (`owner_mismatch=0`) and the planted test must appear in
+  `witnessesOf()` for that module. **Red on the old code:** the same plant on today's tree gives `witnesses_mismatch=1` (C15 FAIL). New **R14** *"the old key
+  comes back by hand"*: a line with `"witnesses":[…]` added → `not canonical` fail. W-PROOF-MAP: its fixture `modules.json` drops `witnesses`; the named
+  test must still show under "named by" (proves the proof map reads the extractor, not a stored copy). The `--witnesses` command: its output equals
+  `witnessesOf()` for 3 modules, and an unknown file exits 1.
+- **Must stay identical:** every generated page, loader and `sw.js` byte for byte (C8, C10, C11), `§MANIFEST_ROUNDTRIP … identical=55/55 … verdict=PASS`,
+  W-BUMP, the proof map's "proven by" rows. Deletion budget: the PR states lines +/−; the stored field, its refresh line and its C15 half are removed.
+- **Not in this step:** viewer/ERP manifests (B2/B3 simply never get the field), the `owner` field, Code Facts.
 
 ## ADVICE — from the session that built Part F, for the owner and the sessions that follow (2026-11-14)
 
