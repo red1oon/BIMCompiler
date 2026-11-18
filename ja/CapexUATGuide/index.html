@@ -5422,7 +5422,7 @@
 </tr>
 <tr>
 <td>D9</td>
-<td>Log in to iDempiere again and read the <strong>Home</strong> tab</td>
+<td>Log in to iDempiere again and read the <strong>Home</strong> tab. Home goals are recalculated only when they are older than <strong>30 minutes</strong> (System Configurator name <code>ZK_DASHBOARD_PERFORMANCE_REFRESH_INTERVAL</code>, 1800000 ms). If you opened Home at A2.2 less than 30 minutes ago, the goals still show the counts from before the test data (for example <em>CAPEX Total Projects</em> 2): either wait, or open <strong>System Admin ▸ General Rules ▸ System Rules ▸ System Configurator</strong>, set that name's <strong>Configured Value</strong> to <code>60000</code>, save, and log in again</td>
 <td>The CAPEX goals show the same counts as the dashboard tiles, money in your login’s currency. A goal that has a target (for example <em>Health Green</em>, <em>Schedule On Time</em>, <em>Actual Cost</em>) shows its percentage of the target on the Home tab, not the count</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
