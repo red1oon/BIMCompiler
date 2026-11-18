@@ -4,6 +4,15 @@ Scope: **SPEC and step ledger** for ONE translation standard across the Trilogy 
 ## ▶ RESUME HERE (written 2026-11-18; T1-T4 and T5a, T5b built and merged, T5c partial (Window/Menu/Tab/Process/Form + chrome); next = Korean AD_Field first, then Element / Ref_List / Message)
 Start: (1) read this file top to bottom; (2) `git -C ~/bim-ootb fetch origin`; `git -C ~/bim-ootb worktree list` BEFORE any `git worktree add`, and reuse one that exists for your branch; (3) take the steps in order, T1 first. Each step: spec lines below → witness with a falsifier → code → logs read → RESULT written here → PR → merge (owner rule: merge your own verified PRs). Push is ON (CLAUDE.md §PUSH PAUSE lifted). No binary DB commits (CLAUDE.md §DB CHANGES). Never `git worktree remove --force`.
 
+**▶ SESSION CLOSE 2026-11-18 (lead session, read first):**
+- **Verified by the lead session on main** (re-runs, logs read): W-TRILOGY-LANG 22/0, W-TRL-TERMS 7/0, W-MODELLER-TERMS 5/0, W-TRL-PROVENANCE 8/0, W-ERP-MACHINE-SRC 7/0, W-ERP-CHROME-FILL 7/0, W-ERP-KO-SCREEN 7/0.
+- **Owner stopped after T5c (partial).** Open, in order:
+  1. Korean AD_Field, then AD_Element, AD_Ref_List, AD_Message (~10,700 distinct strings).
+  2. Page code to read the Korean AD_Process / AD_Form / AD_Element maps, which are built but not read yet.
+  3. bn_BD, bl_BD, af_ZA, en_GB / en_AU / en_MY.
+- **Cost measured:** T5 cost about 640k agent tokens for 2,625 rows. Ask the owner before each large language run.
+- **Rule broken once, blocked:** the T5 agent tried `git worktree remove --force`; the permission guard refused it, and a plain remove then worked. Every brief must repeat: never `--force`, never route around a denial.
+
 ## 1. Owner decisions (verbatim, 2026-11-18, binding)
 - *"Is it just Thai, or we can organise for all the language packs that legacy iDempiere already has? I assume such packs shape are important to build our part in OOTB too"*
 - *"is it better we reenact those language packs as we have better capabilities with our AI here? Their translation xml schema is good enough to adopt as our project standard method to separate concern"*. Then, asked: **"Yes, as proposed"** to: *legacy's translation XML is the project's one translation format; AI-written rows live in their own lowest-priority source folder; published packs always win.*
