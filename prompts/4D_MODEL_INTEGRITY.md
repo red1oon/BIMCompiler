@@ -3876,3 +3876,23 @@ UE-3 second Undo is a no-op · UE-4 refused link keeps the previous record · UE
 - **Not covered:** still single-level (no redo); import and native generate are not undoable; CPM float columns are re-derived after Undo, not restored; Duplex only (`UE_BLD` for another); the panel's on-screen text after Undo is not judged.
 - **⚠ Process defect of this session, for the next one:** the squash before the PR was `git reset --soft origin/main` after a `git merge origin/main` that had ABORTED (uncommitted files in the way). The commit therefore carried an old tree and would have reverted 20 files of other lanes (1,119 lines). Caught from the `--stat` before merge; auto-merge was disabled, the branch rebuilt as main + 13 files, and `gh pr diff --name-only` checked (13) before re-enabling. **Rule: never soft-reset onto main unless the merge just before it printed success; check `git diff origin/main HEAD --stat` before every push.**
 **NEXT: step 5 (reorder — one atomic verb that exchanges two bars' places, through `_tmCommitEdit`, judged by the lock gate, undone by one Undo).**
+### Q.19.11 STEP 5 SPEC — reorder: exchange two bars' places (G-B), written before the code (2026-11-18)
+**Issue:** the planner can move, resize and link bars but cannot change the ORDER of two bars; a drag is clamped by the bar's predecessors, so "do B before A" needs an unlink, two drags and a re-link, each a separate undo step.
+**The verb — `ScheduleAuthor.swapTasks(db, scheduleId, aId, bId, { dryRun })`, atomic, nothing written on refusal.** With A the earlier bar and B the later:
+- B takes A's start; A ends where B ended; both keep their durations. The pair's envelope `[A.start, B.finish]` does not move, so nothing outside the pair is disturbed by the exchange itself.
+- A direct link A→B is reversed to B→A (same type and lag). No other link is touched.
+- **Refused, with the reason named:** the same task; a summary or unknown task; bars that overlap in time (`bars_overlap` — parallel bars have no order to exchange); B still has a predecessor that finishes after B's new start (`blocked`, `blockedBy` = the engine's own binding predecessor — this also catches A→X→B); the reversed link would close a cycle (`cycle`).
+- After the exchange A obeys its own predecessors (B among them when the link was reversed) and A's successors are pushed, by the SAME clamp and push-only cascade a drag uses. The load of the leaf graph and the cascade are extracted from `moveTaskCascade` and shared, not copied.
+**The gesture:** drop a bar on another bar with **Shift** held = exchange places (without Shift it stays "link"). For touch, the typed panel gets a "⇄ Swap places with" row. Hook `window.__tmGanttSwap(aId, bId)`. `swapGanttBars` keeps lock check, verb and refusal tip, and commits through `_tmCommitEdit` (§Q.19.7) with an undo record (§Q.19.9).
+**The lock gate is the physical judge, unchanged:** a reorder the links allow but the building does not (a slab before the columns under it) commits while editing, and 🔒 refuses with the offenders named until it is undone or fixed (§I row "is an edit legal?").
+**Witness `witness_gantt_reorder` (before the code), Duplex, shipped verbs:**
+| claim | what must hold |
+|---|---|
+| RO-1 | after a committed swap: B starts where A started, A ends where B ended, durations kept, the two bars' element sets are unchanged and every element lies inside its bar's new window |
+| RO-2 | a direct link is reversed (same type, lag) and no other link row changes; an unlinked pair changes no link row |
+| RO-3 | each refusal — overlap, blocked by another predecessor, same task — names its reason (and the blocker), writes nothing and leaves the undo record alone |
+| RO-4 | one Undo restores tasks, links and element times exactly |
+| RO-5 | the lock gate: from the edit-start baseline, a committed reorder that makes the schedule physically worse is refused at lock with offenders named, and passes again after Undo; at least one committed reorder is judged (else INCONCLUSIVE) |
+| RO-6 | wiring: Shift-drop calls `swapGanttBars`; it takes the edit lock and commits through `_tmCommitEdit` with `undo:`; a dry run writes nothing |
+| RO-R | red control: an element pushed out of its swapped bar fails RO-1 |
+**Predictions:** all red on main (no verb). After: every legal adjacent pair on Duplex is tried in dry run and the counts of committed / refused-by-reason are printed; RO-5 expects at least one physically worse reorder among the directly linked structural pairs.
