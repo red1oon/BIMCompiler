@@ -14,11 +14,21 @@ Scope: **SPEC and built-step ledger** for the CLI front ends on the door: the MI
 
 **§42 S3 BUILT** (bim-ootb #3240, auto-merge): `nearest()`'s short-name cap, W-ASSIST-NEAREST 5/0. The help lane can now delete `GUARD_MIN_CHARS`. They poll main for it; no message was sent, because which peer session is the help lane was not known.
 
+**Guide for §41 DONE + LIVE** (BIMCompiler #942, deployed: guard 988 → 988 files, canaries 200, live en + zh polled):
+- a "`#` finds a document" paragraph with a run block, `red1 '#80000'`;
+- the verb table at 78;
+- the counts: 68 verbs, 13 ERP verbs;
+- 2 lines × 6 languages translated;
+- W-FAST-SCRIPT-GUIDE 122/0 (`GUIDE_BREAK=1` FAILs), W-DOCS-I18N 8/0.
+
+On the way: in a one-shot `red1 '<words>'` the screen text goes to stderr, so a guide block needs `2>&1 | grep -v '^§'`. One `confirm_run` failure was a transient Modeller exit 1; it passed on the re-run.
+
+**§43 step (1) DONE:** the proposal is in the Teamwork lane's file as `TEAMWORK_FRAMEWORK.md` §53 (BIMCompiler #945): relay-log tables in CommStore, and the store opened from a machine file. Step (2) waits for their answer.
+
 **Next, in order:**
-1. The Fast Script Guide refresh for §41: verb table 77 → 78, the `#` help line, the bash-quoting note. Use the guide chain in the memory note: `--refresh --only`, `i18n_sync`, W-FAST-SCRIPT-GUIDE, W-DOCS-I18N, `safe_gh_deploy`.
-2. §43: send the Teamwork lane the proposal.
-3. The ERP one-ledger study.
-4. The TWIN question about `idempiere.html?window=143`.
+1. §43 (2), once Teamwork answers §53.
+2. The ERP one-ledger study.
+3. The TWIN question about `idempiere.html?window=143` (it opens one sample order, not the list).
 
 No owner question is open.
 **▶ SESSION CLOSE 2026-11-18 (read FIRST):** the sequel film **CH 3 "Inside the Record" BUILT: EN rc4, ZH rc2 (on the owner's phone), TH rc1 (F with Edge's Niwat voice at +25 Hz: the female Thai voice gave no audio; owner: "Accept any voice that works"); end card = prior art · costs · credentials + red1's mantra + the guide link** (BIMCompiler #916 #921). The Fast Script Guide also gained "From the menu into a record" (`red1_walk_record`, #920, live). The recording and build folders stay in `/tmp/wt-film-fse2/scripts/film_inside_record/out*` (not in git) for any later cut; earlier status note: EN rc2 BUILT (FILM_COMMAND_LINE_ERP.md CH 3 STATUS; owner's framing rules now house style FILM_NARRATION.md 4-6: two-colour CH cover, lower frame cropped/zoomed to what changes, ONE terminal font with slow scroll). Its dry run found six shell defects, fixed as **§45** (a record by its id; `cd <n>` in a kind keeps the walk) and **§46** (an action prints a summary, not JSON; the hint leaves the line; Tab in the record's order; offers follow the record), bim-ootb #3224. The guide's Duplex chain refreshed for the 4D lane's drift (49 priced rows, 43 project lines) and re-deployed. **Next, in order:** (1) §41 `#<number>`; (2) §42 S3 short-name cap; (3) §43 `team.*`; (4) the ERP one-ledger study; (5) the TWIN question CH 3 left open: `idempiere.html?window=143` alone opens one sample order, not the list (compare legacy's opening query). No owner question is open. The legacy pilot still runs on :8088.
