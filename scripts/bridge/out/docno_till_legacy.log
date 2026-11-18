@@ -1,0 +1,10 @@
+§DTL setup seq=1000219 doctype=1000059 prefix=@AD_Org_ID.Value/K@-@C_POS_ID.Name/K@- start=1 pattern=000000 pos={"T1":1000000,"T2":1000001,"N1":1000002}
+§DTL till=T1 org=11 -> C_Order 1010580 DocumentNo=HQ-T1-000001 c_pos_id=1000000
+§DTL till=T2 org=11 -> C_Order 1010581 DocumentNo=HQ-T2-000001 c_pos_id=1000001
+§DTL till=T1 org=11 -> C_Order 1010582 DocumentNo=HQ-T1-000002 c_pos_id=1000000
+§DTL till=T1 org=11 -> C_Order 1010583 DocumentNo=HQ-T1-000003 c_pos_id=1000000
+§DTL till=T2 org=11 -> C_Order 1010584 DocumentNo=HQ-T2-000002 c_pos_id=1000001
+§DTL till=N1 org=50002 -> C_Order 1010585 DocumentNo=Store North-N1-000001 c_pos_id=1000002
+§DTL till=none org=11 -> C_Order 1010586 DocumentNo=HQ--000001 c_pos_id=-
+§DTL AD_Sequence_No [{"key":"HQ","currentnext":2},{"key":"HQ-T1","currentnext":4},{"key":"HQ-T2","currentnext":3},{"key":"Store North-N1","currentnext":2}]
+§DTL DONE
