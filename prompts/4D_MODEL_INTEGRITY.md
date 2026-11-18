@@ -3804,3 +3804,19 @@ summary                                            68 pass / 79 fail / 2 inconcl
 - **Not covered, named:** the wall-clock label (`tm-label`) and the sun stay on local time, so the label's hour is not the counter's `HR` outside UTC; the scene itself is not rendered here (the canvas side is the §I frontier rule, guarded by NS-0, not pixels); NS-7 edits Duplex only (`NS_BLD` for another); un-authored bars (no task) were not in any of the seven runs; the variance drawer's phase highlight still uses `<=`.
 - **Found red on main, not this step (same on an untouched main worktree):** `witness_cpe_buildup_activate_silent` and `witness_cpe_buildup_require_tm_first` (marker not found — they read the split files raw), `witness_gantt_props_epoch` (4 fail), `witness_tm_silent_refusal_tips` (its brace scanner aborts), `witness_gantt_bar_is_its_task` (cannot find `sql.js`), `witness_sun_arc_linear`, `witness_sun_compass_wiring`.
 **NEXT: step 3 (one commit pipeline — the six copies become one function).**
+### Q.19.7 STEP 3 SPEC — one commit pipeline, written before the code (2026-11-18)
+**Issue:** the commit pipeline (snapshot element times → re-time elements → undo record → resync → CPM annotate → persist → invalidate → day ladder → redraw → render) is typed out in EIGHT places in `tm_gantt_edit.js`, not six: drag, ruler shift, group shift, pull-back, undo, link, unlink, typed apply. They already differ: link re-syncs only when a bar moved; unlink never renders the canvas; three of them leave no undo record (step 4). A rule that has to be re-typed at each site is a rule that eventually is not (§S69's own words about the bake lock).
+**Change (behaviour-preserving, move-only in intent):** two functions own it.
+- `_tmEditRefresh(what, schedId)` — resync → annotate → persist → invalidate → `computeDays` → draw → render. The only place those seven are called in sequence.
+- `_tmCommitEdit({ what, schedId, moved, tasksBefore, undo, log })` — snapshots the touched elements' times, calls `retimeTaskElements`, writes `_lastEdit` when `undo` is given, prints the caller's commit line, then `_tmEditRefresh`. Each verb keeps only what is its own: lock check, engine verb, refusal tips.
+- Undo calls `_tmEditRefresh` after its restore. Import and native generate stay on the refold path (they rebuild the 4D from the tasks table; a different pipeline, not a copy of this one).
+**Deliberate differences, named:** link without a moved bar and unlink now also resync and render (idempotent re-derivers; they were skipped by omission). Which edits are undoable does NOT change in this step.
+**Witness `witness_gantt_one_commit_pipeline` (before the code):**
+| claim | what must hold |
+|---|---|
+| OCP-1 | the seven refresh steps appear in sequence in exactly one function of the family |
+| OCP-2 | every function that takes the edit lock (`_tmEditLocked(`, derived from source) reaches the pipeline (`_tmCommitEdit(` or `_tmEditRefresh(`) and calls none of the seven steps itself |
+| OCP-3 | on a real building (Duplex), each gesture — move, resize, ruler shift, group shift, pull-back, link, undo — runs the steps in the one canonical order (recorded by instrumented steps) |
+| OCP-4 | equivalence: tasks rows, element ops, links and the undo record after each gesture hash-equal the same gesture on main (`§W_OCP_STATE` lines diffed, main vs branch) |
+| OCP-R | red control: a verb body with one step removed fails OCP-2 |
+**Predictions on main:** OCP-1 red (8 sequences), OCP-2 red; OCP-3 red only for link (no resync). **Deletion budget:** stated in the result; add-only is not done. Witnesses that read the verbs' source for the step names (CPM-1, PERS-1, TBL-5, retime-resync wiring, pull-back) are re-pointed at the pipeline, each keeping its claim.
