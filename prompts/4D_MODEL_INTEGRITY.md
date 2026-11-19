@@ -4793,3 +4793,51 @@ Substructure on Superstructure columns") is **struck**: that class is **9 of 109
   4. Upload through `scripts/oci_patch_gate.js --upload` with a verifier on `$GATE_DB` (38 `storey_elevation` rows, each guid + name equal to its
      `spatial_structure` row; `witness_ifc_storeys.js --patched "$GATE_DB"`), fetch back, byte-compare.
   5. Then the same check for Terminal and Hospital: is the local `_meta.db` the served one (`oci os object head` md5 vs local)?
+
+## §Q.37 THE SHIM-ANCHOR MODEL — PLAN TO SHIP (2026-11-20, owner after the §Q.33 review and a prior-art check: *"Proceed to plan and implement."*)
+**Why this shape.** §Q.33's three sandboxes proved the relation and failed on the big-bang. Prior art says the same of everyone (Jung, Amer,
+Golparvar-Fard, CIB W78 2021: rule-based BIM sequencing *"still require[s] hard-coded sequencing rules and work templates … unable to cover undefined
+rules"*, wrong when the model is inaccurate, not verified on real projects; the relation itself is Echeverry / Ibbs / Kim 1991 — physical relationships
+are ONE of four sequencing factors, beside trade interaction, access and regulation). So: the bond is a STORED, REPORTED FACT first; it drives a consumer
+only one consumer at a time, each behind the gates, each deleting the special case it replaces. The template grid (location × trade) stays and keeps
+ordering everything no bond orders (rule D) — trade interaction is the grid's job, not the bond's.
+### Q.37.1 STAGES (work top to bottom; a stage is one PR in bim-ootb; ✅ / ⛔ marked here)
+| # | stage | changes the programme? | needs the owner? |
+|---|---|---|---|
+| S1 | **Bond table, report only** — `viewer/shim_bonds.js` (candidate owner of "which thing(s) carries T, by which need"), `scripts/shim_bonds_report.js`, gate witness `witness_shim_bonds.js`. Reads the persisted runs. | no | no |
+| S2 | **Persist the bonds with the run** (`run.json` `bonds`, cache-keyed) and print `§SHIM_*` in `witness.log`, so every later reader reads, never recomputes. | no | no |
+| S3 | **Election reads bonds** — `designatedSupport` returns the bond's primary host; the D1 / D2 / D3 / D5 / D7 / ground-band clauses it replaces are DELETED in the same PR (deletion budget stated). Flag first (`opts.supportSource='bonds'`, default off, as `LevelDeriver` was), measured on 7, then default on. | **yes** | ⛔ Q1, Q2 below |
+| S4 | **Hung filing reads bonds** — D6 files by the `hangs-below` bond, not by "elected support on a higher level". | yes | no (it is the §S47.3 ruling) |
+| S5 | **Renderer hold + lock gate + load-path film read bonds** — `tm_sched_xray.js` `maxCarrierEnd` and the lock verdict stop running their own geometric test. `witness_midair_zero`'s census stays an INDEPENDENT judge (not switched). | no (judges) | no |
+| S6 | **Mesh faces into the contact owner** (angle / oriented faces) — turns `unverified` into `bonded` or `misplaced`. | maybe | measure first |
+| P0 | Prerequisite named in §Q.36.5: LTU gates judge the served pair. Until then every LTU bond number is on the local Aug-10 DB and says so. | — | — |
+⛔ **Q1 (blocks S3 only):** rule B pulls Finishes ceilings ahead of MEP-Final fixtures (Hospital 3,249 in §Q.33.5). Change the phase table (ceiling grid, then fittings into it) or keep the template order and let the fixture bond be informational? ⛔ **Q2 (blocks S3 only):** a wall the geometry needs as a bearer but the file flags non-bearing (701 in §Q.33.9) — geometry (the shipped D1 `bearingWalls`) wins? Session advice on both: yes to the first option. S1-S2 need neither.
+### Q.37.2 SPEC S1 — the bond table, report only
+- **One contact owner, unchanged:** candidates are `CpmSchedule.contactGraph(items).contacts` (§I row 1). S1 writes NO second contact test. The pair's
+  relation is the election's own three-way split (`cpm_schedule.js` `designatedSupport`: below = `S.bz < T.bz-EPS && S.tz >= T.bz-GAP`; side/inside =
+  `S.bz <= T.bz+EPS && S.tz >= T.tz-EPS`; else above), restated once in `shim_bonds.js relOf` and deleted from the election at S3.
+- **Kind** (the only place a class name appears): IFC class → kind, refined by two extracted facts — the `rel_aggregates` parent (a member / plate
+  under an `IfcCurtainWall` is façade; a slab / member under an `IfcStair` is a stair part) and the shipped owners `groundworkSlabs` (ground slab) and
+  `bearingWalls` (D1, bearing wall). No Pset is read (none is in the DBs, §Q.33.7).
+- **Table = §Q.33.3's dry run, row for row, plus the mined `rule_shim` rows** (terminal_rules 5 class rows, duplex_rules 3). Nothing else is authored;
+  a kind with no row is `lost(untabled)` and keeps its template time. Each row: ordered needs, each = capability (`ground` · `bears-on-top` ·
+  `hangs-below` · `fixes-on-side` · `opening-accepts` · `continues-same-kind`) + host kinds IN TIER ORDER + count (`one` | `all`).
+- **Rules:** A bond = a need met by an ANCHORED contact of an offered kind in the needed relation; tie = tier, then contact area, then guid. Anchored
+  waves (§Q.33.6 item 1): wave 0 = ground seeds (the election's own `isSeed`, minus façade parts); a host qualifies only if anchored in an EARLIER wave;
+  no relax in S1. Count `all` records every anchored host of the winning need below T. Relay = the `continues-same-kind` need, met only by an anchored
+  piece (rule C); it draws no order (the grid orders pieces of one run).
+- **Outcomes (every element gets exactly one):** `bonded` · `lost(untabled)` · `lost(no-contact)` · `lost(unanchored)` (a right-kind host touches but
+  never anchors) · `misplaced` (a right-kind host touches, wrong relation). Angle: boxes only → every bond is `angle=unverified`, printed, never
+  `misplaced` for angle (rule E).
+- **§-lines:** `§SHIM_BONDS <bld> n= bonded= lostUntabled= lostNoContact= lostUnanchored= misplaced= waves= seeds= angleUnverified=` ·
+  `§SHIM_KIND` (per kind: n / bonded / by need) · `§SHIM_TABLE_SOURCE` (bonds by row source: dry-run / mined) · `§SHIM_VS_ELECTION` (same host / other
+  host / bond only / election only, by kind) · `§SHIM_WOULD_MOVE` (bonded T whose primary host ENDS after T starts on the played layer, by kind — what S3
+  would change; NOT a defect count).
+- **Witness `witness_shim_bonds.js` (gate 17), issue it exposes: *"does the bond table stay acyclic, total and sane on every building, and do the
+  cases the model was invented for hold?"*** B1 every element has exactly one outcome · B2 every bond's host is in an earlier wave (cycles 0) · B3 two
+  runs hash-equal · B4 no slab / beam / column is hosted by a façade part or bonded by `hangs-below` · B5 no slab's primary host is a non-bearing wall
+  while a column or beam also bears it · B6 a stair landing with a sibling contact bonds inside its own stair · B7 ratchet: `bonded` share per building
+  may not fall (baseline from the run) · red control: a table where a mullion offers `bears-on-top` to slabs must fail B4 on HHS. INCONCLUSIVE, never
+  PASS, where a claim's population is empty.
+- **Proof owed:** the seven §SHIM_BONDS lines; `run_4d_gates.sh` GREEN 17/17; played instants hash-equal on all seven (S1 changes no schedule);
+  no served file changes (no sw bump).
