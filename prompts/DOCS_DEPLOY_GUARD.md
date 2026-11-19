@@ -109,3 +109,18 @@ W-DEPLOY-GUARD is green; a deliberately stale tree **cannot** shrink the live si
 - GREEN, after the fix: `P10 PASS nCut=0`, 36 tables. 3 are taller than a page (B0.1 h 1427, B2.1 993, D1 1685) and continue with their header row repeated on each page (pdftotext pp. 17, 18, 24, 41, 42).
 - The new build: 44 pages, P1–P8 PASS. The order is p2 Changes, p3 What is this?, p4 Contents, p5 Checklist.
 - `PRINT_BREAK=tables`: P10 FAIL on the same 4 tables (not scope-blind).
+
+### Printable guides, 2026-11-20 SPEC (2): page numbers in Contents (written before code)
+**Owner (verbatim):** *"add page number to Contents items."*
+**How (`scripts/guide/print_check.js`, only when the page has a `.uat-toc`):**
+1. A first marked print finds the page of every Contents target. Each `.uat-toc a[href^="#"]` gets an invisible marker at the element with that id.
+2. The clean print and the marked print are then made with the numbers written in: a right-aligned `span.uat-pg` after each link, print only.
+3. The web page keeps plain links. The Contents page stands alone (the checklist sheet breaks before it), so the numbers cannot move later pages.
+**P11 (new), named issue:** *"a page number in Contents points to the wrong page"*. In the final marked print, every number written in equals the page that its target's marker is on.
+- `PRINT_BREAK=toc` writes every number +1: P11 must FAIL.
+- A page with no `.uat-toc` gives `P11 not judged`.
+**RESULT (2026-11-20, logs read):**
+- `§PRINT TOC 27 of 27 targets placed`; **P11 PASS** (27 entries, 0 wrong); P1–P10 PASS; 44 pages.
+- `PRINT_BREAK=toc`: P11 FAIL (every number off by one, as written).
+- First run: P2 and P2b FAILed falsely, because the new Contents markers sit at each heading's start and read as "first on the page". Fixed: qqK markers are left out of the page-start order. Re-run all PASS.
+- pdftotext of page 4 shows each entry with its number on the right (Changes 2, What is this? 3, How do I pass? 3, Checklist 5, A 8 … ).
