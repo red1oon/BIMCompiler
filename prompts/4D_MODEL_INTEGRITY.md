@@ -4695,3 +4695,29 @@ CARRIER'S TASK; it is task filing, never the in-bar layout.
 2. **Clinic 1:** slab-on-grade (Substructure) over column stubs (Superstructure), 0.2 d — the same phase-filing class as LTU; decide together.
 3. **The two new HHS midair IfcMembers** seen only on the patched DB (locked, named) — find which patch statement moves them.
 4. §Q.33.12 items 2-4 unchanged (film per-frame witness needs a bake; full shim model needs rulings; bake speed is a GPU A/B).
+### Q.36 MEASURED (2026-11-20, §Q.35.5 item 1; CPU only; probe + logs `…/b96992a9…/scratchpad/q355/`) — LTU 109 is NOT phase filing; LTU has no floor axis
+`probe_pairs.js` (same predicate as `witness_floor_carriers.js`, every pair listed, reads the persisted run only). §Q.35.5 item 1's wording ("footings filed
+Substructure on Superstructure columns") is **struck**: that class is **9 of 109**. The other 100:
+- **74 of 109: the late carrier sits in task `TASK_Superstructure_TAKPLAN` [day 70-109].** That task holds **3,492** elements; only **248** carry the storey
+  `TAKPLAN`. The rest were moved in by `§D6_HANG_FILING` (`movedToCarrierLevel=52150` of 122,330, `ofWhichBearingOrEmbedded=28426`, `viaChain=29749`):
+  e.g. 79 `VÅNING 1` + 75 `VÅN 1` elements at 2.4-5.5 m play in the roof task.
+- **Cause: "higher level" has no meaning on LTU.** `§STOREY_DATUM mode=INFERRED … elevation:0=EMPTY center_z:0=EMPTY`; `§S18_STOREY_MERGE_FAIL no such
+  column`. The 18 names are nine federated files naming the SAME four floors four ways (`VÅNING n` / `VÅN n` / `Storey n` / `Plan n`), ranked by median
+  base and built as 18 separate "floors" (`VÅNING 1` 8-9, `VÅN 1` 9-19, `Storey 1` 19-20, `Plan 1` 20-21, …). `TAKPLAN` (roof plan) spans 2.14-16.27 m.
+  LTU is the **only** building of the seven without a declared datum (the other six print `mode=DECLARED`).
+- **The fact was never extracted, though the source has it.** `LTU_AHouse_meta.db` `spatial_structure` carries the 38 `IfcBuildingStorey` rows (guid,
+  name) and no elevation. All nine source IFCs (`bim-compiler internal/UNMERGED/LTU_AHouse_*.ifc`) declare them and AGREE: `Ref.` 0.0 · floor 1 = 2.7 ·
+  floor 2 = 6.0 · floor 3 = 9.3 · floor 4 = 12.3 (STR file: `VÅN 4` 12.0) · `TAKPLAN` 15.3 · `VÅN 5` 16.0 (mm, `IfcSIUnit MILLI`). Guids equal the DB's.
+- **Tool defect found on the way:** `bim-ootb tools/ifc_storeys_patch.py` did not decode ISO 10303-21 string escapes — it wrote `V\S\ENING 1` and
+  `V\X2\00C5\X0\N 1`, which match no `elements_meta.storey`.
+### Q.36.1 SPEC — carry LTU's declared storeys (EXTRACT, no rule added)
+- `tools/ifc_storeys_patch.py`: decode `\S\c`, `\X\hh`, `\X2\…\X0\`, `\X4\…\X0\` in names. Witness claim added to `witness_ifc_storeys.js`:
+  *"a storey name with a STEP escape reads as the same text web-ifc gives"* (the witness already compares the two readings).
+- `buildings/patches/LTU_AHouse_meta.db.sql`: append the tool's `storey_elevation` block (38 rows, generated, idempotent `DELETE`+`INSERT`), marked
+  `§IFC_STOREYS`. No z offset: the frame test must print `IN_FRAME` (element base median 8.277 inside ladder 0..16).
+- No scheduler code change: `_storeyDatumCandidates` already reads `storey_elevation` (§IFC_STOREYS, MODELLER_MASTER §G3); R1 (§Q.35.1) then owns the floor.
+- `_GANTT_CACHE_VERSION` 44 → 45 (a stored LTU schedule is stale), `sw.js` bump.
+- **Proof owed:** `§STOREY_DATUM mode=DECLARED source=storey_elevation` on LTU; W-FC-1x LTU 109 → the measured number, lock re-set from the run;
+  `§D6_HANG_FILING` moved count before → after; the six other buildings' played instants hash-equal (their patches are untouched); programme days and task
+  count before → after; `run_4d_gates.sh` GREEN 16/16 with `assembly_order.json` / `dcma.json` re-locked from the run and every rise named.
+- UAT constraint (2026-11-20 block): the Shed's DB and patch are not touched; no schedule rows written.
