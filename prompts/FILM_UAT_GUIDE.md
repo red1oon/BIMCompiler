@@ -3,11 +3,16 @@ SCOPE: the film that walks through the CAPEX UAT Guide (`docs/CapexUATGuide.md`,
 Every number spoken or shown is a fact read from the guide, the saved PDF or a § log line. **Read `build.log` after every run (`§FILM_*`); the exit code is not evidence.** The film file is NEVER pushed
 (owner 2026-11-14: only scripts, logs and specs go to GitHub); it stays in `~/Videos/`. Layout rules: `prompts/FILM_NARRATION.md` ▶ PLAYBOOK C.
 
-> ## ▶ RESUME HERE — FILM 2 "UAT, hands on: where to click" (rewritten 2026-11-19 night; read §5.10 → §5.11)
-> **State:** **all 12 scenes PASS in ONE take** (take 4, session scratchpad `a0008b42…/scratchpad/f2/full`; may be cleaned by the janitor: a re-take is ~13 min). Built from it: rc1 572 s → rc2 362 s → **rc3 310.4 s, −16.6 LUFS, one silence of 11.9 s** (`~/Videos/UAT_Hands_On_Where_To_Click_EN_rc3.mp4`, not pushed). rc3's gate prints FAIL on two bars only: `silence_max=11.9>8.0 film_s=310.4>300` (§5.11 table).
-> **Fixed this session:** `drv.js scrollInto` (a page that cannot scroll; the wheel turned the wrong way) · `compose.py` idle and scroll spans at ×8 with a badge · `build.sh` loudnorm + the §5.4 bars gated (they were only printed). **Real product find:** the Run Checker failed a tester who skipped the OPTIONAL Accept all (B2.8 `project_metadata 4 vs 5`); the owner chose the checker fix: bim-ootb #3345 (`CAPEX_DASHBOARD.md` §5.90, W-UAT-COMPARE-OPTIONAL 5/0), live; ledger row 13 in `SQLiteIDEMPIERE.md` §UAT-LEDGER. The guide and the signed UAT report are unchanged.
-> **Next:** (1) the owner's edit call for the last 70 s (§5.11 end: accept ~5 min, or cut s4/s3, and/or a line over the s10 scroll) → rebuild from take 4 (no re-take) → (2) one contact-sheet look → §5.12. Pack In scene (A3.1 on :8108) still waits for the owner's go (advice: a later rc).
-> **Take tips:** start a take a few minutes after any GitHub Pages deploy (take 3 hit a transient error body for the PDF); Chrome on Xvfb renders by swiftshader (CPU).
+> ## ▶ RESUME HERE — UAT films (rewritten 2026-11-20; read §5.12 → §5.13, then §5.10–§5.11 for the pipeline)
+> **Film 1 DONE and published by the owner:** rc3 (`~/Videos/UAT_Hands_On_Where_To_Click_EN_rc3.mp4`) = https://youtu.be/PBp4qfV4mIo, linked in the guide's *See how* (item 1).
+> **Part II (guide *See how* item 2, pending): A3.1 Pack In + the raw-sheet path.**
+> - Scene **s13 Pack In is RECORDED and PASSES** (§5.12 RESULT, folder `f2/full_s13_t5` in session scratchpad a0008b42…; may be cleaned: a re-take is about 3 min). Back up :8108 first, restore after; the backup `idempiere_film_packin_bak` is still there.
+> - Next: SPEC the raw-sheet scenes, then take, then build Part II:
+>   - open the pack's `sheets/` (no marks), B0.1–B0.8 marking by hand, B0.9 Save marked copies;
+>   - B2.3 **Arrange** (watch them move into place);
+>   - B5 with box 2 given (the run reads PASS, not PARTIAL PASS).
+> - Use the guide's own B0 texts and the Dry Run's M.js selectors.
+> **Take rules learnt:** Chrome shows *Change your password* after the GardenAdmin login (press its OK); the role window is optional; ZK icon buttons are found by tooltip. After `cp -al` give each copy its own `scenes.log`. Start a take a few minutes after a Pages deploy.
 
 ## 1 SPEC (2026-11-14; owner's brief, verbatim)
 > *"make a film to go thru the UAT guide, linger right away at the 2D illustration as a preamble, CH 0 'UAT or it doesn't work' - Part of any software project completion is a User Acceptance Test done
@@ -233,3 +238,21 @@ Every build: frames = picture (9,313 in rc3), 31 of 31 lines DETAIL, 0 tone WRON
   - Time zone and language are the same in both (Asia/Kuala_Lumpur, en-US). The server log has nothing at the time.
 - **So the fault is in the desk Chrome's session with ZK, not in the instance.** Next: compare that Chrome's ZK requests (zkau responses) with headless; try a fresh desk profile with s13 first.
 - :8108 restored after each attempt (`TD_`=0, imp_proc=1); the backup `idempiere_film_packin_bak` is KEPT until s13 passes, then dropped.
+**s13 take-1 CAUSE FOUND (2026-11-20, derived, not guessed):**
+- A diagnostic login with every ZK request logged: the login OK posts (`POST /webui/zkau` returns the role window); the role OK posts NOTHING.
+- Not the browser build: headless Chrome 155, and a headed Playwright-launched Chrome on :97 with the desk's flags, both pass.
+- Driving the desk Chrome by X input only (no debugging connection) and reading the screen: Chrome's own window **"Change your password — The password you just used was found in a data breach. Google Password Manager recommends changing your password now. [OK]"** covers the page. The demo password GardenAdmin is in the known breach lists; Playwright-launched browsers switch that warning off, which is why every headless login passed.
+**Fix (`scenes.js` `chromePwWarn`):** the film SHOWS it, as a tester will meet it. OCR finds the window's heading; the pointer clicks its OK (checks `chrome_password_window_ok_found`, `chrome_password_window_closed`). It is called after the login OK and after the role OK.
+**Tester note (for the change list):** after logging in with GardenAdmin, Chrome may show *Change your password*. It is Chrome's warning about the well-known demo password, not an iDempiere error: press OK.
+**s13 RESULT 2026-11-20: PASS in one take** (take 5, folder `f2/full_s13_t5`, s13.mkv 161.7 s; `§FILM_SCENES_VERDICT PASS scenes=s13`). The path:
+1. Login; Chrome's *Change your password* window: OK placed from its heading (`§FILM_OCR_DERIVED`), `chrome_password_window_closed`. No role window this time (`§FILM_NOTE after log in: home`).
+2. Search box ▸ `Pack In` ▸ New ▸ Name ▸ Save (*Record saved*).
+3. Paperclip ▸ **Load** (icon-only: its word is the tooltip) ▸ the real file window, Home ▸ Downloads ▸ the zip ▸ Open; `attachment_names_zip`; OK.
+4. PackIn ▸ OK; **`Processed=225 Un-Resolved=0`**. The database then had 12 `TD_` projects (guide A3.2).
+:8108 restored after (`TD_`=0, imp_proc=1); the backup `idempiere_film_packin_bak` is KEPT for Part II re-takes.
+**Takes 2–4 each taught one thing, now in the code:**
+- the OK on Chrome's window is not read by OCR (white on orange): it is placed from the heading;
+- the role window is optional: wait for whichever comes;
+- the attachment window's buttons are icons: select them by tooltip.
+**Own mistake, fixed:** `cp -al` copies share `scenes.log`, so s13 attempts appended into take 4's log. Take 4's log was cut back to its original 408 lines, ending with its PASS verdict. The copies now get their own `scenes.log` (`rm` + `cp` after `cp -al`).
+**Owner, 2026-11-20:** film 1 (rc3) is uploaded as https://youtu.be/PBp4qfV4mIo (guide, *See how* 1). **Part II** (guide, *See how* 2, pending) is to cover A3.1 Pack In (this scene, s13, recorded) and the raw-sheet path: the pack's `sheets/` (as drawn, no marks), marked by hand in B0.1–B0.9, then Arrange (§5.13). The raw-sheet scenes are not specced or recorded yet.
