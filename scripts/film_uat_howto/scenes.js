@@ -198,8 +198,13 @@ S.s12 = async () => {   // B5.3 + B5.4: Mark my run, Download result
     D.log('§FILM_SCENE ' + s + ' begin');
     if (PREP[s]) await PREP[s]();
     await D.recStart(path.join(out, s + '.mkv'));
+    const f0 = D.fails();
     try { await S[s](); } catch (e) { D.check(false, s + '_threw', e.message.split('\n')[0]); }
     await D.recStop();
+    // a failed scene leaves the desktop in its state (full take 2026-11-19: s5's file window stayed open through s6 and s7, both then failed on it; §5.9).
+    // A FAIL is a re-take anyway, so stop here: close a file window left open, name the scene to re-take, do not spend the rest of the take on scenes that cannot pass.
+    if (D.fails() > f0) { try { if (D.win('^(Open File|Select files)')) await D.key('Escape', 'close the file window left open'); } catch (e) { }   // the display itself may be gone (full take s8)
+      D.log('§FILM_STOP first failed scene=' + s + ' (re-take from ' + s + ' with its PREP; the scenes after it were not run)'); break; }
   }
   D.log('§FILM_SCENES_VERDICT ' + (D.fails() ? 'FAIL fails=' + D.fails() : 'PASS') + ' scenes=' + which.join(','));
   await D.close(); process.exit(D.fails() ? 1 : 0);
