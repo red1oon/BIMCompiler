@@ -10,6 +10,11 @@
   .md-typeset table:not([class]) { display: table; width: 100%; font-size: 9pt; }
   .md-typeset table:not([class]) th, .md-typeset table:not([class]) td { border: 1px solid #555; padding: 3pt 5pt; }
   .md-typeset tr, .md-typeset img, .md-typeset figure { break-inside: avoid; page-break-inside: avoid; }
+  .md-typeset table:not([class]) { break-inside: avoid; page-break-inside: avoid; }
+  .md-typeset table:not([class]) thead { display: table-header-group; }
+  .md-typeset h2, .md-typeset h3, .md-typeset h4, .md-typeset p:has(+ .md-typeset__scrollwrap), .md-typeset p:has(+ table) { break-after: avoid; page-break-after: avoid; }
+  .md-typeset__scrollwrap, .md-typeset__table { overflow: visible !important; }
+  .uat-toc ul { margin-top: 2pt; } .uat-toc li { margin: 1pt 0; }
   .md-typeset h2 { break-before: page; page-break-before: always; }
   .md-typeset h3 { break-after: avoid; break-before: page; page-break-before: always; }
   .md-typeset h2 + h3, .uat-sheet h3, .uat-cover h3 { break-before: auto; page-break-before: auto; }
@@ -41,7 +46,24 @@
 | For | The pilot client's UAT team: System Setup, BIM, Project Mgmt Accounting |
 | The latest copy | Page: [red1oon.github.io/BIMCompiler/CapexUATGuide](https://red1oon.github.io/BIMCompiler/CapexUATGuide/) · PDF: [CapexUATGuide.pdf](https://red1oon.github.io/BIMCompiler/CapexUATGuide.pdf). The PDF is made from the page at every publish and checked (pages, links). |
 
-**Changes since the signed UAT report (2026-11-19)**: read these even if you have already done the UAT. If your run met one of them, retest that step. They go into the report's appendix; the signed report itself is not changed.
+**Changes since the signed UAT report:** listed on the next page. Read them even if you have already done the UAT.
+
+**Revision history**
+
+| Revision | What changed |
+|---|---|
+| 2026-11-20 | The page *Changes since the signed UAT report* (after this cover); the pages *What is this?* and *Contents*; a table that fits on a page is no longer cut in two (a long one repeats its header row); A3.1 the Pack In window's steps and result; B3.1 the second currency note |
+| 2026-11-19 | This cover; each section on a new page; page numbers; every link in the PDF opens the public site |
+| 2026-11-18 | Corrections found by the UAT dry run: A1 links the Developer Guide §3 setup; D2b, D3, D8 figures for a fresh GardenWorld; D9 goals refresh every 30 minutes; B4.4 the model's line under Task Line |
+| 2026-11-15 | Roles and the checklist sheet; B00 export from BricsCAD; B0 from the sheets as drawn to the marked set; B3.1 measured total cost; B5 mark your run with the reference pack; the PDF |
+| 2026-11-14 | Corrections from the full dry run: window names and menu paths, chapter C step by step, C4 Issue to Project, construction products at standard cost, chapter B on the Shed drawing set |
+| 2026-11-13 | First issue |
+
+</div>
+
+## Changes since the signed UAT report (2026-11-19)
+
+Read these even if you have already done the UAT. If your run met one of them, retest that step. They go into the report's appendix; the signed report itself is not changed.
 
 | # | Step | What | Status | What to do |
 |---|---|---|---|---|
@@ -52,18 +74,8 @@
 | 5 | B3.1 | The amount in brackets is the rate pack's second currency (RM), whatever language you choose. Showing your local currency for the language you choose is **ongoing development**. | Noted, in development | Compare the **USD** figure |
 | 6 | (film) | The hands-on film shows the ready-marked sheets. The raw-sheet path (B0: mark the sheets yourself, then Arrange) is to follow. | Noted | None; B0 is unchanged |
 
-**Revision history**
 
-| Revision | What changed |
-|---|---|
-| 2026-11-20 | The list *Changes since the signed UAT report* above; A3.1 the Pack In window's steps and result; B3.1 the second currency note |
-| 2026-11-19 | This cover; each section on a new page; page numbers; every link in the PDF opens the public site |
-| 2026-11-18 | Corrections found by the UAT dry run: A1 links the Developer Guide §3 setup; D2b, D3, D8 figures for a fresh GardenWorld; D9 goals refresh every 30 minutes; B4.4 the model's line under Task Line |
-| 2026-11-15 | Roles and the checklist sheet; B00 export from BricsCAD; B0 from the sheets as drawn to the marked set; B3.1 measured total cost; B5 mark your run with the reference pack; the PDF |
-| 2026-11-14 | Corrections from the full dry run: window names and menu paths, chapter C step by step, C4 Issue to Project, construction products at standard cost, chapter B on the Shed drawing set |
-| 2026-11-13 | First issue |
-
-</div>
+## What is this?
 
 A hands-on test script for the testers of the pilot client (Sysnova). Each step says what to **do**, what you should **see**, and has a box to tick.
 **A value is affirmed at its source, not trusted.** Wherever a step gives a number, it also says **Source:** where the number is kept (a record, a field, a formula) and what to open to see it there. Open that source, read the value yourself, and tick *Pass* only if it matches. A figure on the dashboard is never the evidence: the rows behind it are.
@@ -71,6 +83,39 @@ A hands-on test script for the testers of the pilot client (Sysnova). Each step 
 Work top to bottom: every chapter uses what the one before produced. Write anything that differs on the **Notes** line at the end of each chapter.
 
 Dates in the test data are set for **13 November 2026**. Testing well after that day still works, but the colours on the dashboard (on time, late, over budget) drift with the calendar.
+
+## Contents
+
+<div class="uat-toc" markdown="1">
+
+- [Changes since the signed UAT report](#changes-since-the-signed-uat-report-2026-11-19)
+- [What is this?](#what-is-this)
+- [Checklist: who does what](#checklist-who-does-what)
+- [A · Set up (System Setup, once)](#a-set-up-system-setup-once)
+    - [A1 · The BIM apps on your own server (optional)](#a1-the-bim-apps-on-your-own-server-optional)
+    - [A2 · Install the dashboard into your iDempiere](#a2-install-the-dashboard-into-your-idempiere)
+    - [A3 · Load the test data (GardenWorld)](#a3-load-the-test-data-gardenworld)
+    - [A4 · ERP model setup, where needed](#a4-erp-model-setup-where-needed)
+- [B · BIM: the Shed, from 2D drawings to a priced model](#b-bim-the-shed-from-2d-drawings-to-a-priced-model-bim)
+    - [B00 · For the drafter: export the nine sheets from BricsCAD as DXF](#b00-for-the-drafter-export-the-nine-sheets-from-bricscad-as-dxf)
+    - [B0 · From the drawings as drawn to the marked set](#b0-from-the-drawings-as-drawn-to-the-marked-set)
+    - [B1 · Get to know the drawings: one sheet at a time](#b1-get-to-know-the-drawings-one-sheet-at-a-time)
+    - [B2 · Open all nine sheets: the drawings arrange themselves](#b2-open-all-nine-sheets-the-drawings-arrange-themselves)
+    - [B2b · Convert the drawings to the 3D Shed](#b2b-convert-the-drawings-to-the-3d-shed)
+    - [B3 · Fit the 4D schedule and the 5D rates to your local scene](#b3-fit-the-4d-schedule-and-the-5d-rates-to-your-local-scene)
+    - [B4 · Send the model to the ERP as a Project Order](#b4-send-the-model-to-the-erp-as-a-project-order)
+    - [B5 · Mark your run against the reference pack](#b5-mark-your-run-against-the-reference-pack)
+- [C · ERP: the hands-on exercise](#c-erp-the-hands-on-exercise-project-mgmt-accounting-as-gardenworld-admin)
+    - [C1 · Purchase orders](#c1-purchase-orders)
+    - [C2 · Material receipt](#c2-material-receipt)
+    - [C3 · Vendor invoice and payment](#c3-vendor-invoice-and-payment)
+    - [C4 · Issue materials to site](#c4-issue-materials-to-site)
+    - [C5 · Tick a phase](#c5-tick-a-phase)
+- [D · The dashboard](#d-the-dashboard-project-mgmt-accounting-the-read-job-system-setup)
+- [Known limits (do not fail a step on these)](#known-limits-do-not-fail-a-step-on-these)
+- [Sign-off](#sign-off)
+
+</div>
 
 <div class="uat-sheet" markdown="1">
 
