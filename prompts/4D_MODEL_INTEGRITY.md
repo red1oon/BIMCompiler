@@ -4515,3 +4515,25 @@ Measure, per building (7 + the HHS film DB), with the owners named in §I for an
 4. **Measure the extraction sources, do not author more.** Per DB: coverage of Pset LoadBearing, `rel_aggregates`, IFC type/family names, mined rows —
    what share of the authored table each could replace. Owner signs off any authored row; none is added in v2.
 - Re-run §Q.33.4 items 1-5 + the named cases with v2; same PRIMAL-LAW §-lines (NO-OP / VACUOUS / scope-blind). Played layer from current origin/main.
+### Q.33.7 POC v2 RESULT (2026-11-19, sandbox `…/shim_poc/v2/`, played layer = main `e14bfa71`)
+- **Break 1 cycles: RESOLVED** — `§SHIM_V2_CYCLE` 0 on all 8 (v1: 2 … 8,267). Cost: `relaxed` bonds (deadlocks broken lowest-tier first), e.g. Hospital
+  188 beams + 49 columns, LTU 2,309 coverings; beams with one end bonded Hospital 241 → 405.
+- **Break 2 tiers: RESOLVED for slabs** (L2/L3 slab host = a column, not "MW 11.5"; slab-elects-wall-over-column 0 on all 8), partly overall (2 Hospital
+  structural elements on a wall with no load-bearing fact). Walls hosting structure WITHOUT a load-bearing fact: 1,002 across the 8.
+- **Break 3 ground: PARTLY** — VACUOUS gone (HHS 486 seeds, film 491, JKR 213), but the shipped band clause reads "structural" off the class sequence,
+  so façade posts seed (HHS 274 members + 48 plates; LTU 1,785 timber members).
+- **Break 4 extraction: NOT RESOLVED in the DBs** — Pset LoadBearing 0 in all 8 DBs; fills/voids 0; `rel_aggregates` absent in 4. The SOURCE IFCs carry
+  them (LoadBearing rows present in Duplex/HHS/Hospital/Terminal/LTU; fills/voids 38/50 … 1,857/3,368). Missing = an extraction step, not data.
+- Rule C still moves 41-55 % of what it relays (order ≈ chance). The L2 column now starts AFTER the slab in today's layer → rule B moves it: the model is
+  right and today's layer wrong (that is the point, not a defect).
+- Rules used by v2 not in the spec, ADOPTED here: wait-then-relax for items 1-2; duplicates collapse on the same mesh box within `SG.EPS`; tier order
+  applies to every capability.
+### Q.33.8 SPEC v3 (sandbox) — test the missing facts before changing the extractor; two rule fixes
+1. **Source-IFC side table (sandbox only):** read the source IFCs with IfcOpenShell → per guid: `LoadBearing` (Pset_*Common), `IfcRelFillsElement` /
+   `IfcRelVoidsElement` host, `IfcRelAggregates` parent. Join by GlobalId; report match rate per DB. Feed v3; measure what each fact buys (walls without a
+   fact 1,002 → ?, §Q.2 gap 2, mullion/façade kinds, table coverage share). This decides whether the extractor should carry them (IFC/extraction lane).
+2. **Relay = one unit of work, not an order.** A `continues-same-kind` group (a continuous slab, a beam run, a duct run, a wall line) is ONE unit: it
+   starts after the first-order hosts of the group; no precedence is drawn between its pieces (their order stays the template's/rank). Rule C moves → 0
+   by definition; report group sizes and how many groups have ≥ 1 first-order host.
+3. **Ground without class:** seeds = elements in the ground band whose bottom face OFFERS nothing below and that are NOT façade parts (aggregate parent is a
+   curtain wall, from item 1) — footings, ground slabs, columns/walls standing on soil. Report façade posts removed from seeds.
