@@ -117,7 +117,7 @@ D.files = async (geo) => {   // in the take: the Files app comes forward, at a f
 };
 D.closeWin = (id) => { try { X('windowclose', id); } catch (e) { } };
 // ---- reading a NATIVE window (Files, the OS file window): one frame of the screen, words located by OCR (tesseract), so the pointer goes where the word really is
-D.findText = async (rx, region, tries) => {
+D.findText = async (rx, region, tries, quiet) => {   // quiet: a miss returns null without a FAIL (the caller has a derived fallback and checks it)
   const tmp = path.join(require('os').tmpdir(), 'film_ocr_' + process.pid), keep = typeof rx === 'function' ? rx : (t => rx.test(t));
   // four reads of one frame, merged: 1x colour, 2x grey, 2x grey inverted, 2x near-white only (white text on GTK's orange selected row is lost in the others; measured)
   const VARS = [['', 1], ['scale=3840:2160:flags=lanczos,format=gray', 2], ['scale=3840:2160:flags=lanczos,format=gray,negate', 2], ["scale=3840:2160:flags=lanczos,format=gray,lutyuv=y='if(gt(val,225),0,255)'", 2]];   // 4th: near-white text only (a selected row)
@@ -134,7 +134,7 @@ D.findText = async (rx, region, tries) => {
     if (hit.length) { const o = hit[0]; log('§FILM_OCR found "' + o.t + '" at=' + [o.x, o.y, o.w, o.h].join(',') + ' conf=' + o.conf.toFixed(0) + ' read=' + o.read + ' of ' + hit.length + ' rx=' + String(rx).slice(0, 60)); return Object.assign(o, { name: o.t }); }
     await sleep(700);
   }
-  D.check(false, 'ocr_find ' + String(rx).slice(0, 60), 'not on screen'); return null;
+  if (!quiet) D.check(false, 'ocr_find ' + String(rx).slice(0, 60), 'not on screen'); return null;
 };
 // ---- a drag (orbit a 3D view): press, an eased move, release
 D.drag = async (x1, y1, dur) => { const t = now(); X('mousedown', 1); EV.clicks.push({ t, x: D.mouse().x, y: D.mouse().y, n: 0, label: 'drag start' }); await D.moveTo(x1, y1, dur || 1.4); X('mouseup', 1); log('§FILM_PTR drag to=' + x1 + ',' + y1); await sleep(400); };
@@ -143,8 +143,16 @@ D.pick = async (folders, pickFn, label) => {
   const DLG = '^(Open File|Select files)'; const dlg = await D.waitWin(DLG, 20000);   // GTK: 'Open File(s)' for an input, 'Select files this site can read' for the File System Access picker if (!D.check(!!dlg, 'file_window_opened', label)) return false;
   log('§FILM_DIALOG ' + JSON.stringify(dlg)); await sleep(900); const R = { x: dlg.x, y: dlg.y + 40, w: dlg.w, h: dlg.h - 120 };
   // start from Home (left pane): the window remembers the last folder it showed, so the first folder row may not be there otherwise
-  const hm = await D.findText(t => /Home$/.test(t),   // the selected row may read with its icon glyph in front (full take 2026-11-19: exact 'Home' missed)
-    { x: dlg.x, y: dlg.y + 30, w: 160, h: 260 }); if (!hm) return false;
+  // Home is often the SELECTED row (white on orange) and tesseract misreads its H: full take 2026-11-19 read it 'Some' on every frame (§5.8 mock). If 'Home' is not read,
+  // derive it from the sidebar's fixed order: the one row between 'Recent' and 'Desktop' (both read at conf >= 90).
+  const SIDE = { x: dlg.x, y: dlg.y - 20, w: 160, h: 300 };
+  let hm = await D.findText(t => t === 'Home', SIDE, 3, true);
+  if (!hm) {
+    const rec = await D.findText(t => t === 'Recent', SIDE, 3), dsk = rec && await D.findText(t => /^Deskto/.test(t), { x: SIDE.x, y: rec.y + rec.h, w: SIDE.w, h: 200 }, 3);
+    hm = dsk && await D.findText(t => /^[A-Za-z]{3,}$/.test(t), { x: rec.x - 4, y: rec.y + rec.h + 4, w: 120, h: dsk.y - rec.y - rec.h - 10 }, 3);
+    if (!D.check(!!hm, 'home_row_derived', hm ? 'read="' + hm.t + '" between Recent y=' + rec.y + ' and Desktop y=' + dsk.y : 'no row between Recent and Desktop')) return false;
+    log('§FILM_OCR_DERIVED Home at=' + [hm.x, hm.y, hm.w, hm.h].join(',') + ' read="' + hm.t + '"');
+  }
   await D.aim(D.screenBox(hm.x - 26, hm.y - 6, hm.w + 50, hm.h + 12, 'Home'), { label: 'Home (file window)' }); await D.click({ label: 'Home' }); await sleep(900);
   for (const f of folders) {
     const hit = await D.findText(typeof f === 'function' ? f : (t => t === f || t.replace(/[^\w.]/g, '') === f), R); if (!hit) return false;
