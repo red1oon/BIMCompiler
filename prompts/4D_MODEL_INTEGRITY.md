@@ -4495,3 +4495,23 @@ Measure, per building (7 + the HHS film DB), with the owners named in §I for an
    wall-under-beam, beam-on-beam ties) — resolved, unchanged or worse, each with numbers.
 4. Table coverage: how many elements got their needs from IFC relations / mined rows / the authored table / nothing.
 5. Every §-line able to say NO-OP, VACUOUS, scope-blind (PRIMAL LAW 4). Result recorded as §Q.33.5; nothing is implemented until the owner reads it.
+### Q.33.5 POC v1 RESULT (2026-11-19, sandbox only; probes + logs `…/scratchpad/shim_poc/`, played layer from a checkout 6 commits behind main)
+- **Works:** a host for 85-99 % of elements with real mesh faces in all 8 DBs (7 + HHS film); stair landings bond to their own stair; 0 slabs hosted by a
+  mullion; §Q.2 gap 1 gone (0/30, 0/26, 0/4); fixtures find ceilings; windows find walls by geometry with no fills/voids data (none of the 8 DBs has it).
+- **Breaks:** (1) bond CYCLES — 2 (Duplex) … 509 (Hospital) … 8,267 (LTU) elements; mutual first-order bonds, relay from unanchored hosts, coincident
+  duplicates (film 49 pairs, LTU 2,591). (2) "largest contact area" elects an 11.5 cm partition over 87 columns for the L2 floor. (3) `ground` has no source
+  of its own (it is `seq===1`): VACUOUS on HHS / film / JKR; chains reaching ground Terminal 13,952 / 47,629, LTU 27,243 / 118,775. (4) the authored
+  table carries the model — IFC relations + mined rows ≤ 11 % of bonds outside Terminal; class ambiguity returns inside the table.
+- **Also:** hang joints are rays (no hangers modelled); rule C order ≈ chance vs today (42-59 % move); rule B pulls Finishes ceilings ahead of MEP-Final
+  fixtures in the thousands (Hospital 3,249) — a phase-table question for the owner, not a model defect.
+### Q.33.6 SPEC v2 — the four breaks, sandbox again (nothing implemented)
+1. **Anchored waves, not free bonds.** Seeds = ground (item 3). A host qualifies only if it is ALREADY anchored (wave k-1); an element bonds in the first
+   wave where a qualifying host meets it. Coincident duplicates (same box, same kind) collapse to one before bonding. Cycles become impossible; report any
+   residue as `§SHIM_V2_CYCLE` (must be 0) and elements never reached as `lost(unanchored)`.
+2. **Host priority by structural tier, area only inside a tier.** Tier order of OFFERS: footing/column → beam → slab → wall WITH a load-bearing fact
+   (Pset LoadBearing where present, else the D1 bearing-wall result) → other wall → the rest. A partition is never preferred over a column that also meets.
+3. **Ground from geometry, reusing the shipped owner.** Seeds = the structural elements `§GROUND_RESTS_ON_SOIL` already elects (ground band, §Q.17) plus
+   footings — not `seq===1`. Report seeds per building; VACUOUS must disappear on HHS / film / JKR or say why.
+4. **Measure the extraction sources, do not author more.** Per DB: coverage of Pset LoadBearing, `rel_aggregates`, IFC type/family names, mined rows —
+   what share of the authored table each could replace. Owner signs off any authored row; none is added in v2.
+- Re-run §Q.33.4 items 1-5 + the named cases with v2; same PRIMAL-LAW §-lines (NO-OP / VACUOUS / scope-blind). Played layer from current origin/main.
