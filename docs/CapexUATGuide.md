@@ -3,6 +3,7 @@
 <div class="uat-noprint" markdown="0"><a class="md-button md-button--primary" href="../CapexUATGuide.pdf" download>⬇ Download the PDF</a> <button type="button" class="md-button" onclick="window.print()">🖨 Print from the browser</button>
 <span style="margin-left:.6em;font-size:.8em">The PDF is made from this page each time it is published, and checked: the checklist on a sheet of its own, each chapter on a new page, no table row split or cut off. Print it, tick the boxes by hand, sign the last page and hand it in.</span></div>
 <style>
+.md-typeset .uat-h { font-size: 1.5625em; font-weight: 300; letter-spacing: -.01em; line-height: 1.4; margin: 1.6em 0 .64em; }
 @media print {
   .md-header, .md-tabs, .md-sidebar, .md-footer, .md-top, .md-source, .uat-noprint, .md-content__button, .headerlink { display: none !important; }
   .md-main__inner, .md-content, .md-content__inner, .md-grid { margin: 0 !important; padding: 0 !important; max-width: none !important; }
@@ -84,7 +85,13 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 
 Dates in the test data are set for **13 November 2026**. Testing well after that day still works, but the colours on the dashboard (on time, late, over budget) drift with the calendar.
 
-**How do I pass?** Do every step and tick its box. The last step of chapter B, [B5 · Mark your run](#b5-mark-your-run-against-the-reference-pack), is where your run is marked. Open the **[UAT Run Checker](https://red1oon.github.io/bim-ootb/capex/uat/check.html)**, give it the files and the two lines your own run produced, and press **Mark my run**. It compares them with the reference pack, a run already proven correct, and reads **PASS**, **FAIL** or **NOT GIVEN** for each one. It works in your browser: nothing is uploaded. Then press **Download result**. **Your final goal is that file, `uat_result.json`: attach it to your signed sheets and send both back to the person who runs the UAT.** A box you leave out reads NOT GIVEN, never PASS. A tester who skipped B00 and B0 gets **PARTIAL PASS**, which is expected (B5.3).
+<p class="uat-h" id="how-do-i-pass">How do I pass?</p>
+
+Do every step and tick its box. Your run is then marked in step **[B5 · Mark your run](#b5-mark-your-run-against-the-reference-pack)**, the last section of chapter B (B5.1 to B5.4). It is a step of this guide like any other, not a separate task.
+
+In B5 you open the **[UAT Run Checker](https://red1oon.github.io/bim-ootb/capex/uat/check.html)**, give it the files and the two lines your own run produced, and press **Mark my run**. It compares them with the reference pack, a run already proven correct, and reads **PASS**, **FAIL** or **NOT GIVEN** for each one. It works in your browser: nothing is uploaded. Then press **Download result**.
+
+**Your final goal is that file, `uat_result.json`: attach it to your signed sheets and send both back to the person who runs the UAT.** A box you leave out reads NOT GIVEN, never PASS. A tester who skipped B00 and B0 gets **PARTIAL PASS**, which is expected (B5.3).
 
 ## Contents
 
@@ -92,6 +99,7 @@ Dates in the test data are set for **13 November 2026**. Testing well after that
 
 - [Changes since the signed UAT report](#changes-since-the-signed-uat-report-2026-11-19)
 - [What is this?](#what-is-this)
+    - [How do I pass?](#how-do-i-pass)
 - [Checklist: who does what](#checklist-who-does-what)
 - [A · Set up (System Setup, once)](#a-set-up-system-setup-once)
     - [A1 · The BIM apps on your own server (optional)](#a1-the-bim-apps-on-your-own-server-optional)
@@ -488,7 +496,7 @@ Do this in the **Viewer**, on the Shed you opened in B2.9. (In the Modeller, **E
 
 ### B5 · Mark your run against the reference pack
 
-The **UAT Run Checker** compares what your run produced with the run this guide was proven on, stage by stage. It reads your files in your browser; nothing is uploaded. Keep the files from B0.9 and B2.8 and the two lines from B2.9 and B3.1 for this step.
+This is the step that *How do I pass?* (at the start of this guide) points to. The **UAT Run Checker** compares what your run produced with the run this guide was proven on, stage by stage. It reads your files in your browser; nothing is uploaded. Keep the files from B0.9 and B2.8 and the two lines from B2.9 and B3.1 for this step.
 
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|
