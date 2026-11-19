@@ -52,7 +52,7 @@
 
 | Revision | What changed |
 |---|---|
-| 2026-11-20 | The page *Changes since the signed UAT report* (after this cover); the pages *What is this?* and *Contents*; a table that fits on a page is no longer cut in two (a long one repeats its header row); A3.1 the Pack In window's steps and result; B3.1 the second currency note |
+| 2026-11-20 | The page *Changes since the signed UAT report* (after this cover); the pages *What is this?* (with *How do I pass?*: the UAT Run Checker and the result file to send back) and *Contents*; a table that fits on a page is no longer cut in two (a long one repeats its header row); A3.1 the Pack In window's steps and result; B3.1 the second currency note |
 | 2026-11-19 | This cover; each section on a new page; page numbers; every link in the PDF opens the public site |
 | 2026-11-18 | Corrections found by the UAT dry run: A1 links the Developer Guide §3 setup; D2b, D3, D8 figures for a fresh GardenWorld; D9 goals refresh every 30 minutes; B4.4 the model's line under Task Line |
 | 2026-11-15 | Roles and the checklist sheet; B00 export from BricsCAD; B0 from the sheets as drawn to the marked set; B3.1 measured total cost; B5 mark your run with the reference pack; the PDF |
@@ -83,6 +83,8 @@ A hands-on test script for the testers of the pilot client (Sysnova). Each step 
 Work top to bottom: every chapter uses what the one before produced. Write anything that differs on the **Notes** line at the end of each chapter.
 
 Dates in the test data are set for **13 November 2026**. Testing well after that day still works, but the colours on the dashboard (on time, late, over budget) drift with the calendar.
+
+**How do I pass?** Do every step and tick its box. The last step of chapter B, [B5 · Mark your run](#b5-mark-your-run-against-the-reference-pack), is where your run is marked. Open the **[UAT Run Checker](https://red1oon.github.io/bim-ootb/capex/uat/check.html)**, give it the files and the two lines your own run produced, and press **Mark my run**. It compares them with the reference pack, a run already proven correct, and reads **PASS**, **FAIL** or **NOT GIVEN** for each one. It works in your browser: nothing is uploaded. Then press **Download result**. **Your final goal is that file, `uat_result.json`: attach it to your signed sheets and send both back to the person who runs the UAT.** A box you leave out reads NOT GIVEN, never PASS. A tester who skipped B00 and B0 gets **PARTIAL PASS**, which is expected (B5.3).
 
 ## Contents
 
