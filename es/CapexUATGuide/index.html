@@ -1448,6 +1448,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#changes-since-the-signed-uat-report-2026-11-19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changes since the signed UAT report (2026-11-19)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#checklist-who-does-what" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3515,6 +3526,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#changes-since-the-signed-uat-report-2026-11-19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changes since the signed UAT report (2026-11-19)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#checklist-who-does-what" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3866,11 +3888,11 @@
 </tr>
 <tr>
 <td>Revision</td>
-<td><strong>2026-11-19</strong></td>
+<td><strong>2026-11-20</strong></td>
 </tr>
 <tr>
 <td>Status</td>
-<td>Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately. The steps are unchanged in this revision.</td>
+<td>Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately and stays as signed. This revision adds notes to A3.1 and B3.1 and lists, below, what changed or was found since that report.</td>
 </tr>
 <tr>
 <td>Prepared and issued by</td>
@@ -3886,6 +3908,7 @@
 </tr>
 </tbody>
 </table>
+<p><strong>Changes since the signed UAT report:</strong> listed on the next page. Read them even if you have already done the UAT.</p>
 <p><strong>Revision history</strong></p>
 <table>
 <thead>
@@ -3895,6 +3918,10 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>2026-11-20</td>
+<td>The page <em>Changes since the signed UAT report</em> (after this cover); A3.1 the Pack In window's steps and result; B3.1 the second currency note</td>
+</tr>
 <tr>
 <td>2026-11-19</td>
 <td>This cover; each section on a new page; page numbers; every link in the PDF opens the public site</td>
@@ -3918,6 +3945,63 @@
 </tbody>
 </table>
 </div>
+<h2 id="changes-since-the-signed-uat-report-2026-11-19">Changes since the signed UAT report (2026-11-19)<a class="headerlink" href="#changes-since-the-signed-uat-report-2026-11-19" title="Permanent link">&para;</a></h2>
+<p>Read these even if you have already done the UAT. If your run met one of them, retest that step. They go into the report's appendix; the signed report itself is not changed.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Step</th>
+<th>What</th>
+<th>Status</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>B5.2, B5.3</td>
+<td>The UAT Run Checker wrongly read box 3 (your database) as <strong>FAIL: tables differ, project_metadata 4 vs 5</strong> when you skipped the optional <strong>Accept all</strong> (B2.2c).</td>
+<td><strong>Fixed</strong> 2026-11-19, live</td>
+<td>If you saw that FAIL: reload the Run Checker and mark your run again with the same files</td>
+</tr>
+<tr>
+<td>2</td>
+<td>PDF download</td>
+<td>Right after the site is updated, <strong>⬇ Download the PDF</strong> can fail once (<em>Failed - Unknown server error</em>, the file saved as <code>.html</code>).</td>
+<td>Noted</td>
+<td>Wait a minute and click again; the PDF is a few MB</td>
+</tr>
+<tr>
+<td>3</td>
+<td>A3.1</td>
+<td>This step's Confirm described only the folder script. The <strong>Pack In</strong> window ends with the Process Message <strong>Processed=225 Un-Resolved=0</strong>.</td>
+<td>Corrected in this revision</td>
+<td>If you used the window, that message is a pass</td>
+</tr>
+<tr>
+<td>4</td>
+<td>B4, D</td>
+<td>The USD amount reaches the Project Order unchanged (B4.1, B4.2, B4.4). It is as correct as the shipped rate pack, not a market price. Chapter D's dashboard reads the GardenWorld test projects, not the Shed.</td>
+<td>Noted</td>
+<td>None</td>
+</tr>
+<tr>
+<td>5</td>
+<td>B3.1</td>
+<td>The amount in brackets is the rate pack's second currency (RM), whatever language you choose. Showing your local currency for the language you choose is <strong>ongoing development</strong>.</td>
+<td>Noted, in development</td>
+<td>Compare the <strong>USD</strong> figure</td>
+</tr>
+<tr>
+<td>6</td>
+<td>(film)</td>
+<td>The hands-on film shows the ready-marked sheets. The raw-sheet path (B0: mark the sheets yourself, then Arrange) is to follow.</td>
+<td>Noted</td>
+<td>None; B0 is unchanged</td>
+</tr>
+</tbody>
+</table>
 <p>A hands-on test script for the testers of the pilot client (Sysnova). Each step says what to <strong>do</strong>, what you should <strong>see</strong>, and has a box to tick.
 <strong>A value is affirmed at its source, not trusted.</strong> Wherever a step gives a number, it also says <strong>Source:</strong> where the number is kept (a record, a field, a formula) and what to open to see it there. Open that source, read the value yourself, and tick <em>Pass</em> only if it matches. A figure on the dashboard is never the evidence: the rows behind it are.</p>
 <p>Work top to bottom: every chapter uses what the one before produced. Write anything that differs on the <strong>Notes</strong> line at the end of each chapter.</p>
@@ -4369,8 +4453,8 @@
 <tbody>
 <tr>
 <td>A3.1</td>
-<td>Put the zip in an empty folder on the server and run <code>utils/RUN_ApplyPackInFromFolder.sh &lt;folder&gt;</code>, or use the <strong>Pack In</strong> window logged in as GardenWorld Admin (choose the zip, then run it)</td>
-<td>The run prints <em>Successful application of …CAPEXTestData.zip</em>, <code>Error=false</code> and ends with <em>Done</em>. The log also prints a <code>java.lang.Exception</code> trace for each planned line (<em>MProduct.loadPO: NO Data found</em>): these do not stop the run, and the rows are checked in A3.2 to A3.4</td>
+<td>Put the zip in an empty folder on the server and run <code>utils/RUN_ApplyPackInFromFolder.sh &lt;folder&gt;</code>, or use the <strong>Pack In</strong> window logged in as GardenWorld Admin (choose the zip, then run it). In the window: <strong>New</strong>, type a name, <strong>Save</strong>; the paperclip (<strong>Attachment</strong>) ▸ <strong>Load</strong> the zip ▸ <strong>OK</strong>; then the <strong>PackIn</strong> button ▸ <strong>OK</strong></td>
+<td>The run prints <em>Successful application of …CAPEXTestData.zip</em>, <code>Error=false</code> and ends with <em>Done</em>. The log also prints a <code>java.lang.Exception</code> trace for each planned line (<em>MProduct.loadPO: NO Data found</em>): these do not stop the run, and the rows are checked in A3.2 to A3.4. With the <strong>Pack In</strong> window, the Process Message reads <strong>Processed=225 Un-Resolved=0</strong></td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
@@ -5026,7 +5110,7 @@
 <tr>
 <td>B3.1</td>
 <td>Note the Viewer’s total cost (Find panel: <code>total cost</code>; it is the cost of the 13 drawn bays, see the note at the top of chapter B) and the schedule’s finish date (<strong>Time Machine</strong>, key <strong>T</strong>)</td>
-<td>With the shipped rates the total reads <strong>USD 96,839 (RM 372,457) — total building cost</strong> (the digits may be grouped differently in your browser's language). A higher figure, such as USD 97,979, means the B0.7 exclude box missed the expansion joint. Write the total and the finish date down: <strong><em>_</em></strong><em> / <strong><em>_</em></strong></em></td>
+<td>With the shipped rates the total reads <strong>USD 96,839 (RM 372,457) — total building cost</strong> (the digits may be grouped differently in your browser's language). The amount in brackets is the rate pack's second currency (RM), whatever language you choose; your local currency for the chosen language is in development. A higher figure, such as USD 97,979, means the B0.7 exclude box missed the expansion joint. Write the total and the finish date down: <strong><em>_</em></strong><em> / <strong><em>_</em></strong></em></td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
