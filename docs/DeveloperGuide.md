@@ -168,6 +168,51 @@ flowchart LR
 
 Most files are pattern 1 or 2, with a 3 at the top, printing 4s.
 
+### 1.3 Your iDempiere: how the BIM code talks to it
+
+This guide assumes your administrator already runs iDempiere and its PostgreSQL database (for example in Docker); it does not cover
+installing them. The BIM code never opens that database. It talks to iDempiere only through iDempiere's **stock web services**
+(`/ADInterface/services/rest/model_adservice/…`, part of `org.idempiere.webservices`), with a user, a role and a password on every call,
+and only through the **web-service types** your administrator installs. A type not installed is refused by the server
+(`Service type … not configured`), never worked around.
+
+There are two links, and they differ in where the code runs:
+
+| Link | Code | Runs in | Needs on your iDempiere | State |
+|---|---|---|---|---|
+| **Read: iDempiere → CAPEX dashboard** | `capex/tools/legacy_snapshot.js` (reads), `capex/adapters.js` `loadLegacy` (the tables and columns) | **Node, beside the server**, so the browser never calls iDempiere | the read types of UAT Guide A2: `202611042300_CAPEX-WS-READ.sql` (required), the *Q4*, *chain*, *pacalc* scripts (optional), then a restart | In use: the UAT Guide's chapter D runs it |
+| **Write: Viewer → iDempiere Project Order** | `viewer/erp_rest_push.js` (the calls), `viewer/erp_push_plan.js` (the plan), `viewer/find_erp_push.js` (**› ERP**, asks for the password once per tab) | **the browser** | the BIM OOTB plugin's `BIMOOTB_*` types and its role (`iDempiereOOTB/org.idempiere.bimootb/`); the Viewer served from iDempiere's own address (`/bimootb/…`) | Proof of concept, not packaged for a site |
+
+**The read job.** Run it where Node can reach iDempiere:
+
+```
+BRIDGE_BASE=http://<your-idempiere>:<port> BRIDGE_USER=... BRIDGE_PASS=... BRIDGE_CLIENT=... BRIDGE_ROLE=... BRIDGE_ORG=... BRIDGE_WH=... \
+  node capex/tools/legacy_snapshot.js
+```
+
+It writes `capex/legacy_snapshot.json`; open `capex/index.html?source=legacy` to see it. The password stays in the job. Read its last line:
+
+| Last line | Meaning | What to do |
+|---|---|---|
+| `§DASH_LEGACY_READ_VERDICT PASS optional_missing=[…]` | Every table the dashboard needs was read. The listed optional ones (for example `bimdocs` without the BIM Document plugin) show as *no data (not installed)* | Nothing |
+| `§DASH_LEGACY_READ_VERDICT FAIL required_missing=[…]`, exit 1 | The read types are not installed. Each `§DASH_LEGACY_UNAVAILABLE` line above it quotes the server's reason | Apply UAT Guide A2, restart iDempiere, run again |
+| `§DASH_LEGACY_SNAPSHOT FAIL …` | Login refused or the server not reached | Check the address, user, role and password |
+
+Measured 2026-11-19: on a pilot with the A2 types the job read 13 projects and every table but `bimdocs` (PASS); on a test instance without them
+it named the 8 missing required types and exited 1.
+
+**Why the browser cannot simply call your iDempiere.** A page on one address (GitHub Pages, or your own `:8080`) may read an answer from another
+address only if that server allows it with an `Access-Control-Allow-Origin` header. Stock iDempiere sends none: measured 2026-11-19, both the
+browser's pre-check (`OPTIONS`) and a real `POST` to `model_adservice` came back without it. So the read link runs in Node, and the Viewer's
+**› ERP** push reaches a real iDempiere only when the Viewer itself is served by that iDempiere under `/bimootb/` (the plugin's web bundle,
+the bundles `org.idempiere.bimootb` and `org.idempiere.bimootb.viewer` under `iDempiereOOTB/` in this repository, built by `iDempiereOOTB/org.idempiere.bimootb/tools/build_bundle_poc.sh`), or behind a reverse proxy that puts both on one address. Opened anywhere else,
+**› ERP** folds the Project Order into the browser's own Kernel ERP only, which is what UAT Guide B4 tests. The plugin's state and its
+open steps: `prompts/BIM_OOTB_LEGACY_IDEMPIERE_INTEGRATION.md` §8.
+
+**Proving the write path without a server:** `node tests/poc_erp_rest_push.js` (bim-ootb) runs the push against a mock that enforces iDempiere's
+own rules (no free `Filter`, keys bound as fields) and must print `§POC_ERP_REST_PUSH_VERDICT PASS`. It does not prove a real server accepts it;
+`capex/tests/witness_viewer_push_legacy.js` does, and it creates a project on the server it is pointed at, so point it only at a test instance.
+
 ---
 
 ## 2. The two repositories
