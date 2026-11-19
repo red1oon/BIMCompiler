@@ -4721,3 +4721,19 @@ Substructure on Superstructure columns") is **struck**: that class is **9 of 109
   `§D6_HANG_FILING` moved count before → after; the six other buildings' played instants hash-equal (their patches are untouched); programme days and task
   count before → after; `run_4d_gates.sh` GREEN 16/16 with `assembly_order.json` / `dcma.json` re-locked from the run and every rise named.
 - UAT constraint (2026-11-20 block): the Shed's DB and patch are not touched; no schedule rows written.
+### Q.36.2 MEASURED + SPEC — §Q.35.5 item 3, the two HHS midair IfcMembers: the same missing fact (2026-11-20; `q355/probe_hhs.js`, owner verbs `contactGraph` / `designatedSupport`)
+- The two (`3XrBtx9eX7mQE6EqWHPfl1`, `…fl5`, curtain-wall posts, Level 2, play day 35.6) elect wall `2TPxGMIrHD1RFtsgRpxMUZ` (`Basic Wall:STB 20.0`, z 4.49-7.99).
+  On the unpatched DB that wall is banded `Level 1` and plays day 40.0 in the same task as the posts (42.3). On the patched DB it is banded **`Unknown`** and
+  plays day 45.6 in `TASK_Architecture_Envelope_Unknown` [43-46], after the posts.
+- **The patch statement:** `HHS_Office_Federated_extracted.db.sql` line 36, `INSERT INTO spatial_structure VALUES('STC_Unknown','IfcBuildingStorey','Unknown',…
+  center_z 4.148…)`. It is a COMPILED row (`compile_rooms.py`): the mean centre of the 2,120 elements whose storey label is `Unknown`. The scheduler reads it
+  as a declared rung: `§STOREY_DATUM source=center_z ladder=4[1.476..8.587]`, band `Unknown` = [4.148, 5.151), scheduled after Level 3.
+- **HHS has no extracted storey datum at all.** Its other three rungs (1.476 / 5.151 / 8.587) are also compiled means. The three source IFCs
+  (`opensourceBIM_HHS_Office_{architect,construction,MEP}.ifc`) declare the same four storeys: `Level 1` 0.0942 · `Level 2` 3.8 · `Level 3` 7.3 ·
+  `Roof Level` 10.9 (mm). The geometry is in that frame: large slab tops sit at 0.1-0.2 / 3.8-4.0 / 7.3-7.5 / 10.9 m.
+- **SPEC:** the same extraction as §Q.36.1 — append the tool's `storey_elevation` block to the HHS patch. No rule on the name `Unknown`; the declared
+  ladder goes ahead of the compiled rung by the existing candidate order. Sandbox: `source=storey_elevation ladder=4[0.094..10.900]`, midairPlayed 2 → 0,
+  the two `…_Unknown` tasks gone, `Roof Level` tasks appear, 18 → 20 tasks, 60 → 58 d.
+- **Proof owed (added to §Q.36.1's):** HHS midair IfcMember 2 → 0 and `§FILING_PARITY` 2 → 0, re-locked; the four editor witnesses green on HHS (CI runs them).
+- **Not done here, named:** Clinic / JKR / Hospital also print `source=center_z` (compiled rungs). Their source IFCs are at hand for Clinic and Hospital;
+  measure each the same way before touching (Hospital's frame is 168-201 m, a z offset applies).
