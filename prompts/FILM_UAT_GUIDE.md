@@ -184,3 +184,52 @@ P/T, restored clean in the handover run; Pack In uuid error seen ~1 in 8 dry run
 | rc3 (a wheel notch is travel) | **310.4** | **11.9** (one; the rest ≤ 6.4) | **−16.6 ✓** | FAIL `silence_max=11.9>8.0 film_s=310.4>300` |
 Every build: frames = picture (9,313 in rc3), 31 of 31 lines DETAIL, 0 tone WRONG, keys 535/535, clicks 62/62. `§COMP_IDLE` rc3: 384.3 s of idle/scroll source shown in 48.0 s, each sped frame badged `>> x8`. Films in `~/Videos/` (rc1, rc2, rc3), never pushed.
 **What is left is an EDIT decision, not a pipeline fault (owner's call):** the 11.9 s is s10's guide scroll sped ×8 with no line over it; the 310 s is 10 s over the gate (the storyboard target is 3–4 min = 180–240 s). Options: accept ~5 min and set the gate to the measured film; or cut (e.g. s4's Extract, 44 s of idle source, or s3's GitHub page) and/or put a line over the s10 scroll. No contact-sheet look done yet (step 3 waits for a build inside its bars).
+
+### 5.12 SPEC — scene s13, iDempiere Pack In through its window (A3.1, second option) on :8108 (2026-11-20; written before code)
+**Owner, 2026-11-20:** *"Yes u may copy and restore later."* · *"Indeed we want this UAT to be completely human"* · *"So, is it really not mocked up but real human user like experience been recorded?"* (answer given: yes, a real desktop and real input events; the pointer is moved by script; idle time is sped and badged).
+**Database (around the take, not filmed):**
+- Before: stop :8108, run `CREATE DATABASE idempiere_film_packin_bak TEMPLATE idempiere_bimdoc`, start (done 2026-11-20, `§FILM_DB backup made`).
+- After the take: stop, drop, recreate `idempiere_bimdoc` from the backup, start, check `TD_` projects = 0 and `ad_package_imp_proc` = 1 (as found), then drop the backup.
+- This is the same pattern as the UAT Dry Run's P2–P4 and T2–T4.
+**Measured by a headless exploration on the backed-up instance (2026-11-20, restored after: `TD_`=0, imp_proc=1):** the window path works for GardenWorld Admin:
+1. Menu search `Pack In`.
+2. New (`a.toolbar-button` title *New Alt+N*); Organization defaults to `*`; type in the Name field (red, mandatory).
+3. Save: *Record saved*.
+4. The paperclip *Attachment* opens a window with **Load** (the OS file window) and **OK**.
+5. The **PackIn** button opens a process dialog (*PackIn · Import Package · Run as Job · OK · Cancel*).
+6. OK runs it; Process Message: **`Processed=225 Un-Resolved=0`** plus the pack's description; the database then has **12** `TD_` projects (guide A3.2).
+**Guide find (ledger row 14):** A3.1's Confirm column states only the folder script's output (*Successful application … Error=false … Done*). The window option shows `Processed=225 Un-Resolved=0` instead. The owner's rule: the signed report stays as signed; a guide correction after sign-off goes to an appendix.
+**Scene s13 (one take, after s12; chip A3.1; strip = the guide's own words "use the **Pack In** window logged in as GardenWorld Admin (choose the zip, then run it)"):**
+1. Ctrl+T opens a new tab; type `localhost:8108/webui/` in the address bar, Enter.
+2. Click the user box and type; click the password box and type; OK; OK on the role window.
+3. Click the search box, type `Pack In`, click the entry.
+4. New, click Name, type `CAPEX test data`, Save.
+5. The paperclip, Load: the real OS file window, Home ▸ Downloads ▸ the zip, Open; OK.
+6. PackIn, OK; read the message.
+**Checks (cause → effect, each within its wait):**
+- The login form has 2 boxes.
+- The role window's OK is shown; the search box is shown.
+- The entry `Pack In` is listed; the window's PackIn button is shown.
+- The Name box is mandatory and empty after New; *Record saved* after Save.
+- The file window opened; the attachment window names the zip.
+- The process dialog is shown; the Process Message matches `Processed=\d+ Un-Resolved=0`.
+**Instructor (3 lines, after their action):** "In iDempiere, any window opens from the search box. Type its name: Pack In." · "Press New, give it a name, and save. The paper clip attaches the test-data zip." · "Press Pack In, then OK. The message counts what was processed, and nothing is left unresolved."
+**PREP (not filmed):** the test-data zip is downloaded to the fresh `Downloads/`, as scene s2 shows. The take is s13 alone, in take 4's folder (each scene is its own recording; `scenes.log` gets s13's lines and its own verdict line). The film is rebuilt from take 4 + s13.
+
+### 5.13 APPENDIX LIST — steps the films do not yet show (owner's review; do not redo the film, appendix later)
+- **2026-11-20, owner (verbatim):** *"I viewed back carefully the film, i noticed we jumped a step to Marked DXF. We supposed to load unmarked raw DXF 2Ds to prove the arrange works. It is OK, we can make this as appendix UAT when we review the rest of the films. Need not redo. Just note."*
+  - What film 2 does: s4 to s6 open the pack's `marked/` copies (the guide's path for "a tester given the `…_marked.dxf` copies", §5.5).
+  - What is missing: the RAW, unmarked sheets (the pack's `sheets/`) loaded and marked by hand, B0.1 to B0.9. That is the step that proves Arrange places them, from the tester's own marks.
+  - Status: APPENDIX, to be filmed when the rest of the films are reviewed. Film 2 stays as it is.
+**s13 take 1 (2026-11-20): FAIL, cause not found yet.**
+- `scenes.log` (folder `f2/full_s13_t1`): PREP zip 14,144 B; address bar, `login_form boxes=2`, User, Password, OK (log in), `role_window_shown Select Role`, OK (role) clicked inside its box 1167,815,80,30. Then `s13_threw page.waitForSelector: Timeout 90000ms` (no search box).
+- Derived on the live desk (no re-take):
+  - The tab still shows **Select Role**, values GardenWorld / GardenWorld Admin / `*` / (warehouse empty) / English.
+  - The button is the top element at its centre; the screen box matches the click.
+  - A second real click on the settled window: nothing. A Playwright click: nothing.
+  - Opening the Org and Warehouse dropdowns: **0 items** (the window is dead on the client).
+  - A reload plus a filled login in the SAME desk Chrome: the role window never appears (60 s).
+  - A fresh **headless** Chromium login at the same minute passes the role window (search box shown).
+  - Time zone and language are the same in both (Asia/Kuala_Lumpur, en-US). The server log has nothing at the time.
+- **So the fault is in the desk Chrome's session with ZK, not in the instance.** Next: compare that Chrome's ZK requests (zkau responses) with headless; try a fresh desk profile with s13 first.
+- :8108 restored after each attempt (`TD_`=0, imp_proc=1); the backup `idempiere_film_packin_bak` is KEPT until s13 passes, then dropped.
