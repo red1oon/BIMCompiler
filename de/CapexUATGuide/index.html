@@ -1459,6 +1459,28 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#what-is-this" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is this?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#checklist-who-does-what" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3537,6 +3559,28 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#what-is-this" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is this?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#checklist-who-does-what" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3851,6 +3895,11 @@
   .md-typeset table:not([class]) { display: table; width: 100%; font-size: 9pt; }
   .md-typeset table:not([class]) th, .md-typeset table:not([class]) td { border: 1px solid #555; padding: 3pt 5pt; }
   .md-typeset tr, .md-typeset img, .md-typeset figure { break-inside: avoid; page-break-inside: avoid; }
+  .md-typeset table:not([class]) { break-inside: avoid; page-break-inside: avoid; }
+  .md-typeset table:not([class]) thead { display: table-header-group; }
+  .md-typeset h2, .md-typeset h3, .md-typeset h4, .md-typeset p:has(+ .md-typeset__scrollwrap), .md-typeset p:has(+ table) { break-after: avoid; page-break-after: avoid; }
+  .md-typeset__scrollwrap, .md-typeset__table { overflow: visible !important; }
+  .uat-toc ul { margin-top: 2pt; } .uat-toc li { margin: 1pt 0; }
   .md-typeset h2 { break-before: page; page-break-before: always; }
   .md-typeset h3 { break-after: avoid; break-before: page; page-break-before: always; }
   .md-typeset h2 + h3, .uat-sheet h3, .uat-cover h3 { break-before: auto; page-break-before: auto; }
@@ -3920,7 +3969,7 @@
 <tbody>
 <tr>
 <td>2026-11-20</td>
-<td>The page <em>Changes since the signed UAT report</em> (after this cover); A3.1 the Pack In window's steps and result; B3.1 the second currency note</td>
+<td>The page <em>Changes since the signed UAT report</em> (after this cover); the pages <em>What is this?</em> and <em>Contents</em>; a table that fits on a page is no longer cut in two (a long one repeats its header row); A3.1 the Pack In window's steps and result; B3.1 the second currency note</td>
 </tr>
 <tr>
 <td>2026-11-19</td>
@@ -4002,10 +4051,48 @@
 </tr>
 </tbody>
 </table>
+<h2 id="what-is-this">What is this?<a class="headerlink" href="#what-is-this" title="Permanent link">&para;</a></h2>
 <p>A hands-on test script for the testers of the pilot client (Sysnova). Each step says what to <strong>do</strong>, what you should <strong>see</strong>, and has a box to tick.
 <strong>A value is affirmed at its source, not trusted.</strong> Wherever a step gives a number, it also says <strong>Source:</strong> where the number is kept (a record, a field, a formula) and what to open to see it there. Open that source, read the value yourself, and tick <em>Pass</em> only if it matches. A figure on the dashboard is never the evidence: the rows behind it are.</p>
 <p>Work top to bottom: every chapter uses what the one before produced. Write anything that differs on the <strong>Notes</strong> line at the end of each chapter.</p>
 <p>Dates in the test data are set for <strong>13 November 2026</strong>. Testing well after that day still works, but the colours on the dashboard (on time, late, over budget) drift with the calendar.</p>
+<h2 id="contents">Contents<a class="headerlink" href="#contents" title="Permanent link">&para;</a></h2>
+<div class="uat-toc">
+<ul>
+<li><a href="#changes-since-the-signed-uat-report-2026-11-19">Changes since the signed UAT report</a></li>
+<li><a href="#what-is-this">What is this?</a></li>
+<li><a href="#checklist-who-does-what">Checklist: who does what</a></li>
+<li><a href="#a-set-up-system-setup-once">A · Set up (System Setup, once)</a><ul>
+<li><a href="#a1-the-bim-apps-on-your-own-server-optional">A1 · The BIM apps on your own server (optional)</a></li>
+<li><a href="#a2-install-the-dashboard-into-your-idempiere">A2 · Install the dashboard into your iDempiere</a></li>
+<li><a href="#a3-load-the-test-data-gardenworld">A3 · Load the test data (GardenWorld)</a></li>
+<li><a href="#a4-erp-model-setup-where-needed">A4 · ERP model setup, where needed</a></li>
+</ul>
+</li>
+<li><a href="#b-bim-the-shed-from-2d-drawings-to-a-priced-model-bim">B · BIM: the Shed, from 2D drawings to a priced model</a><ul>
+<li><a href="#b00-for-the-drafter-export-the-nine-sheets-from-bricscad-as-dxf">B00 · For the drafter: export the nine sheets from BricsCAD as DXF</a></li>
+<li><a href="#b0-from-the-drawings-as-drawn-to-the-marked-set">B0 · From the drawings as drawn to the marked set</a></li>
+<li><a href="#b1-get-to-know-the-drawings-one-sheet-at-a-time">B1 · Get to know the drawings: one sheet at a time</a></li>
+<li><a href="#b2-open-all-nine-sheets-the-drawings-arrange-themselves">B2 · Open all nine sheets: the drawings arrange themselves</a></li>
+<li><a href="#b2b-convert-the-drawings-to-the-3d-shed">B2b · Convert the drawings to the 3D Shed</a></li>
+<li><a href="#b3-fit-the-4d-schedule-and-the-5d-rates-to-your-local-scene">B3 · Fit the 4D schedule and the 5D rates to your local scene</a></li>
+<li><a href="#b4-send-the-model-to-the-erp-as-a-project-order">B4 · Send the model to the ERP as a Project Order</a></li>
+<li><a href="#b5-mark-your-run-against-the-reference-pack">B5 · Mark your run against the reference pack</a></li>
+</ul>
+</li>
+<li><a href="#c-erp-the-hands-on-exercise-project-mgmt-accounting-as-gardenworld-admin">C · ERP: the hands-on exercise</a><ul>
+<li><a href="#c1-purchase-orders">C1 · Purchase orders</a></li>
+<li><a href="#c2-material-receipt">C2 · Material receipt</a></li>
+<li><a href="#c3-vendor-invoice-and-payment">C3 · Vendor invoice and payment</a></li>
+<li><a href="#c4-issue-materials-to-site">C4 · Issue materials to site</a></li>
+<li><a href="#c5-tick-a-phase">C5 · Tick a phase</a></li>
+</ul>
+</li>
+<li><a href="#d-the-dashboard-project-mgmt-accounting-the-read-job-system-setup">D · The dashboard</a></li>
+<li><a href="#known-limits-do-not-fail-a-step-on-these">Known limits (do not fail a step on these)</a></li>
+<li><a href="#sign-off">Sign-off</a></li>
+</ul>
+</div>
 <div class="uat-sheet">
 <h2 id="checklist-who-does-what">Checklist: who does what<a class="headerlink" href="#checklist-who-does-what" title="Permanent link">&para;</a></h2>
 <p>Three roles run this test. Tick a part when all its steps pass, and initial it.</p>
