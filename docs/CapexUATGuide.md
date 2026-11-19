@@ -93,6 +93,8 @@ In B5 you open the **[UAT Run Checker](https://red1oon.github.io/bim-ootb/capex/
 
 **Your final goal is that file, `uat_result.json`: attach it to your signed sheets and send both back to the person who runs the UAT.** A box you leave out reads NOT GIVEN, never PASS. A tester who skipped B00 and B0 gets **PARTIAL PASS**, which is expected (B5.3).
 
+**See how:** [https://youtu.be/PBp4qfV4mIo](https://youtu.be/PBp4qfV4mIo), the film *UAT, hands on: where to click*. It shows where to click, on a real screen, from the downloads to B5 and the result file.
+
 ## Contents
 
 <div class="uat-toc" markdown="1">
