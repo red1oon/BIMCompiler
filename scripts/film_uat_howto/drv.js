@@ -77,8 +77,11 @@ D.wheel = async (down, n) => { for (let i = 0; i < n; i++) { X('click', down ? 5
 D.scrollInto = async (sel, margin) => {   // scroll with the mouse wheel, as a person does, until the target is on screen (it never jumps by script)
   margin = margin || 200; const m = D.mouse(); if (m.y < 160 || m.x < 560 || m.x > 1340) await D.moveTo(960, 620);   // the wheel scrolls what is under the pointer: put it over the page's text first
   for (let i = 0; i < 60; i++) { const b = await D.box(sel), top = 92 + margin, bot = 1075 - margin; if (b.y >= top && b.y + b.h <= bot) return b;
-    const dist = b.y > bot ? b.y + b.h - bot : top - b.y, n = Math.max(1, Math.min(8, Math.round(dist / 110)));   // one wheel notch scrolls ~100 px; fewer notches as it gets close
-    await D.wheel(b.y > bot, n); await sleep(450); }   // smooth scrolling keeps moving after the last notch: let it settle before measuring again
+    // FILM_UAT_GUIDE §5.10: the margin is a wish. A page that cannot scroll further that way (the Run Checker does not scroll at all) keeps a fully visible target where it is.
+    const pg = await D.page.evaluate(() => ({ y: scrollY, max: document.documentElement.scrollHeight - innerHeight })), up = b.y < top;   // the wheel turns by the edge that is out: top above the window -> up, else its bottom is below -> down
+    if ((up ? pg.y <= 0 : pg.y >= pg.max - 1) && b.y >= 92 && b.y + b.h <= 1075) { log('§FILM_SCROLL ' + (typeof sel === 'string' ? sel : 'locator') + ' page_at=' + (up ? 'top' : 'end') + ' y=' + Math.round(b.y) + ' (margin not reachable)'); return b; }
+    const dist = up ? top - b.y : b.y + b.h - bot, n = Math.max(1, Math.min(8, Math.round(dist / 110)));   // one wheel notch scrolls ~100 px; fewer notches as it gets close
+    await D.wheel(!up, n); await sleep(450); }   // smooth scrolling keeps moving after the last notch: let it settle before measuring again
   throw new Error('could not scroll to ' + sel);
 };
 // ---- keys: typed text (each character logged for its key sound) and named keys
