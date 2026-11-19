@@ -53,7 +53,7 @@
 
 | Revision | What changed |
 |---|---|
-| 2026-11-20 | The page *Changes since the signed UAT report* (after this cover); the pages *What is this?* (with *How do I pass?*: the UAT Run Checker and the result file to send back) and *Contents*; a table that fits on a page is no longer cut in two (a long one repeats its header row); A3.1 the Pack In window's steps and result; B3.1 the second currency note |
+| 2026-11-20 | The page *Changes since the signed UAT report* (after this cover); the pages *What is this?* (with *How do I pass?*: the UAT Run Checker and the result file to send back) and *Contents* with page numbers; a table that fits on a page is no longer cut in two (a long one repeats its header row); A3.1 the Pack In window's steps and result; B3.1 the second currency note |
 | 2026-11-19 | This cover; each section on a new page; page numbers; every link in the PDF opens the public site |
 | 2026-11-18 | Corrections found by the UAT dry run: A1 links the Developer Guide §3 setup; D2b, D3, D8 figures for a fresh GardenWorld; D9 goals refresh every 30 minutes; B4.4 the model's line under Task Line |
 | 2026-11-15 | Roles and the checklist sheet; B00 export from BricsCAD; B0 from the sheets as drawn to the marked set; B3.1 measured total cost; B5 mark your run with the reference pack; the PDF |
