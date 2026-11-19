@@ -59,3 +59,42 @@ caption band); the highlight boxes come from `pdftotext -bbox` word boxes. One c
 - Mandarin runs longer than English (189 s against 168 s): the build measures every beat's voice first and sizes its picture from that, so nothing was trimmed.
 - **Not re-run:** the English build after the table refactor (the EN strings are the same literals moved into `STR['en']`; the unused floor-plan preamble still was removed).
 - The translation was not reviewed by a native speaker.
+
+## 5 SPEC — FILM 2 "UAT, hands on: where to click" (2026-11-19; PLAN, not built; nothing recorded until the owner's go)
+**Owner's brief (verbatim, 2026-11-19):** *"Plan a film that truly is more than the last one about UAT Guide. This time it is to show users how to actually do the steps. ie Show where to click, and open what page, and download - all the actions shown. Answering need not go to each one as too lengthy. Just a few that maybe unfamiliar. Thus it is less talk but action that shows how."* · *"Priority is the starter baby steps aimed for newbies. They will not know where to fetch, or what to do with a link"* · *"thus animated pointer movements are important"*
+**What film 1 already covers (do not repeat):** what UAT is, the printed PDF tour, the dashboard as the prize, the looks, the standards. Film 1 stays final (owner 2026-11-14).
+**Film 2's one job:** a newbie with only a browser gets from "I have a link" to the files in the right place and opened in the right app. Every action is SEEN: the pointer travels to the thing, clicks it, and the effect appears (page opens, file lands, list fills). Talk is one short line per scene, after the action.
+
+### 5.1 Picture method (the pointer is the star)
+- **A real desktop, recorded whole:** Xvfb 1920×1080 (`env -u DBUS_SESSION_BUS_ADDRESS`, never the owner's screen: [[feedback_headed_browser_portal_dbus]]), headed `google-chrome` with a fresh profile, `nautilus` for the Downloads folder and Extract. `ffmpeg -f x11grab -draw_mouse 1` records the real OS pointer, the real file-open dialog, the real download bubble. Headless Playwright cannot show any of these three, and they are exactly what a newbie does not know.
+- **Animated pointer:** moved by XTest (python-xlib in the film venv, pip, no sudo; or `xdotool` if the owner installs it), along an eased arc (ease-in-out, 0.6 to 0.9 s per move, ~60 steps), a short rest on the target, then the click. A ring pulses at the click point (drawn in post from the logged click time and point). Real click and key samples (`keys_eklee`, CC BY 3.0, credited), as the house style asks.
+- **Every target point is read, never typed:** web elements from the DOM box via CDP (`§FILM_PTR target="⬇ Download the PDF" box=x,y,w,h aim=cx,cy`); native windows (file dialog, nautilus) from their X window geometry plus the GTK widget located by its accessible name (AT-SPI) or, failing that, typing the path (Ctrl+L in the dialog, a real shortcut a newbie can use too).
+- **House style kept, adapted for a click film:** split screen. TOP strip = the guide's own step text for that action, typed character by character with real key sounds (step id first, e.g. `B0.1 Open 2D drawings…`); BOTTOM = the real desktop. Typed parts that ARE typing (the address bar, a menu search box) are typed on the desktop itself.
+- **Zoom-follow:** the bottom frame is a 1920×1080 capture shown cropped and eased toward the pointer (1.0× travel, 1.6× on a small target such as the GitHub raw button), so a phone viewer can see what is clicked. Crop rectangle per frame from the logged pointer path.
+
+### 5.2 Storyboard (baby steps first; target 3 to 4 min; F asks, M answers, one line each)
+| # | scene (guide step) | what the pointer does, in order | line (after the action) |
+|---|---|---|---|
+| 0 | card | CHAPTER 1 · Where to click · *the first steps, shown* (silent 3.6 s, sponsor logo) | — |
+| 1 | the guide (cover) | types the guide address in Chrome's address bar, Enter · the page opens · moves to **⬇ Download the PDF**, click · the download bubble shows the file · opens the bubble's folder icon: `CapexUATGuide.pdf` in **Downloads** | F: Where did it go? M: Your Downloads folder. |
+| 2 | *What you need*: a link that downloads | scrolls to the table · test-data pack link, click · the zip lands in Downloads | M: This link is a file. Keep it zipped: Pack In takes the zip as it is (A3.1). |
+| 3 | *What you need*: a link that is a page | the products-script link, click · a GitHub page opens, NOT a download · pointer to the **Download raw file** button (zoom 1.6×), click · the `.sql` lands | F: It opened a page? M: The file is behind this button. |
+| 4 | the reference pack | its link, click · zip lands · in Downloads, right-click it ▸ **Extract** · the folder opens: `sheets/` and the nine `.dxf` | M: This one you unzip. Your sheets are inside. |
+| 5 | B0.1 open the drawings | the Modeller link, click · **📂 Open ▸ Open 2D drawings (.dxf)…** · the file window: into the extracted `sheets` folder · **Ctrl+A** · **Open** · the panel lists nine sheets | F: All nine at once? M: Select all, then Open. |
+| 6 | B0.9 save the marked copies | **Save marked copies** · nine downloads (if Chrome asks *download multiple files*, the pointer clicks **Allow**: shown only if measured) · Downloads lists the nine `_marked.dxf` | M: Nine new files. You use these from now on. |
+| 7 | B2.8 export | **Export ▸ Viewer database (.db)** · the `.db` lands | — (caption only) |
+| 8 | B2.9 open it in the Viewer | front-door link · the picture with two pills: the **red** pill · **Buildings / IFC** · card **Blank Viewer** · **Ctrl+O** · file window ▸ the `.db` · the model opens · select the status line, **Ctrl+C** | F: Why copy that line? M: The Run Checker asks for it. |
+| 9 | B5 mark your run | Run Checker link · box 1 ▸ the pack zip · box 2 ▸ the nine marked files · box 3 ▸ the `.db` · box 4 **Ctrl+V** · box 5 the total-cost line · **Mark my run** · PASS rows · **Download result** · `uat_result.json` in Downloads | M: Attach this file to your sign-off. |
+| 10 | iDempiere, finding a window (A3.1) | log in as GardenWorld Admin · menu **Search** box: types `Pack In` · click the entry · choose the zip from Downloads · run · *Successful application* | M: Any window: type its name in the menu search. |
+| 11 | closing | one card: *the rest of the guide works the same way: do, confirm, tick* · contact as film 1 (on screen, not spoken) | — |
+**Left out on purpose (lengthy or familiar):** B00 BricsCAD export, B0.2 to B0.8 marking, B3 rate edits, chapter C forms (iDempiere users know them), chapter D (film 1). Scene 4 serves testers given the pack; B0.9 in scene 6 is shown on the pack's own sheets.
+
+### 5.3 Facts to MEASURE before any voice (never from this file)
+Every file name and size that lands (`§FILM_DL name= bytes= sha256=`), each link's kind (download vs page: HTTP `Content-Disposition`/content type), whether Chrome shows the multiple-downloads prompt in scene 6, whether each link opens in the same tab or a new one, the Modeller's sheet count after Open, the Viewer status line text, the Run Checker's rows. Scene 10 needs the shared test instance :8108 (stops nothing, only logs in and runs Pack In on a copy, restored after, as `UATDryRun.js` P/T does): **ask before using it.**
+
+### 5.4 Witness (numbers, not looks)
+- **Pointer truth:** for every click, the pointer position at the click frame (`§FILM_PTR click at=x,y`) lies inside the target's box; 0 clicks outside. Every move eased (no jump > 40 px between frames except inside a declared cut).
+- **Cause → effect:** every click has its logged effect within 5 s (download file exists, URL changed, list count) or the scene FAILS and is re-taken, never cut around.
+- **Honest screen:** the recorded desktop is Linux GNOME (Chrome, Files). The first scene's caption says once: *your computer's windows may look different; the buttons are the same.* No Windows/Mac screen is faked.
+- Audio and layout as film 1 (§1 witness, PLAYBOOK C): frames = sum of segments, −16 ±1 LUFS, silences ≤ ~7 s, bottom 230 px of the top/bottom composite kept for captions, real key and click samples (check K2 of `film_cli_in_action`).
+- Pipeline: `scripts/film_uat_howto/` (new; reuse `film_uat_guide/build.py` audio/caption code). Film file stays in `~/Videos/`, never pushed.
