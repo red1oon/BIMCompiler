@@ -4659,3 +4659,26 @@ CARRIER'S TASK; it is task filing, never the in-bar layout.
 - **Proof owed:** play instants hash-equal on the six buildings where `§RUNG_RUN_LABEL` is a no-op AND the merge map is unchanged (else the moved count
   named); Terminal W-FC-1x 25 → ≤ 1 and its lock re-set from the run; DCMA check 1 logic on Terminal not worse; `run_4d_gates.sh` GREEN 16/16; Terminal
   programme days and task count before → after named.
+### Q.35.2 RESULT R1 — APPLIED (2026-11-19, bim-ootb PR #3347, branch `fix/4d-datum-rung-floors`; logs `…/scratchpad/q3312/r1_logs/`)
+- `_rungRunLabels` + ladder-fed `§S18_STOREY_MERGE source=ladder` (Terminal only: `rungs=44 runs=37 repeatedNames=15 relabelledRuns=15`, `names=37 merged=11`).
+  Gates **GREEN 16/16**. **W-FC-1x Terminal 25 → 0** (lock re-set to 0). Duplex / HHS / JKR / Clinic / Hospital / LTU played instants **hash-equal**.
+  Terminal 69 → 98 tasks, programme 91 → 94 d, 47,856 instants moved (max 59.6 d).
+- **Found on the way, fixed in the same PR — §TPL_BRIDGE_EDGE:** `instantiateTemplate`'s within-level bridge RAISED a first-on-level task's start but
+  wrote NO link (a date with no logic). Measured: R1's new low Terminal levels gave 2 such tasks (`MEP_Final_GROUND_FLOOR_LEVEL`, `MEP_Rough_in_00_Aras_Asas`,
+  DCMA check 1 0 → 2 %). The bridge is now the link when nothing else links in: `§TPL_BRIDGE_EDGE added=2` on Terminal, `added=0` on the 12 other runs;
+  DCMA logic 0 %.
+- **JKR, deliberately excluded (scope):** feeding the ladder to the merge on ladders WITHOUT a repeated name switches §S18 on where it never ran. On JKR it
+  merges `00 Aras Tanah` 82.899 / `01 Aras Satu` 82.888 (1 cm), which folds the ≈81 m level below the ladder (1,103 envelope + 503 MEP elements, built
+  first today) into the ground floor: 24 → 18 tasks, **programme 50 → 56 d**. Ruled: not done — the 1 cm sliver rung is a placement point, not two
+  floors. If §S18 is ever switched on fleet-wide, the below-ladder band must not absorb the merge (re-measure JKR first).
+- `_GANTT_CACHE_VERSION` 43 → 44: #3322 #3333 #3342 #3344 changed schedules without a bump, so a v43 stored schedule was being replayed as current.
+  sw v1769. Also green: `witness_tm_play_schedule_fresh` 9/0, `witness_storey_datum_frame` 10/0, `witness_gantt_native_generate` 5/0.
+### Q.35.3 SPEC — R2: the gates judge the DB the viewer plays (`scripts/lib/apply_building_patch.js mode()` default `agg` → `all`)
+- `all` = the whole `buildings/patches/<db>.sql` (+ `.qto.sql`) exactly as `A._applyPendingPatch`; `agg` and `0` stay selectable (`CACHE_PATCHES`).
+- Measured on top of R1 (env only, before the change): RED 2/16 — every rise is in the DB the viewer ALREADY plays, now seen by the judge:
+  HHS midair IfcMember 0 → 2 + `§FILING_PARITY` 0 → 2; unjudged structural Terminal (IfcBeam 19 → 29, IfcColumn 7 → 23, IfcMember 38 → 44, IfcPlate
+  491 → 499, IfcSlab 0 → 2, IfcWall 0 → 1), LTU IfcPlate 1 → 10; DCMA check 6 (REPORT) Terminal high float 13 → 15. W-FC-1x LTU 755 → **109**.
+  Played instants vs R1: JKR / Clinic / Hospital hash-equal; Duplex 1,110 moved (14 → 15 d, 18 → 22 tasks), HHS 3,857 (60 d, 16 → 18 tasks),
+  Terminal 48,032 (94 d, 98 → 114 tasks), LTU all (528 → 522 d).
+- Proof owed: re-lock `assembly_order.json` (LOCK=1, self-check MATCH), `dcma.json`, W-FC-1x LTU 755 → 109 — each rise named here, never silently;
+  gates GREEN 16/16; CI green (the editor witnesses run on HHS in CI).
