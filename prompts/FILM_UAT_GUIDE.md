@@ -12,6 +12,7 @@ Every number spoken or shown is a fact read from the guide, the saved PDF or a �
 >   - B2.3 **Arrange** (watch them move into place);
 >   - B5 with box 2 given (the run reads PASS, not PARTIAL PASS).
 > - Use the guide's own B0 texts and the Dry Run's M.js selectors.
+> **Part III (owner asked 2026-11-20 "Will Part II follow thru till the end? Or we need a part III?"; answer given: yes, a Part III), to plan after Part II:** B4 (send the model to the ERP as a Project Order), chapter **C** (C1 purchase order, C2 receipt, C3 vendor invoice + payment, C4 issue to project, C5 tick a phase), chapter **D** (the dashboard checks), and B3.2–B3.6 (rate and lag edits) if the owner wants them. A2 (install the dashboard scripts) is server work: Developer Guide, unless the owner asks. Goal (owner): the UAT completely human; Parts I–III together show every guide step done by hand.
 > **Take rules learnt:** Chrome shows *Change your password* after the GardenAdmin login (press its OK); the role window is optional; ZK icon buttons are found by tooltip. After `cp -al` give each copy its own `scenes.log`. Start a take a few minutes after a Pages deploy.
 
 ## 1 SPEC (2026-11-14; owner's brief, verbatim)
