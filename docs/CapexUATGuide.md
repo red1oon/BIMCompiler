@@ -41,7 +41,24 @@
 | For | The pilot client's UAT team: System Setup, BIM, Project Mgmt Accounting |
 | The latest copy | Page: [red1oon.github.io/BIMCompiler/CapexUATGuide](https://red1oon.github.io/BIMCompiler/CapexUATGuide/) · PDF: [CapexUATGuide.pdf](https://red1oon.github.io/BIMCompiler/CapexUATGuide.pdf). The PDF is made from the page at every publish and checked (pages, links). |
 
-**Changes since the signed UAT report (2026-11-19)**: read these even if you have already done the UAT. If your run met one of them, retest that step. They go into the report's appendix; the signed report itself is not changed.
+**Changes since the signed UAT report:** listed on the next page. Read them even if you have already done the UAT.
+
+**Revision history**
+
+| Revision | What changed |
+|---|---|
+| 2026-11-20 | The page *Changes since the signed UAT report* (after this cover); A3.1 the Pack In window's steps and result; B3.1 the second currency note |
+| 2026-11-19 | This cover; each section on a new page; page numbers; every link in the PDF opens the public site |
+| 2026-11-18 | Corrections found by the UAT dry run: A1 links the Developer Guide §3 setup; D2b, D3, D8 figures for a fresh GardenWorld; D9 goals refresh every 30 minutes; B4.4 the model's line under Task Line |
+| 2026-11-15 | Roles and the checklist sheet; B00 export from BricsCAD; B0 from the sheets as drawn to the marked set; B3.1 measured total cost; B5 mark your run with the reference pack; the PDF |
+| 2026-11-14 | Corrections from the full dry run: window names and menu paths, chapter C step by step, C4 Issue to Project, construction products at standard cost, chapter B on the Shed drawing set |
+| 2026-11-13 | First issue |
+
+</div>
+
+## Changes since the signed UAT report (2026-11-19)
+
+Read these even if you have already done the UAT. If your run met one of them, retest that step. They go into the report's appendix; the signed report itself is not changed.
 
 | # | Step | What | Status | What to do |
 |---|---|---|---|---|
@@ -52,18 +69,6 @@
 | 5 | B3.1 | The amount in brackets is the rate pack's second currency (RM), whatever language you choose. Showing your local currency for the language you choose is **ongoing development**. | Noted, in development | Compare the **USD** figure |
 | 6 | (film) | The hands-on film shows the ready-marked sheets. The raw-sheet path (B0: mark the sheets yourself, then Arrange) is to follow. | Noted | None; B0 is unchanged |
 
-**Revision history**
-
-| Revision | What changed |
-|---|---|
-| 2026-11-20 | The list *Changes since the signed UAT report* above; A3.1 the Pack In window's steps and result; B3.1 the second currency note |
-| 2026-11-19 | This cover; each section on a new page; page numbers; every link in the PDF opens the public site |
-| 2026-11-18 | Corrections found by the UAT dry run: A1 links the Developer Guide §3 setup; D2b, D3, D8 figures for a fresh GardenWorld; D9 goals refresh every 30 minutes; B4.4 the model's line under Task Line |
-| 2026-11-15 | Roles and the checklist sheet; B00 export from BricsCAD; B0 from the sheets as drawn to the marked set; B3.1 measured total cost; B5 mark your run with the reference pack; the PDF |
-| 2026-11-14 | Corrections from the full dry run: window names and menu paths, chapter C step by step, C4 Issue to Project, construction products at standard cost, chapter B on the Shed drawing set |
-| 2026-11-13 | First issue |
-
-</div>
 
 A hands-on test script for the testers of the pilot client (Sysnova). Each step says what to **do**, what you should **see**, and has a box to tick.
 **A value is affirmed at its source, not trusted.** Wherever a step gives a number, it also says **Source:** where the number is kept (a record, a field, a formula) and what to open to see it there. Open that source, read the value yourself, and tick *Pass* only if it matches. A figure on the dashboard is never the evidence: the rows behind it are.
