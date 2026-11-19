@@ -35,16 +35,28 @@
 |---|---|
 | Document | CAPEX UAT Guide — from 2D drawings to the dashboard |
 | Purpose | The step-by-step test script for the User Acceptance Test of the pilot client (Sysnova): BIM drawings to a priced model, the ERP exercise, the CAPEX dashboard |
-| Revision | **2026-11-19** |
-| Status | Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately. The steps are unchanged in this revision. |
+| Revision | **2026-11-20** |
+| Status | Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately and stays as signed. This revision adds notes to A3.1 and B3.1 and lists, below, what changed or was found since that report. |
 | Prepared and issued by | Redhuan D. Oon, Project Consultant |
 | For | The pilot client's UAT team: System Setup, BIM, Project Mgmt Accounting |
 | The latest copy | Page: [red1oon.github.io/BIMCompiler/CapexUATGuide](https://red1oon.github.io/BIMCompiler/CapexUATGuide/) · PDF: [CapexUATGuide.pdf](https://red1oon.github.io/BIMCompiler/CapexUATGuide.pdf). The PDF is made from the page at every publish and checked (pages, links). |
+
+**Changes since the signed UAT report (2026-11-19)**: read these even if you have already done the UAT. If your run met one of them, retest that step. They go into the report's appendix; the signed report itself is not changed.
+
+| # | Step | What | Status | What to do |
+|---|---|---|---|---|
+| 1 | B5.2, B5.3 | The UAT Run Checker wrongly read box 3 (your database) as **FAIL: tables differ, project_metadata 4 vs 5** when you skipped the optional **Accept all** (B2.2c). | **Fixed** 2026-11-19, live | If you saw that FAIL: reload the Run Checker and mark your run again with the same files |
+| 2 | PDF download | Right after the site is updated, **⬇ Download the PDF** can fail once (*Failed - Unknown server error*, the file saved as `.html`). | Noted | Wait a minute and click again; the PDF is a few MB |
+| 3 | A3.1 | This step's Confirm described only the folder script. The **Pack In** window ends with the Process Message **Processed=225 Un-Resolved=0**. | Corrected in this revision | If you used the window, that message is a pass |
+| 4 | B4, D | The USD amount reaches the Project Order unchanged (B4.1, B4.2, B4.4). It is as correct as the shipped rate pack, not a market price. Chapter D's dashboard reads the GardenWorld test projects, not the Shed. | Noted | None |
+| 5 | B3.1 | The amount in brackets is the rate pack's second currency (RM), whatever language you choose. Showing your local currency for the language you choose is **ongoing development**. | Noted, in development | Compare the **USD** figure |
+| 6 | (film) | The hands-on film shows the ready-marked sheets. The raw-sheet path (B0: mark the sheets yourself, then Arrange) is to follow. | Noted | None; B0 is unchanged |
 
 **Revision history**
 
 | Revision | What changed |
 |---|---|
+| 2026-11-20 | The list *Changes since the signed UAT report* above; A3.1 the Pack In window's steps and result; B3.1 the second currency note |
 | 2026-11-19 | This cover; each section on a new page; page numbers; every link in the PDF opens the public site |
 | 2026-11-18 | Corrections found by the UAT dry run: A1 links the Developer Guide §3 setup; D2b, D3, D8 figures for a fresh GardenWorld; D9 goals refresh every 30 minutes; B4.4 the model's line under Task Line |
 | 2026-11-15 | Roles and the checklist sheet; B00 export from BricsCAD; B0 from the sheets as drawn to the marked set; B3.1 measured total cost; B5 mark your run with the reference pack; the PDF |
@@ -183,7 +195,7 @@ The pack goes to the client named in its file name (**GardenWorld**), and is pac
 
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|
-| A3.1 | Put the zip in an empty folder on the server and run `utils/RUN_ApplyPackInFromFolder.sh <folder>`, or use the **Pack In** window logged in as GardenWorld Admin (choose the zip, then run it) | The run prints *Successful application of …CAPEXTestData.zip*, `Error=false` and ends with *Done*. The log also prints a `java.lang.Exception` trace for each planned line (*MProduct.loadPO: NO Data found*): these do not stop the run, and the rows are checked in A3.2 to A3.4 | ☐ Pass ☐ Fail |
+| A3.1 | Put the zip in an empty folder on the server and run `utils/RUN_ApplyPackInFromFolder.sh <folder>`, or use the **Pack In** window logged in as GardenWorld Admin (choose the zip, then run it). In the window: **New**, type a name, **Save**; the paperclip (**Attachment**) ▸ **Load** the zip ▸ **OK**; then the **PackIn** button ▸ **OK** | The run prints *Successful application of …CAPEXTestData.zip*, `Error=false` and ends with *Done*. The log also prints a `java.lang.Exception` trace for each planned line (*MProduct.loadPO: NO Data found*): these do not stop the run, and the rows are checked in A3.2 to A3.4. With the **Pack In** window, the Process Message reads **Processed=225 Un-Resolved=0** | ☐ Pass ☐ Fail |
 | A3.2 | Open the **Project** window, search Value `TD_%` | 12 projects, for example *TD_RIVERSIDE – Riverside Tower (test data)* **Source:** the pack file itself holds 12 `C_Project` records; the window’s record count (status bar) is the count in your database | ☐ Pass ☐ Fail |
 | A3.3 | Open *TD_RIVERSIDE*, tab **Phase** | 5 phases with dates; the first 3 are ticked **Complete** **Source:** the **Phase** tab’s own *Complete* tick boxes (the pack set them); count them yourself | ☐ Pass ☐ Fail |
 | A3.4 | Look at the project’s **Currency** | The currency of GardenWorld’s *Purchase* price list. The pack sets no currency: iDempiere takes it from the price list, so it follows your setup | ☐ Pass ☐ Fail |
@@ -407,7 +419,7 @@ The schedule and the cost come from reference files the Viewer ships with. You e
 
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|
-| B3.1 | Note the Viewer’s total cost (Find panel: `total cost`; it is the cost of the 13 drawn bays, see the note at the top of chapter B) and the schedule’s finish date (**Time Machine**, key **T**) | With the shipped rates the total reads **USD 96,839 (RM 372,457) — total building cost** (the digits may be grouped differently in your browser's language). A higher figure, such as USD 97,979, means the B0.7 exclude box missed the expansion joint. Write the total and the finish date down: ________ / ________ | ☐ Pass ☐ Fail |
+| B3.1 | Note the Viewer’s total cost (Find panel: `total cost`; it is the cost of the 13 drawn bays, see the note at the top of chapter B) and the schedule’s finish date (**Time Machine**, key **T**) | With the shipped rates the total reads **USD 96,839 (RM 372,457) — total building cost** (the digits may be grouped differently in your browser's language). The amount in brackets is the rate pack's second currency (RM), whatever language you choose; your local currency for the chosen language is in development. A higher figure, such as USD 97,979, means the B0.7 exclude box missed the expansion joint. Write the total and the finish date down: ________ / ________ | ☐ Pass ☐ Fail |
 | B3.2 | Make the rate edit and the lag edit above. Your copy is saved in this browser as you type | The form keeps your value; a list shown as JSON text must stay valid JSON | ☐ Pass ☐ Fail |
 | B3.3 | **Reload the Viewer tab**, so it reads your copies | The building opens again | ☐ Pass ☐ Fail |
 | B3.4 | Read the total cost again | It moved in the direction of your rate edit | ☐ Pass ☐ Fail |
