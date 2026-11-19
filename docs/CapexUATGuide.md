@@ -53,7 +53,7 @@
 
 | Revision | What changed |
 |---|---|
-| 2026-11-20 | The page *Changes since the signed UAT report* (after this cover); the pages *What is this?* (with *How do I pass?*: the UAT Run Checker and the result file to send back) and *Contents* with page numbers; a table that fits on a page is no longer cut in two (a long one repeats its header row); A3.1 the Pack In window's steps and result; B3.1 the second currency note |
+| 2026-11-20 | The page *Changes since the signed UAT report* (after this cover); the pages *What is this?* (with *How do I pass?*: the UAT Run Checker and the result file to send back) and *Contents* with page numbers; *See how*, the films (1 linked, 2 pending); a table that fits on a page is no longer cut in two (a long one repeats its header row); A3.1 the Pack In window's steps and result; B3.1 the second currency note |
 | 2026-11-19 | This cover; each section on a new page; page numbers; every link in the PDF opens the public site |
 | 2026-11-18 | Corrections found by the UAT dry run: A1 links the Developer Guide §3 setup; D2b, D3, D8 figures for a fresh GardenWorld; D9 goals refresh every 30 minutes; B4.4 the model's line under Task Line |
 | 2026-11-15 | Roles and the checklist sheet; B00 export from BricsCAD; B0 from the sheets as drawn to the marked set; B3.1 measured total cost; B5 mark your run with the reference pack; the PDF |
@@ -93,7 +93,12 @@ In B5 you open the **[UAT Run Checker](https://red1oon.github.io/bim-ootb/capex/
 
 **Your final goal is that file, `uat_result.json`: attach it to your signed sheets and send both back to the person who runs the UAT.** A box you leave out reads NOT GIVEN, never PASS. A tester who skipped B00 and B0 gets **PARTIAL PASS**, which is expected (B5.3).
 
-**See how:** [https://youtu.be/PBp4qfV4mIo](https://youtu.be/PBp4qfV4mIo), the film *UAT, hands on: where to click*. It shows where to click, on a real screen, from the downloads to B5 and the result file.
+<p class="uat-h" id="see-how">See how</p>
+
+Films of the steps, on a real screen:
+
+1. *UAT, hands on: where to click*: [https://youtu.be/PBp4qfV4mIo](https://youtu.be/PBp4qfV4mIo). From the downloads to B5 and the result file.
+2. *UAT, hands on, part 2*: pending. The link is added here when it is uploaded.
 
 ## Contents
 
@@ -102,6 +107,7 @@ In B5 you open the **[UAT Run Checker](https://red1oon.github.io/bim-ootb/capex/
 - [Changes since the signed UAT report](#changes-since-the-signed-uat-report-2026-11-19)
 - [What is this?](#what-is-this)
     - [How do I pass?](#how-do-i-pass)
+    - [See how](#see-how)
 - [Checklist: who does what](#checklist-who-does-what)
 - [A · Set up (System Setup, once)](#a-set-up-system-setup-once)
     - [A1 · The BIM apps on your own server (optional)](#a1-the-bim-apps-on-your-own-server-optional)
