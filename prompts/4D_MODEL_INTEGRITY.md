@@ -4454,3 +4454,44 @@ Issue it proves/disproves: *"a DB carrying a stale stored schedule plays the old
 - One explicit, directed "what carries what" relation per building (bearing / hung / façade-on-slab), computed once, stored, and read by the
   schedule, the repair, the renderer and the witnesses — instead of class + contact re-derived differently in each.
 - A witness on what the film DRAWS (per-frame visible set from the renderer) judged against that same relation.
+
+## §Q.33 THE SHIM-ANCHOR MODEL — SPEC FOR A SANDBOX POC (2026-11-19, owner, worked through in conversation: *"each element irrespective of concrete type, is abstract to certain properties … applicable to anything"* · *"mete out specs, then sandbox poc"*)
+**Why (one paragraph, the post-mortem):** the template grid (location × trade, §A banner / §S26.11) is right and stays. What kept failing is the
+step that puts an element in it and orders it inside it: the IFC class lookup plus a geometric election (`designatedSupport`, four floating judges,
+the renderer's last-carrier hold — §Q.30-§Q.32). This model replaces that step with ONE two-sided relation. It builds on §SHIM-FACING (2026-11-09),
+which measured that the shim face as a DIRECTION alone fixes ~0, for two named reasons: the carrier stayed scheduled later by the phase order, and the
+mined `rule_shim` rows cover few classes. Items B and C below answer those two reasons.
+### Q.33.1 THE ABSTRACT ELEMENT (no type names in the rule; types only fill the table)
+1. **Shape** — oriented faces with normals (top, bottom, sides, ends) + position. From mesh / oriented box; an axis-aligned bbox loses angle.
+2. **Shim faces** — which of its faces may bond: bottom · top · side · end · inset.
+3. **Needs** — ordered list of host capabilities: `bears-on-top` · `hangs-below` · `fixes-on-side` · `opening-accepts` · `continues-same-kind` · `ground`.
+4. **Joint spec per need** — my face ↔ host face; where on the host (point / area / edge / inside); angle (square / parallel / coplanar) ± tolerance.
+5. **Count** — `one` (any route) or `all` (every bearing point, e.g. both ends of a span).
+6. **Offers** — which capabilities its own faces give to which needs (the host half of the agreement).
+7. **Rank** — tie-break inside one location × phase when no bond orders two elements.
+8. **Exception** — temporary works: may precede its host (props, cantilever); declared, never inferred.
+### Q.33.2 THE RULES
+- **A. Bond = agreement.** A need meets an offer on the declared faces inside the joint spec. Same-priority candidates: largest contact area, then guid.
+- **B. Bond beats phase.** Host before element (count `all` → after the last host). A host whose phase comes later is MOVED UP (a wall carrying a
+  slab becomes structure — D1 derived, not special-cased). Answers §SHIM-FACING reason 1.
+- **C. Relay.** First-order bonds form first; `continues-same-kind` spreads outward ONLY from already-bonded pieces (slab→slab coplanar edge, beam run,
+  duct run, wall line). No cycles by construction.
+- **D. Phases do the rest.** Elements with no bond between them are ordered by the template (phase order, levels bottom-up), unchanged.
+- **E. Three outcomes, nothing guessed:** `bonded` · `lost` (no host satisfies any need — reported, keeps its template time) · `misplaced` (a host of the
+  right kind is near but face/position/angle fail — a model-quality finding). Angle unknown (no rotation data) → `unverified`, never `misplaced`.
+- **F. The table's sources, in this order:** IFC relations where declared (fills/voids, contained-in-space) → mined `rule_shim` rows (duplex/terminal
+  rules DBs) → a short authored practice table, each row with its reason and the owner's sign-off. Answers §SHIM-FACING reason 2. Extract first.
+### Q.33.3 MENTAL DRY RUN (owner session, 2026-11-19) — the POC must reproduce or refute each row
+footing→ground · column→footing top · slab piece→column top, else relay from coplanar neighbour · slab on wall → wall moved up · secondary beam end→
+primary side, primary ends→column tops (depth decides primary; same-depth tie gone) · stair landing→its flight end / wall side (not coplanar with the
+floor, no false relay) · mullion→slab edge, vertical (a slab never takes a mullion: mullion offers no `bears-on-top` for slabs) · carpet/screed→slab top,
+parallel · ceiling→`hangs-below` slab above · fan/lamp→ceiling underside (p1) else slab (p2), upright · duct segment→slab above or its run; fitting→
+`continues` only · window→`opening-accepts` inset in wall, parallel · slab on grade→ground. Services vs ceiling board: no bond → phase order decides.
+### Q.33.4 POC — SANDBOX ONLY (no shipped code changes; read-only on DBs and persisted runs)
+Measure, per building (7 + the HHS film DB), with the owners named in §I for anything already owned:
+1. `bonded / lost / misplaced / unverified` per element kind; the `lost` and `misplaced` lists sampled with names.
+2. Against today's played layer: how many elements would MOVE (host after element), split by rule B / C; programme-day effect not required yet.
+3. The named cases: HHS film DB stair landings + the L2/L3 floor slabs vs façade mullions (§Q.30/§Q.32); §Q.2's beam gaps 1-3 (30/26/4 carrier-above,
+   wall-under-beam, beam-on-beam ties) — resolved, unchanged or worse, each with numbers.
+4. Table coverage: how many elements got their needs from IFC relations / mined rows / the authored table / nothing.
+5. Every §-line able to say NO-OP, VACUOUS, scope-blind (PRIMAL LAW 4). Result recorded as §Q.33.5; nothing is implemented until the owner reads it.
