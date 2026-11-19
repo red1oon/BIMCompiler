@@ -64,7 +64,25 @@ for sc in P.SCENES:
     add('hold', sid, a0, ty); sc['_strip'] = (strip_t0, txt)
     # cut points: each beat's cue; after a beat's span, hold if its line needs more room
     cuts = sorted(set([a0] + [cue[b[1]] for b in sc['beats'] if cue[b[1]] > a0] + [a1]))
-    fast = [(f['t0'], f['t1']) for f in ev['fast'] if 't1' in f]
+    fast = [(f['t0'], f['t1'], 3.0) for f in ev['fast'] if 't1' in f]
+    # §5.11: idle spans (no move, click, key or wheel notch for > 2 s) play at x8, 0.8 s kept real time at each end; a declared fast span (x3) wins where they overlap
+    acts = sorted([(m['t0'], m['t1']) for m in ev['moves']] + [(c['t'], c['t'] + 0.3) for c in ev['clicks']] + [(k['t'], k['t'] + 0.12) for k in ev['keys'] if k['k'] != 'w'])   # a wheel notch is travel, not an action: a scroll > 2 s is sped like a wait
+    s_, gaps = a0, []
+    for x0, x1 in acts:
+        if x0 > s_: gaps.append((s_, x0))
+        s_ = max(s_, x1)
+    gaps.append((s_, a1)); idle = []
+    for g0, g1 in gaps:
+        g0, g1 = max(g0, a0) + 0.8, min(g1, a1) - 0.8
+        if g1 - g0 <= 2.0 - 1.6: continue
+        for f0, f1, _ in fast:   # clip out the declared spans
+            if f1 <= g0 or f0 >= g1: continue
+            if f0 > g0: idle.append((g0, f0, 8.0))
+            g0 = max(g0, f1)
+        if g1 > g0: idle.append((g0, g1, 8.0))
+    idle = [x for x in idle if x[1] - x[0] > 0.4]
+    log('§COMP_IDLE %s spans=%d src_s=%.2f out_s=%.2f' % (sid, len(idle), sum(b - a for a, b, _ in idle), sum((b - a) / 8.0 for a, b, _ in idle)))
+    fast = sorted(fast + idle)
     by_cue = {}
     for bid, cname, text in sc['beats']: by_cue.setdefault(cue[cname], []).append((bid, text))
     for k in range(len(cuts)):
@@ -76,17 +94,17 @@ for sc in P.SCENES:
             span = 0.0
             if nxt is not None:   # the span's own length, with its fast parts at x3
                 s = c
-                for f0, f1 in fast:
+                for f0, f1, sp in fast:
                     if f1 <= s or f0 >= nxt: continue
-                    span += max(0, f0 - s) + (min(f1, nxt) - max(f0, s)) / 3.0; s = min(f1, nxt)
+                    span += max(0, f0 - s) + (min(f1, nxt) - max(f0, s)) / sp; s = min(f1, nxt)
                 span += max(0, nxt - s)
             if span < need: add('hold', sid, c, need - span); log('§COMP_HOLD %s %s +%.2fs (line %.2fs, span %.2fs)' % (sid, ','.join(b for b, _ in by_cue[c]), need - span, need, span))
         if k + 1 < len(cuts):
             s, e = c, cuts[k + 1]
-            for f0, f1 in fast:
+            for f0, f1, sp in fast:
                 if f1 <= s or f0 >= e: continue
                 if f0 > s: add('play', sid, s, f0)
-                add('play', sid, max(f0, s), min(f1, e), 3.0); s = min(f1, e)
+                add('play', sid, max(f0, s), min(f1, e), sp); s = min(f1, e)
             if e > s: add('play', sid, s, e)
     for kk in ev['keys']:
         if a0 <= kk['t'] <= a1 and kk['k'] in ('k', 'r'): sounds.append(dict(src=sid, ts=kk['t'], k=kk['k']))

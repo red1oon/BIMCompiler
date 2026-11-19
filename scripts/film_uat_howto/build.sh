@@ -14,7 +14,7 @@ D=$(ffprobe -v error -show_entries format=duration -of csv=p=0 $WK/silent.mp4)
 rm -f $WK/voice.mp4; (cd $WK/fit && rm -f *.wav && FILM_SEC=$D $PY $FIT ../narration.tsv en 1.15 > ../fit.log 2>&1 && FILM_SEC=$D python3 $MUX en ../silent.mp4 ../voice.mp4 > ../mux.log 2>&1)
 $PY sounds.py $WK/sounds.json $D $WK/sounds.wav > $WK/sounds.log 2>&1 || { echo "§BUILD_FAIL sounds, see $WK/sounds.log"; exit 3; }
 # the keys and clicks under the voice: picture and captions copied as they are, only the sound mixed
-ffmpeg -y -v error -i $WK/voice.mp4 -i $WK/sounds.wav -filter_complex "[1:a]volume=0.8[k];[0:a][k]amix=inputs=2:duration=first:normalize=0[a]" -map 0:v -c:v copy -map "[a]" -c:a aac -b:a 192k "$OUT"
+ffmpeg -y -v error -i $WK/voice.mp4 -i $WK/sounds.wav -filter_complex "[1:a]volume=0.8[k];[0:a][k]amix=inputs=2:duration=first:normalize=0,loudnorm=I=-16:TP=-1.5:LRA=11[a]" -ar 48000 -map 0:v -c:v copy -map "[a]" -c:a aac -b:a 192k "$OUT"
 # checks (numbers, not looks): frames = the picture's, loudness, the long silences, every line fitted
 FR=$(ffprobe -v error -count_frames -select_streams v:0 -show_entries stream=nb_read_frames -of csv=p=0 "$OUT"); FR0=$(grep -o 'frames=[0-9]*' $WK/comp.log | tail -1 | cut -d= -f2)
 LU=$(ffmpeg -nostats -i "$OUT" -filter_complex ebur128 -f null - 2>&1 | grep -E '^\s+I:' | tail -1 | awk '{print $2}')
@@ -22,4 +22,8 @@ SIL=$(ffmpeg -nostats -i "$OUT" -af silencedetect=noise=-40dB:d=4 -f null - 2>&1
 NF=$(grep -c '§NARR_FIT' $WK/fit.log || true); ND=$(grep '§NARR_FIT' $WK/fit.log | grep -c -- '-> DETAIL' || true); NW=$(grep '§NARR_TONE' $WK/fit.log | grep -c WRONG || true)
 echo "§FILM_CHECKS frames=$FR picture=$FR0 film_s=$D LUFS=$LU silences_ge4s=[$SIL] lines=$NF detail=$ND tone_wrong=$NW $(tail -2 $WK/sounds.log | head -1)" | tee $WK/checks.log
 ok=1; [ "$FR" = "$FR0" ] || ok=0; [ "$NF" = "$ND" ] || ok=0; [ "$NW" = 0 ] || ok=0; grep -q 'SOUNDS_VERDICT PASS' $WK/sounds.log || ok=0
+# §5.11: the §5.4 bars are gated, not only printed
+MS=$(echo "$SIL" | tr ' ' '\n' | sort -g | tail -1); MS=${MS:-0}; BAD=""
+awk -v m=$MS 'BEGIN{exit !(m <= 8.0)}' || BAD="$BAD silence_max=$MS>8.0"; awk -v l=$LU 'BEGIN{exit !(l >= -17 && l <= -15)}' || BAD="$BAD LUFS=${LU}_not_-16+-1"; awk -v d=$D 'BEGIN{exit !(d <= 300)}' || BAD="$BAD film_s=$D>300"
+[ -n "$BAD" ] && { ok=0; echo "§FILM_CHECKS_BARS FAIL$BAD" | tee -a $WK/checks.log; } || echo "§FILM_CHECKS_BARS PASS silence_max=$MS LUFS=$LU film_s=$D" | tee -a $WK/checks.log
 echo "§FILM_CHECKS_VERDICT $([ $ok = 1 ] && echo PASS || echo FAIL) -> $OUT" | tee -a $WK/checks.log
