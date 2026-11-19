@@ -4640,3 +4640,22 @@ CARRIER'S TASK; it is task filing, never the in-bar layout.
 - **Separately (owner decision, already open in §Q.33.11):** adopt `CACHE_PATCHES=all` so the gates judge the DB the viewer plays — it alone takes LTU
   755 → 109; its Terminal/LTU instant moves are the transform repairs, re-lock from the run.
 **Next after the owner's answer:** §Q.33.12 items 2-4 all need the owner (item 2's proof is a bake, 3 needs rulings, 4 is a GPU A/B).
+### Q.35 RULINGS (2026-11-19, owner: *"u make the rulings"* — made by the session under that instruction, recorded here as such)
+- **R1 = §Q.34.1 YES.** In datum mode (`§STOREY_DATUM mode=DECLARED`) the declared LADDER, not the storey name, says which floor an element is on.
+  Why: the ladder is extracted (IfcBuildingStorey elevations, frame-checked §I.6) and the element's base is geometry; a name is a label that two federated
+  files can reuse 15 m apart (§Q.34). Site-engineer test: a stair at 5.9 m is built with the 5-6 m floor, whatever its file calls that floor.
+- **R2 = adopt `CACHE_PATCHES=all` as the default.** Why: CARDINAL/twin principle applied to the judge — the gates must judge the DB the viewer plays.
+  `agg` judged 2,871 LTU elements at the origin that the viewer never shows (§Q.34). Movement it causes is the transform repairs; re-lock from the run.
+- Order: R1 first (one PR, measured on `agg`), then R2 (its own PR, measured on top of R1) — each effect named separately, as §Q.33.11 required.
+### Q.35.1 SPEC — R1 `§RUNG_RUN_LABEL` + ladder-owned merge (bim-ootb `viewer/schedule_author.js`)
+- `_rungRunLabels(ladder, sortedBaseZ)` (pure, exported): a storey name is one floor only across a CONTIGUOUS run of ladder rungs; each extra run of a
+  repeated name is labelled `<name> @<first rung z, 2 dp>`; the run holding the most element bases keeps the plain name. No tolerance constant.
+  Called by `_buildScheduleElements` right after `_chooseStoreyDatum` in datum mode only (the exported frame verb stays unchanged for its witness).
+  Log `§RUNG_RUN_LABEL rungs= runs= repeatedNames= relabelledRuns= <labels(n=)>` or `(no-op)`.
+- The merge map ("are two storey names one floor?", §I owner `deriveStoreyMergeMap`) in datum mode is fed the LABELLED LADDER (one row per rung), not the
+  raw `spatial_structure` rows — same owner, right input; rungs within GAP chain into one band exactly as today. INFERRED buildings: unchanged path.
+  Log `§S18_STOREY_MERGE source=ladder|spatial_structure`.
+- Band rank (`deriveBandRanks`) is not touched: with (1)+(2) every band is a z-interval, so its median-base rank follows z.
+- **Proof owed:** play instants hash-equal on the six buildings where `§RUNG_RUN_LABEL` is a no-op AND the merge map is unchanged (else the moved count
+  named); Terminal W-FC-1x 25 → ≤ 1 and its lock re-set from the run; DCMA check 1 logic on Terminal not worse; `run_4d_gates.sh` GREEN 16/16; Terminal
+  programme days and task count before → after named.
