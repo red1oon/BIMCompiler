@@ -7,7 +7,7 @@ Every number spoken or shown is a fact read from the guide, the saved PDF or a �
 > **Film 1 DONE and published by the owner:** rc3 (`~/Videos/UAT_Hands_On_Where_To_Click_EN_rc3.mp4`) = https://youtu.be/PBp4qfV4mIo, linked in the guide's *See how* (item 1).
 > **Part II (guide *See how* item 2, pending): A3.1 Pack In + the raw-sheet path.**
 > - Scene **s13 Pack In is RECORDED and PASSES** (§5.12 RESULT, folder `f2/full_s13_t5` in session scratchpad a0008b42…; may be cleaned: a re-take is about 3 min). Back up :8108 first, restore after; the backup `idempiere_film_packin_bak` is still there.
-> - Next: SPEC the raw-sheet scenes, then take, then build Part II:
+> - **The raw-sheet scenes are SPECCED (§5.14, from the shipped witness W-UAT-B0).** Next: measure the two open points of p7, write p1–p10 in `scenes.js`, take, then build Part II. The plan:
 >   - open the pack's `sheets/` (no marks), B0.1–B0.8 marking by hand, B0.9 Save marked copies;
 >   - B2.3 **Arrange** (watch them move into place);
 >   - B5 with box 2 given (the run reads PASS, not PARTIAL PASS).
@@ -256,3 +256,26 @@ Every build: frames = picture (9,313 in rc3), 31 of 31 lines DETAIL, 0 tone WRON
 - the attachment window's buttons are icons: select them by tooltip.
 **Own mistake, fixed:** `cp -al` copies share `scenes.log`, so s13 attempts appended into take 4's log. Take 4's log was cut back to its original 408 lines, ending with its PASS verdict. The copies now get their own `scenes.log` (`rm` + `cp` after `cp -al`).
 **Owner, 2026-11-20:** film 1 (rc3) is uploaded as https://youtu.be/PBp4qfV4mIo (guide, *See how* 1). **Part II** (guide, *See how* 2, pending) is to cover A3.1 Pack In (this scene, s13, recorded) and the raw-sheet path: the pack's `sheets/` (as drawn, no marks), marked by hand in B0.1–B0.9, then Arrange (§5.13). The raw-sheet scenes are not specced or recorded yet.
+
+### 5.14 SPEC — Part II, the raw-sheet path (2026-11-20; written before code; owner: *"proceed"*)
+**Source of every step, value and ready-state: the shipped witness W-UAT-B0** (bim-ootb `capex/tests/witness_uat_b0_raw_to_marked.js`, "a tester holding the nine RAW Shed sheets cannot reach the guide's marked set by the steps of UAT Guide B0 in the real Modeller"). It drives the panel's own controls: `[data-act="sec"]`, `card`, `layer` + `laysplit`, `bodyzadd`, `add` (`data-group="Z"`), `exsheet`, `tool` (`data-tool="exclude"`), `acceptsr` / `acceptall`, the `#dm-f-<i>-SET` field and the `#dm-chip` badge. The ready-state is `DxfMetaEditor.state` (not busy, has a verdict).
+- The tables `LAYERS`, `BODYZ`, `DATUMS` and `EX_AIM` are COPIED from that file at build time, not retyped here.
+- Input for the film: the reference pack's `sheets/` (the nine raw drawings, no marks); the pack is downloaded in Part I.
+**Part II scenes, guide order (A3.1 comes before B), one instructor line after each action:**
+| # | step | what the pointer does | checked (the guide's own Confirm) |
+|---|---|---|---|
+| p0 | A3.1 | (= s13, recorded) Pack In through the window | `Processed=… Un-Resolved=0` |
+| p1 | B0.1 | Modeller ▸ 📂 Open ▸ Open 2D drawings ▸ the file window: Downloads ▸ the extracted pack ▸ `sheets` ▸ Ctrl+A ▸ Open | panel lists 9 sheets, none with a role; badge **Blocked**; **All defaults 34** yellow |
+| p2 | B0.2, B0.2b | *Accept stated + read*, then *Accept all* | 113 → 0 yellow; roles 3 PLAN, 4 ELEV, 1 SECTION |
+| p3 | B0.3 | open a card, click **Set**, Ctrl+A, type `SHED`, Enter | all nine Set = SHED |
+| p4 | B0.4, B0.4b | **Layers**: each of the ten selects (the split arrow where the table says *one sheet only*), then *Accept all* | *Blocked · 1* after PLAN·Col, **Qualifies** after ELEV·Wall; 14 → 0 yellow |
+| p5 | B0.5 | **Body heights**: type footing z0/z1, Add; beam z0/z1, Add | the two `@BODYZ=` rows |
+| p6 | B0.6 | each elevation and section card: type `0.6096` and its y, Add | five new `@Z=0.6096` rows; Qualifies |
+| p7 | B0.7 | **Exclude areas** ▸ 3_BEAM_LAYOUT ▸ *Exclude area*; zoom with the WHEEL to the bay between grids 06 and 35; DRAG the box round the joint (real button down, move, up) | an `@EXCLUDE` mark inside the §5.84 tolerance (`uat_compare` rule) |
+| p8 | B0.8, B0.9 | read the badge; **Save marked copies** (if Chrome asks to download several files, the pointer clicks **Allow**: filmed only if it shows) | Qualifies, 0 yellow; nine `…_marked.dxf` land in Downloads |
+| p9 | B2.1, B2.3 | open the nine saved copies; **Arrange** | status counts **Step 1/46 … Step 46/46** |
+| p10 | B5 | Run Checker with box 2 = the nine saved copies | B0.9 **PASS**; the run reads **PASS** (not PARTIAL PASS) |
+**Open, to measure before p7 is taken (not guessed):**
+1. Whether choosing the sheet in *Exclude areas* already zooms the canvas to it (the witness says it pans "as highlight() does"). If not, the zoom is wheel notches over the joint, the number measured from the camera distance.
+2. The screen points of the drag come from the drawing coordinates `EX_AIM` through the camera, the same way every other click's target comes from a measured box. Logged `§FILM_PTR drag from=… to=…`.
+**Witness (numbers):** each row's Confirm checked as `§FILM_CHECK`; p10's checker result is the end of the chain (B0.9 PASS = the tester's marks equal the answer key's, mark for mark). The audio and layout bars are §5.11's (gated in build.sh).
