@@ -88,3 +88,24 @@ W-DEPLOY-GUARD is green; a deliberately stale tree **cannot** shrink the live si
 **Break switches (each must FAIL its check):** `PRINT_BREAK=links` keeps the print-server links (P8) · `PRINT_BREAK=footer` prints without the footer (P7) · `PRINT_BREAK=cover` drops the cover's break-after (P6) · `PRINT_BREAK=h3` drops the section breaks (P2b).
 **The UAT dry-run proof is not disturbed:** this revision changes the cover and print style only; the 80 steps' text must parse identically to the revision the dry run proved (`guide.js` parse of both, compared), and the cover says the proof is for those steps.
 **RESULT 2026-11-19 (W-GUIDE-PRINT 10/0 on CapexUATGuide, local build of this tree).** 39 pages (was 32), 240 table rows, 6 chapters, 16 sections judged: P1 the checklist sheet = page 3 alone · P2 every chapter starts a page · P2b every section not right after its chapter starts a page · P3 no row split · P4 nothing cut off · P5 the two prints agree · P6 the cover = page 1 alone (next element on page 2) · P7 every page reads "Page i of 39" · P8 0 links to the print server, 10 links into the site each open a built page and its #id, written under `https://red1oon.github.io/BIMCompiler/` · P9 13 outside links each answer 200. Break switches: `links` → P8 FAIL (`http://127.0.0.1:…/DeveloperGuide/#3-…`), `footer` → P7 FAIL (no number on any page), `cover` → P6 FAIL (next element on page 1), `h3` → P2b FAIL (A2, A3, A4 … mid-page); the old ones still fail: `1` → P1, `clip` → P4 (and now P5 too: the clipped prints paginate differently). The 80 steps parse identically to the revision the dry run proved (`§STEPS_SAME proved=80 new=80 identical=true`).
+
+
+### Printable guides, 2026-11-20 SPEC: the order after the cover, a contents page, and no short table cut in two (written before code)
+**Owner (2026-11-20, verbatim):** *"On page 2 of the PDF, put a title to it, 'What is this?'. After page 2, insert a table of contents. Before page 2, is the list of changes we dicussed. Also look thru the PDF to make better page breaks so that we don't have truncated halfway parts particularly tables."*
+**Order (CapexUATGuide):**
+1. The cover (one page, P6).
+2. `## Changes since the signed UAT report`.
+3. `## What is this?` (the intro that used to follow the cover).
+4. `## Contents`: every `##` and `###` as a link to its anchor. The PDF keeps the links; there are no page numbers.
+5. The checklist sheet (P1), then the chapters.
+**Breaks (the guide's print CSS):** a table that fits on a page is kept whole (`break-inside: avoid` on the table); a longer table repeats its header row on each page (`thead` as `table-header-group`); a heading, and the paragraph just before a table, are kept with what follows (`break-after: avoid`).
+**P10 (new, `scripts/guide/print_check.js`), named issue:** *"a table short enough for one page is cut across two pages"*.
+- Each table's height is measured in print media at the printed text width (A4 210 mm − 2 × 12 mm = 186 mm ≈ 703 px).
+- A table at most 90 % of the text height (297 − 2 × 14 mm = 269 mm ≈ 1,017 px) must have its first and last row markers on the same page.
+- Tables taller than that may continue, and they are listed with their heights.
+- `PRINT_BREAK=tables` removes the keep-whole rule: P10 must then FAIL on today's guide (the issue was real), else P10 is scope-blind.
+**RESULT 2026-11-20 (logs read, `PRINT_NO_NET=1` for the local runs; the publish runs P9):**
+- RED, the live PDF before the fix: `P10 FAIL nCut=4`. Cut were Pack In Application Dictionary (h 468 px, pp. 4–5), Shed Floor Plan (294, pp. 11–12), PLAN sheets (419, pp. 14–15) and TD_RIVERSIDE (669, pp. 28–29).
+- GREEN, after the fix: `P10 PASS nCut=0`, 36 tables. 3 are taller than a page (B0.1 h 1427, B2.1 993, D1 1685) and continue with their header row repeated on each page (pdftotext pp. 17, 18, 24, 41, 42).
+- The new build: 44 pages, P1–P8 PASS. The order is p2 Changes, p3 What is this?, p4 Contents, p5 Checklist.
+- `PRINT_BREAK=tables`: P10 FAIL on the same 4 tables (not scope-blind).

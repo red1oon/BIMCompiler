@@ -12,7 +12,7 @@
 //   P8 no link in the PDF points at the print server; every link into the site resolves to a built page (and its #id) · P9 every outside link answers 2xx/3xx
 //   (spec: prompts/DOCS_DEPLOY_GUARD.md "Printable guides, 2026-11-19 SPEC")
 // PRINT_BREAK=1 removes the sheet's break-after before printing: P1 must FAIL. PRINT_BREAK=clip makes every table wider than the page: P4 must FAIL.
-// PRINT_BREAK=links keeps the print-server links (P8) · =footer no footer (P7) · =cover the cover keeps no break-after (P6) · =h3 no section breaks (P2b). PRINT_NO_NET=1 skips P9 (printed, not PASS).
+// PRINT_BREAK=tables drops the keep-whole rule (P10) · PRINT_BREAK=links keeps the print-server links (P8) · =footer no footer (P7) · =cover the cover keeps no break-after (P6) · =h3 no section breaks (P2b). PRINT_NO_NET=1 skips P9 (printed, not PASS).
 // usage: node scripts/guide/print_check.js --site <built site dir> --page <Name> --out <file.pdf>   exit 0 PASS · 1 FAIL · 3 INCONCLUSIVE / cannot run
 'use strict';
 const fs = require('fs'), path = require('path'), http = require('http'), os = require('os'), cp = require('child_process');
@@ -39,6 +39,7 @@ const stop = (code, why) => { say('§PRINT_VERDICT ' + (code === 3 ? 'INCONCLUSI
     if (BREAK) await pg.addStyleTag({ content: '@media print { .uat-sheet { break-after: auto !important; page-break-after: auto !important; } }' });
     if (CLIP) await pg.addStyleTag({ content: '@media print { .md-typeset table:not([class]) td:first-child { min-width: 150mm !important; } }' });   // PRINT_BREAK=clip: tables wider than the page
     if (BK('cover')) await pg.addStyleTag({ content: '@media print { .uat-cover { break-after: auto !important; page-break-after: auto !important; } }' });
+    if (BK('tables')) await pg.addStyleTag({ content: '@media print { .md-typeset table:not([class]) { break-inside: auto !important; page-break-inside: auto !important; } }' });   // P10 must FAIL
     if (BK('h3')) await pg.addStyleTag({ content: '@media print { .md-typeset h3 { break-before: auto !important; page-break-before: auto !important; } }' });
     // P8: a link that resolves to the print server is written under the public site_url (Chrome writes each link resolved against the page's own origin)
     const links = await pg.evaluate((pub, keep) => { const o = location.origin, out = [];
@@ -64,6 +65,11 @@ const stop = (code, why) => { say('§PRINT_VERDICT ' + (code === 3 ? 'INCONCLUSI
         let b = sheet.previousElementSibling; while (b && !visible(b)) b = b.previousElementSibling; let a = sheet.nextElementSibling; while (a && !visible(a)) a = a.nextElementSibling;
         if (b) put(b, 'qqBEFOREqq', true); if (a) put(a, 'qqAFTERqq'); P.sheet = { before: !!b, after: !!a }; }
       return P; });
+    // P10: each table's height at the printed text width (A4 210 mm - 2 x 12 mm = 186 mm ~ 703 px), measured in print media, then the viewport is put back
+    if (mark) { const vp = pg.viewport(); await pg.setViewport({ width: 703, height: 1000 });
+      plan.tables = await pg.evaluate(() => { const root = document.querySelector('.md-content .md-typeset') || document.body;
+        return Array.from(root.querySelectorAll('table:not([class])')).map((t, ti) => ({ ti, h: Math.round(t.getBoundingClientRect().height), n: t.rows.length, text: ((t.rows[1] || t.rows[0] || {}).innerText || '').replace(/\s+/g, ' ').trim().slice(0, 40) })); });
+      await pg.setViewport(vp); }
     const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');   // P7: "<title> · Page i of N" on every page (Chrome's print footer; @page margin boxes are not supported)
     await pg.pdf({ path: file, format: 'A4', printBackground: true, preferCSSPageSize: true, displayHeaderFooter: !BK('footer'), headerTemplate: '<span></span>',
       footerTemplate: '<div style="font-size:8pt;width:100%;text-align:center;color:#444">' + esc(title) + ' · Page <span class="pageNumber"></span> of <span class="totalPages"></span></div>' });
@@ -86,6 +92,13 @@ const stop = (code, why) => { say('§PRINT_VERDICT ' + (code === 3 ? 'INCONCLUSI
   // P3 + P4
   const A_ = r => at[r.id + 'Aqq'], Z_ = r => at[r.id + 'Zqq'], missing = plan.rows.filter(r => !A_(r) || !Z_(r)), split = plan.rows.filter(r => A_(r) && Z_(r) && A_(r) !== Z_(r));
   ck('P3 no table row is split across pages (' + plan.rows.length + ' rows)', split.length === 0, { split: split.map(r => r.text + ' (pages ' + A_(r) + '-' + Z_(r) + ')').slice(0, 6) });
+  // P10 (DOCS_DEPLOY_GUARD.md 2026-11-20): a table at most 90 % of the text height (297 mm - 2 x 14 mm = 269 mm ~ 1017 px) starts and ends on one page
+  const LIMIT = Math.round(0.9 * 1017), tb = (plan.tables || []).map(t => { const rs = plan.rows.filter(r => r.id.startsWith('qqR' + t.ti + 'X')), a = rs.map(A_).filter(Boolean), z = rs.map(Z_).filter(Boolean);
+    return Object.assign({}, t, { p0: a.length ? Math.min(...a) : 0, p1: z.length ? Math.max(...z) : 0 }); });
+  const cut = tb.filter(t => t.h <= LIMIT && t.p1 > t.p0), long = tb.filter(t => t.h > LIMIT);
+  if (!tb.length) say('§PRINT P10 not judged: no table measured'); else
+  ck('P10 no table short enough for one page is cut across two (' + tb.length + ' tables, ' + long.length + ' taller than a page)', cut.length === 0,
+    { cut: cut.map(t => t.text + ' h=' + t.h + ' pages ' + t.p0 + '-' + t.p1).slice(0, 10), nCut: cut.length, taller: long.map(t => t.text + ' h=' + t.h + ' pages ' + t.p0 + '-' + t.p1).slice(0, 10) });
   ck('P4 no row or last column is cut off', missing.length === 0, { missing: missing.map(r => r.text + (A_(r) ? ' (end missing)' : ' (start missing)')).slice(0, 6), nMissing: missing.length });
   // P5
   const first = t => (t.split('\n').map(l => l.replace(/qq[A-Z0-9]+qq/g, '').trim()).find(Boolean) || ''), differ = clean.map((t, i) => [i + 1, first(t), first(marked[i] || '')]).filter(x => x[1] !== x[2]);
