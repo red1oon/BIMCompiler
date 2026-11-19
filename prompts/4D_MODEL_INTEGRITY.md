@@ -4537,3 +4537,23 @@ Measure, per building (7 + the HHS film DB), with the owners named in §I for an
    by definition; report group sizes and how many groups have ≥ 1 first-order host.
 3. **Ground without class:** seeds = elements in the ground band whose bottom face OFFERS nothing below and that are NOT façade parts (aggregate parent is a
    curtain wall, from item 1) — footings, ground slabs, columns/walls standing on soil. Report façade posts removed from seeds.
+### Q.33.9 POC v3 RESULT + DECISION (2026-11-19, sandbox `…/shim_poc/v3/`; owner: *"Don't wait. U know the direction. Do till resolved"*)
+- **v3 measured:** source IFCs join to the DBs at 95-100 %. Pset LoadBearing contradicts the walls the model needs (701 hosting walls declared
+  non-bearing; architects' exports set nearly every wall FALSE — usable only on LTU). Fills/voids buy ~0 (geometry already finds the same wall).
+  `rel_aggregates` is the one fact that changes outcomes (curtain-wall parts, stair parts). "Relay = one unit" makes units up to 69,931 pieces — not an
+  order. Ground without class: façade seeds 322 → 0 on HHS. **Full model NOT ready to drive a consumer** (needs a LoadBearing-vs-D1 ruling, relay cut
+  by location, 667-5,729 untabled proxies per building).
+- **What v3 proved is the root of "stairs first, floors missing":** today's schedule plays the L2 floor slab at day 1.09 while its 87 columns finish at
+  day 9.22 — the graph engine gives a floor ONE finish-to-start edge from its ELECTED support (`cpm_schedule.js` E1, §D4), so it may start after one
+  column; the renderer then (rightly) holds it until its LAST carrier ends, and that last carrier is a curtain-wall mullion filed as structure (§Q.32).
+- **Decision — take the two proven outputs of the model into the shipped owners, nothing else:**
+  1. **§ASSEMBLY_RULE** — a part whose own class rule is Superstructure but whose DECLARED assembly (`rel_aggregates` parent) has a non-structural
+     rule takes the assembly's rule (curtain-wall mullions/panels → the curtain wall's Architecture Envelope). One function in `schedule_author.js`
+     (`assemblyRule`), called at the three rule sites AND by the renderer's own rule lookup (`tm_sched_xray.js`), so both see one classification.
+     Extracted fact only; DBs without `rel_aggregates` unchanged and counted (`§ASSEMBLY_RULE … dbHasAggregates=0`).
+  2. **§E1_ALL_CARRIERS** — a structural element that is wider than it is tall in BOTH plan directions (a floor/roof plate: `tz-bz < min(dx,dy)`),
+     resting on ≥ 2 pool carriers, gets a FINISH-TO-START edge from EVERY pool carrier whose top meets its underside (`S.bz < T.bz-EPS`,
+     `T.bz-GAP <= S.tz <= T.bz+GAP`) — not only from the elected one. Same "last carrier" rule the renderer applies (`maxCarrierEnd`). Edges go strictly
+     below → above (no new cycle possible among them); `§SUPPORT_CYCLE` must stay 0.
+- **Proof owed:** `run_4d_gates.sh` (expect programme days to move — named, not hidden); the L2 slab plays after its columns; fast film bake of the HHS
+  film DB: the three watched floor slabs DRAWN during the build-up (`§CPE_BUILDUP_PLACED_SUMMARY neverDrawn=none`), staged count down.
