@@ -182,6 +182,16 @@ Owner's verbatim choice: **"T5a + T5b, then Korean screen"**. T5 is done as thre
 - **Process note:** the auto-merge took the PR when its checks went green, before my second push (a v1113 re-bump after main moved); that push was therefore not needed: main is `erp_i18n.js?v=10`, `CACHE_VERSION` v1112, every T5c file identical to the branch.
 - **Open under T5 (not in the owner's split):** Korean AD_Field / AD_Element / AD_Ref_List / AD_Message names; Korean Description / Help; bn_BD, bl_BD, af_ZA, en_GB / en_AU / en_MY.
 
+### T6 REQUIREMENT — the local currency follows the chosen language (2026-11-20; owner; ONGOING DEVELOPMENT, spec only, not built)
+**Owner (2026-11-20, verbatim):** *"In the Total Cost of the project pasting, it says a RM malaysian currency. If the user selects Bangladesh it will give their local one? Don't fix, just note."*. Then: *"add to the note that it is ongoing development (and update the prompts/# responsible to reflect local currency choosen as language)"*.
+**Requirement (S-5, one language choice):** the language a user chooses also chooses the LOCAL currency that is shown beside the base amount. For example `bn_BD` gives ৳ (BDT) and `en_MY` / `ms_MY` give RM. The base amount, the one carried into the Project Order, stays in the rate pack's own currency.
+**Measured today (bim-ootb origin/main, read 2026-11-20; not yet measured in a browser):**
+- The locale files carry `cur`, `cur2` and `cur_rate`: `viewer/locales/bn_BD.js` has ৳, USD, 120; `en_MY.js` and `ms_MY.js` have RM, USD, 3.91; `en_US.js` has $, RM, 0.26.
+- But `viewer/rates.js` `_applyRateWords` (:781–784) re-asserts the rate pack's `currency`, `currency2` and `exchange_rate` AFTER the language loads. So with the Shed pack (USD; RM at 372,457 / 96,839 = 3.846) every language shows `USD … (RM …)`.
+- The comments beside the rates are stale: `bn_BD` reads "1 USD = 110 BDT" beside 120; `en_MY` reads "4.45 RM" beside 3.91.
+**Open design question (owner):** where does the local rate come from? Options are the language file's own `cur_rate`, a dated rate table in the rate pack, or the ERP's `C_Conversion_Rate`. A fixed number in a language file is not a dated rate. Until this is decided, the guide's B3.1 note and the UAT change list (item 5) say: compare the USD figure; the local currency is in development.
+**Witness when built (named issue):** "the second currency shown is the rate pack's, not the chosen language's". Choose `bn_BD`: the Find `total cost` line shows ৳ at the stated rate; choose `en_MY`: RM. The USD base and the Project Order amount stay the same in both.
+
 ## 5. Rules for the agent (read before the first edit)
 - Spec before code: write each step's SPEC lines here first, if they need more detail than above.
 - Witnesses: start from `bim-ootb/witness_kit/contract.js`. A verdict prints INCONCLUSIVE, never PASS, when nothing was judged. Each claim names the issue it proves or disproves, and has a falsifier.
