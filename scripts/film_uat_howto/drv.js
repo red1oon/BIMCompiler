@@ -84,8 +84,25 @@ D.scrollInto = async (sel, margin) => {   // scroll with the mouse wheel, as a p
     await D.wheel(!up, n); await sleep(450); }   // smooth scrolling keeps moving after the last notch: let it settle before measuring again
   throw new Error('could not scroll to ' + sel);
 };
+// §5.15: a panel that scrolls INSIDE itself (the Modeller's #dm-body): the wheel over the panel, until the target is inside the scroller's shown box (the margin is a wish, §5.10)
+D.scrollIn = async (target, scroller, margin) => {
+  margin = margin === undefined ? 60 : margin; const sb = await D.box(scroller);
+  const m = D.mouse(); if (!(m.x > sb.x + 20 && m.x < sb.x + sb.w - 20 && m.y > sb.y + 20 && m.y < sb.y + sb.h - 20)) await D.moveTo(sb.x + sb.w * 0.55, sb.y + sb.h * 0.5);
+  for (let i = 0; i < 60; i++) {
+    const b = await D.box(target), top = sb.y + margin, bot = sb.y + sb.h - margin; if (b.y >= top && b.y + Math.min(b.h, sb.h - 2 * margin) <= bot) return b;
+    const up = b.y < top, st = await D.page.evaluate(s => { const e = document.querySelector(s); return { y: e.scrollTop, max: e.scrollHeight - e.clientHeight }; }, scroller);
+    if ((up ? st.y <= 0 : st.y >= st.max - 1) && b.y >= sb.y && b.y + b.h <= sb.y + sb.h) { log('§FILM_SCROLL ' + (typeof target === 'string' ? target : 'locator') + ' in ' + scroller + ' at=' + (up ? 'top' : 'end') + ' y=' + Math.round(b.y)); return b; }
+    const dist = up ? top - b.y : b.y + Math.min(b.h, sb.h - 2 * margin) - bot, n = Math.max(1, Math.min(8, Math.round(dist / 110)));
+    await D.wheel(!up, n); await sleep(450); }
+  throw new Error('could not scroll to ' + (typeof target === 'string' ? target : 'locator') + ' in ' + scroller);
+};
+// §5.15: a list (<select>): click it, type the option's first letters, Enter (a keyboard pick, as a person does); the caller checks the value after
+D.pickSelect = async (target, text, label) => { await D.aimClick(target, { label: label || 'the list' }); await sleep(500); await D.type(text, 120); await sleep(300); await D.key('Return', 'choose ' + text); await sleep(600); };
+// §5.15: a press, an eased move, a release from one screen point to another (the exclude box); button 3 = a right-drag (OrbitControls pans)
+D.dragFromTo = async (x0, y0, x1, y1, opt) => { opt = opt || {}; const btn = opt.button || 1; await D.moveTo(x0, y0, opt.dur0); const t = now(); X('mousedown', btn); EV.clicks.push({ t, x: Math.round(x0), y: Math.round(y0), n: 0, button: btn, label: opt.label || 'drag start' });
+  await sleep(150); await D.moveTo(x1, y1, opt.dur || 1.2); await sleep(150); X('mouseup', btn); log('§FILM_PTR drag from=' + Math.round(x0) + ',' + Math.round(y0) + ' to=' + Math.round(x1) + ',' + Math.round(y1) + ' button=' + btn + (opt.label ? ' (' + opt.label + ')' : '')); await sleep(400); };
 // ---- keys: typed text (each character logged for its key sound) and named keys
-D.type = async (text, delay) => { delay = delay || 105; const t0 = now(); X('type', '--delay', delay, text); for (let i = 0; i < text.length; i++) EV.keys.push({ t: t0 + i * delay / 1000, k: 'k' }); log('§FILM_KEYS typed=' + JSON.stringify(text) + ' n=' + text.length); await sleep(200); };
+D.type = async (text, delay) => { delay = delay || 105; const t0 = now(); X('type', '--delay', delay, '--', text); /* '--': a text that starts with '-' (a negative z, §5.15) is not an option */ for (let i = 0; i < text.length; i++) EV.keys.push({ t: t0 + i * delay / 1000, k: 'k' }); log('§FILM_KEYS typed=' + JSON.stringify(text) + ' n=' + text.length); await sleep(200); };
 D.key = async (combo, label) => { const t = now(); X('key', combo); EV.keys.push({ t, k: /Return|KP_Enter/.test(combo) ? 'r' : 'k', combo }); log('§FILM_KEY ' + combo + (label ? ' (' + label + ')' : '')); await sleep(350); };
 // ---- files that land
 // WHICH TAB CHROME SHOWS: Playwright's CDP attach makes every tab report document.visibilityState 'visible' (measured: two tabs both 'visible'), so that is no evidence.
