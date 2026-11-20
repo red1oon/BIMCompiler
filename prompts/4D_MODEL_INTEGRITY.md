@@ -4841,3 +4841,36 @@ ordering everything no bond orders (rule D) — trade interaction is the grid's 
   PASS, where a claim's population is empty.
 - **Proof owed:** the seven §SHIM_BONDS lines; `run_4d_gates.sh` GREEN 17/17; played instants hash-equal on all seven (S1 changes no schedule);
   no served file changes (no sw bump).
+### Q.37.3 RESULT S1 — APPLIED (2026-11-20, bim-ootb PR #3353, branch `feat/4d-shim-bonds-report`; logs `…/b96992a9…/scratchpad/q37/`)
+- `viewer/shim_bonds.js` (kindOf · TABLE · relsOf · compute · capOf / srcOf), `scripts/lib/shim_bonds_run.js` (one loader), `scripts/shim_bonds_report.js`,
+  `viewer/tests/witness_shim_bonds.js` = **gate 17**. No viewer page loads the module; played instants unchanged (cache dirs untouched); no sw bump.
+  `run_4d_gates.sh` **GREEN 17/17**; witness 45 pass / 0 fail / 5 INCONCLUSIVE (B6 where no landing is declared: Duplex, JKR, Terminal, Hospital, LTU).
+- **Spec corrections made while building, recorded:** (1) the two relation tests are NOT made exclusive (`relsOf` → below / spans / above): the election
+  asks "below" first, so a wall round a window reads "below" there; with the exclusive split `opening_fill` was `misplaced` 35 of 38 on Duplex, with
+  the non-exclusive one 2 of 38. (2) a fourth lost reason `lost(no-host)` (contacts exist, none of an offered kind). (3) rows marked `proposed`
+  (bearing wall = "a vertical bearer, like a column", §Q.6 D1; partition on its slab; stair flight / stair part) — without them hosts cannot anchor
+  and windows / landings are lost wholesale. They are NOT signed off and are counted on `§SHIM_TABLE_SOURCE`. (4) relay bonds are excluded from
+  `§SHIM_WOULD_MOVE` (rule C draws no order).
+- **`§SHIM_BONDS` (played layer, boxes only → every bond `angle=unverified`):**
+  | building | n | bonded | untabled | no-contact | no-host | unanchored | misplaced | seeds / waves | bonds by source: dry-run / mined / proposed |
+  |---|---:|---:|---:|---:|---:|---:|---:|---|---|
+  | Duplex | 1,119 | 1,009 (90.2 %) | 75 | 0 | 6 | 8 | 21 | 18 / 7 | 527 / 431 / 44 |
+  | HHS | 6,839 | 5,811 (85.0 %) | 674 | 11 | 172 | 137 | 34 | 163 / 11 | 5,277 / 218 / 153 |
+  | JKR | 8,985 | 5,797 (64.5 %) | 2,691 | 1 | 63 | 198 | 235 | 16 / 9 | 4,786 / 646 / 361 |
+  | Clinic | 16,071 | 14,723 (91.6 %) | 544 | 26 | 95 | 535 | 148 | 132 / 10 | 11,559 / 2,141 / 991 |
+  | Terminal | 48,428 | 10,034 (20.7 %) | 34,602 | 21 | 1,191 | 2,448 | 132 | 265 / 11 | 8,373 / 1,329 / 331 |
+  | Hospital | 63,182 | 55,260 (87.5 %) | 7,410 | 13 | 85 | 274 | 140 | 582 / 36 | 39,866 / 13,900 / 1,466 |
+  | LTU ⚠ local DB (§Q.36.5) | 122,330 | 104,191 (85.2 %) | 9,146 | 413 | 5,533 | 2,620 | 427 | 278 / 19 | 95,000 / 6,064 / 3,054 |
+- **Untabled, the sign-off list (`§SHIM_UNTABLED`):** `IfcBuildingElementProxy` (HHS 665, JKR 1,798, Hospital 5,729, LTU 1,642), **Terminal `IfcPlate`
+  33,324** (its aggregate parents are not elements, so they cannot be told façade — the §Q.33.11 JKR problem again), non-façade `IfcMember` (LTU 2,349,
+  JKR 575, Terminal 442), `IfcFlowController` / `IfcValve` (LTU 3,802, Hospital 470, Clinic 369), furniture, railings, `IfcRoof`.
+- **What the lost / misplaced structure says (`§SHIM_WHY` probe):** JKR columns with every contact ABOVE them (nothing modelled below); LTU beams
+  resting on timber `IfcMember`s that have no row (103 + 22 + …, `lost(unanchored)`); Duplex bearing walls touching only a slab above and another
+  unanchored wall. These are model gaps or table gaps, named, not scheduling errors.
+- **`§SHIM_WOULD_MOVE` (bonded, relay excluded, a host ENDS after the element starts on today's played layer — what S3 would change):** Duplex 73
+  (segments 62) · HHS 3 · JKR 237 (fixtures 151, columns 64) · Clinic 656 (fixtures 291, segments 230, bearing walls 74) · Terminal 266 · Hospital 849
+  (segments 563, façade parts 165) · LTU 304. Fixtures lead on three buildings: that is Q1 (ceiling before fitting) in numbers.
+- **`§SHIM_VS_ELECTION`:** the bond's host is the election's host on a minority (Duplex 330 same / 637 other; Hospital 9,125 / 45,453), mostly services,
+  where the election's pool override picks structure and the bond picks the stated hang or run. Not judged here; S3 measures what that changes.
+- **Honest limits:** B4 and B5 hold partly BY the table (no row offers a partition or a façade part to a slab) — they guard the table against edits, the
+  red control proves they can fail. The model's value is not proven by S1; S1 proves it is total, acyclic, deterministic and cheap (7 buildings < 30 s).
