@@ -53,7 +53,7 @@
 
 | Revision | What changed |
 |---|---|
-| 2026-11-20 (b) | Change list item 8: the film *UAT, hands on, part 2* is made (A3.1 Pack In; B0 on the sheets as drawn; Arrange; a full PASS at B5); *See how* item 2 says so. Its link is added when it is uploaded. No step changed |
+| 2026-11-20 (b) | Change list item 8 and *See how* item 2: film part 2 made. No step changed |
 | 2026-11-20 | The page *Changes since the signed UAT report* (after this cover); the pages *What is this?* (with *How do I pass?*: the UAT Run Checker and the result file to send back) and *Contents* with page numbers; *See how*, the films (1 linked, 2 pending); a table that fits on a page is no longer cut in two (a long one repeats its header row); A3.1 the Pack In window's steps and result; B3.1 the second currency note |
 | 2026-11-19 | This cover; each section on a new page; page numbers; every link in the PDF opens the public site |
 | 2026-11-18 | Corrections found by the UAT dry run: A1 links the Developer Guide §3 setup; D2b, D3, D8 figures for a fresh GardenWorld; D9 goals refresh every 30 minutes; B4.4 the model's line under Task Line |
