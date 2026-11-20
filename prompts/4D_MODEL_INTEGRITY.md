@@ -5346,7 +5346,7 @@ dry. v2 shipped: it keeps the true hung edges v1 dropped to the wave order (`§E
   (`bears-on-top` the joist floor / ground slab); programme days / tasks; six other buildings unchanged (no such slab); `run_4d_gates.sh`, re-locks named.
 - **Seen on the way, NOT fixed (data, not rule):** Duplex's two *Wood Joist* floor slabs carry boxes of 3.7 m x 17 m (x -0.2..3.5 and 5.4..9.1) where
   the house is 8 m wide — a strip 3.5..5.4 has tile and no structural floor box. An extraction / box question for the Duplex DB.
-### Q.48.1 RESULT — APPLIED, with a smaller gain than the spec implied (2026-11-20, bim-ootb PR #3367; logs `~/.cache/bim4d/q48_logs_2026-11-20/`)
+### Q.48.1 RESULT — APPLIED, with a smaller gain than the spec implied (2026-11-20, bim-ootb PR #3372; logs `~/.cache/bim4d/q48_logs_2026-11-20/`)
 - **Kinds:** Duplex's 14 finish slabs are now `floor_finish`; they bond `bears-on-top` (bonded 1,008 → 1,009). No other building has a slab filed
   `Finishes`; none of their values moved.
 - **B9 Duplex 37 → 32, not → 5.** The 32 pipes no longer hang from a tile — they now hang from the ROOF (`Basic Roof`, z 6.00, 2.9 m above the tile,
