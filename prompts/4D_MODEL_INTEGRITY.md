@@ -5319,7 +5319,13 @@ dry. v2 shipped: it keeps the true hung edges v1 dropped to the wave order (`§E
 - **Consequence to know:** the gates judge the REPO patches; on HHS / Terminal / Hospital the bucket serves a different (older + this block) file,
   exactly as before this step. That gap predates §Q.44 and is not closed here; §Q.38's "local-vs-served check" for Terminal and Hospital is the same
   item and now has its measurement: the patches differ, by the blocks named above.
-- **Not witnessed:** browser / bake on the live buildings. **Undo:** remove the block's 6 lines from the served file, put it back through the gate.
+- **Post-upload witness (`apply_served.log`) — the gate applies with the sqlite3 CLI, the browser does not, so:** each patch AS SERVED (fetched over
+  HTTPS) applied to its database AS SERVED through the viewer's own chunker (`scripts/lib/apply_building_patch.js`, mode `all`): 6 / 6 PASS, `failed=[]`
+  on every one (statements Duplex 192, HHS 2,241, Terminal 35,098, Hospital 19,219, LTU 44, Clinic 26), `element_predefined_type` rows = coverings.
+- **A CI scare, checked not assumed:** on #3366 the job `live-json-editor` (a headless browser on the LIVE site, building `Ifc2x3_Duplex_Federated`)
+  timed out at 180 s one minute after the Duplex upload. Re-run of the same job with the uploaded patch in place: **pass**. A transient navigation
+  timeout, and incidentally a browser load of the live Duplex after the upload.
+- **Not witnessed:** a schedule generated in a browser on the live buildings; bake. **Undo:** remove the block's 6 lines from the served file, put it back through the gate.
 ### Q.47.1 ▶ RESUME HERE (2026-11-20)
 1. **⛔ Owner ruling: where pipe / duct INSULATION is filed** (§Q.44.2 item 2). LTU live now schedules its 24,321 pieces of lagging in `Finishes`.
 2. **⛔ Owner decision: the unshipped blocks in the HHS / Terminal / Hospital repo patches** (surface names; Terminal transform repair) — upload,
