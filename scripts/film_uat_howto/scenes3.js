@@ -201,8 +201,17 @@ module.exports = (S, PREP, D, H) => {
   const RCV = /Received|Half paid|Paid in full/, INV = /Half paid|Paid in full/;
   const onhand = pr => num(sql("select coalesce(sum(s.qtyonhand),0) from m_storageonhand s join m_product p on p.m_product_id=s.m_product_id join m_locator l on l.m_locator_id=s.m_locator_id where p.value='" + pr + "' and l.value='Default HQ Locator'"));   // B:READ (declared): the Storage per Product window's figure
   const stdcost = pr => sql("select coalesce(max(c.currentcostprice),0) from m_cost c join m_product p on p.m_product_id=c.m_product_id join m_costelement e on e.m_costelement_id=c.m_costelement_id where p.value='" + pr + "' and e.costelementtype='M' and e.costingmethod='S'");   // B:READ (declared): the Product window's Costs tab
-  const openWin = async (name) => { const crumb = D.page.locator('.adwindow-breadcrumb a:visible', { hasText: new RegExp('^\\s*' + name + '\\s*$') }); const tab = D.page.locator('li.z-tab:visible', { hasText: new RegExp('^\\*?\\s*' + name) });
-    if (await crumb.count()) await zk.parent(name); else if (await tab.count()) { await zAim(tab.first(), { label: name + ' (its tab)' }); await zk.idle(1500); } else await zk.open(name); };
+  // a window already open is reached by its tab. iDempiere cuts a long tab title ('Purchase Invoice and Credit...'), so the tab is matched on the title's first 22 characters
+  // (rehearsal 2026-11-20: the full name never matched and three invoice windows piled up). Before a NEW window opens, the oldest window tabs are closed until two are left,
+  // as a person tidies up: more than about seven tabs push the first ones off the strip, where the pointer cannot reach them.
+  const wtabs = () => D.page.locator('li.z-tab:visible').filter({ has: D.page.locator('.z-tab-button') });
+  const openWin = async (name) => { const crumb = D.page.locator('.adwindow-breadcrumb a:visible', { hasText: new RegExp('^\\s*' + name.replace(/[()/]/g, '\\$&') + '\\s*$') });
+    const head = name.slice(0, 22).replace(/[()/]/g, '\\$&'), tab = D.page.locator('li.z-tab:visible', { hasText: new RegExp('^\\*?\\s*' + head + (name.length > 22 ? '' : '(:|\\s*$)')) });
+    if (await crumb.count()) return zk.parent(name);
+    if (await tab.count()) { const bx = await tab.first().boundingBox(); if (bx && bx.x >= 0) { await zAim(tab.first(), { label: name + ' (its tab)' }); await zk.idle(1500); return; } }
+    for (let i = 0; i < 12 && await wtabs().count() > 2; i++) { const t = wtabs().first(), nm = (await t.innerText()).trim().slice(0, 40); const bx = await t.boundingBox(); if (!bx || bx.x < 0) { D.check(false, 'window_tab_reachable', nm + ' is off the tab strip'); break; }
+      await D.aimClick(t.locator('.z-tab-button').first(), { label: '× (close ' + nm + ')' }); await zk.idle(1200); }
+    await zk.open(name); };
   const createFrom = async (dlgText, docno, what) => {   // the Create lines from dialog: its Order list -> the order, the line ticked, its own button
     await zAim(D.page.locator('button.form-button:visible', { hasText: 'Create lines from' }).first(), { label: 'Create lines from' }); await zk.idle(2500);
     const w = D.page.locator('.z-window:visible', { hasText: dlgText }).last(); if (!(await w.count())) { D.check(false, what + '_dialog_opened', dlgText); return false; }
@@ -281,8 +290,12 @@ module.exports = (S, PREP, D, H) => {
   for (const row of PLAN) if (row.co && RCV.test(row.far || '')) { S['c2_' + row.project] = recScene(row); PREP['c2_' + row.project] = async () => onIdemp(); }
   H.recScenes = PLAN.filter(r => r.co && RCV.test(r.far || '')).map(r => 'c2_' + r.project);
   // ---------------- c4: C4.1 Set Project Type -> Work Order (Job); C4.2 Issue to Project; C4.3 the Issues tab; C4.4 Project Balance (one scene per project with an issue)
-  const lookup = async (key) => { await zk.tool('Lookup Record', 'Lookup Record'); const w = D.page.locator('.z-window:visible').filter({ hasText: 'Lookup Record' }).last();
-    const vf = w.locator('input[instancename="Value"], [instancename="Value"] input').first(); await zAim(vf, { label: 'Search Key' }); await D.key('ctrl+a', 'select what is there'); await D.type(key); await zAim(w.locator('button.img-btn[title^="OK"]').first(), { label: 'OK (Lookup)' }); await zk.idle(2500);
+  // the Project window may have been left on a child tab or in grid view by the scene before: back to the header's form, as a person does (breadcrumb, then Grid Toggle)
+  const hasF = (t, c) => D.page.evaluate(([t, c]) => [...document.querySelectorAll('[instancename]')].some(x => x.getBoundingClientRect().width > 0 && new RegExp('^' + t + '\\d+' + c + '$').test(x.getAttribute('instancename'))), [t, c]);
+  const onHeader = async (t) => { for (let k = 0; k < 3; k++) { if (await hasF(t, 'Value')) return true; const crumb = D.page.locator('.adwindow-breadcrumb a:visible').first();
+      D.log('§FILM_NOTE ' + t + '.Value not on screen (try ' + k + '): ' + (k === 0 && await crumb.count() ? 'breadcrumb' : 'Grid Toggle')); if (k === 0 && await crumb.count()) { await zAim(crumb, { label: 'the window\'s first tab (breadcrumb)' }); await zk.idle(1500); } else await zk.tool('Grid Toggle', 'Grid Toggle (form view)'); } return hasF(t, 'Value'); };
+  const lookup = async (key) => { await onHeader('C_Project'); await zk.tool('Lookup Record', 'Lookup Record'); const w = D.page.locator('.z-window:visible').filter({ hasText: 'Lookup Record' }).last();
+    const vf = w.locator('input[instancename="Value"], [instancename="Value"] input').first(); await zAim(vf, { label: 'Search Key' }); await D.key('ctrl+a', 'select what is there'); await D.type(key); await zAim(w.locator('button.img-btn[title^="OK"]').first(), { label: 'OK (Lookup)' }); await zk.idle(2500); await onHeader('C_Project');
     const v = await zk.val(await zk.inst('C_Project', 'Value')); D.check(v === key, 'lookup_found ' + key, JSON.stringify(v)); return v === key; };
   // OK on a process dialog, then its result as iDempiere writes it: the process panel keeps it after '**' (measured: '** Created 1'); a dialog that closes leaves it in the window's status
   const procOk = async (label) => { const dlg = D.page.locator('.z-window:visible').filter({ has: D.page.locator('button.btn-ok') }).last(); const h = await dlg.elementHandle();
@@ -326,6 +339,9 @@ module.exports = (S, PREP, D, H) => {
     // B:READ (declared) for every project; C4.3 / C4.4 show the windows for the guide's three named projects
     const n1 = num(sql("select count(*) from c_projectissue i join c_project p on p.c_project_id=i.c_project_id where p.value='" + row.project + "'")), bal1 = num(sql("select projectbalanceamt from c_project where value='" + row.project + "'")), want = r2(num(d.qty) * num(PROD[d.product].cost));
     D.check(n1 === n0 + 1, 'c43_one_issue_line ' + row.project, n0 + ' -> ' + n1); D.check(r2(bal1 - bal0) === want, 'c44_balance_rose_qty_x_standard_cost ' + row.project, bal0 + ' -> ' + bal1 + ' (' + d.qty + ' x ' + PROD[d.product].cost + ' = ' + want + ')');
+    // each Issue to Project opens its own tab; nine of them push the window tabs off the strip (rehearsal 2026-11-20: the Project tab sat at x = -86, the pointer could not reach it): close it, as a person does
+    const tx = D.page.locator('li.z-tab:visible', { hasText: /Issue to Project/ }).last().locator('.z-tab-button').first(); if (await tx.count()) { await D.aimClick(tx, { label: '× (close Issue to Project)' }); await zk.idle(1200); }
+    D.check(await D.page.locator('li.z-tab:visible', { hasText: /Issue to Project/ }).count() === 0, 'c42_tab_closed ' + row.project);
     D.cue(id + '_end'); await D.sleep(1500); };
   // C4.3 + C4.4 shown in the windows for the projects whose figures the guide's C4.4 gives (parsed: '*TD_X* q × c = **v**')
   const c44row = (MD.split('\n').find(l => /^\| C4\.4 \|/.test(l)) || ''), NAMED = []; let mm; const rxN = /\*(TD_[A-Z]+)\* ([\d,.]+) × ([\d.]+) = \*\*([\d,.]+)\*\*/g; while ((mm = rxN.exec(c44row))) NAMED.push({ project: mm[1], qty: mm[2], cost: mm[3], bal: mm[4] });
@@ -352,9 +368,18 @@ module.exports = (S, PREP, D, H) => {
     const id = 'c5_' + C5; D.cue(id + '_start', { project: C5 }); const t0 = num(sql("select count(*) from c_projectphase ph join c_project p on p.c_project_id=ph.c_project_id where p.value='" + C5 + "' and ph.iscomplete='Y'")), tot = num(sql("select count(*) from c_projectphase ph join c_project p on p.c_project_id=ph.c_project_id where p.value='" + C5 + "'"));
     const next = sql("select ph.name from c_projectphase ph join c_project p on p.c_project_id=ph.c_project_id where p.value='" + C5 + "' and ph.iscomplete='N' order by ph.seqno limit 1");   // B:READ (declared): which row is the next unticked one
     await openWin('Project'); if (!(await lookup(C5))) return; if (!(await phaseTab(C5))) return; D.cue(id + '_phase');
-    const r = D.page.locator('tr.adtab-grid.z-row:visible', { hasText: next }).first(); if (await r.count()) { await zAim(r, { label: 'phase ' + next }); await zk.idle(800); await zk.tool('Grid Toggle', 'Grid Toggle (form view)'); }
+    // the Phase tab sits under the header as a list: click the phase's name (the row is selected and shows its pencil), then the pencil (Edit Record) opens that phase as a form.
+    // (The window's Grid Toggle acts on the HEADER while the list is below it: rehearsal 2026-11-20, it turned the header into a grid and the phase stayed a list.)
+    const asForm = await hasF('C_ProjectPhase', 'Name'); if (asForm) D.log('§FILM_NOTE the Phase tab opened as a form (left so by an earlier visit)');
+    const r = D.page.locator('tr.adtab-grid.z-row:visible', { hasText: next }).first(); if (!asForm) { if (!D.check(await r.count() === 1, 'c51_phase_row_listed', next)) return;
+    await zAim(r.locator('td.z-cell', { hasText: new RegExp('^\\s*' + next + '\\s*$') }).first(), { label: 'phase ' + next }); await zk.idle(1000);
+    await zAim(r.locator('td[title="Edit Record"]').first(), { label: 'Edit Record (the pencil)' }); await zk.idle(2500); }
     const cx = zk.f(await zk.inst('C_ProjectPhase', 'IsComplete')); const nm = await zk.val(await zk.inst('C_ProjectPhase', 'Name'));
     if (!D.check(nm === next, 'c51_row_is_next_phase', JSON.stringify(nm) + ' next=' + next)) return;
+    // FIND (rehearsal 2026-11-20): Save refused, 'Fill mandatory fields: Invoice Rule'. The pack's phases carry no Invoice Rule; iDempiere's own default for a phase is the
+    // project's (AD_Column C_ProjectPhase.ProjInvoiceRule DefaultValue @ProjInvoiceRule@), so the project's own rule is chosen (B:READ, declared: its name from the project row)
+    const ir = await zk.inst('C_ProjectPhase', 'ProjInvoiceRule'); if (!(await zk.val(ir))) { const rule = sql("select l.name from c_project p join ad_ref_list l on l.value=p.projinvoicerule join ad_column c on c.ad_reference_value_id=l.ad_reference_id join ad_table t on t.ad_table_id=c.ad_table_id where p.value='" + C5 + "' and t.tablename='C_Project' and c.columnname='ProjInvoiceRule'");
+      find('C5.1_invoice_rule', 'the pack phases carry no Invoice Rule and the Phase form refuses to save without it (Fill mandatory fields: Invoice Rule); the project\'s own rule is chosen: ' + rule); D.cue(id + '_rule'); if (!(await zk.combo(ir, rule, 'Invoice Rule'))) return; }
     await zAim(cx.locator('input, label').first(), { label: 'Complete' }); await zk.idle(600); D.cue(id + '_tick'); if (!(await zk.saved('phase ' + next))) return;
     const t1 = num(sql("select count(*) from c_projectphase ph join c_project p on p.c_project_id=ph.c_project_id where p.value='" + C5 + "' and ph.iscomplete='Y'"));
     D.check(t1 === t0 + 1, 'c51_phase_stays_ticked ' + C5, t0 + ' -> ' + t1 + ' of ' + tot);   // guide C5.1: 'The phase stays ticked (for TD_DEPOT 2 of 4 now)'
@@ -366,30 +391,36 @@ module.exports = (S, PREP, D, H) => {
     for (const p of D.pages()) if (/8108\/webui/.test(p.url())) await p.close().catch(() => {});
     const ck = (await D.page.context().cookies()).filter(c => /localhost/.test(c.domain) && String(c.port || '') !== 'x'); await D.page.context().clearCookies({ domain: 'localhost' }).catch(async () => { await D.page.context().clearCookies(); });
     D.page = D.pages()[D.pages().length - 1]; await D.page.bringToFront(); D.log('§FILM_PREP c0 iDempiere tabs closed, cookies for localhost cleared (' + ck.length + ')'); };
-  S.c0 = async () => {
-    D.cue('c0_start'); D.log('§FILM_PLAN ' + JSON.stringify(PLAN)); D.log('§FILM_PROD ' + JSON.stringify(PROD)); await D.key('ctrl+t', 'a new tab'); await D.sleep(1200); await D.usePage(/^(about:blank|chrome:\/\/new-tab-page|chrome:\/\/newtab)/); await D.page.bringToFront();
-    await D.aimClick(OMNIBOX, { label: 'the address bar' }); await D.type(H.IDEMP); await D.key('Return', 'open iDempiere');
-    await D.waitUrl(/8108\/webui/, 60000); await D.page.waitForFunction(() => document.querySelectorAll('input.z-textbox').length >= 2, null, { timeout: 90000 }); await D.sleep(1500);
+  // the log in form, as a person fills it (c0, and again at D9): user, password, Select Role, OK; Chrome's own two windows; HQ / HQ Warehouse; Home
+  const loginForm = async (tag) => {
     const boxes = D.page.locator('input.z-textbox'); await D.aimClick(boxes.nth(0), { label: 'User' }); await D.key('ctrl+a', 'select what is there'); await D.type('GardenAdmin'); await D.aimClick(boxes.nth(1), { label: 'Password' }); await D.key('ctrl+a', 'select what is there'); await D.type('GardenAdmin');   // ctrl+a: a box Chrome filled in is replaced, not appended to
     // §5.16 find: with the default Organization '*' a purchase order refuses to save ('Fill mandatory fields: Organization, Warehouse', measured 2026-11-20); the guide names no
     // organization, so the film ticks Select Role and chooses HQ and HQ Warehouse, as the UAT Dry Run's login did (lib/zk.js role(pg,'HQ','HQ')). Change list item, appended.
     const sr = D.page.locator('.z-checkbox:visible', { hasText: 'Select Role' }).first(); const on = await sr.locator('input').isChecked().catch(() => false);
     if (!on) { await D.aimClick(sr.locator('label, input').first(), { label: 'Select Role' }); await D.sleep(500); }
-    D.check(await sr.locator('input').isChecked().catch(() => false), 'c0_select_role_ticked');
+    D.check(await sr.locator('input').isChecked().catch(() => false), tag + '_select_role_ticked');
     await D.aimClick(D.page.locator('button.btn-ok:visible').first(), { label: 'OK (log in)' }); await D.sleep(4000); await H.chromePwWarn('after log in');
-    await D.page.waitForFunction(() => document.querySelectorAll('span.z-combobox').length >= 4, null, { timeout: 60000 }); await D.sleep(1200); D.cue('c0_role');
+    await D.page.waitForFunction(() => document.querySelectorAll('span.z-combobox').length >= 4, null, { timeout: 60000 }); await D.sleep(1200); D.cue(tag + '_role');
     const cbs = D.page.locator('span.z-combobox:visible'); await zk.combo(cbs.nth(2), 'HQ', 'Organization'); await zk.combo(cbs.nth(3), /^\s*HQ/, 'Warehouse');
     const rv = await D.page.evaluate(() => [...document.querySelectorAll('span.z-combobox')].filter(e => e.getBoundingClientRect().width > 0).map(e => e.querySelector('input').value));
-    D.check(rv[2] === 'HQ' && /^HQ/.test(rv[3] || ''), 'c0_role_org_hq_warehouse_hq', JSON.stringify(rv));
+    D.check(rv[2] === 'HQ' && /^HQ/.test(rv[3] || ''), tag + '_role_org_hq_warehouse_hq', JSON.stringify(rv));
     const which = await D.page.waitForFunction(() => document.querySelector('input.z-bandbox-input[placeholder="Alt+G"]') ? 'home' : (/Select Role/.test((document.querySelector('.login-box-header-txt') || {}).innerText || '') ? 'role' : null), null, { timeout: 60000 }).then(h => h.jsonValue());
     if (which === 'role') { await D.sleep(1500); await D.aimClick(D.page.locator('button.btn-ok:visible').first(), { label: 'OK (role)' }); await D.sleep(2500); await H.chromePwWarn('after role'); }
-    await D.page.waitForSelector('input.z-bandbox-input[placeholder="Alt+G"]:visible', { timeout: 90000 }); D.check(true, 'c0_home_shown', which);
+    await D.page.waitForSelector('input.z-bandbox-input[placeholder="Alt+G"]:visible', { timeout: 90000 }); D.check(true, tag + '_home_shown', which);
     // Chrome's own 'Save password?' bubble (top right) stays open after the login and takes the keys and clicks meant for the page (measured 2026-11-20: a typed project went
     // nowhere): the film presses its 'No thanks', read on the screen, as a tester would
     for (let i = 0; i < 6; i++) { const nt = await D.findText(t => /^thanks$/i.test(t), D.screenBox(1000, 60, 920, 420, 'Chrome Save password bubble'), 2, true);
       if (!nt) { if (i >= 2) { D.log('§FILM_NOTE no Chrome Save password bubble'); break; } await D.sleep(1000); continue; }
-      D.cue('c0_savepw'); await D.aim(D.screenBox(nt.x - 40, nt.y - 8, nt.w + 50, nt.h + 16, 'No thanks'), { label: 'No thanks (Chrome: Save password?)' }); await D.click({ label: 'No thanks' }); await D.sleep(1200);
-      const gone = !(await D.findText(t => /^thanks$/i.test(t), D.screenBox(1000, 60, 920, 420, 'Chrome Save password bubble'), 2, true)); D.check(gone, 'chrome_save_password_bubble_closed'); break; } D.log('§FILM_HOME_OPENED t=' + D.now().toFixed(0) + ' (D9: Home goals recalculate only when older than 30 min)');
+      D.cue(tag + '_savepw'); await D.aim(D.screenBox(nt.x - 40, nt.y - 8, nt.w + 50, nt.h + 16, 'No thanks'), { label: 'No thanks (Chrome: Save password?)' }); await D.click({ label: 'No thanks' }); await D.sleep(1200);
+      const gone = !(await D.findText(t => /^thanks$/i.test(t), D.screenBox(1000, 60, 920, 420, 'Chrome Save password bubble'), 2, true)); D.check(gone, 'chrome_save_password_bubble_closed'); break; } stSet('home.opened', D.now().toFixed(0)); D.log('§FILM_HOME_OPENED t=' + D.now().toFixed(0) + ' (D9: Home goals recalculate only when older than 30 min)');
+  };
+  H.loginForm = loginForm; H.find = find; H.num = num; H.r2 = r2; H.MD = MD; H.openWin = openWin; H.lookup = lookup;
+  S.c0 = async () => {
+    D.cue('c0_start'); D.log('§FILM_PLAN ' + JSON.stringify(PLAN)); D.log('§FILM_PROD ' + JSON.stringify(PROD)); await D.key('ctrl+t', 'a new tab'); await D.sleep(1200); await D.usePage(/^(about:blank|chrome:\/\/new-tab-page|chrome:\/\/newtab)/); await D.page.bringToFront();
+    await D.aimClick(OMNIBOX, { label: 'the address bar' }); await D.type(H.IDEMP); await D.key('Return', 'open iDempiere');
+    await D.waitUrl(/8108\/webui/, 60000); await D.page.waitForFunction(() => document.querySelectorAll('input.z-textbox').length >= 2, null, { timeout: 90000 }); await D.sleep(1500);
+    await loginForm('c0');
     D.cue('c0_home'); await D.sleep(2500); D.cue('c0_end');
   };
+  require('./scenes3d.js')(S, PREP, D, H);
 };
