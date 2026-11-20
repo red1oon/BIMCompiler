@@ -4937,3 +4937,25 @@ ordering everything no bond orders (rule D) — trade interaction is the grid's 
 - **▶ NEXT:** S3 in its order — (a) wire `ShimBonds.compute` into `_buildScheduleElements` (viewer loads `shim_bonds.js`; sw bump), flag
   `supportSource='bonds'` default off; (b) the ceiling rule above as its first reader, measured on seven, gates, re-lock named; (c) the election returns the
   bond's host, the D1 / D2 / D3 / D5 / D7 / ground-band clauses deleted in the same PR.
+
+### Q.39 SPEC — S3 first reader: STANDARD PRACTICE FOR ALL, a suspended ceiling is close-up work (2026-11-20, ruling Q1 §Q.38.1)
+- **The rule (every building, one place):** per level the trade order is rough-in → close-up → MEP final → finishes. A ceiling is closed before the
+  fittings that hang from it; a floor finish is laid last. Today `IfcCovering` is one class rule, `Finishes` sequence 10 (`rates.js`).
+- **The fact:** the bond. A covering bonded `hangs-below` is a ceiling; one bonded `bears-on-top` is a floor finish; an unbonded covering keeps the
+  class rule (counted). No name is read (`Compound Ceiling` / `Abgehängte …` are language-bound).
+- **Code:** `ShimBonds.applyCeilings(els, who)` — ONE mutation (pattern: `applyBearingWalls`): ceiling → `phase='Architecture Closeup'`, `seq=8`;
+  resource, rate and install time unchanged. `ScheduleGate.applyGeometryReclass(els, who)` = bearing walls, then ceilings (the bond's kinds read the
+  promoted walls), called by ALL THREE element recipes (`schedule_author.js`, `tm_gantt_build.js`, `tm_sched_xray.js`) in place of their
+  `applyBearingWalls` call, so the task grid, the movie and the lock gate move the SAME ceilings. In node a missing `ShimBonds` / `CpmSchedule` global
+  is `require`d by the gate itself, so no harness can silently run without the rule; in the browser `viewer.html` loads `shim_bonds.js`.
+  No aggregates are read here (a covering's kind and its hosts' kinds do not depend on them, except a landing slab — counted, not chased).
+- **Template:** `architecture_closeup.trades` is `['CARPENTER']`; the ceiling crew is `FINISHER`. `FINISHER` is added to that phase's trades (the crew
+  works in two phases, as `CONCRETE_GANG` already does); template version bumped. Cost is unchanged by construction (D8: work content × rate).
+- **Cost named (PERF BUDGET):** one contact graph + one bond pass per recipe call — measured in node: Hospital 1.1 s + 0.4 s, LTU 2.7 s + 0.7 s, no
+  new geometry, heap +0. `§CEILING_CLOSEUP … ms=` prints it every run.
+- **§-line:** `§CEILING_CLOSEUP recipe= coverings= ceilings= floorFinish= unbonded= ms=`. A run with coverings and `ceilings=0` says NO-OP.
+- **Witness claim (added to `witness_shim_bonds.js`, B8):** *"no fitting bonded under a ceiling starts before that ceiling ends on the played layer"*
+  — counted before (main) and after; INCONCLUSIVE where no fitting hangs from a ceiling.
+- **Proof owed:** B8 before → after on seven; programme days / task count before → after per building; `run_4d_gates.sh` GREEN 17/17 with every
+  re-locked value named; `_GANTT_CACHE_VERSION` 45 → 46, sw bump; UAT constraint (Shed: the lag edit still moves the finish; no schedule rows written).
+- **Not in this step:** the election still elects (S3c); the rest of the phase table is reviewed against the standard sequence afterwards.
