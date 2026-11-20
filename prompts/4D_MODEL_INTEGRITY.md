@@ -5369,3 +5369,27 @@ dry. v2 shipped: it keeps the true hung edges v1 dropped to the wave order (`§E
    that is not a distance constant.
 5. The 22 small lines of §Q.46's table · 6. profile §Q.43.1's programme moves · 7. delete ONE election clause · 8. phase table vs standard
    practice · 9. sign-off list; S5; S6.
+
+### Q.49 — OWNER, 2026-11-20: *"Follow your advice"* (on the four open items of §Q.48.2) — the advice, recorded, then the first of them as a SPEC
+- **Rulings taken from that sentence (each was put to the owner as advice in the session's report):**
+  1. **Insulation:** standard practice — lagging goes on WITH the pipework of its level, after the pipe, before the ceiling closes (this section).
+  2. **Far hangers:** measure "an element that is fixed to a side or rests on something is not also hung" on seven; ship only if the numbers hold.
+  3. **Duplex box centres:** measure how widespread the shift is before any patch.
+  4. **Unshipped blocks in the HHS / Terminal / Hospital repo patches: LEAVE.** They belong to other lanes (surface names; Terminal's transform
+     repair is the kind of block that was withdrawn from LTU's production patch). Consequence, accepted: on those three the gates judge a patch
+     users do not get; closing that gap is for the lanes that own those blocks.
+- **SPEC — a covering declared INSULATION goes with the pipe it wraps.** Measured first (`~/.cache/bim4d/q49_logs_2026-11-20/probe_ins_base.log`,
+  LTU, the only building that declares any): 24,321 pieces, all filed `Finishes` seq 10 (class rule); **22,168 touch a segment / fitting** among
+  their own contacts (16,487 touch three or more), every such pipe is `MEP Rough-in` seq 7, 20,938 on the pipe's own level label; 2,153 touch none.
+  Today the election gives them a slab (19,053) and they are the last trade on the job.
+  - **Kind** `insulation` = `IfcCovering` declared `INSULATION` (was `covering_other`; MOLDING / CLADDING / … stay `covering_other`).
+  - **Need** `wraps` (relation `touch`, §Q.43 rule J), hosts `segment`, `fitting`, count `one`, source `proposed` (this ruling). It offers nothing.
+  - **Filing:** a bonded insulation piece takes its HOST's phase and sequence (no number authored: whatever the pipe is). Unbonded → the class rule,
+    counted. Trade, rate and install time unchanged (the §CEILING_CLOSEUP pattern) — the trade stays `FINISHER`; a lagging trade is a rates
+    question, named, not decided here.
+  - **Order:** `wraps` is finish-to-start in `§E1_BOND_CARRIERS` (the lagging goes on after its pipe).
+  - **Code:** `viewer/shim_bonds.js` (`kindOf`, `TABLE`, `REL`, the reclass in the one bond pass → `§INSULATION_WITH_PIPE`), `viewer/cpm_schedule.js`
+    (one word in the edge-type test). B11's expectation follows the kind.
+  - **Proof owed, all seven:** `§INSULATION_WITH_PIPE` (LTU: moved / unbonded; six others VACUOUS); LTU programme days / tasks, phase populations,
+    B9, midair, parity, DCMA before → after; six others unchanged; `run_4d_gates.sh`, every re-lock named. **Limit named now:** "tested before
+    lagging" is not modelled — the piece waits for its own pipe, not for a system test.
