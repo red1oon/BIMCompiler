@@ -5358,8 +5358,13 @@ dry. v2 shipped: it keeps the true hung edges v1 dropped to the wave order (`§E
   `shim_bonds.js?v=5`, `_GANTT_CACHE_VERSION` 53, sw v1779. **Not witnessed:** browser / bake.
 ### Q.48.2 ▶ RESUME HERE (2026-11-20)
 1. **⛔ Owner ruling: where pipe / duct INSULATION is filed.** 2. **⛔ Owner decision: the unshipped blocks in the HHS / Terminal / Hospital repo patches.**
-3. **Duplex's Level-2 floor boxes** (two *Wood Joist* slabs, 3.7 m x 17 m each in `element_transforms` where the house is 8 m wide): read the source
-   IFC's geometry for those two guids; if the DB box is wrong it is a patch (extracted fact), and Duplex's 32 should fall with it.
+3. **Duplex's box CENTRES are shifted — measured, not yet patched (item 3 of the list before, done as a read-only check):** IfcOpenShell on
+   `Duplex_ARC.ifc` vs `element_transforms`: the two *Wood Joist* floors really are two 3.71 m x 16.97 m strips (the size in the DB is right), but
+   their centres are off — `1hOSvn…RqU` true x 0.42..4.12, DB -0.18..3.53 (0.59 m); `1hOSvn…RrM` true x 4.67..8.38, DB 5.39..9.10 (0.72 m); the
+   slab on grade `2O2Fr$…` 0.6 m in y; the roof is exact. Of Duplex's 32 remaining pipes 23 lie under a TRUE floor box and miss the shifted one
+   (they sit at x 3.6..5.2, by the party wall). This is the §META_TRANSFORM_REPAIR class of defect: a patch from the source file (extracted
+   fact), for the lane that owns the transform repairs — and it changes rendering, so it is not a 4D-lane edit to make alone.
+   **And 14 of the 32 are vertical stacks, most of the rest drains at z -0.6..0 under the slab on grade:** not hung from anything. Same line as item 4.
 4. **Far "first offerer"** (Terminal 42, LTU 28, Duplex 32 until item 3): a hung bond across metres of clear height is not a hanger; needs a rule
    that is not a distance constant.
 5. The 22 small lines of §Q.46's table · 6. profile §Q.43.1's programme moves · 7. delete ONE election clause · 8. phase table vs standard
