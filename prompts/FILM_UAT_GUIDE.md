@@ -312,3 +312,38 @@ Every build: frames = picture (9,313 in rc3), 31 of 31 lines DETAIL, 0 tone WRON
 - Guide (owner's rule: the signed report untouched, changes appended): revision **2026-11-20 (b)**, change list item **8**, *See how* item 2 "made; link when uploaded". `NOTICES_since_report.md` row 8.
 - `idempiere_film_packin_bak` is still on :8108. Part II did not need it (s13 not re-taken). Drop it once the owner accepts Part II.
 - **2026-11-20, after the owner published Part II (https://youtu.be/WvPgjcMbSwo, guide #1096 live):** `idempiere_bimdoc` checked as found (`TD_`=0, `ad_package_imp_proc`=1, 0 connections to the backup), then `idempiere_film_packin_bak` DROPPED. A future s13 re-take makes its own copy first, as §5.12 says.
+
+### 5.16 SPEC — Part III: B4, chapter C (every document by hand), chapter D (2026-11-20; written before code)
+**Owner, 2026-11-20:** *"Proceed"* (after Part II was published), then two choices. Chapter C: **"All by hand, repeats sped"**: every document goes through the iDempiere windows in one take; the first of each kind plays at normal speed with a line; the repeats are sped ×8 and badged. B3.2–B3.6: **"Start at B4"** (the B3 edits can be an appendix later).
+**Why every document:** chapter D's figures hold only when all of chapter C is made: Within 7 / Over 2 / Not started 5, USD 2,020.45 spent (43 %), USD 6,738.39 in the 5 Drafted orders. The dry run made C through web services (`C.js`, declared programmatic), so no hand path through these windows has been proven yet. This film is the first.
+**Source of every value:** the guide's chapter C tables (projects, products, quantities, *How far*), parsed from `docs/CapexUATGuide.md` at take time as `UATDryRun`'s `lib/guide.js` does, never retyped. Window names, field labels and expected messages are the guide's own words.
+**:8108, around the take (not filmed; the owner allowed copy and restore, 2026-11-20):**
+- Stop the instance; `CREATE DATABASE idempiere_film_p3_bak TEMPLATE idempiere_bimdoc`; start it.
+- A2: `setup_test_instance.sh` (must print `§SETUP_VERDICT PASS`), then a restart.
+- A3.1: Pack In from a folder (`RUN_ApplyPackInFromFolder.sh`; Part II films the window way); A3.6: the products script, then a restart.
+- Check `TD_`=12 and the 5 `PWD-` products before the take; any other count stops the take.
+- After the take: stop, restore `idempiere_bimdoc` from the backup, check `TD_`=0, `ad_package_imp_proc`=1 and the setup verdict as found, start, drop the backup.
+**The take (scenes in guide order; each one checked against the guide's Confirm column):**
+- **r0, B2.9 (sped, no new line):** the Viewer opens the Shed `.db`. PREP puts the pack's `reference/SHED_extracted.db` in `Downloads/`; it has the same bytes size as the tester's export, 1,257,472 B, measured in Parts I and II.
+- **r1–r3, B4.1–B4.4:**
+  - Find panel ▸ a column group ▸ **› ERP**: the status line reads `Project Order: 1 lines · contract … (saved)` and **open ↗** appears.
+  - Press it again: `0 lines`.
+  - **open ↗**, the Kernel ERP sign-in, **GardenAdmin**, Log In: project SHED with the group's planned amount; Phase 1 and Task 1 record; Task Line holds the line; Project Line and Phase Line read 0 records.
+  - The Kernel ERP keeps its data in the browser, so a fresh profile starts it empty.
+- **c1, C1.1 + C1.2:** per purchase-order row, the Purchase Order window: New, header fields, Save, PO Line, New, Product, Quantity, Save. The check is the line price = standard cost, and Total Lines = Grand Total = qty × price. Then Complete where the table says so. Ten orders, six Completed.
+- **c2, C2.1:** four receipts by *Create lines from*.
+- **c3, C3.1 + C3.2:** three invoices and three payments; half for *Half paid*.
+- **c4, C4.1 + C4.2:** nine *Set Project Type* and nine *Issue to Project*.
+  - C4.3 and C4.4 are shown for the three projects whose figures the guide gives (204.35, 577.63, 191.35).
+  - The other six are checked by the witness, from the tables.
+- **c5, C5.1:** TD_DEPOT, the next phase ticked.
+- In every kind, the first document plays at normal speed with a line; each repeat is its own scene, played ×8 and badged `>> x8` (new plan key `speed`; no key or click sounds inside a sped scene).
+- **d0, chapter D's read job (System Setup):**
+  - A terminal on the desk, in the served bim-ootb copy (PREP: a worktree of origin/main served by `python3 -m http.server 8080`, as A1.1/A1.2 say).
+  - Type `BRIDGE_BASE=http://localhost:8108 node capex/tools/legacy_snapshot.js`; the line `§DASH_LEGACY_SNAPSHOT … projects=14 … unavailable=[]` is read off the screen.
+- **d1–d9, D1–D9:** `localhost:8080/capex/index.html?source=legacy`; tiles, drill panel, Procurement, project pages, ƒ formula, Layout/Skin. Each figure is checked against the guide's Confirm text.
+  - D9: if the Home tab was last opened more than 30 minutes before (measured from the take's own log), just log in again. Otherwise, the System Configurator path the guide gives.
+**Witness:**
+- Each Confirm is a `§FILM_CHECK`. The screen is read from the window's own text; a table read (B:READ) is declared in the check's name.
+- The end of the chain is D: every dashboard figure in the guide's D1–D8 equals the tile after the film's own chapter C. 0 FAIL, or a re-take from the failed scene.
+**Not shown:** A2 and A3 (server work, Developer Guide §3 / the dry run; Part II films A3.1 by window), B3.2–B3.6 (owner).
