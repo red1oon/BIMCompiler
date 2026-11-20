@@ -5332,3 +5332,17 @@ dry. v2 shipped: it keeps the true hung edges v1 dropped to the wave order (`§E
    or leave: until then the gates judge a patch users do not get on those three.
 3. Duplex segments 37 (finish-slab offerer) · 4. far "first offerer" (Terminal 42, LTU 28) · 5. the 22 small lines · 6. profile §Q.43.1's
    programme moves · 7. delete ONE election clause · 8. phase table vs standard practice · 9. sign-off list; S5; S6.
+
+### Q.48 SPEC — a slab the run files as a FINISH is a floor finish in the bond table (2026-11-20, owner: *"resume 4D"*; §Q.47.1 item 3)
+- **Issue (measured, `~/.cache/bim4d/q48_logs_2026-11-20/probe_duplex.log`):** Duplex B9 = 37 hung pipes whose host ends after they start. 32 of them
+  hang from a 13-19 mm `IfcSlab` named *Floor: Finish Floor - Ceramic Tile / Wood* at z 3.10 — the run already files those 14 slabs as `Finishes`
+  seq 11 (the §W_D0 C2 name override), but `ShimBonds.kindOf` calls every non-ground `IfcSlab` a `slab`, and a `slab` OFFERS `hangs-below`. So the
+  tile is the pipe's "first offerer above" and the pipe waits for the last trade of the job. The other 5 hang from the roof (§Q.46 table, far hanger).
+- **Rule (`kindOf`'s own contract: *"what the shipped classification already decided for this run"*, as it already reads sequence 1 / Substructure
+  for `ground_slab`):** an `IfcSlab` whose phase is `Finishes` is kind `floor_finish` (§Q.44's kind: need `bears-on-top` a slab; offers nothing).
+  No name is read here; the name override that put it in `Finishes` is the one owner of that decision.
+- **Population:** slabs filed `Finishes` — Duplex 14, the other six 0 (`probe_slabhost_base.log` §Q.46: slabs by phase).
+- **Code:** one line in `viewer/shim_bonds.js kindOf`. **Proof owed:** Duplex B9 before → after with what the 32 bond to now; the 14 tiles' own bond
+  (`bears-on-top` the joist floor / ground slab); programme days / tasks; six other buildings unchanged (no such slab); `run_4d_gates.sh`, re-locks named.
+- **Seen on the way, NOT fixed (data, not rule):** Duplex's two *Wood Joist* floor slabs carry boxes of 3.7 m x 17 m (x -0.2..3.5 and 5.4..9.1) where
+  the house is 8 m wide — a strip 3.5..5.4 has tile and no structural floor box. An extraction / box question for the Duplex DB.
