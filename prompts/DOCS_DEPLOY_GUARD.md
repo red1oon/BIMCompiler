@@ -124,3 +124,12 @@ W-DEPLOY-GUARD is green; a deliberately stale tree **cannot** shrink the live si
 - `PRINT_BREAK=toc`: P11 FAIL (every number off by one, as written).
 - First run: P2 and P2b FAILed falsely, because the new Contents markers sit at each heading's start and read as "first on the page". Fixed: qqK markers are left out of the page-start order. Re-run all PASS.
 - pdftotext of page 4 shows each entry with its number on the right (Changes 2, What is this? 3, How do I pass? 3, Checklist 5, A 8 … ).
+
+### Printable guides, 2026-11-20 SPEC (3): a lead-in stays with its table (written before code)
+**Owner, 2026-11-20 (verbatim):** *"FOr the PDF, push the 'Changes since..' on page 1 to the followng page so that cut off line is together with it"*.
+**Measured on the live PDF (45 pages):** page 2 holds only the heading *Changes since the signed UAT report (2026-11-19)* and the first line of its sentence ("… They go into the"). The rest of the sentence and the whole table start on page 3, which the table fills (content to y 827 of 842). The table is kept whole (P10), so it moves to the next page and leaves its heading and the cut sentence behind.
+**P12 (new), named issue:** *"a table's lead-in (the heading or sentence right before it) is left on another page, or cut across two"*.
+- Every table gets a start marker on the visible element right before its wrapper, and an end marker inside it.
+- P12 holds when that element starts and ends on the page where the table's first row starts.
+- `PRINT_BREAK=lead` drops the new keep-together rule: P12 must FAIL. The live PDF before the fix is the RED.
+**Fix (`docs/CapexUATGuide.md`):** the section goes in `<div class="uat-keep" markdown="1">` (heading, sentence, table), print rule `break-inside: avoid`. Its table prints at 8.5 pt, so the three fit one page. The web page is unchanged.
