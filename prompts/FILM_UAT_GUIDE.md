@@ -396,3 +396,36 @@ Every build: frames = picture (9,313 in rc3), 31 of 31 lines DETAIL, 0 tone WRON
   2. Desk: `desk.sh start <dir>`.
   3. Scenes: `SHED_DB=<pack>/reference/SHED_extracted.db node scenes.js <out> <dir>/desk/home r0 r1 r2 r3 c0 <c1_*> <c2_*> <c31_*> <c32_*> <c41_*> <c42_*> <c43_*> c5 …`.
   The order numbers are kept in `<home>/p3_state.json`, written by the scenes themselves.
+**PROGRESS 2026-11-20 (3) — EVERY Part III scene is proven on the desk; the full take was started and stopped at the owner's "pause to exit"; read this first to resume:**
+- **Proven (logs read; rehearsals `reh1`–`reh10`, 62 scenes in all):**
+  - **One run, r0 → c42 (43 scenes, 769 checks PASS, 0 FAIL):** B4, the log in, all 10 orders, 4 receipts, 3 invoices, 3 payments, 9 Set Project Type, 9 Issue to Project.
+  - **C4.3 + C4.4** for the three named projects; **C5.1** (TD_DEPOT 1 → 2 of 4).
+  - **Chapter D, the end of the chain, after chapter C made wholly by hand:**
+    - d0: the read job typed in a terminal, `projects=14` read off the screen.
+    - D1: 14 / 14, panel rows 14. D2: USD 4,667.80; **ERP ↗** opens TD_RIVERSIDE, Planned Amount 371.25.
+    - D2b: Within 7 / Over 2 / Not started 5; TD_CARPARK 457.59 against 330.00, TD_DATAHALL 191.35 against 181.50.
+    - D3: USD 2,020.45, 43 %. D4: 5 open orders; the five Supply chain stages as the guide says.
+    - D5/D6: TD_RIVERSIDE 371.25, 5 phases, 5 bars, first 3 complete. D7: formula shown. D8: Executive / Dark and back, same figures.
+    - D9: Log Out, log in, Home reads *CAPEX Total Projects: 14*, *CAPEX Active Projects: 14*.
+- **New finds** (logged `§FILM_FIND`; for the change list with finds 1–7):
+  8. **C5.1:** after ticking **Complete**, Save is refused: *Fill mandatory fields: Invoice Rule*. The pack's phases carry no Invoice Rule. The film chooses the project's own rule (*None*), which is iDempiere's default for a phase (`AD_Column C_ProjectPhase.ProjInvoiceRule` DefaultValue `@ProjInvoiceRule@`). A fix in the test-data pack would spare the tester this step: owner's call.
+  9. **C5.1:** the Phase tab sits under the header as a list. Click the phase's name, then its pencil (**Edit Record**). The window's Grid Toggle acts on the header, not on the list.
+  10. **D3:** adding the panel's **Spent** column gives 2,020.46; the tile reads 2,020.45 (each row is rounded to the cent, Project Balance holds 4 decimals).
+  11. **D4:** *Open purchase orders* reads **USD 6,741.25**, not 6,738.39 (the knock-on of find 2, now read on the page).
+  12. **C4.2:** each Issue to Project opens its own tab; nine of them push the first window tabs off the strip. Close each one when done.
+- **New code** (branch `film/uat-part3`, pushed):
+  - `scenes3d.js`: d0 (GNOME Terminal in its own private session bus), d1–d9. Figures parsed from the guide's chapter D rows.
+  - `scenes3.js`: `loginForm` (c0 and D9), `onHeader`, `openWin` (cut tab titles matched, old tabs closed), the C5.1 steps, the Issue tab closed.
+  - `plan3.py`: 62 scenes, 96 lines, 39 repeats at x8; every strip found in the guide (`python3 plan3.py` prints `§PLAN3`).
+- **Not done:** the ONE full take, the build, the change-list rows (finds 1–12), the guide's *See how* link.
+- **:8108 restored as found at close** (`§P3_RESTORE_CHECK PASS`, `§P3_DOWN_VERDICT PASS`, both copies dropped). The bim-ootb copy `/tmp/wt-film-uat-ootb` is removed.
+- **To resume** (about 15 min of set-up, then a take of about 75 min, then the build):
+  1. `git -C ~/bim-ootb worktree add --detach /tmp/wt-film-uat-ootb origin/main`; in it `python3 -m http.server 8080` (A1.1/A1.2); no `capex/legacy_snapshot.json` there.
+  2. Unzip `Shed_UAT_pack_20261115.zip` (SYSNOVA `DXF2BIM/ShedDrawing/model/`) for `reference/SHED_extracted.db`.
+  3. `prep3.sh up <dir>`, `prep3.sh ready <dir>`; `desk.sh start <dir>/desk < /dev/null > log` (never pipe it: Chrome keeps the pipe open).
+  4. Check no bim-ootb Pages deploy is in flight (r0–r3 use the live Viewer and Kernel ERP).
+  5. `SHED_DB=… node scenes.js <dir>/take1 <dir>/desk/home $(python3 plan3.py | tail -1)`; read `scenes.log`; 0 FAIL or re-take from the failed scene after `prep3.sh reset`.
+  6. `FILM_PLAN=plan3 bash build.sh <dir>/take1 <dir>/wk ~/Videos/UAT_Hands_On_Part3_ERP_Dashboard_EN_rc1.mp4`; read every log. A sped scene longer than about 64 s of source may breach the 8 s silence bar: add a second line on its mid cue.
+  7. `prep3.sh down <dir>`; remove the bim-ootb copy.
+- **Take rules learnt this session:** two tabs titled *iDempiere* exist after **ERP ↗** (the new one is known by `Action=Zoom`); the browser's page list is not in tab-strip order (the tab is read off the strip); never press an **OK** after Log Out (it is the log in form's own).
+
