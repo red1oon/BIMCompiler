@@ -24,6 +24,6 @@ echo "§FILM_CHECKS frames=$FR picture=$FR0 film_s=$D LUFS=$LU silences_ge4s=[$S
 ok=1; [ "$FR" = "$FR0" ] || ok=0; [ "$NF" = "$ND" ] || ok=0; [ "$NW" = 0 ] || ok=0; grep -q 'SOUNDS_VERDICT PASS' $WK/sounds.log || ok=0
 # §5.11: the §5.4 bars are gated, not only printed
 MS=$(echo "$SIL" | tr ' ' '\n' | sort -g | tail -1); MS=${MS:-0}; BAD=""
-awk -v m=$MS 'BEGIN{exit !(m <= 8.0)}' || BAD="$BAD silence_max=$MS>8.0"; awk -v l=$LU 'BEGIN{exit !(l >= -17 && l <= -15)}' || BAD="$BAD LUFS=${LU}_not_-16+-1"; awk -v d=$D 'BEGIN{exit !(d <= 300)}' || BAD="$BAD film_s=$D>300"
+awk -v m=$MS 'BEGIN{exit !(m <= 8.0)}' || BAD="$BAD silence_max=$MS>8.0"; awk -v l=$LU 'BEGIN{exit !(l >= -17 && l <= -15)}' || BAD="$BAD LUFS=${LU}_not_-16+-1"; if [ "${FILM_PLAN:-plan}" = plan ] || [ -n "$FILM_MAX_S" ]; then MX=${FILM_MAX_S:-300}; awk -v d=$D -v m=$MX 'BEGIN{exit !(d <= m)}' || BAD="$BAD film_s=$D>$MX"; else echo "§FILM_CHECKS_LENGTH measured film_s=$D (not gated: §5.15, Part II has no length target until the owner sets one; FILM_MAX_S gates it)" | tee -a $WK/checks.log; fi
 [ -n "$BAD" ] && { ok=0; echo "§FILM_CHECKS_BARS FAIL$BAD" | tee -a $WK/checks.log; } || echo "§FILM_CHECKS_BARS PASS silence_max=$MS LUFS=$LU film_s=$D" | tee -a $WK/checks.log
 echo "§FILM_CHECKS_VERDICT $([ $ok = 1 ] && echo PASS || echo FAIL) -> $OUT" | tee -a $WK/checks.log

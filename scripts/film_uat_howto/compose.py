@@ -6,7 +6,7 @@
 # (zoom from the click's measured target box), a ring at each real click, '>> x3' on a sped-up wait. A line that needs more room than its span HOLDS the frame (never trims).
 import sys, os, json, re, subprocess, math
 from PIL import Image, ImageDraw, ImageFont
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__))); import plan as P
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__))); import importlib; P = importlib.import_module(os.environ.get('FILM_PLAN', 'plan'))   # FILM_PLAN=plan2: Part II (§5.15)
 FPS, W, H, TOP = 30, 1920, 1080, 150; BH = H - TOP
 BG, INK, CORAL, SKY = (15, 23, 42), (243, 238, 232), (255, 107, 120), (125, 211, 252)
 REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -57,6 +57,8 @@ EVS, PTS, tsv_rows, sounds, beat_out = {}, {}, [], [], {}
 for sc in P.SCENES:
     sid = sc['id']; ev = json.load(open(os.path.join(TAKE, sid + '.events.json'))); EVS[sid] = ev; PTS[sid] = pts_of(os.path.join(TAKE, sid + '.mkv'))
     cue = {c['name']: c['t'] for c in ev['cues']}
+    for c in ev['clicks']:   # §5.15: a beat may also hang on a logged click ('click:<label>', its first press): a long stretch with one cue gets a second line without a re-take
+        if c.get('label') and ('click:' + c['label']) not in cue: cue['click:' + c['label']] = c['t']
     a0, a1 = cue[sc['span'][0]], cue[sc['span'][1]]
     # typing first: the strip types over a hold of the scene's first frame (house style: typing, then the action)
     txt = strip_text(sc); ty = len(txt) / 30.0 + 0.7; strip_t0 = T
