@@ -5,7 +5,7 @@ Every number spoken or shown is a fact read from the guide, the saved PDF or a �
 
 > ## ▶ RESUME HERE — UAT films (rewritten 2026-11-20; read §5.12 → §5.13, then §5.10–§5.11 for the pipeline)
 > **Film 1 DONE and published by the owner:** rc3 (`~/Videos/UAT_Hands_On_Where_To_Click_EN_rc3.mp4`) = https://youtu.be/PBp4qfV4mIo, linked in the guide's *See how* (item 1).
-> **Part II (guide *See how* item 2, pending): A3.1 Pack In + the raw-sheet path.**
+> **Part II BUILT 2026-11-20: rc4 `~/Videos/UAT_Hands_On_Part2_Raw_Sheets_EN_rc4.mp4`, every bar PASS, 610.7 s (§5.15 RESULT). Next: the owner reviews and uploads; then put its link in the guide's *See how* item 2 and change-list item 8, and drop the :8108 backup `idempiere_film_packin_bak`. After that, Part III (below).** (Plan as was:) A3.1 Pack In + the raw-sheet path.
 > - Scene **s13 Pack In is RECORDED and PASSES** (§5.12 RESULT, folder `f2/full_s13_t5` in session scratchpad a0008b42…; may be cleaned: a re-take is about 3 min). Back up :8108 first, restore after; the backup `idempiere_film_packin_bak` is still there.
 > - **The raw-sheet scenes are SPECCED (§5.14, from the shipped witness W-UAT-B0).** Next: measure the two open points of p7, write p1–p10 in `scenes.js`, take, then build Part II. The plan:
 >   - open the pack's `sheets/` (no marks), B0.1–B0.8 marking by hand, B0.9 Save marked copies;
@@ -295,3 +295,19 @@ Every build: frames = picture (9,313 in rc3), 31 of 31 lines DETAIL, 0 tone WRON
 - **To make p10 a full PASS, the run's own B2.5 to B3.1 are needed** (box 3 the run's `.db`, boxes 4 and 5 its lines). The take replays Part I's s6, s7, s8, s10, s9 on the tester's own copies, then s11 with box 2 added and s12 judged PASS. In the film these parts are sped and badged: Part I already teaches them.
 **Bars:** §5.11's silence and loudness bars hold. The 300 s length bar was set for film 2; Part II is a new film and its length is MEASURED and reported. It is not gated until the owner sets a target.
 **Witness:** every Confirm of p1 to p10 is a `§FILM_CHECK` (counts read from the panel's own text). The end of the chain is p10: B0.9 PASS and the run PASS on the live Run Checker.
+**RESULT 2026-11-20: Part II rc4 built, every bar PASS** (no re-take after take 1; `checks.log` read):
+- **Take 1, ONE take, 16 of 16 scenes PASS** (`§FILM_SCENES_VERDICT PASS scenes=p1,…,p12`), fresh desk + profile, PREP = the pack zip + its extracted folder in `Downloads/`. Measured: Blocked · 99, 34 yellow, roles 0 → 113 → 0, Blocked · 89, 3 PLAN 4 ELEV 1 SECTION · nine Set = SHED · ten layers (two by the split arrow, `plan Rod` pooled: on the floor plan only), Blocked · 1 after PLAN·Col, Qualifies after ELEV·Wall, 14 → 0 · two `@BODYZ` · five `@Z=0.6096` · exclude: 13 wheel notches + 5 right-drag pans to a 421 px joint, the drag wrote `@EXCLUDE=-20884.566,-5609.25,-20845.786,-4938.864` (inside `EX_TOL`) · Qualifies, 0 yellow; nine `_marked.dxf` landed, **equal to the pack's `marked/` mark for mark (0 diffs)**; Chrome did NOT ask about multiple downloads · reload, click + Shift+click, `9 SHEETS`, Arrange `Step 1/46` → `Step 46/46` (46 distinct, 35.5 s) · Convert 511, `.db` 1,257,472 B, `DONE — SHED 511 elements`, `USD 96,839 (RM 372,457)` · Run Checker: box 2 = 9 files, **B0.9 "9 of 9 sheets compared; every mark equal; exclude box inside the tolerance … PASS"**, **`Your run: PASS`**, `uat_result.json` verdict PASS.
+- s13 (A3.1 Pack In) is take 5 of §5.12, copied in as its own passing scene. Part II is `FILM_PLAN=plan2` (`plan2.py`), A3.1 first as in the guide.
+- **Found and fixed while making it:** `xdotool type` read a leading `-` (`-1.4478`) as an option (now `--`); a set layer the template can name shows `<type> · stated` in place of its list (read-back fixed); OCR misreads the first and selected file-window rows (`0.FAQOR PLAN. marked. dxt`, `Shep UAT pack.20261115.zip`): the first row is placed from the rows below it, as §5.8 did for Home; a cue extra keyed `name` overwrote the cue's name (build rc1 KeyError; repaired from `scenes.log`, code fixed).
+- **Builds (same take):**
+
+| build | film s | max silence s | LUFS | lines | gate |
+|---|---|---|---|---|---|
+| rc1 | 606.4 | 13.4 | −17.1 | 29 | FAIL silence, LUFS |
+| rc2 (+4 lines on the silent spans) | 612.8 | 13.4 | −17.0 | 34 | FAIL silence (s10: Back, contents, an 82 s scroll with one cue) |
+| rc3 (+1 line at s10 start) | 610.7 | 13.0 | −17.0 | 35 | FAIL silence |
+| **rc4** (a beat may hang on a logged click, `click:<label>`; the guide's B5 words over the scroll) | **610.7** | **6.9** | **−16.9** | **36/36 DETAIL** | **PASS** |
+
+  frames 18,321 = picture; tone wrong 0; keys 1177/1177, clicks 139/139. Film: `~/Videos/UAT_Hands_On_Part2_Raw_Sheets_EN_rc4.mp4` (never pushed). Length 10 min 11 s: not gated (no target yet, owner's call).
+- Guide (owner's rule: the signed report untouched, changes appended): revision **2026-11-20 (b)**, change list item **8**, *See how* item 2 "made; link when uploaded". `NOTICES_since_report.md` row 8.
+- `idempiere_film_packin_bak` is still on :8108. Part II did not need it (s13 not re-taken). Drop it once the owner accepts Part II.

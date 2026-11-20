@@ -57,6 +57,8 @@ EVS, PTS, tsv_rows, sounds, beat_out = {}, {}, [], [], {}
 for sc in P.SCENES:
     sid = sc['id']; ev = json.load(open(os.path.join(TAKE, sid + '.events.json'))); EVS[sid] = ev; PTS[sid] = pts_of(os.path.join(TAKE, sid + '.mkv'))
     cue = {c['name']: c['t'] for c in ev['cues']}
+    for c in ev['clicks']:   # §5.15: a beat may also hang on a logged click ('click:<label>', its first press): a long stretch with one cue gets a second line without a re-take
+        if c.get('label') and ('click:' + c['label']) not in cue: cue['click:' + c['label']] = c['t']
     a0, a1 = cue[sc['span'][0]], cue[sc['span'][1]]
     # typing first: the strip types over a hold of the scene's first frame (house style: typing, then the action)
     txt = strip_text(sc); ty = len(txt) / 30.0 + 0.7; strip_t0 = T

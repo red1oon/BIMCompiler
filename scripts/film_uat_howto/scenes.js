@@ -379,7 +379,7 @@ S.p6 = async () => {   // B0.6: on each elevation and the section card, Level da
     const si = await D.page.evaluate(n => window.DxfMetaEditor.state.sheets.findIndex(s => s.name === n), name);   // the card that carries this sheet's name
     const card = '[data-act="card"][data-sheet="' + si + '"]';
     if (!(await D.page.evaluate(si => !!window.DxfMetaEditor.state.open[si], si))) { await D.scrollIn(card, BODY); await D.aimClick(card, { label: 'open card ' + name }); await dm.idle(); }
-    D.cue('p6_card', { name }); await typeInto('#dm-av-' + si + '-Z', '0.6096', name + ' datum height'); await typeInto('#dm-ap-' + si + '-Z', y, name + ' y where drawn');
+    D.cue(DATUMS[0][0] === name ? 'p6_card' : 'p6_card_' + name.replace(/\.dxf$/, ''), { sheet: name });   /* cue extras must not use the key 'name' (it overwrote the cue's own name, build rc1) */ await typeInto('#dm-av-' + si + '-Z', '0.6096', name + ' datum height'); await typeInto('#dm-ap-' + si + '-Z', y, name + ' y where drawn');
     const add = '[data-act="add"][data-sheet="' + si + '"][data-group="Z"]'; await D.scrollIn(add, BODY); await D.aim(add, { label: 'Add (' + name + ')' }); await D.click({ label: 'Add' }); await dm.idle();
     const z = await D.page.evaluate(n => window.DxfMetaEditor.state.sheets.find(s => s.name === n).marks.filter(m => m.key === 'Z').map(m => m.value), name);
     D.check(z.filter(v => /^0\.6096\b/.test(String(v))).length === 1 && z.length === 3, 'b06_datum ' + name, JSON.stringify(z));   // guide B0.6: 'a new @Z=0.6096 row beside the two it read itself'
