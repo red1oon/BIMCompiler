@@ -689,7 +689,7 @@ file, the line and the command to run. Comments between the tags stay yours.
 
 ### 5.2 Adding a new browser file
 
-Add its `<script src="name.js?v=1">` in the right place in the page (order matters, §0 #2), add it to that app's
+**On a page outside the three apps** (`index.html`, `capex/`): add its `<script src="name.js?v=1">` in the right place in the page (order matters, §0 #2), add it to that page's
 `PRECACHE_ASSETS` in `sw.js` **unless it is lazy on purpose**, bump `CACHE_VERSION`, and add any new shared global name to
 `eslint.globals.json`.
 
