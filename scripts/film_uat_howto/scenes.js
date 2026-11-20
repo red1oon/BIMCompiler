@@ -118,6 +118,8 @@ S.s7 = async () => {   // B2.8: Export -> Viewer database (.db), into Downloads
 const AREA = D.screenBox(760, 560, 400, 240, 'the model area');   // the middle of the Viewer's canvas: a click there focuses the model, as a person does before a shortcut key
 S.s8 = async () => {   // B2.9: front door -> red pill -> Buildings / IFC -> Blank Viewer -> Ctrl+O -> the .db
   D.cue('s8_start');
+  // §5.15 Part II: the Modeller opened in the guide's own tab (one tab, measured), so a person goes Back to the guide first
+  for (let i = 0; i < 3 && !/CapexUATGuide/.test(D.page.url()); i++) { await D.aimClick(BACK, { label: 'Back (to the guide)' }); await D.waitUrl(/CapexUATGuide|modeller/, 15000); await D.sleep(1500); }
   const toc = D.page.locator('.md-sidebar--secondary a', { hasText: 'B2b · Convert' }).first(); await D.aimClick(toc, { label: 'contents: B2b' }); await D.sleep(1800);
   const fd = D.page.locator('a[href$="bim-ootb/index.html"]', { hasText: 'front door' }).first(); await D.scrollInto(fd, 220); await D.aim(fd, { label: 'the front door link' }); D.cue('s8_link'); await D.click({ label: 'front door' });
   await D.waitUrl(/bim-ootb\/index\.html/, 60000); await D.page.waitForSelector('.hot.red', { state: 'visible', timeout: 60000 }); await D.sleep(2500); D.cue('s8_front');
@@ -166,10 +168,10 @@ S.s9 = async () => {   // B3.1: the Find panel, 'total cost'
 
 S.s11 = async () => {   // B5.1 + B5.2: box 5 pasted, box 1 the pack's zip, box 3 the database
   D.cue('s11_start'); await tabTo(TAB1, CHECK);
-  await D.aimClick('#cline', { label: 'box 5' }); await D.key('ctrl+v', 'paste'); const c = await D.page.$eval('#cline', e => e.value);
+  await D.aimClick('#cline', { label: 'box 5' }); await D.key('ctrl+a', 'select what is there'); await D.key('ctrl+v', 'paste'); const c = await D.page.$eval('#cline', e => e.value);
   D.check(/USD 96,839 \(RM 372,457\) — total building cost/.test(c), 'box5_pasted', JSON.stringify(c.slice(0, 100))); D.cue('s11_pasted'); await D.sleep(1500);
   await D.scrollInto('#pack', 200); await D.aim('#pack', { label: 'box 1' }); D.cue('s11_box1'); await D.click({ label: 'box 1' });
-  let ok = await D.pick(['Downloads'], async (R) => { const f = await D.findText(t => /pack_2026111\d\.zip$/.test(t), R); if (!f) return false; await D.aim(D.screenBox(f.x - 60, f.y - 4, f.w + 70, f.h + 8, 'the pack zip'), { label: 'Shed_UAT_pack_20261115.zip' }); await D.click({ label: 'the pack zip' }); await D.sleep(700); }, 'box 1: the pack');
+  let ok = await D.pick(['Downloads'], async (R) => { const f = await D.findText(t => /pack.2026111\d\.zip$/.test(t)   /* §5.15: the zip as the only, selected row reads "pack.20261115.zip" */, R); if (!f) return false; await D.aim(D.screenBox(f.x - 60, f.y - 4, f.w + 70, f.h + 8, 'the pack zip'), { label: 'Shed_UAT_pack_20261115.zip' }); await D.click({ label: 'the pack zip' }); await D.sleep(700); }, 'box 1: the pack');
   if (!ok) return;
   let intact = ''; for (let i = 0; i < 60 && !/Pack intact/.test(intact); i++) { intact = await D.page.evaluate(() => document.body.innerText); if (!/Pack intact/.test(intact)) await D.sleep(500); }
   const il = (/Pack intact: 19 files checked[^\n]*/.exec(intact) || [''])[0]; D.check(!!il, 'pack_intact_19', JSON.stringify(il.slice(0, 100))); D.cue('s11_intact'); await D.sleep(2500);   // guide B5.1
@@ -251,6 +253,232 @@ S.s13 = async () => {
   let msg = ''; for (let i = 0; i < 150 && !/Processed=/.test(msg); i++) { msg = await D.page.evaluate(() => [...document.querySelectorAll('textarea')].map(t => t.value).filter(Boolean).join(' / ')); if (!/Processed=/.test(msg)) await D.sleep(1000); }
   const line = (/Processed=\d+ Un-Resolved=\d+/.exec(msg) || [''])[0]; D.check(/Processed=\d+ Un-Resolved=0/.test(line), 'packin_processed_unresolved_0', JSON.stringify(line));
   D.cue('s13_done', { line }); await D.sleep(4000); D.cue('s13_end');
+};
+
+// §5.15 Part II end of the chain: box 2 = the nine copies the tester saved in B0.9, and the run judged PASS on all four rows
+S.p11 = async () => {   // B5.1 + B5.2 with box 2: s11 (box 5, box 1, box 3), then box 2 the nine saved copies
+  await S.s11(); if (D.fails()) return;
+  D.cue('p11_box2'); await D.scrollInto('#marked', 200); await D.aim('#marked', { label: 'box 2' }); await D.click({ label: 'box 2' });
+  const ok = await D.pick(['Downloads'], pickNine, 'box 2: the nine saved copies'); if (!ok) return;
+  await D.sleep(1500); const n = await D.page.$eval('#marked', e => e.files.length); D.check(n === 9, 'box2_nine_copies', 'files=' + n);   // guide B5.2: 'In box 2 select your nine …_marked.dxf'
+  D.cue('p11_end'); await D.sleep(2000);
+};
+S.p12 = async () => {   // B5.3 + B5.4: Mark my run -> four rows PASS, the run PASS; Download result
+  D.cue('p12_start');
+  await D.page.waitForFunction(() => { const g = document.getElementById('go'); return !!g && !g.disabled; }, null, { timeout: 90000 });
+  await D.scrollInto('#go', 200); await D.aim('#go', { label: 'Mark my run' }); D.cue('p12_go'); await D.click({ label: 'Mark my run' });
+  await D.page.waitForFunction(() => document.querySelectorAll('#rows tr').length >= 4 && /Your run/.test((document.getElementById('verdict') || {}).innerText || ''), null, { timeout: 120000 }); await D.sleep(1200);
+  const rows = await D.page.evaluate(() => [...document.querySelectorAll('#rows tr')].map(r => r.innerText.replace(/\s+/g, ' ').trim())), v = await D.page.$eval('#verdict', e => e.innerText.trim());
+  D.log('§FILM_ROWS ' + JSON.stringify(rows));
+  const b09 = rows.find(r => /B0\.9/.test(r)) || ''; D.check(/\bPASS\b/.test(b09) && !/NOT GIVEN|FAIL/.test(b09), 'b53_b09_marked_sheets_pass', JSON.stringify(b09.slice(0, 160)));   // the tester's marks equal the answer key's
+  D.check(v === 'Your run: PASS', 'b53_run_pass', JSON.stringify(v));   // guide B5.3: 'Your run reads PASS when all four pass'
+  D.cue('p12_marked'); await D.scrollInto('#rows', 160); await D.sleep(4500);
+  await D.scrollInto('#dl', 200); await D.aim('#dl', { label: 'Download result (uat_result.json)' }); D.cue('p12_dl'); await D.click({ label: 'Download result' });
+  const f = await D.waitFile(/uat_result.*\.json$/, 60000); let j = null; try { j = JSON.parse(fs.readFileSync(f.path, 'utf8')); } catch (e) { }
+  D.check(!!j && j.verdict === 'PASS', 'result_saved_verdict_pass', f ? f.name + ' verdict=' + (j && j.verdict) : 'none'); D.cue('p12_saved'); await D.sleep(3500); D.cue('p12_end');
+};
+// ================= §5.14 / §5.15 PART II: the raw sheets, marked by hand (B0.1-B0.9), then Arrange (B2.3) and a full PASS at B5 =================
+// Source of every value: the guide's B0 table and W-UAT-B0 (bim-ootb capex/tests/witness_uat_b0_raw_to_marked.js); the tables below are COPIED from that witness.
+const LAYERS = [['plan', 'Col', 'column'], ['plan', 'Fo', 'footing'], ['elev', 'Wall', 'panel'], ['elev', 'Rod', 'fan'], ['elev', 'Dim', 'net'], ['section', 'Fo', 'bar'], ['elev', 'Win', 'door'],
+  ['elev', '0', 'column', '1S_ELEV_SOUTH.dxf'], ['plan', 'Dim', 'beam', '3_BEAM_LAYOUT.dxf'], ['plan', 'Rod', 'doorswing', '0_FLOOR_PLAN.dxf']];
+const DATUMS = [['1S_ELEV_SOUTH.dxf', '-4446.6'], ['1N_ELEV_NORTH.dxf', '-3895.2'], ['2_ELEV_WEST.dxf', '-4515.7264'], ['7_ELEV_EAST.dxf', '-3766.442'], ['8_SECTION_AA_TRUSS.dxf', '-3726.416']];
+const BODYZ = [['footing', '-1.4478', '-1.143'], ['beam', '3.098794', '3.352794']];
+const EX_AIM = [-20885, -5610, -20847, -4940], EX_TOL = { x0: [-20908, -20873.6], x1: [-20850.7, -20843.3], y0max: -5577.3, y1min: -4965.3 };
+const PACK = 'Shed_UAT_pack_20261115', BODY = '#dm-body';
+const dm = {   // the Drawing metadata panel, read from its own text (what the tester reads); roles from the panel state (B:READ: the role words sit inside nine cards)
+  chip: () => D.page.$eval('#dm-chip', e => e.innerText.replace(/\s+/g, ' ').trim()).catch(() => ''),
+  head: id => D.page.$eval('[data-act="sec"][data-sec="' + id + '"]', e => e.innerText.replace(/\s+/g, ' ').trim()).catch(() => ''),
+  yellow: () => D.page.evaluate(() => document.querySelectorAll('#dm-yellows [data-act="confirm"],#dm-yellows [data-act="dconfirm"],#dm-yellows [data-act="defkeep"]').length),
+  roles: () => D.page.evaluate(() => { const r = {}; window.DxfMetaEditor.state.sheets.forEach(s => { const m = s.marks.find(q => q.key === 'VIEW'); if (m) r[m.value] = (r[m.value] || 0) + 1; }); return r; }),
+  idle: () => D.page.waitForFunction(() => window.DxfMetaEditor && !window.DxfMetaEditor.state.busy && window.DxfMetaEditor.state.verdict, null, { timeout: 120000, polling: 250 }).then(() => D.sleep(700)),
+  open: async (id, label) => { const h = '[data-act="sec"][data-sec="' + id + '"]'; const isOpen = await D.page.evaluate(id => !!window.DxfMetaEditor.state.sec[id], id);
+    if (!isOpen) { await D.scrollIn(h, BODY); await D.aimClick(h, { label: 'open ' + label }); await dm.idle(); } return D.page.evaluate(id => !!window.DxfMetaEditor.state.sec[id], id); },
+  fold: async (id, label) => { const h = '[data-act="sec"][data-sec="' + id + '"]'; if (await D.page.evaluate(id => !!window.DxfMetaEditor.state.sec[id], id)) { await D.scrollIn(h, BODY); await D.aimClick(h, { label: 'fold ' + label }); await dm.idle(); } },
+};
+PREP.p1 = async () => {   // set-up, not filmed (Part I films the download and the Extract): the pack zip and its extracted folder in the fresh Downloads; the guide open
+  await PREP.oneTab(); const src = process.env.PACK_ZIP; if (!src || !fs.existsSync(src)) throw new Error('PACK_ZIP not set (the reference pack zip)');
+  fs.copyFileSync(src, path.join(D.dlDir(), PACK + '.zip')); require('child_process').execFileSync('unzip', ['-q', '-o', src, '-d', path.join(D.dlDir(), PACK)]);
+  D.log('§FILM_PREP p1 pack ' + PACK + '.zip bytes=' + fs.statSync(src).size + ' sheets=' + fs.readdirSync(path.join(D.dlDir(), PACK, 'sheets')).length);
+  await D.page.goto(GUIDE); await D.page.waitForLoadState('load'); await D.sleep(1500);
+};
+S.p1 = async () => {   // B0.1: the Modeller, the nine RAW sheets (the pack's sheets/, no marks) through the OS file window
+  D.cue('p1_start');
+  const toc = D.page.locator('.md-sidebar--secondary a', { hasText: 'B0 · From the drawings' }).first();
+  await D.aim(toc, { label: 'contents: B0' }); await D.click({ label: 'contents: B0' }); await D.sleep(1800);
+  const link = D.page.locator('a[href*="modeller/modeller.html"]').first(); await D.aim(link, { label: 'the Modeller link' }); D.cue('p1_link'); await D.click({ label: 'the Modeller link' });
+  D.fastStart('the Modeller loads'); await D.waitUrl(/modeller\/modeller\.html/, 60000); await MOD.ready(); await D.sleep(1500); D.fastEnd();
+  await D.aimClick('#b-open', { label: 'Open' }); await D.sleep(600);
+  await D.aim('#m-open-panel .mo-row[data-key="__dxf"]', { label: 'Open 2D drawings (.dxf)…' }); D.cue('p1_row'); await D.click({ label: 'Open 2D drawings (.dxf)…' });
+  const ok = await D.pick(['Downloads', t => /^Shed_UAT_pack_2026111\d$/.test(t), 'sheets'], async () => { await D.key('ctrl+a', 'select all nine'); await D.sleep(900); }, 'the nine raw sheets');
+  if (!ok) return;
+  D.fastStart('the sheets are read'); await D.page.waitForFunction(n => window.DxfMetaEditor && window.DxfMetaEditor.state.sheets.length === n && !window.DxfMetaEditor.state.busy && window.DxfMetaEditor.state.verdict, 9, { timeout: 300000, polling: 300 }); await D.sleep(1500); D.fastEnd();
+  const chip = await dm.chip(), yh = await dm.head('yellows'), roles = await dm.roles();
+  D.check(/^Blocked · \d+$/.test(chip), 'b01_badge_blocked', JSON.stringify(chip));             // guide B0.1: 'The badge reads Blocked with a number'
+  D.check(/ALL DEFAULTS 34 yellow/.test(yh), 'b01_all_defaults_34', JSON.stringify(yh));        // guide B0.1: 'All defaults lists 34 yellow rows'
+  D.check(Object.keys(roles).length === 0, 'b01_no_sheet_has_a_role', JSON.stringify(roles));  // the raw sheets carry no marks (W-UAT-B0 R0)
+  await D.aim('#dm-chip', { label: 'the badge: ' + chip }); D.cue('p1_badge', { chip }); await D.sleep(1800);
+  await D.aim('[data-act="sec"][data-sec="yellows"]', { label: 'All defaults: 34 yellow', fx: 0.8 }); D.cue('p1_yellow'); await D.sleep(2500); D.cue('p1_end');
+};
+S.p2 = async () => {   // B0.2 + B0.2b: Accept stated + read (34 -> 113), then Accept all (113 -> 0)
+  D.cue('p2_start'); const b1 = '#dm-yellows [data-act="acceptsr"]';
+  await D.scrollIn(b1, BODY); await D.aim(b1, { label: 'Accept stated + read' }); D.cue('p2_sr'); await D.click({ label: 'Accept stated + read' }); await dm.idle();
+  const y1 = await dm.head('yellows'); D.check(/ALL DEFAULTS 113 yellow/.test(y1), 'b02_grows_to_113', JSON.stringify(y1));   // guide B0.2
+  D.cue('p2_113'); await D.sleep(2200);
+  const b2 = '#dm-yellows [data-act="acceptall"]'; await D.scrollIn(b2, BODY); await D.aim(b2, { label: 'Accept all' }); D.cue('p2_all'); await D.click({ label: 'Accept all' }); await dm.idle();
+  const n = await dm.yellow(), chip = await dm.chip(), roles = await dm.roles();
+  D.check(n === 0, 'b02b_0_yellow', 'yellow=' + n + ' head=' + JSON.stringify(await dm.head('yellows')));            // guide B0.2b: '0 yellow rows'
+  D.check(/^Blocked · (48|89)$/.test(chip), 'b02b_badge_blocked_smaller', JSON.stringify(chip));                      // guide B0.2b: 'Blocked with a smaller number (48 or 89)'
+  D.check(roles.PLAN === 3 && roles.ELEV === 4 && roles.SECTION === 1, 'b02b_roles_3plan_4elev_1section', JSON.stringify(roles));
+  await D.aim('#dm-chip', { label: 'the badge: ' + chip }); D.cue('p2_done', { chip }); await D.sleep(2500); D.cue('p2_end');
+};
+S.p3 = async () => {   // B0.3: one card's Set field: BUILD-NAME -> SHED, Enter (typing it once fills all nine)
+  D.cue('p3_start'); await dm.open('sheets', 'Sheets'); const f = '#dm-f-0-SET';
+  await D.scrollIn(f, BODY); await D.aimClick(f, { label: 'Set (first card)' }); await D.key('ctrl+a', 'select BUILD-NAME'); D.cue('p3_type'); await D.type('SHED'); await D.key('Return', 'Enter'); await dm.idle();
+  const v = await D.page.evaluate(() => [...Array(9).keys()].map(i => (document.getElementById('dm-f-' + i + '-SET') || {}).value));
+  D.check(v.length === 9 && v.every(x => x === 'SHED'), 'b03_every_set_reads_shed', JSON.stringify(v));   // guide B0.3: 'Every sheet's Set reads SHED'
+  D.cue('p3_done'); await D.sleep(2000);
+  const f1 = '#dm-f-1-SET'; await D.scrollIn(f1, BODY); await D.aim(f1, { label: 'Set (second card): SHED' }); await D.sleep(1800); D.cue('p3_end');
+};
+S.p4 = async () => {   // B0.4 + B0.4b: Layers, the ten meanings (two through the split arrow), then Accept all (14 -> 0)
+  D.cue('p4_start'); await dm.fold('sheets', 'Sheets'); await dm.open('layers', 'Layers'); D.cue('p4_layers');
+  for (const [role, L, ui, only] of LAYERS) {
+    const key = role + '|' + L, pooledSel = 'select[data-act="layer"][data-role="' + role + '"][data-layer="' + L + '"]:not([data-sheet])', oneSel = only && 'select[data-act="layer"][data-role="' + role + '"][data-layer="' + L + '"][data-sheet="' + only + '"]';
+    let sel = pooledSel, how = 'pooled';
+    if (only) { const arrow = '[data-act="laysplit"][data-key="' + key + '"]';
+      if (await D.page.$(arrow)) { if (!(await D.page.$(oneSel))) { await D.scrollIn(arrow, BODY); await D.aim(arrow, { label: 'Type this layer sheet by sheet (' + key + ')' }); D.cue('p4_split', { key }); await D.click({ label: 'the split arrow' }); await dm.idle(); } sel = oneSel; how = 'one sheet: ' + only; }
+      else how = 'pooled (no arrow: the layer is on ' + only + ' only, guide B0.4 table)'; }
+    await D.scrollIn(sel, BODY); D.cue('p4_pick', { role, L, ui }); await D.pickSelect(sel, ui, role.toUpperCase() + ' · ' + L); await dm.idle();
+    // once set, a layer the template can name shows '<type> · stated' in place of its list (dxf_meta_editor.js renderLayers, measured 2026-11-20): read whichever the row shows
+    const row = '[data-layer-row="' + key + (sel === oneSel ? '|' + only : '') + '"]';
+    const v = await D.page.evaluate(([sel, row]) => { const s = document.querySelector(sel); if (s) return s.value; const t = document.querySelector(row + ' .dm-tt'); return t ? t.innerText.replace(/ · stated$/, '').trim() : '(no row)'; }, [sel, row]), chip = await dm.chip();
+    D.check(v === ui || (ui === 'door' && v === 'elevdoor'),'b04_layer ' + role + ' ' + L + (only ? ' (' + only + ')' : '') + ' = ' + ui, 'value=' + v + ' via ' + how + ' badge=' + JSON.stringify(chip));
+    if (role === 'plan' && L === 'Col') D.check(chip === 'Blocked · 1', 'b04_after_plan_col_blocked_1', JSON.stringify(chip));     // guide B0.4
+    if (role === 'elev' && L === 'Wall') D.check(chip === 'Qualifies', 'b04_after_elev_wall_qualifies', JSON.stringify(chip));  // guide B0.4
+  }
+  const yh = await dm.head('yellows'); D.check(/ALL DEFAULTS 14 yellow/.test(yh), 'b04_all_ten_set_14_yellow', JSON.stringify(yh));   // guide B0.4: '14 yellow rows'
+  await D.aim('#dm-chip', { label: 'the badge' }); D.cue('p4_qualifies'); await D.sleep(1800);
+  const b = '#dm-yellows [data-act="acceptall"]'; await D.scrollIn(b, BODY); await D.aim(b, { label: 'Accept all' }); D.cue('p4_all'); await D.click({ label: 'Accept all' }); await dm.idle();
+  const n = await dm.yellow(); D.check(n === 0, 'b04b_0_yellow', 'yellow=' + n);   // guide B0.4b
+  D.cue('p4_done'); await D.sleep(2000); D.cue('p4_end');
+};
+const typeInto = async (sel, text, label) => { await D.scrollIn(sel, BODY); await D.aimClick(sel, { label }); await D.key('ctrl+a', 'select what is there'); await D.type(text); };
+S.p5 = async () => {   // B0.5: Body heights, footing and beam (two rows)
+  D.cue('p5_start'); await dm.fold('layers', 'Layers'); await dm.open('bodyz', 'Body heights'); D.cue('p5_open');
+  for (const [k, z0, z1] of BODYZ) {
+    await typeInto('#dm-bz-' + k + '-0', z0, k + ' z0'); await typeInto('#dm-bz-' + k + '-1', z1, k + ' z1');
+    const add = '[data-act="bodyzadd"][data-kind="' + k + '"]'; await D.scrollIn(add, BODY); await D.aim(add, { label: 'Add (' + k + ')' }); D.cue('p5_add', { k }); await D.click({ label: 'Add' }); await dm.idle();
+  }
+  const t = await D.page.evaluate(() => (document.getElementById('dm-body') || {}).innerText || ''), chip = await dm.chip();
+  D.check(/@BODYZ=footing,-1\.4478,-1\.143/.test(t) && /@BODYZ=beam,3\.098794,3\.352794/.test(t), 'b05_two_bodyz_rows', JSON.stringify((t.match(/@BODYZ=[^\s]+/g) || [])));   // guide B0.5
+  D.check(chip === 'Qualifies', 'b05_badge_still_qualifies', JSON.stringify(chip));
+  D.cue('p5_done'); await D.sleep(2000); D.cue('p5_end');
+};
+S.p6 = async () => {   // B0.6: on each elevation and the section card, Level datums (@Z): 0.6096 at the card's y, Add
+  D.cue('p6_start'); await dm.fold('bodyz', 'Body heights'); await dm.open('sheets', 'Sheets');
+  for (const [name, y] of DATUMS) {
+    const si = await D.page.evaluate(n => window.DxfMetaEditor.state.sheets.findIndex(s => s.name === n), name);   // the card that carries this sheet's name
+    const card = '[data-act="card"][data-sheet="' + si + '"]';
+    if (!(await D.page.evaluate(si => !!window.DxfMetaEditor.state.open[si], si))) { await D.scrollIn(card, BODY); await D.aimClick(card, { label: 'open card ' + name }); await dm.idle(); }
+    D.cue('p6_card', { name }); await typeInto('#dm-av-' + si + '-Z', '0.6096', name + ' datum height'); await typeInto('#dm-ap-' + si + '-Z', y, name + ' y where drawn');
+    const add = '[data-act="add"][data-sheet="' + si + '"][data-group="Z"]'; await D.scrollIn(add, BODY); await D.aim(add, { label: 'Add (' + name + ')' }); await D.click({ label: 'Add' }); await dm.idle();
+    const z = await D.page.evaluate(n => window.DxfMetaEditor.state.sheets.find(s => s.name === n).marks.filter(m => m.key === 'Z').map(m => m.value), name);
+    D.check(z.filter(v => /^0\.6096\b/.test(String(v))).length === 1 && z.length === 3, 'b06_datum ' + name, JSON.stringify(z));   // guide B0.6: 'a new @Z=0.6096 row beside the two it read itself'
+  }
+  const chip = await dm.chip(); D.check(chip === 'Qualifies', 'b06_badge_still_qualifies', JSON.stringify(chip));
+  D.cue('p6_done'); await D.sleep(2000); D.cue('p6_end');
+};
+// §5.15 open point 2: where the joint is DRAWN on screen (B:READ: the camera projection of EX_AIM through the sheet's own toWorld, as W-UAT-B0 aims), in SCREEN pixels
+const joint = async () => { const o = await D.page.evaluate(() => ({ sx: screenX, sy: screenY, oh: outerHeight, ih: innerHeight, ow: outerWidth, iw: innerWidth }));
+  const r = await D.page.evaluate(aim => { const A = window.A, THREE = window.THREE, c = window.DxfImportUI.state.canvas['3_BEAM_LAYOUT.dxf'], rc = A.renderer.domElement.getBoundingClientRect();
+    const scr = (x, y) => { const w = c.toWorld(x, y), v = new THREE.Vector3(w[0], w[1], w[2]).project(A.camera); return [rc.left + (v.x + 1) / 2 * rc.width, rc.top + (1 - v.y) / 2 * rc.height]; };
+    const pr = document.getElementById('dm-panel').getBoundingClientRect().right; return { a: scr(aim[0], aim[3]), b: scr(aim[2], aim[1]), all: [scr(aim[0], aim[1]), scr(aim[2], aim[1]), scr(aim[2], aim[3]), scr(aim[0], aim[3])], free: [pr + 10, rc.top + 70, rc.right - 10, rc.bottom - 10] }; }, EX_AIM);
+  const side = (o.ow - o.iw) / 2, ox = o.sx + side, oy = o.sy + o.oh - o.ih - side, S2 = p => [p[0] + ox, p[1] + oy];
+  const all = r.all.map(S2), xs = all.map(p => p[0]), ys = all.map(p => p[1]);
+  return { a: S2(r.a), b: S2(r.b), box: [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)], free: [r.free[0] + ox, r.free[1] + oy, r.free[2] + ox, r.free[3] + oy] }; };
+S.p7 = async () => {   // B0.7: Exclude areas: 3_BEAM_LAYOUT, Exclude area, zoom (wheel) + pan (right-drag) to the joint between grids 06 and 35, drag the box, leave the tool
+  D.cue('p7_start'); await dm.fold('sheets', 'Sheets'); await dm.open('excludes', 'Exclude areas');
+  const exs = '[data-act="exsheet"]'; await D.scrollIn(exs, BODY); D.cue('p7_sheet'); await D.pickSelect(exs, '3_BEAM', 'the Exclude areas list');
+  const sv = await D.page.$eval(exs, s => s.value); D.check(sv === '3_BEAM_LAYOUT.dxf', 'b07_sheet_chosen', sv);
+  const tool = '[data-act="tool"][data-tool="exclude"]'; await D.scrollIn(tool, BODY); await D.aim(tool, { label: 'Exclude area' }); D.cue('p7_tool'); await D.click({ label: 'Exclude area' }); await dm.idle();
+  const bt = await D.page.$eval(tool, b => b.innerText.trim()); D.check(bt === 'Drag a box', 'b07_button_reads_drag_a_box', JSON.stringify(bt));   // guide B0.7: '(the button now reads Drag a box)'
+  // zoom to the bay: a closed loop of real input. Pan (right-drag: the tool takes the left button only, dxf_meta_editor.js:232) the joint to the middle of the free canvas, one wheel notch, read again
+  D.cue('p7_zoom'); D.fastStart('zoom to the joint (wheel + right-drag)'); let j = await joint(), notches = 0, pans = 0;
+  for (let i = 0; i < 90; i++) {
+    const cx = (j.box[0] + j.box[2]) / 2, cy = (j.box[1] + j.box[3]) / 2, fx = (j.free[0] + j.free[2]) / 2, fy = (j.free[1] + j.free[3]) / 2, h = j.box[3] - j.box[1];
+    const inside = j.box[0] > j.free[0] + 40 && j.box[2] < j.free[2] - 40 && j.box[1] > j.free[1] + 30 && j.box[3] < j.free[3] - 30;
+    D.log('§FILM_VIEW i=' + i + ' joint=' + j.box.map(Math.round).join(',') + ' h=' + Math.round(h) + ' inside=' + inside + ' notches=' + notches + ' pans=' + pans);
+    if (h >= 420 && inside) break;
+    if (Math.hypot(cx - fx, cy - fy) > 60 || !inside) { await D.dragFromTo(cx, cy, fx, fy, { button: 3, dur: 0.8, label: 'pan (right-drag)' }); pans++; await D.sleep(600); }
+    else { await D.moveTo(fx, fy); await D.wheel(false, h < 250 ? 3 : 1); notches += h < 250 ? 3 : 1; await D.sleep(700); }
+    j = await joint();
+  }
+  D.fastEnd(); const h = j.box[3] - j.box[1]; D.check(h >= 420, 'b07_zoomed_to_joint', 'joint box h=' + Math.round(h) + ' px after notches=' + notches + ' pans=' + pans);
+  D.cue('p7_drag'); await D.sleep(1200); await D.dragFromTo(j.a[0], j.a[1], j.b[0], j.b[1], { dur: 1.6, label: 'the exclude box round the joint' }); await dm.idle();
+  const ex = await D.page.evaluate(() => { const s = window.DxfMetaEditor.state.sheets.find(q => q.name === '3_BEAM_LAYOUT.dxf'); return s.marks.filter(q => q.key === 'EXCLUDE').map(q => q.value); });
+  const v = ex.length === 1 ? ex[0].split(',').map(Number) : [], inTol = v.length === 4 && v[0] > EX_TOL.x0[0] && v[0] < EX_TOL.x0[1] && v[2] > EX_TOL.x1[0] && v[2] < EX_TOL.x1[1] && v[1] < EX_TOL.y0max && v[3] > EX_TOL.y1min;
+  const rowT = await D.page.evaluate(() => (document.getElementById('dm-body').innerText.match(/3_BEAM_LAYOUT[^\n]*@EXCLUDE=[^\n]*/) || [''])[0]);
+  D.check(inTol, 'b07_one_exclude_inside_tolerance', JSON.stringify(ex) + ' row=' + JSON.stringify(rowT));   // guide B0.7 + W-UAT-B0 R2 tolerance (§5.84)
+  D.cue('p7_box'); await D.sleep(2500);
+  await D.scrollIn(tool, BODY); await D.aim(tool, { label: 'Drag a box (leave the tool)' }); await D.click({ label: 'Drag a box' }); await dm.idle();
+  const off = await D.page.evaluate(() => window.DxfMetaEditor.state.tool); D.check(!off, 'b07_tool_left', String(off));
+  D.cue('p7_end');
+};
+// the saved copies against the pack's answer key, mark for mark (W-UAT-B0 R2's own rule: text + position; @EXCLUDE by the tolerance; @BODYZ over the set)
+const marksSame = (dirA, dirB) => { const MOD2 = '/home/red1/bim-ootb/modeller', DxfParser = require(MOD2 + '/lib/dxf-parser.js'), MK = require(MOD2 + '/dxf2bim/dxf2marks.js');
+  const marksOf = f => MK.readMarks(new DxfParser().parseSync(fs.readFileSync(f, 'utf8')).entities).map(m => ({ t: m.raw.replace(/\s+@BY=\S+$/, ''), x: Number(m.x.toFixed(2)), y: Number(m.y.toFixed(2)) }));
+  const key = m => m.t + ' @' + m.x + ',' + m.y, diffs = [], bzA = [], bzB = [], ex = []; let n = 0;
+  fs.readdirSync(dirB).filter(f => /_marked\.dxf$/.test(f)).forEach(f => { const pa = path.join(dirA, f); if (!fs.existsSync(pa)) { diffs.push(f + ' not saved'); return; } n++;
+    const a = marksOf(pa), b = marksOf(path.join(dirB, f)), skip = m => /^@(EXCLUDE|BODYZ)=/.test(m.t), ka = a.filter(m => !skip(m)).map(key), kb = b.filter(m => !skip(m)).map(key);
+    ka.filter(x => !kb.includes(x)).forEach(x => diffs.push(f + ' extra ' + x)); kb.filter(x => !ka.includes(x)).forEach(x => diffs.push(f + ' missing ' + x));
+    bzA.push(...a.filter(m => /^@BODYZ=/.test(m.t)).map(m => m.t)); bzB.push(...b.filter(m => /^@BODYZ=/.test(m.t)).map(m => m.t)); ex.push(...a.filter(m => /^@EXCLUDE=/.test(m.t)).map(m => m.t)); });
+  if (JSON.stringify(bzA.sort()) !== JSON.stringify(bzB.sort())) diffs.push('@BODYZ over the set differs');
+  return { n, diffs, ex }; };
+S.p8 = async () => {   // B0.8 + B0.9: read the badge (Qualifies, 0 yellow); Save marked copies -> nine ..._marked.dxf in Downloads
+  D.cue('p8_start'); const chip = await dm.chip(), n0 = await dm.yellow();
+  await D.aim('#dm-chip', { label: 'the badge: ' + chip }); D.cue('p8_badge', { chip }); await D.sleep(2000);
+  D.check(chip === 'Qualifies' && n0 === 0, 'b08_qualifies_0_yellow', JSON.stringify(chip) + ' yellow=' + n0);   // guide B0.8
+  await D.aim('#dm-save', { label: 'Save marked copies' }); D.cue('p8_save'); await D.click({ label: 'Save marked copies' });
+  // Chrome may ask once whether the site may download several files (§5.2 scene 6: filmed only if it shows): its Allow is read on the screen
+  const nM = () => fs.readdirSync(D.dlDir()).filter(f => /_marked\.dxf$/.test(f) && !/crdownload/.test(f)).length; let asked = false;
+  for (let i = 0; i < 60 && nM() < 9; i++) {
+    if (!asked && i >= 4) { const al = await D.findText(t => t === 'Allow', D.screenBox(0, 60, 1000, 400, 'Chrome download prompt'), 1, true);
+      if (al) { asked = true; D.log('§FILM_NOTE Chrome asked to download multiple files'); D.cue('p8_allow'); await D.aim(D.screenBox(al.x - 20, al.y - 10, al.w + 40, al.h + 20, 'Allow'), { label: 'Allow (Chrome: download multiple files)' }); await D.click({ label: 'Allow' }); } }
+    await D.sleep(500); }
+  if (!asked) D.log('§FILM_NOTE Chrome did not ask about multiple downloads');
+  const names = fs.readdirSync(D.dlDir()).filter(f => /_marked\.dxf$/.test(f)).sort(); D.check(names.length === 9, 'b09_nine_marked_landed', names.join(','));   // guide B0.9
+  const note = await D.page.$eval('#dm-note', e => e.innerText).catch(() => ''); D.check(/^Downloaded: /.test(note), 'b09_panel_says_downloaded', JSON.stringify(note.slice(0, 120)));
+  const cmp = marksSame(D.dlDir(), path.join(D.dlDir(), PACK, 'marked')); D.check(cmp.n === 9 && cmp.diffs.length === 0, 'b09_marks_equal_answer_key', 'files=' + cmp.n + ' diffs=' + JSON.stringify(cmp.diffs.slice(0, 6)) + ' exclude=' + JSON.stringify(cmp.ex));
+  D.cue('p8_saved'); await D.sleep(3000); D.cue('p8_end');
+};
+// the nine saved copies in the OS file window: click the first, Shift+click the last (p9 and the Run Checker's box 2)
+const pickNine = async (R) => {
+    // the first row is often misread (take t1g: '0.FAQOR PLAN. marked. dxt'): try it quietly, else place it one row above 1N_ELEV_NORTH (row height from 1N -> 1S, both read at conf >= 90)
+    let f0 = await D.findText(t => /^0_FLOOR_PLAN_marked/.test(t), R, 2, true);
+    if (!f0) { const a = await D.findText(t => /^1N_ELEV_NORTH_marked/.test(t), R, 3), b = a && await D.findText(t => /ELEV_SOUTH_marked/.test(t), R, 3); if (!a || !b) return false;
+      f0 = { x: a.x, y: a.y - (b.y - a.y), w: a.w, h: a.h }; D.check(b.y - a.y > 10 && b.y - a.y < 60, 'first_row_derived', 'row=' + (b.y - a.y) + ' px above 1N_ELEV_NORTH y=' + a.y); D.log('§FILM_OCR_DERIVED 0_FLOOR_PLAN_marked.dxf at=' + [f0.x, f0.y, f0.w, f0.h].join(',')); }
+    await D.aim(D.screenBox(f0.x - 40, f0.y - 4, f0.w + 50, f0.h + 8, '0_FLOOR_PLAN_marked.dxf'), { label: '0_FLOOR_PLAN_marked.dxf' }); await D.click({ label: 'the first copy' });
+    const f8 = await D.findText(t => /SECTION_AA_TRUSS_marked/.test(t), R); if (!f8) return false;   // read as two words '8' + 'SECTION_AA_TRUSS_marked.dxf' (t1g)
+    await D.aim(D.screenBox(f8.x - 40, f8.y - 4, f8.w + 50, f8.h + 8, '8_SECTION_AA_TRUSS_marked.dxf'), { label: '8_SECTION_AA_TRUSS_marked.dxf' });
+    D.X('keydown', 'shift'); D.log('§FILM_KEY shift down (select the range)'); await D.click({ label: 'Shift+click the last copy' }); D.X('keyup', 'shift'); D.log('§FILM_KEY shift up'); await D.sleep(900); };
+S.p9 = async () => {   // B2.1 + B2.3: reload; the nine SAVED copies (click the first, Shift+click the last: Downloads also holds the zip and its folder); Arrange
+  D.cue('p9_start'); await D.key('F5', 'reload the page'); D.fastStart('the Modeller reloads'); await D.sleep(1500); await MOD.ready(); await D.sleep(1500); D.fastEnd();
+  await D.aimClick('#b-open', { label: 'Open' }); await D.sleep(600);
+  await D.aim('#m-open-panel .mo-row[data-key="__dxf"]', { label: 'Open 2D drawings (.dxf)…' }); D.cue('p9_row'); await D.click({ label: 'Open 2D drawings (.dxf)…' });
+  const ok = await D.pick(['Downloads'], pickNine, 'the nine saved copies');
+  if (!ok) return;
+  D.fastStart('the sheets are read'); await D.page.waitForFunction(n => window.DxfMetaEditor && window.DxfMetaEditor.state.sheets.length === n && !window.DxfMetaEditor.state.busy && window.DxfMetaEditor.state.verdict, 9, { timeout: 300000, polling: 300 }); await D.sleep(1500); D.fastEnd();
+  const names = await D.page.evaluate(() => window.DxfMetaEditor.state.sheets.map(s => s.name).sort());
+  const title = await D.page.$eval('#dxf-panel .ip-title', e => e.innerText.replace(/\s+/g, ' ').trim()).catch(() => ''), chip = await dm.chip();
+  D.check(/9 SHEETS/.test(title) && names.every(n => /_marked\.dxf$/.test(n)), 'b21_nine_saved_copies_open', JSON.stringify(title) + ' ' + names.length + ' _marked');   // guide B2.1
+  D.check(chip === 'Qualifies', 'b22_badge_qualifies', JSON.stringify(chip));   // guide B2.2
+  D.cue('p9_loaded'); await D.sleep(2500);
+  await D.aim('#dxf-arrange', { label: 'Arrange' }); D.cue('p9_arrange'); await D.click({ label: 'Arrange' });
+  let first = '', last = '', seen = 0; const t0 = D.now();
+  for (let i = 0; i < 1200; i++) { const s = await D.page.$eval('#dxf-status', e => e.innerText).catch(() => ''), m = /Step (\d+)\/(\d+)/.exec(s);
+    if (m) { if (!first) first = m[0]; if (m[0] !== last) { last = m[0]; seen++; } if (m[1] === m[2]) break; } await D.sleep(100); }
+  D.log('§FILM_ARRANGE first="' + first + '" last="' + last + '" distinct=' + seen + ' sec=' + (D.now() - t0).toFixed(1));
+  D.check(last === 'Step 46/46', 'b23_arrange_counts_to_46', 'first=' + first + ' last=' + last + ' distinct=' + seen);   // guide B2.3: 'Step 1/46 … Step 46/46'
+  D.cue('p9_arranged'); await D.sleep(4000); D.cue('p9_end');
 };
 
 (async () => {
