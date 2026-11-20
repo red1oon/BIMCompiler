@@ -44,7 +44,7 @@ W-X0-SESSION 8/8) + the SessionEnd hook in `~/.claude/settings.json` (stderr + e
 **1. NEXT, in order** (session closed 2026-11-18 by the owner: *"close, will resume VSC in future"*).
 00. **RENAME ✅ 2026-11-18: X0 / x0 → Code Facts / code-facts** (§F.40 SPEC + RESULT; bim-ootb #3317). Everything below that says X0 / x0 means this tool under its old name. Docs: Developer Guide §3/§4.1 rewritten, first sentence is the owner's. Film 4 v4 is the owner's next step, from the SCRIPT v4 section of `prompts/FILM_IMMERSIVE_SOFTWARE.md` (another agent).
 0. **FILM 4 v4 ✅ BUILT 2026-11-18 (owner: "Lets do it")**: current file `~/Videos/Dev_Setup_CH0_EN_AFTER_2026-11-18_v4c.mp4`, 172.5 s (over the ~150 s target; the session beat is cut), scripts `scripts/film_dev_setup/` (v2 = git history). All gates PASS (`§FILM_GUARD`, `§K2`, `§KEYS`, `§FLOW`, `§STRIP_VIDEO`, voice 0 WRONG); one name on screen (Code Facts), a progress strip, three fixed cues, an animated pointer drawn to the token's real pixel rectangle. The owner's first v4 cut had a leftover top bar over the last cards (found by watching; fixed, check S in cards and on the encoded file). Details, defects, rebuild recipe in `prompts/FILM_IMMERSIVE_SOFTWARE.md` # FILM 4 STATUS. Waiting on the owner: review of v4c and a cut list (about 22 s over), F-27 (published installer: not now).
-1. **B2: spec ✅ 2026-11-20, part 1 ✅ 2026-11-20** (bim-ootb #3367 → `1cedcf2f`: per-site numbers, marker pairs, pinned literals; `claims=19/19 red=20/20`), **deps review written** (B2 DEPS REVIEW: 201 `deps`, 7 `notDeps`, 8 `uses`). **Next: the owner's one-message confirmation of the 15 not-plain edges, then PART 2, the switch PR** (B2 BUILD SPEC "Build order": tell live sessions first; `--init erp` with the reviewed lists; marker pairs placed by hand on the 13 pages; one `CACHE_VERSION` step; the before / after runs; C20 + the spec's R18; turn C16 to C19 from the trial onto the committed file).
+1. **B2 ✅ DONE 2026-11-20** (spec, part 1 bim-ootb #3367, deps review, part 2 the switch #3373 → `e4c7356a`, live build v1122; Part B, "B2 PART 2 RESULT"). **Next in B: the B3 build spec (the viewer).**
 2. **D spec** (owner table: `<app>/questions.json`, `"extends"` marks, W-OWNER-UNIQUE).
 3. Grow the CI fast tier when a runner has filled the cache (`node scripts/gen_ci_tier.js --write --probe`); add `PROVES:` lines as witnesses are touched.
 4. **§F.41 W-VSC-OPERATIONAL ✅ 2026-11-19** (#3332): 39 entry points, all routed, 27 run, 12 not run by design (browser / heavy, named); local, ~90 s. Run it before a PR that adds a page, command or runner.
@@ -55,7 +55,7 @@ Done this session (tenth): B1, E0, E1, F-25 `x0`, F-26 `x0 session` + SessionEnd
 | Part | State | Next step |
 |---|---|---|
 | A | ✅ DONE 2026-11-17: A0, A-1..A-7, A1, A2, A3 (W-CORE-PURE PASS, `forbidden=0`, in CI). Results: Part A RESULT INDEX | none |
-| B | **B0 ✅** (#3200, W-MANIFEST-ROUNDTRIP in CI) · **B1 ✅** 2026-11-18 (#3245, #3250: modeller written from modules.json, 25 deps declared) · **B-1 ✅** 2026-11-18 content hashes, own step · **B-2 ✅** 2026-11-18 per-module flag as today · **B-5 ✅** tool proposes deps, a person confirms · **B-3 ✅** owner + witnesses per module · **B-4 ✅** plugin precache derived, `BUILTINS` untouched | B2 part 1 ✅ 2026-11-20 (#3367); deps review written. Next: owner confirms 15 edges, then part 2 (the switch PR) |
+| B | **B0 ✅** (#3200, W-MANIFEST-ROUNDTRIP in CI) · **B1 ✅** 2026-11-18 (#3245, #3250: modeller written from modules.json, 25 deps declared) · **B-1 ✅** 2026-11-18 content hashes, own step · **B-2 ✅** 2026-11-18 per-module flag as today · **B-5 ✅** tool proposes deps, a person confirms · **B-3 ✅** owner + witnesses per module · **B-4 ✅** plugin precache derived, `BUILTINS` untouched | **B2 ✅** 2026-11-20 (#3367, #3373: ERP written from `erp/modules.json`, 201 deps declared). Next: B3 build spec (viewer) |
 | C, D | not started; wait on B | — |
 | E | **E0 ✅** 2026-11-18 `witness_kit/paths.js` (#3256) | ask E-1 (the `PROVES:` header) |
 | F | every row that needs no data from B to E is built (§F index, F.0 to F.35) | F-2 ceilings on 2026-11-30; the F-1 headless Fetch-back button (unbuilt, browser go given); rows waiting on B/D/E data |
@@ -284,7 +284,7 @@ when anything it covers changed. The page stays a static file. **No build step a
 them from it is **byte-identical** to what is committed. No file changes. B1 switch one app (smallest first: modeller, 59 tags) to "manifest is the
 source", generated sections between markers, byte-identical again. B2 erp, B3 viewer. `tests/audit_sw_precache.js` stays green throughout.
 
-**OPEN DECISIONS:** none. B-1 to B-5, B1-Q1 to B1-Q3, B2-Q1 and B2-Q2 are answered (DECISIONS). One confirmation is owed by the owner under B2-Q1: the 15 edges of the B2 DEPS REVIEW that are not plain `deps`.
+**OPEN DECISIONS:** none. B-1 to B-5, B1-Q1 to B1-Q3, B2-Q1 and B2-Q2 are answered (DECISIONS).
 
 **Witnesses:** W-MANIFEST-ROUNDTRIP (manifest → generated text byte-identical to committed; red control: swap two dependent modules → generator
 refuses) · `audit_sw_precache.js` · page boot witnesses unchanged.
@@ -696,7 +696,33 @@ moving or deleting a tag or comment · the 4 partial `?v=` literals (not whole-s
 - **A real fault the review found (bim-ootb #3368, handed to the ERP lane, not fixed here):** `idempiere.html` loads `erp_seam.js` (`:662`) before `bigdecimal.js` (`:666`), so `erp_seam.js:31` holds `BD = null` in the browser and the
   rule-guard test at `:124-126` compares with `Number()` instead of BigDecimal. Whether any real value differs between the two was not measured. It is recorded as `uses`, so the switch keeps today's bytes; when the lane fixes the order it becomes `deps`.
 - **Checked in memory** (`MS.init` with these lists, then `MS.order`): `§TRIAL_ORDER app=erp deps=201 notDeps=7 uses=395 judged=201 errors=0 module_pairs_with_both_tags=185 page_placements_judged=202` (a scratch probe, in no repo; part 2's C20 is the kept form).
-- **Waiting on the owner (B2-Q1's own last step):** one message confirming the 15 that are not plain `deps` (7 `notDeps`, 8 `uses`).
+- **OWNER CONFIRMED 2026-11-20:** shown the 15 that are not plain `deps` (7 `notDeps`, 8 `uses`) in three groups; owner: *"yes"*.
+
+**B2 PART 2 RESULT — ✅ DONE 2026-11-20 (bim-ootb #3370, PR #3373 → main `e4c7356a`; the owner confirmed the 15 not-plain edges with "yes").** ERP is a SOURCE app: `erp/modules.json` (1,147 lines: 297 modules, 366 sites,
+419 precache entries; 201 `deps`, 7 `notDeps`, 395 `uses`, `depsReview.by` = owner) writes every ERP script tag, `'file?v=N'` literal, `PRECACHE_ASSETS` entry and `CACHE_VERSION`.
+- **Bytes:** 16 marker pairs on the 13 pages (32 lines; `idempiere.html`, `glassbowl.html` and `glassbowl_gravity.html` have 2 pairs each), 2 marker lines in `erp/sw.js`, `CACHE_VERSION` one step. Nothing else in those files changed
+  (`C9 ok=Y app=erp switch=e4c7356aa2c7 files=19`). The hand comment on the `CACHE_VERSION` line was left as it is (the deploy stamp reads that line, C19).
+- **Main moved during the build:** a peer's ERP bump (#3371: `ctx_help.js` 2 → 3, `ad_ctxhelp_app_rows.js` 4 → 5, `CACHE_VERSION` v1120 → v1121) merged first. `origin/main` merged in cleanly; its two numbers were set in `erp/modules.json` and the
+  version stepped v1121 → v1122. The peer had been told before the switch and again when it landed (4 live sessions).
+- **Log on merged main `e4c7356a` (full run):** `§MANIFEST_ROUNDTRIP apps=3 source=erp,modeller files=55 sites=830 … identical=55/55 driven=757/757 sw_vm=3/3 claims=28/28 red=21/21 order_check=PASS deps_declared=226 unreviewed=0 owner_gap=152 witness_gap=152 b2_trial=N site_v=28 pinned=2 verdict=PASS`
+  · `C20 ok=Y app=erp deps_declared=201 pairs_judged=185 page_placements_judged=202 pairs_on_2plus_pages=16 out_of_order_in_the_pages=0 generator_refusals=0` (judged against the pages' own tag positions) ·
+  `R21 detected=Y erp/crud_overlay.js and its dep erp/crud_core.js swapped on erp/idempiere.html only (right on 1 other page(s)): 1 refusal(s), all naming erp/idempiere.html`.
+- **Before / after, the tests that read the two changed files as text:** 41 files; 6 need a browser and were not run; the 35 node ones give the same result line for line on unedited main and on the switch branch (24 exit 0, 10 exit 1, 1 timeout on both;
+  the 10 + 1 are not this lane's: `poc_idmp_host`, `witness_already_there`, `witness_bc_migrate`, `witness_docno` (timeout at 240 s), `witness_migration_recover`, `witness_odoo_form`, `witness_odoo_messy`, `witness_role_access_update`,
+  `test_s253_gantt_sync`, `test_s283_pwa_install`, `witness_zoom_linkback_node`).
+- **Unchanged on the branch:** `§BUMP_W_VERDICT PASS judged=7 failed=0` · `§BUMP_PARITY_W_VERDICT PASS judged=24` · `§DEPS_W … verdict=PASS` · `§SW_AUDIT_SUMMARY 303 found, 0 missing` · `§CODEFACTS_BUMP_BUTTON checks=6 failed=0 verdict=PASS` ·
+  `§SHIP_PANEL … verdict=PASS` · `§CORE_PURE … forbidden=0 … verdict=PASS`.
+- **Live, fetched back:** `erp/version.json` = `{"version":"v1.95.0","build":"v1122","sha":"e4c7356a","pr":3373,…}`; live `erp/sw.js` holds `CACHE_VERSION="v1122"` and no marker comment (it is minified, as the spec expected); live
+  `erp/idempiere.html` holds its 2 `§MANIFEST:BEGIN erp tags` lines. A dry-run bump on main: `§BUMP page=erp/erp.html ref=icons.js v=26->27 (manifest erp/modules.json)` … `v=3->4`, `v=3->4`, `v=12->13` (each page from its own number).
+- **A generator weakness found by C11 and fixed in the PR:** ERP pages keep several tags on one line (`branch_admin.html`, `kitchen.html`, `till.html`). A new tag was written on a new line after the WHOLE line, so removing it again did not give
+  back the same bytes. Now a new tag (or precache entry) whose anchor shares its line with later sites stays on that line, right after the anchor.
+- **Two witness assumptions corrected (the instrument, not the product):** C10 compared the module's `v` with the reader's, which is null when sites differ (now: the highest site number); C17 stripped marker lines from one side only.
+- **NOT run, said plainly:** the legacy-parity bridge on the switch branch (the spec listed it). No JS module is bumped by the switch and the pages gain comment lines only; the bridge's own bump witness (`§BUMP_PARITY_W_VERDICT`) passed.
+  The first real ERP bump by any session runs the gate as always. W-VSC-OPERATIONAL and the CI fast tier: CI ran its tier green on the PR; §F.41 was not run locally.
+- **Docs:** CLAUDE.md WORK-TO-ZERO merge rule and Developer Guide §5.1 / §5.2 now say ERP and the Modeller are written from `modules.json` (this PR).
+- **Open after B2:** `owner_gap` (ERP 121 modules name no prompts file in their header) and `witness_gap` (128) are printed on every run; Part D and Part E close them · bim-ootb #3368 (`erp_seam.js` before `bigdecimal.js`), with the ERP lane ·
+  B-4's own step (7 plugin `.mjs` on disk are not precached) · the 10 modules whose numbers differ between pages stay so until B4-HASH.
+- **NEXT in Part B:** B3, the viewer (302 modules, 3 that disagree, 26 lazy and not precached; its own build spec first).
 
 ---
 
@@ -1211,7 +1237,7 @@ first. C is long and best done slowly, module by module, after B/D make ownershi
 | Part | Starts with no decision | Next decision to ask | Why that one |
 |---|---|---|---|
 | A | ✅ done 2026-11-17 (W-CORE-PURE in CI) | none | — |
-| B | nothing until the owner confirms the 15 not-plain edges (B2 DEPS REVIEW); then B2 part 2 | that confirmation | B-5: a person confirms the order list |
+| B | the B3 (viewer) build spec | none until the spec raises one | |
 | C | nothing; waits on B and D | C-1 part names + owners | |
 | D | nothing new; the multi-publisher list already exists (`types/globals.gen.d.ts`) | D-1 where the questions list lives | needs B's `owner` field |
 | E | nothing; E0 done | E-1 the `PROVES:` header format | |
