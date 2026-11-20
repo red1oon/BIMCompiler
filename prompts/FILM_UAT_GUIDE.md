@@ -5,7 +5,7 @@ Every number spoken or shown is a fact read from the guide, the saved PDF or a �
 
 > ## ▶ RESUME HERE — UAT films (rewritten 2026-11-20; read §5.12 → §5.13, then §5.10–§5.11 for the pipeline)
 > **Film 1 DONE and published by the owner:** rc3 (`~/Videos/UAT_Hands_On_Where_To_Click_EN_rc3.mp4`) = https://youtu.be/PBp4qfV4mIo, linked in the guide's *See how* (item 1).
-> **Part II BUILT 2026-11-20: rc4 `~/Videos/UAT_Hands_On_Part2_Raw_Sheets_EN_rc4.mp4`, every bar PASS, 610.7 s (§5.15 RESULT). Next: the owner reviews and uploads; then put its link in the guide's *See how* item 2 and change-list item 8, and drop the :8108 backup `idempiere_film_packin_bak`. After that, Part III (below).** (Plan as was:) A3.1 Pack In + the raw-sheet path.
+> **Part II PUBLISHED 2026-11-20 by the owner: https://youtu.be/WvPgjcMbSwo (rc4, every bar PASS, 610.7 s, §5.15 RESULT); linked in the guide's *See how* item 2 and change-list item 8. Next: Part III (below).** (Plan as was:) A3.1 Pack In + the raw-sheet path.
 > - Scene **s13 Pack In is RECORDED and PASSES** (§5.12 RESULT, folder `f2/full_s13_t5` in session scratchpad a0008b42…; may be cleaned: a re-take is about 3 min). Back up :8108 first, restore after; the backup `idempiere_film_packin_bak` is still there.
 > - **The raw-sheet scenes are SPECCED (§5.14, from the shipped witness W-UAT-B0).** Next: measure the two open points of p7, write p1–p10 in `scenes.js`, take, then build Part II. The plan:
 >   - open the pack's `sheets/` (no marks), B0.1–B0.8 marking by hand, B0.9 Save marked copies;

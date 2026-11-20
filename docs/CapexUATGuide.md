@@ -53,7 +53,7 @@
 
 | Revision | What changed |
 |---|---|
-| 2026-11-20 (b) | Change list item 8 and *See how* item 2: film part 2 made. No step changed |
+| 2026-11-20 (b) | Change list item 8 and *See how* item 2: film part 2, linked. No step changed |
 | 2026-11-20 | The page *Changes since the signed UAT report* (after this cover); the pages *What is this?* (with *How do I pass?*: the UAT Run Checker and the result file to send back) and *Contents* with page numbers; *See how*, the films (1 linked, 2 pending); a table that fits on a page is no longer cut in two (a long one repeats its header row); A3.1 the Pack In window's steps and result; B3.1 the second currency note |
 | 2026-11-19 | This cover; each section on a new page; page numbers; every link in the PDF opens the public site |
 | 2026-11-18 | Corrections found by the UAT dry run: A1 links the Developer Guide §3 setup; D2b, D3, D8 figures for a fresh GardenWorld; D9 goals refresh every 30 minutes; B4.4 the model's line under Task Line |
@@ -76,7 +76,7 @@ Read these even if you have already done the UAT. If your run met one of them, r
 | 5 | B3.1 | The amount in brackets is the rate pack's second currency (RM), whatever language you choose. Showing your local currency for the language you choose is **ongoing development**. | Noted, in development | Compare the **USD** figure |
 | 6 | (film) | The hands-on film shows the ready-marked sheets. The raw-sheet path (B0: mark the sheets yourself, then Arrange) is to follow. | Noted | None; B0 is unchanged |
 | 7 | A2.2, A3.1, C (log in) | After you log in as GardenAdmin, **Chrome** may show its own window *Change your password: the password you just used was found in a data breach*. That is Chrome's warning about the well-known demo password, not an iDempiere error. Until you close it, clicks on the page do nothing. | Noted | Press **OK** on Chrome's window, then go on |
-| 8 | B0, B2.3, B5 (film) | The film *UAT, hands on, part 2* shows the path item 6 said was to follow: the nine sheets as drawn, marked by hand (B0.1 to B0.9), Arrange (B2.3), and the Run Checker with your nine marked copies in box 2 (B5): every row and the run read **PASS**. | Film made; link to follow (*See how*) | None; B0 is unchanged. Watch it before you mark the sheets yourself |
+| 8 | B0, B2.3, B5 (film) | The film *UAT, hands on, part 2* shows the path item 6 said was to follow: the nine sheets as drawn, marked by hand (B0.1 to B0.9), Arrange (B2.3), and the Run Checker with your nine marked copies in box 2 (B5): every row and the run read **PASS**. | Film published: [youtu.be/WvPgjcMbSwo](https://youtu.be/WvPgjcMbSwo) | None; B0 is unchanged. Watch it before you mark the sheets yourself |
 
 
 ## What is this?
@@ -101,7 +101,7 @@ In B5 you open the **[UAT Run Checker](https://red1oon.github.io/bim-ootb/capex/
 Films of the steps, on a real screen:
 
 1. *UAT, hands on: where to click*: [https://youtu.be/PBp4qfV4mIo](https://youtu.be/PBp4qfV4mIo). From the downloads to B5 and the result file.
-2. *UAT, hands on, part 2*: A3.1 Pack In, then B0 on the nine sheets as drawn (marked by hand), B2.3 Arrange, and B5 with all four rows PASS. Made; the link is added here when it is uploaded.
+2. *UAT, hands on, part 2*: [https://youtu.be/WvPgjcMbSwo](https://youtu.be/WvPgjcMbSwo). A3.1 Pack In, then B0 on the nine sheets as drawn (marked by hand), B2.3 Arrange, and B5 with all four rows PASS.
 
 ## Contents
 
