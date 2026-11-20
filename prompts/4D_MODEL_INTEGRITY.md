@@ -5256,3 +5256,24 @@ dry. v2 shipped: it keeps the true hung edges v1 dropped to the wave order (`§E
    Duplex segments 37, LTU 30. One kind per step, second-carrier pattern (§Q.40 v3).
 4. Profile §Q.43.1's programme / task-count moves. 5. Delete ONE election clause covered by a bond edge. 6. The rest of the phase table against
    standard practice. 7. Sign-off list; Terminal / Hospital local-vs-served check; S5; S6.
+
+### Q.46 SPEC — a slab that structure stands on IS structure (rule B, §Q.33.2) (2026-11-20, owner: *"resume"*; §Q.45.1 item 3)
+- **Re-profile first (`~/.cache/bim4d/q46_logs_2026-11-20/probe_b9_base.log`, after §Q.43-§Q.45):** B9 = Duplex 37 · HHS 2 · JKR 0 · Clinic 70 ·
+  Terminal 55 · Hospital 4 · LTU 30. By what the late host IS:
+  | line | n | finding |
+  |---|---:|---|
+  | Clinic bearing walls 65 + columns 2 | 67 | ONE host: slab `2oJ$jhEMn3nhAqn0NbtYKu` *"Basic Roof: EPDM Membrane … Metal Deck"*, z 4.47-4.59, 1,807 m², filed `Architecture Envelope` seq 6 [day 20-26]; what stands on it is `Superstructure_First Floor` [12-20]. Touching (gap 0.00). **This step.** |
+  | Terminal segments 34, ceilings 4, fixtures 4; LTU segments 28 | 70 | `hangs-below` with a clear gap of 6-14 m (Terminal p50 7.77, LTU 5.96): the first offerer above is a roof over a tall space — a pipe at z 0.87 is not hung from a slab at z 7.89. NOT filing; a far "first offerer" is still not a hanger. Named, not fixed here (needs a rule that is not a distance constant). |
+  | Duplex segments 37 | 37 | host = a 1 cm `IfcSlab` filed `Finishes` seq 11 (the *Finish Floor* tile slabs, §W_D0 C2) — the tile is taken as the offerer above the pipe. Next step: a finish slab offers no `hangs-below`. |
+  | walls on a wall / windows in a wall of a later level; pipes fixed to a later wall; stair parts ← railing; one beam pair | 22 | each a few; listed in the log. |
+- **Population of the rule on all seven (`probe_slabhost_base.log`):** slabs not filed as structure that a column or bearing wall bears on —
+  **Clinic 1 (carrying 67), every other building 0** (Hospital has 24 envelope slabs, Duplex 15 finish / envelope slabs: nothing structural bears on them).
+- **Rule (rule B: *"a host whose phase comes later is MOVED UP — a wall carrying a slab becomes structure, D1 derived, not special-cased"*):** a slab
+  whose phase is neither `Superstructure` nor `Substructure` and which is the `bears-on-top` host of a column or a bearing wall becomes
+  `Superstructure`, sequence 4 — what any slab is. Resource, rate and install time unchanged (the §BEARING_WALL / §CEILING_CLOSEUP pattern).
+- **Code:** `viewer/shim_bonds.js` — in the ONE bond pass `applyCeilings` already runs for every element recipe (`ScheduleGate.applyGeometryReclass`;
+  no second contact graph, no second compute): `§CARRYING_SLAB recipe= promoted= carrying= byWas=`; NO-OP when none. Runs with or without coverings
+  (today the pass returns early when a building has no covering — it must not).
+- **Proof owed, all seven:** `§CARRYING_SLAB` per building (Clinic 1, others 0 = NO-OP); B9 Clinic 70 → 3; Clinic programme days / tasks before →
+  after; midair, parity, DCMA; `run_4d_gates.sh`, every re-lock named. Six buildings must be byte-identical in their played layer (the rule finds
+  nothing there) — proved by the gates passing with no re-lock for them.
