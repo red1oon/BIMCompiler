@@ -5028,3 +5028,16 @@ Three versions were built and gated; only the third shipped. The spec above (v1)
    non-ceiling covering, §Q.39.1 a).
 3. The rest of the phase table against standard practice (ruling Q1): list every deviation before changing any.
 4. Sign-off list (§Q.37.3); Terminal / Hospital local-vs-served check (§Q.38); S5; S6.
+
+### Q.41 SPEC — S3c REDESIGNED: bonds ADD carriers to the solve, behind a flag (2026-11-20, owner: *"Continue"*; §Q.40.2 item 1)
+- **Why (§Q.40.1 ⚠):** replacing the elected support by the bond's host makes an element run ahead of the carrier it no longer names. So the bond's
+  hosts are ADDED: an element waits for every carrier the election and the bonds name (the model's `count = all`; §E1_ALL_CARRIERS is the precedent).
+- **Code, `cpm_schedule.js buildGraph` only:** `§E1_BOND_CARRIERS` — for an element bonded by `bears-on-top` / `hangs-below`, a finish-to-start edge
+  from each bond host; by `fixes-on-side` / `opening-accepts` / `joins`, start-to-start (it goes in with its host, as `embedded` does today);
+  `continues-same-kind` and `ground` add nothing (rule C, seeds). An edge the graph already has is not added twice. Bonds are computed on the contact
+  graph the solve already holds; no aggregates.
+- **Flag, default OFF:** `opts`-free switch `global.__TPL_BOND_CARRIERS` / node env `TPL_BOND_CARRIERS=1` (the `TPL_LEVEL_SOURCE` pattern). With the
+  flag off no bond is computed here and the graph is byte-identical. No clause of the election is deleted in this step.
+- **Sandbox measurement owed before any decision (flag on, separate cache dir, all seven):** edges added by capability; `§SUPPORT_CYCLE`; played midair
+  and `§FILING_PARITY`; programme days / tasks; `§SHIM_WOULD_MOVE` before → after (does the PLAYED layer honour the bonds, or does the within-task
+  re-tiling throw the solve's order away as it did before §D6?); DCMA; the gates' verdict with the flag on, every red named.
