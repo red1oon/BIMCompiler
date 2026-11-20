@@ -5297,3 +5297,38 @@ dry. v2 shipped: it keeps the true hung edges v1 dropped to the wave order (`§E
 5. The small lines of §Q.46's table (walls on a later wall, windows, stair parts ← railing, one beam pair): 22 in all.
 6. Profile §Q.43.1's programme / task-count moves. 7. Delete ONE election clause covered by a bond edge. 8. The rest of the phase table against
    standard practice. 9. Sign-off list; Terminal / Hospital local-vs-served check; S5; S6.
+
+### Q.47 — THE DECLARED COVERING TYPES ARE IN THE BUCKET (2026-11-20, owner go: *"yes as long documented so we have a trace of what changed"*; §Q.46.2 item 1; bim-ootb PR #3366; logs + backups `~/.cache/bim4d/q47_upload_2026-11-20/`)
+- **The full trace is in bim-ootb `buildings/patches/README.md` §Upload log** (per served file: bytes + md5 before and after, verifier result on the
+  served database, upload time) and the six `*.predefined_type.manifest.json` beside the patches. Summary here.
+- **What the bucket serves, read first (`bucket_state_before.log`):** five of the seven gate DBs are in the bucket with a patch (Duplex_extracted,
+  HHS_extracted, Terminal_meta, Hospital_meta, LTU_meta); **JKR is not in the bucket** (GitHub Pages serves it with the repo — live since #3362);
+  **Clinic is served as `Clinic.db`**, not the `Clinic_meta.db` the gates judge, so its block was generated again against the served `Clinic.db`
+  (250 / 250 CEILING, same as the gate DB).
+- **⚠ Found before uploading (OCI_UPLOAD rule 1, download and diff the target):** for HHS, Terminal and Hospital the repo patch differs from the
+  served patch by FAR more than this block — work of other lanes never uploaded (`§IFC_SURFACE_NAMES` etc. 5,464 / 18,983 diff lines; Terminal a
+  regenerated `§META_TRANSFORM_REPAIR`, 2,105 lines — the kind of block that was withdrawn from LTU's production patch, §Q.36.5). The go covered the
+  covering types only. **So for those three the uploaded file = the served file as it stood + the 4-statement block, nothing else** (each diff: 6
+  lines added, 0 removed). Duplex, LTU and Clinic: served-before + block is byte-equal to the repo file.
+- **Six uploads through `scripts/oci_patch_gate.js --upload`**, clean worktree at `origin/main` `79755693` (Clinic: its PR branch, 1 ahead, clean),
+  dry run first, one file at a time. Verifier on the served DB with the file applied — *rows | rows joining an IfcCovering | IfcCovering in the
+  served db | types*: Duplex 13 | 13 | 13 | CEILING · HHS 43 | 43 | 43 | CEILING · Terminal 82 | 82 | 82 | CEILING · Hospital 602 | 602 | 602 | CEILING ·
+  LTU 24321 | 24321 | 24321 | INSULATION · Clinic 250 | 250 | 250 | CEILING. All six `§GATE_VERDICT UPLOAD_VERIFIED`; fetched back over HTTPS
+  byte-equal, `application/sql`, CORS `*` (`fetch_back.log`).
+- **With it:** `_GANTT_CACHE_VERSION` 52, sw v1778 — a schedule stored before the upload was built without the declared types.
+- **Consequence to know:** the gates judge the REPO patches; on HHS / Terminal / Hospital the bucket serves a different (older + this block) file,
+  exactly as before this step. That gap predates §Q.44 and is not closed here; §Q.38's "local-vs-served check" for Terminal and Hospital is the same
+  item and now has its measurement: the patches differ, by the blocks named above.
+- **Post-upload witness (`apply_served.log`) — the gate applies with the sqlite3 CLI, the browser does not, so:** each patch AS SERVED (fetched over
+  HTTPS) applied to its database AS SERVED through the viewer's own chunker (`scripts/lib/apply_building_patch.js`, mode `all`): 6 / 6 PASS, `failed=[]`
+  on every one (statements Duplex 192, HHS 2,241, Terminal 35,098, Hospital 19,219, LTU 44, Clinic 26), `element_predefined_type` rows = coverings.
+- **A CI scare, checked not assumed:** on #3366 the job `live-json-editor` (a headless browser on the LIVE site, building `Ifc2x3_Duplex_Federated`)
+  timed out at 180 s one minute after the Duplex upload. Re-run of the same job with the uploaded patch in place: **pass**. A transient navigation
+  timeout, and incidentally a browser load of the live Duplex after the upload.
+- **Not witnessed:** a schedule generated in a browser on the live buildings; bake. **Undo:** remove the block's 6 lines from the served file, put it back through the gate.
+### Q.47.1 ▶ RESUME HERE (2026-11-20)
+1. **⛔ Owner ruling: where pipe / duct INSULATION is filed** (§Q.44.2 item 2). LTU live now schedules its 24,321 pieces of lagging in `Finishes`.
+2. **⛔ Owner decision: the unshipped blocks in the HHS / Terminal / Hospital repo patches** (surface names; Terminal transform repair) — upload,
+   or leave: until then the gates judge a patch users do not get on those three.
+3. Duplex segments 37 (finish-slab offerer) · 4. far "first offerer" (Terminal 42, LTU 28) · 5. the 22 small lines · 6. profile §Q.43.1's
+   programme moves · 7. delete ONE election clause · 8. phase table vs standard practice · 9. sign-off list; S5; S6.
