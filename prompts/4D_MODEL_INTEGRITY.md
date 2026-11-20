@@ -5167,3 +5167,37 @@ dry. v2 shipped: it keeps the true hung edges v1 dropped to the wave order (`§E
 3. Profile the three programme / task-count moves named above.
 4. Delete ONE election clause now covered by a bond edge. 5. The rest of the phase table against standard practice. 6. Sign-off list; Terminal /
    Hospital local-vs-served check; S5; S6.
+
+### Q.44 SPEC — what a covering IS comes from the file: `IfcCovering.PredefinedType` (2026-11-20, owner: *"proceed"*; §Q.43.2 item 1)
+- **Issue (measured; probes + logs `~/.cache/bim4d/q44_logs_2026-11-20/`):** §Q.39 decides ceiling vs floor finish from the covering's own bond
+  (`hangs-below` = ceiling, `bears-on-top` = floor finish). The source IFCs DECLARE it, and the bond disagrees with them (`probe_predef.log`,
+  IfcOpenShell over the source files, every covering guid of the shipped DB found unless said):
+  | | coverings in the DB | declared `PredefinedType` | the bond said (main, `probe_cov_base.log`) |
+  |---|---:|---|---|
+  | LTU | 24,321 | **INSULATION 24,321** (pipe / duct lagging) | ceiling 12,038 · floor finish 8,671 · lost 3,612 |
+  | Hospital | 602 | CEILING 602 | ceiling 600 · lost 2 |
+  | Clinic | 250 | CEILING 250 | ceiling 239 · **floor finish 3** · lost 8 |
+  | HHS | 43 | CEILING 43 | ceiling 39 · floor finish 1 · lost 3 |
+  | JKR | 35 (34 found) | CEILING 26 · MOLDING 7 (fascia) · CLADDING 1 | ceiling 19 · **floor finish 10** · lost 6 |
+  | Duplex | 13 | CEILING 13 | ceiling 13 |
+  | Terminal | 82 | not read: `TerminalMerged.ifc` throws on the attribute (IFC2x3 entity with 8 arguments) — INCONCLUSIVE | ceiling 55 · lost 27 |
+  So on LTU §CEILING_CLOSEUP moved 12,038 pieces of lagging into `Architecture Closeup` as ceilings, and B9's LTU 241 "fixtures under a covering" are
+  fixtures under lagged pipes. Clinic's 30 and JKR's fixtures hang from DECLARED ceilings that bonded `bears-on-top` because a thin slab tops out within
+  GAP under them (Clinic: ceiling z 7.25-7.30, a roof deck 0.49 m below, the slab it hangs from 0.18 m above); JKR's 47 are under a 5.3 m `Fascia`.
+  Measured and NOT adopted: "the nearer host wins" (`probe_flip_base.log`) — on LTU it flips 4,159 of 8,585 (gap below p50 0.21 m, above 0.19 m: a
+  coin toss) and reaches 116 of 245 fixtures. A geometry rule here is the square peg; the fact is in the file.
+- **Rule (extract, §Q.33.2 F: IFC facts first):** a covering's kind is its declared type — `CEILING` → `ceiling` (need: `hangs-below` slab / beam;
+  §CEILING_CLOSEUP applies), `FLOORING` → `floor_finish` (need: `bears-on-top` slab), any other declared type (`INSULATION`, `MOLDING`, `CLADDING`,
+  `ROOFING`, …) → `covering_other`: NO row (untabled, keeps its template time), offers nothing, is not a ceiling. A fixture's first need names
+  `ceiling` (and the undeclared `covering`). **No declared type → today's behaviour, unchanged** (kind `covering`, both needs, bond decides) — so a
+  building whose patch is not served loses nothing.
+- **Carrier of the fact (DB CHANGES = MIGRATION SCRIPT + SELF-HEAL LOADER):** `tools/ifc_predefined_type_patch.py` (pattern:
+  `scripts/ifc_aggregates_patch.py`) writes an idempotent block `§IFC_PREDEFINED_TYPE` into `buildings/patches/<db>.sql`:
+  `element_predefined_type(guid PRIMARY KEY, predefined_type)`, IfcCovering only, guids present in the DB only. The viewer's patch loader and
+  `scripts/lib/apply_building_patch.js` already apply the file. The element recipes read the table once and stamp `ptype` on each element
+  (one owner: `ScheduleAuthor`), the bond items carry it, `ShimBonds.kindOf` reads it.
+- **⛔ Not decided here (owner):** where pipe / duct INSULATION is filed. This step only stops calling it a ceiling: it keeps the class rule
+  (`Finishes`, what it had before §Q.39). Standard practice is lagging after the pipe is tested, before the ceiling closes — a practice-table row.
+- **Proof owed, all seven, before → after:** `§CEILING_CLOSEUP` ceilings / floor finish / other / undeclared; B8, B8x, B9 (LTU, JKR, Clinic fixture
+  lines); bonded (B7); programme days / tasks; midair; DCMA; `run_4d_gates.sh`, every re-lock named. A new witness claim: every covering the patch
+  declares has the kind its declared type gives, and a building with the table and one without both run (no silent default).
