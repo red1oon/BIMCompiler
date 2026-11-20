@@ -311,3 +311,4 @@ Every build: frames = picture (9,313 in rc3), 31 of 31 lines DETAIL, 0 tone WRON
   frames 18,321 = picture; tone wrong 0; keys 1177/1177, clicks 139/139. Film: `~/Videos/UAT_Hands_On_Part2_Raw_Sheets_EN_rc4.mp4` (never pushed). Length 10 min 11 s: not gated (no target yet, owner's call).
 - Guide (owner's rule: the signed report untouched, changes appended): revision **2026-11-20 (b)**, change list item **8**, *See how* item 2 "made; link when uploaded". `NOTICES_since_report.md` row 8.
 - `idempiere_film_packin_bak` is still on :8108. Part II did not need it (s13 not re-taken). Drop it once the owner accepts Part II.
+- **2026-11-20, after the owner published Part II (https://youtu.be/WvPgjcMbSwo, guide #1096 live):** `idempiere_bimdoc` checked as found (`TD_`=0, `ad_package_imp_proc`=1, 0 connections to the backup), then `idempiere_film_packin_bak` DROPPED. A future s13 re-take makes its own copy first, as §5.12 says.
