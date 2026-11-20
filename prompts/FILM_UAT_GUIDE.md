@@ -321,7 +321,7 @@ Every build: frames = picture (9,313 in rc3), 31 of 31 lines DETAIL, 0 tone WRON
 - Stop the instance; `CREATE DATABASE idempiere_film_p3_bak TEMPLATE idempiere_bimdoc`; start it.
 - A2: `setup_test_instance.sh` (must print `§SETUP_VERDICT PASS`), then a restart.
 - A3.1: Pack In from a folder (`RUN_ApplyPackInFromFolder.sh`; Part II films the window way); A3.6: the products script, then a restart.
-- Check `TD_`=12 and the 5 `PWD-` products before the take; any other count stops the take.
+- Check `TD_`=12 and the 10 `PWD-` products (the guide's *10 materials*; chapter C uses 5 of them) before the take; any other count stops the take.
 - After the take: stop, restore `idempiere_bimdoc` from the backup, check `TD_`=0, `ad_package_imp_proc`=1 and the setup verdict as found, start, drop the backup.
 **The take (scenes in guide order; each one checked against the guide's Confirm column):**
 - **r0, B2.9 (sped, no new line):** the Viewer opens the Shed `.db`. PREP puts the pack's `reference/SHED_extracted.db` in `Downloads/`; it has the same bytes size as the tester's export, 1,257,472 B, measured in Parts I and II.
@@ -347,3 +347,29 @@ Every build: frames = picture (9,313 in rc3), 31 of 31 lines DETAIL, 0 tone WRON
 - Each Confirm is a `§FILM_CHECK`. The screen is read from the window's own text; a table read (B:READ) is declared in the check's name.
 - The end of the chain is D: every dashboard figure in the guide's D1–D8 equals the tile after the film's own chapter C. 0 FAIL, or a re-take from the failed scene.
 **Not shown:** A2 and A3 (server work, Developer Guide §3 / the dry run; Part II films A3.1 by window), B3.2–B3.6 (owner).
+**PROGRESS 2026-11-20 (Part III; desk runs, logs read; NOT a take yet):**
+- **Proven by hand on the desk:**
+  - **B4 r0–r3 PASS:** *Column below grade USD 594.360*; *Project Order: 1 lines · contract USD 594 (saved)*, then *0 lines*; Kernel ERP SHED *BIM: SHED* 594.36, Phase 1, Task 1, the line under Task Line only.
+  - **c0 login PASS**, with Select Role ticked and HQ / HQ Warehouse chosen; Chrome's *Change your password* OK and *Save password?* No thanks.
+  - **C1, all 10 orders PASS** (6 Completed, 4 Drafted).
+  - **C2.1** TD_RIVERSIDE receipt PASS (the line entered by hand); **C3.1** TD_RIVERSIDE invoice PASS (the guide's Create lines from works there); **C3.2** TD_RIVERSIDE payment PASS (Paid, open 0).
+- **FINDS for the guide's change list** (owner: append; the signed report untouched). Each is logged `§FILM_FIND`:
+  1. **Log in:** the guide names no organization. With the default `*` an order refuses to save: *Fill mandatory fields: Organization, Warehouse*. Tick **Select Role** and choose **HQ** / **HQ Warehouse**.
+  2. **C1.1:** the order window prices a line at the *Purchase* list's precision (2 decimals): 68.1167 → 68.12, total 1,975.48, not the guide's 1,975.38. Every order total is logged.
+     Knock-on: D4's open orders come to **6,741.25**, not the guide's 6,738.39 (476.84 + 836.64 + 3,581.43 + 1,205.28 + 641.06). D2b and D3 are unaffected (issues use the standard cost).
+  3. **C2.1 (owner 2026-11-20: "Enter the line by hand"):** *Create lines from* lists no lines on this iDempiere 13 build. Measured by a statement log: its Info Window binds the Locator's id to the Order criterion (`v.C_Order_ID = 101`, 101 the locator), because the Locator criterion's select clause holds `@M_Locator_ID@`.
+     Way that works: on the header set **Order**; on Receipt Line, New, pick the **Order Line** (product, quantity and Default HQ Locator fill in); Save; Complete.
+  4. **C3.2:** the Payment window is sales-side. Its Business Partner lookup goes straight to the BP Info with **Vendor = No** (`bp.IsVendor = 'N'`, by the statement log), so no vendor is listed. Set the Info's Vendor to **Yes** and ReQuery. The vendor is found by its search key (`SeedFarm`).
+  5. **Chrome:** *Save password?* stays open after the login and takes the keys meant for the page. Press **No thanks**.
+- **Driver lessons, now in the code:**
+  - A ZK form scrolls inside its own panel: `reveal` wheels it into view before each click.
+  - Long lists: Down until the value matches, then Enter. List items carry non-breaking spaces.
+  - `xdotool type --`.
+  - SQL reads run with `ON_ERROR_STOP` (an error once read as 0).
+  - A cue extra must not be keyed `name`.
+- **:8108 now:** `idempiere_bimdoc` holds development documents. `idempiere_film_p3_bak` (as found) and `idempiere_film_p3_ready` (prepared) exist.
+  - Before the take: `prep3.sh reset`.
+  - After the take: `prep3.sh down` (restores as found and drops both copies).
+- **NEXT:**
+  - Scenes still to write and prove: C4.1 Set Project Type (×9), C4.2 Issue to Project (×9), C4.3/C4.4 (3 shown), C5.1, D0 read job + D1–D9.
+  - Then `plan3.py` (strips and lines; repeats `speed: 8`), `prep3.sh reset`, ONE take, build, the change-list rows above, `prep3.sh down`.

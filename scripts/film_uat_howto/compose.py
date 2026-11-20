@@ -85,6 +85,8 @@ for sc in P.SCENES:
     idle = [x for x in idle if x[1] - x[0] > 0.4]
     log('§COMP_IDLE %s spans=%d src_s=%.2f out_s=%.2f' % (sid, len(idle), sum(b - a for a, b, _ in idle), sum((b - a) / 8.0 for a, b, _ in idle)))
     fast = sorted(fast + idle)
+    if sc.get('speed'):   # §5.16 a repeat scene plays whole at its speed (x8), badged; its keys and clicks make no sound (a x8 rattle is noise, not information)
+        fast = [(a0, a1, float(sc['speed']))]; log('§COMP_SPEED %s x%d src_s=%.2f out_s=%.2f' % (sid, sc['speed'], a1 - a0, (a1 - a0) / sc['speed']))
     by_cue = {}
     for bid, cname, text in sc['beats']: by_cue.setdefault(cue[cname], []).append((bid, text))
     for k in range(len(cuts)):
@@ -108,9 +110,9 @@ for sc in P.SCENES:
                 if f0 > s: add('play', sid, s, f0)
                 add('play', sid, max(f0, s), min(f1, e), sp); s = min(f1, e)
             if e > s: add('play', sid, s, e)
-    for kk in ev['keys']:
+    for kk in ([] if sc.get('speed') else ev['keys']):
         if a0 <= kk['t'] <= a1 and kk['k'] in ('k', 'r'): sounds.append(dict(src=sid, ts=kk['t'], k=kk['k']))
-    for cl in ev['clicks']:
+    for cl in ([] if sc.get('speed') else ev['clicks']):
         if a0 <= cl['t'] <= a1: sounds.append(dict(src=sid, ts=cl['t'], k='c', n=cl.get('n', 1)))
 closing = mkcard([(P.CLOSING['line1'], font(True, 64), INK), (P.CLOSING['line2'], font(True, 96), CORAL), ('Redhuan D. OON, CTFL · Project Consultant', font(False, 40), INK), (P.CLOSING['credit'], font(False, 26), (148, 163, 184))])
 closing.paste(plate, ((W - plate.width) // 2, 880)); card(closing, 5.0)
