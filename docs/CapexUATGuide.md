@@ -19,6 +19,8 @@
   .md-typeset h2 { break-before: page; page-break-before: always; }
   .md-typeset h3 { break-after: avoid; break-before: page; page-break-before: always; }
   .md-typeset h2 + h3, .uat-sheet h3, .uat-cover h3 { break-before: auto; page-break-before: auto; }
+  .uat-keep { break-inside: avoid; page-break-inside: avoid; }   /* DOCS_DEPLOY_GUARD.md SPEC (3), W-GUIDE-PRINT P12: a lead-in stays with its table */
+  .uat-keep-small table:not([class]) { font-size: 8.5pt; }
   .uat-cover { break-after: page; page-break-after: always; border: 1.5px solid #333; }
   .md-typeset h1 { margin-top: 18mm; }
   .md-typeset img { max-width: 100%; max-height: 105mm; }
@@ -63,6 +65,8 @@
 
 </div>
 
+<div class="uat-keep uat-keep-small" markdown="1">
+
 ## Changes since the signed UAT report (2026-11-19)
 
 Read these even if you have already done the UAT. If your run met one of them, retest that step. They go into the report's appendix; the signed report itself is not changed.
@@ -77,6 +81,8 @@ Read these even if you have already done the UAT. If your run met one of them, r
 | 6 | (film) | The hands-on film shows the ready-marked sheets. The raw-sheet path (B0: mark the sheets yourself, then Arrange) is to follow. | Noted | None; B0 is unchanged |
 | 7 | A2.2, A3.1, C (log in) | After you log in as GardenAdmin, **Chrome** may show its own window *Change your password: the password you just used was found in a data breach*. That is Chrome's warning about the well-known demo password, not an iDempiere error. Until you close it, clicks on the page do nothing. | Noted | Press **OK** on Chrome's window, then go on |
 | 8 | B0, B2.3, B5 (film) | The film *UAT, hands on, part 2* shows the path item 6 said was to follow: the nine sheets as drawn, marked by hand (B0.1 to B0.9), Arrange (B2.3), and the Run Checker with your nine marked copies in box 2 (B5): every row and the run read **PASS**. | Film published: [youtu.be/WvPgjcMbSwo](https://youtu.be/WvPgjcMbSwo) | None; B0 is unchanged. Watch it before you mark the sheets yourself |
+
+</div>
 
 
 ## What is this?
@@ -193,6 +199,8 @@ Steps: A 17 · B 43 (29 if given the marked copies: skip B00, B0) · C 10 · D 1
 
 The nine Shed sheets are the pilot client's own work, so its testers may use them. Any other drawing set goes through the same way once its sheets carry their settings (levels, datums and layer meanings), which the Modeller's **Drawing metadata** panel records.
 
+<div class="uat-keep uat-keep-small" markdown="1">
+
 **Where to find each window.** Every window and process below is in iDempiere's left-hand menu; open the folder and click the entry, or type the name in the menu's **Search** box. A new record is made with the **New** button in the toolbar, saved with **Save**, and a document is finished with its **Document Action** button (choose **Complete**, then **OK**).
 
 | Name used in this guide | Menu path |
@@ -210,6 +218,8 @@ The nine Shed sheets are the pilot client's own work, so its testers may use the
 | Material Receipt | Requisition-to-Invoice (Purchasing) ▸ Material Receipt |
 | Purchase Invoice and Credit/Debit Note | Requisition-to-Invoice (Purchasing) ▸ Purchase Invoice and Credit/Debit Note |
 | Payment and Receipt | Open Items (Financial Movements and Aging) ▸ Payment and Receipt |
+
+</div>
 
 **Who does what:** see the checklist sheet above.
 
@@ -380,6 +390,8 @@ The panel has sections you open by clicking their title: **All defaults** (the y
 | ELEV sheets | `0` | column, **1S_ELEV_SOUTH only** (one sheet only) | the columns drawn on the south elevation |
 | SECTION sheets | `Fo` | bar | the truss members of section A-A |
 
+<div class="uat-keep" markdown="1">
+
 **B0.6 · the five level datums** (`0.6096` m = 24 in, the plinth level *PL*: on every elevation the PL line is drawn 24 in above the ground line)
 
 | Card | y where drawn |
@@ -389,6 +401,8 @@ The panel has sections you open by clicking their title: **All defaults** (the y
 | `2_ELEV_WEST` | `-4515.7264` |
 | `7_ELEV_EAST` | `-3766.442` |
 | `8_SECTION_AA_TRUSS` | `-3726.416` |
+
+</div>
 
 **B0.5 · where the body heights come from.** Footing F-1 is 12 in thick, its top 45 in below the finished ground (z −1.143 m to −1.4478 m). The beams run from 122 in to 132 in above the ground (3.0988 m to 3.3528 m), as the section's lines give them; the elevations draw the beam soffit at 120 in, a 2 in difference the drawings leave open and this test does not settle.
 

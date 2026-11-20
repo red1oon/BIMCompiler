@@ -124,3 +124,22 @@ W-DEPLOY-GUARD is green; a deliberately stale tree **cannot** shrink the live si
 - `PRINT_BREAK=toc`: P11 FAIL (every number off by one, as written).
 - First run: P2 and P2b FAILed falsely, because the new Contents markers sit at each heading's start and read as "first on the page". Fixed: qqK markers are left out of the page-start order. Re-run all PASS.
 - pdftotext of page 4 shows each entry with its number on the right (Changes 2, What is this? 3, How do I pass? 3, Checklist 5, A 8 … ).
+
+### Printable guides, 2026-11-20 SPEC (3): a lead-in stays with its table (written before code)
+**Owner, 2026-11-20 (verbatim):** *"FOr the PDF, push the 'Changes since..' on page 1 to the followng page so that cut off line is together with it"*.
+**Measured on the live PDF (45 pages):** page 2 holds only the heading *Changes since the signed UAT report (2026-11-19)* and the first line of its sentence ("… They go into the"). The rest of the sentence and the whole table start on page 3, which the table fills (content to y 827 of 842). The table is kept whole (P10), so it moves to the next page and leaves its heading and the cut sentence behind.
+**P12 (new), named issue:** *"a table's lead-in (the heading or sentence right before it) is left on another page, or cut across two"*.
+- Every table gets a start marker on the visible element right before its wrapper, and an end marker inside it.
+- P12 holds when that element starts and ends on the page where the table's first row starts.
+- `PRINT_BREAK=lead` drops the new keep-together rule: P12 must FAIL. The live PDF before the fix is the RED.
+**Fix (`docs/CapexUATGuide.md`):** the section goes in `<div class="uat-keep" markdown="1">` (heading, sentence, table), print rule `break-inside: avoid`. Its table prints at 8.5 pt, so the three fit one page. The web page is unchanged.
+**RESULT (2026-11-20, logs read):**
+- **RED, the live guide:** P12 FAIL on exactly the owner's case: "Read these even if you have already done the UAT." (lead pages 2–3, table starts 3).
+- **After the fix:** `§PRINT_VERDICT PASS judged=13 fails=0`. P12 PASS (29 judged, the tables that fit a page); P1–P11 PASS; 44 pages (was 45).
+  - Page 2 now holds the heading, the whole sentence and all 8 rows.
+  - Wrapped: the *Changes since* section (`uat-keep uat-keep-small`), *Where to find each window* (`uat-keep uat-keep-small`), and the B0.6 datums (`uat-keep`).
+- **`PRINT_BREAK=lead`** (keeps dropped): P12 FAIL on the other two lead-ins.
+- **Measured while making the check:**
+  - An absolute marker inside a block that a keep rule moved to the next page is painted at the block's old place. So P12 reads a lead-in's pages from its own text on the published pages (whitespace dropped, markers stripped) and falls back to the markers only when the text is not found.
+  - A table right after a table has no lead-in.
+  - A table taller than the text height (1,017 px) breaks anyway and is not judged.
