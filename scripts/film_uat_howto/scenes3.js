@@ -146,6 +146,10 @@ module.exports = (S, PREP, D, H) => {
     if (await cb.count()) { const cur = await cb.locator('input').inputValue().catch(() => ''); if (cur !== action) { await D.aimClick(cb.locator('.z-combobox-button'), { label: 'the action list' }); await zk.idle(600); await D.aimClick(D.page.locator('.z-combobox-popup:visible .z-comboitem', { hasText: new RegExp('^\\s*' + action + '\\s*$') }).first(), { label: action }); await zk.idle(600); } }
     await D.aimClick(dlg.locator('button.btn-ok').first(), { label: 'OK (' + (label || action) + ')' }); await zk.idle(4000); };
   zk.status = async table => zk.val(await zk.inst(table, 'DocStatus'));
+  // a Locator field is read-only with a button: its Locator dialog's first list holds the locators (measured: Fertilizer ... Default HQ Locator ...), then OK
+  zk.locator = async (inst, name) => { await zAim(D.page.locator('[instancename="' + inst + '"]:visible button').first(), { label: 'Locator (its button)' }); await zk.idle(2000);
+    const w = D.page.locator('.z-window:visible', { hasText: 'Create New Record' }).last(); if (!(await zk.combo(w.locator('.z-combobox').first(), name, 'Locator (list)'))) return false;
+    await zAim(w.locator('button.img-btn[title^="OK"]').first(), { label: 'OK (Locator)' }); await zk.idle(1500); const v = await zk.val(inst); return D.check(v === name, 'locator_set ' + inst, JSON.stringify(v)); };
   zk.parent = async (name) => { await D.aimClick(D.page.locator('.adwindow-breadcrumb a:visible', { hasText: new RegExp('^\\s*' + name + '\\s*$') }).first(), { label: name + ' (breadcrumb)' }); await zk.idle(1500); };
   // B:READ, declared: the price list's own precision, the rule iDempiere's order window applies to a line price (measured 2026-11-20: Purchase PricePrecision=2, 68.1167 -> 68.12)
   const sql = q => require('child_process').execFileSync('docker', ['exec', '-i', 'postgres', 'psql', '-U', 'adempiere', '-d', 'idempiere_bimdoc', '-v', 'ON_ERROR_STOP=1', '-qtA'], { input: 'set search_path=adempiere;\n' + q, encoding: 'utf8' }).trim().split('\n').pop();
@@ -276,6 +280,86 @@ module.exports = (S, PREP, D, H) => {
   H.invScenes = PLAN.filter(r => r.co && INV.test(r.far || '')).map(r => 'c31_' + r.project);
   for (const row of PLAN) if (row.co && RCV.test(row.far || '')) { S['c2_' + row.project] = recScene(row); PREP['c2_' + row.project] = async () => onIdemp(); }
   H.recScenes = PLAN.filter(r => r.co && RCV.test(r.far || '')).map(r => 'c2_' + r.project);
+  // ---------------- c4: C4.1 Set Project Type -> Work Order (Job); C4.2 Issue to Project; C4.3 the Issues tab; C4.4 Project Balance (one scene per project with an issue)
+  const lookup = async (key) => { await zk.tool('Lookup Record', 'Lookup Record'); const w = D.page.locator('.z-window:visible').filter({ hasText: 'Lookup Record' }).last();
+    const vf = w.locator('input[instancename="Value"], [instancename="Value"] input').first(); await zAim(vf, { label: 'Search Key' }); await D.key('ctrl+a', 'select what is there'); await D.type(key); await zAim(w.locator('button.img-btn[title^="OK"]').first(), { label: 'OK (Lookup)' }); await zk.idle(2500);
+    const v = await zk.val(await zk.inst('C_Project', 'Value')); D.check(v === key, 'lookup_found ' + key, JSON.stringify(v)); return v === key; };
+  // OK on a process dialog, then its result as iDempiere writes it: the process panel keeps it after '**' (measured: '** Created 1'); a dialog that closes leaves it in the window's status
+  const procOk = async (label) => { const dlg = D.page.locator('.z-window:visible').filter({ has: D.page.locator('button.btn-ok') }).last(); const h = await dlg.elementHandle();
+    await zAim(dlg.locator('button.btn-ok').first(), { label: 'OK (' + label + ')' }); await zk.idle(4000);
+    // ZK replaces the panel when the process has run: the result is looked up afresh in whichever visible window now carries the '**' line
+    let m = ''; for (let i = 0; i < 24; i++) { const a = await D.page.evaluate(() => [...document.querySelectorAll('.z-window')].filter(e => e.getBoundingClientRect().width > 0).map(e => e.innerText.replace(/\s+/g, ' ')).filter(t => /\*\*/.test(t)).pop() || ''), b = await zk.msg();
+      m = ((/\*\*\s*(.*)$/.exec(a) || [])[1] || '') + ' | ' + b; if (/\*\*/.test(a) || /\bOK\b/.test(b)) break; await D.sleep(300); } void h; return m.slice(0, 400); };
+  const gridRows = () => D.page.evaluate(() => [...document.querySelectorAll('tr.adtab-grid.z-row, .adtab-grid tr.z-row')].filter(e => e.getBoundingClientRect().width > 0).length);
+  const phaseTab = async (project) => {   // on the Project window showing the project: Line Level to Phase if needed, Save, then the Phase tab
+    const ll = await zk.inst('C_Project', 'ProjectLineLevel'), v = await zk.val(ll);
+    if (v !== 'Phase') { find('C5.1_line_level', 'the pack projects have Line Level = Project, so the Project window hides the Phase tab; Line Level set to Phase (' + project + ')'); await zk.combo(ll, 'Phase', 'Line Level'); if (!(await zk.saved('line level ' + project))) return false; }
+    await zk.tab('Phase'); await zk.idle(1500); return true; };
+  const typeScene = (row) => async () => {
+    const id = 'c41_' + row.project; D.cue(id + '_start', { project: row.project });
+    await openWin('Project'); if (!(await lookup(row.project))) return; D.cue(id + '_found');
+    await zAim(D.page.locator('button.form-button:visible', { hasText: 'Set Project Type' }).first(), { label: 'Set Project Type' }); await zk.idle(2500);
+    const dlg = D.page.locator('.z-window:visible').filter({ has: D.page.locator('button.btn-ok') }).last(); const cb = dlg.locator('.z-combobox').first();
+    if (!(await zk.combo(cb, /^\s*Work Order \(Job\)/, 'Project Type'))) return;
+    D.cue(id + '_ok'); const m = await procOk('Set Project Type'); D.log('§FILM_MSG ' + id + ' ' + JSON.stringify(m.slice(-200)));
+    const cat = sql("select coalesce(projectcategory,'') || '|' || coalesce((select name from c_projecttype t where t.c_projecttype_id=p.c_projecttype_id),'') from c_project p where value='" + row.project + "'");   // B:READ (declared)
+    const ph = num(sql("select count(*) from c_projectphase ph join c_project p on p.c_project_id=ph.c_project_id where p.value='" + row.project + "'"));
+    D.check(/\bOK\b/.test(m) || /^W\|Work Order/.test(cat), 'c41_message_ok ' + row.project, JSON.stringify(m.slice(-120)) + ' category|type=' + cat);   // guide C4.1: 'The message says OK'
+    D.check(/^W\|/.test(cat) && ph > 0, 'c41_work_order_phases_kept ' + row.project, 'category|type=' + cat + ' phases=' + ph);   // guide C4.1: phases still there
+    // OWNER 2026-11-20 ('Set Line Level first'): the pack's projects carry Line Level = Project, and the Phase tab shows only for Phase or Task (AD_Tab display logic): Line Level -> Phase, Save
+    if (await phaseTab(row.project)) { const n = await gridRows(); D.check(n === ph, 'c41_phase_tab_lists_phases ' + row.project, 'rows=' + n + ' phases=' + ph); }
+    D.cue(id + '_end'); await D.sleep(1500); };
+  const today = () => { const d = new Date(); return String(d.getMonth() + 1).padStart(2, '0') + '/' + String(d.getDate()).padStart(2, '0') + '/' + d.getFullYear(); };   // the date as this login shows dates (MM/DD/YYYY, read off the receipt's Movement Date)
+  const issueScene = (row) => async () => {
+    const id = 'c42_' + row.project, d = row.issue; D.cue(id + '_start', { project: row.project, qty: d.qty, product: d.product });
+    const bal0 = num(sql("select projectbalanceamt from c_project where value='" + row.project + "'")), n0 = num(sql("select count(*) from c_projectissue i join c_project p on p.c_project_id=i.c_project_id where p.value='" + row.project + "'"));
+    await zk.open('Issue to Project'); D.cue(id + '_open');
+    const P = n => D.page.locator('[instancename="' + n + '"]:visible').first();
+    await zk.comboTyped(P('C_Project_ID'), row.project, new RegExp('^\\s*' + row.project + '_'), 'Project');
+    await zk.locator('M_Locator_ID', 'Default HQ Locator');
+    await zk.search('M_Product_ID', d.product, 'Product');
+    await zk.text('MovementQty', d.qty, 'Movement Quantity'); await zk.text('MovementDate', today(), 'Movement Date (today)');
+    const pv = {}; for (const n of ['C_Project_ID', 'M_Locator_ID', 'M_Product_ID', 'MovementQty', 'MovementDate', 'M_InOut_ID', 'S_TimeExpense_ID', 'C_ProjectLine_ID']) pv[n] = await zk.val(n);
+    if (!D.check(pv.C_Project_ID.indexOf(row.project + '_') === 0 && pv.M_Locator_ID === 'Default HQ Locator' && String(pv.M_Product_ID).indexOf(d.product) >= 0 && num(pv.MovementQty) === num(d.qty) && !pv.M_InOut_ID && !pv.S_TimeExpense_ID && !pv.C_ProjectLine_ID, 'c42_parameters ' + row.project, JSON.stringify(pv))) return;   // guide C4.2: the three left empty
+    D.cue(id + '_ok'); const m = await procOk('Issue to Project'); D.log('§FILM_MSG ' + id + ' ' + JSON.stringify(m.slice(-200)));
+    D.check(/Created\s*=?\s*1\b|\b1\s*Created/i.test(m), 'c42_message_created_1 ' + row.project, JSON.stringify(m.slice(-160)));   // guide C4.2: 'The message says Created 1'
+    // B:READ (declared) for every project; C4.3 / C4.4 show the windows for the guide's three named projects
+    const n1 = num(sql("select count(*) from c_projectissue i join c_project p on p.c_project_id=i.c_project_id where p.value='" + row.project + "'")), bal1 = num(sql("select projectbalanceamt from c_project where value='" + row.project + "'")), want = r2(num(d.qty) * num(PROD[d.product].cost));
+    D.check(n1 === n0 + 1, 'c43_one_issue_line ' + row.project, n0 + ' -> ' + n1); D.check(r2(bal1 - bal0) === want, 'c44_balance_rose_qty_x_standard_cost ' + row.project, bal0 + ' -> ' + bal1 + ' (' + d.qty + ' x ' + PROD[d.product].cost + ' = ' + want + ')');
+    D.cue(id + '_end'); await D.sleep(1500); };
+  // C4.3 + C4.4 shown in the windows for the projects whose figures the guide's C4.4 gives (parsed: '*TD_X* q × c = **v**')
+  const c44row = (MD.split('\n').find(l => /^\| C4\.4 \|/.test(l)) || ''), NAMED = []; let mm; const rxN = /\*(TD_[A-Z]+)\* ([\d,.]+) × ([\d.]+) = \*\*([\d,.]+)\*\*/g; while ((mm = rxN.exec(c44row))) NAMED.push({ project: mm[1], qty: mm[2], cost: mm[3], bal: mm[4] });
+  H.NAMED = NAMED;
+  const showScene = (nm) => async () => {
+    const id = 'c43_' + nm.project, row = PLAN.find(r => r.project === nm.project); D.cue(id + '_start', { project: nm.project });
+    await openWin('Project (Lines/Issues)'); if (!(await lookup(nm.project))) return; await zk.tab('Issues'); D.cue(id + '_issues');
+    const rows = await D.page.evaluate(() => [...document.querySelectorAll('.adtab-grid .z-row, .z-grid .z-row, tr.z-row')].filter(e => e.getBoundingClientRect().width > 0).map(r => r.innerText.replace(/\s+/g, ' ')).filter(t => /PWD-/.test(t)));
+    const one = rows.length ? rows[0] : JSON.stringify(await D.page.evaluate(() => [...document.querySelectorAll('[instancename]')].filter(e => e.getBoundingClientRect().width > 0 && /C_ProjectIssue\d+(M_Product_ID|MovementQty|DocStatus|Processed)$/.test(e.getAttribute('instancename'))).map(e => e.getAttribute('instancename').replace(/^C_ProjectIssue\d+/, '') + '=' + ((e.querySelector('input') || e).value || (e.querySelector('input[type=checkbox]') || {}).checked))));
+    D.check(one.indexOf(row.issue.product) >= 0 && new RegExp('\\b' + row.issue.qty.replace(/\B(?=(\d{3})+(?!\d))/g, ',?') + '\\b').test(one), 'c43_issue_line_product_qty ' + nm.project, one.slice(0, 200));   // guide C4.3: one issue line with the product and quantity
+    D.cue(id + '_balance'); await openWin('Project'); if (!(await lookup(nm.project))) return; const b = await zk.val(await zk.inst('C_Project', 'ProjectBalanceAmt')); await zk.reveal(zk.f(await zk.inst('C_Project', 'ProjectBalanceAmt'))); await D.aim(zk.f(await zk.inst('C_Project', 'ProjectBalanceAmt')), { label: 'Project Balance ' + b });
+    D.check(r2(num(b)) === num(nm.bal), 'c44_project_balance ' + nm.project, b + ' (guide ' + nm.qty + ' x ' + nm.cost + ' = ' + nm.bal + ')');   // guide C4.4 (the guide prints the product rounded to cents)
+    if (num(b) !== num(nm.bal)) find('C4.4_balance_decimals', 'Project Balance shows the exact product with 4 decimals (' + nm.project + ' ' + b + '); the guide prints it rounded (' + nm.bal + ')');
+    D.cue(id + '_end'); await D.sleep(2000); };
+  for (const nm of NAMED) { S['c43_' + nm.project] = showScene(nm); PREP['c43_' + nm.project] = async () => onIdemp(); }
+  H.showScenes = NAMED.map(n => 'c43_' + n.project);
+  for (const row of PLAN) if (row.issue) { S['c42_' + row.project] = issueScene(row); PREP['c42_' + row.project] = async () => onIdemp(); }
+  H.issueScenes = PLAN.filter(r => r.issue).map(r => 'c42_' + r.project);
+  for (const row of PLAN) if (row.issue) { S['c41_' + row.project] = typeScene(row); PREP['c41_' + row.project] = async () => onIdemp(); }
+  H.typeScenes = PLAN.filter(r => r.issue).map(r => 'c41_' + r.project);
+  // ---------------- c5: C5.1 tick the next phase on TD_DEPOT (the guide's example), Save
+  const C5 = ((/\| C5\.1 \|.*?\*(TD_[A-Z]+)\*/.exec(MD) || [])[1]) || 'TD_DEPOT';
+  S.c5 = async () => {
+    const id = 'c5_' + C5; D.cue(id + '_start', { project: C5 }); const t0 = num(sql("select count(*) from c_projectphase ph join c_project p on p.c_project_id=ph.c_project_id where p.value='" + C5 + "' and ph.iscomplete='Y'")), tot = num(sql("select count(*) from c_projectphase ph join c_project p on p.c_project_id=ph.c_project_id where p.value='" + C5 + "'"));
+    const next = sql("select ph.name from c_projectphase ph join c_project p on p.c_project_id=ph.c_project_id where p.value='" + C5 + "' and ph.iscomplete='N' order by ph.seqno limit 1");   // B:READ (declared): which row is the next unticked one
+    await openWin('Project'); if (!(await lookup(C5))) return; if (!(await phaseTab(C5))) return; D.cue(id + '_phase');
+    const r = D.page.locator('tr.adtab-grid.z-row:visible', { hasText: next }).first(); if (await r.count()) { await zAim(r, { label: 'phase ' + next }); await zk.idle(800); await zk.tool('Grid Toggle', 'Grid Toggle (form view)'); }
+    const cx = zk.f(await zk.inst('C_ProjectPhase', 'IsComplete')); const nm = await zk.val(await zk.inst('C_ProjectPhase', 'Name'));
+    if (!D.check(nm === next, 'c51_row_is_next_phase', JSON.stringify(nm) + ' next=' + next)) return;
+    await zAim(cx.locator('input, label').first(), { label: 'Complete' }); await zk.idle(600); D.cue(id + '_tick'); if (!(await zk.saved('phase ' + next))) return;
+    const t1 = num(sql("select count(*) from c_projectphase ph join c_project p on p.c_project_id=ph.c_project_id where p.value='" + C5 + "' and ph.iscomplete='Y'"));
+    D.check(t1 === t0 + 1, 'c51_phase_stays_ticked ' + C5, t0 + ' -> ' + t1 + ' of ' + tot);   // guide C5.1: 'The phase stays ticked (for TD_DEPOT 2 of 4 now)'
+    D.cue(id + '_end'); await D.sleep(2000); };
+  PREP.c5 = async () => onIdemp();
   H.poScenes = PLAN.flatMap(r => ['co', 'dr'].filter(k => r[k]).map(k => 'c1_' + r.project + '_' + k));
   // ---------------- c0: log in to iDempiere as GardenWorld Admin (a new tab), as Part II s13 does; Chrome's own password window is pressed OK (change list item 7)
   PREP.c0 = async () => {   // not filmed: no iDempiere session left from an earlier attempt (a fresh profile has none): its tabs closed, its cookie cleared

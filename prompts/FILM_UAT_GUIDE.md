@@ -373,3 +373,26 @@ Every build: frames = picture (9,313 in rc3), 31 of 31 lines DETAIL, 0 tone WRON
 - **NEXT:**
   - Scenes still to write and prove: C4.1 Set Project Type (×9), C4.2 Issue to Project (×9), C4.3/C4.4 (3 shown), C5.1, D0 read job + D1–D9.
   - Then `plan3.py` (strips and lines; repeats `speed: 8`), `prep3.sh reset`, ONE take, build, the change-list rows above, `prep3.sh down`.
+**PROGRESS 2026-11-20 (2) — session closed here; read this first to resume Part III:**
+- **Also proven on the desk since (1):**
+  - **C4.1** Set Project Type PASS (TD_RIVERSIDE, TD_DEPOT, TD_BRIDGE): *OK* read, category W, phases kept.
+  - **C4.2** Issue to Project PASS (TD_RIVERSIDE, TD_DEPOT, TD_BRIDGE): *Created 1*; one issue line; balance += qty × standard cost (204.35, 76.66, 577.63).
+  - **C4.3 + C4.4** window scenes PASS (TD_RIVERSIDE, TD_BRIDGE): the Issues tab row; Project Balance.
+- **More finds** (logged `§FILM_FIND`; for the change list with (1)'s five):
+  6. **C4.1 / C5.1 / D6 (owner 2026-11-20: "Set Line Level first"):** the pack's 12 projects carry **Line Level = Project**, and the Project window shows the Phase tab only for Line Level Phase or Task (AD_Tab display logic). Set **Line Level = Phase** and Save, then the Phase tab lists the phases.
+  7. **C4.4:** Project Balance shows the exact product with 4 decimals (204.3501, 577.625). The guide prints it rounded (204.35, 577.63).
+- **Observation** (not a guide step): TD_BRIDGE's issue line reads **Posting Error**; TD_RIVERSIDE's reads *Posted*. Look at the accounting of PWD-07.2.2 before chapter D.
+- **Open at close:**
+  - `c5` (C5.1) fails after the TD_DEPOT lookup: `no field C_Project.Value on screen`. The window was left on its Phase tab, grid view.
+  - Next try: in `lookup`, come back to the header (tab *Project* / Grid Toggle to form) before reading Value. The rest of `c5` is written: phase row by name, then Grid Toggle, then Complete, then Save.
+  - **Not written yet:** D0 read job (terminal) and D1–D9; `plan3.py`; the full take; the build.
+- **Selectors and steps that work** (all in `scenes3.js`):
+  - `[instancename="<Table><n><Column>"]` + `zk.inst`; `reveal` before every click; long lists by Down/Enter.
+  - The Locator field by its dialog's first list.
+  - Lookup Record (`[instancename="Value"]`); process OK then the `**` result line.
+  - Info windows: Vendor → Yes, Sales Transaction unticked.
+- **:8108 restored at close** (`prep3.sh down`: as found, backups dropped). To resume, from the branch worktree:
+  1. `prep3.sh up <dir>` then `prep3.sh ready <dir>`.
+  2. Desk: `desk.sh start <dir>`.
+  3. Scenes: `SHED_DB=<pack>/reference/SHED_extracted.db node scenes.js <out> <dir>/desk/home r0 r1 r2 r3 c0 <c1_*> <c2_*> <c31_*> <c32_*> <c41_*> <c42_*> <c43_*> c5 …`.
+  The order numbers are kept in `<home>/p3_state.json`, written by the scenes themselves.
