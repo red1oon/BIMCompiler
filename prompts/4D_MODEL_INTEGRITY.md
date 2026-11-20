@@ -5346,3 +5346,21 @@ dry. v2 shipped: it keeps the true hung edges v1 dropped to the wave order (`§E
   (`bears-on-top` the joist floor / ground slab); programme days / tasks; six other buildings unchanged (no such slab); `run_4d_gates.sh`, re-locks named.
 - **Seen on the way, NOT fixed (data, not rule):** Duplex's two *Wood Joist* floor slabs carry boxes of 3.7 m x 17 m (x -0.2..3.5 and 5.4..9.1) where
   the house is 8 m wide — a strip 3.5..5.4 has tile and no structural floor box. An extraction / box question for the Duplex DB.
+### Q.48.1 RESULT — APPLIED, with a smaller gain than the spec implied (2026-11-20, bim-ootb PR #3367; logs `~/.cache/bim4d/q48_logs_2026-11-20/`)
+- **Kinds:** Duplex's 14 finish slabs are now `floor_finish`; they bond `bears-on-top` (bonded 1,008 → 1,009). No other building has a slab filed
+  `Finishes`; none of their values moved.
+- **B9 Duplex 37 → 32, not → 5.** The 32 pipes no longer hang from a tile — they now hang from the ROOF (`Basic Roof`, z 6.00, 2.9 m above the tile,
+  `nothing above the host`), because the Level-2 structural floor is not over them in the model's boxes (the data question named in the spec: the
+  two *Wood Joist* floor boxes are 3.7 m wide strips). So the rule is right and the count barely moved: the remainder is the far-hanger line plus
+  that box defect. Programme 15 d / 21 tasks unchanged.
+- **Gates:** `run_4d_gates.sh` 17 / 17 GREEN on the change (`…/gates_v1/4d_gates_20261120T082145Z.log`, run before the version-bump commit; the bump
+  changes no schedule code). `shim_bonds.json` tightened (Duplex `earlyVsHost` 37 → 32, bonded 1,009); `witness_shim_bonds` 80 / 0 / 7 after.
+  `shim_bonds.js?v=5`, `_GANTT_CACHE_VERSION` 53, sw v1779. **Not witnessed:** browser / bake.
+### Q.48.2 ▶ RESUME HERE (2026-11-20)
+1. **⛔ Owner ruling: where pipe / duct INSULATION is filed.** 2. **⛔ Owner decision: the unshipped blocks in the HHS / Terminal / Hospital repo patches.**
+3. **Duplex's Level-2 floor boxes** (two *Wood Joist* slabs, 3.7 m x 17 m each in `element_transforms` where the house is 8 m wide): read the source
+   IFC's geometry for those two guids; if the DB box is wrong it is a patch (extracted fact), and Duplex's 32 should fall with it.
+4. **Far "first offerer"** (Terminal 42, LTU 28, Duplex 32 until item 3): a hung bond across metres of clear height is not a hanger; needs a rule
+   that is not a distance constant.
+5. The 22 small lines of §Q.46's table · 6. profile §Q.43.1's programme moves · 7. delete ONE election clause · 8. phase table vs standard
+   practice · 9. sign-off list; S5; S6.
