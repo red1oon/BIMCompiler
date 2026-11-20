@@ -4988,3 +4988,17 @@ ordering everything no bond orders (rule D) — trade interaction is the grid's 
    deviations before changing any. Known candidates: doors are close-up but windows / railings are envelope; furniture is Finishes 11 (fine);
    `IfcFlowController` / valves have no bond row.
 5. Sign-off list of §Q.37.3 (proposed rows, untabled kinds); Terminal and Hospital local-vs-served check (§Q.38); then S5, S6.
+
+### Q.40 SPEC — S4: hung filing follows the BOND chain (2026-11-20, owner: *"Proceed"*; §Q.39.2 item 1)
+- **Issue (measured, §Q.39.1 b):** `_hangFilingAxis` (§D6) files an element on the highest level along its chain of ELECTED supports. A fitting under a
+  ceiling does not elect the ceiling (the election prefers a pool contact, §S26.2), so the ceiling is filed with the slab it hangs from (the level
+  above) and its fitting stays below: Hospital fittings `MEP_Final_Level_3` [189-194] under a ceiling in `Architecture_Closeup_Level_4` [226-229].
+  B8x = Clinic 10 · Terminal 44 · Hospital 14 · LTU 2.
+- **Rule (the §S47.3 ruling, unchanged: an element suspended from above is filed by what it hangs from):** the chain step of an element bonded
+  `hangs-below` is its BOND's host; every other element keeps its elected support. Nothing else in §D6 changes (transitive, rings take the ring's
+  highest level, phase / trade / rate / install time untouched).
+- **Code:** in `_hangFilingAxis` only — `ShimBonds.compute(items, G)` on the contact graph it already builds (no second graph), then
+  `sup[i] = hangs-below bond ? bond host : des[i]`. No aggregates (as §Q.39). `§D6_HANG_FILING` gains `chainByBond=` (steps taken from a bond that
+  differ from the election) and `bondsMs=`. Without `ShimBonds` the old chain runs and the line says `chain=election`.
+- **Proof owed:** B8x → 0 (or each remainder named) and its lock tightened; `movedToCarrierLevel` before → after per building; programme days / tasks
+  before → after; `run_4d_gates.sh` 17/17 with every re-locked value named; `_GANTT_CACHE_VERSION` 46 → 47, sw bump.
