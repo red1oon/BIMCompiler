@@ -5119,9 +5119,51 @@ Three versions were built and gated; only the third shipped. The spec above (v1)
   A façade part that touches no slab falls to its second need, `continues-same-kind` (held by its mullion / neighbour), which draws no order.
   `continues-same-kind` stays `any` in this step (it draws no order; named, not fixed).
 - **Code:** `viewer/shim_bonds.js` only (`REL`, `relOk`, `tryBond`, and the same test in the never-anchored reason pass). No consumer changes:
-  §E1_BOND_CARRIERS, §CEILING_CLOSEUP and §D6's second carrier read the same `host` / `hosts`. `§SHIM_BONDS` (report) gains `occludedDropped=` and
-  `joinsNotTouching=`.
+  §E1_BOND_CARRIERS, §CEILING_CLOSEUP and §D6's second carrier read the same `host` / `hosts`. The two invariants are judged on the RESULT by a new
+  witness claim, `witness_shim_bonds` B10 (an offerer between element and host = 0; joins that do not touch = 0), with its own red control.
 - **Proof owed, all seven, before → after:** the gap table above (host further than GAP with a nearer offerer → 0, by construction — plus the residue
   that has NO nearer offerer, named); bonded count (B7 will move: every fall named by kind and outcome); B9; B8 / B8x; `§E1_BOND_CARRIERS` edges;
   `§SUPPORT_CYCLE`; played midair; `§FILING_PARITY`; programme days / tasks; DCMA; `run_4d_gates.sh` with every re-locked value named.
   Sandbox first (the run is keyed on `shim_bonds.js`, so main's persisted runs stay as the baseline).
+### Q.43.1 RESULT — APPLIED as v2 (2026-11-20, bim-ootb PR #3361, branch `fix/4d-q43-facade-filing-by-bond`; logs `…/b5ee8c6f…/scratchpad/q43/`)
+Two versions built and gated on seven. v1 = rules N + J as specified. v2 = v1 plus: **a hung element WAITS for its first offerer above to anchor**
+instead of falling through to a later need (a relay from a neighbouring piece, which draws no order); the waiting ones are released when the waves run
+dry. v2 shipped: it keeps the true hung edges v1 dropped to the wave order (`§E1_BOND_CARRIERS` hangs-below edges, main → v1 → v2: Clinic 5,031 →
+2,722 → 3,731; JKR 1,923 → 1,446 → 1,687; Hospital 12,474 → 3,116 → 3,435; LTU 44,619 → 39,028 → 40,459).
+| | B9 (bonded, relay excluded, starting before a host ends) main → v2 | bonded main → v2 | programme days / tasks |
+|---|---|---|---|
+| Duplex | 73 → **37** (segments 37) | 1,009 → 1,008 | 15 = / 22 → 21 |
+| HHS | 2 → 2 (landings) | 5,811 = | 58 = / 20 = |
+| JKR | 19 → **53** (fixtures 53) | 5,797 → 5,781 | 49 → **45** / 24 = |
+| Clinic | 112 → 100 (bearing walls 65, fixtures 30, stair parts 3, columns 2) | 14,723 → 14,552 | 127 = / 19 = |
+| Terminal | 170 → **55** (segments 40, walls 4, coverings 4, fixtures 4, fittings 2, beam 1) | 10,034 → 9,914 | 94 = / 114 → 117 |
+| Hospital | 168 → **4** (façade parts 165 → 0) | 55,260 → 54,110 | 262 = / 35 = |
+| LTU | 132 → **269** (fixtures 241, segments 26, windows 2) | 105,776 → 105,577 | 672 → 673 / 43 = |
+- **B10 (new claim, all seven PASS):** hung / joined bonds judged Duplex 308 · HHS 3,387 · JKR 2,146 · Clinic 6,138 · Terminal 3,549 · Hospital 16,301 ·
+  LTU 51,188; an offerer between element and host = 0; joins that do not touch = 0. **RED10:** with `joins` put back to `any`, Hospital shows 5,172
+  joins that do not touch — the claim can fail. Façade joins now have max gap 0.35 m (Hospital), 0.48 (HHS), 0.38 (Clinic); was 15.76 / 3.26 / 3.51.
+- **The two B9 rises are true pairs the far bond hid, not new defects:** JKR 53 and LTU 241 fixtures now bond to the covering directly over them
+  (before: a slab or a covering further up), and that covering is filed in `Finishes` (it bonded `bears-on-top`, so §CEILING_CLOSEUP does not treat it as
+  a ceiling): LTU `MEP Final_Plan 1 ← Finishes_Plan 1` 137, `Plan 4` 44; JKR `MEP Final_00 ← Finishes_00` 33. B8 / B8x stay 0 on all (those judge
+  ceilings bonded `hangs-below` only). This is §Q.42.1 item 2 (kinds `ceiling` / `floor_finish`), now with its real size.
+- **Locks moved, each named** (`midair.json`, `dcma.json`, `shim_bonds.json`; re-locked from the run): `float_after_cpm` (the display layer no viewer
+  reads, §TM_REVEAL_SHIPPED) Hospital 976 → 1,160 (1,337 before any bond carrier), LTU 2,658 → 3,347 (5,579 before), JKR 423 → 449 (464 before) — the
+  false far carriers had been delaying elements; the others unchanged. `ScheduleGate.auditFloating` on the PLAYED layer is identical on all seven
+  (Duplex 1, HHS 16, JKR 160, Clinic 153, Terminal 50, Hospital 270, LTU 440; nothing entered, nothing left). Strict midair LTU 245 → 250 (named sets,
+  `UNNAMED=0`). DCMA Terminal high-float tasks 14 → 16 (a REPORT measure). B7 bonded falls as in the table (façade parts that touch no slab and have
+  no anchored neighbour). Played midair and `§FILING_PARITY` unchanged (`witness_tm_assembly_order` green without a re-lock). `§SUPPORT_CYCLE` 0 on all.
+- **Gates:** `run_4d_gates.sh` 17 / 17 GREEN after the re-lock (`…/q43/final/4d_gates_20261120T053455Z.log`). `shim_bonds.js?v=2`,
+  `_GANTT_CACHE_VERSION` 49, sw v1775.
+- **Not witnessed:** browser / bake. **Not done:** why JKR's programme is 4 days shorter and Terminal has 3 more tasks, Duplex 1 fewer (the ceiling
+  count moves with the bonds — not profiled). `continues-same-kind` is still `any` (draws no order). **Honest limit:** rule N is occlusion on
+  bounding boxes — an offerer that overlaps the element's plan box by a sliver occludes; rule J uses GAP, a tolerance (the contact owner's own).
+- **Process note:** the baseline gate run was started before the edit and its last two gates read the edited file (red for that reason only);
+  their baseline is §Q.42's green run at the same commit.
+### Q.43.2 ▶ RESUME HERE (2026-11-20)
+1. **Kinds `ceiling` / `floor_finish` (two-pass)** — now the largest line: LTU 241, JKR 53, Clinic 30 fixtures under a covering filed in `Finishes`.
+2. **Filing by bond, where the host really is in a later task** (re-read `probe_b9` after item 1): Clinic bearing walls 65 + columns 2
+   (`Superstructure_First Floor ← Architecture Envelope_First Floor`: a slab filed as envelope carries them — rule B, the host moves up), Terminal
+   segments 40, Duplex segments 37, LTU segments 26. One kind per step, second-carrier pattern (§Q.40 v3).
+3. Profile the three programme / task-count moves named above.
+4. Delete ONE election clause now covered by a bond edge. 5. The rest of the phase table against standard practice. 6. Sign-off list; Terminal /
+   Hospital local-vs-served check; S5; S6.
