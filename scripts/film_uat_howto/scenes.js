@@ -191,6 +191,68 @@ S.s12 = async () => {   // B5.3 + B5.4: Mark my run, Download result
   D.check(!!j, 'result_saved_valid_json', f ? f.name : 'none'); D.cue('s12_saved'); await D.sleep(3500); D.cue('s12_end');
 };
 
+// §5.12 scene s13: iDempiere Pack In through its window (guide A3.1, second option), on the shared test instance :8108 (its database copied before the take and restored after, not filmed)
+const IDEMP = 'localhost:8108/webui/';
+PREP.s13 = async () => {   // set-up, not filmed: the test-data zip in the fresh Downloads (scene s2 shows that download), from the guide's own link
+  await PREP.oneTab(); await D.page.goto(GUIDE); await D.page.waitForLoadState('load');
+  const href = await D.page.$eval('a[href*="CAPEXTestData.zip"]', a => a.href); const r = await D.page.request.get(href); const b = await r.body();
+  fs.writeFileSync(path.join(D.dlDir(), href.split('/').pop()), b); D.log('§FILM_PREP s13 test-data zip ' + href.split('/').pop() + ' bytes=' + b.length);
+};
+const vis = sel => D.page.locator(sel + ':visible').first();
+const textOf = async sel => D.page.evaluate(s => [...document.querySelectorAll(s)].filter(e => e.getBoundingClientRect().width > 0).map(e => (e.innerText || e.value || '').trim()).join(' | '), sel);
+// §5.12 take-1 cause: Chrome's own window 'Change your password' (the demo password GardenAdmin is in a known data breach) covers the page and takes the clicks.
+// A tester sees it too, so the film shows it: OCR finds the window's heading, the pointer clicks its OK. Called after the login OK and after the role OK (it can come at either).
+const chromePwWarn = async (when) => {
+  for (let i = 0; i < 6; i++) {
+    const head = await D.findText(t => t === 'Change', D.screenBox(700, 180, 560, 120, 'Chrome window heading'), 2, true);
+    if (!head) { await D.sleep(1000); continue; }
+    let ok = await D.findText(t => /^[O0]K\.?$/i.test(t), D.screenBox(head.x + 200, head.y + 60, 400, 180, 'Chrome window OK'), 3, true);
+    if (!ok) {   // white on orange is not always read (take 2, 2026-11-20): place it from the heading, as measured on the recorded frame (heading 755,240 -> OK centre 1130,357)
+      ok = { x: head.x + 375 - 18, y: head.y + 117 - 10, w: 36, h: 20 }; D.log('§FILM_OCR_DERIVED Chrome OK from heading at=' + [head.x, head.y].join(',') + ' -> ' + [ok.x, ok.y, ok.w, ok.h].join(',')); }
+    D.cue('s13_chrome_warn'); await D.aim(D.screenBox(ok.x - 24, ok.y - 10, ok.w + 48, ok.h + 20, 'OK (Chrome)'), { label: 'OK (Chrome: Change your password)' }); await D.click({ label: 'OK (Chrome)' }); await D.sleep(1500);
+    const gone = !(await D.findText(t => t === 'Change', D.screenBox(700, 180, 560, 120, 'Chrome window heading'), 2, true)); D.check(gone, 'chrome_password_window_closed', when); return gone;
+  }
+  D.log('§FILM_NOTE no Chrome password window ' + when); return true;
+};
+S.s13 = async () => {
+  D.cue('s13_start');
+  await D.key('ctrl+t', 'a new tab'); await D.sleep(1200); await D.usePage(/^(about:blank|chrome:\/\/new-tab-page|chrome:\/\/newtab)/); await D.page.bringToFront();
+  await D.aimClick(OMNIBOX, { label: 'the address bar' }); await D.type(IDEMP); await D.key('Return', 'open iDempiere');
+  await D.waitUrl(/8108\/webui/, 60000); await D.page.waitForFunction(() => document.querySelectorAll('input.z-textbox').length >= 2, null, { timeout: 90000 }); await D.sleep(1500);
+  const boxes = D.page.locator('input.z-textbox'); D.check(await boxes.count() >= 2, 'login_form', 'boxes=' + await boxes.count()); D.cue('s13_login');
+  await D.aimClick(boxes.nth(0), { label: 'User' }); await D.type('GardenAdmin');
+  await D.aimClick(boxes.nth(1), { label: 'Password' }); await D.type('GardenAdmin');
+  await D.aimClick(vis('button.btn-ok'), { label: 'OK (log in)' }); await D.sleep(4000);
+  await chromePwWarn('after log in');
+  // the role window comes on some logins and not on others (take 3: straight to Home): wait for whichever comes, press the role OK only when it is there
+  const which = await D.page.waitForFunction(() => document.querySelector('input.z-bandbox-input[placeholder="Alt+G"]') ? 'home' : (/Select Role/.test((document.querySelector('.login-box-header-txt') || {}).innerText || '') ? 'role' : null), null, { timeout: 60000 }).then(h => h.jsonValue());
+  D.log('§FILM_NOTE after log in: ' + which);
+  if (which === 'role') { D.check(true, 'role_window_shown', 'Select Role'); await D.sleep(1500); await D.aimClick(vis('button.btn-ok'), { label: 'OK (role)' }); await D.sleep(2500); await chromePwWarn('after role'); }
+  const sb = 'input.z-bandbox-input[placeholder="Alt+G"]'; await D.page.waitForSelector(sb + ':visible', { timeout: 90000 }); D.check(true, 'search_box_shown'); await D.sleep(2500);
+  await D.aimClick(vis(sb), { label: 'the search box' }); await D.type('Pack In'); await D.sleep(2500);
+  const item = D.page.locator('.z-listitem:visible', { hasText: /^\s*Pack In\s*$/ }).first(); D.check(await item.count() === 1, 'search_lists_pack_in', await textOf('.z-listitem'));
+  await D.aimClick(item, { label: 'Pack In (search result)' });
+  await D.page.waitForSelector('button.form-button:visible', { timeout: 60000 }); await D.sleep(2500); D.check(/PackIn/.test(await textOf('button.form-button')), 'packin_window_open', await textOf('button.form-button')); D.cue('s13_window'); await D.sleep(2000);
+  await D.aimClick(vis('a.toolbar-button[title^="New"]'), { label: 'New' }); await D.sleep(2500);
+  const nm = vis('input.idempiere-mandatory.z-textbox'); D.check(await nm.count() === 1 && (await nm.inputValue()) === '', 'name_box_empty_mandatory');
+  await D.aimClick(nm, { label: 'Name' }); await D.type('CAPEX test data');
+  await D.aimClick(vis('a.toolbar-button[title^="Save Changes"]'), { label: 'Save' }); await D.sleep(3000);
+  const st = await D.page.evaluate(() => document.body.innerText); D.check(/Record saved/.test(st), 'record_saved', /Record saved/.test(st) ? 'Record saved' : 'no Record saved'); D.cue('s13_saved');
+  await D.aimClick(vis('a.toolbar-button[title^="Attachment"]'), { label: 'Attachment (paperclip)' }); await D.sleep(2500);
+  const load = D.page.locator('.z-window button.img-btn[title^="Load"]:visible').first();   // icon-only button: its word is the tooltip (title) await load.waitFor({ state: 'visible', timeout: 30000 });
+  await D.aimClick(load, { label: 'Load' });
+  const ok = await D.pick(['Downloads'], async (R) => { const f = await D.findText(t => /CAPEXTestData\.zip$/.test(t), R); if (!f) return false; await D.aim(D.screenBox(f.x - 60, f.y - 4, f.w + 70, f.h + 8, 'the test-data zip'), { label: 'the test-data zip' }); await D.click({ label: 'the test-data zip' }); }, 'the test-data zip');
+  if (!ok) return; await D.sleep(3000);
+  const named = await D.page.evaluate(() => [...document.querySelectorAll('.z-window')].filter(w => w.getBoundingClientRect().width > 0 && /Attachment/.test(w.innerText)).map(w => w.innerText + ' ' + [...w.querySelectorAll('input,select,option')].map(i => i.value || i.textContent).join(' ')).join(' ')); D.check(/CAPEXTestData\.zip/.test(named), 'attachment_names_zip', JSON.stringify(named.slice(0, 160)));
+  await D.aimClick(D.page.locator('.z-window button.btn-ok:visible').last(), { label: 'OK (attachment)' }); await D.sleep(2500); D.cue('s13_attached'); await D.sleep(2000);
+  await D.aimClick(vis('button.form-button'), { label: 'PackIn' }); await D.sleep(2500);
+  const pok = D.page.locator('.z-window button.txt-btn.btn-ok:visible').first(); await pok.waitFor({ state: 'visible', timeout: 30000 }); D.check(true, 'process_dialog_shown', JSON.stringify((await textOf('.z-window')).slice(-80)));
+  await D.aimClick(pok, { label: 'OK (run Pack In)' });
+  let msg = ''; for (let i = 0; i < 150 && !/Processed=/.test(msg); i++) { msg = await D.page.evaluate(() => [...document.querySelectorAll('textarea')].map(t => t.value).filter(Boolean).join(' / ')); if (!/Processed=/.test(msg)) await D.sleep(1000); }
+  const line = (/Processed=\d+ Un-Resolved=\d+/.exec(msg) || [''])[0]; D.check(/Processed=\d+ Un-Resolved=0/.test(line), 'packin_processed_unresolved_0', JSON.stringify(line));
+  D.cue('s13_done', { line }); await D.sleep(4000); D.cue('s13_end');
+};
+
 (async () => {
   const [out, home, ...which] = process.argv.slice(2); fs.mkdirSync(out, { recursive: true });
   await D.init(home, path.join(out, 'scenes.log'));
