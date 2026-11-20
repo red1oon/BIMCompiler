@@ -133,3 +133,13 @@ W-DEPLOY-GUARD is green; a deliberately stale tree **cannot** shrink the live si
 - P12 holds when that element starts and ends on the page where the table's first row starts.
 - `PRINT_BREAK=lead` drops the new keep-together rule: P12 must FAIL. The live PDF before the fix is the RED.
 **Fix (`docs/CapexUATGuide.md`):** the section goes in `<div class="uat-keep" markdown="1">` (heading, sentence, table), print rule `break-inside: avoid`. Its table prints at 8.5 pt, so the three fit one page. The web page is unchanged.
+**RESULT (2026-11-20, logs read):**
+- **RED, the live guide:** P12 FAIL on exactly the owner's case: "Read these even if you have already done the UAT." (lead pages 2–3, table starts 3).
+- **After the fix:** `§PRINT_VERDICT PASS judged=13 fails=0`. P12 PASS (29 judged, the tables that fit a page); P1–P11 PASS; 44 pages (was 45).
+  - Page 2 now holds the heading, the whole sentence and all 8 rows.
+  - Wrapped: the *Changes since* section (`uat-keep uat-keep-small`), *Where to find each window* (`uat-keep uat-keep-small`), and the B0.6 datums (`uat-keep`).
+- **`PRINT_BREAK=lead`** (keeps dropped): P12 FAIL on the other two lead-ins.
+- **Measured while making the check:**
+  - An absolute marker inside a block that a keep rule moved to the next page is painted at the block's old place. So P12 reads a lead-in's pages from its own text on the published pages (whitespace dropped, markers stripped) and falls back to the markers only when the text is not found.
+  - A table right after a table has no lead-in.
+  - A table taller than the text height (1,017 px) breaks anyway and is not judged.
