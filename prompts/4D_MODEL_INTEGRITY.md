@@ -5236,3 +5236,23 @@ dry. v2 shipped: it keeps the true hung edges v1 dropped to the wave order (`§E
    Duplex segments 37, LTU 30. One kind per step, second-carrier pattern (§Q.40 v3).
 5. Profile §Q.43.1's programme / task-count moves. 6. Delete ONE election clause covered by a bond edge. 7. The rest of the phase table against
    standard practice. 8. Sign-off list; Terminal / Hospital local-vs-served check; S5; S6.
+
+### Q.45 — Terminal's coverings carry their declared type too (2026-11-20, owner: *"resume"*; §Q.44.2 item 3; bim-ootb PR #3363; logs `~/.cache/bim4d/q45_logs_2026-11-20/`)
+- **Issue:** §Q.44.1 left Terminal undeclared: `~/Downloads/TerminalMerged.ifc` writes each `IfcCovering` with 8 arguments (no `PredefinedType`, no
+  type object). **Extracted, not inferred:** the fuller copy of the same model (`~/Projects/bim-compiler/DAGCompiler/lib/input/IFC/TerminalMerged.ifc`,
+  nine arguments, 4 `IfcCoveringType`) declares all 82 guids of the shipped DB: **CEILING 82 / 82**. Block written by the §Q.44 generator (one
+  `INSERT … SELECT`, 542 bytes). No code change.
+- **Result:** `§CEILING_CLOSEUP` Terminal ceilings / unbonded 55 / 27 → **82 / 0** (`ceilingByDeclaration=82`). B11 `declared=82`, kind mismatches 0.
+  B8 fittings hanging from a ceiling 417, early 0; B8x 0; B9 55 = lock. Programme 94 → 93 d, tasks 117 → 108, `Architecture Closeup` 190 → 217,
+  `Finishes` 203 → 176. `run_4d_gates.sh` 17 / 17 GREEN with NO re-lock (`…/gates/4d_gates_20261120T065515Z.log`).
+- **Not done:** `_GANTT_CACHE_VERSION` is not bumped — Terminal's DB is bucket-served, so nothing changes for a user until the patch is uploaded
+  (§Q.44.2 item 1, now SEVEN patches); bump it WITH that upload. Not witnessed: browser / bake.
+- **Lesson for the source list:** two files named `TerminalMerged.ifc` differ in what they carry; a generator run that reports `unreadable` is a
+  reason to look for the other copy, not a verdict on the model.
+### Q.45.1 ▶ RESUME HERE (2026-11-20)
+1. **⛔ Owner go: upload the SEVEN patches to the bucket** (`oci_patch_gate.js`; bump `_GANTT_CACHE_VERSION` + sw with it).
+2. **⛔ Owner ruling: where pipe / duct INSULATION is filed** (§Q.44.2 item 2).
+3. **Filing by bond where the host really is in a later task** (re-profile first): Clinic bearing walls 65 + columns 2, Terminal segments 40,
+   Duplex segments 37, LTU 30. One kind per step, second-carrier pattern (§Q.40 v3).
+4. Profile §Q.43.1's programme / task-count moves. 5. Delete ONE election clause covered by a bond edge. 6. The rest of the phase table against
+   standard practice. 7. Sign-off list; Terminal / Hospital local-vs-served check; S5; S6.
