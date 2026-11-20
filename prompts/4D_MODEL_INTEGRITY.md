@@ -5393,3 +5393,30 @@ dry. v2 shipped: it keeps the true hung edges v1 dropped to the wave order (`§E
   - **Proof owed, all seven:** `§INSULATION_WITH_PIPE` (LTU: moved / unbonded; six others VACUOUS); LTU programme days / tasks, phase populations,
     B9, midair, parity, DCMA before → after; six others unchanged; `run_4d_gates.sh`, every re-lock named. **Limit named now:** "tested before
     lagging" is not modelled — the piece waits for its own pipe, not for a system test.
+### Q.49.1 RESULT — APPLIED as v4; three versions rejected by the gates (2026-11-20, bim-ootb PR #3375; logs `~/.cache/bim4d/q49_logs_2026-11-20/`)
+| version (LTU) | played midair | B9 | verdict |
+|---|---|---|---|
+| v1 the spec as written: host's phase AND sequence | 0 → **39** (7 lagging, 20 fittings, 12 segments) | 30 → 700 | rejected — with the pipe's own sequence the election takes the lagging as the PIPE's support (its box spans the pipe; §D7 needs `S.seq > T.seq`); DCMA high float 27 → 35, programme 673 → 680 d |
+| v2 host's phase, own sequence (10) | 0 → **457** lagging | 723 | rejected — a moved piece resting on a piece that did not move; a piece on another level label than its pipe |
+| v3 = v2 + a piece with no pipe CONTINUES its run (relay, rule C) + filed no lower than its pipe (second carrier, the §Q.40 v3 pattern) | 0 → **28** lagging | 28 | rejected — those 28 elect a FITTING of `MEP Final` (sequence 9 < 10), a task that starts later |
+| **v4 = v3 with the sequence half a step after the pipe (7.5: ordinal, between rough-in 7 and close-up 8)** | **0** | **28** | **shipped** |
+- **`§INSULATION_WITH_PIPE` (LTU):** declared 24,321 · moved to its pipe's phase **23,929** (3,703 of them through their run) · touching no pipe, kept
+  the class rule **392**. The six other buildings declare no insulation (VACUOUS).
+- **LTU before → after:** programme 673 → **666 d**, 43 tasks; `Finishes` 24,563 → 634, `MEP Rough-in` 78,940 → 102,869; bonded 84,875 → 108,804;
+  `§E1_BOND_CARRIERS` gains `wraps` 20,514 edges; `§SUPPORT_CYCLE` 0; DCMA unchanged (high float 27).
+- **Gates:** `run_4d_gates.sh` 17 / 17 GREEN on v4 with NO re-lock (`…/gates_v4/4d_gates_20261120T085821Z.log`, before the version-bump commit).
+  After the bump: `shim_bonds.json` tightened (LTU `earlyVsHost` 30 → 28, bonded 108,804); `witness_shim_bonds` 80 / 0 / 7 and
+  `witness_tm_assembly_order` 42 / 0 on all seven. `shim_bonds.js?v=6`, `schedule_author.js?v=32`, `cpm_schedule.js?v=8`, `_GANTT_CACHE_VERSION` 54, sw v1780.
+- **Departures from the spec, named:** the sequence is the pipe's + 0.5, not the pipe's (v1 is why); two things the spec did not have — the relay
+  need for a piece with no pipe of its own, and the second carrier in `_hangFilingAxis` for kind `insulation`.
+- **Limits:** the trade is still `FINISHER` (the lagging adds to that crew's load inside rough-in — a rates question); "tested before lagging" is
+  not modelled; the half-step sequence is a number used as an order, and any code that needs a whole-number sequence would have to be checked
+  (none of the 17 gates found one). **Not witnessed:** browser / bake. **Live reach:** LTU's declared types are in the bucket (§Q.47), so this
+  reaches users with the deploy.
+### Q.49.2 ▶ RESUME HERE (2026-11-20)
+1. **Far hangers (ruling 2, measure first):** "an element that is fixed to a side or rests on something is not also hung" — count, per building,
+   the hung bonds whose element ALSO has a met `fixes-on-side` need or a bearing contact below; what B9 and the edges become. Terminal 42, LTU ~26, Duplex 32.
+2. **Duplex box centres (ruling 3, measure first):** every Duplex element's `element_transforms` centre vs the source file's box centre —
+   how many are off, by how much, which classes.
+3. The 22 small lines of §Q.46's table · 4. profile §Q.43.1's programme moves · 5. delete ONE election clause · 6. phase table vs standard
+   practice (lagging trade included) · 7. sign-off list; S5; S6. **Closed by ruling 4:** the unshipped HHS / Terminal / Hospital patch blocks stay unshipped.
