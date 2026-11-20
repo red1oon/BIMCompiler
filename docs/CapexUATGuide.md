@@ -3,6 +3,7 @@
 <div class="uat-noprint" markdown="0"><a class="md-button md-button--primary" href="../CapexUATGuide.pdf" download>⬇ Download the PDF</a> <button type="button" class="md-button" onclick="window.print()">🖨 Print from the browser</button>
 <span style="margin-left:.6em;font-size:.8em">The PDF is made from this page each time it is published, and checked: the checklist on a sheet of its own, each chapter on a new page, no table row split or cut off. Print it, tick the boxes by hand, sign the last page and hand it in.</span></div>
 <style>
+.md-typeset .uat-h { font-size: 1.5625em; font-weight: 300; letter-spacing: -.01em; line-height: 1.4; margin: 1.6em 0 .64em; }
 @media print {
   .md-header, .md-tabs, .md-sidebar, .md-footer, .md-top, .md-source, .uat-noprint, .md-content__button, .headerlink { display: none !important; }
   .md-main__inner, .md-content, .md-content__inner, .md-grid { margin: 0 !important; padding: 0 !important; max-width: none !important; }
@@ -52,7 +53,7 @@
 
 | Revision | What changed |
 |---|---|
-| 2026-11-20 | The page *Changes since the signed UAT report* (after this cover); the pages *What is this?* and *Contents*; a table that fits on a page is no longer cut in two (a long one repeats its header row); A3.1 the Pack In window's steps and result; B3.1 the second currency note |
+| 2026-11-20 | The page *Changes since the signed UAT report* (after this cover); the pages *What is this?* (with *How do I pass?*: the UAT Run Checker and the result file to send back) and *Contents* with page numbers; *See how*, the films (1 linked, 2 pending); a table that fits on a page is no longer cut in two (a long one repeats its header row); A3.1 the Pack In window's steps and result; B3.1 the second currency note |
 | 2026-11-19 | This cover; each section on a new page; page numbers; every link in the PDF opens the public site |
 | 2026-11-18 | Corrections found by the UAT dry run: A1 links the Developer Guide §3 setup; D2b, D3, D8 figures for a fresh GardenWorld; D9 goals refresh every 30 minutes; B4.4 the model's line under Task Line |
 | 2026-11-15 | Roles and the checklist sheet; B00 export from BricsCAD; B0 from the sheets as drawn to the marked set; B3.1 measured total cost; B5 mark your run with the reference pack; the PDF |
@@ -73,6 +74,7 @@ Read these even if you have already done the UAT. If your run met one of them, r
 | 4 | B4, D | The USD amount reaches the Project Order unchanged (B4.1, B4.2, B4.4). It is as correct as the shipped rate pack, not a market price. Chapter D's dashboard reads the GardenWorld test projects, not the Shed. | Noted | None |
 | 5 | B3.1 | The amount in brackets is the rate pack's second currency (RM), whatever language you choose. Showing your local currency for the language you choose is **ongoing development**. | Noted, in development | Compare the **USD** figure |
 | 6 | (film) | The hands-on film shows the ready-marked sheets. The raw-sheet path (B0: mark the sheets yourself, then Arrange) is to follow. | Noted | None; B0 is unchanged |
+| 7 | A2.2, A3.1, C (log in) | After you log in as GardenAdmin, **Chrome** may show its own window *Change your password: the password you just used was found in a data breach*. That is Chrome's warning about the well-known demo password, not an iDempiere error. Until you close it, clicks on the page do nothing. | Noted | Press **OK** on Chrome's window, then go on |
 
 
 ## What is this?
@@ -84,12 +86,29 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 
 Dates in the test data are set for **13 November 2026**. Testing well after that day still works, but the colours on the dashboard (on time, late, over budget) drift with the calendar.
 
+<p class="uat-h" id="how-do-i-pass">How do I pass?</p>
+
+Do every step and tick its box. Your run is then marked in step **[B5 · Mark your run](#b5-mark-your-run-against-the-reference-pack)**, the last section of chapter B (B5.1 to B5.4). It is a step of this guide like any other, not a separate task.
+
+In B5 you open the **[UAT Run Checker](https://red1oon.github.io/bim-ootb/capex/uat/check.html)**, give it the files and the two lines your own run produced, and press **Mark my run**. It compares them with the reference pack, a run already proven correct, and reads **PASS**, **FAIL** or **NOT GIVEN** for each one. It works in your browser: nothing is uploaded. Then press **Download result**.
+
+**Your final goal is that file, `uat_result.json`: attach it to your signed sheets and send both back to the person who runs the UAT.** A box you leave out reads NOT GIVEN, never PASS. A tester who skipped B00 and B0 gets **PARTIAL PASS**, which is expected (B5.3).
+
+<p class="uat-h" id="see-how">See how</p>
+
+Films of the steps, on a real screen:
+
+1. *UAT, hands on: where to click*: [https://youtu.be/PBp4qfV4mIo](https://youtu.be/PBp4qfV4mIo). From the downloads to B5 and the result file.
+2. *UAT, hands on, part 2*: pending. The link is added here when it is uploaded.
+
 ## Contents
 
 <div class="uat-toc" markdown="1">
 
 - [Changes since the signed UAT report](#changes-since-the-signed-uat-report-2026-11-19)
 - [What is this?](#what-is-this)
+    - [How do I pass?](#how-do-i-pass)
+    - [See how](#see-how)
 - [Checklist: who does what](#checklist-who-does-what)
 - [A · Set up (System Setup, once)](#a-set-up-system-setup-once)
     - [A1 · The BIM apps on your own server (optional)](#a1-the-bim-apps-on-your-own-server-optional)
@@ -486,7 +505,7 @@ Do this in the **Viewer**, on the Shed you opened in B2.9. (In the Modeller, **E
 
 ### B5 · Mark your run against the reference pack
 
-The **UAT Run Checker** compares what your run produced with the run this guide was proven on, stage by stage. It reads your files in your browser; nothing is uploaded. Keep the files from B0.9 and B2.8 and the two lines from B2.9 and B3.1 for this step.
+This is the step that *How do I pass?* (at the start of this guide) points to. The **UAT Run Checker** compares what your run produced with the run this guide was proven on, stage by stage. It reads your files in your browser; nothing is uploaded. Keep the files from B0.9 and B2.8 and the two lines from B2.9 and B3.1 for this step.
 
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|

@@ -5,7 +5,7 @@
 set -e; cd "$(dirname "$0")"; H=$(pwd)
 TAKE=$(realpath "$1"); WK=$(realpath -m "$2"); OUT="$3"; [ -e "$OUT" ] && { echo "§REFUSED $OUT exists (never overwritten)"; exit 5; }
 PY=~/.local/share/film_narration/venv/bin/python; FIT=$H/../film_replication_engine/film6/fit6/fit_kokoro_v3_k.py; MUX=$H/../film_replication_engine/film6/fit6/mux_two_pass.py
-grep -q "§FILM_SCENES_VERDICT PASS" $TAKE/scenes.log || { echo "§REFUSED the takes did not all pass: read $TAKE/scenes.log (a FAIL is a re-take, never cut around)"; exit 4; }
+grep -q "§FILM_SCENES_VERDICT PASS" $TAKE/scenes.log && ! grep -q "§FILM_SCENES_VERDICT FAIL" $TAKE/scenes.log || { echo "§REFUSED the takes did not all pass: read $TAKE/scenes.log (a FAIL is a re-take, never cut around; a scene added to a take folder later (§5.12) must not leave a FAIL line)"; exit 4; }
 export CUDA_VISIBLE_DEVICES=""; mkdir -p $WK/fm $WK/fit; cp ass_head.txt $WK/fm/; cp ass_head.txt $WK/fit/
 $PY compose.py tsv $TAKE $WK > $WK/comp_tsv.log 2>&1 || { echo "§BUILD_FAIL compose tsv, see $WK/comp_tsv.log"; exit 3; }
 (cd $WK/fm && rm -f *.wav && FILM_SEC=2000 $PY $FIT ../narration.tsv m 1.15 > ../fit_measure.log 2>&1)

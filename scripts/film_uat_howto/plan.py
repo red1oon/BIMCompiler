@@ -58,6 +58,10 @@ SCENES = [
     ('b12a', 's12_marked', "Press Mark my run. You skipped B zero, so box two stays empty, and the run reads partial pass."),
     ('b12b', 's12_saved',  "Download the result, and attach it to your sign-off."),
   ]),
+  dict(id='s13', chip='A3.1', strip='use the **Pack In** window logged in as GardenWorld Admin (choose the zip, then run it)', span=('s13_start', 's13_end'), beats=[   # §5.12
+    ('b13a', 's13_window',   "In iDempiere, any window opens from the search box. Type its name: Pack In."),
+    ('b13b', 's13_attached', "Press New, give it a name, and save. The paper clip attaches the test-data zip."),
+    ('b13c', 's13_done',     "Press Pack In, then OK. The message counts what was processed, and nothing is left unresolved.")]),
 ]
 TITLE = dict(kicker='UAT GUIDE · HANDS ON', line1='Where to click', line2='the first steps, shown', note='Every click is real: the real browser, the real file windows.')
 CLOSING = dict(line1='The rest of the guide works the same way:', line2='do, confirm, tick.', credit='Voice: Kokoro (local) · key sounds: eklee, CC BY 3.0 · click: GNOME')

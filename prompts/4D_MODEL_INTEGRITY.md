@@ -4794,6 +4794,17 @@ Substructure on Superstructure columns") is **struck**: that class is **9 of 109
      `spatial_structure` row; `witness_ifc_storeys.js --patched "$GATE_DB"`), fetch back, byte-compare.
   5. Then the same check for Terminal and Hospital: is the local `_meta.db` the served one (`oci os object head` md5 vs local)?
 
+## 2026-11-20 UAT CONSTRAINT on 4D corrections (from the UAT lane; read before changing what the Shed's 4D shows)
+**Owner (verbatim):** *"There is another session i stop from 'resume 4D' because i want to ask u if 4D schedule correction will affect our UAT? If so, can not fingerprint the schedule values. Qualitiative proof is enough."*
+**Measured:** the UAT's answer key (`uat/Shed_UAT_pack_20261115.zip` on OCI) holds no schedule data: `schedules`, `tasks`, `task_sequences` and `task_elements` all have 0 rows. The UAT Run Checker therefore judges no 4D value, and a 4D correction does not change any checker verdict.
+**What the UAT Guide (BIMCompiler `docs/CapexUATGuide.md`) asks of 4D, all qualitative:**
+- B3.1: *note* the finish date (Time Machine, key T); no value is checked.
+- B3.5: after the B3.2 lag edit (+5 days on each edited row), *"the finish date moved by the days you added; the day counter and the placed count rise as the parts go up in order"*.
+**Keep true while correcting 4D:**
+1. A lag added to an edited row still moves the Shed's finish date later. If a correction takes that row off the path that drives the finish, B3.5's words need a guide note: tell the UAT lane, do not let it silently break.
+2. The parts still go up in order in Time Machine.
+3. Do not write schedule rows into the Shed's Modeller/Viewer export. If that becomes necessary, the checker must leave the schedule tables out of its B2.8 count (bim-ootb `prompts/UAT_KIT.md` §3).
+Exact dates and durations may change freely: no UAT step or checker stage fingerprints them.
 ## §Q.37 THE SHIM-ANCHOR MODEL — PLAN TO SHIP (2026-11-20, owner after the §Q.33 review and a prior-art check: *"Proceed to plan and implement."*)
 **Why this shape.** §Q.33's three sandboxes proved the relation and failed on the big-bang. Prior art says the same of everyone (Jung, Amer,
 Golparvar-Fard, CIB W78 2021: rule-based BIM sequencing *"still require[s] hard-coded sequencing rules and work templates … unable to cover undefined

@@ -12,7 +12,7 @@
 //   P8 no link in the PDF points at the print server; every link into the site resolves to a built page (and its #id) · P9 every outside link answers 2xx/3xx
 //   (spec: prompts/DOCS_DEPLOY_GUARD.md "Printable guides, 2026-11-19 SPEC")
 // PRINT_BREAK=1 removes the sheet's break-after before printing: P1 must FAIL. PRINT_BREAK=clip makes every table wider than the page: P4 must FAIL.
-// PRINT_BREAK=tables drops the keep-whole rule (P10) · PRINT_BREAK=links keeps the print-server links (P8) · =footer no footer (P7) · =cover the cover keeps no break-after (P6) · =h3 no section breaks (P2b). PRINT_NO_NET=1 skips P9 (printed, not PASS).
+// PRINT_BREAK=toc writes every Contents number +1 (P11) · PRINT_BREAK=tables drops the keep-whole rule (P10) · PRINT_BREAK=links keeps the print-server links (P8) · =footer no footer (P7) · =cover the cover keeps no break-after (P6) · =h3 no section breaks (P2b). PRINT_NO_NET=1 skips P9 (printed, not PASS).
 // usage: node scripts/guide/print_check.js --site <built site dir> --page <Name> --out <file.pdf>   exit 0 PASS · 1 FAIL · 3 INCONCLUSIVE / cannot run
 'use strict';
 const fs = require('fs'), path = require('path'), http = require('http'), os = require('os'), cp = require('child_process');
@@ -34,7 +34,7 @@ const stop = (code, why) => { say('§PRINT_VERDICT ' + (code === 3 ? 'INCONCLUSI
   await new Promise(r => srv.listen(0, '127.0.0.1', r));
   const URL = 'http://127.0.0.1:' + srv.address().port + '/' + NAME + '/', TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'guideprint-')), MARKED = path.join(TMP, 'marked.pdf');
   const br = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] });
-  async function print(file, mark) {
+  async function print(file, mark, toc) {
     const pg = await br.newPage(); await pg.goto(URL, { waitUntil: 'networkidle0', timeout: 120000 }); await pg.emulateMediaType('print');
     if (BREAK) await pg.addStyleTag({ content: '@media print { .uat-sheet { break-after: auto !important; page-break-after: auto !important; } }' });
     if (CLIP) await pg.addStyleTag({ content: '@media print { .md-typeset table:not([class]) td:first-child { min-width: 150mm !important; } }' });   // PRINT_BREAK=clip: tables wider than the page
@@ -46,6 +46,9 @@ const stop = (code, why) => { say('§PRINT_VERDICT ' + (code === 3 ? 'INCONCLUSI
       document.querySelectorAll('a[href]').forEach(a => { const h = a.getAttribute('href'); if (!h || h.startsWith('#') || /^(mailto|javascript|data):/i.test(h) || !a.getClientRects().length) return;
         if (a.href.startsWith(o + '/')) { const rel = a.href.slice(o.length + 1); out.push({ rel, pub: pub + rel }); if (!keep && pub !== '/') a.setAttribute('href', pub + rel); } else out.push({ ext: a.href }); });
       return out; }, PUBLIC, BK('links'));
+    // Contents page numbers (DOCS_DEPLOY_GUARD.md 2026-11-20 (2)): written after each .uat-toc link, from the first pass's measured pages; PRINT_BREAK=toc writes them +1 (P11 must FAIL)
+    if (toc) { await pg.addStyleTag({ content: '@media print { .uat-toc .uat-pg { float: right; padding-left: 6pt; } .uat-toc li { list-style: none; } }' });
+      await pg.evaluate((toc, plus) => document.querySelectorAll('.uat-toc a[href^="#"]').forEach(a => { const n = toc[a.getAttribute('href')]; if (!n) return; const sp = document.createElement('span'); sp.className = 'uat-pg'; sp.textContent = String(n + plus); a.parentNode.insertBefore(sp, a.nextSibling); }), toc, BK('toc') ? 1 : 0); }
     const title = await pg.evaluate(() => ((document.querySelector('.md-typeset h1') || {}).innerText || document.title || '').replace(/¶/g, '').trim());
     let plan = null;
     if (mark) plan = await pg.evaluate(() => {   // invisible markers: absolutely placed (no space taken), 2px, white
@@ -56,6 +59,8 @@ const stop = (code, why) => { say('§PRINT_VERDICT ' + (code === 3 ? 'INCONCLUSI
       const root = document.querySelector('.md-content .md-typeset') || document.body, P = { rows: [], heads: [], subs: [], sheet: null, cover: null };
       Array.from(root.querySelectorAll('table:not([class])')).forEach((t, ti) => Array.from(t.rows).forEach((r, ri) => { if (!r.cells.length) return; const id = 'qqR' + ti + 'X' + ri, text = r.cells[0].innerText.trim().slice(0, 40); put(r.cells[0], id + 'Aqq'); put(r.cells[r.cells.length - 1], id + 'Zqq', true);
         P.rows.push({ id, text }); }));
+      P.toc = []; Array.from(root.querySelectorAll('.uat-toc a[href^="#"]')).forEach((a, i) => { const el = document.getElementById(decodeURIComponent(a.getAttribute('href').slice(1))), nx = a.nextElementSibling;
+        if (el) put(el, 'qqK' + i + 'qq'); P.toc.push({ href: a.getAttribute('href'), id: 'qqK' + i + 'qq', found: !!el, shown: nx && nx.classList.contains('uat-pg') ? Number(nx.textContent) : null }); });
       const sheet = root.querySelector('.uat-sheet');
       Array.from(root.querySelectorAll('h2')).forEach((h, i) => { if (sheet && sheet.contains(h)) return; const text = h.innerText.replace(/¶/g, '').trim(); put(h, 'qqH' + i + 'qq'); P.heads.push({ id: 'qqH' + i + 'qq', text }); });
       const cover = root.querySelector('.uat-cover');
@@ -75,11 +80,16 @@ const stop = (code, why) => { say('§PRINT_VERDICT ' + (code === 3 ? 'INCONCLUSI
       footerTemplate: '<div style="font-size:8pt;width:100%;text-align:center;color:#444">' + esc(title) + ' · Page <span class="pageNumber"></span> of <span class="totalPages"></span></div>' });
     await pg.close(); return Object.assign(plan || {}, { links });
   }
-  const cleanPlan = await print(OUT, false); const plan = await print(MARKED, true); await br.close(); srv.close();
+  // first pass (marked): the page of each Contents target, then the published and the marked prints carry those numbers
+  const PRE = MARKED.replace(/\.pdf$/, '') + '_pre.pdf', atOf = f => { const n = Number((cp.execFileSync('pdfinfo', [f], { encoding: 'utf8' }).match(/Pages:\s+(\d+)/) || [0, 0])[1]), m = {};
+    for (let i = 1; i <= n; i++) (cp.execFileSync('pdftotext', ['-f', String(i), '-l', String(i), f, '-'], { encoding: 'utf8' }).match(/qq[A-Z0-9]+qq/g) || []).forEach(k => { if (!(k in m)) m[k] = i; }); return m; };
+  let toc = null; const pre = await print(PRE, true);
+  if (pre.toc && pre.toc.length) { const a0 = atOf(PRE); toc = {}; pre.toc.forEach(t => { if (a0[t.id]) toc[t.href] = a0[t.id]; }); say('§PRINT TOC ' + Object.keys(toc).length + ' of ' + pre.toc.length + ' targets placed ' + JSON.stringify(toc)); }
+  const cleanPlan = await print(OUT, false, toc); const plan = await print(MARKED, true, toc); await br.close(); srv.close();
   const pages = f => { const n = Number((cp.execFileSync('pdfinfo', [f], { encoding: 'utf8' }).match(/Pages:\s+(\d+)/) || [0, 0])[1]); const out = [];
     for (let i = 1; i <= n; i++) out.push(cp.execFileSync('pdftotext', ['-f', String(i), '-l', String(i), f, '-'], { encoding: 'utf8' })); return out; };
   const clean = pages(OUT), marked = pages(MARKED), at = {}, order = [];
-  marked.forEach((t, i) => { (t.match(/qq[A-Z0-9]+qq/g) || []).forEach(m => { if (!(m in at)) at[m] = i + 1; order.push([i + 1, m]); }); });
+  marked.forEach((t, i) => { (t.match(/qq[A-Z0-9]+qq/g) || []).forEach(m => { if (!(m in at)) at[m] = i + 1; if (!/^qqK/.test(m)) order.push([i + 1, m]); });   /* the Contents-target markers (qqK) share their heading's start: never "first on a page" (P2, P2b) */ });
   say('§PRINT page=' + NAME + ' clean_pages=' + clean.length + ' marked_pages=' + marked.length + ' rows=' + plan.rows.length + ' headings=' + plan.heads.length + ' sheet=' + !!plan.sheet + (BREAK ? ' (BREAK: the sheet keeps no break-after)' : CLIP ? ' (BREAK clip: tables wider than the page)' : '') + ' bytes=' + fs.statSync(OUT).size);
   if (!plan.rows.length || !plan.heads.length) stop(3, 'nothing to judge: rows=' + plan.rows.length + ' headings=' + plan.heads.length);
   // P1
@@ -92,6 +102,9 @@ const stop = (code, why) => { say('§PRINT_VERDICT ' + (code === 3 ? 'INCONCLUSI
   // P3 + P4
   const A_ = r => at[r.id + 'Aqq'], Z_ = r => at[r.id + 'Zqq'], missing = plan.rows.filter(r => !A_(r) || !Z_(r)), split = plan.rows.filter(r => A_(r) && Z_(r) && A_(r) !== Z_(r));
   ck('P3 no table row is split across pages (' + plan.rows.length + ' rows)', split.length === 0, { split: split.map(r => r.text + ' (pages ' + A_(r) + '-' + Z_(r) + ')').slice(0, 6) });
+  // P11: every Contents number = the page its target is on in the final marked print
+  if (plan.toc && plan.toc.length) { const wrong = plan.toc.filter(t => !t.found || !t.shown || at[t.id] !== t.shown).map(t => t.href + ' shown=' + t.shown + ' at=' + at[t.id]);
+    ck('P11 every Contents page number is the page of its target (' + plan.toc.length + ' entries)', wrong.length === 0, { wrong: wrong.slice(0, 8), nWrong: wrong.length }); } else say('§PRINT P11 not judged: no Contents (.uat-toc)');
   // P10 (DOCS_DEPLOY_GUARD.md 2026-11-20): a table at most 90 % of the text height (297 mm - 2 x 14 mm = 269 mm ~ 1017 px) starts and ends on one page
   const LIMIT = Math.round(0.9 * 1017), tb = (plan.tables || []).map(t => { const rs = plan.rows.filter(r => r.id.startsWith('qqR' + t.ti + 'X')), a = rs.map(A_).filter(Boolean), z = rs.map(Z_).filter(Boolean);
     return Object.assign({}, t, { p0: a.length ? Math.min(...a) : 0, p1: z.length ? Math.max(...z) : 0 }); });
