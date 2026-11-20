@@ -5201,3 +5201,38 @@ dry. v2 shipped: it keeps the true hung edges v1 dropped to the wave order (`§E
 - **Proof owed, all seven, before → after:** `§CEILING_CLOSEUP` ceilings / floor finish / other / undeclared; B8, B8x, B9 (LTU, JKR, Clinic fixture
   lines); bonded (B7); programme days / tasks; midair; DCMA; `run_4d_gates.sh`, every re-lock named. A new witness claim: every covering the patch
   declares has the kind its declared type gives, and a building with the table and one without both run (no silent default).
+### Q.44.1 RESULT — APPLIED (2026-11-20, bim-ootb PR #3362, branch `fix/4d-q44-ceiling-kinds`; logs `~/.cache/bim4d/q44_logs_2026-11-20/`)
+- **Patches (`tools/ifc_predefined_type_patch.py`, `patch_gen.log`):** Duplex 13 / 13 CEILING · HHS 43 / 43 CEILING · JKR 34 / 35 (CEILING 26, MOLDING 7,
+  CLADDING 1; one guid in no source) · Clinic 250 / 250 CEILING · Hospital 602 / 602 CEILING · LTU 24,321 / 24,321 INSULATION. Where every covering
+  was found with one type the block is ONE `INSERT … SELECT` (LTU: 723 bytes, not 24,321 statements). **Terminal: no block** — all 82 unreadable in
+  `TerminalMerged.ifc` (the entity has 8 arguments, the attribute is the 9th); it keeps the bond rule, and B11 says so (`declared=0`).
+- **`§CEILING_CLOSEUP`, before → after (ceilings / floor finish / unbonded):** LTU 12,038 / 8,671 / 3,612 → **0 / 0 / 0, other-declared 24,321** ·
+  Clinic 239 / 3 / 8 → 250 / 0 / 0 · JKR 19 / 10 / 6 → 27 / 0 / 0 (26 declared + the one undeclared, by bond; 8 other-declared) · HHS 39 / 1 / 3 →
+  43 / 0 / 0 · Hospital 600 / 0 / 2 → 602 / 0 / 0 · Duplex 13 → 13 · Terminal 55 / 0 / 27 unchanged (undeclared).
+- **B9 (bonded, relay excluded, starting before a host ends):** JKR 53 → **0** · LTU 269 → **30** · Clinic 100 → **70** · Duplex 37, HHS 2, Terminal 55,
+  Hospital 4 unchanged. B8 / B8x 0 on all (LTU INCONCLUSIVE: no fitting hangs from a ceiling there — it has none). B7 bonded: LTU 105,577 → 84,875 and
+  JKR 5,781 → 5,762 (other-declared coverings have no row: lagging, fascia, cladding); re-locked, the only lock that moved.
+- **Programme:** days unchanged except JKR 45 → 46; tasks HHS 20 → 18, Hospital 35 → 34, others unchanged. Phase populations: LTU `Architecture
+  Closeup` 12,644 → 606, `Finishes` 12,525 → 24,563 (the lagging is back under the class rule); Clinic Closeup 493 → 504, JKR 84 → 92, HHS 172 → 176,
+  Hospital 1,040 → 1,042.
+- **B11 (new, all seven PASS):** every declared covering has the kind its type gives; no other-declared covering is bonded or hosts anything.
+  **RED11:** with the declared types withheld, 12,038 LTU coverings the file declares NOT a ceiling bond `hangs-below` — the claim can fail.
+- **A judge defect found and fixed on the way:** `scripts/lib/shim_bonds_run.js` passed the cache reader's boolean `patched` as the patch mode, which
+  selected the aggregates-only text — the witness's fresh recomputation never saw the rest of a patch (B3 went red on four buildings the moment a
+  second table mattered). It now applies what the run applied.
+- **Gates:** `run_4d_gates.sh` 17 / 17 GREEN (`…/gates_final/4d_gates_20261120T061536Z.log`), no re-lock other than `shim_bonds.json`.
+  `shim_bonds.js?v=3`, `schedule_gate.js?v=7`, `schedule_author.js?v=31`, `tm_gantt_build.js?v=5`, `tm_sched_xray.js?v=4`, `_GANTT_CACHE_VERSION` 50, sw v1776.
+- **⚠ Live reach:** the viewer fetches `patches/<db>.sql` from the folder its DB came from. For a DB served from the bucket the new block reaches users
+  only after the patch is uploaded through `scripts/oci_patch_gate.js` — **NOT done here** (an upload to the served bucket needs the owner's go). Until
+  then such a building runs undeclared = exactly as before this PR. The gates judge the repo's patches.
+- **Not witnessed:** browser / bake. **Honest limits:** only IfcCovering is carried; `kindOf` still reads no other declared type. The schedule's own
+  bond passes still run without aggregates while the persisted table has them (the difference predates this step).
+### Q.44.2 ▶ RESUME HERE (2026-11-20)
+1. **⛔ Owner go: upload the six patches to the bucket** (`oci_patch_gate.js`, one per served DB; `deploy/OCI_UPLOAD.md` §RULES) so §Q.44 reaches users.
+2. **⛔ Owner ruling: where pipe / duct INSULATION is filed.** LTU's 24,321 pieces are in `Finishes` (class rule). Standard practice: lagging after the
+   pipe is tested, before the ceiling closes. Needs a practice-table row (kind `insulation`: joins its segment; phase) — not authored without sign-off.
+3. **Terminal's covering types:** read them another way (the IFC2x3 type object, or the per-discipline source) — 82 coverings, 27 unbonded.
+4. **Filing by bond where the host really is in a later task** (re-profile first): Clinic bearing walls 65 + columns 2, Terminal segments 40,
+   Duplex segments 37, LTU 30. One kind per step, second-carrier pattern (§Q.40 v3).
+5. Profile §Q.43.1's programme / task-count moves. 6. Delete ONE election clause covered by a bond edge. 7. The rest of the phase table against
+   standard practice. 8. Sign-off list; Terminal / Hospital local-vs-served check; S5; S6.
