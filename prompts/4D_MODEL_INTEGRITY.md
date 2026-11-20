@@ -5092,3 +5092,36 @@ Three versions were built and gated; only the third shipped. The spec above (v1)
 2. Kinds `ceiling` / `floor_finish` (two-pass) — closes the fittings line of item 1.
 3. Delete ONE election clause now covered by a bond edge (candidate: D7's later-contact skip, or D3's beam demotion), flag the deletion, gates.
 4. The rest of the phase table against standard practice. 5. Sign-off list; Terminal / Hospital local-vs-served check; S5; S6.
+
+### Q.43 SPEC — the bond's `above` host must be the FIRST offerer above, and `joins` must be a touch (2026-11-20, owner: *"resume 4d"*; §Q.42.1 item 1)
+- **Issue (measured before any filing change; probes + logs `…/b5ee8c6f…/scratchpad/q43/`, `probe_gap_base.log`):** §Q.42.1 item 1 calls B9's remainder
+  "filing". For the hung and joined kinds it is not: the host is not what the element hangs from. The contact owner's third relation
+  (`cpm_schedule.js contactGraph`: `S.bz >= T.tz - GAP && S.tz > T.tz + EPS`) has no upper limit, `shim_bonds.js` REL maps `hangs-below` to it and
+  `joins` to `any`, and the tie is tier, then plan overlap — never nearness. So a bond is "an offerer anywhere above in plan" (§E's own row:
+  *support base bounded, TOP unbounded*, mirrored). Vertical clear gap from the element to its primary host, p50 / p99 / max m, and how many bonds
+  have a NEARER offerer of an accepted kind in the same contact list:
+  | | bonded hung / joined | host further than GAP | of which a nearer offerer exists | gap p50 / p99 / max |
+  |---|---:|---:|---:|---|
+  | Hospital façade part / joins | 7,176 | 5,172 | 884 | 1.65 / 10.02 / 15.76 |
+  | Hospital segment / hangs-below | 13,781 | 12,784 | 9,573 | 1.80 / 12.74 / 17.62 |
+  | Terminal segment / hangs-below | 2,231 | 1,920 | 1,462 | 1.05 / 13.07 / 14.81 |
+  | LTU segment / hangs-below | 33,653 | 17,139 | 15,230 | 0.53 / 5.71 / 7.82 |
+  | Clinic fixture / hangs-below | 2,556 | 2,522 | 1,253 | 1.90 / 4.12 / 6.08 |
+  B9's remainder with a host further than GAP: Hospital façade 165 of 165 (the plate `3sbXgw…kN` z 168.34-168.54 "joins" a slab at z 181.66),
+  Terminal segments 98 / 98, fixtures 43 / 43, coverings 15 / 15, LTU segments 109 / 109, Clinic façade 10 / 10, Duplex fixtures 8 / 8, segments 26 / 62.
+  Filing those by bond would repeat §Q.40 v1 on a relation that does not exist. **So the relation is fixed first; no filing changes in this step.**
+- **Rule N (first offerer above — §E: occlusion, no new constant; §Q.33.3 "ceiling → slab ABOVE", "duct segment → slab above"):** for a need whose
+  relation is `above`, a candidate qualifies only if no other contact whose kind offers `hangs-below` to this element's kind (any row of its table
+  entry), itself above the element, lies wholly below the candidate (`k.tz <= j.bz + EPS`). The occluder need not be anchored: it is in the way either
+  way. Tier, plan overlap and guid then pick among the survivors, as before.
+- **Rule J (`joins` is a touch — §Q.33.3 "mullion → slab EDGE", "landing → its flight end"):** REL `joins` = `touch`: the two height ranges meet,
+  `S.bz <= T.tz + GAP && S.tz >= T.bz - GAP` (GAP is the contact owner's own audit constant, the one its bearing test already uses; no new number).
+  A façade part that touches no slab falls to its second need, `continues-same-kind` (held by its mullion / neighbour), which draws no order.
+  `continues-same-kind` stays `any` in this step (it draws no order; named, not fixed).
+- **Code:** `viewer/shim_bonds.js` only (`REL`, `relOk`, `tryBond`, and the same test in the never-anchored reason pass). No consumer changes:
+  §E1_BOND_CARRIERS, §CEILING_CLOSEUP and §D6's second carrier read the same `host` / `hosts`. `§SHIM_BONDS` (report) gains `occludedDropped=` and
+  `joinsNotTouching=`.
+- **Proof owed, all seven, before → after:** the gap table above (host further than GAP with a nearer offerer → 0, by construction — plus the residue
+  that has NO nearer offerer, named); bonded count (B7 will move: every fall named by kind and outcome); B9; B8 / B8x; `§E1_BOND_CARRIERS` edges;
+  `§SUPPORT_CYCLE`; played midair; `§FILING_PARITY`; programme days / tasks; DCMA; `run_4d_gates.sh` with every re-locked value named.
+  Sandbox first (the run is keyed on `shim_bonds.js`, so main's persisted runs stay as the baseline).
