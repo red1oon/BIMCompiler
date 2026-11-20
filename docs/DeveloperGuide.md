@@ -681,10 +681,10 @@ There are three service workers, each with its own `CACHE_VERSION`: `viewer/sw.j
 reason for a bump in the commit message, not in the `sw.js` line. The 4D schedule also has its own cache key,
 `_GANTT_CACHE_VERSION` in `viewer/tm_dash.js`. If you change how a schedule is built, bump it by hand (`bump.js` does not).
 
-**The Modeller and ERP are written from `modeller/modules.json` (since 2026-11-18) and `erp/modules.json` (since 2026-11-20).** There `bump.js` raises the
+**All three apps are written from their own `modules.json`: `modeller/` (since 2026-11-18), `erp/` and `viewer/` (since 2026-11-20).** `bump.js` raises the
 module's version number in `modules.json` and the app's `CACHE_VERSION`, then writes the pages, the lazy lists and `sw.js` from it, including the `?v=` inside a page's
-own scripts. In ERP a module can carry a different number on different pages; each goes up by one from its own number, and the two service-worker
-register lines are never raised. Do not edit a Modeller or ERP script tag, a `?v=` or a `PRECACHE_ASSETS` entry by hand: CI (W-MANIFEST-ROUNDTRIP) fails with the
+own scripts. In ERP and the Viewer a module can carry a different number on different pages; each goes up by one from its own number, and the two service-worker
+register lines are never raised. Do not edit a script tag, a `?v=` (the lazy lists in `viewer/main.js` included) or a `PRECACHE_ASSETS` entry by hand in any of the three apps: CI (W-MANIFEST-ROUNDTRIP) fails with the
 file, the line and the command to run. Comments between the tags stay yours.
 
 ### 5.2 Adding a new browser file
@@ -693,8 +693,8 @@ Add its `<script src="name.js?v=1">` in the right place in the page (order matte
 `PRECACHE_ASSETS` in `sw.js` **unless it is lazy on purpose**, bump `CACHE_VERSION`, and add any new shared global name to
 `eslint.globals.json`.
 
-**In the Modeller and in ERP,** add the module's line to `modeller/modules.json` or `erp/modules.json` instead (its `v`, `load`, `precache`; its tag in `order` at the place it
-must load; its entry in `precacheOrder` unless it is lazy on purpose), then run `node scripts/gen_manifest.js --write modeller` (or `erp`): it writes the
+**In the three apps (Viewer, ERP, Modeller),** add the module's line to that app's `modules.json` instead (its `v`, `load`, `precache`; its tag in `order` at the place it
+must load; its entry in `precacheOrder` unless it is lazy on purpose), then run `node scripts/gen_manifest.js --write <app>` (`viewer`, `erp` or `modeller`): it writes the
 tag and the precache entry next to their neighbours. A page's tags sit between `§MANIFEST:BEGIN` / `§MANIFEST:END` marker lines; a tag outside them is refused. If the new file reads another module while it loads, `--check` lists that as an unreviewed
 order edge (`§DEPS_UNREVIEWED`) until a person puts it in `deps`, `uses` or `notDeps`.
 

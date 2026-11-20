@@ -119,9 +119,9 @@ top-to-bottom to zero in whatever file it lives:
     (its history collides with the squash → `DIRTY`).
   - **`sw.js` is the conflict magnet** (every deploy bumps `CACHE_VERSION` + `PRECACHE_ASSETS`). On conflict: KEEP
     BOTH precache additions, take the HIGHER `CACHE_VERSION`. Never resolve by dropping the other session's hunk.
-    **`modeller/` (2026-11-18) and `erp/` (2026-11-20) are written from `<app>/modules.json`:** there, keep both sides' lines in `modules.json`, take the
+    **`viewer/`, `erp/` (both 2026-11-20) and `modeller/` (2026-11-18) are written from `<app>/modules.json`:** there, keep both sides' lines in `modules.json`, take the
     higher `cacheVersion`, run `node scripts/gen_manifest.js --write <app>`, then `--check` must print `verdict=PASS`. Never hand-edit a tag, a `?v=`,
-    a precache entry or `CACHE_VERSION` in those two apps (CI refuses it); `node scripts/bump.js <file> --write` works as before. The viewer is still by hand.
+    a precache entry or `CACHE_VERSION` in those three apps (CI refuses it); `node scripts/bump.js <file> --write` works as before.
   - The worktree isolates working-dir + checked-out branch, **NOT** line-level merge conflicts on shared files.
 - **Docs deploy (READ `prompts/DOCS_DEPLOY_POLICY.md` + `prompts/DOCS_DEPLOY_GUARD.md`):** publish docs ONLY
   via **`scripts/safe_gh_deploy.sh`** (the no-shrink seatbelt — W-DEPLOY-GUARD) from your FULL working branch.
