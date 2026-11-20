@@ -5277,3 +5277,23 @@ dry. v2 shipped: it keeps the true hung edges v1 dropped to the wave order (`§E
 - **Proof owed, all seven:** `§CARRYING_SLAB` per building (Clinic 1, others 0 = NO-OP); B9 Clinic 70 → 3; Clinic programme days / tasks before →
   after; midair, parity, DCMA; `run_4d_gates.sh`, every re-lock named. Six buildings must be byte-identical in their played layer (the rule finds
   nothing there) — proved by the gates passing with no re-lock for them.
+### Q.46.1 RESULT — APPLIED (2026-11-20, bim-ootb PR #3364, branch `fix/4d-q46-filing-by-bond`; logs `~/.cache/bim4d/q46_logs_2026-11-20/`)
+- **`§CARRYING_SLAB` (recipe schedule_author):** Clinic candidates 7, **promoted 1, carrying 67** (`byWas {"Architecture Envelope/seq6":1}`) · Duplex
+  candidates 15, Hospital 24: promoted 0 (NO-OP) · HHS, JKR, Terminal, LTU: every slab already structure (VACUOUS).
+- **B9 Clinic 70 → 3** (left: 3 stair parts ← railing). `float_after_cpm` Clinic 128 → 121. Clinic programme 127 d / 19 tasks unchanged; the deck moved
+  from `Architecture Envelope_First Floor` to `Superstructure_First Floor` (660 / 555 elements, was 659 / 556). B7 unchanged.
+- **Gates:** first run 16 / 17 — the one red was Clinic's float lock moving DOWN (128 → 121, an equality lock); re-locked from the run with
+  `shim_bonds.json` (Clinic `earlyVsHost` 70 → 3). Second run 17 / 17 GREEN (`…/gates_final/4d_gates_20261120T072154Z.log`). No other building's
+  value moved. `shim_bonds.js?v=4`, `_GANTT_CACHE_VERSION` 51, sw v1777.
+- **Cost:** none added where a building has coverings (same pass). A building with NO covering but a slab filed outside structure now runs the bond
+  pass once per recipe (none of the seven is in that case). **Not witnessed:** browser / bake.
+- **B9 now:** Duplex 37 · HHS 2 · JKR 0 · Clinic 3 · Terminal 55 · Hospital 4 · LTU 30 (at §Q.42: 73 / 2 / 19 / 112 / 170 / 168 / 132).
+### Q.46.2 ▶ RESUME HERE (2026-11-20)
+1. **⛔ Owner go: upload the SEVEN patches to the bucket** (`oci_patch_gate.js`). 2. **⛔ Owner ruling: where pipe / duct INSULATION is filed.**
+3. **Duplex segments 37:** the offerer above them is a 1 cm *Finish Floor* `IfcSlab` filed `Finishes` — a finish slab should offer no `hangs-below`
+   (find why the structural slab under it is not the first offerer: kind, wave or relation).
+4. **Far "first offerer" (Terminal 42, LTU 28):** a hung bond across 6-14 m of clear height is not a hanger. Needs a rule that is not a distance
+   constant (candidates to measure: the element also `fixes-on-side` / rests on something nearer; the space is one storey of the declared ladder).
+5. The small lines of §Q.46's table (walls on a later wall, windows, stair parts ← railing, one beam pair): 22 in all.
+6. Profile §Q.43.1's programme / task-count moves. 7. Delete ONE election clause covered by a bond edge. 8. The rest of the phase table against
+   standard practice. 9. Sign-off list; Terminal / Hospital local-vs-served check; S5; S6.
