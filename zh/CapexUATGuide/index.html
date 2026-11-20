@@ -3904,6 +3904,8 @@
   .md-typeset h2 { break-before: page; page-break-before: always; }
   .md-typeset h3 { break-after: avoid; break-before: page; page-break-before: always; }
   .md-typeset h2 + h3, .uat-sheet h3, .uat-cover h3 { break-before: auto; page-break-before: auto; }
+  .uat-keep { break-inside: avoid; page-break-inside: avoid; }   /* DOCS_DEPLOY_GUARD.md SPEC (3), W-GUIDE-PRINT P12: a lead-in stays with its table */
+  .uat-keep-small table:not([class]) { font-size: 8.5pt; }
   .uat-cover { break-after: page; page-break-after: always; border: 1.5px solid #333; }
   .md-typeset h1 { margin-top: 18mm; }
   .md-typeset img { max-width: 100%; max-height: 105mm; }
@@ -3999,6 +4001,7 @@
 </tbody>
 </table>
 </div>
+<div class="uat-keep uat-keep-small">
 <h2 id="changes-since-the-signed-uat-report-2026-11-19">Changes since the signed UAT report (2026-11-19)<a class="headerlink" href="#changes-since-the-signed-uat-report-2026-11-19" title="Permanent link">&para;</a></h2>
 <p>Read these even if you have already done the UAT. If your run met one of them, retest that step. They go into the report's appendix; the signed report itself is not changed.</p>
 <table>
@@ -4070,6 +4073,7 @@
 </tr>
 </tbody>
 </table>
+</div>
 <h2 id="what-is-this">What is this?<a class="headerlink" href="#what-is-this" title="Permanent link">&para;</a></h2>
 <p>A hands-on test script for the testers of the pilot client (Sysnova). Each step says what to <strong>do</strong>, what you should <strong>see</strong>, and has a box to tick.
 <strong>A value is affirmed at its source, not trusted.</strong> Wherever a step gives a number, it also says <strong>Source:</strong> where the number is kept (a record, a field, a formula) and what to open to see it there. Open that source, read the value yourself, and tick <em>Pass</em> only if it matches. A figure on the dashboard is never the evidence: the rows behind it are.</p>
@@ -4380,6 +4384,7 @@
 </tbody>
 </table>
 <p>The nine Shed sheets are the pilot client's own work, so its testers may use them. Any other drawing set goes through the same way once its sheets carry their settings (levels, datums and layer meanings), which the Modeller's <strong>Drawing metadata</strong> panel records.</p>
+<div class="uat-keep uat-keep-small">
 <p><strong>Where to find each window.</strong> Every window and process below is in iDempiere's left-hand menu; open the folder and click the entry, or type the name in the menu's <strong>Search</strong> box. A new record is made with the <strong>New</strong> button in the toolbar, saved with <strong>Save</strong>, and a document is finished with its <strong>Document Action</strong> button (choose <strong>Complete</strong>, then <strong>OK</strong>).</p>
 <table>
 <thead>
@@ -4443,6 +4448,7 @@
 </tr>
 </tbody>
 </table>
+</div>
 <p><strong>Who does what:</strong> see the checklist sheet above.</p>
 <hr />
 <h2 id="a-set-up-system-setup-once">A · Set up (System Setup, once)<a class="headerlink" href="#a-set-up-system-setup-once" title="Permanent link">&para;</a></h2>
@@ -4994,6 +5000,7 @@
 </tr>
 </tbody>
 </table>
+<div class="uat-keep">
 <p><strong>B0.6 · the five level datums</strong> (<code>0.6096</code> m = 24 in, the plinth level <em>PL</em>: on every elevation the PL line is drawn 24 in above the ground line)</p>
 <table>
 <thead>
@@ -5025,6 +5032,7 @@
 </tr>
 </tbody>
 </table>
+</div>
 <p><strong>B0.5 · where the body heights come from.</strong> Footing F-1 is 12 in thick, its top 45 in below the finished ground (z −1.143 m to −1.4478 m). The beams run from 122 in to 132 in above the ground (3.0988 m to 3.3528 m), as the section's lines give them; the elevations draw the beam soffit at 120 in, a 2 in difference the drawings leave open and this test does not settle.</p>
 <p><em>Proven (witness W-UAT-B0, 2026-11-15): these steps, done in the real Modeller on the nine sheets as drawn, reach </em><em>Qualifies</em><em>, save nine copies equal mark for mark to the supplied <code>…_marked.dxf</code> set, and B2b's </em><em>Convert</em><em> then reads the same <code>Converted: 511 elements (0 door/window fills), 2 openings cut.</code> The datum y values are typed, not picked with the </em><em>Pick</em><em> button; picking was not part of the proof.</em></p>
 <h3 id="b1-get-to-know-the-drawings-one-sheet-at-a-time">B1 · Get to know the drawings: one sheet at a time<a class="headerlink" href="#b1-get-to-know-the-drawings-one-sheet-at-a-time" title="Permanent link">&para;</a></h3>
