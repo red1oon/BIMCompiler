@@ -5420,3 +5420,17 @@ dry. v2 shipped: it keeps the true hung edges v1 dropped to the wave order (`§E
    how many are off, by how much, which classes.
 3. The 22 small lines of §Q.46's table · 4. profile §Q.43.1's programme moves · 5. delete ONE election clause · 6. phase table vs standard
    practice (lagging trade included) · 7. sign-off list; S5; S6. **Closed by ruling 4:** the unshipped HHS / Terminal / Hospital patch blocks stay unshipped.
+### Q.49.3 SESSION CLOSE 2026-11-20 (owner: *"wrap up resume new session"*) — state for the next session, nothing new measured here
+- **Shipped this session, all merged, live at sw v1780 (bim-ootb):** #3361 first offerer above / joins is a touch (§Q.43) · #3362 #3363 a covering
+  is what its file declares (§Q.44, §Q.45) · #3364 a slab that structure stands on is structure (§Q.46) · #3366 the declared types uploaded to
+  the bucket, with the trace (§Q.47) · #3372 a finish slab is a floor finish in the bond table (§Q.48) · #3375 insulation goes with its pipe (§Q.49).
+- **B9 (bonded, relay excluded, starting before a host ends), §Q.42 → now:** Duplex 73 → 32 · HHS 2 → 2 · JKR 19 → 0 · Clinic 112 → 3 ·
+  Terminal 170 → 55 · Hospital 168 → 4 · LTU 132 → 28. Programme days now: Duplex 15 · HHS 58 · JKR 46 · Clinic 127 · Terminal 93 · Hospital 262 · LTU 666.
+- **Start at §Q.49.2 item 1** (far hangers, measure first), then item 2 (Duplex box centres, measure first). Both are read-only measurements;
+  no ruling is waiting on the owner.
+- **⚠ New rule for any viewer file bump (other lane, bim-ootb #3377):** script tags, `?v=` numbers, the precache list and `CACHE_VERSION` in `viewer/`
+  are being generated from `viewer/modules.json`. Use `node scripts/bump.js <file> --write` (or `--changed --write`); never hand-edit them — CI
+  refuses. `_GANTT_CACHE_VERSION` in `tm_dash.js` (now 54) stays a hand bump. Check whether #3377 has merged before the first bump.
+- **Logs of this session:** `~/.cache/bim4d/q44_logs_2026-11-20/` … `q49_logs_2026-11-20/`, `q47_upload_2026-11-20/` (served patches before the
+  upload, manifests, fetch-back). The §Q.43 logs were in a session scratchpad that no longer exists; their numbers are in §Q.43.1.
+- **Not witnessed anywhere this session:** a schedule generated in a browser on the live buildings; a bake.
