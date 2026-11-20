@@ -5332,3 +5332,40 @@ dry. v2 shipped: it keeps the true hung edges v1 dropped to the wave order (`§E
    or leave: until then the gates judge a patch users do not get on those three.
 3. Duplex segments 37 (finish-slab offerer) · 4. far "first offerer" (Terminal 42, LTU 28) · 5. the 22 small lines · 6. profile §Q.43.1's
    programme moves · 7. delete ONE election clause · 8. phase table vs standard practice · 9. sign-off list; S5; S6.
+
+### Q.48 SPEC — a slab the run files as a FINISH is a floor finish in the bond table (2026-11-20, owner: *"resume 4D"*; §Q.47.1 item 3)
+- **Issue (measured, `~/.cache/bim4d/q48_logs_2026-11-20/probe_duplex.log`):** Duplex B9 = 37 hung pipes whose host ends after they start. 32 of them
+  hang from a 13-19 mm `IfcSlab` named *Floor: Finish Floor - Ceramic Tile / Wood* at z 3.10 — the run already files those 14 slabs as `Finishes`
+  seq 11 (the §W_D0 C2 name override), but `ShimBonds.kindOf` calls every non-ground `IfcSlab` a `slab`, and a `slab` OFFERS `hangs-below`. So the
+  tile is the pipe's "first offerer above" and the pipe waits for the last trade of the job. The other 5 hang from the roof (§Q.46 table, far hanger).
+- **Rule (`kindOf`'s own contract: *"what the shipped classification already decided for this run"*, as it already reads sequence 1 / Substructure
+  for `ground_slab`):** an `IfcSlab` whose phase is `Finishes` is kind `floor_finish` (§Q.44's kind: need `bears-on-top` a slab; offers nothing).
+  No name is read here; the name override that put it in `Finishes` is the one owner of that decision.
+- **Population:** slabs filed `Finishes` — Duplex 14, the other six 0 (`probe_slabhost_base.log` §Q.46: slabs by phase).
+- **Code:** one line in `viewer/shim_bonds.js kindOf`. **Proof owed:** Duplex B9 before → after with what the 32 bond to now; the 14 tiles' own bond
+  (`bears-on-top` the joist floor / ground slab); programme days / tasks; six other buildings unchanged (no such slab); `run_4d_gates.sh`, re-locks named.
+- **Seen on the way, NOT fixed (data, not rule):** Duplex's two *Wood Joist* floor slabs carry boxes of 3.7 m x 17 m (x -0.2..3.5 and 5.4..9.1) where
+  the house is 8 m wide — a strip 3.5..5.4 has tile and no structural floor box. An extraction / box question for the Duplex DB.
+### Q.48.1 RESULT — APPLIED, with a smaller gain than the spec implied (2026-11-20, bim-ootb PR #3372; logs `~/.cache/bim4d/q48_logs_2026-11-20/`)
+- **Kinds:** Duplex's 14 finish slabs are now `floor_finish`; they bond `bears-on-top` (bonded 1,008 → 1,009). No other building has a slab filed
+  `Finishes`; none of their values moved.
+- **B9 Duplex 37 → 32, not → 5.** The 32 pipes no longer hang from a tile — they now hang from the ROOF (`Basic Roof`, z 6.00, 2.9 m above the tile,
+  `nothing above the host`), because the Level-2 structural floor is not over them in the model's boxes (the data question named in the spec: the
+  two *Wood Joist* floor boxes are 3.7 m wide strips). So the rule is right and the count barely moved: the remainder is the far-hanger line plus
+  that box defect. Programme 15 d / 21 tasks unchanged.
+- **Gates:** `run_4d_gates.sh` 17 / 17 GREEN on the change (`…/gates_v1/4d_gates_20261120T082145Z.log`, run before the version-bump commit; the bump
+  changes no schedule code). `shim_bonds.json` tightened (Duplex `earlyVsHost` 37 → 32, bonded 1,009); `witness_shim_bonds` 80 / 0 / 7 after.
+  `shim_bonds.js?v=5`, `_GANTT_CACHE_VERSION` 53, sw v1779. **Not witnessed:** browser / bake.
+### Q.48.2 ▶ RESUME HERE (2026-11-20)
+1. **⛔ Owner ruling: where pipe / duct INSULATION is filed.** 2. **⛔ Owner decision: the unshipped blocks in the HHS / Terminal / Hospital repo patches.**
+3. **Duplex's box CENTRES are shifted — measured, not yet patched (item 3 of the list before, done as a read-only check):** IfcOpenShell on
+   `Duplex_ARC.ifc` vs `element_transforms`: the two *Wood Joist* floors really are two 3.71 m x 16.97 m strips (the size in the DB is right), but
+   their centres are off — `1hOSvn…RqU` true x 0.42..4.12, DB -0.18..3.53 (0.59 m); `1hOSvn…RrM` true x 4.67..8.38, DB 5.39..9.10 (0.72 m); the
+   slab on grade `2O2Fr$…` 0.6 m in y; the roof is exact. Of Duplex's 32 remaining pipes 23 lie under a TRUE floor box and miss the shifted one
+   (they sit at x 3.6..5.2, by the party wall). This is the §META_TRANSFORM_REPAIR class of defect: a patch from the source file (extracted
+   fact), for the lane that owns the transform repairs — and it changes rendering, so it is not a 4D-lane edit to make alone.
+   **And 14 of the 32 are vertical stacks, most of the rest drains at z -0.6..0 under the slab on grade:** not hung from anything. Same line as item 4.
+4. **Far "first offerer"** (Terminal 42, LTU 28, Duplex 32 until item 3): a hung bond across metres of clear height is not a hanger; needs a rule
+   that is not a distance constant.
+5. The 22 small lines of §Q.46's table · 6. profile §Q.43.1's programme moves · 7. delete ONE election clause · 8. phase table vs standard
+   practice · 9. sign-off list; S5; S6.
