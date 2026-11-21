@@ -3940,11 +3940,11 @@
 </tr>
 <tr>
 <td>Revision</td>
-<td><strong>2026-11-20 (b)</strong></td>
+<td><strong>2026-11-21</strong></td>
 </tr>
 <tr>
 <td>Status</td>
-<td>Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately and stays as signed. This revision adds notes to A3.1 and B3.1 and lists, below, what changed or was found since that report.</td>
+<td>Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately and stays as signed. What changed or was found since is listed after this cover.</td>
 </tr>
 <tr>
 <td>Prepared and issued by</td>
@@ -3970,6 +3970,10 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>2026-11-21</td>
+<td>Change list items 9 to 19 (film part 3). No step changed</td>
+</tr>
 <tr>
 <td>2026-11-20 (b)</td>
 <td>Change list item 8 and <em>See how</em> item 2: film part 2, linked. No step changed</td>
@@ -4070,6 +4074,83 @@
 <td>The film <em>UAT, hands on, part 2</em> shows the path item 6 said was to follow: the nine sheets as drawn, marked by hand (B0.1 to B0.9), Arrange (B2.3), and the Run Checker with your nine marked copies in box 2 (B5): every row and the run read <strong>PASS</strong>.</td>
 <td>Film published: <a href="https://youtu.be/WvPgjcMbSwo">youtu.be/WvPgjcMbSwo</a></td>
 <td>None; B0 is unchanged. Watch it before you mark the sheets yourself</td>
+</tr>
+<tr>
+<td>9</td>
+<td>C (log in)</td>
+<td>The guide names no organization. With the default <code>*</code> a purchase order will not save: <em>Fill mandatory fields: Organization, Warehouse</em>.</td>
+<td>Noted</td>
+<td>On the log in page tick <strong>Select Role</strong>, then choose <strong>HQ</strong> and <strong>HQ Warehouse</strong></td>
+</tr>
+<tr>
+<td>10</td>
+<td>C1.1, D4</td>
+<td>The order window prices a line to the <em>Purchase</em> list's 2 decimals (68.1167 becomes 68.12), so an order total differs from <em>quantity × standard cost</em> (TD_RIVERSIDE 1,975.48, not 1,975.38; TD_DATAHALL 1,807.92, not 1,799.55, as 1.075 becomes 1.08). D4's <em>Open purchase orders</em> then reads <strong>USD 6,741.25</strong>, not 6,738.39. D2b and D3 are not affected (an issue uses the standard cost).</td>
+<td>Noted</td>
+<td>Pass C1.1 if the line price is the price list's, rounded to the cent; pass D4 at 6,741.25</td>
+</tr>
+<tr>
+<td>11</td>
+<td>C2.1</td>
+<td><strong>Create lines from</strong> lists no lines on this iDempiere build (its search binds the wrong field to the order).</td>
+<td>Noted</td>
+<td>Set <strong>Order</strong> on the receipt header; tab <strong>Receipt Line</strong>, <strong>New</strong>, choose the <strong>Order Line</strong> (product, quantity and <em>Default HQ Locator</em> fill in); Save; Complete</td>
+</tr>
+<tr>
+<td>12</td>
+<td>C3.2</td>
+<td>The <strong>Business Partner</strong> search of the Payment window opens with <strong>Vendor = No</strong>, so no vendor is listed.</td>
+<td>Noted</td>
+<td>In that search set <strong>Vendor</strong> to <strong>Yes</strong> and press <strong>ReQuery</strong>; the vendor's search key is <em>SeedFarm</em></td>
+</tr>
+<tr>
+<td>13</td>
+<td>C (log in)</td>
+<td>Chrome's <em>Save password?</em> stays open after you log in and takes the keys meant for the page.</td>
+<td>Noted</td>
+<td>Press <strong>No thanks</strong></td>
+</tr>
+<tr>
+<td>14</td>
+<td>C4.1, C5.1, D6</td>
+<td>The test projects have <strong>Line Level = Project</strong>; the Project window then hides the <strong>Phase</strong> tab.</td>
+<td>Noted</td>
+<td>In the project header set <strong>Line Level</strong> to <strong>Phase</strong> and Save; the Phase tab then lists the phases</td>
+</tr>
+<tr>
+<td>15</td>
+<td>C4.4</td>
+<td><strong>Project Balance</strong> shows 4 decimals (204.3501, 577.625); the guide prints them rounded (204.35, 577.63).</td>
+<td>Noted</td>
+<td>Pass if it rounds to the guide's figure</td>
+</tr>
+<tr>
+<td>16</td>
+<td>C5.1</td>
+<td>After you tick <strong>Complete</strong>, Save is refused: <em>Fill mandatory fields: Invoice Rule</em>. The test data's phases carry none.</td>
+<td>Noted</td>
+<td>Choose the project's own rule (<em>None</em>), then Save</td>
+</tr>
+<tr>
+<td>17</td>
+<td>C5.1</td>
+<td>The Phase tab is a list under the header.</td>
+<td>Noted</td>
+<td>Click the phase's name, then its pencil (<strong>Edit Record</strong>), to tick <strong>Complete</strong></td>
+</tr>
+<tr>
+<td>18</td>
+<td>D3</td>
+<td>Adding up the panel's <strong>Spent</strong> column gives 2,020.46; the tile reads <strong>2,020.45</strong> (each row is rounded to the cent).</td>
+<td>Noted</td>
+<td>Pass at the tile's 2,020.45</td>
+</tr>
+<tr>
+<td>19</td>
+<td>C4.2</td>
+<td>Each <strong>Issue to Project</strong> opens its own window tab; after several, the first tabs are pushed off the strip.</td>
+<td>Noted</td>
+<td>Close each Issue tab when done</td>
 </tr>
 </tbody>
 </table>
