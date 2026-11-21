@@ -11,6 +11,7 @@ FPS, W, H, TOP = 30, 1920, 1080, 150; BH = H - TOP
 BG, INK, CORAL, SKY = (15, 23, 42), (243, 238, 232), (255, 107, 120), (125, 211, 252)
 REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 def log(m): print(m, flush=True)
+IDLE_X, IDLE_KEEP = float(getattr(P, 'IDLE_X', 8.0)), float(getattr(P, 'IDLE_KEEP', 0.8))   # §5.17: a wait's speed and the real time kept at each end, per plan (Parts I and II: x8, 0.8 s)
 def font(b, s): return ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans%s.ttf' % ('-Bold' if b else ''), s)
 mode, TAKE, WORK = sys.argv[1], sys.argv[2], sys.argv[3]; os.makedirs(WORK, exist_ok=True)
 GUIDE = open(os.path.join(REPO, 'docs', 'CapexUATGuide.md'), encoding='utf-8').read()
@@ -72,7 +73,7 @@ for sc in P.SCENES:
     # cut points: each beat's cue; after a beat's span, hold if its line needs more room
     cuts = sorted(set([a0] + [cue[b[1]] for b in sc['beats'] if cue[b[1]] > a0] + [a1]))
     fast = [(f['t0'], f['t1'], 3.0) for f in ev['fast'] if 't1' in f]
-    # §5.11: idle spans (no move, click, key or wheel notch for > 2 s) play at x8, 0.8 s kept real time at each end; a declared fast span (x3) wins where they overlap
+    # §5.11: idle spans (no move, click, key or wheel notch for > 2 s) play at IDLE_X (x8), IDLE_KEEP (0.8 s) kept real time at each end (§5.17: per plan); a declared fast span (x3) wins where they overlap
     acts = sorted([(m['t0'], m['t1']) for m in ev['moves']] + [(c['t'], c['t'] + 0.3) for c in ev['clicks']] + [(k['t'], k['t'] + 0.12) for k in ev['keys'] if k['k'] != 'w'])   # a wheel notch is travel, not an action: a scroll > 2 s is sped like a wait
     s_, gaps = a0, []
     for x0, x1 in acts:
@@ -80,15 +81,15 @@ for sc in P.SCENES:
         s_ = max(s_, x1)
     gaps.append((s_, a1)); idle = []
     for g0, g1 in gaps:
-        g0, g1 = max(g0, a0) + 0.8, min(g1, a1) - 0.8
+        g0, g1 = max(g0, a0) + IDLE_KEEP, min(g1, a1) - IDLE_KEEP
         if g1 - g0 <= 2.0 - 1.6: continue
         for f0, f1, _ in fast:   # clip out the declared spans
             if f1 <= g0 or f0 >= g1: continue
-            if f0 > g0: idle.append((g0, f0, 8.0))
+            if f0 > g0: idle.append((g0, f0, IDLE_X))
             g0 = max(g0, f1)
-        if g1 > g0: idle.append((g0, g1, 8.0))
+        if g1 > g0: idle.append((g0, g1, IDLE_X))
     idle = [x for x in idle if x[1] - x[0] > 0.4]
-    log('§COMP_IDLE %s spans=%d src_s=%.2f out_s=%.2f' % (sid, len(idle), sum(b - a for a, b, _ in idle), sum((b - a) / 8.0 for a, b, _ in idle)))
+    log('§COMP_IDLE %s spans=%d src_s=%.2f out_s=%.2f' % (sid, len(idle), sum(b - a for a, b, _ in idle), sum((b - a) / IDLE_X for a, b, _ in idle)))
     fast = sorted(fast + idle)
     if sc.get('speed'):   # §5.16 a repeat scene plays whole at its speed (x8), badged; its keys and clicks make no sound (a x8 rattle is noise, not information)
         fast = [(a0, a1, float(sc['speed']))]; log('§COMP_SPEED %s x%d src_s=%.2f out_s=%.2f' % (sid, sc['speed'], a1 - a0, (a1 - a0) / sc['speed']))

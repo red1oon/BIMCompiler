@@ -4,6 +4,7 @@ Every number spoken or shown is a fact read from the guide, the saved PDF or a �
 (owner 2026-11-14: only scripts, logs and specs go to GitHub); it stays in `~/Videos/`. Layout rules: `prompts/FILM_NARRATION.md` ▶ PLAYBOOK C.
 
 > ## ▶ RESUME HERE — UAT films (rewritten 2026-11-20; read §5.12 → §5.13, then §5.10–§5.11 for the pipeline)
+> **2026-11-22 (c): Part III CUT to 14:04 as rc4 (`~/Videos/UAT_Hands_On_Part3_ERP_Dashboard_EN_rc4.mp4`, every bar PASS, §5.17): D9 without the refresh, waits ×24, repeats ×16. If the owner uploads it, re-link *See how* 3 and change-list item 20.**
 > **2026-11-22 (b): Part III PUBLISHED by the owner: https://youtu.be/stnbV8nygqs, linked in the guide's *See how* 3 + change list item 20 (rev 2026-11-22, #1126). All three films are published. Cover limit: every revision row costs cover space, and P6 failed twice in two days. Each time the fix was to cut older history rows to their items. The next revision will need the same, or a cover that keeps only the latest revisions (owner's call).**
 > **2026-11-22: Part III DONE: rc3 `~/Videos/UAT_Hands_On_Part3_ERP_Dashboard_EN_rc3.mp4`, every bar PASS (§5.16 PROGRESS (4) + RESULT rc3). Guide change list 9–19 live (#1119). Next: the owner uploads it, then link it in *See how* item 3.**
 > **Film 1 DONE and published by the owner:** rc3 (`~/Videos/UAT_Hands_On_Where_To_Click_EN_rc3.mp4`) = https://youtu.be/PBp4qfV4mIo, linked in the guide's *See how* (item 1).
@@ -443,3 +444,25 @@ Every build: frames = picture (9,313 in rc3), 31 of 31 lines DETAIL, 0 tone WRON
 - **Guide:** the change list items 9 to 19 (finds 1–12) are LIVE: BIMCompiler #1119, rev 2026-11-21, W-GUIDE-PRINT 13/0, deploy guard PASS 992/992, live PDF == checked (4,990,761 B). No step changed (`§STEPS_SAME identical=true` vs master). The signed report is untouched. The same rows are in SYSNOVA `UAT/NOTICES_since_report.md`.
 - **Teardown:** `§P3_RESTORE_CHECK PASS` (as found: TD_=0, PWD-=0, imp_proc=1, setup verdict as found), `§P3_DOWN_VERDICT PASS`. :8108 stopped (found stopped). Postgres stopped (this session started it). The bim-ootb copy is removed, and nothing of the run is listening.
 - **NEXT (owner):** upload rc3, then link it in the guide's *See how* item 3, plus a change-list row (as #1096 did for Part II). Open: find 8 (C5.1 Invoice Rule) could be fixed in the test-data pack instead of by the tester (owner's call).
+
+### 5.17 SPEC — Part III cut to under 15 minutes (2026-11-22; written before code; owner: *"can u cut down the film to less than 15 mins long. Perhaps need no refresh and there are much gaps of slience in between"*)
+**Measured on rc3** (`comp.log`): film 1131.5 s. Idle waits 1,287 s of source → 161 s of film (×8, plus 0.8 s real time at each end of every wait). The 39 repeats 1,821 s → 228 s (×8). Holds for lines 75 s. D9 (log out, log in, the 30-minute refresh) 91 s. 143 silences of 1.5 s or more, 397 s in all.
+**Sized before any render:** a timeline-only run of `compose.py` stops at `§COMP_TIMELINE` (rc3's settings reproduce 1131.52 s):
+
+| Settings | film_s |
+|---|---|
+| rc3 | 1131.5 |
+| D9 without the refresh | 1060.2 |
+| + 0.4 s kept at each end of a wait | 966.2 |
+| + waits ×16 | 935.4 |
+| + repeats ×16 | 877.7 |
+| + waits ×24, 0.3 s kept | **844.4** |
+
+**Change:**
+1. `compose.py` reads the wait speed and the real time kept at each end from the plan: `IDLE_X` (default 8.0) and `IDLE_KEEP` (default 0.8). Parts I and II are unchanged.
+2. `plan3.py`: `IDLE_X = 24`, `IDLE_KEEP = 0.3`, `SP = 16`.
+3. D9 starts on the Home tab after the new log in (`span=('click:No thanks', 'd9_end')`), with three lines: Home after a new log in, the chapter C summary, and the goals equal the tiles. The log out, log in, Chrome's windows and the refresh explanation are not shown. The guide's D9 Do/Confirm text is unchanged.
+
+Nothing is re-taken, and every document, Confirm check and line of chapter C stays.
+**Witness:** the build's own bars (silence ≤ 8 s, LUFS, keys/clicks, lines) PASS and `film_s < 900`, read from `checks.log`. rc4 goes to `~/Videos/UAT_Hands_On_Part3_ERP_Dashboard_EN_rc4.mp4`. The published rc3 stays as it is; the owner decides whether to re-upload.
+**RESULT rc4 (2026-11-22 06:58):** `~/Videos/UAT_Hands_On_Part3_ERP_Dashboard_EN_rc4.mp4`, **843.8 s (14:04)**, was 1131.5 s. `§FILM_CHECKS_BARS PASS silence_max=5.32819 LUFS=-16.8`, `§FILM_CHECKS_VERDICT PASS`. Silences of 4 s or more: 1 (was 18). 100 lines, keys 3445/3445, clicks 160/160. The timeline-only estimate was 844.44 s. Same take (take3b), nothing re-taken. The published film is rc3 (https://youtu.be/stnbV8nygqs). If the owner uploads rc4 instead, the guide's *See how* 3 and change-list item 20 take the new link.
