@@ -1,5 +1,5 @@
 # ⚠ DO NOT REMOVE — film "UAT, hands on" PART III (prompts/FILM_UAT_GUIDE.md §5.16): the PLAN, same shape as plan.py (FILM_PLAN=plan3 selects it in compose.py).
-# B4 (the model to the ERP), chapter C (every document by hand: the first of each kind at normal speed, each repeat its own scene at x8), chapter D (the dashboard).
+# B4 (the model to the ERP), chapter C (every document by hand: the first of each kind at normal speed, each repeat its own scene at x16, §5.17), chapter D (the dashboard).
 # 'strip' = the guide's OWN words (compose.py stops the build on a strip not found in docs/CapexUATGuide.md). The repeat scenes and their spoken quantities are built from the
 # guide's own chapter C table, parsed here as scenes3.js parses it (never retyped). Numbers spoken elsewhere are only ones the take measured (§FILM_CHECK lines). READ THE LOGS.
 import os, re
@@ -20,7 +20,8 @@ RCV, INV = re.compile('Received|Half paid|Paid in full'), re.compile('Half paid|
 C11 = '**Purchase Order** window, **New**'; C12 = '**Document Action ▸ Complete ▸ OK** on the orders the table marks *complete*; leave the others as they are'
 C21 = '**Material Receipt** window, **New**'; C31 = '**Purchase Invoice and Credit/Debit Note** window, **New**'; C32 = '**Payment and Receipt** window, **New**'
 C41 = 'Press **Set Project Type**, choose **Work Order (Job)**, **OK**'; C42 = 'Menu **Project Management ▸ Issue to Project**'; C43 = '**Project (Lines/Issues)** window, find the project, tab **Issues**'
-SP = 8
+SP = 16   # §5.17: repeats x16 (was x8)
+IDLE_X, IDLE_KEEP = 24, 0.3   # §5.17: waits x24, 0.3 s real time at each end (compose defaults x8, 0.8 s)
 def rep(sid, chip, strip, bid, text): return dict(id=sid, chip=chip, strip=strip, span=(sid + '_start', sid + '_end'), speed=SP, beats=[(bid, sid + '_start', text)])
 
 SCENES = [
@@ -152,18 +153,10 @@ SCENES += [
   dict(id='d8', chip='D8', strip='Change **Layout** (top bar) to *Executive* and **Skin** to *Dark*, then back to *Classic* and *Light*', span=('d8_start', 'd8_end'), beats=[
     ('d9a', 'd8_start',     "Layout, Executive: fewer tiles, new labels, the same figures."),
     ('d9b', 'd8_dark',      "Skin, Dark. Then back to Classic, and Light.")]),
-  dict(id='d9', chip='D9', strip='Log in to iDempiere again and read the **Home** tab', span=('d9_start', 'd9_end'), beats=[
-    ('d10a', 'd9_start', "Last: iDempiere's own Home tab. Log out, and log in again."),
-    ('d10b', 'd9_login', "Home goals are recalculated when they are older than thirty minutes."),
-    # §5.16 (4): rc1 silences 8.4 + 39.2 + 10.3 s (the log in, then the wait for Chrome's Save password?): lines on the logged events and between them
-    ('d10b1', 'at:click:OK (log in)|s13_chrome_warn|0.3', "Log in as before, with Select Role ticked."),
-    ('d10b2', 's13_chrome_warn', "Chrome's warning about the demo password again. Press OK."),
-    ('d10b3', 'd9_role', "HQ and HQ Warehouse are already chosen. OK."),
-    ('d10b4', 'at:click:OK (role)|d9_savepw|0.15', "Chapter C began more than thirty minutes ago, so the goals are worked out afresh."),
-    ('d10b5', 'at:click:OK (role)|d9_savepw|0.45', "Ten orders, four receipts, three invoices, three payments, nine issues: every one by hand."),
-    ('d10b6', 'at:click:OK (role)|d9_savepw|0.77', "Each one was checked against the guide's Confirm column."),
-    ('d10b7', 'd9_savepw', "Chrome asks to save the password once more. No thanks."),
-    ('d10b8', 'at:d9_savepw|d9_goals|0.45', "Then the Home tab: CAPEX Total Projects, and CAPEX Active Projects."),
+  # §5.17 (owner 2026-11-22: "Perhaps need no refresh"): D9 starts on the Home tab after the new log in; the log out, log in and the 30-minute wait are not shown
+  dict(id='d9', chip='D9', strip='Log in to iDempiere again and read the **Home** tab', span=('click:No thanks', 'd9_end'), beats=[
+    ('d10a', 'click:No thanks', "Last: iDempiere's own Home tab, after a new log in."),
+    ('d10b5', 'at:d9_savepw|d9_goals|0.45', "Ten orders, four receipts, three invoices, three payments, nine issues: every one by hand."),
     ('d10c', 'd9_goals', "The CAPEX goals show the same counts as the dashboard tiles.")]),
 ]
 TITLE = dict(kicker='UAT GUIDE · HANDS ON · PART III', line1='From the model to the money', line2='orders, receipts, issues, the dashboard', note='Every click is real: the real browser, your own iDempiere.')
