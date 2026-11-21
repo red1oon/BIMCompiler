@@ -44,7 +44,7 @@ W-X0-SESSION 8/8) + the SessionEnd hook in `~/.claude/settings.json` (stderr + e
 **1. NEXT, in order** (session closed 2026-11-18 by the owner: *"close, will resume VSC in future"*).
 00. **RENAME ✅ 2026-11-18: X0 / x0 → Code Facts / code-facts** (§F.40 SPEC + RESULT; bim-ootb #3317). Everything below that says X0 / x0 means this tool under its old name. Docs: Developer Guide §3/§4.1 rewritten, first sentence is the owner's. Film 4 v4 is the owner's next step, from the SCRIPT v4 section of `prompts/FILM_IMMERSIVE_SOFTWARE.md` (another agent).
 0. **FILM 4 v4 ✅ BUILT 2026-11-18 (owner: "Lets do it")**: current file `~/Videos/Dev_Setup_CH0_EN_AFTER_2026-11-18_v4c.mp4`, 172.5 s (over the ~150 s target; the session beat is cut), scripts `scripts/film_dev_setup/` (v2 = git history). All gates PASS (`§FILM_GUARD`, `§K2`, `§KEYS`, `§FLOW`, `§STRIP_VIDEO`, voice 0 WRONG); one name on screen (Code Facts), a progress strip, three fixed cues, an animated pointer drawn to the token's real pixel rectangle. The owner's first v4 cut had a leftover top bar over the last cards (found by watching; fixed, check S in cards and on the encoded file). Details, defects, rebuild recipe in `prompts/FILM_IMMERSIVE_SOFTWARE.md` # FILM 4 STATUS. Waiting on the owner: review of v4c and a cut list (about 22 s over), F-27 (published installer: not now).
-1. **B2 ✅ and B3 ✅ DONE 2026-11-20: all three apps are written from `<app>/modules.json`** (ERP bim-ootb #3367 + #3373, viewer #3378 → `14bb498f`; Part B, "B2 PART 2 RESULT" and "B3 RESULT"). **Next in B: ask B3-Q2 (what happens to `bump.js`'s old regex path; 3 outside pages still use it), then the B4-HASH spec (content hashes, an announced step, B-1).**
+1. **B2 ✅ and B3 ✅ DONE 2026-11-20: all three apps are written from `<app>/modules.json`** (ERP bim-ootb #3367 + #3373, viewer #3378 → `14bb498f`; Part B, "B2 PART 2 RESULT" and "B3 RESULT"). **B3-Q2 ✅ ANSWERED 2026-11-21: the three outside pages come in NOW (step B3-OUT, before B4-HASH), then the old regex path of `bump.js` is deleted. Next in B: ask B3-Q3 (`archive/gallery.html`: frozen as it is, or kept current), then the B3-OUT spec, then the B4-HASH spec (content hashes, an announced step, B-1).**
 2. **D spec** (owner table: `<app>/questions.json`, `"extends"` marks, W-OWNER-UNIQUE).
 3. Grow the CI fast tier when a runner has filled the cache (`node scripts/gen_ci_tier.js --write --probe`); add `PROVES:` lines as witnesses are touched.
 4. **§F.41 W-VSC-OPERATIONAL ✅ 2026-11-19** (#3332): 39 entry points, all routed, 27 run, 12 not run by design (browser / heavy, named); local, ~90 s. Run it before a PR that adds a page, command or runner.
@@ -55,7 +55,7 @@ Done this session (tenth): B1, E0, E1, F-25 `x0`, F-26 `x0 session` + SessionEnd
 | Part | State | Next step |
 |---|---|---|
 | A | ✅ DONE 2026-11-17: A0, A-1..A-7, A1, A2, A3 (W-CORE-PURE PASS, `forbidden=0`, in CI). Results: Part A RESULT INDEX | none |
-| B | **B0 ✅** (#3200, W-MANIFEST-ROUNDTRIP in CI) · **B1 ✅** 2026-11-18 (#3245, #3250: modeller written from modules.json, 25 deps declared) · **B-1 ✅** 2026-11-18 content hashes, own step · **B-2 ✅** 2026-11-18 per-module flag as today · **B-5 ✅** tool proposes deps, a person confirms · **B-3 ✅** owner + witnesses per module · **B-4 ✅** plugin precache derived, `BUILTINS` untouched | **B2 ✅** and **B3 ✅** 2026-11-20 (#3367, #3373, #3378): viewer, ERP and modeller written from `modules.json`, 261 deps declared. Next: B3-Q2, then the B4-HASH spec |
+| B | **B0 ✅** (#3200, W-MANIFEST-ROUNDTRIP in CI) · **B1 ✅** 2026-11-18 (#3245, #3250: modeller written from modules.json, 25 deps declared) · **B-1 ✅** 2026-11-18 content hashes, own step · **B-2 ✅** 2026-11-18 per-module flag as today · **B-5 ✅** tool proposes deps, a person confirms · **B-3 ✅** owner + witnesses per module · **B-4 ✅** plugin precache derived, `BUILTINS` untouched | **B2 ✅** and **B3 ✅** 2026-11-20 (#3367, #3373, #3378): viewer, ERP and modeller written from `modules.json`, 261 deps declared. **B3-Q2 ✅** 2026-11-21 (outside pages in now). Next: B3-Q3, the B3-OUT spec, then the B4-HASH spec |
 | C, D | not started; B's data is now there for all three apps (D can start: D spec) | — |
 | E | **E0 ✅** 2026-11-18 `witness_kit/paths.js` (#3256) | ask E-1 (the `PROVES:` header) |
 | F | every row that needs no data from B to E is built (§F index, F.0 to F.35) | F-2 ceilings on 2026-11-30; the F-1 headless Fetch-back button (unbuilt, browser go given); rows waiting on B/D/E data |
@@ -284,7 +284,7 @@ when anything it covers changed. The page stays a static file. **No build step a
 them from it is **byte-identical** to what is committed. No file changes. B1 switch one app (smallest first: modeller, 59 tags) to "manifest is the
 source", generated sections between markers, byte-identical again. B2 erp, B3 viewer. `tests/audit_sw_precache.js` stays green throughout.
 
-**OPEN DECISIONS:** B3-Q2 (end of the B3 BUILD SPEC). B-1 to B-5, B1-Q1 to B1-Q3, B2-Q1 and B2-Q2 are answered (DECISIONS).
+**OPEN DECISIONS:** B3-Q3 (`archive/gallery.html` frozen or kept current; asked 2026-11-21). B-1 to B-5, B1-Q1 to B1-Q3, B2-Q1, B2-Q2 and B3-Q2 are answered (DECISIONS).
 
 **Witnesses:** W-MANIFEST-ROUNDTRIP (manifest → generated text byte-identical to committed; red control: swap two dependent modules → generator
 refuses) · `audit_sw_precache.js` · page boot witnesses unchanged.
@@ -316,6 +316,14 @@ deploy workflow still green on the first merge after each switch (fetch `erp/ver
   never runs `bump.js`. Asked again: keep the stored list (refresh in bump + C15 a warning; the file then holds a list that is sometimes stale) or work it
   out when asked (recommended; the extractor already exists, one reader `scripts/gen_proof_map.js:39` moves onto it). Owner: *"Follow your advice"*.
   → §B-3R SPEC below.
+
+- **B3-Q2 (2026-11-21, thirteenth session).** Asked with the recommendation "keep the old regex path of `bump.js` for the three outside pages until B4-HASH". Owner: *"is it better to change early and mature faster?"*
+  The session then measured the three pages against the apps' lists (bim-ootb `main` @ `e4fa52fe`, each page's `?v=` against the owning app's `modules.json` `v`):
+  `index.html` loads 7 app files and 2 are behind (`viewer/locale_loader.js` 15 vs 16, `viewer/import_db_builder.js` 11 vs 12) · `capex/index.html` loads 6 ERP files, 0 behind ·
+  `archive/gallery.html` loads 9 files in 15 tags, most behind (e.g. `viewer/import_worker.js` 9 vs 22). (`test/test_ifc_export.html` also matches `?v=`, but only inside `new Worker(...)` literals of a May fixture: not a tag.)
+  So the old path does not keep them in step today, and B4-HASH would have to bring them in anyway. Revised recommendation: bring them in now, each outside tag taking its number from the app that owns the file
+  (`capex/` is not a fourth app: all 6 of its tags are ERP files), delete the regex path, and let W-MANIFEST-ROUNDTRIP cover the three pages. Owner: *"proceed"*. → **B3-Q2 = bring them in now, as step B3-OUT, before B4-HASH.**
+  Whether the archive page is frozen or followed is the next detail, **B3-Q3**: asked 2026-11-21, recorded here when answered.
 
 - **B2-Q1 and B2-Q2 (2026-11-20, twelfth session).** Asked B2-Q1 with the measured 216 order-forcing edges and the recommendation "the session reads all 216 and cites each; the owner is shown only the ones that
   are not plain, plus the count of the rest". Owner: *"decide for me"*. → **B2-Q1 = as recommended.** The session took the same words for **B2-Q2 = yes** (an ERP bump raises the inline literals with their module, the two service-worker
@@ -777,7 +785,7 @@ W-CORE-PURE, the Code Facts ship and bump-button witnesses · after the merge: t
 
 **Owner items (open; one per message).**
 - **B3 confirmation (B-5) ✅ ANSWERED 2026-11-20, owner: *"Agree"*:** the 6 edges that are not plain `deps` go in `uses` (the 3 against today's order, the 3 wizard edges). The 28 imports follow B1's answer.
-- **B3-Q2: what happens to the old regex path in `bump.js` once all three apps are written from their lists?** Three pages outside the apps still need it. **Recommended:** keep it for those three until B4-HASH (nothing deleted now).
+- **B3-Q2 ✅ ANSWERED 2026-11-21 (owner: *"proceed"*, on the revised recommendation "bring them in now"; DECISIONS):** ~~what happens to the old regex path in `bump.js` once all three apps are written from their lists?~~ Three pages outside the apps still need it. **Recommended:** keep it for those three until B4-HASH (nothing deleted now).
   Alternative: bring `capex/` in as a fourth app and the two single pages under the app they load from, then delete the path (a separate step with its own spec).
 
 **B3 RESULT — ✅ DONE 2026-11-20 (bim-ootb #3377, PR #3378 → main `14bb498f`; the owner confirmed the 6 not-plain edges with "Agree").** The viewer is a SOURCE app, so **all three apps are written from their lists.**
@@ -1317,7 +1325,7 @@ first. C is long and best done slowly, module by module, after B/D make ownershi
 | Part | Starts with no decision | Next decision to ask | Why that one |
 |---|---|---|---|
 | A | ✅ done 2026-11-17 (W-CORE-PURE in CI) | none | — |
-| B | the B4-HASH spec (which bytes are hashed, how `CACHE_VERSION` follows) | B3-Q2 (the old regex path of `bump.js`) | 3 pages outside the apps still use it |
+| B | the B4-HASH spec (which bytes are hashed, how `CACHE_VERSION` follows) | B3-Q3 (`archive/gallery.html` frozen or kept current) | it decides the B3-OUT spec's scope (B3-Q2 ✅ 2026-11-21: outside pages in now) |
 | C | nothing; waits on B and D | C-1 part names + owners | |
 | D | nothing new; the multi-publisher list already exists (`types/globals.gen.d.ts`) | D-1 where the questions list lives | needs B's `owner` field |
 | E | nothing; E0 done | E-1 the `PROVES:` header format | |
