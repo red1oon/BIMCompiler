@@ -169,7 +169,10 @@ D.pick = async (folders, pickFn, label) => {
   let hm = await D.findText(t => t === 'Home', SIDE, 3, true);
   if (!hm) {
     const rec = await D.findText(t => t === 'Recent', SIDE, 3), dsk = rec && await D.findText(t => /^Deskto/.test(t), { x: SIDE.x, y: rec.y + rec.h, w: SIDE.w, h: 200 }, 3);
-    hm = dsk && await D.findText(t => /^[A-Za-z]{3,}$/.test(t), { x: rec.x - 4, y: rec.y + rec.h + 4, w: 120, h: dsk.y - rec.y - rec.h - 10 }, 3);
+    hm = dsk && await D.findText(t => /^[A-Za-z]{3,}$/.test(t), { x: rec.x - 4, y: rec.y + rec.h + 4, w: 120, h: dsk.y - rec.y - rec.h - 10 }, 3, true);
+    // take2 2026-11-22: the selected row gave no word at all (take1 read 'Some'). The one row between them is then at the gap's middle (take1: Recent 152, Home 194, Desktop 229).
+    // A wrong click cannot pass silently: the next folder ('Downloads') must still be found by OCR inside the window.
+    if (!hm && rec && dsk && dsk.y - rec.y > 2 * dsk.h) hm = { x: dsk.x, y: Math.round((rec.y + dsk.y) / 2), w: dsk.w, h: dsk.h, t: '(gap middle)' };
     if (!D.check(!!hm, 'home_row_derived', hm ? 'read="' + hm.t + '" between Recent y=' + rec.y + ' and Desktop y=' + dsk.y : 'no row between Recent and Desktop')) return false;
     log('§FILM_OCR_DERIVED Home at=' + [hm.x, hm.y, hm.w, hm.h].join(',') + ' read="' + hm.t + '"');
   }

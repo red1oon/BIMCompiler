@@ -374,6 +374,10 @@ module.exports = (S, PREP, D, H) => {
     const r = D.page.locator('tr.adtab-grid.z-row:visible', { hasText: next }).first(); if (!asForm) { if (!D.check(await r.count() === 1, 'c51_phase_row_listed', next)) return;
     await zAim(r.locator('td.z-cell', { hasText: new RegExp('^\\s*' + next + '\\s*$') }).first(), { label: 'phase ' + next }); await zk.idle(1000);
     await zAim(r.locator('td[title="Edit Record"]').first(), { label: 'Edit Record (the pencil)' }); await zk.idle(2500); }
+    // take3 2026-11-22: the form opens on the FIRST phase (Substructure, already ticked); a person steps to the next one with the breadcrumb's Next record (Alt+Right)
+    if (asForm) for (let k = 0; k < tot && (await zk.val(await zk.inst('C_ProjectPhase', 'Name'))) !== next; k++) {
+      const nb = D.page.locator('a.breadcrumb-toolbar-button[title^="Next record"]:visible').first(); if (!D.check(await nb.count() === 1, 'c51_next_record_button', 'step ' + (k + 1))) return;
+      await zAim(nb, { label: 'Next record' }); await zk.idle(1500); D.log('§FILM_NOTE c51 form now on "' + (await zk.val(await zk.inst('C_ProjectPhase', 'Name'))) + '" (want ' + next + ')'); }
     const cx = zk.f(await zk.inst('C_ProjectPhase', 'IsComplete')); const nm = await zk.val(await zk.inst('C_ProjectPhase', 'Name'));
     if (!D.check(nm === next, 'c51_row_is_next_phase', JSON.stringify(nm) + ' next=' + next)) return;
     // FIND (rehearsal 2026-11-20): Save refused, 'Fill mandatory fields: Invoice Rule'. The pack's phases carry no Invoice Rule; iDempiere's own default for a phase is the

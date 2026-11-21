@@ -59,6 +59,11 @@ for sc in P.SCENES:
     cue = {c['name']: c['t'] for c in ev['cues']}
     for c in ev['clicks']:   # §5.15: a beat may also hang on a logged click ('click:<label>', its first press): a long stretch with one cue gets a second line without a re-take
         if c.get('label') and ('click:' + c['label']) not in cue: cue['click:' + c['label']] = c['t']
+    for b in sc['beats']:   # §5.16 (4): 'at:<a>|<b>|<f>' = a point between two logged events, for a wait with no event inside it (places a line only; the picture is unchanged)
+        if b[1].startswith('at:'):
+            ca, cb, f = b[1][3:].split('|'); f = float(f)
+            if ca not in cue or cb not in cue or not 0 < f < 1 or cue[cb] <= cue[ca]: sys.exit('§COMP_REFUSED %s %s: unknown event, or f outside (0, 1), or b not after a' % (sid, b[1]))
+            cue[b[1]] = cue[ca] + f * (cue[cb] - cue[ca]); log('§COMP_AT %s %s t=+%.1fs' % (sid, b[0], cue[b[1]] - cue[sc['span'][0]]))
     a0, a1 = cue[sc['span'][0]], cue[sc['span'][1]]
     # typing first: the strip types over a hold of the scene's first frame (house style: typing, then the action)
     txt = strip_text(sc); ty = len(txt) / 30.0 + 0.7; strip_t0 = T

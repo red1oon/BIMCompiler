@@ -25,7 +25,8 @@ def rep(sid, chip, strip, bid, text): return dict(id=sid, chip=chip, strip=strip
 
 SCENES = [
   dict(id='r0', chip='B2.9', strip='In the blank Viewer press **Ctrl+O** (Open Building) and choose the `.db`', span=('s8_start', 's8_end'), speed=SP, beats=[
-    ('r0a', 's8_start', "Part three starts where part one ended: the Shed, open in the Viewer.")]),
+    ('r0a', 's8_start', "Part three starts where part one ended: the Shed, open in the Viewer."),
+    ('r0b', 'click:Home', "Control O opens the file window: Home, then Downloads, then the Shed's file.")]),   # §5.16 (4): rc1 silence 10.8 s
   dict(id='r1', chip='B4.1', strip='Open the **Find** panel and click one group of parts in its list (for example a column type)', span=('r1_start', 'r1_end'), beats=[
     ('r1a', 'r1_type',  "Press F for the Find panel, and look for the columns."),
     ('r1b', 'r1_group', "Click one group. The panel shows its cost, and a button: ERP.")]),
@@ -39,6 +40,10 @@ SCENES = [
   dict(id='c0', chip='C', strip='ERP: the hands-on exercise (Project Mgmt Accounting, as GardenWorld Admin)', span=('c0_start', 'c0_end'), beats=[
     ('c0a', 'c0_start', "Chapter C is done in your iDempiere. Log in as GardenAdmin, and tick Select Role."),
     ('c0b', 'c0_role',  "Choose the organization HQ, and HQ Warehouse. Without them, an order will not save."),
+    # §5.16 (4): rc1 silence 29.3 s = the wait from OK (role) to Chrome's Save password? (no event inside it): three lines between the two events
+    ('c0b2', 'at:click:OK (role)|c0_savepw|0.2',  "The role window closes, and iDempiere opens its Home tab."),
+    ('c0b3', 'at:click:OK (role)|c0_savepw|0.47', "HQ and HQ Warehouse stay with this login, for every document of chapter C."),
+    ('c0b4', 'at:click:OK (role)|c0_savepw|0.74', "The Home tab's CAPEX goals are read at the very end, in D9."),
     ('c0c', 'c0_savepw', "Chrome asks to save the password. Say no thanks, or it takes your next keys.")]),
 ]
 first = dict(c1=True, c1d=True, c2=True, c31=True, c32=True, c41=True, c42=True, c43=True)
@@ -150,6 +155,15 @@ SCENES += [
   dict(id='d9', chip='D9', strip='Log in to iDempiere again and read the **Home** tab', span=('d9_start', 'd9_end'), beats=[
     ('d10a', 'd9_start', "Last: iDempiere's own Home tab. Log out, and log in again."),
     ('d10b', 'd9_login', "Home goals are recalculated when they are older than thirty minutes."),
+    # §5.16 (4): rc1 silences 8.4 + 39.2 + 10.3 s (the log in, then the wait for Chrome's Save password?): lines on the logged events and between them
+    ('d10b1', 'at:click:OK (log in)|s13_chrome_warn|0.3', "Log in as before, with Select Role ticked."),
+    ('d10b2', 's13_chrome_warn', "Chrome's warning about the demo password again. Press OK."),
+    ('d10b3', 'd9_role', "HQ and HQ Warehouse are already chosen. OK."),
+    ('d10b4', 'at:click:OK (role)|d9_savepw|0.15', "Chapter C began more than thirty minutes ago, so the goals are worked out afresh."),
+    ('d10b5', 'at:click:OK (role)|d9_savepw|0.45', "Ten orders, four receipts, three invoices, three payments, nine issues: every one by hand."),
+    ('d10b6', 'at:click:OK (role)|d9_savepw|0.77', "Each one was checked against the guide's Confirm column."),
+    ('d10b7', 'd9_savepw', "Chrome asks to save the password once more. No thanks."),
+    ('d10b8', 'at:d9_savepw|d9_goals|0.45', "Then the Home tab: CAPEX Total Projects, and CAPEX Active Projects."),
     ('d10c', 'd9_goals', "The CAPEX goals show the same counts as the dashboard tiles.")]),
 ]
 TITLE = dict(kicker='UAT GUIDE · HANDS ON · PART III', line1='From the model to the money', line2='orders, receipts, issues, the dashboard', note='Every click is real: the real browser, your own iDempiere.')
