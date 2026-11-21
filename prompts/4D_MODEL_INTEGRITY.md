@@ -5577,3 +5577,27 @@ is within the owner's GAP of the element (it touches what it hangs from). Share 
 3. **The canvas becomes a function of the cursor, checked:** a full pass and the delta pass at the same cursor must give the same slot state
    (`W-INCR-EQUIV` exists as a hook, `window.__forceFull`; make it a claim of gate 18).
 4. Then §Q.52.1 (true boxes).
+
+### Q.54 SPEC — THE CANVAS IS A FUNCTION OF THE CURSOR (2026-11-22, owner: *"Go. Stay abstract"*; §Q.53.1 items 1-3)
+- **The model (four invariants; every fix below is one of them, none is a case):**
+  - **C1 — function, not history.** What is drawn for an element = `built(g, cursor)` AND `shown(g, view)`. Reaching a cursor by playing,
+    by scrubbing back, or by a jump gives the same canvas. Nothing may depend on the path.
+  - **C2 — one owner of `built`.** `built(g, c)` is the schedule's op: `start <= c`. The canvas holds no support test of its own; order is the
+    schedule's job (§I). The browser-only hold (`_tmXraySolidifyTs`, a third copy of the support relation, all-of, §Q.53 item 1) is not an
+    owner: on a schedule authored by the one solve it is empty by rule. Where ops come from elsewhere (captured IFC 4D, civil route order) the
+    hold stays, as a TERM of `built` supplied by one named provider — never tested inline.
+  - **C3 — the shortcut is derived from the predicate.** The incremental draw may skip a batch only when no term of `built` / display state of
+    any of its elements changes in the step. The change instants are produced by the same owner that evaluates the terms
+    (`transitionsOf(g)`), for every model — so a term cannot be added without its instants (the civil-only `§CW_SOLIDIFY_EVENT` gate is the
+    counter-example and is deleted).
+  - **C4 — other hiders are terms of `shown`.** Proxy boxes, discipline filter, isolate: each is a term; a change of any term invalidates the
+    shortcut through ONE generation counter, not a "force a full pass" flag per feature.
+- **Witness = gate 18 (`witness_tm_drawn_vs_scheduled`, extended), the issue it exposes: *"is the canvas the function C1 says it is?"***
+  W1 drawn = scheduled at every sample, play forward · W2 the same after scrubbing BACK through the samples · W3 the same after random jumps ·
+  W4 at every sample the incremental canvas = a forced full pass, slot for slot (count of differing elements, not a per-class total) ·
+  W5 no element is hidden by a hold on a solve-authored schedule (`staged = 0`) · red control per claim · INCONCLUSIVE when the page, the
+  Time Machine or the ops do not come up. Node half (CPU, runs with the 17): the hold provider sliced from the shipped file returns 0 on
+  the seven persisted played layers (today 1 / 3 / 143 / 52 / 41 / 260 / 382, §Q.53).
+- **Order of work:** baseline run of the witness as shipped (Hospital, monotonic) → C2 + C3 in `tm_core.js` / `tm_render.js` /
+  `tm_sched_xray.js` → witness extended with W2-W5 → re-run → C4 only for the hiders the log still names. Deletion budget stated in the result.
+- **Not in this step:** true boxes (§Q.52.1) — the canvas fix does not depend on them.
