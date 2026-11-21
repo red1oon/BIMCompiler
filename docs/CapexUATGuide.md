@@ -43,7 +43,7 @@
 |---|---|
 | Document | CAPEX UAT Guide — from 2D drawings to the dashboard |
 | Purpose | The step-by-step test script for the User Acceptance Test of the pilot client (Sysnova): BIM drawings to a priced model, the ERP exercise, the CAPEX dashboard |
-| Revision | **2026-11-21** |
+| Revision | **2026-11-22** |
 | Status | Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately and stays as signed. What changed or was found since is listed after this cover. |
 | Prepared and issued by | Redhuan D. Oon, Project Consultant |
 | For | The pilot client's UAT team: System Setup, BIM, Project Mgmt Accounting |
@@ -55,11 +55,12 @@
 
 | Revision | What changed |
 |---|---|
+| 2026-11-22 | Change list item 20 and *See how* item 3: film part 3, linked. No step changed |
 | 2026-11-21 | Change list items 9 to 19 (film part 3). No step changed |
 | 2026-11-20 (b) | Change list item 8 and *See how* item 2: film part 2, linked. No step changed |
-| 2026-11-20 | The page *Changes since the signed UAT report* (after this cover); the pages *What is this?* (with *How do I pass?*: the UAT Run Checker and the result file to send back) and *Contents* with page numbers; *See how*, the films (1 linked, 2 pending); a table that fits on a page is no longer cut in two (a long one repeats its header row); A3.1 the Pack In window's steps and result; B3.1 the second currency note |
+| 2026-11-20 | Pages *Changes since…*, *What is this?* (*How do I pass?*), *Contents*, *See how*; short tables kept whole; A3.1 Pack In window; B3.1 second currency |
 | 2026-11-19 | This cover; each section on a new page; page numbers; every link in the PDF opens the public site |
-| 2026-11-18 | Corrections found by the UAT dry run: A1 links the Developer Guide §3 setup; D2b, D3, D8 figures for a fresh GardenWorld; D9 goals refresh every 30 minutes; B4.4 the model's line under Task Line |
+| 2026-11-18 | Dry-run corrections: A1 links Developer Guide §3; D2b, D3, D8 fresh-GardenWorld figures; D9 30-minute refresh; B4.4 Task Line |
 | 2026-11-15 | Roles and the checklist sheet; B00 export from BricsCAD; B0 from the sheets as drawn to the marked set; B3.1 measured total cost; B5 mark your run with the reference pack; the PDF |
 | 2026-11-14 | Corrections from the full dry run: window names and menu paths, chapter C step by step, C4 Issue to Project, construction products at standard cost, chapter B on the Shed drawing set |
 | 2026-11-13 | First issue |
@@ -93,6 +94,7 @@ Read these even if you have already done the UAT. If your run met one of them, r
 | 17 | C5.1 | The Phase tab is a list under the header. | Noted | Click the phase's name, then its pencil (**Edit Record**), to tick **Complete** |
 | 18 | D3 | Adding up the panel's **Spent** column gives 2,020.46; the tile reads **2,020.45** (each row is rounded to the cent). | Noted | Pass at the tile's 2,020.45 |
 | 19 | C4.2 | Each **Issue to Project** opens its own window tab; after several, the first tabs are pushed off the strip. | Noted | Close each Issue tab when done |
+| 20 | B4, C, D (film) | The film *UAT, hands on, part 3* shows B4, every document of chapter C made by hand, and chapter D. Items 9 to 19 are what it met on the way. | Film published: [youtu.be/stnbV8nygqs](https://youtu.be/stnbV8nygqs) | None; no step changed. Watch it before chapter C |
 
 </div>
 
@@ -120,6 +122,7 @@ Films of the steps, on a real screen:
 
 1. *UAT, hands on: where to click*: [https://youtu.be/PBp4qfV4mIo](https://youtu.be/PBp4qfV4mIo). From the downloads to B5 and the result file.
 2. *UAT, hands on, part 2*: [https://youtu.be/WvPgjcMbSwo](https://youtu.be/WvPgjcMbSwo). A3.1 Pack In, then B0 on the nine sheets as drawn (marked by hand), B2.3 Arrange, and B5 with all four rows PASS.
+3. *UAT, hands on, part 3*: [https://youtu.be/stnbV8nygqs](https://youtu.be/stnbV8nygqs). B4 the model to the ERP, chapter C with every document made by hand in the iDempiere windows, and chapter D on the dashboard.
 
 ## Contents
 
