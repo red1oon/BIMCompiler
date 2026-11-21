@@ -853,6 +853,19 @@ No `sw.js` serves `index.html`, `import_own.js`, `capex/` or `archive/` (the tra
 context witnesses, `tests/audit_sw_precache.js`, `tests/audit_script_tags.js`, W-CORE-PURE; after the merge: the Pages deploy green and the live `index.html` fetched back byte-equal to `main`.
 **Deletion budget:** removes the regex path of `bump.js` (`PAGE_REF` / `JS_REF`, their two scans in `--changed`, the `pages` and `loaders` replace loops, `swFor` / `needSw` and the loop that bumps a `sw.js` no manifest owns, the `§BUMP_CHECK_BY_HAND` loop; an estimate of about 60 lines, counted in the PR) · adds `--adopt` (about 40) + rule 5 (about 3) + `FROZEN` (2) + 4 claims (about 60) + ~30 `order` lines and ~10 `modules` lines in the two lists.
 **Not in B3-OUT:** content hashes and the `?v=` the 8 unversioned tags lack (B4-HASH) · `archive/gallery.html` (frozen) · `test/test_ifc_export.html` (a May fixture, `?v=` only inside `new Worker(...)` strings) · `capex/` as its own app · retiring `bump.js` (B4-HASH).
+**B3-OUT ADDENDUM (2026-11-22, the build met the code; a worker stopped before any commit, each finding re-read by this session):**
+- **13th tag:** `index.html:663-664` is the GoatCounter tag (`data-goatcounter="…"` and `async`, over two lines). The generator writes only `<script src="X"></script>` with an optional `onerror` (`scripts/lib/page_refs.js` header: `canonical=false`
+  otherwise), and `--check` refuses a `<script src>` outside the markers, so adopting the page rewrote the tag and dropped its attributes (seen in a dry run: 5 lines changed, not 4). **B3-OUT-Q1**, asked with the recommendation
+  "the generator keeps a tag's other attributes verbatim; it owns only `src` and its `?v=`" (alternative: exempt external unversioned tags from the markers rule). Owner: *"Proceed."* → **B3-OUT-Q1 = attributes kept verbatim.**
+  The byte-identical check over the 55 files already listed proves no other page moves. The markers then go round `index.html:174-187` AND `:663-664` (two pairs; B2 allows several).
+- **Dead tag:** `index.html:181` loads `viewer/bonsai_kernel.js`, which moved to `modeller/bonsai_kernel.js` in #550 (`964ad3cc`, 2026-06-27): a 404 since then. `index.html:321` guards it (`if(window.Bonsai && Bonsai.preload)`), so the landing page's
+  occt-wasm preload has silently not run. B3-OUT keeps the tag byte-identical (`--adopt` prints `§ADOPT_MISSING`; `gen_deps_candidates.js` skips a module not on disk). **Handed over as information** (pointing it at `modeller/` starts a
+  large download on the landing page: the landing / Modeller lane's call, not this lane's).
+- **C22's population** is "a `?v=` site whose target is a file on disk"; an unresolved one is printed apart (`unresolved=N`). Measured: 1, `prompts/film_bim_doonce_rec.js:258` `load('reg_report_ui.js?v=1')` (a film recording script; it runs
+  inside the Modeller page, where the name resolves to `modeller/reg_report_ui.js`; no bump edits it).
+- **Deps (B-5), read in the code:** plain `deps`: `capex/dash.js -> capex/adapters.js` and `-> capex/tiles.js` (`capex/dash.js:19`; tags `capex/index.html:60`, `:41`, both before `dash.js` `:61`) ·
+  `capex/index.html#inline0 -> erp/ad_callout.js` (`capex/index.html:54`; its tag `:46` is before the body). Not plain: `capex/index.html#inline0 -> erp/genesis.js` (`:51` `var C = window.crypto`: a browser built-in name; B2 put the same
+  edge in `notDeps`) → `notDeps`, for the owner to confirm on the PR. The viewer side (`index.html`, `import_own.js`) has no new order-forcing edge.
 
 ---
 
