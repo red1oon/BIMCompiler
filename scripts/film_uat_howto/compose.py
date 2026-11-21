@@ -59,6 +59,11 @@ for sc in P.SCENES:
     cue = {c['name']: c['t'] for c in ev['cues']}
     for c in ev['clicks']:   # §5.15: a beat may also hang on a logged click ('click:<label>', its first press): a long stretch with one cue gets a second line without a re-take
         if c.get('label') and ('click:' + c['label']) not in cue: cue['click:' + c['label']] = c['t']
+    for b in sc['beats']:   # §5.16 (4): 'at:<a>|<b>|<f>' = a point between two logged events, for a wait with no event inside it (places a line only; the picture is unchanged)
+        if b[1].startswith('at:'):
+            ca, cb, f = b[1][3:].split('|'); f = float(f)
+            if ca not in cue or cb not in cue or not 0 < f < 1 or cue[cb] <= cue[ca]: sys.exit('§COMP_REFUSED %s %s: unknown event, or f outside (0, 1), or b not after a' % (sid, b[1]))
+            cue[b[1]] = cue[ca] + f * (cue[cb] - cue[ca]); log('§COMP_AT %s %s t=+%.1fs' % (sid, b[0], cue[b[1]] - cue[sc['span'][0]]))
     a0, a1 = cue[sc['span'][0]], cue[sc['span'][1]]
     # typing first: the strip types over a hold of the scene's first frame (house style: typing, then the action)
     txt = strip_text(sc); ty = len(txt) / 30.0 + 0.7; strip_t0 = T
@@ -85,6 +90,8 @@ for sc in P.SCENES:
     idle = [x for x in idle if x[1] - x[0] > 0.4]
     log('§COMP_IDLE %s spans=%d src_s=%.2f out_s=%.2f' % (sid, len(idle), sum(b - a for a, b, _ in idle), sum((b - a) / 8.0 for a, b, _ in idle)))
     fast = sorted(fast + idle)
+    if sc.get('speed'):   # §5.16 a repeat scene plays whole at its speed (x8), badged; its keys and clicks make no sound (a x8 rattle is noise, not information)
+        fast = [(a0, a1, float(sc['speed']))]; log('§COMP_SPEED %s x%d src_s=%.2f out_s=%.2f' % (sid, sc['speed'], a1 - a0, (a1 - a0) / sc['speed']))
     by_cue = {}
     for bid, cname, text in sc['beats']: by_cue.setdefault(cue[cname], []).append((bid, text))
     for k in range(len(cuts)):
@@ -108,9 +115,9 @@ for sc in P.SCENES:
                 if f0 > s: add('play', sid, s, f0)
                 add('play', sid, max(f0, s), min(f1, e), sp); s = min(f1, e)
             if e > s: add('play', sid, s, e)
-    for kk in ev['keys']:
+    for kk in ([] if sc.get('speed') else ev['keys']):
         if a0 <= kk['t'] <= a1 and kk['k'] in ('k', 'r'): sounds.append(dict(src=sid, ts=kk['t'], k=kk['k']))
-    for cl in ev['clicks']:
+    for cl in ([] if sc.get('speed') else ev['clicks']):
         if a0 <= cl['t'] <= a1: sounds.append(dict(src=sid, ts=cl['t'], k='c', n=cl.get('n', 1)))
 closing = mkcard([(P.CLOSING['line1'], font(True, 64), INK), (P.CLOSING['line2'], font(True, 96), CORAL), ('Redhuan D. OON, CTFL · Project Consultant', font(False, 40), INK), (P.CLOSING['credit'], font(False, 26), (148, 163, 184))])
 closing.paste(plate, ((W - plate.width) // 2, 880)); card(closing, 5.0)

@@ -481,6 +481,9 @@ S.p9 = async () => {   // B2.1 + B2.3: reload; the nine SAVED copies (click the 
   D.cue('p9_arranged'); await D.sleep(4000); D.cue('p9_end');
 };
 
+// §5.16 PART III scenes live in scenes3.js, on the same runner and driver
+require('./scenes3.js')(S, PREP, D, { GUIDE, BACK, OMNIBOX, oneTab: PREP.oneTab, chromePwWarn, IDEMP });
+
 (async () => {
   const [out, home, ...which] = process.argv.slice(2); fs.mkdirSync(out, { recursive: true });
   await D.init(home, path.join(out, 'scenes.log'));

@@ -4,6 +4,7 @@ Every number spoken or shown is a fact read from the guide, the saved PDF or a �
 (owner 2026-11-14: only scripts, logs and specs go to GitHub); it stays in `~/Videos/`. Layout rules: `prompts/FILM_NARRATION.md` ▶ PLAYBOOK C.
 
 > ## ▶ RESUME HERE — UAT films (rewritten 2026-11-20; read §5.12 → §5.13, then §5.10–§5.11 for the pipeline)
+> **2026-11-22: Part III DONE: rc3 `~/Videos/UAT_Hands_On_Part3_ERP_Dashboard_EN_rc3.mp4`, every bar PASS (§5.16 PROGRESS (4) + RESULT rc3). Guide change list 9–19 live (#1119). Next: the owner uploads it, then link it in *See how* item 3.**
 > **Film 1 DONE and published by the owner:** rc3 (`~/Videos/UAT_Hands_On_Where_To_Click_EN_rc3.mp4`) = https://youtu.be/PBp4qfV4mIo, linked in the guide's *See how* (item 1).
 > **Part II PUBLISHED 2026-11-20 by the owner: https://youtu.be/WvPgjcMbSwo (rc4, every bar PASS, 610.7 s, §5.15 RESULT); linked in the guide's *See how* item 2 and change-list item 8. Next: Part III (below).** (Plan as was:) A3.1 Pack In + the raw-sheet path.
 > - Scene **s13 Pack In is RECORDED and PASSES** (§5.12 RESULT, folder `f2/full_s13_t5` in session scratchpad a0008b42…; may be cleaned: a re-take is about 3 min). Back up :8108 first, restore after; the backup `idempiere_film_packin_bak` is still there.
@@ -312,3 +313,132 @@ Every build: frames = picture (9,313 in rc3), 31 of 31 lines DETAIL, 0 tone WRON
 - Guide (owner's rule: the signed report untouched, changes appended): revision **2026-11-20 (b)**, change list item **8**, *See how* item 2 "made; link when uploaded". `NOTICES_since_report.md` row 8.
 - `idempiere_film_packin_bak` is still on :8108. Part II did not need it (s13 not re-taken). Drop it once the owner accepts Part II.
 - **2026-11-20, after the owner published Part II (https://youtu.be/WvPgjcMbSwo, guide #1096 live):** `idempiere_bimdoc` checked as found (`TD_`=0, `ad_package_imp_proc`=1, 0 connections to the backup), then `idempiere_film_packin_bak` DROPPED. A future s13 re-take makes its own copy first, as §5.12 says.
+
+### 5.16 SPEC — Part III: B4, chapter C (every document by hand), chapter D (2026-11-20; written before code)
+**Owner, 2026-11-20:** *"Proceed"* (after Part II was published), then two choices. Chapter C: **"All by hand, repeats sped"**: every document goes through the iDempiere windows in one take; the first of each kind plays at normal speed with a line; the repeats are sped ×8 and badged. B3.2–B3.6: **"Start at B4"** (the B3 edits can be an appendix later).
+**Why every document:** chapter D's figures hold only when all of chapter C is made: Within 7 / Over 2 / Not started 5, USD 2,020.45 spent (43 %), USD 6,738.39 in the 5 Drafted orders. The dry run made C through web services (`C.js`, declared programmatic), so no hand path through these windows has been proven yet. This film is the first.
+**Source of every value:** the guide's chapter C tables (projects, products, quantities, *How far*), parsed from `docs/CapexUATGuide.md` at take time as `UATDryRun`'s `lib/guide.js` does, never retyped. Window names, field labels and expected messages are the guide's own words.
+**:8108, around the take (not filmed; the owner allowed copy and restore, 2026-11-20):**
+- Stop the instance; `CREATE DATABASE idempiere_film_p3_bak TEMPLATE idempiere_bimdoc`; start it.
+- A2: `setup_test_instance.sh` (must print `§SETUP_VERDICT PASS`), then a restart.
+- A3.1: Pack In from a folder (`RUN_ApplyPackInFromFolder.sh`; Part II films the window way); A3.6: the products script, then a restart.
+- Check `TD_`=12 and the 10 `PWD-` products (the guide's *10 materials*; chapter C uses 5 of them) before the take; any other count stops the take.
+- After the take: stop, restore `idempiere_bimdoc` from the backup, check `TD_`=0, `ad_package_imp_proc`=1 and the setup verdict as found, start, drop the backup.
+**The take (scenes in guide order; each one checked against the guide's Confirm column):**
+- **r0, B2.9 (sped, no new line):** the Viewer opens the Shed `.db`. PREP puts the pack's `reference/SHED_extracted.db` in `Downloads/`; it has the same bytes size as the tester's export, 1,257,472 B, measured in Parts I and II.
+- **r1–r3, B4.1–B4.4:**
+  - Find panel ▸ a column group ▸ **› ERP**: the status line reads `Project Order: 1 lines · contract … (saved)` and **open ↗** appears.
+  - Press it again: `0 lines`.
+  - **open ↗**, the Kernel ERP sign-in, **GardenAdmin**, Log In: project SHED with the group's planned amount; Phase 1 and Task 1 record; Task Line holds the line; Project Line and Phase Line read 0 records.
+  - The Kernel ERP keeps its data in the browser, so a fresh profile starts it empty.
+- **c1, C1.1 + C1.2:** per purchase-order row, the Purchase Order window: New, header fields, Save, PO Line, New, Product, Quantity, Save. The check is the line price = standard cost, and Total Lines = Grand Total = qty × price. Then Complete where the table says so. Ten orders, six Completed.
+- **c2, C2.1:** four receipts by *Create lines from*.
+- **c3, C3.1 + C3.2:** three invoices and three payments; half for *Half paid*.
+- **c4, C4.1 + C4.2:** nine *Set Project Type* and nine *Issue to Project*.
+  - C4.3 and C4.4 are shown for the three projects whose figures the guide gives (204.35, 577.63, 191.35).
+  - The other six are checked by the witness, from the tables.
+- **c5, C5.1:** TD_DEPOT, the next phase ticked.
+- In every kind, the first document plays at normal speed with a line; each repeat is its own scene, played ×8 and badged `>> x8` (new plan key `speed`; no key or click sounds inside a sped scene).
+- **d0, chapter D's read job (System Setup):**
+  - A terminal on the desk, in the served bim-ootb copy (PREP: a worktree of origin/main served by `python3 -m http.server 8080`, as A1.1/A1.2 say).
+  - Type `BRIDGE_BASE=http://localhost:8108 node capex/tools/legacy_snapshot.js`; the line `§DASH_LEGACY_SNAPSHOT … projects=14 … unavailable=[]` is read off the screen.
+- **d1–d9, D1–D9:** `localhost:8080/capex/index.html?source=legacy`; tiles, drill panel, Procurement, project pages, ƒ formula, Layout/Skin. Each figure is checked against the guide's Confirm text.
+  - D9: if the Home tab was last opened more than 30 minutes before (measured from the take's own log), just log in again. Otherwise, the System Configurator path the guide gives.
+**Witness:**
+- Each Confirm is a `§FILM_CHECK`. The screen is read from the window's own text; a table read (B:READ) is declared in the check's name.
+- The end of the chain is D: every dashboard figure in the guide's D1–D8 equals the tile after the film's own chapter C. 0 FAIL, or a re-take from the failed scene.
+**Not shown:** A2 and A3 (server work, Developer Guide §3 / the dry run; Part II films A3.1 by window), B3.2–B3.6 (owner).
+**PROGRESS 2026-11-20 (Part III; desk runs, logs read; NOT a take yet):**
+- **Proven by hand on the desk:**
+  - **B4 r0–r3 PASS:** *Column below grade USD 594.360*; *Project Order: 1 lines · contract USD 594 (saved)*, then *0 lines*; Kernel ERP SHED *BIM: SHED* 594.36, Phase 1, Task 1, the line under Task Line only.
+  - **c0 login PASS**, with Select Role ticked and HQ / HQ Warehouse chosen; Chrome's *Change your password* OK and *Save password?* No thanks.
+  - **C1, all 10 orders PASS** (6 Completed, 4 Drafted).
+  - **C2.1** TD_RIVERSIDE receipt PASS (the line entered by hand); **C3.1** TD_RIVERSIDE invoice PASS (the guide's Create lines from works there); **C3.2** TD_RIVERSIDE payment PASS (Paid, open 0).
+- **FINDS for the guide's change list** (owner: append; the signed report untouched). Each is logged `§FILM_FIND`:
+  1. **Log in:** the guide names no organization. With the default `*` an order refuses to save: *Fill mandatory fields: Organization, Warehouse*. Tick **Select Role** and choose **HQ** / **HQ Warehouse**.
+  2. **C1.1:** the order window prices a line at the *Purchase* list's precision (2 decimals): 68.1167 → 68.12, total 1,975.48, not the guide's 1,975.38. Every order total is logged.
+     Knock-on: D4's open orders come to **6,741.25**, not the guide's 6,738.39 (476.84 + 836.64 + 3,581.43 + 1,205.28 + 641.06). D2b and D3 are unaffected (issues use the standard cost).
+  3. **C2.1 (owner 2026-11-20: "Enter the line by hand"):** *Create lines from* lists no lines on this iDempiere 13 build. Measured by a statement log: its Info Window binds the Locator's id to the Order criterion (`v.C_Order_ID = 101`, 101 the locator), because the Locator criterion's select clause holds `@M_Locator_ID@`.
+     Way that works: on the header set **Order**; on Receipt Line, New, pick the **Order Line** (product, quantity and Default HQ Locator fill in); Save; Complete.
+  4. **C3.2:** the Payment window is sales-side. Its Business Partner lookup goes straight to the BP Info with **Vendor = No** (`bp.IsVendor = 'N'`, by the statement log), so no vendor is listed. Set the Info's Vendor to **Yes** and ReQuery. The vendor is found by its search key (`SeedFarm`).
+  5. **Chrome:** *Save password?* stays open after the login and takes the keys meant for the page. Press **No thanks**.
+- **Driver lessons, now in the code:**
+  - A ZK form scrolls inside its own panel: `reveal` wheels it into view before each click.
+  - Long lists: Down until the value matches, then Enter. List items carry non-breaking spaces.
+  - `xdotool type --`.
+  - SQL reads run with `ON_ERROR_STOP` (an error once read as 0).
+  - A cue extra must not be keyed `name`.
+- **:8108 now:** `idempiere_bimdoc` holds development documents. `idempiere_film_p3_bak` (as found) and `idempiere_film_p3_ready` (prepared) exist.
+  - Before the take: `prep3.sh reset`.
+  - After the take: `prep3.sh down` (restores as found and drops both copies).
+- **NEXT:**
+  - Scenes still to write and prove: C4.1 Set Project Type (×9), C4.2 Issue to Project (×9), C4.3/C4.4 (3 shown), C5.1, D0 read job + D1–D9.
+  - Then `plan3.py` (strips and lines; repeats `speed: 8`), `prep3.sh reset`, ONE take, build, the change-list rows above, `prep3.sh down`.
+**PROGRESS 2026-11-20 (2) — session closed here; read this first to resume Part III:**
+- **Also proven on the desk since (1):**
+  - **C4.1** Set Project Type PASS (TD_RIVERSIDE, TD_DEPOT, TD_BRIDGE): *OK* read, category W, phases kept.
+  - **C4.2** Issue to Project PASS (TD_RIVERSIDE, TD_DEPOT, TD_BRIDGE): *Created 1*; one issue line; balance += qty × standard cost (204.35, 76.66, 577.63).
+  - **C4.3 + C4.4** window scenes PASS (TD_RIVERSIDE, TD_BRIDGE): the Issues tab row; Project Balance.
+- **More finds** (logged `§FILM_FIND`; for the change list with (1)'s five):
+  6. **C4.1 / C5.1 / D6 (owner 2026-11-20: "Set Line Level first"):** the pack's 12 projects carry **Line Level = Project**, and the Project window shows the Phase tab only for Line Level Phase or Task (AD_Tab display logic). Set **Line Level = Phase** and Save, then the Phase tab lists the phases.
+  7. **C4.4:** Project Balance shows the exact product with 4 decimals (204.3501, 577.625). The guide prints it rounded (204.35, 577.63).
+- **Observation** (not a guide step): TD_BRIDGE's issue line reads **Posting Error**; TD_RIVERSIDE's reads *Posted*. Look at the accounting of PWD-07.2.2 before chapter D.
+- **Open at close:**
+  - `c5` (C5.1) fails after the TD_DEPOT lookup: `no field C_Project.Value on screen`. The window was left on its Phase tab, grid view.
+  - Next try: in `lookup`, come back to the header (tab *Project* / Grid Toggle to form) before reading Value. The rest of `c5` is written: phase row by name, then Grid Toggle, then Complete, then Save.
+  - **Not written yet:** D0 read job (terminal) and D1–D9; `plan3.py`; the full take; the build.
+- **Selectors and steps that work** (all in `scenes3.js`):
+  - `[instancename="<Table><n><Column>"]` + `zk.inst`; `reveal` before every click; long lists by Down/Enter.
+  - The Locator field by its dialog's first list.
+  - Lookup Record (`[instancename="Value"]`); process OK then the `**` result line.
+  - Info windows: Vendor → Yes, Sales Transaction unticked.
+- **:8108 restored at close** (`prep3.sh down`: as found, backups dropped). To resume, from the branch worktree:
+  1. `prep3.sh up <dir>` then `prep3.sh ready <dir>`.
+  2. Desk: `desk.sh start <dir>`.
+  3. Scenes: `SHED_DB=<pack>/reference/SHED_extracted.db node scenes.js <out> <dir>/desk/home r0 r1 r2 r3 c0 <c1_*> <c2_*> <c31_*> <c32_*> <c41_*> <c42_*> <c43_*> c5 …`.
+  The order numbers are kept in `<home>/p3_state.json`, written by the scenes themselves.
+**PROGRESS 2026-11-20 (3) — EVERY Part III scene is proven on the desk; the full take was started and stopped at the owner's "pause to exit"; read this first to resume:**
+- **Proven (logs read; rehearsals `reh1`–`reh10`, 62 scenes in all):**
+  - **One run, r0 → c42 (43 scenes, 769 checks PASS, 0 FAIL):** B4, the log in, all 10 orders, 4 receipts, 3 invoices, 3 payments, 9 Set Project Type, 9 Issue to Project.
+  - **C4.3 + C4.4** for the three named projects; **C5.1** (TD_DEPOT 1 → 2 of 4).
+  - **Chapter D, the end of the chain, after chapter C made wholly by hand:**
+    - d0: the read job typed in a terminal, `projects=14` read off the screen.
+    - D1: 14 / 14, panel rows 14. D2: USD 4,667.80; **ERP ↗** opens TD_RIVERSIDE, Planned Amount 371.25.
+    - D2b: Within 7 / Over 2 / Not started 5; TD_CARPARK 457.59 against 330.00, TD_DATAHALL 191.35 against 181.50.
+    - D3: USD 2,020.45, 43 %. D4: 5 open orders; the five Supply chain stages as the guide says.
+    - D5/D6: TD_RIVERSIDE 371.25, 5 phases, 5 bars, first 3 complete. D7: formula shown. D8: Executive / Dark and back, same figures.
+    - D9: Log Out, log in, Home reads *CAPEX Total Projects: 14*, *CAPEX Active Projects: 14*.
+- **New finds** (logged `§FILM_FIND`; for the change list with finds 1–7):
+  8. **C5.1:** after ticking **Complete**, Save is refused: *Fill mandatory fields: Invoice Rule*. The pack's phases carry no Invoice Rule. The film chooses the project's own rule (*None*), which is iDempiere's default for a phase (`AD_Column C_ProjectPhase.ProjInvoiceRule` DefaultValue `@ProjInvoiceRule@`). A fix in the test-data pack would spare the tester this step: owner's call.
+  9. **C5.1:** the Phase tab sits under the header as a list. Click the phase's name, then its pencil (**Edit Record**). The window's Grid Toggle acts on the header, not on the list.
+  10. **D3:** adding the panel's **Spent** column gives 2,020.46; the tile reads 2,020.45 (each row is rounded to the cent, Project Balance holds 4 decimals).
+  11. **D4:** *Open purchase orders* reads **USD 6,741.25**, not 6,738.39 (the knock-on of find 2, now read on the page).
+  12. **C4.2:** each Issue to Project opens its own tab; nine of them push the first window tabs off the strip. Close each one when done.
+- **New code** (branch `film/uat-part3`, pushed):
+  - `scenes3d.js`: d0 (GNOME Terminal in its own private session bus), d1–d9. Figures parsed from the guide's chapter D rows.
+  - `scenes3.js`: `loginForm` (c0 and D9), `onHeader`, `openWin` (cut tab titles matched, old tabs closed), the C5.1 steps, the Issue tab closed.
+  - `plan3.py`: 62 scenes, 96 lines, 39 repeats at x8; every strip found in the guide (`python3 plan3.py` prints `§PLAN3`).
+- **Not done:** the ONE full take, the build, the change-list rows (finds 1–12), the guide's *See how* link.
+- **:8108 restored as found at close** (`§P3_RESTORE_CHECK PASS`, `§P3_DOWN_VERDICT PASS`, both copies dropped). The bim-ootb copy `/tmp/wt-film-uat-ootb` is removed.
+- **To resume** (about 15 min of set-up, then a take of about 75 min, then the build):
+  1. `git -C ~/bim-ootb worktree add --detach /tmp/wt-film-uat-ootb origin/main`; in it `python3 -m http.server 8080` (A1.1/A1.2); no `capex/legacy_snapshot.json` there.
+  2. Unzip `Shed_UAT_pack_20261115.zip` (SYSNOVA `DXF2BIM/ShedDrawing/model/`) for `reference/SHED_extracted.db`.
+  3. `prep3.sh up <dir>`, `prep3.sh ready <dir>`; `desk.sh start <dir>/desk < /dev/null > log` (never pipe it: Chrome keeps the pipe open).
+  4. Check no bim-ootb Pages deploy is in flight (r0–r3 use the live Viewer and Kernel ERP).
+  5. `SHED_DB=… node scenes.js <dir>/take1 <dir>/desk/home $(python3 plan3.py | tail -1)`; read `scenes.log`; 0 FAIL or re-take from the failed scene after `prep3.sh reset`.
+  6. `FILM_PLAN=plan3 bash build.sh <dir>/take1 <dir>/wk ~/Videos/UAT_Hands_On_Part3_ERP_Dashboard_EN_rc1.mp4`; read every log. A sped scene longer than about 64 s of source may breach the 8 s silence bar: add a second line on its mid cue.
+  7. `prep3.sh down <dir>`; remove the bim-ootb copy.
+- **Take rules learnt this session:** two tabs titled *iDempiere* exist after **ERP ↗** (the new one is known by `Action=Zoom`); the browser's page list is not in tab-strip order (the tab is read off the strip); never press an **OK** after Log Out (it is the log in form's own).
+
+**PROGRESS 2026-11-22 (4) — the take is RECORDED, 62 of 62 scenes PASS; rc1 built, its silence bar FAILED; read this first:**
+- **Take 1 (2026-11-21 17:24):** 22 scenes PASS, then the laptop SUSPENDED at 17:47:13 (journal: *The system will suspend now!*; on battery, `sleep-inactive-battery-timeout 900`, the last input about 17:32). The scene broke the same second (`Target page … closed`). **Take rule:** every take and build now runs under `systemd-inhibit --what=idle:sleep:handle-lid-switch`.
+- **Take 2:** r0 FAIL `home_row_derived no row between Recent and Desktop`: OCR read no word on the selected Home row (take 1 read *Some*). **Fix (`drv.js` `D.pick`):** when no word is read, Home is the row in the middle of the gap (take 1: Recent 152, Home 194, Desktop 229). A wrong click cannot pass: the next folder must still be found by OCR. Take 3 `§FILM_CHECK PASS home_row_derived read="(gap middle)"`.
+- **Take 3:** r0 → c43 PASS (46 scenes, 818 checks), then c5 FAIL `c51_row_is_next_phase "Substructure" next=Superstructure`: the Phase tab was left as a form by c41 and opened on the FIRST phase. Probed on the live page: the breadcrumb's **Next record** (Alt+Right) was enabled. **Fix (`scenes3.js` c5):** in form view, press Next record until the phase is the next unticked one (`§FILM_NOTE c51 form now on "Superstructure"`).
+- **Take 3b** (`cp -al take3`, its own `scenes.log`; the first part kept as `scenes_r0_to_c43.log`): c5 → d9 `§FILM_SCENES_VERDICT PASS`, 131 checks, 0 FAIL. Chapter D after chapter C wholly by hand: 14/14, USD 4,667.80, Within 7 / Over 2 / Not started 5, USD 2,020.45 = 43 %, D4 **6,741.25** (find 2), D9 Home *CAPEX Total Projects: 14* = tile.
+- **rc1 built** (`~/Videos/UAT_Hands_On_Part3_ERP_Dashboard_EN_rc1.mp4`, 1131.4 s, LUFS −16.9, 96 lines): `§FILM_CHECKS_BARS FAIL silence_max=39.2296>8.0`. Silences over 8 s (silencedetect −40 dB): r0 10.8 s (the file window, sped), c0 29.3 s (OK role → Chrome's *Save password?*, about 220 s of the driver's OCR wait, idle ×8), d9 8.4 + 39.2 + 10.3 s (the same wait, 296 s). c0 and d9 have NO logged event inside the wait to hang a line on.
+- **SPEC (before code): a line at a point BETWEEN two logged events.** `compose.py`: a beat's cue may be `at:<a>|<b>|<f>`, the time `cue[a] + f × (cue[b] − cue[a])`, where `a` and `b` are cues or `click:<label>` names of the same scene and 0 < f < 1; an unknown name or an f outside (0, 1) stops the build (no silent fallback). It only places a line; the picture is unchanged. New lines (each a fact of the take's log or the guide's text): r0 on `click:Home`; c0 three in the wait; d9 on the log in, Chrome's warning, the role window, three in the wait, *Save password?*, and one before the goals. **Witness:** the same build bars; rc2 must read `§FILM_CHECKS_BARS PASS` (silence_max ≤ 8 s), or the fit is moved, never the bar.
+- **rc2** (`at:` lines in, `§COMP_AT` 8): `silence_max=8.26454>8.0`, one gap left, d9 between d10b6 and d10b7. The three wait lines were evenly spaced but unequal in length (gaps 7.6 / 5.3 / 4.4 / 8.3 s). Measured film rate in that wait: 37.0 s per unit of f, so they move to f = 0.15 / 0.45 / 0.77 (planned gaps about 6.3 s each) → rc3.
+- **RESULT rc3 — Part III DONE (2026-11-22 04:12):** `~/Videos/UAT_Hands_On_Part3_ERP_Dashboard_EN_rc3.mp4` (1131.5 s, 458.7 MB), `§FILM_CHECKS_BARS PASS silence_max=6.85625 LUFS=-16.7`, `§FILM_CHECKS_VERDICT PASS`. 108 lines, keys 3469/3469, clicks 168/168. The D9 wait gaps came out at 6.5 / 6.4 / 6.2 / 6.4 s, as planned. The take: 62 of 62 scenes, 949 checks, 0 FAIL (take3 r0–c43 + take3b c5–d9). rc1 and rc2 (bars FAIL) are kept in `~/Videos` beside it.
+- **Guide:** the change list items 9 to 19 (finds 1–12) are LIVE: BIMCompiler #1119, rev 2026-11-21, W-GUIDE-PRINT 13/0, deploy guard PASS 992/992, live PDF == checked (4,990,761 B). No step changed (`§STEPS_SAME identical=true` vs master). The signed report is untouched. The same rows are in SYSNOVA `UAT/NOTICES_since_report.md`.
+- **Teardown:** `§P3_RESTORE_CHECK PASS` (as found: TD_=0, PWD-=0, imp_proc=1, setup verdict as found), `§P3_DOWN_VERDICT PASS`. :8108 stopped (found stopped). Postgres stopped (this session started it). The bim-ootb copy is removed, and nothing of the run is listening.
+- **NEXT (owner):** upload rc3, then link it in the guide's *See how* item 3, plus a change-list row (as #1096 did for Part II). Open: find 8 (C5.1 Invoice Rule) could be fixed in the test-data pack instead of by the tester (owner's call).
