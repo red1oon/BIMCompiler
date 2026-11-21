@@ -5434,3 +5434,77 @@ dry. v2 shipped: it keeps the true hung edges v1 dropped to the wave order (`§E
 - **Logs of this session:** `~/.cache/bim4d/q44_logs_2026-11-20/` … `q49_logs_2026-11-20/`, `q47_upload_2026-11-20/` (served patches before the
   upload, manifests, fetch-back). The §Q.43 logs were in a session scratchpad that no longer exists; their numbers are in §Q.43.1.
 - **Not witnessed anywhere this session:** a schedule generated in a browser on the live buildings; a bake.
+
+### Q.50 SPEC — MEASURE ONLY: "an element fixed to a side or resting on something is not also hung" (2026-11-22, owner: *"resume 4D"*; §Q.49 ruling 2, §Q.49.2 item 1)
+- **Issue it answers:** does that sentence, as a rule, remove the FAR hung bonds (Terminal 42, LTU ~26, Duplex 32 — a pipe "hung" from a roof
+  6-14 m up) WITHOUT removing true hangers? Ship only if the numbers hold. No schedule code changes in this step.
+- **Population:** every element bonded `hangs-below` in the persisted run (`run.json` `bonds`, PRIMAL LAW 5 — no re-solve), all seven buildings.
+- **No second contact test (§I row 1, §E):** candidates are `CpmSchedule.contactGraph(items).contacts`; the relation is `ShimBonds.relsOf`. For each
+  hung element T, from its own contact list:
+  - **side** = a contact of a kind T's own table row accepts for `fixes-on-side`, in relation `spans` (met = anchored in an earlier wave; also
+    counted when touching but not anchored earlier). **rests** = a contact in relation `below` that does not also span T, by the kind of what is
+    under it. Both are the contact owner's tests; no new constant.
+  - **gap** to the hung host = `host.bz - T.tz` (clear height), split at the owner's own GAP: NEAR (a real hanger) vs FAR.
+- **Output, `§FAR_HANGER <bld>` + per-kind lines:** hung bonds · NEAR / FAR · with side · with rests (by kind below) · B9 among them; and the table
+  the ruling needs: rule drops (side or rests) x NEAR / FAR, and x B9 / not B9. **The rule holds if it drops the FAR B9 and keeps the NEAR bonds.**
+  VACUOUS printed where a building has no hung bond. Probe + logs: `~/.cache/bim4d/q50_logs_2026-11-22/`.
+
+### Q.51 SPEC — MEASURE ONLY: every Duplex box centre against the source file (2026-11-22; §Q.49 ruling 3, §Q.49.2 item 2)
+- **Issue it answers:** §Q.48.2 found three Duplex boxes whose CENTRE is 0.6-0.7 m off the source while the size is right. How many of the
+  1,190 `element_transforms` rows are off, by how much, in which classes and along which axis — before anyone writes a patch.
+- **Truth:** IfcOpenShell world-coordinate geometry of the source file(s) in `reference/residential/` (the Federated file; Architecture + MEP if
+  the Federated one does not carry every guid). Per guid: the source box (min / max of the tessellated vertices) vs the DB box
+  (`center ± bbox / 2`, raw `Duplex_extracted.db`). Compared: centre delta per axis, size delta per axis.
+- **Output `§DUPLEX_BOX`:** rows in the DB · matched by guid · no geometry in the source · not in the source; centre off by more than 1 cm
+  (count, by class, by axis, p50 / max); size off by more than 1 cm; the largest ten by name. A guid the source does not carry is counted,
+  never guessed. No DB, patch or schedule file changes. Probe + log: `~/.cache/bim4d/q50_logs_2026-11-22/`.
+
+### Q.50.1 RESULT — THE RULE DOES NOT HOLD; nothing shipped (2026-11-22; logs `~/.cache/bim4d/q50_logs_2026-11-22/probe_far_hanger.log`, `probe_far_hanger_v2.log`)
+Three readings of "rests", each OR "a wall it could fix to spans it". A = any contact in the owner's `below` relation · B = that contact is a
+bearer kind (footing, column, beam, slab, ground slab, wall) · C = B and its top is AT the element's base (owner's EPS). NEAR = the hung host
+is within the owner's GAP of the element (it touches what it hangs from). Share of NEAR hangers the rule would un-hang, and B9 among hung bonds:
+| | hung bonds | NEAR | A drops NEAR | B drops NEAR | C drops NEAR | B9 now → A / B / C |
+|---|---:|---:|---:|---:|---:|---|
+| Duplex | 335 | 48 | 54 % | 15 % | 13 % | 32 → 17 / 26 / 32 |
+| HHS | 1,809 | 1,306 | 54 % | 9 % | 5 % | 0 |
+| JKR | 2,137 | 1,246 | 73 % | 32 % | 20 % | 0 |
+| Clinic | 5,950 | 727 | 63 % | 22 % | 15 % | 0 |
+| Terminal | 3,549 | 715 | 50 % | 6 % | 3 % | 42 → 14 / 27 / 39 |
+| Hospital | 13,673 | 2,736 | 71 % | 42 % | 36 % | 0 |
+| LTU | 39,158 | 21,769 | 71 % | 53 % | 9 % | 26 → 1 / 1 / 26 |
+- **Why A fails (§E, the proxy table's own first row):** `below` is "a box starts under me and tops out within GAP of my base". Under a hung pipe
+  that is the ceiling (Terminal 1,066, Hospital 4,566), the next pipe or fitting, a light fitting — none of them carries it. A is the reading that
+  clears B9, and it un-hangs half to three quarters of the pipes that TOUCH their slab. **Why C fails the other way:** it keeps the true
+  hangers and leaves B9 where it is (the far-hung pieces rest on nothing a box test can see). No reading does both. **Rejected, as ruled.**
+- **What the B9 pieces are (samples in the log):** Duplex — drains at z -0.61..0.00 under the slab on grade, "hung" from the roof at z 6.00;
+  Terminal — ceiling tiles at z 2.91 whose first offerer is a beam at z 15.39, pipes at z 0.87 under a slab at 7.89; LTU — risers z 2.27..7.52
+  and pipes at z 2.77 under a beam at z 8.27. For Duplex §Q.51.1 names the cause; Terminal and LTU are still open.
+- **Honest limit:** NEAR / FAR is split at the owner's GAP (0.5 m); a pipe on a 1 m rod counts FAR. The verdict rests on the NEAR column only.
+
+### Q.51.1 RESULT — NOT A DUPLEX DEFECT: `center_*` is not the middle of the box, on every extracted DB (2026-11-22; logs same folder, `probe_duplex_box.log`, `probe_box_cause_extracted.log`)
+- **`§DUPLEX_BOX` (source = `Ifc2x3_Duplex_Architecture.ifc` + `Ifc2x3_Duplex_MEP.ifc`, IfcOpenShell world coordinates):** DB rows 1,190 · matched
+  by guid 1,190 · not in the source 0 · **centre off by more than 1 cm: 386 · size off: 0.** Off p50 / p90 / max = 0.09 / 0.51 / 3.12 m; worst
+  axis x 143, y 153, z 90. By class (off of all): walls 55 of 57 · slabs 20 of 21 · footings 7 of 7 · windows 24 of 24 · openings 48 of 50 ·
+  spaces 21 of 21 · furniture 61 of 61 · flow terminals 98 of 105 · coverings 8 of 13 · fittings 16 of 358 · **segments 8 of 427**. The largest:
+  the four exterior walls, 2.42-3.12 m. Errors come in mirrored pairs (the two halves of the duplex).
+- **Cause, read from the DB's own mesh (`component_geometries`, vertices stored relative to `center_*`):** on 338 of 1,140 meshed elements the
+  mesh's box middle is NOT at the local origin (max 3.12 m) — the same classes with the same counts as the 386 above (386 less the 48 openings,
+  which carry no mesh). `center_*` is the point the mesh is placed at, not the middle of its box; `bbox_*` is the true size. Drawing uses
+  mesh + centre, so the picture is right. **The schedule builds its box as `center ± bbox / 2` (`schedule_author.js:836`), so its box is shifted.**
+- **Not Duplex only:** the same check on the other extracted DBs — HHS 4,311 of 6,839 (max 21.6 m), JKR 3,349 of 8,985 (max 13.7 m). For those
+  two this is DB-internal only (mesh vs its own centre), not yet checked against their source files. Clinic / Terminal / Hospital / LTU are
+  scheduled from `_meta.db` (no mesh in it): **not measured.**
+- **So §Q.48.2 item 3's reading is withdrawn:** this is not a transform to repair (moving `center_*` would move the drawn mesh). It is the
+  schedule's box reader. Every contact, support, hang and midair number on Duplex, HHS and JKR was computed on boxes of which a third to two
+  thirds are displaced.
+
+### Q.51.2 ▶ RESUME HERE (2026-11-22)
+1. **The element box gets ONE owner that returns the true box** (§I: add the row). Spec first. Facts needed by the spec: (a) the true box =
+   `center + the mesh's local min / max`; (b) the meta DBs have no mesh, so the offset must travel as data — a small patch table per building
+   (`element_box_offset`, generated from the geo DB / source file, applied by the existing patch loader), never a second copy of the mesh;
+   (c) measure Clinic / Terminal / Hospital / LTU from their `_geo.db` first; (d) expect every lock in `run_4d_gates.sh` to move on the
+   buildings affected — each move named, sandbox first.
+2. **Far hangers again AFTER item 1** — Duplex's 32 (23 lie under a true floor box) and possibly Terminal's and LTU's depend on it. The rule of
+   §Q.50 is rejected; do not re-try it.
+3. The 22 small lines of §Q.46's table · 4. profile §Q.43.1's programme moves · 5. delete ONE election clause · 6. phase table vs standard
+   practice (lagging trade included) · 7. sign-off list; S5; S6.
