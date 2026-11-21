@@ -4,6 +4,7 @@ Every number spoken or shown is a fact read from the guide, the saved PDF or a �
 (owner 2026-11-14: only scripts, logs and specs go to GitHub); it stays in `~/Videos/`. Layout rules: `prompts/FILM_NARRATION.md` ▶ PLAYBOOK C.
 
 > ## ▶ RESUME HERE — UAT films (rewritten 2026-11-20; read §5.12 → §5.13, then §5.10–§5.11 for the pipeline)
+> **2026-11-22 (b): Part III PUBLISHED by the owner: https://youtu.be/stnbV8nygqs, linked in the guide's *See how* 3 + change list item 20 (rev 2026-11-22, #1126). All three films are published. Cover limit: every revision row costs cover space, and P6 failed twice in two days. Each time the fix was to cut older history rows to their items. The next revision will need the same, or a cover that keeps only the latest revisions (owner's call).**
 > **2026-11-22: Part III DONE: rc3 `~/Videos/UAT_Hands_On_Part3_ERP_Dashboard_EN_rc3.mp4`, every bar PASS (§5.16 PROGRESS (4) + RESULT rc3). Guide change list 9–19 live (#1119). Next: the owner uploads it, then link it in *See how* item 3.**
 > **Film 1 DONE and published by the owner:** rc3 (`~/Videos/UAT_Hands_On_Where_To_Click_EN_rc3.mp4`) = https://youtu.be/PBp4qfV4mIo, linked in the guide's *See how* (item 1).
 > **Part II PUBLISHED 2026-11-20 by the owner: https://youtu.be/WvPgjcMbSwo (rc4, every bar PASS, 610.7 s, §5.15 RESULT); linked in the guide's *See how* item 2 and change-list item 8. Next: Part III (below).** (Plan as was:) A3.1 Pack In + the raw-sheet path.
