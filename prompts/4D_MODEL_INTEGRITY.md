@@ -5601,7 +5601,7 @@ is within the owner's GAP of the element (it touches what it hangs from). Share 
 - **Order of work:** baseline run of the witness as shipped (Hospital, monotonic) → C2 + C3 in `tm_core.js` / `tm_render.js` /
   `tm_sched_xray.js` → witness extended with W2-W5 → re-run → C4 only for the hiders the log still names. Deletion budget stated in the result.
 - **Not in this step:** true boxes (§Q.52.1) — the canvas fix does not depend on them.
-### Q.54.1 RESULT — C2 + C3 APPLIED, witnessed in the browser on Hospital (2026-11-22, bim-ootb branch `fix/4d-q54-canvas-function`; logs `~/.cache/bim4d/q53_logs_2026-11-22/dvs_hospital_*.log`, `~/.cache/bim4d/q54_logs_2026-11-22/`)
+### Q.54.1 RESULT — C2 + C3 APPLIED, witnessed in the browser on Hospital (2026-11-22, bim-ootb PR #3381, branch `fix/4d-q54-canvas-function`; logs `~/.cache/bim4d/q53_logs_2026-11-22/dvs_hospital_*.log`, `~/.cache/bim4d/q54_logs_2026-11-22/`)
 - **Baseline, shipped code, headless on the split pair as the viewer loads it (`dvs_hospital_main2.log`): RED.** Play forward, 61 samples: from
   t = 0.10 to the END ~155 scheduled elements are not drawn (columns 150 of 549, walls 5, slabs 3, beams 2; batched slots 154, instanced 2);
   at the end the incremental canvas misses 156, a forced full pass misses 0. A further 83 columns at a time are held by the canvas.
@@ -5609,7 +5609,7 @@ is within the owner's GAP of the element (it touches what it hangs from). Share 
 - **Root, one sentence:** the strict bar "appear only after the LAST carrier under you has finished" lives in two homes — the schedule-side
   repair (`_ogSupportSweep`) and the canvas-side hide (`_tmXraySolidifyTs`). On solve-authored schedules (`schedules.display_authored = 1`) the
   first was switched off on 2026-08-16 (`§OG_SWEEP_SKIP`); the second kept running, and its reveal instant was never in the redraw index.
-- **Code (three files; +38 / −9 lines of code; the three inline copies of the hold test are one function):**
+- **Code (three files, +37 / −11 lines with comments; the three inline copies of the hold test are one function):**
   - **C2 `tm_sched_xray.js _tmRebuildXrayCache` → `§TM_HOLD_OWNER`:** on `display_authored = 1` the hold map is empty — the same flag, the same
     reason as `§OG_SWEEP_SKIP`. Imported / captured / civil schedules keep the hold.
   - **C3 `tm_core.js _tmBuildEventIndex` → `§TM_TRANSITIONS`:** hold instants are transitions on EVERY model (civil gate deleted); the index key
@@ -5625,6 +5625,8 @@ is within the owner's GAP of the element (it touches what it hangs from). Share 
   | forward again | 61 | 0 | 0 | 0 |
   | 40 seeded jumps | 40 | 0 | 0 | 0 |
   `§DVS_HOLD display_authored=true heldInMap=0` (was 281). `pass=6 fail=0 ran=38`, red control detected.
+- **Gates:** `run_4d_gates.sh` 17 / 17 GREEN on the branch, no re-lock (`~/.cache/bim4d/q54_logs_2026-11-22/4d_gates_20261121T204307Z.log`) — as expected:
+  no gate runs the draw layer. `tm_core.js?v=3`, `tm_render.js?v=2`, `tm_sched_xray.js?v=5`, sw v1782 (through `scripts/bump.js`).
 - **`witness_cw_solidify_event` (node) was DEAD on main** (it read `time_machine.js` from `origin/main`, a 34-line loader since the file split:
   "slice miss"). Repaired; its claim "buildings unchanged" is replaced by "a building with a held slot visits its mesh at the reveal tick"; red
   control = `origin/main` skips it. INCONCLUSIVE here only because `CivilWorksPath.db` is not in the worktree.
