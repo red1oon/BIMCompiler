@@ -5678,3 +5678,21 @@ is within the owner's GAP of the element (it touches what it hangs from). Share 
   painted red and counted on screen. Nothing in the film is authored: frame = f(run.json, true boxes, judge). Script committed, mp4 not.
 - **Live reach:** code goes live with the deploy; the offset blocks reach users only where the patch is served from the repo (GitHub Pages).
   Bucket-served patches need the patch gate — an upload to production, the owner's go.
+
+### Q.56 ▶ RESUME HERE (2026-11-22, owner: *"I need to unravel this hell. Give a sane way out"* → *"proceed"* → *"write a simple crawler … use film screenplay proof instead of any human eyes"*)
+- **The culprit, measured:** the gates judged a node COPY of the Time Machine; the browser did four things the copy did not (composed containers scheduled
+  as work · rates replaced from JSON at boot, the pack following the page language · a push pass `_cjpJudgeParity` moving up to 614 elements later,
+  footings included · the canvas hold, fixed in #3381) and both used boxes that are not where the mesh is.
+- **The harness (bim-ootb branch `feat/4d-product-judge`, pushed, NO PR yet):** `node scripts/product_judge.js run --root <checkout> --tag <name> <buildings>`
+  then `compare <tagA> <tagB>`. It runs the REAL viewer headless (about 10 minutes for seven), judges what it played on the true mesh boxes, and fails a
+  branch on any count that got worse. Rules: canvas · copy · box · early · nopath · and the crawler's four truths (`scripts/lib/schedule_crawler.js`:
+  onNothing, beforeFloor, beforeWall, beforeFrame) with a screenplay per building (`~/.cache/bim4d/product/<tag>/<bld>.screenplay.txt`).
+- **The candidate (bim-ootb branch `fix/4d-q55-one-population-true-box`, pushed, NOT mergeable yet):** one box owner + offsets, containers left out, the
+  push pass off on solve-authored schedules. main → candidate: copy 0 and box 0 on all seven; early Hospital 548 → 0, JKR 425 → 13, HHS 57 → 4, Clinic
+  122 → 16, Terminal 715 → 306, LTU 1,427 → 417; but 9 crawler cells WORSE (Hospital beforeFloor 274 → 377: a column goes up days before the slab it
+  stands on). Verdict FAIL: 31 better, 9 worse.
+- **NEXT, one thing:** the crawler's four truths become the solve's own edges (floor before what stands on it, what touches my underside before me, wall
+  before its window, frame before its glass) — then the crawler reads 0 by construction and the harness proves it on the product. No other rule work.
+- **Film:** `scripts/film_4d_true_box/render.py` draws the judge's `<bld>.film.json` (red = out of order when it appears) and reads its own last frame
+  back pixel by pixel (`§FILM_EYES`). Clip + screenplays: `~/Videos/Hospital_4D_build_order_BEFORE_AFTER.mp4`, `Hospital_4D_screenplay_{BEFORE,AFTER}.txt`.
+  It shows 1,077 → 587 out of order on Hospital: an improvement, NOT yet a proof of a solution.

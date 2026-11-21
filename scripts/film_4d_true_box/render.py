@@ -19,7 +19,7 @@ ap.add_argument('--labA', default='BEFORE'); ap.add_argument('--labB', default='
 a = ap.parse_args(); os.makedirs(a.out, exist_ok=True)
 PHASE = {'Substructure': (120, 110, 100), 'Superstructure': (170, 174, 180), 'Architecture Envelope': (196, 164, 120), 'MEP Rough-in': (88, 150, 200),
          'Architecture Closeup': (150, 190, 150), 'MEP Final': (120, 200, 210), 'Finishes': (214, 200, 160), 'Architecture': (196, 164, 120)}
-RED, LIVE, BG = (232, 48, 48), (255, 214, 64), (18, 20, 24)
+RED, ORANGE, LIVE, BG = (232, 48, 48), (255, 140, 0), (255, 214, 64), (18, 20, 24)
 F = lambda s: ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans%s.ttf' % ('-Bold' if s < 0 else ''), abs(s))
 log = open(os.path.join(a.out, 'render.log'), 'w')
 def say(m): print(m); log.write(m + '\n'); log.flush()
@@ -44,7 +44,7 @@ class Panel:
         s.D, s.label = D, label; s.col = np.zeros((H, W, 3), np.uint8); s.col[:] = BG; s.z = np.full((H, W), -1e18)
         rows = D['rows']; s.rows = rows
         s.byS = sorted(range(len(rows)), key=lambda i: rows[i][1]); s.byE = sorted(range(len(rows)), key=lambda i: rows[i][2]); s.iS = s.iE = 0
-        s.placed = s.red = s.live = 0
+        s.placed = s.red = s.live = s.orange = 0
     def quad(s, pts, col):
         us = np.array([p[0] for p in pts]) * S + ox; vs = oy - np.array([p[1] for p in pts]) * S; ws = np.array([p[2] for p in pts])
         x0, x1 = int(max(0, math.floor(us.min()))), int(min(W - 1, math.ceil(us.max()))); y0, y1 = int(max(0, math.floor(vs.min()))), int(min(H - 1, math.ceil(vs.max())))
@@ -80,10 +80,10 @@ class Panel:
     def advance(s, d):
         rows = s.rows
         while s.iS < len(rows) and rows[s.byS[s.iS]][1] <= d:
-            r = rows[s.byS[s.iS]]; s.iS += 1; s.placed += 1; bad = r[11] or r[12]
-            if bad: s.red += 1
-            else: s.live += 1
-            s.box(r, RED if bad else LIVE)
+            r = rows[s.byS[s.iS]]; s.iS += 1; s.placed += 1
+            if r[11]: s.red += 1; s.box(r, RED)                      # breaks a truth at the moment it appears: red, and it stays red
+            elif r[12]: s.orange += 1; s.box(r, ORANGE)              # the judge finds no support path to the ground: orange, stays
+            else: s.live += 1; s.box(r, LIVE)
         while s.iE < len(rows) and rows[s.byE[s.iE]][2] <= d:
             r = rows[s.byE[s.iE]]; s.iE += 1
             if not (r[11] or r[12]): s.live -= 1; s.box(r, PHASE.get(r[3], (160, 160, 160)))
@@ -91,13 +91,14 @@ class Panel:
         im = Image.fromarray(s.col); g = ImageDraw.Draw(im)
         g.text((20, 14), s.label, font=F(-30), fill=(255, 255, 255))
         g.text((20, 54), 'day %3d of %d   ·   built %s of %s' % (min(d, s.D['days']), round(s.D['days']), format(s.placed, ','), format(len(s.rows), ',')), font=F(20), fill=(200, 205, 212))
-        g.text((20, H - 54), 'unsupported when they appear: ', font=F(22), fill=(200, 205, 212))
-        g.text((20 + g.textlength('unsupported when they appear: ', font=F(22)), H - 58), format(s.red, ','), font=F(-28), fill=RED if s.red else (120, 220, 140))
+        t1 = 'out of order when they appear: '; g.text((20, H - 54), t1, font=F(22), fill=(200, 205, 212)); x = 20 + g.textlength(t1, font=F(22))
+        g.text((x, H - 58), format(s.red, ','), font=F(-28), fill=RED if s.red else (120, 220, 140)); x += g.textlength(format(s.red, ',') + '   ', font=F(-28))
+        t2 = 'no support path found: '; g.text((x, H - 54), t2, font=F(22), fill=(200, 205, 212)); g.text((x + g.textlength(t2, font=F(22)), H - 58), format(s.orange, ','), font=F(-28), fill=ORANGE if s.orange else (120, 220, 140))
         return im
 
 pa, pb = Panel(A, a.labA), Panel(B, a.labB)
-say('§FILM_RENDER title="%s" frames=%d panel=%dx%d view az=%.0f tilt=%.0f scale=%.2f px/m days=%.0f | BEFORE n=%d midair=%d orphans=%d | AFTER n=%d midair=%d orphans=%d' % (
-    a.title, a.frames, W, H, a.az, a.tilt, S, DAYS, A['n'], A['midair'], A['orphans'], B['n'], B['midair'], B['orphans']))
+say('§FILM_RENDER title="%s" frames=%d panel=%dx%d view az=%.0f tilt=%.0f scale=%.2f px/m days=%.0f | A n=%d outOfOrder=%d noPath=%d | B n=%d outOfOrder=%d noPath=%d' % (
+    a.title, a.frames, W, H, a.az, a.tilt, S, DAYS, A['n'], A['broken'], A['nopath'], B['n'], B['broken'], B['nopath']))
 for f in range(a.frames + a.hold):
     d = DAYS * min(f, a.frames - 1) / (a.frames - 1) if f < a.frames else DAYS + 1
     pa.advance(d); pb.advance(d)
@@ -105,6 +106,15 @@ for f in range(a.frames + a.hold):
     ImageDraw.Draw(fr).line([(W, 0), (W, H)], fill=(60, 64, 72), width=2)
     fr.save(os.path.join(a.out, 'f%05d.png' % f), compress_level=1)
     if f % 120 == 0 or f == a.frames - 1: say('§FILM_FRAME f=%d day=%.1f BEFORE placed=%d red=%d live=%d | AFTER placed=%d red=%d live=%d' % (f, d, pa.placed, pa.red, pa.live, pb.placed, pb.red, pb.live))
-# self-check (PRIMAL LAW 4): the counters must equal the exporter's own totals, and every element must have been painted
-okA = pa.placed == A['n'] and pb.placed == B['n']; redA, redB = sum(1 for r in A['rows'] if r[11] or r[12]), sum(1 for r in B['rows'] if r[11] or r[12])
-say('§FILM_SELFCHECK allPainted=%s BEFORE red=%d (rows say %d) AFTER red=%d (rows say %d) -> %s' % (okA, pa.red, redA, pb.red, redB, 'PASS' if okA and pa.red == redA and pb.red == redB else 'FAIL'))
+# self-check (PRIMAL LAW 4) and THE MACHINE'S EYES: the counters must equal the rows' own totals, every element must have been painted, and the last
+# frame is read back pixel by pixel — exact red / orange pixels are counted per panel. A panel with no broken element must show no red pixel.
+def eyes(p):
+    c = p.col.reshape(-1, 3); k = lambda col: int(((c[:, 0] == col[0]) & (c[:, 1] == col[1]) & (c[:, 2] == col[2])).sum())
+    shade = lambda col, f: tuple(int(v * f) for v in col)
+    return sum(k(shade(RED, f)) for f in (1, 0.78, 0.60)), sum(k(shade(ORANGE, f)) for f in (1, 0.78, 0.60))
+ok = pa.placed == A['n'] and pb.placed == B['n']
+for nm, p, D in (('A', pa, A), ('B', pb, B)):
+    rows_red = sum(1 for r in D['rows'] if r[11]); rp, op = eyes(p)
+    good = p.red == rows_red and (rows_red > 0 or rp == 0); ok = ok and good
+    say('§FILM_EYES panel=%s label="%s" elementsOutOfOrder=%d (rows say %d) redPixelsInLastFrame=%d orangePixels=%d -> %s' % (nm, p.label, p.red, rows_red, rp, op, 'PASS' if good else 'FAIL'))
+say('§FILM_SELFCHECK allPainted=%s -> %s' % (pa.placed == A['n'] and pb.placed == B['n'], 'PASS' if ok else 'FAIL'))
