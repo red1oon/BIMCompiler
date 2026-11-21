@@ -5577,3 +5577,75 @@ is within the owner's GAP of the element (it touches what it hangs from). Share 
 3. **The canvas becomes a function of the cursor, checked:** a full pass and the delta pass at the same cursor must give the same slot state
    (`W-INCR-EQUIV` exists as a hook, `window.__forceFull`; make it a claim of gate 18).
 4. Then §Q.52.1 (true boxes).
+
+### Q.54 SPEC — THE CANVAS IS A FUNCTION OF THE CURSOR (2026-11-22, owner: *"Go. Stay abstract"*; §Q.53.1 items 1-3)
+- **The model (four invariants; every fix below is one of them, none is a case):**
+  - **C1 — function, not history.** What is drawn for an element = `built(g, cursor)` AND `shown(g, view)`. Reaching a cursor by playing,
+    by scrubbing back, or by a jump gives the same canvas. Nothing may depend on the path.
+  - **C2 — one owner of `built`.** `built(g, c)` is the schedule's op: `start <= c`. The canvas holds no support test of its own; order is the
+    schedule's job (§I). The browser-only hold (`_tmXraySolidifyTs`, a third copy of the support relation, all-of, §Q.53 item 1) is not an
+    owner: on a schedule authored by the one solve it is empty by rule. Where ops come from elsewhere (captured IFC 4D, civil route order) the
+    hold stays, as a TERM of `built` supplied by one named provider — never tested inline.
+  - **C3 — the shortcut is derived from the predicate.** The incremental draw may skip a batch only when no term of `built` / display state of
+    any of its elements changes in the step. The change instants are produced by the same owner that evaluates the terms
+    (`transitionsOf(g)`), for every model — so a term cannot be added without its instants (the civil-only `§CW_SOLIDIFY_EVENT` gate is the
+    counter-example and is deleted).
+  - **C4 — other hiders are terms of `shown`.** Proxy boxes, discipline filter, isolate: each is a term; a change of any term invalidates the
+    shortcut through ONE generation counter, not a "force a full pass" flag per feature.
+- **Witness = gate 18 (`witness_tm_drawn_vs_scheduled`, extended), the issue it exposes: *"is the canvas the function C1 says it is?"***
+  W1 drawn = scheduled at every sample, play forward · W2 the same after scrubbing BACK through the samples · W3 the same after random jumps ·
+  W4 at every sample the incremental canvas = a forced full pass, slot for slot (count of differing elements, not a per-class total) ·
+  W5 no element is hidden by a hold on a solve-authored schedule (`staged = 0`) · red control per claim · INCONCLUSIVE when the page, the
+  Time Machine or the ops do not come up. Node half (CPU, runs with the 17): the hold provider sliced from the shipped file returns 0 on
+  the seven persisted played layers (today 1 / 3 / 143 / 52 / 41 / 260 / 382, §Q.53).
+- **Order of work:** baseline run of the witness as shipped (Hospital, monotonic) → C2 + C3 in `tm_core.js` / `tm_render.js` /
+  `tm_sched_xray.js` → witness extended with W2-W5 → re-run → C4 only for the hiders the log still names. Deletion budget stated in the result.
+- **Not in this step:** true boxes (§Q.52.1) — the canvas fix does not depend on them.
+### Q.54.1 RESULT — C2 + C3 APPLIED, witnessed in the browser on Hospital (2026-11-22, bim-ootb PR #3381, branch `fix/4d-q54-canvas-function`; logs `~/.cache/bim4d/q53_logs_2026-11-22/dvs_hospital_*.log`, `~/.cache/bim4d/q54_logs_2026-11-22/`)
+- **Baseline, shipped code, headless on the split pair as the viewer loads it (`dvs_hospital_main2.log`): RED.** Play forward, 61 samples: from
+  t = 0.10 to the END ~155 scheduled elements are not drawn (columns 150 of 549, walls 5, slabs 3, beams 2; batched slots 154, instanced 2);
+  at the end the incremental canvas misses 156, a forced full pass misses 0. A further 83 columns at a time are held by the canvas.
+  `§XRAY_EDGES staged=281`. That is §Q.53 items 1 and 2, now measured where the owner looks.
+- **Root, one sentence:** the strict bar "appear only after the LAST carrier under you has finished" lives in two homes — the schedule-side
+  repair (`_ogSupportSweep`) and the canvas-side hide (`_tmXraySolidifyTs`). On solve-authored schedules (`schedules.display_authored = 1`) the
+  first was switched off on 2026-08-16 (`§OG_SWEEP_SKIP`); the second kept running, and its reveal instant was never in the redraw index.
+- **Code (three files, +37 / −11 lines with comments; the three inline copies of the hold test are one function):**
+  - **C2 `tm_sched_xray.js _tmRebuildXrayCache` → `§TM_HOLD_OWNER`:** on `display_authored = 1` the hold map is empty — the same flag, the same
+    reason as `§OG_SWEEP_SKIP`. Imported / captured / civil schedules keep the hold.
+  - **C3 `tm_core.js _tmBuildEventIndex` → `§TM_TRANSITIONS`:** hold instants are transitions on EVERY model (civil gate deleted); the index key
+    includes the linger length (an input of its instants); whoever rebuilds the hold map drops the index, in that one place.
+  - **`tm_core.js _tmHeld` / `tm_render.js`:** the hold term is tested by one function; `renderAtTime` no longer reads the map.
+- **Witness `witness_tm_drawn_vs_scheduled`, extended (W2-W5) and repaired:** it printed `pass=6 fail=0` on a load with NO geometry (drawn 0 at
+  every sample, `§DVS_NOOP` printed beside PASS) — now INCONCLUSIVE when nothing is represented in the scene or the cursor does not move it.
+  **After the fix (`dvs_hospital_fix1.log`), Hospital, 63,415 ops, 63,065 drawable:**
+  | path | samples | scheduled and not drawn | drawn and not yet scheduled | incremental vs full, elements differing |
+  |---|---:|---:|---:|---:|
+  | play forward | 61 | 0 (was 156) | 0 | 0 (was 156) |
+  | scrub back | 61 | 0 | 0 | 0 |
+  | forward again | 61 | 0 | 0 | 0 |
+  | 40 seeded jumps | 40 | 0 | 0 | 0 |
+  `§DVS_HOLD display_authored=true heldInMap=0` (was 281). `pass=6 fail=0 ran=38`, red control detected.
+- **Gates:** `run_4d_gates.sh` 17 / 17 GREEN on the branch, no re-lock (`~/.cache/bim4d/q54_logs_2026-11-22/4d_gates_20261121T204307Z.log`) — as expected:
+  no gate runs the draw layer. `tm_core.js?v=3`, `tm_render.js?v=2`, `tm_sched_xray.js?v=5`, sw v1782 (through `scripts/bump.js`).
+- **`witness_cw_solidify_event` (node) was DEAD on main** (it read `time_machine.js` from `origin/main`, a 34-line loader since the file split:
+  "slice miss"). Repaired; its claim "buildings unchanged" is replaced by "a building with a held slot visits its mesh at the reveal tick"; red
+  control = `origin/main` skips it. INCONCLUSIVE here only because `CivilWorksPath.db` is not in the worktree.
+- **Departure from the spec:** the node half of W5 is not built — the hold is now empty by a DB flag, so slicing the provider proves nothing;
+  W5 is the browser claim. **C4 not done**, and not yet needed by this log (see limits).
+- **⚠ FOUND ON THE WAY — the gates do not judge the schedule the browser plays (measured, same DB, same patch, same code):**
+  browser `§AUTHOR_TPL elements=63415 totalDays=287 tasks=33`; gate run `elements=63182 totalDays=262 tasks=34`. Cause: at load the browser
+  runs `scene.js §NOGEO_COMPOSE` — 233 geometry-less aggregate parents (curtain walls 178, stairs 31, roofs 24) get a box that is the union of
+  their children and are then scheduled as work of their own; `cache_4d_run.js` never runs that step, and `§4D_NOGEO` drops them. The same
+  containers exist on Duplex 3, HHS 41, Clinic 43 (raw DB counts). A curtain-wall container spanning a façade is one box in the browser's
+  contact graph and 25 days of programme. Every number in §Q.6-§Q.51 is the gate run's.
+- **Limits:** the witness drives the bake verbs (`tmActivateForBake`, `tmSetCursor`), camera fixed. The interactive panel's own paths — the box
+  proxy while orbiting (`large=true` on Hospital), the slider handlers, discipline filter / isolate during play — are C4 and are NOT covered.
+  One building. The 350 "absent" are the 233 containers above + 117 duplicate shells the viewer hides on purpose.
+### Q.54.2 ▶ RESUME HERE (2026-11-22)
+1. **One scheduled population (the ⚠ above) — spec first.** A container with no geometry of its own is not work; its parts are. The population
+   owner (`ScheduleAuthor.scheduledWhere` / `§4D_NOGEO`) must give the browser and the gate run the SAME set; the node run must load the DB
+   the way the viewer does (compose included) so the mirror cannot drift again; gate = element count, days and task count equal, browser vs
+   node, on all seven. Expect the LIVE programmes to change on Duplex, HHS, Clinic, Hospital (Hospital 287 → 262 d).
+2. **Gate 18 in CI / in `run_4d_gates.sh`** (it needs a browser: runner only, like the live JSON witness), on HHS for cost, Hospital on demand.
+3. **C4, measured first:** the same four paths driven through the PANEL (slider + play button) with the camera moving, proxy engaged.
+4. Then §Q.52.1 (true boxes), then §Q.51.2 items 2-3.
