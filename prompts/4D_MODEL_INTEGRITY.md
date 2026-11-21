@@ -5544,3 +5544,36 @@ is within the owner's GAP of the element (it touches what it hangs from). Share 
 3. **A witness on the browser's own played layer** (the stored `kernel_ops` timestamps of a live load, compared op for op with the node
    mirror) — needs the owner's go for a headless run; until it exists every "live" claim in this lane is a claim about the mirror.
 4. Then §Q.51.2 items 2-3.
+
+### Q.53 REVIEW BACK, part 2 — owner, 2026-11-22: *"Hospital, i ran the Time Machine"* · *"The timeline scrubber also does not reflect actual facts on canvas, some can stop rendering, have to go end and replay etc, not consistent"*
+- **What this says:** the complaint is canvas ≠ scrubber. That is the DRAW layer (`tm_render.js renderAtTime`), which none of the 17 gates
+  runs: they judge `kernel_ops` times in node. Logs: `~/.cache/bim4d/q53_logs_2026-11-22/`.
+- **Ruled out, measured (`served_vs_gated.log`):** Hospital's schedule built on the files the live site SERVES (served `Hospital_meta.db` +
+  served patch, §Q.47's copies) vs the gated run: 63,182 / 63,182 elements start at the same instant. The live schedule IS the gated schedule.
+- **Read in the code, three ways the canvas departs from the scrubber:**
+  1. **A third, browser-only copy of the support relation hides placed elements** (`tm_sched_xray.js _buildXraySupportCache` →
+     `_tmXraySolidifyTs`; `tm_render.js:277 / :362 / :438`): an element whose op has ended stays hidden until the LAST structural box under it
+     in plan has ended. Its header says "predicate copied verbatim from schedule_gate.js"; it is the *all-of instead of any-of* row of §E, on
+     the displaced boxes of §Q.51.1, and it is not in §I. Sliced from the shipped file and run on the persisted played layers
+     (`staged_hidden.log`) — hidden after their own bar ends: Duplex 1 · HHS 3 · JKR 143 · Clinic 52 · Terminal 41 · **Hospital 260** (192
+     columns, 31 walls, 20 beams, 14 stairs; median 4.2 days, 29 over a week, one roof 46.9 days) · LTU 382.
+  2. **The draw is incremental, and the moment a hidden element should appear is not in its index** (`tm_core.js _tmBuildEventIndex`): a
+     batch is redrawn only when one of its elements has an op start / end in the cursor step. The reveal time of item 1 is another element's
+     end. The file already records this exact failure and its fix — `§CW_SOLIDIFY_EVENT`, *"leave the slot hidden for the rest of the film"* —
+     **and gates the fix to civil models: "buildings build the identical index".** A full redraw only happens on a jump of more than 7 days,
+     a camera move with the box proxy engaged, or a restart: that is "go to the end and replay".
+  3. **Other writers of the same slots** on a building of this size (box proxy `_dlod*` above 20k elements, streaming, discipline filter,
+     isolate): each is patched in with its own "force one full pass" flag. Not measured here — it needs the real scene.
+- **The instrument already exists and is not a gate:** `viewer/tests/witness_tm_drawn_vs_scheduled.js` (2026-09-04, written for a Hospital
+  complaint): shipped viewer, headless, per cursor SCHEDULED vs DRAWN from real slot state, misses attributed to mechanism. It needs a
+  headless browser — the owner's go, and not beside a live bake (VRAM).
+- **Limit:** items 1-2 are 260 elements on Hospital; whether they are all of what the owner saw is not established without that witness.
+### Q.53.1 ▶ RESUME HERE (2026-11-22) — the draw layer comes BEFORE §Q.52.1
+1. **⛔ Owner go: run `witness_tm_drawn_vs_scheduled` headless on Hospital** (play forward, scrub back, scrub forward — the three paths), and
+   make it gate 18. Its log is the list of what to fix.
+2. **Spec + fix, no go needed:** (a) the reveal time joins the event index on buildings too (delete the civil gate); (b) the browser's
+   support copy goes — the schedule already orders supports (`midair 0` on the played layer), so the canvas shows what the op says;
+   if a hold is still wanted it reads the ONE owner, not a copy. Node witness: every element is drawn-eligible from its own op start.
+3. **The canvas becomes a function of the cursor, checked:** a full pass and the delta pass at the same cursor must give the same slot state
+   (`W-INCR-EQUIV` exists as a hook, `window.__forceFull`; make it a claim of gate 18).
+4. Then §Q.52.1 (true boxes).
