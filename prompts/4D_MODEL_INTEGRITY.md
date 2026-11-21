@@ -5434,3 +5434,17 @@ dry. v2 shipped: it keeps the true hung edges v1 dropped to the wave order (`§E
 - **Logs of this session:** `~/.cache/bim4d/q44_logs_2026-11-20/` … `q49_logs_2026-11-20/`, `q47_upload_2026-11-20/` (served patches before the
   upload, manifests, fetch-back). The §Q.43 logs were in a session scratchpad that no longer exists; their numbers are in §Q.43.1.
 - **Not witnessed anywhere this session:** a schedule generated in a browser on the live buildings; a bake.
+
+### Q.50 SPEC — MEASURE ONLY: "an element fixed to a side or resting on something is not also hung" (2026-11-22, owner: *"resume 4D"*; §Q.49 ruling 2, §Q.49.2 item 1)
+- **Issue it answers:** does that sentence, as a rule, remove the FAR hung bonds (Terminal 42, LTU ~26, Duplex 32 — a pipe "hung" from a roof
+  6-14 m up) WITHOUT removing true hangers? Ship only if the numbers hold. No schedule code changes in this step.
+- **Population:** every element bonded `hangs-below` in the persisted run (`run.json` `bonds`, PRIMAL LAW 5 — no re-solve), all seven buildings.
+- **No second contact test (§I row 1, §E):** candidates are `CpmSchedule.contactGraph(items).contacts`; the relation is `ShimBonds.relsOf`. For each
+  hung element T, from its own contact list:
+  - **side** = a contact of a kind T's own table row accepts for `fixes-on-side`, in relation `spans` (met = anchored in an earlier wave; also
+    counted when touching but not anchored earlier). **rests** = a contact in relation `below` that does not also span T, by the kind of what is
+    under it. Both are the contact owner's tests; no new constant.
+  - **gap** to the hung host = `host.bz - T.tz` (clear height), split at the owner's own GAP: NEAR (a real hanger) vs FAR.
+- **Output, `§FAR_HANGER <bld>` + per-kind lines:** hung bonds · NEAR / FAR · with side · with rests (by kind below) · B9 among them; and the table
+  the ruling needs: rule drops (side or rests) x NEAR / FAR, and x B9 / not B9. **The rule holds if it drops the FAR B9 and keeps the NEAR bonds.**
+  VACUOUS printed where a building has no hung bond. Probe + logs: `~/.cache/bim4d/q50_logs_2026-11-22/`.
