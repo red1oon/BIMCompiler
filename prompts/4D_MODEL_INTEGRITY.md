@@ -5092,3 +5092,488 @@ Three versions were built and gated; only the third shipped. The spec above (v1)
 2. Kinds `ceiling` / `floor_finish` (two-pass) — closes the fittings line of item 1.
 3. Delete ONE election clause now covered by a bond edge (candidate: D7's later-contact skip, or D3's beam demotion), flag the deletion, gates.
 4. The rest of the phase table against standard practice. 5. Sign-off list; Terminal / Hospital local-vs-served check; S5; S6.
+
+### Q.43 SPEC — the bond's `above` host must be the FIRST offerer above, and `joins` must be a touch (2026-11-20, owner: *"resume 4d"*; §Q.42.1 item 1)
+- **Issue (measured before any filing change; probes + logs `…/b5ee8c6f…/scratchpad/q43/`, `probe_gap_base.log`):** §Q.42.1 item 1 calls B9's remainder
+  "filing". For the hung and joined kinds it is not: the host is not what the element hangs from. The contact owner's third relation
+  (`cpm_schedule.js contactGraph`: `S.bz >= T.tz - GAP && S.tz > T.tz + EPS`) has no upper limit, `shim_bonds.js` REL maps `hangs-below` to it and
+  `joins` to `any`, and the tie is tier, then plan overlap — never nearness. So a bond is "an offerer anywhere above in plan" (§E's own row:
+  *support base bounded, TOP unbounded*, mirrored). Vertical clear gap from the element to its primary host, p50 / p99 / max m, and how many bonds
+  have a NEARER offerer of an accepted kind in the same contact list:
+  | | bonded hung / joined | host further than GAP | of which a nearer offerer exists | gap p50 / p99 / max |
+  |---|---:|---:|---:|---|
+  | Hospital façade part / joins | 7,176 | 5,172 | 884 | 1.65 / 10.02 / 15.76 |
+  | Hospital segment / hangs-below | 13,781 | 12,784 | 9,573 | 1.80 / 12.74 / 17.62 |
+  | Terminal segment / hangs-below | 2,231 | 1,920 | 1,462 | 1.05 / 13.07 / 14.81 |
+  | LTU segment / hangs-below | 33,653 | 17,139 | 15,230 | 0.53 / 5.71 / 7.82 |
+  | Clinic fixture / hangs-below | 2,556 | 2,522 | 1,253 | 1.90 / 4.12 / 6.08 |
+  B9's remainder with a host further than GAP: Hospital façade 165 of 165 (the plate `3sbXgw…kN` z 168.34-168.54 "joins" a slab at z 181.66),
+  Terminal segments 98 / 98, fixtures 43 / 43, coverings 15 / 15, LTU segments 109 / 109, Clinic façade 10 / 10, Duplex fixtures 8 / 8, segments 26 / 62.
+  Filing those by bond would repeat §Q.40 v1 on a relation that does not exist. **So the relation is fixed first; no filing changes in this step.**
+- **Rule N (first offerer above — §E: occlusion, no new constant; §Q.33.3 "ceiling → slab ABOVE", "duct segment → slab above"):** for a need whose
+  relation is `above`, a candidate qualifies only if no other contact whose kind offers `hangs-below` to this element's kind (any row of its table
+  entry), itself above the element, lies wholly below the candidate (`k.tz <= j.bz + EPS`). The occluder need not be anchored: it is in the way either
+  way. Tier, plan overlap and guid then pick among the survivors, as before.
+- **Rule J (`joins` is a touch — §Q.33.3 "mullion → slab EDGE", "landing → its flight end"):** REL `joins` = `touch`: the two height ranges meet,
+  `S.bz <= T.tz + GAP && S.tz >= T.bz - GAP` (GAP is the contact owner's own audit constant, the one its bearing test already uses; no new number).
+  A façade part that touches no slab falls to its second need, `continues-same-kind` (held by its mullion / neighbour), which draws no order.
+  `continues-same-kind` stays `any` in this step (it draws no order; named, not fixed).
+- **Code:** `viewer/shim_bonds.js` only (`REL`, `relOk`, `tryBond`, and the same test in the never-anchored reason pass). No consumer changes:
+  §E1_BOND_CARRIERS, §CEILING_CLOSEUP and §D6's second carrier read the same `host` / `hosts`. The two invariants are judged on the RESULT by a new
+  witness claim, `witness_shim_bonds` B10 (an offerer between element and host = 0; joins that do not touch = 0), with its own red control.
+- **Proof owed, all seven, before → after:** the gap table above (host further than GAP with a nearer offerer → 0, by construction — plus the residue
+  that has NO nearer offerer, named); bonded count (B7 will move: every fall named by kind and outcome); B9; B8 / B8x; `§E1_BOND_CARRIERS` edges;
+  `§SUPPORT_CYCLE`; played midair; `§FILING_PARITY`; programme days / tasks; DCMA; `run_4d_gates.sh` with every re-locked value named.
+  Sandbox first (the run is keyed on `shim_bonds.js`, so main's persisted runs stay as the baseline).
+### Q.43.1 RESULT — APPLIED as v2 (2026-11-20, bim-ootb PR #3361, branch `fix/4d-q43-facade-filing-by-bond`; logs `…/b5ee8c6f…/scratchpad/q43/`)
+Two versions built and gated on seven. v1 = rules N + J as specified. v2 = v1 plus: **a hung element WAITS for its first offerer above to anchor**
+instead of falling through to a later need (a relay from a neighbouring piece, which draws no order); the waiting ones are released when the waves run
+dry. v2 shipped: it keeps the true hung edges v1 dropped to the wave order (`§E1_BOND_CARRIERS` hangs-below edges, main → v1 → v2: Clinic 5,031 →
+2,722 → 3,731; JKR 1,923 → 1,446 → 1,687; Hospital 12,474 → 3,116 → 3,435; LTU 44,619 → 39,028 → 40,459).
+| | B9 (bonded, relay excluded, starting before a host ends) main → v2 | bonded main → v2 | programme days / tasks |
+|---|---|---|---|
+| Duplex | 73 → **37** (segments 37) | 1,009 → 1,008 | 15 = / 22 → 21 |
+| HHS | 2 → 2 (landings) | 5,811 = | 58 = / 20 = |
+| JKR | 19 → **53** (fixtures 53) | 5,797 → 5,781 | 49 → **45** / 24 = |
+| Clinic | 112 → 100 (bearing walls 65, fixtures 30, stair parts 3, columns 2) | 14,723 → 14,552 | 127 = / 19 = |
+| Terminal | 170 → **55** (segments 40, walls 4, coverings 4, fixtures 4, fittings 2, beam 1) | 10,034 → 9,914 | 94 = / 114 → 117 |
+| Hospital | 168 → **4** (façade parts 165 → 0) | 55,260 → 54,110 | 262 = / 35 = |
+| LTU | 132 → **269** (fixtures 241, segments 26, windows 2) | 105,776 → 105,577 | 672 → 673 / 43 = |
+- **B10 (new claim, all seven PASS):** hung / joined bonds judged Duplex 308 · HHS 3,387 · JKR 2,146 · Clinic 6,138 · Terminal 3,549 · Hospital 16,301 ·
+  LTU 51,188; an offerer between element and host = 0; joins that do not touch = 0. **RED10:** with `joins` put back to `any`, Hospital shows 5,172
+  joins that do not touch — the claim can fail. Façade joins now have max gap 0.35 m (Hospital), 0.48 (HHS), 0.38 (Clinic); was 15.76 / 3.26 / 3.51.
+- **The two B9 rises are true pairs the far bond hid, not new defects:** JKR 53 and LTU 241 fixtures now bond to the covering directly over them
+  (before: a slab or a covering further up), and that covering is filed in `Finishes` (it bonded `bears-on-top`, so §CEILING_CLOSEUP does not treat it as
+  a ceiling): LTU `MEP Final_Plan 1 ← Finishes_Plan 1` 137, `Plan 4` 44; JKR `MEP Final_00 ← Finishes_00` 33. B8 / B8x stay 0 on all (those judge
+  ceilings bonded `hangs-below` only). This is §Q.42.1 item 2 (kinds `ceiling` / `floor_finish`), now with its real size.
+- **Locks moved, each named** (`midair.json`, `dcma.json`, `shim_bonds.json`; re-locked from the run): `float_after_cpm` (the display layer no viewer
+  reads, §TM_REVEAL_SHIPPED) Hospital 976 → 1,160 (1,337 before any bond carrier), LTU 2,658 → 3,347 (5,579 before), JKR 423 → 449 (464 before) — the
+  false far carriers had been delaying elements; the others unchanged. `ScheduleGate.auditFloating` on the PLAYED layer is identical on all seven
+  (Duplex 1, HHS 16, JKR 160, Clinic 153, Terminal 50, Hospital 270, LTU 440; nothing entered, nothing left). Strict midair LTU 245 → 250 (named sets,
+  `UNNAMED=0`). DCMA Terminal high-float tasks 14 → 16 (a REPORT measure). B7 bonded falls as in the table (façade parts that touch no slab and have
+  no anchored neighbour). Played midair and `§FILING_PARITY` unchanged (`witness_tm_assembly_order` green without a re-lock). `§SUPPORT_CYCLE` 0 on all.
+- **Gates:** `run_4d_gates.sh` 17 / 17 GREEN after the re-lock (`…/q43/final/4d_gates_20261120T053455Z.log`). `shim_bonds.js?v=2`,
+  `_GANTT_CACHE_VERSION` 49, sw v1775.
+- **Not witnessed:** browser / bake. **Not done:** why JKR's programme is 4 days shorter and Terminal has 3 more tasks, Duplex 1 fewer (the ceiling
+  count moves with the bonds — not profiled). `continues-same-kind` is still `any` (draws no order). **Honest limit:** rule N is occlusion on
+  bounding boxes — an offerer that overlaps the element's plan box by a sliver occludes; rule J uses GAP, a tolerance (the contact owner's own).
+- **Process note:** the baseline gate run was started before the edit and its last two gates read the edited file (red for that reason only);
+  their baseline is §Q.42's green run at the same commit.
+### Q.43.2 ▶ RESUME HERE (2026-11-20)
+1. **Kinds `ceiling` / `floor_finish` (two-pass)** — now the largest line: LTU 241, JKR 53, Clinic 30 fixtures under a covering filed in `Finishes`.
+2. **Filing by bond, where the host really is in a later task** (re-read `probe_b9` after item 1): Clinic bearing walls 65 + columns 2
+   (`Superstructure_First Floor ← Architecture Envelope_First Floor`: a slab filed as envelope carries them — rule B, the host moves up), Terminal
+   segments 40, Duplex segments 37, LTU segments 26. One kind per step, second-carrier pattern (§Q.40 v3).
+3. Profile the three programme / task-count moves named above.
+4. Delete ONE election clause now covered by a bond edge. 5. The rest of the phase table against standard practice. 6. Sign-off list; Terminal /
+   Hospital local-vs-served check; S5; S6.
+
+### Q.44 SPEC — what a covering IS comes from the file: `IfcCovering.PredefinedType` (2026-11-20, owner: *"proceed"*; §Q.43.2 item 1)
+- **Issue (measured; probes + logs `~/.cache/bim4d/q44_logs_2026-11-20/`):** §Q.39 decides ceiling vs floor finish from the covering's own bond
+  (`hangs-below` = ceiling, `bears-on-top` = floor finish). The source IFCs DECLARE it, and the bond disagrees with them (`probe_predef.log`,
+  IfcOpenShell over the source files, every covering guid of the shipped DB found unless said):
+  | | coverings in the DB | declared `PredefinedType` | the bond said (main, `probe_cov_base.log`) |
+  |---|---:|---|---|
+  | LTU | 24,321 | **INSULATION 24,321** (pipe / duct lagging) | ceiling 12,038 · floor finish 8,671 · lost 3,612 |
+  | Hospital | 602 | CEILING 602 | ceiling 600 · lost 2 |
+  | Clinic | 250 | CEILING 250 | ceiling 239 · **floor finish 3** · lost 8 |
+  | HHS | 43 | CEILING 43 | ceiling 39 · floor finish 1 · lost 3 |
+  | JKR | 35 (34 found) | CEILING 26 · MOLDING 7 (fascia) · CLADDING 1 | ceiling 19 · **floor finish 10** · lost 6 |
+  | Duplex | 13 | CEILING 13 | ceiling 13 |
+  | Terminal | 82 | not read: `TerminalMerged.ifc` throws on the attribute (IFC2x3 entity with 8 arguments) — INCONCLUSIVE | ceiling 55 · lost 27 |
+  So on LTU §CEILING_CLOSEUP moved 12,038 pieces of lagging into `Architecture Closeup` as ceilings, and B9's LTU 241 "fixtures under a covering" are
+  fixtures under lagged pipes. Clinic's 30 and JKR's fixtures hang from DECLARED ceilings that bonded `bears-on-top` because a thin slab tops out within
+  GAP under them (Clinic: ceiling z 7.25-7.30, a roof deck 0.49 m below, the slab it hangs from 0.18 m above); JKR's 47 are under a 5.3 m `Fascia`.
+  Measured and NOT adopted: "the nearer host wins" (`probe_flip_base.log`) — on LTU it flips 4,159 of 8,585 (gap below p50 0.21 m, above 0.19 m: a
+  coin toss) and reaches 116 of 245 fixtures. A geometry rule here is the square peg; the fact is in the file.
+- **Rule (extract, §Q.33.2 F: IFC facts first):** a covering's kind is its declared type — `CEILING` → `ceiling` (need: `hangs-below` slab / beam;
+  §CEILING_CLOSEUP applies), `FLOORING` → `floor_finish` (need: `bears-on-top` slab), any other declared type (`INSULATION`, `MOLDING`, `CLADDING`,
+  `ROOFING`, …) → `covering_other`: NO row (untabled, keeps its template time), offers nothing, is not a ceiling. A fixture's first need names
+  `ceiling` (and the undeclared `covering`). **No declared type → today's behaviour, unchanged** (kind `covering`, both needs, bond decides) — so a
+  building whose patch is not served loses nothing.
+- **Carrier of the fact (DB CHANGES = MIGRATION SCRIPT + SELF-HEAL LOADER):** `tools/ifc_predefined_type_patch.py` (pattern:
+  `scripts/ifc_aggregates_patch.py`) writes an idempotent block `§IFC_PREDEFINED_TYPE` into `buildings/patches/<db>.sql`:
+  `element_predefined_type(guid PRIMARY KEY, predefined_type)`, IfcCovering only, guids present in the DB only. The viewer's patch loader and
+  `scripts/lib/apply_building_patch.js` already apply the file. The element recipes read the table once and stamp `ptype` on each element
+  (one owner: `ScheduleAuthor`), the bond items carry it, `ShimBonds.kindOf` reads it.
+- **⛔ Not decided here (owner):** where pipe / duct INSULATION is filed. This step only stops calling it a ceiling: it keeps the class rule
+  (`Finishes`, what it had before §Q.39). Standard practice is lagging after the pipe is tested, before the ceiling closes — a practice-table row.
+- **Proof owed, all seven, before → after:** `§CEILING_CLOSEUP` ceilings / floor finish / other / undeclared; B8, B8x, B9 (LTU, JKR, Clinic fixture
+  lines); bonded (B7); programme days / tasks; midair; DCMA; `run_4d_gates.sh`, every re-lock named. A new witness claim: every covering the patch
+  declares has the kind its declared type gives, and a building with the table and one without both run (no silent default).
+### Q.44.1 RESULT — APPLIED (2026-11-20, bim-ootb PR #3362, branch `fix/4d-q44-ceiling-kinds`; logs `~/.cache/bim4d/q44_logs_2026-11-20/`)
+- **Patches (`tools/ifc_predefined_type_patch.py`, `patch_gen.log`):** Duplex 13 / 13 CEILING · HHS 43 / 43 CEILING · JKR 34 / 35 (CEILING 26, MOLDING 7,
+  CLADDING 1; one guid in no source) · Clinic 250 / 250 CEILING · Hospital 602 / 602 CEILING · LTU 24,321 / 24,321 INSULATION. Where every covering
+  was found with one type the block is ONE `INSERT … SELECT` (LTU: 723 bytes, not 24,321 statements). **Terminal: no block** — all 82 unreadable in
+  `TerminalMerged.ifc` (the entity has 8 arguments, the attribute is the 9th); it keeps the bond rule, and B11 says so (`declared=0`).
+- **`§CEILING_CLOSEUP`, before → after (ceilings / floor finish / unbonded):** LTU 12,038 / 8,671 / 3,612 → **0 / 0 / 0, other-declared 24,321** ·
+  Clinic 239 / 3 / 8 → 250 / 0 / 0 · JKR 19 / 10 / 6 → 27 / 0 / 0 (26 declared + the one undeclared, by bond; 8 other-declared) · HHS 39 / 1 / 3 →
+  43 / 0 / 0 · Hospital 600 / 0 / 2 → 602 / 0 / 0 · Duplex 13 → 13 · Terminal 55 / 0 / 27 unchanged (undeclared).
+- **B9 (bonded, relay excluded, starting before a host ends):** JKR 53 → **0** · LTU 269 → **30** · Clinic 100 → **70** · Duplex 37, HHS 2, Terminal 55,
+  Hospital 4 unchanged. B8 / B8x 0 on all (LTU INCONCLUSIVE: no fitting hangs from a ceiling there — it has none). B7 bonded: LTU 105,577 → 84,875 and
+  JKR 5,781 → 5,762 (other-declared coverings have no row: lagging, fascia, cladding); re-locked, the only lock that moved.
+- **Programme:** days unchanged except JKR 45 → 46; tasks HHS 20 → 18, Hospital 35 → 34, others unchanged. Phase populations: LTU `Architecture
+  Closeup` 12,644 → 606, `Finishes` 12,525 → 24,563 (the lagging is back under the class rule); Clinic Closeup 493 → 504, JKR 84 → 92, HHS 172 → 176,
+  Hospital 1,040 → 1,042.
+- **B11 (new, all seven PASS):** every declared covering has the kind its type gives; no other-declared covering is bonded or hosts anything.
+  **RED11:** with the declared types withheld, 12,038 LTU coverings the file declares NOT a ceiling bond `hangs-below` — the claim can fail.
+- **A judge defect found and fixed on the way:** `scripts/lib/shim_bonds_run.js` passed the cache reader's boolean `patched` as the patch mode, which
+  selected the aggregates-only text — the witness's fresh recomputation never saw the rest of a patch (B3 went red on four buildings the moment a
+  second table mattered). It now applies what the run applied.
+- **Gates:** `run_4d_gates.sh` 17 / 17 GREEN (`…/gates_final/4d_gates_20261120T061536Z.log`), no re-lock other than `shim_bonds.json`.
+  `shim_bonds.js?v=3`, `schedule_gate.js?v=7`, `schedule_author.js?v=31`, `tm_gantt_build.js?v=5`, `tm_sched_xray.js?v=4`, `_GANTT_CACHE_VERSION` 50, sw v1776.
+- **⚠ Live reach:** the viewer fetches `patches/<db>.sql` from the folder its DB came from. For a DB served from the bucket the new block reaches users
+  only after the patch is uploaded through `scripts/oci_patch_gate.js` — **NOT done here** (an upload to the served bucket needs the owner's go). Until
+  then such a building runs undeclared = exactly as before this PR. The gates judge the repo's patches.
+- **Not witnessed:** browser / bake. **Honest limits:** only IfcCovering is carried; `kindOf` still reads no other declared type. The schedule's own
+  bond passes still run without aggregates while the persisted table has them (the difference predates this step).
+### Q.44.2 ▶ RESUME HERE (2026-11-20)
+1. **⛔ Owner go: upload the six patches to the bucket** (`oci_patch_gate.js`, one per served DB; `deploy/OCI_UPLOAD.md` §RULES) so §Q.44 reaches users.
+2. **⛔ Owner ruling: where pipe / duct INSULATION is filed.** LTU's 24,321 pieces are in `Finishes` (class rule). Standard practice: lagging after the
+   pipe is tested, before the ceiling closes. Needs a practice-table row (kind `insulation`: joins its segment; phase) — not authored without sign-off.
+3. **Terminal's covering types:** read them another way (the IFC2x3 type object, or the per-discipline source) — 82 coverings, 27 unbonded.
+4. **Filing by bond where the host really is in a later task** (re-profile first): Clinic bearing walls 65 + columns 2, Terminal segments 40,
+   Duplex segments 37, LTU 30. One kind per step, second-carrier pattern (§Q.40 v3).
+5. Profile §Q.43.1's programme / task-count moves. 6. Delete ONE election clause covered by a bond edge. 7. The rest of the phase table against
+   standard practice. 8. Sign-off list; Terminal / Hospital local-vs-served check; S5; S6.
+
+### Q.45 — Terminal's coverings carry their declared type too (2026-11-20, owner: *"resume"*; §Q.44.2 item 3; bim-ootb PR #3363; logs `~/.cache/bim4d/q45_logs_2026-11-20/`)
+- **Issue:** §Q.44.1 left Terminal undeclared: `~/Downloads/TerminalMerged.ifc` writes each `IfcCovering` with 8 arguments (no `PredefinedType`, no
+  type object). **Extracted, not inferred:** the fuller copy of the same model (`~/Projects/bim-compiler/DAGCompiler/lib/input/IFC/TerminalMerged.ifc`,
+  nine arguments, 4 `IfcCoveringType`) declares all 82 guids of the shipped DB: **CEILING 82 / 82**. Block written by the §Q.44 generator (one
+  `INSERT … SELECT`, 542 bytes). No code change.
+- **Result:** `§CEILING_CLOSEUP` Terminal ceilings / unbonded 55 / 27 → **82 / 0** (`ceilingByDeclaration=82`). B11 `declared=82`, kind mismatches 0.
+  B8 fittings hanging from a ceiling 417, early 0; B8x 0; B9 55 = lock. Programme 94 → 93 d, tasks 117 → 108, `Architecture Closeup` 190 → 217,
+  `Finishes` 203 → 176. `run_4d_gates.sh` 17 / 17 GREEN with NO re-lock (`…/gates/4d_gates_20261120T065515Z.log`).
+- **Not done:** `_GANTT_CACHE_VERSION` is not bumped — Terminal's DB is bucket-served, so nothing changes for a user until the patch is uploaded
+  (§Q.44.2 item 1, now SEVEN patches); bump it WITH that upload. Not witnessed: browser / bake.
+- **Lesson for the source list:** two files named `TerminalMerged.ifc` differ in what they carry; a generator run that reports `unreadable` is a
+  reason to look for the other copy, not a verdict on the model.
+### Q.45.1 ▶ RESUME HERE (2026-11-20)
+1. **⛔ Owner go: upload the SEVEN patches to the bucket** (`oci_patch_gate.js`; bump `_GANTT_CACHE_VERSION` + sw with it).
+2. **⛔ Owner ruling: where pipe / duct INSULATION is filed** (§Q.44.2 item 2).
+3. **Filing by bond where the host really is in a later task** (re-profile first): Clinic bearing walls 65 + columns 2, Terminal segments 40,
+   Duplex segments 37, LTU 30. One kind per step, second-carrier pattern (§Q.40 v3).
+4. Profile §Q.43.1's programme / task-count moves. 5. Delete ONE election clause covered by a bond edge. 6. The rest of the phase table against
+   standard practice. 7. Sign-off list; Terminal / Hospital local-vs-served check; S5; S6.
+
+### Q.46 SPEC — a slab that structure stands on IS structure (rule B, §Q.33.2) (2026-11-20, owner: *"resume"*; §Q.45.1 item 3)
+- **Re-profile first (`~/.cache/bim4d/q46_logs_2026-11-20/probe_b9_base.log`, after §Q.43-§Q.45):** B9 = Duplex 37 · HHS 2 · JKR 0 · Clinic 70 ·
+  Terminal 55 · Hospital 4 · LTU 30. By what the late host IS:
+  | line | n | finding |
+  |---|---:|---|
+  | Clinic bearing walls 65 + columns 2 | 67 | ONE host: slab `2oJ$jhEMn3nhAqn0NbtYKu` *"Basic Roof: EPDM Membrane … Metal Deck"*, z 4.47-4.59, 1,807 m², filed `Architecture Envelope` seq 6 [day 20-26]; what stands on it is `Superstructure_First Floor` [12-20]. Touching (gap 0.00). **This step.** |
+  | Terminal segments 34, ceilings 4, fixtures 4; LTU segments 28 | 70 | `hangs-below` with a clear gap of 6-14 m (Terminal p50 7.77, LTU 5.96): the first offerer above is a roof over a tall space — a pipe at z 0.87 is not hung from a slab at z 7.89. NOT filing; a far "first offerer" is still not a hanger. Named, not fixed here (needs a rule that is not a distance constant). |
+  | Duplex segments 37 | 37 | host = a 1 cm `IfcSlab` filed `Finishes` seq 11 (the *Finish Floor* tile slabs, §W_D0 C2) — the tile is taken as the offerer above the pipe. Next step: a finish slab offers no `hangs-below`. |
+  | walls on a wall / windows in a wall of a later level; pipes fixed to a later wall; stair parts ← railing; one beam pair | 22 | each a few; listed in the log. |
+- **Population of the rule on all seven (`probe_slabhost_base.log`):** slabs not filed as structure that a column or bearing wall bears on —
+  **Clinic 1 (carrying 67), every other building 0** (Hospital has 24 envelope slabs, Duplex 15 finish / envelope slabs: nothing structural bears on them).
+- **Rule (rule B: *"a host whose phase comes later is MOVED UP — a wall carrying a slab becomes structure, D1 derived, not special-cased"*):** a slab
+  whose phase is neither `Superstructure` nor `Substructure` and which is the `bears-on-top` host of a column or a bearing wall becomes
+  `Superstructure`, sequence 4 — what any slab is. Resource, rate and install time unchanged (the §BEARING_WALL / §CEILING_CLOSEUP pattern).
+- **Code:** `viewer/shim_bonds.js` — in the ONE bond pass `applyCeilings` already runs for every element recipe (`ScheduleGate.applyGeometryReclass`;
+  no second contact graph, no second compute): `§CARRYING_SLAB recipe= promoted= carrying= byWas=`; NO-OP when none. Runs with or without coverings
+  (today the pass returns early when a building has no covering — it must not).
+- **Proof owed, all seven:** `§CARRYING_SLAB` per building (Clinic 1, others 0 = NO-OP); B9 Clinic 70 → 3; Clinic programme days / tasks before →
+  after; midair, parity, DCMA; `run_4d_gates.sh`, every re-lock named. Six buildings must be byte-identical in their played layer (the rule finds
+  nothing there) — proved by the gates passing with no re-lock for them.
+### Q.46.1 RESULT — APPLIED (2026-11-20, bim-ootb PR #3364, branch `fix/4d-q46-filing-by-bond`; logs `~/.cache/bim4d/q46_logs_2026-11-20/`)
+- **`§CARRYING_SLAB` (recipe schedule_author):** Clinic candidates 7, **promoted 1, carrying 67** (`byWas {"Architecture Envelope/seq6":1}`) · Duplex
+  candidates 15, Hospital 24: promoted 0 (NO-OP) · HHS, JKR, Terminal, LTU: every slab already structure (VACUOUS).
+- **B9 Clinic 70 → 3** (left: 3 stair parts ← railing). `float_after_cpm` Clinic 128 → 121. Clinic programme 127 d / 19 tasks unchanged; the deck moved
+  from `Architecture Envelope_First Floor` to `Superstructure_First Floor` (660 / 555 elements, was 659 / 556). B7 unchanged.
+- **Gates:** first run 16 / 17 — the one red was Clinic's float lock moving DOWN (128 → 121, an equality lock); re-locked from the run with
+  `shim_bonds.json` (Clinic `earlyVsHost` 70 → 3). Second run 17 / 17 GREEN (`…/gates_final/4d_gates_20261120T072154Z.log`). No other building's
+  value moved. `shim_bonds.js?v=4`, `_GANTT_CACHE_VERSION` 51, sw v1777.
+- **Cost:** none added where a building has coverings (same pass). A building with NO covering but a slab filed outside structure now runs the bond
+  pass once per recipe (none of the seven is in that case). **Not witnessed:** browser / bake.
+- **B9 now:** Duplex 37 · HHS 2 · JKR 0 · Clinic 3 · Terminal 55 · Hospital 4 · LTU 30 (at §Q.42: 73 / 2 / 19 / 112 / 170 / 168 / 132).
+### Q.46.2 ▶ RESUME HERE (2026-11-20)
+1. **⛔ Owner go: upload the SEVEN patches to the bucket** (`oci_patch_gate.js`). 2. **⛔ Owner ruling: where pipe / duct INSULATION is filed.**
+3. **Duplex segments 37:** the offerer above them is a 1 cm *Finish Floor* `IfcSlab` filed `Finishes` — a finish slab should offer no `hangs-below`
+   (find why the structural slab under it is not the first offerer: kind, wave or relation).
+4. **Far "first offerer" (Terminal 42, LTU 28):** a hung bond across 6-14 m of clear height is not a hanger. Needs a rule that is not a distance
+   constant (candidates to measure: the element also `fixes-on-side` / rests on something nearer; the space is one storey of the declared ladder).
+5. The small lines of §Q.46's table (walls on a later wall, windows, stair parts ← railing, one beam pair): 22 in all.
+6. Profile §Q.43.1's programme / task-count moves. 7. Delete ONE election clause covered by a bond edge. 8. The rest of the phase table against
+   standard practice. 9. Sign-off list; Terminal / Hospital local-vs-served check; S5; S6.
+
+### Q.47 — THE DECLARED COVERING TYPES ARE IN THE BUCKET (2026-11-20, owner go: *"yes as long documented so we have a trace of what changed"*; §Q.46.2 item 1; bim-ootb PR #3366; logs + backups `~/.cache/bim4d/q47_upload_2026-11-20/`)
+- **The full trace is in bim-ootb `buildings/patches/README.md` §Upload log** (per served file: bytes + md5 before and after, verifier result on the
+  served database, upload time) and the six `*.predefined_type.manifest.json` beside the patches. Summary here.
+- **What the bucket serves, read first (`bucket_state_before.log`):** five of the seven gate DBs are in the bucket with a patch (Duplex_extracted,
+  HHS_extracted, Terminal_meta, Hospital_meta, LTU_meta); **JKR is not in the bucket** (GitHub Pages serves it with the repo — live since #3362);
+  **Clinic is served as `Clinic.db`**, not the `Clinic_meta.db` the gates judge, so its block was generated again against the served `Clinic.db`
+  (250 / 250 CEILING, same as the gate DB).
+- **⚠ Found before uploading (OCI_UPLOAD rule 1, download and diff the target):** for HHS, Terminal and Hospital the repo patch differs from the
+  served patch by FAR more than this block — work of other lanes never uploaded (`§IFC_SURFACE_NAMES` etc. 5,464 / 18,983 diff lines; Terminal a
+  regenerated `§META_TRANSFORM_REPAIR`, 2,105 lines — the kind of block that was withdrawn from LTU's production patch, §Q.36.5). The go covered the
+  covering types only. **So for those three the uploaded file = the served file as it stood + the 4-statement block, nothing else** (each diff: 6
+  lines added, 0 removed). Duplex, LTU and Clinic: served-before + block is byte-equal to the repo file.
+- **Six uploads through `scripts/oci_patch_gate.js --upload`**, clean worktree at `origin/main` `79755693` (Clinic: its PR branch, 1 ahead, clean),
+  dry run first, one file at a time. Verifier on the served DB with the file applied — *rows | rows joining an IfcCovering | IfcCovering in the
+  served db | types*: Duplex 13 | 13 | 13 | CEILING · HHS 43 | 43 | 43 | CEILING · Terminal 82 | 82 | 82 | CEILING · Hospital 602 | 602 | 602 | CEILING ·
+  LTU 24321 | 24321 | 24321 | INSULATION · Clinic 250 | 250 | 250 | CEILING. All six `§GATE_VERDICT UPLOAD_VERIFIED`; fetched back over HTTPS
+  byte-equal, `application/sql`, CORS `*` (`fetch_back.log`).
+- **With it:** `_GANTT_CACHE_VERSION` 52, sw v1778 — a schedule stored before the upload was built without the declared types.
+- **Consequence to know:** the gates judge the REPO patches; on HHS / Terminal / Hospital the bucket serves a different (older + this block) file,
+  exactly as before this step. That gap predates §Q.44 and is not closed here; §Q.38's "local-vs-served check" for Terminal and Hospital is the same
+  item and now has its measurement: the patches differ, by the blocks named above.
+- **Post-upload witness (`apply_served.log`) — the gate applies with the sqlite3 CLI, the browser does not, so:** each patch AS SERVED (fetched over
+  HTTPS) applied to its database AS SERVED through the viewer's own chunker (`scripts/lib/apply_building_patch.js`, mode `all`): 6 / 6 PASS, `failed=[]`
+  on every one (statements Duplex 192, HHS 2,241, Terminal 35,098, Hospital 19,219, LTU 44, Clinic 26), `element_predefined_type` rows = coverings.
+- **A CI scare, checked not assumed:** on #3366 the job `live-json-editor` (a headless browser on the LIVE site, building `Ifc2x3_Duplex_Federated`)
+  timed out at 180 s one minute after the Duplex upload. Re-run of the same job with the uploaded patch in place: **pass**. A transient navigation
+  timeout, and incidentally a browser load of the live Duplex after the upload.
+- **Not witnessed:** a schedule generated in a browser on the live buildings; bake. **Undo:** remove the block's 6 lines from the served file, put it back through the gate.
+### Q.47.1 ▶ RESUME HERE (2026-11-20)
+1. **⛔ Owner ruling: where pipe / duct INSULATION is filed** (§Q.44.2 item 2). LTU live now schedules its 24,321 pieces of lagging in `Finishes`.
+2. **⛔ Owner decision: the unshipped blocks in the HHS / Terminal / Hospital repo patches** (surface names; Terminal transform repair) — upload,
+   or leave: until then the gates judge a patch users do not get on those three.
+3. Duplex segments 37 (finish-slab offerer) · 4. far "first offerer" (Terminal 42, LTU 28) · 5. the 22 small lines · 6. profile §Q.43.1's
+   programme moves · 7. delete ONE election clause · 8. phase table vs standard practice · 9. sign-off list; S5; S6.
+
+### Q.48 SPEC — a slab the run files as a FINISH is a floor finish in the bond table (2026-11-20, owner: *"resume 4D"*; §Q.47.1 item 3)
+- **Issue (measured, `~/.cache/bim4d/q48_logs_2026-11-20/probe_duplex.log`):** Duplex B9 = 37 hung pipes whose host ends after they start. 32 of them
+  hang from a 13-19 mm `IfcSlab` named *Floor: Finish Floor - Ceramic Tile / Wood* at z 3.10 — the run already files those 14 slabs as `Finishes`
+  seq 11 (the §W_D0 C2 name override), but `ShimBonds.kindOf` calls every non-ground `IfcSlab` a `slab`, and a `slab` OFFERS `hangs-below`. So the
+  tile is the pipe's "first offerer above" and the pipe waits for the last trade of the job. The other 5 hang from the roof (§Q.46 table, far hanger).
+- **Rule (`kindOf`'s own contract: *"what the shipped classification already decided for this run"*, as it already reads sequence 1 / Substructure
+  for `ground_slab`):** an `IfcSlab` whose phase is `Finishes` is kind `floor_finish` (§Q.44's kind: need `bears-on-top` a slab; offers nothing).
+  No name is read here; the name override that put it in `Finishes` is the one owner of that decision.
+- **Population:** slabs filed `Finishes` — Duplex 14, the other six 0 (`probe_slabhost_base.log` §Q.46: slabs by phase).
+- **Code:** one line in `viewer/shim_bonds.js kindOf`. **Proof owed:** Duplex B9 before → after with what the 32 bond to now; the 14 tiles' own bond
+  (`bears-on-top` the joist floor / ground slab); programme days / tasks; six other buildings unchanged (no such slab); `run_4d_gates.sh`, re-locks named.
+- **Seen on the way, NOT fixed (data, not rule):** Duplex's two *Wood Joist* floor slabs carry boxes of 3.7 m x 17 m (x -0.2..3.5 and 5.4..9.1) where
+  the house is 8 m wide — a strip 3.5..5.4 has tile and no structural floor box. An extraction / box question for the Duplex DB.
+### Q.48.1 RESULT — APPLIED, with a smaller gain than the spec implied (2026-11-20, bim-ootb PR #3372; logs `~/.cache/bim4d/q48_logs_2026-11-20/`)
+- **Kinds:** Duplex's 14 finish slabs are now `floor_finish`; they bond `bears-on-top` (bonded 1,008 → 1,009). No other building has a slab filed
+  `Finishes`; none of their values moved.
+- **B9 Duplex 37 → 32, not → 5.** The 32 pipes no longer hang from a tile — they now hang from the ROOF (`Basic Roof`, z 6.00, 2.9 m above the tile,
+  `nothing above the host`), because the Level-2 structural floor is not over them in the model's boxes (the data question named in the spec: the
+  two *Wood Joist* floor boxes are 3.7 m wide strips). So the rule is right and the count barely moved: the remainder is the far-hanger line plus
+  that box defect. Programme 15 d / 21 tasks unchanged.
+- **Gates:** `run_4d_gates.sh` 17 / 17 GREEN on the change (`…/gates_v1/4d_gates_20261120T082145Z.log`, run before the version-bump commit; the bump
+  changes no schedule code). `shim_bonds.json` tightened (Duplex `earlyVsHost` 37 → 32, bonded 1,009); `witness_shim_bonds` 80 / 0 / 7 after.
+  `shim_bonds.js?v=5`, `_GANTT_CACHE_VERSION` 53, sw v1779. **Not witnessed:** browser / bake.
+### Q.48.2 ▶ RESUME HERE (2026-11-20)
+1. **⛔ Owner ruling: where pipe / duct INSULATION is filed.** 2. **⛔ Owner decision: the unshipped blocks in the HHS / Terminal / Hospital repo patches.**
+3. **Duplex's box CENTRES are shifted — measured, not yet patched (item 3 of the list before, done as a read-only check):** IfcOpenShell on
+   `Duplex_ARC.ifc` vs `element_transforms`: the two *Wood Joist* floors really are two 3.71 m x 16.97 m strips (the size in the DB is right), but
+   their centres are off — `1hOSvn…RqU` true x 0.42..4.12, DB -0.18..3.53 (0.59 m); `1hOSvn…RrM` true x 4.67..8.38, DB 5.39..9.10 (0.72 m); the
+   slab on grade `2O2Fr$…` 0.6 m in y; the roof is exact. Of Duplex's 32 remaining pipes 23 lie under a TRUE floor box and miss the shifted one
+   (they sit at x 3.6..5.2, by the party wall). This is the §META_TRANSFORM_REPAIR class of defect: a patch from the source file (extracted
+   fact), for the lane that owns the transform repairs — and it changes rendering, so it is not a 4D-lane edit to make alone.
+   **And 14 of the 32 are vertical stacks, most of the rest drains at z -0.6..0 under the slab on grade:** not hung from anything. Same line as item 4.
+4. **Far "first offerer"** (Terminal 42, LTU 28, Duplex 32 until item 3): a hung bond across metres of clear height is not a hanger; needs a rule
+   that is not a distance constant.
+5. The 22 small lines of §Q.46's table · 6. profile §Q.43.1's programme moves · 7. delete ONE election clause · 8. phase table vs standard
+   practice · 9. sign-off list; S5; S6.
+
+### Q.49 — OWNER, 2026-11-20: *"Follow your advice"* (on the four open items of §Q.48.2) — the advice, recorded, then the first of them as a SPEC
+- **Rulings taken from that sentence (each was put to the owner as advice in the session's report):**
+  1. **Insulation:** standard practice — lagging goes on WITH the pipework of its level, after the pipe, before the ceiling closes (this section).
+  2. **Far hangers:** measure "an element that is fixed to a side or rests on something is not also hung" on seven; ship only if the numbers hold.
+  3. **Duplex box centres:** measure how widespread the shift is before any patch.
+  4. **Unshipped blocks in the HHS / Terminal / Hospital repo patches: LEAVE.** They belong to other lanes (surface names; Terminal's transform
+     repair is the kind of block that was withdrawn from LTU's production patch). Consequence, accepted: on those three the gates judge a patch
+     users do not get; closing that gap is for the lanes that own those blocks.
+- **SPEC — a covering declared INSULATION goes with the pipe it wraps.** Measured first (`~/.cache/bim4d/q49_logs_2026-11-20/probe_ins_base.log`,
+  LTU, the only building that declares any): 24,321 pieces, all filed `Finishes` seq 10 (class rule); **22,168 touch a segment / fitting** among
+  their own contacts (16,487 touch three or more), every such pipe is `MEP Rough-in` seq 7, 20,938 on the pipe's own level label; 2,153 touch none.
+  Today the election gives them a slab (19,053) and they are the last trade on the job.
+  - **Kind** `insulation` = `IfcCovering` declared `INSULATION` (was `covering_other`; MOLDING / CLADDING / … stay `covering_other`).
+  - **Need** `wraps` (relation `touch`, §Q.43 rule J), hosts `segment`, `fitting`, count `one`, source `proposed` (this ruling). It offers nothing.
+  - **Filing:** a bonded insulation piece takes its HOST's phase and sequence (no number authored: whatever the pipe is). Unbonded → the class rule,
+    counted. Trade, rate and install time unchanged (the §CEILING_CLOSEUP pattern) — the trade stays `FINISHER`; a lagging trade is a rates
+    question, named, not decided here.
+  - **Order:** `wraps` is finish-to-start in `§E1_BOND_CARRIERS` (the lagging goes on after its pipe).
+  - **Code:** `viewer/shim_bonds.js` (`kindOf`, `TABLE`, `REL`, the reclass in the one bond pass → `§INSULATION_WITH_PIPE`), `viewer/cpm_schedule.js`
+    (one word in the edge-type test). B11's expectation follows the kind.
+  - **Proof owed, all seven:** `§INSULATION_WITH_PIPE` (LTU: moved / unbonded; six others VACUOUS); LTU programme days / tasks, phase populations,
+    B9, midair, parity, DCMA before → after; six others unchanged; `run_4d_gates.sh`, every re-lock named. **Limit named now:** "tested before
+    lagging" is not modelled — the piece waits for its own pipe, not for a system test.
+### Q.49.1 RESULT — APPLIED as v4; three versions rejected by the gates (2026-11-20, bim-ootb PR #3375; logs `~/.cache/bim4d/q49_logs_2026-11-20/`)
+| version (LTU) | played midair | B9 | verdict |
+|---|---|---|---|
+| v1 the spec as written: host's phase AND sequence | 0 → **39** (7 lagging, 20 fittings, 12 segments) | 30 → 700 | rejected — with the pipe's own sequence the election takes the lagging as the PIPE's support (its box spans the pipe; §D7 needs `S.seq > T.seq`); DCMA high float 27 → 35, programme 673 → 680 d |
+| v2 host's phase, own sequence (10) | 0 → **457** lagging | 723 | rejected — a moved piece resting on a piece that did not move; a piece on another level label than its pipe |
+| v3 = v2 + a piece with no pipe CONTINUES its run (relay, rule C) + filed no lower than its pipe (second carrier, the §Q.40 v3 pattern) | 0 → **28** lagging | 28 | rejected — those 28 elect a FITTING of `MEP Final` (sequence 9 < 10), a task that starts later |
+| **v4 = v3 with the sequence half a step after the pipe (7.5: ordinal, between rough-in 7 and close-up 8)** | **0** | **28** | **shipped** |
+- **`§INSULATION_WITH_PIPE` (LTU):** declared 24,321 · moved to its pipe's phase **23,929** (3,703 of them through their run) · touching no pipe, kept
+  the class rule **392**. The six other buildings declare no insulation (VACUOUS).
+- **LTU before → after:** programme 673 → **666 d**, 43 tasks; `Finishes` 24,563 → 634, `MEP Rough-in` 78,940 → 102,869; bonded 84,875 → 108,804;
+  `§E1_BOND_CARRIERS` gains `wraps` 20,514 edges; `§SUPPORT_CYCLE` 0; DCMA unchanged (high float 27).
+- **Gates:** `run_4d_gates.sh` 17 / 17 GREEN on v4 with NO re-lock (`…/gates_v4/4d_gates_20261120T085821Z.log`, before the version-bump commit).
+  After the bump: `shim_bonds.json` tightened (LTU `earlyVsHost` 30 → 28, bonded 108,804); `witness_shim_bonds` 80 / 0 / 7 and
+  `witness_tm_assembly_order` 42 / 0 on all seven. `shim_bonds.js?v=6`, `schedule_author.js?v=32`, `cpm_schedule.js?v=8`, `_GANTT_CACHE_VERSION` 54, sw v1780.
+- **Departures from the spec, named:** the sequence is the pipe's + 0.5, not the pipe's (v1 is why); two things the spec did not have — the relay
+  need for a piece with no pipe of its own, and the second carrier in `_hangFilingAxis` for kind `insulation`.
+- **Limits:** the trade is still `FINISHER` (the lagging adds to that crew's load inside rough-in — a rates question); "tested before lagging" is
+  not modelled; the half-step sequence is a number used as an order, and any code that needs a whole-number sequence would have to be checked
+  (none of the 17 gates found one). **Not witnessed:** browser / bake. **Live reach:** LTU's declared types are in the bucket (§Q.47), so this
+  reaches users with the deploy.
+### Q.49.2 ▶ RESUME HERE (2026-11-20)
+1. **Far hangers (ruling 2, measure first):** "an element that is fixed to a side or rests on something is not also hung" — count, per building,
+   the hung bonds whose element ALSO has a met `fixes-on-side` need or a bearing contact below; what B9 and the edges become. Terminal 42, LTU ~26, Duplex 32.
+2. **Duplex box centres (ruling 3, measure first):** every Duplex element's `element_transforms` centre vs the source file's box centre —
+   how many are off, by how much, which classes.
+3. The 22 small lines of §Q.46's table · 4. profile §Q.43.1's programme moves · 5. delete ONE election clause · 6. phase table vs standard
+   practice (lagging trade included) · 7. sign-off list; S5; S6. **Closed by ruling 4:** the unshipped HHS / Terminal / Hospital patch blocks stay unshipped.
+### Q.49.3 SESSION CLOSE 2026-11-20 (owner: *"wrap up resume new session"*) — state for the next session, nothing new measured here
+- **Shipped this session, all merged, live at sw v1780 (bim-ootb):** #3361 first offerer above / joins is a touch (§Q.43) · #3362 #3363 a covering
+  is what its file declares (§Q.44, §Q.45) · #3364 a slab that structure stands on is structure (§Q.46) · #3366 the declared types uploaded to
+  the bucket, with the trace (§Q.47) · #3372 a finish slab is a floor finish in the bond table (§Q.48) · #3375 insulation goes with its pipe (§Q.49).
+- **B9 (bonded, relay excluded, starting before a host ends), §Q.42 → now:** Duplex 73 → 32 · HHS 2 → 2 · JKR 19 → 0 · Clinic 112 → 3 ·
+  Terminal 170 → 55 · Hospital 168 → 4 · LTU 132 → 28. Programme days now: Duplex 15 · HHS 58 · JKR 46 · Clinic 127 · Terminal 93 · Hospital 262 · LTU 666.
+- **Start at §Q.49.2 item 1** (far hangers, measure first), then item 2 (Duplex box centres, measure first). Both are read-only measurements;
+  no ruling is waiting on the owner.
+- **⚠ New rule for any viewer file bump (other lane, bim-ootb #3377):** script tags, `?v=` numbers, the precache list and `CACHE_VERSION` in `viewer/`
+  are being generated from `viewer/modules.json`. Use `node scripts/bump.js <file> --write` (or `--changed --write`); never hand-edit them — CI
+  refuses. `_GANTT_CACHE_VERSION` in `tm_dash.js` (now 54) stays a hand bump. Check whether #3377 has merged before the first bump.
+- **Logs of this session:** `~/.cache/bim4d/q44_logs_2026-11-20/` … `q49_logs_2026-11-20/`, `q47_upload_2026-11-20/` (served patches before the
+  upload, manifests, fetch-back). The §Q.43 logs were in a session scratchpad that no longer exists; their numbers are in §Q.43.1.
+- **Not witnessed anywhere this session:** a schedule generated in a browser on the live buildings; a bake.
+
+### Q.50 SPEC — MEASURE ONLY: "an element fixed to a side or resting on something is not also hung" (2026-11-22, owner: *"resume 4D"*; §Q.49 ruling 2, §Q.49.2 item 1)
+- **Issue it answers:** does that sentence, as a rule, remove the FAR hung bonds (Terminal 42, LTU ~26, Duplex 32 — a pipe "hung" from a roof
+  6-14 m up) WITHOUT removing true hangers? Ship only if the numbers hold. No schedule code changes in this step.
+- **Population:** every element bonded `hangs-below` in the persisted run (`run.json` `bonds`, PRIMAL LAW 5 — no re-solve), all seven buildings.
+- **No second contact test (§I row 1, §E):** candidates are `CpmSchedule.contactGraph(items).contacts`; the relation is `ShimBonds.relsOf`. For each
+  hung element T, from its own contact list:
+  - **side** = a contact of a kind T's own table row accepts for `fixes-on-side`, in relation `spans` (met = anchored in an earlier wave; also
+    counted when touching but not anchored earlier). **rests** = a contact in relation `below` that does not also span T, by the kind of what is
+    under it. Both are the contact owner's tests; no new constant.
+  - **gap** to the hung host = `host.bz - T.tz` (clear height), split at the owner's own GAP: NEAR (a real hanger) vs FAR.
+- **Output, `§FAR_HANGER <bld>` + per-kind lines:** hung bonds · NEAR / FAR · with side · with rests (by kind below) · B9 among them; and the table
+  the ruling needs: rule drops (side or rests) x NEAR / FAR, and x B9 / not B9. **The rule holds if it drops the FAR B9 and keeps the NEAR bonds.**
+  VACUOUS printed where a building has no hung bond. Probe + logs: `~/.cache/bim4d/q50_logs_2026-11-22/`.
+
+### Q.51 SPEC — MEASURE ONLY: every Duplex box centre against the source file (2026-11-22; §Q.49 ruling 3, §Q.49.2 item 2)
+- **Issue it answers:** §Q.48.2 found three Duplex boxes whose CENTRE is 0.6-0.7 m off the source while the size is right. How many of the
+  1,190 `element_transforms` rows are off, by how much, in which classes and along which axis — before anyone writes a patch.
+- **Truth:** IfcOpenShell world-coordinate geometry of the source file(s) in `reference/residential/` (the Federated file; Architecture + MEP if
+  the Federated one does not carry every guid). Per guid: the source box (min / max of the tessellated vertices) vs the DB box
+  (`center ± bbox / 2`, raw `Duplex_extracted.db`). Compared: centre delta per axis, size delta per axis.
+- **Output `§DUPLEX_BOX`:** rows in the DB · matched by guid · no geometry in the source · not in the source; centre off by more than 1 cm
+  (count, by class, by axis, p50 / max); size off by more than 1 cm; the largest ten by name. A guid the source does not carry is counted,
+  never guessed. No DB, patch or schedule file changes. Probe + log: `~/.cache/bim4d/q50_logs_2026-11-22/`.
+
+### Q.50.1 RESULT — THE RULE DOES NOT HOLD; nothing shipped (2026-11-22; logs `~/.cache/bim4d/q50_logs_2026-11-22/probe_far_hanger.log`, `probe_far_hanger_v2.log`)
+Three readings of "rests", each OR "a wall it could fix to spans it". A = any contact in the owner's `below` relation · B = that contact is a
+bearer kind (footing, column, beam, slab, ground slab, wall) · C = B and its top is AT the element's base (owner's EPS). NEAR = the hung host
+is within the owner's GAP of the element (it touches what it hangs from). Share of NEAR hangers the rule would un-hang, and B9 among hung bonds:
+| | hung bonds | NEAR | A drops NEAR | B drops NEAR | C drops NEAR | B9 now → A / B / C |
+|---|---:|---:|---:|---:|---:|---|
+| Duplex | 335 | 48 | 54 % | 15 % | 13 % | 32 → 17 / 26 / 32 |
+| HHS | 1,809 | 1,306 | 54 % | 9 % | 5 % | 0 |
+| JKR | 2,137 | 1,246 | 73 % | 32 % | 20 % | 0 |
+| Clinic | 5,950 | 727 | 63 % | 22 % | 15 % | 0 |
+| Terminal | 3,549 | 715 | 50 % | 6 % | 3 % | 42 → 14 / 27 / 39 |
+| Hospital | 13,673 | 2,736 | 71 % | 42 % | 36 % | 0 |
+| LTU | 39,158 | 21,769 | 71 % | 53 % | 9 % | 26 → 1 / 1 / 26 |
+- **Why A fails (§E, the proxy table's own first row):** `below` is "a box starts under me and tops out within GAP of my base". Under a hung pipe
+  that is the ceiling (Terminal 1,066, Hospital 4,566), the next pipe or fitting, a light fitting — none of them carries it. A is the reading that
+  clears B9, and it un-hangs half to three quarters of the pipes that TOUCH their slab. **Why C fails the other way:** it keeps the true
+  hangers and leaves B9 where it is (the far-hung pieces rest on nothing a box test can see). No reading does both. **Rejected, as ruled.**
+- **What the B9 pieces are (samples in the log):** Duplex — drains at z -0.61..0.00 under the slab on grade, "hung" from the roof at z 6.00;
+  Terminal — ceiling tiles at z 2.91 whose first offerer is a beam at z 15.39, pipes at z 0.87 under a slab at 7.89; LTU — risers z 2.27..7.52
+  and pipes at z 2.77 under a beam at z 8.27. For Duplex §Q.51.1 names the cause; Terminal and LTU are still open.
+- **Honest limit:** NEAR / FAR is split at the owner's GAP (0.5 m); a pipe on a 1 m rod counts FAR. The verdict rests on the NEAR column only.
+
+### Q.51.1 RESULT — NOT A DUPLEX DEFECT: `center_*` is not the middle of the box, on every extracted DB (2026-11-22; logs same folder, `probe_duplex_box.log`, `probe_box_cause_extracted.log`)
+- **`§DUPLEX_BOX` (source = `Ifc2x3_Duplex_Architecture.ifc` + `Ifc2x3_Duplex_MEP.ifc`, IfcOpenShell world coordinates):** DB rows 1,190 · matched
+  by guid 1,190 · not in the source 0 · **centre off by more than 1 cm: 386 · size off: 0.** Off p50 / p90 / max = 0.09 / 0.51 / 3.12 m; worst
+  axis x 143, y 153, z 90. By class (off of all): walls 55 of 57 · slabs 20 of 21 · footings 7 of 7 · windows 24 of 24 · openings 48 of 50 ·
+  spaces 21 of 21 · furniture 61 of 61 · flow terminals 98 of 105 · coverings 8 of 13 · fittings 16 of 358 · **segments 8 of 427**. The largest:
+  the four exterior walls, 2.42-3.12 m. Errors come in mirrored pairs (the two halves of the duplex).
+- **Cause, read from the DB's own mesh (`component_geometries`, vertices stored relative to `center_*`):** on 338 of 1,140 meshed elements the
+  mesh's box middle is NOT at the local origin (max 3.12 m) — the same classes with the same counts as the 386 above (386 less the 48 openings,
+  which carry no mesh). `center_*` is the point the mesh is placed at, not the middle of its box; `bbox_*` is the true size. Drawing uses
+  mesh + centre, so the picture is right. **The schedule builds its box as `center ± bbox / 2` (`schedule_author.js:836`), so its box is shifted.**
+- **Not Duplex only:** the same check on the other extracted DBs — HHS 4,311 of 6,839 (max 21.6 m), JKR 3,349 of 8,985 (max 13.7 m). For those
+  two this is DB-internal only (mesh vs its own centre), not yet checked against their source files. Clinic / Terminal / Hospital / LTU are
+  scheduled from `_meta.db` (no mesh in it): **not measured.**
+- **So §Q.48.2 item 3's reading is withdrawn:** this is not a transform to repair (moving `center_*` would move the drawn mesh). It is the
+  schedule's box reader. Every contact, support, hang and midair number on Duplex, HHS and JKR was computed on boxes of which a third to two
+  thirds are displaced.
+
+### Q.51.2 ▶ RESUME HERE (2026-11-22)
+1. **The element box gets ONE owner that returns the true box** (§I: add the row). Spec first. Facts needed by the spec: (a) the true box =
+   `center + the mesh's local min / max`; (b) the meta DBs have no mesh, so the offset must travel as data — a small patch table per building
+   (`element_box_offset`, generated from the geo DB / source file, applied by the existing patch loader), never a second copy of the mesh;
+   (c) measure Clinic / Terminal / Hospital / LTU from their `_geo.db` first; (d) expect every lock in `run_4d_gates.sh` to move on the
+   buildings affected — each move named, sandbox first.
+2. **Far hangers again AFTER item 1** — Duplex's 32 (23 lie under a true floor box) and possibly Terminal's and LTU's depend on it. The rule of
+   §Q.50 is rejected; do not re-try it.
+3. The 22 small lines of §Q.46's table · 4. profile §Q.43.1's programme moves · 5. delete ONE election clause · 6. phase table vs standard
+   practice (lagging trade included) · 7. sign-off list; S5; S6.
+
+### Q.52 REVIEW BACK — owner, 2026-11-22, after testing the Time Machine: *"it is still horrible. So do review back."*
+- **Question reviewed:** the gates are 17 / 17 green and the played layer reads `midair 0` on seven buildings. Why does it still look wrong?
+- **Measured (`~/.cache/bim4d/q52_logs_2026-11-22/judge_true_box.log`; nothing re-solved — the times are what plays today):** the same two owners
+  (`ScheduleGate.auditFloating`, `SupportSweep.midairAudit`) run twice on each persisted played layer: A on the boxes the schedule uses
+  (`center ± bbox / 2`), B on the true boxes (the same centre + the mesh's own min / max, from the extracted / `_geo` DB, §Q.51.1).
+  | | played elements | box differs from the true box (> 5 cm) | midair A → B | auditFloating A → B | floating under B only, main classes |
+  |---|---:|---:|---|---|---|
+  | Duplex | 1,119 | 199 (max 3.1 m) | 0 → 3 | 1 → 1 | - |
+  | HHS | 6,839 | 2,300 (max 21.6 m) | 0 → 51 | 16 → 52 | proxies 24, columns 6, stair flights 4 |
+  | JKR | 8,985 | 1,506 (max 13.7 m) | 0 → 392 | 160 → 515 | members 245, columns 87, slabs 47, beams 11 |
+  | Clinic | 16,071 | 2,397 (max 6.7 m) | 0 → 101 | 81 → 97 | walls 40, beams 6, columns 4 |
+  | Terminal | 48,428 | 2,085 (max 11.3 m) | 0 → 406 | 50 → 622 | plates 485, walls 28, members 26, columns 22 |
+  | Hospital | 63,182 | 7,802 (max 31.1 m) | 0 → 90 | 270 → 330 | columns 49, walls 16, windows 9 |
+  | LTU | 122,330 | 12,520 (max 38.1 m) | 0 → 1,228 | 440 → 601 | slabs 98, columns 51, beams 29, walls 29 |
+- **Finding 1 — the zero was a zero on the wrong geometry.** §Q.51.1 holds on all seven, not three: 28,809 of 266,954 played elements are
+  scheduled AND judged on a box that is not where the element is drawn. Solver and judge share the same wrong box, so they agree with each other
+  and the gate is green; the film draws the mesh. This is this file's own opening rule (*"WITNESS is moot if underlying design is poor"*) again:
+  one unverified input under every owner of §I.
+- **Finding 2 — "green" already contained accepted floating.** `auditFloating` under A is not zero (JKR 160, Hospital 270, LTU 440): those are
+  locked as named sets in `midair.json`, so the gate passes while they play.
+- **Finding 3 — nothing in §Q.37-§Q.51 was ever judged where the owner looks.** Every result section ends "Not witnessed: browser / bake". The
+  node mirror of the played layer is the only thing the gates see. Whether the browser plays that same layer today is unproven in this lane
+  since §Q.31.
+- **Limits of this measurement, named:** B is still a box (an L-shaped slab's box covers ground the slab does not); B judges a schedule that was
+  SOLVED on A's boxes, so B's counts are "what plays today", not what a re-solve would give; elements whose mesh and box disagree in size were
+  left on A's box and not counted separately (the probe's counter did not print — re-run owed). Not all of "horrible" is explained by this:
+  the count is 3-1,228 per building, and what the owner saw is not known here.
+### Q.52.1 ▶ RESUME HERE (2026-11-22) — supersedes §Q.51.2's order
+1. **Fix the input before any more rules:** one owner for the element box that returns the true box (§Q.51.2 item 1: spec, the offset as a
+   patch table for the meta DBs, sandbox, every lock that moves named). No rule work (far hangers, small lines, election clauses) until then —
+   every such number so far was measured on displaced boxes and must be re-read after.
+2. **Re-solve on true boxes and re-judge** — the table above again, with a schedule solved on B. That is the first honest midair number.
+3. **A witness on the browser's own played layer** (the stored `kernel_ops` timestamps of a live load, compared op for op with the node
+   mirror) — needs the owner's go for a headless run; until it exists every "live" claim in this lane is a claim about the mirror.
+4. Then §Q.51.2 items 2-3.
+
+### Q.53 REVIEW BACK, part 2 — owner, 2026-11-22: *"Hospital, i ran the Time Machine"* · *"The timeline scrubber also does not reflect actual facts on canvas, some can stop rendering, have to go end and replay etc, not consistent"*
+- **What this says:** the complaint is canvas ≠ scrubber. That is the DRAW layer (`tm_render.js renderAtTime`), which none of the 17 gates
+  runs: they judge `kernel_ops` times in node. Logs: `~/.cache/bim4d/q53_logs_2026-11-22/`.
+- **Ruled out, measured (`served_vs_gated.log`):** Hospital's schedule built on the files the live site SERVES (served `Hospital_meta.db` +
+  served patch, §Q.47's copies) vs the gated run: 63,182 / 63,182 elements start at the same instant. The live schedule IS the gated schedule.
+- **Read in the code, three ways the canvas departs from the scrubber:**
+  1. **A third, browser-only copy of the support relation hides placed elements** (`tm_sched_xray.js _buildXraySupportCache` →
+     `_tmXraySolidifyTs`; `tm_render.js:277 / :362 / :438`): an element whose op has ended stays hidden until the LAST structural box under it
+     in plan has ended. Its header says "predicate copied verbatim from schedule_gate.js"; it is the *all-of instead of any-of* row of §E, on
+     the displaced boxes of §Q.51.1, and it is not in §I. Sliced from the shipped file and run on the persisted played layers
+     (`staged_hidden.log`) — hidden after their own bar ends: Duplex 1 · HHS 3 · JKR 143 · Clinic 52 · Terminal 41 · **Hospital 260** (192
+     columns, 31 walls, 20 beams, 14 stairs; median 4.2 days, 29 over a week, one roof 46.9 days) · LTU 382.
+  2. **The draw is incremental, and the moment a hidden element should appear is not in its index** (`tm_core.js _tmBuildEventIndex`): a
+     batch is redrawn only when one of its elements has an op start / end in the cursor step. The reveal time of item 1 is another element's
+     end. The file already records this exact failure and its fix — `§CW_SOLIDIFY_EVENT`, *"leave the slot hidden for the rest of the film"* —
+     **and gates the fix to civil models: "buildings build the identical index".** A full redraw only happens on a jump of more than 7 days,
+     a camera move with the box proxy engaged, or a restart: that is "go to the end and replay".
+  3. **Other writers of the same slots** on a building of this size (box proxy `_dlod*` above 20k elements, streaming, discipline filter,
+     isolate): each is patched in with its own "force one full pass" flag. Not measured here — it needs the real scene.
+- **The instrument already exists and is not a gate:** `viewer/tests/witness_tm_drawn_vs_scheduled.js` (2026-09-04, written for a Hospital
+  complaint): shipped viewer, headless, per cursor SCHEDULED vs DRAWN from real slot state, misses attributed to mechanism. It needs a
+  headless browser — the owner's go, and not beside a live bake (VRAM).
+- **Limit:** items 1-2 are 260 elements on Hospital; whether they are all of what the owner saw is not established without that witness.
+### Q.53.1 ▶ RESUME HERE (2026-11-22) — the draw layer comes BEFORE §Q.52.1
+1. **⛔ Owner go: run `witness_tm_drawn_vs_scheduled` headless on Hospital** (play forward, scrub back, scrub forward — the three paths), and
+   make it gate 18. Its log is the list of what to fix.
+2. **Spec + fix, no go needed:** (a) the reveal time joins the event index on buildings too (delete the civil gate); (b) the browser's
+   support copy goes — the schedule already orders supports (`midair 0` on the played layer), so the canvas shows what the op says;
+   if a hold is still wanted it reads the ONE owner, not a copy. Node witness: every element is drawn-eligible from its own op start.
+3. **The canvas becomes a function of the cursor, checked:** a full pass and the delta pass at the same cursor must give the same slot state
+   (`W-INCR-EQUIV` exists as a hook, `window.__forceFull`; make it a claim of gate 18).
+4. Then §Q.52.1 (true boxes).

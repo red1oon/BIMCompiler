@@ -19,6 +19,8 @@
   .md-typeset h2 { break-before: page; page-break-before: always; }
   .md-typeset h3 { break-after: avoid; break-before: page; page-break-before: always; }
   .md-typeset h2 + h3, .uat-sheet h3, .uat-cover h3 { break-before: auto; page-break-before: auto; }
+  .uat-keep { break-inside: avoid; page-break-inside: avoid; }   /* DOCS_DEPLOY_GUARD.md SPEC (3), W-GUIDE-PRINT P12: a lead-in stays with its table */
+  .uat-keep-small table:not([class]) { font-size: 8.5pt; }
   .uat-cover { break-after: page; page-break-after: always; border: 1.5px solid #333; }
   .md-typeset h1 { margin-top: 18mm; }
   .md-typeset img { max-width: 100%; max-height: 105mm; }
@@ -41,8 +43,8 @@
 |---|---|
 | Document | CAPEX UAT Guide — from 2D drawings to the dashboard |
 | Purpose | The step-by-step test script for the User Acceptance Test of the pilot client (Sysnova): BIM drawings to a priced model, the ERP exercise, the CAPEX dashboard |
-| Revision | **2026-11-20 (b)** |
-| Status | Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately and stays as signed. This revision adds notes to A3.1 and B3.1 and lists, below, what changed or was found since that report. |
+| Revision | **2026-11-21** |
+| Status | Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately and stays as signed. What changed or was found since is listed after this cover. |
 | Prepared and issued by | Redhuan D. Oon, Project Consultant |
 | For | The pilot client's UAT team: System Setup, BIM, Project Mgmt Accounting |
 | The latest copy | Page: [red1oon.github.io/BIMCompiler/CapexUATGuide](https://red1oon.github.io/BIMCompiler/CapexUATGuide/) · PDF: [CapexUATGuide.pdf](https://red1oon.github.io/BIMCompiler/CapexUATGuide.pdf). The PDF is made from the page at every publish and checked (pages, links). |
@@ -53,6 +55,7 @@
 
 | Revision | What changed |
 |---|---|
+| 2026-11-21 | Change list items 9 to 19 (film part 3). No step changed |
 | 2026-11-20 (b) | Change list item 8 and *See how* item 2: film part 2, linked. No step changed |
 | 2026-11-20 | The page *Changes since the signed UAT report* (after this cover); the pages *What is this?* (with *How do I pass?*: the UAT Run Checker and the result file to send back) and *Contents* with page numbers; *See how*, the films (1 linked, 2 pending); a table that fits on a page is no longer cut in two (a long one repeats its header row); A3.1 the Pack In window's steps and result; B3.1 the second currency note |
 | 2026-11-19 | This cover; each section on a new page; page numbers; every link in the PDF opens the public site |
@@ -62,6 +65,8 @@
 | 2026-11-13 | First issue |
 
 </div>
+
+<div class="uat-keep uat-keep-small" markdown="1">
 
 ## Changes since the signed UAT report (2026-11-19)
 
@@ -77,6 +82,19 @@ Read these even if you have already done the UAT. If your run met one of them, r
 | 6 | (film) | The hands-on film shows the ready-marked sheets. The raw-sheet path (B0: mark the sheets yourself, then Arrange) is to follow. | Noted | None; B0 is unchanged |
 | 7 | A2.2, A3.1, C (log in) | After you log in as GardenAdmin, **Chrome** may show its own window *Change your password: the password you just used was found in a data breach*. That is Chrome's warning about the well-known demo password, not an iDempiere error. Until you close it, clicks on the page do nothing. | Noted | Press **OK** on Chrome's window, then go on |
 | 8 | B0, B2.3, B5 (film) | The film *UAT, hands on, part 2* shows the path item 6 said was to follow: the nine sheets as drawn, marked by hand (B0.1 to B0.9), Arrange (B2.3), and the Run Checker with your nine marked copies in box 2 (B5): every row and the run read **PASS**. | Film published: [youtu.be/WvPgjcMbSwo](https://youtu.be/WvPgjcMbSwo) | None; B0 is unchanged. Watch it before you mark the sheets yourself |
+| 9 | C (log in) | The guide names no organization. With the default `*` a purchase order will not save: *Fill mandatory fields: Organization, Warehouse*. | Noted | On the log in page tick **Select Role**, then choose **HQ** and **HQ Warehouse** |
+| 10 | C1.1, D4 | The order window prices a line to the *Purchase* list's 2 decimals (68.1167 becomes 68.12), so an order total differs from *quantity × standard cost* (TD_RIVERSIDE 1,975.48, not 1,975.38; TD_DATAHALL 1,807.92, not 1,799.55, as 1.075 becomes 1.08). D4's *Open purchase orders* then reads **USD 6,741.25**, not 6,738.39. D2b and D3 are not affected (an issue uses the standard cost). | Noted | Pass C1.1 if the line price is the price list's, rounded to the cent; pass D4 at 6,741.25 |
+| 11 | C2.1 | **Create lines from** lists no lines on this iDempiere build (its search binds the wrong field to the order). | Noted | Set **Order** on the receipt header; tab **Receipt Line**, **New**, choose the **Order Line** (product, quantity and *Default HQ Locator* fill in); Save; Complete |
+| 12 | C3.2 | The **Business Partner** search of the Payment window opens with **Vendor = No**, so no vendor is listed. | Noted | In that search set **Vendor** to **Yes** and press **ReQuery**; the vendor's search key is *SeedFarm* |
+| 13 | C (log in) | Chrome's *Save password?* stays open after you log in and takes the keys meant for the page. | Noted | Press **No thanks** |
+| 14 | C4.1, C5.1, D6 | The test projects have **Line Level = Project**; the Project window then hides the **Phase** tab. | Noted | In the project header set **Line Level** to **Phase** and Save; the Phase tab then lists the phases |
+| 15 | C4.4 | **Project Balance** shows 4 decimals (204.3501, 577.625); the guide prints them rounded (204.35, 577.63). | Noted | Pass if it rounds to the guide's figure |
+| 16 | C5.1 | After you tick **Complete**, Save is refused: *Fill mandatory fields: Invoice Rule*. The test data's phases carry none. | Noted | Choose the project's own rule (*None*), then Save |
+| 17 | C5.1 | The Phase tab is a list under the header. | Noted | Click the phase's name, then its pencil (**Edit Record**), to tick **Complete** |
+| 18 | D3 | Adding up the panel's **Spent** column gives 2,020.46; the tile reads **2,020.45** (each row is rounded to the cent). | Noted | Pass at the tile's 2,020.45 |
+| 19 | C4.2 | Each **Issue to Project** opens its own window tab; after several, the first tabs are pushed off the strip. | Noted | Close each Issue tab when done |
+
+</div>
 
 
 ## What is this?
@@ -193,6 +211,8 @@ Steps: A 17 · B 43 (29 if given the marked copies: skip B00, B0) · C 10 · D 1
 
 The nine Shed sheets are the pilot client's own work, so its testers may use them. Any other drawing set goes through the same way once its sheets carry their settings (levels, datums and layer meanings), which the Modeller's **Drawing metadata** panel records.
 
+<div class="uat-keep uat-keep-small" markdown="1">
+
 **Where to find each window.** Every window and process below is in iDempiere's left-hand menu; open the folder and click the entry, or type the name in the menu's **Search** box. A new record is made with the **New** button in the toolbar, saved with **Save**, and a document is finished with its **Document Action** button (choose **Complete**, then **OK**).
 
 | Name used in this guide | Menu path |
@@ -210,6 +230,8 @@ The nine Shed sheets are the pilot client's own work, so its testers may use the
 | Material Receipt | Requisition-to-Invoice (Purchasing) ▸ Material Receipt |
 | Purchase Invoice and Credit/Debit Note | Requisition-to-Invoice (Purchasing) ▸ Purchase Invoice and Credit/Debit Note |
 | Payment and Receipt | Open Items (Financial Movements and Aging) ▸ Payment and Receipt |
+
+</div>
 
 **Who does what:** see the checklist sheet above.
 
@@ -380,6 +402,8 @@ The panel has sections you open by clicking their title: **All defaults** (the y
 | ELEV sheets | `0` | column, **1S_ELEV_SOUTH only** (one sheet only) | the columns drawn on the south elevation |
 | SECTION sheets | `Fo` | bar | the truss members of section A-A |
 
+<div class="uat-keep" markdown="1">
+
 **B0.6 · the five level datums** (`0.6096` m = 24 in, the plinth level *PL*: on every elevation the PL line is drawn 24 in above the ground line)
 
 | Card | y where drawn |
@@ -389,6 +413,8 @@ The panel has sections you open by clicking their title: **All defaults** (the y
 | `2_ELEV_WEST` | `-4515.7264` |
 | `7_ELEV_EAST` | `-3766.442` |
 | `8_SECTION_AA_TRUSS` | `-3726.416` |
+
+</div>
 
 **B0.5 · where the body heights come from.** Footing F-1 is 12 in thick, its top 45 in below the finished ground (z −1.143 m to −1.4478 m). The beams run from 122 in to 132 in above the ground (3.0988 m to 3.3528 m), as the section's lines give them; the elevations draw the beam soffit at 120 in, a 2 in difference the drawings leave open and this test does not settle.
 

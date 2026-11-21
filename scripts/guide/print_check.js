@@ -9,6 +9,7 @@
 //   P4 every row's markers present (a missing end marker = the row's last column was cut off). Markers are qq<ID>qq: lowercase ends that cannot run into a neighbour (two adjacent QQ…QQ markers once read as one, a false P4 FAIL)
 //   P5 the clean and the marked prints agree: same page count, same first text line on every page (the markers move nothing)
 //   P2b every ### heading not right after its ## starts a page · P6 the cover (.uat-cover) is page 1 alone · P7 every page reads "Page i of N" with the true N
+//   P12 every table's lead-in (the visible element right before it) starts and ends on the page where the table's first row starts (DOCS_DEPLOY_GUARD.md SPEC (3)); PRINT_BREAK=lead drops .uat-keep: P12 must FAIL
 //   P8 no link in the PDF points at the print server; every link into the site resolves to a built page (and its #id) · P9 every outside link answers 2xx/3xx
 //   (spec: prompts/DOCS_DEPLOY_GUARD.md "Printable guides, 2026-11-19 SPEC")
 // PRINT_BREAK=1 removes the sheet's break-after before printing: P1 must FAIL. PRINT_BREAK=clip makes every table wider than the page: P4 must FAIL.
@@ -40,6 +41,7 @@ const stop = (code, why) => { say('§PRINT_VERDICT ' + (code === 3 ? 'INCONCLUSI
     if (CLIP) await pg.addStyleTag({ content: '@media print { .md-typeset table:not([class]) td:first-child { min-width: 150mm !important; } }' });   // PRINT_BREAK=clip: tables wider than the page
     if (BK('cover')) await pg.addStyleTag({ content: '@media print { .uat-cover { break-after: auto !important; page-break-after: auto !important; } }' });
     if (BK('tables')) await pg.addStyleTag({ content: '@media print { .md-typeset table:not([class]) { break-inside: auto !important; page-break-inside: auto !important; } }' });   // P10 must FAIL
+    if (BK('lead')) await pg.addStyleTag({ content: '@media print { .uat-keep { break-inside: auto !important; page-break-inside: auto !important; } }' });   // P12 must FAIL
     if (BK('h3')) await pg.addStyleTag({ content: '@media print { .md-typeset h3 { break-before: auto !important; page-break-before: auto !important; } }' });
     // P8: a link that resolves to the print server is written under the public site_url (Chrome writes each link resolved against the page's own origin)
     const links = await pg.evaluate((pub, keep) => { const o = location.origin, out = [];
@@ -69,6 +71,10 @@ const stop = (code, why) => { say('§PRINT_VERDICT ' + (code === 3 ? 'INCONCLUSI
       if (sheet) { put(sheet, 'qqSAqq'); put(sheet, 'qqSZqq', true); const visible = el => el && getComputedStyle(el).display !== 'none' && el.innerText.trim();
         let b = sheet.previousElementSibling; while (b && !visible(b)) b = b.previousElementSibling; let a = sheet.nextElementSibling; while (a && !visible(a)) a = a.nextElementSibling;
         if (b) put(b, 'qqBEFOREqq', true); if (a) put(a, 'qqAFTERqq'); P.sheet = { before: !!b, after: !!a }; }
+      P.leads = []; Array.from(root.querySelectorAll('table:not([class])')).forEach((t, ti) => { const w = t.closest('.md-typeset__scrollwrap') || t; let b = w.previousElementSibling;
+        while (b && !(getComputedStyle(b).display !== 'none' && b.innerText.trim())) b = b.previousElementSibling;
+        if (b && (b.matches('table, .md-typeset__scrollwrap') || b.querySelector('table'))) b = null;   // a table right after a table has no lead-in of its own
+        if (b) { put(b, 'qqL' + ti + 'Aqq'); put(b, 'qqL' + ti + 'Zqq', true); const tx = b.innerText.replace(/qq[A-Z0-9]+qq/g, '').replace(/\s+/g, ' ').trim();   /* the row markers already in it are not the reader's text */ P.leads.push({ ti, text: tx.slice(0, 50), first: tx.slice(0, 40), last: tx.slice(-30) }); } });
       return P; });
     // P10: each table's height at the printed text width (A4 210 mm - 2 x 12 mm = 186 mm ~ 703 px), measured in print media, then the viewport is put back
     if (mark) { const vp = pg.viewport(); await pg.setViewport({ width: 703, height: 1000 });
@@ -89,7 +95,7 @@ const stop = (code, why) => { say('§PRINT_VERDICT ' + (code === 3 ? 'INCONCLUSI
   const pages = f => { const n = Number((cp.execFileSync('pdfinfo', [f], { encoding: 'utf8' }).match(/Pages:\s+(\d+)/) || [0, 0])[1]); const out = [];
     for (let i = 1; i <= n; i++) out.push(cp.execFileSync('pdftotext', ['-f', String(i), '-l', String(i), f, '-'], { encoding: 'utf8' })); return out; };
   const clean = pages(OUT), marked = pages(MARKED), at = {}, order = [];
-  marked.forEach((t, i) => { (t.match(/qq[A-Z0-9]+qq/g) || []).forEach(m => { if (!(m in at)) at[m] = i + 1; if (!/^qqK/.test(m)) order.push([i + 1, m]); });   /* the Contents-target markers (qqK) share their heading's start: never "first on a page" (P2, P2b) */ });
+  marked.forEach((t, i) => { (t.match(/qq[A-Z0-9]+qq/g) || []).forEach(m => { if (!(m in at)) at[m] = i + 1; if (!/^qq[KL]/.test(m)) order.push([i + 1, m]); });   /* the Contents-target markers (qqK) share their heading's start: never "first on a page" (P2, P2b) */ });
   say('§PRINT page=' + NAME + ' clean_pages=' + clean.length + ' marked_pages=' + marked.length + ' rows=' + plan.rows.length + ' headings=' + plan.heads.length + ' sheet=' + !!plan.sheet + (BREAK ? ' (BREAK: the sheet keeps no break-after)' : CLIP ? ' (BREAK clip: tables wider than the page)' : '') + ' bytes=' + fs.statSync(OUT).size);
   if (!plan.rows.length || !plan.heads.length) stop(3, 'nothing to judge: rows=' + plan.rows.length + ' headings=' + plan.heads.length);
   // P1
@@ -116,6 +122,14 @@ const stop = (code, why) => { say('§PRINT_VERDICT ' + (code === 3 ? 'INCONCLUSI
   // P5
   const first = t => (t.split('\n').map(l => l.replace(/qq[A-Z0-9]+qq/g, '').trim()).find(Boolean) || ''), differ = clean.map((t, i) => [i + 1, first(t), first(marked[i] || '')]).filter(x => x[1] !== x[2]);
   ck('P5 the published print and the marked print paginate alike', clean.length === marked.length && differ.length === 0, { pages: [clean.length, marked.length], differ: differ.slice(0, 4) });
+  // P12 (SPEC (3)): a table's lead-in is on the page where the table starts, and not cut across two
+  const leads = (plan.leads || []).filter(l => tb.some(t => t.ti === l.ti && t.h <= 1017));   // the tables that fit the text height (1017 px): a taller one breaks anyway, its lead-in is not judged
+  // the lead-in's pages are read from its OWN TEXT on the published pages (what the reader sees): an absolute marker inside a block that a keep rule moved to the next page
+  // was measured painted at the block's old place (2026-11-20: 'Where to find each window' read page 6 by marker, page 7 by text). The marker is the fallback when the text is not found.
+  const nrm = t => t.replace(/-\n/g, '').replace(/\s+/g, '')   /* whitespace dropped: a code span prints as '( 0.6096' */, cleanN = clean.map(nrm), pageOfText = (t, upto) => { const k = nrm(t); for (let i = Math.min(upto, cleanN.length); i >= 1; i--) if (cleanN[i - 1].indexOf(k) >= 0) return i; return 0; };
+  if (leads.length) { const off = leads.filter(l => { const r = at['qqR' + l.ti + 'X0Aqq'], a = pageOfText(l.first, r || 999) || at['qqL' + l.ti + 'Aqq'], z = pageOfText(l.last, r || 999) || at['qqL' + l.ti + 'Zqq']; l.pa = a; l.pz = z; return !(a && a === z && a === r); })
+      .map(l => l.text + ' (lead pages ' + l.pa + '-' + l.pz + ', table starts ' + at['qqR' + l.ti + 'X0Aqq'] + ')');
+    ck('P12 every table\'s lead-in is on the page where the table starts (' + leads.length + ' judged, tables that fit a page)', off.length === 0, { off: off.slice(0, 6), nOff: off.length }); } else say('§PRINT P12 not judged: no table has a lead-in');
   // P2b
   const badSubs = plan.subs.filter(h => !h.afterChapter && (!at[h.id] || firstOn(at[h.id]) !== h.id));
   if (plan.subs.length) ck('P2b every section heading (###) not right after its chapter heading starts a page (' + plan.subs.filter(h => !h.afterChapter).length + ' judged)', badSubs.length === 0, { notAtTop: badSubs.map(h => h.text + ' (page ' + at[h.id] + ')').slice(0, 6) });

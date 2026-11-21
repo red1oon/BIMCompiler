@@ -44,7 +44,7 @@ W-X0-SESSION 8/8) + the SessionEnd hook in `~/.claude/settings.json` (stderr + e
 **1. NEXT, in order** (session closed 2026-11-18 by the owner: *"close, will resume VSC in future"*).
 00. **RENAME ✅ 2026-11-18: X0 / x0 → Code Facts / code-facts** (§F.40 SPEC + RESULT; bim-ootb #3317). Everything below that says X0 / x0 means this tool under its old name. Docs: Developer Guide §3/§4.1 rewritten, first sentence is the owner's. Film 4 v4 is the owner's next step, from the SCRIPT v4 section of `prompts/FILM_IMMERSIVE_SOFTWARE.md` (another agent).
 0. **FILM 4 v4 ✅ BUILT 2026-11-18 (owner: "Lets do it")**: current file `~/Videos/Dev_Setup_CH0_EN_AFTER_2026-11-18_v4c.mp4`, 172.5 s (over the ~150 s target; the session beat is cut), scripts `scripts/film_dev_setup/` (v2 = git history). All gates PASS (`§FILM_GUARD`, `§K2`, `§KEYS`, `§FLOW`, `§STRIP_VIDEO`, voice 0 WRONG); one name on screen (Code Facts), a progress strip, three fixed cues, an animated pointer drawn to the token's real pixel rectangle. The owner's first v4 cut had a leftover top bar over the last cards (found by watching; fixed, check S in cards and on the encoded file). Details, defects, rebuild recipe in `prompts/FILM_IMMERSIVE_SOFTWARE.md` # FILM 4 STATUS. Waiting on the owner: review of v4c and a cut list (about 22 s over), F-27 (published installer: not now).
-1. **B2 spec** (ERP as a source app; ERP's site numbers disagree, so a site-level `v` until B4-HASH).
+1. **B2 ✅ and B3 ✅ DONE 2026-11-20: all three apps are written from `<app>/modules.json`** (ERP bim-ootb #3367 + #3373, viewer #3378 → `14bb498f`; Part B, "B2 PART 2 RESULT" and "B3 RESULT"). **B3-Q2 ✅ ANSWERED 2026-11-21: the three outside pages come in NOW (step B3-OUT, before B4-HASH), then the old regex path of `bump.js` is deleted. B3-Q3 ✅ 2026-11-21: `archive/gallery.html` frozen. **B3-OUT BUILD SPEC written 2026-11-22** (Part B, after B3 RESULT: 4 referrers, not 3 — `import_own.js` is the fourth). Next in B: build B3-OUT, then the B4-HASH spec (content hashes, an announced step, B-1).**
 2. **D spec** (owner table: `<app>/questions.json`, `"extends"` marks, W-OWNER-UNIQUE).
 3. Grow the CI fast tier when a runner has filled the cache (`node scripts/gen_ci_tier.js --write --probe`); add `PROVES:` lines as witnesses are touched.
 4. **§F.41 W-VSC-OPERATIONAL ✅ 2026-11-19** (#3332): 39 entry points, all routed, 27 run, 12 not run by design (browser / heavy, named); local, ~90 s. Run it before a PR that adds a page, command or runner.
@@ -55,8 +55,8 @@ Done this session (tenth): B1, E0, E1, F-25 `x0`, F-26 `x0 session` + SessionEnd
 | Part | State | Next step |
 |---|---|---|
 | A | ✅ DONE 2026-11-17: A0, A-1..A-7, A1, A2, A3 (W-CORE-PURE PASS, `forbidden=0`, in CI). Results: Part A RESULT INDEX | none |
-| B | **B0 ✅** (#3200, W-MANIFEST-ROUNDTRIP in CI) · **B1 ✅** 2026-11-18 (#3245, #3250: modeller written from modules.json, 25 deps declared) · **B-1 ✅** 2026-11-18 content hashes, own step · **B-2 ✅** 2026-11-18 per-module flag as today · **B-5 ✅** tool proposes deps, a person confirms · **B-3 ✅** owner + witnesses per module · **B-4 ✅** plugin precache derived, `BUILTINS` untouched | B2 (ERP as a source app); first measure ERP's numbers that disagree (B-1 keeps them until B4-HASH) |
-| C, D | not started; wait on B | — |
+| B | **B0 ✅** (#3200, W-MANIFEST-ROUNDTRIP in CI) · **B1 ✅** 2026-11-18 (#3245, #3250: modeller written from modules.json, 25 deps declared) · **B-1 ✅** 2026-11-18 content hashes, own step · **B-2 ✅** 2026-11-18 per-module flag as today · **B-5 ✅** tool proposes deps, a person confirms · **B-3 ✅** owner + witnesses per module · **B-4 ✅** plugin precache derived, `BUILTINS` untouched | **B2 ✅** and **B3 ✅** 2026-11-20 (#3367, #3373, #3378): viewer, ERP and modeller written from `modules.json`, 261 deps declared. **B3-Q2 ✅** 2026-11-21 (outside pages in now). **B3-Q3 ✅** (gallery frozen). B3-OUT spec ✅ 2026-11-22. Next: build B3-OUT, then the B4-HASH spec |
+| C, D | not started; B's data is now there for all three apps (D can start: D spec) | — |
 | E | **E0 ✅** 2026-11-18 `witness_kit/paths.js` (#3256) | ask E-1 (the `PROVES:` header) |
 | F | every row that needs no data from B to E is built (§F index, F.0 to F.35) | F-2 ceilings on 2026-11-30; the F-1 headless Fetch-back button (unbuilt, browser go given); rows waiting on B/D/E data |
 
@@ -284,7 +284,7 @@ when anything it covers changed. The page stays a static file. **No build step a
 them from it is **byte-identical** to what is committed. No file changes. B1 switch one app (smallest first: modeller, 59 tags) to "manifest is the
 source", generated sections between markers, byte-identical again. B2 erp, B3 viewer. `tests/audit_sw_precache.js` stays green throughout.
 
-**OPEN DECISIONS:** none. B-1 to B-5 and B1-Q1 to B1-Q3 are answered (DECISIONS).
+**OPEN DECISIONS:** none. B-1 to B-5, B1-Q1 to B1-Q3, B2-Q1, B2-Q2, B3-Q2 and B3-Q3 are answered (DECISIONS).
 
 **Witnesses:** W-MANIFEST-ROUNDTRIP (manifest → generated text byte-identical to committed; red control: swap two dependent modules → generator
 refuses) · `audit_sw_precache.js` · page boot witnesses unchanged.
@@ -316,6 +316,24 @@ deploy workflow still green on the first merge after each switch (fetch `erp/ver
   never runs `bump.js`. Asked again: keep the stored list (refresh in bump + C15 a warning; the file then holds a list that is sometimes stale) or work it
   out when asked (recommended; the extractor already exists, one reader `scripts/gen_proof_map.js:39` moves onto it). Owner: *"Follow your advice"*.
   → §B-3R SPEC below.
+
+- **B3-Q2 (2026-11-21, thirteenth session).** Asked with the recommendation "keep the old regex path of `bump.js` for the three outside pages until B4-HASH". Owner: *"is it better to change early and mature faster?"*
+  The session then measured the three pages against the apps' lists (bim-ootb `main` @ `e4fa52fe`, each page's `?v=` against the owning app's `modules.json` `v`):
+  `index.html` loads 7 app files and 2 are behind (`viewer/locale_loader.js` 15 vs 16, `viewer/import_db_builder.js` 11 vs 12) · `capex/index.html` loads 6 ERP files, 0 behind ·
+  `archive/gallery.html` loads 9 files in 15 tags, most behind (e.g. `viewer/import_worker.js` 9 vs 22). (`test/test_ifc_export.html` also matches `?v=`, but only inside `new Worker(...)` literals of a May fixture: not a tag.)
+  So the old path does not keep them in step today, and B4-HASH would have to bring them in anyway. Revised recommendation: bring them in now, each outside tag taking its number from the app that owns the file
+  (`capex/` is not a fourth app: all 6 of its tags are ERP files), delete the regex path, and let W-MANIFEST-ROUNDTRIP cover the three pages. Owner: *"proceed"*. → **B3-Q2 = bring them in now, as step B3-OUT, before B4-HASH.**
+  **CORRECTION, same session, after reading `scripts/bump.js:122-134` and the history:** "behind" was partly wrong. The regex path DOES raise outside pages (every page not owned by an app), each site from ITS OWN number,
+  so a different number is not a stale one: `fce8fdc4` (#3302) raised `index.html`'s `locale_loader.js` 14→15 in the same commit that raised the viewer's 15→16. The ONE real miss measured: `viewer/import_db_builder.js`
+  went 11→12 in `viewer/viewer.html` (#2702, `8d1ede96`, 2026-11-08) but `index.html` stayed at 11 (that change did not go through `bump.js`). No `sw.js` serves `index.html`, `capex/` or `archive/`, so the cost of a miss there
+  is the browser's own cache, not a service worker. The decision still stands on its other grounds (B4-HASH has to bring these pages in anyway; one real miss exists; one step, one cause); the owner was told the correction.
+- **B3-Q3 (2026-11-21, thirteenth session).** Asked: is `archive/gallery.html` frozen as it is, or kept current? Measured: it is the old front page kept when the new landing replaced it (`index.html:8`), nothing links to it
+  (one code comment, `viewer/scene.js:1072`), last edited 2026-10-04; freezing stops only its `?v=` from following, the page still loads today's files. Recommended: freeze it (the witness counts its tags, owns none, no bump edits it;
+  B3-OUT covers `index.html` + `capex/index.html`, 14 tags). Owner: *"agree"*. → **B3-Q3 = frozen.**
+
+- **B2-Q1 and B2-Q2 (2026-11-20, twelfth session).** Asked B2-Q1 with the measured 216 order-forcing edges and the recommendation "the session reads all 216 and cites each; the owner is shown only the ones that
+  are not plain, plus the count of the rest". Owner: *"decide for me"*. → **B2-Q1 = as recommended.** The session took the same words for **B2-Q2 = yes** (an ERP bump raises the inline literals with their module, the two service-worker
+  register lines stay pinned): it was the other open question of the same spec, and its recommendation repeats his B1-Q2 answer for the modeller. He was told so in the same reply; it can be reversed before the switch PR (part 2) at no cost.
 
 - **B1-Q1, B1-Q2, B1-Q3 (2026-11-18, tenth session).** Asked one per message with the B1 BUILD SPEC counts. **B1-Q1** (32 comments + 4 inline scripts between the page's
   67 tags, 59 comment marks between `sw.js`'s 164 entries; A = they stay in the files, tool rewrites only tags/entries, +4 marker lines; B = into the manifest;
@@ -570,6 +588,271 @@ known blind spot) must be caught; on the real modeller every cited file:line hol
   `viewer_db_export`) fail identically on unedited main `43218701`: not B1's, handed to the modeller lane as information.
 - Live sessions told before the merge (5 peers); the LOD Upgrade pill lane (P5–P7 open) was told how lazy `lod/*.js` packs are listed (precacheOrder only, unless a `?v=` site names them).
 - Note: `modeller/modules.json` is served by Pages as a static file (HTTP 200) because Pages serves tracked files; nothing fetches or precaches it (C12).
+
+**B2 BUILD SPEC (2026-11-20, twelfth session; spec only, no bim-ootb change yet; two owner questions at the end, B2-Q1 and B2-Q2).** Scope: `erp/` becomes "the manifest is the
+source", the way the modeller did in B1. The viewer stays in check mode (B3). Every number below was measured read-only on bim-ootb `main` @ `79755693` with the shipped tools
+(`node scripts/gen_manifest.js --check --out <scratch>`, `node scripts/gen_deps_candidates.js erp`); a number with no `§` line beside it came from reading that `--out` file or from the `git` / `grep` command named.
+
+**Baseline.**
+- `§MANIFEST_APP app=erp pages=13 loaders=5 modules=297 boot=274 lazy=23 sites=366 tag=338 asset=0 inline=23 lazy_sites=5 precache=419 cacheVersion=v1120`
+- `§MANIFEST_VERSIONS app=erp versioned_modules=267 one_version=246 disagree=10 sites_below_max=14 files=erp/icons.js,erp/erp_picker.js,erp/kernel_ops.js,erp/kanban_lens.js,erp/model_layer.js,erp/tip_fold.js,erp/crud_core.js,erp/crud_overlay.js,erp/manifest.json,erp/sw.js`
+- `§MANIFEST_UNVERSIONED app=erp tags_without_v=56` (42 modules) · `§MANIFEST_INLINE_SITES app=erp inline_sites=23 … partial_literals=4` · `§MANIFEST_MISSING app=erp targets_not_on_disk=0`
+- `§MANIFEST_LAZY_PRECACHE app=erp lazy_precached=22 lazy_not_precached=1 boot_not_precached=13 precached_not_referenced=136 dup_entries=0` · `§MANIFEST_PLUGINS app=erp precached_mjs=29 on_disk=36`
+- Whole check: `§MANIFEST_CHECK apps=3 files=55 identical=55/55 sites=830 … precache=907 order_check=PASS deps_declared=25 unreviewed=0 source=modeller written=0 verdict=PASS`.
+- Sites per file: `idempiere.html` 240 tags + 17 inline · `glassbowl.html` 19 + 1 · `till.html` 18 · `genesis.html` 14 · `erp.html` 12 + 3 · `branch_admin.html` 9 · `spike_writepath.html` 6 · `kanban_lens.html` 5 + 1 ·
+  `glassbowl_gravity.html` 4 + 1 · `kitchen.html` 4 · `pivot_lens.html` 3 · `chat_lens.html` 2 · `borrower.html` 2 · 5 loaders, 1 literal each (`ninja_pill.js`, `plugin_overlay.js`, `ad_attachment.js`, `erp_pills.js`, `idmp_pills.js`).
+  46 modules sit on 2 or more pages; 23 of the 297 live outside `erp/`; 6 tags carry an `onerror`. `git ls-files 'erp/*.html'` = 20, so 7 ERP pages have no site and stay unowned (B0 deviation 2).
+- **How busy the tree is** (`git log --since="7 days ago" origin/main`): 50 commits touched `erp/sw.js`, 46 touched `erp/idempiere.html`. The modeller had nothing like this.
+
+**What is the same as B1 (not repeated here):** the file is `erp/modules.json` (`erp/manifest.json` is the web-app manifest), one record per line, canonical form, dev-side only (C12) · hand-written comments stay in the files, the
+generator owns whole sites (B1-Q1 = A) · `load` / `lazyGroup` / `precache` copied as today (B-2) · `owner` extracted or empty, witnesses worked out when asked (B-3 REVISED) · `deps` / `uses` / `notDeps` and `depsReview` ·
+the 29 plugin `.mjs` precache entries stay plain entries of `precacheOrder` exactly as today (B-4's "derive from disk" adds 7 and is its own later step) · `bump.js` keeps its command lines, exit codes and `§BUMP` lines.
+
+**What ERP needs that the modeller did not (the five design points of B2).**
+1. **A number per site where the pages disagree (B-1: today's numbers stay until B4-HASH).** `modules.json`'s `order` entries gain an optional `v`. A module's `v` is its highest number today; a site carries its own `v` only when it
+   differs (14 sites today, e.g. `erp/icons.js` is 12 on `idempiere.html`, 26 on `erp.html`, 3 on `glassbowl.html` and `glassbowl_gravity.html`). A tag with no `?v=` of a module that is versioned elsewhere carries `"v": null`
+   (`erp/kernel_ops.js`: 8 on `idempiere.html`, 6 on two lens pages, none on `glassbowl.html` and `spike_writepath.html`; how many more such modules: counted at build). A site `v` equal to its module's is "not canonical" and refused.
+   The schema keeps refusing a site `v` in the modeller (`disagree=0` there). B4-HASH deletes the field.
+2. **Bump keeps today's arithmetic.** Today's `bump.js` raises every reference by one from its own number (`scripts/bump.js:122-131`). The manifest path does the same: the module's `v` and each site `v` go up by one, a `null` stays `null`.
+   So a bump of a disagreeing module writes the same bytes as the old bump (claim C17).
+3. **Several marker pairs per page.** `idempiere.html`'s 240 tags are in two groups, lines 551-865 (211 tag lines) and 8160-8180 (3 tag lines), 7,300 lines of page script apart. One pair around both would say nothing. Rule: a page may hold
+   any number of `§MANIFEST:BEGIN erp tags` / `§MANIFEST:END erp tags` pairs, placed by hand in the switch PR; the generator refuses a `<script src>` outside every pair and a pair with no tag. How many pairs the 13 pages need: counted at build
+   (`idempiere.html` 2; the other 12 not looked at one by one here). `erp/sw.js`: one precache pair inside `const PRECACHE_ASSETS = [` (line 77) … `];` (line 379), as B1.
+4. **Two literals no bump may raise: `navigator.serviceWorker.register('sw.js?v=683')` (`idempiere.html:8175`) and `…('sw.js?v=600')` (`erp.html:389`).** They are inline sites of the module `erp/sw.js`. `sw.js` changes with every bump
+   (its `CACHE_VERSION`), so under B1's rule "inline literals go up with their module" every later bump of a branch would also change the address the service worker is registered under. Nothing raises them today (the old bump cannot see
+   inline literals). B2 keeps that: an `order` entry may carry `"pin": true`; the generator writes it, `--check` guards it, bump never raises it. What a browser does when that address changes was not measured, which is the reason not to change it here.
+   The other 21 inline literals (15 team / comm / attachment scripts, 3 `manifest.json`, 3 pill / bubble JSON) follow B2-Q2.
+5. **The dependency review is six times larger** (next block), and the order rule is per page: a `deps` target must load before its reader on every page where both are tags (46 modules are on 2+ pages).
+
+**The `deps` candidate list (B-5), measured:**
+`§DEPS_SUMMARY app=erp modules=297 read=288 inline_bodies=25 skipped=9 parse_fail=0 candidates=603 load=186 load_guarded=30 call=204 call_guarded=183 import=0 import_not_module=0 forces_order=216 against=56 against_load_unguarded=1 ambiguous=5 published=375 published_by_2plus=5 new=603`
+- By class and today's tag order (counted from the `§DEPS_CAND` lines): load 182 ok / 1 AGAINST / 3 n/a · load-guarded 22 / 3 / 5 · call 154 / 23 / 27 · call-guarded 129 / 29 / 25.
+- So **216 edges can force an order; 204 of them agree with today's tag order, 4 run against it, 8 cannot be placed** (the two are not tags of one page). The 387 call-time edges go in as `uses` on the tool's evidence (B1-Q3, unchanged).
+- The 4 against today's order: `erp/model_pa.js:11` → `ad_callout.js` (load; read here: `A = root.AdCallout` at load, but `:16` reads `root.AdCallout || A` again at call time, and the page loads `model_pa.js` at `idempiere.html:698`, before
+  `ad_callout.js` at `:702`, so it works today without the order: proposed `uses`) · `erp_replica_client.js:14` → `overlay/boot.js` (name `fetch`) · `erp_seam.js:31` → `bigdecimal.js` (`BigDecimal`) · `erp_snapshot_sign.js:12` → `genesis.js` (`crypto`).
+  The last three are load-guarded and not read yet; they are read at build, like every other edge.
+- `§DEPS_AMBIGUOUS` 5 (the shared `ERP` object with 5 to 6 publishers, and `IdmpPillActions` with 2): printed, not edges.
+
+**Build order: two PRs, so the busy tree is touched once and briefly.**
+- **Part 1 (no ERP file changes):** the generator learns points 1 to 4 (`scripts/lib/manifest_source.js`, `gen_manifest.js`, `bump.js`), proven on fixtures and on a temp copy of the real ERP tree switched in memory; the modeller's bytes and its
+  `claims=15/15` unchanged. The session reads the 216 order-forcing edges and writes the proposed lists here (B2-Q1).
+- **Part 2 (the switch):** `gen_manifest.js --init erp`, the marker lines, the confirmed `deps`, one `CACHE_VERSION` step (v1120 → the next number at merge time), CI's W-MANIFEST-ROUNDTRIP with `source=modeller,erp`. Live sessions are told first
+  (START HERE 4). Main moves about 7 times a day on these files, so the PR is opened, checked and merged in one sitting, and re-inited (not hand-merged) if main moved.
+
+**Witnesses.** W-MANIFEST-ROUNDTRIP is extended (same file, same CI step). B1's C8 to C15 and R6 to R12 run for every source app (`source=modeller,erp`). New claims, ERP:
+| Claim | What it says | Judged against (never the generator itself) |
+|---|---|---|
+| C16 | Site numbers are exactly today's disagreements: the sites that carry their own `v` are the sites B0's reader finds below their module's highest number, plus the unversioned tags of versioned modules | B0's `buildApp` read of the tree (`§MANIFEST_VERSIONS`) |
+| C17 | A bump of a disagreeing module writes what the old bump wrote: for `erp/icons.js`, `erp/crud_overlay.js` and `erp/kernel_ops.js`, the tag bytes equal those of `bump.js` from the commit before the switch, run on the same tree | `git show <parent>:scripts/bump.js` on a temp copy |
+| C18 | The pinned literals do not move: a bump whose targets include `erp/sw.js` and a `--changed` bump on a branch that changed it leave both `sw.js?v=` literals as they were | the two page lines before and after |
+| C19 | The deploy stamp still reads the version: the pattern of `.github/workflows/deploy-pages.yml:35` (`CACHE_VERSION = '[^']+'`) applied to the generated `erp/sw.js` gives the manifest's `cacheVersion` | the workflow's own pattern |
+| C20 | The order holds on every page: for each `deps` pair, on each of the 13 pages where both are tags, the target is first; printed as `pairs_judged= pages_judged=` | `checkOrder` per page |
+**Red controls (same run, temp copy, each must FAIL):** R13 swap the site numbers of one module between two pages → `--check` FAIL naming both lines · R14 delete one site `v` → FAIL · R15 a site `v` equal to its module's → "not canonical" ·
+R16 a `<script src>` planted between the two marker pairs of `idempiere.html` → refused · R17 `"pin"` removed from a register literal, then a bump with `erp/sw.js` among the targets → C18 FAIL · R18 a `deps` pair in the right order on
+`idempiere.html` and swapped on a second page → refused, naming that page · R6 on a real confirmed ERP pair (`synthetic=N`).
+**Red on the old code:** C16 to C18 must FAIL on the generator as it is on `main` today (it refuses a site `v`, and has no `pin`).
+**INCONCLUSIVE, never PASS, when:** `erp/modules.json` is missing or has 0 modules; 0 sites carry their own `v` (C16 and C17 would judge nothing); no `deps` pair has both ends as tags on 2+ pages (R18 would judge nothing);
+the parent `bump.js` cannot be read; any red control did not fail; C13 has unreviewed edges.
+`§MANIFEST_ROUNDTRIP apps=3 source=modeller,erp files= sites= site_v= pinned= identical=N/N driven=N/N claims=20/20 red=18/18 order_check=PASS|INCONCLUSIVE deps_declared= unreviewed= owner_gap= verdict=`
+**Runs that must be unchanged, before (on `main`) and after (on the branch), logs kept and read:** the tests that read the two changed files as text (`git grep -lE "readFileSync\([^)]*idempiere\.html"` = 36 files; the same for `sw\.js`
+under `erp tests scripts` = 11): a marker line could move one of them · `node scripts/tests/witness_bump.js` · `node tests/witness_bump_parity.js` · the parity gate once on the switch branch (§F.32, `--compiler-root` at a current
+bim-compiler) · W-CORE-PURE · W-DEPS-CAND · the Code Facts ship and bump-button witnesses · W-VSC-OPERATIONAL (§F.41) · the CI fast tier · the full W-MANIFEST-ROUNDTRIP with C7 and C9 · `tests/audit_sw_precache.js` (viewer) ·
+after the merge: the Pages deploy green, `erp/version.json` fetched back with `build` = the new `CACHE_VERSION`. The deployed `erp/sw.js` is minified, so the marker comments are not expected in the fetched copy (not measured; the modeller's are, it is not minified).
+**Issue proved:** "ERP's module lists (13 pages, 5 loaders, one service worker, numbers that disagree between pages) cannot be owned by one committed manifest, with declared load order, without changing a byte the browser gets".
+
+**Deletion budget (stated honestly: B2 adds, it does not remove).** Hand-kept today, generated after: 338 tags, 23 inline and 5 loader literals in 18 files, 419 precache entries, `CACHE_VERSION`. New file `erp/modules.json`, about 1,100 lines
+(297 + 366 + 419 + header; an estimate). Marker lines: 2 per pair + 2 in `sw.js`. **Removed: 0 lines of pages or lists**; `bump.js` keeps its regex path while the viewer uses it (it goes at B3, `bump.js` itself at B4-HASH).
+
+**Risks.**
+- **A live ERP session on an older branch hand-edits a tag or `sw.js`:** CI fails with the file, the line and "edit erp/modules.json". With 50 `sw.js` commits a week this WILL happen in the first days. Sessions that bump with `bump.js` or the Bump button notice nothing.
+- **Merge rule for sessions** (replaces "keep both precache additions, take the higher `CACHE_VERSION`" for ERP): merge `erp/modules.json` keeping both sides' lines and the higher `cacheVersion`, then `node scripts/gen_manifest.js --write erp`, then `--check` = PASS. CLAUDE.md's WORK-TO-ZERO line is updated in the switch PR's companion docs PR.
+- A test that reads `idempiere.html` by line number moves with the marker lines: caught by the before / after runs, fixed in the test.
+- The first ERP bump after the switch: the build ends with a real `--write` bump of one single-number module and one disagreeing module on the branch, diffed against the old bump's bytes.
+- A false `deps` edge would refuse a legal reorder: only edges a person confirmed are `deps`.
+
+**Not in B2:** the viewer (B3) · content hashes (B4-HASH) · unifying the 10 disagreeing modules' numbers · deriving plugin precache entries from disk (B-4's step) · any change to what is precached · the 7 ERP pages with no site, test fixtures, `erp/tests/*.html` ·
+moving or deleting a tag or comment · the 4 partial `?v=` literals (not whole-string sites; counted, never owned) · the web-app `erp/manifest.json` itself.
+
+**Owner questions (ANSWERED 2026-11-20: both as recommended; see DECISIONS).**
+- **B2-Q1: who confirms ERP's 216 order-forcing dependencies?** The modeller had 37 and the owner confirmed them as one short list. **Recommended:** the session reads all 216 in the code and writes file:line for each here; the owner is shown
+  only the ones that are not plain (the 4 that run against today's order, the 8 that cannot be placed, and any the session moves out of `deps`) plus the count of the rest, and confirms that in one message. Alternative: the owner is shown all 216.
+- **B2-Q2: may an ERP bump also raise the 21 inline literals the old bump cannot see, as the modeller's does (B1-Q2), while the two service-worker register lines stay untouched?** Recommended: yes.
+
+**B2 PART 1 RESULT — ✅ DONE 2026-11-20 (bim-ootb #3365, PR #3367 → main `1cedcf2f`).** The generator learned points 1 to 4 of the spec; no ERP file changed; ERP is still in check mode. +147 / −21 lines in
+`scripts/lib/manifest_source.js`, `scripts/bump.js`, the witness, and one line of `modeller/modules.json`.
+- **Built:** an `order` entry may carry `v` (integer or null) and `pin`; `MS.raise()` is the one bump arithmetic (module `v` and each site `v` + 1, a pinned site keeps its number); `MS.bumpSites()` says which sites a bump raises (used by the
+  bump loop and by `--changed`); `--init` no longer refuses differing numbers (module `v` = the highest, a differing site keeps its own, an inline site that names the app's own `sw.js` gets `pin`); a page may hold any number of marker pairs
+  (in order, never nested, none empty).
+- **Measured, more exact than the spec:** 28 sites carry their own `v`: 14 below their module's highest number, and **14 tags with no `?v=` of modules versioned elsewhere** (the spec knew one, `kernel_ops.js`). 19 modules have differing sites. The fixture rule places 16 marker pairs on the 13 pages.
+- **Log on merged main `1cedcf2f` (full run, C7 and C9 included):**
+  `§MANIFEST_ROUNDTRIP apps=3 source=modeller files=55 sites=830 … identical=55/55 driven=757/757 sw_vm=3/3 claims=19/19 red=20/20 order_check=PASS deps_declared=25 unreviewed=0 owner_gap=31 witness_gap=24 b2_trial=Y site_v=28 pinned=2 verdict=PASS`
+  · `C16 … check_fails=0 driven_files=20/20 marker_pairs=16 modules_differing_from_reader=0 site_v=28 reader_says=28 … pinned=2` · `C17 … modules_bumped=19 … bump_lines=38/38 files_changed=8 files_differing=0/19` ·
+  `C18 … named_as_target: regex_exit=2 manifest_exit=2 · --changed (sw.js + icons.js changed): exit=0 bumpable=erp/icons.js sw_lines=0 literals unchanged` · `C19 … stamp_reads=v1121 manifest=v1121 before_the_bump=v1120`.
+- **Red on the old code** (the new witness with `manifest_source.js`, `bump.js` and the modeller manifest of main `79755693`): `C16 ok=N … check_fails=31 … site_v=0 reader_says=28`, C17 and C18 "judged nothing", `claims=15/18 red=16/19 … verdict=INCONCLUSIVE`.
+  C19 is a guard with no red on the old code (it read `v1120 = v1120` there): it protects the deploy stamp from a later change of the `sw.js` line.
+- **Unchanged, on the branch:** `§BUMP_W_VERDICT PASS judged=7 failed=0` · `§BUMP_PARITY_W_VERDICT PASS judged=24` · `§DEPS_W cases=16 agree=16/16 … verdict=PASS` · `§SW_AUDIT_SUMMARY 303 found, 0 missing` ·
+  `§CODEFACTS_BUMP_BUTTON checks=6 failed=0 verdict=PASS` · `§SHIP_PANEL … verdict=PASS` · `§CORE_PURE files=125 … forbidden=0 … verdict=PASS`.
+- **Deviations from the spec, said here:** (1) the new red controls are **R16 to R20** (R13 to R15 were taken by #3326); R18 of the spec (a pair swapped on a second page) and C20 wait for part 2, because ERP has no declared `deps` until the switch.
+  (2) **One rule for every app** instead of "a site `v` is refused in the modeller": a site `v` is legal only when it is lower than its module's, or null; the modeller has none, so its bytes and verdict are as before. A per-app exception would have been a special case in the generic layer.
+  (3) C17 bumps all 19 differing modules, not the three the spec named. (4) Until `erp/modules.json` exists the claims run on ERP switched in memory and in temp trees (`b2_trial=Y`); part 2 turns the same claims onto the committed file.
+- **Found on the way, fixed in the same PR:** the modeller's register literal (`sw.js?v=1`, an inline site of `modeller/sw.js`) would have been raised by a second `--changed` bump on one branch. It is now `"pin": true` (one manifest line, no page byte changes). It had not happened yet (the literal is still 1).
+
+**B2 DEPS REVIEW — the session's reading of ERP's 216 order-forcing edges (B2-Q1; tool sha `1c213995…` on main `79755693`; each cited line read in the code).**
+- **`deps`, 201:** every plain edge whose cited line reads the name when the file loads. By publisher: `ad_process.js` 63 (each `processes/*.js`: `… : global.AdProcess`) · `ad_callout.js` 29 (28 `callouts/*.js` + `idempiere.html:709`) ·
+  `model_layer.js` 22 and `model_trade.js` 17 (the `model_*.js` UMD factories and 5 processes) · `bigdecimal.js` 10 · `layered_registry.js` 4 · `page_status.js` 3 · `model_order.js` 3 · 2 each: `ad_modelval.js`, `rest_core.js`, `ad_data.js`,
+  `ad_parser.js`, `idmp_session.js`, `erp_kernel.js`, `common/whole_history.js`, `kds_core.js`, `model_asi.js`, `ninja_stage.js` · 1 each: `genesis.js` (`genesis.html:103`, `window.Genesis.b3`) and 28 more publishers (the list is the tool's
+  `§DEPS_CAND … order=ok` lines minus the three below).
+- **`notDeps`, 7 (the name is a browser built-in that the "publisher" only wraps or fills in):** `fetch` → `overlay/boot.js` (`boot.js:25` assigns `window.fetch`): `chat_lens.html:68`, `erp.html:106`, `erp_replica_client.js:14` (AGAINST today) ·
+  `crypto` → `genesis.js` (`genesis.js:667-668` fills `global.crypto` only when it is missing): `erp_snapshot_sign.js:12` (AGAINST), `erp_attrib.js:21`, `erp_signer.js:13`, `idempiere.html:706`.
+- **`uses`, 8 (real, but no tag order can or should be forced):** `model_pa.js:11` → `ad_callout.js` (AGAINST today; `:16` reads `root.AdCallout` again at call time) · `erp_seam.js:31` → `bigdecimal.js` (AGAINST today, and a real fault: next line) ·
+  six that are not two tags of one page (loaded by inline page scripts or on different pages): `team_updates.js:12` → `semver_strict.js`, `team_versions.js:12` → `op_versions.js`, `odoo_descriptor.js:22` → `erp_descriptor.js`,
+  `team_docno.js:14` → `model_trade.js`, `team_sync.js:876` → `team_scope.js`, `team_sync.js:30` → `ad_modelval.js`.
+- **A real fault the review found (bim-ootb #3368, handed to the ERP lane, not fixed here):** `idempiere.html` loads `erp_seam.js` (`:662`) before `bigdecimal.js` (`:666`), so `erp_seam.js:31` holds `BD = null` in the browser and the
+  rule-guard test at `:124-126` compares with `Number()` instead of BigDecimal. Whether any real value differs between the two was not measured. It is recorded as `uses`, so the switch keeps today's bytes; when the lane fixes the order it becomes `deps`.
+- **Checked in memory** (`MS.init` with these lists, then `MS.order`): `§TRIAL_ORDER app=erp deps=201 notDeps=7 uses=395 judged=201 errors=0 module_pairs_with_both_tags=185 page_placements_judged=202` (a scratch probe, in no repo; part 2's C20 is the kept form).
+- **OWNER CONFIRMED 2026-11-20:** shown the 15 that are not plain `deps` (7 `notDeps`, 8 `uses`) in three groups; owner: *"yes"*.
+
+**B2 PART 2 RESULT — ✅ DONE 2026-11-20 (bim-ootb #3370, PR #3373 → main `e4c7356a`; the owner confirmed the 15 not-plain edges with "yes").** ERP is a SOURCE app: `erp/modules.json` (1,147 lines: 297 modules, 366 sites,
+419 precache entries; 201 `deps`, 7 `notDeps`, 395 `uses`, `depsReview.by` = owner) writes every ERP script tag, `'file?v=N'` literal, `PRECACHE_ASSETS` entry and `CACHE_VERSION`.
+- **Bytes:** 16 marker pairs on the 13 pages (32 lines; `idempiere.html`, `glassbowl.html` and `glassbowl_gravity.html` have 2 pairs each), 2 marker lines in `erp/sw.js`, `CACHE_VERSION` one step. Nothing else in those files changed
+  (`C9 ok=Y app=erp switch=e4c7356aa2c7 files=19`). The hand comment on the `CACHE_VERSION` line was left as it is (the deploy stamp reads that line, C19).
+- **Main moved during the build:** a peer's ERP bump (#3371: `ctx_help.js` 2 → 3, `ad_ctxhelp_app_rows.js` 4 → 5, `CACHE_VERSION` v1120 → v1121) merged first. `origin/main` merged in cleanly; its two numbers were set in `erp/modules.json` and the
+  version stepped v1121 → v1122. The peer had been told before the switch and again when it landed (4 live sessions).
+- **Log on merged main `e4c7356a` (full run):** `§MANIFEST_ROUNDTRIP apps=3 source=erp,modeller files=55 sites=830 … identical=55/55 driven=757/757 sw_vm=3/3 claims=28/28 red=21/21 order_check=PASS deps_declared=226 unreviewed=0 owner_gap=152 witness_gap=152 b2_trial=N site_v=28 pinned=2 verdict=PASS`
+  · `C20 ok=Y app=erp deps_declared=201 pairs_judged=185 page_placements_judged=202 pairs_on_2plus_pages=16 out_of_order_in_the_pages=0 generator_refusals=0` (judged against the pages' own tag positions) ·
+  `R21 detected=Y erp/crud_overlay.js and its dep erp/crud_core.js swapped on erp/idempiere.html only (right on 1 other page(s)): 1 refusal(s), all naming erp/idempiere.html`.
+- **Before / after, the tests that read the two changed files as text:** 41 files; 6 need a browser and were not run; the 35 node ones give the same result line for line on unedited main and on the switch branch (24 exit 0, 10 exit 1, 1 timeout on both;
+  the 10 + 1 are not this lane's: `poc_idmp_host`, `witness_already_there`, `witness_bc_migrate`, `witness_docno` (timeout at 240 s), `witness_migration_recover`, `witness_odoo_form`, `witness_odoo_messy`, `witness_role_access_update`,
+  `test_s253_gantt_sync`, `test_s283_pwa_install`, `witness_zoom_linkback_node`).
+- **Unchanged on the branch:** `§BUMP_W_VERDICT PASS judged=7 failed=0` · `§BUMP_PARITY_W_VERDICT PASS judged=24` · `§DEPS_W … verdict=PASS` · `§SW_AUDIT_SUMMARY 303 found, 0 missing` · `§CODEFACTS_BUMP_BUTTON checks=6 failed=0 verdict=PASS` ·
+  `§SHIP_PANEL … verdict=PASS` · `§CORE_PURE … forbidden=0 … verdict=PASS`.
+- **Live, fetched back:** `erp/version.json` = `{"version":"v1.95.0","build":"v1122","sha":"e4c7356a","pr":3373,…}`; live `erp/sw.js` holds `CACHE_VERSION="v1122"` and no marker comment (it is minified, as the spec expected); live
+  `erp/idempiere.html` holds its 2 `§MANIFEST:BEGIN erp tags` lines. A dry-run bump on main: `§BUMP page=erp/erp.html ref=icons.js v=26->27 (manifest erp/modules.json)` … `v=3->4`, `v=3->4`, `v=12->13` (each page from its own number).
+- **A generator weakness found by C11 and fixed in the PR:** ERP pages keep several tags on one line (`branch_admin.html`, `kitchen.html`, `till.html`). A new tag was written on a new line after the WHOLE line, so removing it again did not give
+  back the same bytes. Now a new tag (or precache entry) whose anchor shares its line with later sites stays on that line, right after the anchor.
+- **Two witness assumptions corrected (the instrument, not the product):** C10 compared the module's `v` with the reader's, which is null when sites differ (now: the highest site number); C17 stripped marker lines from one side only.
+- **NOT run, said plainly:** the legacy-parity bridge on the switch branch (the spec listed it). No JS module is bumped by the switch and the pages gain comment lines only; the bridge's own bump witness (`§BUMP_PARITY_W_VERDICT`) passed.
+  The first real ERP bump by any session runs the gate as always. W-VSC-OPERATIONAL and the CI fast tier: CI ran its tier green on the PR; §F.41 was not run locally.
+- **Docs:** CLAUDE.md WORK-TO-ZERO merge rule and Developer Guide §5.1 / §5.2 now say ERP and the Modeller are written from `modules.json` (this PR).
+- **Open after B2:** `owner_gap` (ERP 121 modules name no prompts file in their header) and `witness_gap` (128) are printed on every run; Part D and Part E close them · bim-ootb #3368 (`erp_seam.js` before `bigdecimal.js`), with the ERP lane ·
+  B-4's own step (7 plugin `.mjs` on disk are not precached) · the 10 modules whose numbers differ between pages stay so until B4-HASH.
+- **NEXT in Part B:** B3, the viewer: its build spec is the next block.
+
+**B3 BUILD SPEC (2026-11-20, twelfth session; spec only; one confirmation and one question at the end).** Scope: `viewer/` becomes "the manifest is the source", the last of the three apps. Measured read-only on bim-ootb `main` @ `9dde6d7d` with the
+shipped tools, plus two scratch probes (`§TRIAL_*` lines, in no repo).
+
+**Baseline.**
+- `§MANIFEST_APP app=viewer pages=5 loaders=15 modules=314 boot=273 lazy=41 sites=352 tag=295 asset=0 inline=2 lazy_sites=55 precache=303 cacheVersion=v1779`
+- `§MANIFEST_VERSIONS app=viewer versioned_modules=307 one_version=302 disagree=3 sites_below_max=3 files=viewer/locale_loader.js,viewer/schedule_author.js,viewer/sw.js` · `§MANIFEST_UNVERSIONED app=viewer tags_without_v=13 external_url_sites=2` ·
+  `§MANIFEST_INLINE_SITES app=viewer inline_sites=2 … partial_literals=2 non_js_inline_blocks=1` · `§MANIFEST_LAZY_PRECACHE app=viewer lazy_precached=15 lazy_not_precached=26 boot_not_precached=43 precached_not_referenced=58 dup_entries=0`
+- Sites per file: `viewer.html` 264 tags + 1 inline · `boq_charts.html` 16 + 1 · `mep_report.html` 7 · `clash_report.html` 5 · `model_check_report.html` 3 · `main.js` 26 lazy literals · 14 more loaders, 1 to 5 each (29 literals).
+  60 of the 314 modules live outside `viewer/`; 13 are on 2+ pages; 232 tags carry an `onerror`; 5 modules are both a tag on a page and a lazy literal in a loader; 2 sites are CDN URLs (`clash_report.html`, keyed by the URL as in B0).
+- Tag groups (a new group where two tags are more than 25 lines apart): `viewer.html` 852-1194 (263) and 1308 (1) · `boq_charts.html` 57-73 (14) and 2272 (2) · `clash_report.html` 7 (1) and 44-46 (4) · `mep_report.html` 7 (1) and 58-62 (6) ·
+  `model_check_report.html` 49-51 (3). So 9 marker pairs, placed by hand in the switch PR.
+- **Busier than ERP** (`git log --since="7 days ago" origin/main`): 68 commits touched `viewer/sw.js`, 46 touched `viewer/viewer.html`.
+
+**No new generator work is expected.** The viewer switched in memory with what B2 built: `§TRIAL_VIEWER modules=314 inline_readers=8 files=22 identical=22/22 marker_pairs=9 site_v=5 pinned=2 check_fails=0 owner_gap=191`.
+The 5 site numbers: `locale_loader.js` is 15 on `clash_report.html` and 16 elsewhere; `schedule_author.js` is 20 on `boq_charts.html` and 31 on `viewer.html`; `viewer/sw.js`'s two register literals (538 and 594, both pinned);
+`erp/bigdecimal.js` and `erp/ad_docfsm.js` are tags with no `?v=` on `viewer.html` and versioned literals in `wh_walk.js`.
+
+**What is the same as B1 / B2 (not repeated):** `viewer/modules.json`, canonical, dev-side only · comments stay in the files · `precache` copied per module as today (B-2; the viewer has no single rule: 15 lazy and precached, 26 lazy and not) ·
+site `v` and `pin` · `bump.js` command lines and `§BUMP` lines · the merge rule for sessions (CLAUDE.md gains `viewer/`).
+
+**What the viewer has that the others did not.**
+1. **Its own audits stay the second reader:** `tests/audit_sw_precache.js` (LISTED-IS-REAL, NEEDED-IS-LISTED) and `tests/audit_script_tags.js` are not moved onto the manifest in B3; C6 keeps comparing their summary with the manifest's counts.
+2. **`_GANTT_CACHE_VERSION` in `viewer/tm_dash.js` stays by hand** (not a file version; Developer Guide §5.1 says so already).
+3. **The import map** (1 non-JS inline block) and the 2 partial `?v=` literals are counted, never owned.
+4. **After B3 the regex path of `bump.js` serves three pages only:** `index.html`, `capex/index.html`, `archive/gallery.html` (the tracked `.html` outside the three apps that hold a `?v=` reference; measured by `git grep`). That is B3-Q2.
+
+**The `deps` candidate list (B-5), measured:** `§DEPS_SUMMARY app=viewer modules=314 read=297 inline_bodies=13 skipped=17 parse_fail=0 candidates=726 load=26 load_guarded=15 call=293 call_guarded=364 import=28 import_not_module=26 forces_order=69 against=169 against_load_unguarded=0 ambiguous=8 published=750 published_by_2plus=22`
+**B3 DEPS REVIEW — the session's reading of the 69 order-forcing edges (each cited line read in the code):**
+- **`deps`, 35 (26 load + 9 guarded load, all in today's order):** the `hr_bim_asset/*.js` family → `watermark.js` (6), `connectors.js`, `rules.js`, `mock_rates.js` · `bom_engine/bom_node.js:24-25` → `bom_strategies.js`, `bom_constraints.js`; `bom_tree.js:18` → `bom_node.js` ·
+  `proj_claim.js:21`, `proj_control.js:21`, `proj_fold.js:18`, `vo_approve.js:20`, `vo_fold.js:30`, `whatif.js:26` → `erp/bigdecimal.js`; `proj_claim.js:22` → `proj_period.js`; `vo_approve.js:21` → `erp/ad_docfsm.js` ·
+  `common/flythru_maths.js:33` → `common/storey_raster.js` · `materialize.js:26` → `common/import_key.js` · `sourced_light.js:13` → `light_law.js` · `boq_charts.html:96`, `viewer.html:1020`, `cpm_schedule.js:51` → `rates.js` ·
+  `clash_report.html:546` → `locale_loader.js` · `model_check_report.html:99` → `road_check.js`, `:113` → `earthworks_volume.js` · `doc_canvas.js:577` → `grid_state.js`, `:579` → `grid_recompose.js` · `edit_delta_viewer.js:77` → `connect_scene.js` ·
+  `universal_history.js:12` → `common/history_bar.js`, `:464` → `common/whole_history.js`, `:417` → `erp/kernel_ops.js`.
+- **`uses`, 3 that run AGAINST today's tag order and work anyway:** `input_registry.js:245` → `scene.js` and `:248` → `panels.js` (both sit inside `pollAudit` / `pollPills`, which retry on a timer until the names exist; `input_registry.js` is the tag at
+  `viewer.html:885`, `scene.js` at `:898`, `panels.js` at `:909`) · `silhouette_refine.js:487` → `main.js` (`if (global.APP) global.APP.silhouette = API`: the tag at `:901` runs before `main.js` at `:1191`, so the line does nothing on this page,
+  and no viewer file reads `APP.silhouette` / `A.silhouette` (`git grep`): a dead line, noted for the viewer lane, not a fault).
+- **`uses`, 3 that cannot be placed:** `wizard.js:61-63` → `wizard_orientation.js`, `wizard_storeys.js`, `wizard_classify.js` (`typeof` guarded; not two tags of one page).
+- **`uses`, 28 imports** (as B1: the `import` / `importScripts` statement orders them; 26 of the 28 targets are `lib/` files or worker-only files that are not manifest modules).
+- `notDeps`: none. `§DEPS_AMBIGUOUS` 8: printed, not edges.
+- Checked in memory: `§TRIAL_ORDER app=viewer deps=35 notDeps=0 uses=691 judged=35 errors=0`. With all 41 load edges as `deps` the generator refuses exactly the three AGAINST ones (`errors=3`).
+
+**Build: one PR** (no part 1 is needed): live sessions told first · the 9 marker pairs + the `sw.js` pair · `gen_manifest.js --init viewer --as-uses <the 6>` · one `CACHE_VERSION` step · the witness's B2 block (C16 to C21 today named for ERP) made to run for every source app with site numbers or pins ·
+opened, checked and merged in one sitting; if main moved in `viewer/`, merge it and set the moved numbers in `viewer/modules.json` (as #3373 did with #3371).
+**Witness:** `§MANIFEST_ROUNDTRIP apps=3 source=erp,modeller,viewer … claims=N/N red=M/M order_check=PASS deps_declared=261 unreviewed=0 verdict=`; C6 (the precache audit's own summary) must still equal the manifest; C9 for the viewer's switch commit.
+**INCONCLUSIVE** as in B1 / B2, plus: the audit prints no summary line.
+**Runs unchanged before / after:** `tests/audit_sw_precache.js`, `tests/audit_script_tags.js` · the node tests that read `viewer.html` or `sw.js` as text (`git grep` finds 12 files, 10 of them node-only) · `witness_bump.js`, `witness_bump_parity.js`, W-DEPS-CAND,
+W-CORE-PURE, the Code Facts ship and bump-button witnesses · after the merge: the Pages deploy green and the live `viewer/sw.js` `CACHE_VERSION` fetched back.
+**Not in B3:** content hashes (B4-HASH) · one precache rule for lazy modules · the audits' move onto the manifest · the three pages outside the apps · `_GANTT_CACHE_VERSION` · any tag, literal or comment moved.
+**Deletion budget (honest):** B3 adds `viewer/modules.json` (about 1,000 lines, an estimate) and removes 0 lines of pages or lists. The regex path of `bump.js` is NOT removed in B3 unless B3-Q2 says so (the B1 spec expected it to go here; three outside pages still use it).
+**Risk particular to the viewer:** it is the tree most sessions touch (68 `sw.js` commits a week). The first days after the switch will see CI refusals on branches that hand-edit a tag; the message names the file, the line and the command.
+
+**Owner items (open; one per message).**
+- **B3 confirmation (B-5) ✅ ANSWERED 2026-11-20, owner: *"Agree"*:** the 6 edges that are not plain `deps` go in `uses` (the 3 against today's order, the 3 wizard edges). The 28 imports follow B1's answer.
+- **B3-Q2 ✅ ANSWERED 2026-11-21 (owner: *"proceed"*, on the revised recommendation "bring them in now"; DECISIONS):** ~~what happens to the old regex path in `bump.js` once all three apps are written from their lists?~~ Three pages outside the apps still need it. **Recommended:** keep it for those three until B4-HASH (nothing deleted now).
+  Alternative: bring `capex/` in as a fourth app and the two single pages under the app they load from, then delete the path (a separate step with its own spec).
+
+**B3 RESULT — ✅ DONE 2026-11-20 (bim-ootb #3377, PR #3378 → main `14bb498f`; the owner confirmed the 6 not-plain edges with "Agree").** The viewer is a SOURCE app, so **all three apps are written from their lists.**
+`viewer/modules.json`: 314 modules, 352 sites, 303 precache entries; 35 `deps`, 691 `uses`, `depsReview.by` = owner.
+- **Bytes:** 9 marker pairs on the 5 pages, 2 marker lines in `viewer/sw.js`, `CACHE_VERSION` v1780 → v1781. Nothing else in those files changed (`C9 ok=Y app=viewer switch=14bb498ff1d0 files=21`).
+- **Main moved before the build:** the 4D lane's #3375 (hand bumps of `schedule_author.js`, `shim_bonds.js`, `cpm_schedule.js`, sw v1780) merged after the notice went out. The branch was moved onto it BEFORE the baseline and the init, so its values are
+  the list's starting values. 4 live sessions told before; 3 told when it landed (one had ended).
+- **Log on merged main `14bb498f` (full run):** `§MANIFEST_ROUNDTRIP apps=3 source=viewer,erp,modeller files=55 sites=830 … identical=55/55 driven=757/757 sw_vm=3/3 claims=40/40 red=26/26 order_check=PASS deps_declared=261 unreviewed=0 owner_gap=331 witness_gap=272 b2_trial=N site_v=33 pinned=4 verdict=PASS`
+  · `C6 ok=Y audit: total=303 scripts=259 precached=226 · manifest: total=303 scripts=259 precached=226` · `C16 … app=viewer … driven_files=22/22 marker_pairs=9 … site_v=5 reader_says=5 … pinned=2` ·
+  `C17 … app=viewer modules_bumped=4 (ad_docfsm.js,bigdecimal.js,locale_loader.js,schedule_author.js) … bump_lines=9/9 files_changed=6 files_differing=0/21` · `C18 … app=viewer pinned=2 … literals unchanged` ·
+  `C20 ok=Y app=viewer deps_declared=35 pairs_judged=30 page_placements_judged=30 pairs_on_2plus_pages=0 out_of_order_in_the_pages=0 generator_refusals=0`.
+- **Before / after:** the 10 node tests that read `viewer.html` or `sw.js` as text, plus `tests/audit_sw_precache.js` and `tests/audit_script_tags.js`: the same result line for line on unedited main (`0c27edc9`) and on the switch branch
+  (7 exit 0, 5 not, on both; the 5 are not this lane's: `poc_fin_evm`, `test_s253_gantt_sync`, `test_s283_pwa_install`, `poc_precache_trim`, `witness_split_surface`).
+- **Unchanged on the branch:** `§BUMP_W_VERDICT PASS judged=7` · `§BUMP_PARITY_W_VERDICT PASS judged=24` · `§DEPS_W … verdict=PASS` · `§CODEFACTS_BUMP_BUTTON checks=6 failed=0 verdict=PASS` · `§SHIP_PANEL … verdict=PASS` · `§CORE_PURE … verdict=PASS`.
+- **Live, fetched back:** deploy run for `14bb498f` success; live `viewer/sw.js` holds `CACHE_VERSION="v1781"`; live `viewer.html` holds its 2 `§MANIFEST:BEGIN viewer tags` lines. A dry-run bump of `viewer/schedule_author.js` on main raises it on
+  `boq_charts.html` 20 → 21 and `viewer.html` 32 → 33, and the modeller's loader literal 22 → 23 with that loader's own tag (two manifests in one run).
+- **A generator weakness found by C11, fixed in the PR:** `viewer/sw.js` keeps several precache entries on one line with no space after the comma. A new entry is now written after the separator that follows its anchor and repeats that separator, so
+  adding and removing gives back the same bytes for both `'a','b'` and `'a', 'b'`.
+- **Witness change:** the B2 block (C16 to C18, C20, R16 to R21) runs for every app whose pages load a module under different numbers (ERP, the viewer); C19 stays ERP's (the deploy stamp). R21 is INCONCLUSIVE only when no source app has a
+  `deps` pair on 2+ pages (the viewer has none: `pairs_on_2plus_pages=0`; ERP has 16).
+- **Deviation from the spec:** `tests/audit_script_tags.js` printed no summary line the before / after set could compare (its exit code was compared, 0 on both).
+- **Not run:** the 2 tests that need a browser; W-VSC-OPERATIONAL locally (CI's tier was green on the PR).
+- **Docs:** CLAUDE.md merge rule and Developer Guide §5.1 / §5.2 now say all three apps (this PR).
+- **Part B's "Done when", where it stands:** all three apps generated from their manifests ✅, round-trip identical ✅, the Pages deploy green after each switch ✅. Still open: `bump.js` "retired or reduced" (its regex path now serves 3 outside
+  pages only: B3-Q2, then B4-HASH) · B-4's own step (7 ERP plugin `.mjs` not precached) · one precache rule for lazy modules (B-2's later step) · the `owner` gap (331 modules across the apps; Part D).
+
+**B3-OUT BUILD SPEC (written 2026-11-22; decisions B3-Q2 = bring the outside referrers in now, B3-Q3 = `archive/gallery.html` frozen; no decision open).**
+**Issue it fixes:** after B3 the regex path of `scripts/bump.js` (`:122-154`, the `pages` / `loaders` loops for files no manifest owns) is the only thing that keeps the referrers outside the three apps in step, and only when a
+change goes through `bump.js`. Measured miss: `viewer/import_db_builder.js` went 11→12 in `viewer/viewer.html` (#2702, `8d1ede96`) and `index.html` still says 11; `import_own.js` says `viewer/import_worker.js?v=20` while the
+viewer is at 22. No check reports either. B4-HASH would have to bring these files in anyway.
+**Measured baseline (bim-ootb `main` @ `e4fa52fe`, the same reader `bump.js` uses, a node one-off over `trackedFiles`):** the non-owned files with a `?v=` reference the regex path would edit are exactly four:
+| File | `?v=` sites | Unversioned `<script src>` | Owning list after B3-OUT | Files it loads (each already a module there, except `import_own.js`) |
+|---|---|---|---|---|
+| `index.html` (the landing page) | 8 tags | 4 (`erp/icons.js`, `common/whole_history.js`, `common/about_diy.js`, `viewer/bonsai_kernel.js`) | `viewer/modules.json` | `common/pill_builder.js` 1, `common/i18n/lang_choice.js` 1, `viewer/locale_loader.js` 15 (module 16), `viewer/vertex_weld.js` 1, `viewer/import_db_builder.js` 11 (module 12), `common/import_key.js` 2, `import_own.js` 7 (NEW module), `viewer/db_resolve.js` 4 |
+| `import_own.js` (root loader, loaded only by `index.html:186`) | 3 literals (`:355` ×2, `:527`) | — | `viewer/modules.json` | `viewer/import_worker.js` 20 (module 22) ×2, `viewer/mesh_import_worker.js` 2 (module 1: **above** the module, see 3) |
+| `capex/index.html` | 6 tags | 4 (`tiles.js`, `pa_tiles.js`, `adapters.js`, `dash.js`: capex's own files) | `erp/modules.json` | `erp/layered_registry.js` 1, `erp/bigdecimal.js` 2, `erp/db_export_safe.js` 1, `erp/ad_callout.js` 11, `erp/callouts/sqlfn.js` 3, `erp/goal_engine.js` 3 (all equal to their module) |
+| `archive/gallery.html` | 4 tags the regex sees (+ 11 `?v=` inside inline-script strings it never saw) | — | **none: FROZEN (B3-Q3)** | — |
+No `sw.js` serves `index.html`, `import_own.js`, `capex/` or `archive/` (the tracked `sw.js` are `erp/`, `modeller/`, `viewer/`, `oplogpic/`; `oplogpic/` pages hold no `?v=`). Activity since 2026-10-22: `index.html` 9 commits, `capex/index.html` 14, `import_own.js` 5 (the CAPEX dashboard lane is live: told first).
+**What changes (one PR, bim-ootb):**
+1. **`gen_manifest.js --adopt <app> <file…>`** (new, one-time, like `--init`): reads each file with the B0 reader (`readSites`), appends its sites to `<app>/modules.json` `order` in file order, adds a `modules` line for a target the list lacks
+   (`import_own.js`; the 8 unversioned targets: `v:null` where no site of it carries a number), then runs the deps candidate tool for the new edges. Writes nothing to the adopted file except the marker pair(s). Refuses a file already
+   in another app's `order`, a file under `lib/`/`tests/`, and a FROZEN file.
+2. **Marker pairs** `<!-- §MANIFEST:BEGIN viewer tags … -->` / `END` round `index.html:174-187` (all 12 `<script src>` sit there) and `<!-- §MANIFEST:BEGIN erp tags … -->` / `END` round `capex/index.html:41-61`. 4 marker lines. A `.js` loader needs none (as today).
+3. **A site above its module** (`import_own.js` → `viewer/mesh_import_worker.js` 2, the module is 1): the module's `v` becomes 2 and the viewer's own sites of it gain a site `v:1` (byte-identical; the existing "a site `v` only when lower" rule holds).
+4. **`bump.js`: the regex path is DELETED** — the `pages` / `loaders` replace loops, `PAGE_REF` / `JS_REF` in `--changed` (it reads the manifests only), the non-manifest `sw.js` branch, `§BUMP_CHECK_BY_HAND`. A target no list names exits 2 `not_loaded_by_any_page_or_loader` as today.
+5. **A site in a file outside the app folder adds nothing to that app's `CACHE_VERSION`** (no service worker serves it): bumping `import_own.js` raises `index.html:186` and no `CACHE_VERSION`; bumping `viewer/locale_loader.js` raises its viewer pages, the modeller's,
+   `index.html:179`, and the viewer's and modeller's `CACHE_VERSION` once each (as today). The loader rule holds: a raised literal in `import_own.js` raises `import_own.js`'s own tag next round.
+6. **`FROZEN`** in `gen_manifest.js`: `['archive/gallery.html']`, with the decision cited beside it. Counted, never owned, never written.
+**Witness (W-MANIFEST-ROUNDTRIP, new claims; red-run each against today's code, it must FAIL):**
+- **C22 OUTSIDE-OWNED:** every tracked file outside `lib/` / `tests/` that the B0 reader finds a `?v=` site in is in exactly one app's `order` or in `FROZEN`. Red: a temp-tree root page with one `?v=` tag → FAIL naming the file and `--adopt`. Prints `outside_owned=N/N frozen=1`.
+- **C23 FROZEN-UNTOUCHED:** a dry-run bump of every module `archive/gallery.html` names leaves it byte-identical. Red: today's `bump.js` edits it.
+- **C24 OUTSIDE-NO-CV:** in a temp copy, `bump.js import_own.js --write` changes exactly `index.html` (one tag +1) and `viewer/modules.json`, no `sw.js`. Red: without rule 5 → the viewer's `CACHE_VERSION` moves.
+- **C25 NO-REGEX:** `bump.js --root <temp tree with a non-owned page loading viewer/rates.js>` leaves that page byte-identical. Red: today's `bump.js` raises it.
+- Existing claims run unchanged: C1-C21, byte-identical `identical=N/N` (the adoption commit's only byte change to the three adopted files is the 4 marker lines: `git diff --stat` shows it), `order_check=PASS`.
+**Line:** `§MANIFEST_ROUNDTRIP apps=3 source=erp,modeller,viewer … outside_owned=3/3 frozen=1 claims=N/N red=M/M order_check=PASS deps_declared=N unreviewed=0 verdict=`.
+**INCONCLUSIVE** when: C22 judged 0 files (the reader found no outside file: the claim is blind) · the deps review of the new edges is not done (`unreviewed>0`).
+**Deps review (B-5: the tool proposes, a person confirms):** the session reads each new order-forcing edge in the code (file:line) and writes the list here; the owner confirms the not-plain ones in one message, as in B2 / B3.
+**Runs unchanged before / after:** `scripts/tests/witness_bump.js` (C1-C7; a case that used the regex path is moved onto a manifest file, named in the PR, never deleted), `tests/witness_bump_parity.js`, the Code Facts ship / bump-button /
+context witnesses, `tests/audit_sw_precache.js`, `tests/audit_script_tags.js`, W-CORE-PURE; after the merge: the Pages deploy green and the live `index.html` fetched back byte-equal to `main`.
+**Deletion budget:** removes the regex path of `bump.js` (`PAGE_REF` / `JS_REF`, their two scans in `--changed`, the `pages` and `loaders` replace loops, `swFor` / `needSw` and the loop that bumps a `sw.js` no manifest owns, the `§BUMP_CHECK_BY_HAND` loop; an estimate of about 60 lines, counted in the PR) · adds `--adopt` (about 40) + rule 5 (about 3) + `FROZEN` (2) + 4 claims (about 60) + ~30 `order` lines and ~10 `modules` lines in the two lists.
+**Not in B3-OUT:** content hashes and the `?v=` the 8 unversioned tags lack (B4-HASH) · `archive/gallery.html` (frozen) · `test/test_ifc_export.html` (a May fixture, `?v=` only inside `new Worker(...)` strings) · `capex/` as its own app · retiring `bump.js` (B4-HASH).
 
 ---
 
@@ -1084,7 +1367,7 @@ first. C is long and best done slowly, module by module, after B/D make ownershi
 | Part | Starts with no decision | Next decision to ask | Why that one |
 |---|---|---|---|
 | A | ✅ done 2026-11-17 (W-CORE-PURE in CI) | none | — |
-| B | the B2 (ERP) build spec | none until the spec raises one | |
+| B | the B4-HASH spec (which bytes are hashed, how `CACHE_VERSION` follows) | none (B3-Q2, B3-Q3 ✅ 2026-11-21) | the B3-OUT spec: `index.html` + `capex/index.html` follow their apps' lists, gallery frozen, regex path deleted |
 | C | nothing; waits on B and D | C-1 part names + owners | |
 | D | nothing new; the multi-publisher list already exists (`types/globals.gen.d.ts`) | D-1 where the questions list lives | needs B's `owner` field |
 | E | nothing; E0 done | E-1 the `PROVES:` header format | |
