@@ -5508,3 +5508,39 @@ is within the owner's GAP of the element (it touches what it hangs from). Share 
    §Q.50 is rejected; do not re-try it.
 3. The 22 small lines of §Q.46's table · 4. profile §Q.43.1's programme moves · 5. delete ONE election clause · 6. phase table vs standard
    practice (lagging trade included) · 7. sign-off list; S5; S6.
+
+### Q.52 REVIEW BACK — owner, 2026-11-22, after testing the Time Machine: *"it is still horrible. So do review back."*
+- **Question reviewed:** the gates are 17 / 17 green and the played layer reads `midair 0` on seven buildings. Why does it still look wrong?
+- **Measured (`~/.cache/bim4d/q52_logs_2026-11-22/judge_true_box.log`; nothing re-solved — the times are what plays today):** the same two owners
+  (`ScheduleGate.auditFloating`, `SupportSweep.midairAudit`) run twice on each persisted played layer: A on the boxes the schedule uses
+  (`center ± bbox / 2`), B on the true boxes (the same centre + the mesh's own min / max, from the extracted / `_geo` DB, §Q.51.1).
+  | | played elements | box differs from the true box (> 5 cm) | midair A → B | auditFloating A → B | floating under B only, main classes |
+  |---|---:|---:|---|---|---|
+  | Duplex | 1,119 | 199 (max 3.1 m) | 0 → 3 | 1 → 1 | - |
+  | HHS | 6,839 | 2,300 (max 21.6 m) | 0 → 51 | 16 → 52 | proxies 24, columns 6, stair flights 4 |
+  | JKR | 8,985 | 1,506 (max 13.7 m) | 0 → 392 | 160 → 515 | members 245, columns 87, slabs 47, beams 11 |
+  | Clinic | 16,071 | 2,397 (max 6.7 m) | 0 → 101 | 81 → 97 | walls 40, beams 6, columns 4 |
+  | Terminal | 48,428 | 2,085 (max 11.3 m) | 0 → 406 | 50 → 622 | plates 485, walls 28, members 26, columns 22 |
+  | Hospital | 63,182 | 7,802 (max 31.1 m) | 0 → 90 | 270 → 330 | columns 49, walls 16, windows 9 |
+  | LTU | 122,330 | 12,520 (max 38.1 m) | 0 → 1,228 | 440 → 601 | slabs 98, columns 51, beams 29, walls 29 |
+- **Finding 1 — the zero was a zero on the wrong geometry.** §Q.51.1 holds on all seven, not three: 28,809 of 266,954 played elements are
+  scheduled AND judged on a box that is not where the element is drawn. Solver and judge share the same wrong box, so they agree with each other
+  and the gate is green; the film draws the mesh. This is this file's own opening rule (*"WITNESS is moot if underlying design is poor"*) again:
+  one unverified input under every owner of §I.
+- **Finding 2 — "green" already contained accepted floating.** `auditFloating` under A is not zero (JKR 160, Hospital 270, LTU 440): those are
+  locked as named sets in `midair.json`, so the gate passes while they play.
+- **Finding 3 — nothing in §Q.37-§Q.51 was ever judged where the owner looks.** Every result section ends "Not witnessed: browser / bake". The
+  node mirror of the played layer is the only thing the gates see. Whether the browser plays that same layer today is unproven in this lane
+  since §Q.31.
+- **Limits of this measurement, named:** B is still a box (an L-shaped slab's box covers ground the slab does not); B judges a schedule that was
+  SOLVED on A's boxes, so B's counts are "what plays today", not what a re-solve would give; elements whose mesh and box disagree in size were
+  left on A's box and not counted separately (the probe's counter did not print — re-run owed). Not all of "horrible" is explained by this:
+  the count is 3-1,228 per building, and what the owner saw is not known here.
+### Q.52.1 ▶ RESUME HERE (2026-11-22) — supersedes §Q.51.2's order
+1. **Fix the input before any more rules:** one owner for the element box that returns the true box (§Q.51.2 item 1: spec, the offset as a
+   patch table for the meta DBs, sandbox, every lock that moves named). No rule work (far hangers, small lines, election clauses) until then —
+   every such number so far was measured on displaced boxes and must be re-read after.
+2. **Re-solve on true boxes and re-judge** — the table above again, with a schedule solved on B. That is the first honest midair number.
+3. **A witness on the browser's own played layer** (the stored `kernel_ops` timestamps of a live load, compared op for op with the node
+   mirror) — needs the owner's go for a headless run; until it exists every "live" claim in this lane is a claim about the mirror.
+4. Then §Q.51.2 items 2-3.
