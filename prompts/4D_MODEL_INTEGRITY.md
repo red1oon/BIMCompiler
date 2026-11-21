@@ -5696,3 +5696,24 @@ is within the owner's GAP of the element (it touches what it hangs from). Share 
 - **Film:** `scripts/film_4d_true_box/render.py` draws the judge's `<bld>.film.json` (red = out of order when it appears) and reads its own last frame
   back pixel by pixel (`§FILM_EYES`). Clip + screenplays: `~/Videos/Hospital_4D_build_order_BEFORE_AFTER.mp4`, `Hospital_4D_screenplay_{BEFORE,AFTER}.txt`.
   It shows 1,077 → 587 out of order on Hospital: an improvement, NOT yet a proof of a solution.
+
+### Q.58 ▶▶ RESUME HERE (2026-11-22, owner: *"how do other software do such build up successfully? … I cannot afford to give further rulings. You have to come out with a solution that works. The issue is simple. Build up properly."*) — supersedes §Q.56's NEXT
+- **How the others do it (read, not assumed):** Navisworks TimeLiner attaches model items to schedule TASKS by selection sets / rules and shows the items of the
+  active tasks at a date — an element's time is its task's time, nothing is solved per element. BEXEL generates a schedule from a declared METHODOLOGY (trade
+  sequence) by ZONES. ALICE generates from RECIPES per element type. None derives order from box contacts. Order = method x location; elements are mapped to
+  a step by what they are.
+- **Prototype, judged before any product code (bim-ootb `scripts/proto_method_order.js`, branch `feat/4d-product-judge`):** the product's own elements, true
+  boxes, times thrown away, ordered ONLY by: frame bottom-up by base; then per floor (the slab an element stands over, not a storey label) the steps walls ·
+  roof and decks · curtain wall (frame + glass) · windows and doors · stairs and railings · other envelope · services first fix · ceilings · services second
+  fix · finishes; inside a step bottom-up by base. No election, no bond, no solver. Crawler, today's product → that order:
+  beforeFloor 0 / 10 / 122 / 65 / 70 / 264 / 94 → **0 on all seven**; onNothing 25 / 16 / 29 / 305 / 157 / 269 / 3,801 → 0 / 0 / 115 / 49 / 60 / 37 / 427;
+  beforeWall ≤ 33; beforeFrame HHS 88, Clinic 18 (frame and glass share a step — put members before panels).
+- **THE DECISION (mine, the owner gives no further rulings):** the product orders the build-up by METHOD x LOCATION, as the industry does. The election, the
+  bond table and the four-truth edges stop deciding order; the crawler and the product judge stay as the JUDGE. Bars = step x floor (so the Gantt is the
+  truth at bar grain, like every other 4D tool, and finer than today's seven lumps); inside a bar, bottom-up by base. Durations and crews as today.
+- **Order of work:** (1) the method list + the floor-under location as ONE owner in the product, behind the box owner already in the candidate; (2) judge on
+  seven with `product_judge.js` — merge only when no cell is worse than main; (3) trace the remaining onNothing (JKR 115, LTU 427) with the screenplay;
+  (4) the film, house style, from the judge's facts; (5) delete what no longer decides anything.
+- **Candidate `fix/4d-q55-one-population-true-box` as judged with the four truths as solver edges: FAIL 21 better / 4 worse** (beforeFloor → 0, but onNothing
+  Hospital 214 → 608, HHS 40 → 705): a fourth support mechanism collides with the other three. Keep from it: the box owner + offsets, containers left out, the
+  push pass off, the patch chunk bound. Drop: `§SITE_ORDER` edges once (1) lands.
