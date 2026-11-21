@@ -5448,3 +5448,13 @@ dry. v2 shipped: it keeps the true hung edges v1 dropped to the wave order (`§E
 - **Output, `§FAR_HANGER <bld>` + per-kind lines:** hung bonds · NEAR / FAR · with side · with rests (by kind below) · B9 among them; and the table
   the ruling needs: rule drops (side or rests) x NEAR / FAR, and x B9 / not B9. **The rule holds if it drops the FAR B9 and keeps the NEAR bonds.**
   VACUOUS printed where a building has no hung bond. Probe + logs: `~/.cache/bim4d/q50_logs_2026-11-22/`.
+
+### Q.51 SPEC — MEASURE ONLY: every Duplex box centre against the source file (2026-11-22; §Q.49 ruling 3, §Q.49.2 item 2)
+- **Issue it answers:** §Q.48.2 found three Duplex boxes whose CENTRE is 0.6-0.7 m off the source while the size is right. How many of the
+  1,190 `element_transforms` rows are off, by how much, in which classes and along which axis — before anyone writes a patch.
+- **Truth:** IfcOpenShell world-coordinate geometry of the source file(s) in `reference/residential/` (the Federated file; Architecture + MEP if
+  the Federated one does not carry every guid). Per guid: the source box (min / max of the tessellated vertices) vs the DB box
+  (`center ± bbox / 2`, raw `Duplex_extracted.db`). Compared: centre delta per axis, size delta per axis.
+- **Output `§DUPLEX_BOX`:** rows in the DB · matched by guid · no geometry in the source · not in the source; centre off by more than 1 cm
+  (count, by class, by axis, p50 / max); size off by more than 1 cm; the largest ten by name. A guid the source does not carry is counted,
+  never guessed. No DB, patch or schedule file changes. Probe + log: `~/.cache/bim4d/q50_logs_2026-11-22/`.
