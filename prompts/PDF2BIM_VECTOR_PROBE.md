@@ -710,3 +710,16 @@ Changes, each forced by a log line:
   2. **W-S8 openings:** `width/height` labels (1.51/1.31) read above+below the opening chain, bound to gaps in traced walls; BRH tags for sill.
   3. p3 (EG, rotated 90 deg — W-S2 orientation) the same; storeys stacked by the section on p2 (levels ±0.00 / OG FFL read from Schnitt A-A, raster path again).
   4. Then emit STD-layer DXF sheets -> `dxf2bim_import` gate -> Modeller Convert -> DB, as TB-LKTN (§23-§26).
+
+### §43.1 STEP 1 SPEC — CHAIN-ANCHORED WALL TRACING (W-S7) (owner 2026-11-22: *"go ahead with step 1"*; spec BEFORE code)
+**Input (no re-derivation):** `raster_probe.py` writes `chains.json` (skew, Otsu, scale H/V px/m, every chain with tick px, segment values, verdict). `raster_walls.py` reads it plus the same page PNG. Only GREEN chains anchor walls; YELLOW chains are listed, not used.
+**Rule (German inner-dimension chain, measured not assumed):** in a GREEN chain the segments alternate wall | room | wall … starting and ending with an exterior wall. A segment is a WALL candidate when its value is below the smallest room value of that chain (here walls 0.115-0.365, rooms ≥ 2.6 m) — derived per chain, logged. A H chain's walls are VERTICAL bands at [tick_i, tick_i+1]; a V chain's are HORIZONTAL bands.
+**Trace:** for a band [a, b] (px), walk along the wall axis row by row across the plan body; a row is WALL when both faces show ink at the band edges (±2 px) AND the band interior is not paper (ink+grey fraction ≥ the value measured on the band's own first confirmed rows). Runs shorter than 2 x wall thickness are dropped as noise; gaps ≤ 1 px bridged; LONGER gaps are kept as gaps (= candidate openings, step 2), never filled.
+**Witness W-S7 (can say NO-OP / VACUOUS / WRONG):**
+| ID | Claim | Issue exposed |
+|---|---|---|
+| W-S7a | each wall band's measured thickness (face-to-face px / scale) equals its chain value ± 1 px | chain ticks are not the wall faces (extension-line offset) |
+| W-S7b | the 4 exterior walls (first/last of the H and V GREEN chains) form a closed ring: each one's traced extent reaches the other two within 1 wall thickness; ring = 12.49 x 11.99 m | ring open / invented corners |
+| W-S7c | interior walls: each traced run ends on another wall (T or L junction) or at a gap logged as an opening candidate | free-floating walls |
+| W-S7d | a falsifier: the same trace on a band shifted half a room into a room interior finds NO wall (≤ 5 % of rows) | tracer reads hatch/furniture as wall |
+**Output:** `walls.json` (mm, origin = exterior outer corner top-left, y down as on the sheet, flip stated when emitting DXF) + `§RASTER_WALL` lines. VACUOUS if 0 GREEN chains.
