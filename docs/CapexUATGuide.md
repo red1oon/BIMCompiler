@@ -46,7 +46,7 @@
 |---|---|
 | Document | CAPEX UAT Guide — from 2D drawings to the dashboard |
 | Purpose | The step-by-step test script for the User Acceptance Test of the pilot client (Sysnova): BIM drawings to a priced model, the ERP exercise, the CAPEX dashboard |
-| Revision | **2026-11-22 (c)** |
+| Revision | **2026-11-22 (d)** |
 | Status | Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately and stays as signed. Since then steps C1.1, C2.1, C3.2, C4.1, C4.2, C4.4, C5.1, D3, D4, D9 and L3 carry the corrections of the change list (item 22). What changed or was found since is listed after this cover. |
 | Prepared and issued by | Redhuan D. Oon, Project Consultant |
 | For | The pilot client's UAT team: System Setup, BIM, Project Mgmt Accounting |
@@ -58,6 +58,7 @@
 
 | Revision | What changed |
 |---|---|
+| 2026-11-22 (d) | Second independent check of film part 3: item 23 (B4.1, L, C3.1, C3.2, C5.1, D8, D9 and the C log in) |
 | 2026-11-22 (c) | Change list items 9 to 19 now in their steps (C1.1, C2.1, C3.2, C4.1, C4.2, C4.4, C5.1, D3, D4, D9 and L3); D read job and D9 percents said as they are; item 22 |
 | 2026-11-22 (b) | Legacy iDempiere: A5 for the administrator (LA1 to LA4), B4 note (L1 to L3); change list item 21. No step changed |
 | 2026-11-22 | Change list item 20 and *See how* item 3: film part 3, linked. No step changed |
@@ -100,6 +101,7 @@ Read these even if you have already done the UAT. If your run met one of them, r
 | 18 | D3 | Adding up the panel's **Spent** column gives 2,020.46; the tile reads **2,020.45** (each row is rounded to the cent). | **Corrected in the step** (2026-11-22 (c)) | Follow the step: it now says this |
 | 19 | C4.2 | Each **Issue to Project** opens its own window tab; after several, the first tabs are pushed off the strip. | **Corrected in the step** (2026-11-22 (c)) | Follow the step: it now says this |
 | 20 | B4, C, D (film) | The film *UAT, hands on, part 3* shows B4, every document of chapter C made by hand, and chapter D. Items 9 to 19 are what it met on the way. | Film published: [youtu.be/stnbV8nygqs](https://youtu.be/stnbV8nygqs) | None; no step changed. Watch it before chapter C |
+| 23 | B4.1, L, C3.1, C3.2, C5.1, D8, D9, C (log in) | A second independent check of the film part 3 against this guide: do the legacy L1 to L3 **after chapter D** (or on a copy: SHED is one more project); L3 and the chapter C log in name Chrome's windows, the demo password and closing each document's tab; C3.1 runs with the window's own **Create lines from** button; C3.2 half paid is rounded up to the cent; C5.1 says what to do with no Phase tab; D9 money goals are rounded to the unit; B4.1's list shows parts at once. | Corrected in this revision | Retest a step of this list if you did it before |
 | 22 | C1.1, C2.1, C3.2, C4.1, C4.2, C4.4, C5.1, D3, D4, D9 and L3 | **The steps now say what works.** Items 9 to 19 were written only in this list; each is now in its step, so a step read on its own passes (C5.1 was the one that stopped a tester: Save refused, *Fill mandatory fields: Invoice Rule*). Also new in D: the read job ends with `§DASH_LEGACY_READ_VERDICT PASS` and needs `BRIDGE_USER`/`BRIDGE_PASS` on a server that is not `localhost`; D9 says what the Home goals' percents are measured against (the targets A2 installs), so *Actual Cost* reads 0 % on the test data. Found by an independent check of the film part 3 against this guide. | Corrected in this revision | Retest a step of this list if you did it before |
 | 21 | A5, B4 | **If your ERP is a legacy iDempiere:** the administrator installs the BIM OOTB plugin (A5, steps LA1 to LA4); then B4 from the Viewer that your iDempiere serves, steps L1 to L3 under B4. The Viewer keeps your sign-in ids when you open a file, and **open ↗** opens your iDempiere's Project. | New in this revision | Only with a legacy iDempiere: A5, then L1 to L3 |
 
@@ -553,20 +555,20 @@ Do this in the **Viewer**, on the Shed you opened in B2.9. (In the Modeller, **E
 
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|
-| B4.1 | Open the **Find** panel and click one group of parts in its list (for example a column type) | The panel shows the group's cost and the button **› ERP** | ☐ Pass ☐ Fail |
+| B4.1 | Open the **Find** panel and click one group of parts in its list (for example a column type; the list shows parts as soon as the panel opens, and typing *column* in its box lists the column types) | The panel shows the group's cost and the button **› ERP** | ☐ Pass ☐ Fail |
 | B4.2 | Press **› ERP** | The status line reads *Project Order: 1 lines · contract …  (saved)* and a link **open ↗** appears | ☐ Pass ☐ Fail |
 | B4.3 | Press **› ERP** again | *Project Order: 0 lines*: nothing new is added, the order is keyed by the model's name (**SHED**) | ☐ Pass ☐ Fail |
 | B4.4 | Click **open ↗**. On the Kernel ERP sign-in page choose **GardenAdmin**, then **Log In** | The ERP opens on the project **SHED** (*BIM: SHED*) with its planned amount (the amount of the group you clicked in B4.1). Its **Phase** and **Task** tabs each hold one record. The line from the model is under **Task Line** (with the Task selected), showing the same planned amount: a line shows in the tab of its lowest level, as in iDempiere (*Task Line*: a task is set; *Phase Line*: a phase but no task; *Project Line*: neither), so **Project Line** and **Phase Line** read *0 records* | ☐ Pass ☐ Fail |
 
 <div class="uat-keep" markdown="1">
 
-**If your ERP is a legacy iDempiere** (not the Kernel ERP): your administrator installs the **BIM OOTB plugin** in it once ([A5](#a5-the-bim-ootb-plugin-only-if-your-erp-is-a-legacy-idempiere)). Then do B4 in the Viewer that your iDempiere serves. The steps are the same; only where the Viewer comes from and what you confirm change. (Why: a browser does not let a page from another site call your iDempiere, so the Viewer is served by the iDempiere itself.)
+**If your ERP is a legacy iDempiere** (not the Kernel ERP): your administrator installs the **BIM OOTB plugin** in it once ([A5](#a5-the-bim-ootb-plugin-only-if-your-erp-is-a-legacy-idempiere)). Then do B4 in the Viewer that your iDempiere serves. The steps are the same; only where the Viewer comes from and what you confirm change. (Why: a browser does not let a page from another site call your iDempiere, so the Viewer is served by the iDempiere itself.) **Do L1 to L3 after chapter D, or on a copy of your iDempiere:** the project SHED that L2 creates is one more project there, and chapter D's figures are for the 14 projects without it.
 
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|
 | L1 | Open **your iDempiere**`/bimootb/viewer/viewer.html?blank=1&erpUser=GardenAdmin&erpClient=11&erpRole=102&erpOrg=11&erpWarehouse=103` (GardenWorld's user and ids; use your own), press **Ctrl+O** and open the Shed's `.db` as in B2.9 | The Viewer opens the Shed: *DONE — SHED 511 elements* | ☐ Pass ☐ Fail |
 | L2 | Do B4.1, press **› ERP**, type your iDempiere password in the window *Sign in to iDempiere*, and press **Push** | The window shows your user and ids, filled in. Then the status line reads *iDempiere Project #… · created* with *"projects":1* and **open ↗** appears. (Chrome may show its own password windows: press **OK**, then **No thanks**) | ☐ Pass ☐ Fail |
-| L3 | Click **open ↗** and log in to your iDempiere (tick **Select Role**, choose **HQ**, as in chapter C) | The **Project** window opens on **SHED** (*BIM: SHED*) with the planned amount of the group you clicked in B4.1 | ☐ Pass ☐ Fail |
+| L3 | Click **open ↗** and log in to your iDempiere (tick **Select Role**, choose **HQ**, as in chapter C; Chrome may show its own windows: press **OK**, then **No thanks**) | The **Project** window opens on **SHED** (*BIM: SHED*) with the planned amount of the group you clicked in B4.1 | ☐ Pass ☐ Fail |
 
 </div>
 
@@ -591,7 +593,7 @@ This is the step that *How do I pass?* (at the start of this guide) points to. T
 
 Use the 12 test projects. The table says, per project, what to make. The products are the **Construction** products of A3.6 (**not** GardenWorld's own); use any GardenWorld vendor, the *Purchase* price list and *HQ Warehouse*. Do not type a price: the order line takes it from the price list, which is the product's standard cost rounded to the cent (68.1167 becomes 68.12). On each document, set **Project** to the test project (the windows do not ask for a phase).
 
-**Log in for chapter C:** log in as GardenAdmin, tick **Select Role**, and choose the organization **HQ** and the warehouse **HQ Warehouse** (with the default `*` an order will not save: *Fill mandatory fields: Organization, Warehouse*). If Chrome shows *Change your password*, press **OK**; if it asks *Save password?*, press **No thanks** (else it takes the keys meant for the page).
+**Log in for chapter C:** log in as GardenAdmin (password *GardenAdmin* on a fresh GardenWorld), tick **Select Role**, and choose the organization **HQ** and the warehouse **HQ Warehouse** (with the default `*` an order will not save: *Fill mandatory fields: Organization, Warehouse*). If Chrome shows *Change your password*, press **OK**; if it asks *Save password?*, press **No thanks** (else it takes the keys meant for the page). Each document opens its own window tab: close it (**×**) when done, or the first tabs are pushed off the strip.
 
 | Product | Name | Unit | Standard cost (USD) |
 |---|---|---|---|
@@ -639,8 +641,8 @@ Only *Half paid* and *Paid in full* orders (TD_BRIDGE, TD_RIVERSIDE, TD_SCHOOL).
 
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|
-| C3.1 | **Purchase Invoice and Credit/Debit Note** window, **New**. Header: **Target Document Type** *AP Invoice*, **Business Partner** the same vendor, **Project** the test project. Press **Create lines from**, choose the purchase order (or its receipt), tick the line, **OK**. Save, then **Document Action ▸ Complete ▸ OK** | The invoice is *Completed*; its **Grand Total** equals the order's | ☐ Pass ☐ Fail |
-| C3.2 | **Payment and Receipt** window, **New**. **Document Type** *AP Payment*, **Business Partner** the same vendor (its search opens with **Vendor = No**: set **Vendor** to **Yes**, press **ReQuery**, choose *SeedFarm*), **Invoice** the invoice you just made (the amount fills in; the **Project** field disappears once an invoice is chosen, that is normal), **Bank Account** *MoneyBank 1234*, **Tender type** *Check*. For *Half paid* change **Payment amount** to half the invoice total. Save, then **Document Action ▸ Complete ▸ OK** | The payment is *Completed*. On the invoice, **Paid** is ticked for *Paid in full*; for *Half paid* it is not, and the open amount is the other half | ☐ Pass ☐ Fail |
+| C3.1 | **Purchase Invoice and Credit/Debit Note** window, **New**. Header: **Target Document Type** *AP Invoice*, **Business Partner** the same vendor, **Project** the test project. Press **Create lines from**, choose the purchase order (or its receipt), tick the line, and press the window's own **Create lines from** button. Save, then **Document Action ▸ Complete ▸ OK** | The invoice is *Completed*; its **Grand Total** equals the order's | ☐ Pass ☐ Fail |
+| C3.2 | **Payment and Receipt** window, **New**. **Document Type** *AP Payment*, **Business Partner** the same vendor (its search opens with **Vendor = No**: set **Vendor** to **Yes**, press **ReQuery**, choose *SeedFarm*), **Invoice** the invoice you just made (the amount fills in; the **Project** field disappears once an invoice is chosen, that is normal), **Bank Account** *MoneyBank 1234*, **Tender type** *Check*. For *Half paid* change **Payment amount** to half the invoice total, rounded up to the cent (*TD_BRIDGE* 2,426.13: pay 1,213.07, and 1,213.06 stays open). Save, then **Document Action ▸ Complete ▸ OK** | The payment is *Completed*. On the invoice, **Paid** is ticked for *Paid in full*; for *Half paid* it is not, and the open amount is the other half | ☐ Pass ☐ Fail |
 
 ### C4 · Issue materials to site
 
@@ -657,7 +659,7 @@ This is done in two parts, once per test project that has an issue in the table 
 
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|
-| C5.1 | **Project** window, a test project (for example *TD_DEPOT*), tab **Phase**. Open the next phase that is not ticked (in the list: click its name, then its pencil **Edit Record**; if the tab shows one phase as a form: **Next record**). Set **Invoice Rule** to *None* (the project's own rule; without it Save is refused: *Fill mandatory fields: Invoice Rule*), tick **Complete**, **Save** | The phase stays ticked (for *TD_DEPOT* 2 of 4 now); that project's *Done* on the dashboard rises (chapter D) | ☐ Pass ☐ Fail |
+| C5.1 | **Project** window, a test project (for example *TD_DEPOT*), tab **Phase** (no Phase tab: the project did not go through C4.1, so first set **Line Level** to **Phase** in the header and Save). Open the next phase that is not ticked (in the list: click its name, then its pencil **Edit Record**; if the tab shows one phase as a form: **Next record**). Set **Invoice Rule** to *None* (the project's own rule; without it Save is refused: *Fill mandatory fields: Invoice Rule*), tick **Complete**, **Save** | The phase stays ticked (for *TD_DEPOT* 2 of 4 now); that project's *Done* on the dashboard rises (chapter D) | ☐ Pass ☐ Fail |
 
 **Notes (chapter C):** ______________________________________________
 
@@ -685,8 +687,8 @@ It writes the file `capex/legacy_snapshot.json` inside your copy of the reposito
 | D5 | Click a number on a tile | The drill panel lists the projects behind it; click a project to open its page | ☐ Pass ☐ Fail |
 | D6 | On the project page of *TD_RIVERSIDE*, open the tabs | Overview: Approved **371.25**, 5 phases. The Schedule tab draws the 5 phase bars with the pack’s dates, the first 3 *Complete* **Source:** the project’s **Phase** tab in iDempiere (*Planned Amount*, start and end dates, *Complete*); read them there and compare | ☐ Pass ☐ Fail |
 | D7 | Open **ƒ formula** under a tile | The formula is shown; it is the same Performance Analysis measure your iDempiere holds (A2.3) | ☐ Pass ☐ Fail |
-| D8 | Change **Layout** (top bar) to *Executive* and **Skin** to *Dark*, then back to *Classic* and *Light* | The look changes. *Executive* shows fewer, re-labelled tiles (*Actual Cost* becomes *Spent so far*) with the same figures (4,667.80 approved, 2,020.45 spent); *Classic* shows them all again | ☐ Pass ☐ Fail | ☐ Pass ☐ Fail |
-| D9 | Log in to iDempiere again and read the **Home** tab. Home goals are recalculated only when they are older than **30 minutes** (System Configurator name `ZK_DASHBOARD_PERFORMANCE_REFRESH_INTERVAL`, 1800000 ms). If you opened Home at A2.2 less than 30 minutes ago, the goals still show the counts from before the test data (for example *CAPEX Total Projects* 2): either wait, or open **System Admin ▸ General Rules ▸ System Rules ▸ System Configurator**, set that name's **Configured Value** to `60000`, save, and log in again | The CAPEX goals show the same counts as the dashboard tiles (for example *CAPEX Total Projects* 14, *CAPEX Active Projects* 14), money in your login’s currency. A goal that has a target shows its percentage of that target, not the count. The targets are the ones A2 installs, the plan of the system the dashboard was built on (*Actual Cost*, *Committed Cost*, *Invoiced*: USD 39,971,166.17; *Health Green*, *Schedule On Time*, *Budget Within*: 9 active projects). So on the test data *Actual Cost* reads **0 %** and *Health Green* **55 %** (5 of 9), not the tiles' share; that is expected. Your own targets are set in the **Performance Goal** window (*Measure Target*) | ☐ Pass ☐ Fail |
+| D8 | Change **Layout** (top bar) to *Executive* and **Skin** to *Dark*, then back to *Classic* and *Light* | The look changes. *Executive* shows fewer, re-labelled tiles (*Actual Cost* becomes *Spent so far*) with the same figures (4,667.80 approved, 2,020.45 spent); *Classic* shows them all again | ☐ Pass ☐ Fail |
+| D9 | Log in to iDempiere again and read the **Home** tab. Home goals are recalculated only when they are older than **30 minutes** (System Configurator name `ZK_DASHBOARD_PERFORMANCE_REFRESH_INTERVAL`, 1800000 ms). If you opened Home at A2.2 less than 30 minutes ago, the goals still show the counts from before the test data (for example *CAPEX Total Projects* 2): either wait, or open **System Admin ▸ General Rules ▸ System Rules ▸ System Configurator**, set that name's **Configured Value** to `60000`, save, and log in again | The CAPEX goals show the same counts as the dashboard tiles (for example *CAPEX Total Projects* 14, *CAPEX Active Projects* 14), money in your login’s currency rounded to the unit (*CAPEX Approved Budget* 4,668 for the tile's 4,667.80). A goal that has a target shows its percentage of that target, not the count. The targets are the ones A2 installs, the plan of the system the dashboard was built on (*Actual Cost*, *Committed Cost*, *Invoiced*: USD 39,971,166.17; *Health Green*, *Schedule On Time*, *Budget Within*: 9 active projects). So on the test data *Actual Cost* reads **0 %** and *Health Green* **55 %** (5 of 9), not the tiles' share; that is expected. Your own targets are set in the **Performance Goal** window (*Measure Target*) | ☐ Pass ☐ Fail |
 
 **Notes (chapter D):** ______________________________________________
 
