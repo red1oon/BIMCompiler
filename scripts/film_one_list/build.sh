@@ -30,7 +30,7 @@ ffmpeg -y -v error -i $OD/work/film_voice.mp4 -i $OD/work/keys.wav -filter_compl
 echo "§KEYSMIX frames=$(ffprobe -v error -count_frames -select_streams v:0 -show_entries stream=nb_read_frames -of csv=p=0 "$OUTMP4") audio_s=$(ffprobe -v error -select_streams a:0 -show_entries stream=duration -of csv=p=0 "$OUTMP4") video_s=$D" >> $OD/keysmix.log
 $PY k2.py $OD $OD/work/film_voice.mp4 "$OUTMP4" $OD/work/fit/$FTAG.ass > $OD/k2.log 2>&1; cat $OD/k2.log | tail -3
 node flowcheck.js $OD > $OD/flow.log 2>&1; tail -1 $OD/flow.log
-CUE_C=$(grep -o "beat=close t=[0-9.]*" $OD/record.log | cut -d= -f3); DUR=$(grep -o "dur=[0-9.]*" $OD/record.log | tail -1 | cut -d= -f2)
-python3 stripcheck.py "$OUTMP4" "0:4.0,${CUE_C}:$(python3 -c "print(max(0,${DUR}-0.2))")" > $OD/stripvideo.log 2>&1 || echo "§STRIP_VIDEO_FAIL see $OD/stripvideo.log"; tail -1 $OD/stripvideo.log   # check S on the ENCODED FILE (the cover and the last card carry no strip)
+CUE_B1=$(grep -o "beat=b1 t=[0-9.]*" $OD/record.log | cut -d= -f3); CUE_C=$(grep -o "beat=close t=[0-9.]*" $OD/record.log | cut -d= -f3); DUR=$(grep -o "dur=[0-9.]*" $OD/record.log | tail -1 | cut -d= -f2)
+python3 stripcheck.py "$OUTMP4" "0:$(python3 -c "print(max(0,${CUE_B1}-0.2))"),${CUE_C}:$(python3 -c "print(max(0,${DUR}-0.2))")" > $OD/stripvideo.log 2>&1 || echo "§STRIP_VIDEO_FAIL see $OD/stripvideo.log"; tail -1 $OD/stripvideo.log   # check S on the ENCODED FILE (the cover and the last card carry no strip)
 echo "§FILM_FILE frames=$(ffprobe -v error -count_frames -select_streams v:0 -show_entries stream=nb_read_frames -of csv=p=0 "$OUTMP4") dur_s=$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$OUTMP4") size=$(stat -c %s "$OUTMP4")" | tee -a $OD/stripvideo.log
 echo "§BUILD_DONE $OUTMP4"

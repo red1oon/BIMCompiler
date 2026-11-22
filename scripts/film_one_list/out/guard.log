@@ -1,3 +1,6 @@
+§FILM_GUARD OK   cover says "When we change one, every page that loads it needs a new number" <- b2.bump_in_list expected 7->8 got 7->8
+§FILM_GUARD OK   cover says "one press of the Bump tool does every page" <- b2.page_from_list expected Y got Y
+§FILM_GUARD OK   cover says "the setup refuses a hand edit" <- b3.refuses expected FAIL got FAIL
 §FILM_GUARD OK   b1 says "Two pages load the same file" <- b1.same_file expected Y got Y
 §FILM_GUARD OK   b1 says "Why two numbers" <- b1.numbers_differ expected Y got Y
 §FILM_GUARD OK   b1 says "In November the file changed" <- b1.changed_in_november expected Y got Y
@@ -22,7 +25,7 @@
 §FILM_GUARD OK   b5 says "a planted fault proves it can" <- b5.planted_proves expected Y got Y
 §FILM_GUARD OK   b5 says "forty-four of forty-four claims hold" <- b5.claims expected 44/44 got 44/44
 §FILM_GUARD OK   b5 says "all thirty-one planted faults are caught" <- b5.red expected 31/31 got 31/31
-§FILM_GUARD OK   N every spoken number word is covered by a `says` fact (14 judged)
+§FILM_GUARD OK   N every spoken number word is covered by a `says` fact (16 judged)
 §FILM_GUARD OK   typed b1 is the spec's line byte for byte: git grep -n "import_db_builder.js?v=" e4fa52fe -- index.html viewer/viewer.html
 §FILM_GUARD OK   typed b2 is the spec's line byte for byte: node scripts/bump.js import_own.js
 §FILM_GUARD OK   typed b4 is the spec's line byte for byte: git diff --stat e4fa52fe 0fa163b8 -- index.html capex/index.html import_own.js
@@ -41,7 +44,7 @@
 §FILM_GUARD OK   the lower-frame file extracts exist (6 from git show + the hand-edited copy + the old-code witness lines)
 §FILM_GUARD OK   the pictures: every plan entry has its PNG
 §FILM_GUARD OK   no worktree path leaks into the shown terminal lines (shown as <sha>)
-§FILM_GUARD OK   D every term is defined in its own beat before it is used (6 terms: version number@b1, list@b2, bump@b2, check@b3, markers@b4, witness@b5); F1 every beat opens with its F question (5)
+§FILM_GUARD OK   D every term is defined in its own beat before it is used (6 terms: version number@cover, bump@cover, list@b2, check@b3, markers@b4, witness@b5); F1 every beat opens with its F question (6)
 §FILM_GUARD OK   C the cues: constants as the legend, every frame's tags match them (bad=0, file frames 147, terminal frames 206) 
 §FILM_GUARD OK   S the strip: only on the beat frames, none on the cover or the last card, nothing inside its rows (§CARD_STRIP_ALL unique_frames=208 with_strip=206 without_strip=2 bad=0)
 §FILM_GUARD OK   T one terminal font and no cut row: 26 px, no §FONT_FAIL, no §CARD_OVER
@@ -57,6 +60,7 @@
 §FILM_GUARD OK   not said: no claim about all users
 §FILM_GUARD OK   not said: nothing here measures safety
 §FILM_GUARD OK   not said: no AI claim
+§FILM_GUARD OK   not said: never "automatically": a person still presses Bump once
 §FILM_GUARD OK   not said: B4-HASH is not built and not spoken
 §FILM_GUARD OK   not said: the dead bonsai_kernel tag is handed over, not spoken
 §FILM_GUARD VERDICT PASS
