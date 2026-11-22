@@ -186,7 +186,7 @@ Three roles run this test. Tick a part when all its steps pass, and initial it.
 | **BIM** | a BIM / QS tester; your **drafter** for B00 | a desktop browser; the drafter: BricsCAD |
 | **Project Mgmt Accounting** | a project / accounting user | the GardenWorld Admin login, a desktop browser |
 
-**Order:** System Setup first. BIM may start at once (public apps, not your iDempiere). On a legacy iDempiere (the pilot client's case) BIM sends the Shed into it (A5, then B4 by L1 to L3) **before** chapter C, so chapter D shows it beside the test projects. Project Mgmt Accounting after A; D after C.
+**Order:** System Setup first. BIM may start at once (public apps); on a legacy iDempiere, L1 to L3 before C. Project Mgmt Accounting after A; D after C.
 
 | Part | Role | Done in | Needs first | Hands over | Steps | Done / initials |
 |---|---|---|---|---|---|---|
