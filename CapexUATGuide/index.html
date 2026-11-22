@@ -3965,11 +3965,11 @@
 </tr>
 <tr>
 <td>Revision</td>
-<td><strong>2026-11-22 (g)</strong></td>
+<td><strong>2026-11-23 (h)</strong></td>
 </tr>
 <tr>
 <td>Status</td>
-<td>Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately and stays as signed. Since then steps C1.1, C2.1, C3.2, C4.1, C4.2, C4.4, C5.1, D3, D4, D9 and L3 (and B4.1, C3.1, C3.2, C5.1, D2, D8 after them, then B3.1 and B5) carry the corrections of the change list (items 22 to 26). What changed or was found since is listed after this cover.</td>
+<td>Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately and stays as signed. Since then steps C1.1, C2.1, C3.2, C4.1, C4.2, C4.4, C5.1, D3, D4, D9 and L3 (and B4.1, C3.1, C3.2, C5.1, D2, D8 after them, then B3.1 and B5, then B4, L2, L3 and D) carry the corrections of the change list (items 22 to 27). What changed or was found since is listed after this cover.</td>
 </tr>
 <tr>
 <td>Prepared and issued by</td>
@@ -3995,6 +3995,10 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>2026-11-23 (h)</td>
+<td>The whole Shed into the ERP and the dashboard: B4, L1 to L3 before C, D (item 27)</td>
+</tr>
 <tr>
 <td>2026-11-22 (g)</td>
 <td>One cost for the model: B3.1, B5 and the reference pack (item 26)</td>
@@ -4194,6 +4198,13 @@
 <td>Follow the step: it now says this</td>
 </tr>
 <tr>
+<td>27</td>
+<td>B4, L1 to L3, D</td>
+<td><strong>The whole Shed reaches the ERP and the dashboard.</strong> B4.1 now sends the whole model: press <strong>F</strong>, click <strong>Level 1 (511)</strong>, <strong>› ERP</strong> (USD 355,097.98, B3.1's total), not one group of parts. On a legacy iDempiere, L1 to L3 come <strong>before chapter C</strong>, so chapter D shows SHED beside the test projects: 15 projects, Approved Budget USD 359,765.78, Not started 6, Actual Cost 1 % of plan, Home 15 and 359,766. Measured on a fresh run in that order (2026-11-23). Item 4's <em>the dashboard reads the test projects, not the Shed</em> no longer holds. The films show one group and the 14-project figures.</td>
+<td>Corrected in this revision</td>
+<td>Redo B4 (or L1 to L3), then read D again</td>
+</tr>
+<tr>
 <td>26</td>
 <td>B3.1, B5</td>
 <td><strong>One cost for the model.</strong> The Viewer showed two costs for the Shed: <em>total cost</em> in the Find panel priced each part at its rate × the number of parts (USD 96,839), while the Find bar and <strong>› ERP</strong> priced it at its rate × its quantity in the rate's own unit (m, m², m³). There is now one cost, in the rate pack's own units: <strong>USD 355,097.98 (RM 1,365,761)</strong>, the same in <em>total cost</em>, the Find bar and the Project Order. The Run Checker reads the cents; the reference pack is rebuilt with the new figure (Shed_UAT_pack_20261122.zip). The films still show the old figure (USD 96,839); the guide's figure is the one to confirm.</td>
@@ -4334,7 +4345,7 @@
 </tr>
 </tbody>
 </table>
-<p><strong>Order:</strong> System Setup first. BIM may start at once (public apps, not your iDempiere). Project Mgmt Accounting after A; D after C.</p>
+<p><strong>Order:</strong> System Setup first. BIM may start at once (public apps); on a legacy iDempiere, L1 to L3 before C. Project Mgmt Accounting after A; D after C.</p>
 <table>
 <thead>
 <tr>
@@ -5512,14 +5523,14 @@
 <tbody>
 <tr>
 <td>B4.1</td>
-<td>Open the <strong>Find</strong> panel (key <strong>F</strong>) and click one group of parts in its list (for example a column type). The list fills only when you search: click the model first, press <strong>F</strong>, type a word in its box (for example <em>column</em>) and press <strong>Enter</strong></td>
-<td>The panel shows the group's cost and the button <strong>› ERP</strong></td>
+<td>Click the model, press <strong>F</strong> (the <strong>Find</strong> panel). Its list opens by storey: click <strong>Level 1 (511)</strong>, the whole Shed (the two parts under <em>Unknown</em> are openings, priced 0)</td>
+<td>The bar reads <em>Level 1 · 1 storey</em> <strong>USD 355,097.98</strong> (B3.1's total) and shows the button <strong>› ERP</strong>. For a moment the amount shows every decimal, then the cents</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
 <td>B4.2</td>
 <td>Press <strong>› ERP</strong></td>
-<td>The status line reads <em>Project Order: 1 lines · contract …  (saved)</em> and a link <strong>open ↗</strong> appears</td>
+<td>The status line reads <em>Project Order: 11 lines · contract USD 355,098 (saved)</em> (12 lines if Time Machine has built the schedule in this tab: the order then follows its tasks; the amount is the same) and a link <strong>open ↗</strong> appears</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
@@ -5531,13 +5542,13 @@
 <tr>
 <td>B4.4</td>
 <td>Click <strong>open ↗</strong>. On the Kernel ERP sign-in page choose <strong>GardenAdmin</strong>, then <strong>Log In</strong></td>
-<td>The ERP opens on the project <strong>SHED</strong> (<em>BIM: SHED</em>) with its planned amount (the amount of the group you clicked in B4.1). Its <strong>Phase</strong> and <strong>Task</strong> tabs each hold one record. The line from the model is under <strong>Task Line</strong> (with the Task selected), showing the same planned amount: a line shows in the tab of its lowest level, as in iDempiere (<em>Task Line</em>: a task is set; <em>Phase Line</em>: a phase but no task; <em>Project Line</em>: neither), so <strong>Project Line</strong> and <strong>Phase Line</strong> read <em>0 records</em></td>
+<td>The ERP opens on the project <strong>SHED</strong> (<em>BIM: SHED</em>) with its planned amount, <strong>355097.97658</strong> (B4.1's total, every decimal). Its <strong>Phase</strong> tab holds 6 phases (<em>1 of 6</em>; 5 if the schedule was built), the first <em>Substructure</em> 1,023.22458. A phase's <strong>Task</strong> tab holds its tasks (Substructure: one, <em>CONCRETE_GANG</em>), and <strong>Task Line</strong> the model's lines with the same planned amount (Substructure: one line, 1,023.22458): a line shows in the tab of its lowest level, as in iDempiere (<em>Task Line</em>: a task is set; <em>Phase Line</em>: a phase but no task; <em>Project Line</em>: neither), so <strong>Project Line</strong> and <strong>Phase Line</strong> read <em>0 records</em></td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 </tbody>
 </table>
 <div class="uat-keep">
-<p><strong>If your ERP is a legacy iDempiere</strong> (not the Kernel ERP): your administrator installs the <strong>BIM OOTB plugin</strong> in it once (<a href="#a5-the-bim-ootb-plugin-only-if-your-erp-is-a-legacy-idempiere">A5</a>). Then do B4 in the Viewer that your iDempiere serves. The steps are the same; only where the Viewer comes from and what you confirm change. (Why: a browser does not let a page from another site call your iDempiere, so the Viewer is served by the iDempiere itself.) <strong>Do L1 to L3 after chapter D, or on a copy of your iDempiere:</strong> the project SHED that L2 creates is one more project there, and chapter D's figures are for the 14 projects without it.</p>
+<p><strong>If your ERP is a legacy iDempiere</strong> (not the Kernel ERP; the pilot client's case): your administrator installs the <strong>BIM OOTB plugin</strong> in it once (<a href="#a5-the-bim-ootb-plugin-only-if-your-erp-is-a-legacy-idempiere">A5</a>). Then do B4 in the Viewer that your iDempiere serves. The steps are the same; only where the Viewer comes from and what you confirm change. (Why: a browser does not let a page from another site call your iDempiere, so the Viewer is served by the iDempiere itself.) <strong>Do L1 to L3 before chapter C:</strong> the project SHED that L2 creates is the Shed in your iDempiere, and chapter D's figures include it.</p>
 <table>
 <thead>
 <tr>
@@ -5556,14 +5567,14 @@
 </tr>
 <tr>
 <td>L2</td>
-<td>Do B4.1, press <strong>› ERP</strong>, type your iDempiere password in the window <em>Sign in to iDempiere</em>, and press <strong>Push</strong></td>
+<td>Do B4.1 (<strong>Level 1</strong>, the whole Shed), press <strong>› ERP</strong>, type your iDempiere password in the window <em>Sign in to iDempiere</em>, and press <strong>Push</strong></td>
 <td>The window shows your user and ids, filled in. Then the status line reads <em>iDempiere Project #… · created</em> with <em>"projects":1</em> and <strong>open ↗</strong> appears. (Chrome may show its own password windows: press <strong>OK</strong>, then <strong>No thanks</strong>)</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
 <td>L3</td>
 <td>Click <strong>open ↗</strong> and log in to your iDempiere (tick <strong>Select Role</strong>, choose <strong>HQ</strong>, as in chapter C; Chrome may show its own windows: press <strong>OK</strong>, then <strong>No thanks</strong>)</td>
-<td>The <strong>Project</strong> window opens on <strong>SHED</strong> (<em>BIM: SHED</em>) with the planned amount of the group you clicked in B4.1</td>
+<td>The <strong>Project</strong> window opens on <strong>SHED</strong> (<em>BIM: SHED</em>) with Planned Amount <strong>355,097.97658</strong> (B4.1's total, every decimal)</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 </tbody>
@@ -5900,7 +5911,7 @@
 <p>The dashboard reads a file that a small read job writes from your iDempiere. Run the job first, and again whenever you want fresh figures (it needs Node.js; on a server that is not <code>localhost</code> it also needs <code>BRIDGE_USER</code> and <code>BRIDGE_PASS</code>, else it stops: the full line with user, password, tenant and role is in the <a href="../CapexDashboardGuide/#developers-note">Developer's note</a>):</p>
 <div class="highlight"><pre><span></span><code>BRIDGE_BASE=http://&lt;your-idempiere&gt;:&lt;port&gt; node capex/tools/legacy_snapshot.js
 </code></pre></div>
-<p>It writes the file <code>capex/legacy_snapshot.json</code> inside your copy of the repository (the folder from A1.1, next to <code>index.html</code>), prints a line <code>§DASH_LEGACY_SNAPSHOT … projects=14 … unavailable=[]</code> (14 on a fresh GardenWorld), and ends with a line <code>§DASH_LEGACY_READ_VERDICT PASS …</code>. Then open <code>/capex/index.html?source=legacy</code> on the server that holds that copy (see <a href="../CapexDashboardGuide/#how-the-dashboard-connects-to-the-data">How the dashboard connects to the data</a>). Every tile is described in <a href="../CapexDashboardGuide/#the-dashboard-page">The dashboard page</a>.</p>
+<p>It writes the file <code>capex/legacy_snapshot.json</code> inside your copy of the repository (the folder from A1.1, next to <code>index.html</code>), prints a line <code>§DASH_LEGACY_SNAPSHOT … projects=15 … unavailable=[]</code> (14 on a fresh GardenWorld, plus SHED from L2), and ends with a line <code>§DASH_LEGACY_READ_VERDICT PASS …</code>. Then open <code>/capex/index.html?source=legacy</code> on the server that holds that copy (see <a href="../CapexDashboardGuide/#how-the-dashboard-connects-to-the-data">How the dashboard connects to the data</a>). Every tile is described in <a href="../CapexDashboardGuide/#the-dashboard-page">The dashboard page</a>. <strong>Without SHED</strong> (you did B4 only in the Kernel ERP, or skipped L1 to L3), your iDempiere holds 14 projects and the rows below read 14 and 14, USD 4,667.80, Within 7 / Over 2 / Not started 5, 43 % of plan, and on Home <em>CAPEX Total Projects</em> 14 and <em>CAPEX Approved Budget</em> 4,668.</p>
 <p><img alt="The dashboard" src="../img/capex/capex_page_dashboard.png" /></p>
 <table>
 <thead>
@@ -5915,25 +5926,25 @@
 <tr>
 <td>D1</td>
 <td>Read <strong>Total Projects</strong> and <strong>Active Projects</strong></td>
-<td><strong>14</strong> and <strong>14</strong> on a fresh GardenWorld: the 12 test projects plus GardenWorld's own <em>Standard</em> and <em>Landscape</em> (plus any of your own). <strong>Step into the source:</strong> click the number: the side panel lists the projects behind it, and its row count is the figure. <strong>ƒ formula</strong> under the tile shows the measure (D7)</td>
+<td><strong>15</strong> and <strong>15</strong>: the 12 test projects, GardenWorld's own <em>Standard</em> and <em>Landscape</em>, and <strong>SHED</strong> from L2 (plus any of your own). <strong>Step into the source:</strong> click the number: the side panel lists the projects behind it, and its row count is the figure. <strong>ƒ formula</strong> under the tile shows the measure (D7)</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
 <td>D2</td>
 <td>Read <strong>Approved Budget</strong></td>
-<td>The sum of the planned amounts, per currency: <strong>USD 4,667.80</strong> (the 12 test projects 4,067.80 plus <em>Landscape</em> 600.00). <strong>Step into the source:</strong> click the number; add the <strong>Approved</strong> column of the panel yourself. Press <strong>ERP ↗</strong> on a project (it opens your iDempiere: log in if it asks): iDempiere’s <strong>Project</strong> window shows the same figure in <strong>Planned Amount</strong>, and it equals the sum of <strong>Planned Amount</strong> on the <strong>Phase</strong> tab</td>
+<td>The sum of the planned amounts, per currency: <strong>USD 359,765.78</strong> (the 12 test projects 4,067.80, <em>Landscape</em> 600.00 and <em>SHED</em> 355,097.98). <strong>Step into the source:</strong> click the number; add the <strong>Approved</strong> column of the panel yourself. Press <strong>ERP ↗</strong> on a project (it opens your iDempiere: log in if it asks): iDempiere’s <strong>Project</strong> window shows the same figure in <strong>Planned Amount</strong>, and it equals the sum of <strong>Planned Amount</strong> on the <strong>Phase</strong> tab</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
 <td>D2b</td>
 <td>Read the <strong>Budget</strong> tile (Within / Over / Not started)</td>
-<td><strong>Over</strong> lists <em>TD_CARPARK</em> (Spent 457.59 against a plan of 330.00) and <em>TD_DATAHALL</em> (191.35 against 181.50), the other 7 projects with issues are <strong>Within</strong>; <strong>Not started</strong> is 5: <em>TD_OFFICE</em>, <em>TD_SUBSTATION</em>, <em>TD_WAREHOUSE</em> and GardenWorld’s own <em>Landscape</em> and <em>Standard</em>, which carry no spending on a fresh GardenWorld. The three counts read <strong>Within 7, Over 2, Not started 5</strong>. If your server's <em>Standard</em> project already carries spending, it moves out of <em>Not started</em> <strong>Step into the source:</strong> click <strong>Total Projects</strong> and read each project’s <strong>Spent</strong>, <strong>Approved</strong> and <strong>Budget</strong> columns: <em>Over</em> is Spent above Approved, <em>Not started</em> is Spent 0</td>
+<td><strong>Over</strong> lists <em>TD_CARPARK</em> (Spent 457.59 against a plan of 330.00) and <em>TD_DATAHALL</em> (191.35 against 181.50), the other 7 projects with issues are <strong>Within</strong>; <strong>Not started</strong> is 6: <em>TD_OFFICE</em>, <em>TD_SUBSTATION</em>, <em>TD_WAREHOUSE</em>, GardenWorld’s own <em>Landscape</em> and <em>Standard</em>, which carry no spending on a fresh GardenWorld, and <em>SHED</em> (nothing issued to it yet). The three counts read <strong>Within 7, Over 2, Not started 6</strong>. If your server's <em>Standard</em> project already carries spending, it moves out of <em>Not started</em> <strong>Step into the source:</strong> click <strong>Total Projects</strong> and read each project’s <strong>Spent</strong>, <strong>Approved</strong> and <strong>Budget</strong> columns: <em>Over</em> is Spent above Approved, <em>Not started</em> is Spent 0</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
 <td>D3</td>
 <td>Read <strong>Actual Cost</strong> (Spent)</td>
-<td>It rose by what you issued in C4: <strong>2,020.45</strong> over the 12 test projects. GardenWorld’s own projects carry no spending on a fresh GardenWorld, so the tile reads <strong>USD 2,020.45</strong>, <strong>43 %</strong> of plan (add whatever your own projects already carry). <strong>Step into the source:</strong> click the number and add the <strong>Spent</strong> column (it adds up to 2,020.46, as each row is rounded to the cent: pass at the tile's 2,020.45); each project’s <strong>Spent</strong> is <strong>Project Balance</strong> in iDempiere’s <strong>Project</strong> window (C4.4)</td>
+<td>It rose by what you issued in C4: <strong>2,020.45</strong> over the 12 test projects. GardenWorld’s own projects carry no spending on a fresh GardenWorld, so the tile reads <strong>USD 2,020.45</strong>, <strong>1 %</strong> of plan (SHED's 355,097.98 is in the plan) (add whatever your own projects already carry). <strong>Step into the source:</strong> click the number and add the <strong>Spent</strong> column (it adds up to 2,020.46, as each row is rounded to the cent: pass at the tile's 2,020.45); each project’s <strong>Spent</strong> is <strong>Project Balance</strong> in iDempiere’s <strong>Project</strong> window (C4.4)</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
@@ -5963,13 +5974,13 @@
 <tr>
 <td>D8</td>
 <td>Change <strong>Layout</strong> (top bar) to <em>Executive</em> and <strong>Skin</strong> to <em>Dark</em>, then back to <em>Classic</em> and <em>Light</em></td>
-<td>The look changes. <em>Executive</em> shows fewer, re-labelled tiles (<em>Actual Cost</em> becomes <em>Spent so far</em>) with the same figures (4,667.80 approved, 2,020.45 spent); <em>Classic</em> shows them all again</td>
+<td>The look changes. <em>Executive</em> shows fewer, re-labelled tiles (<em>Actual Cost</em> becomes <em>Spent so far</em>) with the same figures (359,765.78 approved, 2,020.45 spent); <em>Classic</em> shows them all again</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
 <td>D9</td>
 <td><strong>Log Out</strong> of iDempiere, log in again (tick <strong>Select Role</strong>, choose <strong>HQ</strong>, as in chapter C) and read the <strong>Home</strong> tab. Home goals are recalculated only when they are older than <strong>30 minutes</strong> (System Configurator name <code>ZK_DASHBOARD_PERFORMANCE_REFRESH_INTERVAL</code>, 1800000 ms). If you opened Home at A2.2 less than 30 minutes ago, the goals still show the counts from before the test data (for example <em>CAPEX Total Projects</em> 2): either wait, or open <strong>System Admin ▸ General Rules ▸ System Rules ▸ System Configurator</strong>, set that name's <strong>Configured Value</strong> to <code>60000</code>, save, and log in again</td>
-<td>The CAPEX goals show the same counts as the dashboard tiles (for example <em>CAPEX Total Projects</em> 14, <em>CAPEX Active Projects</em> 14), money in your login’s currency rounded to the unit (<em>CAPEX Approved Budget</em> 4,668 for the tile's 4,667.80). A goal that has a target shows its percentage of that target, not the count. The targets are the ones A2 installs, the plan of the system the dashboard was built on (<em>Actual Cost</em>, <em>Committed Cost</em>, <em>Invoiced</em>: USD 39,971,166.17; <em>Health Green</em>, <em>Schedule On Time</em>, <em>Budget Within</em>: 9 active projects). So on the test data <em>Actual Cost</em> reads <strong>0 %</strong> and <em>Health Green</em> <strong>55 %</strong> (5 of 9, on the day this guide was proven: the colours drift with the calendar), not the tiles' share; that is expected. Your own targets are set in the <strong>Performance Goal</strong> window (<em>Measure Target</em>)</td>
+<td>The CAPEX goals show the same counts as the dashboard tiles (for example <em>CAPEX Total Projects</em> 15, <em>CAPEX Active Projects</em> 15), money in your login’s currency rounded to the unit (<em>CAPEX Approved Budget</em> 359,766 for the tile's 359,765.78). A goal that has a target shows its percentage of that target, not the count. The targets are the ones A2 installs, the plan of the system the dashboard was built on (<em>Actual Cost</em>, <em>Committed Cost</em>, <em>Invoiced</em>: USD 39,971,166.17; <em>Health Green</em>, <em>Schedule On Time</em>, <em>Budget Within</em>: 9 active projects). So on the test data <em>Actual Cost</em> reads <strong>0 %</strong> and <em>Health Green</em> <strong>33 %</strong> (3 of 9, measured 2026-11-23: the colours drift with the calendar), not the tiles' share; that is expected. Your own targets are set in the <strong>Performance Goal</strong> window (<em>Measure Target</em>)</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 </tbody>
