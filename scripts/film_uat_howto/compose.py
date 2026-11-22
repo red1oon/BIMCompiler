@@ -64,6 +64,8 @@ ImageDraw.Draw(title).text(((W - ImageDraw.Draw(title).textlength('Sponsored by'
 card(title, 3.6)
 EVS, PTS, tsv_rows, sounds, beat_out = {}, {}, [], [], {}
 for sc in P.SCENES:
+    if sc.get('card'):   # §5.23: a silent chapter card before this scene (plain dark, no voice)
+        _cl = sc['card']; card(mkcard([(_cl[0], font(True, 34), CORAL)] + [(t, font(True, 72 if i == 0 else 48), INK if i == 0 else CORAL) for i, t in enumerate(_cl[1:])]), 3.6); log('§COMP_CARD %s at %.2fs "%s"' % (sc['id'], T - 3.6, ' / '.join(_cl)))
     sid = sc['id']; ev = json.load(open(os.path.join(TAKE, sid + '.events.json'))); EVS[sid] = ev; PTS[sid] = pts_of(os.path.join(TAKE, sid + '.mkv'))
     cue = {c['name']: c['t'] for c in ev['cues']}
     for c in ev['clicks']:   # §5.15: a beat may also hang on a logged click ('click:<label>', its first press): a long stretch with one cue gets a second line without a re-take
