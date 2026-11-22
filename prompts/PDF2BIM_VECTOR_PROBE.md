@@ -730,3 +730,15 @@ Changes, each forced by a log line:
 - **Openings fall out of the trace (input for step 2, not yet judged):** faces + straight texture (window-like) right wall 1.51 / 1.52 / 1.54 m, top 1.49 / 1.55 / 1.48 m, bottom 1.45 / 0.98 / 1.44 m — the drawing's labels say 1.51 and 1.01; the ±40 mm spread is the smoothing window, to be tightened in W-S8 against the labels. Left wall: one window-like 0.97 m and two FACE-ABSENT gaps 0.90 / 0.93 m (drawn differently; W-S8 classifies them).
 - **Output:** `walls.json` 26 wall runs, 55.86 m, mm from the outer top-left corner.
 - **W-S7c scope (stated, not hidden):** only the 8 wall bands crossed by the two GREEN chains are traced. Interior walls crossed only by YELLOW chains are not seen yet. **Two routes to the rest, next:** (a) close more chains (the 8/9 glyph confusion), (b) a general wall finder: the same diagonal-hatch texture test scanned over the whole plan body, its thickness vocabulary taken from the GREEN chains (0.115 / 0.175 / 0.365 m) — every found wall must still pass W-S7a and the falsifier.
+
+### §43.2 STEP 1b SPEC — WHOLE-PLAN WALL SEARCH (W-S9) (owner 2026-11-22: *"go ahead with the whole-plan wall search"*; spec BEFORE code)
+**Input:** `chains.json`, `page_clean.png`, `walls.json` (§43.1). Thickness VOCABULARY = the wall values of the GREEN chains (here 0.115 / 0.175 / 0.365 m), px via the W-S5 scale. Nothing else is a wall thickness.
+**Detector (one rule for every band, vertical and horizontal):** a face = a stroke running along the wall axis; a band of width T (vocabulary) is WALL on a row when both faces are present AND (T thick: interior texture DIAGONAL > STRAIGHT, as §43.1) or (T thin, inner < 5 px: interior PAPER — nothing between the faces). Runs smoothed and split exactly as §43.1. **Minimum run length per thickness = the shortest run of that thickness CONFIRMED by §43.1** (measured, logged), not a constant. Overlapping candidates (same axis, x within T/2) keep the one whose faces are strongest.
+**Witness claims:**
+| ID | Claim | Issue exposed |
+|---|---|---|
+| W-S9a | recall: every §43.1 wall run is re-found (≥ 90 % of its length) | the scanner is blind to walls the anchored trace saw |
+| W-S9b | every accepted wall's face-centre thickness = a vocabulary value ± 1 px; others REJECTED and counted | stray parallel lines taken as walls |
+| W-S9c | connectivity falsifier: a wall is GREEN only if it is joined (end or face within one thickness) to the network grown from the exterior ring; isolated candidates (furniture, room-stamp boxes, stair lines) are YELLOW, listed, NOT emitted | furniture/text read as walls |
+| W-S9d | total accepted length and per-thickness length printed; the ring of §43.1 is part of the network (else INCONCLUSIVE) | vacuous network |
+**Output:** `walls_all.json` (GREEN only) + `§RASTER_SCAN_*` lines; the YELLOW list beside it.
