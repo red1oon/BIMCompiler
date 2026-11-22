@@ -5805,3 +5805,14 @@ is within the owner's GAP of the element (it touches what it hangs from). Share 
   gone). So what method order does not yet say is ONE thing: a piece that HANGS (nothing under it, something touching above) goes in before its hanger. That
   is the open design item — a method statement for hung work (it is second fix / close-up practice: hangers first), not another judge split. (3) Hospital's film from the judge's facts. (4) Delete what no longer decides anything (§Q.58 step 5, item 5 above).
   (5) Bars = step x floor in the Gantt (the envelope bar still holds four steps).
+- **Q.59.1 PRODUCT results after the owner's go (2026-11-22: *"Go, but just do Hospital first, and stop if it does not clear."*), branch `a6d1f818`, main → branch:**
+  **Hospital (GPU, 171 s): CLEARS, no cell worse** — days 250 → 272 · canvas 0 → 0 · copy 63,030 → 0 · box 7,802 → 0 · early 347 → 17 · nopath 34 → 34 ·
+  onNothing 269 → 0 · beforeFloor 264 → 0 · beforeWall 0 → 0 · beforeFrame 16 → 0. It played exactly what the node copy predicted.
+  **HHS (software GL):** all four truths 0, early 44 → 0, copy 2,836 → 0, box 2,300 → 0, but **nopath 5 → 6 WORSE** (not yet traced). **Duplex (software GL):**
+  truths 0, copy 40 → 0, box 199 → 0, **early 2 → 4 WORSE** (the four risers above). `compare` on these + SampleCastle: FAIL worse=2 better=21 same=11.
+- **Hospital's 17, measured (owner: *"a hung item likely happens within a phase task? … apply … shim anchor dependency to it?"*):** all 17 HANG (nothing touches
+  their underside, the elected support is higher) and all 17 are in the SAME BAR as their hanger, 0.0 to 2.4 days ahead of it: 12 pipe fittings and 2 valves
+  under the pipe above them (MEP Rough-in Level 6), 3 envelope proxies under a higher one (Envelope Level 5 / 6). Duplex's 4 are NOT all in one bar: 2 duct taps
+  are a level below their fitting's bar (same phase), 2 risers are in another phase than the wall. So the remedy has two parts: (a) inside a bar, a piece that
+  hangs takes its place right after its hanger — the bond table already names the hanger (`hangs-below`, run.json `bonds`); (b) a piece whose hanger is in
+  a later bar is filed with its hanger. Neither is built; both to be judged with `product_judge.js` exactly as above.
