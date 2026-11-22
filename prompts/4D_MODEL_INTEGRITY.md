@@ -5934,3 +5934,27 @@ is within the owner's GAP of the element (it touches what it hangs from). Share 
 - **Shipped:** bim-ootb PR #3395 (fix + W-BAKE-8 + the Hospital_silent offsets, sw v1786), auto-merge requested; #3390 (HospitalAjaibPath offsets) merged.
 - **A bake file needs three things to be comparable with a judged schedule:** its mesh-box offsets patch, the same rate pack (the bake's browser is `en_US` →
   `rsmeans2024_us`; the judge pins `cidb2024_my`), and a regenerated schedule. Not looked at: the picture itself — every statement above is a log value.
+### Q.64 ▶▶▶ RESUME HERE — SESSION CLOSE 2026-11-22 (owner: *"wrap up, update context in case new session continues. Close"*)
+- **STATE, all landed and live (site fetched back: sw `v1786`):**
+  bim-ootb **#3389** method x location order (`eb389e01`) · **#3390** offsets for `HospitalAjaibPath.db` · **#3395** film cursor fix + W-BAKE-8 + offsets for
+  `Hospital_silent.db` (`10577327`). BIMCompiler: §Q.59 – §Q.63 merged (#1143, #1146, #1155). No session worktree or unpushed branch is left.
+- **What is true now (read §Q.61 for the table, §Q.63 for the bake):** on nine buildings, real viewer, the build-up breaks no site truth (one roof on a curtain-wall
+  member on Clinic); the node copy equals the product wherever a building has its offsets patch; Hospital was baked from the saved file and its log matches the
+  expected schedule within 0.67 %. `product_judge.js compare` still prints FAIL worse=1 (HHS nopath 5 → 6, accepted by the owner, §Q.61).
+- **How to judge anything from here** (not `run_4d_gates.sh` — its ratchets lock the old order and were never re-run):
+  fast, CPU: `node scripts/crawl_node_copy.js main <buildings>` · the verdict: `node scripts/product_judge.js run --root <checkout> --tag <name> <buildings>` then
+  `compare main <name>` (GPU needs the owner's go per run; `GPU=sw` works without it for buildings up to JKR's size; give each concurrent run its own `PORT`).
+  The stored `main` tag in `~/.cache/bim4d/product/main/` is the OLD order (`7021e6cb`) — keep it as the baseline, or re-run it as a new tag from today's main.
+- **To compare a bake with a schedule** (§Q.63 last bullet): the file's offsets patch, the bake's rate pack (`RATES_PACK=rsmeans2024_us` on this machine), a regenerated
+  schedule. `HospitalAjaibPath.db` (the bake tool's default `--db`) has build-up OFF in its saved path; `Hospital_silent.db` is the owner's usual saved file.
+- **NEXT, in order (nothing is in flight):**
+  1. Delete what no longer decides order: `§SITE_ORDER` edges, `_hangFilingAxis`, `§TPL_LAYER_ORDER` + `§TPL_LAYER_SELFCHECK` (reads FAIL by construction now), the
+     election's role in the solve (§Q.58 step 5). Judge with `compare`: no cell may move.
+  2. Retire or re-point `run_4d_gates.sh` and its 17 ratchets at the product judge; put the crawler truths in CI for the tracked HHS file.
+  3. Bars = step x floor (the envelope bar still holds four steps).
+  4. Offsets patches for every served building without one (Shed: box 20, copy 47; `Hospital_extracted`; any `_silent` file). A building without one schedules on
+     boxes that are not where its meshes are.
+  5. Open, not started: hung work (a method statement, not a move — §Q.60.1 says why the move fails); Hospital's 5 and LTU's 48 `early` leftovers; the 34 Hospital
+     pieces with no path to the ground; the bake reading a few hundred pieces under the expectation (day origin not pinned to the hour, §Q.63).
+  6. The house-style film for the seven. No picture was ever looked at this session — every claim is a log value or a judge count.
+- **Do not:** rebuild a "move the hung piece behind its hanger" pass (§Q.60.1), split the old judge's `early` a fourth time, or re-lock gate numbers.
