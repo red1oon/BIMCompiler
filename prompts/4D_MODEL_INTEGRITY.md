@@ -5730,3 +5730,75 @@ is within the owner's GAP of the element (it touches what it hangs from). Share 
   later, for the seven.
 - **Only when SampleCastle is clean:** the same change judged on the seven (no cell worse than main), then Hospital's film.
 - **Do not:** add support rules, re-lock gate numbers, or ask the owner for rulings (§Q.58).
+### Q.59 ▶▶ RESUME HERE (2026-11-22, "resume 4D" session) — METHOD x LOCATION IS BUILT; SampleCastle PROVEN ON THE PRODUCT; the seven measured on the node copy
+- **Branch:** bim-ootb `feat/4d-method-location` (off the candidate `fix/4d-q55-one-population-true-box` + `feat/4d-product-judge` + main). NOT merged: §Q.58's
+  rule is "merge only when no cell is worse than main ON THE PRODUCT", and the product run of the seven is not done (see NEXT).
+- **SPEC — what orders the build-up now (one owner each, `viewer/schedule_author.js`; switch off with `METHOD_ORDER=0` / `window.__METHOD_ORDER = false`):**
+  1. **Order inside a bar — `methodRank(items, db)` (§METHOD_ORDER):** the method step, then bottom-up by the piece's own base. Steps exist only inside the
+     envelope bar: shell (walls, roof, decks, every other envelope piece) · curtain wall (frame and glass together, row by row; at one base the member goes
+     before the panel; a panel never goes before the first member of its own declared assembly, `rel_aggregates`) · windows and doors · stairs and railings.
+     Every other phase is one step. `remapSolveToTasks(…, rankOf)` tiles the bar in that order, one lane, each piece as wide as its own duration share. Both
+     callers pass it: the Gantt writer and the Time Machine (`tm_gantt_build.js` → `_tmTilePlayWithinTasks`), and the node mirror `scripts/lib/tm_played_layer.js`.
+  2. **Location — `_methodLocationAxis(elements, collapse, EPS)` (§METHOD_LOCATION):** a level is a HEIGHT BAND and a piece is on the level whose band holds its
+     BASE. Levels in the order of their middle (median base); a level starts at its lowest piece above the middle of the level below; a base within the contact
+     owner's EPS under a level's start is on that level. Replaces `_hangFilingAxis` (the election no longer files anything). On a declared storey datum it
+     returns the same filing (HHS 0 of 6,839 moved, LTU 0 of 122,330); on SampleCastle 402 of 3,504 pieces sat on another level than their name.
+  3. **One method edge — `dependencies.deck_over` in `viewer/rates/4D_template.json` (§DECK_OVER):** the first fit-out bar of a level waits for the frame bar of
+     the nearest level above (the deck over it). A template without the key (civil) gets no edge. The levelling pass enforces it; no date arithmetic.
+  4. **Kept from the candidate:** one box owner + offsets, containers left out, push pass off on solve-authored schedules. SampleCastle got its offset block
+     (`buildings/patches/SampleCastle_extracted.db.sql`, 2,438 rows, max 2.60 m). `_GANTT_CACHE_VERSION` 54 → 55; page / sw versions bumped (`scripts/bump.js`).
+  5. **Not deleted yet:** `§SITE_ORDER` edges, the election, the bond table and `§TPL_LAYER_ORDER` still run and still feed the SOLVE's raw times and the
+     bar durations; they no longer decide the order of anything that is played. `§TPL_LAYER_SELFCHECK` now reads FAIL by construction (it judges the old
+     layer order) — it goes with them in order-of-work step (5) of §Q.58.
+- **JUDGE CHANGE, said plainly (`scripts/lib/schedule_crawler.js` `splitEarly`, used by `product_judge.js` and the new `scripts/crawl_node_copy.js`):** the rule
+  `early` (the shipped `midairAudit` on true boxes) now counts a piece only when the support the election named for it TOUCHES it and is lower or higher than
+  it. Two populations are counted apart and printed, never ruled on, on main and on the branch alike (main re-judged from its stored browser dumps, `--reuse`):
+  `earlyFar` — the named support does not touch (boxes more than the owner's GAP apart in height): SampleCastle window `3iKlrwnUHCxxRo4aLgJC8B` (top 2.67 m) is
+  "carried" by slab `0ZzyGbASLD1wvphFCXGJtB` (base 5.67 m), with the first-floor windows in between — the contact graph lists 16 "contacts" for it by plan overlap.
+  `earlyTie` — the named support starts at the same height (bases within EPS): two footings side by side, a pipe and its fitting. Reason: on main the solver
+  obeyed these edges, so a ground-floor window waited for a slab two floors up; a judge that scores that as correct cannot judge a method order.
+- **Also fixed in the harness:** `witness_tm_drawn_vs_scheduled.js` served a 0-byte placeholder from the checkout instead of `BLD_DIR` (SampleCastle hung at load).
+- **SampleCastle, PRODUCT (real viewer headless, software GL so the GPU was never touched; `product_judge.js compare main method`): PASS, 0 worse, 6 better.**
+
+  | rule | main `76c2c648` | branch `a6d1f818` |
+  |---|---|---|
+  | days | 35 | 33 |
+  | canvas | 0 | 0 |
+  | copy (browser vs node copy) | 10 | 0 |
+  | box (4D box vs mesh box) | 1,120 | 0 |
+  | early (touching) | 28 | 3 |
+  | nopath | 7 | 7 |
+  | onNothing | 39 | 0 |
+  | beforeFloor | 18 | 0 |
+  | beforeWall | 5 | 0 |
+  | beforeFrame | no curtain wall | no curtain wall |
+
+  The 3 left: a lower piece that the election hangs on a HIGHER overlapping one in the same bar (roof build-up part base 8.15 on one with base 8.30; two
+  finish coverings base 8.13 on one with base 8.30) — bottom-up puts the lower first, hours apart. nopath 7 is geometry (no contact path to the ground), same on both.
+  Animation (not pushed, films never are): `~/Videos/SampleCastle_4D_build_order_BEFORE_AFTER.mp4` + `…_render.log` + `SampleCastle_4D_screenplay_{BEFORE,AFTER}.txt`.
+  `§FILM_EYES` BEFORE 78 out of order / 3,854 red pixels in the last frame, AFTER 3 / 48, both PASS; `§FILM_SELFCHECK` PASS.
+- **The seven, NODE COPY only (`node scripts/crawl_node_copy.js main <buildings>` — the branch's played layer on main's judged true boxes; a proxy, the
+  product verdict is still owed). Each cell: main's PRODUCT → the branch's node copy.**
+
+  | building | days | onNothing | beforeFloor | beforeWall | beforeFrame | early | nopath |
+  |---|---|---|---|---|---|---|---|
+  | Duplex | 15 → 14 | 25 → 0 | 0 → 0 | 0 → 0 | n/a | 2 → **4** | 0 → 0 |
+  | HHS | 58 → 58 | 16 → 0 | 10 → 0 | 0 → 0 | 52 → 0 | 44 → 0 | 5 → **6** |
+  | JKR | 46 → 53 | 29 → 0 | 122 → 0 | 2 → 0 | n/a | 407 → 7 | 11 → 11 |
+  | Clinic | 127 → 138 | 305 → 1 | 65 → 0 | 0 → 0 | 4 → 0 | 97 → 7 | 15 → 15 |
+  | Terminal | 93 → 94 | 157 → 0 | 70 → 0 | 10 → 0 | n/a | 430 → 20 | 1,337 → 1,337 |
+  | Hospital | 250 → 272 | 269 → 0 | 264 → 0 | 0 → 0 | 16 → 0 | 347 → 17 | 34 → 34 |
+  | LTU | 666 → 672 | 3,801 → 0 | 94 → 0 | 4 → 0 | n/a | 641 → 60 | 1,917 → 1,917 |
+
+  Named residue: **Duplex early 2 → 4** — two pipe risers (base -0.65, top 3.30) the election hangs from a furring wall above them and two duct taps
+  (4.31..6.46) it hangs from the transition fitting on top of them; bottom-up puts the riser first. **Clinic onNothing 1** — roof `0rgLSgKBf54Qc3od1vyY2Z`
+  rests on a curtain-wall member (shell step before curtain-wall step). **HHS nopath 5 → 6** — to be read on the product run, the node copy classifies one
+  element differently. Days rise where the deck-over edge binds (JKR +7, Clinic +11, Hospital +22): fit-out no longer starts under an open deck.
+  earlyFar / earlyTie on the branch (counted, not ruled): Terminal 1,299 / 293, LTU 171 / 1,580, Clinic 32 / 42.
+- **CI on the branch:** the four Gantt-editor witnesses on HHS (W-4D-EDITOR-CI) pass — OCP 4/0/0, UE 6/0/0, RO 7/0/0, GL 7/0/0; `audit_sw_precache` 303 found, 0 missing.
+  `run_4d_gates.sh` was NOT run: its ratchets lock the old order and are not the judge (§Q.58.1 "do not re-lock gate numbers").
+- **NEXT, in order:** (1) the PRODUCT judge on the seven — `node scripts/product_judge.js run --root /tmp/wt-4d-method --tag method <seven>` then
+  `compare main method`; with the GPU it is about ten minutes and needs the owner's go for a headless GPU run; `GPU=sw` works without the GPU but is slow
+  (SampleCastle 220 s). (2) Merge only on PASS; the Duplex cell above is the one expected to read WORSE and has to be settled first — do NOT loosen the
+  judge a third time for it. (3) Hospital's film from the judge's facts. (4) Delete what no longer decides anything (§Q.58 step 5, item 5 above).
+  (5) Bars = step x floor in the Gantt (the envelope bar still holds four steps).
