@@ -5859,3 +5859,34 @@ is within the owner's GAP of the element (it touches what it hangs from). Share 
   The piece was "on the ground" only by the band. Not an order defect; not fixed, not hidden. It is the single cell between this branch and PASS on five.
 - **NEXT:** (1) decide the HHS cell on its merits (a piece with nothing under it IS unsupported — the branch's reading is the truer one), (2) Clinic, Terminal, LTU on
   the product (GPU go), (3) merge on PASS, (4) deletions (§Q.58 step 5), (5) bars = step x floor.
+### Q.61 ▶▶ RESUME HERE (2026-11-22, owner: *"The numbers look minimal, do you think we can push our luck?"* → *"ok go"*) — PRODUCT VERDICT ON NINE, MERGE REQUESTED
+- **Owner's go covered:** the GPU run of Clinic, Terminal, LTU; the Shed check; and, if both clean, accepting the HHS piece and merging.
+- **PRODUCT, real viewer (GPU: Hospital, Clinic, Terminal, LTU; software GL: the rest), `compare main method`: worse=1 better=48 same=26 on nine buildings.**
+
+  | building | onNothing | beforeFloor | beforeWall | beforeFrame | early | nopath | copy | box | days |
+  |---|---|---|---|---|---|---|---|---|---|
+  | SampleCastle | 39 → 0 | 18 → 0 | 5 → 0 | n/a | 28 → 3 | 7 → 7 | 10 → 0 | 1,120 → 0 | 35 → 33 |
+  | Duplex | 25 → 0 | 0 → 0 | 0 → 0 | n/a | 2 → 2 | 0 → 0 | 40 → 0 | 199 → 0 | 15 → 14 |
+  | HHS | 16 → 0 | 10 → 0 | 0 → 0 | 52 → 0 | 44 → 0 | 5 → **6** | 2,836 → 0 | 2,300 → 0 | 58 → 58 |
+  | JKR | 29 → 0 | 122 → 0 | 2 → 0 | n/a | 407 → 7 | 11 → 11 | 100 → 0 | 1,506 → 0 | 46 → 53 |
+  | Clinic | 305 → 1 | 65 → 0 | 0 → 0 | 4 → 0 | 96 → 5 | 15 → 15 | 4,448 → 0 | 2,397 → 0 | 127 → 138 |
+  | Terminal | 157 → 0 | 70 → 0 | 10 → 0 | n/a | 430 → 5 | 1,337 → 1,337 | 560 → 0 | 2,085 → 0 | 93 → 94 |
+  | Hospital | 269 → 0 | 264 → 0 | 0 → 0 | 16 → 0 | 335 → 5 | 34 → 34 | 63,030 → 0 | 7,802 → 0 | 250 → 272 |
+  | LTU | 3,801 → 0 | 94 → 0 | 4 → 0 | n/a | 635 → 48 | 1,917 → 1,917 | 395 → 0 | 12,520 → 0 | 666 → 672 |
+  | Shed | 0 → 0 | 3 → 0 | 0 → 0 | n/a | 33 → 0 | 0 → 0 | 79 → 47 | 20 → 20 | 8 → 9 |
+
+  canvas 0 → 0 everywhere but JKR 1 → 1. On all eight patched buildings the browser played exactly the node copy (copy 0). Counted, not ruled (branch):
+  earlyFar Terminal 1,299, LTU 171, Clinic 32; earlyTie LTU 1,580, Terminal 293; earlyStack Terminal 15, LTU 12, Hospital 12.
+- **The one worse cell (HHS nopath 5 → 6, §Q.60.1) is ACCEPTED by the owner's go**, on the stated ground that a piece with nothing under it is unsupported and
+  main only passed it through the 1 m ground band. It is an acceptance in the owner's words, not a re-lock: `compare` still prints FAIL worse=1.
+- **UAT constraint (the 2026-11-20 block above) checked on the Shed:** (1) the guide's lag edit (+5 on the two superstructure rows of `within_level`) moves the
+  finish 8 → 18 days on the branch, exactly as on main (`§DECK_OVER edges=0` — one level, no deck above); (2) parts go up in order: every truth 0, early 33 → 0.
+  (3) no schedule rows are written into any export by this change.
+- **Stored schedules:** `_GANTT_CACHE_VERSION` 55 regenerates a generated schedule on first open unless it has a baseline or was imported (`activeSchedule`
+  `safeToRegen`) — the rule of every earlier bump; bars dragged without a baseline are lost, as before.
+- **Merge:** bim-ootb PR #3389 (`feat/4d-method-location`, head `64edc423` after merging main), auto-merge (squash) enabled; local checks on the merged
+  branch: fast tier 40/40, Gantt-editor witnesses OCP 4 / UE 6 / RO 7 / GL 7 with 0 fail, sw audit 303 / 0 missing, manifest round trip PASS.
+  **Verify it landed before any follow-up; a follow-up starts from fresh `origin/main`, never from this branch.**
+- **NEXT:** (1) delete what no longer decides order (`§SITE_ORDER` edges, hang filing, `§TPL_LAYER_ORDER` + its self-check, the election's role in the solve —
+  §Q.58 step 5); (2) bars = step x floor (the envelope bar holds four steps); (3) `run_4d_gates.sh`: retire or re-point its ratchets at the product judge —
+  they lock the old order and were not run; (4) offset blocks for the Shed (box 20) and any building served without one; (5) the house-style film for the seven.
