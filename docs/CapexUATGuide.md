@@ -47,7 +47,7 @@
 | Document | CAPEX UAT Guide — from 2D drawings to the dashboard |
 | Purpose | The step-by-step test script for the User Acceptance Test of the pilot client (Sysnova): BIM drawings to a priced model, the ERP exercise, the CAPEX dashboard |
 | Revision | **2026-11-22 (f)** |
-| Status | Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately and stays as signed. Since then steps C1.1, C2.1, C3.2, C4.1, C4.2, C4.4, C5.1, D3, D4, D9 and L3 carry the corrections of the change list (item 22). What changed or was found since is listed after this cover. |
+| Status | Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately and stays as signed. Since then steps C1.1, C2.1, C3.2, C4.1, C4.2, C4.4, C5.1, D3, D4, D9 and L3 (and B4.1, C3.1, C3.2, C5.1, D2, D8 after them) carry the corrections of the change list (items 22 to 25). What changed or was found since is listed after this cover. |
 | Prepared and issued by | Redhuan D. Oon, Project Consultant |
 | For | The pilot client's UAT team: System Setup, BIM, Project Mgmt Accounting |
 | The latest copy | Page: [red1oon.github.io/BIMCompiler/CapexUATGuide](https://red1oon.github.io/BIMCompiler/CapexUATGuide/) · PDF: [CapexUATGuide.pdf](https://red1oon.github.io/BIMCompiler/CapexUATGuide.pdf). The PDF is made from the page at every publish and checked (pages, links). |
@@ -58,7 +58,7 @@
 
 | Revision | What changed |
 |---|---|
-| 2026-11-22 (f) | Film part 3 re-published, linked (item 20). No step changed |
+| 2026-11-22 (f) | Film part 3 re-published, linked (item 20); item 25 |
 | 2026-11-22 (e) | Item 24 |
 | 2026-11-22 (d) | Item 23 |
 | 2026-11-22 (c) | Items 9 to 19 moved into their steps; item 22 |
@@ -102,11 +102,12 @@ Read these even if you have already done the UAT. If your run met one of them, r
 | 17 | C5.1 | The Phase tab is a list under the header. | **Corrected in the step** (2026-11-22 (c)) | Follow the step: it now says this |
 | 18 | D3 | Adding up the panel's **Spent** column gives 2,020.46; the tile reads **2,020.45** (each row is rounded to the cent). | **Corrected in the step** (2026-11-22 (c)) | Follow the step: it now says this |
 | 19 | C4.2 | Each **Issue to Project** opens its own window tab; after several, the first tabs are pushed off the strip. | **Corrected in the step** (2026-11-22 (c)) | Follow the step: it now says this |
-| 20 | B4, C, D (film) | The film *UAT, hands on, part 3* shows B4, every document of chapter C made by hand, chapter D, and last the legacy B4 (L1 to L3). Items 9 to 19 are what it met on the way. | Film published: [youtu.be/g7FTNnbbybA](https://youtu.be/g7FTNnbbybA) (2026-11-22, follows revision (f); replaces the first upload) | None; no step changed. Watch it before chapter C |
+| 25 | B4.1, C3.1, C3.2, D | A fourth independent check of the film part 3: **B4.1** the Find list fills only when you search (click the model, **F**, type a word such as *column*, **Enter**; revision (d) wrongly said it shows parts at once); **C3.2** type the vendor's **search key** *SeedFarm* (the Payment window does not find it by name); **C3.1** the dialog's own **Create lines from** button, not the header's; D's read job ends with a line `§DASH_LEGACY_READ_VERDICT PASS …`. | Corrected in this revision | Retest a step of this list if you did it before |
 | 24 | B4.1, C3.1, D2, D9, sign-off | A third independent check of the film part 3: C3.1 says **Save** before **Create lines from** (no second Save); D9 says **Log Out**, then log in with Select Role and HQ; B4.1 names the key **F**; D2's **ERP ↗** may ask you to log in; the checklist and sign-off count the legacy-only steps (A5, L1 to L3). | Corrected in this revision | Retest a step of this list if you did it before |
 | 23 | B4.1, L, C3.1, C3.2, C5.1, D8, D9, C (log in) | A second independent check of the film part 3 against this guide: do the legacy L1 to L3 **after chapter D** (or on a copy: SHED is one more project); L3 and the chapter C log in name Chrome's windows, the demo password and closing each document's tab; C3.1 runs with the window's own **Create lines from** button; C3.2 half paid is rounded up to the cent; C5.1 says what to do with no Phase tab; D9 money goals are rounded to the unit; B4.1's list shows parts at once. | Corrected in this revision | Retest a step of this list if you did it before |
 | 22 | C1.1, C2.1, C3.2, C4.1, C4.2, C4.4, C5.1, D3, D4, D9 and L3 | **The steps now say what works.** Items 9 to 19 were written only in this list; each is now in its step, so a step read on its own passes (C5.1 was the one that stopped a tester: Save refused, *Fill mandatory fields: Invoice Rule*). Also new in D: the read job ends with `§DASH_LEGACY_READ_VERDICT PASS` and needs `BRIDGE_USER`/`BRIDGE_PASS` on a server that is not `localhost`; D9 says what the Home goals' percents are measured against (the targets A2 installs), so *Actual Cost* reads 0 % on the test data. Found by an independent check of the film part 3 against this guide. | Corrected in this revision | Retest a step of this list if you did it before |
 | 21 | A5, B4 | **If your ERP is a legacy iDempiere:** the administrator installs the BIM OOTB plugin (A5, steps LA1 to LA4); then B4 from the Viewer that your iDempiere serves, steps L1 to L3 under B4. The Viewer keeps your sign-in ids when you open a file, and **open ↗** opens your iDempiere's Project. | New in this revision | Only with a legacy iDempiere: A5, then L1 to L3 |
+| 20 | B4, C, D (film) | The film *UAT, hands on, part 3* shows B4, every document of chapter C made by hand, chapter D, and last the legacy B4 (L1 to L3). Items 9 to 19 are what it met on the way. | Film published: [youtu.be/g7FTNnbbybA](https://youtu.be/g7FTNnbbybA) (2026-11-22, follows revision (f); replaces the first upload) | None; no step changed. Watch it before chapter C |
 
 </div>
 
@@ -558,7 +559,7 @@ Do this in the **Viewer**, on the Shed you opened in B2.9. (In the Modeller, **E
 
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|
-| B4.1 | Open the **Find** panel (key **F**) and click one group of parts in its list (for example a column type; the list shows parts as soon as the panel opens, and typing *column* in its box lists the column types) | The panel shows the group's cost and the button **› ERP** | ☐ Pass ☐ Fail |
+| B4.1 | Open the **Find** panel (key **F**) and click one group of parts in its list (for example a column type). The list fills only when you search: click the model first, press **F**, type a word in its box (for example *column*) and press **Enter** | The panel shows the group's cost and the button **› ERP** | ☐ Pass ☐ Fail |
 | B4.2 | Press **› ERP** | The status line reads *Project Order: 1 lines · contract …  (saved)* and a link **open ↗** appears | ☐ Pass ☐ Fail |
 | B4.3 | Press **› ERP** again | *Project Order: 0 lines*: nothing new is added, the order is keyed by the model's name (**SHED**) | ☐ Pass ☐ Fail |
 | B4.4 | Click **open ↗**. On the Kernel ERP sign-in page choose **GardenAdmin**, then **Log In** | The ERP opens on the project **SHED** (*BIM: SHED*) with its planned amount (the amount of the group you clicked in B4.1). Its **Phase** and **Task** tabs each hold one record. The line from the model is under **Task Line** (with the Task selected), showing the same planned amount: a line shows in the tab of its lowest level, as in iDempiere (*Task Line*: a task is set; *Phase Line*: a phase but no task; *Project Line*: neither), so **Project Line** and **Phase Line** read *0 records* | ☐ Pass ☐ Fail |
@@ -644,8 +645,8 @@ Only *Half paid* and *Paid in full* orders (TD_BRIDGE, TD_RIVERSIDE, TD_SCHOOL).
 
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|
-| C3.1 | **Purchase Invoice and Credit/Debit Note** window, **New**. Header: **Target Document Type** *AP Invoice*, **Business Partner** the same vendor, **Project** the test project. **Save**. Then press **Create lines from**, choose the purchase order (or its receipt), tick the line, and press the window's own **Create lines from** button (the line is saved with it). Then **Document Action ▸ Complete ▸ OK** | The invoice is *Completed*; its **Grand Total** equals the order's | ☐ Pass ☐ Fail |
-| C3.2 | **Payment and Receipt** window, **New**. **Document Type** *AP Payment*, **Business Partner** the same vendor (its search opens with **Vendor = No**: set **Vendor** to **Yes**, press **ReQuery**, choose *SeedFarm*), **Invoice** the invoice you just made (the amount fills in; the **Project** field disappears once an invoice is chosen, that is normal), **Bank Account** *MoneyBank 1234*, **Tender type** *Check*. For *Half paid* change **Payment amount** to half the invoice total, rounded up to the cent (*TD_BRIDGE* 2,426.13: pay 1,213.07, and 1,213.06 stays open). Save, then **Document Action ▸ Complete ▸ OK** | The payment is *Completed*. On the invoice, **Paid** is ticked for *Paid in full*; for *Half paid* it is not, and the open amount is the other half | ☐ Pass ☐ Fail |
+| C3.1 | **Purchase Invoice and Credit/Debit Note** window, **New**. Header: **Target Document Type** *AP Invoice*, **Business Partner** the same vendor, **Project** the test project. **Save**. Then press **Create lines from**, choose the purchase order (or its receipt), tick the line, and press the **Create lines from** button of the window that opened (not the header's; the line is saved with it). Then **Document Action ▸ Complete ▸ OK** | The invoice is *Completed*; its **Grand Total** equals the order's | ☐ Pass ☐ Fail |
+| C3.2 | **Payment and Receipt** window, **New**. **Document Type** *AP Payment*, **Business Partner** the same vendor (this window finds a partner by its **search key**, not its name: type *SeedFarm*, the vendor's search key in the **Business Partner** window, A4.1; its search opens with **Vendor = No**: set **Vendor** to **Yes**, press **ReQuery**, choose *SeedFarm*), **Invoice** the invoice you just made (the amount fills in; the **Project** field disappears once an invoice is chosen, that is normal), **Bank Account** *MoneyBank 1234*, **Tender type** *Check*. For *Half paid* change **Payment amount** to half the invoice total, rounded up to the cent (*TD_BRIDGE* 2,426.13: pay 1,213.07, and 1,213.06 stays open). Save, then **Document Action ▸ Complete ▸ OK** | The payment is *Completed*. On the invoice, **Paid** is ticked for *Paid in full*; for *Half paid* it is not, and the open amount is the other half | ☐ Pass ☐ Fail |
 
 ### C4 · Issue materials to site
 
@@ -676,7 +677,7 @@ The dashboard reads a file that a small read job writes from your iDempiere. Run
 BRIDGE_BASE=http://<your-idempiere>:<port> node capex/tools/legacy_snapshot.js
 ```
 
-It writes the file `capex/legacy_snapshot.json` inside your copy of the repository (the folder from A1.1, next to `index.html`), prints a line `§DASH_LEGACY_SNAPSHOT … projects=14 … unavailable=[]` (14 on a fresh GardenWorld), and ends with `§DASH_LEGACY_READ_VERDICT PASS`. Then open `/capex/index.html?source=legacy` on the server that holds that copy (see [How the dashboard connects to the data](CapexDashboardGuide.md#how-the-dashboard-connects-to-the-data)). Every tile is described in [The dashboard page](CapexDashboardGuide.md#the-dashboard-page).
+It writes the file `capex/legacy_snapshot.json` inside your copy of the repository (the folder from A1.1, next to `index.html`), prints a line `§DASH_LEGACY_SNAPSHOT … projects=14 … unavailable=[]` (14 on a fresh GardenWorld), and ends with a line `§DASH_LEGACY_READ_VERDICT PASS …`. Then open `/capex/index.html?source=legacy` on the server that holds that copy (see [How the dashboard connects to the data](CapexDashboardGuide.md#how-the-dashboard-connects-to-the-data)). Every tile is described in [The dashboard page](CapexDashboardGuide.md#the-dashboard-page).
 
 ![The dashboard](img/capex/capex_page_dashboard.png)
 
