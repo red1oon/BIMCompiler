@@ -59,10 +59,7 @@
 | Revision | What changed |
 |---|---|
 | 2026-11-22 (g) | One cost for the model: B3.1, B5 and the reference pack (item 26) |
-| 2026-11-22 (f) | Film part 3 re-published, linked (item 20); item 25 |
-| 2026-11-22 (e) | Item 24 |
-| 2026-11-22 (d) | Item 23 |
-| 2026-11-22 (c) | Items 9 to 19 moved into their steps; item 22 |
+| 2026-11-22 (c) to (f) | Items 9 to 19 moved into their steps; items 22 to 25; film part 3 re-published, linked (item 20) |
 | 2026-11-22 (b) | Legacy iDempiere: A5, L1 to L3 (item 21). No step changed |
 | 2026-11-22 | Change list item 20 and *See how* item 3: film part 3, linked. No step changed |
 | 2026-11-21 | Change list items 9 to 19 (film part 3). No step changed |
