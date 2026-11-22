@@ -1,0 +1,11 @@
+§BEATLEN beat=cover voice=0 typing=0.00 -> hold from narr.js
+§BEATLEN beat=before voice=14.95 typing=3.58 -> 18.53 (typing 3.58 + gap 0.3 + voice 13.45 + tail 1.2)
+§BEATLEN beat=tab voice=18.2 typing=0.00 -> 18.2
+§BEATLEN beat=guide voice=16.43 typing=0.00 -> 16.43
+§BEATLEN beat=ask voice=12.06 typing=3.33 -> 15.39 (typing 3.33 + gap 0.3 + voice 10.56 + tail 1.2)
+§BEATLEN beat=cli voice=8.73 typing=4.67 -> 13.4 (typing 4.67 + gap 0.3 + voice 7.23 + tail 1.2)
+§BEATLEN beat=langs voice=18.58 typing=0.00 -> 18.58
+§BEATLEN beat=tenant voice=10.53 typing=7.75 -> 18.28 (typing 7.75 + gap 0.3 + voice 9.03 + tail 1.2)
+§BEATLEN beat=legacy voice=19.74 typing=6.33 -> 26.07 (typing 6.33 + gap 0.3 + voice 18.24 + tail 1.2)
+§BEATLEN beat=close voice=0 typing=0.00 -> hold from narr.js
+§BEATLEN_DONE beats=8 total=144.9s

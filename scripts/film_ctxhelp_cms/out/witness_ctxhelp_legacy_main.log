@@ -1,0 +1,12 @@
+§CTXHELP_LEGACY script legacy/local_sql/postgresql/202611161933_KernelERP_ContextHelp.sql 210684 chars, targets 21, db idempiere_pilot, break none
+§CTXHELP_LEGACY psql exit 0, markers APPLY1 true AFTER1 true AFTER2 true rolled back true
+§CTXHELP_LEGACY limits MsgText 2000 / _Trl 2000; sequences before [1000000,1000000] after 1st [1000021,1000021] after 2nd [1000021,1000021]; site help on tab 187 before 200000 after 200000
+§CTXHELP_LEGACY L1/L2 judged 20 targets + 20 site-language rows; cut at the site limit 2
+  PASS L1 legacy's lookup finds our help on 20 of 20 targets, each message = the site's own tab / process text + <hr> + the twin's message (whole blocks, 2 ending in the guide link)
+  PASS L2 per site language: 20 of 20 translations = the translated own text first, then the twin's message
+§CTXHELP_LEGACY L3 second apply: 84 statements, 0 changed rows []
+  PASS L3 a second apply changes nothing: 84 of 84 statements report 0 rows, sequences [1000021,1000021] -> [1000021,1000021]
+  PASS L4 ids from the site's sequences: 40 of 40 new rows >= CurrentNext before the apply (1000000); sequences advanced 21 / 21
+  PASS L5 a tab that already has a site help keeps it: tab 187 help 200000 -> 200000
+  PASS L6 every message and translation fits the site's MsgText length (2000 / 2000): over = 0
+§WITNESS_CTXHELP_LEGACY pass=6 fail=0 inconclusive=0 verdict=PASS

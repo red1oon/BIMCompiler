@@ -1,0 +1,7 @@
+§K2 OK   beat=before return=7.75 voice_start=8.38 ass_start=8.38 | voice-only track in typing window -180.0 dB vs in voice -19.0 dB (gap 161.0) | mixed in typing: peak -8.7 dBFS rms -36.5 dB
+§K2 OK   beat=ask return=60.67 voice_start=61.30 ass_start=61.30 | voice-only track in typing window -180.0 dB vs in voice -16.5 dB (gap 163.5) | mixed in typing: peak -9.0 dBFS rms -35.7 dB
+§K2 OK   beat=cli return=77.38 voice_start=78.01 ass_start=78.01 | voice-only track in typing window -180.0 dB vs in voice -16.4 dB (gap 163.6) | mixed in typing: peak -9.1 dBFS rms -36.2 dB
+§K2 OK   beat=tenant return=112.46 voice_start=113.09 ass_start=113.09 | voice-only track in typing window -180.0 dB vs in voice -16.5 dB (gap 163.5) | mixed in typing: peak -8.0 dBFS rms -35.6 dB
+§K2 OK   beat=legacy return=129.33 voice_start=129.97 ass_start=129.97 | voice-only track in typing window -180.0 dB vs in voice -16.5 dB (gap 163.5) | mixed in typing: peak -8.0 dBFS rms -35.8 dB
+§K2_LEVEL keys (mixed, typing windows) mean rms -36.0 dB, mean peak -8.6 dBFS; voice mean rms -17.0 dB -> keys are 19.0 dB under the voice rms
+§K2_VERDICT PASS beats=5 bad=0 audible=True

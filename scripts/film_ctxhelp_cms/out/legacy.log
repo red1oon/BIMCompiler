@@ -1,0 +1,6 @@
+§LEGACY_STATE before {"helps":1,"msgs":1,"trl":1,"tabLinks":0,"procLinks":0,"seq":"AD_CtxHelp|1000000 AD_CtxHelpMsg|1000000"} ours=0
+§LEGACY_APPLIED {"helps":22,"msgs":22,"trl":22,"tabLinks":17,"procLinks":4,"seq":"AD_CtxHelp|1000021 AD_CtxHelpMsg|1000021"}
+§LEGACY_LOOKUP tab=186 {"uu":"2296041b-0c8b-550a-abab-7b73e9c6df3b","len":1875,"ours":true}
+§LEGACY_ZK {"hasOwn":true,"hasOurs":true,"rect":{"x":1626,"y":559,"w":276,"h":1676},"title":"iDempiere","order":{"id":1011162,"no":"82161"}} panel="Order Reference Transaction Reference Number (Sales Order, Purchase Order) of your Business Partner The business partner order reference is the order reference for this specific transaction; Often Purchase Order numbers are given to print on Invoices for easier reference. A standard number can be de"
+§LEGACY_STATE after {"helps":1,"msgs":1,"trl":1,"tabLinks":0,"procLinks":0,"seq":"AD_CtxHelp|1000000 AD_CtxHelpMsg|1000000","ours":0} stamps_equal=true -> pilot back to its snapshot: true
+§LEGACY_VERDICT PASS
