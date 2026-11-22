@@ -78,7 +78,7 @@ def ticks(img, y0, y1, a, b):
     def run(x, y, step):
         n = 0; miss = 0
         while 0 <= y < img.shape[0] and n < 12:
-            if img[y, x]: n += 1; miss = 0
+            if img[y, max(0, x - 1):x + 2].any(): n += 1; miss = 0   # 3-col window: ticks are short diagonals
             else:
                 miss += 1
                 if miss > 1: break
@@ -153,7 +153,7 @@ for dname, img, g in (('H', ink, gray), ('V', np.rot90(ink, k=-1), np.rot90(gray
     ls0 = line_runs(img); ls = dedupe(ls0)
     log(f"§RASTER_LINES dir={dname} n={len(ls)} dropped_dupes={len(ls0)-len(ls)} minlen={MINLEN} gap={GAP}")
     for i, (y0, y1, a, b) in enumerate(ls):
-        tk = ticks(img, y0, y1, a, b)
+        tk = ticks(g < 215, y0, y1, a, b)   # ticks on the grey-inclusive mask: diagonal strokes fade to grey (pixel dump §43)
         if len(tk) < 2: continue
         bx0 = max(0, a - 20); by0 = max(0, y0 - 30)
         gb = g[by0:y0 - 1, bx0:b + 20]; ib = img[by0:y0 - 1, bx0:b + 20]
@@ -166,7 +166,7 @@ hh = np.bincount(hs) if len(hs) else np.zeros(1, int)
 HMAIN = int(np.argmax(hh[6:]) + 6) if len(hh) > 6 else 0
 log(f"§RASTER_GLYPH_H n={len(hs)} hist(6..20)={hh[6:21].tolist()} main_h={HMAIN}")
 
-bank = {}; nwords = nmatch = 0; nfb = [0]; nsplit = [0]; dbg = [0]; nsep = [0]; gaps = []
+bank = {}; nwords = nmatch = 0; nfb = [0]; nsplit = [0]; nresplit = [0]; dbg = [0]; nsep = [0]; gaps = []
 DOT_GREY = 215  # stated: lighter than Otsu; the pixel dumps show the dot as grey 167..215
 _ws = sorted(c[3] - c[2] + 1 for L in lines_all for c in L['cs'] if 0.75 * HMAIN <= c[1] - c[0] + 1 <= 1.25 * HMAIN and c[3] - c[2] + 1 > 2)
 DIGW = float(np.median([x for x in _ws if x <= 0.75 * HMAIN and x >= 0.3 * HMAIN])) if _ws else 6.0
@@ -186,6 +186,11 @@ for L in lines_all:
         raised = sorted([c for c in cc if c[1] < base - 0.25 * HMAIN and 0.35 * HMAIN <= c[1] - c[0] + 1
                          and c[2] >= mr - 2], key=lambda c: c[2])
         smalls = [c for c in cc if c[1] - c[0] + 1 < 0.55 * HMAIN and c not in raised]
+        if os.environ.get('DBGWORD') == w['t']:
+            log(f"§RASTER_WORD_DIAG dir={L['dir']} pos={L['y']} ocr={w['t']} box=({w['x']:.0f},{w['y']:.0f},{w['w']:.0f},{w['h']:.0f}) base={base} cc=" +
+                ';'.join(f"x{c[2]}-{c[3]} y{c[0]}-{c[1]} n{c[4]}" for c in cc))
+            sub = L['ib'][max(0, int(w['y']) - 6):int(w['y'] + w['h']) + 2, max(0, int(w['x']) - 2):int(w['x'] + w['w']) + 14]
+            for row in sub: log('   ' + ''.join('#' if v else '.' for v in row))
         if dbg[0] < 25 and any(ch in w['t'] for ch in ',.'):
             dbg[0] += 1
             log(f"§RASTER_DOT_DIAG ocr={w['t']} base={base} main=" + ';'.join(f"{c[2]}-{c[3]}" for c in main) +
@@ -202,8 +207,16 @@ for L in lines_all:
                 x = int(round(j * wd / k)); lo, hi = max(1, x - 2), min(wd - 1, x + 3)
                 cuts.append(lo + int(np.argmin(col[lo:hi])))
             edges = [0] + cuts + [wd]
-            for j in range(k): sp.append((c[0], c[1], c[2] + edges[j], c[2] + edges[j + 1] - 1, 0))
+            for j in range(k):
+                xa, xb_ = c[2] + edges[j], c[2] + edges[j + 1] - 1
+                rows = np.where(L['ib'][c[0]:c[1] + 1, xa:xb_ + 1].any(axis=1))[0]   # the piece's OWN height
+                if len(rows): sp.append((c[0] + rows[0], c[0] + rows[-1], xa, xb_, 0))
             nsplit[0] += 1
+        # re-classify after splitting: a piece that ends above the baseline is a raised digit (e.g. 5 touching a 7)
+        for c in [c for c in sp if c[1] < base - 0.25 * HMAIN and c[1] - c[0] + 1 >= 0.35 * HMAIN]:
+            if not raised and c[2] >= max(q[3] for q in sp if q is not c) - 3:
+                raised = [c]; nresplit[0] += 1
+            sp.remove(c)
         main = sp
         d = [ch for ch in w['t'] if ch.isdigit()]
         rocr = None
@@ -272,7 +285,7 @@ for L in lines_all:
         w['txt'] = t
 log(f"§RASTER_SEP_GAP modes=({lo_},{hi_}) valley_threshold>={SEPGAP}")
 log(f"§RASTER_SEP separators={nsep[0]} dot_grey<{DOT_GREY} gap_hist={np.bincount(np.clip(gaps,0,15)).tolist() if gaps else []}")
-log(f"§RASTER_BANK words={nwords} count_match={nmatch} fallback_used={nfb[0]} split_wide={nsplit[0]} labels=" +
+log(f"§RASTER_BANK words={nwords} count_match={nmatch} fallback_used={nfb[0]} split_wide={nsplit[0]} raised_from_split={nresplit[0]} labels=" +
     ' '.join(f"{k}:{len(v)}" for k, v in sorted(bank.items())))
 
 # threshold from the bank: leave-one-out correlation of each item to its own label mean vs the best other label
