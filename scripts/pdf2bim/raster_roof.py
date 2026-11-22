@@ -114,6 +114,7 @@ for k, c in enumerate(caps, 1):
     out[c['name']] = dict(bbox=bb, k=k)
     log(f"§RASTER_VIEW {c['name']} seed_frags={c['seed_frags']} seed_cells={c['seed_cells']} ink={len(ys)} bbox={bb} "
         f"contains_other_captions={others or '-'}")
+np.save(os.path.join(work, 'views_label.npy'), VL)
 log(f"§RASTER_W-S14a views={len(out)} overlapping={bad} verdict={'PASS' if bad == 0 and len(out) == len(caps) else 'FAIL'}")
 
 def theil_sen(xs, ys):
