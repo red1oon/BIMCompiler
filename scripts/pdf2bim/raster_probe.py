@@ -361,7 +361,7 @@ for c in chains:
         log(f"§RASTER_CHECKSUM {tag} sum={tot:.3f} verdict=YELLOW reason=no_overall_chain"); continue
     ov = over[0]['segs'][0]['v']; d = tot - ov
     ok = abs(d) <= RES + 1e-9
-    green += ok; yellow += (not ok)
+    green += ok; yellow += (not ok); c['verdict'] = 'GREEN' if ok else 'YELLOW'; c['overall'] = ov
     log(f"§RASTER_CHECKSUM {tag} sum={tot:.3f} overall={ov:.3f} d={d*1000:+.0f}mm verdict={'GREEN' if ok else 'YELLOW'}")
     if ok:
         for s in c['segs']: pxm[c['dir']].append((s['R'] - s['L'], s['v']))
@@ -385,3 +385,20 @@ if len(ks) == 2:
         f"paper_scale=1:{1000*DPI/(ks['H']*25.4):.1f} verdict={'PASS' if agree <= 0.5 else 'FAIL'}")
 else:
     log(f"§RASTER_W-S5 verdict=INCONCLUSIVE dirs_with_green={list(ks)}")
+
+# --- hand-off to raster_walls.py (§43.1): chains in PAGE coordinates (deskewed page, y down) ---
+import json
+Hs = gray.shape[0]
+def to_page(c):
+    if c['dir'] == 'H':
+        return dict(line_y=c['y'], ticks_x=c['ticks'])
+    # V chains were read on np.rot90(page, k=-1): rotated (row=i, col=j) = page (row=Hs-1-j, col=i)
+    return dict(line_x=c['y'], ticks_y=sorted(Hs - 1 - t for t in c['ticks']), ticks_rot=c['ticks'])
+Image.fromarray(np.clip(gray, 0, 255).astype(np.uint8)).save(os.path.join(work, 'page_clean.png'))  # deskewed, blue removed
+out = dict(page=page, clean=os.path.join(work, 'page_clean.png'), dpi=DPI, skew_deg=SKEW, otsu=OT, scale_px_per_m=ks, chains=[])
+for c in chains:
+    segs = [dict(L=s['L'], R=s['R'], txt=s['txt'], v=s['v']) for s in c['segs']]
+    out['chains'].append(dict(dir=c['dir'], verdict=c.get('verdict', 'YELLOW'), overall=c.get('overall'),
+                              segs=segs, **to_page(c)))
+json.dump(out, open(os.path.join(work, 'chains.json'), 'w'), indent=1, default=float)
+log(f"§RASTER_HANDOFF chains.json chains={len(chains)} green={sum(1 for c in chains if c.get('verdict')=='GREEN')}")
