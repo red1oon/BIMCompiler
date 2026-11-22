@@ -131,138 +131,199 @@ def value(main, sup):
         return float(m + ('.' + sup if sup else '')) / 100.0
     return None
 
-def read_word(gband, iband, w, tag):
-    """Split a word box into main glyphs and a raised digit by geometry, OCR each alone."""
-    x0 = max(0, int(w['x']) - 2); x1 = min(gband.shape[1], int(w['x'] + w['w']) + 14)
-    y0 = max(0, int(w['y']) - 6); y1 = min(gband.shape[0], int(w['y'] + w['h']) + 2)
-    comps = [c for c in components(iband[y0:y1, x0:x1]) if c[4] >= 4]
-    if not comps: return None, None
-    base = max(c[1] for c in comps); hmax = max(c[1] - c[0] for c in comps) + 1
-    raised = [c for c in comps if base - c[1] > 0.3 * hmax and (c[1] - c[0] + 1) > 0.35 * hmax]
-    main = [c for c in comps if c not in raised]
-    if not main: return None, None
-    mx0 = min(c[2] for c in main); mx1 = max(c[3] for c in main)
-    my0 = min(c[0] for c in main); my1 = max(c[1] for c in main)
-    pad = 10
-    sub = np.full((my1 - my0 + 1 + 2 * pad, mx1 - mx0 + 1 + 2 * pad), 255.0)
-    sub[pad:-pad, pad:-pad] = gband[y0 + my0:y0 + my1 + 1, x0 + mx0:x0 + mx1 + 1]
-    mt = ''.join(q['t'] for q in tess(sub, tag + 'm', 7, '0123456789,.', 6))
-    st = None
-    if raised:
-        r = max(raised, key=lambda c: c[3])
-        if r[2] >= mx1 - 2:  # raised digit sits right of the main number
-            s2 = np.full((r[1] - r[0] + 1 + 2 * pad, r[3] - r[2] + 1 + 2 * pad), 255.0)
-            s2[pad:-pad, pad:-pad] = gband[y0 + r[0]:y0 + r[1] + 1, x0 + r[2]:x0 + r[3] + 1]
-            st = ''.join(q['t'] for q in tess(s2, tag + 's', 10, '0123456789', 8)) or '?'
-    return mt, st
+# --- HYBRID READER (§43 step 0c) ---
+# Main numbers: grey band OCR (reader b). Glyph geometry splits each word into main glyphs, dots and a
+# raised digit. Template bank: main glyphs of words whose glyph count matches the OCR digits are labelled
+# by that read. Raised digit: template match against the bank (threshold measured from the bank itself).
+def nbm(bm):
+    im = Image.fromarray((bm * 255).astype(np.uint8)).resize((10, 14), Image.BILINEAR)
+    v = np.asarray(im).astype(float) / 255.0
+    return v - v.mean()
+def corr(a, b): return float((a * b).sum() / (np.sqrt((a * a).sum() * (b * b).sum()) + 1e-9))
 
-# --- GLYPH READER (§43 step 0b): one CAD font per sheet -> cluster glyph shapes, label a cluster by
-# the MAJORITY of single-glyph OCR votes over its members. Dots and raised digits come from geometry.
-NB = (14, 10)  # normalised glyph bitmap (h, w)
-def norm(bm):
-    im = Image.fromarray((bm * 255).astype(np.uint8)).resize((NB[1], NB[0]), Image.BILINEAR)
-    return np.asarray(im).astype(float) / 255.0
+def dedupe(ls):
+    keep = []
+    for m in sorted(ls, key=lambda m: -(m[3] - m[2])):
+        if any(abs(m[0] - k[0]) <= 3 and m[2] >= k[2] - 6 and m[3] <= k[3] + 6 for k in keep): continue
+        keep.append(m)
+    return sorted(keep)
 
-def band_glyphs(img, g, y0, a, b, dname, pos):
-    bx0 = max(0, a - 20); by0 = max(0, y0 - 30)
-    ib = img[by0:y0 - 1, bx0:b + 20]
-    out = []
-    for (t, bt, l, r, n) in components(ib):
-        h = bt - t + 1; w = r - l + 1
-        if bt >= ib.shape[0] - 2 and w <= 3: continue          # tick stub touching the line
-        out.append(dict(dir=dname, pos=pos, t=by0 + t, b=by0 + bt, l=bx0 + l, r=bx0 + r, h=h, w=w, n=n,
-                        bm=ib[t:bt + 1, l:r + 1].copy(), g=g[by0 + t:by0 + bt + 1, bx0 + l:bx0 + r + 1].copy()))
-    return out
-
-lines_all = []; glyphs = []
+lines_all = []
 for dname, img, g in (('H', ink, gray), ('V', np.rot90(ink, k=-1), np.rot90(gray, k=-1))):
-    ls = line_runs(img)
-    log(f"§RASTER_LINES dir={dname} n={len(ls)} minlen={MINLEN} gap={GAP}")
-    for (y0, y1, a, b) in ls:
+    ls0 = line_runs(img); ls = dedupe(ls0)
+    log(f"§RASTER_LINES dir={dname} n={len(ls)} dropped_dupes={len(ls0)-len(ls)} minlen={MINLEN} gap={GAP}")
+    for i, (y0, y1, a, b) in enumerate(ls):
         tk = ticks(img, y0, y1, a, b)
         if len(tk) < 2: continue
-        lines_all.append(dict(dir=dname, y=y0, a=a, b=b, ticks=tk))
-        glyphs += band_glyphs(img, g, y0, a, b, dname, y0)
+        bx0 = max(0, a - 20); by0 = max(0, y0 - 30)
+        gb = g[by0:y0 - 1, bx0:b + 20]; ib = img[by0:y0 - 1, bx0:b + 20]
+        ws = tess(gb, f'{dname}{i}', 11, '0123456789,.')
+        cs = [c for c in components(ib) if c[4] >= 2 and not (c[1] >= ib.shape[0] - 2 and c[3] - c[2] <= 2)]
+        lines_all.append(dict(dir=dname, y=y0, a=a, b=b, ticks=tk, bx0=bx0, ws=ws, cs=cs, ib=ib, gb=gb))
 
-# size classes from the measured height histogram (not constants): main digits = the modal tall height
-hs = np.array([q['h'] for q in glyphs]) if glyphs else np.array([0])
-hh = np.bincount(hs); HMAIN = int(np.argmax(hh[6:]) + 6) if len(hh) > 6 else 0
-log(f"§RASTER_GLYPH_H n={len(glyphs)} hist(6..20)={hh[6:21].tolist()} main_h={HMAIN}")
-digits = [q for q in glyphs if 0.55 * HMAIN <= q['h'] <= 1.25 * HMAIN and q['w'] <= 1.0 * HMAIN]
-dots = [q for q in glyphs if q['h'] <= 0.35 * HMAIN and q['w'] <= 0.35 * HMAIN and q['n'] >= 2]
-wide = [q for q in glyphs if 0.55 * HMAIN <= q['h'] <= 1.25 * HMAIN and q['w'] > 1.0 * HMAIN]
-log(f"§RASTER_GLYPH_CLASS digits={len(digits)} dots={len(dots)} wide_unsplit={len(wide)} other={len(glyphs)-len(digits)-len(dots)-len(wide)}")
+hs = np.array([c[1] - c[0] + 1 for L in lines_all for c in L['cs']])
+hh = np.bincount(hs) if len(hs) else np.zeros(1, int)
+HMAIN = int(np.argmax(hh[6:]) + 6) if len(hh) > 6 else 0
+log(f"§RASTER_GLYPH_H n={len(hs)} hist(6..20)={hh[6:21].tolist()} main_h={HMAIN}")
 
-# cluster (greedy, correlation of normalised bitmaps + aspect)
-CL_T = 0.80
-clusters = []
-for q in digits:
-    v = norm(q['bm']); q['v'] = v; asp = q['w'] / q['h']
-    best = None
-    for c in clusters:
-        if abs(asp - c['asp']) > 0.25: continue
-        a1 = v - v.mean(); a2 = c['v'] - c['v'].mean()
-        cor = (a1 * a2).sum() / (np.sqrt((a1 * a1).sum() * (a2 * a2).sum()) + 1e-9)
-        if cor >= CL_T and (best is None or cor > best[0]): best = (cor, c)
-    if best:
-        c = best[1]; c['m'].append(q); k = len(c['m']); c['v'] = c['v'] + (v - c['v']) / k; c['asp'] += (asp - c['asp']) / k
-    else:
-        clusters.append(dict(v=v, asp=asp, m=[q]))
-VOTES = 15
-for ci, c in enumerate(clusters):
-    votes = {}
-    for j, q in enumerate(c['m'][:VOTES]):
-        pad = 8; s2 = np.full((q['g'].shape[0] + 2 * pad, q['g'].shape[1] + 2 * pad), 255.0)
-        s2[pad:-pad, pad:-pad] = q['g']
-        t = ''.join(x['t'] for x in tess(s2, f'c{ci}_{j}', 10, '0123456789', 8))
-        if len(t) == 1: votes[t] = votes.get(t, 0) + 1
-    tot = sum(votes.values()); top = max(votes.items(), key=lambda kv: kv[1]) if votes else ('?', 0)
-    c['label'] = top[0] if tot >= 2 and top[1] / max(tot, 1) >= 0.6 else '?'
-    for q in c['m']: q['lab'] = c['label']
-    log(f"§RASTER_GLYPH_CLUSTER id={ci} n={len(c['m'])} asp={c['asp']:.2f} votes={dict(sorted(votes.items()))} label={c['label']}")
-nl = sum(len(c['m']) for c in clusters if c['label'] != '?')
-log(f"§RASTER_GLYPH_LABELLED clusters={len(clusters)} glyphs={len(digits)} labelled={nl} unlabelled={len(digits)-nl}")
-
-def words_in(L, Rr, dname, pos):
-    gs = [q for q in digits if q['dir'] == dname and q['pos'] == pos and L - 30 <= (q['l'] + q['r']) / 2 <= Rr + 30]
-    if not gs: return []
-    base = np.median([q['b'] for q in gs])
-    main = [q for q in gs if q['b'] >= base - 0.25 * HMAIN]
-    raised = [q for q in gs if q['b'] < base - 0.25 * HMAIN]
-    main.sort(key=lambda q: q['l'])
+bank = {}; nwords = nmatch = 0; nfb = [0]; nsplit = [0]; dbg = [0]; nsep = [0]; gaps = []
+DOT_GREY = 215  # stated: lighter than Otsu; the pixel dumps show the dot as grey 167..215
+_ws = sorted(c[3] - c[2] + 1 for L in lines_all for c in L['cs'] if 0.75 * HMAIN <= c[1] - c[0] + 1 <= 1.25 * HMAIN and c[3] - c[2] + 1 > 2)
+DIGW = float(np.median([x for x in _ws if x <= 0.75 * HMAIN and x >= 0.3 * HMAIN])) if _ws else 6.0
+log(f"§RASTER_DIGW median_digit_w={DIGW:.1f} (from {len(_ws)} tall glyphs, 1-glyphs excluded by w>=0.3h)")
+for L in lines_all:
     words = []
-    for q in main:
-        if words and q['l'] - words[-1][-1]['r'] <= 0.9 * HMAIN: words[-1].append(q)
-        else: words.append([q])
-    out = []
-    for w in words:
-        l, r = w[0]['l'], w[-1]['r']
-        txt = ''
-        for i, q in enumerate(w):
-            txt += q['lab']
-            if i + 1 < len(w):
-                nxt = w[i + 1]
-                if any(d['dir'] == dname and d['pos'] == pos and q['r'] - 1 <= d['l'] and d['r'] <= nxt['l'] + 1
-                       and d['b'] >= base - 3 for d in dots):
-                    txt += ','
-        sup = [q for q in raised if r - 2 <= q['l'] <= r + 0.9 * HMAIN]
-        st = sup[0]['lab'] if sup else None
-        out.append(dict(l=l, r=r, c=(l + r) / 2, txt=txt, sup=st))
-    return out
+    for w in L['ws']:
+        x0, x1 = w['x'] - 2, w['x'] + w['w'] + 0.9 * HMAIN
+        y0, y1 = w['y'] - 6, w['y'] + w['h'] + 2
+        cc = [c for c in L['cs'] if x0 <= (c[2] + c[3]) / 2 <= x1 and c[1] >= y0 and c[0] <= y1]
+        tall = [c for c in cc if c[1] - c[0] + 1 >= 0.55 * HMAIN]
+        if not tall: continue
+        base = max(c[1] for c in tall)
+        main = sorted([c for c in tall if c[1] >= base - 0.25 * HMAIN and c[2] <= w['x'] + w['w'] + 2], key=lambda c: c[2])
+        if not main: continue
+        mr = max(c[3] for c in main)
+        raised = sorted([c for c in cc if c[1] < base - 0.25 * HMAIN and 0.35 * HMAIN <= c[1] - c[0] + 1
+                         and c[2] >= mr - 2], key=lambda c: c[2])
+        smalls = [c for c in cc if c[1] - c[0] + 1 < 0.55 * HMAIN and c not in raised]
+        if dbg[0] < 25 and any(ch in w['t'] for ch in ',.'):
+            dbg[0] += 1
+            log(f"§RASTER_DOT_DIAG ocr={w['t']} base={base} main=" + ';'.join(f"{c[2]}-{c[3]}" for c in main) +
+                " smalls=" + ';'.join(f"x{c[2]}-{c[3]} y{c[0]}-{c[1]} n{c[4]}" for c in smalls))
+        # split touching digits: a main component wider than 1.3 x the measured single-digit width
+        sp = []
+        for c in main:
+            wd = c[3] - c[2] + 1
+            k = int(round(wd / DIGW)) if wd > 1.3 * DIGW else 1
+            if k <= 1: sp.append(c); continue
+            col = L['ib'][c[0]:c[1] + 1, c[2]:c[3] + 1].sum(axis=0)
+            cuts = []
+            for j in range(1, k):
+                x = int(round(j * wd / k)); lo, hi = max(1, x - 2), min(wd - 1, x + 3)
+                cuts.append(lo + int(np.argmin(col[lo:hi])))
+            edges = [0] + cuts + [wd]
+            for j in range(k): sp.append((c[0], c[1], c[2] + edges[j], c[2] + edges[j + 1] - 1, 0))
+            nsplit[0] += 1
+        main = sp
+        d = [ch for ch in w['t'] if ch.isdigit()]
+        rocr = None
+        if raised and len(d) == len(main) + 1:          # OCR folded the raised digit into the word
+            rocr = d[-1]; d = d[:-1]
+        if len(d) != len(main):                         # fallback: re-read the main glyphs alone (reader b)
+            pad = 10; gx0, gx1 = main[0][2], main[-1][3]; gy0 = min(c[0] for c in main); gy1 = max(c[1] for c in main)
+            gb = L['gb']; sub = np.full((gy1 - gy0 + 1 + 2 * pad, gx1 - gx0 + 1 + 2 * pad), 255.0)
+            sub[pad:-pad, pad:-pad] = gb[gy0:gy1 + 1, gx0:gx1 + 1]
+            d2 = [ch for ch in ''.join(q['t'] for q in tess(sub, f"fb{L['dir']}{L['y']}_{int(w['x'])}", 7, '0123456789,.', 6)) if ch.isdigit()]
+            if len(d2) == len(main): d = d2; nfb[0] += 1
+        nwords += 1
+        cntok = len(d) == len(main)
+        if cntok:
+            nmatch += 1
+            for ch, c in zip(d, main):
+                bank.setdefault(ch, []).append(nbm(L['ib'][c[0]:c[1] + 1, c[2]:c[3] + 1]))
+            for i in range(len(main) - 1): gaps.append(main[i + 1][2] - main[i][3] - 1)
+            txt = None   # built after all gaps are measured (separator threshold = histogram valley)
+        else:
+            txt = w['t']
+        vecs = [nbm(L['ib'][c[0]:c[1] + 1, c[2]:c[3] + 1]) for c in main]
+        words.append(dict(vecs=vecs, d=d, main=main, base=base, gb=L['gb'], l=L['bx0'] + w['x'], r=L['bx0'] + max(w['x'] + w['w'], raised[0][3] if raised else 0),
+                          txt=txt.strip(',.') if txt else None, cntok=cntok, raised=raised[0] if raised else None, rocr=rocr))
+    L['words'] = words
+# MAIN-DIGIT k-NN VOTE: every glyph of a count-matched word is a labelled sample; each glyph is relabelled by
+# the majority of its K most similar OTHER samples on this sheet (one CAD font). A lone OCR misread is outvoted.
+K = 7; KSHARE = 0.6   # stated
+samples = [(ch, v, (id(w), i)) for L in lines_all for w in L['words'] if w['cntok'] for i, (ch, v) in enumerate(zip(w['d'], w['vecs']))]
+SV = np.array([v.ravel() / (np.linalg.norm(v) + 1e-9) for _, v, _ in samples]) if samples else np.zeros((0, 140))
+SL = [ch for ch, _, _ in samples]; SK = [k for _, _, k in samples]
+nchg = nkeep = nunsure = 0
+for L in lines_all:
+    for w in L['words']:
+        if not w['cntok']: continue
+        nd = []
+        for i, (ch, v) in enumerate(zip(w['d'], w['vecs'])):
+            x = v.ravel() / (np.linalg.norm(v) + 1e-9); sims = SV @ x
+            order = [j for j in np.argsort(-sims) if SK[j] != (id(w), i)][:K]
+            votes = {}
+            for j in order: votes[SL[j]] = votes.get(SL[j], 0) + 1
+            top = max(votes.items(), key=lambda kv: kv[1])
+            if top[1] / K >= KSHARE:
+                if top[0] != ch: nchg += 1
+                else: nkeep += 1
+                nd.append(top[0])
+            else:
+                nd.append(ch); nunsure += 1
+        w['d'] = nd
+log(f"§RASTER_KNN samples={len(samples)} K={K} share>={KSHARE} kept={nkeep} changed={nchg} no_majority={nunsure}")
+gh_ = np.bincount(np.clip(gaps, 0, 15)) if gaps else np.zeros(1, int)
+lo_ = int(np.argmax(gh_[:3])); hi_ = 3 + int(np.argmax(gh_[3:9])) if len(gh_) > 3 else 3
+SEPGAP = lo_ + 1 + int(np.argmin(gh_[lo_ + 1:hi_])) if hi_ > lo_ + 1 else 3
+SEPGAP = SEPGAP + 1  # the valley bin itself is ambiguous; a separator gap must be wider than it
+for L in lines_all:
+    for w in L['words']:
+        if w['txt'] is not None: continue
+        t = ''
+        for i, ch in enumerate(w['d']):
+            t += ch
+            if i + 1 < len(w['main']):
+                gx0, gx1 = w['main'][i][3] + 1, w['main'][i + 1][2]
+                if gx1 - gx0 >= SEPGAP:
+                    patch = w['gb'][max(0, w['base'] - 3):w['base'] + 1, gx0:gx1]
+                    if patch.size and patch.min() < DOT_GREY: t += ','; nsep[0] += 1
+        w['txt'] = t
+log(f"§RASTER_SEP_GAP modes=({lo_},{hi_}) valley_threshold>={SEPGAP}")
+log(f"§RASTER_SEP separators={nsep[0]} dot_grey<{DOT_GREY} gap_hist={np.bincount(np.clip(gaps,0,15)).tolist() if gaps else []}")
+log(f"§RASTER_BANK words={nwords} count_match={nmatch} fallback_used={nfb[0]} split_wide={nsplit[0]} labels=" +
+    ' '.join(f"{k}:{len(v)}" for k, v in sorted(bank.items())))
+
+# threshold from the bank: leave-one-out correlation of each item to its own label mean vs the best other label
+means = {k: np.mean(v, axis=0) for k, v in bank.items() if len(v) >= 3}
+within = []; between = []
+for k, v in bank.items():
+    if k not in means or len(v) < 3: continue
+    for i, x in enumerate(v):
+        loo = (means[k] * len(v) - x) / (len(v) - 1)
+        within.append(corr(x, loo))
+        between.append(max([corr(x, m) for kk, m in means.items() if kk != k] or [0]))
+within = np.array(within); between = np.array(between)
+T = float(np.percentile(within, 5)) if len(within) else 1.0
+log(f"§RASTER_BANK_THR within_p5={T:.3f} within_med={np.median(within) if len(within) else 0:.3f} "
+    f"between_p95={np.percentile(between, 95) if len(between) else 0:.3f} labels_with_mean={sorted(means)}")
+MARGIN = 0.05  # stated: best label must beat the runner-up by this much
+
+nr = nr_ok = nr_agree = nr_disagree = 0
+for L in lines_all:
+    for w in L['words']:
+        if w['raised'] is None: w['sup'] = None; continue
+        nr += 1; c = w['raised']
+        x = nbm(L['ib'][c[0]:c[1] + 1, c[2]:c[3] + 1])
+        sc = sorted(((corr(x, m), k) for k, m in means.items()), reverse=True)
+        lab = sc[0][1] if sc and (len(sc) < 2 or sc[0][0] - sc[1][0] >= MARGIN) else '?'
+        if lab != '?': nr_ok += 1
+        if w['rocr'] is not None:
+            if w['rocr'] == lab: nr_agree += 1
+            elif lab != '?': nr_disagree += 1   # logged, NOT a veto: the OCR fold read is measured biased (§43)
+        w['sup'] = lab; w['sup_score'] = sc[0] if sc else None
+from collections import Counter
+tops = Counter(w['sup_score'][1] for L in lines_all for w in L['words'] if w.get('sup_score'))
+sc5 = [round(w['sup_score'][0], 2) for L in lines_all for w in L['words'] if w.get('sup_score')]
+rocrs = Counter(w['rocr'] for L in lines_all for w in L['words'] if w.get('rocr'))
+log(f"§RASTER_RAISED_DIAG top_label={dict(tops)} top_scores={sorted(sc5)} ocr_folded={dict(rocrs)} hraised=" +
+    str(sorted(w['raised'][1]-w['raised'][0]+1 for L in lines_all for w in L['words'] if w.get('raised'))))
+log(f"§RASTER_RAISED n={nr} matched={nr_ok} ocr_agree={nr_agree} ocr_disagree={nr_disagree} (template decides; checksum judges)")
 
 chains = []
-for ln in lines_all:
-    tk = ln['ticks']; segs = []
+for L in lines_all:
+    tk = L['ticks']; segs = []
     for i in range(len(tk) - 1):
-        L, Rr = tk[i], tk[i + 1]
-        ws = [w for w in words_in(L, Rr, ln['dir'], ln['y']) if L - 4 <= w['c'] <= Rr + 4]
-        if not ws: segs.append(dict(L=L, R=Rr, txt=None, v=None)); continue
+        a, b = tk[i], tk[i + 1]
+        ws = [w for w in L['words'] if a - 4 <= (w['l'] + w['r']) / 2 <= b + 4]
+        if not ws: segs.append(dict(L=a, R=b, txt=None, v=None)); continue
         w = max(ws, key=lambda w: w['r'] - w['l'])
-        ok = '?' not in w['txt'] and (w['sup'] in (None,) or w['sup'].isdigit())
+        ok = w['cntok'] and w['sup'] != '?'
         v = value(w['txt'], w['sup']) if ok else None
-        segs.append(dict(L=L, R=Rr, txt=w['txt'] + ('^' + w['sup'] if w['sup'] else ''), v=v))
-    ln['segs'] = segs; chains.append(ln)
-    log(f"§RASTER_CHAIN dir={ln['dir']} pos={ln['y']} ext={ln['a']}..{ln['b']} ticks={len(tk)} "
+        segs.append(dict(L=a, R=b, txt=w['txt'] + ('^' + w['sup'] if w['sup'] else '') + ('' if w['cntok'] else '~'), v=v))
+    L['segs'] = segs; chains.append(L)
+    log(f"§RASTER_CHAIN dir={L['dir']} pos={L['y']} ext={L['a']}..{L['b']} ticks={len(tk)} "
         f"segs=" + ' | '.join(str(s['txt']) for s in segs))
 
 # --- W-S4 checksum: a multi-segment chain vs a single-segment chain of the same tick extent ---
