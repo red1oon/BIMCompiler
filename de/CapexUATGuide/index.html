@@ -3965,11 +3965,11 @@
 </tr>
 <tr>
 <td>Revision</td>
-<td><strong>2026-11-22 (f)</strong></td>
+<td><strong>2026-11-22 (g)</strong></td>
 </tr>
 <tr>
 <td>Status</td>
-<td>Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately and stays as signed. Since then steps C1.1, C2.1, C3.2, C4.1, C4.2, C4.4, C5.1, D3, D4, D9 and L3 (and B4.1, C3.1, C3.2, C5.1, D2, D8 after them) carry the corrections of the change list (items 22 to 25). What changed or was found since is listed after this cover.</td>
+<td>Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately and stays as signed. Since then steps C1.1, C2.1, C3.2, C4.1, C4.2, C4.4, C5.1, D3, D4, D9 and L3 (and B4.1, C3.1, C3.2, C5.1, D2, D8 after them, then B3.1 and B5) carry the corrections of the change list (items 22 to 26). What changed or was found since is listed after this cover.</td>
 </tr>
 <tr>
 <td>Prepared and issued by</td>
@@ -3996,20 +3996,12 @@
 </thead>
 <tbody>
 <tr>
-<td>2026-11-22 (f)</td>
-<td>Film part 3 re-published, linked (item 20); item 25</td>
+<td>2026-11-22 (g)</td>
+<td>One cost for the model: B3.1, B5 and the reference pack (item 26)</td>
 </tr>
 <tr>
-<td>2026-11-22 (e)</td>
-<td>Item 24</td>
-</tr>
-<tr>
-<td>2026-11-22 (d)</td>
-<td>Item 23</td>
-</tr>
-<tr>
-<td>2026-11-22 (c)</td>
-<td>Items 9 to 19 moved into their steps; item 22</td>
+<td>2026-11-22 (c) to (f)</td>
+<td>Items 9 to 19 moved into their steps; items 22 to 25; film part 3 re-published, linked (item 20)</td>
 </tr>
 <tr>
 <td>2026-11-22 (b)</td>
@@ -4200,6 +4192,13 @@
 <td>Each <strong>Issue to Project</strong> opens its own window tab; after several, the first tabs are pushed off the strip.</td>
 <td><strong>Corrected in the step</strong> (2026-11-22 (c))</td>
 <td>Follow the step: it now says this</td>
+</tr>
+<tr>
+<td>26</td>
+<td>B3.1, B5</td>
+<td><strong>One cost for the model.</strong> The Viewer showed two costs for the Shed: <em>total cost</em> in the Find panel priced each part at its rate × the number of parts (USD 96,839), while the Find bar and <strong>› ERP</strong> priced it at its rate × its quantity in the rate's own unit (m, m², m³). There is now one cost, in the rate pack's own units: <strong>USD 355,097.98 (RM 1,365,761)</strong>, the same in <em>total cost</em>, the Find bar and the Project Order. The Run Checker reads the cents; the reference pack is rebuilt with the new figure (Shed_UAT_pack_20261122.zip). The films still show the old figure (USD 96,839); the guide's figure is the one to confirm.</td>
+<td>Corrected in this revision</td>
+<td>Redo B3.1, then B5 with the new pack</td>
 </tr>
 <tr>
 <td>25</td>
@@ -4558,7 +4557,7 @@
 </tr>
 <tr>
 <td>The <strong>reference pack</strong> (to mark your run, chapter B5)</td>
-<td><a href="https://objectstorage.ap-kulai-2.oraclecloud.com/n/ax3cp6tzwuy2/b/bim-ootb/o/uat/Shed_UAT_pack_20261115.zip">Shed_UAT_pack_20261115.zip</a>: the nine sheets as B00 exports them, the supplied marked copies, the reference Viewer database and the expected values</td>
+<td><a href="https://objectstorage.ap-kulai-2.oraclecloud.com/n/ax3cp6tzwuy2/b/bim-ootb/o/uat/Shed_UAT_pack_20261122.zip">Shed_UAT_pack_20261122.zip</a>: the nine sheets as B00 exports them, the supplied marked copies, the reference Viewer database and the expected values</td>
 </tr>
 <tr>
 <td>The <strong>UAT Run Checker</strong></td>
@@ -5463,7 +5462,7 @@
 <tr>
 <td>B3.1</td>
 <td>Note the Viewer’s total cost (Find panel: <code>total cost</code>; it is the cost of the 13 drawn bays, see the note at the top of chapter B) and the schedule’s finish date (<strong>Time Machine</strong>, key <strong>T</strong>)</td>
-<td>With the shipped rates the total reads <strong>USD 96,839 (RM 372,457) — total building cost</strong> (the digits may be grouped differently in your browser's language). The amount in brackets is the rate pack's second currency (RM), whatever language you choose; your local currency for the chosen language is in development. A higher figure, such as USD 97,979, means the B0.7 exclude box missed the expansion joint. Write the total and the finish date down: <strong><em>_</em></strong><em> / <strong><em>_</em></strong></em></td>
+<td>With the shipped rates the total reads <strong>USD 355,097.98 (RM 1,365,761) — total building cost</strong> (the digits may be grouped differently in your browser's language). The amount in brackets is the rate pack's second currency (RM), whatever language you choose; your local currency for the chosen language is in development. A higher figure, such as USD 358,943.48, means the B0.7 exclude box missed the expansion joint. Write the total and the finish date down: <strong><em>_</em></strong><em> / <strong><em>_</em></strong></em></td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
@@ -5608,7 +5607,7 @@
 </tr>
 </tbody>
 </table>
-<p><em>Proven (witness W-UAT-CHECK, 2026-11-15) on the pack as it is served: a run equal to the proven one marks PASS on all four rows; a run whose B0.7 exclude box was skipped marks FAIL on all four (515 elements, USD 97,979); an empty form marks INCONCLUSIVE; a pack with one file changed is refused.</em></p>
+<p><em>Proven (witness W-UAT-CHECK, 2026-11-22, the one-cost pack) on the pack as it is served: a run equal to the proven one marks PASS on all four rows; a run whose B0.7 exclude box was skipped marks FAIL on all four (515 elements, USD 358,943.48); an empty form marks INCONCLUSIVE; a pack with one file changed is refused.</em></p>
 <p><strong>Notes (chapter B):</strong> <strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong>____</p>
 <hr />
 <h2 id="c-erp-the-hands-on-exercise-project-mgmt-accounting-as-gardenworld-admin">C · ERP: the hands-on exercise (Project Mgmt Accounting, as GardenWorld Admin)<a class="headerlink" href="#c-erp-the-hands-on-exercise-project-mgmt-accounting-as-gardenworld-admin" title="Permanent link">&para;</a></h2>
