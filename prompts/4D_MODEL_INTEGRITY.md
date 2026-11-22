@@ -5816,3 +5816,10 @@ is within the owner's GAP of the element (it touches what it hangs from). Share 
   are a level below their fitting's bar (same phase), 2 risers are in another phase than the wall. So the remedy has two parts: (a) inside a bar, a piece that
   hangs takes its place right after its hanger — the bond table already names the hanger (`hangs-below`, run.json `bonds`); (b) a piece whose hanger is in
   a later bar is filed with its hanger. Neither is built; both to be judged with `product_judge.js` exactly as above.
+- **Q.59.2 Hospital BEFORE | AFTER film + the facts a bake log is compared to (owner 2026-11-22: *"do its before/after film so that a final bake logs can compare to it"*).**
+  From the judge's `Hospital.film.json` of main and of branch `a6d1f818` (real-viewer times, true boxes), `scripts/film_4d_true_box/render.py`, CPU only.
+  `§FILM_EYES` BEFORE 867 out of order / 2,354 red pixels in the last frame, AFTER 17 / 29, both PASS; `§FILM_SELFCHECK` PASS; 63,182 pieces painted in each panel.
+  Files (`~/Videos`, not pushed): `Hospital_4D_method_order_BEFORE_AFTER.mp4` · `…_render.log` · `…_screenplay_{BEFORE,AFTER}.txt` ·
+  `…_AFTER_elements.csv` (per piece: start day, end day, phase, class, flags — 63,182 rows) · `…_AFTER_built_by_day.csv` (pieces started per day, 0..272).
+  A bake is comparable ONLY if it plays the branch (the live site still plays main's order) and its schedule is regenerated (`_GANTT_CACHE_VERSION` 55): then
+  each piece's reveal day in the bake log must equal `start_day` in the elements file, and the count on screen at day d must equal `started_so_far`.
