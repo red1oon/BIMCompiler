@@ -1,0 +1,3 @@
+$ git diff --numstat e4fa52fe 0fa163b8 -- scripts/bump.js
+19	88	scripts/bump.js
+§CMD_EXIT 0

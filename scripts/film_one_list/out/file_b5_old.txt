@@ -1,0 +1,6 @@
+§FILE name=b5_old from=b5_old.log
+§MANIFEST_RED_RUN id=C22 root=<e4fa52fe> judged=49 unowned=3 (capex/index.html,import_own.js,index.html) verdict=FAIL
+§MANIFEST_CLAIM id=C23 ok=Y archive/gallery.html names 9 files (7 of them raisable modules of the viewer list, read from the root); bump --write of those: exit=0 bump_lines=19 files_changed=9 gallery_changed=N (never in a list, never written)
+§MANIFEST_CLAIM id=C24 ok=N bump import_own.js --write: exit=0 files_changed=index.html index_lines=1 tag_v=7->8:true sw_changed=0 · bump viewer/locale_loader.js: CACHE_VERSION v1781->v1782 index.html_changed=Y
+§MANIFEST_CLAIM id=C25 ok=N zz_root.html (loads viewer/rates.js?v=3, in no list) after bump viewer/rates.js --write: exit=0 bump_lines=4 page_CHANGED
+§MANIFEST_RED id=R26 detected=Y a copy of the gallery at the root (its paths resolve), adopted into a temp list, then the same bump --write: zz_gallery.html EDITED (so C23's "untouched" can fail)

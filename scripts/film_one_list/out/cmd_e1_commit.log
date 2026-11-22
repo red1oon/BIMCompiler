@@ -1,0 +1,7 @@
+$ git show --stat --format="%h %ad %s" --date=short 8d1ede96 -- index.html viewer/viewer.html viewer/import_db_builder.js
+8d1ede96 2026-11-08 feat(ifc): keep the IFC's stated grid on both open routes (ifc_grid_axis, W-IFC-GRID 29/0) (#2702)
+
+ viewer/import_db_builder.js | 10 ++++++++++
+ viewer/viewer.html          |  4 ++--
+ 2 files changed, 12 insertions(+), 2 deletions(-)
+§CMD_EXIT 0

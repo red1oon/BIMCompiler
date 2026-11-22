@@ -1,0 +1,4 @@
+$ git show -U0 --format= 8d1ede96 -- viewer/viewer.html index.html | grep -E "^[-+][^-+].*import_db_builder.js"
+-<script src="import_db_builder.js?v=11"></script>
++<script src="import_db_builder.js?v=12"></script>
+§CMD_EXIT 0

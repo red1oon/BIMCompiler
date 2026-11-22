@@ -1,0 +1,9 @@
+§OUTPUT /home/red1/Videos/One_List_CH0_EN_AFTER_2026-11-22.mp4 (never overwritten)
+§FILM_GUIDE url=https://red1oon.github.io/BIMCompiler/DeveloperGuide/#52-adding-a-new-browser-file http=200 anchor=Y
+§K2 OK   beat=b5 return=73.04 voice_start=73.67 ass_start=73.67 | voice-only track in typing window -180.0 dB vs in voice -16.2 dB (gap 163.8) | mixed in typing: peak -8.2 dBFS rms -32.7 dB
+§K2_LEVEL keys (mixed, typing windows) mean rms -32.6 dB, mean peak -8.2 dBFS; voice mean rms -16.8 dB -> keys are 15.8 dB under the voice rms
+§K2_VERDICT PASS beats=5 bad=0 audible=True
+§FLOW_VERDICT PASS beats=5
+§STRIP_VIDEO_VERDICT PASS
+§FILM_FILE frames=2665 dur_s=111.041667 size=5974301
+§BUILD_DONE /home/red1/Videos/One_List_CH0_EN_AFTER_2026-11-22.mp4

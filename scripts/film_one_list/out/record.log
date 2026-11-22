@@ -1,0 +1,9 @@
+§FILM_CUE beat=cover t=0.000 frames=542 typing=0 answer_hold_frames=542 x1
+§FILM_CUE beat=b1 t=22.583 frames=453 typing=62 answer_hold_frames=391 x1
+§FILM_CUE beat=b2 t=41.458 frames=456 typing=39 answer_hold_frames=417 x1
+§FILM_CUE beat=b3 t=60.458 frames=337 typing=91 answer_hold_frames=61+184 x2
+§FILM_CUE beat=b4 t=74.500 frames=341 typing=61 answer_hold_frames=280 x1
+§FILM_CUE beat=b5 t=88.708 frames=547 typing=51 answer_hold_frames=289+206 x2
+§FILM_CUE beat=close t=111.500 frames=408 typing=0 answer_hold_frames=408 x1
+§FILM_KEYS typed=194 returns=5
+§FILM_DONE dur=128.500 frames=3084 planned=3084

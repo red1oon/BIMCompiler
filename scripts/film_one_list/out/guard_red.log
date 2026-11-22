@@ -1,0 +1,61 @@
+§FILM_GUARD OK   b1 says "Two pages load the same file" <- b1.same_file expected Y got Y
+§FILM_GUARD OK   b1 says "Why two numbers" <- b1.numbers_differ expected Y got Y
+§FILM_GUARD OK   b1 says "In November the file changed" <- b1.changed_in_november expected Y got Y
+§FILM_GUARD OK   b1 says "The viewer page asked for the new copy" <- b1.viewer_new expected Y got Y
+§FILM_GUARD OK   b1 says "The landing page kept asking for the old one" <- b1.landing_old expected Y got Y
+§FILM_GUARD OK   b1 says "and nothing said so" <- b1.nothing_said expected PASS got PASS
+§FILM_GUARD OK   b2 says "one list of its files, each with its number" <- b2.list_has_number expected Y got Y
+§FILM_GUARD OK   b2 says "The landing page is written from that list" <- b2.page_from_list expected Y got Y
+§FILM_GUARD OK   b2 says "changes it there" <- b2.bump_in_list expected 7->8 got 7->8
+§FILM_GUARD OK   b2 says "is left alone" <- b2.cache_alone expected 0 got 0
+§FILM_GUARD OK   b2 says "that worker does not serve this page" <- b2.no_sw_for_page expected Y got Y
+§FILM_GUARD OK   b3 says "refuses" <- b3.refuses expected FAIL got FAIL
+§FILM_GUARD OK   b3 says "It names the file, the line" <- b3.names_file_line expected index.html:187 got index.html:187
+§FILM_GUARD OK   b3 says "the command that fixes it" <- b3.names_command expected node scripts/gen_manifest.js --write viewer got node scripts/gen_manifest.js --write viewer
+§FILM_GUARD OK   b4 says "six comment lines" <- b4.insertions expected 6 got 6
+§FILM_GUARD OK   b4 says "two pages" <- b4.files expected 2 got 2
+§FILM_GUARD OK   b4 says "the markers that fence what the list writes" <- b4.all_markers expected Y got Y
+§FILM_GUARD OK   b4 says "The analytics tag between them keeps its own settings" <- b4.tag_same expected Y got Y
+§FILM_GUARD OK   b5 says "four new checks" <- b5.new_checks expected 4 got 4
+§FILM_GUARD OK   b5 says "three failed there" <- b5.old_failed expected 3 got 3
+§FILM_GUARD OK   b5 says "The fourth cannot fail on old code" <- b5.fourth_cannot_fail_old expected Y got Y
+§FILM_GUARD OK   b5 says "a planted fault proves it can" <- b5.planted_proves expected Y got Y
+§FILM_GUARD FAIL b5 says "forty-four of forty-four claims hold" <- b5.claims expected 44/44 got N
+§FILM_GUARD OK   b5 says "all thirty-one planted faults are caught" <- b5.red expected 31/31 got 31/31
+§FILM_GUARD OK   N every spoken number word is covered by a `says` fact (14 judged)
+§FILM_GUARD OK   typed b1 is the spec's line byte for byte: git grep -n "import_db_builder.js?v=" e4fa52fe -- index.html viewer/viewer.html
+§FILM_GUARD OK   typed b2 is the spec's line byte for byte: node scripts/bump.js import_own.js
+§FILM_GUARD OK   typed b4 is the spec's line byte for byte: git diff --stat e4fa52fe 0fa163b8 -- index.html capex/index.html import_own.js
+§FILM_GUARD OK   typed b3 is the spec's sed, then the spec's check (piped through grep to fit the strip)
+§FILM_GUARD OK   typed b5 is the spec's witness line, piped through tail -1
+§FILM_GUARD OK   every typed/evidence command exited as expected (24 logs; b3, b3_full and b5_old are the ones meant to exit 1; wrong: none)
+§FILM_GUARD OK   the trees are the named commits (BEFORE e4fa52fe, AFTER 0fa163b8) and both are clean now: the hand edit was undone
+§FILM_GUARD OK   file b1_index = git show e4fa52fe:index.html lines 183-185, marked 184
+§FILM_GUARD OK   file b1_viewer = git show e4fa52fe:viewer/viewer.html lines 1026-1028, marked 1027
+§FILM_GUARD OK   file b2_index_tag = git show 0fa163b8:index.html lines 187-187, marked 187
+§FILM_GUARD OK   file b2_mod_order = git show 0fa163b8:viewer/modules.json lines 350-353, marked 352
+§FILM_GUARD OK   file b2_mod_v = git show 0fa163b8:viewer/modules.json lines 63-63, marked 63
+§FILM_GUARD OK   file b4_tag = git show 0fa163b8:index.html lines 663-668, marked 666,667
+§FILM_GUARD OK   b1 marked line numbers are the ones the real grep printed (184, 1027)
+§FILM_GUARD OK   file b3_edit = the AFTER file at lines 186-188 but for line 187 (?v=7 became ?v=9, the typed sed's change)
+§FILM_GUARD OK   the lower-frame file extracts exist (6 from git show + the hand-edited copy + the old-code witness lines)
+§FILM_GUARD OK   the pictures: every plan entry has its PNG
+§FILM_GUARD OK   no worktree path leaks into the shown terminal lines (shown as <sha>)
+§FILM_GUARD OK   D every term is defined in its own beat before it is used (6 terms: version number@b1, list@b2, bump@b2, check@b3, markers@b4, witness@b5); F1 every beat opens with its F question (5)
+§FILM_GUARD OK   C the cues: constants as the legend, every frame's tags match them (bad=0, file frames 147, terminal frames 206) 
+§FILM_GUARD OK   S the strip: only on the beat frames, none on the cover or the last card, nothing inside its rows (§CARD_STRIP_ALL unique_frames=208 with_strip=206 without_strip=2 bad=0)
+§FILM_GUARD OK   T one terminal font and no cut row: 26 px, no §FONT_FAIL, no §CARD_OVER
+§FILM_GUARD OK   P prior art "web.dev, Prevent unnecessary network requests with the HTTP Cache" <- out/prior/webdev_http_cache.html
+§FILM_GUARD OK   P prior art "webpack, Caching guide" <- out/prior/webpack_caching.html
+§FILM_GUARD OK   prior-art rows kept: 2 (a row whose text is not in its fetched copy would have failed above, and been dropped from priorart.json)
+§FILM_GUARD OK   §FILM_GUIDE: §FILM_GUIDE url=https://red1oon.github.io/BIMCompiler/DeveloperGuide/#52-adding-a-new-browser-file http=200 anchor=Y
+§FILM_GUARD OK   last card: bump.js +19 -88 = 19/88; outside files capex/index.html,import_own.js,index.html; frozen 'archive/gallery.html'
+§FILM_GUARD OK   credentials: #3385 and #1116 #1117 #1118 #1128 MERGED (read from GitHub at facts time), #3385 says "Fixes #3379"
+§FILM_GUARD OK   not said: no speed was measured
+§FILM_GUARD OK   not said: no claim of being first or novel
+§FILM_GUARD OK   not said: no claim about all users
+§FILM_GUARD OK   not said: nothing here measures safety
+§FILM_GUARD OK   not said: no AI claim
+§FILM_GUARD OK   not said: B4-HASH is not built and not spoken
+§FILM_GUARD OK   not said: the dead bonsai_kernel tag is handed over, not spoken
+§FILM_GUARD VERDICT FAIL 1
