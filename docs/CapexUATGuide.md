@@ -173,7 +173,7 @@ Three roles run this test. Tick a part when all its steps pass, and initial it.
 
 | Role | Who | Needs |
 |---|---|---|
-| **System Setup** | your iDempiere administrator | `psql` and a server restart, the GardenWorld Admin login, Node.js (D's read job); for A5 only, JDK 17 |
+| **System Setup** | your iDempiere administrator | `psql` and a server restart, the GardenWorld Admin login, Node.js (D's read job) |
 | **BIM** | a BIM / QS tester; your **drafter** for B00 | a desktop browser; the drafter: BricsCAD |
 | **Project Mgmt Accounting** | a project / accounting user | the GardenWorld Admin login, a desktop browser |
 
@@ -185,13 +185,13 @@ Three roles run this test. Tick a part when all its steps pass, and initial it.
 | A2 · Install the dashboard | System Setup | `psql`, server restart | — | the dashboard's scripts in iDempiere | 3 | ☐ |
 | A3 · Load the test data | System Setup | Pack In, `psql` | A2 | 12 projects, 10 products | 6 | ☐ |
 | A4 · ERP model check | System Setup | iDempiere | A3 | vendor, stock, products | 4 | ☐ |
-| A5 · BIM OOTB plugin (legacy iDempiere only) | System Setup | server, restart, Role window | — | the Viewer at `/bimootb` | 4 | ☐ |
+| A5 · Plugin (legacy only) | System Setup | server, Role window | — | the Viewer at `/bimootb` | 4 | ☐ |
 | B00 · Export the sheets as DXF | BIM (drafter) | BricsCAD | the drawing | nine `.dxf` | 3 | ☐ |
 | B0 · To the marked set | BIM | Modeller | B00 or pack `sheets/` | nine `_marked.dxf` | 11 | ☐ |
 | B1 · The sheets one at a time | BIM | Modeller | B0 | — | 4 | ☐ |
 | B2 · Arrange and convert | BIM | Modeller, Viewer | B0 | `SHED_extracted.db` | 11 | ☐ |
 | B3 · 4D and 5D | BIM | Viewer | B2 | total cost, finish date | 6 | ☐ |
-| B4 · Project Order | BIM | Viewer, browser ERP | B2; legacy iDempiere: A5 | project **SHED** | 4 | ☐ |
+| B4 · Project Order | BIM | Viewer, browser ERP | B2 | project **SHED** | 4 | ☐ |
 | B5 · Mark your run | BIM | Run Checker | B0.9 B2.8 B2.9 B3.1 | `uat_result.json` | 4 | ☐ |
 | C1 · Purchase orders | Project Mgmt Accounting | iDempiere | A3, A4 | orders | 2 | ☐ |
 | C2 · Material receipt | Project Mgmt Accounting | iDempiere | C1 | goods received | 1 | ☐ |
