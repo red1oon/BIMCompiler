@@ -31,6 +31,9 @@
   .uat-sheet table:not([class]) th, .uat-sheet table:not([class]) td { padding: 1.5pt 4pt; }
   .uat-sheet p { margin: 3pt 0; }
   .uat-sheet h2 { break-before: auto; page-break-before: auto; }
+  /* the cover's tables as the sheet's (DOCS_DEPLOY_GUARD P6): each revision adds a row, and the cover must stay one page (P6 failed three times, 2026-11-21/22) */
+  .uat-cover table:not([class]) { font-size: 8pt; }
+  .uat-cover table:not([class]) th, .uat-cover table:not([class]) td { padding: 1.5pt 4pt; }
 }
 </style>
 <style>.uat-cover { border: 1px solid #888; border-radius: 4px; padding: .4em 1em .8em; margin: 1em 0 1.6em; } .uat-cover table:not([class]) { width: 100%; }</style>
@@ -43,7 +46,7 @@
 |---|---|
 | Document | CAPEX UAT Guide — from 2D drawings to the dashboard |
 | Purpose | The step-by-step test script for the User Acceptance Test of the pilot client (Sysnova): BIM drawings to a priced model, the ERP exercise, the CAPEX dashboard |
-| Revision | **2026-11-22** |
+| Revision | **2026-11-22 (b)** |
 | Status | Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately and stays as signed. What changed or was found since is listed after this cover. |
 | Prepared and issued by | Redhuan D. Oon, Project Consultant |
 | For | The pilot client's UAT team: System Setup, BIM, Project Mgmt Accounting |
@@ -55,6 +58,7 @@
 
 | Revision | What changed |
 |---|---|
+| 2026-11-22 (b) | B4 note for a legacy iDempiere (L1 to L3); change list item 21. No step changed |
 | 2026-11-22 | Change list item 20 and *See how* item 3: film part 3, linked. No step changed |
 | 2026-11-21 | Change list items 9 to 19 (film part 3). No step changed |
 | 2026-11-20 (b) | Change list item 8 and *See how* item 2: film part 2, linked. No step changed |
@@ -95,6 +99,7 @@ Read these even if you have already done the UAT. If your run met one of them, r
 | 18 | D3 | Adding up the panel's **Spent** column gives 2,020.46; the tile reads **2,020.45** (each row is rounded to the cent). | Noted | Pass at the tile's 2,020.45 |
 | 19 | C4.2 | Each **Issue to Project** opens its own window tab; after several, the first tabs are pushed off the strip. | Noted | Close each Issue tab when done |
 | 20 | B4, C, D (film) | The film *UAT, hands on, part 3* shows B4, every document of chapter C made by hand, and chapter D. Items 9 to 19 are what it met on the way. | Film published: [youtu.be/stnbV8nygqs](https://youtu.be/stnbV8nygqs) | None; no step changed. Watch it before chapter C |
+| 21 | B4 | **If your ERP is a legacy iDempiere:** B4 from the Viewer that your iDempiere serves (the BIM OOTB plugin), steps L1 to L3 under B4. The Viewer keeps your sign-in ids when you open a file, and **open ↗** opens your iDempiere's Project. | New in this revision | Only with a legacy iDempiere: do L1 to L3 |
 
 </div>
 
@@ -533,6 +538,18 @@ Do this in the **Viewer**, on the Shed you opened in B2.9. (In the Modeller, **E
 | B4.2 | Press **› ERP** | The status line reads *Project Order: 1 lines · contract …  (saved)* and a link **open ↗** appears | ☐ Pass ☐ Fail |
 | B4.3 | Press **› ERP** again | *Project Order: 0 lines*: nothing new is added, the order is keyed by the model's name (**SHED**) | ☐ Pass ☐ Fail |
 | B4.4 | Click **open ↗**. On the Kernel ERP sign-in page choose **GardenAdmin**, then **Log In** | The ERP opens on the project **SHED** (*BIM: SHED*) with its planned amount (the amount of the group you clicked in B4.1). Its **Phase** and **Task** tabs each hold one record. The line from the model is under **Task Line** (with the Task selected), showing the same planned amount: a line shows in the tab of its lowest level, as in iDempiere (*Task Line*: a task is set; *Phase Line*: a phase but no task; *Project Line*: neither), so **Project Line** and **Phase Line** read *0 records* | ☐ Pass ☐ Fail |
+
+<div class="uat-keep" markdown="1">
+
+**If your ERP is a legacy iDempiere** (not the Kernel ERP): your administrator installs the **BIM OOTB plugin** in it once. Then do B4 in the Viewer that your iDempiere serves. The steps are the same; only where the Viewer comes from and what you confirm change. (Why: a browser does not let a page from another site call your iDempiere, so the Viewer is served by the iDempiere itself.)
+
+| # | Do | Confirm on screen | Result |
+|---|---|---|---|
+| L1 | Open **your iDempiere**`/bimootb/viewer/viewer.html?blank=1&erpUser=GardenAdmin&erpClient=11&erpRole=102&erpOrg=11&erpWarehouse=103` (GardenWorld's user and ids; use your own), press **Ctrl+O** and open the Shed's `.db` as in B2.9 | The Viewer opens the Shed: *DONE — SHED 511 elements* | ☐ Pass ☐ Fail |
+| L2 | Do B4.1, press **› ERP**, type your iDempiere password in the window *Sign in to iDempiere*, and press **Push** | The window shows your user and ids, filled in. Then the status line reads *iDempiere Project #… · created* with *"projects":1* and **open ↗** appears. (Chrome may show its own password windows: press **OK**, then **No thanks**) | ☐ Pass ☐ Fail |
+| L3 | Click **open ↗** and log in to your iDempiere | The **Project** window opens on **SHED** (*BIM: SHED*) with the planned amount of the group you clicked in B4.1 | ☐ Pass ☐ Fail |
+
+</div>
 
 ### B5 · Mark your run against the reference pack
 

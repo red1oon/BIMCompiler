@@ -396,6 +396,13 @@ module.exports = (S, PREP, D, H) => {
     const ck = (await D.page.context().cookies()).filter(c => /localhost/.test(c.domain) && String(c.port || '') !== 'x'); await D.page.context().clearCookies({ domain: 'localhost' }).catch(async () => { await D.page.context().clearCookies(); });
     D.page = D.pages()[D.pages().length - 1]; await D.page.bringToFront(); D.log('§FILM_PREP c0 iDempiere tabs closed, cookies for localhost cleared (' + ck.length + ')'); };
   // the log in form, as a person fills it (c0, and again at D9): user, password, Select Role, OK; Chrome's own two windows; HQ / HQ Warehouse; Home
+  // Chrome's own 'Save password?' bubble (top right) after a password is typed: pressed 'No thanks', read on the screen (§5.16 find 5; shared by the log in and the Viewer's sign-in, §5.18)
+  const savePw = async (tag) => {
+    for (let i = 0; i < 6; i++) { const nt = await D.findText(t => /^thanks$/i.test(t), D.screenBox(1000, 60, 920, 420, 'Chrome Save password bubble'), 2, true);
+      if (!nt) { if (i >= 2) { D.log('§FILM_NOTE no Chrome Save password bubble'); break; } await D.sleep(1000); continue; }
+      D.cue(tag + '_savepw'); await D.aim(D.screenBox(nt.x - 40, nt.y - 8, nt.w + 50, nt.h + 16, 'No thanks'), { label: 'No thanks (Chrome: Save password?)' }); await D.click({ label: 'No thanks' }); await D.sleep(1200);
+      const gone = !(await D.findText(t => /^thanks$/i.test(t), D.screenBox(1000, 60, 920, 420, 'Chrome Save password bubble'), 2, true)); D.check(gone, 'chrome_save_password_bubble_closed'); break; } };
+  H.savePw = savePw;
   const loginForm = async (tag) => {
     const boxes = D.page.locator('input.z-textbox'); await D.aimClick(boxes.nth(0), { label: 'User' }); await D.key('ctrl+a', 'select what is there'); await D.type('GardenAdmin'); await D.aimClick(boxes.nth(1), { label: 'Password' }); await D.key('ctrl+a', 'select what is there'); await D.type('GardenAdmin');   // ctrl+a: a box Chrome filled in is replaced, not appended to
     // §5.16 find: with the default Organization '*' a purchase order refuses to save ('Fill mandatory fields: Organization, Warehouse', measured 2026-11-20); the guide names no
@@ -413,10 +420,7 @@ module.exports = (S, PREP, D, H) => {
     await D.page.waitForSelector('input.z-bandbox-input[placeholder="Alt+G"]:visible', { timeout: 90000 }); D.check(true, tag + '_home_shown', which);
     // Chrome's own 'Save password?' bubble (top right) stays open after the login and takes the keys and clicks meant for the page (measured 2026-11-20: a typed project went
     // nowhere): the film presses its 'No thanks', read on the screen, as a tester would
-    for (let i = 0; i < 6; i++) { const nt = await D.findText(t => /^thanks$/i.test(t), D.screenBox(1000, 60, 920, 420, 'Chrome Save password bubble'), 2, true);
-      if (!nt) { if (i >= 2) { D.log('§FILM_NOTE no Chrome Save password bubble'); break; } await D.sleep(1000); continue; }
-      D.cue(tag + '_savepw'); await D.aim(D.screenBox(nt.x - 40, nt.y - 8, nt.w + 50, nt.h + 16, 'No thanks'), { label: 'No thanks (Chrome: Save password?)' }); await D.click({ label: 'No thanks' }); await D.sleep(1200);
-      const gone = !(await D.findText(t => /^thanks$/i.test(t), D.screenBox(1000, 60, 920, 420, 'Chrome Save password bubble'), 2, true)); D.check(gone, 'chrome_save_password_bubble_closed'); break; } stSet('home.opened', D.now().toFixed(0)); D.log('§FILM_HOME_OPENED t=' + D.now().toFixed(0) + ' (D9: Home goals recalculate only when older than 30 min)');
+    await savePw(tag); stSet('home.opened', D.now().toFixed(0)); D.log('§FILM_HOME_OPENED t=' + D.now().toFixed(0) + ' (D9: Home goals recalculate only when older than 30 min)');
   };
   H.loginForm = loginForm; H.find = find; H.num = num; H.r2 = r2; H.MD = MD; H.openWin = openWin; H.lookup = lookup;
   S.c0 = async () => {
@@ -427,4 +431,5 @@ module.exports = (S, PREP, D, H) => {
     D.cue('c0_home'); await D.sleep(2500); D.cue('c0_end');
   };
   require('./scenes3d.js')(S, PREP, D, H);
+  require('./scenes3l.js')(S, PREP, D, H);   // §5.18 L4: B4 to a legacy iDempiere
 };
