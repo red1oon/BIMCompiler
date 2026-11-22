@@ -58,11 +58,11 @@
 
 | Revision | What changed |
 |---|---|
-| 2026-11-22 (f) | Film part 3 re-published to match the corrected steps: *See how* 3 and item 20 link it. No step changed |
-| 2026-11-22 (e) | Third independent check of film part 3: item 24 |
-| 2026-11-22 (d) | Second independent check of film part 3: item 23 (B4.1, L, C3.1, C3.2, C5.1, D8, D9 and the C log in) |
-| 2026-11-22 (c) | Change list items 9 to 19 now in their steps (C1.1, C2.1, C3.2, C4.1, C4.2, C4.4, C5.1, D3, D4, D9 and L3); D read job and D9 percents said as they are; item 22 |
-| 2026-11-22 (b) | Legacy iDempiere: A5 for the administrator (LA1 to LA4), B4 note (L1 to L3); change list item 21. No step changed |
+| 2026-11-22 (f) | Film part 3 re-published, linked (item 20). No step changed |
+| 2026-11-22 (e) | Item 24 |
+| 2026-11-22 (d) | Item 23 |
+| 2026-11-22 (c) | Items 9 to 19 moved into their steps; item 22 |
+| 2026-11-22 (b) | Legacy iDempiere: A5, L1 to L3 (item 21). No step changed |
 | 2026-11-22 | Change list item 20 and *See how* item 3: film part 3, linked. No step changed |
 | 2026-11-21 | Change list items 9 to 19 (film part 3). No step changed |
 | 2026-11-20 (b) | Change list item 8 and *See how* item 2: film part 2, linked. No step changed |
