@@ -5958,3 +5958,18 @@ is within the owner's GAP of the element (it touches what it hangs from). Share 
      pieces with no path to the ground; the bake reading a few hundred pieces under the expectation (day origin not pinned to the hour, §Q.63).
   6. The house-style film for the seven. No picture was ever looked at this session — every claim is a log value or a judge count.
 - **Do not:** rebuild a "move the hung piece behind its hanger" pass (§Q.60.1), split the old judge's `early` a fourth time, or re-lock gate numbers.
+### Q.65 HHS HI-RES BAKE ON THE NEW ORDER (2026-11-22, owner: *"Do a HHS bake, from saved DB path, all checks on, hi res"*) — §Q.64 stays the resume block
+- **Run:** the prepared script `scripts/bake_hires_offline.sh HHS_Office_Federated_silent` (1920x1080, 24 fps; `--dlod-proxy --reveal --buildup --label --measure --clash
+  --load-path --ledger --cost --storey-reveal --escape-route --sun-compass`; day counter as saved). `§CLI_BAKE_RESOLVED` reads 1 for every one of those; visualPanel and
+  audioPanel are 0 (the script does not pass them; audio is not built). 3,274 frames, 136.4 s, 163 MB, wall 3,869 s, `aborted=no fileOk=true`, `unconverged=0`,
+  ffprobe frames=3274. Delivered: `~/Downloads/HHS_Office_Federated_silent_1920x1080_24fps_2026-11-22_1936.mp4`; logs `~/Videos/HHS_silent_hires_bake_2026-11-22*.log`.
+- **Prepared as §Q.63 says:** offsets for the saved file (5,207 of 6,839 pieces, max 21.57 m) — bim-ootb **#3400, merged**; stored schedule regenerated on load
+  (`genVersion=38->55`); CPU judge of the file with the bake's rate pack: onNothing 0 of 2,755 · beforeFloor 0 of 6,623 · beforeWall 0 of 99 · beforeFrame 0 of 627 ·
+  box 0 · early 0 · nopath 6 · 59 days. Expectation: `~/Videos/HHS_silent_bake_expected_elements.csv`.
+- **Bake log vs expectation:** `totalDays=59` both. Placed count vs expected at the logged frames of the build-up: −1 .. −3 pieces up to day 39, then +39 .. +41 — the 41
+  containers with no geometry, which the film counts once the cursor passes them (end 6,880 = 6,839 + 41). Worst 0.60 %. Slabs drawn once each, in order: Level 1 @2,
+  Level 2 @56, Unknown @83, Level 3 @84, Roof @111. The cursor never goes back in 56 samples. The bake's own `§SUPPORT_CHECK floating=4/6839`.
+- **The script's own verdicts:** `§LOADPATH_INFOPANEL` PASS · `§LOADPATH_CARD` PASS · `§INTERIOR_LIGHTS_WITNESS` PASS · `§RULE_TINT_CEASE` PASS · `§HUD_OVERLAP_WORST` none
+  over 3,274 frames PASS · `§FRAME_REUSE_TOTAL reused=0/3274` INCONCLUSIVE (its own word: nothing was reused). Not looked at: the picture.
+- **Note for whoever cleans a bake worktree:** `out/` holds TRACKED files; remove only your own log there, never `rm -rf out` (done once this session, restored with
+  `git checkout -- out` before the worktree was removed).
