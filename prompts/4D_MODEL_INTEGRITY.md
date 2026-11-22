@@ -5838,3 +5838,24 @@ is within the owner's GAP of the element (it touches what it hangs from). Share 
   before the hanger's bar starts. Its phase is not changed.
 - **Witness = the product judge, unchanged:** `early` on Duplex must be ≤ 2 and on Hospital < 17, no other cell worse on any judged building; `§HUNG_WORK`
   prints pieces found, moved in order, filed on another level, and NO-OP when 0.
+- **Q.60.1 RESULT — THE HUNG-WORK MOVE IS REJECTED, MEASURED; nothing of it is in the product (branch product code is still `a6d1f818`).**
+  Built as specified, then narrowed twice, judged on the node copy each time (onNothing main-branch-before → with the move):
+  (1) every piece whose elected support is higher and touching: Duplex 290 pieces, Hospital 7,196 → onNothing Duplex 0 → 8, HHS 0 → 67, Hospital 0 → 335, SampleCastle 0 → 12;
+  (2) + nothing touches its underside: Duplex 240, Hospital 4,514 → Duplex 9, HHS 87, Hospital 385;
+  (3) + the hanger is an earlier trade: Duplex 238, Hospital 4,497 → Duplex 9, HHS 87, JKR 86, Hospital 373. With level filing off and ONLY the order
+  move on: Duplex 8, HHS 87, JKR 86, Hospital 373 — so it is the move itself, not the filing. With both off: 0 on all four.
+  **Why:** a piece moved behind its hanger leaves the piece that rests on IT ahead of it (a pipe on the elbow that was moved). Following that needs a cascade —
+  a solver again, the collision §Q.58 named. Do not rebuild it.
+- **What the leftovers actually are (the judge, `splitEarly` — a fourth class `stack`, counted and printed, never ruled on, main re-judged the same way):**
+  the named support sits ON the piece by the crawler's own truth (its base at the piece's top, same or earlier trade). "T hangs from S" and "S stands on T"
+  cannot both be obeyed: with T first the old judge objects, with S first the crawler does. Duplex 2 (duct tap under its transition fitting), Hospital 12
+  (pipe fitting under the vertical pipe on it; main had the same 12).
+- **PRODUCT compare after that split (`--reuse`, the stored runs of `a6d1f818`), main → branch:** Duplex early 2 → 2 (no longer worse; the 2 left are the risers
+  the election hangs from a furring wall, as on main in number) · Hospital early 335 → 5 (2 valves under a valve 0.46 m up, 3 envelope proxies under a higher
+  overlapping one) · JKR 407 → 7 · HHS 44 → 0 · SampleCastle 28 → 3. **Verdict FAIL worse=1 better=27 same=14 on five buildings.**
+- **The one worse cell, traced: HHS nopath 5 → 6, piece `1Atj4lkpv3qwTaPKeAZTF4`** (envelope proxy, base 0.09 m, nothing under it within 0.5 m). Same box and class on
+  both sides. On true boxes the branch recognises HHS's 10 slabs on grade as groundwork (`§GROUNDWORK_SLAB n=10`; main: 0), which is right — and that switches
+  the shipped judge's ground seeding from `ground-band` (anything within 1 m of the lowest level is on the ground) to `classification` (only groundwork is).
+  The piece was "on the ground" only by the band. Not an order defect; not fixed, not hidden. It is the single cell between this branch and PASS on five.
+- **NEXT:** (1) decide the HHS cell on its merits (a piece with nothing under it IS unsupported — the branch's reading is the truer one), (2) Clinic, Terminal, LTU on
+  the product (GPU go), (3) merge on PASS, (4) deletions (§Q.58 step 5), (5) bars = step x floor.
