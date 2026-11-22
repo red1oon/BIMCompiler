@@ -5717,3 +5717,16 @@ is within the owner's GAP of the element (it touches what it hangs from). Share 
 - **Candidate `fix/4d-q55-one-population-true-box` as judged with the four truths as solver edges: FAIL 21 better / 4 worse** (beforeFloor → 0, but onNothing
   Hospital 214 → 608, HHS 40 → 705): a fourth support mechanism collides with the other three. Keep from it: the box owner + offsets, containers left out, the
   push pass off, the patch chunk bound. Drop: `§SITE_ORDER` edges once (1) lands.
+### Q.58.1 ▶▶ START OF THE NEXT SESSION (owner, 2026-11-22: *"continue in new session. Update prompt also to do a basic animation of SampleCastle as our present test case instead of Hospital so we have something light and faster to prove as a baseline."*)
+- **The test case is now SampleCastle, not Hospital.** 3,621 elements, 7 storeys (`-1 fundering` … `04 dak`), 7.9 MB, one file with its meshes:
+  `~/bim-compiler/deploy/buildings/SampleCastle_extracted.db` (also linked as `~/.cache/bim4d/unseen_blds/SampleCastle_extracted.db`; the copy in
+  `~/bim-ootb/buildings/` is 0 bytes — do not use it; pass `BLD_DIR=~/bim-compiler/deploy/buildings`). Classes: coverings 1,262 · walls 934 · slabs 279 ·
+  windows 259 · doors 205 · beams 174 · railings 90 · pipes 60. No patch file. A full judge run on it is seconds, not minutes.
+- **First deliverable = a BASIC ANIMATION of SampleCastle that is the baseline proof**, before any of the seven: (a) judge today's product on it
+  (`BLD_DIR=… node scripts/product_judge.js run --root ~/bim-ootb --tag main SampleCastle`) and keep its screenplay; (b) order it by METHOD x LOCATION
+  (§Q.58: start from `scripts/proto_method_order.js`, then the product change); (c) crawler to zero on it, every remaining line of the screenplay
+  explained or fixed; (d) the animation from the judge's `SampleCastle.film.json` with `scripts/film_4d_true_box/render.py` (bim-compiler) — BEFORE |
+  AFTER, red = out of order when it appears, `§FILM_EYES` reading the last frame back, no human eye asked. Plain clip; the house film style comes
+  later, for the seven.
+- **Only when SampleCastle is clean:** the same change judged on the seven (no cell worse than main), then Hospital's film.
+- **Do not:** add support rules, re-lock gate numbers, or ask the owner for rulings (§Q.58).
