@@ -46,7 +46,7 @@
 |---|---|
 | Document | CAPEX UAT Guide — from 2D drawings to the dashboard |
 | Purpose | The step-by-step test script for the User Acceptance Test of the pilot client (Sysnova): BIM drawings to a priced model, the ERP exercise, the CAPEX dashboard |
-| Revision | **2026-11-22 (e)** |
+| Revision | **2026-11-22 (f)** |
 | Status | Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately and stays as signed. Since then steps C1.1, C2.1, C3.2, C4.1, C4.2, C4.4, C5.1, D3, D4, D9 and L3 carry the corrections of the change list (item 22). What changed or was found since is listed after this cover. |
 | Prepared and issued by | Redhuan D. Oon, Project Consultant |
 | For | The pilot client's UAT team: System Setup, BIM, Project Mgmt Accounting |
@@ -58,6 +58,7 @@
 
 | Revision | What changed |
 |---|---|
+| 2026-11-22 (f) | Film part 3 re-published to match the corrected steps: *See how* 3 and item 20 link it. No step changed |
 | 2026-11-22 (e) | Third independent check of film part 3: item 24 |
 | 2026-11-22 (d) | Second independent check of film part 3: item 23 (B4.1, L, C3.1, C3.2, C5.1, D8, D9 and the C log in) |
 | 2026-11-22 (c) | Change list items 9 to 19 now in their steps (C1.1, C2.1, C3.2, C4.1, C4.2, C4.4, C5.1, D3, D4, D9 and L3); D read job and D9 percents said as they are; item 22 |
@@ -101,7 +102,7 @@ Read these even if you have already done the UAT. If your run met one of them, r
 | 17 | C5.1 | The Phase tab is a list under the header. | **Corrected in the step** (2026-11-22 (c)) | Follow the step: it now says this |
 | 18 | D3 | Adding up the panel's **Spent** column gives 2,020.46; the tile reads **2,020.45** (each row is rounded to the cent). | **Corrected in the step** (2026-11-22 (c)) | Follow the step: it now says this |
 | 19 | C4.2 | Each **Issue to Project** opens its own window tab; after several, the first tabs are pushed off the strip. | **Corrected in the step** (2026-11-22 (c)) | Follow the step: it now says this |
-| 20 | B4, C, D (film) | The film *UAT, hands on, part 3* shows B4, every document of chapter C made by hand, and chapter D. Items 9 to 19 are what it met on the way. | Film published: [youtu.be/stnbV8nygqs](https://youtu.be/stnbV8nygqs) | None; no step changed. Watch it before chapter C |
+| 20 | B4, C, D (film) | The film *UAT, hands on, part 3* shows B4, every document of chapter C made by hand, chapter D, and last the legacy B4 (L1 to L3). Items 9 to 19 are what it met on the way. | Film published: [youtu.be/g7FTNnbbybA](https://youtu.be/g7FTNnbbybA) (2026-11-22, follows revision (f); replaces the first upload) | None; no step changed. Watch it before chapter C |
 | 24 | B4.1, C3.1, D2, D9, sign-off | A third independent check of the film part 3: C3.1 says **Save** before **Create lines from** (no second Save); D9 says **Log Out**, then log in with Select Role and HQ; B4.1 names the key **F**; D2's **ERP ↗** may ask you to log in; the checklist and sign-off count the legacy-only steps (A5, L1 to L3). | Corrected in this revision | Retest a step of this list if you did it before |
 | 23 | B4.1, L, C3.1, C3.2, C5.1, D8, D9, C (log in) | A second independent check of the film part 3 against this guide: do the legacy L1 to L3 **after chapter D** (or on a copy: SHED is one more project); L3 and the chapter C log in name Chrome's windows, the demo password and closing each document's tab; C3.1 runs with the window's own **Create lines from** button; C3.2 half paid is rounded up to the cent; C5.1 says what to do with no Phase tab; D9 money goals are rounded to the unit; B4.1's list shows parts at once. | Corrected in this revision | Retest a step of this list if you did it before |
 | 22 | C1.1, C2.1, C3.2, C4.1, C4.2, C4.4, C5.1, D3, D4, D9 and L3 | **The steps now say what works.** Items 9 to 19 were written only in this list; each is now in its step, so a step read on its own passes (C5.1 was the one that stopped a tester: Save refused, *Fill mandatory fields: Invoice Rule*). Also new in D: the read job ends with `§DASH_LEGACY_READ_VERDICT PASS` and needs `BRIDGE_USER`/`BRIDGE_PASS` on a server that is not `localhost`; D9 says what the Home goals' percents are measured against (the targets A2 installs), so *Actual Cost* reads 0 % on the test data. Found by an independent check of the film part 3 against this guide. | Corrected in this revision | Retest a step of this list if you did it before |
@@ -133,7 +134,7 @@ Films of the steps, on a real screen:
 
 1. *UAT, hands on: where to click*: [https://youtu.be/PBp4qfV4mIo](https://youtu.be/PBp4qfV4mIo). From the downloads to B5 and the result file.
 2. *UAT, hands on, part 2*: [https://youtu.be/WvPgjcMbSwo](https://youtu.be/WvPgjcMbSwo). A3.1 Pack In, then B0 on the nine sheets as drawn (marked by hand), B2.3 Arrange, and B5 with all four rows PASS.
-3. *UAT, hands on, part 3*: [https://youtu.be/stnbV8nygqs](https://youtu.be/stnbV8nygqs). B4 the model to the ERP, chapter C with every document made by hand in the iDempiere windows, and chapter D on the dashboard.
+3. *UAT, hands on, part 3*: [https://youtu.be/g7FTNnbbybA](https://youtu.be/g7FTNnbbybA). B4 the model to the ERP, chapter C with every document made by hand in the iDempiere windows, chapter D on the dashboard, and last B4 to a legacy iDempiere (L1 to L3). It follows this revision of the guide.
 
 ## Contents
 
