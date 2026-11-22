@@ -1,0 +1,5 @@
+$ nl -ba index.html | sed -n '186,188p'
+   186	<script src="common/import_key.js?v=2"></script>
+   187	<script src="import_own.js?v=9"></script>
+   188	<script src="viewer/db_resolve.js?v=4"></script><!-- §SEAM-W3 F13: cached-badge exact key -->
+§CMD_EXIT 0

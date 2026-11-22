@@ -1,0 +1,51 @@
+§FACTS tree before {"dir":"/tmp/wt-film5-before","sha":"e4fa52fe","head":"e4fa52feefc4944454d0c6412e106f17df6aefdf","clean":true,"node_modules":true}
+§FACTS tree after {"dir":"/tmp/wt-film5-after","sha":"0fa163b8","head":"0fa163b82c5306b9f7b1d3cc7bfd0289c306d0f2","clean":true,"node_modules":true}
+§FACTS cmd b1 exit=0 (expected 0) lines=2 secs=0 $ git grep -n "import_db_builder.js?v=" e4fa52fe -- index.html viewer/viewer.html
+§FACTS file b1_index e4fa52fe:index.html lines 183-185 marked 184
+§FACTS file b1_viewer e4fa52fe:viewer/viewer.html lines 1026-1028 marked 1027
+§FACTS cmd e1_commit exit=0 (expected 0) lines=4 secs=0 $ git show --stat --format="%h %ad %s" --date=short 8d1ede96 -- index.html viewer/viewer.html viewer/import_db_b
+§FACTS cmd e1_diff exit=0 (expected 0) lines=2 secs=0 $ git show -U0 --format= 8d1ede96 -- viewer/viewer.html index.html | grep -E "^[-+][^-+].*import_db_builder.js"
+§FACTS cmd e1_before_check exit=0 (expected 0) lines=1 secs=19 $ node scripts/gen_manifest.js --check | grep MANIFEST_CHECK
+§FACTS cmd e1_before_log exit=0 (expected 0) lines=1 secs=0 $ git log -1 --format="%h %ad %s" --date=short
+§FACTS cmd b2 exit=0 (expected 0) lines=3 secs=1 $ node scripts/bump.js import_own.js
+§FACTS cmd e2_sw exit=0 (expected 0) lines=5 secs=0 $ find . -name sw.js -not -path './node_modules/*' -not -path './.git/*' | sort; echo serviceWorker_mentions_in_
+§FACTS cmd e2_after_log exit=0 (expected 0) lines=1 secs=0 $ git log -1 --format="%h %ad %s" --date=short
+§FACTS cmd e2_status exit=0 (expected 0) lines=0 secs=0 $ git status --short
+§FACTS file b2_mod_v 0fa163b8:viewer/modules.json lines 63-63 marked 63
+§FACTS file b2_mod_order 0fa163b8:viewer/modules.json lines 350-353 marked 352
+§FACTS file b2_index_tag 0fa163b8:index.html lines 187-187 marked 187
+§FACTS cmd b3 exit=1 (expected 1) lines=2 secs=18 $ sed -i 's/import_own.js?v=7/import_own.js?v=9/' index.html && node scripts/gen_manifest.js --check 2>&1 | grep
+§FACTS cmd b3_edit exit=0 (expected 0) lines=3 secs=0 $ nl -ba index.html | sed -n '186,188p'
+§FACTS cmd b3_full exit=1 (expected 1) lines=33 secs=20 $ node scripts/gen_manifest.js --check
+§FACTS file b3_edit working copy: a hand edit in a throwaway tree of 0fa163b8:index.html lines 1-3 marked 187
+§FACTS cmd b3_restore exit=0 (expected 0) lines=1 secs=0 $ git checkout -- index.html && git status --short && echo restored_clean
+§FACTS cmd b4 exit=0 (expected 0) lines=3 secs=0 $ git diff --stat e4fa52fe 0fa163b8 -- index.html capex/index.html import_own.js
+§FACTS cmd b4_added exit=0 (expected 0) lines=6 secs=0 $ git diff -U0 e4fa52fe 0fa163b8 -- index.html capex/index.html | grep -E '^[+-][^+-]'
+§FACTS cmd b4_tag_before exit=0 (expected 0) lines=2 secs=0 $ git show e4fa52fe:index.html | grep -A1 'data-goatcounter'
+§FACTS cmd b4_tag_after exit=0 (expected 0) lines=2 secs=0 $ git show 0fa163b8:index.html | grep -A1 'data-goatcounter'
+§FACTS file b4_tag 0fa163b8:index.html lines 663-668 marked 666,667
+§FACTS cmd b5 exit=0 (expected 0) lines=1 secs=84 $ node scripts/tests/witness_manifest_roundtrip.js | tail -1
+§FACTS cmd b5_full exit=0 (expected 0) lines=117 secs=47 $ node scripts/tests/witness_manifest_roundtrip.js
+§FACTS cmd b5_old exit=1 (expected 1) lines=118 secs=58 $ MANIFEST_W_OLD=/tmp/wt-film5-before MANIFEST_W_C22_ROOT=/tmp/wt-film5-before node scripts/tests/witness_manife
+§FACTS cmd b5_status exit=0 (expected 0) lines=0 secs=0 $ git status --short
+§FACTS cmd close_numstat exit=0 (expected 0) lines=1 secs=0 $ git diff --numstat e4fa52fe 0fa163b8 -- scripts/bump.js
+§FACTS cmd close_frozen exit=0 (expected 0) lines=1 secs=0 $ grep -n "FROZEN = \[" scripts/gen_manifest.js
+§FACTS cmd close_pr_body exit=0 (expected 0) lines=1 secs=0 $ gh pr view 3385 -R red1oon/bim-ootb --json body -q .body | grep -n "^Fixes #3379"
+§FACTS change {"bumpAdded":19,"bumpDeleted":88,"frozen":["archive/gallery.html"],"outsideOwned":"3/3","outsideFiles":["capex/index.html","import_own.js","index.html"],"pages":2,"loaders":1}
+§FACTS credentials {"ootb":{"n":3385,"state":"MERGED feat(manifest): B3-OUT — outside referrers written from the app lists, gallery frozen, bump.js regex path deleted"},"fixes":3379,"decisions":{"1116":"MERGED prompts: CODE_ARCHITECTURE_DESIGN B3-Q2 answered (outside pages in now)","1117":"MERGED prompts: CODE_ARCHITECTURE_DESIGN B3-Q3 answered + B3-Q2 measurement corrected","1118":"MERGED prompts: CODE_ARCHITECTURE_DESIGN B3-OUT BUILD SPEC","1128":"MERGED prompts: CODE_ARCHITECTURE_DESIGN B3-OUT addendum (B3-OUT-Q1 answered)"},"fixesLine":"1:Fixes #3379"}
+§FACTS OK   b1: index.html asks for ?v=11, viewer.html for ?v=12 (different, from the real grep)
+§FACTS OK   b1: the commit that raised the viewer page touched viewer/viewer.html and not index.html, in November (2026-11-08)
+§FACTS OK   b1: the manifest check of the BEFORE tree said nothing (verdict PASS)
+§FACTS OK   b2: the dry run names index.html, import_own.js, v 7->8, manifest viewer/modules.json, writes nothing, no sw line, sw=0
+§FACTS OK   b2: no sw.js at the root and index.html never mentions serviceWorker (./erp/sw.js ./modeller/sw.js ./oplogpic/sw.js ./viewer/sw.js)
+§FACTS OK   b3: the check exited 1, names index.html:187 and the fix command, the unfiltered run also exits 1
+§FACTS OK   b3: the AFTER tree is clean again after the undo
+§FACTS OK   b4: 2 files, 6 insertions, 0 deletions, import_own.js not in the stat, every added line a marker comment, the analytics tag identical before and after
+§FACTS OK   b5: the witness line on the new code: claims 44/44 red 31/31 outside_owned 3/3 frozen 1 verdict PASS
+§FACTS OK   b5: every planted fault caught in the full run (R lines detected=Y 31, N 0)
+§FACTS OK   b5: on the OLD code 3 of 4 new checks fail, C23 cannot (ok=Y there) and R26 shows it can fail
+§FACTS OK   the trees are clean after every run (b2 0, b5 0 changed files)
+§FACTS OK   last card: bump.js +19 -88, 2 pages + 1 loader outside the three apps, frozen archive/gallery.html
+§FACTS OK   credentials: bim-ootb #3385 and BIMCompiler #1116 #1117 #1118 #1128 are MERGED, and #3385 says Fixes #3379
+§FACTS OK   every typed command exited as expected {"b1":0,"e1_commit":0,"e1_diff":0,"e1_before_check":0,"e1_before_log":0,"b2":0,"e2_sw":0,"e2_after_log":0,"e2_status":0,"b3":1,"b3_edit":0,"b3_full":1,"b3_restore":0,"b4":0,"b4_added":0,"b4_tag_before":0,"b4_tag_after":0,"b5":0,"b5_full":0,"b5_old":1,"b5_status":0,"close_numstat":0,"close_frozen":0,"close_pr_body":0}
+§FACTS VERDICT PASS

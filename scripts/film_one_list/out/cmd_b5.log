@@ -1,0 +1,3 @@
+$ node scripts/tests/witness_manifest_roundtrip.js | tail -1
+§MANIFEST_ROUNDTRIP apps=3 source=viewer,erp,modeller files=58 sites=856 tag=725 asset=0 inline=47 lazy=84 precache=907 identical=58/58 driven=774/774 sw_vm=3/3 claims=44/44 red=31/31 outside_owned=3/3 frozen=1 unresolved=1 order_check=PASS deps_declared=264 unreviewed=0 owner_gap=335 witness_gap=276 b2_trial=N site_v=40 pinned=4 verdict=PASS
+§CMD_EXIT 0

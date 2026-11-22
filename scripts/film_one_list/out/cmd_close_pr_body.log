@@ -1,0 +1,3 @@
+$ gh pr view 3385 -R red1oon/bim-ootb --json body -q .body | grep -n "^Fixes #3379"
+1:Fixes #3379
+§CMD_EXIT 0

@@ -1,0 +1,4 @@
+$ sed -i 's/import_own.js?v=7/import_own.js?v=9/' index.html && node scripts/gen_manifest.js --check 2>&1 | grep -E "MANIFEST_(FAIL|CHECK)"
+§MANIFEST_FAIL index.html:187 differs from what modules.json writes (a hand edit of a generated site?); edit viewer/modules.json, then run: node scripts/gen_manifest.js --write viewer
+§MANIFEST_CHECK apps=3 files=58 identical=58/58 sites=856 tag=725 asset=0 inline=47 lazy=84 precache=907 order_check=PASS deps_declared=264 unreviewed=0 source=viewer,erp,modeller written=0 verdict=FAIL
+§CMD_EXIT 1

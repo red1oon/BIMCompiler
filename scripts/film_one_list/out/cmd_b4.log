@@ -1,0 +1,5 @@
+$ git diff --stat e4fa52fe 0fa163b8 -- index.html capex/index.html import_own.js
+ capex/index.html | 2 ++
+ index.html       | 4 ++++
+ 2 files changed, 6 insertions(+)
+§CMD_EXIT 0

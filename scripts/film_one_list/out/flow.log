@@ -1,0 +1,10 @@
+§FLOW OK   F4 beat=b1 cue=4.21 first word +2.88 s (needs ≥ 2.88: typing 2.58 + 0.3)
+§FLOW OK   F4 beat=b2 cue=23.08 first word +1.93 s (needs ≥ 1.93: typing 1.63 + 0.3)
+§FLOW OK   F5 b1 → b2 silence 2.77 s (needs ≥ 0.6)
+§FLOW OK   F4 beat=b3 cue=43.00 first word +4.09 s (needs ≥ 4.09: typing 3.79 + 0.3)
+§FLOW OK   F5 b2 → b3 silence 4.93 s (needs ≥ 0.6)
+§FLOW OK   F4 beat=b4 cue=57.04 first word +2.84 s (needs ≥ 2.84: typing 2.54 + 0.3)
+§FLOW OK   F5 b3 → b4 silence 3.67 s (needs ≥ 0.6)
+§FLOW OK   F4 beat=b5 cue=71.25 first word +2.42 s (needs ≥ 2.42: typing 2.13 + 0.3)
+§FLOW OK   F5 b4 → b5 silence 3.29 s (needs ≥ 0.6)
+§FLOW_VERDICT PASS beats=5
