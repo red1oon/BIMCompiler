@@ -2,7 +2,17 @@
 Scope: **SPEC and phase ledger** for ONE vocabulary the CLI and the guides both read: a keyed message catalog and a help catalog over the Application Dictionary, with a short/long level and a locale. Read the log after every run (exit code is not evidence). Spec first, witness with a falsifier next, code last; honour until this file is marked DONE.
 Background, measurements and prior art are in `prompts/DOCS_I18N.md` §4b-§4d (owner ideas of 2026-11-16: shared vocabulary for CLI and guides, a `Student` level = the long text, reuse the legacy element/message model, remove the copied Help). This file owns the BUILD; that file keeps the findings.
 
-## ▶▶▶ RESUME HERE (updated 2026-11-22; the next "resume message" session starts here)
+## ▶▶▶ RESUME HERE (updated 2026-11-22 close; the next "resume message" session starts here)
+**▶ 2026-11-22 CLOSE (read this first; the lines below it are the day's history):**
+- **DONE today, all merged unless noted:** F4 the panel follows the tab / process / Home (#3380) · F2 the tab's own legacy text first (#3384) · F7 every message fits MsgText's 2000 with a guide link (#3387) · F6 the legacy migration script `erp/legacy/` (#3388) · F6.1 no dead links in it + README links (#3391) · F6.2 the guide-link label names the section (#3398, auto-merge on: **verify it merged**) · §19.18 film v1 made (`~/Videos/Knowledge_CMS_ERP_EN_AFTER_2026-11-22_v1.mp4`, 165 s, scripts `scripts/film_ctxhelp_cms/`). Witnesses: W-CTXHELP-OVERLAY 9 claims (K1-K11), W-CTXHELP-LEGACY 7/0 (L1-L7, on the pilot, rolled back).
+- **Owner, 2026-11-22 (verbatim):** *"iDempiere's wiki is Creative Commons. if it is not really lots of extra content, then wrap up, so future session can follow up"*.
+- **NEXT (in order):**
+  1. **Legacy's wiki as a content source.** Licence: Creative Commons per the owner; **confirm the exact variant** (BY, BY-SA, BY-NC…) from the wiki's footer, read in a real browser by the owner or a route that is not blocked (wiki.idempiere.org answers automated fetches with 403; an archive fetch was refused by this session's permissions: do not work around it). A share-alike variant means the copied text keeps that licence and its attribution, so record per topic its page URL + licence in AD_CtxHelp.Description or the message, and never mix it into MIT text silently.
+  2. **Measure before writing anything:** how many wiki pages are real HOW-TO for a core window (trade cycle + accounting) versus the generated `ManPageW_*` pages (those repeat the dictionary text the panel already shows first, F2: no gain). Owner's condition: only worth a step if it is "lots of extra content"; otherwise leave it.
+  3. The owner's notes on film v1 (none yet).
+  4. Nothing else is open in this lane. Our own guides are used whole (a survey of 8 more guides, 163 sections, found no core how-to). docs.idempiere.org states no licence ("Copyright © 2026 iDempiere" only).
+- **Environment left running:** docker `postgres` and the legacy pilot (:8088, `~/idempiere-pilot/start.sh`); the pilot is verified back to its snapshot (1 help, 0 links) after every legacy run.
+
 **▶ 2026-11-22 film:** **§19.18 FILM MADE** (`~/Videos/Knowledge_CMS_ERP_EN_AFTER_2026-11-22_v1.mp4`, 165 s, K2 + captions PASS, legacy pilot restored). Both defects named in §19.18 RESULT are FIXED (F6.1 #3391, F6.2 #3398). Next: the owner's notes on v1; more topics need a source. More topics: our guides are exhausted, legacy's docs have no licence (owner's word needed).
 **▶ 2026-11-22 latest:** **F6 BUILT** (bim-ootb #3388): the legacy migration script, W-CTXHELP-LEGACY 6/0 on the pilot DB. F2, F4, F5, F6, F7 done. **Next:** more English topics (Sonnet agents allowed, owner 2026-11-19), then the film for legacy users (zh_CN, de_DE, es_ES); it can now show the SAME topics inside real iDempiere.
 **▶ 2026-11-22 later:** **F7 BUILT** (bim-ootb #3387, 2000-char fit with a guide link). **F6 ANSWERED** (copy the site's own text in, at apply time): build it next, its SPEC + measured facts under §19.17.
@@ -1980,6 +1990,7 @@ Both boxes read input through `HelpGrammar.parse`. **6a ERP:** `#<number>` searc
 4. Narration TSV EN (F asks / M answers), cues from measured segment starts; chapter cards silent 3.6 s; subtitles inside the bottom 230 px (capcheck); every number voiced from the run's own § lines.
 
 ## STATUS
+2026-11-22 (close): lane at zero except owner items; wiki = Creative Commons (owner), variant + amount of real how-to to measure next; F6.2 #3398 to verify merged.
 2026-11-22 (late): F6.2 built (bim-ootb #3398): the guide link names the section, not a tenant's heading; K9 + red labelmsg. Both film defects closed.
 2026-11-22 (late): F6.1 built (bim-ootb #3391): no dead links in the legacy script, README links to the script and the guides; W-CTXHELP-LEGACY 7/0 + red oldscript.
 2026-11-22 (film): §19.18 film v1 made (165 s, EN); beat 7 shot on the legacy pilot and the pilot restored to its snapshot; K2 PASS, captions PASS; two small defects named.
