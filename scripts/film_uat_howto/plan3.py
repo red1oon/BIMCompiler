@@ -42,7 +42,7 @@ SCENES = [
   # §5.18 L4 (owner 2026-11-22: "Show the workings on film and UATGuide with a note if the ERP side is legacy"): B4 again, with the Viewer served by a legacy iDempiere (the BIM OOTB plugin)
   dict(id='l0', chip='B4 · L1', strip="Open **your iDempiere**`/bimootb/viewer/viewer.html?blank=1&erpUser=GardenAdmin&erpClient=11&erpRole=102&erpOrg=11&erpWarehouse=103`", span=('l0_start', 'l0_end'), speed=SP, beats=[   # sped: B2.9 again (r0 shows it)
    
-    ('l0a', 'l0_url',   "If your ERP is a legacy iDempiere, the Viewer comes from it. Type its address, slash bimootb, with your user and ids."),
+    ('l0a', 'l0_url',   "If your ERP is a legacy iDempiere, your administrator first installs the BIM OOTB plugin: step A5. Then the Viewer comes from your iDempiere. Type its address, slash bimootb, with your user and ids."),
     ('l0b', 'l0_ctrlo', "Then open the Shed's file, as before.")]),
   dict(id='l1', chip='B4.1', strip='Open the **Find** panel and click one group of parts in its list (for example a column type)', span=('r1_start', 'r1_end'), speed=SP, beats=[   # sped: B4.1 again (r1 shows it)
     ('l1a', 'r1_group', "The same group of parts, at the same cost.")]),
@@ -78,11 +78,11 @@ for r in PLAN:   # C1: one order per row and kind, in the guide's table order
               ('c1a', sid + '_start',    "Type the window's name in the search box: Purchase Order. Press New."),
               ('c1b', sid + '_new',      "Business partner, Seed Farm. Price list, Purchase. Warehouse, HQ. And the project. Save."),
               ('c1c', sid + '_line',     "On the PO Line tab, New. The product, and the quantity from the table. Leave the price alone. Save."),
-              ('c1d', sid + '_totals',   "The price is the product's standard cost, and the total is quantity times price."),
+              ('c1d', sid + '_totals',   "The price is the product's standard cost, rounded to the cent, and the total is quantity times price."),
               ('c1e', sid + '_complete', "Document Action, Complete, OK. The status reads Completed.")]))
         elif kind == 'dr' and once('c1d'):
             SCENES.append(dict(id=sid, chip='C1.2', strip=C12, span=(sid + '_start', sid + '_end'), speed=SP, beats=[
-              ('c1f', sid + '_start', "The second order, %s, is made the same way, and left as it is: Drafted. The repeats now play at eight times the speed." % say(d))]))
+              ('c1f', sid + '_start', "The second order, %s, is made the same way, and left as it is: Drafted. The repeats now play at sixteen times the speed." % say(d))]))
         else: SCENES.append(rep(sid, 'C1.1' if kind == 'dr' else 'C1.1 · C1.2', C11, 'c1_%d' % len(SCENES), "%s: %s, %s." % (r['name'], say(d), 'completed' if kind == 'co' else 'left in draft')))
 for r in PLAN:
     if r['co'] and RCV.search(r['far']):
@@ -107,7 +107,7 @@ for r in PLAN:
               ('c4a', sid + '_start',    "Then the payment. Payment and Receipt, New. Document type: AP Payment."),
               ('c4b', sid + '_new',      "This window lists customers. Type the vendor's search key, and in the Info window set Vendor to Yes."),
               ('c4c', sid + '_complete', "Choose the invoice: the amount fills in. Bank account, tender type Check. Save, and complete.")]))
-        else: SCENES.append(rep(sid, 'C3.2', C32, 'c32_%d' % len(SCENES), "%s: %s." % (r['name'], 'half of the invoice is paid' if half else 'paid in full')))
+        else: SCENES.append(rep(sid, 'C3.2', C32, 'c32_%d' % len(SCENES), "%s: %s." % (r['name'], 'half paid. On the invoice, Paid stays unticked, and the other half is open' if half else 'paid in full. On the invoice, Paid is ticked')))
 for r in PLAN:
     if r['issue']:
         sid = 'c41_' + r['project']
@@ -131,12 +131,14 @@ for p in NAMED:
           ('c7b', sid + '_balance', "And in the Project window, Project Balance rose by quantity times standard cost.")]))
     else: SCENES.append(rep(sid, 'C4.3 · C4.4', C43, 'c43_%d' % len(SCENES), "%s: one issue line, and its balance." % r['name']))
 SCENES += [
-  dict(id='c5', chip='C5.1', strip='tick **Complete** on the next phase that is not ticked, **Save**', span=('c5_TD_DEPOT_start', 'c5_TD_DEPOT_end'), beats=[
+  dict(id='c5', chip='C5.1', strip='Set **Invoice Rule** to *None* (the project\'s own rule; without it Save is refused: *Fill mandatory fields: Invoice Rule*), tick **Complete**, **Save**', span=('c5_TD_DEPOT_start', 'c5_TD_DEPOT_end'), beats=[
     ('c8a', 'c5_TD_DEPOT_start', "Last in chapter C: tick a phase. Project window, North Depot, the Phase tab."),
-    ('c8b', 'c5_TD_DEPOT_phase', "Open the next phase that is not ticked, tick Complete, and save. It stays ticked.")]),
+    ('c8b', 'c5_TD_DEPOT_phase', "Open the next phase that is not ticked. Here the tab shows one phase as a form, so: Next record."),   # §5.19 N2
+    ('c8c', 'c5_TD_DEPOT_rule',  "Set Invoice Rule to None, the project's own rule. Without it, Save is refused."),
+    ('c8d', 'c5_TD_DEPOT_tick',  "Tick Complete, and save. It stays ticked: two of four.")]),
   dict(id='d0', chip='D', strip='BRIDGE_BASE=http://<your-idempiere>:<port> node capex/tools/legacy_snapshot.js', span=('d0_start', 'd0_end'), beats=[
-    ('d0a', 'd0_start', "Chapter D. The dashboard reads a file that a small job writes from your iDempiere. Run it in a terminal, in your copy of the repository."),
-    ('d0b', 'd0_done',  "Its last line counts what it read: fourteen projects, and nothing unavailable.")]),
+    ('d0a', 'd0_start', "Chapter D. The dashboard reads a file that a small job writes from your iDempiere. Run it in a terminal, in your copy of the repository. On a server that is not this computer, add your user and password: the Developer's note has the full line."),
+    ('d0b', 'd0_done',  "A line counts what it read: fourteen projects, and nothing unavailable.")]),
   dict(id='d1', chip='D1 · D5', strip='Read **Total Projects** and **Active Projects**', span=('d1_start', 'd1_end'), beats=[
     ('d1a', 'd1_start', "Open the dashboard page, with source equals legacy."),
     ('d1b', 'd1_tiles', "Total Projects, fourteen. Active Projects, fourteen."),
@@ -175,7 +177,8 @@ SCENES += [
   dict(id='d9', chip='D9', strip='Log in to iDempiere again and read the **Home** tab', span=('click:No thanks', 'd9_end'), beats=[
     ('d10a', 'click:No thanks', "Last: iDempiere's own Home tab, after a new log in."),
     ('d10b5', 'at:d9_savepw|d9_goals|0.45', "Ten orders, four receipts, three invoices, three payments, nine issues: every one by hand."),
-    ('d10c', 'd9_goals', "The CAPEX goals show the same counts as the dashboard tiles.")]),
+    ('d10c', 'd9_goals', "The CAPEX goals show the same counts as the dashboard tiles."),
+    ('d10d', 'at:d9_goals|d9_end|0.5', "A goal with a target shows a percent of the target that A2 installed. So Actual Cost reads zero percent here: that is expected.")]),   # §5.19 N6
 ]
 TITLE = dict(kicker='UAT GUIDE · HANDS ON · PART III', line1='From the model to the money', line2='orders, receipts, issues, the dashboard', note='Every click is real: the real browser, your own iDempiere.')
 CLOSING = dict(line1='Every document made by hand, every figure checked:', line2='do, confirm, tick.', credit='Voice: Kokoro (local) · key sounds: eklee, CC BY 3.0 · click: GNOME')
