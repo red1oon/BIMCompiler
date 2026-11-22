@@ -239,9 +239,34 @@ for L in lines_all:
         else:
             txt = w['t']
         vecs = [nbm(L['ib'][c[0]:c[1] + 1, c[2]:c[3] + 1]) for c in main]
-        words.append(dict(vecs=vecs, d=d, main=main, base=base, gb=L['gb'], l=L['bx0'] + w['x'], r=L['bx0'] + max(w['x'] + w['w'], raised[0][3] if raised else 0),
+        gcrops = [L['gb'][c[0]:c[1] + 1, c[2]:c[3] + 1] for c in main]
+        words.append(dict(vecs=vecs, gcrops=gcrops, d=d, main=main, base=base, gb=L['gb'], l=L['bx0'] + w['x'], r=L['bx0'] + max(w['x'] + w['w'], raised[0][3] if raised else 0),
                           txt=txt.strip(',.') if txt else None, cntok=cntok, raised=raised[0] if raised else None, rocr=rocr))
     L['words'] = words
+def holes(mask):
+    m = np.pad(mask, 1, constant_values=False); bg = ~m
+    lab = np.zeros(m.shape, int); n = 0; hole = 0
+    for y0, x0 in zip(*np.where(bg)):
+        if lab[y0, x0]: continue
+        n += 1; q = deque([(y0, x0)]); lab[y0, x0] = n; border = False
+        while q:
+            y, x = q.popleft()
+            if y in (0, m.shape[0] - 1) or x in (0, m.shape[1] - 1): border = True
+            for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                yy, xx = y + dy, x + dx
+                if 0 <= yy < m.shape[0] and 0 <= xx < m.shape[1] and bg[yy, xx] and not lab[yy, xx]:
+                    lab[yy, xx] = n; q.append((yy, xx))
+        if not border: hole += 1
+    return hole
+HOLE_T = {}
+for thr in (OT, 190, 215):
+    hist = {}
+    for L in lines_all:
+        for w in L['words']:
+            if not w['cntok']: continue
+            for ch, gc in zip(w['d'], w['gcrops']):
+                hist.setdefault(ch, {}); h = holes(gc < thr); hist[ch][h] = hist[ch].get(h, 0) + 1
+    log(f"§RASTER_HOLES_DIAG thr={thr} " + ' '.join(f"{k}:{dict(sorted(v.items()))}" for k, v in sorted(hist.items())))
 # MAIN-DIGIT k-NN VOTE: every glyph of a count-matched word is a labelled sample; each glyph is relabelled by
 # the majority of its K most similar OTHER samples on this sheet (one CAD font). A lone OCR misread is outvoted.
 K = 7; KSHARE = 0.6   # stated
@@ -252,13 +277,13 @@ nchg = nkeep = nunsure = 0
 for L in lines_all:
     for w in L['words']:
         if not w['cntok']: continue
-        nd = []
+        nd = []; w['votes'] = []
         for i, (ch, v) in enumerate(zip(w['d'], w['vecs'])):
             x = v.ravel() / (np.linalg.norm(v) + 1e-9); sims = SV @ x
             order = [j for j in np.argsort(-sims) if SK[j] != (id(w), i)][:K]
             votes = {}
             for j in order: votes[SL[j]] = votes.get(SL[j], 0) + 1
-            top = max(votes.items(), key=lambda kv: kv[1])
+            top = max(votes.items(), key=lambda kv: kv[1]); w['votes'].append(votes)
             if top[1] / K >= KSHARE:
                 if top[0] != ch: nchg += 1
                 else: nkeep += 1
@@ -267,6 +292,73 @@ for L in lines_all:
                 nd.append(ch); nunsure += 1
         w['d'] = nd
 log(f"§RASTER_KNN samples={len(samples)} K={K} share>={KSHARE} kept={nkeep} changed={nchg} no_majority={nunsure}")
+# HOLE-COUNT CONSTRAINT (§43.5): applied only when holes contradict the label AND exactly one k-NN vote candidate
+# (or, failing that, exactly one digit at all) fits; threshold = Otsu (the §RASTER_HOLES_DIAG row that is consistent)
+FITS = {2: {'8'}, 1: {'0', '4', '6', '9'}, 0: {'1', '2', '3', '5', '7', '4'}}
+HOLE_RULE = False   # §43.5 run 1: hole COUNT turned GREEN chains YELLOW (9/6 tails close a 2nd hole at 200 dpi)
+nh_chg = nh_unsure = 0
+def hole_geo(mask):
+    """(area, centroid_y as fraction of glyph height) of each enclosed hole"""
+    m = np.pad(mask, 1, constant_values=False); bg = ~m; lab = np.zeros(m.shape, int); n = 0; out = []
+    for y0, x0 in zip(*np.where(bg)):
+        if lab[y0, x0]: continue
+        n += 1; q = deque([(y0, x0)]); lab[y0, x0] = n; border = False; ys = []
+        while q:
+            y, x = q.popleft(); ys.append(y)
+            if y in (0, m.shape[0] - 1) or x in (0, m.shape[1] - 1): border = True
+            for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                yy, xx = y + dy, x + dx
+                if 0 <= yy < m.shape[0] and 0 <= xx < m.shape[1] and bg[yy, xx] and not lab[yy, xx]:
+                    lab[yy, xx] = n; q.append((yy, xx))
+        if not border: out.append((len(ys), round((np.mean(ys) - 1) / mask.shape[0], 2)))
+    return sorted(out, key=lambda t: -t[0])
+geo = {}
+for L in lines_all:
+    for w in L['words']:
+        if not w['cntok']: continue
+        for ch, gc in zip(w['d'], w['gcrops']):
+            if ch in '0689': geo.setdefault(ch, []).append(hole_geo(gc < OT))
+for k, v in sorted(geo.items()):
+    log(f"§RASTER_HOLES_GEO label={k} n={len(v)} holes(area,cy)=" + ' '.join(str(h) for h in v))
+# HOLE-POSITION CONSTRAINT (§43.5 run 2, from §RASTER_HOLES_GEO on this sheet): the LARGEST hole's height
+# separates 9 (cy < 0.42) from 0 (0.42..0.55) from {6, 8} (cy > 0.55); 6 vs 8 is NOT separable at 200 dpi.
+def fit_by_pos(gc):
+    hg = hole_geo(gc < OT)
+    if not hg: return None
+    cy = hg[0][1]
+    return {'9'} if cy < 0.42 else ({'0'} if cy <= 0.55 else {'6', '8'})
+np_chg = np_unsure = 0
+for L in lines_all:
+    for w in L['words']:
+        if not w['cntok']: continue
+        for i, gc in enumerate(w['gcrops']):
+            if w['d'][i] not in '0689': continue
+            fit = fit_by_pos(gc)
+            if fit is None or w['d'][i] in fit: continue
+            vv = w['votes'][i] if i < len(w['votes']) else {}
+            cand = [c for c in fit if vv.get(c, 0) > 0]
+            best = max(cand, key=lambda c: vv[c]) if cand else None
+            unique = best is not None and sum(1 for c in cand if vv[c] == vv[best]) == 1
+            new = best if unique else (next(iter(fit)) if len(fit) == 1 else '?')
+            log(f"§RASTER_HOLEPOS change {w['d'][i]}->{new} fit={sorted(fit)} votes={vv} word_at_x={w['l']:.0f}")
+            if new == '?': np_unsure += 1
+            else: np_chg += 1
+            w['d'][i] = new
+log(f"§RASTER_HOLEPOS changed={np_chg} made_unsure={np_unsure}")
+for L in lines_all if HOLE_RULE else []:
+    for w in L['words']:
+        if not w['cntok']: continue
+        for i, gc in enumerate(w['gcrops']):
+            h = holes(gc < OT); fit = FITS.get(h, set())
+            if w['d'][i] in fit: continue
+            cand = [c for c in w['votes'][i] if c in fit] if i < len(w['votes']) else []
+            if len(cand) == 1 or (not cand and len(fit) == 1):
+                new = cand[0] if cand else next(iter(fit))
+                log(f"§RASTER_HOLES change {w['d'][i]}->{new} holes={h} votes={w['votes'][i] if i < len(w['votes']) else {}} word_at_x={w['l']:.0f}")
+                w['d'][i] = new; nh_chg += 1
+            else:
+                w['d'][i] = '?'; nh_unsure += 1
+log(f"§RASTER_HOLES changed={nh_chg} made_unsure={nh_unsure}")
 gh_ = np.bincount(np.clip(gaps, 0, 15)) if gaps else np.zeros(1, int)
 lo_ = int(np.argmax(gh_[:3])); hi_ = 3 + int(np.argmax(gh_[3:9])) if len(gh_) > 3 else 3
 SEPGAP = lo_ + 1 + int(np.argmin(gh_[lo_ + 1:hi_])) if hi_ > lo_ + 1 else 3
