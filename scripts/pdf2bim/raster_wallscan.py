@@ -58,8 +58,9 @@ def scan(INK, INKG, K, tag):
     cD2 = np.cumsum(np.pad(D2, ((0, 0), (1, 0))).astype(np.int32), axis=1)
     cI = np.cumsum(np.pad(INKG, ((0, 0), (1, 0))).astype(np.int32), axis=1)
     cands = []
-    for v in sorted(vocab, reverse=True):
-        T = int(round(v * K)); thin = (T - px(2)) - px(3) < px(5)
+    Tlo, Thi = int(round(min(vocab) * K)), int(round(max(vocab) * K))
+    for T in range(Thi, Tlo - 1, -1):                             # §43.7: every thickness in the READ range proposes
+        v = T / K; thin = (T - px(2)) - px(3) < px(5)
         L = 2 * T                                                 # §43.1 rule: runs >= 2 x thickness (connectivity rejects junk)
         xs = np.arange(0, Ww - T)
         both = FF[:, xs] & FF[:, xs + T]
@@ -97,8 +98,10 @@ def scan(INK, INKG, K, tag):
         m = (cr - cl) / K
         near = min(vocab, key=lambda u: abs(u - m))               # the MEASUREMENT decides; the template only proposes
         if abs(m - near) * K <= px(1):
-            if near != c['v']: c['relabel'] = f"{c['v']}->{near}"; nrel[0] += 1
-            c['v'] = near; c['thk_m'] = m; c['fl'] = cl; c['fr'] = cr; ver.append(c)
+            if abs(near - c['v']) * K > 0.5: c['relabel'] = f"{c['v']:.3f}->{near}"; nrel[0] += 1
+            c['v'] = near; c['src'] = 'READ'; c['thk_m'] = m; c['fl'] = cl; c['fr'] = cr; ver.append(c)
+        elif abs(m - c['v']) * K <= px(1):                          # §43.7: consistent with its own template -> MEASURED
+            c['v'] = round(m, 3); c['src'] = 'MEASURED'; c['thk_m'] = m; c['fl'] = cl; c['fr'] = cr; ver.append(c)
         else: rej += 1; c['fate'] = f'thk {m:.3f}'
     log(f"§RASTER_W-S9b {tag} verified={len(ver)} relabelled={nrel[0]} rejected_thickness={rej} of {len(cands)}")
     # non-max suppression among VERIFIED candidates: thick first, longest first; a candidate whose band
@@ -123,8 +126,8 @@ hori = scan(ink.T.copy(), inkg.T.copy(), KV, 'horizontal')   # walls along x (tr
 
 # rectangles in body px (x, y), inclusive
 rects = []
-for c in vert: rects.append(dict(o='V', x0=c['fl'], x1=c['fr'], y0=c['r0'], y1=c['r1'], v=c['v'], m=c['thk_m'], T=c['T']))
-for c in hori: rects.append(dict(o='H', y0=c['fl'], y1=c['fr'], x0=c['r0'], x1=c['r1'], v=c['v'], m=c['thk_m'], T=c['T']))
+for c in vert: rects.append(dict(o='V', x0=c['fl'], x1=c['fr'], y0=c['r0'], y1=c['r1'], v=c['v'], m=c['thk_m'], T=c['T'], src=c['src']))
+for c in hori: rects.append(dict(o='H', y0=c['fl'], y1=c['fr'], x0=c['r0'], x1=c['r1'], v=c['v'], m=c['thk_m'], T=c['T'], src=c['src']))
 
 # exterior strip rule: the outer ring strip (one exterior thickness from the body edge) belongs to the exterior
 # wall; a THINNER band inside it is window glazing/frame (§43.1 classed those rows P), logged as opening evidence
@@ -196,13 +199,16 @@ log(f"§RASTER_W-S9a recall={found}/{len(W1)} verdict={'PASS' if found == len(W1
 out = []
 for j in sorted(net):
     r = rects[j]
-    out.append(dict(axis=r['o'], thk_chain_m=r['v'], thk_meas_m=round(r['m'], 4),
+    out.append(dict(axis=r['o'], src=r.get('src', 'READ'), thk_chain_m=r['v'], thk_meas_m=round(r['m'], 4),
                     x0=(r['x0'] - M) / KH * 1000, x1=(r['x1'] - M) / KH * 1000,
                     y0=(r['y0'] - M) / KV * 1000, y1=(r['y1'] - M) / KV * 1000))
 per = {}
 for w in out:
     L = (w['y1'] - w['y0']) if w['axis'] == 'V' else (w['x1'] - w['x0'])
     per[w['thk_chain_m']] = per.get(w['thk_chain_m'], 0) + L / 1000
+from collections import Counter
+log(f"§RASTER_SCAN_SRC " + ' '.join(f"{k}:{v}" for k, v in Counter(w['src'] for w in out).items()) +
+    " measured_thk_m=" + ','.join(f"{w['thk_chain_m']}" for w in out if w['src'] == 'MEASURED'))
 log(f"§RASTER_W-S9d walls={len(out)} total_m={sum(per.values()):.2f} per_thickness=" +
     ' '.join(f"{k}:{v:.2f}m" for k, v in sorted(per.items())))
 json.dump(dict(origin='outer top-left corner, y down, mm', walls=out), open(os.path.join(work, 'walls_all.json'), 'w'), indent=1)
