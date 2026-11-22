@@ -58,7 +58,7 @@
 
 | Revision | What changed |
 |---|---|
-| 2026-11-22 (b) | B4 note for a legacy iDempiere (L1 to L3); change list item 21. No step changed |
+| 2026-11-22 (b) | Legacy iDempiere: A5 for the administrator (LA1 to LA4), B4 note (L1 to L3); change list item 21. No step changed |
 | 2026-11-22 | Change list item 20 and *See how* item 3: film part 3, linked. No step changed |
 | 2026-11-21 | Change list items 9 to 19 (film part 3). No step changed |
 | 2026-11-20 (b) | Change list item 8 and *See how* item 2: film part 2, linked. No step changed |
@@ -99,7 +99,7 @@ Read these even if you have already done the UAT. If your run met one of them, r
 | 18 | D3 | Adding up the panel's **Spent** column gives 2,020.46; the tile reads **2,020.45** (each row is rounded to the cent). | Noted | Pass at the tile's 2,020.45 |
 | 19 | C4.2 | Each **Issue to Project** opens its own window tab; after several, the first tabs are pushed off the strip. | Noted | Close each Issue tab when done |
 | 20 | B4, C, D (film) | The film *UAT, hands on, part 3* shows B4, every document of chapter C made by hand, and chapter D. Items 9 to 19 are what it met on the way. | Film published: [youtu.be/stnbV8nygqs](https://youtu.be/stnbV8nygqs) | None; no step changed. Watch it before chapter C |
-| 21 | B4 | **If your ERP is a legacy iDempiere:** B4 from the Viewer that your iDempiere serves (the BIM OOTB plugin), steps L1 to L3 under B4. The Viewer keeps your sign-in ids when you open a file, and **open ↗** opens your iDempiere's Project. | New in this revision | Only with a legacy iDempiere: do L1 to L3 |
+| 21 | A5, B4 | **If your ERP is a legacy iDempiere:** the administrator installs the BIM OOTB plugin (A5, steps LA1 to LA4); then B4 from the Viewer that your iDempiere serves, steps L1 to L3 under B4. The Viewer keeps your sign-in ids when you open a file, and **open ↗** opens your iDempiere's Project. | New in this revision | Only with a legacy iDempiere: A5, then L1 to L3 |
 
 </div>
 
@@ -143,6 +143,7 @@ Films of the steps, on a real screen:
     - [A2 · Install the dashboard into your iDempiere](#a2-install-the-dashboard-into-your-idempiere)
     - [A3 · Load the test data (GardenWorld)](#a3-load-the-test-data-gardenworld)
     - [A4 · ERP model setup, where needed](#a4-erp-model-setup-where-needed)
+    - [A5 · The BIM OOTB plugin (only if your ERP is a legacy iDempiere)](#a5-the-bim-ootb-plugin-only-if-your-erp-is-a-legacy-idempiere)
 - [B · BIM: the Shed, from 2D drawings to a priced model](#b-bim-the-shed-from-2d-drawings-to-a-priced-model-bim)
     - [B00 · For the drafter: export the nine sheets from BricsCAD as DXF](#b00-for-the-drafter-export-the-nine-sheets-from-bricscad-as-dxf)
     - [B0 · From the drawings as drawn to the marked set](#b0-from-the-drawings-as-drawn-to-the-marked-set)
@@ -172,7 +173,7 @@ Three roles run this test. Tick a part when all its steps pass, and initial it.
 
 | Role | Who | Needs |
 |---|---|---|
-| **System Setup** | your iDempiere administrator | `psql` and a server restart, the GardenWorld Admin login, Node.js (D's read job) |
+| **System Setup** | your iDempiere administrator | `psql` and a server restart, the GardenWorld Admin login, Node.js (D's read job); for A5 only, JDK 17 |
 | **BIM** | a BIM / QS tester; your **drafter** for B00 | a desktop browser; the drafter: BricsCAD |
 | **Project Mgmt Accounting** | a project / accounting user | the GardenWorld Admin login, a desktop browser |
 
@@ -184,12 +185,13 @@ Three roles run this test. Tick a part when all its steps pass, and initial it.
 | A2 · Install the dashboard | System Setup | `psql`, server restart | — | the dashboard's scripts in iDempiere | 3 | ☐ |
 | A3 · Load the test data | System Setup | Pack In, `psql` | A2 | 12 projects, 10 products | 6 | ☐ |
 | A4 · ERP model check | System Setup | iDempiere | A3 | vendor, stock, products | 4 | ☐ |
+| A5 · BIM OOTB plugin (legacy iDempiere only) | System Setup | server, restart, Role window | — | the Viewer at `/bimootb` | 4 | ☐ |
 | B00 · Export the sheets as DXF | BIM (drafter) | BricsCAD | the drawing | nine `.dxf` | 3 | ☐ |
 | B0 · To the marked set | BIM | Modeller | B00 or pack `sheets/` | nine `_marked.dxf` | 11 | ☐ |
 | B1 · The sheets one at a time | BIM | Modeller | B0 | — | 4 | ☐ |
 | B2 · Arrange and convert | BIM | Modeller, Viewer | B0 | `SHED_extracted.db` | 11 | ☐ |
 | B3 · 4D and 5D | BIM | Viewer | B2 | total cost, finish date | 6 | ☐ |
-| B4 · Project Order | BIM | Viewer, browser ERP | B2 | project **SHED** | 4 | ☐ |
+| B4 · Project Order | BIM | Viewer, browser ERP | B2; legacy iDempiere: A5 | project **SHED** | 4 | ☐ |
 | B5 · Mark your run | BIM | Run Checker | B0.9 B2.8 B2.9 B3.1 | `uat_result.json` | 4 | ☐ |
 | C1 · Purchase orders | Project Mgmt Accounting | iDempiere | A3, A4 | orders | 2 | ☐ |
 | C2 · Material receipt | Project Mgmt Accounting | iDempiere | C1 | goods received | 1 | ☐ |
@@ -308,6 +310,21 @@ GardenWorld already has the vendor, the warehouse and the locator; the products 
 | A4.2 | **Product** window: search Value `PWD-%`, then open *PWD-04.2 Brick masonry* | 10 products in category *Construction*. *PWD-04.2*: unit **M3**, stocked, price **68.1167** on the *Purchase* price list (tab **Price**; 8,174 BDT ÷ 120), and a **Standard** cost of 68.1167 (tab **Costs**) **Source:** the product’s **Description** field names it: *PWD SoR 2022 item 04.2, page …, 8174 BDT/M3 = 68.1167 USD at 120*. That is the Public Works Department Schedule of Rates item; read the rate and the item number there and divide by 120 yourself | ☐ Pass ☐ Fail |
 | A4.3 | **Warehouse and Locators** window: open *HQ Warehouse*, tab **Locator** | It has the locator *Default HQ Locator*, where you receive and issue | ☐ Pass ☐ Fail |
 | A4.4 | **Product** window: *Test material A (test data)* | The pack’s product exists, in category *TD Materials (test data)* | ☐ Pass ☐ Fail |
+
+### A5 · The BIM OOTB plugin (only if your ERP is a legacy iDempiere)
+
+Skip A5 if the BIM tester sends the Project Order to the Kernel ERP (B4). With a legacy iDempiere 13, B4 is done from the Viewer that your iDempiere serves (the BIM tester's steps L1 to L3), and that Viewer comes from this plugin. (Why: a browser does not let a page from another site call your iDempiere, so the Viewer is served by the iDempiere itself.) The plugin's source and its build script are in [`iDempiereOOTB/`](https://github.com/red1oon/BIMCompiler/tree/master/iDempiereOOTB) of the BIMCompiler repository. You need JDK 17 (`javac`) and a copy of the [bim-ootb repository](https://github.com/red1oon/bim-ootb) (the Viewer it packs). Take a database backup first if you want to go back exactly: removing the plugin later leaves the rows its setup pack wrote.
+
+<div class="uat-keep" markdown="1">
+
+| # | Do | Confirm on screen | Result |
+|---|---|---|---|
+| LA1 | Build the two bundles: `iDempiereOOTB/org.idempiere.bimootb/tools/build_bundle_poc.sh <your iDempiere>/server <your bim-ootb copy> <an empty folder>` | Its last line starts `§BIMOOTB_BUNDLE` and names `2pack=2Pack_13.1.0.zip`. The folder holds two folders: `org.idempiere.bimootb_13.1.0.<stamp>` and `org.idempiere.bimootb.viewer_13.1.0.<stamp>` | ☐ Pass ☐ Fail |
+| LA2 | Stop iDempiere. Copy both folders into `server/plugins/`. Add one line for each to `server/configuration/org.eclipse.equinox.simpleconfigurator/bundles.info`: `org.idempiere.bimootb,13.1.0.<stamp>,plugins/org.idempiere.bimootb_13.1.0.<stamp>/,4,true` and the same for `org.idempiere.bimootb.viewer`. Start iDempiere | The plugin packs in its own setup pack a little after the login page answers (up to 3 minutes). Then the **Role** window lists the role **BIM OOTB Push** | ☐ Pass ☐ Fail |
+| LA3 | **Role** window: open the role the BIM tester logs in with (GardenWorld: *GardenWorld Admin*), tab **Included role templates**, **New**, choose **BIM OOTB Push**, **Save**. Then restart iDempiere | The tab lists **BIM OOTB Push**. (Without it the push is refused: *Login role does not have access to the service type 'BIMOOTB_Query_C_Project'*) | ☐ Pass ☐ Fail |
+| LA4 | Open **your iDempiere**`/bimootb/viewer/viewer.html` in a browser | The Viewer opens. Give the BIM tester this address, with the user and ids of the role from LA3 (L1) | ☐ Pass ☐ Fail |
+
+</div>
 
 **Notes (chapter A):** ______________________________________________
 
@@ -541,7 +558,7 @@ Do this in the **Viewer**, on the Shed you opened in B2.9. (In the Modeller, **E
 
 <div class="uat-keep" markdown="1">
 
-**If your ERP is a legacy iDempiere** (not the Kernel ERP): your administrator installs the **BIM OOTB plugin** in it once. Then do B4 in the Viewer that your iDempiere serves. The steps are the same; only where the Viewer comes from and what you confirm change. (Why: a browser does not let a page from another site call your iDempiere, so the Viewer is served by the iDempiere itself.)
+**If your ERP is a legacy iDempiere** (not the Kernel ERP): your administrator installs the **BIM OOTB plugin** in it once ([A5](#a5-the-bim-ootb-plugin-only-if-your-erp-is-a-legacy-idempiere)). Then do B4 in the Viewer that your iDempiere serves. The steps are the same; only where the Viewer comes from and what you confirm change. (Why: a browser does not let a page from another site call your iDempiere, so the Viewer is served by the iDempiere itself.)
 
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|

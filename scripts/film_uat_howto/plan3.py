@@ -53,6 +53,8 @@ SCENES = [
   dict(id='l3', chip='B4 · L3', strip='Click **open ↗** and log in to your iDempiere', span=('l3_start', 'l3_end'), speed=8, beats=[   # sped x8: the iDempiere log in again (c0 shows it at normal speed); the line holds the Project window
    
     ('l3a', 'l3_start',   "Open it, and log in to iDempiere."),
+    ('l3a2', 'l3_login',  "Your user and password, and tick Select Role."),   # §5.18 L8: rc5 silence 8.02 s here
+    ('l3a3', 'l3_role',   "Then the role window: choose HQ, and press OK."),
     ('l3b', 'l3_project', "The Project window opens on SHED, with the planned amount of the group you clicked.")]),
   dict(id='c0', chip='C', strip='ERP: the hands-on exercise (Project Mgmt Accounting, as GardenWorld Admin)', span=('c0_start', 'c0_end'), beats=[
     ('c0a', 'c0_start', "Chapter C is done in your iDempiere. Log in as GardenAdmin, and tick Select Role."),

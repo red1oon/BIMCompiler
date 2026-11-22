@@ -223,8 +223,11 @@ if CAMERA == 'smooth':
     if _bad: sys.exit('§COMP_REFUSED the camera path breaks its bars: ' + ','.join(_bad))
 rings = []
 scene_of = {sc['id']: sc for sc in P.SCENES}
+# §5.18 L9: the piece of every frame, looked up once; a scene's decoder is closed after its LAST frame (52 left open = 19 GB, the rc5 low-memory kill)
+PF = [next(q for q in pieces if q['t_out'] <= n / FPS < q['t_out'] + q['dur'] + 1e-9) if n / FPS < TOTAL else pieces[-1] for n in range(NF)]
+LAST = {q['scene']: n for n, q in enumerate(PF) if q['kind'] != 'card'}; _dec_opened = set(); _dec_closed = 0; _dec_max = 0
 for n in range(NF):
-    t = n / FPS; p = next(q for q in pieces if q['t_out'] <= t < q['t_out'] + q['dur'] + 1e-9) if t < TOTAL else pieces[-1]
+    t = n / FPS; p = PF[n]
     if p['kind'] == 'card': frame = p['img']; enc.stdin.write(frame.tobytes()); continue
     sid = p['scene']; ev = EVS[sid]; ts = p['a'] if p['kind'] == 'hold' else p['a'] + (t - p['t_out']) * p['speed']
     scr = frame_at(sid, ts); zs, cxs, cys = CAM[n]
@@ -240,6 +243,10 @@ for n in range(NF):
             d.ellipse([ox - r, oy - r, ox + r, oy + r], outline=CORAL, width=5)
     if p['kind'] == 'play' and p['speed'] > 1: d.rounded_rectangle([W - 170, TOP + 20, W - 30, TOP + 74], radius=10, fill=(0, 0, 0)); d.text((W - 150, TOP + 28), '>> x%d' % p['speed'], font=font(True, 32), fill=SKY)
     enc.stdin.write(out.tobytes())
+    _dec_opened.update(dec.keys()); _dec_max = max(_dec_max, len(dec))
+    if LAST.get(sid) == n and sid in dec:   # §5.18 L9: this scene is not drawn again
+        d0 = dec.pop(sid); cur.pop(sid, None); d0.kill(); d0.stdout.close(); d0.wait(); _dec_closed += 1
     if n % 300 == 0: log('§COMP_FRAME %d/%d t=%.1f scene=%s zoom=%.2f' % (n, NF, t, sid, zs))
 enc.stdin.close(); enc.wait()
+log('§COMP_DECODERS opened=%d closed=%d max_open=%d still_open=%d' % (len(_dec_opened), _dec_closed, _dec_max, len(dec)))
 log('§COMP_DONE frames=%d film_s=%.2f -> %s' % (NF, TOTAL, os.path.join(WORK, 'silent.mp4')))
