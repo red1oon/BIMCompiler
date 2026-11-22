@@ -1,0 +1,9 @@
+{
+ "note": "Only sources this lane READ. A web row names the URL and the copy fetched into out/prior/ at build time (fetch_prior.sh) and a text that must be in that copy; guard.js check P fails a row whose text is not there. Nothing from memory. The HTML Living Standard was not searched.",
+ "items": [
+  { "name": "web.dev, Prevent unnecessary network requests with the HTTP Cache", "where": { "url": "https://web.dev/articles/http-cache", "saved": "out/prior/webdev_http_cache.html", "text": "Versioned URLs are a good practice because they make it easier to invalidate cached responses." },
+    "does": "a version in the URL is what lets a cached file be replaced", "took": "our ?v=N is that version; now the landing page's N comes from the same list as the viewer's" },
+  { "name": "webpack, Caching guide", "where": { "url": "https://webpack.js.org/guides/caching/", "saved": "out/prior/webpack_caching.html", "text": "The [contenthash] substitution will add a unique hash based on the content of an asset." },
+    "does": "the name changes when the content does, so nobody types the number", "took": "the idea for B4-HASH, the step to come: not built here" }
+ ]
+}

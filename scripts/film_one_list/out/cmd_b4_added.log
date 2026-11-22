@@ -1,0 +1,8 @@
+$ git diff -U0 e4fa52fe 0fa163b8 -- index.html capex/index.html | grep -E '^[+-][^+-]'
++<!-- §MANIFEST:BEGIN erp tags (script tags here are written by scripts/gen_manifest.js from erp/modules.json; comments are yours) -->
++<!-- §MANIFEST:END erp tags -->
++<!-- §MANIFEST:BEGIN viewer tags (script tags here are written by scripts/gen_manifest.js from viewer/modules.json; comments are yours) -->
++<!-- §MANIFEST:END viewer tags -->
++<!-- §MANIFEST:BEGIN viewer tags (script tags here are written by scripts/gen_manifest.js from viewer/modules.json; comments are yours) -->
++<!-- §MANIFEST:END viewer tags -->
+§CMD_EXIT 0

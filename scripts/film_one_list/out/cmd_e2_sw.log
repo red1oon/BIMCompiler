@@ -1,0 +1,7 @@
+$ find . -name sw.js -not -path './node_modules/*' -not -path './.git/*' | sort; echo serviceWorker_mentions_in_index_html=$(grep -c serviceWorker index.html)
+./erp/sw.js
+./modeller/sw.js
+./oplogpic/sw.js
+./viewer/sw.js
+serviceWorker_mentions_in_index_html=0
+§CMD_EXIT 0

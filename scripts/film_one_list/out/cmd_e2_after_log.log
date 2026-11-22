@@ -1,0 +1,3 @@
+$ git log -1 --format="%h %ad %s" --date=short
+0fa163b8 2026-11-22 feat(manifest): B3-OUT — outside referrers written from the app lists, gallery frozen, bump.js regex path deleted (#3385)
+§CMD_EXIT 0

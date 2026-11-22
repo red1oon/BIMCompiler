@@ -1,0 +1,5 @@
+$ node scripts/bump.js import_own.js
+§BUMP page=index.html ref=import_own.js v=7->8 (manifest viewer/modules.json)
+§BUMP_DONE targets=1 pages=1 loaders=0 sw=0 mode=dry-run written=0
+dry run — nothing written. Add --write to apply, then run: node tests/audit_sw_precache.js
+§CMD_EXIT 0
