@@ -221,3 +221,30 @@ the PRs (#3245 #3250 #3256 #3259 #3266 #3274 #3280) and their verdict lines, the
 - **Cut** the manual-fix steps v1 had to show (npm install, git init): they are gone. Keep the hand-edit refusal beat (b4), the proof map (b5), the session bill (b7). The owner's cut list for v1 still decides the rest.
 - **Done:** rebuilt as v2 (status block above) on the owner's "rebuild the film with the new setup script"; the owner's cut list for v1 was never given, the default cut list was used.
 
+
+---
+
+# FILM 5 — "CH 0 · One list writes every page" (owner 2026-11-22: *"Proceed. Do a meaningful focus film if enough material."*, after B3-OUT, bim-ootb #3385)
+
+**SPEC (written 2026-11-22, before any build).** A FOCUS film: one change, shown on the real tree, about 75 s. House style (`prompts/FILM_NARRATION.md` HOUSE STYLE 1-6, THE LAST CARD, GUIDE LINK): two-colour cover,
+terminal strip typed key by key with real eklee key sounds, voice after the Return key, ONE large terminal font, F asks / M answers, English only. **The lower frame is the real file at the line that changes**, rendered from the
+bytes git holds at the named commit (`git show <sha>:<path>`), the changed line large and marked; it is a view of the file, never a drawing of a page. Scripts `scripts/film_one_list/` copied from `scripts/film_dev_setup/`; the film is
+never committed. Output `~/Videos/One_List_CH0_EN_AFTER_2026-11-22.mp4` (never overwritten). CPU only, `nice -n 19 ionice -c3`; no browser, no VS Code capture needed (every lower frame is file text).
+**Trees:** BEFORE = bim-ootb `e4fa52fe` (main before B3-OUT) · AFTER = the merge commit of #3385. Every typed command runs in a throwaway `git worktree` of the named tree (hand edits only there), output `> out/<beat>.log`.
+
+| id | top (typed) | bottom (real file text) | narration (F: … \\| M: …) | numbers from |
+|---|---|---|---|---|
+| cover | two-tone card: kicker **CH 0**, title **One list writes every page**, sub "the landing page joins the viewer's list" | — | — | — |
+| b1 miss | `git grep -n "import_db_builder.js?v=" e4fa52fe -- index.html viewer/viewer.html` | the two lines, BEFORE tree: `index.html` `?v=11`, `viewer/viewer.html` `?v=12` | F: Two pages load the same file. Why two numbers? \\| M: In November the file changed. The viewer page asked for the new copy. The landing page kept asking for the old one, and nothing said so. | the grep output; `8d1ede96` (#2702) |
+| b2 list | `node scripts/bump.js import_own.js` (AFTER tree, dry run) | `viewer/modules.json`, the `index.html` order lines | F: And now? \\| M: The landing page is written from the viewer's list. A bump raises its number there, and leaves the viewer's cache alone: no service worker serves this page. | `§BUMP page=index.html … v=7->8 (manifest viewer/modules.json)`; no `§BUMP sw=` line |
+| b3 refuse | `sed -i 's/import_own.js?v=7/import_own.js?v=9/' index.html && node scripts/gen_manifest.js --check` (throwaway copy) | the refusal lines | F: What if I just edit the number? \\| M: The check refuses. It names the file, the line, and the command that fixes it. | the `--check` FAIL line, its file:line |
+| b4 kept | `git diff --stat e4fa52fe <merge> -- index.html capex/index.html import_own.js` | `index.html:663-668`: the analytics tag, untouched, between its markers | F: How much of the page changed? \\| M: Six comment lines across two pages. The analytics tag keeps its own settings. | the diff stat (`4`, `2`, `import_own.js` absent) |
+| b5 proof | `node scripts/tests/witness_manifest_roundtrip.js` | the `§MANIFEST_ROUNDTRIP` line, `claims=` and `red=` marked | F: How do we know it holds? \\| M: Every new check was run first on the old code, and failed there. Then on the new code, and passed. | `claims=N/N red=M/M outside_owned=3/3 frozen=1` |
+| close | last card | — | — | `facts.json` |
+
+**Last card:** what changed (3 pages and one loader written from two lists, `bump.js` −88 +19, one archive page frozen) · **prior art** (rows fetched at build into `out/prior/`, check P: the cache-busting note in the HTML Living Standard or
+web.dev on `Cache-Control` + versioned URLs, and webpack's `[contenthash]` page for the B4-HASH step to come; a row not found in the fetched copy fails the build) · **credentials** bim-ootb #3385 (Fixes #3379), the witness line from the build's own log,
+BIMCompiler #1116 #1117 #1118 #1128 (the decisions) · the guide link `DeveloperGuide/#52-adding-a-new-browser-file` (`§FILM_GUIDE … anchor=Y` or the build fails) · the key-sound credit.
+**Gates (all from `scripts/film_dev_setup/`):** `§FACTS VERDICT PASS` (every typed line exit as expected: b3 is the one meant to exit 1) · `§FILM_GUARD VERDICT PASS` (every spoken number in `facts.json`) · `§CARDS_DONE too_tall=0` · `§K2_VERDICT PASS` · `§KEYS_VERDICT PASS` ·
+`§FILM_DONE frames=planned` · `§FILM_GUIDE http=200 anchor=Y`. Read every `out/*.log` before any claim.
+**Not in this film:** the dead `viewer/bonsai_kernel.js` tag (handed over), B4-HASH (not built), Code Facts / VS Code (films 1-4).
