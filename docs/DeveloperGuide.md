@@ -687,11 +687,16 @@ own scripts. In ERP and the Viewer a module can carry a different number on diff
 register lines are never raised. Do not edit a script tag, a `?v=` (the lazy lists in `viewer/main.js` included) or a `PRECACHE_ASSETS` entry by hand in any of the three apps: CI (W-MANIFEST-ROUNDTRIP) fails with the
 file, the line and the command to run. Comments between the tags stay yours.
 
+**Pages outside the three apps (since 2026-11-22, B3-OUT):** the landing page `index.html` and its loader `import_own.js` are written from `viewer/modules.json`, and
+`capex/index.html` from `erp/modules.json`, the same way. A bump of a file they load raises them too; a version number in a file no service worker serves (these three) does not
+raise any `CACHE_VERSION`. `archive/gallery.html` is frozen: counted, never written, never bumped. `bump.js` no longer edits a page that no list names: CI (W-MANIFEST-ROUNDTRIP, C22)
+fails on any file with a `?v=` that is in no list and not frozen, and names the command that adopts it: `node scripts/gen_manifest.js --adopt <app> <file>`.
+
 ### 5.2 Adding a new browser file
 
-**On a page outside the three apps** (`index.html`, `capex/`): add its `<script src="name.js?v=1">` in the right place in the page (order matters, §0 #2), add it to that page's
-`PRECACHE_ASSETS` in `sw.js` **unless it is lazy on purpose**, bump `CACHE_VERSION`, and add any new shared global name to
-`eslint.globals.json`.
+**On a page outside the three apps:** `index.html` and `capex/index.html` are in a list now (§5.1), so a new tag there goes in that list's `order` exactly as below
+(`viewer` for `index.html`, `erp` for `capex/index.html`). A NEW page outside the apps that loads a file with `?v=` is first adopted into one list:
+`node scripts/gen_manifest.js --adopt <app> <page>` (one time; it adds the marker lines and the page's sites, nothing else). Add any new shared global name to `eslint.globals.json`.
 
 **In the three apps (Viewer, ERP, Modeller),** add the module's line to that app's `modules.json` instead (its `v`, `load`, `precache`; its tag in `order` at the place it
 must load; its entry in `precacheOrder` unless it is lazy on purpose), then run `node scripts/gen_manifest.js --write <app>` (`viewer`, `erp` or `modeller`): it writes the
