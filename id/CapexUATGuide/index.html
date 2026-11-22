@@ -3965,7 +3965,7 @@
 </tr>
 <tr>
 <td>Revision</td>
-<td><strong>2026-11-22 (d)</strong></td>
+<td><strong>2026-11-22 (e)</strong></td>
 </tr>
 <tr>
 <td>Status</td>
@@ -3995,6 +3995,10 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>2026-11-22 (e)</td>
+<td>Third independent check of film part 3: item 24</td>
+</tr>
 <tr>
 <td>2026-11-22 (d)</td>
 <td>Second independent check of film part 3: item 23 (B4.1, L, C3.1, C3.2, C5.1, D8, D9 and the C log in)</td>
@@ -4199,6 +4203,13 @@
 <td>The film <em>UAT, hands on, part 3</em> shows B4, every document of chapter C made by hand, and chapter D. Items 9 to 19 are what it met on the way.</td>
 <td>Film published: <a href="https://youtu.be/stnbV8nygqs">youtu.be/stnbV8nygqs</a></td>
 <td>None; no step changed. Watch it before chapter C</td>
+</tr>
+<tr>
+<td>24</td>
+<td>B4.1, C3.1, D2, D9, sign-off</td>
+<td>A third independent check of the film part 3: C3.1 says <strong>Save</strong> before <strong>Create lines from</strong> (no second Save); D9 says <strong>Log Out</strong>, then log in with Select Role and HQ; B4.1 names the key <strong>F</strong>; D2's <strong>ERP ↗</strong> may ask you to log in; the checklist and sign-off count the legacy-only steps (A5, L1 to L3).</td>
+<td>Corrected in this revision</td>
+<td>Retest a step of this list if you did it before</td>
 </tr>
 <tr>
 <td>23</td>
@@ -4423,7 +4434,7 @@
 <td>Viewer, browser ERP</td>
 <td>B2</td>
 <td>project <strong>SHED</strong></td>
-<td>4</td>
+<td>4 (legacy: L1–L3)</td>
 <td>☐</td>
 </tr>
 <tr>
@@ -5491,7 +5502,7 @@
 <tbody>
 <tr>
 <td>B4.1</td>
-<td>Open the <strong>Find</strong> panel and click one group of parts in its list (for example a column type; the list shows parts as soon as the panel opens, and typing <em>column</em> in its box lists the column types)</td>
+<td>Open the <strong>Find</strong> panel (key <strong>F</strong>) and click one group of parts in its list (for example a column type; the list shows parts as soon as the panel opens, and typing <em>column</em> in its box lists the column types)</td>
 <td>The panel shows the group's cost and the button <strong>› ERP</strong></td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
@@ -5804,7 +5815,7 @@
 <tbody>
 <tr>
 <td>C3.1</td>
-<td><strong>Purchase Invoice and Credit/Debit Note</strong> window, <strong>New</strong>. Header: <strong>Target Document Type</strong> <em>AP Invoice</em>, <strong>Business Partner</strong> the same vendor, <strong>Project</strong> the test project. Press <strong>Create lines from</strong>, choose the purchase order (or its receipt), tick the line, and press the window's own <strong>Create lines from</strong> button. Save, then <strong>Document Action ▸ Complete ▸ OK</strong></td>
+<td><strong>Purchase Invoice and Credit/Debit Note</strong> window, <strong>New</strong>. Header: <strong>Target Document Type</strong> <em>AP Invoice</em>, <strong>Business Partner</strong> the same vendor, <strong>Project</strong> the test project. <strong>Save</strong>. Then press <strong>Create lines from</strong>, choose the purchase order (or its receipt), tick the line, and press the window's own <strong>Create lines from</strong> button (the line is saved with it). Then <strong>Document Action ▸ Complete ▸ OK</strong></td>
 <td>The invoice is <em>Completed</em>; its <strong>Grand Total</strong> equals the order's</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
@@ -5900,7 +5911,7 @@
 <tr>
 <td>D2</td>
 <td>Read <strong>Approved Budget</strong></td>
-<td>The sum of the planned amounts, per currency: <strong>USD 4,667.80</strong> (the 12 test projects 4,067.80 plus <em>Landscape</em> 600.00). <strong>Step into the source:</strong> click the number; add the <strong>Approved</strong> column of the panel yourself. Press <strong>ERP ↗</strong> on a project: iDempiere’s <strong>Project</strong> window shows the same figure in <strong>Planned Amount</strong>, and it equals the sum of <strong>Planned Amount</strong> on the <strong>Phase</strong> tab</td>
+<td>The sum of the planned amounts, per currency: <strong>USD 4,667.80</strong> (the 12 test projects 4,067.80 plus <em>Landscape</em> 600.00). <strong>Step into the source:</strong> click the number; add the <strong>Approved</strong> column of the panel yourself. Press <strong>ERP ↗</strong> on a project (it opens your iDempiere: log in if it asks): iDempiere’s <strong>Project</strong> window shows the same figure in <strong>Planned Amount</strong>, and it equals the sum of <strong>Planned Amount</strong> on the <strong>Phase</strong> tab</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
@@ -5947,8 +5958,8 @@
 </tr>
 <tr>
 <td>D9</td>
-<td>Log in to iDempiere again and read the <strong>Home</strong> tab. Home goals are recalculated only when they are older than <strong>30 minutes</strong> (System Configurator name <code>ZK_DASHBOARD_PERFORMANCE_REFRESH_INTERVAL</code>, 1800000 ms). If you opened Home at A2.2 less than 30 minutes ago, the goals still show the counts from before the test data (for example <em>CAPEX Total Projects</em> 2): either wait, or open <strong>System Admin ▸ General Rules ▸ System Rules ▸ System Configurator</strong>, set that name's <strong>Configured Value</strong> to <code>60000</code>, save, and log in again</td>
-<td>The CAPEX goals show the same counts as the dashboard tiles (for example <em>CAPEX Total Projects</em> 14, <em>CAPEX Active Projects</em> 14), money in your login’s currency rounded to the unit (<em>CAPEX Approved Budget</em> 4,668 for the tile's 4,667.80). A goal that has a target shows its percentage of that target, not the count. The targets are the ones A2 installs, the plan of the system the dashboard was built on (<em>Actual Cost</em>, <em>Committed Cost</em>, <em>Invoiced</em>: USD 39,971,166.17; <em>Health Green</em>, <em>Schedule On Time</em>, <em>Budget Within</em>: 9 active projects). So on the test data <em>Actual Cost</em> reads <strong>0 %</strong> and <em>Health Green</em> <strong>55 %</strong> (5 of 9), not the tiles' share; that is expected. Your own targets are set in the <strong>Performance Goal</strong> window (<em>Measure Target</em>)</td>
+<td><strong>Log Out</strong> of iDempiere, log in again (tick <strong>Select Role</strong>, choose <strong>HQ</strong>, as in chapter C) and read the <strong>Home</strong> tab. Home goals are recalculated only when they are older than <strong>30 minutes</strong> (System Configurator name <code>ZK_DASHBOARD_PERFORMANCE_REFRESH_INTERVAL</code>, 1800000 ms). If you opened Home at A2.2 less than 30 minutes ago, the goals still show the counts from before the test data (for example <em>CAPEX Total Projects</em> 2): either wait, or open <strong>System Admin ▸ General Rules ▸ System Rules ▸ System Configurator</strong>, set that name's <strong>Configured Value</strong> to <code>60000</code>, save, and log in again</td>
+<td>The CAPEX goals show the same counts as the dashboard tiles (for example <em>CAPEX Total Projects</em> 14, <em>CAPEX Active Projects</em> 14), money in your login’s currency rounded to the unit (<em>CAPEX Approved Budget</em> 4,668 for the tile's 4,667.80). A goal that has a target shows its percentage of that target, not the count. The targets are the ones A2 installs, the plan of the system the dashboard was built on (<em>Actual Cost</em>, <em>Committed Cost</em>, <em>Invoiced</em>: USD 39,971,166.17; <em>Health Green</em>, <em>Schedule On Time</em>, <em>Budget Within</em>: 9 active projects). So on the test data <em>Actual Cost</em> reads <strong>0 %</strong> and <em>Health Green</em> <strong>55 %</strong> (5 of 9, on the day this guide was proven: the colours drift with the calendar), not the tiles' share; that is expected. Your own targets are set in the <strong>Performance Goal</strong> window (<em>Measure Target</em>)</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 </tbody>
@@ -5979,14 +5990,14 @@
 <td>A · Set up</td>
 <td>System Setup:</td>
 <td></td>
-<td>/ 17</td>
+<td>/ 17 (21 with A5)</td>
 <td></td>
 </tr>
 <tr>
 <td>B · BIM</td>
 <td>BIM:</td>
 <td></td>
-<td>/ 43 (29 if you were given the marked copies and skipped B00 and B0)</td>
+<td>/ 43 (29 if you were given the marked copies and skipped B00 and B0; +3 with L1–L3)</td>
 <td></td>
 </tr>
 <tr>
