@@ -5799,6 +5799,9 @@ is within the owner's GAP of the element (it touches what it hangs from). Share 
   `run_4d_gates.sh` was NOT run: its ratchets lock the old order and are not the judge (§Q.58.1 "do not re-lock gate numbers").
 - **NEXT, in order:** (1) the PRODUCT judge on the seven — `node scripts/product_judge.js run --root /tmp/wt-4d-method --tag method <seven>` then
   `compare main method`; with the GPU it is about ten minutes and needs the owner's go for a headless GPU run; `GPU=sw` works without the GPU but is slow
-  (SampleCastle 220 s). (2) Merge only on PASS; the Duplex cell above is the one expected to read WORSE and has to be settled first — do NOT loosen the
-  judge a third time for it. (3) Hospital's film from the judge's facts. (4) Delete what no longer decides anything (§Q.58 step 5, item 5 above).
+  (SampleCastle 220 s). (2) Merge only on PASS. The Duplex cell (early 2 → 4, CONFIRMED on the product, see below) reads WORSE and has to be settled
+  first — and not by loosening the judge a third time. MEASURED: of every `early` piece left on the branch (Duplex 4, SampleCastle 3) the elected support is
+  HIGHER than the piece and NOTHING touches the piece's underside; "the support is lower and not finished" is 0 (main's Duplex 2 were both of that kind and are
+  gone). So what method order does not yet say is ONE thing: a piece that HANGS (nothing under it, something touching above) goes in before its hanger. That
+  is the open design item — a method statement for hung work (it is second fix / close-up practice: hangers first), not another judge split. (3) Hospital's film from the judge's facts. (4) Delete what no longer decides anything (§Q.58 step 5, item 5 above).
   (5) Bars = step x floor in the Gantt (the envelope bar still holds four steps).
