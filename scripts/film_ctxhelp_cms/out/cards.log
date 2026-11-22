@@ -1,0 +1,11 @@
+§CARD beat=cover entries=1 overflow_px=0
+§CARD beat=before entries=35 overflow_px=0
+§CARD beat=tab entries=3 overflow_px=0
+§CARD beat=guide entries=2 overflow_px=0
+§CARD beat=ask entries=32 overflow_px=0
+§CARD beat=cli entries=48 overflow_px=0
+§CARD beat=langs entries=3 overflow_px=0
+§CARD beat=tenant entries=85 overflow_px=0
+§CARD beat=legacy entries=68 overflow_px=0
+§CARD beat=close entries=1 overflow_px=0
+§CARDS_DONE beats=10 stills=273 too_tall=0 key_cues=253 return_cues=5

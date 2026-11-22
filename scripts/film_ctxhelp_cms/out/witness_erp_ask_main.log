@@ -1,0 +1,48 @@
+  ✅ A3 verbs.json lists erp.ask as a read for human and ai, calling erp_cli ask  read human,ai
+§W-ERP-ASK A1 ok "How do I close a Sales Order?" -> window=143 action=CL lang=en_US by=LANG exit=0
+§W-ERP-ASK A1 ok "what does complete do on a sales order" -> window=143 action=CO lang=en_US by=LANG exit=0
+§W-ERP-ASK A1 ok "complete an invoice" -> window=167 action=CO lang=en_US by=LANG exit=0
+§W-ERP-ASK A1 ok "How can I void a payment?" -> window=195 action=VO lang=en_US by=LANG exit=0
+§W-ERP-ASK A1 ok "how to record a customer payment" -> window=195 action=null lang=en_US by=LANG exit=0
+§W-ERP-ASK A1 ok "How do I create a shipment?" -> window=169 action=null lang=en_US by=LANG exit=0
+§W-ERP-ASK A1 ok "reactivate a sales order" -> window=143 action=RE lang=en_US by=LANG exit=0
+§W-ERP-ASK A1 ok "Re-activate a Sales Order" -> window=143 action=RE lang=en_US by=LANG exit=0
+§W-ERP-ASK A1 envelope sample: {"request":"d-mwrisj74-746909-1","verb":"erp.ask","actor":"human","status":"ok","answer":{"question":"How do I close a Sales Order?","lang":"en_US","langBy":"LANG","howtoLang":"en_US","window":{"id":143,"name":"Sales Order"},"process":{"id":193,"name":"Generate PO from Sales Order","report":false},"
+  ✅ A1 the English set through the door finds the window and the action (= the page S3)  8/8
+§W-ERP-ASK A2 ok "如何关闭销售订单？" -> window=143 "销售订单" action=CL "结束" howto="1 · 销售订单" howtoLang=zh_CN
+§W-ERP-ASK A2 ok "怎样结束销售订单？" -> window=143 "销售订单" action=CL "结束" howto="1 · 销售订单" howtoLang=zh_CN
+§W-ERP-ASK A2 ok "怎样完成一张发票？" -> window=167 "发票(客户/公司)" action=CO "完成" howto="3 · 客户发票 → 应收" howtoLang=zh_CN
+§W-ERP-ASK A2 ok "如何重新激活销售订单？" -> window=143 "销售订单" action=RE "重新激活" howto="1 · 销售订单" howtoLang=zh_CN
+§W-ERP-ASK A2 ok "怎么记录客户付款？" -> window=195 "付款" action=null null howto="4 · 收款与分配" howtoLang=zh_CN
+§W-ERP-ASK A2 ok "如何创建出货单？" -> window=169 "物料出货(客户/公司)" action=null null howto="2 · 出货" howtoLang=zh_CN
+§W-ERP-ASK A2 ok "How do I close a Sales Order?" -> window=143 "销售订单" action=CL "结束" howto="1 · 销售订单" howtoLang=zh_CN
+  ✅ A2 the Chinese set (lang=zh_CN) finds the window and the action, answered in zh_CN  7/7
+§W-ERP-ASK A2de ok "Wie kann ich einen Auftrag schließen?" -> window=143 "Auftrag" action=CL "Schließen" howto="1 · Auftrag" howtoLang=de_DE
+§W-ERP-ASK A2de ok "Wie kann ich eine Rechnung fertigstellen?" -> window=167 "Rechnung (Kunde)" action=CO "Fertigstellen" howto="3 · Kundenrechnung → Forderungen" howtoLang=de_DE
+§W-ERP-ASK A2de ok "Auftrag reaktivieren" -> window=143 "Auftrag" action=RE "Reaktivieren" howto="1 · Auftrag" howtoLang=de_DE
+§W-ERP-ASK A2de ok "Wie erfasse ich eine Zahlung?" -> window=195 "Zahlung" action=null null howto="4 · Zahlungseingang und Zuordnung" howtoLang=de_DE
+§W-ERP-ASK A2de ok "How do I close a Sales Order?" -> window=143 "Auftrag" action=CL "Schließen" howto="1 · Auftrag" howtoLang=de_DE
+  ✅ A2de the German set (lang=de_DE) finds the window and the action, with the de_DE how-to  5/5
+§W-ERP-ASK L LANG=zh_CN.UTF-8 -> zh_CN/LANG · lang=de_DE with LANG=zh_CN -> de_DE/flag · LANG=C -> en_US/default
+  ✅ L the terminal LANG decides when nothing else is stated  zh_CN/LANG
+  ✅ L lang= overrides LANG  de_DE/flag
+  ✅ L no LANG: the system client, else the session client, else en_US (the seed has no client 0 row)  en_US/default
+  ✅ L a stated user's saved Language comes before LANG; without a user it is not read  [{"lang":"ja_JP","by":"preference"},{"lang":"zh_CN","by":"LANG"}]
+§W-ERP-ASK A4 zh summary: "窗口: 销售订单\n进程: 由费用产生销售订单\n文档动作: 结束 — Finally close this transaction. It cannot be re-activated.\n  单据处于以下状态时可用: 完成, 等候付款\nCLI: erp.close kind=Order number=<Document " · en summary: "Window: Sales Order\nProcess: Generate PO from Sales Order\nAction: Close — Finall"
+  ✅ A4 the zh_CN card: dictionary labels + the Chinese how-to, marked as translated  窗口: 销售订单
+  ✅ A4 the English card is English  Window: Sales Order
+  ✅ A3 an AI caller gets the answer (a read needs no confirmation)  exit=0 status=ok
+§W-ERP-ASK P1 role=102 door processes=137 oracle=137
+  ✅ P1 the door's process set for role 102 = the menu's P/R leaves the role may run (independent SQL)  137 vs 137
+§W-ERP-ASK P2 ok "Vendor Selection" want=115 got=115 row at line 1 window=206
+§W-ERP-ASK P2 ok "Generate Shipments" want=118 got=118 row at line 0 window=none
+§W-ERP-ASK P2 ok "Generate Invoices" want=119 got=119 row at line 1 window=107
+§W-ERP-ASK P2 ok "Open Orders" want=121 got=121 row at line 1 window=228
+§W-ERP-ASK P2 ok "Product Transaction Summary" want=124 got=124 row at line 1 window=140
+  ✅ P2 a process name on the role's menu is answered with that process, through the real door line  5/5
+  ✅ P2 the summary has the Process/Report row right after the Window row (first when no window), as the page  5/5
+§W-ERP-ASK P3 "Create Periods " (off the menu, id 100) -> process=335
+§W-ERP-ASK P3 "Renumber" (off the menu, id 101) -> process=null
+§W-ERP-ASK P3 "Create Price List " (off the menu, id 103) -> process=null
+  ✅ P3 a process off the role's menu is never named  0 stray of 3
+§WITNESS_ERP_ASK pass=15 fail=0 inconclusive=0 verdict=PASS

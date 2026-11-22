@@ -1,0 +1,733 @@
+{
+ "made": "2026-11-22T07:25:38.242Z",
+ "tree": "eb389e01",
+ "shots": {
+  "home": {
+   "file": "pages/home.png",
+   "rects": {
+    "panel": {
+     "x": 1560,
+     "y": 69,
+     "w": 360,
+     "h": 1011
+    },
+    "howtoTitle": {
+     "x": 1562,
+     "y": 193,
+     "w": 359,
+     "h": 47
+    },
+    "ctx": {
+     "x": 1577,
+     "y": 296,
+     "w": 329,
+     "h": 169
+    },
+    "card": null,
+    "content": {
+     "x": 506,
+     "y": 120,
+     "w": 1054,
+     "h": 921
+    },
+    "sep": null,
+    "more": null
+   },
+   "line": "§HELP_CTX window=null type=H id=0 howto=200000 shown=msg lang=en_US",
+   "panel": {
+    "title": "Getting Started",
+    "ctx": "Welcome to iDempiere!\n\nStart exploring your workspace, managing data, and customizing your experience.\n\nNeed help? Check out our Getting Started Guide."
+   }
+  },
+  "ctxwin": {
+   "file": "pages/ctxwin.png",
+   "rects": {
+    "panel": {
+     "x": 1560,
+     "y": 69,
+     "w": 360,
+     "h": 1011
+    },
+    "howtoTitle": {
+     "x": 1562,
+     "y": 193,
+     "w": 359,
+     "h": 47
+    },
+    "ctx": {
+     "x": 1577,
+     "y": 296,
+     "w": 329,
+     "h": 119
+    },
+    "card": null,
+    "content": {
+     "x": 506,
+     "y": 246,
+     "w": 1054,
+     "h": 795
+    },
+    "sep": null,
+    "more": null
+   },
+   "records": 18,
+   "rows": 18,
+   "window": "§IDEMPIERE window=Context Help(200034) tabs=3 source=sqlite"
+  },
+  "so_header": {
+   "file": "pages/so_header.png",
+   "rects": {
+    "panel": {
+     "x": 1560,
+     "y": 69,
+     "w": 360,
+     "h": 1011
+    },
+    "howtoTitle": {
+     "x": 1562,
+     "y": 193,
+     "w": 359,
+     "h": 47
+    },
+    "ctx": {
+     "x": 1577,
+     "y": 296,
+     "w": 329,
+     "h": 1129
+    },
+    "card": null,
+    "content": {
+     "x": 506,
+     "y": 246,
+     "w": 1054,
+     "h": 795
+    },
+    "sep": {
+     "x": 1577,
+     "y": 503,
+     "w": 329,
+     "h": 2
+    },
+    "more": {
+     "x": 1577,
+     "y": 1339,
+     "w": 251,
+     "h": 26
+    }
+   },
+   "line": "§HELP_CTX window=143 type=T id=186 howto=1000000 shown=dict+msg lang=en_US",
+   "panel": {
+    "title": "How To",
+    "ctx": "Order\n\nOrder Header\n\nThe Order Header Tab defines the parameters of an Order. Changing the Organization, Business Partner, Warehouse, Date Promised, etc. changes these values on all the lines.\n\n1 · Sales Order\n\nOpen Sales Order from the menu (⌂ → Sales), create a line or two, and press the Process button (§6) → Complete. Completion is not just a status flip: completeIt fans out into the shipment and invoice that follow it, in the SAME signed op-group.\n\nStep 7 · Enter the order header\n\nOpen Sales Order (window 143) and click New record.\nBusiness Partner: e.g. Joe Block. Choosing it fills Invoice Partner and Price List automatically (CalloutOrder.bPartner, logged).\nTarget Document Type: Standard Order.\nClick Save.\n\nStep 9 · Complete the order\n\nGo back to the Order tab. Your order is still the selected record, so there is nothing to look up in the list.\nThe form shows the actions that are allowed now: Complete · Prepare · Void. Click Complete.\n\nThe status becomes Completed (CO). The change is stored as a signed entry, and the chain check passes (§CRUD process committed … to=CO verifyChain=ok). Reload the page and it is still CO.\n\nStep 9 · Complete the order …\n\ndocs/ERPUserGuide.md · 1 · Sales Order"
+   }
+  },
+  "so_line": {
+   "file": "pages/so_line.png",
+   "rects": {
+    "panel": {
+     "x": 1560,
+     "y": 69,
+     "w": 360,
+     "h": 1011
+    },
+    "howtoTitle": {
+     "x": 1562,
+     "y": 193,
+     "w": 359,
+     "h": 47
+    },
+    "ctx": {
+     "x": 1577,
+     "y": 296,
+     "w": 329,
+     "h": 706
+    },
+    "card": null,
+    "content": {
+     "x": 506,
+     "y": 246,
+     "w": 1054,
+     "h": 795
+    },
+    "sep": {
+     "x": 1577,
+     "y": 452,
+     "w": 329,
+     "h": 2
+    },
+    "more": null
+   },
+   "line": "§HELP_CTX window=143 type=T id=187 howto=1000015 shown=dict+msg lang=en_US",
+   "panel": {
+    "title": "How To",
+    "ctx": "Order Line\n\nOrder Line\n\nThe Order Line Tab defines the individual line items that comprise an Order.\n\nStep 8 · Add a line\nOpen the Order Line tab and click New record. You do not have to click Save on the header first: as in iDempiere, moving to another tab saves the record you were typing. If a required field is still empty, the header is not saved and you stay on it, with the field marked. The Order Line tab only ever lists the lines of the order you are on, including lines added during this session to other orders.\nProduct: e.g. Oak Tree. Choosing it fills the Price from the order's price list (61.75), the UOM (Each) and the Tax (Standard), as iDempiere does. Quantity: 2. Line Net Amount becomes 123.50.\nClick Save.\ndocs/ERP_FirstSetup.md · Step 8 · Add a line"
+   }
+  },
+  "so_tax": {
+   "file": "pages/so_tax.png",
+   "rects": {
+    "panel": {
+     "x": 1560,
+     "y": 69,
+     "w": 360,
+     "h": 1011
+    },
+    "howtoTitle": {
+     "x": 1562,
+     "y": 193,
+     "w": 359,
+     "h": 47
+    },
+    "ctx": {
+     "x": 1577,
+     "y": 296,
+     "w": 329,
+     "h": 144
+    },
+    "card": null,
+    "content": {
+     "x": 506,
+     "y": 246,
+     "w": 1054,
+     "h": 795
+    },
+    "sep": null,
+    "more": null
+   },
+   "line": "§HELP_CTX window=143 type=T id=236 howto=none shown=dict lang=en_US",
+   "panel": {
+    "title": "How To",
+    "ctx": "Order Tax\n\nOrder Tax\n\nThe Order Tax Tab displays the tax amount for an Order based on the lines entered."
+   }
+  },
+  "so_more": {
+   "file": "pages/so_more.png",
+   "rects": {
+    "panel": {
+     "x": 1560,
+     "y": 69,
+     "w": 360,
+     "h": 1011
+    },
+    "howtoTitle": {
+     "x": 1562,
+     "y": -161,
+     "w": 359,
+     "h": 47
+    },
+    "ctx": {
+     "x": 1577,
+     "y": -58,
+     "w": 329,
+     "h": 1129
+    },
+    "card": null,
+    "content": {
+     "x": 506,
+     "y": 246,
+     "w": 1054,
+     "h": 795
+    },
+    "sep": {
+     "x": 1577,
+     "y": 149,
+     "w": 329,
+     "h": 2
+    },
+    "more": {
+     "x": 1577,
+     "y": 985,
+     "w": 251,
+     "h": 26
+    }
+   },
+   "more": {
+    "text": "Step 9 · Complete the order …",
+    "href": "https://red1oon.github.io/BIMCompiler/ERP_FirstSetup/#step-9-complete-the-order"
+   }
+  },
+  "guide": {
+   "file": "pages/guide.png",
+   "rects": {}
+  },
+  "ask": {
+   "file": "pages/ask.png",
+   "rects": {
+    "panel": {
+     "x": 1560,
+     "y": 69,
+     "w": 360,
+     "h": 1011
+    },
+    "howtoTitle": {
+     "x": 1562,
+     "y": 193,
+     "w": 359,
+     "h": 47
+    },
+    "ctx": {
+     "x": 1577,
+     "y": 1520,
+     "w": 329,
+     "h": 1129
+    },
+    "card": {
+     "x": 1577,
+     "y": 296,
+     "w": 329,
+     "h": 1212
+    },
+    "content": {
+     "x": 506,
+     "y": 246,
+     "w": 1054,
+     "h": 795
+    },
+    "sep": {
+     "x": 1577,
+     "y": 1727,
+     "w": 329,
+     "h": 2
+    },
+    "more": {
+     "x": 1577,
+     "y": 2563,
+     "w": 251,
+     "h": 26
+    }
+   },
+   "q": "How do I close a Sales Order?",
+   "line": "§HELP_SEARCH ask=\"How do I close a Sales Order?\" lang=en_US window=143 action=CL process=193 cli=\"erp.close kind=Order number=<Document No>\" howto=1000000 matched=[\"action:close\",\"window:salesorder\"] hits=window/143,process/193,howto/1000014,action/CL,howto/1000000",
+   "card": "WindowSales Order New\nProcessGenerate PO from Sales Order\nActionClose — Finally close this transaction. It cannot be re-activated.\nAllowed when the document is: Completed, Waiting Payment\nCLIerp.close kind=Order number=<Document No>\nGuide1 · Sales Order\n\nOpen Sales Order from the menu (⌂ → Sales), create a line or two, and press the Process button (§6) → Complete. Completion is not just a status flip: completeIt fans out into the shipment and invoice that follow it, in the SAME signed op-group.\n\nStep 7 · Enter the order header\n\nOpen Sales Order (window 143) and click New record.\nBusiness Partner: e.g. Joe Block. Choosing it fills Invoice Partner and Price List automatically (CalloutOrder.bPartner, logged).\nTarget Document Type: Standard Order.\nClick Save.\n\nStep 9 · Complete the order\n\nGo back to the Order tab. Your order is still the selected record, so there is nothing to look up in the list.\nThe form shows the actions that are allowed now: Complete · Prepare · Void. Click Complete.\n\nThe status becomes Completed (CO). The change is stored as a signed entry, and the chain check passes (§CRUD process committed … to=CO verifyChain=ok). Reload the page and it is still CO.\n\nStep 9 · Complete the order …"
+  },
+  "lang_zh_CN": {
+   "file": "pages/lang_zh_CN.png",
+   "rects": {
+    "panel": {
+     "x": 1560,
+     "y": 69,
+     "w": 360,
+     "h": 1011
+    },
+    "howtoTitle": {
+     "x": 1562,
+     "y": -1210,
+     "w": 359,
+     "h": 48
+    },
+    "ctx": {
+     "x": 1577,
+     "y": 69,
+     "w": 329,
+     "h": 1289
+    },
+    "card": {
+     "x": 1577,
+     "y": -1105,
+     "w": 329,
+     "h": 1162
+    },
+    "content": {
+     "x": 393,
+     "y": 249,
+     "w": 1167,
+     "h": 792
+    },
+    "sep": {
+     "x": 1577,
+     "y": 200,
+     "w": 329,
+     "h": 2
+    },
+    "more": {
+     "x": 1577,
+     "y": 1247,
+     "w": 263,
+     "h": 26
+    }
+   },
+   "line": "§HELP_CTX window=143 type=T id=186 howto=1000000 shown=dict+msg lang=zh_CN",
+   "panel": {
+    "title": "How To",
+    "ctx": "订单\n\n订单\n\nThe Order Header Tab defines the parameters of an Order\n\n1 · 销售订单\n\n从菜单（⌂ → 销售）打开销售订单，建一两行，然后按处理按钮（§6）→ 完成。完成不只是改变状态：completeIt 会在同一个已签名的操作组里，接着生成后面的出货单和发票。\n\nStep 7 · Enter the order header\n\nOpen Sales Order (window 143) and click New record.\nBusiness Partner: e.g. Joe Block. Choosing it fills Invoice Partner and Price List automatically (CalloutOrder.bPartner, logged).\nTarget Document Type: Standard Order.\nClick Save.\n\nStep 9 · Complete the order\n\nGo back to the Order tab. Your order is still the selected record, so there is nothing to look up in the list.\nThe form shows the actions that are allowed now: Complete · Prepare · Void. Click Complete.\n\nThe status becomes Completed (CO). The change is stored as a signed entry, and the chain check passes (§CRUD process committed … to=CO verifyChain=ok). Reload the page and it is still CO.\n\nWhat Complete creates depends on the document type, exactly as in iDempiere. A Standard Order creates nothing else on Complete: its shipment and invoice come later (iDempiere's Generate Shipments / Generate Invoices). A POS Order, Warehouse Order or Credit Order creates its shipment on Complete, and a POS or Credit Order also its invoice.\n\nStep 9 · Complete the order …\n\n由构建会话翻译，未经母语者审校\ndocs/ERPUserGuide.md · 1 · Sales Order"
+   }
+  },
+  "lang_de_DE": {
+   "file": "pages/lang_de_DE.png",
+   "rects": {
+    "panel": {
+     "x": 1560,
+     "y": 69,
+     "w": 360,
+     "h": 1011
+    },
+    "howtoTitle": {
+     "x": 1562,
+     "y": -1259,
+     "w": 359,
+     "h": 47
+    },
+    "ctx": {
+     "x": 1577,
+     "y": 68,
+     "w": 329,
+     "h": 1255
+    },
+    "card": {
+     "x": 1577,
+     "y": -1156,
+     "w": 329,
+     "h": 1212
+    },
+    "content": {
+     "x": 393,
+     "y": 246,
+     "w": 1167,
+     "h": 795
+    },
+    "sep": {
+     "x": 1577,
+     "y": 300,
+     "w": 329,
+     "h": 2
+    },
+    "more": {
+     "x": 1577,
+     "y": 1187,
+     "w": 251,
+     "h": 26
+    }
+   },
+   "line": "§HELP_CTX window=143 type=T id=186 howto=1000000 shown=dict+msg lang=de_DE",
+   "panel": {
+    "title": "How To",
+    "ctx": "Auftrag\n\nAuftragskopf\n\nIm Register \"Auftrag\" legen Sie die Parameter eines Auftrags fest. Ändern Sie Organisation, Geschäftspartner, Lager, zugesagten Liefertermin usw. verändern sich die Werte aller Positionen!\n\n1 · Auftrag\n\nÖffnen Sie Auftrag im Menü (⌂ → Vertrieb), legen Sie eine oder zwei Positionen an und drücken Sie die Schaltfläche Verarbeiten (§6) → Fertigstellen. Fertigstellen ist mehr als ein Statuswechsel: completeIt erzeugt die folgende Lieferung und Rechnung in DERSELBEN signierten Operationsgruppe.\n\nStep 7 · Enter the order header\n\nOpen Sales Order (window 143) and click New record.\nBusiness Partner: e.g. Joe Block. Choosing it fills Invoice Partner and Price List automatically (CalloutOrder.bPartner, logged).\nTarget Document Type: Standard Order.\nClick Save.\n\nStep 9 · Complete the order\n\nGo back to the Order tab. Your order is still the selected record, so there is nothing to look up in the list.\nThe form shows the actions that are allowed now: Complete · Prepare · Void. Click Complete.\n\nThe status becomes Completed (CO). The change is stored as a signed entry, and the chain check passes (§CRUD process committed … to=CO verifyChain=ok). Reload the page and it is still CO.\n\nStep 9 · Complete the order …\n\nVon der Build-Sitzung übersetzt, nicht von Muttersprachlern geprüft\ndocs/ERPUserGuide.md · 1 · Sales Order"
+   }
+  },
+  "lang_es_ES": {
+   "file": "pages/lang_es_ES.png",
+   "rects": {
+    "panel": {
+     "x": 1560,
+     "y": 69,
+     "w": 360,
+     "h": 1011
+    },
+    "howtoTitle": {
+     "x": 1562,
+     "y": -1259,
+     "w": 359,
+     "h": 47
+    },
+    "ctx": {
+     "x": 1577,
+     "y": 68,
+     "w": 329,
+     "h": 1113
+    },
+    "card": {
+     "x": 1577,
+     "y": -1156,
+     "w": 329,
+     "h": 1212
+    },
+    "content": {
+     "x": 393,
+     "y": 246,
+     "w": 1167,
+     "h": 795
+    },
+    "sep": {
+     "x": 1577,
+     "y": 224,
+     "w": 329,
+     "h": 2
+    },
+    "more": {
+     "x": 1577,
+     "y": 1095,
+     "w": 251,
+     "h": 26
+    }
+   },
+   "line": "§HELP_CTX window=143 type=T id=186 howto=1000000 shown=dict+msg lang=en_US",
+   "panel": {
+    "title": "Cómo hacer",
+    "ctx": "Orden\n\nEncabezamiento de la Orden\n\nLa pestaña del encabezamiento de la orden define los parámetros de una orden.\n\n1 · Sales Order\n\n(English)\n\nOpen Sales Order from the menu (⌂ → Sales), create a line or two, and press the Process button (§6) → Complete. Completion is not just a status flip: completeIt fans out into the shipment and invoice that follow it, in the SAME signed op-group.\n\nStep 7 · Enter the order header\n\nOpen Sales Order (window 143) and click New record.\nBusiness Partner: e.g. Joe Block. Choosing it fills Invoice Partner and Price List automatically (CalloutOrder.bPartner, logged).\nTarget Document Type: Standard Order.\nClick Save.\n\nStep 9 · Complete the order\n\nGo back to the Order tab. Your order is still the selected record, so there is nothing to look up in the list.\nThe form shows the actions that are allowed now: Complete · Prepare · Void. Click Complete.\n\nThe status becomes Completed (CO). The change is stored as a signed entry, and the chain check passes (§CRUD process committed … to=CO verifyChain=ok). Reload the page and it is still CO.\n\nStep 9 · Complete the order …\n\ndocs/ERPUserGuide.md · 1 · Sales Order"
+   }
+  },
+  "tenant_typed": {
+   "file": "pages/tenant_typed.png",
+   "rects": {
+    "panel": {
+     "x": 1560,
+     "y": 69,
+     "w": 360,
+     "h": 1011
+    },
+    "howtoTitle": {
+     "x": 1562,
+     "y": -384,
+     "w": 359,
+     "h": 47
+    },
+    "ctx": {
+     "x": 1577,
+     "y": 944,
+     "w": 329,
+     "h": 119
+    },
+    "card": {
+     "x": 1577,
+     "y": -281,
+     "w": 329,
+     "h": 1212
+    },
+    "content": {
+     "x": 506,
+     "y": 246,
+     "w": 1054,
+     "h": 795
+    },
+    "sep": null,
+    "more": null
+   }
+  },
+  "tenant_shown": {
+   "file": "pages/tenant_shown.png",
+   "rects": {
+    "panel": {
+     "x": 1560,
+     "y": 69,
+     "w": 360,
+     "h": 1011
+    },
+    "howtoTitle": {
+     "x": 1562,
+     "y": -644,
+     "w": 359,
+     "h": 47
+    },
+    "ctx": {
+     "x": 1577,
+     "y": 684,
+     "w": 329,
+     "h": 388
+    },
+    "card": {
+     "x": 1577,
+     "y": -540,
+     "w": 329,
+     "h": 1212
+    },
+    "content": {
+     "x": 506,
+     "y": 246,
+     "w": 1054,
+     "h": 795
+    },
+    "sep": {
+     "x": 1577,
+     "y": 890,
+     "w": 329,
+     "h": 2
+    },
+    "more": null
+   },
+   "line": "§HELP_CTX window=143 type=T id=186 howto=1000000 shown=dict+msg lang=en_US"
+  }
+ },
+ "lines": {
+  "index": "§HELP_SEARCH index lang=en_US windows=295 records=968 actions=13 statuses=12 howto=17 (en_US) phrases=722 vocab=0",
+  "home": "§HELP_CTX window=null type=H id=0 howto=200000 shown=msg lang=en_US",
+  "k6cut": "§CTXHELP_OVERLAY K6 tab 186 [UG1+FS7+FS9] cut at the limit: 1635 of max 2000 chars, the guide text starts it word for word, link to FS9 \"Step 9 · Complete the order\"",
+  "k10": "PASS K10 the How To panel follows the place in view: Home (help 200000, \"Getting Started\") true; en_US 89 of 89; de_DE 89 of 89 (tabs + processes; message 34, own dictionary text 138; F2 own text first 40 of 40)",
+  "k11": "PASS K11 every context-help message fits the column: 18 of 18 messages <= 2000, 17 of 17 translations <= 2000",
+  "legacyL1": "PASS L1 legacy's lookup finds our help on 20 of 20 targets, each message = the site's own tab / process text + <hr> + the twin's message (whole blocks, 2 ending in the guide link)",
+  "legacyL3": "PASS L3 a second apply changes nothing: 84 of 84 statements report 0 rows, sequences [1000021,1000021] -> [1000021,1000021]",
+  "legacyL5": "PASS L5 a tab that already has a site help keeps it: tab 187 help 200000 -> 200000"
+ },
+ "home": {
+  "title": "Getting Started",
+  "ctx": "Welcome to iDempiere!\n\nStart exploring your workspace, managing data, and customizing your experience.\n\nNeed help? Check out our Getting Started Guide."
+ },
+ "ctxwin": {
+  "records": 18,
+  "rows": 18,
+  "window": "§IDEMPIERE window=Context Help(200034) tabs=3 source=sqlite"
+ },
+ "so": {
+  "line": "§HELP_CTX window=143 type=T id=186 howto=1000000 shown=dict+msg lang=en_US",
+  "panel": {
+   "title": "How To",
+   "ctx": "Order\n\nOrder Header\n\nThe Order Header Tab defines the parameters of an Order. Changing the Organization, Business Partner, Warehouse, Date Promised, etc. changes these values on all the lines.\n\n1 · Sales Order\n\nOpen Sales Order from the menu (⌂ → Sales), create a line or two, and press the Process button (§6) → Complete. Completion is not just a status flip: completeIt fans out into the shipment and invoice that follow it, in the SAME signed op-group.\n\nStep 7 · Enter the order header\n\nOpen Sales Order (window 143) and click New record.\nBusiness Partner: e.g. Joe Block. Choosing it fills Invoice Partner and Price List automatically (CalloutOrder.bPartner, logged).\nTarget Document Type: Standard Order.\nClick Save.\n\nStep 9 · Complete the order\n\nGo back to the Order tab. Your order is still the selected record, so there is nothing to look up in the list.\nThe form shows the actions that are allowed now: Complete · Prepare · Void. Click Complete.\n\nThe status becomes Completed (CO). The change is stored as a signed entry, and the chain check passes (§CRUD process committed … to=CO verifyChain=ok). Reload the page and it is still CO.\n\nStep 9 · Complete the order …\n\ndocs/ERPUserGuide.md · 1 · Sales Order"
+  }
+ },
+ "line": {
+  "line": "§HELP_CTX window=143 type=T id=187 howto=1000015 shown=dict+msg lang=en_US",
+  "panel": {
+   "title": "How To",
+   "ctx": "Order Line\n\nOrder Line\n\nThe Order Line Tab defines the individual line items that comprise an Order.\n\nStep 8 · Add a line\nOpen the Order Line tab and click New record. You do not have to click Save on the header first: as in iDempiere, moving to another tab saves the record you were typing. If a required field is still empty, the header is not saved and you stay on it, with the field marked. The Order Line tab only ever lists the lines of the order you are on, including lines added during this session to other orders.\nProduct: e.g. Oak Tree. Choosing it fills the Price from the order's price list (61.75), the UOM (Each) and the Tax (Standard), as iDempiere does. Quantity: 2. Line Net Amount becomes 123.50.\nClick Save.\ndocs/ERP_FirstSetup.md · Step 8 · Add a line"
+  }
+ },
+ "tax": {
+  "line": "§HELP_CTX window=143 type=T id=236 howto=none shown=dict lang=en_US",
+  "panel": {
+   "title": "How To",
+   "ctx": "Order Tax\n\nOrder Tax\n\nThe Order Tax Tab displays the tax amount for an Order based on the lines entered."
+  }
+ },
+ "more": {
+  "text": "Step 9 · Complete the order …",
+  "href": "https://red1oon.github.io/BIMCompiler/ERP_FirstSetup/#step-9-complete-the-order"
+ },
+ "guide": {
+  "title": "Kernel-ERP — Your First Setup - BIM Intent Compiler",
+  "heading": "Step 9 · Complete the order",
+  "url": "https://red1oon.github.io/BIMCompiler/ERP_FirstSetup/#step-9-complete-the-order"
+ },
+ "ask": {
+  "q": "How do I close a Sales Order?",
+  "line": "§HELP_SEARCH ask=\"How do I close a Sales Order?\" lang=en_US window=143 action=CL process=193 cli=\"erp.close kind=Order number=<Document No>\" howto=1000000 matched=[\"action:close\",\"window:salesorder\"] hits=window/143,process/193,howto/1000014,action/CL,howto/1000000",
+  "card": "WindowSales Order New\nProcessGenerate PO from Sales Order\nActionClose — Finally close this transaction. It cannot be re-activated.\nAllowed when the document is: Completed, Waiting Payment\nCLIerp.close kind=Order number=<Document No>\nGuide1 · Sales Order\n\nOpen Sales Order from the menu (⌂ → Sales), create a line or two, and press the Process button (§6) → Complete. Completion is not just a status flip: completeIt fans out into the shipment and invoice that follow it, in the SAME signed op-group.\n\nStep 7 · Enter the order header\n\nOpen Sales Order (window 143) and click New record.\nBusiness Partner: e.g. Joe Block. Choosing it fills Invoice Partner and Price List automatically (CalloutOrder.bPartner, logged).\nTarget Document Type: Standard Order.\nClick Save.\n\nStep 9 · Complete the order\n\nGo back to the Order tab. Your order is still the selected record, so there is nothing to look up in the list.\nThe form shows the actions that are allowed now: Complete · Prepare · Void. Click Complete.\n\nThe status becomes Completed (CO). The change is stored as a signed entry, and the chain check passes (§CRUD process committed … to=CO verifyChain=ok). Reload the page and it is still CO.\n\nStep 9 · Complete the order …"
+ },
+ "langs": {
+  "zh_CN": {
+   "line": "§HELP_CTX window=143 type=T id=186 howto=1000000 shown=dict+msg lang=zh_CN",
+   "panel": {
+    "title": "How To",
+    "ctx": "订单\n\n订单\n\nThe Order Header Tab defines the parameters of an Order\n\n1 · 销售订单\n\n从菜单（⌂ → 销售）打开销售订单，建一两行，然后按处理按钮（§6）→ 完成。完成不只是改变状态：completeIt 会在同一个已签名的操作组里，接着生成后面的出货单和发票。\n\nStep 7 · Enter the order header\n\nOpen Sales Order (window 143) and click New record.\nBusiness Partner: e.g. Joe Block. Choosing it fills Invoice Partner and Price List automatically (CalloutOrder.bPartner, logged).\nTarget Document Type: Standard Order.\nClick Save.\n\nStep 9 · Complete the order\n\nGo back to the Order tab. Your order is still the selected record, so there is nothing to look up in the list.\nThe form shows the actions that are allowed now: Complete · Prepare · Void. Click Complete.\n\nThe status becomes Completed (CO). The change is stored as a signed entry, and the chain check passes (§CRUD process committed … to=CO verifyChain=ok). Reload the page and it is still CO.\n\nWhat Complete creates depends on the document type, exactly as in iDempiere. A Standard Order creates nothing else on Complete: its shipment and invoice come later (iDempiere's Generate Shipments / Generate Invoices). A POS Order, Warehouse Order or Credit Order creates its shipment on Complete, and a POS or Credit Order also its invoice.\n\nStep 9 · Complete the order …\n\n由构建会话翻译，未经母语者审校\ndocs/ERPUserGuide.md · 1 · Sales Order"
+   }
+  },
+  "de_DE": {
+   "line": "§HELP_CTX window=143 type=T id=186 howto=1000000 shown=dict+msg lang=de_DE",
+   "panel": {
+    "title": "How To",
+    "ctx": "Auftrag\n\nAuftragskopf\n\nIm Register \"Auftrag\" legen Sie die Parameter eines Auftrags fest. Ändern Sie Organisation, Geschäftspartner, Lager, zugesagten Liefertermin usw. verändern sich die Werte aller Positionen!\n\n1 · Auftrag\n\nÖffnen Sie Auftrag im Menü (⌂ → Vertrieb), legen Sie eine oder zwei Positionen an und drücken Sie die Schaltfläche Verarbeiten (§6) → Fertigstellen. Fertigstellen ist mehr als ein Statuswechsel: completeIt erzeugt die folgende Lieferung und Rechnung in DERSELBEN signierten Operationsgruppe.\n\nStep 7 · Enter the order header\n\nOpen Sales Order (window 143) and click New record.\nBusiness Partner: e.g. Joe Block. Choosing it fills Invoice Partner and Price List automatically (CalloutOrder.bPartner, logged).\nTarget Document Type: Standard Order.\nClick Save.\n\nStep 9 · Complete the order\n\nGo back to the Order tab. Your order is still the selected record, so there is nothing to look up in the list.\nThe form shows the actions that are allowed now: Complete · Prepare · Void. Click Complete.\n\nThe status becomes Completed (CO). The change is stored as a signed entry, and the chain check passes (§CRUD process committed … to=CO verifyChain=ok). Reload the page and it is still CO.\n\nStep 9 · Complete the order …\n\nVon der Build-Sitzung übersetzt, nicht von Muttersprachlern geprüft\ndocs/ERPUserGuide.md · 1 · Sales Order"
+   }
+  },
+  "es_ES": {
+   "line": "§HELP_CTX window=143 type=T id=186 howto=1000000 shown=dict+msg lang=en_US",
+   "panel": {
+    "title": "Cómo hacer",
+    "ctx": "Orden\n\nEncabezamiento de la Orden\n\nLa pestaña del encabezamiento de la orden define los parámetros de una orden.\n\n1 · Sales Order\n\n(English)\n\nOpen Sales Order from the menu (⌂ → Sales), create a line or two, and press the Process button (§6) → Complete. Completion is not just a status flip: completeIt fans out into the shipment and invoice that follow it, in the SAME signed op-group.\n\nStep 7 · Enter the order header\n\nOpen Sales Order (window 143) and click New record.\nBusiness Partner: e.g. Joe Block. Choosing it fills Invoice Partner and Price List automatically (CalloutOrder.bPartner, logged).\nTarget Document Type: Standard Order.\nClick Save.\n\nStep 9 · Complete the order\n\nGo back to the Order tab. Your order is still the selected record, so there is nothing to look up in the list.\nThe form shows the actions that are allowed now: Complete · Prepare · Void. Click Complete.\n\nThe status becomes Completed (CO). The change is stored as a signed entry, and the chain check passes (§CRUD process committed … to=CO verifyChain=ok). Reload the page and it is still CO.\n\nStep 9 · Complete the order …\n\ndocs/ERPUserGuide.md · 1 · Sales Order"
+   }
+  }
+ },
+ "tenant": {
+  "title": "Our own Sales Order rule",
+  "body": "Ask the credit desk before you complete an order over the customer's credit limit.",
+  "save": "§CRUD validate key=ad_ctxhelpmsg verb=create ok",
+  "persist": "§CRUD-PERSIST key=ad_ctxhelpmsg id=null op=CRUD_CREATE cols=ad_client_id,ad_org_id,ad_ctxhelp_id,isactive,msgtext source=sidecar gid=d6518071-c5ea-4ae8-96dc-d2225989c51e ops=1 sealed=1 verifyChain=ok",
+  "rows": [
+   {
+    "c": 0,
+    "n": 1635
+   },
+   {
+    "c": 11,
+    "n": 137
+   }
+  ],
+  "line": "§HELP_CTX window=143 type=T id=186 howto=1000000 shown=dict+msg lang=en_US",
+  "panel": {
+   "title": "How To",
+   "ctx": "Order\n\nOrder Header\n\nThe Order Header Tab defines the parameters of an Order. Changing the Organization, Business Partner, Warehouse, Date Promised, etc. changes these values on all the lines.\n\nOur own Sales Order rule\n\nAsk the credit desk before you complete an order over the customer's credit limit.\n\ndocs/ERPUserGuide.md · Our own Sales Order rule"
+  }
+ },
+ "errors": [],
+ "cli": {
+  "line": "cd Order; ask \"How do I close a Sales Order?\"",
+  "arrow": "→ erp.ask question=\"How do I close a Sales Order?\"",
+  "status": "ok",
+  "window": {
+   "id": 143,
+   "name": "Sales Order"
+  },
+  "action": "CL",
+  "summary": "Window: Sales Order\nProcess: Generate PO from Sales Order\nAction: Close — Finally close this transaction. It cannot be re-activated.\n  Allowed when the document is: Completed, Waiting Payment\nCLI: erp.close kind=Order number=<Document No>\nGuide: 1 · Sales Order https://red1oon.github.io/BIMCompiler/ERPUserGuide/#1-sales-order\n\nOpen Sales Order from the menu (⌂ → Sales), create a line or two, and press the Process button (§6) → Complete. Completion is not just a status flip: completeIt fans out into the shipment and invoice that follow it, in the SAME signed op-group.Step 7 · Enter the order headerOpen Sales Order (window 143) and click New record.Business Partner: e.g. Joe Block. Choosing it fills Invoice Partner and Price List automatically (CalloutOrder.bPartner, logged).Target Document Type: Standard Order.Click Save.Step 9 · Complete the orderGo back to the Order tab. Your order is still the selected record, so there is nothing to look up in the list.The form shows the actions that are allowed now: Complete · Prepare · Void. Click Complete.The status becomes Completed (CO). The change is stored as a signed entry, and the chain check passes (§CRUD process committed … to=CO verifyChain=ok). Reload the page and it is still CO.Step 9 · Complete the order …",
+  "exit": 0
+ },
+ "legacy": {
+  "db": "idempiere_pilot",
+  "script": "legacy/local_sql/postgresql/202611161933_KernelERP_ContextHelp.sql",
+  "before": {
+   "helps": 1,
+   "msgs": 1,
+   "trl": 1,
+   "tabLinks": 0,
+   "procLinks": 0,
+   "seq": "AD_CtxHelp|1000000 AD_CtxHelpMsg|1000000"
+  },
+  "applied": {
+   "helps": 22,
+   "msgs": 22,
+   "trl": 22,
+   "tabLinks": 17,
+   "procLinks": 4,
+   "seq": "AD_CtxHelp|1000021 AD_CtxHelpMsg|1000021"
+  },
+  "lookup186": {
+   "uu": "2296041b-0c8b-550a-abab-7b73e9c6df3b",
+   "len": 1875,
+   "ours": true
+  },
+  "order": {
+   "id": 1011162,
+   "no": "82161"
+  },
+  "zk": {
+   "panel": "Order Reference\n\nTransaction Reference Number (Sales Order, Purchase Order) of your Business Partner\n\nThe business partner order reference is the order reference for this specific transaction; Often Purchase Order numbers are given to print on Invoices for easier reference. A standard number can be defined in the Business Partner (Customer) window.\n---\nOrder\n\nOrder Header\n\nThe Order Header Tab defines the parameters of an Order. Changing the Organization, Business Partner, Warehouse, Date Promised, etc. changes these values on all the lines.\n\n1 · Sales Order\n\nOpen Sales Order from the menu (⌂ → Sales), create a line or two, and press the Process button (§6) → Complete. Completion is not just a status flip: completeIt fans out into the shipment and invoice that follow it, in the SAME signed op-group.\n\nStep 7 · Enter the order header\n\nOpen Sales Order (window 143) and click New record.\nBusiness Partner: e.g. Joe Block. Choosing it fills Invoice Partner and Price List automatically (CalloutOrder.bPartner, logged).\nTarget Document Type: Standard Order.\nClick Save.\n\nStep 9 · Complete the order\n\nGo back to the Order tab. Your order is still the selected record, so there is nothing to look up in the list.\nThe form shows the actions that are allowed now: Complete · Prepare · Void. Click Complete.\n\nThe status becomes Completed (CO). The change is stored as a signed entry, and the chain check passes (§CRUD process committed … to=CO verifyChain=ok). Reload the page and it is still CO.\n\n",
+   "hasOwn": true,
+   "hasOurs": true,
+   "title": "iDempiere",
+   "rect": {
+    "x": 1626,
+    "y": 559,
+    "w": 276,
+    "h": 1676
+   }
+  },
+  "after": {
+   "helps": 1,
+   "msgs": 1,
+   "trl": 1,
+   "tabLinks": 0,
+   "procLinks": 0,
+   "seq": "AD_CtxHelp|1000000 AD_CtxHelpMsg|1000000",
+   "ours": 0
+  },
+  "back": true
+ },
+ "verdicts": {
+  "overlay": "W-CTXHELP-OVERLAY pass=9 fail=0 inconclusive=0 verdict=PASS",
+  "legacy": "W-CTXHELP-LEGACY pass=6 fail=0 inconclusive=0 verdict=PASS",
+  "erpAsk": "W-ERP-ASK pass=15 fail=0 inconclusive=0 verdict=PASS"
+ },
+ "credentials": {
+  "licence": "MIT License",
+  "repo": "github.com/red1oon/bim-ootb",
+  "prs": [
+   {
+    "n": 3380,
+    "state": "MERGED"
+   },
+   {
+    "n": 3384,
+    "state": "MERGED"
+   },
+   {
+    "n": 3387,
+    "state": "MERGED"
+   },
+   {
+    "n": 3388,
+    "state": "MERGED"
+   },
+   {
+    "n": 3374,
+    "state": "MERGED"
+   }
+  ]
+ }
+}

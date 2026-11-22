@@ -1,0 +1,81 @@
+§CTXHELP_OVERLAY seed + patches/ad_seed.db.sql statements ok=3834 failed=3 break=none
+§CTXHELP_OVERLAY before the overlay: tables present 2 of 6 (ad_task,ad_task_access)
+§CTXHELP_OVERLAY first §CTXHELP_OVERLAY ensure tables=4/4 rows=3/3 app=71/71 skipped=0 ms=8 (legacy context help tables; boot overlay, outside the team base hash)
+§CTXHELP_OVERLAY K1 ad_ctxhelp columns=19 legacy=19 rows twin=18 legacy=1
+§CTXHELP_OVERLAY K1 ad_ctxhelpmsg columns=12 legacy=12 rows twin=18 legacy=1
+§CTXHELP_OVERLAY K1 ad_ctxhelpmsg_trl columns=12 legacy=12 rows twin=17 legacy=1
+§CTXHELP_OVERLAY K1 ad_ctxhelpsuggestion columns=21 legacy=21 rows twin=0 legacy=0
+§CTXHELP_OVERLAY K1 ad_task columns=17 legacy=17 rows twin=3 legacy=3
+§CTXHELP_OVERLAY K1 ad_task_access columns=11 legacy=11 rows twin=3 legacy=3
+§CTXHELP_OVERLAY K1 legacy rows equal 3 of 3; twin-only rows 50, client 0 50
+§CTXHELP_OVERLAY K1 link column ad_ctxhelp_id: legacy tables 6, in the seed 6, carry it 6 ( missing)
+  PASS K1 the overlay is legacy's + the app's: columns 6 of 6, row counts (legacy + app) 6 of 6, legacy rows equal 3 of 3, twin-only rows client 0 50 of 50, link column 6 of 6
+§CTXHELP_OVERLAY second §CTXHELP_OVERLAY ensure tables=0/4 rows=0/3 app=0/71 skipped=0 ms=7 (legacy context help tables; boot overlay, outside the team base hash)
+§CTXHELP_OVERLAY K2 edited app message 1000000 kept after the second ensure: true
+  PASS K2 a second ensure adds nothing: rows=0 tables=0, key repeats in 0 of 4 tables (first run added rows=3 app=71)
+§CTXHELP_OVERLAY K6 tab 186 [UG1+FS7+FS9] cut at the limit: 1635 of max 2000 chars, the guide text starts it word for word, link to FS9 "Step 9 · Complete the order"
+§CTXHELP_OVERLAY K6 tab 186 [UG1+FS7+FS9] -> help 1000000 ctxtype=T text DIFFERS 943 chars "1 · Sales Order Open Sales Order from the menu (⌂ "
+§CTXHELP_OVERLAY K6 tab 257 [UG2] -> help 1000001 ctxtype=T text == guides 335 chars "2 · Shipment The Shipment (M_InOut) that Complete "
+§CTXHELP_OVERLAY K6 tab 263 [UG3] -> help 1000002 ctxtype=T text == guides 364 chars "3 · Customer Invoice → AR The Invoice the same Com"
+§CTXHELP_OVERLAY K6 tab 330 [UG4] -> help 1000003 ctxtype=T text == guides 323 chars "4 · Receipt & Allocation Record the customer's Pay"
+§CTXHELP_OVERLAY K6 process 53267 [UG5] -> help 1000004 ctxtype=P text == guides 336 chars "5 · Replenishment The sale just dropped on-hand. R"
+§CTXHELP_OVERLAY K6 tab 294 [UG6+FSD] -> help 1000008 ctxtype=T text == guides 1311 chars "6 · Purchase Order → Receipt → Vendor Invoice → Ma"
+§CTXHELP_OVERLAY K6 tab 296 [UG6] -> help 1000005 ctxtype=T text == guides 925 chars "6 · Purchase Order → Receipt → Vendor Invoice → Ma"
+§CTXHELP_OVERLAY K6 tab 290 [UG6] -> help 1000005 ctxtype=T text == guides 925 chars "6 · Purchase Order → Receipt → Vendor Invoice → Ma"
+§CTXHELP_OVERLAY K6 tab 408 [UG6] -> help 1000005 ctxtype=T text == guides 925 chars "6 · Purchase Order → Receipt → Vendor Invoice → Ma"
+§CTXHELP_OVERLAY K6 tab 200007 [UG7] -> help 1000006 ctxtype=T text == guides 454 chars "7 · Final accounts Two more postings close the per"
+§CTXHELP_OVERLAY K6 tab 328 [UG7] -> help 1000006 ctxtype=T text == guides 454 chars "7 · Final accounts Two more postings close the per"
+§CTXHELP_OVERLAY K6 tab 372 [UG8] -> help 1000007 ctxtype=T text == guides 354 chars "8 · Financial reporting From here, everything is r"
+§CTXHELP_OVERLAY K6 process 310 [UG8+FS11] -> help 1000009 ctxtype=P text == guides 765 chars "8 · Financial reporting From here, everything is r"
+§CTXHELP_OVERLAY K6 process 53161 [FS3] cut at the limit: 1072 of max 2000 chars, the guide text starts it word for word, link to FS3 "Step 3 · Run Initial Tenant Setup"
+§CTXHELP_OVERLAY K6 process 53161 [FS3] -> help 1000010 ctxtype=P text DIFFERS 596 chars "Step 3 · Run Initial Tenant Setup In the menu on t"
+§CTXHELP_OVERLAY K6 tab 220 [FS4+FS5] -> help 1000011 ctxtype=T text == guides 714 chars "Step 4 · Create a customer Open Business Partner ("
+§CTXHELP_OVERLAY K6 tab 180 [FS6] -> help 1000012 ctxtype=T text == guides 519 chars "Step 6 · Products, prices, tax and payment terms W"
+§CTXHELP_OVERLAY K6 tab 177 [FS6] -> help 1000012 ctxtype=T text == guides 519 chars "Step 6 · Products, prices, tax and payment terms W"
+§CTXHELP_OVERLAY K6 tab 222 [FS6a] -> help 1000013 ctxtype=T text == guides 532 chars "Step 6a · Give your customer an address A sales or"
+§CTXHELP_OVERLAY K6 tab 191 [FS6b] -> help 1000014 ctxtype=T text == guides 575 chars "Step 6b · A first sales order in your own company "
+§CTXHELP_OVERLAY K6 tab 187 [FS8] -> help 1000015 ctxtype=T text == guides 625 chars "Step 8 · Add a line Open the Order Line tab and cl"
+§CTXHELP_OVERLAY K6 process 238 [FS11b] -> help 1000016 ctxtype=P text == guides 389 chars "Step 11b · Aging: who owes you, and since when Ope"
+§CTXHELP_OVERLAY K6 sections on every one of their targets: docs/ERPUserGuide.md 8 of 8, docs/ERP_FirstSetup.md 12 of 12
+  PASS K6 legacy's lookup finds the help of 21 of 21 targets (tabs + processes named by 20 sections of the two guides), its text == those sections' own text in source order 21 of 21 (2 cut at whole blocks at the 2000-char limit, ending in the guide link), CtxType right 21 of 21; sections whole on all their targets 20 of 20
+§CTXHELP_OVERLAY K11 limits MsgText 2000 / _Trl 2000; longest message 1750, longest translation 1966
+  PASS K11 every context-help message fits the column: 18 of 18 messages <= 2000, 17 of 17 translations <= 2000
+§CTXHELP_OVERLAY K7 fr_FR published 0, machine rows 0, reader rows 17
+§CTXHELP_OVERLAY K7 es_ES published 1, machine rows 0, reader rows 17
+§CTXHELP_OVERLAY K7 de_DE help 1000000 cut at the limit: 1678 of max 2000 chars, the full text starts it word for word: true, link "Step 9 · Complete the order"
+§CTXHELP_OVERLAY K7 de_DE published 1, machine rows 8, reader rows 17
+§CTXHELP_OVERLAY K7 ar published 0, machine rows 0, reader rows 17
+§CTXHELP_OVERLAY K7 zh_CN help 1000000 cut at the limit: 1868 of max 2000 chars, the full text starts it word for word: true, link "Step 9 · Complete the order"
+§CTXHELP_OVERLAY K7 zh_CN published 0, machine rows 4, reader rows 17
+§CTXHELP_OVERLAY K7 ja_JP published 0, machine rows 0, reader rows 17
+§CTXHELP_OVERLAY K7 ms_MY published 0, machine rows 0, reader rows 17
+§CTXHELP_OVERLAY K7 th_TH published 0, machine rows 0, reader rows 17
+§CTXHELP_OVERLAY K7 pt_BR published 0, machine rows 0, reader rows 17
+§CTXHELP_OVERLAY K7 id_ID published 0, machine rows 0, reader rows 17
+§CTXHELP_OVERLAY K7 ko_KR published 0, machine rows 0, reader rows 17
+  PASS K7 translations in legacy's table: published 2 of 2, helps with a machine section 14 of 14 (section by section, linked, IsTranslated N), machine rows in use 12 of 12, shadowed 0 | K8 the reader == the page DB's helps (title, html, language, windows incl. sub tabs, processes, guide URL) 187 of 187
+§CTXHELP_OVERLAY K5 team base this tree=be91a5c9f897 origin/main=be91a5c9f897
+  PASS K5 the Team BASE hash does not move (seed + hashed patches == origin/main's)
+§CTXHELP_OVERLAY page chromium 147.0.7727.15 §CTXHELP_OVERLAY ensure tables=4/4 rows=3/3 app=71/71 skipped=0 ms=12 (legacy context help tables; boot overlay, outside the team base hash)
+§CTXHELP_OVERLAY page §IDMP-SESSION scopeMenu visibleWindows=295/333 visibleProcs=137/159 visibleForms=21/24 visibleWorkflows=11/12 visibleInfos=3/4 visibleTasks=0/3 roots=15
+§CTXHELP_OVERLAY K3 find window open, Records = 18
+§CTXHELP_OVERLAY K3 grid rows on screen 18
+§CTXHELP_OVERLAY K3 §IDEMPIERE window=Context Help(200034) tabs=3 source=sqlite legacy names=["Home - Getting Started","1 · Sales Order + Step 7 · Enter the order header + Step 9 · Complete the order","2 · Shipment","3 · Customer Invoice → AR","4 · Receipt & Allocation","5 · Replenishment","6 · Purchase Order → Receipt → Vendor Invoice → Match","7 · Final accounts","8 · Financial reporting","6 · Purchase Order → Receipt → Vendor Invoice → Match + Part D — Your first purchase order (demo company)","8 · Financial reporting + Step 11 · Run the Trial Balance","Step 3 · Run Initial Tenant Setup","Step 4 · Create a customer + Step 5 · Create a vendor","Step 6 · Products, prices, tax and payment terms","Step 6a · Give your customer an address","Step 6b · A first sales order in your own company","Step 8 · Add a line","Step 11b · Aging: who owes you, and since when"]
+  PASS K3 the Context Help window opens on the twin, Find says Records = 18 (want 18), and shows legacy's + the app's 18 row(s): 18 of 18 names on screen
+§CTXHELP_OVERLAY K9 before the edit reader row "1 · Sales Order | <p>Open <b><a href="#" data-help-win="143">Sales Ord" panel "Order Order Header The Order Header Tab defines the parameters of an O" card how-to=1000000 "ok). Reload the page and it is still CO. Step 9 · Complete the order …"
+§CTXHELP_OVERLAY K9 save: §CRUD validate key=ad_ctxhelpmsg verb=create ok | §CRUD-PERSIST key=ad_ctxhelpmsg id=null op=CRUD_CREATE cols=ad_client_id,ad_org_id,ad_ctxhelp_id,isactive,msgtext source=sidecar gid=1bbdf566-4186-4e36-a69e-61094f07b53b ops=1 sealed=1 verifyChain=ok
+§CTXHELP_OVERLAY K9 rows of help 1000000 after the save: client 0 1635 chars, client 11 118 chars; System row unchanged=true
+§CTXHELP_OVERLAY K9 after the save, no reload reader row "Our own Sales Order rule | <p>Ask the credit desk before you complete " panel "Order Order Header The Order Header Tab defines the parameters of an O" card how-to=1000000 "r rule Ask the credit desk before you complete (W-CTXHELP-OVERLAY K9)."
+§CTXHELP_OVERLAY K9 after a reload reader row "Our own Sales Order rule | <p>Ask the credit desk before you complete " panel "Order Order Header The Order Header Tab defines the parameters of an O" card how-to=1000000 "r rule Ask the credit desk before you complete (W-CTXHELP-OVERLAY K9)."
+§CTXHELP_OVERLAY K9 rows after the reload: client 0 1635 chars, client 11 118 chars
+  PASS K9 a tenant's own message, typed in the Context Help window: (a) saved as client 11, signed, System's row untouched: true; (b) shown with no reload: reader true, panel true, answer card true; (c) after a reload: reader true, panel true, answer card true
+§CTXHELP_OVERLAY K10 oracle: windows with a linked tab 15 (107,123,139,140,143,146,167,169,181,183,184,194,195,216,200005), tabs 86, linked processes 4 (238,310,53161,53267), Home help 200000, de_DE AD_Tab_Trl translated rows 1121
+§CTXHELP_OVERLAY K10 home: §HELP_CTX window=null type=H id=0 howto=200000 shown=msg lang=en_US | title "Getting Started" panel "Welcome to iDempiere! Start exploring your workspa"
+§CTXHELP_OVERLAY K10 en_US process 53161 not on the role's menu (menu 53202), skipped
+§CTXHELP_OVERLAY K10 en_US 89 of 89 places right
+§CTXHELP_OVERLAY K10 §HELP_SEARCH index lang=de_DE windows=295 records=968 actions=13 statuses=12 howto=17 (de_DE) phrases=1023 vocab=0
+§CTXHELP_OVERLAY K10 de_DE process 53161 not on the role's menu (menu 53202), skipped
+§CTXHELP_OVERLAY K10 de_DE 89 of 89 places right
+§CTXHELP_OVERLAY K10 places judged: with a message 34, dictionary text 138; F2 own text before the message 40 of 40; linked tabs 17 (177,180,186,187,191,220,222,257,263,290,294,296,328,330,372,408,200007), shown with their message 17
+  PASS K10 the How To panel follows the place in view: Home (help 200000, "Getting Started") true; en_US 89 of 89; de_DE 89 of 89 (tabs + processes; message 34, own dictionary text 138; F2 own text first 40 of 40)
+§WITNESS_CTXHELP_OVERLAY pass=9 fail=0 inconclusive=0 verdict=PASS

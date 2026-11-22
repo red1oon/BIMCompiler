@@ -1,0 +1,18 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT before cue=8.38 room=14.36 dur=13.45 -> DETAIL slack=+0.91 words=36
+§NARR_TONE before#0 F WH rose=0st endDelta=-2.5st want=fall OK "What does legacy iDempiere ship in its Context Help?"
+§NARR_FIT tab cue=23.34 room=17.61 dur=16.70 -> DETAIL slack=+0.91 words=50
+§NARR_TONE tab#0 F WH rose=0st endDelta=-4.1st want=fall OK "What does the panel say?"
+§NARR_FIT guide cue=41.55 room=15.82 dur=14.93 -> DETAIL slack=+0.89 words=50
+§NARR_FIT ask cue=61.30 room=11.44 dur=10.56 -> DETAIL slack=+0.88 words=31
+§NARR_TONE ask#0 F YN rose=5.0st endDelta=+3.8st want=rise OK "Can I just ask?"
+§NARR_FIT cli cue=78.01 room=8.15 dur=7.23 -> DETAIL slack=+0.92 words=21
+§NARR_TONE cli#0 F YN rose=5.0st endDelta=+1.7st want=rise OK "And at the command line?"
+§NARR_FIT langs cue=86.76 room=17.98 dur=17.08 -> DETAIL slack=+0.90 words=42
+§NARR_TONE langs#0 F YN rose=5.0st endDelta=+3.8st want=rise OK "And in other languages?"
+§NARR_FIT tenant cue=113.09 room=9.94 dur=9.03 -> DETAIL slack=+0.91 words=26
+§NARR_TONE tenant#0 F YN rose=11.0st endDelta=+0.9st want=rise OK "Can a company write its own?"
+§NARR_FIT legacy cue=129.97 room=19.15 dur=18.24 -> DETAIL slack=+0.91 words=49
+§NARR_TONE legacy#0 F YN rose=5.0st endDelta=+7.5st want=rise OK "And in real iDempiere?"
