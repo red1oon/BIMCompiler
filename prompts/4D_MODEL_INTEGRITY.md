@@ -5884,9 +5884,27 @@ is within the owner's GAP of the element (it touches what it hangs from). Share 
   (3) no schedule rows are written into any export by this change.
 - **Stored schedules:** `_GANTT_CACHE_VERSION` 55 regenerates a generated schedule on first open unless it has a baseline or was imported (`activeSchedule`
   `safeToRegen`) — the rule of every earlier bump; bars dragged without a baseline are lost, as before.
-- **Merge:** bim-ootb PR #3389 (`feat/4d-method-location`, head `64edc423` after merging main), auto-merge (squash) enabled; local checks on the merged
+- **Merge: LANDED** — bim-ootb PR #3389 merged as `eb389e01` (CI green), Pages deploy success, live site fetched back: sw `v1785`, `_GANTT_CACHE_VERSION` 55, `methodRank` / `_methodLocationAxis` / `deck_over` present. (`feat/4d-method-location`, head `64edc423` after merging main); local checks on the merged
   branch: fast tier 40/40, Gantt-editor witnesses OCP 4 / UE 6 / RO 7 / GL 7 with 0 fail, sw audit 303 / 0 missing, manifest round trip PASS.
   **Verify it landed before any follow-up; a follow-up starts from fresh `origin/main`, never from this branch.**
 - **NEXT:** (1) delete what no longer decides order (`§SITE_ORDER` edges, hang filing, `§TPL_LAYER_ORDER` + its self-check, the election's role in the solve —
   §Q.58 step 5); (2) bars = step x floor (the envelope bar holds four steps); (3) `run_4d_gates.sh`: retire or re-point its ratchets at the product judge —
   they lock the old order and were not run; (4) offset blocks for the Shed (box 20) and any building served without one; (5) the house-style film for the seven.
+### Q.62 HOSPITAL BAKE ON THE NEW ORDER (2026-11-22, owner: *"tell me when it lands, then bake Hospital"*)
+- **What was baked:** `node cli_silent_bake.js --db HospitalAjaibPath --buildup --gpu real` from main `eb389e01` + the offsets patch below; 1,230 frames, 1280x720, 15 fps,
+  82.0 s, 28 MB, wall 2,506 s, `aborted=no fileOk=true`. `~/Videos/Hospital_method_order_bake.mp4` + `.log` (not pushed). The stored path's own settings have
+  build-up OFF (`§CLI_BAKE_BUILDUP_RESOLVED on=0 source=stored-path`): a first start was a fly-through of the finished building, stopped after 2 frames.
+- **The file with the camera path is NOT the judged Hospital.** `HospitalAjaibPath.db` (the bake tool's default) has no patch: no mesh-box offsets, no storey table,
+  no `rel_aggregates`, no declared types; `Hospital_meta.db` (judged, §Q.61) has no `cinema_path`. Offsets generated for it (42,755 of 63,182 pieces, max 31.13 m) —
+  bim-ootb PR #3390 `buildings/patches/HospitalAjaibPath.db.sql`. Versus the judged file's facts: same 63,182 pieces, 88 % on the same start day, 98 % within a day.
+- **Rate pack:** the bake's browser is `en_US` → `rsmeans2024_us` → 290 days; the judge pins `cidb2024_my` (273 days on this file). A bake is comparable only to an
+  expectation built with ITS pack: `RATES_PACK=rsmeans2024_us node scripts/cache_4d_run.js --force` gives 290, as the bake's `§AUTHOR_TPL totalDays=290`.
+- **CPU judge of this file with this pack (node copy on true mesh boxes):** onNothing 0 of 24,706 · beforeFloor 0 of 62,390 · beforeWall 0 of 562 · beforeFrame INCONCLUSIVE
+  (no assembly data) · box 0 · early 6 · nopath 34. Expected facts: `~/Videos/Hospital_bake_file_expected_elements.csv`.
+- **Bake log vs expectation:** (1) `§CPE_BUILDUP frame= cursor= placed=` at 22 frames: the placed count equals the number of pieces the expectation has started by that
+  cursor day within 4..509 pieces of 63,182 (0.8 % worst; the day origin was taken as the window's first day at midnight). End: 63,417 = 63,182 + the 233 parked containers
+  + 2. (2) the nine watched slabs (`§CPE_BUILDUP_PLACED`) are drawn in the expected order: Level 1, 2, 3, Unknown, 4, 5, 6, 7A, 7 at frames 12, 27, 63, 71, 279, 306, 441, 445, 453.
+  (3) the bake's own line `§SUPPORT_CHECK floating=14/63182`.
+- **⚠ FOUND IN THE BAKE, NOT DIAGNOSED:** two slabs are drawn, hidden again, and drawn again — Level 3 `0e8pm26Tv5vPrj6zU55MbT` placed @63, pending @114, placed @142; Unknown
+  `2wV7MXoU9CUuWvtMFXEk_5` placed @71, pending @101, placed @145. The film cursor stands at day 37.2 at frames 60 and 120 (placed 1,753 → 1,752) and dips under these slabs'
+  start days (36.5, 37.4) in between. That is the film's cursor mapping (cinema lane), not the schedule's order; whether it predates this change was not checked.
