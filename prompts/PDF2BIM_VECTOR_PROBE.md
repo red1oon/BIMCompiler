@@ -640,3 +640,42 @@ Before the publish every "builds" here used a local export of ebcea595bea6, and 
 **The row:** "Open 2D drawings from PDF drawing (.pdf)…", replacing "from PDF image": the owner's first label, changed on his go because "image" reads as "scan" and scans are refused.
 **Witness:** the same runs as §41; the 7 sheets change only on the `@ACCEPT` lines (W-T3-style diff, line count named); geometry hash unchanged; `witness_pdf2dxf_page` reads the new wording on screen.
 **§42 RESULT (2026-11-05):** the sheets changed on the 6 `@ACCEPT` lines only, geometry hash unchanged; every variant `fails 0`, ruler `fails 0`, second drawing `fails 0`; port 215/0, reader 28/0, page 25/0 three runs running. Live: PRs #2655, #2656, #2658. Also found while preparing the film and fixed: the Convert status said "Fills not placed: 2" with all 14 placed; a refusal showed an internal rule name; the IFC status said walls=0 on 13 walls. Details: bim-ootb §L39.
+
+## 43. SCANNED DRAWINGS: A RASTER + OCR PATH, FIRST CASE A GERMAN WERKPLAN (owner 2026-11-22: *"Yes we can raster/OCR as it will be minimal for users in Germany, either they spend on that or give us CAD."*; spec BEFORE code)
+**Ruling recorded:** the no-OCR ruling (§1, §7, §41) is lifted **for PDFs that hold only a scan**. A vector PDF still goes the vector path; OCR never overrides a text layer. The raster path is the fallback for users who cannot supply CAD; the user's alternative is always "give us the CAD export", and the refusal text says so.
+
+**The case, measured (2026-11-22; `pdfinfo`, `pdfimages -list`, `pdffonts`, `pdftocairo -svg`):** file DE-1 (private client set, held outside every repo; sha256 `8f779bdd14a6…`; never committed, never named in public text, outputs stay in the session scratchpad). 4 A3 pages, each ONE 2338 x 3306 RGB JPEG at 200 dpi; 0 fonts, 0 text, 1 path (the page clip). Today `dxf_import_ui.js:1143` refuses it ("scanned image"), as designed.
+- p1: a window sampling form (Bemusterung), handwritten: not a drawing; out of scope.
+- p2: 4 elevations (Ansicht Süd/Nord/Ost/West) + Schnitt A-A, B-B; p3: Erdgeschoss plan, rotated 90 deg inside the sheet; p4: Obergeschoss plan. Title block: Werkplan 1:50, printed reduced to A3 (so the printed scale is FALSE on this paper; scale must come from the drawing).
+- Client markups in BLUE ink over black-line drawings (window types, roller shutters). A "VORABZUG" stamp in grey.
+
+**Is it a standard? (my reading, to be witnessed, not recalled as fact):** German building-drawing conventions (DIN 1356-1 style): dimension chains in metres with a raised last digit (3.38⁵ = 3.385 m); openings labelled width over height (1.51 / 1.31); sill height tagged BRH; room stamp (name, m²); material-hatch legend; view/section labels. **No structural grid bubbles** — the TB-LKTN type anchors on grid A–E/1–5 (§17); this type must anchor on dimension chains instead.
+
+**THE KEY: a dimension chain is a CHECKSUM on OCR.** Each chain's segments sum to its overall (p4 top: 0.365+3.51+0.175+3.385+0.175+4.515+0.365 = 12.49, as read by eye from the 70 dpi view — to be confirmed by the probe). So an OCR number is never trusted alone: it is GREEN only when its chain closes (and, where a parallel chain spans the same extent, when both agree); otherwise YELLOW, never forced, never "corrected" to fit. This is the template-matcher (§12) for a scan: expected structure (chains that close) against what the reader makes out.
+
+**Method (deterministic around a fixed, local OCR engine):**
+1. **Route:** plan page has < PDF_MIN_PLAN_PATHS vector paths AND ≥1 page-size image → raster path (not refusal).
+2. **Ink separation by colour:** black/grey = drawing; blue = markup layer (kept as markup, never geometry); thresholds from the page's own hue histogram, logged.
+3. **Orientation + deskew:** from the long H/V line angle histogram (0/90/180/270 + small skew); p3's rotation is the test.
+4. **Lines:** run-length on rows/columns of the binarised page (orthogonal plans): H/V segments with thickness; thick-pair poché = wall candidates (thickness histogram, not a constant).
+5. **Text:** OCR runs LOCALLY ONLY (Tesseract CLI for the probe; tesseract.js vendored + lazy, like pdf.js, for the page). **No cloud OCR** (the January Google Vision route is not used: client drawings leave the machine only if the owner says so). Dimension text with a digit whitelist; the raised digit read as its own small box above-right.
+6. **Chains:** a dimension line = long H/V line with tick marks; numbers bound to the segment between ticks; checksum per chain; scale px/m fitted from closed chains only, X and Y separately, must agree.
+7. **Emit** the same STD-layer DXF sheets the vector path emits (`to_std`), so DXF2BIM / Convert is unchanged downstream.
+
+**Language/type:** a new editable type template `german_werkplan_efh.json` beside `low_cost_single_storey_unit.json` (§13 pattern): chain notation, W/H label form, BRH, room-stamp form, view words (Ansicht, Schnitt, Erdgeschoss, Obergeschoss, Speicher, Legende). Room names need German OCR data (`deu`), not installed today (`tesseract --list-langs`: eng, osd) — a fetch of public data, not client data.
+
+**Witness claims (each can say NO-OP / VACUOUS / WRONG):**
+| ID | Claim | Issue it exposes |
+|---|---|---|
+| W-S1 | DE-1 routes to raster, a vector PDF (TB-LKTN) still routes vector, byte-identical to today | the new route steals vector PDFs |
+| W-S2 | p3 orientation found = the one that makes its text upright; skew logged | rotated sheets read sideways |
+| W-S3 | blue ink pixels removed from drawing layer, count logged; 0 blue on TB-LKTN render (falsifier) | client markup read as walls/dims |
+| W-S4 | per chain: numbers read, sum vs overall, verdict GREEN/YELLOW; INCONCLUSIVE if 0 chains | OCR numbers trusted unchecked |
+| W-S5 | scale from closed chains: X vs Y agree within 0.5 %; printed 1:50 shown FALSE on this A3 | scale taken from the title block |
+| W-S6 | EG and OG overall extents agree (same building) | per-sheet drift |
+| W-S7 | wall thickness histogram; exterior ring closes on the chain extents | pairing invents walls |
+| W-S8 | openings: each W/H label bound to a wall gap of that width (±1 chain step) | label/gap mis-binding |
+
+**Step 0 = probe only (no product code):** p4 (cleanest), Tesseract CLI, numbers + chains, W-S4/W-S5 measured, result appended here. Port to JS (`modeller/pdf2dxf/raster_*.js`) only after the probe shows chains close at a useful rate; the product row/refusal wording changes in `bim-ootb prompts/DXF2BIM_MODELLER_LANE.md` (§L40) then.
+**Perf budget:** a 2338 x 3306 RGBA page = 31 MB per page in the browser; process one page at a time, release before the next; log heap per page.
+**Positioning note (stated, not hidden):** Tesseract's recogniser is a fixed trained model running offline. It is a reader, never a decider: every value it gives passes a checksum or stays yellow.
