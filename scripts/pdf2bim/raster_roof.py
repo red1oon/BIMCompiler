@@ -65,19 +65,56 @@ def comps(mask, minpx):
         out.append(dict(n=n, px=cnt, y0=ys0, y1=ys1, x0=xs0, x1=xs1))
     return lab, [o for o in out if o['px'] >= minpx]
 lab, frags = comps(ink, 20)
-views = {c['name']: [] for c in caps}
-for fr in frags:
-    cx = (fr['x0'] + fr['x1']) / 2
-    below = [c for c in caps if c['y'] >= fr['y1'] - 5]
-    if not below: continue
-    c = min(below, key=lambda c: math.hypot(c['x'] + 150 - cx, c['y'] - fr['y1']))
-    views[c['name']].append(fr)
-out = {}
-for name, fs in views.items():
-    if not fs: log(f"§RASTER_VIEW {name} fragments=0 VACUOUS"); continue
-    x0 = min(f_['x0'] for f_ in fs); x1 = max(f_['x1'] for f_ in fs); y0 = min(f_['y0'] for f_ in fs); y1 = max(f_['y1'] for f_ in fs)
-    out[name] = dict(bbox=[int(x0), int(y0), int(x1), int(y1)], ids={f_['n'] for f_ in fs})
-    log(f"§RASTER_VIEW {name} fragments={len(fs)} bbox={out[name]['bbox']}")
+# §43.10 VIEW SEPARATION: seeds = fragments sitting on a caption; all seeds grow AT ONCE through the (slightly
+# dilated) ink; a pixel takes the first label to reach it, so a line joining two views splits at its midpoint
+S4 = max(2, int(round(4 * F)))
+hs, ws_ = H // S4, W // S4
+smi = ink[:hs * S4, :ws_ * S4].reshape(hs, S4, ws_, S4).any(axis=(1, 3))
+dil = smi.copy()
+for dy in (-1, 0, 1):
+    for dx in (-1, 0, 1):
+        dil |= np.roll(np.roll(smi, dy, 0), dx, 1)
+VLs = np.zeros((hs, ws_), np.int32); q = deque()
+for k, c in enumerate(caps, 1):
+    seeds = [fr for fr in frags if c['y'] - 60 * F <= fr['y1'] <= c['y'] + 5 and fr['x0'] < c['x'] + 300 * F and fr['x1'] > c['x'] - 20 * F]
+    ns = 0
+    for fr in seeds:
+        ys, xs = np.where(lab[fr['y0']:fr['y1'] + 1, fr['x0']:fr['x1'] + 1] == fr['n'])
+        for y, x in zip((ys + fr['y0']) // S4, (xs + fr['x0']) // S4):
+            if y < hs and x < ws_ and not VLs[y, x]: VLs[y, x] = k; q.append((y, x)); ns += 1
+    c['seed_frags'] = len(seeds); c['seed_cells'] = ns
+while q:
+    y, x = q.popleft(); k = VLs[y, x]
+    for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+        yy, xx = y + dy, x + dx
+        if 0 <= yy < hs and 0 <= xx < ws_ and dil[yy, xx] and not VLs[yy, xx]:
+            VLs[yy, xx] = k; q.append((yy, xx))
+# unreached ink joins the Euclidean-nearest region within 10 cells (grow over ALL cells, 10 steps), else UNASSIGNED
+near = VLs.copy(); front = deque((y, x, 0) for y, x in zip(*np.where(VLs > 0)))
+while front:
+    y, x, d = front.popleft()
+    if d >= 10: continue
+    for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+        yy, xx = y + dy, x + dx
+        if 0 <= yy < hs and 0 <= xx < ws_ and not near[yy, xx]:
+            near[yy, xx] = near[y, x]; front.append((yy, xx, d + 1))
+VLs = np.where(smi & (VLs == 0), near, VLs)
+VL = np.zeros((H, W), np.int32); VL[:hs * S4, :ws_ * S4] = VLs.repeat(S4, 0).repeat(S4, 1)
+tot = int(ink.sum()); una = int((ink & (VL == 0)).sum())
+log(f"§RASTER_W-S14c assigned_ink={tot-una} unassigned_ink={una} ({100*una/tot:.1f}%) cell={S4}px")
+uy, ux = np.where(ink & (VL == 0))
+if len(uy): log(f"§RASTER_UNASSIGNED bbox=({ux.min()},{uy.min()})-({ux.max()},{uy.max()}) (legend/title block expected)")
+out = {}; bad = 0
+for k, c in enumerate(caps, 1):
+    ys, xs = np.where(ink & (VL == k))
+    if not len(ys): log(f"§RASTER_VIEW {c['name']} VACUOUS (seed_frags={c['seed_frags']})"); continue
+    bb = [int(xs.min()), int(ys.min()), int(xs.max()), int(ys.max())]
+    others = [o['name'] for o in caps if o is not c and bb[0] <= o['x'] <= bb[2] and bb[1] <= o['y'] <= bb[3] - 10]
+    bad += bool(others)
+    out[c['name']] = dict(bbox=bb, k=k)
+    log(f"§RASTER_VIEW {c['name']} seed_frags={c['seed_frags']} seed_cells={c['seed_cells']} ink={len(ys)} bbox={bb} "
+        f"contains_other_captions={others or '-'}")
+log(f"§RASTER_W-S14a views={len(out)} overlapping={bad} verdict={'PASS' if bad == 0 and len(out) == len(caps) else 'FAIL'}")
 
 def theil_sen(xs, ys):
     xs = np.asarray(xs, float); ys = np.asarray(ys, float); n = len(xs)
@@ -89,7 +126,7 @@ res = {}
 for name, v in out.items():
     if not name.startswith('ANSICHT'): continue
     X0, Y0, X1, Y1 = v['bbox']
-    mine = np.isin(lab[Y0:Y1 + 1, X0:X1 + 1], list(v['ids']))
+    mine = (VL[Y0:Y1 + 1, X0:X1 + 1] == v['k']) & ink[Y0:Y1 + 1, X0:X1 + 1]
     # ground line: the row (bottom third) with the longest ink run in this view
     rows = [(int(mine[y].sum()), y) for y in range(int(mine.shape[0] * 2 / 3), mine.shape[0])]
     gl = max(rows)[1]
