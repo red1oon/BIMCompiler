@@ -5826,3 +5826,15 @@ is within the owner's GAP of the element (it touches what it hangs from). Share 
 - **Q.59.3 JKR on the PRODUCT (software GL), branch `a6d1f818`: no cell worse** — days 46 → 53 · canvas 1 → 1 · copy 100 → 0 · box 1,506 → 0 · early 407 → 7 ·
   nopath 11 → 11 · onNothing 29 → 0 · beforeFloor 122 → 0 · beforeWall 2 → 0. `compare main method` over the five judged (SampleCastle, Duplex, HHS, JKR,
   Hospital): FAIL worse=2 (Duplex early 2 → 4, HHS nopath 5 → 6) better=27 same=13. Clinic, Terminal, LTU not run on the product (GPU go not given for them).
+### Q.60 SPEC — HUNG WORK GOES IN AFTER ITS HANGER (2026-11-22, owner: *"Remedy"*)
+- **Measured first — the bond table cannot be the source for these pieces:** of the 21 left (Hospital 17, Duplex 4) the shim-anchor table names NO host for 19
+  (`lost(unanchored)` 14: pipe fittings and duct taps; `lost(untabled)` 5: valves and proxies have no row) and a DIFFERENT host for 2 (a slab at 6.00, the
+  judge says the wall at 3.10). The judge's hanger is the election's (`CpmSchedule.designatedSupport`, §I: the owner of "which ONE thing holds T").
+- **Rule (one owner, `schedule_author.js` `hungOf(items)`):** a piece HANGS when the support the owner elects for it TOUCHES it (boxes within GAP in height)
+  and starts HIGHER than it (base above the piece's base by more than EPS). The election prefers a support below, so a higher one means nothing bears it.
+  Nothing else is read from the election; a piece that stands on something is never touched.
+  (a) **Order in a bar:** a hung piece takes its place right after its hanger (`methodRank`: its rank becomes just after the hanger's, chains follow).
+  (b) **Location:** a hung piece is filed on its hanger's level when that level is higher (`_methodLocationAxis`), so it cannot sit in a bar that ends
+  before the hanger's bar starts. Its phase is not changed.
+- **Witness = the product judge, unchanged:** `early` on Duplex must be ≤ 2 and on Hospital < 17, no other cell worse on any judged building; `§HUNG_WORK`
+  prints pieces found, moved in order, filed on another level, and NO-OP when 0.
