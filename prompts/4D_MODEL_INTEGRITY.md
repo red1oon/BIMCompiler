@@ -5908,3 +5908,53 @@ is within the owner's GAP of the element (it touches what it hangs from). Share 
 - **⚠ FOUND IN THE BAKE, NOT DIAGNOSED:** two slabs are drawn, hidden again, and drawn again — Level 3 `0e8pm26Tv5vPrj6zU55MbT` placed @63, pending @114, placed @142; Unknown
   `2wV7MXoU9CUuWvtMFXEk_5` placed @71, pending @101, placed @145. The film cursor stands at day 37.2 at frames 60 and 120 (placed 1,753 → 1,752) and dips under these slabs'
   start days (36.5, 37.4) in between. That is the film's cursor mapping (cinema lane), not the schedule's order; whether it predates this change was not checked.
+### Q.63 THE BAKE FLICKER — CAUSE, FIX, AND THE REDO ON THE SAVED HOSPITAL FILE (2026-11-22, owner: *"chase the flicker"* → *"Flicker is little it is OK. Rather redo with the saved DB with path that is always used."*)
+- **Cause (cinema lane, `viewer/maxq_buildup_ghost.js` `_workCursorAt`, §CPE_BUILDUP_ONSET_BLEND of 2026-08-27):** in the first 10 film seconds the cursor is
+  `el + (cal − el)·w`, the work-paced instant blended toward the calendar. Where `el` is AHEAD of `cal` the blend falls as `w` rises. On the §Q.62 bake: frames
+  74-137, day 39.5 → 35.8. A CPU simulation of the formula on that bake's schedule predicts Level 3 shown @63, hidden @116, shown @141 and Unknown 71 / 102 / 145;
+  the bake log says 63 / 114 / 142 and 71 / 101 / 145. Up to 204 pieces are hidden again at the worst frame.
+- **It predates method x location but the new schedules expose it on Hospital** (same formula, an 82 s film, frames going back, old → new order): Hospital 0 → 60 ·
+  Terminal 43 → 34 · Duplex 92 → 35 · JKR 8 → 5 · HHS 0 → 5 · SampleCastle 3 → 8 · Clinic 1 → 0 · LTU 0 → 0.
+- **Fix (one line, §CPE_ONSET_BLEND_MONOTONE):** where `el >= cal` return `cal`. The blend exists to hold back a front-loaded opening (`el < cal`) and is unchanged
+  there; both branches rise with t and meet where the instants are equal.
+- **Witness:** `witness_bake_plays_schedule.js` **W-BAKE-8**. The old W-BAKE-3 ("never runs backwards") judged `BUILDUP_EVEN_TEMPO=false` with no film length — a mode
+  no film has used since August (scope-blind, PRIMAL LAW 4). W-BAKE-8 runs the shipped flags, an 82 s film, one sample per frame, on the real schedule and on a
+  back-loaded one, with a control that must go backwards unguarded (INCONCLUSIVE if it does not). With the fix pass=22 fail=0; with the line removed 3 FAIL.
+- **Redo on the saved file, as the owner asked:** `Hospital_silent.db` (`~/Downloads`, linked into `buildings/`; 4-stick stored path, saved settings buildup=1 roomTitle=1
+  reveal=1), no flags, from the fix branch. Offsets generated into `buildings/patches/Hospital_silent.db.sql` (42,755 rows). Stored schedule regenerated on load
+  (`§TM_PLAY_SCHEDULE_FRESH stale=1 regen=ran/ok genVersion=39->55`). 2,937 frames, 1280x720, 195.8 s, 67 MB, wall 6,938 s, `aborted=no fileOk=true`.
+  `~/Videos/Hospital_silent_method_order_bake.mp4` + `.log`; expectation `Hospital_silent_bake_expected_elements.csv` (this file, `rsmeans2024_us`).
+- **CPU judge of that file before the bake (true mesh boxes):** onNothing 0 of 24,395 · beforeFloor 0 of 62,414 · beforeWall 0 of 562 · beforeFrame 0 of 2,210 · box 0 ·
+  early 6 · nopath 34 · 281 days.
+- **Bake log vs expectation:** `§AUTHOR_TPL totalDays=281` both. At the 18 logged frames of the build-up the placed count is within 41..423 pieces of the expected
+  count (0.67 % worst), always a little under — the day origin (the window's first day at midnight) was not pinned to the hour, so this is not shown to be a real lag.
+  All placed by frame 1,080; the end count 63,417 = 63,182 + 233 parked containers + 2. Slabs drawn once each, in order, Level 1, 2, 3, 4, 5, Unknown, 6, 7A, 7 at
+  frames 43, 98, 138, 257, 284, 309, 313, 366, 373 — 3.8 frames per expected day throughout. The cursor never goes back in any of the 48 logged samples.
+  The bake's own `§SUPPORT_CHECK floating=2/63182`.
+- **Shipped:** bim-ootb PR #3395 (fix + W-BAKE-8 + the Hospital_silent offsets, sw v1786), auto-merge requested; #3390 (HospitalAjaibPath offsets) merged.
+- **A bake file needs three things to be comparable with a judged schedule:** its mesh-box offsets patch, the same rate pack (the bake's browser is `en_US` →
+  `rsmeans2024_us`; the judge pins `cidb2024_my`), and a regenerated schedule. Not looked at: the picture itself — every statement above is a log value.
+### Q.64 ▶▶▶ RESUME HERE — SESSION CLOSE 2026-11-22 (owner: *"wrap up, update context in case new session continues. Close"*)
+- **STATE, all landed and live (site fetched back: sw `v1786`):**
+  bim-ootb **#3389** method x location order (`eb389e01`) · **#3390** offsets for `HospitalAjaibPath.db` · **#3395** film cursor fix + W-BAKE-8 + offsets for
+  `Hospital_silent.db` (`10577327`). BIMCompiler: §Q.59 – §Q.63 merged (#1143, #1146, #1155). No session worktree or unpushed branch is left.
+- **What is true now (read §Q.61 for the table, §Q.63 for the bake):** on nine buildings, real viewer, the build-up breaks no site truth (one roof on a curtain-wall
+  member on Clinic); the node copy equals the product wherever a building has its offsets patch; Hospital was baked from the saved file and its log matches the
+  expected schedule within 0.67 %. `product_judge.js compare` still prints FAIL worse=1 (HHS nopath 5 → 6, accepted by the owner, §Q.61).
+- **How to judge anything from here** (not `run_4d_gates.sh` — its ratchets lock the old order and were never re-run):
+  fast, CPU: `node scripts/crawl_node_copy.js main <buildings>` · the verdict: `node scripts/product_judge.js run --root <checkout> --tag <name> <buildings>` then
+  `compare main <name>` (GPU needs the owner's go per run; `GPU=sw` works without it for buildings up to JKR's size; give each concurrent run its own `PORT`).
+  The stored `main` tag in `~/.cache/bim4d/product/main/` is the OLD order (`7021e6cb`) — keep it as the baseline, or re-run it as a new tag from today's main.
+- **To compare a bake with a schedule** (§Q.63 last bullet): the file's offsets patch, the bake's rate pack (`RATES_PACK=rsmeans2024_us` on this machine), a regenerated
+  schedule. `HospitalAjaibPath.db` (the bake tool's default `--db`) has build-up OFF in its saved path; `Hospital_silent.db` is the owner's usual saved file.
+- **NEXT, in order (nothing is in flight):**
+  1. Delete what no longer decides order: `§SITE_ORDER` edges, `_hangFilingAxis`, `§TPL_LAYER_ORDER` + `§TPL_LAYER_SELFCHECK` (reads FAIL by construction now), the
+     election's role in the solve (§Q.58 step 5). Judge with `compare`: no cell may move.
+  2. Retire or re-point `run_4d_gates.sh` and its 17 ratchets at the product judge; put the crawler truths in CI for the tracked HHS file.
+  3. Bars = step x floor (the envelope bar still holds four steps).
+  4. Offsets patches for every served building without one (Shed: box 20, copy 47; `Hospital_extracted`; any `_silent` file). A building without one schedules on
+     boxes that are not where its meshes are.
+  5. Open, not started: hung work (a method statement, not a move — §Q.60.1 says why the move fails); Hospital's 5 and LTU's 48 `early` leftovers; the 34 Hospital
+     pieces with no path to the ground; the bake reading a few hundred pieces under the expectation (day origin not pinned to the hour, §Q.63).
+  6. The house-style film for the seven. No picture was ever looked at this session — every claim is a log value or a judge count.
+- **Do not:** rebuild a "move the hung piece behind its hanger" pass (§Q.60.1), split the old judge's `early` a fourth time, or re-lock gate numbers.

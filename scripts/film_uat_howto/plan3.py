@@ -40,7 +40,7 @@ SCENES = [
     ('r3b', 'r3_project',  "The project is SHED, with the planned amount of the group you clicked."),
     ('r3c', 'r3_taskline', "Phase and Task hold one record each. The line sits under Task Line, with the same amount.")]),
   # §5.18 L4 (owner 2026-11-22: "Show the workings on film and UATGuide with a note if the ERP side is legacy"): B4 again, with the Viewer served by a legacy iDempiere (the BIM OOTB plugin)
-  dict(id='l0', chip='B4 · L1', strip="Open **your iDempiere**`/bimootb/viewer/viewer.html?blank=1&erpUser=GardenAdmin&erpClient=11&erpRole=102&erpOrg=11&erpWarehouse=103`", span=('l0_start', 'l0_end'), speed=SP, beats=[   # sped: B2.9 again (r0 shows it)
+  dict(id='l0', card=['IF YOUR ERP IS A LEGACY iDEMPIERE', 'B4 again: the Shed into your iDempiere', 'steps L1 to L3, after chapter D'], chip='B4 · L1', strip="Open **your iDempiere**`/bimootb/viewer/viewer.html?blank=1&erpUser=GardenAdmin&erpClient=11&erpRole=102&erpOrg=11&erpWarehouse=103`", span=('l0_start', 'l0_end'), speed=SP, beats=[   # sped: B2.9 again (r0 shows it)
    
     ('l0a', 'l0_url',   "If your ERP is a legacy iDempiere, your administrator first installs the BIM OOTB plugin: step A5. Then the Viewer comes from your iDempiere. Type its address, slash bimootb, with your user and ids."),
     ('l0b', 'l0_ctrlo', "Then open the Shed's file, as before. This part comes after chapter D, or on a copy of your iDempiere: SHED becomes one more project there.")]),
@@ -57,7 +57,7 @@ SCENES = [
     ('l3a3', 'l3_role',   "Then the role window: choose HQ, and press OK."),
     ('l3b', 'l3_project', "The Project window opens on SHED, with the planned amount of the group you clicked.")]),
   dict(id='c0', chip='C', strip='ERP: the hands-on exercise (Project Mgmt Accounting, as GardenWorld Admin)', span=('c0_start', 'c0_end'), beats=[
-    ('c0a', 'c0_start', "Chapter C is done in your iDempiere. Log in as GardenAdmin, and tick Select Role."),
+    ('c0a', 'c0_start', "Chapter C is done in your iDempiere, on the twelve test projects, not the Shed. Log in as GardenAdmin, and tick Select Role."),
     ('c0b', 'c0_role',  "Choose the organization HQ, and HQ Warehouse. Without them, an order will not save."),
     # §5.16 (4): rc1 silence 29.3 s = the wait from OK (role) to Chrome's Save password? (no event inside it): three lines between the two events
     ('c0b2', 'at:click:OK (role)|c0_savepw|0.2',  "The role window closes, and iDempiere opens its Home tab."),
