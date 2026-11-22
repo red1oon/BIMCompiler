@@ -13,6 +13,10 @@ C = json.load(open(os.path.join(work, 'chains.json')))
 g = np.asarray(Image.open(C['clean']).convert('L')).astype(int)
 OT = C['otsu']; GREY = 215                 # same thresholds as the probe (Otsu ink; grey-inclusive 215)
 ink = g < OT; inkg = g < GREY
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from raster_texture import texture_maps, band_scores
+TS, TD1, TD2 = texture_maps(inkg)              # vertical walls: rows = page y
+TST, TD1T, TD2T = texture_maps(inkg.T.copy())  # horizontal walls: rows = page x
 greens = [c for c in C['chains'] if c['verdict'] == 'GREEN']
 gh = [c for c in greens if c['dir'] == 'H']; gv = [c for c in greens if c['dir'] == 'V']
 if not gh or not gv:
@@ -63,12 +67,9 @@ def trace(seg, vertical, lo, hi, tag):
     thin = (b - 2) - (a + 3) < 5
     diag = np.zeros(n); strt = np.zeros(n)
     if not thin:
-        P = np.array([inner_profile(a, b, t, vertical) for t in range(lo, hi + 1)], dtype=bool)
-        for i in range(n - 1):
-            p, q = P[i], P[i + 1]
-            if p.sum() == 0 or q.sum() == 0: continue
-            strt[i] = (p & q).sum() / max(p.sum(), 1)
-            diag[i] = max((p[1:] & q[:-1]).sum(), (p[:-1] & q[1:]).sum()) / max(p.sum(), 1)
+        if vertical: s_, d_ = band_scores(TS, TD1, TD2, a + 3, b - 2, slice(lo, hi + 1))
+        else: s_, d_ = band_scores(TST, TD1T, TD2T, a + 3, b - 2, slice(lo, hi + 1))
+        strt, diag = s_, d_
         w = max(3, thk_px // 3)
         ker = np.ones(2 * w + 1) / (2 * w + 1)
         diag = np.convolve(diag, ker, 'same'); strt = np.convolve(strt, ker, 'same')
