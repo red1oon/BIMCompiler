@@ -46,8 +46,8 @@
 |---|---|
 | Document | CAPEX UAT Guide — from 2D drawings to the dashboard |
 | Purpose | The step-by-step test script for the User Acceptance Test of the pilot client (Sysnova): BIM drawings to a priced model, the ERP exercise, the CAPEX dashboard |
-| Revision | **2026-11-22 (f)** |
-| Status | Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately and stays as signed. Since then steps C1.1, C2.1, C3.2, C4.1, C4.2, C4.4, C5.1, D3, D4, D9 and L3 (and B4.1, C3.1, C3.2, C5.1, D2, D8 after them) carry the corrections of the change list (items 22 to 25). What changed or was found since is listed after this cover. |
+| Revision | **2026-11-22 (g)** |
+| Status | Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately and stays as signed. Since then steps C1.1, C2.1, C3.2, C4.1, C4.2, C4.4, C5.1, D3, D4, D9 and L3 (and B4.1, C3.1, C3.2, C5.1, D2, D8 after them, then B3.1 and B5) carry the corrections of the change list (items 22 to 26). What changed or was found since is listed after this cover. |
 | Prepared and issued by | Redhuan D. Oon, Project Consultant |
 | For | The pilot client's UAT team: System Setup, BIM, Project Mgmt Accounting |
 | The latest copy | Page: [red1oon.github.io/BIMCompiler/CapexUATGuide](https://red1oon.github.io/BIMCompiler/CapexUATGuide/) · PDF: [CapexUATGuide.pdf](https://red1oon.github.io/BIMCompiler/CapexUATGuide.pdf). The PDF is made from the page at every publish and checked (pages, links). |
@@ -58,6 +58,7 @@
 
 | Revision | What changed |
 |---|---|
+| 2026-11-22 (g) | One cost for the model: B3.1, B5 and the reference pack (item 26) |
 | 2026-11-22 (f) | Film part 3 re-published, linked (item 20); item 25 |
 | 2026-11-22 (e) | Item 24 |
 | 2026-11-22 (d) | Item 23 |
@@ -102,6 +103,7 @@ Read these even if you have already done the UAT. If your run met one of them, r
 | 17 | C5.1 | The Phase tab is a list under the header. | **Corrected in the step** (2026-11-22 (c)) | Follow the step: it now says this |
 | 18 | D3 | Adding up the panel's **Spent** column gives 2,020.46; the tile reads **2,020.45** (each row is rounded to the cent). | **Corrected in the step** (2026-11-22 (c)) | Follow the step: it now says this |
 | 19 | C4.2 | Each **Issue to Project** opens its own window tab; after several, the first tabs are pushed off the strip. | **Corrected in the step** (2026-11-22 (c)) | Follow the step: it now says this |
+| 26 | B3.1, B5 | **One cost for the model.** The Viewer showed two costs for the Shed: *total cost* in the Find panel priced each part at its rate × the number of parts (USD 96,839), while the Find bar and **› ERP** priced it at its rate × its quantity in the rate's own unit (m, m², m³). There is now one cost, in the rate pack's own units: **USD 355,097.98 (RM 1,365,761)**, the same in *total cost*, the Find bar and the Project Order. The Run Checker reads the cents; the reference pack is rebuilt with the new figure (Shed_UAT_pack_20261122.zip). The films still show the old figure (USD 96,839); the guide's figure is the one to confirm. | Corrected in this revision | Redo B3.1, then B5 with the new pack |
 | 25 | B4.1, C3.1, C3.2, D | A fourth independent check of the film part 3: **B4.1** the Find list fills only when you search (click the model, **F**, type a word such as *column*, **Enter**; revision (d) wrongly said it shows parts at once); **C3.2** type the vendor's **search key** *SeedFarm* (the Payment window does not find it by name); **C3.1** the dialog's own **Create lines from** button, not the header's; D's read job ends with a line `§DASH_LEGACY_READ_VERDICT PASS …`. | Corrected in this revision | Retest a step of this list if you did it before |
 | 24 | B4.1, C3.1, D2, D9, sign-off | A third independent check of the film part 3: C3.1 says **Save** before **Create lines from** (no second Save); D9 says **Log Out**, then log in with Select Role and HQ; B4.1 names the key **F**; D2's **ERP ↗** may ask you to log in; the checklist and sign-off count the legacy-only steps (A5, L1 to L3). | Corrected in this revision | Retest a step of this list if you did it before |
 | 23 | B4.1, L, C3.1, C3.2, C5.1, D8, D9, C (log in) | A second independent check of the film part 3 against this guide: do the legacy L1 to L3 **after chapter D** (or on a copy: SHED is one more project); L3 and the chapter C log in name Chrome's windows, the demo password and closing each document's tab; C3.1 runs with the window's own **Create lines from** button; C3.2 half paid is rounded up to the cent; C5.1 says what to do with no Phase tab; D9 money goals are rounded to the unit; B4.1's list shows parts at once. | Corrected in this revision | Retest a step of this list if you did it before |
@@ -224,7 +226,7 @@ Steps: A 17 · B 43 (29 if given the marked copies: skip B00, B0) · C 10 · D 1
 | The construction-products script (10 materials at standard cost) | [202611141500_CAPEX-TD-CONSTRUCTION-PRODUCTS.sql](https://github.com/red1oon/bim-ootb/blob/main/capex/plugin/testdata_2pack/202611141500_CAPEX-TD-CONSTRUCTION-PRODUCTS.sql) |
 | The dashboard's scripts for iDempiere | listed in chapter A2, all in the [bim-ootb repository](https://github.com/red1oon/bim-ootb/tree/main/capex/legacy) |
 | The **Shed** drawing set: nine 2D sheets as **DXF** files, one per sheet | exported from BricsCAD by your drafter as in chapter **B00** (a `.dwg` cannot be opened); chapter B0 then turns them into the nine `…_marked.dxf` files that chapters B1 onward open (a tester given the `…_marked.dxf` copies skips B00 and B0) |
-| The **reference pack** (to mark your run, chapter B5) | [Shed_UAT_pack_20261115.zip](https://objectstorage.ap-kulai-2.oraclecloud.com/n/ax3cp6tzwuy2/b/bim-ootb/o/uat/Shed_UAT_pack_20261115.zip): the nine sheets as B00 exports them, the supplied marked copies, the reference Viewer database and the expected values |
+| The **reference pack** (to mark your run, chapter B5) | [Shed_UAT_pack_20261122.zip](https://objectstorage.ap-kulai-2.oraclecloud.com/n/ax3cp6tzwuy2/b/bim-ootb/o/uat/Shed_UAT_pack_20261122.zip): the nine sheets as B00 exports them, the supplied marked copies, the reference Viewer database and the expected values |
 | The **UAT Run Checker** | [check.html](https://red1oon.github.io/bim-ootb/capex/uat/check.html) in your browser: it reads your files locally, nothing is uploaded |
 
 The nine Shed sheets are the pilot client's own work, so its testers may use them. Any other drawing set goes through the same way once its sheets carry their settings (levels, datums and layer meanings), which the Modeller's **Drawing metadata** panel records.
@@ -544,7 +546,7 @@ The schedule and the cost come from reference files the Viewer ships with. You e
 
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|
-| B3.1 | Note the Viewer’s total cost (Find panel: `total cost`; it is the cost of the 13 drawn bays, see the note at the top of chapter B) and the schedule’s finish date (**Time Machine**, key **T**) | With the shipped rates the total reads **USD 96,839 (RM 372,457) — total building cost** (the digits may be grouped differently in your browser's language). The amount in brackets is the rate pack's second currency (RM), whatever language you choose; your local currency for the chosen language is in development. A higher figure, such as USD 97,979, means the B0.7 exclude box missed the expansion joint. Write the total and the finish date down: ________ / ________ | ☐ Pass ☐ Fail |
+| B3.1 | Note the Viewer’s total cost (Find panel: `total cost`; it is the cost of the 13 drawn bays, see the note at the top of chapter B) and the schedule’s finish date (**Time Machine**, key **T**) | With the shipped rates the total reads **USD 355,097.98 (RM 1,365,761) — total building cost** (the digits may be grouped differently in your browser's language). The amount in brackets is the rate pack's second currency (RM), whatever language you choose; your local currency for the chosen language is in development. A higher figure, such as USD 358,943.48, means the B0.7 exclude box missed the expansion joint. Write the total and the finish date down: ________ / ________ | ☐ Pass ☐ Fail |
 | B3.2 | Make the rate edit and the lag edit above. Your copy is saved in this browser as you type | The form keeps your value; a list shown as JSON text must stay valid JSON | ☐ Pass ☐ Fail |
 | B3.3 | **Reload the Viewer tab**, so it reads your copies | The building opens again | ☐ Pass ☐ Fail |
 | B3.4 | Read the total cost again | It moved in the direction of your rate edit | ☐ Pass ☐ Fail |
@@ -587,7 +589,7 @@ This is the step that *How do I pass?* (at the start of this guide) points to. T
 | B5.3 | Press **Mark my run** | One row per stage: **B0.9** marked sheets, **B2.8** Viewer database, **B2.9** status line, **B3.1** total cost, each **PASS**, **FAIL** or **NOT GIVEN**, with the reason under it. Your run reads **PASS** when all four pass. A tester who skipped B00 and B0 has no marked files: B0.9 reads NOT GIVEN and the run **PARTIAL PASS** | ☐ Pass ☐ Fail |
 | B5.4 | Press **Download result (uat_result.json)** and attach the file to this sign-off | The file is saved | ☐ Pass ☐ Fail |
 
-*Proven (witness W-UAT-CHECK, 2026-11-15) on the pack as it is served: a run equal to the proven one marks PASS on all four rows; a run whose B0.7 exclude box was skipped marks FAIL on all four (515 elements, USD 97,979); an empty form marks INCONCLUSIVE; a pack with one file changed is refused.*
+*Proven (witness W-UAT-CHECK, 2026-11-22, the one-cost pack) on the pack as it is served: a run equal to the proven one marks PASS on all four rows; a run whose B0.7 exclude box was skipped marks FAIL on all four (515 elements, USD 358,943.48); an empty form marks INCONCLUSIVE; a pack with one file changed is refused.*
 
 **Notes (chapter B):** ______________________________________________
 
