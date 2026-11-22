@@ -29,7 +29,7 @@ SCENES = [
   dict(id='r0', chip='B2.9', strip='In the blank Viewer press **Ctrl+O** (Open Building) and choose the `.db`', span=('s8_start', 's8_end'), speed=SP, beats=[
     ('r0a', 's8_start', "Part three starts where part one ended: the Shed, open in the Viewer."),
     ('r0b', 'click:Home', "Control O opens the file window: Home, then Downloads, then the Shed's file.")]),   # §5.16 (4): rc1 silence 10.8 s
-  dict(id='r1', chip='B4.1', strip='Open the **Find** panel and click one group of parts in its list (for example a column type)', span=('r1_start', 'r1_end'), beats=[
+  dict(id='r1', chip='B4.1', strip='Open the **Find** panel and click one group of parts in its list', span=('r1_start', 'r1_end'), beats=[
     ('r1a', 'r1_type',  "Press F for the Find panel, and look for the columns."),
     ('r1b', 'r1_group', "Click one group. The panel shows its cost, and a button: ERP.")]),
   dict(id='r2', chip='B4.2 · B4.3', strip='Press **› ERP**', span=('r2_start', 'r2_end'), beats=[
@@ -43,8 +43,8 @@ SCENES = [
   dict(id='l0', chip='B4 · L1', strip="Open **your iDempiere**`/bimootb/viewer/viewer.html?blank=1&erpUser=GardenAdmin&erpClient=11&erpRole=102&erpOrg=11&erpWarehouse=103`", span=('l0_start', 'l0_end'), speed=SP, beats=[   # sped: B2.9 again (r0 shows it)
    
     ('l0a', 'l0_url',   "If your ERP is a legacy iDempiere, your administrator first installs the BIM OOTB plugin: step A5. Then the Viewer comes from your iDempiere. Type its address, slash bimootb, with your user and ids."),
-    ('l0b', 'l0_ctrlo', "Then open the Shed's file, as before.")]),
-  dict(id='l1', chip='B4.1', strip='Open the **Find** panel and click one group of parts in its list (for example a column type)', span=('r1_start', 'r1_end'), speed=SP, beats=[   # sped: B4.1 again (r1 shows it)
+    ('l0b', 'l0_ctrlo', "Then open the Shed's file, as before. Do this part after chapter D, or on a copy of your iDempiere: SHED becomes one more project there.")]),
+  dict(id='l1', chip='B4.1', strip='Open the **Find** panel and click one group of parts in its list', span=('r1_start', 'r1_end'), speed=SP, beats=[   # sped: B4.1 again (r1 shows it)
     ('l1a', 'r1_group', "The same group of parts, at the same cost.")]),
   dict(id='l2', chip='B4 · L2', strip='press **› ERP**, type your iDempiere password in the window *Sign in to iDempiere*, and press **Push**', span=('l2_start', 'l2_end'), beats=[
     ('l2a', 'l2_push',   "Press ERP. A window asks you to sign in to your iDempiere. Your user and ids are already filled in."),
@@ -53,7 +53,7 @@ SCENES = [
   dict(id='l3', chip='B4 · L3', strip='Click **open ↗** and log in to your iDempiere', span=('l3_start', 'l3_end'), speed=8, beats=[   # sped x8: the iDempiere log in again (c0 shows it at normal speed); the line holds the Project window
    
     ('l3a', 'l3_start',   "Open it, and log in to iDempiere."),
-    ('l3a2', 'l3_login',  "Your user and password, and tick Select Role."),   # §5.18 L8: rc5 silence 8.02 s here
+    ('l3a2', 'l3_login',  "Your user and password, and tick Select Role. Chrome's own windows: OK, then no thanks."),   # §5.18 L8: rc5 silence 8.02 s here
     ('l3a3', 'l3_role',   "Then the role window: choose HQ, and press OK."),
     ('l3b', 'l3_project', "The Project window opens on SHED, with the planned amount of the group you clicked.")]),
   dict(id='c0', chip='C', strip='ERP: the hands-on exercise (Project Mgmt Accounting, as GardenWorld Admin)', span=('c0_start', 'c0_end'), beats=[
@@ -82,13 +82,13 @@ for r in PLAN:   # C1: one order per row and kind, in the guide's table order
               ('c1e', sid + '_complete', "Document Action, Complete, OK. The status reads Completed.")]))
         elif kind == 'dr' and once('c1d'):
             SCENES.append(dict(id=sid, chip='C1.2', strip=C12, span=(sid + '_start', sid + '_end'), speed=SP, beats=[
-              ('c1f', sid + '_start', "The second order, %s, is made the same way, and left as it is: Drafted. The repeats now play at sixteen times the speed." % say(d))]))
+              ('c1f', sid + '_start', "The second order, %s, is made the same way, and left as it is: Drafted. The repeats now play at sixteen times the speed, or more." % say(d))]))
         else: SCENES.append(rep(sid, 'C1.1' if kind == 'dr' else 'C1.1 · C1.2', C11, 'c1_%d' % len(SCENES), "%s: %s, %s." % (r['name'], say(d), 'completed' if kind == 'co' else 'left in draft')))
 for r in PLAN:
     if r['co'] and RCV.search(r['far']):
         sid = 'c2_' + r['project']
         if once('c2'): SCENES.append(dict(id=sid, chip='C2.1', strip=C21, span=(sid + '_start', sid + '_end'), beats=[
-              ('c2a', sid + '_start',    "Now the goods arrive. Material Receipt, New. The vendor, the order, and the project. Save."),
+              ('c2a', sid + '_start',    "Now the goods arrive. Material Receipt, New. The vendor, and the order: the project fills in from it. Save."),
               ('c2b', sid + '_line',     "On the Receipt Line tab, New, and pick the Order Line. Product, quantity and locator fill in."),
               ('c2c', sid + '_complete', "Save, go back to the header, and complete it.")]))
         else: SCENES.append(rep(sid, 'C2.1', C21, 'c2_%d' % len(SCENES), "%s: the receipt of %s." % (r['name'], say(r['co']))))
@@ -105,9 +105,9 @@ for r in PLAN:
         sid = 'c32_' + r['project']; half = 'Half paid' in r['far']
         if once('c32'): SCENES.append(dict(id=sid, chip='C3.2', strip=C32, span=(sid + '_start', sid + '_end'), beats=[
               ('c4a', sid + '_start',    "Then the payment. Payment and Receipt, New. Document type: AP Payment."),
-              ('c4b', sid + '_new',      "This window lists customers. Type the vendor's search key, and in the Info window set Vendor to Yes."),
+              ('c4b', sid + '_new',      "Its partner search opens with Vendor set to No. Type the vendor's search key, set Vendor to Yes, and ReQuery."),
               ('c4c', sid + '_complete', "Choose the invoice: the amount fills in. Bank account, tender type Check. Save, and complete.")]))
-        else: SCENES.append(rep(sid, 'C3.2', C32, 'c32_%d' % len(SCENES), "%s: %s." % (r['name'], 'half paid. On the invoice, Paid stays unticked, and the other half is open' if half else 'paid in full. On the invoice, Paid is ticked')))
+        else: SCENES.append(rep(sid, 'C3.2', C32, 'c32_%d' % len(SCENES), "%s: %s." % (r['name'], 'half paid. Check it on the invoice: Paid stays unticked, and the other half is open' if half else 'paid in full. Check it on the invoice: Paid is ticked')))
 for r in PLAN:
     if r['issue']:
         sid = 'c41_' + r['project']
@@ -169,7 +169,7 @@ SCENES += [
     ('d7a', 'd5_page',     "Riverside Tower. Overview: the approved amount, and five phases."),
     ('d7b', 'd5_schedule', "The Schedule tab draws the five phase bars, the first three complete.")]),
   dict(id='d7', chip='D7', strip='Open **ƒ formula** under a tile', span=('d7_start', 'd7_end'), beats=[
-    ('d8a', 'd7_formula', "Under every tile, formula shows how the figure is calculated: the same measure your iDempiere holds.")]),
+    ('d8a', 'd7_formula', "Under a tile, formula shows how its figure is calculated: the same measure your iDempiere holds.")]),
   dict(id='d8', chip='D8', strip='Change **Layout** (top bar) to *Executive* and **Skin** to *Dark*, then back to *Classic* and *Light*', span=('d8_start', 'd8_end'), beats=[
     ('d9a', 'd8_start',     "Layout, Executive: fewer tiles, new labels, the same figures."),
     ('d9b', 'd8_dark',      "Skin, Dark. Then back to Classic, and Light.")]),
