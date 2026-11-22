@@ -22,6 +22,7 @@ C21 = '**Material Receipt** window, **New**'; C31 = '**Purchase Invoice and Cred
 C41 = 'Press **Set Project Type**, choose **Work Order (Job)**, **OK**'; C42 = 'Menu **Project Management ▸ Issue to Project**'; C43 = '**Project (Lines/Issues)** window, find the project, tab **Issues**'
 SP = 16   # §5.17: repeats x16 (was x8)
 IDLE_X, IDLE_KEEP = 24, 0.3   # §5.17: waits x24, 0.3 s real time at each end (compose defaults x8, 0.8 s)
+CAMERA = 'smooth'   # §5.18 L6: the eased camera (compose default 'old', so Parts I and II rebuild unchanged)
 def rep(sid, chip, strip, bid, text): return dict(id=sid, chip=chip, strip=strip, span=(sid + '_start', sid + '_end'), speed=SP, beats=[(bid, sid + '_start', text)])
 
 SCENES = [
@@ -38,6 +39,23 @@ SCENES = [
     ('r3a', 'r3_signin',   "Open it. On the sign-in page, choose GardenAdmin, and log in."),
     ('r3b', 'r3_project',  "The project is SHED, with the planned amount of the group you clicked."),
     ('r3c', 'r3_taskline', "Phase and Task hold one record each. The line sits under Task Line, with the same amount.")]),
+  # §5.18 L4 (owner 2026-11-22: "Show the workings on film and UATGuide with a note if the ERP side is legacy"): B4 again, with the Viewer served by a legacy iDempiere (the BIM OOTB plugin)
+  dict(id='l0', chip='B4 · L1', strip="Open **your iDempiere**`/bimootb/viewer/viewer.html?blank=1&erpUser=GardenAdmin&erpClient=11&erpRole=102&erpOrg=11&erpWarehouse=103`", span=('l0_start', 'l0_end'), speed=SP, beats=[   # sped: B2.9 again (r0 shows it)
+   
+    ('l0a', 'l0_url',   "If your ERP is a legacy iDempiere, the Viewer comes from it. Type its address, slash bimootb, with your user and ids."),
+    ('l0b', 'l0_ctrlo', "Then open the Shed's file, as before.")]),
+  dict(id='l1', chip='B4.1', strip='Open the **Find** panel and click one group of parts in its list (for example a column type)', span=('r1_start', 'r1_end'), speed=SP, beats=[   # sped: B4.1 again (r1 shows it)
+    ('l1a', 'r1_group', "The same group of parts, at the same cost.")]),
+  dict(id='l2', chip='B4 · L2', strip='press **› ERP**, type your iDempiere password in the window *Sign in to iDempiere*, and press **Push**', span=('l2_start', 'l2_end'), beats=[
+    ('l2a', 'l2_push',   "Press ERP. A window asks you to sign in to your iDempiere. Your user and ids are already filled in."),
+    ('l2b', 'l2_pushpw', "Type the password, and push. Chrome shows its own password windows: OK, then no thanks."),
+    ('l2c', 'l2_end',    "The status line names the new iDempiere project: one project, one phase, one task, one line.")]),
+  dict(id='l3', chip='B4 · L3', strip='Click **open ↗** and log in to your iDempiere', span=('l3_start', 'l3_end'), speed=8, beats=[   # sped x8: the iDempiere log in again (c0 shows it at normal speed); the line holds the Project window
+   
+    ('l3a', 'l3_start',   "Open it, and log in to iDempiere."),
+    ('l3a2', 'l3_login',  "Your user and password, and tick Select Role."),   # §5.18 L8: rc5 silence 8.02 s here
+    ('l3a3', 'l3_role',   "Then the role window: choose HQ, and press OK."),
+    ('l3b', 'l3_project', "The Project window opens on SHED, with the planned amount of the group you clicked.")]),
   dict(id='c0', chip='C', strip='ERP: the hands-on exercise (Project Mgmt Accounting, as GardenWorld Admin)', span=('c0_start', 'c0_end'), beats=[
     ('c0a', 'c0_start', "Chapter C is done in your iDempiere. Log in as GardenAdmin, and tick Select Role."),
     ('c0b', 'c0_role',  "Choose the organization HQ, and HQ Warehouse. Without them, an order will not save."),

@@ -44,10 +44,18 @@ def add(kind, scene, a, b, speed=1.0, img=None):
     dur = (b - a) / speed if kind == 'play' else b
     pieces.append(dict(kind=kind, scene=scene, a=a, b=b, speed=speed, t_out=T, dur=dur, img=img)); T += dur
 def card(img, sec): add('card', None, 0, sec, img=img)
+FIT_BAD = []
+def fit_font(d, txt, f, room, floor):   # §5.18 L7: the largest size <= f's that fits `room` px; None if not even `floor` fits
+    size = f.size
+    while size > floor and d.textlength(txt, font=ImageFont.truetype(f.path, size)) > room: size -= 2
+    g = ImageFont.truetype(f.path, size); return g if d.textlength(txt, font=g) <= room else None
 def mkcard(lines):
     im = Image.new('RGB', (W, H), (11, 15, 23)); d = ImageDraw.Draw(im); y = 360
     for txt, f, col in lines:
-        w = d.textlength(txt, font=f); d.text(((W - w) / 2, y), txt, font=f, fill=col); y += f.size + 36
+        g = fit_font(d, txt, f, W - 160, int(f.size * 0.4))
+        if g is None: FIT_BAD.append('card:' + txt[:40]); g = f
+        w = d.textlength(txt, font=g); log('§COMP_FIT card size=%d->%d w=%.0f room=%d "%s"' % (f.size, g.size, w, W - 160, txt[:50]))
+        d.text(((W - w) / 2, y), txt, font=g, fill=col); y += g.size + 36
     return im
 logo = Image.open(os.path.expanduser('~/Pictures/SYSNOVALogo.png')).convert('RGBA')
 title = mkcard([(P.TITLE['kicker'], font(True, 34), CORAL), (P.TITLE['line1'], font(True, 120), INK), (P.TITLE['line2'], font(True, 72), CORAL), (P.TITLE['note'], font(False, 40), INK)])
@@ -67,9 +75,14 @@ for sc in P.SCENES:
             cue[b[1]] = cue[ca] + f * (cue[cb] - cue[ca]); log('§COMP_AT %s %s t=+%.1fs' % (sid, b[0], cue[b[1]] - cue[sc['span'][0]]))
     a0, a1 = cue[sc['span'][0]], cue[sc['span'][1]]
     # typing first: the strip types over a hold of the scene's first frame (house style: typing, then the action)
-    txt = strip_text(sc); ty = len(txt) / 30.0 + 0.7; strip_t0 = T
-    for i in range(len(txt)): sounds.append(dict(t=T + 0.25 + i / 30.0, k='k'))
-    add('hold', sid, a0, ty); sc['_strip'] = (strip_t0, txt)
+    txt = strip_text(sc); strip_t0 = T
+    if txt == globals().get('_prev_strip'):   # §5.18: the same words as the scene before (a repeat): shown whole, not typed again (a 42-fold re-typing was ~100 s of the film)
+        sc['_strip'] = (strip_t0 - len(txt) / 30.0 - 1.0, txt); log('§COMP_STRIP_SAME %s not retyped' % sid)
+    else:
+        ty = len(txt) / 30.0 + 0.7
+        for i in range(len(txt)): sounds.append(dict(t=T + 0.25 + i / 30.0, k='k'))
+        add('hold', sid, a0, ty); sc['_strip'] = (strip_t0, txt)
+    _prev_strip = txt
     # cut points: each beat's cue; after a beat's span, hold if its line needs more room
     cuts = sorted(set([a0] + [cue[b[1]] for b in sc['beats'] if cue[b[1]] > a0] + [a1]))
     fast = [(f['t0'], f['t1'], 3.0) for f in ev['fast'] if 't1' in f]
@@ -91,8 +104,16 @@ for sc in P.SCENES:
     idle = [x for x in idle if x[1] - x[0] > 0.4]
     log('§COMP_IDLE %s spans=%d src_s=%.2f out_s=%.2f' % (sid, len(idle), sum(b - a for a, b, _ in idle), sum((b - a) / IDLE_X for a, b, _ in idle)))
     fast = sorted(fast + idle)
-    if sc.get('speed'):   # §5.16 a repeat scene plays whole at its speed (x8), badged; its keys and clicks make no sound (a x8 rattle is noise, not information)
-        fast = [(a0, a1, float(sc['speed']))]; log('§COMP_SPEED %s x%d src_s=%.2f out_s=%.2f' % (sid, sc['speed'], a1 - a0, (a1 - a0) / sc['speed']))
+    if sc.get('speed'):   # §5.16 a repeat scene plays whole at its speed, badged; its keys and clicks make no sound (a x8 rattle is noise, not information)
+        # §5.18: its WAITS play at the faster of the scene's speed and IDLE_X (a sped scene used to play its waits slower than a normal one did)
+        sp, segs, s_ = float(sc['speed']), [], a0
+        for f0, f1, fs in sorted(idle):
+            f0, f1 = max(f0, a0), min(f1, a1)
+            if f1 <= s_: continue
+            if f0 > s_: segs.append((s_, f0, sp))
+            segs.append((max(f0, s_), f1, max(sp, fs))); s_ = f1
+        if s_ < a1: segs.append((s_, a1, sp))
+        fast = segs; log('§COMP_SPEED %s x%d src_s=%.2f out_s=%.2f waits=%d' % (sid, sc['speed'], a1 - a0, sum((b - a) / v for a, b, v in segs), sum(1 for a, b, v in segs if v > sp)))
     by_cue = {}
     for bid, cname, text in sc['beats']: by_cue.setdefault(cue[cname], []).append((bid, text))
     for k in range(len(cuts)):
@@ -153,10 +174,29 @@ def zoom_target(ev, ts):
             b = c.get('box'); small = b and (b[2] < 60 or b[3] < 24)
             return (1.7 if small else 1.3), (b[0] + b[2] / 2, b[1] + b[3] / 2) if b else (c['x'], c['y'])
     return 1.0, None
+STRIP_FIT = {}
+def fit_strips():   # §5.18 L7: each strip at 38 pt, else the largest size >= 26 that fits, else two lines at 26
+    d = ImageDraw.Draw(Image.new('RGB', (10, 10))); base = font(False, 38)
+    for sc in P.SCENES:
+        txt = strip_text(sc); cw = d.textlength(sc['chip'], font=font(True, 30)) + 36; room = W - (40 + cw + 30) - 40
+        g = fit_font(d, txt, base, room, 26)
+        if g is not None: STRIP_FIT[txt] = (g, None); log('§COMP_FIT strip %s size=%d w=%.0f room=%.0f' % (sc['id'], g.size, d.textlength(txt, font=g), room)); continue
+        g = font(False, 26); cut = None   # a break after a space, or inside an address after '&', '?' or '/' (the l0 strip is one long URL)
+        for k in sorted((i for i in range(1, len(txt)) if txt[i - 1] in ' &?/'), reverse=True):
+            if d.textlength(txt[:k].rstrip(), font=g) <= room and d.textlength(txt[k:].lstrip(), font=g) <= room: cut = k; break
+        if cut is None: FIT_BAD.append('strip:' + sc['id']); STRIP_FIT[txt] = (g, None); log('§COMP_FIT strip %s FAIL no two-line fit at 26' % sc['id']); continue
+        STRIP_FIT[txt] = (g, cut); log('§COMP_FIT strip %s size=26 wrapped at %d room=%.0f' % (sc['id'], cut, room))
+fit_strips()
+if FIT_BAD: sys.exit('§COMP_REFUSED text does not fit the frame: ' + ', '.join(FIT_BAD))
 def strip_img(sc_strip, chars, cursor):
     im = Image.new('RGB', (W, TOP), BG); d = ImageDraw.Draw(im); chip, txt = sc_strip
     f = font(True, 30); cw = d.textlength(chip, font=f) + 36; d.rounded_rectangle([40, 30, 40 + cw, 76], radius=10, fill=CORAL); d.text((58, 36), chip, font=f, fill=(255, 255, 255))
-    f2 = font(False, 38); d.text((40 + cw + 30, 34), txt[:chars] + ('▍' if cursor else ''), font=f2, fill=INK)
+    f2, x = STRIP_FIT.get(txt, (font(False, 38), None)), 40 + cw + 30
+    if f2[1] is None: d.text((x, 34), txt[:chars] + ('▍' if cursor else ''), font=f2[0], fill=INK)
+    else:   # wrapped at f2[1] (§5.18 L7): two lines, typed in order
+        a = txt[:f2[1]]; shown = txt[:chars]
+        d.text((x, 22), shown[:len(a)] + ('▍' if cursor and chars <= len(a) else ''), font=f2[0], fill=INK)
+        if chars > len(a): d.text((x, 22 + f2[0].size + 6), shown[len(a):].lstrip() + ('▍' if cursor else ''), font=f2[0], fill=INK)
     d.text((40, 96), 'from the UAT Guide, as written', font=font(False, 24), fill=(148, 163, 184)); return im
 # ---- render
 enc = subprocess.Popen(['ffmpeg', '-v', 'error', '-y', '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-s', '%dx%d' % (W, H), '-r', str(FPS), '-i', '-', '-c:v', 'libx264', '-preset', 'medium', '-crf', '18', '-pix_fmt', 'yuv420p', os.path.join(WORK, 'silent.mp4')], stdin=subprocess.PIPE)
@@ -170,17 +210,30 @@ def frame_at(sid, ts):   # decode forward only (each scene's output order is mon
         if len(buf) < W * H * 3: break
         i += 1; img = buf
     cur[sid] = (i, img); return Image.frombytes('RGB', (W, H), img) if img else Image.new('RGB', (W, H))
-zs, cxs, cys, last_sid = 1.0, 960.0, 540.0, None; rings = []
+# §5.18 L6: the camera path for every frame, computed (and measured) before any frame is drawn; CAMERA is the plan's ('old' = up to rc4, 'smooth' = §5.18)
+import camera
+CAMERA = getattr(P, 'CAMERA', 'old'); _F = camera.frames(pieces, NF, FPS, TOTAL); CAM = camera.path(CAMERA, _F, EVS, pointer_at, FPS, W, BH, H)
+_mo = camera.measure(camera.path('old', _F, EVS, pointer_at, FPS, W, BH, H), _F, W, BH, H) if CAMERA != 'old' else None; _mc = camera.measure(CAM, _F, W, BH, H)
+_r = lambda m: json.dumps({k: round(v, 4) if isinstance(v, float) else v for k, v in m.items()})
+if _mo: log('§COMP_CAMERA_OLD ' + _r(_mo))
+log('§COMP_CAMERA %s %s' % (CAMERA, _r(_mc)))
+if CAMERA == 'smooth':
+    _bad = [k for k, ok in (('zoom_acc_max<=0.005', _mc['zoom_acc_max'] <= 0.005), ('pan_acc_max<=10', _mc['pan_acc_max'] <= 10), ('pan_acc_p99<=5', _mc['pan_acc_p99'] <= 5), ('cut_zoom_pops=0', _mc['cut_zoom_pops'] == 0)) if not ok]
+    log('§COMP_CAMERA_VERDICT %s %s' % ('FAIL' if _bad else 'PASS', ','.join(_bad) or 'all bars met'))
+    if _bad: sys.exit('§COMP_REFUSED the camera path breaks its bars: ' + ','.join(_bad))
+rings = []
 scene_of = {sc['id']: sc for sc in P.SCENES}
+# §5.18 L9: the piece of every frame, looked up once; a scene's decoder is closed after its LAST frame (52 left open = 19 GB, the rc5 low-memory kill)
+PF = [next(q for q in pieces if q['t_out'] <= n / FPS < q['t_out'] + q['dur'] + 1e-9) if n / FPS < TOTAL else pieces[-1] for n in range(NF)]
+LAST = {q['scene']: n for n, q in enumerate(PF) if q['kind'] != 'card'}; _dec_opened = set(); _dec_closed = 0; _dec_max = 0
 for n in range(NF):
-    t = n / FPS; p = next(q for q in pieces if q['t_out'] <= t < q['t_out'] + q['dur'] + 1e-9) if t < TOTAL else pieces[-1]
+    t = n / FPS; p = PF[n]
     if p['kind'] == 'card': frame = p['img']; enc.stdin.write(frame.tobytes()); continue
     sid = p['scene']; ev = EVS[sid]; ts = p['a'] if p['kind'] == 'hold' else p['a'] + (t - p['t_out']) * p['speed']
-    if sid != last_sid: zs, (cxs, cys) = 1.0, pointer_at(ev, ts); last_sid = sid
-    scr = frame_at(sid, ts); zt, ctr = zoom_target(ev, ts); px, py = pointer_at(ev, ts); ctr = ctr or (px, py)
-    a = 1 - math.exp(-1 / FPS / 0.30); zs += (zt - zs) * a; cxs += (ctr[0] - cxs) * a; cys += (ctr[1] - cys) * a
+    scr = frame_at(sid, ts); zs, cxs, cys = CAM[n]
     cw, ch = W / zs, BH / zs; x0 = min(max(cxs - cw / 2, 0), W - cw); y0 = min(max(cys - ch / 2, 0), H - ch)
-    view = scr.crop((int(x0), int(y0), int(x0 + cw), int(y0 + ch))).resize((W, BH), Image.LANCZOS)
+    if CAMERA == 'smooth': view = scr.resize((W, BH), Image.LANCZOS, box=(x0, y0, x0 + cw, y0 + ch))   # §5.18 L6: sub-pixel crop (a whole-pixel crop shimmers in a slow zoomed pan)
+    else: view = scr.crop((int(x0), int(y0), int(x0 + cw), int(y0 + ch))).resize((W, BH), Image.LANCZOS)
     out = Image.new('RGB', (W, H), BG); sc = scene_of[sid]; st0, txt = sc['_strip']; chars = min(len(txt), max(0, int((t - st0 - 0.25) * 30)))
     out.paste(strip_img((sc['chip'], txt), chars, chars < len(txt) and int(t * 2) % 2 == 0), (0, 0)); out.paste(view, (0, TOP))
     d = ImageDraw.Draw(out)
@@ -190,6 +243,10 @@ for n in range(NF):
             d.ellipse([ox - r, oy - r, ox + r, oy + r], outline=CORAL, width=5)
     if p['kind'] == 'play' and p['speed'] > 1: d.rounded_rectangle([W - 170, TOP + 20, W - 30, TOP + 74], radius=10, fill=(0, 0, 0)); d.text((W - 150, TOP + 28), '>> x%d' % p['speed'], font=font(True, 32), fill=SKY)
     enc.stdin.write(out.tobytes())
+    _dec_opened.update(dec.keys()); _dec_max = max(_dec_max, len(dec))
+    if LAST.get(sid) == n and sid in dec:   # §5.18 L9: this scene is not drawn again
+        d0 = dec.pop(sid); cur.pop(sid, None); d0.kill(); d0.stdout.close(); d0.wait(); _dec_closed += 1
     if n % 300 == 0: log('§COMP_FRAME %d/%d t=%.1f scene=%s zoom=%.2f' % (n, NF, t, sid, zs))
 enc.stdin.close(); enc.wait()
+log('§COMP_DECODERS opened=%d closed=%d max_open=%d still_open=%d' % (len(_dec_opened), _dec_closed, _dec_max, len(dec)))
 log('§COMP_DONE frames=%d film_s=%.2f -> %s' % (NF, TOTAL, os.path.join(WORK, 'silent.mp4')))
