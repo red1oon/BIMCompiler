@@ -5823,3 +5823,6 @@ is within the owner's GAP of the element (it touches what it hangs from). Share 
   `…_AFTER_elements.csv` (per piece: start day, end day, phase, class, flags — 63,182 rows) · `…_AFTER_built_by_day.csv` (pieces started per day, 0..272).
   A bake is comparable ONLY if it plays the branch (the live site still plays main's order) and its schedule is regenerated (`_GANTT_CACHE_VERSION` 55): then
   each piece's reveal day in the bake log must equal `start_day` in the elements file, and the count on screen at day d must equal `started_so_far`.
+- **Q.59.3 JKR on the PRODUCT (software GL), branch `a6d1f818`: no cell worse** — days 46 → 53 · canvas 1 → 1 · copy 100 → 0 · box 1,506 → 0 · early 407 → 7 ·
+  nopath 11 → 11 · onNothing 29 → 0 · beforeFloor 122 → 0 · beforeWall 2 → 0. `compare main method` over the five judged (SampleCastle, Duplex, HHS, JKR,
+  Hospital): FAIL worse=2 (Duplex early 2 → 4, HHS nopath 5 → 6) better=27 same=13. Clinic, Terminal, LTU not run on the product (GPU go not given for them).
