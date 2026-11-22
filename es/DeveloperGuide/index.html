@@ -5256,10 +5256,14 @@ module's version number in <code>modules.json</code> and the app's <code>CACHE_V
 own scripts. In ERP and the Viewer a module can carry a different number on different pages; each goes up by one from its own number, and the two service-worker
 register lines are never raised. Do not edit a script tag, a <code>?v=</code> (the lazy lists in <code>viewer/main.js</code> included) or a <code>PRECACHE_ASSETS</code> entry by hand in any of the three apps: CI (W-MANIFEST-ROUNDTRIP) fails with the
 file, the line and the command to run. Comments between the tags stay yours.</p>
+<p><strong>Pages outside the three apps (since 2026-11-22, B3-OUT):</strong> the landing page <code>index.html</code> and its loader <code>import_own.js</code> are written from <code>viewer/modules.json</code>, and
+<code>capex/index.html</code> from <code>erp/modules.json</code>, the same way. A bump of a file they load raises them too; a version number in a file no service worker serves (these three) does not
+raise any <code>CACHE_VERSION</code>. <code>archive/gallery.html</code> is frozen: counted, never written, never bumped. <code>bump.js</code> no longer edits a page that no list names: CI (W-MANIFEST-ROUNDTRIP, C22)
+fails on any file with a <code>?v=</code> that is in no list and not frozen, and names the command that adopts it: <code>node scripts/gen_manifest.js --adopt &lt;app&gt; &lt;file&gt;</code>.</p>
 <h3 id="52-adding-a-new-browser-file">5.2 Adding a new browser file<a class="headerlink" href="#52-adding-a-new-browser-file" title="Permanent link">&para;</a></h3>
-<p><strong>On a page outside the three apps</strong> (<code>index.html</code>, <code>capex/</code>): add its <code>&lt;script src="name.js?v=1"&gt;</code> in the right place in the page (order matters, §0 #2), add it to that page's
-<code>PRECACHE_ASSETS</code> in <code>sw.js</code> <strong>unless it is lazy on purpose</strong>, bump <code>CACHE_VERSION</code>, and add any new shared global name to
-<code>eslint.globals.json</code>.</p>
+<p><strong>On a page outside the three apps:</strong> <code>index.html</code> and <code>capex/index.html</code> are in a list now (§5.1), so a new tag there goes in that list's <code>order</code> exactly as below
+(<code>viewer</code> for <code>index.html</code>, <code>erp</code> for <code>capex/index.html</code>). A NEW page outside the apps that loads a file with <code>?v=</code> is first adopted into one list:
+<code>node scripts/gen_manifest.js --adopt &lt;app&gt; &lt;page&gt;</code> (one time; it adds the marker lines and the page's sites, nothing else). Add any new shared global name to <code>eslint.globals.json</code>.</p>
 <p><strong>In the three apps (Viewer, ERP, Modeller),</strong> add the module's line to that app's <code>modules.json</code> instead (its <code>v</code>, <code>load</code>, <code>precache</code>; its tag in <code>order</code> at the place it
 must load; its entry in <code>precacheOrder</code> unless it is lazy on purpose), then run <code>node scripts/gen_manifest.js --write &lt;app&gt;</code> (<code>viewer</code>, <code>erp</code> or <code>modeller</code>): it writes the
 tag and the precache entry next to their neighbours. A page's tags sit between <code>§MANIFEST:BEGIN</code> / <code>§MANIFEST:END</code> marker lines; a tag outside them is refused. If the new file reads another module while it loads, <code>--check</code> lists that as an unreviewed
