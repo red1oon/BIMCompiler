@@ -13,12 +13,27 @@ C = json.load(open(os.path.join(work, 'chains.json')))
 g = np.asarray(Image.open(C['clean']).convert('L')).astype(int)
 OT = C['otsu']; GREY = 215                 # same thresholds as the probe (Otsu ink; grey-inclusive 215)
 ink = g < OT; inkg = g < GREY
+F = C.get('dpi', 200) / 200.0
+def px(v): return max(1, int(round(v * F)))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from raster_texture import texture_maps, band_scores
 TS, TD1, TD2 = texture_maps(inkg)              # vertical walls: rows = page y
 TST, TD1T, TD2T = texture_maps(inkg.T.copy())  # horizontal walls: rows = page x
+for stale in ('walls.json', 'walls_all.json'):   # a VACUOUS run must not leave an older run's output to be read downstream
+    if os.path.exists(os.path.join(work, stale)): os.remove(os.path.join(work, stale))
 greens = [c for c in C['chains'] if c['verdict'] == 'GREEN']
-gh = [c for c in greens if c['dir'] == 'H']; gv = [c for c in greens if c['dir'] == 'V']
+def anchors(c):
+    """a chain anchors walls only if it begins AND ends with a wall segment (both exterior walls are in it):
+    wall = below the chain's largest value-ratio gap; needs >= 3 segments (§43.6, a 2-segment chain at 400 dpi
+    made 4.625 m a 'wall')"""
+    v = [s['v'] for s in c['segs']]
+    if len(v) < 3: return False
+    sv = sorted(v); k = int(np.argmax(np.diff(np.log(sv)))); cut = (sv[k] + sv[k + 1]) / 2
+    return v[0] < cut and v[-1] < cut
+for c in greens:
+    if not anchors(c): log(f"§RASTER_ANCHOR_SKIP dir={c['dir']} segs={[s['txt'] for s in c['segs']]} reason=not_wall_bounded")
+gh = sorted([c for c in greens if c['dir'] == 'H' and anchors(c)], key=lambda c: -len(c['segs']))
+gv = sorted([c for c in greens if c['dir'] == 'V' and anchors(c)], key=lambda c: -len(c['segs']))   # most segments anchors
 if not gh or not gv:
     log(f"§RASTER_W-S7 verdict=VACUOUS green_H={len(gh)} green_V={len(gv)} (need one GREEN chain each way)"); sys.exit(0)
 KH, KV = C['scale_px_per_m']['H'], C['scale_px_per_m']['V']
@@ -46,9 +61,9 @@ def row_state(band_a, band_b, t, vertical):
     """state of one cross-section of a wall band at position t along its axis"""
     if vertical: line = lambda x: (ink[t, x], inkg[t, x])
     else: line = lambda x: (ink[x, t], inkg[x, t])
-    fa = any(line(x)[0] for x in range(band_a - 2, band_a + 3))
-    fb = any(line(x)[0] for x in range(band_b - 2, band_b + 3))
-    inner = [line(x)[1] for x in range(band_a + 3, band_b - 2)]
+    fa = any(line(x)[0] for x in range(band_a - px(2), band_a + px(2) + 1))
+    fb = any(line(x)[0] for x in range(band_b - px(2), band_b + px(2) + 1))
+    inner = [line(x)[1] for x in range(band_a + px(3), band_b - px(2))]
     fill = (sum(inner) / len(inner)) if inner else None
     return fa, fb, fill
 
@@ -64,11 +79,11 @@ def trace(seg, vertical, lo, hi, tag):
     n = hi - lo + 1
     faces = np.array([row_state(a, b, t, vertical)[:2] for t in range(lo, hi + 1)])
     both = faces[:, 0] & faces[:, 1]
-    thin = (b - 2) - (a + 3) < 5
+    thin = (b - px(2)) - (a + px(3)) < px(5)
     diag = np.zeros(n); strt = np.zeros(n)
     if not thin:
-        if vertical: s_, d_ = band_scores(TS, TD1, TD2, a + 3, b - 2, slice(lo, hi + 1))
-        else: s_, d_ = band_scores(TST, TD1T, TD2T, a + 3, b - 2, slice(lo, hi + 1))
+        if vertical: s_, d_ = band_scores(TS, TD1, TD2, a + px(3), b - px(2), slice(lo, hi + 1))
+        else: s_, d_ = band_scores(TST, TD1T, TD2T, a + px(3), b - px(2), slice(lo, hi + 1))
         strt, diag = s_, d_
         w = max(3, thk_px // 3)
         ker = np.ones(2 * w + 1) / (2 * w + 1)
@@ -100,14 +115,14 @@ def measured_thk(t, k):
     """W-S7a: face-to-face distance measured on the wall rows (outermost face columns), m"""
     a, b = t['a'], t['b']; rows = [r for r in range(len(t['kinds'])) if t['kinds'][r] == 'W']
     if not rows: return None
-    cols = range(a - 4, b + 5)
+    cols = range(a - px(4), b + px(5))
     prof = np.zeros(len(cols))
     for r in rows:
         pos = t['lo'] + r
         prof += np.array([ink[pos, x] if t['vertical'] else ink[x, pos] for x in cols])
     prof /= len(rows)
     strong = [cols[i] for i in range(len(cols)) if prof[i] >= 0.6]
-    L = [x for x in strong if x <= a + 4]; R = [x for x in strong if x >= b - 4]
+    L = [x for x in strong if x <= a + px(4)]; R = [x for x in strong if x >= b - px(4)]
     if not L or not R: return None
     # centre of each face line (weighted by the profile)
     cl = sum(x * prof[x - cols[0]] for x in L) / sum(prof[x - cols[0]] for x in L)
@@ -123,7 +138,7 @@ for c, vertical, lo, hi, K in ((ch, True, Y0, Y1, KH), (cv, False, X0, X1, KV)):
         t['ext'] = s is segs[0] or s is segs[-1]; t['K'] = K
         m = measured_thk(t, K)
         d = (m - s['v']) * 1000 if m else None
-        ok = m is not None and abs(m - s['v']) * K <= 1.0   # ±1 px (spec W-S7a)
+        ok = m is not None and abs(m - s['v']) * K <= px(1)   # ±1 px at 200 dpi (spec W-S7a)
         t['thk_m'] = m
         log(f"§RASTER_W-S7a {'V' if vertical else 'H'}wall{i} chain={s['v']:.3f} measured={m if m is None else round(m,3)} "
             f"d={d if d is None else round(d)}mm verdict={'PASS' if ok else ('INCONCLUSIVE' if m is None else 'FAIL')}")
@@ -151,7 +166,7 @@ for c, vertical, lo, hi in ((ch, True, Y0, Y1), (cv, False, X0, X1)):
     for s in page_segs(c):
         if s['v'] < 1.0: continue
         mid = (s['a'] + s['b']) // 2
-        f = trace(dict(a=mid - 13, b=mid + 13, v=0, txt='FALSIFIER'), vertical, lo, hi, f"F{'V' if vertical else 'H'}{mid}")
+        f = trace(dict(a=mid - px(13), b=mid + px(13), v=0, txt='FALSIFIER'), vertical, lo, hi, f"F{'V' if vertical else 'H'}{mid}")
         frac = f['wall_rows'] / len(f['kinds']); fals.append(frac)
         log(f"§RASTER_W-S7d band_mid={mid} wall_rows={frac*100:.1f}% verdict={'PASS' if frac <= 0.05 else 'FAIL'}")
 log(f"§RASTER_W-S7d bands={len(fals)} max_wall_rows={max(fals)*100 if fals else 0:.1f}% verdict="

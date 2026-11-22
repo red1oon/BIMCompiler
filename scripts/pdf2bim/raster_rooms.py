@@ -10,14 +10,18 @@ import numpy as np
 def log(*a): print(*a, flush=True)
 
 work, stamps_path = sys.argv[1], sys.argv[2]
+if not os.path.exists(os.path.join(work, 'walls_all.json')):
+    log("§RASTER_W-S10 verdict=VACUOUS (walls_all.json absent: the previous stage had nothing to anchor on)"); sys.exit(0)
 C = json.load(open(os.path.join(work, 'chains.json')))
 WA = json.load(open(os.path.join(work, 'walls_all.json')))['walls']
 ST = json.load(open(stamps_path))
 KH, KV = C['scale_px_per_m']['H'], C['scale_px_per_m']['V']
-gh = [c for c in C['chains'] if c['verdict'] == 'GREEN' and c['dir'] == 'H'][0]
-gv = [c for c in C['chains'] if c['verdict'] == 'GREEN' and c['dir'] == 'V'][0]
+gh = max([c for c in C['chains'] if c['verdict'] == 'GREEN' and c['dir'] == 'H'], key=lambda c: len(c['segs']))
+gv = max([c for c in C['chains'] if c['verdict'] == 'GREEN' and c['dir'] == 'V'], key=lambda c: len(c['segs']))
 X0, X1 = gh['ticks_x'][0], gh['ticks_x'][-1]; Y0, Y1 = gv['ticks_y'][0], gv['ticks_y'][-1]
 Wpx, Hpx = X1 - X0 + 1, Y1 - Y0 + 1
+F = C.get('dpi', 200) / 200.0
+TOL = max(1, int(round(3 * F)))
 log(f"§RASTER_ROOMS_IN walls={len(WA)} stamps={len(ST['rooms'])} source={ST['_source'][:40]}...")
 
 def px(w):  # mm -> body px rectangle (inclusive)
@@ -40,14 +44,14 @@ for i in range(len(R)):
         if i == j or a['w']['axis'] != b['w']['axis'] or a['w']['thk_chain_m'] != b['w']['thk_chain_m']: continue
         ax0, ax1, ay0, ay1 = a['r']; bx0, bx1, by0, by1 = b['r']
         if a['w']['axis'] == 'H':
-            if abs(ay0 - by0) > 3 or abs(ay1 - by1) > 3 or not (ax1 < bx0): continue
-            between = [q for q in R if q is not a and q is not b and q['w']['axis'] == 'H' and abs(q['r'][2] - ay0) <= 3
+            if abs(ay0 - by0) > TOL or abs(ay1 - by1) > TOL or not (ax1 < bx0): continue
+            between = [q for q in R if q is not a and q is not b and q['w']['axis'] == 'H' and abs(q['r'][2] - ay0) <= TOL
                        and q['r'][0] < bx0 and q['r'][1] > ax1]
             if between: continue
             gaps.append(('H', a['w']['thk_chain_m'], (bx0 - ax1) / KH, (ax1, bx0, min(ay0, by0), max(ay1, by1))))
         else:
-            if abs(ax0 - bx0) > 3 or abs(ax1 - bx1) > 3 or not (ay1 < by0): continue
-            between = [q for q in R if q is not a and q is not b and q['w']['axis'] == 'V' and abs(q['r'][0] - ax0) <= 3
+            if abs(ax0 - bx0) > TOL or abs(ax1 - bx1) > TOL or not (ay1 < by0): continue
+            between = [q for q in R if q is not a and q is not b and q['w']['axis'] == 'V' and abs(q['r'][0] - ax0) <= TOL
                        and q['r'][2] < by0 and q['r'][3] > ay1]
             if between: continue
             gaps.append(('V', a['w']['thk_chain_m'], (by0 - ay1) / KV, (min(ax0, bx0), max(ax1, bx1), ay1, by0)))

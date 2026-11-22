@@ -11,7 +11,9 @@ def log(*a): print(*a, flush=True)
 
 page, work = sys.argv[1], sys.argv[2]
 os.makedirs(work, exist_ok=True)
-DPI = 200
+DPI = int(sys.argv[3]) if len(sys.argv) > 3 else 200   # §43.6: the scan's DPI; every pixel constant scales by F
+F = DPI / 200.0
+def px(v): return max(1, int(round(v * F)))
 rgb = np.asarray(Image.open(page).convert('RGB')).astype(np.int16)
 H, W, _ = rgb.shape
 R, G, B = rgb[..., 0], rgb[..., 1], rgb[..., 2]
@@ -33,7 +35,7 @@ def otsu(g):
     return int(np.argmax((mt * om - mu) ** 2 / (om * (1 - om) + 1e-12)))
 OT = otsu(gray)
 gimg = Image.fromarray(gray.astype(np.uint8))
-small = np.asarray(gimg.resize((W // 2, H // 2))) < OT
+small = np.asarray(gimg.resize((int(W / (2 * F)), int(H / (2 * F))))) < OT   # same effective resolution at any DPI
 best = (0, -1)
 for a10 in range(-100, 101, 2):  # -1.00 .. +1.00 deg, 0.02 step
     a = a10 / 100
@@ -46,8 +48,8 @@ gray = np.asarray(gimg).astype(float)
 ink = gray < OT
 log(f"§RASTER_SKEW deg={SKEW:+.2f} otsu={OT} ink_pct={100*ink.mean():.2f}")
 
-MINLEN = 300   # px at 200 dpi = 38 mm of paper; stated
-GAP = 3        # px bridged inside a line (scan dropouts); stated
+MINLEN = px(300)   # 300 px at 200 dpi = 38 mm of paper; stated
+GAP = px(3)        # 3 px at 200 dpi bridged inside a line (scan dropouts); stated
 
 def line_runs(img):
     out = []
@@ -61,33 +63,33 @@ def line_runs(img):
     merged = []
     for y, a, b in out:
         for m in merged:
-            if y - m[1] <= 1 and min(b, m[3]) - max(a, m[2]) > 0.5 * (b - a):
+            if y - m[1] <= px(1) and min(b, m[3]) - max(a, m[2]) > 0.5 * (b - a):
                 m[1] = y; m[2] = min(m[2], a); m[3] = max(m[3], b); break
         else:
             merged.append([y, y, a, b])
     merged.sort(key=lambda m: (m[0], m[2])); col = []
     for m in merged:
         for c in col:
-            if abs(m[0] - c[0]) <= 1 and -15 <= m[2] - c[3] <= 15 + 0 and m[2] >= c[2]:
+            if abs(m[0] - c[0]) <= px(1) and -px(15) <= m[2] - c[3] <= px(15) and m[2] >= c[2]:
                 c[1] = max(c[1], m[1]); c[3] = max(c[3], m[3]); break
         else:
             col.append(list(m))
-    return [m for m in col if m[1] - m[0] <= 3]  # thin = dimension line, not a wall face pair
+    return [m for m in col if m[1] - m[0] <= px(3)]  # thin = dimension line, not a wall face pair
 
 def ticks(img, y0, y1, a, b):
     def run(x, y, step):
         n = 0; miss = 0
-        while 0 <= y < img.shape[0] and n < 12:
-            if img[y, max(0, x - 1):x + 2].any(): n += 1; miss = 0   # 3-col window: ticks are short diagonals
+        while 0 <= y < img.shape[0] and n < px(12):
+            if img[y, max(0, x - px(1)):x + px(1) + 1].any(): n += 1; miss = 0   # 3-col window: ticks are short diagonals
             else:
                 miss += 1
-                if miss > 1: break
+                if miss > px(1): break
             y += step
         return n
-    xs = [x for x in range(a, b + 1) if run(x, y0 - 1, -1) >= 4 and run(x, y1 + 1, 1) >= 4]
+    xs = [x for x in range(a, b + 1) if run(x, y0 - 1, -1) >= px(4) and run(x, y1 + 1, 1) >= px(4)]
     groups = []
     for x in xs:
-        if groups and x - groups[-1][-1] <= 3: groups[-1].append(x)
+        if groups and x - groups[-1][-1] <= px(3): groups[-1].append(x)
         else: groups.append([x])
     return [int(np.mean(g)) for g in groups]
 
@@ -107,6 +109,7 @@ def components(mask):
     return boxes
 
 def tess(arr, tag, psm, wl, k=4):
+    k = max(1, int(round(k / F)))   # §43.6: glyphs reach Tesseract at the same size whatever the DPI
     f = os.path.join(work, tag + '.png')
     im = Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8))
     im.resize((im.width * k, im.height * k), Image.LANCZOS).save(f)
@@ -144,7 +147,7 @@ def corr(a, b): return float((a * b).sum() / (np.sqrt((a * a).sum() * (b * b).su
 def dedupe(ls):
     keep = []
     for m in sorted(ls, key=lambda m: -(m[3] - m[2])):
-        if any(abs(m[0] - k[0]) <= 3 and m[2] >= k[2] - 6 and m[3] <= k[3] + 6 for k in keep): continue
+        if any(abs(m[0] - k[0]) <= px(3) and m[2] >= k[2] - px(6) and m[3] <= k[3] + px(6) for k in keep): continue
         keep.append(m)
     return sorted(keep)
 
@@ -155,10 +158,10 @@ for dname, img, g in (('H', ink, gray), ('V', np.rot90(ink, k=-1), np.rot90(gray
     for i, (y0, y1, a, b) in enumerate(ls):
         tk = ticks(g < 215, y0, y1, a, b)   # ticks on the grey-inclusive mask: diagonal strokes fade to grey (pixel dump §43)
         if len(tk) < 2: continue
-        bx0 = max(0, a - 20); by0 = max(0, y0 - 30)
-        gb = g[by0:y0 - 1, bx0:b + 20]; ib = img[by0:y0 - 1, bx0:b + 20]
+        bx0 = max(0, a - px(20)); by0 = max(0, y0 - px(30))
+        gb = g[by0:y0 - 1, bx0:b + px(20)]; ib = img[by0:y0 - 1, bx0:b + px(20)]
         ws = tess(gb, f'{dname}{i}', 11, '0123456789,.')
-        cs = [c for c in components(ib) if c[4] >= 2 and not (c[1] >= ib.shape[0] - 2 and c[3] - c[2] <= 2)]
+        cs = [c for c in components(ib) if c[4] >= max(1, round(2 * F * F)) and not (c[1] >= ib.shape[0] - px(2) and c[3] - c[2] <= px(2))]
         lines_all.append(dict(dir=dname, y=y0, a=a, b=b, ticks=tk, bx0=bx0, ws=ws, cs=cs, ib=ib, gb=gb))
 
 hs = np.array([c[1] - c[0] + 1 for L in lines_all for c in L['cs']])
@@ -174,8 +177,8 @@ log(f"§RASTER_DIGW median_digit_w={DIGW:.1f} (from {len(_ws)} tall glyphs, 1-gl
 for L in lines_all:
     words = []
     for w in L['ws']:
-        x0, x1 = w['x'] - 2, w['x'] + w['w'] + 0.9 * HMAIN
-        y0, y1 = w['y'] - 6, w['y'] + w['h'] + 2
+        x0, x1 = w['x'] - px(2), w['x'] + w['w'] + 0.9 * HMAIN
+        y0, y1 = w['y'] - px(6), w['y'] + w['h'] + px(2)
         cc = [c for c in L['cs'] if x0 <= (c[2] + c[3]) / 2 <= x1 and c[1] >= y0 and c[0] <= y1]
         tall = [c for c in cc if c[1] - c[0] + 1 >= 0.55 * HMAIN]
         if not tall: continue
@@ -184,7 +187,7 @@ for L in lines_all:
         if not main: continue
         mr = max(c[3] for c in main)
         raised = sorted([c for c in cc if c[1] < base - 0.25 * HMAIN and 0.35 * HMAIN <= c[1] - c[0] + 1
-                         and c[2] >= mr - 2], key=lambda c: c[2])
+                         and c[2] >= mr - px(2)], key=lambda c: c[2])
         smalls = [c for c in cc if c[1] - c[0] + 1 < 0.55 * HMAIN and c not in raised]
         if os.environ.get('DBGWORD') == w['t']:
             log(f"§RASTER_WORD_DIAG dir={L['dir']} pos={L['y']} ocr={w['t']} box=({w['x']:.0f},{w['y']:.0f},{w['w']:.0f},{w['h']:.0f}) base={base} cc=" +
@@ -204,7 +207,7 @@ for L in lines_all:
             col = L['ib'][c[0]:c[1] + 1, c[2]:c[3] + 1].sum(axis=0)
             cuts = []
             for j in range(1, k):
-                x = int(round(j * wd / k)); lo, hi = max(1, x - 2), min(wd - 1, x + 3)
+                x = int(round(j * wd / k)); lo, hi = max(1, x - px(2)), min(wd - 1, x + px(3))
                 cuts.append(lo + int(np.argmin(col[lo:hi])))
             edges = [0] + cuts + [wd]
             for j in range(k):
@@ -214,7 +217,7 @@ for L in lines_all:
             nsplit[0] += 1
         # re-classify after splitting: a piece that ends above the baseline is a raised digit (e.g. 5 touching a 7)
         for c in [c for c in sp if c[1] < base - 0.25 * HMAIN and c[1] - c[0] + 1 >= 0.35 * HMAIN]:
-            if not raised and c[2] >= max(q[3] for q in sp if q is not c) - 3:
+            if not raised and c[2] >= max(q[3] for q in sp if q is not c) - px(3):
                 raised = [c]; nresplit[0] += 1
             sp.remove(c)
         main = sp
@@ -359,9 +362,9 @@ for L in lines_all if HOLE_RULE else []:
             else:
                 w['d'][i] = '?'; nh_unsure += 1
 log(f"§RASTER_HOLES changed={nh_chg} made_unsure={nh_unsure}")
-gh_ = np.bincount(np.clip(gaps, 0, 15)) if gaps else np.zeros(1, int)
-lo_ = int(np.argmax(gh_[:3])); hi_ = 3 + int(np.argmax(gh_[3:9])) if len(gh_) > 3 else 3
-SEPGAP = lo_ + 1 + int(np.argmin(gh_[lo_ + 1:hi_])) if hi_ > lo_ + 1 else 3
+gh_ = np.bincount(np.clip(gaps, 0, px(15))) if gaps else np.zeros(1, int)
+lo_ = int(np.argmax(gh_[:px(3)])); hi_ = px(3) + int(np.argmax(gh_[px(3):px(9)])) if len(gh_) > px(3) else px(3)
+SEPGAP = lo_ + 1 + int(np.argmin(gh_[lo_ + 1:hi_])) if hi_ > lo_ + 1 else px(3)
 SEPGAP = SEPGAP + 1  # the valley bin itself is ambiguous; a separator gap must be wider than it
 for L in lines_all:
     for w in L['words']:
@@ -372,11 +375,11 @@ for L in lines_all:
             if i + 1 < len(w['main']):
                 gx0, gx1 = w['main'][i][3] + 1, w['main'][i + 1][2]
                 if gx1 - gx0 >= SEPGAP:
-                    patch = w['gb'][max(0, w['base'] - 3):w['base'] + 1, gx0:gx1]
+                    patch = w['gb'][max(0, w['base'] - px(3)):w['base'] + 1, gx0:gx1]
                     if patch.size and patch.min() < DOT_GREY: t += ','; nsep[0] += 1
         w['txt'] = t
 log(f"§RASTER_SEP_GAP modes=({lo_},{hi_}) valley_threshold>={SEPGAP}")
-log(f"§RASTER_SEP separators={nsep[0]} dot_grey<{DOT_GREY} gap_hist={np.bincount(np.clip(gaps,0,15)).tolist() if gaps else []}")
+log(f"§RASTER_SEP separators={nsep[0]} dot_grey<{DOT_GREY} gap_hist={np.bincount(np.clip(gaps,0,px(15))).tolist() if gaps else []}")
 log(f"§RASTER_BANK words={nwords} count_match={nmatch} fallback_used={nfb[0]} split_wide={nsplit[0]} raised_from_split={nresplit[0]} labels=" +
     ' '.join(f"{k}:{len(v)}" for k, v in sorted(bank.items())))
 
@@ -421,7 +424,7 @@ for L in lines_all:
     tk = L['ticks']; segs = []
     for i in range(len(tk) - 1):
         a, b = tk[i], tk[i + 1]
-        ws = [w for w in L['words'] if a - 4 <= (w['l'] + w['r']) / 2 <= b + 4]
+        ws = [w for w in L['words'] if a - px(4) <= (w['l'] + w['r']) / 2 <= b + px(4)]
         if not ws: segs.append(dict(L=a, R=b, txt=None, v=None)); continue
         w = max(ws, key=lambda w: w['r'] - w['l'])
         ok = w['cntok'] and w['sup'] != '?'
@@ -441,7 +444,7 @@ for c in chains:
     vals = [s['v'] for s in c['segs']]
     span = (c['ticks'][0], c['ticks'][-1])
     over = [o for o in chains if o is not c and o['dir'] == c['dir'] and len(o['segs']) == 1
-            and abs(o['ticks'][0] - span[0]) <= 6 and abs(o['ticks'][-1] - span[1]) <= 6 and o['segs'][0]['v']]
+            and abs(o['ticks'][0] - span[0]) <= px(6) and abs(o['ticks'][-1] - span[1]) <= px(6) and o['segs'][0]['v']]
     tag = f"dir={c['dir']} pos={c['y']} segs=" + ' | '.join(str(s['txt']) for s in c['segs'])
     if None in vals:
         yellow += 1
@@ -452,7 +455,9 @@ for c in chains:
         yellow += 1
         log(f"§RASTER_CHECKSUM {tag} sum={tot:.3f} verdict=YELLOW reason=no_overall_chain"); continue
     ov = over[0]['segs'][0]['v']; d = tot - ov
-    ok = abs(d) <= RES + 1e-9
+    # |d| must also be a whole number of notation units (5 mm): every value is a multiple of 5 mm, so a
+    # legitimate difference is 0 or one unit of drafter rounding; d = -2 mm can only be a misread (§43.6)
+    ok = abs(d) <= RES + 1e-9 and abs(round(abs(d) * 1000) % 5) == 0
     green += ok; yellow += (not ok); c['verdict'] = 'GREEN' if ok else 'YELLOW'; c['overall'] = ov
     log(f"§RASTER_CHECKSUM {tag} sum={tot:.3f} overall={ov:.3f} d={d*1000:+.0f}mm verdict={'GREEN' if ok else 'YELLOW'}")
     if ok:
