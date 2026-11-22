@@ -151,7 +151,7 @@ def dedupe(ls):
         keep.append(m)
     return sorted(keep)
 
-lines_all = []
+lines_all = []; farn = [0]
 for dname, img, g in (('H', ink, gray), ('V', np.rot90(ink, k=-1), np.rot90(gray, k=-1))):
     ls0 = line_runs(img); ls = dedupe(ls0)
     log(f"§RASTER_LINES dir={dname} n={len(ls)} dropped_dupes={len(ls0)-len(ls)} minlen={MINLEN} gap={GAP}")
@@ -162,8 +162,20 @@ for dname, img, g in (('H', ink, gray), ('V', np.rot90(ink, k=-1), np.rot90(gray
         gb = g[by0:y0 - 1, bx0:b + px(20)]; ib = img[by0:y0 - 1, bx0:b + px(20)]
         ws = tess(gb, f'{dname}{i}', 11, '0123456789,.')
         cs = [c for c in components(ib) if c[4] >= max(1, round(2 * F * F)) and not (c[1] >= ib.shape[0] - px(2) and c[3] - c[2] <= px(2))]
-        lines_all.append(dict(dir=dname, y=y0, a=a, b=b, ticks=tk, bx0=bx0, ws=ws, cs=cs, ib=ib, gb=gb))
+        side = 'near'
+        if not any(ch.isdigit() for w in ws for ch in w['t']):
+            # §43.8: no number on the usual side -> read the FAR side (text below the line, still upright); only then,
+            # so a page whose numbers sit on the usual side reads byte-identically (p4 regression)
+            fy1 = min(img.shape[0], y1 + 2 + px(30))
+            gb2 = g[y1 + 2:fy1, bx0:b + px(20)]; ib2 = img[y1 + 2:fy1, bx0:b + px(20)]
+            ws2 = tess(gb2, f'{dname}{i}f', 11, '0123456789,.')
+            if any(ch.isdigit() for w in ws2 for ch in w['t']):
+                gb, ib, ws, side = gb2, ib2, ws2, 'far'
+                cs = [c for c in components(ib) if c[4] >= max(1, round(2 * F * F)) and not (c[0] <= px(1) and c[3] - c[2] <= px(2))]
+                farn[0] += 1
+        lines_all.append(dict(dir=dname, y=y0, a=a, b=b, ticks=tk, bx0=bx0, ws=ws, cs=cs, ib=ib, gb=gb, side=side))
 
+log(f"§RASTER_SIDE far_side_chains={farn[0]} (numbers read below the line where none sat above)")
 hs = np.array([c[1] - c[0] + 1 for L in lines_all for c in L['cs']])
 hh = np.bincount(hs) if len(hs) else np.zeros(1, int)
 HMAIN = int(np.argmax(hh[6:]) + 6) if len(hh) > 6 else 0
