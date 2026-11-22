@@ -1,0 +1,4 @@
+$ git show 0fa163b8:index.html | grep -A1 'data-goatcounter'
+<script data-goatcounter="https://red1oon.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+§CMD_EXIT 0

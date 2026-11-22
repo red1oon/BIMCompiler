@@ -31,6 +31,9 @@
   .uat-sheet table:not([class]) th, .uat-sheet table:not([class]) td { padding: 1.5pt 4pt; }
   .uat-sheet p { margin: 3pt 0; }
   .uat-sheet h2 { break-before: auto; page-break-before: auto; }
+  /* the cover's tables as the sheet's (DOCS_DEPLOY_GUARD P6): each revision adds a row, and the cover must stay one page (P6 failed three times, 2026-11-21/22) */
+  .uat-cover table:not([class]) { font-size: 8pt; }
+  .uat-cover table:not([class]) th, .uat-cover table:not([class]) td { padding: 1.5pt 4pt; }
 }
 </style>
 <style>.uat-cover { border: 1px solid #888; border-radius: 4px; padding: .4em 1em .8em; margin: 1em 0 1.6em; } .uat-cover table:not([class]) { width: 100%; }</style>
@@ -43,7 +46,7 @@
 |---|---|
 | Document | CAPEX UAT Guide — from 2D drawings to the dashboard |
 | Purpose | The step-by-step test script for the User Acceptance Test of the pilot client (Sysnova): BIM drawings to a priced model, the ERP exercise, the CAPEX dashboard |
-| Revision | **2026-11-22** |
+| Revision | **2026-11-22 (b)** |
 | Status | Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately and stays as signed. What changed or was found since is listed after this cover. |
 | Prepared and issued by | Redhuan D. Oon, Project Consultant |
 | For | The pilot client's UAT team: System Setup, BIM, Project Mgmt Accounting |
@@ -55,6 +58,7 @@
 
 | Revision | What changed |
 |---|---|
+| 2026-11-22 (b) | Legacy iDempiere: A5 for the administrator (LA1 to LA4), B4 note (L1 to L3); change list item 21. No step changed |
 | 2026-11-22 | Change list item 20 and *See how* item 3: film part 3, linked. No step changed |
 | 2026-11-21 | Change list items 9 to 19 (film part 3). No step changed |
 | 2026-11-20 (b) | Change list item 8 and *See how* item 2: film part 2, linked. No step changed |
@@ -95,6 +99,7 @@ Read these even if you have already done the UAT. If your run met one of them, r
 | 18 | D3 | Adding up the panel's **Spent** column gives 2,020.46; the tile reads **2,020.45** (each row is rounded to the cent). | Noted | Pass at the tile's 2,020.45 |
 | 19 | C4.2 | Each **Issue to Project** opens its own window tab; after several, the first tabs are pushed off the strip. | Noted | Close each Issue tab when done |
 | 20 | B4, C, D (film) | The film *UAT, hands on, part 3* shows B4, every document of chapter C made by hand, and chapter D. Items 9 to 19 are what it met on the way. | Film published: [youtu.be/stnbV8nygqs](https://youtu.be/stnbV8nygqs) | None; no step changed. Watch it before chapter C |
+| 21 | A5, B4 | **If your ERP is a legacy iDempiere:** the administrator installs the BIM OOTB plugin (A5, steps LA1 to LA4); then B4 from the Viewer that your iDempiere serves, steps L1 to L3 under B4. The Viewer keeps your sign-in ids when you open a file, and **open ↗** opens your iDempiere's Project. | New in this revision | Only with a legacy iDempiere: A5, then L1 to L3 |
 
 </div>
 
@@ -138,6 +143,7 @@ Films of the steps, on a real screen:
     - [A2 · Install the dashboard into your iDempiere](#a2-install-the-dashboard-into-your-idempiere)
     - [A3 · Load the test data (GardenWorld)](#a3-load-the-test-data-gardenworld)
     - [A4 · ERP model setup, where needed](#a4-erp-model-setup-where-needed)
+    - [A5 · The BIM OOTB plugin (only if your ERP is a legacy iDempiere)](#a5-the-bim-ootb-plugin-only-if-your-erp-is-a-legacy-idempiere)
 - [B · BIM: the Shed, from 2D drawings to a priced model](#b-bim-the-shed-from-2d-drawings-to-a-priced-model-bim)
     - [B00 · For the drafter: export the nine sheets from BricsCAD as DXF](#b00-for-the-drafter-export-the-nine-sheets-from-bricscad-as-dxf)
     - [B0 · From the drawings as drawn to the marked set](#b0-from-the-drawings-as-drawn-to-the-marked-set)
@@ -179,6 +185,7 @@ Three roles run this test. Tick a part when all its steps pass, and initial it.
 | A2 · Install the dashboard | System Setup | `psql`, server restart | — | the dashboard's scripts in iDempiere | 3 | ☐ |
 | A3 · Load the test data | System Setup | Pack In, `psql` | A2 | 12 projects, 10 products | 6 | ☐ |
 | A4 · ERP model check | System Setup | iDempiere | A3 | vendor, stock, products | 4 | ☐ |
+| A5 · Plugin (legacy only) | System Setup | server, Role window | — | the Viewer at `/bimootb` | 4 | ☐ |
 | B00 · Export the sheets as DXF | BIM (drafter) | BricsCAD | the drawing | nine `.dxf` | 3 | ☐ |
 | B0 · To the marked set | BIM | Modeller | B00 or pack `sheets/` | nine `_marked.dxf` | 11 | ☐ |
 | B1 · The sheets one at a time | BIM | Modeller | B0 | — | 4 | ☐ |
@@ -303,6 +310,21 @@ GardenWorld already has the vendor, the warehouse and the locator; the products 
 | A4.2 | **Product** window: search Value `PWD-%`, then open *PWD-04.2 Brick masonry* | 10 products in category *Construction*. *PWD-04.2*: unit **M3**, stocked, price **68.1167** on the *Purchase* price list (tab **Price**; 8,174 BDT ÷ 120), and a **Standard** cost of 68.1167 (tab **Costs**) **Source:** the product’s **Description** field names it: *PWD SoR 2022 item 04.2, page …, 8174 BDT/M3 = 68.1167 USD at 120*. That is the Public Works Department Schedule of Rates item; read the rate and the item number there and divide by 120 yourself | ☐ Pass ☐ Fail |
 | A4.3 | **Warehouse and Locators** window: open *HQ Warehouse*, tab **Locator** | It has the locator *Default HQ Locator*, where you receive and issue | ☐ Pass ☐ Fail |
 | A4.4 | **Product** window: *Test material A (test data)* | The pack’s product exists, in category *TD Materials (test data)* | ☐ Pass ☐ Fail |
+
+### A5 · The BIM OOTB plugin (only if your ERP is a legacy iDempiere)
+
+Skip A5 if the BIM tester sends the Project Order to the Kernel ERP (B4). With a legacy iDempiere 13, B4 is done from the Viewer that your iDempiere serves (the BIM tester's steps L1 to L3), and that Viewer comes from this plugin. (Why: a browser does not let a page from another site call your iDempiere, so the Viewer is served by the iDempiere itself.) The plugin's source and its build script are in [`iDempiereOOTB/`](https://github.com/red1oon/BIMCompiler/tree/master/iDempiereOOTB) of the BIMCompiler repository. You need JDK 17 (`javac`) and a copy of the [bim-ootb repository](https://github.com/red1oon/bim-ootb) (the Viewer it packs). Take a database backup first if you want to go back exactly: removing the plugin later leaves the rows its setup pack wrote.
+
+<div class="uat-keep" markdown="1">
+
+| # | Do | Confirm on screen | Result |
+|---|---|---|---|
+| LA1 | Build the two bundles: `iDempiereOOTB/org.idempiere.bimootb/tools/build_bundle_poc.sh <your iDempiere>/server <your bim-ootb copy> <an empty folder>` | Its last line starts `§BIMOOTB_BUNDLE` and names `2pack=2Pack_13.1.0.zip`. The folder holds two folders: `org.idempiere.bimootb_13.1.0.<stamp>` and `org.idempiere.bimootb.viewer_13.1.0.<stamp>` | ☐ Pass ☐ Fail |
+| LA2 | Stop iDempiere. Copy both folders into `server/plugins/`. Add one line for each to `server/configuration/org.eclipse.equinox.simpleconfigurator/bundles.info`: `org.idempiere.bimootb,13.1.0.<stamp>,plugins/org.idempiere.bimootb_13.1.0.<stamp>/,4,true` and the same for `org.idempiere.bimootb.viewer`. Start iDempiere | The plugin packs in its own setup pack a little after the login page answers (up to 3 minutes). Then the **Role** window lists the role **BIM OOTB Push** | ☐ Pass ☐ Fail |
+| LA3 | **Role** window: open the role the BIM tester logs in with (GardenWorld: *GardenWorld Admin*), tab **Included role templates**, **New**, choose **BIM OOTB Push**, **Save**. Then restart iDempiere | The tab lists **BIM OOTB Push**. (Without it the push is refused: *Login role does not have access to the service type 'BIMOOTB_Query_C_Project'*) | ☐ Pass ☐ Fail |
+| LA4 | Open **your iDempiere**`/bimootb/viewer/viewer.html` in a browser | The Viewer opens. Give the BIM tester this address, with the user and ids of the role from LA3 (L1) | ☐ Pass ☐ Fail |
+
+</div>
 
 **Notes (chapter A):** ______________________________________________
 
@@ -533,6 +555,18 @@ Do this in the **Viewer**, on the Shed you opened in B2.9. (In the Modeller, **E
 | B4.2 | Press **› ERP** | The status line reads *Project Order: 1 lines · contract …  (saved)* and a link **open ↗** appears | ☐ Pass ☐ Fail |
 | B4.3 | Press **› ERP** again | *Project Order: 0 lines*: nothing new is added, the order is keyed by the model's name (**SHED**) | ☐ Pass ☐ Fail |
 | B4.4 | Click **open ↗**. On the Kernel ERP sign-in page choose **GardenAdmin**, then **Log In** | The ERP opens on the project **SHED** (*BIM: SHED*) with its planned amount (the amount of the group you clicked in B4.1). Its **Phase** and **Task** tabs each hold one record. The line from the model is under **Task Line** (with the Task selected), showing the same planned amount: a line shows in the tab of its lowest level, as in iDempiere (*Task Line*: a task is set; *Phase Line*: a phase but no task; *Project Line*: neither), so **Project Line** and **Phase Line** read *0 records* | ☐ Pass ☐ Fail |
+
+<div class="uat-keep" markdown="1">
+
+**If your ERP is a legacy iDempiere** (not the Kernel ERP): your administrator installs the **BIM OOTB plugin** in it once ([A5](#a5-the-bim-ootb-plugin-only-if-your-erp-is-a-legacy-idempiere)). Then do B4 in the Viewer that your iDempiere serves. The steps are the same; only where the Viewer comes from and what you confirm change. (Why: a browser does not let a page from another site call your iDempiere, so the Viewer is served by the iDempiere itself.)
+
+| # | Do | Confirm on screen | Result |
+|---|---|---|---|
+| L1 | Open **your iDempiere**`/bimootb/viewer/viewer.html?blank=1&erpUser=GardenAdmin&erpClient=11&erpRole=102&erpOrg=11&erpWarehouse=103` (GardenWorld's user and ids; use your own), press **Ctrl+O** and open the Shed's `.db` as in B2.9 | The Viewer opens the Shed: *DONE — SHED 511 elements* | ☐ Pass ☐ Fail |
+| L2 | Do B4.1, press **› ERP**, type your iDempiere password in the window *Sign in to iDempiere*, and press **Push** | The window shows your user and ids, filled in. Then the status line reads *iDempiere Project #… · created* with *"projects":1* and **open ↗** appears. (Chrome may show its own password windows: press **OK**, then **No thanks**) | ☐ Pass ☐ Fail |
+| L3 | Click **open ↗** and log in to your iDempiere | The **Project** window opens on **SHED** (*BIM: SHED*) with the planned amount of the group you clicked in B4.1 | ☐ Pass ☐ Fail |
+
+</div>
 
 ### B5 · Mark your run against the reference pack
 

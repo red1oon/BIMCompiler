@@ -1,0 +1,33 @@
+§CUE_CONST file=#38bdf8/THE FILE terminal=#4ade80/IN THE TERMINAL answer=#fbbf24 steps=5 font=26 cpl=117 rows=9
+§CARD_STRIP beat=cover file=cover_0001.png strip=N overlap_px=0.0
+§CARD beat=cover entries=1 overflow_px=0
+§CARD beat=b1 entries=43 overflow_px=0
+§CARD beat=b2 entries=20 overflow_px=0
+§TAG_OVERLAP beat=b3 file=b3_0116.png text_rects_under_the_terminal_tag=2
+§TAG_OVERLAP beat=b3 file=b3_0117.png text_rects_under_the_terminal_tag=2
+§TAG_OVERLAP beat=b3 file=b3_0118.png text_rects_under_the_terminal_tag=2
+§TAG_OVERLAP beat=b3 file=b3_0119.png text_rects_under_the_terminal_tag=2
+§TAG_OVERLAP beat=b3 file=b3_0120.png text_rects_under_the_terminal_tag=2
+§TAG_OVERLAP beat=b3 file=b3_0121.png text_rects_under_the_terminal_tag=2
+§TAG_OVERLAP beat=b3 file=b3_0122.png text_rects_under_the_terminal_tag=2
+§TAG_OVERLAP beat=b3 file=b3_0123.png text_rects_under_the_terminal_tag=2
+§TAG_OVERLAP beat=b3 file=b3_0124.png text_rects_under_the_terminal_tag=2
+§TAG_OVERLAP beat=b3 file=b3_0125.png text_rects_under_the_terminal_tag=2
+§TAG_OVERLAP beat=b3 file=b3_0126.png text_rects_under_the_terminal_tag=2
+§TAG_OVERLAP beat=b3 file=b3_0127.png text_rects_under_the_terminal_tag=2
+§TAG_OVERLAP beat=b3 file=b3_0128.png text_rects_under_the_terminal_tag=2
+§TAG_OVERLAP beat=b3 file=b3_0129.png text_rects_under_the_terminal_tag=2
+§TAG_OVERLAP beat=b3 file=b3_0130.png text_rects_under_the_terminal_tag=2
+§TAG_OVERLAP beat=b3 file=b3_0131.png text_rects_under_the_terminal_tag=2
+§TAG_OVERLAP beat=b3 file=b3_0132.png text_rects_under_the_terminal_tag=2
+§TAG_OVERLAP beat=b3 file=b3_0133.png text_rects_under_the_terminal_tag=2
+§TAG_OVERLAP beat=b3 file=b3_0134.png text_rects_under_the_terminal_tag=2
+§CARD beat=b3 entries=73 overflow_px=0
+§CARD beat=b4 entries=42 overflow_px=0
+§CARD beat=b5 entries=33 overflow_px=0
+§CARD_STRIP beat=close file=close_0208.png strip=N overlap_px=0.0
+§CARD beat=close entries=1 overflow_px=0
+§CARD_STRIP_ALL unique_frames=208 with_strip=206 without_strip=2 bad=0
+§CUE_CHECK unique_frames=208 file_frames=147 terminal_frames=206 bad=0
+§TAG_CHECK unique_frames=208 overlaps=19
+§CARDS_DONE beats=7 stills=208 too_tall=0 key_cues=194 return_cues=5 chars_per_line=117 rows=9
