@@ -5973,3 +5973,31 @@ is within the owner's GAP of the element (it touches what it hangs from). Share 
   over 3,274 frames PASS · `§FRAME_REUSE_TOTAL reused=0/3274` INCONCLUSIVE (its own word: nothing was reused). Not looked at: the picture.
 - **Note for whoever cleans a bake worktree:** `out/` holds TRACKED files; remove only your own log there, never `rm -rf out` (done once this session, restored with
   `git checkout -- out` before the worktree was removed).
+### Q.66 ▶▶▶ RESUME HERE — DELETION DONE + TERMINAL HI-RES BAKE (2026-11-22, owner: *"Do for Terminal, this time hi-res"* · *"and may delete old solver as you advised."*) — supersedes §Q.64's NEXT item 1
+- **DELETED (bim-ootb #3404, merged; +33 / −318 lines; sw v1787):** `cpm_schedule.js` `§SITE_ORDER` edges + `siteOrderPairs` (the file is back to its form before them);
+  `schedule_author.js` `_hangFilingAxis` (§D6_HANG_FILING), the `§TPL_LAYER_ORDER` pass, `§TPL_LAYER_SELFCHECK`, and the `METHOD_ORDER` off switch (with those gone it
+  would fall back to an order nobody stands behind). There is now ONE order path: `_methodLocationAxis` files, `methodRank` orders.
+- **Proof nothing played changes:** node copy played layer (every piece's start and end) + bar grid, sha1 before (main) and after (branch), eight buildings — identical:
+  Duplex `3836e94d…`/`92e29880…` · HHS `17a357b7…`/`81ec76b9…` · JKR `f409a8ff…`/`2379df79…` · Clinic `1a8a34fe…`/`2b0ab05c…` · Terminal `1e63bb7d…`/`d8be1329…` ·
+  Hospital `5e19fb83…`/`7122214a…` · LTU `377b751d…`/`4b164b56…` · SampleCastle `e2de0ada…`/`c04ba4dc…`. Control: Duplex's played hash changes under another rate pack.
+  (First before-run was started in the worktree I then edited — discarded, recomputed from the untouched main checkout.)
+- **Witnesses re-pointed, not deleted:** `witness_gantt_edit_coherence` G-COH-11 now requires `§METHOD_LOCATION levels=` + `§METHOD_ORDER on elements=`;
+  `witness_tm_assembly_order` A5 requires `§METHOD_ORDER on elements=`. Both read lines that no longer existed since #3389 (so both were already red on main).
+  Run on the branch: fast tier 40/40 · OCP 4 / UE 6 / RO 7 / GL 7, 0 fail · edit coherence on HHS pass · `witness_bake_plays_schedule` 22/0.
+- **NOT deleted (the honest remainder of "the old solver"):** the solve (`ScheduleGate.computeSchedule` → `CpmSchedule`) and the election (`designatedSupport`). The solve
+  still supplies each piece's DURATION (the width of its slot in the bar) and the election is the old support judge's input and the Gantt lock gate's
+  (`verifyGanttIntegrity`). Removing them means: durations straight from `installSecs` / crew, and a lock gate judged by the crawler's truths. That is a design step
+  with its own spec, not a deletion. Also left: `remapSolveToTasks`'s layer / lift branch (callers that pass no rank: witnesses, imported schedules), the bond table.
+- **TERMINAL HI-RES BAKE:** `scripts/bake_hires_offline.sh Terminal_silent` (`~/Downloads/Terminal_silent.db`, 3-stick stored path 52.2 s; 1920x1080, 24 fps, every option of
+  the script on). 2,209 frames, 92.0 s, 110 MB, wall 3,120 s, `aborted=no fileOk=true`, `unconverged=0`. Delivered `~/Downloads/Terminal_silent_1920x1080_24fps_2026-11-22_2300.mp4`;
+  logs `~/Videos/Terminal_silent_hires_bake_2026-11-22*.log`; expectation `~/Videos/Terminal_silent_bake_expected_elements.csv`. Offsets for the file (42,702 of 48,428,
+  max 11.27 m): bim-ootb #3405 (auto-merge requested — verify). Stored schedule regenerated `39->55`.
+  CPU judge beforehand: onNothing 0 of 37,966 · beforeFloor 0 of 44,971 · beforeWall 0 of 371 · beforeFrame INCONCLUSIVE (no assembly data) · box 0 · early 5 · nopath 1,363 · 116 days.
+  **Bake vs expectation: `totalDays=116` both; placed count within 0..2 pieces of the expected count at every logged frame (0.00 %); end 48,428 = 48,428.** Eleven tracked slabs
+  drawn once each, in expected order (frames 7 … 111). Cursor never back in 38 samples. Script verdicts: load-path panel / card PASS, interior lights PASS, tint cease PASS,
+  HUD overlap none over 2,209 frames PASS, frame reuse INCONCLUSIVE (its own word). The bake's `§SUPPORT_CHECK floating=29/48428`.
+  **Seen in the numbers, not judged:** 38,468 of 48,428 pieces (79 %) are placed by day 39 = frame 120 = the first 5 s — one level (`Aras 03`) holds 30,984 pieces. The film
+  completes the building by frame 360 of 2,209. That is pacing (the film's even-calendar tempo on a front-loaded schedule), not order.
+- **NEXT (replaces §Q.64's list):** 1. retire / re-point `run_4d_gates.sh` and put the crawler truths in CI on the tracked HHS file · 2. bars = step x floor · 3. offsets for
+  every served building without them (Shed, `Hospital_extracted`) · 4. spec the removal of the solve + election (durations from `installSecs`, lock gate on the crawler) ·
+  5. hung work as a method statement (§Q.60.1) · 6. the house-style film. Bakes done this session for reference: Hospital (§Q.62, §Q.63), HHS (§Q.65), Terminal (here).
