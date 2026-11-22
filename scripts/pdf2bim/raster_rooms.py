@@ -51,34 +51,91 @@ for i in range(len(R)):
                        and q['r'][2] < by0 and q['r'][3] > ay1]
             if between: continue
             gaps.append(('V', a['w']['thk_chain_m'], (by0 - ay1) / KV, (min(ax0, bx0), max(ax1, bx1), ay1, by0)))
-# keep only the NEAREST neighbour gap per piece end (a gap must not jump over another piece)
-gaps.sort(key=lambda g: g[2])
+# opening evidence on this sheet = widths of the gaps in the EXTERIOR ring (measured openings, §43.1)
+ext_t = max(w['thk_chain_m'] for w in WA)
+OPEN_MAX = max(g[2] for g in gaps if g[1] == ext_t)
+log(f"§RASTER_ROOMS_OPENMAX widest_exterior_opening_m={OPEN_MAX:.2f} (gaps wider than this are not closed)")
+gaps.sort(key=lambda g: g[2]); nclosed = 0
 for o, t, wm, (p0, p1, q0, q1) in gaps:
+    where = (f"x={p0/KH*1000:.0f}..{p1/KH*1000:.0f} y={q0/KV*1000:.0f}..{q1/KV*1000:.0f}" if o == 'H'
+             else f"x={p0/KH*1000:.0f}..{p1/KH*1000:.0f} y={q0/KV*1000:.0f}..{q1/KV*1000:.0f}")
+    if wm > OPEN_MAX + 1e-9:
+        log(f"§RASTER_ROOMS_GAP_SKIP {o} thk={t} width={wm:.2f}m at {where} (wider than any measured opening)"); continue
     if o == 'H': wall[max(0, q0):q1 + 1, p0:p1 + 1] = True
     else: wall[q0:q1 + 1, max(0, p0):p1 + 1] = True
-log(f"§RASTER_ROOMS_GAPS closed={len(gaps)} widths_m=" + ','.join(f"{o}{t}:{w:.2f}" for o, t, w, _ in gaps))
+    nclosed += 1
+    log(f"§RASTER_ROOMS_GAP {o} thk={t} width={wm:.2f}m at {where}")
+log(f"§RASTER_ROOMS_GAPS closed={nclosed} of {len(gaps)}")
 
 # flood free space (4-connectivity)
-lab = np.zeros((Hpx, Wpx), np.int32); comps = []
-for y in range(Hpx):
-    for x in range(Wpx):
-        if wall[y, x] or lab[y, x]: continue
-        n = len(comps) + 1; q = deque([(y, x)]); lab[y, x] = n; cnt = 0; ex = ey = 0
-        while q:
-            cy, cx = q.popleft(); cnt += 1
-            for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1)):
-                yy, xx = cy + dy, cx + dx
-                if 0 <= yy < Hpx and 0 <= xx < Wpx:
-                    if wall[yy, xx]:
-                        if dx: ex += 1
-                        else: ey += 1
-                    elif not lab[yy, xx]:
-                        lab[yy, xx] = n; q.append((yy, xx))
-        comps.append(dict(n=n, area=cnt / (KH * KV), per=ex / KV + ey / KH))
-for c in comps:
-    ys, xs = np.where(lab == c['n'])
-    c['bbox_mm'] = (round(xs.min() / KH * 1000), round(ys.min() / KV * 1000), round((xs.max() + 1) / KH * 1000), round((ys.max() + 1) / KV * 1000))
-    c['fill'] = len(xs) / ((xs.max() - xs.min() + 1) * (ys.max() - ys.min() + 1))   # 1.0 = rectangle
+def flood(mask):
+    lab = np.zeros((Hpx, Wpx), np.int32); comps = []
+    for y in range(Hpx):
+        for x in range(Wpx):
+            if mask[y, x] or lab[y, x]: continue
+            n = len(comps) + 1; q = deque([(y, x)]); lab[y, x] = n; cnt = 0; ex = ey = 0
+            while q:
+                cy, cx = q.popleft(); cnt += 1
+                for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                    yy, xx = cy + dy, cx + dx
+                    if 0 <= yy < Hpx and 0 <= xx < Wpx:
+                        if mask[yy, xx]:
+                            if dx: ex += 1
+                            else: ey += 1
+                        elif not lab[yy, xx]:
+                            lab[yy, xx] = n; q.append((yy, xx))
+            comps.append(dict(n=n, area=cnt / (KH * KV), per=ex / KV + ey / KH))
+    for c in comps:
+        ys, xs = np.where(lab == c['n'])
+        c['bbox_mm'] = (round(xs.min() / KH * 1000), round(ys.min() / KV * 1000), round((xs.max() + 1) / KH * 1000), round((ys.max() + 1) / KV * 1000))
+        c['fill'] = len(xs) / ((xs.max() - xs.min() + 1) * (ys.max() - ys.min() + 1))
+    return lab, comps
+
+def stamp_label(lab, r):
+    x, y = r['at'][0] - X0, r['at'][1] - Y0
+    return lab[y, x] if 0 <= y < Hpx and 0 <= x < Wpx else 0
+
+lab, comps = flood(wall)
+# pass-through closure (§43.4.1): only for a component holding >= 2 stamps
+for _round in range(len(ST['rooms'])):
+    shared = {}
+    for r in ST['rooms']:
+        n = stamp_label(lab, r)
+        if n: shared.setdefault(n, []).append(r)
+    merged = [(n, rs) for n, rs in shared.items() if len(rs) >= 2]
+    if not merged: break
+    n, rs = merged[0]
+    cands = []
+    for q in R:
+        x0, x1, y0, y1 = q['r']
+        if q['w']['axis'] == 'V':
+            for y, step in ((y0 - 1, -1), (y1 + 1, 1)):
+                L = 0; yy = y; xa, xb = max(0, x0), min(Wpx - 1, x1)
+                if not (0 <= yy < Hpx) or lab[yy, xa:xb + 1].max() != n: continue
+                while 0 <= yy < Hpx and not wall[yy, xa:xb + 1].any(): yy += step; L += 1
+                if 0 <= yy < Hpx and L > 0:
+                    cands.append((L / KV, 'V', (xa, xb, min(y, yy - step), max(y, yy - step))))
+        else:
+            for x, step in ((x0 - 1, -1), (x1 + 1, 1)):
+                L = 0; xx = x; ya, yb = max(0, y0), min(Hpx - 1, y1)
+                if not (0 <= xx < Wpx) or lab[ya:yb + 1, xx].max() != n: continue
+                while 0 <= xx < Wpx and not wall[ya:yb + 1, xx].any(): xx += step; L += 1
+                if 0 <= xx < Wpx and L > 0:
+                    cands.append((L / KH, 'H', (min(x, xx - step), max(x, xx - step), ya, yb)))
+    cands.sort()
+    done = False
+    for Lm, o, (a0, a1, b0, b1) in cands:
+        trial = wall.copy()
+        if o == 'V': trial[b0:b1 + 1, a0:a1 + 1] = True
+        else: trial[b0:b1 + 1, a0:a1 + 1] = True
+        lab2, comps2 = flood(trial)
+        if len({stamp_label(lab2, r) for r in rs}) == len(rs):
+            wall = trial; lab, comps = lab2, comps2; done = True
+            log(f"§RASTER_ROOMS_PASS separates={[r['name'] for r in rs]} width={Lm:.3f}m axis={o} "
+                f"at x={a0/KH*1000:.0f}..{a1/KH*1000:.0f} y={b0/KV*1000:.0f}..{b1/KV*1000:.0f} (shortest of {len(cands)} candidates)")
+            break
+    if not done:
+        log(f"§RASTER_ROOMS_PASS separates={[r['name'] for r in rs]} verdict=NONE_FOUND candidates={len(cands)}"); break
 big = [c for c in comps if c['area'] >= 1.0]
 log(f"§RASTER_ROOMS_COMPONENTS all={len(comps)} >=1m2={len(big)} areas=" + ','.join(f"{c['area']:.2f}" for c in sorted(big, key=lambda c: -c['area'])))
 
