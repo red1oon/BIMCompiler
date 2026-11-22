@@ -1547,6 +1547,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#a5-the-bim-ootb-plugin-only-if-your-erp-is-a-legacy-idempiere" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A5 · The BIM OOTB plugin (only if your ERP is a legacy iDempiere)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3647,6 +3658,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#a5-the-bim-ootb-plugin-only-if-your-erp-is-a-legacy-idempiere" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A5 · The BIM OOTB plugin (only if your ERP is a legacy iDempiere)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3916,6 +3938,9 @@
   .uat-sheet table:not([class]) th, .uat-sheet table:not([class]) td { padding: 1.5pt 4pt; }
   .uat-sheet p { margin: 3pt 0; }
   .uat-sheet h2 { break-before: auto; page-break-before: auto; }
+  /* the cover's tables as the sheet's (DOCS_DEPLOY_GUARD P6): each revision adds a row, and the cover must stay one page (P6 failed three times, 2026-11-21/22) */
+  .uat-cover table:not([class]) { font-size: 8pt; }
+  .uat-cover table:not([class]) th, .uat-cover table:not([class]) td { padding: 1.5pt 4pt; }
 }
 </style>
 <style>.uat-cover { border: 1px solid #888; border-radius: 4px; padding: .4em 1em .8em; margin: 1em 0 1.6em; } .uat-cover table:not([class]) { width: 100%; }</style>
@@ -3940,7 +3965,7 @@
 </tr>
 <tr>
 <td>Revision</td>
-<td><strong>2026-11-22</strong></td>
+<td><strong>2026-11-22 (b)</strong></td>
 </tr>
 <tr>
 <td>Status</td>
@@ -3970,6 +3995,10 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>2026-11-22 (b)</td>
+<td>Legacy iDempiere: A5 for the administrator (LA1 to LA4), B4 note (L1 to L3); change list item 21. No step changed</td>
+</tr>
 <tr>
 <td>2026-11-22</td>
 <td>Change list item 20 and <em>See how</em> item 3: film part 3, linked. No step changed</td>
@@ -4163,6 +4192,13 @@
 <td>Film published: <a href="https://youtu.be/stnbV8nygqs">youtu.be/stnbV8nygqs</a></td>
 <td>None; no step changed. Watch it before chapter C</td>
 </tr>
+<tr>
+<td>21</td>
+<td>A5, B4</td>
+<td><strong>If your ERP is a legacy iDempiere:</strong> the administrator installs the BIM OOTB plugin (A5, steps LA1 to LA4); then B4 from the Viewer that your iDempiere serves, steps L1 to L3 under B4. The Viewer keeps your sign-in ids when you open a file, and <strong>open ↗</strong> opens your iDempiere's Project.</td>
+<td>New in this revision</td>
+<td>Only with a legacy iDempiere: A5, then L1 to L3</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -4199,6 +4235,7 @@
 <li><a href="#a2-install-the-dashboard-into-your-idempiere">A2 · Install the dashboard into your iDempiere</a></li>
 <li><a href="#a3-load-the-test-data-gardenworld">A3 · Load the test data (GardenWorld)</a></li>
 <li><a href="#a4-erp-model-setup-where-needed">A4 · ERP model setup, where needed</a></li>
+<li><a href="#a5-the-bim-ootb-plugin-only-if-your-erp-is-a-legacy-idempiere">A5 · The BIM OOTB plugin (only if your ERP is a legacy iDempiere)</a></li>
 </ul>
 </li>
 <li><a href="#b-bim-the-shed-from-2d-drawings-to-a-priced-model-bim">B · BIM: the Shed, from 2D drawings to a priced model</a><ul>
@@ -4301,6 +4338,15 @@
 <td>iDempiere</td>
 <td>A3</td>
 <td>vendor, stock, products</td>
+<td>4</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>A5 · Plugin (legacy only)</td>
+<td>System Setup</td>
+<td>server, Role window</td>
+<td>—</td>
+<td>the Viewer at <code>/bimootb</code></td>
 <td>4</td>
 <td>☐</td>
 </tr>
@@ -4748,6 +4794,46 @@
 </tr>
 </tbody>
 </table>
+<h3 id="a5-the-bim-ootb-plugin-only-if-your-erp-is-a-legacy-idempiere">A5 · The BIM OOTB plugin (only if your ERP is a legacy iDempiere)<a class="headerlink" href="#a5-the-bim-ootb-plugin-only-if-your-erp-is-a-legacy-idempiere" title="Permanent link">&para;</a></h3>
+<p>Skip A5 if the BIM tester sends the Project Order to the Kernel ERP (B4). With a legacy iDempiere 13, B4 is done from the Viewer that your iDempiere serves (the BIM tester's steps L1 to L3), and that Viewer comes from this plugin. (Why: a browser does not let a page from another site call your iDempiere, so the Viewer is served by the iDempiere itself.) The plugin's source and its build script are in <a href="https://github.com/red1oon/BIMCompiler/tree/master/iDempiereOOTB"><code>iDempiereOOTB/</code></a> of the BIMCompiler repository. You need JDK 17 (<code>javac</code>) and a copy of the <a href="https://github.com/red1oon/bim-ootb">bim-ootb repository</a> (the Viewer it packs). Take a database backup first if you want to go back exactly: removing the plugin later leaves the rows its setup pack wrote.</p>
+<div class="uat-keep">
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Do</th>
+<th>Confirm on screen</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LA1</td>
+<td>Build the two bundles: <code>iDempiereOOTB/org.idempiere.bimootb/tools/build_bundle_poc.sh &lt;your iDempiere&gt;/server &lt;your bim-ootb copy&gt; &lt;an empty folder&gt;</code></td>
+<td>Its last line starts <code>§BIMOOTB_BUNDLE</code> and names <code>2pack=2Pack_13.1.0.zip</code>. The folder holds two folders: <code>org.idempiere.bimootb_13.1.0.&lt;stamp&gt;</code> and <code>org.idempiere.bimootb.viewer_13.1.0.&lt;stamp&gt;</code></td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>LA2</td>
+<td>Stop iDempiere. Copy both folders into <code>server/plugins/</code>. Add one line for each to <code>server/configuration/org.eclipse.equinox.simpleconfigurator/bundles.info</code>: <code>org.idempiere.bimootb,13.1.0.&lt;stamp&gt;,plugins/org.idempiere.bimootb_13.1.0.&lt;stamp&gt;/,4,true</code> and the same for <code>org.idempiere.bimootb.viewer</code>. Start iDempiere</td>
+<td>The plugin packs in its own setup pack a little after the login page answers (up to 3 minutes). Then the <strong>Role</strong> window lists the role <strong>BIM OOTB Push</strong></td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>LA3</td>
+<td><strong>Role</strong> window: open the role the BIM tester logs in with (GardenWorld: <em>GardenWorld Admin</em>), tab <strong>Included role templates</strong>, <strong>New</strong>, choose <strong>BIM OOTB Push</strong>, <strong>Save</strong>. Then restart iDempiere</td>
+<td>The tab lists <strong>BIM OOTB Push</strong>. (Without it the push is refused: <em>Login role does not have access to the service type 'BIMOOTB_Query_C_Project'</em>)</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>LA4</td>
+<td>Open <strong>your iDempiere</strong><code>/bimootb/viewer/viewer.html</code> in a browser</td>
+<td>The Viewer opens. Give the BIM tester this address, with the user and ids of the role from LA3 (L1)</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+</tbody>
+</table>
+</div>
 <p><strong>Notes (chapter A):</strong> <strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong>____</p>
 <hr />
 <h2 id="b-bim-the-shed-from-2d-drawings-to-a-priced-model-bim">B · BIM: the Shed, from 2D drawings to a priced model (BIM)<a class="headerlink" href="#b-bim-the-shed-from-2d-drawings-to-a-priced-model-bim" title="Permanent link">&para;</a></h2>
@@ -5407,6 +5493,39 @@
 </tr>
 </tbody>
 </table>
+<div class="uat-keep">
+<p><strong>If your ERP is a legacy iDempiere</strong> (not the Kernel ERP): your administrator installs the <strong>BIM OOTB plugin</strong> in it once (<a href="#a5-the-bim-ootb-plugin-only-if-your-erp-is-a-legacy-idempiere">A5</a>). Then do B4 in the Viewer that your iDempiere serves. The steps are the same; only where the Viewer comes from and what you confirm change. (Why: a browser does not let a page from another site call your iDempiere, so the Viewer is served by the iDempiere itself.)</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Do</th>
+<th>Confirm on screen</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L1</td>
+<td>Open <strong>your iDempiere</strong><code>/bimootb/viewer/viewer.html?blank=1&amp;erpUser=GardenAdmin&amp;erpClient=11&amp;erpRole=102&amp;erpOrg=11&amp;erpWarehouse=103</code> (GardenWorld's user and ids; use your own), press <strong>Ctrl+O</strong> and open the Shed's <code>.db</code> as in B2.9</td>
+<td>The Viewer opens the Shed: <em>DONE — SHED 511 elements</em></td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>L2</td>
+<td>Do B4.1, press <strong>› ERP</strong>, type your iDempiere password in the window <em>Sign in to iDempiere</em>, and press <strong>Push</strong></td>
+<td>The window shows your user and ids, filled in. Then the status line reads <em>iDempiere Project #… · created</em> with <em>"projects":1</em> and <strong>open ↗</strong> appears. (Chrome may show its own password windows: press <strong>OK</strong>, then <strong>No thanks</strong>)</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>L3</td>
+<td>Click <strong>open ↗</strong> and log in to your iDempiere</td>
+<td>The <strong>Project</strong> window opens on <strong>SHED</strong> (<em>BIM: SHED</em>) with the planned amount of the group you clicked in B4.1</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+</tbody>
+</table>
+</div>
 <h3 id="b5-mark-your-run-against-the-reference-pack">B5 · Mark your run against the reference pack<a class="headerlink" href="#b5-mark-your-run-against-the-reference-pack" title="Permanent link">&para;</a></h3>
 <p>This is the step that <em>How do I pass?</em> (at the start of this guide) points to. The <strong>UAT Run Checker</strong> compares what your run produced with the run this guide was proven on, stage by stage. It reads your files in your browser; nothing is uploaded. Keep the files from B0.9 and B2.8 and the two lines from B2.9 and B3.1 for this step.</p>
 <table>
