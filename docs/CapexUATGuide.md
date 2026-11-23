@@ -46,8 +46,8 @@
 |---|---|
 | Document | CAPEX UAT Guide — from 2D drawings to the dashboard |
 | Purpose | The step-by-step test script for the User Acceptance Test of the pilot client (Sysnova): BIM drawings to a priced model, the ERP exercise, the CAPEX dashboard |
-| Revision | **2026-11-23 (j)** |
-| Status | Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately and stays as signed. Since then, steps were corrected: the change list after this cover (items 22 to 30) names each step and what changed. |
+| Revision | **2026-11-23 (k)** |
+| Status | Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately and stays as signed. Since then, steps were corrected: the change list after this cover (items 22 to 31) names each step and what changed. |
 | Prepared and issued by | Redhuan D. Oon, Project Consultant |
 | For | The pilot client's UAT team: System Setup, BIM, Project Mgmt Accounting |
 | The latest copy | Page: [red1oon.github.io/BIMCompiler/CapexUATGuide](https://red1oon.github.io/BIMCompiler/CapexUATGuide/) · PDF: [CapexUATGuide.pdf](https://red1oon.github.io/BIMCompiler/CapexUATGuide.pdf). The PDF is made from the page at every publish and checked (pages, links). |
@@ -58,7 +58,7 @@
 
 | Revision | What changed |
 |---|---|
-| 2026-11-23 (h) to (j) | The whole Shed into the ERP and the dashboard: B4, L1 to L3 before C, D (item 27); the link names the order, *Push again?* (item 28); L2's status line, B5.1's pack date (items 29, 30) |
+| 2026-11-23 (h) to (j) | The whole Shed into the ERP and the dashboard: B4, L1 to L3 before C, D (item 27); the link names the order, *Push again?* (item 28); L2's status line, B5.1's pack date (items 29, 30); the two films (item 31) |
 | 2026-11-22 (g) | One cost for the model: B3.1, B5 and the reference pack (item 26) |
 | 2026-11-22 (c) to (f) | Items 9 to 19 moved into their steps; items 22 to 25; film part 3 re-published, linked (item 20) |
 | 2026-11-22 (b) | Legacy iDempiere: A5, L1 to L3 (item 21). No step changed |
@@ -101,6 +101,7 @@ Read these even if you have already done the UAT. If your run met one of them, r
 | 17 | C5.1 | The Phase tab is a list under the header. | **Corrected in the step** (2026-11-22 (c)) | Follow the step: it now says this |
 | 18 | D3 | Adding up the panel's **Spent** column gives 2,020.46; the tile reads **2,020.45** (each row is rounded to the cent). | **Corrected in the step** (2026-11-22 (c)) | Follow the step: it now says this |
 | 19 | C4.2 | Each **Issue to Project** opens its own window tab; after several, the first tabs are pushed off the strip. | **Corrected in the step** (2026-11-22 (c)) | Follow the step: it now says this |
+| 31 | (films) | The three films are replaced by **two**, in this revision's order: *part I* (the BIM chapter, A3.1 to B5) and *part II* (B4 with the whole Shed, L1 to L3 before chapter C, chapter C by hand, chapter D with 15 projects). Items 8 and 20 and the earlier links describe the older films. | Films published: [youtu.be/kXFnhxIeOp0](https://youtu.be/kXFnhxIeOp0), [youtu.be/MfJLQOJMa9k](https://youtu.be/MfJLQOJMa9k) (2026-11-23) | None; no step changed. Watch part I before chapter B, part II before B4 |
 | 30 | B5.1 | The reference pack of revision (g) (`Shed_UAT_pack_20261122.zip`) reads *Pack intact: 19 files checked, built 2026-11-22 …* under box 1; the step still said *built 2026-11-15* (the earlier pack). | Corrected in this revision | If box 1 showed 2026-11-22, that is a pass |
 | 29 | L2 | **L2's status line in full.** On a fresh iDempiere the first push also creates the Shed's product categories, products and unit, so the line reads *iDempiere Project #… · created {"categories":3,"products":11,"projects":1,"phases":6,"tasks":8,"lines":11,"uoms":1}*. Revision (i) quoted only the project's counts, measured on a server that already held those products. Measured twice on a reset test instance (2026-11-23). | Corrected in this revision | If L2 showed the longer line, that is a pass |
 | 28 | B4.2 to B4.4, L2, L3 | **The ERP link names its Project Order.** The Viewer's link after a push now reads **SHED #… ↗** (the order's id), not *open ↗*; on a legacy iDempiere it appears only after your push, with the number of the status line. Pressing **› ERP** again first shows a box **Push again?** (**Cancel** or **Push again**); a second push adds nothing, on the Kernel ERP and on a legacy iDempiere alike (measured 2026-11-23: three pushes, one project SHED). The films still show *open ↗*. | Corrected in this revision | None if you passed B4 or L; the steps now name the link and the box |
@@ -137,9 +138,8 @@ In B5 you open the **[UAT Run Checker](https://red1oon.github.io/bim-ootb/capex/
 
 Films of the steps, on a real screen:
 
-1. *UAT, hands on: where to click*: [https://youtu.be/PBp4qfV4mIo](https://youtu.be/PBp4qfV4mIo). From the downloads to B5 and the result file.
-2. *UAT, hands on, part 2*: [https://youtu.be/WvPgjcMbSwo](https://youtu.be/WvPgjcMbSwo). A3.1 Pack In, then B0 on the nine sheets as drawn (marked by hand), B2.3 Arrange, and B5 with all four rows PASS.
-3. *UAT, hands on, part 3*: [https://youtu.be/g7FTNnbbybA](https://youtu.be/g7FTNnbbybA). B4 the model to the ERP, chapter C with every document made by hand in the iDempiere windows, chapter D on the dashboard, and last B4 to a legacy iDempiere (L1 to L3). It follows this revision of the guide.
+1. *UAT, hands on, part I*: [https://youtu.be/kXFnhxIeOp0](https://youtu.be/kXFnhxIeOp0). The guide and *What you need*, A3.1 Pack In in its window, B0 on the nine sheets as drawn (marked by hand), B2 Arrange, Convert and the Viewer, B3.1 the total cost, and B5 the Run Checker with every row PASS.
+2. *UAT, hands on, part II*: [https://youtu.be/MfJLQOJMa9k](https://youtu.be/MfJLQOJMa9k). B4 the whole Shed to the Kernel ERP (the link *SHED #…*, *Push again?*), then L1 to L3 into a legacy iDempiere, chapter C with every document made by hand in the iDempiere windows, and chapter D on the dashboard (15 projects with SHED). It follows this revision of the guide.
 
 ## Contents
 
