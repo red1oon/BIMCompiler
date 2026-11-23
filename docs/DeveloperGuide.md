@@ -20,7 +20,7 @@ JavaScript app, several things will look broken when they are not. Ten things to
 | 3 | **One shared object, two spellings.** Viewer modules are `function setupX(A) { A.camera = … }`; other code reads the same object as `APP.camera`. | Every module gets the app object handed in, no registry. | `grep "APP.camera ="` finds nothing. Look it up in `internal/APP_SURFACE.md` (bim-ootb): 1,676 fields, each with the `file:line` that defines it. |
 | 4 | **Most files end with a UMD tail**: `if (typeof module …) module.exports = X`. | The same file runs in the browser *and* in Node, so witnesses can test it without a browser. | Do not remove the tail. Your editor sees these files as modules, so "go to definition" needs the generated `types/globals.gen.d.ts` (§4). |
 | 5 | **The database is SQLite running inside the browser tab** (sql.js, WebAssembly). There is no server. | Local-first: the user's data lives with the user. | Reading and writing data is SQL against a file in memory. "The backend" is a `.db` file. |
-| 6 | **A service worker caches files for offline use.** Precached files are served cache-first. | Air-gapped use. | **After you edit a precached file, the browser keeps serving the old one** until its `?v=` and the worker's `CACHE_VERSION` go up. Run `node scripts/bump.js <file> --write` (§5.1). |
+| 6 | **A service worker caches files for offline use.** Precached files are served cache-first. | Air-gapped use. | **After you edit a precached file, the browser keeps serving the old one** until its `?v=` code and the worker's `CACHE_VERSION` change. Run `node scripts/bump.js <file> --write` (§5.1). |
 | 7 | **Some parts load only when first used** (the viewer's Find/navigate parts, from a list in `viewer/main.js`). They are not precached, on purpose. | Fast start: no bytes spent on features you have not opened. | Keep it that way. Never add a lazy module to the precache list to "fix" a warning. `bump.js` handles lazy lists for you. |
 | 8 | **Proof is a log line, not a screenshot.** Code prints `§TAG` lines (`console.log('§CLASH_FILM …')`); about 9,300 distinct tags. | A value you can read back is evidence; a picture is not. | When you claim something works, show the `§` line that proves it. Exit code 0 is not evidence. Read the log. |
 | 9 | **Tests are called witnesses**, and each one names the issue it proves or disproves. About 1,350 witness files. | A test that passes without telling you whether the problem is solved is not a test. | A witness must be able to say FAIL and INCONCLUSIVE (nothing was judged), not only PASS. Start new ones from `witness_kit/contract.js`. |
@@ -671,7 +671,7 @@ covers every field of every active ERP window (W-ERP-HOVER). Spec: bim-compiler 
 
 ```
 edit  →  node scripts/bump.js <file>           (dry run: shows what it will change)
-      →  node scripts/bump.js <file> --write   (page ?v= +1, loader list ?v= +1 for lazy parts, CACHE_VERSION +1)
+      →  node scripts/bump.js <file> --write   (every ?v= = the first 8 hex of the file's SHA-256, lazy lists and pages included; CACHE_VERSION +1 when one in the app's own folder changed)
       →  node tests/audit_sw_precache.js        (precache list and pages agree)
       →  npx eslint viewer modeller             (no undefined globals)
       →  run the witness for what you changed, READ ITS LOG
@@ -681,14 +681,19 @@ There are three service workers, each with its own `CACHE_VERSION`: `viewer/sw.j
 reason for a bump in the commit message, not in the `sw.js` line. The 4D schedule also has its own cache key,
 `_GANTT_CACHE_VERSION` in `viewer/tm_dash.js`. If you change how a schedule is built, bump it by hand (`bump.js` does not).
 
-**All three apps are written from their own `modules.json`: `modeller/` (since 2026-11-18), `erp/` and `viewer/` (since 2026-11-20).** `bump.js` raises the
-module's version number in `modules.json` and the app's `CACHE_VERSION`, then writes the pages, the lazy lists and `sw.js` from it, including the `?v=` inside a page's
-own scripts. In ERP and the Viewer a module can carry a different number on different pages; each goes up by one from its own number, and the two service-worker
-register lines are never raised. Do not edit a script tag, a `?v=` (the lazy lists in `viewer/main.js` included) or a `PRECACHE_ASSETS` entry by hand in any of the three apps: CI (W-MANIFEST-ROUNDTRIP) fails with the
-file, the line and the command to run. Comments between the tags stay yours.
+**All three apps are written from their own `modules.json`: `modeller/` (since 2026-11-18), `erp/` and `viewer/` (since 2026-11-20).**
+**A `?v=` is a code, not a number (since 2026-11-23, B4-HASH):** the first 8 hex of the SHA-256 of the file it names, as committed in git. `modules.json` holds no version: the
+code is computed when the lists are written, and the pages hold it. A loader's bytes hold its children's codes, so children are computed first (a cycle is refused, naming it).
+Every file in the repo has a code, `lib/` copies included; other sites' addresses and the service-worker register lines stay as they are.
+`node scripts/bump.js <file> --write` (the Bump button and the quick fix run it) writes every stale code of the apps that list the file and adds 1 to that app's `CACHE_VERSION`
+once when a code in the app's own folder changed. The service workers store files without the `?v=`, so the new `CACHE_VERSION` is what makes a browser fetch the file again.
+Pressing twice writes nothing the second time. For an ERP file the press still runs the legacy-parity gate first. A changed file that was not pressed is refused by
+`node scripts/gen_manifest.js --check` and CI: `<file> changed but <page>:<line> still says ?v=<old>; run: node scripts/bump.js <file> --write`.
+Do not type a code, a script tag or a `PRECACHE_ASSETS` entry by hand. `CACHE_VERSION` stays a counting `vNNN`. After a merge with main: take main's side of the generated
+files, run `node scripts/gen_manifest.js --write <app>`, and keep the number above main's. Comments between the tags stay yours.
 
 **Pages outside the three apps (since 2026-11-22, B3-OUT):** the landing page `index.html` and its loader `import_own.js` are written from `viewer/modules.json`, and
-`capex/index.html` from `erp/modules.json`, the same way. A bump of a file they load raises them too; a version number in a file no service worker serves (these three) does not
+`capex/index.html` from `erp/modules.json`, the same way. A bump of a file they load raises them too; a code in a file no service worker serves (these three) does not
 raise any `CACHE_VERSION`. `archive/gallery.html` is frozen: counted, never written, never bumped. `bump.js` no longer edits a page that no list names: CI (W-MANIFEST-ROUNDTRIP, C22)
 fails on any file with a `?v=` that is in no list and not frozen, and names the command that adopts it: `node scripts/gen_manifest.js --adopt <app> <file>`.
 
@@ -698,7 +703,7 @@ fails on any file with a `?v=` that is in no list and not frozen, and names the 
 (`viewer` for `index.html`, `erp` for `capex/index.html`). A NEW page outside the apps that loads a file with `?v=` is first adopted into one list:
 `node scripts/gen_manifest.js --adopt <app> <page>` (one time; it adds the marker lines and the page's sites, nothing else). Add any new shared global name to `eslint.globals.json`.
 
-**In the three apps (Viewer, ERP, Modeller),** add the module's line to that app's `modules.json` instead (its `v`, `load`, `precache`; its tag in `order` at the place it
+**In the three apps (Viewer, ERP, Modeller),** add the module's line to that app's `modules.json` instead (its `load`, `precache`; its tag in `order` at the place it
 must load; its entry in `precacheOrder` unless it is lazy on purpose), then run `node scripts/gen_manifest.js --write <app>` (`viewer`, `erp` or `modeller`): it writes the
 tag and the precache entry next to their neighbours. A page's tags sit between `§MANIFEST:BEGIN` / `§MANIFEST:END` marker lines; a tag outside them is refused. If the new file reads another module while it loads, `--check` lists that as an unreviewed
 order edge (`§DEPS_UNREVIEWED`) until a person puts it in `deps`, `uses` or `notDeps`.
