@@ -1,26 +1,8 @@
 {
   "_readme": "What the next library publish may change, stated before it runs (\u00a734, \u00a738). witness_library_publish.js holds the export to exactly this. Update it for each publish.",
-  "spec": "\u00a746.3 (2026-11-23): the German Werkplan families of migrations CL009-CL014 (scanned set DE-1), on top of the live ebcea595bea6 (CL006); stated from the migrations before the run: 17 families, 32 ad_geometry_map rows",
-  "added_families": [
-    "DEWP_D1010_1010x2005",
-    "DEWP_D1010_1010x2295",
-    "DEWP_D5010d240_5010x2005",
-    "DEWP_D885_885x2005",
-    "DEWP_D885_885x2295",
-    "DEWP_D885d115_885x2005",
-    "DEWP_D885d115_885x2295",
-    "DEWP_D885d175_885x2005",
-    "DEWP_D885d175_885x2275",
-    "DEWP_D885d175_885x2295",
-    "DEWP_W1010_1010x1200",
-    "DEWP_W1010d240_1010x1200",
-    "DEWP_W1260d240_1260x1200",
-    "DEWP_W1510_1510x1200",
-    "DEWP_W1635_1635x1200",
-    "DEWP_W3010_3010x1200",
-    "DEWP_W885_885x1200"
-  ],
-  "added_map_rows": 32,
+  "spec": "none pending: 5510b96bbf80 published 2026-11-23 (\u00a746.3)",
+  "added_families": [],
+  "added_map_rows": 0,
   "families_that_may_resolve_differently": [],
   "descriptions_that_may_change": []
 }
