@@ -138,7 +138,11 @@ if res.get('H') and res['H']['ok'] and not res.get('V'):
 for d in ('H', 'V'):   # one offset per axis = the median t of its matches
     if res.get(d) and 't' not in res[d]: res[d]['t'] = float(np.median([h['t'] for h in res[d]['matches']]))
 
-if not res.get('H') or not res.get('V'): sys.exit(log("§RASTER_W-S17r verdict=VACUOUS (an axis has no match)"))
+if not res.get('H') or not res.get('V'):   # §43.18: the H map is still written (stage C reads it), marked partial
+    if res.get('H') and res['H']['ok']:
+        json.dump(dict(spec='§43.17 step A', ok=False, partial='H only', map={'H': res['H']}, scale_px_per_m={'H': K4['H'] * res['H']['s'], 'V': K4['V'] * res['H']['s']}),
+                  open(out_p, 'w'), indent=1)
+    sys.exit(log("§RASTER_W-S17r verdict=VACUOUS (an axis has no match)" + (' | register.json written with the H map only' if res.get('H') and res['H']['ok'] else '')))
 agree = abs(res['H']['s'] - res['V'].get('s_free', res['V']['s'])) / res['H']['s']
 K3 = {'H': K4['H'] * res['H']['s'], 'V': K4['V'] * res['V']['s']}
 ok = res['H']['ok'] and res['V']['ok'] and agree <= 0.005

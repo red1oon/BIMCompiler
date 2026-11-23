@@ -1,5 +1,6 @@
 # Implementing PDF2BIM_VECTOR_PROBE.md §43.16 — Witness: W-S19a (openings jamb to jamb, DIN 4172 class), W-S19b (jamb falsifier)
-# Usage: python3 -P raster_openings.py <plan workdir (chains.json, walls.json)>  > raster_openings.log ; writes <work>/openings.json
+# Usage: python3 -P raster_openings.py <plan workdir (chains.json, walls.json)> [<type template, default types/german_werkplan_efh.json>]  > raster_openings.log
+#   writes <work>/openings.json; the opening size series comes from the TYPE TEMPLATE (opening_series), not from this code
 # An exterior opening = the gap between two collinear exterior runs of walls.json (§43.1). The run end is where the wall HATCH
 # stops; the opening edge is the drawn JAMB stroke: a column (H wall) / row (V wall) whose ink covers >= 90 % of the band.
 # Width = jamb stroke centre to centre (the face-line convention of W-S7a), then classed against DIN 4172 Öffnungsmaß x*125+10 mm.
@@ -27,7 +28,9 @@ W = json.load(open(os.path.join(work, 'walls.json')))['walls']
 ext_t = max(w['thk_chain_m'] for w in W)
 HALF_X, HALF_Y = (X1 - X0) / KH * 500, (Y1 - Y0) / KV * 500   # body half-size, mm
 COVER = 0.90; BACK, FWD = px(2), px(6)       # search -2..+6 px from the run end, toward the opening (spec §43.16)
-SERIES = lambda w: 125 * round((w - 10) / 125) + 10   # nearest Öffnungsmaß x*125 + 10 mm (DIN 4172, 1 cm joint)
+TPL = sys.argv[2] if len(sys.argv) > 2 else os.path.join(os.path.dirname(os.path.abspath(__file__)), 'types', 'german_werkplan_efh.json')
+OS = json.load(open(TPL))['opening_series']; MOD, JNT = OS['module_mm'], OS['joint_mm']
+SERIES = lambda w: MOD * round((w - JNT) / MOD) + JNT   # nearest series value x*module + joint (the type's; DIN 4172 for the German Werkplan type)
 
 def band_px(w):   # (along-axis converter, band rows/cols as page px) for a run
     if w['axis'] == 'H':
@@ -65,8 +68,8 @@ for axis in ('H', 'V'):
             o0 = (pa - (X0 if axis == 'H' else Y0)) / K * 1000; o1 = (pb - (X0 if axis == 'H' else Y0)) / K * 1000
             meas = o1 - o0; nom = SERIES(meas); d = meas - nom; tol = 1000 / K
             cls = 'STANDARD' if abs(d) <= tol else 'STANDARD-DEFAULT'
-            mid = nom + (62.5 if meas > nom else -62.5)                       # the midpoint toward the other neighbour
-            if cls != 'STANDARD' and abs(meas - mid) <= tol: cls = 'TIE'; tie = sorted((nom, nom + (125 if meas > nom else -125)))
+            mid = nom + (MOD / 2 if meas > nom else -MOD / 2)                       # the midpoint toward the other neighbour
+            if cls != 'STANDARD' and abs(meas - mid) <= tol: cls = 'TIE'; tie = sorted((nom, nom + (MOD if meas > nom else -MOD)))
             else: tie = None
             c = (o0 + o1) / 2
             ops.append(dict(face=face, axis=axis, run_a=W.index(a), run_b=W.index(b), jamb_a=ja is not None, jamb_b=jb is not None,
@@ -95,5 +98,5 @@ log(f"§RASTER_W-S19a openings={n} both_jambs={both} STANDARD={sum(o['cls'] == '
 fp = sum(fals)
 log(f"§RASTER_W-S19b falsifier mid-wall probes={len(fals)} jamb_found={fp} rate={fp / max(1, len(fals)):.0%} "
     f"verdict={'PASS' if len(fals) and fp / len(fals) <= 0.05 else ('INCONCLUSIVE' if not fals else 'FAIL')}")
-json.dump(dict(source='DIN 4172 Öffnungsmaß x*12.5+1 cm (BauNetz Wissen, Steinformat und Maßordnung); §43.16', openings=ops),
+json.dump(dict(source=OS['_source'] + '; §43.16', openings=ops),
           open(out_p, 'w'), indent=1, ensure_ascii=False)
