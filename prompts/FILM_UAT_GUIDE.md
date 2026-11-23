@@ -3,6 +3,8 @@ SCOPE: the film that walks through the CAPEX UAT Guide (`docs/CapexUATGuide.md`,
 Every number spoken or shown is a fact read from the guide, the saved PDF or a § log line. **Read `build.log` after every run (`§FILM_*`); the exit code is not evidence.** The film file is NEVER pushed
 (owner 2026-11-14: only scripts, logs and specs go to GitHub); it stays in `~/Videos/`. Layout rules: `prompts/FILM_NARRATION.md` ▶ PLAYBOOK C.
 
+> ## ▶▶▶ 2026-11-23, NEWEST: Part III is to be REDONE in the guide's rev (h) flow (owner) — spec §5.24 (order r → l → c → d, whole Shed, D's 15-project figures; reference recording `~/.cache/uat_film_part3/take_h_measure/`). Next: the script changes of §5.24, then one take on :8108 (prep3 + prepL around backups), build rc11, independent check. Also §5.25: the CH 0 'BIM to ERP Variance Order' film (Project Issue phase-dates variance on the Shed): measure on :8108 first.
+
 > ## ▶▶ RESUME HERE FIRST (2026-11-22, night) — Part III rc9 PUBLISHED (https://youtu.be/g7FTNnbbybA), guide rev (f) live
 > **State:** film part 3 = rc9 (880.4 s, every bar PASS), linked in *See how* 3 + item 20. Guide revisions (c)–(f) today: the change-list finds 9–19 now live in their step rows (§5.19), then two more independent checks fixed (§5.20, §5.21: items 23, 24); the 80 step ids are unchanged but 11+ rows read differently from the text the signed report proved (the report stays as signed, the change list is its appendix).
 > **Independent checks (fresh read-only agents, film vs recording vs step rows):** rc6 1 BLOCKER/8 MISMATCH → rc7 0/6 → rc8 0/3 → rc9 not yet checked (its fixes: §5.21).
