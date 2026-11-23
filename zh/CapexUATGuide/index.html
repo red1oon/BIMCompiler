@@ -3965,11 +3965,11 @@
 </tr>
 <tr>
 <td>Revision</td>
-<td><strong>2026-11-23 (i)</strong></td>
+<td><strong>2026-11-23 (j)</strong></td>
 </tr>
 <tr>
 <td>Status</td>
-<td>Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately and stays as signed. Since then, steps were corrected: the change list after this cover (items 22 to 28) names each step and what changed.</td>
+<td>Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately and stays as signed. Since then, steps were corrected: the change list after this cover (items 22 to 30) names each step and what changed.</td>
 </tr>
 <tr>
 <td>Prepared and issued by</td>
@@ -3996,8 +3996,8 @@
 </thead>
 <tbody>
 <tr>
-<td>2026-11-23 (h), (i)</td>
-<td>The whole Shed into the ERP and the dashboard: B4, L1 to L3 before C, D (item 27); the link names the order, <em>Push again?</em> (item 28)</td>
+<td>2026-11-23 (h) to (j)</td>
+<td>The whole Shed into the ERP and the dashboard: B4, L1 to L3 before C, D (item 27); the link names the order, <em>Push again?</em> (item 28); L2's status line, B5.1's pack date (items 29, 30)</td>
 </tr>
 <tr>
 <td>2026-11-22 (g)</td>
@@ -4196,6 +4196,20 @@
 <td>Each <strong>Issue to Project</strong> opens its own window tab; after several, the first tabs are pushed off the strip.</td>
 <td><strong>Corrected in the step</strong> (2026-11-22 (c))</td>
 <td>Follow the step: it now says this</td>
+</tr>
+<tr>
+<td>30</td>
+<td>B5.1</td>
+<td>The reference pack of revision (g) (<code>Shed_UAT_pack_20261122.zip</code>) reads <em>Pack intact: 19 files checked, built 2026-11-22 …</em> under box 1; the step still said <em>built 2026-11-15</em> (the earlier pack).</td>
+<td>Corrected in this revision</td>
+<td>If box 1 showed 2026-11-22, that is a pass</td>
+</tr>
+<tr>
+<td>29</td>
+<td>L2</td>
+<td><strong>L2's status line in full.</strong> On a fresh iDempiere the first push also creates the Shed's product categories, products and unit, so the line reads <em>iDempiere Project #… · created {"categories":3,"products":11,"projects":1,"phases":6,"tasks":8,"lines":11,"uoms":1}</em>. Revision (i) quoted only the project's counts, measured on a server that already held those products. Measured twice on a reset test instance (2026-11-23).</td>
+<td>Corrected in this revision</td>
+<td>If L2 showed the longer line, that is a pass</td>
 </tr>
 <tr>
 <td>28</td>
@@ -5575,7 +5589,7 @@
 <tr>
 <td>L2</td>
 <td>Do B4.1 (<strong>Level 1</strong>, the whole Shed), press <strong>› ERP</strong>, type your iDempiere password in the window <em>Sign in to iDempiere</em>, and press <strong>Push</strong></td>
-<td>The window shows your user and ids, filled in. Then the status line reads <em>iDempiere Project #… · created {"projects":1,"phases":6,"tasks":8,"lines":11}</em> and the link <strong>SHED #… ↗</strong> appears, with the same number (before the push there is no link). If you press <strong>› ERP</strong> again, the box <strong>Push again?</strong> asks first; a second push creates nothing (<em>"projects":0</em>, all 0). (Chrome may show its own password windows: press <strong>OK</strong>, then <strong>No thanks</strong>)</td>
+<td>The window shows your user and ids, filled in. Then the status line reads <em>iDempiere Project #… · created {"categories":3,"products":11,"projects":1,"phases":6,"tasks":8,"lines":11,"uoms":1}</em> (the first push into your iDempiere also creates the Shed's product categories, products and unit) and the link <strong>SHED #… ↗</strong> appears, with the same number (before the push there is no link). If you press <strong>› ERP</strong> again, the box <strong>Push again?</strong> asks first; a second push creates nothing (<em>"projects":0</em>, all 0). (Chrome may show its own password windows: press <strong>OK</strong>, then <strong>No thanks</strong>)</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
@@ -5602,7 +5616,7 @@
 <tr>
 <td>B5.1</td>
 <td>Download the <strong>reference pack</strong> (link in <em>What you need</em>) and open the <a href="https://red1oon.github.io/bim-ootb/capex/uat/check.html">UAT Run Checker</a>. In box <strong>1</strong> choose the pack's <code>.zip</code></td>
-<td>Under box 1: <em>Pack intact: 19 files checked, built 2026-11-15 …</em>. A damaged or wrong file is refused, and <strong>Mark my run</strong> stays off</td>
+<td>Under box 1: <em>Pack intact: 19 files checked, built 2026-11-22 …</em>. A damaged or wrong file is refused, and <strong>Mark my run</strong> stays off</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
