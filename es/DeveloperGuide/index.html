@@ -4148,7 +4148,7 @@ JavaScript app, several things will look broken when they are not. Ten things to
 <td>6</td>
 <td><strong>A service worker caches files for offline use.</strong> Precached files are served cache-first.</td>
 <td>Air-gapped use.</td>
-<td><strong>After you edit a precached file, the browser keeps serving the old one</strong> until its <code>?v=</code> and the worker's <code>CACHE_VERSION</code> go up. Run <code>node scripts/bump.js &lt;file&gt; --write</code> (§5.1).</td>
+<td><strong>After you edit a precached file, the browser keeps serving the old one</strong> until its <code>?v=</code> code and the worker's <code>CACHE_VERSION</code> change. Run <code>node scripts/bump.js &lt;file&gt; --write</code> (§5.1).</td>
 </tr>
 <tr>
 <td>7</td>
@@ -5243,7 +5243,7 @@ covers every field of every active ERP window (W-ERP-HOVER). Spec: bim-compiler 
 <h2 id="5-changing-things">5. Changing things<a class="headerlink" href="#5-changing-things" title="Permanent link">&para;</a></h2>
 <h3 id="51-any-edit-to-a-file-the-browser-loads">5.1 Any edit to a file the browser loads<a class="headerlink" href="#51-any-edit-to-a-file-the-browser-loads" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code>edit  →  node scripts/bump.js &lt;file&gt;           (dry run: shows what it will change)
-      →  node scripts/bump.js &lt;file&gt; --write   (page ?v= +1, loader list ?v= +1 for lazy parts, CACHE_VERSION +1)
+      →  node scripts/bump.js &lt;file&gt; --write   (every ?v= = the first 8 hex of the file&#39;s SHA-256, lazy lists and pages included; CACHE_VERSION +1 when one in the app&#39;s own folder changed)
       →  node tests/audit_sw_precache.js        (precache list and pages agree)
       →  npx eslint viewer modeller             (no undefined globals)
       →  run the witness for what you changed, READ ITS LOG
@@ -5251,20 +5251,25 @@ covers every field of every active ERP window (W-ERP-HOVER). Spec: bim-compiler 
 <p>There are three service workers, each with its own <code>CACHE_VERSION</code>: <code>viewer/sw.js</code>, <code>erp/sw.js</code>, <code>modeller/sw.js</code>. Put the
 reason for a bump in the commit message, not in the <code>sw.js</code> line. The 4D schedule also has its own cache key,
 <code>_GANTT_CACHE_VERSION</code> in <code>viewer/tm_dash.js</code>. If you change how a schedule is built, bump it by hand (<code>bump.js</code> does not).</p>
-<p><strong>All three apps are written from their own <code>modules.json</code>: <code>modeller/</code> (since 2026-11-18), <code>erp/</code> and <code>viewer/</code> (since 2026-11-20).</strong> <code>bump.js</code> raises the
-module's version number in <code>modules.json</code> and the app's <code>CACHE_VERSION</code>, then writes the pages, the lazy lists and <code>sw.js</code> from it, including the <code>?v=</code> inside a page's
-own scripts. In ERP and the Viewer a module can carry a different number on different pages; each goes up by one from its own number, and the two service-worker
-register lines are never raised. Do not edit a script tag, a <code>?v=</code> (the lazy lists in <code>viewer/main.js</code> included) or a <code>PRECACHE_ASSETS</code> entry by hand in any of the three apps: CI (W-MANIFEST-ROUNDTRIP) fails with the
-file, the line and the command to run. Comments between the tags stay yours.</p>
+<p><strong>All three apps are written from their own <code>modules.json</code>: <code>modeller/</code> (since 2026-11-18), <code>erp/</code> and <code>viewer/</code> (since 2026-11-20).</strong>
+<strong>A <code>?v=</code> is a code, not a number (since 2026-11-23, B4-HASH):</strong> the first 8 hex of the SHA-256 of the file it names, as committed in git. <code>modules.json</code> holds no version: the
+code is computed when the lists are written, and the pages hold it. A loader's bytes hold its children's codes, so children are computed first (a cycle is refused, naming it).
+Every file in the repo has a code, <code>lib/</code> copies included; other sites' addresses and the service-worker register lines stay as they are.
+<code>node scripts/bump.js &lt;file&gt; --write</code> (the Bump button and the quick fix run it) writes every stale code of the apps that list the file and adds 1 to that app's <code>CACHE_VERSION</code>
+once when a code in the app's own folder changed. The service workers store files without the <code>?v=</code>, so the new <code>CACHE_VERSION</code> is what makes a browser fetch the file again.
+Pressing twice writes nothing the second time. For an ERP file the press still runs the legacy-parity gate first. A changed file that was not pressed is refused by
+<code>node scripts/gen_manifest.js --check</code> and CI: <code>&lt;file&gt; changed but &lt;page&gt;:&lt;line&gt; still says ?v=&lt;old&gt;; run: node scripts/bump.js &lt;file&gt; --write</code>.
+Do not type a code, a script tag or a <code>PRECACHE_ASSETS</code> entry by hand. <code>CACHE_VERSION</code> stays a counting <code>vNNN</code>. After a merge with main: take main's side of the generated
+files, run <code>node scripts/gen_manifest.js --write &lt;app&gt;</code>, and keep the number above main's. Comments between the tags stay yours.</p>
 <p><strong>Pages outside the three apps (since 2026-11-22, B3-OUT):</strong> the landing page <code>index.html</code> and its loader <code>import_own.js</code> are written from <code>viewer/modules.json</code>, and
-<code>capex/index.html</code> from <code>erp/modules.json</code>, the same way. A bump of a file they load raises them too; a version number in a file no service worker serves (these three) does not
+<code>capex/index.html</code> from <code>erp/modules.json</code>, the same way. A bump of a file they load raises them too; a code in a file no service worker serves (these three) does not
 raise any <code>CACHE_VERSION</code>. <code>archive/gallery.html</code> is frozen: counted, never written, never bumped. <code>bump.js</code> no longer edits a page that no list names: CI (W-MANIFEST-ROUNDTRIP, C22)
 fails on any file with a <code>?v=</code> that is in no list and not frozen, and names the command that adopts it: <code>node scripts/gen_manifest.js --adopt &lt;app&gt; &lt;file&gt;</code>.</p>
 <h3 id="52-adding-a-new-browser-file">5.2 Adding a new browser file<a class="headerlink" href="#52-adding-a-new-browser-file" title="Permanent link">&para;</a></h3>
 <p><strong>On a page outside the three apps:</strong> <code>index.html</code> and <code>capex/index.html</code> are in a list now (§5.1), so a new tag there goes in that list's <code>order</code> exactly as below
 (<code>viewer</code> for <code>index.html</code>, <code>erp</code> for <code>capex/index.html</code>). A NEW page outside the apps that loads a file with <code>?v=</code> is first adopted into one list:
 <code>node scripts/gen_manifest.js --adopt &lt;app&gt; &lt;page&gt;</code> (one time; it adds the marker lines and the page's sites, nothing else). Add any new shared global name to <code>eslint.globals.json</code>.</p>
-<p><strong>In the three apps (Viewer, ERP, Modeller),</strong> add the module's line to that app's <code>modules.json</code> instead (its <code>v</code>, <code>load</code>, <code>precache</code>; its tag in <code>order</code> at the place it
+<p><strong>In the three apps (Viewer, ERP, Modeller),</strong> add the module's line to that app's <code>modules.json</code> instead (its <code>load</code>, <code>precache</code>; its tag in <code>order</code> at the place it
 must load; its entry in <code>precacheOrder</code> unless it is lazy on purpose), then run <code>node scripts/gen_manifest.js --write &lt;app&gt;</code> (<code>viewer</code>, <code>erp</code> or <code>modeller</code>): it writes the
 tag and the precache entry next to their neighbours. A page's tags sit between <code>§MANIFEST:BEGIN</code> / <code>§MANIFEST:END</code> marker lines; a tag outside them is refused. If the new file reads another module while it loads, <code>--check</code> lists that as an unreviewed
 order edge (<code>§DEPS_UNREVIEWED</code>) until a person puts it in <code>deps</code>, <code>uses</code> or <code>notDeps</code>.</p>
