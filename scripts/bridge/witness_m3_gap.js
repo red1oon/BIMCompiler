@@ -911,6 +911,9 @@ async function localDDO1(mut, f) {
 // ================= corpus (spec §23) =================
 const POSDT = C.dt.pos, STDDT = C.dt.std;
 const sc = (id, facts) => ({ id, facts, legacy: legacyRun, local: localRun(0) });
+// VOCAB_MESSAGE_CATALOG §19.19 (derived how-to): per scenario, the table and document type its LEGACY push writes, read from the descriptor it pushes (descFor), never from the scenario's name
+const META = {};
+const metaLine = r => META[r.id] ? log(`§SCN_META ${r.id} ${JSON.stringify(META[r.id])}`) : null;
 const corpus = [
   sc('S1-pos-sale', { doctype: POSDT, lines: [{ product: 123, qty: 1 }] }),
   sc('S2-product-not-on-pricelist', { doctype: POSDT, lines: [{ product: 122, qty: 1 }] }),
@@ -969,9 +972,10 @@ const quirks = [
   // M3_ONLY=<prefix>: run only the corpus rows whose id starts with it (used by the one-shot S5 witness, spec §43); the S5 row exists only in that mode
   if (process.env.M3_ONLY === 'S5') corpus.push(sc('S5-pos-sale-stray-acct-schema', { doctype: POSDT, lines: [{ product: 123, qty: 1 }] }));
   if (process.env.M3_ONLY) { const keep = corpus.filter(c => c.id.startsWith(process.env.M3_ONLY)); corpus.length = 0; corpus.push(...keep); }
+  for (const c of corpus) META[c.id] = { table: descFor(c.facts).header.table, doctype: c.facts.doctype };
   const rows = await R.run(corpus, spec, quirks, { log });
   const only = process.env.M3_ONLY, keepOnly = list => only ? list.filter(x => x.id.startsWith(only)) : list;
-  const onlyExit = extra => { for (const r of rows.concat(extra || [])) log(`§SCN_DETAIL ${r.id} legacy=${JSON.stringify({ ...r.legacy, _order: undefined })} sqlite=${JSON.stringify(r.sqlite)}`); log('§M3_VERDICT ONLY ' + only); process.exit(0); };
+  const onlyExit = extra => { for (const r of rows.concat(extra || [])) { metaLine(r); } for (const r of rows.concat(extra || [])) log(`§SCN_DETAIL ${r.id} legacy=${JSON.stringify({ ...r.legacy, _order: undefined })} sqlite=${JSON.stringify(r.sqlite)}`); log('§M3_VERDICT ONLY ' + only); process.exit(0); };
   // S12 void (spec §33): product 136 (costed, reversal is cost-neutral), BP 112
   const vrows = await R.run(keepOnly([{ id: 'S12-void-pos-sale', facts: { doctype: POSDT, action: 'VO', lines: [{ product: 137, qty: 1 }] }, legacy: legacyVoid, local: localVoid(0) },
     { id: 'S12b-void-taxed-pos-sale', facts: { doctype: POSDT, action: 'VO', org: 12, wh: 104, deliveryVia: 'D', lines: [{ product: 137, qty: 1 }] }, legacy: legacyVoid, local: localVoid(0) }]), voidSpec, quirks, { log });
@@ -1000,7 +1004,7 @@ const quirks = [
   if (!only || 'O2C'.startsWith(only.slice(0, 3)) && only.startsWith('O2C')) {
     const O2C = require('./cycle_o2c')({ cfg, query, call: call_, createLink, gb, E, POS, DP, SCHEMA, SCHEMA2, TODAY, cents, lc, fmtPostings, legacyFactsOf, legacyCostQty, localCostQty, locStock, applyCostQty,
       pos, priceOfAt, taxOfFor, taxById, taxChildren, TAX_INCLUDED, dtOf, creditOf, periodCheck, acctSetupOf, PL_CURRENCY, log });
-    for (const [i, st] of O2C.STEPS.entries()) rows.push(...await R.run([O2C.scenario(st, i)], { keys: O2C.KEYS[st], notCompared: {} }, quirks, { log }));
+    for (const [i, st] of O2C.STEPS.entries()) { const sc = O2C.scenario(st, i); if (O2C.meta(st)) META[sc.id] = O2C.meta(st); rows.push(...await R.run([sc], { keys: O2C.KEYS[st], notCompared: {} }, quirks, { log })); }
     // negative control for the cycle: a second chain whose SQLite invoice price is +1¢ MUST surface at the INV step (lines, total, books, open item) and not before
     const NEG = require('./cycle_o2c')({ cfg, query, call: call_, createLink, gb, E, POS, DP, SCHEMA, SCHEMA2, TODAY, cents, lc, fmtPostings, legacyFactsOf, legacyCostQty, localCostQty, locStock, applyCostQty,
       pos, priceOfAt, taxOfFor, taxById, taxChildren, TAX_INCLUDED, dtOf, creditOf, periodCheck, acctSetupOf, PL_CURRENCY, log: () => {}, mut: 1, idBase: 98000 });
@@ -1089,6 +1093,7 @@ const quirks = [
     out('§M3_DDO_NEGATIVE_CONTROL', dneg[0].verdict === 'SQLITE-GAP' && dneg[0].gaps.some(g => g.key === 'outcome'), `the SQLite side read as Q (legacy I refuses: no Doc_DDOrder class) ⇒ verdict=${dneg[0].verdict} gaps=${dneg[0].gaps.map(g => g.key).join(',')}`); }
   if (only) onlyExit();
   const by = Object.fromEntries(rows.map(r => [r.id, r]));
+  for (const r of rows) metaLine(r);
   for (const r of rows) log(`§SCN_DETAIL ${r.id} legacy=${JSON.stringify({ ...r.legacy, _order: undefined })} sqlite=${JSON.stringify(r.sqlite)}`);
 
   // ---- HARNESS checks
