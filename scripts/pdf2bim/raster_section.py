@@ -1,6 +1,7 @@
 # Implementing PDF2BIM_VECTOR_PROBE.md §43.20 step 0 — heights from a section's GEOMETRY (its level-mark text is unreadable at 200 dpi)
 # Implementing PDF2BIM_VECTOR_PROBE.md §43.20 step 2 — scale from the cut faces (slab lines) / READ depth; isotropy from p4's W-S5; faces checked by the roof (Hough vote)
-# Usage: python3 -P raster_section.py <p2 workdir (page_clean.png via chains.json, views_label.npy, roof.json)> <view name> <depth_m READ> <pitch_deg READ> <ext_wall_m READ> <p4 raster_probe log>
+# Usage: python3 -P raster_section.py <p2 workdir (page_clean.png via chains.json, views_label.npy, roof.json)> <view name> <depth_m READ> <pitch_deg READ> <ext_wall_m READ> <p4 raster_probe log> <storeys N from the plans>
+# §43.20 step 3: slabs = line pairs with hatch between, named top-down by N; writes section_heights.json on PASS
 import sys, os, json, math, re
 import numpy as np
 from PIL import Image
@@ -9,7 +10,7 @@ from raster_texture import texture_maps
 
 def log(*a): print(*a, flush=True)
 work, view, depth, pitch, extw = sys.argv[1], sys.argv[2], float(sys.argv[3]), float(sys.argv[4]), float(sys.argv[5])
-P4LOG = sys.argv[6]
+P4LOG = sys.argv[6]; NST = int(sys.argv[7])
 C = json.load(open(os.path.join(work, 'chains.json'))); R = json.load(open(os.path.join(work, 'roof.json')))
 L = np.load(os.path.join(work, 'views_label.npy')); lab = list(R['views']).index(view) + 1   # same order as raster_roof.py wrote the label map
 ys, xs = np.where(L == lab); x0, y0, x1, y1 = xs.min(), ys.min(), xs.max(), ys.max()
@@ -99,6 +100,31 @@ grp = []
 for r in rows: (grp[-1].append(r) if grp and r - grp[-1][-1] <= 1 else grp.append([r]))
 log(f"§SECT_LINES long horizontal lines between the faces (region row: z above the base slab bottom row {base}, m): " + ' '.join(f"{float(np.mean(g_)):.1f}:{(base - float(np.mean(g_))) / kh:+.3f}" for g_ in grp))
 log(f"§SECT_ROOF_Z apex z={(base - ay) / kh:+.3f} m above the base slab bottom; the left top line meets the left face at z={(base - (L_[2] - tl * lf)) / kh:+.3f}, the right at z={(base - (R_[2] + tr * rf)) / kh:+.3f}")
+# ---- §43.20 step 3: slabs by a structural rule ----
+g25 = []
+for r in range(ink.shape[0]):
+    if max([b - a + 1 for a, b in runs(ink[r, ilf:irf + 1])] or [0]) >= 0.25 * span:
+        if g25 and r - g25[-1][1] <= 1: g25[-1][1] = r
+        else: g25.append([r, r])
+slabs = []
+for a, b in zip(g25, g25[1:]):
+    mid_rows = range(a[1] + 1, b[0])
+    dens = [float(DG[r, ilf:irf + 1].mean()) for r in mid_rows]
+    if dens and min(dens) >= 0.30: slabs.append(dict(top=(a[0] + a[1]) / 2, bot=(b[0] + b[1]) / 2, min_hatch=round(min(dens), 2)))
+log(f"§SECT_SLABS line groups (rows, run >= 25 % span) {[(a + b) / 2 for a, b in g25]} -> hatched pairs " + ' '.join(f"{q['top']}/{q['bot']}(hatch>={q['min_hatch']})" for q in slabs) + f" | storeys N={NST} need {NST + 1}")
+if len(slabs) < NST + 1: sys.exit(log(f"§SECT_HEIGHTS verdict=VACUOUS ({len(slabs)} slabs < N+1 = {NST + 1}); heights stay DEFAULT"))
+use = slabs[:NST + 1]; sub = slabs[NST + 1:]
+ceil_, base_ = use[0], use[-1]; floors = use[1:-1][::-1]           # floors bottom-up: storey 2 .. N
+z = lambda row: (base_['top'] - row) / kh                         # m above the base slab top (EG level 0)
+mm5 = lambda m: int(round(m * 1000 / 5) * 5)
+roof_row = ((L_[2] - tl * lf) + (R_[2] + tr * rf)) / 2
+H = dict(datum='base slab top = EG level 0', k_px_per_m=round(kh, 3),
+         levels=[0] + [mm5(z(f['top'])) for f in floors], slab_thk=[mm5((f['bot'] - f['top']) / kh) for f in floors],
+         ceiling_bottom=mm5(z(ceil_['bot'])), ceiling_top=mm5(z(ceil_['top'])), roof_bottom=mm5(z(roof_row)), apex=mm5(z(ay)),
+         rows=dict(base=base_, floors=floors, ceiling=ceil_, roof_at_faces=round(roof_row, 1), apex=round(ay, 1)), sub_base=sub)
+log(f"§SECT_HEIGHTS verdict=PASS levels_mm={H['levels']} slab_mm={H['slab_thk']} ceiling={H['ceiling_bottom']}..{H['ceiling_top']} roof_bottom={H['roof_bottom']} apex={H['apex']} (base slab rows {base_['top']}/{base_['bot']}, sub-base layers {[(q['top'], q['bot']) for q in sub]})")
+log(f"§SECT_STAIR_DIAG 16 x 0.179 = 2.864 m (EG plan label, human-read) vs OG level {H['levels'][1] / 1000 if len(H['levels']) > 1 else None} m (no verdict)")
+json.dump(H, open(os.path.join(work, 'section_heights.json'), 'w'), indent=1)
 # DIAGNOSTIC: the section's height chain (YELLOW) at k_h
 for ch in C['chains']:
     if ch['dir'] != 'V' or not (x0 <= ch['line_x'] <= x1): continue
