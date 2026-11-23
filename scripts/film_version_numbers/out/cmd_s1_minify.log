@@ -1,0 +1,4 @@
+$ NODE_PATH=/tmp/wt-film6-min/node_modules node scripts/minify_pages.js /tmp/wt-film6-min/site 2>&1 | grep -E "PAYLOAD-MIN" | cut -c1-200
+§PAYLOAD-MIN viewer/panels.js raw 173.2→99.8KB gz 54.3→30.6KB
+§PAYLOAD-MIN-TOTAL files=1 skipped=0 raw 173→100KB gz 54→31KB (gz −43.6%) identMangle=OFF(globals-safe)
+§CMD_EXIT 0

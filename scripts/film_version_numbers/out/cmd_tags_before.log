@@ -1,0 +1,3 @@
+$ git grep -n -o -E "[^A-Za-z0-9_]panels\.js\?v=[0-9a-f]+" -- index.html "viewer/*.html" "erp/*.html" "modeller/*.html" capex/index.html
+viewer/viewer.html:910:"panels.js?v=cb4ecd9c
+§CMD_EXIT 0

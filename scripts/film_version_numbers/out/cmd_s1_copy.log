@@ -1,0 +1,4 @@
+$ cp viewer/panels.js /tmp/wt-film6-min/site/viewer/panels.js && sha256sum viewer/panels.js /tmp/wt-film6-min/site/viewer/panels.js | cut -c1-12
+cb4ecd9ce9f5
+cb4ecd9ce9f5
+§CMD_EXIT 0

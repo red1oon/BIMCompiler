@@ -1,0 +1,6 @@
+§POINTER id=s1_row kind=control dom={"x": 53, "y": 410, "w": 289, "h": 22} inside=True flat=False changed_px=120834 OK
+§POINTER id=s2_name kind=token dom={"x": 482, "y": 440, "w": 54, "h": 22} pixels={"x": 482, "y": 440, "w": 54, "h": 22} dcentre=0.0 dw=0 dh=0 OK
+§POINTER id=s2_tag kind=token dom={"x": 744, "y": 440, "w": 90, "h": 22} pixels={"x": 744, "y": 440, "w": 90, "h": 22} dcentre=0.0 dw=0 dh=0 OK
+§POINTER id=s3_press1 kind=control dom={"x": 152, "y": 824, "w": 69, "h": 24} inside=True flat=False changed_px=114113 OK
+§POINTER id=s3_press2 kind=control dom={"x": 152, "y": 824, "w": 80, "h": 24} inside=True flat=False changed_px=62432 OK
+§POINTER_VERDICT PASS items=5

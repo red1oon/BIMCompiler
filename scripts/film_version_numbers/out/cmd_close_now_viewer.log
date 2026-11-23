@@ -1,0 +1,3 @@
+$ git show fc2f8216:viewer/modules.json | grep -c '"v":' || true
+0
+§CMD_EXIT 0

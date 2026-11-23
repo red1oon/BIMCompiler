@@ -1,0 +1,13 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT cover cue=0.00 room=998.70 dur=3.59 -> DETAIL slack=+995.11 words=12
+§NARR_TONE cover#0 F WH rose=0st endDelta=-2.4st want=fall OK "What makes this code different?"
+§NARR_FIT s1 cue=0.00 room=998.70 dur=8.39 -> DETAIL slack=+990.31 words=27
+§NARR_TONE s1#0 F YN rose=5.0st endDelta=+4.4st want=rise OK "Is there a build step?"
+§NARR_FIT s2 cue=0.00 room=998.70 dur=8.38 -> DETAIL slack=+990.32 words=28
+§NARR_TONE s2#0 F YN rose=5.0st endDelta=+3.4st want=rise OK "And the editor?"
+§NARR_FIT s3 cue=0.00 room=998.70 dur=9.94 -> DETAIL slack=+988.76 words=32
+§NARR_TONE s3#0 F WH rose=0st endDelta=-5.4st want=fall OK "What if I change a file?"
+§NARR_FIT s4 cue=0.00 room=998.70 dur=9.95 -> DETAIL slack=+988.75 words=32
+§NARR_TONE s4#0 F WH rose=0st endDelta=-4.6st want=fall OK "And how do we know it holds?"

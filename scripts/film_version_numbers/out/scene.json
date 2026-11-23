@@ -1,0 +1,412 @@
+{
+ "beats": {
+  "cover": {
+   "layout": "full",
+   "label": "the repo, opened in VS Code",
+   "items": [
+    {
+     "kind": "still",
+     "still": "h0",
+     "label": "bim-ootb in VS Code",
+     "frames": null
+    }
+   ]
+  },
+  "s1": {
+   "layout": "full",
+   "label": "the file you read is the file that runs",
+   "items": [
+    {
+     "kind": "still",
+     "still": "s1_pkg",
+     "label": "package.json: no bundler among its dependencies, no build script",
+     "frames": 30
+    },
+    {
+     "kind": "ptr",
+     "id": "s1_row",
+     "pre": "s1_pre",
+     "post": "s1_post",
+     "target": {
+      "x": 53,
+      "y": 410,
+      "w": 289,
+      "h": 22
+     },
+     "view": "s1_inset",
+     "viewKind": "browser",
+     "viewPulse": {
+      "x": 64,
+      "y": 69,
+      "w": 125,
+      "h": 24
+     },
+     "pulse": {
+      "x": 681,
+      "y": 440,
+      "w": 90,
+      "h": 22
+     },
+     "label": "open viewer/panels.js: the same lines the browser receives, whitespace stripped",
+     "frames": null
+    }
+   ]
+  },
+  "s2": {
+   "layout": "full",
+   "label": "Code Facts: hover any name or tag",
+   "items": [
+    {
+     "kind": "ptr",
+     "id": "s2_name",
+     "pre": "s2a_pre",
+     "sel": "s2a_sel",
+     "post": "s2a_hover",
+     "target": {
+      "x": 482,
+      "y": 440,
+      "w": 54,
+      "h": 22
+     },
+     "selectDiff": true,
+     "label": "hover a shared name: where it is written, who reads it",
+     "frames": 90,
+     "hover": "**APP.camera** written at [viewer/grid_views.js:83](file:///tmp/wt-film6-after/viewer/grid_views.js#L83) · 4 writes · 1247 reads"
+    },
+    {
+     "kind": "ptr",
+     "id": "s2_tag",
+     "pre": "s2b_pre",
+     "sel": "s2b_sel",
+     "post": "s2b_hover",
+     "target": {
+      "x": 744,
+      "y": 440,
+      "w": 90,
+      "h": 22
+     },
+     "selectDiff": true,
+     "label": "hover a § tag: what it means, what prints it",
+     "frames": null,
+     "hover": "**§BUMP_DONE** last value not shown: tag not in any stamped log no spec found printed by: - [scripts/bump.js:84](file:///tmp/wt-film6-after/scripts/bump.js#L84) - [scripts/bump.js:290](file:///tmp/wt-film6-after/scripts/bump.js#L290) - [devtools/vscode/code-facts/tests/realvsc/run.js:208](file:///tmp/wt-film6-after/devtools/vscode/code-facts/tests/realvsc/run.js#L208) - [devtools/vscode/code-facts/tests/witness_codefacts_bump_button.js:22](file:///tmp/wt-film6-after/devtools/vscode/code-facts/te"
+    }
+   ]
+  },
+  "s3": {
+   "layout": "full",
+   "label": "edit, warning, Bump, the app offers the update",
+   "items": [
+    {
+     "kind": "type",
+     "id": "s3_edit",
+     "text": " Button",
+     "start": "s3_k000",
+     "keys": [
+      "s3_k002",
+      "s3_k004",
+      "s3_k006",
+      "s3_k008"
+     ],
+     "ret": "s3_ret",
+     "ans": "s3_ans",
+     "view": "i_old0",
+     "viewAns": "i_old1",
+     "viewPulse": {
+      "x": 230,
+      "y": 110,
+      "w": 93,
+      "h": 29
+     },
+     "term": null,
+     "first": true,
+     "label": "type the fix, Ctrl+S: saved. The app, reloaded, still shows the old words"
+    },
+    {
+     "kind": "still",
+     "still": "s3_warn",
+     "view": "i_old1",
+     "label": "Code Facts warns on line 1: the saved edit is not in the cache version yet",
+     "frames": null
+    },
+    {
+     "kind": "ptr",
+     "id": "s3_press1",
+     "pre": "s3_pre1",
+     "post": "s3_checking",
+     "target": {
+      "x": 152,
+      "y": 824,
+      "w": 69,
+      "h": 24
+     },
+     "view": "i_old1",
+     "label": "press Bump: the check runs in the background",
+     "frames": null
+    },
+    {
+     "kind": "still",
+     "still": "s3_ready",
+     "view": "i_old1",
+     "label": "the check passed: Bump has a tick",
+     "frames": null
+    },
+    {
+     "kind": "ptr",
+     "id": "s3_press2",
+     "pre": "s3_ready",
+     "post": "s3_written",
+     "target": {
+      "x": 152,
+      "y": 824,
+      "w": 80,
+      "h": 24
+     },
+     "view": "i_old1",
+     "label": "press it again: the new numbers are written",
+     "frames": null
+    },
+    {
+     "kind": "pulse",
+     "id": "s3_diff",
+     "still": "s3_diff",
+     "rect": {
+      "x": 726,
+      "y": 283,
+      "w": 72,
+      "h": 18
+     },
+     "view": "i_old1",
+     "label": "the press wrote the new code into the page that loads the file (and the cache version)",
+     "frames": null,
+     "w": 2
+    },
+    {
+     "kind": "still",
+     "still": "s3_diff",
+     "view": "i_old2",
+     "label": "the app reloaded after the press: still the old words",
+     "frames": null
+    },
+    {
+     "kind": "pulse",
+     "id": "s3_toast",
+     "still": "s3_diff",
+     "view": "i_toast",
+     "viewRect": {
+      "x": 64,
+      "y": 242,
+      "w": 125,
+      "h": 24
+     },
+     "label": "the app offers the update: Update ready, tap to refresh",
+     "frames": null,
+     "w": 1
+    },
+    {
+     "kind": "pulse",
+     "id": "s3_new",
+     "still": "s3_diff",
+     "view": "i_new",
+     "viewRect": {
+      "x": 230,
+      "y": 110,
+      "w": 171,
+      "h": 29
+     },
+     "label": "after the refresh: the new words",
+     "frames": null,
+     "w": 2
+    }
+   ]
+  },
+  "s4": {
+   "layout": "full",
+   "label": "the witness: red on the old code, green on the new",
+   "items": [
+    {
+     "kind": "type",
+     "id": "s4_0",
+     "text": "MANIFEST_W_OLD=/tmp/wt-film6-old node scripts/tests/witness_manifest_roundtrip.js | grep -E \"MANIFEST_CLAIM id=C(2[6-9]|3[01]) \" | cut -c1-30",
+     "start": "s4_0_k000",
+     "keys": [
+      "s4_0_k002",
+      "s4_0_k004",
+      "s4_0_k006",
+      "s4_0_k008",
+      "s4_0_k010",
+      "s4_0_k012",
+      "s4_0_k014",
+      "s4_0_k016",
+      "s4_0_k018",
+      "s4_0_k020",
+      "s4_0_k022",
+      "s4_0_k024",
+      "s4_0_k026",
+      "s4_0_k028",
+      "s4_0_k030",
+      "s4_0_k032",
+      "s4_0_k034",
+      "s4_0_k036",
+      "s4_0_k038",
+      "s4_0_k040",
+      "s4_0_k042",
+      "s4_0_k044",
+      "s4_0_k046",
+      "s4_0_k048",
+      "s4_0_k050",
+      "s4_0_k052",
+      "s4_0_k054",
+      "s4_0_k056",
+      "s4_0_k058",
+      "s4_0_k060",
+      "s4_0_k062",
+      "s4_0_k064",
+      "s4_0_k066",
+      "s4_0_k068",
+      "s4_0_k070",
+      "s4_0_k072",
+      "s4_0_k074",
+      "s4_0_k076",
+      "s4_0_k078",
+      "s4_0_k080",
+      "s4_0_k082",
+      "s4_0_k084",
+      "s4_0_k086",
+      "s4_0_k088",
+      "s4_0_k090",
+      "s4_0_k092",
+      "s4_0_k094",
+      "s4_0_k096",
+      "s4_0_k098",
+      "s4_0_k100",
+      "s4_0_k102",
+      "s4_0_k104",
+      "s4_0_k106",
+      "s4_0_k108",
+      "s4_0_k110",
+      "s4_0_k112",
+      "s4_0_k114",
+      "s4_0_k116",
+      "s4_0_k118",
+      "s4_0_k120",
+      "s4_0_k122",
+      "s4_0_k124",
+      "s4_0_k126",
+      "s4_0_k128",
+      "s4_0_k130",
+      "s4_0_k132",
+      "s4_0_k134",
+      "s4_0_k136",
+      "s4_0_k138",
+      "s4_0_k140",
+      "s4_0_k142"
+     ],
+     "ret": "s4_0_ret",
+     "ans": "s4_0_ans",
+     "running": [
+      "s4_0_run0",
+      "s4_0_run1"
+     ],
+     "first": true,
+     "label": "the six new checks, run on the code before the change",
+     "term": {
+      "x": 352,
+      "y": 526,
+      "w": 1564,
+      "h": 292
+     },
+     "hold": 14,
+     "pulse": {
+      "x": 599,
+      "y": 588,
+      "w": 36,
+      "h": 118
+     }
+    },
+    {
+     "kind": "type",
+     "id": "s4_1",
+     "text": "node scripts/tests/witness_manifest_roundtrip.js | tail -1 | grep -o \"claims=[0-9/]* red=[0-9/]*\"",
+     "start": "s4_1_k000",
+     "keys": [
+      "s4_1_k002",
+      "s4_1_k004",
+      "s4_1_k006",
+      "s4_1_k008",
+      "s4_1_k010",
+      "s4_1_k012",
+      "s4_1_k014",
+      "s4_1_k016",
+      "s4_1_k018",
+      "s4_1_k020",
+      "s4_1_k022",
+      "s4_1_k024",
+      "s4_1_k026",
+      "s4_1_k028",
+      "s4_1_k030",
+      "s4_1_k032",
+      "s4_1_k034",
+      "s4_1_k036",
+      "s4_1_k038",
+      "s4_1_k040",
+      "s4_1_k042",
+      "s4_1_k044",
+      "s4_1_k046",
+      "s4_1_k048",
+      "s4_1_k050",
+      "s4_1_k052",
+      "s4_1_k054",
+      "s4_1_k056",
+      "s4_1_k058",
+      "s4_1_k060",
+      "s4_1_k062",
+      "s4_1_k064",
+      "s4_1_k066",
+      "s4_1_k068",
+      "s4_1_k070",
+      "s4_1_k072",
+      "s4_1_k074",
+      "s4_1_k076",
+      "s4_1_k078",
+      "s4_1_k080",
+      "s4_1_k082",
+      "s4_1_k084",
+      "s4_1_k086",
+      "s4_1_k088",
+      "s4_1_k090",
+      "s4_1_k092",
+      "s4_1_k094",
+      "s4_1_k096",
+      "s4_1_k098"
+     ],
+     "ret": "s4_1_ret",
+     "ans": "s4_1_ans",
+     "running": [
+      "s4_1_run0",
+      "s4_1_run1"
+     ],
+     "first": false,
+     "label": "the same witness on the new code",
+     "term": {
+      "x": 352,
+      "y": 526,
+      "w": 1564,
+      "h": 292
+     },
+     "pulse": {
+      "x": 373,
+      "y": 728,
+      "w": 199,
+      "h": 18
+     }
+    }
+   ]
+  }
+ },
+ "hash": {
+  "after_before": "58ffb997c1fd",
+  "after_end": "58ffb997c1fd"
+ },
+ "vscode": "1.147.0",
+ "display": ":143"
+}
