@@ -2,6 +2,7 @@
 # Usage:
 #   python3 -P raster_layout.py learn <out_template.json> <kind>=<page.png> [<kind>=<page.png> ...]
 #   python3 -P raster_layout.py match <template.json> <page.png> [...]          > raster_layout.log
+#   python3 -P raster_layout.py upright <template.json> <page.png> <out.png>    (§43.14: write a PLAN page at its winning rotation)
 # Anchor words + their page-normalised centres, at the page's best rotation (most anchor hits). Local Tesseract only.
 import sys, os, re, json, subprocess, tempfile
 import numpy as np
@@ -64,7 +65,8 @@ else:
             if c: used.add(c[0]); green += 1; rows.append(f"GREEN {e['word']}")
             else: rows.append(f"YELLOW missing {e['word']}@({e['cx']},{e['cy']})")
         return (green / len(exp) if exp else 0), green, len(exp), len(w) - len(used), rows
-    for path in sys.argv[3:]:
+    pages = sys.argv[3:4] if sys.argv[1] == 'upright' else sys.argv[3:]
+    for path in pages:
         im = Image.open(path).convert('L'); best = None
         for rot in (0, 90, 180, 270):
             w = words(im.rotate(rot, expand=True))
@@ -74,3 +76,7 @@ else:
                 if best is None or sc[0] > best[0]: best = (sc[0], rot, kind)
         verdict = best[2] if best and best[0] >= 0.5 else 'UNKNOWN'
         log(f"§LAYOUT_CLASS page={os.path.basename(path)} rot={best[1]} -> {verdict} best_score={best[0]:.2f}")
+        if sys.argv[1] == 'upright':   # §43.14 one owner of the orientation: the layout's rotation, never chosen by hand
+            if verdict != 'plan': log(f"§LAYOUT_UPRIGHT page={os.path.basename(path)} verdict=REFUSED kind={verdict}"); sys.exit(1)
+            Image.open(path).convert('RGB').rotate(best[1], expand=True).save(sys.argv[4])
+            log(f"§LAYOUT_UPRIGHT page={os.path.basename(path)} rot={best[1]} kind=plan out={os.path.basename(sys.argv[4])} verdict=WRITTEN")
