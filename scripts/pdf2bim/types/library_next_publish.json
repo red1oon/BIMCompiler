@@ -1,8 +1,11 @@
 {
   "_readme": "What the next library publish may change, stated before it runs (\u00a734, \u00a738). witness_library_publish.js holds the export to exactly this. Update it for each publish.",
-  "spec": "none pending: 5510b96bbf80 published 2026-11-23 (\u00a746.3)",
-  "added_families": [],
-  "added_map_rows": 0,
+  "spec": "\u00a748 (2026-11-24): the entrance door leaf + its side light, migrations CL015 (DEWP_D1135_1135x2275) + CL016 (DEWP_W500_500x2275), on top of the live 5510b96bbf80; stated from the migrations before the run: 2 families, 4 ad_geometry_map rows",
+  "added_families": [
+    "DEWP_D1135_1135x2275",
+    "DEWP_W500_500x2275"
+  ],
+  "added_map_rows": 4,
   "families_that_may_resolve_differently": [],
   "descriptions_that_may_change": []
 }

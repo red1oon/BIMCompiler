@@ -202,8 +202,9 @@ def storey(work, tag, level, sheet, wall_h, door_h=None):
     DH = door_h or door_height(TPL_EFH); DHS = 'READ-GEOM (section door outlines, §43.21 step 3)' if door_h else 'DEFAULT(DIN 18101 opening Nennmaß)'; ndr = 0; tags_d = []; fams = {}
     ANG = {('H', 'a', -1): (0, 90), ('H', 'a', 1): (270, 360), ('H', 'b', -1): (90, 180), ('H', 'b', 1): (180, 270),
            ('V', 'a', -1): (180, 270), ('V', 'a', 1): (270, 360), ('V', 'b', -1): (90, 180), ('V', 'b', 1): (0, 90)}   # DXF y up; sheet y down
+    SLJ = []; sl_marks = []   # §48 the side lights (sidelights.json for the family generator): @TAG + @SCHEDULE marks, written with the door tags
     for d in DOORS:
-        r = d['nominal_mm']; al = d['ea'] if d['hinge'] == 'a' else d['eb']
+        r = d.get('leaf_mm', d['nominal_mm']); al = d['ea'] if d['hinge'] == 'a' else d['eb']   # §48 a leaf narrower than its opening: the arc = the leaf
         ac = d['band'][0] if d['side'] == -1 else d['band'][1]   # hinge ON the host piece's face (importer L1.2 R9 / dxf2shell doorStrip, 1 mm); the drawn frame offset is logged, not used
         hx, hy = (al, -ac) if d['axis'] == 'H' else (ac, -al)
         a0, a1 = ANG[(d['axis'], d['hinge'], d['side'])]
@@ -211,8 +212,20 @@ def storey(work, tag, level, sheet, wall_h, door_h=None):
         fam = fid_of(r, round(d['thk_m'] * 1000), DH); fams[fam] = r
         m_ = math.radians((a0 + a1) / 2); tags_d.append((hx + r / 2 * math.sqrt(2) * math.cos(m_), hy + r / 2 * math.sqrt(2) * math.sin(m_), f'@TAG=door,{fam}'))
         log(f"§RASTER_EMIT_DOOR {tag} {d['src']} axis={d['axis']} hinge=({hx:.1f},{hy:.1f}) r={r} arc={a0}..{a1} family={fam} edges_mm={d['ea']:.1f}..{d['eb']:.1f} host_band={d['band']} drawn_hinge_offset_mm={d['hinge_offset_mm']} (not used) height={DH} {DHS}")
+        if d.get('leaf_mm'):   # §48 the rest of the opening, away from the hinge = a fixed side light in the same wall gap (sill 0, the door's height: DEFAULT, it shares the door frame)
+            s0, s1 = (d['ea'] + r, d['eb']) if d['hinge'] == 'a' else (d['ea'], d['eb'] - r); sw = round(s1 - s0)
+            rr_ = (s0, d['band'][0], s1, d['band'][1]) if d['axis'] == 'H' else (d['band'][0], s0, d['band'][1], s1)
+            body += lw('A-GLAZ', rect(*rr_)); ng += 1; th = round(d['thk_m'] * 1000)
+            sfam = 'DEWP_W%d%s_%dx%d' % (sw, '' if th == 365 else 'd%d' % th, sw, DH)
+            sl_marks.append(((rr_[0] + rr_[2]) / 2, -(rr_[1] + rr_[3]) / 2, f'@TAG=window,{sfam}'))
+            glaz.append(dict(face=d['face'], r=rr_, a=s0, b=s1, sill=0, h=DH, sidelight=True))   # the elevation shows it (its own sill / height), as every window
+            SLJ.append(dict(face=d['face'], along_mm=[round(s0, 1), round(s1, 1)], nominal_mm=sw, thk_m=d['thk_m'], height_mm=DH, sill_mm=0, family=sfam, leaf_mm=r, door_index=d.get('index')))
+            log(f"§RASTER_EMIT_SIDELIGHT {tag} face={d['face']} along_mm={s0:.1f}..{s1:.1f} width={sw} family={sfam} sill=0 height={DH} (DEFAULT: the door's frame) leaf={r} opening={d['eb'] - d['ea']:.1f}")
     for x_, y_, t_ in tags_d: body += tx(x_, y_, t_)
-    marks = ['@UNITS=mm', '@SET=STD', '@VIEW=PLAN', f'@NAME={tag} (scan)', f'@LEVEL={level / 1000:g}'] + ([f'@BODYZ=column,{level / 1000:g},{(level + wall_h) / 1000:g}'] if ncol else []) + ([f'@SCHEDULE={f},door,{w_},{DH}' for f, w_ in sorted(fams.items())] + ['@HEADFRAME=0'] if fams else [])
+    if SLJ: json.dump(dict(spec='PDF2BIM_VECTOR_PROBE.md §48', openings=SLJ), open(os.path.join(work, 'sidelights.json'), 'w'), indent=1)
+    for x_, y_, t_ in sl_marks:
+        if x_ is not None: body += tx(x_, y_, t_); tags_d.append((x_, y_, t_))
+    marks = ['@UNITS=mm', '@SET=STD', '@VIEW=PLAN', f'@NAME={tag} (scan)', f'@LEVEL={level / 1000:g}'] + ([f'@BODYZ=column,{level / 1000:g},{(level + wall_h) / 1000:g}'] if ncol else []) + ([f'@SCHEDULE={f},door,{w_},{DH}' for f, w_ in sorted(fams.items())] + ['@HEADFRAME=0'] if fams else []) + [t_ for x_, y_, t_ in sl_marks if x_ is None]
     for n, m in enumerate(marks): body += tx(-3000, -2500 - 300 * n, m)
     for k, x in GX.items(): body += tx(x, 600, f'@GRIDX={k}')
     for k, y in GY.items(): body += tx(-600, -y, f'@GRIDY={k}')
@@ -301,8 +314,8 @@ for face, hax in (('S', '+X'), ('N', '-X'), ('E', '+Y'), ('W', '-Y')):
         for g in q['glaz']:
             if g['face'] != face: continue
             if hid and g['a'] >= hid[0] - 1 and g['b'] <= hid[1] + 1: log(f"§RASTER_EMIT_GARAGE_ELEV W house window {g['a']}..{g['b']} hidden behind the garage: not drawn"); continue
-            x0, x1 = sorted((drawn(g['a']), drawn(g['b']))); z0 = q['level'] + SILL
-            b += lw('A-GLAZ', [(x0, z0), (x1, z0), (x1, z0 + WH), (x0, z0 + WH)]); n_ += 1
+            x0, x1 = sorted((drawn(g['a']), drawn(g['b']))); z0 = q['level'] + g.get('sill', SILL); gh_ = g.get('h', WH)   # §48 a side light states its own sill / height
+            b += lw('A-GLAZ', [(x0, z0), (x1, z0), (x1, z0 + gh_), (x0, z0 + gh_)]); n_ += 1
     ng_ = 0
     for q in ST:   # §43.22 step 3: the garage band (and its S windows) on the faces it shows
         G_ = q.get('garage')

@@ -24,7 +24,7 @@ if __name__ == '__main__':
     DOORS = [(d, int(p.split(':')[1]) if ':' in p else H0) for p in sys.argv[1].split(',') for d in json.load(open(p.split(':')[0]))['doors']]
     LABEL = sys.argv[4] if len(sys.argv) > 4 else 'CL011'
     PRIOR = ''.join(open(f).read() for f in sys.argv[3].split(',')) if len(sys.argv) > 3 else ''
-    sizes = sorted({(d['nominal_mm'], round(d['thk_m'] * 1000), h) for d, h in DOORS})
+    sizes = sorted({(d.get('leaf_mm', d['nominal_mm']), round(d['thk_m'] * 1000), h) for d, h in DOORS})   # §48 a leaf narrower than its opening: the family is the leaf
     skipped = [fid_of(w, d, H) for w, d, H in sizes if "'%s'" % fid_of(w, d, H) in PRIOR]; sizes = [(w, d, H) for w, d, H in sizes if "'%s'" % fid_of(w, d, H) not in PRIOR]
     measured = any(H != H0 for w, d, H in sizes)
     hl = ("Height: per storey, the section's measured floor build-up + the DIN 18101 class (§43.21 step 3)." if measured else
