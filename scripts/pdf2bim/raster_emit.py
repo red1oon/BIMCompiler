@@ -63,7 +63,7 @@ def write(name, body, want):
     ok = all(back.get(k, 0) == v for k, v in want.items())
     log(f"§RASTER_W-S12a {name} written={want} read_back={back} verdict={'PASS' if ok else 'FAIL'}")
 
-def storey(work, tag, level, sheet, wall_h):
+def storey(work, tag, level, sheet, wall_h, door_h=None):
     C = json.load(open(os.path.join(work, 'chains.json')))
     W1 = json.load(open(os.path.join(work, 'walls.json')))['walls']
     WA = json.load(open(os.path.join(work, 'walls_all.json')))['walls']
@@ -197,7 +197,7 @@ def storey(work, tag, level, sheet, wall_h):
         body += dim((BW if sideV == 'maxX' else 0, -a), (BW if sideV == 'maxX' else 0, -b), (cx_ + sgv * off, -(a + b) / 2), 90, b - a); nd += 1
     log(f"§RASTER_EMIT_DIMS H_chain side={sideH} values_mm={[b - a for a, b in zip(xs, xs[1:])]} overall={xs[-1]} | V_chain side={sideV} values_mm={[b - a for a, b in zip(ys, ys[1:])]} overall={ys[-1]} | written={nd} (other sides: no GREEN chain, none stated)")
     # §43.21 step 2: each DOOR = one A-DOOR ARC (hinge = centre, radius = nominal width, the importer's door rule), @TAG at the swing box centre
-    DH = door_height(TPL_EFH); ndr = 0; tags_d = []; fams = {}
+    DH = door_h or door_height(TPL_EFH); DHS = 'READ-GEOM (section door outlines, §43.21 step 3)' if door_h else 'DEFAULT(DIN 18101 opening Nennmaß)'; ndr = 0; tags_d = []; fams = {}
     ANG = {('H', 'a', -1): (0, 90), ('H', 'a', 1): (270, 360), ('H', 'b', -1): (90, 180), ('H', 'b', 1): (180, 270),
            ('V', 'a', -1): (180, 270), ('V', 'a', 1): (270, 360), ('V', 'b', -1): (90, 180), ('V', 'b', 1): (0, 90)}   # DXF y up; sheet y down
     for d in DOORS:
@@ -208,7 +208,7 @@ def storey(work, tag, level, sheet, wall_h):
         body += ['0', 'ARC', '8', 'A-DOOR', '10', f'{hx:.1f}', '20', f'{hy:.1f}', '30', '0', '40', f'{r:.1f}', '50', f'{a0:g}', '51', f'{a1:g}']; ndr += 1
         fam = fid_of(r, round(d['thk_m'] * 1000), DH); fams[fam] = r
         m_ = math.radians((a0 + a1) / 2); tags_d.append((hx + r / 2 * math.sqrt(2) * math.cos(m_), hy + r / 2 * math.sqrt(2) * math.sin(m_), f'@TAG=door,{fam}'))
-        log(f"§RASTER_EMIT_DOOR {tag} {d['src']} axis={d['axis']} hinge=({hx:.1f},{hy:.1f}) r={r} arc={a0}..{a1} family={fam} edges_mm={d['ea']:.1f}..{d['eb']:.1f} host_band={d['band']} drawn_hinge_offset_mm={d['hinge_offset_mm']} (not used) height={DH} DEFAULT(DIN 18101 opening Nennmaß)")
+        log(f"§RASTER_EMIT_DOOR {tag} {d['src']} axis={d['axis']} hinge=({hx:.1f},{hy:.1f}) r={r} arc={a0}..{a1} family={fam} edges_mm={d['ea']:.1f}..{d['eb']:.1f} host_band={d['band']} drawn_hinge_offset_mm={d['hinge_offset_mm']} (not used) height={DH} {DHS}")
     for x_, y_, t_ in tags_d: body += tx(x_, y_, t_)
     marks = ['@UNITS=mm', '@SET=STD', '@VIEW=PLAN', f'@NAME={tag} (scan)', f'@LEVEL={level / 1000:g}'] + ([f'@BODYZ=column,{level / 1000:g},{(level + wall_h) / 1000:g}'] if ncol else []) + ([f'@SCHEDULE={f},door,{w_},{DH}' for f, w_ in sorted(fams.items())] + ['@HEADFRAME=0'] if fams else [])
     for n, m in enumerate(marks): body += tx(-3000, -2500 - 300 * n, m)
@@ -223,7 +223,8 @@ def storey(work, tag, level, sheet, wall_h):
 
     return dict(EXT=EXT, glaz=glaz, GX=GX, GY=GY, level=level)
 
-ST = [dict(q, **storey(q['work'], q['tag'], q['level'], q['sheet'], q['wall_h'])) for q in STOREYS]
+for i_, q in enumerate(STOREYS): q['door_h'] = SH['doors'][i_]['model_mm'] if (SH and EGW and SH.get('doors') and i_ < len(SH['doors'])) else None   # §43.21 step 3
+ST = [dict(q, **storey(q['work'], q['tag'], q['level'], q['sheet'], q['wall_h'], q['door_h'])) for q in STOREYS]
 TOP = ST[-1]; EXT, GX, GY = TOP['EXT'], TOP['GX'], TOP['GY']
 
 # ---- elevations: S (+X), N (-X), E (+Y), W (-Y) with north = sheet top (DEFAULT) ----

@@ -124,6 +124,36 @@ H = dict(datum='base slab top = EG level 0', k_px_per_m=round(kh, 3),
          rows=dict(base=base_, floors=floors, ceiling=ceil_, roof_at_faces=round(roof_row, 1), apex=round(ay, 1)), sub_base=sub)
 log(f"§SECT_HEIGHTS verdict=PASS levels_mm={H['levels']} slab_mm={H['slab_thk']} ceiling={H['ceiling_bottom']}..{H['ceiling_top']} roof_bottom={H['roof_bottom']} apex={H['apex']} (base slab rows {base_['top']}/{base_['bot']}, sub-base layers {[(q['top'], q['bot']) for q in sub]})")
 log(f"§SECT_STAIR_DIAG 16 x 0.179 = 2.864 m (EG plan label, human-read) vs OG level {H['levels'][1] / 1000 if len(H['levels']) > 1 else None} m (no verdict)")
+# ---- §43.21 step 3: door outlines per storey -> floor build-up + door height above the finished floor ----
+TPLD = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'types', 'german_werkplan_efh.json')))['door_series']['height_mm']
+DIN_H = [TPLD['opening_page_nennmass'], TPLD['alternative']]
+strokes = []
+for c in range(ilf + 3, irf - 2):
+    for a, b in runs(inkg[:, c]):   # g < 215: the door outlines are faint strokes (first run at Otsu: VACUOUS, as the roof in step 2)
+        if 1.8 * kh <= b - a + 1 <= 2.8 * kh: strokes.append((c, int(a), int(b)))
+def clusters(vals):
+    vs = sorted(vals); out = []
+    for v in vs: (out[-1].append(v) if out and v - out[-1][-1] <= 1 else out.append([v]))
+    return sorted(out, key=lambda q: (-len(q), q[0]))
+storeys_rows = [(base_['top'], floors[0]['bot'] if floors else ceil_['bot'])] + [(f['top'], (floors[i + 1]['bot'] if i + 1 < len(floors) else ceil_['bot'])) for i, f in enumerate(floors)]
+DR = []
+for si, (slab_top, above) in enumerate(storeys_rows):
+    st = [s_ for s_ in strokes if above < s_[2] < slab_top and s_[1] > above]
+    bc = clusters([s_[2] for s_ in st])
+    if not bc: DR.append(None); log(f"§SECT_DOORS storey={si + 1} verdict=VACUOUS (no stroke)"); continue
+    ffl = float(np.mean(bc[0])); on = [s_ for s_ in st if abs(s_[2] - ffl) <= 1]
+    tc = clusters([s_[1] for s_ in on])
+    if not tc or len(tc[0]) < 3: DR.append(None); log(f"§SECT_DOORS storey={si + 1} verdict=VACUOUS (head cluster {len(tc[0]) if tc else 0} strokes < 3)"); continue
+    head = float(np.mean(tc[0])); bu = (slab_top - ffl) / kh; hf = (ffl - head) / kh
+    DR.append(dict(storey=si + 1, ffl_row=round(ffl, 1), head_row=round(head, 1), buildup_mm=mm5(bu), above_ffl_mm=round(hf * 1000), n_bottom=len(bc[0]), n_head=len(tc[0]), head_cols=sorted({s_[0] for s_ in on if abs(s_[1] - head) <= 1})))
+    log(f"§SECT_DOORS storey={si + 1} strokes={len(st)} FFL row={ffl:.1f} ({len(bc[0])} bottoms) head row={head:.1f} ({len(tc[0])} tops, cols {DR[-1]['head_cols']}) floor build-up={bu:.3f} m door above FFL={hf:.3f} m")
+ok_d = all(DR) and len(DR) >= 2 and max(d['above_ffl_mm'] for d in DR) - min(d['above_ffl_mm'] for d in DR) <= 1000 / kh
+if all(DR) and len(DR) >= 1 and (ok_d or len(DR) == 1):
+    hm = float(np.mean([d['above_ffl_mm'] for d in DR])); din = min(DIN_H, key=lambda v: abs(v - hm)); cls = 'STANDARD' if abs(hm - din) <= 1000 / kh else 'STANDARD-DEFAULT'
+    for d in DR: d.update(din_mm=din, cls=cls, model_mm=d['buildup_mm'] + din)
+    H['doors'] = DR
+    log(f"§SECT_DOORS verdict=PASS storeys agree: above FFL {[d['above_ffl_mm'] for d in DR]} mm (spread <= 1 px = {1000 / kh:.0f} mm) mean {hm:.0f} -> DIN 18101 {din} ({cls}, d={hm - din:+.0f} mm) | model door height over the raw slab per storey {[d['model_mm'] for d in DR]} = build-up {[d['buildup_mm'] for d in DR]} + {din}")
+else: log(f"§SECT_DOORS verdict=INCONCLUSIVE (storeys {[d and d['above_ffl_mm'] for d in DR]}): door height stays DEFAULT")
 json.dump(H, open(os.path.join(work, 'section_heights.json'), 'w'), indent=1)
 # DIAGNOSTIC: the section's height chain (YELLOW) at k_h
 for ch in C['chains']:
