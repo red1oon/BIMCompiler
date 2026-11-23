@@ -17,7 +17,7 @@ if [ "$OP" = up ]; then
   BD=$3; J=$(ls -d $BD/org.idempiere.bimootb_13.1.0.* | head -1); V=$(ls -d $BD/org.idempiere.bimootb.viewer_13.1.0.* | head -1); [ -d "$J" ] && [ -d "$V" ] || { say "§PL_REFUSED no bundles in $BD"; exit 3; }
   [ "$(pq "select count(*) from pg_database where datname='$BAK'")" = 0 ] || { say "§PL_REFUSED $BAK exists already: run 'down' first"; exit 3; }
   [ "$(grep -c bimootb $BI)" = 0 ] || { say "§PL_REFUSED bundles.info already names bimootb: not as found"; exit 3; }
-  state before; grep '§PL_STATE before' "$LOG/prepL.log" | tail -1 | sed 's/.*bundles_info/bundles_info/' > "$LOG/as_found.txt"
+  state before; grep '§PL_STATE before' "$LOG/prepL.log" | tail -1 | sed 's/.*bundles_info/bundles_info/' > "$LOG/as_found_pl.txt"
   stop_i; pq "CREATE DATABASE $BAK TEMPLATE $DB" && say "§PL_BACKUP made $BAK"; cp "$BI" "$LOG/bundles.info.as_found"
   cp -r "$J" "$V" $SRV/plugins/; JV=${J##*_}; VV=${V##*_}
   printf 'org.idempiere.bimootb,%s,plugins/%s/,4,true\norg.idempiere.bimootb.viewer,%s,plugins/%s/,4,true\n' "$JV" "$(basename $J)" "$VV" "$(basename $V)" >> "$BI"; say "§PL_INSTALL $(basename $J) $(basename $V)"
@@ -41,7 +41,7 @@ elif [ "$OP" = down ]; then
   pq "DROP DATABASE $DB" && pq "CREATE DATABASE $DB TEMPLATE $BAK" && say "§PL_RESTORE $DB recreated from $BAK"
   sed -i '/^org\.idempiere\.bimootb/d' "$BI"; rm -rf $SRV/plugins/org.idempiere.bimootb_13.1.0.* $SRV/plugins/org.idempiere.bimootb.viewer_13.1.0.*; say "§PL_UNINSTALL bundles.info lines and folders removed"
   cmp -s "$BI" "$LOG/bundles.info.as_found" && say "§PL_BUNDLES_INFO equal to as found" || say "§PL_BUNDLES_INFO FAIL differs from as found"
-  state restored; A=$(cat "$LOG/as_found.txt"); R=$(grep '§PL_STATE restored' "$LOG/prepL.log" | tail -1 | sed 's/.*bundles_info/bundles_info/')
+  state restored; A=$(cat "$LOG/as_found_pl.txt"); R=$(grep '§PL_STATE restored' "$LOG/prepL.log" | tail -1 | sed 's/.*bundles_info/bundles_info/')
   [ "$A" = "$R" ] && say "§PL_RESTORE_CHECK PASS equal to as found: $R" || { say "§PL_RESTORE_CHECK FAIL as found: $A | now: $R (backup KEPT)"; exit 5; }
   pq "DROP DATABASE $BAK" && pq "DROP DATABASE IF EXISTS $RDY" && say "§PL_DOWN_VERDICT PASS backup and ready snapshot dropped; :8108 left stopped (as found)"
 fi
