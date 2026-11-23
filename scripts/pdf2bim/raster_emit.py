@@ -83,6 +83,8 @@ for k, y in GY.items(): body += tx(-600, -y, f'@GRIDY={k}')
 write('plan_og.dxf', body, {'A-WALL-FULL': nw, 'A-GLAZ': ng, 'DXF2BIM-MARK': len(marks) + len(GX) + len(GY)})
 
 # ---- elevations: S (+X), N (-X), E (+Y), W (-Y) with north = sheet top (DEFAULT) ----
+_ey0 = min(w['y0'] for w in EXT); _ey1 = max(w['y1'] for w in EXT)
+RIDGE = H + round((_ey1 - _ey0) / 2 * math.tan(math.radians(PITCH)))   # the roof sheet uses the same envelope depth
 FACEMARK = {'S': 'minY', 'N': 'maxY', 'E': 'maxX', 'W': 'minX'}   # DXF y up, north = sheet top (DEFAULT)
 for face, hax in (('S', '+X'), ('N', '-X'), ('E', '+Y'), ('W', '-Y')):
     width = BW if face in 'SN' else BD
@@ -99,14 +101,21 @@ for face, hax in (('S', '+X'), ('N', '-X'), ('E', '+Y'), ('W', '-Y')):
     mk = ['@VIEW=ELEV', f'@FACE={FACEMARK[face]}', f'@HAXIS={hax}', '@UNITS=mm', '@SET=STD', f'@ROOF={RIDGE/1000}']
     for i, m in enumerate(mk): b += tx(-3000, -1000 - 300 * i, m)
     b += tx(-1500, 0, '@Z=0') + tx(-1500, H, f'@Z={H/1000}')
+    for zl in (H, RIDGE):   # §43.12: level lines the importer reads as the roof bottom / top drawn (dxf2shell roofZ)
+        b += ['0', 'LINE', '8', 'A-ANNO-LEVL', '10', '-500', '20', f'{zl:.1f}', '30', '0', '11', f'{width + 500:.1f}', '21', f'{zl:.1f}', '31', '0']
     G = GX if face in 'SN' else GY
     for k, v in G.items(): b += tx(drawn(v), -600, f'@GRIDH={k}')
-    write(f'elev_{face}.dxf', b, {'A-WALL': 1, 'A-GLAZ': n_, 'DXF2BIM-MARK': len(mk) + 2 + len(G)})
+    write(f'elev_{face}.dxf', b, {'A-WALL': 1, 'A-GLAZ': n_, 'A-ANNO-LEVL': 2, 'DXF2BIM-MARK': len(mk) + 2 + len(G)})
 
-# ---- roof ----
-b = lw('A-ROOF', rect(0, 0, BW, BD))
-mk = ['@UNITS=mm', '@SET=STD', '@VIEW=ROOF', '@NAME=ROOF PLAN', f'@LEVEL={H/1000}', f'@ROOF={RIDGE/1000}']
+# ---- roof (§43.12): outline = the EMITTED exterior envelope; gable rect + ridge along x (gables OST/WEST) ----
+ex0 = min(w['x0'] for w in EXT); ex1 = max(w['x1'] for w in EXT); ey0 = min(w['y0'] for w in EXT); ey1 = max(w['y1'] for w in EXT)
+cy = (ey0 + ey1) / 2
+RIDGE = H + round((ey1 - ey0) / 2 * math.tan(math.radians(PITCH)))   # recomputed on the emitted envelope depth
+log(f"§RASTER_EMIT_ROOF envelope_mm=({ex0:.0f},{ey0:.0f})-({ex1:.0f},{ey1:.0f}) pitch={PITCH} READ ridge_z={RIDGE} DERIVED ridge_axis=x (gables OST/WEST)")
+b = lw('A-ROOF', rect(ex0, ey0, ex1, ey1)) + lw('A-ROOF-GABLE', rect(ex0, ey0, ex1, ey1))
+b += ['0', 'LINE', '8', 'A-ROOF-RIDGE', '10', f'{ex0:.1f}', '20', f'{-cy:.1f}', '30', f'{RIDGE:.1f}', '11', f'{ex1:.1f}', '21', f'{-cy:.1f}', '31', f'{RIDGE:.1f}']
+mk = ['@UNITS=mm', '@SET=STD', '@VIEW=ROOF', '@NAME=ROOF PLAN', f'@LEVEL={H/1000}', f'@ROOF={RIDGE/1000}', f'@PITCH={PITCH}']
 for i, m in enumerate(mk): b += tx(-3000, -2500 - 300 * i, m)
 for k, x in GX.items(): b += tx(x, 600, f'@GRIDX={k}')
 for k, y in GY.items(): b += tx(-600, -y, f'@GRIDY={k}')
-write('roof.dxf', b, {'A-ROOF': 1, 'DXF2BIM-MARK': len(mk) + len(GX) + len(GY)})
+write('roof.dxf', b, {'A-ROOF': 1, 'A-ROOF-GABLE': 1, 'A-ROOF-RIDGE': 1, 'DXF2BIM-MARK': len(mk) + len(GX) + len(GY)})
