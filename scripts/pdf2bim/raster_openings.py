@@ -9,6 +9,7 @@ import numpy as np
 from PIL import Image
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from raster_body import anchor_chains, body
+from raster_jamb import jamb as _jamb
 
 def log(*a): print(*a, flush=True)
 
@@ -37,20 +38,7 @@ def band_px(w):   # (along-axis converter, band rows/cols as page px) for a run
         return (lambda mm: X0 + mm / 1000 * KH), (Y0 + w['y0'] / 1000 * KV, Y0 + w['y1'] / 1000 * KV), KH
     return (lambda mm: Y0 + mm / 1000 * KV), (X0 + w['x0'] / 1000 * KH, X0 + w['x1'] / 1000 * KH), KV
 
-def coverage(axis, pos, b0, b1):
-    """share of the band's rows (H wall: page rows b0..b1 at column pos) that hold ink"""
-    lo, hi = int(round(b0)), int(round(b1))
-    if axis == 'H': return float(inkg[lo:hi + 1, pos].mean())
-    return float(inkg[pos, lo:hi + 1].mean())
-
-def jamb(axis, end_px, sign, b0, b1):
-    """the qualifying stroke nearest the run end, searching toward the opening (sign +1: opening at larger px)"""
-    e = int(round(end_px)); cols = [e + sign * k for k in range(-BACK, FWD + 1)]
-    q = [c for c in cols if coverage(axis, c, b0, b1) >= COVER]
-    if not q: return None
-    q.sort(key=lambda c: sign * (c - e)); first = q[0]; run = [first]
-    while first + sign * len(run) in q: run.append(first + sign * len(run))   # the stroke = contiguous qualifying columns
-    return (min(run) + max(run)) / 2
+def jamb(axis, end_px, sign, b0, b1): return _jamb(inkg, axis, end_px, sign, b0, b1, BACK, FWD, COVER)   # raster_jamb.py owns the rule
 
 ops, fals = [], []
 for axis in ('H', 'V'):
