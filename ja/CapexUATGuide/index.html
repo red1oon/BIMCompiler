@@ -3965,11 +3965,11 @@
 </tr>
 <tr>
 <td>Revision</td>
-<td><strong>2026-11-23 (h)</strong></td>
+<td><strong>2026-11-23 (i)</strong></td>
 </tr>
 <tr>
 <td>Status</td>
-<td>Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately and stays as signed. Since then steps C1.1, C2.1, C3.2, C4.1, C4.2, C4.4, C5.1, D3, D4, D9 and L3 (and B4.1, C3.1, C3.2, C5.1, D2, D8 after them, then B3.1 and B5, then B4, L2, L3 and D) carry the corrections of the change list (items 22 to 27). What changed or was found since is listed after this cover.</td>
+<td>Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately and stays as signed. Since then, steps were corrected: the change list after this cover (items 22 to 28) names each step and what changed.</td>
 </tr>
 <tr>
 <td>Prepared and issued by</td>
@@ -3996,8 +3996,8 @@
 </thead>
 <tbody>
 <tr>
-<td>2026-11-23 (h)</td>
-<td>The whole Shed into the ERP and the dashboard: B4, L1 to L3 before C, D (item 27)</td>
+<td>2026-11-23 (h), (i)</td>
+<td>The whole Shed into the ERP and the dashboard: B4, L1 to L3 before C, D (item 27); the link names the order, <em>Push again?</em> (item 28)</td>
 </tr>
 <tr>
 <td>2026-11-22 (g)</td>
@@ -4196,6 +4196,13 @@
 <td>Each <strong>Issue to Project</strong> opens its own window tab; after several, the first tabs are pushed off the strip.</td>
 <td><strong>Corrected in the step</strong> (2026-11-22 (c))</td>
 <td>Follow the step: it now says this</td>
+</tr>
+<tr>
+<td>28</td>
+<td>B4.2 to B4.4, L2, L3</td>
+<td><strong>The ERP link names its Project Order.</strong> The Viewer's link after a push now reads <strong>SHED #… ↗</strong> (the order's id), not <em>open ↗</em>; on a legacy iDempiere it appears only after your push, with the number of the status line. Pressing <strong>› ERP</strong> again first shows a box <strong>Push again?</strong> (<strong>Cancel</strong> or <strong>Push again</strong>); a second push adds nothing, on the Kernel ERP and on a legacy iDempiere alike (measured 2026-11-23: three pushes, one project SHED). The films still show <em>open ↗</em>.</td>
+<td>Corrected in this revision</td>
+<td>None if you passed B4 or L; the steps now name the link and the box</td>
 </tr>
 <tr>
 <td>27</td>
@@ -5530,18 +5537,18 @@
 <tr>
 <td>B4.2</td>
 <td>Press <strong>› ERP</strong></td>
-<td>The status line reads <em>Project Order: 11 lines · contract USD 355,098 (saved)</em> (12 lines if Time Machine has built the schedule in this tab: the order then follows its tasks; the amount is the same) and a link <strong>open ↗</strong> appears</td>
+<td>The status line reads <em>Project Order: 11 lines · contract USD 355,098 (saved)</em> (12 lines if Time Machine has built the schedule in this tab: the order then follows its tasks; the amount is the same) and a link <strong>SHED #… ↗</strong> appears (the number is the Project Order's id, e.g. <em>SHED #990001</em>). If you did B4 before in this browser, the link shows already at B4.1 and <strong>› ERP</strong> first asks <em>Push again?</em> (B4.3): press <strong>Push again</strong></td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
 <td>B4.3</td>
-<td>Press <strong>› ERP</strong> again</td>
-<td><em>Project Order: 0 lines</em>: nothing new is added, the order is keyed by the model's name (<strong>SHED</strong>)</td>
+<td>Press <strong>› ERP</strong> again, then <strong>Push again</strong> in the box</td>
+<td>First a box <strong>Push again?</strong> reads <em>SHED #… is already a Project Order. A second push adds only what is not there yet.</em> (buttons <strong>Cancel</strong> and <strong>Push again</strong>; <strong>Cancel</strong> or Esc pushes nothing). After <strong>Push again</strong>: <em>Project Order: 0 lines</em>: nothing new is added, the order is keyed by the model's name (<strong>SHED</strong>)</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
 <td>B4.4</td>
-<td>Click <strong>open ↗</strong>. On the Kernel ERP sign-in page choose <strong>GardenAdmin</strong>, then <strong>Log In</strong></td>
+<td>Click <strong>SHED #… ↗</strong>. On the Kernel ERP sign-in page choose <strong>GardenAdmin</strong>, then <strong>Log In</strong></td>
 <td>The ERP opens on the project <strong>SHED</strong> (<em>BIM: SHED</em>) with its planned amount, <strong>355097.97658</strong> (B4.1's total, every decimal). Its <strong>Phase</strong> tab holds 6 phases (<em>1 of 6</em>; 5 if the schedule was built), the first <em>Substructure</em> 1,023.22458. A phase's <strong>Task</strong> tab holds its tasks (Substructure: one, <em>CONCRETE_GANG</em>), and <strong>Task Line</strong> the model's lines with the same planned amount (Substructure: one line, 1,023.22458): a line shows in the tab of its lowest level, as in iDempiere (<em>Task Line</em>: a task is set; <em>Phase Line</em>: a phase but no task; <em>Project Line</em>: neither), so <strong>Project Line</strong> and <strong>Phase Line</strong> read <em>0 records</em></td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
@@ -5568,12 +5575,12 @@
 <tr>
 <td>L2</td>
 <td>Do B4.1 (<strong>Level 1</strong>, the whole Shed), press <strong>› ERP</strong>, type your iDempiere password in the window <em>Sign in to iDempiere</em>, and press <strong>Push</strong></td>
-<td>The window shows your user and ids, filled in. Then the status line reads <em>iDempiere Project #… · created</em> with <em>"projects":1</em> and <strong>open ↗</strong> appears. (Chrome may show its own password windows: press <strong>OK</strong>, then <strong>No thanks</strong>)</td>
+<td>The window shows your user and ids, filled in. Then the status line reads <em>iDempiere Project #… · created {"projects":1,"phases":6,"tasks":8,"lines":11}</em> and the link <strong>SHED #… ↗</strong> appears, with the same number (before the push there is no link). If you press <strong>› ERP</strong> again, the box <strong>Push again?</strong> asks first; a second push creates nothing (<em>"projects":0</em>, all 0). (Chrome may show its own password windows: press <strong>OK</strong>, then <strong>No thanks</strong>)</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
 <td>L3</td>
-<td>Click <strong>open ↗</strong> and log in to your iDempiere (tick <strong>Select Role</strong>, choose <strong>HQ</strong>, as in chapter C; Chrome may show its own windows: press <strong>OK</strong>, then <strong>No thanks</strong>)</td>
+<td>Click <strong>SHED #… ↗</strong> and log in to your iDempiere (tick <strong>Select Role</strong>, choose <strong>HQ</strong>, as in chapter C; Chrome may show its own windows: press <strong>OK</strong>, then <strong>No thanks</strong>)</td>
 <td>The <strong>Project</strong> window opens on <strong>SHED</strong> (<em>BIM: SHED</em>) with Planned Amount <strong>355,097.97658</strong> (B4.1's total, every decimal)</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
