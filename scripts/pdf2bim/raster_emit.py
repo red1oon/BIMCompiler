@@ -68,6 +68,15 @@ def snap(v, T, K):
     return r
 def snapw(w): return dict(w, x0=snap(w['x0'], TX, KH), x1=snap(w['x1'], TX, KH), y0=snap(w['y0'], TY, KV), y1=snap(w['y1'], TY, KV))
 EXT = [snapw(w) for w in EXT]; INT = [snapw(w) for w in INT]
+# §43.16 openings measured jamb to jamb, sized to DIN 4172 (raster_openings.py): the two runs of each opening end at its nominal edges
+OPF = os.path.join(work, 'openings.json')
+if os.path.exists(OPF):
+    EXT_IDX = [i for i, w in enumerate(W1) if w['thk_chain_m'] == ext_t]
+    for o in json.load(open(OPF))['openings']:
+        ia, ib = EXT_IDX.index(o['run_a']), EXT_IDX.index(o['run_b']); k0, k1 = ('x0', 'x1') if o['axis'] == 'H' else ('y0', 'y1')
+        EXT[ia] = dict(EXT[ia], **{k1: o['a_mm']}); EXT[ib] = dict(EXT[ib], **{k0: o['b_mm']})
+        log(f"§RASTER_EMIT_OPENING face={o['face']} nominal={o['nominal_mm']} class={o['cls']} edges_mm={o['a_mm']}..{o['b_mm']} (measured {o['meas_mm']})")
+else: log("§RASTER_EMIT_OPENING openings.json absent: gaps are the run gaps (§43.11 behaviour)")
 log(f"§RASTER_EMIT_SNAP moved={SN['n']} max_tick_offset_mm={SN['max_off']:.1f} (<= 1 px = {1000/KH:.1f}/{1000/KV:.1f}) max_shift_mm={SN['max_shift']:.1f} "
     f"envelope_mm={min(w['x0'] for w in EXT):.0f},{min(w['y0'] for w in EXT):.0f}..{max(w['x1'] for w in EXT):.0f},{max(w['y1'] for w in EXT):.0f}")
 
