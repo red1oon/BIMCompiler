@@ -25,6 +25,14 @@ for e in B:
     m = next((x for x in left if near(x, e)), None)
     if m: left.remove(m)
     else: missing.append(e)
+# W-S46b (PDF2BIM_VECTOR_PROBE.md §46.1, env HOUSE_SLAB=<section_heights.json>): the house's ground-floor slab is the ONE stated addition to the house:
+# IfcSlab over the baseline house walls' plan box, z = -(A-A base slab rows, mm5) .. 0. Found exactly once -> taken out of the 'east of the house' list; absent or doubled -> FAIL.
+if os.environ.get('HOUSE_SLAB'):
+    SHh = json.load(open(os.environ['HOUSE_SLAB'])); bs = SHh['rows']['base']; thk = int(round((bs['bot'] - bs['top']) / SHh['k_px_per_m'] * 1000 / 5) * 5)
+    hw = [b for c, b in B if c == 'IfcWall']; exp = ('IfcSlab', (min(b[0] for b in hw), min(b[1] for b in hw), -thk, max(b[3] for b in hw), max(b[4] for b in hw), 0))
+    hits = [e for e in left if near(e, exp)]
+    if len(hits) == 1: left.remove(hits[0])
+    print(f"§W-S46b house ground slab expected={exp} found={len(hits)} (thickness {thk} mm READ-GEOM from A-A rows {bs['top']}/{bs['bot']}) verdict={'PASS' if len(hits) == 1 else 'FAIL'}")
 extra_house = [e for e in left if e[1][3] > 1]
 g_ok = not missing and not extra_house and len(B) > 0
 print(f"§W-S22g house elements baseline={len(B)} found_in_new={len(B) - len(missing)} missing={missing[:4]} new_elements={len(left)} of which east of the house face={extra_house[:4]} verdict={'PASS' if g_ok else ('INCONCLUSIVE' if not B else 'FAIL')}")

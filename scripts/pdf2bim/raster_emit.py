@@ -220,6 +220,15 @@ def storey(work, tag, level, sheet, wall_h, door_h=None):
     if ndr: want['A-DOOR'] = ndr; want['DXF2BIM-MARK'] += len(tags_d)
     if ncw: want['A-WALL-CURT'] = ncw
     if ncol: want['A-COLS'] = ncol
+    if SH and EGW and tag == 'EG':   # §46.1 the house's ground-floor slab, drawn (A-A's base slab rows, READ-GEOM), after the house entities, before the annex
+        bs = SH['rows']['base']; hthk = int(round((bs['bot'] - bs['top']) / SH['k_px_per_m'] * 1000 / 5) * 5)
+        hx0 = min(w['x0'] for w in EXT); hx1 = max(w['x1'] for w in EXT); hy0 = min(w['y0'] for w in EXT); hy1 = max(w['y1'] for w in EXT)
+        e = lw('A-FLOR-OTLN', rect(hx0, hy0, hx1, hy1)); e[6:6] = ['38', f'{0:.1f}', '39', f'{hthk:.1f}']; body += e; want['A-FLOR-OTLN'] = want.get('A-FLOR-OTLN', 0) + 1
+        log(f"§RASTER_EMIT_HOUSE_SLAB ring_mm=({hx0:.1f},{hy0:.1f})-({hx1:.1f},{hy1:.1f}) top=0 (EG level 0, DEFAULT) thickness={hthk} (READ-GEOM, A-A base rows {bs['top']}/{bs['bot']} at k={SH['k_px_per_m']})")
+    if sheet == STOREYS[-1]['sheet'] and TPL_EFH.get('owner_rulings'):   # §46.2 the owner's acceptance, on paper (bim-ootb §L37 / §L41a), as the type file states it
+        OR_ = TPL_EFH['owner_rulings']; OA_ = OR_['_accept']; acc = [f"@ACCEPT={c},{OA_['who']},{OA_['date']},{OA_['reason']}" for k, v in OR_.items() if not k.startswith('_') for c in v]
+        for n, m in enumerate(acc): body += tx(-3000, -2500 - 300 * (len(marks) + n), m)
+        want['DXF2BIM-MARK'] += len(acc); log(f"§RASTER_EMIT_ACCEPT {len(acc)} marks on {sheet}: " + ' '.join(c for k, v in OR_.items() if not k.startswith('_') for c in v))
     GAR = None
     if AH and tag == 'EG':   # §43.22 step 3: the annex, appended AFTER every house entity (the reader's index handles of the house do not move)
         A_ = json.load(open(os.path.join(work, 'annex.json'))); assert A_['ring_closed'], 'annex ring not closed'
@@ -260,7 +269,7 @@ def storey(work, tag, level, sheet, wall_h, door_h=None):
             wl = f"DEWP_W{round(g['b'] - g['a'])}_{round(g['b'] - g['a'])}x{WH}"; r_ = g['r']; gb += tx((r_[0] + r_[2]) / 2, -(r_[1] + r_[3]) / 2, f'@TAG=window,{wl}')
             gm.append(f"@SCHEDULE={wl},window,{round(g['b'] - g['a'])},{WH},{SILL}"); log(f"§RASTER_EMIT_GARAGE_HIDDEN_WINDOW W y_mm={g['a']}..{g['b']} tagged {wl}, schedule sill={SILL} height={WH} (DEFAULT registry, as every window)")
         for n, m in enumerate(gm): gb += tx(xW - 3000, -2500 - 300 * n, m)
-        want['A-WALL-FULL'] += len(WP); want['A-GLAZ'] = want.get('A-GLAZ', 0) + ngz; want['A-FLOR-OTLN'] = 2; want['DXF2BIM-MARK'] += len(gm) + len(GD) + len(hw_)
+        want['A-WALL-FULL'] += len(WP); want['A-GLAZ'] = want.get('A-GLAZ', 0) + ngz; want['A-FLOR-OTLN'] = want.get('A-FLOR-OTLN', 0) + 2; want['DXF2BIM-MARK'] += len(gm) + len(GD) + len(hw_)
         if GD: want['A-DOOR'] = want.get('A-DOOR', 0) + len(GD)
         GAR = dict(xW=xW, yN=yN, yS=yS, top=AH['wall_clear'], win=[q for q in OPn if q['face'] == 'S'])
     write(sheet, body, want)
