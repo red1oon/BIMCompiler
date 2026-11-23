@@ -47,7 +47,7 @@ module.exports = (S, PREP, D, H) => {
   };
   S.r1 = wholeShed('r1'); S.l1 = wholeShed('l1');
   const MD = fs.readFileSync(path.join(__dirname, '..', '..', 'docs', 'CapexUATGuide.md'), 'utf8');
-  const L2 = JSON.parse((/\{"projects":\d+[^}]*\}/.exec(MD.split('\n').find(l => l.indexOf('| L2 |') === 0) || '') || ['null'])[0]);   // the guide's L2 row: the push's created counts
+  const L2 = JSON.parse((/\{"[a-z]+":\d+(?:,"[a-z]+":\d+)*\}/.exec(MD.split('\n').find(l => l.indexOf('| L2 |') === 0) || '') || ['null'])[0]);   // the guide's L2 row: the push's created counts
   const linkText = () => D.page.evaluate(() => { const a = document.getElementById('find-erp-open'); return a && getComputedStyle(a).display !== 'none' && a.getBoundingClientRect().width > 0 ? a.textContent.trim() : null; });
 
   // ---------------- l2: B4.2 › ERP: the local Project Order, then the Viewer's own sign-in window for the iDempiere, the password, Push -> the status line names the iDempiere project

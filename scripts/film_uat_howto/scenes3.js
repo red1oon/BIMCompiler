@@ -52,7 +52,7 @@ module.exports = (S, PREP, D, H) => {
     const g = { planned: (/planned amount, \*\*([\d.]+)\*\*/.exec(B44) || [])[1], phases: (/\*1 of (\d+)\*/.exec(B44) || [])[1], phase1: (/the first \*([^*]+)\* ([\d,.]+\d)/.exec(B44) || []).slice(1), task: (/one, \*([A-Z_]+)\*/.exec(B44) || [])[1] };
     D.log('§FILM_NOTE r3 guide B4.4 ' + JSON.stringify(g));
     const pa = f.plannedamt || ''; D.check(!!g.planned && String(pa).replace(/,/g, '') === g.planned, 'b44_planned_amount_as_guide', JSON.stringify(pa) + ' guide ' + g.planned); D.cue('r3_project', { planned: pa }); await D.sleep(2500);
-    const nav = () => D.page.evaluate(() => { const n = document.getElementById('idmp-recnav'); return n ? n.textContent.replace(/\s+/g, ' ').trim() : null; });   // the record navigator: 'Record 1 of 6' or '0 records'
+    const nav = () => D.page.evaluate(() => { const t = [document.getElementById('idmp-status-main'), document.getElementById('idmp-recnav')].map(e => e ? e.textContent.replace(/\s+/g, ' ') : '').join(' '); const m = /Record \d+ of \d+|\b0 records/.exec(t); return m ? m[0] : t.trim().slice(0, 80); });   // what the ERP's status line says on a tab: '… · Record 1 of 6' or '… · 0 records'
     const T = {}; const num = v => Number(String(v).replace(/,/g, ''));
     await clickTab('Project Line'); T.pl = await nav();
     await clickTab('Phase'); T.ph = await nav(); const f1 = await D.page.evaluate(() => { const o = {}; document.querySelectorAll('input').forEach(e => { const k = e.getAttribute('data-col') || e.name; if (k && e.getBoundingClientRect().width > 0) o[k] = e.value; }); return o; });
