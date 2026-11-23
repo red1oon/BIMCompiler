@@ -7,6 +7,13 @@ const GUIDE = 'https://red1oon.github.io/BIMCompiler/CapexUATGuide/';
 // Chrome's own toolbar is not in any page's DOM: its address bar was MEASURED once from a calibration frame of this desktop (probe1.png: the bar spans x 130-1705, y 52-84)
 const BACK = D.screenBox(14, 53, 28, 28, 'the Back button');   // measured on the same frame: the toolbar arrow at x 28, y 67
 const OMNIBOX = D.screenBox(300, 54, 700, 28, 'the address bar');
+// §5.28: the pack, the B3.1 line and the Run Checker's box-1 line are the guide's own words (docs/CapexUATGuide.md, rev (j)), parsed, never typed
+const GMD = fs.readFileSync(path.join(__dirname, '..', '..', 'docs', 'CapexUATGuide.md'), 'utf8'), GROW = k => GMD.split('\n').find(l => l.indexOf('| ' + k + ' |') === 0) || '';
+const PACK_URL = (/\((https:\/\/[^)\s]*Shed_UAT_pack_\d{8}\.zip)\)/.exec(GMD) || [])[1], PACK = (/(Shed_UAT_pack_\d{8})\.zip/.exec(PACK_URL || '') || [])[1], PACKID = (PACK || '').slice(-8);
+const B31 = (/\*\*(USD [\d,.]+ \(RM [\d,]+\) — total building cost)\*\*/.exec(GROW('B3.1')) || [])[1];
+const B51 = ((/\*(Pack intact: \d+ files checked, built [\d-]+) …\*/.exec(GROW('B5.1')) || [])[1]);
+const esc = t => String(t).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+console.log('§FILM_GUIDE pack=' + PACK + ' url=' + PACK_URL + ' b31=' + JSON.stringify(B31) + ' b51=' + JSON.stringify(B51));
 const S = {}, PREP = {};
 PREP.s5 = async () => { await PREP.s3(); };
 PREP.s8 = async () => { await PREP.oneTab(); await D.page.goto('https://red1oon.github.io/bim-ootb/index.html'); await D.sleep(1500); await D.page.evaluate(() => { localStorage.clear(); sessionStorage.clear(); }); await PREP.s3(); };   // a re-take sees the front door as a first visit (the pill picture), as the fresh build does
@@ -23,7 +30,8 @@ S.s1 = async () => {   // the guide, and its PDF into Downloads
   D.cue('s1_page', { title: await D.page.title() });
   await D.aim('a.md-button--primary', { label: '⬇ Download the PDF' }); await D.sleep(500); D.cue('s1_click');
   await D.click({ label: '⬇ Download the PDF' });
-  const f = await D.waitFile(/^CapexUATGuide.*\.pdf$/, 60000); D.check(!!f && f.bytes === 4795915, 'pdf_landed', f ? f.name + ' ' + f.bytes : 'none');
+  const plen = await fetch(GUIDE.replace(/\/CapexUATGuide\/$/, '/CapexUATGuide.pdf'), { method: 'HEAD' }).then(r => Number(r.headers.get('content-length'))).catch(() => -1);   // B:READ: the size the published PDF is served at
+  const f = await D.waitFile(/^CapexUATGuide.*\.pdf$/, 60000); D.check(!!f && plen > 0 && f.bytes === plen, 'pdf_landed', f ? f.name + ' ' + f.bytes : 'none');
   D.cue('s1_landed'); await D.sleep(2500);
   D.cue('s1_ctrlj'); await D.key('ctrl+j', 'show the downloads'); await D.waitUrl(/chrome:\/\/downloads/); await D.sleep(1200);
   const shown = await D.page.evaluate(() => { const m = document.querySelector('downloads-manager'); const items = m && m.shadowRoot ? [...m.shadowRoot.querySelectorAll('downloads-item')] : []; return items.map(i => (i.shadowRoot && i.shadowRoot.querySelector('#name') || {}).textContent || ''); }).catch(() => []);
@@ -38,7 +46,8 @@ S.s2 = async () => {   // a link that IS a file: the test-data pack (keep it zip
   D.fastStart('scroll to What you need'); await D.moveTo(960, 600); await D.scrollInto(L, 260); D.fastEnd();
   D.cue('s2_table'); await D.sleep(1500);
   await D.aim(L, { label: 'the test-data pack link' }); D.cue('s2_click'); await D.click({ label: 'the test-data pack link' });
-  const f = await D.waitFile(/CAPEXTestData\.zip$/, 60000); D.check(!!f && f.bytes === 14144, 'testdata_zip_landed', f ? f.name + ' ' + f.bytes : 'none');
+  const href = await D.page.$eval(L, e => e.href).catch(() => ''); const zlen = href ? await fetch(href, { method: 'HEAD' }).then(r => Number(r.headers.get('content-length'))).catch(() => -1) : -1;   // B:READ: the size the guide's link serves
+  const f = await D.waitFile(/CAPEXTestData\.zip$/, 60000); D.check(!!f && zlen > 0 && f.bytes === zlen, 'testdata_zip_landed', f ? f.name + ' ' + f.bytes : 'none');
   D.cue('s2_landed'); await D.sleep(3500); D.cue('s2_end');
 };
 S.s3 = async () => {   // a link that is a PAGE: the products script opens GitHub; the file is behind 'Download raw file'
@@ -56,12 +65,13 @@ S.s3 = async () => {   // a link that is a PAGE: the products script opens GitHu
 S.s4 = async () => {   // the reference pack: download it, then open it in Files: opening the zip extracts it; inside are the sheets
   D.cue('s4_start'); const L = 'a[href*="Shed_UAT_pack"]';
   await D.scrollInto(L, 260); await D.aim(L, { label: 'the reference pack link' }); D.cue('s4_click'); await D.click({ label: 'the reference pack link' });
-  const f = await D.waitFile(/^Shed_UAT_pack_20261115\.zip$/, 90000); D.check(!!f && f.bytes === 567159, 'pack_landed', f ? f.name + ' ' + f.bytes : 'none');
+  const len = await fetch(PACK_URL, { method: 'HEAD' }).then(r => Number(r.headers.get('content-length'))).catch(() => -1);   // B:READ: the size the guide's link serves
+  const f = await D.waitFile(new RegExp('^' + esc(PACK) + '\\.zip$'), 90000); D.check(!!f && len > 0 && f.bytes === len, 'pack_landed', f ? f.name + ' ' + f.bytes : 'none');
   D.cue('s4_landed'); await D.sleep(2000);
   D.cue('s4_files'); const win = await D.files(); if (!win) return; await D.sleep(1200); const FR = D.filesGeo;   // OCR reads inside the Files window only
   const z = await D.findText(/Shed_UAT/, FR); if (!z) return;
   await D.aim(D.screenBox(z.x, z.y - 58, z.w, 52, 'the pack zip icon'), { label: 'the pack zip' }); D.cue('s4_open'); await D.click({ n: 2, label: 'the pack zip (double-click)' });
-  let ok = false; const ex = path.join(HOME_DL(), 'Shed_UAT_pack_20261115');
+  let ok = false; const ex = path.join(HOME_DL(), PACK);
   for (let i = 0; i < 60 && !ok; i++) { await D.sleep(500); ok = fs.existsSync(path.join(ex, 'marked')) && fs.readdirSync(path.join(ex, 'marked')).filter(n => /_marked\.dxf$/.test(n)).length === 9; }
   D.check(ok, 'pack_extracted', ex + ' marked=' + (fs.existsSync(path.join(ex, 'marked')) ? fs.readdirSync(path.join(ex, 'marked')).length : 0));
   D.cue('s4_extracted'); await D.sleep(1800);
@@ -86,7 +96,7 @@ S.s5 = async () => {   // B2.1: the Modeller, all nine marked sheets through the
   await D.aimClick('#b-open', { label: 'Open' }); await D.sleep(600);
   await D.aim('#m-open-panel .mo-row[data-key="__dxf"]', { label: 'Open 2D drawings (.dxf)…' }); D.cue('s5_row'); await D.click({ label: 'Open 2D drawings (.dxf)…' });
   D.cue('s5_dialog');
-  const ok = await D.pick(['Downloads', t => /^Shed_UAT_pack_2026111\d$/.test(t), 'marked'], async () => { await D.key('ctrl+a', 'select all nine'); await D.sleep(900); }, 'the nine marked sheets');
+  const ok = await D.pick(['Downloads', t => t === PACK, 'marked'], async () => { await D.key('ctrl+a', 'select all nine'); await D.sleep(900); }, 'the nine marked sheets');
   if (!ok) return;
   D.fastStart('the sheets are read'); await D.page.waitForFunction(n => window.DxfMetaEditor && window.DxfMetaEditor.state.sheets.length === n && !window.DxfMetaEditor.state.busy && window.DxfMetaEditor.state.verdict, 9, { timeout: 300000, polling: 300 }); await D.sleep(1500); D.fastEnd();
   const title = await D.page.$eval('#dxf-panel .ip-title', e => e.innerText.replace(/\s+/g, ' ').trim()).catch(() => '');
@@ -161,7 +171,7 @@ S.s9 = async () => {   // B3.1: the Find panel, 'total cost'
   for (let i = 0; i < 40; i++) { if (await D.page.evaluate(() => { const p = document.getElementById('find-panel'); return !!(p && p.getBoundingClientRect().width > 0); })) break; await D.sleep(300); }
   await D.aim('#find-name', { label: 'the Find box' }); await D.click({ label: 'the Find box' }); D.cue('s9_type'); await D.type('total cost'); await D.key('Return', 'ask');
   let t = ''; for (let i = 0; i < 120 && !/USD\s*[\d,]+/.test(t); i++) { t = await D.page.evaluate(() => (document.getElementById('nlp-toast') || {}).innerText || ''); if (!/USD/.test(t)) await D.sleep(500); }
-  const line = t.split('\n')[0]; D.check(/USD 96,839 \(RM 372,457\) — total building cost/.test(t), 'total_cost_line', JSON.stringify(line));   // guide B3.1
+  const line = t.split('\n')[0]; D.check(!!B31 && t.indexOf(B31) >= 0, 'total_cost_line', JSON.stringify(line));   // guide B3.1
   D.cue('s9_cost', { line }); await D.sleep(3000);
   await D.aim('#nlp-toast', { fy: 0.2, label: 'the answer' }); D.cue('s9_copy'); await D.click({ n: 3, label: 'the answer (triple-click)' }); await D.key('ctrl+c', 'copy'); await D.sleep(1500); D.cue('s9_end');
 };
@@ -169,12 +179,12 @@ S.s9 = async () => {   // B3.1: the Find panel, 'total cost'
 S.s11 = async () => {   // B5.1 + B5.2: box 5 pasted, box 1 the pack's zip, box 3 the database
   D.cue('s11_start'); await tabTo(TAB1, CHECK);
   await D.aimClick('#cline', { label: 'box 5' }); await D.key('ctrl+a', 'select what is there'); await D.key('ctrl+v', 'paste'); const c = await D.page.$eval('#cline', e => e.value);
-  D.check(/USD 96,839 \(RM 372,457\) — total building cost/.test(c), 'box5_pasted', JSON.stringify(c.slice(0, 100))); D.cue('s11_pasted'); await D.sleep(1500);
+  D.check(!!B31 && c.indexOf(B31) >= 0, 'box5_pasted', JSON.stringify(c.slice(0, 100))); D.cue('s11_pasted'); await D.sleep(1500);
   await D.scrollInto('#pack', 200); await D.aim('#pack', { label: 'box 1' }); D.cue('s11_box1'); await D.click({ label: 'box 1' });
-  let ok = await D.pick(['Downloads'], async (R) => { const f = await D.findText(t => /pack.2026111\d\.zip$/.test(t)   /* §5.15: the zip as the only, selected row reads "pack.20261115.zip" */, R); if (!f) return false; await D.aim(D.screenBox(f.x - 60, f.y - 4, f.w + 70, f.h + 8, 'the pack zip'), { label: 'Shed_UAT_pack_20261115.zip' }); await D.click({ label: 'the pack zip' }); await D.sleep(700); }, 'box 1: the pack');
+  let ok = await D.pick(['Downloads'], async (R) => { const f = await D.findText(t => new RegExp('pack.' + PACKID + '\\.zip$').test(t)   /* §5.15: the zip as the only, selected row reads "pack.20261115.zip" */, R); if (!f) return false; await D.aim(D.screenBox(f.x - 60, f.y - 4, f.w + 70, f.h + 8, 'the pack zip'), { label: 'Shed_UAT_pack_20261115.zip' }); await D.click({ label: 'the pack zip' }); await D.sleep(700); }, 'box 1: the pack');
   if (!ok) return;
   let intact = ''; for (let i = 0; i < 60 && !/Pack intact/.test(intact); i++) { intact = await D.page.evaluate(() => document.body.innerText); if (!/Pack intact/.test(intact)) await D.sleep(500); }
-  const il = (/Pack intact: 19 files checked[^\n]*/.exec(intact) || [''])[0]; D.check(!!il, 'pack_intact_19', JSON.stringify(il.slice(0, 100))); D.cue('s11_intact'); await D.sleep(2500);   // guide B5.1
+  const il = (new RegExp(esc(B51 || '§none') + '[^\\n]*').exec(intact) || [''])[0]; D.check(!!B51 && !!il, 'pack_intact_as_guide_b51', JSON.stringify(il.slice(0, 100))); D.cue('s11_intact'); await D.sleep(2500);   // guide B5.1
   await D.scrollInto('#db', 200); await D.aim('#db', { label: 'box 3' }); await D.click({ label: 'box 3' });
   ok = await D.pick(['Downloads'], async (R) => { const f = await D.findText(t => /extracted\.db$/.test(t), R); if (!f) return false; await D.aim(D.screenBox(f.x - 60, f.y - 4, f.w + 70, f.h + 8, 'SHED_extracted.db'), { label: 'SHED_extracted.db' }); await D.click({ label: 'SHED_extracted.db' }); await D.sleep(700); }, 'box 3: the database');
   D.cue('s11_box3'); await D.sleep(2500); D.cue('s11_end');
@@ -284,7 +294,7 @@ const LAYERS = [['plan', 'Col', 'column'], ['plan', 'Fo', 'footing'], ['elev', '
 const DATUMS = [['1S_ELEV_SOUTH.dxf', '-4446.6'], ['1N_ELEV_NORTH.dxf', '-3895.2'], ['2_ELEV_WEST.dxf', '-4515.7264'], ['7_ELEV_EAST.dxf', '-3766.442'], ['8_SECTION_AA_TRUSS.dxf', '-3726.416']];
 const BODYZ = [['footing', '-1.4478', '-1.143'], ['beam', '3.098794', '3.352794']];
 const EX_AIM = [-20885, -5610, -20847, -4940], EX_TOL = { x0: [-20908, -20873.6], x1: [-20850.7, -20843.3], y0max: -5577.3, y1min: -4965.3 };
-const PACK = 'Shed_UAT_pack_20261115', BODY = '#dm-body';
+const BODY = '#dm-body';
 const dm = {   // the Drawing metadata panel, read from its own text (what the tester reads); roles from the panel state (B:READ: the role words sit inside nine cards)
   chip: () => D.page.$eval('#dm-chip', e => e.innerText.replace(/\s+/g, ' ').trim()).catch(() => ''),
   head: id => D.page.$eval('[data-act="sec"][data-sec="' + id + '"]', e => e.innerText.replace(/\s+/g, ' ').trim()).catch(() => ''),
@@ -309,7 +319,7 @@ S.p1 = async () => {   // B0.1: the Modeller, the nine RAW sheets (the pack's sh
   D.fastStart('the Modeller loads'); await D.waitUrl(/modeller\/modeller\.html/, 60000); await MOD.ready(); await D.sleep(1500); D.fastEnd();
   await D.aimClick('#b-open', { label: 'Open' }); await D.sleep(600);
   await D.aim('#m-open-panel .mo-row[data-key="__dxf"]', { label: 'Open 2D drawings (.dxf)…' }); D.cue('p1_row'); await D.click({ label: 'Open 2D drawings (.dxf)…' });
-  const ok = await D.pick(['Downloads', t => /^Shed_UAT_pack_2026111\d$/.test(t), 'sheets'], async () => { await D.key('ctrl+a', 'select all nine'); await D.sleep(900); }, 'the nine raw sheets');
+  const ok = await D.pick(['Downloads', t => t === PACK, 'sheets'], async () => { await D.key('ctrl+a', 'select all nine'); await D.sleep(900); }, 'the nine raw sheets');
   if (!ok) return;
   D.fastStart('the sheets are read'); await D.page.waitForFunction(n => window.DxfMetaEditor && window.DxfMetaEditor.state.sheets.length === n && !window.DxfMetaEditor.state.busy && window.DxfMetaEditor.state.verdict, 9, { timeout: 300000, polling: 300 }); await D.sleep(1500); D.fastEnd();
   const chip = await dm.chip(), yh = await dm.head('yellows'), roles = await dm.roles();

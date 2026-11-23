@@ -34,19 +34,21 @@ module.exports = (S, PREP, D, H) => {
 
   // ---------------- l1: B4.1 the same Find steps as r1
   // owner 2026-11-22 (§INTERNAL-UAT): the WHOLE Shed reaches the ERP and the dashboard: F opens the Storey tree (▸ Level 1 (511) ▸ Unknown (2)); tap Level 1, the bar prices all of it
-  S.l1 = async () => {
-    D.cue('l1_start'); await D.aimClick(AREA, { label: 'the model area (focus)' }); await D.sleep(400); await D.key('f', 'the Find panel');
+  const wholeShed = tag => async () => {   // §5.27: B4.1 the whole Shed, the same scene for the Kernel ERP (r1) and the legacy iDempiere (l1)
+    D.cue(tag + '_start'); await D.aimClick(AREA, { label: 'the model area (focus)' }); await D.sleep(400); await D.key('f', 'the Find panel');
     await until(() => { const p = document.getElementById('find-panel'); return !!(p && p.getBoundingClientRect().width > 0); }, 15000);
     const lbl = D.page.locator('#find-tree .find-tree-row[data-find-parent="Level 1"] > span:nth-child(2)').first();
     const tree = await until(() => { const r = document.querySelector('#find-tree .find-tree-row[data-find-parent="Level 1"]'); return r ? r.innerText.replace(/\s+/g, ' ').trim() : null; }, 20000);
     D.check(/Level 1 \(511\)/.test(tree || ''), 'b41_tree_level1_511', JSON.stringify(tree));
-    await D.aim(lbl, { label: 'Level 1 (the whole Shed)' }); D.cue('l1_level1'); await D.click({ label: 'Level 1' });
+    await D.aim(lbl, { label: 'Level 1 (the whole Shed)' }); D.cue(tag + '_level1'); await D.click({ label: 'Level 1' });
     const ok = await until(() => { const b = document.getElementById('find-erp-btn'), t = (document.getElementById('find-selected') || {}).innerText || ''; return b && b.getBoundingClientRect().width > 0 && /USD\s*[\d,]+\.\d{2}(?!\d)/.test(t) ? t.replace(/\s+/g, ' ').trim() : null; }, 120000);   // the bar paints every digit first, then the order currency's precision (find_erp_push.js _precision)
     D.check(/Level 1 .*USD 355,097\.98/.test(ok || ''), 'b41_whole_shed_bar', JSON.stringify((ok || '').slice(0, 120)));   // guide B3.1's total (one cost, rev (g))
-    D.cue('l1_end', { selected: (ok || '').slice(0, 120) }); await D.sleep(2500);
+    D.cue(tag + '_bar', { selected: (ok || '').slice(0, 120) }); await D.sleep(2500); D.cue(tag + '_end');
   };
-
-  if (process.env.FILM_WHOLE_SHED_R1) S.r1 = S.l1;   // measurement (§INTERNAL-UAT): the Kernel-ERP B4.1 with the whole Shed too
+  S.r1 = wholeShed('r1'); S.l1 = wholeShed('l1');
+  const MD = fs.readFileSync(path.join(__dirname, '..', '..', 'docs', 'CapexUATGuide.md'), 'utf8');
+  const L2 = JSON.parse((/\{"[a-z]+":\d+(?:,"[a-z]+":\d+)*\}/.exec(MD.split('\n').find(l => l.indexOf('| L2 |') === 0) || '') || ['null'])[0]);   // the guide's L2 row: the push's created counts
+  const linkText = () => D.page.evaluate(() => { const a = document.getElementById('find-erp-open'); return a && getComputedStyle(a).display !== 'none' && a.getBoundingClientRect().width > 0 ? a.textContent.trim() : null; });
 
   // ---------------- l2: B4.2 › ERP: the local Project Order, then the Viewer's own sign-in window for the iDempiere, the password, Push -> the status line names the iDempiere project
   S.l2 = async () => {
@@ -65,7 +67,8 @@ module.exports = (S, PREP, D, H) => {
     for (let i = 0; i < 600 && !/iDempiere Project #\d+|failed/.test(st); i++) { st = await status(); if (!/iDempiere Project #\d+|failed/.test(st)) await D.sleep(200); }
     D.fastEnd(); const m = /iDempiere Project #(\d+) · created (\{.*\})/.exec(st);
     D.check(!!m, 'bl_pushed_to_idempiere', JSON.stringify(st.slice(0, 200)));
-    if (m) { const cr = JSON.parse(m[2]); D.check(cr.projects === 1 && cr.lines >= 1, 'bl_created_one_project_with_its_line', m[2]); D.log('§FILM_STATE legacy.project=' + m[1]); }
+    if (m) { const cr = JSON.parse(m[2]); D.check(!!L2 && JSON.stringify(cr) === JSON.stringify(L2), 'bl_created_counts_as_guide_l2', m[2] + ' guide ' + JSON.stringify(L2)); D.log('§FILM_STATE legacy.project=' + m[1]); }
+    const lt = await linkText(); D.check(!!m && lt === 'SHED #' + m[1] + ' \u2197', 'bl_link_names_the_idempiere_project', JSON.stringify(lt));   // guide L2: the link SHED #… ↗, with the same number
     const href = await D.page.evaluate(() => { const a = document.getElementById('find-erp-open'); return a ? a.getAttribute('href') : null; });   // B:READ (declared): where open ↗ goes
     D.check(!!m && href === 'http://localhost:8108/webui/index.zul?Action=Zoom&TableName=C_Project&Record_ID=' + m[1], 'bl_open_link_is_the_idempiere_project', href);
     D.cue('l2_end', { status: st.slice(0, 160) }); await D.sleep(3000);
@@ -73,7 +76,7 @@ module.exports = (S, PREP, D, H) => {
 
   // ---------------- l3: open ↗ -> that iDempiere's log in -> the Project window on SHED
   S.l3 = async () => {
-    D.cue('l3_start'); const before = D.pages().length; await D.aim('#find-erp-open', { label: 'open ↗' }); await D.click({ label: 'open ↗' });
+    D.cue('l3_start'); const before = D.pages().length; await D.aim('#find-erp-open', { label: 'SHED #… ↗' }); await D.click({ label: 'SHED #… ↗' });
     for (let i = 0; i < 80 && D.pages().length === before; i++) await D.sleep(250);
     D.fastStart('iDempiere opens'); const ok = await D.waitUrl(/8108\/webui/, 60000); if (!ok) { D.fastEnd(); return; }
     await D.page.waitForFunction(() => document.querySelectorAll('input.z-textbox').length >= 2, null, { timeout: 90000 }); D.fastEnd(); await D.sleep(1200);
@@ -85,6 +88,8 @@ module.exports = (S, PREP, D, H) => {
     const nm = await D.page.evaluate(() => { const e = [...document.querySelectorAll('[instancename]')].find(x => /^C_Project\d*Name$/.test(x.getAttribute('instancename')) && x.getBoundingClientRect().width > 0); const i = e && (e.matches('input') ? e : e.querySelector('input')); return i ? i.value : null; });
     D.check(v === 'SHED' && /SHED/.test(nm || ''), 'bl_idempiere_project_shed', JSON.stringify({ value: v, name: nm }));   // the note: the project SHED in your iDempiere's Project window
     D.check(!!pa && H.lgroup != null && Math.abs(Number(String(pa).replace(/,/g, '')) - Math.round(H.lgroup * 100) / 100) < 0.005, 'bl_idempiere_planned_amount_is_the_group', JSON.stringify(pa) + ' group USD ' + H.lgroup);   // as B4.4: the planned amount of the group you clicked
+    const gl3 = (/Planned Amount \*\*([\d,]+\.\d+)\*\*/.exec(MD.split('\n').find(l => l.indexOf('| L3 |') === 0) || '') || [])[1];
+    D.check(!!gl3 && String(pa) === gl3, 'bl_planned_amount_as_guide_l3', JSON.stringify(pa) + ' guide ' + gl3);   // guide L3: Planned Amount 355,097.97658 (every decimal)
     D.cue('l3_project', { value: v, planned: pa }); await D.sleep(4000); D.cue('l3_end');
   };
 };

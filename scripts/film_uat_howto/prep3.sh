@@ -13,7 +13,7 @@ start_i(){ sh $INST/start.sh > "$LOG/start.log" 2>&1; for i in $(seq 1 140); do 
 counts(){ say "§P3_COUNTS $1 td_projects=$(q "select count(*) from c_project where value like 'TD\_%'") pwd_products=$(q "select count(*) from m_product where value like 'PWD-%'") imp_proc=$(q "select count(*) from ad_package_imp_proc") setup=\"$(DB=$DB bash $OOTB/capex/legacy/test_instance/setup_test_instance.sh --check | grep -o '§SETUP_VERDICT.*')\""; }
 if [ "$OP" = up ]; then
   [ "$(pq "select count(*) from pg_database where datname='$BAK'")" = 0 ] || { say "§P3_REFUSED $BAK exists already (it may be the only good copy): restore with 'down' first"; exit 3; }
-  counts before; grep '§P3_COUNTS before' "$LOG/prep3.log" | tail -1 > "$LOG/as_found.txt"
+  counts before; grep '§P3_COUNTS before' "$LOG/prep3.log" | tail -1 > "$LOG/as_found_p3.txt"
   stop_i; pq "CREATE DATABASE $BAK TEMPLATE $DB" && say "§P3_BACKUP made $BAK"
   DB=$DB bash $OOTB/capex/legacy/test_instance/setup_test_instance.sh > "$LOG/a2_setup.log" 2>&1; say "§P3_A2 $(grep -o '§SETUP_VERDICT.*' "$LOG/a2_setup.log")"
   start_i
@@ -32,7 +32,7 @@ elif [ "$OP" = down ]; then
   [ "$(pq "select count(*) from pg_database where datname='$BAK'")" = 1 ] || { say "§P3_REFUSED no backup $BAK: refusing to drop $DB"; exit 3; }
   stop_i; pq "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname='$DB'" > /dev/null
   pq "DROP DATABASE $DB" && pq "CREATE DATABASE $DB TEMPLATE $BAK" && say "§P3_RESTORE $DB recreated from $BAK"
-  counts restored; A=$(sed 's/.*td_projects/td_projects/' "$LOG/as_found.txt"); R=$(grep '§P3_COUNTS restored' "$LOG/prep3.log" | tail -1 | sed 's/.*td_projects/td_projects/')
+  counts restored; A=$(sed 's/.*td_projects/td_projects/' "$LOG/as_found_p3.txt"); R=$(grep '§P3_COUNTS restored' "$LOG/prep3.log" | tail -1 | sed 's/.*td_projects/td_projects/')
   [ "$A" = "$R" ] && say "§P3_RESTORE_CHECK PASS equal to as found: $R" || { say "§P3_RESTORE_CHECK FAIL as found: $A | now: $R (backup KEPT)"; start_i; exit 5; }
   start_i; pq "DROP DATABASE $BAK" && pq "DROP DATABASE IF EXISTS $RDY" && say "§P3_DOWN_VERDICT PASS backup and ready snapshot dropped"
 fi
