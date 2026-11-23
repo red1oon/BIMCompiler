@@ -299,7 +299,7 @@ Proposed general outline sent to the owner (4 advantages: the code you read is t
 (the session showed that 3 of the 4 proposed chapters repeat films 1-5 and recommended a short promo) → *"Are any repeat of before? OR need better promo advert treatment?"* → *"Yes, ensure more visible of VSC for familiarity"*.
 **FILM 6 PROMO SPEC (supersedes the FILM 6 SPEC table above; the version-number walkthrough is not made as a separate film).** About 60-75 s, English, for people deciding whether to look at this project. **VS Code fills the frame in every scene** (the real window, full size: Explorer, editor,
 hovers, the Problems/warning line, the status-bar Bump button, the terminal panel), so a viewer who knows VS Code recognises everything; the real app appears only as an inset where the change shows. Typed lines in VS Code's own terminal panel with real key sounds, voice after Return;
-pointer moves animated to the real token rectangle. Footage: new real captures with the FILM 6 kit (`scripts/film_version_numbers/`, the throwaway trees), reusing earlier films' real VS Code stills only where they match the same window look. Nothing drawn that was not captured.
+pointer moves animated to the real token rectangle. Footage: ALL NEW real captures with the FILM 6 kit (`scripts/film_version_numbers/`, the throwaway trees); owner 2026-11-23: *"ie u may have to cut anew"*: no clip of films 1-5 is stitched in. Nothing drawn that was not captured.
 | scene | VS Code shows | inset | narration (F: … \| M: …, short, lively) | from |
 |---|---|---|---|---|
 | hook | the repo opening in VS Code; cover over it: kicker **CH 0**, title proposed **Built to be read**, sub "this codebase in VS Code" | — | F: What makes this code different? | — |
