@@ -27,6 +27,14 @@ problem may go to one well-scoped Fable agent (owner 2026-11-17: *"if u hit a co
 One heavy job at a time on this machine, under `nice -n 19 ionice -c3`. Headless-browser runs are allowed for this lane's parked browser items (owner
 2026-11-16: *"U can do browser run for those items new session"*), one at a time, never beside a live bake or GPU work.
 
+**00. SESSION CLOSE 2026-11-23 (thirteenth session; owner: "resume VSC" … "close").** Done, merged, verified on main and live: **Part B ✅ complete.** B3-Q2/B3-Q3/B3-OUT-Q1 → **B3-OUT** (bim-ootb #3385 → `0fa163b8`: `index.html`, `import_own.js`,
+`capex/index.html` written from the lists, `archive/gallery.html` frozen, the regex path of `bump.js` deleted) · B4-HASH-Q1..Q4 → **B4-HASH** (#3402 → `fc2f8216`: every `?v=` = first 8 hex of the file's SHA-256 as committed, 767 list numbers removed, one press kept with the ERP parity gate,
+counting `CACHE_VERSION`) · Developer Guide §5.1/§5.2 live (fetched back) · films (never committed, scripts merged): **Film 5** "Browser version numbers, done for you" v2 (BIMCompiler #1133 #1137, 128.5 s, the developers' record) and **Film 6 promo "Built to be read"**
+(#1208, `~/Videos/Built_To_Be_Read_CH0_EN_AFTER_2026-11-23_v3.mp4`, 74 s, VS Code 84 % of frames; FILM_IMMERSIVE_SOFTWARE.md FILM 6 STATUS). Results and the spec errors the builds caught: Part B "B3-OUT RESULT", "B4-HASH RESULT".
+**Next:** Part D spec (owner table `<app>/questions.json`, D-2 `"extends"` still open) · B-4's own step (7 ERP plugin `.mjs` not precached) · later: copy unchanged files between caches on deploy (noted in the B4-HASH spec) · F-2 ceilings 2026-11-30.
+**Handed over, not this lane's:** `index.html:181` dead `viewer/bonsai_kernel.js` tag (landing page's occt-wasm preload silent since #550) · `modeller/dxf_import_ui.js:12` / `dxf_export_ui.js:11` hand `?v=` (Modeller lane) · 5 ERP wiring witnesses failing on main before and after B4-HASH.
+Kept worktrees (untracked renders for a recut, owner may delete): `/tmp/wt-film5`, `/tmp/wt-film6`.
+
 **0. SESSION CLOSE 2026-11-18 (tenth session; owner: "resume VSC" → "proceed").** Done, merged, verified on main:
 B1-Q1..Q3 answered (A / yes / session cites + owner OK; #944) · the 37 order edges read in code and confirmed by the owner (#947) · **B1 ✅**: deps tool + W-DEPS-CAND (bim-ootb #3245),
 the modeller written from `modeller/modules.json` (#3250 → `b9b2e522`; `§MANIFEST_ROUNDTRIP … claims=15/15 red=12/12 order_check=PASS deps_declared=25 verdict=PASS`; live `modeller/sw.js` v295 fetched back;
