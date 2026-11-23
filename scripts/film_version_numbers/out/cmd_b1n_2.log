@@ -1,0 +1,4 @@
+$ git diff --cached -U0 -- "*/sw.js" | grep "^+const"
++const CACHE_VERSION = 'v305';   // §MANIFEST cacheVersion (written by gen_manifest.js; edit modeller/modules.json)
++const CACHE_VERSION = 'v1756';
+§CMD_EXIT 0

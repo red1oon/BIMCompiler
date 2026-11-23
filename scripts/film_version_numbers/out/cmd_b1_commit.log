@@ -1,0 +1,3 @@
+$ git show --stat --format="%h %ad %s" --date=short fce8fdc4 | head -1
+fce8fdc4 2026-11-18 i18n: the Modeller looks terms up by key, not by exact English (TRL_TRILOGY_STANDARD S-2, T3) (#3302)
+§CMD_EXIT 0

@@ -1,0 +1,14 @@
+§OUTPUT /home/red1/Videos/Built_To_Be_Read_CH0_EN_AFTER_2026-11-23_v3.mp4 (never overwritten)
+§POINTER_VERDICT PASS items=5
+§FILM_GUIDE url=https://red1oon.github.io/BIMCompiler/DeveloperGuide/#51-any-edit-to-a-file-the-browser-loads http=200 anchor=Y
+§K2 OK   beat=s4 return=50.38 voice_start=51.01 ass_start=51.01 | voice-only track in typing window -180.0 dB vs in voice -16.4 dB (gap 163.6) | mixed in typing: peak -8.3 dBFS rms -34.4 dB
+§K2_LEVEL keys (mixed, typing windows) mean rms -33.1 dB, mean peak -9.2 dBFS; voice mean rms -16.5 dB -> keys are 16.6 dB under the voice rms
+§K2_VERDICT PASS beats=2 bad=0 audible=True
+§FLOW_VERDICT PASS beats=5
+§STRIP_VIDEO_VERDICT PASS
+§FILM_FILE frames=1780 dur_s=74.166667 size=6182248
+§VSC_SHARE_VIDEO_FAIL see out/vsccheck.log
+§VSC_SHARE_VIDEO_VERDICT FAIL
+§GUARD_FAIL see out/guard.log (final run, after the share is measured)
+§FILM_GUARD VERDICT FAIL 1
+§BUILD_DONE /home/red1/Videos/Built_To_Be_Read_CH0_EN_AFTER_2026-11-23_v3.mp4

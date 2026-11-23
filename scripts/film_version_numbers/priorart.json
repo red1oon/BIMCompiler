@@ -1,0 +1,15 @@
+{
+ "note": "Only sources this lane READ. A web row names the URL and the copy fetched into out/prior/ at build time (fetch_prior.sh) and a text that must be in that copy; guard.js check P fails a row whose text is not there (then the row is dropped and the build log says so). Nothing from memory. Rows carried from film 5 (read 2026-11-22), re-fetched now.",
+ "items": [
+  {
+   "name": "webpack, Caching guide",
+   "where": {
+    "url": "https://webpack.js.org/guides/caching/",
+    "saved": "out/prior/webpack_caching.html",
+    "text": "The [contenthash] substitution will add a unique hash based on the content of an asset."
+   },
+   "does": "bundler projects name each output file after a hash of its content, so a changed file gets a new name",
+   "took": "here the files keep their names; one script writes the file's own SHA-256 code into every page that loads it"
+  }
+ ]
+}

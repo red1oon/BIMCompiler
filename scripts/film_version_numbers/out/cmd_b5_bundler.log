@@ -1,0 +1,3 @@
+$ git ls-files | grep -c -E "(^|/)(webpack|rollup|vite|esbuild|parcel|snowpack|gulpfile)[^/]*\.(config\.)?(js|mjs|cjs|ts|json)$" || true
+0
+§CMD_EXIT 0

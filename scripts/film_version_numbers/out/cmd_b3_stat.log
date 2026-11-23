@@ -1,0 +1,7 @@
+$ git diff --stat
+ viewer/modules.json | 2 +-
+ viewer/panels.js    | 2 +-
+ viewer/sw.js        | 2 +-
+ viewer/viewer.html  | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
+§CMD_EXIT 0

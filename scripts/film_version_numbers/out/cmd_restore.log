@@ -1,0 +1,3 @@
+$ git checkout -- . && git status --short && echo restored_clean
+restored_clean
+§CMD_EXIT 0

@@ -1,0 +1,3 @@
+$ node scripts/tests/witness_manifest_roundtrip.js | tail -1 | grep -o "claims=[0-9/]* red=[0-9/]*"
+claims=51/51 red=31/31
+§CMD_EXIT 0

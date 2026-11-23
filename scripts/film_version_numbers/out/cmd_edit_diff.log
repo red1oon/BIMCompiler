@@ -1,0 +1,4 @@
+$ git diff -U0 -- viewer/panels.js | grep "^[-+][^-+]" | cut -c1-200
+-      return [ { section: 'Pill Icons', reorderable: true, _key: 'pill', _array: true, rows: rows } ];
++      return [ { section: 'Pill Icon Buttons', reorderable: true, _key: 'pill', _array: true, rows: rows } ];
+§CMD_EXIT 0

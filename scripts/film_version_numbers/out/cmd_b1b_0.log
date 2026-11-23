@@ -1,0 +1,4 @@
+$ git grep -n -o -E "import_db_builder.js\?v=[0-9]+" e4fa52fe -- index.html viewer/viewer.html
+e4fa52fe:index.html:184:import_db_builder.js?v=11
+e4fa52fe:viewer/viewer.html:1027:import_db_builder.js?v=12
+§CMD_EXIT 0
