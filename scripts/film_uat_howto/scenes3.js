@@ -14,27 +14,23 @@ module.exports = (S, PREP, D, H) => {
   };
   S.r0 = async () => { await S.s8(); };
 
-  // ---------------- r1: B4.1 the Find panel, one group of parts (a column type): its cost and the › ERP button
+  // ---------------- r1: B4.1 the whole Shed: scenes3l.js wholeShed('r1') (one scene for r1 and l1, §5.27)
   const AREA = D.screenBox(760, 560, 400, 240, 'the model area');
-  S.r1 = async () => {
-    D.cue('r1_start'); await D.aimClick(AREA, { label: 'the model area (focus)' }); await D.sleep(400); await D.key('f', 'the Find panel');
-    await until(() => { const p = document.getElementById('find-panel'); return !!(p && p.getBoundingClientRect().width > 0); }, 15000);
-    await D.aimClick('#find-name', { label: 'the Find box' }); await D.key('ctrl+a', 'select what is there'); D.cue('r1_type'); await D.type('column'); await D.key('Return', 'find');
-    const n = await until(() => document.querySelectorAll('.find-result-item').length, 20000); D.check(n > 0, 'b41_groups_listed', 'groups=' + n);
-    const it = D.page.locator('.find-result-item').first(); await D.aim(it, { label: 'the first column group' }); D.cue('r1_group'); await D.click({ label: 'a group of parts' });
-    const ok = await until(() => { const b = document.getElementById('find-erp-btn'), t = (document.getElementById('find-selected') || {}).innerText || ''; return b && b.getBoundingClientRect().width > 0 && /USD\s*[\d,.]+/.test(t) ? t.replace(/\s+/g, ' ').trim() : null; }, 20000);
-    D.check(!!ok, 'b41_group_cost_and_erp_button', JSON.stringify((ok || '').slice(0, 120)));   // guide B4.1: 'The panel shows the group's cost and the button › ERP'
-    D.cue('r1_end', { selected: (ok || '').slice(0, 120) }); await D.sleep(2500);
-  };
   // ---------------- r2: B4.2 + B4.3 › ERP twice
   const status = () => D.page.evaluate(() => { const s = document.getElementById('status'); return s ? s.textContent : ''; });
   const pushRead = async (rx, ms) => { let st = ''; for (let i = 0; i < (ms || 60000) / 150; i++) { st = await status(); if (rx.test(st)) return st; await D.sleep(150); } return st; };
-  S.r2 = async () => {
+  const linkText = () => D.page.evaluate(() => { const a = document.getElementById('find-erp-open'); return a && getComputedStyle(a).display !== 'none' && a.getBoundingClientRect().width > 0 ? a.textContent.trim() : null; });
+  S.r2 = async () => {   // §5.27: guide B4.2 + B4.3 rev (i): the link names the order (SHED #… ↗); a second › ERP asks "Push again?" first
     D.cue('r2_start'); await D.aim('#find-erp-btn', { label: '› ERP' }); D.cue('r2_push'); await D.click({ label: '› ERP' });
-    const st1 = await pushRead(/Project Order: \d+ lines/); D.check(/Project Order: 1 lines · contract .*\(saved\)/.test(st1), 'b42_one_line_saved', JSON.stringify(st1.slice(0, 140)));   // guide B4.2
-    const link = await until(() => { const a = document.getElementById('find-erp-open'); return a && getComputedStyle(a).display !== 'none' && a.getBoundingClientRect().width > 0 ? a.innerText.trim() : null; }, 20000);
-    D.check(/open/.test(link || ''), 'b42_open_link_shown', JSON.stringify(link)); D.cue('r2_saved', { status: st1.slice(0, 140) }); await D.sleep(3000);
+    const st1 = await pushRead(/Project Order: \d+ lines/); D.check(/Project Order: 11 lines · contract USD 355,098 \(saved\)/.test(st1), 'b42_lines_saved_contract', JSON.stringify(st1.slice(0, 140)));   // guide B4.2: 11 lines (12 with the schedule)
+    const link = await until(() => { const a = document.getElementById('find-erp-open'); return a && getComputedStyle(a).display !== 'none' && a.getBoundingClientRect().width > 0 && /#\d+/.test(a.textContent) ? a.textContent.trim() : null; }, 20000);
+    const lm = /^SHED #(\d+) ↗$/.exec(link || ''); D.check(!!lm, 'b42_link_names_the_order', JSON.stringify(link)); H.kernelOrder = lm ? lm[1] : null;
+    D.cue('r2_saved', { status: st1.slice(0, 140), link }); await D.sleep(3000);
     await D.aim('#find-erp-btn', { label: '› ERP (again)' }); D.cue('r2_again'); await D.click({ label: '› ERP again' });
+    const box = await until(() => { const b = document.getElementById('find-erp-again'); return b ? b.innerText.replace(/\s+/g, ' ').trim() : null; }, 15000);
+    D.check(!!box && /Push again\?/.test(box) && box.indexOf('SHED #' + H.kernelOrder + ' is already a Project Order. A second push adds only what is not there yet.') >= 0, 'b43_box_push_again_names_the_order', JSON.stringify(box));   // guide B4.3
+    D.cue('r2_box', { box }); await D.sleep(2500);
+    await D.aim('#find-erp-again-push', { label: 'Push again' }); D.cue('r2_pushagain'); await D.click({ label: 'Push again' });
     const st2 = await pushRead(/Project Order: 0 lines/, 40000); D.check(/Project Order: 0 lines/.test(st2), 'b43_zero_lines_keyed_by_name', JSON.stringify(st2.slice(0, 140)));   // guide B4.3
     D.cue('r2_end', { status: st2.slice(0, 140) }); await D.sleep(3000);
   };
@@ -43,7 +39,7 @@ module.exports = (S, PREP, D, H) => {
   const amt = () => D.page.evaluate(() => [...document.querySelectorAll('input')].filter(e => e.getBoundingClientRect().width > 0 && (e.getAttribute('data-col') || e.name) === 'plannedamt').map(e => e.value)[0] || '');
   const clickTab = async name => { const t = D.page.locator('.idmp-adtab', { hasText: new RegExp('^\\s*' + name + '\\s*$') }).first(); await D.aimClick(t, { label: 'tab ' + name }); await until(n => [...document.querySelectorAll('.idmp-adtab.active')].some(e => e.innerText.trim() === n), 20000, name); await D.sleep(1800); };
   S.r3 = async () => {
-    D.cue('r3_start'); const before = D.pages().length; await D.aim('#find-erp-open', { label: 'open ↗' }); await D.click({ label: 'open ↗' });
+    D.cue('r3_start'); const before = D.pages().length; await D.aim('#find-erp-open', { label: 'SHED #… ↗' }); await D.click({ label: 'SHED #… ↗' });
     for (let i = 0; i < 80 && D.pages().length === before; i++) await D.sleep(250);
     D.fastStart('the Kernel ERP loads'); const ok = await D.waitUrl(/erp\//, 60000); if (!ok) { D.fastEnd(); return; }
     const users = await until(() => document.querySelectorAll('.idmp-login-user').length, 120000); D.fastEnd(); D.check(users >= 2, 'b44_signin_lists_users', 'entries=' + users); D.cue('r3_signin'); await D.sleep(1500);
@@ -52,14 +48,23 @@ module.exports = (S, PREP, D, H) => {
     D.fastStart('the project window opens'); await until(() => document.querySelectorAll('.idmp-adtab').length > 0 && [...document.querySelectorAll('input')].some(e => (e.getAttribute('data-col') || e.name) === 'value' && e.value), 120000); D.fastEnd();
     const f = await D.page.evaluate(() => { const o = {}; document.querySelectorAll('input').forEach(e => { const k = e.getAttribute('data-col') || e.name; if (k && e.getBoundingClientRect().width > 0) o[k] = e.value; }); return o; });
     D.check(f.value === 'SHED' && /BIM: SHED/.test(f.name || ''), 'b44_project_shed', JSON.stringify({ value: f.value, name: f.name }));   // guide B4.4: 'the project SHED (BIM: SHED)'
-    const pa = f.plannedamt || ''; D.check(/\d/.test(pa) && Number(String(pa).replace(/,/g, '')) > 0, 'b44_planned_amount', JSON.stringify(pa)); D.cue('r3_project', { planned: pa }); await D.sleep(2500);
-    const T = {};
-    await clickTab('Project Line'); T.pl = await tabRows('Project Line');
-    await clickTab('Phase'); T.ph = await tabRows('Phase'); await clickTab('Phase Line'); T.phl = await tabRows('Phase Line');
-    await clickTab('Task'); T.tk = await tabRows('Task'); await clickTab('Task Line'); T.tkl = await tabRows('Task Line'); const la = await amt(); D.cue('r3_taskline', { amount: la });
-    D.check(T.ph === 1 && T.tk === 1, 'b44_phase_and_task_one_record', JSON.stringify(T));
-    D.check(T.tkl >= 1 && T.pl === 0 && T.phl === 0, 'b44_line_under_task_line_only', JSON.stringify(T));   // guide B4.4: Task Line holds it; Project Line and Phase Line read 0 records
-    D.check(Number(String(la).replace(/,/g, '')) === Number(String(pa).replace(/,/g, '')), 'b44_task_line_same_planned_amount', 'task line ' + la + ' project ' + pa);
+    const B44 = MD.split('\n').find(l => l.indexOf('| B4.4 |') === 0) || '';   // the guide's B4.4 row: every expected value below is parsed from it
+    const g = { planned: (/planned amount, \*\*([\d.]+)\*\*/.exec(B44) || [])[1], phases: (/\*1 of (\d+)\*/.exec(B44) || [])[1], phase1: (/the first \*([^*]+)\* ([\d,.]+\d)/.exec(B44) || []).slice(1), task: (/one, \*([A-Z_]+)\*/.exec(B44) || [])[1] };
+    D.log('§FILM_NOTE r3 guide B4.4 ' + JSON.stringify(g));
+    const pa = f.plannedamt || ''; D.check(!!g.planned && String(pa).replace(/,/g, '') === g.planned, 'b44_planned_amount_as_guide', JSON.stringify(pa) + ' guide ' + g.planned); D.cue('r3_project', { planned: pa }); await D.sleep(2500);
+    const nav = () => D.page.evaluate(() => { const n = document.getElementById('idmp-recnav'); return n ? n.textContent.replace(/\s+/g, ' ').trim() : null; });   // the record navigator: 'Record 1 of 6' or '0 records'
+    const T = {}; const num = v => Number(String(v).replace(/,/g, ''));
+    await clickTab('Project Line'); T.pl = await nav();
+    await clickTab('Phase'); T.ph = await nav(); const f1 = await D.page.evaluate(() => { const o = {}; document.querySelectorAll('input').forEach(e => { const k = e.getAttribute('data-col') || e.name; if (k && e.getBoundingClientRect().width > 0) o[k] = e.value; }); return o; });
+    D.cue('r3_phase', { nav: T.ph, phase: f1.name, planned: f1.plannedamt });
+    await clickTab('Phase Line'); T.phl = await nav();
+    await clickTab('Task'); T.tk = await nav(); const tn = await D.page.evaluate(() => [...document.querySelectorAll('input')].filter(e => e.getBoundingClientRect().width > 0 && (e.getAttribute('data-col') || e.name) === 'name').map(e => e.value)[0] || '');
+    await clickTab('Task Line'); T.tkl = await nav(); const la = await amt(); D.cue('r3_taskline', { amount: la, nav: T.tkl });
+    D.log('§FILM_NOTE r3 tabs ' + JSON.stringify(T) + ' phase1=' + JSON.stringify([f1.name, f1.plannedamt]) + ' task=' + tn + ' taskline=' + la);
+    D.check(T.ph === 'Record 1 of ' + g.phases && f1.name === g.phase1[0] && num(f1.plannedamt) === num(g.phase1[1]), 'b44_phase_1_of_n_first_as_guide', JSON.stringify({ nav: T.ph, name: f1.name, planned: f1.plannedamt, guide: g }));
+    D.check(T.tk === 'Record 1 of 1' && tn === g.task, 'b44_task_one_as_guide', JSON.stringify({ nav: T.tk, task: tn }));
+    D.check(/^Record 1 of \d+$/.test(T.tkl || '') && T.pl === '0 records' && T.phl === '0 records', 'b44_line_under_task_line_only', JSON.stringify(T));   // guide B4.4: Project Line and Phase Line read 0 records
+    D.check(num(la) === num(g.phase1[1]), 'b44_task_line_same_amount_as_first_phase', 'task line ' + la + ' phase ' + g.phase1[1]);
     await D.sleep(3000); D.cue('r3_end');
   };
 
