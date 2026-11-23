@@ -10,5 +10,9 @@
  "door_series": {"_source": "DIN 18101 via BauNetz Wissen 'Wandöffnungen und Türgrößen nach DIN 18101' (.../konstruktion-funktion/wandoeffnungen-und-tuergroessen-nach-din-18101-155227: Nennmaß = Baurichtmaß + 10 mm width, + 5 mm height) and 'Türblattgrößen nach DIN 18101' (.../konstruktion-funktion/tuerblattgroessen-nach-din-18101-155263), read 2026-11-23; PDF2BIM_VECTOR_PROBE.md §43.21",
   "single_leaf_width_mm": [635, 760, 885, 1010, 1135], "double_leaf_width_mm": [1260, 1510, 1760, 2010],
   "height_mm": {"opening_page_nennmass": 2005, "leaf_page_nennmass": 2010, "alternative": 2130, "_status": "YELLOW: the two pages disagree (2005 vs 2010); not resolved"}},
- "door_system": {"_status": "YELLOW: the scan does not draw the frame or leaf at a readable scale. frame_face_mm and leaf_mm copied from the §38 'Low cost single storey unit' door_system; depth = the wall's READ thickness (the §34 convention); height = door_series opening Nennmaß (§43.21 step 2, DEFAULT)", "frame_face_mm": 50, "leaf_mm": 40}
+ "door_system": {"_status": "YELLOW: the scan does not draw the frame or leaf at a readable scale. frame_face_mm and leaf_mm copied from the §38 'Low cost single storey unit' door_system; depth = the wall's READ thickness (the §34 convention); height = door_series opening Nennmaß (§43.21 step 2, DEFAULT)", "frame_face_mm": 50, "leaf_mm": 40},
+ "owner_rulings": {"_source": "owner 2026-11-23: 'just make the Modeller able to convert to DB for me to Viewer' (PDF2BIM_VECTOR_PROBE.md §46); bim-ootb DXF2BIM_MODELLER_LANE.md §L37 + §L41a say which codes a person can accept",
+  "WAIVED_DRAWING_DIMENSIONS": ["QF:dim_missing", "QF:dim_point_missing", "QF:elev_height_dim_missing"],
+  "STATED_FINDING_NO_GRID": ["QF:grid_missing"],
+  "_accept": {"who": "the first-release rule of this building type (owner)", "date": "2026-11-23", "reason": "a scanned Werkplan: dimensioned per room not per wall or opening and with no grid"}}
 }
