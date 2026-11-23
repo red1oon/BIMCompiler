@@ -11,7 +11,10 @@ const Database = process.env.M3_SQLJS === '1' ? require('./sqljs_better.js') : r
 const { cfgFromEnv, query } = require('./ad_client');
 const store = require('./store');
 const { drain } = require('./pusher');
-const R = require('./reconcile');
+// VOCAB_MESSAGE_CATALOG §19.19: CUR = the scenario whose LEGACY side is running, so every push can be tied to it (createLink below)
+let CUR = null;
+const R0 = require('./reconcile');
+const R = { ...R0, run: (list, ...a) => R0.run(list.map(s => ({ ...s, legacy: async f => { CUR = s.id; try { return await s.legacy(f); } finally { CUR = null; } } })), ...a) };
 const E = require('../erp_engine');
 const POS = require('../../build/erp/pos_core.js');
 const DP = require('../doc_poster');                // SQLite posting fold (derivePostings) — the engine under test for Fact_Acct
@@ -414,7 +417,20 @@ function localVoid(mut = 0) {
 }
 
 // ================= MODEL: Inventory Move (spec §56) — legacy through the FROZEN link with the §55 descriptor (test data), own key set =================
-const { createLink } = require('./legacy_link');
+const { createLink: createLink0 } = require('./legacy_link');
+// VOCAB_MESSAGE_CATALOG §19.19: every legacy push of a scenario, as its descriptor and payload SAY it (table; C_DocType_ID / C_DocTypeTarget_ID, a const or the payload's value).
+//   The scenario's document = its LAST push (a prerequisite, e.g. the invoice a payment settles, is pushed first). Logged as §SCN_META when no explicit META exists.
+const PUSHES = {};
+const createLink = async o => {
+  const lk = await createLink0(o), sub = lk.submit.bind(lk);
+  lk.submit = (n, p) => {
+    const h = CUR && (o.descriptors || {})[n] && o.descriptors[n].header;
+    if (h) { const F = h.fields || {}, fv = F.C_DocType_ID || F.C_DocTypeTarget_ID, dt = fv ? (fv.const != null ? fv.const : fv.path && p ? p[fv.path] : null) : null;
+      (PUSHES[CUR] = PUSHES[CUR] || []).push({ table: h.table, doctype: dt == null ? null : Number(dt) }); }
+    return sub(n, p);
+  };
+  return lk;
+};
 const MOVE_DESC = { move: { composite: 'SyncOrder',
   header: { serviceType: 'BridgeCreateMovement', table: 'M_Movement', fields: { AD_Org_ID: { const: C.org }, C_DocType_ID: { const: C.dt.movement }, MovementDate: { path: 'date' }, Description: { path: 'note' } } },
   lines: { serviceType: 'BridgeCreateMovementLine', table: 'M_MovementLine', parent: 'M_Movement_ID', from: 'lines', lineNo: { col: 'Line', step: 10 },
@@ -913,7 +929,8 @@ const POSDT = C.dt.pos, STDDT = C.dt.std;
 const sc = (id, facts) => ({ id, facts, legacy: legacyRun, local: localRun(0) });
 // VOCAB_MESSAGE_CATALOG §19.19 (derived how-to): per scenario, the table and document type its LEGACY push writes, read from the descriptor it pushes (descFor), never from the scenario's name
 const META = {};
-const metaLine = r => META[r.id] ? log(`§SCN_META ${r.id} ${JSON.stringify(META[r.id])}`) : null;
+const metaOf = id => META[id] || (PUSHES[id] && PUSHES[id].length ? { ...PUSHES[id][PUSHES[id].length - 1], pushes: PUSHES[id].length } : null);
+const metaLine = r => { const m = metaOf(r.id); return m ? log(`§SCN_META ${r.id} ${JSON.stringify(m)}`) : null; };
 const corpus = [
   sc('S1-pos-sale', { doctype: POSDT, lines: [{ product: 123, qty: 1 }] }),
   sc('S2-product-not-on-pricelist', { doctype: POSDT, lines: [{ product: 122, qty: 1 }] }),
