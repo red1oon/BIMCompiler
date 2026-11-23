@@ -6,6 +6,9 @@
 #   with the 5th argument (§43.20 step 3): storey level, slab, roof bottom are READ-GEOM from the section (raster_section.py), not DEFAULT
 #   with the 4th argument (§43.18): the EG is Level 1 at 0, the first plan is the OG above it; heights DEFAULT (storey = wall.height, slab = synth.slab.thickness)
 import sys, os, json, math
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from gen_werkplan_door_families import fid_of, door_height   # §43.21 one owner of the door family id + DEFAULT height
+TPL_EFH = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'types', 'german_werkplan_efh.json')))
 
 def log(*a): print(*a, flush=True)
 
@@ -56,7 +59,7 @@ def write(name, body, want):
     p = os.path.join(out, name); open(p, 'w').write('\n'.join(dxf) + '\n')
     t = open(p).read().split('\n'); back = {}
     for i in range(len(t) - 3):
-        if t[i] == '0' and t[i + 1] in ('LWPOLYLINE', 'TEXT', 'LINE', 'DIMENSION') and t[i + 2] == '8': back[t[i + 3]] = back.get(t[i + 3], 0) + 1
+        if t[i] == '0' and t[i + 1] in ('LWPOLYLINE', 'TEXT', 'LINE', 'DIMENSION', 'ARC') and t[i + 2] == '8': back[t[i + 3]] = back.get(t[i + 3], 0) + 1
     ok = all(back.get(k, 0) == v for k, v in want.items())
     log(f"§RASTER_W-S12a {name} written={want} read_back={back} verdict={'PASS' if ok else 'FAIL'}")
 
@@ -114,6 +117,41 @@ def storey(work, tag, level, sheet, wall_h):
             EXT[ia] = dict(EXT[ia], **{k1: o['a_mm']}); EXT[ib] = dict(EXT[ib], **{k0: o['b_mm']})
             log(f"§RASTER_EMIT_OPENING face={o['face']} nominal={o['nominal_mm']} class={o['cls']} edges_mm={o['a_mm']}..{o['b_mm']} (measured {o['meas_mm']})")
     else: log("§RASTER_EMIT_OPENING openings.json absent: gaps are the run gaps (§43.11 behaviour)")
+    # §43.21 step 2: doors (raster_doors.py doors.json). Interior runs ending within 1 px + 30 mm of a door's nominal edge, in its band, end AT it
+    DF = os.path.join(work, 'doors.json'); DOORS = json.load(open(DF))['doors'] if os.path.exists(DF) else []
+    if DOORS:
+        EXT_IDX_ = [i for i, w in enumerate(W1) if w['thk_chain_m'] == ext_t]; OPS_ = json.load(open(OPF))['openings'] if os.path.exists(OPF) else []
+        nmv = 0
+        for d in DOORS:
+            K_ = KH if d['axis'] == 'H' else KV; tol = 1000 / K_ + 30; n2 = d['nominal_mm'] / 2
+            d['ea'], d['eb'] = d['centre_mm'] - n2, d['centre_mm'] + n2
+            if d['src'] == 'exterior':
+                o = OPS_[d['index']]; d['ea'], d['eb'] = o['a_mm'], o['b_mm']; wr = EXT[EXT_IDX_.index(o['run_a'])]
+                d['band'] = (wr['y0'], wr['y1']) if d['axis'] == 'H' else (wr['x0'], wr['x1']); continue
+            k0, k1, b0, b1 = ('x0', 'x1', 'y0', 'y1') if d['axis'] == 'H' else ('y0', 'y1', 'x0', 'x1')
+            tb = 1000 / (KV if d['axis'] == 'H' else KH) + 30
+            for j, w in enumerate(INT):
+                if w['axis'] != d['axis'] or abs(w[b0] - d['band_mm'][0]) > tb or abs(w[b1] - d['band_mm'][1]) > tb: continue
+                if abs(w[k1] - d['ea']) <= tol and w[k1] != d['ea']: INT[j] = dict(w, **{k1: d['ea']}); nmv += 1
+                elif abs(w[k0] - d['eb']) <= tol and w[k0] != d['eb']: INT[j] = dict(w, **{k0: d['eb']}); nmv += 1
+            host = [w for w in INT if w['axis'] == d['axis'] and (w[k1] == d['ea'] or w[k0] == d['eb']) and abs(w[b0] - d['band_mm'][0]) <= tb and abs(w[b1] - d['band_mm'][1]) <= tb]
+            pj = [j for j, w in enumerate(INT) if w['axis'] == d['axis'] and (w[k1] == d['ea'] or w[k0] == d['eb']) and abs(w[b0] - d['band_mm'][0]) <= tb and abs(w[b1] - d['band_mm'][1]) <= tb]
+            if len(pj) == 2 and (abs(INT[pj[0]][b0] - INT[pj[1]][b0]) > 1 or abs(INT[pj[0]][b1] - INT[pj[1]][b1]) > 1):   # one wall, two traces: READ wins (§43.21 step 2 rule ii)
+                T_ = round(d['thk_m'] * 1000); RT = {r for m, r in (TX if d['axis'] == 'V' else TY)}
+                exact = [INT[j] for j in pj if abs((INT[j][b1] - INT[j][b0]) - T_) <= 1]
+                band = (exact[0][b0], exact[0][b1]) if exact else None; why = 'piece at READ thickness'
+                if band is None:
+                    fr = [(INT[j][b0], +1) for j in pj if INT[j][b0] in RT] + [(INT[j][b1], -1) for j in pj if INT[j][b1] in RT]
+                    if fr: f_, sg = fr[0]; band = (f_, f_ + T_) if sg > 0 else (f_ - T_, f_); why = f'READ tick face {f_} + READ thickness {T_}'
+                if band:
+                    mv = [round(max(abs(INT[j][b0] - band[0]), abs(INT[j][b1] - band[1])), 1) for j in pj]
+                    for j in pj: INT[j] = dict(INT[j], **{b0: band[0], b1: band[1]})
+                    log(f"§RASTER_EMIT_DOOR_BAND {tag} door centre={d['centre_mm']:.0f} two jamb pieces -> one band {band} ({why}); faces moved_mm={mv}")
+                else: log(f"§RASTER_EMIT_DOOR_BAND {tag} door centre={d['centre_mm']:.0f} two jamb pieces differ, no READ value to unify them (stated, unchanged)")
+                host = [INT[j] for j in pj]
+            d['band'] = (host[0][b0], host[0][b1]) if host else (d['band_mm'][0], d['band_mm'][1])   # the EMITTED piece's band: the importer reads the hinge on its face to 1 mm
+            d['host_found'] = bool(host)
+        log(f"§RASTER_EMIT_DOORS {tag} doors={len(DOORS)} (interior {sum(d['src'] == 'interior' for d in DOORS)}, exterior {sum(d['src'] == 'exterior' for d in DOORS)}) interior_run_ends_moved_to_door_edges={nmv}")
     log(f"§RASTER_EMIT_SNAP moved={SN['n']} max_tick_offset_mm={SN['max_off']:.1f} (<= 1 px = {1000/KH:.1f}/{1000/KV:.1f}) max_shift_mm={SN['max_shift']:.1f} "
         f"envelope_mm={min(w['x0'] for w in EXT):.0f},{min(w['y0'] for w in EXT):.0f}..{max(w['x1'] for w in EXT):.0f},{max(w['y1'] for w in EXT):.0f}")
 
@@ -139,6 +177,7 @@ def storey(work, tag, level, sheet, wall_h):
                 g0, g1 = (a['x1'], b['x0']) if axis == 'H' else (a['y1'], b['y0'])
                 if g1 - g0 > 300:
                     face = ('N' if side == 0 else 'S') if axis == 'H' else ('W' if side == 0 else 'E')
+                    if any(d['src'] == 'exterior' and d['face'] == face and d['ea'] < g1 and d['eb'] > g0 for d in DOORS): continue   # §43.21 a DOOR, written as its arc
                     r = (g0, a['y0'], g1, a['y1']) if axis == 'H' else (a['x0'], g0, a['x1'], g1)
                     glaz.append(dict(face=face, r=r, a=g0, b=g1)); body += lw('A-GLAZ', rect(*r)); ng += 1
     for f in ('N', 'S', 'E', 'W'): log(f"§RASTER_EMIT_OPENINGS face={f} widths_mm={[round(g['b']-g['a']) for g in glaz if g['face'] == f]}")
@@ -157,11 +196,26 @@ def storey(work, tag, level, sheet, wall_h):
         off = 450 if (a, b) == (ys[0], ys[-1]) else 0
         body += dim((BW if sideV == 'maxX' else 0, -a), (BW if sideV == 'maxX' else 0, -b), (cx_ + sgv * off, -(a + b) / 2), 90, b - a); nd += 1
     log(f"§RASTER_EMIT_DIMS H_chain side={sideH} values_mm={[b - a for a, b in zip(xs, xs[1:])]} overall={xs[-1]} | V_chain side={sideV} values_mm={[b - a for a, b in zip(ys, ys[1:])]} overall={ys[-1]} | written={nd} (other sides: no GREEN chain, none stated)")
-    marks = ['@UNITS=mm', '@SET=STD', '@VIEW=PLAN', f'@NAME={tag} (scan)', f'@LEVEL={level / 1000:g}'] + ([f'@BODYZ=column,{level / 1000:g},{(level + wall_h) / 1000:g}'] if ncol else [])
+    # §43.21 step 2: each DOOR = one A-DOOR ARC (hinge = centre, radius = nominal width, the importer's door rule), @TAG at the swing box centre
+    DH = door_height(TPL_EFH); ndr = 0; tags_d = []; fams = {}
+    ANG = {('H', 'a', -1): (0, 90), ('H', 'a', 1): (270, 360), ('H', 'b', -1): (90, 180), ('H', 'b', 1): (180, 270),
+           ('V', 'a', -1): (180, 270), ('V', 'a', 1): (270, 360), ('V', 'b', -1): (90, 180), ('V', 'b', 1): (0, 90)}   # DXF y up; sheet y down
+    for d in DOORS:
+        r = d['nominal_mm']; al = d['ea'] if d['hinge'] == 'a' else d['eb']
+        ac = d['band'][0] if d['side'] == -1 else d['band'][1]   # hinge ON the host piece's face (importer L1.2 R9 / dxf2shell doorStrip, 1 mm); the drawn frame offset is logged, not used
+        hx, hy = (al, -ac) if d['axis'] == 'H' else (ac, -al)
+        a0, a1 = ANG[(d['axis'], d['hinge'], d['side'])]
+        body += ['0', 'ARC', '8', 'A-DOOR', '10', f'{hx:.1f}', '20', f'{hy:.1f}', '30', '0', '40', f'{r:.1f}', '50', f'{a0:g}', '51', f'{a1:g}']; ndr += 1
+        fam = fid_of(r, round(d['thk_m'] * 1000), DH); fams[fam] = r
+        m_ = math.radians((a0 + a1) / 2); tags_d.append((hx + r / 2 * math.sqrt(2) * math.cos(m_), hy + r / 2 * math.sqrt(2) * math.sin(m_), f'@TAG=door,{fam}'))
+        log(f"§RASTER_EMIT_DOOR {tag} {d['src']} axis={d['axis']} hinge=({hx:.1f},{hy:.1f}) r={r} arc={a0}..{a1} family={fam} edges_mm={d['ea']:.1f}..{d['eb']:.1f} host_band={d['band']} drawn_hinge_offset_mm={d['hinge_offset_mm']} (not used) height={DH} DEFAULT(DIN 18101 opening Nennmaß)")
+    for x_, y_, t_ in tags_d: body += tx(x_, y_, t_)
+    marks = ['@UNITS=mm', '@SET=STD', '@VIEW=PLAN', f'@NAME={tag} (scan)', f'@LEVEL={level / 1000:g}'] + ([f'@BODYZ=column,{level / 1000:g},{(level + wall_h) / 1000:g}'] if ncol else []) + ([f'@SCHEDULE={f},door,{w_},{DH}' for f, w_ in sorted(fams.items())] + ['@HEADFRAME=0'] if fams else [])
     for n, m in enumerate(marks): body += tx(-3000, -2500 - 300 * n, m)
     for k, x in GX.items(): body += tx(x, 600, f'@GRIDX={k}')
     for k, y in GY.items(): body += tx(-600, -y, f'@GRIDY={k}')
     want = {'A-WALL-FULL': nw, 'A-GLAZ': ng, 'A-ANNO-DIMS': nd, 'DXF2BIM-MARK': len(marks) + len(GX) + len(GY)}
+    if ndr: want['A-DOOR'] = ndr; want['DXF2BIM-MARK'] += len(tags_d)
     if ncw: want['A-WALL-CURT'] = ncw
     if ncol: want['A-COLS'] = ncol
     write(sheet, body, want)
