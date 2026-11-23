@@ -30,7 +30,8 @@ S.s1 = async () => {   // the guide, and its PDF into Downloads
   D.cue('s1_page', { title: await D.page.title() });
   await D.aim('a.md-button--primary', { label: '⬇ Download the PDF' }); await D.sleep(500); D.cue('s1_click');
   await D.click({ label: '⬇ Download the PDF' });
-  const f = await D.waitFile(/^CapexUATGuide.*\.pdf$/, 60000); D.check(!!f && f.bytes === 4795915, 'pdf_landed', f ? f.name + ' ' + f.bytes : 'none');
+  const plen = await fetch(GUIDE.replace(/\/CapexUATGuide\/$/, '/CapexUATGuide.pdf'), { method: 'HEAD' }).then(r => Number(r.headers.get('content-length'))).catch(() => -1);   // B:READ: the size the published PDF is served at
+  const f = await D.waitFile(/^CapexUATGuide.*\.pdf$/, 60000); D.check(!!f && plen > 0 && f.bytes === plen, 'pdf_landed', f ? f.name + ' ' + f.bytes : 'none');
   D.cue('s1_landed'); await D.sleep(2500);
   D.cue('s1_ctrlj'); await D.key('ctrl+j', 'show the downloads'); await D.waitUrl(/chrome:\/\/downloads/); await D.sleep(1200);
   const shown = await D.page.evaluate(() => { const m = document.querySelector('downloads-manager'); const items = m && m.shadowRoot ? [...m.shadowRoot.querySelectorAll('downloads-item')] : []; return items.map(i => (i.shadowRoot && i.shadowRoot.querySelector('#name') || {}).textContent || ''); }).catch(() => []);
@@ -45,7 +46,8 @@ S.s2 = async () => {   // a link that IS a file: the test-data pack (keep it zip
   D.fastStart('scroll to What you need'); await D.moveTo(960, 600); await D.scrollInto(L, 260); D.fastEnd();
   D.cue('s2_table'); await D.sleep(1500);
   await D.aim(L, { label: 'the test-data pack link' }); D.cue('s2_click'); await D.click({ label: 'the test-data pack link' });
-  const f = await D.waitFile(/CAPEXTestData\.zip$/, 60000); D.check(!!f && f.bytes === 14144, 'testdata_zip_landed', f ? f.name + ' ' + f.bytes : 'none');
+  const href = await D.page.$eval(L, e => e.href).catch(() => ''); const zlen = href ? await fetch(href, { method: 'HEAD' }).then(r => Number(r.headers.get('content-length'))).catch(() => -1) : -1;   // B:READ: the size the guide's link serves
+  const f = await D.waitFile(/CAPEXTestData\.zip$/, 60000); D.check(!!f && zlen > 0 && f.bytes === zlen, 'testdata_zip_landed', f ? f.name + ' ' + f.bytes : 'none');
   D.cue('s2_landed'); await D.sleep(3500); D.cue('s2_end');
 };
 S.s3 = async () => {   // a link that is a PAGE: the products script opens GitHub; the file is behind 'Download raw file'

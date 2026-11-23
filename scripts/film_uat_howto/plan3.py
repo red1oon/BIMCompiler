@@ -21,7 +21,7 @@ C11 = '**Purchase Order** window, **New**'; C12 = '**Document Action ▸ Complet
 C21 = '**Material Receipt** window, **New**'; C31 = '**Purchase Invoice and Credit/Debit Note** window, **New**'; C32 = '**Payment and Receipt** window, **New**'
 C41 = 'Press **Set Project Type**, choose **Work Order (Job)**, **OK**'; C42 = 'Menu **Project Management ▸ Issue to Project**'; C43 = '**Project (Lines/Issues)** window, find the project, tab **Issues**'
 SP = 16   # §5.17: repeats x16 (was x8)
-IDLE_X, IDLE_KEEP = 24, 0.3   # §5.17: waits x24, 0.3 s real time at each end (compose defaults x8, 0.8 s)
+IDLE_X, IDLE_KEEP = 32, 0.3   # §5.27: waits x32 (rc1 15:11 > the owner's 15 min, idle out 82.9 s at x24); §5.17: waits x24, 0.3 s real time at each end (compose defaults x8, 0.8 s)
 CAMERA = 'smooth'   # §5.18 L6: the eased camera (compose default 'old', so Parts I and II rebuild unchanged)
 # §5.27: the strips and every spoken figure of B4, L and D are parsed from the guide's own rows (never typed)
 def ROW(k): return [l for l in MD.split('\n') if l.startswith('| ' + k + ' |')][0]
