@@ -54,7 +54,7 @@ def write(name, body, want):
     ok = all(back.get(k, 0) == v for k, v in want.items())
     log(f"§RASTER_W-S12a {name} written={want} read_back={back} verdict={'PASS' if ok else 'FAIL'}")
 
-def storey(work, tag, level, sheet):
+def storey(work, tag, level, sheet, wall_h):
     C = json.load(open(os.path.join(work, 'chains.json')))
     W1 = json.load(open(os.path.join(work, 'walls.json')))['walls']
     WA = json.load(open(os.path.join(work, 'walls_all.json')))['walls']
@@ -118,6 +118,12 @@ def storey(work, tag, level, sheet):
     # ---- plan ----
     body = []; nw = ng = 0
     for w in EXT + INT: body += lw('A-WALL-FULL', rect(w['x0'], w['y0'], w['x1'], w['y1'])); nw += 1
+    NF = os.path.join(work, 'notch.json'); ncw = ncol = 0; colz = []   # §43.19 a notched corner: glazed runs (curtain walls) + the post if measured
+    if os.path.exists(NF):
+        for cn in json.load(open(NF))['corners']:
+            for q in cn.get('curtain', []): body += lw('A-WALL-CURT', rect(q['x0'], q['y0'], q['x1'], q['y1'])); ncw += 1
+            if cn.get('post'): p_ = cn['post']; body += lw('A-COLS', rect(p_['x0'], p_['y0'], p_['x1'], p_['y1'])); ncol += 1
+        log(f"§RASTER_EMIT_NOTCH {tag} curtain_walls={ncw} posts={ncol}")
     glaz = []   # gaps between collinear exterior runs = the measured openings (§43.1 W-S7b)
     for axis in ('H', 'V'):
         for side in (0, 1):
@@ -145,16 +151,19 @@ def storey(work, tag, level, sheet):
         off = 450 if (a, b) == (ys[0], ys[-1]) else 0
         body += dim((BW if sideV == 'maxX' else 0, -a), (BW if sideV == 'maxX' else 0, -b), (cx_ + sgv * off, -(a + b) / 2), 90, b - a); nd += 1
     log(f"§RASTER_EMIT_DIMS H_chain side={sideH} values_mm={[b - a for a, b in zip(xs, xs[1:])]} overall={xs[-1]} | V_chain side={sideV} values_mm={[b - a for a, b in zip(ys, ys[1:])]} overall={ys[-1]} | written={nd} (other sides: no GREEN chain, none stated)")
-    marks = ['@UNITS=mm', '@SET=STD', '@VIEW=PLAN', f'@NAME={tag} (scan)', f'@LEVEL={level / 1000:g}']
+    marks = ['@UNITS=mm', '@SET=STD', '@VIEW=PLAN', f'@NAME={tag} (scan)', f'@LEVEL={level / 1000:g}'] + ([f'@BODYZ=column,{level / 1000:g},{(level + wall_h) / 1000:g}'] if ncol else [])
     for n, m in enumerate(marks): body += tx(-3000, -2500 - 300 * n, m)
     for k, x in GX.items(): body += tx(x, 600, f'@GRIDX={k}')
     for k, y in GY.items(): body += tx(-600, -y, f'@GRIDY={k}')
-    write(sheet, body, {'A-WALL-FULL': nw, 'A-GLAZ': ng, 'A-ANNO-DIMS': nd, 'DXF2BIM-MARK': len(marks) + len(GX) + len(GY)})
+    want = {'A-WALL-FULL': nw, 'A-GLAZ': ng, 'A-ANNO-DIMS': nd, 'DXF2BIM-MARK': len(marks) + len(GX) + len(GY)}
+    if ncw: want['A-WALL-CURT'] = ncw
+    if ncol: want['A-COLS'] = ncol
+    write(sheet, body, want)
 
 
     return dict(EXT=EXT, glaz=glaz, GX=GX, GY=GY, level=level)
 
-ST = [dict(q, **storey(q['work'], q['tag'], q['level'], q['sheet'])) for q in STOREYS]
+ST = [dict(q, **storey(q['work'], q['tag'], q['level'], q['sheet'], q['wall_h'])) for q in STOREYS]
 TOP = ST[-1]; EXT, GX, GY = TOP['EXT'], TOP['GX'], TOP['GY']
 
 # ---- elevations: S (+X), N (-X), E (+Y), W (-Y) with north = sheet top (DEFAULT) ----
