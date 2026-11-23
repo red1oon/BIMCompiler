@@ -72,11 +72,11 @@ SCENES = [
   dict(id='c0', chip='C', strip='ERP: the hands-on exercise (Project Mgmt Accounting, as GardenWorld Admin)', span=('c0_start', 'c0_end'), beats=[
     ('c0a', 'c0_start', "Chapter C is done in your iDempiere, on the twelve test projects, not the Shed. Log in as GardenAdmin, and tick Select Role."),
     ('c0b', 'c0_role',  "Choose the organization HQ, and HQ Warehouse. Without them, an order will not save."),
-    # §5.16 (4): rc1 silence 29.3 s = the wait from OK (role) to Chrome's Save password? (no event inside it): three lines between the two events
-    ('c0b2', 'at:click:OK (role)|c0_savepw|0.2',  "The role window closes, and iDempiere opens its Home tab."),
-    ('c0b3', 'at:click:OK (role)|c0_savepw|0.47', "HQ and HQ Warehouse stay with this login, for every document of chapter C."),
-    ('c0b4', 'at:click:OK (role)|c0_savepw|0.74', "The Home tab's CAPEX goals are read at the very end, in D9."),
-    ('c0c', 'c0_savepw', "Chrome asks to save the password. Say no thanks, or it takes your next keys.")]),
+    # §5.27: in the rev (h) order Chrome's Save password? was already answered at L2/L3 (same iDempiere), so c0 has no c0_savepw cue (take1: OK (role) 56.2 s -> c0_home 247.4 s, idle sped):
+    # the lines between the two events are anchored on c0_home; the 'Chrome asks to save the password' line is gone (it is not on screen)
+    ('c0b2', 'at:click:OK (role)|c0_home|0.2',  "The role window closes, and iDempiere opens its Home tab."),
+    ('c0b3', 'at:click:OK (role)|c0_home|0.5', "HQ and HQ Warehouse stay with this login, for every document of chapter C."),
+    ('c0b4', 'at:click:OK (role)|c0_home|0.8', "The Home tab's CAPEX goals are read at the very end, in D9.")]),
 ]
 first = dict(c1=True, c1d=True, c2=True, c31=True, c32=True, c41=True, c42=True, c43=True)
 def once(k):
@@ -186,10 +186,10 @@ SCENES += [
   dict(id='d8', chip='D8', strip='Change **Layout** (top bar) to *Executive* and **Skin** to *Dark*, then back to *Classic* and *Light*', span=('d8_start', 'd8_end'), beats=[
     ('d9a', 'd8_start',     "Layout, Executive: fewer tiles, new labels, the same figures."),
     ('d9b', 'd8_dark',      "Skin, Dark. Then back to Classic, and Light.")]),
-  # §5.17 (owner 2026-11-22: "Perhaps need no refresh"): D9 starts on the Home tab after the new log in; the log out, log in and the 30-minute wait are not shown
-  dict(id='d9', chip='D9', strip='**Log Out** of iDempiere, log in again (tick **Select Role**, choose **HQ**, as in chapter C) and read the **Home** tab', span=('click:No thanks', 'd9_end'), beats=[
-    ('d10a', 'click:No thanks', "Last: iDempiere's own Home tab, after a new log in."),
-    ('d10b5', 'at:d9_savepw|d9_goals|0.45', "Ten orders, four receipts, three invoices, three payments, nine issues: every one by hand."),
+  # §5.27: no Save password? at D9 in the rev (h) order (answered at L2/L3), so D9 starts at the role window's OK. §5.17 (owner 2026-11-22: "Perhaps need no refresh"): D9 starts on the Home tab after the new log in; the log out, log in and the 30-minute wait are not shown
+  dict(id='d9', chip='D9', strip='**Log Out** of iDempiere, log in again (tick **Select Role**, choose **HQ**, as in chapter C) and read the **Home** tab', span=('click:OK (role)', 'd9_end'), beats=[
+    ('d10a', 'click:OK (role)', "Last: iDempiere's own Home tab, after a new log in."),
+    ('d10b5', 'at:click:OK (role)|d9_goals|0.45', "Ten orders, four receipts, three invoices, three payments, nine issues: every one by hand."),
     ('d10c', 'd9_goals', "Total Projects and Active Projects show the same counts as the dashboard tiles."),
     ('d10d', 'at:d9_goals|d9_end|0.5', "A goal with a target shows a percent of the target that A2 installed. So Actual Cost reads zero percent here: that is expected.")]),   # §5.19 N6
 ]
