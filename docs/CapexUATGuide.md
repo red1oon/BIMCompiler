@@ -58,8 +58,7 @@
 
 | Revision | What changed |
 |---|---|
-| 2026-11-23 (i) | B4.2 to B4.4, L2, L3: the link names the order (SHED #…), a second push asks *Push again?* (item 28) |
-| 2026-11-23 (h) | The whole Shed into the ERP and the dashboard: B4, L1 to L3 before C, D (item 27) |
+| 2026-11-23 (h), (i) | The whole Shed into the ERP and the dashboard: B4, L1 to L3 before C, D (item 27); the link names the order, *Push again?* (item 28) |
 | 2026-11-22 (g) | One cost for the model: B3.1, B5 and the reference pack (item 26) |
 | 2026-11-22 (c) to (f) | Items 9 to 19 moved into their steps; items 22 to 25; film part 3 re-published, linked (item 20) |
 | 2026-11-22 (b) | Legacy iDempiere: A5, L1 to L3 (item 21). No step changed |
