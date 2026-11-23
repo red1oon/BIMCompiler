@@ -30,7 +30,7 @@ B41 = DO('B4.1').split(' (the two parts')[0]; B44 = DO('B4.4'); L3S = DO('L3').s
 WORDS = 'zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen twenty'.split()
 def W(n): n = int(n); return WORDS[n] if n < len(WORDS) else str(n)
 _c = __import__('json').loads(re.search(r'\{"[a-z]+":\d+(?:,"[a-z]+":\d+)*\}', ROW('L2')).group(0))
-L2SAY = '%s phases, %s tasks, %s lines' % (W(_c['phases']), W(_c['tasks']), W(_c['lines'])) + (', after the Shed\'s products' if _c.get('products') else '')   # §5.27 rc2: the line held l2 12.9 s, cut
+L2SAY = '%s phases, %s tasks, %s lines' % (W(_c['phases']), W(_c['tasks']), W(_c['lines'])) + (', and the Shed\'s products' if _c.get('products') else '')   # §5.27 rc2: the line held l2 12.9 s, cut
 _m = re.search(r'\*\*(\d+)\*\* and \*\*(\d+)\*\*', ROW('D1')); D1T, D1A = W(_m.group(1)), W(_m.group(2))
 _m = re.search(r'\*\*Within (\d+), Over (\d+), Not started (\d+)\*\*', ROW('D2b')); D2B = (W(_m.group(1)), W(_m.group(2)), W(_m.group(3)))
 D3P = W(re.search(r'\*\*(\d+) %\*\*', ROW('D3')).group(1))
@@ -53,7 +53,7 @@ SCENES = [
     ('r3a', 'r3_signin',   "Click the link. On the sign-in page, choose GardenAdmin, and log in."),
     ('r3b', 'r3_project',  "The project is SHED, with the whole Shed's planned amount, every decimal."),
     ('r3b2', 'r3_phase',   "The Phase tab holds six phases. The first is Substructure."),
-    ('r3c', 'r3_taskline', "Its task, and the line under Task Line, carry the same amount.")]),
+    ('r3c', 'r3_taskline', "Its task is CONCRETE GANG, and the line under Task Line carries the same amount.")]),   # §5.27 check: only the line's amount is read
   # §5.18 L4 (owner 2026-11-22: "Show the workings on film and UATGuide with a note if the ERP side is legacy"): B4 again, with the Viewer served by a legacy iDempiere (the BIM OOTB plugin)
   dict(id='l0', card=['IF YOUR ERP IS A LEGACY iDEMPIERE', 'B4 again: the Shed into your iDempiere', 'steps L1 to L3, before chapter C'], chip='B4 · L1', strip="Open **your iDempiere**`/bimootb/viewer/viewer.html?blank=1&erpUser=GardenAdmin&erpClient=11&erpRole=102&erpOrg=11&erpWarehouse=103`", span=('l0_start', 'l0_end'), beats=[
     ('l0a', 'l0_url',   "If your ERP is a legacy iDempiere, your administrator first installs the BIM OOTB plugin: step A5. Then the Viewer comes from your iDempiere. Type its address, slash bimootb, with your user and ids."),
@@ -177,6 +177,9 @@ for i, p in enumerate(['TD_SUBSTATION', 'TD_DATAHALL', 'TD_BRIDGE', 'TD_RIVERSID
           ('d6a', sid + '_start', "Now a project's own page. Click a number, then the project in the panel."),
           ('d6b', sid + '_chain', "Its Procurement tab shows the order at the stage you took it to. %s: %s only." % (nm, STG[p]))]))
     else: SCENES.append(rep(sid, 'D4', strip, 'd6_%d' % i, "%s: %s." % (nm, STG[p])))
+# §5.27 check: D9's document counts are the scenes this take recorded and passed (one scene per document), not typed
+_N = lambda pre: sum(1 for x in SCENES if x['id'].startswith(pre))
+DOCS = '%s orders, %s receipts, %s invoices, %s payments, %s issues' % (W(_N('c1_')).capitalize(), W(_N('c2_')), W(_N('c31_')), W(_N('c32_')), W(_N('c42_')))
 SCENES += [
   dict(id='d5', chip='D5 · D6', strip='On the project page of *TD_RIVERSIDE*, open the tabs', span=('d5_start', 'd5_end'), beats=[
     ('d7a', 'd5_page',     "Riverside Tower. Overview: the approved amount, and five phases."),
@@ -189,7 +192,7 @@ SCENES += [
   # §5.27: no Save password? at D9 in the rev (h) order (answered at L2/L3), so D9 starts at the role window's OK. §5.17 (owner 2026-11-22: "Perhaps need no refresh"): D9 starts on the Home tab after the new log in; the log out, log in and the 30-minute wait are not shown
   dict(id='d9', chip='D9', strip='**Log Out** of iDempiere, log in again (tick **Select Role**, choose **HQ**, as in chapter C) and read the **Home** tab', span=('click:OK (role)', 'd9_end'), beats=[
     ('d10a', 'click:OK (role)', "Last: iDempiere's own Home tab, after a new log in."),
-    ('d10b5', 'at:click:OK (role)|d9_goals|0.45', "Ten orders, four receipts, three invoices, three payments, nine issues: every one by hand."),
+    ('d10b5', 'at:click:OK (role)|d9_goals|0.45', "%s: every one by hand." % DOCS),
     ('d10c', 'd9_goals', "Total Projects and Active Projects show the same counts as the dashboard tiles."),
     ('d10d', 'at:d9_goals|d9_end|0.5', "A goal with a target shows a percent of the target that A2 installed. So Actual Cost reads zero percent here: that is expected.")]),   # §5.19 N6
 ]
