@@ -18,6 +18,17 @@ C = json.load(open(os.path.join(work, 'chains.json')))
 out_p = os.path.join(work, 'doors.json')
 if os.path.exists(out_p): os.remove(out_p)   # a VACUOUS run must not leave an older run's output
 g = np.asarray(Image.open(C['clean']).convert('L')).astype(int); inkg = g < 215; HP, WP = inkg.shape
+# §48 pen markup is not drawing: printed ink is neutral (excess blue = B - max(R, G) = 0); pen strokes are bluish. The cut = the valley of the sheet's own
+# ink histogram of excess blue over 1..20 (above the noise band's own peak), never a typed number. Applied to the swing-arc EVIDENCE only.
+_rgb = np.asarray(Image.open(C['page']).convert('RGB')).astype(np.int16); _xb = _rgb[..., 2] - np.maximum(_rgb[..., 0], _rgb[..., 1])
+_hx = np.bincount(np.clip(_xb[_rgb.mean(axis=2) < 200], 0, 255), minlength=256); PEN_T = int(1 + np.argmax(_hx[1:21]))   # the noise band ends at its own peak (neutral ink's JPEG chroma artefact; bin 7 on both DE-1 plan pages), the pen tail starts above it
+_pen = Image.fromarray(((_xb > PEN_T) * 255).astype(np.uint8)).rotate(C.get('skew_deg', 0), resample=Image.NEAREST, fillcolor=0)
+_pen = np.asarray(_pen) > 127
+if _pen.shape == inkg.shape:
+    _pd = _pen.copy(); _pd[1:] |= _pen[:-1]; _pd[:-1] |= _pen[1:]; _pd[:, 1:] |= _pen[:, :-1]; _pd[:, :-1] |= _pen[:, 1:]
+    inkA = inkg & ~_pd
+else: inkA = inkg
+print(f"§RASTER_W-S48c pen markup cut excess_blue>{PEN_T} (above the noise peak of the ink histogram 1..20: {_hx[1:21].tolist()}) pen_px={int(_pen.sum())} removed_from_arc_evidence={int((inkg & ~inkA).sum())} of ink {int(inkg.sum())}", flush=True)
 F = C.get('dpi', 200) / 200.0
 def px(v): return max(1, int(round(v * F)))
 _, gh, gv = anchor_chains(C)
@@ -37,7 +48,7 @@ def jamb(axis, end_px, sign, b0, b1): return _jamb(inkg, axis, end_px, sign, b0,
 
 def ink_at(x, y):
     xi, yi = int(round(x)), int(round(y))
-    return 0 <= yi < HP and 0 <= xi < WP and inkg[yi, xi]
+    return 0 <= yi < HP and 0 <= xi < WP and inkA[yi, xi]   # §48 the swing evidence: drawing ink, pen markup left out
 
 def cov_at(axis, h, dirn, face, side, r):
     """share of the quarter circle (10..80 deg from the wall line) with ink within +-1 px radially"""
@@ -50,7 +61,7 @@ def cov_at(axis, h, dirn, face, side, r):
         hit += ok
     return hit / n
 
-def arc(axis, pa, pb, b0, b1):
+def arc(axis, pa, pb, b0, b1, rr=None):
     """§43.21 run 2: best (radial contrast, coverage, hinge, side, r_px, offset_px) over hinge {pa, pb} x side x hinge offset
     across the band (face .. far face; a French door hinges on its frame inside the band) x r 0.80..1.05 width.
     contrast = coverage at r - mean coverage at r +-4..6 px (a drawn arc is a thin circle; plan clutter is not)."""
@@ -59,8 +70,9 @@ def arc(axis, pa, pb, b0, b1):
         for side, face in ((-1, b0), (+1, b1)):
             for off in range(0, thk + 1):
                 f = face - side * off                       # step from this side's face into the band
-                cov = {r: cov_at(axis, h, dirn, f, side, r) for r in range(int(0.80 * w) - 6, int(1.05 * w) + 7)}
-                for r in range(int(0.80 * w), int(1.05 * w) + 1):
+                lo_r, hi_r = rr if rr else (int(0.80 * w), int(1.05 * w))   # §48: rr = an absolute radius range in px (a leaf narrower than the opening)
+                cov = {r: cov_at(axis, h, dirn, f, side, r) for r in range(lo_r - 6, hi_r + 7)}
+                for r in range(lo_r, hi_r + 1):
                     ring = [cov[r + k] for k in (-6, -5, -4, 4, 5, 6)]
                     c = cov[r] - sum(ring) / len(ring)
                     if c > best[0]: best = (c, cov[r], hinge, side, r, off)
@@ -108,9 +120,34 @@ for axis in ('H', 'V'):
 # §43.21 run 2: the threshold is the sheet's own null population (solid-wall probes) + 0.10
 THR = round(max(fals) + MARGIN, 2) if fals else None   # compared at the logged precision (2 decimals), as the spec reads them
 sep = THR is not None and THR <= 0.60
+# §48 a leaf narrower than its opening (a door + a side light): exterior non-doors only, r from 0.80 x the smallest DIN 18101 single leaf to
+# 0.80 x the opening width; its own null population = the same solid-wall probes over the same absolute r range (+ MARGIN, <= 0.60)
+LEAFS = sorted(DS['single_leaf_width_mm']); narrow = []
+for c in cands:
+    if c['src'] != 'exterior' or (sep and round(c['arc_contrast'], 2) >= THR): continue
+    o = OP[c['index']]; conv, (b0, b1), K = frame(W1[o['run_a']]); pa, pb = conv(o['centre_mm'] - o['meas_mm'] / 2), conv(o['centre_mm'] + o['meas_mm'] / 2)
+    lo, hi = int(0.80 * LEAFS[0] / 1000 * K), int(0.80 * (pb - pa)) - 1
+    if hi > lo: narrow.append((c, o, pa, pb, b0, b1, K, lo, hi))
+NMIN = 5   # §48: a null population of fewer solid-wall probes judges nothing (VACUOUS), never a door
+PROBES = [w for w in INT] + [w for w in W1 if w['thk_chain_m'] == ext_t]
+for c, o, pa, pb, b0, b1, K, lo, hi in narrow:   # each candidate against ITS OWN r range: probes on solid runs long enough for that arc
+    falsN = []
+    for w in PROBES:
+        ax = w['axis']; s_, e_ = ('x0', 'x1') if ax == 'H' else ('y0', 'y1'); Kw = KH if ax == 'H' else KV
+        if (w[e_] - w[s_]) / 1000 * Kw < 2 * hi + 2 * px(6): continue
+        conv, (q0, q1), _ = frame(w); m = conv((w[s_] + w[e_]) / 2); half = (pb - pa) / 2
+        falsN.append(arc(ax, m - half, m + half, q0, q1, (lo, hi))[0])
+    THRN = round(max(falsN) + MARGIN, 2) if len(falsN) >= NMIN else None; sepN = THRN is not None and THRN <= 0.60
+    con, cov, hg, sd, r, off = arc(c['axis'], pa, pb, b0, b1, (lo, hi))
+    ok = sepN and round(con, 2) >= THRN
+    if ok:
+        r_mm = r / K * 1000; leaf = min(LEAFS, key=lambda v: abs(v - r_mm))
+        c.update(arc_contrast=round(con, 3), arc_cov=round(cov, 3), hinge=hg, side=sd, hinge_offset_mm=round(off / K * 1000), r_mm=round(r_mm), leaf_mm=leaf, narrow_leaf=True)
+    log(f"§RASTER_W-S48a exterior face={c['face']} centre_mm={c['centre_mm']:.0f} width={c['meas_mm']:.0f} narrow-leaf r_px={lo}..{hi} contrast={con:.2f} cov={cov:.2f} hinge={hg} side={sd} r_mm={r / K * 1000:.0f} "
+        f"| null probes={len(falsN)} max={max(falsN) if falsN else 0:.2f} threshold={THRN} -> {'DOOR leaf=' + str(c['leaf_mm']) + ' (DIN 18101 nearest r) + side light' if ok else ('unchanged' if sepN else 'unchanged (null VACUOUS: fewer than ' + str(NMIN) + ' probes or threshold > 0.60)')}")
 doors, rest = [], []
 for c in cands:
-    c['kind'] = 'DOOR' if sep and round(c['arc_contrast'], 2) >= THR else ('WINDOW' if c['src'] == 'exterior' else 'OPENING')
+    c['kind'] = 'DOOR' if (sep and round(c['arc_contrast'], 2) >= THR) or c.get('narrow_leaf') else ('WINDOW' if c['src'] == 'exterior' else 'OPENING')
     (doors if c['kind'] == 'DOOR' else rest).append(c)
     if c['src'] == 'exterior':
         log(f"§RASTER_DOOR exterior face={c['face']} centre_mm={c['centre_mm']:.0f} width={c['meas_mm']:.0f} ({c['nominal_mm']} {c['cls']}) "
