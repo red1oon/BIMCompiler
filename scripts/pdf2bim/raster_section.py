@@ -1,12 +1,12 @@
 # Implementing PDF2BIM_VECTOR_PROBE.md §43.20 step 0 — heights from a section's GEOMETRY (its level-mark text is unreadable at 200 dpi)
 # Implementing PDF2BIM_VECTOR_PROBE.md §43.20 step 2 — scale from the cut faces (slab lines) / READ depth; isotropy from p4's W-S5; faces checked by the roof (Hough vote)
 # Usage: python3 -P raster_section.py <p2 workdir (page_clean.png via chains.json, views_label.npy, roof.json)> <view name> <depth_m READ> <pitch_deg READ> <ext_wall_m READ> <p4 raster_probe log> <storeys N from the plans>
-# §43.20 step 3: slabs = line pairs with hatch between, named top-down by N; writes section_heights.json on PASS
+# §43.20 step 3: slabs = line pairs (rule in raster_texture.slab_pairs, §43.22 step 2) with hatch between, named top-down by N; writes section_heights.json on PASS
 import sys, os, json, math, re
 import numpy as np
 from PIL import Image
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from raster_texture import texture_maps
+from raster_texture import texture_maps, slab_pairs
 
 def log(*a): print(*a, flush=True)
 work, view, depth, pitch, extw = sys.argv[1], sys.argv[2], float(sys.argv[3]), float(sys.argv[4]), float(sys.argv[5])
@@ -101,16 +101,7 @@ for r in rows: (grp[-1].append(r) if grp and r - grp[-1][-1] <= 1 else grp.appen
 log(f"§SECT_LINES long horizontal lines between the faces (region row: z above the base slab bottom row {base}, m): " + ' '.join(f"{float(np.mean(g_)):.1f}:{(base - float(np.mean(g_))) / kh:+.3f}" for g_ in grp))
 log(f"§SECT_ROOF_Z apex z={(base - ay) / kh:+.3f} m above the base slab bottom; the left top line meets the left face at z={(base - (L_[2] - tl * lf)) / kh:+.3f}, the right at z={(base - (R_[2] + tr * rf)) / kh:+.3f}")
 # ---- §43.20 step 3: slabs by a structural rule ----
-g25 = []
-for r in range(ink.shape[0]):
-    if max([b - a + 1 for a, b in runs(ink[r, ilf:irf + 1])] or [0]) >= 0.25 * span:
-        if g25 and r - g25[-1][1] <= 1: g25[-1][1] = r
-        else: g25.append([r, r])
-slabs = []
-for a, b in zip(g25, g25[1:]):
-    mid_rows = range(a[1] + 1, b[0])
-    dens = [float(DG[r, ilf:irf + 1].mean()) for r in mid_rows]
-    if dens and min(dens) >= 0.30: slabs.append(dict(top=(a[0] + a[1]) / 2, bot=(b[0] + b[1]) / 2, min_hatch=round(min(dens), 2)))
+g25, slabs = slab_pairs(ink, DG, ilf, irf, span, 0.25)   # raster_texture.py owns the slab rule
 log(f"§SECT_SLABS line groups (rows, run >= 25 % span) {[(a + b) / 2 for a, b in g25]} -> hatched pairs " + ' '.join(f"{q['top']}/{q['bot']}(hatch>={q['min_hatch']})" for q in slabs) + f" | storeys N={NST} need {NST + 1}")
 if len(slabs) < NST + 1: sys.exit(log(f"§SECT_HEIGHTS verdict=VACUOUS ({len(slabs)} slabs < N+1 = {NST + 1}); heights stay DEFAULT"))
 use = slabs[:NST + 1]; sub = slabs[NST + 1:]
