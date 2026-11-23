@@ -1,0 +1,101 @@
+{
+ "_about": "Sheet-arrangement fingerprint of a German Werkplan set (PDF2BIM_VECTOR_PROBE.md §43.13). Learned, then EDITABLE: anchors per sheet kind with page-normalised centres at the best rotation; match tolerance 0.12",
+ "kinds": {
+  "views": {
+   "learned_from": "p2_200-2.png",
+   "rotation": 0,
+   "anchors": [
+    {
+     "a": "LEGENDE",
+     "word": "LEGENDE",
+     "cx": 0.904,
+     "cy": 0.235
+    },
+    {
+     "a": "ANSICHT",
+     "word": "ANSICHT",
+     "cx": 0.08,
+     "cy": 0.329
+    },
+    {
+     "a": "ANSICHT",
+     "word": "ANSICHT",
+     "cx": 0.38,
+     "cy": 0.33
+    },
+    {
+     "a": "ANSICHT",
+     "word": "ANSICHT",
+     "cx": 0.721,
+     "cy": 0.333
+    },
+    {
+     "a": "STOREY",
+     "word": "SPEICHER",
+     "cx": 0.395,
+     "cy": 0.634
+    },
+    {
+     "a": "ANSICHT",
+     "word": "ANSICHT",
+     "cx": 0.626,
+     "cy": 0.663
+    },
+    {
+     "a": "STOREY",
+     "word": "OBERGESCHOSS",
+     "cx": 0.407,
+     "cy": 0.731
+    },
+    {
+     "a": "STOREY",
+     "word": "ERDGESCHOSS",
+     "cx": 0.404,
+     "cy": 0.837
+    },
+    {
+     "a": "WERKPLAN",
+     "word": "WERKPLAN",
+     "cx": 0.889,
+     "cy": 0.924
+    },
+    {
+     "a": "SCHNITT",
+     "word": "SCHNITT",
+     "cx": 0.124,
+     "cy": 0.935
+    },
+    {
+     "a": "SCHNITT",
+     "word": "SCHNITT",
+     "cx": 0.628,
+     "cy": 0.934
+    }
+   ]
+  },
+  "plan": {
+   "learned_from": "p4_200-4.png",
+   "rotation": 0,
+   "anchors": [
+    {
+     "a": "LEGENDE",
+     "word": "LEGENDE",
+     "cx": 0.853,
+     "cy": 0.271
+    },
+    {
+     "a": "WERKPLAN",
+     "word": "WERKPLAN",
+     "cx": 0.845,
+     "cy": 0.924
+    },
+    {
+     "a": "STOREY",
+     "word": "OBERGESCHOSS",
+     "cx": 0.854,
+     "cy": 0.939
+    }
+   ]
+  }
+ }
+}

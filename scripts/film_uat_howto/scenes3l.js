@@ -33,7 +33,20 @@ module.exports = (S, PREP, D, H) => {
   };
 
   // ---------------- l1: B4.1 the same Find steps as r1
-  S.l1 = async () => { await S.r1(); };
+  // owner 2026-11-22 (§INTERNAL-UAT): the WHOLE Shed reaches the ERP and the dashboard: F opens the Storey tree (▸ Level 1 (511) ▸ Unknown (2)); tap Level 1, the bar prices all of it
+  S.l1 = async () => {
+    D.cue('l1_start'); await D.aimClick(AREA, { label: 'the model area (focus)' }); await D.sleep(400); await D.key('f', 'the Find panel');
+    await until(() => { const p = document.getElementById('find-panel'); return !!(p && p.getBoundingClientRect().width > 0); }, 15000);
+    const lbl = D.page.locator('#find-tree .find-tree-row[data-find-parent="Level 1"] > span:nth-child(2)').first();
+    const tree = await until(() => { const r = document.querySelector('#find-tree .find-tree-row[data-find-parent="Level 1"]'); return r ? r.innerText.replace(/\s+/g, ' ').trim() : null; }, 20000);
+    D.check(/Level 1 \(511\)/.test(tree || ''), 'b41_tree_level1_511', JSON.stringify(tree));
+    await D.aim(lbl, { label: 'Level 1 (the whole Shed)' }); D.cue('l1_level1'); await D.click({ label: 'Level 1' });
+    const ok = await until(() => { const b = document.getElementById('find-erp-btn'), t = (document.getElementById('find-selected') || {}).innerText || ''; return b && b.getBoundingClientRect().width > 0 && /USD\s*[\d,]+\.\d{2}(?!\d)/.test(t) ? t.replace(/\s+/g, ' ').trim() : null; }, 120000);   // the bar paints every digit first, then the order currency's precision (find_erp_push.js _precision)
+    D.check(/Level 1 .*USD 355,097\.98/.test(ok || ''), 'b41_whole_shed_bar', JSON.stringify((ok || '').slice(0, 120)));   // guide B3.1's total (one cost, rev (g))
+    D.cue('l1_end', { selected: (ok || '').slice(0, 120) }); await D.sleep(2500);
+  };
+
+  if (process.env.FILM_WHOLE_SHED_R1) S.r1 = S.l1;   // measurement (§INTERNAL-UAT): the Kernel-ERP B4.1 with the whole Shed too
 
   // ---------------- l2: B4.2 › ERP: the local Project Order, then the Viewer's own sign-in window for the iDempiere, the password, Push -> the status line names the iDempiere project
   S.l2 = async () => {

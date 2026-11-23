@@ -5958,3 +5958,70 @@ is within the owner's GAP of the element (it touches what it hangs from). Share 
      pieces with no path to the ground; the bake reading a few hundred pieces under the expectation (day origin not pinned to the hour, §Q.63).
   6. The house-style film for the seven. No picture was ever looked at this session — every claim is a log value or a judge count.
 - **Do not:** rebuild a "move the hung piece behind its hanger" pass (§Q.60.1), split the old judge's `early` a fourth time, or re-lock gate numbers.
+### Q.65 HHS HI-RES BAKE ON THE NEW ORDER (2026-11-22, owner: *"Do a HHS bake, from saved DB path, all checks on, hi res"*) — §Q.64 stays the resume block
+- **Run:** the prepared script `scripts/bake_hires_offline.sh HHS_Office_Federated_silent` (1920x1080, 24 fps; `--dlod-proxy --reveal --buildup --label --measure --clash
+  --load-path --ledger --cost --storey-reveal --escape-route --sun-compass`; day counter as saved). `§CLI_BAKE_RESOLVED` reads 1 for every one of those; visualPanel and
+  audioPanel are 0 (the script does not pass them; audio is not built). 3,274 frames, 136.4 s, 163 MB, wall 3,869 s, `aborted=no fileOk=true`, `unconverged=0`,
+  ffprobe frames=3274. Delivered: `~/Downloads/HHS_Office_Federated_silent_1920x1080_24fps_2026-11-22_1936.mp4`; logs `~/Videos/HHS_silent_hires_bake_2026-11-22*.log`.
+- **Prepared as §Q.63 says:** offsets for the saved file (5,207 of 6,839 pieces, max 21.57 m) — bim-ootb **#3400, merged**; stored schedule regenerated on load
+  (`genVersion=38->55`); CPU judge of the file with the bake's rate pack: onNothing 0 of 2,755 · beforeFloor 0 of 6,623 · beforeWall 0 of 99 · beforeFrame 0 of 627 ·
+  box 0 · early 0 · nopath 6 · 59 days. Expectation: `~/Videos/HHS_silent_bake_expected_elements.csv`.
+- **Bake log vs expectation:** `totalDays=59` both. Placed count vs expected at the logged frames of the build-up: −1 .. −3 pieces up to day 39, then +39 .. +41 — the 41
+  containers with no geometry, which the film counts once the cursor passes them (end 6,880 = 6,839 + 41). Worst 0.60 %. Slabs drawn once each, in order: Level 1 @2,
+  Level 2 @56, Unknown @83, Level 3 @84, Roof @111. The cursor never goes back in 56 samples. The bake's own `§SUPPORT_CHECK floating=4/6839`.
+- **The script's own verdicts:** `§LOADPATH_INFOPANEL` PASS · `§LOADPATH_CARD` PASS · `§INTERIOR_LIGHTS_WITNESS` PASS · `§RULE_TINT_CEASE` PASS · `§HUD_OVERLAP_WORST` none
+  over 3,274 frames PASS · `§FRAME_REUSE_TOTAL reused=0/3274` INCONCLUSIVE (its own word: nothing was reused). Not looked at: the picture.
+- **Note for whoever cleans a bake worktree:** `out/` holds TRACKED files; remove only your own log there, never `rm -rf out` (done once this session, restored with
+  `git checkout -- out` before the worktree was removed).
+### Q.66 ▶▶▶ RESUME HERE — DELETION DONE + TERMINAL HI-RES BAKE (2026-11-22, owner: *"Do for Terminal, this time hi-res"* · *"and may delete old solver as you advised."*) — supersedes §Q.64's NEXT item 1
+- **DELETED (bim-ootb #3404, merged; +33 / −318 lines; sw v1787):** `cpm_schedule.js` `§SITE_ORDER` edges + `siteOrderPairs` (the file is back to its form before them);
+  `schedule_author.js` `_hangFilingAxis` (§D6_HANG_FILING), the `§TPL_LAYER_ORDER` pass, `§TPL_LAYER_SELFCHECK`, and the `METHOD_ORDER` off switch (with those gone it
+  would fall back to an order nobody stands behind). There is now ONE order path: `_methodLocationAxis` files, `methodRank` orders.
+- **Proof nothing played changes:** node copy played layer (every piece's start and end) + bar grid, sha1 before (main) and after (branch), eight buildings — identical:
+  Duplex `3836e94d…`/`92e29880…` · HHS `17a357b7…`/`81ec76b9…` · JKR `f409a8ff…`/`2379df79…` · Clinic `1a8a34fe…`/`2b0ab05c…` · Terminal `1e63bb7d…`/`d8be1329…` ·
+  Hospital `5e19fb83…`/`7122214a…` · LTU `377b751d…`/`4b164b56…` · SampleCastle `e2de0ada…`/`c04ba4dc…`. Control: Duplex's played hash changes under another rate pack.
+  (First before-run was started in the worktree I then edited — discarded, recomputed from the untouched main checkout.)
+- **Witnesses re-pointed, not deleted:** `witness_gantt_edit_coherence` G-COH-11 now requires `§METHOD_LOCATION levels=` + `§METHOD_ORDER on elements=`;
+  `witness_tm_assembly_order` A5 requires `§METHOD_ORDER on elements=`. Both read lines that no longer existed since #3389 (so both were already red on main).
+  Run on the branch: fast tier 40/40 · OCP 4 / UE 6 / RO 7 / GL 7, 0 fail · edit coherence on HHS pass · `witness_bake_plays_schedule` 22/0.
+- **NOT deleted (the honest remainder of "the old solver"):** the solve (`ScheduleGate.computeSchedule` → `CpmSchedule`) and the election (`designatedSupport`). The solve
+  still supplies each piece's DURATION (the width of its slot in the bar) and the election is the old support judge's input and the Gantt lock gate's
+  (`verifyGanttIntegrity`). Removing them means: durations straight from `installSecs` / crew, and a lock gate judged by the crawler's truths. That is a design step
+  with its own spec, not a deletion. Also left: `remapSolveToTasks`'s layer / lift branch (callers that pass no rank: witnesses, imported schedules), the bond table.
+- **TERMINAL HI-RES BAKE:** `scripts/bake_hires_offline.sh Terminal_silent` (`~/Downloads/Terminal_silent.db`, 3-stick stored path 52.2 s; 1920x1080, 24 fps, every option of
+  the script on). 2,209 frames, 92.0 s, 110 MB, wall 3,120 s, `aborted=no fileOk=true`, `unconverged=0`. Delivered `~/Downloads/Terminal_silent_1920x1080_24fps_2026-11-22_2300.mp4`;
+  logs `~/Videos/Terminal_silent_hires_bake_2026-11-22*.log`; expectation `~/Videos/Terminal_silent_bake_expected_elements.csv`. Offsets for the file (42,702 of 48,428,
+  max 11.27 m): bim-ootb #3405 (auto-merge requested — verify). Stored schedule regenerated `39->55`.
+  CPU judge beforehand: onNothing 0 of 37,966 · beforeFloor 0 of 44,971 · beforeWall 0 of 371 · beforeFrame INCONCLUSIVE (no assembly data) · box 0 · early 5 · nopath 1,363 · 116 days.
+  **Bake vs expectation: `totalDays=116` both; placed count within 0..2 pieces of the expected count at every logged frame (0.00 %); end 48,428 = 48,428.** Eleven tracked slabs
+  drawn once each, in expected order (frames 7 … 111). Cursor never back in 38 samples. Script verdicts: load-path panel / card PASS, interior lights PASS, tint cease PASS,
+  HUD overlap none over 2,209 frames PASS, frame reuse INCONCLUSIVE (its own word). The bake's `§SUPPORT_CHECK floating=29/48428`.
+  **Seen in the numbers, not judged:** 38,468 of 48,428 pieces (79 %) are placed by day 39 = frame 120 = the first 5 s — one level (`Aras 03`) holds 30,984 pieces. The film
+  completes the building by frame 360 of 2,209. That is pacing (the film's even-calendar tempo on a front-loaded schedule), not order.
+- **NEXT (replaces §Q.64's list):** 1. retire / re-point `run_4d_gates.sh` and put the crawler truths in CI on the tracked HHS file · 2. bars = step x floor · 3. offsets for
+  every served building without them (Shed, `Hospital_extracted`) · 4. spec the removal of the solve + election (durations from `installSecs`, lock gate on the crawler) ·
+  5. hung work as a method statement (§Q.60.1) · 6. the house-style film. Bakes done this session for reference: Hospital (§Q.62, §Q.63), HHS (§Q.65), Terminal (here).
+### Q.67 THREE LOW-RES BUILD-UP BAKES: SHED, JEBEL, JKR (2026-11-23, owner: *"Do a silent low res no reveal just build up bake of Shed, Jebel and JKR"*) — §Q.66 stays the resume block
+- **Run:** bim-ootb main `fc2f8216`, worktree `/tmp/wt-4d-bake-sjj`; `cli_silent_bake.js --gpu real --width 1280 --height 720 --fps 15 --buildup --no-reveal` plus every other
+  overlay `--no-*` (label, measure, clash, load-path, ledger, cost, storey-reveal, escape-route, sun-compass, drawn-services). `§CLI_BAKE_RESOLVED` reads buildup=1 and 0 for
+  every overlay (Jebel's saved path still carries visualPanel=1 audioPanel=1; those draw only inside the load-path freeze, which is off). Files (not pushed): `~/Videos/{Shed,JKR,Jebel}_buildup_lowres_2026-11-23.mp4` + `.log`.
+- **Files baked:** Shed = `SHED_extracted.db` (the UAT pack's reference file, sha1 `ca3d3658…`, = the one §Q.61 judged); JKR = `buildings/JKR_extracted.db`; Jebel =
+  `~/Projects/Jebel/source/BakeFilm_material_corrected.db` (the bake DB JEBEL_POC.md names). Shed and JKR have NO `cinema_path` table: a plain bake refuses
+  (`no stored path … and no plan named`); `--override` with `{}` (no bands) falls to the shipped derived orbit (`fx_cinema_orbit.js` `cinemaPathPlan` → `FXS._cinemaPathPlan`).
+- **Offsets first (§Q.63):** Shed 47 of 511 pieces (max 0.91 m) — bim-ootb **#3410** (auto-merge requested; verify). Jebel 2,939 of 6,461 (max 17.80 m, 9 size-differs left out) — kept LOCAL in
+  the worktree only (private project, never committed). JKR already carried its block. All three `§PATCH_APPLY … applied` in the bake log.
+- **Expectation = node copy, the bake's pack (`RATES_PACK=rsmeans2024_us`, `cache_4d_run.js --force`).** Compared at every `§CPE_BUILDUP` sample (one per 60 frames), day origin = the
+  window's first day at local midnight:
+
+  | building | frames | wall | days bake / copy | end placed | worst placed vs copy | cursor back | `§SUPPORT_CHECK` floating |
+  |---|---|---|---|---|---|---|---|
+  | Shed | 413 | 267 s | 9 / 8 | 512 = 511 + 1 | −13 at day 6.9 (2.5 %); 0 to day 5.2 | 0 of 8 | 0/511 |
+  | JKR | 552 | 545 s | 57 / 57 | 8,988 = 8,985 + 3 | −479 at day 44.7 (5.3 %), always under | 0 of 11 | 40/8985 |
+  | Jebel | 1,296 | 1,110 s | 84 / 84 | 6,461 = 6,461 | −92 at day 20.2 (1.4 %) | 0 of 23 | 73/6461 |
+
+  All `fileOk=true`, `unconverged=0`, ffprobe frame counts equal the bake's. Jebel regenerated its stored schedule on load (`genVersion=42->55`).
+- **Seen in the numbers, not diagnosed:** (1) **Shed:** the browser authors 5 tasks / 9 days, the node copy 4 tasks / 8 days, and counts one more piece (512 vs 511) — same
+  9 days as the product judge in §Q.61, so the node copy is the side that differs. (2) **JKR frame 0:** the cursor stands at 2026-07-11, 133 days BEFORE the schedule window
+  (2026-11-22..2027-01-19), one piece placed; `capOps=8985/8988` — the 3 pieces outside the captured schedule carry those dates (`§GHOST_GROUND triggerT=-2.35`). The film
+  jumps the gap by frame 60. (3) **JKR lags the copy by up to 5.3 %** at every sample, larger than Hospital / Terminal / Jebel (≤1.4 %); moving the day origin by 4-12 h moves
+  the worst to 4.3-4.8 %, so it is not only the unpinned origin. Not looked at: the picture.

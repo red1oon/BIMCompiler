@@ -432,4 +432,8 @@ module.exports = (S, PREP, D, H) => {
   };
   require('./scenes3d.js')(S, PREP, D, H);
   require('./scenes3l.js')(S, PREP, D, H);   // §5.18 L4: B4 to a legacy iDempiere
+  // Chrome's 'Save password?' window can come up LATE (measured 2026-11-23: none within c0's 3 s look, then open over the form in c2, its Password box over
+  // the Receipt Line's Order Line list button at 1615,321: the click went into Chrome's window, §FILM_ZK_LISTS open=[]). A person presses No thanks when it
+  // shows (guide find 13): every chapter C and D scene after c0 first looks for it.
+  Object.keys(S).filter(k => /^[cd]/.test(k) && k !== 'c0').forEach(k => { const run = S[k]; S[k] = async () => { await savePw(k + '_pre'); return run(); }; });
 };
