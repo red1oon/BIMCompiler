@@ -6001,3 +6001,27 @@ is within the owner's GAP of the element (it touches what it hangs from). Share 
 - **NEXT (replaces §Q.64's list):** 1. retire / re-point `run_4d_gates.sh` and put the crawler truths in CI on the tracked HHS file · 2. bars = step x floor · 3. offsets for
   every served building without them (Shed, `Hospital_extracted`) · 4. spec the removal of the solve + election (durations from `installSecs`, lock gate on the crawler) ·
   5. hung work as a method statement (§Q.60.1) · 6. the house-style film. Bakes done this session for reference: Hospital (§Q.62, §Q.63), HHS (§Q.65), Terminal (here).
+### Q.67 THREE LOW-RES BUILD-UP BAKES: SHED, JEBEL, JKR (2026-11-23, owner: *"Do a silent low res no reveal just build up bake of Shed, Jebel and JKR"*) — §Q.66 stays the resume block
+- **Run:** bim-ootb main `fc2f8216`, worktree `/tmp/wt-4d-bake-sjj`; `cli_silent_bake.js --gpu real --width 1280 --height 720 --fps 15 --buildup --no-reveal` plus every other
+  overlay `--no-*` (label, measure, clash, load-path, ledger, cost, storey-reveal, escape-route, sun-compass, drawn-services). `§CLI_BAKE_RESOLVED` reads buildup=1 and 0 for
+  every overlay (Jebel's saved path still carries visualPanel=1 audioPanel=1; those draw only inside the load-path freeze, which is off). Files (not pushed): `~/Videos/{Shed,JKR,Jebel}_buildup_lowres_2026-11-23.mp4` + `.log`.
+- **Files baked:** Shed = `SHED_extracted.db` (the UAT pack's reference file, sha1 `ca3d3658…`, = the one §Q.61 judged); JKR = `buildings/JKR_extracted.db`; Jebel =
+  `~/Projects/Jebel/source/BakeFilm_material_corrected.db` (the bake DB JEBEL_POC.md names). Shed and JKR have NO `cinema_path` table: a plain bake refuses
+  (`no stored path … and no plan named`); `--override` with `{}` (no bands) falls to the shipped derived orbit (`fx_cinema_orbit.js` `cinemaPathPlan` → `FXS._cinemaPathPlan`).
+- **Offsets first (§Q.63):** Shed 47 of 511 pieces (max 0.91 m) — bim-ootb **#3410** (auto-merge requested; verify). Jebel 2,939 of 6,461 (max 17.80 m, 9 size-differs left out) — kept LOCAL in
+  the worktree only (private project, never committed). JKR already carried its block. All three `§PATCH_APPLY … applied` in the bake log.
+- **Expectation = node copy, the bake's pack (`RATES_PACK=rsmeans2024_us`, `cache_4d_run.js --force`).** Compared at every `§CPE_BUILDUP` sample (one per 60 frames), day origin = the
+  window's first day at local midnight:
+
+  | building | frames | wall | days bake / copy | end placed | worst placed vs copy | cursor back | `§SUPPORT_CHECK` floating |
+  |---|---|---|---|---|---|---|---|
+  | Shed | 413 | 267 s | 9 / 8 | 512 = 511 + 1 | −13 at day 6.9 (2.5 %); 0 to day 5.2 | 0 of 8 | 0/511 |
+  | JKR | 552 | 545 s | 57 / 57 | 8,988 = 8,985 + 3 | −479 at day 44.7 (5.3 %), always under | 0 of 11 | 40/8985 |
+  | Jebel | 1,296 | 1,110 s | 84 / 84 | 6,461 = 6,461 | −92 at day 20.2 (1.4 %) | 0 of 23 | 73/6461 |
+
+  All `fileOk=true`, `unconverged=0`, ffprobe frame counts equal the bake's. Jebel regenerated its stored schedule on load (`genVersion=42->55`).
+- **Seen in the numbers, not diagnosed:** (1) **Shed:** the browser authors 5 tasks / 9 days, the node copy 4 tasks / 8 days, and counts one more piece (512 vs 511) — same
+  9 days as the product judge in §Q.61, so the node copy is the side that differs. (2) **JKR frame 0:** the cursor stands at 2026-07-11, 133 days BEFORE the schedule window
+  (2026-11-22..2027-01-19), one piece placed; `capOps=8985/8988` — the 3 pieces outside the captured schedule carry those dates (`§GHOST_GROUND triggerT=-2.35`). The film
+  jumps the gap by frame 60. (3) **JKR lags the copy by up to 5.3 %** at every sample, larger than Hospital / Terminal / Jebel (≤1.4 %); moving the day origin by 4-12 h moves
+  the worst to 4.3-4.8 %, so it is not only the unpinned origin. Not looked at: the picture.
