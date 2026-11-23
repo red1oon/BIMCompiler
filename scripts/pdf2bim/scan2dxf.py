@@ -99,6 +99,11 @@ if os.path.exists(AJ) and json.load(open(AJ)).get('ring_closed'):
         if os.path.exists(os.path.join(V, 'annex_heights.json')): ah = os.path.join(V, 'annex_heights.json'); break
 log(f"§SCAN_ANNEX ring={'closed' if os.path.exists(AJ) and json.load(open(AJ)).get('ring_closed') else 'none'} heights={'yes' if ah else 'no'}")
 
+# 6b. §47 step 1: the corner step on every plan work (a notched corner = glazing + post, §43.19); writes notch.json, which the emit reads
+for w_ in (R, OR):
+    run(f'notch_{os.path.basename(w_)}', 'raster_notch.py', w_)
+    log(f"§SCAN_NOTCH work={os.path.basename(w_)} notch.json={'yes' if os.path.exists(os.path.join(w_, 'notch.json')) else 'no'}")
+
 # 7. emit: upper plan, roof, lower registered plan, main section [, annex heights]
 run('emit', 'raster_emit.py', R if ORDER[storey[ref][0]] > ORDER[storey[other][0]] else OR, os.path.join(V, 'roof.json'), os.path.join(out, 'std'),
     OR if ORDER[storey[ref][0]] > ORDER[storey[other][0]] else R, os.path.join(V, 'section_heights.json'), *([ah] if ah else []))
