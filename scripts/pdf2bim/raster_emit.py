@@ -236,7 +236,7 @@ def storey(work, tag, level, sheet, wall_h, door_h=None):
             return out_ + [(a, x1)]
         WP = [('N', x0_, yN, x1_, yN + tN) for x0_, x1_ in pieces(xW, 0, [q for q in OPn if q['face'] == 'N'])] + \
              [('S', x0_, yS - tS, x1_, yS) for x0_, x1_ in pieces(xW, 0, [q for q in OPn if q['face'] == 'S'])] + [('W', xW, yN + tN, xW + tW, yS - tS)]
-        gb = []; n0 = 0   # run 1 amendment: the garage on its OWN plan sheet (plan_eg.dxf stays byte-identical); handles = indices on that sheet
+        gb = body; n0 = sum(1 for i in range(0, len(body), 2) if body[i] == '0')   # bim-ootb §L40: the garage ON the EG plan again, after every house entity (the house's index handles do not move)
         hd = []
         for k_, (f_, x0_, y0_, x1_, y1_) in enumerate(WP):
             gb += lw('A-WALL-FULL', rect(x0_, y0_, x1_, y1_)); hd.append(str(n0 + k_))
@@ -255,13 +255,13 @@ def storey(work, tag, level, sheet, wall_h, door_h=None):
             e = lw('A-FLOR-OTLN', ring); e[6:6] = ['38', f'{top:.1f}', '39', f'{thk:.1f}']; gb += e
             log(f"§RASTER_EMIT_GARAGE_SLAB {nm} ring_mm=({xW},{yN})-(0,{yS}) top={top} thickness={thk} (READ-GEOM, B-B){' -> IfcSlab, a flat roof beside a pitched one is not importable as IfcRoof (bim-ootb finding)' if nm == 'roof' else ''}")
         gm = [f'@WALLTOP=handle:{h},{AH["wall_clear"] / 1000:g},0' for h in hd] + [f'@SCHEDULE={f},door,{w_},{gdh}' for f, w_ in gfam]
-        gm = ['@UNITS=mm', '@SET=STD', '@VIEW=PLAN', '@NAME=Garage (scan)', f'@LEVEL={level / 1000:g}'] + gm
+        hw_ = [g for g in glaz if g['face'] == 'W' and g['a'] >= yN - 1 and g['b'] <= yS + 1]   # §L40: a house window now behind the garage: no elevation shows it -> its size by a schedule entry (§F8 D24), sill/height DEFAULT as every window
+        for g in hw_:
+            wl = f"DEWP_W{round(g['b'] - g['a'])}_{round(g['b'] - g['a'])}x{WH}"; r_ = g['r']; gb += tx((r_[0] + r_[2]) / 2, -(r_[1] + r_[3]) / 2, f'@TAG=window,{wl}')
+            gm.append(f"@SCHEDULE={wl},window,{round(g['b'] - g['a'])},{WH},{SILL}"); log(f"§RASTER_EMIT_GARAGE_HIDDEN_WINDOW W y_mm={g['a']}..{g['b']} tagged {wl}, schedule sill={SILL} height={WH} (DEFAULT registry, as every window)")
         for n, m in enumerate(gm): gb += tx(xW - 3000, -2500 - 300 * n, m)
-        for k, x in GX.items(): gb += tx(x, 600, f'@GRIDX={k}')
-        for k, y in GY.items(): gb += tx(-600, -y, f'@GRIDY={k}')
-        gw = {'A-WALL-FULL': len(WP), 'A-GLAZ': ngz, 'A-FLOR-OTLN': 2, 'DXF2BIM-MARK': len(gm) + len(GD) + len(GX) + len(GY)}
-        if GD: gw['A-DOOR'] = len(GD)
-        write('plan_garage.dxf', gb, gw)
+        want['A-WALL-FULL'] += len(WP); want['A-GLAZ'] = want.get('A-GLAZ', 0) + ngz; want['A-FLOR-OTLN'] = 2; want['DXF2BIM-MARK'] += len(gm) + len(GD) + len(hw_)
+        if GD: want['A-DOOR'] = want.get('A-DOOR', 0) + len(GD)
         GAR = dict(xW=xW, yN=yN, yS=yS, top=AH['wall_clear'], win=[q for q in OPn if q['face'] == 'S'])
     write(sheet, body, want)
 
@@ -285,16 +285,20 @@ for face, hax in (('S', '+X'), ('N', '-X'), ('E', '+Y'), ('W', '-Y')):
         return v
     b = []; n_ = 0
     for q in ST:   # §43.18 one wall band per storey (level .. level + wall_h), its own openings at its own sill
-        b += lw('A-WALL', [(0, q['level']), (width, q['level']), (width, q['level'] + q['wall_h']), (0, q['level'] + q['wall_h'])])
+        G_ = q.get('garage'); hid = (G_['yN'], G_['yS']) if (G_ and face == 'W') else None   # bim-ootb §L40 R2: on W the garage hides the house's EG wall over its y range
+        for x0b, x1b in ([(0, width)] if not hid else [(a_, b_) for a_, b_ in ((0, hid[0]), (hid[1], width)) if b_ - a_ > 1]):
+            b += lw('A-WALL', [(x0b, q['level']), (x1b, q['level']), (x1b, q['level'] + q['wall_h']), (x0b, q['level'] + q['wall_h'])])
+            if hid: log(f"§RASTER_EMIT_GARAGE_ELEV W house band split: drawn {x0b}..{x1b} (hidden {hid[0]}..{hid[1]})")
         for g in q['glaz']:
             if g['face'] != face: continue
+            if hid and g['a'] >= hid[0] - 1 and g['b'] <= hid[1] + 1: log(f"§RASTER_EMIT_GARAGE_ELEV W house window {g['a']}..{g['b']} hidden behind the garage: not drawn"); continue
             x0, x1 = sorted((drawn(g['a']), drawn(g['b']))); z0 = q['level'] + SILL
             b += lw('A-GLAZ', [(x0, z0), (x1, z0), (x1, z0 + WH), (x0, z0 + WH)]); n_ += 1
     ng_ = 0
     for q in ST:   # §43.22 step 3: the garage band (and its S windows) on the faces it shows
         G_ = q.get('garage')
         if not G_: continue
-        span = {'S': (G_['xW'], 0), 'N': (drawn(0), drawn(G_['xW']))}.get(face)   # run 1 amendment: no W band (it overlaps the house's W band)
+        span = {'S': (G_['xW'], 0), 'N': (drawn(0), drawn(G_['xW'])), 'W': (G_['yN'], G_['yS'])}.get(face)   # §L40: the W band again (the house band is split around it)
         if not span: continue
         b += lw('A-WALL', [(span[0], q['level']), (span[1], q['level']), (span[1], q['level'] + G_['top']), (span[0], q['level'] + G_['top'])]); ng_ += 1
         if face == 'S':
@@ -309,7 +313,7 @@ for face, hax in (('S', '+X'), ('N', '-X'), ('E', '+Y'), ('W', '-Y')):
         b += ['0', 'LINE', '8', 'A-ANNO-LEVL', '10', '-500', '20', f'{zl:.1f}', '30', '0', '11', f'{width + 500:.1f}', '21', f'{zl:.1f}', '31', '0']
     G = GX if face in 'SN' else GY
     for k, v in G.items(): b += tx(drawn(v), -600, f'@GRIDH={k}')
-    write(f'elev_{face}.dxf', b, {'A-WALL': len(ST) + ng_, 'A-GLAZ': n_, 'A-ANNO-LEVL': len(ZL), 'DXF2BIM-MARK': len(mk) + 2 + len(G)})
+    write(f'elev_{face}.dxf', b, {'A-WALL': sum(1 for i in range(0, len(b) - 3, 2) if b[i] == '0' and b[i + 3] == 'A-WALL'), 'A-GLAZ': n_, 'A-ANNO-LEVL': len(ZL), 'DXF2BIM-MARK': len(mk) + 2 + len(G)})
 
 # ---- roof (§43.12): outline = the EMITTED exterior envelope; gable rect + ridge along x (gables OST/WEST) ----
 ex0 = min(w['x0'] for w in EXT); ex1 = max(w['x1'] for w in EXT); ey0 = min(w['y0'] for w in EXT); ey1 = max(w['y1'] for w in EXT)
