@@ -2,7 +2,8 @@
 # Emits the scan in the importer's STD sheet form (same layers/marks as to_std.py + elev_emit.py): plan, four
 # elevations, roof. READ: walls (§43.2 READ), exterior ring + window gaps (§43.1), plan size (chains), roof pitch
 # (§43.10). DEFAULT (stated, registry values): wall height, window sill/height, plan level 0, north = sheet top.
-# Usage: python3 -P raster_emit.py <plan workdir (walls.json, walls_all.json, chains.json)> <roof.json> <out_dir> [<EG workdir>]
+# Usage: python3 -P raster_emit.py <plan workdir (walls.json, walls_all.json, chains.json)> <roof.json> <out_dir> [<EG workdir>] [<section_heights.json>]
+#   with the 5th argument (§43.20 step 3): storey level, slab, roof bottom are READ-GEOM from the section (raster_section.py), not DEFAULT
 #   with the 4th argument (§43.18): the EG is Level 1 at 0, the first plan is the OG above it; heights DEFAULT (storey = wall.height, slab = synth.slab.thickness)
 import sys, os, json, math
 
@@ -10,6 +11,7 @@ def log(*a): print(*a, flush=True)
 
 work, roof_json, out = sys.argv[1], sys.argv[2], sys.argv[3]
 EGW = sys.argv[4] if len(sys.argv) > 4 else None
+SH = json.load(open(sys.argv[5])) if len(sys.argv) > 5 else None
 os.makedirs(out, exist_ok=True)
 C = json.load(open(os.path.join(work, 'chains.json')))
 W1 = json.load(open(os.path.join(work, 'walls.json')))['walls']          # §43.1 anchored trace
@@ -32,12 +34,16 @@ RISE = round(BD / 2 * math.tan(math.radians(PITCH)))
 if EGW:   # §43.18 two storeys, every height a DEFAULT: storey height = wall.height, EG walls stop under the slab (synth.slab.thickness)
     SLAB = round(float(regv('synth.slab.thickness')) * 1000)
     STOREYS = [dict(tag='EG', work=EGW, level=0, wall_h=H - SLAB, sheet='plan_eg.dxf'), dict(tag='OG', work=work, level=H, wall_h=H, sheet='plan_og.dxf')]
+    if SH:   # §43.20 step 3: READ-GEOM from the section (levels above the base slab top = EG level 0)
+        OGL, SLAB = SH['levels'][1], SH['slab_thk'][0]
+        STOREYS = [dict(tag='EG', work=EGW, level=0, wall_h=OGL - SLAB, sheet='plan_eg.dxf'), dict(tag='OG', work=work, level=OGL, wall_h=SH['roof_bottom'] - OGL, sheet='plan_og.dxf')]
+        log(f"§RASTER_EMIT_HEIGHTS READ-GEOM (section, k={SH['k_px_per_m']} px/m) OG level={OGL} slab={SLAB} roof_bottom={SH['roof_bottom']} measured apex={SH['apex']} | replaces DEFAULT wall.height={H} synth.slab.thickness={round(float(regv('synth.slab.thickness')) * 1000)}")
 else: STOREYS = [dict(tag='OG', work=work, level=0, wall_h=H, sheet='plan_og.dxf')]
 ROOF0 = STOREYS[-1]['level'] + STOREYS[-1]['wall_h']
 RIDGE = ROOF0 + RISE
 log(f"§RASTER_EMIT_VALUES READ plan={BW}x{BD}mm pitch={PITCH}deg (geometry gables {sorted(gab)}) | DEFAULT wall.height={H} "
-    f"window.sill={SILL} window.height={WH} level=0 north=sheet_top | DERIVED ridge={RIDGE}mm (H + {BD}/2*tan{PITCH})")
-if EGW: log(f"§RASTER_EMIT_STOREYS " + ' '.join(f"{q['tag']}: level={q['level']} walls {q['level']}..{q['level'] + q['wall_h']}" for q in STOREYS) + f" roof_bottom={ROOF0} | DEFAULT synth.slab.thickness={SLAB}")
+    f"window.sill={SILL} window.height={WH} level=0 north=sheet_top | DERIVED ridge={RIDGE}mm (H + {BD}/2*tan{PITCH})" + (f' | wall.height/slab/roof bottom NOT used: READ-GEOM from the section, ridge = roof bottom {ROOF0} + rise' if SH and EGW else ''))
+if EGW: log(f"§RASTER_EMIT_STOREYS " + ' '.join(f"{q['tag']}: level={q['level']} walls {q['level']}..{q['level'] + q['wall_h']}" for q in STOREYS) + f" roof_bottom={ROOF0} | {'READ-GEOM' if SH else 'DEFAULT'} synth.slab.thickness={SLAB}")
 
 def lw(layer, pts):
     e = ['0', 'LWPOLYLINE', '8', layer, '90', str(len(pts)), '70', '1']
@@ -199,6 +205,9 @@ ex0 = min(w['x0'] for w in EXT); ex1 = max(w['x1'] for w in EXT); ey0 = min(w['y
 cy = (ey0 + ey1) / 2
 RIDGE = ROOF0 + round((ey1 - ey0) / 2 * math.tan(math.radians(PITCH)))   # recomputed on the emitted envelope depth
 log(f"§RASTER_EMIT_ROOF envelope_mm=({ex0:.0f},{ey0:.0f})-({ex1:.0f},{ey1:.0f}) pitch={PITCH} READ ridge_z={RIDGE} DERIVED ridge_axis=x (gables OST/WEST)")
+if SH and EGW:
+    dd = RIDGE - SH['apex']; px_ = dd / 1000 * SH['k_px_per_m']
+    log(f"§RASTER_EMIT_RIDGE_CHECK derived ridge={RIDGE} (READ pitch) vs measured apex={SH['apex']} d={dd:+d} mm ({px_:+.1f} px, limit 2) verdict={'PASS' if abs(px_) <= 2 else 'FINDING'}")
 b = lw('A-ROOF', rect(ex0, ey0, ex1, ey1)) + lw('A-ROOF-GABLE', rect(ex0, ey0, ex1, ey1))
 b += ['0', 'LINE', '8', 'A-ROOF-RIDGE', '10', f'{ex0:.1f}', '20', f'{-cy:.1f}', '30', f'{RIDGE:.1f}', '11', f'{ex1:.1f}', '21', f'{-cy:.1f}', '31', f'{RIDGE:.1f}']
 mk = ['@UNITS=mm', '@SET=STD', '@VIEW=ROOF', '@NAME=ROOF PLAN', f'@LEVEL={ROOF0/1000}', f'@ROOF={RIDGE/1000}', f'@PITCH={PITCH}']
