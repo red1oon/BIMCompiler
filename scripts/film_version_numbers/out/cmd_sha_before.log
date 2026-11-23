@@ -1,0 +1,3 @@
+$ sha256sum viewer/panels.js | cut -c1-8
+cb4ecd9c
+§CMD_EXIT 0

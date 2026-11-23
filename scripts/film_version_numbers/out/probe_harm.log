@@ -1,0 +1,5 @@
+§HARM_PROBE candidates=1 ["viewer/panels.js:\"Pill Icons\"(w0)"]
+§HARM_PROBE try {"file":"viewer/panels.js","old":"Pill Icons","new":"Pill Icon Buttons","litOld":"'Pill Icons'","litNew":"'Pill Icon Buttons'","witnesses":0,"state":"settings","js_sourced":true,"controller":true,"shows_old_before":true,"old_after_reload":true,"new_after_reload":false,"press_exit":0,"press_lines":4,"new_after_press_reload":false,"toast":true,"sw_versions":"bim-ootb-v1791,bim-ootb-v1792","new_after_second_reload":true,"verdict":"SHOWS","tree_clean":true}
+§HARM_PROBE HARM_CHOICE {"file":"viewer/panels.js","old":"Pill Icons","new":"Pill Icon Buttons","litOld":"'Pill Icons'","litNew":"'Pill Icon Buttons'","witnesses":0,"state":"settings","js_sourced":true,"controller":true,"shows_old_before":true,"old_after_reload":true,"new_after_reload":false,"press_exit":0,"press_lines":4,"new_after_press_reload":false,"toast":true,"sw_versions":"bim-ootb-v1791,bim-ootb-v1792","new_after_second_reload":true,"verdict":"SHOWS","tree_clean":true}
+§HARM_PROBE VERDICT FOUND
+exit=0

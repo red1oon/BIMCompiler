@@ -73,9 +73,10 @@ else:
             for kind, k in tpl['kinds'].items():
                 sc = score(w, k)
                 log(f"§LAYOUT_SCORE page={os.path.basename(path)} rot={rot} kind={kind} score={sc[0]:.2f} ({sc[1]}/{sc[2]}) unexpected={sc[3]} | " + '; '.join(sc[4]))
-                if best is None or sc[0] > best[0]: best = (sc[0], rot, kind)
+                if best is None or sc[0] > best[0]: best = (sc[0], rot, kind, w)
         verdict = best[2] if best and best[0] >= 0.5 else 'UNKNOWN'
         log(f"§LAYOUT_CLASS page={os.path.basename(path)} rot={best[1]} -> {verdict} best_score={best[0]:.2f}")
+        if verdict == 'plan': log(f"§LAYOUT_STOREY page={os.path.basename(path)} rot={best[1]} words=" + ','.join(f"{x['word']}:{x['conf']:.0f}" for x in best[3] if x['a'] == 'STOREY'))   # §44: the storey word itself (the anchor test only checks its class)
         if sys.argv[1] == 'upright':   # §43.14 one owner of the orientation: the layout's rotation, never chosen by hand
             if verdict != 'plan': log(f"§LAYOUT_UPRIGHT page={os.path.basename(path)} verdict=REFUSED kind={verdict}"); sys.exit(1)
             Image.open(path).convert('RGB').rotate(best[1], expand=True).save(sys.argv[4])

@@ -1,0 +1,9 @@
+§FILM_CUE beat=cover t=0.000 frames=134 typing=0 answer_hold_frames=134 x1
+§FILM_CUE beat=s1 t=5.583 frames=307 typing=70 answer_hold_frames=237 x1
+§FILM_CUE beat=s2 t=18.375 frames=277 typing=170 answer_hold_frames=107 x1
+§FILM_CUE beat=s3 t=29.917 frames=300 typing=194 answer_hold_frames=10+10+10+10+21+10+10+21 x8 TIGHT
+§FILM_CUE beat=s4 t=42.417 frames=474 typing=230 answer_hold_frames=244 x1
+§FILM_CUE beat=close t=62.167 frames=288 typing=0 answer_hold_frames=288 x1
+§FILM_KEYS typed=124 returns=3
+§VSC_SHARE frames=1492 of 1780 share=83.8% (the share of frames whose top area is the real VS Code window, from the plan; the encoded file is re-measured by vsccheck.py) PASS
+§FILM_DONE dur=74.167 frames=1780 planned=1780

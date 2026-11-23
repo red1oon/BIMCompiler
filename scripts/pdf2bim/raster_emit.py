@@ -2,14 +2,21 @@
 # Emits the scan in the importer's STD sheet form (same layers/marks as to_std.py + elev_emit.py): plan, four
 # elevations, roof. READ: walls (§43.2 READ), exterior ring + window gaps (§43.1), plan size (chains), roof pitch
 # (§43.10). DEFAULT (stated, registry values): wall height, window sill/height, plan level 0, north = sheet top.
-# Usage: python3 -P raster_emit.py <plan workdir (walls.json, walls_all.json, chains.json)> <roof.json> <out_dir> [<EG workdir>]
+# Usage: python3 -P raster_emit.py <plan workdir (walls.json, walls_all.json, chains.json)> <roof.json> <out_dir> [<EG workdir>] [<section_heights.json>] [<annex_heights.json>]
+#   with the 6th argument (§43.22 step 3): the annex (double garage) from the EG work's annex.json + annex_heights.json, appended after every house entity
+#   with the 5th argument (§43.20 step 3): storey level, slab, roof bottom are READ-GEOM from the section (raster_section.py), not DEFAULT
 #   with the 4th argument (§43.18): the EG is Level 1 at 0, the first plan is the OG above it; heights DEFAULT (storey = wall.height, slab = synth.slab.thickness)
 import sys, os, json, math
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from gen_werkplan_door_families import fid_of, door_height   # §43.21 one owner of the door family id + DEFAULT height
+TPL_EFH = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'types', 'german_werkplan_efh.json')))
 
 def log(*a): print(*a, flush=True)
 
 work, roof_json, out = sys.argv[1], sys.argv[2], sys.argv[3]
 EGW = sys.argv[4] if len(sys.argv) > 4 else None
+SH = json.load(open(sys.argv[5])) if len(sys.argv) > 5 else None
+AH = json.load(open(sys.argv[6])) if len(sys.argv) > 6 else None   # §43.22 step 3
 os.makedirs(out, exist_ok=True)
 C = json.load(open(os.path.join(work, 'chains.json')))
 W1 = json.load(open(os.path.join(work, 'walls.json')))['walls']          # §43.1 anchored trace
@@ -32,12 +39,16 @@ RISE = round(BD / 2 * math.tan(math.radians(PITCH)))
 if EGW:   # §43.18 two storeys, every height a DEFAULT: storey height = wall.height, EG walls stop under the slab (synth.slab.thickness)
     SLAB = round(float(regv('synth.slab.thickness')) * 1000)
     STOREYS = [dict(tag='EG', work=EGW, level=0, wall_h=H - SLAB, sheet='plan_eg.dxf'), dict(tag='OG', work=work, level=H, wall_h=H, sheet='plan_og.dxf')]
+    if SH:   # §43.20 step 3: READ-GEOM from the section (levels above the base slab top = EG level 0)
+        OGL, SLAB = SH['levels'][1], SH['slab_thk'][0]
+        STOREYS = [dict(tag='EG', work=EGW, level=0, wall_h=OGL - SLAB, sheet='plan_eg.dxf'), dict(tag='OG', work=work, level=OGL, wall_h=SH['roof_bottom'] - OGL, sheet='plan_og.dxf')]
+        log(f"§RASTER_EMIT_HEIGHTS READ-GEOM (section, k={SH['k_px_per_m']} px/m) OG level={OGL} slab={SLAB} roof_bottom={SH['roof_bottom']} measured apex={SH['apex']} | replaces DEFAULT wall.height={H} synth.slab.thickness={round(float(regv('synth.slab.thickness')) * 1000)}")
 else: STOREYS = [dict(tag='OG', work=work, level=0, wall_h=H, sheet='plan_og.dxf')]
 ROOF0 = STOREYS[-1]['level'] + STOREYS[-1]['wall_h']
 RIDGE = ROOF0 + RISE
 log(f"§RASTER_EMIT_VALUES READ plan={BW}x{BD}mm pitch={PITCH}deg (geometry gables {sorted(gab)}) | DEFAULT wall.height={H} "
-    f"window.sill={SILL} window.height={WH} level=0 north=sheet_top | DERIVED ridge={RIDGE}mm (H + {BD}/2*tan{PITCH})")
-if EGW: log(f"§RASTER_EMIT_STOREYS " + ' '.join(f"{q['tag']}: level={q['level']} walls {q['level']}..{q['level'] + q['wall_h']}" for q in STOREYS) + f" roof_bottom={ROOF0} | DEFAULT synth.slab.thickness={SLAB}")
+    f"window.sill={SILL} window.height={WH} level=0 north=sheet_top | DERIVED ridge={RIDGE}mm (H + {BD}/2*tan{PITCH})" + (f' | wall.height/slab/roof bottom NOT used: READ-GEOM from the section, ridge = roof bottom {ROOF0} + rise' if SH and EGW else ''))
+if EGW: log(f"§RASTER_EMIT_STOREYS " + ' '.join(f"{q['tag']}: level={q['level']} walls {q['level']}..{q['level'] + q['wall_h']}" for q in STOREYS) + f" roof_bottom={ROOF0} | {'READ-GEOM' if SH else 'DEFAULT'} synth.slab.thickness={SLAB}")
 
 def lw(layer, pts):
     e = ['0', 'LWPOLYLINE', '8', layer, '90', str(len(pts)), '70', '1']
@@ -50,11 +61,11 @@ def write(name, body, want):
     p = os.path.join(out, name); open(p, 'w').write('\n'.join(dxf) + '\n')
     t = open(p).read().split('\n'); back = {}
     for i in range(len(t) - 3):
-        if t[i] == '0' and t[i + 1] in ('LWPOLYLINE', 'TEXT', 'LINE', 'DIMENSION') and t[i + 2] == '8': back[t[i + 3]] = back.get(t[i + 3], 0) + 1
+        if t[i] == '0' and t[i + 1] in ('LWPOLYLINE', 'TEXT', 'LINE', 'DIMENSION', 'ARC') and t[i + 2] == '8': back[t[i + 3]] = back.get(t[i + 3], 0) + 1
     ok = all(back.get(k, 0) == v for k, v in want.items())
     log(f"§RASTER_W-S12a {name} written={want} read_back={back} verdict={'PASS' if ok else 'FAIL'}")
 
-def storey(work, tag, level, sheet, wall_h):
+def storey(work, tag, level, sheet, wall_h, door_h=None):
     C = json.load(open(os.path.join(work, 'chains.json')))
     W1 = json.load(open(os.path.join(work, 'walls.json')))['walls']
     WA = json.load(open(os.path.join(work, 'walls_all.json')))['walls']
@@ -108,6 +119,41 @@ def storey(work, tag, level, sheet, wall_h):
             EXT[ia] = dict(EXT[ia], **{k1: o['a_mm']}); EXT[ib] = dict(EXT[ib], **{k0: o['b_mm']})
             log(f"§RASTER_EMIT_OPENING face={o['face']} nominal={o['nominal_mm']} class={o['cls']} edges_mm={o['a_mm']}..{o['b_mm']} (measured {o['meas_mm']})")
     else: log("§RASTER_EMIT_OPENING openings.json absent: gaps are the run gaps (§43.11 behaviour)")
+    # §43.21 step 2: doors (raster_doors.py doors.json). Interior runs ending within 1 px + 30 mm of a door's nominal edge, in its band, end AT it
+    DF = os.path.join(work, 'doors.json'); DOORS = json.load(open(DF))['doors'] if os.path.exists(DF) else []
+    if DOORS:
+        EXT_IDX_ = [i for i, w in enumerate(W1) if w['thk_chain_m'] == ext_t]; OPS_ = json.load(open(OPF))['openings'] if os.path.exists(OPF) else []
+        nmv = 0
+        for d in DOORS:
+            K_ = KH if d['axis'] == 'H' else KV; tol = 1000 / K_ + 30; n2 = d['nominal_mm'] / 2
+            d['ea'], d['eb'] = d['centre_mm'] - n2, d['centre_mm'] + n2
+            if d['src'] == 'exterior':
+                o = OPS_[d['index']]; d['ea'], d['eb'] = o['a_mm'], o['b_mm']; wr = EXT[EXT_IDX_.index(o['run_a'])]
+                d['band'] = (wr['y0'], wr['y1']) if d['axis'] == 'H' else (wr['x0'], wr['x1']); continue
+            k0, k1, b0, b1 = ('x0', 'x1', 'y0', 'y1') if d['axis'] == 'H' else ('y0', 'y1', 'x0', 'x1')
+            tb = 1000 / (KV if d['axis'] == 'H' else KH) + 30
+            for j, w in enumerate(INT):
+                if w['axis'] != d['axis'] or abs(w[b0] - d['band_mm'][0]) > tb or abs(w[b1] - d['band_mm'][1]) > tb: continue
+                if abs(w[k1] - d['ea']) <= tol and w[k1] != d['ea']: INT[j] = dict(w, **{k1: d['ea']}); nmv += 1
+                elif abs(w[k0] - d['eb']) <= tol and w[k0] != d['eb']: INT[j] = dict(w, **{k0: d['eb']}); nmv += 1
+            host = [w for w in INT if w['axis'] == d['axis'] and (w[k1] == d['ea'] or w[k0] == d['eb']) and abs(w[b0] - d['band_mm'][0]) <= tb and abs(w[b1] - d['band_mm'][1]) <= tb]
+            pj = [j for j, w in enumerate(INT) if w['axis'] == d['axis'] and (w[k1] == d['ea'] or w[k0] == d['eb']) and abs(w[b0] - d['band_mm'][0]) <= tb and abs(w[b1] - d['band_mm'][1]) <= tb]
+            if len(pj) == 2 and (abs(INT[pj[0]][b0] - INT[pj[1]][b0]) > 1 or abs(INT[pj[0]][b1] - INT[pj[1]][b1]) > 1):   # one wall, two traces: READ wins (§43.21 step 2 rule ii)
+                T_ = round(d['thk_m'] * 1000); RT = {r for m, r in (TX if d['axis'] == 'V' else TY)}
+                exact = [INT[j] for j in pj if abs((INT[j][b1] - INT[j][b0]) - T_) <= 1]
+                band = (exact[0][b0], exact[0][b1]) if exact else None; why = 'piece at READ thickness'
+                if band is None:
+                    fr = [(INT[j][b0], +1) for j in pj if INT[j][b0] in RT] + [(INT[j][b1], -1) for j in pj if INT[j][b1] in RT]
+                    if fr: f_, sg = fr[0]; band = (f_, f_ + T_) if sg > 0 else (f_ - T_, f_); why = f'READ tick face {f_} + READ thickness {T_}'
+                if band:
+                    mv = [round(max(abs(INT[j][b0] - band[0]), abs(INT[j][b1] - band[1])), 1) for j in pj]
+                    for j in pj: INT[j] = dict(INT[j], **{b0: band[0], b1: band[1]})
+                    log(f"§RASTER_EMIT_DOOR_BAND {tag} door centre={d['centre_mm']:.0f} two jamb pieces -> one band {band} ({why}); faces moved_mm={mv}")
+                else: log(f"§RASTER_EMIT_DOOR_BAND {tag} door centre={d['centre_mm']:.0f} two jamb pieces differ, no READ value to unify them (stated, unchanged)")
+                host = [INT[j] for j in pj]
+            d['band'] = (host[0][b0], host[0][b1]) if host else (d['band_mm'][0], d['band_mm'][1])   # the EMITTED piece's band: the importer reads the hinge on its face to 1 mm
+            d['host_found'] = bool(host)
+        log(f"§RASTER_EMIT_DOORS {tag} doors={len(DOORS)} (interior {sum(d['src'] == 'interior' for d in DOORS)}, exterior {sum(d['src'] == 'exterior' for d in DOORS)}) interior_run_ends_moved_to_door_edges={nmv}")
     log(f"§RASTER_EMIT_SNAP moved={SN['n']} max_tick_offset_mm={SN['max_off']:.1f} (<= 1 px = {1000/KH:.1f}/{1000/KV:.1f}) max_shift_mm={SN['max_shift']:.1f} "
         f"envelope_mm={min(w['x0'] for w in EXT):.0f},{min(w['y0'] for w in EXT):.0f}..{max(w['x1'] for w in EXT):.0f},{max(w['y1'] for w in EXT):.0f}")
 
@@ -133,6 +179,7 @@ def storey(work, tag, level, sheet, wall_h):
                 g0, g1 = (a['x1'], b['x0']) if axis == 'H' else (a['y1'], b['y0'])
                 if g1 - g0 > 300:
                     face = ('N' if side == 0 else 'S') if axis == 'H' else ('W' if side == 0 else 'E')
+                    if any(d['src'] == 'exterior' and d['face'] == face and d['ea'] < g1 and d['eb'] > g0 for d in DOORS): continue   # §43.21 a DOOR, written as its arc
                     r = (g0, a['y0'], g1, a['y1']) if axis == 'H' else (a['x0'], g0, a['x1'], g1)
                     glaz.append(dict(face=face, r=r, a=g0, b=g1)); body += lw('A-GLAZ', rect(*r)); ng += 1
     for f in ('N', 'S', 'E', 'W'): log(f"§RASTER_EMIT_OPENINGS face={f} widths_mm={[round(g['b']-g['a']) for g in glaz if g['face'] == f]}")
@@ -151,19 +198,78 @@ def storey(work, tag, level, sheet, wall_h):
         off = 450 if (a, b) == (ys[0], ys[-1]) else 0
         body += dim((BW if sideV == 'maxX' else 0, -a), (BW if sideV == 'maxX' else 0, -b), (cx_ + sgv * off, -(a + b) / 2), 90, b - a); nd += 1
     log(f"§RASTER_EMIT_DIMS H_chain side={sideH} values_mm={[b - a for a, b in zip(xs, xs[1:])]} overall={xs[-1]} | V_chain side={sideV} values_mm={[b - a for a, b in zip(ys, ys[1:])]} overall={ys[-1]} | written={nd} (other sides: no GREEN chain, none stated)")
-    marks = ['@UNITS=mm', '@SET=STD', '@VIEW=PLAN', f'@NAME={tag} (scan)', f'@LEVEL={level / 1000:g}'] + ([f'@BODYZ=column,{level / 1000:g},{(level + wall_h) / 1000:g}'] if ncol else [])
+    # §43.21 step 2: each DOOR = one A-DOOR ARC (hinge = centre, radius = nominal width, the importer's door rule), @TAG at the swing box centre
+    DH = door_h or door_height(TPL_EFH); DHS = 'READ-GEOM (section door outlines, §43.21 step 3)' if door_h else 'DEFAULT(DIN 18101 opening Nennmaß)'; ndr = 0; tags_d = []; fams = {}
+    ANG = {('H', 'a', -1): (0, 90), ('H', 'a', 1): (270, 360), ('H', 'b', -1): (90, 180), ('H', 'b', 1): (180, 270),
+           ('V', 'a', -1): (180, 270), ('V', 'a', 1): (270, 360), ('V', 'b', -1): (90, 180), ('V', 'b', 1): (0, 90)}   # DXF y up; sheet y down
+    for d in DOORS:
+        r = d['nominal_mm']; al = d['ea'] if d['hinge'] == 'a' else d['eb']
+        ac = d['band'][0] if d['side'] == -1 else d['band'][1]   # hinge ON the host piece's face (importer L1.2 R9 / dxf2shell doorStrip, 1 mm); the drawn frame offset is logged, not used
+        hx, hy = (al, -ac) if d['axis'] == 'H' else (ac, -al)
+        a0, a1 = ANG[(d['axis'], d['hinge'], d['side'])]
+        body += ['0', 'ARC', '8', 'A-DOOR', '10', f'{hx:.1f}', '20', f'{hy:.1f}', '30', '0', '40', f'{r:.1f}', '50', f'{a0:g}', '51', f'{a1:g}']; ndr += 1
+        fam = fid_of(r, round(d['thk_m'] * 1000), DH); fams[fam] = r
+        m_ = math.radians((a0 + a1) / 2); tags_d.append((hx + r / 2 * math.sqrt(2) * math.cos(m_), hy + r / 2 * math.sqrt(2) * math.sin(m_), f'@TAG=door,{fam}'))
+        log(f"§RASTER_EMIT_DOOR {tag} {d['src']} axis={d['axis']} hinge=({hx:.1f},{hy:.1f}) r={r} arc={a0}..{a1} family={fam} edges_mm={d['ea']:.1f}..{d['eb']:.1f} host_band={d['band']} drawn_hinge_offset_mm={d['hinge_offset_mm']} (not used) height={DH} {DHS}")
+    for x_, y_, t_ in tags_d: body += tx(x_, y_, t_)
+    marks = ['@UNITS=mm', '@SET=STD', '@VIEW=PLAN', f'@NAME={tag} (scan)', f'@LEVEL={level / 1000:g}'] + ([f'@BODYZ=column,{level / 1000:g},{(level + wall_h) / 1000:g}'] if ncol else []) + ([f'@SCHEDULE={f},door,{w_},{DH}' for f, w_ in sorted(fams.items())] + ['@HEADFRAME=0'] if fams else [])
     for n, m in enumerate(marks): body += tx(-3000, -2500 - 300 * n, m)
     for k, x in GX.items(): body += tx(x, 600, f'@GRIDX={k}')
     for k, y in GY.items(): body += tx(-600, -y, f'@GRIDY={k}')
     want = {'A-WALL-FULL': nw, 'A-GLAZ': ng, 'A-ANNO-DIMS': nd, 'DXF2BIM-MARK': len(marks) + len(GX) + len(GY)}
+    if ndr: want['A-DOOR'] = ndr; want['DXF2BIM-MARK'] += len(tags_d)
     if ncw: want['A-WALL-CURT'] = ncw
     if ncol: want['A-COLS'] = ncol
+    GAR = None
+    if AH and tag == 'EG':   # §43.22 step 3: the annex, appended AFTER every house entity (the reader's index handles of the house do not move)
+        A_ = json.load(open(os.path.join(work, 'annex.json'))); assert A_['ring_closed'], 'annex ring not closed'
+        Wn = {w['name']: w for w in A_['walls']}; Hs = sorted([w for w in A_['walls'] if w['axis'] == 'H'], key=lambda w: w['faces_mm'][0]); Vw = [w for w in A_['walls'] if w['axis'] == 'V'][0]
+        yN = Hs[0]['faces_mm'][0]; yS = snap(Hs[1]['faces_mm'][1], TY, KV); xW = Vw['faces_mm'][0]   # MEASURED outer faces; S snaps to the house's READ south face (§43.15 rule)
+        tN, tS, tW = Hs[0]['thk_mm'], Hs[1]['thk_mm'], Vw['thk_mm']
+        log(f"§RASTER_EMIT_GARAGE faces_mm N={yN} S={Hs[1]['faces_mm'][1]}->{yS} W={xW} (MEASURED; S snapped to READ) thicknesses {tN}/{tS}/{tW} (READ-SERIES) | heights {dict((k, AH[k]) for k in ('wall_clear', 'roof_slab_thk', 'roof_slab_top', 'base_slab_thk'))} datum={AH['datum_vs_EG']}")
+        OPn = []
+        for o in A_['openings']:
+            c_ = (o['edge_mm'][0] + o['edge_mm'][1]) / 2; h_ = o['nominal_mm'] / 2; OPn.append(dict(o, a=round(c_ - h_, 2), b=round(c_ + h_, 2), face='N' if Wn[o['wall']] is Hs[0] else 'S'))
+        def pieces(x0, x1, ops):
+            cut = sorted((q['a'], q['b']) for q in ops); out_ = []; a = x0
+            for qa, qb in cut: out_.append((a, qa)); a = qb
+            return out_ + [(a, x1)]
+        WP = [('N', x0_, yN, x1_, yN + tN) for x0_, x1_ in pieces(xW, 0, [q for q in OPn if q['face'] == 'N'])] + \
+             [('S', x0_, yS - tS, x1_, yS) for x0_, x1_ in pieces(xW, 0, [q for q in OPn if q['face'] == 'S'])] + [('W', xW, yN + tN, xW + tW, yS - tS)]
+        gb = body; n0 = sum(1 for i in range(0, len(body), 2) if body[i] == '0')   # bim-ootb §L40: the garage ON the EG plan again, after every house entity (the house's index handles do not move)
+        hd = []
+        for k_, (f_, x0_, y0_, x1_, y1_) in enumerate(WP):
+            gb += lw('A-WALL-FULL', rect(x0_, y0_, x1_, y1_)); hd.append(str(n0 + k_))
+            log(f"§RASTER_EMIT_GARAGE_WALL {f_} rect_mm=({x0_},{y0_})-({x1_},{y1_}) handle={n0 + k_} top={AH['wall_clear']} base=0")
+        ngz = 0
+        for q in OPn:
+            if q['face'] == 'S': gb += lw('A-GLAZ', rect(q['a'], yS - tS, q['b'], yS)); ngz += 1; log(f"§RASTER_EMIT_GARAGE_WINDOW S x_mm={q['a']}..{q['b']} nominal={q['nominal_mm']} ({q['cls']}, measured {q['meas_mm']})")
+        GD = [q for q in OPn if q['face'] == 'N']; gdh = door_height(TPL_EFH); gfam = []
+        for q in GD:   # hinge at the west edge on the inner face, swing into the garage (+y on the sheet): ANG ('H','a',+1)
+            r = q['nominal_mm']; hx, hy = q['a'], -(yN + tN); fam = fid_of(r, tN, gdh); gfam.append((fam, r))
+            gb += ['0', 'ARC', '8', 'A-DOOR', '10', f'{hx:.1f}', '20', f'{hy:.1f}', '30', '0', '40', f'{r:.1f}', '50', '270', '51', '360']
+            m_ = math.radians(315); gb += tx(hx + r / 2 * math.sqrt(2) * math.cos(m_), hy + r / 2 * math.sqrt(2) * math.sin(m_), f'@TAG=door,{fam}')
+            log(f"§RASTER_EMIT_GARAGE_DOOR N x_mm={q['a']}..{q['b']} nominal={r} ({q['cls']}, measured {q['meas_mm']}) hinge=({hx},{hy}) family={fam} height={gdh} DEFAULT (B-B draws only the door track)")
+        ring = rect(xW, yN, 0, yS)
+        for nm, top, thk in (('base', 0, AH['base_slab_thk']), ('roof', AH['roof_slab_top'], AH['roof_slab_thk'])):   # §D75: the piece's own top (38) and thickness (39), mm
+            e = lw('A-FLOR-OTLN', ring); e[6:6] = ['38', f'{top:.1f}', '39', f'{thk:.1f}']; gb += e
+            log(f"§RASTER_EMIT_GARAGE_SLAB {nm} ring_mm=({xW},{yN})-(0,{yS}) top={top} thickness={thk} (READ-GEOM, B-B){' -> IfcSlab, a flat roof beside a pitched one is not importable as IfcRoof (bim-ootb finding)' if nm == 'roof' else ''}")
+        gm = [f'@WALLTOP=handle:{h},{AH["wall_clear"] / 1000:g},0' for h in hd] + [f'@SCHEDULE={f},door,{w_},{gdh}' for f, w_ in gfam]
+        hw_ = [g for g in glaz if g['face'] == 'W' and g['a'] >= yN - 1 and g['b'] <= yS + 1]   # §L40: a house window now behind the garage: no elevation shows it -> its size by a schedule entry (§F8 D24), sill/height DEFAULT as every window
+        for g in hw_:
+            wl = f"DEWP_W{round(g['b'] - g['a'])}_{round(g['b'] - g['a'])}x{WH}"; r_ = g['r']; gb += tx((r_[0] + r_[2]) / 2, -(r_[1] + r_[3]) / 2, f'@TAG=window,{wl}')
+            gm.append(f"@SCHEDULE={wl},window,{round(g['b'] - g['a'])},{WH},{SILL}"); log(f"§RASTER_EMIT_GARAGE_HIDDEN_WINDOW W y_mm={g['a']}..{g['b']} tagged {wl}, schedule sill={SILL} height={WH} (DEFAULT registry, as every window)")
+        for n, m in enumerate(gm): gb += tx(xW - 3000, -2500 - 300 * n, m)
+        want['A-WALL-FULL'] += len(WP); want['A-GLAZ'] = want.get('A-GLAZ', 0) + ngz; want['A-FLOR-OTLN'] = 2; want['DXF2BIM-MARK'] += len(gm) + len(GD) + len(hw_)
+        if GD: want['A-DOOR'] = want.get('A-DOOR', 0) + len(GD)
+        GAR = dict(xW=xW, yN=yN, yS=yS, top=AH['wall_clear'], win=[q for q in OPn if q['face'] == 'S'])
     write(sheet, body, want)
 
 
-    return dict(EXT=EXT, glaz=glaz, GX=GX, GY=GY, level=level)
+    return dict(EXT=EXT, glaz=glaz, GX=GX, GY=GY, level=level, garage=GAR)
 
-ST = [dict(q, **storey(q['work'], q['tag'], q['level'], q['sheet'], q['wall_h'])) for q in STOREYS]
+for i_, q in enumerate(STOREYS): q['door_h'] = SH['doors'][i_]['model_mm'] if (SH and EGW and SH.get('doors') and i_ < len(SH['doors'])) else None   # §43.21 step 3
+ST = [dict(q, **storey(q['work'], q['tag'], q['level'], q['sheet'], q['wall_h'], q['door_h'])) for q in STOREYS]
 TOP = ST[-1]; EXT, GX, GY = TOP['EXT'], TOP['GX'], TOP['GY']
 
 # ---- elevations: S (+X), N (-X), E (+Y), W (-Y) with north = sheet top (DEFAULT) ----
@@ -179,11 +285,26 @@ for face, hax in (('S', '+X'), ('N', '-X'), ('E', '+Y'), ('W', '-Y')):
         return v
     b = []; n_ = 0
     for q in ST:   # §43.18 one wall band per storey (level .. level + wall_h), its own openings at its own sill
-        b += lw('A-WALL', [(0, q['level']), (width, q['level']), (width, q['level'] + q['wall_h']), (0, q['level'] + q['wall_h'])])
+        G_ = q.get('garage'); hid = (G_['yN'], G_['yS']) if (G_ and face == 'W') else None   # bim-ootb §L40 R2: on W the garage hides the house's EG wall over its y range
+        for x0b, x1b in ([(0, width)] if not hid else [(a_, b_) for a_, b_ in ((0, hid[0]), (hid[1], width)) if b_ - a_ > 1]):
+            b += lw('A-WALL', [(x0b, q['level']), (x1b, q['level']), (x1b, q['level'] + q['wall_h']), (x0b, q['level'] + q['wall_h'])])
+            if hid: log(f"§RASTER_EMIT_GARAGE_ELEV W house band split: drawn {x0b}..{x1b} (hidden {hid[0]}..{hid[1]})")
         for g in q['glaz']:
             if g['face'] != face: continue
+            if hid and g['a'] >= hid[0] - 1 and g['b'] <= hid[1] + 1: log(f"§RASTER_EMIT_GARAGE_ELEV W house window {g['a']}..{g['b']} hidden behind the garage: not drawn"); continue
             x0, x1 = sorted((drawn(g['a']), drawn(g['b']))); z0 = q['level'] + SILL
             b += lw('A-GLAZ', [(x0, z0), (x1, z0), (x1, z0 + WH), (x0, z0 + WH)]); n_ += 1
+    ng_ = 0
+    for q in ST:   # §43.22 step 3: the garage band (and its S windows) on the faces it shows
+        G_ = q.get('garage')
+        if not G_: continue
+        span = {'S': (G_['xW'], 0), 'N': (drawn(0), drawn(G_['xW'])), 'W': (G_['yN'], G_['yS'])}.get(face)   # §L40: the W band again (the house band is split around it)
+        if not span: continue
+        b += lw('A-WALL', [(span[0], q['level']), (span[1], q['level']), (span[1], q['level'] + G_['top']), (span[0], q['level'] + G_['top'])]); ng_ += 1
+        if face == 'S':
+            for g in G_['win']:
+                z0 = q['level'] + SILL; b += lw('A-GLAZ', [(g['a'], z0), (g['b'], z0), (g['b'], z0 + WH), (g['a'], z0 + WH)]); n_ += 1
+        log(f"§RASTER_EMIT_GARAGE_ELEV {face} band drawn x {span[0]}..{span[1]} z {q['level']}..{q['level'] + G_['top']} windows {len(G_['win']) if face == 'S' else 0}")
     mk = ['@VIEW=ELEV', f'@FACE={FACEMARK[face]}', f'@HAXIS={hax}', '@UNITS=mm', '@SET=STD', f'@ROOF={RIDGE/1000}']
     for i, m in enumerate(mk): b += tx(-3000, -1000 - 300 * i, m)
     b += tx(-1500, 0, '@Z=0') + tx(-1500, H, f'@Z={H/1000}')
@@ -192,13 +313,16 @@ for face, hax in (('S', '+X'), ('N', '-X'), ('E', '+Y'), ('W', '-Y')):
         b += ['0', 'LINE', '8', 'A-ANNO-LEVL', '10', '-500', '20', f'{zl:.1f}', '30', '0', '11', f'{width + 500:.1f}', '21', f'{zl:.1f}', '31', '0']
     G = GX if face in 'SN' else GY
     for k, v in G.items(): b += tx(drawn(v), -600, f'@GRIDH={k}')
-    write(f'elev_{face}.dxf', b, {'A-WALL': len(ST), 'A-GLAZ': n_, 'A-ANNO-LEVL': len(ZL), 'DXF2BIM-MARK': len(mk) + 2 + len(G)})
+    write(f'elev_{face}.dxf', b, {'A-WALL': sum(1 for i in range(0, len(b) - 3, 2) if b[i] == '0' and b[i + 3] == 'A-WALL'), 'A-GLAZ': n_, 'A-ANNO-LEVL': len(ZL), 'DXF2BIM-MARK': len(mk) + 2 + len(G)})
 
 # ---- roof (§43.12): outline = the EMITTED exterior envelope; gable rect + ridge along x (gables OST/WEST) ----
 ex0 = min(w['x0'] for w in EXT); ex1 = max(w['x1'] for w in EXT); ey0 = min(w['y0'] for w in EXT); ey1 = max(w['y1'] for w in EXT)
 cy = (ey0 + ey1) / 2
 RIDGE = ROOF0 + round((ey1 - ey0) / 2 * math.tan(math.radians(PITCH)))   # recomputed on the emitted envelope depth
 log(f"§RASTER_EMIT_ROOF envelope_mm=({ex0:.0f},{ey0:.0f})-({ex1:.0f},{ey1:.0f}) pitch={PITCH} READ ridge_z={RIDGE} DERIVED ridge_axis=x (gables OST/WEST)")
+if SH and EGW:
+    dd = RIDGE - SH['apex']; px_ = dd / 1000 * SH['k_px_per_m']
+    log(f"§RASTER_EMIT_RIDGE_CHECK derived ridge={RIDGE} (READ pitch) vs measured apex={SH['apex']} d={dd:+d} mm ({px_:+.1f} px, limit 2) verdict={'PASS' if abs(px_) <= 2 else 'FINDING'}")
 b = lw('A-ROOF', rect(ex0, ey0, ex1, ey1)) + lw('A-ROOF-GABLE', rect(ex0, ey0, ex1, ey1))
 b += ['0', 'LINE', '8', 'A-ROOF-RIDGE', '10', f'{ex0:.1f}', '20', f'{-cy:.1f}', '30', f'{RIDGE:.1f}', '11', f'{ex1:.1f}', '21', f'{-cy:.1f}', '31', f'{RIDGE:.1f}']
 mk = ['@UNITS=mm', '@SET=STD', '@VIEW=ROOF', '@NAME=ROOF PLAN', f'@LEVEL={ROOF0/1000}', f'@ROOF={RIDGE/1000}', f'@PITCH={PITCH}']

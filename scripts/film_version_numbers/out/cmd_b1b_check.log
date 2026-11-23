@@ -1,0 +1,4 @@
+$ node scripts/gen_manifest.js --check | grep MANIFEST_CHECK
+§MANIFEST_CHECK apps=3 files=55 identical=55/55 sites=830 tag=702 asset=0 inline=47 lazy=81 precache=907 order_check=PASS deps_declared=261 unreviewed=0 source=viewer,erp,modeller written=0 verdict=PASS
+§MANIFEST_CHECK apps=3 files=55 identical=55/55 sites=830 tag=702 asset=0 inline=47 lazy=81 precache=907 order_check=PASS deps_declared=261 unreviewed=0 source=viewer,erp,modeller written=0 verdict=PASS
+§CMD_EXIT 0

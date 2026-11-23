@@ -1,0 +1,3 @@
+$ wc -l scripts/bump.js
+291 scripts/bump.js
+§CMD_EXIT 0

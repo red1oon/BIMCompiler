@@ -252,5 +252,8 @@ module.exports = function makeO2C(X) {
     'RC-INV': ['outcome', 'inv_statuses', 'rev_total', 'ispaid', 'rev_tax', 'books', 'books_euro', 'allocations', 'pay_isallocated', 'ol_qty', 'bp_delta', 'stock_delta', 'cost_qty_delta'],
     'RC-SHIP': ['outcome', 'ship_statuses', 'rev_lines', 'books', 'books_euro', 'ol_qty', 'bp_delta', 'stock_delta', 'cost_qty_delta'] };
   const STEPS = ['SO', 'SHIP', 'INV', 'PAY', 'RC-INV', 'RC-SHIP'];
-  return { STEPS, KEYS, scenario: (step, i) => ({ id: `O2C${i + 1}-${step}`, facts: { step }, legacy: f => legacyStep(f.step), local: f => localStep(f.step) }), S, L };
+  // VOCAB_MESSAGE_CATALOG §19.19: the table and document type each step's LEGACY push writes (its descriptor; the reversals have none)
+  const META_OF = { SO: ['so', SODT], SHIP: ['ship', SHIPDT], INV: ['inv', INVDT], PAY: ['pay', C.dt.arReceipt] };
+  const meta = st => META_OF[st] ? { table: DESC[META_OF[st][0]].header.table, doctype: Number(META_OF[st][1]) } : null;
+  return { STEPS, KEYS, meta, scenario: (step, i) => ({ id: `O2C${i + 1}-${step}`, facts: { step }, legacy: f => legacyStep(f.step), local: f => localStep(f.step) }), S, L };
 };

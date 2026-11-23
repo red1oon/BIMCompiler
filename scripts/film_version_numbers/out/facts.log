@@ -1,0 +1,68 @@
+§FACTS tree before {"dir":"/tmp/wt-film6-before","sha":"e4fa52fe","head":"e4fa52feefc4944454d0c6412e106f17df6aefdf","changed":0,"node_modules":true}
+§FACTS tree diff {"dir":"/tmp/wt-film6-diff","sha":"fce8fdc4^","head":"c38f4c3467ab530965d8b216e042c719c0b0ea10","changed":31,"node_modules":true}
+§FACTS tree after {"dir":"/tmp/wt-film6-after","sha":"fc2f8216","head":"fc2f821615cca3ec81758d35189d2e0f21035951","changed":0,"node_modules":true}
+§FACTS diff tree: staged stat == git show --stat fce8fdc4, nothing unstaged
+§FACTS cmd b1_commit exit=0 (expected 0) lines=1 secs=0 $ git show --stat --format="%h %ad %s" --date=short fce8fdc4 | head -1
+§FACTS cmd b1n_0 exit=0 (expected 0) lines=1 secs=0 $ git diff --cached --stat | tail -1
+§FACTS cmd b1n_1 exit=0 (expected 0) lines=8 secs=0 $ git grep -n -o -E 'locale_loader.js(\?v=|": \{"v":)[0-9]+' -- index.html "viewer/*.html" modeller
+§FACTS cmd b1n_2 exit=0 (expected 0) lines=2 secs=0 $ git diff --cached -U0 -- "*/sw.js" | grep "^+const"
+§FACTS b1n {"files":31,"places":8,"placeFiles":8,"cache":2}
+§FACTS b1n every place is an added line of fce8fdc4: true
+§FACTS cmd b1b_0 exit=0 (expected 0) lines=2 secs=0 $ git grep -n -o -E "import_db_builder.js\?v=[0-9]+" e4fa52fe -- index.html viewer/viewer.html
+§FACTS cmd b1b_commit exit=0 (expected 0) lines=4 secs=0 $ git show --stat --format="%h %ad %s" --date=short 8d1ede96 -- index.html viewer/viewer.html viewer/import_db_builder.js
+§FACTS cmd b1b_diff exit=0 (expected 0) lines=2 secs=0 $ git show -U0 --format= 8d1ede96 -- viewer/viewer.html index.html | grep -E "^[-+][^-+].*import_db_builder.js"
+§FACTS cmd b1b_check exit=0 (expected 0) lines=2 secs=15 $ node scripts/gen_manifest.js --check | grep MANIFEST_CHECK
+§FACTS cmd sha_before exit=0 (expected 0) lines=1 secs=0 $ sha256sum viewer/panels.js | cut -c1-8
+§FACTS cmd tags_before exit=0 (expected 0) lines=1 secs=0 $ git grep -n -o -E "[^A-Za-z0-9_]panels\.js\?v=[0-9a-f]+" -- index.html "viewer/*.html" "erp/*.html" "modeller/*.html" ca
+§FACTS cmd edit_diff exit=0 (expected 0) lines=2 secs=0 $ git diff -U0 -- viewer/panels.js | grep "^[-+][^-+]" | cut -c1-200
+§FACTS cmd check_stale exit=1 (expected 1) lines=2 secs=13 $ node scripts/gen_manifest.js --check 2>&1 | grep -E "MANIFEST_(FAIL|CHECK)" | cut -c1-260
+§FACTS cmd sha_edited exit=0 (expected 0) lines=1 secs=0 $ sha256sum viewer/panels.js | cut -c1-8
+§FACTS cmd press_check exit=0 (expected 0) lines=5 secs=1 $ node scripts/bump.js --changed --check
+§FACTS cmd press_write exit=0 (expected 0) lines=5 secs=1 $ node scripts/bump.js --changed --write
+§FACTS cmd b3_stat exit=0 (expected 0) lines=5 secs=0 $ git diff --stat
+§FACTS cmd b4_0 exit=0 (expected 0) lines=1 secs=0 $ sha256sum viewer/panels.js | cut -c1-8
+§FACTS cmd tags_after exit=0 (expected 0) lines=1 secs=0 $ git grep -n -o -E "[^A-Za-z0-9_]panels\.js\?v=[0-9a-f]+" -- index.html "viewer/*.html" "erp/*.html" "modeller/*.html" ca
+§FACTS cmd b4_1 exit=1 (expected 1) lines=2 secs=12 $ sed -i 's/panels.js?v=5225deef/panels.js?v=12345678/' viewer/viewer.html && node scripts/gen_manifest.js --check 2>&1 | 
+§FACTS cmd b4_full exit=1 (expected 1) lines=36 secs=17 $ node scripts/gen_manifest.js --check
+§FACTS cmd b4_line exit=0 (expected 0) lines=1 secs=0 $ sed -n "910p" viewer/viewer.html
+§FACTS cmd restore exit=0 (expected 0) lines=1 secs=0 $ git checkout -- . && git status --short && echo restored_clean
+§FACTS cmd b5_bundler exit=0 (expected 0) lines=1 secs=0 $ git ls-files | grep -c -E "(^|/)(webpack|rollup|vite|esbuild|parcel|snowpack|gulpfile)[^/]*\.(config\.)?(js|mjs|cjs|ts|j
+§FACTS cmd b5_pkg exit=0 (expected 0) lines=1 secs=0 $ node -e "const p=require('./package.json');const d=Object.keys(Object.assign({},p.dependencies,p.devDependencies));const
+§FACTS cmd b5_wc exit=0 (expected 0) lines=1 secs=0 $ wc -l scripts/bump.js
+§FACTS b5 {"bundlerConfigs":0,"deps":3,"bundlers":0,"buildScript":"N","bumpLines":291}
+§FACTS cmd s1_npm exit=0 (expected 0) lines=2 secs=0 $ mkdir -p /tmp/wt-film6-min/site/viewer && cd /tmp/wt-film6-min && { [ -d node_modules/esbuild ] || npm i --no-save --no-
+§FACTS cmd s1_copy exit=0 (expected 0) lines=2 secs=0 $ cp viewer/panels.js /tmp/wt-film6-min/site/viewer/panels.js && sha256sum viewer/panels.js /tmp/wt-film6-min/site/viewer/
+§FACTS cmd s1_minify exit=0 (expected 0) lines=2 secs=0 $ NODE_PATH=/tmp/wt-film6-min/node_modules node scripts/minify_pages.js /tmp/wt-film6-min/site 2>&1 | grep -E "PAYLOAD-MIN
+§FACTS s1 {"file":"viewer/panels.js","srcBytes":177308,"minBytes":102200,"sha":"cb4ecd9c","shaCopy":"cb4ecd9c","shaMin":"c9bf0bbb","namesInSrc":3428,"namesInMin":2174,"namesOnlyInMin":91,"unexplained":[],"localRenames":["right2","pill2","out2","cal2"],"globalsInSrc":59,"globalsMissingInMin":0,"titleKept":true,"minifyLine":"§PAYLOAD-MIN viewer/panels.js raw 173.2→99.8KB gz 54.3→30.6KB","firstLineSame":"var I
+§FACTS cmd s4_old_full exit=1 (expected 1) lines=135 secs=82 $ MANIFEST_W_OLD=/tmp/wt-film6-old node scripts/tests/witness_manifest_roundtrip.js
+§FACTS cmd s4_0 exit=1 (expected 1) lines=6 secs=76 $ MANIFEST_W_OLD=/tmp/wt-film6-old node scripts/tests/witness_manifest_roundtrip.js | grep -E "MANIFEST_CLAIM id=C(2[6-9]|
+§FACTS cmd s4_1 exit=0 (expected 0) lines=1 secs=78 $ node scripts/tests/witness_manifest_roundtrip.js | tail -1 | grep -o "claims=[0-9/]* red=[0-9/]*"
+§FACTS s4 {"oldFailed":6,"claims":"51/51","red":"31/31"}
+§FACTS cmd close_hand_viewer exit=0 (expected 0) lines=1 secs=0 $ git show fc2f8216^:viewer/modules.json | grep -c '"v":' || true
+§FACTS cmd close_now_viewer exit=0 (expected 0) lines=1 secs=0 $ git show fc2f8216:viewer/modules.json | grep -c '"v":' || true
+§FACTS cmd close_hand_erp exit=0 (expected 0) lines=1 secs=0 $ git show fc2f8216^:erp/modules.json | grep -c '"v":' || true
+§FACTS cmd close_now_erp exit=0 (expected 0) lines=1 secs=0 $ git show fc2f8216:erp/modules.json | grep -c '"v":' || true
+§FACTS cmd close_hand_modeller exit=0 (expected 0) lines=1 secs=0 $ git show fc2f8216^:modeller/modules.json | grep -c '"v":' || true
+§FACTS cmd close_now_modeller exit=0 (expected 0) lines=1 secs=0 $ git show fc2f8216:modeller/modules.json | grep -c '"v":' || true
+§FACTS cmd close_check exit=0 (expected 0) lines=1 secs=12 $ node scripts/gen_manifest.js --check | grep MANIFEST_CHECK
+§FACTS cmd close_witness exit=0 (expected 0) lines=127 secs=77 $ node scripts/tests/witness_manifest_roundtrip.js
+§FACTS cmd close_status exit=0 (expected 0) lines=0 secs=0 $ git status --short
+§FACTS change {"handBefore":767,"handAfter":0,"checkLine":"§MANIFEST_CHECK apps=3 files=58 identical=58/58 sites=857 tag=726 asset=0 inline=47 lazy=84 precache=908 order_check=PASS deps_declared=265 unreviewed=0 source=viewer,erp,modeller written=0 verdict=PASS","sites":857,"apps":3,"checkVerdict":"PASS","witness":{"line":"§MANIFEST_ROUNDTRIP apps=3 source=viewer,erp,modeller files=58 sites=857 tag=726 asset=0 inline=47 lazy=84 precache=908 identical=58/58 driven=853/853 sw_vm=3/3 claims=51/51 red=31/31 outside_owned=3/3 frozen=1 unresolved=1 order_check=PASS deps_declared=265 unreviewed=0 owner_gap=335 witness_gap=276 pinned=5 verdict=PASS","claims":"51/51","red":"31/31","outsideOwned":"3/3","verdict":"PASS"},"outsideFiles":["capex/index.html","import_own.js","index.html"],"pages":2,"loaders":1,"dirtyAfter":0}
+§FACTS credentials {"ootb":{"3385":"MERGED feat(manifest): B3-OUT — outside referrers written from the app lists, gallery frozen, bump.js regex path deleted","3402":"MERGED feat(manifest): B4-HASH — ?v= is a content code, one press kept"},"decisions":{"1116":"MERGED prompts: CODE_ARCHITECTURE_DESIGN B3-Q2 answered (outside pages in now)","1117":"MERGED prompts: CODE_ARCHITECTURE_DESIGN B3-Q3 answered + B3-Q2 measurement corrected","1118":"MERGED prompts: CODE_ARCHITECTURE_DESIGN B3-OUT BUILD SPEC","1128":"MERGED prompts: CODE_ARCHITECTURE_DESIGN B3-OUT addendum (B3-OUT-Q1 answered)"}}
+§FACTS OK   CH1: #3302 changed 31 files; its number appears in 8 places (all added lines of the commit), 2 cache versions changed in sw.js files
+§FACTS OK   CH1b: index.html asks for ?v=11 (line 184), viewer.html for ?v=12 (line 1027)
+§FACTS OK   CH1b: the commit that raised the viewer page touched viewer/viewer.html and not index.html, in November (2026-11-08); the BEFORE tree's manifest check said PASS
+§FACTS OK   CH2: the edited file viewer/panels.js differs in 2 diff lines; the check without a press refuses (exit 1: §MANIFEST_FAIL viewer/panels.js changed but viewer/viewer.html:910 still says ?v=cb4ecd9c;)
+§FACTS OK   CH3: the press check passed (PASS), the write ran, viewer/sw.js CACHE_VERSION 1791 -> 1792
+§FACTS OK   CH4: the code in viewer/viewer.html:910 (5225deef) equals sha256sum of viewer/panels.js (5225deef)
+§FACTS OK   CH4: the hand-typed code 12345678 is refused: exit 1, names viewer/viewer.html:910 and a fix command (node scripts/bump.js viewer/panels.js --write)
+§FACTS OK   the AFTER tree is clean again after the undo
+§FACTS OK   CH5: no bundler config in the tree (0), no bundler among 3 dependencies, build script N
+§FACTS OK   last card: 767 hand-kept numbers in the three lists before, 0 after; §MANIFEST_CHECK apps=3 files=58 identical=58/58 sites=857 tag=726 asset=0 inline=47 lazy=84 precache=908 order_check=PASS deps_declared=265 unreviewed=0 source=viewer,erp,modeller written=0 verdict=PASS
+§FACTS OK   last card: the witness on the merged tree: claims 51/51 red 31/31 outside_owned 3/3 verdict PASS
+§FACTS OK   credentials: bim-ootb #3385 and #3402 and BIMCompiler #1116 #1117 #1118 #1128 are MERGED
+§FACTS OK   PROMO s1: the deploy's minify pass keeps every global name (59 window.* names, missing 0), renames only 4 shadowed locals (right2,pill2,out2,cal2), unexplained new names 0, keeps the heading string; 177308 -> 102200 bytes; §PAYLOAD-MIN viewer/panels.js raw 173.2→99.8KB gz 54.3→30.6KB
+§FACTS OK   PROMO s4: the six new claims C26-C31 all fail on the OLD tree (6 of 6), the typed run on the new tree reads claims 51/51 red 31/31
+§FACTS every typed/evidence command exited as expected {"b1_commit":0,"b1n_0":0,"b1n_1":0,"b1n_2":0,"b1b_0":0,"b1b_commit":0,"b1b_diff":0,"b1b_check":0,"sha_before":0,"tags_before":0,"edit_diff":0,"check_stale":1,"sha_edited":0,"press_check":0,"press_write":0,"b3_stat":0,"b4_0":0,"tags_after":0,"b4_1":1,"b4_full":1,"b4_line":0,"restore":0,"b5_bundler":0,"b5_pkg":0,"b5_wc":0,"s1_npm":0,"s1_copy":0,"s1_minify":0,"s4_old_full":1,"s4_0":1,"s4_1":0,"close_hand_viewer":0,"close_now_viewer":0,"close_hand_erp":0,"close_now_erp":0,"close_hand_modeller":0,"close_now_modeller":0,"close_check":0,"close_witness":0,"close_status":0}
+§FACTS VERDICT PASS
+exit=0
