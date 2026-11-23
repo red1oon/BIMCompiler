@@ -21,26 +21,17 @@ TS, TD1, TD2 = texture_maps(inkg)              # vertical walls: rows = page y
 TST, TD1T, TD2T = texture_maps(inkg.T.copy())  # horizontal walls: rows = page x
 for stale in ('walls.json', 'walls_all.json'):   # a VACUOUS run must not leave an older run's output to be read downstream
     if os.path.exists(os.path.join(work, stale)): os.remove(os.path.join(work, stale))
-greens = [c for c in C['chains'] if c['verdict'] == 'GREEN']
-def anchors(c):
-    """a chain anchors walls only if it begins AND ends with a wall segment (both exterior walls are in it):
-    wall = below the chain's largest value-ratio gap; needs >= 3 segments (§43.6, a 2-segment chain at 400 dpi
-    made 4.625 m a 'wall')"""
-    v = [s['v'] for s in c['segs']]
-    if len(v) < 3: return False
-    sv = sorted(v); k = int(np.argmax(np.diff(np.log(sv)))); cut = (sv[k] + sv[k + 1]) / 2
-    return v[0] < cut and v[-1] < cut
+from raster_body import anchors, anchor_chains, body   # §43.16 one owner of the body frame
+greens, _gh, _gv = anchor_chains(C)
 for c in greens:
     if not anchors(c): log(f"§RASTER_ANCHOR_SKIP dir={c['dir']} segs={[s['txt'] for s in c['segs']]} reason=not_wall_bounded")
-gh = sorted([c for c in greens if c['dir'] == 'H' and anchors(c)], key=lambda c: -len(c['segs']))
-gv = sorted([c for c in greens if c['dir'] == 'V' and anchors(c)], key=lambda c: -len(c['segs']))   # most segments anchors
+gh, gv = _gh, _gv   # most segments anchors
 if not gh or not gv:
     log(f"§RASTER_W-S7 verdict=VACUOUS green_H={len(gh)} green_V={len(gv)} (need one GREEN chain each way)"); sys.exit(0)
 KH, KV = C['scale_px_per_m']['H'], C['scale_px_per_m']['V']
 ch, cv = gh[0], gv[0]
 # plan body = outer ticks of the two GREEN chains (page px)
-X0, X1 = ch['ticks_x'][0], ch['ticks_x'][-1]
-Y0, Y1 = cv['ticks_y'][0], cv['ticks_y'][-1]
+X0, X1, Y0, Y1 = body(ch, cv)
 log(f"§RASTER_BODY x={X0}..{X1} y={Y0}..{Y1} size_m={ (X1-X0)/KH:.3f}x{(Y1-Y0)/KV:.3f} chains_overall={ch['overall']}x{cv['overall']}")
 
 def page_segs(c):
