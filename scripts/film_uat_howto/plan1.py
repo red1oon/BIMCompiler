@@ -16,6 +16,17 @@ for s in SCENES:
     s['beats'] = [(b[0], b[1], NEW.get(b[0], b[2])) + tuple(b[3:]) for b in s['beats']]
 for s in SCENES:   # the pack's own folders (sheets, marked, reference: the zip as the guide's link serves it) said when the folder opens
     if s['id'] == 's4': s['beats'].insert(2, ('b4b2', 's4_inside', "Inside: the sheets as drawn, the same sheets marked, and the reference database."))
+# rc1 (§5.28): silences 10.2 s (s1 end -> s2's table) and 21.2 s (s13's log in, before its first line) broke the 8 s bar: lines for what is on screen there, on the take's own events
+ADD = {
+  's2':  [('b2_0', 's2_start', "Close the downloads tab, Control W, and scroll down to What you need.")],
+  's13': [('b13_0', 's13_login', "A3.1 by its window: log in to iDempiere as GardenAdmin."),
+          ('b13_0b', 'click:OK (Chrome)', "Chrome warns about the well-known demo password. Press OK: it is Chrome's window, not iDempiere's."),
+          ('b13_0b2', 'at:click:OK (Chrome)|click:OK (role)|0.6', "Then the role window: press OK."),   # rc2: 8.4 s and 8.9 s still silent here
+          ('b13_0c', 'click:OK (role)', "The wait for the Home tab is sped up."),
+          ('b13_0d', 'at:click:OK (role)|click:the search box|0.6', "Home opens: the same tab that D9 reads at the very end.")],
+}
+for s in SCENES:
+    s['beats'] = ADD.get(s['id'], []) + s['beats']
 for k in ('IDLE_X', 'IDLE_KEEP', 'CAMERA', 'SP'):
     if hasattr(plan2, k): globals()[k] = getattr(plan2, k)
 TITLE = dict(kicker='UAT GUIDE · HANDS ON · PART I', line1='From the drawings to a priced model', line2='mark them, convert them, check your run', note='Every click is real: the real browser, the real file windows.')

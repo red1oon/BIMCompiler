@@ -30,7 +30,7 @@ B41 = DO('B4.1').split(' (the two parts')[0]; B44 = DO('B4.4'); L3S = DO('L3').s
 WORDS = 'zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen twenty'.split()
 def W(n): n = int(n); return WORDS[n] if n < len(WORDS) else str(n)
 _c = __import__('json').loads(re.search(r'\{"[a-z]+":\d+(?:,"[a-z]+":\d+)*\}', ROW('L2')).group(0))
-L2SAY = '%s project, %s phases, %s tasks, %s lines' % (W(_c['projects']), W(_c['phases']), W(_c['tasks']), W(_c['lines'])) + (', and first the Shed\'s %s products' % W(_c['products']) if _c.get('products') else '')
+L2SAY = '%s phases, %s tasks, %s lines' % (W(_c['phases']), W(_c['tasks']), W(_c['lines'])) + (', after the Shed\'s products' if _c.get('products') else '')   # §5.27 rc2: the line held l2 12.9 s, cut
 _m = re.search(r'\*\*(\d+)\*\* and \*\*(\d+)\*\*', ROW('D1')); D1T, D1A = W(_m.group(1)), W(_m.group(2))
 _m = re.search(r'\*\*Within (\d+), Over (\d+), Not started (\d+)\*\*', ROW('D2b')); D2B = (W(_m.group(1)), W(_m.group(2)), W(_m.group(3)))
 D3P = W(re.search(r'\*\*(\d+) %\*\*', ROW('D3')).group(1))
@@ -63,7 +63,7 @@ SCENES = [
   dict(id='l2', chip='B4 · L2', strip='press **› ERP**, type your iDempiere password in the window *Sign in to iDempiere*, and press **Push**', span=('l2_start', 'l2_end'), beats=[
     ('l2a', 'l2_push',   "Press ERP. A window asks you to sign in to your iDempiere. Your user and ids are already filled in."),
     ('l2b', 'l2_pushpw', "Type the password, and push. Chrome shows its own password windows: OK, then no thanks."),
-    ('l2c', 'l2_end',    "The status line names the new iDempiere project: %s. The link names it too, with the same number." % L2SAY)]),
+    ('l2c', 'l2_end',    "The status line names the new project: %s. The link shows its number." % L2SAY)]),
   dict(id='l3', chip='B4 · L3', strip=L3S, span=('l3_start', 'l3_end'), speed=8, beats=[   # sped x8: the iDempiere log in again (c0 shows it at normal speed); the line holds the Project window
     ('l3a', 'l3_start',   "Click the link, and log in to iDempiere."),
     ('l3a2', 'l3_login',  "Your user and password, and tick Select Role. Chrome's own windows: OK, then no thanks."),   # §5.18 L8: rc5 silence 8.02 s here
