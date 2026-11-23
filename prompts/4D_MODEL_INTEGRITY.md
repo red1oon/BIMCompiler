@@ -6025,3 +6025,30 @@ is within the owner's GAP of the element (it touches what it hangs from). Share 
   (2026-11-22..2027-01-19), one piece placed; `capOps=8985/8988` — the 3 pieces outside the captured schedule carry those dates (`§GHOST_GROUND triggerT=-2.35`). The film
   jumps the gap by frame 60. (3) **JKR lags the copy by up to 5.3 %** at every sample, larger than Hospital / Terminal / Jebel (≤1.4 %); moving the day origin by 4-12 h moves
   the worst to 4.3-4.8 %, so it is not only the unpinned origin. Not looked at: the picture.
+### Q.68 HI-RES 4D5D BAKES + THE FILM "BAKE OF 3 PROJECTS" (2026-11-23, owner: *"build up bakes again but with those panels that shows 4D5D, compass, and measures without reveal and load path. Escape route is OK. High res."* · *"combine them together With cards 'Bake of 3 projects', and for each project credentials"* · *"narrate male only voice sparingly that each project behaves according to abstract code without customization"* · *"Card should be the colorful 2 tone CH usual. Last card can be the usual prior art and credentials"* · *"Need not remove parts during splicing"* · *"Modify the Shed path so it does not end up outside but turns in or around midway"*) — §Q.66 stays the resume block
+- **Bakes** (bim-ootb main `452797e5`, 1920x1080, 24 fps, `--buildup --4d5d --ledger --cost --measure --sun-compass --escape-route --no-reveal --no-load-path --no-clash
+  --no-storey-reveal --no-drawn-services`), all `fileOk=true unconverged=0`, ffprobe = bake frames; `~/Downloads/{Shed,JKR,Jebel}_buildup_4D5D_1920x1080_24fps_2026-11-23*.mp4` (not pushed):
+
+  | building | path | frames | compass | escape route | ledger / cost / HUD overlap | `§HUD_LAYOUT_STABLE` |
+  |---|---|---|---|---|---|---|
+  | Shed (ring) | authored ring, below | 2,281 | built (owner's geocode) | 20.68 m | PASS | FAIL |
+  | JKR | derived orbit (`--override {}`) | 883 | INCONCLUSIVE — no site in the file, not invented | 4.62 m | PASS | FAIL |
+  | Jebel | its saved 4-stick path | 2,074 | built (its IFC site) | 82.76 m | PASS | FAIL |
+
+- **Shed fixes:** the first Shed bake had no compass and no escape route (`§ESCAPE_ROUTE_BUILD FAIL metadata-absent`, `§SUN_COMPASS INCONCLUSIVE`). `SHED_extracted.db` is the same
+  building as `Shed_film.db` (same IfcBuilding / storey GUIDs, same placement), so lines 2-18 of `Shed_film.db.sql` (room, walkable raster, site) were copied into
+  `SHED_extracted.db.sql` — bim-ootb **#3411, merged** (after the offsets, **#3410, merged**).
+- **Shed ring path (presentation, owner's ask):** `scripts/film_bake_3_projects/shed_ring.py` — 8 sticks on an ellipse 14 m outside the barn's walls (`element_world_bbox`), eye 8 m,
+  each pinned (`lookAt`) on the barn's middle; three.js coords via `modelOffset` = the viewer's own `§CENTRES_RESULT` (scene.js `ifc2three`). Passed as `--override` (the
+  `cinema_path` table has no lookAt column, so it is not saved into the file). **Measured from the pose log** (full film, 6 fps, software GL): ring walk 394 poses, camera
+  23.3-35.1 m from the barn's middle, never inside its box, azimuth swept 289°, aim within 20° of the barn except 5 poses (frames 46-50, the spin→walk hand-over, max 94°).
+  Film 95 s; build tops out at 0.92 (`§CPE_BUILDUP_TOPOUT`), so the walk-around is the build-up.
+- **⚠ `§HUD_LAYOUT_STABLE panelHFormula=FAIL` on 4 of 5 bakes today, NOT diagnosed.** PASS: Shed first bake (no escape route), HHS + Terminal 2026-11-22 (escape route on, load path on).
+  FAIL: JKR, Jebel, Shed withRoute, Shed ring (escape route on, load path off). `§HUD_OVERLAP_WORST` none on every frame of every film. JKR's logged panel heights 456-660 all
+  fit the formula for 1-7 rows; the witness keeps only a boolean, so which state failed is not in the log (`maxq_hud_layers.js` `_hudPanelHCheckOnChange`). A first guess
+  (the escape card's `boxScale` 1.22 missing from the witness formula) is contradicted by HHS/Terminal passing with the route on.
+- **The film:** `~/Downloads/Bake_of_3_projects_1920x1080_24fps_2026-11-23.mp4` — 6,234 frames (expected 6,235), 259.8 s; title card, one PLAYBOOK C two-tone chapter card per project
+  (Shed = "SYSNOVA / Poultry Barn project", JKR = "A local Malaysian / building project" — never named, Jebel = "Jebel / Palm Jebel Ali Mosque"), each film WHOLE (owner: no cuts), end card
+  = prior art (PRIOR_ART_BIM_FILM_2026-09-27.md + docs/4DGenerator.md §2.2-2.3) + credits. Voice: Kokoro am_michael, one line per card only, ≈ −17.5 LUFS per card. The "nothing
+  customised" line is gated: `§MONTAGE_SAME_CODE` = same commit + same template v1.3.0 on all three logs, PASS. Card numbers are read from each bake log (pieces = the build-up's
+  own total: Jebel hi-res 6,467 vs 6,461 in the low-res bake — not looked into). Scripts: `scripts/film_bake_3_projects/` (montage.py, cards.py, shed_ring.py). Not looked at: the picture.
