@@ -17,7 +17,7 @@ const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'uatshed-'));
 const cli = cp.spawnSync('node', [path.join(ROOT, 'modeller/dxf2bim_cli.js'), '--sheets'].concat(NAMES.map(x => SHD + x + '.dxf'), ['--out', TMP, '--complete', '--ifc', '--accept-suggestions', '--set', 'SHED', '--level', '0',
   '--datum', '1S_ELEV:0.6096@-4446.6', '--datum', '1N_ELEV:0.6096@-3895.2', '--datum', '2_ELEV:0.6096@-4515.7264', '--datum', '7_ELEV:0.6096@-3766.442', '--datum', '8_SECTION:0.6096@-3726.416',
   '--layer', 'plan:Col=column', '--layer', 'elev:0=column@1S_ELEV', '--layer', 'plan:Fo=footing', '--layer', 'plan:Dim=beam@3_BEAM', '--layer', 'elev:Wall=panel', '--layer', 'elev:Rod=fan', '--layer', 'elev:Dim=net', '--layer', 'plan:Rod=doorswing@0_FLOOR', '--layer', 'section:Fo=bar', '--layer', 'elev:Win=elevdoor',
-  '--bodyz', 'footing=-1.4478,-1.143', '--exclude', '3_BEAM:-20880,-5600,-20845,-4950', '--bodyz', 'beam=3.098794,3.352794']), { encoding: 'utf8' });
+  '--exclude', '3_BEAM:-20880,-5600,-20845,-4950', '--bodyz', 'beam=3.098794,3.352794']), { encoding: 'utf8' });   // footing: the drawing's default (PR-BODYZ-CHAIN), owner 2026-11-24
 const MDIR = path.join(TMP, 'marked'), marked = fs.existsSync(MDIR) ? fs.readdirSync(MDIR).filter(f => /\.dxf$/i.test(f)).sort().map(f => path.join(MDIR, f)) : [];
 log('§UAT_SHOT cli rc=' + cli.status + ' marked=' + marked.length + ' ' + marked.map(f => path.basename(f)).join(','));
 if (marked.length !== 9) { log('§UAT_SHOT FAIL the CLI did not write 9 marked sheets'); process.exit(1); }
