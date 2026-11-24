@@ -496,10 +496,9 @@ built-in pre-release test harness (§15).
 - **Click into a field** and the **Tool Tip** panel on the right shows its name, its description and its
   longer help. With nothing focused it says *Place your cursor into a field on the screen*. Click the panel's
   title to fold it.
-- **How To**, under the Tool Tip, shows the steps for the window you have open (Sales Order, Shipment,
-  Invoice, Payment), taken word for word from the trade-cycle steps of this guide
-  ([The standard flow](#the-standard-flow-order-to-cash-procure-to-pay-books-to-reports)), with a link to the section. A window name in
-  the steps opens that window.
+- **How To**, under the Tool Tip, explains the window you have open. Every window of the trade cycle and the
+  books has one (see [The Help panel](#the-help-panel-what-to-have-in-place-and-a-check-before-you-complete) below).
+  A window name in it opens that window.
 - **Ask a question** in the box at the top of How To, in plain words, then press Enter, for example
   *How do I close a Sales Order?* The answer card names the window (click it to open), the document action,
   the statuses it is allowed from, the command line that does it where one is offered, and the guide
@@ -516,6 +515,63 @@ built-in pre-release test harness (§15).
 > *Proven by* **W-FIELD-HELP** (every displayed field's text equals the real legacy `AD_Field_v`, 15,849 of
 > 15,849), **W-HELP-SHOWCASE** (packs extracted from the published packs, the question sets in English and
 > Chinese, the links) and **W-ERP-ASK** (the same answers at the command line, and the language order).
+
+### The Help panel: what to have in place, and a check before you complete
+
+**The idea.** A good guide tells you what must be in place *before* you act, not after something goes wrong.
+The Help panel does that for every window. With the **Friendly** plugin switched on, it also checks the
+document in front of you and shows what would stop it.
+
+**Opening it.** Press **?** on the right-hand strip. The panel opens on the right. Its top line links to this
+guide (the section for the window you are on), the guided **Tour**, and **About / Run it yourself**.
+
+**What every window shows (for everyone).** The window's own description comes first, exactly as in
+iDempiere. Below it:
+
+- **Before you start**: the records that must exist first, each a link to the window where you make it
+  (for a Sales Order: document type, customer and address, warehouse, price list, sales rep, payment term).
+- **Do it**: the tabs in the order you fill them, then the action that finishes the job.
+- **What Complete does**: what Complete makes and changes, by kind of document. For example, a POS Order
+  also creates the shipment and the invoice; a Standard Order reserves the stock.
+- **What can stop Complete**: the reasons, in iDempiere's own words, such as *Period Closed*.
+
+This text is read from iDempiere's own rules, and each line traces to the code it comes from. iDempiere users
+get the same text in their own system through a small help script ([how to apply it](https://github.com/red1oon/bim-ootb/tree/main/erp/legacy)).
+
+**Check before you complete (Friendly plugin).** Press the light-bulb **Check** in the panel. It runs the same
+Complete on your document as a trial, and nothing is saved. It then lists everything that would stop it, not
+only the first thing:
+
+> **Before you complete: 2 to fix**
+> 1. Period Closed
+> 2. Business Partner is on Credit Hold - Open Balance=269.23, Credit Limit=10000 · **Open**
+
+The field each problem is about turns red (here *Date Ordered* and *Business Partner*), and **Open** takes you
+to the record that fixes it. iDempiere tells you these one at a time, only after you press Complete.
+
+**▶ Fix.** When one field value would clear a problem, the panel offers it, for example
+*▶ Fix 1: Date Ordered → today*. Pressing it fills that field as if you had typed it, and the panel checks
+again. Some rules:
+
+- A fix is offered only after the check has tried it and seen the problem go away.
+- It changes only a field of the document you are on. It never completes, posts or runs a process.
+- Nothing is saved: **Save** keeps it, **Undo Changes** puts the old value back.
+
+**Checking while you work.** With the Friendly plugin on, a saved document is checked by itself when you open
+it and after each save. The number of problems shows on **?** (and on **⋯** while the strip is folded).
+For a problem on a line, **Show line N** jumps to it, and **Show lines with issues** shows only those lines
+(**Show all lines** brings the rest back). The switch *Checking while you work* in the panel turns it off.
+
+**Not covered yet.** Ship/Receipt Confirm and Requisition say that no check is available for them yet. If the
+form has unsaved changes, **Check** asks you to save first.
+
+> *Proven by* **W-HELP-PEEK**. After every check the data is byte-for-byte the same, and the check always agrees
+> with what Complete then does. It also checks that every problem is listed in iDempiere's order, that the fields
+> are marked on screen, and that **Open** lands on the right record. Each fix is tried before it is offered, and
+> saving it lets Complete pass. Without the plugin there is no check at all.
+> *The same idea elsewhere:* Microsoft Business Central checks journals and documents while you work and
+> offers recommended fixes. SAP's purchase order has a **Check** button. Here the check runs the very same
+> Complete, so the two cannot disagree.
 
 #### Developer note: how the help is organised in its own files
 
