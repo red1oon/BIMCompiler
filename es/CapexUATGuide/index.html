@@ -3967,11 +3967,11 @@
 </tr>
 <tr>
 <td>Revision</td>
-<td><strong>2026-11-24 (m)</strong></td>
+<td><strong>2026-11-24 (n)</strong></td>
 </tr>
 <tr>
 <td>Status</td>
-<td>Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately and stays as signed. Since then, steps were corrected: the change list after this cover (items 22 to 31) names each step and what changed.</td>
+<td>Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately and stays as signed. Since then, steps were corrected: the change list after this cover (items 22 to 32) names each step and what changed.</td>
 </tr>
 <tr>
 <td>Prepared and issued by</td>
@@ -3997,6 +3997,10 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>2026-11-24 (n)</td>
+<td>B0 from defaults: check, change only if wrong; the footing from the Footing Section; B3.1, B4, L3, D new figures, per rate pack; new reference pack (items 5, 32)</td>
+</tr>
 <tr>
 <td>2026-11-24 (l), (m)</td>
 <td>Three notes moved into their steps: A2.2 and chapter C log in, the PDF download, B3.1 and B4.4 (items 2, 4, 7); B0.6 says why the datums are typed</td>
@@ -4102,8 +4106,8 @@
 <td>5</td>
 <td>B3.1</td>
 <td>The amount in brackets is the rate pack's second currency (RM), whatever language you choose. Showing your local currency for the language you choose is <strong>ongoing development</strong>.</td>
-<td>Noted, in development</td>
-<td>Compare the <strong>USD</strong> figure</td>
+<td><strong>Done</strong> (revision 2026-11-24 (n)): the total is priced with your language's rate pack (Bangla: the Bangladesh pack, BDT first, USD in brackets), and the Run Checker judges B3.1 against your pack</td>
+<td>Compare the figure of your pack in B3.1</td>
 </tr>
 <tr>
 <td>6</td>
@@ -4202,6 +4206,13 @@
 <td>Each <strong>Issue to Project</strong> opens its own window tab; after several, the first tabs are pushed off the strip.</td>
 <td><strong>Corrected in the step</strong> (2026-11-22 (c))</td>
 <td>Follow the step: it now says this</td>
+</tr>
+<tr>
+<td>32</td>
+<td>B0, B3.1, B4, L3, D, B5</td>
+<td><strong>B0 reads its settings from the drawings.</strong> The set name, the five level datums, nine of the ten layer meanings, the beam and footing heights and the expansion-joint box now arrive as defaults: you check each one and change it only if it is wrong; the one value you set is the elevation column layer (B0.4). The footing height now follows the drawings: the Footing Section dimensions the footing top 5'-0" below the finished ground with a 12 in footing, where this guide used to type 45 in. The deeper footings make the 32 column pieces below ground 12.192 m longer in all, so at the same rates the total is <strong>USD 361,437.82</strong> on the US pack (was 355,097.98) and <strong>BDT 15,342,507.97</strong> on the Bangladesh pack; L3 and chapter D follow. New reference pack <code>Shed_UAT_pack_20261124.zip</code> (B5.1).</td>
+<td>Corrected in this revision</td>
+<td>Use the new reference pack. A run made before with the 45 in footing still marks PASS against the earlier pack <code>Shed_UAT_pack_20261122.zip</code></td>
 </tr>
 <tr>
 <td>31</td>
@@ -4601,7 +4612,7 @@
 </tr>
 <tr>
 <td>The <strong>reference pack</strong> (to mark your run, chapter B5)</td>
-<td><a href="https://objectstorage.ap-kulai-2.oraclecloud.com/n/ax3cp6tzwuy2/b/bim-ootb/o/uat/Shed_UAT_pack_20261122.zip">Shed_UAT_pack_20261122.zip</a>: the nine sheets as B00 exports them, the supplied marked copies, the reference Viewer database and the expected values</td>
+<td><a href="https://objectstorage.ap-kulai-2.oraclecloud.com/n/ax3cp6tzwuy2/b/bim-ootb/o/uat/Shed_UAT_pack_20261124.zip">Shed_UAT_pack_20261124.zip</a>: the nine sheets as B00 exports them, the supplied marked copies, the reference Viewer database and the expected values</td>
 </tr>
 <tr>
 <td>The <strong>UAT Run Checker</strong></td>
@@ -5058,7 +5069,7 @@
 <tr>
 <td>B00.3</td>
 <td>Send the nine <code>.dxf</code> files to the testers</td>
-<td>The testers open them in B0.1, which is the check: <strong>All defaults</strong> must list <strong>34</strong> yellow rows, then <strong>113</strong> after B0.2. Other counts mean the export differs from the drawings this guide was proven on: check the settings above and export again</td>
+<td>The testers open them in B0.1, which is the check: <strong>All defaults</strong> must list <strong>34</strong> yellow rows, then <strong>133</strong> after B0.2. Other counts mean the export differs from the drawings this guide was proven on: check the settings above and export again</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 </tbody>
@@ -5113,7 +5124,7 @@
 <p><em>Proven by measurement (witness W-UAT-SHED-SOURCE, 2026-11-15) with files written in each DXF version by a DXF library, not by BricsCAD itself: ASCII 2000 to 2018 give the same model, 512 bodies, identical; R12, binary DXF, the whole drawing in one file, and a file without its units give no model. The settings above follow from that; the DXFOUT options are quoted from BricsCAD's help.</em></p>
 <h3 id="b0-from-the-drawings-as-drawn-to-the-marked-set">B0 · From the drawings as drawn to the marked set<a class="headerlink" href="#b0-from-the-drawings-as-drawn-to-the-marked-set" title="Permanent link">&para;</a></h3>
 <p><em>No export from your drafter yet?</em> The reference pack's <code>sheets/</code> folder holds the nine sheets exactly as B00 writes them; start B0 from those.</p>
-<p>The nine sheets as drawn carry no settings: the Modeller cannot tell which CAD layer is a column, how deep the footings go, or where the expansion joint is. In this step you tell it, in the <strong>Drawing metadata</strong> panel, and save the result as nine <code>…_marked.dxf</code> copies. Every value below is read from the drawings (the source is named in each row); nothing is invented. Type the numbers exactly as written.</p>
+<p>The nine sheets as drawn carry no settings. The Modeller reads them from the drawings: the set name from the floor plan's title, the level datums from the <em>PL</em> lines, the beam and footing heights from the elevations and the Footing Section, and the expansion joint from the beam layout. It shows each one as a <strong>default</strong>, in the <strong>Drawing metadata</strong> panel, with the rule and the drawing it came from. <strong>You do not type these. You check each default against the drawing and change it only if it is wrong.</strong> Then you save the result as nine <code>…_marked.dxf</code> copies. Nothing is invented: a value the drawings do not settle is left open and named, never guessed.</p>
 <p>The panel has sections you open by clicking their title: <strong>All defaults</strong> (the yellow list), <strong>Sheets</strong> (one card per sheet), <strong>Layers</strong>, <strong>Body heights</strong>, <strong>Exclude areas</strong>. The badge at the top says <strong>Blocked · n</strong> (n things still missing) or <strong>Qualifies</strong>.</p>
 <table>
 <thead>
@@ -5134,25 +5145,25 @@
 <tr>
 <td>B0.2</td>
 <td>In <strong>All defaults</strong>, press <strong>Accept stated + read</strong></td>
-<td>The list grows to <strong>113</strong> yellow rows: the grid lines, level lines and roles that follow from the first ones</td>
+<td>The list grows to <strong>133</strong> yellow rows: the grid lines, level lines and roles that follow from the first ones</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
 <td>B0.2b</td>
-<td>Press <strong>Accept all</strong></td>
-<td><strong>0</strong> yellow rows. The badge still reads <strong>Blocked</strong> with a smaller number (48 or 89). In <strong>Sheets</strong>, eight cards now show a role (3 PLAN, 4 ELEV, 1 SECTION); <code>5_DETAILS</code> is the notes sheet</td>
+<td>Press <strong>Accept all</strong>, then press it once more</td>
+<td>The first press leaves <strong>14</strong> yellow rows (the defaults that follow from the ones just taken, such as the beam height and the exclude box), the second <strong>0</strong>. The badge reads <strong>Qualifies</strong>. In <strong>Sheets</strong>, eight cards now show a role (3 PLAN, 4 ELEV, 1 SECTION); <code>5_DETAILS</code> is the notes sheet</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
 <td>B0.3</td>
-<td>In <strong>Sheets</strong>, open any card. In its <strong>Set</strong> field replace <code>BUILD-NAME</code> with <strong>SHED</strong> and press Enter</td>
-<td>Every sheet's <strong>Set</strong> reads <strong>SHED</strong> (typing it once fills all nine)</td>
+<td>In <strong>Sheets</strong>, open any card and check its <strong>Set</strong> field</td>
+<td>It already reads <strong>SHED</strong> on all nine sheets, from the floor plan's title <em>Shed Floor Plan</em>. Nothing to type. (Only if it is wrong: type the name once and press Enter; it fills all nine)</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
 <td>B0.4</td>
-<td>Open <strong>Layers</strong>. Under each heading, pick the meaning of each CAD layer from its list, as in the table below. Where the table says <em>one sheet only</em>, press the small arrow at the right of the layer's row (<strong>Type this layer sheet by sheet</strong>) and pick the meaning on that sheet's line only</td>
-<td>After <strong>PLAN · Col = column</strong> the badge reads <strong>Blocked · 1</strong>; after <strong>ELEV · Wall = panel</strong> it reads <strong>Qualifies</strong>. When all ten are set, <strong>All defaults</strong> shows <strong>14</strong> yellow rows (sizes the Modeller assumes, such as the fan depth)</td>
+<td>Open <strong>Layers</strong> and check each layer's meaning against the table below: nine of the ten are already set, each row reading <em>from drawing</em> with the rule that read it. Set the one that is not: under <strong>ELEV sheets</strong>, layer <code>0</code>, press the small arrow at the right of its row (<strong>Type this layer sheet by sheet</strong>) and pick <strong>column</strong> on the <code>1S_ELEV_SOUTH</code> line only. (No drawing says which elevation gives the columns' height, so the Modeller leaves it to you.)</td>
+<td><strong>All defaults</strong> shows <strong>3</strong> yellow rows (the sizes that follow from that column layer). The badge reads <strong>Qualifies</strong></td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
@@ -5163,20 +5174,20 @@
 </tr>
 <tr>
 <td>B0.5</td>
-<td>Open <strong>Body heights</strong>. It lists <strong>footing</strong> and <strong>beam</strong> as waiting (no elevation shows them). Type <strong>footing</strong>: z0 <code>-1.4478</code>, z1 <code>-1.143</code>, <strong>Add</strong>. Type <strong>beam</strong>: z0 <code>3.098794</code>, z1 <code>3.352794</code>, <strong>Add</strong></td>
-<td>Two rows: <code>@BODYZ=footing,-1.4478,-1.143</code> and <code>@BODYZ=beam,3.098794,3.352794</code>. The badge still reads <strong>Qualifies</strong></td>
+<td>Open <strong>Body heights</strong> and check its two rows against the drawings (the note below says where each comes from)</td>
+<td>Two rows, nothing typed: <code>@BODYZ=beam,3.098794,3.352794 from drawing · PR-BODYZ-DRAWN</code> and <code>@BODYZ=footing,-1.8288,-1.524 from drawing · PR-BODYZ-CHAIN</code>. The badge reads <strong>Qualifies</strong>. (Only if a row is wrong: type that kind's z0 and z1 and press <strong>Add</strong>; your figures replace the default)</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
 <td>B0.6</td>
-<td>In <strong>Sheets</strong>, open each elevation and the section card in turn. Under <strong>Level datums (@Z)</strong>, type the height <code>0.6096</code> in the first box and the card's y (table below) in <strong>y where drawn</strong>, then <strong>Add</strong>. (Why: these five datums change no element of the model, measured: the element count stays the same with or without them. They make your marked copies equal the supplied ones, which the Run Checker compares mark for mark in B5, and Arrange counts them in B2.3.)</td>
-<td>Each of the five cards lists a new <code>@Z=0.6096</code> row beside the two it read itself (<code>@Z=0</code> and the eave or ridge height). The badge still reads <strong>Qualifies</strong></td>
+<td>In <strong>Sheets</strong>, open each elevation and the section card in turn and check its <strong>Level datums (@Z)</strong></td>
+<td>Each of the five cards lists a <code>@Z=0.6096</code> row at the y of the table below, read from the card's <em>PL</em> line (rule PR-Z-LABEL), beside the two it read itself (<code>@Z=0</code> and the eave or ridge height). Nothing to type. The badge still reads <strong>Qualifies</strong>. (These datums change no element of the model; the Run Checker compares them mark for mark in B5, and Arrange counts them in B2.3)</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
 <td>B0.7</td>
-<td>Open <strong>Exclude areas</strong>. Choose <strong>3_BEAM_LAYOUT</strong> in its list and press <strong>Exclude area</strong> (the button now reads <strong>Drag a box</strong>). On the canvas, zoom to the bay between grid <strong>06</strong> and grid <strong>35</strong>: the beam layout's <strong>expansion joint</strong> is the pair of close vertical lines (about 22 cm apart) running across all four rows A to D. Drag a box from above row A to below row D that holds both lines and the small break marks beside them: start about half a metre left of the left line (not more than 1 m: two short beam ends start 1.05 m to the left) and stop about 25 cm right of the right line. The break marks reach 18 cm out from the lines; the beams of the right-hand block start 37 cm right of the right line, so the box must stop before them. Press <strong>Drag a box</strong> again to leave the tool</td>
-<td><strong>Exclude areas</strong> lists one row, <code>3_BEAM_LAYOUT @EXCLUDE=…</code> with the box's four numbers. Without it the joint's two lines are read as four extra beams (B2b would then read 515 elements, not 511)</td>
+<td>Open <strong>Exclude areas</strong> and check its row. On the canvas, zoom to the bay between grid <strong>06</strong> and grid <strong>35</strong> of <strong>3_BEAM_LAYOUT</strong>: the beam layout's <strong>expansion joint</strong> is the pair of close vertical lines (about 22 cm apart) running across all four rows A to D, with small break marks beside them</td>
+<td>One row, nothing dragged: <code>3_BEAM_LAYOUT @EXCLUDE=-20875.137,-5585.95,-20849.151,-4956.626</code> (rule PR-EXCLUDE-JOINT: two lines closer together than a beam is wide, across every beam row). The box holds both lines and the break marks. Without it, the joint's two lines are read as four extra beams (B2b would then read 515 elements, not 511). (Only if the box is wrong: press <strong>Exclude area</strong> and drag a new one)</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
@@ -5193,13 +5204,13 @@
 </tr>
 </tbody>
 </table>
-<p><strong>B0.4 · the ten layer meanings</strong></p>
+<p><strong>B0.4 · the ten layer meanings</strong> (nine arrive set from the drawings; you set the tenth)</p>
 <table>
 <thead>
 <tr>
 <th>Heading in Layers</th>
 <th>CAD layer</th>
-<th>Pick</th>
+<th>Meaning (check it)</th>
 <th>Where it is read from</th>
 </tr>
 </thead>
@@ -5255,8 +5266,8 @@
 <tr>
 <td>ELEV sheets</td>
 <td><code>0</code></td>
-<td>column, <strong>1S_ELEV_SOUTH only</strong> (one sheet only)</td>
-<td>the columns drawn on the south elevation</td>
+<td>column, <strong>1S_ELEV_SOUTH only</strong> (one sheet only): <strong>the one you set</strong></td>
+<td>the columns drawn on the south elevation; the layer draws columns on all four elevations and only the south one is the set's</td>
 </tr>
 <tr>
 <td>SECTION sheets</td>
@@ -5267,7 +5278,7 @@
 </tbody>
 </table>
 <div class="uat-keep">
-<p><strong>B0.6 · the five level datums</strong> (<code>0.6096</code> m = 24 in, the plinth level <em>PL</em>: on every elevation the PL line is drawn 24 in above the ground line)</p>
+<p><strong>B0.6 · the five level datums</strong> (<code>0.6096</code> m = 24 in, the plinth level <em>PL</em>: on every elevation the PL line is drawn 24 in above the ground line). The y is the PL line's own, as the Modeller reads it; a y typed to fewer decimals on the same line is the same datum to the Run Checker</p>
 <table>
 <thead>
 <tr>
@@ -5278,11 +5289,11 @@
 <tbody>
 <tr>
 <td><code>1S_ELEV_SOUTH</code></td>
-<td><code>-4446.6</code></td>
+<td><code>-4446.5812</code></td>
 </tr>
 <tr>
 <td><code>1N_ELEV_NORTH</code></td>
-<td><code>-3895.2</code></td>
+<td><code>-3895.1917</code></td>
 </tr>
 <tr>
 <td><code>2_ELEV_WEST</code></td>
@@ -5290,17 +5301,17 @@
 </tr>
 <tr>
 <td><code>7_ELEV_EAST</code></td>
-<td><code>-3766.442</code></td>
+<td><code>-3766.4423</code></td>
 </tr>
 <tr>
 <td><code>8_SECTION_AA_TRUSS</code></td>
-<td><code>-3726.416</code></td>
+<td><code>-3726.4156</code></td>
 </tr>
 </tbody>
 </table>
 </div>
-<p><strong>B0.5 · where the body heights come from.</strong> Footing F-1 is 12 in thick, its top 45 in below the finished ground (z −1.143 m to −1.4478 m). The beams run from 122 in to 132 in above the ground (3.0988 m to 3.3528 m), as the section's lines give them; the elevations draw the beam soffit at 120 in, a 2 in difference the drawings leave open and this test does not settle.</p>
-<p><em>Proven (witness W-UAT-B0, 2026-11-15): these steps, done in the real Modeller on the nine sheets as drawn, reach </em><em>Qualifies</em><em>, save nine copies equal mark for mark to the supplied <code>…_marked.dxf</code> set, and B2b's </em><em>Convert</em><em> then reads the same <code>Converted: 511 elements (0 door/window fills), 2 openings cut.</code> The datum y values are typed, not picked with the </em><em>Pick</em><em> button; picking was not part of the proof.</em></p>
+<p><strong>B0.5 · where the body heights come from.</strong> A height comes from the drawing that dimensions it: a section or detail before an elevation, an elevation before a plan. Footing F-1: the Footing Section (<code>5_DETAILS</code>) dimensions its top 5'-0" below the finished ground and its thickness T = 12 in (the FOOTING SCHEDULE), so z −1.524 m to −1.8288 m. The beams run from 122 in to 132 in above the ground (3.0988 m to 3.3528 m), as the section's lines give them; the elevations draw the beam soffit at 120 in, a 2 in difference the drawings leave open and this test does not settle.</p>
+<p><em>Proven (witness W-UAT-B0, 2026-11-24): these steps, done in the real Modeller on the nine sheets as drawn, take every default with nothing typed but the one layer of B0.4, reach </em><em>Qualifies</em><em>, save nine copies equal mark for mark to the reference pack's <code>marked/</code> set (<code>Shed_UAT_pack_20261124.zip</code>), and B2b's </em><em>Convert</em><em> then reads the same <code>Converted: 511 elements (0 door/window fills), 2 openings cut.</code> Without the exclude-box default the same run reads 515 elements.</em></p>
 <h3 id="b1-get-to-know-the-drawings-one-sheet-at-a-time">B1 · Get to know the drawings: one sheet at a time<a class="headerlink" href="#b1-get-to-know-the-drawings-one-sheet-at-a-time" title="Permanent link">&para;</a></h3>
 <p>Open <a href="https://red1oon.github.io/bim-ootb/modeller/modeller.html">the Modeller</a>. The drawings are opened from <strong>📂 Open → Open 2D drawings (.dxf)…</strong></p>
 <p><img alt="Where to click: Open, then Open 2D drawings (.dxf)" src="../../img/uat/uat_b1_open_menu.png" /></p>
@@ -5506,7 +5517,7 @@
 <tr>
 <td>B3.1</td>
 <td>Note the Viewer’s total cost (Find panel: <code>total cost</code>; it is the cost of the 13 drawn bays, see the note at the top of chapter B) and the schedule’s finish date (<strong>Time Machine</strong>, key <strong>T</strong>)</td>
-<td>With the shipped rates the total reads <strong>USD 355,097.98 (RM 1,365,761) — total building cost</strong> (the digits may be grouped differently in your browser's language). The amount in brackets is the rate pack's second currency (RM), whatever language you choose; your local currency for the chosen language is in development. A higher figure, such as USD 358,943.48, means the B0.7 exclude box missed the expansion joint. Write the total and the finish date down: <strong><em>_</em></strong><em> / <strong><em>_</em></strong></em></td>
+<td>The total is priced with the rate pack of your language (Settings ▸ 5D Rate Pack shows which). <strong>Bangla (Bangladesh pack, <code>pwd2024_bd</code>):</strong> <strong>BDT 15,342,507.97 (USD 127,854) — total building cost</strong>. <strong>English, US pack (<code>rsmeans2024_us</code>):</strong> <strong>USD 361,437.82 (RM 1,390,145) — total building cost</strong>. The digits may be grouped differently in your browser's language. The first figure is the pack's own currency; the bracket is a second currency for reference. Another pack prices with its own rates: the Run Checker (B5) knows each pack's figure. A higher figure, such as USD 365,283.32 on the US pack, means the B0.7 exclude box missed the expansion joint. Write the total and the finish date down: <strong><em>_</em></strong><em> / <strong><em>_</em></strong></em></td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
@@ -5557,13 +5568,13 @@
 <tr>
 <td>B4.1</td>
 <td>Click the model, press <strong>F</strong> (the <strong>Find</strong> panel). Its list opens by storey: click <strong>Level 1 (511)</strong>, the whole Shed (the two parts under <em>Unknown</em> are openings, priced 0)</td>
-<td>The bar reads <em>Level 1 · 1 storey</em> <strong>USD 355,097.98</strong> (B3.1's total) and shows the button <strong>› ERP</strong>. For a moment the amount shows every decimal, then the cents</td>
+<td>The bar reads <em>Level 1 · 1 storey</em> and B3.1's first figure: <strong>BDT 15,342,507.97</strong> (Bangladesh pack) or <strong>USD 361,437.82</strong> (US pack) and shows the button <strong>› ERP</strong>. For a moment the amount shows every decimal, then the cents</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
 <td>B4.2</td>
 <td>Press <strong>› ERP</strong></td>
-<td>The status line reads <em>Project Order: 11 lines · contract USD 355,098 (saved)</em> (12 lines if Time Machine has built the schedule in this tab: the order then follows its tasks; the amount is the same) and a link <strong>SHED #… ↗</strong> appears (the number is the Project Order's id, e.g. <em>SHED #990001</em>). If you did B4 before in this browser, the link shows already at B4.1 and <strong>› ERP</strong> first asks <em>Push again?</em> (B4.3): press <strong>Push again</strong></td>
+<td>The status line reads <em>Project Order: 11 lines · contract BDT 15,342,508 (saved)</em> (Bangladesh pack) or <em>… contract USD 361,438 (saved)</em> (US pack) (12 lines if Time Machine has built the schedule in this tab: the order then follows its tasks; the amount is the same) and a link <strong>SHED #… ↗</strong> appears (the number is the Project Order's id, e.g. <em>SHED #990001</em>). If you did B4 before in this browser, the link shows already at B4.1 and <strong>› ERP</strong> first asks <em>Push again?</em> (B4.3): press <strong>Push again</strong></td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
@@ -5607,7 +5618,7 @@
 <tr>
 <td>L3</td>
 <td>Click <strong>SHED #… ↗</strong> and log in to your iDempiere (tick <strong>Select Role</strong>, choose <strong>HQ</strong>, as in chapter C; Chrome may show its own windows: press <strong>OK</strong>, then <strong>No thanks</strong>)</td>
-<td>The <strong>Project</strong> window opens on <strong>SHED</strong> (<em>BIM: SHED</em>) with Planned Amount <strong>355,097.97658</strong> (B4.1's total, every decimal)</td>
+<td>The <strong>Project</strong> window opens on <strong>SHED</strong> (<em>BIM: SHED</em>) with Planned Amount <strong>361,437.81658</strong> on the US pack (B4.1's total, every decimal)</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 </tbody>
@@ -5628,7 +5639,7 @@
 <tr>
 <td>B5.1</td>
 <td>Download the <strong>reference pack</strong> (link in <em>What you need</em>) and open the <a href="https://red1oon.github.io/bim-ootb/capex/uat/check.html">UAT Run Checker</a>. In box <strong>1</strong> choose the pack's <code>.zip</code></td>
-<td>Under box 1: <em>Pack intact: 19 files checked, built 2026-11-22 …</em>. A damaged or wrong file is refused, and <strong>Mark my run</strong> stays off</td>
+<td>Under box 1: <em>Pack intact: 19 files checked, built 2026-11-24 …</em>. A damaged or wrong file is refused, and <strong>Mark my run</strong> stays off</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
@@ -5651,7 +5662,7 @@
 </tr>
 </tbody>
 </table>
-<p><em>Proven (witness W-UAT-CHECK, 2026-11-22, the one-cost pack) on the pack as it is served: a run equal to the proven one marks PASS on all four rows; a run whose B0.7 exclude box was skipped marks FAIL on all four (515 elements, USD 358,943.48); an empty form marks INCONCLUSIVE; a pack with one file changed is refused.</em></p>
+<p><em>Proven (witness W-UAT-CHECK, 2026-11-24, the pack with the drawing's footing) on the pack as it is served: a run equal to the proven one marks PASS on all four rows; a run whose B0.7 exclude box is missing marks FAIL on all four (515 elements, USD 365,283.32); an empty form marks INCONCLUSIVE; a pack with one file changed is refused. B3.1 is judged with your own rate pack (witness W-UAT-B31-PER-PACK, 16 packs).</em></p>
 <p><strong>Notes (chapter B):</strong> <strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong>____</p>
 <hr />
 <h2 id="c-erp-the-hands-on-exercise-project-mgmt-accounting-as-gardenworld-admin">C · ERP: the hands-on exercise (Project Mgmt Accounting, as GardenWorld Admin)<a class="headerlink" href="#c-erp-the-hands-on-exercise-project-mgmt-accounting-as-gardenworld-admin" title="Permanent link">&para;</a></h2>
@@ -5965,7 +5976,7 @@
 <tr>
 <td>D2</td>
 <td>Read <strong>Approved Budget</strong></td>
-<td>The sum of the planned amounts, per currency: <strong>USD 359,765.78</strong> (the 12 test projects 4,067.80, <em>Landscape</em> 600.00 and <em>SHED</em> 355,097.98). <strong>Step into the source:</strong> click the number; add the <strong>Approved</strong> column of the panel yourself. Press <strong>ERP ↗</strong> on a project (it opens your iDempiere: log in if it asks): iDempiere’s <strong>Project</strong> window shows the same figure in <strong>Planned Amount</strong>, and it equals the sum of <strong>Planned Amount</strong> on the <strong>Phase</strong> tab</td>
+<td>The sum of the planned amounts, per currency: <strong>USD 366,105.62</strong> (the 12 test projects 4,067.80, <em>Landscape</em> 600.00 and <em>SHED</em> 361,437.82, the US pack's B3.1 total). <strong>Step into the source:</strong> click the number; add the <strong>Approved</strong> column of the panel yourself. Press <strong>ERP ↗</strong> on a project (it opens your iDempiere: log in if it asks): iDempiere’s <strong>Project</strong> window shows the same figure in <strong>Planned Amount</strong>, and it equals the sum of <strong>Planned Amount</strong> on the <strong>Phase</strong> tab</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
@@ -5977,7 +5988,7 @@
 <tr>
 <td>D3</td>
 <td>Read <strong>Actual Cost</strong> (Spent)</td>
-<td>It rose by what you issued in C4: <strong>2,020.45</strong> over the 12 test projects. GardenWorld’s own projects carry no spending on a fresh GardenWorld, so the tile reads <strong>USD 2,020.45</strong>, <strong>1 %</strong> of plan (SHED's 355,097.98 is in the plan) (add whatever your own projects already carry). <strong>Step into the source:</strong> click the number and add the <strong>Spent</strong> column (it adds up to 2,020.46, as each row is rounded to the cent: pass at the tile's 2,020.45); each project’s <strong>Spent</strong> is <strong>Project Balance</strong> in iDempiere’s <strong>Project</strong> window (C4.4)</td>
+<td>It rose by what you issued in C4: <strong>2,020.45</strong> over the 12 test projects. GardenWorld’s own projects carry no spending on a fresh GardenWorld, so the tile reads <strong>USD 2,020.45</strong>, <strong>1 %</strong> of plan (SHED's 361,437.82 is in the plan) (add whatever your own projects already carry). <strong>Step into the source:</strong> click the number and add the <strong>Spent</strong> column (it adds up to 2,020.46, as each row is rounded to the cent: pass at the tile's 2,020.45); each project’s <strong>Spent</strong> is <strong>Project Balance</strong> in iDempiere’s <strong>Project</strong> window (C4.4)</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
@@ -6007,13 +6018,13 @@
 <tr>
 <td>D8</td>
 <td>Change <strong>Layout</strong> (top bar) to <em>Executive</em> and <strong>Skin</strong> to <em>Dark</em>, then back to <em>Classic</em> and <em>Light</em></td>
-<td>The look changes. <em>Executive</em> shows fewer, re-labelled tiles (<em>Actual Cost</em> becomes <em>Spent so far</em>) with the same figures (359,765.78 approved, 2,020.45 spent); <em>Classic</em> shows them all again</td>
+<td>The look changes. <em>Executive</em> shows fewer, re-labelled tiles (<em>Actual Cost</em> becomes <em>Spent so far</em>) with the same figures (366,105.62 approved, 2,020.45 spent); <em>Classic</em> shows them all again</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
 <td>D9</td>
 <td><strong>Log Out</strong> of iDempiere, log in again (tick <strong>Select Role</strong>, choose <strong>HQ</strong>, as in chapter C) and read the <strong>Home</strong> tab. Home goals are recalculated only when they are older than <strong>30 minutes</strong> (System Configurator name <code>ZK_DASHBOARD_PERFORMANCE_REFRESH_INTERVAL</code>, 1800000 ms). If you opened Home at A2.2 less than 30 minutes ago, the goals still show the counts from before the test data (for example <em>CAPEX Total Projects</em> 2): either wait, or open <strong>System Admin ▸ General Rules ▸ System Rules ▸ System Configurator</strong>, set that name's <strong>Configured Value</strong> to <code>60000</code>, save, and log in again</td>
-<td>The CAPEX goals show the same counts as the dashboard tiles (for example <em>CAPEX Total Projects</em> 15, <em>CAPEX Active Projects</em> 15), money in your login’s currency rounded to the unit (<em>CAPEX Approved Budget</em> 359,766 for the tile's 359,765.78). A goal that has a target shows its percentage of that target, not the count. The targets are the ones A2 installs, the plan of the system the dashboard was built on (<em>Actual Cost</em>, <em>Committed Cost</em>, <em>Invoiced</em>: USD 39,971,166.17; <em>Health Green</em>, <em>Schedule On Time</em>, <em>Budget Within</em>: 9 active projects). So on the test data <em>Actual Cost</em> reads <strong>0 %</strong> and <em>Health Green</em> <strong>33 %</strong> (3 of 9, measured 2026-11-23: the colours drift with the calendar), not the tiles' share; that is expected. Your own targets are set in the <strong>Performance Goal</strong> window (<em>Measure Target</em>)</td>
+<td>The CAPEX goals show the same counts as the dashboard tiles (for example <em>CAPEX Total Projects</em> 15, <em>CAPEX Active Projects</em> 15), money in your login’s currency rounded to the unit (<em>CAPEX Approved Budget</em> 366,106 for the tile's 366,105.62). A goal that has a target shows its percentage of that target, not the count. The targets are the ones A2 installs, the plan of the system the dashboard was built on (<em>Actual Cost</em>, <em>Committed Cost</em>, <em>Invoiced</em>: USD 39,971,166.17; <em>Health Green</em>, <em>Schedule On Time</em>, <em>Budget Within</em>: 9 active projects). So on the test data <em>Actual Cost</em> reads <strong>0 %</strong> and <em>Health Green</em> <strong>33 %</strong> (3 of 9, measured 2026-11-23: the colours drift with the calendar), not the tiles' share; that is expected. Your own targets are set in the <strong>Performance Goal</strong> window (<em>Measure Target</em>)</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 </tbody>
