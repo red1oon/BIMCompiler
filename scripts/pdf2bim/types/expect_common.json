@@ -1,0 +1,12 @@
+{
+ "_readme": "Expectation checklist, the common base (PDF2BIM_VECTOR_PROBE.md §49 / §50): if the set shows X, Y must exist. Data, read by type_expect.py (scan side) and, later, by the Modeller's qualifier. 'when' is a comparison over READ facts; 'evidence' names where a value may come from, in order; 'check' entries are evaluated by name in type_expect.py (one function each, cited). A rule never fills a body: MISSING is a stated finding.",
+ "rules": [
+  {"id": "stair_per_storey_pair",
+   "when": "storeys >= 2",
+   "expect": {"class": "IfcStair", "count": "storeys - 1", "per": "adjacent storey pair"},
+   "look": {"lower_plan": "tread lines inside a closed outline", "upper_plan": "the same outline with the walk line and the arrival arrow", "label": "<n> STG <rise cm>/<going cm>"},
+   "evidence": ["reader:raster_stair", "dictionary:stair"],
+   "check": ["risers_times_rise_vs_storey", "step_rule_din18065", "walk_line_length_vs_treads"],
+   "source": "DIN 18065 (Schrittmaßregel 59..65 cm; walk line); owner 2026-11-24"}
+ ]
+}
