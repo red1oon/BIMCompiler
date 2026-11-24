@@ -3967,11 +3967,11 @@
 </tr>
 <tr>
 <td>Revision</td>
-<td><strong>2026-11-24 (o)</strong></td>
+<td><strong>2026-11-25 (q)</strong></td>
 </tr>
 <tr>
 <td>Status</td>
-<td>Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately and stays as signed. Since then, steps were corrected: the change list after this cover (items 22 to 32) names each step and what changed.</td>
+<td>Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately and stays as signed. Since then, steps were corrected: the change list after this cover (items 22 to 33) names each step and what changed.</td>
 </tr>
 <tr>
 <td>Prepared and issued by</td>
@@ -3997,6 +3997,14 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>2026-11-25 (q)</td>
+<td>The test runs with the Bangladesh rate pack (the note at the start): B3.1, B4, L3 and D in BDT with USD in brackets; A3.1 loads 226 records (the BDT to USD rate); item 33</td>
+</tr>
+<tr>
+<td>2026-11-25 (p)</td>
+<td>B3.1: a footnote on the Bangladesh rates (the PWD Schedule of Rates 2022, 120 BDT per USD), so a tester knows the Bangladesh pack works</td>
+</tr>
 <tr>
 <td>2026-11-24 (o)</td>
 <td>B4.2 states both status lines in full; B4.4's planned amount follows the new total (item 32)</td>
@@ -4212,6 +4220,13 @@
 <td>Follow the step: it now says this</td>
 </tr>
 <tr>
+<td>33</td>
+<td>Start, A3.1, B3.1, B4, L3, D</td>
+<td><strong>The test runs with the Bangladesh rate pack.</strong> Set it once in the Viewer (Settings ▸ 5D Rate Pack: <code>pwd2024_bd</code>, the note at the start). The totals are in BDT with USD in brackets: B3.1 <strong>BDT 15,342,507.97 (USD 127,854)</strong>, B4.2 contract BDT 15,342,508, L3 Planned Amount 15,342,507.96847 with Currency BDT, D2 Approved Budget <strong>USD 4,667.80</strong> and <strong>BDT 15,342,507.97 (USD 127,854)</strong> (the dashboard now shows a foreign currency with its USD value, bim-ootb #3447). A3.1's test data adds the BDT to USD rate (120 per USD, the rate pack's own): <strong>Processed=226</strong>.</td>
+<td>Corrected in this revision</td>
+<td>Set the pack before B3; retest B3.1 to D if you ran them on another pack</td>
+</tr>
+<tr>
 <td>32</td>
 <td>B0, B3.1, B4, L3, D, B5</td>
 <td><strong>B0 reads its settings from the drawings.</strong> The set name, the five level datums, nine of the ten layer meanings, the beam and footing heights and the expansion-joint box now arrive as defaults: you check each one and change it only if it is wrong; the one value you set is the elevation column layer (B0.4). The footing height now follows the drawings: the Footing Section dimensions the footing top 5'-0" below the finished ground with a 12 in footing, where this guide used to type 45 in. The deeper footings make the 32 column pieces below ground 12.192 m longer in all, so at the same rates the total is <strong>USD 361,437.82</strong> on the US pack (was 355,097.98) and <strong>BDT 15,342,507.97</strong> on the Bangladesh pack; L3 and chapter D follow. New reference pack <code>Shed_UAT_pack_20261124.zip</code> (B5.1).</td>
@@ -4306,8 +4321,11 @@
 </table>
 </div>
 <h2 id="what-is-this">What is this?<a class="headerlink" href="#what-is-this" title="Permanent link">&para;</a></h2>
-<p>A hands-on test script for the testers of the pilot client (Sysnova). Each step says what to <strong>do</strong>, what you should <strong>see</strong>, and has a box to tick.
+<p>A hands-on test script for the testers of the pilot client (Sysnova). Each step says what to <strong>do</strong>, what you should <strong>see</strong>, and has a box to tick.</p>
+<blockquote>
+<p><strong>Do set your locale to Bangladesh for this test, as it shall affect the results we want.</strong> In the Viewer, open <strong>Settings</strong> (key <code>=</code>), section <strong>5D Rate Pack</strong>, and choose <code>pwd2024_bd</code>: the line under it reads <em>Active: pwd2024_bd (BDT)</em>. The screens stay in English; every cost is then priced with the Bangladesh rates, in BDT with USD in brackets (B3.1, B4, L3, D). Footnote 1 under B3 names the rates.
 <strong>A value is affirmed at its source, not trusted.</strong> Wherever a step gives a number, it also says <strong>Source:</strong> where the number is kept (a record, a field, a formula) and what to open to see it there. Open that source, read the value yourself, and tick <em>Pass</em> only if it matches. A figure on the dashboard is never the evidence: the rows behind it are.</p>
+</blockquote>
 <p>Work top to bottom: every chapter uses what the one before produced. Write anything that differs on the <strong>Notes</strong> line at the end of each chapter.</p>
 <p>Dates in the test data are set for <strong>13 November 2026</strong>. Testing well after that day still works, but the colours on the dashboard (on time, late, over budget) drift with the calendar.</p>
 <p class="uat-h" id="how-do-i-pass">How do I pass?</p>
@@ -4823,7 +4841,7 @@
 <tr>
 <td>A3.1</td>
 <td>Put the zip in an empty folder on the server and run <code>utils/RUN_ApplyPackInFromFolder.sh &lt;folder&gt;</code>, or use the <strong>Pack In</strong> window logged in as GardenWorld Admin (choose the zip, then run it). In the window: <strong>New</strong>, type a name, <strong>Save</strong>; the paperclip (<strong>Attachment</strong>) ▸ <strong>Load</strong> the zip ▸ <strong>OK</strong>; then the <strong>PackIn</strong> button ▸ <strong>OK</strong></td>
-<td>The run prints <em>Successful application of …CAPEXTestData.zip</em>, <code>Error=false</code> and ends with <em>Done</em>. The log also prints a <code>java.lang.Exception</code> trace for each planned line (<em>MProduct.loadPO: NO Data found</em>): these do not stop the run, and the rows are checked in A3.2 to A3.4. With the <strong>Pack In</strong> window, the Process Message reads <strong>Processed=225 Un-Resolved=0</strong></td>
+<td>The run prints <em>Successful application of …CAPEXTestData.zip</em>, <code>Error=false</code> and ends with <em>Done</em>. The log also prints a <code>java.lang.Exception</code> trace for each planned line (<em>MProduct.loadPO: NO Data found</em>): these do not stop the run, and the rows are checked in A3.2 to A3.4. With the <strong>Pack In</strong> window, the Process Message reads <strong>Processed=226 Un-Resolved=0</strong></td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
@@ -5520,8 +5538,8 @@
 <tbody>
 <tr>
 <td>B3.1</td>
-<td>Note the Viewer’s total cost (Find panel: <code>total cost</code>; it is the cost of the 13 drawn bays, see the note at the top of chapter B) and the schedule’s finish date (<strong>Time Machine</strong>, key <strong>T</strong>)</td>
-<td>The total is priced with the rate pack of your language (Settings ▸ 5D Rate Pack shows which). <strong>Bangla (Bangladesh pack, <code>pwd2024_bd</code>):</strong> <strong>BDT 15,342,507.97 (USD 127,854) — total building cost</strong>. <strong>English, US pack (<code>rsmeans2024_us</code>):</strong> <strong>USD 361,437.82 (RM 1,390,145) — total building cost</strong>. The digits may be grouped differently in your browser's language. The first figure is the pack's own currency; the bracket is a second currency for reference. Another pack prices with its own rates: the Run Checker (B5) knows each pack's figure. A higher figure, such as USD 365,283.32 on the US pack, means the B0.7 exclude box missed the expansion joint. Write the total and the finish date down: <strong><em>_</em></strong><em> / <strong><em>_</em></strong></em></td>
+<td>Check that <strong>Settings ▸ 5D Rate Pack</strong> reads <em>Active: pwd2024_bd (BDT)</em> (the note at the start of this guide). Then note the Viewer’s total cost (Find panel: <code>total cost</code>; it is the cost of the 13 drawn bays, see the note at the top of chapter B) and the schedule’s finish date (<strong>Time Machine</strong>, key <strong>T</strong>)</td>
+<td>With the Bangladesh pack the total reads <strong>BDT 15,342,507.97 (USD 127,854) — total building cost</strong><sup>1</sup>. (Without a pack chosen, the pack of your browser's language prices it: in English (US), <strong>USD 361,437.82 (RM 1,390,145) — total building cost</strong>.) The digits may be grouped differently in your browser's language. The first figure is the pack's own currency; the bracket is a second currency for reference. Another pack prices with its own rates: the Run Checker (B5) knows each pack's figure. A higher figure, such as USD 365,283.32 on the US pack, means the B0.7 exclude box missed the expansion joint. Write the total and the finish date down: <strong><em>_</em></strong><em> / <strong><em>_</em></strong></em></td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
@@ -5557,6 +5575,7 @@
 </tbody>
 </table>
 <p><img alt="The Inspect drawer: Measure, Clash, X-Ray, Section, Time Machine, 4D / 5D" src="../img/viewer/pill-inspect-drawer.png" /></p>
+<p><sup>1</sup> <em>Footnote to B3.1.</em> <strong>The Bangladesh rates.</strong> The Bangladesh pack (<code>pwd2024_bd</code>) prices from the <strong>PWD Schedule of Rates 2022</strong> of the Bangladesh Public Works Department (approved by the Finance Division on 21 June 2022, valid three years; the edition its site serves, no later edition is published), at <strong>120 BDT per USD</strong>. Its material rates (reinforced concrete, Grade 400 bar: Dhaka column, ground-floor items) are read from that schedule; its other rows are not yet checked against it. The pack is chosen when you choose <strong>Bangla</strong> as the language, or by Settings ▸ 5D Rate Pack. The total then reads <strong>BDT 15,342,507.97 (USD 127,854)</strong>, measured on the Shed in the real Viewer, and the Run Checker (B5) judges your B3.1 line against the Bangladesh pack. The hands-on film shows the English (US pack) line; both are proven.</p>
 <h3 id="b4-send-the-model-to-the-erp-as-a-project-order">B4 · Send the model to the ERP as a Project Order<a class="headerlink" href="#b4-send-the-model-to-the-erp-as-a-project-order" title="Permanent link">&para;</a></h3>
 <p>Do this in the <strong>Viewer</strong>, on the Shed you opened in B2.9. (In the Modeller, <strong>ERP ▸ Project Order</strong> prices a building that was <em>opened</em> from a database; for a model made from drawings it tells you to use this route.) Full detail: <a href="../ModellerGuide/#send-it-to-erp-project-order-variant-vo">Send it to ERP</a>.</p>
 <table>
@@ -5572,13 +5591,13 @@
 <tr>
 <td>B4.1</td>
 <td>Click the model, press <strong>F</strong> (the <strong>Find</strong> panel). Its list opens by storey: click <strong>Level 1 (511)</strong>, the whole Shed (the two parts under <em>Unknown</em> are openings, priced 0)</td>
-<td>The bar reads <em>Level 1 · 1 storey</em> and B3.1's first figure: <strong>BDT 15,342,507.97</strong> (Bangladesh pack) or <strong>USD 361,437.82</strong> (US pack) and shows the button <strong>› ERP</strong>. For a moment the amount shows every decimal, then the cents</td>
+<td>The bar reads <em>Level 1 · 1 storey</em> and B3.1's first figure, <strong>BDT 15,342,507.97</strong> (on the US pack: <strong>USD 361,437.82</strong>) and shows the button <strong>› ERP</strong>. For a moment the amount shows every decimal, then the cents</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
 <td>B4.2</td>
 <td>Press <strong>› ERP</strong></td>
-<td>The status line reads <em>Project Order: 11 lines · contract USD 361,438 (saved)</em> on the US pack, or <em>Project Order: 11 lines · contract BDT 15,342,508 (saved)</em> on the Bangladesh pack (12 lines if Time Machine has built the schedule in this tab: the order then follows its tasks; the amount is the same) and a link <strong>SHED #… ↗</strong> appears (the number is the Project Order's id, e.g. <em>SHED #990001</em>). If you did B4 before in this browser, the link shows already at B4.1 and <strong>› ERP</strong> first asks <em>Push again?</em> (B4.3): press <strong>Push again</strong></td>
+<td>The status line reads <em>Project Order: 11 lines · contract BDT 15,342,508 (saved)</em> (on the US pack: <em>Project Order: 11 lines · contract USD 361,438 (saved)</em>) (12 lines if Time Machine has built the schedule in this tab: the order then follows its tasks; the amount is the same) and a link <strong>SHED #… ↗</strong> appears (the number is the Project Order's id, e.g. <em>SHED #990001</em>). If you did B4 before in this browser, the link shows already at B4.1 and <strong>› ERP</strong> first asks <em>Push again?</em> (B4.3): press <strong>Push again</strong></td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
@@ -5590,7 +5609,7 @@
 <tr>
 <td>B4.4</td>
 <td>Click <strong>SHED #… ↗</strong>. On the Kernel ERP sign-in page choose <strong>GardenAdmin</strong>, then <strong>Log In</strong></td>
-<td>The ERP opens on the project <strong>SHED</strong> (<em>BIM: SHED</em>) with its planned amount, <strong>361437.81658</strong> on the US pack (B4.1's total, every decimal; on the Bangladesh pack 15342507.96847). Its <strong>Phase</strong> tab holds 6 phases (<em>1 of 6</em>; 5 if the schedule was built), the first <em>Substructure</em> 1,023.22458. A phase's <strong>Task</strong> tab holds its tasks (Substructure: one, <em>CONCRETE_GANG</em>), and <strong>Task Line</strong> the model's lines with the same planned amount (Substructure: one line, 1,023.22458): a line shows in the tab of its lowest level, as in iDempiere (<em>Task Line</em>: a task is set; <em>Phase Line</em>: a phase but no task; <em>Project Line</em>: neither), so <strong>Project Line</strong> and <strong>Phase Line</strong> read <em>0 records</em> The amount is as correct as the shipped rate pack, not a market price.</td>
+<td>The ERP opens on the project <strong>SHED</strong> (<em>BIM: SHED</em>) with its planned amount, <strong>15342507.96847</strong> and Currency <strong>BDT</strong> (B4.1's total, every decimal; on the US pack 361437.81658, USD). Its <strong>Phase</strong> tab holds 6 phases (<em>1 of 6</em>; 5 if the schedule was built), the first <em>Substructure</em> 23,449.16847. A phase's <strong>Task</strong> tab holds its tasks (Substructure: one, <em>CONCRETE_GANG</em>), and <strong>Task Line</strong> the model's lines with the same planned amount (Substructure: one line, 23,449.16847): a line shows in the tab of its lowest level, as in iDempiere (<em>Task Line</em>: a task is set; <em>Phase Line</em>: a phase but no task; <em>Project Line</em>: neither), so <strong>Project Line</strong> and <strong>Phase Line</strong> read <em>0 records</em> The amount is as correct as the shipped rate pack, not a market price.</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 </tbody>
@@ -5622,7 +5641,7 @@
 <tr>
 <td>L3</td>
 <td>Click <strong>SHED #… ↗</strong> and log in to your iDempiere (tick <strong>Select Role</strong>, choose <strong>HQ</strong>, as in chapter C; Chrome may show its own windows: press <strong>OK</strong>, then <strong>No thanks</strong>)</td>
-<td>The <strong>Project</strong> window opens on <strong>SHED</strong> (<em>BIM: SHED</em>) with Planned Amount <strong>361,437.81658</strong> on the US pack (B4.1's total, every decimal)</td>
+<td>The <strong>Project</strong> window opens on <strong>SHED</strong> (<em>BIM: SHED</em>) with Planned Amount <strong>15,342,507.96847</strong> (B4.1's total, every decimal; on the US pack 361,437.81658)</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 </tbody>
@@ -5980,7 +5999,7 @@
 <tr>
 <td>D2</td>
 <td>Read <strong>Approved Budget</strong></td>
-<td>The sum of the planned amounts, per currency: <strong>USD 366,105.62</strong> (the 12 test projects 4,067.80, <em>Landscape</em> 600.00 and <em>SHED</em> 361,437.82, the US pack's B3.1 total). <strong>Step into the source:</strong> click the number; add the <strong>Approved</strong> column of the panel yourself. Press <strong>ERP ↗</strong> on a project (it opens your iDempiere: log in if it asks): iDempiere’s <strong>Project</strong> window shows the same figure in <strong>Planned Amount</strong>, and it equals the sum of <strong>Planned Amount</strong> on the <strong>Phase</strong> tab</td>
+<td>The sum of the planned amounts, per currency: <strong>USD 4,667.80</strong> (the 12 test projects 4,067.80 and <em>Landscape</em> 600.00) and <strong>BDT 15,342,507.97 (USD 127,854)</strong> (<em>SHED</em>, B3.1's total; the bracket converts it at the rate A3.1 loads, 120 BDT per USD). <strong>Step into the source:</strong> click the number; add the <strong>Approved</strong> column of the panel yourself. Press <strong>ERP ↗</strong> on a project (it opens your iDempiere: log in if it asks): iDempiere’s <strong>Project</strong> window shows the same figure in <strong>Planned Amount</strong>, and it equals the sum of <strong>Planned Amount</strong> on the <strong>Phase</strong> tab</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
@@ -5992,7 +6011,7 @@
 <tr>
 <td>D3</td>
 <td>Read <strong>Actual Cost</strong> (Spent)</td>
-<td>It rose by what you issued in C4: <strong>2,020.45</strong> over the 12 test projects. GardenWorld’s own projects carry no spending on a fresh GardenWorld, so the tile reads <strong>USD 2,020.45</strong>, <strong>1 %</strong> of plan (SHED's 361,437.82 is in the plan) (add whatever your own projects already carry). <strong>Step into the source:</strong> click the number and add the <strong>Spent</strong> column (it adds up to 2,020.46, as each row is rounded to the cent: pass at the tile's 2,020.45); each project’s <strong>Spent</strong> is <strong>Project Balance</strong> in iDempiere’s <strong>Project</strong> window (C4.4)</td>
+<td>It rose by what you issued in C4: <strong>2,020.45</strong> over the 12 test projects. GardenWorld’s own projects carry no spending on a fresh GardenWorld, so the tile reads <strong>USD 2,020.45</strong> and <strong>BDT 0.00 (USD 0)</strong> (SHED has no spending yet), each with its own % of plan (add whatever your own projects already carry). <strong>Step into the source:</strong> click the number and add the <strong>Spent</strong> column (it adds up to 2,020.46, as each row is rounded to the cent: pass at the tile's 2,020.45); each project’s <strong>Spent</strong> is <strong>Project Balance</strong> in iDempiere’s <strong>Project</strong> window (C4.4)</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
@@ -6022,13 +6041,13 @@
 <tr>
 <td>D8</td>
 <td>Change <strong>Layout</strong> (top bar) to <em>Executive</em> and <strong>Skin</strong> to <em>Dark</em>, then back to <em>Classic</em> and <em>Light</em></td>
-<td>The look changes. <em>Executive</em> shows fewer, re-labelled tiles (<em>Actual Cost</em> becomes <em>Spent so far</em>) with the same figures (366,105.62 approved, 2,020.45 spent); <em>Classic</em> shows them all again</td>
+<td>The look changes. <em>Executive</em> shows fewer, re-labelled tiles (<em>Actual Cost</em> becomes <em>Spent so far</em>) with the same figures (USD 4,667.80 and BDT 15,342,507.97 (USD 127,854) approved, 2,020.45 spent); <em>Classic</em> shows them all again</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
 <td>D9</td>
 <td><strong>Log Out</strong> of iDempiere, log in again (tick <strong>Select Role</strong>, choose <strong>HQ</strong>, as in chapter C) and read the <strong>Home</strong> tab. Home goals are recalculated only when they are older than <strong>30 minutes</strong> (System Configurator name <code>ZK_DASHBOARD_PERFORMANCE_REFRESH_INTERVAL</code>, 1800000 ms). If you opened Home at A2.2 less than 30 minutes ago, the goals still show the counts from before the test data (for example <em>CAPEX Total Projects</em> 2): either wait, or open <strong>System Admin ▸ General Rules ▸ System Rules ▸ System Configurator</strong>, set that name's <strong>Configured Value</strong> to <code>60000</code>, save, and log in again</td>
-<td>The CAPEX goals show the same counts as the dashboard tiles (for example <em>CAPEX Total Projects</em> 15, <em>CAPEX Active Projects</em> 15), money in your login’s currency rounded to the unit (<em>CAPEX Approved Budget</em> 366,106 for the tile's 366,105.62). A goal that has a target shows its percentage of that target, not the count. The targets are the ones A2 installs, the plan of the system the dashboard was built on (<em>Actual Cost</em>, <em>Committed Cost</em>, <em>Invoiced</em>: USD 39,971,166.17; <em>Health Green</em>, <em>Schedule On Time</em>, <em>Budget Within</em>: 9 active projects). So on the test data <em>Actual Cost</em> reads <strong>0 %</strong> and <em>Health Green</em> <strong>33 %</strong> (3 of 9, measured 2026-11-23: the colours drift with the calendar), not the tiles' share; that is expected. Your own targets are set in the <strong>Performance Goal</strong> window (<em>Measure Target</em>)</td>
+<td>The CAPEX goals show the same counts as the dashboard tiles (for example <em>CAPEX Total Projects</em> 15, <em>CAPEX Active Projects</em> 15), money in your login’s currency rounded to the unit (<em>CAPEX Approved Budget</em> 4,668 for the tile's USD 4,667.80: a Home goal counts the login's currency, USD, so SHED's BDT stays on the dashboard). A goal that has a target shows its percentage of that target, not the count. The targets are the ones A2 installs, the plan of the system the dashboard was built on (<em>Actual Cost</em>, <em>Committed Cost</em>, <em>Invoiced</em>: USD 39,971,166.17; <em>Health Green</em>, <em>Schedule On Time</em>, <em>Budget Within</em>: 9 active projects). So on the test data <em>Actual Cost</em> reads <strong>0 %</strong> and <em>Health Green</em> <strong>33 %</strong> (3 of 9, measured 2026-11-23: the colours drift with the calendar), not the tiles' share; that is expected. Your own targets are set in the <strong>Performance Goal</strong> window (<em>Measure Target</em>)</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 </tbody>
