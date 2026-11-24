@@ -125,6 +125,8 @@ run('stack', 'raster_stack.py', up_w, low_w)
 # 6e. §55.2 the chimney: a hatched square + round flue at the same place on every plan (chimney.json, MEASURE ONLY: no importer chimney body yet, bim-ootb §L48)
 run('chimney', 'raster_chimney.py', up_w, low_w)
 
+# 6f. §58.3 reserved words with a slab void (LUFTRAUM): the cell on the upper plan, checked against the section's printed size (voids.json, read by the emit; nothing is drawn unless the check passes)
+run('void', 'raster_void.py', up_w, V)
 # 7. emit: upper plan, roof, lower registered plan, main section [, annex heights]
 run('emit', 'raster_emit.py', R if ORDER[storey[ref][0]] > ORDER[storey[other][0]] else OR, os.path.join(V, 'roof.json'), os.path.join(out, 'std'),
     OR if ORDER[storey[ref][0]] > ORDER[storey[other][0]] else R, os.path.join(V, 'section_heights.json'), *([ah] if ah else []))
