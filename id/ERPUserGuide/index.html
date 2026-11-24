@@ -1589,7 +1589,18 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Help on every field, and a question box (LIVE)">
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-help-panel-what-to-have-in-place-and-a-check-before-you-complete" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Help panel: what to have in place, and a check before you complete
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The Help panel: what to have in place, and a check before you complete">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -4307,7 +4318,18 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Help on every field, and a question box (LIVE)">
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-help-panel-what-to-have-in-place-and-a-check-before-you-complete" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Help panel: what to have in place, and a check before you complete
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The Help panel: what to have in place, and a check before you complete">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -5613,10 +5635,9 @@ built-in pre-release test harness (§15).</p>
 <li><strong>Click into a field</strong> and the <strong>Tool Tip</strong> panel on the right shows its name, its description and its
   longer help. With nothing focused it says <em>Place your cursor into a field on the screen</em>. Click the panel's
   title to fold it.</li>
-<li><strong>How To</strong>, under the Tool Tip, shows the steps for the window you have open (Sales Order, Shipment,
-  Invoice, Payment), taken word for word from the trade-cycle steps of this guide
-  (<a href="#the-standard-flow-order-to-cash-procure-to-pay-books-to-reports">The standard flow</a>), with a link to the section. A window name in
-  the steps opens that window.</li>
+<li><strong>How To</strong>, under the Tool Tip, explains the window you have open. Every window of the trade cycle and the
+  books has one (see <a href="#the-help-panel-what-to-have-in-place-and-a-check-before-you-complete">The Help panel</a> below).
+  A window name in it opens that window.</li>
 <li><strong>Ask a question</strong> in the box at the top of How To, in plain words, then press Enter, for example
   <em>How do I close a Sales Order?</em> The answer card names the window (click it to open), the document action,
   the statuses it is allowed from, the command line that does it where one is offered, and the guide
@@ -5634,6 +5655,57 @@ built-in pre-release test harness (§15).</p>
 <p><em>Proven by</em> <strong>W-FIELD-HELP</strong> (every displayed field's text equals the real legacy <code>AD_Field_v</code>, 15,849 of
 15,849), <strong>W-HELP-SHOWCASE</strong> (packs extracted from the published packs, the question sets in English and
 Chinese, the links) and <strong>W-ERP-ASK</strong> (the same answers at the command line, and the language order).</p>
+</blockquote>
+<h3 id="the-help-panel-what-to-have-in-place-and-a-check-before-you-complete">The Help panel: what to have in place, and a check before you complete<a class="headerlink" href="#the-help-panel-what-to-have-in-place-and-a-check-before-you-complete" title="Permanent link">&para;</a></h3>
+<p><strong>The idea.</strong> A good guide tells you what must be in place <em>before</em> you act, not after something goes wrong.
+The Help panel does that for every window. With the <strong>Friendly</strong> plugin switched on, it also checks the
+document in front of you and shows what would stop it.</p>
+<p><strong>Opening it.</strong> Press <strong>?</strong> on the right-hand strip. The panel opens on the right. Its top line links to this
+guide (the section for the window you are on), the guided <strong>Tour</strong>, and <strong>About / Run it yourself</strong>.</p>
+<p><strong>What every window shows (for everyone).</strong> The window's own description comes first, exactly as in
+iDempiere. Below it:</p>
+<ul>
+<li><strong>Before you start</strong>: the records that must exist first, each a link to the window where you make it
+  (for a Sales Order: document type, customer and address, warehouse, price list, sales rep, payment term).</li>
+<li><strong>Do it</strong>: the tabs in the order you fill them, then the action that finishes the job.</li>
+<li><strong>What Complete does</strong>: what Complete makes and changes, by kind of document. For example, a POS Order
+  also creates the shipment and the invoice; a Standard Order reserves the stock.</li>
+<li><strong>What can stop Complete</strong>: the reasons, in iDempiere's own words, such as <em>Period Closed</em>.</li>
+</ul>
+<p>This text is read from iDempiere's own rules, and each line traces to the code it comes from. iDempiere users
+get the same text in their own system through a small help script (<a href="https://github.com/red1oon/bim-ootb/tree/main/erp/legacy">how to apply it</a>).</p>
+<p><strong>Check before you complete (Friendly plugin).</strong> Press the light-bulb <strong>Check</strong> in the panel. It runs the same
+Complete on your document as a trial, and nothing is saved. It then lists everything that would stop it, not
+only the first thing:</p>
+<blockquote>
+<p><strong>Before you complete: 2 to fix</strong>
+1. Period Closed
+2. Business Partner is on Credit Hold - Open Balance=269.23, Credit Limit=10000 · <strong>Open</strong></p>
+</blockquote>
+<p>The field each problem is about turns red (here <em>Date Ordered</em> and <em>Business Partner</em>), and <strong>Open</strong> takes you
+to the record that fixes it. iDempiere tells you these one at a time, only after you press Complete.</p>
+<p><strong>▶ Fix.</strong> When one field value would clear a problem, the panel offers it, for example
+<em>▶ Fix 1: Date Ordered → today</em>. Pressing it fills that field as if you had typed it, and the panel checks
+again. Some rules:</p>
+<ul>
+<li>A fix is offered only after the check has tried it and seen the problem go away.</li>
+<li>It changes only a field of the document you are on. It never completes, posts or runs a process.</li>
+<li>Nothing is saved: <strong>Save</strong> keeps it, <strong>Undo Changes</strong> puts the old value back.</li>
+</ul>
+<p><strong>Checking while you work.</strong> With the Friendly plugin on, a saved document is checked by itself when you open
+it and after each save. The number of problems shows on <strong>?</strong> (and on <strong>⋯</strong> while the strip is folded).
+For a problem on a line, <strong>Show line N</strong> jumps to it, and <strong>Show lines with issues</strong> shows only those lines
+(<strong>Show all lines</strong> brings the rest back). The switch <em>Checking while you work</em> in the panel turns it off.</p>
+<p><strong>Not covered yet.</strong> Ship/Receipt Confirm and Requisition say that no check is available for them yet. If the
+form has unsaved changes, <strong>Check</strong> asks you to save first.</p>
+<blockquote>
+<p><em>Proven by</em> <strong>W-HELP-PEEK</strong>. After every check the data is byte-for-byte the same, and the check always agrees
+with what Complete then does. It also checks that every problem is listed in iDempiere's order, that the fields
+are marked on screen, and that <strong>Open</strong> lands on the right record. Each fix is tried before it is offered, and
+saving it lets Complete pass. Without the plugin there is no check at all.
+<em>The same idea elsewhere:</em> Microsoft Business Central checks journals and documents while you work and
+offers recommended fixes. SAP's purchase order has a <strong>Check</strong> button. Here the check runs the very same
+Complete, so the two cannot disagree.</p>
 </blockquote>
 <h4 id="developer-note-how-the-help-is-organised-in-its-own-files">Developer note: how the help is organised in its own files<a class="headerlink" href="#developer-note-how-the-help-is-organised-in-its-own-files" title="Permanent link">&para;</a></h4>
 <p>Help content never goes into <code>ad_seed.db</code> and never into legacy iDempiere: it lives in the ERP twin as
