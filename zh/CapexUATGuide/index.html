@@ -3908,6 +3908,8 @@
 
 <h1 id="capex-uat-guide-from-2d-drawings-to-the-dashboard">CAPEX UAT Guide — from 2D drawings to the dashboard<a class="headerlink" href="#capex-uat-guide-from-2d-drawings-to-the-dashboard" title="Permanent link">&para;</a></h1>
 <div class="uat-noprint" markdown="0"><a class="md-button md-button--primary" href="../CapexUATGuide.pdf" download>⬇ Download the PDF</a> <button type="button" class="md-button" onclick="window.print()">🖨 Print from the browser</button>
+
+<p class="uat-noprint"><small>Right after the site is updated, the download can fail once (<i>Failed - Unknown server error</i>, the file saved as <code>.html</code>): wait a minute and click again; the PDF is a few MB.</small></p>
 <span style="margin-left:.6em;font-size:.8em">The PDF is made from this page each time it is published, and checked: the checklist on a sheet of its own, each chapter on a new page, no table row split or cut off. Print it, tick the boxes by hand, sign the last page and hand it in.</span></div>
 <style>
 .md-typeset .uat-h { font-size: 1.5625em; font-weight: 300; letter-spacing: -.01em; line-height: 1.4; margin: 1.6em 0 .64em; }
@@ -3965,7 +3967,7 @@
 </tr>
 <tr>
 <td>Revision</td>
-<td><strong>2026-11-23 (k)</strong></td>
+<td><strong>2026-11-24 (l)</strong></td>
 </tr>
 <tr>
 <td>Status</td>
@@ -3995,6 +3997,10 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>2026-11-24 (l)</td>
+<td>Three notes moved into their steps: A2.2 and chapter C log in, the PDF download, B3.1 and B4.4 (items 2, 4, 7)</td>
+</tr>
 <tr>
 <td>2026-11-23 (h) to (j)</td>
 <td>The whole Shed into the ERP and the dashboard: B4, L1 to L3 before C, D (item 27); the link names the order, <em>Push again?</em> (item 28); L2's status line, B5.1's pack date (items 29, 30); the two films (item 31)</td>
@@ -4075,7 +4081,7 @@
 <td>2</td>
 <td>PDF download</td>
 <td>Right after the site is updated, <strong>⬇ Download the PDF</strong> can fail once (<em>Failed - Unknown server error</em>, the file saved as <code>.html</code>).</td>
-<td>Noted</td>
+<td>Now in the step (revision 2026-11-24 (l))</td>
 <td>Wait a minute and click again; the PDF is a few MB</td>
 </tr>
 <tr>
@@ -4089,7 +4095,7 @@
 <td>4</td>
 <td>B4, D</td>
 <td>The USD amount reaches the Project Order unchanged (B4.1, B4.2, B4.4). It is as correct as the shipped rate pack, not a market price. Chapter D's dashboard reads the GardenWorld test projects, not the Shed.</td>
-<td>Noted</td>
+<td>Now in the step (revision 2026-11-24 (l))</td>
 <td>None</td>
 </tr>
 <tr>
@@ -4110,7 +4116,7 @@
 <td>7</td>
 <td>A2.2, A3.1, C (log in)</td>
 <td>After you log in as GardenAdmin, <strong>Chrome</strong> may show its own window <em>Change your password: the password you just used was found in a data breach</em>. That is Chrome's warning about the well-known demo password, not an iDempiere error. Until you close it, clicks on the page do nothing.</td>
-<td>Noted</td>
+<td>Now in the step (revision 2026-11-24 (l))</td>
 <td>Press <strong>OK</strong> on Chrome's window, then go on</td>
 </tr>
 <tr>
@@ -4688,7 +4694,7 @@
 <tr>
 <td>A1.1</td>
 <td>Copy the repository: <code>git clone https://github.com/red1oon/bim-ootb</code></td>
-<td>A folder <code>bim-ootb</code> with <code>index.html</code>, <code>modeller/</code>, <code>erp/</code>, <code>capex/</code></td>
+<td>A folder <code>bim-ootb</code> with <code>index.html</code>, <code>modeller/</code>, <code>erp/</code>, <code>capex/</code> The amount is as correct as the shipped rate pack, not a market price.</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
@@ -4773,7 +4779,7 @@
 </tr>
 <tr>
 <td>A2.2</td>
-<td>Log in as GardenWorld Admin, open the <strong>Home</strong> tab</td>
+<td>Log in as GardenWorld Admin, open the <strong>Home</strong> tab. <em>Chrome</em> may then open its own window <em>Change your password: the password you just used was found in a data breach</em>: that is Chrome's warning about the well-known demo password, not an iDempiere error; press <strong>OK</strong> (until you do, clicks on the page do nothing)</td>
 <td>The Performance panel shows CAPEX goals, for example <em>CAPEX Total Projects</em>, <em>CAPEX Approved Budget</em></td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
@@ -5569,7 +5575,7 @@
 <tr>
 <td>B4.4</td>
 <td>Click <strong>SHED #… ↗</strong>. On the Kernel ERP sign-in page choose <strong>GardenAdmin</strong>, then <strong>Log In</strong></td>
-<td>The ERP opens on the project <strong>SHED</strong> (<em>BIM: SHED</em>) with its planned amount, <strong>355097.97658</strong> (B4.1's total, every decimal). Its <strong>Phase</strong> tab holds 6 phases (<em>1 of 6</em>; 5 if the schedule was built), the first <em>Substructure</em> 1,023.22458. A phase's <strong>Task</strong> tab holds its tasks (Substructure: one, <em>CONCRETE_GANG</em>), and <strong>Task Line</strong> the model's lines with the same planned amount (Substructure: one line, 1,023.22458): a line shows in the tab of its lowest level, as in iDempiere (<em>Task Line</em>: a task is set; <em>Phase Line</em>: a phase but no task; <em>Project Line</em>: neither), so <strong>Project Line</strong> and <strong>Phase Line</strong> read <em>0 records</em></td>
+<td>The ERP opens on the project <strong>SHED</strong> (<em>BIM: SHED</em>) with its planned amount, <strong>355097.97658</strong> (B4.1's total, every decimal). Its <strong>Phase</strong> tab holds 6 phases (<em>1 of 6</em>; 5 if the schedule was built), the first <em>Substructure</em> 1,023.22458. A phase's <strong>Task</strong> tab holds its tasks (Substructure: one, <em>CONCRETE_GANG</em>), and <strong>Task Line</strong> the model's lines with the same planned amount (Substructure: one line, 1,023.22458): a line shows in the tab of its lowest level, as in iDempiere (<em>Task Line</em>: a task is set; <em>Phase Line</em>: a phase but no task; <em>Project Line</em>: neither), so <strong>Project Line</strong> and <strong>Phase Line</strong> read <em>0 records</em> The amount is as correct as the shipped rate pack, not a market price.</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 </tbody>
@@ -5650,7 +5656,7 @@
 <hr />
 <h2 id="c-erp-the-hands-on-exercise-project-mgmt-accounting-as-gardenworld-admin">C · ERP: the hands-on exercise (Project Mgmt Accounting, as GardenWorld Admin)<a class="headerlink" href="#c-erp-the-hands-on-exercise-project-mgmt-accounting-as-gardenworld-admin" title="Permanent link">&para;</a></h2>
 <p>Use the 12 test projects. The table says, per project, what to make. The products are the <strong>Construction</strong> products of A3.6 (<strong>not</strong> GardenWorld's own); use any GardenWorld vendor, the <em>Purchase</em> price list and <em>HQ Warehouse</em>. Do not type a price: the order line takes it from the price list, which is the product's standard cost rounded to the cent (68.1167 becomes 68.12). On each document, set <strong>Project</strong> to the test project (the windows do not ask for a phase).</p>
-<p><strong>Log in for chapter C:</strong> log in as GardenAdmin (password <em>GardenAdmin</em> on a fresh GardenWorld), tick <strong>Select Role</strong>, and choose the organization <strong>HQ</strong> and the warehouse <strong>HQ Warehouse</strong> (with the default <code>*</code> an order will not save: <em>Fill mandatory fields: Organization, Warehouse</em>). If Chrome shows <em>Change your password</em>, press <strong>OK</strong>; if it asks <em>Save password?</em>, press <strong>No thanks</strong> (else it takes the keys meant for the page). Each document opens its own window tab: close it (<strong>×</strong>) when done, or the first tabs are pushed off the strip.</p>
+<p><strong>Log in for chapter C:</strong> log in as GardenAdmin (password <em>GardenAdmin</em> on a fresh GardenWorld; Chrome may open its own window <em>Change your password: the password you just used was found in a data breach</em>: that is Chrome's warning about the well-known demo password, not an iDempiere error; press <strong>OK</strong> (until you do, clicks on the page do nothing)), tick <strong>Select Role</strong>, and choose the organization <strong>HQ</strong> and the warehouse <strong>HQ Warehouse</strong> (with the default <code>*</code> an order will not save: <em>Fill mandatory fields: Organization, Warehouse</em>). If Chrome shows <em>Change your password</em>, press <strong>OK</strong>; if it asks <em>Save password?</em>, press <strong>No thanks</strong> (else it takes the keys meant for the page). Each document opens its own window tab: close it (<strong>×</strong>) when done, or the first tabs are pushed off the strip.</p>
 <table>
 <thead>
 <tr>
