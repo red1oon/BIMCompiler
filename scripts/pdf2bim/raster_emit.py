@@ -242,6 +242,17 @@ def storey(work, tag, level, sheet, wall_h, door_h=None):
         OR_ = TPL_EFH['owner_rulings']; OA_ = OR_['_accept']; acc = [f"@ACCEPT={c},{OA_['who']},{OA_['date']},{OA_['reason']}" for k, v in OR_.items() if not k.startswith('_') for c in v]
         for n, m in enumerate(acc): body += tx(-3000, -2500 - 300 * (len(marks) + n), m)
         want['DXF2BIM-MARK'] += len(acc); log(f"§RASTER_EMIT_ACCEPT {len(acc)} marks on {sheet}: " + ' '.join(c for k, v in OR_.items() if not k.startswith('_') for c in v))
+    SJ = os.path.join(work, 'stair.json')
+    if tag == 'EG' and os.path.exists(SJ):   # §50 a READ stair (type_expect.py): its outline, the spine as a hole, the walk line (open, the turn as a bulge) on A-FLOR-STRS + @STAIR
+        S_ = json.load(open(SJ)); o_ = S_['outline_mm']; sp_ = S_['spine_mm']; w_ = S_['walk_line_mm']
+        body += lw('A-FLOR-STRS', rect(*o_)) + lw('A-FLOR-STRS', rect(*sp_))
+        (xa, ya), (cx_, cy_), rr, (xb, yb) = w_['start'], w_['turn_centre'], w_['radius'], w_['end']
+        bul = -1.0 if xa > xb else 1.0   # DXF y up: a half turn from the east run to the west run passing south (below the spine end) is clockwise
+        pl = ['0', 'LWPOLYLINE', '8', 'A-FLOR-STRS', '90', '4', '70', '0', '10', f'{xa:.1f}', '20', f'{-ya:.1f}', '10', f'{xa:.1f}', '20', f'{-cy_:.1f}', '42', f'{bul:g}',
+              '10', f'{xb:.1f}', '20', f'{-cy_:.1f}', '10', f'{xb:.1f}', '20', f'{-yb:.1f}']
+        body += pl; want['A-FLOR-STRS'] = want.get('A-FLOR-STRS', 0) + 3
+        sm = f"@STAIR={S_['n_risers']},{S_['rise_mm']},{S_['going_mm']}"; body += tx(o_[0], -(o_[1] - 300), sm); want['DXF2BIM-MARK'] += 1
+        log(f"§RASTER_EMIT_STAIR {tag} outline_mm={o_} spine_mm={sp_} walk line {w_['start']} -> turn {w_['turn_centre']} r={rr} -> {w_['end']} bulge={bul:g} mark={sm} source={S_['source']}")
     GAR = None
     if AH and tag == 'EG':   # §43.22 step 3: the annex, appended AFTER every house entity (the reader's index handles of the house do not move)
         A_ = json.load(open(os.path.join(work, 'annex.json'))); assert A_['ring_closed'], 'annex ring not closed'

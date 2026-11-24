@@ -104,6 +104,19 @@ for w_ in (R, OR):
     run(f'notch_{os.path.basename(w_)}', 'raster_notch.py', w_)
     log(f"§SCAN_NOTCH work={os.path.basename(w_)} notch.json={'yes' if os.path.exists(os.path.join(w_, 'notch.json')) else 'no'}")
 
+# 6c. §50 the expectation checklist: facts from what was READ (storeys, section levels + build-ups), a drawing's own dictionary bound by the PDF's sha256
+import hashlib
+low_w, up_w = (OR, R) if ORDER[storey[ref][0]] > ORDER[storey[other][0]] else (R, OR)
+SHJ = json.load(open(os.path.join(V, 'section_heights.json'))); bu = {d_['storey']: d_['buildup_mm'] for d_ in SHJ.get('doors', [])}
+names = sorted([storey[ref][0], storey[other][0]], key=lambda n_: ORDER[n_])
+sha = hashlib.sha256(open(pdf, 'rb').read()).hexdigest()
+facts = dict(pdf_sha256=sha, storeys=[dict(name=n_, level_mm=SHJ['levels'][i], buildup_mm=bu.get(i + 1, 0)) for i, n_ in enumerate(names)],
+             section_px_mm=round(1000 / SHJ['k_px_per_m'], 1), plan_px_mm=round(1000 / CR['scale_px_per_m']['H'], 1))
+json.dump(facts, open(os.path.join(low_w, 'facts.json'), 'w'), indent=1)
+dicts = [f_ for f_ in sorted(glob.glob(os.path.join(TYPES, '*_rosetta.json'))) if json.load(open(f_)).get('applies_to_pdf_sha256') == sha]
+log(f"§SCAN_EXPECT facts storeys={[(x['name'], x['level_mm'], x['buildup_mm']) for x in facts['storeys']]} dictionary={[os.path.basename(f_) for f_ in dicts] or 'none for this pdf'}")
+run('expect', 'type_expect.py', os.path.join(TYPES, 'expect_common.json'), os.path.join(low_w, 'facts.json'), low_w, *(dicts[:1]))
+
 # 7. emit: upper plan, roof, lower registered plan, main section [, annex heights]
 run('emit', 'raster_emit.py', R if ORDER[storey[ref][0]] > ORDER[storey[other][0]] else OR, os.path.join(V, 'roof.json'), os.path.join(out, 'std'),
     OR if ORDER[storey[ref][0]] > ORDER[storey[other][0]] else R, os.path.join(V, 'section_heights.json'), *([ah] if ah else []))

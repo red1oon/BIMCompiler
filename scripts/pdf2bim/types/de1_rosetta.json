@@ -1,0 +1,47 @@
+{
+ "_readme": "Rosetta dictionary of the scanned set DE-1 (PDF2BIM_VECTOR_PROBE.md §50): values read ONCE from the scan by a multimodal read, owner-accepted 2026-11-24 ('Yes, record it as the dictionary entry and build'), the precedent of §16 (TB-LKTN). Every number below is a pixel measurement of the drawn lines (rows / columns cited) or the printed label; each is checked by type_expect.py before use. Frame: the reference (OG) plan, mm from the house's outer NW corner, y down (sheet).",
+ "applies_to_pdf_sha256": "8f779bdd14a643cb4062b6193748bc3c31f0eee5669e735f1ad9460368dfe5a7",
+ "stair": {
+  "label": "16 STG 17,9/27,3",
+  "n_risers": 16,
+  "rise_mm": 179,
+  "going_mm": 273,
+  "from_storey": "ERDGESCHOSS",
+  "to_storey": "OBERGESCHOSS",
+  "form": "half-turn, winders round the end of a central spine",
+  "outline_mm": [
+   5246,
+   5050,
+   7447,
+   7432
+  ],
+  "spine_mm": [
+   6247,
+   5050,
+   6468,
+   6428
+  ],
+  "walk_line_mm": {
+   "start": [
+    6949,
+    5100
+   ],
+   "turn_centre": [
+    6357,
+    6428
+   ],
+   "radius": 592,
+   "end": [
+    5765,
+    5500
+   ],
+   "sense": "start on the right flight (EG side, open to the hall), round the spine end, arrive on the left flight"
+  },
+  "_sources": {
+   "label": "EG plan, the printed label above the right flight (multimodal read; OCR at 200 dpi reads 'STG' but not the digits, §50)",
+   "outline_mm": "left: the thin outline line x 5246 (OG plan rows y 5300..7400: 5232..5246); right: the inner face of the right wall x 7447 (OG rows: 7447); top: the inner face of the top wall y 5050 (EG rows y 5050: ink 5062..6468); bottom: the traced EG wall y0 7432 (walls.json)",
+   "spine_mm": "x: EG rows y 5350..5800 ink 6247..6468; end: OG plan columns x 6300 / 6420: the spine's bottom line y 6414..6442",
+   "walk_line_mm": "OG plan: left run x 5758..5772 (rows y 5600..6400), right run x 6949 (rows y 5500..6600); radius = half their distance; centre x 6357 = the spine centre (6264+6444)/2 = 6354, centre y = the spine end; start y 5100 = the right flight's first tread line (OG rows y 5100); end y 5500 = the arrival arrow (OG row y 5500: 5662..5869)"
+  }
+ }
+}
