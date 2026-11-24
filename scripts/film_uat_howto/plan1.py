@@ -114,6 +114,31 @@ SHORT = {
 for s in SCENES:
     s['beats'] = [(b[0], b[1], SHORT.get(b[0], b[2])) + tuple(b[3:]) for b in s['beats'] if b[0] not in DROP]
 # §5.30 (owner: "When PDF is opened, it should be view full width, so need not keep zooming in and out"): the camera holds zoom 1.0 while a scene shows the downloaded PDF (the page fills the width, its text is readable as it is); (cue, cue) in the take
+# §5.32 (owner 2026-11-25: the whole UAT runs with the Bangladesh rate pack): the guide's opening note, the Settings path and the B3.1 Bangladesh line are READ FROM THE PDF (FILM_GUIDE_PDF, the fresh rev (q) PDF; the md only when no PDF is given), never typed here
+import re as _re, subprocess as _sp
+_pdf = os.environ.get('FILM_GUIDE_PDF')
+GT = _re.sub(r'\s+', ' ', _sp.run(['pdftotext', _pdf, '-'], capture_output=True, text=True).stdout) if _pdf and os.path.exists(_pdf) else _re.sub(r'\s+', ' ', MD.replace('**', '').replace('`', ''))
+def _clean(t): return _re.sub(r'\( ', '(', _re.sub(r' ([,.:)])', r'\1', t))
+_note = _re.search(r'Do set your locale to Bangladesh.*?Active: \S+ \(BDT\)\.', GT); assert _note, 'the opening note is not in the guide'
+_note = _clean(_note.group(0)); _paras = [x.strip() for x in _re.split(r'(?<=results we want\.) ', _note)]; assert len(_paras) == 2, _paras
+_pk = _re.search(r'open Settings \(key =\), section (5D Rate Pack), and choose (\S+?):', _note); assert _pk, 'the Settings path is not in the note'
+# the B3.1 row wraps inside its table cell, so the PDF's text splits the line (…(USD ⏎ 127,854) — total building cost): the figure pair is read where it stands whole (the change list's B3.1 entry), and the row's own tail is checked in the same text
+BDT = _re.search(r'BDT ([\d,]+)\.(\d\d) \(USD ([\d,]+)\)', GT); assert BDT, 'the Bangladesh total is not in the guide'
+assert BDT.group(3) + ') — total building cost' in GT or _pdf is None, 'B3.1 in the PDF does not end the figure with "— total building cost"'
+def WB(n):   # a whole number in words (to millions)
+    n = int(n)
+    if n >= 1000000: return WB(n // 1000000) + ' million' + (', ' + WB(n % 1000000) if n % 1000000 else '')
+    if n >= 1000: return WB(n // 1000) + ' thousand' + (', ' + WB(n % 1000) if n % 1000 else '')
+    return W(n)
+BDT_SAY = 'B D T ' + WB(BDT.group(1).replace(',', '')) + ' point ' + ' '.join(ONES[int(c)] for c in BDT.group(2))
+OPEN_CARD = dict(kicker="THE GUIDE'S FIRST NOTE", paras=_paras, path='Settings (key =)   \u25B8   5D Rate Pack   \u25B8   ' + _pk.group(2),
+  beat=('c0', "Set your locale to Bangladesh. In the Viewer, press equals, open 5D Rate Pack, and choose P W D twenty twenty-four B D."))
+SCENES[0]['beats'] = [('c0', 'card0', OPEN_CARD['beat'][1])] + SCENES[0]['beats']
+for s_ in SCENES:
+    if s_['id'] == 's9':   # B3.1 in the Bangladesh pack: the pack chosen in Settings, then the total
+        s_['strip'] = 'Check that **Settings ▸ 5D Rate Pack** reads'
+        s_['beats'] = [('q12s', 's9_section', "In the Viewer, press equals: Settings, 5D Rate Pack. Choose P W D twenty twenty-four B D."),
+                       ('q12a', 's9_cost', "Ask for the total cost: %s. Copy it." % BDT_SAY)]
 CAMERA_FLAT = {'s2': [('s2_start', 's2_end')], 's3': [('s3_start', 's3_click'), ('s3_back', 's3_end')], 's4': [('s4_start', 's4_landed')], 'p1': [('p1_start', 'p1_link')], 's8': [('s8_start', 's8_link')], 's10': [('s10_start', 's10_checker')]}
 for k in ('IDLE_X', 'IDLE_KEEP', 'CAMERA', 'SP'):
     if hasattr(plan2, k): globals()[k] = getattr(plan2, k)

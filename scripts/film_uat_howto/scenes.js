@@ -11,11 +11,13 @@ const OMNIBOX = D.screenBox(300, 54, 700, 28, 'the address bar');
 // §5.28: the pack, the B3.1 line and the Run Checker's box-1 line are the guide's own words (docs/CapexUATGuide.md, rev (j)), parsed, never typed
 const GMD = fs.readFileSync(path.join(__dirname, '..', '..', 'docs', 'CapexUATGuide.md'), 'utf8'), GROW = k => GMD.split('\n').find(l => l.indexOf('| ' + k + ' |') === 0) || '';
 const PACK_URL = (/\((https:\/\/[^)\s]*Shed_UAT_pack_\d{8}\.zip)\)/.exec(GMD) || [])[1], PACK = (/(Shed_UAT_pack_\d{8})\.zip/.exec(PACK_URL || '') || [])[1], PACKID = (PACK || '').slice(-8);
-const B31 = (/\*\*(USD [\d,.]+ \(RM [\d,]+\) — total building cost)\*\*/.exec(GROW('B3.1')) || [])[1];
+// §5.32: B3.1's line is the guide's BANGLADESH line (the whole UAT runs with the pwd2024_bd pack), read from the PDF the tester downloaded (the one in Downloads: s1's, or the fresh one a re-take puts there), never typed; the md is the fallback only when no PDF is there yet
+const _pdfText = () => { try { const f = path.join(D.home ? D.dlDir() : (process.env.FILM_HOME ? path.join(process.env.FILM_HOME, 'Downloads') : ''), 'CapexUATGuide.pdf'); return require('child_process').execFileSync('pdftotext', [f, '-']).toString().replace(/\s+/g, ' '); } catch (e) { return ''; } };
+let B31 = null; const getB31 = () => { const t = _pdfText(), m0 = /(BDT [\d,.]+ \(USD [\d,]+\))/.exec(t), m = m0 && t.indexOf(m0[1].replace(/^.*\(USD /, '') + ' — total building cost') >= 0 ? [0, m0[1] + ' — total building cost'] : null;   /* the B3.1 row wraps in its cell, so the PDF text splits the line: the figure pair where it stands whole + the row's own tail */ return B31 = m ? m[1] : ((/\*\*(BDT [\d,.]+ \(USD [\d,]+\) — total building cost)\*\*/.exec(GROW('B3.1')) || [])[1]); };
 const B51 = ((/\*(Pack intact: \d+ files checked, built [\d-]+) …\*/.exec(GROW('B5.1')) || [])[1]);
 const PACK_TD_URL = (/\((https:\/\/github\.com\/[^)\s]*CAPEXTestData\.zip)\)/.exec(GMD) || [])[1];   // the guide's own link (B:READ), for the size check and a resumed take's set-up
 const esc = t => String(t).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-console.log('§FILM_GUIDE pack=' + PACK + ' url=' + PACK_URL + ' b31=' + JSON.stringify(B31) + ' b51=' + JSON.stringify(B51));
+getB31(); console.log('§FILM_GUIDE pack=' + PACK + ' url=' + PACK_URL + ' b31=' + JSON.stringify(B31) + ' b51=' + JSON.stringify(B51));
 const S = {}, PREP = {};
 // §5.29 (owner 2026-11-24: "during film making, not to use the online UAT Guide but the downloaded PDF guide"): PREP.pdf puts the PDF s1 saves into the fresh Downloads (when a take resumes after s1) and shows it in Chrome's own viewer
 const PDF_FILE = () => path.join(D.dlDir(), PDF_NAME);
@@ -192,19 +194,31 @@ S.s10 = async () => {   // B5.2 (box 4): the Run Checker from the PDF's B5.1 lin
   const v = await D.page.$eval('#vline', e => e.value); D.check(/DONE — SHED 511 elements/.test(v), 'box4_pasted', JSON.stringify(v.slice(0, 100)));
   D.cue('s10_pasted'); await D.sleep(3500); D.cue('s10_end');
 };
-S.s9 = async () => {   // B3.1: the Find panel, 'total cost'
-  D.cue('s9_start'); await tabTo(TAB2, /viewer\/viewer\.html/); await D.aimClick(AREA, { label: 'the model area (focus)' }); await D.sleep(400);
+S.s9 = async () => {   // B3.1: Settings (=) > 5D Rate Pack > pwd2024_bd (the guide's note at its start), then the Find panel, 'total cost'
+  getB31(); D.cue('s9_start'); await tabTo(TAB2, /viewer\/viewer\.html/); await D.aimClick(AREA, { label: 'the model area (focus)' }); await D.sleep(400);
+  await D.key('equal', 'Settings (the = key)');
+  await D.page.waitForSelector('#settings-panel', { state: 'visible', timeout: 30000 }); await D.sleep(900);
+  const hd = D.page.locator('#settings-panel span', { hasText: /^5D Rate Pack$/ }).first(); await hd.waitFor({ state: 'visible', timeout: 30000 });
+  try { await D.scrollIn(hd, '#settings-panel', 120); } catch (e) { D.log('§FILM_NOTE 5D Rate Pack header: ' + String(e.message).slice(0, 80)); }
+  await D.aim(hd, { label: 'section 5D Rate Pack' }); D.cue('s9_section'); await D.click({ label: '5D Rate Pack' }); await D.sleep(900);
+  const sel = D.page.locator('#settings-panel select:has(option[value="pwd2024_bd"])').first(); await sel.waitFor({ state: 'visible', timeout: 30000 });
+  try { await D.scrollIn(sel, '#settings-panel', 120); } catch (e) { D.log('§FILM_NOTE rate pack list: ' + String(e.message).slice(0, 80)); }
+  D.cue('s9_pick'); await D.pickSelect(sel, 'pwd2024', 'the rate pack list'); await D.sleep(1500);
+  let act = ''; for (let i = 0; i < 40 && !/Active: pwd2024_bd \(BDT\)/.test(act); i++) { act = await D.page.evaluate(() => [...document.querySelectorAll('#settings-panel div')].map(d => d.textContent.trim()).filter(t => /^Active: /.test(t)).join(' | ')); if (!/Active: pwd2024_bd \(BDT\)/.test(act)) await D.sleep(500); }
+  D.check(/Active: pwd2024_bd \(BDT\)/.test(act), 'settings_pack_active_pwd2024_bd', JSON.stringify(act));   // guide: 'the line under it reads Active: pwd2024_bd (BDT)'
+  D.cue('s9_active', { act }); await D.aim(D.page.locator('#settings-panel div', { hasText: /^Active: / }).last(), { label: 'Active: pwd2024_bd (BDT)' }); await D.sleep(2200);
+  await D.key('equal', 'close Settings'); await D.sleep(900); await D.aimClick(AREA, { label: 'the model area (focus)' }); await D.sleep(400);
   await D.key('f', 'the Find panel');
   for (let i = 0; i < 40; i++) { if (await D.page.evaluate(() => { const p = document.getElementById('find-panel'); return !!(p && p.getBoundingClientRect().width > 0); })) break; await D.sleep(300); }
   await D.aim('#find-name', { label: 'the Find box' }); await D.click({ label: 'the Find box' }); D.cue('s9_type'); await D.type('total cost'); await D.key('Return', 'ask');
-  let t = ''; for (let i = 0; i < 120 && !/USD\s*[\d,]+/.test(t); i++) { t = await D.page.evaluate(() => (document.getElementById('nlp-toast') || {}).innerText || ''); if (!/USD/.test(t)) await D.sleep(500); }
-  const line = t.split('\n')[0]; D.check(!!B31 && t.indexOf(B31) >= 0, 'total_cost_line', JSON.stringify(line));   // guide B3.1
+  let t = ''; for (let i = 0; i < 120 && !/(BDT|USD)\s*[\d,]+/.test(t); i++) { t = await D.page.evaluate(() => (document.getElementById('nlp-toast') || {}).innerText || ''); if (!/(BDT|USD)\s*[\d,]+/.test(t)) await D.sleep(500); }
+  const line = t.split('\n')[0]; D.check(!!B31 && t.indexOf(B31) >= 0, 'total_cost_line', JSON.stringify(line) + ' guide=' + JSON.stringify(B31));   // guide B3.1, the Bangladesh line from the PDF
   D.cue('s9_cost', { line }); await D.sleep(3000);
   await D.aim('#nlp-toast', { fy: 0.2, label: 'the answer' }); D.cue('s9_copy'); await D.click({ n: 3, label: 'the answer (triple-click)' }); await D.key('ctrl+c', 'copy'); await D.sleep(1500); D.cue('s9_end');
 };
 
 S.s11 = async () => {   // B5.1 + B5.2: box 5 pasted, box 1 the pack's zip, box 3 the database
-  D.cue('s11_start'); await tabTo(TAB1, CHECK);
+  getB31(); D.cue('s11_start'); await tabTo(TAB1, CHECK);
   await D.aimClick('#cline', { label: 'box 5' }); await D.key('ctrl+a', 'select what is there'); await D.key('ctrl+v', 'paste'); const c = await D.page.$eval('#cline', e => e.value);
   D.check(!!B31 && c.indexOf(B31) >= 0, 'box5_pasted', JSON.stringify(c.slice(0, 100))); D.cue('s11_pasted'); await D.sleep(1500);
   await D.scrollInto('#pack', 200); await D.aim('#pack', { label: 'box 1' }); D.cue('s11_box1'); await D.click({ label: 'box 1' });
@@ -315,6 +329,8 @@ S.p12 = async () => {   // B5.3 + B5.4: Mark my run -> four rows PASS, the run P
   const rows = await D.page.evaluate(() => [...document.querySelectorAll('#rows tr')].map(r => r.innerText.replace(/\s+/g, ' ').trim())), v = await D.page.$eval('#verdict', e => e.innerText.trim());
   D.log('§FILM_ROWS ' + JSON.stringify(rows));
   const b09 = rows.find(r => /B0\.9/.test(r)) || ''; D.check(/\bPASS\b/.test(b09) && !/NOT GIVEN|FAIL/.test(b09), 'b53_b09_marked_sheets_pass', JSON.stringify(b09.slice(0, 160)));   // the tester's marks equal the answer key's
+  const b31r = rows.find(r => /B3\.1/.test(r)) || ''; D.check(/\bPASS\b/.test(b31r) && !/NOT GIVEN|FAIL|INCONCLUSIVE/.test(b31r), 'b53_b31_total_cost_pass', JSON.stringify(b31r.slice(0, 220)));   // §5.32: the Bangladesh line, judged per pack (bim-ootb #3429)
+  const body = await D.page.evaluate(() => document.body.innerText); D.log('§FILM_NOTE the Run Checker page ' + (/pwd2024_bd/.test(body) ? 'NAMES pwd2024_bd: ' + JSON.stringify((body.split('\n').find(l => /pwd2024_bd/.test(l)) || '').slice(0, 200)) : 'does not name pwd2024_bd; the B3.1 row reads ' + JSON.stringify(b31r.slice(0, 220))));
   D.check(v === 'Your run: PASS', 'b53_run_pass', JSON.stringify(v));   // guide B5.3: 'Your run reads PASS when all four pass'
   D.cue('p12_marked'); await D.scrollInto('#rows', 160); await D.sleep(4500);
   await D.scrollInto('#dl', 200); await D.aim('#dl', { label: 'Download result (uat_result.json)' }); D.cue('p12_dl'); await D.click({ label: 'Download result' });
