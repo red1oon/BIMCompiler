@@ -11,6 +11,7 @@ for sc in P.SCENES:
         if a not in cue: print('§ANCHORS_BAD %s span cue %s missing' % (sc['id'], a)); bad += 1
     for b in sc['beats']:
         n += 1; c = b[1]
+        if c == 'card0': continue   # the opening card's own line (compose.py OPEN_CARD)
         if c.startswith('at:'): ok = all((x in cue or x in clk) for x in c[3:].split('|')[:2])
         else: ok = c in cue or c in clk
         if not ok: print('§ANCHORS_BAD %s beat %s cue %s not in the take (cues: %s)' % (sc['id'], b[0], c, ' '.join(sorted(cue))[:200])); bad += 1

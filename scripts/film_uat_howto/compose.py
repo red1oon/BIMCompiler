@@ -85,7 +85,21 @@ plate = Image.new('RGB', (logo.width + 40, logo.height + 30), (255, 255, 255)); 
 ImageDraw.Draw(title).text(((W - ImageDraw.Draw(title).textlength('Sponsored by', font=font(False, 28))) / 2, 836), 'Sponsored by', font=font(False, 28), fill=(170, 170, 170))
 card(title, 3.6)
 EVS, PTS, tsv_rows, sounds, beat_out = {}, {}, [], [], {}
+def mkpara(oc):   # §5.32: the guide's opening note on a card: a kicker, the note's words wrapped, the Settings path on a line of its own
+    im = Image.new('RGB', (W, H), (11, 15, 23)); d = ImageDraw.Draw(im); y = 250; d.text((120, y), oc['kicker'], font=font(True, 34), fill=CORAL); y += 80; f = font(False, 46); room = W - 240
+    for para in oc['paras']:
+        line = ''
+        for wd in para.split(' '):
+            if d.textlength((line + ' ' + wd).strip(), font=f) > room: d.text((120, y), line, font=f, fill=INK); y += 66; line = wd
+            else: line = (line + ' ' + wd).strip()
+        d.text((120, y), line, font=f, fill=INK); y += 66 + 34
+    g = fit_font(d, oc['path'], font(True, 60), room, 30) or font(True, 40); d.text((120, y + 20), oc['path'], font=g, fill=CORAL); return im
+OC = getattr(P, 'OPEN_CARD', None)   # a card after the title carrying its own spoken line (OC['beat'] = (id, text)); it lasts as long as the line needs
+if OC:
+    bid_, text_ = OC['beat']; t0_ = T; dur_ = max(OC.get('min', 6.0), VD[bid_] + 1.4); card(mkpara(OC), dur_); beat_out[bid_] = (t0_ + 0.5, text_)
+    log('§COMP_CARD_NOTE at %.2fs for %.2fs: %s | %s' % (t0_, dur_, ' // '.join(OC['paras']), OC['path']))
 for sc in P.SCENES:
+    sc['beats'] = [b for b in sc['beats'] if b[1] != 'card0']   # the card's own line is placed above, not on a scene's cue
     if sc.get('card'):   # §5.23: a silent chapter card before this scene (plain dark, no voice)
         _cl = sc['card']; card(mkcard([(_cl[0], font(True, 34), CORAL)] + [(t, font(True, 72 if i == 0 else 48), INK if i == 0 else CORAL) for i, t in enumerate(_cl[1:])]), 3.6); log('§COMP_CARD %s at %.2fs "%s"' % (sc['id'], T - 3.6, ' / '.join(_cl)))
     sid = sc['id']; ev = json.load(open(os.path.join(TAKE, sid + '.events.json'))); EVS[sid] = ev; PTS[sid] = pts_of(os.path.join(TAKE, sid + '.mkv'))
