@@ -1,0 +1,6 @@
+§K2 OK   beat=legacy return=128.04 voice_start=128.68 ass_start=128.68 | voice-only track in typing window -180.0 dB vs in voice -16.5 dB (gap 163.5) | mixed in typing: peak -9.6 dBFS rms -37.0 dB
+§K2_LEVEL keys (mixed, typing windows) mean rms -37.1 dB, mean peak -9.9 dBFS; voice mean rms -17.0 dB -> keys are 20.1 dB under the voice rms
+§K2_VERDICT PASS beats=5 bad=0 audible=True
+§CAPTION_VERDICT PASS cues=35
+§BUILD_DONE /home/red1/Videos/Knowledge_CMS_ERP_EN_AFTER_2026-11-24_v2.mp4
+build exit=0

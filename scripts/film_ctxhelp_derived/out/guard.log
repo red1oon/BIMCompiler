@@ -1,0 +1,55 @@
+§FILM_GUARD OK   before says "One topic" <- legacy.helps expected 1 got 1
+§FILM_GUARD OK   before says "One hundred and thirty-one topics" <- twin.records expected 131 got 131
+§FILM_GUARD OK   before says "one hundred and twenty-four" <- core.windows expected 124 got 124
+§FILM_GUARD OK   so says "a Sales Order" <- so.tab expected 186 got 186
+§FILM_GUARD OK   so says "a link to the window that makes each one" <- so.before_each_linked expected Y got Y
+§FILM_GUARD OK   so says "Do it ... What Complete does ... when it refuses" <- so.sections expected Y got Y
+§FILM_GUARD OK   who says "line two thousand one hundred seventy-eight" <- who.line expected 2178 got 2178
+§FILM_GUARD OK   who says "that first line" <- who.first_li expected Y got Y
+§FILM_GUARD OK   who says "If the line moves, the build fails" <- who.build_fails expected Y got Y
+§FILM_GUARD OK   tick says "and our twin did the same" <- tick.verdict expected MATCH got MATCH
+§FILM_GUARD OK   tick says "legacy completed one shipment" <- tick.legacy expected 1 got 1
+§FILM_GUARD OK   tick says "and so did the twin" <- tick.sqlite expected 1 got 1
+§FILM_GUARD OK   refuse says "Business Partner with this Order over Credit Hold (panel)" <- refuse.quote_panel expected Y got Y
+§FILM_GUARD OK   refuse says "refused with that very message" <- refuse.quote_run expected Y got Y
+§FILM_GUARD OK   refuse says "It carries a tick" <- refuse.tick expected Y got Y
+§FILM_GUARD OK   po says "one carries a tick" <- po.ticks expected 1 got 1
+§FILM_GUARD OK   po says "the purchase order itself" <- po.tick_is_po expected Y got Y
+§FILM_GUARD OK   po says "fewer ticks" <- po.fewer expected Y got Y
+§FILM_GUARD OK   any says "the documents that ask for one" <- bp.needed expected Y got Y
+§FILM_GUARD OK   any says "Click one, and you are there" <- click.window expected 169 got 169
+§FILM_GUARD OK   any says "nine more in M In Out" <- ship.more expected 9 got 9
+§FILM_GUARD OK   legacy says "one hundred and thirty topics" <- legacy.added expected 130 got 130
+§FILM_GUARD OK   legacy says "No code, no new columns" <- legacy.nocode expected Y got Y
+§FILM_GUARD OK   legacy says "the tab's own words, then ours" <- legacy.shown expected Y got Y
+§FILM_GUARD OK   legacy says "the pilot is as it was" <- legacy.back expected true got true
+§FILM_GUARD OK   close says "one hundred and twenty-four windows" <- core.windows expected 124 got 124
+§FILM_GUARD OK   close says "seventy-eight cited effects" <- effects.n expected 78 got 78
+§FILM_GUARD OK   close says "twenty-five ticks" <- ticks.n expected 25 got 25
+§FILM_GUARD OK   before number words all covered by a fact
+§FILM_GUARD OK   so number words all covered by a fact
+§FILM_GUARD OK   who number words all covered by a fact
+§FILM_GUARD OK   tick number words all covered by a fact
+§FILM_GUARD OK   refuse number words all covered by a fact
+§FILM_GUARD OK   po number words all covered by a fact
+§FILM_GUARD OK   any number words all covered by a fact
+§FILM_GUARD OK   legacy number words all covered by a fact
+§FILM_GUARD OK   close number words all covered by a fact
+§FILM_GUARD OK   no page error in the twin session
+§FILM_GUARD OK   every twin picture exists and holds the elements it must show (inside its crop window)
+§FILM_GUARD OK   beat 8: legacy's three stills exist and hold what they must show
+§FILM_GUARD OK   beat 8: the pilot was restored to its snapshot (legacy_shot) and its tables say 1 / 0 / 0 (pilot_witness)
+§FILM_GUARD OK   the L&F parity witness on the pilot passes
+§FILM_GUARD OK   W-CTXHELP-DERIVED passes 8/0 on the same tree and its red run (DV_BREAK=srcline) FAILS
+§FILM_GUARD OK   a ✓ needs a MATCH: with every verdict flipped the text has 0 ✓ (D3), with the real facts 25
+§FILM_GUARD OK   the twin's Context Help Records = legacy's AD_CtxHelp after the apply (131 = 1 + 130)
+§FILM_GUARD OK   the guide link: the guides do NOT describe this panel yet (gap named, no guide link on the card)
+§FILM_GUARD OK   credentials: MIT, every PR the card names merged
+§FILM_GUARD OK   not said: the pictures are taken, not streamed
+§FILM_GUARD OK   not said: no speed was measured
+§FILM_GUARD OK   not said: no language was shown; translations are named only as not built
+§FILM_GUARD OK   not said: nothing was reviewed by a native speaker or a person
+§FILM_GUARD OK   not said: beat 8 applied the script with psql, not through RUN_SyncDB
+§FILM_GUARD OK   not said: legacy's panel may be served from its cache (§LEGACY_CACHE), so no "fresh" claim
+§FILM_GUARD OK   not said: no claim about AI
+§FILM_GUARD VERDICT PASS

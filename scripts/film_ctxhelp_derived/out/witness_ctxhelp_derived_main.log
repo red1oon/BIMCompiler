@@ -1,0 +1,19 @@
+§CTXHELP_DERIVED_W D1 derived 124 of 124 core menu windows; documents 21; complete 124
+§CTXHELP_DERIVED_W D2a run_20261123_142109_m3metaall.log: 55 of 55 scenarios equal the log (verdict, table/doctype, legacy values)
+§CTXHELP_DERIVED_W D2b cited lines 131 of 131 hold their token; refusals re-read from C_Order,C_Invoice,M_InOut,M_Inventory,C_Payment,C_AllocationHdr,C_BankStatement,C_BankTransfer,C_DepositBatch,GL_Journal,GL_JournalBatch,M_Movement,M_MovementConfirm,M_InOutConfirm,M_Requisition,C_DocTypeCounter: equal
+§CTXHELP_DERIVED_W D2c/D4/D5 judged 124 sections: quotes 151, window links 188
+§CTXHELP_DERIVED_W D3 marks ✓ with the real facts 25, with every verdict flipped to SQLITE-GAP 0
+§CTXHELP_DERIVED_W D6 run sources vs bim-compiler origin/master: witness_m3_gap.js=same cycle_o2c.js=same
+§CTXHELP_DERIVED_W PASS D1 every core window has its derived section on its head tab with its parts: 124 of 124 (core denominator 124)
+§CTXHELP_DERIVED_W PASS D2a the run facts are the log's: 55 of 55
+§CTXHELP_DERIVED_W PASS D2b the source rules are legacy's: cited lines 131 of 131, fresh read equal
+§CTXHELP_DERIVED_W PASS D2c every quoted message is legacy's and every window link names its window: 124 of 124
+§CTXHELP_DERIVED_W PASS D4 no scenario name in a derived text: 124 of 124
+§CTXHELP_DERIVED_W PASS D5 every message with a derived section fits 2000 and keeps the section whole: 124 of 124
+§CTXHELP_DERIVED_W PASS D3 a SQLITE-GAP scenario proves nothing: 0 ✓ left of 25
+§CTXHELP_DERIVED_W PASS D6 the run was made from today's scenario code (2 of 2 files)
+§CTXHELP_DERIVED_W §WITNESS_CTXHELP_DERIVED PASS pass=8 fail=0 inconclusive=0
+
+real	0m52.155s
+user	0m26.966s
+sys	0m57.808s
