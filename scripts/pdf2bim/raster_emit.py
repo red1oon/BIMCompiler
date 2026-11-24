@@ -1,4 +1,4 @@
-# Implementing PDF2BIM_VECTOR_PROBE.md §53.1 (marks last) + §43.7 + §43.11 + §43.15 + §43.18 — Witness: W-S12a (round trip, every sheet), W-S18 (READ snap + dimensions), W-S17e (two storeys).
+# Implementing PDF2BIM_VECTOR_PROBE.md §55.1 (WC pre-walls) + §53.1 (marks last) + §43.7 + §43.11 + §43.15 + §43.18 — Witness: W-S12a (round trip, every sheet), W-S18 (READ snap + dimensions), W-S17e (two storeys).
 # Emits the scan in the importer's STD sheet form (same layers/marks as to_std.py + elev_emit.py): plan, four
 # elevations, roof. READ: walls (§43.2 READ), exterior ring + window gaps (§43.1), plan size (chains), roof pitch
 # (§43.10). DEFAULT (stated, registry values): wall height, window sill/height, plan level 0, north = sheet top.
@@ -190,6 +190,13 @@ def storey(work, tag, level, sheet, wall_h, door_h=None):
     for w in free: INT.remove(w); log(f"§RASTER_EMIT_FREE_STUB {tag} dropped rect_mm=({w['x0']:.0f},{w['y0']:.0f})-({w['x1']:.0f},{w['y1']:.0f}) thk {w['thk_chain_m']} (touches no wall >= 0.8 m)")
     log(f"§RASTER_W-S54c {tag} free stubs dropped={len(free)} of {len(INT) + len(free)} interior walls")
     for w in EXT + INT: body += lw('A-WALL-FULL', rect(w['x0'], w['y0'], w['x1'], w['y1'])); nw += 1
+    # §55.1 the WC pre-walls the plan draws (raster_prewall.py): an ordinary wall, its top by the importer's per-wall marking (level + the type's height, DEFAULT, editable)
+    PWJ = os.path.join(work, 'prewalls.json'); pw_marks = []
+    if os.path.exists(PWJ):
+        for w in json.load(open(PWJ))['prewalls']:
+            h_ = sum(1 for i in range(0, len(body), 2) if body[i] == '0'); body += lw('A-WALL-FULL', rect(w['x0'], w['y0'], w['x1'], w['y1'])); nw += 1
+            top = round(level + w['height_m'] * 1000); pw_marks.append(f'@WALLTOP=handle:{h_},{top / 1000:g},{level / 1000:g}')
+            log(f"§RASTER_EMIT_PREWALL {tag} rect_mm=({w['x0']:.0f},{w['y0']:.0f})-({w['x1']:.0f},{w['y1']:.0f}) depth={w['depth_mm']} run={w['run_mm']} handle={h_} z={level}..{top} ({w['height_source']})")
     STK = os.path.join(work, 'walls_stacked.json')
     if tag == 'EG' and os.path.exists(STK):   # §51 walls the upper plan places and this scan's own ink confirms (raster_stack.py): the upper wall's rectangle, stated as STACKED
         for w in json.load(open(STK))['walls']:
@@ -313,7 +320,7 @@ def storey(work, tag, level, sheet, wall_h, door_h=None):
     if SLJ: json.dump(dict(spec='PDF2BIM_VECTOR_PROBE.md §48', openings=SLJ), open(os.path.join(work, 'sidelights.json'), 'w'), indent=1)
     for x_, y_, t_ in sl_marks:
         if x_ is not None: body += tx(x_, y_, t_); tags_d.append((x_, y_, t_))
-    marks = ['@UNITS=mm', '@SET=STD', '@VIEW=PLAN', f'@NAME={tag} (scan)', f'@LEVEL={level / 1000:g}'] + ([f'@BODYZ=column,{level / 1000:g},{(level + wall_h) / 1000:g}'] if ncol else []) + ([f'@SCHEDULE={f},door,{w_},{DH}' for f, w_ in sorted(fams.items())] + ['@HEADFRAME=0'] if fams else []) + [t_ for x_, y_, t_ in sl_marks if x_ is None]
+    marks = ['@UNITS=mm', '@SET=STD', '@VIEW=PLAN', f'@NAME={tag} (scan)', f'@LEVEL={level / 1000:g}'] + ([f'@BODYZ=column,{level / 1000:g},{(level + wall_h) / 1000:g}'] if ncol else []) + ([f'@SCHEDULE={f},door,{w_},{DH}' for f, w_ in sorted(fams.items())] + ['@HEADFRAME=0'] if fams else []) + [t_ for x_, y_, t_ in sl_marks if x_ is None] + pw_marks
     for n, m in enumerate(marks): body += tx(-3000, -2500 - 300 * n, m)
     for k, x in GX.items(): body += tx(x, 600, f'@GRIDX={k}')
     for k, y in GY.items(): body += tx(-600, -y, f'@GRIDY={k}')
