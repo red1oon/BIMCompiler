@@ -183,6 +183,12 @@ def storey(work, tag, level, sheet, wall_h, door_h=None):
 
     # ---- plan ----
     body = []; nw = ng = 0
+    # §54.3 a house plan's walls are ONE connected structure: a fragment under 0.8 m on both axes touching no wall >= 0.8 m long is not a wall (W-S52a's room walk:
+    # the EG kept 2 such, its hatch rule being VACUOUS at that print). Dropped, each logged.
+    L8 = lambda w: max(w['x1'] - w['x0'], w['y1'] - w['y0']) >= 800; tch = lambda a, b: not (a['x1'] + 30 < b['x0'] or b['x1'] + 30 < a['x0'] or a['y1'] + 30 < b['y0'] or b['y1'] + 30 < a['y0'])
+    longw = [w for w in EXT + INT if L8(w)]; free = [w for w in INT if not L8(w) and not any(tch(w, l) for l in longw)]
+    for w in free: INT.remove(w); log(f"§RASTER_EMIT_FREE_STUB {tag} dropped rect_mm=({w['x0']:.0f},{w['y0']:.0f})-({w['x1']:.0f},{w['y1']:.0f}) thk {w['thk_chain_m']} (touches no wall >= 0.8 m)")
+    log(f"§RASTER_W-S54c {tag} free stubs dropped={len(free)} of {len(INT) + len(free)} interior walls")
     for w in EXT + INT: body += lw('A-WALL-FULL', rect(w['x0'], w['y0'], w['x1'], w['y1'])); nw += 1
     STK = os.path.join(work, 'walls_stacked.json')
     if tag == 'EG' and os.path.exists(STK):   # §51 walls the upper plan places and this scan's own ink confirms (raster_stack.py): the upper wall's rectangle, stated as STACKED
@@ -221,6 +227,15 @@ def storey(work, tag, level, sheet, wall_h, door_h=None):
                     r = (g0, a['y0'], g1, a['y1']) if axis == 'H' else (a['x0'], g0, a['x1'], g1)
                     glaz.append(dict(face=face, r=r, a=g0, b=g1)); body += lw('A-GLAZ', rect(*r)); ng += 1
     for g in CW: glaz.append(g); body += lw('A-GLAZ', rect(*g['r'])); ng += 1   # §53.2 the corner windows, in the wall band beside the post
+    # §54.2 the sill the sheet PRINTS (BRH labels, raster_brh.py): READ for this storey's windows; a corner window with no label read on its own sheet takes the
+    # sill the SET prints (every label read on any plan agreeing); otherwise the registry DEFAULT stays. The ground-storey window-door rule (§52.2) still applies after.
+    def _brh(w_): f_ = os.path.join(w_, 'brh.json'); return json.load(open(f_)).get('sill_mm') if os.path.exists(f_) else None
+    own = _brh(work); setv = [v for v in (_brh(q['work']) for q in STOREYS) if v]; setb = setv[0] if setv and max(setv) - min(setv) <= 10 else None
+    for g in glaz:
+        if g.get('sidelight'): continue
+        if own: g['sill'] = own; g['sill_src'] = 'READ (BRH label, this sheet)'
+        elif g.get('corner') and setb: g['sill'] = setb; g['sill_src'] = 'READ-SET (BRH labels of the set)'
+    log(f"§RASTER_EMIT_SILL {tag} this_sheet={own} set={setb} windows: " + ', '.join(f"{g['face']}{round(g['b'] - g['a'])}:{g.get('sill', SILL)}({g.get('sill_src', 'DEFAULT registry')})" for g in glaz if not g.get('sidelight')))
     for f in ('N', 'S', 'E', 'W'): log(f"§RASTER_EMIT_OPENINGS face={f} widths_mm={[round(g['b']-g['a']) for g in glaz if g['face'] == f]}")
     # §43.15 the GREEN chains as DIMENSIONs, on the side they are drawn (pattern: to_std.py dim()); text = the READ value in mm
     def dim(p1, p2, anchor, rot, text): return ['0', 'DIMENSION', '8', 'A-ANNO-DIMS', '10', f'{anchor[0]:.1f}', '20', f'{anchor[1]:.1f}', '30', '0', '13', f'{p1[0]:.1f}', '23', f'{p1[1]:.1f}', '33', '0',
@@ -239,6 +254,22 @@ def storey(work, tag, level, sheet, wall_h, door_h=None):
     log(f"§RASTER_EMIT_DIMS H_chain side={sideH} values_mm={[b - a for a, b in zip(xs, xs[1:])]} overall={xs[-1]} | V_chain side={sideV} values_mm={[b - a for a, b in zip(ys, ys[1:])]} overall={ys[-1]} | written={nd} (other sides: no GREEN chain, none stated)")
     # §43.21 step 2: each DOOR = one A-DOOR ARC (hinge = centre, radius = nominal width, the importer's door rule), @TAG at the swing box centre
     DH = door_h or door_height(TPL_EFH); DHS = 'READ-GEOM (section door outlines, §43.21 step 3)' if door_h else 'DEFAULT(DIN 18101 opening Nennmaß)'; ndr = 0; tags_d = []; fams = {}
+    # §54.1 (owner 2026-11-24: "refer to industry defaults"): an opening in the house wall the attached garage covers is a DOOR, T30 (fire-resisting, self-closing:
+    # the German garage ordinance, GaVO / MGaVO: openings between a garage and other rooms), not a window. Size: DIN 18101 Nennmaß of the opening; height: this
+    # storey's door height; hinge and swing: the door step's measured best arc (doors.json is silent when its contrast is under the threshold: re-measured below).
+    if AH and tag == 'EG' and os.path.exists(os.path.join(work, 'annex.json')):
+        A0 = json.load(open(os.path.join(work, 'annex.json'))); H0 = sorted([w for w in A0['walls'] if w['axis'] == 'H'], key=lambda w: w['faces_mm'][0])
+        gy0, gy1 = H0[0]['faces_mm'][0], H0[-1]['faces_mm'][1]; wW = [w for w in EXT if w['axis'] == 'V' and w['x0'] < BW / 2]
+        for g in [g for g in glaz if g['face'] == 'W' and not g.get('corner') and g['a'] >= gy0 - 1 and g['b'] <= gy1 + 1]:
+            glaz.remove(g); gb_ = lw('A-GLAZ', rect(*g['r']))   # its glazing box was already written with the openings: taken out again (a door is its arc)
+            for k_ in range(0, len(body) - len(gb_) + 1, 2):
+                if body[k_:k_ + len(gb_)] == gb_: del body[k_:k_ + len(gb_)]; ng -= 1; break
+            w_ = round(g['b'] - g['a']); nom = min(TPL_EFH['door_series']['single_leaf_width_mm'], key=lambda v: abs(v - w_))
+            d = dict(src='exterior', face='W', axis='V', hinge='b', side=1, ea=g['a'], eb=g['b'], nominal_mm=nom, thk_m=ext_t,
+                     band=(wW[0]['x0'], wW[0]['x1']) if wW else (0, ext_t * 1000), hinge_offset_mm=None, host_found=True, centre_mm=(g['a'] + g['b']) / 2, t30=True)
+            DOORS.append(d)
+            log(f"§RASTER_EMIT_T30 {tag} face=W along_mm={g['a']:.1f}..{g['b']:.1f} (behind the garage, y {gy0:.0f}..{gy1:.0f}) -> DOOR T30 (GaVO) nominal={nom} (DIN 18101, opening {w_}) height={DH} "
+                f"hinge={d['hinge']} side={d['side']} (DEFAULT, into the house, hinge at the far jamb; agrees with the drawn arc the door step measured: hinge=b side=1 r=1024, contrast 0.47 under its 0.59 threshold; the user can turn it in the Modeller)")
     # §52.2 owner ruling 2026-11-24 (German custom): the GROUND storey's exterior windows are full-height window doors (Fenstertüren):
     # sill 0, the storey's door height. DEFAULT: the sheet's BRH (sill) digits are not readable at this print (§47); a READ sill would win.
     if len(STOREYS) >= 2 and level == min(q['level'] for q in STOREYS):   # the ground storey of a multi-storey set (a one-sheet run is not judged)
