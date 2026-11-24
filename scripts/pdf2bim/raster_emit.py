@@ -349,6 +349,11 @@ def storey(work, tag, level, sheet, wall_h, door_h=None):
         body += pl; want['A-FLOR-STRS'] = want.get('A-FLOR-STRS', 0) + 3
         sm = f"@STAIR={S_['n_risers']},{S_['rise_mm']},{S_['going_mm']}"; body += tx(o_[0], -(o_[1] - 300), sm); want['DXF2BIM-MARK'] += 1
         log(f"§RASTER_EMIT_STAIR {tag} outline_mm={o_} spine_mm={sp_} walk line {w_['start']} -> turn {w_['turn_centre']} r={rr} -> {w_['end']} bulge={bul:g} mark={sm} source={S_['source']}")
+    VJ = os.path.join(work, 'voids.json')   # §58.3 a reserved word with a slab void (LUFTRAUM): its checked cell, a closed ring on A-FLOR-VOID (bim-ootb §L49 cuts the storey's slab)
+    if os.path.exists(VJ):
+        for v_ in json.load(open(VJ))['rings']:
+            body += lw('A-FLOR-VOID', rect(v_['x0'], v_['y0'], v_['x1'], v_['y1'])); want['A-FLOR-VOID'] = want.get('A-FLOR-VOID', 0) + 1
+            log(f"§RASTER_EMIT_VOID {tag} word={v_['word']} ring_mm=({v_['x0']:.1f},{v_['y0']:.1f})-({v_['x1']:.1f},{v_['y1']:.1f}) = {(v_['x1'] - v_['x0']) / 1000:.3f} x {(v_['y1'] - v_['y0']) / 1000:.3f} m, N-S size checked against the section's printed {v_['printed_m']} m")
     GAR = None
     if AH and tag == 'EG':   # §43.22 step 3: the annex, appended AFTER every house entity (the reader's index handles of the house do not move)
         A_ = json.load(open(os.path.join(work, 'annex.json'))); assert A_['ring_closed'], 'annex ring not closed'
