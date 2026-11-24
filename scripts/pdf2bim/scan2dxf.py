@@ -103,6 +103,8 @@ log(f"§SCAN_ANNEX ring={'closed' if os.path.exists(AJ) and json.load(open(AJ)).
 for w_ in (R, OR):
     run(f'notch_{os.path.basename(w_)}', 'raster_notch.py', w_)
     log(f"§SCAN_NOTCH work={os.path.basename(w_)} notch.json={'yes' if os.path.exists(os.path.join(w_, 'notch.json')) else 'no'}")
+    run(f'fixtures_{os.path.basename(w_)}', 'raster_fixtures.py', w_)   # §52.5 the sanitary symbols this plan draws (fixtures.json, read by the emit)
+    log(f"§SCAN_FIXTURES work={os.path.basename(w_)} fixtures.json={'yes' if os.path.exists(os.path.join(w_, 'fixtures.json')) else 'no'}")
 
 # 6c. §50 the expectation checklist: facts from what was READ (storeys, section levels + build-ups), a drawing's own dictionary bound by the PDF's sha256
 import hashlib

@@ -14,8 +14,10 @@ up, lo = sys.argv[1], sys.argv[2]; SHIFT = float(sys.argv[3]) if len(sys.argv) >
 LMIN, MARGIN, CLEAR, SHIFTS, TOL = 600, 0.10, 150, (-1000, -750, -500, 500, 750, 1000), 2   # stated (§51): pieces under 0.6 m poison the null; the door rule's margin
 CL = json.load(open(os.path.join(lo, 'chains.json'))); _, gh, gv = anchor_chains(CL); X0, X1, Y0, Y1 = body(gh[0], gv[0]); KH, KV = CL['scale_px_per_m']['H'], CL['scale_px_per_m']['V']
 ink = np.asarray(Image.open(CL['clean']).convert('L')).astype(int) < 215; HP, WP = ink.shape
-UP = [w for w in json.load(open(os.path.join(up, 'walls_all.json')))['walls'] if w.get('src', 'READ') == 'READ']
+_upf = 'walls_drawn.json' if os.path.exists(os.path.join(up, 'walls_drawn.json')) else 'walls_all.json'   # §52.1: the upper plan's DRAWN bands (before its hatch rule) say where to look
+UP = [w for w in json.load(open(os.path.join(up, _upf)))['walls'] if w.get('src', 'READ') == 'READ']
 LW = json.load(open(os.path.join(lo, 'walls_all.json')))['walls']
+log(f"§RASTER_STACK upper_source={_upf} upper_READ_bands={len(UP)}")
 BW, BD = (X1 - X0) / KH * 1000, (Y1 - Y0) / KV * 1000   # the lower plan's body in mm (the house)
 def pxr(w): return X0 + w['x0'] / 1000 * KH, X0 + w['x1'] / 1000 * KH, Y0 + w['y0'] / 1000 * KV, Y0 + w['y1'] / 1000 * KV
 def share(w):

@@ -1,11 +1,12 @@
 {
   "_readme": "What the next library publish may change, stated before it runs (\u00a734, \u00a738). witness_library_publish.js holds the export to exactly this. Update it for each publish.",
-  "spec": "\u00a748 (2026-11-24): the entrance door leaf + its side light, migrations CL015 (DEWP_D1135_1135x2275) + CL016 (DEWP_W500_500x2275), on top of the live 5510b96bbf80; stated from the migrations before the run: 2 families, 4 ad_geometry_map rows",
+  "spec": "\u00a752.2 (2026-11-24): the ground-storey window doors (Fenstert\u00fcren, owner: German custom), migration CL017 (DEWP_W1010_1010x2275, DEWP_W1510_1510x2275, DEWP_W3010_3010x2275), on top of the live 175e0d52cffd; stated from the migration before the run: 3 families, 6 ad_geometry_map rows",
   "added_families": [
-    "DEWP_D1135_1135x2275",
-    "DEWP_W500_500x2275"
+    "DEWP_W1010_1010x2275",
+    "DEWP_W1510_1510x2275",
+    "DEWP_W3010_3010x2275"
   ],
-  "added_map_rows": 4,
+  "added_map_rows": 6,
   "families_that_may_resolve_differently": [],
   "descriptions_that_may_change": []
 }
