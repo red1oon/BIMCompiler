@@ -518,9 +518,9 @@ built-in pre-release test harness (§15).
 
 ### The Help panel: what to have in place, and a check before you complete
 
-**The idea.** A good guide tells you what must be in place *before* you act, not after something goes wrong.
-The Help panel does that for every window. With the **Friendly** plugin switched on, it also checks the
-document in front of you and shows what would stop it.
+**What a newcomer needs.** Before pressing an action, you need to know two things: what must already be in
+place, and what the action will do. The Help panel tells you both, for every window. With the **Friendly**
+plugin switched on, it also checks the document in front of you and shows what would stop it.
 
 **Opening it.** Press **?** on the right-hand strip. The panel opens on the right. Its top line links to this
 guide (the section for the window you are on), the guided **Tour**, and **About / Run it yourself**.
