@@ -48,7 +48,7 @@
 |---|---|
 | Document | CAPEX UAT Guide — from 2D drawings to the dashboard |
 | Purpose | The step-by-step test script for the User Acceptance Test of the pilot client (Sysnova): BIM drawings to a priced model, the ERP exercise, the CAPEX dashboard |
-| Revision | **2026-11-24 (l)** |
+| Revision | **2026-11-24 (m)** |
 | Status | Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately and stays as signed. Since then, steps were corrected: the change list after this cover (items 22 to 31) names each step and what changed. |
 | Prepared and issued by | Redhuan D. Oon, Project Consultant |
 | For | The pilot client's UAT team: System Setup, BIM, Project Mgmt Accounting |
@@ -60,7 +60,7 @@
 
 | Revision | What changed |
 |---|---|
-| 2026-11-24 (l) | Three notes moved into their steps: A2.2 and chapter C log in, the PDF download, B3.1 and B4.4 (items 2, 4, 7) |
+| 2026-11-24 (l), (m) | Three notes moved into their steps: A2.2 and chapter C log in, the PDF download, B3.1 and B4.4 (items 2, 4, 7); B0.6 says why the datums are typed |
 | 2026-11-23 (h) to (j) | The whole Shed into the ERP and the dashboard: B4, L1 to L3 before C, D (item 27); the link names the order, *Push again?* (item 28); L2's status line, B5.1's pack date (items 29, 30); the two films (item 31) |
 | 2026-11-22 (g) | One cost for the model: B3.1, B5 and the reference pack (item 26) |
 | 2026-11-22 (c) to (f) | Items 9 to 19 moved into their steps; items 22 to 25; film part 3 re-published, linked (item 20) |
@@ -422,7 +422,7 @@ The panel has sections you open by clicking their title: **All defaults** (the y
 | B0.4 | Open **Layers**. Under each heading, pick the meaning of each CAD layer from its list, as in the table below. Where the table says *one sheet only*, press the small arrow at the right of the layer's row (**Type this layer sheet by sheet**) and pick the meaning on that sheet's line only | After **PLAN · Col = column** the badge reads **Blocked · 1**; after **ELEV · Wall = panel** it reads **Qualifies**. When all ten are set, **All defaults** shows **14** yellow rows (sizes the Modeller assumes, such as the fan depth) | ☐ Pass ☐ Fail |
 | B0.4b | In **All defaults**, press **Accept all** | **0** yellow rows | ☐ Pass ☐ Fail |
 | B0.5 | Open **Body heights**. It lists **footing** and **beam** as waiting (no elevation shows them). Type **footing**: z0 `-1.4478`, z1 `-1.143`, **Add**. Type **beam**: z0 `3.098794`, z1 `3.352794`, **Add** | Two rows: `@BODYZ=footing,-1.4478,-1.143` and `@BODYZ=beam,3.098794,3.352794`. The badge still reads **Qualifies** | ☐ Pass ☐ Fail |
-| B0.6 | In **Sheets**, open each elevation and the section card in turn. Under **Level datums (@Z)**, type the height `0.6096` in the first box and the card's y (table below) in **y where drawn**, then **Add** | Each of the five cards lists a new `@Z=0.6096` row beside the two it read itself (`@Z=0` and the eave or ridge height). The badge still reads **Qualifies** | ☐ Pass ☐ Fail |
+| B0.6 | In **Sheets**, open each elevation and the section card in turn. Under **Level datums (@Z)**, type the height `0.6096` in the first box and the card's y (table below) in **y where drawn**, then **Add**. (Why: these five datums change no element of the model, measured: the element count stays the same with or without them. They make your marked copies equal the supplied ones, which the Run Checker compares mark for mark in B5, and Arrange counts them in B2.3.) | Each of the five cards lists a new `@Z=0.6096` row beside the two it read itself (`@Z=0` and the eave or ridge height). The badge still reads **Qualifies** | ☐ Pass ☐ Fail |
 | B0.7 | Open **Exclude areas**. Choose **3_BEAM_LAYOUT** in its list and press **Exclude area** (the button now reads **Drag a box**). On the canvas, zoom to the bay between grid **06** and grid **35**: the beam layout's **expansion joint** is the pair of close vertical lines (about 22 cm apart) running across all four rows A to D. Drag a box from above row A to below row D that holds both lines and the small break marks beside them: start about half a metre left of the left line (not more than 1 m: two short beam ends start 1.05 m to the left) and stop about 25 cm right of the right line. The break marks reach 18 cm out from the lines; the beams of the right-hand block start 37 cm right of the right line, so the box must stop before them. Press **Drag a box** again to leave the tool | **Exclude areas** lists one row, `3_BEAM_LAYOUT @EXCLUDE=…` with the box's four numbers. Without it the joint's two lines are read as four extra beams (B2b would then read 515 elements, not 511) | ☐ Pass ☐ Fail |
 | B0.8 | Read the top of the panel | The badge reads **Qualifies**; **All defaults** has **0** yellow rows | ☐ Pass ☐ Fail |
 | B0.9 | Press **Save marked copies** (at the foot of the panel) | Your browser downloads nine files named `0_FLOOR_PLAN_marked.dxf` … `5_DETAILS_marked.dxf`, the names used from B1 on. The panel says **Downloaded: …**; the files you opened are unchanged | ☐ Pass ☐ Fail |
