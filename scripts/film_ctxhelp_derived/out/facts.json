@@ -1,0 +1,824 @@
+{
+ "made": "2026-11-24T01:32:23.134Z",
+ "tree": "3c08fa43",
+ "shots": {
+  "ctxwin": {
+   "file": "pages/ctxwin.png",
+   "rects": {
+    "panel": {
+     "x": 1560,
+     "y": 69,
+     "w": 360,
+     "h": 1011
+    },
+    "ctx": {
+     "x": 1577,
+     "y": 296,
+     "w": 329,
+     "h": 119
+    },
+    "content": {
+     "x": 506,
+     "y": 246,
+     "w": 1054,
+     "h": 795
+    }
+   },
+   "records": 131,
+   "rows": 131,
+   "window": "§IDEMPIERE window=Context Help(200034) tabs=3 source=sqlite"
+  },
+  "so_a": {
+   "file": "pages/so_a.png",
+   "crop": {
+    "x": 1560,
+    "y": 89,
+    "w": 360,
+    "h": 620
+   },
+   "inside": true,
+   "win": "top+led",
+   "must": [
+    {
+     "text": "Before you start.",
+     "rect": {
+      "x": 1577,
+      "y": 103,
+      "w": 329,
+      "h": 176
+     }
+    },
+    {
+     "text": "Do it.",
+     "rect": {
+      "x": 1577,
+      "y": 289,
+      "w": 329,
+      "h": 101
+     }
+    }
+   ]
+  },
+  "so_b": {
+   "file": "pages/so_b.png",
+   "crop": {
+    "x": 1560,
+    "y": 130,
+    "w": 360,
+    "h": 620
+   },
+   "inside": true,
+   "win": "top+led",
+   "must": [
+    {
+     "text": "What Complete does.",
+     "rect": {
+      "x": 1577,
+      "y": 144,
+      "w": 329,
+      "h": 25
+     }
+    },
+    {
+     "text": "ul",
+     "rect": {
+      "x": 1577,
+      "y": 178,
+      "w": 329,
+      "h": 428
+     }
+    }
+   ]
+  },
+  "so_c": {
+   "file": "pages/so_c.png",
+   "crop": {
+    "x": 1560,
+    "y": 460,
+    "w": 360,
+    "h": 620
+   },
+   "inside": true,
+   "win": "bottom",
+   "must": [
+    {
+     "text": "When it refuses",
+     "rect": {
+      "x": 1577,
+      "y": 606,
+      "w": 329,
+      "h": 277
+     }
+    }
+   ]
+  },
+  "po_b": {
+   "file": "pages/po_b.png",
+   "crop": {
+    "x": 1560,
+    "y": 181,
+    "w": 360,
+    "h": 620
+   },
+   "inside": true,
+   "win": "top+led",
+   "must": [
+    {
+     "text": "What Complete does.",
+     "rect": {
+      "x": 1577,
+      "y": 195,
+      "w": 329,
+      "h": 25
+     }
+    },
+    {
+     "text": "ul",
+     "rect": {
+      "x": 1577,
+      "y": 229,
+      "w": 329,
+      "h": 302
+     }
+    }
+   ]
+  },
+  "bp_n": {
+   "file": "pages/bp_n.png",
+   "crop": {
+    "x": 1560,
+    "y": 281,
+    "w": 360,
+    "h": 620
+   },
+   "inside": true,
+   "win": "top+led",
+   "must": [
+    {
+     "text": "Needed by.",
+     "rect": {
+      "x": 1577,
+      "y": 295,
+      "w": 329,
+      "h": 176
+     }
+    }
+   ]
+  },
+  "ship_b": {
+   "file": "pages/ship_b.png",
+   "crop": {
+    "x": 1560,
+    "y": 69,
+    "w": 360,
+    "h": 643
+   },
+   "inside": true,
+   "win": "top-grown",
+   "must": [
+    {
+     "text": "What Complete does.",
+     "rect": {
+      "x": 1577,
+      "y": 69,
+      "w": 329,
+      "h": 25
+     }
+    },
+    {
+     "text": "ul",
+     "rect": {
+      "x": 1577,
+      "y": 103,
+      "w": 329,
+      "h": 605
+     }
+    }
+   ]
+  },
+  "ship_c": {
+   "file": "pages/ship_c.png",
+   "crop": {
+    "x": 1560,
+    "y": 460,
+    "w": 360,
+    "h": 620
+   },
+   "inside": true,
+   "win": "bottom",
+   "must": [
+    {
+     "text": "When it refuses",
+     "rect": {
+      "x": 1577,
+      "y": 481,
+      "w": 329,
+      "h": 378
+     }
+    }
+   ]
+  }
+ },
+ "lines": {
+  "index": "§HELP_SEARCH index lang=en_US windows=295 records=1081 actions=13 statuses=12 howto=130 (en_US) phrases=722 vocab=0"
+ },
+ "term": {
+  "sed": {
+   "cmd": "sed -n 2178p MOrder.java",
+   "cwd": "/home/red1/idempiere-dev-setup/idempiere/org.adempiere.base/src/org/compiere/model",
+   "out": "\t\tif (evalAutoGenerateInOutRule(DocSubTypeSO, dt.isAutoGenerateInout())) ",
+   "status": 0
+  },
+  "tick": {
+   "cmd": "grep S1-pos-sale run_20261123_142109_m3metaall.log",
+   "cwd": "/home/red1/.cache/bim_bridge",
+   "out": "§SCN S1-pos-sale MATCH compared=17 inconclusive=0\n§SCN_META S1-pos-sale {\"table\":\"C_Order\",\"doctype\":135}\n§SCN_DETAIL S1-pos-sale legacy={\"outcome\":\"COMPLETED\",\"docstatus\":\"CO\",\"lines\":\"123:1:6175\",\"total_cents\":6175,\"shipments\":1,\"shipments_completed\":1,\"invoices\":1,\"stock_delta\":\"{\\\"123\\\":-1}\",\"postings\":\"518:DR6175/CR0|758:DR0/CR6175\",\"postings_shipment\":\"REFUSED:Posted=E\",\"postings_euro\":\"518:DR5249/CR0|758:DR0/CR5249\",\"postings_shipment_euro\":\"REFUSED:Posted=E\",\"line_tax\":\"123:104\",\"order_tax\":\"104:6175:0\",\"grand_total_cents\":6175,\"invoice_tax\":\"104:6175:0\",\"cost_qty_delta\":\"{}\"} sqlite={\"outcome\":\"COMPLETED\",\"docstatus\":\"CO\",\"lines\":\"123:1:6175\",\"total_cents\":6175,\"shipments\":1,\"shipments_completed\":1,\"invoices\":1,\"stock_delta\":\"{\\\"123\\\":-1}\",\"postings\":\"518:DR6175/CR0|758:DR0/CR6175\",\"postings_shipment\":\"REFUSED:Posted=E\",\"_refused\":\"AverageCostingNegativeQty: Product=123, Current Qty=0, New Current Qty=-1, CostElement=103, Schema=101\",\"cost_qty_delta\":\"{}\",\"postings_euro\":\"518:DR5249/CR0|758:DR0/CR5249\",\"postings_shipment_euro\":\"REFUSED:Posted=E\",\"line_tax\":\"123:104\",\"order_tax\":\"104:6175:0\",\"grand_total_cents\":6175,\"invoice_tax\":\"104:6175:0\"}",
+   "status": 0,
+   "d": {
+    "line": "§SCN_DETAIL S1-pos-sale legacy={\"outcome\":\"COMPLETED\",\"docstatus\":\"CO\",\"lines\":\"123:1:6175\",\"total_cents\":6175,\"shipments\":1,\"shipments_completed\":1,\"invoices\":1,\"stock_delta\":\"{\\\"123\\\":-1}\",\"postings\":\"518:DR6175/CR0|758:DR0/CR6175\",\"postings_shipment\":\"REFUSED:Posted=E\",\"postings_euro\":\"518:DR5249/CR0|758:DR0/CR5249\",\"postings_shipment_euro\":\"REFUSED:Posted=E\",\"line_tax\":\"123:104\",\"order_tax\":\"104:6175:0\",\"grand_total_cents\":6175,\"invoice_tax\":\"104:6175:0\",\"cost_qty_delta\":\"{}\"} sqlite={\"outcome\":\"COMPLETED\",\"docstatus\":\"CO\",\"lines\":\"123:1:6175\",\"total_cents\":6175,\"shipments\":1,\"shipments_completed\":1,\"invoices\":1,\"stock_delta\":\"{\\\"123\\\":-1}\",\"postings\":\"518:DR6175/CR0|758:DR0/CR6175\",\"postings_shipment\":\"REFUSED:Posted=E\",\"_refused\":\"AverageCostingNegativeQty: Product=123, Current Qty=0, New Current Qty=-1, CostElement=103, Schema=101\",\"cost_qty_delta\":\"{}\",\"postings_euro\":\"518:DR5249/CR0|758:DR0/CR5249\",\"postings_shipment_euro\":\"REFUSED:Posted=E\",\"line_tax\":\"123:104\",\"order_tax\":\"104:6175:0\",\"grand_total_cents\":6175,\"invoice_tax\":\"104:6175:0\"}",
+    "legacy": {
+     "outcome": "COMPLETED",
+     "docstatus": "CO",
+     "lines": "123:1:6175",
+     "total_cents": 6175,
+     "shipments": 1,
+     "shipments_completed": 1,
+     "invoices": 1,
+     "stock_delta": "{\"123\":-1}",
+     "postings": "518:DR6175/CR0|758:DR0/CR6175",
+     "postings_shipment": "REFUSED:Posted=E",
+     "postings_euro": "518:DR5249/CR0|758:DR0/CR5249",
+     "postings_shipment_euro": "REFUSED:Posted=E",
+     "line_tax": "123:104",
+     "order_tax": "104:6175:0",
+     "grand_total_cents": 6175,
+     "invoice_tax": "104:6175:0",
+     "cost_qty_delta": "{}"
+    },
+    "sqlite": {
+     "outcome": "COMPLETED",
+     "docstatus": "CO",
+     "lines": "123:1:6175",
+     "total_cents": 6175,
+     "shipments": 1,
+     "shipments_completed": 1,
+     "invoices": 1,
+     "stock_delta": "{\"123\":-1}",
+     "postings": "518:DR6175/CR0|758:DR0/CR6175",
+     "postings_shipment": "REFUSED:Posted=E",
+     "_refused": "AverageCostingNegativeQty: Product=123, Current Qty=0, New Current Qty=-1, CostElement=103, Schema=101",
+     "cost_qty_delta": "{}",
+     "postings_euro": "518:DR5249/CR0|758:DR0/CR5249",
+     "postings_shipment_euro": "REFUSED:Posted=E",
+     "line_tax": "123:104",
+     "order_tax": "104:6175:0",
+     "grand_total_cents": 6175,
+     "invoice_tax": "104:6175:0"
+    },
+    "verdict": "MATCH"
+   }
+  },
+  "ref": {
+   "cmd": "grep S13b run_20261123_142109_m3metaall.log",
+   "cwd": "/home/red1/.cache/bim_bridge",
+   "out": "§SCN S13b-standard-order-over-credit-limit MATCH compared=17 inconclusive=0\n§SCN_META S13b-standard-order-over-credit-limit {\"table\":\"C_Order\",\"doctype\":132}\n§SCN_DETAIL S13b-standard-order-over-credit-limit legacy={\"outcome\":\"REJECTED\",\"reason\":\"Failed when processing document: Business Partner with this Order over Credit Hold - Open \"} sqlite={\"outcome\":\"REJECTED\",\"reason\":\"credit-over-hold\"}",
+   "status": 0,
+   "d": {
+    "line": "§SCN_DETAIL S13b-standard-order-over-credit-limit legacy={\"outcome\":\"REJECTED\",\"reason\":\"Failed when processing document: Business Partner with this Order over Credit Hold - Open \"} sqlite={\"outcome\":\"REJECTED\",\"reason\":\"credit-over-hold\"}",
+    "legacy": {
+     "outcome": "REJECTED",
+     "reason": "Failed when processing document: Business Partner with this Order over Credit Hold - Open "
+    },
+    "sqlite": {
+     "outcome": "REJECTED",
+     "reason": "credit-over-hold"
+    },
+    "verdict": "MATCH"
+   }
+  }
+ },
+ "ctxwin": {
+  "records": 131,
+  "rows": 131,
+  "window": "§IDEMPIERE window=Context Help(200034) tabs=3 source=sqlite"
+ },
+ "so": {
+  "line": "§HELP_CTX window=143 type=T id=186 howto=1000000 shown=dict+msg lang=en_US",
+  "p": {
+   "all": "Order\n\nOrder Header\n\nThe Order Header Tab defines the parameters of an Order. Changing the Organization, Business Partner, Warehouse, Date Promised, etc. changes these values on all the lines.\n\nSales Order\n\nBefore you start. These must exist first: Target Document Type (Document Type), Business Partner, Partner Location (Business Partner), Warehouse (Warehouse and Locators), Price List, Sales Representative (User), Payment Term.\n\nDo it. Fill Order, then Order Line, Order Tax, Payment Schedule, POS Payment; then the Document Action Complete.\n\nWhat Complete does.\n\nOn Credit Order, Warehouse Order, POS Order (Prepay Order if Generate Shipment): also creates and completes the shipment ✓\nPOS Order, On Credit Order (Prepay Order if Generate Invoice): also creates the invoice ✓\nStandard Order: reserves the ordered quantity; shipment and invoice are made next ✓\nQuotation: reserves the quantity and creates nothing else\nProposal: reserves nothing and creates nothing else\nPrepay Order: waits for a payment (status Waiting Payment)\nThe next action offered is Close\n\nWhen it refuses, legacy says: “Period Closed” ✓; “Product is not on Price List” ✓; “Business Partner with this Order over Credit Hold” ✓; “Fill mandatory fields: Shipper”; “No Document Lines found”; “Product … Exclude Auto Delivery”; “Line No … - Invalid: Date Promised”; “Cannot change Document Type”; “Cannot reserve Stock”; “Error calculating tax”; “Error in payment schedule”.\n\nRead from iDempiere's MOrder.java and the dictionary. ✓ = seen in a legacy run of 2026-11-23.\n\n1 · Sales Order\n\n1 · Sales Order …\n\ndocs/ERPUserGuide.md · Sales Order",
+   "complete": [
+    {
+     "text": "On Credit Order, Warehouse Order, POS Order (Prepay Order if Generate Shipment): also creates and completes the shipment ✓",
+     "tick": true
+    },
+    {
+     "text": "POS Order, On Credit Order (Prepay Order if Generate Invoice): also creates the invoice ✓",
+     "tick": true
+    },
+    {
+     "text": "Standard Order: reserves the ordered quantity; shipment and invoice are made next ✓",
+     "tick": true
+    },
+    {
+     "text": "Quotation: reserves the quantity and creates nothing else",
+     "tick": false
+    },
+    {
+     "text": "Proposal: reserves nothing and creates nothing else",
+     "tick": false
+    },
+    {
+     "text": "Prepay Order: waits for a payment (status Waiting Payment)",
+     "tick": false
+    },
+    {
+     "text": "The next action offered is Close",
+     "tick": false
+    }
+   ],
+   "ticks": 3,
+   "before": "Before you start. These must exist first: Target Document Type (Document Type), Business Partner, Partner Location (Business Partner), Warehouse (Warehouse and Locators), Price List, Sales Representative (User), Payment Term.",
+   "beforeItems": [
+    "Target Document Type (Document Type)",
+    "Business Partner",
+    "Partner Location (Business Partner)",
+    "Warehouse (Warehouse and Locators)",
+    "Price List",
+    "Sales Representative (User)",
+    "Payment Term"
+   ],
+   "beforeLinks": [
+    {
+     "text": "Document Type",
+     "win": "135"
+    },
+    {
+     "text": "Business Partner",
+     "win": "123"
+    },
+    {
+     "text": "Business Partner",
+     "win": "123"
+    },
+    {
+     "text": "Warehouse and Locators",
+     "win": "139"
+    },
+    {
+     "text": "Price List",
+     "win": "146"
+    },
+    {
+     "text": "User",
+     "win": "108"
+    },
+    {
+     "text": "Payment Term",
+     "win": "141"
+    }
+   ],
+   "refuse": "When it refuses, legacy says: “Period Closed” ✓; “Product is not on Price List” ✓; “Business Partner with this Order over Credit Hold” ✓; “Fill mandatory fields: Shipper”; “No Document Lines found”; “Product … Exclude Auto Delivery”; “Line No … - Invalid: Date Promised”; “Cannot change Document Type”; “Cannot reserve Stock”; “Error calculating tax”; “Error in payment schedule”.",
+   "refuseTicks": 3,
+   "needed": null,
+   "neededLinks": [],
+   "neededItems": [],
+   "doit": "Do it. Fill Order, then Order Line, Order Tax, Payment Schedule, POS Payment; then the Document Action Complete."
+  }
+ },
+ "po": {
+  "line": "§HELP_CTX window=181 type=T id=294 howto=1000008 shown=dict+msg lang=en_US",
+  "p": {
+   "all": "Purchase Order\n\nOrder Header\n\nThe Order Header Tab defines the parameters of an order. The field values defined will determine how the Order Lines are processed.\n\nPurchase Order\n\nBefore you start. These must exist first: Target Document Type (Document Type), Business Partner, Partner Location (Business Partner), Warehouse (Warehouse and Locators), Price List, Company Agent (User), Payment Term.\n\nDo it. Fill Purchase Order, then PO Line, Order Tax, Payment Schedule, Estimated Landed Cost; then the Document Action Complete.\n\nWhat Complete does.\n\nOn Credit Order, Warehouse Order, POS Order (Prepay Order if Generate Shipment): also creates and completes the shipment\nPOS Order, On Credit Order (Prepay Order if Generate Invoice): also creates the invoice\nPurchase Order with no SO Sub Type: adds the ordered quantity to the warehouse's ordered stock; receipt and invoice are made next ✓\nThe next action offered is Close\n\nWhen it refuses, legacy says: “Period Closed” ✓; “Product is not on Price List” ✓; “Business Partner with this Order over Credit Hold” ✓; “Fill mandatory fields: Shipper”; “No Document Lines found”; “Product … Exclude Auto Delivery”; “Line No … - Invalid: Date Promised”; “Cannot change Document Type”; “Cannot reserve Stock”; “Error calculating tax”; “Error in payment schedule”.\n\nRead from iDempiere's MOrder.java and the dictionary. ✓ = seen in a legacy run of 2026-11-23.\n\n6 · Purchase Order → Receipt → Vendor Invoice → Match\n\n6 · Purchase Order → Receipt → Vendor Invoice → Match …\n\ndocs/ERPUserGuide.md · Purchase Order",
+   "complete": [
+    {
+     "text": "On Credit Order, Warehouse Order, POS Order (Prepay Order if Generate Shipment): also creates and completes the shipment",
+     "tick": false
+    },
+    {
+     "text": "POS Order, On Credit Order (Prepay Order if Generate Invoice): also creates the invoice",
+     "tick": false
+    },
+    {
+     "text": "Purchase Order with no SO Sub Type: adds the ordered quantity to the warehouse's ordered stock; receipt and invoice are made next ✓",
+     "tick": true
+    },
+    {
+     "text": "The next action offered is Close",
+     "tick": false
+    }
+   ],
+   "ticks": 1,
+   "before": "Before you start. These must exist first: Target Document Type (Document Type), Business Partner, Partner Location (Business Partner), Warehouse (Warehouse and Locators), Price List, Company Agent (User), Payment Term.",
+   "beforeItems": [
+    "Target Document Type (Document Type)",
+    "Business Partner",
+    "Partner Location (Business Partner)",
+    "Warehouse (Warehouse and Locators)",
+    "Price List",
+    "Company Agent (User)",
+    "Payment Term"
+   ],
+   "beforeLinks": [
+    {
+     "text": "Document Type",
+     "win": "135"
+    },
+    {
+     "text": "Business Partner",
+     "win": "123"
+    },
+    {
+     "text": "Business Partner",
+     "win": "123"
+    },
+    {
+     "text": "Warehouse and Locators",
+     "win": "139"
+    },
+    {
+     "text": "Price List",
+     "win": "146"
+    },
+    {
+     "text": "User",
+     "win": "108"
+    },
+    {
+     "text": "Payment Term",
+     "win": "141"
+    }
+   ],
+   "refuse": "When it refuses, legacy says: “Period Closed” ✓; “Product is not on Price List” ✓; “Business Partner with this Order over Credit Hold” ✓; “Fill mandatory fields: Shipper”; “No Document Lines found”; “Product … Exclude Auto Delivery”; “Line No … - Invalid: Date Promised”; “Cannot change Document Type”; “Cannot reserve Stock”; “Error calculating tax”; “Error in payment schedule”.",
+   "refuseTicks": 3,
+   "needed": null,
+   "neededLinks": [],
+   "neededItems": [],
+   "doit": "Do it. Fill Purchase Order, then PO Line, Order Tax, Payment Schedule, Estimated Landed Cost; then the Document Action Complete."
+  }
+ },
+ "bp": {
+  "line": "§HELP_CTX window=123 type=T id=220 howto=1000011 shown=dict+msg lang=en_US",
+  "p": {
+   "all": "Business Partner\n\nBusiness Partner\n\nThe Business Partner Tab defines any Entity with whom an organization transacts.\n\nBusiness Partner\n\nBefore you start. These must exist first: Business Partner Group.\n\nNeeded by. Each of these asks for one on its header: Sales Order, Purchase Order, Shipment (Customer), Payment and Receipt, Purchase Invoice and Credit/Debit Note, Material Receipt, Sales Invoice and Credit/Debit Note, Bank/Cash Transfer.\n\nDo it. Fill Business Partner, then Contact (User), Location, Bank Account, Shipping Accounts, Customer Accounting, Vendor Accounting.\n\nRead from the dictionary.\n\nStep 4 · Create a customer\n\nOpen Business Partner (window 123) and click New record on the toolbar.\nOrganization: pick your company's HQ, or * to share the record across organizations.\nSearch Key: e.g. C-001. Name: e.g. Acme Retail Sdn Bhd.\nBusiness Partner Group: pick Standard, the group the setup created for your company.\nTick Customer and click Save on the toolbar.\n\nStep 4 · Create a customer …\n\ndocs/ERP_FirstSetup.md · Business Partner",
+   "complete": [],
+   "ticks": 0,
+   "before": "Before you start. These must exist first: Business Partner Group.",
+   "beforeItems": [
+    "Business Partner Group"
+   ],
+   "beforeLinks": [
+    {
+     "text": "Business Partner Group",
+     "win": "192"
+    }
+   ],
+   "refuse": null,
+   "refuseTicks": 0,
+   "needed": "Needed by. Each of these asks for one on its header: Sales Order, Purchase Order, Shipment (Customer), Payment and Receipt, Purchase Invoice and Credit/Debit Note, Material Receipt, Sales Invoice and Credit/Debit Note, Bank/Cash Transfer.",
+   "neededLinks": [
+    {
+     "text": "Sales Order",
+     "win": "143"
+    },
+    {
+     "text": "Purchase Order",
+     "win": "181"
+    },
+    {
+     "text": "Shipment (Customer)",
+     "win": "169"
+    },
+    {
+     "text": "Payment and Receipt",
+     "win": "195"
+    },
+    {
+     "text": "Purchase Invoice and Credit/Debit Note",
+     "win": "183"
+    },
+    {
+     "text": "Material Receipt",
+     "win": "184"
+    },
+    {
+     "text": "Sales Invoice and Credit/Debit Note",
+     "win": "167"
+    },
+    {
+     "text": "Bank/Cash Transfer",
+     "win": "200105"
+    }
+   ],
+   "neededItems": [
+    "Sales Order",
+    "Purchase Order",
+    "Shipment (Customer)",
+    "Payment and Receipt",
+    "Purchase Invoice and Credit/Debit Note",
+    "Material Receipt",
+    "Sales Invoice and Credit/Debit Note",
+    "Bank/Cash Transfer"
+   ],
+   "doit": "Do it. Fill Business Partner, then Contact (User), Location, Bank Account, Shipping Accounts, Customer Accounting, Vendor Accounting."
+  }
+ },
+ "click": {
+  "link": {
+   "text": "Shipment (Customer)",
+   "win": "169"
+  },
+  "line": "§HELP_CTX window=169 type=T id=257 howto=1000001 shown=dict+msg lang=en_US",
+  "tab": "Shipment"
+ },
+ "ship": {
+  "line": "§HELP_CTX window=169 type=T id=257 howto=1000001 shown=dict+msg lang=en_US",
+  "p": {
+   "all": "Shipment\n\nShipments and Customer Returns\n\nThe Shipments Tab allows you to generate, maintain, enter and process Shipments to a Customer or Returns from a Customer.\n\nShipment (Customer)\n\nBefore you start. These must exist first: Business Partner, Partner Location (Business Partner).\n\nDo it. Fill Shipment, then Shipment Line, Packages; then the Document Action Complete.\n\nWhat Complete does.\n\nPick/QA Confirmation: Yes: creates a pick/QA confirmation document with one line per shipment line\nShip/Receipt Confirmation: Yes: creates a ship/receipt confirmation (after the pick/QA one when both are on)\nStays In Progress while a non-customer confirmation is unprocessed\nMovement Type Customer Shipment, Vendor Returns: takes the line quantity out of the locator's on-hand stock (stocked products)\nMovement Type Customer Returns, Vendor Receipts: adds the line quantity to the locator's on-hand stock (stocked products)\nReduces the product's reserved stock for the order line's warehouse ✓\nRaises order line delivered qty on shipment (C-), lowers it on customer return (C+) ✓\nOffers Close as the next document action\n\nWhen it refuses, legacy says: “Either Order or RMA can be process on this document.”; “Period Closed”; “Back-Date transaction not allowed”; “No Document Lines found”; “Attribute Set Mandatory (Line No #… , Product=… )”; “Open: Ship/Receipt Confirmation”; “Insufficient Stock Coverage. A shipment should not be allowed if there is insufficient stock before the shipment’s movement date.”; “More than line qty on attribute tab for line …”; “Cannot correct Inventory OnHand (MA) [… ] - …”; and 9 more in MInOut.java.\n\nRead from iDempiere's MInOut.java and the dictionary. ✓ = seen in a legacy run of 2026-11-23.\n\n2 · Shipment\n\n2 · Shipment …\n\ndocs/ERPUserGuide.md · Shipment (Customer)",
+   "complete": [
+    {
+     "text": "Pick/QA Confirmation: Yes: creates a pick/QA confirmation document with one line per shipment line",
+     "tick": false
+    },
+    {
+     "text": "Ship/Receipt Confirmation: Yes: creates a ship/receipt confirmation (after the pick/QA one when both are on)",
+     "tick": false
+    },
+    {
+     "text": "Stays In Progress while a non-customer confirmation is unprocessed",
+     "tick": false
+    },
+    {
+     "text": "Movement Type Customer Shipment, Vendor Returns: takes the line quantity out of the locator's on-hand stock (stocked products)",
+     "tick": false
+    },
+    {
+     "text": "Movement Type Customer Returns, Vendor Receipts: adds the line quantity to the locator's on-hand stock (stocked products)",
+     "tick": false
+    },
+    {
+     "text": "Reduces the product's reserved stock for the order line's warehouse ✓",
+     "tick": true
+    },
+    {
+     "text": "Raises order line delivered qty on shipment (C-), lowers it on customer return (C+) ✓",
+     "tick": true
+    },
+    {
+     "text": "Offers Close as the next document action",
+     "tick": false
+    }
+   ],
+   "ticks": 2,
+   "before": "Before you start. These must exist first: Business Partner, Partner Location (Business Partner).",
+   "beforeItems": [
+    "Business Partner",
+    "Partner Location (Business Partner)"
+   ],
+   "beforeLinks": [
+    {
+     "text": "Business Partner",
+     "win": "123"
+    },
+    {
+     "text": "Business Partner",
+     "win": "123"
+    }
+   ],
+   "refuse": "When it refuses, legacy says: “Either Order or RMA can be process on this document.”; “Period Closed”; “Back-Date transaction not allowed”; “No Document Lines found”; “Attribute Set Mandatory (Line No #… , Product=… )”; “Open: Ship/Receipt Confirmation”; “Insufficient Stock Coverage. A shipment should not be allowed if there is insufficient stock before the shipment’s movement date.”; “More than line qty on attribute tab for line …”; “Cannot correct Inventory OnHand (MA) [… ] - …”; and 9 more in MInOut.java.",
+   "refuseTicks": 0,
+   "needed": null,
+   "neededLinks": [],
+   "neededItems": [],
+   "doit": "Do it. Fill Shipment, then Shipment Line, Packages; then the Document Action Complete."
+  },
+  "more": {
+   "n": 9,
+   "file": "MInOut.java"
+  }
+ },
+ "errors": [],
+ "legacy": {
+  "db": "idempiere_pilot",
+  "script": "legacy/local_sql/postgresql/202611230625_KernelERP_ContextHelp.sql",
+  "before": {
+   "helps": 1,
+   "msgs": 1,
+   "trl": 1,
+   "tabLinks": 0,
+   "procLinks": 0,
+   "seq": "AD_CtxHelp|1000000 AD_CtxHelpMsg|1000000"
+  },
+  "tableId": 319,
+  "order": {
+   "id": 1006416,
+   "no": "602850"
+  },
+  "applied": {
+   "helps": 131,
+   "msgs": 131,
+   "trl": 131,
+   "tabLinks": 126,
+   "procLinks": 4,
+   "seq": "AD_CtxHelp|1000130 AD_CtxHelpMsg|1000130"
+  },
+  "lookup257": {
+   "uu": "88553452-b4a3-594f-936c-51f8d4303780",
+   "len": 1981,
+   "ours": true
+  },
+  "reloadSame": true,
+  "zk": {
+   "panel": "Description\n\nOptional short description of the record\n\nA description is limited to 255 characters.\n---\nShipment\n\nShipments and Customer Returns\n\nThe Shipments Tab allows you to generate, maintain, enter and process Shipments to a Customer or Returns from a Customer.\n\nShipment (Customer)\n\nBefore you start. These must exist first: Business Partner, Partner Location (Business Partner).\n\nDo it. Fill Shipment, then Shipment Line, Packages; then the Document Action Complete.\n\nWhat Complete does.\n\nPick/QA Confirmation: Yes: creates a pick/QA confirmation document with one line per shipment line\nShip/Receipt Confirmation: Yes: creates a ship/receipt confirmation (after the pick/QA one when both are on)\nStays In Progress while a non-customer confirmation is unprocessed\nMovement Type Customer Shipment, Vendor Returns: takes the line quantity out of the locator's on-hand stock (stocked products)\nMovement Type Customer Returns, Vendor Receipts: adds the line quantity to the locator's on-hand stock (stocked products)\nReduces the product's reserved stock for the order line's warehouse ✓\nRaises order line delivered qty on shipment (C-), lowers it on customer return (C+) ✓\nOffers Close as the next document action\n\nWhen it refuses, legacy says: “Either Order or RMA can be process on this document.”; “Period Closed”; “Back-Date transaction not allowed”; “No Document Lines found”; “Attribute Set Mandatory (Line No #… , Product=… )”; “Open: Ship/Receipt Confirmation”; “Insufficient Stock Coverage. A shipment should not be allowed if there is insufficient stock before the shipment’s movement date.”; “More than line qty on attribute tab for line …”; “Cannot correct Inventory OnHand (MA) [… ] - …”; and 9 more in MInOut.java.\n\nShipment (Customer) …\n\n\n\n---\n",
+   "hasOwn": true,
+   "hasOurs": true,
+   "title": "iDempiere",
+   "fresh": false,
+   "shots": {
+    "top": {
+     "file": "pages/legacy_ship_a.png",
+     "crop": {
+      "x": 1625,
+      "y": 83,
+      "w": 294,
+      "h": 620
+     },
+     "box": {
+      "x": 1625,
+      "y": 83,
+      "w": 294,
+      "h": 995
+     },
+     "must": [
+      {
+       "text": "Before you start.",
+       "rect": {
+        "x": 1642,
+        "y": 116,
+        "w": 243,
+        "h": 94
+       }
+      },
+      {
+       "text": "Do it.",
+       "rect": {
+        "x": 1642,
+        "y": 220,
+        "w": 243,
+        "h": 94
+       }
+      }
+     ],
+     "inside": true
+    },
+    "complete": {
+     "file": "pages/legacy_ship_b.png",
+     "crop": {
+      "x": 1625,
+      "y": 83,
+      "w": 294,
+      "h": 620
+     },
+     "box": {
+      "x": 1625,
+      "y": 83,
+      "w": 294,
+      "h": 995
+     },
+     "must": [
+      {
+       "text": "Reduces the product",
+       "rect": {
+        "x": 1702,
+        "y": 226,
+        "w": 183,
+        "h": 94
+       }
+      },
+      {
+       "text": "Raises order line delivered",
+       "rect": {
+        "x": 1702,
+        "y": 320,
+        "w": 183,
+        "h": 117
+       }
+      }
+     ],
+     "inside": true
+    },
+    "tail": {
+     "file": "pages/legacy_ship_d.png",
+     "crop": {
+      "x": 1625,
+      "y": 458,
+      "w": 294,
+      "h": 620
+     },
+     "box": {
+      "x": 1625,
+      "y": 83,
+      "w": 294,
+      "h": 995
+     },
+     "inside": true
+    }
+   },
+   "more": [
+    "9",
+    "MInOut.java"
+   ],
+   "ticks": 2
+  },
+  "after": {
+   "helps": 1,
+   "msgs": 1,
+   "trl": 1,
+   "tabLinks": 0,
+   "procLinks": 0,
+   "seq": "AD_CtxHelp|1000000 AD_CtxHelpMsg|1000000",
+   "ours": 0
+  },
+  "back": true
+ },
+ "derived": {
+  "d1": "§CTXHELP_DERIVED_W D1 derived 124 of 124 core menu windows; documents 21; complete 124",
+  "d2b": "§CTXHELP_DERIVED_W D2b cited lines 131 of 131 hold their token; refusals re-read from C_Order,C_Invoice,M_InOut,M_Inventory,C_Payment,C_AllocationHdr,C_BankStatement,C_BankTransfer,C_DepositBatch,GL_Journal,GL_JournalBatch,M_Movement,M_MovementConfirm,M_InOutConfirm,M_Requisition,C_DocTypeCounter: equal",
+  "d3": "§CTXHELP_DERIVED_W D3 marks ✓ with the real facts 25, with every verdict flipped to SQLITE-GAP 0",
+  "verdict": "§CTXHELP_DERIVED_W §WITNESS_CTXHELP_DERIVED PASS pass=8 fail=0 inconclusive=0",
+  "windows": 124,
+  "of": 124,
+  "ticks": 25,
+  "flipped": 0,
+  "cited": 131,
+  "citedOf": 131
+ },
+ "red": {
+  "srcline": "§CTXHELP_DERIVED_W FAIL D2b the source rules are legacy's: cited lines 130 of 131, fresh read equal :: C_Order.CO.shipment@MOrder.java:2179",
+  "verdict": "§CTXHELP_DERIVED_W §WITNESS_CTXHELP_DERIVED FAIL pass=7 fail=1 inconclusive=0 DV_BREAK=srcline",
+  "cited": "§CTXHELP_DERIVED_W D2b cited lines 130 of 131 hold their token; refusals re-read from C_Order,C_Invoice,M_InOut,M_Inventory,C_Payment,C_AllocationHdr,C_BankStatement,C_BankTransfer,C_DepositBatch,GL_Journal,GL_JournalBatch,M_Movement,M_MovementConfirm,M_InOutConfirm,M_Requisition,C_DocTypeCounter: equal"
+ },
+ "rules": {
+  "effects": 78,
+  "effect": {
+   "id": "C_Order.CO.shipment",
+   "file": "org/compiere/model/MOrder.java",
+   "line": 2178,
+   "token": "evalAutoGenerateInOutRule(DocSubTypeSO, dt.isAutoGenerateInout())",
+   "text": "also creates and completes the shipment"
+  },
+  "head": "87968daa739c929e4cb2d01e9f576865c7442677 2026-01-16T11:29:30+08:00",
+  "srcLine": "if (evalAutoGenerateInOutRule(DocSubTypeSO, dt.isAutoGenerateInout()))",
+  "tokenHeld": true,
+  "buildFailsDocumented": true
+ },
+ "script": {
+  "statements": {
+   "INSERT INTO AD_CTXHELP": 130,
+   "INSERT INTO AD_CTXHELPMSG": 130,
+   "INSERT INTO AD_CTXHELPMSG_TRL": 130,
+   "UPDATE AD_TAB": 126,
+   "UPDATE AD_PROCESS": 4
+  },
+  "ddl": 0,
+  "tables": [
+   "AD_CTXHELP",
+   "AD_CTXHELPMSG",
+   "AD_CTXHELPMSG_TRL",
+   "AD_PROCESS",
+   "AD_TAB"
+  ]
+ },
+ "pilot": {
+  "counts": [
+   "§PILOT_COUNT ad_ctxhelp=1 (must be 1)",
+   "§PILOT_COUNT ad_tab_with_ctxhelp=0 (must be 0)",
+   "§PILOT_COUNT ad_process_with_ctxhelp=0 (must be 0)"
+  ],
+  "verdict": "§PILOT_VERDICT PASS 1/0/0"
+ },
+ "lf": {
+  "verdict": "§LF_VERDICT PASS fails=0 inconclusive=0",
+  "findings": "§LF_FINDINGS windows_equal=350/370 after_patch=370/370 — the product, not a harness failure"
+ },
+ "credentials": {
+  "licence": "MIT License",
+  "repo": "github.com/red1oon/bim-ootb",
+  "prs": [
+   {
+    "n": 3412,
+    "state": "MERGED"
+   },
+   {
+    "n": 3415,
+    "state": "MERGED"
+   },
+   {
+    "n": 3416,
+    "state": "MERGED"
+   }
+  ]
+ },
+ "guide": {
+  "gap": true
+ }
+}

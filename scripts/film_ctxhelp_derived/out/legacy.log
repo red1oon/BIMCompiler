@@ -1,0 +1,10 @@
+§LEGACY_STATE before {"helps":1,"msgs":1,"trl":1,"tabLinks":0,"procLinks":0,"seq":"AD_CtxHelp|1000000 AD_CtxHelpMsg|1000000"} ours=0
+§LEGACY_CACHE legacy keeps a tab's context-help text in a static cache that never expires (MCtxHelpMsg.java:51); no before-picture is taken, and the panel picture below may be served from an earlier apply of the same script; the rows themselves are proved by §LEGACY_LOOKUP and the counts
+§LEGACY_APPLIED {"helps":131,"msgs":131,"trl":131,"tabLinks":126,"procLinks":4,"seq":"AD_CtxHelp|1000130 AD_CtxHelpMsg|1000130"}
+§LEGACY_LOOKUP tab=257 {"uu":"88553452-b4a3-594f-936c-51f8d4303780","len":1981,"ours":true}
+§LEGACY_SHOT legacy_ship_a {"crop":{"x":1625,"y":83,"w":294,"h":620},"inside":true,"must":["Before you start.@116+94","Do it.@220+94"]}
+§LEGACY_SHOT legacy_ship_b {"crop":{"x":1625,"y":83,"w":294,"h":620},"inside":true,"must":["Reduces the product@226+94","Raises order line delivered@320+117"]}
+§LEGACY_SHOT legacy_ship_d {"crop":{"x":1625,"y":458,"w":294,"h":620},"paragraph_bottom":1077,"window_bottom":1078,"tail_inside":true}
+§LEGACY_ZK {"hasOwn":true,"hasOurs":true,"fresh_login":false,"more":["9","MInOut.java"],"ticks_in_panel":2,"stills_inside":{"top":true,"complete":true,"tail":true},"title":"iDempiere","order":{"id":1006416,"no":"602850"},"table":319} panel="Description Optional short description of the record A description is limited to 255 characters. --- Shipment Shipments and Customer Returns The Shipments Tab allows you to generate, maintain, enter and process Shipments to a Customer or Returns from a Customer. Shipment (Customer) Before you start."
+§LEGACY_STATE after {"helps":1,"msgs":1,"trl":1,"tabLinks":0,"procLinks":0,"seq":"AD_CtxHelp|1000000 AD_CtxHelpMsg|1000000","ours":0} stamps_equal=true -> pilot back to its snapshot: true
+§LEGACY_VERDICT PASS

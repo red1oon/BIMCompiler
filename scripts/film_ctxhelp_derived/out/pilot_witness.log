@@ -1,0 +1,5 @@
+§PILOT_WITNESS 2026-11-24T09:42:16+08:00 db=idempiere_pilot
+§PILOT_COUNT ad_ctxhelp=1 (must be 1)
+§PILOT_COUNT ad_tab_with_ctxhelp=0 (must be 0)
+§PILOT_COUNT ad_process_with_ctxhelp=0 (must be 0)
+§PILOT_VERDICT PASS 1/0/0

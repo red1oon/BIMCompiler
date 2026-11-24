@@ -1,0 +1,17 @@
+§FILM_SHOT name=ctxwin rects={"panel":{"x":1560,"y":69,"w":360,"h":1011},"ctx":{"x":1577,"y":296,"w":329,"h":119},"content":{"x":506,"y":246,"w":1054,"h":795}} {"records":131,"rows":131,"window":"§IDEMPIERE window=Context Help(200034) tabs=3 source=sqlite"}
+§FILM_FACTS so complete=7 ticks=3 before_items=7 before_links=7 refuse_ticks=3
+§FILM_SHOT name=so_a crop={"x":1560,"y":89,"w":360,"h":620} inside=true window=top+led must=Before you start.@103+176 | Do it.@289+101
+§FILM_SHOT name=so_b crop={"x":1560,"y":130,"w":360,"h":620} inside=true window=top+led must=What Complete does.@144+25 | ul@178+428
+§FILM_SHOT name=so_c crop={"x":1560,"y":460,"w":360,"h":620} inside=true window=bottom must=When it refuses@606+277
+§FILM_FACTS po complete=4 ticks=1 tick_lines=["Purchase Order with no SO Sub Type: adds the ordered quantit"] refuse_ticks=3
+§FILM_SHOT name=po_b crop={"x":1560,"y":181,"w":360,"h":620} inside=true window=top+led must=What Complete does.@195+25 | ul@229+302
+§FILM_FACTS bp needed_items=8 needed_links=8 ["Sales Order=143","Purchase Order=181","Shipment (Customer)=169","Payment and Receipt=195","Purchase Invoice and Credit/Debit Note=183","Material Receipt=184","Sales Invoice and Credit/Debit Note=167","Bank/Cash Transfer=200105"]
+§FILM_SHOT name=bp_n crop={"x":1560,"y":281,"w":360,"h":620} inside=true window=top+led must=Needed by.@295+176
+§FILM_FACTS click link={"text":"Shipment (Customer)","win":"169"} -> §HELP_CTX window=169 type=T id=257 howto=1000001 shown=dict+msg lang=en_US
+§FILM_FACTS ship complete=8 ticks=2 more={"n":9,"file":"MInOut.java"} refuse_ticks=0
+§FILM_SHOT name=ship_b crop={"x":1560,"y":69,"w":360,"h":643} inside=true window=top-grown must=What Complete does.@69+25 | ul@103+605
+§FILM_SHOT name=ship_c crop={"x":1560,"y":460,"w":360,"h":620} inside=true window=bottom must=When it refuses@481+378
+§FILM_TERM sed status=0 out="\t\tif (evalAutoGenerateInOutRule(DocSubTypeSO, dt.isAutoGenerateInout())) "
+§FILM_TERM tick status=0 lines=3 | ref status=0 lines=3
+§FILM_FACTS tick verdict=MATCH legacy.shipments_completed=1 sqlite.shipments_completed=1 | ref verdict=MATCH legacy.reason="Failed when processing document: Business Partner with this Order over Credit Hold - Open "
+§FILM_FACTS ctxwin={"records":131,"rows":131,"window":"§IDEMPIERE window=Context Help(200034) tabs=3 source=sqlite"} | so=§HELP_CTX window=143 type=T id=186 howto=1000000 shown=dict+msg lang=en_US | po=§HELP_CTX window=181 type=T id=294 howto=1000008 shown=dict+msg lang=en_US | bp=§HELP_CTX window=123 type=T id=220 howto=1000011 shown=dict+msg lang=en_US | ship=§HELP_CTX window=169 type=T id=257 howto=1000001 shown=dict+msg lang=en_US | errors=0
