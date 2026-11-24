@@ -9,7 +9,8 @@
   {{ super() }}
   {#- the feedback box (VOCAB_MESSAGE_CATALOG §19.21 item 5): giscus over GitHub Discussions, one thread per page path; config.extra.giscus.enabled is the switch -#}
   {% set g = config.extra.giscus %}
-  {% if g and g.enabled and page and not (page.meta and page.meta.no_feedback) %}
+  {#- a printable guide (its page carries window.print()) is made into a PDF whose check wants only the guide's own chapters, so it gets no box (W-GUIDE-PRINT P2 failed on this heading, 2026-11-25) -#}
+  {% if g and g.enabled and page and not (page.meta and page.meta.no_feedback) and not ('window.print()' in (page.markdown or '')) %}
   <h2 id="__comments">Feedback and questions</h2>
   <p><small>Anyone can read these. To write, sign in with GitHub.</small></p>
   <script src="https://giscus.app/client.js" data-repo="{{ g.repo }}" data-repo-id="{{ g.repo_id }}" data-category="{{ g.category }}" data-category-id="{{ g.category_id }}"

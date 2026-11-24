@@ -77,10 +77,10 @@ extra_javascript:
 extra:
   # Feedback box on every page (bim-compiler prompts/VOCAB_MESSAGE_CATALOG.md §19.21 item 5; owner 2026-11-24: "Need no counter. Allow anon readers.
   #   Feedback is good enough option"): giscus over this repo's GitHub Discussions. Anyone reads; posting needs a GitHub login. No server.
-  #   enabled stays false until the giscus GitHub App is installed on red1oon/BIMCompiler (https://github.com/apps/giscus): before that the
+  #   ON since 2026-11-25 (owner installed the giscus GitHub App on the repo; API answers "Discussion not found" = installed). Before the install the
   #   widget shows "giscus is not installed on this repository" (checked 2026-11-24 at https://giscus.app/api/discussions/categories).
   giscus:
-    enabled: false
+    enabled: true
     repo: red1oon/BIMCompiler
     repo_id: R_kgDORA12Lg
     category: Announcements
