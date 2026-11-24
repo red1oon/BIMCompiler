@@ -5670,8 +5670,9 @@ iDempiere. Below it:</p>
 <li><strong>Do it</strong>: the tabs in the order you fill them, then the action that finishes the job.</li>
 <li><strong>What Complete does</strong>: what Complete makes and changes, by kind of document. For example, a POS Order
   also creates the shipment and the invoice; a Standard Order reserves the stock.</li>
-<li><strong>What can stop Complete</strong>: the reasons, in iDempiere's own words, such as <em>Period Closed</em>.</li>
 </ul>
+<p>The reasons that can stop Complete are not listed here: a fixed list of everything that could go wrong hides the
+one thing that is wrong. With the Friendly plugin on, <strong>Check</strong> (below) lists the ones that apply to your document.</p>
 <p>This text is read from iDempiere's own rules, and each line traces to the code it comes from. iDempiere users
 get the same text in their own system through a small help script (<a href="https://github.com/red1oon/bim-ootb/tree/main/erp/legacy">how to apply it</a>).</p>
 <p><strong>Check before you complete (Friendly plugin).</strong> Press the light-bulb <strong>Check</strong> in the panel. It runs the same
@@ -5696,13 +5697,17 @@ again. Some rules:</p>
 it and after each save. The number of problems shows on <strong>?</strong> (and on <strong>⋯</strong> while the strip is folded).
 For a problem on a line, <strong>Show line N</strong> jumps to it, and <strong>Show lines with issues</strong> shows only those lines
 (<strong>Show all lines</strong> brings the rest back). The switch <em>Checking while you work</em> in the panel turns it off.</p>
-<p><strong>Not covered yet.</strong> Ship/Receipt Confirm and Requisition say that no check is available for them yet. If the
-form has unsaved changes, <strong>Check</strong> asks you to save first.</p>
+<p><strong>Not covered yet.</strong> Of the 15 kinds of document in the core windows, 11 are checked. Ship/Receipt Confirm,
+Requisition and Payments into Batch say that no check is available for them yet, and Bank/Cash Transfer has no
+check because this system does not hold its table yet. If the form has unsaved changes, <strong>Check</strong> asks you to save
+first.</p>
 <blockquote>
 <p><em>Proven by</em> <strong>W-HELP-PEEK</strong>. After every check the data is byte-for-byte the same, and the check always agrees
 with what Complete then does. It also checks that every problem is listed in iDempiere's order, that the fields
 are marked on screen, and that <strong>Open</strong> lands on the right record. Each fix is tried before it is offered, and
-saving it lets Complete pass. Without the plugin there is no check at all.
+saving it lets Complete pass. All 9 fixes were tried on a document that really stops there (a date in a closed
+period on six kinds of document, a date older than the allowed back-dating on a movement, a wrong control
+amount on a journal and on a journal batch). Without the plugin there is no check at all.
 <em>The same idea elsewhere:</em> Microsoft Business Central checks journals and documents while you work and
 offers recommended fixes. SAP's purchase order has a <strong>Check</strong> button. Here the check runs the very same
 Complete, so the two cannot disagree.</p>
