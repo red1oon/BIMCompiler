@@ -106,6 +106,7 @@ for w_ in (R, OR):
     run(f'brh_{os.path.basename(w_)}', 'raster_brh.py', w_)   # §54.2 the printed sill heights (brh.json, read by the emit)
     run(f'fixtures_{os.path.basename(w_)}', 'raster_fixtures.py', w_)   # §52.5 the sanitary symbols this plan draws (fixtures.json, read by the emit)
     log(f"§SCAN_FIXTURES work={os.path.basename(w_)} fixtures.json={'yes' if os.path.exists(os.path.join(w_, 'fixtures.json')) else 'no'}")
+    run(f'prewall_{os.path.basename(w_)}', 'raster_prewall.py', w_)   # §55.1 the WC pre-walls drawn behind the WCs just read (prewalls.json, read by the emit)
 
 # 6c. §50 the expectation checklist: facts from what was READ (storeys, section levels + build-ups), a drawing's own dictionary bound by the PDF's sha256
 import hashlib
@@ -121,6 +122,8 @@ log(f"§SCAN_EXPECT facts storeys={[(x['name'], x['level_mm'], x['buildup_mm']) 
 run('expect', 'type_expect.py', os.path.join(TYPES, 'expect_common.json'), os.path.join(low_w, 'facts.json'), low_w, *(dicts[:1]))
 # 6d. §51 walls from the sheets' correlation: the upper plan's walls say where to look on the lower plan, its own ink decides
 run('stack', 'raster_stack.py', up_w, low_w)
+# 6e. §55.2 the chimney: a hatched square + round flue at the same place on every plan (chimney.json, MEASURE ONLY: no importer chimney body yet, bim-ootb §L48)
+run('chimney', 'raster_chimney.py', up_w, low_w)
 
 # 7. emit: upper plan, roof, lower registered plan, main section [, annex heights]
 run('emit', 'raster_emit.py', R if ORDER[storey[ref][0]] > ORDER[storey[other][0]] else OR, os.path.join(V, 'roof.json'), os.path.join(out, 'std'),
