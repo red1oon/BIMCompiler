@@ -1,0 +1,5 @@
+§CARD figures={"legacyHelps":1,"added":130,"tabs":126,"procs":4,"ddl":0,"windows":124,"of":124,"effects":78,"cited":131,"citedOf":131,"applied":131} content_bottom=752px (frame 1080) fits
+§CUT t=4.5 max_volume_around=-91.0 dB
+§SPLICE frames_in=4108 card_frames=288 frames_out=4396 planned=4396 dur_in=171.167 dur_out=183.167 audio_out=183.084
+§CHECK card_max_volume=-91 dB · orig 30s max/mean -1.5/-16.3 vs new 42s -1.4/-16.3 same · orig 80s max/mean -1.5/-16.3 vs new 92s -1.2/-16.3 same · orig 150s max/mean -1.5/-17.1 vs new 162s -1.5/-17.1 same
+§INSERT_CARD_VERDICT PASS /home/red1/Videos/Knowledge_CMS_ERP_EN_AFTER_2026-11-24_v2b.mp4
