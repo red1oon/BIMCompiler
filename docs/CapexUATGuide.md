@@ -48,7 +48,7 @@
 |---|---|
 | Document | CAPEX UAT Guide — from 2D drawings to the dashboard |
 | Purpose | The step-by-step test script for the User Acceptance Test of the pilot client (Sysnova): BIM drawings to a priced model, the ERP exercise, the CAPEX dashboard |
-| Revision | **2026-11-24 (n)** |
+| Revision | **2026-11-24 (o)** |
 | Status | Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately and stays as signed. Since then, steps were corrected: the change list after this cover (items 22 to 32) names each step and what changed. |
 | Prepared and issued by | Redhuan D. Oon, Project Consultant |
 | For | The pilot client's UAT team: System Setup, BIM, Project Mgmt Accounting |
@@ -60,6 +60,7 @@
 
 | Revision | What changed |
 |---|---|
+| 2026-11-24 (o) | B4.2 states both status lines in full; B4.4's planned amount follows the new total (item 32) |
 | 2026-11-24 (n) | B0 from defaults: check, change only if wrong; the footing from the Footing Section; B3.1, B4, L3, D new figures, per rate pack; new reference pack (items 5, 32) |
 | 2026-11-24 (l), (m) | Three notes moved into their steps: A2.2 and chapter C log in, the PDF download, B3.1 and B4.4 (items 2, 4, 7); B0.6 says why the datums are typed |
 | 2026-11-23 (h) to (j) | The whole Shed into the ERP and the dashboard: B4, L1 to L3 before C, D (item 27); the link names the order, *Push again?* (item 28); L2's status line, B5.1's pack date (items 29, 30); the two films (item 31) |
@@ -569,9 +570,9 @@ Do this in the **Viewer**, on the Shed you opened in B2.9. (In the Modeller, **E
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|
 | B4.1 | Click the model, press **F** (the **Find** panel). Its list opens by storey: click **Level 1 (511)**, the whole Shed (the two parts under *Unknown* are openings, priced 0) | The bar reads *Level 1 · 1 storey* and B3.1's first figure: **BDT 15,342,507.97** (Bangladesh pack) or **USD 361,437.82** (US pack) and shows the button **› ERP**. For a moment the amount shows every decimal, then the cents | ☐ Pass ☐ Fail |
-| B4.2 | Press **› ERP** | The status line reads *Project Order: 11 lines · contract BDT 15,342,508 (saved)* (Bangladesh pack) or *… contract USD 361,438 (saved)* (US pack) (12 lines if Time Machine has built the schedule in this tab: the order then follows its tasks; the amount is the same) and a link **SHED #… ↗** appears (the number is the Project Order's id, e.g. *SHED #990001*). If you did B4 before in this browser, the link shows already at B4.1 and **› ERP** first asks *Push again?* (B4.3): press **Push again** | ☐ Pass ☐ Fail |
+| B4.2 | Press **› ERP** | The status line reads *Project Order: 11 lines · contract USD 361,438 (saved)* on the US pack, or *Project Order: 11 lines · contract BDT 15,342,508 (saved)* on the Bangladesh pack (12 lines if Time Machine has built the schedule in this tab: the order then follows its tasks; the amount is the same) and a link **SHED #… ↗** appears (the number is the Project Order's id, e.g. *SHED #990001*). If you did B4 before in this browser, the link shows already at B4.1 and **› ERP** first asks *Push again?* (B4.3): press **Push again** | ☐ Pass ☐ Fail |
 | B4.3 | Press **› ERP** again, then **Push again** in the box | First a box **Push again?** reads *SHED #… is already a Project Order. A second push adds only what is not there yet.* (buttons **Cancel** and **Push again**; **Cancel** or Esc pushes nothing). After **Push again**: *Project Order: 0 lines*: nothing new is added, the order is keyed by the model's name (**SHED**) | ☐ Pass ☐ Fail |
-| B4.4 | Click **SHED #… ↗**. On the Kernel ERP sign-in page choose **GardenAdmin**, then **Log In** | The ERP opens on the project **SHED** (*BIM: SHED*) with its planned amount, **355097.97658** (B4.1's total, every decimal). Its **Phase** tab holds 6 phases (*1 of 6*; 5 if the schedule was built), the first *Substructure* 1,023.22458. A phase's **Task** tab holds its tasks (Substructure: one, *CONCRETE_GANG*), and **Task Line** the model's lines with the same planned amount (Substructure: one line, 1,023.22458): a line shows in the tab of its lowest level, as in iDempiere (*Task Line*: a task is set; *Phase Line*: a phase but no task; *Project Line*: neither), so **Project Line** and **Phase Line** read *0 records* The amount is as correct as the shipped rate pack, not a market price. | ☐ Pass ☐ Fail |
+| B4.4 | Click **SHED #… ↗**. On the Kernel ERP sign-in page choose **GardenAdmin**, then **Log In** | The ERP opens on the project **SHED** (*BIM: SHED*) with its planned amount, **361437.81658** on the US pack (B4.1's total, every decimal; on the Bangladesh pack 15342507.96847). Its **Phase** tab holds 6 phases (*1 of 6*; 5 if the schedule was built), the first *Substructure* 1,023.22458. A phase's **Task** tab holds its tasks (Substructure: one, *CONCRETE_GANG*), and **Task Line** the model's lines with the same planned amount (Substructure: one line, 1,023.22458): a line shows in the tab of its lowest level, as in iDempiere (*Task Line*: a task is set; *Phase Line*: a phase but no task; *Project Line*: neither), so **Project Line** and **Phase Line** read *0 records* The amount is as correct as the shipped rate pack, not a market price. | ☐ Pass ☐ Fail |
 
 <div class="uat-keep" markdown="1">
 
