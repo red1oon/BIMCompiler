@@ -48,7 +48,7 @@
 |---|---|
 | Document | CAPEX UAT Guide — from 2D drawings to the dashboard |
 | Purpose | The step-by-step test script for the User Acceptance Test of the pilot client (Sysnova): BIM drawings to a priced model, the ERP exercise, the CAPEX dashboard |
-| Revision | **2026-11-24 (o)** |
+| Revision | **2026-11-25 (p)** |
 | Status | Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately and stays as signed. Since then, steps were corrected: the change list after this cover (items 22 to 32) names each step and what changed. |
 | Prepared and issued by | Redhuan D. Oon, Project Consultant |
 | For | The pilot client's UAT team: System Setup, BIM, Project Mgmt Accounting |
@@ -60,6 +60,7 @@
 
 | Revision | What changed |
 |---|---|
+| 2026-11-25 (p) | B3.1: a footnote on the Bangladesh rates (the PWD Schedule of Rates 2022, 120 BDT per USD), so a tester knows the Bangladesh pack works |
 | 2026-11-24 (o) | B4.2 states both status lines in full; B4.4's planned amount follows the new total (item 32) |
 | 2026-11-24 (n) | B0 from defaults: check, change only if wrong; the footing from the Footing Section; B3.1, B4, L3, D new figures, per rate pack; new reference pack (items 5, 32) |
 | 2026-11-24 (l), (m) | Three notes moved into their steps: A2.2 and chapter C log in, the PDF download, B3.1 and B4.4 (items 2, 4, 7); B0.6 says why the datums are typed |
@@ -554,7 +555,7 @@ The schedule and the cost come from reference files the Viewer ships with. You e
 
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|
-| B3.1 | Note the Viewer’s total cost (Find panel: `total cost`; it is the cost of the 13 drawn bays, see the note at the top of chapter B) and the schedule’s finish date (**Time Machine**, key **T**) | The total is priced with the rate pack of your language (Settings ▸ 5D Rate Pack shows which). **Bangla (Bangladesh pack, `pwd2024_bd`):** **BDT 15,342,507.97 (USD 127,854) — total building cost**. **English, US pack (`rsmeans2024_us`):** **USD 361,437.82 (RM 1,390,145) — total building cost**. The digits may be grouped differently in your browser's language. The first figure is the pack's own currency; the bracket is a second currency for reference. Another pack prices with its own rates: the Run Checker (B5) knows each pack's figure. A higher figure, such as USD 365,283.32 on the US pack, means the B0.7 exclude box missed the expansion joint. Write the total and the finish date down: ________ / ________ | ☐ Pass ☐ Fail |
+| B3.1 | Note the Viewer’s total cost (Find panel: `total cost`; it is the cost of the 13 drawn bays, see the note at the top of chapter B) and the schedule’s finish date (**Time Machine**, key **T**) | The total is priced with the rate pack of your language (Settings ▸ 5D Rate Pack shows which). **Bangla (Bangladesh pack, `pwd2024_bd`):** **BDT 15,342,507.97 (USD 127,854) — total building cost**[^bdrates]. **English, US pack (`rsmeans2024_us`):** **USD 361,437.82 (RM 1,390,145) — total building cost**. The digits may be grouped differently in your browser's language. The first figure is the pack's own currency; the bracket is a second currency for reference. Another pack prices with its own rates: the Run Checker (B5) knows each pack's figure. A higher figure, such as USD 365,283.32 on the US pack, means the B0.7 exclude box missed the expansion joint. Write the total and the finish date down: ________ / ________ | ☐ Pass ☐ Fail |
 | B3.2 | Make the rate edit and the lag edit above. Your copy is saved in this browser as you type | The form keeps your value; a list shown as JSON text must stay valid JSON | ☐ Pass ☐ Fail |
 | B3.3 | **Reload the Viewer tab**, so it reads your copies | The building opens again | ☐ Pass ☐ Fail |
 | B3.4 | Read the total cost again | It moved in the direction of your rate edit | ☐ Pass ☐ Fail |
@@ -562,6 +563,8 @@ The schedule and the cost come from reference files the Viewer ships with. You e
 | B3.6 | **⬇ Download** your edited files, then **Reset** them | You keep your copies as files; the Viewer is back on the shipped references | ☐ Pass ☐ Fail |
 
 ![The Inspect drawer: Measure, Clash, X-Ray, Section, Time Machine, 4D / 5D](img/viewer/pill-inspect-drawer.png)
+
+[^bdrates]: **The Bangladesh rates.** The Bangladesh pack (`pwd2024_bd`) prices from the **PWD Schedule of Rates 2022** of the Bangladesh Public Works Department (approved by the Finance Division on 21 June 2022, valid three years; the edition its site serves, no later edition is published), at **120 BDT per USD**. Its material rates (reinforced concrete, Grade 400 bar: Dhaka column, ground-floor items) are read from that schedule; its other rows are not yet checked against it. The pack is chosen when you choose **Bangla** as the language, or by Settings ▸ 5D Rate Pack. The total then reads **BDT 15,342,507.97 (USD 127,854)**, measured on the Shed in the real Viewer, and the Run Checker (B5) judges your B3.1 line against the Bangladesh pack. The hands-on film shows the English (US pack) line; both are proven.
 
 ### B4 · Send the model to the ERP as a Project Order
 
