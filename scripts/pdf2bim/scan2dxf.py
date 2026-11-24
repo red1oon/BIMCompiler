@@ -116,6 +116,8 @@ json.dump(facts, open(os.path.join(low_w, 'facts.json'), 'w'), indent=1)
 dicts = [f_ for f_ in sorted(glob.glob(os.path.join(TYPES, '*_rosetta.json'))) if json.load(open(f_)).get('applies_to_pdf_sha256') == sha]
 log(f"§SCAN_EXPECT facts storeys={[(x['name'], x['level_mm'], x['buildup_mm']) for x in facts['storeys']]} dictionary={[os.path.basename(f_) for f_ in dicts] or 'none for this pdf'}")
 run('expect', 'type_expect.py', os.path.join(TYPES, 'expect_common.json'), os.path.join(low_w, 'facts.json'), low_w, *(dicts[:1]))
+# 6d. §51 walls from the sheets' correlation: the upper plan's walls say where to look on the lower plan, its own ink decides
+run('stack', 'raster_stack.py', up_w, low_w)
 
 # 7. emit: upper plan, roof, lower registered plan, main section [, annex heights]
 run('emit', 'raster_emit.py', R if ORDER[storey[ref][0]] > ORDER[storey[other][0]] else OR, os.path.join(V, 'roof.json'), os.path.join(out, 'std'),

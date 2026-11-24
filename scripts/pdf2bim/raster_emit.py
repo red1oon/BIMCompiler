@@ -164,6 +164,11 @@ def storey(work, tag, level, sheet, wall_h, door_h=None):
     # ---- plan ----
     body = []; nw = ng = 0
     for w in EXT + INT: body += lw('A-WALL-FULL', rect(w['x0'], w['y0'], w['x1'], w['y1'])); nw += 1
+    STK = os.path.join(work, 'walls_stacked.json')
+    if tag == 'EG' and os.path.exists(STK):   # §51 walls the upper plan places and this scan's own ink confirms (raster_stack.py): the upper wall's rectangle, stated as STACKED
+        for w in json.load(open(STK))['walls']:
+            body += lw('A-WALL-FULL', rect(w['x0'], w['y0'], w['x1'], w['y1'])); nw += 1
+            log(f"§RASTER_EMIT_STACKED {tag} {w['axis']} rect_mm=({w['x0']:.0f},{w['y0']:.0f})-({w['x1']:.0f},{w['y1']:.0f}) thk {w['thk_chain_m']} J={w['stack_J']} from {w['stack_from']} (position and thickness: the upper plan's; presence: this scan's ink)")
     NF = os.path.join(work, 'notch.json'); ncw = ncol = 0; colz = []   # §43.19 a notched corner: glazed runs (curtain walls) + the post if measured
     if os.path.exists(NF):
         for cn in json.load(open(NF))['corners']:
