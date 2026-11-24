@@ -20,6 +20,10 @@ if [ "$OP" = up ]; then
   F=$(mktemp -d); cp $TD/202611131200_GardenWorld_CAPEXTestData.zip $F/; sh $INST/server/utils/RUN_ApplyPackInFromFolder.sh $F > "$LOG/a31_packin.log" 2>&1; rm -rf $F
   say "§P3_A31 $(grep -E 'Successful application|Error=' "$LOG/a31_packin.log" | tr '\n' ' ' | cut -c1-200)"
   cat $TD/202611141500_CAPEX-TD-CONSTRUCTION-PRODUCTS.sql | docker exec -i postgres psql -U adempiere -d $DB -v ON_ERROR_STOP=1 -qtA -c "set search_path=adempiere" -f - > "$LOG/a36_products.log" 2>&1; say "§P3_A36 rc=$?"
+  # §5.30 (owner 2026-11-25): the Home page the film shows: no Donate gadget, the Performance gadget in the LOWER half (column 3, under Calendar). The layout is PA_DashboardContent (client 0); a user's own rows (PA_DashboardPreference) are copied from it at the
+  # first login (DashboardController.createDashboardPreference, ui.zk WEB-INF/src/org/adempiere/webui/desktop/DashboardController.java:244-253), so this runs BEFORE any login and no preference rows may exist. Test instance only; 'down' restores the backup like everything else.
+  pq "set search_path=adempiere; update pa_dashboardcontent set isactive='N' where name='Donate'; update pa_dashboardcontent set columnno=3, line=1 where name='Performance'" $DB > /dev/null
+  say "§P3_HOME_LAYOUT $(q "select string_agg(name||':'||isactive||':'||columnno||'/'||line, ' ' order by columnno, line) from pa_dashboardcontent where name in ('Donate','Performance','Calendar')") prefs=$(q "select count(*) from pa_dashboardpreference")"
   stop_i; start_i; counts after
   grep -q 'td_projects=12 pwd_products=10' <(grep '§P3_COUNTS after' "$LOG/prep3.log" | tail -1) && say "§P3_UP_VERDICT PASS" || { say "§P3_UP_VERDICT FAIL (the take must not start)"; exit 4; }
 elif [ "$OP" = ready ]; then
