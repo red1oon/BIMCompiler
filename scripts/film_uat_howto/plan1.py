@@ -89,14 +89,41 @@ ADD = {
 }
 for s in SCENES:
     s['beats'] = ADD.get(s['id'], []) + s['beats']
+# §5.30 (owner 2026-11-25: "Need not narrate trivial actions ... Look out thruout so we save time narrating and can speed up"): EVERY line of Film I read against one test: does it say what to do next, where to look, or the one result a step's Confirm hangs on?
+# DROPPED = it only restates what the screen plainly shows, or is a browser trick (the take still CHECKS what they stood next to: Processed=225 Un-Resolved=0, the role window, the Home tab). SHORT = the same line, cut to what the tester needs.
+# A span left without a line plays sped up by the idle rule (compose.py §5.11, x16, 0.5 s real time kept at each end); the PDF reopen is a declared fast span (x3) under one short line.
+DROP = {'b1c', 'b3c', 'b13_0b', 'b13_0b2', 'b13_0c', 'b13_0d', 'q5b', 'q11b', 'b2_0b'}
+SHORT = {
+  'b1b':  "Press Download the P.D.F. It saves to Downloads.",
+  'b2_0': "Open the downloaded P.D.F. from Downloads.",
+  'b2a':  "Control F finds the test-data file under What you need.",
+  'b2b':  "This link is a file: keep it zipped. Pack In takes the zip as it is.",
+  'b4b2': "Inside: the sheets as drawn, the sheets marked, the reference database.",
+  'b4c':  "Marked holds the supplied copies. You will mark your own.",
+  'b13c': "Press Pack In, then OK.",
+  'q1a':  "The steps are in the P.D.F. Control F finds B zero point one.",
+  'q1c':  "All defaults lists %s yellow rows." % W(Y1),
+  'q3a':  "B zero point three. The Set field already reads %s, on all nine sheets. Nothing to type." % SETN,
+  'q4a':  "Nine of the ten layers are already set, each read from the drawing.",
+  'q4d':  "Check each against the guide's table.",
+  'q5a':  "Open Body heights. Two rows, both read from the drawings.",
+  'b8_p': "B two point nine: open the front door.",
+  'q11d': "Back to the P.D.F.",
+  'q11e': "B five point one: its link opens the Run Checker. It reads your files in your browser: nothing is uploaded.",
+}
+for s in SCENES:
+    s['beats'] = [(b[0], b[1], SHORT.get(b[0], b[2])) + tuple(b[3:]) for b in s['beats'] if b[0] not in DROP]
+# §5.30 (owner: "When PDF is opened, it should be view full width, so need not keep zooming in and out"): the camera holds zoom 1.0 while a scene shows the downloaded PDF (the page fills the width, its text is readable as it is); (cue, cue) in the take
+CAMERA_FLAT = {'s2': [('s2_start', 's2_end')], 's3': [('s3_start', 's3_click'), ('s3_back', 's3_end')], 's4': [('s4_start', 's4_landed')], 'p1': [('p1_start', 'p1_link')], 's8': [('s8_start', 's8_link')], 's10': [('s10_start', 's10_checker')]}
 for k in ('IDLE_X', 'IDLE_KEEP', 'CAMERA', 'SP'):
     if hasattr(plan2, k): globals()[k] = getattr(plan2, k)
+FAST_IDLE_WINS = True   # §5.30: inside a declared fast span (the PDF reopen) the waits play at the idle speed, not at x3
 CAMERA = 'smooth'   # §5.29 (b), owner 2026-11-24 "zooming smooth, not jumpy or swinging": plan2 has no CAMERA, so Film I was built on compose's 'old' camera; the eased one is gated by §COMP_CAMERA_VERDICT
 IDLE_X, IDLE_KEEP = 16, 0.5   # §5.28 rc3: at the default x8 the wait for iDempiere's Home tab (s13, 150 s of source) still left 10.4 s without a line; Part III uses x24-x32
 TITLE = dict(kicker='UAT GUIDE · HANDS ON · PART I', line1='From the drawings to a priced model', line2='mark them, convert them, check your run', note='Every click is real: the real browser, the real file windows.')
 CLOSING = dict(line1='Your own marks, checked mark for mark:', line2='do, confirm, tick.', credit='Voice: Kokoro (local) · key sounds: eklee, CC BY 3.0 · click: GNOME')
 if __name__ == '__main__':
     ids = [b[0] for s in SCENES for b in s['beats']]; assert len(ids) == len(set(ids)), 'beat ids repeat'
-    used = set(ids); assert all(k in used for k in NEW), 'a rewritten beat id is not in the list'
+    used = set(ids); assert all(k in used or k in DROP for k in list(NEW) + list(SHORT)), 'a rewritten beat id is not in the list'
     print('§PLAN1 scenes=%d beats=%d strips_missing=%s' % (len(SCENES), len(ids), [s['id'] for s in SCENES if s['strip'] not in MD]))
     print(' '.join(s['id'] for s in SCENES))

@@ -9,7 +9,7 @@
 #              smoothed with a zero-phase Gaussian (sigma SIG_S) inside each scene's frames: speed rises and falls continuously (no velocity step). The crop is sub-pixel (compose.py).
 import math
 LEAD_S, TAIL_S, MERGE_S, SIG_S, EDGE_S = 1.0, 0.8, 1.6, 0.35, 0.6
-ZMERGE_S, FIT_X, FIT_Y, MIN_HOLD_S, MARGIN = 4.0, 160, 100, 1.2, 25   # §5.29 (b): groups closer than ZMERGE_S are ONE run held at ONE zoom level and ONE view centre (no zoom out and back in, no pan swing between targets); a run whose targets do not fit the crop with FIT_X/FIT_Y px to spare is held on the whole screen
+ZMERGE_S, FIT_X, FIT_Y, MIN_HOLD_S, MARGIN, FLAT_MARGIN_S = 4.0, 160, 100, 1.2, 25, 1.4   # §5.29 (b): groups closer than ZMERGE_S are ONE run held at ONE zoom level and ONE view centre (no zoom out and back in, no pan swing between targets); a run whose targets do not fit the crop with FIT_X/FIT_Y px to spare is held on the whole screen
 
 def frames(pieces, NF, FPS, TOTAL):
     """per output frame: (piece, scene, source time) — the same mapping compose.py renders with"""
@@ -55,7 +55,16 @@ def _runs(G, W, BH):
         else: R.append([g[0], g[1], g[2], list(g[3])])
     return [(t0, t1, *_fit(z, pts, W, BH), z, pts) for t0, t1, z, pts in R]
 
-def path(variant, F, EVS, pointer_at, FPS, W, BH, H):
+def _flat_spans(EVS, FLAT):
+    """§5.30: {scene: [(t0, t1)]} in the take's source time: the spans where the scene shows the downloaded PDF (the camera holds zoom 1.0 there: the page is fitted to the width, its text is readable as it is)"""
+    out = {}
+    for sid, spans in (FLAT or {}).items():
+        cues = {c['name']: c['t'] for c in EVS[sid]['cues']}; out[sid] = [(cues[a], cues[b]) for a, b in spans]
+    return out
+
+def is_flat(FS, sid, ts): return sid in FS and any(a <= ts <= b for a, b in FS[sid])
+
+def path(variant, F, EVS, pointer_at, FPS, W, BH, H, FLAT=None):
     """-> list of (zs, cx, cy) per output frame (None on a card)"""
     if variant == 'old':
         zs, cxs, cys, last, P = 1.0, 960.0, 540.0, None, []
@@ -68,7 +77,9 @@ def path(variant, F, EVS, pointer_at, FPS, W, BH, H):
             zs += (zt - zs) * a; cxs += (ctr[0] - cxs) * a; cys += (ctr[1] - cys) * a; P.append((zs, cxs, cys))
         return P
     # 'smooth': raw target per frame, then a zero-phase Gaussian per scene run
-    G = {sid: _runs(_groups(ev), W, BH) for sid, ev in EVS.items()}; raw = []; runi = []; lastsid = None; oy = 0.0; OYC = {}
+    FS = _flat_spans(EVS, FLAT); G = {sid: _runs(_groups(ev), W, BH) for sid, ev in EVS.items()}
+    # §5.30: a click run whose window comes within FLAT_MARGIN_S of a PDF span is dropped (a Back or a link click beside the PDF is not zoomed on): the smoothing's reach (3 sigma, ~1 s) then never carries a zoom into the PDF span
+    G = {sid: [r for r in rs if not any(r[0] - LEAD_S < b + FLAT_MARGIN_S and r[1] + TAIL_S > a - FLAT_MARGIN_S for a, b in FS.get(sid, []))] for sid, rs in G.items()}; raw = []; runi = []; lastsid = None; oy = 0.0; OYC = {}
     for p, sid, ts in F:
         if sid is None: raw.append(None); runi.append(None); continue
         ev = EVS[sid]; px, py = pointer_at(ev, ts); z, ri = 1.0, None
@@ -81,11 +92,13 @@ def path(variant, F, EVS, pointer_at, FPS, W, BH, H):
         ctr = (W / 2, oy + BH / 2)
         for k, g in enumerate(G[sid]):
             if g[0] - LEAD_S <= ts <= g[1] + TAIL_S: ri = k; break
+        if is_flat(FS, sid, ts): ri = None   # §5.30: a PDF span: no run, no zoom
         if ri is not None and p['kind'] == 'play' and p['speed'] <= 1: z, ctr = G[sid][ri][2], G[sid][ri][3]
         raw.append((z, ctr[0], ctr[1])); runi.append(ri)
     first, last = {}, {}   # a sped or held frame INSIDE a run (between its first and last frame held at its level) keeps the level: zooming out and in around a wait is the hunting this removes
     for n, r in enumerate(raw):
         if r is not None and runi[n] is not None and F[n][0]['kind'] == 'play' and F[n][0]['speed'] <= 1: key = (F[n][1], runi[n]); first.setdefault(key, n); last[key] = n
+    base = {n: raw[n] for n in range(len(raw)) if raw[n] is not None and is_flat(FS, F[n][1], F[n][2])}   # the flat frames as they were before the runs were filled in
     byscene = {}
     for (sid, ri), n0 in first.items(): byscene.setdefault(sid, []).append([n0, last[(sid, ri)], G[sid][ri][4], list(G[sid][ri][5])])
     for sid, L in byscene.items():   # runs the FILM puts closer than ZMERGE_S apart (a sped wait between two clicks is short on screen) are ONE run: held, not zoomed out and in
@@ -99,6 +112,13 @@ def path(variant, F, EVS, pointer_at, FPS, W, BH, H):
             if sum(1 for n in range(max(n0, sn[0] + e), min(n1, sn[-1] - e) + 1)) < MIN_HOLD_S * FPS: z = 1.0   # a zoom that could only be held for a moment is a pop, not a camera move: left out
             for n in range(n0, n1 + 1):
                 if raw[n] is not None and F[n][1] == sid: raw[n] = (z, ctr[0], ctr[1])
+    for n, r in base.items(): raw[n] = r
+    flat_n = sorted(base); FM = int(FLAT_MARGIN_S * FPS)   # §5.30: no zoom within FLAT_MARGIN_S of a PDF span, counted in OUTPUT frames (a sped wait is short on screen, so a margin in source seconds is not enough): the smoothing's reach never carries a zoom into it
+    import bisect
+    for n, r in enumerate(raw):
+        if r is None or n in base or r[0] == 1.0: continue
+        k = bisect.bisect_left(flat_n, n); near = [flat_n[j] for j in (k - 1, k) if 0 <= j < len(flat_n)]
+        if any(abs(m - n) <= FM and F[m][1] == F[n][1] for m in near): raw[n] = (1.0, W / 2, BH / 2)
     for n, r in enumerate(raw):   # clamp the TARGET to the screen, so the smoothed path needs no clamp kink
         if r is not None: z, x, y = r; cw, ch = W / z, BH / z; raw[n] = (z, min(max(x, cw / 2), W - cw / 2), min(max(y, ch / 2), H - ch / 2))
     out = [None] * len(raw); r = max(1, int(3 * SIG_S * FPS)); K = [math.exp(-0.5 * (k / (SIG_S * FPS)) ** 2) for k in range(-r, r + 1)]
@@ -115,9 +135,13 @@ def path(variant, F, EVS, pointer_at, FPS, W, BH, H):
                 j = min(max(i + k, n), m - 1); z, x, y = raw[j]; sw += w; sz += w * z; sx += w * x; sy += w * y
             out[i] = (sz / sw, sx / sw, sy / sw)
         n = m
+    for n, c in enumerate(out):   # §5.30: the PDF spans are exactly zoom 1.0 (the smoothing's reach is kept out of them by FLAT_MARGIN_S above, so this moves a frame by < 0.002)
+        if c is not None and is_flat(FS, F[n][1], F[n][2]):
+            if abs(c[0] - 1.0) > 0.002: FLATDBG.append('%s frame %d zoom %.4f before forcing (ts-in-span, a zoomed frame within the smoothing reach)' % (F[n][1], n, c[0]))
+            out[n] = (1.0, c[1], c[2])
     return out
 
-DBG = []
+DBG = []; FLATDBG = []
 def measure(P, F, W, BH, H):
     """-> dict: zoom step/accel per frame, pan speed/accel of the view origin in OUTPUT px per frame, and zoom pops at scene changes (frames across a cut or a card are not motion)"""
     zst, zac, pv, pa, pops, prev = [], [], [], [], 0, None
@@ -173,3 +197,13 @@ def measure(P, F, W, BH, H):
     def q(a, f): a = sorted(a); return a[min(len(a) - 1, int(f * (len(a) - 1)))] if a else 0.0
     return dict(frames=len(zst), zoom_step_max=max(zst or [0]), zoom_acc_max=max(zac or [0]), zoom_acc_p99=q(zac, 0.99),
                 pan_speed_max=max(pv or [0]), pan_acc_max=max(pa or [0]), pan_acc_p99=q(pa, 0.99), pan_acc_gt5=sum(1 for x in pa if x > 5), cut_zoom_pops=pops, zoom_reversals=zrev, pan_reversals=prev_)
+
+
+def flat_report(P, F, FLAT, EVS):
+    """§5.30 witness: per PDF scene, the lowest and highest zoom over the frames inside its PDF spans (must both be 1.0), and how many frames that is; a scene with no frame in its span is INCONCLUSIVE, never PASS"""
+    FS = _flat_spans(EVS, FLAT); rows = []
+    for sid, spans in FS.items():
+        zs = [P[i][0] for i, (p, s_, ts) in enumerate(F) if s_ == sid and P[i] is not None and is_flat(FS, sid, ts)]
+        if not zs: rows.append((sid, spans, 0, None, None, 'INCONCLUSIVE')); continue
+        rows.append((sid, spans, len(zs), min(zs), max(zs), 'PASS' if max(zs) - 1.0 < 1e-6 and 1.0 - min(zs) < 1e-6 else 'FAIL'))
+    return rows

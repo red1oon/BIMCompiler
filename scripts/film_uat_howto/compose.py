@@ -11,6 +11,7 @@ FPS, W, H, TOP = 30, 1920, 1080, 150; BH = H - TOP
 BG, INK, CORAL, SKY = (15, 23, 42), (243, 238, 232), (255, 107, 120), (125, 211, 252)
 REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 def log(m): print(m, flush=True)
+FAST_IDLE_WINS = bool(getattr(P, 'FAST_IDLE_WINS', False))
 IDLE_X, IDLE_KEEP = float(getattr(P, 'IDLE_X', 8.0)), float(getattr(P, 'IDLE_KEEP', 0.8))   # §5.17: a wait's speed and the real time kept at each end, per plan (Parts I and II: x8, 0.8 s)
 def font(b, s): return ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans%s.ttf' % ('-Bold' if b else ''), s)
 mode, TAKE, WORK = sys.argv[1], sys.argv[2], sys.argv[3]; os.makedirs(WORK, exist_ok=True)
@@ -119,13 +120,23 @@ for sc in P.SCENES:
     for g0, g1 in gaps:
         g0, g1 = max(g0, a0) + IDLE_KEEP, min(g1, a1) - IDLE_KEEP
         if g1 - g0 <= 2.0 - 1.6: continue
-        for f0, f1, _ in fast:   # clip out the declared spans
+        for f0, f1, _ in ([] if FAST_IDLE_WINS else fast):   # clip out the declared spans (§5.30: unless the plan lets the idle speed win inside them)
             if f1 <= g0 or f0 >= g1: continue
             if f0 > g0: idle.append((g0, f0, IDLE_X))
             g0 = max(g0, f1)
         if g1 > g0: idle.append((g0, g1, IDLE_X))
     idle = [x for x in idle if x[1] - x[0] > 0.4]
     log('§COMP_IDLE %s spans=%d src_s=%.2f out_s=%.2f' % (sid, len(idle), sum(b - a for a, b, _ in idle), sum((b - a) / IDLE_X for a, b, _ in idle)))
+    if FAST_IDLE_WINS:   # §5.30 (owner: the PDF reopen is "speed up"): inside a declared span the waits play at the idle speed (x16), only the rest at the declared x3
+        nf = []
+        for f0, f1, v in fast:
+            cur = f0
+            for i0, i1, _ in sorted(idle):
+                if i1 <= cur or i0 >= f1: continue
+                if i0 > cur: nf.append((cur, i0, v))
+                cur = max(cur, i1)
+            if f1 > cur: nf.append((cur, f1, v))
+        fast = nf
     fast = sorted(fast + idle)
     if sc.get('speed'):   # §5.16 a repeat scene plays whole at its speed, badged; its keys and clicks make no sound (a x8 rattle is noise, not information)
         # §5.18: its WAITS play at the faster of the scene's speed and IDLE_X (a sped scene used to play its waits slower than a normal one did)
@@ -235,14 +246,17 @@ def frame_at(sid, ts):   # decode forward only (each scene's output order is mon
     cur[sid] = (i, img); return Image.frombytes('RGB', (W, H), img) if img else Image.new('RGB', (W, H))
 # §5.18 L6: the camera path for every frame, computed (and measured) before any frame is drawn; CAMERA is the plan's ('old' = up to rc4, 'smooth' = §5.18)
 import camera
-CAMERA = getattr(P, 'CAMERA', 'old'); _F = camera.frames(pieces, NF, FPS, TOTAL); CAM = camera.path(CAMERA, _F, EVS, pointer_at, FPS, W, BH, H)
+CAMERA = getattr(P, 'CAMERA', 'old'); _F = camera.frames(pieces, NF, FPS, TOTAL); FLAT = getattr(P, 'CAMERA_FLAT', {}); CAM = camera.path(CAMERA, _F, EVS, pointer_at, FPS, W, BH, H, FLAT)
 _mo = camera.measure(camera.path('old', _F, EVS, pointer_at, FPS, W, BH, H), _F, W, BH, H) if CAMERA != 'old' else None; _mc = camera.measure(CAM, _F, W, BH, H)
 _r = lambda m: json.dumps({k: round(v, 4) if isinstance(v, float) else v for k, v in m.items()})
 if _mo: log('§COMP_CAMERA_OLD ' + _r(_mo))
 log('§COMP_CAMERA %s %s' % (CAMERA, _r(_mc)))
 for _d in camera.DBG[:int(os.environ.get('FILM_CAM_DBG', '0'))]: log('§COMP_CAMERA_REV ' + _d)   # where the reversals are (FILM_CAM_DBG=n lines), measured on the path just computed (the smooth one)
+for _d in camera.FLATDBG[:20]: log('§COMP_CAMERA_FLAT_FORCED ' + _d)
+_fr = camera.flat_report(CAM, _F, FLAT, EVS) if CAMERA == 'smooth' else []   # §5.30: zoom == 1.0 throughout the PDF scenes
+for sid, spans, n, zmin, zmax, v in _fr: log('§COMP_CAMERA_SCENE %s pdf_spans=%d frames=%d zoom_min=%s zoom_max=%s %s' % (sid, len(spans), n, zmin, zmax, v))
 if CAMERA == 'smooth':
-    _bad = [k for k, ok in (('zoom_acc_max<=0.005', _mc['zoom_acc_max'] <= 0.005), ('pan_acc_max<=10', _mc['pan_acc_max'] <= 10), ('pan_acc_p99<=5', _mc['pan_acc_p99'] <= 5), ('cut_zoom_pops=0', _mc['cut_zoom_pops'] == 0), ('zoom_reversals=0', _mc['zoom_reversals'] == 0), ('pan_reversals=0', _mc['pan_reversals'] == 0)) if not ok]
+    _bad = [k for k, ok in (('zoom_acc_max<=0.005', _mc['zoom_acc_max'] <= 0.005), ('pan_acc_max<=10', _mc['pan_acc_max'] <= 10), ('pan_acc_p99<=5', _mc['pan_acc_p99'] <= 5), ('cut_zoom_pops=0', _mc['cut_zoom_pops'] == 0), ('zoom_reversals=0', _mc['zoom_reversals'] == 0), ('pan_reversals=0', _mc['pan_reversals'] == 0)) if not ok] + ['pdf_scene_zoom=1.0:' + r[0] for r in _fr if r[5] != 'PASS']
     _inc = [k for k in ('zoom_reversals', 'pan_reversals') if _mo is not None and _mo[k] == 0]   # a bar the OLD path also meets proves nothing on this film: INCONCLUSIVE, not PASS (§5.29 b)
     log('§COMP_CAMERA_VERDICT %s %s%s' % ('FAIL' if _bad else 'PASS', ','.join(_bad) or 'all bars met', ('; INCONCLUSIVE (the old path reads 0 too, the measure is vacuous here): ' + ','.join(_inc)) if _inc else ''))
     if _bad: sys.exit('§COMP_REFUSED the camera path breaks its bars: ' + ','.join(_bad))

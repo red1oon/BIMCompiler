@@ -32,10 +32,17 @@ PREP.s4 = async () => { await PREP.s3(); await D.filesLaunch(D.dlDir()); };
 PREP.s1 = async () => { await D.page.goto('about:blank'); await D.sleep(800); };   // setup before the take (not filmed): a blank tab
 
 // §5.29 the PDF in Chrome's own viewer: a person finds a step with Ctrl+F, and clicks a link where its words are on the page (OCR of the screen; the click is checked by its effect: a file landed, a page opened)
-const PDFREG = D.screenBox(700, 150, 810, 920, 'the PDF page (the sheet, not the thumbnails)');
+const PDFREG = D.screenBox(310, 150, 1590, 920, 'the PDF page (the sheet, not the thumbnails)');
 const pdfGo = async (text, label) => { await D.key('ctrl+f', 'find in the PDF: ' + (label || text)); await D.type(text); await D.key('Return', 'go to it'); await D.sleep(1300); await D.key('Escape', 'close the find bar'); await D.sleep(800); };
 const pdfLink = async (rx, label, region, pick) => { const h = await D.findText(rx, region || PDFREG, 8, false, pick); if (!h) return null; const b = D.screenBox(h.x - 6, h.y - 4, h.w + 12, h.h + 8, label); await D.aim(b, { label }); await D.click({ label }); return h; };
-const pdfShown = async () => { const ok = await D.waitUrl(/CapexUATGuide\.pdf$/, 30000); await D.sleep(1200); return ok; };
+// §5.30 (owner 2026-11-25: "When PDF is opened, it should be view full width, so need not keep zooming in and out"): the viewer's own Fit control (a toolbar button: x 985, y 120 on this desktop, measured on a frame; it toggles fit-page / fit-width,
+// and a '#view=FitH' added to an opened file is ignored by the viewer, measured) is pressed until the page fills the viewer's width; the viewer keeps that zoom across a Back. The width is MEASURED from a frame (pagewidth.py), never assumed.
+const FITBTN = D.screenBox(965, 102, 40, 36, "the PDF viewer's Fit control"), pageW = () => JSON.parse(require('child_process').execFileSync('python3', [path.join(__dirname, 'pagewidth.py')], { env: D.ENV }).toString());
+const pdfFit = async () => {
+  let w = pageW(); for (let i = 0; i < 3 && w.width < 0.95 * w.area; i++) { await D.aim(FITBTN, { label: "Fit to width (the viewer's own control)" }); if (i === 0) D.cue('pdf_fit'); await D.click({ label: 'Fit to width', after: 1500 }); w = pageW(); }
+  D.check(w.width >= 0.95 * w.area, 'pdf_page_fills_the_width', 'page x=' + w.left + '..' + w.right + ' width=' + w.width + ' of ' + w.area); return w;
+};
+const pdfShown = async () => { const ok = await D.waitUrl(/CapexUATGuide\.pdf$/, 30000); await D.sleep(1200); await pdfFit(); return ok; };
 
 S.s1 = async () => {   // the guide, and its PDF into Downloads
   D.cue('s1_start');
@@ -59,10 +66,10 @@ S.s2 = async () => {   // the PDF opened from the downloads list; a link that IS
   D.cue('s2_start');
   if (/chrome:\/\/downloads/.test(D.page.url())) {   // s1 left the downloads list on screen: its link opens the file with the SYSTEM's viewer (measured on this desktop: no tab), so the PDF is opened the way any file is, Ctrl+O, in Chrome's own viewer
     // the web page the PDF came from is closed first (from now on the guide is the PDF; two tabs of one title cannot be told apart by the window's title)
-    D.cue('s2_close_tabs'); await D.key('ctrl+1', 'the first tab'); await D.sleep(900); await D.key('ctrl+w', 'close the web page'); await D.sleep(1500); await D.usePage(/chrome:\/\/downloads/);
+    D.fastStart('the PDF is reopened from Downloads (one short line, played sped up: owner 2026-11-25)'); D.cue('s2_close_tabs'); await D.key('ctrl+1', 'the first tab'); await D.sleep(900); await D.key('ctrl+w', 'close the web page'); await D.sleep(1500); await D.usePage(/chrome:\/\/downloads/);
     D.cue('s2_openpdf'); await D.key('ctrl+o', 'open a file');
     const ok = await D.pick(['Downloads'], async (R) => { const f = await D.findText(t => /CapexUATGuide/.test(t), R); if (!f) return false; await D.aim(D.screenBox(f.x - 60, f.y - 4, f.w + 70, f.h + 8, 'CapexUATGuide.pdf'), { label: 'CapexUATGuide.pdf' }); await D.click({ label: 'CapexUATGuide.pdf' }); await D.sleep(700); }, 'the guide PDF');
-    if (!ok) return; await D.usePage(/CapexUATGuide\.pdf$/); await pdfShown(); D.check(D.pages().length === 1 && /CapexUATGuide\.pdf$/.test(D.page.url()), 'pdf_opened_in_chrome_one_tab', 'tabs=' + D.pages().length + ' ' + D.page.url());
+    if (!ok) return; await D.usePage(/CapexUATGuide\.pdf$/); D.fastEnd(); await pdfShown(); D.check(D.pages().length === 1 && /CapexUATGuide\.pdf$/.test(D.page.url()), 'pdf_opened_in_chrome_one_tab', 'tabs=' + D.pages().length + ' ' + D.page.url());
   }
   await pdfShown(); await pdfGo('GardenWorld_CAPEXTestData', 'the test-data pack'); D.cue('s2_table'); await D.sleep(1500);
   const hit = await pdfLink(/CAPEXTestData/, 'the test-data pack link'); D.cue('s2_click');
@@ -246,6 +253,13 @@ const chromePwWarn = async (when) => {
   }
   D.log('§FILM_NOTE no Chrome password window ' + when); return true;
 };
+// §5.30 (owner 2026-11-25): the take's profile has the password manager and the leak check OFF (desk.sh), so Chrome's 'Save password?' bubble and its 'Change your password' window never show. The check is the take's own: OCR of the two places they
+// appear finds none of their words ('Never' / 'thanks' / 'Manager' / 'breach' in the bubble's corner; the window's 'Change' heading) in the frame after the login and the role OK: 0 hits = PASS.
+const noBubble = async (when) => {
+  const bub = await D.findText(t => /^(Never|thanks|Manager|breach)$/i.test(t), D.screenBox(1300, 90, 620, 440, 'where the Save password bubble sits'), 1, true);
+  const win = await D.findText(t => t === 'Change', D.screenBox(700, 180, 560, 120, 'Chrome window heading'), 1, true);
+  D.check(!bub && !win, 'no_password_bubble_or_window ' + when, 'hits=' + ((bub ? 1 : 0) + (win ? 1 : 0)) + (bub ? ' bubble="' + bub.t + '"' : '') + (win ? ' window="' + win.t + '"' : ''));
+};
 S.s13 = async () => {
   D.cue('s13_start');
   await D.key('ctrl+t', 'a new tab'); await D.sleep(1200); await D.usePage(/^(about:blank|chrome:\/\/new-tab-page|chrome:\/\/newtab)/); await D.page.bringToFront();
@@ -255,12 +269,12 @@ S.s13 = async () => {
   await D.aimClick(boxes.nth(0), { label: 'User' }); await D.type('GardenAdmin');
   await D.aimClick(boxes.nth(1), { label: 'Password' }); await D.type('GardenAdmin');
   await D.aimClick(vis('button.btn-ok'), { label: 'OK (log in)' }); await D.sleep(4000);
-  await chromePwWarn('after log in');
+  await noBubble('after log in');
   // the role window comes on some logins and not on others (take 3: straight to Home): wait for whichever comes, press the role OK only when it is there
   const which = await D.page.waitForFunction(() => document.querySelector('input.z-bandbox-input[placeholder="Alt+G"]') ? 'home' : (/Select Role/.test((document.querySelector('.login-box-header-txt') || {}).innerText || '') ? 'role' : null), null, { timeout: 60000 }).then(h => h.jsonValue());
   D.log('§FILM_NOTE after log in: ' + which);
-  if (which === 'role') { D.check(true, 'role_window_shown', 'Select Role'); await D.sleep(1500); await D.aimClick(vis('button.btn-ok'), { label: 'OK (role)' }); await D.sleep(2500); await chromePwWarn('after role'); }
-  const sb = 'input.z-bandbox-input[placeholder="Alt+G"]'; await D.page.waitForSelector(sb + ':visible', { timeout: 90000 }); D.check(true, 'search_box_shown'); await D.sleep(2500);
+  if (which === 'role') { D.check(true, 'role_window_shown', 'Select Role'); await D.sleep(1500); await D.aimClick(vis('button.btn-ok'), { label: 'OK (role)' }); await D.sleep(2500); await noBubble('after role'); }
+  const sb = 'input.z-bandbox-input[placeholder="Alt+G"]'; await D.page.waitForSelector(sb + ':visible', { timeout: 90000 }); D.check(true, 'search_box_shown'); await D.sleep(2500); await noBubble('at Home');
   await D.aimClick(vis(sb), { label: 'the search box' }); await D.type('Pack In'); await D.sleep(2500);
   const item = D.page.locator('.z-listitem:visible', { hasText: /^\s*Pack In\s*$/ }).first(); D.check(await item.count() === 1, 'search_lists_pack_in', await textOf('.z-listitem'));
   await D.aimClick(item, { label: 'Pack In (search result)' });
