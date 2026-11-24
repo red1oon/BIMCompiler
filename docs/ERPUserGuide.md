@@ -533,7 +533,9 @@ iDempiere. Below it:
 - **Do it**: the tabs in the order you fill them, then the action that finishes the job.
 - **What Complete does**: what Complete makes and changes, by kind of document. For example, a POS Order
   also creates the shipment and the invoice; a Standard Order reserves the stock.
-- **What can stop Complete**: the reasons, in iDempiere's own words, such as *Period Closed*.
+
+The reasons that can stop Complete are not listed here: a fixed list of everything that could go wrong hides the
+one thing that is wrong. With the Friendly plugin on, **Check** (below) lists the ones that apply to your document.
 
 This text is read from iDempiere's own rules, and each line traces to the code it comes from. iDempiere users
 get the same text in their own system through a small help script ([how to apply it](https://github.com/red1oon/bim-ootb/tree/main/erp/legacy)).
@@ -562,13 +564,17 @@ it and after each save. The number of problems shows on **?** (and on **⋯** wh
 For a problem on a line, **Show line N** jumps to it, and **Show lines with issues** shows only those lines
 (**Show all lines** brings the rest back). The switch *Checking while you work* in the panel turns it off.
 
-**Not covered yet.** Ship/Receipt Confirm and Requisition say that no check is available for them yet. If the
-form has unsaved changes, **Check** asks you to save first.
+**Not covered yet.** Of the 15 kinds of document in the core windows, 11 are checked. Ship/Receipt Confirm,
+Requisition and Payments into Batch say that no check is available for them yet, and Bank/Cash Transfer has no
+check because this system does not hold its table yet. If the form has unsaved changes, **Check** asks you to save
+first.
 
 > *Proven by* **W-HELP-PEEK**. After every check the data is byte-for-byte the same, and the check always agrees
 > with what Complete then does. It also checks that every problem is listed in iDempiere's order, that the fields
 > are marked on screen, and that **Open** lands on the right record. Each fix is tried before it is offered, and
-> saving it lets Complete pass. Without the plugin there is no check at all.
+> saving it lets Complete pass. All 9 fixes were tried on a document that really stops there (a date in a closed
+> period on six kinds of document, a date older than the allowed back-dating on a movement, a wrong control
+> amount on a journal and on a journal batch). Without the plugin there is no check at all.
 > *The same idea elsewhere:* Microsoft Business Central checks journals and documents while you work and
 > offers recommended fixes. SAP's purchase order has a **Check** button. Here the check runs the very same
 > Complete, so the two cannot disagree.
