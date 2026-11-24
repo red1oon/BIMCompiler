@@ -2,11 +2,30 @@
  "_readme": "RESERVED WORDS (PDF2BIM_VECTOR_PROBE.md §58): printed words whose meaning the drawing states and a reader must not skip. EDITABLE; every entry cites WHO gave the meaning. Nothing here is inferred.",
  "entries": {
   "LUFTRAUM": {
-   "words": ["LUFTRAUM"],
+   "words": [
+    "LUFTRAUM"
+   ],
    "meaning": "an empty space across from the ground floor to the first (owner, 2026-11-25)",
-   "effect": ["no slab at this storey over the room region that holds the label (a slab opening)", "not a floor area on this storey: no printed-area comparison", "the room below keeps its height up to the next slab above the void"],
+   "effect": [
+    "no slab at this storey over the room region that holds the label (a slab opening)",
+    "not a floor area on this storey: no printed-area comparison",
+    "the room below keeps its height up to the next slab above the void"
+   ],
    "witness": "W-S58a: the model has no slab over the labelled point on the storey where the word is printed",
    "source": "owner 2026-11-25"
+  },
+  "DACHNEIGUNG": {
+   "kind": "notation",
+   "words": [
+    "DACHNEIGUNG"
+   ],
+   "pattern": "<n> GRAD",
+   "meaning": "roof pitch in degrees, printed beside the roof section (DE-1 p2, mid-left: 'DACHNEIGUNG 22 GRAD')",
+   "effect": [
+    "the roof planes of the model slope at <n> degrees (tolerance 1 degree)"
+   ],
+   "witness": "W-S59c: model roof pitch (rise over half-span) equals the printed value within 1 degree",
+   "source": "printed on the drawing (DE-1 p2), read by OCR 2026-11-25"
   }
  }
 }
