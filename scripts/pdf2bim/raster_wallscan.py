@@ -1,4 +1,4 @@
-# Implementing PDF2BIM_VECTOR_PROBE.md §43.2 — Witness: W-S9a recall, W-S9b thickness, W-S9c connectivity, W-S9d totals
+# Implementing PDF2BIM_VECTOR_PROBE.md §43.2 + §52.1 — Witness: W-S9a recall, W-S9b thickness, W-S9c connectivity, W-S9d totals, W-S52c hatch
 # Usage: python3 -P raster_wallscan.py <workdir with chains.json + page_clean.png + walls.json>  > raster_wallscan.log
 # Whole-plan wall search on a scanned plan. Thickness vocabulary and minimum run lengths come from the
 # GREEN chains and the §43.1 anchored trace; nothing is a wall unless it passes W-S9b and joins the ring network.
@@ -6,7 +6,7 @@ import sys, os, json
 import numpy as np
 from PIL import Image
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from raster_texture import texture_maps
+from raster_texture import texture_maps, hatch_period, hatch_score as _hs
 
 def log(*a): print(*a, flush=True)
 
@@ -45,6 +45,28 @@ def shift(a, dy, dx):
 def runs1d(b):
     d = np.diff(np.concatenate(([0], b.astype(np.int8), [0])))
     return list(zip(np.where(d == 1)[0], np.where(d == -1)[0] - 1))
+
+# §52.1 HATCH RULE (owner 2026-11-24, the "columns" in the OG rooms): every cut wall on the sheet carries the sheet's own hatch,
+# thin partitions included (the §43.1 "thin bands cannot show hatch" premise is measured wrong on DE-1). Period P = median spacing of
+# ink-run starts along the chain-anchored walls' centrelines; score = best line pair (l, l+D) of the band interior:
+# (share of the line covered by starts at P ±2 px) x (share of starts continued diagonally, ±D ±1 px, on line l+D).
+# Calibrated on the chain walls (walls.json): threshold = their min - 0.10. Runs on every VERIFIED candidate BEFORE suppression (a false band must not evict a true one, the §43.2 order lesson) and so before connectivity.
+def mm2px(w):   # mm (outer top-left) -> body px
+    return dict(o=w['axis'], x0=w['x0'] / 1000 * KH + M, x1=w['x1'] / 1000 * KH + M, y0=w['y0'] / 1000 * KV + M, y1=w['y1'] / 1000 * KV + M)
+HD = px(2)
+def hatch_score(o, x0, x1, y0, y1, P):   # body px; one owner: raster_texture.hatch_score (faces: 2 px left, 1 px right, as measured §52.1)
+    x0, x1, y0, y1 = int(round(x0)), int(round(x1)), int(round(y0)), int(round(y1))
+    v = o == 'V'
+    return _hs(ink, o, x0 + (px(1) if v else 0), x1 - (px(1) if v else 0), y0 + (0 if v else px(1)), y1 - (0 if v else px(1)), P, HD, px(2), px(1))
+_W1px = [mm2px(w) for w in W1]
+HP, _nsp = hatch_period(ink, [(p['o'], p['x0'], p['x1'], p['y0'], p['y1']) for p in _W1px])
+_cal = [hatch_score(p['o'], p['x0'], p['x1'], p['y0'], p['y1'], HP) for p in _W1px] if HP else []
+_cmin = min(_cal) if _cal else 0.0
+HATCH_THR = round(_cmin - 0.10, 3)
+_vac = len(_cal) < 5 or _cmin < 0.40
+log(f"§RASTER_HATCH period_px={HP:.1f} from_chain_walls={len(_W1px)} starts={_nsp} calib_min={_cmin:.2f} calib_median={float(np.median(_cal)) if _cal else 0:.2f} "
+    f"threshold={HATCH_THR} verdict={'VACUOUS (rule off, §43.1 rule kept)' if _vac else 'PASS'}")
+NOHATCH = []
 
 def scan(INK, INKG, K, tag):
     """walls running along axis 0 (rows) of INK; returns candidates (x_left_face, x_right_face, r0, r1, T_m)"""
@@ -104,65 +126,86 @@ def scan(INK, INKG, K, tag):
             c['v'] = round(m, 3); c['src'] = 'MEASURED'; c['thk_m'] = m; c['fl'] = cl; c['fr'] = cr; ver.append(c)
         else: rej += 1; c['fate'] = f'thk {m:.3f}'
     log(f"§RASTER_W-S9b {tag} verified={len(ver)} relabelled={nrel[0]} rejected_thickness={rej} of {len(cands)}")
+    ver_all = list(ver)
+    if not _vac:   # §52.1 the sheet's hatch decides, before suppression
+        kept = []
+        for c in ver:
+            sc = hatch_score('V', c['fl'], c['fr'], c['r0'], c['r1'], HP) if tag == 'vertical' else hatch_score('H', c['r0'], c['r1'], c['fl'], c['fr'], HP)
+            c['hatch'] = round(sc, 3)
+            if sc >= HATCH_THR: kept.append(c)
+            else:
+                c['fate'] = 'nohatch'
+                NOHATCH.append(dict(o='V' if tag == 'vertical' else 'H', thk=c['v'], src=c['src'], hatch=c['hatch'], len_m=round((c['r1'] - c['r0']) / K, 3),
+                                    band_px=[round(c['fl'] + (ox if tag == 'vertical' else oy)), round(c['fr'] + (ox if tag == 'vertical' else oy))],
+                                    run_px=[c['r0'] + (oy if tag == 'vertical' else ox), c['r1'] + (oy if tag == 'vertical' else ox)]))
+        log(f"§RASTER_W-S52c {tag} verified={len(ver)} hatched={len(kept)} removed_no_hatch={len(ver)-len(kept)} (threshold {HATCH_THR}; every removed band in walls_nohatch.json)")
+        ver = kept
     # non-max suppression among VERIFIED candidates: thick first, longest first; a candidate whose band
     # overlaps an accepted band (any thickness) on > 50 % of its rows is dropped
-    ver.sort(key=lambda c: (-c['v'], -(c['r1'] - c['r0']), -c['s']))
-    good = []
-    for c in ver:
-        ok = True
-        for a in good:
-            if c['x'] <= a['x'] + a['T'] + px(1) and a['x'] <= c['x'] + c['T'] + px(1):
-                ov = min(c['r1'], a['r1']) - max(c['r0'], a['r0']) + 1
-                if ov > 0.5 * (c['r1'] - c['r0'] + 1): ok = False; break
-        if ok: good.append(c); c['fate'] = 'ok'
-        else: c['fate'] = 'nms'
+    def nms(vs, mark):
+        vs = sorted(vs, key=lambda c: (-c['v'], -(c['r1'] - c['r0']), -c['s']))
+        good = []
+        for c in vs:
+            ok = True
+            for a in good:
+                if c['x'] <= a['x'] + a['T'] + px(1) and a['x'] <= c['x'] + c['T'] + px(1):
+                    ov = min(c['r1'], a['r1']) - max(c['r0'], a['r0']) + 1
+                    if ov > 0.5 * (c['r1'] - c['r0'] + 1): ok = False; break
+            if ok: good.append(c)
+            if mark: c['fate'] = 'ok' if ok else 'nms'
+        return good
+    DRAWN[tag] = nms(ver_all, False)   # §52.1: the drawn bands before the hatch rule (walls_drawn.json, where §51's stack step looks)
+    good = nms(ver, True)
     log(f"§RASTER_SCAN_NMS {tag} kept={len(good)} of {len(ver)}")
     ALL[tag] = cands
     return good
 
-ALL = {}
+ALL = {}; DRAWN = {}
 vert = scan(ink, inkg, KH, 'vertical')          # walls along y
 hori = scan(ink.T.copy(), inkg.T.copy(), KV, 'horizontal')   # walls along x (transposed)
 
-# rectangles in body px (x, y), inclusive
-rects = []
-for c in vert: rects.append(dict(o='V', x0=c['fl'], x1=c['fr'], y0=c['r0'], y1=c['r1'], v=c['v'], m=c['thk_m'], T=c['T'], src=c['src']))
-for c in hori: rects.append(dict(o='H', y0=c['fl'], y1=c['fr'], x0=c['r0'], x1=c['r1'], v=c['v'], m=c['thk_m'], T=c['T'], src=c['src']))
-
-# exterior strip rule: the outer ring strip (one exterior thickness from the body edge) belongs to the exterior
-# wall; a THINNER band inside it is window glazing/frame (§43.1 classed those rows P), logged as opening evidence
+# rectangles in body px (x, y), inclusive; exterior strip rule; W-S9c connectivity (one function: the walls, and §52.1's drawn bands)
 ext_v = max(vocab); ext_px = ext_v * KH
 bw0, bh0 = X1 - X0 + 2 * M, Y1 - Y0 + 2 * M
-def in_ext_strip(r):
-    if r['o'] == 'V': return r['x0'] < M + ext_px + px(2) or r['x1'] > bw0 - M - ext_px - px(2)
-    return r['y0'] < M + ext_px + px(2) or r['y1'] > bh0 - M - ext_px - px(2)
-glaz = [r for r in rects if r['v'] < ext_v and in_ext_strip(r)]
-rects = [r for r in rects if not (r['v'] < ext_v and in_ext_strip(r))]
-log(f"§RASTER_SCAN_GLAZING thinner_bands_in_exterior_strip={len(glaz)} (removed as walls, kept as opening evidence) at " +
-    ';'.join(f"{r['o']}:{(r['x0']+ox):.0f},{(r['y0']+oy):.0f}" for r in glaz))
-# W-S9c connectivity from the exterior ring; walls JOIN when they touch: face tolerance 2 px + 1 (§43.1)
 tol = px(3)
 def touch(a, b):
     return a['x0'] - tol <= b['x1'] and b['x0'] - tol <= a['x1'] and a['y0'] - tol <= b['y1'] and b['y0'] - tol <= a['y1']
-bw, bh = X1 - X0 + 2 * M, Y1 - Y0 + 2 * M
-ext_thk = max(vocab) * KH
-seed = [i for i, r in enumerate(rects) if r['v'] == max(vocab) and (
-        (r['o'] == 'V' and (r['x0'] < M + ext_thk / 2 or r['x1'] > bw - M - ext_thk / 2)) or
-        (r['o'] == 'H' and (r['y0'] < M + ext_thk / 2 or r['y1'] > bh - M - ext_thk / 2)))]
-net = set(seed); front = list(seed)
-while front:
-    i = front.pop()
-    for j, r in enumerate(rects):
-        if j not in net and touch(rects[i], r): net.add(j); front.append(j)
+def in_ext_strip(r):
+    if r['o'] == 'V': return r['x0'] < M + ext_px + px(2) or r['x1'] > bw0 - M - ext_px - px(2)
+    return r['y0'] < M + ext_px + px(2) or r['y1'] > bh0 - M - ext_px - px(2)
+def network(vl, hl):
+    rects = []
+    for c in vl: rects.append(dict(o='V', x0=c['fl'], x1=c['fr'], y0=c['r0'], y1=c['r1'], v=c['v'], m=c['thk_m'], T=c['T'], src=c['src']))
+    for c in hl: rects.append(dict(o='H', y0=c['fl'], y1=c['fr'], x0=c['r0'], x1=c['r1'], v=c['v'], m=c['thk_m'], T=c['T'], src=c['src']))
+    # exterior strip rule: the outer ring strip (one exterior thickness from the body edge) belongs to the exterior
+    # wall; a THINNER band inside it is window glazing/frame (§43.1 classed those rows P), logged as opening evidence
+    glaz = [r for r in rects if r['v'] < ext_v and in_ext_strip(r)]
+    rects = [r for r in rects if not (r['v'] < ext_v and in_ext_strip(r))]
+    # W-S9c connectivity from the exterior ring; walls JOIN when they touch: face tolerance 2 px + 1 (§43.1)
+    ext_thk = max(vocab) * KH
+    seed = [i for i, r in enumerate(rects) if r['v'] == max(vocab) and (
+            (r['o'] == 'V' and (r['x0'] < M + ext_thk / 2 or r['x1'] > bw0 - M - ext_thk / 2)) or
+            (r['o'] == 'H' and (r['y0'] < M + ext_thk / 2 or r['y1'] > bh0 - M - ext_thk / 2)))]
+    net = set(seed); front = list(seed)
+    while front:
+        i = front.pop()
+        for j, r in enumerate(rects):
+            if j not in net and touch(rects[i], r): net.add(j); front.append(j)
+    return rects, net, glaz, seed
+def to_mm(rects, net):
+    return [dict(axis=r['o'], src=r.get('src', 'READ'), thk_chain_m=r['v'], thk_meas_m=round(r['m'], 4),
+                 x0=(r['x0'] - M) / KH * 1000, x1=(r['x1'] - M) / KH * 1000, y0=(r['y0'] - M) / KV * 1000, y1=(r['y1'] - M) / KV * 1000) for r in (rects[j] for j in sorted(net))]
+rects, net, glaz, seed = network(vert, hori)
+_dr, _dn, glaz, _ = network(DRAWN['vertical'], DRAWN['horizontal'])   # glazing evidence = the thinner DRAWN bands in the exterior strip (they carry no hatch, §52.1)
+log(f"§RASTER_SCAN_GLAZING thinner_bands_in_exterior_strip={len(glaz)} (removed as walls, kept as opening evidence) at " +
+    ';'.join(f"{r['o']}:{(r['x0']+ox):.0f},{(r['y0']+oy):.0f}" for r in glaz))
 log(f"§RASTER_W-S9c seeds_exterior={len(seed)} network={len(net)} isolated_YELLOW={len(rects)-len(net)} "
     f"verdict={'INCONCLUSIVE' if len(seed) < 4 else 'PASS'}")
 for j, r in enumerate(rects):
     if j not in net:
         log(f"§RASTER_SCAN_YELLOW o={r['o']} thk={r['v']} x={r['x0']+ox:.0f}..{r['x1']+ox:.0f} y={r['y0']+oy:.0f}..{r['y1']+oy:.0f} reason=not_joined_to_ring")
 
-# W-S9a recall of the §43.1 runs (mm -> body px)
-def mm2px(w):
-    return dict(o=w['axis'], x0=w['x0'] / 1000 * KH + M, x1=w['x1'] / 1000 * KH + M, y0=w['y0'] / 1000 * KV + M, y1=w['y1'] / 1000 * KV + M)
+# W-S9a recall of the §43.1 runs (mm2px is defined above, with the §52.1 hatch rule)
 found = 0
 for w in W1:
     p = mm2px(w)
@@ -196,12 +239,7 @@ for w in W1:
 log(f"§RASTER_W-S9a recall={found}/{len(W1)} verdict={'PASS' if found == len(W1) else 'FAIL'}")
 
 # W-S9d totals + output (GREEN only), mm from the outer top-left corner
-out = []
-for j in sorted(net):
-    r = rects[j]
-    out.append(dict(axis=r['o'], src=r.get('src', 'READ'), thk_chain_m=r['v'], thk_meas_m=round(r['m'], 4),
-                    x0=(r['x0'] - M) / KH * 1000, x1=(r['x1'] - M) / KH * 1000,
-                    y0=(r['y0'] - M) / KV * 1000, y1=(r['y1'] - M) / KV * 1000))
+out = to_mm(rects, net)
 per = {}
 for w in out:
     L = (w['y1'] - w['y0']) if w['axis'] == 'V' else (w['x1'] - w['x0'])
@@ -212,3 +250,7 @@ log(f"§RASTER_SCAN_SRC " + ' '.join(f"{k}:{v}" for k, v in Counter(w['src'] for
 log(f"§RASTER_W-S9d walls={len(out)} total_m={sum(per.values()):.2f} per_thickness=" +
     ' '.join(f"{k}:{v:.2f}m" for k, v in sorted(per.items())))
 json.dump(dict(origin='outer top-left corner, y down, mm', walls=out), open(os.path.join(work, 'walls_all.json'), 'w'), indent=1)
+drawn = to_mm(_dr, _dn)
+log(f"§RASTER_W-S52d drawn_bands (before the hatch rule, joined to the ring) = {len(drawn)} -> walls_drawn.json (where §51's stack step looks; never emitted as walls)")
+json.dump(dict(origin='outer top-left corner, y down, mm', about='§52.1 drawn bands before the hatch rule: a place to look, not walls', walls=drawn), open(os.path.join(work, 'walls_drawn.json'), 'w'), indent=1)
+json.dump(dict(about='§52.1 verified wall bands without the sheet hatch (page px), removed before suppression', threshold=HATCH_THR, period_px=HP, bands=NOHATCH), open(os.path.join(work, 'walls_nohatch.json'), 'w'), indent=0)

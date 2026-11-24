@@ -205,6 +205,18 @@ def storey(work, tag, level, sheet, wall_h, door_h=None):
     log(f"§RASTER_EMIT_DIMS H_chain side={sideH} values_mm={[b - a for a, b in zip(xs, xs[1:])]} overall={xs[-1]} | V_chain side={sideV} values_mm={[b - a for a, b in zip(ys, ys[1:])]} overall={ys[-1]} | written={nd} (other sides: no GREEN chain, none stated)")
     # §43.21 step 2: each DOOR = one A-DOOR ARC (hinge = centre, radius = nominal width, the importer's door rule), @TAG at the swing box centre
     DH = door_h or door_height(TPL_EFH); DHS = 'READ-GEOM (section door outlines, §43.21 step 3)' if door_h else 'DEFAULT(DIN 18101 opening Nennmaß)'; ndr = 0; tags_d = []; fams = {}
+    # §52.2 owner ruling 2026-11-24 (German custom): the GROUND storey's exterior windows are full-height window doors (Fenstertüren):
+    # sill 0, the storey's door height. DEFAULT: the sheet's BRH (sill) digits are not readable at this print (§47); a READ sill would win.
+    if len(STOREYS) >= 2 and level == min(q['level'] for q in STOREYS):   # the ground storey of a multi-storey set (a one-sheet run is not judged)
+        FT = []
+        for g in glaz:
+            if g.get('sidelight'): continue
+            g['sill'] = 0; g['h'] = DH; g['fenster'] = True
+            FT.append(dict(face=g['face'], along_mm=[round(g['a'], 1), round(g['b'], 1)], nominal_mm=round(g['b'] - g['a']), thk_m=ext_t, height_mm=DH, sill_mm=0))
+            log(f"§RASTER_EMIT_FENSTERTUER {tag} face={g['face']} along_mm={g['a']:.1f}..{g['b']:.1f} width={round(g['b'] - g['a'])} sill=0 height={DH} "
+                f"(DEFAULT owner 2026-11-24: ground storey = Fenstertür, German custom; was sill {SILL} / height {WH} registry)")
+        log(f"§RASTER_W-S52e {tag} ground storey: window doors={len(FT)} of {sum(1 for g in glaz if not g.get('sidelight'))} exterior windows (side lights keep their own)")
+        json.dump(dict(spec='PDF2BIM_VECTOR_PROBE.md §52.2', openings=FT), open(os.path.join(work, 'fenstertueren.json'), 'w'), indent=1)
     ANG = {('H', 'a', -1): (0, 90), ('H', 'a', 1): (270, 360), ('H', 'b', -1): (90, 180), ('H', 'b', 1): (180, 270),
            ('V', 'a', -1): (180, 270), ('V', 'a', 1): (270, 360), ('V', 'b', -1): (90, 180), ('V', 'b', 1): (0, 90)}   # DXF y up; sheet y down
     SLJ = []; sl_marks = []   # §48 the side lights (sidelights.json for the family generator): @TAG + @SCHEDULE marks, written with the door tags
@@ -227,6 +239,12 @@ def storey(work, tag, level, sheet, wall_h, door_h=None):
             SLJ.append(dict(face=d['face'], along_mm=[round(s0, 1), round(s1, 1)], nominal_mm=sw, thk_m=d['thk_m'], height_mm=DH, sill_mm=0, family=sfam, leaf_mm=r, door_index=d.get('index')))
             log(f"§RASTER_EMIT_SIDELIGHT {tag} face={d['face']} along_mm={s0:.1f}..{s1:.1f} width={sw} family={sfam} sill=0 height={DH} (DEFAULT: the door's frame) leaf={r} opening={d['eb'] - d['ea']:.1f}")
     for x_, y_, t_ in tags_d: body += tx(x_, y_, t_)
+    FXJ = os.path.join(work, 'fixtures.json'); nfx = 0   # §52.5 each sanitary symbol read: @FIXTURE=<kind>,<facing> at its back point (DXF frame: y up, facing CCW from +x)
+    if os.path.exists(FXJ):
+        for f_ in json.load(open(FXJ))['fixtures']:
+            fd = (360 - f_['facing_deg']) % 360; body += tx(f_['back_mm'][0], -f_['back_mm'][1], f"@FIXTURE={f_['kind']},{fd:g}"); nfx += 1
+            log(f"§RASTER_EMIT_FIXTURE {tag} kind={f_['kind']} back_mm=({f_['back_mm'][0]:.0f},{f_['back_mm'][1]:.0f}) facing_sheet={f_['facing_deg']} facing_dxf={fd:g} drawn_mm={f_['size_mm']}")
+        log(f"§RASTER_EMIT_FIXTURES {tag} written={nfx}")
     if SLJ: json.dump(dict(spec='PDF2BIM_VECTOR_PROBE.md §48', openings=SLJ), open(os.path.join(work, 'sidelights.json'), 'w'), indent=1)
     for x_, y_, t_ in sl_marks:
         if x_ is not None: body += tx(x_, y_, t_); tags_d.append((x_, y_, t_))
@@ -236,6 +254,7 @@ def storey(work, tag, level, sheet, wall_h, door_h=None):
     for k, y in GY.items(): body += tx(-600, -y, f'@GRIDY={k}')
     want = {'A-WALL-FULL': nw, 'A-GLAZ': ng, 'A-ANNO-DIMS': nd, 'DXF2BIM-MARK': len(marks) + len(GX) + len(GY)}
     if ndr: want['A-DOOR'] = ndr; want['DXF2BIM-MARK'] += len(tags_d)
+    want['DXF2BIM-MARK'] += nfx   # §52.5 the @FIXTURE marks
     if ncw: want['A-WALL-CURT'] = ncw
     if ncol: want['A-COLS'] = ncol
     if SH and EGW and tag == 'EG':   # §46.1 the house's ground-floor slab, drawn (A-A's base slab rows, READ-GEOM), after the house entities, before the annex
@@ -295,8 +314,9 @@ def storey(work, tag, level, sheet, wall_h, door_h=None):
         gm = [f'@WALLTOP=handle:{h},{AH["wall_clear"] / 1000:g},0' for h in hd] + [f'@SCHEDULE={f},door,{w_},{gdh}' for f, w_ in gfam]
         hw_ = [g for g in glaz if g['face'] == 'W' and g['a'] >= yN - 1 and g['b'] <= yS + 1]   # §L40: a house window now behind the garage: no elevation shows it -> its size by a schedule entry (§F8 D24), sill/height DEFAULT as every window
         for g in hw_:
-            wl = f"DEWP_W{round(g['b'] - g['a'])}_{round(g['b'] - g['a'])}x{WH}"; r_ = g['r']; gb += tx((r_[0] + r_[2]) / 2, -(r_[1] + r_[3]) / 2, f'@TAG=window,{wl}')
-            gm.append(f"@SCHEDULE={wl},window,{round(g['b'] - g['a'])},{WH},{SILL}"); log(f"§RASTER_EMIT_GARAGE_HIDDEN_WINDOW W y_mm={g['a']}..{g['b']} tagged {wl}, schedule sill={SILL} height={WH} (DEFAULT registry, as every window)")
+            gh_, gs_ = g.get('h', WH), g.get('sill', SILL)   # §52.2 a ground-storey window door keeps its own sill / height here too
+            wl = f"DEWP_W{round(g['b'] - g['a'])}_{round(g['b'] - g['a'])}x{gh_}"; r_ = g['r']; gb += tx((r_[0] + r_[2]) / 2, -(r_[1] + r_[3]) / 2, f'@TAG=window,{wl}')
+            gm.append(f"@SCHEDULE={wl},window,{round(g['b'] - g['a'])},{gh_},{gs_}"); log(f"§RASTER_EMIT_GARAGE_HIDDEN_WINDOW W y_mm={g['a']}..{g['b']} tagged {wl}, schedule sill={gs_} height={gh_} ({'§52.2 window door' if g.get('fenster') else 'DEFAULT registry, as every window'})")
         for n, m in enumerate(gm): gb += tx(xW - 3000, -2500 - 300 * n, m)
         want['A-WALL-FULL'] += len(WP); want['A-GLAZ'] = want.get('A-GLAZ', 0) + ngz; want['A-FLOR-OTLN'] = want.get('A-FLOR-OTLN', 0) + 2; want['DXF2BIM-MARK'] += len(gm) + len(GD) + len(hw_)
         if GD: want['A-DOOR'] = want.get('A-DOOR', 0) + len(GD)
