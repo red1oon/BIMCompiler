@@ -18,6 +18,27 @@ GUIDE = open(os.path.join(REPO, 'docs', 'CapexUATGuide.md'), encoding='utf-8').r
 for sc in P.SCENES:   # R: the strip is the guide's own words
     ok = sc['strip'] in GUIDE; log('§COMP_STRIP %s %s "%s"' % (sc['id'], 'FOUND' if ok else 'NOT-IN-GUIDE', sc['strip']))
     if not ok: sys.exit(3)
+# §5.29 (owner 2026-11-24: the film reads the DOWNLOADED PDF, not the online page): every strip but s1's (s1 is the online page where the PDF is downloaded) must also be in the PDF the take saved (FILM_GUIDE_PDF).
+# pdftotext puts a table's cells in one stream, so a strip's words are looked for IN ORDER inside a window after its first three words, not as one unbroken phrase.
+def strip_in_pdf(strip, txt):
+    w = re.sub(r'\s+', ' ', strip.replace('**', '').replace('`', '')).strip().split(' '); head = ' '.join(w[:3]); start = 0
+    while True:
+        i = txt.find(head, start)
+        if i < 0: return False
+        seg = txt[i:i + len(' '.join(w)) * 4 + 200]; pos = 0; ok = True
+        for x in w:
+            j = seg.find(x, pos)
+            if j < 0: ok = False; break
+            pos = j + len(x)
+        if ok: return True
+        start = i + 1
+if os.environ.get('FILM_GUIDE_PDF'):
+    PDFTXT = re.sub(r'\s+', ' ', subprocess.run(['pdftotext', os.environ['FILM_GUIDE_PDF'], '-'], capture_output=True, text=True).stdout); bad = []
+    for sc in P.SCENES:
+        if sc['id'] == 's1': continue
+        ok = strip_in_pdf(sc['strip'], PDFTXT); log('§COMP_STRIP_PDF %s %s' % (sc['id'], 'FOUND' if ok else 'NOT-IN-PDF')); (not ok) and bad.append(sc['id'])
+    log('§COMP_STRIP_PDF_VERDICT %s pdf=%s' % ('PASS' if not bad else 'FAIL ' + ','.join(bad), os.environ['FILM_GUIDE_PDF']))
+    if bad: sys.exit(3)
 def strip_text(sc): return sc['strip'].replace('**', '').replace('`', '')
 if mode == 'tsv':
     rows = []; t = 0
@@ -219,9 +240,11 @@ _mo = camera.measure(camera.path('old', _F, EVS, pointer_at, FPS, W, BH, H), _F,
 _r = lambda m: json.dumps({k: round(v, 4) if isinstance(v, float) else v for k, v in m.items()})
 if _mo: log('§COMP_CAMERA_OLD ' + _r(_mo))
 log('§COMP_CAMERA %s %s' % (CAMERA, _r(_mc)))
+for _d in camera.DBG[:int(os.environ.get('FILM_CAM_DBG', '0'))]: log('§COMP_CAMERA_REV ' + _d)   # where the reversals are (FILM_CAM_DBG=n lines), measured on the path just computed (the smooth one)
 if CAMERA == 'smooth':
-    _bad = [k for k, ok in (('zoom_acc_max<=0.005', _mc['zoom_acc_max'] <= 0.005), ('pan_acc_max<=10', _mc['pan_acc_max'] <= 10), ('pan_acc_p99<=5', _mc['pan_acc_p99'] <= 5), ('cut_zoom_pops=0', _mc['cut_zoom_pops'] == 0)) if not ok]
-    log('§COMP_CAMERA_VERDICT %s %s' % ('FAIL' if _bad else 'PASS', ','.join(_bad) or 'all bars met'))
+    _bad = [k for k, ok in (('zoom_acc_max<=0.005', _mc['zoom_acc_max'] <= 0.005), ('pan_acc_max<=10', _mc['pan_acc_max'] <= 10), ('pan_acc_p99<=5', _mc['pan_acc_p99'] <= 5), ('cut_zoom_pops=0', _mc['cut_zoom_pops'] == 0), ('zoom_reversals=0', _mc['zoom_reversals'] == 0), ('pan_reversals=0', _mc['pan_reversals'] == 0)) if not ok]
+    _inc = [k for k in ('zoom_reversals', 'pan_reversals') if _mo is not None and _mo[k] == 0]   # a bar the OLD path also meets proves nothing on this film: INCONCLUSIVE, not PASS (§5.29 b)
+    log('§COMP_CAMERA_VERDICT %s %s%s' % ('FAIL' if _bad else 'PASS', ','.join(_bad) or 'all bars met', ('; INCONCLUSIVE (the old path reads 0 too, the measure is vacuous here): ' + ','.join(_inc)) if _inc else ''))
     if _bad: sys.exit('§COMP_REFUSED the camera path breaks its bars: ' + ','.join(_bad))
 rings = []
 scene_of = {sc['id']: sc for sc in P.SCENES}
