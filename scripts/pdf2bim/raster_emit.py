@@ -1,4 +1,4 @@
-# Implementing PDF2BIM_VECTOR_PROBE.md §43.7 + §43.11 + §43.15 + §43.18 — Witness: W-S12a (round trip, every sheet), W-S18 (READ snap + dimensions), W-S17e (two storeys).
+# Implementing PDF2BIM_VECTOR_PROBE.md §53.1 (marks last) + §43.7 + §43.11 + §43.15 + §43.18 — Witness: W-S12a (round trip, every sheet), W-S18 (READ snap + dimensions), W-S17e (two storeys).
 # Emits the scan in the importer's STD sheet form (same layers/marks as to_std.py + elev_emit.py): plan, four
 # elevations, roof. READ: walls (§43.2 READ), exterior ring + window gaps (§43.1), plan size (chains), roof pitch
 # (§43.10). DEFAULT (stated, registry values): wall height, window sill/height, plan level 0, north = sheet top.
@@ -56,7 +56,27 @@ def lw(layer, pts):
     return e
 def tx(x, y, t): return ['0', 'TEXT', '8', 'DXF2BIM-MARK', '10', f'{x:.1f}', '20', f'{y:.1f}', '30', '0', '40', '150', '1', t + ' @BY=user']
 def rect(x0, y0, x1, y1): return [(x0, -y0), (x1, -y0), (x1, -y1), (x0, -y1)]   # sheet y down -> DXF y up
+def marks_last(name, body):
+    """§53.1 every DXF2BIM-MARK TEXT after all geometry, order kept: the Modeller's mark editor strips the marks and writes them back at the END, so a
+    geometry entity after a mark would move to another index, and an index handle (@WALLTOP=handle:<n>, the reader numbers handle-less entities by
+    position) would name another entity (bim-ootb §L41 FINDING: Accept all broke the garage door). The handles are renumbered to the new order."""
+    ents = []
+    for i in range(0, len(body), 2):
+        if body[i] == '0': ents.append([])
+        ents[-1] += body[i:i + 2]
+    is_mark = lambda e: e[1] == 'TEXT' and 'DXF2BIM-MARK' in e[2:4]
+    geo = [k for k, e in enumerate(ents) if not is_mark(e)]; mk = [k for k, e in enumerate(ents) if is_mark(e)]
+    new_of = {old: new for new, old in enumerate(geo + mk)}; moved = sum(1 for k in geo if new_of[k] != k); remapped = 0
+    for k in mk:
+        e = ents[k]
+        for j in range(0, len(e), 2):
+            if e[j] == '1' and e[j + 1].startswith('@WALLTOP=handle:'):
+                h, rest = e[j + 1][len('@WALLTOP=handle:'):].split(',', 1)
+                e[j + 1] = f'@WALLTOP=handle:{new_of[int(h)]},{rest}'; remapped += 1
+    log(f"§RASTER_EMIT_MARKS_LAST {name} geometry={len(geo)} marks={len(mk)} geometry_moved={moved} walltop_handles_remapped={remapped}")
+    return [x for k in geo + mk for x in ents[k]]
 def write(name, body, want):
+    body = marks_last(name, body)
     dxf = ['0', 'SECTION', '2', 'HEADER', '9', '$INSUNITS', '70', '4', '0', 'ENDSEC', '0', 'SECTION', '2', 'ENTITIES'] + body + ['0', 'ENDSEC', '0', 'EOF']
     p = os.path.join(out, name); open(p, 'w').write('\n'.join(dxf) + '\n')
     t = open(p).read().split('\n'); back = {}
