@@ -18,7 +18,7 @@ D.init = async (home, logPath) => {
   D.home = home; LOG = logPath; browser = await chromium.connectOverCDP('http://127.0.0.1:9333'); ctx = browser.contexts()[0];
   // Playwright's CDP connection sends downloads to its own temp folder under a random name: give Chrome back its OWN behaviour (its Downloads folder, its real names, its download bubble)
   const bs = await browser.newBrowserCDPSession(); await bs.send('Browser.setDownloadBehavior', { behavior: 'default' }); log('§FILM_DL_BEHAVIOR default (Chrome\'s own)');
-  D.page = ctx.pages()[0]; ctx.on('page', p => { log('§FILM_TAB opened ' + (p.url() || '(blank)')); });
+  D.page = ctx.pages()[0]; ctx.pages().forEach(p => p.on('close', () => log('§FILM_TAB closed ' + (p.url() || '(blank)') + ' t=' + now().toFixed(3)))); ctx.on('page', p => { log('§FILM_TAB opened ' + (p.url() || '(blank)')); p.on('close', () => log('§FILM_TAB closed ' + (p.url() || '(blank)') + ' t=' + now().toFixed(3))); });
 };
 D.usePage = async (match) => { for (let i = 0; i < 40; i++) { const p = ctx.pages().find(q => match.test(q.url())); if (p) { D.page = p; return p; } await sleep(250); } throw new Error('no tab matches ' + match); };
 D.pages = () => ctx.pages();
@@ -42,8 +42,13 @@ D.fastEnd = () => { const f = EV.fast[EV.fast.length - 1]; f.t1 = now(); log('§
 D.mouse = () => { const m = /x:(\d+) y:(\d+)/.exec(X('getmouselocation')); return { x: +m[1], y: +m[2] }; };
 async function origin(pg) { const g = await pg.evaluate(() => ({ sx: screenX, sy: screenY, ow: outerWidth, oh: outerHeight, iw: innerWidth, ih: innerHeight, dpr: devicePixelRatio })); const side = (g.ow - g.iw) / 2; return { x: g.sx + side, y: g.sy + g.oh - g.ih - side, dpr: g.dpr }; }
 D.box = async (target, pg) => {   // target: a CSS selector string or a Playwright locator -> its box in SCREEN pixels
-  pg = pg || D.page; const loc = typeof target === 'string' ? pg.locator(target).first() : target;
-  await loc.waitFor({ state: 'visible', timeout: 60000 }); const b = await loc.boundingBox(), o = await origin(pg);
+  pg = pg || D.page; let loc = typeof target === 'string' ? pg.locator(target).first() : target;
+  try { await loc.waitFor({ state: 'visible', timeout: 60000 }); }
+  catch (e) {   // §5.29: a tab that changes process (the PDF viewer's tab going to a web page) can swap its page object under the driver (measured once, dry6 p1): the live page is found again by what the window shows, then the same locator is asked once more
+    if (!/closed/.test(e.message) || typeof target !== 'string') throw e;
+    const was = D.page.url(); let q = null; for (let i = 0; i < 20 && !q; i++) { q = await D.shownPage(); if (!q) q = ctx.pages().find(x => !x.isClosed() && x.url() === was); if (!q) await sleep(250); }
+    if (!q) throw e; D.page = pg = q; log('§FILM_NOTE the page object was replaced under the driver; found again by the window title: ' + q.url()); loc = pg.locator(target).first(); await loc.waitFor({ state: 'visible', timeout: 60000 }); }
+  const b = await loc.boundingBox(), o = await origin(pg);
   return { x: o.x + b.x, y: o.y + b.y, w: b.width, h: b.height, name: typeof target === 'string' ? target : String(target) };
 };
 D.screenBox = (x, y, w, h, name) => ({ x, y, w, h, name });   // a native window part, measured from its X window geometry
@@ -110,7 +115,11 @@ D.key = async (combo, label) => { const t = now(); X('key', combo); EV.keys.push
 D.shownTitle = () => { const ids = XQ('search', '--onlyvisible', '--class', 'google-chrome').trim().split('\n').filter(Boolean); for (const id of ids) { const n = XQ('getwindowname', id).trim(); if (/ - Google Chrome$/.test(n)) return n.replace(/ - Google Chrome$/, ''); } return ''; };
 D.shownPage = async () => { const t = D.shownTitle(); for (const p of ctx.pages()) { const pt = await p.title().catch(() => null); if (pt !== null && pt === t) return p; } return null; };
 D.waitUrl = async (rx, ms) => {   // the SHOWN tab reaches a URL matching rx
-  for (let i = 0; i < (ms || 30000) / 250; i++) { const p = await D.shownPage(); if (p && rx.test(p.url())) { D.page = p; log('§FILM_URL shown ' + p.url()); return true; } await sleep(250); }
+  for (let i = 0; i < (ms || 30000) / 250; i++) { const p = await D.shownPage(); if (p && rx.test(p.url())) { D.page = p; log('§FILM_URL shown ' + p.url()); return true; }
+    // §5.29: Chrome's PDF viewer tab reports no title to the driver (its X window title is the PDF's own), so no tab matches the shown title: if NO page carries it and exactly one page's URL matches, that is the shown one
+    if (!p) { const t = D.shownTitle(), names = []; for (const q of ctx.pages()) names.push(await q.title().catch(() => null)); const m = ctx.pages().filter(q => rx.test(q.url()));
+      if (t && !names.includes(t) && m.length === 1) { D.page = m[0]; log('§FILM_URL shown (by URL: the viewer tab has no title for the driver) ' + m[0].url()); return true; } }
+    await sleep(250); }
   D.check(false, 'url ' + rx, 'the shown tab never reached it (shown title "' + D.shownTitle() + '")'); return false; };   // polls: a Back restores from the page cache without a load event
 D.dlDir = () => path.join(D.home, 'Downloads');
 D.waitFile = async (rx, ms, dir) => {
@@ -137,7 +146,7 @@ D.files = async (geo) => {   // in the take: the Files app comes forward, at a f
 };
 D.closeWin = (id) => { try { X('windowclose', id); } catch (e) { } };
 // ---- reading a NATIVE window (Files, the OS file window): one frame of the screen, words located by OCR (tesseract), so the pointer goes where the word really is
-D.findText = async (rx, region, tries, quiet) => {   // quiet: a miss returns null without a FAIL (the caller has a derived fallback and checks it)
+D.findText = async (rx, region, tries, quiet, pick) => {   // pick(hits) chooses among several hits (default: the first in reading order)   // quiet: a miss returns null without a FAIL (the caller has a derived fallback and checks it)
   const tmp = path.join(require('os').tmpdir(), 'film_ocr_' + process.pid), keep = typeof rx === 'function' ? rx : (t => rx.test(t));
   // four reads of one frame, merged: 1x colour, 2x grey, 2x grey inverted, 2x near-white only (white text on GTK's orange selected row is lost in the others; measured)
   const VARS = [['', 1], ['scale=3840:2160:flags=lanczos,format=gray', 2], ['scale=3840:2160:flags=lanczos,format=gray,negate', 2], ["scale=3840:2160:flags=lanczos,format=gray,lutyuv=y='if(gt(val,225),0,255)'", 2]];   // 4th: near-white text only (a selected row)
@@ -151,7 +160,7 @@ D.findText = async (rx, region, tries, quiet) => {   // quiet: a miss returns nu
           if (keep(o.t) && (!region || (o.x >= region.x && o.y >= region.y && o.x <= region.x + region.w && o.y <= region.y + region.h))) hit.push(o); });
     });
     hit.sort((p, q) => (Math.abs(p.y - q.y) < 12 ? p.x - q.x : p.y - q.y));   // reading order: top row first, then left to right
-    if (hit.length) { const o = hit[0]; log('§FILM_OCR found "' + o.t + '" at=' + [o.x, o.y, o.w, o.h].join(',') + ' conf=' + o.conf.toFixed(0) + ' read=' + o.read + ' of ' + hit.length + ' rx=' + String(rx).slice(0, 60)); return Object.assign(o, { name: o.t }); }
+    if (hit.length) { const o = (pick && pick(hit)) || hit[0]; log('§FILM_OCR found "' + o.t + '" at=' + [o.x, o.y, o.w, o.h].join(',') + ' conf=' + o.conf.toFixed(0) + ' read=' + o.read + ' of ' + hit.length + ' rx=' + String(rx).slice(0, 60)); return Object.assign(o, { name: o.t }); }
     await sleep(700);
   }
   if (!quiet) D.check(false, 'ocr_find ' + String(rx).slice(0, 60), 'not on screen'); return null;
