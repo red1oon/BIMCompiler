@@ -12,7 +12,8 @@
     "the room below keeps its height up to the next slab above the void"
    ],
    "witness": "W-S58a: the model has no slab over the labelled point on the storey where the word is printed",
-   "source": "owner 2026-11-25"
+   "source": "owner 2026-11-25",
+   "geometry": "slab_void"
   },
   "DACHNEIGUNG": {
    "kind": "notation",
