@@ -3,7 +3,7 @@ Scope: **SPEC and phase ledger** for ONE vocabulary the CLI and the guides both 
 Background, measurements and prior art are in `prompts/DOCS_I18N.md` §4b-§4d (owner ideas of 2026-11-16: shared vocabulary for CLI and guides, a `Student` level = the long text, reuse the legacy element/message model, remove the copied Help). This file owns the BUILD; that file keeps the findings.
 
 ## ▶▶▶ RESUME HERE (trigger: "resume Help", formerly "resume message"; read the ▶▶ 2026-11-24 CLOSE block first)
-**▶▶▶ 2026-11-24 LATER (read first): §19.21 SPEC, the help PEEKS AHEAD** (owner: on `?`, check the document on screen, mark the fields red, list every blocker, match Business Central, fix where the data gives one value). It **supersedes items 2 and 3 below**; item 1 (guide) now describes the peek (S4). Owner decided: easiest value + undo (Back-Date → today); legacy links at record level only (see §19.21 OWNER DECISIONS). **S1 + S2 + S3 BUILT** (§19.21 S1 / S2 / S3 RESULT, bim-ootb #3433 #3435 #3437 #3438). Next = S4 (guide section + film v3 storyboard).
+**▶▶▶ 2026-11-24 LATER (read first): §19.21 SPEC, the help PEEKS AHEAD** (owner: on `?`, check the document on screen, mark the fields red, list every blocker, match Business Central, fix where the data gives one value). It **supersedes items 2 and 3 below**; item 1 (guide) now describes the peek (S4). Owner decided: easiest value + undo (Back-Date → today); legacy links at record level only (see §19.21 OWNER DECISIONS). **S1-S4 DONE** (§19.21 RESULTs; bim-ootb #3433 #3435 #3437 #3438; guide section LIVE). Next = items 4, 5, 6 below, then the v3 storyboard (item 7).
 
 **▶▶ 2026-11-24 CLOSE — FILM v3 BRIEF (read first; supersedes the v2 lines below). Owner decisions, verbatim where quoted:**
 - **Why v2/v2b are hard to follow (owner):** they show OUR WORKINGS (a code line typed, a run log, ticks, sales vs purchase) instead of what the user gets. *"Show what it does, not what happens internally."* The ticks / recorded runs are internal testing: *"it is admin report card just show once. It is not part of the show"*.
@@ -2195,7 +2195,14 @@ Both boxes read input through `HelpGrammar.parse`. **6a ERP:** `#<number>` searc
 - **Regressions read:** W-FRIENDLY-OPS 6/0, W-CTXHELP-OVERLAY 9/0, W-HELP-SHOWCASE 38/0, W-FIELD-HELP 14/0, SW audit 0 missing, manifest PASS.
 - **Next:** S4 = the guide section describing the Help panel, the peek, ▶ Fix and the background check (RESUME item 1), published via `scripts/safe_gh_deploy.sh`; then the v3 storyboard for the owner's OK (it now shows the peek: Now = legacy stops at Complete; Ours = the count on `?`, every blocker with its field marked, one click to fix).
 
+
+### §19.21 S4 RESULT (2026-11-24): the guide section is LIVE (RESUME item 1 DONE)
+- `docs/ERPUserGuide.md` **"The Help panel: what to have in place, and a check before you complete"**, published with `scripts/safe_gh_deploy.sh` (dry run first: guard PASS 992/992; publish: canaries 200, `§DEPLOY-DONE`; `glassbowl_data.db` copied in per DOCS_DEPLOY_POLICY). Live anchor checked by fetch: `#the-help-panel-what-to-have-in-place-and-a-check-before-you-complete`.
+- Principle first (owner item 6 for this page): *a good guide tells you what must be in place before you act*; then the `?` door, what every window shows (also for iDempiere users through the `erp/legacy` script), Check, ▶ Fix (tried before offered, one field, nothing saved, never completes), checking while you work (count on `?`, Show lines with issues), what is not covered, the witness, and the prior art (Business Central, SAP Check). The old How To bullet ("Sales Order, Shipment, Invoice, Payment") corrected.
+- **Pending list now (brief order):** item 4 (a guide link on every topic: the window's own section, else this new section), item 5 (giscus feedback), item 6 (language review of the derived topics), item 7 (storyboard v3, now around the peek: Now = legacy stops at Complete, one reason at a time; Ours = the count on `?`, every blocker with its field marked, ▶ one click).
+
 ## STATUS
+2026-11-24 (night): §19.21 S4: guide section LIVE (safe deploy, guard PASS). Next: items 4, 5, 6, then the v3 storyboard.
 2026-11-24 (night): §19.21 S3 built (bim-ootb #3438): background check, count on the ? door, Show lines with issues. Next S4 (guide + film v3).
 2026-11-24 (late): §19.21 S2 built (bim-ootb #3437): ▶ Fix, proved before offered; sweep 12 of 15. Next S3 (background check).
 2026-11-24 (later): §19.21 S1 built (bim-ootb #3433 + #3435): the lightbulb Check in the Help panel, marks, Show-it, ? door, lightbulb pill gone; W-HELP-PEEK PASS. Next S2 (▶ fixes).
