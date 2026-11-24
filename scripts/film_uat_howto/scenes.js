@@ -3,7 +3,8 @@
 // Each scene: cue at its start, real pointer + keys, and a CHECK that the click had its effect (a file landed, a page opened, a list filled). A FAIL means re-take, never cut around it.
 'use strict';
 const D = require('./drv.js'), fs = require('fs'), path = require('path');
-const GUIDE = 'https://red1oon.github.io/BIMCompiler/CapexUATGuide/';
+const GUIDE = 'https://red1oon.github.io/BIMCompiler/CapexUATGuide/';   // §5.29 owner rule 2026-11-24: ONLY s1 opens the online page (it is where the PDF is downloaded); every later scene reads the PDF the tester saved
+const PDF_NAME = 'CapexUATGuide.pdf', PDF_URL = GUIDE.replace(/\/CapexUATGuide\/$/, '/' + PDF_NAME);
 // Chrome's own toolbar is not in any page's DOM: its address bar was MEASURED once from a calibration frame of this desktop (probe1.png: the bar spans x 130-1705, y 52-84)
 const BACK = D.screenBox(14, 53, 28, 28, 'the Back button');   // measured on the same frame: the toolbar arrow at x 28, y 67
 const OMNIBOX = D.screenBox(300, 54, 700, 28, 'the address bar');
@@ -12,15 +13,29 @@ const GMD = fs.readFileSync(path.join(__dirname, '..', '..', 'docs', 'CapexUATGu
 const PACK_URL = (/\((https:\/\/[^)\s]*Shed_UAT_pack_\d{8}\.zip)\)/.exec(GMD) || [])[1], PACK = (/(Shed_UAT_pack_\d{8})\.zip/.exec(PACK_URL || '') || [])[1], PACKID = (PACK || '').slice(-8);
 const B31 = (/\*\*(USD [\d,.]+ \(RM [\d,]+\) — total building cost)\*\*/.exec(GROW('B3.1')) || [])[1];
 const B51 = ((/\*(Pack intact: \d+ files checked, built [\d-]+) …\*/.exec(GROW('B5.1')) || [])[1]);
+const PACK_TD_URL = (/\((https:\/\/github\.com\/[^)\s]*CAPEXTestData\.zip)\)/.exec(GMD) || [])[1];   // the guide's own link (B:READ), for the size check and a resumed take's set-up
 const esc = t => String(t).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 console.log('§FILM_GUIDE pack=' + PACK + ' url=' + PACK_URL + ' b31=' + JSON.stringify(B31) + ' b51=' + JSON.stringify(B51));
 const S = {}, PREP = {};
+// §5.29 (owner 2026-11-24: "during film making, not to use the online UAT Guide but the downloaded PDF guide"): PREP.pdf puts the PDF s1 saves into the fresh Downloads (when a take resumes after s1) and shows it in Chrome's own viewer
+const PDF_FILE = () => path.join(D.dlDir(), PDF_NAME);
+PREP.pdf = async () => {   // set-up, not filmed
+  if (!fs.existsSync(PDF_FILE())) { const r = await fetch(PDF_URL); fs.writeFileSync(PDF_FILE(), Buffer.from(await r.arrayBuffer())); D.log('§FILM_PREP pdf fetched ' + PDF_URL + ' bytes=' + fs.statSync(PDF_FILE()).size); }
+  if (!/CapexUATGuide\.pdf/.test(D.page.url())) { await D.page.goto('file://' + PDF_FILE(), { waitUntil: 'commit' }).catch(e => D.log('§FILM_NOTE goto pdf: ' + String(e).split('\n')[0])); await D.sleep(3500); }
+};
+PREP.oneTab = async () => { const ps = D.pages(); for (const p of ps.slice(1)) await p.close().catch(() => {}); D.page = ps[0]; await D.page.bringToFront(); await D.sleep(500); };
+PREP.s3 = async () => { await PREP.pdf(); };   // a re-take starts on the PDF (not filmed)
+PREP.s2 = async () => { if (!/chrome:\/\/downloads/.test(D.page.url())) await PREP.pdf(); };   // s2 normally follows s1 on its downloads list
 PREP.s5 = async () => { await PREP.s3(); };
 PREP.s8 = async () => { await PREP.oneTab(); await D.page.goto('https://red1oon.github.io/bim-ootb/index.html'); await D.sleep(1500); await D.page.evaluate(() => { localStorage.clear(); sessionStorage.clear(); }); await PREP.s3(); };   // a re-take sees the front door as a first visit (the pill picture), as the fresh build does
 PREP.s4 = async () => { await PREP.s3(); await D.filesLaunch(D.dlDir()); };
-PREP.oneTab = async () => { const ps = D.pages(); for (const p of ps.slice(1)) await p.close().catch(() => {}); D.page = ps[0]; await D.page.bringToFront(); await D.sleep(500); };
-PREP.s3 = async () => { if (!/CapexUATGuide/.test(D.page.url())) { await D.page.goto(GUIDE); await D.page.waitForLoadState('load'); await D.sleep(1500); } };   // a re-take starts on the guide (not filmed)
 PREP.s1 = async () => { await D.page.goto('about:blank'); await D.sleep(800); };   // setup before the take (not filmed): a blank tab
+
+// §5.29 the PDF in Chrome's own viewer: a person finds a step with Ctrl+F, and clicks a link where its words are on the page (OCR of the screen; the click is checked by its effect: a file landed, a page opened)
+const PDFREG = D.screenBox(700, 150, 810, 920, 'the PDF page (the sheet, not the thumbnails)');
+const pdfGo = async (text, label) => { await D.key('ctrl+f', 'find in the PDF: ' + (label || text)); await D.type(text); await D.key('Return', 'go to it'); await D.sleep(1300); await D.key('Escape', 'close the find bar'); await D.sleep(800); };
+const pdfLink = async (rx, label, region, pick) => { const h = await D.findText(rx, region || PDFREG, 8, false, pick); if (!h) return null; const b = D.screenBox(h.x - 6, h.y - 4, h.w + 12, h.h + 8, label); await D.aim(b, { label }); await D.click({ label }); return h; };
+const pdfShown = async () => { const ok = await D.waitUrl(/CapexUATGuide\.pdf$/, 30000); await D.sleep(1200); return ok; };
 
 S.s1 = async () => {   // the guide, and its PDF into Downloads
   D.cue('s1_start');
@@ -40,31 +55,36 @@ S.s1 = async () => {   // the guide, and its PDF into Downloads
 };
 
 const HOME_DL = () => D.dlDir(), XQmin = w => { try { D.X('windowminimize', w); } catch (e) { } };
-S.s2 = async () => {   // a link that IS a file: the test-data pack (keep it zipped)
-  D.cue('s2_start'); await D.key('ctrl+w', 'close the downloads tab'); await D.waitUrl(/CapexUATGuide/); await D.sleep(600);
-  const L = 'a[href*="CAPEXTestData.zip"]';
-  D.fastStart('scroll to What you need'); await D.moveTo(960, 600); await D.scrollInto(L, 260); D.fastEnd();
-  D.cue('s2_table'); await D.sleep(1500);
-  await D.aim(L, { label: 'the test-data pack link' }); D.cue('s2_click'); await D.click({ label: 'the test-data pack link' });
-  const href = await D.page.$eval(L, e => e.href).catch(() => ''); const zlen = href ? await fetch(href, { method: 'HEAD' }).then(r => Number(r.headers.get('content-length'))).catch(() => -1) : -1;   // B:READ: the size the guide's link serves
-  const f = await D.waitFile(/CAPEXTestData\.zip$/, 60000); D.check(!!f && zlen > 0 && f.bytes === zlen, 'testdata_zip_landed', f ? f.name + ' ' + f.bytes : 'none');
+S.s2 = async () => {   // the PDF opened from the downloads list; a link that IS a file: the test-data pack (keep it zipped)
+  D.cue('s2_start');
+  if (/chrome:\/\/downloads/.test(D.page.url())) {   // s1 left the downloads list on screen: its link opens the file with the SYSTEM's viewer (measured on this desktop: no tab), so the PDF is opened the way any file is, Ctrl+O, in Chrome's own viewer
+    // the web page the PDF came from is closed first (from now on the guide is the PDF; two tabs of one title cannot be told apart by the window's title)
+    D.cue('s2_close_tabs'); await D.key('ctrl+1', 'the first tab'); await D.sleep(900); await D.key('ctrl+w', 'close the web page'); await D.sleep(1500); await D.usePage(/chrome:\/\/downloads/);
+    D.cue('s2_openpdf'); await D.key('ctrl+o', 'open a file');
+    const ok = await D.pick(['Downloads'], async (R) => { const f = await D.findText(t => /CapexUATGuide/.test(t), R); if (!f) return false; await D.aim(D.screenBox(f.x - 60, f.y - 4, f.w + 70, f.h + 8, 'CapexUATGuide.pdf'), { label: 'CapexUATGuide.pdf' }); await D.click({ label: 'CapexUATGuide.pdf' }); await D.sleep(700); }, 'the guide PDF');
+    if (!ok) return; await D.usePage(/CapexUATGuide\.pdf$/); await pdfShown(); D.check(D.pages().length === 1 && /CapexUATGuide\.pdf$/.test(D.page.url()), 'pdf_opened_in_chrome_one_tab', 'tabs=' + D.pages().length + ' ' + D.page.url());
+  }
+  await pdfShown(); await pdfGo('GardenWorld_CAPEXTestData', 'the test-data pack'); D.cue('s2_table'); await D.sleep(1500);
+  const hit = await pdfLink(/CAPEXTestData/, 'the test-data pack link'); D.cue('s2_click');
+  const f = await D.waitFile(/CAPEXTestData\.zip$/, 60000); const zlen = await fetch(PACK_TD_URL, { method: 'HEAD', redirect: 'follow' }).then(r => Number(r.headers.get('content-length'))).catch(() => -1);   // B:READ: the size the guide's link serves
+  D.check(!!hit && !!f && zlen > 0 && f.bytes === zlen, 'testdata_zip_landed', f ? f.name + ' ' + f.bytes + ' served=' + zlen : 'none');
   D.cue('s2_landed'); await D.sleep(3500); D.cue('s2_end');
 };
 S.s3 = async () => {   // a link that is a PAGE: the products script opens GitHub; the file is behind 'Download raw file'
-  D.cue('s3_start'); const L = 'a[href*="CONSTRUCTION-PRODUCTS.sql"]'; await D.scrollInto(L, 260);
-  await D.aim(L, { label: 'the products-script link' }); D.cue('s3_click'); await D.click({ label: 'the products-script link' });
-  await D.page.waitForURL(/github\.com\/.*CONSTRUCTION-PRODUCTS\.sql/, { timeout: 60000 }); await D.page.waitForLoadState('load'); await D.sleep(2500);
+  D.cue('s3_start'); await pdfGo('CAPEX-TD-CONSTRUCTION-PRODUCTS', 'the products script');
+  const hit = await pdfLink(/CONSTRUCTION/, 'the products-script link'); D.cue('s3_click');
+  D.check(!!hit && await D.waitUrl(/github\.com\/.*CONSTRUCTION-PRODUCTS\.sql/, 60000), 'products_link_opened_github', D.page.url()); await D.page.waitForLoadState('load'); await D.sleep(2500);
   const html = fs.readdirSync(HOME_DL()).filter(n => /\.sql$/.test(n)).length; D.check(html === 0, 'link_opened_a_page_not_a_file', 'sql files in Downloads=' + html + ' url=' + D.page.url());
   D.cue('s3_page'); await D.sleep(2500);
   const B = '[data-testid="download-raw-button"]';   // GitHub's 'Download raw file' (an icon beside Raw; measured: it carries no aria-label, only this test id)
   await D.aim(B, { label: 'Download raw file', dur: 1.0 }); D.cue('s3_raw'); await D.sleep(900); await D.click({ label: 'Download raw file' });
   const f = await D.waitFile(/CONSTRUCTION-PRODUCTS.*\.sql$/, 60000); D.check(!!f && f.bytes > 1000, 'sql_landed', f ? f.name + ' ' + f.bytes : 'none');
   D.cue('s3_landed'); await D.sleep(2500);
-  D.cue('s3_back'); await D.key('Escape', 'close the download list'); await D.aimClick(BACK, { label: 'Back' }); await D.waitUrl(/CapexUATGuide/); await D.sleep(1500); D.cue('s3_end');
+  D.cue('s3_back'); await D.key('Escape', 'close the download list'); await D.aimClick(BACK, { label: 'Back' }); await pdfShown(); D.cue('s3_end');
 };
 S.s4 = async () => {   // the reference pack: download it, then open it in Files: opening the zip extracts it; inside are the sheets
-  D.cue('s4_start'); const L = 'a[href*="Shed_UAT_pack"]';
-  await D.scrollInto(L, 260); await D.aim(L, { label: 'the reference pack link' }); D.cue('s4_click'); await D.click({ label: 'the reference pack link' });
+  D.cue('s4_start'); await pdfGo('reference pack (to mark', 'the reference pack');
+  const hit = await pdfLink(/Shed_UAT/, 'the reference pack link'); D.cue('s4_click'); D.check(!!hit, 'pack_link_found_in_pdf', JSON.stringify(hit && hit.t));
   const len = await fetch(PACK_URL, { method: 'HEAD' }).then(r => Number(r.headers.get('content-length'))).catch(() => -1);   // B:READ: the size the guide's link serves
   const f = await D.waitFile(new RegExp('^' + esc(PACK) + '\\.zip$'), 90000); D.check(!!f && len > 0 && f.bytes === len, 'pack_landed', f ? f.name + ' ' + f.bytes : 'none');
   D.cue('s4_landed'); await D.sleep(2000);
@@ -128,10 +148,10 @@ S.s7 = async () => {   // B2.8: Export -> Viewer database (.db), into Downloads
 const AREA = D.screenBox(760, 560, 400, 240, 'the model area');   // the middle of the Viewer's canvas: a click there focuses the model, as a person does before a shortcut key
 S.s8 = async () => {   // B2.9: front door -> red pill -> Buildings / IFC -> Blank Viewer -> Ctrl+O -> the .db
   D.cue('s8_start');
-  // §5.15 Part II: the Modeller opened in the guide's own tab (one tab, measured), so a person goes Back to the guide first
-  for (let i = 0; i < 3 && !/CapexUATGuide/.test(D.page.url()); i++) { await D.aimClick(BACK, { label: 'Back (to the guide)' }); await D.waitUrl(/CapexUATGuide|modeller/, 15000); await D.sleep(1500); }
-  const toc = D.page.locator('.md-sidebar--secondary a', { hasText: 'B2b · Convert' }).first(); await D.aimClick(toc, { label: 'contents: B2b' }); await D.sleep(1800);
-  const fd = D.page.locator('a[href$="bim-ootb/index.html"]', { hasText: 'front door' }).first(); await D.scrollInto(fd, 220); await D.aim(fd, { label: 'the front door link' }); D.cue('s8_link'); await D.click({ label: 'front door' });
+  // the Modeller opened in the guide's own tab (one tab, measured), so a person goes Back to the guide first: the PDF (§5.29)
+  for (let i = 0; i < 3 && !/CapexUATGuide\.pdf$/.test(D.page.url()); i++) { await D.aimClick(BACK, { label: 'Back (to the guide)' }); await D.waitUrl(/CapexUATGuide\.pdf$|modeller/, 15000); await D.sleep(1500); }
+  await pdfShown(); await pdfGo('Open the front door', 'B2.9'); D.cue('s8_pdf');
+  const hit = await pdfLink(/^front/, 'the front door link (B2.9)'); D.cue('s8_link'); D.check(!!hit, 'b29_front_door_link_found_in_pdf', JSON.stringify(hit && hit.t));
   await D.waitUrl(/bim-ootb\/index\.html/, 60000); await D.page.waitForSelector('.hot.red', { state: 'visible', timeout: 60000 }); await D.sleep(2500); D.cue('s8_front');
   // the red pill: the hotspot is a box over the picture; the pill itself sits at 73.5 % across, 43 % down it (measured on this desktop's frame fd.png)
   await D.aim('.hot.red', { fx: 0.735, fy: 0.43, label: 'the red pill' }); await D.click({ label: 'the red pill' }); await D.sleep(2500);
@@ -154,12 +174,12 @@ S.s8 = async () => {   // B2.9: front door -> red pill -> Buildings / IFC -> Bla
 const TAB1 = D.screenBox(70, 12, 190, 26, 'tab 1'), TAB2 = D.screenBox(305, 12, 190, 26, 'tab 2');
 const tabTo = async (box, rx) => { await D.aimClick(box, { label: box.name }); await D.sleep(900); const ok = await D.waitUrl(rx, 8000); D.check(ok, 'tab_shown ' + rx, 'window title "' + D.shownTitle() + '"'); };
 const CHECK = /capex\/uat\/check\.html/;
-S.s10 = async () => {   // B5.2 (box 4): the Run Checker in the first tab, the status line pasted
+S.s10 = async () => {   // B5.2 (box 4): the Run Checker from the PDF's B5.1 link, the status line pasted
   D.cue('s10_start'); await tabTo(TAB1, /bim-ootb\/index\.html|CapexUATGuide/);
-  for (let i = 0; i < 4 && !/CapexUATGuide/.test(D.page.url()); i++) { await D.aimClick(BACK, { label: 'Back' }); await D.sleep(1500); }   // the front door keeps its own history steps
-  D.check(/CapexUATGuide/.test(D.page.url()), 'back_to_guide', D.page.url());
-  const toc = D.page.locator('.md-sidebar--secondary a', { hasText: 'B5 · Mark your run' }).first(); await D.aimClick(toc, { label: 'contents: B5' }); await D.sleep(1800);
-  const ln = D.page.locator('a[href*="capex/uat/check.html"]').first(); await D.scrollInto(ln, 220); await D.aim(ln, { label: 'the UAT Run Checker link' }); await D.click({ label: 'UAT Run Checker' });
+  for (let i = 0; i < 4 && !/CapexUATGuide\.pdf$/.test(D.page.url()); i++) { await D.aimClick(BACK, { label: 'Back' }); await D.sleep(1500); }   // the front door keeps its own history steps
+  D.check(/CapexUATGuide\.pdf$/.test(D.page.url()) || await D.waitUrl(/CapexUATGuide\.pdf$/, 15000), 'back_to_the_pdf', D.page.url());
+  await pdfShown(); await pdfGo('open the UAT Run Checker', 'B5.1'); D.cue('s10_pdf');
+  const hit = await pdfLink(/^Checker\.?$/, 'the UAT Run Checker link (B5.1)', null, hs => hs.slice().sort((a, b) => b.y - a.y)[0]);   // the link is the LAST 'Checker' on the page (the first is the intro's bold words above the table) D.check(!!hit, 'b51_checker_link_found_in_pdf', JSON.stringify(hit && hit.t));
   await D.waitUrl(CHECK, 60000); await D.page.waitForSelector('#vline', { state: 'visible', timeout: 60000 }); await D.sleep(1500); D.cue('s10_checker');
   await D.scrollInto('#vline', 200); await D.aimClick('#vline', { label: 'box 4' }); D.cue('s10_paste'); await D.key('ctrl+v', 'paste');
   const v = await D.page.$eval('#vline', e => e.value); D.check(/DONE — SHED 511 elements/.test(v), 'box4_pasted', JSON.stringify(v.slice(0, 100)));
@@ -181,7 +201,7 @@ S.s11 = async () => {   // B5.1 + B5.2: box 5 pasted, box 1 the pack's zip, box 
   await D.aimClick('#cline', { label: 'box 5' }); await D.key('ctrl+a', 'select what is there'); await D.key('ctrl+v', 'paste'); const c = await D.page.$eval('#cline', e => e.value);
   D.check(!!B31 && c.indexOf(B31) >= 0, 'box5_pasted', JSON.stringify(c.slice(0, 100))); D.cue('s11_pasted'); await D.sleep(1500);
   await D.scrollInto('#pack', 200); await D.aim('#pack', { label: 'box 1' }); D.cue('s11_box1'); await D.click({ label: 'box 1' });
-  let ok = await D.pick(['Downloads'], async (R) => { const f = await D.findText(t => new RegExp('pack.' + PACKID + '\\.zip$').test(t)   /* §5.15: the zip as the only, selected row reads "pack.20261115.zip" */, R); if (!f) return false; await D.aim(D.screenBox(f.x - 60, f.y - 4, f.w + 70, f.h + 8, 'the pack zip'), { label: 'Shed_UAT_pack_20261115.zip' }); await D.click({ label: 'the pack zip' }); await D.sleep(700); }, 'box 1: the pack');
+  let ok = await D.pick(['Downloads'], async (R) => { const f = await D.findText(t => new RegExp('pack.?' + PACKID + '\\.[z2]ip').test(t)   /* §5.15: the zip as the only, selected row reads "pack.20261124.2ip" (tesseract: the zip as the only, selected row; the pointer's arrow over its first letters, 2026-11-24) */, R); if (!f) return false; await D.aim(D.screenBox(f.x - 60, f.y - 4, f.w + 70, f.h + 8, 'the pack zip'), { label: 'Shed_UAT_pack_20261115.zip' }); await D.click({ label: 'the pack zip' }); await D.sleep(700); }, 'box 1: the pack');
   if (!ok) return;
   let intact = ''; for (let i = 0; i < 60 && !/Pack intact/.test(intact); i++) { intact = await D.page.evaluate(() => document.body.innerText); if (!/Pack intact/.test(intact)) await D.sleep(500); }
   const il = (new RegExp(esc(B51 || '§none') + '[^\\n]*').exec(intact) || [''])[0]; D.check(!!B51 && !!il, 'pack_intact_as_guide_b51', JSON.stringify(il.slice(0, 100))); D.cue('s11_intact'); await D.sleep(2500);   // guide B5.1
@@ -205,10 +225,10 @@ S.s12 = async () => {   // B5.3 + B5.4: Mark my run, Download result
 
 // §5.12 scene s13: iDempiere Pack In through its window (guide A3.1, second option), on the shared test instance :8108 (its database copied before the take and restored after, not filmed)
 const IDEMP = 'localhost:8108/webui/';
-PREP.s13 = async () => {   // set-up, not filmed: the test-data zip in the fresh Downloads (scene s2 shows that download), from the guide's own link
-  await PREP.oneTab(); await D.page.goto(GUIDE); await D.page.waitForLoadState('load');
-  const href = await D.page.$eval('a[href*="CAPEXTestData.zip"]', a => a.href); const r = await D.page.request.get(href); const b = await r.body();
-  fs.writeFileSync(path.join(D.dlDir(), href.split('/').pop()), b); D.log('§FILM_PREP s13 test-data zip ' + href.split('/').pop() + ' bytes=' + b.length);
+PREP.s13 = async () => {   // set-up, not filmed: the test-data zip in the fresh Downloads (scene s2 shows that download), from the guide's own link (parsed from the guide, §5.29: no online page)
+  await PREP.oneTab(); const r = await fetch(PACK_TD_URL); const b = Buffer.from(await r.arrayBuffer());
+  fs.writeFileSync(path.join(D.dlDir(), PACK_TD_URL.split('/').pop()), b); D.log('§FILM_PREP s13 test-data zip ' + PACK_TD_URL.split('/').pop() + ' bytes=' + b.length);
+  await PREP.pdf();   // tab 1 shows the PDF (s13 opens iDempiere in a new tab)
 };
 const vis = sel => D.page.locator(sel + ':visible').first();
 const textOf = async sel => D.page.evaluate(s => [...document.querySelectorAll(s)].filter(e => e.getBoundingClientRect().width > 0).map(e => (e.innerText || e.value || '').trim()).join(' | '), sel);
@@ -287,13 +307,22 @@ S.p12 = async () => {   // B5.3 + B5.4: Mark my run -> four rows PASS, the run P
   const f = await D.waitFile(/uat_result.*\.json$/, 60000); let j = null; try { j = JSON.parse(fs.readFileSync(f.path, 'utf8')); } catch (e) { }
   D.check(!!j && j.verdict === 'PASS', 'result_saved_verdict_pass', f ? f.name + ' verdict=' + (j && j.verdict) : 'none'); D.cue('p12_saved'); await D.sleep(3500); D.cue('p12_end');
 };
-// ================= §5.14 / §5.15 PART II: the raw sheets, marked by hand (B0.1-B0.9), then Arrange (B2.3) and a full PASS at B5 =================
-// Source of every value: the guide's B0 table and W-UAT-B0 (bim-ootb capex/tests/witness_uat_b0_raw_to_marked.js); the tables below are COPIED from that witness.
-const LAYERS = [['plan', 'Col', 'column'], ['plan', 'Fo', 'footing'], ['elev', 'Wall', 'panel'], ['elev', 'Rod', 'fan'], ['elev', 'Dim', 'net'], ['section', 'Fo', 'bar'], ['elev', 'Win', 'door'],
-  ['elev', '0', 'column', '1S_ELEV_SOUTH.dxf'], ['plan', 'Dim', 'beam', '3_BEAM_LAYOUT.dxf'], ['plan', 'Rod', 'doorswing', '0_FLOOR_PLAN.dxf']];
-const DATUMS = [['1S_ELEV_SOUTH.dxf', '-4446.6'], ['1N_ELEV_NORTH.dxf', '-3895.2'], ['2_ELEV_WEST.dxf', '-4515.7264'], ['7_ELEV_EAST.dxf', '-3766.442'], ['8_SECTION_AA_TRUSS.dxf', '-3726.416']];
-const BODYZ = [['footing', '-1.4478', '-1.143'], ['beam', '3.098794', '3.352794']];
-const EX_AIM = [-20885, -5610, -20847, -4940], EX_TOL = { x0: [-20908, -20873.6], x1: [-20850.7, -20843.3], y0max: -5577.3, y1min: -4965.3 };
+// ================= §5.14 / §5.15 / §5.29 the raw sheets: B0.1-B0.9 on the pre-filled panel =================
+// §5.29 (owner 2026-11-24: "Defaults needs no further typing. Typing is only to check each default and override it."): every value below is the guide's own row (rev (o)), PARSED, never typed here.
+// The take CHECKS each default (the pointer rests on it, the take reads it from the panel and from the saved marks) and keys in the ONE value the guide leaves to the tester: the ELEV layer 0 (B0.4).
+const gnum = (row, rx) => { const m = rx.exec(GROW(row)); return m ? Number(m[1]) : NaN; };
+const Y1 = gnum('B0.1', /lists \*\*(\d+)\*\* yellow/), Y2 = gnum('B0.2', /to \*\*(\d+)\*\* yellow/), Y3 = gnum('B0.2b', /leaves \*\*(\d+)\*\* yellow/), Y4 = gnum('B0.4', /shows \*\*(\d+)\*\* yellow/);
+const ROLES = (/\((\d) PLAN, (\d) ELEV, (\d) SECTION\)/.exec(GROW('B0.2b')) || []).slice(1).map(Number);
+const SETNAME = (/reads \*\*(\w+)\*\* on all nine/.exec(GROW('B0.3')) || [])[1];
+const ZV = (/`@Z=([\d.]+)`/.exec(GROW('B0.6')) || [])[1];
+const LAYERS = (() => { const L = GMD.split('\n'), i = L.findIndex(l => /^\*\*B0\.4 · the ten layer meanings/.test(l)), out = [];   // the guide's table: heading, CAD layer, meaning (+ 'X only' + 'the one you set')
+  for (let k = i + 1; k < L.length && out.length < 10; k++) { const c = L[k].split('|').map(x => x.trim()); if (c.length < 5 || !/ sheets$/.test(c[1])) continue;
+    const only = (/\*\*(\w+) only\*\*/.exec(c[3]) || [])[1]; out.push({ role: c[1].split(' ')[0].toLowerCase(), L: (/`([^`]+)`/.exec(c[2]) || [])[1], ui: (/^([a-z]+)/.exec(c[3]) || [])[1], only: only && only + '.dxf', set: /the one you set/.test(c[3]) }); } return out; })();
+const DATUMS = (() => { const L = GMD.split('\n'), i = L.findIndex(l => /^\*\*B0\.6 · the five level datums/.test(l)), out = [];
+  for (let k = i + 1; k < L.length && out.length < 5; k++) { const m = /^\| `(\w+)` \| `(-?[\d.]+)` \|/.exec(L[k]); if (m) out.push([m[1] + '.dxf', m[2]]); } return out; })();
+const BODYZ = [...GROW('B0.5').matchAll(/`(@BODYZ=(\w+),([-\d.]+),([-\d.]+)) from drawing · (PR-[A-Z-]+)`/g)].map(m => ({ text: m[1], kind: m[2], rule: m[5] }));
+const EXCL = (() => { const m = /`(\w+) @EXCLUDE=([-\d.]+),([-\d.]+),([-\d.]+),([-\d.]+)`/.exec(GROW('B0.7')) || []; return { sheet: m[1] + '.dxf', text: m[1] + ' @EXCLUDE=' + m.slice(2).join(','), box: m.slice(2).map(Number), rule: (/rule (PR-[A-Z-]+)/.exec(GROW('B0.7')) || [])[1] }; })();
+console.log('§FILM_GUIDE_B0 yellow=' + [Y1, Y2, Y3, Y4] + ' roles=' + ROLES + ' set=' + SETNAME + ' z=' + ZV + ' layers=' + LAYERS.length + ' (set by hand: ' + LAYERS.filter(l => l.set).map(l => l.role + '|' + l.L + '|' + l.only) + ') datums=' + DATUMS.length + ' bodyz=' + BODYZ.map(b => b.kind + ':' + b.rule) + ' exclude=' + EXCL.text + ' ' + EXCL.rule);
 const BODY = '#dm-body';
 const dm = {   // the Drawing metadata panel, read from its own text (what the tester reads); roles from the panel state (B:READ: the role words sit inside nine cards)
   chip: () => D.page.$eval('#dm-chip', e => e.innerText.replace(/\s+/g, ' ').trim()).catch(() => ''),
@@ -305,18 +334,17 @@ const dm = {   // the Drawing metadata panel, read from its own text (what the t
     if (!isOpen) { await D.scrollIn(h, BODY); await D.aimClick(h, { label: 'open ' + label }); await dm.idle(); } return D.page.evaluate(id => !!window.DxfMetaEditor.state.sec[id], id); },
   fold: async (id, label) => { const h = '[data-act="sec"][data-sec="' + id + '"]'; if (await D.page.evaluate(id => !!window.DxfMetaEditor.state.sec[id], id)) { await D.scrollIn(h, BODY); await D.aimClick(h, { label: 'fold ' + label }); await dm.idle(); } },
 };
-PREP.p1 = async () => {   // set-up, not filmed (Part I films the download and the Extract): the pack zip and its extracted folder in the fresh Downloads; the guide open
+PREP.p1 = async () => {   // set-up, not filmed (the film shows the download and the Extract in s4): the pack zip and its extracted folder in the fresh Downloads; the PDF shown
   await PREP.oneTab(); const src = process.env.PACK_ZIP; if (!src || !fs.existsSync(src)) throw new Error('PACK_ZIP not set (the reference pack zip)');
   fs.copyFileSync(src, path.join(D.dlDir(), PACK + '.zip')); require('child_process').execFileSync('unzip', ['-q', '-o', src, '-d', path.join(D.dlDir(), PACK)]);
   D.log('§FILM_PREP p1 pack ' + PACK + '.zip bytes=' + fs.statSync(src).size + ' sheets=' + fs.readdirSync(path.join(D.dlDir(), PACK, 'sheets')).length);
-  await D.page.goto(GUIDE); await D.page.waitForLoadState('load'); await D.sleep(1500);
+  await PREP.pdf();
 };
-S.p1 = async () => {   // B0.1: the Modeller, the nine RAW sheets (the pack's sheets/, no marks) through the OS file window
-  D.cue('p1_start');
-  const toc = D.page.locator('.md-sidebar--secondary a', { hasText: 'B0 · From the drawings' }).first();
-  await D.aim(toc, { label: 'contents: B0' }); await D.click({ label: 'contents: B0' }); await D.sleep(1800);
-  const link = D.page.locator('a[href*="modeller/modeller.html"]').first(); await D.aim(link, { label: 'the Modeller link' }); D.cue('p1_link'); await D.click({ label: 'the Modeller link' });
-  D.fastStart('the Modeller loads'); await D.waitUrl(/modeller\/modeller\.html/, 60000); await MOD.ready(); await D.sleep(1500); D.fastEnd();
+S.p1 = async () => {   // B0.1: from the PDF, the Modeller link; the nine RAW sheets (the pack's sheets/, no marks) through the OS file window
+  D.cue('p1_start'); await pdfShown(); await pdfGo('all nine sheets exported in B00', 'B0.1'); D.cue('p1_pdf');
+  const hit = await pdfLink(/^Modeller/, 'the Modeller link (B0.1)'); D.cue('p1_link');
+  D.check(!!hit && await D.waitUrl(/modeller\/modeller\.html/, 60000), 'b01_pdf_link_opened_the_modeller', D.page.url());
+  D.fastStart('the Modeller loads'); await MOD.ready(); await D.sleep(1500); D.fastEnd();
   await D.aimClick('#b-open', { label: 'Open' }); await D.sleep(600);
   await D.aim('#m-open-panel .mo-row[data-key="__dxf"]', { label: 'Open 2D drawings (.dxf)…' }); D.cue('p1_row'); await D.click({ label: 'Open 2D drawings (.dxf)…' });
   const ok = await D.pick(['Downloads', t => t === PACK, 'sheets'], async () => { await D.key('ctrl+a', 'select all nine'); await D.sleep(900); }, 'the nine raw sheets');
@@ -324,93 +352,105 @@ S.p1 = async () => {   // B0.1: the Modeller, the nine RAW sheets (the pack's sh
   D.fastStart('the sheets are read'); await D.page.waitForFunction(n => window.DxfMetaEditor && window.DxfMetaEditor.state.sheets.length === n && !window.DxfMetaEditor.state.busy && window.DxfMetaEditor.state.verdict, 9, { timeout: 300000, polling: 300 }); await D.sleep(1500); D.fastEnd();
   const chip = await dm.chip(), yh = await dm.head('yellows'), roles = await dm.roles();
   D.check(/^Blocked · \d+$/.test(chip), 'b01_badge_blocked', JSON.stringify(chip));             // guide B0.1: 'The badge reads Blocked with a number'
-  D.check(/ALL DEFAULTS 34 yellow/.test(yh), 'b01_all_defaults_34', JSON.stringify(yh));        // guide B0.1: 'All defaults lists 34 yellow rows'
+  D.check(new RegExp('ALL DEFAULTS ' + Y1 + ' yellow').test(yh), 'b01_all_defaults_' + Y1, JSON.stringify(yh));        // guide B0.1: 'All defaults lists 34 yellow rows'
   D.check(Object.keys(roles).length === 0, 'b01_no_sheet_has_a_role', JSON.stringify(roles));  // the raw sheets carry no marks (W-UAT-B0 R0)
   await D.aim('#dm-chip', { label: 'the badge: ' + chip }); D.cue('p1_badge', { chip }); await D.sleep(1800);
-  await D.aim('[data-act="sec"][data-sec="yellows"]', { label: 'All defaults: 34 yellow', fx: 0.8 }); D.cue('p1_yellow'); await D.sleep(2500); D.cue('p1_end');
+  await D.aim('[data-act="sec"][data-sec="yellows"]', { label: 'All defaults: ' + Y1 + ' yellow', fx: 0.8 }); D.cue('p1_yellow'); await D.sleep(2500); D.cue('p1_end');
 };
-S.p2 = async () => {   // B0.2 + B0.2b: Accept stated + read (34 -> 113), then Accept all (113 -> 0)
+S.p2 = async () => {   // B0.2 + B0.2b: Accept stated + read (34 -> 133), Accept all (133 -> 14), Accept all again (14 -> 0, Qualifies)
   D.cue('p2_start'); const b1 = '#dm-yellows [data-act="acceptsr"]';
   await D.scrollIn(b1, BODY); await D.aim(b1, { label: 'Accept stated + read' }); D.cue('p2_sr'); await D.click({ label: 'Accept stated + read' }); await dm.idle();
-  const y1 = await dm.head('yellows'); D.check(/ALL DEFAULTS 113 yellow/.test(y1), 'b02_grows_to_113', JSON.stringify(y1));   // guide B0.2
-  D.cue('p2_113'); await D.sleep(2200);
-  const b2 = '#dm-yellows [data-act="acceptall"]'; await D.scrollIn(b2, BODY); await D.aim(b2, { label: 'Accept all' }); D.cue('p2_all'); await D.click({ label: 'Accept all' }); await dm.idle();
+  const y1 = await dm.head('yellows'); D.check(new RegExp('ALL DEFAULTS ' + Y2 + ' yellow').test(y1), 'b02_grows_to_' + Y2, JSON.stringify(y1));   // guide B0.2
+  D.cue('p2_grown'); await D.sleep(2200);
+  const b2 = '#dm-yellows [data-act="acceptall"]'; await D.scrollIn(b2, BODY); await D.aim(b2, { label: 'Accept all (first press)' }); D.cue('p2_all'); await D.click({ label: 'Accept all (first press)' }); await dm.idle();
+  const y2 = await dm.head('yellows'); D.check(new RegExp('ALL DEFAULTS ' + Y3 + ' yellow').test(y2), 'b02b_first_press_leaves_' + Y3, JSON.stringify(y2)); D.cue('p2_first'); await D.sleep(1800);   // guide B0.2b: 'The first press leaves 14 yellow rows'
+  await D.scrollIn(b2, BODY); await D.aim(b2, { label: 'Accept all (second press)' }); D.cue('p2_all2'); await D.click({ label: 'Accept all (second press)' }); await dm.idle();
   const n = await dm.yellow(), chip = await dm.chip(), roles = await dm.roles();
-  D.check(n === 0, 'b02b_0_yellow', 'yellow=' + n + ' head=' + JSON.stringify(await dm.head('yellows')));            // guide B0.2b: '0 yellow rows'
-  D.check(/^Blocked · (48|89)$/.test(chip), 'b02b_badge_blocked_smaller', JSON.stringify(chip));                      // guide B0.2b: 'Blocked with a smaller number (48 or 89)'
-  D.check(roles.PLAN === 3 && roles.ELEV === 4 && roles.SECTION === 1, 'b02b_roles_3plan_4elev_1section', JSON.stringify(roles));
+  D.check(n === 0, 'b02b_second_press_0_yellow', 'yellow=' + n + ' head=' + JSON.stringify(await dm.head('yellows')));            // guide B0.2b: 'the second 0'
+  D.check(chip === 'Qualifies', 'b02b_badge_qualifies', JSON.stringify(chip));                                                    // guide B0.2b: 'The badge reads Qualifies'
+  D.check(roles.PLAN === ROLES[0] && roles.ELEV === ROLES[1] && roles.SECTION === ROLES[2], 'b02b_roles_' + ROLES.join('_'), JSON.stringify(roles));
   await D.aim('#dm-chip', { label: 'the badge: ' + chip }); D.cue('p2_done', { chip }); await D.sleep(2500); D.cue('p2_end');
 };
-S.p3 = async () => {   // B0.3: one card's Set field: BUILD-NAME -> SHED, Enter (typing it once fills all nine)
-  D.cue('p3_start'); await dm.open('sheets', 'Sheets'); const f = '#dm-f-0-SET';
-  await D.scrollIn(f, BODY); await D.aimClick(f, { label: 'Set (first card)' }); await D.key('ctrl+a', 'select BUILD-NAME'); D.cue('p3_type'); await D.type('SHED'); await D.key('Return', 'Enter'); await dm.idle();
+S.p3 = async () => {   // B0.3: the Set field already reads SHED on every sheet: the pointer rests on two cards' fields, nothing is typed
+  D.cue('p3_start'); await dm.open('sheets', 'Sheets');
+  for (const i of [0, 1]) { const f = '#dm-f-' + i + '-SET'; await D.scrollIn(f, BODY); await D.aim(f, { label: 'Set (card ' + (i + 1) + '): already ' + SETNAME }); if (i === 0) D.cue('p3_field'); await D.sleep(1800); }
   const v = await D.page.evaluate(() => [...Array(9).keys()].map(i => (document.getElementById('dm-f-' + i + '-SET') || {}).value));
-  D.check(v.length === 9 && v.every(x => x === 'SHED'), 'b03_every_set_reads_shed', JSON.stringify(v));   // guide B0.3: 'Every sheet's Set reads SHED'
-  D.cue('p3_done'); await D.sleep(2000);
-  const f1 = '#dm-f-1-SET'; await D.scrollIn(f1, BODY); await D.aim(f1, { label: 'Set (second card): SHED' }); await D.sleep(1800); D.cue('p3_end');
+  D.check(v.length === 9 && v.every(x => x === SETNAME), 'b03_every_set_reads_' + SETNAME + '_nothing_typed', JSON.stringify(v));   // guide B0.3: 'It already reads SHED on all nine sheets'
+  D.cue('p3_done'); await D.sleep(1500); D.cue('p3_end');
 };
-S.p4 = async () => {   // B0.4 + B0.4b: Layers, the ten meanings (two through the split arrow), then Accept all (14 -> 0)
-  D.cue('p4_start'); await dm.fold('sheets', 'Sheets'); await dm.open('layers', 'Layers'); D.cue('p4_layers');
-  for (const [role, L, ui, only] of LAYERS) {
-    const key = role + '|' + L, pooledSel = 'select[data-act="layer"][data-role="' + role + '"][data-layer="' + L + '"]:not([data-sheet])', oneSel = only && 'select[data-act="layer"][data-role="' + role + '"][data-layer="' + L + '"][data-sheet="' + only + '"]';
-    let sel = pooledSel, how = 'pooled';
-    if (only) { const arrow = '[data-act="laysplit"][data-key="' + key + '"]';
-      if (await D.page.$(arrow)) { if (!(await D.page.$(oneSel))) { await D.scrollIn(arrow, BODY); await D.aim(arrow, { label: 'Type this layer sheet by sheet (' + key + ')' }); D.cue('p4_split', { key }); await D.click({ label: 'the split arrow' }); await dm.idle(); } sel = oneSel; how = 'one sheet: ' + only; }
-      else how = 'pooled (no arrow: the layer is on ' + only + ' only, guide B0.4 table)'; }
-    await D.scrollIn(sel, BODY); D.cue('p4_pick', { role, L, ui }); await D.pickSelect(sel, ui, role.toUpperCase() + ' · ' + L); await dm.idle();
-    // once set, a layer the template can name shows '<type> · stated' in place of its list (dxf_meta_editor.js renderLayers, measured 2026-11-20): read whichever the row shows
-    const row = '[data-layer-row="' + key + (sel === oneSel ? '|' + only : '') + '"]';
-    const v = await D.page.evaluate(([sel, row]) => { const s = document.querySelector(sel); if (s) return s.value; const t = document.querySelector(row + ' .dm-tt'); return t ? t.innerText.replace(/ · stated$/, '').trim() : '(no row)'; }, [sel, row]), chip = await dm.chip();
-    D.check(v === ui || (ui === 'door' && v === 'elevdoor'),'b04_layer ' + role + ' ' + L + (only ? ' (' + only + ')' : '') + ' = ' + ui, 'value=' + v + ' via ' + how + ' badge=' + JSON.stringify(chip));
-    if (role === 'plan' && L === 'Col') D.check(chip === 'Blocked · 1', 'b04_after_plan_col_blocked_1', JSON.stringify(chip));     // guide B0.4
-    if (role === 'elev' && L === 'Wall') D.check(chip === 'Qualifies', 'b04_after_elev_wall_qualifies', JSON.stringify(chip));  // guide B0.4
+S.p4 = async () => {   // B0.4 + B0.4b: nine of the ten layer meanings CHECKED as drawn (the row reads 'from drawing · PR-LAYER-x'); the one set is ELEV layer 0 = column on 1S_ELEV_SOUTH only; then Accept all (3 -> 0)
+  D.cue('p4_start'); await dm.fold('sheets', 'Sheets'); await dm.open('layers', 'Layers'); D.cue('p4_layers'); let checked = 0;
+  for (const { role, L, ui, only, set } of LAYERS) {
+    const key = role + '|' + L, row = '[data-layer-row="' + key + '"]', want = (role === 'elev' && ui === 'door') ? 'elevdoor' : ui;
+    // what the take reads from the panel state: the LAYER mark on every sheet of the role that draws the layer (or on `only`), and the rule that wrote it (the witness's own reading, W-UAT-B0 RL)
+    const st = await D.page.evaluate(([role, L, want, only]) => { const S = window.DxfMetaEditor.state, VW = { plan: 'PLAN', elev: 'ELEV', section: 'SECTION', roof: 'ROOF' };
+      const sheets = S.sheets.filter(q => q.marks.some(m => m.key === 'VIEW' && m.value === VW[role]) && (q.dxf.entities.some(e => e.layer === L) || (q.hatchLayers && q.hatchLayers[L])) && (!only || q.name === only));
+      return sheets.map(q => { const m = q.marks.find(m => m.key === 'LAYER' && m.value.slice(0, m.value.lastIndexOf(',')) === L); return { sheet: q.name, value: m ? m.value : null, rule: m ? m.rule || null : null }; }); }, [role, L, want, only || null]);
+    const have = st.length > 0 && st.every(x => x.value === L + ',' + want && /^PR-LAYER-/.test(x.rule || ''));
+    await D.scrollIn(row, BODY);
+    if (!set) {   // a DEFAULT: check it, type nothing
+      const tag = row + ' [data-rule]'; await D.aim(tag, { label: 'default ' + role.toUpperCase() + ' · ' + L + ' = ' + ui }); D.cue('p4_check_' + checked); await D.sleep(950);
+      const t = await D.page.$eval(tag, e => e.innerText.replace(/\s+/g, ' ').trim()).catch(() => '');
+      D.check(have && /^from drawing · PR-LAYER-/.test(t), 'b04_default ' + role + ' ' + L + (only ? ' (' + only + ')' : '') + ' = ' + ui, 'panel reads "' + t + '" marks=' + JSON.stringify(st.map(x => x.rule)) + ' nothing typed'); checked++;
+    } else {      // the ONE value the drawings do not give: keyed in through the row's small arrow, on one sheet
+      D.check(!have, 'b04_set_by_hand_layer_is_not_pre_filled ' + role + ' ' + L, JSON.stringify(st.map(x => x.value)));
+      const arrow = '[data-act="laysplit"][data-key="' + key + '"]', oneSel = 'select[data-act="layer"][data-role="' + role + '"][data-layer="' + L + '"][data-sheet="' + only + '"]';
+      await D.scrollIn(arrow, BODY); await D.aim(arrow, { label: 'Type this layer sheet by sheet (' + key + ')' }); D.cue('p4_split', { key }); await D.click({ label: 'the split arrow' }); await dm.idle();
+      await D.scrollIn(oneSel, BODY); D.cue('p4_pick', { role, L, ui }); await D.pickSelect(oneSel, ui, role.toUpperCase() + ' · ' + L + ' · ' + only); await dm.idle();
+      const v = await D.page.$eval(oneSel, e => e.value).catch(() => (null)), chip = await dm.chip();
+      D.check(v === ui, 'b04_layer ' + role + ' ' + L + ' (' + only + ') = ' + ui + ' (set by hand)', 'value=' + v + ' badge=' + JSON.stringify(chip));
+    }
   }
-  const yh = await dm.head('yellows'); D.check(/ALL DEFAULTS 14 yellow/.test(yh), 'b04_all_ten_set_14_yellow', JSON.stringify(yh));   // guide B0.4: '14 yellow rows'
+  const yh = await dm.head('yellows'), chip = await dm.chip(); D.check(new RegExp('ALL DEFAULTS ' + Y4 + ' yellow').test(yh), 'b04_' + Y4 + '_yellow', JSON.stringify(yh));   // guide B0.4: '3 yellow rows'
+  D.check(chip === 'Qualifies', 'b04_badge_qualifies', JSON.stringify(chip));   // guide B0.4: 'The badge reads Qualifies'
+  D.check(checked === LAYERS.length - 1, 'b04_nine_checked_one_set', 'checked=' + checked);
   await D.aim('#dm-chip', { label: 'the badge' }); D.cue('p4_qualifies'); await D.sleep(1800);
   const b = '#dm-yellows [data-act="acceptall"]'; await D.scrollIn(b, BODY); await D.aim(b, { label: 'Accept all' }); D.cue('p4_all'); await D.click({ label: 'Accept all' }); await dm.idle();
   const n = await dm.yellow(); D.check(n === 0, 'b04b_0_yellow', 'yellow=' + n);   // guide B0.4b
   D.cue('p4_done'); await D.sleep(2000); D.cue('p4_end');
 };
-const typeInto = async (sel, text, label) => { await D.scrollIn(sel, BODY); await D.aimClick(sel, { label }); await D.key('ctrl+a', 'select what is there'); await D.type(text); };
-S.p5 = async () => {   // B0.5: Body heights, footing and beam (two rows)
+S.p5 = async () => {   // B0.5: Body heights: both rows are defaults, each naming its rule: checked, nothing typed
   D.cue('p5_start'); await dm.fold('layers', 'Layers'); await dm.open('bodyz', 'Body heights'); D.cue('p5_open');
-  for (const [k, z0, z1] of BODYZ) {
-    await typeInto('#dm-bz-' + k + '-0', z0, k + ' z0'); await typeInto('#dm-bz-' + k + '-1', z1, k + ' z1');
-    const add = '[data-act="bodyzadd"][data-kind="' + k + '"]'; await D.scrollIn(add, BODY); await D.aim(add, { label: 'Add (' + k + ')' }); D.cue('p5_add', { k }); await D.click({ label: 'Add' }); await dm.idle();
+  for (const bz of BODYZ) {
+    const row = '[data-bodyz-row="' + bz.kind + '"]'; await D.scrollIn(row, BODY); await D.aim(row, { label: 'default ' + bz.text }); D.cue('p5_row_' + bz.kind); await D.sleep(1700);
+    const t = await D.page.$eval(row, e => e.innerText.replace(/\s+/g, ' ').trim()).catch(() => '');
+    D.check(t.indexOf(bz.text + ' from drawing · ' + bz.rule) === 0 || t.indexOf(bz.text + ' from drawing · ' + bz.rule) > 0, 'b05_default ' + bz.kind, JSON.stringify(t) + ' nothing typed');   // guide B0.5
   }
-  const t = await D.page.evaluate(() => (document.getElementById('dm-body') || {}).innerText || ''), chip = await dm.chip();
-  D.check(/@BODYZ=footing,-1\.4478,-1\.143/.test(t) && /@BODYZ=beam,3\.098794,3\.352794/.test(t), 'b05_two_bodyz_rows', JSON.stringify((t.match(/@BODYZ=[^\s]+/g) || [])));   // guide B0.5
-  D.check(chip === 'Qualifies', 'b05_badge_still_qualifies', JSON.stringify(chip));
-  D.cue('p5_done'); await D.sleep(2000); D.cue('p5_end');
+  const rows = await D.page.evaluate(() => document.querySelectorAll('[data-bodyz-row]').length), chip = await dm.chip();
+  D.check(rows === BODYZ.length, 'b05_two_rows', 'rows=' + rows); D.check(chip === 'Qualifies', 'b05_badge_qualifies', JSON.stringify(chip));
+  D.cue('p5_done'); await D.sleep(1500); D.cue('p5_end');
 };
-S.p6 = async () => {   // B0.6: on each elevation and the section card, Level datums (@Z): 0.6096 at the card's y, Add
+S.p6 = async () => {   // B0.6: on each elevation and the section card, the @Z=0.6096 row at the y drawn, read by rule PR-Z-LABEL: checked, nothing typed
   D.cue('p6_start'); await dm.fold('bodyz', 'Body heights'); await dm.open('sheets', 'Sheets');
   for (const [name, y] of DATUMS) {
     const si = await D.page.evaluate(n => window.DxfMetaEditor.state.sheets.findIndex(s => s.name === n), name);   // the card that carries this sheet's name
     const card = '[data-act="card"][data-sheet="' + si + '"]';
     if (!(await D.page.evaluate(si => !!window.DxfMetaEditor.state.open[si], si))) { await D.scrollIn(card, BODY); await D.aimClick(card, { label: 'open card ' + name }); await dm.idle(); }
-    D.cue(DATUMS[0][0] === name ? 'p6_card' : 'p6_card_' + name.replace(/\.dxf$/, ''), { sheet: name });   /* cue extras must not use the key 'name' (it overwrote the cue's own name, build rc1) */ await typeInto('#dm-av-' + si + '-Z', '0.6096', name + ' datum height'); await typeInto('#dm-ap-' + si + '-Z', y, name + ' y where drawn');
-    const add = '[data-act="add"][data-sheet="' + si + '"][data-group="Z"]'; await D.scrollIn(add, BODY); await D.aim(add, { label: 'Add (' + name + ')' }); await D.click({ label: 'Add' }); await dm.idle();
+    D.cue(DATUMS[0][0] === name ? 'p6_card' : 'p6_card_' + name.replace(/\.dxf$/, ''), { sheet: name });   /* cue extras must not use the key 'name' (it overwrote the cue's own name, build rc1) */
+    const mk = D.page.locator('.dm-mk', { hasText: '@Z=' + ZV + ' y ' + y }).first(); await D.scrollIn(mk, BODY); await D.aim(mk, { label: name + ' datum @Z=' + ZV + ' y ' + y }); await D.sleep(1500);
+    const t = await mk.innerText().then(x => x.replace(/\s+/g, ' ').trim()).catch(() => '');
     const z = await D.page.evaluate(n => window.DxfMetaEditor.state.sheets.find(s => s.name === n).marks.filter(m => m.key === 'Z').map(m => m.value), name);
-    D.check(z.filter(v => /^0\.6096\b/.test(String(v))).length === 1 && z.length === 3, 'b06_datum ' + name, JSON.stringify(z));   // guide B0.6: 'a new @Z=0.6096 row beside the two it read itself'
+    D.check(/from drawing · PR-Z-LABEL/.test(t) && z.filter(v => new RegExp('^' + ZV.replace('.', '\\.') + '\\b').test(String(v))).length === 1 && z.length === 3, 'b06_default_datum ' + name, JSON.stringify(t) + ' z=' + JSON.stringify(z) + ' nothing typed');   // guide B0.6: '@Z=0.6096 beside the two it read itself'
   }
   const chip = await dm.chip(); D.check(chip === 'Qualifies', 'b06_badge_still_qualifies', JSON.stringify(chip));
   D.cue('p6_done'); await D.sleep(2000); D.cue('p6_end');
 };
-// §5.15 open point 2: where the joint is DRAWN on screen (B:READ: the camera projection of EX_AIM through the sheet's own toWorld, as W-UAT-B0 aims), in SCREEN pixels
+// §5.15 open point 2: where the joint is DRAWN on screen (B:READ: the camera projection of the box through the sheet's own toWorld, as W-UAT-B0 aims), in SCREEN pixels
+const EX_AIM = [EXCL.box[0], EXCL.box[1], EXCL.box[2], EXCL.box[3]];
 const joint = async () => { const o = await D.page.evaluate(() => ({ sx: screenX, sy: screenY, oh: outerHeight, ih: innerHeight, ow: outerWidth, iw: innerWidth }));
-  const r = await D.page.evaluate(aim => { const A = window.A, THREE = window.THREE, c = window.DxfImportUI.state.canvas['3_BEAM_LAYOUT.dxf'], rc = A.renderer.domElement.getBoundingClientRect();
+  const r = await D.page.evaluate(([aim, sheet]) => { const A = window.A, THREE = window.THREE, c = window.DxfImportUI.state.canvas[sheet], rc = A.renderer.domElement.getBoundingClientRect();
     const scr = (x, y) => { const w = c.toWorld(x, y), v = new THREE.Vector3(w[0], w[1], w[2]).project(A.camera); return [rc.left + (v.x + 1) / 2 * rc.width, rc.top + (1 - v.y) / 2 * rc.height]; };
-    const pr = document.getElementById('dm-panel').getBoundingClientRect().right; return { a: scr(aim[0], aim[3]), b: scr(aim[2], aim[1]), all: [scr(aim[0], aim[1]), scr(aim[2], aim[1]), scr(aim[2], aim[3]), scr(aim[0], aim[3])], free: [pr + 10, rc.top + 70, rc.right - 10, rc.bottom - 10] }; }, EX_AIM);
+    const pr = document.getElementById('dm-panel').getBoundingClientRect().right; return { a: scr(aim[0], aim[3]), b: scr(aim[2], aim[1]), all: [scr(aim[0], aim[1]), scr(aim[2], aim[1]), scr(aim[2], aim[3]), scr(aim[0], aim[3])], free: [pr + 10, rc.top + 70, rc.right - 10, rc.bottom - 10] }; }, [EX_AIM, EXCL.sheet]);
   const side = (o.ow - o.iw) / 2, ox = o.sx + side, oy = o.sy + o.oh - o.ih - side, S2 = p => [p[0] + ox, p[1] + oy];
   const all = r.all.map(S2), xs = all.map(p => p[0]), ys = all.map(p => p[1]);
   return { a: S2(r.a), b: S2(r.b), box: [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)], free: [r.free[0] + ox, r.free[1] + oy, r.free[2] + ox, r.free[3] + oy] }; };
-S.p7 = async () => {   // B0.7: Exclude areas: 3_BEAM_LAYOUT, Exclude area, zoom (wheel) + pan (right-drag) to the joint between grids 06 and 35, drag the box, leave the tool
+S.p7 = async () => {   // B0.7: Exclude areas: the row is a default (rule PR-EXCLUDE-JOINT), no drag; the take zooms (wheel + right-drag) to the joint to check the box holds both lines
   D.cue('p7_start'); await dm.fold('sheets', 'Sheets'); await dm.open('excludes', 'Exclude areas');
-  const exs = '[data-act="exsheet"]'; await D.scrollIn(exs, BODY); D.cue('p7_sheet'); await D.pickSelect(exs, '3_BEAM', 'the Exclude areas list');
-  const sv = await D.page.$eval(exs, s => s.value); D.check(sv === '3_BEAM_LAYOUT.dxf', 'b07_sheet_chosen', sv);
-  const tool = '[data-act="tool"][data-tool="exclude"]'; await D.scrollIn(tool, BODY); await D.aim(tool, { label: 'Exclude area' }); D.cue('p7_tool'); await D.click({ label: 'Exclude area' }); await dm.idle();
-  const bt = await D.page.$eval(tool, b => b.innerText.trim()); D.check(bt === 'Drag a box', 'b07_button_reads_drag_a_box', JSON.stringify(bt));   // guide B0.7: '(the button now reads Drag a box)'
+  const exOf = () => D.page.evaluate(sh => { const s = window.DxfMetaEditor.state.sheets.find(q => q.name === sh); return s.marks.filter(q => q.key === 'EXCLUDE').map(q => ({ v: q.value, rule: q.rule || null })); }, EXCL.sheet);
+  const ex0 = await exOf(), row = D.page.locator('#dm-body').getByText('@EXCLUDE=' + EXCL.box.join(','), { exact: false }).first();
+  await D.scrollIn(row, BODY); await D.aim(row, { label: 'the exclude row (a default): ' + EXCL.text }); D.cue('p7_row'); await D.sleep(2200);
+  const rowT = await row.innerText().then(x => x.replace(/\s+/g, ' ').trim()).catch(() => '');
+  D.check(ex0.length === 1 && ex0[0].v === EXCL.box.join(',') && ex0[0].rule === EXCL.rule && rowT.indexOf(EXCL.text) >= 0, 'b07_one_default_exclude_row', JSON.stringify(ex0) + ' row=' + JSON.stringify(rowT) + ' nothing dragged');   // guide B0.7: 'One row, nothing dragged'
   // zoom to the bay: a closed loop of real input. Pan (right-drag: the tool takes the left button only, dxf_meta_editor.js:232) the joint to the middle of the free canvas, one wheel notch, read again
   D.cue('p7_zoom'); D.fastStart('zoom to the joint (wheel + right-drag)'); let j = await joint(), notches = 0, pans = 0;
   for (let i = 0; i < 90; i++) {
@@ -423,26 +463,16 @@ S.p7 = async () => {   // B0.7: Exclude areas: 3_BEAM_LAYOUT, Exclude area, zoom
     j = await joint();
   }
   D.fastEnd(); const h = j.box[3] - j.box[1]; D.check(h >= 420, 'b07_zoomed_to_joint', 'joint box h=' + Math.round(h) + ' px after notches=' + notches + ' pans=' + pans);
-  D.cue('p7_drag'); await D.sleep(1200); await D.dragFromTo(j.a[0], j.a[1], j.b[0], j.b[1], { dur: 1.6, label: 'the exclude box round the joint' }); await dm.idle();
-  const ex = await D.page.evaluate(() => { const s = window.DxfMetaEditor.state.sheets.find(q => q.name === '3_BEAM_LAYOUT.dxf'); return s.marks.filter(q => q.key === 'EXCLUDE').map(q => q.value); });
-  const v = ex.length === 1 ? ex[0].split(',').map(Number) : [], inTol = v.length === 4 && v[0] > EX_TOL.x0[0] && v[0] < EX_TOL.x0[1] && v[2] > EX_TOL.x1[0] && v[2] < EX_TOL.x1[1] && v[1] < EX_TOL.y0max && v[3] > EX_TOL.y1min;
-  const rowT = await D.page.evaluate(() => (document.getElementById('dm-body').innerText.match(/3_BEAM_LAYOUT[^\n]*@EXCLUDE=[^\n]*/) || [''])[0]);
-  D.check(inTol, 'b07_one_exclude_inside_tolerance', JSON.stringify(ex) + ' row=' + JSON.stringify(rowT));   // guide B0.7 + W-UAT-B0 R2 tolerance (§5.84)
-  D.cue('p7_box'); await D.sleep(2500);
-  await D.scrollIn(tool, BODY); await D.aim(tool, { label: 'Drag a box (leave the tool)' }); await D.click({ label: 'Drag a box' }); await dm.idle();
-  const off = await D.page.evaluate(() => window.DxfMetaEditor.state.tool); D.check(!off, 'b07_tool_left', String(off));
+  D.cue('p7_box'); await D.aim(D.screenBox(j.box[0], j.box[1], j.box[2] - j.box[0], j.box[3] - j.box[1], 'the default exclude box on the canvas'), { label: 'the default box round the joint', dur: 1.2 }); await D.sleep(2800);
+  const ex1 = await exOf(), off = await D.page.evaluate(() => window.DxfMetaEditor.state.tool);
+  D.check(ex1.length === 1 && ex1[0].v === ex0[0].v && !off, 'b07_still_the_default_nothing_dragged', JSON.stringify(ex1) + ' tool=' + off);
   D.cue('p7_end');
 };
 // the saved copies against the pack's answer key, mark for mark (W-UAT-B0 R2's own rule: text + position; @EXCLUDE by the tolerance; @BODYZ over the set)
-const marksSame = (dirA, dirB) => { const MOD2 = '/home/red1/bim-ootb/modeller', DxfParser = require(MOD2 + '/lib/dxf-parser.js'), MK = require(MOD2 + '/dxf2bim/dxf2marks.js');
-  const marksOf = f => MK.readMarks(new DxfParser().parseSync(fs.readFileSync(f, 'utf8')).entities).map(m => ({ t: m.raw.replace(/\s+@BY=\S+$/, ''), x: Number(m.x.toFixed(2)), y: Number(m.y.toFixed(2)) }));
-  const key = m => m.t + ' @' + m.x + ',' + m.y, diffs = [], bzA = [], bzB = [], ex = []; let n = 0;
-  fs.readdirSync(dirB).filter(f => /_marked\.dxf$/.test(f)).forEach(f => { const pa = path.join(dirA, f); if (!fs.existsSync(pa)) { diffs.push(f + ' not saved'); return; } n++;
-    const a = marksOf(pa), b = marksOf(path.join(dirB, f)), skip = m => /^@(EXCLUDE|BODYZ)=/.test(m.t), ka = a.filter(m => !skip(m)).map(key), kb = b.filter(m => !skip(m)).map(key);
-    ka.filter(x => !kb.includes(x)).forEach(x => diffs.push(f + ' extra ' + x)); kb.filter(x => !ka.includes(x)).forEach(x => diffs.push(f + ' missing ' + x));
-    bzA.push(...a.filter(m => /^@BODYZ=/.test(m.t)).map(m => m.t)); bzB.push(...b.filter(m => /^@BODYZ=/.test(m.t)).map(m => m.t)); ex.push(...a.filter(m => /^@EXCLUDE=/.test(m.t)).map(m => m.t)); });
-  if (JSON.stringify(bzA.sort()) !== JSON.stringify(bzB.sort())) diffs.push('@BODYZ over the set differs');
-  return { n, diffs, ex }; };
+const marksSame = (dirA, dirB) => { const MOD2 = '/home/red1/bim-ootb/modeller', DxfParser = require(MOD2 + '/lib/dxf-parser.js'), MK = require(MOD2 + '/dxf2bim/dxf2marks.js'), UC = require('/home/red1/bim-ootb/capex/uat/uat_compare.js');   // the Run Checker's own comparer (B5.3): the same-line datum rule and the exclude tolerance are its rules, the pack's manifest holds the tolerance
+  const texts = d => fs.readdirSync(d).filter(f => /_marked\.dxf$/.test(f)).reduce((o, f) => (o[f] = fs.readFileSync(path.join(d, f), 'utf8'), o), {}), man = JSON.parse(fs.readFileSync(path.join(path.dirname(dirB), 'manifest.json'), 'utf8'));
+  const cm = UC.compareMarked(texts(dirA), texts(dirB), { DxfParser, Dxf2Marks: MK }, man.exclude_tolerance);
+  return { n: cm.sheets, diffs: cm.diffs, ex: cm.exclude, verdict: cm.verdict, zline: cm.zline }; };
 S.p8 = async () => {   // B0.8 + B0.9: read the badge (Qualifies, 0 yellow); Save marked copies -> nine ..._marked.dxf in Downloads
   D.cue('p8_start'); const chip = await dm.chip(), n0 = await dm.yellow();
   await D.aim('#dm-chip', { label: 'the badge: ' + chip }); D.cue('p8_badge', { chip }); await D.sleep(2000);
@@ -457,7 +487,7 @@ S.p8 = async () => {   // B0.8 + B0.9: read the badge (Qualifies, 0 yellow); Sav
   if (!asked) D.log('§FILM_NOTE Chrome did not ask about multiple downloads');
   const names = fs.readdirSync(D.dlDir()).filter(f => /_marked\.dxf$/.test(f)).sort(); D.check(names.length === 9, 'b09_nine_marked_landed', names.join(','));   // guide B0.9
   const note = await D.page.$eval('#dm-note', e => e.innerText).catch(() => ''); D.check(/^Downloaded: /.test(note), 'b09_panel_says_downloaded', JSON.stringify(note.slice(0, 120)));
-  const cmp = marksSame(D.dlDir(), path.join(D.dlDir(), PACK, 'marked')); D.check(cmp.n === 9 && cmp.diffs.length === 0, 'b09_marks_equal_answer_key', 'files=' + cmp.n + ' diffs=' + JSON.stringify(cmp.diffs.slice(0, 6)) + ' exclude=' + JSON.stringify(cmp.ex));
+  const cmp = marksSame(D.dlDir(), path.join(D.dlDir(), PACK, 'marked')); D.check(cmp.n === 9 && cmp.verdict === 'PASS' && cmp.diffs.length === 0, 'b09_marks_equal_the_supplied_marked_set (the Run Checker comparer)', 'verdict=' + cmp.verdict + ' sheets=' + cmp.n + ' diffs=' + JSON.stringify(cmp.diffs.slice(0, 6)) + ' same-line datums=' + JSON.stringify(cmp.zline) + ' exclude=' + JSON.stringify(cmp.ex));
   D.cue('p8_saved'); await D.sleep(3000); D.cue('p8_end');
 };
 // the nine saved copies in the OS file window: click the first, Shift+click the last (p9 and the Run Checker's box 2)

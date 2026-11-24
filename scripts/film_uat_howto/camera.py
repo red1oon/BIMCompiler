@@ -1,5 +1,7 @@
 # ⚠ DO NOT REMOVE — film "UAT, hands on": the CAMERA (zoom and view centre per output frame) and its MEASURE (prompts/FILM_UAT_GUIDE.md §5.18 L6). READ THE LOG (§COMP_CAMERA*).
 # THE ISSUE IT PROVES OR DISPROVES: "the film's zoom and pan jerk at clicks" (owner 2026-11-22: "The jerking movements during zoom or mouse clicks has to stop and smooth").
+#   §5.29 (b) 'smooth' also: groups closer than ZMERGE_S form ONE RUN held at one zoom and one centre (the bounding box of its click targets), so the camera never zooms out and back in
+#              between near clicks and never swings its pan between two targets; a run whose targets do not fit the crop is held on the whole screen.
 # The whole path is computed BEFORE any frame is drawn, so it can be measured (and, in 'smooth', smoothed both ways in time). Units: zoom (1 = the whole screen) and OUTPUT pixels per frame.
 #   'old'    = the path compose.py drew up to rc4: each frame moves 0.30 s-exponentially toward a target that JUMPS (1.0 -> 1.3/1.7 one second before a click, back 0.8 s after,
 #              also inside sped playback), reset to 1.0 at a scene change; the crop was rounded to whole pixels.
@@ -7,6 +9,7 @@
 #              smoothed with a zero-phase Gaussian (sigma SIG_S) inside each scene's frames: speed rises and falls continuously (no velocity step). The crop is sub-pixel (compose.py).
 import math
 LEAD_S, TAIL_S, MERGE_S, SIG_S, EDGE_S = 1.0, 0.8, 1.6, 0.35, 0.6
+ZMERGE_S, FIT_X, FIT_Y, MIN_HOLD_S, MARGIN = 4.0, 160, 100, 1.2, 25   # §5.29 (b): groups closer than ZMERGE_S are ONE run held at ONE zoom level and ONE view centre (no zoom out and back in, no pan swing between targets); a run whose targets do not fit the crop with FIT_X/FIT_Y px to spare is held on the whole screen
 
 def frames(pieces, NF, FPS, TOTAL):
     """per output frame: (piece, scene, source time) — the same mapping compose.py renders with"""
@@ -38,6 +41,20 @@ def _groups(ev):
         else: G.append([c['t'], c['t'], z, [(c['t'], ctr)]])
     return G
 
+def _fit(zmax, pts, W, BH):
+    """the largest zoom level <= zmax at which every click target of a run fits the crop with room to spare, else 1.0; and the centre = the targets' bounding box"""
+    xs = [c[0] for _, c in pts]; ys = [c[1] for _, c in pts]; w, h = max(xs) - min(xs), max(ys) - min(ys); z = zmax
+    while z > 1.0 and not (w <= W / z - FIT_X and h <= BH / z - FIT_Y): z = round(z - 0.05, 3)
+    return (z if z >= 1.05 else 1.0), ((max(xs) + min(xs)) / 2, (max(ys) + min(ys)) / 2)
+
+def _runs(G, W, BH):
+    """§5.29 (b): groups closer than ZMERGE_S in SOURCE time -> one run [t0, t1, zoom, centre, zmax, points] (path() then also merges runs that the film puts closer than ZMERGE_S apart: a sped wait is short on screen)"""
+    R = []
+    for g in G:
+        if R and g[0] - R[-1][1] <= ZMERGE_S: R[-1][1] = g[1]; R[-1][2] = max(R[-1][2], g[2]); R[-1][3] += g[3]
+        else: R.append([g[0], g[1], g[2], list(g[3])])
+    return [(t0, t1, *_fit(z, pts, W, BH), z, pts) for t0, t1, z, pts in R]
+
 def path(variant, F, EVS, pointer_at, FPS, W, BH, H):
     """-> list of (zs, cx, cy) per output frame (None on a card)"""
     if variant == 'old':
@@ -51,16 +68,39 @@ def path(variant, F, EVS, pointer_at, FPS, W, BH, H):
             zs += (zt - zs) * a; cxs += (ctr[0] - cxs) * a; cys += (ctr[1] - cys) * a; P.append((zs, cxs, cys))
         return P
     # 'smooth': raw target per frame, then a zero-phase Gaussian per scene run
-    G = {sid: _groups(ev) for sid, ev in EVS.items()}; raw = []
+    G = {sid: _runs(_groups(ev), W, BH) for sid, ev in EVS.items()}; raw = []; runi = []; lastsid = None; oy = 0.0; OYC = {}
     for p, sid, ts in F:
-        if sid is None: raw.append(None); continue
-        ev = EVS[sid]; px, py = pointer_at(ev, ts); z, ctr = 1.0, (px, py)
-        if p['kind'] == 'play' and p['speed'] <= 1:
-            for g in G[sid]:
-                if g[0] - LEAD_S <= ts <= g[1] + TAIL_S:
-                    z = g[2]; ctr = min(g[3], key=lambda tc: abs(tc[0] - ts))[1] if ts > g[0] else g[3][0][1]; break
-        cw, ch = W / z, BH / z; cx = min(max(ctr[0], cw / 2), W - cw / 2); cy = min(max(ctr[1], ch / 2), H - ch / 2)   # clamp the TARGET to the screen, so the smoothed path needs no clamp kink
-        raw.append((z, cx, cy))
+        if sid is None: raw.append(None); runi.append(None); continue
+        ev = EVS[sid]; px, py = pointer_at(ev, ts); z, ri = 1.0, None
+        if sid not in OYC: ys = [pointer_at(EVS[sid], t_)[1] for q_, s_, t_ in F if s_ == sid and t_ is not None][::15]; OYC[sid] = max(0.0, max(ys) + MARGIN - BH) if ys and max(ys) - min(ys) <= BH - 2 * MARGIN else None   # a scene whose pointer stays inside one 930 px band is held at ONE shift for the whole scene (no pan at all on the whole screen)
+        if OYC[sid] is not None: oy = OYC[sid]
+        elif sid != lastsid: oy, lastsid = 0.0, sid   # §5.29 (b): on the whole screen the 150 px the strip takes is a vertical shift; it follows the pointer only when the pointer comes within MARGIN of the shown area's top or bottom (a dead band: a pointer going up and down inside it moves nothing)
+        if OYC[sid] is None:
+            if py < oy + MARGIN: oy = max(0.0, py - MARGIN)
+            elif py > oy + BH - MARGIN: oy = min(float(H - BH), py - BH + MARGIN)
+        ctr = (W / 2, oy + BH / 2)
+        for k, g in enumerate(G[sid]):
+            if g[0] - LEAD_S <= ts <= g[1] + TAIL_S: ri = k; break
+        if ri is not None and p['kind'] == 'play' and p['speed'] <= 1: z, ctr = G[sid][ri][2], G[sid][ri][3]
+        raw.append((z, ctr[0], ctr[1])); runi.append(ri)
+    first, last = {}, {}   # a sped or held frame INSIDE a run (between its first and last frame held at its level) keeps the level: zooming out and in around a wait is the hunting this removes
+    for n, r in enumerate(raw):
+        if r is not None and runi[n] is not None and F[n][0]['kind'] == 'play' and F[n][0]['speed'] <= 1: key = (F[n][1], runi[n]); first.setdefault(key, n); last[key] = n
+    byscene = {}
+    for (sid, ri), n0 in first.items(): byscene.setdefault(sid, []).append([n0, last[(sid, ri)], G[sid][ri][4], list(G[sid][ri][5])])
+    for sid, L in byscene.items():   # runs the FILM puts closer than ZMERGE_S apart (a sped wait between two clicks is short on screen) are ONE run: held, not zoomed out and in
+        L.sort(); M = [L[0]]
+        for it in L[1:]:
+            if it[0] - M[-1][1] <= ZMERGE_S * FPS: M[-1][1] = it[1]; M[-1][2] = max(M[-1][2], it[2]); M[-1][3] += it[3]
+            else: M.append(it)
+        sn = [n for n in range(len(raw)) if F[n][1] == sid and raw[n] is not None]; e = int(EDGE_S * FPS)   # the scene's own frames; its first and last EDGE_S are held on the whole screen
+        for n0, n1, zmax, pts in M:
+            z, ctr = _fit(zmax, pts, W, BH)
+            if sum(1 for n in range(max(n0, sn[0] + e), min(n1, sn[-1] - e) + 1)) < MIN_HOLD_S * FPS: z = 1.0   # a zoom that could only be held for a moment is a pop, not a camera move: left out
+            for n in range(n0, n1 + 1):
+                if raw[n] is not None and F[n][1] == sid: raw[n] = (z, ctr[0], ctr[1])
+    for n, r in enumerate(raw):   # clamp the TARGET to the screen, so the smoothed path needs no clamp kink
+        if r is not None: z, x, y = r; cw, ch = W / z, BH / z; raw[n] = (z, min(max(x, cw / 2), W - cw / 2), min(max(y, ch / 2), H - ch / 2))
     out = [None] * len(raw); r = max(1, int(3 * SIG_S * FPS)); K = [math.exp(-0.5 * (k / (SIG_S * FPS)) ** 2) for k in range(-r, r + 1)]
     n = 0
     while n < len(raw):
@@ -77,6 +117,7 @@ def path(variant, F, EVS, pointer_at, FPS, W, BH, H):
         n = m
     return out
 
+DBG = []
 def measure(P, F, W, BH, H):
     """-> dict: zoom step/accel per frame, pan speed/accel of the view origin in OUTPUT px per frame, and zoom pops at scene changes (frames across a cut or a card are not motion)"""
     zst, zac, pv, pa, pops, prev = [], [], [], [], 0, None
@@ -90,6 +131,45 @@ def measure(P, F, W, BH, H):
         zst.append(abs(v[2])); pv.append(math.hypot(v[0], v[1]))
         if prev is not None: zac.append(abs(v[2] - prev[2])); pa.append(math.hypot(v[0] - prev[0], v[1] - prev[1]))
         prev = v
+    # §5.29 (b): 'swinging'. Per scene run: zoom hunting (an interior zoom stroke of <= 1.5 s between two strokes) and pan swings (two strokes < 1.5 s apart, each > 40 px, turning > 120 degrees)
+    runs, cur = [], []
+    for i, c in enumerate(P):
+        if c is None or (cur and F[i][1] != F[cur[-1]][1]):
+            if cur: runs.append(cur)
+            cur = [] if c is None else [i]; continue
+        cur.append(i)
+    if cur: runs.append(cur)
+    zrev = 0; FPS_ = 30; HYS = 0.02; global DBG; DBG = []
+    for run in runs:
+        zs = [P[i][0] for i in run]; piv = [0]; d = 0; ext = 0   # zig-zag pivots (indices) with 0.02 hysteresis
+        for k in range(1, len(zs)):
+            if d == 0:
+                if zs[k] - zs[0] > HYS: d, ext = 1, k
+                elif zs[0] - zs[k] > HYS: d, ext = -1, k
+            elif d == 1:
+                if zs[k] > zs[ext]: ext = k
+                elif zs[ext] - zs[k] > HYS: piv.append(ext); d, ext = -1, k
+            else:
+                if zs[k] < zs[ext]: ext = k
+                elif zs[k] - zs[ext] > HYS: piv.append(ext); d, ext = 1, k
+        if d != 0: piv.append(ext)
+        for a in range(1, len(piv) - 2):   # the stroke piv[a] -> piv[a+1] has a stroke before it and one after it
+            e = piv[a + 1]
+            while e + 1 < len(zs) and abs(zs[e + 1] - zs[piv[a + 1]]) < 0.005: e += 1   # the dwell at the turn: out-and-back-in is the stroke PLUS the time it stays at the turn
+            if e - piv[a] <= 1.5 * FPS_: zrev += 1; DBG.append('zoom %s run_frame %d dur %.2fs z %.3f->%.3f' % (F[run[0]][1], piv[a], (e - piv[a]) / FPS_, zs[piv[a]], zs[piv[a + 1]]))
+    prev_ = 0
+    for run in runs:
+        o = [(lambda c: (min(max(c[1] - W / c[0] / 2, 0), W - W / c[0]) + W / c[0] / 2, min(max(c[2] - BH / c[0] / 2, 0), H - BH / c[0]) + BH / c[0] / 2))(P[i]) for i in run]; sp = [0.0] + [math.hypot(o[k][0] - o[k - 1][0], o[k][1] - o[k - 1][1]) for k in range(1, len(o))]
+        sm = [sum(sp[max(0, k - 2):k + 3]) / len(sp[max(0, k - 2):k + 3]) for k in range(len(sp))]; strokes, k = [], 0
+        while k < len(sm):
+            if sm[k] > 0.4:
+                s0 = k
+                while k < len(sm) and (sm[k] > 0.4 or any(sm[j] > 0.4 for j in range(k, min(len(sm), k + 8)))): k += 1
+                strokes.append((s0, k - 1))
+            else: k += 1
+        for (a0, a1), (b0, b1) in zip(strokes, strokes[1:]):
+            da = (o[a1][0] - o[a0][0], o[a1][1] - o[a0][1]); db = (o[b1][0] - o[b0][0], o[b1][1] - o[b0][1]); na, nb = math.hypot(*da), math.hypot(*db)
+            if na > 40 and nb > 40 and b0 - a1 < 1.5 * FPS_ and (da[0] * db[0] + da[1] * db[1]) / (na * nb) < -0.5: prev_ += 1; DBG.append('pan %s run_frame %d gap %.2fs da=%s db=%s' % (F[run[0]][1], a1, (b0 - a1) / FPS_, tuple(round(x) for x in da), tuple(round(x) for x in db)))
     def q(a, f): a = sorted(a); return a[min(len(a) - 1, int(f * (len(a) - 1)))] if a else 0.0
     return dict(frames=len(zst), zoom_step_max=max(zst or [0]), zoom_acc_max=max(zac or [0]), zoom_acc_p99=q(zac, 0.99),
-                pan_speed_max=max(pv or [0]), pan_acc_max=max(pa or [0]), pan_acc_p99=q(pa, 0.99), pan_acc_gt5=sum(1 for x in pa if x > 5), cut_zoom_pops=pops)
+                pan_speed_max=max(pv or [0]), pan_acc_max=max(pa or [0]), pan_acc_p99=q(pa, 0.99), pan_acc_gt5=sum(1 for x in pa if x > 5), cut_zoom_pops=pops, zoom_reversals=zrev, pan_reversals=prev_)
