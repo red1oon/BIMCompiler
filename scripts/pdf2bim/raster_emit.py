@@ -189,9 +189,22 @@ def storey(work, tag, level, sheet, wall_h, door_h=None):
         for w in json.load(open(STK))['walls']:
             body += lw('A-WALL-FULL', rect(w['x0'], w['y0'], w['x1'], w['y1'])); nw += 1
             log(f"§RASTER_EMIT_STACKED {tag} {w['axis']} rect_mm=({w['x0']:.0f},{w['y0']:.0f})-({w['x1']:.0f},{w['y1']:.0f}) thk {w['thk_chain_m']} J={w['stack_J']} from {w['stack_from']} (position and thickness: the upper plan's; presence: this scan's ink)")
-    NF = os.path.join(work, 'notch.json'); ncw = ncol = 0; colz = []   # §43.19 a notched corner: glazed runs (curtain walls) + the post if measured
+    NF = os.path.join(work, 'notch.json'); ncw = ncol = 0; colz = []; CW = []   # §43.19 a notched corner: glazed runs (curtain walls) + the post if measured
     if os.path.exists(NF):
         for cn in json.load(open(NF))['corners']:
+            if cn.get('glazed'):   # §53.2 (owner 2026-11-24): a glazed corner = a corner POST + one framed window per side (registry sill / height), not full-height glass
+                c_ = cn['corner']; E_ = ext_t * 1000
+                px0, px1 = (BW - E_, BW) if 'E' in c_ else (0, E_); py0, py1 = (0, E_) if 'N' in c_ else (BD - E_, BD)
+                # the post and the windows take the BANDS of the walls they join (measured: the N wall band is 0..359, not 0..365): collinear, so each window has its host
+                hw_ = [w for w in EXT if w['axis'] == 'H' and ((w['y0'] < BD / 2) == ('N' in c_))]; vw_ = [w for w in EXT if w['axis'] == 'V' and ((w['x0'] > BW / 2) == ('E' in c_))]
+                if hw_: py0, py1 = hw_[0]['y0'], hw_[0]['y1']
+                if vw_: px0, px1 = vw_[0]['x0'], vw_[0]['x1']
+                body += lw('A-WALL-FULL', rect(px0, py0, px1, py1)); nw += 1
+                Hq, Vq = [q for q in cn['curtain'] if q['axis'] == 'H'][0], [q for q in cn['curtain'] if q['axis'] == 'V'][0]
+                ha, hb = (Hq['x0'], px0) if 'E' in c_ else (px1, Hq['x1']); va, vb = (py1, Vq['y1']) if 'N' in c_ else (Vq['y0'], py0)
+                CW.append(dict(face=c_[0], r=(ha, py0, hb, py1), a=ha, b=hb, corner=True)); CW.append(dict(face=c_[1], r=(px0, va, px1, vb), a=va, b=vb, corner=True))
+                log(f"§RASTER_EMIT_CORNER_WINDOW {tag} corner={c_} post_mm=({px0:.0f},{py0:.0f})-({px1:.0f},{py1:.0f}) window {c_[0]} {ha:.0f}..{hb:.0f} ({hb - ha:.0f} mm), window {c_[1]} {va:.0f}..{vb:.0f} ({vb - va:.0f} mm), sill {SILL} height {WH} (DEFAULT registry: the sash swing says window, owner)")
+                continue
             for q in cn.get('curtain', []): body += lw('A-WALL-CURT', rect(q['x0'], q['y0'], q['x1'], q['y1'])); ncw += 1
             if cn.get('post'): p_ = cn['post']; body += lw('A-COLS', rect(p_['x0'], p_['y0'], p_['x1'], p_['y1'])); ncol += 1
         log(f"§RASTER_EMIT_NOTCH {tag} curtain_walls={ncw} posts={ncol}")
@@ -207,6 +220,7 @@ def storey(work, tag, level, sheet, wall_h, door_h=None):
                     if any(d['src'] == 'exterior' and d['face'] == face and d['ea'] < g1 and d['eb'] > g0 for d in DOORS): continue   # §43.21 a DOOR, written as its arc
                     r = (g0, a['y0'], g1, a['y1']) if axis == 'H' else (a['x0'], g0, a['x1'], g1)
                     glaz.append(dict(face=face, r=r, a=g0, b=g1)); body += lw('A-GLAZ', rect(*r)); ng += 1
+    for g in CW: glaz.append(g); body += lw('A-GLAZ', rect(*g['r'])); ng += 1   # §53.2 the corner windows, in the wall band beside the post
     for f in ('N', 'S', 'E', 'W'): log(f"§RASTER_EMIT_OPENINGS face={f} widths_mm={[round(g['b']-g['a']) for g in glaz if g['face'] == f]}")
     # §43.15 the GREEN chains as DIMENSIONs, on the side they are drawn (pattern: to_std.py dim()); text = the READ value in mm
     def dim(p1, p2, anchor, rot, text): return ['0', 'DIMENSION', '8', 'A-ANNO-DIMS', '10', f'{anchor[0]:.1f}', '20', f'{anchor[1]:.1f}', '30', '0', '13', f'{p1[0]:.1f}', '23', f'{p1[1]:.1f}', '33', '0',
@@ -230,12 +244,12 @@ def storey(work, tag, level, sheet, wall_h, door_h=None):
     if len(STOREYS) >= 2 and level == min(q['level'] for q in STOREYS):   # the ground storey of a multi-storey set (a one-sheet run is not judged)
         FT = []
         for g in glaz:
-            if g.get('sidelight'): continue
+            if g.get('sidelight') or g.get('corner'): continue   # §53.2 a corner window keeps its sill (the sash swing)
             g['sill'] = 0; g['h'] = DH; g['fenster'] = True
             FT.append(dict(face=g['face'], along_mm=[round(g['a'], 1), round(g['b'], 1)], nominal_mm=round(g['b'] - g['a']), thk_m=ext_t, height_mm=DH, sill_mm=0))
             log(f"§RASTER_EMIT_FENSTERTUER {tag} face={g['face']} along_mm={g['a']:.1f}..{g['b']:.1f} width={round(g['b'] - g['a'])} sill=0 height={DH} "
                 f"(DEFAULT owner 2026-11-24: ground storey = Fenstertür, German custom; was sill {SILL} / height {WH} registry)")
-        log(f"§RASTER_W-S52e {tag} ground storey: window doors={len(FT)} of {sum(1 for g in glaz if not g.get('sidelight'))} exterior windows (side lights keep their own)")
+        log(f"§RASTER_W-S52e {tag} ground storey: window doors={len(FT)} of {sum(1 for g in glaz if not g.get('sidelight') and not g.get('corner'))} exterior windows (side lights and corner windows keep their own)")
         json.dump(dict(spec='PDF2BIM_VECTOR_PROBE.md §52.2', openings=FT), open(os.path.join(work, 'fenstertueren.json'), 'w'), indent=1)
     ANG = {('H', 'a', -1): (0, 90), ('H', 'a', 1): (270, 360), ('H', 'b', -1): (90, 180), ('H', 'b', 1): (180, 270),
            ('V', 'a', -1): (180, 270), ('V', 'a', 1): (270, 360), ('V', 'b', -1): (90, 180), ('V', 'b', 1): (0, 90)}   # DXF y up; sheet y down
