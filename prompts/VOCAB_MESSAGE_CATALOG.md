@@ -2270,7 +2270,7 @@ Spec: owner "yes" to the three follow-ups (sweep to 15 of 15, exercise the untes
 **Not done / ⛔:** pilot ZK restart (owner's call). (giscus: the owner installed the app and item 5 went live during this build, #1261; not a film beat.)
 
 ## STATUS
-2026-11-25 (coverage): §19.21 COVERAGE RESULT: sweep 11 of 15 peeked (⛔ 4 for the parity lane), fix rows 9 of 9 exercised, the stop-reason list deleted (build_help_pack +3 −11), D8 / L8 added. Question for the parity lane: port MDepositBatch, MBankTransfer (+ its table), MInOutConfirm, MRequisition?
+2026-11-25 (coverage, bim-ootb #3446): §19.21 COVERAGE RESULT: sweep 11 of 15 peeked (⛔ 4 for the parity lane), fix rows 9 of 9 exercised, the stop-reason list deleted (build_help_pack +3 −11), D8 / L8 added. Question for the parity lane: port MDepositBatch, MBankTransfer (+ its table), MInOutConfirm, MRequisition?
 2026-11-25: §19.22 film v3 MADE (163 s, guard/K2/caption PASS, beat 8 on Purchase Order because legacy ZK caches tab text). Scripts: scripts/film_help_peek/.
 2026-11-25: item 5 DONE: owner installed the giscus app; `extra.giscus.enabled: true`, published by safe_gh_deploy (guard 992/992, canaries 200, live ERPUserGuide carries the box). A printable guide (page carries window.print()) gets no box: its PDF check P2 failed on the box's heading, fixed in overrides/main.html (dry run P2 PASS 9 judged). Film v3 in progress (fork).
 2026-11-24 (night): §19.22 storyboard v3 written for the owner's OK (around the peek; newcomer-first narration).
