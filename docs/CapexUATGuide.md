@@ -52,7 +52,7 @@
 |---|---|
 | Document | CAPEX UAT Guide — from 2D drawings to the dashboard |
 | Purpose | The step-by-step test script for the User Acceptance Test of the pilot client (Sysnova): BIM drawings to a priced model, the ERP exercise, the CAPEX dashboard |
-| Revision | **2026-11-25 (t)** |
+| Revision | **2026-11-25 (u)** |
 | Status | Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately and stays as signed. Since then, steps were corrected: the revision history names each revision and what changed. |
 | Prepared and issued by | Redhuan D. Oon, Project Consultant |
 | For | The pilot client's UAT team: System Setup, BIM, Project Mgmt Accounting |
@@ -66,6 +66,7 @@
 
 | Revision | What changed |
 |---|---|
+| 2026-11-25 (u) | A5 says what the plugin contains, including the rate packs (the Bangladesh pack among them); LA1 confirms it in `BUNDLE_CONTENTS.txt` |
 | 2026-11-25 (t) | Layout only: the revision history on its own page after the cover; the list of changes since the signed report is no longer part of this guide. No step changed |
 | 2026-11-25 (s) | *See how*: the two films re-taken with the Bangladesh rate pack. No step changed |
 | 2026-11-25 (r) | A2 names the rates script (`202611251000_CAPEX-WS-RATES.sql`) the dashboard's BDT (USD) needs; the pack is set in each Viewer, L1 too |
@@ -301,13 +302,13 @@ GardenWorld already has the vendor, the warehouse and the locator; the products 
 
 ### A5 · The BIM OOTB plugin (only if your ERP is a legacy iDempiere)
 
-Skip A5 if the BIM tester sends the Project Order to the Kernel ERP (B4). With a legacy iDempiere 13, B4 is done from the Viewer that your iDempiere serves (the BIM tester's steps L1 to L3), and that Viewer comes from this plugin. (Why: a browser does not let a page from another site call your iDempiere, so the Viewer is served by the iDempiere itself.) The plugin's source and its build script are in [`iDempiereOOTB/`](https://github.com/red1oon/BIMCompiler/tree/master/iDempiereOOTB) of the BIMCompiler repository. You need JDK 17 (`javac`) and a copy of the [bim-ootb repository](https://github.com/red1oon/bim-ootb) (the Viewer it packs). Take a database backup first if you want to go back exactly: removing the plugin later leaves the rows its setup pack wrote.
+Skip A5 if the BIM tester sends the Project Order to the Kernel ERP (B4). With a legacy iDempiere 13, B4 is done from the Viewer that your iDempiere serves (the BIM tester's steps L1 to L3), and that Viewer comes from this plugin. (Why: a browser does not let a page from another site call your iDempiere, so the Viewer is served by the iDempiere itself.) **What the plugin contains:** the bundle `org.idempiere.bimootb.viewer` is the whole Viewer of your bim-ootb copy (all of `viewer/` except its tests and building files), **including the 16 rate packs** in `viewer/rates/`, among them `pwd2024_bd.json`, the Bangladesh pack this test uses (PWD Schedule of Rates 2022, 120 BDT per USD; footnote 1 under B3). The bundle `org.idempiere.bimootb` adds the web-service types and the role the push uses (its setup pack). So the tester's rate pack comes with the plugin: nothing is downloaded for it. The plugin's source and its build script are in [`iDempiereOOTB/`](https://github.com/red1oon/BIMCompiler/tree/master/iDempiereOOTB) of the BIMCompiler repository. You need JDK 17 (`javac`) and a copy of the [bim-ootb repository](https://github.com/red1oon/bim-ootb) (the Viewer it packs). Take a database backup first if you want to go back exactly: removing the plugin later leaves the rows its setup pack wrote.
 
 <div class="uat-keep" markdown="1">
 
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|
-| LA1 | Build the two bundles: `iDempiereOOTB/org.idempiere.bimootb/tools/build_bundle_poc.sh <your iDempiere>/server <your bim-ootb copy> <an empty folder>` | Its last line starts `§BIMOOTB_BUNDLE` and names `2pack=2Pack_13.1.0.zip`. The folder holds two folders: `org.idempiere.bimootb_13.1.0.<stamp>` and `org.idempiere.bimootb.viewer_13.1.0.<stamp>` | ☐ Pass ☐ Fail |
+| LA1 | Build the two bundles: `iDempiereOOTB/org.idempiere.bimootb/tools/build_bundle_poc.sh <your iDempiere>/server <your bim-ootb copy> <an empty folder>` | Its last line starts `§BIMOOTB_BUNDLE` and names `2pack=2Pack_13.1.0.zip`. The folder holds two folders: `org.idempiere.bimootb_13.1.0.<stamp>` and `org.idempiere.bimootb.viewer_13.1.0.<stamp>`; the viewer folder's `BUNDLE_CONTENTS.txt` lists `viewer/rates/pwd2024_bd.json` | ☐ Pass ☐ Fail |
 | LA2 | Stop iDempiere. Copy both folders into `server/plugins/`. Add one line for each to `server/configuration/org.eclipse.equinox.simpleconfigurator/bundles.info`: `org.idempiere.bimootb,13.1.0.<stamp>,plugins/org.idempiere.bimootb_13.1.0.<stamp>/,4,true` and the same for `org.idempiere.bimootb.viewer`. Start iDempiere | The plugin packs in its own setup pack a little after the login page answers (up to 3 minutes). Then the **Role** window lists the role **BIM OOTB Push** | ☐ Pass ☐ Fail |
 | LA3 | **Role** window: open the role the BIM tester logs in with (GardenWorld: *GardenWorld Admin*), tab **Included role templates**, **New**, choose **BIM OOTB Push**, **Save**. Then restart iDempiere | The tab lists **BIM OOTB Push**. (Without it the push is refused: *Login role does not have access to the service type 'BIMOOTB_Query_C_Project'*) | ☐ Pass ☐ Fail |
 | LA4 | Open **your iDempiere**`/bimootb/viewer/viewer.html` in a browser | The Viewer opens. Give the BIM tester this address, with the user and ids of the role from LA3 (L1) | ☐ Pass ☐ Fail |
