@@ -197,6 +197,14 @@ def storey(work, tag, level, sheet, wall_h, door_h=None):
             h_ = sum(1 for i in range(0, len(body), 2) if body[i] == '0'); body += lw('A-WALL-FULL', rect(w['x0'], w['y0'], w['x1'], w['y1'])); nw += 1
             top = round(level + w['height_m'] * 1000); pw_marks.append(f'@WALLTOP=handle:{h_},{top / 1000:g},{level / 1000:g}')
             log(f"§RASTER_EMIT_PREWALL {tag} rect_mm=({w['x0']:.0f},{w['y0']:.0f})-({w['x1']:.0f},{w['y1']:.0f}) depth={w['depth_mm']} run={w['run_mm']} handle={h_} z={level}..{top} ({w['height_source']})")
+    VJ0 = os.path.join(work, 'voids.json')   # §63 the void's edge carries a guard wall (the Bruestung): an ordinary wall, its top by the per-wall marking (the type file's read level, base = this storey's level)
+    if os.path.exists(VJ0) and TPL_EFH.get('void_guard'):
+        for v_ in json.load(open(VJ0))['rings']:
+            g_ = v_.get('guard')
+            if not g_: continue
+            h_ = sum(1 for i in range(0, len(body), 2) if body[i] == '0'); body += lw('A-WALL-FULL', rect(g_['x0'], g_['y0'], g_['x1'], g_['y1'])); nw += 1
+            top = round(TPL_EFH['void_guard']['top_m'] * 1000); pw_marks.append(f'@WALLTOP=handle:{h_},{top / 1000:g},{level / 1000:g}')
+            log(f"§RASTER_EMIT_VOID_GUARD {tag} word={v_['word']} rect_mm=({g_['x0']:.0f},{g_['y0']:.0f})-({g_['x1']:.0f},{g_['y1']:.0f}) thickness={g_['thk_mm']:.0f} handle={h_} z={level}..{top} (top READ once from the owner's screenshot: {TPL_EFH['void_guard']['top_m']}; height {(top - level) / 1000:.3f} m)")
     STK = os.path.join(work, 'walls_stacked.json')
     if tag == 'EG' and os.path.exists(STK):   # §51 walls the upper plan places and this scan's own ink confirms (raster_stack.py): the upper wall's rectangle, stated as STACKED
         for w in json.load(open(STK))['walls']:
@@ -458,12 +466,19 @@ log(f"§RASTER_EMIT_ROOF envelope_mm=({ex0:.0f},{ey0:.0f})-({ex1:.0f},{ey1:.0f})
 if SH and EGW:
     dd = RIDGE - SH['apex']; px_ = dd / 1000 * SH['k_px_per_m']
     log(f"§RASTER_EMIT_RIDGE_CHECK derived ridge={RIDGE} (READ pitch) vs measured apex={SH['apex']} d={dd:+d} mm ({px_:+.1f} px, limit 2) verdict={'PASS' if abs(px_) <= 2 else 'FINDING'}")
-b = lw('A-ROOF', rect(ex0, ey0, ex1, ey1)) + lw('A-ROOF-GABLE', rect(ex0, ey0, ex1, ey1))
+OVH = 0   # §63 / bim-ootb §L51: the eave overhang = the rafter-end run MEASURED on the main section (raster_eave.py -> eave.json beside section_heights.json), 5 cm steps; the roof outline is the envelope + that margin on all four sides
+EVJ = os.path.join(os.path.dirname(os.path.abspath(sys.argv[5])), 'eave.json') if len(sys.argv) > 5 else None
+if EVJ and os.path.exists(EVJ):
+    OVH = round(float(json.load(open(EVJ)).get('overhang_m', 0)) * 1000)
+    log(f"§RASTER_EMIT_OVERHANG {OVH} mm on all four sides (eave.json: the rafter end of the main section; the drop at the eave end = overhang x tan(pitch) = {OVH * math.tan(math.radians(PITCH)):.0f} mm, the printed -30)")
+else: log('§RASTER_EMIT_OVERHANG none (no eave.json: the roof outline = the envelope, as before)')
+rx0, ry0, rx1, ry1 = ex0 - OVH, ey0 - OVH, ex1 + OVH, ey1 + OVH
+b = lw('A-ROOF', rect(rx0, ry0, rx1, ry1)) + lw('A-ROOF-GABLE', rect(rx0, ry0, rx1, ry1))
 # §59.5 / bim-ootb §L36 + §L50: the gable end walls rise to the roof: a closed rectangle on A-WALL-GABLE over each end wall of the emitted envelope (ridge along x -> the walls at ex0 / ex1)
 tw0 = max(w['x1'] for w in EXT if w['axis'] == 'V' and abs(w['x0'] - ex0) < 1.0) - ex0; tw1 = ex1 - min(w['x0'] for w in EXT if w['axis'] == 'V' and abs(w['x1'] - ex1) < 1.0)   # the vertical (end) walls only: a horizontal wall piece also starts at x = ex0
 b += lw('A-WALL-GABLE', rect(ex0, ey0, ex0 + tw0, ey1)) + lw('A-WALL-GABLE', rect(ex1 - tw1, ey0, ex1, ey1))
 log(f"§RASTER_EMIT_GABLE_WALLS end walls x {ex0:.0f}..{ex0 + tw0:.0f} and {ex1 - tw1:.0f}..{ex1:.0f} (thickness {tw0:.0f} / {tw1:.0f} from the emitted exterior walls), y {ey0:.0f}..{ey1:.0f}: raised to the roof underside by the importer (bim-ootb §L36)")
-b += ['0', 'LINE', '8', 'A-ROOF-RIDGE', '10', f'{ex0:.1f}', '20', f'{-cy:.1f}', '30', f'{RIDGE:.1f}', '11', f'{ex1:.1f}', '21', f'{-cy:.1f}', '31', f'{RIDGE:.1f}']
+b += ['0', 'LINE', '8', 'A-ROOF-RIDGE', '10', f'{rx0:.1f}', '20', f'{-cy:.1f}', '30', f'{RIDGE:.1f}', '11', f'{rx1:.1f}', '21', f'{-cy:.1f}', '31', f'{RIDGE:.1f}']
 mk = ['@UNITS=mm', '@SET=STD', '@VIEW=ROOF', '@NAME=ROOF PLAN', f'@LEVEL={ROOF0/1000}', f'@ROOF={RIDGE/1000}', f'@PITCH={PITCH}', '@GABLEWINDOW=default', '@DEFAULT=building.type,German Einfamilienhaus']   # §59.5: the E / W elevations show one small window centred in each gable (measured, §62); its size = the registry's German type (nearest occurrence)
 for i, m in enumerate(mk): b += tx(-3000, -2500 - 300 * i, m)
 for k, x in GX.items(): b += tx(x, 600, f'@GRIDX={k}')
