@@ -106,7 +106,8 @@ async function zkField(pid) {
   S('§W_BIM_LINK_LEGACY start mode=' + MODE + ' src=' + SRC + ' ootb=' + OOTB + ' (' + sh('git -C ' + OOTB + ' rev-parse --short HEAD').out.trim() + ') compiler=' + sh('git -C ' + REPO + ' rev-parse --short HEAD').out.trim() + ' out=' + OUT);
   if (Number(psql("SELECT count(*) FROM pg_database WHERE datname='" + BAK + "'", 'postgres')) !== 1) { S('§W_BIM_LINK_LEGACY refused: no backup database ' + BAK); return finish(2); }
   if (MODE === 'guide' && !fs.existsSync(path.join(UAT, 'instruments', 'L.js'))) { S('§W_BIM_LINK_LEGACY refused: UAT_DIR does not hold instruments/L.js'); return finish(2); }
-  await stop(); fs.copyFileSync(BI, asFound); uninstall(); restoreDb();
+  if (fs.readFileSync(BI, 'utf8').split('\n').some(l => /^org\.idempiere\.bimootb/.test(l))) { S('§W_BIM_LINK_LEGACY refused: bundles.info already names org.idempiere.bimootb (the server is not as found)'); return finish(2); }
+  await stop(); fs.copyFileSync(BI, asFound); restoreDb();
   S('§W_BIM_LINK_LEGACY precondition server=stopped bundles.info bimootb lines=0 db=' + DB + ' restored from ' + BAK + ' pkgs=' + (pkgs() || 'none'));
   const tmp = [];
   try {
