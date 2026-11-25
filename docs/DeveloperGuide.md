@@ -268,13 +268,13 @@ The folder has no `.git`: that is normal, every tool below works without it. (Th
 node scripts/setup.js --open
 ```
 
-It prints one `§` line per step and ends with a verdict. Real output (2026-11-18, shortened):
+It prints one `§` line per step and ends with a verdict. Real output (2026-11-18, task count re-read 2026-11-25, shortened):
 
 ```
 §SETUP_PREREQ node=18.19.1 npm=Y python3=Y code=/snap/bin/code
 §SETUP_DEPS npm_ci=ok espree=Y
 §SETUP_TOOLS manifest=PASS proof_map=PASS bump=PASS
-§SETUP_VSC code=/snap/bin/code codefacts=installed eslint=recommended tasks=6 snippets=3 launch=Y mode=throwaway ext_dir=<folder>/.setup/vscode-ext
+§SETUP_VSC code=/snap/bin/code codefacts=installed eslint=recommended tasks=9 snippets=3 launch=Y mode=throwaway ext_dir=<folder>/.setup/vscode-ext
 §SETUP steps=4 ok=4 gaps=0 verdict=PASS
 ```
 
@@ -320,7 +320,7 @@ of the count, open it once with `?ignore-me` at the end of the address.
 
 1. **The folder is open**, with the editor settings from `.vscode/settings.json`.
 2. **Code Facts is in the Extensions view** (the repo's own add-on, §4.1). Hover a shared field such as `A.camera` in `viewer/grid_views.js`: every write and read is listed. Without VS Code, the same facts: `node devtools/code-facts/code-facts.js help`.
-3. **Terminal ▸ Run Task** lists the tasks of `.vscode/tasks.json` (6 today, table below).
+3. **Terminal ▸ Run Task** lists the tasks of `.vscode/tasks.json` (9 today, table below).
 4. **Snippets:** type `witness`, `slog` or `spec` in a `.js` file and press Tab (table below).
 5. **F5 / Run ▸ Start Debugging** offers **Viewer in Chrome**, ERP, Modeller, **This page in Chrome** (any `.html` page open in the editor) and **Node: this witness / script** (`.vscode/launch.json`).
 6. **Recommended extensions:** ESLint is listed in `.vscode/extensions.json`; VS Code offers it on first open, and `--install` installs it.
