@@ -21,9 +21,13 @@
   .md-typeset h2 { break-before: page; page-break-before: always; }
   .md-typeset h3 { break-after: avoid; break-before: page; page-break-before: always; }
   .md-typeset h2 + h3, .uat-sheet h3, .uat-cover h3 { break-before: auto; page-break-before: auto; }
-  .uat-keep { break-inside: avoid; page-break-inside: avoid; }   /* DOCS_DEPLOY_GUARD.md SPEC (3), W-GUIDE-PRINT P12: a lead-in stays with its table */
+  .uat-keep { break-inside: avoid; page-break-inside: avoid; }
+  .uat-keep > p { break-inside: avoid; page-break-inside: avoid; }   /* a block's lead-in is never split across pages (it left 3 lines alone on a page, owner 2026-11-25) */
+  .uat-flow table:not([class]) { break-inside: auto; page-break-inside: auto; }   /* a table longer than a page flows from under its lead-in (rows still never split); kept whole it left a one-line page */   /* DOCS_DEPLOY_GUARD.md SPEC (3), W-GUIDE-PRINT P12: a lead-in stays with its table */
   .uat-keep-small table:not([class]) { font-size: 8.5pt; }
   .uat-cover { break-after: page; page-break-after: always; border: 1.5px solid #333; }
+  .uat-revhist { break-after: page; page-break-after: always; }   /* the revision history on its own page after the cover: on the cover it grew past page 1 and left page 2 with the footer only (owner 2026-11-25) */
+  .uat-revhist table:not([class]) { font-size: 8pt; }
   .md-typeset h1 { margin-top: 18mm; }
   .md-typeset img { max-width: 100%; max-height: 105mm; }
   a[href]::after { content: none !important; }
@@ -48,83 +52,41 @@
 |---|---|
 | Document | CAPEX UAT Guide — from 2D drawings to the dashboard |
 | Purpose | The step-by-step test script for the User Acceptance Test of the pilot client (Sysnova): BIM drawings to a priced model, the ERP exercise, the CAPEX dashboard |
-| Revision | **2026-11-25 (s)** |
-| Status | Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately and stays as signed. Since then, steps were corrected: the change list after this cover (items 22 to 34) names each step and what changed. |
+| Revision | **2026-11-25 (t)** |
+| Status | Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately and stays as signed. Since then, steps were corrected: the revision history names each revision and what changed. |
 | Prepared and issued by | Redhuan D. Oon, Project Consultant |
 | For | The pilot client's UAT team: System Setup, BIM, Project Mgmt Accounting |
 | The latest copy | Page: [red1oon.github.io/BIMCompiler/CapexUATGuide](https://red1oon.github.io/BIMCompiler/CapexUATGuide/) · PDF: [CapexUATGuide.pdf](https://red1oon.github.io/BIMCompiler/CapexUATGuide.pdf). The PDF is made from the page at every publish and checked (pages, links). |
 
-**Changes since the signed UAT report:** listed on the next page. Read them even if you have already done the UAT.
+</div>
+
+<div class="uat-revhist" markdown="1">
 
 **Revision history**
 
 | Revision | What changed |
 |---|---|
-| 2026-11-25 (s) | *See how*: the two films re-taken with the Bangladesh rate pack (item 34). No step changed |
-| 2026-11-25 (r) | A2 names the rates script (`202611251000_CAPEX-WS-RATES.sql`) the dashboard's BDT (USD) needs; the pack is set in each Viewer, L1 too (item 33) |
+| 2026-11-25 (t) | Layout only: the revision history on its own page after the cover; the list of changes since the signed report is no longer part of this guide. No step changed |
+| 2026-11-25 (s) | *See how*: the two films re-taken with the Bangladesh rate pack. No step changed |
+| 2026-11-25 (r) | A2 names the rates script (`202611251000_CAPEX-WS-RATES.sql`) the dashboard's BDT (USD) needs; the pack is set in each Viewer, L1 too |
 | 2026-11-25 (q) | The test runs with the Bangladesh rate pack (the note at the start): B3.1, B4, L3 and D in BDT with USD in brackets; A3.1 loads 226 records (the BDT to USD rate); item 33 |
 | 2026-11-25 (p) | B3.1: a footnote on the Bangladesh rates (the PWD Schedule of Rates 2022, 120 BDT per USD), so a tester knows the Bangladesh pack works |
-| 2026-11-24 (o) | B4.2 states both status lines in full; B4.4's planned amount follows the new total (item 32) |
-| 2026-11-24 (n) | B0 from defaults: check, change only if wrong; the footing from the Footing Section; B3.1, B4, L3, D new figures, per rate pack; new reference pack (items 5, 32) |
-| 2026-11-24 (l), (m) | Three notes moved into their steps: A2.2 and chapter C log in, the PDF download, B3.1 and B4.4 (items 2, 4, 7); B0.6 says why the datums are typed |
-| 2026-11-23 (h) to (j) | The whole Shed into the ERP and the dashboard: B4, L1 to L3 before C, D (item 27); the link names the order, *Push again?* (item 28); L2's status line, B5.1's pack date (items 29, 30); the two films (item 31) |
-| 2026-11-22 (g) | One cost for the model: B3.1, B5 and the reference pack (item 26) |
-| 2026-11-22 (c) to (f) | Items 9 to 19 moved into their steps; items 22 to 25; film part 3 re-published, linked (item 20) |
-| 2026-11-22 (b) | Legacy iDempiere: A5, L1 to L3 (item 21). No step changed |
-| 2026-11-22 | Change list item 20 and *See how* item 3: film part 3, linked. No step changed |
-| 2026-11-21 | Change list items 9 to 19 (film part 3). No step changed |
-| 2026-11-20 (b) | Change list item 8 and *See how* item 2: film part 2, linked. No step changed |
-| 2026-11-20 | Pages *Changes since…*, *What is this?* (*How do I pass?*), *Contents*, *See how*; short tables kept whole; A3.1 Pack In window; B3.1 second currency |
+| 2026-11-24 (o) | B4.2 states both status lines in full; B4.4's planned amount follows the new total |
+| 2026-11-24 (n) | B0 from defaults: check, change only if wrong; the footing from the Footing Section; B3.1, B4, L3, D new figures, per rate pack; new reference pack |
+| 2026-11-24 (l), (m) | Three notes moved into their steps: A2.2 and chapter C log in, the PDF download, B3.1 and B4.4; B0.6 says why the datums are typed |
+| 2026-11-23 (h) to (j) | The whole Shed into the ERP and the dashboard: B4, L1 to L3 before C, D; the link names the order, *Push again?*; L2's status line, B5.1's pack date; the two films |
+| 2026-11-22 (g) | One cost for the model: B3.1, B5 and the reference pack |
+| 2026-11-22 (c) to (f) | Notes moved into their steps; corrections from independent checks; film part 3 re-published, linked |
+| 2026-11-22 (b) | Legacy iDempiere: A5, L1 to L3. No step changed |
+| 2026-11-22 | *See how* item 3: film part 3, linked. No step changed |
+| 2026-11-21 | Notes from film part 3. No step changed |
+| 2026-11-20 (b) | *See how* item 2: film part 2, linked. No step changed |
+| 2026-11-20 | Pages *What is this?* (*How do I pass?*), *Contents*, *See how*; short tables kept whole; A3.1 Pack In window; B3.1 second currency |
 | 2026-11-19 | This cover; each section on a new page; page numbers; every link in the PDF opens the public site |
 | 2026-11-18 | Dry-run corrections: A1 links Developer Guide §3; D2b, D3, D8 fresh-GardenWorld figures; D9 30-minute refresh; B4.4 Task Line |
 | 2026-11-15 | Roles and the checklist sheet; B00 export from BricsCAD; B0 from the sheets as drawn to the marked set; B3.1 measured total cost; B5 mark your run with the reference pack; the PDF |
 | 2026-11-14 | Corrections from the full dry run: window names and menu paths, chapter C step by step, C4 Issue to Project, construction products at standard cost, chapter B on the Shed drawing set |
 | 2026-11-13 | First issue |
-
-</div>
-
-<div class="uat-keep uat-keep-small" markdown="1">
-
-## Changes since the signed UAT report (2026-11-19)
-
-Read these even if you have already done the UAT. If your run met one of them, retest that step. They go into the report's appendix; the signed report itself is not changed.
-
-| # | Step | What | Status | What to do |
-|---|---|---|---|---|
-| 1 | B5.2, B5.3 | The UAT Run Checker wrongly read box 3 (your database) as **FAIL: tables differ, project_metadata 4 vs 5** when you skipped the optional **Accept all** (B2.2c). | **Fixed** 2026-11-19, live | If you saw that FAIL: reload the Run Checker and mark your run again with the same files |
-| 2 | PDF download | Right after the site is updated, **⬇ Download the PDF** can fail once (*Failed - Unknown server error*, the file saved as `.html`). | Now in the step (revision 2026-11-24 (l)) | Wait a minute and click again; the PDF is a few MB |
-| 3 | A3.1 | This step's Confirm described only the folder script. The **Pack In** window ends with the Process Message **Processed=225 Un-Resolved=0**. | Corrected in this revision | If you used the window, that message is a pass |
-| 4 | B4, D | The USD amount reaches the Project Order unchanged (B4.1, B4.2, B4.4). It is as correct as the shipped rate pack, not a market price. Chapter D's dashboard reads the GardenWorld test projects, not the Shed. | Now in the step (revision 2026-11-24 (l)) | None |
-| 5 | B3.1 | The amount in brackets is the rate pack's second currency (RM), whatever language you choose. Showing your local currency for the language you choose is **ongoing development**. | **Done** (revision 2026-11-24 (n)): the total is priced with your language's rate pack (Bangla: the Bangladesh pack, BDT first, USD in brackets), and the Run Checker judges B3.1 against your pack | Compare the figure of your pack in B3.1 |
-| 6 | (film) | The hands-on film shows the ready-marked sheets. The raw-sheet path (B0: mark the sheets yourself, then Arrange) is to follow. | Noted | None; B0 is unchanged |
-| 7 | A2.2, A3.1, C (log in) | After you log in as GardenAdmin, **Chrome** may show its own window *Change your password: the password you just used was found in a data breach*. That is Chrome's warning about the well-known demo password, not an iDempiere error. Until you close it, clicks on the page do nothing. | Now in the step (revision 2026-11-24 (l)) | Press **OK** on Chrome's window, then go on |
-| 8 | B0, B2.3, B5 (film) | The film *UAT, hands on, part 2* shows the path item 6 said was to follow: the nine sheets as drawn, marked by hand (B0.1 to B0.9), Arrange (B2.3), and the Run Checker with your nine marked copies in box 2 (B5): every row and the run read **PASS**. | Film published: [youtu.be/WvPgjcMbSwo](https://youtu.be/WvPgjcMbSwo) | None; B0 is unchanged. Watch it before you mark the sheets yourself |
-| 9 | C (log in) | The guide names no organization. With the default `*` a purchase order will not save: *Fill mandatory fields: Organization, Warehouse*. | **Corrected in the step** (2026-11-22 (c)) | Follow chapter C's log in note: it now says this |
-| 10 | C1.1, D4 | The order window prices a line to the *Purchase* list's 2 decimals (68.1167 becomes 68.12), so an order total differs from *quantity × standard cost* (TD_RIVERSIDE 1,975.48, not 1,975.38; TD_DATAHALL 1,807.92, not 1,799.55, as 1.075 becomes 1.08). D4's *Open purchase orders* then reads **USD 6,741.25**, not 6,738.39. D2b and D3 are not affected (an issue uses the standard cost). | **Corrected in the step** (2026-11-22 (c)) | Follow the step: it now says this |
-| 11 | C2.1 | **Create lines from** lists no lines on this iDempiere build (its search binds the wrong field to the order). | **Corrected in the step** (2026-11-22 (c)) | Follow the step: it now says this |
-| 12 | C3.2 | The **Business Partner** search of the Payment window opens with **Vendor = No**, so no vendor is listed. | **Corrected in the step** (2026-11-22 (c)) | Follow the step: it now says this |
-| 13 | C (log in) | Chrome's *Save password?* stays open after you log in and takes the keys meant for the page. | **Corrected in the step** (2026-11-22 (c)) | Follow chapter C's log in note: it now says this |
-| 14 | C4.1, C5.1, D6 | The test projects have **Line Level = Project**; the Project window then hides the **Phase** tab. | **Corrected in the step** (2026-11-22 (c)) | Follow the step: it now says this |
-| 15 | C4.4 | **Project Balance** shows 4 decimals (204.3501, 577.625); the guide prints them rounded (204.35, 577.63). | **Corrected in the step** (2026-11-22 (c)) | Follow the step: it now says this |
-| 16 | C5.1 | After you tick **Complete**, Save is refused: *Fill mandatory fields: Invoice Rule*. The test data's phases carry none. | **Corrected in the step** (2026-11-22 (c)) | Follow the step: it now says this |
-| 17 | C5.1 | The Phase tab is a list under the header. | **Corrected in the step** (2026-11-22 (c)) | Follow the step: it now says this |
-| 18 | D3 | Adding up the panel's **Spent** column gives 2,020.46; the tile reads **2,020.45** (each row is rounded to the cent). | **Corrected in the step** (2026-11-22 (c)) | Follow the step: it now says this |
-| 19 | C4.2 | Each **Issue to Project** opens its own window tab; after several, the first tabs are pushed off the strip. | **Corrected in the step** (2026-11-22 (c)) | Follow the step: it now says this |
-| 34 | (films) | Both films are re-taken on this guide with the Bangladesh rate pack: they open with the note to set it, set it in each Viewer, and show every figure in BDT with USD in brackets (B3.1, B4, L3, D); B0 shows the defaults being checked. They replace the films of item 31. | Films published: [youtu.be/uJEqVKZ8fug](https://youtu.be/uJEqVKZ8fug), [youtu.be/BE5FtvBy9V8](https://youtu.be/BE5FtvBy9V8) (2026-11-25) | None; no step changed. Watch part I before chapter B, part II before B4 |
-| 33 | Start, A3.1, B3.1, B4, L3, D | **The test runs with the Bangladesh rate pack.** Set it in each Viewer you open (Settings ▸ 5D Rate Pack: `pwd2024_bd`, the note at the start; L1 for a legacy iDempiere). A2 applies one more script, `202611251000_CAPEX-WS-RATES.sql`, without which D2 reads *NO_SOURCE* instead of the bracket. The totals are in BDT with USD in brackets: B3.1 **BDT 15,342,507.97 (USD 127,854)**, B4.2 contract BDT 15,342,508, L3 Planned Amount 15,342,507.96847 with Currency BDT, D2 Approved Budget **USD 4,667.80** and **BDT 15,342,507.97 (USD 127,854)** (the dashboard now shows a foreign currency with its USD value, bim-ootb #3447). A3.1's test data adds the BDT to USD rate (120 per USD, the rate pack's own): **Processed=226**. | Corrected in this revision | Set the pack before B3; retest B3.1 to D if you ran them on another pack |
-| 32 | B0, B3.1, B4, L3, D, B5 | **B0 reads its settings from the drawings.** The set name, the five level datums, nine of the ten layer meanings, the beam and footing heights and the expansion-joint box now arrive as defaults: you check each one and change it only if it is wrong; the one value you set is the elevation column layer (B0.4). The footing height now follows the drawings: the Footing Section dimensions the footing top 5'-0" below the finished ground with a 12 in footing, where this guide used to type 45 in. The deeper footings make the 32 column pieces below ground 12.192 m longer in all, so at the same rates the total is **USD 361,437.82** on the US pack (was 355,097.98) and **BDT 15,342,507.97** on the Bangladesh pack; L3 and chapter D follow. New reference pack `Shed_UAT_pack_20261124.zip` (B5.1). | Corrected in this revision | Use the new reference pack. A run made before with the 45 in footing still marks PASS against the earlier pack `Shed_UAT_pack_20261122.zip` |
-| 31 | (films) | The three films are replaced by **two**, in this revision's order: *part I* (the BIM chapter, A3.1 to B5) and *part II* (B4 with the whole Shed, L1 to L3 before chapter C, chapter C by hand, chapter D with 15 projects). Items 8 and 20 and the earlier links describe the older films. | Films published: [youtu.be/kXFnhxIeOp0](https://youtu.be/kXFnhxIeOp0), [youtu.be/MfJLQOJMa9k](https://youtu.be/MfJLQOJMa9k) (2026-11-23) | None; no step changed. Watch part I before chapter B, part II before B4 |
-| 30 | B5.1 | The reference pack of revision (g) (`Shed_UAT_pack_20261122.zip`) reads *Pack intact: 19 files checked, built 2026-11-22 …* under box 1; the step still said *built 2026-11-15* (the earlier pack). | Corrected in this revision | If box 1 showed 2026-11-22, that is a pass |
-| 29 | L2 | **L2's status line in full.** On a fresh iDempiere the first push also creates the Shed's product categories, products and unit, so the line reads *iDempiere Project #… · created {"categories":3,"products":11,"projects":1,"phases":6,"tasks":8,"lines":11,"uoms":1}*. Revision (i) quoted only the project's counts, measured on a server that already held those products. Measured twice on a reset test instance (2026-11-23). | Corrected in this revision | If L2 showed the longer line, that is a pass |
-| 28 | B4.2 to B4.4, L2, L3 | **The ERP link names its Project Order.** The Viewer's link after a push now reads **SHED #… ↗** (the order's id), not *open ↗*; on a legacy iDempiere it appears only after your push, with the number of the status line. Pressing **› ERP** again first shows a box **Push again?** (**Cancel** or **Push again**); a second push adds nothing, on the Kernel ERP and on a legacy iDempiere alike (measured 2026-11-23: three pushes, one project SHED). The films still show *open ↗*. | Corrected in this revision | None if you passed B4 or L; the steps now name the link and the box |
-| 27 | B4, L1 to L3, D | **The whole Shed reaches the ERP and the dashboard.** B4.1 now sends the whole model: press **F**, click **Level 1 (511)**, **› ERP** (USD 355,097.98, B3.1's total), not one group of parts. On a legacy iDempiere, L1 to L3 come **before chapter C**, so chapter D shows SHED beside the test projects: 15 projects, Approved Budget USD 359,765.78, Not started 6, Actual Cost 1 % of plan, Home 15 and 359,766. Measured on a fresh run in that order (2026-11-23). Item 4's *the dashboard reads the test projects, not the Shed* no longer holds. The films show one group and the 14-project figures. | Corrected in this revision | Redo B4 (or L1 to L3), then read D again |
-| 26 | B3.1, B5 | **One cost for the model.** The Viewer showed two costs for the Shed: *total cost* in the Find panel priced each part at its rate × the number of parts (USD 96,839), while the Find bar and **› ERP** priced it at its rate × its quantity in the rate's own unit (m, m², m³). There is now one cost, in the rate pack's own units: **USD 355,097.98 (RM 1,365,761)**, the same in *total cost*, the Find bar and the Project Order. The Run Checker reads the cents; the reference pack is rebuilt with the new figure (Shed_UAT_pack_20261122.zip). The films still show the old figure (USD 96,839); the guide's figure is the one to confirm. | Corrected in this revision | Redo B3.1, then B5 with the new pack |
-| 25 | B4.1, C3.1, C3.2, D | A fourth independent check of the film part 3: **B4.1** the Find list fills only when you search (click the model, **F**, type a word such as *column*, **Enter**; revision (d) wrongly said it shows parts at once); **C3.2** type the vendor's **search key** *SeedFarm* (the Payment window does not find it by name); **C3.1** the dialog's own **Create lines from** button, not the header's; D's read job ends with a line `§DASH_LEGACY_READ_VERDICT PASS …`. | Corrected in this revision | Retest a step of this list if you did it before |
-| 24 | B4.1, C3.1, D2, D9, sign-off | A third independent check of the film part 3: C3.1 says **Save** before **Create lines from** (no second Save); D9 says **Log Out**, then log in with Select Role and HQ; B4.1 names the key **F**; D2's **ERP ↗** may ask you to log in; the checklist and sign-off count the legacy-only steps (A5, L1 to L3). | Corrected in this revision | Retest a step of this list if you did it before |
-| 23 | B4.1, L, C3.1, C3.2, C5.1, D8, D9, C (log in) | A second independent check of the film part 3 against this guide: do the legacy L1 to L3 **after chapter D** (or on a copy: SHED is one more project); L3 and the chapter C log in name Chrome's windows, the demo password and closing each document's tab; C3.1 runs with the window's own **Create lines from** button; C3.2 half paid is rounded up to the cent; C5.1 says what to do with no Phase tab; D9 money goals are rounded to the unit; B4.1's list shows parts at once. | Corrected in this revision | Retest a step of this list if you did it before |
-| 22 | C1.1, C2.1, C3.2, C4.1, C4.2, C4.4, C5.1, D3, D4, D9 and L3 | **The steps now say what works.** Items 9 to 19 were written only in this list; each is now in its step, so a step read on its own passes (C5.1 was the one that stopped a tester: Save refused, *Fill mandatory fields: Invoice Rule*). Also new in D: the read job ends with `§DASH_LEGACY_READ_VERDICT PASS` and needs `BRIDGE_USER`/`BRIDGE_PASS` on a server that is not `localhost`; D9 says what the Home goals' percents are measured against (the targets A2 installs), so *Actual Cost* reads 0 % on the test data. Found by an independent check of the film part 3 against this guide. | Corrected in this revision | Retest a step of this list if you did it before |
-| 21 | A5, B4 | **If your ERP is a legacy iDempiere:** the administrator installs the BIM OOTB plugin (A5, steps LA1 to LA4); then B4 from the Viewer that your iDempiere serves, steps L1 to L3 under B4. The Viewer keeps your sign-in ids when you open a file, and **open ↗** opens your iDempiere's Project. | New in this revision | Only with a legacy iDempiere: A5, then L1 to L3 |
-| 20 | B4, C, D (film) | The film *UAT, hands on, part 3* shows B4, every document of chapter C made by hand, chapter D, and last the legacy B4 (L1 to L3). Items 9 to 19 are what it met on the way. | Film published: [youtu.be/g7FTNnbbybA](https://youtu.be/g7FTNnbbybA) (2026-11-22, follows revision (f); replaces the first upload) | None; no step changed. Watch it before chapter C |
 
 </div>
 
@@ -159,7 +121,6 @@ Films of the steps, on a real screen:
 
 <div class="uat-toc" markdown="1">
 
-- [Changes since the signed UAT report](#changes-since-the-signed-uat-report-2026-11-19)
 - [What is this?](#what-is-this)
     - [How do I pass?](#how-do-i-pass)
     - [See how](#see-how)
@@ -423,6 +384,8 @@ The general *Section A-A* frame is not used in this test.
 
 The nine sheets as drawn carry no settings. The Modeller reads them from the drawings: the set name from the floor plan's title, the level datums from the *PL* lines, the beam and footing heights from the elevations and the Footing Section, and the expansion joint from the beam layout. It shows each one as a **default**, in the **Drawing metadata** panel, with the rule and the drawing it came from. **You do not type these. You check each default against the drawing and change it only if it is wrong.** Then you save the result as nine `…_marked.dxf` copies. Nothing is invented: a value the drawings do not settle is left open and named, never guessed.
 
+<div class="uat-flow" markdown="1">
+
 The panel has sections you open by clicking their title: **All defaults** (the yellow list), **Sheets** (one card per sheet), **Layers**, **Body heights**, **Exclude areas**. The badge at the top says **Blocked · n** (n things still missing) or **Qualifies**.
 
 | # | Do | Confirm on screen | Result |
@@ -438,6 +401,8 @@ The panel has sections you open by clicking their title: **All defaults** (the y
 | B0.7 | Open **Exclude areas** and check its row. On the canvas, zoom to the bay between grid **06** and grid **35** of **3_BEAM_LAYOUT**: the beam layout's **expansion joint** is the pair of close vertical lines (about 22 cm apart) running across all four rows A to D, with small break marks beside them | One row, nothing dragged: `3_BEAM_LAYOUT @EXCLUDE=-20875.137,-5585.95,-20849.151,-4956.626` (rule PR-EXCLUDE-JOINT: two lines closer together than a beam is wide, across every beam row). The box holds both lines and the break marks. Without it, the joint's two lines are read as four extra beams (B2b would then read 515 elements, not 511). (Only if the box is wrong: press **Exclude area** and drag a new one) | ☐ Pass ☐ Fail |
 | B0.8 | Read the top of the panel | The badge reads **Qualifies**; **All defaults** has **0** yellow rows | ☐ Pass ☐ Fail |
 | B0.9 | Press **Save marked copies** (at the foot of the panel) | Your browser downloads nine files named `0_FLOOR_PLAN_marked.dxf` … `5_DETAILS_marked.dxf`, the names used from B1 on. The panel says **Downloaded: …**; the files you opened are unchanged | ☐ Pass ☐ Fail |
+
+</div>
 
 **B0.4 · the ten layer meanings** (nine arrive set from the drawings; you set the tenth)
 
