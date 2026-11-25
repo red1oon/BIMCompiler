@@ -3967,7 +3967,7 @@
 </tr>
 <tr>
 <td>Revision</td>
-<td><strong>2026-11-25 (q)</strong></td>
+<td><strong>2026-11-25 (r)</strong></td>
 </tr>
 <tr>
 <td>Status</td>
@@ -3997,6 +3997,10 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>2026-11-25 (r)</td>
+<td>A2 names the rates script (<code>202611251000_CAPEX-WS-RATES.sql</code>) the dashboard's BDT (USD) needs; the pack is set in each Viewer, L1 too (item 33)</td>
+</tr>
 <tr>
 <td>2026-11-25 (q)</td>
 <td>The test runs with the Bangladesh rate pack (the note at the start): B3.1, B4, L3 and D in BDT with USD in brackets; A3.1 loads 226 records (the BDT to USD rate); item 33</td>
@@ -4222,7 +4226,7 @@
 <tr>
 <td>33</td>
 <td>Start, A3.1, B3.1, B4, L3, D</td>
-<td><strong>The test runs with the Bangladesh rate pack.</strong> Set it once in the Viewer (Settings ▸ 5D Rate Pack: <code>pwd2024_bd</code>, the note at the start). The totals are in BDT with USD in brackets: B3.1 <strong>BDT 15,342,507.97 (USD 127,854)</strong>, B4.2 contract BDT 15,342,508, L3 Planned Amount 15,342,507.96847 with Currency BDT, D2 Approved Budget <strong>USD 4,667.80</strong> and <strong>BDT 15,342,507.97 (USD 127,854)</strong> (the dashboard now shows a foreign currency with its USD value, bim-ootb #3447). A3.1's test data adds the BDT to USD rate (120 per USD, the rate pack's own): <strong>Processed=226</strong>.</td>
+<td><strong>The test runs with the Bangladesh rate pack.</strong> Set it in each Viewer you open (Settings ▸ 5D Rate Pack: <code>pwd2024_bd</code>, the note at the start; L1 for a legacy iDempiere). A2 applies one more script, <code>202611251000_CAPEX-WS-RATES.sql</code>, without which D2 reads <em>NO_SOURCE</em> instead of the bracket. The totals are in BDT with USD in brackets: B3.1 <strong>BDT 15,342,507.97 (USD 127,854)</strong>, B4.2 contract BDT 15,342,508, L3 Planned Amount 15,342,507.96847 with Currency BDT, D2 Approved Budget <strong>USD 4,667.80</strong> and <strong>BDT 15,342,507.97 (USD 127,854)</strong> (the dashboard now shows a foreign currency with its USD value, bim-ootb #3447). A3.1's test data adds the BDT to USD rate (120 per USD, the rate pack's own): <strong>Processed=226</strong>.</td>
 <td>Corrected in this revision</td>
 <td>Set the pack before B3; retest B3.1 to D if you ran them on another pack</td>
 </tr>
@@ -4323,7 +4327,7 @@
 <h2 id="what-is-this">What is this?<a class="headerlink" href="#what-is-this" title="Permanent link">&para;</a></h2>
 <p>A hands-on test script for the testers of the pilot client (Sysnova). Each step says what to <strong>do</strong>, what you should <strong>see</strong>, and has a box to tick.</p>
 <blockquote>
-<p><strong>Do set your locale to Bangladesh for this test, as it shall affect the results we want.</strong> In the Viewer, open <strong>Settings</strong> (key <code>=</code>), section <strong>5D Rate Pack</strong>, and choose <code>pwd2024_bd</code>: the line under it reads <em>Active: pwd2024_bd (BDT)</em>. The screens stay in English; every cost is then priced with the Bangladesh rates, in BDT with USD in brackets (B3.1, B4, L3, D). Footnote 1 under B3 names the rates.
+<p><strong>Do set your locale to Bangladesh for this test, as it shall affect the results we want.</strong> In the Viewer, open <strong>Settings</strong> (key <code>=</code>), section <strong>5D Rate Pack</strong>, and choose <code>pwd2024_bd</code>: the line under it reads <em>Active: pwd2024_bd (BDT)</em>. Do it in <strong>each</strong> Viewer you open: the one of B2.9 and, for a legacy iDempiere, the one your iDempiere serves (L1), as each keeps its own settings. The screens stay in English; every cost is then priced with the Bangladesh rates, in BDT with USD in brackets (B3.1, B4, L3, D). Footnote 1 under B3 names the rates.
 <strong>A value is affirmed at its source, not trusted.</strong> Wherever a step gives a number, it also says <strong>Source:</strong> where the number is kept (a record, a field, a formula) and what to open to see it there. Open that source, read the value yourself, and tick <em>Pass</em> only if it matches. A figure on the dashboard is never the evidence: the rows behind it are.</p>
 </blockquote>
 <p>Work top to bottom: every chapter uses what the one before produced. Write anything that differs on the <strong>Notes</strong> line at the end of each chapter.</p>
@@ -4781,6 +4785,11 @@
 <td><a href="https://github.com/red1oon/bim-ootb/tree/main/capex/legacy/ws/pacalc/migration/iD13/postgresql"><code>capex/legacy/ws/pacalc</code></a></td>
 <td><code>202611131400_CAPEX-WS-PACALC.sql</code></td>
 <td>Reading the dashboard's own formulas (Performance Analysis measures) from your server</td>
+</tr>
+<tr>
+<td><a href="https://github.com/red1oon/bim-ootb/tree/main/capex/legacy/ws/rates/migration/iD13/postgresql"><code>capex/legacy/ws/rates</code></a></td>
+<td><code>202611251000_CAPEX-WS-RATES.sql</code></td>
+<td>Reading the conversion rates, so the dashboard can show a foreign currency with its value in your currency (D2: <em>BDT … (USD …)</em>)</td>
 </tr>
 <tr>
 <td><a href="https://github.com/red1oon/bim-ootb/tree/main/capex/legacy/migration/iD13/postgresql"><code>capex/legacy/migration</code></a></td>
@@ -5628,8 +5637,8 @@
 <tbody>
 <tr>
 <td>L1</td>
-<td>Open <strong>your iDempiere</strong><code>/bimootb/viewer/viewer.html?blank=1&amp;erpUser=GardenAdmin&amp;erpClient=11&amp;erpRole=102&amp;erpOrg=11&amp;erpWarehouse=103</code> (GardenWorld's user and ids; use your own), press <strong>Ctrl+O</strong> and open the Shed's <code>.db</code> as in B2.9</td>
-<td>The Viewer opens the Shed: <em>DONE — SHED 511 elements</em></td>
+<td>Open <strong>your iDempiere</strong><code>/bimootb/viewer/viewer.html?blank=1&amp;erpUser=GardenAdmin&amp;erpClient=11&amp;erpRole=102&amp;erpOrg=11&amp;erpWarehouse=103</code> (GardenWorld's user and ids; use your own), press <strong>Ctrl+O</strong> and open the Shed's <code>.db</code> as in B2.9. Then set <strong>Settings ▸ 5D Rate Pack</strong> to <code>pwd2024_bd</code> in this Viewer too (the note at the start)</td>
+<td>The Viewer opens the Shed: <em>DONE — SHED 511 elements</em>; Settings reads <em>Active: pwd2024_bd (BDT)</em></td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
