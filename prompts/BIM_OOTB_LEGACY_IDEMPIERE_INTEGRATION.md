@@ -405,3 +405,38 @@ without `://` gets `http://` prepended `:106`, so the stored value must be absol
      every displayed display-type-40 field of the seed maps to `url` (X of N). **Falsifier:** `ERP_BREAK=nourl` (no type 40 mapping) → FAIL.
    - **`§BIM_LINK_TWIN`** one line comparing legacy and Kernel: column name, AD_Reference_ID, field IsReadOnly, field SeqNo after Description, element name, UUs, value shape.
 6. **Out of scope:** the UAT guide text and the signed V3 report (the owner writes a footnote); the CAPEX dashboard; films. :8108 is restored to exactly as found and left stopped.
+
+### §8.10 RESULT 2026-11-26 — built on both sides; witnesses run on the :8108 test copy (backed up first, restored and stopped after each run); logs read
+- **Legacy (this repo, `iDempiereOOTB/org.idempiere.bimootb`):** `META-INF/2Pack_13.1.1.zip` was made by iDempiere's own Pack Out (`§PACKOUT … Exported=5`: AD_Element, AD_Column, AD_Field,
+  WS_WebServiceFieldInput, AD_Tab) on a copy configured by `tools/bimootb_link_setup_poc.sql` + `tools/bimootb_link_packout_poc.sql`. Pack Out could express everything, and the PackOut.xml
+  was not edited by hand. `BIMTabPanel.java`, `BIMTabPanelFactory.java`, its OSGI-INF xml and `202605010001_BIM_Tab.sql` are deleted (−280 lines). The MANIFEST drops ZK, ui.zk and DS.
+  The bundle version stays 13.1.0 (the UAT Guide's LA1/LA2 rule, item 3). Diff vs master: +339 / −301 (the new lines are 182 witness + 101 POC SQL + the spec).
+- **Kernel (bim-ootb #3455):** the boot overlay `erp/ad_bim_link_overlay.js` and the rows file `ad_bim_link_rows.js`, generated from the 2Pack itself, so the UUs are the same. The generic URL editor
+  (display type 40) is in `crud_core`/`crud_overlay`. The push stores the link, and the `BIM src db=` Description write is deleted. The plan carries the link. Zoom Across no longer
+  offers a destination on a Project header. Code diff without generated hash/manifest lines: about +170 / −45.
+- **W-BIM-LINK-KERNEL** `§W_BIM_LINK_KERNEL_VERDICT PASS judged=12 fails=0` covers the real blank Viewer → Ctrl+O on the Shed → Find › ERP (`§PROJ_PUSH_LEGACY skip=no-target`), then
+  `§BIM_LINK_STORE project=990001 written url=http://localhost:<port>/viewer/viewer.html?db=import%3A%2F%2FSHED_extracted.db%2Fv0`. In the Project window the field "BIM Model" is
+  disabled, with an `<a target=_blank>` whose href equals the value, right after Description, and gate=false. The rule is generic: 42 displayed URL fields on 33 tabs map to one editor. The click
+  opens a new tab whose Viewer db equals the pushed db, and it reopens the Shed (same browser). **Falsifier** `ERP_BREAK=nourl` → the rule FAILED as it must.
+  W-ZOOM-ACROSS 10/10 (it now proves that a project header has no red pill). The bump parity gate gives `§BUMP_PARITY … verdict=PASS`, `gen_manifest --check` PASS, `audit_sw_precache` 0 missing.
+- **W-BIM-LINK-LEGACY upgrade** `§W_BIM_LINK_LEGACY_VERDICT PASS judged=5 fails=0`. The published bundle applies `13.1.0` only. The new bundle (same version 13.1.0.<stamp>) then gives
+  `0.0.0, 13.1.0, 13.1.1: Completed successfully`, and 13.1.0 is not re-applied. The column, field, whitelist and tab 200500=N match the spec.
+- **W-BIM-LINK-LEGACY guide (clean install + the link)** `§W_BIM_LINK_LEGACY_VERDICT FAIL judged=20 fails=1`. The UAT's own instruments and judge give **LA1 PASS** (last line
+  `§BIMOOTB_BUNDLE … 2pack=2Pack_13.1.0.zip update=2Pack_13.1.1.zip …`, two folders `…_13.1.0.<stamp>`), **LA2, LA3, LA4, L1 and L3 PASS** (Planned Amount 15,342,507.96847). **L2 FAIL**
+  on one number: the status line reads `"uoms":2` where the guide says `"uoms":1`. **The published build (13.1.0 master + bim-ootb main) gives the same `"uoms":2` on the same restored DB**
+  (baseline run, `--src master`), so this change does not cause it. The guide's figure assumes chapter A2–A4 ran first, and this witness runs only LA1–L3 on the bare test copy.
+  The rest: both packs applied on a clean install. `C_Project 1000001.BIM_ViewerURL=http://localhost:8108/bimootb/viewer/viewer.html?db=import%3A%2F%2FSHED_extracted.db%2Fv0`
+  equals the expected value. A GET of it returns 200 text/html with db equal to A.DB_URL. In ZK (`C_Project0BIM_ViewerURL`, `editor-box`) the text is readonly (`editor-input-disd z-textbox-readonly`), the `<a class="editor-button
+  z-button-os" target=_blank>` href equals the value, the icon is `z-icon-Online`, and the tab list has no BIM tab. **Falsifier:** with the whitelist row deleted, the push is refused with `Web service type
+  BIMOOTB_Create_C_Project: input column BIM_ViewerURL not allowed` and stored="".
+- **`§BIM_LINK_TWIN SAME`** column=BIM_ViewerURL reference=40 length=2000, the three UUs, element "BIM Model", readonly=Y, seqno=65, tab=157, after=Description, bimTabActive=N,
+  valueShape `<origin>/<path>/viewer.html?db=<enc db>`, renderer {readonly, button, target=_blank, href==value}. **Remaining L&F difference (named):** legacy's button shows the ZK font icon
+  `z-icon-Online`, the Kernel's shows `↗`; the Kernel has no ZK icon font.
+- **Remaining differences / not done:** `Note` (the pushed GUID set) is still written only on the Kernel. Zoom Across on Project LINES reads it (§ZOOM-SAME-ITEM). The 13.1.0 SysConfig rows
+  `BIMOOTB_VIEWER_URL` / `BIMOOTB_BUILDINGS_BASE` and the `AD_TabType` list value 'BIM' are now unused, and 13.1.1 leaves them as they are. A legacy site that has only 13.1.0 refuses a
+  push that carries the link. In practice that cannot happen in a browser, because a site serves its own Viewer from the same bundle build. `viewer/tests/witness_zoom_linkback_node.js` already
+  crashes on origin/main (old-URL slice); it is updated to the new column but does not run.
+- **UAT Guide lines that would need a revision (the owner writes the footnote; not edited here):** A5 "What the plugin contains" (the bundle `org.idempiere.bimootb` now also adds the
+  "BIM Model" link field); LA1 confirm (the last line now also names `update=2Pack_13.1.1.zip`, and `2pack=2Pack_13.1.0.zip` is unchanged); L3 confirm (the Project window now shows "BIM
+  Model" with the link back to the Viewer); B4 for the Kernel ERP (the same field in the Kernel's Project window; the red pill no longer appears on a project). The L2 `"uoms":1` figure is unchanged
+  by this work.
