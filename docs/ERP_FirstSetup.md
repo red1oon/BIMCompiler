@@ -8,6 +8,9 @@ This page walks a first-time user through setting up a **new company** in the in
 order an Odoo or iDempiere user would expect: open the app, create the company, add customers, vendors
 and products, enter a first sales order and purchase order, and look at the books.
 
+The setup steps also appear as How To topics in the app's Help panel. iDempiere users can have the same topics in
+their own system: [iDempiere add-on for the How To panel](https://github.com/red1oon/bim-ootb/tree/main/erp/legacy).
+
 !!! privacy "🔒 Your data stays in your browser"
     There is no AI and no LLM in this app. Everything you type stays in your own browser's storage
     (IndexedDB) on your own device; nothing is uploaded to us. A few optional features that you start
