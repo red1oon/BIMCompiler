@@ -3,6 +3,7 @@ Scope: **SPEC and phase ledger** for ONE vocabulary the CLI and the guides both 
 Background, measurements and prior art are in `prompts/DOCS_I18N.md` §4b-§4d (owner ideas of 2026-11-16: shared vocabulary for CLI and guides, a `Student` level = the long text, reuse the legacy element/message model, remove the copied Help). This file owns the BUILD; that file keeps the findings.
 
 ## ▶▶▶ RESUME HERE (trigger: "resume Help", formerly "resume message"; read the ▶▶ 2026-11-24 CLOSE block first)
+**▶▶▶ 2026-11-25 CLOSED (owner: "close"): the Help lane is at ZERO.** Pending items 1-7 all done (giscus box LIVE #1261, guide redeployed 15 of 15). Owner rulings: no film re-cut ("merely repetitive"); the pilot ZK help cache is NOT managed ("if it is stale, someone just refresh. Need not micro manage"); ports and gaps are never asked per-gap (TWIN rule). Left only for the parity lane: MPayment void/reverse of a Completed Bank Transfer, MInOutConfirm split/difference documents, back-date re-costing (MInOut.java:3384-3600). Nothing else to resume.
 **▶▶▶ 2026-11-25 (later): COVERAGE** sweep 11 of 15 peeked (4 ⛔ parity lane: Payments into Batch, Bank/Cash Transfer, Ship/Receipt Confirm, Requisition), fix rows 9 of 9 exercised, the stop-reason list deleted (§19.21 COVERAGE RESULT). Film v3 shows that list in beat 6, so it is now older than the product.
 
 **▶▶▶ 2026-11-25 (port): the four classes are ported, sweep 15 of 15 (§19.21 PORT RESULT, bim-ootb #3450); open ⛔: MPayment void/reverse, MInOutConfirm difference docs.**
