@@ -3949,7 +3949,7 @@
 </tr>
 <tr>
 <td>Revision</td>
-<td><strong>2026-11-26 (v)</strong></td>
+<td><strong>2026-11-26 (w)</strong></td>
 </tr>
 <tr>
 <td>Status</td>
@@ -3980,6 +3980,10 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>2026-11-26 (w)</td>
+<td>The BIM Model link back is now footnote 2 to A5, as version 2 of the plugin for later (not in this UAT's or the dashboard's present scope). No step changed</td>
+</tr>
 <tr>
 <td>2026-11-26 (v)</td>
 <td>Footnote 2 to L3: the <strong>BIM Model</strong> link back from the Project window to the Viewer (plugin pack 13.1.1; the Kernel ERP shows the same field). No step changed</td>
@@ -4674,7 +4678,7 @@
 </tbody>
 </table>
 <h3 id="a5-the-bim-ootb-plugin-only-if-your-erp-is-a-legacy-idempiere">A5 · The BIM OOTB plugin (only if your ERP is a legacy iDempiere)<a class="headerlink" href="#a5-the-bim-ootb-plugin-only-if-your-erp-is-a-legacy-idempiere" title="Permanent link">&para;</a></h3>
-<p>Skip A5 if the BIM tester sends the Project Order to the Kernel ERP (B4). With a legacy iDempiere 13, B4 is done from the Viewer that your iDempiere serves (the BIM tester's steps L1 to L3), and that Viewer comes from this plugin. (Why: a browser does not let a page from another site call your iDempiere, so the Viewer is served by the iDempiere itself.) <strong>What the plugin contains:</strong> the bundle <code>org.idempiere.bimootb.viewer</code> is the whole Viewer of your bim-ootb copy (all of <code>viewer/</code> except its tests and building files), <strong>including the 16 rate packs</strong> in <code>viewer/rates/</code>, among them <code>pwd2024_bd.json</code>, the Bangladesh pack this test uses (PWD Schedule of Rates 2022, 120 BDT per USD; footnote 1 under B3). The bundle <code>org.idempiere.bimootb</code> adds the web-service types and the role the push uses (its setup pack). So the tester's rate pack comes with the plugin: nothing is downloaded for it. The plugin's source and its build script are in <a href="https://github.com/red1oon/BIMCompiler/tree/master/iDempiereOOTB"><code>iDempiereOOTB/</code></a> of the BIMCompiler repository. You need JDK 17 (<code>javac</code>) and a copy of the <a href="https://github.com/red1oon/bim-ootb">bim-ootb repository</a> (the Viewer it packs). Take a database backup first if you want to go back exactly: removing the plugin later leaves the rows its setup pack wrote.</p>
+<p>Skip A5 if the BIM tester sends the Project Order to the Kernel ERP (B4). With a legacy iDempiere 13, B4 is done from the Viewer that your iDempiere serves (the BIM tester's steps L1 to L3), and that Viewer comes from this plugin. (Why: a browser does not let a page from another site call your iDempiere, so the Viewer is served by the iDempiere itself.) <strong>What the plugin contains:</strong> the bundle <code>org.idempiere.bimootb.viewer</code> is the whole Viewer of your bim-ootb copy (all of <code>viewer/</code> except its tests and building files), <strong>including the 16 rate packs</strong> in <code>viewer/rates/</code>, among them <code>pwd2024_bd.json</code>, the Bangladesh pack this test uses (PWD Schedule of Rates 2022, 120 BDT per USD; footnote 1 under B3). The bundle <code>org.idempiere.bimootb</code> adds the web-service types and the role the push uses (its setup pack). So the tester's rate pack comes with the plugin: nothing is downloaded for it. The plugin's source and its build script are in <a href="https://github.com/red1oon/BIMCompiler/tree/master/iDempiereOOTB"><code>iDempiereOOTB/</code></a> of the BIMCompiler repository. You need JDK 17 (<code>javac</code>) and a copy of the <a href="https://github.com/red1oon/bim-ootb">bim-ootb repository</a> (the Viewer it packs). Take a database backup first if you want to go back exactly: removing the plugin later leaves the rows its setup pack wrote.<sup>2</sup></p>
 <div class="uat-keep">
 <table>
 <thead>
@@ -4713,6 +4717,7 @@
 </tbody>
 </table>
 </div>
+<p><sup>2</sup> <em>Footnote to A5.</em> <strong>Version 2 of the plugin, for later: the BIM Model link back.</strong> This is a further feature for when it is needed; it is not part of this UAT or the dashboard's present scope, and no step of this guide depends on it. The plugin's source now carries a second setup pack, <code>2Pack_13.1.1.zip</code>, applied after 13.1.0. It adds a read-only field <strong>BIM Model</strong> to the Project window: the push in L2 fills it with the address of the Viewer and the building, and its button opens that building in a new browser tab, so you can go back from a project to its model. The Kernel ERP's Project window has the same field. Installed now, it shows only in two places, and both can be ignored in this UAT: LA1's last line also names <code>update=2Pack_13.1.1.zip</code>, and the field sits under Description in the Project window. A building opened from a file with <strong>Ctrl+O</strong> opens again only in the browser that opened it.</p>
 <p><strong>Notes (chapter A):</strong> <strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong>____</p>
 <hr />
 <h2 id="b-bim-the-shed-from-2d-drawings-to-a-priced-model-bim">B · BIM: the Shed, from 2D drawings to a priced model (BIM)<a class="headerlink" href="#b-bim-the-shed-from-2d-drawings-to-a-priced-model-bim" title="Permanent link">&para;</a></h2>
@@ -5402,13 +5407,12 @@
 <tr>
 <td>L3</td>
 <td>Click <strong>SHED #… ↗</strong> and log in to your iDempiere (tick <strong>Select Role</strong>, choose <strong>HQ</strong>, as in chapter C; Chrome may show its own windows: press <strong>OK</strong>, then <strong>No thanks</strong>)</td>
-<td>The <strong>Project</strong> window opens on <strong>SHED</strong> (<em>BIM: SHED</em>) with Planned Amount <strong>15,342,507.96847</strong> (B4.1's total, every decimal; on the US pack 361,437.81658)<sup>2</sup></td>
+<td>The <strong>Project</strong> window opens on <strong>SHED</strong> (<em>BIM: SHED</em>) with Planned Amount <strong>15,342,507.96847</strong> (B4.1's total, every decimal; on the US pack 361,437.81658)</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 </tbody>
 </table>
 </div>
-<p><sup>2</sup> <em>Footnote to L3.</em> <strong>The link back to the model.</strong> The Project window also shows a read-only field <strong>BIM Model</strong>, under Description. The push in L2 fills it with the address of the Viewer and the building it was pushed from; its button opens that building in a new browser tab, so you can go back from the project to its model. It comes with the plugin of A5 (LA1's last line also names <code>update=2Pack_13.1.1.zip</code>), and the Kernel ERP's Project window shows the same field after B4. It is for information, not a step: do not fail L3 on it. A building opened from a file with <strong>Ctrl+O</strong>, as in this guide, opens again only in the browser that opened it.</p>
 <h3 id="b5-mark-your-run-against-the-reference-pack">B5 · Mark your run against the reference pack<a class="headerlink" href="#b5-mark-your-run-against-the-reference-pack" title="Permanent link">&para;</a></h3>
 <p>This is the step that <em>How do I pass?</em> (at the start of this guide) points to. The <strong>UAT Run Checker</strong> compares what your run produced with the run this guide was proven on, stage by stage. It reads your files in your browser; nothing is uploaded. Keep the files from B0.9 and B2.8 and the two lines from B2.9 and B3.1 for this step.</p>
 <table>
