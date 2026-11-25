@@ -459,9 +459,13 @@ if SH and EGW:
     dd = RIDGE - SH['apex']; px_ = dd / 1000 * SH['k_px_per_m']
     log(f"§RASTER_EMIT_RIDGE_CHECK derived ridge={RIDGE} (READ pitch) vs measured apex={SH['apex']} d={dd:+d} mm ({px_:+.1f} px, limit 2) verdict={'PASS' if abs(px_) <= 2 else 'FINDING'}")
 b = lw('A-ROOF', rect(ex0, ey0, ex1, ey1)) + lw('A-ROOF-GABLE', rect(ex0, ey0, ex1, ey1))
+# §59.5 / bim-ootb §L36 + §L50: the gable end walls rise to the roof: a closed rectangle on A-WALL-GABLE over each end wall of the emitted envelope (ridge along x -> the walls at ex0 / ex1)
+tw0 = max(w['x1'] for w in EXT if w['axis'] == 'V' and abs(w['x0'] - ex0) < 1.0) - ex0; tw1 = ex1 - min(w['x0'] for w in EXT if w['axis'] == 'V' and abs(w['x1'] - ex1) < 1.0)   # the vertical (end) walls only: a horizontal wall piece also starts at x = ex0
+b += lw('A-WALL-GABLE', rect(ex0, ey0, ex0 + tw0, ey1)) + lw('A-WALL-GABLE', rect(ex1 - tw1, ey0, ex1, ey1))
+log(f"§RASTER_EMIT_GABLE_WALLS end walls x {ex0:.0f}..{ex0 + tw0:.0f} and {ex1 - tw1:.0f}..{ex1:.0f} (thickness {tw0:.0f} / {tw1:.0f} from the emitted exterior walls), y {ey0:.0f}..{ey1:.0f}: raised to the roof underside by the importer (bim-ootb §L36)")
 b += ['0', 'LINE', '8', 'A-ROOF-RIDGE', '10', f'{ex0:.1f}', '20', f'{-cy:.1f}', '30', f'{RIDGE:.1f}', '11', f'{ex1:.1f}', '21', f'{-cy:.1f}', '31', f'{RIDGE:.1f}']
-mk = ['@UNITS=mm', '@SET=STD', '@VIEW=ROOF', '@NAME=ROOF PLAN', f'@LEVEL={ROOF0/1000}', f'@ROOF={RIDGE/1000}', f'@PITCH={PITCH}']
+mk = ['@UNITS=mm', '@SET=STD', '@VIEW=ROOF', '@NAME=ROOF PLAN', f'@LEVEL={ROOF0/1000}', f'@ROOF={RIDGE/1000}', f'@PITCH={PITCH}', '@GABLEWINDOW=default', '@DEFAULT=building.type,German Einfamilienhaus']   # §59.5: the E / W elevations show one small window centred in each gable (measured, §62); its size = the registry's German type (nearest occurrence)
 for i, m in enumerate(mk): b += tx(-3000, -2500 - 300 * i, m)
 for k, x in GX.items(): b += tx(x, 600, f'@GRIDX={k}')
 for k, y in GY.items(): b += tx(-600, -y, f'@GRIDY={k}')
-write('roof.dxf', b, {'A-ROOF': 1, 'A-ROOF-GABLE': 1, 'A-ROOF-RIDGE': 1, 'DXF2BIM-MARK': len(mk) + len(GX) + len(GY)})
+write('roof.dxf', b, {'A-ROOF': 1, 'A-ROOF-GABLE': 1, 'A-WALL-GABLE': 2, 'A-ROOF-RIDGE': 1, 'DXF2BIM-MARK': len(mk) + len(GX) + len(GY)})
