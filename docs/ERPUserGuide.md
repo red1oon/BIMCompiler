@@ -499,6 +499,7 @@ built-in pre-release test harness (§15).
 - **How To**, under the Tool Tip, explains the window you have open. Every window of the trade cycle and the
   books has one (see [The Help panel](#the-help-panel-what-to-have-in-place-and-a-check-before-you-complete) below).
   A window name in it opens that window.
+  Running real iDempiere? The same How To text is available there as an add-on: [iDempiere add-on for the How To panel](https://github.com/red1oon/bim-ootb/tree/main/erp/legacy).
 - **Ask a question** in the box at the top of How To, in plain words, then press Enter, for example
   *How do I close a Sales Order?* The answer card names the window (click it to open), the document action,
   the statuses it is allowed from, the command line that does it where one is offered, and the guide
@@ -538,7 +539,7 @@ The reasons that can stop Complete are not listed here: a fixed list of everythi
 one thing that is wrong. With the Friendly plugin on, **Check** (below) lists the ones that apply to your document.
 
 This text is read from iDempiere's own rules, and each line traces to the code it comes from. iDempiere users
-get the same text in their own system through a small help script ([how to apply it](https://github.com/red1oon/bim-ootb/tree/main/erp/legacy)).
+get the same text in their own system through a small help script, the [iDempiere add-on for the How To panel](https://github.com/red1oon/bim-ootb/tree/main/erp/legacy) (what it changes, and how to install it).
 
 **Check before you complete (Friendly plugin).** Press the light-bulb **Check** in the panel. It runs the same
 Complete on your document as a trial, and nothing is saved. It then lists everything that would stop it, not
