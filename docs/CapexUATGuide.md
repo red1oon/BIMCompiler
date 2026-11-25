@@ -48,8 +48,8 @@
 |---|---|
 | Document | CAPEX UAT Guide — from 2D drawings to the dashboard |
 | Purpose | The step-by-step test script for the User Acceptance Test of the pilot client (Sysnova): BIM drawings to a priced model, the ERP exercise, the CAPEX dashboard |
-| Revision | **2026-11-25 (r)** |
-| Status | Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately and stays as signed. Since then, steps were corrected: the change list after this cover (items 22 to 33) names each step and what changed. |
+| Revision | **2026-11-25 (s)** |
+| Status | Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately and stays as signed. Since then, steps were corrected: the change list after this cover (items 22 to 34) names each step and what changed. |
 | Prepared and issued by | Redhuan D. Oon, Project Consultant |
 | For | The pilot client's UAT team: System Setup, BIM, Project Mgmt Accounting |
 | The latest copy | Page: [red1oon.github.io/BIMCompiler/CapexUATGuide](https://red1oon.github.io/BIMCompiler/CapexUATGuide/) · PDF: [CapexUATGuide.pdf](https://red1oon.github.io/BIMCompiler/CapexUATGuide.pdf). The PDF is made from the page at every publish and checked (pages, links). |
@@ -60,6 +60,7 @@
 
 | Revision | What changed |
 |---|---|
+| 2026-11-25 (s) | *See how*: the two films re-taken with the Bangladesh rate pack (item 34). No step changed |
 | 2026-11-25 (r) | A2 names the rates script (`202611251000_CAPEX-WS-RATES.sql`) the dashboard's BDT (USD) needs; the pack is set in each Viewer, L1 too (item 33) |
 | 2026-11-25 (q) | The test runs with the Bangladesh rate pack (the note at the start): B3.1, B4, L3 and D in BDT with USD in brackets; A3.1 loads 226 records (the BDT to USD rate); item 33 |
 | 2026-11-25 (p) | B3.1: a footnote on the Bangladesh rates (the PWD Schedule of Rates 2022, 120 BDT per USD), so a tester knows the Bangladesh pack works |
@@ -109,6 +110,7 @@ Read these even if you have already done the UAT. If your run met one of them, r
 | 17 | C5.1 | The Phase tab is a list under the header. | **Corrected in the step** (2026-11-22 (c)) | Follow the step: it now says this |
 | 18 | D3 | Adding up the panel's **Spent** column gives 2,020.46; the tile reads **2,020.45** (each row is rounded to the cent). | **Corrected in the step** (2026-11-22 (c)) | Follow the step: it now says this |
 | 19 | C4.2 | Each **Issue to Project** opens its own window tab; after several, the first tabs are pushed off the strip. | **Corrected in the step** (2026-11-22 (c)) | Follow the step: it now says this |
+| 34 | (films) | Both films are re-taken on this guide with the Bangladesh rate pack: they open with the note to set it, set it in each Viewer, and show every figure in BDT with USD in brackets (B3.1, B4, L3, D); B0 shows the defaults being checked. They replace the films of item 31. | Films published: [youtu.be/uJEqVKZ8fug](https://youtu.be/uJEqVKZ8fug), [youtu.be/BE5FtvBy9V8](https://youtu.be/BE5FtvBy9V8) (2026-11-25) | None; no step changed. Watch part I before chapter B, part II before B4 |
 | 33 | Start, A3.1, B3.1, B4, L3, D | **The test runs with the Bangladesh rate pack.** Set it in each Viewer you open (Settings ▸ 5D Rate Pack: `pwd2024_bd`, the note at the start; L1 for a legacy iDempiere). A2 applies one more script, `202611251000_CAPEX-WS-RATES.sql`, without which D2 reads *NO_SOURCE* instead of the bracket. The totals are in BDT with USD in brackets: B3.1 **BDT 15,342,507.97 (USD 127,854)**, B4.2 contract BDT 15,342,508, L3 Planned Amount 15,342,507.96847 with Currency BDT, D2 Approved Budget **USD 4,667.80** and **BDT 15,342,507.97 (USD 127,854)** (the dashboard now shows a foreign currency with its USD value, bim-ootb #3447). A3.1's test data adds the BDT to USD rate (120 per USD, the rate pack's own): **Processed=226**. | Corrected in this revision | Set the pack before B3; retest B3.1 to D if you ran them on another pack |
 | 32 | B0, B3.1, B4, L3, D, B5 | **B0 reads its settings from the drawings.** The set name, the five level datums, nine of the ten layer meanings, the beam and footing heights and the expansion-joint box now arrive as defaults: you check each one and change it only if it is wrong; the one value you set is the elevation column layer (B0.4). The footing height now follows the drawings: the Footing Section dimensions the footing top 5'-0" below the finished ground with a 12 in footing, where this guide used to type 45 in. The deeper footings make the 32 column pieces below ground 12.192 m longer in all, so at the same rates the total is **USD 361,437.82** on the US pack (was 355,097.98) and **BDT 15,342,507.97** on the Bangladesh pack; L3 and chapter D follow. New reference pack `Shed_UAT_pack_20261124.zip` (B5.1). | Corrected in this revision | Use the new reference pack. A run made before with the 45 in footing still marks PASS against the earlier pack `Shed_UAT_pack_20261122.zip` |
 | 31 | (films) | The three films are replaced by **two**, in this revision's order: *part I* (the BIM chapter, A3.1 to B5) and *part II* (B4 with the whole Shed, L1 to L3 before chapter C, chapter C by hand, chapter D with 15 projects). Items 8 and 20 and the earlier links describe the older films. | Films published: [youtu.be/kXFnhxIeOp0](https://youtu.be/kXFnhxIeOp0), [youtu.be/MfJLQOJMa9k](https://youtu.be/MfJLQOJMa9k) (2026-11-23) | None; no step changed. Watch part I before chapter B, part II before B4 |
@@ -150,8 +152,8 @@ In B5 you open the **[UAT Run Checker](https://red1oon.github.io/bim-ootb/capex/
 
 Films of the steps, on a real screen:
 
-1. *UAT, hands on, part I*: [https://youtu.be/kXFnhxIeOp0](https://youtu.be/kXFnhxIeOp0). The guide and *What you need*, A3.1 Pack In in its window, B0 on the nine sheets as drawn (marked by hand), B2 Arrange, Convert and the Viewer, B3.1 the total cost, and B5 the Run Checker with every row PASS.
-2. *UAT, hands on, part II*: [https://youtu.be/MfJLQOJMa9k](https://youtu.be/MfJLQOJMa9k). B4 the whole Shed to the Kernel ERP (the link *SHED #…*, *Push again?*), then L1 to L3 into a legacy iDempiere, chapter C with every document made by hand in the iDempiere windows, and chapter D on the dashboard (15 projects with SHED). It follows this revision of the guide.
+1. *UAT, hands on, part I*: [https://youtu.be/uJEqVKZ8fug](https://youtu.be/uJEqVKZ8fug). The note to set the Bangladesh rate pack, the guide and *What you need*, A3.1 Pack In in its window, B0 on the nine sheets as drawn (checking the defaults), B2 Arrange, Convert and the Viewer, B3.1 the total cost with the Bangladesh pack (*BDT 15,342,507.97 (USD 127,854)*), and B5 the Run Checker with every row PASS.
+2. *UAT, hands on, part II*: [https://youtu.be/BE5FtvBy9V8](https://youtu.be/BE5FtvBy9V8). With the Bangladesh rate pack: B4 the whole Shed to the Kernel ERP (the link *SHED #…*, *Push again?*), then L1 to L3 into a legacy iDempiere, chapter C with every document made by hand in the iDempiere windows, and chapter D on the dashboard (15 projects with SHED, *BDT 15,342,507.97 (USD 127,854)* beside USD). It follows this revision of the guide.
 
 ## Contents
 
