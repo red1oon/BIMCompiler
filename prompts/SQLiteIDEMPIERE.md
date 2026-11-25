@@ -2721,7 +2721,7 @@ Read-only trace of bim-ootb origin/main (agent), three load-bearing lines re-rea
 Legacy reads IMAP inside the process. A browser cannot, and the relay must not run business logic (TEAMWORK_FRAMEWORK immutable principle). **Recommended:** run the ported process on an office **device** through the Node kernel (CLI lane), with legacy's own parameters (IMAPHost, folders, …) and legacy's folder moves — same inputs, same outcome, no server added. Needs an IMAP/SMTP library in Node (a dependency choice). **Fallback:** a carrier-only bridge on the customer's server that drops each raw `.eml` into the relay folder; the twin then interprets it — this changes the process's parameters, so it is not the twin path.
 
 ### Scope note
-Per CLAUDE.md §AD-LAYER LAW 6, Requests are outside CORE (trade cycle + accounting): this port arrives as a staged module through the plugin host — which also exercises the extension enabler.
+**OWNER RULING, 2026-11-26: *"R_Request is part of core."*** Steps R0-R7 (the whole legacy Request chain, L1-L7) are CORE: built in the kernel itself through the generic model registry and process engine, under the twin rule — not as a plugin. (This replaces a note first written here the same day that wrongly placed Requests outside core.)
 
 ### Build order (each: spec § first, witness that can FAIL, oracle = real iDempiere on the pilot/test instance, read the log)
 | Step | What | Witness (issue it proves) |
@@ -2734,4 +2734,17 @@ Per CLAUDE.md §AD-LAYER LAW 6, Requests are outside CORE (trade cycle + account
 | R5 | Port L5 (Notice first; E-Mail through the R4 runner; failure → Notice) | recipients and texts equal legacy per NotificationType |
 | R6 | Wire K7 generically | request counts per record (incl. a Project) equal `MRequest.getRequestCount` on the same data |
 | R7 | Read and inventory L6 | — |
-| R8 | (plugin, not core) BIM link: the Site Camera share text carries `GUID: <guid>` (`sitecam.js:467`) → suggest the element/project | **unmeasured:** whether WhatsApp keeps that text when a photo is shared on to email (Android and iPhone) |
+| R8 | **The only plugin piece:** the BIM link, scope in §EMAIL-REQ-R8 below | §EMAIL-REQ-R8 W-REQ-BIMLINK |
+
+### §EMAIL-REQ-R8 — the BIM link plugin: scope (2026-11-26, owner: *"What would you mean as later as a plugin? Define its scope."*)
+**Why a plugin and not core:** legacy iDempiere has no BIM model. Everything legacy does with a Request is core (R0-R7) and must equal legacy; reading a BIM element ID out of a Request and tying it to a model is behaviour legacy does not have, so it is an extension. Precedent: the BIM Document plugin (bim-ootb `erp/plugins/bim_document.mjs`, its actions are AD processes under the gear, `prompts/ERP_IDEMPIERE_UX_PARITY.md` lens table: "0 side doors").
+**IN (what it reads):** a Request made by the core email process, unchanged. Its Result text holds the email body, which carries the Site Camera caption when WhatsApp keeps it: building / storey / class, element name, `GUID: <guid>`, GPS, map link, time (`viewer/sitecam.js:467`).
+**DOES (all through AD processes on the Request window's gear, no custom window code):**
+1. **Find:** read `GUID: <guid>` from the Request's Summary/Result; look the GUID up in the model files attached to the project's BIM Documents (`BIM_Document`, one deliverable per row, `C_Project_ID`, the file as its attachment).
+2. **Link:** on one match, set the Request's own generic record link — `AD_Table_ID` = BIM Document, `Record_ID`/`Record_UU` = that document (columns exist on `R_Request` in `erp/ad_seed.db`; legacy fills `Record_UU` from `Record_ID`, `MRequest.java:796-802`) — and set `C_Project_ID` from the document **only if the Request has none**. Each change goes through the core save path, so core history (L4) records it like any user edit.
+3. **Open:** "Open in Viewer" on a linked Request opens the model at that GUID (the Viewer's share-link deep link).
+**DOES NOT:** create or delete Requests; change the email process, the save rules, history, notices or the window; overwrite a project a person already set; guess when the GUID is missing, unknown or found in more than one document — it then changes nothing and logs why.
+**Where the GUID lives:** in the Request's own text, as delivered. No column is added to `R_Request`. (If a stored column is later wanted, that is an owner decision, not part of this scope.)
+**Depends on (unmeasured):** (a) WhatsApp keeping the photo's caption when the photo is shared on to email, Android and iPhone; (b) the Viewer exposing an element lookup by GUID inside an attached model file without opening the Viewer.
+**Witness W-REQ-BIMLINK (spec):** a Request with a known GUID links to exactly that BIM Document and project · unknown GUID / no GUID / GUID in two documents → no change, logged reason · a Request that already has a project keeps it · **core drift arm:** the same email set run with and without the plugin gives byte-equal core rows apart from the link columns the plugin set · mutant: let the plugin overwrite a set project → the witness goes red.
+
