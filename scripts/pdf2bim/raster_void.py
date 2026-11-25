@@ -129,7 +129,14 @@ for key, pts in hits.items():
         fns = (fc[3] - fc[1]) / 1000 if fc else None
         log(f"§VOID_W-S58b {key} cell N-S {ns:.3f} m, E-W {(x1 - x0) / 1000:.3f} m; printed {[p[0] for p in pr]}: " + (f"PASS (|diff| <= {TOL_M} m, printed {ok[0][0]})" if ok else 'FAIL / not read: NOTHING DRAWN') +
             f" | falsifier (start 1.2 m south): N-S {fns if fns is None else round(fns, 3)} -> {'check FAILS as it must' if (fns is None or not any(abs(p[0] - fns) <= TOL_M for p in pr)) else 'WEAK: the check would pass here too'}")
-        if ok: rings.append(dict(word=key, x0=round(sx0, 1), y0=round(sy0, 1), x1=round(sx1, 1), y1=round(sy1, 1), printed_m=ok[0][0], n_s_m=round(ns, 3)))
+        guard = None   # §63 the void's edge carries a guard wall (the Bruestung): the NEXT long line beyond the south edge is its far face; 0.10 .. 0.40 m thick or no guard
+        nxt = line_at('H', cx, grp['down'][1], +1, MIN_LONG_M * KH)
+        if nxt:
+            ya = mm(0, grp['down'][0])[1]; yb = mm(0, nxt[0])[1]; thk = yb - ya
+            log(f"§VOID_GUARD {key} the south edge y {ya:.0f} and the next long line y {yb:.0f}: {thk:.0f} mm" + (' -> a guard wall' if 100 <= thk <= 400 else ' -> not a wall (outside 100..400 mm): no guard'))
+            if 100 <= thk <= 400: guard = dict(x0=round(sx0, 1), x1=round(sx1, 1), y0=round(sy1, 1), y1=round(yb, 1), thk_mm=round(thk, 1))   # from the void's SOUTH edge (sy1) to the guard's far face
+        else: log(f"§VOID_GUARD {key} no second long line beyond the south edge: no guard")
+        if ok: rings.append(dict(word=key, x0=round(sx0, 1), y0=round(sy0, 1), x1=round(sx1, 1), y1=round(sy1, 1), printed_m=ok[0][0], n_s_m=round(ns, 3), guard=guard))
 if rings:
     json.dump(dict(spec='PDF2BIM_VECTOR_PROBE.md §58.3', rings=rings), open(os.path.join(work, 'voids.json'), 'w'), indent=1)
     log(f"§VOID verdict=WRITTEN {len(rings)} ring(s): " + ' '.join(f"{r['word']} ({r['x0']:.0f},{r['y0']:.0f})-({r['x1']:.0f},{r['y1']:.0f}) mm" for r in rings))

@@ -89,6 +89,9 @@ for s in sects:
     if os.path.exists(os.path.join(V, 'section_heights.json')): main = s; break
 if not main: stop(f"no SCHNITT view of {sects} gave section_heights.json")
 log(f"§SCAN_SECTION main={main}")
+# 5b. §63 the eave: the rafter end of the main section (the roof line continued past the wall face; the printed -30 is its drop): eave.json, read by the emit
+slog_ = [os.path.join(out, 'logs', l) for l in sorted(os.listdir(os.path.join(out, 'logs'))) if l.endswith(f"section_{main.split()[-1]}.log")][-1]
+run(f"eave_{main.split()[-1]}", 'raster_eave.py', V, slog_, f'--view={main}')
 
 # 6. the annex on the registered (lower) plan: its ring, then its own section
 run(f'annex_{other[:-4]}_reg', 'raster_annex.py', OR)
