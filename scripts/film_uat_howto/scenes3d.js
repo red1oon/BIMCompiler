@@ -5,14 +5,17 @@
 module.exports = (S, PREP, D, H) => {
   const fs = require('fs'), path = require('path'), { spawn } = require('child_process');
   const { zk, sql, find, num, r2, MD, OMNIBOX } = H;
-  const OOTB = process.env.OOTB_COPY || '/tmp/wt-film-uat-ootb', DASH = 'localhost:8080/capex/index.html?source=legacy', SNAP = path.join(OOTB, 'capex', 'legacy_snapshot.json');
+  const WEBPORT = process.env.FILM_WEBPORT || '8191', OOTB = process.env.OOTB_COPY || '/tmp/wt-film-ootb-f2', DASH = 'localhost:' + WEBPORT + '/capex/index.html?source=legacy', SNAP = path.join(OOTB, 'capex', 'legacy_snapshot.json');
   const row = k => (MD.split('\n').find(l => l.indexOf('| ' + k + ' |') === 0) || '');
   const G = {}; { let m;   // the guide's own figures
     m = /\*\*(\d+)\*\* and \*\*(\d+)\*\*/.exec(row('D1')) || []; G.total = +m[1]; G.active = +m[2];
     G.approved = (/\*\*USD ([\d,.]+)\*\*/.exec(row('D2')) || [])[1];
     m = /\*\*Within (\d+), Over (\d+), Not started (\d+)\*\*/.exec(row('D2b')) || []; G.within = +m[1]; G.over = +m[2]; G.notstarted = +m[3];
     G.overRows = []; const rx = /\*(TD_[A-Z]+)\* \((?:Spent )?([\d,.]+) against (?:a plan of )?([\d,.]+)\)/g; while ((m = rx.exec(row('D2b')))) G.overRows.push({ project: m[1], spent: m[2], plan: m[3] });
-    G.spent = (/\*\*USD ([\d,.]+)\*\*/.exec(row('D3')) || [])[1]; G.pct = (/\*\*(\d+) %\*\*/.exec(row('D3')) || [])[1];
+    G.approvedBdt = (/\*\*(BDT [\d,.]+ \(USD [\d,]+\))\*\*/.exec(row('D2')) || [])[1];   // D2 rev (r): 'and **BDT 15,342,507.97 (USD 127,854)**' (SHED, the Bangladesh pack)
+    G.spentBdt = (/\*\*(BDT [\d,.]+ \(USD [\d,]+\))\*\*/.exec(row('D3')) || [])[1];   // D3: '**BDT 0.00 (USD 0)**'
+    G.homeApproved = (/\*CAPEX Approved Budget\* ([\d,]+)/.exec(row('D9')) || [])[1];   // D9: 'CAPEX Approved Budget 4,668'
+    G.spent = (/\*\*USD ([\d,.]+)\*\*/.exec(row('D3')) || [])[1]; G.pct = String(Math.round(100 * num(G.spent) / num(G.approved)));   // §5.33: D3 (rev (r)) says each tile has its own % of plan but no longer states it: the USD tile's percent is the guide's two USD figures divided (D3's Spent over D2's Approved), rounded
     m = /the (\d+) you left Drafted, \*\*USD ([\d,.]+)\*\*/.exec(row('D4')) || []; G.openN = +m[1]; G.openAmt = m[2];
     G.stages = []; const st = /\(([^()]*Ordered[^()]*Paid)\)/.exec(row('D4')); if (st) st[1].split(',').forEach(part => { const stage = (/(Ordered|Received|Invoiced|Paid)\s*$/.exec(part.trim()) || [])[1]; (part.match(/TD_[A-Z]+/g) || []).forEach(p => G.stages.push({ project: p, stage: stage.toLowerCase() })); });
     m = /\*(TD_[A-Z]+)\*.*Approved \*\*([\d,.]+)\*\*, (\d+) phases.*first (\d+) \*Complete\*/.exec(row('D6')) || []; G.d6 = { project: m[1], approved: m[2], phases: +m[3], complete: +m[4] };
@@ -33,7 +36,7 @@ module.exports = (S, PREP, D, H) => {
   const TERM = { x: 120, y: 500, w: 1680, h: 540 }; let termWin = null;
   PREP.d0 = async () => {
     await H.onIdemp(); try { fs.unlinkSync(SNAP); } catch (e) { }   // not filmed: no snapshot left from an earlier run, so the file the scene finds is the one its own command wrote
-    const code = await new Promise(r => require('http').get('http://localhost:8080/capex/index.html', x => { x.resume(); r(x.statusCode); }).on('error', () => r(0))); if (code !== 200) throw new Error('the served copy is not up: python3 -m http.server 8080 in ' + OOTB + ' (A1.1/A1.2)');
+    const code = await new Promise(r => require('http').get('http://localhost:' + WEBPORT + '/capex/index.html', x => { x.resume(); r(x.statusCode); }).on('error', () => r(0))); if (code !== 200) throw new Error('the served copy is not up: python3 -m http.server ' + WEBPORT + ' in ' + OOTB + ' (A1.1/A1.2)');
     const find1 = () => { try { return D.X('search', '--class', 'gnome-terminal').trim().split('\n').filter(Boolean).pop(); } catch (e) { return null; } };
     termWin = find1();
     if (!termWin) { const env = Object.assign({}, D.ENV, { HOME: D.home, GSK_RENDERER: 'cairo', LIBGL_ALWAYS_SOFTWARE: '1' }); delete env.XDG_RUNTIME_DIR; delete env.WAYLAND_DISPLAY;
@@ -83,6 +86,7 @@ module.exports = (S, PREP, D, H) => {
   // ---------------- d2: D2 Approved Budget; the panel's Approved column added; ERP ↗ on a project: iDempiere's Project window, Planned Amount
   S.d2 = async () => {
     D.cue('d2_start'); await home(); const ab = await tile('approved_budget'); D.check(ab.replace(/\s/g, '').indexOf('USD' + G.approved) >= 0, 'd2_approved_budget_tile', JSON.stringify(ab));
+    D.check(!!G.approvedBdt && ab.replace(/\s/g, '').indexOf(G.approvedBdt.replace(/\s/g, '')) >= 0, 'd2_approved_budget_bdt_tile', JSON.stringify(ab) + ' guide ' + G.approvedBdt);   // D2: the Bangladesh pack's own figure, with the USD bracket
     await D.aim('[data-drill="approved_budget"] [data-flat]', { label: 'Approved Budget' }); await D.sleep(1200);
     const p = await drill('[data-drill="approved_budget"] [data-flat]', 'the number (Approved Budget)'); if (!D.check(!!p, 'd2_panel_opened')) return; D.cue('d2_panel');
     D.check(sum(p.rows, 'approved') === num(G.approved), 'd2_panel_approved_column_adds_up', 'sum of ' + p.rows.filter(r => r.cur === 'USD').length + ' USD rows = ' + sum(p.rows, 'approved') + ' (guide ' + G.approved + ')');
@@ -110,7 +114,8 @@ module.exports = (S, PREP, D, H) => {
   // ---------------- d3: D3 Actual Cost (Spent): the tile, its percentage of plan, the panel's Spent column added
   S.d3 = async () => {
     D.cue('d3_start'); await home(); const t = await tile('actual_cost'), f = t.replace(/\s/g, '');
-    D.check(f.indexOf('USD' + G.spent) >= 0, 'd3_actual_cost_tile', JSON.stringify(t)); D.check(new RegExp('\\b' + G.pct + '(\\.\\d+)?%').test(f), 'd3_percent_of_plan_' + G.pct, JSON.stringify(t));
+    D.check(f.indexOf('USD' + G.spent) >= 0, 'd3_actual_cost_tile', JSON.stringify(t)); D.check(!!G.spentBdt && f.indexOf(G.spentBdt.replace(/\s/g, '')) >= 0, 'd3_actual_cost_bdt_tile', JSON.stringify(t) + ' guide ' + G.spentBdt); D.check(new RegExp('USD' + G.pct + '(\\.\\d+)?%').test(f), 'd3_percent_of_plan_' + G.pct, JSON.stringify(t));
+    { const bp = Math.round(100 * num((/BDT ([\d,.]+)/.exec(G.spentBdt) || [])[1]) / num((/BDT ([\d,.]+)/.exec(G.approvedBdt) || [])[1])); D.check(new RegExp('BDT' + bp + '(\\.\\d+)?%').test(f), 'd3_bdt_percent_of_plan_' + bp, JSON.stringify(t)); }   // each tile has its own % of plan (D3)
     await D.aim('[data-drill="actual_cost"] [data-flat]', { label: 'Actual Cost' }); await D.sleep(1200);
     const p = await drill('[data-drill="actual_cost"] [data-flat]', 'the number (Actual Cost)'); if (!D.check(!!p, 'd3_panel_opened')) return; D.cue('d3_panel');
     // the panel prints each project's Spent to the cent while Project Balance holds 4 decimals (find C4.4): the column a tester adds can differ from the tile by the rounding,
@@ -172,6 +177,7 @@ module.exports = (S, PREP, D, H) => {
   S.d8 = async () => {
     D.cue('d8_start'); await home(); const n0 = await nums();
     if (!(await pick('fTheme', 'Executive', 'Layout'))) return; D.cue('d8_executive'); const ex = (await txt('#view')).replace(/USD\s*/g, 'USD '), n1 = await nums();
+    D.check(!!G.approvedBdt && ex.replace(/USD /g, 'USD').replace(/\s/g, '').indexOf(G.approvedBdt.replace(/USD /g, 'USD').replace(/\s/g, '')) >= 0, 'd8_executive_bdt_figure', G.approvedBdt + ' on the page');
     D.check(ex.indexOf(G.approved) >= 0 && ex.indexOf(G.spent) >= 0, 'd8_executive_same_figures', G.approved + ' and ' + G.spent + ' on the page: ' + (ex.indexOf(G.approved) >= 0) + '/' + (ex.indexOf(G.spent) >= 0));
     D.check(ex.indexOf(G.execLabel) >= 0, 'd8_executive_relabelled_' + G.execLabel.replace(/\s+/g, '_')); const same = Object.keys(n1).filter(k => n0[k] !== undefined && n0[k] !== n1[k]);
     D.check(Object.keys(n1).length > 0 && Object.keys(n1).length < Object.keys(n0).length && !same.length, 'd8_fewer_tiles_same_numbers', 'classic ' + Object.keys(n0).length + ' executive ' + Object.keys(n1).length + ' changed=' + JSON.stringify(same)); await D.sleep(2500);
@@ -197,6 +203,7 @@ module.exports = (S, PREP, D, H) => {
     D.log('§FILM_D9_GOALS ' + JSON.stringify(g)); const tot = g.find(x => /^CAPEX Total Projects/.test(x)) || '', act = g.find(x => /^CAPEX Active Projects/.test(x)) || '';
     D.check(new RegExp(':\\s*' + G.total + '$').test(tot), 'd9_home_total_projects_equals_tile', JSON.stringify(tot) + ' tile ' + G.total);
     if (act) D.check(new RegExp(':\\s*' + G.active + '$').test(act), 'd9_home_active_projects_equals_tile', JSON.stringify(act) + ' tile ' + G.active);
+    const apg = g.find(x => /^CAPEX Approved Budget/.test(x)) || ''; if (G.homeApproved) D.check(new RegExp(':\\s*' + G.homeApproved.replace(',', ',?') + '$').test(apg), 'd9_home_approved_budget_as_guide', JSON.stringify(apg) + ' guide ' + G.homeApproved);   // D9: 4,668 (the login's currency, USD; SHED's BDT stays on the dashboard)
     const gl = D.page.locator('.z-label:visible, a:visible, span:visible', { hasText: /^CAPEX Total Projects/ }).first(); if (await gl.count()) await D.aim(gl, { label: 'CAPEX Total Projects (Home)' }); D.cue('d9_goals'); await D.sleep(4000); D.cue('d9_end');
   };
   PREP.d9 = async () => {};

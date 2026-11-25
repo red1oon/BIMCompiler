@@ -33,17 +33,26 @@ _c = __import__('json').loads(re.search(r'\{"[a-z]+":\d+(?:,"[a-z]+":\d+)*\}', R
 L2SAY = '%s phases, %s tasks, %s lines' % (W(_c['phases']), W(_c['tasks']), W(_c['lines'])) + (', and the Shed\'s products' if _c.get('products') else '')   # §5.27 rc2: the line held l2 12.9 s, cut
 _m = re.search(r'\*\*(\d+)\*\* and \*\*(\d+)\*\*', ROW('D1')); D1T, D1A = W(_m.group(1)), W(_m.group(2))
 _m = re.search(r'\*\*Within (\d+), Over (\d+), Not started (\d+)\*\*', ROW('D2b')); D2B = (W(_m.group(1)), W(_m.group(2)), W(_m.group(3)))
-D3P = W(re.search(r'\*\*(\d+) %\*\*', ROW('D3')).group(1))
+# D3 rev (r) states the two tiles' figures (USD 2,020.45 and BDT 0.00 (USD 0)) and says each has its own % of plan, but no longer a percent: the USD tile's percent is the guide's two USD figures divided (D3's Spent over D2's Approved), rounded
+_sp = float(re.search(r'\*\*USD ([\d,.]+)\*\*', ROW('D3')).group(1).replace(',', '')); _ap = float(re.search(r'\*\*USD ([\d,.]+)\*\*', ROW('D2')).group(1).replace(',', ''))
+D3P = W(round(100 * _sp / _ap))
 def rep(sid, chip, strip, bid, text): return dict(id=sid, chip=chip, strip=strip, span=(sid + '_start', sid + '_end'), speed=SP, beats=[(bid, sid + '_start', text)])
 
+# §5.33: Film I rc8's opening card (the guide's note, from the PDF) and the owner's corrections: the pack set in each Viewer, the PDF at zoom 1.0, trivial narration dropped, idle spans sped
+FAST_IDLE_WINS = True
+import sys as _sys; _sys.path.insert(0, os.path.dirname(os.path.abspath(__file__))); from plan1 import OPEN_CARD   # reads the PDF named by FILM_GUIDE_PDF
+CAMERA_FLAT = {'r0': [('s8_start', 's8_link')]}   # r0 is s8 (B2.9 again): its PDF part
 SCENES = [
   dict(id='r0', chip='B2.9', strip='In the blank Viewer press **Ctrl+O** (Open Building) and choose the `.db`', span=('s8_start', 's8_end'), speed=SP, beats=[
-    ('r0a', 's8_start', "Part three starts with the Shed open in the Viewer, as at the end of B2."),
-    ('r0b', 'click:Home', "Control O opens the file window: Home, then Downloads, then the Shed's file.")]),   # §5.16 (4): rc1 silence 10.8 s
+    ('c0', 'card0', OPEN_CARD['beat'][1]),
+    ('r0a', 's8_start', "The Shed is opened in the Viewer again, as at the end of B2.")]),
+  dict(id='r0p', chip='B3.1', strip='Check that **Settings ▸ 5D Rate Pack** reads', span=('r0p_start', 'r0p_end'), beats=[
+    ('r0c', 'r0p_section', "The guide's first note: in this Viewer too, press equals, open 5D Rate Pack, and choose P W D twenty twenty-four B D."),
+    ]),
   dict(id='r1', chip='B4.1', strip=B41, span=('r1_start', 'r1_end'), beats=[   # §5.27: the whole Shed (scenes3l.js wholeShed)
     ('r1a', 'r1_start',  "Click the model, and press F for the Find panel. Its list opens by storey."),
     ('r1b', 'r1_level1', "Click Level 1: the whole Shed."),
-    ('r1c', 'r1_bar',    "The bar shows the whole Shed's cost, B3's total, and a button: ERP.")]),
+    ('r1c', 'r1_bar',    "The bar shows the whole Shed's cost, B3's total in B D T, and a button: ERP.")]),
   dict(id='r2', chip='B4.2 · B4.3', strip='Press **› ERP**', span=('r2_start', 'r2_end'), beats=[
     ('r2a', 'r2_push',      "Press it. The status line reads: Project Order, eleven lines, saved."),
     ('r2a2', 'r2_saved',    "The link beside it names the order: SHED, and its number."),
@@ -51,31 +60,28 @@ SCENES = [
     ('r2c', 'r2_pushagain', "Push again: zero lines. The order is keyed by the model's name, so nothing is added twice.")]),
   dict(id='r3', chip='B4.4', strip=B44, span=('r3_start', 'r3_end'), beats=[
     ('r3a', 'r3_signin',   "Click the link. On the sign-in page, choose GardenAdmin, and log in."),
-    ('r3b', 'r3_project',  "The project is SHED, with the whole Shed's planned amount, every decimal."),
+    ('r3b', 'r3_project',  "The project is SHED, with the whole Shed's planned amount, every decimal, and its currency: B D T."),
     ('r3b2', 'r3_phase',   "The Phase tab holds six phases. The first is Substructure."),
     ('r3c', 'r3_taskline', "Its task is CONCRETE GANG, and the line under Task Line carries the same amount.")]),   # §5.27 check: only the line's amount is read
   # §5.18 L4 (owner 2026-11-22: "Show the workings on film and UATGuide with a note if the ERP side is legacy"): B4 again, with the Viewer served by a legacy iDempiere (the BIM OOTB plugin)
   dict(id='l0', card=['IF YOUR ERP IS A LEGACY iDEMPIERE', 'B4 again: the Shed into your iDempiere', 'steps L1 to L3, before chapter C'], chip='B4 · L1', strip="Open **your iDempiere**`/bimootb/viewer/viewer.html?blank=1&erpUser=GardenAdmin&erpClient=11&erpRole=102&erpOrg=11&erpWarehouse=103`", span=('l0_start', 'l0_end'), beats=[
-    ('l0a', 'l0_url',   "If your ERP is a legacy iDempiere, your administrator first installs the BIM OOTB plugin: step A5. Then the Viewer comes from your iDempiere. Type its address, slash bimootb, with your user and ids."),
-    ('l0b', 'l0_ctrlo', "Then open the Shed's file, as before. Do this before chapter C: SHED becomes one more project in your iDempiere, and chapter D counts it.")]),
+    ('l0a', 'l0_url',   "On a legacy iDempiere, the administrator installs the BIM OOTB plugin first: step A5. The Viewer then comes from your iDempiere: type its address, slash bimootb."),
+    ('l0b', 'l0_ctrlo', "Open the Shed's file, as before. Do this before chapter C: SHED becomes one more project in your iDempiere, and chapter D counts it."),
+    ('l0c', 'l0_section', "Then the pack, in this Viewer too: Settings, 5D Rate Pack, P W D twenty twenty-four B D.")]),
   dict(id='l1', chip='B4.1', strip=B41, span=('l1_start', 'l1_end'), speed=SP, beats=[   # sped: B4.1 again (r1 shows it)
     ('l1a', 'l1_start', "The whole Shed again, at the same cost.")]),
   dict(id='l2', chip='B4 · L2', strip='press **› ERP**, type your iDempiere password in the window *Sign in to iDempiere*, and press **Push**', span=('l2_start', 'l2_end'), beats=[
     ('l2a', 'l2_push',   "Press ERP. A window asks you to sign in to your iDempiere. Your user and ids are already filled in."),
-    ('l2b', 'l2_pushpw', "Type the password, and push. Chrome shows its own password windows: OK, then no thanks."),
+    ('l2b', 'l2_pushpw', "Type the password, and push."),
     ('l2c', 'l2_end',    "The status line names the new project: %s. The link shows its number." % L2SAY)]),
   dict(id='l3', chip='B4 · L3', strip=L3S, span=('l3_start', 'l3_end'), speed=8, beats=[   # sped x8: the iDempiere log in again (c0 shows it at normal speed); the line holds the Project window
     ('l3a', 'l3_start',   "Click the link, and log in to iDempiere."),
-    ('l3a2', 'l3_login',  "Your user and password, and tick Select Role. Chrome's own windows: OK, then no thanks."),   # §5.18 L8: rc5 silence 8.02 s here
-    ('l3a3', 'l3_role',   "Then the role window: choose HQ, and press OK."),
     ('l3b', 'l3_project', "The Project window opens on SHED, with the whole Shed's planned amount.")]),
   dict(id='c0', chip='C', strip='ERP: the hands-on exercise (Project Mgmt Accounting, as GardenWorld Admin)', span=('c0_start', 'c0_end'), beats=[
     ('c0a', 'c0_start', "Chapter C is done in your iDempiere, on the twelve test projects, not the Shed. Log in as GardenAdmin, and tick Select Role."),
     ('c0b', 'c0_role',  "Choose the organization HQ, and HQ Warehouse. Without them, an order will not save."),
     # §5.27: in the rev (h) order Chrome's Save password? was already answered at L2/L3 (same iDempiere), so c0 has no c0_savepw cue (take1: OK (role) 56.2 s -> c0_home 247.4 s, idle sped):
     # the lines between the two events are anchored on c0_home; the 'Chrome asks to save the password' line is gone (it is not on screen)
-    ('c0b2', 'at:click:OK (role)|c0_home|0.2',  "The role window closes, and iDempiere opens its Home tab."),
-    ('c0b3', 'at:click:OK (role)|c0_home|0.5', "HQ and HQ Warehouse stay with this login, for every document of chapter C."),
     ('c0b4', 'at:click:OK (role)|c0_home|0.8', "The Home tab's CAPEX goals are read at the very end, in D9.")]),
 ]
 first = dict(c1=True, c1d=True, c2=True, c31=True, c32=True, c41=True, c42=True, c43=True)
@@ -150,21 +156,21 @@ SCENES += [
     ('c8c', 'c5_TD_DEPOT_rule',  "Set Invoice Rule to None, the project's own rule. Without it, Save is refused."),
     ('c8d', 'c5_TD_DEPOT_tick',  "Tick Complete, and save. It stays ticked: two of four.")]),
   dict(id='d0', chip='D', strip='BRIDGE_BASE=http://<your-idempiere>:<port> node capex/tools/legacy_snapshot.js', span=('d0_start', 'd0_end'), beats=[
-    ('d0a', 'd0_start', "Chapter D. The dashboard reads a file that a small job writes from your iDempiere. Run it in a terminal, in your copy of the repository. On a server that is not this computer, add your user and password: the Developer's note has the full line."),
+    ('d0a', 'd0_start', "Chapter D. The dashboard reads a file that a small job writes from your iDempiere. Run it in a terminal, in your copy of the repository."),
     ('d0b', 'd0_done',  "A line counts what it read: %s projects, SHED among them, and nothing unavailable." % D1T)]),
   dict(id='d1', chip='D1 · D5', strip='Read **Total Projects** and **Active Projects**', span=('d1_start', 'd1_end'), beats=[
     ('d1a', 'd1_start', "Open the dashboard page, with source equals legacy."),
     ('d1b', 'd1_tiles', "Total Projects, %s. Active Projects, %s: the test projects, GardenWorld's own two, and SHED." % (D1T, D1A)),
     ('d1c', 'd1_panel', "Click the number. The side panel lists the projects behind it, and its row count is the figure.")]),
   dict(id='d2', chip='D2', strip='Read **Approved Budget**', span=('d2_start', 'd2_end'), beats=[
-    ('d2a', 'd2_panel',   "Approved Budget is the sum of the planned amounts. Click it, and add the Approved column yourself."),
+    ('d2a', 'd2_panel',   "Approved Budget is the sum of the planned amounts, per currency: dollars for the test projects, B D T for the Shed. Click it, and add the Approved column yourself."),
     ('d2b', 'd2_erp',     "ERP, on a project, opens that project in iDempiere."),
     ('d2c', 'd2_planned', "Planned Amount there is the same figure. Close the tab.")]),
   dict(id='d2b', chip='D2b', strip='Read the **Budget** tile (Within / Over / Not started)', span=('d2b_start', 'd2b_end'), beats=[
     ('d3a', 'd2b_start', "The Budget tile: %s within, %s over, %s not started. SHED is not started: nothing is issued to it yet." % D2B),
     ('d3b', 'd2b_over',  "Click Over. Car Park and Data Hall have spent more than their plan.")]),
   dict(id='d3', chip='D3', strip='Read **Actual Cost** (Spent)', span=('d3_start', 'd3_end'), beats=[
-    ('d4a', 'd3_start', "Actual Cost rose by what you issued in chapter C. With the whole Shed in the plan, that is %s percent of plan." % D3P),
+    ('d4a', 'd3_start', "Actual Cost rose by what you issued in chapter C: %s percent of plan in dollars, and nothing yet in B D T, the Shed's." % D3P),
     ('d4b', 'd3_panel', "Click it, and add the Spent column. Each project's Spent is its Project Balance in iDempiere.")]),
   dict(id='d4', chip='D4', strip='Open **Procurement Risks** in the left menu', span=('d4_start', 'd4_end'), beats=[
     ('d5a', 'd4_start',  "Procurement Risks, in the left menu."),
@@ -193,7 +199,7 @@ SCENES += [
   dict(id='d9', chip='D9', strip='**Log Out** of iDempiere, log in again (tick **Select Role**, choose **HQ**, as in chapter C) and read the **Home** tab', span=('click:OK (role)', 'd9_end'), beats=[
     ('d10a', 'click:OK (role)', "Last: iDempiere's own Home tab, after a new log in."),
     ('d10b5', 'at:click:OK (role)|d9_goals|0.45', "%s: every one by hand." % DOCS),
-    ('d10c', 'd9_goals', "Total Projects and Active Projects show the same counts as the dashboard tiles."),
+    ('d10c', 'd9_goals', "Total Projects and Active Projects show the same counts as the dashboard tiles, and Approved Budget the dollar figure, rounded to the unit."),
     ('d10d', 'at:d9_goals|d9_end|0.5', "A goal with a target shows a percent of the target that A2 installed. So Actual Cost reads zero percent here: that is expected.")]),   # §5.19 N6
 ]
 # §5.27: the guide's order r -> l -> c -> d (rev (h): L1 to L3 before chapter C); the §5.21 K1 reorder (legacy after D) is deleted

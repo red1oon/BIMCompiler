@@ -16,6 +16,7 @@ const _pdfText = () => { try { const f = path.join(D.home ? D.dlDir() : (process
 let B31 = null; const getB31 = () => { const t = _pdfText(), m0 = /(BDT [\d,.]+ \(USD [\d,]+\))/.exec(t), m = m0 && t.indexOf(m0[1].replace(/^.*\(USD /, '') + ' — total building cost') >= 0 ? [0, m0[1] + ' — total building cost'] : null;   /* the B3.1 row wraps in its cell, so the PDF text splits the line: the figure pair where it stands whole + the row's own tail */ return B31 = m ? m[1] : ((/\*\*(BDT [\d,.]+ \(USD [\d,]+\) — total building cost)\*\*/.exec(GROW('B3.1')) || [])[1]); };
 const B51 = ((/\*(Pack intact: \d+ files checked, built [\d-]+) …\*/.exec(GROW('B5.1')) || [])[1]);
 const PACK_TD_URL = (/\((https:\/\/github\.com\/[^)\s]*CAPEXTestData\.zip)\)/.exec(GMD) || [])[1];   // the guide's own link (B:READ), for the size check and a resumed take's set-up
+const A31 = (/\*\*(Processed=\d+ Un-Resolved=0)\*\*/.exec(GROW('A3.1')) || [])[1];
 const esc = t => String(t).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 getB31(); console.log('§FILM_GUIDE pack=' + PACK + ' url=' + PACK_URL + ' b31=' + JSON.stringify(B31) + ' b51=' + JSON.stringify(B51));
 const S = {}, PREP = {};
@@ -194,20 +195,24 @@ S.s10 = async () => {   // B5.2 (box 4): the Run Checker from the PDF's B5.1 lin
   const v = await D.page.$eval('#vline', e => e.value); D.check(/DONE — SHED 511 elements/.test(v), 'box4_pasted', JSON.stringify(v.slice(0, 100)));
   D.cue('s10_pasted'); await D.sleep(3500); D.cue('s10_end');
 };
-S.s9 = async () => {   // B3.1: Settings (=) > 5D Rate Pack > pwd2024_bd (the guide's note at its start), then the Find panel, 'total cost'
-  getB31(); D.cue('s9_start'); await tabTo(TAB2, /viewer\/viewer\.html/); await D.aimClick(AREA, { label: 'the model area (focus)' }); await D.sleep(400);
+// §5.33: the guide's opening note (rev (r): in EACH Viewer): Settings (the = key) > 5D Rate Pack > pwd2024_bd, as a person does (the real <select>); the take checks the line under it. Shared by s9 (Film I), r0 and l0 (Film II).
+const pinPack = async (tag) => {
   await D.key('equal', 'Settings (the = key)');
   await D.page.waitForSelector('#settings-panel', { state: 'visible', timeout: 30000 }); await D.sleep(900);
   const hd = D.page.locator('#settings-panel span', { hasText: /^5D Rate Pack$/ }).first(); await hd.waitFor({ state: 'visible', timeout: 30000 });
   try { await D.scrollIn(hd, '#settings-panel', 120); } catch (e) { D.log('§FILM_NOTE 5D Rate Pack header: ' + String(e.message).slice(0, 80)); }
-  await D.aim(hd, { label: 'section 5D Rate Pack' }); D.cue('s9_section'); await D.click({ label: '5D Rate Pack' }); await D.sleep(900);
+  await D.aim(hd, { label: 'section 5D Rate Pack' }); D.cue(tag + '_section'); await D.click({ label: '5D Rate Pack' }); await D.sleep(900);
   const sel = D.page.locator('#settings-panel select:has(option[value="pwd2024_bd"])').first(); await sel.waitFor({ state: 'visible', timeout: 30000 });
   try { await D.scrollIn(sel, '#settings-panel', 120); } catch (e) { D.log('§FILM_NOTE rate pack list: ' + String(e.message).slice(0, 80)); }
-  D.cue('s9_pick'); await D.pickSelect(sel, 'pwd2024', 'the rate pack list'); await D.sleep(1500);
+  D.cue(tag + '_pick'); await D.pickSelect(sel, 'pwd2024', 'the rate pack list'); await D.sleep(1500);
   let act = ''; for (let i = 0; i < 40 && !/Active: pwd2024_bd \(BDT\)/.test(act); i++) { act = await D.page.evaluate(() => [...document.querySelectorAll('#settings-panel div')].map(d => d.textContent.trim()).filter(t => /^Active: /.test(t)).join(' | ')); if (!/Active: pwd2024_bd \(BDT\)/.test(act)) await D.sleep(500); }
-  D.check(/Active: pwd2024_bd \(BDT\)/.test(act), 'settings_pack_active_pwd2024_bd', JSON.stringify(act));   // guide: 'the line under it reads Active: pwd2024_bd (BDT)'
-  D.cue('s9_active', { act }); await D.aim(D.page.locator('#settings-panel div', { hasText: /^Active: / }).last(), { label: 'Active: pwd2024_bd (BDT)' }); await D.sleep(2200);
-  await D.key('equal', 'close Settings'); await D.sleep(900); await D.aimClick(AREA, { label: 'the model area (focus)' }); await D.sleep(400);
+  D.check(/Active: pwd2024_bd \(BDT\)/.test(act), 'settings_pack_active_pwd2024_bd ' + tag, JSON.stringify(act));   // guide: 'the line under it reads Active: pwd2024_bd (BDT)'
+  D.cue(tag + '_active', { act }); await D.aim(D.page.locator('#settings-panel div', { hasText: /^Active: / }).last(), { label: 'Active: pwd2024_bd (BDT)' }); await D.sleep(2200);
+  await D.key('equal', 'close Settings'); await D.sleep(900); await D.aimClick(AREA, { label: 'the model area (focus)' }); await D.sleep(400); return act;
+};
+S.s9 = async () => {   // B3.1: Settings (=) > 5D Rate Pack > pwd2024_bd (the guide's note at its start), then the Find panel, 'total cost'
+  getB31(); D.cue('s9_start'); await tabTo(TAB2, /viewer\/viewer\.html/); await D.aimClick(AREA, { label: 'the model area (focus)' }); await D.sleep(400);
+  await pinPack('s9');
   await D.key('f', 'the Find panel');
   for (let i = 0; i < 40; i++) { if (await D.page.evaluate(() => { const p = document.getElementById('find-panel'); return !!(p && p.getBoundingClientRect().width > 0); })) break; await D.sleep(300); }
   await D.aim('#find-name', { label: 'the Find box' }); await D.click({ label: 'the Find box' }); D.cue('s9_type'); await D.type('total cost'); await D.key('Return', 'ask');
@@ -309,7 +314,7 @@ S.s13 = async () => {
   const pok = D.page.locator('.z-window button.txt-btn.btn-ok:visible').first(); await pok.waitFor({ state: 'visible', timeout: 30000 }); D.check(true, 'process_dialog_shown', JSON.stringify((await textOf('.z-window')).slice(-80)));
   await D.aimClick(pok, { label: 'OK (run Pack In)' });
   let msg = ''; for (let i = 0; i < 150 && !/Processed=/.test(msg); i++) { msg = await D.page.evaluate(() => [...document.querySelectorAll('textarea')].map(t => t.value).filter(Boolean).join(' / ')); if (!/Processed=/.test(msg)) await D.sleep(1000); }
-  const line = (/Processed=\d+ Un-Resolved=\d+/.exec(msg) || [''])[0]; D.check(/Processed=\d+ Un-Resolved=0/.test(line), 'packin_processed_unresolved_0', JSON.stringify(line));
+  const line = (/Processed=\d+ Un-Resolved=\d+/.exec(msg) || [''])[0]; D.check(!!A31 && line === A31, 'packin_processed_unresolved_0', JSON.stringify(line) + ' guide ' + JSON.stringify(A31));   // §5.34: A3.1's own words (rev (r): Processed=226 Un-Resolved=0), parsed
   D.cue('s13_done', { line }); await D.sleep(4000); D.cue('s13_end');
 };
 
@@ -552,7 +557,7 @@ S.p9 = async () => {   // B2.1 + B2.3: reload; the nine SAVED copies (click the 
 };
 
 // §5.16 PART III scenes live in scenes3.js, on the same runner and driver
-require('./scenes3.js')(S, PREP, D, { GUIDE, BACK, OMNIBOX, oneTab: PREP.oneTab, chromePwWarn, IDEMP });
+require('./scenes3.js')(S, PREP, D, { GUIDE, BACK, OMNIBOX, oneTab: PREP.oneTab, chromePwWarn, noBubble, pinPack, prepPdf: PREP.pdf, getB31: () => getB31(), IDEMP });
 
 (async () => {
   const [out, home, ...which] = process.argv.slice(2); fs.mkdirSync(out, { recursive: true });

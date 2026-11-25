@@ -8,7 +8,7 @@ for sc in P.SCENES:
     if not os.path.exists(f): print('§ANCHORS_BAD %s no events file' % sc['id']); bad += 1; continue
     ev = json.load(open(f)); cue = {c['name'] for c in ev['cues']}; clk = {'click:' + c['label'] for c in ev['clicks'] if c.get('label')}
     for a in sc['span']:
-        if a not in cue: print('§ANCHORS_BAD %s span cue %s missing' % (sc['id'], a)); bad += 1
+        if a not in cue and a not in clk: print('§ANCHORS_BAD %s span cue %s missing' % (sc['id'], a)); bad += 1
     for b in sc['beats']:
         n += 1; c = b[1]
         if c == 'card0': continue   # the opening card's own line (compose.py OPEN_CARD)
