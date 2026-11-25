@@ -3949,7 +3949,7 @@
 </tr>
 <tr>
 <td>Revision</td>
-<td><strong>2026-11-26 (w)</strong></td>
+<td><strong>2026-11-26 (x)</strong></td>
 </tr>
 <tr>
 <td>Status</td>
@@ -3980,6 +3980,10 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>2026-11-26 (x)</td>
+<td>Known limits: three lines removed as no longer true (the Kernel ERP now posts project issues to the books, takes the products and Standard costing, and loads this test pack); the test-copy warning for the products script stays. No step changed</td>
+</tr>
 <tr>
 <td>2026-11-26 (w)</td>
 <td>The BIM Model link back is now footnote 2 to A5, as version 2 of the plugin for later (not in this UAT's or the dashboard's present scope). No step changed</td>
@@ -5823,10 +5827,8 @@
 <h2 id="known-limits-do-not-fail-a-step-on-these">Known limits (do not fail a step on these)<a class="headerlink" href="#known-limits-do-not-fail-a-step-on-these" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>Proposed figures.</strong> <em>Forecast</em>, <em>Procurement Risks</em> and <em>Handover</em> use definitions we proposed; they await your confirmation.</li>
-<li><strong>Postings in the Kernel ERP.</strong> Project issues complete but are not yet posted to the books in the browser-based Kernel ERP; in your iDempiere they post as usual.</li>
 <li><strong>Task dates.</strong> Task dates are kept by the BIM Document plugin; without it, the Schedule tab draws phases only.</li>
-<li><strong>Standard costing is a PostgreSQL iDempiere set-up.</strong> The products script, and the change of GardenWorld’s accounting schema to Standard costing, are not available in the browser-based Kernel ERP. Applying the script changes how <em>all</em> GardenWorld products are costed on that server, so apply it on a test copy, not on a live GardenWorld.</li>
-<li><strong>This pack in the Kernel ERP.</strong> Loading this test pack into the browser-based Kernel ERP (rather than into your iDempiere) is not available yet.</li>
+<li><strong>Standard costing changes all GardenWorld products.</strong> Applying the products script changes how <em>all</em> GardenWorld products are costed on that server, so apply it on a test copy, not on a live GardenWorld.</li>
 </ul>
 <h2 id="sign-off">Sign-off<a class="headerlink" href="#sign-off" title="Permanent link">&para;</a></h2>
 <table>
