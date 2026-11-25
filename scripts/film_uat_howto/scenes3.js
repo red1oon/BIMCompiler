@@ -10,9 +10,10 @@ module.exports = (S, PREP, D, H) => {
   PREP.r0 = async () => {   // not filmed: the reference pack's SHED_extracted.db (= the tester's export, 1,257,472 B, Parts I and II) in Downloads; the guide open
     await H.oneTab(); const src = process.env.SHED_DB; if (!src || !fs.existsSync(src)) throw new Error('SHED_DB not set (the pack reference/SHED_extracted.db)');
     fs.copyFileSync(src, path.join(D.dlDir(), 'SHED_extracted.db')); D.log('§FILM_PREP r0 SHED_extracted.db bytes=' + fs.statSync(src).size);
-    await D.page.goto(GUIDE); await D.page.waitForLoadState('load'); await D.sleep(1500);
+    await H.prepPdf();   // §5.33: the steps are read from the downloaded PDF, never the online page
   };
   S.r0 = async () => { await S.s8(); };
+  S.r0p = async () => { D.cue('r0p_start'); await H.pinPack('r0p'); D.cue('r0p_end'); };   // §5.33 the guide's note: the pack is chosen in the Kernel Viewer through Settings (rev (r): in EACH Viewer), a scene of its own at normal speed
 
   // ---------------- r1: B4.1 the whole Shed: scenes3l.js wholeShed('r1') (one scene for r1 and l1, §5.27)
   const AREA = D.screenBox(760, 560, 400, 240, 'the model area');
@@ -22,7 +23,8 @@ module.exports = (S, PREP, D, H) => {
   const linkText = () => D.page.evaluate(() => { const a = document.getElementById('find-erp-open'); return a && getComputedStyle(a).display !== 'none' && a.getBoundingClientRect().width > 0 ? a.textContent.trim() : null; });
   S.r2 = async () => {   // §5.27: guide B4.2 + B4.3 rev (i): the link names the order (SHED #… ↗); a second › ERP asks "Push again?" first
     D.cue('r2_start'); await D.aim('#find-erp-btn', { label: '› ERP' }); D.cue('r2_push'); await D.click({ label: '› ERP' });
-    const st1 = await pushRead(/Project Order: \d+ lines/); D.check(/Project Order: 11 lines · contract USD 355,098 \(saved\)/.test(st1), 'b42_lines_saved_contract', JSON.stringify(st1.slice(0, 140)));   // guide B4.2: 11 lines (12 with the schedule)
+    const st1 = await pushRead(/Project Order: \d+ lines/); const B42 = (MD.split('\n').find(l => l.indexOf('| B4.2 |') === 0) || ''), g42 = /\*(Project Order: \d+ lines · contract BDT [\d,]+ \(saved\))\*/.exec(B42) || [];   // the guide's own line (the Bangladesh pack; the US pack's is in brackets in the same row)
+    D.check(!!g42[1] && st1.indexOf(g42[1]) >= 0, 'b42_lines_saved_contract', JSON.stringify(st1.slice(0, 140)) + ' guide ' + JSON.stringify(g42[1]));   // guide B4.2: 11 lines (12 with the schedule)
     const link = await until(() => { const a = document.getElementById('find-erp-open'); return a && getComputedStyle(a).display !== 'none' && a.getBoundingClientRect().width > 0 && /#\d+/.test(a.textContent) ? a.textContent.trim() : null; }, 20000);
     const lm = /^SHED #(\d+) ↗$/.exec(link || ''); D.check(!!lm, 'b42_link_names_the_order', JSON.stringify(link)); H.kernelOrder = lm ? lm[1] : null;
     D.cue('r2_saved', { status: st1.slice(0, 140), link }); await D.sleep(3000);
@@ -51,6 +53,9 @@ module.exports = (S, PREP, D, H) => {
     const B44 = MD.split('\n').find(l => l.indexOf('| B4.4 |') === 0) || '';   // the guide's B4.4 row: every expected value below is parsed from it
     const g = { planned: (/planned amount, \*\*([\d.]+)\*\*/.exec(B44) || [])[1], phases: (/\*1 of (\d+)\*/.exec(B44) || [])[1], phase1: (/the first \*([^*]+)\* ([\d,.]+\d)/.exec(B44) || []).slice(1), task: (/one, \*([A-Z_]+)\*/.exec(B44) || [])[1] };
     D.log('§FILM_NOTE r3 guide B4.4 ' + JSON.stringify(g));
+    g.currency = (/Currency \*\*([A-Z]{3})\*\*/.exec(B44) || [])[1];   // B4.4: 'its planned amount, **15342507.96847** and Currency **BDT**'
+    const cur = await D.page.evaluate(() => { const e = [...document.querySelectorAll('input,select')].find(x => (x.getAttribute('data-col') || x.name) === 'c_currency_id' && x.getBoundingClientRect().width > 0); return e ? (e.tagName === 'SELECT' && e.selectedOptions[0] ? e.selectedOptions[0].text : e.value) : ''; });
+    D.check(!!g.currency && String(cur).indexOf(g.currency) >= 0, 'b44_currency_as_guide', JSON.stringify(cur) + ' guide ' + g.currency);
     const pa = f.plannedamt || ''; D.check(!!g.planned && String(pa).replace(/,/g, '') === g.planned, 'b44_planned_amount_as_guide', JSON.stringify(pa) + ' guide ' + g.planned); D.cue('r3_project', { planned: pa }); await D.sleep(2500);
     const nav = () => D.page.evaluate(() => { const t = [document.getElementById('idmp-status-main'), document.getElementById('idmp-recnav')].map(e => e ? e.textContent.replace(/\s+/g, ' ') : '').join(' '); const m = /Record \d+ of \d+|\b0 records/.exec(t); return m ? m[0] : t.trim().slice(0, 80); });   // what the ERP's status line says on a tab: '… · Record 1 of 6' or '… · 0 records'
     const T = {}; const num = v => Number(String(v).replace(/,/g, ''));
@@ -401,13 +406,6 @@ module.exports = (S, PREP, D, H) => {
     const ck = (await D.page.context().cookies()).filter(c => /localhost/.test(c.domain) && String(c.port || '') !== 'x'); await D.page.context().clearCookies({ domain: 'localhost' }).catch(async () => { await D.page.context().clearCookies(); });
     D.page = D.pages()[D.pages().length - 1]; await D.page.bringToFront(); D.log('§FILM_PREP c0 iDempiere tabs closed, cookies for localhost cleared (' + ck.length + ')'); };
   // the log in form, as a person fills it (c0, and again at D9): user, password, Select Role, OK; Chrome's own two windows; HQ / HQ Warehouse; Home
-  // Chrome's own 'Save password?' bubble (top right) after a password is typed: pressed 'No thanks', read on the screen (§5.16 find 5; shared by the log in and the Viewer's sign-in, §5.18)
-  const savePw = async (tag) => {
-    for (let i = 0; i < 6; i++) { const nt = await D.findText(t => /^thanks$/i.test(t), D.screenBox(1000, 60, 920, 420, 'Chrome Save password bubble'), 2, true);
-      if (!nt) { if (i >= 2) { D.log('§FILM_NOTE no Chrome Save password bubble'); break; } await D.sleep(1000); continue; }
-      D.cue(tag + '_savepw'); await D.aim(D.screenBox(nt.x - 40, nt.y - 8, nt.w + 50, nt.h + 16, 'No thanks'), { label: 'No thanks (Chrome: Save password?)' }); await D.click({ label: 'No thanks' }); await D.sleep(1200);
-      const gone = !(await D.findText(t => /^thanks$/i.test(t), D.screenBox(1000, 60, 920, 420, 'Chrome Save password bubble'), 2, true)); D.check(gone, 'chrome_save_password_bubble_closed'); break; } };
-  H.savePw = savePw;
   const loginForm = async (tag) => {
     const boxes = D.page.locator('input.z-textbox'); await D.aimClick(boxes.nth(0), { label: 'User' }); await D.key('ctrl+a', 'select what is there'); await D.type('GardenAdmin'); await D.aimClick(boxes.nth(1), { label: 'Password' }); await D.key('ctrl+a', 'select what is there'); await D.type('GardenAdmin');   // ctrl+a: a box Chrome filled in is replaced, not appended to
     // §5.16 find: with the default Organization '*' a purchase order refuses to save ('Fill mandatory fields: Organization, Warehouse', measured 2026-11-20); the guide names no
@@ -415,17 +413,16 @@ module.exports = (S, PREP, D, H) => {
     const sr = D.page.locator('.z-checkbox:visible', { hasText: 'Select Role' }).first(); const on = await sr.locator('input').isChecked().catch(() => false);
     if (!on) { await D.aimClick(sr.locator('label, input').first(), { label: 'Select Role' }); await D.sleep(500); }
     D.check(await sr.locator('input').isChecked().catch(() => false), tag + '_select_role_ticked');
-    await D.aimClick(D.page.locator('button.btn-ok:visible').first(), { label: 'OK (log in)' }); await D.sleep(4000); await H.chromePwWarn('after log in');
+    await D.aimClick(D.page.locator('button.btn-ok:visible').first(), { label: 'OK (log in)' }); await D.sleep(4000); await H.noBubble(tag + ' after log in');
     await D.page.waitForFunction(() => document.querySelectorAll('span.z-combobox').length >= 4, null, { timeout: 60000 }); await D.sleep(1200); D.cue(tag + '_role');
     const cbs = D.page.locator('span.z-combobox:visible'); await zk.combo(cbs.nth(2), 'HQ', 'Organization'); await zk.combo(cbs.nth(3), /^\s*HQ/, 'Warehouse');
     const rv = await D.page.evaluate(() => [...document.querySelectorAll('span.z-combobox')].filter(e => e.getBoundingClientRect().width > 0).map(e => e.querySelector('input').value));
     D.check(rv[2] === 'HQ' && /^HQ/.test(rv[3] || ''), tag + '_role_org_hq_warehouse_hq', JSON.stringify(rv));
     const which = await D.page.waitForFunction(() => document.querySelector('input.z-bandbox-input[placeholder="Alt+G"]') ? 'home' : (/Select Role/.test((document.querySelector('.login-box-header-txt') || {}).innerText || '') ? 'role' : null), null, { timeout: 60000 }).then(h => h.jsonValue());
-    if (which === 'role') { await D.sleep(1500); await D.aimClick(D.page.locator('button.btn-ok:visible').first(), { label: 'OK (role)' }); await D.sleep(2500); await H.chromePwWarn('after role'); }
+    if (which === 'role') { await D.sleep(1500); await D.aimClick(D.page.locator('button.btn-ok:visible').first(), { label: 'OK (role)' }); await D.sleep(2500); await H.noBubble(tag + ' after role'); }
     await D.page.waitForSelector('input.z-bandbox-input[placeholder="Alt+G"]:visible', { timeout: 90000 }); D.check(true, tag + '_home_shown', which);
-    // Chrome's own 'Save password?' bubble (top right) stays open after the login and takes the keys and clicks meant for the page (measured 2026-11-20: a typed project went
-    // nowhere): the film presses its 'No thanks', read on the screen, as a tester would
-    await savePw(tag); stSet('home.opened', D.now().toFixed(0)); D.log('§FILM_HOME_OPENED t=' + D.now().toFixed(0) + ' (D9: Home goals recalculate only when older than 30 min)');
+    // §5.33: the take's profile has the password manager off (desk.sh), so Chrome's 'Save password?' bubble and its breach window never show: checked by OCR (noBubble), not pressed away
+    await H.noBubble(tag + ' at Home'); stSet('home.opened', D.now().toFixed(0)); D.log('§FILM_HOME_OPENED t=' + D.now().toFixed(0) + ' (D9: Home goals recalculate only when older than 30 min)');
   };
   H.loginForm = loginForm; H.find = find; H.num = num; H.r2 = r2; H.MD = MD; H.openWin = openWin; H.lookup = lookup;
   S.c0 = async () => {
@@ -437,8 +434,4 @@ module.exports = (S, PREP, D, H) => {
   };
   require('./scenes3d.js')(S, PREP, D, H);
   require('./scenes3l.js')(S, PREP, D, H);   // §5.18 L4: B4 to a legacy iDempiere
-  // Chrome's 'Save password?' window can come up LATE (measured 2026-11-23: none within c0's 3 s look, then open over the form in c2, its Password box over
-  // the Receipt Line's Order Line list button at 1615,321: the click went into Chrome's window, §FILM_ZK_LISTS open=[]). A person presses No thanks when it
-  // shows (guide find 13): every chapter C and D scene after c0 first looks for it.
-  Object.keys(S).filter(k => /^[cd]/.test(k) && k !== 'c0').forEach(k => { const run = S[k]; S[k] = async () => { await savePw(k + '_pre'); return run(); }; });
 };

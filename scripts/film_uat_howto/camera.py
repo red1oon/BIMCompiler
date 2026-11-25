@@ -9,7 +9,7 @@
 #              smoothed with a zero-phase Gaussian (sigma SIG_S) inside each scene's frames: speed rises and falls continuously (no velocity step). The crop is sub-pixel (compose.py).
 import math
 LEAD_S, TAIL_S, MERGE_S, SIG_S, EDGE_S = 1.0, 0.8, 1.6, 0.35, 0.6
-ZMERGE_S, FIT_X, FIT_Y, MIN_HOLD_S, MARGIN, FLAT_MARGIN_S = 4.0, 160, 100, 1.2, 25, 1.4   # §5.29 (b): groups closer than ZMERGE_S are ONE run held at ONE zoom level and ONE view centre (no zoom out and back in, no pan swing between targets); a run whose targets do not fit the crop with FIT_X/FIT_Y px to spare is held on the whole screen
+ZMERGE_S, FIT_X, FIT_Y, MIN_HOLD_S, MARGIN, FLAT_MARGIN_S, LOCK_S = 4.0, 160, 100, 3.2, 25, 1.4, 1.8   # MIN_HOLD_S 1.2 -> 3.2 (§5.33: a zoom held 1.2 s with ramps of ~0.5 s each side read as a swing in Film II's c1 scene)   # §5.29 (b): groups closer than ZMERGE_S are ONE run held at ONE zoom level and ONE view centre (no zoom out and back in, no pan swing between targets); a run whose targets do not fit the crop with FIT_X/FIT_Y px to spare is held on the whole screen
 
 def frames(pieces, NF, FPS, TOTAL):
     """per output frame: (piece, scene, source time) — the same mapping compose.py renders with"""
@@ -79,21 +79,25 @@ def path(variant, F, EVS, pointer_at, FPS, W, BH, H, FLAT=None):
     # 'smooth': raw target per frame, then a zero-phase Gaussian per scene run
     FS = _flat_spans(EVS, FLAT); G = {sid: _runs(_groups(ev), W, BH) for sid, ev in EVS.items()}
     # §5.30: a click run whose window comes within FLAT_MARGIN_S of a PDF span is dropped (a Back or a link click beside the PDF is not zoomed on): the smoothing's reach (3 sigma, ~1 s) then never carries a zoom into the PDF span
-    G = {sid: [r for r in rs if not any(r[0] - LEAD_S < b + FLAT_MARGIN_S and r[1] + TAIL_S > a - FLAT_MARGIN_S for a, b in FS.get(sid, []))] for sid, rs in G.items()}; raw = []; runi = []; lastsid = None; oy = 0.0; OYC = {}
+    G = {sid: [r for r in rs if not any(r[0] - LEAD_S < b + FLAT_MARGIN_S and r[1] + TAIL_S > a - FLAT_MARGIN_S for a, b in FS.get(sid, []))] for sid, rs in G.items()}; raw = []; runi = []; dfl = []; lastsid = None; oy = 0.0; OYC = {}; lastshift = [0, -10 ** 9]
     for p, sid, ts in F:
-        if sid is None: raw.append(None); runi.append(None); continue
+        if sid is None: raw.append(None); runi.append(None); dfl.append(None); continue
         ev = EVS[sid]; px, py = pointer_at(ev, ts); z, ri = 1.0, None
         if sid not in OYC: ys = [pointer_at(EVS[sid], t_)[1] for q_, s_, t_ in F if s_ == sid and t_ is not None][::15]; OYC[sid] = max(0.0, max(ys) + MARGIN - BH) if ys and max(ys) - min(ys) <= BH - 2 * MARGIN else None   # a scene whose pointer stays inside one 930 px band is held at ONE shift for the whole scene (no pan at all on the whole screen)
         if OYC[sid] is not None: oy = OYC[sid]
-        elif sid != lastsid: oy, lastsid = 0.0, sid   # §5.29 (b): on the whole screen the 150 px the strip takes is a vertical shift; it follows the pointer only when the pointer comes within MARGIN of the shown area's top or bottom (a dead band: a pointer going up and down inside it moves nothing)
+        elif sid != lastsid: oy, lastsid = 0.0, sid; lastshift[0], lastshift[1] = 0, -10 ** 9   # §5.29 (b): on the whole screen the 150 px the strip takes is a vertical shift; it follows the pointer only when the pointer comes within MARGIN of the shown area's top or bottom (a dead band: a pointer going up and down inside it moves nothing)
         if OYC[sid] is None:
-            if py < oy + MARGIN: oy = max(0.0, py - MARGIN)
-            elif py > oy + BH - MARGIN: oy = min(float(H - BH), py - BH + MARGIN)
+            o0 = oy; nf = len(raw)   # a shift the other way within LOCK_S of the last one waits (a pointer going to a button at the bottom and straight back up would swing the view), unless the pointer is out of view altogether
+            hidden = py < oy or py > oy + BH
+            if py < oy + MARGIN and (hidden or nf - lastshift[1] > LOCK_S * FPS or lastshift[0] <= 0): oy = max(0.0, py - MARGIN)
+            elif py > oy + BH - MARGIN and (hidden or nf - lastshift[1] > LOCK_S * FPS or lastshift[0] >= 0): oy = min(float(H - BH), py - BH + MARGIN)
+            if oy != o0: lastshift[0], lastshift[1] = (1 if oy > o0 else -1), nf; FLATDBG.append('shift %s frame %d oy %.0f -> %.0f (pointer y %.0f)' % (sid, nf, o0, oy, py))
         ctr = (W / 2, oy + BH / 2)
         for k, g in enumerate(G[sid]):
             if g[0] - LEAD_S <= ts <= g[1] + TAIL_S: ri = k; break
         if is_flat(FS, sid, ts): ri = None   # §5.30: a PDF span: no run, no zoom
-        if ri is not None and p['kind'] == 'play' and p['speed'] <= 1: z, ctr = G[sid][ri][2], G[sid][ri][3]
+        dfl.append((1.0, ctr[0], ctr[1]))   # the scene's own view at this frame (whole screen, its vertical shift): what a frame shows when no zoom run applies
+        if ri is not None and p['kind'] == 'play' and p['speed'] <= 1 and G[sid][ri][2] > 1.0: z, ctr = G[sid][ri][2], G[sid][ri][3]
         raw.append((z, ctr[0], ctr[1])); runi.append(ri)
     first, last = {}, {}   # a sped or held frame INSIDE a run (between its first and last frame held at its level) keeps the level: zooming out and in around a wait is the hunting this removes
     for n, r in enumerate(raw):
@@ -110,6 +114,10 @@ def path(variant, F, EVS, pointer_at, FPS, W, BH, H, FLAT=None):
         for n0, n1, zmax, pts in M:
             z, ctr = _fit(zmax, pts, W, BH)
             if sum(1 for n in range(max(n0, sn[0] + e), min(n1, sn[-1] - e) + 1)) < MIN_HOLD_S * FPS: z = 1.0   # a zoom that could only be held for a moment is a pop, not a camera move: left out
+            if z == 1.0:   # §5.33: a run left on the whole screen is NO camera move: its frames keep the scene's own (shift-held) view, not a pan to the run's click centre
+                for n in range(n0, n1 + 1):
+                    if raw[n] is not None and F[n][1] == sid: raw[n] = dfl[n]
+                continue
             for n in range(n0, n1 + 1):
                 if raw[n] is not None and F[n][1] == sid: raw[n] = (z, ctr[0], ctr[1])
     for n, r in base.items(): raw[n] = r
@@ -128,7 +136,9 @@ def path(variant, F, EVS, pointer_at, FPS, W, BH, H, FLAT=None):
         sid = F[n][1]; m = n
         while m < len(raw) and raw[m] is not None and F[m][1] == sid: m += 1   # one scene run [n, m)
         e = int(EDGE_S * FPS)   # each scene starts and ends on the whole screen, so a cut never jumps out of a zoom (the 'old' path: a pop at every such cut)
-        for i in list(range(n, min(m, n + e))) + list(range(max(n, m - e), m)): raw[i] = (1.0, W / 2, BH / 2)
+        for i in range(n, min(m, n + e)): raw[i] = (1.0, W / 2, BH / 2 + (OYC.get(sid) or 0.0))
+        endc = dfl[max(n, m - e - 1)]   # the end edge keeps the view the scene had just before it (a scene that shifted for a pointer at the bottom would otherwise swing back to the top on its last 0.6 s)
+        for i in range(max(n, m - e), m): raw[i] = (1.0, W / 2, endc[2] if endc else BH / 2)   # §5.33: a scene held at one vertical shift keeps it at its edges too (a short sped scene otherwise shifted and came straight back: a swing)
         for i in range(n, m):
             sw = sz = sx = sy = 0.0
             for k, w in zip(range(-r, r + 1), K):

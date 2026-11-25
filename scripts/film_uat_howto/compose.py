@@ -22,11 +22,15 @@ for sc in P.SCENES:   # R: the strip is the guide's own words
 # §5.29 (owner 2026-11-24: the film reads the DOWNLOADED PDF, not the online page): every strip but s1's (s1 is the online page where the PDF is downloaded) must also be in the PDF the take saved (FILM_GUIDE_PDF).
 # pdftotext puts a table's cells in one stream, so a strip's words are looked for IN ORDER inside a window after its first three words, not as one unbroken phrase.
 def strip_in_pdf(strip, txt):
-    w = re.sub(r'\s+', ' ', strip.replace('**', '').replace('`', '')).strip().split(' '); head = ' '.join(w[:3]); start = 0
+    # the words that survive pdftotext, in order: a table's cells come out interleaved and links/arrows come out in pieces, so tokens carrying / ? & = › ▸ and the markdown asterisks are left out, and each remaining word
+    # must follow the one before inside a window after the first word's occurrence (the window is generous: the longest rows wrap over several cells)
+    w = [x for x in re.sub(r'\s+', ' ', strip.replace('`', '').replace('*', '')).strip().split(' ') if x and not re.search(r'[/?&=›▸▶]', x)]
+    if not w: return True
+    start = 0; win = len(' '.join(w)) * 8 + 400
     while True:
-        i = txt.find(head, start)
+        i = txt.find(w[0], start)
         if i < 0: return False
-        seg = txt[i:i + len(' '.join(w)) * 4 + 200]; pos = 0; ok = True
+        seg = txt[i:i + win]; pos = 0; ok = True
         for x in w:
             j = seg.find(x, pos)
             if j < 0: ok = False; break
@@ -266,7 +270,7 @@ _r = lambda m: json.dumps({k: round(v, 4) if isinstance(v, float) else v for k, 
 if _mo: log('§COMP_CAMERA_OLD ' + _r(_mo))
 log('§COMP_CAMERA %s %s' % (CAMERA, _r(_mc)))
 for _d in camera.DBG[:int(os.environ.get('FILM_CAM_DBG', '0'))]: log('§COMP_CAMERA_REV ' + _d)   # where the reversals are (FILM_CAM_DBG=n lines), measured on the path just computed (the smooth one)
-for _d in camera.FLATDBG[:20]: log('§COMP_CAMERA_FLAT_FORCED ' + _d)
+for _d in camera.FLATDBG[:int(os.environ.get('FILM_CAM_DBG', '0')) + 40]: log('§COMP_CAMERA_FLAT_FORCED ' + _d)
 _fr = camera.flat_report(CAM, _F, FLAT, EVS) if CAMERA == 'smooth' else []   # §5.30: zoom == 1.0 throughout the PDF scenes
 for sid, spans, n, zmin, zmax, v in _fr: log('§COMP_CAMERA_SCENE %s pdf_spans=%d frames=%d zoom_min=%s zoom_max=%s %s' % (sid, len(spans), n, zmin, zmax, v))
 if CAMERA == 'smooth':
