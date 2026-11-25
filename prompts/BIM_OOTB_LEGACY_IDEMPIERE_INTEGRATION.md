@@ -440,3 +440,7 @@ without `://` gets `http://` prepended `:106`, so the stored value must be absol
   "BIM Model" link field); LA1 confirm (the last line now also names `update=2Pack_13.1.1.zip`, and `2pack=2Pack_13.1.0.zip` is unchanged); L3 confirm (the Project window now shows "BIM
   Model" with the link back to the Viewer); B4 for the Kernel ERP (the same field in the Kernel's Project window; the red pill no longer appears on a project). The L2 `"uoms":1` figure is unchanged
   by this work.
+- **Post-merge confirmation (2026-11-26, published sources):** W-BIM-LINK-LEGACY `guide --src master` = the UAT's OWN LA1 (git archive of BIMCompiler master 5616e17a4, #1292) + bim-ootb main
+  f0dc2e4a (#3455): LA1, LA2, LA3, LA4, L1, L3 PASS; packs `13.1.0, 13.1.1: Completed successfully`; link stored, GET 200, ZK field read-only with `<a target=_blank href=value>`, no BIM tab;
+  `§BIM_LINK_TWIN SAME`; falsifier refused (`input column BIM_ViewerURL not allowed`). L2 again `"uoms":2` = the published-build baseline on the same bare DB (environmental, chapter A not run).
+  :8108 restored (`bundles.info sha=72ae5d5673ab27e8` as found, 0 plugin folders, no bimootb package rows, c_project=2) and stopped; the backup DB dropped.
