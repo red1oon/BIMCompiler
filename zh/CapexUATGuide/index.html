@@ -3949,7 +3949,7 @@
 </tr>
 <tr>
 <td>Revision</td>
-<td><strong>2026-11-25 (t)</strong></td>
+<td><strong>2026-11-25 (u)</strong></td>
 </tr>
 <tr>
 <td>Status</td>
@@ -3980,6 +3980,10 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>2026-11-25 (u)</td>
+<td>A5 says what the plugin contains, including the rate packs (the Bangladesh pack among them); LA1 confirms it in <code>BUNDLE_CONTENTS.txt</code></td>
+</tr>
 <tr>
 <td>2026-11-25 (t)</td>
 <td>Layout only: the revision history on its own page after the cover; the list of changes since the signed report is no longer part of this guide. No step changed</td>
@@ -4666,7 +4670,7 @@
 </tbody>
 </table>
 <h3 id="a5-the-bim-ootb-plugin-only-if-your-erp-is-a-legacy-idempiere">A5 · The BIM OOTB plugin (only if your ERP is a legacy iDempiere)<a class="headerlink" href="#a5-the-bim-ootb-plugin-only-if-your-erp-is-a-legacy-idempiere" title="Permanent link">&para;</a></h3>
-<p>Skip A5 if the BIM tester sends the Project Order to the Kernel ERP (B4). With a legacy iDempiere 13, B4 is done from the Viewer that your iDempiere serves (the BIM tester's steps L1 to L3), and that Viewer comes from this plugin. (Why: a browser does not let a page from another site call your iDempiere, so the Viewer is served by the iDempiere itself.) The plugin's source and its build script are in <a href="https://github.com/red1oon/BIMCompiler/tree/master/iDempiereOOTB"><code>iDempiereOOTB/</code></a> of the BIMCompiler repository. You need JDK 17 (<code>javac</code>) and a copy of the <a href="https://github.com/red1oon/bim-ootb">bim-ootb repository</a> (the Viewer it packs). Take a database backup first if you want to go back exactly: removing the plugin later leaves the rows its setup pack wrote.</p>
+<p>Skip A5 if the BIM tester sends the Project Order to the Kernel ERP (B4). With a legacy iDempiere 13, B4 is done from the Viewer that your iDempiere serves (the BIM tester's steps L1 to L3), and that Viewer comes from this plugin. (Why: a browser does not let a page from another site call your iDempiere, so the Viewer is served by the iDempiere itself.) <strong>What the plugin contains:</strong> the bundle <code>org.idempiere.bimootb.viewer</code> is the whole Viewer of your bim-ootb copy (all of <code>viewer/</code> except its tests and building files), <strong>including the 16 rate packs</strong> in <code>viewer/rates/</code>, among them <code>pwd2024_bd.json</code>, the Bangladesh pack this test uses (PWD Schedule of Rates 2022, 120 BDT per USD; footnote 1 under B3). The bundle <code>org.idempiere.bimootb</code> adds the web-service types and the role the push uses (its setup pack). So the tester's rate pack comes with the plugin: nothing is downloaded for it. The plugin's source and its build script are in <a href="https://github.com/red1oon/BIMCompiler/tree/master/iDempiereOOTB"><code>iDempiereOOTB/</code></a> of the BIMCompiler repository. You need JDK 17 (<code>javac</code>) and a copy of the <a href="https://github.com/red1oon/bim-ootb">bim-ootb repository</a> (the Viewer it packs). Take a database backup first if you want to go back exactly: removing the plugin later leaves the rows its setup pack wrote.</p>
 <div class="uat-keep">
 <table>
 <thead>
@@ -4681,7 +4685,7 @@
 <tr>
 <td>LA1</td>
 <td>Build the two bundles: <code>iDempiereOOTB/org.idempiere.bimootb/tools/build_bundle_poc.sh &lt;your iDempiere&gt;/server &lt;your bim-ootb copy&gt; &lt;an empty folder&gt;</code></td>
-<td>Its last line starts <code>§BIMOOTB_BUNDLE</code> and names <code>2pack=2Pack_13.1.0.zip</code>. The folder holds two folders: <code>org.idempiere.bimootb_13.1.0.&lt;stamp&gt;</code> and <code>org.idempiere.bimootb.viewer_13.1.0.&lt;stamp&gt;</code></td>
+<td>Its last line starts <code>§BIMOOTB_BUNDLE</code> and names <code>2pack=2Pack_13.1.0.zip</code>. The folder holds two folders: <code>org.idempiere.bimootb_13.1.0.&lt;stamp&gt;</code> and <code>org.idempiere.bimootb.viewer_13.1.0.&lt;stamp&gt;</code>; the viewer folder's <code>BUNDLE_CONTENTS.txt</code> lists <code>viewer/rates/pwd2024_bd.json</code></td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
