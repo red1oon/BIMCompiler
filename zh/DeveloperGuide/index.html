@@ -4591,11 +4591,11 @@ The folder has no <code>.git</code>: that is normal, every tool below works with
 <p><strong>1. Set up</strong> (installs what the dev tools need, checks them, installs Code Facts, opens VS Code on the folder):</p>
 <div class="highlight"><pre><span></span><code>node scripts/setup.js --open
 </code></pre></div>
-<p>It prints one <code>§</code> line per step and ends with a verdict. Real output (2026-11-18, shortened):</p>
+<p>It prints one <code>§</code> line per step and ends with a verdict. Real output (2026-11-18, task count re-read 2026-11-25, shortened):</p>
 <div class="highlight"><pre><span></span><code>§SETUP_PREREQ node=18.19.1 npm=Y python3=Y code=/snap/bin/code
 §SETUP_DEPS npm_ci=ok espree=Y
 §SETUP_TOOLS manifest=PASS proof_map=PASS bump=PASS
-§SETUP_VSC code=/snap/bin/code codefacts=installed eslint=recommended tasks=6 snippets=3 launch=Y mode=throwaway ext_dir=&lt;folder&gt;/.setup/vscode-ext
+§SETUP_VSC code=/snap/bin/code codefacts=installed eslint=recommended tasks=9 snippets=3 launch=Y mode=throwaway ext_dir=&lt;folder&gt;/.setup/vscode-ext
 §SETUP steps=4 ok=4 gaps=0 verdict=PASS
 </code></pre></div>
 <p><code>npm ci</code> (about 10 seconds, the one step that needs the network) is needed by the manifest and bump tools (and gives you the lint check). The app itself needs nothing installed. A second run says <code>§SETUP_DEPS skipped=present</code> and changes nothing. A problem is a <code>§SETUP_GAP</code> line with the one-line
@@ -4675,7 +4675,7 @@ of the count, open it once with <code>?ignore-me</code> at the end of the addres
 <ol>
 <li><strong>The folder is open</strong>, with the editor settings from <code>.vscode/settings.json</code>.</li>
 <li><strong>Code Facts is in the Extensions view</strong> (the repo's own add-on, §4.1). Hover a shared field such as <code>A.camera</code> in <code>viewer/grid_views.js</code>: every write and read is listed. Without VS Code, the same facts: <code>node devtools/code-facts/code-facts.js help</code>.</li>
-<li><strong>Terminal ▸ Run Task</strong> lists the tasks of <code>.vscode/tasks.json</code> (6 today, table below).</li>
+<li><strong>Terminal ▸ Run Task</strong> lists the tasks of <code>.vscode/tasks.json</code> (9 today, table below).</li>
 <li><strong>Snippets:</strong> type <code>witness</code>, <code>slog</code> or <code>spec</code> in a <code>.js</code> file and press Tab (table below).</li>
 <li><strong>F5 / Run ▸ Start Debugging</strong> offers <strong>Viewer in Chrome</strong>, ERP, Modeller, <strong>This page in Chrome</strong> (any <code>.html</code> page open in the editor) and <strong>Node: this witness / script</strong> (<code>.vscode/launch.json</code>).</li>
 <li><strong>Recommended extensions:</strong> ESLint is listed in <code>.vscode/extensions.json</code>; VS Code offers it on first open, and <code>--install</code> installs it.</li>
