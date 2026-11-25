@@ -564,9 +564,8 @@ it and after each save. The number of problems shows on **?** (and on **⋯** wh
 For a problem on a line, **Show line N** jumps to it, and **Show lines with issues** shows only those lines
 (**Show all lines** brings the rest back). The switch *Checking while you work* in the panel turns it off.
 
-**Not covered yet.** Of the 15 kinds of document in the core windows, 11 are checked. Ship/Receipt Confirm,
-Requisition and Payments into Batch say that no check is available for them yet, and Bank/Cash Transfer has no
-check because this system does not hold its table yet. If the form has unsaved changes, **Check** asks you to save
+**What is covered.** All 15 kinds of document in the core windows are checked, including Requisition, Payments into
+Batch, Ship/Receipt Confirm and Bank/Cash Transfer. If the form has unsaved changes, **Check** asks you to save
 first.
 
 > *Proven by* **W-HELP-PEEK**. After every check the data is byte-for-byte the same, and the check always agrees
