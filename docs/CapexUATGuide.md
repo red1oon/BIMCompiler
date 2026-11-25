@@ -52,7 +52,7 @@
 |---|---|
 | Document | CAPEX UAT Guide — from 2D drawings to the dashboard |
 | Purpose | The step-by-step test script for the User Acceptance Test of the pilot client (Sysnova): BIM drawings to a priced model, the ERP exercise, the CAPEX dashboard |
-| Revision | **2026-11-26 (w)** |
+| Revision | **2026-11-26 (x)** |
 | Status | Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately and stays as signed. Since then, steps were corrected: the revision history names each revision and what changed. |
 | Prepared and issued by | Redhuan D. Oon, Project Consultant |
 | For | The pilot client's UAT team: System Setup, BIM, Project Mgmt Accounting |
@@ -66,6 +66,7 @@
 
 | Revision | What changed |
 |---|---|
+| 2026-11-26 (x) | Known limits: three lines removed as no longer true (the Kernel ERP now posts project issues to the books, takes the products and Standard costing, and loads this test pack); the test-copy warning for the products script stays. No step changed |
 | 2026-11-26 (w) | The BIM Model link back is now footnote 2 to A5, as version 2 of the plugin for later (not in this UAT's or the dashboard's present scope). No step changed |
 | 2026-11-26 (v) | Footnote 2 to L3: the **BIM Model** link back from the Project window to the Viewer (plugin pack 13.1.1; the Kernel ERP shows the same field). No step changed |
 | 2026-11-25 (u) | A5 says what the plugin contains, including the rate packs (the Bangladesh pack among them); LA1 confirms it in `BUNDLE_CONTENTS.txt` |
@@ -692,10 +693,8 @@ It writes the file `capex/legacy_snapshot.json` inside your copy of the reposito
 ## Known limits (do not fail a step on these)
 
 - **Proposed figures.** *Forecast*, *Procurement Risks* and *Handover* use definitions we proposed; they await your confirmation.
-- **Postings in the Kernel ERP.** Project issues complete but are not yet posted to the books in the browser-based Kernel ERP; in your iDempiere they post as usual.
 - **Task dates.** Task dates are kept by the BIM Document plugin; without it, the Schedule tab draws phases only.
-- **Standard costing is a PostgreSQL iDempiere set-up.** The products script, and the change of GardenWorld’s accounting schema to Standard costing, are not available in the browser-based Kernel ERP. Applying the script changes how *all* GardenWorld products are costed on that server, so apply it on a test copy, not on a live GardenWorld.
-- **This pack in the Kernel ERP.** Loading this test pack into the browser-based Kernel ERP (rather than into your iDempiere) is not available yet.
+- **Standard costing changes all GardenWorld products.** Applying the products script changes how *all* GardenWorld products are costed on that server, so apply it on a test copy, not on a live GardenWorld.
 
 ## Sign-off
 
