@@ -2,7 +2,7 @@
 // Spec: ~/Projects/CitaGlobal/CitaGlobal_Pitch_Report.md §13.4. READ <out>/render_opener.log after every run.
 // Issue this proves: the zoom lands EXACTLY on the box where footage then plays (§OPENER_BOX = the rect the
 // last zoomed frame shows), and every phase has the frame count its duration asks for (§OPENER_FRAMES).
-// Run: node render_opener.js <outDir> [phoneStill.png] [hqStill.png] [phoneBStill.png]   (CPU only, headless)
+// Run: node render_opener.js <outDir> [phoneStill.png] [hqStill.png] [phoneBStill.png] [hqOutStill.png]   (CPU only, headless)
 'use strict';
 const { chromium } = require(require('os').homedir() + '/bim-ootb/tests/node_modules/playwright');
 const fs = require('fs'), path = require('path');
@@ -15,7 +15,7 @@ const asUrl = (p) => p ? 'file://' + path.resolve(p) : null;
   const page = await browser.newPage({ viewport: { width: 1920, height: 1080 } });
   const errs = []; page.on('pageerror', e => errs.push(String(e)));
   await page.goto('file://' + path.join(__dirname, 'opener.html'));
-  const q = { phone: asUrl(process.argv[3]), hq: asUrl(process.argv[4]), phoneB: asUrl(process.argv[5]) };
+  const q = { phone: asUrl(process.argv[3]), hq: asUrl(process.argv[4]), phoneB: asUrl(process.argv[5]), hqOut: asUrl(process.argv[6]) };
   const phases = await page.evaluate(() => window.OPENER.PHASES);
   const boxes = await page.evaluate(() => window.OPENER.boxes());
   say(`§OPENER_BOX phone x=${boxes.phone.x} y=${boxes.phone.y} w=${boxes.phone.w} h=${boxes.phone.h}`);

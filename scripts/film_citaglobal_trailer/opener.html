@@ -172,6 +172,7 @@ function stateAt(phase, t, q){
     st.cap='Signal back — it sends itself.'; st.capAlpha=clamp((t-0.8)/0.25,0,1)*clamp((2.4-t)/0.25,0,1);
   } else if (phase==='outro'){
     st.cam = camLerp(HQ_FULL, OVER, t/1.1); st.linkOn={A:true,B:true}; st.hqLit=1; st.stack={A:0,B:0};
+    st.hqHref = q.hqOut || q.hq || null;   // seam: the HQ part's LAST frame on the way out
     st.endCard = clamp((t-1.6)/0.4,0,1); st.rowT = t-1.8;
   }
   return st;
