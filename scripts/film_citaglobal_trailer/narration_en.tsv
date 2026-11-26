@@ -2,11 +2,11 @@ open	0.2	3.2	opener.html intro (signal down; caption on screen)	F: No signal out
 clash	3.4	13.2	phone1.html; Hospital film 148.6 s HUD: 29 ARC vs ELEC clashes, Level 4, Hall/Corridor 2	M: Share a clash, to or from site. Check it, snap it back.	F: HQ spots a clash. | M: Share the clash analysis, to or from a remote site. Check it on the spot, snap a photo back. Even on one bar of signal.
 road	13.4	19.0	BIM_JELAPANG_v3c 30 s (Civil Works walk)	M: Walk the site. Snag it. Share it.	M: It sends when it can. | F: And on the road? | M: Walk the site. Snag it. Share it.
 send	19.1	22.4	opener.html send (links green, stacks to HQ)	M: Signal back, it reaches HQ.	M: When the signal's back, it all reaches HQ.
-model	22.6	27.0	build_hq.py 2d_to_3d (UAT Guide film bq1)	M: Your own 2D sheets, stood up in 3D.	F: Where does the model come from? | M: Your own 2D sheets, stood up in 3D.
-cost	27.1	30.7	build_hq.py 4d5d pages (Bengali analytics page)	M: Time and cost, from the model.	M: Time and cost, computed from the model, in any language.
-you	30.8	36.8	build_hq.py time_mach + bake panel stills	M: You set it. No AI is called.	F: Who sets the schedule, and the film? | M: You do. Drag a bar, place the camera. No AI is called.
-find	36.9	40.8	build_hq.py find stills (storey, parts, room, path)	M: Find any part, or the way out.	M: Find any part. Isolate it. Trace the way out of any room.
-erp	40.9	44.2	build_hq.py erp_en/de/zh/th	M: The same ERP, in your language.	M: And the same ERP, in your team's language.
-board	44.3	49.0	build_hq.py dash_looks; FILM_UAT_GUIDE build_rc3.log: looks=4 numbers_same_in_all=true	M: Every project, one page.	F: The board? | M: Every project, one page. New look, same numbers.
-bakes	49.2	55.2	build_hq.py bake montage	M: Then watch it build.	F: Wow. | M: Then watch it build, day by day.
-card	56.9	63.1	opener.html benefits card (§13.6; licence range = report §4, estimate)	M: No licence fees. Your data stays yours.	F: And the licence fees? | M: None. Your know-how stays in-house... and your data stays yours.
+model	22.60	31.18	build_hq.py arrange+convert (UAT Film 1 374.5/381 s) · addbay (Model in Action 20.5 s) · fp_walk/fp_head (walk_film.log FP_glimpse 90.01, FP_closeup 104.23)	M: Your 2D sheets, morphed into 3D, meshed.	F: And the model? | M: Your own 2D sheets... morphed into 3D, and meshed. | M: Add a bay. Walk the sprinklers in.
+cost	31.38	34.93	build_hq.py 4d5d pages (Bengali analytics page)	M: Time and cost, from the model.	M: Time and cost, computed from the model, in any language.
+you	35.03	41.07	build_hq.py time_mach + bake panel stills	M: You set it. No AI is called.	F: Who sets the schedule, and the film? | M: You do. Drag a bar, place the camera. No AI is called.
+find	41.17	45.02	build_hq.py find stills (storey, parts, room, path)	M: Find any part, or the way out.	M: Find any part. Isolate it. Trace the way out of any room.
+erp	45.12	48.42	build_hq.py erp_en/de/zh/th	M: The same ERP, in your language.	M: And the same ERP, in your team's language.
+board	48.52	53.18	build_hq.py dash_looks; FILM_UAT_GUIDE build_rc3.log: looks=4 numbers_same_in_all=true	M: Every project, one page.	F: The board? | M: Every project, one page. New look, same numbers.
+bakes	53.38	59.33	build_hq.py bake montage	M: Then watch it build.	F: Wow. | M: Then watch it build, day by day.
+card	60.93	67.33	opener.html benefits card (§13.6; licence range = report §4, estimate)	M: No licence fees. Your data stays yours.	F: And the licence fees? | M: None. Your know-how stays in-house... and your data stays yours.

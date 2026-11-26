@@ -13,11 +13,21 @@ FPS, BG = 30, '0x0b1a2e'
 LOG = []
 def say(s): LOG.append(s); print(s)
 UAT = V + '/CAPEX_UAT_Guide_film_EN_2026-11-14_rc3.mp4'
-CROP_UAT = 'crop=1511:850:204:0'          # above the caption band (bottom 230 px, FILM_UAT_GUIDE §2)
+CROP_UAT = 'crop=1511:850:204:0'
+F1 = V + '/UAT_Hands_On_Film1_BIM_EN_rc9.mp4'               # Modeller by hand, full screen
+CROP_F1 = 'crop=1511:850:409:110'                             # below the step strip, above the caption, canvas side
+MIA = V + '/Command_Line_ERP_CH1_Model_In_Action_EN_rc2.mp4'  # model.addbay end=high on the Shed
+JW = H + '/Projects/Jebel/walk_film_2026-11-08/film_ba/take4/walk_film.mp4'  # Modeller MEP walk (ACMV, then FP)          # above the caption band (bottom 230 px, FILM_UAT_GUIDE §2)
 CROP_SUB = 'crop=1742:980:89:0'            # above a one-line subtitle
 # (name, kind, src, start, seconds_of_source, speed, crop, out_seconds)
 P = [
- ('2d_to_3d',   'clip', UAT, 31.2, 12.3, 2.5, CROP_UAT, None),
+ # owner 2026-11-26: real Modeller footage — 2D arrange, convert, Shed add bay (replaces the UAT guide page scroll)
+ ('arrange',    'clip', F1, 374.5, 5.0, 2.5, CROP_F1, None),
+ ('convert',    'clip', F1, 381.0, 12.0, 3.6, CROP_F1, None),
+ ('addbay',     'clip', MIA, 20.5, 5.5, 2.5, None, None),
+ # owner 2026-11-26: ~2 s of the Modeller MEP walk putting in sprinklers (beats from walk_film.log: FP_glimpse 90.01, FP_closeup 104.23)
+ ('fp_walk',    'clip', JW, 90.0, 1.6, 1, 'crop=1100:619:500:250', None),
+ ('fp_head',    'clip', JW, 104.3, 1.0, 1, 'crop=700:394:608:303', None),
  ('4d5d_bn',    'still', ST + '/4D5DHTML.png', 0, 0, 1, None, 1.3),
  ('4d5d_shed',  'still', ST + '/shed_4d5d.jpg', 0, 0, 1, None, 1.2),
  ('5d_excel',   'still', ST + '/4DDashBoard.png', 0, 0, 1, None, 1.1),
