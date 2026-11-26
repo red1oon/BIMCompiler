@@ -8,6 +8,17 @@
 # CAVEAT: the stack below is a MAP from point-in-time memory — VERIFY each item against
 #   live code (main.js / scene.js / dlod.js) before relying on or changing it.
 
+## ▶▶ RESUME HERE — "resume mobile" (written 2026-11-26; read THIS block, then §2026-11-26 REVIEW at the end of this file)
+**State:** review done, nothing built. Facts (boot JS 1.51→10.24 MB, 7 panel systems, Back only on Site Camera, 10 key-only actions, dead controls on phones) and the PROPOSED strategy are in **§2026-11-26 REVIEW** (BIMCompiler #1303). The owner has not approved any of it yet — settle one detail at a time.
+**Advice (the lead's, 2026-11-26):**
+1. **Start with P0 — measure, don't argue.** Lighthouse mobile *Total Blocking Time* + script-evaluation ms, headless CPU, on 818ae9f3 (May) vs HEAD, same building (Duplex). Ask the owner for one real-phone `chrome://inspect` trace. Until then "it got slower" stays INFERRED; say so.
+2. **Then P1, the cheapest visible win (one PR, deletion-heavy):** one `A.caps` owner replacing the 5 `_isMobile` copies; hide (not grey) controls a phone cannot run (gi-preview row, Still/Populate/MaxQ); open Settings + JSON editor on-screen on phones (`panels.js:1891, 2420`); 44 px ✕; no `backdrop-filter` on phones. Witness: a headless phone viewport lists the pills/rows shown, each one's action runs without `§MAXQ_FAIL`/no-op, every panel's rect is inside the viewport — and a mutant (restore `left:320px`) goes RED.
+3. **P2 one sheet manager under `A.createPanel`** (generic, not per panel): one sheet at a time, closes by swipe-down / tap on the canvas / Android Back (`pushState` generalised from `sitecam.js:161-177`) / ✕. Desktop unchanged.
+4. **P3 boot diet + `§BOOT_WEIGHT` ratchet** — film/bake/CPE/4D-authoring/charts to the lazy tier; target to propose ≤ 3 MB phone boot JS.
+5. **P4 thumb rail of five + More + context chips** — only after the owner picks the five.
+**Don't:** add new pills before P1; build a second panel engine beside `createPanel`; claim a speed-up without the P0 numbers re-run.
+
+
 ## WHERE IT LIVES (code)
 - `viewer/main.js`    — DPR scaling, on-demand render gate, tab pause
 - `viewer/scene.js`   — antialias off, WebGL context-lost handler
