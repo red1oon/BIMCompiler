@@ -156,6 +156,9 @@ const PHASES = {
 };
 function stateAt(phase, t, q){
   const st={ cam:OVER, linkOn:{A:false,B:false}, stack:{A:3,B:3}, packets:[], hqLit:0, phoneHref:q.phone||null, phoneBHref:q.phoneB||null, hqHref:q.hq||null, cap:'', sub:'', capAlpha:0, endCard:0, blink: Math.floor(t*3)%2===0 };
+  // seams: the zoom INTO a screen shows that clip's first frame, the zoom OUT its last
+  if (phase!=='intro') st.phoneHref = q.phoneOut || q.phone || null;
+  if (phase==='send' || phase==='outro') st.phoneBHref = q.phoneBOut || q.phoneB || null;
   if (phase==='intro'){
     st.stack.A = Math.min(3, 1+Math.floor(t/0.6)); st.stack.B = Math.min(3, 1+Math.floor(t/0.7));
     st.cap='No signal out there.'; st.sub='Work carries on — saved on the phone.'; st.capAlpha=clamp(t/0.3,0,1)*clamp((2.3-t)/0.25,0,1);

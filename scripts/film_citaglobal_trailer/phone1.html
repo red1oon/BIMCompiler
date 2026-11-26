@@ -1,0 +1,71 @@
+<!doctype html>
+<!-- ⚠ DO NOT REMOVE — Scope: CitaGlobal trailer PHONE 1 screen (456×933, 8 s): a clash link arrives from HQ in chat →
+     opens at that clash → Site Camera on site → photo sent back. Spec: CitaGlobal_Pitch_Report.md §13.9.
+     A SIMULATION of the screens (owner: "simulate the mobile parts"); the 3D pictures are frames of the real Hospital
+     film. The clash named in the chat is the one the picture shows (Hospital film 150 s: "29 ARC vs ELEC clashes",
+     Level 4, Hall/Corridor 2). Pure function of t. Rendered by render_phone1.js; read its log. -->
+<html><head><meta charset="utf-8"><style>
+html,body{margin:0;width:456px;height:933px;overflow:hidden;background:#0b141a;font-family:'Noto Sans','DejaVu Sans',sans-serif}
+#app{position:absolute;inset:0}
+.hdr{position:absolute;left:0;right:0;top:0;height:92px;background:#202c33;color:#e9edef;display:flex;align-items:flex-end;padding:0 0 12px 16px;box-sizing:border-box}
+.av{width:40px;height:40px;border-radius:50%;background:#00a884;color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;margin-right:12px}
+.nm{font-size:19px;font-weight:600}.st{font-size:13px;color:#8696a0}
+.chat{position:absolute;left:0;right:0;top:92px;bottom:64px;background:#0b141a;padding:14px 12px;box-sizing:border-box}
+.b{position:relative;max-width:330px;border-radius:8px;padding:8px 10px 6px;margin:10px 0;font-size:16px;line-height:1.3;color:#e9edef;transition:none}
+.in{background:#202c33;border-top-left-radius:0}.out{background:#005c4b;margin-left:auto;border-top-right-radius:0}
+.in:before{content:'';position:absolute;left:-8px;top:0;border-top:10px solid #202c33;border-left:8px solid transparent}
+.out:before{content:'';position:absolute;right:-8px;top:0;border-top:10px solid #005c4b;border-right:8px solid transparent}
+.tm{font-size:12px;color:#8696a0;display:flex;justify-content:flex-end;align-items:center;gap:4px;text-align:right;margin-top:3px}
+.card{background:#1d282f;border-radius:8px;overflow:hidden;margin-top:6px}
+.card img{display:block;width:100%;height:150px;object-fit:cover}
+.card .u{font-size:13px;color:#7cc4ff;padding:6px 8px}
+.bar{position:absolute;left:0;right:0;bottom:0;height:64px;background:#202c33}
+.full{position:absolute;inset:0}
+.full img{width:100%;height:100%;object-fit:cover;display:block}
+.tag{position:absolute;left:12px;right:12px;top:40px;background:rgba(7,17,31,.82);color:#7cf3c0;font-size:16px;font-weight:600;padding:8px 10px;border-radius:8px}
+.shut{position:absolute;left:50%;bottom:38px;width:74px;height:74px;margin-left:-37px;border-radius:50%;border:6px solid #fff;box-sizing:border-box}
+.cap{position:absolute;left:0;right:0;bottom:130px;background:rgba(7,17,31,.78);color:#fff;font-size:15px;padding:8px 12px;line-height:1.35}
+.flash{position:absolute;inset:0;background:#fff}
+.ring{position:absolute;width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:50%;border:4px solid #fff;box-shadow:0 0 0 3px rgba(0,0,0,.35)}
+</style></head><body><div id="app"></div>
+<script>
+'use strict';
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+let Q={};          // { clashDir, camDir, clashN, camN }
+const fr=(dir,i)=>`file://${dir}/${String(i+1).padStart(4,'0')}.png`;
+const TICK1=(c)=>`<svg width="22" height="16" viewBox="0 0 16 11"><path d="M11.07.65 4.6 7.12 1.93 4.45.87 5.51l3.73 3.73 7.53-7.53z" fill="${c}"/></svg>`;
+const TICK2=(c)=>`<svg width="26" height="16" viewBox="0 0 16 11"><path d="M11.07.65 4.6 7.12 1.93 4.45.87 5.51l3.73 3.73 7.53-7.53z" fill="${c}"/><path d="M15.07.65 8.6 7.12l-.9-.9-1.06 1.06 1.96 1.96 7.53-7.53z" fill="${c}"/></svg>`;
+function chat(t, showIn, showOut, photoSrc, tick, label){
+  const a=clamp((t-0.25)/0.25,0,1), o=clamp((t-6.6)/0.25,0,1);
+  return `<div class="hdr"><div class="av">HQ</div><div><div class="nm">HQ · Clash desk</div><div class="st">WhatsApp</div></div></div>
+  <div class="chat">
+   ${showIn?`<div class="b in" style="opacity:${a};transform:translateY(${(1-a)*20}px)">ARC vs ELEC clash · Level 4, Hall/Corridor 2. Please check on site.
+     <div class="card"><img src="${fr(Q.clashDir,0)}"><div class="u">🔗 Open in BIM Viewer · same clash</div></div><div class="tm">10:42</div></div>`:''}
+   ${showOut?`<div class="b out" style="opacity:${o};transform:translateY(${(1-o)*20}px)"><div class="card"><img src="${photoSrc}"></div>Checked on site. Photo, Level 4.<div class="tm">10:47 ${tick||TICK1('#8696a0')}</div></div>`:''}
+   ${label>0?`<div style="position:absolute;left:12px;right:12px;top:14px;background:rgba(7,17,31,.9);border:1px solid #7cf3c0;color:#7cf3c0;font-size:16px;font-weight:600;padding:9px 12px;border-radius:10px;opacity:${label}">📶 Asynchronous WhatsApp<br><span style="color:#cfe3ff;font-weight:500">operating in low web coverage</span></div>`:''}
+  </div><div class="bar"></div>`;
+}
+function frame(t){
+  const app=document.getElementById('app');
+  if (t<2.0){                                   // the link arrives, the finger taps it
+    let h=chat(t,true,false,'');
+    if (t>=1.45){ const r=clamp((t-1.45)/0.4,0,1); h+=`<div class="ring" style="left:200px;top:300px;opacity:${1-r};transform:scale(${0.6+r*0.8})"></div>`; }
+    app.innerHTML=h;
+  } else if (t<4.4){                            // the Viewer opens at that clash
+    const i=clamp(Math.floor((t-2.0)*30),0,Q.clashN-1);
+    app.innerHTML=`<div class="full"><img src="${fr(Q.clashDir,i)}"></div><div class="tag" style="opacity:${clamp((t-2.2)/0.3,0,1)}">Opened at the same clash</div>`;
+  } else if (t<6.4){                            // Site Camera: look, snap
+    const snapped=t>=5.5, i=snapped?Math.min(33,Q.camN-1):clamp(Math.floor((t-4.4)*30),0,Q.camN-1);
+    let h=`<div class="full"><img src="${fr(Q.camDir,i)}"></div><div class="tag">📷 Site Camera</div>`;
+    if (snapped) h+=`<div class="cap">Hospital · Level 4 · Hall/Corridor 2<br>ARC vs ELEC · GPS + time stamped</div>`;
+    h+=`<div class="shut" style="background:${snapped&&t<5.7?'#fff':'transparent'}"></div>`;
+    if (t>=5.5 && t<5.75) h+=`<div class="flash" style="opacity:${1-(t-5.5)/0.25}"></div>`;
+    app.innerHTML=h;
+  } else {                                      // back in chat: the photo goes to HQ
+    // owner 2026-11-26: single tick turning double tick, labelled (last 2 s)
+    const tick = t>=9.0 ? TICK2('#53bdeb') : TICK1('#8696a0');
+    app.innerHTML=chat(t,true,true,fr(Q.camDir,Math.min(33,Q.camN-1)), tick, clamp((t-8.0)/0.3,0,1));
+  }
+}
+window.PHONE1={ dur:10.0, setup(q){ Q=q; }, render(t){ frame(t); } };
+</script></body></html>

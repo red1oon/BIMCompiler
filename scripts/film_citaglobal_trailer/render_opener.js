@@ -15,7 +15,11 @@ const asUrl = (p) => p ? 'file://' + path.resolve(p) : null;
   const page = await browser.newPage({ viewport: { width: 1920, height: 1080 } });
   const errs = []; page.on('pageerror', e => errs.push(String(e)));
   await page.goto('file://' + path.join(__dirname, 'opener.html'));
-  const q = { phone: asUrl(process.argv[3]), hq: asUrl(process.argv[4]), phoneB: asUrl(process.argv[5]), hqOut: asUrl(process.argv[6]) };
+  // stills: either positional (phone hq phoneB hqOut) or one JSON file {phone, phoneOut, phoneB, phoneBOut, hq, hqOut}
+  let q;
+  if (process.argv[3] && process.argv[3].endsWith('.json')) { const j = JSON.parse(fs.readFileSync(process.argv[3], 'utf8')); q = {}; for (const k in j) q[k] = asUrl(j[k]); }
+  else q = { phone: asUrl(process.argv[3]), hq: asUrl(process.argv[4]), phoneB: asUrl(process.argv[5]), hqOut: asUrl(process.argv[6]) };
+  say(`§OPENER_STILLS ${Object.keys(q).filter(k => q[k]).join(',')}`);
   const phases = await page.evaluate(() => window.OPENER.PHASES);
   const boxes = await page.evaluate(() => window.OPENER.boxes());
   say(`§OPENER_BOX phone x=${boxes.phone.x} y=${boxes.phone.y} w=${boxes.phone.w} h=${boxes.phone.h}`);
