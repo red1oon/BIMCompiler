@@ -31,18 +31,27 @@ html,body{margin:0;width:456px;height:933px;overflow:hidden;background:#0b141a;f
 <script>
 'use strict';
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-let Q={};          // { clashDir, camDir, clashN, camN }
+let Q={};
+const STR = {
+ en: { desk:'HQ · Clash desk', msg:'ARC vs ELEC clash · Level 4, Hall/Corridor 2. Please check on site.', link:'🔗 Open in BIM Viewer · same clash',
+       opened:'Opened at the same clash', cam:'📷 Site Camera', capA:'Hospital · Level 4 · Hall/Corridor 2', capB:'ARC vs ELEC · GPS + time stamped',
+       reply:'Checked on site. Photo, Level 4.', async1:'📶 Asynchronous WhatsApp', async2:'operating in low web coverage' },
+ ms: { desk:'HQ · Meja Clash', msg:'Clash ARC vs ELEC · Aras 4, Hall/Corridor 2. Sila semak di tapak.', link:'🔗 Buka dalam BIM Viewer · clash yang sama',
+       opened:'Dibuka pada clash yang sama', cam:'📷 Kamera Tapak', capA:'Hospital · Aras 4 · Hall/Corridor 2', capB:'ARC vs ELEC · GPS + masa direkod',
+       reply:'Sudah disemak di tapak. Foto, Aras 4.', async1:'📶 WhatsApp tak segerak', async2:'beroperasi dalam liputan internet lemah' },
+};
+const T=(k)=>((STR[Q.lang]||STR.en)[k]);          // { clashDir, camDir, clashN, camN }
 const fr=(dir,i)=>`file://${dir}/${String(i+1).padStart(4,'0')}.png`;
 const TICK1=(c)=>`<svg width="22" height="16" viewBox="0 0 16 11"><path d="M11.07.65 4.6 7.12 1.93 4.45.87 5.51l3.73 3.73 7.53-7.53z" fill="${c}"/></svg>`;
 const TICK2=(c)=>`<svg width="26" height="16" viewBox="0 0 16 11"><path d="M11.07.65 4.6 7.12 1.93 4.45.87 5.51l3.73 3.73 7.53-7.53z" fill="${c}"/><path d="M15.07.65 8.6 7.12l-.9-.9-1.06 1.06 1.96 1.96 7.53-7.53z" fill="${c}"/></svg>`;
 function chat(t, showIn, showOut, photoSrc, tick, label){
   const a=clamp((t-0.25)/0.25,0,1), o=clamp((t-6.6)/0.25,0,1);
-  return `<div class="hdr"><div class="av">HQ</div><div><div class="nm">HQ · Clash desk</div><div class="st">WhatsApp</div></div></div>
+  return `<div class="hdr"><div class="av">HQ</div><div><div class="nm">${T('desk')}</div><div class="st">WhatsApp</div></div></div>
   <div class="chat">
-   ${showIn?`<div class="b in" style="opacity:${a};transform:translateY(${(1-a)*20}px)">ARC vs ELEC clash · Level 4, Hall/Corridor 2. Please check on site.
-     <div class="card"><img src="${fr(Q.clashDir,0)}"><div class="u">🔗 Open in BIM Viewer · same clash</div></div><div class="tm">10:42</div></div>`:''}
-   ${showOut?`<div class="b out" style="opacity:${o};transform:translateY(${(1-o)*20}px)"><div class="card"><img src="${photoSrc}"></div>Checked on site. Photo, Level 4.<div class="tm">10:47 ${tick||TICK1('#8696a0')}</div></div>`:''}
-   ${label>0?`<div style="position:absolute;left:12px;right:12px;top:14px;background:rgba(7,17,31,.9);border:1px solid #7cf3c0;color:#7cf3c0;font-size:16px;font-weight:600;padding:9px 12px;border-radius:10px;opacity:${label}">📶 Asynchronous WhatsApp<br><span style="color:#cfe3ff;font-weight:500">operating in low web coverage</span></div>`:''}
+   ${showIn?`<div class="b in" style="opacity:${a};transform:translateY(${(1-a)*20}px)">${T('msg')}
+     <div class="card"><img src="${fr(Q.clashDir,0)}"><div class="u">${T('link')}</div></div><div class="tm">10:42</div></div>`:''}
+   ${showOut?`<div class="b out" style="opacity:${o};transform:translateY(${(1-o)*20}px)"><div class="card"><img src="${photoSrc}"></div>${T('reply')}<div class="tm">10:47 ${tick||TICK1('#8696a0')}</div></div>`:''}
+   ${label>0?`<div style="position:absolute;left:12px;right:12px;top:14px;background:rgba(7,17,31,.9);border:1px solid #7cf3c0;color:#7cf3c0;font-size:16px;font-weight:600;padding:9px 12px;border-radius:10px;opacity:${label}">${T('async1')}<br><span style="color:#cfe3ff;font-weight:500">${T('async2')}</span></div>`:''}
   </div><div class="bar"></div>`;
 }
 function frame(t){
@@ -53,11 +62,11 @@ function frame(t){
     app.innerHTML=h;
   } else if (t<4.4){                            // the Viewer opens at that clash
     const i=clamp(Math.floor((t-2.0)*30),0,Q.clashN-1);
-    app.innerHTML=`<div class="full"><img src="${fr(Q.clashDir,i)}"></div><div class="tag" style="opacity:${clamp((t-2.2)/0.3,0,1)}">Opened at the same clash</div>`;
+    app.innerHTML=`<div class="full"><img src="${fr(Q.clashDir,i)}"></div><div class="tag" style="opacity:${clamp((t-2.2)/0.3,0,1)}">${T('opened')}</div>`;
   } else if (t<6.4){                            // Site Camera: look, snap
     const snapped=t>=5.5, i=snapped?Math.min(33,Q.camN-1):clamp(Math.floor((t-4.4)*30),0,Q.camN-1);
-    let h=`<div class="full"><img src="${fr(Q.camDir,i)}"></div><div class="tag">📷 Site Camera</div>`;
-    if (snapped) h+=`<div class="cap">Hospital · Level 4 · Hall/Corridor 2<br>ARC vs ELEC · GPS + time stamped</div>`;
+    let h=`<div class="full"><img src="${fr(Q.camDir,i)}"></div><div class="tag">${T('cam')}</div>`;
+    if (snapped) h+=`<div class="cap">${T('capA')}<br>${T('capB')}</div>`;
     h+=`<div class="shut" style="background:${snapped&&t<5.7?'#fff':'transparent'}"></div>`;
     if (t>=5.5 && t<5.75) h+=`<div class="flash" style="opacity:${1-(t-5.5)/0.25}"></div>`;
     app.innerHTML=h;

@@ -20,6 +20,7 @@ const asUrl = (p) => p ? 'file://' + path.resolve(p) : null;
   if (process.argv[3] && process.argv[3].endsWith('.json')) { const j = JSON.parse(fs.readFileSync(process.argv[3], 'utf8')); q = {}; for (const k in j) q[k] = asUrl(j[k]); }
   else q = { phone: asUrl(process.argv[3]), hq: asUrl(process.argv[4]), phoneB: asUrl(process.argv[5]), hqOut: asUrl(process.argv[6]) };
   say(`§OPENER_STILLS ${Object.keys(q).filter(k => q[k]).join(',')}`);
+  say(`§OPENER_LANG ${await page.evaluate((l) => window.OPENER.setLang(l), process.env.FILM_LANG || 'en')}`);
   const phases = await page.evaluate(() => window.OPENER.PHASES);
   const boxes = await page.evaluate(() => window.OPENER.boxes());
   say(`§OPENER_BOX phone x=${boxes.phone.x} y=${boxes.phone.y} w=${boxes.phone.w} h=${boxes.phone.h}`);

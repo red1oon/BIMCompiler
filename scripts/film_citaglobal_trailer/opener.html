@@ -19,6 +19,24 @@ svg{display:block;width:1920px;height:1080px}
 </svg>
 <script>
 'use strict';
+// every string the film draws, per language (FILM_LANG); a missing key falls back to English
+const STR = {
+ en: { hospital:'Hospital site', civil:'Civil Works', hq:'HQ',
+       cap1:'No signal out there.', sub1:'Work carries on — saved on the phone.', cap2:'Signal back — it sends itself.',
+       ben:[['Ready for JKR & BIM reporting','Dated photo, place and value per element. IFC by discipline.'],
+            ['No licence fees','Saves a 450-staff contractor USD 90k–245k a year (estimate).'],
+            ['Grows by sites, not servers','Each device works on its own; a plain relay carries the changes.'],
+            ['Know-how stays in-house','Your power users run and extend it with the same commands we use.'],
+            ['No AI inside','Same input, same answer. Your data stays yours.']] },
+ ms: { hospital:'Tapak Hospital', civil:'Kerja Awam', hq:'HQ',
+       cap1:'Tiada isyarat di tapak.', sub1:'Kerja diteruskan — disimpan dalam telefon.', cap2:'Isyarat pulih — ia dihantar sendiri.',
+       ben:[['Sedia untuk laporan JKR & BIM','Foto bertarikh, lokasi dan nilai bagi setiap elemen. IFC mengikut disiplin.'],
+            ['Tiada yuran lesen','Menjimatkan kontraktor 450 kakitangan USD 90k–245k setahun (anggaran).'],
+            ['Berkembang ikut tapak, bukan pelayan','Setiap peranti berfungsi sendiri; saluran ringkas membawa perubahan.'],
+            ['Kepakaran kekal dalam syarikat','Pengguna mahir anda menjalankan dan meluaskannya dengan arahan yang sama.'],
+            ['Tiada AI di dalam','Input sama, jawapan sama. Data anda kekal milik anda.']] },
+};
+let LANG='en'; const T=(k)=>(STR[LANG]&&STR[LANG][k]!==undefined?STR[LANG][k]:STR.en[k]);
 // ---------- world geometry (all in 1920x1080 world units) ----------
 const W = { phoneA:{x:452,y:636,w:28,h:56}, hqScreen:{x:1482,y:636,w:256,h:144}, tower:{x:1290,top:470,base:880} };
 const SITES = [
@@ -80,21 +98,21 @@ function draw(st){
   el('path',{d:'M-200,900 C300,820 700,960 1100,880 S1700,840 2200,900 L2200,1400 L-200,1400Z',fill:'#10261f'},g);
   // forest
   [[150,880,1.2],[250,900,0.9],[560,890,1.1],[640,905,0.8],[90,910,0.8]].forEach(a=>tree(g,...a));
-  el('text',{x:420,y:960,class:'lbl'},g).textContent='Hospital site';
+  el('text',{x:420,y:960,class:'lbl'},g).textContent=T('hospital');
   // road works
   el('path',{d:'M760,960 L1040,960 L1000,915 L800,915Z',fill:'#2b2f36'},g);
   for (let i=0;i<3;i++) el('polygon',{points:`${1010+i*26},${958} ${1020+i*26},${930} ${1030+i*26},${958}`,fill:'#ff9f1c'},g);
-  el('text',{x:900,y:1000,class:'lbl'},g).textContent='Civil Works';
+  el('text',{x:900,y:1000,class:'lbl'},g).textContent=T('civil');
   // tower
-  const T=W.tower;
-  el('polygon',{points:`${T.x},${T.top} ${T.x-46},${T.base} ${T.x+46},${T.base}`,fill:'none',stroke:'#9fc3e8','stroke-width':5},g);
-  for (let i=1;i<6;i++){ const yy=T.top+(T.base-T.top)*i/6, hw=46*i/6; el('line',{x1:T.x-hw,y1:yy,x2:T.x+hw,y2:yy,stroke:'#9fc3e8','stroke-width':3},g); }
+  const TW=W.tower;
+  el('polygon',{points:`${TW.x},${TW.top} ${TW.x-46},${TW.base} ${TW.x+46},${TW.base}`,fill:'none',stroke:'#9fc3e8','stroke-width':5},g);
+  for (let i=1;i<6;i++){ const yy=TW.top+(TW.base-TW.top)*i/6, hw=46*i/6; el('line',{x1:TW.x-hw,y1:yy,x2:TW.x+hw,y2:yy,stroke:'#9fc3e8','stroke-width':3},g); }
   const anyOn = st.linkOn.A||st.linkOn.B;
-  for (let i=1;i<=3;i++) el('path',{d:`M${T.x-26*i},${T.top-14*i} A${30*i},${30*i} 0 0 1 ${T.x+26*i},${T.top-14*i}`,fill:'none',stroke:anyOn?'#7cf3c0':'#3b4b63','stroke-width':4},g);
+  for (let i=1;i<=3;i++) el('path',{d:`M${TW.x-26*i},${TW.top-14*i} A${30*i},${30*i} 0 0 1 ${TW.x+26*i},${TW.top-14*i}`,fill:'none',stroke:anyOn?'#7cf3c0':'#3b4b63','stroke-width':4},g);
   // HQ building
   el('rect',{x:1420,y:560,width:380,height:340,fill:'#1a2a40',stroke:'#9fc3e8','stroke-width':4},g);
   el('polygon',{points:'1400,560 1610,470 1820,560',fill:'#22365a',stroke:'#9fc3e8','stroke-width':4},g);
-  el('text',{x:1610,y:540,class:'lbl'},g).textContent='HQ';
+  el('text',{x:1610,y:540,class:'lbl'},g).textContent=T('hq');
   const S=W.hqScreen;
   if (st.hqLit>0) el('circle',{cx:S.x+S.w/2,cy:S.y+S.h/2,r:240*st.hqLit,fill:'url(#glow)'},g);
   el('rect',{x:S.x-6,y:S.y-6,width:S.w+12,height:S.h+12,rx:6,fill:'#0c1420',stroke:'#cfd8e3','stroke-width':3},g);
@@ -136,7 +154,7 @@ const FOOT = '';
 function benefits(h, tr, k, st){
   const a0 = st.endCard, p=tr(0,0);
   el('rect',{x:p.x,y:p.y,width:1920*k,height:1080*k,fill:'#07111f',opacity:.80*a0},h);
-  BENEFITS.forEach((r,i)=>{
+  T('ben').forEach((r,i)=>{
     const a = clamp((st.rowT - i*0.35)/0.3, 0, 1); if (a<=0) return;
     const y = 190 + i*150, dx = (1-a)*40;
     const c = tr(250+dx, y-14); el('circle',{cx:c.x,cy:c.y,r:16*k,fill:'#7cf3c0',opacity:a},h);
@@ -161,7 +179,7 @@ function stateAt(phase, t, q){
   if (phase==='send' || phase==='outro') st.phoneBHref = q.phoneBOut || q.phoneB || null;
   if (phase==='intro'){
     st.stack.A = Math.min(3, 1+Math.floor(t/0.6)); st.stack.B = Math.min(3, 1+Math.floor(t/0.7));
-    st.cap='No signal out there.'; st.sub='Work carries on — saved on the phone.'; st.capAlpha=clamp(t/0.3,0,1)*clamp((2.3-t)/0.25,0,1);
+    st.cap=T('cap1'); st.sub=T('sub1'); st.capAlpha=clamp(t/0.3,0,1)*clamp((2.3-t)/0.25,0,1);
     st.cam = t<2.2 ? OVER : camLerp(OVER, PHONE_FULL, (t-2.2)/0.9);
   } else if (phase==='swap'){
     st.cam = t<0.8 ? camLerp(PHONE_FULL, OVER, t/0.8) : camLerp(OVER, PHONE_B_FULL, (t-0.8)/0.9);
@@ -172,7 +190,7 @@ function stateAt(phase, t, q){
     ['A','B'].forEach((id,j)=>{ const f=clamp(fly*1.15-j*0.1,0,1); st.stack[id] = 3-Math.min(3,Math.floor(f*3.2));
       for (let i=0;i<3;i++){ const u=(f*3.2-i)*1.0; if (u>0 && u<2) st.packets.push({site:id,u}); } });
     st.hqLit = clamp((t-1.6)/0.5,0,1);
-    st.cap='Signal back — it sends itself.'; st.capAlpha=clamp((t-0.8)/0.25,0,1)*clamp((2.4-t)/0.25,0,1);
+    st.cap=T('cap2'); st.capAlpha=clamp((t-0.8)/0.25,0,1)*clamp((2.4-t)/0.25,0,1);
   } else if (phase==='outro'){
     st.cam = camLerp(HQ_FULL, OVER, t/1.1); st.linkOn={A:true,B:true}; st.hqLit=1; st.stack={A:0,B:0};
     st.hqHref = q.hqOut || q.hq || null;   // seam: the HQ part's LAST frame on the way out
@@ -184,6 +202,7 @@ function stateAt(phase, t, q){
 function toScreen(r,c){ const k=1920/c.w; return { x:Math.round((r.x-c.x)*k), y:Math.round((r.y-c.y)*k), w:Math.round(r.w*k), h:Math.round(r.h*k) }; }
 window.OPENER = {
   PHASES,
+  setLang(l){ LANG = STR[l] ? l : 'en'; return LANG; },
   render(phase, t, q){ draw(stateAt(phase, t, q||{})); },
   // where footage goes when fully zoomed (phone screen / HQ screen), in output pixels
   boxes(){ const p=W.phoneA, scr={ x:p.x+p.w*0.06, y:p.y+p.h*0.05, w:p.w*0.88, h:p.h*0.90 };
