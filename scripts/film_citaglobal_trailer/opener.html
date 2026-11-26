@@ -122,10 +122,29 @@ function draw(st){
   if (st.cap && st.capAlpha>0){ const a=tr(960,110), b=tr(960,165);
     const t1=el('text',{x:a.x,y:a.y,class:'cap',opacity:st.capAlpha,'font-size':54*k},h); t1.textContent=st.cap;
     if (st.sub){ const t2=el('text',{x:b.x,y:b.y,class:'sub',opacity:st.capAlpha,'font-size':30*k},h); t2.textContent=st.sub; } }
-  if (st.endCard>0){ const p=tr(0,0); el('rect',{x:p.x,y:p.y,width:1920*k,height:230*k,fill:'#07111f',opacity:.78*st.endCard},h);
-    const a=tr(960,105), b=tr(960,170);
-    el('text',{x:a.x,y:a.y,class:'cap',opacity:st.endCard,'font-size':58*k},h).textContent='No AI inside. No server.';
-    el('text',{x:b.x,y:b.y,class:'sub',opacity:st.endCard,'font-size':34*k},h).textContent='Your data stays yours.'; }
+  if (st.endCard>0) benefits(h, tr, k, st);
+}
+
+const BENEFITS = [
+  ['Ready for JKR & BIM reporting', 'Dated photo, place and value per element. IFC by discipline.'],
+  ['No licence fees', 'Saves a 450-staff contractor USD 90k–245k a year (estimate).'],
+  ['Grows by sites, not servers', 'Each device works on its own; a plain relay carries the changes.'],
+  ['Know-how stays in-house', 'Your power users run and extend it with the same commands we use.'],
+  ['No AI inside', 'Same input, same answer. Your data stays yours.'],
+];
+const FOOT = '';
+function benefits(h, tr, k, st){
+  const a0 = st.endCard, p=tr(0,0);
+  el('rect',{x:p.x,y:p.y,width:1920*k,height:1080*k,fill:'#07111f',opacity:.80*a0},h);
+  BENEFITS.forEach((r,i)=>{
+    const a = clamp((st.rowT - i*0.35)/0.3, 0, 1); if (a<=0) return;
+    const y = 190 + i*150, dx = (1-a)*40;
+    const c = tr(250+dx, y-14); el('circle',{cx:c.x,cy:c.y,r:16*k,fill:'#7cf3c0',opacity:a},h);
+    const t1 = tr(300+dx, y); el('text',{x:t1.x,y:t1.y,'font-size':46*k,'font-weight':700,fill:'#fff',opacity:a,'font-family':'Noto Sans,DejaVu Sans,sans-serif'},h).textContent=r[0];
+    const t2 = tr(300+dx, y+48); el('text',{x:t2.x,y:t2.y,'font-size':28*k,fill:'#cfe3ff',opacity:a,'font-family':'Noto Sans,DejaVu Sans,sans-serif'},h).textContent=r[1];
+  });
+  const fa = clamp((st.rowT - 5*0.35)/0.3, 0, 1);
+  const f = tr(300, 1010); el('text',{x:f.x,y:f.y,'font-size':20*k,fill:'#8fa9c8',opacity:fa,'font-family':'Noto Sans,DejaVu Sans,sans-serif'},h).textContent=FOOT;
 }
 
 // ---------- phases (seconds) ----------
@@ -133,7 +152,7 @@ const PHASES = {
   intro: { dur: 3.2 },   // overview, signal down, work saved on the phones → zoom into the Hospital phone
   swap:  { dur: 1.8 },   // out of the Hospital phone → into the Civil Works phone
   send:  { dur: 3.4 },   // out of the Civil Works phone, both signals return, the stacks fly to HQ → zoom into the HQ screen
-  outro: { dur: 4.0 },   // out of the HQ screen to the overview, end card
+  outro: { dur: 8.0 },   // out of the HQ screen to the overview, then the benefits card (rows one by one, held to read)
 };
 function stateAt(phase, t, q){
   const st={ cam:OVER, linkOn:{A:false,B:false}, stack:{A:3,B:3}, packets:[], hqLit:0, phoneHref:q.phone||null, phoneBHref:q.phoneB||null, hqHref:q.hq||null, cap:'', sub:'', capAlpha:0, endCard:0, blink: Math.floor(t*3)%2===0 };
@@ -153,7 +172,7 @@ function stateAt(phase, t, q){
     st.cap='Signal back — it sends itself.'; st.capAlpha=clamp((t-0.8)/0.25,0,1)*clamp((2.4-t)/0.25,0,1);
   } else if (phase==='outro'){
     st.cam = camLerp(HQ_FULL, OVER, t/1.1); st.linkOn={A:true,B:true}; st.hqLit=1; st.stack={A:0,B:0};
-    st.endCard = clamp((t-1.2)/0.4,0,1);
+    st.endCard = clamp((t-1.6)/0.4,0,1); st.rowT = t-1.8;
   }
   return st;
 }
