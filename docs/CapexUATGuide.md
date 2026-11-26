@@ -52,7 +52,7 @@
 |---|---|
 | Document | CAPEX UAT Guide — from 2D drawings to the dashboard |
 | Purpose | The step-by-step test script for the User Acceptance Test of the pilot client (Sysnova): BIM drawings to a priced model, the ERP exercise, the CAPEX dashboard |
-| Revision | **2026-11-26 (x)** |
+| Revision | **2026-11-26 (y)** |
 | Status | Issued for UAT. Proven step by step by the UAT Dry Run of 2026-11-19 (86 of 86 steps PASS, the 80 steps of this guide and the 6 setup steps of the Developer Guide §3); the dry-run report is issued separately and stays as signed. Since then, steps were corrected: the revision history names each revision and what changed. |
 | Prepared and issued by | Redhuan D. Oon, Project Consultant |
 | For | The pilot client's UAT team: System Setup, BIM, Project Mgmt Accounting |
@@ -66,6 +66,7 @@
 
 | Revision | What changed |
 |---|---|
+| 2026-11-26 (y) | C1.1: footnote 3 on Generate PO, the purchase orders made from the project itself (how it works; with the vendor *Standard* on each product it can make them). No step changed |
 | 2026-11-26 (x) | Known limits: three lines removed as no longer true (the Kernel ERP now posts project issues to the books, takes the products and Standard costing, and loads this test pack); the test-copy warning for the products script stays. No step changed |
 | 2026-11-26 (w) | The BIM Model link back is now footnote 2 to A5, as version 2 of the plugin for later (not in this UAT's or the dashboard's present scope). No step changed |
 | 2026-11-26 (v) | Footnote 2 to L3: the **BIM Model** link back from the Project window to the Viewer (plugin pack 13.1.1; the Kernel ERP shows the same field). No step changed |
@@ -622,8 +623,10 @@ Make one order per row of the table that has a purchase order, with the quantity
 
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|
-| C1.1 | **Purchase Order** window, **New**. Header: **Business Partner** *Seed Farm Inc.* (or any vendor), **Price List** *Purchase*, **Warehouse** *HQ Warehouse*, **Project** the test project (the field sits in the header). Save. Tab **PO Line**, **New**: **Product** the table's product, **Quantity** from the table; leave the price as the price list gives it. Save | The line price is the product's standard cost rounded to the cent, as the *Purchase* list prices it (for example 68.12 for *PWD-04.2*, standard cost 68.1167). The order's **Total Lines** = quantity × that price (for example 29 × 68.12 = 1,975.48) and **Grand Total** is the same (the tax rate is 0). **Source:** the price is the product’s **Price** tab, *Purchase* list (A4.2); multiply it by the quantity yourself | ☐ Pass ☐ Fail |
+| C1.1 | **Purchase Order** window, **New**. Header: **Business Partner** *Seed Farm Inc.* (or any vendor), **Price List** *Purchase*, **Warehouse** *HQ Warehouse*, **Project** the test project (the field sits in the header). Save. Tab **PO Line**, **New**: **Product** the table's product, **Quantity** from the table; leave the price as the price list gives it. Save<sup>3</sup> | The line price is the product's standard cost rounded to the cent, as the *Purchase* list prices it (for example 68.12 for *PWD-04.2*, standard cost 68.1167). The order's **Total Lines** = quantity × that price (for example 29 × 68.12 = 1,975.48) and **Grand Total** is the same (the tax rate is 0). **Source:** the price is the product’s **Price** tab, *Purchase* list (A4.2); multiply it by the quantity yourself | ☐ Pass ☐ Fail |
 | C1.2 | **Document Action ▸ Complete ▸ OK** on the orders the table marks *complete*; leave the others as they are | Document status *Completed* on those, *Drafted* on the others | ☐ Pass ☐ Fail |
+
+<sup>3</sup> *Footnote to C1.1.* **Generate PO: the order made from the project itself.** This guide makes each order by hand so that every project can stop at its own stage. iDempiere can also make the purchase orders from the project: in the **Project** window, the **Generate PO** button (process *Generate PO from Project*) reads the project's lines, for the whole project or one phase or one line. For each line it orders the product's **planned quantity** from the product's vendor, the one on the product's **Purchasing** tab (the current vendor first). It makes **one order per vendor** (with *Consolidate Document* ticked, the default), each line priced by the order's price list (the vendor's purchase price list, else the project's); if that gives no price, it uses the vendor record's PO price, last PO price or list price. The line then remembers its order (**Purchase Order** field) and is skipped next time. It skips a line and says why: *Line has no Product*, *Product has no PO record* (the product has no vendor), *Line was ordered previously*. In this test the Construction products of A3.6 have no vendor, so Generate PO makes no order and says *Product has no PO record* for each line. To use it, give each Construction product a **Purchasing** row with the vendor **Standard** (GardenWorld's own partner), then press **Generate PO** on the project. The Kernel ERP's Project window has the same button and does the same. No step of this guide depends on it.
 
 ### C2 · Material receipt
 
