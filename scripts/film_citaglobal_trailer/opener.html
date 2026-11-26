@@ -1,0 +1,168 @@
+<!doctype html>
+<!-- ⚠ DO NOT REMOVE — Scope: CitaGlobal trailer FRAME DEVICE (overview → phone → HQ → overview).
+     Spec: ~/Projects/CitaGlobal/CitaGlobal_Pitch_Report.md §13.3 + §13.4. Pure function of (phase, t): no randomness,
+     same frame for the same input. Rendered by render_opener.js, which prints the § lines. Read its log after every run. -->
+<html><head><meta charset="utf-8"><style>
+html,body{margin:0;background:#0b1a2e;overflow:hidden}
+svg{display:block;width:1920px;height:1080px}
+.cap{font:700 54px 'Noto Sans','DejaVu Sans',sans-serif;fill:#fff;text-anchor:middle}
+.sub{font:500 30px 'Noto Sans','DejaVu Sans',sans-serif;fill:#cfe3ff;text-anchor:middle}
+.lbl{font:600 22px 'Noto Sans','DejaVu Sans',sans-serif;fill:#9fc3e8;text-anchor:middle}
+</style></head><body>
+<svg id="s" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<defs>
+  <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#07111f"/><stop offset="1" stop-color="#1f3b63"/></linearGradient>
+  <radialGradient id="glow"><stop offset="0" stop-color="#7cf3c0" stop-opacity=".9"/><stop offset="1" stop-color="#7cf3c0" stop-opacity="0"/></radialGradient>
+</defs>
+<g id="world"></g>
+<g id="hud"></g>
+</svg>
+<script>
+'use strict';
+// ---------- world geometry (all in 1920x1080 world units) ----------
+const W = { phoneA:{x:452,y:636,w:28,h:56}, hqScreen:{x:1482,y:636,w:256,h:144}, tower:{x:1290,top:470,base:880} };
+const SITES = [
+  { id:'A', x:420, y:880, kind:'forest', label:'Remote site', phone:W.phoneA },
+  { id:'B', x:900, y:900, kind:'road',   label:'Road works',  phone:{x:928,y:676,w:22,h:44} },
+];
+const NS = 'http://www.w3.org/2000/svg';
+const el = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
+const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+const ease = (u)=>{ u=clamp(u,0,1); return u<.5 ? 4*u*u*u : 1-Math.pow(-2*u+2,3)/2; };
+const lerp = (a,b,u)=>a+(b-a)*u;
+
+// camera: viewBox that fits rect r to `fill` of the frame height, centred on r
+function fitBox(r, fill){ const h = r.h/fill, w = h*16/9; return { x:r.x+r.w/2-w/2, y:r.y+r.h/2-h/2, w, h }; }
+const OVER = { x:0, y:0, w:1920, h:1080 };
+// log-space zoom so the speed feels constant
+function camLerp(a,b,u){ u=ease(u); const lw = Math.exp(lerp(Math.log(a.w),Math.log(b.w),u));
+  const k = (a.w===b.w)?u:(lw-a.w)/(b.w-a.w); return { x:lerp(a.x,b.x,k), y:lerp(a.y,b.y,k), w:lw, h:lw*9/16 }; }
+const PHONE_FULL = fitBox(W.phoneA, 0.96);
+const HQ_FULL = fitBox(W.hqScreen, 1.0);
+
+// link path from a phone to the tower top
+function linkPath(s){ const p=s.phone, sx=p.x+p.w/2, sy=p.y, tx=W.tower.x, ty=W.tower.top+10, mx=(sx+tx)/2, my=Math.min(sy,ty)-180;
+  return { d:`M${sx},${sy} Q${mx},${my} ${tx},${ty}`, sx, sy, tx, ty, mx, my }; }
+const qpt=(L,u)=>({ x:(1-u)*(1-u)*L.sx+2*(1-u)*u*L.mx+u*u*L.tx, y:(1-u)*(1-u)*L.sy+2*(1-u)*u*L.my+u*u*L.ty });
+const HQ_IN = { x:W.hqScreen.x+40, y:W.hqScreen.y-40 };
+
+function stick(g, x, y, armUp, phone){
+  const c='#e8f1ff', sw=6;
+  el('circle',{cx:x,cy:y-150,r:20,fill:'none',stroke:c,'stroke-width':sw},g);
+  el('line',{x1:x,y1:y-130,x2:x,y2:y-60,stroke:c,'stroke-width':sw,'stroke-linecap':'round'},g);
+  el('line',{x1:x,y1:y-60,x2:x-22,y2:y,stroke:c,'stroke-width':sw,'stroke-linecap':'round'},g);
+  el('line',{x1:x,y1:y-60,x2:x+22,y2:y,stroke:c,'stroke-width':sw,'stroke-linecap':'round'},g);
+  el('line',{x1:x,y1:y-115,x2:x-30,y2:y-80,stroke:c,'stroke-width':sw,'stroke-linecap':'round'},g);
+  // arm holding the phone up
+  el('polyline',{points:`${x},${y-115} ${x+26},${y-160} ${phone.x+phone.w/2},${phone.y+phone.h}`,fill:'none',stroke:c,'stroke-width':sw,'stroke-linecap':'round','stroke-linejoin':'round'},g);
+}
+function phoneDraw(g, p, screenHref, lit){
+  const r = p.w*0.16;
+  el('rect',{x:p.x,y:p.y,width:p.w,height:p.h,rx:r,fill:'#111820',stroke:'#cfd8e3','stroke-width':p.w*0.05},g);
+  const sx=p.x+p.w*0.06, sy=p.y+p.h*0.05, sw=p.w*0.88, sh=p.h*0.90;
+  el('rect',{x:sx,y:sy,width:sw,height:sh,rx:r*0.6,fill: lit?'#1b6fd1':'#0a2a4d'},g);
+  if (screenHref) el('image',{href:screenHref,x:sx,y:sy,width:sw,height:sh,preserveAspectRatio:'xMidYMid slice'},g);
+  return { x:sx, y:sy, w:sw, h:sh };
+}
+function tree(g,x,y,s){ el('polygon',{points:`${x},${y-120*s} ${x-45*s},${y} ${x+45*s},${y}`,fill:'#173d2e'},g); el('rect',{x:x-6*s,y:y,width:12*s,height:22*s,fill:'#3a2a1c'},g); }
+function docStack(g, x, y, n){ for (let i=0;i<n;i++){ const yy=y-i*13; el('rect',{x:x,y:yy,width:30,height:38,rx:3,fill:'#fff7d6',stroke:'#c9a54a','stroke-width':2},g); el('line',{x1:x+5,y1:yy+10,x2:x+19,y2:yy+10,stroke:'#c9a54a','stroke-width':2},g); } }
+function signal(g, x, y, on, blink){ const col = on ? '#7cf3c0' : '#ff6b6b';
+  for (let i=0;i<4;i++){ const hgt=8+i*7; el('rect',{x:x+i*10,y:y-hgt,width:7,height:hgt,fill:(on||(blink&&i<1))?col:'#3b4b63'},g); }
+  if (!on) { el('line',{x1:x+44,y1:y-30,x2:x+60,y2:y-14,stroke:'#ff6b6b','stroke-width':4},g); el('line',{x1:x+60,y1:y-30,x2:x+44,y2:y-14,stroke:'#ff6b6b','stroke-width':4},g); } }
+
+// ---------- one frame ----------
+// state: { cam, linkOn:{A,B}, stack:{A,B}, packets:[{site,u}], hqLit, phoneHref, hqHref, cap, sub, capAlpha, endCard }
+function draw(st){
+  const g = document.getElementById('world'); g.innerHTML='';
+  el('rect',{x:-4000,y:-4000,width:12000,height:12000,fill:'url(#sky)'},g);
+  for (let i=0;i<40;i++){ const sx=(i*397)%1920, sy=(i*173)%420; el('circle',{cx:sx,cy:sy,r:(i%3)+1,fill:'#cfe3ff',opacity:.5},g); }
+  el('path',{d:'M-200,900 C300,820 700,960 1100,880 S1700,840 2200,900 L2200,1400 L-200,1400Z',fill:'#10261f'},g);
+  // forest
+  [[150,880,1.2],[250,900,0.9],[560,890,1.1],[640,905,0.8],[90,910,0.8]].forEach(a=>tree(g,...a));
+  el('text',{x:420,y:960,class:'lbl'},g).textContent='Remote site';
+  // road works
+  el('path',{d:'M760,960 L1040,960 L1000,915 L800,915Z',fill:'#2b2f36'},g);
+  for (let i=0;i<3;i++) el('polygon',{points:`${1010+i*26},${958} ${1020+i*26},${930} ${1030+i*26},${958}`,fill:'#ff9f1c'},g);
+  el('text',{x:900,y:1000,class:'lbl'},g).textContent='Road works';
+  // tower
+  const T=W.tower;
+  el('polygon',{points:`${T.x},${T.top} ${T.x-46},${T.base} ${T.x+46},${T.base}`,fill:'none',stroke:'#9fc3e8','stroke-width':5},g);
+  for (let i=1;i<6;i++){ const yy=T.top+(T.base-T.top)*i/6, hw=46*i/6; el('line',{x1:T.x-hw,y1:yy,x2:T.x+hw,y2:yy,stroke:'#9fc3e8','stroke-width':3},g); }
+  const anyOn = st.linkOn.A||st.linkOn.B;
+  for (let i=1;i<=3;i++) el('path',{d:`M${T.x-26*i},${T.top-14*i} A${30*i},${30*i} 0 0 1 ${T.x+26*i},${T.top-14*i}`,fill:'none',stroke:anyOn?'#7cf3c0':'#3b4b63','stroke-width':4},g);
+  // HQ building
+  el('rect',{x:1420,y:560,width:380,height:340,fill:'#1a2a40',stroke:'#9fc3e8','stroke-width':4},g);
+  el('polygon',{points:'1400,560 1610,470 1820,560',fill:'#22365a',stroke:'#9fc3e8','stroke-width':4},g);
+  el('text',{x:1610,y:540,class:'lbl'},g).textContent='HQ';
+  const S=W.hqScreen;
+  if (st.hqLit>0) el('circle',{cx:S.x+S.w/2,cy:S.y+S.h/2,r:240*st.hqLit,fill:'url(#glow)'},g);
+  el('rect',{x:S.x-6,y:S.y-6,width:S.w+12,height:S.h+12,rx:6,fill:'#0c1420',stroke:'#cfd8e3','stroke-width':3},g);
+  el('rect',{x:S.x,y:S.y,width:S.w,height:S.h,fill: st.hqLit>0?'#123a66':'#0a1a2c'},g);
+  if (st.hqHref) el('image',{href:st.hqHref,x:S.x,y:S.y,width:S.w,height:S.h,preserveAspectRatio:'xMidYMid slice',opacity:st.hqLit},g);
+  el('rect',{x:1560,y:820,width:100,height:80,fill:'#0c1420',stroke:'#9fc3e8','stroke-width':3},g);
+  // sites: links, people, phones, stacks
+  SITES.forEach(s=>{
+    const L=linkPath(s), on=st.linkOn[s.id];
+    el('path',{d:L.d,fill:'none',stroke:on?'#7cf3c0':'#5b6b83','stroke-width':on?5:4,'stroke-dasharray':on?'':'14 14',opacity:on?1:.8},g);
+    if (!on){ const m=qpt(L,.5); el('circle',{cx:m.x,cy:m.y,r:18,fill:'#0b1a2e',stroke:'#ff6b6b','stroke-width':4},g);
+      el('line',{x1:m.x-8,y1:m.y-8,x2:m.x+8,y2:m.y+8,stroke:'#ff6b6b','stroke-width':4},g); el('line',{x1:m.x+8,y1:m.y-8,x2:m.x-8,y2:m.y+8,stroke:'#ff6b6b','stroke-width':4},g); }
+    stick(g, s.x, s.y, true, s.phone);
+    phoneDraw(g, s.phone, s.id==='A'?st.phoneHref:null, on);
+    if (st.cam.w > 700) signal(g, s.phone.x+s.phone.w+14, s.phone.y+12, on, st.blink);
+    docStack(g, s.x+44, s.y-48, st.stack[s.id]);
+  });
+  st.packets.forEach(pk=>{ const s=SITES.find(z=>z.id===pk.site), L=linkPath(s);
+    let p; if (pk.u<=1) p=qpt(L,pk.u); else { const v=pk.u-1; p={x:lerp(L.tx,HQ_IN.x,v),y:lerp(L.ty,HQ_IN.y,v)}; }
+    el('rect',{x:p.x-12,y:p.y-15,width:24,height:30,rx:3,fill:'#fff7d6',stroke:'#7cf3c0','stroke-width':3},g); });
+  const c=st.cam; document.getElementById('s').setAttribute('viewBox',`${c.x} ${c.y} ${c.w} ${c.h}`);
+  // HUD (screen space, so it is drawn in the zoomed viewBox's units)
+  const h=document.getElementById('hud'); h.innerHTML='';
+  const k=c.w/1920, tr=(x,y)=>({x:c.x+x*k,y:c.y+y*k});
+  if (st.cap && st.capAlpha>0){ const a=tr(960,110), b=tr(960,165);
+    const t1=el('text',{x:a.x,y:a.y,class:'cap',opacity:st.capAlpha,'font-size':54*k},h); t1.textContent=st.cap;
+    if (st.sub){ const t2=el('text',{x:b.x,y:b.y,class:'sub',opacity:st.capAlpha,'font-size':30*k},h); t2.textContent=st.sub; } }
+  if (st.endCard>0){ const p=tr(0,0); el('rect',{x:p.x,y:p.y,width:1920*k,height:230*k,fill:'#07111f',opacity:.78*st.endCard},h);
+    const a=tr(960,105), b=tr(960,170);
+    el('text',{x:a.x,y:a.y,class:'cap',opacity:st.endCard,'font-size':58*k},h).textContent='No AI inside. No server.';
+    el('text',{x:b.x,y:b.y,class:'sub',opacity:st.endCard,'font-size':34*k},h).textContent='Your data stays yours.'; }
+}
+
+// ---------- phases (seconds) ----------
+const PHASES = {
+  // overview, signal down, work saved on the phones, then zoom into A's phone
+  intro:   { dur: 4.2 },
+  // back out of the phone, A's signal returns, the stack flies to HQ, zoom into the HQ screen
+  send:    { dur: 4.4 },
+  // out of the HQ screen to the overview, all links up, end card
+  outro:   { dur: 4.5 },
+};
+function stateAt(phase, t, q){
+  const st={ cam:OVER, linkOn:{A:false,B:false}, stack:{A:0,B:0}, packets:[], hqLit:0, phoneHref:q.phone||null, hqHref:q.hq||null, cap:'', sub:'', capAlpha:0, endCard:0, blink: Math.floor(t*3)%2===0 };
+  if (phase==='intro'){
+    st.stack.A = Math.min(3, Math.floor(t/0.7)); st.stack.B = Math.min(2, Math.floor(t/1.1));
+    st.cap='No signal out there.'; st.sub='Work carries on — saved on the phone.'; st.capAlpha=clamp(t/0.4,0,1)*clamp((3.0-t)/0.3,0,1);
+    st.cam = t<3.0 ? OVER : camLerp(OVER, PHONE_FULL, (t-3.0)/1.0);
+  } else if (phase==='send'){
+    st.cam = t<1.0 ? camLerp(PHONE_FULL, OVER, t/1.0) : (t<3.2 ? OVER : camLerp(OVER, HQ_FULL, (t-3.2)/1.0));
+    st.stack.B = 2; st.linkOn.A = t>=1.0;
+    const fly = clamp((t-1.1)/1.6,0,1);           // three documents leave one after another
+    const left = 3 - Math.min(3, Math.floor(fly*3.2)); st.stack.A = left;
+    for (let i=0;i<3;i++){ const u=(fly*3.2-i)*1.0; if (u>0 && u<2) st.packets.push({site:'A',u}); }
+    st.hqLit = clamp((t-2.0)/0.6,0,1);
+    st.cap='Signal back — it sends itself.'; st.capAlpha=clamp((t-1.0)/0.3,0,1)*clamp((3.2-t)/0.3,0,1);
+  } else if (phase==='outro'){
+    st.cam = camLerp(HQ_FULL, OVER, t/1.2); st.linkOn={A:true,B:true}; st.hqLit=1; st.stack={A:0,B:0};
+    st.endCard = clamp((t-1.3)/0.5,0,1);
+  }
+  return st;
+}
+// screen rect (output pixels) of a world rect under camera c
+function toScreen(r,c){ const k=1920/c.w; return { x:Math.round((r.x-c.x)*k), y:Math.round((r.y-c.y)*k), w:Math.round(r.w*k), h:Math.round(r.h*k) }; }
+window.OPENER = {
+  PHASES,
+  render(phase, t, q){ draw(stateAt(phase, t, q||{})); },
+  // where footage goes when fully zoomed (phone screen / HQ screen), in output pixels
+  boxes(){ const p=W.phoneA, scr={ x:p.x+p.w*0.06, y:p.y+p.h*0.05, w:p.w*0.88, h:p.h*0.90 };
+    return { phone: toScreen(scr, PHONE_FULL), hq: toScreen(W.hqScreen, HQ_FULL) }; },
+};
+</script></body></html>
