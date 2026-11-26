@@ -9,7 +9,7 @@
 #   live code (main.js / scene.js / dlod.js) before relying on or changing it.
 
 ## ▶▶ RESUME HERE — "resume mobile" (written 2026-11-26; read THIS block, then §2026-11-26 REVIEW at the end of this file)
-**State:** review done, nothing built. Facts (boot JS 1.51→10.24 MB, 7 panel systems, Back only on Site Camera, 10 key-only actions, dead controls on phones) and the PROPOSED strategy are in **§2026-11-26 REVIEW** (BIMCompiler #1303). The owner has not approved any of it yet — settle one detail at a time.
+**State (updated 2026-11-26 late):** P0 DONE headless, see **§2026-11-26 P0 RESULT** at the end (CPU boot cost measured up ≥1.8× eval, 4.3× parse, +1.6 s new geometry passes; first frame 2.9→7.5 s on software GL; real-phone trace still owed by the owner). Nothing built yet. Earlier state: review done, nothing built. Facts (boot JS 1.51→10.24 MB, 7 panel systems, Back only on Site Camera, 10 key-only actions, dead controls on phones) and the PROPOSED strategy are in **§2026-11-26 REVIEW** (BIMCompiler #1303). The owner has not approved any of it yet — settle one detail at a time.
 **Advice (the lead's, 2026-11-26):**
 1. **Start with P0 — measure, don't argue.** Lighthouse mobile *Total Blocking Time* + script-evaluation ms, headless CPU, on 818ae9f3 (May) vs HEAD, same building (Duplex). Ask the owner for one real-phone `chrome://inspect` trace. Until then "it got slower" stays INFERRED; say so.
 2. **Then P1, the cheapest visible win (one PR, deletion-heavy):** one `A.caps` owner replacing the 5 `_isMobile` copies; hide (not grey) controls a phone cannot run (gi-preview row, Still/Populate/MaxQ); open Settings + JSON editor on-screen on phones (`panels.js:1891, 2420`); 44 px ✕; no `backdrop-filter` on phones. Witness: a headless phone viewport lists the pills/rows shown, each one's action runs without `§MAXQ_FAIL`/no-op, every panel's rect is inside the viewport — and a mutant (restore `left:320px`) goes RED.
@@ -567,3 +567,26 @@ Read-only review, nothing changed in code. Two read-only audits of bim-ootb `ori
 ### D. Order for the dedicated session (each: spec § → witness that can fail → build → read the log)
 P0 measure first: Lighthouse mobile TBT + script-eval ms, 818ae9f3 vs HEAD, headless; and ask the owner for one real-phone trace (Duplex) — the A-section verdict stays INFERRED until then. · P1 `A.caps` single owner + hide dead/no-op controls + Settings/JSON-editor placement (smallest, visible win) · P2 sheet manager + Back/swipe/backdrop close (generic, under `createPanel`) · P3 boot diet + `§BOOT_WEIGHT` ratchet · P4 thumb rail + context chips (owner picks the five).
 **Owner questions to settle there (not here):** the five rail items · desktop-only features: "On a computer…" row vs fully hidden · the boot-weight target number · keep drawers' "never outside-tap" rule on desktop (proposal: yes, desktop unchanged).
+
+## §2026-11-26 P0 RESULT — measured: May (818ae9f3) vs reviewed HEAD (851e49f6), Duplex, headless phone emulation
+**Spec (P0, §D):** same building, cold profile, phone emulation (412×823, touch, Android UA → the viewer takes its mobile path), **CPU 4× slowdown, no network throttle** (isolates parse/compile/eval from download). Each build served from `git archive` with the same `Duplex_extracted.db`. Lighthouse 11.7.1 ×3 alternating + a console/long-task probe + a JS sampling profile. Scripts: `scripts/mobile_perf/` (`run.sh` Lighthouse, `extract.js` metrics, `probe.js` timeline, `prof.js` attribution, `gl.js` backend check; needs `npm i lighthouse@11.7.1` in `scripts/mobile_perf/tools/`, not committed). Logs: `build/mobile_perf_p0_2026-11-26/*.txt`.
+**⚠ Backend:** headless WebGL = **SwiftShader (software GL)** (`§P0_GL`). So anything GPU-bound (shader compile, per-frame draw) is CPU-rendered here and is NOT a phone number. The table splits the two.
+
+| measure (CPU 4×) | May 818ae9f3 | Nov 851e49f6 | GPU-independent? | source |
+|---|---|---|---|---|
+| JS requests / JS bytes | 65 / 3.9 MB | 275 / 12.8 MB | yes | `§P0_LH js_reqs js_KB` |
+| script evaluation (whole run) | 3.1 s* | **5.5 s** | yes | `§P0_LH scriptEval_ms`, 3/3 runs within 3 % |
+| parse + compile | 90 ms | **390 ms** (4.3×) | yes | `§P0_LH parseCompile_ms` |
+| new post-load geometry JS before first frame | — | **≈1.6 s** (silhouette_refine 713, wind_flip 390, three-mesh-bvh 231, dup_shell 174, light_zones 98) | yes | `§P0_PROF TOP_FN/BY_FILE` |
+| DB fetched → `§DB_LOADED` | 1.7 s | 2.5 s | mostly | `§P0_EV` |
+| first frame with the model drawn | **2.9 s** | **7.5 s** | **no** (includes one 4.57 s long task, three.js `R` 1.6 s + native 3.6 s = shader/GL on SwiftShader) | `§P0_PROBE first_tri_ms`, `§P0_LT` |
+| Lighthouse TBT / TTI | not computable (page never went quiet in 90 s) | 7.3–7.6 s / 9.4–9.7 s | no | `§P0_LH` |
+| steady state after load | main thread busy forever: a ~435 ms long task every frame, 2.3 frames/s | **idle**, last long task ends 8.8 s, 60 rAF/s | no (SwiftShader) | `§P0_PROBE steady_raf_per_s`, `§P0_LT` |
+*May's 3.1 s covers the full 90 s run including its per-frame JS, so its boot-only share is lower and the boot growth is **≥1.8×**.
+
+**Verdict (what is now MEASURED, replacing §A's INFERRED):**
+1. **Boot got slower on the CPU side — measured, not inferred:** script eval ≥1.8×, parse/compile 4.3×, plus ≈1.6 s of new geometry passes (silhouette refine, wind flip, BVH, dup shell, light zones) that run on the phone before the first frame. This is the P3 boot-diet target, and it is GPU-independent.
+2. **Time to first drawn model 2.9 s → 7.5 s on this rig**, but about 5 s of that one blocking task is shader/GL work done in software here. A real phone GPU will be faster on that part; how much is UNKNOWN until the real-phone trace.
+3. **Something got better:** May redrew every frame forever (busy main thread, battery and heat on a phone); Nov goes idle after load. P3 must not undo that.
+**Still needed from the owner (the only thing headless can't give):** one real mid-range Android `chrome://inspect` Performance trace, Duplex, cold cache + SW cleared, on today's live viewer — it settles row 2 (GPU share of the 4.57 s task).
+**Next (per §D):** P1 (`A.caps` single owner + hide dead controls + Settings/JSON-editor placement). P3 gets a second target from this result: the five post-load passes above should be gated off, or deferred until after the first frame, on phones. Each needs its own witness.
