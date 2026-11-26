@@ -1,0 +1,6 @@
+§P0_LH build=818 run=1 runtimeError=none warnings=1 TBT_ms=NaN FCP_ms=186 TTI_ms=NaN LCP_ms=467 bootup_ms=3091 mainthread_ms=90391 scriptEval_ms=3119 parseCompile_ms=86 js_reqs=65 js_KB=3883 total_KB=12489 db_req=200
+§P0_LH build=818 run=2 runtimeError=none warnings=1 TBT_ms=NaN FCP_ms=152 TTI_ms=NaN LCP_ms=358 bootup_ms=3096 mainthread_ms=89998 scriptEval_ms=3123 parseCompile_ms=89 js_reqs=65 js_KB=3883 total_KB=12489 db_req=200
+§P0_LH build=818 run=3 runtimeError=none warnings=1 TBT_ms=NaN FCP_ms=158 TTI_ms=NaN LCP_ms=393 bootup_ms=3165 mainthread_ms=90101 scriptEval_ms=3195 parseCompile_ms=97 js_reqs=65 js_KB=3883 total_KB=12489 db_req=200
+§P0_LH build=851 run=1 runtimeError=none warnings=0 TBT_ms=7291 FCP_ms=193 TTI_ms=9366 LCP_ms=1392 bootup_ms=5412 mainthread_ms=9360 scriptEval_ms=5533 parseCompile_ms=374 js_reqs=275 js_KB=12792 total_KB=23204 db_req=200
+§P0_LH build=851 run=2 runtimeError=none warnings=0 TBT_ms=7422 FCP_ms=202 TTI_ms=9579 LCP_ms=1474 bootup_ms=5460 mainthread_ms=9626 scriptEval_ms=5590 parseCompile_ms=401 js_reqs=275 js_KB=12792 total_KB=23205 db_req=200
+§P0_LH build=851 run=3 runtimeError=none warnings=0 TBT_ms=7622 FCP_ms=206 TTI_ms=9737 LCP_ms=1473 bootup_ms=5485 mainthread_ms=9722 scriptEval_ms=5604 parseCompile_ms=397 js_reqs=275 js_KB=12792 total_KB=23204 db_req=200

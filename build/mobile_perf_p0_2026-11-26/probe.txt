@@ -1,0 +1,17 @@
+§P0_EV build=818 168ms §MAIN_JS v20 loaded — 4D_QTO_REQUEST relay enabled
+§P0_EV build=818 186ms §UPGRADE_THREE_DONE r=160 ms=119 BatchedMesh=function
+§P0_EV build=818 1699ms [S192] §DB_LOADED size=9MB
+§P0_PROBE build=818 first_tri_ms=2868 longtasks=276 blocking_ms(sum dur-50)=105304 longest_ms=978 last_longtask_end_ms=120034 steady_raf_per_s=2.3 final={"tri":344588,"calls":152,"meshes":145,"raf":293,"lt":275}
+§P0_LT build=818 312+76 401+222 623+559 1272+141 1509+59 1578+61 1665+219 1885+978 2865+361 3235+644 3881+69 3950+447 4428+443 4877+451 5335+439 5789+432 6223+63 6286+442 6730+437 7168+436 7605+436 8042+436 8480+436 8917+427 9346+432 9779+435 10215+434 10654+434 11090+438 11528+436 11965+430 12396+435 12832+437 13269+434 13704+436 14141+438 14580+433 15018+455 15474+440 15916+443
+§P0_EV build=851 500ms §UPGRADE_THREE_DONE r=186 ms=138 BatchedMesh=function
+§P0_EV build=851 686ms §MAIN_JS v38 loaded — S287b single-owner render loop
+§P0_EV build=851 2301ms §DB_LOAD_STEP fetched bytes=9625600
+§P0_EV build=851 2304ms §DB_LOAD_STEP patch-fetch buildings/patches/Duplex_extracted.db.sql
+§P0_EV build=851 2308ms §DB_LOAD_STEP patch-response status=200
+§P0_EV build=851 2439ms §DB_LOAD_STEP patched bytes=9633792
+§P0_EV build=851 2439ms §DB_LOAD_STEP opening
+§P0_EV build=851 2454ms §DB_LOAD_STEP opened
+§P0_EV build=851 2501ms §DB_LOAD_STEP ghosts composed
+§P0_EV build=851 2501ms [S192] §DB_LOADED size=9MB
+§P0_PROBE build=851 first_tri_ms=7465 longtasks=12 blocking_ms(sum dur-50)=7251 longest_ms=4570 last_longtask_end_ms=8842 steady_raf_per_s=60.1 final={"tri":357884,"calls":97,"meshes":93,"raf":6735,"lt":12}
+§P0_LT build=851 116+143 790+69 900+292 1192+672 1865+141 2160+60 2226+61 2312+480 2873+4570 7463+660 8135+627 8766+76
