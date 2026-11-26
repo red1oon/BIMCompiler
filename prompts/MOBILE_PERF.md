@@ -606,3 +606,28 @@ Code read on bim-ootb origin/main 851e49f6 before this spec. Desktop must be unc
 **CI note:** the first push failed W-MANIFEST-ROUNDTRIP C15 — a `prompts/MOBILE_PERF.md` path in config.js's leading comment was read as the module's owner; the comment now cites "MOBILE_PERF §P1" without the path. Pre-existing, unrelated: `erp/tests/witness_pill_canonical.js` fails on `#pill-erpdoc` (pill retired 2026-11-24).
 Lines (code): +57 −30; 4 duplicate phone formulas and the grey-and-block branch deleted.
 **Next:** P2 (one sheet manager under `A.createPanel`: one sheet at a time, swipe-down / canvas tap / Android Back / ✕). Real-phone trace for P0 still owed.
+
+## §P2 SPEC — one way to close any panel on a phone, one panel at a time (owner GO 2026-11-27: "Proceed")
+Owner's agreed wording (2026-11-26): *one shared way to close any panel on a phone, by swiping down, tapping the model, pressing Android Back or tapping ✕, with only one panel open at a time.* Desktop unchanged.
+**Measured population first** (phone survey on bim-ootb c20b4b89, Duplex, every rail pill + every drawer row tapped; `Home` skipped, it leaves the page):
+| opens | element | system | in P2? |
+|---|---|---|---|
+| rail Navigate / Inspect / Camera-View | `*-drawer-panel` | `createPanel` | yes |
+| rail Palette | `sunglass-slider-panel` | `.bim-panel` | yes |
+| rail Settings → Edit Project JSON | `settings-panel`, `json-editor-*` | `createPanel` | yes |
+| Navigate → Find | `find-panel` | `.bim-panel` | yes |
+| rail Help | `cmd-palette` | `HelpPanel` (common/help) | yes — adapter |
+| Navigate → World History | `whole-hist-panel` | `WholeHistory` (common) | yes — adapter |
+| Inspect → Clash Matrix | `A._clashMatrixDiv` | scene.js `'c'` shortcut | yes — adapter |
+| tap on the model | `info-panel` | selection card | **no** — a tap on the model must keep selecting |
+| Walk / Fly Tour / Section Cut / Precision | `walk-anchor-prompt`, `tour-scrub-panel`, `section-slider-panel`, `precision-indwrap` | mode controls | **no** — closing them would strand a running mode |
+(`Role View`, `Page History`, `Measure`, `X-Ray`, `Time Machine`, `4D/5D`, `Reset Camera`, `Auto-Pivot`, `Nav LOD` opened no fixed element.)
+**Build (all in `viewer/panels.js`, beside §PANEL_FIT; phone only, desktop never enters it):**
+1. `A.sheets` — the set of open sheets = every shown `.bim-panel` (any creator) + the 3 adapters `{get, close}` (Help → `showCommandPalette()` toggle, World History → `WholeHistory.close()`, Clash → `_shortcuts.c()` toggle). One `MutationObserver` (childList + style/class, rAF-batched) diffs that set. Closing a `.bim-panel` = its own `.bim-panel-close` (so its `onClose` runs), else `display:none`.
+2. **One at a time:** a newly shown sheet closes any other open sheet (`§SHEET_REPLACE`). No back-stack (spec C.2 floated one; replace-only is simpler — recorded as a deviation, owner may ask for it).
+3. **Android Back:** the first open sheet pushes one history entry `{bimSheet:1}`; `popstate` closes the open sheet (`via=back`). A sheet closed any other way consumes that entry (`history.back()`, its popstate ignored), so Back never leaks and never leaves the page while a sheet is open.
+4. **Tap on the model:** a capture-phase tap (≤ 8 px) on the canvas while a sheet is open closes it and is consumed — no pick, no measure point (`via=canvas`). Drags still orbit.
+5. **Swipe down:** a pointer that starts inside a sheet on a non-control element (not input/button/select/textarea/range), with the sheet scrolled to top, and moves ≥ 60 px down (more down than sideways) closes it (`via=swipe`). A grab bar (CSS, `.bim-panel` only, phone only) shows the affordance.
+6. ✕ is the panel's own close (P1 made it 44 px); the manager only does the bookkeeping (`via=other`).
+Log: `§SHEET_OPEN id= n=`, `§SHEET_CLOSE id= via=back|canvas|swipe|replace|other`, `§SHEET_HIST push|consume`.
+**Witness W-MOBILE-P2** (`bim-ootb viewer/tests/witness_mobile_p2.js`): phone Duplex — for each of the 10 sheets above × each closer it supports (Back, canvas tap, swipe, ✕ where it has one): open → close → not shown + the `§SHEET_CLOSE via=` line; after canvas-tap closes, no `info-panel` (no pick); one-at-a-time (open Settings then Navigate → Settings shut); history clean after every close (`history.state` not `bimSheet`). Desktop control: Settings + Navigate both stay open, a canvas tap leaves them, no `§SHEET_` line. **Red control:** the phone run with `A.sheets.disable()` must go RED on Back. INCONCLUSIVE if no sheet opened.
