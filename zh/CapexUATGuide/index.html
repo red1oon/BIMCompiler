@@ -3949,7 +3949,7 @@
 </tr>
 <tr>
 <td>Revision</td>
-<td><strong>2026-11-26 (x)</strong></td>
+<td><strong>2026-11-26 (y)</strong></td>
 </tr>
 <tr>
 <td>Status</td>
@@ -3980,6 +3980,10 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>2026-11-26 (y)</td>
+<td>C1.1: footnote 3 on Generate PO, the purchase orders made from the project itself (how it works; with the vendor <em>Standard</em> on each product it can make them). No step changed</td>
+</tr>
 <tr>
 <td>2026-11-26 (x)</td>
 <td>Known limits: three lines removed as no longer true (the Kernel ERP now posts project issues to the books, takes the products and Standard costing, and loads this test pack); the test-copy warning for the products script stays. No step changed</td>
@@ -5628,7 +5632,7 @@
 <tbody>
 <tr>
 <td>C1.1</td>
-<td><strong>Purchase Order</strong> window, <strong>New</strong>. Header: <strong>Business Partner</strong> <em>Seed Farm Inc.</em> (or any vendor), <strong>Price List</strong> <em>Purchase</em>, <strong>Warehouse</strong> <em>HQ Warehouse</em>, <strong>Project</strong> the test project (the field sits in the header). Save. Tab <strong>PO Line</strong>, <strong>New</strong>: <strong>Product</strong> the table's product, <strong>Quantity</strong> from the table; leave the price as the price list gives it. Save</td>
+<td><strong>Purchase Order</strong> window, <strong>New</strong>. Header: <strong>Business Partner</strong> <em>Seed Farm Inc.</em> (or any vendor), <strong>Price List</strong> <em>Purchase</em>, <strong>Warehouse</strong> <em>HQ Warehouse</em>, <strong>Project</strong> the test project (the field sits in the header). Save. Tab <strong>PO Line</strong>, <strong>New</strong>: <strong>Product</strong> the table's product, <strong>Quantity</strong> from the table; leave the price as the price list gives it. Save<sup>3</sup></td>
 <td>The line price is the product's standard cost rounded to the cent, as the <em>Purchase</em> list prices it (for example 68.12 for <em>PWD-04.2</em>, standard cost 68.1167). The order's <strong>Total Lines</strong> = quantity × that price (for example 29 × 68.12 = 1,975.48) and <strong>Grand Total</strong> is the same (the tax rate is 0). <strong>Source:</strong> the price is the product’s <strong>Price</strong> tab, <em>Purchase</em> list (A4.2); multiply it by the quantity yourself</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
@@ -5640,6 +5644,7 @@
 </tr>
 </tbody>
 </table>
+<p><sup>3</sup> <em>Footnote to C1.1.</em> <strong>Generate PO: the order made from the project itself.</strong> This guide makes each order by hand so that every project can stop at its own stage. iDempiere can also make the purchase orders from the project: in the <strong>Project</strong> window, the <strong>Generate PO</strong> button (process <em>Generate PO from Project</em>) reads the project's lines, for the whole project or one phase or one line. For each line it orders the product's <strong>planned quantity</strong> from the product's vendor, the one on the product's <strong>Purchasing</strong> tab (the current vendor first). It makes <strong>one order per vendor</strong> (with <em>Consolidate Document</em> ticked, the default), each line priced by the order's price list (the vendor's purchase price list, else the project's); if that gives no price, it uses the vendor record's PO price, last PO price or list price. The line then remembers its order (<strong>Purchase Order</strong> field) and is skipped next time. It skips a line and says why: <em>Line has no Product</em>, <em>Product has no PO record</em> (the product has no vendor), <em>Line was ordered previously</em>. In this test the Construction products of A3.6 have no vendor, so Generate PO makes no order and says <em>Product has no PO record</em> for each line. To use it, give each Construction product a <strong>Purchasing</strong> row with the vendor <strong>Standard</strong> (GardenWorld's own partner), then press <strong>Generate PO</strong> on the project. The Kernel ERP's Project window has the same button and does the same. No step of this guide depends on it.</p>
 <h3 id="c2-material-receipt">C2 · Material receipt<a class="headerlink" href="#c2-material-receipt" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
