@@ -22,8 +22,8 @@ svg{display:block;width:1920px;height:1080px}
 // ---------- world geometry (all in 1920x1080 world units) ----------
 const W = { phoneA:{x:452,y:636,w:28,h:56}, hqScreen:{x:1482,y:636,w:256,h:144}, tower:{x:1290,top:470,base:880} };
 const SITES = [
-  { id:'A', x:420, y:880, kind:'forest', label:'Remote site', phone:W.phoneA },
-  { id:'B', x:900, y:900, kind:'road',   label:'Road works',  phone:{x:928,y:676,w:22,h:44} },
+  { id:'A', x:420, y:880, kind:'forest', label:'Hospital site', phone:W.phoneA },
+  { id:'B', x:900, y:900, kind:'road',   label:'Civil Works',  phone:{x:926,y:676,w:24,h:48} },
 ];
 const NS = 'http://www.w3.org/2000/svg';
 const el = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
@@ -38,6 +38,7 @@ const OVER = { x:0, y:0, w:1920, h:1080 };
 function camLerp(a,b,u){ u=ease(u); const lw = Math.exp(lerp(Math.log(a.w),Math.log(b.w),u));
   const k = (a.w===b.w)?u:(lw-a.w)/(b.w-a.w); return { x:lerp(a.x,b.x,k), y:lerp(a.y,b.y,k), w:lw, h:lw*9/16 }; }
 const PHONE_FULL = fitBox(W.phoneA, 0.96);
+const PHONE_B_FULL = fitBox(SITES[1].phone, 0.96);
 const HQ_FULL = fitBox(W.hqScreen, 1.0);
 
 // link path from a phone to the tower top
@@ -79,11 +80,11 @@ function draw(st){
   el('path',{d:'M-200,900 C300,820 700,960 1100,880 S1700,840 2200,900 L2200,1400 L-200,1400Z',fill:'#10261f'},g);
   // forest
   [[150,880,1.2],[250,900,0.9],[560,890,1.1],[640,905,0.8],[90,910,0.8]].forEach(a=>tree(g,...a));
-  el('text',{x:420,y:960,class:'lbl'},g).textContent='Remote site';
+  el('text',{x:420,y:960,class:'lbl'},g).textContent='Hospital site';
   // road works
   el('path',{d:'M760,960 L1040,960 L1000,915 L800,915Z',fill:'#2b2f36'},g);
   for (let i=0;i<3;i++) el('polygon',{points:`${1010+i*26},${958} ${1020+i*26},${930} ${1030+i*26},${958}`,fill:'#ff9f1c'},g);
-  el('text',{x:900,y:1000,class:'lbl'},g).textContent='Road works';
+  el('text',{x:900,y:1000,class:'lbl'},g).textContent='Civil Works';
   // tower
   const T=W.tower;
   el('polygon',{points:`${T.x},${T.top} ${T.x-46},${T.base} ${T.x+46},${T.base}`,fill:'none',stroke:'#9fc3e8','stroke-width':5},g);
@@ -107,7 +108,7 @@ function draw(st){
     if (!on){ const m=qpt(L,.5); el('circle',{cx:m.x,cy:m.y,r:18,fill:'#0b1a2e',stroke:'#ff6b6b','stroke-width':4},g);
       el('line',{x1:m.x-8,y1:m.y-8,x2:m.x+8,y2:m.y+8,stroke:'#ff6b6b','stroke-width':4},g); el('line',{x1:m.x+8,y1:m.y-8,x2:m.x-8,y2:m.y+8,stroke:'#ff6b6b','stroke-width':4},g); }
     stick(g, s.x, s.y, true, s.phone);
-    phoneDraw(g, s.phone, s.id==='A'?st.phoneHref:null, on);
+    phoneDraw(g, s.phone, s.id==='A'?st.phoneHref:st.phoneBHref, on);
     if (st.cam.w > 700) signal(g, s.phone.x+s.phone.w+14, s.phone.y+12, on, st.blink);
     docStack(g, s.x+44, s.y-48, st.stack[s.id]);
   });
@@ -129,30 +130,30 @@ function draw(st){
 
 // ---------- phases (seconds) ----------
 const PHASES = {
-  // overview, signal down, work saved on the phones, then zoom into A's phone
-  intro:   { dur: 4.2 },
-  // back out of the phone, A's signal returns, the stack flies to HQ, zoom into the HQ screen
-  send:    { dur: 4.4 },
-  // out of the HQ screen to the overview, all links up, end card
-  outro:   { dur: 4.5 },
+  intro: { dur: 3.2 },   // overview, signal down, work saved on the phones → zoom into the Hospital phone
+  swap:  { dur: 1.8 },   // out of the Hospital phone → into the Civil Works phone
+  send:  { dur: 3.4 },   // out of the Civil Works phone, both signals return, the stacks fly to HQ → zoom into the HQ screen
+  outro: { dur: 4.0 },   // out of the HQ screen to the overview, end card
 };
 function stateAt(phase, t, q){
-  const st={ cam:OVER, linkOn:{A:false,B:false}, stack:{A:0,B:0}, packets:[], hqLit:0, phoneHref:q.phone||null, hqHref:q.hq||null, cap:'', sub:'', capAlpha:0, endCard:0, blink: Math.floor(t*3)%2===0 };
+  const st={ cam:OVER, linkOn:{A:false,B:false}, stack:{A:3,B:3}, packets:[], hqLit:0, phoneHref:q.phone||null, phoneBHref:q.phoneB||null, hqHref:q.hq||null, cap:'', sub:'', capAlpha:0, endCard:0, blink: Math.floor(t*3)%2===0 };
   if (phase==='intro'){
-    st.stack.A = Math.min(3, Math.floor(t/0.7)); st.stack.B = Math.min(2, Math.floor(t/1.1));
-    st.cap='No signal out there.'; st.sub='Work carries on — saved on the phone.'; st.capAlpha=clamp(t/0.4,0,1)*clamp((3.0-t)/0.3,0,1);
-    st.cam = t<3.0 ? OVER : camLerp(OVER, PHONE_FULL, (t-3.0)/1.0);
+    st.stack.A = Math.min(3, 1+Math.floor(t/0.6)); st.stack.B = Math.min(3, 1+Math.floor(t/0.7));
+    st.cap='No signal out there.'; st.sub='Work carries on — saved on the phone.'; st.capAlpha=clamp(t/0.3,0,1)*clamp((2.3-t)/0.25,0,1);
+    st.cam = t<2.2 ? OVER : camLerp(OVER, PHONE_FULL, (t-2.2)/0.9);
+  } else if (phase==='swap'){
+    st.cam = t<0.8 ? camLerp(PHONE_FULL, OVER, t/0.8) : camLerp(OVER, PHONE_B_FULL, (t-0.8)/0.9);
   } else if (phase==='send'){
-    st.cam = t<1.0 ? camLerp(PHONE_FULL, OVER, t/1.0) : (t<3.2 ? OVER : camLerp(OVER, HQ_FULL, (t-3.2)/1.0));
-    st.stack.B = 2; st.linkOn.A = t>=1.0;
-    const fly = clamp((t-1.1)/1.6,0,1);           // three documents leave one after another
-    const left = 3 - Math.min(3, Math.floor(fly*3.2)); st.stack.A = left;
-    for (let i=0;i<3;i++){ const u=(fly*3.2-i)*1.0; if (u>0 && u<2) st.packets.push({site:'A',u}); }
-    st.hqLit = clamp((t-2.0)/0.6,0,1);
-    st.cap='Signal back — it sends itself.'; st.capAlpha=clamp((t-1.0)/0.3,0,1)*clamp((3.2-t)/0.3,0,1);
+    st.cam = t<0.8 ? camLerp(PHONE_B_FULL, OVER, t/0.8) : (t<2.4 ? OVER : camLerp(OVER, HQ_FULL, (t-2.4)/0.9));
+    st.linkOn = { A: t>=0.8, B: t>=0.95 };
+    const fly = clamp((t-0.85)/1.3,0,1);
+    ['A','B'].forEach((id,j)=>{ const f=clamp(fly*1.15-j*0.1,0,1); st.stack[id] = 3-Math.min(3,Math.floor(f*3.2));
+      for (let i=0;i<3;i++){ const u=(f*3.2-i)*1.0; if (u>0 && u<2) st.packets.push({site:id,u}); } });
+    st.hqLit = clamp((t-1.6)/0.5,0,1);
+    st.cap='Signal back — it sends itself.'; st.capAlpha=clamp((t-0.8)/0.25,0,1)*clamp((2.4-t)/0.25,0,1);
   } else if (phase==='outro'){
-    st.cam = camLerp(HQ_FULL, OVER, t/1.2); st.linkOn={A:true,B:true}; st.hqLit=1; st.stack={A:0,B:0};
-    st.endCard = clamp((t-1.3)/0.5,0,1);
+    st.cam = camLerp(HQ_FULL, OVER, t/1.1); st.linkOn={A:true,B:true}; st.hqLit=1; st.stack={A:0,B:0};
+    st.endCard = clamp((t-1.2)/0.4,0,1);
   }
   return st;
 }
@@ -163,6 +164,7 @@ window.OPENER = {
   render(phase, t, q){ draw(stateAt(phase, t, q||{})); },
   // where footage goes when fully zoomed (phone screen / HQ screen), in output pixels
   boxes(){ const p=W.phoneA, scr={ x:p.x+p.w*0.06, y:p.y+p.h*0.05, w:p.w*0.88, h:p.h*0.90 };
-    return { phone: toScreen(scr, PHONE_FULL), hq: toScreen(W.hqScreen, HQ_FULL) }; },
+    const pb=SITES[1].phone, scrB={ x:pb.x+pb.w*0.06, y:pb.y+pb.h*0.05, w:pb.w*0.88, h:pb.h*0.90 };
+    return { phone: toScreen(scr, PHONE_FULL), phoneB: toScreen(scrB, PHONE_B_FULL), hq: toScreen(W.hqScreen, HQ_FULL) }; },
 };
 </script></body></html>
