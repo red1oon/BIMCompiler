@@ -8,10 +8,10 @@
 
 ### ▶ FIRST for the next session (owner, 2026-11-28: "if u think Fable needs to review what is done perhaps it can code what is done thus far better")
 **A review that fixes what it finds — not a rewrite for its own sake.** Model: Fable (a well-scoped code-design review). Read the code itself, not the results
-prose; judge it cold. Scope = what was written on 2026-11-28 in bim-ootb: PR **#3493** (short addresses, the row), **#3494** (samples, phantom-change fix in
+prose; judge it cold. Scope = what was written on 2026-11-28 in bim-ootb: PR **#3500** (the one-page editor: `pdf/edit_layer.js`, `pdf/pdf_write.js` rewriteText/lockOf/fonts, `pdf/index.html`), **#3501/#3502** (`erp/overlay/ninja/`, `common/pdfwriter/`, SARA AM in `ninja_pdf.js`), **#3493** (short addresses, the row), **#3494** (samples, phantom-change fix in
 `pdf/index.html` download/applyEdit + `pdf/pdf_write.js` record, File it wording, `erp/sheet_addin/history.js` sample), **#3498** (`pdf/index.html` phone
 layout, two-step open, observer root, track/go, serial drawing; `pdf/pdf_open.js` textLater), and the two builders' PRs of §18 (`feat/edit-as-sheet`) and §19
-(`feat/ninja-pdf-main`) once merged; plus the witnesses they added (`erp/tests/witness_door_urls*.js`, `witness_killer_usability.js`,
+(`feat/ninja-pdf-main`) — both merged now; plus the witnesses they added (`erp/tests/witness_door_urls*.js`, `witness_killer_usability.js`,
 `pdf/tests/witness_pdf_mobile.js`, the §18/§19 witnesses). Questions to answer, each with file:line: is it correct (find the input that breaks it)? is each
 responsibility owned once (CLAUDE.md AD-layer rule 5, "one implementation")? what can be deleted (deletion budget)? can each witness actually FAIL on the defect it
 names, or is it scope-blind / vacuous (WITNESS_INTERFACE_FRAMEWORK)? perf budget (heap, verts, bytes) respected? Fix what is found as its own numbered section
@@ -34,14 +34,21 @@ Sister files: `prompts/PDF_EDITOR.md` (the PDF side: clean-room rule, KillerPDF'
 | Excel / WPS menu | built and witnessed on stand-in hosts only; real Excel never run, real WPS menu cannot load here | §8, §11, §13 |
 The three pages link to each other (row PDF · Sheet history · File it). User guide: https://red1oon.github.io/BIMCompiler/PdfPageGuide/ (§15-§16 state).
 
-### In flight at this rewrite (check the results sections before anything else)
-1. **§18 the one-page editor** ("Edit as a sheet", owner's design): the original page stays the base, an edit layer only where we can write back, live table
-   totals ON the page, export = the original file with only edited runs changed, closest-font substitution with a red on-screen box, undo/redo. The CURRENT spec
-   is **§18.0**; results go to §18.4+. Built by an agent (bim-ootb branch `feat/edit-as-sheet`).
-2. **§19 the report engine in the live app** (NinjaExcel PDF printer + Thai SARA AM fix), so "a report printed by our ERP" can be opened, edited and filed back.
-   Results go to §19.1. Built by an agent (bim-ootb branch `feat/ninja-pdf-main`); it may stop on a ⛔ of the NINJAEXCEL lane (moving the pill code).
-3. **FILM v2 "ONE PAGE"** (`FILM_KILLER_FRONT_DOOR.md`, last section): the old Parts 1-3 are SCRUBBED (owner). Shoot only after §18 and §19 are merged and
-   witnessed and the guide covers them. No beat faked; the owner's own PDFs never on screen.
+### Done at the 2026-11-28 close (both verified by the coordinating session itself, live, logs read) — and what the film still waits for
+1. ✅ **§18 slice A, the one-page editor** — bim-ootb #3500 `4a38ab58`; results §18.4. Re-run by the coordinator on the LIVE page:
+   `§EDSHEET-VERDICT PASS judged=46 failed=0`; locally with mutants `§EDSHEET-MUTANTS killed=7/7`. Edit layer over writable runs (trial balance: 139 writable,
+   46 locked Thai), live totals on the page, closest font + red box (Helvetica for a sans run), undo/redo byte-identical, untouched objects + images byte-identical.
+2. ✅ **§19 the report engine in the live app** — bim-compiler #1375 `614583fe`, bim-ootb #3501 `03f67130` + #3502 `8537a5be`; results §19.1 and the end of
+   `prompts/NINJAEXCEL_TEMPLATE_ENGINE.md` (now on master). Re-run by the coordinator LIVE: `§NINJAPDF-VERDICT PASS N1..N3,N5,N6=PASS judged=21 failed=0`
+   (N4 = the lane's `run_all.sh`, local only: the builder reports 54 gates ok). The ERP's "Excel Report" pill prints the trial balance as a PDF that reads back
+   144/144 and adds up; Thai SARA AM right (`จำนวนเอกสาร`); that PDF edits on the one page; PDFKit + 6 fonts in `common/pdfwriter/` (slice B will reuse them).
+3. **FILM v2 "ONE PAGE"** (`FILM_KILLER_FRONT_DOOR.md`, last section): prerequisites (1) ✅ (2) ✅; **(3) the guide is NOT yet updated** for the one-page editor and
+   the ERP report print — do that, then shoot. Old Parts 1-3 are scrubbed.
+**Biggest next levers found today (numbers in §18.4):** only 9 of the owner's 24 openable PDFs have writable text on page 1, decided by FILE STRUCTURE — 8
+cross-reference streams (PDF 1.5+), 1 encrypted, 4 turned pages, 1 text in a form XObject, 1 scan. Cross-reference-stream support is the single largest unlock.
+Thai stays locked until an embedded font (slice B, the PDFKit fonts are in place). Layer covers page 1 only; drag-sum is mouse-only; Times/Courier/bold/italic
+substitution coded, not witnessed; prose edits (outside tables) sit in `_door_text`, which the open-time binding check skips. bim-compiler branch `ninja-xtab2`
+is fully contained in master (deletable by its lane's owner rule). Overlay report files are not precached (offline report run not claimed).
 
 ### Owner rulings that still bind (dated, verbatim where short)
 - Two stages: standalone first, the ERP when the user chooses (2026-11-27). History belongs in the file (*"has to be in the file anyway"*).
