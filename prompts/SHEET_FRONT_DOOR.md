@@ -1,164 +1,84 @@
-# ⚠ DO NOT REMOVE — SHEET FRONT DOOR: the user's own spreadsheet is the way in to the ERP
-# Scope: a menu added to Excel / WPS / LibreOffice / Google Sheets ("Prepare Invoice", "File it", "Run report", "Read supplier bill")
-# that files REAL iDempiere documents from the user's own sheet layout. Spec first, witness first, EXTRACT ONLY.
-# READ THE LOG after every run (§SHEET_DOOR / §SDOOR-* lines); the exit code is not evidence.
-# Code: bim-ootb `erp/sheet_door.js` + `erp/tests/witness_sheet_door.js`. This file: findings, decisions, results (dated sections).
+# ⚠ DO NOT REMOVE — SHEET FRONT DOOR ('resume killer'): the user's own PDF or spreadsheet is the way in to the ERP
+# Scope: three browser pages (PDF one-page editor, Sheet history, File it) + thin Excel/WPS menus over ONE engine: read, check, edit, remember, and — when the user
+# chooses — file REAL iDempiere documents. Spec first (a numbered section here BEFORE code), witness first, EXTRACT ONLY.
+# READ THE LOG after every run (§-tagged lines); the exit code is not evidence.
+# Code: bim-ootb `pdf/`, `erp/sheet_door.js`, `erp/sheet_history.js`, `erp/sheet_addin/`. This file: the resume block, then dated spec + results sections.
 
-## ▶▶ RESUME HERE — call sign **'resume killer'** (state as of 2026-11-28; go to **▶ OPEN LIST** below after reading this block)
-**One package, one core, many doors** (owner agreed 2026-11-27: *"ok so we call this 'resume killer'"*). This file + `prompts/PDF_EDITOR.md`
-are two halves of ONE lane. IN: a PDF report (reader), Excel/WPS/LibreOffice (menu), a blank page (editor). CORE: sheet + source map
-(cell ↔ box on the page) + history (S9) + "does it add up" check (S1). OUT: the SAME PDF with numbers rewritten in place, a PDF in a
-new layout (NinjaExcel), .xlsx, the ERP (File it). Shared pieces are built ONCE (history, check, cell map, pdf.js, SheetJS, menu).
-**Build order:** (1) PDF_EDITOR P0 viewer + S10 report reader, proof = round trip of our own trial-balance PDF (21 accounts,
-40,392.44); (2) numbers-only in-place write-back (narrow cut of PDF_EDITOR P4) with history; (3) S3 Excel menu; (4) the wider
-editor phases P1/P2/P5 on the same core.
-**Two stages, decided (owner 2026-11-27):** stage 1 = the user's own PDF / Excel with reading, the adds-up check, history and a copy back
-out, **standalone, no ERP in sight**; stage 2 = "File it" into the ERP proper. Asked whether stage 1 should sit on the ERP's own Document /
-PrintFormat layers, the owner ruled: *"yes standalone for now - borrowing the same code layer needed"*. So stage 1 takes ERP code only
-where it needs it (as it already does: the kernel's journal format and `verifyJournal` for history, the ERP's SheetJS build); mapping a
-user's layout to an iDempiere PrintFormat is a later, separate step, not a precondition.
-The owner's name for it: *"sort of a sharding of pieces approach as it can pick from the entire ERP framework"* — each front-door
-feature takes the single ERP piece it needs (a shard), never the whole; any piece of the framework may be picked later the same way.
-And the positioning: *"it is like ERP in Excel format, without some baggage of a serious multi user performance yet. This is a good back
-door entry to the ERP when user choses"* — stage 1 makes no multi-user or performance claim; crossing to the ERP is the user's own choice.
-**State:**
-- **S1 DONE (witness) 2026-11-27:** engine `erp/sheet_door.js` + W-SHEET-DOOR 9/9 cases PASS (21 checks), mutants 5/5 killed
-  (bim-ootb `feat/sheet-door`). Results + two legacy findings in §5.
-- **S9 HISTORY DONE (witness) 2026-11-27** (owner: *"history is lacking in Excel. It is a missing killer... Proceed."*):
-  `erp/sheet_history.js`, W-SHEET-HISTORY 8/8 cases PASS (20 checks), mutants 5/5 killed — §6.4.
-- **S10 REPORT READER + PDF P0 DONE (witness) 2026-11-27** = build order step (1): bim-ootb `pdf/` (PR #3470). Our trial-balance PDF reads
-  back to the sheet that printed it, 144 of 144 cells at the same address, debit = credit = 40,392.44 found by arithmetic — §7.4;
-  the page (view, find, outline, Read as sheet, .xlsx, offline) — `PDF_EDITOR.md` §4.2.
-- **Reader denominator widened 2026-11-27 (bim-ootb #3472, §7.5):** 3 of 5 layouts rebuilt (trial balance, sales register, cross-tab);
-  2 are measured LIMITS (merged / centred / wrapped cells; columns that nearly touch). Next for the reader = the page's ruling lines
-  and fills as grid evidence (§7.5 "Next").
-- **Build order step (2) DONE (witness) 2026-11-27 — numbers-only PDF write-back** (bim-ootb #3477, #3478): a number changed in the
-  Read-as-sheet grid is rewritten in the same PDF, in its own box; "Download PDF" hands it back; one S9 entry per rewrite.
-  W-PDF-WRITE 67 checks PASS, mutants 6/6; page 22 PASS — `PDF_EDITOR.md` §4.3/§4.4. Limit: a digit the embedded font lacks is refused
-  or written in the family's regular face, said in words.
-- **Build order step (3) S3 Excel menu BUILT on a stand-in host 2026-11-27** (bim-ootb #3475, §8): File it / Stamp / Cell history /
-  Check history; W-SHEET-ADDIN 59 checks PASS, mutants 11/11. **REAL EXCEL NOT RUN. "File it" is NOT-WIRED in the real pane:**
-  `erp/ws_kernel.js` is node-only (reads files from disk), so the filing path has no browser runner yet (§8.3 finding 1).
-- **Reader fix 2026-11-27 (bim-ootb #3479, §7.6):** a row left stale after a consistent column edit is now NAMED, not passed over.
-- **Films (owner 2026-11-27):** `prompts/FILM_KILLER_FRONT_DOOR.md`. Film 1 "PDF and Excel are killer apps / So we open it up" = stage 1,
-  English; Film 2 = the filed document in the real kernel ERP window, its books and a report ("ERP is now a utility...").
-- **History travels inside the file 2026-11-27** (owner: *"wouldn't history be cheap and has to be in the file anyway?"*; bim-ootb #3481,
-  #3482): the downloaded PDF carries it as an attachment, the `.xlsx` in `_door_history`; reopening verifies it, binds it to the printed
-  numbers and continues the chain — `PDF_EDITOR.md` §4.5/§4.6. Not noticed: a REMOVED history (needs signing).
-- **S3b "File it" in a browser DONE (witness) 2026-11-27** (bim-ootb #3483, §9): ONE kernel for node and browser; plain page
-  `erp/sheet_addin/file_it.html`; the pane's File it wired.
-- **S3c the filed document in the REAL ERP window DONE (witness) 2026-11-27** (bim-ootb #3484, §10; owner: *"show the document in the real
-  ERP window too"*): "Open in the ERP" → the Invoice window, lines and posting; applied once per entry hash; no per-window code.
-- **S4 WPS 2026-11-27** (bim-ootb #3486, §11): the menu for WPS on the same shim, proven on a stand-in. **Real WPS on this machine**
-  (snap 10.1.0.6757, §13, #3487): its WRITER keeps hidden sheets, chunks, formula results and files the same invoice; its MENU cannot run
-  (no add-in fetched in a 50 s probe). Mobile: no add-in path found for phones → phones use our URLs with the user's file (§11.4).
-- **A check that cannot run says so 2026-11-27** (bim-ootb #3488, §12): a total holding a formula with no saved result is REFUSED and
-  named; every verdict lists which checks ran; stored history/ledger lines are ASCII-escaped.
-- **Sheet panel closable** (bim-ootb #3485, owner request).
-- **Usability as a newcomer 2026-11-28** (owner: *"Focus on its usability. If it checks out, suggest what is pending"*; bim-ootb #3494, §16): W-KILLER-USE walks
-  the three pages on the LIVE site, desktop + phone, across pages: **44 of 44 PASS** after the fixes (before: 7 + 2 fails). A sample on every page, tap-size row,
-  no phantom changes from PDF → .xlsx → Sheet history (one owner of a cell's formula, §16.2), File it names an unmarked workbook in plain words.
-  **The usability-ordered pending list is §16.4** — work THAT order, not the old group order.
-- **Short addresses + one way round 2026-11-28** (owner: *"Make apps URLs relatable for user easy usage continuity. Update user guide"*; bim-ootb #3493, §15):
-  `red1oon.github.io/bim-ootb/pdf` · `/history` · `/file-it`; each page carries the row PDF · Sheet history · File it; old addresses unchanged. Guide rewritten
-  for all three (OPEN LIST 6, 17 done). Carrying the OPEN file between pages is NOT built: it would keep the user's file in browser storage (owner's call, §15.2 point 3).
-- **The history page 2026-11-28** (bim-ootb #3489, §14): `erp/sheet_addin/history.html` gives ANY spreadsheet file a memory with no add-in:
-  Stamp, a cell's story, rewind + download that version, merge two copies with the clash shown. 95 KB on the wire, no kernel.
-- **Posting view = legacy's Account Viewer 2026-11-28** (owner: *"fix the posting view to show all 6 entries"*; bim-ootb #3490;
-  record in `prompts/ERP_IDEMPIERE_UX_PARITY.md` §ACCT-VIEWER): legacy opens on the first schema with a selector + Refresh, so the page
-  does too: 3 entries as it opens, the other 3 after picking the second schema (6 of 6 reachable); a missing tenant filter fixed.
-- **Films** (`prompts/FILM_KILLER_FRONT_DOOR.md`; files in `~/Videos/`, never pushed): Film 1 `..._PART1_EN_rc2.mp4` (owner: *"Film 1 is
-  good"*), Film 2 `..._PART2_EN_rc1.mp4` (owner 2026-11-28: *"Film 2 poated"*), Film 3 `..._PART3_EN_rc1.mp4` (the memory; sent to the
-  owner, not yet answered).
+## ▶▶ RESUME HERE — call sign **'resume killer'** (consolidated 2026-11-28; read this block, then the section it points to)
 
-### ▶ OPEN LIST — work it top to bottom (WORK-TO-ZERO); written at the 2026-11-28 wrap-up (owner: *"wrap up, update context well so new session will 'resume killer' and resolve all above"*)
-Each item names where its evidence is. Mark `✅ DONE (witness)` or `⛔ BLOCKED: <the one question>` here as you go.
+### What this lane is (one paragraph)
+**Start from the user's own file, not from an ERP window.** A PDF report or a spreadsheet the user already has is opened in our browser pages, read, checked
+("does it add up"), edited, given a memory (history inside the file), and — only when the user chooses — filed into the ERP's books. Nothing is uploaded,
+nothing is installed, it runs on a phone. Owner's words: a harmless "Trojan horse" (*"the entry point as simple as their own Excel"*), *"ERP in Excel format,
+without some baggage"*, *"a good back door entry to the ERP when user choses"*; stage 1 is standalone and borrows single ERP pieces (*"sharding of pieces"*).
+Sister files: `prompts/PDF_EDITOR.md` (the PDF side: clean-room rule, KillerPDF's 14 feature groups as the yardstick), `prompts/FILM_KILLER_FRONT_DOOR.md`
+(the film), `prompts/ERP_IDEMPIERE_UX_PARITY.md` §ACCT-VIEWER (the posting view).
 
-**A. ✅ CLOSED by the owner 2026-11-28: *"Films has delivered the idea. Focus on its usability."* The films stand as made; items 1-5 and 7 are not to be worked.**
-**(was) A. Waiting on the owner (ask once, together; do not block the rest on them)**
-1. Film 2 cover wording: "PART 2 · THE BOOKS" / "PDF and Excel are killer apps" / "ERP is now a utility" / "from your own file, into the books".
-2. Film 3 cover wording: "PART 3 · THE MEMORY" / "PDF and Excel are killer apps" / "History is the missing killer" / "your own file, with a memory inside it".
-3. Licence line on the credits cards of Films 2 and 3: "Open source: MIT licence, except 39 ERP files under GPL-2.0-only." Film 1's card
-   says only "Open source, MIT licence": make it match?
-4. Film 2's posting shot shows the OLD view (3 entries + a "more schemas" note). The film is already posted. Redo the shot with the
-   selector (both schemas), or leave it?
-5. Does Film 3 go out as it is (rc1)?
+### Where it stands (live on https://red1oon.github.io/bim-ootb/)
+| Page (short address) | Does today | Spec / results |
+|---|---|---|
+| **PDF** `/pdf` | view, find, outline, password; Read as sheet with the adds-up check; change a NUMBER in place in the same PDF; history inside the PDF and the .xlsx; a sample report; works offline; on a phone: page 1 in ≤ 2.4 s on 25 real PDFs (2,499 pages: 1.3 s), ≤ 5 pages drawn, the page on screen is the page read | §7, PDF_EDITOR §4.2-4.6, §16, §17 |
+| **Sheet history** `/history` | any .xlsx gets a memory: Stamp, a cell's story, rewind, merge two copies; a sample with 3 stamps | §14, §16 |
+| **File it** `/file-it` | files a marked invoice workbook into the demo books (GardenWorld), hands the workbook back with a signed ledger line; Open in the ERP (Invoice window + posting) | §9, §10, §16 |
+| Excel / WPS menu | built and witnessed on stand-in hosts only; real Excel never run, real WPS menu cannot load here | §8, §11, §13 |
+The three pages link to each other (row PDF · Sheet history · File it). User guide: https://red1oon.github.io/BIMCompiler/PdfPageGuide/ (§15-§16 state).
 
-**B. Guide and films (small)**
-6. ✅ DONE (witness) 2026-11-28, §15.4: guide rewritten for all three pages + their short addresses, published by the seatbelt, read back live. Was: `docs/PdfPageGuide.md` covers view + Read as sheet only. Add: change a number / Download PDF, the history inside the file, the
-   filing page (`file_it.html`), "Open in the ERP", and the history page (`history.html`). Film 3's closing card dropped its guide link
-   for this reason (film RESULT). Deploy ONLY with `scripts/safe_gh_deploy.sh`; a fresh checkout lacks `docs/glassbowl_data.db` (git-ignored,
-   live on the site) and the guard aborts: restore it with `git show origin/gh-pages:glassbowl_data.db > docs/glassbowl_data.db` first.
-   That trap needs a permanent answer (where that file should live) — one line to the owner if it is not obvious.
-7. (6 is done; still waits on the answers to A.) The short addresses of §15 are the ones for the cards: `red1oon.github.io/bim-ootb/pdf` · `/history` · `/file-it`. After 6 (and the answers to A), one rebuild per film that needs it: guide links on the closing cards; Film 1's last card still
-   links the app.
+### In flight at this rewrite (check the results sections before anything else)
+1. **§18 the one-page editor** ("Edit as a sheet", owner's design): the original page stays the base, an edit layer only where we can write back, live table
+   totals ON the page, export = the original file with only edited runs changed, closest-font substitution with a red on-screen box, undo/redo. The CURRENT spec
+   is **§18.0**; results go to §18.4+. Built by an agent (bim-ootb branch `feat/edit-as-sheet`).
+2. **§19 the report engine in the live app** (NinjaExcel PDF printer + Thai SARA AM fix), so "a report printed by our ERP" can be opened, edited and filed back.
+   Results go to §19.1. Built by an agent (bim-ootb branch `feat/ninja-pdf-main`); it may stop on a ⛔ of the NINJAEXCEL lane (moving the pill code).
+3. **FILM v2 "ONE PAGE"** (`FILM_KILLER_FRONT_DOOR.md`, last section): the old Parts 1-3 are SCRUBBED (owner). Shoot only after §18 and §19 are merged and
+   witnessed and the guide covers them. No beat faked; the owner's own PDFs never on screen.
 
-**C. False passes / correctness (do these before new features)**
-8. The PDF page's `.xlsx` after a real WPS re-save: totals C28 / F28 come back as float residue (4.77e-15, 2.41e-13) where 0 was written
-   (§13). Judge the PDF-side checks on a WPS-saved file; compare to the cent, never to exactly 0.
-9. History: the TIME of an entry is outside the hash (edited → still verifies; §14 finding 1; the ERP journal has the same shape).
-   Decide with the kernel's owner section whether `at` joins the hashed fields (it changes the journal format: a twin / ONE-format
-   question, so spec it first and keep one verifier).
-10. The kernel's `verifyJournal` accepts a changed "value before" and does not check a merge entry's carried entries (PDF_EDITOR §4.6
-    finding 3; §14 finding 2). Today only `SheetHistory.verify` catches both. One verifier should.
-11. Re-merging the same other copy after more stamps re-opens clashes already settled as "mine" (§14 finding 5): needs a merge base.
-12. A file re-saved by a writer that stores no formula results makes every formula cell read as "changed" on the history page (§14
-    finding 4): true but noisy; say why on the page, or do not list result-only differences.
-13. Excel/WPS Stamp would record the PDF page's `_door_break` cell and a second page's sheet as cleared (PDF_EDITOR §4.6 finding 5): not judged.
-14. An emoji typed into a VISIBLE cell and re-saved as an inline string is misread by the vendored SheetJS (§12 "Not fixed").
+### Owner rulings that still bind (dated, verbatim where short)
+- Two stages: standalone first, the ERP when the user chooses (2026-11-27). History belongs in the file (*"has to be in the file anyway"*).
+- The films delivered the idea; focus on usability (2026-11-28). Old films scrubbed; ONE new film, own-file first, the ERP closes the loop (2026-11-28).
+- One page, edit where understood, keep the original around it; substitute the closest font with a red "font not same" box and Ctrl-Z rather than lock (2026-11-28).
+- Novelty: the general idea is NOT new (Word PDF Reflow since 2013; Acrobat edits text without touching images and warns on font substitution). Say "may be new
+  as a combination" only; **no novelty claim until a prior-art search is done** (§18.1, item P8 below).
+- Privacy: the owner's PDFs on this machine are measured by number only; no name, path or content in any commit, log, PR, film or card (§17).
+- Clean-room: never read KillerPDF's (GPLv3) source.
 
-**D. Real applications (nothing below has ever run in the real app)**
-15. REAL EXCEL: sideload `erp/sheet_addin/manifest.xml`; first question = does the pane load and get the workbook; then File it, Stamp,
-    Cell history, Check history; then what Excel's own writer does to `_door_*` sheets. No Excel on this machine: ⛔ until the owner
-    names a machine, unless Excel on the web is reachable.
-16. WPS: this machine's snap `wps-office 10.1.0.6757` saves our files correctly (§13) but its MENU cannot load (no add-in fetched in a
-    50 s probe; `libkso.so` does contain `KJSPlugin` strings, so another install path is not excluded). Needs a WPS build that takes
-    add-ins; first question = does a pane served from our https URL receive `window.Application`.
-17. ✅ DONE 2026-11-28 (guide, Limits: "WPS and your name", read back live §15.4); the never-commit half stands as a rule. Was: WPS writes the local OS user name into `docProps/core.xml` `lastModifiedBy` (§13): tell the user in the guide; never commit such files.
-18. S5 LibreOffice menu on the same shim: LibreOffice Calc is NOT installed here (`soffice` has Writer/Math/Base only).
-19. A real phone: `file_it.html` loads 33.7 MB / 123 MB heap (§9, §11.4); `history.html` and the PDF page are light. Device emulation only so far.
-20. Viewers: the rewritten PDF and its attachment are judged in poppler and pdf.js only (no Acrobat / Preview / Chrome panel).
+### Pending, in the order a user meets it (WORK-TO-ZERO; mark `✅ DONE (witness)` or `⛔ BLOCKED: <question>`; `OL-n` = the 2026-11-28 list number it replaces)
+- **P1 File it files only the sample** — marking one's own invoice layout (S7 "Mark my invoice", §4) is not built. First wall a real user hits. (§16.4-1)
+- **P2 The reader judges few outside layouts** — of 16 table PDFs on this machine: 2 add up, 3 "do NOT add up" (two look like misreads), 9 not judged. Widen it on
+  real statements/reports: running-balance column, tables over several pages, ruling lines as grid evidence. The users' top wish (§17.5). (OL-21)
+- **P3 Free organise and sign** — merge / split / reorder / fill / sign without a paywall: high demand, cheap with pdf-lib (PDF_EDITOR P1/P2). (§17.5)
+- **P4 File it weight and offline** — 11.3 MB first visit; no offline reload (no service worker over `erp/sheet_addin/`); never on a real phone. (OL-29, OL-19)
+- **P5 Open file across pages** — owner's call: it keeps a copy in browser storage (§15.2-3).
+- **P6 Real applications** — real Excel never run (needs a machine or Excel on the web) (OL-15); a WPS build that loads add-ins (OL-16); LibreOffice Calc not
+  installed (OL-18); viewers beyond poppler and pdf.js (OL-20).
+- **P7 Plain words** — font names in edit messages; File it's engine still says "_door_tags" (§16.4-5).
+- **P8 Prior-art search** for the front door / one-page editor (OL-24; §18.1) before any film card or page says "new".
+- **P9 Correctness under the hood** — entry time outside the hash (OL-9); one verifier, not kernel + SheetHistory (OL-10); merge base (OL-11); noisy formula results
+  from writers that store none (OL-12); `_door_break` stamped as cleared (OL-13); emoji in an inline string (OL-14).
+- **P10 ERP side** — Account Viewer parity gaps (OL-25); two workbooks into one set of books refused (OL-26); signing / removed history / same-origin hand-over
+  (OL-27); demo books only (OL-28); the outside request to idempiere.org (OL-30); red ERP witnesses never triaged (OL-31); one shared SHA-256 (OL-32).
+- **P11 CI** — none of this lane's witnesses run in CI; node ones first (OL-33). **P12** history-page grid limits and styles (OL-34). **P13** PDF write-back
+  limits: missing digit in a subset, one-byte fonts, xref streams, forms (OL-23) — largely absorbed by §18. **P14** WPS writes the OS user name into files:
+  told in the guide ✅; never commit such files (OL-17).
+- **Docs deploy trap:** a fresh checkout lacks git-ignored `docs/glassbowl_data.db` (live on the site) and the seatbelt aborts: restore it with
+  `git show origin/gh-pages:glassbowl_data.db > docs/glassbowl_data.db` first; a permanent home for it is still undecided.
 
-**E. Reader and PDF depth**
-21. Reader: the page's ruling lines and cell fills as grid evidence (§7.5 "Next"): showcase 7 of 41, geometry 14 of 18, the
-    204-column stress sheet 585 of 796. Multi-page tables, scans: not started.
-22. Merge the report PDF engine from bim-compiler `origin/ninja-xtab2` / bim-ootb `origin/feat/ninja-template-pill` (the "new layout" OUT
-    of the ▶▶ block; the user manual already describes its PDF download) and fix its Thai SARA AM defect (`จำนวน` printed as `จำานวน`, §7.5).
-23. PDF write-back limits (`PDF_EDITOR.md` §4.4): a digit missing from the embedded subset (3 cells stay refused), one-byte fonts,
-    cross-reference streams, form text. Then the editor's own next phase P1 organise.
-24. §6.1's prior-art table records no source per row ("sources in that session's reply" are gone): re-source it before any film or
-    page quotes it. No prior-art search exists yet for the PDF / spreadsheet front door itself.
-
-**F. ERP side**
-25. Account Viewer, what is still unlike legacy (`ERP_IDEMPIERE_UX_PARITY.md` §ACCT-VIEWER "Not done"): the other columns, the query
-    tab's filters, sort / group, Re-Post, Export, Zoom, and "Post now?" on a record with Posted ≠ Y. Twin rule: these are open, not accepted.
-26. Two different workbooks into ONE set of books are refused (§10 finding 2: both mint the same record ids from the seed).
-27. Signing: who wrote an entry; a removed history; any same-origin page can write a hand-over (§10 finding 4).
-28. Demo books only (GardenWorld, one fixed login): no tenant or user choice on `file_it.html` (§9).
-29. `file_it.html` does not come back on an offline RELOAD (no service worker covers `erp/sheet_addin/`, §9).
-30. The ERP page makes one outside request, `GET https://www.idempiere.org/short-donate/`, from a context-help row (§10 finding 8): trace it.
-31. Witnesses that load `ws_kernel.js` and are red on main before and after this lane's work (9 to 11 files, §9.5 / §10.4), plus
-    `poc_posted_column_live`, `poc_critic_post_live`, `poc_critic_lensswap_live`, `poc_preview_demo` and W-MANIFEST-ROUNDTRIP C9 locally:
-    never investigated. Triage: which are real.
-32. A fourth hand-written SHA-256 now exists (§9.5 finding 6): one shared file.
-
-**G. Housekeeping**
-33. None of this lane's witnesses is wired into CI (bim-ootb `.github/workflows/ci.yml`): W-SHEET-DOOR, -HISTORY, -ADDIN, W-FILE-IT,
-    W-DOOR-ERP, W-SHEET-WPS (+page, +real), W-HISTORY-PAGE, W-ACCT-VIEWER, and `pdf/tests/*`. The node-only ones are cheap: wire them first.
-34. History page: inserted rows / columns are not understood as such; the grid draws at most 200 x 40 cells; cell styles are not kept in
-    any download (SheetJS community build).
-
-**How to run things (so the next session does not rediscover them)**
-- Witnesses (bim-ootb, from a `/tmp/wt-*` worktree off `origin/main`, never the shared checkout): `node pdf/tests/witness_sheet_reader.js`
-  (`SREAD_MUTANTS=1`), `witness_pdfed_p0.js`, `witness_pdf_write.js`, `witness_pdf_history.js`; `node erp/tests/witness_sheet_door.js`,
-  `witness_sheet_history.js`, `witness_sheet_addin.js`, `witness_sheet_wps.js`; page witnesses need
-  `env -u DBUS_SESSION_BUS_ADDRESS node <file>` (headless, `--disable-gpu`): `pdf/tests/witness_pdfed_page.js`, `witness_pdf_write_page.js`,
-  `witness_pdf_history_page.js`, `erp/tests/witness_file_it.js`, `witness_door_erp*.js`, `witness_history_page.js`, `witness_acct_viewer.js`,
-  `witness_sheet_wps_page.js`, `witness_sheet_wps_real.js` (real WPS under Xvfb). Read the log, not the exit code.
-- Live pages (short addresses, §15): `https://red1oon.github.io/bim-ootb/pdf/` · `.../bim-ootb/history/` · `.../bim-ootb/file-it/` (real files `erp/sheet_addin/history.html`, `file_it.html`) ·
-  WPS add-in base `.../erp/sheet_addin/wps/` · Excel manifest `.../erp/sheet_addin/manifest.xml` · guide `https://red1oon.github.io/BIMCompiler/PdfPageGuide/`.
-- Agents were used for every slice on 2026-11-27/28 (owner: *"Use agents to speed up work"*): one bounded slice each, own worktrees,
-  spec appended as its own numbered section here, results under it. Keep that shape.
+### How to run things
+- Witnesses (bim-ootb, from a `/tmp/wt-*` worktree off `origin/main`, never the shared checkout; deps by git-ignored symlinks
+  `ln -sfn ~/bim-ootb/node_modules node_modules; ln -sfn ~/bim-ootb/tests/node_modules tests/node_modules`; puppeteer from `~/bim-compiler/node_modules`):
+  node: `pdf/tests/witness_sheet_reader.js` (`SREAD_MUTANTS=1`), `witness_pdfed_p0.js`, `witness_pdf_write.js`, `witness_pdf_history.js`;
+  `erp/tests/witness_sheet_door.js`, `witness_sheet_history.js`, `witness_sheet_addin.js`, `witness_sheet_wps.js`, `witness_door_urls.js`.
+  Browser (`env -u DBUS_SESSION_BUS_ADDRESS node <file>`, headless): `pdf/tests/witness_pdfed_page.js`, `witness_pdf_write_page.js`, `witness_pdf_history_page.js`,
+  `witness_pdf_mobile.js` (`PDFM_LIST=<file>` for local PDFs, `PDFM_URL=` for the live page), `erp/tests/witness_file_it.js`, `witness_door_erp*.js`,
+  `witness_history_page.js`, `witness_acct_viewer.js`, `witness_sheet_wps_page.js`, `witness_sheet_wps_real.js` (real WPS under Xvfb),
+  `witness_killer_usability.js` (`USE_URL=` live), `witness_door_urls_page.js` (`DOORURL_URL=` live). Read the log, not the exit code.
+- Changed `erp/` JS needs `node scripts/bump.js <file> --write` (runs the legacy-parity gate first, ~10 min; run it in the background) and
+  `node scripts/gen_manifest.js --check` PASS. `pdf/` is network-first (no version to bump).
+- Independent PDF readers here: poppler (`pdfinfo`, `pdftotext -raw` — default mode drops accounting dashes, `pdfdetach`, `pdftoppm`), ghostscript, pdfminer.
+  WPS is a snap (`/snap/bin/wps-office.et`), fixtures under `$HOME`; LibreOffice Calc is not installed.
+- Live: `https://red1oon.github.io/bim-ootb/pdf/` · `/history/` · `/file-it/` · WPS add-in base `/erp/sheet_addin/wps/` · Excel manifest
+  `/erp/sheet_addin/manifest.xml` · guide `https://red1oon.github.io/BIMCompiler/PdfPageGuide/`. Docs publish only with `scripts/safe_gh_deploy.sh`.
+- Way of working (owner: *"Use agents to speed up work"*): one bounded slice per agent, own worktree, spec appended as its own numbered section here BEFORE
+  code, results under it; the owner's PDFs only through `PDFM_LIST`. The full 34-item list of 2026-11-28 morning is in git history of this file (before PR "consolidate").
 
 ## 0. Why (owner, 2026-11-27)
 The owner wants a harmless "Trojan horse": users start from what they already use, their own Excel or PDF, with a simple
@@ -1638,6 +1558,33 @@ Owner, 2026-11-28, verbatim: *"since we are in our own browser and we already lo
 that can then export back to PDF or Excel?"* — then, on the two-mode proposal (sheet by default where a table is found, the original otherwise): *"Go with you"*.
 Earlier the same day: *"Can we merge Excel table features right into our PDF space instead of it opening as a separate panel?"* — this section answers both.
 
+### 18.0 THE CURRENT SPEC (consolidated 2026-11-28 from 18.2, 18.3, 18.5, 18.6 — read this; those sections are kept as the record of how it got here)
+**One page. Edit where we understand; keep the original everywhere else.**
+- **The page:** the ORIGINAL PDF page is drawn by pdf.js as the base — images, drawings, every font, untouched. On top sits an **edit layer**, only over runs
+  we can write back. Tap / double-click a word or number to edit it where it stands; nothing else on the page moves (the old run's box is masked on screen).
+- **Table features on the page, no side panel:** totals the reader found are live `SUM`s, recomputed on every edit and marked on the page (adds up / does not,
+  with the gap); drag across numbers → sum and count; tap a total → its formula and its rows lit. The old side grid stays behind a **Show grid** button.
+- **Fonts, in this order:** (1) the run's own embedded font when it holds every glyph; (2) another face of the same family in the file; (3) the closest
+  standard PDF font (Helvetica / Times / Courier ± bold / italic) from the font's own description, best width fit. Any substitution shows a **red on-screen
+  box "font not same: <from> → <to>"** until the user accepts it or undoes it; the box is never written into the PDF; the export lists every substitution.
+  **Locked** only what no font can show (e.g. Thai: the standard fonts have no Thai glyphs; an embedded font comes in slice B), images, vector art, and text
+  that is part of a picture — a tap says why.
+- **Undo / redo:** Ctrl-Z / Cmd-Z, Ctrl-Shift-Z, and Undo / Redo buttons for phones. An undo is its own history entry (the inverse edit), so the history in the
+  file stays true and verifying.
+- **Export:** PDF = **the original file with only the edited runs changed**, by the one in-place engine (`pdf/pdf_write.js`, widened from numbers to any text
+  run); every other object byte-identical, image streams never re-encoded. `.xlsx` as before (SUM formulas, the history sheet). No second PDF writer.
+- **Still true, said plainly:** any change breaks a digital signature; adding / deleting rows and sorting re-lay a table's region (slice B: that region is
+  redrawn by us, the rest stays original); several pages in one sheet, embedded fonts and OCR come later.
+- **Claims (W-EDIT-SHEET, `pdf/tests/witness_edit_sheet.js`, verdict `§EDSHEET-VERDICT`):** **H1** the edit layer covers every writable run of page 1 and no
+  locked one, each locked run names why · **H2** text and number edits round-trip (our reader and poppler read the new text at the same boxes; the old text is
+  gone) · **H3 integrity:** every object not holding an edited run byte-identical, every image stream byte-identical, a poppler raster changes 0 pixels outside
+  the edited boxes · **H4/H5** a missing glyph → substituted by the order above with the red box and a `§EDSHEET-FONT` line, or locked — never written wrong;
+  the box absent from the exported PDF · **H6** edit → undo → the export equals the original run, all else byte-identical; redo re-applies; the history verifies
+  · **H7** accept removes the box, keeps the substitution · **E3** live totals (D10 +1 → its total marked with gap 1.00; consistent edits → adds up), one S9
+  entry per edit · **E5** the .xlsx re-reads to the same cells with SUM formulas and a verifying history · **E7** phone: fits 390 px, a cell tap edits without
+  scrolling the page, W-PDF-MOBILE still all PASS on the corpus and on the owner's PDFs. **Mutants:** a run dropped from the layer → H1; total not recomputed →
+  E3; an untouched object rewritten → H3; the red box written into the PDF → H5; undo not recorded → H6.
+
 ### 18.1 Novelty, stated honestly (the owner asked "my idea is novel isn't it?")
 The GENERAL idea is not new: Microsoft Word has opened a PDF as an editable copy and saved it back as PDF since Word 2013 ("PDF Reflow", a converter that makes
 a copy; complex layouts break; scans are not editable — support.microsoft.com/word/opening-pdfs-in-word, microsoft.com/en-us/microsoft-365/blog/?p=836);
@@ -1645,7 +1592,7 @@ Acrobat exports PDF to Excel/Word. What MAY be new is the combination: in the br
 printed totals before it is trusted; every cell is traced to its box on the original page; the history travels inside the file; two modes chosen per document;
 the result can be filed into the ERP. **No claim of novelty is made until a prior-art search is done** (OPEN LIST 24).
 
-### 18.2 Design (owner delegated: "Go with you")
+### 18.2 Design (owner delegated: "Go with you") — SUPERSEDED by 18.0 (two modes and a fresh PDF writer were dropped, 18.5)
 - **Two modes, one page.** After the text is read, the reader looks at page 1. A table found (cells ≥ 12 in ≥ 3 columns, any verdict) → the file opens in
   **Edit as a sheet**; otherwise in **Keep the original** (today's viewer + numbers-only in-place write-back, unchanged). A switch at the top flips between them;
   the choice and why are said in the status line ("Opened as a sheet: a table of 144 cells was found on page 1").
@@ -1661,7 +1608,7 @@ the result can be filed into the ERP. **No claim of novelty is made until a prio
   out" — counted from the page, never silently lost); add / delete rows, sort (slice B); more than one page in the sheet (slice B); embedded fonts (slice B);
   scans (OCR, later).
 
-### 18.3 Claims for slice A (W-EDIT-SHEET, `pdf/tests/witness_edit_sheet.js`; verdict `§EDSHEET-VERDICT PASS|FAIL|INCONCLUSIVE judged=N failed=M`)
+### 18.3 Claims for slice A — SUPERSEDED in part by 18.0 (E1, E2, E4, E6 replaced by H1-H7) (W-EDIT-SHEET, `pdf/tests/witness_edit_sheet.js`; verdict `§EDSHEET-VERDICT PASS|FAIL|INCONCLUSIVE judged=N failed=M`)
 - **E1 mode chosen right:** the trial balance opens as a sheet ("144 cells"); a text-only corpus PDF (market report, page 1) opens as the original; the switch flips both ways.
 - **E2 our page is faithful:** every word of page 1 is drawn, at its box within 0.5 pt (from the model); every ruling line pdf_reader finds is drawn. Exposes: dropped words.
 - **E3 edit anywhere:** a text cell (an account name) and a number cell changed in place; the totals recompute; D10 +1 → its total marked "does not add up" with

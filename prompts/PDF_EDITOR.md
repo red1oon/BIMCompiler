@@ -3,7 +3,7 @@
 # in any browser, offline, the file never leaving the device. Spec first, witness first, EXTRACT ONLY. READ THE LOG after every
 # run (§PDFED-* lines); the exit code is not evidence. Code will live in bim-ootb (`pdf/` page + engine); this file is the lane record.
 
-## ▶ RESUME HERE (2026-11-27) — call sign **'resume killer'**: start at the ▶▶ block of `prompts/SHEET_FRONT_DOOR.md` (one package, build order)
+## ▶ RESUME HERE (2026-11-28) — call sign **'resume killer'**: start at the ▶▶ block of `prompts/SHEET_FRONT_DOOR.md`. The PDF editor is now ONE page that edits where it understands and keeps the original around it: its current spec is SHEET_FRONT_DOOR §18.0 (it absorbs this file's P4 text-edit phase); this file keeps the clean-room rule, the KillerPDF yardstick (§2) and the write-back + history results (§4.3-4.6)
 - **P0 VIEW DONE (witness) 2026-11-27** with the S10 report reader: bim-ootb `pdf/` (PR #3470), results §4.2. **1 of 14 groups** (G1) is in part at parity:
   open, pages on demand, find, outline, password and damaged files; NOT yet: the 5 view modes, tabs, split panes, clickable links.
 - **P4 NARROW DONE (witness) 2026-11-27: numbers only**, rewritten in the box the source map names (bim-ootb #3477, #3478; spec §4.3,
