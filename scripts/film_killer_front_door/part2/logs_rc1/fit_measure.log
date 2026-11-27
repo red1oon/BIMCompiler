@@ -1,0 +1,19 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT b1a cue=0.00 room=998.70 dur=4.76 -> DETAIL slack=+993.94 words=18
+§NARR_FIT b1b cue=0.00 room=998.70 dur=4.64 -> DETAIL slack=+994.06 words=16
+§NARR_FIT b1c cue=0.00 room=998.70 dur=7.92 -> DETAIL slack=+990.78 words=22
+§NARR_TONE b1c#0 F YN rose=5.0st endDelta=+3.1st want=rise OK "And the PDF?"
+§NARR_FIT b2a cue=0.00 room=998.70 dur=6.06 -> DETAIL slack=+992.64 words=19
+§NARR_TONE b2a#0 F YN rose=5.0st endDelta=+4.1st want=rise OK "And the history?"
+§NARR_FIT b2b cue=0.00 room=998.70 dur=1.57 -> DETAIL slack=+997.13 words=6
+§NARR_FIT b3 cue=0.00 room=998.70 dur=4.16 -> DETAIL slack=+994.54 words=16
+§NARR_TONE b3#0 F WH rose=0st endDelta=-3.9st want=fall OK "What if someone edits the history by hand?"
+§NARR_FIT b4a cue=0.00 room=998.70 dur=5.59 -> DETAIL slack=+993.11 words=18
+§NARR_FIT b4b cue=0.00 room=998.70 dur=6.93 -> DETAIL slack=+991.77 words=19
+§NARR_FIT b5a cue=0.00 room=998.70 dur=6.50 -> DETAIL slack=+992.20 words=22
+§NARR_TONE b5a#0 F YN rose=5.0st endDelta=+3.9st want=rise OK "Can I see it in the ERP?"
+§NARR_FIT b5b cue=0.00 room=998.70 dur=4.96 -> DETAIL slack=+993.74 words=14
+§NARR_FIT b5c cue=0.00 room=998.70 dur=8.15 -> DETAIL slack=+990.55 words=21
+§NARR_FIT b6 cue=0.00 room=998.70 dur=4.39 -> DETAIL slack=+994.31 words=13
