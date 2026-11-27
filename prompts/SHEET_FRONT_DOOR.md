@@ -1712,3 +1712,23 @@ editor more cleaner space control?"* — adopted: **substitute and FLAG instead 
   exported PDF's drawing; **H6** edit → undo → the exported PDF's edited-run text equals the original and every other object is byte-identical; redo re-applies;
   the history verifies with the undo entries; **H7** accept removes the red box and keeps the substitution. Mutants: red box written into the PDF → H5;
   undo not recorded in history → H6.
+
+
+## 19. The report engine in the live app: "a report printed by our ERP" (spec 2026-11-28, before code)
+Owner, 2026-11-28: agreed to merge the NinjaExcel report PDF engine first (OPEN LIST 22) so the new film (FILM_KILLER_FRONT_DOOR "FILM v2") can show a report
+printed by our ERP, edited on the one page and filed back. Owner, verbatim: *"Go with your suggestions."*
+**Measured before the design:** the engine is NOT on bim-ootb main. bim-ootb `origin/feat/ninja-template-pill` (last `cdf7ec8c`, sw v845; main is at v1154) adds
+`erp/ninja_template.js`, `ninja_template_xlsx.js`, `ninja_report.js`, pill changes, vendored `erp/vendor/pdfkit.standalone.js` (~53k lines, MIT) + `exceljs.min.js`
+(MIT), two sample workbooks; bim-compiler `origin/ninja-xtab2` holds `build/erp/ninja_pdf.js` (134 lines, own sheet → PDF renderer, pdfkit injected) and
+the lane file `prompts/NINJAEXCEL_TEMPLATE_ENGINE.md`, whose RESUME blocks list an open ⛔ ("re-home the pill port into `erp/overlay/ninja/`") and the unopened
+PRs. Known defect: Thai SARA AM printed wrong (`จำนวน` → `จำานวน`, §7.5). The ERP's own toolbar **Print** (`idempiere.html` ~2070, `__report.printRecord`)
+folds a receipt from the record; it is not AD_PrintFormat-driven and writes no PDF file itself — not in scope here.
+**Design:** bring the engine to bim-ootb main by the NINJAEXCEL lane's OWN plan (its RESUME blocks, its ⛔ respected: if re-homing needs an owner ruling, stop
+and say so); ONE copy of the engine (fold the two copies the lane names); pdfkit is the one PDF writer for NEW pages we draw (it embeds TTF fonts — the
+same mechanism slice B of §18 will use for Thai, no second writer); the user reaches it from the NinjaExcel pill ("Run report" → "Download PDF") as the
+manual describes. Fix SARA AM in the engine, not in the font.
+**Claims (W-NINJA-PDF; verdict `§NINJAPDF-VERDICT ...`):** **N1** the trial-balance sample prints a PDF in the browser that OUR reader (`pdf/report_reader.js`)
+reads back to the same cells and "adds up" (the round trip this film beat needs); **N2** the Thai labels extract with poppler `pdftotext -raw` equal to the source
+strings (SARA AM right: `จำนวน`); **N3** that PDF opens on the one page (§18) and a number edit round-trips (H2/H3); **N4** the lane's existing witnesses
+(W40/W41/W42, W44 Xtab2, W47 replay — as its file names them) stay green; **N5** cost logged (bytes added to the first visit of the ERP page; pdfkit loads only when
+a PDF is asked for). Mutants: SARA AM fix removed → N2; a cell dropped from the PDF → N1.
