@@ -1375,6 +1375,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#send-to-hq-and-the-hq-view" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Send to HQ, and the HQ view
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#gi-preview-ao" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4012,6 +4023,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#send-to-hq-and-the-hq-view" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Send to HQ, and the HQ view
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#gi-preview-ao" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5118,6 +5140,35 @@ and annotation. Open an entry for its detail view; a clash snag also carries a d
 confirmation. The log is kept in this browser (IndexedDB), not on a server. An empty list says <em>Use Site Camera to snap
 and save photos</em>: the camera is the mobile tool described under <strong>Mobile-only</strong> below.</p>
 <p><em>Written from the tool's own help text and code header, 2026-11-17. No screenshot yet.</em></p>
+<p><a id="send-to-hq"></a></p>
+<h4 id="send-to-hq-and-the-hq-view">Send to HQ, and the HQ view<a class="headerlink" href="#send-to-hq-and-the-hq-view" title="Permanent link">&para;</a></h4>
+<p><strong>On the phone: Send to HQ.</strong> At the top of the Issue Log, <strong>📤 Send to HQ</strong> sends the site report to head office: every
+issue in the log with its photo, and the walk you took (the points of a Walk-mode walk, each with its camera view). On a
+phone the Issue Log opens from the <strong>Inspect</strong> pill, row <strong>Issues</strong>. What happens next depends on the browser:</p>
+<ul>
+<li><strong>Not in a team:</strong> the phone's own share sheet opens with the report and the photos attached, so you can email them
+  to HQ. The status line says <em>Saved N file(s) — attach them to an email to HQ.</em> if the browser has no share sheet and
+  the files were downloaded instead.</li>
+<li><strong>In a team</strong> (this browser has joined a team in the <strong>Team</strong> panel, see the
+  <a href="https://red1oon.github.io/bim-ootb/erp/team_guide.html">Team guide</a>; the viewer on the same site uses that
+  pairing): the report goes into the team folder with nothing more to tap. It is sealed with the team key and signed by
+  this phone; nothing in the folder is readable (no building name, no issue id in the clear). The status line says
+  <em>Sent to your team folder.</em></li>
+<li><strong>No signal:</strong> the report is kept on the phone and the status line says <em>Saved on this phone — it goes to your team
+  folder when you are online.</em> When the signal comes back it sends itself; nothing is lost and nothing has to be pressed
+  again. The walk and snags themselves work with no signal: the model and the Issue Log are on the phone.</li>
+</ul>
+<p><strong>At HQ: Get from team.</strong> In a team, the Issue Log on HQ's browser shows <strong>📥 Get from team</strong> beside Send to HQ. It
+reads every phone's reports into the same Issue Log: each issue card names the phone it came from by its device code
+(as the Team panel shows it), with its photo. A phone sends its whole log each time, so an issue it sends again
+replaces its own row; it is never listed twice. A report that does not open (not signed by a team device, or
+changed on the way) is refused whole and the status line counts it as <em>refused</em>. HQ's own issues are never sent on as
+its own.</p>
+<p><strong>Replay a walk.</strong> After Get from team, the Issue Log has one row per phone that walked: <em>Walk · device code · N points ·
+tap to replay</em>. Tap it: the walk's points go on the history bar, and the bar opens. Scrub the bar and HQ's camera goes
+to where the phone's camera was at each point.</p>
+<p><em>Written from the code (<code>viewer/issues.js</code>) and the witnesses W-SEND-HQ, W-SEND-HQ-TEAM, W-HQ-VIEW and
+W-ISSUE-LOG-ROUTE (bim-compiler <code>prompts/MOBILE_PERF.md</code> §P5), 2026-11-28. No screenshot yet.</em></p>
 <h4 id="gi-preview-ao">GI Preview (AO)<a class="headerlink" href="#gi-preview-ao" title="Permanent link">&para;</a></h4>
 <p><strong>GI Preview (AO)</strong> (<strong>Alt+G</strong>, desktop only) turns on an ambient-occlusion preview using the N8AO effect. The help lists
 it as a research spike, and it is disabled on mobile because of memory. It sits in the
