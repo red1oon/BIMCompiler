@@ -20,6 +20,7 @@ const asUrl = (p) => p ? 'file://' + path.resolve(p) : null;
   if (process.argv[3] && process.argv[3].endsWith('.json')) { const j = JSON.parse(fs.readFileSync(process.argv[3], 'utf8')); q = {}; for (const k in j) q[k] = asUrl(j[k]); }
   else q = { phone: asUrl(process.argv[3]), hq: asUrl(process.argv[4]), phoneB: asUrl(process.argv[5]), hqOut: asUrl(process.argv[6]) };
   say(`§OPENER_STILLS ${Object.keys(q).filter(k => q[k]).join(',')}`);
+  say(`§OPENER_FILM ${await page.evaluate((f) => window.OPENER.setFilm(f), process.env.FILM_ID || '')}`);
   say(`§OPENER_LANG ${await page.evaluate((l) => window.OPENER.setLang(l), process.env.FILM_LANG || 'en')}`);
   const phases = await page.evaluate(() => window.OPENER.PHASES);
   const boxes = await page.evaluate(() => window.OPENER.boxes());
@@ -39,7 +40,7 @@ const asUrl = (p) => p ? 'file://' + path.resolve(p) : null;
   }
   // the zoomed end-frames must hit the boxes: read the viewBox the page ends on and recompute
   const endIntro = await page.evaluate(() => { window.OPENER.render('intro', window.OPENER.PHASES.intro.dur, {}); return document.getElementById('s').getAttribute('viewBox'); });
-  const endSend = await page.evaluate(() => { window.OPENER.render('send', window.OPENER.PHASES.send.dur, {}); return document.getElementById('s').getAttribute('viewBox'); });
+  const endSend = await page.evaluate(() => { if (!window.OPENER.PHASES.send) return 'n/a (no send phase in this film)'; window.OPENER.render('send', window.OPENER.PHASES.send.dur, {}); return document.getElementById('s').getAttribute('viewBox'); });
   say(`§OPENER_END intro_viewBox="${endIntro}" send_viewBox="${endSend}"`);
   say(`§OPENER_PAGEERRORS n=${errs.length}${errs.length ? ' ' + errs.join(' | ') : ''}`);
   await browser.close();

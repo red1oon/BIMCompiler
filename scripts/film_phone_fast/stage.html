@@ -1,0 +1,35 @@
+<!doctype html>
+<!-- ⚠ DO NOT REMOVE — Scope: FILM-M1 compositor (MOBILE_PERF.md §FILM-M1 RECORDING SPEC R4). Pure function of ONE frame descriptor:
+     background still + phone frame(s) + desktop frame + captions + finger mark. Rendered by render_stage.js; read its log. -->
+<html><head><meta charset="utf-8"><style>
+html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:#07111f;font-family:'Noto Sans','DejaVu Sans',sans-serif}
+#bg,#dark{position:absolute;inset:0}#bg{background-size:cover}#dark{background:linear-gradient(#07111f,#122a48)}
+.scr{position:absolute;overflow:hidden;border-radius:18px;box-shadow:0 0 0 6px #cfd8e3,0 18px 50px rgba(0,0,0,.6);background:#000}
+.scr img{width:100%;height:100%;display:block;object-fit:cover}
+.desk{border-radius:8px;box-shadow:0 0 0 10px #1a2433,0 0 0 13px #9fc3e8,0 18px 50px rgba(0,0,0,.6)}
+.lbl{position:absolute;color:#9fc3e8;font-weight:600;font-size:26px;text-align:center}
+.cap{position:absolute;color:#fff;font-weight:700;font-size:50px;line-height:1.15}
+.sub{position:absolute;color:#cfe3ff;font-weight:500;font-size:26px;line-height:1.35}
+.ring{position:absolute;width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:50%;border:5px solid #fff;box-shadow:0 0 0 3px rgba(0,0,0,.45)}
+</style></head><body><div id="bg"></div><div id="dark"></div><div id="app"></div>
+<script>
+'use strict';
+const esc = s => String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+function scr(src, r, cls) { return `<div class="scr ${cls || ''}" style="left:${r.x}px;top:${r.y}px;width:${r.w}px;height:${r.h}px"><img src="${src}"></div>`; }
+window.STAGE = {
+  // d = { bg, dark (0..1), phone:{src,r,tap}, desk:{src,r}, phoneB:{src,r}, labels:[{x,y,w,text}], cap, sub, capBox:{x,y,w}, capAlpha }
+  render(d) {
+    document.getElementById('bg').style.backgroundImage = d.bg ? `url("${d.bg}")` : 'none';
+    document.getElementById('dark').style.opacity = d.dark || 0;
+    let h = '';
+    if (d.desk) h += scr(d.desk.src, d.desk.r, 'desk');
+    if (d.phone) h += scr(d.phone.src, d.phone.r);
+    if (d.phoneB) h += scr(d.phoneB.src, d.phoneB.r);
+    for (const L of d.labels || []) h += `<div class="lbl" style="left:${L.x}px;top:${L.y}px;width:${L.w}px;opacity:${L.a == null ? 1 : L.a}">${esc(L.text)}</div>`;
+    if (d.phone && d.phone.tap) { const k = d.phone.r.w / 456; h += `<div class="ring" style="left:${d.phone.r.x + d.phone.tap[0] * k}px;top:${d.phone.r.y + d.phone.tap[1] * k}px"></div>`; }
+    if (d.cap && d.capAlpha > 0) { const b = d.capBox; h += `<div class="cap" style="left:${b.x}px;top:${b.y}px;width:${b.w}px;opacity:${d.capAlpha}">${esc(d.cap)}</div>`;
+      if (d.sub) h += `<div class="sub" style="left:${b.x}px;top:${b.y + (b.subDy || 140)}px;width:${b.w}px;opacity:${d.capAlpha}">${esc(d.sub)}</div>`; }
+    document.getElementById('app').innerHTML = h;
+  },
+};
+</script></body></html>

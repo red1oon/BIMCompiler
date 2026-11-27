@@ -1,0 +1,10 @@
+§OPENER_STILLS phone,phoneOut,phoneB,phoneBOut,hq,hqOut
+§OPENER_FILM m1
+§OPENER_LANG en
+§OPENER_BOX phone x=732 y=73 w=456 h=933
+§OPENER_BOX phoneB x=732 y=73 w=456 h=933 same_as_phone=true
+§OPENER_BOX hq x=0 y=0 w=1920 h=1080
+§OPENER_FRAMES phase=intro dur=3.2 expected=96 written=96 OK
+§OPENER_FRAMES phase=outro dur=4 expected=120 written=120 OK
+§OPENER_END intro_viewBox="414.14814814814815 634.8333333333334 103.70370370370368 58.33333333333332" send_viewBox="n/a (no send phase in this film)"
+§OPENER_PAGEERRORS n=0

@@ -36,7 +36,10 @@ const STR = {
             ['Kepakaran kekal dalam syarikat','Pengguna mahir anda menjalankan dan meluaskannya dengan arahan yang sama.'],
             ['Tiada AI di dalam','Input sama, jawapan sama. Data anda kekal milik anda.']] },
 };
-let LANG='en'; const T=(k)=>(STR[LANG]&&STR[LANG][k]!==undefined?STR[LANG][k]:STR.en[k]);
+// FILM-M1 "the phone, fast" (MOBILE_PERF.md §FILM-M1): same world, its own captions/phases; the trailer (film '') is unchanged
+const M1 = { en: { hospital:'Site A', civil:'Site B', cap1:'The phone, fast.', sub1:'Walk the site, snag it, and HQ sees the same view.', end1:'Fast on the phone.', end2:'Every step on the record.' } };
+let FILM='';
+let LANG='en'; const T=(k)=>(FILM==='m1'&&(M1[LANG]||M1.en)[k]!==undefined?(M1[LANG]||M1.en)[k]:STR[LANG]&&STR[LANG][k]!==undefined?STR[LANG][k]:STR.en[k]);
 // ---------- world geometry (all in 1920x1080 world units) ----------
 const W = { phoneA:{x:452,y:636,w:28,h:56}, hqScreen:{x:1482,y:636,w:256,h:144}, tower:{x:1290,top:470,base:880} };
 const SITES = [
@@ -172,7 +175,16 @@ const PHASES = {
   send:  { dur: 3.4 },   // out of the Civil Works phone, both signals return, the stacks fly to HQ → zoom into the HQ screen
   outro: { dur: 8.0 },   // out of the HQ screen to the overview, then the benefits card (rows one by one, held to read)
 };
+const PHASES_M1 = { intro: { dur: 3.2 }, outro: { dur: 4.0 } };
+function stateAtM1(phase, t, q){
+  const m=M1[LANG]||M1.en, st={ cam:OVER, linkOn:{A:true,B:true}, stack:{A:0,B:0}, packets:[], hqLit:1, phoneHref:q.phone||null, phoneBHref:q.phoneB||null, hqHref:q.hq||null, cap:'', sub:'', capAlpha:0, endCard:0, blink:false };
+  if (phase==='intro'){ st.cap=m.cap1; st.sub=m.sub1; st.capAlpha=clamp(t/0.3,0,1)*clamp((2.3-t)/0.25,0,1); st.cam = t<2.2 ? OVER : camLerp(OVER, PHONE_FULL, (t-2.2)/0.9); }
+  else if (phase==='outro'){ st.phoneHref = q.phoneOut || q.phone || null; st.phoneBHref = q.phoneBOut || q.phoneB || null; st.hqHref = q.hqOut || q.hq || null;
+    st.cap=m.end1; st.sub=m.end2; st.capAlpha=clamp((t-0.6)/0.4,0,1); }
+  return st;
+}
 function stateAt(phase, t, q){
+  if (FILM==='m1') return stateAtM1(phase, t, q);
   const st={ cam:OVER, linkOn:{A:false,B:false}, stack:{A:3,B:3}, packets:[], hqLit:0, phoneHref:q.phone||null, phoneBHref:q.phoneB||null, hqHref:q.hq||null, cap:'', sub:'', capAlpha:0, endCard:0, blink: Math.floor(t*3)%2===0 };
   // seams: the zoom INTO a screen shows that clip's first frame, the zoom OUT its last
   if (phase!=='intro') st.phoneHref = q.phoneOut || q.phone || null;
@@ -201,7 +213,8 @@ function stateAt(phase, t, q){
 // screen rect (output pixels) of a world rect under camera c
 function toScreen(r,c){ const k=1920/c.w; return { x:Math.round((r.x-c.x)*k), y:Math.round((r.y-c.y)*k), w:Math.round(r.w*k), h:Math.round(r.h*k) }; }
 window.OPENER = {
-  PHASES,
+  get PHASES(){ return FILM==='m1' ? PHASES_M1 : PHASES; },
+  setFilm(f){ FILM = (f==='m1') ? 'm1' : ''; return FILM || 'trailer'; },
   setLang(l){ LANG = STR[l] ? l : 'en'; return LANG; },
   render(phase, t, q){ draw(stateAt(phase, t, q||{})); },
   // where footage goes when fully zoomed (phone screen / HQ screen), in output pixels

@@ -1,0 +1,16 @@
+§VOX F=af_heart M=am_michael speed_mult=1.0 base=1.000
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT intro cue=0.10 room=2.80 dur=1.53 -> DETAIL slack=+1.27 words=7
+§NARR_TONE intro#0 F YN rose=8.0st endDelta=+1.8st want=rise OK "Is it really fast, on a phone?"
+§NARR_FIT ready cue=3.20 room=2.20 dur=1.59 -> SHORT slack=+0.61 words=5
+§NARR_FIT fab cue=5.70 room=1.60 dur=1.48 -> DETAIL slack=+0.12 words=4
+§NARR_FIT nav_swipe cue=7.60 room=3.00 dur=2.53 -> DETAIL slack=+0.47 words=7
+§NARR_FIT walk_start cue=10.90 room=3.20 dur=2.77 -> DETAIL slack=+0.43 words=8
+§NARR_FIT walk_steps cue=14.40 room=3.17 dur=1.79 -> DETAIL slack=+1.38 words=6
+§NARR_FIT snag cue=17.87 room=6.86 dur=3.55 -> DETAIL slack=+3.31 words=10
+§NARR_FIT scrub cue=25.03 room=3.50 dur=1.94 -> DETAIL slack=+1.56 words=6
+§NARR_FIT hq_open cue=28.83 room=3.20 dur=1.87 -> SHORT slack=+1.33 words=5
+§NARR_FIT site_b cue=32.33 room=6.30 dur=2.37 -> DETAIL slack=+3.93 words=7
+§NARR_FIT outro cue=38.93 room=3.10 dur=2.94 -> DETAIL slack=+0.16 words=9
