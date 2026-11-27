@@ -1,14 +1,18 @@
-# ⚠ DO NOT REMOVE — FILM "START FROM YOUR OWN FILE" (the killer front door): PLAN ONLY
+# ⚠ DO NOT REMOVE — FILM "PDF AND EXCEL ARE KILLER APPS" (the killer front door; was "Start from your own file"): PART 1 SHOT, PART 2 PLANNED
 # Scope: storyboard + shot list for a short film on `prompts/SHEET_FRONT_DOOR.md` + `prompts/PDF_EDITOR.md` ("resume killer").
 # Show only what exists; every shot is READY (on bim-ootb main) or `NEEDS: <feature>`. Every number on screen or in the voice comes from a
 # `§` line of the take. READ THE LOG after every run (facts, guard, record, k2); an exit code is not evidence. No render, GPU, paid call.
 # House rules followed: `prompts/FILM_NARRATION.md` HOUSE STYLE (split screen + real key sounds, two-colour cover, last card, guide link);
 # films are never pushed, only scripts (`~/Videos/` holds the output); no private client names; no other product named on screen.
 
-## ▶ RESUME HERE (2026-11-27)
-**State: PLAN ONLY. Nothing recorded, no script written.** Read this file, answer the 3 questions in §5, then build per §4.
-Read first when building: `SHEET_FRONT_DOOR.md` ▶▶ block + §5 §6.4 §7.4 §7.5 (facts), `PDF_EDITOR.md` §4.2-§4.4 (page + write-back results),
-`FILM_NARRATION.md` PLAYBOOK C. Before shooting, re-check each `NEEDS` tag against bim-ootb `origin/main` (the in-flight work may have merged).
+## ▶ RESUME HERE (2026-11-27, updated after the owner's answers)
+**Owner (2026-11-27): "Agree, film 1, 'PDF and Excel are killer apps' - So we open it up".** Decisions, now closed (§5 questions 1-3 answered):
+1. **TWO films.** Part 1 = the READY beats only = beats 0-5 + last card of §3 (about 1:45), shot 2026-11-27 (see ## RESULT at the end). Part 2 (beats 6-8: same PDF back, the Excel menu, File it) waits for the features in flight; no NEEDS beat is shot or faked.
+2. **Title: "PDF and Excel are killer apps"; line under it / hook: "So we open it up".** (replaces the working title "Start from your own file" and the `YOUR OWN FILE · CH 1` kicker.)
+3. **Languages: English only** (owner: "Just english"). No zh/th.
+4. **Last card (owner, 2026-11-27, allude to the ERP at the back):** "file it into the books, when you choose, an ERP is available free to use." Voice, text only, no footage of anything unbuilt: "This is the way in. Your own file first." / "Next: change a number and get the same PDF back." / "Then file it into the books, when you choose. An ERP is available, free to use." + the guide/app link.
+Build dir: `scripts/film_killer_front_door/` (`build.sh`; narration text in `narr.js`). Read the RESULT section at the end first. Before Part 2, re-check each `NEEDS` tag against bim-ootb `origin/main`.
+Read first when building Part 2: `SHEET_FRONT_DOOR.md` ▶▶ block + §5 §6.4 §7.4 §7.5 (facts), `PDF_EDITOR.md` §4.2-§4.4, `FILM_NARRATION.md` PLAYBOOK C.
 
 ## 1. Promise and audience
 **Promise (one sentence):** *Open the PDF or spreadsheet you already have, find out in seconds whether it adds up, and go on into the ERP only if you choose.*
@@ -28,7 +32,7 @@ words anywhere: "report", "sheet", "adds up", "history", "file it". Principle fi
 ## 3. Storyboard (8 beats; times = voice + typing, to be re-measured; narration is one short line, spoken numbers in words)
 | # | Beat (stage) | On screen (real page / file / click) | Narration (plain) | Proof number on screen | s | Status |
 |---|---|---|---|---|---|---|
-| 0 | Cover | card: `YOUR OWN FILE · CH 1` / "Start from your own file" / "No ERP window needed" | none | - | 4 | READY |
+| 0 | Cover | card: "PDF and Excel are killer apps" / "So we open it up" (owner's title, 2026-11-27) | none | - | 4 | READY |
 | 1 | **Stage 1** Your report, opened on your own computer | `pdf/index.html`: Open a PDF (real file chooser) on `trial_balance_th.pdf`; the line "Nothing is uploaded: the file stays on this device." | "A report in a PDF is a picture of a sheet. Here is one, opened on this computer. Nothing is sent anywhere." | page 1, 21 accounts; requests made after the file is chosen, counted by the take (claim only if the count is 0) | 16 | READY |
 | 2 | It is a normal reader first | `market_impact_report.pdf`: type `market` in Find (real keystrokes), click an outline entry | "First it is just a good reader. Search the words. Jump by the outline." | 12 pages, 23 outline entries, 45 hits | 12 | READY |
 | 3 | Read it as a sheet | back to the trial balance; click **Read as sheet**; the grid fills; hover D28, its box lights on the page | "Now read it as a sheet. Every figure lands in the cell it was printed from, and the page checks the columns add up." | `Page 1 adds up`, 144 of 144 cells, debit = credit = 40,392.44 | 26 | READY |
@@ -68,3 +72,13 @@ witness is green; a beat whose feature is not there is cut, never faked. Beat 6 
 1. **One film or two?** Shoot cut A (≈ 1:45, PDF only) now as Part 1 and cut B's extra beats later as Part 2 - or wait and make one ≈ 3:20 film once write-back and the Excel menu are merged? (Recommendation: Part 1 now; stage 2 is the film's point and needs the menu.)
 2. **Languages:** English only first, or EN + ZH + TH like the CLI film (zh/th narration text goes to the free Edge voice service, cached by text; English stays local)?
 3. **Title and cover:** "Start from your own file" (working), or a hook line such as "Does your report really add up?"; and the series kicker (`YOUR OWN FILE · CH 1`).
+
+## FILM 2 (planned, not shot) - owner direction 2026-11-27
+**Owner's words, verbatim:** "Film 2, will show proper Kernel ERP UI panel for whatever document been processed, and the books, report etc 'ERP is now an utility, no longer a luxury. It is granted free.'"
+- **Arc:** the document that was filed from the user's own sheet is shown in the real kernel ERP UI (its own window/panel for that document), then the books it posted (the accounting entries), then a report that includes it. The existing plan beats 6-8 (same PDF back with a memory, the Excel menu, File it) fold into this film.
+- **Closing line (spoken):** "ERP is now a utility, no longer a luxury. It is granted free." (the owner's line; only the article "an utility" is fixed to "a utility" in the spoken text, the verbatim quote above stays the source.)
+- **Preconditions before it can be shot (each a NEEDS tag; a beat whose feature is not on bim-ootb `origin/main` is cut, never faked):**
+  1. `NEEDS: numbers-only PDF write-back merged` (`PDF_EDITOR.md` §4.3/§4.4).
+  2. `NEEDS: the Excel menu / "File it" wired to a page a user can reach` (`sheet_door.js`; plus a real run in Excel, none yet).
+  3. `NEEDS: the filed document visible in the ERP window with its posting and a report` (real kernel ERP UI for that document, its accounting entries, a report that includes it).
+- Every screen is the real UI; every number is re-read from that take's own `§` lines (same rule as Part 1). Nothing is shot for it yet.
