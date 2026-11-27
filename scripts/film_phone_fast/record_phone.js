@@ -8,17 +8,35 @@
 //       node record_phone.js <outDir> HQ <url-file> (desktop 1920×1080 opens phone A's shared link)
 //       node record_phone.js <outDir> C            (Duplex, phone 456×933: CLASH in detail — run, pick one, its detail, snag + share link from it;
 //                                                   2026-11-27 recut beat. Spec: MOBILE_PERF.md §FILM-M1 owner note "clash … on detail")
+//       node record_phone.js <outDir> S            (Duplex, TWO screens at once: phone A 456×933 + HQ desktop 1920×1080, both PAIRED to one encrypted team
+//                                                   folder served by this process at /pipe — phone sends its report, HQ gets it, replays the walk and scrubs it;
+//                                                   2026-11-27 recut beat "history syncing". Spec: MOBILE_PERF.md §FILM-M1 owner note + §P5 F3 STEPS 3-4.
+//                                                   Frames: <outDir>/phone/f + <outDir>/hq/f, a manifest.json each (every frame carries t = ms on ONE shared clock).)
 // CPU only, headless. Serves ~/bim-ootb (origin/main) on a local port exactly like witness_field_ops.js.
 'use strict';
 const os = require('os'), fs = require('fs'), path = require('path'), http = require('http');
 const { chromium } = require(os.homedir() + '/bim-ootb/tests/node_modules/playwright');
 const ROOT = process.env.BIM_OOTB || path.join(os.homedir(), 'bim-ootb');
+if (typeof globalThis.crypto === 'undefined' || !globalThis.crypto.subtle) globalThis.crypto = require('crypto').webcrypto;
 const [OUT_, ROLE, URLFILE] = process.argv.slice(2); const OUT = path.resolve(OUT_ || 'out');
-fs.mkdirSync(path.join(OUT, 'f'), { recursive: true });
+if (ROLE !== 'S') fs.mkdirSync(path.join(OUT, 'f'), { recursive: true });
+// role S: the team folder = a dumb folder relay at /pipe/list + /pipe/f/<name> next to the app (as viewer/tests/witness_hq_view.js serves it); the app opens with &pipe=<base>/pipe
+const FOLDER = fs.mkdtempSync(path.join(os.tmpdir(), 'm1-sync-folder-'));
+function walkDir(d, rel, out) { if (!fs.existsSync(d)) return out; fs.readdirSync(d).forEach(n => { const p = path.join(d, n), r = rel ? rel + '/' + n : n;
+  if (fs.statSync(p).isDirectory()) walkDir(p, r, out); else out.push(r); }); return out; }
 const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.json': 'application/json', '.sql': 'text/plain', '.db': 'application/octet-stream',
   '.png': 'image/png', '.css': 'text/css', '.wasm': 'application/wasm', '.svg': 'image/svg+xml', '.webmanifest': 'application/json' };
 const server = http.createServer((req, res) => {
-  let p = decodeURIComponent(req.url.split('?')[0]); if (p === '/') p = '/viewer/viewer.html';
+  const u = new URL(req.url, 'http://x'); let p = decodeURIComponent(u.pathname);
+  if (p === '/pipe/list') { const pre = u.searchParams.get('prefix') || '';
+    res.writeHead(200, { 'Content-Type': 'application/json' }); res.end(JSON.stringify(walkDir(FOLDER, '', []).filter(n => n.indexOf(pre) === 0))); return; }
+  if (p.indexOf('/pipe/f/') === 0) { const fp = path.join(FOLDER, p.slice(8)); if (fp.indexOf(FOLDER) !== 0) { res.writeHead(400); res.end(); return; }
+    if (req.method === 'PUT') { const ch = []; req.on('data', c => ch.push(c)); req.on('end', () => {
+      if (u.searchParams.get('absent') === '1' && fs.existsSync(fp)) { res.writeHead(412); res.end(); return; }
+      fs.mkdirSync(path.dirname(fp), { recursive: true }); fs.writeFileSync(fp, Buffer.concat(ch)); res.writeHead(201); res.end('ok'); }); return; }
+    if (!fs.existsSync(fp)) { res.writeHead(404); res.end(); return; }
+    res.writeHead(200, { 'Content-Type': 'application/octet-stream' }); fs.createReadStream(fp).pipe(res); return; }
+  if (p === '/') p = '/viewer/viewer.html';
   fs.readFile(path.join(ROOT, p), (e, buf) => { if (e) { res.writeHead(404); res.end('404'); return; }
     res.writeHead(200, { 'Content-Type': MIME[path.extname(p)] || 'application/octet-stream' }); res.end(buf); });
 });
@@ -30,12 +48,13 @@ const DESK = { viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 };
 const BLD = { A: 'buildings/Duplex_extracted.db', C: 'buildings/Duplex_extracted.db', B: process.env.M1_B_DB || 'buildings/HHS_Office_Federated_extracted.db' };
 
 const LOG = []; const say = s => { LOG.push(s); console.log(s); };
-const frames = []; let page, cons = [], nShot = 0;
+let frames = [], page, cons = [], nShot = 0, SHOT_DIR = OUT; let T0 = Date.now(), lastT = -1;   // T0 = the one clock (role S resets it after the arrangement)
 const pad = n => String(n).padStart(4, '0');
 // one captured frame; hold = how many film frames (30 fps) it stays; tap = finger mark the compositor draws (not in the UI)
-async function shot(beat, hold, tap) { const f = 'f/' + pad(nShot++) + '.png'; await page.screenshot({ path: path.join(OUT, f) });
-  frames.push({ f, hold: hold || 1, beat, tap: tap || null }); }
-const beats = [];
+async function shot(beat, hold, tap) { const f = 'f/' + pad(nShot++) + '.png'; const t = Math.max(lastT + 1, Date.now() - T0); lastT = t;
+  await page.screenshot({ path: path.join(SHOT_DIR, f) });
+  frames.push({ f, hold: hold || 1, beat, tap: tap || null, t }); }
+let beats = [];
 async function beat(id, re, fn) {
   const m = cons.length, f0 = frames.length; let err = null;
   try { await fn(); } catch (e) { err = String(e.message || e).slice(0, 160); }
@@ -93,14 +112,15 @@ async function touchAt(beatId, sel, holdMs, after) {
   await page.mouse.up(); await page.waitForTimeout(after || 300);
   return c;
 }
-async function ready(ctx, url) {
-  page = await ctx.newPage(); cons = []; page.setDefaultTimeout(240000);   // software GL: a Hospital X-Ray frame can take > 30 s
-  page.on('console', m => { const t = m.text(); cons.push(t); if (/§(SHEET_(CLOSE|REPLACE|SWALLOW)|WALK_XRAY|ISSUE_|PICK hits|SNAP |CAMERA|RENDERER_CAPS|CLASH_(REVEAL|DETAIL|VIZ|MATRIX_FILTER|SNAG|MATRIX_COUNT)|SHARE_URL)/.test(t)) LOG.push('  [console] ' + t.slice(0, 160)); });
-  page.on('pageerror', e => say('  [pageerror] ' + String(e.message).slice(0, 200)));
+async function ready(ctx, url, tag) {
+  page = await ctx.newPage(); const mine = cons = []; page.setDefaultTimeout(240000);   // software GL: a Hospital X-Ray frame can take > 30 s
+  const pre = tag ? '  [' + tag + ' console] ' : '  [console] ';   // role S: two pages log into one record.log, each line says whose it is
+  page.on('console', m => { const t = m.text(); mine.push(t); if (/§(SHEET_(CLOSE|REPLACE|SWALLOW)|WALK_XRAY|ISSUE_|PICK hits|SNAP |CAMERA|RENDERER_CAPS|CLASH_(REVEAL|DETAIL|VIZ|MATRIX_FILTER|SNAG|MATRIX_COUNT)|SHARE_URL|HQ_(SEND|GET|REPLAY|TEAM)|WALK_TRACE)/.test(t)) LOG.push(pre + t.slice(0, 200)); });
+  page.on('pageerror', e => say((tag ? '  [' + tag + ' pageerror] ' : '  [pageerror] ') + String(e.message).slice(0, 200)));
   const t0 = Date.now(); await page.goto(url, { waitUntil: 'domcontentloaded' });
   for (let i = 0; i < 240; i++) { await page.waitForTimeout(1000);
     if (await page.evaluate(() => !!(window.APP && APP.guidMap && Object.keys(APP.guidMap).length && APP.streaming === false && window._mainPillActions)).catch(() => false)) {
-      await page.waitForTimeout(2500); say(`§M1_READY role=${ROLE} url=${url.replace(/^http:\/\/127\.0\.0\.1:\d+/, '')} wait_s=${((Date.now() - t0) / 1000).toFixed(1)} (not filmed)`); return true; } }
+      await page.waitForTimeout(2500); say(`§M1_READY role=${ROLE}${tag ? ' screen=' + tag : ''} url=${url.replace(/^http:\/\/127\.0\.0\.1:\d+/, '')} wait_s=${((Date.now() - t0) / 1000).toFixed(1)} (not filmed)`); return true; } }
   say('§M1_READY role=' + ROLE + ' FAILED'); return false;
 }
 // a camera feed for Site Camera: the viewer's own canvas (R2 — a headless browser has no camera)
@@ -300,9 +320,178 @@ async function snag(beatId) {
       await shot('hq_open', 90);
     });
     await ctx.close();
+  } else if (ROLE === 'S') {
+    // History syncing, two screens, ONE process, ONE relay folder (this server's /pipe). ARRANGEMENT (not filmed, copied from viewer/tests/witness_hq_view.js):
+    // each browser's device is made IN its page (private keys never leave it, saved where the Team panel saves it), the founder (node) creates the encrypted team
+    // space, enrols both devices and syncs to the folder, and each page's cfg ({space}) is written to IndexedDB — i.e. both browsers are PAIRED. Everything filmed
+    // after that is the real UI: phone = FAB → Help → "Issues" → Send to HQ; HQ = key I → Get from team → the walk row → the history bar.
+    // Shortcuts, as role A does them: walk STEPS are injected (A.advanceWalkStep, a phone counts them from the accelerometer), the walk is stopped by API,
+    // and the HQ scrub is UniversalHistory.jumpTo(i) (role A's scrub precedent) — each is said again where it happens.
+    const STORE = require(path.join(ROOT, 'common', 'comm', 'comm_store.js')), PIPE = require(path.join(ROOT, 'common', 'comm', 'comm_pipe.js'));
+    const SQL = await require(os.homedir() + '/bim-ootb/tests/node_modules/sql.js')();
+    const relay = PIPE.folderPipe(FOLDER, 'folder');
+    const codeOf = kid => kid.slice(0, 4).toUpperCase() + '-' + kid.slice(4, 8).toUpperCase();
+    const SHARE_STUB = () => { window.__shared = null; navigator.canShare = d => !!(d && d.files && d.files.length);   // the OS share sheet stand-in: it only keeps what it was handed
+      navigator.share = async d => { window.__shared = { files: d.files.map(f => f.name) }; }; };
+    const makeDevice = pg => pg.evaluate(async () => {
+      for (const n of ['comm_envelope', 'comm_order', 'team_keys', 'comm_roster', 'comm_admit', 'comm_pipe', 'comm_store']) {
+        if (n === 'comm_store' && window.CommStore) continue;
+        await new Promise((res, rej) => { const s = document.createElement('script'); s.src = '../common/comm/' + n + '.js'; s.onload = res; s.onerror = rej; document.head.appendChild(s); }); }
+      const dev = await window.CommStore.newDevice(); dev.person_uu = crypto.randomUUID();
+      await new Promise((res, rej) => { const r = indexedDB.open('comm_phone', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv');
+        r.onsuccess = () => { const t = r.result.transaction('kv', 'readwrite'); t.objectStore('kv').put(dev, 'device'); t.oncomplete = res; t.onerror = rej; }; r.onerror = rej; });
+      return { kid: dev.kid, pubJwk: dev.pubJwk, dhPubJwk: dev.dhPubJwk, person_uu: dev.person_uu }; });
+    const setCfg = (pg, cfg) => pg.evaluate(cfg => new Promise((res, rej) => { const r = indexedDB.open('comm_phone', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv');
+      r.onsuccess = () => { const t = r.result.transaction('kv', 'readwrite'); t.objectStore('kv').put(cfg, 'cfg'); t.oncomplete = res; t.onerror = rej; }; r.onerror = rej; }), cfg);
+    const rowsOf = pg => pg.evaluate(async () => { const all = await APP._getAllIssues(), out = [];
+      for (const r of all) { let b64 = ''; if (r.jpeg_blob) { const b = new Uint8Array(await r.jpeg_blob.arrayBuffer()); let s = ''; for (let i = 0; i < b.length; i++) s += String.fromCharCode(b[i]); b64 = btoa(s); }
+        out.push({ id: r.id, cls: r.element_class, src_kid: r.src_kid || '', src_id: r.src_id, b64 }); } return out; });
+    const pipeQ = '&pipe=' + encodeURIComponent(base + '/pipe'), viewerUrl = base + '/viewer/viewer.html?db=' + BLD.A + pipeQ;
+    const screens = { phone: { name: 'phone', dir: path.join(OUT, 'phone'), frames: [], beats: [], viewport: [456, 933] },
+                      hq: { name: 'hq', dir: path.join(OUT, 'hq'), frames: [], beats: [], viewport: [1920, 1080] } };
+    for (const k in screens) fs.mkdirSync(path.join(screens[k].dir, 'f'), { recursive: true });
+    let CUR = null;
+    const use = X => { CUR = X; page = X.page; cons = X.cons; frames = X.frames; beats = X.beats; SHOT_DIR = X.dir; nShot = X.frames.length; };
+
+    const pctx = await browser.newContext(PHONE); await pctx.addInitScript(CAM_SHIM); await pctx.addInitScript(SHARE_STUB);
+    if (!await ready(pctx, viewerUrl, 'phone')) throw new Error('phone not ready'); screens.phone.page = page; screens.phone.cons = cons; screens.phone.ctx = pctx;
+    await siteGeo(pctx);
+    const hctx = await browser.newContext(DESK);
+    if (!await ready(hctx, viewerUrl, 'hq')) throw new Error('hq not ready'); screens.hq.page = page; screens.hq.cons = cons; screens.hq.ctx = hctx;
+    const P = screens.phone, H = screens.hq;
+    // ── arrangement (not filmed)
+    const dP = await makeDevice(P.page), dH = await makeDevice(H.page);
+    const fDev = await STORE.newDevice(); fDev.person_uu = require('crypto').randomUUID();
+    const sp = await STORE.newSpace('m1-sync', fDev, fDev.person_uu, 'Founder', 102);
+    const F = STORE.open(new SQL.Database(), { SQL, space: sp.space, self: fDev, access: () => ({ allowed: true }), tableId: () => null, log: () => {} });
+    await F.genesis(sp.params);
+    for (const [d, n] of [[dP, 'Site A'], [dH, 'HQ desk']]) { await F.addPerson({ person_uu: d.person_uu, name: n, ad_role_id: 103, comm_admin: false }); await F.enroll(d.kid, d.pubJwk, d.person_uu, d.dhPubJwk); }
+    await F.sync(relay);
+    for (const X of [P, H]) await setCfg(X.page, { space: sp.space, founder: false });
+    const codeP = codeOf(dP.kid);
+    say(`§M1_SYNC_ARRANGE space=${sp.space.slice(0, 12)} phone=${codeP} hq=${codeOf(dH.kid)} folder=${FOLDER} (not filmed: devices + team space made as witness_hq_view.js makes them; both browsers paired)`);
+
+    T0 = Date.now(); lastT = -1;   // the one clock starts here
+    use(H); await shot('ready', 45); use(P); await shot('ready', 45);
+    const pillsN = () => page.evaluate(() => [...document.querySelectorAll('[id^="pill-"]')].filter(e => e.offsetWidth && getComputedStyle(e).visibility !== 'hidden').length);
+    const statusText = () => page.evaluate(() => (document.getElementById('status') || {}).textContent || '');
+    let nTrace = 0;
+
+    // 1 — phone: a short walk, then one snag with its photo (role A's own steps)
+    use(P);
+    await beat('s_walk', /^§WALK_TRACE /, async () => {
+      await tapSel('s_walk', '#mobile-trigger', 400); await shot('s_walk', 12);
+      await tapSel('s_walk', '#pill-navigate', 400); await tapRow('s_walk', 'navigate', 'Walk'); await shot('s_walk', 12);
+      await swipeDown('s_walk', 'navigate-drawer-panel');   // the Walk prompt opens under the Navigate drawer (FILM-M1 finding 1): a user swipes it away first
+      await tapSel('s_walk', '#walk-anchor-prompt button', 900); await shot('s_walk', 30);
+      for (let k = 1; k <= 12; k++) { await page.evaluate(k => { if (k === 4 || k === 9) APP.camera.rotateY(40 * Math.PI / 180);   // STEPS INJECTED (A.advanceWalkStep): the emulator has no accelerometer
+        APP.walkStepCount = (APP.walkStepCount || 0) + 1; APP.advanceWalkStep(); }, k); await page.waitForTimeout(120); await shot('s_walk', 7); }
+    });
+    await beat('s_snag', /§ISSUE_SAVED/, async () => snag('s_snag'));   // the snag is taken while the walk is on (role A's order: the camera is inside the building)
+    await page.evaluate(() => APP.stopWalkMode()); await page.waitForTimeout(500);   // STOP BY API, as role A does (§WALK_XRAY_AUTO restored)
+    await page.evaluate(() => { try { APP.closeSitePreview && APP.closeSitePreview(); APP.closeSiteCamera && APP.closeSiteCamera(); } catch (e) {}
+      const c = document.getElementById('info-panel-close'); if (c) c.click(); const ip = document.getElementById('info-panel'); if (ip) ip.style.display = 'none'; });   // cleanup, as role A (not filmed)
+    nTrace = cons.filter(t => /^§WALK_TRACE /.test(t)).length;
+    const phoneRows = await rowsOf(P.page);
+    say(`§M1_SYNC_PHONE issues=${phoneRows.length} walk_trace_lines=${nTrace} photo_bytes=${phoneRows.map(r => Math.floor(r.b64.length * 3 / 4)).join(',')}`);
+
+    // 2 — phone: the Issue Log as a phone user opens it (no pill carries it: FAB → Help → the "Issues" row), then the real Send to HQ button
+    await beat('s_send', /^§HQ_SEND via=team drop=/, async () => {
+      if (!(await pillsN())) await tapSel('s_send', '#mobile-trigger', 400);
+      await tapSel('s_send', '#pill-help', 600); await shot('s_send', 20);
+      for (let w = 0; w < 40 && !(await page.evaluate(() => !!document.querySelector('#cmd-palette .cmd-row'))); w++) await page.waitForTimeout(250);
+      if (!(await page.evaluate(() => { const r = [...document.querySelectorAll('#cmd-palette .cmd-row')].find(x => /^Issues\b/.test((x.innerText || '').trim())); if (!r) return false; r.setAttribute('data-m1s', '1'); return true; })))
+        throw new Error('no "Issues" row in the Help list');
+      // the Help list is longer than the screen: the user scrolls it (mouse wheel over the list) until the row is on screen
+      const rowY = () => page.evaluate(() => { const r = document.querySelector('[data-m1s]'), b = r.getBoundingClientRect(); return [Math.round(b.top + b.height / 2), innerHeight]; });
+      for (let w = 0; w < 30; w++) { const [y, h] = await rowY(); if (y > 120 && y < h - 120) break; await page.mouse.move(228, 500); await page.mouse.wheel(0, y >= h - 120 ? 260 : -260); await page.waitForTimeout(200); if (w % 3 === 2) await shot('s_send', 4); }
+      await touchAt('s_send', '[data-m1s]', 0, 700);
+      await page.evaluate(() => { const r = document.querySelector('[data-m1s]'); if (r) r.removeAttribute('data-m1s'); });
+      // the Help list stays open over the Issue Log until its ✕ is tapped (help_panel.js run(): "the panel stays open") — a user closes it
+      if (await page.evaluate(() => !!document.getElementById('cmd-palette'))) await touchAt('s_send', '#cmd-close', 0, 600);
+      for (let w = 0; w < 40 && !(await page.evaluate(() => { const b = document.getElementById('issues-send-hq'); return !!(b && b.offsetWidth); })); w++) await page.waitForTimeout(250);
+      await shot('s_send', 30);
+      await touchAt('s_send', '#issues-send-hq', 0, 300);
+      for (let w = 0; w < 60 && !/team folder/i.test(await statusText()); w++) await page.waitForTimeout(250);
+      const st = (await statusText()).trim(), shared = await page.evaluate(() => window.__shared);
+      say(`§M1_SYNC_SEND status="${st}" share_sheet=${shared ? 'INVOKED' : 'none'} folder_files=${walkDir(FOLDER, '', []).filter(n => /\/drop-/.test(n)).length}`);
+      await shot('s_send', 60);
+      if (shared) throw new Error('a share sheet was invoked: ' + JSON.stringify(shared));
+      if (!/Sent to your team folder/.test(st)) throw new Error('status line is "' + st + '"');
+    });
+
+    // 3 — HQ: key I opens the Issue Log, the real Get from team button merges the phone's report
+    use(H);
+    await beat('s_get', /^§HQ_GET drops=1 new=1 issues_added=1 .*refused=0$/, async () => {
+      await page.keyboard.press('i'); await page.waitForTimeout(600);
+      for (let w = 0; w < 40 && !(await page.evaluate(() => { const b = document.getElementById('issues-get-team'); return !!(b && b.offsetWidth); })); w++) await page.waitForTimeout(250);
+      await shot('s_get', 30);
+      await touchAt('s_get', '#issues-get-team', 0, 600);
+      for (let w = 0; w < 60 && !cons.some(t => /^§HQ_GET drops=/.test(t)); w++) await page.waitForTimeout(250);
+      await page.waitForTimeout(600);
+      const hq = await rowsOf(page), cards = await page.evaluate(() => Array.from(document.querySelectorAll('#issues-list .issue-card:not(.issue-walk-row)')).map(e => e.textContent.trim().replace(/\s+/g, ' ')));
+      const mine = hq.filter(r => r.src_kid === dP.kid);
+      const cardOk = cards.some(c => c.endsWith('from ' + codeP));
+      const eq = mine.length === phoneRows.length && mine.length > 0 && mine.every(r => { const p = phoneRows.find(x => x.id === r.src_id); return p && p.b64 === r.b64 && r.b64.length > 0; });
+      const line = `§M1_SYNC issue_from=${cardOk ? codeP : 'MISSING'} photo_equal=${eq} rows=${hq.length}`;
+      say(line); if (cardOk && eq) cons.push(line);
+      await shot('s_get', 90);
+      if (!cardOk || !eq) throw new Error('card_from=' + cardOk + ' photo_equal=' + eq + ' cards=' + JSON.stringify(cards));
+    });
+
+    // 4 — HQ: tap the phone's walk row → its points enter the history bar
+    await beat('s_replay', /^§HQ_REPLAY kid=\S+ points=\d+/, async () => {
+      const sel = '.issue-walk-row[data-kid="' + dP.kid + '"]';
+      await touchAt('s_replay', sel, 0, 700);
+      for (let w = 0; w < 40 && !cons.some(t => /^§HQ_REPLAY /.test(t)); w++) await page.waitForTimeout(250);
+      const rp = cons.filter(t => /^§HQ_REPLAY /.test(t)).pop() || '', pts = +(rp.match(/points=(\d+)/) || [])[1];
+      const barJs = code => { const b = document.getElementById('universal-hist-btns'), r = b && b.getBoundingClientRect();
+        return { bar_visible: !!(b && b.offsetWidth && getComputedStyle(b).display !== 'none'), marks: document.querySelectorAll('#hist-marks > *').length,
+          walk_entries: UniversalHistory.list().filter(e => String(e.label).indexOf(code + ' · ') === 0).length }; };
+      const bar0 = await page.evaluate(barJs, codeP);
+      // PRODUCT GAP (logged, not patched): replayTeamWalk() does not open the history bar, so the walk sits in a CLOSED bar. A user opens it with the viewer's own
+      // shortcut Z (scene.js:2664 UniversalHistory.toggleOpen) — a real key press, filmed.
+      await shot('s_replay', 30); await page.keyboard.press('z'); await page.waitForTimeout(700);
+      const bar = await page.evaluate(barJs, codeP);
+      say(`§M1_SYNC_REPLAY points=${pts} phone_trace_lines=${nTrace} history_walk_entries=${bar.walk_entries} bar_visible_after_replay=${bar0.bar_visible} bar_visible_after_key_Z=${bar.bar_visible} marks=${bar.marks}`);
+      await shot('s_replay', 60);
+      if (!bar.bar_visible || bar.marks < pts) throw new Error('history bar not visible after Z: ' + JSON.stringify(bar));
+      if (pts !== nTrace || bar.walk_entries !== pts) throw new Error('points=' + pts + ' trace=' + nTrace + ' history=' + bar.walk_entries);
+    });
+
+    // 5 — HQ: scrub every replayed point (UniversalHistory.jumpTo — role A's scrub precedent), compare HQ's camera with the phone's recorded one
+    await beat('s_scrub', /^§M1_SYNC_SCRUB points=\d+ max_err_m=[\d.]+/, async () => {
+      const W = await page.evaluate(kid => new Promise(res => { const r = indexedDB.open('comm_phone', 1); r.onsuccess = () => { const q = r.result.transaction('kv').objectStore('kv').get('viewer_walks'); q.onsuccess = () => res((q.result || {})[kid]); }; }), dP.kid);
+      const L = await page.evaluate(code => UniversalHistory.list().filter(e => String(e.label).indexOf(code + ' · ') === 0).map(e => ({ i: e.i, label: e.label })), codeP);
+      if (!W || !L.length || L.length !== W.walk.length) throw new Error('walk=' + (W && W.walk.length) + ' history=' + L.length);
+      const errs = [], errsNow = [], red = []; const SHIFT = 0.05;
+      for (let k = 0; k < L.length; k++) {
+        const want = W.walk[k].viewState.cam.p;
+        await page.evaluate(i => UniversalHistory.jumpTo(i), L[k].i);
+        const now = await page.evaluate(() => { const p = APP.camera.position; return [p.x, p.y, p.z]; });
+        await page.waitForTimeout(150); await shot('s_scrub', 5);
+        await page.waitForTimeout(250); await shot('s_scrub', 5);
+        await page.waitForTimeout(400); await shot('s_scrub', 14);
+        const got = await page.evaluate(() => { const p = APP.camera.position; return [p.x, p.y, p.z]; });
+        errs.push(Math.hypot(got[0] - want[0], got[1] - want[1], got[2] - want[2])); errsNow.push(Math.hypot(now[0] - want[0], now[1] - want[1], now[2] - want[2]));
+        red.push(Math.hypot(got[0] - (want[0] + SHIFT), got[1] - want[1], got[2] - want[2]));   // RED control: the same camera against a position 5 cm off
+      }
+      const mx = Math.max.apply(null, errs), mxNow = Math.max.apply(null, errsNow), mxRed = Math.max.apply(null, red), minRed = Math.min.apply(null, red);
+      const redFails = red.filter(e => e > 0.01).length;   // the ≤ 0.01 check must FAIL on every shifted comparison
+      say(`§M1_SYNC_SCRUB_DETAIL per_point_err_m=${errs.map(e => e.toFixed(4)).join(',')} immediately_after_jump_max_err_m=${mxNow.toFixed(4)} labels=${L.map(e => JSON.stringify(e.label)).join(',')}`);
+      say(`§M1_SYNC_SCRUB_RED shifted_by_m=${SHIFT} check_le_0.01_failed_on=${redFails}/${red.length} min_err_m=${minRed.toFixed(4)} max_err_m=${mxRed.toFixed(4)} ${redFails === red.length ? 'RED_AS_REQUIRED' : 'RED_CONTROL_DID_NOT_FAIL'}`);
+      const line = `§M1_SYNC_SCRUB points=${L.length} max_err_m=${mx.toFixed(4)}`;
+      say(line + (mx <= 0.01 ? ' ok' : ' FAIL')); if (mx <= 0.01 && redFails === red.length) cons.push(line);
+      await shot('s_scrub', 45);
+    });
+    await pctx.close(); await hctx.close();
+    for (const k in screens) { const X = screens[k];
+      fs.writeFileSync(path.join(X.dir, 'manifest.json'), JSON.stringify({ role: 'S', screen: X.name, viewport: X.viewport, clock: 'ms since recording start (T0), one clock for both screens', frames: X.frames, beats: X.beats }, null, 1));
+      say(`§M1_SCREEN screen=${X.name} frames=${X.frames.length} film_frames=${X.frames.reduce((a, f) => a + f.hold, 0)} t_first=${X.frames[0].t} t_last=${X.frames[X.frames.length - 1].t}`); }
+    frames = P.frames.concat(H.frames); beats = P.beats.concat(H.beats);
   }
   await browser.close(); server.close();
-  fs.writeFileSync(path.join(OUT, 'manifest.json'), JSON.stringify({ role: ROLE, frames, beats }, null, 1));
+  if (ROLE !== 'S') fs.writeFileSync(path.join(OUT, 'manifest.json'), JSON.stringify({ role: ROLE, frames, beats }, null, 1));
   const bad = beats.filter(b => !b.ok).map(b => b.id);
   say(`§M1_RECORD role=${ROLE} frames=${frames.length} film_frames=${frames.reduce((a, f) => a + f.hold, 0)} beats=${beats.length} not_ok=${bad.length}${bad.length ? ' [' + bad.join(',') + ']' : ''}`);
   fs.writeFileSync(path.join(OUT, 'record.log'), LOG.join('\n') + '\n');
