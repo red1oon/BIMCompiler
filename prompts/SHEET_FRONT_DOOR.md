@@ -17,8 +17,12 @@ editor phases P1/P2/P5 on the same core.
   (bim-ootb `feat/sheet-door`). Results + two legacy findings in §5.
 - **S9 HISTORY DONE (witness) 2026-11-27** (owner: *"history is lacking in Excel. It is a missing killer... Proceed."*):
   `erp/sheet_history.js`, W-SHEET-HISTORY 8/8 cases PASS (20 checks), mutants 5/5 killed — §6.4.
-- **Next = build order step (1) above** (not S3 first, re-ordered 2026-11-27); after it S3 Excel, S4 WPS, S5 LibreOffice; S2 is reduced to "the host writes/reads the `_door_ledger` sheet"
-  (the replay itself is already proven by D9).
+- **S10 REPORT READER + PDF P0 DONE (witness) 2026-11-27** = build order step (1): bim-ootb `pdf/` (PR #3470). Our trial-balance PDF reads
+  back to the sheet that printed it, 144 of 144 cells at the same address, debit = credit = 40,392.44 found by arithmetic — §7.4;
+  the page (view, find, outline, Read as sheet, .xlsx, offline) — `PDF_EDITOR.md` §4.2.
+- **Next = build order step (2):** numbers-only in-place write-back (narrow cut of PDF_EDITOR P4) into the box the source map names,
+  each change an S9 history entry. Before it, widen the reader's denominator: a SECOND report layout (§7.4 "Not yet"). Then S3 Excel,
+  S4 WPS, S5 LibreOffice; S2 is reduced to "the host writes/reads the `_door_ledger` sheet" (the replay itself is already proven by D9).
 
 ## 0. Why (owner, 2026-11-27)
 The owner wants a harmless "Trojan horse": users start from what they already use, their own Excel or PDF, with a simple
@@ -255,3 +259,31 @@ Pure function, host-neutral, no file format inside: `read(pages) -> { ok, verdic
 | R8 COST | read ms, cells, items, heap logged (`§SREAD-COST`) | unmeasured weight | — |
 
 Not claimed: any PDF other than this one (a second report layout is the next denominator step), scans (P6), multi-page tables.
+
+### 7.4 RESULTS — S10 (2026-11-27, bim-ootb `feat/pdf-p0-reader`, PR #3470)
+Command: `SREAD_MUTANTS=1 node pdf/tests/witness_sheet_reader.js` (pdf.js 3.11.174 in node; oracle = `pdf/corpus/trial_balance_th.cells.json`).
+```
+§SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 boxesTrimmed=18 collisions=0 checks=5
+§SREAD-R1 PASS 4/4 · R2 PASS 4/4 · R3 PASS 7/7 · R4 PASS 4/4 · R5 PASS 2/2 · R6 PASS 3/3 · R7 PASS 3/3 · R8 PASS 1/1
+§SREAD-MUTANTS killed=5/5  (blank rows dropped→R1, brackets not negative→R2, sums not compared→R3, boxes shifted a row→R4, column dropped on write→R6)
+§SREAD-COST items=152 lines=27 cells=144 readMs=5 pdfBytes=74945 heapMB=16
+§SREAD-VERDICT PASS judged=29 failed=0
+```
+- R1: 144 of 144 oracle cells at the SAME address with the same text, no extra cell, blank rows 4/27/29 kept.
+- R3: total row 28 found by arithmetic, `D28 = SUM(D6:D26) = 40,392.44 = E28`; row rule `F = C + D - E` on 21 of 21 rows. One printed
+  digit changed (D10 498.09 → 499.09): `verdict=DOES_NOT_ADD_UP reason="D28: printed 40392.44 != rows sum 40393.44"`.
+- R4: 188 poppler word centres, each inside exactly one cell box whose text holds the word; every one of the 144 boxes holds a word.
+- R6: the `.xlsx` re-reads to the same 144 cells; the four totals carry `SUM` formulas; the hidden sheet `_door_source` lists cell, page, box.
+- R7: the read sheet is one S9 genesis entry the kernel's own `verifyJournal` accepts; one later edit = one `CELL_SET`. No adapter.
+
+**Findings (each from a failing check):**
+1. **A tall title's box reached into the row under it** (R4 first run FAIL: the centres of `บริษัท`, `:` and `GardenWorld` lay in two
+   boxes; A2 and B2 held no word of their own). Font boxes of neighbouring lines really overlap (poppler's do too). Fixed in the
+   engine: where two neighbouring lines' boxes overlap, both stop at the middle of the overlap (`boxesTrimmed=18` on this file).
+   This matters for step (2): a write-back into an overlapping box would have painted over the neighbour.
+2. **The report PDF engine is not on `main`** (§7.1): the trial balance PDF had to be made from bim-compiler `origin/ninja-xtab2`.
+   Not fixed here; it is the missing half of "print it back in a new layout" in the ▶▶ block.
+
+**Not yet (stated, not hidden):** ONE layout is proven (denominator 1 of 1). The cell-gap and pitch rules (§7.2 items 2 and 4) are
+measured on this file only; a second and third report layout must be judged before any general claim. No multi-page table, no
+scan. `Read as sheet` reads the page on screen, one page at a time. The witnesses are not wired into CI (same as S1 and S9).
