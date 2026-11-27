@@ -3,8 +3,9 @@
 # in any browser, offline, the file never leaving the device. Spec first, witness first, EXTRACT ONLY. READ THE LOG after every
 # run (§PDFED-* lines); the exit code is not evidence. Code will live in bim-ootb (`pdf/` page + engine); this file is the lane record.
 
-## ▶ RESUME HERE (2026-11-27)
-- **Spec only.** Nothing built. Next = phase P0 (§4): a bare `pdf/` page on the already-shipped pdf.js, witness W-PDFED-P0.
+## ▶ RESUME HERE (2026-11-27) — call sign **'resume killer'**: start at the ▶▶ block of `prompts/SHEET_FRONT_DOOR.md` (one package, build order)
+- **Spec only.** Nothing built. Next = phase P0 (§4) together with the S10 report reader: a bare `pdf/` page on the already-shipped pdf.js, witness W-PDFED-P0.
+- P4 is cut narrow first: **numbers only**, written back into the box the source map names (no reflow; a digit missing from the embedded subset → stated substitution).
 - Sister lane: `prompts/SHEET_FRONT_DOOR.md` (the PDF→sheet report reader S10 and history S9 are the extras this editor gets for free).
 
 ## 0. Why (owner, 2026-11-27)

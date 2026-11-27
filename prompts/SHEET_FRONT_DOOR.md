@@ -4,12 +4,20 @@
 # READ THE LOG after every run (§SHEET_DOOR / §SDOOR-* lines); the exit code is not evidence.
 # Code: bim-ootb `erp/sheet_door.js` + `erp/tests/witness_sheet_door.js`. This file: findings, decisions, results (dated sections).
 
-## ▶ RESUME HERE (2026-11-27)
+## ▶▶ RESUME HERE — call sign **'resume killer'** (2026-11-27)
+**One package, one core, many doors** (owner agreed 2026-11-27: *"ok so we call this 'resume killer'"*). This file + `prompts/PDF_EDITOR.md`
+are two halves of ONE lane. IN: a PDF report (reader), Excel/WPS/LibreOffice (menu), a blank page (editor). CORE: sheet + source map
+(cell ↔ box on the page) + history (S9) + "does it add up" check (S1). OUT: the SAME PDF with numbers rewritten in place, a PDF in a
+new layout (NinjaExcel), .xlsx, the ERP (File it). Shared pieces are built ONCE (history, check, cell map, pdf.js, SheetJS, menu).
+**Build order:** (1) PDF_EDITOR P0 viewer + S10 report reader, proof = round trip of our own trial-balance PDF (21 accounts,
+40,392.44); (2) numbers-only in-place write-back (narrow cut of PDF_EDITOR P4) with history; (3) S3 Excel menu; (4) the wider
+editor phases P1/P2/P5 on the same core.
+**State:**
 - **S1 DONE (witness) 2026-11-27:** engine `erp/sheet_door.js` + W-SHEET-DOOR 9/9 cases PASS (21 checks), mutants 5/5 killed
   (bim-ootb `feat/sheet-door`). Results + two legacy findings in §5.
 - **S9 HISTORY DONE (witness) 2026-11-27** (owner: *"history is lacking in Excel. It is a missing killer... Proceed."*):
   `erp/sheet_history.js`, W-SHEET-HISTORY 8/8 cases PASS (20 checks), mutants 5/5 killed — §6.4.
-- **Next after S9: S3 (Excel add-in menu)**, then S4 WPS, S5 LibreOffice; S2 is reduced to "the host writes/reads the `_door_ledger` sheet"
+- **Next = build order step (1) above** (not S3 first, re-ordered 2026-11-27); after it S3 Excel, S4 WPS, S5 LibreOffice; S2 is reduced to "the host writes/reads the `_door_ledger` sheet"
   (the replay itself is already proven by D9).
 
 ## 0. Why (owner, 2026-11-27)
