@@ -533,3 +533,17 @@ format, no per-window code), DB policy (no binary; `ad_seed.db` is the file the 
 Not claimed (stated up front): real Excel (the pane is run in Chromium with an Office.js stub; the Excel layer itself was proven only on S3's fake Office.js);
 any tenant other than the GardenWorld demo seed; multi-user; a page reload offline; the workbook's cell STYLES surviving the download (SheetJS community build
 writes values, formulas and number formats, not fonts / fills / widths — measured and reported in 9.x, not hidden).
+
+### 9.4 Owner addition 2026-11-27: the filed document in the REAL ERP window (claim F12, specced before any code)
+Owner: *"yes, show the document in the real ERP window too."* After a sheet is filed from `file_it.html`, the SAME invoice must open in the real ERP page
+(`erp/idempiere.html`, its own Invoice window, through the generic AD engine, no per-window code) with its posting visible.
+
+| ID | Claim | Issue it exposes | Falsifier |
+|----|-------|------------------|-----------|
+| F12 ERP WINDOW | After File it in `file_it.html`, the real `idempiere.html` (GardenWorld login) holds the same invoice: DocumentNo, grand total and the `Fact_Acct` rows read in the ERP page's DB equal those of the filing (and of the oracle), and the Invoice window's grid shows that row (grid rows + the record id per row, the AD-LAYER way); a reload keeps exactly one copy; a tampered ledger line is refused and nothing is added | the "document in the books" exists only inside the filing page | ledger applied twice; a tampered line accepted; the row in the DB but absent from the grid |
+
+**Design to be built (ONE implementation):** the workbook's `_door_ledger` line is the hand-over. The ERP page takes the line(s) and runs the kernel's own
+`verifyJournal` + `replay` on its database: no second apply, no second format. Rejected: writing the filing page's whole database over the ERP page's resident
+cache (it would wipe what the user has in the ERP); feeding the ops through the page's op log (`crud_overlay` `applyOpGroup` + `commitGroup`: another entry
+format and another id law, negative ids; the ledger's own record ids and its `Fact_Acct.Record_ID` links would not survive).
+**Gate (coordinator's rule for this slice):** build it here only if `idempiere.html` needs no more than a minimal hook; otherwise specify the next slice exactly.
