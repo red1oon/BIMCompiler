@@ -5,6 +5,11 @@
 # House rules followed: `prompts/FILM_NARRATION.md` HOUSE STYLE (split screen + real key sounds, two-colour cover, last card, guide link);
 # films are never pushed, only scripts (`~/Videos/` holds the output); no private client names; no other product named on screen.
 
+## ▶▶ RESUME HERE FIRST (2026-11-28): Parts 1-3 are SCRUBBED by the owner; ONE new film replaces them — read "## FILM v2 — ONE PAGE" at the END
+Owner, 2026-11-28, verbatim: *"Go with your suggestions. Consider the old films scrubbed. We be doing entirely new one"*. The Part 1-3 plans and RESULTS below
+are history only (their scripts under `scripts/film_killer_front_door/` may be reused as tooling). Shoot ONLY after its prerequisites (see FILM v2 §P) are merged
+and witnessed; no beat is faked.
+
 ## ▶ RESUME HERE (2026-11-27, updated after the owner's answers)
 **Owner (2026-11-27): "Agree, film 1, 'PDF and Excel are killer apps' - So we open it up".** Decisions, now closed (§5 questions 1-3 answered):
 1. **TWO films.** Part 1 = the READY beats only = beats 0-5 + last card of §3 (about 1:45), shot 2026-11-27 (see ## RESULT at the end). Part 2 (beats 6-8: same PDF back, the Excel menu, File it) waits for the features in flight; no NEEDS beat is shot or faked.
@@ -181,3 +186,27 @@ Every downloaded workbook (7: three stamps, the step-2 version, both copies, the
 **Cards:** closing card = the three lines above, the links (this history page, the PDF page) and the limits in plain words: "A spreadsheet file, not tried in Excel · a name is typed, not a signature · the time of an entry is not protected · a removed history is not noticed · colours and widths are not kept in the download · no claim about many users, speed, security or compliance". **The guide link is NOT on the card: the guide page (`PdfPageGuide`) has no section for the history page (`§FILM_LINK id=guide ... page_covers_the_history_page=false DROPPED`); no `docs/` page names `history.html`. A guide section for the history page is still to be written.** **Final "Prior art / credentials" card (shown in rc1, owner to confirm wording; each line shown only if `credits.js` finds its source at build time; the same three lines and the same licence wording as Film 2 rc1, the licence count RECOUNTED at the pinned sha, still 39):** (1) "No AI inside." (`docs/USER_GUIDE.md`); (2) "Open source: MIT licence, except 39 ERP files under GPL-2.0-only." (bim-ootb `LICENSE` and the `SPDX-License-Identifier: GPL-2.0-only` headers of 39 files under `erp/` and `pdf/`); (3) "Earlier work, dated: the Spatial Compilation paper, priority date 2026-03-30" + its public link; plus the key-sound credit and "the top line states each step in plain words, it is not a command". **No line about the gap the page fills was added:** §6.1's table records what each product's history does and where it stops, but the file says "sources in that session's reply" and carries no URL or citation for any row, so no half of such a sentence has a cited source here; left out (and no product is named on screen).
 **Checks (logs read):** `§GUARD_VERDICT voice PASS facts=12 bad=0` (no digit in the voice; "uploaded" is spoken only because the measurement holds; planted number rejected; none of: "in Excel", protected, forever, secure, many users, speed), `§GUARD_VERDICT cards PASS facts=209 bad=0` (planted control rejected), `§CREDITS_VERDICT PASS lines_shown=3 dropped=0`, `§FILM_LINK_VERDICT PASS shown=2 dropped=1`, `§K2_VERDICT PASS beats=10 bad=0`, `§KEYS_VERDICT PASS` (260 typed, 17 returns), all 12 voice rows fitted in full, 0 wrong tones, `§FACTS_VERDICT PASS` (15 derived facts, among them: the 14 downloaded-file and page checks above), silences of 3 s or more: the voiceless cover (4.2 s) and the final card (6.7 s).
 **Honesty notes:** the outside edits are made by a SCRIPT, said in the film as "someone changes the file somewhere else" and on the strip as "outside the page ... by a script"; no spreadsheet program, real WPS included, was run for this film (the lane's WPS witness, §14.3 P9, is a separate result and is not claimed here). Times in the story all read the same minute because the whole take ran within it; the film says nothing about times being protected, and the closing card says the time of an entry is not protected (§14.3 finding 1). Names are typed names. A removed history, styles lost in the download, real Excel not run: on the card. The merge claim is "one merge, one clash, you choose"; nothing about merging again later (finding 5/6). No claim about speed (the page's 61 ms ready time is logged, not claimed), many users, security, compliance or phones. Dropped: nothing.
+
+
+## FILM v2 — ONE PAGE (plan 2026-11-28; owner: "Go with your suggestions ... entirely new one")
+**Replaces Parts 1-3 entirely** (they are scrubbed: the owner unlists them; never re-cut). Title kept: **"PDF and Excel are killer apps"**; the line under it is
+taken at shoot time from the closing idea (draft: "One page. Your own file. Edit where it is.") — owner sees it on the cover before release.
+**House rules (standing, applied exactly):** split screen with REAL key sounds, the voice after the Return key; local Kokoro voice, CPU-only headless capture,
+no GPU, no paid call; every number on screen or in the voice comes from a `facts.log` of the same build and passes the guard; English only; the mp4/wav/stills are
+NEVER pushed (scripts, logs, this plan only); output `~/Videos/PDF_and_Excel_are_killer_apps_ONE_PAGE_EN_rc1.mp4`. About 2.5-3 min.
+**Story (owner-agreed order: your own file first, the ERP closes the loop):**
+| beat | on screen (the real live page, real keys) | facts it needs (from the build's own logs) |
+|---|---|---|
+| cover | title + line | - |
+| 1 your file | open a report PDF: it looks exactly the same, but it is editable; "a table of N cells, it adds up" | §EDSHEET open line, reader cells/verdict |
+| 2 edit in place | change a number → that total turns red on the page with the gap; fix it → green; change a word; a letter the font lacks → red "font not same" box → Ctrl-Z | §EDSHEET H2/H5/H6 lines |
+| 3 nothing else touched | the logo / pictures untouched; one proof line "every other part of the file unchanged (N of M objects identical)" | §EDSHEET H3 counts |
+| 4 take it away | Download: the same PDF back + an Excel file with real formulas; the history inside both | E5 + history lines |
+| 5 the memory | one cell's story (15 s) | §PDFHIST-STORY |
+| 6 a report printed by our ERP | the ERP prints a report (NinjaExcel engine, merged per SHEET_FRONT_DOOR §19) → open it here → edit → it still adds up | §19 engine lines |
+| 7 into the books | File it → the invoice in the ERP window, its entries, the trial balance | W-FILE-IT / W-DOOR-ERP facts |
+| 8 on a phone | the same page on a phone; a very long file opens in about a second | W-PDF-MOBILE facts (the owner's files are NEVER shown: a corpus or generated long file is used on screen) |
+| close | owner's line: "ERP is now a utility, no longer a luxury. It is granted free." + credits card (No AI inside; licence line as true at build; dated earlier work) — **no novelty claim** (SHEET_FRONT_DOOR §18.1) | credits.js sources |
+**§P prerequisites, each merged + witnessed before the shoot:** (1) SHEET_FRONT_DOOR §18 slice A incl. §18.5-§18.6 (one-page editor, integrity proof, font box,
+undo); (2) SHEET_FRONT_DOOR §19 (the report engine in the live app, Thai text right); (3) the guide updated for both (one page, the ERP print).
+**Privacy:** the owner's own PDFs (used for W-PDF-MOBILE) never appear on screen, in a log of the film, or in a card.
