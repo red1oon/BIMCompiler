@@ -17,6 +17,8 @@ out, **standalone, no ERP in sight**; stage 2 = "File it" into the ERP proper. A
 PrintFormat layers, the owner ruled: *"yes standalone for now - borrowing the same code layer needed"*. So stage 1 takes ERP code only
 where it needs it (as it already does: the kernel's journal format and `verifyJournal` for history, the ERP's SheetJS build); mapping a
 user's layout to an iDempiere PrintFormat is a later, separate step, not a precondition.
+The owner's name for it: *"sort of a sharding of pieces approach as it can pick from the entire ERP framework"* — each front-door
+feature takes the single ERP piece it needs (a shard), never the whole; any piece of the framework may be picked later the same way.
 **State:**
 - **S1 DONE (witness) 2026-11-27:** engine `erp/sheet_door.js` + W-SHEET-DOOR 9/9 cases PASS (21 checks), mutants 5/5 killed
   (bim-ootb `feat/sheet-door`). Results + two legacy findings in §5.
