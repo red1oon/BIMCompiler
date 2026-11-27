@@ -1517,3 +1517,118 @@ Guide: the samples, "a corrected total stays a live sum formula", File it on unm
 7. **CI (33):** none of the lane's witnesses run in CI; the node ones are cheap; W-KILLER-USE needs a browser (the CI already installs puppeteer for others).
 8. **Depth (21-23, 25-28, 30-32, 34):** reader grid evidence, NinjaExcel layout OUT + Thai SARA AM, write-back limits, Account Viewer parity, two workbooks into
    one books, signing, tenant/user choice, the outside request, red ERP witnesses, one SHA-256, history-page grid limits.
+
+## 17. The PDF page on a phone, with the PDFs found on this machine (spec 2026-11-28, before code)
+Owner, 2026-11-28, verbatim: *"Proceed with any PDF sample in this machine. Emulate a mobile phone to see its perf, and better UI for user experience."*
+**Privacy:** the PDFs are the owner's own files (client sets among them). They are read locally in a headless browser; nothing leaves the machine. No file name,
+path or content goes into a commit, log kept in git, PR or this file: each PDF is named by a number and its measured traits only (bytes, pages, text or scan,
+money-figure count on page 1, locked or not). The list lives in the session scratchpad only.
+
+**Sample (measured 2026-11-28):** 227 PDF files over 10 KB under the home folder (not caches/node_modules/.git/snap), 158 distinct by size, all readable by
+poppler: 35 under 100 KB, 63 under 1 MB, 48 under 10 MB, 12 over 10 MB; 12 scans (no text on page 1), 16 with a table of money figures on page 1 (≥ 10 numbers
+like `1,234.56`), 3 locked, 20 over 50 pages. Judged set: those 16 tables + 2 scans + the 3 largest + the 2 longest + the 3 locked + 2 ordinary (≈ 28).
+
+**Phone emulation:** 390 x 844 CSS px, DPR 3, touch, mobile user agent; CPU slowed 4x (the Lighthouse mobile setting); the FIRST page load on "slow 4G"
+(150 ms RTT, 1.6 Mbit/s down). Witness `pdf/tests/witness_pdf_mobile.js` (W-PDF-MOBILE; `PDFM_LIST=<file of paths>`, default the page's own corpus so it
+runs anywhere). Verdict `§PDFM-VERDICT PASS|FAIL|INCONCLUSIVE judged=N failed=M`; one `§PDFM-FILE n=<k> ...` line per PDF with its numbers.
+- **M1 first page fast:** from choosing the file to page 1 painted, ≤ 3 s at 4x CPU for files ≤ 10 MB (stated for bigger). Exposes: open work that grows with
+  the whole file before anything is shown.
+- **M2 memory bounded:** canvases alive ≤ 6 right after open AND after scrolling to the end; peak JS heap stated. Exposes: drawing every page at once on a
+  phone (PERF BUDGET: release what is off screen).
+- **M3 read as sheet:** the time and verdict per table PDF (stated; FAIL only on a page error).
+- **M4 first visit:** bytes and ms until the page can open a file, on slow 4G (stated).
+- **U1 the document is what you see:** after open, the page 1 canvas covers ≥ 50% of the first screen.
+- **U2 the toolbar stays small:** the header is ≤ 2 rows (≤ 100 px) before and after a file is open.
+- **U3 the verdict is seen:** after Read as sheet, the verdict line is on screen without scrolling.
+- **U4 nothing wider than the phone:** document width ≤ 390; every control ≥ 24 x 24.
+- **U5 no page errors, refusals in words** (scan: "no text"; locked: asks a password).
+A FAIL is a finding: the fixes are specced in §17.1 after the first run, with the numbers.
+
+### 17.1 First run (before any fix) and the fixes decided (2026-11-28)
+Run: `PDFM_LIST=<scratchpad list> node pdf/tests/witness_pdf_mobile.js` on the local tree = main `1b7a91eb` (25 of the owner's PDFs, phone emulation of §17).
+`§PDFM-VERDICT FAIL judged=135 failed=76`. First visit on slow 4G: 763,201 bytes, usable after 4.2 s. Per file (n, bytes, pages → open ms / page 1 painted ms
+/ canvases alive / peak JS heap):
+```
+small, 1-4 pages (n 1-9, 13, 15, 22, 25)   open 160-490 ms, page 1 painted 0.24-2.9 s, canvases = pages, heap 3-65 MB          M1 PASS
+n=11  430 KB    38 p   open   368 ms   page 1  1.97 s   canvases   38   heap  11 MB
+n=12  1.2 MB    69 p   open   902 ms   page 1  5.72 s   canvases   69   heap 135 MB                                        M1 FAIL
+n=14  2.0 MB   126 p   open 1,356 ms   page 1  9.47 s   canvases  126   heap 200 MB                                        M1 FAIL
+n=16  6.3 MB     4 p   open   818 ms   page 1  8.14 s   canvases    4   heap 106 MB   (image-heavy pages; 50 long tasks)    M1 FAIL
+n=23  8.3 MB    79 p   open   601 ms   page 1  3.50 s   canvases   79                                                    M1 FAIL
+n=19  79 MB     80 p   open 6,494 ms   page 1  7.74 s   canvases   80
+n=20  60 MB  2,464 p   open 7,776 ms   page 1 19.58 s   canvases 2,464  heap 267 MB
+n=21  47 MB  2,499 p   open 9,199 ms   page 1 21.89 s   canvases 2,499  heap 261 MB
+n=17 not a PDF → "This file is not a PDF." · n=18 scan → "11 pages, no text (a scan)" · n=22-24 locked (owner password only) open normally.
+```
+**Findings (code read, file:line in `pdf/index.html` at `1b7a91eb`):**
+1. **M2 every page drawn on a phone.** `layout()` observes the pages with `root: #pages`. At ≤ 760 px `main` is `height: auto`, so `#pages` never scrolls:
+   it is as tall as the whole document and every page "intersects" → `draw()` for all pages at once (2,499 canvases). The window scrolls instead.
+2. **Read as sheet reads the MIDDLE page on a phone.** `track()` takes `#pages.scrollTop + clientHeight / 2`; with `#pages` full height that is the middle of the
+   document: page 7 of 12, 20 of 38, 35 of 69, 1233 of 2464 were read, never the page on screen. `go()` (outline, Find hits) sets `#pages.scrollTop`: on a phone
+   it moves nothing. Correctness, not only comfort.
+3. **M1 page 1 waits for the whole file.** `PdfOpen.open` (`pdf/pdf_open.js:44`) reads every page's text before it returns (7.8-9.2 s for 2,500 pages), and
+   page 1 then competes with every other page's drawing (finding 1).
+4. **U2** the toolbar wraps to 205 px (9 controls + the status line). **U1** the outline / found / history panel (30 vh) sits ABOVE the document: page 1
+   covers 18-44%. **U3** after Read as sheet the verdict is below every page (top at 814-824 px of 844, or further).
+
+**Fixes:**
+- F1 the pages are observed against the viewport when `#pages` does not scroll itself (phone), against `#pages` when it does (desktop); `track()` and `go()`
+  work from the pages' positions on screen (`getBoundingClientRect`, `scrollIntoView`), so both layouts read and jump to the page on screen.
+- F2 open in two steps: `PdfOpen.open(..., { textLater: true })` returns after the page sizes; page 1 is laid out and drawn; then the text is read (progress
+  in the status line). Find, Read as sheet and the history check wait for it; `§PDFED-OPEN` is still printed once everything is read (no witness changes).
+  Without the option the opener is unchanged (node witnesses).
+- F3 phone layout: the document first, then the sheet / outline / history; Read as sheet SHOWS the sheet in place of the pages (verdict at the top), Close goes
+  back; the toolbar uses short labels on a phone (Open · Sheet · .xlsx · PDF) and Find behind a button; the sample button hides once a file is open.
+- **U1 restated (a fact of geometry, not a loosening):** a landscape page cannot cover half a portrait screen at full width; U1 passes when page 1 covers
+  ≥ 50% of the first screen OR is wholly on it.
+- **U6 new:** scrolled so page k is in the middle of the screen, Read as sheet reads page k (finding 2).
+
+### 17.2 Found while fixing (2026-11-28, before the after-run)
+- **The toolbar scrolled away on a phone.** `html, body { height: 100% }` makes body one screen tall; a `position: sticky` header cannot stick past its
+  parent, so after one screen of scrolling the toolbar was gone: a user on page 3 had to scroll back to the top to reach *Sheet*, which moved the page that
+  is read. Fix: on a phone `html, body { height: auto; min-height: 100% }`. **Claim U7 (new):** scrolled to the end of a multi-page file, the Sheet button
+  is on screen and is the element under its own centre.
+- **Witness slip:** `page.tap()` scrolls its target into view before tapping (it moved the window under the sticky toolbar: page 3 → 2). The witness taps
+  the screen where the button IS (`touchscreen.tap(x, y)`), as a thumb does.
+- Toolbar measured 101 px with 6 px padding → 5 px: 99 px.
+
+### 17.3 RESULTS (2026-11-28, bim-ootb PR #3498 `feat/pdf-mobile`, merged as `ef08a10e`, deployed)
+Code: `pdf/index.html` (two-step open, observer against what scrolls, `track()`/`go()` from the screen, one page drawn at a time, phone layout + short labels +
+Find button, sheet in place of the pages, toolbar that stays), `pdf/pdf_open.js` (`textLater`, opt-in), `pdf/tests/witness_pdf_mobile.js` (new).
+The 25 PDFs, phone emulation, **against the LIVE page**: `§PDFM-VERDICT PASS judged=162 failed=0` (before, local main `1b7a91eb`: judged=135 failed=76).
+```
+§PDFM-FIRSTVISIT bytes=235719 msToUsable=1692 net=slow4G cpu=4x        (live, minified; the local tree serves 769 KB unminified, 4.1 s)
+page 1 painted, before → after (local, same machine; A/B back to back for n=9,10,16):
+  2,499 p 21.9 s → 1.3 s · 2,464 p 19.6 s → 1.5 s · 126 p 9.5 s → 0.4 s · 69 p 5.7 s → 0.4 s · image-heavy 4 p 8.3 s → 2.4 s · 1-page files 0.24-0.5 s, unchanged
+canvases alive: every page (up to 2,499) → at most 5 · peak JS heap 2,464 p: 267 MB → 74 MB · toolbar 205 → 99 px · U6 the page on screen is read · U7 toolbar stays
+all text read (Find / Read as sheet ready): 2,499 p 10.2 s, 126 p 1.9 s, ≤ 12 p under 0.5 s; the status line counts the pages meanwhile
+```
+Regression, same tree: PDFPG 19, PDFWP 22, PDFHP 19, W-KILLER-USE 44, SWPP 28 (WPS phone page), PDFWR 67 (6/6), PDFHIST 57 (10/10), SREAD 38 (8/8), PDFED 13 (3/3);
+eslint 0; CI pass. Privacy: the diff was checked against the 25 file names (only generic words like "Report" matched); no path, no name in any commit.
+**What the run also showed (not fixed here, the reader's own lane, OPEN LIST 21):** of the 16 table PDFs, the reader JUDGED few. Ours (the trial balance) and one
+outside file add up; 3 outside files "do NOT add up" (not checked whether the misread is ours or a real difference: two print `360.00` against a rows sum
+`885.00`, which looks like a misread); 9 are "not judged: no total row found". The core promise works on our layout and seldom yet on other people's.
+
+### 17.4 Where it sits for a user, against KillerPDF (the C# desktop program studied first, §2 of PDF_EDITOR.md) and Adobe Acrobat (2026-11-28)
+Against KillerPDF's 14 public feature groups (PDF_EDITOR §2, the denominator): ours covers **G1 in part** (view, find, outline, password; no view modes, tabs,
+split panes), a **narrow slice of G4** (numbers only, not text), a **narrow slice of G10** (.xlsx only). **0 of the other 11 groups** (organise, annotate, images,
+forms, redaction, OCR, compare, security, signing, quality, automation). KillerPDF is a Windows desktop program by its own list (Windows certificate store,
+TWAIN scanning, installed Office); nothing in our record of it runs in a phone browser.
+Adobe Acrobat on a phone, by Adobe's own help pages (read 2026-11-28): free = view, comment, fill, sign, share; editing text, OCR, export, organising pages need
+a paid mobile subscription (Reader Plus / Premium); its online converters upload the file to Adobe's cloud, have a free quota and a 100 MB cap.
+Ours that neither gives as measured here: free, no install, no upload, offline after one visit, on any phone browser; a report read back as a sheet WITH an
+"adds up" check; a number changed in place in the same PDF; the history inside the file. NOT measured: KillerPDF's or Acrobat's speed on the same 25 files, or
+Acrobat's PDF→Excel accuracy on them. Sources: helpx.adobe.com/acrobat/mobile/subscription-refunds/about-subscriptions.html ·
+helpx.adobe.com/document-cloud/faq/free-online-pdf.html · adobe.com/acrobat/online/pdf-to-excel.
+
+### 17.5 The users' wish list out there, weighed (web read 2026-11-28; vendor and review pages, no formal survey found — anecdotal, said so)
+| Wish (theme, source kind) | Ours today | Weight for this lane |
+|---|---|---|
+| Basic tasks truly free, no "pay after you edited" (complaint sites, Trustpilot, Product Hunt) | free, no account | HIGH: keep it, say it on the page |
+| Do not upload my documents (iLovePDF app-review analysis, free-editor roundups) | nothing leaves the device | HIGH: our strongest edge, already said |
+| Edit existing TEXT offline (free-editor roundups: PDFgear, PDF-XChange, PDF24 recommended for it) | numbers only | MEDIUM-HIGH: P4 wide (G4) |
+| Merge / split / reorder / sign without a paywall (Product Hunt, complaint sites) | none | HIGH and CHEAP: P1 organise + fill/sign (pdf-lib already chosen, §3) |
+| Bank statements / reports → Excel that is RIGHT: columns not merged, running balance, totals reconciled to the printed balances (accounting vendor pages) | our adds-up check IS that reconciliation, but it judges few outside layouts (§17.3) | HIGHEST fit: widen the reader (running-balance column, multi-page, ruling lines = OPEN LIST 21) on real statements |
+| Scans (OCR) | refused in words | MEDIUM: 12 of 158 PDFs on this machine are scans; G8 |
+Sources: sikayetvar.com (PDF Guru complaint) · trustpilot.com/review/pdf.net · kimola.com iLovePDF feedback report · producthunt.com/products/desidocs ·
+techrepublic.com best free PDF editors 2026 · dev.to / hashnode bank-statement converter articles · cpapracticeadvisor.com 2024-02-28.
