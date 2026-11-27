@@ -12,6 +12,15 @@ new layout (NinjaExcel), .xlsx, the ERP (File it). Shared pieces are built ONCE 
 **Build order:** (1) PDF_EDITOR P0 viewer + S10 report reader, proof = round trip of our own trial-balance PDF (21 accounts,
 40,392.44); (2) numbers-only in-place write-back (narrow cut of PDF_EDITOR P4) with history; (3) S3 Excel menu; (4) the wider
 editor phases P1/P2/P5 on the same core.
+**Two stages, decided (owner 2026-11-27):** stage 1 = the user's own PDF / Excel with reading, the adds-up check, history and a copy back
+out, **standalone, no ERP in sight**; stage 2 = "File it" into the ERP proper. Asked whether stage 1 should sit on the ERP's own Document /
+PrintFormat layers, the owner ruled: *"yes standalone for now - borrowing the same code layer needed"*. So stage 1 takes ERP code only
+where it needs it (as it already does: the kernel's journal format and `verifyJournal` for history, the ERP's SheetJS build); mapping a
+user's layout to an iDempiere PrintFormat is a later, separate step, not a precondition.
+The owner's name for it: *"sort of a sharding of pieces approach as it can pick from the entire ERP framework"* — each front-door
+feature takes the single ERP piece it needs (a shard), never the whole; any piece of the framework may be picked later the same way.
+And the positioning: *"it is like ERP in Excel format, without some baggage of a serious multi user performance yet. This is a good back
+door entry to the ERP when user choses"* — stage 1 makes no multi-user or performance claim; crossing to the ERP is the user's own choice.
 **State:**
 - **S1 DONE (witness) 2026-11-27:** engine `erp/sheet_door.js` + W-SHEET-DOOR 9/9 cases PASS (21 checks), mutants 5/5 killed
   (bim-ootb `feat/sheet-door`). Results + two legacy findings in §5.
@@ -20,8 +29,13 @@ editor phases P1/P2/P5 on the same core.
 - **S10 REPORT READER + PDF P0 DONE (witness) 2026-11-27** = build order step (1): bim-ootb `pdf/` (PR #3470). Our trial-balance PDF reads
   back to the sheet that printed it, 144 of 144 cells at the same address, debit = credit = 40,392.44 found by arithmetic — §7.4;
   the page (view, find, outline, Read as sheet, .xlsx, offline) — `PDF_EDITOR.md` §4.2.
+- **Reader denominator widened 2026-11-27 (bim-ootb #3472, §7.5):** 3 of 5 layouts rebuilt (trial balance, sales register, cross-tab);
+  2 are measured LIMITS (merged / centred / wrapped cells; columns that nearly touch). Next for the reader = the page's ruling lines
+  and fills as grid evidence (§7.5 "Next").
+- **In flight 2026-11-27 (two workers, own sections):** build order step (2) numbers-only write-back → `PDF_EDITOR.md` §4.3/§4.4; S3 Excel
+  menu → §8 below. Read those sections' RESULTS for their state.
 - **Next = build order step (2):** numbers-only in-place write-back (narrow cut of PDF_EDITOR P4) into the box the source map names,
-  each change an S9 history entry. Before it, widen the reader's denominator: a SECOND report layout (§7.4 "Not yet"). Then S3 Excel,
+  each change an S9 history entry. Then S3 Excel,
   S4 WPS, S5 LibreOffice; S2 is reduced to "the host writes/reads the `_door_ledger` sheet" (the replay itself is already proven by D9).
 
 ## 0. Why (owner, 2026-11-27)
@@ -287,6 +301,53 @@ Command: `SREAD_MUTANTS=1 node pdf/tests/witness_sheet_reader.js` (pdf.js 3.11.1
 **Not yet (stated, not hidden):** ONE layout is proven (denominator 1 of 1). The cell-gap and pitch rules (§7.2 items 2 and 4) are
 measured on this file only; a second and third report layout must be judged before any general claim. No multi-page table, no
 scan. `Read as sheet` reads the page on screen, one page at a time. The witnesses are not wired into CI (same as S1 and S9).
+
+### 7.5 More layouts (2026-11-27, bim-ootb `feat/reader-more-layouts`, PR #3472)
+**How this was done (stated plainly):** four more PDFs were made with the same report engine and judged against the sheets that
+printed them BEFORE any rule changed. The failures below are the spec for the changes; each change is held by a check and a mutant.
+
+| Layout (corpus file) | First run, §7.2 rules as built | Cause |
+|---|---|---|
+| Sales register, 1,444 rows (not in git, 1.1 MB) | 4,331 of 5,777 cells at their address | the customer header stands to the right of every customer name: its own column band, 5 columns for a 4-column sheet |
+| Sales register, 1 row (`sales_register_th.pdf`) | "no table" | only 2 lines hold 3+ cells; row pitch taken from too few gaps; a total over ONE row not tried |
+| Cross-tab (`crosstab.pdf`) | "no table" | 2 table lines; signed figures in 2-cell columns not typed as numbers |
+| Geometry fixture (`geometry_fixture.pdf`) | "no table" | cells 3.5 pt apart at 9 pt merged into one |
+| Showcase (`showcase.pdf`) | 1 of 41 | merged, centred and wrapped cells; an empty first column |
+
+**Rules added to §7.2** (same numbering): (2b) inside a cell, a gap of 0.35 of the font height or more where the next run starts on,
+or the last run ends on, a cell edge that ANOTHER line shows → the cell is split there. (3) a table is 2 or more lines of 3+ cells;
+when there are more bands than any line has cells, the band the fewest lines use joins the neighbour it never shares a line with.
+(4) row pitch = the gap two or more neighbouring table lines agree on; with fewer, the smallest gap beside a table line.
+(5) a column is typed from ALL its cells (shared right edge or centre); outside a number column only a figure printed AS a figure
+(decimals, separators, sign, brackets) is a number, bare digits stay a code. (6) a total over one row is tried.
+
+**Claim R9 LAYOUTS** (issue: one layout passes, the next silently breaks):
+```
+§SREAD-LAYOUT file=sales_register_th cells=17 sameAddressAndText=16 differsAsThePdfItselfReads=1 extra=0 cols=4 bandsMerged=2 verdict=ADDS_UP
+§SREAD-LAYOUT file=crosstab cells=12 sameOrder=12 sameAddress=1 read=12 verdict=INCONCLUSIVE
+§SREAD-LIMIT file=showcase (merged, centred, wrapped cells) cells=41 sameOrder=7 sameAddress=1 read=36 collisions=6 verdict=INCONCLUSIVE
+§SREAD-LIMIT file=geometry_fixture (columns that nearly touch, a merged cell, a wrapped cell) cells=18 sameOrder=14 sameAddress=12 read=19 edgeSplits=2 verdict=INCONCLUSIVE
+§SREAD-R9 verdict=PASS judged=8 failed=0
+§SREAD-MUTANTS killed=7/7   (+ M6 apart header not joined→R9, M7 touching columns not split→R9)
+§SREAD-VERDICT PASS judged=37 failed=0          (trial balance unchanged: 144 of 144, R1-R8 as §7.4)
+```
+- **Denominator: 3 of 5 layouts rebuilt.** Trial balance: same address, 144 of 144. Sales register: same address 17 of 17, total
+  `D8 = SUM(D6:D6) = 228.85`. Cross-tab: same ORDER 12 of 12, `-1,023.98` and `-633.41` read as numbers, verdict INCONCLUSIVE (it has no total).
+- The 1,444-row register (measured this session, file not in git): 5,776 of 5,777 at their address, `D1448 = SUM` agrees, read in 83-145 ms.
+- **Two LIMIT layouts are measured, not passed** (a floor check only stops them getting worse unseen; neither is reported as ADDS_UP).
+
+**Findings:**
+1. **The PDF carries one Thai word differently from the sheet:** the sheet's `จำนวน` is in the PDF as `จำานวน` (an extra `า` after
+   SARA AM). poppler reads the same, so it is the PDF maker (`ninja_pdf.js` / PDFKit text mapping), not the reader. Counted as "differs as
+   the PDF itself reads", never hidden. A defect to fix where that engine lives (`origin/ninja-xtab2`).
+2. **An empty sheet column leaves no trace on the page** (cross-tab column B): cells to its right shift one column. Order is kept;
+   the address is not recoverable from text alone.
+3. **Witness slip caught by its own check:** `crosstab-minus` first FAILED: a 2-cell column (header + figure) cannot be typed by
+   alignment. Fixed by rule (5) above.
+
+**Not yet / Next:** merged, centred and wrapped cells (showcase 7 of 41 in order) and overflowing text beside touching columns (a
+204-column stress sheet: 585 of 796) need more than text positions. The page's own **ruling lines and cell fills** are the missing
+evidence (`modeller/pdf2dxf/pdf_reader.js` already reads paths); that is the next reader step, with these two files as its denominator.
 
 ## 8. Slice S3 — the Excel menu (spec 2026-11-27, before code)
 Build-order step (3). Code: bim-ootb `erp/sheet_addin/` (`host_shim.js`, `excel_host.js`, `taskpane.html`, `taskpane.js`, `manifest.xml`) + a small pure
