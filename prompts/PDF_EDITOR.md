@@ -405,7 +405,7 @@ through `host_shim.js`'s reader to the same lines (H9 runs on those bytes). Issu
 travels in. The older page witnesses (which re-read the downloaded .xlsx) stay green.
 
 ## 4.6 RESULTS — history inside the file (2026-11-27, bim-ootb PR #3481 `feat/pdf-history-in-file` + follow-up #3482 `feat/pdf-history-xlsx-compressed`)
-Code: `pdf/pdf_history.js` (new, 98 lines: check / adopt / start / save / toWorkbook / xlsxBytes / story), `pdf/pdf_write.js` (+ `embedFile`,
+Code: `pdf/pdf_history.js` (new, 97 lines: check / adopt / start / save / toWorkbook / xlsxBytes / story), `pdf/pdf_write.js` (+ `embedFile`,
 `build` takes new objects, `record` takes the sheet name), `pdf/pdf_open.js` (+ `attachments`, `history`), `pdf/index.html` (History block,
 both downloads), `pdf/sw.js` ASSETS (+ `pdf_history.js`, `../erp/sheet_addin/host_shim.js`). Nothing under `erp/` edited. bim-ootb diff vs `main`:
 #3481 7 files +609 / −32 (shipped code +209 / −32, witnesses +400); #3482 3 files +12 / −4. The page's old "one history per page read,
@@ -442,10 +442,10 @@ Regression, same tree (after #3482): `§PDFWR-VERDICT PASS judged=67` (6/6) · `
 
 - **H1/H2:** from the saved bytes alone the 3 lines come back equal, accepted by `SheetHistory.verify` and `ws_kernel.verifyJournal`; 144 of
   144 cells bound. A second session with only those bytes records nothing on Read as sheet and its edit is seq 4 with `prev` = entry 3's
-  hash; the second save holds ONE embedded file, ONE file specification and the same 34 objects.
+  hash; the second save holds ONE embedded file, ONE file specification and the same 33 objects.
 - **H3 (independent):** `pdfdetach -list` names `_door_history.jsonl`; `pdfdetach -save` gives the 15,744 bytes of the lines; `pdfinfo` clean,
   1 page; `pdftotext -raw` and every `-bbox` word box identical to the same save without history.
-- **H4:** history-only save of the unedited file: the content stream (object 5, 28,044 bytes) byte-identical; exactly ONE of the 31 objects
+- **H4:** history-only save of the unedited file: the content stream (object 5, 28,097 bytes as an object) byte-identical; exactly ONE of the 31 objects
   differs (object 2, the `/Names` dictionary: the catalog itself is untouched); 2 new objects; one revision; the stream inflates (node
   zlib) to the lines; the same lines saved twice, or saved again into the saved file, give the same bytes; poppler raster 0 pixels differ.
 - **H5-H7:** a value changed in the carried history (by the witness's own deflate and cross-reference table) → `broken`, entry 2,
