@@ -1005,7 +1005,7 @@ cell adds *"; not checked: subtotal (none printed)"*; a template that never tagg
 at the writer: every line the shim appends to `_door_history` / `_door_ledger` is ASCII-escaped for characters beyond U+FFFF (`😀`; a JSON string, so `JSON.parse` returns the SAME text and
 every digest is computed on parsed values, never on the line text). Old workbooks (raw astral characters in a line) verify unchanged and are normalised to the escaped form the next time a
 line is appended. Limit that stays: an emoji typed into a VISIBLE cell and re-saved by an inline-string writer is read back as U+F600 by this reader (Stamp would record a change);
-it is a reader limit named here, not fixed. Check history on an already damaged history says "edited" as before, plus a hint when the text holds a lone surrogate or private-use character.
+it is a reader limit named here, not fixed. Check history on an already damaged history says "edited" as before (a hint on lone surrogate / private-use characters was considered and NOT built: it would name a cause it cannot prove).
 
 **Claims.** Each names the issue it exposes and can fail:
 | ID | Claim | Issue exposed | Falsifier (mutant) |
