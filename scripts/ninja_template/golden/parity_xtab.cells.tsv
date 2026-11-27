@@ -1,0 +1,55 @@
+Output	A1	s	XTAB FIXTURE
+Output	A3	s	Account
+Output	C3	s	12110
+Output	D3	s	14120
+Output	E3	s	41000
+Output	F3	s	51100
+Output	A5	s	Amount
+Output	C5	n	445.85
+Output	D5	n	-633.41
+Output	E5	n	-1023.98
+Output	F5	n	966.41
+Output	A6	s	Check
+Process	A1	s	ANNOTATION
+Process	B1	s	ROW
+Process	C1	s	SELECT
+Process	D1	s	TABLE
+Process	E1	s	JOIN
+Process	F1	s	WHERE
+Process	G1	s	ADDRESS
+Process	H1	s	Direction
+Process	I1	s	VALUES
+Process	A2	f	CONCATENATE("@",C2,"@",B2)
+Process	B2	f	ROW()
+Process	C2	s	a.value
+Process	D2	s	c_elementvalue a
+Process	F2	s	a.value IN ('12110','14120','41000','51100') ORDER BY a.value
+Process	G2	s	C3
+Process	H2	s	>
+Process	I2	s	12110
+Process	J2	s	14120
+Process	K2	s	41000
+Process	L2	s	51100
+Process	A3	f	CONCATENATE("@",C3,"@",B3)
+Process	B3	f	ROW()
+Process	C3	s	el.value as acctno
+Process	D3	s	fact_acct a
+Process	F3	s	a.postingtype='A' AND a.datetrx BETWEEN #1 AND #2 AND el.value IN ('12110','14120','41000','51100')
+Process	H3	s	V
+Process	I3	s	12110
+Process	J3	s	14120
+Process	K3	s	41000
+Process	L3	s	51100
+Process	A4	f	CONCATENATE("@",C4,"@",B4)
+Process	B4	f	ROW()
+Process	C4	s	sum(a.amtacctdr-a.amtacctcr) as amt
+Process	D4	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F4	s	GROUP BY el.value ORDER BY el.value
+Process	G4	s	C5
+Process	H4	s	C3+
+Process	I4	n	445.85
+Process	J4	n	-633.41
+Process	K4	n	-1023.98
+Process	L4	n	966.41
+Process	B5	f	ROW()
+Process	I5	s	END

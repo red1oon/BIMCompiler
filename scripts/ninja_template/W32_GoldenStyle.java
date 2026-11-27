@@ -1,0 +1,20 @@
+// W32 — formatting parity of the TWIN's .xlsx against the frozen STYLE golden (golden/<name>.styles.tsv, dumped from the REAL plugin's output by GoldenDump).
+// usage: W32 <golden prefix> <twin.xlsx>. Checks per cell font/fontColor/fill/border/numfmt/align, merged count, hidden cols, col widths, row heights.
+// Two-way on cells: golden cell missing in the twin = mismatch; a non-default-style or non-blank twin cell absent from the golden = mismatch ("extra"). INCONCLUSIVE if 0 cells compared.
+import java.io.*; import java.util.*; import java.nio.file.*; import org.apache.poi.ss.usermodel.*; import org.apache.poi.xssf.usermodel.*;
+public class W32_GoldenStyle {
+ static String rgb(Color c){ if(c instanceof XSSFColor){ byte[] b=((XSSFColor)c).getRGB(); return b==null?"-":String.format("%02X%02X%02X",b[0]&255,b[1]&255,b[2]&255);} return "-"; }
+ static boolean plain(CellStyle q){ return q.getFillPattern()==FillPatternType.NO_FILL && q.getBorderTop()==BorderStyle.NONE && q.getBorderBottom()==BorderStyle.NONE && q.getBorderLeft()==BorderStyle.NONE && q.getBorderRight()==BorderStyle.NONE && q.getDataFormatString().equals("General"); }
+ static String esc(String s){ return s.replace("\\","\\\\").replace("\t","\\t").replace("\n","\\n").replace("\r","\\r"); }
+ static String line(Workbook w, Cell c){ CellStyle q=c.getCellStyle(); Font f=w.getFontAt(q.getFontIndex()); Color fc=(f instanceof XSSFFont)?((XSSFFont)f).getXSSFColor():null;
+  return f.getFontName()+"/"+f.getFontHeightInPoints()+"/b"+f.getBold()+"/i"+f.getItalic()+"/u"+f.getUnderline()+"\t"+rgb(fc)+"\t"+(q.getFillPattern()!=FillPatternType.NO_FILL? q.getFillPattern()+"/"+rgb(q.getFillForegroundColorColor()):"none")+"\t"+q.getBorderTop()+","+q.getBorderBottom()+","+q.getBorderLeft()+","+q.getBorderRight()+"\t"+esc(q.getDataFormatString().replace("\\(","(").replace("\\)",")").replace("\\-","-"))+"\t"+q.getAlignment()+"/"+q.getVerticalAlignment()+"/"+q.getWrapText(); }
+ public static void main(String[] a) throws Exception { Workbook w=WorkbookFactory.create(new FileInputStream(a[1])); Sheet s=w.getSheet("Output"); Map<String,Integer> bad=new TreeMap<>(); List<String> ex=new ArrayList<>(); int cells=0; Set<String> seen=new HashSet<>();
+  for(String l:Files.readAllLines(Paths.get(a[0]+".styles.tsv"))){ if(l.isEmpty()) continue; String[] p=l.split("\t",-1);
+   if(p[0].equals("#merged")){ if(s.getNumMergedRegions()!=Integer.parseInt(p[1])) bad.merge("mergedCount",1,Integer::sum); continue; }
+   if(p[0].equals("#col")){ int c=Integer.parseInt(p[1]); if(s.getColumnWidth(c)!=Integer.parseInt(p[2])) bad.merge("colWidth",1,Integer::sum); if(s.isColumnHidden(c)!=Boolean.parseBoolean(p[3])) bad.merge("hiddenCol",1,Integer::sum); continue; }
+   if(p[0].equals("#row")){ Row r=s.getRow(Integer.parseInt(p[1])); if(r!=null && r.getHeight()!=Short.parseShort(p[2])) bad.merge("rowHeight",1,Integer::sum); continue; }
+   cells++; seen.add(p[0]); org.apache.poi.ss.util.CellReference ref=new org.apache.poi.ss.util.CellReference(p[0]); Row r=s.getRow(ref.getRow()); Cell c=r==null?null:r.getCell(ref.getCol());
+   if(c==null){ bad.merge("cellMissing",1,Integer::sum); if(ex.size()<6) ex.add(p[0]+" missing in twin"); continue; }
+   String[] got=line(w,c).split("\t",-1); String[] k={"font","fontColor","fill","border","numfmt","align"}; for(int i=0;i<k.length;i++) if(!got[i].equals(p[i+1])){ bad.merge(k[i],1,Integer::sum); if(ex.size()<6) ex.add(p[0]+" "+k[i]+" golden="+p[i+1]+" | twin="+got[i]); } }
+  for(Row r:s) for(Cell c:r){ String ad=c.getAddress().formatAsString(); if(seen.contains(ad)) continue; if(c.getCellType()==CellType.BLANK && plain(c.getCellStyle())) continue; if(c.getCellType()==CellType.STRING && c.getStringCellValue().isEmpty() && plain(c.getCellStyle())) continue; bad.merge("extraInTwin",1,Integer::sum); if(ex.size()<6) ex.add(ad+" present in twin, absent from golden"); }
+  System.out.println("§GOLDEN_STYLE "+new File(a[1]).getName()+" cells="+cells+" mismatches="+bad); for(String e:ex) System.out.println("   "+e); System.out.println("§STYLE_PARITY_VERDICT "+(cells==0?"INCONCLUSIVE":(bad.isEmpty()?"PASS":"FAIL"))); }}

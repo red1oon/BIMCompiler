@@ -1,0 +1,30 @@
+#merged	0
+#col	0	2048	false
+#col	1	2048	false
+#col	2	2048	false
+#col	3	2048	false
+#col	4	2048	false
+#col	5	2048	false
+#col	6	2048	false
+#col	7	2048	false
+#row	0	255
+A1	Arial/10/bfalse/ifalse/u0	-	none	NONE,NONE,NONE,NONE	General	GENERAL/BOTTOM/false
+#row	2	255
+A3	Arial/10/btrue/ifalse/u0	-	SOLID_FOREGROUND/C0C0C0	NONE,MEDIUM,NONE,NONE	General	GENERAL/BOTTOM/false
+B3	Arial/10/btrue/ifalse/u0	-	SOLID_FOREGROUND/C0C0C0	NONE,MEDIUM,NONE,NONE	General	GENERAL/BOTTOM/false
+C3	Arial/10/btrue/ifalse/u0	-	SOLID_FOREGROUND/C0C0C0	NONE,MEDIUM,NONE,NONE	General	GENERAL/BOTTOM/false
+D3	Arial/10/btrue/ifalse/u0	-	SOLID_FOREGROUND/C0C0C0	NONE,MEDIUM,NONE,NONE	General	GENERAL/BOTTOM/false
+E3	Arial/10/btrue/ifalse/u0	-	SOLID_FOREGROUND/C0C0C0	NONE,MEDIUM,NONE,NONE	General	GENERAL/BOTTOM/false
+F3	Arial/10/btrue/ifalse/u0	-	SOLID_FOREGROUND/C0C0C0	NONE,MEDIUM,NONE,NONE	General	GENERAL/BOTTOM/false
+#row	4	255
+A5	Arial/10/bfalse/ifalse/u0	-	none	NONE,NONE,NONE,NONE	General	GENERAL/BOTTOM/false
+C5	Arial/9/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	#,##0.00	GENERAL/BOTTOM/false
+D5	Arial/9/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	#,##0.00	GENERAL/BOTTOM/false
+E5	Arial/9/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	#,##0.00	GENERAL/BOTTOM/false
+F5	Arial/9/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	#,##0.00	GENERAL/BOTTOM/false
+#row	5	255
+A6	Arial/10/bfalse/ifalse/u0	-	none	NONE,NONE,NONE,NONE	General	GENERAL/BOTTOM/false
+C6	Arial/9/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	#,##0.00	GENERAL/BOTTOM/false
+D6	Arial/9/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	#,##0.00	GENERAL/BOTTOM/false
+E6	Arial/9/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	#,##0.00	GENERAL/BOTTOM/false
+F6	Arial/9/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	#,##0.00	GENERAL/BOTTOM/false

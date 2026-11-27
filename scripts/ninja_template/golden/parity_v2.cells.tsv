@@ -1,0 +1,1427 @@
+Output	A1	s	PARITY FIXTURE v2
+Output	A3	s	Acct
+Output	B3	s	Name
+Output	C3	s	Total
+Output	D3	n	429.0
+Output	E3	n	430.0
+Output	F3	n	50010.0
+Output	G3	n	50016.0
+Output	H3	n	50011.0
+Output	I3	n	431.0
+Output	J3	n	781.0
+Output	K3	n	780.0
+Output	L3	n	778.0
+Output	M3	n	432.0
+Output	N3	n	433.0
+Output	O3	n	434.0
+Output	P3	n	435.0
+Output	Q3	n	436.0
+Output	R3	n	437.0
+Output	S3	n	438.0
+Output	T3	n	439.0
+Output	U3	n	440.0
+Output	V3	n	441.0
+Output	W3	n	442.0
+Output	X3	n	634.0
+Output	Y3	n	443.0
+Output	Z3	n	444.0
+Output	AA3	n	445.0
+Output	AB3	n	635.0
+Output	AC3	n	50001.0
+Output	AD3	n	50002.0
+Output	AE3	n	50003.0
+Output	AF3	n	50004.0
+Output	AG3	n	50017.0
+Output	AH3	n	200000.0
+Output	AI3	n	446.0
+Output	AJ3	n	447.0
+Output	AK3	n	426.0
+Output	AL3	n	448.0
+Output	AM3	n	427.0
+Output	AN3	n	428.0
+Output	AO3	n	449.0
+Output	AP3	n	450.0
+Output	AQ3	n	772.0
+Output	AR3	n	636.0
+Output	AS3	n	451.0
+Output	AT3	n	452.0
+Output	AU3	n	453.0
+Output	AV3	n	637.0
+Output	AW3	n	454.0
+Output	AX3	n	455.0
+Output	AY3	n	638.0
+Output	AZ3	n	456.0
+Output	BA3	n	457.0
+Output	BB3	n	458.0
+Output	BC3	n	639.0
+Output	BD3	n	459.0
+Output	BE3	n	460.0
+Output	BF3	n	461.0
+Output	BG3	n	462.0
+Output	BH3	n	463.0
+Output	BI3	n	464.0
+Output	BJ3	n	465.0
+Output	BK3	n	466.0
+Output	BL3	n	467.0
+Output	BM3	n	468.0
+Output	BN3	n	469.0
+Output	BO3	n	470.0
+Output	BP3	n	471.0
+Output	BQ3	n	472.0
+Output	BR3	n	473.0
+Output	BS3	n	474.0
+Output	BT3	n	475.0
+Output	BU3	n	476.0
+Output	BV3	n	477.0
+Output	BW3	n	478.0
+Output	BX3	n	479.0
+Output	BY3	n	480.0
+Output	BZ3	n	640.0
+Output	CA3	n	481.0
+Output	CB3	n	482.0
+Output	CC3	n	483.0
+Output	CD3	n	641.0
+Output	CE3	n	484.0
+Output	CF3	n	485.0
+Output	CG3	n	486.0
+Output	CH3	n	642.0
+Output	CI3	n	487.0
+Output	CJ3	n	488.0
+Output	CK3	n	489.0
+Output	CL3	n	643.0
+Output	CM3	n	490.0
+Output	CN3	n	491.0
+Output	CO3	n	492.0
+Output	CP3	n	644.0
+Output	CQ3	n	493.0
+Output	CR3	n	494.0
+Output	CS3	n	495.0
+Output	CT3	n	645.0
+Output	CU3	n	496.0
+Output	CV3	n	497.0
+Output	CW3	n	773.0
+Output	CX3	n	646.0
+Output	CY3	n	498.0
+Output	CZ3	n	499.0
+Output	DA3	n	500.0
+Output	DB3	n	501.0
+Output	DC3	n	647.0
+Output	DD3	n	502.0
+Output	DE3	n	503.0
+Output	DF3	n	504.0
+Output	DG3	n	648.0
+Output	DH3	n	505.0
+Output	DI3	n	649.0
+Output	DJ3	n	650.0
+Output	DK3	n	651.0
+Output	DL3	n	652.0
+Output	DM3	n	653.0
+Output	DN3	n	654.0
+Output	DO3	n	655.0
+Output	DP3	n	656.0
+Output	DQ3	n	657.0
+Output	DR3	n	658.0
+Output	DS3	n	783.0
+Output	DT3	n	659.0
+Output	DU3	n	660.0
+Output	DV3	n	661.0
+Output	DW3	n	662.0
+Output	DX3	n	663.0
+Output	DY3	n	664.0
+Output	DZ3	n	665.0
+Output	EA3	n	666.0
+Output	EB3	n	667.0
+Output	EC3	n	668.0
+Output	ED3	n	669.0
+Output	EE3	n	759.0
+Output	EF3	n	670.0
+Output	EG3	n	671.0
+Output	EH3	n	672.0
+Output	EI3	n	760.0
+Output	EJ3	n	673.0
+Output	EK3	n	674.0
+Output	EL3	n	675.0
+Output	EM3	n	775.0
+Output	EN3	n	676.0
+Output	EO3	n	761.0
+Output	EP3	n	677.0
+Output	EQ3	n	678.0
+Output	ER3	n	679.0
+Output	ES3	n	762.0
+Output	ET3	n	680.0
+Output	EU3	n	681.0
+Output	EV3	n	763.0
+Output	EW3	n	682.0
+Output	EX3	n	683.0
+Output	EY3	n	684.0
+Output	EZ3	n	764.0
+Output	FA3	n	685.0
+Output	FB3	n	686.0
+Output	FC3	n	687.0
+Output	FD3	n	688.0
+Output	FE3	n	765.0
+Output	FF3	n	689.0
+Output	FG3	n	690.0
+Output	FH3	n	691.0
+Output	FI3	n	692.0
+Output	FJ3	n	693.0
+Output	FK3	n	766.0
+Output	FL3	n	694.0
+Output	FM3	n	695.0
+Output	FN3	n	696.0
+Output	FO3	n	697.0
+Output	FP3	n	698.0
+Output	FQ3	n	699.0
+Output	FR3	n	700.0
+Output	FS3	n	702.0
+Output	FT3	n	716.0
+Output	FU3	n	717.0
+Output	FV3	n	718.0
+Output	FW3	n	768.0
+Output	FX3	n	719.0
+Output	FY3	n	720.0
+Output	FZ3	n	721.0
+Output	GA3	n	769.0
+Output	GB3	n	722.0
+Output	GC3	n	723.0
+Output	GD3	n	724.0
+Output	GE3	n	725.0
+Output	GF3	n	726.0
+Output	GG3	n	727.0
+Output	GH3	n	50008.0
+Output	GI3	n	50007.0
+Output	GJ3	n	50009.0
+Output	GK3	n	728.0
+Output	GL3	n	770.0
+Output	GM3	n	729.0
+Output	GN3	n	730.0
+Output	GO3	n	771.0
+Output	GP3	f	GO3*2
+Output	GQ3	f	GP3+1
+Output	A4	s	5
+Output	B4	s	Cost of Goods Sold
+Output	A5	s	51100
+Output	B5	s	Product CoGs
+Output	A6	s	51110
+Output	B6	s	Cost Of Production
+Output	A7	s	51120
+Output	B7	s	Scrap
+Output	A8	s	51130
+Output	B8	s	Outside Processing (Subcontract)
+Output	A9	s	51200
+Output	B9	s	Product Expense
+Output	A10	s	51300
+Output	B10	s	Cost Adjustments
+Output	D10	s	Agri-Tech
+Output	A11	s	51400
+Output	B11	s	Inventory Clearing
+Output	D11	s	C&W Construction
+Output	A12	s	51800
+Output	B12	s	Commissions Paid
+Output	D12	s	GardenUser BP
+Output	A13	s	52000
+Output	B13	s	Services Purchases
+Output	D13	s	Joe Block
+Output	A14	s	53000
+Output	B14	s	Sideline Purchases
+Output	D14	s	Patio Fun, Inc.
+Output	A15	s	54000
+Output	B15	s	Freight in
+Output	D15	s	Seed Farm Inc.
+Output	A16	s	55
+Output	B16	s	Returns
+Output	D16	s	Standard
+Output	A17	s	55100
+Output	B17	s	Returns Expense
+Output	A18	s	55200
+Output	B18	s	Returns to Vendors
+Output	A19	s	56
+Output	B19	s	Inventory CoGs
+Output	A20	s	56100
+Output	B20	s	Inventory Shrinkage
+Output	A21	s	56200
+Output	B21	s	Inventory Write Down Below Cost
+Output	A22	s	56300
+Output	B22	s	Inventory Adjustment
+Output	A23	s	56400
+Output	B23	s	Inventory Revaluation
+Output	A24	s	57000
+Output	B24	s	Direct Labor
+Output	A25	s	58
+Output	B25	s	CoGS Variances
+Output	A26	s	58100
+Output	B26	s	Invoice price variance
+Output	A27	s	58200
+Output	B27	s	Purchase price variance
+Output	A28	s	58300
+Output	B28	s	Purchase price variance Offset
+Output	A29	s	58400
+Output	B29	s	Using Variance
+Output	A30	s	58500
+Output	B30	s	Method Change Variance
+Output	A31	s	58600
+Output	B31	s	Rate Variance
+Output	A32	s	58700
+Output	B32	s	Mix Variance
+Output	A33	s	58800
+Output	B33	s	Average Cost Variance
+Output	A34	s	58900
+Output	B34	s	Landed Cost Clearing
+Output	A35	s	59
+Output	B35	s	CoGs/Sales Discounts
+Output	A36	s	59100
+Output	B36	s	Trade discounts received
+Output	A37	s	59101
+Output	B37	s	Trade Discounts
+Output	A38	s	59200
+Output	B38	s	Payment discount revenue
+Output	A39	s	59201
+Output	B39	s	Payment discount revenue
+Output	A40	s	59300
+Output	B40	s	Promotion Discounts
+Output	A41	s	6
+Output	B41	s	Expenses
+Output	A42	s	60
+Output	B42	s	Payroll Expenses
+Output	A43	s	60110
+Output	B43	s	Wages
+Output	A44	s	60120
+Output	B44	s	Wages Owners
+Output	A45	s	60130
+Output	B45	s	Salaries
+Output	A46	s	60210
+Output	B46	s	Vacation Pay
+Output	A47	s	60220
+Output	B47	s	Vacation Pay Owners
+Output	A48	s	60230
+Output	B48	s	Sick Pay
+Output	A49	s	60240
+Output	B49	s	Sick Pay Owners
+Output	A50	s	60300
+Output	B50	s	Retirement (Pension, Profit Sharing, 401k)
+Output	A51	s	60410
+Output	B51	s	FICA Tax
+Output	A52	s	60420
+Output	B52	s	FICA Tax Owners
+Output	A53	s	60430
+Output	B53	s	Federal/State Unemployment
+Output	A54	s	60440
+Output	B54	s	Federal/State Unemployment Owners
+Output	A55	s	60510
+Output	B55	s	Health Insurance Premium
+Output	A56	s	60520
+Output	B56	s	Health Insurance Premium Owners
+Output	A57	s	60580
+Output	B57	s	Health Insurance Employee Contribution
+Output	A58	s	60590
+Output	B58	s	Health Insurance Cobra Payments
+Output	A59	s	60600
+Output	B59	s	Workers Compensation Insurance
+Output	A60	s	60710
+Output	B60	s	Disability Insurance Premium
+Output	A61	s	60720
+Output	B61	s	Disability Insurance Premium Owners
+Output	A62	s	60790
+Output	B62	s	Disability Insurance Employee Contribution
+Output	A63	s	60810
+Output	B63	s	Life Insurance Premium
+Output	A64	s	60820
+Output	B64	s	Life Insurance Premium Owners
+Output	A65	s	60890
+Output	B65	s	Life Insurance Employee Contribution
+Output	A66	s	60900
+Output	B66	s	Other Benefit Expense
+Output	A67	s	60910
+Output	B67	s	Staff Gifts & Perks
+Output	A68	s	60920
+Output	B68	s	Staff Picnic (100% Deductible)
+Output	A69	s	60990
+Output	B69	s	Payroll Processing Expense
+Output	A70	s	61
+Output	B70	s	Occupancy Cost
+Output	A71	s	61100
+Output	B71	s	Rent Expense
+Output	A72	s	61200
+Output	B72	s	Utilities
+Output	A73	s	61300
+Output	B73	s	Other Occupancy Costs
+Output	A74	s	62
+Output	B74	s	Advertising
+Output	A75	s	62100
+Output	B75	s	Media Advertising
+Output	A76	s	62200
+Output	B76	s	Catalog, Newsletter
+Output	A77	s	62300
+Output	B77	s	Events
+Output	A78	s	62400
+Output	B78	s	Joint Advertising
+Output	A79	s	62500
+Output	B79	s	Web Hosting
+Output	A80	s	62800
+Output	B80	s	Other Advertising & Promotion
+Output	A81	s	62900
+Output	B81	s	Vendor Advertising Allowances
+Output	A82	s	63
+Output	B82	s	Telephone and Communications
+Output	A83	s	63100
+Output	B83	s	Telephone
+Output	A84	s	63200
+Output	B84	s	Mobile Telephone
+Output	A85	s	63300
+Output	B85	s	Network Charges
+Output	A86	s	64
+Output	B86	s	Professional Services
+Output	A87	s	64100
+Output	B87	s	Legal Fees
+Output	A88	s	64200
+Output	B88	s	Accounting Fees
+Output	A89	s	64300
+Output	B89	s	Inventory Verification Fees
+Output	A90	s	64500
+Output	B90	s	Other Consulting Fees
+Output	A91	s	65
+Output	B91	s	Stationary & Supplies
+Output	A92	s	65100
+Output	B92	s	Stationary & Supplies - Office Use
+Output	A93	s	65500
+Output	B93	s	Janitorial Supplies
+Output	A94	s	66
+Output	B94	s	Data Processing
+Output	A95	s	66100
+Output	B95	s	Data Processing Supplies
+Output	A96	s	66200
+Output	B96	s	Data Processing Rental
+Output	A97	s	66300
+Output	B97	s	Outside Computer Services
+Output	A98	s	66900
+Output	B98	s	Data Processing Other Expense
+Output	A99	s	67
+Output	B99	s	Depreciation Expense
+Output	A100	s	67120
+Output	B100	s	Building Depreciation
+Output	A101	s	67130
+Output	B101	s	Land Improvement Depreciation
+Output	A102	s	67140
+Output	B102	s	Building Improvement Depreciation
+Output	A103	s	67150
+Output	B103	s	Leasehold Improvement Depreciation
+Output	A104	s	67210
+Output	B104	s	Furniture Depreciation
+Output	A105	s	67220
+Output	B105	s	Fixtures Depreciation
+Output	A106	s	67230
+Output	B106	s	Equipment Depreciation
+Output	A107	s	67240
+Output	B107	s	Vehicles Depreciation
+Output	A108	s	67250
+Output	B108	s	Data Processing Equipment Depreciation
+Output	A109	s	67260
+Output	B109	s	Software Depreciation
+Output	A110	s	68
+Output	B110	s	Business Travel
+Output	A111	s	68100
+Output	B111	s	Business Travel - Plane/Train/Taxi
+Output	A112	s	68200
+Output	B112	s	Business Travel - Auto Reimbursement
+Output	A113	s	68300
+Output	B113	s	Business Travel - Hotel
+Output	A114	s	68400
+Output	B114	s	Business Meals & Entertainment (50%)
+Output	A115	s	68500
+Output	B115	s	Staff Meeting Food (100%)
+Output	A116	s	68600
+Output	B116	s	Employee expense
+Output	A117	s	68900
+Output	B117	s	Business Travel Other Expense
+Output	A118	s	69
+Output	B118	s	Insurance
+Output	A119	s	69100
+Output	B119	s	Business Insurance
+Output	A120	s	69200
+Output	B120	s	Real Estate Insurance
+Output	A121	s	69300
+Output	B121	s	Vehicle Insurance
+Output	A122	s	69400
+Output	B122	s	Other Insurance
+Output	A123	s	7
+Output	B123	s	7-Expenses
+Output	A124	s	70
+Output	B124	s	Payment Processor Costs
+Output	A125	s	70100
+Output	B125	s	Credit Card Service Charges
+Output	A126	s	70200
+Output	B126	s	Bank Service Charges
+Output	A127	s	70900
+Output	B127	s	Other Payment Service Charges
+Output	A128	s	71
+Output	B128	s	Dues & Subscription
+Output	A129	s	71100
+Output	B129	s	Association Membership Fees
+Output	A130	s	71200
+Output	B130	s	Subscription Fees
+Output	A131	s	72
+Output	B131	s	Office Expense
+Output	A132	s	72100
+Output	B132	s	Office Expense
+Output	A133	s	73
+Output	B133	s	Posting & Shipping
+Output	A134	s	73100
+Output	B134	s	Postage Expense
+Output	A135	s	73200
+Output	B135	s	Customer Package Expense
+Output	A136	s	73290
+Output	B136	s	Customer Postage Fees Received
+Output	A137	s	73300
+Output	B137	s	Shipping Expenses
+Output	A138	s	74
+Output	B138	s	Taxes and Licenses
+Output	A139	s	74100
+Output	B139	s	Tax expense
+Output	A140	s	74200
+Output	B140	s	Inventory & Use Taxes
+Output	A141	s	74300
+Output	B141	s	Real Estate Taxes
+Output	A142	s	74400
+Output	B142	s	Business Licenses & Fees
+Output	A143	s	74900
+Output	B143	s	Licenses & Fees - Other
+Output	A144	s	75
+Output	B144	s	Education
+Output	A145	s	75100
+Output	B145	s	Education Course Fees
+Output	A146	s	75200
+Output	B146	s	Education Travel
+Output	A147	s	75300
+Output	B147	s	Education Meals & Entertainment (50%)
+Output	A148	s	75900
+Output	B148	s	Education Other
+Output	A149	s	76
+Output	B149	s	Equipment Rent
+Output	A150	s	76100
+Output	B150	s	Office Equipment Rent
+Output	A151	s	76200
+Output	B151	s	Store Equipment Rent
+Output	A152	s	76900
+Output	B152	s	Equipment Rent Other
+Output	A153	s	77
+Output	B153	s	Repairs & Maintenance
+Output	A154	s	77100
+Output	B154	s	Building Repairs & Maintenance
+Output	A155	s	77200
+Output	B155	s	Furniture, Equipment Repairs & Maintenance
+Output	A156	s	77300
+Output	B156	s	Data Processing Repairs & Maintenance
+Output	A157	s	77400
+Output	B157	s	Software Maintenance
+Output	A158	s	77500
+Output	B158	s	Vehicle Repairs & Maintenance
+Output	A159	s	77900
+Output	B159	s	Repairs & Maintenance Other
+Output	A160	s	78
+Output	B160	s	Other Operating Expenses
+Output	A161	s	78100
+Output	B161	s	Bad Debts Write-off
+Output	A162	s	78200
+Output	B162	s	Collection Expense
+Output	A163	s	78300
+Output	B163	s	Petty Cash Over/Short
+Output	A164	s	78400
+Output	B164	s	Recruitment Costs
+Output	A165	s	78500
+Output	B165	s	Vehicle Expense
+Output	A166	s	78600
+Output	B166	s	Amortization Expense
+Output	A167	s	78700
+Output	B167	s	Penalties
+Output	A168	s	78800
+Output	B168	s	Franchise Fee / Royalty Fees
+Output	A169	s	78900
+Output	B169	s	Miscellaneous Expense
+Output	A170	s	79
+Output	B170	s	Default/Suspense Accounts
+Output	A171	s	79100
+Output	B171	s	Default account
+Output	A172	s	79200
+Output	B172	s	Suspense balancing
+Output	A173	s	79300
+Output	B173	s	Suspense error
+Output	A174	s	79400
+Output	B174	s	Cash book expense
+Output	A175	s	79600
+Output	B175	s	Charge expense
+Output	A176	s	82
+Output	B176	s	Other Expense
+Output	A177	s	82100
+Output	B177	s	Interest Expense
+Output	A178	s	82200
+Output	B178	s	Mortgage Interest Expense
+Output	A179	s	82300
+Output	B179	s	Uninsured Casualty Loss
+Output	A180	s	82400
+Output	B180	s	Charitable Contributions
+Output	A181	s	825
+Output	B181	s	Currency Loss
+Output	A182	s	82510
+Output	B182	s	Bank revaluation loss
+Output	A183	s	82520
+Output	B183	s	Bank settlement loss
+Output	A184	s	82530
+Output	B184	s	Unrealized loss
+Output	A185	s	82540
+Output	B185	s	Realized loss
+Output	A186	s	82550
+Output	B186	s	Currency balancing
+Output	A187	s	82700
+Output	B187	s	Capital Gains Loss
+Output	A188	s	82800
+Output	B188	s	Fixed Asset Sale Loss
+Output	A189	s	82900
+Output	B189	s	Other Expense
+Output	A190	s	83
+Output	B190	s	Expense (Absorbed)
+Output	A191	s	83100
+Output	B191	s	Labor (Absorbed)
+Output	A192	s	83200
+Output	B192	s	Burden (Absorbed)
+Output	A193	s	89
+Output	B193	s	Income Tax & Summary
+Output	A194	s	89100
+Output	B194	s	Federal Income Tax
+Output	A195	s	89200
+Output	B195	s	State Income Tax
+Output	A196	s	89300
+Output	B196	s	Local Income Tax
+Output	A197	s	89900
+Output	B197	s	Income Summary
+Output	A198	f	ROW()
+Output	B198	s	Expense accounts
+Output	C198	f	COUNTA(A4:A4)
+Output	A201	s	Net movement
+Output	C201	f	B202*1
+Output	A203	s	Customers
+Output	GP203	f	ROW()*1
+Output	D204	f	COUNTA(D203:D203)
+Output	E204	f	COUNTA(E203:E203)
+Output	F204	f	COUNTA(F203:F203)
+Output	G204	f	COUNTA(G203:G203)
+Output	H204	f	COUNTA(H203:H203)
+Output	I204	f	COUNTA(I203:I203)
+Output	J204	f	COUNTA(J203:J203)
+Output	K204	f	COUNTA(K203:K203)
+Output	L204	f	COUNTA(L203:L203)
+Output	M204	f	COUNTA(M203:M203)
+Output	N204	f	COUNTA(N203:N203)
+Output	O204	f	COUNTA(O203:O203)
+Output	P204	f	COUNTA(P203:P203)
+Output	Q204	f	COUNTA(Q203:Q203)
+Output	R204	f	COUNTA(R203:R203)
+Output	S204	f	COUNTA(S203:S203)
+Output	T204	f	COUNTA(T203:T203)
+Output	U204	f	COUNTA(U203:U203)
+Output	V204	f	COUNTA(V203:V203)
+Output	W204	f	COUNTA(W203:W203)
+Output	X204	f	COUNTA(X203:X203)
+Output	Y204	f	COUNTA(Y203:Y203)
+Output	Z204	f	COUNTA(Z203:Z203)
+Output	AA204	f	COUNTA(AA203:AA203)
+Output	AB204	f	COUNTA(AB203:AB203)
+Output	AC204	f	COUNTA(AC203:AC203)
+Output	AD204	f	COUNTA(AD203:AD203)
+Output	AE204	f	COUNTA(AE203:AE203)
+Output	AF204	f	COUNTA(AF203:AF203)
+Output	AG204	f	COUNTA(AG203:AG203)
+Output	AH204	f	COUNTA(AH203:AH203)
+Output	AI204	f	COUNTA(AI203:AI203)
+Output	AJ204	f	COUNTA(AJ203:AJ203)
+Output	AK204	f	COUNTA(AK203:AK203)
+Output	AL204	f	COUNTA(AL203:AL203)
+Output	AM204	f	COUNTA(AM203:AM203)
+Output	AN204	f	COUNTA(AN203:AN203)
+Output	AO204	f	COUNTA(AO203:AO203)
+Output	AP204	f	COUNTA(AP203:AP203)
+Output	AQ204	f	COUNTA(AQ203:AQ203)
+Output	AR204	f	COUNTA(AR203:AR203)
+Output	AS204	f	COUNTA(AS203:AS203)
+Output	AT204	f	COUNTA(AT203:AT203)
+Output	AU204	f	COUNTA(AU203:AU203)
+Output	AV204	f	COUNTA(AV203:AV203)
+Output	AW204	f	COUNTA(AW203:AW203)
+Output	AX204	f	COUNTA(AX203:AX203)
+Output	AY204	f	COUNTA(AY203:AY203)
+Output	AZ204	f	COUNTA(AZ203:AZ203)
+Output	BA204	f	COUNTA(BA203:BA203)
+Output	BB204	f	COUNTA(BB203:BB203)
+Output	BC204	f	COUNTA(BC203:BC203)
+Output	BD204	f	COUNTA(BD203:BD203)
+Output	BE204	f	COUNTA(BE203:BE203)
+Output	BF204	f	COUNTA(BF203:BF203)
+Output	BG204	f	COUNTA(BG203:BG203)
+Output	BH204	f	COUNTA(BH203:BH203)
+Output	BI204	f	COUNTA(BI203:BI203)
+Output	BJ204	f	COUNTA(BJ203:BJ203)
+Output	BK204	f	COUNTA(BK203:BK203)
+Output	BL204	f	COUNTA(BL203:BL203)
+Output	BM204	f	COUNTA(BM203:BM203)
+Output	BN204	f	COUNTA(BN203:BN203)
+Output	BO204	f	COUNTA(BO203:BO203)
+Output	BP204	f	COUNTA(BP203:BP203)
+Output	BQ204	f	COUNTA(BQ203:BQ203)
+Output	BR204	f	COUNTA(BR203:BR203)
+Output	BS204	f	COUNTA(BS203:BS203)
+Output	BT204	f	COUNTA(BT203:BT203)
+Output	BU204	f	COUNTA(BU203:BU203)
+Output	BV204	f	COUNTA(BV203:BV203)
+Output	BW204	f	COUNTA(BW203:BW203)
+Output	BX204	f	COUNTA(BX203:BX203)
+Output	BY204	f	COUNTA(BY203:BY203)
+Output	BZ204	f	COUNTA(BZ203:BZ203)
+Output	CA204	f	COUNTA(CA203:CA203)
+Output	CB204	f	COUNTA(CB203:CB203)
+Output	CC204	f	COUNTA(CC203:CC203)
+Output	CD204	f	COUNTA(CD203:CD203)
+Output	CE204	f	COUNTA(CE203:CE203)
+Output	CF204	f	COUNTA(CF203:CF203)
+Output	CG204	f	COUNTA(CG203:CG203)
+Output	CH204	f	COUNTA(CH203:CH203)
+Output	CI204	f	COUNTA(CI203:CI203)
+Output	CJ204	f	COUNTA(CJ203:CJ203)
+Output	CK204	f	COUNTA(CK203:CK203)
+Output	CL204	f	COUNTA(CL203:CL203)
+Output	CM204	f	COUNTA(CM203:CM203)
+Output	CN204	f	COUNTA(CN203:CN203)
+Output	CO204	f	COUNTA(CO203:CO203)
+Output	CP204	f	COUNTA(CP203:CP203)
+Output	CQ204	f	COUNTA(CQ203:CQ203)
+Output	CR204	f	COUNTA(CR203:CR203)
+Output	CS204	f	COUNTA(CS203:CS203)
+Output	CT204	f	COUNTA(CT203:CT203)
+Output	CU204	f	COUNTA(CU203:CU203)
+Output	CV204	f	COUNTA(CV203:CV203)
+Output	CW204	f	COUNTA(CW203:CW203)
+Output	CX204	f	COUNTA(CX203:CX203)
+Output	CY204	f	COUNTA(CY203:CY203)
+Output	CZ204	f	COUNTA(CZ203:CZ203)
+Output	DA204	f	COUNTA(DA203:DA203)
+Output	DB204	f	COUNTA(DB203:DB203)
+Output	DC204	f	COUNTA(DC203:DC203)
+Output	DD204	f	COUNTA(DD203:DD203)
+Output	DE204	f	COUNTA(DE203:DE203)
+Output	DF204	f	COUNTA(DF203:DF203)
+Output	DG204	f	COUNTA(DG203:DG203)
+Output	DH204	f	COUNTA(DH203:DH203)
+Output	DI204	f	COUNTA(DI203:DI203)
+Output	DJ204	f	COUNTA(DJ203:DJ203)
+Output	DK204	f	COUNTA(DK203:DK203)
+Output	DL204	f	COUNTA(DL203:DL203)
+Output	DM204	f	COUNTA(DM203:DM203)
+Output	DN204	f	COUNTA(DN203:DN203)
+Output	DO204	f	COUNTA(DO203:DO203)
+Output	DP204	f	COUNTA(DP203:DP203)
+Output	DQ204	f	COUNTA(DQ203:DQ203)
+Output	DR204	f	COUNTA(DR203:DR203)
+Output	DS204	f	COUNTA(DS203:DS203)
+Output	DT204	f	COUNTA(DT203:DT203)
+Output	DU204	f	COUNTA(DU203:DU203)
+Output	DV204	f	COUNTA(DV203:DV203)
+Output	DW204	f	COUNTA(DW203:DW203)
+Output	DX204	f	COUNTA(DX203:DX203)
+Output	DY204	f	COUNTA(DY203:DY203)
+Output	DZ204	f	COUNTA(DZ203:DZ203)
+Output	EA204	f	COUNTA(EA203:EA203)
+Output	EB204	f	COUNTA(EB203:EB203)
+Output	EC204	f	COUNTA(EC203:EC203)
+Output	ED204	f	COUNTA(ED203:ED203)
+Output	EE204	f	COUNTA(EE203:EE203)
+Output	EF204	f	COUNTA(EF203:EF203)
+Output	EG204	f	COUNTA(EG203:EG203)
+Output	EH204	f	COUNTA(EH203:EH203)
+Output	EI204	f	COUNTA(EI203:EI203)
+Output	EJ204	f	COUNTA(EJ203:EJ203)
+Output	EK204	f	COUNTA(EK203:EK203)
+Output	EL204	f	COUNTA(EL203:EL203)
+Output	EM204	f	COUNTA(EM203:EM203)
+Output	EN204	f	COUNTA(EN203:EN203)
+Output	EO204	f	COUNTA(EO203:EO203)
+Output	EP204	f	COUNTA(EP203:EP203)
+Output	EQ204	f	COUNTA(EQ203:EQ203)
+Output	ER204	f	COUNTA(ER203:ER203)
+Output	ES204	f	COUNTA(ES203:ES203)
+Output	ET204	f	COUNTA(ET203:ET203)
+Output	EU204	f	COUNTA(EU203:EU203)
+Output	EV204	f	COUNTA(EV203:EV203)
+Output	EW204	f	COUNTA(EW203:EW203)
+Output	EX204	f	COUNTA(EX203:EX203)
+Output	EY204	f	COUNTA(EY203:EY203)
+Output	EZ204	f	COUNTA(EZ203:EZ203)
+Output	FA204	f	COUNTA(FA203:FA203)
+Output	FB204	f	COUNTA(FB203:FB203)
+Output	FC204	f	COUNTA(FC203:FC203)
+Output	FD204	f	COUNTA(FD203:FD203)
+Output	FE204	f	COUNTA(FE203:FE203)
+Output	FF204	f	COUNTA(FF203:FF203)
+Output	FG204	f	COUNTA(FG203:FG203)
+Output	FH204	f	COUNTA(FH203:FH203)
+Output	FI204	f	COUNTA(FI203:FI203)
+Output	FJ204	f	COUNTA(FJ203:FJ203)
+Output	FK204	f	COUNTA(FK203:FK203)
+Output	FL204	f	COUNTA(FL203:FL203)
+Output	FM204	f	COUNTA(FM203:FM203)
+Output	FN204	f	COUNTA(FN203:FN203)
+Output	FO204	f	COUNTA(FO203:FO203)
+Output	FP204	f	COUNTA(FP203:FP203)
+Output	FQ204	f	COUNTA(FQ203:FQ203)
+Output	FR204	f	COUNTA(FR203:FR203)
+Output	FS204	f	COUNTA(FS203:FS203)
+Output	FT204	f	COUNTA(FT203:FT203)
+Output	FU204	f	COUNTA(FU203:FU203)
+Output	FV204	f	COUNTA(FV203:FV203)
+Output	FW204	f	COUNTA(FW203:FW203)
+Output	FX204	f	COUNTA(FX203:FX203)
+Output	FY204	f	COUNTA(FY203:FY203)
+Output	FZ204	f	COUNTA(FZ203:FZ203)
+Output	GA204	f	COUNTA(GA203:GA203)
+Output	GB204	f	COUNTA(GB203:GB203)
+Output	GC204	f	COUNTA(GC203:GC203)
+Output	GD204	f	COUNTA(GD203:GD203)
+Output	GE204	f	COUNTA(GE203:GE203)
+Output	GF204	f	COUNTA(GF203:GF203)
+Output	GG204	f	COUNTA(GG203:GG203)
+Output	GH204	f	COUNTA(GH203:GH203)
+Output	GI204	f	COUNTA(GI203:GI203)
+Output	GJ204	f	COUNTA(GJ203:GJ203)
+Output	GK204	f	COUNTA(GK203:GK203)
+Output	GL204	f	COUNTA(GL203:GL203)
+Output	GM204	f	COUNTA(GM203:GM203)
+Output	GN204	f	COUNTA(GN203:GN203)
+Output	GO204	f	COUNTA(GO203:GO203)
+Process	A1	s	ANNOTATION
+Process	B1	s	ROW
+Process	C1	s	SELECT
+Process	D1	s	TABLE
+Process	E1	s	JOIN
+Process	F1	s	WHERE
+Process	G1	s	ADDRESS
+Process	H1	s	Direction
+Process	I1	s	VALUES
+Process	A2	f	CONCATENATE("@",C2,"@",B2)
+Process	B2	f	ROW()
+Process	C2	s	a.value
+Process	D2	s	c_elementvalue a
+Process	F2	s	a.accounttype='E' AND a.isactive='Y' ORDER BY a.value
+Process	G2	s	A4
+Process	H2	s	V
+Process	I2	s	5
+Process	J2	s	51100
+Process	K2	s	51110
+Process	L2	s	51120
+Process	M2	s	51130
+Process	N2	s	51200
+Process	O2	s	51300
+Process	P2	s	51400
+Process	Q2	s	51800
+Process	R2	s	52000
+Process	S2	s	53000
+Process	T2	s	54000
+Process	U2	s	55
+Process	V2	s	55100
+Process	W2	s	55200
+Process	X2	s	56
+Process	Y2	s	56100
+Process	Z2	s	56200
+Process	AA2	s	56300
+Process	AB2	s	56400
+Process	AC2	s	57000
+Process	AD2	s	58
+Process	AE2	s	58100
+Process	AF2	s	58200
+Process	AG2	s	58300
+Process	AH2	s	58400
+Process	AI2	s	58500
+Process	AJ2	s	58600
+Process	AK2	s	58700
+Process	AL2	s	58800
+Process	AM2	s	58900
+Process	AN2	s	59
+Process	AO2	s	59100
+Process	AP2	s	59101
+Process	AQ2	s	59200
+Process	AR2	s	59201
+Process	AS2	s	59300
+Process	AT2	s	6
+Process	AU2	s	60
+Process	AV2	s	60110
+Process	AW2	s	60120
+Process	AX2	s	60130
+Process	AY2	s	60210
+Process	AZ2	s	60220
+Process	BA2	s	60230
+Process	BB2	s	60240
+Process	BC2	s	60300
+Process	BD2	s	60410
+Process	BE2	s	60420
+Process	BF2	s	60430
+Process	BG2	s	60440
+Process	BH2	s	60510
+Process	BI2	s	60520
+Process	BJ2	s	60580
+Process	BK2	s	60590
+Process	BL2	s	60600
+Process	BM2	s	60710
+Process	BN2	s	60720
+Process	BO2	s	60790
+Process	BP2	s	60810
+Process	BQ2	s	60820
+Process	BR2	s	60890
+Process	BS2	s	60900
+Process	BT2	s	60910
+Process	BU2	s	60920
+Process	BV2	s	60990
+Process	BW2	s	61
+Process	BX2	s	61100
+Process	BY2	s	61200
+Process	BZ2	s	61300
+Process	CA2	s	62
+Process	CB2	s	62100
+Process	CC2	s	62200
+Process	CD2	s	62300
+Process	CE2	s	62400
+Process	CF2	s	62500
+Process	CG2	s	62800
+Process	CH2	s	62900
+Process	CI2	s	63
+Process	CJ2	s	63100
+Process	CK2	s	63200
+Process	CL2	s	63300
+Process	CM2	s	64
+Process	CN2	s	64100
+Process	CO2	s	64200
+Process	CP2	s	64300
+Process	CQ2	s	64500
+Process	CR2	s	65
+Process	CS2	s	65100
+Process	CT2	s	65500
+Process	CU2	s	66
+Process	CV2	s	66100
+Process	CW2	s	66200
+Process	CX2	s	66300
+Process	CY2	s	66900
+Process	CZ2	s	67
+Process	DA2	s	67120
+Process	DB2	s	67130
+Process	DC2	s	67140
+Process	DD2	s	67150
+Process	DE2	s	67210
+Process	DF2	s	67220
+Process	DG2	s	67230
+Process	DH2	s	67240
+Process	DI2	s	67250
+Process	DJ2	s	67260
+Process	DK2	s	68
+Process	DL2	s	68100
+Process	DM2	s	68200
+Process	DN2	s	68300
+Process	DO2	s	68400
+Process	DP2	s	68500
+Process	DQ2	s	68600
+Process	DR2	s	68900
+Process	DS2	s	69
+Process	DT2	s	69100
+Process	DU2	s	69200
+Process	DV2	s	69300
+Process	DW2	s	69400
+Process	DX2	s	7
+Process	DY2	s	70
+Process	DZ2	s	70100
+Process	EA2	s	70200
+Process	EB2	s	70900
+Process	EC2	s	71
+Process	ED2	s	71100
+Process	EE2	s	71200
+Process	EF2	s	72
+Process	EG2	s	72100
+Process	EH2	s	73
+Process	EI2	s	73100
+Process	EJ2	s	73200
+Process	EK2	s	73290
+Process	EL2	s	73300
+Process	EM2	s	74
+Process	EN2	s	74100
+Process	EO2	s	74200
+Process	EP2	s	74300
+Process	EQ2	s	74400
+Process	ER2	s	74900
+Process	ES2	s	75
+Process	ET2	s	75100
+Process	EU2	s	75200
+Process	EV2	s	75300
+Process	EW2	s	75900
+Process	EX2	s	76
+Process	EY2	s	76100
+Process	EZ2	s	76200
+Process	FA2	s	76900
+Process	FB2	s	77
+Process	FC2	s	77100
+Process	FD2	s	77200
+Process	FE2	s	77300
+Process	FF2	s	77400
+Process	FG2	s	77500
+Process	FH2	s	77900
+Process	FI2	s	78
+Process	FJ2	s	78100
+Process	FK2	s	78200
+Process	FL2	s	78300
+Process	FM2	s	78400
+Process	FN2	s	78500
+Process	FO2	s	78600
+Process	FP2	s	78700
+Process	FQ2	s	78800
+Process	FR2	s	78900
+Process	FS2	s	79
+Process	FT2	s	79100
+Process	FU2	s	79200
+Process	FV2	s	79300
+Process	FW2	s	79400
+Process	FX2	s	79600
+Process	FY2	s	82
+Process	FZ2	s	82100
+Process	GA2	s	82200
+Process	GB2	s	82300
+Process	GC2	s	82400
+Process	GD2	s	825
+Process	GE2	s	82510
+Process	GF2	s	82520
+Process	GG2	s	82530
+Process	GH2	s	82540
+Process	GI2	s	82550
+Process	GJ2	s	82700
+Process	GK2	s	82800
+Process	GL2	s	82900
+Process	GM2	s	83
+Process	GN2	s	83100
+Process	GO2	s	83200
+Process	GP2	s	89
+Process	GQ2	s	89100
+Process	GR2	s	89200
+Process	GS2	s	89300
+Process	GT2	s	89900
+Process	A3	f	CONCATENATE("@",C3,"@",B3)
+Process	B3	f	ROW()
+Process	C3	s	a.name
+Process	G3	s	B4
+Process	H3	s	V
+Process	I3	s	Cost of Goods Sold
+Process	J3	s	Product CoGs
+Process	K3	s	Cost Of Production
+Process	L3	s	Scrap
+Process	M3	s	Outside Processing (Subcontract)
+Process	N3	s	Product Expense
+Process	O3	s	Cost Adjustments
+Process	P3	s	Inventory Clearing
+Process	Q3	s	Commissions Paid
+Process	R3	s	Services Purchases
+Process	S3	s	Sideline Purchases
+Process	T3	s	Freight in
+Process	U3	s	Returns
+Process	V3	s	Returns Expense
+Process	W3	s	Returns to Vendors
+Process	X3	s	Inventory CoGs
+Process	Y3	s	Inventory Shrinkage
+Process	Z3	s	Inventory Write Down Below Cost
+Process	AA3	s	Inventory Adjustment
+Process	AB3	s	Inventory Revaluation
+Process	AC3	s	Direct Labor
+Process	AD3	s	CoGS Variances
+Process	AE3	s	Invoice price variance
+Process	AF3	s	Purchase price variance
+Process	AG3	s	Purchase price variance Offset
+Process	AH3	s	Using Variance
+Process	AI3	s	Method Change Variance
+Process	AJ3	s	Rate Variance
+Process	AK3	s	Mix Variance
+Process	AL3	s	Average Cost Variance
+Process	AM3	s	Landed Cost Clearing
+Process	AN3	s	CoGs/Sales Discounts
+Process	AO3	s	Trade discounts received
+Process	AP3	s	Trade Discounts
+Process	AQ3	s	Payment discount revenue
+Process	AR3	s	Payment discount revenue
+Process	AS3	s	Promotion Discounts
+Process	AT3	s	Expenses
+Process	AU3	s	Payroll Expenses
+Process	AV3	s	Wages
+Process	AW3	s	Wages Owners
+Process	AX3	s	Salaries
+Process	AY3	s	Vacation Pay
+Process	AZ3	s	Vacation Pay Owners
+Process	BA3	s	Sick Pay
+Process	BB3	s	Sick Pay Owners
+Process	BC3	s	Retirement (Pension, Profit Sharing, 401k)
+Process	BD3	s	FICA Tax
+Process	BE3	s	FICA Tax Owners
+Process	BF3	s	Federal/State Unemployment
+Process	BG3	s	Federal/State Unemployment Owners
+Process	BH3	s	Health Insurance Premium
+Process	BI3	s	Health Insurance Premium Owners
+Process	BJ3	s	Health Insurance Employee Contribution
+Process	BK3	s	Health Insurance Cobra Payments
+Process	BL3	s	Workers Compensation Insurance
+Process	BM3	s	Disability Insurance Premium
+Process	BN3	s	Disability Insurance Premium Owners
+Process	BO3	s	Disability Insurance Employee Contribution
+Process	BP3	s	Life Insurance Premium
+Process	BQ3	s	Life Insurance Premium Owners
+Process	BR3	s	Life Insurance Employee Contribution
+Process	BS3	s	Other Benefit Expense
+Process	BT3	s	Staff Gifts & Perks
+Process	BU3	s	Staff Picnic (100% Deductible)
+Process	BV3	s	Payroll Processing Expense
+Process	BW3	s	Occupancy Cost
+Process	BX3	s	Rent Expense
+Process	BY3	s	Utilities
+Process	BZ3	s	Other Occupancy Costs
+Process	CA3	s	Advertising
+Process	CB3	s	Media Advertising
+Process	CC3	s	Catalog, Newsletter
+Process	CD3	s	Events
+Process	CE3	s	Joint Advertising
+Process	CF3	s	Web Hosting
+Process	CG3	s	Other Advertising & Promotion
+Process	CH3	s	Vendor Advertising Allowances
+Process	CI3	s	Telephone and Communications
+Process	CJ3	s	Telephone
+Process	CK3	s	Mobile Telephone
+Process	CL3	s	Network Charges
+Process	CM3	s	Professional Services
+Process	CN3	s	Legal Fees
+Process	CO3	s	Accounting Fees
+Process	CP3	s	Inventory Verification Fees
+Process	CQ3	s	Other Consulting Fees
+Process	CR3	s	Stationary & Supplies
+Process	CS3	s	Stationary & Supplies - Office Use
+Process	CT3	s	Janitorial Supplies
+Process	CU3	s	Data Processing
+Process	CV3	s	Data Processing Supplies
+Process	CW3	s	Data Processing Rental
+Process	CX3	s	Outside Computer Services
+Process	CY3	s	Data Processing Other Expense
+Process	CZ3	s	Depreciation Expense
+Process	DA3	s	Building Depreciation
+Process	DB3	s	Land Improvement Depreciation
+Process	DC3	s	Building Improvement Depreciation
+Process	DD3	s	Leasehold Improvement Depreciation
+Process	DE3	s	Furniture Depreciation
+Process	DF3	s	Fixtures Depreciation
+Process	DG3	s	Equipment Depreciation
+Process	DH3	s	Vehicles Depreciation
+Process	DI3	s	Data Processing Equipment Depreciation
+Process	DJ3	s	Software Depreciation
+Process	DK3	s	Business Travel
+Process	DL3	s	Business Travel - Plane/Train/Taxi
+Process	DM3	s	Business Travel - Auto Reimbursement
+Process	DN3	s	Business Travel - Hotel
+Process	DO3	s	Business Meals & Entertainment (50%)
+Process	DP3	s	Staff Meeting Food (100%)
+Process	DQ3	s	Employee expense
+Process	DR3	s	Business Travel Other Expense
+Process	DS3	s	Insurance
+Process	DT3	s	Business Insurance
+Process	DU3	s	Real Estate Insurance
+Process	DV3	s	Vehicle Insurance
+Process	DW3	s	Other Insurance
+Process	DX3	s	7-Expenses
+Process	DY3	s	Payment Processor Costs
+Process	DZ3	s	Credit Card Service Charges
+Process	EA3	s	Bank Service Charges
+Process	EB3	s	Other Payment Service Charges
+Process	EC3	s	Dues & Subscription
+Process	ED3	s	Association Membership Fees
+Process	EE3	s	Subscription Fees
+Process	EF3	s	Office Expense
+Process	EG3	s	Office Expense
+Process	EH3	s	Posting & Shipping
+Process	EI3	s	Postage Expense
+Process	EJ3	s	Customer Package Expense
+Process	EK3	s	Customer Postage Fees Received
+Process	EL3	s	Shipping Expenses
+Process	EM3	s	Taxes and Licenses
+Process	EN3	s	Tax expense
+Process	EO3	s	Inventory & Use Taxes
+Process	EP3	s	Real Estate Taxes
+Process	EQ3	s	Business Licenses & Fees
+Process	ER3	s	Licenses & Fees - Other
+Process	ES3	s	Education
+Process	ET3	s	Education Course Fees
+Process	EU3	s	Education Travel
+Process	EV3	s	Education Meals & Entertainment (50%)
+Process	EW3	s	Education Other
+Process	EX3	s	Equipment Rent
+Process	EY3	s	Office Equipment Rent
+Process	EZ3	s	Store Equipment Rent
+Process	FA3	s	Equipment Rent Other
+Process	FB3	s	Repairs & Maintenance
+Process	FC3	s	Building Repairs & Maintenance
+Process	FD3	s	Furniture, Equipment Repairs & Maintenance
+Process	FE3	s	Data Processing Repairs & Maintenance
+Process	FF3	s	Software Maintenance
+Process	FG3	s	Vehicle Repairs & Maintenance
+Process	FH3	s	Repairs & Maintenance Other
+Process	FI3	s	Other Operating Expenses
+Process	FJ3	s	Bad Debts Write-off
+Process	FK3	s	Collection Expense
+Process	FL3	s	Petty Cash Over/Short
+Process	FM3	s	Recruitment Costs
+Process	FN3	s	Vehicle Expense
+Process	FO3	s	Amortization Expense
+Process	FP3	s	Penalties
+Process	FQ3	s	Franchise Fee / Royalty Fees
+Process	FR3	s	Miscellaneous Expense
+Process	FS3	s	Default/Suspense Accounts
+Process	FT3	s	Default account
+Process	FU3	s	Suspense balancing
+Process	FV3	s	Suspense error
+Process	FW3	s	Cash book expense
+Process	FX3	s	Charge expense
+Process	FY3	s	Other Expense
+Process	FZ3	s	Interest Expense
+Process	GA3	s	Mortgage Interest Expense
+Process	GB3	s	Uninsured Casualty Loss
+Process	GC3	s	Charitable Contributions
+Process	GD3	s	Currency Loss
+Process	GE3	s	Bank revaluation loss
+Process	GF3	s	Bank settlement loss
+Process	GG3	s	Unrealized loss
+Process	GH3	s	Realized loss
+Process	GI3	s	Currency balancing
+Process	GJ3	s	Capital Gains Loss
+Process	GK3	s	Fixed Asset Sale Loss
+Process	GL3	s	Other Expense
+Process	GM3	s	Expense (Absorbed)
+Process	GN3	s	Labor (Absorbed)
+Process	GO3	s	Burden (Absorbed)
+Process	GP3	s	Income Tax & Summary
+Process	GQ3	s	Federal Income Tax
+Process	GR3	s	State Income Tax
+Process	GS3	s	Local Income Tax
+Process	GT3	s	Income Summary
+Process	A4	f	CONCATENATE("@",C4,"@",B4)
+Process	B4	f	ROW()
+Process	C4	s	a.c_elementvalue_id
+Process	G4	s	D3
+Process	H4	s	>
+Process	I4	n	429.0
+Process	J4	n	430.0
+Process	K4	n	50010.0
+Process	L4	n	50016.0
+Process	M4	n	50011.0
+Process	N4	n	431.0
+Process	O4	n	781.0
+Process	P4	n	780.0
+Process	Q4	n	778.0
+Process	R4	n	432.0
+Process	S4	n	433.0
+Process	T4	n	434.0
+Process	U4	n	435.0
+Process	V4	n	436.0
+Process	W4	n	437.0
+Process	X4	n	438.0
+Process	Y4	n	439.0
+Process	Z4	n	440.0
+Process	AA4	n	441.0
+Process	AB4	n	442.0
+Process	AC4	n	634.0
+Process	AD4	n	443.0
+Process	AE4	n	444.0
+Process	AF4	n	445.0
+Process	AG4	n	635.0
+Process	AH4	n	50001.0
+Process	AI4	n	50002.0
+Process	AJ4	n	50003.0
+Process	AK4	n	50004.0
+Process	AL4	n	50017.0
+Process	AM4	n	200000.0
+Process	AN4	n	446.0
+Process	AO4	n	447.0
+Process	AP4	n	426.0
+Process	AQ4	n	448.0
+Process	AR4	n	427.0
+Process	AS4	n	428.0
+Process	AT4	n	449.0
+Process	AU4	n	450.0
+Process	AV4	n	772.0
+Process	AW4	n	636.0
+Process	AX4	n	451.0
+Process	AY4	n	452.0
+Process	AZ4	n	453.0
+Process	BA4	n	637.0
+Process	BB4	n	454.0
+Process	BC4	n	455.0
+Process	BD4	n	638.0
+Process	BE4	n	456.0
+Process	BF4	n	457.0
+Process	BG4	n	458.0
+Process	BH4	n	639.0
+Process	BI4	n	459.0
+Process	BJ4	n	460.0
+Process	BK4	n	461.0
+Process	BL4	n	462.0
+Process	BM4	n	463.0
+Process	BN4	n	464.0
+Process	BO4	n	465.0
+Process	BP4	n	466.0
+Process	BQ4	n	467.0
+Process	BR4	n	468.0
+Process	BS4	n	469.0
+Process	BT4	n	470.0
+Process	BU4	n	471.0
+Process	BV4	n	472.0
+Process	BW4	n	473.0
+Process	BX4	n	474.0
+Process	BY4	n	475.0
+Process	BZ4	n	476.0
+Process	CA4	n	477.0
+Process	CB4	n	478.0
+Process	CC4	n	479.0
+Process	CD4	n	480.0
+Process	CE4	n	640.0
+Process	CF4	n	481.0
+Process	CG4	n	482.0
+Process	CH4	n	483.0
+Process	CI4	n	641.0
+Process	CJ4	n	484.0
+Process	CK4	n	485.0
+Process	CL4	n	486.0
+Process	CM4	n	642.0
+Process	CN4	n	487.0
+Process	CO4	n	488.0
+Process	CP4	n	489.0
+Process	CQ4	n	643.0
+Process	CR4	n	490.0
+Process	CS4	n	491.0
+Process	CT4	n	492.0
+Process	CU4	n	644.0
+Process	CV4	n	493.0
+Process	CW4	n	494.0
+Process	CX4	n	495.0
+Process	CY4	n	645.0
+Process	CZ4	n	496.0
+Process	DA4	n	497.0
+Process	DB4	n	773.0
+Process	DC4	n	646.0
+Process	DD4	n	498.0
+Process	DE4	n	499.0
+Process	DF4	n	500.0
+Process	DG4	n	501.0
+Process	DH4	n	647.0
+Process	DI4	n	502.0
+Process	DJ4	n	503.0
+Process	DK4	n	504.0
+Process	DL4	n	648.0
+Process	DM4	n	505.0
+Process	DN4	n	649.0
+Process	DO4	n	650.0
+Process	DP4	n	651.0
+Process	DQ4	n	652.0
+Process	DR4	n	653.0
+Process	DS4	n	654.0
+Process	DT4	n	655.0
+Process	DU4	n	656.0
+Process	DV4	n	657.0
+Process	DW4	n	658.0
+Process	DX4	n	783.0
+Process	DY4	n	659.0
+Process	DZ4	n	660.0
+Process	EA4	n	661.0
+Process	EB4	n	662.0
+Process	EC4	n	663.0
+Process	ED4	n	664.0
+Process	EE4	n	665.0
+Process	EF4	n	666.0
+Process	EG4	n	667.0
+Process	EH4	n	668.0
+Process	EI4	n	669.0
+Process	EJ4	n	759.0
+Process	EK4	n	670.0
+Process	EL4	n	671.0
+Process	EM4	n	672.0
+Process	EN4	n	760.0
+Process	EO4	n	673.0
+Process	EP4	n	674.0
+Process	EQ4	n	675.0
+Process	ER4	n	775.0
+Process	ES4	n	676.0
+Process	ET4	n	761.0
+Process	EU4	n	677.0
+Process	EV4	n	678.0
+Process	EW4	n	679.0
+Process	EX4	n	762.0
+Process	EY4	n	680.0
+Process	EZ4	n	681.0
+Process	FA4	n	763.0
+Process	FB4	n	682.0
+Process	FC4	n	683.0
+Process	FD4	n	684.0
+Process	FE4	n	764.0
+Process	FF4	n	685.0
+Process	FG4	n	686.0
+Process	FH4	n	687.0
+Process	FI4	n	688.0
+Process	FJ4	n	765.0
+Process	FK4	n	689.0
+Process	FL4	n	690.0
+Process	FM4	n	691.0
+Process	FN4	n	692.0
+Process	FO4	n	693.0
+Process	FP4	n	766.0
+Process	FQ4	n	694.0
+Process	FR4	n	695.0
+Process	FS4	n	696.0
+Process	FT4	n	697.0
+Process	FU4	n	698.0
+Process	FV4	n	699.0
+Process	FW4	n	700.0
+Process	FX4	n	702.0
+Process	FY4	n	716.0
+Process	FZ4	n	717.0
+Process	GA4	n	718.0
+Process	GB4	n	768.0
+Process	GC4	n	719.0
+Process	GD4	n	720.0
+Process	GE4	n	721.0
+Process	GF4	n	769.0
+Process	GG4	n	722.0
+Process	GH4	n	723.0
+Process	GI4	n	724.0
+Process	GJ4	n	725.0
+Process	GK4	n	726.0
+Process	GL4	n	727.0
+Process	GM4	n	50008.0
+Process	GN4	n	50007.0
+Process	GO4	n	50009.0
+Process	GP4	n	728.0
+Process	GQ4	n	770.0
+Process	GR4	n	729.0
+Process	GS4	n	730.0
+Process	GT4	n	771.0
+Process	A5	f	CONCATENATE("@",C5,"@",B5)
+Process	B5	f	ROW()
+Process	C5	s	SUM(a.amtacctdr-a.amtacctcr)
+Process	D5	s	fact_acct a
+Process	F5	s	a.datetrx BETWEEN #1 AND #2
+Process	G5	s	B9
+Process	H5	s	S
+Process	A6	f	CONCATENATE("@",C6,"@",B6)
+Process	B6	f	ROW()
+Process	C6	s	a.name
+Process	D6	s	c_bpartner a
+Process	F6	s	a.iscustomer='Y' AND a.isactive='Y' ORDER BY a.name
+Process	G6	s	D10
+Process	H6	s	V
+Process	I6	s	Agri-Tech
+Process	J6	s	C&W Construction
+Process	K6	s	GardenUser BP
+Process	L6	s	Joe Block
+Process	M6	s	Patio Fun, Inc.
+Process	N6	s	Seed Farm Inc.
+Process	O6	s	Standard
+Process	B7	f	ROW()
+Process	I7	s	END
