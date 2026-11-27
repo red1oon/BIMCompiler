@@ -1,0 +1,74 @@
+§STAGE_FRAME_MODE frame=phone plan=hybrid
+§STAGE_SITE_B db=HHS_Office_Federated label=Office
+§STAGE_DROPPED src=A seg=fast beats=[] (manifest ok=false or absent: not shown)
+§STAGE_CAPTION beat=ready text="Ready to touch at once." source="MOBILE_PERF §2026-11-27 LEVELS, P3 row" sub="Longest freeze after the model arrives: 5.6 s → 0.6 s (measured on a phone profile)."
+§STAGE_CAPTION beat=fab text="Panels open in under 0.1 s." source="MOBILE_PERF §P6 W-MOBILE-PANELS (open painted 9.5–74 ms)" sub="Slowest first open 74 ms (Settings), measured on a phone profile at 4× CPU slowdown."
+§STAGE_FACT sheet_bottom=yes (A record.log)
+§STAGE_CAPTION beat=nav_open text="Panels open as bottom sheets." source="§SHEET_OPEN … layer=top sheet=bottom" sub="Navigate and Settings, from the pill rail."
+§STAGE_FACT sheet_swipe=yes (A record.log)
+§STAGE_CAPTION beat=nav_swipe text="Swipe down to close." source="§SHEET_CLOSE via=swipe" sub="One panel at a time."
+§STAGE_FACT sheet_back=yes (A record.log)
+§STAGE_CAPTION beat=settings_open text="Android Back closes it." source="§SHEET_CLOSE via=back" sub="The page stays."
+§STAGE_DROPPED src=A seg=walk beats=[] (manifest ok=false or absent: not shown)
+§STAGE_FACT xray_on=yes (A record.log)
+§STAGE_FACT xray_off=yes (A record.log)
+§STAGE_CAPTION beat=walk_start text="Walk: X-Ray turns itself on." source="§WALK_XRAY_AUTO on / restored off" sub="It switches back off when the walk stops."
+§STAGE_FACT walk_trace=yes (A record.log)
+§STAGE_CAPTION beat=walk_steps text="Every step on the record." source="§WALK_TRACE" sub="Steps simulated here; a phone counts them as you walk."
+§STAGE_FACT snap=yes (A record.log)
+§STAGE_FACT issue_saved=yes (A record.log)
+§STAGE_CAPTION beat=snag text="Snag the element." source="§SNAP + §ISSUE_SAVED" sub="Element, storey and time stamped on the photo, saved to the Issue Log (simulated camera)."
+§STAGE_DROPPED src=C seg=clash beats=[] (manifest ok=false or absent: not shown)
+§STAGE_FACT clash_filter=MEP vs ARC (C record.log)
+§STAGE_FACT clash_count=501 (C record.log)
+§STAGE_FACT clash_showing=20 (C record.log)
+§STAGE_CAPTION beat=clash_run text="Clash Matrix: MEP vs ARC." source="§CLASH_MATRIX_FILTER MEP vs ARC; [clash_run] matrix_count=501; §CLASH_REVEAL showing=20" sub="501 clashes in that pair; the list shows 20."
+§STAGE_FACT clash_overlap=0.033 (C record.log)
+§STAGE_FACT clash_tgt_err=0.0000 (C record.log)
+§STAGE_CAPTION beat=clash_pick text="Tap a clash." source="§CLASH_DETAIL overlap=0.033m; §M1_CLASH tgt_err_m=0.0000" sub="Overlap 0.033 m. The camera target lands on it: error 0.0000 m."
+§STAGE_FACT clash_classes=IfcFlowSegment|IfcSlab (C record.log)
+§STAGE_FACT clash_hl=4 (C record.log)
+§STAGE_CAPTION beat=clash_detail text="Both elements, highlighted." source="§M1_CLASH classes=IfcFlowSegment|IfcSlab highlights=4 checks=all_pass" sub="IfcFlowSegment|IfcSlab; 4 highlights on the model."
+§STAGE_FACT clash_saved=yes (C record.log)
+§STAGE_CAPTION beat=clash_snag text="Long-press: snag the clash." source="§CLASH_SNAG_SAVED" sub="A photo with the clash strip (simulated camera), then Share."
+§STAGE_FACT clash_fallback=yes (C record.log)
+§STAGE_CAPTION beat=clash_share text="Share: the desktop-style panel." source="§CLASH_SNAG_SHARE_PANEL shown (desktop fallback)" sub="This browser has no phone share sheet, so the app shows its own panel. A real phone shows its own share sheet."
+§STAGE_FACT clash_link=1 (C record.log)
+§STAGE_CAPTION beat=clash_saved text="Saved to the Issue Log, with a link." source="§CLASH_SNAG_SAVED; §M1_SHARE idb_clash_rows=1" sub="The link carries the clash, the camera and the tolerance; 1 clash stored."
+§STAGE_DROPPED src=S seg=hq beats=[] (manifest ok=false or absent: not shown)
+§STAGE_TIMED seg=hq events=29 t_first=97 t_last=192581 initial_phone=S/phone/f/0000.png@t52 initial_hq=S/hq/f/0000.png@t0
+§STAGE_FACT off_badge=OFFLINE (S record.log)
+§STAGE_FACT off_issues=1 (S record.log)
+§STAGE_CAPTION beat=s_offline text="No signal on site." source="§M1_OFFLINE on badge="OFFLINE"; §M1_OFFLINE_WORK onLine=false issues_saved=1" sub="The phone shows OFFLINE. The walk and the snag go on: 1 issue saved on the phone."
+§STAGE_FACT send_status=Saved on this phone — it goes to your team folder when you are online. (S record.log)
+§STAGE_CAPTION beat=s_send text="Phone: Send to HQ." source="§M1_SYNC_SEND status="Saved on this phone — it goes to your team folder when you are online." share_sheet=none" sub=""Saved on this phone — it goes to your team folder when you are online.""
+§STAGE_FACT on_drops=3 (S record.log)
+§STAGE_FACT send_via=team (S record.log)
+§STAGE_CAPTION beat=s_online text="Signal back: it sends itself." source="§M1_OFFLINE off folder_drops 0->3; §HQ_SEND via=team" sub="Into the team folder, sealed (3 files). Nothing to tap, no share sheet."
+§STAGE_FACT get_added=1 (S record.log)
+§STAGE_FACT get_from=28C0-0E9E (S record.log)
+§STAGE_CAPTION beat=s_get text="HQ gets the report." source="§HQ_GET issues_added=1; §M1_SYNC issue_from=28C0-0E9E photo_equal=true" sub="1 issue from 28C0-0E9E, photo identical. Recorded in sequence: sent first, then fetched."
+§STAGE_FACT replay_points=4 (S record.log)
+§STAGE_CAPTION beat=s_replay text="HQ replays the phone’s walk." source="§HQ_REPLAY points=4 from=28C0-0E9E" sub="4 points from 28C0-0E9E."
+§STAGE_FACT scrub_points=4 (S record.log)
+§STAGE_FACT scrub_err=0.0000 (S record.log)
+§STAGE_CAPTION beat=s_scrub text="Scrub: the camera matches." source="§M1_SYNC_SCRUB points=4 max_err_m=0.0000" sub="At each of 4 points, HQ’s camera vs the phone’s record: max error 0.0000 m."
+§STAGE_DROPPED src=B seg=sites beats=[] (manifest ok=false or absent: not shown)
+§STAGE_FACT b_xray_on=yes (B record.log)
+§STAGE_CAPTION beat=b_walk text="Site B walks its own site." source="§WALK_XRAY_AUTO on (B)" sub="Office walk, X-Ray on by itself."
+§STAGE_FACT b_issue=yes (B record.log)
+§STAGE_CAPTION beat=b_snag text="Site B snags its own." source="§WALK_XRAY_AUTO on + §ISSUE_SAVED (B)" sub="Office walk, X-Ray on by itself, stamped photo to its Issue Log."
+§STAGE_PLAN frames=2370 seconds=79.00 chapter=3.60s opener=3.20s fast=7.70s walk=11.13s clash=11.83s hq=21.33s sites=6.20s outro=4.00s close=10.00s
+§STAGE_USED beats=A:fab,A:nav_open,A:nav_swipe,A:settings_open,A:settings_back,A:walk_start,A:walk_steps,A:snag,C:clash_run,C:clash_pick,C:clash_detail,C:clash_snag_or_share,S:s_offline,S:s_send,S:s_online,S:s_get,S:s_replay,S:s_scrub,B:b_walk,B:b_snag
+§STAGE_FRAME kind=phone layout=phone role=A screen_rect=732,73,456,933 outer_rect=716,57,488,965 radii=screen:46px/outer:62px bezel=16 aspect_err=0.0000% img_eq_screen=true OK
+§STAGE_HANDOFF opener_box=732,73,456,933 layout_rect=732,73,456,933 screen_rect=732,73,456,933 crossfade_frames=15 equal=true OK
+§STAGE_FRAME kind=phone layout=phone+desktop role=A screen_rect=150,140,392.16,802.38 outer_rect=134,124,424.16,834.38 radii=screen:39.6px/outer:55.6px bezel=16 aspect_err=0.0003% img_eq_screen=true OK
+§STAGE_FRAME kind=desktop layout=phone+desktop window_rect=620,140,1140,681.25 content_rect=620,180,1140,641.25 url_text="HQ" aspect_err=0.0000% OK
+§STAGE_FRAME kind=phone layout=phone+desktop+phone role=A screen_rect=62,185,392.16,802.38 outer_rect=46,169,424.16,834.38 radii=screen:39.6px/outer:55.6px bezel=16 aspect_err=0.0003% img_eq_screen=true OK
+§STAGE_FRAME kind=phone layout=phone+desktop+phone role=B screen_rect=1465.83,185,392.16,802.38 outer_rect=1449.83,169,424.16,834.38 radii=screen:39.6px/outer:55.6px bezel=16 aspect_err=0.0003% img_eq_screen=true OK
+§STAGE_FRAME kind=desktop layout=phone+desktop+phone window_rect=504,270,912,553 content_rect=504,310,912,513 url_text="HQ" aspect_err=0.0000% OK
+§STAGE_FRAMES planned=2370 written=2370 rendered_unique=554 OK
+§STAGE_FRAME_CHECK layouts=3 fails=0 OK
+§STAGE_TAP drawn=179 expected=179 OK
+§STAGE_IMG broken=0 OK
+§STAGE_PAGEERRORS n=0
