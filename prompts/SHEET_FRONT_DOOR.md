@@ -17,8 +17,12 @@ editor phases P1/P2/P5 on the same core.
   (bim-ootb `feat/sheet-door`). Results + two legacy findings in §5.
 - **S9 HISTORY DONE (witness) 2026-11-27** (owner: *"history is lacking in Excel. It is a missing killer... Proceed."*):
   `erp/sheet_history.js`, W-SHEET-HISTORY 8/8 cases PASS (20 checks), mutants 5/5 killed — §6.4.
-- **Next = build order step (1) above** (not S3 first, re-ordered 2026-11-27); after it S3 Excel, S4 WPS, S5 LibreOffice; S2 is reduced to "the host writes/reads the `_door_ledger` sheet"
-  (the replay itself is already proven by D9).
+- **S10 REPORT READER + PDF P0 DONE (witness) 2026-11-27** = build order step (1): bim-ootb `pdf/` (PR #3470). Our trial-balance PDF reads
+  back to the sheet that printed it, 144 of 144 cells at the same address, debit = credit = 40,392.44 found by arithmetic — §7.4;
+  the page (view, find, outline, Read as sheet, .xlsx, offline) — `PDF_EDITOR.md` §4.2.
+- **Next = build order step (2):** numbers-only in-place write-back (narrow cut of PDF_EDITOR P4) into the box the source map names,
+  each change an S9 history entry. Before it, widen the reader's denominator: a SECOND report layout (§7.4 "Not yet"). Then S3 Excel,
+  S4 WPS, S5 LibreOffice; S2 is reduced to "the host writes/reads the `_door_ledger` sheet" (the replay itself is already proven by D9).
 
 ## 0. Why (owner, 2026-11-27)
 The owner wants a harmless "Trojan horse": users start from what they already use, their own Excel or PDF, with a simple
@@ -201,3 +205,85 @@ BACKUP!B9 = SUM(B5:B8) = 541.02), read with the ERP's own SheetJS build.
 100,000-cell sheet's genesis is in the order of 12 MB (extrapolated, NOT measured). An Excel cell holds at most 32,767
 characters, so the `_door_history` writer must split one entry across cells (one entry per row, chunks across columns) — a
 shim-side requirement, to be witnessed with the first host. A step costs only its changed cells (3 steps here: 1.5 KB total).
+
+## 7. Slice S10 — REPORT READER: a PDF report becomes a checked sheet (spec 2026-11-27, before code)
+Build-order step (1) of the ▶▶ block, together with `PDF_EDITOR.md` §4.1 (P0). Code: bim-ootb `pdf/report_reader.js`, witness
+`pdf/tests/witness_sheet_reader.js` (W-SHEET-READER).
+
+### 7.1 Measured before the design (2026-11-27)
+- **The proof file** is the NinjaExcel trial balance: `parity_tb.xlsx` run by the report engine on the GardenWorld twin for
+  2003-01-01..2003-12-31 and printed by `ninja_pdf.js` (PDFKit). That engine lives on bim-compiler `origin/ninja-xtab2` and bim-ootb
+  `origin/feat/ninja-template-pill`; **neither is merged**, so the "one-page PDF" download the user manual describes is not on
+  bim-ootb `main` today (finding, not fixed in this slice). Re-run this session: `§TB_DEMO accounts=21 totalDebit=40392.44
+  totalCredit=40392.44 proofDrMinusCr=0.00 · §PDF_CONTENT cells=144 missingFromPdf=0`. One page, 681 x 526.5 pt, 74,945 bytes.
+- **The oracle** is the sheet that printed the PDF, dumped from that same run: 144 cells (address, type, value, printed text,
+  formula), no merged cells, blank rows 4, 27, 29. Kept beside the PDF as `pdf/corpus/trial_balance_th.cells.json`.
+- **What pdf.js (3.11.174, already shipped at `modeller/lib/pdfjs/`) gives for it:** 302 text items. One printed cell arrives as
+  several items (Thai and Latin runs are separate, with baselines up to 2.2 pt apart inside one row); the gap between two cells
+  arrives as a space item as wide as the gap (39 to 190 pt), a real space is 2.8 to 3.9 pt. Row pitch 12.75 pt; a blank sheet row
+  shows as a double pitch.
+
+### 7.2 Design
+Pure function, host-neutral, no file format inside: `read(pages) -> { ok, verdict, reason, sheet, map, checks, stats }`, where
+`pages` = the text items of each page in page points, y down (the page's own reader hands them in; the engine never calls pdf.js).
+1. **Lines:** items whose baselines differ by at most 0.3 of the smaller font height are one line.
+2. **Cells:** in a line, neighbours closer than 0.6 of the font height are one cell (stated limit: a report whose columns sit
+   closer than that merges cells; the adds-up check then fails loudly, it does not pass).
+3. **Columns:** from the lines that hold 3 or more cells (the table), the vertical bands no cell crosses are the gutters. A cell
+   of any other line goes to the column its left edge falls in.
+4. **Rows:** lines top to bottom; a gap of about two pitches (median pitch of the table lines) is one blank row, so the read
+   sheet keeps the source's row numbers.
+5. **Types, as printed:** a column whose cells share a right edge is a number column; there `1,373.65` is a number,
+   `(1,466.15)` is negative and a lone `-` is 0. A left-aligned column stays text (an account code `11100` is not a number).
+6. **Does it add up (the S1 rule, found not declared):** the first row after the block of number rows is tried as a total: per
+   number column, printed vs sum of the block. Half or more columns agree → it IS a total row and every column is reported
+   (`SUM`, cell, range, printed, computed, ok). Across the block, a row rule with coefficients -1/0/+1 over the other number
+   columns that holds on EVERY row (and on 3 or more rows with two non-zero terms) is reported (`ROW`, e.g. F = C + D - E).
+   Verdict `ADDS_UP` | `DOES_NOT_ADD_UP` (cell and both numbers named) | `INCONCLUSIVE` (no text, no table, or no total found:
+   never PASS on nothing judged).
+7. **Source map:** every cell carries `{ page, box:[x0,y0,x1,y1] }` in page points, y down: the box the numbers-only
+   write-back (build-order step 2) will rewrite.
+8. **Out:** the sheet as SheetJS cells (values; a proven total carries its `SUM` formula) and as an S9 snapshot
+   (`{ sheet: { A1: { v, f } } }`) so the history engine records it with no adapter.
+
+### 7.3 Claims (each names the issue it exposes; verdict line `§SREAD-<case> verdict=PASS|FAIL|INCONCLUSIVE judged=N failed=M`)
+| ID | Claim | Issue it exposes | Falsifier |
+|----|-------|------------------|-----------|
+| R1 CELLS | All 144 oracle cells are read at the SAME address with the same text (outer spaces trimmed); no extra cell | cells lost, merged, split or shifted when a report is read | mutant: blank rows dropped |
+| R2 NUMBERS | Every oracle number equals the read value within 0.005; brackets are negative; a dash is 0; codes in the text column stay text | wrong signs, codes turned into numbers | mutant: brackets not negative |
+| R3 ADDS UP | Row 28 is found as the total by arithmetic, 4 of 4 columns agree (debit = credit = 40,392.44), the row rule holds on 21 of 21 rows, verdict ADDS_UP. With ONE printed digit changed in the input the verdict is DOES_NOT_ADD_UP and names the cell and both numbers | a report that does not add up is accepted | mutant: sums not compared |
+| R4 SOURCE MAP | Against poppler `pdftotext -bbox` (independent reader): every word's centre lies inside exactly one cell box and that cell's text holds the word; every cell box holds a word | the box a later write-back would rewrite is the wrong place | mutant: boxes shifted one row |
+| R5 VACUOUS | A page with no text → INCONCLUSIVE, no sheet. Text with no table → INCONCLUSIVE, named | an empty or prose page "passes" | — |
+| R6 XLSX | The sheet written by the ERP's own SheetJS build and read back: same values at the same addresses; the four total cells carry SUM formulas | the hand-off file differs from what was read | mutant: one column dropped on write |
+| R7 HISTORY | The read sheet as an S9 genesis entry passes the kernel's `verifyJournal`; one later edit records exactly one CELL_SET | the reader needs an adapter to the shared history (two cores) | — |
+| R8 COST | read ms, cells, items, heap logged (`§SREAD-COST`) | unmeasured weight | — |
+
+Not claimed: any PDF other than this one (a second report layout is the next denominator step), scans (P6), multi-page tables.
+
+### 7.4 RESULTS — S10 (2026-11-27, bim-ootb `feat/pdf-p0-reader`, PR #3470)
+Command: `SREAD_MUTANTS=1 node pdf/tests/witness_sheet_reader.js` (pdf.js 3.11.174 in node; oracle = `pdf/corpus/trial_balance_th.cells.json`).
+```
+§SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 boxesTrimmed=18 collisions=0 checks=5
+§SREAD-R1 PASS 4/4 · R2 PASS 4/4 · R3 PASS 7/7 · R4 PASS 4/4 · R5 PASS 2/2 · R6 PASS 3/3 · R7 PASS 3/3 · R8 PASS 1/1
+§SREAD-MUTANTS killed=5/5  (blank rows dropped→R1, brackets not negative→R2, sums not compared→R3, boxes shifted a row→R4, column dropped on write→R6)
+§SREAD-COST items=152 lines=27 cells=144 readMs=5 pdfBytes=74945 heapMB=16
+§SREAD-VERDICT PASS judged=29 failed=0
+```
+- R1: 144 of 144 oracle cells at the SAME address with the same text, no extra cell, blank rows 4/27/29 kept.
+- R3: total row 28 found by arithmetic, `D28 = SUM(D6:D26) = 40,392.44 = E28`; row rule `F = C + D - E` on 21 of 21 rows. One printed
+  digit changed (D10 498.09 → 499.09): `verdict=DOES_NOT_ADD_UP reason="D28: printed 40392.44 != rows sum 40393.44"`.
+- R4: 188 poppler word centres, each inside exactly one cell box whose text holds the word; every one of the 144 boxes holds a word.
+- R6: the `.xlsx` re-reads to the same 144 cells; the four totals carry `SUM` formulas; the hidden sheet `_door_source` lists cell, page, box.
+- R7: the read sheet is one S9 genesis entry the kernel's own `verifyJournal` accepts; one later edit = one `CELL_SET`. No adapter.
+
+**Findings (each from a failing check):**
+1. **A tall title's box reached into the row under it** (R4 first run FAIL: the centres of `บริษัท`, `:` and `GardenWorld` lay in two
+   boxes; A2 and B2 held no word of their own). Font boxes of neighbouring lines really overlap (poppler's do too). Fixed in the
+   engine: where two neighbouring lines' boxes overlap, both stop at the middle of the overlap (`boxesTrimmed=18` on this file).
+   This matters for step (2): a write-back into an overlapping box would have painted over the neighbour.
+2. **The report PDF engine is not on `main`** (§7.1): the trial balance PDF had to be made from bim-compiler `origin/ninja-xtab2`.
+   Not fixed here; it is the missing half of "print it back in a new layout" in the ▶▶ block.
+
+**Not yet (stated, not hidden):** ONE layout is proven (denominator 1 of 1). The cell-gap and pitch rules (§7.2 items 2 and 4) are
+measured on this file only; a second and third report layout must be judged before any general claim. No multi-page table, no
+scan. `Read as sheet` reads the page on screen, one page at a time. The witnesses are not wired into CI (same as S1 and S9).

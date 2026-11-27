@@ -4,7 +4,9 @@
 # run (§PDFED-* lines); the exit code is not evidence. Code will live in bim-ootb (`pdf/` page + engine); this file is the lane record.
 
 ## ▶ RESUME HERE (2026-11-27) — call sign **'resume killer'**: start at the ▶▶ block of `prompts/SHEET_FRONT_DOOR.md` (one package, build order)
-- **Spec only.** Nothing built. Next = phase P0 (§4) together with the S10 report reader: a bare `pdf/` page on the already-shipped pdf.js, witness W-PDFED-P0.
+- **P0 VIEW DONE (witness) 2026-11-27** with the S10 report reader: bim-ootb `pdf/` (PR #3470), results §4.2. **1 of 14 groups** (G1) is in part at parity:
+  open, pages on demand, find, outline, password and damaged files; NOT yet: the 5 view modes, tabs, split panes, clickable links.
+- **Next = P4 cut narrow** (below), then P1 organise.
 - P4 is cut narrow first: **numbers only**, written back into the box the source map names (no reflow; a digit missing from the embedded subset → stated substitution).
 - Sister lane: `prompts/SHEET_FRONT_DOOR.md` (the PDF→sheet report reader S10 and history S9 are the extras this editor gets for free).
 
@@ -90,3 +92,53 @@ Order of value for our users (reports): P0 → P1 → P2 → P4 → P5 → S10 r
 KillerPDF reports ~145,000 lines of its own C# engine, 8,508 engine tests and a 47,024-file corpus (its own figures, not
 verified). P0-P3 sit mostly on existing libraries. P4 (text edit), P5 (redaction), P7 (encryption + signing) and P9 (PDF/UA) are
 the deep parts. Claims stay "X of 14 groups", each backed by its phase witness, never "parity" in general.
+
+## 4.1 Phase P0 in detail (spec 2026-11-27, before code) — with `SHEET_FRONT_DOOR.md` §7 (S10)
+Code (bim-ootb): `pdf/pdf_open.js` (open + describe, the one owner of "is this file open"), `pdf/index.html` (the page),
+witness `pdf/tests/witness_pdfed_p0.js` (W-PDFED-P0). pdf.js is the copy already shipped at `modeller/lib/pdfjs/` (3.11.174).
+- `PdfOpen.open(pdfjsLib, bytes, password?) -> { ok, pages, text:[per page], outline:[{title,depth}], items:[per page] }` or
+  `{ ok:false, named:'not-a-pdf'|'empty'|'needs-password'|'wrong-password'|'damaged', message }`. `ok:true` with 0 pages cannot
+  be returned. `items` are the text items in page points, y down: what S10 reads.
+- **The page:** Open (file chooser or drop; File API, nothing uploaded), pages drawn on demand and released off screen, text
+  search, outline, **Read as sheet** (S10: the table, the adds-up verdict, hover a cell to see its box on the page, download
+  `.xlsx`). Logs `§PDFED-OPEN`, `§PDFED-COST` (heap, canvases alive), `§SHEET_READER`.
+- **Corpus (in git, ours):** `trial_balance_th.pdf` (1 page, Thai + Latin) and `market_impact_report.pdf` (bim-compiler
+  `docs/BIM_Compiler_Market_Impact_Report.pdf`, 12 pages, 23 outline entries). Made at run time from them, never committed: a
+  copy with its cross-reference table cut off, a password copy (ghostscript), an empty file, a non-PDF. More files by `PDFED_EXTRA=<dir>`.
+
+| ID | Claim | Issue it exposes | Falsifier |
+|----|-------|------------------|-----------|
+| V1 PAGES | per file, page count == poppler `pdfinfo` | pages lost | — |
+| V2 TEXT | per page, the characters read (spaces removed, NFC) are the same multiset as poppler `pdftotext` gives | text lost or garbled | mutant: last item of each page dropped |
+| V3 OUTLINE | outline titles in order == poppler `pdftohtml -xml` outline | bookmarks lost | mutant: nested entries dropped |
+| V4 BROKEN / LOCKED | the cut-xref copy opens with the same page count and text, or is NAMED; the password copy without password is NAMED needs-password and opens with it; empty and non-PDF are NAMED | a blank page shown for a damaged or locked file | mutant: errors swallowed, "opened" with 0 pages |
+| V5 PAGE (wiring, real page, real file chooser, headless) | the page logs `§PDFED-OPEN pages=N`; the first page's canvas holds ink (count of non-white pixels > 0, a number, no screenshot); Read as sheet logs `§SHEET_READER verdict=ADDS_UP cells=144` and the `.xlsx` it offers re-reads to 40,392.44 in D28; on the 12-page file, after scrolling to the end, canvases alive < pages | scripts not loaded, nothing drawn, memory never released | — |
+
+Password files need pdf.js's own decryption only (reading); writing encrypted files stays in P7.
+
+## 4.2 RESULTS — P0 (2026-11-27, bim-ootb `feat/pdf-p0-reader`, PR #3470)
+Commands: `PDFED_MUTANTS=1 node pdf/tests/witness_pdfed_p0.js` · `node pdf/tests/witness_pdfed_page.js` (headless Chromium, `--disable-gpu`).
+```
+§PDFED-OPEN file=trial_balance_th.pdf pages=1 chars=1017 outline=0 runs=152 · file=market_impact_report.pdf pages=12 chars=16842 outline=23 runs=594
+§PDFED-V1 PASS 2/2 · V2 PASS 2/2 · V3 PASS 1/1 · V4 PASS 7/7
+§PDFED-MUTANTS killed=3/3  (first character dropped→V2, nested outline dropped→V3, errors swallowed "opened with 0 pages"→V4)
+§PDFED-VERDICT PASS judged=13 failed=0
+§PDFPG-INK {"canvas":true,"w":1100,"h":850,"ink":111350}
+§PDFPG-RELEASE pages=12 aliveAtOpen=1 aliveAtEnd=2 renders=16 releases=13 heapMB=10
+§PDFPG-VERDICT PASS judged=17 failed=0
+```
+- V4: the copy with its cross-reference table cut off OPENED with the same page and text (pdf.js rebuilt it); empty, non-PDF and
+  header-over-garbage are NAMED; the ghostscript password copy is NAMED `needs-password`, `wrong-password`, then opens with the password.
+- V5 (page): real file chooser; page 1 canvas holds 111,350 dark pixels; Read as sheet `verdict=ADDS_UP cells=144`; the box for D28
+  sits on the source map's box (< 0.5 px); the `.xlsx` handed over re-reads to D28 = 40392.44 `=SUM(D6:D26)`; the outline's last entry goes
+  to the page poppler names; Find "market" = 45 hits = poppler's count; 2 canvases alive of 12 after scrolling; with the network OFF
+  the page reloads and reads the report (red control: cache bypassed + network off → no boot).
+
+**Findings:**
+1. **poppler's default text mode is not a fair oracle for reports:** `pdftotext` removes line-end hyphens, so a column of accounting
+   dashes read 8 of 40 there. `pdftotext -raw` and pdfminer both give 40, as we do. V2 judges against `-raw`.
+2. **Offline is network-first** (`pdf/sw.js`): online users always get the current files, so the page needs no cache-version bump per
+   deploy (it stays out of the `sw.js` conflict class); offline users get the last copy seen.
+
+**Not judged in P0:** V3 has ONE file with an outline (the trial balance has none in either reader). Corpus = 2 of our own files; the
+public sets of §5 are not assembled. Heap per open file is logged, not budgeted.
