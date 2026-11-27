@@ -1183,3 +1183,67 @@ case throw is CRASHED, not a kill. No browser → the browser cases judge nothin
 **Not claimed:** real Excel (NOT RUN: the page needs no Excel, and what Excel's own writer does to `_door_history` is unmeasured; WPS's is,
 §13); cell styles in the download; a signed identity; rows / columns inserted (seen as many cell changes, §6.1 blind spot shared with a
 snapshot diff); a real phone (device emulation only); files beyond what a browser tab holds.
+
+### 14.3 RESULTS (2026-11-28, bim-ootb `feat/sheet-history-page`, PR #3489, merged `9c9578dd`)
+Command: `HPAGE_MUTANTS=1 env -u DBUS_SESSION_BUS_ADDRESS node erp/tests/witness_history_page.js` (headless Chromium on the real page, real file
+chooser, real downloads, real WPS 10.1.0.6757 writer for P9). Log read, not the exit code. **REAL EXCEL NOT RUN.**
+```
+§HPAGE-FIXTURE workbook=ninja_sample.xlsx sheets=3 cells=114 BACKUP!B9={"v":541.02,"f":"SUM(B5:B8)"} B6=100.7 B7=161.12 real=true
+§HPAGE-P1 PASS 13 · P2 PASS 18 · P3 PASS 6 · P4 PASS 10 · P5 PASS 17 · P6 PASS 4 · P7 PASS 5 · P8 PASS 5 · P10 PASS 1 · P9 PASS 3 · E1 PASS 9   (threw=0 on every case)
+§HPAGE-LOADED requests=6 bytes=313465 files=[history.html, xlsx.mini.min.js, sheet_history.js, host_shim.js, xlsx_host.js, history.js]
+  page: §SHIST-PAGE-COST requests=6 bytes=313465 readyMs=50 heapMB=2 kernelLoaded=false scripts=5
+  page: §SHIST-PAGE-STAMP verdict=RECORDED entry=1 cells=114 chunks=1 typedOverFormula=[] lineChars=14084 ms=3 heapMB=3
+  page: §SHIST-PAGE-STAMP verdict=RECORDED entry=2 cells=3 chunks=1 typedOverFormula=["BACKUP!B9"] lineChars=706 ms=2 heapMB=4
+  page: §SHIST-PAGE-MERGE verdict=CONFLICTS other=copy_b_edit.xlsx fork=1 mine=1 theirs=1 applied=["BACKUP!C5:a","BACKUP!C6:b","BACKUP!B8:both"] conflicts=["BACKUP!B7"]
+  page: §SHIST-PAGE-MERGE verdict=RECORDED entry=3 ops=1 fork=1 otherEntries=1 otherHead=f06a6bdd51e9 picks=["BACKUP!B7:a"] lineChars=1285
+§HPAGE-PHONE viewport=390x844 dpr=3 touch=true emulated=true load 390/390 open 390/390 stamp 390/390 story 390/390 rewind 390/390 conflict 390/390 merged 390/390 (device emulation, not a phone)
+§HPAGE-COST pageRequests=6 pageBytes=313465 fileBytes: source=24938 stamped1=19533 stamped3=20385 merged=20790 historyChars: genesis=14084 all3=15356
+§HPAGE-WPS-RESAVE wps=10.1.0.6757 ok=true bytesIn=19987 bytesOut=14025 ms=13206 wpsNamespace=true handled=["System Check: Close clicked"]
+§HPAGE-WPS-BIND state=pending changedByWps=["Process!A2: =CONCATENATE(\"@\",C2,\"@\",B2) (@STALE_MOVED_ROW@99) → =CONCATENATE(\"@\",C2,\"@\",B2) (@i.documentno@2)"]
+§HPAGE-NOTE openpyxl re-save (no formula results stored): history verifies=true hidden=2 page state=pending listed=20 of which formula cells whose value is gone=20 (formula cells in the workbook=20)
+§HPAGE-NOTE the kernel's verifyJournal on the forged carried entry: ok=true (it checks the chain; the carried entries are the engine's verify to check)
+§HPAGE-MUTANTS killed=15/15
+§HPAGE-VERDICT PASS judged=91 failed=0 cases=[P1,P2,P3,P4,P5,P6,P7,P8,P10,P9,E1] all PASS (headless Chromium on the real page; P9 real WPS 10.1.0.6757 writer RAN; real Excel NOT run)
+```
+Mutants (12 served to the browser, 3 engine copies in node; a crash is not a kill, all `threw=0`): outside changes not listed→P1, NO-OP writes an
+entry→P1, a stray cell on download→P2, story of the wrong cell→P3, rewind off by one→P4, rewound file keeps the full history→P4, conflict resolved
+silently (side B wins)→P5, unstamped copy merged anyway→P5, Finish allowed before a pick→P5, tampered entry accepted→P6, kernel loaded→P7, page
+forced wide→P8, carried entries not verified→E1, picks ignored→E1, merge entry made with a conflict open→E1.
+Older witnesses re-run and read, unchanged: W-SHEET-HISTORY 20 (5/5), W-SHEET-ADDIN 63 (14/14), W-SHEET-DOOR 33, W-FILE-IT 53 (9/9 + 6/6),
+W-SHEET-WPS 55 (8/8), W-SHEET-WPS-PAGE 28 (3/3), W-DOOR-ERP 47, W-PDF-HISTORY 57 (10/10) + page 19, W-SHEET-WPS-REAL FINDINGS judged=29 findings=4
+failed=0 (the same four findings as §13.4; its WPS driver now lives in `erp/tests/wps_driver.js`, shared with P9: that witness +5 / −56 lines).
+`gen_manifest --check` verdict=PASS; `erp/sw.js` CACHE_VERSION not bumped (the page is not precached). Diff: +1097 / −68.
+
+**What was shown**
+- **P1** a day on the real sample: no history → said; Stamp = 114 cells; the file edited by another writer (B6 100.7→200.7, a note in F2, 600 typed over
+  `=SUM(B5:B8)`); reopened: exactly `F2, B6, B9` listed as changes since the last stamp and marked in the grid; Stamp = exactly those, B9 flagged; a
+  further Stamp = NO-OP with the stored rows byte for byte unchanged. A Stamp with no name typed records nothing and asks for the name.
+- **P2** each download: engine `verify` AND kernel `verifyJournal` pass; 0 of 114-115 visible cells differ from the file given; `_door_history` very hidden; the
+  Excel shim's Check history / Cell history read the same entries (one format).
+- **P4** 343 cells judged over 3 steps x 3 sheets: grid = `asOf(N)`; each "Download this version" holds that state and entries 1..N, and re-opens as intact.
+- **P5** C6 (Ben) combined, B7 11-vs-22 ONE conflict with both values, both names and the earlier value; no choice pre-selected, Finish disabled, workbook
+  unchanged; after the pick: 3 entries, verifies, B7 = 11, C5 + C6 present, B7's story names both people; the other direction (taking theirs) gives the
+  same visible cells; refusals worded: unrelated, no history, hand-edited (entry 2 of 2), unstamped copy (BACKUP!D5), own unstamped change (BACKUP!D6),
+  same copy twice.
+- **How a merged history is stored** (E1): one entry on the open copy's linear chain; `ops` = what changes in the open copy; `meta.merge = { fork, other
+  (the other copy's head hash, inside the entry hash), otherEntries, picks }`; `payload.theirs` = the other copy's entries after the fork. Engine `verify`
+  re-verifies shared start + carried entries up to that head hash (a forged value or name inside them, two merges deep too, breaks at the merge entry).
+- **P7** 6 requests, 313,465 bytes (ceiling 8 / 400,000), no kernel / SQL / seed; the server saw no request after a page was ready; only GETs.
+
+**Findings**
+1. **The time of an entry is not protected.** The shared entry hash covers `seq, actor, meta, opsDigest`, not `at` (measured: `at` edited → `verify` ok).
+   Same in the ERP journal. Consequence also measured: the same cells stamped under the same name at two different times give the SAME genesis hash, so
+   two such files count as copies of one sheet. Not changed here (one format with the kernel).
+2. **The kernel's `verifyJournal` does not look inside a merge entry's carried entries** (forged carried value → kernel ok, engine broken at the entry). The
+   page uses the engine's `verify`; a kernel-side reader of a merged sheet history would need the same check.
+3. **Real WPS recalculates on open:** one formula cell whose saved result was stale in the sample (`Process!A2`) came back with a new value; the page
+   lists it as a change since the last stamp and the next Stamp records it (as designed; the history itself survived byte for byte, very hidden).
+4. **A writer that stores no formula results (openpyxl):** all 20 formula cells read as changed (value gone). True, but noisy: a user would stamp 20
+   "changes" nobody made. The §12 hazard seen from the history side.
+5. Witness slips fixed, not product defects: a tamper text `"v":22` also matched `228.85` in the genesis entry; on a too-wide phone page the browser shrinks
+   the page instead of scrolling (window reads 1216 wide), so the fit check also requires the window to stay 390.
+6. A second merge with the same other copy after more stamps re-opens earlier conflicts where the pick was "mine" (the fork stays the shared start).
+
+**Not yet:** real Excel (not run: neither the page beside Excel's own writer nor the menus); a real phone; styles in the download; signing (a typed name;
+a removed `_door_history` unnoticed; finding 1); merge-base tracking (finding 6); inserted rows / columns as such; grids beyond 200 x 40 drawn; three-way
+merge of more than two copies in one step; W-HISTORY-PAGE is not wired into CI (like the lane's other witnesses).
