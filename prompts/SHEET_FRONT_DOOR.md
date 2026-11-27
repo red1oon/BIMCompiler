@@ -478,3 +478,163 @@ until the next docs/site deploy; no sideload was attempted); a browser runner fo
 (Office.js has no user identity without sign-in); Stamp is on demand only (no save/close trigger yet: Excel `onChanged` events could record more often); a very large sheet's
 Stamp reads the whole used range once (cost measured only at 453 cells); WPS / LibreOffice / Google Sheets hosts (S4, S5) implement the same host interface; the old-Office
 IE11 limit stands (§1, stated in the pane); the witnesses are not wired into CI (same as S1, S9, S10).
+
+## 9. Slice S3b — a browser runner for the filing path (spec 2026-11-27, before code)
+"Next (a)" of the ▶▶ block and §8.3 finding 1. Code: bim-ootb `erp/ws_kernel.js` (restructured, ONE implementation), `erp/ws_kernel_web.js` (the browser shell),
+`erp/sheet_addin/runner.js`, `erp/sheet_addin/xlsx_host.js`, `erp/sheet_addin/file_it.html` + `file_it.js`, `taskpane.html` / `taskpane.js` (wired).
+Witness `erp/tests/witness_file_it.js` (W-FILE-IT). Laws that bind it: TWIN (same books as the node kernel), AD-LAYER rule 5 (one kernel, one journal
+format, no per-window code), DB policy (no binary; `ad_seed.db` is the file the ERP page already serves), PERF BUDGET (boot ms, heap, bytes logged).
+
+### 9.1 Measured before the design (2026-11-27)
+- What makes `ws_kernel.js` node-only is its SHELL, not its logic: `fs` (seed, patch, the `processes/` folder), `require(...)` of sql.js and of its modules,
+  node `crypto` (`createHash('sha256')`, `randomUUID`), `os`, `Date.now`. `build(db)` itself is plain JS over a sql.js database.
+- A require trace of ONE filing through the node kernel (seed boot + `SheetDoor.file` + Import Invoice + complete + post): **44 files** of `erp/` are loaded when the
+  only process is `processes/ImportInvoice.js` (108 with every process). Every one of the 44 is already UMD and already loaded by `erp/idempiere.html` as a script tag.
+- The journal hash is computed synchronously inside `commit` (`journalOf`). WebCrypto is async only; making `commit` async would change every caller of the kernel
+  (`ws_server`, `ws_adinterface`, 70+ witnesses). So the browser shell brings a synchronous SHA-256 (plain JS); the kernel keeps ONE code path and calls the shell.
+- The ERP page uses its own sql.js build (`erp/lib/sql-wasm-fts5.js`); node witnesses use `tests/node_modules/sql.js`. Two SQLite builds: parity must be measured, not assumed.
+
+### 9.2 Design
+- **One kernel, two thin shells.** `ws_kernel.js` becomes UMD. Everything it did through node (`require`, `fs`, `crypto`, clock) goes through a SHELL object with
+  the same few calls on both sides: `need(name)` (a module's API), `load(names)` / `processes()` (side-effect modules), `sha256(text)`, `uuid()`, `nowMs()`, `perfMs()`,
+  and for the boot `sqljs()`, `seed()`, `patch()`, `extra(files)`. The node shell (inside `ws_kernel.js`) is today's `require` / `fs` / `crypto` lines moved, nothing
+  else. The browser shell (`ws_kernel_web.js`) fetches `ad_seed.db` + `patches/ad_seed.db.sql`, loads the kernel's scripts from ONE ordered list (the 44 files, in the
+  ERP page's own order, added lazily so a page that never files pays nothing), and gives the sync SHA-256. `load()`, `build(db)`, `commit`, `journalOf`, `replay`,
+  `verifyJournal` are the SAME lines for both. No second kernel, no second journal format. `K.shell(over)` lets a witness fix the clock and the ids (both sides).
+- **Shard, not the whole (owner ruling):** the browser gets the kernel's own model list and exactly ONE process (Import Invoice). No ERP window, no `erp_kernel`,
+  no service worker change, `idempiere.html` untouched.
+- **The runner** (`runner.js`, UMD, node + browser): `file(tpl, cells, ledgerLines) -> { result, ledgerLine, facts }` = one `kernel.inTrx` over `SheetDoor.file`
+  (what S1 D9 and S3 A5 do in their witnesses). The workbook is the book: when the workbook's ledger is not the journal of the kernel in memory, a fresh kernel is
+  booted and the ledger replayed first. `facts` = the filed document read back from the kernel DB (never from the sheet): DocumentNo, status, date, partner name,
+  lines (product name, qty, price, net), totals, and the accounting entries (`Fact_Acct` rows: account, debit, credit). Session = the GardenWorld demo login the
+  S1/S3 witnesses use (client 11, org 11, user 100, role 102); choosing a tenant/login is not in this slice.
+- **`file_it.html`** (no Excel): the user opens their own `.xlsx` (File API; SheetJS `erp/xlsx.mini.min.js`); `xlsx_host.js` is the S3 HOST INTERFACE over that
+  workbook in memory, so the SAME `host_shim.js` File it runs (read tagged cells, append the ledger row, apply `writes`); the page shows the verdict in plain words,
+  the document and its books, and hands the workbook back as a download. Nothing is uploaded: the only requests are the page's own files. A "sample invoice"
+  button builds a tagged workbook in the browser (the S1 witness invoice), since S7 "Mark my invoice" is not built.
+- **Task pane:** `taskpane.js` makes the same runner (lazy: the engine and the 27 MB seed load on the first File it, not on Stamp); the NOT-WIRED text goes.
+
+### 9.3 Claims (W-FILE-IT; headless Chromium on the real `file_it.html` over a local static server, real file chooser; verdict line
+`§FILEIT-<case> verdict=PASS|FAIL|INCONCLUSIVE judged=N failed=M`; INCONCLUSIVE when nothing was judged; a mutant that crashes is not a kill)
+| ID | Claim | Issue it exposes | Falsifier (mutant) |
+|----|-------|------------------|--------------------|
+| F1 PARITY | The same workbook filed (a) in node through `runner.js` + the node kernel and (b) in the browser page gives the same verdict, the same writes and the same C_Invoice + lines + Fact_Acct fingerprint (ids stripped), and both equal the S1 oracle path (rows straight into I_Invoice + AD_Process 207) | the browser kernel is a different kernel (twin breach) | M6 date conversion dropped in the workbook host |
+| F2 CROSS | The browser's ledger line verifies in node (`verifyJournal`) and replays into a fresh node kernel to the same fingerprint; the node line verifies in the browser and replays into a fresh browser kernel to the same fingerprint | two journal formats / two hashes | M1 browser SHA-256 differs |
+| F3 SAME BYTES | With the shell's clock and ids fixed to the same values on both sides, the journal line of the same filing is the SAME STRING in node and in the browser; the browser's SHA-256 equals node `crypto` on the line's own hashed texts and on test strings (empty, ASCII, astral, 1 MB) | hashing or serialising differs by host | M1 |
+| F4 REFUSED | A workbook whose subtotal is 0.01 high: the page shows "Not filed" with BOTH numbers; no document block; the kernel journal is empty; no C_Invoice; the offered workbook has NO `_door_ledger` row and only the status cell differs | a refused sheet leaves a ledger trace | M2 ledger line on refusal |
+| F5 BOOKS | The document and books on screen are read from the page's DB: every shown entry row equals an independent SQL read of `Fact_Acct` in the page's DB (witness's own query), debits = credits > 0, the shown rows equal the node kernel's; the page shows the partner NAME and product NAMES (the sheet holds search keys) and the price the price list gave for a line whose price cell is blank | figures echoed from the sheet pass as "the books" | M3 document echoed from the sheet |
+| F6 DOWNLOAD | The downloaded workbook re-read in node: exactly ONE new `_door_ledger` row that verifies and replays to the same fingerprint; docno + status cells written; every other cell of the visible sheet has the same value and formula; `_door_*` sheets very hidden. Reopened in a reloaded page with a new docno: 2 rows, chained, both replay. A different workbook opened after it starts its OWN chain (seq 1) | the workbook cannot rebuild its books; one workbook's chain leaks into another | M4 ledger not replayed on reopen; M5 one extra cell written; M7 kernel kept across workbooks |
+| F7 OFFLINE | After the engine has booted, with the network OFF a filing still succeeds and no request is attempted. A page RELOAD offline is measured and reported, not claimed | "nothing is uploaded" / works offline is unproven | — |
+| F8 COST | `§KRN-BROWSER-COST` scripts, bytes fetched, boot ms (fetch / seed+patch / build), file ms, JS heap MB | unmeasured weight (PERF BUDGET) | — |
+| F9 VACUOUS | A workbook with no `_door_tags` → INCONCLUSIVE in plain words, nothing filed, no download offered | an untagged workbook "passes" | — |
+| F10 PANE | In the real `taskpane.html` (Office.js request answered by a stub that only makes the page boot) the pane's own runner files the same cells: verdict FILED, same fingerprint; File it through the shim is no longer NOT-WIRED | the pane wiring is claimed, not run | M8 pane runner not created |
+| F11 OLD WITNESSES | W-SHEET-DOOR (21), W-SHEET-ADDIN (59), W-SHEET-HISTORY (20) pass unchanged on the restructured kernel, and a named set of the existing `ws_kernel` witnesses gives the same verdict lines before and after | the restructure broke the node kernel | — |
+
+Not claimed (stated up front): real Excel (the pane is run in Chromium with an Office.js stub; the Excel layer itself was proven only on S3's fake Office.js);
+any tenant other than the GardenWorld demo seed; multi-user; a page reload offline; the workbook's cell STYLES surviving the download (SheetJS community build
+writes values, formulas and number formats, not fonts / fills / widths — measured and reported in 9.x, not hidden).
+
+### 9.4 Owner addition 2026-11-27: the filed document in the REAL ERP window (claim F12, specced before any code)
+Owner: *"yes, show the document in the real ERP window too."* After a sheet is filed from `file_it.html`, the SAME invoice must open in the real ERP page
+(`erp/idempiere.html`, its own Invoice window, through the generic AD engine, no per-window code) with its posting visible.
+
+| ID | Claim | Issue it exposes | Falsifier |
+|----|-------|------------------|-----------|
+| F12 ERP WINDOW | After File it in `file_it.html`, the real `idempiere.html` (GardenWorld login) holds the same invoice: DocumentNo, grand total and the `Fact_Acct` rows read in the ERP page's DB equal those of the filing (and of the oracle), and the Invoice window's grid shows that row (grid rows + the record id per row, the AD-LAYER way); a reload keeps exactly one copy; a tampered ledger line is refused and nothing is added | the "document in the books" exists only inside the filing page | ledger applied twice; a tampered line accepted; the row in the DB but absent from the grid |
+
+**Design to be built (ONE implementation):** the workbook's `_door_ledger` line is the hand-over. The ERP page takes the line(s) and runs the kernel's own
+`verifyJournal` + `replay` on its database: no second apply, no second format. Rejected: writing the filing page's whole database over the ERP page's resident
+cache (it would wipe what the user has in the ERP); feeding the ops through the page's op log (`crud_overlay` `applyOpGroup` + `commitGroup`: another entry
+format and another id law, negative ids; the ledger's own record ids and its `Fact_Acct.Record_ID` links would not survive).
+**Gate (coordinator's rule for this slice):** build it here only if `idempiere.html` needs no more than a minimal hook; otherwise specify the next slice exactly.
+
+### 9.5 RESULTS — S3b (2026-11-27, bim-ootb `feat/file-it-browser`, PR #3483, merged `f2b4587a`)
+Command: `env -u DBUS_SESSION_BUS_ADDRESS FILEIT_MUTANTS=1 node erp/tests/witness_file_it.js` (headless Chromium, puppeteer 24, on the REAL `erp/sheet_addin/file_it.html`
+served by a local static server from the tree; real file chooser, real download; node side = the same `runner.js` over the node kernel).
+**REAL EXCEL WAS NOT RUN.** The task pane was run in Chromium with an Office.js stub that only lets the page boot.
+```
+§FILEIT-ORACLE direct ok=true invoice={"grandtotal":153.5,"totallines":153.5,"docstatus":"CO"} fingerprintBytes=661
+§FILEIT-NODE verdict=FILED text="Filed FILEIT-0001 (CO)" writes=[F2, G24] ledgerLineChars=11594
+§FILEIT-F1 PASS 5/5 · F8 PASS 1/1 · F5 PASS 5/5 · F6 PASS 7/7 · F2 PASS 4/4 · F3 PASS 4/4 · F4 PASS 3/3 · F9 PASS 1/1 · F7 PASS 2/2 · F10 PASS 5/5 · F11 PASS 3/3
+§KRN-BROWSER-COST scripts=45 kernelFiles=44 requests=58 bytesServed=33679065 seedAndPatchBytes=30440402 scriptsMs=69 bootMs=948 pageReadyMs=1112 fileMs=90 jsHeapMBAfterBoot=125 jsHeapMBAfterFiling=41
+§FILEIT-OFFLINE-RELOAD (measured, not a claim) page reloaded with the network off: engine ready=N engineText="(no page)"
+§FILEIT-OLD witness_sheet_door.js -> §SDOOR-VERDICT PASS judged=21 failed=0 · witness_sheet_addin.js -> §SADDIN-VERDICT PASS judged=59 failed=0 · witness_sheet_history.js -> §SHIST-VERDICT PASS judged=20 failed=0
+§FILEIT-MUTANTS killed=9/9  (browser SHA differs→F3, ledger line on refusal→F4, document echoed from the sheet→F5, ledger not replayed on reopen→F6, one extra cell written→F6,
+   date conversion dropped→F1, kernel kept across workbooks→F6, pane runner not created→F10, workbook sent out→F7; every child `threw=0`)
+§FILEIT-VERDICT PASS judged=40 failed=0 (headless Chromium on the real page; real Excel NOT run)
+```
+- **One kernel (AD-LAYER rule 5).** `ws_kernel.js` +38 / −17: its body keeps its lines; `require` inside it is now the shell's module lookup, and `fs` / `crypto` / `Date.now`
+  go through the shell. Deleted from the body: the direct `fs`, `path`, `os`, `crypto` use (4 hash calls, 2 uuid calls, the `processes/` folder listing, the seed and patch
+  reads); they are the node shell now. No kernel logic was copied: `ws_kernel_web.js` (129 lines) holds fetch, the script list and a SHA-256, nothing else.
+- F1/F2: the browser page's C_Invoice + lines + Fact_Acct fingerprint == node == the S1 oracle; each side's ledger line verifies and replays on the other side.
+- **F3: with clock and ids fixed, the journal line of the same filing is the SAME 11,594-character string in node and in Chromium** (seq, actor, at, opsDigest, prev, hash and
+  every op with its ids, stamps and uuids), across two different SQLite builds (node `sql.js`, the page's `sql-wasm-fts5`). Browser SHA-256 == node `crypto` on 9 texts incl. 1 MB.
+- F4: subtotal 153.51 against lines 153.5: "Not filed" with both numbers, no document, journal empty, no `_door_ledger` row, only G24 differs in the workbook handed back.
+- F5: the 6 entry rows on screen (two sets of books: 12110 Accounts Receivable debit 153.50 / 41000 Trade Revenue credits 123.50 + 30.00, and the second schema 130.48 /
+  104.98 + 25.50) equal the witness's own SQL read of the page DB and the node kernel's rows; debits = credits; the page shows `C&W Construction`, `Oak Tree`, `Elm Tree`
+  (the sheet holds `C&W`, `Oak`, `Elm`) and, for a blank price cell, the price-list price read from the DB.
+- F6: the downloaded workbook has exactly one ledger row (the page kernel's line), 27 cells compared and only G24 differs, `_door_*` sheets very hidden; reopened in a
+  reloaded page with a new number: 2 rows, chained, both replay in node; a different workbook starts its own chain at seq 1.
+- F7: engine booted, network off: FILED, zero requests. Over the whole run the server saw only GETs and no request left for another host.
+  **A page RELOAD offline does not come back** (no service worker covers these pages; nothing here is precached).
+- F10: in the real `taskpane.html` the kernel is not loaded until File it; File it through the shim with the pane's own runner is FILED (not NOT-WIRED), oracle fingerprint.
+- **Existing kernel witnesses:** all 67 test files that load `ws_kernel.js` (erp/tests, pdf/tests, capex/tests, devtools) were run on `origin/main` and on this branch;
+  65 print the same last verdict line and exit code; the other 2 (`witness_docno`, `witness_help_peek`) timed out on the baseline run under machine load and PASS on the
+  branch. 11 of the 67 exit non-zero on BOTH sides with identical lines (not caused here, not investigated). `gen_manifest --check` PASS; eslint clean; CI green.
+
+**Findings (each from a failing check or a measurement):**
+1. **Import Invoice has a dependency no `require` shows.** First browser run: `Not filed:` with an empty reason; the page log said `Cannot read properties of undefined
+   (reading 'docgen')`. `processes/ImportInvoice.js` reaches `processes/support_docgen.js` through `AdProcess.PSUP.docgen`; node gets it only because the kernel lists the
+   whole folder. The browser list is therefore 44 kernel files, not the 43 of the require trace.
+2. **Four existing witnesses pin the SPELLING of `ws_kernel.js`** (`require('./ad_import_tables.js').ensure(db)`, `db_export_safe.js').registerCoreUdfs(db, A)`): the first
+   restructure (calls renamed to a shell method) turned W-EXPORTSAFE, W-IMPORT-ORDER, W-IMPORT-GLJOURNAL and W-IMPORT-BANKSTATEMENT red. Fixed on my side, not theirs: the
+   kernel body keeps `require(...)`, which inside the file is now the shell's lookup. The diff got smaller for it.
+3. **Every `build(db)` adds its model-validation save hooks and never removes them** (`ad_modelval.registerValidator` pushes; the hooks close over that kernel's database).
+   A later kernel in the same process still runs the earlier kernels' hooks against the earlier database. Found when the runner closed the previous database on opening
+   another workbook: the next filing failed with `hook threw: out of memory` (a closed sql.js database). This is in the node kernel too (every witness that boots several
+   kernels in one process). NOT fixed here: the runner leaves the earlier database open, so a page that opens K different workbooks holds K databases (~33 MB JS heap each
+   before collection, measured 123 → 158 → 190 MB). Fix belongs in the kernel: hooks must read through the transaction in flight, or `build` must own and remove its hooks.
+4. **`verifyJournal` in a browser needed a booted kernel** (the shell was installed only by `boot()`); now it is installed when the scripts load. Check F10 `verify-without-boot`.
+5. **The task pane must not name the runner at load time:** the manifest tool counted `SheetRunner` / `WsKernelWeb` at top level as two new load-order edges that need an
+   owner review; the pane now makes its runner inside its boot function. `--write` again proposed two unrelated `uses` drifts and a `CACHE_VERSION` step; not taken
+   (nothing precached changed; `sw.js` and `idempiere.html` untouched). `xlsx.mini.min.js` is now a `boot` module in `erp/modules.json` because a page has it as a script tag.
+6. **Three other hand-written SHA-256 copies already exist** (`teams/connectors.js`, `oplogpic/app.js`, `modeller/dxf2bim_import.js`), none exported for reuse; this slice adds
+   a fourth in the browser shell (the kernel hashes synchronously, WebCrypto cannot). One shared file is a clean-up candidate.
+
+**Not yet (stated, not hidden):** REAL EXCEL (desktop or web) is still not run; the Excel layer under the pane stands on S3's fake Office.js only. The books are the GardenWorld
+demo seed with one fixed login (client 11, GardenAdmin): no tenant or user choice. Cell STYLES are not kept in the downloaded workbook (SheetJS community build writes values,
+formulas and number formats; fonts, fills and widths are lost: not measured beyond values and formulas, 27 cells). A page reload offline fails. First load is 33.7 MB
+(27.2 MB seed + 3.2 MB patch + scripts) and 125 MB of JS heap at boot; a phone was not tried. The seed is fetched again for each fresh kernel (HTTP cache), not kept in
+memory. Stamp / history in `file_it.html` is not offered (File it only). W-FILE-IT is not wired into CI (same as S1, S3, S9).
+
+**Deployed and fetched back (2026-11-27):** `https://red1oon.github.io/bim-ootb/erp/sheet_addin/file_it.html` is byte-identical to the merged file (sha256 `0d78a8c6fa51`);
+the JS beside it is the deploy's minified build of the merged files. The live page was then run headless (sample invoice, File it):
+```
+§FILEIT-LIVE readyMs=2548 verdict=FILED text="Filed. AR Invoice 100001 for C&W Construction is in the books (Completed)." grand=153.5 status=CO
+   fact=[[518,153.5,0],[758,0,123.5],[758,0,30],[518,130.48,0],[758,0,104.98],[758,0,25.5]] ledger line verifies; bootMs=1927 bytes=30440402 pageErrors=0
+   requests elsewhere or not GET: 1 = the browser's own GET https://red1oon.github.io/favicon.ico
+```
+The six entries are the oracle's. One live run, not a witness in the tree.
+
+### 9.6 F12 (the document in the real ERP window) — NOT BUILT in this slice; what the next slice needs
+Gate result: it cannot be done with a minimal hook in `idempiere.html`. Measured first (probe, not shipped; `§PROBE` lines of this session): a ledger line made by the
+node kernel was taken into the REAL `idempiere.html` in headless Chromium through `window.__idmpDb`.
+```
+§PROBE erp-page before: invoices=20 fact_acct=600 max c_invoice_id=1300109 i_invoice table present; verifyJournal ok entries=1
+§PROBE erp-page applied: 12 inserts + 2 updates (c_invoice, c_invoiceline, c_invoicetax, fact_acct, c_bpartner, c_acctschema); 4 i_invoice updates failed in the probe's own apply
+§PROBE erp-page after: c_invoice PROBE-1 153.5 CO posted=Y; Fact_Acct 6 rows 153.5/0, 0/123.5, 0/30, 130.48/0, 0/104.98, 0/25.5 == the filing's rows
+```
+So the data side works: the ERP page's database takes the ledger's rows at the ledger's own ids (1300110 was free) and reads back the same invoice and the same six entries.
+The window grid was NOT judged. What stands between this and F12, each a decision or a piece of work the next slice must do:
+1. **A replay that does not need `build(db)`.** `replay` lives inside `build`, and `build` on the ERP page's database would add a second set of save hooks to the live page
+   (finding 3). The kernel needs a hook-free `replayInto(db, text)` (verify, digest check, apply) factored out of `build`: ONE implementation, used by `build` too.
+2. **The hand-over.** Both pages are same-origin: `file_it.html` can leave the ledger lines in browser storage and link to
+   `idempiere.html?window=<Invoice window>&record=<C_Invoice_ID>` (the page already has `?window=` / `?record=` deep links, lines 1296-1297, 1595-1599).
+3. **The hook in `idempiere.html`:** two script tags (`ws_kernel.js` + the SHA-256), a few lines after the boot overlays (near line 1266), and therefore two `sw.js`
+   precache entries and a `CACHE_VERSION` step (every `idempiere.html` script is precached). Small in lines, but it is the production page and the conflict magnet.
+4. **Idempotence and persistence (owner-level decision):** the page writes its whole database to its resident cache (`_persistBundle`) on installs; a ledger replayed at
+   every boot would meet its own rows. Options: mark applied entry hashes in a table, or treat the ledger as an install (apply once, persist, like `installShard`).
+5. **Two id laws:** rows the ERP page makes itself get negative ids through its op log; the ledger's rows are positive base rows. They do not collide, but the page's
+   history / undo / team sync see the ledger's rows as base data, not as ops. Acceptable for "show it", to be stated; a real two-way bridge is a larger design.
+6. **The witness:** GardenWorld login in the real page, the Invoice window opened by deep link, grid rows + record id per row counted, the posting view read, a reload,
+   a tampered line refused; mutants: applied twice, tamper accepted, row in the DB but not in the grid.
