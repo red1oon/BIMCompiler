@@ -28,7 +28,44 @@
   // split a string into runs by script: Lao letters (U+0E80-0EFF, zero-width joiners) vs everything else, so each run gets a font that actually HAS its glyphs
   // (measured: Noto Sans Lao on the build host has no ASCII punctuation; sending whole mixed strings to it silently drops '/', '.', '(', ')', bullets)
   // Thai letters (U+0E01-0E5B) get their own run too (same reason: the Latin font has no Thai glyphs) - added with the public Thai trial-balance demo (prompts/NINJAEXCEL_TEMPLATE_ENGINE.md §TB-DEMO)
-  function runsOf(t) { var out = [], cur = null; for (var i = 0; i < t.length; i++) { var ch = t[i], lao = /[຀-໿\u200B-\u200D]/.test(ch), th = !lao && /[\u0E01-\u0E5B]/.test(ch); if (cur && cur.lao === lao && cur.th === th) cur.t += ch; else { cur = { t: ch, lao: lao, th: th }; out.push(cur); } } return out; }
+  function runsOf(t) { var out = [], cur = null; for (var i = 0; i < t.length; i++) { var ch = t[i], lao = /[຀-໿\u200B-\u200D]/.test(ch), th = !lao && /[\u0E01-\u0E5B]/.test(ch); if (cur && cur.lao === lao && cur.th === th) cur.t += ch; else { cur = { t: ch, lao: lao, th: th }; out.push(cur); } } return amRuns(out); }
+  // SARA AM (Thai U+0E33, Lao U+0EB3): the font's shaping (OpenType ccmp) draws it as TWO glyphs, NIKHAHIT + SARA AA, and PDFKit's ToUnicode maps each glyph to the
+  //   characters it came from - the AA glyph is the SAME glyph as a real SARA AA elsewhere, so a text reader got "จำานวน" for "จำนวน" (one extra AA; poppler and pdf.js alike).
+  //   A ToUnicode entry belongs to a glyph, not to one use of it, and an EMPTY entry reads as garbage in pdf.js (U+0002) and as a space in poppler, so no glyph remap can cure it.
+  //   The cure (amDraw): a cluster that holds SARA AM is DRAWN as the shaped glyph outlines (same glyphs, same positions as before - the page looks the same) and WRITTEN as
+  //   fully transparent text shaped without ccmp, where SARA AM is the font's own single SARA AM glyph -> every reader gets the source characters. Measured: both readers.
+  var AM = { '\u0E33': 1, '\u0EB3': 1 }, AM_MARK = /[\u0E31\u0E34-\u0E3A\u0E47-\u0E4E\u0EB1\u0EB4-\u0EBC\u0EC8-\u0ECD]/;
+  function amRuns(runs) {                                          // a Thai/Lao run holding SARA AM -> [before][base consonant + marks + SARA AM (am:true)][after]
+    var out = [];
+    runs.forEach(function (r) {
+      if (!(r.th || r.lao)) { out.push(r); return; }
+      var t = r.t, from = 0;
+      for (var i = 0; i < t.length; i++) {
+        if (!AM[t[i]]) continue;
+        var j = i; while (j > from && AM_MARK.test(t[j - 1])) j--; if (j > from) j--;   // back over the marks to the base consonant
+        if (j > from) out.push({ t: t.slice(from, j), lao: r.lao, th: r.th });
+        out.push({ t: t.slice(j, i + 1), lao: r.lao, th: r.th, am: true }); from = i + 1;
+      }
+      if (from < t.length) out.push({ t: t.slice(from), lao: r.lao, th: r.th });
+    });
+    return out;
+  }
+  function amPrime(doc) {                                          // fontkit keeps a glyph's characters from its FIRST use: a SARA AM decomposed before any real AA would make every real AA read as nothing
+    var fk = doc._font && doc._font.font; if (!fk || fk.__ninjaAmPrimed || typeof fk.glyphForCodePoint !== 'function') return;
+    [0x0E32, 0x0E4D, 0x0EB2, 0x0ECD].forEach(function (cp) { if (fk.hasGlyphForCodePoint(cp)) fk.glyphForCodePoint(cp); }); fk.__ninjaAmPrimed = true;
+  }
+  function amDraw(doc, text, x, y) {                              // doc font + size already set for this run; x,y = the top-left pdfkit text() takes
+    var ef = doc._font, fk = ef && ef.font, size = doc._fontSize;
+    if (!fk || typeof fk.layout !== 'function' || !fk.unitsPerEm) { doc.text(text, x, y, { lineBreak: false }); return; }   // not an embedded TrueType face: plain text
+    var run = fk.layout(text), k = size / fk.unitsPerEm, base = y + ef.ascender / 1000 * size, pen = 0;
+    run.glyphs.forEach(function (g, i) {
+      var p = run.positions[i], d = g.path && g.path.commands && g.path.commands.length ? g.path.toSVG() : '';
+      if (d) doc.save().translate(x + (pen + p.xOffset) * k, base - p.yOffset * k).scale(k, -k).path(d).fill().restore();
+      pen += p.xAdvance;
+    });
+    doc.save().fillOpacity(0); doc.text(text, x, y, { lineBreak: false, features: { ccmp: false } }); doc.restore();
+  }
+
 
   // options: { profile, margins:{l,r,t,b}, defaultRowPt, fonts:{resolve(name,bold,italic,text)->path|stdName}, sheet:'Output', formatNumber(fmt,val)->text }
   function concatBytes(chunks) {                                  // Node Buffer.concat does not exist in a plain browser page; pdfkit chunks are Uint8Array-compatible in both
@@ -107,7 +144,8 @@
       var text = c.t === 'n' ? fmtNum((st && st.numFmt) || c.z || 'General', c.v) : c.t === 'b' ? (c.v ? 'TRUE' : 'FALSE') : String(c.v);
       var fnt = (st && st.font) || {}, size = fnt.size || 10, fpath = fonts.resolve(fnt.name || 'Arial', !!fnt.bold, !!fnt.italic, 'A');   // vertical metrics from the Latin font
       function fontFor(run) { return fonts.resolve(fnt.name || 'Arial', !!fnt.bold, !!fnt.italic, run.lao ? 'ກ' : run.th ? 'ก' : 'A'); }
-      function measure(str) { var w = 0; runsOf(str).forEach(function (r) { doc.font(fontFor(r)).fontSize(size); w += doc.widthOfString(r.t); }); return w; }
+      function useFont(run) { doc.font(fontFor(run)).fontSize(size); if (run.th || run.lao) amPrime(doc); }
+      function measure(str) { var w = 0; runsOf(str).forEach(function (r) { useFont(r); w += doc.widthOfString(r.t); }); return w; }
       doc.font(fpath).fontSize(size); var ascent = doc._font.ascender / 1000 * size, descent = -doc._font.descender / 1000 * size, lh = opts.lineHeightFactor ? size * opts.lineHeightFactor : (ascent + descent + (doc._font.lineGap || 0) / 1000 * size);
       var al = st && st.alignment || {}, h = (al.horizontal && al.horizontal !== 'general') ? al.horizontal : (c.t === 'n' ? 'right' : 'left'), v = al.vertical || 'bottom', wrap = !!al.wrapText;
       var inner = { x0: b.x0 + 2, x1: b.x1 - 2 }, w = inner.x1 - inner.x0;
@@ -121,7 +159,7 @@
         var tw = measure(ln), x = h === 'right' ? inner.x1 - tw : (h === 'center' || h === 'centerContinuous') ? b.x0 + ((b.x1 - b.x0) - tw) / 2 : inner.x0 + (al.indent ? al.indent * 9 * 0.75 : 0);
         var fc = fnt.color && argb(fnt.color); doc.fillColor(fc || '#000000');
         var ty = top + i * lh + (lh - (ascent + descent)) / 2, tx = x;
-        runsOf(ln).forEach(function (r) { doc.font(fontFor(r)).fontSize(size); doc.text(r.t, tx, ty, { lineBreak: false }); tx += doc.widthOfString(r.t); });
+        runsOf(ln).forEach(function (r) { useFont(r); if (r.am) amDraw(doc, r.t, tx, ty); else doc.text(r.t, tx, ty, { lineBreak: false }); tx += doc.widthOfString(r.t); });
       });
       doc.restore();
     });
@@ -129,6 +167,6 @@
     return done.then(function (buf) { return { pdf: buf, page: [pageW, pageH], range: { rows: maxR + 1, cols: maxC + 1 } }; });
   }
 
-  var API = { renderSheet: renderSheet, PROFILES: PROFILES };
+  var API = { renderSheet: renderSheet, PROFILES: PROFILES, runsOf: runsOf };
   if (typeof module !== 'undefined' && module.exports) module.exports = API; else global.NinjaPdf = API;
 })(typeof self !== 'undefined' ? self : this);

@@ -6,7 +6,7 @@ const fs=require('fs'),path=require('path'),http=require('http'),cp=require('chi
 const { chromium } = require(os.homedir()+'/bim-ootb/tests/node_modules/playwright');
 const E=require(process.env.EXCELJS||os.homedir()+'/Projects/ninja-template-data/nm/node_modules/exceljs');
 const D=require('/home/red1/bim-compiler/node_modules/better-sqlite3');
-const ROOT=path.resolve(process.argv[2]), TPL=process.argv[3]||path.join(ROOT,'erp/ninja_tb_sample.xlsx'), DBREL=process.env.DB||'erp/ad_seed.db';
+const ROOT=path.resolve(process.argv[2]), TPL=process.argv[3]||path.join(ROOT,'erp/overlay/ninja/samples/ninja_tb_sample.xlsx'), DBREL=process.env.DB||'erp/ad_seed.db';
 const FROM=(process.env.FROM||'2003-01-01').slice(0,10), TO=(process.env.TO||'2003-12-31').slice(0,10);
 const MIME={'.html':'text/html','.js':'text/javascript','.wasm':'application/wasm','.ttf':'font/ttf','.json':'application/json','.xlsx':'application/octet-stream','.db':'application/octet-stream'};
 const srv=http.createServer((q,r)=>{ const p=decodeURIComponent(q.url.split('?')[0]); if(p==='/probe.html'){ r.writeHead(200,{'Content-Type':'text/html'}); return r.end('<!doctype html><meta charset=utf-8><body>probe'); }
@@ -18,9 +18,9 @@ const srv=http.createServer((q,r)=>{ const p=decodeURIComponent(q.url.split('?')
    const ld=s=>new Promise((ok,no)=>{const e=document.createElement('script');e.src=s;e.onload=ok;e.onerror=()=>no(new Error(s));document.head.appendChild(e);});
    await ld(base+'erp/lib/sql-wasm-fts5.js'); const SQL=await initSqlJs({locateFile:()=>base+'erp/lib/sql-wasm-fts5.wasm'});
    const db=new SQL.Database(new Uint8Array(await (await fetch(base+dbrel)).arrayBuffer()));
-   await ld(base+'erp/xlsx.mini.min.js'); await ld(base+'erp/ninja_report.js');
+   await ld(base+'erp/xlsx.mini.min.js'); await ld(base+'erp/overlay/ninja/ninja_report.js');   // bim-ootb layout since SHEET_FRONT_DOOR.md §19: engine in erp/overlay/ninja/, PDFKit + fonts in common/, ExcelJS viewer/lib
    const tpl=Uint8Array.from(atob(tplB64),c=>c.charCodeAt(0));
-   const t0=performance.now(); const out=await NinjaReport.run({db,template:tpl,from,to,base:base+'erp/',XLSX:window.XLSX});
+   const t0=performance.now(); const out=await NinjaReport.run({db,template:tpl,from,to,base:base+'erp/overlay/ninja/',paths:{exceljs:base+'viewer/lib/exceljs.min.js',pdfkit:base+'common/lib/pdfkit.standalone.js',fonts:base+'common/fonts/',bigdecimal:base+'erp/bigdecimal.js'},XLSX:window.XLSX});
    const b64=u=>{let s='';for(let i=0;i<u.length;i+=32768)s+=String.fromCharCode.apply(null,u.subarray(i,i+32768));return btoa(s);};
    return {facts:out.facts,xlsx:b64(out.xlsx),pdf:b64(out.pdf),ms:Math.round(performance.now()-t0)};
  },{base,dbrel:DBREL,tplB64,from:FROM,to:TO}).catch(e=>({error:String(e)}));

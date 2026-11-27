@@ -45,7 +45,7 @@ chk S_edit PASS node W46_ShowcaseEdit.js $D_SHOW
 # [R] recorded-answer replay of the customer MOES workbooks (private, only when present): addresses + Output cells coverage
 for f in MOES_sofp MOES_cashflow; do [ -f $L/legacy/xlsx/$f.xlsx ] && chk R_replay_$f PASS node W47_Replay.js $L/legacy/xlsx/$f.xlsx; done
 # [W] wiring in the pill host (real ERP page, headless): needs a bim-ootb worktree carrying erp/ninja_report.js + ninja_preflight.js
-[ -n "$ERP_ROOT" ] && [ -f "$ERP_ROOT/erp/ninja_preflight.js" ] && chk W_pill_preflight PASS node W48_PillPreflight.js
+[ -n "$ERP_ROOT" ] && [ -f "$ERP_ROOT/erp/overlay/ninja/ninja_preflight.js" ] && chk W_pill_preflight PASS node W48_PillPreflight.js
 [ -n "$NT_PGPASS" ] && [ -n "$SLOWGUARD" ] && chk G_slowguard PASS node W49_SlowGuard.js $OUT      # [G] slow-statement guard on the local Laos copy (drops+restores an index; opt-in SLOWGUARD=1 NT_PGPASS=..)
 unset SAME_FONT_AS_SPIRE
 # [T] public Thai trial-balance demo (TB-DEMO): every painted number vs an independent SQL aggregate, totals ranges cover the grown list, debits = credits

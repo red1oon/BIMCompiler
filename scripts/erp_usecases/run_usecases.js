@@ -7,12 +7,12 @@
 // Verdict INCONCLUSIVE (never PASS) when no sale completed or the baseline was empty. usage: node run_usecases.js <bim-ootb root> [K=3]   env NEG=1 (baseline perturbed -> RESET must FAIL)
 const fs = require('fs'), path = require('path'); const H = require('./harness'); const UC = [require('./uc1_pos_sale')];
 const root = path.resolve(process.argv[2]), K = Number(process.argv[3] || 3), Y = new Date().getFullYear();
-const tpl = (f) => fs.readFileSync(path.join(root, 'erp', f)).toString('base64');
+const tpl = (f) => fs.readFileSync(path.join(root, 'erp/overlay/ninja/samples', f)).toString('base64');   // bim-ootb overlay layout (SHEET_FRONT_DOOR.md §19)
 async function reports(h) {
   return h.pg.evaluate(async ({ tb, reg, y }) => {
     const ld = (s) => new Promise((ok, no) => { const e = document.createElement('script'); e.src = s; e.onload = ok; e.onerror = no; document.head.appendChild(e); });
-    if (!window.NinjaReport) await ld('ninja_report.js'); if (!window.XLSX) await ld('xlsx.mini.min.js');
-    const run = async (b64, from, to) => NinjaReport.run({ db: window.__idmpDb, template: Uint8Array.from(atob(b64), c => c.charCodeAt(0)), from, to, base: '', XLSX: window.XLSX, withDb: fn => window.__crud.withTipDb(fn) });
+    const P = window.NinjaPill.__report; if (!window.NinjaReport) await ld(P.base + 'ninja_report.js'); if (!window.XLSX) await ld('xlsx.mini.min.js');
+    const run = async (b64, from, to) => NinjaReport.run({ db: window.__idmpDb, template: Uint8Array.from(atob(b64), c => c.charCodeAt(0)), from, to, base: P.base, paths: P.paths, XLSX: window.XLSX, pdf: false, withDb: fn => window.__crud.withTipQuery(() => fn(window.__idmpDb)) });
     const rd = (m, cols) => { const ws = m.Sheets.Output, rows = []; for (let r = 6; r < 5000; r++) { const a = ws['A' + r]; if (!a || a.v === '' || a.v == null) break; rows.push(cols.map(c => (ws[c + r] || {}).v)); } return rows; };
     const T = await run(tb, '2003-01-01', y + '-12-31'), G = await run(reg, '2002-01-01', y + '-12-31');
     const trows = rd(T.model, ['A', 'B', 'C', 'D', 'E']), grows = rd(G.model, ['A', 'B', 'C', 'D']);
