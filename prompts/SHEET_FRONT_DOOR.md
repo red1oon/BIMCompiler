@@ -1443,3 +1443,27 @@ Every existing page witness judges ONE page from a fixture the witness supplies;
 - **J4 messages are words:** a non-PDF given to the PDF page and a non-workbook given to the other two are refused in a sentence, not a stack trace.
 - **C cost:** bytes on the wire and ms to ready per page, at first visit (from the CDP network log). Stated, not judged.
 Denominator: 3 pages x the claims above; a claim whose control was not found prints FAIL with "not found", never PASS.
+
+### 16.1 First run on the LIVE site (before any fix) and the fixes decided (2026-11-28)
+`USE_URL=https://red1oon.github.io/bim-ootb/ node erp/tests/witness_killer_usability.js`: **the jobs work end to end at both widths** (J1 read → edit bites →
+consistent edits add up → both downloads; J2 the row → the .xlsx recognised, D10's story 2 values; J3 refused in words → the sample FILED, Open in the ERP; J4;
+0 page errors). Cost at first visit: PDF 238 KB / 1.6 s, Sheet history 98 KB / 1.2 s, File it **11.3 MB / 2.9 s** (on this machine's line). Findings:
+1. **N1:** PDF and Sheet history offer nothing to a visitor without a file (File it has its sample).
+2. **N3:** on the phone the row's links are 20-21 px high (under 24 x 24) on all three pages; no page scrolls sideways.
+3. **J2-no-phantom (added after the first run showed "2 cells have changed"):** the .xlsx the PDF page hands over, opened on Sheet history straight away, lists
+   `Report!D28: 40393.44 → =SUM(D6:D26)` and `F28` as changes nobody made. Cause (`pdf/index.html` `download()`): the export takes each total's formula from the
+   LATEST re-read of the PDF (`report_reader.js:149` sets `f` when the column adds up), while the history inside the same file records the user's typed total
+   with `f: null` (`pdf_write.js` `record`). Two owners of one cell's state. The other direction exists too: a total left alone while a row changes keeps `f` in the
+   history and loses it in the export.
+4. **J3:** File it given a workbook without marked cells answers "this workbook has no _door_tags sheet (no template to read)": true, but in the code's words, and
+   it does not say what the user can do (marking one's own layout, S7, is not built).
+
+**Fixes (owner delegated "focus on its usability"):**
+- F1 PDF page: a **Try a sample report** button that opens the page's own proof file (`pdf/corpus/trial_balance_th.pdf`, already served).
+- F2 Sheet history: a **Try a sample workbook** button: a small workbook built in the page with three stamps by two names (so steps, a cell's story and
+  rewind show at once); nothing is uploaded, nothing new is loaded (XLSX + the page's own stamp path).
+- F3 the row: each link padded to at least 24 px high.
+- F4 **one owner:** when the file carries a history, the .xlsx export writes each cell's formula AS THE HISTORY HOLDS IT (the history is the record of what was
+  done; a typed total is a number, an untouched total stays a SUM). Claim J2-no-phantom: 0 listed changes on arrival.
+- F5 File it: on opening a workbook without marked cells, say it in plain words at once (what is missing, that marking one's own layout is not built yet, and
+  to try the sample). The engine's own verdict text is not changed (the Excel/WPS menus share it).
