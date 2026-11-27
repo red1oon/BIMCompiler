@@ -97,6 +97,14 @@ async function swipeDown(beatId, id) {
   await page.mouse.up(); await page.waitForTimeout(350); await shot(beatId, 14);
 }
 
+// 2026-11-27: a drawer row that opens its own prompt now closes the drawer by itself (§SHEET_CLOSE … via=row-prompt) — a swipe is only filmed if the drawer is STILL open
+// (the evidence rule of the beat is unchanged: its own § line; the step that was redundant is simply not done)
+async function swipeIfOpen(beatId, id) {
+  const open = await page.evaluate(id => { const d = document.getElementById(id); return !!(d && d.offsetWidth && getComputedStyle(d).display !== 'none' && getComputedStyle(d).visibility !== 'hidden'); }, id);
+  say(`  [drawer] ${id} still_open_after_row=${open}${open ? ' -> swipe it away' : ' (closed by the row itself, nothing to swipe)'}`);
+  if (open) await swipeDown(beatId, id);
+}
+
 // a real finger tap on the element's centre via the browser's own mouse pipeline (pointerdown → pointerup → click), only if that
 // point really hits the element (or a child) — what a thumb does; used where the viewer listens for click (matrix cells) or for
 // a long-press (clash row → snag). hold_ms > 0 = long press.
@@ -174,8 +182,8 @@ async function snag(beatId) {
       // Walk: Navigate → Walk row → SET (the real prompt) → X-Ray switches itself on
       await beat('walk_start', /^§WALK_XRAY_AUTO on/, async () => {
         await tapSel('walk_start', '#pill-navigate', 400); await tapRow('walk_start', 'navigate', 'Walk'); await shot('walk_start', 12);
-        // the Walk prompt opens UNDER the still-open Navigate drawer (defect logged in MOBILE_PERF §FILM-M1) — a user swipes the drawer away first
-        await swipeDown('walk_start', 'navigate-drawer-panel');
+        // rc1: the Walk prompt opened UNDER the still-open Navigate drawer (a swipe was needed); since 2026-11-27 the row closes the drawer itself (§SHEET_CLOSE via=row-prompt)
+        await swipeIfOpen('walk_start', 'navigate-drawer-panel');
         await tapSel('walk_start', '#walk-anchor-prompt button', 900); await shot('walk_start', 45);
       });
       // steps: a phone counts them from the accelerometer; the emulator has none, so each step is injected (A.advanceWalkStep) — caption says so
@@ -203,7 +211,7 @@ async function snag(beatId) {
         const l = '§M1_FAB pills_shown=' + n; cons.push(l); say(l); });
       await beat('b_walk', /^§WALK_XRAY_AUTO on/, async () => {
         await tapSel('b_walk', '#pill-navigate', 400); await tapRow('b_walk', 'navigate', 'Walk'); await shot('b_walk', 8);
-        await swipeDown('b_walk', 'navigate-drawer-panel'); await tapSel('b_walk', '#walk-anchor-prompt button', 900); await shot('b_walk', 30);
+        await swipeIfOpen('b_walk', 'navigate-drawer-panel'); await tapSel('b_walk', '#walk-anchor-prompt button', 900); await shot('b_walk', 30);
         for (let k = 1; k <= 4; k++) { await page.evaluate(() => { APP.walkStepCount = (APP.walkStepCount || 0) + 1; APP.advanceWalkStep(); }); await page.waitForTimeout(150); await shot('b_walk', 7); }
       });
       await beat('b_snag', /§ISSUE_SAVED/, async () => snag('b_snag'));
@@ -291,7 +299,7 @@ async function snag(beatId) {
       for (let w = 0; w < 40 && !(await page.evaluate(() => !!document.getElementById('share-copy'))); w++) await page.waitForTimeout(250);
       await touchAt('clash_share', '#share-copy', 0, 900); await shot('clash_share', 40);
       await page.evaluate(() => { const b = [...document.querySelectorAll('div > button')].find(x => /^OK$/.test((x.textContent || '').trim()) && x.offsetWidth); if (b) b.setAttribute('data-m1ok', '1'); });
-      await touchAt('clash_share', '[data-m1ok]', 0, 900); await shot('clash_share', 45);   // back on the model, the clash saved to the Issue Log
+      await touchAt('clash_share', '[data-m1ok]', 0, 900); await shot('clash_saved', 45);   // back on the model, the clash saved to the Issue Log
       for (let w = 0; w < 40 && !cons.some(t => /^§CLASH_SNAG_SAVED /.test(t)); w++) await page.waitForTimeout(250);
       const saved = cons.filter(t => /^§CLASH_SNAG_SAVED /.test(t)).pop() || '';
       const db = await page.evaluate(async () => { try { const d = await APP._openIssuesDB(); const rows = await new Promise((res, rej) => { const q = d.transaction('issues').objectStore('issues').getAll(); q.onsuccess = () => res(q.result); q.onerror = rej; }); d.close();
@@ -382,7 +390,7 @@ async function snag(beatId) {
     await beat('s_walk', /^§WALK_TRACE /, async () => {
       await tapSel('s_walk', '#mobile-trigger', 400); await shot('s_walk', 12);
       await tapSel('s_walk', '#pill-navigate', 400); await tapRow('s_walk', 'navigate', 'Walk'); await shot('s_walk', 12);
-      await swipeDown('s_walk', 'navigate-drawer-panel');   // the Walk prompt opens under the Navigate drawer (FILM-M1 finding 1): a user swipes it away first
+      await swipeIfOpen('s_walk', 'navigate-drawer-panel');   // the Walk prompt opens under the Navigate drawer (FILM-M1 finding 1): a user swipes it away first
       await tapSel('s_walk', '#walk-anchor-prompt button', 900); await shot('s_walk', 30);
       for (let k = 1; k <= 12; k++) { await page.evaluate(k => { if (k === 4 || k === 9) APP.camera.rotateY(40 * Math.PI / 180);   // STEPS INJECTED (A.advanceWalkStep): the emulator has no accelerometer
         APP.walkStepCount = (APP.walkStepCount || 0) + 1; APP.advanceWalkStep(); }, k); await page.waitForTimeout(120); await shot('s_walk', 7); }

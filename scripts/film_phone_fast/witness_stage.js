@@ -5,8 +5,14 @@
 //   (d) bezel pixels are the bezel colour, background is the plain background, and nothing of the recording leaks outside (solid-magenta control)
 //   (e) a manifest `tap` ({x,y} or [x,y], recording pixels) draws ONE ring at the mapped point; no `tap` draws nothing; the rest of the frame is unchanged
 //   (f) frame=trailer still renders the rc1 device: screenshot sha256 equals the UNMODIFIED rc1 stage.html for the same descriptors
+//   (i) rc2 segment kinds (needs <work>/stage/ from a FULL render, i.e. stage/timeline.json + the film frames):
+//       S interleave — for sampled film frames of the two-screen `timed` segment, the picture really shows, in the phone window and in the HQ window, the latest frame of THAT screen
+//       at the event's time t (compared against the recorded source PNGs, pixel mean-abs-diff, on the final film frame); event times never go backwards; no frame holds > 2 s (idle waits are cut).
+//       RED: the same samples judged against the order-reversed expectation must be DETECTED (fail), and the reversed event list must fail the monotonic check.
+//       play filter — every `play` frame is a beat the plan asked for, ok in its manifest, held ≤ ceil(hold×scale) (≤ maxHold); RED: a forbidden frame injected into the list must be caught.
+//       morph between two layouts that both have a desktop: the desktop and the phone really move (u=0 = from-layout rects, u=1 = target rects).
 //   RED control: a screen forced to 456:800 must FAIL (a) and (b), or the verdict is INCONCLUSIVE (the witness could not report a failure).
-// Run: node witness_stage.js <work> [<old_stage.html from origin/film/m1-clash-beat>]   (work holds A/ B/ HQ/ opener/ from the rc1 recording)
+// Run: node witness_stage.js <work> [<old_stage.html from origin/film/m1-clash-beat>]   (work holds A/ B/ C/ HQ/ S/ stage/ from the rc2 recording; (f) needs opener/ — here or env OPENER_DIR=<rc1 work>/opener)
 'use strict';
 const os = require('os'), fs = require('fs'), path = require('path'), crypto = require('crypto');
 const { chromium } = require(os.homedir() + '/bim-ootb/tests/node_modules/playwright');
@@ -128,8 +134,9 @@ const judge = (tag, ok, detail) => { judged++; if (!ok) fails++; say(`§WIT ${ta
 
   // ---- (f) trailer parity vs the UNMODIFIED rc1 stage.html ----
   let fJudged = 0;
-  if (OLD && fs.existsSync(OLD) && fs.existsSync(path.join(W, 'opener/boxes.json'))) {
-    const box = J('opener/boxes.json').phone, intro = fs.readdirSync(path.join(W, 'opener/intro')).filter(f => f.endsWith('.png')).sort(), bg = url('opener/intro/' + intro[intro.length - 1]), bgMid = url('opener/intro/' + intro[40]);
+  const OPD = process.env.OPENER_DIR || path.join(W, 'opener');
+  if (OLD && fs.existsSync(OLD) && fs.existsSync(path.join(OPD, 'boxes.json'))) {
+    const box = JSON.parse(fs.readFileSync(path.join(OPD, 'boxes.json'), 'utf8')).phone, intro = fs.readdirSync(path.join(OPD, 'intro')).filter(f => f.endsWith('.png')).sort(), bg = 'file://' + path.join(OPD, 'intro', intro[intro.length - 1]), bgMid = 'file://' + path.join(OPD, 'intro', intro[40]);
     const L = { x: 60, y: 190, w: 392, h: 802 }, R = { x: 1468, y: 190, w: 392, h: 802 }, Dk = { x: 520, y: 300, w: 880, h: 495 };
     const ds = [{ bg: bgMid }, { bg, dark: .55, phone: { src: url(fA(iTap >= 0 ? iTap : 0)), r: box, tap: A.frames[iTap >= 0 ? iTap : 0].tap }, cap: 'Ready to touch at once.', sub: 'x', capBox: { x: 90, y: 330, w: 560, subDy: 150 }, capAlpha: 1 },
       { bg, dark: 1, phone: { src: url(fA(5)), r: L }, desk: { src: url(fHQ), r: Dk }, phoneB: { src: url(fB(3)), r: R }, labels: [{ x: L.x, y: 130, w: L.w, text: 'Site A · Duplex', a: 1 }, { x: Dk.x, y: 240, w: Dk.w, text: 'HQ · desktop', a: 1 }], cap: 'HQ opens the same view.', sub: 'y', capBox: { x: 520, y: 850, w: 880, subDy: 66 }, capAlpha: 1 }];
@@ -139,12 +146,76 @@ const judge = (tag, ok, detail) => { judged++; if (!ok) fails++; say(`§WIT ${ta
       const hNew = crypto.createHash('sha256').update(await shot({ ...d0, frame: 'trailer' })).digest('hex');
       judge(`(f) trailer parity sample ${i}`, hOld === hNew, `old=${hOld.slice(0, 16)} new=${hNew.slice(0, 16)}`); fJudged++; }
   } else say('§WIT (f) SKIPPED no old stage.html / opener (verdict will be INCONCLUSIVE)');
+
+  // ---- (i) rc2 segment kinds: needs a full render of this work dir (stage/timeline.json + frames) ----
+  const TLF = path.join(W, 'stage/timeline.json'), PUF = path.join(W, 'stage/plan_used.json'); let iJudged = 0, redI = [];
+  if (fs.existsSync(TLF) && fs.existsSync(PUF) && fs.existsSync(path.join(W, 'S/phone/manifest.json'))) {
+    const TL = J('stage/timeline.json'), PU = J('stage/plan_used.json'), SP = J('S/phone/manifest.json'), SH = J('S/hq/manifest.json');
+    const filmPng = f => path.join(W, 'stage', String(f).padStart(5, '0') + '.png');
+    // ---- S interleave ----
+    const ev = TL.filter(r => r.seg && r.phase === 'event'); const evOk = ev.length > 0 && fs.existsSync(filmPng(ev[0].f));
+    judge('(i) S timed segment present in timeline (population not empty)', evOk, `event_frames=${ev.length}`);
+    if (evOk) {
+      const mono = rows => rows.every((r, i) => !i || r.t >= rows[i - 1].t);
+      judge('(i) S event times never go backwards', mono(ev), `rows=${ev.length} t_first=${ev[0].t} t_last=${ev[ev.length - 1].t}`);
+      const rev = ev.slice().reverse(); const revDetected = !mono(rev); redI.push(revDetected);
+      say(`§WIT (i) RED order reversed: monotonic check ${revDetected ? 'FAILS as required' : 'PASSED (witness blind!)'}`);
+      // independent expectation from the manifests: latest frame of each screen with t <= T, among the beats that appear in this segment
+      const beatsIn = new Set(ev.map(r => r.beat)), mans = { phone: SP, hq: SH };
+      const expectAt = (scr, T) => { const m = mans[scr]; let best = null; m.frames.forEach((f, i) => { const b = m.beats.find(b => i >= b.frames[0] && i < b.frames[1]); const incl = b && beatsIn.has(b.id);
+        if (incl && f.t <= T) best = 'S/' + scr + '/' + f.f; }); if (best) return best;
+        let before = null; m.frames.forEach(f => { if (f.t < ev[0].t) before = 'S/' + scr + '/' + f.f; }); return before || 'S/' + scr + '/' + m.frames[0].f; };
+      // sample: first/last event frame, and up to 3 frames per beat spread across the segment (both screens acted)
+      const byBeat = {}; ev.forEach(r => { (byBeat[r.beat] = byBeat[r.beat] || []).push(r); });
+      const samples = []; for (const b in byBeat) { const L = byBeat[b]; [0, Math.floor(L.length / 2), L.length - 1].forEach(i => { if (L[i] && !samples.includes(L[i])) samples.push(L[i]); }); }
+      const R2 = await page.evaluate(() => window.STAGE.layout('phone+desktop')), scrs = new Set(ev.map(r => r.scr));
+      judge('(i) both screens act in the S segment (not vacuous)', scrs.has('A') && scrs.has('hq'), `acting_screens=${[...scrs]}`);
+      let right = 0, redCaught = 0, redTried = 0; const T0 = ev[0].t, T1 = ev[ev.length - 1].t;
+      for (const r of samples) {
+        const eP = expectAt('phone', r.t), eH = expectAt('hq', r.t), buf = fs.readFileSync(filmPng(r.f));
+        const dataOk = r.phone === eP && r.hq === eH;
+        const mp = await mad(buf, b64(path.join(W, eP)), R2.phone, 50), mh = await mad(buf, b64(path.join(W, eH)), R2.desk, 30);
+        const ok = dataOk && mp.mad <= 6 && mh.mad <= 12; if (ok) right++;
+        judge(`(i) S frame ${r.f} t=${r.t} acts=${r.scr} beat=${r.beat}: phone=${path.basename(eP)} hq=${path.basename(eH)}`, ok, `timeline_files_match=${dataOk} phone_mad=${mp.mad.toFixed(2)} hq_mad=${mh.mad.toFixed(2)}`);
+        // RED: the same film frame against the expectation of the mirrored time (order reversed) must be rejected when that expectation differs
+        const Tm = T0 + T1 - r.t, rP = expectAt('phone', Tm), rH = expectAt('hq', Tm);
+        if (rP !== eP || rH !== eH) { redTried++; const xp = await mad(buf, b64(path.join(W, rP)), R2.phone, 50), xh = await mad(buf, b64(path.join(W, rH)), R2.desk, 30);
+          const wouldPass = rP === r.phone && rH === r.hq && xp.mad <= 6 && xh.mad <= 12; if (!wouldPass) redCaught++; } }
+      const redOk = redTried > 0 && redCaught === redTried; redI.push(redOk);
+      say(`§WIT (i) RED swapped order: ${redCaught}/${redTried} mirrored-time expectations rejected ${redOk ? '(detected as required)' : '(NOT DETECTED, witness blind!)'}`);
+      judge('(i) S interleave sampled frames show the right screen at t', right === samples.length && samples.length >= 6, `right=${right}/${samples.length}`);
+      // idle gaps cut: no frame held > 2 s, and the film shows far less than the recording's wall clock
+      let run = 1, maxRun = 1; for (let i = 1; i < ev.length; i++) { run = (ev[i].phone === ev[i - 1].phone && ev[i].hq === ev[i - 1].hq) ? run + 1 : 1; maxRun = Math.max(maxRun, run); }
+      judge('(i) S: no waiting shown (longest identical run <= 60 film frames, film time < recorded time)', maxRun <= 60 && ev.length / 30 < (T1 - T0) / 1000, `longest_run=${maxRun} film_s=${(ev.length / 30).toFixed(2)} recorded_s=${((T1 - T0) / 1000).toFixed(1)}`);
+    }
+    // ---- play filter (single-screen recordings): beats asked for, ok, hold <= ceil(hold*scale) <= maxHold ----
+    const checkPlay = (rows, P, man) => { const want = new Set(P.beats), ok = new Set(man.beats.filter(b => b.ok).map(b => b.id)), problems = [];
+      const cnt = {}; rows.forEach(r => { if (r.beat !== 'ready' || !want.has('ready')) { if (!want.has(r.beat)) problems.push('forbidden beat ' + r.beat); } if (r.beat !== 'ready' && !ok.has(r.beat)) problems.push('beat not ok ' + r.beat); cnt[r.file] = (cnt[r.file] || 0) + 1; });
+      const meta = {}; rows.forEach(r => { if (!(r.file in meta)) meta[r.file] = r; });
+      for (const f in cnt) { const fr = man.frames.find(x => P.src + '/' + x.f === f); if (!fr) { problems.push('unknown frame ' + f); continue; }
+        const H = P.hold || {}, lab = meta[f].label || fr.beat, rb = meta[f].beat, sc = H[lab] != null ? H[lab] : H[rb] != null ? H[rb] : H.default != null ? H.default : 1;
+        let max = Math.max(1, Math.ceil(fr.hold * sc - 1e-9)); if (P.maxHold) max = Math.min(max, P.maxHold); if (cnt[f] > max) problems.push(`hold ${f} ${cnt[f]}>${max}`); }
+      return problems; };
+    for (const P of PU.segments.filter(p => p.kind === 'play')) {
+      const man = J(P.src + '/manifest.json'), rows = TL.filter(r => r.seg === P.id && r.src === P.src), pr = checkPlay(rows, P, man);
+      judge(`(i) play segment ${P.id} (${P.src}): only asked-for ok beats, holds scaled`, rows.length > 0 && pr.length === 0, `frames=${rows.length} beats=${[...new Set(rows.map(r => r.beat))]} problems=${pr.length ? pr.slice(0, 3).join(';') : 'none'}`);
+      const other = man.beats.find(b => !P.beats.includes(b.id)), fakeF = other && man.frames.find((f, i) => i >= other.frames[0] && i < other.frames[1]);
+      if (fakeF) { const bad = rows.concat([{ file: P.src + '/' + fakeF.f, beat: other.id }]), prb = checkPlay(bad, P, man); const caught = prb.length > 0; redI.push(caught);
+        say(`§WIT (i) RED forbidden frame (${other.id}) injected into ${P.id}: ${caught ? 'CAUGHT as required' : 'NOT CAUGHT (witness blind!)'}`); } }
+    // ---- morph between two layouts that both have a desktop ----
+    { const base = { frame: 'phone', layout: 'phone+desktop+phone', A: { src: url(fA(0)) }, hq: url(fHQ), B: { src: url(fB(0)) } }, from = await page.evaluate(() => window.STAGE.layout('phone+desktop')), to = await page.evaluate(() => window.STAGE.layout('phone+desktop+phone'));
+      for (const [u, ref, nm] of [[0, from, 'from'], [1, to, 'target']]) { await shot({ ...base, morph: { from: 'phone+desktop', u } }); const m = await dom(), a = m.phones.find(p => p.role === 'A').scr, w = m.wins[0].content;
+        const d = Math.max(Math.abs(a.x - ref.phone.x), Math.abs(a.w - ref.phone.w), Math.abs(w.x - ref.desk.x), Math.abs(w.w - ref.desk.w));
+        judge(`(i) morph phone+desktop -> phone+desktop+phone u=${u} equals the ${nm} layout`, d <= 0.6, `phone_x=${a.x.toFixed(1)} want=${ref.phone.x.toFixed(1)} desk_x=${w.x.toFixed(1)} want=${ref.desk.x.toFixed(1)} desk_w=${w.w.toFixed(1)} want=${ref.desk.w.toFixed(1)}`); }
+      await shot({ ...base, morph: { from: 'phone+desktop', u: 0.5 } }); const mm = await dom(), dx = mm.wins[0].content.x; judge('(i) morph u=0.5 desktop is between the two layouts', dx > Math.min(from.desk.x, to.desk.x) + 1 && dx < Math.max(from.desk.x, to.desk.x) - 1, `desk_x=${dx.toFixed(1)} between ${to.desk.x}..${from.desk.x}`); }
+    iJudged = 1;
+  } else say('§WIT (i) SKIPPED no stage/timeline.json + plan_used.json + S/ in the work dir (full render first) (verdict will be INCONCLUSIVE)');
   await browser.close();
   say(`§WIT page_errors=${perrs.length}${perrs.length ? ' ' + perrs.join('|') : ''}`);
   if (perrs.length) judge('(h) no page errors', false, perrs.join('|'));
-  const controlsOk = redA && redB && discr && fJudged > 0;
+  const controlsOk = redA && redB && discr && fJudged > 0 && iJudged > 0 && redI.length >= 3 && redI.every(Boolean);
   const verdict = judged === 0 || !controlsOk ? (fails ? 'FAIL' : 'INCONCLUSIVE') : fails ? 'FAIL' : 'PASS';
-  say(`§WITNESS_STAGE ${verdict} judged=${judged} fails=${fails} red_a_fails=${redA} red_b_fails=${redB} discriminating=${discr} trailer_samples=${fJudged}`);
+  say(`§WITNESS_STAGE ${verdict} judged=${judged} fails=${fails} red_a_fails=${redA} red_b_fails=${redB} discriminating=${discr} trailer_samples=${fJudged} rc2_red_controls_detected=${redI.filter(Boolean).length}/${redI.length}`);
   fs.writeFileSync(path.join(W, 'witness_stage.log'), LOG.join('\n') + '\n');
   process.exit(verdict === 'PASS' ? 0 : 1);
 })().catch(e => { console.log('§WITNESS_STAGE INCONCLUSIVE judged=0 fails=0 fatal ' + e.stack); process.exit(2); });

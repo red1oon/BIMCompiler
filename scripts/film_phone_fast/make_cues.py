@@ -3,7 +3,9 @@
 # Run: python3 make_cues.py <work> <narration.tsv> > cues.tsv
 import json,sys
 w,src=sys.argv[1],sys.argv[2]; S=json.load(open(w+'/stage/segments.json')); fps=S['fps']
-at=dict(S['beatAt']); at['intro']=S['seg']['intro']+3; at['outro']=S['seg']['outro']+18   # intro: after the world appears; outro: as the line shows
+at=dict(S['beatAt'])
+for k,v in S['seg'].items(): at.setdefault(k,v)   # a row may also be keyed by a segment id (e.g. 'sites' = where that segment starts)
+at['intro']=S['seg']['intro']+3; at['outro']=S['seg']['outro']+18   # intro: after the world appears; outro: as the line shows
 rows=[l.rstrip('\n').split('\t') for l in open(src) if l.strip()]
 keep=[r for r in rows if r[1] in at]
 for r in rows:

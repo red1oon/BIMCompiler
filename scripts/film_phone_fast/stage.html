@@ -99,19 +99,24 @@ function renderPhone(d) {
   document.documentElement.style.background = BG; document.body.style.background = BG;
   document.getElementById('bg').style.display = 'none'; document.getElementById('dark').style.display = 'none';
   const name = d.layout || 'phone', L = LAYOUTS[name]; if (!L) throw new Error('unknown layout ' + name);
-  const R = layoutRects(name); let A = R.phone, u = 1;
-  if (d.morph) { const F = LAYOUTS[d.morph.from].A, T = L.A; u = clamp01(d.morph.u); const e = { x: lerp(F.x, T.x, u), y: lerp(F.y, T.y, u), s: lerp(F.s, T.s, u) }; A = rectOf(e); }
+  const R = layoutRects(name); let A = R.phone, Bn = R.phoneB, Dn = L.D ? Object.assign({}, L.D) : null, u = 1;
+  // morph {from: <layout name>, u}: a device present in BOTH layouts glides between its two places; a device only in the target fades in (after u=0.4)
+  const FL = d.morph ? LAYOUTS[d.morph.from] : null; if (d.morph && !FL) throw new Error('unknown morph.from ' + d.morph.from);
+  if (FL) { u = clamp01(d.morph.u); A = rectOf({ x: lerp(FL.A.x, L.A.x, u), y: lerp(FL.A.y, L.A.y, u), s: lerp(FL.A.s, L.A.s, u) });
+    if (L.D && FL.D) Dn = { x: lerp(FL.D.x, L.D.x, u), y: lerp(FL.D.y, L.D.y, u), w: lerp(FL.D.w, L.D.w, u) };
+    if (L.B && FL.B) Bn = rectOf({ x: lerp(FL.B.x, L.B.x, u), y: lerp(FL.B.y, L.B.y, u), s: lerp(FL.B.s, L.B.s, u) }); }
   if (d.rectOverride && d.rectOverride.phone) A = Object.assign({}, A, d.rectOverride.phone);   // witness RED control only
-  const sec = d.morph ? clamp01((u - 0.4) / 0.6) : 1, dev = d.dev == null ? 1 : d.dev;
+  const sec = FL ? clamp01((u - 0.4) / 0.6) : 1, dev = d.dev == null ? 1 : d.dev;
+  const aD = FL && FL.D ? 1 : sec, aB = FL && FL.B ? 1 : sec, W = Dn ? deskOf(Dn).win : null;
   let h = '';
-  if (L.D && d.hq) h += deskHTML(d.hq, L.D, sec * dev);
+  if (L.D && d.hq) h += deskHTML(d.hq, Dn, aD * dev);
   if (d.A) h += phoneHTML('A', d.A.src, A, d.A.tap, dev);
-  if (L.B && d.B) h += phoneHTML('B', d.B.src, R.phoneB, d.B.tap, sec * dev);
+  if (L.B && d.B) h += phoneHTML('B', d.B.src, Bn, d.B.tap, aB * dev);
   const lb = d.labels || {};
   const lab = (t, cx, y, a) => t ? `<div class="plbl" style="left:${cx - 250}px;top:${y}px;width:500px;opacity:${a}">${esc(t)}</div>` : '';
   if (lb.A) h += lab(lb.A, A.x + A.w / 2, A.y - BEZEL - 52, (d.labelA == null ? 1 : d.labelA) * dev);
-  if (L.D && lb.D) h += lab(lb.D, R.win.x + R.win.w / 2, R.win.y - 44, (d.labelA == null ? 1 : d.labelA) * dev);
-  if (L.B && lb.B) h += lab(lb.B, R.phoneB.x + R.phoneB.w / 2, R.phoneB.y - BEZEL - 52, (d.labelA == null ? 1 : d.labelA) * dev);
+  if (L.D && lb.D) h += lab(lb.D, W.x + W.w / 2, W.y - 44, (d.labelA == null ? 1 : d.labelA) * dev);
+  if (L.B && lb.B) h += lab(lb.B, Bn.x + Bn.w / 2, Bn.y - BEZEL - 52, (d.labelA == null ? 1 : d.labelA) * dev);
   for (const c of d.cards || []) h += `<div class="card" style="top:${c.y == null ? 400 : c.y}px;opacity:${c.a}"><div class="t">${esc(c.title)}</div>${c.sub ? `<div class="s">${esc(c.sub)}</div>` : ''}</div>`;
   if (d.cap && d.capAlpha > 0) { const b = d.capBox; h += `<div class="pcap" style="left:${b.x}px;top:${b.y}px;width:${b.w}px;opacity:${d.capAlpha};text-align:${b.align || 'left'}">${esc(d.cap)}</div>`;
     if (d.sub) h += `<div class="psub" style="left:${b.x}px;top:${b.y + (b.subDy || 140)}px;width:${b.w}px;opacity:${d.capAlpha};text-align:${b.align || 'left'}">${esc(d.sub)}</div>`; }
