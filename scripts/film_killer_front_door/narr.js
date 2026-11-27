@@ -13,6 +13,7 @@ exports.beats = [
   { id: 'b4', text: 'F: Now a copy with one digit changed. | M: It does not add up. And it says where.', says: [['changed.linesDiffer', '1', 'one digit'], ['bad.verdict', 'DOES_NOT_ADD_UP', 'does not add up']] },
   { id: 'b5a', text: 'M: Take it with you as a spreadsheet file. The totals are real formulas.', says: [['xlsx.d28f', 'SUM(D6:D26)', 'real formulas']] },
   { id: 'b5b', text: 'F: Switch the network off. | M: It still works.', says: [['offline.worked', 'true', 'still works']] },
-  { id: 'last', text: 'M: This is the way in. Your own file first. | M: Next: change a number and get the same PDF back. | M: Then file it into the books, when you choose. An ERP is available, free to use.', says: [] }
+  { id: 'last', text: 'M: This is the way in. Your own file first. | M: Next: change a number and get the same PDF back. | M: Then file it into the books, when you choose. An ERP is available, free to use.', says: [] },
+  { id: 'prior', hold: 5.5 }   // rc2: the final "Prior art / credentials" card, silent (the playbook's closing cards carry no voice); lines from out/credits.json (credits.js)
 ];
 exports.lang = 'en';

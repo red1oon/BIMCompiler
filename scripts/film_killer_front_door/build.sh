@@ -1,14 +1,15 @@
 #!/bin/bash
-# ⚠ DO NOT REMOVE — build film "PDF and Excel are killer apps" PART 1 (prompts/FILM_KILLER_FRONT_DOOR.md §3 beats 0-5, §4 cut A), English only (owner 2026-11-27), CPU only (CUDA hidden from the voice, Chrome --disable-gpu, headless, never the owner's display). No paid call: the
+# ⚠ DO NOT REMOVE — build film "PDF and Excel are killer apps" PART 1 (prompts/FILM_KILLER_FRONT_DOOR.md §3 beats 0-5, §4 cut A), English only (owner 2026-11-27); rc2 adds the final silent Prior art / credentials card (owner: "yes, on Film 1 too"), CPU only (CUDA hidden from the voice, Chrome --disable-gpu, headless, never the owner's display). No paid call: the
 # voice is the local Kokoro of the playbook. Nothing is uploaded anywhere. Modelled on scripts/film_cli_in_action/build.sh.
 # facts (the REAL page driven, its § lines + the witnesses' verdicts) -> guard voice -> cards -> guard cards -> measure the voice -> beat lengths -> the silent picture -> fit the voice -> two-pass loudnorm mux -> the key sounds mixed in -> numeric film check.
 # READ every log under $OD/; an exit code is not evidence. Usage: OOTB=<bim-ootb checkout (read only)> [OUTMP4=…] ./build.sh        (SKIP_FACTS=1 keeps $OD/facts.json and $OD/shots/)
 set -e; cd "$(dirname "$0")"
 OD=out; export OUTD=$OD; mkdir -p $OD/work/fm $OD/work/fit
-OUTMP4="${OUTMP4:-$HOME/Videos/PDF_and_Excel_are_killer_apps_PART1_EN_rc1.mp4}"; [ -e "$OUTMP4" ] && { echo "§REFUSED $OUTMP4 exists (never overwritten); set OUTMP4="; exit 5; }
+OUTMP4="${OUTMP4:-$HOME/Videos/PDF_and_Excel_are_killer_apps_PART1_EN_rc2.mp4}"; [ -e "$OUTMP4" ] && { echo "§REFUSED $OUTMP4 exists (never overwritten); set OUTMP4="; exit 5; }
 PY=~/.local/share/film_narration/venv/bin/python; FIT=../film_replication_engine/film6/fit6/fit_kokoro_v3_k.py; MUX=../film_replication_engine/film6/fit6/mux_two_pass.py; HEAD=../../prompts/film_narration_ass_head.txt
 export CUDA_VISIBLE_DEVICES=""; FTAG=en; FARG=1.15; KEYVOL="${KEYVOL:-0.8}"
 [ -n "$SKIP_FACTS" ] || env -u DBUS_SESSION_BUS_ADDRESS node facts.js > $OD/facts.log 2>&1 || { echo "§FACTS_FAIL see $OD/facts.log"; exit 3; }
+node credits.js > $OD/credits.log 2>&1 || { echo "§CREDITS_FAIL see $OD/credits.log"; exit 3; }
 node guard.js voice > $OD/guard_voice.log 2>&1 || { echo "§GUARD_FAIL see $OD/guard_voice.log"; exit 3; }
 rm -rf $OD/cards; node cards.js $OD/cards > $OD/cards.log 2>&1; grep -q TOO-TALL $OD/cards.log && { echo "§CARD_TOO_TALL see $OD/cards.log"; exit 3; }
 node guard.js cards > $OD/guard_cards.log 2>&1 || { echo "§GUARD_FAIL see $OD/guard_cards.log"; exit 3; }

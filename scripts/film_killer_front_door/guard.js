@@ -7,7 +7,8 @@ const F = JSON.parse(fs.readFileSync(path.join(__dirname, OD, 'facts.json'), 'ut
 const get = (p) => p.split('.').reduce((o, k) => (o == null ? undefined : o[k]), F);
 const toks = (s) => (String(s).match(/\d[\d,.]*\d|\d/g) || []).map(t => t.replace(/[.,]+$/, ''));
 const known = new Set(); (function walk(v) { if (v && typeof v === 'object') Object.keys(v).forEach(k => walk(v[k])); else toks(v).forEach(t => known.add(t)); })(F);
-['3.0'].forEach(t => known.add(t));   // static: "CC BY 3.0" of the key-sound credit (keys_eklee/license.txt)
+['3.0'].forEach(t => known.add(t));
+if (fs.existsSync(path.join(__dirname, OD, 'credits.json'))) toks(fs.readFileSync(path.join(__dirname, OD, 'credits.json'), 'utf8')).forEach(t => known.add(t));   // rc2: the numbers of the credit lines are those read from their sources (credits.js)   // static: "CC BY 3.0" of the key-sound credit (keys_eklee/license.txt)
 const unknown = (text) => toks(text).filter(t => !known.has(t));
 if (mode === 'voice') {
   N.beats.forEach(b => (b.says || []).forEach(([p, want, word]) => { n++; const got = get(p), ok = String(got) === String(want) && b.text.toLowerCase().indexOf(word) >= 0; if (!ok) bad++; console.log('§GUARD ' + (ok ? 'OK  ' : 'FAIL') + ' beat=' + b.id + ' ' + p + '=' + JSON.stringify(got) + ' expect=' + want + ' spoken="' + word + '"'); }));
