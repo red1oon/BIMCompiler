@@ -161,6 +161,90 @@ Each line is a pointer, not a claim that it is still open: other lanes have work
 **Open:** (a) CLOSED by the confirm run above; (b) the live comparison used its own fixtures (ids 1009900+), not the CAPEX test-data 2Pack projects (not loaded in `idempiere_bimdoc` nor in the twin seed); (c) Generate PO's currency conversion branch and the "Issue to Project" process were not compared live.
 **Instrument notes:** the oracle passes an ID parameter as `Integer` (the UI's AD_PInstance_Para is BigDecimal): scenarios give `type:'num'`; `cfg.rowsAsObjects` breaks multi-line `json_agg` (the driver uses `jsonb_agg`); each run completes real orders on the instance (stock, BP credit, document numbers): a repeat run on the same DB drifts (Oak stock negative, `M_InOut.Posted=E`, credit hold of BP 117) and needs the restore.
 
+## §ACCT-VIEWER (2026-11-28) — the Posted view reaches every accounting schema, as legacy's Account Viewer does (SPEC, written before the code; RESULT below it)
+
+**Owner (2026-11-28, verbatim):** "fix the posting view to show all 6 entries". **Gap:** `prompts/SHEET_FRONT_DOOR.md` §10.4 finding 7: an invoice posts 6 `Fact_Acct` rows over 2 accounting schemas; the Posted view shows the first schema's 3 and a note; the other 3 cannot be reached. Page line of that take: `§POSTED-FACTS table=C_Invoice rec=1300110 schema=101 lines=3 schemas=2 dr=153.5 cr=153.5 balanced=true`.
+
+**What legacy does (read from `~/idempiere-dev-setup/idempiere`, paths under `org.adempiere.ui.zk/WEB-INF/src/org/adempiere/webui/` unless said):**
+
+| # | Behaviour | Source |
+|---|---|---|
+| L1 | The Posted button, role with Show Accounting, record Posted = Y: opens the Account Viewer form with the tab's table id + record id. One handler for every window. | `adwindow/AbstractADWindowContent.java:3857`, `:3882-3897` |
+| L2 | The viewer's schema list = the client's schemas: the client's primary (`AD_ClientInfo.C_AcctSchema1_ID`) first, then every active schema of the client that has a GL and a Default row, by `C_AcctSchema_ID`. | `WAcctViewerData.java:177-178`; `org.adempiere.base/src/org/compiere/model/MAcctSchema.java:146-177` |
+| L3 | A GL Journal posts in one schema: for that table the list is the journal's own schema only. | `WAcctViewerData.java:200-211` |
+| L4 | The selector holds the schemas and NOTHING else: there is no "all schemas" entry. It opens on the FIRST. | `WAcctViewerData.java:217-224` (`fillAcctSchema`), `acct/WAcctViewer.java:634-639` |
+| L5 | Opened from a document: "Select Document" is ticked and the query runs at once. | `WAcctViewer.java:675-688` |
+| L6 | The query: `C_AcctSchema_ID` = the selected schema, `AD_Table_ID` + `Record_ID` = the document, posting type = the list's first entry, which is blank = every posting type; order `Fact_Acct_ID`. | `WAcctViewer.java:960-975`, `:651-652`; `WAcctViewerData.java:233`, `:375-396`, `:471-472` |
+| L7 | Debit and credit are summed: a total row closes the list. | `WAcctViewerData.java:492-493`; `org.adempiere.base/src/org/compiere/report/core/RModelData.java:326-342` |
+| L8 | Picking another schema re-queries NOTHING (it only rebuilds the sort lists); the user presses Refresh, which runs the query for the schema now selected. | `WAcctViewer.java:771-774`, `:857-934`, `:506-510` |
+
+So legacy never shows the 6 rows at once. It shows the first schema's 3, and the other 3 after the user picks the second schema and presses Refresh. The twin rule outranks the wording of the request: the page does what legacy does, and all 6 become reachable exactly as legacy makes them reachable.
+
+**Now (bim-ootb main `322d7259`, `erp/idempiere.html` `_factPostings`):** rows of `rows[0]`'s schema only; a note "N more schema(s) posted"; no selector; no total row; the schema shown is the lowest id that has rows, not the client's primary.
+
+**Ours (the generic layer, every posting table, no table named):**
+- `erp/accts_posted.js` gets the port of `WAcctViewerData`: `acctSchemas(q, clientId, tableName, recordId)` (L2, L3) and `factQuery(q, tableId, recordId, schemaId)` (L6, L7), and the lens gets the selector "Accounting Schema" (the dictionary's name of `C_AcctSchema_ID`) + Refresh (L4, L8) and the total row (L7).
+- `erp/idempiere.html` `_factPostings(ref, schemaId)` calls them; it opens on the first schema of the list (L4, L5). The "more schema(s) posted" note is deleted (legacy has none; the selector says it).
+- `§POSTED-FACTS` stays one line per query and stays truthful: `schema` = the schema shown, `lines` = rows shown, `schemas` = schemas of this record that hold rows, `dr`/`cr`/`balanced` of the rows shown; new: `selector=` the schema ids offered, in order; `of=` the record's rows over all schemas; `all=` per schema `id:rows:dr:cr`.
+
+**Claim (invariant x denominator):** for X of N posting document tables that hold `Fact_Acct` rows in the seed (N from `ad_seed.db`: tables with a `Posted` column, not a view, joined to `Fact_Acct`), on the real page with a real login, the Posted view of a record shows, schema by schema through the selector + Refresh, exactly the rows an independent SQL read of `Fact_Acct` gives for that table + record + schema (count, account, debit, credit, in `Fact_Acct_ID` order); the total row = the SQL sums; debit = credit per schema; the union over the selector = every row of the record.
+
+**Witness W-ACCT-VIEWER (`erp/tests/witness_acct_viewer.js`), cases:**
+- V1 SWEEP: the claim above, per table. A table whose window shows no Posted button for the record is INCONCLUSIVE for that table, never PASS.
+- V2 DEFAULT: the view opens on the client's primary schema (L4) with no second schema's row in it; the selector has no "all" entry; picking a schema WITHOUT Refresh changes no row (L8).
+- V3 ONE-SCHEMA: a GL Journal: the selector offers its schema only (L3); no row of another schema is shown.
+- V4 FILED: the invoice filed from the sheet (W-DOOR-ERP E2 `posting`): 3 + 3 = 6 of 6.
+- V5 NOT-POSTED: a posting table with no `Fact_Acct` row in the seed is listed as not judged (INCONCLUSIVE line), never PASS.
+- V6 NODE: `acctSchemas` / `factQuery` on the seed by node equal hand SQL (order of L2; L3).
+- Mutants (a crash is not a kill): first schema only (the old behaviour); a schema's rows shown twice; the view works for the invoice table only; the selector lists schemas by id (not primary first); Refresh re-reads the old schema.
+
+**Falsifiers:** a row of schema B under schema A; a row missing or doubled; the second schema unreachable; an "all" entry (legacy has none); a GL Journal offering 2 schemas; a table-name branch in the view code; `§POSTED-FACTS` numbers that are not the rows on screen.
+
+**Fixture note (seed fact, 2026-11-28):** `ad_seed.db` holds 600 `Fact_Acct` rows over 8 tables (C_AllocationHdr, C_BankStatement, C_Invoice, C_Payment, GL_Journal, M_InOut, M_MatchInv, M_Movement), but only C_Invoice records carry `Posted = 'Y'` (8 of them); the others carry `Posted = 'N'` beside their rows, and legacy's button on `N` offers to post, it does not open the viewer (`AbstractADWindowContent.java:3899-3903`). For those 7 tables the witness sets `Posted = 'Y'` on the one record it judges, in the page's memory only, and says so per case; `Fact_Acct` is never written by the witness.
+
+**Not in this slice (open, not accepted):** the viewer's other columns (organisation, product, partner, dates, period, posting type: `WAcctViewerData.java:504-600`), the query tab's other filters, sort/group, Re-Post, Export, Zoom.
+
+### §ACCT-VIEWER RESULT — 2026-11-28 (bim-ootb PR #3490, erp sw v1152; witness `erp/tests/witness_acct_viewer.js`, W-DOOR-ERP E2 extended)
+
+**The Posted view, now:** selector "Accounting Schema" (the client's schemas, primary first; a GL Journal: its own only; no "all" entry) + Refresh; it opens on the first schema; pick + Refresh shows another schema's rows in `Fact_Acct_ID` order; a total row sums debit and credit. The filed invoice: 3 entries as it opens, the other 3 after picking the second schema and Refresh = 6 of 6, never 6 at once (legacy L4, L8).
+
+**Corrections to the spec above, found by the build (the spec text is left as written):**
+1. **L9, missed in the table:** the viewer's query always carries the role's read access, client and organisation (`org.adempiere.base/src/org/compiere/report/core/RModelData.java:113-114`, `MRole.addAccessSQL`). The page's query had none, and the sweep showed why it matters: the seed holds a second tenant (client 13) whose 300 `Fact_Acct` rows sit under the SAME table + record ids as GardenWorld's for 7 of the 8 tables, so the old view of a GardenWorld bank statement listed 26 rows where 13 are its own. Fixed in the same port (`factQuery` access: client 0 / the client, org 0 / the role's orgs); mutant M11.
+2. **Fixture note:** the 8 `Posted = 'Y'` invoices belong to client 13, which has no `AD_ClientInfo` row and cannot be the denominator. N is taken over the login's tenant (GardenWorld, client 11): 8 tables, none of whose records carries `Posted = 'Y'`. Every swept record therefore uses the posted-flag fixture; the record posted by the page's own poster with no fixture is the filed invoice (V4, W-DOOR-ERP).
+3. **"No table named":** the view code names one table, `GL_Journal`, because legacy's rule L3 names it (`WAcctViewerData.java:202`).
+
+**Verdict lines (log read; merged tree):**
+```
+§ACCTV-DENOMINATOR posting tables in the dictionary=24 with Fact_Acct rows of GardenWorld (client 11) in the seed N=8 C_AllocationHdr(rows=17,records=2,schemas=2,postedY=0) C_BankStatement(rows=13,records=1,schemas=2,postedY=0) C_Invoice(rows=74,records=8,schemas=2,postedY=0) C_Payment(rows=8,records=2,schemas=2,postedY=0) GL_Journal(rows=8,records=2,schemas=2,postedY=0) M_InOut(rows=96,records=8,schemas=2,postedY=0) M_MatchInv(rows=76,records=18,schemas=2,postedY=0) M_Movement(rows=8,records=1,schemas=2,postedY=0)
+§ACCTV-V6 verdict=PASS judged=7 failed=0 threw=0
+§ACCTV-V5 verdict=INCONCLUSIVE judged=0 failed=0 threw=0 tables=16 (nothing to compare: not judged)
+§ACCTV-V2 verdict=PASS judged=3 failed=0 threw=0
+§ACCTV-V1 verdict=PASS judged=69 failed=0 threw=0 X=8 of N=8 C_AllocationHdr=PASS C_BankStatement=PASS C_Invoice=PASS C_Payment=PASS GL_Journal=PASS M_InOut=PASS M_MatchInv=PASS M_Movement=PASS
+§ACCTV-V3 verdict=PASS judged=2 failed=0 threw=0
+§ACCTV-VERDICT PASS judged=81 failed=0 cases=["V6","V2","V1","V3"] ["PASS","PASS","PASS","PASS"] sweep X=8 of N=8 (headless Chromium on the real idempiere.html, real login)
+§ACCTV-MUTANTS killed=11/11
+§DOORERP-VERDICT PASS judged=48 failed=0 cases=["E1","E2","E4","E6","E3","E5","E7","E8","E9","E10"] ["PASS","PASS","PASS","PASS","PASS","PASS","PASS","PASS","PASS","PASS"] (headless Chromium on the real file_it.html and idempiere.html; real Excel NOT run)
+  page: §POSTED-FACTS table=C_Invoice rec=1300110 schema=101 lines=3 schemas=2 dr=153.5 cr=153.5 balanced=true selector=101,200000 of=6 all=101:3:153.5:153.5,200000:3:130.48:130.48
+  page: §POSTED-FACTS table=C_Invoice rec=1300110 schema=200000 lines=3 schemas=2 dr=130.48 cr=130.48 balanced=true selector=101,200000 of=6 all=101:3:153.5:153.5,200000:3:130.48:130.48
+  §DOORERP-CHECK case=E2 key=posting-all OK rule="through the view's schema selector (101, 200000: pick, Refresh) every Fact_Acct row of the record is shown, each under its own schema, equal to the page DB: 6 of 6 entries; every schema that holds rows is offered"
+```
+- **X of N = 8 of 8** posting tables that hold `Fact_Acct` rows of the tenant; 16 more posting tables hold none in the seed and are listed, not judged (V5). The sweep judges ONE record per table (the fixture record), not every record.
+- **Mutants 11/11 KILLED, none crashed:** no selector (the old behaviour); Refresh reads the first schema again; a schema's rows twice; all schemas under one; invoice table only; another tenant's rows; total row of the first schema; a query on select without Refresh; a journal offering every schema; selector ordered by id; an inactive schema offered. The mutant children run their killing case on 2 tables (C_Invoice, M_InOut).
+- **W-DOOR-ERP assertion changed:** E2 `posting` no longer requires the text "more schema" (the note is deleted); new E2 `posting-all` (6 of 6 through the selector). Nothing else of it changed.
+- **Kept green, before / after:** POC-ACCTS-POSTED all pass (same § lines); `§DEPTH-CYCLE PASS pass=23 fail=0`; `§REPORT-POSTACTION PASS pass=4 fail=0`; W-MANIFEST-ROUNDTRIP PASS; `gen_manifest --check` PASS (64/64); W-CORE-PURE PASS; eslint 0 errors.
+- **Red on main before this change, same § lines after (not caused here, not fixed here):** `poc_posted_column_live` (its six acts true, fails on a page error: its own server serves `erp/` only, so `../common/comm/semver_strict.js` is a 404), `poc_critic_post_live` 11/17, `poc_critic_lensswap_live` (waits for `#pill-kanban`), `poc_preview_demo` (7 fails). W-CI-TIER `committed=DIFFERS` on this machine (the committed list against the local run cache; NOT-JUDGED on a runner).
+- **Lines:** `erp/accts_posted.js` +61 / -2, `erp/idempiere.html` +24 / -23. Deleted: the page's own first-schema fold in `_factPostings` (row filter, per-row account lookup, sums) and the "N more schema(s) posted" note. `gen_manifest --write` again proposed unrelated `uses` drift (2 modules); not taken.
+
+**Shipped and read back (2026-11-28):** bim-ootb #3490 merged as `2993df25` (checks fast-checks, e2e-tests, live-json-editor pass); Pages deploy run 46049349724 success; `erp/version.json` live = `{"version":"v1.98.1","build":"v1152","sha":"2993df25","pr":3490}`; live `idempiere.html` byte-equal to main, live `sw.js` and `accts_posted.js` are the deploy's minified copies (they carry `v1152` and the new selector). The witness on the LIVE site, one invoice (`ACCTV_BASE=https://red1oon.github.io/bim-ootb/ ACCTV_TABLES=C_Invoice ACCTV_ONLY=V1`):
+```
+  page: §POSTED-FACTS table=C_Invoice rec=100 schema=101 lines=3 schemas=2 dr=50.35 cr=50.35 balanced=true selector=101,200000 of=6 all=101:3:50.35:50.35,200000:3:42.8:42.8
+  page: §POSTED-FACTS table=C_Invoice rec=100 schema=200000 lines=3 schemas=2 dr=42.8 cr=42.8 balanced=true selector=101,200000 of=6 all=101:3:50.35:50.35,200000:3:42.8:42.8
+§ACCTV-TABLE table=C_Invoice record=100 window=167 seedPosted=N fixture=posted-flag verdict=PASS shown=6 of=6 schemas=101,200000
+§ACCTV-VERDICT PASS judged=9 failed=0 cases=["V1"] ["PASS"] sweep X=1 of N=1 (headless Chromium on the real idempiere.html, real login, deployed site https://red1oon.github.io/bim-ootb/)
+```
+
+**Still open (as in the spec, not accepted):** the viewer's other columns, the query tab's filters, sort / group, Re-Post, Export, Zoom; the button on a record with `Posted <> 'Y'` (legacy asks "Post now?", `AbstractADWindowContent.java:3899-3903`; the page shows the preview); the Posting Preview lens still names one schema in a note (`erp/erp_preview.js:111`), it is a page-only lens with no legacy form behind it.
+
 ## What is in the archive (finished; one line each)
 - **2026-09-02/03, the first parity pass:** §MEASURED, §P1–§P11 with their §IMPL and RESULT sections, §TWIN-WIDENED / §TWIN-CLASSIFIED. The curated five-table field list retired; List, Yes-No, validation-rule and table-reference editors; mandatory-on-create; GL category; DocNo control.
 - **2026-10-02 → 10-07:** §FS first-setup journey, §MD master-detail, §GT the GridTab layer (one tab contract for every window), §GT-NINJA, §CP core callouts and processes verbatim, §MD-UPSTREAM + §BIM-CRUD, §PROJ-VARIANCE.
