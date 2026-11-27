@@ -100,24 +100,37 @@ const CAPS = {
 };
 // ---- the segment plan (data, not code) ----
 const L3 = { A: 'Site A · Duplex', D: 'HQ · desktop', B: 'Site B · ${siteB}' }, L2 = { A: 'Site A · Duplex', D: 'HQ · desktop' };
-const DEFAULT_PLAN = {
-  facts: FACTS, caps: CAPS,
-  segments: [
+const MID = [   // the middle of the film, identical in every plan: real phone bodies (frame=phone)
+  // 2 — Fast: model ready, panels as bottom sheets, swipe / Back close
+  { id: 'fast', kind: 'play', src: 'A', layout: 'phone', beats: ['ready', 'fab', 'nav_open', 'nav_swipe', 'settings_open', 'settings_back'], hold: { default: 1 } },
+  // 3 — Walk: X-Ray on by itself, steps, snag (A's share / walk_stop / scrub are not in this cut: the HQ link + replay come from role S, which shows them for real)
+  { id: 'walk', kind: 'play', src: 'A', layout: 'phone', beats: ['walk_start', 'walk_steps', 'snag'], hold: { default: 1, walk_steps: 0.8, snag: 0.85 } },
+  // 4 — Clash in detail
+  { id: 'clash', kind: 'play', src: 'C', layout: 'phone', beats: ['clash_run', 'clash_pick', 'clash_detail', 'clash_snag_or_share'], hold: { default: 0.7, clash_pick: 1, clash_share: 0.9 }, maxHold: 36 },
+  // 5 — report arrives at HQ: S's phone sends, HQ gets / replays / scrubs; true t order
+  { id: 'hq', kind: 'timed', src: 'S', layout: 'phone+desktop', beats: ['s_send', 's_get', 's_replay', 's_scrub'], hold: { default: 1 }, maxHold: 60, lead: 15, morph: { from: 'phone', frames: 24 }, labels: L2 },
+  // 6 — two sites: Site B snags its own (A and HQ show their last frames from role S)
+  { id: 'sites', kind: 'play', src: 'B', slot: 'B', layout: 'phone+desktop+phone', beats: ['b_walk', 'b_snag'], hold: { default: 0.6 }, maxHold: 24,
+    stills: { A: { src: 'S', screen: 'phone', at: 'last' }, hq: { src: 'S', screen: 'hq', at: 'last' } }, morph: { from: 'phone+desktop', frames: 24 }, labels: L3 },
+];
+const PLANS = {
+  // rc2: title card -> phone bodies -> end card (kept reproducible: PLAN_NAME=rc2 or plan=rc2)
+  rc2: { facts: FACTS, caps: CAPS, segments: [
     { id: 'intro', kind: 'card', dur: 3.2, title: 'The phone, fast.', sub: 'Walk the site, snag it, send it to HQ.', fadeIn: 6, handoff: 0.6, handoffLayout: 'phone' },
-    // 2 — Fast: model ready, panels as bottom sheets, swipe / Back close
-    { id: 'fast', kind: 'play', src: 'A', layout: 'phone', beats: ['ready', 'fab', 'nav_open', 'nav_swipe', 'settings_open', 'settings_back'], hold: { default: 1 } },
-    // 3 — Walk: X-Ray on by itself, steps, snag (A's share / walk_stop / scrub are not in this cut: the HQ link + replay come from role S, which shows them for real)
-    { id: 'walk', kind: 'play', src: 'A', layout: 'phone', beats: ['walk_start', 'walk_steps', 'snag'], hold: { default: 1, walk_steps: 0.8, snag: 0.85 } },
-    // 4 — Clash in detail
-    { id: 'clash', kind: 'play', src: 'C', layout: 'phone', beats: ['clash_run', 'clash_pick', 'clash_detail', 'clash_snag_or_share'], hold: { default: 0.7, clash_pick: 1, clash_share: 0.9 }, maxHold: 36 },
-    // 5 — report arrives at HQ: S's phone sends, HQ gets / replays / scrubs; true t order
-    { id: 'hq', kind: 'timed', src: 'S', layout: 'phone+desktop', beats: ['s_send', 's_get', 's_replay', 's_scrub'], hold: { default: 1 }, maxHold: 60, lead: 15, morph: { from: 'phone', frames: 24 }, labels: L2 },
-    // 6 — two sites: Site B snags its own (A and HQ show their last frames from role S)
-    { id: 'sites', kind: 'play', src: 'B', slot: 'B', layout: 'phone+desktop+phone', beats: ['b_walk', 'b_snag'], hold: { default: 0.6 }, maxHold: 24,
-      stills: { A: { src: 'S', screen: 'phone', at: 'last' }, hq: { src: 'S', screen: 'hq', at: 'last' } }, morph: { from: 'phone+desktop', frames: 24 }, labels: L3 },
-    { id: 'outro', kind: 'card', dur: 4.0, title: 'Fast on the phone.', sub: 'Every step on the record.', textDelay: 6, textFade: 12, devFade: 15 },
-  ],
+    ...MID,
+    { id: 'outro', kind: 'card', dur: 4.0, title: 'Fast on the phone.', sub: 'Every step on the record.', textDelay: 6, textFade: 12, devFade: 15 } ] },
+  // hybrid (rc3, DEFAULT): chapter card -> trailer zoom into the site figure's phone -> 0.5 s cross-fade into the REAL phone body (same rect) -> middle -> cross-fade to the trailer
+  // outro (overview, links green, the closing line) -> the last card (what you saw / prior art / credentials). Chapter + last card = PNGs from cards_m1.js, the opener frames from render_opener.js (FILM_ID=m1).
+  hybrid: { facts: FACTS, caps: CAPS, segments: [
+    { id: 'chapter', kind: 'still', src: 'cards/chapter.png', dur: 3.6, fadeIn: 12, bgColor: '#0b0f17' },
+    { id: 'opener', kind: 'opener', dir: 'opener/intro', xfade: 12 },
+    { ...MID[0], xfade: 15, handoffBox: 'opener/boxes.json' }, ...MID.slice(1),
+    { id: 'outro', kind: 'opener', dir: 'opener/outro', xfade: 15 },
+    { id: 'close', kind: 'still', src: 'cards/close.png', dur: 10, xfade: 12, bgColor: '#0b0f17' } ] },
 };
+const PLAN_NAME = ARG.plan || process.env.PLAN_NAME || 'hybrid';
+if (!PLANS[PLAN_NAME]) { console.error('plan must be one of ' + Object.keys(PLANS)); process.exit(2); }
+const DEFAULT_PLAN = PLANS[PLAN_NAME];
 
 // ---------------- recordings ----------------
 let PLAN = DEFAULT_PLAN, siteB = '?';
@@ -163,7 +176,7 @@ const useBeats = (src, frames) => { for (const b of new Set(frames.map(f => f.rb
 (async () => {
   const PLAN_RAW = fs.existsSync(path.join(W, 'plan.json')) ? J('plan.json') : DEFAULT_PLAN;
   PLAN = Object.assign({}, DEFAULT_PLAN, Array.isArray(PLAN_RAW) ? { segments: PLAN_RAW } : PLAN_RAW);
-  say(`§STAGE_FRAME_MODE frame=${FRAME} plan=${fs.existsSync(path.join(W, 'plan.json')) ? 'plan.json' : 'default'}`);
+  say(`§STAGE_FRAME_MODE frame=${FRAME} plan=${FRAME === 'trailer' ? 'n/a (rc1 device, fixed)' : fs.existsSync(path.join(W, 'plan.json')) ? 'plan.json' : PLAN_NAME}`);
   const D = [], seg = {}, beatAt = {}, TL = [], mark = n => { seg[n] = D.length; };
   const dbB = (logText('B').match(/db=buildings\/(\w+?)_extracted/) || [])[1] || '?';
   siteB = ({ HHS_Office_Federated: 'Office', Hospital: 'Hospital', Duplex: 'Duplex', Terminal: 'Terminal' })[dbB] || dbB;
@@ -215,6 +228,11 @@ const useBeats = (src, frames) => { for (const b of new Set(frames.map(f => f.rb
     const built = []; let prevLast = null;
     for (const P of PLAN.segments) {
       if (P.kind === 'card') { built.push({ P }); continue; }
+      if (P.kind === 'still' || P.kind === 'opener') {   // full-frame pictures: a held PNG (chapter / last card) or the trailer opener's rendered frames
+        const imgs = P.kind === 'still' ? Array.from({ length: Math.round(P.dur * FPS) }, () => P.src) : pngs(P.dir);
+        if (!imgs.length) throw new Error('segment ' + P.id + ': no pictures');
+        const descs = imgs.map((f, i) => ({ frame: 'phone', layout: 'phone', bgColor: P.bgColor || '#000', under: { src: url(f), a: P.fadeIn && i < P.fadeIn ? +((i + 1) / P.fadeIn).toFixed(3) : 1 } }));
+        built.push({ P, descs, marks: {}, tl: imgs.map(f => ({ phase: 'image', img: f })), imgs: imgs.map(f => url(f)), lastImg: url(imgs[imgs.length - 1]), imgSeg: true }); prevLast = descs[descs.length - 1]; continue; }
       const Lyt = P.layout, descs = [], marks = {}, tl = [], slot = P.slot || 'A', labels = labelsOf(P), st = P.stills || {};
       const note = (f, at) => { for (const k of [f.rb, f.label]) if (k && !(k in marks)) marks[k] = at; };
       let cur = null, since = 0, curKey = null;
@@ -274,7 +292,13 @@ const useBeats = (src, frames) => { for (const b of new Set(frames.map(f => f.rb
         return;
       }
       for (const k in b.marks) if (!(k in beatAt)) beatAt[k] = D.length + b.marks[k];
-      b.descs.forEach((d, i) => { D.push(d); TL.push(Object.assign({ seg: P.id }, b.tl[i])); });
+      // cross-fades (P.xfade = N frames): into a segment that follows a PICTURE segment, the old picture sits on top and fades out (a_i = 1-(i+1)/(N+1)); into a picture segment that follows
+      // phone bodies, the new picture fades in on top of the previous segment's last descriptor (a_i = (i+1)/(N+1)). Never between two device segments.
+      const prev = built[bi - 1], N = P.xfade || 0, xf = (i) => (N && i < N && prev && prev.descs) ? (prev.lastImg ? 'out' : b.imgSeg ? 'in' : null) : null;
+      b.descs.forEach((d, i) => { const k = xf(i); let dd = d, t = Object.assign({ seg: P.id }, b.tl[i]);
+        if (k === 'out') { dd = Object.assign({}, d, { over: { src: prev.lastImg, a: +(1 - (i + 1) / (N + 1)).toFixed(4) } }); t.xfade = { i, N, kind: 'out', from: prev.lastImg, handoff: !!P.handoffBox }; }
+        if (k === 'in') { const base = Object.assign({}, prev.descs[prev.descs.length - 1]); delete base.over; dd = Object.assign(base, { over: { src: b.imgs[i], a: +((i + 1) / (N + 1)).toFixed(4) } }); t.xfade = { i, N, kind: 'in', to: b.imgs[i] }; }
+        D.push(dd); TL.push(t); });
     });
   }
   const segs = Object.entries(seg).map(([k, v], i, a) => `${k}=${(((i + 1 < a.length ? a[i + 1][1] : D.length) - v) / FPS).toFixed(2)}s`);
@@ -294,6 +318,8 @@ const useBeats = (src, frames) => { for (const b of new Set(frames.map(f => f.rb
     return { screens: [...document.querySelectorAll('.pscr')].map(e => ({ role: e.dataset.role, scr: R(e), img: R(e.querySelector('img')), outer: R(e.parentNode), rs: getComputedStyle(e).borderTopLeftRadius, ro: getComputedStyle(e.parentNode).borderTopLeftRadius })),
       wins: [...document.querySelectorAll('.win')].map(e => ({ win: R(e), content: R(e.querySelector('.wscr')), img: R(e.querySelector('.wscr img')), url: e.querySelector('.url').textContent })) }; });
   const f4 = a => a.map(v => +v.toFixed(2)).join(',');
+  // the hand-off from the trailer opener into the REAL phone body: the opener's phone box must be the phone layout's screen rect, numerically (§STAGE_HANDOFF)
+  const hIdx = FRAME === 'phone' ? TL.findIndex(t => t.xfade && t.xfade.handoff) : -1; let handoffEqual = null;
   for (let i = 0; i < D.length; i++) {
     const out = path.join(OUT, String(i).padStart(5, '0') + '.png'), key = JSON.stringify(D[i]);
     if (key === prev) { fs.copyFileSync(path.join(OUT, String(i - 1).padStart(5, '0') + '.png'), out); rings += lastRings; ringsExpected += FRAME === 'phone' ? tapOf(D[i]) : 0; continue; }
@@ -308,6 +334,9 @@ const useBeats = (src, frames) => { for (const b of new Set(frames.map(f => f.rb
         for (const w of m.wins) { const err = Math.abs(w.img[2] / w.img[3] / (16 / 9) - 1) * 100, ok = err <= 0.5 && w.url === 'HQ'; if (!ok) frameFail++;
           say(`§STAGE_FRAME kind=desktop layout=${d.layout} window_rect=${f4(w.win)} content_rect=${f4(w.content)} url_text="${w.url}" aspect_err=${err.toFixed(4)}% ${ok ? 'OK' : 'FAIL'}`); } }
     }
+    if (i === hIdx) { const seg0 = PLAN.segments.find(x => x.id === TL[i].seg), ob = J(seg0.handoffBox).phone, m = await measure(), sc = m.screens.find(x => x.role === 'A').scr, lay = await page.evaluate(() => window.STAGE.layout('phone').phone);
+      const box = [ob.x, ob.y, ob.w, ob.h], lr_ = [lay.x, lay.y, lay.w, lay.h], eq = box.every((v, j) => Math.abs(v - lr_[j]) <= 0.5) && box.every((v, j) => Math.abs(v - sc[j]) <= 0.5); handoffEqual = eq;
+      say(`§STAGE_HANDOFF opener_box=${f4(box)} layout_rect=${f4(lr_)} screen_rect=${f4(sc)} crossfade_frames=${TL[i].xfade.N} equal=${eq} ${eq ? 'OK' : 'FAIL'}`); }
     await page.screenshot({ path: out }); prev = key; rendered++;
   }
   await browser.close();
@@ -315,6 +344,7 @@ const useBeats = (src, frames) => { for (const b of new Set(frames.map(f => f.rb
   say(`§STAGE_FRAMES planned=${D.length} written=${got} rendered_unique=${rendered} ${got === D.length ? 'OK' : 'MISMATCH'}`);
   if (FRAME === 'phone') { say(`§STAGE_FRAME_CHECK layouts=${framesLogged.size} fails=${frameFail} ${frameFail === 0 && framesLogged.size ? 'OK' : 'FAIL'}`);
     say(`§STAGE_TAP drawn=${rings} expected=${ringsExpected} ${rings === ringsExpected && rings > 0 ? 'OK' : 'FAIL'}`); } else say('§STAGE_FRAME kind=trailer (rc1 device, unchanged; not measured)');
+  if (hIdx >= 0 && handoffEqual !== true) say('§STAGE_HANDOFF FAIL (rect not equal or not measured)');
   say(`§STAGE_IMG broken=${broken} ${broken === 0 ? 'OK' : 'FAIL'}`);
   say(`§STAGE_PAGEERRORS n=${errs.length}${errs.length ? ' ' + errs.join(' | ') : ''}`);
   fs.writeFileSync(path.join(OUT, 'render_stage.log'), LOG.join('\n') + '\n');

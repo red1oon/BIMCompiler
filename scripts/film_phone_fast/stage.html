@@ -30,6 +30,7 @@ html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:#07111f
 .pcap{position:absolute;color:#14171c;font-weight:700;font-size:50px;line-height:1.15}
 .psub{position:absolute;color:#4a5260;font-weight:500;font-size:26px;line-height:1.35}
 .plbl{position:absolute;color:#5b6472;font-weight:600;font-size:26px;text-align:center}
+.fullimg{position:absolute;left:0;top:0;width:1920px;height:1080px;display:block;object-fit:fill}.fullimg.o{z-index:50}
 .card{position:absolute;left:0;width:1920px;text-align:center;color:#14171c}
 .card .t{font-weight:700;font-size:92px;line-height:1.1}.card .s{margin-top:26px;font-weight:500;font-size:36px;color:#4a5260}
 </style></head><body><div id="bg"></div><div id="dark"></div><div id="app"></div>
@@ -96,7 +97,7 @@ function deskHTML(src, D, alpha) {
     + `<div class="wscr" style="top:${TB}px;width:${d.content.w}px;height:${d.content.h}px"><img src="${src}"></div></div></div>`;
 }
 function renderPhone(d) {
-  document.documentElement.style.background = BG; document.body.style.background = BG;
+  const bgc = d.bgColor || BG; document.documentElement.style.background = bgc; document.body.style.background = bgc;
   document.getElementById('bg').style.display = 'none'; document.getElementById('dark').style.display = 'none';
   const name = d.layout || 'phone', L = LAYOUTS[name]; if (!L) throw new Error('unknown layout ' + name);
   const R = layoutRects(name); let A = R.phone, Bn = R.phoneB, Dn = L.D ? Object.assign({}, L.D) : null, u = 1;
@@ -109,6 +110,8 @@ function renderPhone(d) {
   const sec = FL ? clamp01((u - 0.4) / 0.6) : 1, dev = d.dev == null ? 1 : d.dev;
   const aD = FL && FL.D ? 1 : sec, aB = FL && FL.B ? 1 : sec, W = Dn ? deskOf(Dn).win : null;
   let h = '';
+  // d.under = a full-frame picture BEHIND everything (trailer opener/outro frames, the chapter + last card PNGs); d.over = a full-frame picture ON TOP with opacity a (cross-fades). d.bgColor = plain background.
+  if (d.under) h += `<img class="fullimg" src="${d.under.src}" style="opacity:${d.under.a == null ? 1 : d.under.a}">`;
   if (L.D && d.hq) h += deskHTML(d.hq, Dn, aD * dev);
   if (d.A) h += phoneHTML('A', d.A.src, A, d.A.tap, dev);
   if (L.B && d.B) h += phoneHTML('B', d.B.src, Bn, d.B.tap, aB * dev);
@@ -120,6 +123,7 @@ function renderPhone(d) {
   for (const c of d.cards || []) h += `<div class="card" style="top:${c.y == null ? 400 : c.y}px;opacity:${c.a}"><div class="t">${esc(c.title)}</div>${c.sub ? `<div class="s">${esc(c.sub)}</div>` : ''}</div>`;
   if (d.cap && d.capAlpha > 0) { const b = d.capBox; h += `<div class="pcap" style="left:${b.x}px;top:${b.y}px;width:${b.w}px;opacity:${d.capAlpha};text-align:${b.align || 'left'}">${esc(d.cap)}</div>`;
     if (d.sub) h += `<div class="psub" style="left:${b.x}px;top:${b.y + (b.subDy || 140)}px;width:${b.w}px;opacity:${d.capAlpha};text-align:${b.align || 'left'}">${esc(d.sub)}</div>`; }
+  if (d.over) h += `<img class="fullimg o" src="${d.over.src}" style="opacity:${d.over.a}">`;
   document.getElementById('app').innerHTML = h;
 }
 window.STAGE = {

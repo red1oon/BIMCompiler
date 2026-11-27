@@ -11,6 +11,10 @@
 //       RED: the same samples judged against the order-reversed expectation must be DETECTED (fail), and the reversed event list must fail the monotonic check.
 //       play filter — every `play` frame is a beat the plan asked for, ok in its manifest, held ≤ ceil(hold×scale) (≤ maxHold); RED: a forbidden frame injected into the list must be caught.
 //       morph between two layouts that both have a desktop: the desktop and the phone really move (u=0 = from-layout rects, u=1 = target rects).
+//   (k) rc3 hybrid segments (chapter card, trailer opener, hand-off, trailer outro, last card), when the work dir was rendered with the hybrid plan:
+//       segment order = the plan's; the chapter / last card frames ARE the card PNGs (pixel diff) and the chapter fades in from its plain background; the opener-to-phone-body hand-off is the
+//       linear blend of the two pictures at every sampled step (pixel diff against a blend computed here), the opener's phone box equals the phone layout's screen rect (numbers); the outro
+//       and last-card dissolves likewise; no voice clip starts during the chapter card or the last card. RED: the blend with its alpha reversed must be DETECTED.
 //   RED control: a screen forced to 456:800 must FAIL (a) and (b), or the verdict is INCONCLUSIVE (the witness could not report a failure).
 // Run: node witness_stage.js <work> [<old_stage.html from origin/film/m1-clash-beat>]   (work holds A/ B/ C/ HQ/ S/ stage/ from the rc2 recording; (f) needs opener/ — here or env OPENER_DIR=<rc1 work>/opener)
 'use strict';
@@ -210,12 +214,53 @@ const judge = (tag, ok, detail) => { judged++; if (!ok) fails++; say(`§WIT ${ta
       await shot({ ...base, morph: { from: 'phone+desktop', u: 0.5 } }); const mm = await dom(), dx = mm.wins[0].content.x; judge('(i) morph u=0.5 desktop is between the two layouts', dx > Math.min(from.desk.x, to.desk.x) + 1 && dx < Math.max(from.desk.x, to.desk.x) - 1, `desk_x=${dx.toFixed(1)} between ${to.desk.x}..${from.desk.x}`); }
     iJudged = 1;
   } else say('§WIT (i) SKIPPED no stage/timeline.json + plan_used.json + S/ in the work dir (full render first) (verdict will be INCONCLUSIVE)');
+
+  // ---- (k) rc3 hybrid segments ----
+  let kJudged = 0; const redK = [];
+  if (fs.existsSync(TLF) && fs.existsSync(PUF)) { const TL = J('stage/timeline.json'), PU = J('stage/plan_used.json');
+    if (TL.some(r => r.phase === 'image')) { kJudged = 1;
+      const film = f => path.join(W, 'stage', String(f).padStart(5, '0') + '.png'), FULL = { x: 0, y: 0, w: 1920, h: 1080 }, durl = f => 'data:image/png;base64,' + fs.readFileSync(f).toString('base64');
+      const segRows = id => TL.filter(r => r.seg === id), order = []; TL.forEach(r => { if (r.seg && order[order.length - 1] !== r.seg) order.push(r.seg); });
+      judge('(k) segment order is the plan\'s', order.join() === PU.segments.map(x => x.id).join(), order.join('>'));
+      // blend computed here: base picture, over picture, alpha (analysis page canvas) -> data URL
+      const blend = (baseUrl, overUrl, a, bgc) => anaRun(async x => { const L = u => new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = u; });
+        const c = document.createElement('canvas'); c.width = 1920; c.height = 1080; const t = c.getContext('2d'); if (x.bgc) { t.fillStyle = x.bgc; t.fillRect(0, 0, 1920, 1080); } if (x.base) t.drawImage(await L(x.base), 0, 0, 1920, 1080);
+        t.globalAlpha = x.a; t.drawImage(await L(x.over), 0, 0, 1920, 1080); return c.toDataURL('image/png'); }, { base: baseUrl, over: overUrl, a, bgc });
+      const madF = async (fi, expUrl) => mad(fs.readFileSync(film(fi)), expUrl, FULL, 0);
+      // chapter card: held frames = the PNG; first frame = fade-in from the plain background
+      { const rows = segRows('chapter'), mid = rows[Math.floor(rows.length / 2)], r = await madF(mid.f, durl(path.join(W, mid.img)));
+        judge('(k) chapter card hold frame == cards/chapter.png', r.mad <= 1 && r.pctBig <= 0.5, `frame=${mid.f} mad=${r.mad.toFixed(3)} big_px=${r.pctBig.toFixed(3)}%`);
+        const row0 = rows[0], seg0 = PU.segments.find(x => x.id === 'chapter'), a0 = 1 / seg0.fadeIn, e0 = await blend(null, durl(path.join(W, row0.img)), a0, seg0.bgColor), r0 = await madF(row0.f, e0);
+        judge('(k) chapter card fades in from its plain background (frame 0 = bg + picture at 1/' + seg0.fadeIn + ')', r0.mad <= 1.5, `mad=${r0.mad.toFixed(3)}`);
+        const bgp = await px(fs.readFileSync(film(mid.f)), [[5, 5], [1915, 1075]]); judge('(k) chapter card background is the plain dark #0b0f17 at the corners (nothing behind it)', bgp.every(p => near(p, [11, 15, 23], 2)), `corners=${bgp.map(p => p.join('.')).join(' ')}`); }
+      // last card
+      { const rows = segRows('close'), mid = rows[rows.length - 2], r = await madF(mid.f, durl(path.join(W, mid.img))); judge('(k) last card hold frame == cards/close.png', r.mad <= 1 && r.pctBig <= 0.5, `frame=${mid.f} mad=${r.mad.toFixed(3)} big_px=${r.pctBig.toFixed(3)}%`); }
+      // dissolves: pictures are blends at alpha_i; red = the reversed alpha must be rejected where the two alphas differ by > 0.3
+      const dissolves = TL.filter(r => r.xfade); const byKind = k => dissolves.filter(r => r.xfade.kind === k);
+      const check = async (label, r, baseUrl, overUrl, aOver) => { const N = r.xfade.N, e = await blend(baseUrl, overUrl, aOver), m = await madF(r.f, e); judge(`(k) ${label}: frame ${r.f} (step ${r.xfade.i + 1}/${N}, over alpha ${aOver.toFixed(3)}) is the linear blend`, m.mad <= 3, `mad=${m.mad.toFixed(3)}`);
+        if (Math.abs(aOver - 0.5) > 0.15) { const wrong = await blend(baseUrl, overUrl, 1 - aOver), mw = await madF(r.f, wrong); redK.push(mw.mad > 3 && mw.mad > 2 * m.mad); say(`§WIT (k) RED ${label} frame ${r.f}: blend with alpha reversed ${mw.mad > 3 ? 'REJECTED as required' : 'ACCEPTED (witness blind!)'} mad=${mw.mad.toFixed(3)}`); } };
+      // hand-off: opener last frame over the phone body (phone layout, same first recording frame)
+      const ho = byKind('out').filter(r => r.xfade.handoff);
+      if (ho.length) { const N = ho[0].xfade.N, row0 = TL[ho[0].f], baseBuf = await shot({ frame: 'phone', layout: 'phone', A: { src: url(row0.file) } }), baseUrl = 'data:image/png;base64,' + baseBuf.toString('base64'), overUrl = durl(ho[0].xfade.from.replace(/^file:\/\//, ''));
+        for (const i of [0, Math.floor(N / 2), N - 1]) await check('hand-off opener -> phone body', ho[i], baseUrl, overUrl, 1 - (i + 1) / (N + 1));
+        const ob = J('opener/boxes.json').phone, lay = await page.evaluate(() => window.STAGE.layout('phone').phone);
+        const eq = ob.x === lay.x && ob.y === lay.y && ob.w === lay.w && ob.h === lay.h; judge('(k) opener phone box == phone layout screen rect (numbers)', eq, `opener_box=${ob.x},${ob.y},${ob.w},${ob.h} layout=${lay.x},${lay.y},${lay.w},${lay.h}`);
+        judge('(k) the stage logged §STAGE_HANDOFF equal=true', /§STAGE_HANDOFF .* equal=true OK/.test(fs.readFileSync(path.join(W, 'stage/render_stage.log'), 'utf8')), 'render_stage.log'); }
+      // trailer outro fades in over the last phone-body frame; last card fades in over the outro's last frame
+      const inn = byKind('in'); if (inn.length) { const N = inn[0].xfade.N, baseF = film(inn[0].f - inn[0].xfade.i - 1), baseUrl = durl(baseF);
+        for (const i of [0, Math.floor(N / 2), N - 1]) await check('phone bodies -> trailer outro', inn[i], baseUrl, inn[i].xfade.to.replace(/^file:\/\//, '') ? durl(inn[i].xfade.to.replace(/^file:\/\//, '')) : '', (i + 1) / (N + 1)); }
+      const out2 = byKind('out').filter(r => !r.xfade.handoff && r.seg === 'close'); if (out2.length) { const N = out2[0].xfade.N, closeP = durl(path.join(W, segRows('close')[0].img)), overUrl = durl(out2[0].xfade.from.replace(/^file:\/\//, ''));
+        for (const i of [0, Math.floor(N / 2), N - 1]) await check('trailer outro -> last card', out2[i], closeP, overUrl, 1 - (i + 1) / (N + 1)); }
+      // no voice during the chapter card or the last card
+      const cf = path.join(W, 'fit/cues.tsv'); if (fs.existsSync(cf)) { const starts = fs.readFileSync(cf, 'utf8').split('\n').filter(Boolean).map(l => +l.split('\t')[1]), seg = PU.segments, fr = id => TL.filter(r => r.seg === id), chEnd = fr('chapter').length / 30, clStart = TL.findIndex(r => r.seg === 'close') / 30;
+        judge('(k) no voice clip starts during the chapter card (first cue ' + Math.min(...starts).toFixed(2) + ' s >= ' + chEnd.toFixed(2) + ' s)', Math.min(...starts) >= chEnd, 'cues.tsv'); judge('(k) no voice clip starts over the last card (last cue ' + Math.max(...starts).toFixed(2) + ' s < ' + clStart.toFixed(2) + ' s)', Math.max(...starts) < clStart, 'cues.tsv'); }
+    } }
   await browser.close();
   say(`§WIT page_errors=${perrs.length}${perrs.length ? ' ' + perrs.join('|') : ''}`);
   if (perrs.length) judge('(h) no page errors', false, perrs.join('|'));
-  const controlsOk = redA && redB && discr && fJudged > 0 && iJudged > 0 && redI.length >= 3 && redI.every(Boolean);
+  const controlsOk = redA && redB && discr && fJudged > 0 && iJudged > 0 && redI.length >= 3 && redI.every(Boolean) && (kJudged === 0 || (redK.length >= 3 && redK.every(Boolean)));
   const verdict = judged === 0 || !controlsOk ? (fails ? 'FAIL' : 'INCONCLUSIVE') : fails ? 'FAIL' : 'PASS';
-  say(`§WITNESS_STAGE ${verdict} judged=${judged} fails=${fails} red_a_fails=${redA} red_b_fails=${redB} discriminating=${discr} trailer_samples=${fJudged} rc2_red_controls_detected=${redI.filter(Boolean).length}/${redI.length}`);
+  say(`§WITNESS_STAGE ${verdict} judged=${judged} fails=${fails} red_a_fails=${redA} red_b_fails=${redB} discriminating=${discr} trailer_samples=${fJudged} rc2_red_controls_detected=${redI.filter(Boolean).length}/${redI.length} rc3_hybrid_judged=${kJudged} rc3_red_controls_detected=${redK.filter(Boolean).length}/${redK.length}`);
   fs.writeFileSync(path.join(W, 'witness_stage.log'), LOG.join('\n') + '\n');
   process.exit(verdict === 'PASS' ? 0 : 1);
 })().catch(e => { console.log('§WITNESS_STAGE INCONCLUSIVE judged=0 fails=0 fatal ' + e.stack); process.exit(2); });

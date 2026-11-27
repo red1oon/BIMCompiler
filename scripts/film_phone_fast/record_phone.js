@@ -403,21 +403,14 @@ async function snag(beatId) {
     const phoneRows = await rowsOf(P.page);
     say(`§M1_SYNC_PHONE issues=${phoneRows.length} walk_trace_lines=${nTrace} photo_bytes=${phoneRows.map(r => Math.floor(r.b64.length * 3 / 4)).join(',')}`);
 
-    // 2 — phone: the Issue Log as a phone user opens it (no pill carries it: FAB → Help → the "Issues" row), then the real Send to HQ button
+    // 2 — phone: the Issue Log as a phone user opens it. SINCE bim-ootb #3480 (2026-11-27): FAB -> Inspect pill -> the "Issues" row of the Inspect drawer; the Issue Log is one bottom sheet
+    //     (§SHEET_REPLACE closed=inspect-drawer-panel by=issues-panel). [Before #3480 the route was Help -> scroll -> "Issues" row -> close the Help list: kept in git history, rc2 recordings.]
     await beat('s_send', /^§HQ_SEND via=team drop=/, async () => {
       if (!(await pillsN())) await tapSel('s_send', '#mobile-trigger', 400);
-      await tapSel('s_send', '#pill-help', 600); await shot('s_send', 20);
-      for (let w = 0; w < 40 && !(await page.evaluate(() => !!document.querySelector('#cmd-palette .cmd-row'))); w++) await page.waitForTimeout(250);
-      if (!(await page.evaluate(() => { const r = [...document.querySelectorAll('#cmd-palette .cmd-row')].find(x => /^Issues\b/.test((x.innerText || '').trim())); if (!r) return false; r.setAttribute('data-m1s', '1'); return true; })))
-        throw new Error('no "Issues" row in the Help list');
-      // the Help list is longer than the screen: the user scrolls it (mouse wheel over the list) until the row is on screen
-      const rowY = () => page.evaluate(() => { const r = document.querySelector('[data-m1s]'), b = r.getBoundingClientRect(); return [Math.round(b.top + b.height / 2), innerHeight]; });
-      for (let w = 0; w < 30; w++) { const [y, h] = await rowY(); if (y > 120 && y < h - 120) break; await page.mouse.move(228, 500); await page.mouse.wheel(0, y >= h - 120 ? 260 : -260); await page.waitForTimeout(200); if (w % 3 === 2) await shot('s_send', 4); }
-      await touchAt('s_send', '[data-m1s]', 0, 700);
-      await page.evaluate(() => { const r = document.querySelector('[data-m1s]'); if (r) r.removeAttribute('data-m1s'); });
-      // the Help list stays open over the Issue Log until its ✕ is tapped (help_panel.js run(): "the panel stays open") — a user closes it
-      if (await page.evaluate(() => !!document.getElementById('cmd-palette'))) await touchAt('s_send', '#cmd-close', 0, 600);
+      await tapSel('s_send', '#pill-inspect', 500); await shot('s_send', 20);
+      await tapRow('s_send', 'inspect', 'Issues');
       for (let w = 0; w < 40 && !(await page.evaluate(() => { const b = document.getElementById('issues-send-hq'); return !!(b && b.offsetWidth); })); w++) await page.waitForTimeout(250);
+      say('  [route] ' + cons.filter(t => /^§SHEET_REPLACE closed=inspect-drawer-panel by=issues-panel/.test(t)).slice(-1)[0]);
       await shot('s_send', 30);
       await touchAt('s_send', '#issues-send-hq', 0, 300);
       for (let w = 0; w < 60 && !/team folder/i.test(await statusText()); w++) await page.waitForTimeout(250);
@@ -457,11 +450,11 @@ async function snag(beatId) {
         return { bar_visible: !!(b && b.offsetWidth && getComputedStyle(b).display !== 'none'), marks: document.querySelectorAll('#hist-marks > *').length,
           walk_entries: UniversalHistory.list().filter(e => String(e.label).indexOf(code + ' · ') === 0).length }; };
       const bar0 = await page.evaluate(barJs, codeP);
-      // PRODUCT GAP (logged, not patched): replayTeamWalk() does not open the history bar, so the walk sits in a CLOSED bar. A user opens it with the viewer's own
-      // shortcut Z (scene.js:2664 UniversalHistory.toggleOpen) — a real key press, filmed.
-      await shot('s_replay', 30); await page.keyboard.press('z'); await page.waitForTimeout(700);
+      // since bim-ootb #3480 replayTeamWalk() opens the history bar itself (§HQ_REPLAY … bar=open); before it did not and a user opened it with the viewer's shortcut Z (rc2 recordings).
+      // Z TOGGLES the bar, so it is pressed only if the bar is still closed after the replay.
+      await shot('s_replay', 30); if (!bar0.bar_visible) { say('  [replay] bar closed after replay -> key Z (pre-#3480 app)'); await page.keyboard.press('z'); } else say('  [replay] bar already open after replay (§HQ_REPLAY bar=open)'); await page.waitForTimeout(700);
       const bar = await page.evaluate(barJs, codeP);
-      say(`§M1_SYNC_REPLAY points=${pts} phone_trace_lines=${nTrace} history_walk_entries=${bar.walk_entries} bar_visible_after_replay=${bar0.bar_visible} bar_visible_after_key_Z=${bar.bar_visible} marks=${bar.marks}`);
+      say(`§M1_SYNC_REPLAY points=${pts} phone_trace_lines=${nTrace} history_walk_entries=${bar.walk_entries} bar_visible_after_replay=${bar0.bar_visible} bar_visible_final=${bar.bar_visible} marks=${bar.marks}`);
       await shot('s_replay', 60);
       if (!bar.bar_visible || bar.marks < pts) throw new Error('history bar not visible after Z: ' + JSON.stringify(bar));
       if (pts !== nTrace || bar.walk_entries !== pts) throw new Error('points=' + pts + ' trace=' + nTrace + ' history=' + bar.walk_entries);
