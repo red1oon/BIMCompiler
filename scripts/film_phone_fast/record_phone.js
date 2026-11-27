@@ -6,6 +6,8 @@
 // Run:  node record_phone.js <outDir> A            (Duplex, phone 456×933: panels, Walk + auto X-Ray, snag, share link, scrub)
 //       node record_phone.js <outDir> B            (Hospital, phone 456×933: pick an element, snag)
 //       node record_phone.js <outDir> HQ <url-file> (desktop 1920×1080 opens phone A's shared link)
+//       node record_phone.js <outDir> C            (Duplex, phone 456×933: CLASH in detail — run, pick one, its detail, snag + share link from it;
+//                                                   2026-11-27 recut beat. Spec: MOBILE_PERF.md §FILM-M1 owner note "clash … on detail")
 // CPU only, headless. Serves ~/bim-ootb (origin/main) on a local port exactly like witness_field_ops.js.
 'use strict';
 const os = require('os'), fs = require('fs'), path = require('path'), http = require('http');
@@ -25,7 +27,7 @@ const PHONE = { viewport: { width: 456, height: 933 }, deviceScaleFactor: 1, isM
   permissions: ['geolocation', 'camera'] };
 const DESK = { viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 };
 // B: the Hospital needs a GPU to draw its X-Ray interior in time (CPU run stalled > 4 min on one frame, 2026-11-27); a GPU run needs the owner's OK
-const BLD = { A: 'buildings/Duplex_extracted.db', B: process.env.M1_B_DB || 'buildings/HHS_Office_Federated_extracted.db' };
+const BLD = { A: 'buildings/Duplex_extracted.db', C: 'buildings/Duplex_extracted.db', B: process.env.M1_B_DB || 'buildings/HHS_Office_Federated_extracted.db' };
 
 const LOG = []; const say = s => { LOG.push(s); console.log(s); };
 const frames = []; let page, cons = [], nShot = 0;
@@ -75,9 +77,25 @@ async function swipeDown(beatId, id) {
   for (let k = 1; k <= 4; k++) { await page.mouse.move(sp[0], sp[1] + k * 30, { steps: 2 }); await shot(beatId, 3, [sp[0], sp[1] + k * 30]); }
   await page.mouse.up(); await page.waitForTimeout(350); await shot(beatId, 14);
 }
+
+// a real finger tap on the element's centre via the browser's own mouse pipeline (pointerdown → pointerup → click), only if that
+// point really hits the element (or a child) — what a thumb does; used where the viewer listens for click (matrix cells) or for
+// a long-press (clash row → snag). hold_ms > 0 = long press.
+async function touchAt(beatId, sel, holdMs, after) {
+  const c = await page.evaluate(s => { const e = document.querySelector(s); if (!e || !e.offsetWidth) return null;
+    const r = e.getBoundingClientRect(), x = Math.round(r.left + r.width / 2), y = Math.round(r.top + r.height / 2), t = document.elementFromPoint(x, y);
+    return (t && (e === t || e.contains(t) || t.contains(e))) ? [x, y] : { blocked: t ? (t.id || t.tagName) : 'none', x, y }; }, sel);
+  if (!c) throw new Error('not on screen: ' + sel);
+  if (!Array.isArray(c)) throw new Error('covered by ' + c.blocked + ' at ' + c.x + ',' + c.y + ': ' + sel);
+  await shot(beatId, 6, c);
+  await page.mouse.move(c[0], c[1]); await page.mouse.down();
+  if (holdMs) { await page.waitForTimeout(holdMs); await shot(beatId, 10, c); }
+  await page.mouse.up(); await page.waitForTimeout(after || 300);
+  return c;
+}
 async function ready(ctx, url) {
   page = await ctx.newPage(); cons = []; page.setDefaultTimeout(240000);   // software GL: a Hospital X-Ray frame can take > 30 s
-  page.on('console', m => { const t = m.text(); cons.push(t); if (/§(SHEET_(CLOSE|REPLACE|SWALLOW)|WALK_XRAY|ISSUE_|PICK hits|SNAP |CAMERA|RENDERER_CAPS)/.test(t)) LOG.push('  [console] ' + t.slice(0, 160)); });
+  page.on('console', m => { const t = m.text(); cons.push(t); if (/§(SHEET_(CLOSE|REPLACE|SWALLOW)|WALK_XRAY|ISSUE_|PICK hits|SNAP |CAMERA|RENDERER_CAPS|CLASH_(REVEAL|DETAIL|VIZ|MATRIX_FILTER|SNAG|MATRIX_COUNT)|SHARE_URL)/.test(t)) LOG.push('  [console] ' + t.slice(0, 160)); });
   page.on('pageerror', e => say('  [pageerror] ' + String(e.message).slice(0, 200)));
   const t0 = Date.now(); await page.goto(url, { waitUntil: 'domcontentloaded' });
   for (let i = 0; i < 240; i++) { await page.waitForTimeout(1000);
@@ -170,6 +188,104 @@ async function snag(beatId) {
       });
       await beat('b_snag', /§ISSUE_SAVED/, async () => snag('b_snag'));
     }
+    await ctx.close();
+  } else if (ROLE === 'C') {
+    // Clash in detail, Duplex, phone profile. Every step is the real UI path a phone user has:
+    //   FAB → Inspect pill → Clash Matrix row → matrix cell (a discipline pair) → clash list row (tap = detail, long-press = snag)
+    //   → Site Camera preview → Share → share panel → Copy URL → OK.   (APP.buildShareUrl has no phone button — the clash link is
+    //   the one the Share panel itself builds, A._buildClashDeepLink; not called from here.)
+    const ctx = await browser.newContext(Object.assign({}, PHONE, { permissions: [...PHONE.permissions, 'clipboard-read', 'clipboard-write'] }));
+    if (!await ready(ctx, base + '/viewer/viewer.html?db=' + BLD.C)) throw new Error('not ready');
+    await siteGeo(ctx);
+    await shot('ready', 45);
+    let pair = null, pick = null;   // the pair chosen from the matrix's own counts; the clash row tapped
+    await beat('clash_run', /^§CLASH_REVEAL storey=\S+ showing=[1-9]/, async () => {
+      await tapSel('clash_run', '#mobile-trigger', 400); await shot('clash_run', 12);
+      await tapSel('clash_run', '#pill-inspect', 400); await tapRow('clash_run', 'inspect', 'Clash'); await shot('clash_run', 20);
+      for (let w = 0; w < 100 && !(await page.evaluate(() => !!APP._clashMatrixDiv)); w++) await page.waitForTimeout(300);
+      // the Inspect drawer may still be open over the matrix (FILM-M1 finding 1 class) — a user swipes it away
+      if (await page.evaluate(() => { const d = document.getElementById('inspect-drawer-panel'); return !!(d && d.offsetWidth && getComputedStyle(d).display !== 'none'); }))
+        await swipeDown('clash_run', 'inspect-drawer-panel');
+      // the matrix counts its pairs by itself (background pass); wait until it is done, then choose the pair with the most hits
+      for (let w = 0; w < 200 && !cons.some(t => /^§CLASH_TRI_COLLAPSE done/.test(t)); w++) await page.waitForTimeout(300);
+      for (let q = 0, n0 = -1; q < 40; q++) { const n = cons.filter(t => /^§CLASH_MATRIX_COUNT /.test(t)).length; if (n === n0) break; n0 = n; await page.waitForTimeout(500); }
+      const counts = cons.filter(t => /^§CLASH_MATRIX_COUNT /.test(t)).map(t => { const m = t.match(/^§CLASH_MATRIX_COUNT (\S+)\|(\S+) = (\d+)/); return m && { a: m[1], b: m[2], n: +m[3] }; }).filter(Boolean);
+      say('  [matrix] counts=' + JSON.stringify(counts));
+      if (!counts.length) throw new Error('matrix gave no counts');
+      const best = counts.slice().sort((x, y) => y.n - x.n)[0]; pair = best;
+      await shot('clash_run', 30);
+      // the open pill rail covers the list's right edge (seen in run C1: row text cut by the pills) — a user taps the FAB again to fold it
+      const pillsN = () => page.evaluate(() => [...document.querySelectorAll('[id^="pill-"]')].filter(e => e.offsetWidth && getComputedStyle(e).visibility !== 'hidden').length);
+      const p0 = await pillsN(); await tapSel('clash_run', '#mobile-trigger', 500); const p1 = await pillsN(); say(`  [fab] pills_shown before=${p0} after_fold=${p1}`);
+      const sel = await page.evaluate(b => { for (const k of [b.a + '|' + b.b, b.b + '|' + b.a]) { const e = document.querySelector('[data-pair="' + k + '"]');
+        if (e && e.offsetWidth) { e.setAttribute('data-m1c', '1'); return '[data-m1c]'; } } return null; }, best);
+      if (!sel) throw new Error('matrix cell not on screen for ' + best.a + '|' + best.b);
+      await touchAt('clash_run', sel, 0, 600);
+      await page.evaluate(() => { const e = document.querySelector('[data-m1c]'); if (e) e.removeAttribute('data-m1c'); });
+      for (let w = 0; w < 100 && !(await page.evaluate(() => !!(APP._clashListDiv && APP._clashListDiv.querySelector('[data-clash-idx]')))); w++) await page.waitForTimeout(300);
+      await page.waitForTimeout(1500); await shot('clash_run', 45);   // the list, with the pair's own count line
+      say('  [clash_run] pair=' + best.a + '|' + best.b + ' matrix_count=' + best.n);
+    });
+    await beat('clash_pick', /^§CLASH_DETAIL guidA=/, async () => {
+      // tap the first listed clash row (the viewer's own order); its idx comes from the row's data attribute
+      const idx = await page.evaluate(() => { const r = APP._clashListDiv && APP._clashListDiv.querySelector('[data-clash-idx]'); if (!r) return null; r.setAttribute('data-m1r', '1'); return +r.getAttribute('data-clash-idx'); });
+      if (idx === null) throw new Error('no clash row in the list');
+      pick = { idx };
+      await touchAt('clash_pick', '[data-m1r]', 0, 400);
+    });
+    await beat('clash_detail', /^§M1_CLASH /, async () => {
+      // the camera flies 2 s to the overlap; frames across it, then settle
+      for (let k = 0; k < 6; k++) { await page.waitForTimeout(450); await shot('clash_detail', 8); }
+      await page.waitForTimeout(600);
+      const r = await page.evaluate(pk => {
+        const c = (APP._currentClashes || [])[pk.idx]; const L = APP._clashListDiv; const row = L && L.querySelector('[data-clash-idx="' + pk.idx + '"]');
+        const rect = e => { const b = e.getBoundingClientRect(); return [Math.round(b.left), Math.round(b.top), Math.round(b.width), Math.round(b.height)]; };
+        const inVp = b => b[2] > 0 && b[3] > 0 && b[0] >= 0 && b[1] >= 0 && b[0] + b[2] <= innerWidth && b[1] + b[3] <= innerHeight;
+        // overlap centre recomputed from the two elements' own stored boxes (same rows _flyToClash reads) → where the camera must be looking
+        const pos = APP.dbQuery("SELECT guid, center_x, center_y, center_z, bbox_x, bbox_y, bbox_z FROM element_transforms WHERE guid IN (?, ?)", [c[0], c[1]]);
+        const lo = [-1e9, -1e9, -1e9], hi = [1e9, 1e9, 1e9]; pos.forEach(p => { for (let i = 0; i < 3; i++) { lo[i] = Math.max(lo[i], p[1 + i] - p[4 + i] / 2); hi[i] = Math.min(hi[i], p[1 + i] + p[4 + i] / 2); } });
+        const oc = APP.ifc2three((lo[0] + hi[0]) / 2, (lo[1] + hi[1]) / 2, (lo[2] + hi[2]) / 2), t = APP.controls.target;
+        return { idx: APP._currentClashViewIdx, a: c[0], b: c[1], clsA: c[2], clsB: c[3], list: L ? rect(L) : null, listInVp: L ? inVp(rect(L)) : false,
+          rowRect: row ? rect(row) : null, rowInVp: row ? inVp(rect(row)) : false, rowSel: !!(row && /79, ?195, ?247/.test(row.style.background)),
+          hl: (APP._clashHighlights || []).length, rows2: pos.length, tgtErr: Math.hypot(t.x - oc.x, t.y - oc.y, t.z - oc.z) };
+      }, pick);
+      const dl = cons.filter(t => /^§CLASH_DETAIL guidA=/.test(t)).pop() || '';
+      const dm = dl.match(/guidA=(\S+) guidB=(\S+)/);
+      const checks = { idx: r.idx === pick.idx, guids: !!dm && dm[1] === r.a && dm[2] === r.b, list_in_viewport: r.listInVp, row_in_viewport: r.rowInVp,
+        row_selected: r.rowSel, highlights: r.hl >= 2, both_elements_found: r.rows2 === 2, cam_on_overlap: r.tgtErr < 0.05 };
+      const bad = Object.keys(checks).filter(k => !checks[k]);
+      const line = `§M1_CLASH pair=${r.a}|${r.b} idx=${r.idx} classes=${r.clsA}|${r.clsB} panel_rect=${r.list} row_rect=${r.rowRect} highlights=${r.hl} tgt_err_m=${r.tgtErr.toFixed(4)} checks=${bad.length ? 'FAIL[' + bad.join(',') + ']' : 'all_pass'}`;
+      say(line); if (!bad.length) cons.push(line);
+      pick.guidA = r.a; pick.guidB = r.b;
+      await shot('clash_detail', 60);
+    });
+    await beat('clash_snag_or_share', /^§M1_SHARE /, async () => {
+      // long-press the SAME clash row → the viewer's own clash snag (S246): markup preview with the clash strip
+      await touchAt('clash_snag', '[data-m1r]', 600, 900);
+      for (let w = 0; w < 60 && !(await page.evaluate(() => !!APP._pendingClashSnag)); w++) await page.waitForTimeout(250);
+      for (let k = 0; k < 3; k++) { await page.waitForTimeout(300); await shot('clash_snag', 20); }
+      const cs = await page.evaluate(() => APP._pendingClashSnag && { a: APP._pendingClashSnag.element_a_guid, b: APP._pendingClashSnag.element_b_guid, link: APP._pendingClashSnag.deep_link, mm: APP._pendingClashSnag.overlap_mm, sev: APP._pendingClashSnag.severity });
+      if (!cs) throw new Error('no clash snag preview');
+      // Share (real button) → no OS share sheet in a desktop-class engine → the viewer's own share panel → Copy URL → OK
+      await tapSel('clash_share', '#site-cam-preview-controls button[onclick="shareSitePhoto()"]', 900); await shot('clash_share', 40);
+      for (let w = 0; w < 40 && !(await page.evaluate(() => !!document.getElementById('share-copy'))); w++) await page.waitForTimeout(250);
+      await touchAt('clash_share', '#share-copy', 0, 900); await shot('clash_share', 40);
+      await page.evaluate(() => { const b = [...document.querySelectorAll('div > button')].find(x => /^OK$/.test((x.textContent || '').trim()) && x.offsetWidth); if (b) b.setAttribute('data-m1ok', '1'); });
+      await touchAt('clash_share', '[data-m1ok]', 0, 900); await shot('clash_share', 45);   // back on the model, the clash saved to the Issue Log
+      for (let w = 0; w < 40 && !cons.some(t => /^§CLASH_SNAG_SAVED /.test(t)); w++) await page.waitForTimeout(250);
+      const saved = cons.filter(t => /^§CLASH_SNAG_SAVED /.test(t)).pop() || '';
+      const db = await page.evaluate(async () => { try { const d = await APP._openIssuesDB(); const rows = await new Promise((res, rej) => { const q = d.transaction('issues').objectStore('issues').getAll(); q.onsuccess = () => res(q.result); q.onerror = rej; }); d.close();
+        return rows.filter(r => r.type === 'clash').map(r => ({ a: r.element_guid, b: r.element_b_guid, link: r.deep_link, blob: r.jpeg_blob ? r.jpeg_blob.size : 0 })); } catch (e) { return String(e); } });
+      const h = (cs.link.split('#')[1] || '');
+      const hp = Object.fromEntries(h.split('&').map(x => x.split('=')));
+      const lk = decodeURIComponent(hp.clash || '').split('~');
+      const checks = { saved_line_pair: saved.includes('guid_a=' + pick.guidA) && saved.includes('guid_b=' + pick.guidB), snag_is_pick: cs.a === pick.guidA && cs.b === pick.guidB,
+        url_carries_pair: lk[0] === pick.guidA && lk[1] === pick.guidB, url_has_cam: /^[-\d.]+,[-\d.]+,[-\d.]+$/.test(hp.cam || ''), idb_row: Array.isArray(db) && db.some(r => r.a === pick.guidA && r.b === pick.guidB && r.blob > 0) };
+      const bad = Object.keys(checks).filter(k => !checks[k]);
+      const rel = cs.link.replace(/^http:\/\/127\.0\.0\.1:\d+/, ''); fs.writeFileSync(path.join(OUT, 'share_url.txt'), rel);
+      const line = `§M1_SHARE url=${rel} carries=#clash=${pick.guidA}~${pick.guidB} overlap_mm=${cs.mm} severity=${cs.sev} idb_clash_rows=${Array.isArray(db) ? db.length : db} checks=${bad.length ? 'FAIL[' + bad.join(',') + ']' : 'all_pass'}`;
+      say(line); if (!bad.length) cons.push(line);
+    });
     await ctx.close();
   } else if (ROLE === 'HQ') {
     const rel = fs.readFileSync(path.resolve(URLFILE), 'utf8').trim();
