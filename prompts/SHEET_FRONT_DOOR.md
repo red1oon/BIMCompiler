@@ -32,11 +32,21 @@ door entry to the ERP when user choses"* — stage 1 makes no multi-user or perf
 - **Reader denominator widened 2026-11-27 (bim-ootb #3472, §7.5):** 3 of 5 layouts rebuilt (trial balance, sales register, cross-tab);
   2 are measured LIMITS (merged / centred / wrapped cells; columns that nearly touch). Next for the reader = the page's ruling lines
   and fills as grid evidence (§7.5 "Next").
-- **In flight 2026-11-27 (two workers, own sections):** build order step (2) numbers-only write-back → `PDF_EDITOR.md` §4.3/§4.4; S3 Excel
-  menu → §8 below. Read those sections' RESULTS for their state.
-- **Next = build order step (2):** numbers-only in-place write-back (narrow cut of PDF_EDITOR P4) into the box the source map names,
-  each change an S9 history entry. Then S3 Excel,
-  S4 WPS, S5 LibreOffice; S2 is reduced to "the host writes/reads the `_door_ledger` sheet" (the replay itself is already proven by D9).
+- **Build order step (2) DONE (witness) 2026-11-27 — numbers-only PDF write-back** (bim-ootb #3477, #3478): a number changed in the
+  Read-as-sheet grid is rewritten in the same PDF, in its own box; "Download PDF" hands it back; one S9 entry per rewrite.
+  W-PDF-WRITE 67 checks PASS, mutants 6/6; page 22 PASS — `PDF_EDITOR.md` §4.3/§4.4. Limit: a digit the embedded font lacks is refused
+  or written in the family's regular face, said in words.
+- **Build order step (3) S3 Excel menu BUILT on a stand-in host 2026-11-27** (bim-ootb #3475, §8): File it / Stamp / Cell history /
+  Check history; W-SHEET-ADDIN 59 checks PASS, mutants 11/11. **REAL EXCEL NOT RUN. "File it" is NOT-WIRED in the real pane:**
+  `erp/ws_kernel.js` is node-only (reads files from disk), so the filing path has no browser runner yet (§8.3 finding 1).
+- **Reader fix 2026-11-27 (bim-ootb #3479, §7.6):** a row left stale after a consistent column edit is now NAMED, not passed over.
+- **Films (owner 2026-11-27):** `prompts/FILM_KILLER_FRONT_DOOR.md`. Film 1 "PDF and Excel are killer apps / So we open it up" = stage 1,
+  English; Film 2 = the filed document in the real kernel ERP window, its books and a report ("ERP is now a utility...").
+- **Next, in this order:** (a) **S3b: a browser runner for the filing path** so "File it" works in the pane and from a page — it is also
+  what Film 2 needs; (b) run the add-in in REAL Excel (sideload) and record what differs from the stand-in; (c) reader: ruling lines
+  and fills as grid evidence (§7.5 "Next"); (d) merge the report PDF engine from `origin/ninja-xtab2` / `feat/ninja-template-pill`
+  (the "new layout" OUT, and the Thai SARA AM defect §7.5); (e) S4 WPS, S5 LibreOffice on the same shim. Open decision for the owner:
+  where a PDF's history is kept (today it lives in the page's memory only, nothing travels with the downloaded file).
 
 ## 0. Why (owner, 2026-11-27)
 The owner wants a harmless "Trojan horse": users start from what they already use, their own Excel or PDF, with a simple
@@ -348,6 +358,20 @@ when there are more bands than any line has cells, the band the fewest lines use
 **Not yet / Next:** merged, centred and wrapped cells (showcase 7 of 41 in order) and overflowing text beside touching columns (a
 204-column stress sheet: 585 of 796) need more than text positions. The page's own **ruling lines and cell fills** are the missing
 evidence (`modeller/pdf2dxf/pdf_reader.js` already reads paths); that is the next reader step, with these two files as its denominator.
+
+### 7.6 A stale row is named (2026-11-27, bim-ootb `fix/reader-row-rule-names-the-row`, PR #3479)
+**Found by the write-back slice** (`PDF_EDITOR.md` §4.4 finding 2), a FALSE PASS: debit D10 and its total D28 changed together, the
+row's closing balance F10 left as printed → the four sums agree, the row rule F = C + D - E fails on one row, and §7.2 item 6 ("holds
+on EVERY row") made the reader stop reporting the rule: verdict ADDS_UP.
+**Rule changed (§7.2 item 6):** a row rule may fail on a few rows and still be the rule (one row in a block of 5 or more, at most 5%);
+each failing row is a check of its own (`ROWCELL`, cell, printed, computed, ok=false) and the verdict is DOES_NOT_ADD_UP.
+```
+§SHEET_READER verdict=DOES_NOT_ADD_UP ... reason="F10: printed 1018.16 != F = C + D - E gives 1019.16"
+§SREAD-CHECK case=R3 key=stale-row OK   (rule still reported on 20 of 21 rows; D28's own SUM check ok)
+§SREAD-MUTANTS killed=8/8  (+ M8 stale row passed over→R3)      §SREAD-VERDICT PASS judged=38 failed=0
+§PDFWR-VERDICT PASS judged=67 failed=0 (mutants 6/6) · §PDFWP-VERDICT PASS judged=22 failed=0
+```
+Six write-back checks had RECORDED the false verdict (W1, W10, W11, page total / download / re-read); they now expect F10 named.
 
 ## 8. Slice S3 — the Excel menu (spec 2026-11-27, before code)
 Build-order step (3). Code: bim-ootb `erp/sheet_addin/` (`host_shim.js`, `excel_host.js`, `taskpane.html`, `taskpane.js`, `manifest.xml`) + a small pure
