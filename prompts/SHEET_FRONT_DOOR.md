@@ -55,6 +55,9 @@ door entry to the ERP when user choses"* — stage 1 makes no multi-user or perf
 - **A check that cannot run says so 2026-11-27** (bim-ootb #3488, §12): a total holding a formula with no saved result is REFUSED and
   named; every verdict lists which checks ran; stored history/ledger lines are ASCII-escaped.
 - **Sheet panel closable** (bim-ootb #3485, owner request).
+- **Short addresses + one way round 2026-11-28** (owner: *"Make apps URLs relatable for user easy usage continuity. Update user guide"*; bim-ootb #3493, §15):
+  `red1oon.github.io/bim-ootb/pdf` · `/history` · `/file-it`; each page carries the row PDF · Sheet history · File it; old addresses unchanged. Guide rewritten
+  for all three (OPEN LIST 6, 17 done). Carrying the OPEN file between pages is NOT built: it would keep the user's file in browser storage (owner's call, §15.2 point 3).
 - **The history page 2026-11-28** (bim-ootb #3489, §14): `erp/sheet_addin/history.html` gives ANY spreadsheet file a memory with no add-in:
   Stamp, a cell's story, rewind + download that version, merge two copies with the clash shown. 95 KB on the wire, no kernel.
 - **Posting view = legacy's Account Viewer 2026-11-28** (owner: *"fix the posting view to show all 6 entries"*; bim-ootb #3490;
@@ -77,12 +80,12 @@ Each item names where its evidence is. Mark `✅ DONE (witness)` or `⛔ BLOCKED
 5. Does Film 3 go out as it is (rc1)?
 
 **B. Guide and films (small)**
-6. `docs/PdfPageGuide.md` covers view + Read as sheet only. Add: change a number / Download PDF, the history inside the file, the
+6. ✅ DONE (witness) 2026-11-28, §15.4: guide rewritten for all three pages + their short addresses, published by the seatbelt, read back live. Was: `docs/PdfPageGuide.md` covers view + Read as sheet only. Add: change a number / Download PDF, the history inside the file, the
    filing page (`file_it.html`), "Open in the ERP", and the history page (`history.html`). Film 3's closing card dropped its guide link
    for this reason (film RESULT). Deploy ONLY with `scripts/safe_gh_deploy.sh`; a fresh checkout lacks `docs/glassbowl_data.db` (git-ignored,
    live on the site) and the guard aborts: restore it with `git show origin/gh-pages:glassbowl_data.db > docs/glassbowl_data.db` first.
    That trap needs a permanent answer (where that file should live) — one line to the owner if it is not obvious.
-7. After 6 (and the answers to A), one rebuild per film that needs it: guide links on the closing cards; Film 1's last card still
+7. (6 is done; still waits on the answers to A.) The short addresses of §15 are the ones for the cards: `red1oon.github.io/bim-ootb/pdf` · `/history` · `/file-it`. After 6 (and the answers to A), one rebuild per film that needs it: guide links on the closing cards; Film 1's last card still
    links the app.
 
 **C. False passes / correctness (do these before new features)**
@@ -106,7 +109,7 @@ Each item names where its evidence is. Mark `✅ DONE (witness)` or `⛔ BLOCKED
 16. WPS: this machine's snap `wps-office 10.1.0.6757` saves our files correctly (§13) but its MENU cannot load (no add-in fetched in a
     50 s probe; `libkso.so` does contain `KJSPlugin` strings, so another install path is not excluded). Needs a WPS build that takes
     add-ins; first question = does a pane served from our https URL receive `window.Application`.
-17. WPS writes the local OS user name into `docProps/core.xml` `lastModifiedBy` (§13): tell the user in the guide; never commit such files.
+17. ✅ DONE 2026-11-28 (guide, Limits: "WPS and your name", read back live §15.4); the never-commit half stands as a rule. Was: WPS writes the local OS user name into `docProps/core.xml` `lastModifiedBy` (§13): tell the user in the guide; never commit such files.
 18. S5 LibreOffice menu on the same shim: LibreOffice Calc is NOT installed here (`soffice` has Writer/Math/Base only).
 19. A real phone: `file_it.html` loads 33.7 MB / 123 MB heap (§9, §11.4); `history.html` and the PDF page are light. Device emulation only so far.
 20. Viewers: the rewritten PDF and its attachment are judged in poppler and pdf.js only (no Acrobat / Preview / Chrome panel).
@@ -147,7 +150,7 @@ Each item names where its evidence is. Mark `✅ DONE (witness)` or `⛔ BLOCKED
   `env -u DBUS_SESSION_BUS_ADDRESS node <file>` (headless, `--disable-gpu`): `pdf/tests/witness_pdfed_page.js`, `witness_pdf_write_page.js`,
   `witness_pdf_history_page.js`, `erp/tests/witness_file_it.js`, `witness_door_erp*.js`, `witness_history_page.js`, `witness_acct_viewer.js`,
   `witness_sheet_wps_page.js`, `witness_sheet_wps_real.js` (real WPS under Xvfb). Read the log, not the exit code.
-- Live pages: `https://red1oon.github.io/bim-ootb/pdf/` · `.../erp/sheet_addin/file_it.html` · `.../erp/sheet_addin/history.html` ·
+- Live pages (short addresses, §15): `https://red1oon.github.io/bim-ootb/pdf/` · `.../bim-ootb/history/` · `.../bim-ootb/file-it/` (real files `erp/sheet_addin/history.html`, `file_it.html`) ·
   WPS add-in base `.../erp/sheet_addin/wps/` · Excel manifest `.../erp/sheet_addin/manifest.xml` · guide `https://red1oon.github.io/BIMCompiler/PdfPageGuide/`.
 - Agents were used for every slice on 2026-11-27/28 (owner: *"Use agents to speed up work"*): one bounded slice each, own worktrees,
   spec appended as its own numbered section here, results under it. Keep that shape.
@@ -1383,3 +1386,36 @@ Owner, 2026-11-28, verbatim: *"resume killer. Make apps URLs relatable for user 
 - **Mutants (`DOORURL_MUTANTS=1`):** a door that drops the hash → U1; a door to a missing page → U1; a row link to a missing file → U2; the current page
   linked → U2. Each must be killed.
 - **Live, after deploy:** the two short addresses return 200 and name their target; read back, not assumed.
+
+### 15.4 RESULTS (2026-11-28, bim-ootb PR #3493 `feat/killer-urls`, merged as `ac9243c1`; guide published by `scripts/safe_gh_deploy.sh`)
+Code: `history/index.html`, `file-it/index.html` (new, 15 lines each), the row in `pdf/index.html` (it replaces the bare "PDF" title), `history.html`, `file_it.html`
+(+2 lines each); witnesses `erp/tests/witness_door_urls.js` (node) and `erp/tests/witness_door_urls_page.js` (headless Chromium, local tree or `DOORURL_URL=` live).
+bim-ootb diff: 7 files, +206 / −1 (witnesses +170). Add-only by nature: no special case superseded.
+```
+§DOORURL-U1 door=/history/ target=erp/sheet_addin/history.html PASS · door=/file-it/ target=erp/sheet_addin/file_it.html PASS
+§DOORURL-U2 page=pdf/index.html items=3 PASS · erp/sheet_addin/history.html items=3 PASS · erp/sheet_addin/file_it.html items=3 PASS
+§DOORURL-U3 doorsJudged+pagesJudged=5 of 5
+§DOORURL-MUTANT "door drops the hash" KILLED by U1 · "door to a missing page" KILLED by U1 · "row link to a missing file" KILLED by U2 · "current page linked" KILLED by U2
+§DOORURL-VERDICT PASS judged=5 failed=0 mutants=4/4
+§DOORURL-BROWSER-SITE https://red1oon.github.io/bim-ootb/                                    (after the Pages deploy of ac9243c1)
+§DOORURL-BROWSER-BASE historyLength of a direct visit=2 (a door that adds no Back entry reads the same)
+§DOORURL-BROWSER typed=/bim-ootb/history/?a=1#b landed=/bim-ootb/erp/sheet_addin/history.html?a=1#b current="Sheet history" historyLength=2 PASS
+§DOORURL-BROWSER typed=/bim-ootb/file-it landed=/bim-ootb/erp/sheet_addin/file_it.html current="File it" historyLength=2 PASS
+§DOORURL-BROWSER typed=/bim-ootb/pdf/ landed=/bim-ootb/pdf/ current="PDF" historyLength=2 PASS
+§DOORURL-BROWSER-ROW clicked="Sheet history" PASS · clicked="File it" PASS · clicked="PDF" PASS
+§DOORURL-BROWSER-VERDICT PASS judged=6 failed=0 site=LIVE
+```
+- Live by curl: `/history/` and `/file-it/` 200 and byte-identical to the merged files; `/history` and `/file-it` (no slash) answer 301 to the slash form.
+- Regression, same tree before merge: `§PDFPG-VERDICT PASS judged=19` · `§PDFWP-VERDICT PASS judged=22` · `§PDFHP-VERDICT PASS judged=19` · `§FILEIT-VERDICT PASS judged=53` ·
+  `§HPAGE-VERDICT PASS judged=91` (P9 real WPS writer ran) · eslint on both witnesses exit 0. CI on #3493: fast-checks, e2e-tests, live-json-editor pass.
+  `node scripts/gen_manifest.js --check` did NOT run here (`§NEED_DEPS espree is not installed`); no script tag was touched.
+- **Guide:** `docs/PdfPageGuide.md` now covers the three pages (short addresses table, the row, change a number + Download PDF, history inside the file, Sheet
+  history, File it + Open in the ERP, the WPS user-name note); every fact taken from §7-§14 / `PDF_EDITOR.md` §4.2-§4.6, the refusal wording from `pdf/pdf_write.js`
+  (`too-many-decimals`: "more decimals than the column prints"). Nav label renamed in `mkdocs.yml`. Seatbelt: `§GUARD result=PASS` live=999 new=999, `§STEP6 all
+  canaries 200`. Read back live: `https://red1oon.github.io/BIMCompiler/PdfPageGuide/` 200, 67,233 bytes, title "PDF, Sheet history and File it: your own files",
+  all three short addresses present. `docs/glassbowl_data.db` restored from `origin/gh-pages` first (the trap of item 6, still without a permanent home).
+- **Witness slip, fixed before the claim:** the browser leg first expected `history.length` 1; a fresh tab starts at `about:blank`, so a direct visit reads 2. The
+  check now compares the door against a direct visit of the real page.
+
+**Not done (stated):** the open file does not travel between pages (§15.2 point 3, owner's call); the Excel/WPS menus do not show the row (they are panes,
+not these pages); W-DOOR-URLS is not wired into CI (OPEN LIST 33, like the lane's other witnesses); the film cards still print the long addresses (OPEN LIST 7, waits on A).
