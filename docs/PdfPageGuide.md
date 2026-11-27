@@ -12,11 +12,13 @@ Three small pages that work on **your own files, on your own device**. Each page
 
 **One way round:** each page has the same row at the top, **PDF · Sheet history · File it**. The page you are on is in bold; click either of the others to go there. Your file does not travel by itself: open it again on the next page (for example, the `.xlsx` the PDF page gave you, on Sheet history).
 
+**No file of your own to hand?** Each page has a sample: *Try a sample report* (PDF), *Try a sample workbook* (Sheet history), *Get a sample invoice* (File it).
+
 Older, longer addresses (on our films and in the Excel menu) still work and open the same pages.
 
 ## 1. PDF: read a report as a sheet
 
-1. **Open a PDF.** Press *Open a PDF* and choose the file (or drop it on the page). It is drawn on screen, page by page.
+1. **Open a PDF.** Press *Open a PDF* and choose the file (or drop it on the page), or press *Try a sample report*. It is drawn on screen, page by page.
 2. **Find and jump.** Type a word in *Find text* to see how many times it appears and on which pages. If the PDF has an outline, click an entry to jump to it.
 3. **Read as sheet.** Press *Read as sheet*. The table on the page you are looking at appears as a grid, every figure in the cell it was printed in. Point at a cell: a box lights on the page where that figure came from.
 4. **Take it away.** Press *Download .xlsx*. You get a spreadsheet file with the same cells; where the report printed a total, the file holds a real sum formula over its rows, not a pasted number.
@@ -37,7 +39,7 @@ A file that is not a PDF, or is damaged, is refused in words and nothing is draw
 
 1. In the sheet, **double-click a number** (on a touch screen, tap it). Type the new number and press **Enter**. **Escape** cancels.
 2. The page rewrites that number **in the same PDF, in its own box**. Nothing else on the page moves. The verdict line checks again at once: change one row and not its total, and it says *does NOT add up* and names the total.
-3. Press **Download PDF**. You get your PDF with the new number in it, the same layout, the same file otherwise.
+3. Press **Download PDF**. You get your PDF with the new number in it, the same layout, the same file otherwise. *Download .xlsx* gives the same sheet as a spreadsheet; a total you corrected so that it adds up stays a live sum formula there.
 
 The page refuses, in words, rather than guess: text that is not a number (`abc`), a number with more decimals than its column prints (`1.234` is not rounded for you), or a number too wide for its box.
 
@@ -55,7 +57,7 @@ Every change is recorded: the cell, the value before, the value after, and when.
 
 Works on any `.xlsx`, from Excel, WPS or the PDF page. No add-in, no spreadsheet program needed.
 
-1. **Open a workbook (.xlsx)** and type **your name**. (It is a typed name, not a signature: anyone can type any name.)
+1. **Open a workbook (.xlsx)** and type **your name**. Or press *Try a sample workbook*: a small order sheet that already carries three stamps by two people, so you can see steps and a cell's story at once. (It is a typed name, not a signature: anyone can type any name.)
 2. **Stamp.** The page lists what changed since the last stamp; *Stamp* records it inside the workbook. Press *Download the workbook* to keep it.
 3. **Go back.** Pick any step to see the sheet as it was then; *Download this version* gives you that copy.
 4. **The story of a cell.** Click a cell to see every value it has had, who stamped it and when.
@@ -65,7 +67,7 @@ The page lists its own limits under *What to know*: if someone deletes the hidde
 
 ## 5. File it: an invoice workbook into the books
 
-1. **Open a workbook (.xlsx)** whose invoice cells are marked, or press **Get a sample invoice** to try one.
+1. **Open a workbook (.xlsx)** whose invoice cells are marked, or press **Get a sample invoice** to try one. Marking the cells of your own invoice layout is not built yet: a workbook without them is opened, and the page says so and points you to the sample.
 2. Press **File it.** The books check that it adds up, file it as a real invoice with its accounting entries, and hand the workbook back with the document number and a signed ledger line inside. *Download the workbook* to keep it.
 3. **Open in the ERP** shows the same invoice in the ERP's own Invoice window, with its lines and its accounting entries. Opening it again, or reloading, never files it twice.
 
