@@ -973,3 +973,68 @@ the witnesses are not wired into CI.
 
 **Merged and deployed (2026-11-27):** bim-ootb PR #3486 merged as `9561b7ce` (CI fast-checks, e2e-tests, live-json-editor green; the deploy to GitHub Pages ran on that commit). Fetched back: `https://red1oon.github.io/bim-ootb/erp/sheet_addin/wps/ribbon.xml` 200, byte-identical to the merged file (825 bytes, `<customUI ...>`), so is `wps/jsplugins.xml` (134 bytes);
 `wps/index.html`, `wps/main.js`, `wps/ribbon.js` (the deploy's minified build, the global handler names `OnAddinLoad`, `OnAction`, `GetImage` and the table `ACTION_OF` intact), `wps_host.js` and `taskpane.html` all 200. Nothing was installed into a WPS (none here): the URL WPS would be given is `https://red1oon.github.io/bim-ootb/erp/sheet_addin/wps/`.
+
+## 12. A check that cannot run must say so (fix) — spec 2026-11-27, before code
+**Defect (found by the WPS slice, §11.5 findings 1 and 2).** A workbook re-saved by a writer that stores NO cached result for a formula (openpyxl stand-in) is read with
+those cells EMPTY. `G8`/`G9` (line amounts) and `G20` (subtotal) of the sample invoice reached the engine as blank, so "File it" filed the invoice with D3's adds-up check silently
+OFF: a blank subtotal is "not checked" (§2), and the engine could not tell "no subtotal printed" from "a subtotal whose result is missing". Same class on the PDF page's `.xlsx`
+totals (`C28`-`F28`) if they were ever read back. A check that silently does not run is a false pass. Second, smaller defect: a character beyond U+FFFF stored as an INLINE string
+is read by the vendored SheetJS as U+F600, so Check history would report an untouched history as edited (the entry's payload digest no longer matches).
+
+**Rule 1 — formula without a value is not blank (D10 NO-SAVED-RESULT).** A tagged cell the engine READS that holds a formula but no saved result is refused, never treated as empty.
+- Which cells: every header cell the engine reads (`partner`, `date`, `docno`, `subtotal`, `grandtotal`) and, for a row that is filled (a product or charge printed, or the
+  product/charge cell itself is a formula without a result), every line column. The unfilled rows of the range are not read (§2: a row with no product and no charge is empty).
+- Verdict `REFUSED`, nothing declared, zero ledger lines, the status cell says (cells named: header cells first, then the rows in order):
+  *"Not filed: cell G20 holds a formula with no saved result; open and save the file in your spreadsheet program, or type the figure"* (several: *"cells G20, G8 and G9 hold formulas with no saved result; ...or type the figures"*).
+- Option (b), the engine computing the formula itself, is REJECTED: the engine never parses formulas (it would be a second spreadsheet), and a SUM over tagged cells is exactly the
+  case where being wrong files a wrong invoice. The user's own program computes it; one open-and-save fixes the file.
+- How the engine knows: the engine never parses a file format (§1), so the HOST says it. Host interface, ONE optional addition: `noSavedResult(sheet, addrs) -> [addrs]` = the
+  addresses among `addrs` that hold a formula and no saved result. `host_shim.js` asks it right after `readCells` (when the host has it) and hands the list to the runner as a 4th
+  argument `file(tpl, cells, ledgerLines, noSavedResult)`, which hands it to the engine as `opts.noSavedResult`. `xlsx_host.js` implements it: the workbook must be read with
+  `sheetStubs: true` (added to `READ`) because without it SheetJS DROPS a formula cell that has no `<v>` (measured: `r.xlsx` G8 `undefined`; with stubs `{t:'z', f:'D8*E8'}`),
+  so the formula is not even visible. Excel and WPS live hosts: a formula cell ALWAYS has a value (the program calculates), so they have no such method and the list is empty.
+
+**Rule 2 — a blank is blank, and the verdict says which checks ran (D11 CHECKS-RAN).** A tagged `subtotal` / `grandtotal` whose cell is truly EMPTY (no value, no formula) still means
+"the sheet prints none": the check is not made and the filing proceeds. It is no longer silent. Every verdict carries `ran` and `checksLine`:
+`checks: line=ran subtotal=ran grandtotal=absent linenet=ran`. States: `ran` (compared), `absent` (nothing printed to compare: cell empty, or the template does not tag it),
+`no-saved-result` (Rule 1 refused on it), `not-reached` (an earlier refusal stopped first). `line` = qty x price == printed amount; `linenet` = printed amount == the filed line net after the import.
+It is in the `§SHEET_DOOR` log line, the shim result, the pane and `file_it.html`. When a check is `absent` although the template TAGS its cell (the user may believe it ran), the status
+cell adds *"; not checked: subtotal (none printed)"*; a template that never tagged it adds nothing there. The TWIN rule holds: no invoice logic is added, only the door's own sheet checks.
+
+**Rule 3 — no astral character in a hidden cell (H-ASTRAL).** The loss is in the VENDORED reader (inline string, 4-byte UTF-8); `erp/xlsx.mini.min.js` is not patched. The class is removed
+at the writer: every line the shim appends to `_door_history` / `_door_ledger` is ASCII-escaped for characters beyond U+FFFF (`😀`; a JSON string, so `JSON.parse` returns the SAME text and
+every digest is computed on parsed values, never on the line text). Old workbooks (raw astral characters in a line) verify unchanged and are normalised to the escaped form the next time a
+line is appended. Limit that stays: an emoji typed into a VISIBLE cell and re-saved by an inline-string writer is read back as U+F600 by this reader (Stamp would record a change);
+it is a reader limit named here, not fixed. Check history on an already damaged history says "edited" as before, plus a hint when the text holds a lone surrogate or private-use character.
+
+**Claims.** Each names the issue it exposes and can fail:
+| ID | Claim | Issue exposed | Falsifier (mutant) |
+|----|-------|---------------|--------------------|
+| D10 | the openpyxl re-saved sample (G8, G9, G20 without results) is REFUSED, the reason names those cells and says why, status cell the same, zero `_door_ledger` rows, zero journal entries | the adds-up check silently off | formula-without-value treated as blank |
+| D10b | the engine alone: `opts.noSavedResult` naming a header total / a filled line amount refuses; naming an unfilled row's amount does not | the rule over-refuses or under-refuses | unfilled-row exemption dropped; flagged list ignored |
+| D11 | a normal workbook files as before (same invoice fingerprint) and says `checks: line=ran subtotal=ran grandtotal=ran linenet=ran`; a template without `subtotal` files and says `subtotal=absent`; a tagged but empty subtotal says `subtotal=absent` and the status cell adds the not-checked note | a check that does not run is invisible | the checks list not reported |
+| H-ASTRAL | a history entry holding U+1F600 survives the openpyxl re-save and verifies; the stored text holds no character beyond U+FFFF; an old (raw) workbook verifies and is normalised on the next append | Check history calls an untouched history edited | escape dropped |
+| HOST | a re-saved file read WITHOUT `sheetStubs` cannot see the formula (so `READ` must carry it) | the host silently loses the fact | `sheetStubs` dropped from READ |
+
+**PDF page side.** Answered by reading the code, recorded in RESULTS below.
+
+### 12.1 RESULTS (2026-11-27, bim-ootb `fix/door-check-must-run`, PR #3488)
+Built as specified; logs read (`§SDOOR-*`, `§SADDIN-*`, `§FILEIT-*`, `§SWPP-*`). Verdict lines:
+```
+§SDOOR-VERDICT PASS judged=33 failed=0 (D10 7, D11 5)        §SDOOR-MUTANTS killed=11/11
+§SADDIN-VERDICT PASS judged=63 failed=0 (A11 4, A6/A8 re-stated) §SADDIN-MUTANTS killed=14/14
+§FILEIT-VERDICT PASS judged=53 failed=0 (F12 9, F13 4)       §FILEIT-MUTANTS killed=9/9  §FILEIT-NODE-MUTANTS killed=6/6
+§DOORERP-VERDICT PASS judged=47 failed=0                     §DOORERP-MUTANTS killed=13/13
+§SWPS-VERDICT PASS judged=55 failed=0                        §SWPS-MUTANTS killed=8/8
+§SWPP-VERDICT PASS judged=28 failed=0 (was 27; +page-refuses)  §SWPP-MUTANTS killed=3/3
+§SHIST-VERDICT PASS judged=20 failed=0                       §SHIST-MUTANTS killed=5/5
+§NOSAVED (F12) verdict=REFUSED text="Not filed: cells G20, G8 and G9 hold formulas with no saved result; open and save the file in your spreadsheet program, or type the figures" checks: line=no-saved-result subtotal=no-saved-result grandtotal=not-reached linenet=no-saved-result
+```
+Existing counts moved only where I added checks (door 21 to 33, addin 59 to 63, file_it 40 to 53, wps page 27 to 28); the three witnesses that quote them (W-FILE-IT F11, W-DOOR-ERP E10) were updated to the new numbers.
+- **D10.** The openpyxl re-saved sample is REFUSED naming G20, G8, G9; zero ledger rows, zero journal entries, no invoice, only G24 written. The remedy the message offers works: the same file with the three figures typed is FILED, every check ran. An unfilled row's flagged amount (G12) does not refuse (mutant: exemption dropped, killed).
+- **Reader fact (measured).** SheetJS 1.2.1 as vendored DROPS a formula cell that has no `<v>` unless read with `sheetStubs: true`; then it is `{t:'z', f:'D8*E8', v:0}`. The `v:0` is NOT a saved result: `xlsx_host.js` treats `t:'z'` as no value (mutant N3 reads it as 0, killed; mutant N1 drops `sheetStubs` from READ, killed).
+- **D11.** Normal workbook: same invoice fingerprint as the oracle, `checks: line=ran subtotal=ran grandtotal=ran linenet=ran`, status cell unchanged. A template without a subtotal tag: FILED, `subtotal=absent`, status unchanged. A tagged but empty subtotal: FILED, `subtotal=absent`, status `...; not checked: subtotal (none printed)`.
+- **H-ASTRAL.** The misread is in the vendored reader (inline string, openpyxl's writer). After the fix a stamped history holding U+1F600 is stored as `\ud83d\ude00`, survives the openpyxl re-save and `Check history` says OK; an old workbook with a raw emoji line verifies, and the next Stamp normalises it (mutants: escape dropped N5, old lines not normalised N6, both killed). Still open, a reader limit not fixed: an emoji typed into a VISIBLE cell and re-saved by an inline-string writer reads back as U+F600, so a later Stamp would record a change in that cell; and an already damaged history still says "edited" (no hint added: the escape removes the class for new entries, and a heuristic on private-use characters would claim a cause it cannot prove).
+- **WPS page witness (27 to 28).** Its Q2 used to open the re-saved workbook in the real `file_it.html` and expect FILED: that was the false pass. It now expects REFUSED naming the cells, then FILED with the figures typed in (ledger replays, chain of 2, same books). Its `§SWPP-LIMIT` lines were reworded to say the door now refuses.
+- **PDF page (item 5).** `pdf/` only WRITES an `.xlsx` (`pdf_history.js` `xlsxBytes`, `report_reader.js` `toWorkbook`); no code in it reads one back. The only path that reads an `.xlsx` back is `xlsx_host.js` (File it / Stamp), now covered; the PDF page's total cells `C28`-`F28`, if tagged by a template, are refused the same way.
+- **Not done / stated:** real Excel and WPS not run (a live formula cell always has a value, so `noSavedResult` is absent there; unverified on WPS until it runs); `READ` must carry `sheetStubs` for any other caller that reads a workbook file for the door (only `file_it.js` does).
