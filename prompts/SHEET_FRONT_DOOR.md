@@ -1247,3 +1247,17 @@ failed=0 (the same four findings as §13.4; its WPS driver now lives in `erp/tes
 **Not yet:** real Excel (not run: neither the page beside Excel's own writer nor the menus); a real phone; styles in the download; signing (a typed name;
 a removed `_door_history` unnoticed; finding 1); merge-base tracking (finding 6); inserted rows / columns as such; grids beyond 200 x 40 drawn; three-way
 merge of more than two copies in one step; W-HISTORY-PAGE is not wired into CI (like the lane's other witnesses).
+
+**Merged and deployed (2026-11-28):** bim-ootb PR #3489 merged as `9c9578dd`; CI, release-please and "Deploy to GitHub Pages" all success on that commit.
+Fetched back: `https://red1oon.github.io/bim-ootb/erp/sheet_addin/history.html` 200, 8,307 bytes, byte-identical to the merged file (the deploy serves the
+scripts minified: `history.js` 20,115 bytes live vs 26,007 in the tree). One stamp + one merge against the LIVE page, headless
+(`HPAGE_URL=<that url> node erp/tests/witness_history_page.js`), log read:
+```
+  §HPAGE-CHECK case=LIVE key=loaded OK  ({"requests":6,"bytes":95489,"readyMs":370,"heapMB":2,"kernel":false})      <- 95 KB on the wire (compressed), 6 requests, no kernel
+  §HPAGE-CHECK case=LIVE key=stamp OK     a Stamp on the live page records the genesis (114 cells) and the downloaded file verifies (engine + kernel)
+  §HPAGE-CHECK case=LIVE key=conflict OK  ONE conflict on BACKUP!B7 with both values (11, 22) and both names, Finish disabled
+  §HPAGE-CHECK case=LIVE key=merge OK     the merged file verifies (engine + kernel), is 3 entries, keeps B7 = 11 and holds C5 and C6
+  §HPAGE-CHECK case=LIVE key=nothing-sent OK  every request of the live run was a GET to the page's own origin
+  page: §SHIST-PAGE-MERGE verdict=RECORDED entry=3 ops=1 fork=1 otherEntries=1 otherHead=b542f851d59e picks=["BACKUP!B7:a"] lineChars=1176
+§HPAGE-VERDICT PASS judged=5 failed=0 cases=["LIVE"] (headless Chromium on the DEPLOYED page; real Excel NOT run)
+```
