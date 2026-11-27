@@ -1671,6 +1671,74 @@ editor more cleaner space control?"* — adopted: **substitute and FLAG instead 
   the history verifies with the undo entries; **H7** accept removes the red box and keeps the substitution. Mutants: red box written into the PDF → H5;
   undo not recorded in history → H6.
 
+### 18.4 RESULTS — slice A (2026-11-28, bim-ootb PR #3500 `feat/edit-as-sheet`, merged as `4a38ab58`, deployed)
+**The scope changed mid-build, per §18.5 then §18.6.** The build started on the two-mode design of 18.2/18.3. Only measurements and the standard-font width tables
+had been written when §18.5 arrived, and no "fresh PDF" writer was ever written. The tables went into the one engine for the §18.6 closest-font step. What
+shipped is §18.0. The 18.3 claims E1, E2, E4 and E6 are superseded, so they were not judged; H1-H7, E3, E5 and E7 were.
+Code (bim-ootb): `pdf/edit_layer.js` (new, 135 lines: the targets, the totals marked on the page, the formula with its rows lit, a mouse drag giving sum and
+count, the red box, the editor). `pdf/pdf_write.js` (+`rewriteText` = the same in-place engine for any text run; one-byte TrueType/Type1 fonts through ToUnicode
+or WinAnsi; `lockOf` = the one owner of "writable"; the closest standard font from the FontDescriptor flags plus a width fit, added to the page's `/Font`
+dictionary). `pdf/index.html` (the layer is built on open, edits are made on the page, Undo/Redo by Ctrl/Cmd+Z and buttons, "Show grid" = the old side grid,
+the export lists substitutions). `modeller/pdf2dxf/pdf_reader.js` (`pagePaths` also returns `imageBoxes`; `read()` output is byte-identical to main on 7 PDFs).
+`pdf/sw.js` ASSETS (+2). `pdf/tests/witness_edit_sheet.js` (new). `witness_pdf_mobile.js` (+1 stated line `§PDFM-LAYER`). Diff: 7 files, +759 / −47.
+Command: `EDSHEET_MUTANTS=1 env -u DBUS_SESSION_BUS_ADDRESS node pdf/tests/witness_edit_sheet.js` (`EDSHEET_URL=<live page>` runs it against the deployed page,
+without mutants).
+```
+§EDSHEET-H1 PASS judged=5 failed=0 writableRuns=139 lockedRuns=46 writableTargets=139 lockedTargets=46 uncovered=0 wronglyOffered=0   (+ picture page: the image locked, "Locked: a picture ...")
+§EDSHEET-E3 PASS judged=8 failed=0 D28 gap=1 computed=40393.44 lit=21 entries=6 marksOk=4/4   (D10 +1 -> D28 "rows 40,393.44, gap 1.00"; the consistent four -> all marks add up; drag D6..D9 = sum, count 4)
+§EDSHEET-H2 PASS judged=10 failed=0 cells=144 B10dx=0.000 D10dr=0.000 verdict=ADDS_UP   (text B10, B12, a run inside the mixed cell A1, numbers; poppler agrees; the 12-page report's one-byte font)
+§EDSHEET-H3 PASS judged=5 failed=0 changed=5,6 added=32 of 31 objects; raster inside=696 outside=0   (picture page: the image object byte-identical, raster 149 inside / 0 outside)
+§EDSHEET-H4 PASS judged=2 failed=0 thai:script-not-supported · arrow:glyph-missing ("the standard PDF fonts cannot show "→""), bytes unchanged both times
+§EDSHEET-H5 PASS judged=5 failed=0 cell=B12 from=LiberationSans to=Helvetica standard=true why="no face of LiberationSans in this file holds them; closest standard PDF font: described as sans-serif, old text width 1.00 of the original"
+§EDSHEET-H6 PASS judged=4 failed=0 undo=byte-identical redo=byte-identical entries=5 verify=true actors=report-reader|you|you (undo)|you (redo)|you (undo)
+§EDSHEET-H7 PASS judged=1 failed=0 redBoxes=0, "Quiz Zebra" still drawn in Helvetica
+§EDSHEET-E5 PASS judged=3 failed=0 cells=144 sums=4 history=OK/9   (host_shim.js's own reader)
+§EDSHEET-E7 PASS judged=3 failed=0 layerMs=407 doc=390px header=99px scrolled=0 input=16px
+§EDSHEET-MUTANTS killed=7/7   (target dropped->H1, totals stale->E3, wrong place->H2, Thai dropped->H4, untouched object rewritten->H3, red box written->H5, undo not recorded->H6)
+§EDSHEET-VERDICT PASS judged=46 failed=0 mutants=7/7            LIVE (deployed page): §EDSHEET-VERDICT PASS judged=46 failed=0
+§EDSHEET-COST layerBuilds=19 layerMsMax=29 (trial balance, desktop) · phone 4x CPU: 56-65 ms · the owner's PDFs: 24-2,228 ms (the slowest are files refused at file level)
+§PDFM-VERDICT PASS judged=162 failed=0 (the owner's 25 PDFs, names withheld; local)   · corpus §PDFM-VERDICT PASS judged=36 failed=0   · LIVE: §PDFM-VERDICT PASS judged=162 failed=0, §PDFM-FIRSTVISIT bytes=253744 msToUsable=1714 (was 235,719 / 1,692 in §17.3)
+```
+Regression on the same tree: §PDFWR 67 (6/6) · §PDFHIST 57 (10/10) · §SREAD 38 (8/8) · §PDFED 13 (3/3) · §PDFPG 19 · §PDFWP 22 · §PDFHP 19 · §USE 44 · §SWPP 28 ·
+§DOORURL 5 · `eslint pdf` exit 0 · CI pass. **No existing witness expectation was changed.**
+
+**Findings:**
+1. **18.3 E6 / E4 were wrong for the proof file (dated 2026-11-28, before §18.5 superseded them).** The trial balance is not Latin-only: 46 of its 185 runs on page 1 are
+   Thai (13 words: title, header row, "รวม", the difference row). E6 ("a Thai word in the model makes the PDF export refuse") would have fired on the unedited
+   file, so E4's round trip could not have been judged on it. §18.5's "export = the original file with only the edited runs changed" removes the problem: the Thai
+   runs stay untouched and locked.
+2. **Thai arrives in pieces.** The 13 Thai words are 46 runs, split at the glyph clusters, and the vowel marks are runs of ZERO width (e.g. at x = 70.90). A cell that
+   mixes Thai and Latin (A1 "งบทดลอง (Trial Balance)") offers its Latin run alone; the Thai runs are locked with the reason "Thai text: its letters are shaped by
+   the font ...". Two geometry rules were needed, found by H1's own failing checks. (a) A run's box is drawn in by 0.6 pt at each side, so a zero-width mark touching
+   " : " does not fall into it. (b) The box handed to the writer is the run's baseline band (±0.3 pt), not its glyph box: the glyph box of a 10 pt run reached the
+   14 pt title's baseline on the line above, and the engine would have refused the edit.
+3. **The PDFKit title already overflows its own clip.** "(Trial Balance)" is clipped to 63 pt but is wider than that. A WIDER new text is refused `does-not-fit`
+   (named, as §4.3 wants); a text no wider than the old is written. The witness edits it to "(Trial 2003)".
+4. **Outside files: the file structure decides, not the fonts.** On the owner's 24 openable PDFs (phone run, counts only), page 1 of **9 has writable text**.
+   Refused at file level: **8 by cross-reference streams (PDF 1.5+)** and 1 encrypted. Also 4 turned pages (`/Rotate`), 1 with all its text inside a form XObject,
+   and 1 scan. Each is locked with its reason. The biggest next lever for "edit any PDF" is cross-reference streams (8 of 24), then turned pages (4).
+   Rotation was found in this run: the first owner run said "rotated-text" on every run of those 4 files (true in the writer's unturned frame, but misleading to a
+   user who sees upright text). It now says "this page is turned (/Rotate 90)".
+5. **A finger's tap closed its own editor.** After a touch the browser moves the focus, which blurred the new field at once (E7's first run: editor logged, field
+   gone). The editor now opens on `touchend` with `preventDefault`. Measured after: scrollY 0 → 0, a 16 px field on screen.
+6. **Undo is exact.** It puts back the earlier bytes, so after edit → undo the PDF is the original byte for byte, and the downloaded copy differs only in the history
+   objects (1 changed, 2 added). Each undo or redo is an S9 entry ("you (undo)" / "you (redo)"; S9 fixes `meta`, so the mark is in the hashed actor), and the history verifies.
+7. **One reader of page 1 per purpose.** The layer reads page 1 when a file opens. That read is kept apart from the grid's `S.read`, so the P0 page witness's
+   "opening another file clears the previous sheet" holds unchanged. Download .xlsx uses the grid's sheet when it is open, else the page's own.
+
+**Not done (stated):**
+- The layer is on **page 1 only** (as §18.3 scoped).
+- Cross-reference streams, turned pages and text inside form XObjects are locked, not edited.
+- Drag-sum works with a mouse only; a finger scrolls.
+- "Masks the old run's box on screen" is done by redrawing the page from the rewritten bytes (pixels outside the edited boxes unchanged, H3). There is no separate mask.
+- Substitution judged on the page: sans regular → Helvetica only. The Times and Courier, bold and italic choices are coded, not witnessed. The same-family step
+  is judged by the engine (W7), not on the page.
+- Edits outside a table are recorded under the sheet `_door_text` (cell `A<run>`). The open-time binding check skips `_door_` sheets, so a file whose prose was
+  changed outside the editor is not detected.
+- The Modeller's W-PD2 witness was not run (it needs an outside oracle, VACUOUS without it). The `read()` equivalence on 7 PDFs stands in for it.
+- Real Excel, Acrobat and Preview were not run. The new witness is not wired into CI.
+- Privacy: the diff was checked against the 25 file names before the PR. One stem matched, and it is treated as the generic word that §17.3 found. It was not
+  inspected further, because the list may be used only through the mobile witness.
 
 ## 19. The report engine in the live app: "a report printed by our ERP" (spec 2026-11-28, before code)
 Owner, 2026-11-28: agreed to merge the NinjaExcel report PDF engine first (OPEN LIST 22) so the new film (FILM_KILLER_FRONT_DOOR "FILM v2") can show a report
