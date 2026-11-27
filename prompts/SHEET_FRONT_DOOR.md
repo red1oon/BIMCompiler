@@ -1543,3 +1543,42 @@ runs anywhere). Verdict `§PDFM-VERDICT PASS|FAIL|INCONCLUSIVE judged=N failed=M
 - **U4 nothing wider than the phone:** document width ≤ 390; every control ≥ 24 x 24.
 - **U5 no page errors, refusals in words** (scan: "no text"; locked: asks a password).
 A FAIL is a finding: the fixes are specced in §17.1 after the first run, with the numbers.
+
+### 17.1 First run (before any fix) and the fixes decided (2026-11-28)
+Run: `PDFM_LIST=<scratchpad list> node pdf/tests/witness_pdf_mobile.js` on the local tree = main `1b7a91eb` (25 of the owner's PDFs, phone emulation of §17).
+`§PDFM-VERDICT FAIL judged=135 failed=76`. First visit on slow 4G: 763,201 bytes, usable after 4.2 s. Per file (n, bytes, pages → open ms / page 1 painted ms
+/ canvases alive / peak JS heap):
+```
+small, 1-4 pages (n 1-9, 13, 15, 22, 25)   open 160-490 ms, page 1 painted 0.24-2.9 s, canvases = pages, heap 3-65 MB          M1 PASS
+n=11  430 KB    38 p   open   368 ms   page 1  1.97 s   canvases   38   heap  11 MB
+n=12  1.2 MB    69 p   open   902 ms   page 1  5.72 s   canvases   69   heap 135 MB                                        M1 FAIL
+n=14  2.0 MB   126 p   open 1,356 ms   page 1  9.47 s   canvases  126   heap 200 MB                                        M1 FAIL
+n=16  6.3 MB     4 p   open   818 ms   page 1  8.14 s   canvases    4   heap 106 MB   (image-heavy pages; 50 long tasks)    M1 FAIL
+n=23  8.3 MB    79 p   open   601 ms   page 1  3.50 s   canvases   79                                                    M1 FAIL
+n=19  79 MB     80 p   open 6,494 ms   page 1  7.74 s   canvases   80
+n=20  60 MB  2,464 p   open 7,776 ms   page 1 19.58 s   canvases 2,464  heap 267 MB
+n=21  47 MB  2,499 p   open 9,199 ms   page 1 21.89 s   canvases 2,499  heap 261 MB
+n=17 not a PDF → "This file is not a PDF." · n=18 scan → "11 pages, no text (a scan)" · n=22-24 locked (owner password only) open normally.
+```
+**Findings (code read, file:line in `pdf/index.html` at `1b7a91eb`):**
+1. **M2 every page drawn on a phone.** `layout()` observes the pages with `root: #pages`. At ≤ 760 px `main` is `height: auto`, so `#pages` never scrolls:
+   it is as tall as the whole document and every page "intersects" → `draw()` for all pages at once (2,499 canvases). The window scrolls instead.
+2. **Read as sheet reads the MIDDLE page on a phone.** `track()` takes `#pages.scrollTop + clientHeight / 2`; with `#pages` full height that is the middle of the
+   document: page 7 of 12, 20 of 38, 35 of 69, 1233 of 2464 were read, never the page on screen. `go()` (outline, Find hits) sets `#pages.scrollTop`: on a phone
+   it moves nothing. Correctness, not only comfort.
+3. **M1 page 1 waits for the whole file.** `PdfOpen.open` (`pdf/pdf_open.js:44`) reads every page's text before it returns (7.8-9.2 s for 2,500 pages), and
+   page 1 then competes with every other page's drawing (finding 1).
+4. **U2** the toolbar wraps to 205 px (9 controls + the status line). **U1** the outline / found / history panel (30 vh) sits ABOVE the document: page 1
+   covers 18-44%. **U3** after Read as sheet the verdict is below every page (top at 814-824 px of 844, or further).
+
+**Fixes:**
+- F1 the pages are observed against the viewport when `#pages` does not scroll itself (phone), against `#pages` when it does (desktop); `track()` and `go()`
+  work from the pages' positions on screen (`getBoundingClientRect`, `scrollIntoView`), so both layouts read and jump to the page on screen.
+- F2 open in two steps: `PdfOpen.open(..., { textLater: true })` returns after the page sizes; page 1 is laid out and drawn; then the text is read (progress
+  in the status line). Find, Read as sheet and the history check wait for it; `§PDFED-OPEN` is still printed once everything is read (no witness changes).
+  Without the option the opener is unchanged (node witnesses).
+- F3 phone layout: the document first, then the sheet / outline / history; Read as sheet SHOWS the sheet in place of the pages (verdict at the top), Close goes
+  back; the toolbar uses short labels on a phone (Open · Sheet · .xlsx · PDF) and Find behind a button; the sample button hides once a file is open.
+- **U1 restated (a fact of geometry, not a loosening):** a landscape page cannot cover half a portrait screen at full width; U1 passes when page 1 covers
+  ≥ 50% of the first screen OR is wholly on it.
+- **U6 new:** scrolled so page k is in the middle of the screen, Read as sheet reads page k (finding 2).
