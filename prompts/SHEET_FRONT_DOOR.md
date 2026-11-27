@@ -1758,3 +1758,53 @@ reads back to the same cells and "adds up" (the round trip this film beat needs)
 strings (SARA AM right: `จำนวน`); **N3** that PDF opens on the one page (§18) and a number edit round-trips (H2/H3); **N4** the lane's existing witnesses
 (W40/W41/W42, W44 Xtab2, W47 replay — as its file names them) stay green; **N5** cost logged (bytes added to the first visit of the ERP page; pdfkit loads only when
 a PDF is asked for). Mutants: SARA AM fix removed → N2; a cell dropped from the PDF → N1.
+
+### 19.1 RESULTS (2026-11-28; bim-compiler #1375 merge `614583fe`, bim-ootb #3501 merge `03f67130`, witness follow-up #3502 merge `8537a5be`)
+**How it was done:** the NINJAEXCEL lane's own plan, step 1 ("re-home the pill port into `erp/overlay/ninja/`, open the bim-ootb PR, merge `ninja-xtab2`"). Its ⛔ needed
+no owner ruling: the law's rules are written (ERP_DEPTH_FILM.md §EXTENSION-LAYER LAW), and "ask the #2009 session before touching `overlay/boot.js`" did not arise -
+boot.js is not touched (other sessions have edited it since, #2431 #2592; editing it now would also change its `?v=` code in `idempiere.html` and break CU2).
+- **bim-compiler #1375** (`ninja-xtab2` + 4 commits, master merged in: PROGRESS.md master's, the NinjaExcel manual the branch's wording): `build/erp` stays the one
+  source of truth. `ninja_pdf.js` SARA AM fix; `ninja_report.js` = the pill-sync host (pre-flight, SELECT-only guard, SQL timing) + `opts.paths` + `opts.pdf=false`/`toPdf()`;
+  `ninja_pill.js` back to master (the report flow is the overlay's now); W40/W41/W48/run_usecases/probe_uc1/run_all.sh follow the bim-ootb layout.
+- **bim-ootb #3501** - NO core file changed (W-CORE-UNTOUCHED: "core files differing ... none"): `erp/overlay/ninja/` = 6 byte copies of `build/erp` + `report_pill.js`
+  (wraps `NinjaPill.open`/`handleBuffer`: two sample report links, a workbook with Input+Process+Output+BACKUP goes to the report flow, any other to the core unchanged)
+  + `samples/` (the lane's two templates, 7.8 + 7.5 KB, copied: its generator is Java/POI `MakeParityTB/Reg.java` + `Xls2Xlsx`, main had no equivalent);
+  `erp/overlay/pills.js` +3 lines loads it; the old core `crud_overlay.js withTipDb` edit is replaced by the published `__crud.withTipQuery` (the raw connection is used
+  inside it); `common/pdfwriter/` = PDFKit 0.15.2 standalone (MIT) + 6 OFL fonts, the one writer for new pages (§18 slice B can load the same; not `common/lib`, that is
+  W-ONE-LIB-FOLDER's mirrored set: putting it there added 4 L3 MISSING lines); ExcelJS = the existing `viewer/lib/exceljs.min.js` (byte-identical, no second copy).
+  The pill shows "Run report" -> preview + `.xlsx` + **Download PDF** (the PDF is drawn on that click), as the manual describes.
+- **SARA AM, in the engine:** the font (Noto Sans Thai, OpenType ccmp) draws ำ as NIKHAHIT + SARA AA; the AA glyph is shared with every real า, and a ToUnicode entry
+  belongs to a glyph, so readers got an extra า. A glyph remap cannot cure it (an empty entry reads as U+0002 in pdf.js and as a space in poppler - both measured).
+  Cure: a cluster holding SARA AM (Thai U+0E33 / Lao U+0EB3) is DRAWN as its shaped outlines and WRITTEN as transparent text shaped without ccmp (the font's own
+  single ำ glyph); fontkit's glyph cache is primed so a decomposed AA never poisons a real one (found: the first fix turned `เอกสาร` into `เอกส ร`). Drawing unchanged:
+  600 dpi cross-correlation old vs new best offset 0 px. Before/after, `pdftotext -raw` of the sales-register PDF: **`จำานวนเอกสาร (ใบ) 1`** -> **`จำนวนเอกสาร (ใบ) 4`**
+  (also `น้ำ ต่ำ`, `กำไร` exact, both PDFKit builds; Lao ຳ needed nothing - its font does not decompose).
+```
+§NINJAPDF-N1 PASS   read=144 sameAddressAndText=144 extra=0 verdict=ADDS_UP reason="4 totals agree with their rows"   (trial balance 2003, from the pill, real download)
+§NINJAPDF-N2 PASS   trial-balance Thai cells 11/11, sales-register 9/9, poppler -raw and pdf.js; saraAmLine="จำนวนเอกสาร (ใบ) 4"
+§NINJAPDF-N3 PASS   pdf/index.html (§18, #3500): C6 273.80 -> 274.80 typed, §EDSHEET-EDIT ok=true, reader C6="274.80" othersChanged=0 rightEdgeMoved=0.000pt,
+                    poppler new=1 old 2->1, verdict=DOES_NOT_ADD_UP reason="C28: printed 0.00 != rows sum 1.00; F6: printed 273.80 != F = C + D - E gives 274.80"
+§NINJAPDF-N4 PASS   run_all.sh gatesOk=54 (W40 B2_browser_run, W41 B2_pill_end_to_end 21 accounts debit=credit=40,392.44, W42 R_register_*, W44 X_xtab2 cells=12 diffs=0,
+                    W47 R_replay_MOES_sofp 49/49 152/152 + cashflow, W48 W_pill_preflight 8/8, every negative control FAIL as it must)
+§NINJAPDF-N5 PASS   first visit: one new request, report_pill.js; bytesAdded=12,152 (11,609 + pills.js 543); Run report fetches ExcelJS + engine 1,025,580 B and NOT the
+                    writer; the first Download PDF fetches PDFKit + ninja_pdf.js + 6 fonts 3,667,677 B (fonts 964,452); a second report fetches nothing again
+§NINJAPDF-N6 PASS   erp/overlay/ninja engine files == bim-compiler origin/master:build/erp (6 of 6)
+§NINJAPDF-MUTANTS killed=2/2   M1 SARA AM fix removed -> N2 FAIL (register 8 of 9); M2 a cell dropped -> N1 FAIL (143 of 144)
+§NINJAPDF-VERDICT PASS N1=PASS N2=PASS N3=PASS N4=PASS N5=PASS N6=PASS judged=23 failed=0
+LIVE (https://red1oon.github.io/bim-ootb/, after the Pages deploy of 03f67130): §NINJAPDF-VERDICT PASS ... judged=23 failed=0 (N1 144 of 144 ADDS_UP)
+```
+**Regression (logs read):** W-FILE-IT PASS 53/0 · W-DOOR-ERP PASS 48/0 · W-HISTORY-PAGE PASS 91/0 · W-KILLER-USE PASS 44/0 · W-SHEET-DOOR PASS 33/0 · W-SHEET-ADDIN PASS
+63/0 · gen_manifest --check verdict=PASS · bump.js --changed: nothing to bump (no changed file is loaded with `?v=`) · eslint clean on the touched files.
+**Findings:**
+1. **W41 had been red since bim-ootb #2083** (the Excel Report pill became a plugin bundle): its server sent `.mjs` as octet-stream, the bundle never loaded, `#pill-ninja`
+   never appeared. Fixed in W41 (serve `.mjs` as JavaScript, wait for the pill).
+2. **`U_usecases` is BAD on pristine bim-ootb main too** (`scripts/erp_usecases` UC-1 POS sale: `[data-doc-action="CO"]` never appears; probe run on a `git archive` of
+   origin/main, no NinjaExcel code involved). The DEPTH-lane gestures it borrows have drifted. Not N4's list; named, not fixed here.
+3. **W-CORE-UNTOUCHED CU4 fails on main itself since #3373:** `erp/modules.json` names `erp/overlay/boot.js` (the manifest owns the seam's `?v=` code). The law's owner
+   decides whether the manifest counts as a reference; CU1-CU3 pass for this work.
+4. The witness's first LIVE run FAILED N1-N3 for its own reason (a slower sample fetch let it press the previous Run button; Chrome's same-name download overwrote the
+   first PDF) - fixed in #3502, live then 6/6. A green local run had not exercised that timing.
+**Not done:** the overlay's report files are not precached (offline report run not claimed - adding them to `PRECACHE_ASSETS` would edit core `sw.js` beyond
+CACHE_VERSION, CU3); the slow-statement guard is still not called by the pill host; `ninja_excel.js` (old scalar binder) and the template engine are still two engines
+(AD-LAYER LAW 5, lane item 4); the manual's "designer section" draft is not merged into the live manual; the film beat itself is not recorded.
+**The `ninja-xtab2` branch** is fully contained in master (#1375 squashed it with the 4 commits above); it holds nothing master lacks and can be deleted.
