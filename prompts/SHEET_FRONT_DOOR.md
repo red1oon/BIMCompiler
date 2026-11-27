@@ -1674,3 +1674,23 @@ the result can be filed into the ERP. **No claim of novelty is made until a prio
   owner's PDFs (`PDFM_LIST`, names never printed) and on the corpus.
 - **Mutants (`EDSHEET_MUTANTS=1`):** a word dropped from the drawn page → E2; total not recomputed → E3; a cell written at the wrong box in the PDF → E4;
   a Thai word silently dropped → E6. Each must be killed.
+
+### 18.5 AMENDMENT (owner's design, 2026-11-28, supersedes the two-mode split and the "fresh PDF" writer of 18.2/18.3 for slice A)
+Owner, verbatim: *"So it kinda two in one mode? Where there is common font text and table, they appear as editable such? Where there are images and special
+font text we stay out and retain its integrity while edit can happen all around it?"* — adopted: **one page, edit where understood, the original kept everywhere else.**
+- **The page:** the ORIGINAL page is drawn by pdf.js as the base (images, drawings, every font). On top, an edit layer over the runs we can write back: text in a
+  font whose embedded glyphs cover the new text, or that takes a stated standard-font substitution (WinAnsi); table cells get the spreadsheet behaviour (live
+  totals marked on the page, drag-sum, a total's formula). **Locked, never touched:** images, vector art, text in a font we cannot write (Thai in a subset that lacks
+  the glyphs, symbol fonts, ...): a tap says why it is locked. Text that is part of a picture is pixels: not editable, said so.
+- **On edit:** the screen masks the old run's box and shows the new text in place; nothing else on the page moves.
+- **Export PDF = the original file with only the edited runs changed** — the in-place engine of `pdf/pdf_write.js` (§4.3-4.4 of PDF_EDITOR.md) widened from
+  numbers to any text run: same font where its glyphs exist, else a standard font added to the page's resources and STATED per cell. Every object not edited
+  stays byte-identical; image streams are never decoded or re-encoded. One engine: no second PDF writer is added in slice A.
+- **Excel export** as before. The old side grid stays behind a **Show grid** button (owner agreed the page is the main place to work, earlier the same day).
+- **Still true:** any change breaks a digital signature (the file is a new revision); adding rows / sorting a table re-lays that table's region (slice B: the region is
+  redrawn by us, the rest stays original).
+- **Claims replacing 18.3 E1/E2/E4/E6 (W-EDIT-SHEET):** **H1** the edit layer covers every writable run of page 1 and no locked one; each locked run names why.
+  **H2** text and number edits round-trip: our reader and poppler read the new text at the same boxes, the old text is gone. **H3 integrity:** every PDF object
+  not holding an edited run is byte-identical to the original; every image stream byte-identical; a poppler raster changes 0 pixels outside the edited boxes.
+  **H4** a font without the needed glyph → the run is either substituted (stated) or locked, never written wrong. E3 (live totals), E5 (Excel), E7 (phone) and the
+  mutants stand; add mutant "an untouched object rewritten" → H3.
