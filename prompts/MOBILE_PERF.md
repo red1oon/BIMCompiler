@@ -7,6 +7,14 @@
 
 ## ▶▶ RESUME HERE — "resume mobile"
 
+### ▶ FOR THE NEXT SESSION (Fable) — review first, then build (left by the 2026-11-28 Sonnet session)
+The owner closed 2026-11-28 to continue under Fable "to give best work quality". Before building, review these with an independent read (code, not this summary):
+1. **The phone-axe mechanism (build step 1) — design it before any code.** Proposed: a `phone:false` flag per module in `viewer/modules.json`, honoured by the page builder (`scripts/gen_manifest.js` owns `viewer.html`'s tags). Open question: HOW a generated static page keeps files off a phone (a gate script that writes desktop-only tags, a second generated phone page, or `APP.lazy` rows) — weigh parse/order guarantees, offline precache, and the C1–C31 claims of `scripts/tests/witness_manifest_roundtrip.js`. Census each axed group first (see "Silent guards" rule).
+2. **`APP.lazy(name)` (bim-ootb #3499, `viewer/main.js` end of file):** is the table shape right for the film group and the phone axe (needs an `init` step that calls a module's `setupX(APP)`; ordering across rows; retry semantics)? The film-group design is in the archive §P3 STAGE 2 MOVE 2 ✅ block.
+3. **The tasker mapping to legacy:** verify against the iDempiere SOURCE (`~/idempiere-dev-setup/idempiere/`: MWFProcess / MWFActivity / MWFNode / MRequest / MRequestUpdate) that a General workflow (type G) + User Form nodes + Role responsibles can drive a per-request run the way proposed (AD_WF_Process with `Record_ID` = the R_Request). Judge the anchor alternatives before the owner decides: a new `R_Request.BIM_Anchor` column (2Pack, like `C_Project.BIM_ViewerURL`) vs `AD_Table_ID/Record_ID` to a BIM element/space record vs `A_Asset`.
+4. **Witness quality of this session's PRs** (a fresh eye, can each fail for the right reason?): W-CLASH-COUNT-AGREE (#3491 — note the R-tree-not-ready fallback still counts with NO tolerance, unfixed), W-MOBILE-CLASH-SHEET (#3496 — C4 was rewritten after its first form could not fail), W-SEND-HQ-GITHUB-LIVE (#3495 — node + the maintainer's gh token, not a browser with a fine-grained trial token), W-BOOT-CHART-LAZY / W-BOOT-CPE-LAZY (#3497/#3499 — E4 is a static check; E6 opens the editor but no film was run).
+5. **#3497 side effect:** `gen_manifest.js --write viewer` also refreshed 8 derived `uses` lists in `viewer/modules.json` (other modules) — confirm they are correct, not noise.
+
 ### The direction (the owner's, consolidated 2026-11-28)
 **The phone is for site missions, not a smaller copy of the desktop BIM.**
 - A person on site walks the building. When they arrive where work is assigned to their role, that task's card comes up on its own.
