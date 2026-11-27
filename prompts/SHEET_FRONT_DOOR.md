@@ -1109,3 +1109,77 @@ Commands: `env -u DBUS_SESSION_BUS_ADDRESS node erp/tests/witness_sheet_wps_real
 So the §11 WPSJS menu is still proven only against the fake object model; the question "does a remote https pane receive `window.Application`" stays UNKNOWN and needs a WPS build that loads the registration (Windows/macOS desktop). The no-add-in route (this section: WPS-saved file -> `file_it.html`) is now proven with the real writer.
 
 **Not claimed:** WPS on Windows / macOS / mobile; any WPS version other than 10.1.0.6757; that the residue (finding 3) breaks the PDF page's own checks (not run: the page's reader of an uploaded workbook is not part of this slice); anything about the ribbon. No WPS-saved workbook is committed (they carry the local user name); the witness regenerates them in a run directory under `$HOME` and deletes it. Cleanup after each run is logged (`§WPSR-CLEANUP ... stillRunning=none`).
+
+## 14. The history page — any spreadsheet file gets a memory, no add-in (spec)
+Spec 2026-11-28, before code. Owner, 2026-11-27: *"history is lacking in Excel. It is a missing killer... Proceed."* Owner, 2026-11-28:
+*"Film 2 poated. So next can be 3rd film with history feature also?"*
+**The hole this closes.** The history ENGINE (§6) is witnessed: record, verify, as-of replay, cell story, merge of two copies. A user reaches
+only part of it: the PDF page shows entries and a cell's story; Stamp / Cell history exist only in the Excel / WPS menus, which have never
+run in a real app (§8.3, §13 W4); **as-of (rewind) and merge have no screen at all**. Stage 1 (▶▶ block: standalone, no ERP in sight).
+
+### 14.1 Design
+- **One plain page**, bim-ootb `erp/sheet_addin/history.html` + `history.js`: the user opens their own `.xlsx` with the browser's file
+  control (File API; nothing is uploaded), and gets the workbook back by download. Model: `file_it.html` (§9).
+- **One implementation per responsibility.** Entries are made, verified, replayed, storied and merged by `erp/sheet_history.js`; they are
+  stored by `host_shim.js` (one entry = one row of chunks in the very hidden sheet `_door_history`, ASCII-escaped, §8 / §12); the workbook
+  file is read and written through `xlsx_host.js`. Stamp IS the shim's `stamp()`, the story IS the shim's `cellHistory()`. The page holds
+  no hashing, no diff, no chunking and no merge rule of its own. Two small additions to shared code, each the inverse of something already
+  there: `xlsx_host.writeSheetValues(sheet, cells)` (the inverse of `readSheetValues`: a rewound or merged sheet put back into the
+  workbook) and `shim.history` (`lines()`, `append(line)`, `keep(n)`: the shim's own private row writer, exposed, so no second chunk writer exists).
+- **No kernel, no seed.** The page loads SheetJS, the history engine, the shim, the file host and its own script. Verification on the
+  page is the engine's own `verify` (WebCrypto); the kernel's `verifyJournal` is NOT loaded there. The witness runs `verifyJournal` in node
+  on every downloaded file, so the "one format with the ERP journal" claim (H2) is still judged on what the page writes.
+- **Open.** No `_door_history` → the page says so and offers Stamp (genesis = every non-empty cell of the visible sheets). History present
+  → verified, then BOUND to the cells now in the file (replay to the last entry, `diff` against the sheet):
+  `intact` · `changes since the last stamp` (each cell listed with before → now; this is not an error, it is exactly what the next Stamp
+  records) · `edited history` (the entry named, with the engine's reason).
+- **Who.** A name the user types. It is written into every entry they stamp, so it is kept in the workbook; the field is pre-filled from the
+  name this browser last used, else from the workbook's last entry (said next to the field, so a copy received from someone else does
+  not silently stamp under the sender's name). The page says in words that it is a typed name, **not a signature**.
+- **Stamp** = one entry for all changes since the last stamp, `typedOverFormula` shown per cell, NO-OP when nothing changed (nothing written).
+- **A broken history: Stamp REFUSES (decided).** The shim's `stamp()` already refuses a history that does not verify; the page keeps that
+  one behaviour rather than add the PDF page's "new history that records the break" (`PDF_EDITOR.md` §4.6), because here the user still
+  holds the file and can go back to an untampered copy. On a broken history the page shows the named entry and nothing else: no story, no
+  rewind, no merge, no download of a "stamped" file.
+- **Cell story.** Click (or tap) a cell in a plain grid of the sheet: every value it had, who, when.
+- **Rewind.** Pick an entry N → the grid shows the sheet as recorded after entry N (`asOf`), the cells that entry changed are marked.
+  "Download this version" = a separate file `<name>_as_of_step_N.xlsx`: the visible sheets hold the step-N cells, `_door_history` holds
+  entries 1..N only (it re-opens as intact at step N). A sheet that did not exist at step N is left in the file, empty.
+- **Merge two copies.** Open a second `.xlsx`. Refused in words when: it has no history; its history does not verify (entry named); it shares
+  no first entry with the open file; either copy holds changes that were never stamped (cells named: stamp that copy first, the merge works
+  on recorded history only). Otherwise the engine's `merge` gives `applied` and `conflicts`; each conflict is shown with BOTH values and who
+  made each (the last entry of each side that set the cell) plus the value before both; nothing is written until every conflict has a
+  pick (mine / theirs / the value before both).
+- **How a merged history is stored (engine extension, minimal).** The engine could not express a persisted merge: `merge` returns a
+  snapshot, not an entry. New `SheetHistory.mergeEntry(a, b, picks, actor, at)` → ONE entry appended to the open file's own chain:
+  its `ops` are the cells that change in the open file (the other copy's edits plus the picks), `meta.merge = { fork, other, otherEntries,
+  picks }` where `other` is the other copy's head hash (meta is inside the entry hash, so the merge is tamper-evident), and
+  `payload.theirs` = the other copy's entries after the fork, carried whole. `verify` checks a merge entry's carried entries: the shared
+  prefix + `theirs` must itself verify and end at `meta.merge.other`. `cellStory` shows the carried entries (who and when on the other
+  side) before the merge entry's own line. The chain stays linear, so the kernel's `verifyJournal`, `asOf`, Stamp and the Excel shim read
+  a merged history with no change. A copy already merged (its head is some entry's `meta.merge.other`) is a NO-OP.
+- **Limits said on the page:** cell styles (colours, widths, borders) are not kept in the downloaded file (SheetJS community build, §9.5);
+  edits between two stamps fold into one step (§6.2); a removed `_door_history` is not noticed (needs signing).
+- Grid: at most 200 rows x 40 columns of a sheet are drawn (said when cut); history and merge always work on every cell.
+- Logs `§SHIST-PAGE-OPEN / -BIND / -STAMP / -STORY / -REWIND / -MERGE / -DOWNLOAD / -COST` (cost: requests, bytes, ms, heap).
+
+### 14.2 Claims (W-HISTORY-PAGE `erp/tests/witness_history_page.js`; verdict line `§HPAGE-<case> verdict=PASS|FAIL|INCONCLUSIVE judged=N failed=M threw=K`)
+Headless Chromium on the real page over a local static server, real file chooser, real downloads; every downloaded file re-read in node.
+What is judged on the page is what the user SEES (the DOM), compared with the engine run in node on the same file. A mutant that makes its
+case throw is CRASHED, not a kill. No browser → the browser cases judge nothing → INCONCLUSIVE.
+| ID | Claim | Issue it exposes | Mutant |
+|----|-------|------------------|--------|
+| P1 DAY | Real `erp/ninja_sample.xlsx`: no history → said, Stamp writes genesis (every non-empty cell). The file edited OUTSIDE (node, as another program would: B6 changed, a note added, 600 typed over the SUM in B9), reopened: the page lists exactly those cells as "changes since the last stamp". Stamp → entry 2 holds exactly those cells, B9 flagged `typedOverFormula`. Stamp again → NO-OP, `_door_history` cell text unchanged | outside edits missed or invented; an empty stamp grows the file | outside changes not listed; NO-OP writes an entry |
+| P2 FILE | Every downloaded workbook re-read in node: `SheetHistory.verify` AND the kernel's `verifyJournal` accept it; visible cells and formulas equal the input except the cells the user changed; `_door_history` very hidden; the Excel shim's own reader (`host_shim` Check history / Cell history) reads the same entries | a second format; the page damages the user's sheet | a stray cell written on download |
+| P3 STORY | The story shown for a clicked cell equals the engine's `cellStory` (every value, who, when, formula typed over), for a cell with 3 values, a cell never changed and an empty cell | a partial or wrong per-cell history | story of the wrong cell |
+| P4 REWIND | For EVERY step N the grid equals `asOf(N)` cell for cell and the marked cells equal entry N's cells; "Download this version" re-opens (page and node) as exactly that state with N entries that verify | time travel wrong; a rewound file that lies about its past | rewind off by one; rewound file keeps the full history |
+| P5 MERGE | Two copies forked from one stamped file, each stamped by another name: different cells combine; the same cell set to 11 and 22 is ONE conflict showing both values and both names, and until picked nothing is written (Finish disabled, the workbook unchanged); same value on both sides is not a conflict; after the pick the merged file verifies (engine + kernel), holds the picked value and both sides' other edits, and its story names both people. Refused in words: an unrelated file; a copy with a hand-edited history (entry named); a copy with unstamped changes (cells named) | silent overwrite; a merge nobody can check afterwards | side B wins silently; unstamped copy merged anyway |
+| P6 TAMPER | One recorded value edited inside `_door_history`: the page names that entry; Stamp is refused and the file's history is left as it was; no story, no rewind | an edited history accepted and built upon | tampered entry accepted |
+| P7 LIGHT | The page loads no kernel and no seed: requests and bytes counted by the server, **ceiling 8 requests and 400,000 bytes** (the vendored SheetJS is 250,826 of them); no request other than GET, none leaving the origin, through open, stamp, merge and download | "nothing is uploaded" unproven; the ERP's 30 MB dragged in | kernel loaded |
+| P8 PHONE | 390 x 844, touch: `scrollWidth <= innerWidth` on load, after open, after a stamp, with the story open and with a conflict shown; a Stamp made by tap records | the page is unusable on a phone | — |
+| P9 WPS | A stamped workbook saved by the real WPS writer (§13 method; no WPS → INCONCLUSIVE for this case only): the history verifies, the page lists what WPS itself changed (if anything) as changes since the last stamp, and a Stamp after a further edit chains on | the history dies in the first real program | — |
+| P10 COST | `§SHIST-PAGE-COST` requests, bytes, ms to ready, open ms, stamp ms, heap | unmeasured weight | — |
+| E1 MERGE-ENTRY | Engine, node: `mergeEntry` refuses while a conflict has no pick; the entry it makes verifies (engine + kernel), `asOf` of it equals merged + picks; an edit inside the carried entries is caught at the merge entry; `cellStory` shows the other side's name; merging the same copy again is a NO-OP; W-SHEET-HISTORY (20 checks) unchanged | a merge that cannot be audited; a second merge logic in the page | carried entries not verified; picks ignored |
+**Not claimed:** real Excel (NOT RUN: the page needs no Excel, and what Excel's own writer does to `_door_history` is unmeasured; WPS's is,
+§13); cell styles in the download; a signed identity; rows / columns inserted (seen as many cell changes, §6.1 blind spot shared with a
+snapshot diff); a real phone (device emulation only); files beyond what a browser tab holds.
