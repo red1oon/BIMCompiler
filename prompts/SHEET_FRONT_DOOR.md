@@ -1347,3 +1347,39 @@ scripts minified: `history.js` 20,115 bytes live vs 26,007 in the tree). One sta
   page: §SHIST-PAGE-MERGE verdict=RECORDED entry=3 ops=1 fork=1 otherEntries=1 otherHead=b542f851d59e picks=["BACKUP!B7:a"] lineChars=1176
 §HPAGE-VERDICT PASS judged=5 failed=0 cases=["LIVE"] (headless Chromium on the DEPLOYED page; real Excel NOT run)
 ```
+
+## 15. Short addresses and one way round the three pages (spec 2026-11-28, before code)
+Owner, 2026-11-28, verbatim: *"resume killer. Make apps URLs relatable for user easy usage continuity. Update user guide,"* (the guide part is OPEN LIST item 6).
+
+### 15.1 Measured before the design
+- The three stage-1 pages live at `red1oon.github.io/bim-ootb/pdf/`, `.../erp/sheet_addin/history.html`, `.../erp/sheet_addin/file_it.html`. Only the first is a
+  name a person can say; the other two carry the repo's folder layout (`erp/sheet_addin/`) and a file suffix.
+- None of the three links to the others (grep of `pdf/index.html`, `history.html`, `file_it.html` for each other's names: 0 hits). `file_it.html` links one
+  page only: "Open in the ERP" (`../idempiere.html`). A user who downloads the `.xlsx` from the PDF page has no way on to the history page except typing its address.
+- No `history/` or `file-it/` folder exists at the bim-ootb root (no clash). The old addresses are printed on Film 1-3 cards and used by the Excel/WPS hand-over
+  (`taskpane.js`, `door_handover.js`), the witnesses and `PDF_EDITOR.md`: they must keep working.
+- `pdf/sw.js` is network-first (no version to bump for an `index.html` change); `erp/sw.js` does not cover `erp/sheet_addin/` (OPEN LIST item 29, unchanged here).
+
+### 15.2 Design (owner delegated the shape: "relatable")
+1. **Short addresses, one word each:** `/bim-ootb/pdf/` (as it is), `/bim-ootb/history/`, `/bim-ootb/file-it/`. Each new one is a ONE-file door
+   (`history/index.html`, `file-it/index.html`) that forwards to the real page with `location.replace`, carrying `?query` and `#hash` unchanged; a
+   `<meta http-equiv="refresh">` and a plain link cover a browser without script. The real pages do NOT move: one implementation each, every old address still works.
+2. **One way round:** each of the three pages carries the same small row **PDF · Sheet history · File it**; the page you are on is marked (`aria-current="page"`),
+   not linked; the other two link the real pages directly (no forwarding hop). Each link says in its title what you would take there
+   (PDF → the report; history → the `.xlsx`; File it → an invoice workbook), because the file does not travel by itself.
+3. **Not in this slice (stated):** carrying the OPEN file from one page to the next without re-opening it. That keeps a copy of the user's file in this
+   origin's browser storage: a privacy line the pages now promise against in words ("not uploaded anywhere" stays true, but "nothing kept" would change). Owner's call.
+4. **Guide:** `docs/PdfPageGuide.md` (URL kept: it is live) becomes the guide of all three pages: the short addresses first, then change a number + Download PDF,
+   the history inside the file, the history page, File it, Open in the ERP, and the WPS user-name note (OPEN LIST item 17). Every fact taken from §7-§14 and
+   `PDF_EDITOR.md` §4.2-§4.6 results, nothing new claimed.
+
+### 15.3 Claims (W-DOOR-URLS, `erp/tests/witness_door_urls.js`, node; verdict `§DOORURL-VERDICT PASS|FAIL|INCONCLUSIVE judged=N failed=M`)
+- **U1 the doors forward right:** each door's script, run in a `vm` with a stand-in `location` (`?a=1#b`), calls `replace` exactly once with its target plus
+  `?a=1#b`; the target file exists in the tree; the meta refresh and the fallback link name the same target. Exposes: a door to a moved/missing page, a
+  door that drops the query or hash (a hand-over or deep link lost).
+- **U2 one way round:** each of the 3 pages has exactly one row; it names all 3 pages in the same order; the current one is `aria-current` and not a link;
+  each of the other two hrefs resolves, relative to the page, to an existing file that is the right page. Exposes: a dead link, a page that links itself.
+- **U3 denominator:** the pages judged = the pages named in the row (3) and the doors judged = 2; zero found prints INCONCLUSIVE, never PASS.
+- **Mutants (`DOORURL_MUTANTS=1`):** a door that drops the hash → U1; a door to a missing page → U1; a row link to a missing file → U2; the current page
+  linked → U2. Each must be killed.
+- **Live, after deploy:** the two short addresses return 200 and name their target; read back, not assumed.
