@@ -34,6 +34,5 @@ Two other messages: a file that is not a PDF, or is damaged, is refused in words
 - **No scans:** a PDF that is only a picture has no text to read. The page tells you it has no text.
 - **A PDF written by a program** (a report, a statement) works best.
 - No claim is made about many users at once, about speed on very large files, or about e-invoice compliance.
-- Changing a figure and getting the same PDF back is **not built yet**.
 
 *Built with pdf.js (Apache-2.0) and SheetJS, both open source and used unmodified.*
