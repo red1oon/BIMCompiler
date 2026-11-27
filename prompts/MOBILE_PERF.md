@@ -7,7 +7,15 @@
 
 ## ▶▶ RESUME HERE — "resume mobile"
 
-### ▶ FOR THE NEXT SESSION (Fable) — review first, then build (left by the 2026-11-28 Sonnet session)
+### ▶ ROLES (owner 2026-11-28: *"Tell Fable to be the designer as that requires heavy thinking and alot Sonnet sessions to carry out its instructions"*)
+**Fable = the designer and reviewer of this lane; Sonnet sessions = the builders.** Fable does NOT build the bulk itself. It:
+1. **Designs** — turns the direction into an architecture (phone axe mechanism, steps layer, mission model on WF/Request, arrival + freshness, sync, desktop designer) after reading the code and the iDempiere source, and records the decisions here.
+2. **Writes WORK ORDERS** — one per bounded task (one PR each), appended below as `### WO-<n> <title>` with: status line (`OPEN` / `IN PROGRESS <session>` / `✅ DONE <PR> <witness verdict>` / `⛔ BLOCKED: <question>`); the goal in one sentence; the files and functions to touch with file:line at a named commit; what NOT to touch; the spec; the witness (issue it proves, checks, red control, the `§` lines to read); acceptance = the exact verdict line; the rules that apply (this file's Rules, CLAUDE.md, AD-LAYER/TWIN laws). A Sonnet session has no memory of this conversation — the work order must stand alone.
+3. **Orders them** by dependency, so several Sonnet sessions can take independent ones (each in its own `/tmp/wt-*` worktree).
+4. **Reviews each result** against its work order from the PR diff and the run LOG (not the session's summary); marks it ✅ or reopens it with the defect.
+Sonnet sessions: "resume mobile" → take the top OPEN work order whose dependencies are ✅ → mark it IN PROGRESS → build → witness → read the log → PR → mark ✅ with the verdict → next. They do not redesign; a design question goes back as `⛔ BLOCKED: <question>` for Fable or the owner.
+
+### ▶ FOR THE NEXT SESSION (Fable) — review first, then design and write the work orders (left by the 2026-11-28 Sonnet session)
 The owner closed 2026-11-28 to continue under Fable "to give best work quality". Before building, review these with an independent read (code, not this summary):
 1. **The phone-axe mechanism (build step 1) — design it before any code.** Proposed: a `phone:false` flag per module in `viewer/modules.json`, honoured by the page builder (`scripts/gen_manifest.js` owns `viewer.html`'s tags). Open question: HOW a generated static page keeps files off a phone (a gate script that writes desktop-only tags, a second generated phone page, or `APP.lazy` rows) — weigh parse/order guarantees, offline precache, and the C1–C31 claims of `scripts/tests/witness_manifest_roundtrip.js`. Census each axed group first (see "Silent guards" rule).
 2. **`APP.lazy(name)` (bim-ootb #3499, `viewer/main.js` end of file):** is the table shape right for the film group and the phone axe (needs an `init` step that calls a module's `setupX(APP)`; ordering across rows; retry semantics)? The film-group design is in the archive §P3 STAGE 2 MOVE 2 ✅ block.
