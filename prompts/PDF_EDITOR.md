@@ -231,24 +231,25 @@ Not claimed in this cut: text other than numbers; reflow; cross-reference stream
 refusal); encrypted files; simple (one-byte) fonts and the standard 14 without widths; text inside form XObjects; vertical
 or rotated text; kerning pairs of the new digits; any report layout other than the proof file (denominator 1 of 1).
 
-## 4.4 RESULTS — P4 narrow, numbers-only write-back (2026-11-27, bim-ootb `feat/pdf-write-numbers`, PR #3477)
-Code: `pdf/pdf_write.js` (407 lines, no library), page wiring in `pdf/index.html`, `pdf/sw.js` ASSETS (+ `pdf_write.js`,
-`../erp/sheet_history.js`). bim-ootb diff vs `main`: 5 files, +929 / −13 (add-only by nature: a new layer, nothing it supersedes).
+## 4.4 RESULTS — P4 narrow, numbers-only write-back (2026-11-27, bim-ootb PR #3477 `feat/pdf-write-numbers` + follow-up PR #3478 `feat/pdf-write-align`)
+Code: `pdf/pdf_write.js` (417 lines, no library), page wiring in `pdf/index.html`, `pdf/sw.js` ASSETS (+ `pdf_write.js`,
+`../erp/sheet_history.js`). bim-ootb diff vs `main`: #3477 5 files, +929 / −13; #3478 (alignment from the column's evidence) 4 files,
++23 / −5 (add-only by nature: a new layer, nothing it supersedes).
 Commands: `PDFWR_MUTANTS=1 node pdf/tests/witness_pdf_write.js` · `env -u DBUS_SESSION_BUS_ADDRESS node pdf/tests/witness_pdf_write_page.js`
 (headless Chromium, `--disable-gpu`). Run after merging `main` with the sister slice's reader change (#3472).
 ```
 §PDF_WRITE ok=true edits=2 applied=2 refused=0 bytesIn=74945 bytesOut=74937 ms=21 cells=D10:"498.09"->"499.09",D28:"40,392.44"->"40,393.44"
-§PDFWR-W1 PASS 5/5 · W2 PASS 4/4 · W3 PASS 4/4 · W4 PASS 7/7 · W5 PASS 2/2 · W6 PASS 12/12 · W7 PASS 5/5 · W8 PASS 5/5 · W9 PASS 4/4 · W10 PASS 5/5 · W11 PASS 3/3 · W12 PASS 5/5 · W13 PASS 3/3
+§PDFWR-W1 PASS 5/5 · W2 PASS 4/4 · W3 PASS 4/4 · W4 PASS 8/8 · W5 PASS 2/2 · W6 PASS 12/12 · W7 PASS 5/5 · W8 PASS 5/5 · W9 PASS 4/4 · W10 PASS 5/5 · W11 PASS 3/3 · W12 PASS 6/6 · W13 PASS 3/3
 §PDFWR-NOTE W3 changed lines: "[<0029002b001500140004002b> 0] TJ" -> "[<0029002b002b00140004002b>] TJ" ; "[<000f000d0010001100120013000e000f000f> 0] TJ" -> "[<000f000d0010001100120011000e000f000f>] TJ"
 §PDFWR-NOTE W4 width edit D10 498.09 -> 1,498.09: /W of "1" = 556.152344, of "," = 277.832031 -> the number grows by 7.5059 pt at 9 pt; change={"x0Before":447.473,"x0After":439.967,"x1Before":475,"x1After":475}
 §PDFWR-RASTER renderer=pdftoppm dpi=100 size=946x732 pixelsChangedInsideEditedBoxes=115 outside=0
 §PDFED-FONT-SUB cell=D28 page=1 from=LiberationSans-Bold to=LiberationSans missing="5" new="40,395.44" stated=true
-§PDFWR-COST edits=2 bytesIn=74945 bytesOut=74937 delta=-8 contentBytesIn=28044 contentBytesOut=28040 rewriteMs=39 heapDeltaKB=3364 heapMB=24
+§PDFWR-COST edits=2 bytesIn=74945 bytesOut=74937 delta=-8 contentBytesIn=28044 contentBytesOut=28040 rewriteMs=13 heapDeltaKB=3274 heapMB=18
 §PDFWR-NOTE W11 ghostscript copy: bytes=35822 objects=38 content flate=true 3126 bytes, Tj=123 TJ=35 Td=14 runs=158 ... outcome=ROUND-TRIP bytesIn=35822 bytesOut=35862
 §PDFWR-SWEEP total corpusFiles=6 filesWithNumbers=6 numberCells=110 roundTrip=102 refused=8 ofThoseRoundTripWithSubstitute=4 wrong=0 poppler=true
 §PDFWR-MUTANTS killed=6/6  (old run kept→W3, right edge not kept→W4, box ignored→W1, missing glyph not refused→W6, fit not checked→W6, xref offsets not updated→W9)
-§PDFWR-VERDICT PASS judged=65 failed=0
-§PDFWR-EDIT cell=D10 ok=true old="498.09" new="499.09" sheetVerdict=DOES_NOT_ADD_UP pdfVerdict=DOES_NOT_ADD_UP agree=true fontSub=none bytes=74939 edits=1
+§PDFWR-VERDICT PASS judged=67 failed=0
+§PDFWR-EDIT cell=D10 ok=true old="498.09" new="499.09" sheetVerdict=DOES_NOT_ADD_UP pdfVerdict=DOES_NOT_ADD_UP agree=true fontSub=none align=right bytes=74939 edits=1
 §PDFWR-HISTORY entries=3 ops=1 cell=D28 before=40392.44 after=40393.44 typedOverFormula=true
 §PDFWR-DOWNLOAD file="trial_balance_th_edited.pdf" bytes=74937 edits=2 historyEntries=3 verdict=ADDS_UP
 §PDFWP-CANVAS {"same":true,"w":1100,"h":850,"inside":69,"outside":0}
@@ -262,7 +263,9 @@ Regression, same tree: `§PDFPG-VERDICT PASS judged=17` · `§PDFED-VERDICT PASS
   occurs nowhere in the saved file; ONE revision (one `%%EOF`, no `/Prev`).
 - **W4:** the other 142 cells and 186 poppler words keep text and box within 0.01 pt; 30 of 31 objects byte-identical; a
   width-changing edit keeps the right edge and moves the left edge by the font's own widths (7.5059 pt) in both readers; rendered
-  by poppler, 115 pixels change inside the two edited boxes and 0 outside.
+  by poppler, 115 pixels change inside the two edited boxes and 0 outside. With `align` left / centre (498.09 → 98.09, 5.01 pt
+  narrower) the left edge / the middle is kept instead, in both readers; `alignOf` reads column D as right (all 23 number cells
+  share the right edge), boxes of one width as right with `decided:false`.
 - **W5:** only D10 rewritten → `DOES_NOT_ADD_UP "D28: printed 40392.44 != rows sum 40393.44"`. The check still bites after an edit.
 - **W6:** 12 refusals, each named, each handing back the input bytes: `not-a-number` (x3, incl. a text cell), `old-text-not-in-box`,
   `no-text-in-box`, `glyph-missing` (font and `5` named), `does-not-fit` ("needs 97.59 pt, its cell is clipped to 84.00 pt"),
@@ -292,12 +295,14 @@ Regression, same tree: `§PDFPG-VERDICT PASS judged=17` · `§PDFED-VERDICT PASS
    `font-not-supported`. The five other corpus PDFs come from ONE generator (PDFKit); the ghostscript copy is the only second writer judged.
 4. **Found by a failing check, fixed:** the first page run failed `canvas` (1100 px before, 606 px after): the edit re-laid the
    page out. The page now redraws the visible pages in place, same size, no jump.
-5. **Cost:** 2 edits on the 75 KB file: 21-39 ms, the file 8 bytes smaller (two `0` spacing numbers gone, a shorter dictionary).
+5. **Ship slip, no loss:** #3477 squash-merged (auto-merge) while the alignment commit was being pushed; the commit went out on a
+   fresh branch off `main` as #3478 (the `feedback_followup_fresh_branch` rule). Auto-merge was switched off too late to hold it.
+6. **Cost:** 2 edits on the 75 KB file: 13-39 ms over the runs, the file 8 bytes smaller (two `0` spacing numbers gone, a shorter dictionary).
 
 **Not proven (stated, not hidden):**
 - Parity group G4 (edit text in place) is NOT claimed: this is numbers only. Groups at parity stay "G1 in part" (§4.2).
 - Code paths no corpus file exercises, so NOT judged: the `xref-stream` refusal, several cross-reference sections (`/Prev`),
-  a page with several content streams, the operators `'` and `"`, non-zero `Tc`/`Tw`/`Tz`, left and centre alignment,
+  a page with several content streams, the operators `'` and `"`, non-zero `Tc`/`Tw`/`Tz`,
   non-rectangular clips (the fit check is then not made, the change says `clip:"unjudged"`), and the font being put back after a
   substituted run (in this corpus every cell sets its own font, so W7's neighbour check would pass either way).
 - Viewers: poppler and pdf.js only. Acrobat, Preview and Chrome's own PDF viewer were not judged.
