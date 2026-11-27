@@ -55,6 +55,10 @@ door entry to the ERP when user choses"* — stage 1 makes no multi-user or perf
 - **A check that cannot run says so 2026-11-27** (bim-ootb #3488, §12): a total holding a formula with no saved result is REFUSED and
   named; every verdict lists which checks ran; stored history/ledger lines are ASCII-escaped.
 - **Sheet panel closable** (bim-ootb #3485, owner request).
+- **Usability as a newcomer 2026-11-28** (owner: *"Focus on its usability. If it checks out, suggest what is pending"*; bim-ootb #3494, §16): W-KILLER-USE walks
+  the three pages on the LIVE site, desktop + phone, across pages: **44 of 44 PASS** after the fixes (before: 7 + 2 fails). A sample on every page, tap-size row,
+  no phantom changes from PDF → .xlsx → Sheet history (one owner of a cell's formula, §16.2), File it names an unmarked workbook in plain words.
+  **The usability-ordered pending list is §16.4** — work THAT order, not the old group order.
 - **Short addresses + one way round 2026-11-28** (owner: *"Make apps URLs relatable for user easy usage continuity. Update user guide"*; bim-ootb #3493, §15):
   `red1oon.github.io/bim-ootb/pdf` · `/history` · `/file-it`; each page carries the row PDF · Sheet history · File it; old addresses unchanged. Guide rewritten
   for all three (OPEN LIST 6, 17 done). Carrying the OPEN file between pages is NOT built: it would keep the user's file in browser storage (owner's call, §15.2 point 3).
@@ -70,7 +74,8 @@ door entry to the ERP when user choses"* — stage 1 makes no multi-user or perf
 ### ▶ OPEN LIST — work it top to bottom (WORK-TO-ZERO); written at the 2026-11-28 wrap-up (owner: *"wrap up, update context well so new session will 'resume killer' and resolve all above"*)
 Each item names where its evidence is. Mark `✅ DONE (witness)` or `⛔ BLOCKED: <the one question>` here as you go.
 
-**A. Waiting on the owner (ask once, together; do not block the rest on them)**
+**A. ✅ CLOSED by the owner 2026-11-28: *"Films has delivered the idea. Focus on its usability."* The films stand as made; items 1-5 and 7 are not to be worked.**
+**(was) A. Waiting on the owner (ask once, together; do not block the rest on them)**
 1. Film 2 cover wording: "PART 2 · THE BOOKS" / "PDF and Excel are killer apps" / "ERP is now a utility" / "from your own file, into the books".
 2. Film 3 cover wording: "PART 3 · THE MEMORY" / "PDF and Excel are killer apps" / "History is the missing killer" / "your own file, with a memory inside it".
 3. Licence line on the credits cards of Films 2 and 3: "Open source: MIT licence, except 39 ERP files under GPL-2.0-only." Film 1's card
@@ -1479,3 +1484,36 @@ Witness expectations changed with it, each naming this section: W-PDF-WRITE-PAGE
 `story-clicked` (D28's story no longer marked "typed over a total"). The log tag is `§PDFXLSX-FORMULAS` (the first name, `§PDFHIST-XLSX-F`, was caught by a
 witness waiting on the prefix `§PDFHIST-XLSX`).
 Not witnessed on the page: a typed total that BREAKS its sum (flag set) — node W8 and S9 H7 cover the rule.
+
+### 16.3 RESULTS (2026-11-28, bim-ootb PR #3494 `feat/killer-usability`, merged as `1b7a91eb`, deployed; guide republished)
+bim-ootb diff: 11 files, +227 / −11 (W-KILLER-USE 150 lines; shipped code ~45 lines; `erp/sw.js` + `modules.json` by `scripts/bump.js`, parity gate run, PASS).
+```
+§USE-SITE https://red1oon.github.io/bim-ootb/ (LIVE)                                       (after the Pages deploy of 1b7a91eb)
+§USE-N1 / N1-works  desktop+phone  PDF "Try a sample report" → "Page 1 adds up: 4 totals agree with their rows."   PASS
+§USE-N1 / N1-works  desktop+phone  Sheet history "Try a sample workbook" → steps=4, D5 story 3 values, visitorNameKept=true   PASS
+§USE-N3-targets phone PDF 0 of 10 · Sheet history 0 of 6 · File it 0 of 5 controls under 24x24   PASS (was 2 each)
+§USE-J1 read · edit bites (names D28, F10) · consistent edits add up · both downloads   desktop (double-click) + phone (tap)   PASS
+§USE-J2-no-phantom desktop+phone: opened straight from the PDF page, 0 changes nobody made   PASS (was 2: D28, F28)
+§USE-J3-refused-in-words: "... Its invoice cells are not marked, so this page cannot file it yet: marking your own layout is not built yet. To see filing work,
+   press Get a sample invoice."   PASS ; J3-sample-files FILED + Open in the ERP   PASS ; J4 "This file is not a PDF."   PASS ; pageErrors=0 both widths
+§USE-COST desktop PDF 314,250 B / 1.1 s · Sheet history 98,464 B / 1.1 s · File it 11,330,012 B / 3.2 s (first visit, this line; phone run reused the cache)
+§USE-VERDICT PASS judged=44 failed=0
+```
+Regression before merge (same tree): PDFWR 67 (mutants 6/6), PDFHIST 57 (10/10), SREAD 38, SHIST 20, SADDIN 63, DOORURL 5 (4/4) + browser 6, PDFPG 19,
+PDFWP 22, PDFHP 19, FILEIT 53, HPAGE 91 (real WPS writer ran); `gen_manifest --check` PASS; eslint 0. CI on #3494: `live-json-editor` (the viewer's settings
+panel, no file of this PR) timed out once at 180 s and passed on re-run (1 m 46 s) — a flaky job, recorded, not this lane's.
+Guide: the samples, "a corrected total stays a live sum formula", File it on unmarked workbooks; republished by the seatbelt.
+
+### 16.4 What is pending, ordered by what a USER meets first (2026-11-28; replaces the group order of the ▶ OPEN LIST for the next session)
+1. **File it files only the sample.** A person's own invoice cannot be filed: marking the cells of one's own layout (S7 "Mark my invoice", §4) is not built.
+   This is now the first wall a real user hits; the page says so in words (§16.1 F5). Biggest usability gap.
+2. **File it weighs 11.3 MB on first visit** (3.2 s here) and does not come back on an offline reload (OPEN LIST 29); never run on a real phone (19).
+3. **The open file does not follow you between pages** (§15.2 point 3): owner's call, it keeps a copy in browser storage.
+4. **Real Excel never run** (15): the menu, File it, Stamp in Excel itself; needs a machine with Excel or Excel on the web.
+5. **Words a user should not need:** an edit that falls back to another face says "written in LiberationSans because the font LiberationSans-Bold in this PDF
+   has no "5"" (font names); File it's engine verdict still says "_door_tags". Plain-words pass over the messages.
+6. **Correctness under the hood (C, 9-14):** an entry's time outside its hash; one verifier (kernel vs SheetHistory); merge base; noisy formula results from
+   writers that store none; emoji in an inline string.
+7. **CI (33):** none of the lane's witnesses run in CI; the node ones are cheap; W-KILLER-USE needs a browser (the CI already installs puppeteer for others).
+8. **Depth (21-23, 25-28, 30-32, 34):** reader grid evidence, NinjaExcel layout OUT + Thai SARA AM, write-back limits, Account Viewer parity, two workbooks into
+   one books, signing, tenant/user choice, the outside request, red ERP witnesses, one SHA-256, history-page grid limits.
