@@ -1517,3 +1517,29 @@ Guide: the samples, "a corrected total stays a live sum formula", File it on unm
 7. **CI (33):** none of the lane's witnesses run in CI; the node ones are cheap; W-KILLER-USE needs a browser (the CI already installs puppeteer for others).
 8. **Depth (21-23, 25-28, 30-32, 34):** reader grid evidence, NinjaExcel layout OUT + Thai SARA AM, write-back limits, Account Viewer parity, two workbooks into
    one books, signing, tenant/user choice, the outside request, red ERP witnesses, one SHA-256, history-page grid limits.
+
+## 17. The PDF page on a phone, with the PDFs found on this machine (spec 2026-11-28, before code)
+Owner, 2026-11-28, verbatim: *"Proceed with any PDF sample in this machine. Emulate a mobile phone to see its perf, and better UI for user experience."*
+**Privacy:** the PDFs are the owner's own files (client sets among them). They are read locally in a headless browser; nothing leaves the machine. No file name,
+path or content goes into a commit, log kept in git, PR or this file: each PDF is named by a number and its measured traits only (bytes, pages, text or scan,
+money-figure count on page 1, locked or not). The list lives in the session scratchpad only.
+
+**Sample (measured 2026-11-28):** 227 PDF files over 10 KB under the home folder (not caches/node_modules/.git/snap), 158 distinct by size, all readable by
+poppler: 35 under 100 KB, 63 under 1 MB, 48 under 10 MB, 12 over 10 MB; 12 scans (no text on page 1), 16 with a table of money figures on page 1 (≥ 10 numbers
+like `1,234.56`), 3 locked, 20 over 50 pages. Judged set: those 16 tables + 2 scans + the 3 largest + the 2 longest + the 3 locked + 2 ordinary (≈ 28).
+
+**Phone emulation:** 390 x 844 CSS px, DPR 3, touch, mobile user agent; CPU slowed 4x (the Lighthouse mobile setting); the FIRST page load on "slow 4G"
+(150 ms RTT, 1.6 Mbit/s down). Witness `pdf/tests/witness_pdf_mobile.js` (W-PDF-MOBILE; `PDFM_LIST=<file of paths>`, default the page's own corpus so it
+runs anywhere). Verdict `§PDFM-VERDICT PASS|FAIL|INCONCLUSIVE judged=N failed=M`; one `§PDFM-FILE n=<k> ...` line per PDF with its numbers.
+- **M1 first page fast:** from choosing the file to page 1 painted, ≤ 3 s at 4x CPU for files ≤ 10 MB (stated for bigger). Exposes: open work that grows with
+  the whole file before anything is shown.
+- **M2 memory bounded:** canvases alive ≤ 6 right after open AND after scrolling to the end; peak JS heap stated. Exposes: drawing every page at once on a
+  phone (PERF BUDGET: release what is off screen).
+- **M3 read as sheet:** the time and verdict per table PDF (stated; FAIL only on a page error).
+- **M4 first visit:** bytes and ms until the page can open a file, on slow 4G (stated).
+- **U1 the document is what you see:** after open, the page 1 canvas covers ≥ 50% of the first screen.
+- **U2 the toolbar stays small:** the header is ≤ 2 rows (≤ 100 px) before and after a file is open.
+- **U3 the verdict is seen:** after Read as sheet, the verdict line is on screen without scrolling.
+- **U4 nothing wider than the phone:** document width ≤ 390; every control ≥ 24 x 24.
+- **U5 no page errors, refusals in words** (scan: "no text"; locked: asks a password).
+A FAIL is a finding: the fixes are specced in §17.1 after the first run, with the numbers.
