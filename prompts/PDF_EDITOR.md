@@ -6,8 +6,11 @@
 ## ▶ RESUME HERE (2026-11-27) — call sign **'resume killer'**: start at the ▶▶ block of `prompts/SHEET_FRONT_DOOR.md` (one package, build order)
 - **P0 VIEW DONE (witness) 2026-11-27** with the S10 report reader: bim-ootb `pdf/` (PR #3470), results §4.2. **1 of 14 groups** (G1) is in part at parity:
   open, pages on demand, find, outline, password and damaged files; NOT yet: the 5 view modes, tabs, split panes, clickable links.
-- **Next = P4 cut narrow** (below), then P1 organise.
-- P4 is cut narrow first: **numbers only**, written back into the box the source map names (no reflow; a digit missing from the embedded subset → stated substitution).
+- **P4 NARROW DONE (witness) 2026-11-27: numbers only**, rewritten in the box the source map names (bim-ootb #3477, #3478; spec §4.3,
+  results §4.4): no reflow, right edge kept, the old run gone from the file, a digit missing from the embedded subset → refused or a
+  STATED substitution. G4 parity is NOT claimed (numbers only; one-byte fonts, cross-reference streams and form text are named refusals).
+  After it the reader names a stale row (`SHEET_FRONT_DOOR.md` §7.6), so the write-back witnesses expect F10 named after a D10 + D28 edit.
+- **Next for the editor = P1 organise**, then P2; the lane's overall next step is in the ▶▶ block of `SHEET_FRONT_DOOR.md`.
 - Sister lane: `prompts/SHEET_FRONT_DOOR.md` (the PDF→sheet report reader S10 and history S9 are the extras this editor gets for free).
 
 ## 0. Why (owner, 2026-11-27)
