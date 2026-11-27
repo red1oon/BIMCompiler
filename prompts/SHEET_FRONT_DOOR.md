@@ -7,7 +7,9 @@
 ## ▶ RESUME HERE (2026-11-27)
 - **S1 DONE (witness) 2026-11-27:** engine `erp/sheet_door.js` + W-SHEET-DOOR 9/9 cases PASS (21 checks), mutants 5/5 killed
   (bim-ootb `feat/sheet-door`). Results + two legacy findings in §5.
-- **Next: S3 (Excel add-in menu)**, then S4 WPS, S5 LibreOffice; S2 is reduced to "the host writes/reads the `_door_ledger` sheet"
+- **S9 HISTORY DONE (witness) 2026-11-27** (owner: *"history is lacking in Excel. It is a missing killer... Proceed."*):
+  `erp/sheet_history.js`, W-SHEET-HISTORY 8/8 cases PASS (20 checks), mutants 5/5 killed — §6.4.
+- **Next after S9: S3 (Excel add-in menu)**, then S4 WPS, S5 LibreOffice; S2 is reduced to "the host writes/reads the `_door_ledger` sheet"
   (the replay itself is already proven by D9).
 
 ## 0. Why (owner, 2026-11-27)
@@ -126,3 +128,68 @@ Shipped log samples: `§SHEET_DOOR verdict=FILED ok=true writes=["F2","G24"]` ·
 **Not yet:** no host menu exists (S3-S5), so `sheet_door.js` is not loaded by any page and has no sw.js entry yet; wiring
 comes with the first shim. The status text is legacy's raw `ERR=` text; a plain-language wrapper must still show legacy's text
 (twin L&F) — decide with S3. Old-Office share in Malaysian SMEs still unmeasured (§1).
+
+## 6. Slice S9 — HISTORY: the spreadsheet's memory (spec 2026-11-27, before code)
+
+### 6.1 Prior art (searched 2026-11-27; sources in that session's reply)
+| Who | What it does | Where it stops |
+|---|---|---|
+| Excel **Show Changes** (365) | per-cell edits, who / when / before | **cloud-saved files only**; Microsoft says 365 days (older pages: 60); gaps in the timeline; not formats / charts / pivots / filters; edits by VBA or Office Scripts not logged; a reset on the web clears it for everyone; "save a copy" / replace the file empties it |
+| Excel **Version History** | whole-file snapshots | cloud only, file-level, no per-cell story, no merge |
+| Legacy **Track Changes / Shared Workbook** | old review mode | retired in favour of co-authoring |
+| **Google Sheets** "Show edit history" (2019) | per-cell prior values back to creation | online only; skips added/deleted rows and columns, format changes and **changes made by formulas** |
+| **LibreOffice** Track Changes | records value edits with an auto comment | **turning recording off accepts and erases them**; no formats; cannot be printed or exported to PDF |
+| Spreadsheet Compare (Office Pro Plus), xlCompare, SheetDelta | diff two files | two files at a time, no running history, no proof |
+| xltrail, "Git for Excel" | git-backed workbook versions | needs git / a server, developer audience |
+| ClusterSeven-class EUC control platforms | enterprise spreadsheet change monitoring | regulated-enterprise products, server-side |
+
+**The gap no one fills:** a history that lives **inside the file**, works **offline in every spreadsheet program**, cannot be
+edited unnoticed (hash chain), can **replay the sheet to any moment**, and **merges two emailed copies** showing conflicts instead
+of overwriting.
+
+### 6.2 Design (decided 2026-11-27, owner delegated)
+- **Snapshot diff, not keystroke events.** The host gives the engine the sheet's cells (value + formula) at each recording point
+  (save, close, or the user's "Stamp" button); the engine diffs against the last recorded state. Every host can read its cells;
+  event APIs differ per host. A diff also catches changes made by macros, paste and formulas (the blind spots in 6.1).
+  Cost: edits between two recording points fold into one step (stated limit). A host with good events (Excel) may record more
+  often; the entry format is the same.
+- **One entry format with the ERP journal.** Each entry = the kernel journal shape (`seq, actor, at, meta, ops, opsDigest,
+  prev, hash, payload.ops`), hashed the same way, so the kernel's own `verifyJournal` verifies a sheet history. Ops are
+  `CELL_SET { sheet, cell, before:{v,f}|null, after:{v,f}|null }`. Kept in the hidden sheet `_door_history` (separate from
+  `_door_ledger`, which only the ERP replays).
+- **Entry 1 = the genesis snapshot** (every non-empty cell), so any moment can be rebuilt from the file alone.
+- **Who:** the name the host reports. Not a signed identity until the kernel's signing (W-SIGN) is wired. Stated, not claimed.
+
+### 6.3 Claims (W-SHEET-HISTORY, `erp/tests/witness_sheet_history.js`, real workbook `erp/ninja_sample.xlsx`)
+| ID | Claim | Issue it exposes | Falsifier |
+|----|-------|------------------|-----------|
+| H1 RECORD | An entry lists exactly the changed cells (value or formula, added, cleared) with before/after; unchanged cells absent; no change → NO-OP, no entry | history misses or invents edits | mutant: cleared cells dropped |
+| H2 FORMAT | Every history line passes the kernel's own `verifyJournal` (one verifier for ERP + sheet history) | a second, divergent log format | — |
+| H3 TAMPER | A hand-edited before/after is caught (payload digest); a deleted entry is caught (chain) | history can be rewritten unseen | mutant: digest check skipped |
+| H4 AS-OF | Replaying the first N entries gives exactly the sheet as it was at step N, for every N | time travel is wrong | mutant: off by one |
+| H5 CELL STORY | A cell's story lists every value it had, in order, with who and when | per-cell history incomplete | — |
+| H6 MERGE | Two copies forked from one history: edits on different cells combine; the same cell changed differently on both sides is a CONFLICT showing both values, neither overwritten; the same change on both sides is not a conflict | version chaos, silent overwrite | mutant: side B wins silently |
+| H7 TYPED-OVER | A formula replaced by a typed number is flagged (`typedOverFormula`) — the most common "sheet doesn't add up" cause | the checker misses hardcoded overrides | mutant: diff ignores formulas |
+| H8 COST | Genesis and per-step time and history bytes are logged (§ line) on the real workbook | unmeasured weight (PERF BUDGET) | — |
+
+### 6.4 RESULTS — S9 (2026-11-27, bim-ootb `feat/sheet-history`)
+Command: `SHIST_MUTANTS=1 node erp/tests/witness_sheet_history.js` on the real `erp/ninja_sample.xlsx` (3 sheets, 114 cells,
+BACKUP!B9 = SUM(B5:B8) = 541.02), read with the ERP's own SheetJS build.
+```
+§SHIST-H1 PASS 5/5 · H2 PASS 2/2 · H3 PASS 3/3 · H4 PASS 1/1 · H5 PASS 2/2 · H6 PASS 5/5 · H7 PASS 1/1 · H8 PASS 1/1
+§SHIST-MUTANTS killed=5/5  (cleared cells dropped→H1, digest unchecked→H3, as-of off by one→H4, side B wins→H6, formulas ignored→H7)
+§SHIST-COST cells=114 genesisMs=5 stepMs=[0,0,0] historyBytes=15579 genesisBytes=14084 fileBytes=24938 heapMB=7
+§SHIST-VERDICT PASS judged=20 failed=0
+```
+- H2: the kernel's own `ws_kernel.verifyJournal` verifies the sheet history: ONE verifier for ERP journal and sheet history.
+- H3: a changed before-value, a removed entry and a changed "who" are each caught at the exact entry.
+- H6: two copies of one history merged: C5 (copy A) + C6 (copy B) combined, B8 changed to the same value on both = no
+  conflict, B7 changed to 11 vs 22 = ONE conflict showing both, merged sheet keeps the base value; unrelated files refused.
+- H7: the one formula overwritten by a typed number (B9: =SUM → 600) is flagged, nothing else.
+- Witness slip found and fixed (not an engine defect): the first run's "add a note in D2" was wrong, D2 already held a date;
+  the engine reported it truthfully. Moved to F2 (outside the used range) with a check that it was empty.
+
+**Cost and the host limits it implies (for S3-S5):** ~123 bytes per cell for the genesis entry (14,084 B / 114 cells), so a
+100,000-cell sheet's genesis is in the order of 12 MB (extrapolated, NOT measured). An Excel cell holds at most 32,767
+characters, so the `_door_history` writer must split one entry across cells (one entry per row, chunks across columns) — a
+shim-side requirement, to be witnessed with the first host. A step costs only its changed cells (3 steps here: 1.5 KB total).
