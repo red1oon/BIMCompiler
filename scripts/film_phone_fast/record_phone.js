@@ -392,7 +392,7 @@ async function snag(beatId) {
       await P.ctx.setOffline(true);   // the browser's own offline switch: navigator.onLine=false, the 'offline' event, every request refused
       for (let w = 0; w < 20 && !(await page.evaluate(() => !!document.getElementById('offline-badge'))); w++) await page.waitForTimeout(150);
       await page.evaluate(() => console.log('§M1_OFFLINE on onLine=' + navigator.onLine + ' badge="' + ((document.getElementById('offline-badge') || {}).textContent || '') + '" toast="' + ((document.getElementById('net-status-toast') || {}).textContent || '').trim() + '"'));
-      await shot('s_offline', 50);
+      await shot('s_offline', 40); await page.waitForTimeout(600); await shot('s_offline', 40);   // badge, then the toast settled: room for the line (rc4 run 1: 1.36 s, voice skipped)
     });
     // 1 — phone: a short walk, then one snag with its photo (role A's own steps)
     await beat('s_walk', /^§WALK_TRACE /, async () => {

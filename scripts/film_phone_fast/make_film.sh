@@ -12,7 +12,7 @@
 set -uo pipefail
 APP=$(cd "$1" && pwd); mkdir -p "$2"; WORK=$(cd "$2" && pwd); OUT=$3
 D=$(cd "$(dirname "$0")" && pwd); REPO=$(cd "$D/../.." && pwd); VENV=$HOME/.local/share/film_narration/venv/bin/python
-PLAN_NAME=${PLAN_NAME:-hybrid}; export PLAN_NAME; TAG=rc3; [ "$PLAN_NAME" = rc2 ] && TAG=rc2
+PLAN_NAME=${PLAN_NAME:-hybrid}; export PLAN_NAME; TAG=${FILM_TAG:-rc4}; [ "$PLAN_NAME" = rc2 ] && TAG=rc2
 ROLES=${ROLES:-"A B HQ C S"}; LOGD=$D/logs/$TAG; mkdir -p "$LOGD"; mkdir -p "$(dirname "$OUT")"
 export BIM_OOTB=$APP
 step() { echo "§MAKE step=$1 $(date +%H:%M:%S)"; }
