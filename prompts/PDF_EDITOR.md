@@ -313,3 +313,84 @@ Regression, same tree: `§PDFPG-VERDICT PASS judged=17` · `§PDFED-VERDICT PASS
 - **History is in the page's memory only.** Where a PDF's history lives (inside the PDF, or a file beside it) is an open decision;
   nothing is persisted with the downloaded PDF yet.
 - The touch path (tap to edit on a coarse pointer) is coded, not witnessed. The witnesses are not wired into CI (as S1, S9, S10).
+
+## 4.5 History inside the file (spec 2026-11-27, before code)
+**Owner decision (2026-11-27).** Asked where a PDF's history is kept, the owner said: *"decide for me, but wouldn't history be cheap
+and has to be in the file anyway?"* Decision taken: **YES, the history is kept INSIDE the downloaded PDF (and inside the downloaded
+.xlsx), so the file alone carries its own tamper-evident memory.** This closes §4.4 "Not proven: history is in the page's memory only".
+Clean room (§1): ISO 32000-2 §7.11.3 (file specification), §7.11.4 (embedded file streams), §7.9.6 (name trees), §7.7.2 (catalog
+`/Names`) and our own measurements only.
+
+### 4.5.1 Measured before the design
+- The five PDFKit corpus files say `%PDF-1.3`; their catalog is `<< /Type /Catalog /Pages 1 0 R /Names 2 0 R >>` and object 2 is
+  `<< /Dests << /Names [ ] >> >>`: `/Names` is ALREADY there, as an indirect object, without `/EmbeddedFiles`. `market_impact_report.pdf`
+  (1.7) has a catalog without `/Names`. So the writer must handle `/Names` absent, inline and by reference.
+- The history engine (S9) fixes an entry's `meta`, and `at` is not in the hash: the only hashed places a note can live are `actor` and the cells.
+- The kernel's `verifyJournal` checks the chain only; `SheetHistory.verify` also checks each payload against its digest. Both are run.
+
+### 4.5.2 Design (owner delegated; decided here)
+Code (bim-ootb): `pdf/pdf_write.js` (+ `embedFile`, the writer's own object / cross-reference machinery, no library),
+`pdf/pdf_open.js` (+ attachments), new `pdf/pdf_history.js` (UMD, MIT: the one owner of "the history of this file"),
+`pdf/index.html`, `pdf/sw.js`. Nothing under `erp/` is edited: `host_shim.js` already exports `splitLine`, `CELL_LIMIT`, `HISTORY`.
+- **In the PDF.** The lines (genesis + one per rewrite, `\n` after each, UTF-8) are ONE embedded file stream named
+  `_door_history.jsonl` (`/Type /EmbeddedFile`, Flate through the platform's `CompressionStream`, `/Params << /Size >>`), held by a
+  file specification (`/Type /Filespec /F /UF /EF`) listed in the catalog's `/Names /EmbeddedFiles` name tree (keys kept sorted).
+  `PdfWrite.embedFile(bytes, name, data) -> Promise<{ ok, bytes, replaced, refused }>`.
+- **Full rewrite, not an incremental update (decided).** Same reason as §4.3.2: an appended revision would keep every earlier copy
+  of the history (and of the numbers) in the file, and the file would stop being ONE revision. Every object that does not have to
+  change is copied byte for byte, so **the page content streams of a history-only save are byte-identical**; changed objects: the one
+  that holds the name tree (the `/Names` object when it is indirect, else the catalog) and the two new ones. Saving again REPLACES the
+  stream object in place (same object numbers, no second attachment, nothing else touched). A `%PDF-1.0..1.3` header becomes
+  `%PDF-1.4` (one byte: `/EmbeddedFiles` is PDF 1.4). No date is written: the same lines give the same bytes.
+  Named refusals: `not-a-pdf`, `encrypted`, `xref-stream`, `damaged` (as §4.3), `names-tree-not-supported` (a name tree split into
+  `/Kids`), `bad-name`. All or nothing: a refusal hands back the input bytes.
+- **On open.** `PdfOpen.open` (the one owner of opening) returns `attachments` (name → bytes, read by pdf.js, NOT by our writer) and
+  `history` = the lines of `_door_history.jsonl`, or null. `PdfHistory.check(SheetHistory, ReportReader, lines, items)` gives ONE state:
+  `none` (no history: the file opens exactly as before) · `ok` · `broken` (the S9 engine names the entry and why) · `mismatch`.
+- **Honest binding of history to content.** A history that verifies but belongs to other numbers is worthless. The history is
+  replayed to its latest state (`asOf`) and compared with what the reader reads from the pages NOW: every cell the history says was
+  set must be printed with the same value, and every cell printed must be in the history (values, not found formulas). A difference
+  = `mismatch`, with the FIRST differing cell (sheet order: row, then column), both values, `differ` of `of` cells, and a kind by
+  structure, not by a threshold: `other-file` when the two sides do not hold the same cell addresses, `changed-outside` when the
+  addresses agree and a value differs. Said in plain words. Limit stated: the binding covers the cells the reader reads, not every byte.
+- **Continue, or restart in the open.** `ok` → the chain CONTINUES: the next edit is entry N+1 with `prev` = entry N's hash; nothing is
+  recorded on open. `broken` / `mismatch` → the chain is NOT continued: the next recording is a NEW genesis (seq 1) that carries the
+  break as a recorded cell, `_door_break!A1` = what was found (the entry or the cell, both values, how many entries the carried
+  history had and its last hash). It is in the payload, so it is digest-protected and shows in a replay.
+- **Sheets.** One chain per file. Page 1's sheet is `Report` (as the .xlsx names it), page N's is `Report pN`; a page first read
+  later is an ordinary entry that adds its cells. `PdfWrite.record` takes the sheet name (default `Report`).
+- **In the .xlsx.** The same lines go to the hidden sheet `_door_history` with the Excel menu's convention (SHEET_FRONT_DOOR §8.1):
+  one entry per ROW, cut by `SheetAddin.splitLine` into chunks of at most 32,767 characters across columns, text cells, sheet very
+  hidden. So the Excel menu's "Check history" and "Cell history" read what the PDF page wrote.
+- **The page.** A **History** block in the side panel: how many entries, verified or not in plain words, where it is kept; a cell's
+  story on request (type an address, or click a cell: `SheetHistory.cellStory`). Download PDF embeds the lines; Download .xlsx
+  adds the hidden sheet. Logs `§PDFHIST-OPEN`, `§PDFHIST-STATE`, `§PDFHIST-SAVE`, `§PDFHIST-XLSX`, `§PDFHIST-STORY`.
+  `pdf_history.js` and `../erp/sheet_addin/host_shim.js` join `pdf/sw.js` ASSETS.
+
+### 4.5.3 Claims (W-PDF-HISTORY `pdf/tests/witness_pdf_history.js`; verdict line `§PDFHIST-<case> verdict=PASS|FAIL|INCONCLUSIVE judged=N failed=M`)
+| ID | Claim | Issue it exposes | Falsifier |
+|----|-------|------------------|-----------|
+| H1 TRAVELS | D10 and D28 edited and recorded, saved; from the SAVED bytes alone (a fresh `open`): the history is found, its lines equal the recorded ones byte for byte, `SheetHistory.verify` AND `ws_kernel.verifyJournal` accept it, 3 entries, entries 2 and 3 hold one `CELL_SET` each (D10, D28); state `ok`, 144 of 144 cells bound | the history is lost on download | mutants: history not written; the opener drops attachments |
+| H2 CONTINUES | a second session (only the saved bytes) edits F10: the new entry is seq 4 with `prev` = entry 3's hash, no second genesis; saved again the file holds ONE `_door_history.jsonl` (4 lines), same object count as after the first save; both verifiers accept | a second session restarts the chain, or attachments pile up | mutants: chain restarted; attachment added, not replaced |
+| H3 INDEPENDENT | poppler `pdfdetach -list` names `_door_history.jsonl`; `pdfdetach -save` gives bytes equal to the lines; `pdfinfo` exit 0, no message, same page count; `pdftotext -raw` and `pdftotext -bbox` (every word box) identical to the same save WITHOUT history | only our own reader sees it; the attachment changes something visible | — (INCONCLUSIVE without poppler) |
+| H4 UNTOUCHED | history-only save of the unedited file (objects read by the witness's own cross-reference reader, not the engine): every content stream and every object but the one holding the name tree is byte-identical; exactly 2 objects are new; one revision (one `%%EOF`, no `/Prev`); every cross-reference entry points at its object; the same lines saved twice give the same bytes; poppler raster (`pdftoppm`) 0 pixels differ | a history-only save rewrites the page | — |
+| H5 TAMPERED HISTORY | one recorded value changed inside the PDF's history (entry 2) → `broken`, entry 2 named, why = payload; an entry removed → named at that entry; the chain is not continued: the next recording is a genesis (seq 1) whose `_door_break!A1` names entry 2; the new chain verifies | a rewritten history is accepted and built upon | mutants: tampered entry accepted; break not recorded |
+| H6 CHANGED OUTSIDE | a number rewritten by the writer WITHOUT recording (D12) → the history still verifies, the binding says `mismatch` / `changed-outside`, names D12 with both values, 1 of 144; not continued | history and numbers drift apart unseen | mutant: binding check skipped |
+| H7 OTHER FILE | the sales register's (verifying) history put into the trial balance → `mismatch` / `other-file`, refused as not this file's, first cell named | a pasted history lends its proof to other numbers | mutant: binding check skipped |
+| H8 NO HISTORY, AND P0 TERMS | every corpus PDF as shipped: state `none`, `history` null, no word of tampering (N = corpus); every corpus PDF given a history: page count == `pdfinfo`, text multiset == `pdftotext -raw`, outline unchanged (P0's V1-V3 terms) | a plain PDF is called tampered; a history-carrying PDF opens worse | — |
+| H9 XLSX | the .xlsx built from the read sheet + the lines, read back with SheetJS and handed to `host_shim.js`'s OWN reader (`SheetAddin.create(host).checkHistory()` / `.cellHistory()`): OK with the same entry count; D10's story = the values recorded; the sheet is very hidden; with a small cell limit every stored chunk is within it and the re-joined rows equal the lines; one changed character in a stored chunk → BROKEN at that entry | the Excel menu cannot read what the page wrote; a second convention | mutant: history sheet not written |
+| H10 COST | `§PDFHIST-COST` per file (trial balance, sales register): genesis and per-entry bytes, as lines and as stored in the PDF (file size delta), ms | unmeasured weight (PERF BUDGET) | — |
+| H11 SECOND WRITER, TWO PAGES | a ghostscript copy holding the trial balance on TWO pages (made at run time): an edit on page 1 and one on page 2 are ONE chain with two sheets (`Report`, `Report p2`); saved and reopened: state `ok`, both pages bound; pdfdetach sees the lines | one generator's catalog only; a second page's history silently lost | — (INCONCLUSIVE without ghostscript) |
+| H12 REFUSED | not a PDF, an encrypted copy, a bad name: refused BY NAME, bytes unchanged | a damaged file written anyway | — |
+
+Mutants (`PDFHIST_MUTANTS=1`): each must turn its named case FAIL in a child run; a crash is not a kill.
+**W-PDF-HISTORY-PAGE** (`pdf/tests/witness_pdf_history_page.js`, the real page, headless, `§PDFHP-*`): edit → Download PDF → the file
+on disk carries the lines (pdfdetach) → the SAME file opened through the real file chooser: `§PDFHIST-OPEN state=ok`, the History block
+says the count and "verified", Read as sheet records NO second genesis, a further edit is entry N+1, a cell's story is shown on request,
+Download .xlsx re-read through `host_shim.js` verifies; a tampered copy and an outside-edited copy are named in words and the next
+history starts with the break. The four older witnesses stay green.
+
+Not claimed in this cut: a signed identity (who = a name, §6.2 of the sister file); files with cross-reference streams (named
+refusal: the history cannot be put in, said in words, the PDF is still handed back); name trees with `/Kids`; the embedded file's
+`/CheckSum`, `/ModDate` and `/AFRelationship`; binding of anything but the cells the reader reads; real Excel (the .xlsx is judged
+through the shim's reader on a stand-in host); merging two downloaded copies (`SheetHistory.merge` exists, not wired here).
