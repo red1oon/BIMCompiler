@@ -19,6 +19,8 @@ where it needs it (as it already does: the kernel's journal format and `verifyJo
 user's layout to an iDempiere PrintFormat is a later, separate step, not a precondition.
 The owner's name for it: *"sort of a sharding of pieces approach as it can pick from the entire ERP framework"* — each front-door
 feature takes the single ERP piece it needs (a shard), never the whole; any piece of the framework may be picked later the same way.
+And the positioning: *"it is like ERP in Excel format, without some baggage of a serious multi user performance yet. This is a good back
+door entry to the ERP when user choses"* — stage 1 makes no multi-user or performance claim; crossing to the ERP is the user's own choice.
 **State:**
 - **S1 DONE (witness) 2026-11-27:** engine `erp/sheet_door.js` + W-SHEET-DOOR 9/9 cases PASS (21 checks), mutants 5/5 killed
   (bim-ootb `feat/sheet-door`). Results + two legacy findings in §5.
