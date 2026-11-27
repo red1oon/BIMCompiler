@@ -10,7 +10,9 @@ clash_detail	clash_detail	§M1_CLASH checks=all_pass	M: Both elements, lit.	M: B
 clash_snag	clash_snag	§CLASH_SNAG_SAVED	M: Hold to snag it.	M: Press and hold, to snag it.
 clash_share	clash_share	§CLASH_SNAG_SHARE_PANEL desktop fallback	M: A phone has its own sheet.	M: Share. A real phone shows its own share sheet.
 clash_saved	clash_saved	§CLASH_SNAG_SAVED + §M1_SHARE	M: Saved, with a link.	M: Saved to the issue log, with a link.
-s_send	s_send	§HQ_SEND via=team	M: Send it to HQ.	M: Now send the report to HQ.
+s_offline	s_offline	§M1_OFFLINE on + §M1_OFFLINE_WORK	M: No signal. Work goes on.	M: No signal out here. The walk and the snag go on.
+s_send	s_send	§HQ_TEAM queued + §M1_SYNC_SEND status	M: Send. Kept on the phone.	M: Send it to HQ. It waits on the phone.
+s_online	s_online	§M1_OFFLINE off + §HQ_SEND via=team	M: Signal back. It sends.	M: Signal back, and it sends itself.
 s_get	s_get	§HQ_GET issues_added=1 + §M1_SYNC photo_equal=true	M: HQ gets the issue.	F: And HQ? | M: It gets the issue, photo too.
 s_replay	s_replay	§HQ_REPLAY points	M: Then replays the walk.	M: Then it replays the walk.
 s_scrub	s_scrub	§M1_SYNC_SCRUB max_err_m	M: The camera matches.	M: Scrub it. The camera matches, point by point.

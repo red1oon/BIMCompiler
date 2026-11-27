@@ -385,8 +385,16 @@ async function snag(beatId) {
     const statusText = () => page.evaluate(() => (document.getElementById('status') || {}).textContent || '');
     let nTrace = 0;
 
-    // 1 — phone: a short walk, then one snag with its photo (role A's own steps)
+    // 0 — OFFLINE (rc4, MOBILE_PERF §2026-11-28 point 2): the phone loses its signal BEFORE the walk; the walk, the snag and Send to HQ happen offline; M1_OFFLINE=0 = the rc3 order
+    const OFFLINE = process.env.M1_OFFLINE !== '0', drops = () => walkDir(FOLDER, '', []).filter(n => /\/drop-/.test(n)).length;
     use(P);
+    if (OFFLINE) await beat('s_offline', /^§M1_OFFLINE on onLine=false badge="[^"]+"/, async () => {
+      await P.ctx.setOffline(true);   // the browser's own offline switch: navigator.onLine=false, the 'offline' event, every request refused
+      for (let w = 0; w < 20 && !(await page.evaluate(() => !!document.getElementById('offline-badge'))); w++) await page.waitForTimeout(150);
+      await page.evaluate(() => console.log('§M1_OFFLINE on onLine=' + navigator.onLine + ' badge="' + ((document.getElementById('offline-badge') || {}).textContent || '') + '" toast="' + ((document.getElementById('net-status-toast') || {}).textContent || '').trim() + '"'));
+      await shot('s_offline', 40); await page.waitForTimeout(600); await shot('s_offline', 40);   // badge, then the toast settled: room for the line (rc4 run 1: 1.36 s, voice skipped)
+    });
+    // 1 — phone: a short walk, then one snag with its photo (role A's own steps)
     await beat('s_walk', /^§WALK_TRACE /, async () => {
       await tapSel('s_walk', '#mobile-trigger', 400); await shot('s_walk', 12);
       await tapSel('s_walk', '#pill-navigate', 400); await tapRow('s_walk', 'navigate', 'Walk'); await shot('s_walk', 12);
@@ -401,11 +409,12 @@ async function snag(beatId) {
       const c = document.getElementById('info-panel-close'); if (c) c.click(); const ip = document.getElementById('info-panel'); if (ip) ip.style.display = 'none'; });   // cleanup, as role A (not filmed)
     nTrace = cons.filter(t => /^§WALK_TRACE /.test(t)).length;
     const phoneRows = await rowsOf(P.page);
+    if (OFFLINE) say(`§M1_OFFLINE_WORK onLine=${await page.evaluate(() => navigator.onLine)} issues_saved=${phoneRows.length} walk_trace_lines=${nTrace} folder_drops=${drops()}`);
     say(`§M1_SYNC_PHONE issues=${phoneRows.length} walk_trace_lines=${nTrace} photo_bytes=${phoneRows.map(r => Math.floor(r.b64.length * 3 / 4)).join(',')}`);
 
     // 2 — phone: the Issue Log as a phone user opens it. SINCE bim-ootb #3480 (2026-11-27): FAB -> Inspect pill -> the "Issues" row of the Inspect drawer; the Issue Log is one bottom sheet
     //     (§SHEET_REPLACE closed=inspect-drawer-panel by=issues-panel). [Before #3480 the route was Help -> scroll -> "Issues" row -> close the Help list: kept in git history, rc2 recordings.]
-    await beat('s_send', /^§HQ_SEND via=team drop=/, async () => {
+    await beat('s_send', OFFLINE ? /^§HQ_TEAM queued id=/ : /^§HQ_SEND via=team drop=/, async () => {
       if (!(await pillsN())) await tapSel('s_send', '#mobile-trigger', 400);
       await tapSel('s_send', '#pill-inspect', 500); await shot('s_send', 20);
       await tapRow('s_send', 'inspect', 'Issues');
@@ -418,7 +427,16 @@ async function snag(beatId) {
       say(`§M1_SYNC_SEND status="${st}" share_sheet=${shared ? 'INVOKED' : 'none'} folder_files=${walkDir(FOLDER, '', []).filter(n => /\/drop-/.test(n)).length}`);
       await shot('s_send', 60);
       if (shared) throw new Error('a share sheet was invoked: ' + JSON.stringify(shared));
-      if (!/Sent to your team folder/.test(st)) throw new Error('status line is "' + st + '"');
+      if (!(OFFLINE ? /^Saved on this phone/ : /Sent to your team folder/).test(st)) throw new Error('status line is "' + st + '"');
+      if (OFFLINE && drops()) throw new Error('offline, yet the folder holds ' + drops() + ' drop file(s)');
+    });
+    // 2b — signal back: the app's own 'online' listener sends the queued report (issues.js: window 'online' -> flushHqOutbox); nothing is tapped
+    if (OFFLINE) await beat('s_online', /^§HQ_SEND via=team drop=/, async () => {
+      const d0 = drops(); await P.ctx.setOffline(false);
+      for (let w = 0; w < 60 && !cons.some(t => /^§HQ_TEAM flushed sent=1 left=0/.test(t)); w++) await page.waitForTimeout(250);
+      await shot('s_online', 20);
+      say(`§M1_OFFLINE off onLine=${await page.evaluate(() => navigator.onLine)} folder_drops ${d0}->${drops()} toast="${await page.evaluate(() => ((document.getElementById('net-status-toast') || {}).textContent || '').trim())}" ${cons.filter(t => /^§HQ_TEAM flushed /.test(t)).slice(-1)[0] || 'no flush line'}`);
+      await shot('s_online', 40);
     });
 
     // 3 — HQ: key I opens the Issue Log, the real Get from team button merges the phone's report
