@@ -170,6 +170,8 @@ Code (bim-ootb): `pdf/pdf_write.js` (UMD, browser + node, MIT, no library: Flate
   `Tj TJ ' "`, rectangular clips `re W n`) that lists every text run with its font, glyph codes, decoded text and its
   extent in page points. (3) Fonts: Type0 Identity-H with ToUnicode (`bfchar`, `bfrange`) and `/W` / `/DW` widths.
 - **Finding the run:** the runs whose centre lies in the edit's box; their decoded text (spaces squashed) must equal `oldText`.
+  A number drawn as SEVERAL runs (same font, size and line) is one cell: the new glyphs go into the run that holds the kept edge
+  (the last one for a right-aligned number), the other runs keep their pen advance and lose their glyphs. Mixed fonts: REFUSED `several-fonts`.
 - **Replacing:** the run's operand and operator are replaced by ONE `TJ` holding the new glyph codes plus a spacing number
   that makes up the width difference, placed BEFORE the glyphs for a right-aligned number (the reader types a cell as a
   number only in a column whose cells share a right edge). The text position after the run is therefore exactly what it was:
@@ -187,8 +189,9 @@ Code (bim-ootb): `pdf/pdf_write.js` (UMD, browser + node, MIT, no library: Flate
   `no-such-page`; and for the file: `not-a-pdf`, `xref-stream` (PDF 1.5 cross-reference streams: not in this cut),
   `encrypted`, `filter-not-supported`, `font-not-supported`, `rotated-text`, `rotated-page`, `shared-content`, `damaged`.
 - **The sheet side, one owner:** `PdfWrite.applyToItems(pages, edits)` applies the same edits to the reader's input so
-  the reader's own adds-up rule judges the EDITED SHEET before a byte is written; `PdfWrite.formatLike(columnTexts, value)`
-  prints a typed value the way its column is printed (decimals, grouping, brackets, dash for zero: read from the column).
+  the reader's own adds-up rule judges the EDITED SHEET before a byte is written; `PdfWrite.formatLike(columnTexts, typedText)`
+  prints a typed number the way its column is printed (decimals, grouping, brackets, dash for zero: read from the column's own
+  texts), on the digits as typed, with no float arithmetic; more decimals than the column prints is REFUSED `too-many-decimals` (no silent rounding).
 - **History (S9, no second format):** `PdfWrite.record(SheetHistory, history, snapshot, changes, actor, at)` = one journal
   entry per rewrite, one `CELL_SET` per applied change; a refused rewrite records nothing.
 - **The page:** in the Read-as-sheet grid a NUMBER cell is edited by double-click; on Enter the page judges the edited sheet,
@@ -206,11 +209,11 @@ Code (bim-ootb): `pdf/pdf_write.js` (UMD, browser + node, MIT, no library: Flate
 | W5 STILL BITES | only D10 rewritten (total left stale): the re-read verdict is DOES_NOT_ADD_UP naming D28 and both numbers | the check goes blind after an edit | — |
 | W6 REFUSED | each is refused BY NAME with the input bytes returned unchanged: a non-number new text; a text cell; an old text that is not what is in the box; a box with no text; a glyph the subset lacks (D28→40,395.44: `glyph-missing`, font and `5` named); a number too wide for its cell (`does-not-fit`); two edits on one box; and one bad edit in a batch refuses the whole batch | a wrong or damaged write passes silently | mutants: glyph check skipped; fit check skipped |
 | W7 STATED SUBSTITUTION | with `substitute`, D28→40,395.44 is written in LiberationSans (regular), `§PDFED-FONT-SUB` names from / to / missing, the change carries `fontSub`; both readers read the new value; right edge kept within 0.01 pt; E28 (bold, next to it) unchanged | a silent font change, or a refusal the user cannot get past | — |
-| W8 HISTORY | genesis + ONE entry per rewrite holding one `CELL_SET` per applied change with before/after; the kernel's `verifyJournal` accepts it; a refused rewrite records nothing; the history replayed (`asOf`) equals the snapshot of the re-read PDF | history and file disagree; a second log format | — |
+| W8 HISTORY | genesis + ONE entry per rewrite holding one `CELL_SET` per applied change with before/after; the kernel's `verifyJournal` accepts it; a refused rewrite records nothing; the history replayed (`asOf`) holds the same VALUE at every address as the re-read PDF | history and file disagree; a second log format | — |
 | W9 VALID FILE | poppler `pdfinfo`: exit 0, no message, same page count; every cross-reference entry points at its `N G obj`; `/Length` equals the stream's real length; size delta, ms and heap logged (`§PDFWR-COST`) | a file only our own reader can open | mutant: offsets not updated |
-| W10 COMPRESSED | the same file with its content stream Flate-compressed (made at run time by the witness, checked equal by poppler first): the W1 edit round-trips, the saved stream is still FlateDecode and inflates (node zlib) to a stream without the old line | only uncompressed streams work (most real PDFs are compressed) | — |
+| W10 VARIANTS | the same file with its content stream Flate-compressed (made at run time by the witness, checked equal by poppler first): the W1 edit round-trips, the saved stream is still FlateDecode and inflates (node zlib) to a stream without the old line. A copy where D10 is drawn as TWO runs (made the same way): the edit round-trips, right edge kept, both readers read 1,498.09 once | only uncompressed streams, or one run per number, work | — |
 | W11 SECOND WRITER | a ghostscript re-distilled copy (made at run time: other operators, other font packaging): the W1 edit either round-trips with W1/W2's checks or is REFUSED by name; measured and reported, never a silent wrong write | the engine fits one generator's style only | — (INCONCLUSIVE without ghostscript) |
-| W12 SHEET SIDE | `applyToItems` + the reader give, for three edit sets (D10 only; D10 + D28; the consistent four), the SAME verdict and reason as the re-read rewritten PDF; `formatLike` prints 40393.44 as `40,393.44`, -1466.15 as `(1,466.15)` and 0 as `-` from column D's and F's own texts | the sheet says one thing, the PDF another | — |
+| W12 SHEET SIDE | `applyToItems` + the reader give, for three edit sets (D10 only; D10 + D28; the consistent four), the SAME verdict and reason as the re-read rewritten PDF; `formatLike` prints `40393.44` as `40,393.44`, `-1466.15` as `(1,466.15)` and `0` as `-` from column D's and F's own texts, and refuses `499.091` | the sheet says one thing, the PDF another | — |
 
 Mutants (`PDFWR_MUTANTS=1`): each must turn its named case FAIL in a child run; a crash is not a kill.
 W-PDF-WRITE-PAGE (wiring, real page, headless, `§PDFWP-*`): a number cell is edited with real key presses → both verdict
