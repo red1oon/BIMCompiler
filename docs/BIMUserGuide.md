@@ -807,6 +807,39 @@ and save photos*: the camera is the mobile tool described under **Mobile-only** 
 
 *Written from the tool's own help text and code header, 2026-11-17. No screenshot yet.*
 
+<a id="send-to-hq"></a>
+#### Send to HQ, and the HQ view
+
+**On the phone: Send to HQ.** At the top of the Issue Log, **📤 Send to HQ** sends the site report to head office: every
+issue in the log with its photo, and the walk you took (the points of a Walk-mode walk, each with its camera view). On a
+phone the Issue Log opens from the **Inspect** pill, row **Issues**. What happens next depends on the browser:
+
+- **Not in a team:** the phone's own share sheet opens with the report and the photos attached, so you can email them
+  to HQ. The status line says *Saved N file(s) — attach them to an email to HQ.* if the browser has no share sheet and
+  the files were downloaded instead.
+- **In a team** (this browser has joined a team in the **Team** panel, see the
+  [Team guide](https://red1oon.github.io/bim-ootb/erp/team_guide.html); the viewer on the same site uses that
+  pairing): the report goes into the team folder with nothing more to tap. It is sealed with the team key and signed by
+  this phone; nothing in the folder is readable (no building name, no issue id in the clear). The status line says
+  *Sent to your team folder.*
+- **No signal:** the report is kept on the phone and the status line says *Saved on this phone — it goes to your team
+  folder when you are online.* When the signal comes back it sends itself; nothing is lost and nothing has to be pressed
+  again. The walk and snags themselves work with no signal: the model and the Issue Log are on the phone.
+
+**At HQ: Get from team.** In a team, the Issue Log on HQ's browser shows **📥 Get from team** beside Send to HQ. It
+reads every phone's reports into the same Issue Log: each issue card names the phone it came from by its device code
+(as the Team panel shows it), with its photo. A phone sends its whole log each time, so an issue it sends again
+replaces its own row; it is never listed twice. A report that does not open (not signed by a team device, or
+changed on the way) is refused whole and the status line counts it as *refused*. HQ's own issues are never sent on as
+its own.
+
+**Replay a walk.** After Get from team, the Issue Log has one row per phone that walked: *Walk · device code · N points ·
+tap to replay*. Tap it: the walk's points go on the history bar, and the bar opens. Scrub the bar and HQ's camera goes
+to where the phone's camera was at each point.
+
+*Written from the code (`viewer/issues.js`) and the witnesses W-SEND-HQ, W-SEND-HQ-TEAM, W-HQ-VIEW and
+W-ISSUE-LOG-ROUTE (bim-compiler `prompts/MOBILE_PERF.md` §P5), 2026-11-28. No screenshot yet.*
+
 #### GI Preview (AO)
 
 **GI Preview (AO)** (**Alt+G**, desktop only) turns on an ambient-occlusion preview using the N8AO effect. The help lists
