@@ -1,0 +1,10 @@
+§K2 OK   beat=b1 return=4.75 voice_start=5.38 ass_start=5.38 | voice-only track in typing window -180.0 dB vs in voice -20.4 dB (gap 159.6) | mixed in typing: peak -9.2 dBFS rms -33.3 dB
+§K2 OK   beat=b2a return=15.62 voice_start=16.26 ass_start=16.26 | voice-only track in typing window -180.0 dB vs in voice -18.1 dB (gap 161.9) | mixed in typing: peak -10.1 dBFS rms -38.3 dB
+§K2 OK   beat=b2b return=22.50 voice_start=23.13 ass_start=23.13 | voice-only track in typing window -180.0 dB vs in voice -15.5 dB (gap 164.5) | mixed in typing: peak -9.0 dBFS rms -33.2 dB
+§K2 OK   beat=b3a return=30.38 voice_start=31.01 ass_start=31.01 | voice-only track in typing window -180.0 dB vs in voice -16.1 dB (gap 163.9) | mixed in typing: peak -9.6 dBFS rms -36.9 dB
+§K2 OK   beat=b3b return=45.33 voice_start=45.97 ass_start=45.97 | voice-only track in typing window -180.0 dB vs in voice -16.1 dB (gap 163.9) | mixed in typing: peak -9.1 dBFS rms -32.5 dB
+§K2 OK   beat=b4 return=54.38 voice_start=55.01 ass_start=55.01 | voice-only track in typing window -180.0 dB vs in voice -15.2 dB (gap 164.8) | mixed in typing: peak -8.8 dBFS rms -36.1 dB
+§K2 OK   beat=b5a return=66.12 voice_start=66.76 ass_start=66.76 | voice-only track in typing window -180.0 dB vs in voice -16.9 dB (gap 163.1) | mixed in typing: peak -8.8 dBFS rms -35.4 dB
+§K2 OK   beat=b5b return=77.33 voice_start=77.97 ass_start=77.97 | voice-only track in typing window -180.0 dB vs in voice -15.5 dB (gap 164.5) | mixed in typing: peak -9.6 dBFS rms -36.8 dB
+§K2_LEVEL keys (mixed, typing windows) mean rms -35.3 dB, mean peak -9.3 dBFS; voice mean rms -16.7 dB -> keys are 18.6 dB under the voice rms
+§K2_VERDICT PASS beats=8 bad=0 audible=True

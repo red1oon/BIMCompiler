@@ -1,0 +1,60 @@
+§SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=13 reason="4 totals agree with their rows"
+§SREAD-LOAD engine=/tmp/wt-film-killer-ootb/pdf/report_reader.js mutant=none pdf=trial_balance_th.pdf bytes=74945 pages=1 items=152 oracleCells=144
+  §SREAD-CHECK case=R1 key=population OK rule="the oracle holds cells to judge (144)"
+  §SREAD-CHECK case=R1 key=same-address OK rule="every oracle cell is read at the same address with the same text (144 of 144)"
+  §SREAD-CHECK case=R1 key=no-extra OK rule="no cell is read that the source sheet does not hold"
+  §SREAD-CHECK case=R1 key=blank-rows OK rule="the source's blank rows 4, 27, 29 are kept (3 blank rows found)"
+§SREAD-R1 verdict=PASS judged=4 failed=0
+  §SREAD-CHECK case=R2 key=numbers OK rule="every oracle number is a number within 0.005 (89 of 89)"
+  §SREAD-CHECK case=R2 key=brackets OK rule="the 14 bracketed figures are negative"
+  §SREAD-CHECK case=R2 key=dash OK rule="the 34 dashes in number columns are 0"
+  §SREAD-CHECK case=R2 key=codes OK rule="the 55 text cells stay text; account code A6 is "11100", not a number"
+§SREAD-R2 verdict=PASS judged=4 failed=0
+  §SREAD-CHECK case=R3 key=total-row OK rule="the total row is found by arithmetic at row 28, 4 of 4 columns agree"
+  §SREAD-CHECK case=R3 key=figure OK rule="debit = credit = 40,392.44, printed and summed from the 21 rows"
+  §SREAD-CHECK case=R3 key=row-rule OK rule="the row rule F = C + D - E is found and holds on 21 of 21 rows"
+  §SREAD-CHECK case=R3 key=verdict OK rule="verdict ADDS_UP"
+  §SREAD-CHECK case=R3 key=tamper-applied OK rule="the printed figure 498.09 (D10) exists once and is changed to 499.09"
+§SHEET_READER verdict=DOES_NOT_ADD_UP ok=false page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=4 ms=7 reason="D28: printed 40392.44 != rows sum 40393.44"
+  §SREAD-CHECK case=R3 key=tamper-caught OK rule="one changed digit -> DOES_NOT_ADD_UP, naming D28 and both numbers (40392.44, 40393.44)"
+  §SREAD-CHECK case=R3 key=tamper-no-formula OK rule="the total that does not agree gets no SUM formula"
+§SREAD-R3 verdict=PASS judged=7 failed=0
+  §SREAD-CHECK case=R4 key=population OK rule="poppler gives words to judge"
+  §SREAD-CHECK case=R4 key=one-box OK rule="each of the 188 poppler word centres lies inside exactly one cell box"
+  §SREAD-CHECK case=R4 key=right-cell OK rule="that cell's text holds the word"
+  §SREAD-CHECK case=R4 key=every-cell OK rule="every one of the 144 cell boxes holds a word"
+§SREAD-R4 verdict=PASS judged=4 failed=0
+§SHEET_READER verdict=INCONCLUSIVE ok=false page=1 items=0 lines=0 cols=0 cells=0 blankRows=0 edgeSplits=0 bandsMerged=0 boxesTrimmed=0 collisions=0 checks=0 ms=0 reason="no text on the page (a scan or an empty page)"
+  §SREAD-CHECK case=R5 key=no-text OK rule="a page with no text -> INCONCLUSIVE, no sheet"
+§SHEET_READER verdict=INCONCLUSIVE ok=false page=1 items=12 lines=12 cols=0 cells=0 blankRows=0 edgeSplits=0 bandsMerged=0 boxesTrimmed=0 collisions=0 checks=0 ms=0 reason="no table found (fewer than 2 lines with 3 or more cells)"
+  §SREAD-CHECK case=R5 key=no-table OK rule="a cover page (text, no table) -> INCONCLUSIVE "no table found", no sheet"
+§SREAD-R5 verdict=PASS judged=2 failed=0
+  §SREAD-CHECK case=R6 key=same-cells OK rule="the .xlsx re-read holds the same 144 cells with the same values (file 54802 bytes)"
+  §SREAD-CHECK case=R6 key=formulas OK rule="the four totals carry SUM formulas over their rows"
+  §SREAD-CHECK case=R6 key=source-map OK rule="the hidden sheet _door_source lists every cell with its page and box (D28 equal to the read map)"
+§SREAD-R6 verdict=PASS judged=3 failed=0
+  §SREAD-CHECK case=R7 key=genesis OK rule="the read sheet is one genesis entry holding all 144 cells"
+  §SREAD-CHECK case=R7 key=kernel-verify OK rule="the kernel's own verifyJournal verifies it (2 entries)"
+  §SREAD-CHECK case=R7 key=one-edit OK rule="one later edit records exactly one CELL_SET (Report!D10 498.09 -> 499.09)"
+§SREAD-R7 verdict=PASS judged=3 failed=0
+§SREAD-COST items=152 lines=27 cells=144 readMs=22 pdfBytes=74945 heapDeltaKB=3159 heapMB=17
+  §SREAD-CHECK case=R8 key=logged OK rule="the cost line carries a cell count and a time"
+§SREAD-R8 verdict=PASS judged=1 failed=0
+§SHEET_READER verdict=ADDS_UP ok=true page=1 items=23 lines=7 cols=4 cells=17 blankRows=3 edgeSplits=0 bandsMerged=2 boxesTrimmed=14 collisions=0 checks=1 ms=3 reason="1 totals agree with their rows"
+§SREAD-LAYOUT file=sales_register_th cells=17 sameAddressAndText=16 differsAsThePdfItselfReads=1 extra=0 cols=4 bandsMerged=2 verdict=ADDS_UP
+  §SREAD-CHECK case=R9 key=register-cells OK rule="sales register: every one of the 17 cells is read at its own address; 16 with the same text, the rest (1) differ only where the PDF itself carries other text (poppler reads the same)"
+  §SREAD-CHECK case=R9 key=register-columns OK rule="the header that stands apart from its column joins it: 4 columns, not more"
+  §SREAD-CHECK case=R9 key=register-total OK rule="the total 228.85 is found as the sum of its one row (D8 = SUM(D6:D6)), typed as a number, verdict ADDS_UP"
+§SHEET_READER verdict=INCONCLUSIVE ok=false page=1 items=12 lines=4 cols=5 cells=12 blankRows=0 edgeSplits=0 bandsMerged=0 boxesTrimmed=0 collisions=0 checks=0 ms=0 reason="no total row found: nothing was judged"
+§SREAD-LAYOUT file=crosstab cells=12 sameOrder=12 sameAddress=1 read=12 verdict=INCONCLUSIVE
+  §SREAD-CHECK case=R9 key=crosstab-order OK rule="cross-tab: all 12 cells in the same row and column ORDER with the same text (an empty sheet column cannot be seen in a PDF: stated)"
+  §SREAD-CHECK case=R9 key=crosstab-minus OK rule="a leading minus is negative: -1,023.98 and -633.41 are read as numbers"
+  §SREAD-CHECK case=R9 key=crosstab-not-judged OK rule="a table with no total row is INCONCLUSIVE, never ADDS_UP"
+§SHEET_READER verdict=INCONCLUSIVE ok=false page=1 items=42 lines=16 cols=4 cells=36 blankRows=8 edgeSplits=0 bandsMerged=0 boxesTrimmed=16 collisions=6 checks=0 ms=0 reason="no total row found: nothing was judged"
+§SHEET_READER verdict=INCONCLUSIVE ok=false page=1 items=19 lines=7 cols=6 cells=19 blankRows=6 edgeSplits=2 bandsMerged=0 boxesTrimmed=12 collisions=0 checks=0 ms=0 reason="no total row found: nothing was judged"
+§SREAD-LIMIT file=showcase (merged, centred, wrapped cells) cells=41 sameOrder=7 sameAddress=1 read=36 collisions=6 verdict=INCONCLUSIVE
+§SREAD-LIMIT file=geometry_fixture (columns that nearly touch, a merged cell, a wrapped cell) cells=18 sameOrder=14 sameAddress=12 read=19 edgeSplits=2 verdict=INCONCLUSIVE
+  §SREAD-CHECK case=R9 key=limit-floor OK rule="the two LIMIT layouts are not rebuilt (stated) and have not got worse: showcase same-order >= 7 of 41, geometry >= 14 of 18"
+  §SREAD-CHECK case=R9 key=limit-honest OK rule="a layout the reader cannot rebuild is not reported as ADDS_UP"
+§SREAD-R9 verdict=PASS judged=8 failed=0
+§SREAD-VERDICT PASS judged=36 failed=0
