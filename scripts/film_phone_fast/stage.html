@@ -1,6 +1,8 @@
 <!doctype html>
-<!-- ⚠ DO NOT REMOVE — Scope: FILM-M1 compositor (MOBILE_PERF.md §FILM-M1 RECORDING SPEC R4). Pure function of ONE frame descriptor:
-     background still + phone frame(s) + desktop frame + captions + finger mark. Rendered by render_stage.js; read its log. -->
+<!-- ⚠ DO NOT REMOVE — Scope: FILM-M1 compositor (MOBILE_PERF.md §FILM-M1 RECORDING SPEC R4). Pure function of ONE frame descriptor.
+     frame='phone' (default, rc2): real phone body (CSS only) around each 456x933 recording, browser-window frame for the 1920x1080 HQ view,
+       finger-touch ring from tap:{x,y}|[x,y] in recording pixels, plain neutral background, title/end cards. Layout chosen by name from LAYOUTS.
+     frame='trailer' (rc1, kept bit-identical): background still + bare screens + finger mark. Rendered by render_stage.js; read its log. -->
 <html><head><meta charset="utf-8"><style>
 html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:#07111f;font-family:'Noto Sans','DejaVu Sans',sans-serif}
 #bg,#dark{position:absolute;inset:0}#bg{background-size:cover}#dark{background:linear-gradient(#07111f,#122a48)}
@@ -11,12 +13,31 @@ html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:#07111f
 .cap{position:absolute;color:#fff;font-weight:700;font-size:50px;line-height:1.15}
 .sub{position:absolute;color:#cfe3ff;font-weight:500;font-size:26px;line-height:1.35}
 .ring{position:absolute;width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:50%;border:5px solid #fff;box-shadow:0 0 0 3px rgba(0,0,0,.45)}
+
+/* ---- frame=phone (rc2). Everything below is namespaced p-/ph so the trailer path above is untouched ---- */
+.ph{position:absolute;background:#14171c;box-shadow:0 28px 60px rgba(20,24,32,.28),0 6px 14px rgba(20,24,32,.18),inset 0 0 0 2px #3b424d}
+.ph .cam{position:absolute;width:7px;height:7px;border-radius:50%;background:#050607;box-shadow:0 0 0 1.5px #2a3038}
+.ph .pscr{position:absolute;overflow:hidden;background:#000}
+.ph .pscr img{position:absolute;left:0;top:0;width:100%;height:100%;display:block;object-fit:fill}
+.pbtn{position:absolute;width:5px;border-radius:3px;background:#2a2f38}
+.pring{position:absolute;border-radius:50%;box-sizing:border-box;border:4px solid rgba(255,255,255,.95);background:radial-gradient(circle,rgba(255,255,255,.55) 0 55%,rgba(255,255,255,.18) 100%);box-shadow:0 0 0 2px rgba(0,0,0,.45)}
+.win{position:absolute;overflow:hidden;background:#fff;box-shadow:0 22px 50px rgba(20,24,32,.26),0 4px 12px rgba(20,24,32,.16),0 0 0 1px #b9bfc8}
+.win .tb{position:absolute;left:0;top:0;right:0;height:40px;background:#eceff2;border-bottom:1px solid #c9ced6}
+.win .tb i{position:absolute;top:13px;width:14px;height:14px;border-radius:50%}
+.win .tb .url{position:absolute;left:50%;top:7px;width:300px;margin-left:-150px;height:26px;line-height:26px;border-radius:13px;background:#fff;box-shadow:inset 0 0 0 1px #cfd4da;color:#566070;font-size:15px;font-weight:600;text-align:center;letter-spacing:.05em}
+.win .wscr{position:absolute;left:0;overflow:hidden;background:#000}
+.win .wscr img{width:100%;height:100%;display:block;object-fit:fill}
+.pcap{position:absolute;color:#14171c;font-weight:700;font-size:50px;line-height:1.15}
+.psub{position:absolute;color:#4a5260;font-weight:500;font-size:26px;line-height:1.35}
+.plbl{position:absolute;color:#5b6472;font-weight:600;font-size:26px;text-align:center}
+.card{position:absolute;left:0;width:1920px;text-align:center;color:#14171c}
+.card .t{font-weight:700;font-size:92px;line-height:1.1}.card .s{margin-top:26px;font-weight:500;font-size:36px;color:#4a5260}
 </style></head><body><div id="bg"></div><div id="dark"></div><div id="app"></div>
 <script>
 'use strict';
 const esc = s => String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
 function scr(src, r, cls) { return `<div class="scr ${cls || ''}" style="left:${r.x}px;top:${r.y}px;width:${r.w}px;height:${r.h}px"><img src="${src}"></div>`; }
-window.STAGE = {
+const STAGE_LEGACY = {
   // d = { bg, dark (0..1), phone:{src,r,tap}, desk:{src,r}, phoneB:{src,r}, labels:[{x,y,w,text}], cap, sub, capBox:{x,y,w}, capAlpha }
   render(d) {
     document.getElementById('bg').style.backgroundImage = d.bg ? `url("${d.bg}")` : 'none';
@@ -30,6 +51,83 @@ window.STAGE = {
     if (d.cap && d.capAlpha > 0) { const b = d.capBox; h += `<div class="cap" style="left:${b.x}px;top:${b.y}px;width:${b.w}px;opacity:${d.capAlpha}">${esc(d.cap)}</div>`;
       if (d.sub) h += `<div class="sub" style="left:${b.x}px;top:${b.y + (b.subDy || 140)}px;width:${b.w}px;opacity:${d.capAlpha}">${esc(d.sub)}</div>`; }
     document.getElementById('app').innerHTML = h;
+  },
+};
+
+// ====================== frame=phone (rc2) ======================
+const NAT = { w: 456, h: 933 };          // recording pixels of a phone frame (record_phone.js)
+const BEZEL = 16, BEZEL_RGB = [20, 23, 28], BG = '#e4e7eb', BG_RGB = [228, 231, 235], TB = 40;
+// LAYOUTS: name -> where each device sits. A/B = phone screen (x,y top-left of the SCREEN, s = scale of 456x933); D = desktop window (x,y,w of the 16:9 content).
+// Chosen per segment by name (render_stage.js PLAN). Add a layout here, nothing else changes.
+const PS = 0.86;
+const LAYOUTS = {
+  'phone':               { A: { x: 732, y: 73, s: 1 } },
+  'phone+desktop':       { A: { x: 150, y: 140, s: PS }, D: { x: 620, y: 140, w: 1140 } },
+  'phone+desktop+phone': { A: { x: 62, y: 185, s: PS }, D: { x: 504, y: 270, w: 912 }, B: { x: 1920 - 62 - NAT.w * PS, y: 185, s: PS } },
+};
+const rectOf = a => ({ x: a.x, y: a.y, w: NAT.w * a.s, h: NAT.h * a.s, s: a.s });
+const deskOf = D => ({ win: { x: D.x, y: D.y, w: D.w, h: TB + D.w * 9 / 16 }, content: { x: D.x, y: D.y + TB, w: D.w, h: D.w * 9 / 16 } });
+const lerp = (a, b, u) => a + (b - a) * u, clamp01 = u => Math.max(0, Math.min(1, u));
+function layoutRects(name) {
+  const L = LAYOUTS[name]; if (!L) throw new Error('unknown layout ' + name);
+  const o = { name, phone: rectOf(L.A) };
+  if (L.D) { const d = deskOf(L.D); o.desk = d.content; o.win = d.win; }
+  if (L.B) o.phoneB = rectOf(L.B);
+  return o;
+}
+const finite = v => typeof v === 'number' && isFinite(v);
+const tapXY = t => !t ? null : Array.isArray(t) ? (finite(t[0]) && finite(t[1]) ? { x: t[0], y: t[1] } : null) : (typeof t === 'object' && finite(t.x) && finite(t.y)) ? { x: t.x, y: t.y } : null;
+function phoneHTML(role, src, r, tap, alpha) {
+  const k = r.w / NAT.w, rs = Math.round(46 * k * 10) / 10, ow = r.w + 2 * BEZEL, oh = r.h + 2 * BEZEL, ox = r.x - BEZEL, oy = r.y - BEZEL;
+  const btn = (left, top, h) => `<i class="pbtn" style="left:${left}px;top:${top}px;height:${h}px"></i>`;
+  let h = `<div class="pwrap" data-role="${role}" style="opacity:${alpha}">`;
+  h += btn(ox - 4, oy + oh * 0.20, oh * 0.06) + btn(ox - 4, oy + oh * 0.29, oh * 0.06) + btn(ox + ow - 1, oy + oh * 0.24, oh * 0.09);   // volume x2 left, power right (behind the body)
+  h += `<div class="ph" data-role="${role}" style="left:${ox}px;top:${oy}px;width:${ow}px;height:${oh}px;border-radius:${rs + BEZEL}px">`
+     + `<i class="cam" style="left:${ow / 2 - 3.5}px;top:${BEZEL / 2 - 3.5}px"></i>`
+     + `<div class="pscr" data-role="${role}" style="left:${BEZEL}px;top:${BEZEL}px;width:${r.w}px;height:${r.h}px;border-radius:${rs}px"><img src="${src}">`;
+  const t = tapXY(tap);
+  if (t) { const d = 60 * Math.max(k, 0.8); h += `<i class="pring" style="left:${t.x * k - d / 2}px;top:${t.y * k - d / 2}px;width:${d}px;height:${d}px"></i>`; }
+  return h + `</div></div></div>`;
+}
+function deskHTML(src, D, alpha) {
+  const d = deskOf(D);
+  return `<div class="pwrap" data-role="D" style="opacity:${alpha}"><div class="win" style="left:${d.win.x}px;top:${d.win.y}px;width:${d.win.w}px;height:${d.win.h}px;border-radius:10px">`
+    + `<div class="tb"><i style="left:14px;background:#ee6a5f"></i><i style="left:36px;background:#f4be4f"></i><i style="left:58px;background:#61c454"></i><span class="url">HQ</span></div>`
+    + `<div class="wscr" style="top:${TB}px;width:${d.content.w}px;height:${d.content.h}px"><img src="${src}"></div></div></div>`;
+}
+function renderPhone(d) {
+  document.documentElement.style.background = BG; document.body.style.background = BG;
+  document.getElementById('bg').style.display = 'none'; document.getElementById('dark').style.display = 'none';
+  const name = d.layout || 'phone', L = LAYOUTS[name]; if (!L) throw new Error('unknown layout ' + name);
+  const R = layoutRects(name); let A = R.phone, u = 1;
+  if (d.morph) { const F = LAYOUTS[d.morph.from].A, T = L.A; u = clamp01(d.morph.u); const e = { x: lerp(F.x, T.x, u), y: lerp(F.y, T.y, u), s: lerp(F.s, T.s, u) }; A = rectOf(e); }
+  if (d.rectOverride && d.rectOverride.phone) A = Object.assign({}, A, d.rectOverride.phone);   // witness RED control only
+  const sec = d.morph ? clamp01((u - 0.4) / 0.6) : 1, dev = d.dev == null ? 1 : d.dev;
+  let h = '';
+  if (L.D && d.hq) h += deskHTML(d.hq, L.D, sec * dev);
+  if (d.A) h += phoneHTML('A', d.A.src, A, d.A.tap, dev);
+  if (L.B && d.B) h += phoneHTML('B', d.B.src, R.phoneB, d.B.tap, sec * dev);
+  const lb = d.labels || {};
+  const lab = (t, cx, y, a) => t ? `<div class="plbl" style="left:${cx - 250}px;top:${y}px;width:500px;opacity:${a}">${esc(t)}</div>` : '';
+  if (lb.A) h += lab(lb.A, A.x + A.w / 2, A.y - BEZEL - 52, (d.labelA == null ? 1 : d.labelA) * dev);
+  if (L.D && lb.D) h += lab(lb.D, R.win.x + R.win.w / 2, R.win.y - 44, (d.labelA == null ? 1 : d.labelA) * dev);
+  if (L.B && lb.B) h += lab(lb.B, R.phoneB.x + R.phoneB.w / 2, R.phoneB.y - BEZEL - 52, (d.labelA == null ? 1 : d.labelA) * dev);
+  for (const c of d.cards || []) h += `<div class="card" style="top:${c.y == null ? 400 : c.y}px;opacity:${c.a}"><div class="t">${esc(c.title)}</div>${c.sub ? `<div class="s">${esc(c.sub)}</div>` : ''}</div>`;
+  if (d.cap && d.capAlpha > 0) { const b = d.capBox; h += `<div class="pcap" style="left:${b.x}px;top:${b.y}px;width:${b.w}px;opacity:${d.capAlpha};text-align:${b.align || 'left'}">${esc(d.cap)}</div>`;
+    if (d.sub) h += `<div class="psub" style="left:${b.x}px;top:${b.y + (b.subDy || 140)}px;width:${b.w}px;opacity:${d.capAlpha};text-align:${b.align || 'left'}">${esc(d.sub)}</div>`; }
+  document.getElementById('app').innerHTML = h;
+}
+window.STAGE = {
+  consts: { NAT, BEZEL, BEZEL_RGB, BG_RGB, TB },
+  layoutNames: () => Object.keys(LAYOUTS),
+  layout: layoutRects,
+  render(d) {
+    if (d.frame === 'trailer') {            // rc1 look: reset what the phone path changed, then the unchanged legacy renderer
+      document.documentElement.style.background = ''; document.body.style.background = '';
+      document.getElementById('bg').style.display = ''; document.getElementById('dark').style.display = '';
+      return STAGE_LEGACY.render(d);
+    }
+    return renderPhone(d);
   },
 };
 </script></body></html>

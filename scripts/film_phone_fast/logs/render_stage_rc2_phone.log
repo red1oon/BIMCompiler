@@ -1,0 +1,24 @@
+§STAGE_FRAME_MODE frame=phone plan=default
+§STAGE_SITE_B db=HHS_Office_Federated label=Office
+§STAGE_DROPPED A=[] B=[]
+§STAGE_CAPTION beat=hq_open text="HQ opens the same view." source="§M1_HQ_CAM SAME_VIEW"
+§STAGE_CAPTION beat=b_walk/b_snag text="Site B snags its own." source="§WALK_XRAY_AUTO on + §ISSUE_SAVED (B)"
+§STAGE_CAPTION beat=ready text="Ready to touch at once." source="MOBILE_PERF §2026-11-27 LEVELS, P3 row"
+§STAGE_CAPTION beat=fab text="Panels open in under 0.1 s." source="MOBILE_PERF §2026-11-27 PANELS table"
+§STAGE_CAPTION beat=nav_swipe text="Swipe down to close." source="§SHEET_CLOSE via=swipe"
+§STAGE_CAPTION beat=settings_open text="Android Back closes it." source="§SHEET_CLOSE via=back"
+§STAGE_CAPTION beat=walk_start text="Walk: X-Ray turns itself on." source="§WALK_XRAY_AUTO on"
+§STAGE_CAPTION beat=walk_steps text="Every step on the record." source="§WALK_TRACE"
+§STAGE_CAPTION beat=snag text="Snag the element." source="§SNAP + §ISSUE_SAVED"
+§STAGE_CAPTION beat=walk_stop text="Stop: X-Ray goes back off." source="§WALK_XRAY_AUTO restored off"
+§STAGE_CAPTION beat=scrub text="Replay: scrub the walk back." source="§M1_SCRUB walk_events=5"
+§STAGE_PLAN frames=1270 seconds=42.33 intro=3.20s phoneA=24.83s split=10.30s outro=4.00s
+§STAGE_FRAME kind=phone layout=phone role=A screen_rect=732,73,456,933 outer_rect=716,57,488,965 radii=screen:46px/outer:62px bezel=16 aspect_err=0.0000% img_eq_screen=true OK
+§STAGE_FRAME kind=phone layout=phone+desktop+phone role=A screen_rect=62,185,392.16,802.38 outer_rect=46,169,424.16,834.38 radii=screen:39.6px/outer:55.6px bezel=16 aspect_err=0.0003% img_eq_screen=true OK
+§STAGE_FRAME kind=phone layout=phone+desktop+phone role=B screen_rect=1465.83,185,392.16,802.38 outer_rect=1449.83,169,424.16,834.38 radii=screen:39.6px/outer:55.6px bezel=16 aspect_err=0.0003% img_eq_screen=true OK
+§STAGE_FRAME kind=desktop layout=phone+desktop+phone window_rect=504,270,912,553 content_rect=504,310,912,513 url_text="HQ" aspect_err=0.0000% OK
+§STAGE_FRAMES planned=1270 written=1270 rendered_unique=221 OK
+§STAGE_FRAME_CHECK layouts=2 fails=0 OK
+§STAGE_TAP drawn=123 expected=123 OK
+§STAGE_IMG broken=0 OK
+§STAGE_PAGEERRORS n=0
