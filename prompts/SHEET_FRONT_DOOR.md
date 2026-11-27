@@ -1467,3 +1467,15 @@ consistent edits add up → both downloads; J2 the row → the .xlsx recognised,
   done; a typed total is a number, an untouched total stays a SUM). Claim J2-no-phantom: 0 listed changes on arrival.
 - F5 File it: on opening a workbook without marked cells, say it in plain words at once (what is missing, that marking one's own layout is not built yet, and
   to try the sample). The engine's own verdict text is not changed (the Excel/WPS menus share it).
+
+### 16.2 F4 refined after the regression run: the history records what the re-read sees (2026-11-28)
+F4 as first written (the export follows the history) made a corrected total a plain number in the .xlsx: W-PDF-WRITE-PAGE `xlsx-after` FAILED, rightly — it
+asks for D28 = 40393.44 WITH `=SUM(D6:D26)`, and the guide promises "where the report printed a total, the file holds a real sum formula". The phantom
+had two sides; both are now closed with ONE owner (the history) that agrees with the reader:
+- **Record (`pdf/index.html` applyEdit → `pdf_write.js` record):** an edited cell is recorded with the formula the RE-READ still finds there. A typed total that
+  still adds up its column stays a SUM and is NOT flagged typed-over; a typed total that breaks its sum is recorded as a number and flagged (S9 H7, node W8).
+- **Export (`download()`):** each cell's formula is the one the history holds (so a total left alone keeps its SUM when a row changes).
+Witness expectations changed with it, each naming this section: W-PDF-WRITE-PAGE `history-2` (D28 now `typedOverFormula=false`) and W-PDF-HISTORY-PAGE
+`story-clicked` (D28's story no longer marked "typed over a total"). The log tag is `§PDFXLSX-FORMULAS` (the first name, `§PDFHIST-XLSX-F`, was caught by a
+witness waiting on the prefix `§PDFHIST-XLSX`).
+Not witnessed on the page: a typed total that BREAKS its sum (flag set) — node W8 and S9 H7 cover the rule.
