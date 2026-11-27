@@ -142,3 +142,82 @@ Commands: `PDFED_MUTANTS=1 node pdf/tests/witness_pdfed_p0.js` · `node pdf/test
 
 **Not judged in P0:** V3 has ONE file with an outline (the trial balance has none in either reader). Corpus = 2 of our own files; the
 public sets of §5 are not assembled. Heap per open file is logged, not budgeted.
+
+## 4.3 Phase P4 narrow: numbers-only write-back (spec 2026-11-27, before code) — build-order step (2) of 'resume killer'
+A user reads a PDF report as a sheet (§4.1, S10), changes a NUMBER in the sheet, and gets the SAME PDF back with that number
+rewritten in place, in the box the source map names. No reflow, numbers only. Clean room (§1): ISO 32000-2 §7.5 (file
+structure), §8.4 (graphics state), §9 (text) and our own measurements only.
+
+### 4.3.1 Measured before the design (the proof file `pdf/corpus/trial_balance_th.pdf`, 74,945 bytes)
+- 31 objects, ONE classic cross-reference table, no `/Prev`, not encrypted. The page's content is ONE stream (object 5,
+  28,044 bytes, **not compressed**): 152 `BT..ET` blocks, 185 `TJ`, 185 `Tm`, 152 `Tf`, no `Tj`/`Td`. Each cell is drawn as
+  `q <x y w h> re W n ... q 1 0 0 -1 0 526.5 cm BT 1 0 0 1 <x> <y> Tm /F4 9 Tf [<hex codes> 0] TJ ET Q Q` (its own clip box).
+- 4 fonts, all Type0 / Identity-H / CIDFontType2 subsets with a ToUnicode map and a `/W` width table:
+  F4 LiberationSans (regular, the body numbers) carries all ten digits and `. , ( ) -`;
+  **F2 LiberationSans-Bold (the total row, 10 pt) carries only the digits 0 2 3 4 9** (and `. ,`): 1 5 6 7 8 are not in the subset.
+- D10 `498.09` is one `TJ` in F4 9 pt; D28 and E28 `40,392.44` are one `TJ` each in F2 10 pt. `498.09` is printed once,
+  `40,392.44` twice (D28 and E28), so "the old string is gone" is a COUNT (one fewer), never "absent".
+
+### 4.3.2 Design (owner delegated; decided here)
+Code (bim-ootb): `pdf/pdf_write.js` (UMD, browser + node, MIT, no library: Flate through the platform's own
+`DecompressionStream` / `CompressionStream`), witnesses `pdf/tests/witness_pdf_write.js` (W-PDF-WRITE, node) and
+`pdf/tests/witness_pdf_write_page.js` (W-PDF-WRITE-PAGE, the real page, headless).
+- `PdfWrite.rewriteNumbers(bytes, edits, opts?) -> Promise<{ ok, bytes, changes:[...], refused:[...] }>`; an edit =
+  `{ page, box:[x0,y0,x1,y1], oldText, newText, cell?, align? }` taken from the reader's source map (page points, y down).
+  **All or nothing:** if ANY edit is refused, `ok:false`, `bytes` is the input unchanged and every refusal is named.
+- **Own layers.** (1) File: classic cross-reference table(s), objects, page tree, the page's content stream(s) (none or
+  one FlateDecode filter). (2) Content: an interpreter of the graphics and text state (`q Q cm`, `BT ET Tf Tm Td TD T* Tc Tw Tz TL Ts`,
+  `Tj TJ ' "`, rectangular clips `re W n`) that lists every text run with its font, glyph codes, decoded text and its
+  extent in page points. (3) Fonts: Type0 Identity-H with ToUnicode (`bfchar`, `bfrange`) and `/W` / `/DW` widths.
+- **Finding the run:** the runs whose centre lies in the edit's box; their decoded text (spaces squashed) must equal `oldText`.
+- **Replacing:** the run's operand and operator are replaced by ONE `TJ` holding the new glyph codes plus a spacing number
+  that makes up the width difference, placed BEFORE the glyphs for a right-aligned number (the reader types a cell as a
+  number only in a column whose cells share a right edge). The text position after the run is therefore exactly what it was:
+  no later run can move. Every other byte of the stream is copied as it was (no re-serialisation of the stream).
+- **Saving:** a true rewrite, not an incremental update (an appended revision would leave the old number in the file):
+  the content-stream object is replaced, every other object is copied byte for byte, one new cross-reference table.
+- **Glyphs:** new text is encoded through the run's own font (reverse ToUnicode). A character the embedded subset lacks:
+  REFUSED `glyph-missing` (font and characters named) by default; with `opts.substitute` the run is written in another
+  font of the SAME family already on the page that holds every needed glyph, the original font restored after the run,
+  logged `§PDFED-FONT-SUB` and returned in the change (`fontSub`). Never silent, never across families.
+- **Fit:** a new number whose extent leaves the run's rectangular clip, or reaches into another run on the same line, is
+  REFUSED `does-not-fit` (a write-back never clips a number nor paints over its neighbour).
+- **Named refusals:** `not-a-number` (old or new text is not a number as the reader types one: one grammar,
+  `ReportReader.parseNum`), `no-text-in-box`, `old-text-not-in-box`, `glyph-missing`, `does-not-fit`, `duplicate-edit`,
+  `no-such-page`; and for the file: `not-a-pdf`, `xref-stream` (PDF 1.5 cross-reference streams: not in this cut),
+  `encrypted`, `filter-not-supported`, `font-not-supported`, `rotated-text`, `rotated-page`, `shared-content`, `damaged`.
+- **The sheet side, one owner:** `PdfWrite.applyToItems(pages, edits)` applies the same edits to the reader's input so
+  the reader's own adds-up rule judges the EDITED SHEET before a byte is written; `PdfWrite.formatLike(columnTexts, value)`
+  prints a typed value the way its column is printed (decimals, grouping, brackets, dash for zero: read from the column).
+- **History (S9, no second format):** `PdfWrite.record(SheetHistory, history, snapshot, changes, actor, at)` = one journal
+  entry per rewrite, one `CELL_SET` per applied change; a refused rewrite records nothing.
+- **The page:** in the Read-as-sheet grid a NUMBER cell is edited by double-click; on Enter the page judges the edited sheet,
+  rewrites the PDF in memory (`substitute` on, said in words), re-opens and re-reads the rewritten bytes, redraws, logs
+  both verdicts (`§PDFWR-SHEET`, `§PDFWR-REREAD`) and records the history entry. **Download PDF** hands back those bytes.
+  A refusal is said in words and the cell goes back. `pdf_write.js` and `erp/sheet_history.js` join `pdf/sw.js` ASSETS.
+
+### 4.3.3 Claims (W-PDF-WRITE; verdict line `§PDFWR-<case> verdict=PASS|FAIL|INCONCLUSIVE judged=N failed=M`)
+| ID | Claim | Issue it exposes | Falsifier |
+|----|-------|------------------|-----------|
+| W1 ROUND TRIP | D10 498.09→499.09 and D28 40,392.44→40,393.44: the SAVED bytes re-read with `pdf_open` + `report_reader` give the new values at the same addresses, 144 cells, every other cell's text unchanged, verdict ADDS_UP. A fully consistent edit (D10 500.09, F10 1,020.16, D28 40,394.44, F28 2.00) re-reads with all 5 checks (4 sums + the row rule on 21 of 21 rows) | the number is written to the wrong cell or not at all | mutant: the box is ignored (last run with that text is rewritten) |
+| W2 INDEPENDENT | poppler `pdftotext -raw` on the saved bytes holds the new strings and one FEWER of each old string; `pdftotext -bbox` holds a word with the new text where the old one stood | our own reader agrees with our own writer only | — (INCONCLUSIVE without poppler) |
+| W3 OLD GONE | in the saved file's content stream (inflated by the witness, not the engine) the old run's line is gone, exactly one line changed per edit, the counts of every other operator are unchanged; the file is one revision (one `%%EOF`, no `/Prev`) and the old line occurs nowhere in the saved bytes | old text left behind, hidden or kept in an earlier revision (KillerPDF #413) | mutant: old run kept, new run added |
+| W4 NOTHING MOVED | every other cell: same text and box within 0.01 pt (reader map); every other poppler word: same bbox within 0.01 pt; the edited cells' RIGHT edge unchanged within 0.01 pt in both readers; a width-changing edit (D10 498.09→1,498.09) keeps the right edge and moves the LEFT edge by the font's own widths of `1,` (7.51 pt at 9 pt) within 0.01 pt; every object but the content stream is byte-identical; rendered by poppler (`pdftoppm`, grey, 100 dpi) 0 pixels differ outside the edited boxes and more than 0 inside | a neighbouring run shifted; alignment lost | mutant: no spacing number (left edge kept instead of right) |
+| W5 STILL BITES | only D10 rewritten (total left stale): the re-read verdict is DOES_NOT_ADD_UP naming D28 and both numbers | the check goes blind after an edit | — |
+| W6 REFUSED | each is refused BY NAME with the input bytes returned unchanged: a non-number new text; a text cell; an old text that is not what is in the box; a box with no text; a glyph the subset lacks (D28→40,395.44: `glyph-missing`, font and `5` named); a number too wide for its cell (`does-not-fit`); two edits on one box; and one bad edit in a batch refuses the whole batch | a wrong or damaged write passes silently | mutants: glyph check skipped; fit check skipped |
+| W7 STATED SUBSTITUTION | with `substitute`, D28→40,395.44 is written in LiberationSans (regular), `§PDFED-FONT-SUB` names from / to / missing, the change carries `fontSub`; both readers read the new value; right edge kept within 0.01 pt; E28 (bold, next to it) unchanged | a silent font change, or a refusal the user cannot get past | — |
+| W8 HISTORY | genesis + ONE entry per rewrite holding one `CELL_SET` per applied change with before/after; the kernel's `verifyJournal` accepts it; a refused rewrite records nothing; the history replayed (`asOf`) equals the snapshot of the re-read PDF | history and file disagree; a second log format | — |
+| W9 VALID FILE | poppler `pdfinfo`: exit 0, no message, same page count; every cross-reference entry points at its `N G obj`; `/Length` equals the stream's real length; size delta, ms and heap logged (`§PDFWR-COST`) | a file only our own reader can open | mutant: offsets not updated |
+| W10 COMPRESSED | the same file with its content stream Flate-compressed (made at run time by the witness, checked equal by poppler first): the W1 edit round-trips, the saved stream is still FlateDecode and inflates (node zlib) to a stream without the old line | only uncompressed streams work (most real PDFs are compressed) | — |
+| W11 SECOND WRITER | a ghostscript re-distilled copy (made at run time: other operators, other font packaging): the W1 edit either round-trips with W1/W2's checks or is REFUSED by name; measured and reported, never a silent wrong write | the engine fits one generator's style only | — (INCONCLUSIVE without ghostscript) |
+| W12 SHEET SIDE | `applyToItems` + the reader give, for three edit sets (D10 only; D10 + D28; the consistent four), the SAME verdict and reason as the re-read rewritten PDF; `formatLike` prints 40393.44 as `40,393.44`, -1466.15 as `(1,466.15)` and 0 as `-` from column D's and F's own texts | the sheet says one thing, the PDF another | — |
+
+Mutants (`PDFWR_MUTANTS=1`): each must turn its named case FAIL in a child run; a crash is not a kill.
+W-PDF-WRITE-PAGE (wiring, real page, headless, `§PDFWP-*`): a number cell is edited with real key presses → both verdict
+lines; the canvas pixels inside the cell's box change; Download PDF hands bytes that poppler and the node reader read as
+the new values; a non-number is refused in words and nothing changes; a text cell opens no editor; history = genesis + one
+entry per applied edit, verified. The P0 page witness (`witness_pdfed_page.js`) stays green.
+
+Not claimed in this cut: text other than numbers; reflow; cross-reference streams and object streams (PDF 1.5+: named
+refusal); encrypted files; simple (one-byte) fonts and the standard 14 without widths; text inside form XObjects; vertical
+or rotated text; kerning pairs of the new digits; any report layout other than the proof file (denominator 1 of 1).
