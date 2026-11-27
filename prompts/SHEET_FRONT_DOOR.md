@@ -1591,3 +1591,44 @@ n=17 not a PDF → "This file is not a PDF." · n=18 scan → "11 pages, no text
 - **Witness slip:** `page.tap()` scrolls its target into view before tapping (it moved the window under the sticky toolbar: page 3 → 2). The witness taps
   the screen where the button IS (`touchscreen.tap(x, y)`), as a thumb does.
 - Toolbar measured 101 px with 6 px padding → 5 px: 99 px.
+
+### 17.3 RESULTS (2026-11-28, bim-ootb PR #3498 `feat/pdf-mobile`, merged as `ef08a10e`, deployed)
+Code: `pdf/index.html` (two-step open, observer against what scrolls, `track()`/`go()` from the screen, one page drawn at a time, phone layout + short labels +
+Find button, sheet in place of the pages, toolbar that stays), `pdf/pdf_open.js` (`textLater`, opt-in), `pdf/tests/witness_pdf_mobile.js` (new).
+The 25 PDFs, phone emulation, **against the LIVE page**: `§PDFM-VERDICT PASS judged=162 failed=0` (before, local main `1b7a91eb`: judged=135 failed=76).
+```
+§PDFM-FIRSTVISIT bytes=235719 msToUsable=1692 net=slow4G cpu=4x        (live, minified; the local tree serves 769 KB unminified, 4.1 s)
+page 1 painted, before → after (local, same machine; A/B back to back for n=9,10,16):
+  2,499 p 21.9 s → 1.3 s · 2,464 p 19.6 s → 1.5 s · 126 p 9.5 s → 0.4 s · 69 p 5.7 s → 0.4 s · image-heavy 4 p 8.3 s → 2.4 s · 1-page files 0.24-0.5 s, unchanged
+canvases alive: every page (up to 2,499) → at most 5 · peak JS heap 2,464 p: 267 MB → 74 MB · toolbar 205 → 99 px · U6 the page on screen is read · U7 toolbar stays
+all text read (Find / Read as sheet ready): 2,499 p 10.2 s, 126 p 1.9 s, ≤ 12 p under 0.5 s; the status line counts the pages meanwhile
+```
+Regression, same tree: PDFPG 19, PDFWP 22, PDFHP 19, W-KILLER-USE 44, SWPP 28 (WPS phone page), PDFWR 67 (6/6), PDFHIST 57 (10/10), SREAD 38 (8/8), PDFED 13 (3/3);
+eslint 0; CI pass. Privacy: the diff was checked against the 25 file names (only generic words like "Report" matched); no path, no name in any commit.
+**What the run also showed (not fixed here, the reader's own lane, OPEN LIST 21):** of the 16 table PDFs, the reader JUDGED few. Ours (the trial balance) and one
+outside file add up; 3 outside files "do NOT add up" (not checked whether the misread is ours or a real difference: two print `360.00` against a rows sum
+`885.00`, which looks like a misread); 9 are "not judged: no total row found". The core promise works on our layout and seldom yet on other people's.
+
+### 17.4 Where it sits for a user, against KillerPDF (the C# desktop program studied first, §2 of PDF_EDITOR.md) and Adobe Acrobat (2026-11-28)
+Against KillerPDF's 14 public feature groups (PDF_EDITOR §2, the denominator): ours covers **G1 in part** (view, find, outline, password; no view modes, tabs,
+split panes), a **narrow slice of G4** (numbers only, not text), a **narrow slice of G10** (.xlsx only). **0 of the other 11 groups** (organise, annotate, images,
+forms, redaction, OCR, compare, security, signing, quality, automation). KillerPDF is a Windows desktop program by its own list (Windows certificate store,
+TWAIN scanning, installed Office); nothing in our record of it runs in a phone browser.
+Adobe Acrobat on a phone, by Adobe's own help pages (read 2026-11-28): free = view, comment, fill, sign, share; editing text, OCR, export, organising pages need
+a paid mobile subscription (Reader Plus / Premium); its online converters upload the file to Adobe's cloud, have a free quota and a 100 MB cap.
+Ours that neither gives as measured here: free, no install, no upload, offline after one visit, on any phone browser; a report read back as a sheet WITH an
+"adds up" check; a number changed in place in the same PDF; the history inside the file. NOT measured: KillerPDF's or Acrobat's speed on the same 25 files, or
+Acrobat's PDF→Excel accuracy on them. Sources: helpx.adobe.com/acrobat/mobile/subscription-refunds/about-subscriptions.html ·
+helpx.adobe.com/document-cloud/faq/free-online-pdf.html · adobe.com/acrobat/online/pdf-to-excel.
+
+### 17.5 The users' wish list out there, weighed (web read 2026-11-28; vendor and review pages, no formal survey found — anecdotal, said so)
+| Wish (theme, source kind) | Ours today | Weight for this lane |
+|---|---|---|
+| Basic tasks truly free, no "pay after you edited" (complaint sites, Trustpilot, Product Hunt) | free, no account | HIGH: keep it, say it on the page |
+| Do not upload my documents (iLovePDF app-review analysis, free-editor roundups) | nothing leaves the device | HIGH: our strongest edge, already said |
+| Edit existing TEXT offline (free-editor roundups: PDFgear, PDF-XChange, PDF24 recommended for it) | numbers only | MEDIUM-HIGH: P4 wide (G4) |
+| Merge / split / reorder / sign without a paywall (Product Hunt, complaint sites) | none | HIGH and CHEAP: P1 organise + fill/sign (pdf-lib already chosen, §3) |
+| Bank statements / reports → Excel that is RIGHT: columns not merged, running balance, totals reconciled to the printed balances (accounting vendor pages) | our adds-up check IS that reconciliation, but it judges few outside layouts (§17.3) | HIGHEST fit: widen the reader (running-balance column, multi-page, ruling lines = OPEN LIST 21) on real statements |
+| Scans (OCR) | refused in words | MEDIUM: 12 of 158 PDFs on this machine are scans; G8 |
+Sources: sikayetvar.com (PDF Guru complaint) · trustpilot.com/review/pdf.net · kimola.com iLovePDF feedback report · producthunt.com/products/desidocs ·
+techrepublic.com best free PDF editors 2026 · dev.to / hashnode bank-statement converter articles · cpapracticeadvisor.com 2024-02-28.
