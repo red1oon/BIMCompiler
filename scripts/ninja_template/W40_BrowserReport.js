@@ -18,9 +18,9 @@ const srv=http.createServer((q,r)=>{ const p=decodeURIComponent(q.url.split('?')
    const ld=s=>new Promise((ok,no)=>{const e=document.createElement('script');e.src=s;e.onload=ok;e.onerror=()=>no(new Error(s));document.head.appendChild(e);});
    await ld(base+'erp/lib/sql-wasm-fts5.js'); const SQL=await initSqlJs({locateFile:()=>base+'erp/lib/sql-wasm-fts5.wasm'});
    const db=new SQL.Database(new Uint8Array(await (await fetch(base+dbrel)).arrayBuffer()));
-   await ld(base+'erp/xlsx.mini.min.js'); await ld(base+'erp/overlay/ninja/ninja_report.js');   // bim-ootb layout since SHEET_FRONT_DOOR.md §19: engine in erp/overlay/ninja/, PDFKit + fonts in common/, ExcelJS viewer/lib
+   await ld(base+'erp/xlsx.mini.min.js'); await ld(base+'erp/overlay/ninja/ninja_report.js');   // bim-ootb layout since SHEET_FRONT_DOOR.md §19: engine in erp/overlay/ninja/, PDFKit + fonts in common/pdfwriter/, ExcelJS viewer/lib
    const tpl=Uint8Array.from(atob(tplB64),c=>c.charCodeAt(0));
-   const t0=performance.now(); const out=await NinjaReport.run({db,template:tpl,from,to,base:base+'erp/overlay/ninja/',paths:{exceljs:base+'viewer/lib/exceljs.min.js',pdfkit:base+'common/lib/pdfkit.standalone.js',fonts:base+'common/fonts/',bigdecimal:base+'erp/bigdecimal.js'},XLSX:window.XLSX});
+   const t0=performance.now(); const out=await NinjaReport.run({db,template:tpl,from,to,base:base+'erp/overlay/ninja/',paths:{exceljs:base+'viewer/lib/exceljs.min.js',pdfkit:base+'common/pdfwriter/pdfkit.standalone.js',fonts:base+'common/pdfwriter/fonts/',bigdecimal:base+'erp/bigdecimal.js'},XLSX:window.XLSX});
    const b64=u=>{let s='';for(let i=0;i<u.length;i+=32768)s+=String.fromCharCode.apply(null,u.subarray(i,i+32768));return btoa(s);};
    return {facts:out.facts,xlsx:b64(out.xlsx),pdf:b64(out.pdf),ms:Math.round(performance.now()-t0)};
  },{base,dbrel:DBREL,tplB64,from:FROM,to:TO}).catch(e=>({error:String(e)}));
