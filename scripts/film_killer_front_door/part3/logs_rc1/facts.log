@@ -1,0 +1,41 @@
+§FACTS FIXTURE workbook=ninja_sample.xlsx (the repo's own, 24,938 bytes) sheets=3 cells=114 BACKUP!B9={"v":541.02,"f":"SUM(B5:B8)"} B6=100.7 B7=161.12
+§FACTS page loaded: ["erp/sheet_addin/history.html","erp/xlsx.mini.min.js","erp/sheet_history.js","erp/sheet_addin/xlsx_host.js","erp/sheet_addin/host_shim.js","erp/sheet_addin/history.js"] requests=6 bytes=313465 | §SHIST-PAGE-COST requests=6 bytes=313465 readyMs=42 heapMB=2 kernelLoaded=false scripts=5
+§FACTS shot h0_page the history page before any file
+§FACTS b1 open: §SHIST-PAGE-OPEN name=ninja_sample.xlsx bytes=24938 sheets=3 cells=114 state=none ms=17 heapMB=3 | page says "This workbook has no history yet. Stamp starts one: it records every cell that holds something (114 cells in 3 sheets)."
+§FACTS shot h1_open the sample workbook opened: This workbook has no history yet. Stamp starts one: it records every cell that holds something (114 cells in 3 sheets).
+§FACTS shot h1b_named the name typed, ready to stamp
+§FACTS b1 stamp: §SHIST-PAGE-STAMP verdict=RECORDED entry=1 cells=114 chunks=1 typedOverFormula=[] lineChars=14084 ms=2 heapMB=3 | page says "Stamped. Entry 1 records 114 cells as Aisha. Download the workbook to keep it." | "History: 1 entry, verified. The sheet matches the last stamp (Aisha, 2026-11-27 18:02 UTC): nothing has changed since."
+§FACTS shot h2_stamped Stamp: Stamped. Entry 1 records 114 cells as Aisha. Download the workbook to keep it.
+§FACTS outside edit 1 (made by a script, at record time): {"cells":["BACKUP!B6 100.7 -> 200.7","BACKUP!F2 (a note)","BACKUP!B9 =SUM(B5:B8) -> 600"],"by":"a script (SheetJS in node), not a spreadsheet program","historyRowsUnchanged":true}
+§FACTS b2 reopened: §SHIST-PAGE-BIND state=pending entries=1 cells=115 pending=3 cells=["BACKUP!F2","BACKUP!B6","BACKUP!B9"] | page says "History: 1 entry, verified. 3 cells have changed since the last stamp (Aisha, 2026-11-27 18:02 UTC). The next Stamp records:" | ["BACKUP!F2: (empty) → checked by QS","BACKUP!B6: 100.7 → 200.7","BACKUP!B9: =SUM(B5:B8) (541.02) → 600 (a number typed over a formula)"]
+§FACTS shot h3_pending changes since the last stamp: 3 cells
+§FACTS shot h3b_pending_list the cells listed, the typed-over one flagged
+§FACTS b2 stamp: §SHIST-PAGE-STAMP verdict=RECORDED entry=2 cells=3 chunks=1 typedOverFormula=["BACKUP!B9"] lineChars=706 ms=1 heapMB=4 | page says "Stamped. Entry 2 records 3 cells as Ben. Download the workbook to keep it."
+§FACTS shot h4_stamp2 Stamp: Stamped. Entry 2 records 3 cells as Ben. Download the workbook to keep it.
+§FACTS stamp again: {"verdict":"NO-OP","text":"No change since the last stamp."}
+§FACTS shot h4b_noop Stamp again: No change since the last stamp.
+§FACTS day 3 stamp: §SHIST-PAGE-STAMP verdict=RECORDED entry=3 cells=2 chunks=1 typedOverFormula=[] lineChars=566 ms=1 heapMB=6
+§FACTS b4 story B6: §SHIST-PAGE-STORY sheet=BACKUP cell=B6 verdict=STORY lines=3 | ["#1 · 2026-11-27 18:02 UTC · Aisha: (empty) → 100.7","#2 · 2026-11-27 18:02 UTC · Ben: 100.7 → 200.7","#3 · 2026-11-27 18:02 UTC · Aisha: 200.7 → 201.7"]
+§FACTS shot h5_story the story of B6: 3 values
+§FACTS story B9: ["#1 · 2026-11-27 18:02 UTC · Aisha: (empty) → =SUM(B5:B8) (541.02)","#2 · 2026-11-27 18:02 UTC · Ben: =SUM(B5:B8) (541.02) → 600 (a number typed over a formula)"]
+§FACTS shot h5b_story_b9 the story of B9: typed over a formula
+§FACTS b5 rewind: §SHIST-PAGE-REWIND step=2 sheet=BACKUP cells=20 marked=3 | "The sheet as it was after step 2 (Ben, 2026-11-27 18:02 UTC). Marked: the 3 cells that step changed." | B9={"v":600,"f":null} F2={"v":"checked by QS","f":null}
+§FACTS shot h6_rewind the sheet at step 2: The sheet as it was after step 2 (Ben, 2026-11-27 18:02 UTC). Marked: the 3 cells that step changed.
+§FACTS rewound file {"name":"day_edited2_as_of_step_2.xlsx","entries":2,"verifyOk":true,"kernelOk":true,"equalsAsOf2":true}
+§FACTS rewound file reopened: {"state":"intact","lines":2,"pending":0}
+§FACTS shot h7_merge_ready Aisha's copy open, the other copy to be opened
+§FACTS b6 merge: §SHIST-PAGE-MERGE verdict=CONFLICTS other=copy_b_edit.xlsx fork=1 mine=1 theirs=1 applied=["BACKUP!C5:a","BACKUP!C6:b","BACKUP!B8:both"] conflicts=["BACKUP!B7"] | applied [["BACKUP!C6","Ben"]] | conflict BACKUP!B7 11 vs 22 (Aisha, Ben) base 161.12 | finish disabled=true | workbook unchanged=true
+§FACTS shot h8_conflict the conflict shown with both values and both names
+§FACTS shot h8b_conflict_buttons the conflict: nothing chosen yet, Finish disabled
+§FACTS shot h9_picked after the pick, Finish enabled
+§FACTS merged: §SHIST-PAGE-MERGE verdict=RECORDED entry=3 ops=1 fork=1 otherEntries=1 otherHead=f06a6bdd51e9 picks=["BACKUP!B7:a"] lineChars=1285 | page says "Merged. Entry 3 records 1 cell changed in this workbook and your 1 choice. The other copy's 1 entry is kept inside it. Download the workbook to keep it (copy_a_edit_merged.xlsx)." | file {"entries":3,"verify":true,"kernel":true,"B7":[11,null],"C5":["paid",null],"C6":["query",null]}
+§FACTS shot h10_merged the merge finished: Merged. Entry 3 records 1 cell changed in this workbook and your 1 choice. The other copy's 1 entry is kept inside it. Download the workbook to keep it (copy_a_edit_merged.xlsx).
+§FACTS story B7 after the merge: ["#1 · 2026-11-27 18:02 UTC · Aisha: (empty) → 161.12","#2 · 2026-11-27 18:02 UTC · Aisha: 161.12 → 11","#2 · 2026-11-27 18:02 UTC · Ben: 161.12 → 22 · made in the other copy, merged at #3"]
+§FACTS shot h11_merge_story the story of B7 names both people
+§FACTS b7 tamper: §SHIST-PAGE-BIND state=broken entries=3 cells=114 pending=0 brokenAt=2 why="payload (a recorded cell value was edited)" | page says "The history inside this file was edited by hand: entry 2 of 3 does not verify (payload (a recorded cell value was edited)). Nothing is shown and nothing can be stamped on top of it. Go back to a copy you trust." | stamp disabled=true sheet=false story=false merge=false download=false
+§FACTS shot h12_broken a history edited by hand: The history inside this file was edited by hand: entry 2 of 3 does not verify (payload (a recorded cell value was edited)). Nothing is shown and nothing can be stamped on top of it. Go back to a copy you trust.
+§FACTS stamp forced by hand on the broken history: {"rowsUnchanged":true,"lines":3,"stateAfter":"broken"}
+§FACTS downloaded files re-read in node (engine verify and the kernel verifyJournal): [{"id":"stamped1","name":"ninja_sample.xlsx","entries":1,"verifyOk":true,"kernelOk":true,"hidden":2},{"id":"stamped2","name":"day_edited1.xlsx","entries":2,"verifyOk":true,"kernelOk":true,"hidden":2},{"id":"stamped3","name":"day_edited2.xlsx","entries":3,"verifyOk":true,"kernelOk":true,"hidden":2},{"id":"step2","name":"day_edited2_as_of_step_2.xlsx","entries":2,"verifyOk":true,"kernelOk":true,"hidden":2},{"id":"copyA","name":"copy_a_edit.xlsx","entries":2,"verifyOk":true,"kernelOk":true,"hidden":2},{"id":"copyB","name":"copy_b_edit.xlsx","entries":2,"verifyOk":true,"kernelOk":true,"hidden":2},{"id":"merged","name":"copy_a_edit_merged.xlsx","entries":3,"verifyOk":true,"kernelOk":true,"hidden":2}]
+§FACTS NET server saw 12 requests in all = 2 page loads x 6 files (0 after the pages were ready); non-GET 0; external (aborted) 0; page errors 0
+§FACTS DERIVED {"genesisCells":114,"stamp1":true,"listedExactly":true,"overFlagged":true,"noop":true,"stamp2":true,"storyThree":true,"rewindOk":true,"mergeCombine":true,"oneClash":true,"mergedOk":true,"tamperCaught":true,"filesVerify":true,"noUpload":true,"light":true}
+§FACTS FACTS_VERDICT PASS (judged: 15 derived facts)

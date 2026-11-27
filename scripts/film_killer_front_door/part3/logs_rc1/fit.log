@@ -1,0 +1,17 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT b1a cue=5.80 room=5.15 dur=4.26 -> DETAIL slack=+0.89 words=13
+§NARR_FIT b1b cue=15.05 room=6.07 dur=5.16 -> DETAIL slack=+0.91 words=15
+§NARR_FIT b2 cue=27.38 room=7.40 dur=6.49 -> DETAIL slack=+0.91 words=20
+§NARR_FIT b3 cue=36.72 room=4.36 dur=3.46 -> DETAIL slack=+0.90 words=13
+§NARR_FIT b2s cue=47.72 room=3.48 dur=2.57 -> DETAIL slack=+0.91 words=8
+§NARR_FIT b4 cue=55.55 room=7.73 dur=6.83 -> DETAIL slack=+0.90 words=24
+§NARR_TONE b4#0 F WH rose=0st endDelta=-2.5st want=fall OK "What did that cell go through?"
+§NARR_FIT b5 cue=68.55 room=7.15 dur=6.23 -> DETAIL slack=+0.92 words=23
+§NARR_TONE b5#0 F YN rose=5.0st endDelta=+3.1st want=rise OK "Can I see the sheet as it was?"
+§NARR_FIT b6a cue=78.01 room=14.73 dur=13.85 -> DETAIL slack=+0.88 words=38
+§NARR_FIT b6b cue=97.80 room=6.44 dur=5.52 -> DETAIL slack=+0.92 words=16
+§NARR_FIT b7 cue=106.97 room=6.98 dur=6.09 -> DETAIL slack=+0.89 words=21
+§NARR_TONE b7#0 F YN rose=5.0st endDelta=+2.5st want=rise OK "And if someone edits the history by hand?"
+§NARR_FIT close cue=114.55 room=5.19 dur=4.28 -> DETAIL slack=+0.91 words=14

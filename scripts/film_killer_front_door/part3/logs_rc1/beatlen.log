@@ -1,0 +1,14 @@
+§BEATLEN beat=cover voice=0 typing=0.00 -> hold from narr.js
+§BEATLEN beat=b1a voice=5.76 typing=1.92 -> 7.68 (typing 1.92 + gap 0.3 + voice 4.26 + tail 1.2)
+§BEATLEN beat=b1b voice=6.66 typing=3.50 -> 10.16 (typing 3.50 + gap 0.3 + voice 5.16 + tail 1.2)
+§BEATLEN beat=b2 voice=7.99 typing=5.67 -> 13.66 (typing 5.67 + gap 0.3 + voice 6.49 + tail 1.2)
+§BEATLEN beat=b3 voice=4.96 typing=1.33 -> 6.29 (typing 1.33 + gap 0.3 + voice 3.46 + tail 1.2)
+§BEATLEN beat=b2s voice=4.07 typing=6.04 -> 10.11 (typing 6.04 + gap 0.3 + voice 2.57 + tail 1.2)
+§BEATLEN beat=b4 voice=8.33 typing=3.75 -> 12.08 (typing 3.75 + gap 0.3 + voice 6.83 + tail 1.2)
+§BEATLEN beat=b5 voice=7.73 typing=4.67 -> 12.4 (typing 4.67 + gap 0.3 + voice 6.23 + tail 1.2)
+§BEATLEN beat=b6a voice=15.35 typing=1.71 -> 17.06 (typing 1.71 + gap 0.3 + voice 13.85 + tail 1.2)
+§BEATLEN beat=b6b voice=7.02 typing=4.46 -> 11.48 (typing 4.46 + gap 0.3 + voice 5.52 + tail 1.2)
+§BEATLEN beat=b7 voice=7.59 typing=2.13 -> 9.71 (typing 2.13 + gap 0.3 + voice 6.09 + tail 1.2)
+§BEATLEN beat=close voice=5.78 typing=0.00 -> 5.78
+§BEATLEN beat=prior voice=0 typing=0.00 -> hold from narr.js
+§BEATLEN_DONE beats=11 total=116.4s

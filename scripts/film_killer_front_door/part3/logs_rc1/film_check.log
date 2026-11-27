@@ -1,0 +1,16 @@
+§FILM_OUT file=/home/red1/Videos/PDF_and_Excel_are_killer_apps_PART3_EN_rc1.mp4 duration_s=125.542 resolution=1920x1080 fps=24/1 frames=3013 audio=aac,48000,1,125.455000 silent_picture_s=125.542
+§FILM beat=cover start=0.000 end=3.583 planned_frames=86 measured_frames=85
+§FILM beat=b1a start=3.583 end=11.250 planned_frames=184 measured_frames=184
+§FILM beat=b1b start=11.250 end=21.417 planned_frames=244 measured_frames=244
+§FILM beat=b2 start=21.417 end=35.083 planned_frames=328 measured_frames=328
+§FILM beat=b3 start=35.083 end=41.375 planned_frames=151 measured_frames=151
+§FILM beat=b2s start=41.375 end=51.500 planned_frames=243 measured_frames=243
+§FILM beat=b4 start=51.500 end=63.583 planned_frames=290 measured_frames=290
+§FILM beat=b5 start=63.583 end=76.000 planned_frames=298 measured_frames=298
+§FILM beat=b6a start=76.000 end=93.042 planned_frames=409 measured_frames=409
+§FILM beat=b6b start=93.042 end=104.542 planned_frames=276 measured_frames=276
+§FILM beat=b7 start=104.542 end=114.250 planned_frames=233 measured_frames=233
+§FILM beat=close start=114.250 end=120.042 planned_frames=139 measured_frames=139
+§FILM beat=prior start=120.042 end=125.542 planned_frames=132 measured_frames=132
+§FILM total planned_frames=3013 measured=3013
+§FILM_VERDICT PASS beats=13 bad=0

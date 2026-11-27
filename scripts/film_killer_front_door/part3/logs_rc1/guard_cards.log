@@ -1,0 +1,3 @@
+§GUARD cards: 209 numbers printed on the cards and in the strip, each a number of facts.json / credits.json (0 of them are a half-typed prefix of such a number, while the keys are still being pressed): yes
+§GUARD_CONTROL planted number on a card is REJECTED
+§GUARD_VERDICT cards PASS facts=209 bad=0
