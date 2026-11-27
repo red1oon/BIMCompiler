@@ -1694,3 +1694,21 @@ font text we stay out and retain its integrity while edit can happen all around 
   not holding an edited run is byte-identical to the original; every image stream byte-identical; a poppler raster changes 0 pixels outside the edited boxes.
   **H4** a font without the needed glyph → the run is either substituted (stated) or locked, never written wrong. E3 (live totals), E5 (Excel), E7 (phone) and the
   mutants stand; add mutant "an untouched object rewritten" → H3.
+
+### 18.6 AMENDMENT (owner, 2026-11-28): closest font, a red "font not same" box, and undo (refines H4)
+Owner, verbatim: *"And we prompt the user when we can swap a closest font or display a red box warning 'font not same' where user can ctl-z undo. This gives our
+editor more cleaner space control?"* — adopted: **substitute and FLAG instead of lock**, the user decides.
+- **Closest font, in order:** (1) the run's own embedded font when it holds every glyph; (2) another face of the SAME family embedded in the file (today's
+  regular-for-bold rule); (3) the closest standard PDF font by the font's own description (FontDescriptor flags serif / fixed-pitch / italic, weight from the
+  name or `/FontWeight`) → Helvetica / Times / Courier, regular / bold / italic; among those, the one whose widths fit the run's box best. The choice is logged
+  `§EDSHEET-FONT cell=.. from=.. to=.. why=..`.
+- **On screen:** a substituted run gets a red box with "font not same: <from> → <to>" until the user accepts it (box goes away) or undoes it. The red box is on
+  the screen only, NEVER written into the PDF; the export summary lists every substituted run.
+- **Undo:** Ctrl-Z (Cmd-Z on a Mac) and an Undo button (phones have no keyboard) reverse the last edit, repeatedly; Ctrl-Shift-Z / Redo re-applies. An undo is a
+  history entry of its own (the inverse edit, actor "you", marked undo): the history inside the file stays a true record and keeps verifying; the PDF and the
+  sheet return to the earlier text; the integrity claim H3 holds after any undo sequence.
+- **Locked only when no font can show it** (e.g. Thai: the standard PDF fonts have no Thai glyphs) — said in words; an embedded font is slice B.
+- **Claims added (W-EDIT-SHEET):** **H5** a run whose font lacks a glyph → substituted by the order above, red box shown with both names, logged, absent from the
+  exported PDF's drawing; **H6** edit → undo → the exported PDF's edited-run text equals the original and every other object is byte-identical; redo re-applies;
+  the history verifies with the undo entries; **H7** accept removes the red box and keeps the substitution. Mutants: red box written into the PDF → H5;
+  undo not recorded in history → H6.
