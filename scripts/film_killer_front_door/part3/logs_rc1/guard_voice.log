@@ -1,0 +1,19 @@
+§GUARD OK   beat=b1a d.noUpload=true expect=true spoken="nothing is uploaded"
+§GUARD OK   beat=b1b d.genesisCells=114 expect=114 spoken="one hundred fourteen cells"
+§GUARD OK   beat=b1b d.stamp1=true expect=true spoken="the file now remembers"
+§GUARD OK   beat=b2 d.listedExactly=true expect=true spoken="exactly what changed"
+§GUARD OK   beat=b3 d.overFlagged=true expect=true spoken="flagged"
+§GUARD OK   beat=b2s d.stamp2=true expect=true spoken="those cells only"
+§GUARD OK   beat=b4 d.storyThree=true expect=true spoken="whole story"
+§GUARD OK   beat=b5 d.rewindOk=true expect=true spoken="download that version"
+§GUARD OK   beat=b6a d.mergeCombine=true expect=true spoken="different cells combine"
+§GUARD OK   beat=b6a d.oneClash=true expect=true spoken="both values and both names"
+§GUARD OK   beat=b6b d.mergedOk=true expect=true spoken="checks out"
+§GUARD OK   beat=b7 d.tamperCaught=true expect=true spoken="caught"
+§GUARD digits in the voice (numbers are spelled in words): none
+§GUARD proof talk or first/novel/unique: none
+§GUARD not-said N (a network or security claim, another product, many users / speed / compliance, price or licence detail, phone): none
+§GUARD "uploaded" spoken in: b1a ; measured: server requests after the pages were ready=0, non-GET=0, external=0, page errors=0
+§GUARD network claims over the pages: none made; external requests aborted in the take: 0
+§GUARD_CONTROL planted number 7777.77 is REJECTED (the guard can fail)
+§GUARD_VERDICT voice PASS facts=12 bad=0
