@@ -1582,3 +1582,12 @@ n=17 not a PDF → "This file is not a PDF." · n=18 scan → "11 pages, no text
 - **U1 restated (a fact of geometry, not a loosening):** a landscape page cannot cover half a portrait screen at full width; U1 passes when page 1 covers
   ≥ 50% of the first screen OR is wholly on it.
 - **U6 new:** scrolled so page k is in the middle of the screen, Read as sheet reads page k (finding 2).
+
+### 17.2 Found while fixing (2026-11-28, before the after-run)
+- **The toolbar scrolled away on a phone.** `html, body { height: 100% }` makes body one screen tall; a `position: sticky` header cannot stick past its
+  parent, so after one screen of scrolling the toolbar was gone: a user on page 3 had to scroll back to the top to reach *Sheet*, which moved the page that
+  is read. Fix: on a phone `html, body { height: auto; min-height: 100% }`. **Claim U7 (new):** scrolled to the end of a multi-page file, the Sheet button
+  is on screen and is the element under its own centre.
+- **Witness slip:** `page.tap()` scrolls its target into view before tapping (it moved the window under the sticky toolbar: page 3 → 2). The witness taps
+  the screen where the button IS (`touchscreen.tap(x, y)`), as a thumb does.
+- Toolbar measured 101 px with 6 px padding → 5 px: 99 px.
