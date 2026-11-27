@@ -6,6 +6,17 @@
 
 ## ▶▶ RESUME HERE — call sign **'resume killer'** (consolidated 2026-11-28; read this block, then the section it points to)
 
+### ▶ FIRST for the next session (owner, 2026-11-28: "if u think Fable needs to review what is done perhaps it can code what is done thus far better")
+**A review that fixes what it finds — not a rewrite for its own sake.** Model: Fable (a well-scoped code-design review). Read the code itself, not the results
+prose; judge it cold. Scope = what was written on 2026-11-28 in bim-ootb: PR **#3493** (short addresses, the row), **#3494** (samples, phantom-change fix in
+`pdf/index.html` download/applyEdit + `pdf/pdf_write.js` record, File it wording, `erp/sheet_addin/history.js` sample), **#3498** (`pdf/index.html` phone
+layout, two-step open, observer root, track/go, serial drawing; `pdf/pdf_open.js` textLater), and the two builders' PRs of §18 (`feat/edit-as-sheet`) and §19
+(`feat/ninja-pdf-main`) once merged; plus the witnesses they added (`erp/tests/witness_door_urls*.js`, `witness_killer_usability.js`,
+`pdf/tests/witness_pdf_mobile.js`, the §18/§19 witnesses). Questions to answer, each with file:line: is it correct (find the input that breaks it)? is each
+responsibility owned once (CLAUDE.md AD-layer rule 5, "one implementation")? what can be deleted (deletion budget)? can each witness actually FAIL on the defect it
+names, or is it scope-blind / vacuous (WITNESS_INTERFACE_FRAMEWORK)? perf budget (heap, verts, bytes) respected? Fix what is found as its own numbered section
+here (spec → fix → witness), keep every existing witness green, record "reviewed, no change needed" where that is the answer.
+
 ### What this lane is (one paragraph)
 **Start from the user's own file, not from an ERP window.** A PDF report or a spreadsheet the user already has is opened in our browser pages, read, checked
 ("does it add up"), edited, given a memory (history inside the file), and — only when the user chooses — filed into the ERP's books. Nothing is uploaded,
