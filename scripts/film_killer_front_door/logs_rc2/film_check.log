@@ -1,0 +1,14 @@
+§FILM_OUT file=/home/red1/Videos/PDF_and_Excel_are_killer_apps_PART1_EN_rc2.mp4 duration_s=99.750 resolution=1920x1080 fps=24/1 frames=2394 audio=aac,48000,1,99.676000 silent_picture_s=99.75
+§FILM beat=cover start=0.000 end=3.583 planned_frames=86 measured_frames=85
+§FILM beat=b1 start=3.583 end=11.792 planned_frames=197 measured_frames=197
+§FILM beat=b2a start=11.792 end=21.125 planned_frames=224 measured_frames=224
+§FILM beat=b2b start=21.125 end=25.833 planned_frames=113 measured_frames=113
+§FILM beat=b3a start=25.833 end=44.042 planned_frames=437 measured_frames=437
+§FILM beat=b3b start=44.042 end=49.542 planned_frames=132 measured_frames=132
+§FILM beat=b4 start=49.542 end=60.458 planned_frames=262 measured_frames=262
+§FILM beat=b5a start=60.458 end=72.208 planned_frames=282 measured_frames=282
+§FILM beat=b5b start=72.208 end=81.500 planned_frames=223 measured_frames=223
+§FILM beat=last start=81.500 end=94.250 planned_frames=306 measured_frames=306
+§FILM beat=prior start=94.250 end=99.750 planned_frames=132 measured_frames=132
+§FILM total planned_frames=2394 measured=2394
+§FILM_VERDICT PASS beats=11 bad=0

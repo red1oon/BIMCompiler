@@ -1,0 +1,4 @@
+§CREDITS LINE no_ai shown="No AI inside." source=docs/USER_GUIDE.md found="There is no AI and no LLM in this app."
+§CREDITS LINE mit shown="Open source, MIT licence." source=LICENSE found="MIT License"
+§CREDITS LINE paper shown="Earlier work, dated: the Spatial Compilation paper, priority date " source=docs/SpatialCompilationPaper.md found="Priority date: 2026-03-30" public https://red1oon.github.io/BIMCompiler/SpatialCompilationPaper/ http=200
+§CREDITS CREDITS_VERDICT PASS lines_shown=3 dropped=0

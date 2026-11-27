@@ -21,7 +21,7 @@ const full = (inner) => `<!doctype html><html><head><meta charset="utf-8"><style
 // one beat = steps; a step = one typed line over the picture of BEFORE, then its real answer over the picture taken AFTER. Steps before the last hold their answer a fixed 1.5 s; the last step's answer takes the rest of the beat.
 const A = (h) => '<div class="ans">' + h + '</div>', OK = (h) => '<div class="ok">' + h + '</div>', NO = (h) => '<div class="no">' + h + '</div>', DIM = (s) => '<div class="dim">' + esc(s) + '</div>', b = (s) => '<b>' + esc(s) + '</b>';
 const plural = (n, w) => n + ' ' + w + (n === 1 ? '' : 's');
-const R = F.read, X = F.xlsx, BAD = F.bad;
+const R = F.read, X = F.xlsx, BAD = F.bad, CRED = JSON.parse(fs.readFileSync(path.join(__dirname, OD, 'credits.json'), 'utf8'));
 const steps = {
   b1: [{ cmd: 'open my report', before: 'empty', after: [A(b(F.b1.file) + ' · ' + plural(F.b1.pages, 'page')), DIM('after the file was chosen: ' + plural(F.net.b1.requests, 'request') + ' (the page\'s own script), ' + F.net.b1.withBody + ' carried data, ' + F.net.b1.otherOrigin + ' left this site')], state: 'b1_open' }],
   b2a: [{ cmd: 'open the long report', before: 'b1_open', after: [A(b('market_impact_report.pdf') + ' · ' + plural(F.b2.pages, 'page') + ' · ' + plural(F.b2.outline, 'outline entry').replace('entrys', 'entries'))], state: 'b2_open' },
@@ -56,7 +56,10 @@ const cards = {
     + '<div class="s" style="margin-top:14px">Limits: one page at a time · simple tables · scans are not read · ' + F.layouts.rebuilt + ' of ' + F.layouts.tried + ' report layouts tried are rebuilt · no claim about many users, speed or e-invoices</div>'
     + '<div class="s" style="margin-top:8px">bim-ootb PRs ' + F.prs.map(p => '#' + p).join(' ') + ' · reader checks ' + F.witness.reader.verdict + ', ' + F.witness.reader.judged + ' judged ' + F.witness.reader.failed + ' failed · page checks ' + F.witness.page.verdict + ', ' + F.witness.page.judged + ' judged ' + F.witness.page.failed + ' failed (read from their logs)</div>'
     + '<div class="s" style="margin-top:8px">Opens PDFs with pdf.js and writes the spreadsheet file with SheetJS, both open source, unmodified · the top line states each step in plain words, it is not a command</div>'
-    + '<div class="s" style="margin-top:8px">Key sounds: eklee, qubodup (CC BY 3.0, opengameart.org)</div></div>'), frames: null }]
+    + '<div class="s" style="margin-top:8px">Key sounds: eklee, qubodup (CC BY 3.0, opengameart.org)</div></div>'), frames: null }],
+  prior: [{ html: full('<div class="ch" style="margin-top:150px"><div class="k">PRIOR ART  /  CREDENTIALS</div>'
+    + CRED.lines.map((l, i) => '<div class="' + (i === 0 ? 't1' : 'p') + '" style="' + (i === 0 ? 'font-size:84px;margin-top:50px' : 'font-size:44px;margin-top:34px;color:#F3EEE8;line-height:1.3') + '">' + esc(l.shown) + '</div>').join('')
+    + (CRED.lines.find(l => l.link) ? '<div class="l" style="margin-top:46px;font-size:36px">' + esc(CRED.lines.find(l => l.link).link) + '</div>' : '') + '</div>'), frames: null }]
 };
 ['b1', 'b2a', 'b2b', 'b3a', 'b3b', 'b4', 'b5a', 'b5b'].forEach(id => { cards[id] = beat(id); });
 const order = require('./narr.js').beats.map(x => x.id);

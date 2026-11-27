@@ -1,0 +1,244 @@
+{
+ "made": "2026-11-27T08:33:46.656Z",
+ "ootb": "aedf3774",
+ "states": {
+  "empty": {
+   "file": "shots/empty.png",
+   "note": "the page before any file: \"Nothing is uploaded: the file stays on this device.\""
+  },
+  "b1_open": {
+   "file": "shots/b1_open.png",
+   "note": "trial balance opened: trial_balance_th.pdf: 1 page"
+  },
+  "b2_open": {
+   "file": "shots/b2_open.png",
+   "note": "the 12-page report opened with its outline"
+  },
+  "b2_find": {
+   "file": "shots/b2_find.png",
+   "note": "Find \"market\": 45 hits on 12 pages"
+  },
+  "b2_outline": {
+   "file": "shots/b2_outline.png",
+   "note": "outline entry \"3. The Structural Problem You Solve\" -> page 5"
+  },
+  "b3_open": {
+   "file": "shots/b3_open.png",
+   "note": "back to the trial balance"
+  },
+  "b3_sheet": {
+   "file": "shots/b3_sheet.png",
+   "note": "Read as sheet: Page 1 adds up: 4 totals agree with their rows."
+  },
+  "b3_hover": {
+   "file": "shots/b3_hover.png",
+   "note": "hover D28: its box on the page"
+  },
+  "b4_open": {
+   "file": "shots/b4_open.png",
+   "note": "the changed copy opened"
+  },
+  "b4_sheet": {
+   "file": "shots/b4_sheet.png",
+   "note": "the copy: Page 1 does NOT add up: D28: printed 40392.44 != rows sum 40393.44."
+  },
+  "b5_sheet": {
+   "file": "shots/b5_sheet.png",
+   "note": "the first report read again: Page 1 adds up: 4 totals agree with their rows."
+  },
+  "b5_download": {
+   "file": "shots/b5_download.png",
+   "note": "Download .xlsx clicked: trial_balance_th_page1.xlsx"
+  },
+  "b6_offline_boot": {
+   "file": "shots/b6_offline_boot.png",
+   "note": "the page reloaded with the network off"
+  },
+  "b6_offline_sheet": {
+   "file": "shots/b6_offline_sheet.png",
+   "note": "read offline: Page 1 adds up: 4 totals agree with their rows."
+  }
+ },
+ "pages": {},
+ "net": {
+  "b1": {
+   "requests": 1,
+   "withBody": 0,
+   "notGet": 0,
+   "otherOrigin": 0,
+   "urls": [
+    "GET /modeller/lib/pdfjs/pdf.worker.min.js"
+   ]
+  },
+  "b2": {
+   "requests": 1,
+   "withBody": 0,
+   "notGet": 0,
+   "otherOrigin": 0,
+   "urls": [
+    "GET /modeller/lib/pdfjs/pdf.worker.min.js"
+   ]
+  }
+ },
+ "changed": {
+  "linesDiffer": 1,
+  "bothSameLength": true,
+  "was": "498.09",
+  "now": "499.09",
+  "file": "trial_balance_th_one_digit_changed.pdf"
+ },
+ "pdfjs": "3.11.174",
+ "stat0": "Nothing is uploaded: the file stays on this device.",
+ "b1": {
+  "open": "§PDFED-OPEN ok=true file=\"trial_balance_th.pdf\" bytes=74945 pages=1 chars=1017 outline=0 ms=313",
+  "pages": 1,
+  "chars": 1017,
+  "file": "trial_balance_th.pdf",
+  "stat": "trial_balance_th.pdf: 1 page"
+ },
+ "b2": {
+  "open": "§PDFED-OPEN ok=true file=\"market_impact_report.pdf\" bytes=183883 pages=12 chars=16842 outline=23 ms=314",
+  "pages": 12,
+  "outline": 23
+ },
+ "find": {
+  "q": "market",
+  "hits": 45,
+  "pagesHit": 12,
+  "poppler": 45,
+  "hitLines": 12,
+  "hitsShown": 11,
+  "everyHit": true
+ },
+ "outlineTitles": [
+  "1. Executive Summary",
+  "2. The Market Landscape",
+  "2.1 Global BIM Market Size & Growth",
+  "2.2 Regional Dynamics: Asia-Pacific as Growth Engine",
+  "2.3 Malaysia: Ground Zero for Launch",
+  "3. The Structural Problem You Solve",
+  "3.1 Construction’s Productivity Crisis",
+  "3.2 The Vendor Lock-In Problem",
+  "3.3 The Global Housing Deficit",
+  "4. Competitive Landscape Analysis",
+  "4.1 Five Approaches to Intent-Driven BIM",
+  "4.2 What Text2BIM Cannot Do",
+  "5. Strategic Positioning",
+  "5.1 Three Novel Contributions (Citable)",
+  "5.2 Addressable Market Segments",
+  "5.3 FOSS as Strategic Moat",
+  "6. Risk Assessment",
+  "6.1 Market Risks",
+  "6.2 Technical Risks (Watchdog Assessment)",
+  "7. Go-to-Market Timeline",
+  "8. Financial Opportunity Framework",
+  "9. Key Statistics Summary",
+  "10. Conclusion"
+ ],
+ "outlineClick": {
+  "index": 6,
+  "title": "3. The Structural Problem You Solve",
+  "page": 5
+ },
+ "read": {
+  "log": "§SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=7 reason=\"4 totals agree with their rows\"",
+  "verdictText": "Page 1 adds up: 4 totals agree with their rows.",
+  "cls": "good",
+  "cells": 144,
+  "d28": "40,392.44",
+  "e28": "40,392.44",
+  "readerCells": 144,
+  "reason": "4 totals agree with their rows",
+  "verdict": "ADDS_UP",
+  "debitEqualsCredit": true
+ },
+ "box": {
+  "a": "D28",
+  "n": 1,
+  "rect": [
+   663.28125,
+   202.609375,
+   733.65625,
+   221.28125
+  ],
+  "inside": true,
+  "cellInside": true,
+  "blueOutlinePixels": 133,
+  "areaPixels": 2968
+ },
+ "bad": {
+  "log": "§SHEET_READER verdict=DOES_NOT_ADD_UP ok=false page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=4 ms=2 reason=\"D28: printed 40392.44 != rows sum 40393.44\"",
+  "verdictText": "Page 1 does NOT add up: D28: printed 40392.44 != rows sum 40393.44.",
+  "cls": "bad",
+  "verdict": "DOES_NOT_ADD_UP",
+  "reason": "D28: printed 40392.44 != rows sum 40393.44",
+  "cell": "D28",
+  "printed": "40392.44",
+  "rowsSum": "40393.44."
+ },
+ "again": {
+  "verdictText": "Page 1 adds up: 4 totals agree with their rows.",
+  "cells": 144
+ },
+ "xlsx": {
+  "log": "§PDFED-XLSX file=\"trial_balance_th_page1.xlsx\" bytes=54802 cells=144 verdict=ADDS_UP",
+  "file": "trial_balance_th_page1.xlsx",
+  "bytes": 54802,
+  "cells": 144,
+  "sheets": [
+   "Report",
+   "_door_source"
+  ],
+  "d28f": "SUM(D6:D26)",
+  "d28v": 40392.44,
+  "sums": 4,
+  "rereadCells": 144
+ },
+ "offline": {
+  "navigatorOnLine": false,
+  "boot": "§PDFED-BOOT pdfjs=3.11.174 reader=function sheetjs=0.18.5",
+  "verdictText": "Page 1 adds up: 4 totals agree with their rows.",
+  "read": "§SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=4 reason=\"4 totals agree with their rows\"",
+  "cells": 144,
+  "serverHits": 0,
+  "probe": "no network: TypeError",
+  "onLineAfter": true,
+  "worked": true
+ },
+ "pageErrors": [],
+ "pdfNet": {
+  "allRequestsOtherOrigin": 0,
+  "total": 19
+ },
+ "witness": {
+  "reader": {
+   "verdict": "PASS",
+   "judged": 36,
+   "failed": 0,
+   "exit": 0
+  },
+  "page": {
+   "verdict": "PASS",
+   "judged": 17,
+   "failed": 0,
+   "exit": 0
+  }
+ },
+ "layouts": {
+  "tried": 5,
+  "notRebuilt": 2,
+  "rebuilt": 3
+ },
+ "prs": [
+  3470,
+  3472
+ ],
+ "link": {
+  "url": "https://red1oon.github.io/bim-ootb/pdf/",
+  "http": 200,
+  "anchor": "-",
+  "guideHttp": 404,
+  "guideAnchor": false,
+  "appHttp": 200
+ }
+}
