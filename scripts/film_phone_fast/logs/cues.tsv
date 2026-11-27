@@ -1,0 +1,11 @@
+intro	0.10	3.20	MOBILE_PERF §FILM-M1 storyboard	F: Fast, on a phone?	F: Is it really fast, on a phone?
+ready	3.20	5.70	§2026-11-27 LEVELS P3 row	M: Ready the moment it lands.	M: Ready to touch, the moment the model lands.
+fab	5.70	7.60	§2026-11-27 PANELS table	M: Panels open at once.	M: Panels open at once.
+nav_swipe	7.60	10.90	§SHEET_CLOSE via=swipe	M: Swipe down to close.	M: Swipe down to close... or press Back.
+walk_start	10.90	14.40	§WALK_XRAY_AUTO on	M: Walk, and X-Ray comes on.	M: Start a walk, and X-Ray switches itself on.
+walk_steps	14.40	17.87	§WALK_TRACE	M: Every step is logged.	M: Every step goes on the record.
+snag	17.87	25.03	§SNAP + §ISSUE_SAVED	M: Snag it. Saved.	M: Snag the element. Stamped, and saved to the issue log.
+scrub	25.03	28.83	§M1_SCRUB	M: Scrub back to replay.	M: Scrub back, and replay the walk.
+hq_open	28.83	32.33	§M1_HQ_CAM SAME_VIEW	M: HQ sees the same view.	F: And HQ? | M: Send the link. HQ opens the same view.
+site_b	32.33	38.93	§ISSUE_SAVED (B)	M: Another site snags its own.	M: Another site walks, and snags its own.
+outro	38.93	42.33	opener m1 outro	M: Fast. On the record.	M: Fast on the phone. Every step on the record.

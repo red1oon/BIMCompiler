@@ -1,0 +1,12 @@
+§MIX_CLIP intro start=0.10 end=1.63 cue_end=3.20 OK
+§MIX_CLIP ready start=3.20 end=4.79 cue_end=5.70 OK
+§MIX_CLIP fab start=5.70 end=7.18 cue_end=7.60 OK
+§MIX_CLIP nav_swipe start=7.60 end=10.13 cue_end=10.90 OK
+§MIX_CLIP walk_start start=10.90 end=13.67 cue_end=14.40 OK
+§MIX_CLIP walk_steps start=14.40 end=16.19 cue_end=17.87 OK
+§MIX_CLIP snag start=17.87 end=21.42 cue_end=25.03 OK
+§MIX_CLIP scrub start=25.03 end=26.97 cue_end=28.83 OK
+§MIX_CLIP hq_open start=28.83 end=30.70 cue_end=32.33 OK
+§MIX_CLIP site_b start=32.33 end=34.70 cue_end=38.93 OK
+§MIX_CLIP outro start=38.93 end=41.87 cue_end=42.33 OK
+§MIX clips=11 overlaps=0 seconds=42.33 peak_scaled_to=0.89 OK
