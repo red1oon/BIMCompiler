@@ -607,6 +607,15 @@ formulas and number formats; fonts, fills and widths are lost: not measured beyo
 (27.2 MB seed + 3.2 MB patch + scripts) and 125 MB of JS heap at boot; a phone was not tried. The seed is fetched again for each fresh kernel (HTTP cache), not kept in
 memory. Stamp / history in `file_it.html` is not offered (File it only). W-FILE-IT is not wired into CI (same as S1, S3, S9).
 
+**Deployed and fetched back (2026-11-27):** `https://red1oon.github.io/bim-ootb/erp/sheet_addin/file_it.html` is byte-identical to the merged file (sha256 `0d78a8c6fa51`);
+the JS beside it is the deploy's minified build of the merged files. The live page was then run headless (sample invoice, File it):
+```
+§FILEIT-LIVE readyMs=2548 verdict=FILED text="Filed. AR Invoice 100001 for C&W Construction is in the books (Completed)." grand=153.5 status=CO
+   fact=[[518,153.5,0],[758,0,123.5],[758,0,30],[518,130.48,0],[758,0,104.98],[758,0,25.5]] ledger line verifies; bootMs=1927 bytes=30440402 pageErrors=0
+   requests elsewhere or not GET: 1 = the browser's own GET https://red1oon.github.io/favicon.ico
+```
+The six entries are the oracle's. One live run, not a witness in the tree.
+
 ### 9.6 F12 (the document in the real ERP window) — NOT BUILT in this slice; what the next slice needs
 Gate result: it cannot be done with a minimal hook in `idempiere.html`. Measured first (probe, not shipped; `§PROBE` lines of this session): a ledger line made by the
 node kernel was taken into the REAL `idempiere.html` in headless Chromium through `window.__idmpDb`.
