@@ -16,4 +16,7 @@ function verifyCreds(cfg, state) { const t = gitShow(REPO, 'origin/master', 'pro
     const st = state && state[c.pr]; if (ok && st !== 'MERGED') { ok = false; why = 'PR #' + c.pr + ' state=' + st; }
     return { c, ok, why, line }; }); }
 function prStates(repo, prs) { const o = {}; for (const n of prs) { const r = cp.spawnSync('gh', ['pr', 'view', String(n), '-R', 'red1oon/' + repo, '--json', 'state', '-q', '.state'], { encoding: 'utf8' }); o[n] = r.status === 0 ? r.stdout.trim() : 'UNKNOWN'; } return o; }
-module.exports = { verifyPrior, verifyCreds, prStates, gitShow, textOf, REPO };
+// Site B's name, ONE table for the captions (render_stage.js) and the last card (cards_m1.js) — rc3 printed the raw db prefix "HHS" on the card while captions said "Office" (MOBILE_PERF §2026-11-28 point 5)
+const SITE_NAMES = { HHS_Office_Federated: 'Office', Hospital: 'Hospital', Duplex: 'Duplex', Terminal: 'Terminal' };
+const siteName = db => SITE_NAMES[db] || db;
+module.exports = { siteName, verifyPrior, verifyCreds, prStates, gitShow, textOf, REPO };

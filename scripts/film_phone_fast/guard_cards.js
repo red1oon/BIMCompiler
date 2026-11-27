@@ -44,6 +44,15 @@ must('CR the card prints every verified witness verdict (' + vc.filter(v => v.ok
   f('replayed points (§M1_SYNC_REPLAY points=)', g(S, /§M1_SYNC_REPLAY points=(\d+)/), (w, t) => t.indexOf('replayed <i>' + w + '</i> points') >= 0);
   f('scrub max error (max of §M1_SYNC_SCRUB_DETAIL per_point_err_m)', (Math.max(...(g(S, /per_point_err_m=([\d.,]+)/) || '9').split(',').map(Number))).toFixed(4), (w, t) => t.indexOf('scrub max error <i>' + w + ' m</i>') >= 0);
   f('issues HQ got (§M1_SYNC rows / §HQ_GET issues_added)', g(S, /§HQ_GET drops=\d+ new=\d+ issues_added=(\d+)/), (w, t) => t.indexOf('HQ got <i>' + w + '</i> issue') >= 0);
+  { const db = g(B, /db=buildings\/(\w+?)_extracted/), nm = db ? SRC.siteName(db) : null, row = J ? J.saw.find(s => s.indexOf('<b>5 Site B</b>') === 0) || '' : '', has = (n, r) => (r === undefined ? row : r).indexOf('<b>5 Site B</b><br>' + n + ' walk') === 0, raw = (db || '').replace(/_.*/, '');
+    must('F site B name on the card = the captions\' name (m1_sources siteName, db=' + db + ' -> "' + nm + '")', !!nm && has(nm));
+    red('F site B row rewritten with the raw db prefix ("' + raw + '", the rc3 card) must fail the name check', !!nm && nm !== raw && !has(nm, row.replace('<br>' + nm + ' walk', '<br>' + raw + ' walk'))); }
+  { // offline (rc4, MOBILE_PERF §2026-11-28 point 2): the S log's order proves walk + snag + send happened offline and the send went out only after the signal came back
+    const at = re => { const m = re.exec(S); return m ? m.index : -1; }, seq = [/§M1_OFFLINE on onLine=false badge="[^"]+"/, /§ISSUE_SAVED/, /§M1_OFFLINE_WORK onLine=false issues_saved=[1-9]\d* walk_trace_lines=[1-9]\d* folder_drops=0/, /§HQ_TEAM queued id=/, /§M1_OFFLINE off onLine=true folder_drops 0->[1-9]/, /§HQ_SEND via=team drop=/].map(at);
+    const inOrder = seq.every((v, i) => v >= 0 && (i === 0 || v > seq[i - 1])), row = J ? J.saw.find(x => x.indexOf('<b>4 To HQ</b>') === 0) || '' : '';
+    must('F offline order in the S log (offline -> snag -> work offline, folder 0 -> queued -> online -> sent) = ' + seq.join(','), inOrder);
+    must('F the card says the To-HQ report was done offline only because the log proves it', inOrder === (row.indexOf('done offline') >= 0));
+    const sw = seq.slice(); [sw[3], sw[5]] = [sw[5], sw[3]]; red('F a log where the send went out before the queue (positions swapped) must fail the order check', !sw.every((v, i) => v >= 0 && (i === 0 || v > sw[i - 1]))); }
   must('F site B snag class (§SNAP line) matches the card', !!g(B, /§SNAP (\w+) /) && !!J && J.saw.some(s => s.indexOf('<b>5 Site B</b>') === 0 && s.indexOf('saved: ' + g(B, /§SNAP (\w+) /)) >= 0)); }
 // ---- G: guide link
 { cp.spawnSync('mkdir', ['-p', path.join(C, 'prior')]); const page = CR.guide.url.split('#')[0], anch = CR.guide.url.split('#')[1], f = path.join(C, 'prior', 'guide.html');

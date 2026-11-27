@@ -1,33 +1,51 @@
 {
- "note": "FILM-M1 last card, 'prior art, what this learned from'. ONLY sources this lane cites in its own text; each row names the file and the exact words that cite it (guard_cards.js check P re-reads the file at the stated ref and fails a row whose words are not there; a made-up row is its red control). Nothing from memory. Sources the lane cites without ever having fetched them (RAIL, Popover API, bottom sheet, Web Share) are shown as 'as cited in MOBILE_PERF.md', not as pages read.",
+ "note": "FILM-M1 last card, 'prior art, what this learned from'. Each row names the file and the exact words that cite it (guard_cards.js check P re-reads the file at the stated ref and fails a row whose words are not there; a made-up row is its red control). Web sources are cited by their DATED READ line in MOBILE_PERF.md §2026-11-28 (verbatim quote, URL, date); a source that could not be read (Material bottom sheets, 2026-11-28: no body text) is not on the card.",
  "items": [
   {
-   "name": "Google RAIL guideline",
-   "where": { "repo": "bim-compiler", "file": "prompts/MOBILE_PERF.md", "ref": "origin/master", "section": "§2026-11-27 PANELS", "text": "Google's RAIL guideline: a response under 100 ms reads as instant" },
-   "does": "a response under 100 ms reads as instant",
+   "name": "Google RAIL model (web.dev, read 2026-11-28)",
+   "where": {
+    "repo": "bim-compiler",
+    "file": "prompts/MOBILE_PERF.md",
+    "ref": "origin/master",
+    "section": "§2026-11-28 rc3 NOTES SETTLED",
+    "text": "READ 2026-11-28 https://web.dev/articles/rail (RAIL): \"Complete a transition initiated by user input within 100 ms"
+   },
+   "does": "a transition initiated by user input within 100 ms feels instantaneous",
    "took": "the bar for opening any panel: slowest first open 74 ms (W-MOBILE-PANELS 43/0)"
   },
   {
-   "name": "Popover API (top layer)",
-   "where": { "repo": "bim-compiler", "file": "prompts/MOBILE_PERF.md", "ref": "origin/master", "section": "§2026-11-27 PANELS", "text": "**Popover API** (`popover=\"auto\"`: top layer — no z-index fights" },
-   "does": "the browser puts a popover element in the top layer, so no z-index fights",
+   "name": "MDN Popover API (read 2026-11-28)",
+   "where": {
+    "repo": "bim-compiler",
+    "file": "prompts/MOBILE_PERF.md",
+    "ref": "origin/master",
+    "section": "§2026-11-28 rc3 NOTES SETTLED",
+    "text": "READ 2026-11-28 https://developer.mozilla.org/en-US/docs/Web/API/Popover_API (Popover API): \"Shows a popover element by adding it to the top layer.\""
+   },
+   "does": "shows a popover element by adding it to the top layer",
    "took": "every phone panel opens in the top layer (P6, bim-ootb #3469); the z-index code stays only for a browser without it"
   },
   {
-   "name": "Bottom-sheet pattern (current design systems)",
-   "where": { "repo": "bim-compiler", "file": "prompts/MOBILE_PERF.md", "ref": "origin/master", "section": "§2026-11-27 PANELS", "text": "a bottom **sheet** (half height, drag handle, swipe to dismiss)" },
-   "does": "a sheet from the bottom edge with a drag handle, swipe to dismiss",
-   "took": "phone panels as bottom sheets, at most 70 % of the screen, closed by swipe, Back or a tap on the model"
-  },
-  {
-   "name": "Web Share API, navigator.share with files",
-   "where": { "repo": "bim-compiler", "file": "prompts/MOBILE_PERF.md", "ref": "origin/master", "section": "§P5 F3 STEPS 1–2 BUILD SPEC", "text": "`navigator.share({ files: [bundle.json, photos…] })`" },
-   "does": "the phone's own share sheet takes the files the page hands it",
+   "name": "MDN Navigator.share() (read 2026-11-28)",
+   "where": {
+    "repo": "bim-compiler",
+    "file": "prompts/MOBILE_PERF.md",
+    "ref": "origin/master",
+    "section": "§2026-11-28 rc3 NOTES SETTLED",
+    "text": "READ 2026-11-28 https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share (Navigator.share): \"invokes the native sharing mechanism of the device to share data such as text, URLs, or files.\""
+   },
+   "does": "invokes the device's native sharing mechanism, files included",
    "took": "Send to HQ by email when the phone is not paired to a team folder (W-SEND-HQ 5/0); downloads where there is no share sheet"
   },
   {
    "name": "GitHub REST API rate limits",
-   "where": { "repo": "bim-ootb", "file": "common/tests/gh_standin.js", "ref": "origin/main", "section": "file header, lines 7-8", "text": "PUBLISHED limits (read 2026-11-02, https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api): 5,000 requests/hour per token" },
+   "where": {
+    "repo": "bim-ootb",
+    "file": "common/tests/gh_standin.js",
+    "ref": "origin/main",
+    "section": "file header, lines 7-8",
+    "text": "PUBLISHED limits (read 2026-11-02, https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api): 5,000 requests/hour per token"
+   },
    "does": "5,000 requests an hour per token, plus secondary limits per minute",
    "took": "the team-folder relay is tested against a stand-in that counts every request against these published limits"
   }
