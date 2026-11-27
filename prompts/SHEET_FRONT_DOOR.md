@@ -638,3 +638,70 @@ The window grid was NOT judged. What stands between this and F12, each a decisio
    history / undo / team sync see the ledger's rows as base data, not as ops. Acceptable for "show it", to be stated; a real two-way bridge is a larger design.
 6. **The witness:** GardenWorld login in the real page, the Invoice window opened by deep link, grid rows + record id per row counted, the posting view read, a reload,
    a tampered line refused; mutants: applied twice, tamper accepted, row in the DB but not in the grid.
+
+## 10. Slice S3c — the filed document in the real ERP window (spec 2026-11-27, before code)
+Claim F12 of §9.4, built on the list of §9.6. Owner, 2026-11-27, verbatim: *"yes, show the document in the real ERP window too."* On the open questions of §9.6 the
+owner said: *"decide for me"*. **Decision taken for this slice:** the hand-over is IDEMPOTENT BY ENTRY HASH. The ERP page records which ledger entry hashes it has
+applied and applies each entry at most once; re-opening the same workbook or reloading the page never files twice. (Not a one-time install.)
+Code: bim-ootb `erp/ws_kernel.js` (`replayInto`, `dispose`), `erp/ws_kernel_web.js` (shell without a boot), `erp/door_handover.js` (new, both pages),
+`erp/sheet_addin/file_it.html` + `file_it.js` + `runner.js` (the link), `erp/idempiere.html` (the hook), `erp/sw.js`, `erp/modules.json`.
+Witness `erp/tests/witness_door_erp.js` (W-DOOR-ERP). Laws that bind it: TWIN, AD-LAYER (the window shows the document through the ONE generic engine: no
+per-window code, no table-name branch, no second master-detail engine), DB policy (no binary), PERF BUDGET (cost logged), `sw.js` conflict rule.
+
+### 10.1 Measured before the design (2026-11-27)
+- One filing of the sample invoice is ONE journal entry of 18 ops: 2 `i_invoice` creates, 1 `c_invoice`, 2 `c_invoiceline`, 1 `c_invoicetax`, 6 `fact_acct`, 2 updates
+  that carry the value they started from (`c_acctschema.c_period_id` old 200104, `c_bpartner` credit used / open balance old 161.12 → new 314.62), 4 `i_invoice` updates.
+  Record ids come from the filing kernel (`c_invoice` 1300110, `fact_acct` 2300300-305, `i_invoice` 1000001-2): every workbook starts from the same seed, so two
+  DIFFERENT workbooks mint the SAME ids.
+- The seed's tables have NO primary key (`CREATE TABLE "C_Invoice" ("C_Invoice_ID" NUMERIC, ...)`): a second insert of the same row does not fail, it DUPLICATES.
+  So "apply once" cannot lean on the database; it must be decided before the insert.
+- `ad_table` gives the window of a document the way legacy zoom does: `C_Invoice` → `AD_Window_ID` 167 (Invoice (Customer)), `PO_Window_ID` 183 when `IsSOTrx='N'`.
+- The ERP page's Posted button already reads `Fact_Acct` of the record (`_factPostings`, first accounting schema, with a note when more schemas posted); the grid row
+  carries `data-ad-table` + `data-ad-record`; `?window=&record=` is a zoom to that record after login. Nothing in the window layer needs to change.
+- The door files invoices only today (`sheet_door.js` refuses any template that is not `kind: "invoice"`; the browser kernel loads ONE process, Import Invoice).
+
+### 10.2 Design
+1. **`replayInto(db, text, opts)` in `ws_kernel.js`, outside `build`** (ONE implementation; `build`'s `replay` calls it): verify the chain (`verifyJournal`), check every
+   payload against its digest, then apply the op groups in order with the kernel's one `apply` (moved out of `build` unchanged; `build` passes its own id counters and
+   composite undo). It needs a database and the shell's hash only: no model layer, no save hooks, no kernel. Options used by the ERP page:
+   `skip(entry)` (entries already applied), `guard: true` (below), `atomic: true` (one SQL transaction: all new entries of the text or none).
+   **Guard (needed because the target is not a fresh seed):** before an entry is applied (a) every record key it creates (`<table>_id`, else `<table>_uu`) must be
+   FREE, (b) every row it updates must exist and still hold the `old` value the entry recorded, where it recorded one. Otherwise the entry is refused with the table,
+   the key and both values, and nothing of that text is applied. No table is named in the code: the rule reads the op.
+2. **Finding 3 of §9.5 (save hooks never removed):** `build` remembers the validators it registered and the kernel gets `dispose()` that removes exactly those.
+   `runner.js` disposes the kernel it leaves and closes its database (it could not before). Opt-in: nothing changes for a caller that never calls `dispose()`.
+3. **Hand-over (`erp/door_handover.js`, one file for both pages, no table name in it).** `offer(name, lines)`: the page that filed verifies the workbook's whole
+   ledger (`verifyJournal`) and keeps it in same-origin `localStorage` (`door_handover_v1`, one record per workbook chain, keyed by the hash of its first entry).
+   `take(db, env)`: the ERP page verifies each kept ledger, runs `replayInto` with `skip` = "hash already in `door_ledger_applied`", `guard` and `atomic`, writes the
+   applied hashes into the table `door_ledger_applied (hash, book, seq, ops, applied)` INSIDE the same database and the same transaction, and persists the database
+   the page's own way (`_persistBundle`, as `installShard` does). The kept record is NOT deleted: it is the hand-over; the table decides. Nothing leaves the device.
+   Log: `§DOOR-HANDOVER applied=N skipped=M refused=K`, one `§DOOR-HANDOVER-REFUSED book=... why="..."` per refusal, `§DOOR-HANDOVER-COST`.
+   A refusal is also shown to the user in plain words in the page's status line and on the login card.
+4. **The link.** After a filing `file_it.html` shows "Open in the ERP": `../idempiere.html?window=<W>&record=<id>`, W read from `ad_table` in the filing kernel's
+   dictionary by legacy's zoom rule (PO window when the record's `IsSOTrx` is `N`), id = the filed record. The click calls `offer` first. No login is put in the link.
+5. **The hook in `idempiere.html`:** one block after the boot overlays and before the login: if `localStorage` holds a hand-over, load `door_handover.js` (which loads
+   `ws_kernel.js` + `ws_kernel_web.js` for the verifier, nothing else) and call `take`. A page with no hand-over loads no script and runs no query.
+6. **How these rows relate to the page's own op log and id law (§9.6 item 5), stated:** they are BASE rows at the ledger's own positive ids, like seed rows; they are
+   not ops in the page's signed op log. The page's own history, undo and Team sync do not see them as changes; a later edit of such a row by the user is an ordinary
+   op on a base row. They live in the page's resident database (IndexedDB bundle), so they survive what the bundle survives and are lost when it is reset: then the
+   kept hand-over applies again at the next boot.
+
+### 10.3 Claims (W-DOOR-ERP; headless Chromium on the real `file_it.html` and the real `idempiere.html` over a local static server, real file chooser, the page's own
+login card; verdict line `§DOORERP-<case> verdict=PASS|FAIL|INCONCLUSIVE judged=N failed=M threw=T`; INCONCLUSIVE when nothing was judged; a mutant that crashes is not a kill)
+| ID | Claim | Issue it exposes | Falsifier (mutant) |
+|----|-------|------------------|--------------------|
+| E1 BOOKS | The sample invoice filed on `file_it.html`, then the page's own "Open in the ERP" link followed: after login the ERP page's DB holds that invoice once: DocumentNo, partner, grand total, DocStatus, posted and the `Fact_Acct` rows equal the filing page's (and the fingerprint equals the node oracle's); debits = credits > 0; the page logged `§DOOR-HANDOVER applied=1 skipped=0 refused=0` | the document exists only inside the filing page | M1 hand-over not offered by the link |
+| E2 WINDOW | What the user sees: the link lands in the Invoice window (window id from the dictionary) on that record: grid rows counted, record id per row == the filed id, DocumentNo / partner / total cells as in the DB; the Invoice Line tab shows the 2 lines WITHOUT Save; the Posted view shows the `Fact_Acct` rows of the page DB for that record, balanced; back on the parent tab the same row is there. The same window opened from the MENU (no zoom) lists the record exactly once | the row is in the DB but the window does not show it | M2 grid row faked without the DB row (the witness reads both) |
+| E3 GENERIC | A ledger entry of ANOTHER document kind (a Sales Order saved through the node kernel's model layer) handed over the same way is applied by the SAME hook with zero new code and opens in ITS window (id from the dictionary) with its line; `door_handover.js` and the hook hold no table name; the existing W-WINDOW-SWEEP (X of N AD windows) gives the same lines before and after, also on a page that took a hand-over | the hook is per-document code | M3 hook applies only one table |
+| E4 ONCE | Reload the ERP page: `applied=0 skipped=1`, still exactly one invoice, 6 `Fact_Acct` rows. The same workbook filed again with a new number (2 ledger entries, chained) and its link followed: `applied=1 skipped=1`, exactly one invoice of each number | a reload or a re-open files twice (no primary key stops it) | M4 applied hash not recorded |
+| E5 REFUSED | (a) one character changed in a kept ledger line, (b) a line that is not a journal entry, (c) a different workbook whose record ids are already used in these books, (d) a ledger whose updated row no longer holds the value it started from: each REFUSED, named in the log and in plain words on the page, and the DB is unchanged (row counts of every touched table) | a tampered or colliding line is applied, or half applied | M5 tampered line applied; M6 used ids not checked |
+| E6 KEPT | After the page's own persist and a reload the boot reads the resident bundle (`db=idb_cache`) and the invoice with its posting is there (`applied=0 skipped=1`); after a normal save made in the page (a new record through the toolbar) and another reload both are there | the hand-over lives in memory only | M7 no persist after applying |
+| E7 HOOKS | The hand-over adds no save hook: `AdModelVal.registeredCount()` on a page that took a hand-over == on a page that took none (same steps, > 0). Node: `replayInto` on a bare seed database == `build().replay` (same fingerprint), `replay` still passes its old witnesses, and `dispose()` returns the validator count to what it was before `build` | a second set of save hooks on the live page | M8 hand-over installs save hooks |
+| E8 COST | `§DOOR-HANDOVER-COST` ms (scripts / verify / apply / persist), entries, ops applied, bundle bytes; and a page with NO hand-over requests none of the door's scripts | unmeasured weight; every user pays for the door | — |
+| E9 NOTHING LEAVES | Across the run every request is a GET to the page's own server | the ledger is sent somewhere | — |
+| E10 OLD | W-FILE-IT 40, W-SHEET-ADDIN 59, W-SHEET-DOOR 21, W-SHEET-HISTORY 20 print their verdict lines unchanged; W-MANIFEST-ROUNDTRIP as on main; a named set of the witnesses that load `ws_kernel.js` gives the same last verdict line before and after | the kernel restructure broke something | — |
+
+Not claimed (stated up front): real Excel; any tenant other than the GardenWorld demo; two different workbooks in ONE ERP book (they mint the same record ids:
+the second is refused, E5c, not merged); a hand-over into books the user has since changed in the same rows (refused, E5d); the page's own op-log edits of the
+same rows (tip-shadowed, not judged); undo / history / Team sync of handed-over rows (they are base rows, §10.2 item 6); the Posted view showing more than the first
+accounting schema (it is the page's existing behaviour).
