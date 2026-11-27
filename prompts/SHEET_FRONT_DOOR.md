@@ -1419,3 +1419,27 @@ bim-ootb diff: 7 files, +206 / −1 (witnesses +170). Add-only by nature: no spe
 
 **Not done (stated):** the open file does not travel between pages (§15.2 point 3, owner's call); the Excel/WPS menus do not show the row (they are panes,
 not these pages); W-DOOR-URLS is not wired into CI (OPEN LIST 33, like the lane's other witnesses); the film cards still print the long addresses (OPEN LIST 7, waits on A).
+
+## 16. Usability of the three pages, judged as a newcomer on the LIVE site (spec 2026-11-28, before code)
+Owner, 2026-11-28, verbatim: *"Films has delivered the idea. Focus on its usability. If it checks out, suggest what is pending."* Group A of the OPEN LIST
+(film covers, licence line, Film 2 redo, Film 3 release) is therefore CLOSED by the owner: the films stand as made.
+
+**Question:** can a person with no help, starting from a short address, do each page's job and go on to the next page with what it handed them?
+Every existing page witness judges ONE page from a fixture the witness supplies; none walks the user's path ACROSS pages, none starts with no file, none at phone width.
+
+**Witness W-KILLER-USE** (`erp/tests/witness_killer_usability.js`, headless Chromium; `USE_URL=` the deployed site, default the local tree). Verdict line
+`§USE-VERDICT PASS|FAIL|INCONCLUSIVE judged=N failed=M`; each claim prints `§USE-<id> PASS|FAIL <measured>`. Two viewports: desktop 1280x800 and phone
+390x844 touch. A FAIL here is a usability finding to fix or to state, not a witness error.
+- **N1 a newcomer with no file can try it:** on first visit each page offers a way to try it without a file of one's own (a sample), reachable in one press.
+  Exposes: an empty page whose only action needs a file the visitor does not have.
+- **N2 the first screen says what to do:** the page's main action (open / sample) is inside the first screen (no scroll) at both viewports.
+- **N3 phone fit:** no sideways scroll at 390 px (document width ≤ window width); every button/link/input at least 24 x 24 CSS px (WCAG 2.2 target size, AA).
+- **J1 PDF job:** open the trial balance (the page's own corpus file) → Read as sheet → "adds up" → change D10 → "does NOT add up", naming D28 →
+  change D28 to match → "adds up" → Download PDF and Download .xlsx both arrive as files.
+- **J2 on to Sheet history with what PDF gave:** follow the row link, open the downloaded `.xlsx`: the page recognises the history it carries (entries > 0,
+  verified), a cell's story of D10 shows both values, Stamp is possible after a name is typed.
+- **J3 on to File it with that same file:** File it refuses a workbook without marked invoice cells IN WORDS that say what to do (no stuck page, no
+  console error); then the sample files, and "Open in the ERP" appears.
+- **J4 messages are words:** a non-PDF given to the PDF page and a non-workbook given to the other two are refused in a sentence, not a stack trace.
+- **C cost:** bytes on the wire and ms to ready per page, at first visit (from the CDP network log). Stated, not judged.
+Denominator: 3 pages x the claims above; a claim whose control was not found prints FAIL with "not found", never PASS.
