@@ -5,7 +5,7 @@
    "name": "Google RAIL model (web.dev, read 2026-11-28)",
    "where": {
     "repo": "bim-compiler",
-    "file": "prompts/MOBILE_PERF.md",
+    "file": "prompts/archive/MOBILE_PERF_history_to_2026-11-28.md",
     "ref": "origin/master",
     "section": "§2026-11-28 rc3 NOTES SETTLED",
     "text": "READ 2026-11-28 https://web.dev/articles/rail (RAIL): \"Complete a transition initiated by user input within 100 ms"
@@ -17,7 +17,7 @@
    "name": "MDN Popover API (read 2026-11-28)",
    "where": {
     "repo": "bim-compiler",
-    "file": "prompts/MOBILE_PERF.md",
+    "file": "prompts/archive/MOBILE_PERF_history_to_2026-11-28.md",
     "ref": "origin/master",
     "section": "§2026-11-28 rc3 NOTES SETTLED",
     "text": "READ 2026-11-28 https://developer.mozilla.org/en-US/docs/Web/API/Popover_API (Popover API): \"Shows a popover element by adding it to the top layer.\""
@@ -29,7 +29,7 @@
    "name": "MDN Navigator.share() (read 2026-11-28)",
    "where": {
     "repo": "bim-compiler",
-    "file": "prompts/MOBILE_PERF.md",
+    "file": "prompts/archive/MOBILE_PERF_history_to_2026-11-28.md",
     "ref": "origin/master",
     "section": "§2026-11-28 rc3 NOTES SETTLED",
     "text": "READ 2026-11-28 https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share (Navigator.share): \"invokes the native sharing mechanism of the device to share data such as text, URLs, or files.\""
