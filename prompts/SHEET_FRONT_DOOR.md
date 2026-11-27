@@ -42,11 +42,29 @@ door entry to the ERP when user choses"* — stage 1 makes no multi-user or perf
 - **Reader fix 2026-11-27 (bim-ootb #3479, §7.6):** a row left stale after a consistent column edit is now NAMED, not passed over.
 - **Films (owner 2026-11-27):** `prompts/FILM_KILLER_FRONT_DOOR.md`. Film 1 "PDF and Excel are killer apps / So we open it up" = stage 1,
   English; Film 2 = the filed document in the real kernel ERP window, its books and a report ("ERP is now a utility...").
-- **Next, in this order:** (a) **S3b: a browser runner for the filing path** so "File it" works in the pane and from a page — it is also
-  what Film 2 needs; (b) run the add-in in REAL Excel (sideload) and record what differs from the stand-in; (c) reader: ruling lines
-  and fills as grid evidence (§7.5 "Next"); (d) merge the report PDF engine from `origin/ninja-xtab2` / `feat/ninja-template-pill`
-  (the "new layout" OUT, and the Thai SARA AM defect §7.5); (e) S4 WPS, S5 LibreOffice on the same shim. Open decision for the owner:
-  where a PDF's history is kept (today it lives in the page's memory only, nothing travels with the downloaded file).
+- **History travels inside the file 2026-11-27** (owner: *"wouldn't history be cheap and has to be in the file anyway?"*; bim-ootb #3481,
+  #3482): the downloaded PDF carries it as an attachment, the `.xlsx` in `_door_history`; reopening verifies it, binds it to the printed
+  numbers and continues the chain — `PDF_EDITOR.md` §4.5/§4.6. Not noticed: a REMOVED history (needs signing).
+- **S3b "File it" in a browser DONE (witness) 2026-11-27** (bim-ootb #3483, §9): ONE kernel for node and browser; plain page
+  `erp/sheet_addin/file_it.html`; the pane's File it wired.
+- **S3c the filed document in the REAL ERP window DONE (witness) 2026-11-27** (bim-ootb #3484, §10; owner: *"show the document in the real
+  ERP window too"*): "Open in the ERP" → the Invoice window, lines and posting; applied once per entry hash; no per-window code.
+- **S4 WPS 2026-11-27** (bim-ootb #3486, §11): the menu for WPS on the same shim, proven on a stand-in. **Real WPS on this machine**
+  (snap 10.1.0.6757, §13, #3487): its WRITER keeps hidden sheets, chunks, formula results and files the same invoice; its MENU cannot run
+  (no add-in fetched in a 50 s probe). Mobile: no add-in path found for phones → phones use our URLs with the user's file (§11.4).
+- **A check that cannot run says so 2026-11-27** (bim-ootb #3488, §12): a total holding a formula with no saved result is REFUSED and
+  named; every verdict lists which checks ran; stored history/ledger lines are ASCII-escaped.
+- **Sheet panel closable** (bim-ootb #3485, owner request).
+- **Films:** `prompts/FILM_KILLER_FRONT_DOOR.md`. Film 1 rc2 (owner: *"Film 1 is good"*) and Film 2 rc1 are made (files under
+  `~/Videos/`, never pushed). Open with the owner: Film 2's cover wording and the licence line on its credits card.
+- **Next, in this order:** (a) the PDF page's `.xlsx` totals after a WPS re-save: two zero totals come back as float residue
+  (§13 finding) — judge the PDF-side checks on a WPS-saved file and compare to the cent, not to 0; (b) run the menus in REAL Excel and a
+  WPS build that takes add-ins (first question: does a pane served from our URL get the spreadsheet object?); (c) reader: ruling lines
+  and fills as grid evidence (§7.5 "Next"); (d) merge the report PDF engine from `origin/ninja-xtab2` / `feat/ninja-template-pill`;
+  (e) S5 LibreOffice on the same shim (LibreOffice Calc is not installed on this machine); (f) signing (who wrote an entry; a removed
+  history; any same-origin page can write a hand-over, §10 finding 4); (g) two different workbooks into one set of books (refused
+  today, §10 finding 2); (h) `file_it.html` first load 33.7 MB / 123 MB heap: a real phone has not been tried; (i) the witnesses of
+  this lane are not wired into CI.
 
 ## 0. Why (owner, 2026-11-27)
 The owner wants a harmless "Trojan horse": users start from what they already use, their own Excel or PDF, with a simple
