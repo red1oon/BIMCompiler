@@ -170,3 +170,7 @@ The measure scripts PROVE the logic; production code goes into `~/bim-ootb/viewe
 2. Real per-pair penetration-depth cost (B/`W-DEPTH-COST`) — confirms the ~500ms flight hides it (C).
 3. Does our depth match IfcClash's depth within tolerance? (B parity proof) — if not, investigate before claiming parity.
 4. Localhost iDempiere ops/sec + 10k batch (A2) — sets the honest Single-station ratio.
+
+---
+
+## §BROWSER_SCALE_AND_CLAIMS — MOVED to docs/BrowserScaleBenchmark.md (2026-10-06, user: part of the film scope)

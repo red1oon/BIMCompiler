@@ -1,0 +1,12 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT b1 cue=0.00 room=998.70 dur=5.20 -> DETAIL slack=+993.50 words=16
+§NARR_FIT b2a cue=0.00 room=998.70 dur=3.66 -> DETAIL slack=+995.04 words=14
+§NARR_FIT b2b cue=0.00 room=998.70 dur=1.48 -> DETAIL slack=+997.22 words=5
+§NARR_FIT b3a cue=0.00 room=998.70 dur=11.84 -> DETAIL slack=+986.86 words=37
+§NARR_FIT b3b cue=0.00 room=998.70 dur=2.36 -> DETAIL slack=+996.34 words=10
+§NARR_FIT b4 cue=0.00 room=998.70 dur=4.26 -> DETAIL slack=+994.44 words=16
+§NARR_FIT b5a cue=0.00 room=998.70 dur=4.24 -> DETAIL slack=+994.46 words=13
+§NARR_FIT b5b cue=0.00 room=998.70 dur=2.33 -> DETAIL slack=+996.37 words=7
+§NARR_FIT last cue=0.00 room=998.70 dur=11.24 -> DETAIL slack=+987.46 words=35

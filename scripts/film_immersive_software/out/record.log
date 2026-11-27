@@ -1,0 +1,7 @@
+§FILM_CUE beat=cover t=0.000 frames=101 typing=0 answer_hold_frames=101 x1
+§FILM_CUE beat=setup t=4.208 frames=366 typing=60 answer_hold_frames=306 x1
+§FILM_CUE beat=move1 t=19.458 frames=334 typing=0 answer_hold_frames=167 x2
+§FILM_CUE beat=move2 t=33.375 frames=468 typing=68 answer_hold_frames=200 x2
+§FILM_CUE beat=close t=52.875 frames=432 typing=0 answer_hold_frames=432 x1
+§FILM_KEYS typed=84 returns=2
+§FILM_DONE dur=70.875 frames=1701 planned=1701

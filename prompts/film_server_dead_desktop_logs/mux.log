@@ -1,0 +1,306 @@
+[Parsed_ass_17 @ 0x625995cf4c40] libass API version: 0x1701000
+[Parsed_ass_17 @ 0x625995cf4c40] libass source: tarball: 0.17.1
+[Parsed_ass_17 @ 0x625995cf4c40] Shaper: FriBidi 1.0.13 (SIMPLE) HarfBuzz-ng 8.3.0 (COMPLEX)
+[Parsed_ass_17 @ 0x625995cf4c40] Using font provider fontconfig
+[Parsed_ass_17 @ 0x625995cf4c40] Added subtitle file: 'sd.ass' (4 styles, 46 events)
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from '/tmp/claude-1000/-home-red1-bim-compiler/c07655a0-883e-4dcf-a5b0-37ebd2d4a624/scratchpad/work/silent.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    encoder         : Lavf60.16.100
+  Duration: 00:03:20.92, start: 0.000000, bitrate: 465 kb/s
+  Stream #0:0[0x1](und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(progressive), 1920x1080, 462 kb/s, 25 fps, 25 tbr, 12800 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+      vendor_id       : [0][0][0][0]
+      encoder         : Lavc60.31.102 libx264
+[aist#1:0/pcm_s16le @ 0x625995cee3c0] Guessed Channel Layout: mono
+Input #1, wav, from 'sd_open.wav':
+  Duration: 00:00:04.14, bitrate: 384 kb/s
+  Stream #1:0: Audio: pcm_s16le ([1][0][0][0] / 0x0001), 24000 Hz, 1 channels, s16, 384 kb/s
+[aist#2:0/pcm_s16le @ 0x625995cee800] Guessed Channel Layout: mono
+Input #2, wav, from 'sd_problem.wav':
+  Duration: 00:00:08.77, bitrate: 384 kb/s
+  Stream #2:0: Audio: pcm_s16le ([1][0][0][0] / 0x0001), 24000 Hz, 1 channels, s16, 384 kb/s
+[aist#3:0/pcm_s16le @ 0x625995d26840] Guessed Channel Layout: mono
+Input #3, wav, from 'sd_bench.wav':
+  Duration: 00:00:11.90, bitrate: 384 kb/s
+  Stream #3:0: Audio: pcm_s16le ([1][0][0][0] / 0x0001), 24000 Hz, 1 channels, s16, 384 kb/s
+[aist#4:0/pcm_s16le @ 0x625995d31d40] Guessed Channel Layout: mono
+Input #4, wav, from 'sd_teamon.wav':
+  Duration: 00:00:08.71, bitrate: 384 kb/s
+  Stream #4:0: Audio: pcm_s16le ([1][0][0][0] / 0x0001), 24000 Hz, 1 channels, s16, 384 kb/s
+[aist#5:0/pcm_s16le @ 0x625995d8cf40] Guessed Channel Layout: mono
+Input #5, wav, from 'sd_found.wav':
+  Duration: 00:00:14.55, bitrate: 384 kb/s
+  Stream #5:0: Audio: pcm_s16le ([1][0][0][0] / 0x0001), 24000 Hz, 1 channels, s16, 384 kb/s
+[aist#6:0/pcm_s16le @ 0x625995fbcac0] Guessed Channel Layout: mono
+Input #6, wav, from 'sd_join.wav':
+  Duration: 00:00:09.08, bitrate: 384 kb/s
+  Stream #6:0: Audio: pcm_s16le ([1][0][0][0] / 0x0001), 24000 Hz, 1 channels, s16, 384 kb/s
+[aist#7:0/pcm_s16le @ 0x625995feea00] Guessed Channel Layout: mono
+Input #7, wav, from 'sd_approve.wav':
+  Duration: 00:00:19.69, bitrate: 384 kb/s
+  Stream #7:0: Audio: pcm_s16le ([1][0][0][0] / 0x0001), 24000 Hz, 1 channels, s16, 384 kb/s
+[aist#8:0/pcm_s16le @ 0x62599602dc80] Guessed Channel Layout: mono
+Input #8, wav, from 'sd_order.wav':
+  Duration: 00:00:14.98, bitrate: 384 kb/s
+  Stream #8:0: Audio: pcm_s16le ([1][0][0][0] / 0x0001), 24000 Hz, 1 channels, s16, 384 kb/s
+[aist#9:0/pcm_s16le @ 0x625996093840] Guessed Channel Layout: mono
+Input #9, wav, from 'sd_complete.wav':
+  Duration: 00:00:17.97, bitrate: 384 kb/s
+  Stream #9:0: Audio: pcm_s16le ([1][0][0][0] / 0x0001), 24000 Hz, 1 channels, s16, 384 kb/s
+[aist#10:0/pcm_s16le @ 0x625995f1e100] Guessed Channel Layout: mono
+Input #10, wav, from 'sd_tax.wav':
+  Duration: 00:00:04.05, bitrate: 384 kb/s
+  Stream #10:0: Audio: pcm_s16le ([1][0][0][0] / 0x0001), 24000 Hz, 1 channels, s16, 384 kb/s
+[aist#11:0/pcm_s16le @ 0x6259960f9c00] Guessed Channel Layout: mono
+Input #11, wav, from 'sd_clash.wav':
+  Duration: 00:00:19.09, bitrate: 384 kb/s
+  Stream #11:0: Audio: pcm_s16le ([1][0][0][0] / 0x0001), 24000 Hz, 1 channels, s16, 384 kb/s
+[aist#12:0/pcm_s16le @ 0x62599611c900] Guessed Channel Layout: mono
+Input #12, wav, from 'sd_clash2.wav':
+  Duration: 00:00:08.54, bitrate: 384 kb/s
+  Stream #12:0: Audio: pcm_s16le ([1][0][0][0] / 0x0001), 24000 Hz, 1 channels, s16, 384 kb/s
+[aist#13:0/pcm_s16le @ 0x62599618d3c0] Guessed Channel Layout: mono
+Input #13, wav, from 'sd_limits.wav':
+  Duration: 00:00:16.17, bitrate: 384 kb/s
+  Stream #13:0: Audio: pcm_s16le ([1][0][0][0] / 0x0001), 24000 Hz, 1 channels, s16, 384 kb/s
+[aist#14:0/pcm_s16le @ 0x6259961a6040] Guessed Channel Layout: mono
+Input #14, wav, from 'sd_close.wav':
+  Duration: 00:00:11.24, bitrate: 384 kb/s
+  Stream #14:0: Audio: pcm_s16le ([1][0][0][0] / 0x0001), 24000 Hz, 1 channels, s16, 384 kb/s
+Stream mapping:
+  Stream #0:0 (h264) -> ass:default
+  Stream #1:0 (pcm_s16le) -> adelay:default
+  Stream #2:0 (pcm_s16le) -> adelay:default
+  Stream #3:0 (pcm_s16le) -> adelay:default
+  Stream #4:0 (pcm_s16le) -> adelay:default
+  Stream #5:0 (pcm_s16le) -> adelay:default
+  Stream #6:0 (pcm_s16le) -> adelay:default
+  Stream #7:0 (pcm_s16le) -> adelay:default
+  Stream #8:0 (pcm_s16le) -> adelay:default
+  Stream #9:0 (pcm_s16le) -> adelay:default
+  Stream #10:0 (pcm_s16le) -> adelay:default
+  Stream #11:0 (pcm_s16le) -> adelay:default
+  Stream #12:0 (pcm_s16le) -> adelay:default
+  Stream #13:0 (pcm_s16le) -> adelay:default
+  Stream #14:0 (pcm_s16le) -> adelay:default
+  ass:default -> Stream #0:0 (libx264)
+  loudnorm:default -> Stream #0:1 (aac)
+Press [q] to stop, [?] for help
+[Parsed_ass_17 @ 0x625995d789c0] libass API version: 0x1701000
+[Parsed_ass_17 @ 0x625995d789c0] libass source: tarball: 0.17.1
+[Parsed_ass_17 @ 0x625995d789c0] Shaper: FriBidi 1.0.13 (SIMPLE) HarfBuzz-ng 8.3.0 (COMPLEX)
+[Parsed_ass_17 @ 0x625995d789c0] Using font provider fontconfig
+[Parsed_ass_17 @ 0x625995d789c0] Added subtitle file: 'sd.ass' (4 styles, 46 events)
+[libx264 @ 0x625996efa2c0] using cpu capabilities: MMX2 SSE2Fast SSSE3 SSE4.2 AVX FMA3 BMI2 AVX2
+[libx264 @ 0x625996efa2c0] profile High, level 4.0, 4:2:0, 8-bit
+[libx264 @ 0x625996efa2c0] 264 - core 164 r3108 31e19f9 - H.264/MPEG-4 AVC codec - Copyleft 2003-2023 - http://www.videolan.org/x264.html - options: cabac=1 ref=3 deblock=1:0:0 analyse=0x3:0x113 me=hex subme=7 psy=1 psy_rd=1.00:0.00 mixed_ref=1 me_range=16 chroma_me=1 trellis=1 8x8dct=1 cqm=0 deadzone=21,11 fast_pskip=1 chroma_qp_offset=-2 threads=30 lookahead_threads=5 sliced_threads=0 nr=0 decimate=1 interlaced=0 bluray_compat=0 constrained_intra=0 bframes=3 b_pyramid=2 b_adapt=1 b_bias=0 direct=1 weightb=1 open_gop=0 weightp=2 keyint=250 keyint_min=25 scenecut=40 intra_refresh=0 rc_lookahead=40 rc=crf mbtree=1 crf=17.0 qcomp=0.60 qpmin=0 qpmax=69 qpstep=4 ip_ratio=1.40 aq=1:1.00
+Output #0, mp4, to '/home/red1/Videos/TheServerIsDead_ERP_Desktop_narrated_2026-10-24.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    encoder         : Lavf60.16.100
+  Stream #0:0: Video: h264 (avc1 / 0x31637661), yuv420p(progressive), 1920x1080, q=2-31, 25 fps, 12800 tbn
+    Metadata:
+      encoder         : Lavc60.31.102 libx264
+    Side data:
+      cpb: bitrate max/min/avg: 0/0/0 buffer size: 0 vbv_delay: N/A
+  Stream #0:1: Audio: aac (LC) (mp4a / 0x6134706D), 48000 Hz, mono, fltp, 192 kb/s
+    Metadata:
+      encoder         : Lavc60.31.102 aac
+frame=    0 fps=0.0 q=0.0 size=       0kB time=00:00:00.02 bitrate=  18.0kbits/s speed=0.146x    
+[Parsed_ass_17 @ 0x625995d789c0] fontselect: (DejaVu Sans, 400, 0) -> /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf, 0, DejaVuSans
+frame=    0 fps=0.0 q=0.0 size=       0kB time=00:00:01.92 bitrate=   0.2kbits/s speed=2.46x    
+frame=    9 fps=7.0 q=22.0 size=       0kB time=00:00:03.32 bitrate=   0.1kbits/s speed=2.59x    
+frame=   65 fps= 36 q=22.0 size=       0kB time=00:00:05.63 bitrate=   0.1kbits/s speed=3.15x    
+frame=  110 fps= 48 q=22.0 size=       0kB time=00:00:07.42 bitrate=   0.1kbits/s speed=3.24x    
+frame=  160 fps= 57 q=22.0 size=     256kB time=00:00:09.42 bitrate= 222.4kbits/s speed=3.37x    
+frame=  194 fps= 59 q=22.0 size=     256kB time=00:00:10.73 bitrate= 195.5kbits/s speed=3.25x    
+frame=  228 fps= 60 q=22.0 size=     256kB time=00:00:12.11 bitrate= 173.1kbits/s speed=3.19x    
+frame=  275 fps= 64 q=22.0 size=     256kB time=00:00:14.01 bitrate= 149.7kbits/s speed=3.25x    
+frame=  337 fps= 70 q=22.0 size=     256kB time=00:00:16.53 bitrate= 126.9kbits/s speed=3.44x    
+frame=  372 fps= 70 q=22.0 size=     512kB time=00:00:17.92 bitrate= 234.1kbits/s speed=3.37x    
+frame=  398 fps= 68 q=22.0 size=     512kB time=00:00:18.92 bitrate= 221.7kbits/s speed=3.25x    
+frame=  423 fps= 67 q=22.0 size=     768kB time=00:00:19.92 bitrate= 315.8kbits/s speed=3.15x    
+frame=  450 fps= 66 q=22.0 size=     768kB time=00:00:21.03 bitrate= 299.1kbits/s speed=3.08x    
+frame=  484 fps= 66 q=22.0 size=     768kB time=00:00:22.31 bitrate= 282.0kbits/s speed=3.04x    
+frame=  520 fps= 66 q=22.0 size=     768kB time=00:00:23.72 bitrate= 265.2kbits/s speed=3.03x    
+frame=  552 fps= 66 q=22.0 size=     768kB time=00:00:25.13 bitrate= 250.4kbits/s speed=3.01x    
+frame=  577 fps= 65 q=22.0 size=     768kB time=00:00:26.13 bitrate= 240.8kbits/s speed=2.95x    
+frame=  600 fps= 64 q=22.0 size=     768kB time=00:00:26.92 bitrate= 233.7kbits/s speed=2.88x    
+frame=  624 fps= 63 q=22.0 size=     768kB time=00:00:27.92 bitrate= 225.3kbits/s speed=2.83x    
+frame=  653 fps= 63 q=22.0 size=    1024kB time=00:00:29.12 bitrate= 288.1kbits/s speed=2.81x    
+frame=  682 fps= 63 q=22.0 size=    1024kB time=00:00:30.31 bitrate= 276.7kbits/s speed=2.79x    
+frame=  730 fps= 64 q=22.0 size=    1280kB time=00:00:32.23 bitrate= 325.3kbits/s speed=2.83x    
+frame=  775 fps= 65 q=22.0 size=    1280kB time=00:00:34.02 bitrate= 308.2kbits/s speed=2.86x    
+frame=  799 fps= 64 q=22.0 size=    1536kB time=00:00:34.92 bitrate= 360.3kbits/s speed=2.81x    
+frame=  837 fps= 65 q=22.0 size=    1536kB time=00:00:36.52 bitrate= 344.5kbits/s speed=2.82x    
+frame=  862 fps= 64 q=22.0 size=    1536kB time=00:00:37.52 bitrate= 335.3kbits/s speed=2.79x    
+frame=  882 fps= 63 q=22.0 size=    1792kB time=00:00:38.22 bitrate= 384.0kbits/s speed=2.74x    
+frame=  917 fps= 63 q=22.0 size=    1792kB time=00:00:39.72 bitrate= 369.6kbits/s speed=2.74x    
+frame=  952 fps= 63 q=22.0 size=    1792kB time=00:00:41.13 bitrate= 356.9kbits/s speed=2.74x    
+frame=  995 fps= 64 q=22.0 size=    2048kB time=00:00:42.81 bitrate= 391.9kbits/s speed=2.76x    
+frame= 1043 fps= 65 q=22.0 size=    2048kB time=00:00:44.71 bitrate= 375.2kbits/s speed= 2.8x    
+frame= 1090 fps= 66 q=22.0 size=    2304kB time=00:00:46.63 bitrate= 404.7kbits/s speed=2.83x    
+frame= 1132 fps= 67 q=22.0 size=    2304kB time=00:00:48.23 bitrate= 391.3kbits/s speed=2.84x    
+frame= 1162 fps= 66 q=22.0 size=    2304kB time=00:00:49.51 bitrate= 381.2kbits/s speed=2.83x    
+frame= 1205 fps= 67 q=22.0 size=    2560kB time=00:00:51.22 bitrate= 409.4kbits/s speed=2.84x    
+frame= 1244 fps= 67 q=22.0 size=    2816kB time=00:00:52.71 bitrate= 437.6kbits/s speed=2.85x    
+frame= 1280 fps= 67 q=22.0 size=    3072kB time=00:00:54.22 bitrate= 464.1kbits/s speed=2.85x    
+frame= 1313 fps= 67 q=22.0 size=    3072kB time=00:00:55.53 bitrate= 453.2kbits/s speed=2.84x    
+frame= 1336 fps= 67 q=22.0 size=    3072kB time=00:00:56.42 bitrate= 446.0kbits/s speed=2.82x    
+frame= 1384 fps= 67 q=22.0 size=    3328kB time=00:00:58.32 bitrate= 467.4kbits/s speed=2.84x    
+frame= 1415 fps= 67 q=22.0 size=    3328kB time=00:00:59.62 bitrate= 457.2kbits/s speed=2.83x    
+frame= 1445 fps= 67 q=22.0 size=    3328kB time=00:01:00.71 bitrate= 449.0kbits/s speed=2.82x    
+frame= 1469 fps= 67 q=22.0 size=    3584kB time=00:01:01.71 bitrate= 475.7kbits/s speed= 2.8x    
+frame= 1493 fps= 66 q=22.0 size=    3840kB time=00:01:02.72 bitrate= 501.6kbits/s speed=2.78x    
+frame= 1520 fps= 66 q=22.0 size=    3840kB time=00:01:03.72 bitrate= 493.7kbits/s speed=2.76x    
+frame= 1550 fps= 66 q=22.0 size=    3840kB time=00:01:05.02 bitrate= 483.8kbits/s speed=2.76x    
+frame= 1576 fps= 65 q=22.0 size=    4096kB time=00:01:06.02 bitrate= 508.2kbits/s speed=2.74x    
+frame= 1625 fps= 66 q=22.0 size=    4096kB time=00:01:08.03 bitrate= 493.2kbits/s speed=2.77x    
+frame= 1642 fps= 65 q=22.0 size=    4096kB time=00:01:08.71 bitrate= 488.3kbits/s speed=2.74x    
+frame= 1684 fps= 66 q=22.0 size=    4352kB time=00:01:10.31 bitrate= 507.0kbits/s speed=2.75x    
+frame= 1727 fps= 66 q=22.0 size=    4608kB time=00:01:12.12 bitrate= 523.4kbits/s speed=2.76x    
+frame= 1770 fps= 67 q=22.0 size=    4864kB time=00:01:13.83 bitrate= 539.7kbits/s speed=2.77x    
+frame= 1808 fps= 67 q=22.0 size=    4864kB time=00:01:15.32 bitrate= 529.0kbits/s speed=2.78x    
+frame= 1832 fps= 66 q=22.0 size=    4864kB time=00:01:16.22 bitrate= 522.8kbits/s speed=2.76x    
+frame= 1865 fps= 66 q=22.0 size=    4864kB time=00:01:17.52 bitrate= 514.0kbits/s speed=2.75x    
+frame= 1905 fps= 66 q=22.0 size=    5120kB time=00:01:19.23 bitrate= 529.4kbits/s speed=2.77x    
+frame= 1930 fps= 66 q=22.0 size=    5120kB time=00:01:20.23 bitrate= 522.8kbits/s speed=2.75x    
+frame= 1967 fps= 66 q=22.0 size=    5120kB time=00:01:21.72 bitrate= 513.2kbits/s speed=2.76x    
+frame= 2003 fps= 66 q=22.0 size=    5632kB time=00:01:23.11 bitrate= 555.1kbits/s speed=2.76x    
+frame= 2042 fps= 67 q=22.0 size=    5632kB time=00:01:24.62 bitrate= 545.2kbits/s speed=2.76x    
+frame= 2070 fps= 66 q=22.0 size=    5632kB time=00:01:25.82 bitrate= 537.6kbits/s speed=2.75x    
+frame= 2100 fps= 66 q=22.0 size=    5888kB time=00:01:27.01 bitrate= 554.3kbits/s speed=2.75x    
+frame= 2125 fps= 66 q=22.0 size=    5888kB time=00:01:28.02 bitrate= 548.0kbits/s speed=2.73x    
+frame= 2147 fps= 66 q=22.0 size=    5888kB time=00:01:28.91 bitrate= 542.5kbits/s speed=2.71x    
+frame= 2177 fps= 65 q=22.0 size=    6144kB time=00:01:30.13 bitrate= 558.4kbits/s speed=2.71x    
+frame= 2212 fps= 65 q=22.0 size=    6144kB time=00:01:31.52 bitrate= 550.0kbits/s speed=2.71x    
+frame= 2247 fps= 65 q=22.0 size=    6400kB time=00:01:32.92 bitrate= 564.2kbits/s speed=2.71x    
+frame= 2286 fps= 66 q=22.0 size=    6400kB time=00:01:34.42 bitrate= 555.3kbits/s speed=2.71x    
+frame= 2318 fps= 66 q=22.0 size=    6656kB time=00:01:35.72 bitrate= 569.6kbits/s speed=2.71x    
+frame= 2358 fps= 66 q=22.0 size=    6912kB time=00:01:37.32 bitrate= 581.8kbits/s speed=2.72x    
+frame= 2405 fps= 66 q=22.0 size=    7168kB time=00:01:39.11 bitrate= 592.5kbits/s speed=2.73x    
+frame= 2440 fps= 66 q=22.0 size=    7424kB time=00:01:40.62 bitrate= 604.4kbits/s speed=2.73x    
+frame= 2485 fps= 67 q=22.0 size=    7424kB time=00:01:42.31 bitrate= 594.4kbits/s speed=2.74x    
+frame= 2520 fps= 67 q=22.0 size=    7424kB time=00:01:43.82 bitrate= 585.7kbits/s speed=2.74x    
+frame= 2555 fps= 67 q=22.0 size=    7680kB time=00:01:45.21 bitrate= 598.0kbits/s speed=2.74x    
+frame= 2582 fps= 66 q=22.0 size=    7680kB time=00:01:46.32 bitrate= 591.7kbits/s speed=2.73x    
+frame= 2604 fps= 66 q=22.0 size=    7680kB time=00:01:47.11 bitrate= 587.4kbits/s speed=2.72x    
+frame= 2618 fps= 66 q=22.0 size=    7680kB time=00:01:47.73 bitrate= 584.0kbits/s speed= 2.7x    
+frame= 2641 fps= 65 q=22.0 size=    7680kB time=00:01:48.62 bitrate= 579.2kbits/s speed=2.69x    
+frame= 2662 fps= 65 q=22.0 size=    7936kB time=00:01:49.41 bitrate= 594.2kbits/s speed=2.67x    
+frame= 2697 fps= 65 q=22.0 size=    8192kB time=00:01:50.82 bitrate= 605.5kbits/s speed=2.68x    
+frame= 2727 fps= 65 q=22.0 size=    8192kB time=00:01:52.02 bitrate= 599.1kbits/s speed=2.67x    
+frame= 2759 fps= 65 q=22.0 size=    8192kB time=00:01:53.32 bitrate= 592.2kbits/s speed=2.67x    
+frame= 2792 fps= 65 q=22.0 size=    8192kB time=00:01:54.73 bitrate= 584.9kbits/s speed=2.67x    
+frame= 2817 fps= 65 q=22.0 size=    8192kB time=00:01:55.73 bitrate= 579.9kbits/s speed=2.66x    
+frame= 2846 fps= 65 q=22.0 size=    8448kB time=00:01:56.82 bitrate= 592.4kbits/s speed=2.66x    
+frame= 2893 fps= 65 q=22.0 size=    8448kB time=00:01:58.72 bitrate= 582.9kbits/s speed=2.67x    
+frame= 2917 fps= 65 q=22.0 size=    8448kB time=00:01:59.72 bitrate= 578.1kbits/s speed=2.66x    
+frame= 2946 fps= 65 q=22.0 size=    8960kB time=00:02:00.83 bitrate= 607.5kbits/s speed=2.66x    
+frame= 2985 fps= 65 q=22.0 size=    8960kB time=00:02:02.43 bitrate= 599.5kbits/s speed=2.66x    
+frame= 3020 fps= 65 q=22.0 size=    8960kB time=00:02:03.81 bitrate= 592.8kbits/s speed=2.66x    
+frame= 3044 fps= 65 q=22.0 size=    9216kB time=00:02:04.71 bitrate= 605.4kbits/s speed=2.65x    
+frame= 3068 fps= 65 q=22.0 size=    9216kB time=00:02:05.71 bitrate= 600.5kbits/s speed=2.65x    
+frame= 3087 fps= 64 q=22.0 size=    9216kB time=00:02:06.42 bitrate= 597.2kbits/s speed=2.63x    
+frame= 3113 fps= 64 q=22.0 size=    9216kB time=00:02:07.53 bitrate= 592.0kbits/s speed=2.63x    
+frame= 3142 fps= 64 q=22.0 size=    9472kB time=00:02:08.61 bitrate= 603.3kbits/s speed=2.62x    
+frame= 3165 fps= 64 q=22.0 size=    9472kB time=00:02:09.62 bitrate= 598.6kbits/s speed=2.62x    
+frame= 3196 fps= 64 q=22.0 size=    9728kB time=00:02:10.81 bitrate= 609.2kbits/s speed=2.61x    
+frame= 3232 fps= 64 q=22.0 size=    9728kB time=00:02:12.22 bitrate= 602.7kbits/s speed=2.62x    
+frame= 3260 fps= 64 q=22.0 size=    9984kB time=00:02:13.41 bitrate= 613.0kbits/s speed=2.61x    
+frame= 3285 fps= 64 q=22.0 size=    9984kB time=00:02:14.42 bitrate= 608.5kbits/s speed=2.61x    
+frame= 3311 fps= 64 q=22.0 size=    9984kB time=00:02:15.42 bitrate= 603.9kbits/s speed= 2.6x    
+frame= 3335 fps= 63 q=22.0 size=   10240kB time=00:02:16.32 bitrate= 615.4kbits/s speed=2.59x    
+frame= 3373 fps= 64 q=22.0 size=   10240kB time=00:02:17.92 bitrate= 608.2kbits/s speed= 2.6x    
+frame= 3408 fps= 64 q=22.0 size=   10240kB time=00:02:19.32 bitrate= 602.1kbits/s speed= 2.6x    
+frame= 3439 fps= 64 q=22.0 size=   10496kB time=00:02:20.52 bitrate= 611.9kbits/s speed= 2.6x    
+frame= 3460 fps= 63 q=22.0 size=   10496kB time=00:02:21.41 bitrate= 608.0kbits/s speed=2.59x    
+frame= 3484 fps= 63 q=22.0 size=   10496kB time=00:02:22.31 bitrate= 604.2kbits/s speed=2.58x    
+frame= 3510 fps= 63 q=22.0 size=   10752kB time=00:02:23.31 bitrate= 614.6kbits/s speed=2.58x    
+frame= 3536 fps= 63 q=22.0 size=   10752kB time=00:02:24.42 bitrate= 609.9kbits/s speed=2.58x    
+frame= 3560 fps= 63 q=22.0 size=   10752kB time=00:02:25.42 bitrate= 605.7kbits/s speed=2.57x    
+frame= 3581 fps= 63 q=22.0 size=   10752kB time=00:02:26.21 bitrate= 602.4kbits/s speed=2.56x    
+frame= 3607 fps= 63 q=22.0 size=   11008kB time=00:02:27.32 bitrate= 612.1kbits/s speed=2.56x    
+frame= 3635 fps= 63 q=22.0 size=   11008kB time=00:02:28.33 bitrate= 608.0kbits/s speed=2.55x    
+frame= 3657 fps= 62 q=22.0 size=   11008kB time=00:02:29.33 bitrate= 603.9kbits/s speed=2.55x    
+frame= 3685 fps= 62 q=22.0 size=   11008kB time=00:02:30.31 bitrate= 599.9kbits/s speed=2.54x    
+frame= 3711 fps= 62 q=22.0 size=   11520kB time=00:02:31.42 bitrate= 623.2kbits/s speed=2.54x    
+frame= 3741 fps= 62 q=22.0 size=   11520kB time=00:02:32.61 bitrate= 618.4kbits/s speed=2.54x    
+frame= 3775 fps= 62 q=22.0 size=   11520kB time=00:02:34.02 bitrate= 612.7kbits/s speed=2.54x    
+frame= 3808 fps= 62 q=22.0 size=   11520kB time=00:02:35.32 bitrate= 607.6kbits/s speed=2.54x    
+frame= 3832 fps= 62 q=22.0 size=   11776kB time=00:02:36.33 bitrate= 617.1kbits/s speed=2.54x    
+frame= 3843 fps= 62 q=22.0 size=   11776kB time=00:02:36.71 bitrate= 615.6kbits/s speed=2.52x    
+frame= 3860 fps= 62 q=22.0 size=   12032kB time=00:02:37.41 bitrate= 626.1kbits/s speed=2.51x    
+frame= 3882 fps= 61 q=22.0 size=   12032kB time=00:02:38.22 bitrate= 622.9kbits/s speed= 2.5x    
+frame= 3920 fps= 61 q=22.0 size=   12032kB time=00:02:39.72 bitrate= 617.1kbits/s speed=2.51x    
+frame= 3950 fps= 61 q=22.0 size=   12544kB time=00:02:40.91 bitrate= 638.6kbits/s speed= 2.5x    
+frame= 3983 fps= 62 q=22.0 size=   12800kB time=00:02:42.32 bitrate= 646.0kbits/s speed=2.51x    
+frame= 4003 fps= 61 q=22.0 size=   12800kB time=00:02:43.11 bitrate= 642.8kbits/s speed= 2.5x    
+frame= 4032 fps= 61 q=22.0 size=   12800kB time=00:02:44.33 bitrate= 638.1kbits/s speed= 2.5x    
+frame= 4060 fps= 61 q=22.0 size=   13056kB time=00:02:45.33 bitrate= 646.9kbits/s speed=2.49x    
+frame= 4085 fps= 61 q=22.0 size=   13056kB time=00:02:46.42 bitrate= 642.7kbits/s speed=2.49x    
+frame= 4114 fps= 61 q=22.0 size=   13056kB time=00:02:47.53 bitrate= 638.4kbits/s speed=2.49x    
+frame= 4135 fps= 61 q=22.0 size=   13312kB time=00:02:48.42 bitrate= 647.5kbits/s speed=2.48x    
+frame= 4153 fps= 61 q=22.0 size=   13312kB time=00:02:49.13 bitrate= 644.8kbits/s speed=2.48x    
+frame= 4170 fps= 61 q=22.0 size=   13568kB time=00:02:49.83 bitrate= 654.5kbits/s speed=2.47x    
+frame= 4186 fps= 60 q=22.0 size=   13568kB time=00:02:50.43 bitrate= 652.2kbits/s speed=2.46x    
+frame= 4230 fps= 61 q=22.0 size=   13824kB time=00:02:52.22 bitrate= 657.6kbits/s speed=2.47x    
+frame= 4248 fps= 60 q=22.0 size=   13824kB time=00:02:52.92 bitrate= 654.9kbits/s speed=2.46x    
+frame= 4270 fps= 60 q=22.0 size=   13824kB time=00:02:53.82 bitrate= 651.5kbits/s speed=2.45x    
+frame= 4289 fps= 60 q=22.0 size=   14080kB time=00:02:54.52 bitrate= 660.9kbits/s speed=2.44x    
+frame= 4309 fps= 60 q=22.0 size=   14080kB time=00:02:55.31 bitrate= 657.9kbits/s speed=2.44x    
+frame= 4332 fps= 60 q=22.0 size=   14336kB time=00:02:56.32 bitrate= 666.1kbits/s speed=2.43x    
+frame= 4357 fps= 60 q=22.0 size=   14336kB time=00:02:57.32 bitrate= 662.3kbits/s speed=2.43x    
+frame= 4383 fps= 60 q=22.0 size=   14336kB time=00:02:58.32 bitrate= 658.6kbits/s speed=2.43x    
+frame= 4408 fps= 60 q=22.0 size=   14336kB time=00:02:59.32 bitrate= 654.9kbits/s speed=2.42x    
+frame= 4432 fps= 60 q=22.0 size=   14336kB time=00:03:00.33 bitrate= 651.3kbits/s speed=2.42x    
+frame= 4455 fps= 59 q=22.0 size=   14336kB time=00:03:01.22 bitrate= 648.0kbits/s speed=2.42x    
+frame= 4479 fps= 59 q=22.0 size=   14336kB time=00:03:02.12 bitrate= 644.8kbits/s speed=2.41x    
+frame= 4501 fps= 59 q=22.0 size=   14336kB time=00:03:03.01 bitrate= 641.7kbits/s speed=2.41x    
+frame= 4525 fps= 59 q=22.0 size=   14592kB time=00:03:04.02 bitrate= 649.6kbits/s speed=2.41x    
+frame= 4552 fps= 59 q=22.0 size=   14592kB time=00:03:05.02 bitrate= 646.1kbits/s speed= 2.4x    
+frame= 4569 fps= 59 q=22.0 size=   14592kB time=00:03:05.72 bitrate= 643.6kbits/s speed=2.39x    
+frame= 4597 fps= 59 q=22.0 size=   14592kB time=00:03:06.81 bitrate= 639.9kbits/s speed=2.39x    
+frame= 4617 fps= 59 q=22.0 size=   14848kB time=00:03:07.73 bitrate= 647.9kbits/s speed=2.39x    
+frame= 4646 fps= 59 q=22.0 size=   14848kB time=00:03:08.82 bitrate= 644.2kbits/s speed=2.39x    
+frame= 4686 fps= 59 q=22.0 size=   14848kB time=00:03:10.42 bitrate= 638.8kbits/s speed=2.39x    
+frame= 4711 fps= 59 q=22.0 size=   14848kB time=00:03:11.42 bitrate= 635.4kbits/s speed=2.39x    
+frame= 4735 fps= 59 q=22.0 size=   14848kB time=00:03:12.32 bitrate= 632.5kbits/s speed=2.39x    
+[Parsed_ass_17 @ 0x625995d789c0] fontselect: (DejaVu Sans, 400, 100) -> /usr/share/fonts/truetype/dejavu/DejaVuSans-Oblique.ttf, 0, DejaVuSans-Oblique
+frame= 4759 fps= 59 q=22.0 size=   14848kB time=00:03:13.32 bitrate= 629.2kbits/s speed=2.38x    
+frame= 4783 fps= 59 q=22.0 size=   15104kB time=00:03:14.32 bitrate= 636.7kbits/s speed=2.38x    
+frame= 4807 fps= 59 q=22.0 size=   15104kB time=00:03:15.32 bitrate= 633.5kbits/s speed=2.38x    
+frame= 4827 fps= 58 q=22.0 size=   15104kB time=00:03:16.03 bitrate= 631.2kbits/s speed=2.37x    
+frame= 4844 fps= 58 q=22.0 size=   15104kB time=00:03:16.71 bitrate= 629.0kbits/s speed=2.37x    
+frame= 4862 fps= 58 q=22.0 size=   15104kB time=00:03:17.41 bitrate= 626.8kbits/s speed=2.36x    
+frame= 4877 fps= 58 q=22.0 size=   15104kB time=00:03:18.12 bitrate= 624.5kbits/s speed=2.35x    
+frame= 4895 fps= 58 q=22.0 size=   15104kB time=00:03:18.82 bitrate= 622.3kbits/s speed=2.35x    
+frame= 4905 fps= 58 q=22.0 size=   15104kB time=00:03:19.23 bitrate= 621.0kbits/s speed=2.34x    
+frame= 4949 fps= 58 q=22.0 size=   15104kB time=00:03:20.42 bitrate= 617.3kbits/s speed=2.34x    
+[out#0/mp4 @ 0x625996ef9180] video:11924kB audio:3542kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.975306%
+frame= 5023 fps= 58 q=-1.0 Lsize=   15617kB time=00:03:20.91 bitrate= 636.8kbits/s speed=2.33x    
+[libx264 @ 0x625996efa2c0] frame I:24    Avg QP: 4.75  size:195490
+[libx264 @ 0x625996efa2c0] frame P:1281  Avg QP:12.40  size:  4926
+[libx264 @ 0x625996efa2c0] frame B:3718  Avg QP:10.79  size:   325
+[libx264 @ 0x625996efa2c0] consecutive B-frames:  0.8%  1.1%  1.6% 96.6%
+[libx264 @ 0x625996efa2c0] mb I  I16..4: 75.9%  1.1% 23.1%
+[libx264 @ 0x625996efa2c0] mb P  I16..4:  1.5%  0.2%  0.4%  P16..4:  3.0%  0.2%  0.2%  0.0%  0.0%    skip:94.6%
+[libx264 @ 0x625996efa2c0] mb B  I16..4:  0.1%  0.0%  0.0%  B16..8:  0.8%  0.0%  0.0%  direct: 0.2%  skip:98.9%  L0:37.6% L1:62.0% BI: 0.4%
+[libx264 @ 0x625996efa2c0] 8x8 transform intra:7.7% inter:49.0%
+[libx264 @ 0x625996efa2c0] coded y,uvDC,uvAC intra: 16.7% 26.2% 22.0% inter: 0.3% 0.8% 0.3%
+[libx264 @ 0x625996efa2c0] i16 v,h,dc,p: 63% 36%  1%  0%
+[libx264 @ 0x625996efa2c0] i8 v,h,dc,ddl,ddr,vr,hd,vl,hu: 21% 19% 57%  1%  1%  1%  1%  0%  1%
+[libx264 @ 0x625996efa2c0] i4 v,h,dc,ddl,ddr,vr,hd,vl,hu: 33% 33% 14%  2%  3%  4%  4%  3%  4%
+[libx264 @ 0x625996efa2c0] i8c dc,h,v,p: 63% 28%  8%  1%
+[libx264 @ 0x625996efa2c0] Weighted P-Frames: Y:0.0% UV:0.0%
+[libx264 @ 0x625996efa2c0] ref P L0: 74.6%  1.8% 18.5%  5.1%
+[libx264 @ 0x625996efa2c0] ref B L0: 77.3% 22.1%  0.6%
+[libx264 @ 0x625996efa2c0] ref B L1: 96.7%  3.3%
+[libx264 @ 0x625996efa2c0] kb/s:486.16
+[aac @ 0x625996efc080] Qavg: 56273.348

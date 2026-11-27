@@ -1,0 +1,6 @@
+§K2 OK   beat=b7 return=124.04 voice_start=124.68 ass_start=124.68 | voice-only track in typing window -180.0 dB vs in voice -16.4 dB (gap 163.6) | mixed in typing: peak -8.9 dBFS rms -35.5 dB
+§K2_LEVEL keys (mixed, typing windows) mean rms -34.9 dB, mean peak -8.8 dBFS; voice mean rms -17.2 dB -> keys are 17.7 dB under the voice rms
+§K2_VERDICT PASS beats=4 bad=0 audible=True
+§FLOW_VERDICT PASS beats=7
+§STRIP_VIDEO_VERDICT PASS
+§BUILD_DONE /home/red1/Videos/Dev_Setup_CH0_EN_AFTER_2026-11-18_v4c.mp4

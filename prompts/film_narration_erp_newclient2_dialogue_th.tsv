@@ -1,0 +1,15 @@
+r0	th	prompts/film_nc_title_card.py (chapter 2 card)	F: กฎการตั้งค่าค่ะ	F: กฎการตั้งค่าค่ะ | M: สิ่งที่ร้านพิมพ์เข้าไป และสิ่งที่ iDempiere ทำให้ครับ
+s0	th	login card th_TH	F: สวัสดีค่ะ	F: สวัสดีค่ะ ต่อไปเป็นกฎการตั้งค่า | M: เริ่มจากเข้าสู่ระบบ GardenWorld ครับ
+s0b	th	login + open the first panel · UI still th_TH	F: เปิดหน้าต่างอัตราแลกเปลี่ยนค่ะ	F: เข้าสู่ระบบ แล้วเปิดหน้าต่างอัตราแลกเปลี่ยนค่ะ | M: นี่คือหน้าจอแรก ยังเป็นภาษาไทยอยู่ครับ
+s0c	th	§I18N lang=en_US (UI switch on the first panel)	F: สลับเป็นภาษาอังกฤษค่ะ	F: สลับหน้าจอเป็นภาษาอังกฤษค่ะ | M: ผู้ใช้ iDempiere เดิมคุ้นกับคำภาษาอังกฤษใน ERP มากกว่าครับ
+s1	th	§ERP_FILM_FACT rates.before=6	F: อัตราแลกเปลี่ยนค่ะ	F: อัตราแลกเปลี่ยนค่ะ
+s1b	th	§ERP_FILM_FACT rate.pair=USD -> CAD	F: พิมพ์หนึ่งอัตราค่ะ	F: พิมพ์หนึ่งอัตราค่ะ | M: ดอลลาร์สหรัฐเป็นดอลลาร์แคนาดา หนึ่งจุดห้า ตลอดปีสองพันสี่สิบครับ | F: ตอนนี้ยังมีอัตราเดียวที่พิมพ์ค่ะ | M: รอดูตอนบันทึกครับ
+s1c	th	§ERP_FILM_FACT rates.after (2 rows) · rates.created	F: บันทึก แล้วอัตราที่สองก็ปรากฏค่ะ	F: บันทึก แล้วอัตราที่สองก็ปรากฏค่ะ | M: อัตราผกผัน จากแคนาดาเป็นสหรัฐ สร้างเองครับ โดยสลับอัตราหาร
+s2	th	§ERP_FILM_FACT (Payment Term window)	F: เงื่อนไขการชำระเงินค่ะ	F: เงื่อนไขการชำระเงินค่ะ | M: วันที่แน่นอนทุกเดือนครับ เราติ๊ก Due Fixed พิมพ์วันที่ศูนย์ และตัดรอบที่ห้า | F: Due Fixed คืออะไรคะ | M: ให้ครบกำหนดในวันที่ตายตัวของเดือนครับ แทนการนับจากวันที่ใบแจ้งหนี้
+s2b	th	§ERP_FILM_FACT refusalOnScreen · paymentTerm.log (verdict=REJECT Invalid: Fix month day)	F: ถูกปฏิเสธค่ะ	F: บันทึก แล้วถูกปฏิเสธค่ะ | M: Invalid: fix month day ครับ
+s2c	th	§ERP_FILM_FACT paymentTerm.saved (day 15 cutoff 5 valid Y)	F: ตั้งเป็นวันที่สิบห้าค่ะ	F: ตั้งเป็นวันที่สิบห้า แล้วบันทึกได้ค่ะ | M: Valid ครับ
+s3	th	§ERP_FILM_FACT manualDefault=true	F: ต่อไปเป็นบทบาทค่ะ	F: ต่อไปเป็นบทบาทค่ะ | M: ชื่อ และระดับ Client บวก Organization ครับ Manual ถูกติ๊กไว้ตามค่าเริ่มต้น เหมือน legacy
+s3b	th	§ERP_FILM_FACT roleAccess {window 334, process 383, form 41, docaction 714}	F: ติ๊ก Manual ออก แล้วบันทึกค่ะ	F: ติ๊ก Manual ออก แล้วบันทึกค่ะ | M: ในการบันทึกครั้งเดียว บทบาทได้สามร้อยสามสิบสี่หน้าต่าง สามร้อยแปดสิบสามโปรเซส สี่สิบเอ็ดฟอร์ม และเจ็ดร้อยสิบสี่การกระทำของเอกสารครับ
+s3c	th	§ERP_FILM_FACT roleAccess	F: นี่คือหน้าต่างของบทบาทค่ะ	F: นี่คือหน้าต่างของบทบาทค่ะ | M: Window Access และ Process Access อยู่ข้างกันครับ
+s4	th	prompts/ERP_DEPTH_FILM.md §NC-6/8/9 (W-NC6-SETUPRULES 24 cases, W-NC9-ROLE-UI 3/3)	F: ทุกกฎถูกวัดบน legacy ก่อนค่ะ	F: ทุกกฎถูกวัดบน legacy ก่อนค่ะ | M: คำตอบเดียวกัน การปฏิเสธเหมือนกันครับ
+p	th	prompts/film_depth_process_card.py — the five steps on the black closing card (red1 2026-10-13)	F: ภาพยนตร์ทุกเรื่องที่นี่ ทำตามขั้นตอนนี้ค่ะ	F: ภาพยนตร์ทุกเรื่องที่นี่ ทำตามขั้นตอนนี้ค่ะ | M: หนึ่ง รันงานเดียวกันบน SQLite และ iDempiere คู่ขนานกันครับ | F: สอง สืบหาช่องว่าง ทุกความต่างถูกบันทึกไว้ค่ะ | M: สาม แก้ตามแบบ iDempiere แล้วพิสูจน์ซ้ำครับ | F: สี่ ไปงานถัดไปค่ะ | M: ห้า ถึงตาคุณ แนะนำงานสำคัญที่เราควรตรวจสอบครับ

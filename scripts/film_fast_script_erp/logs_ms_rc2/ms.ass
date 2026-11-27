@@ -1,0 +1,52 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1920
+PlayResY: 1080
+WrapStyle: 0
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: F,DejaVu Sans,46,&H00B4F0FF,&H00FFFFFF,&H90000000,&H00000000,0,0,0,0,100,100,0,0,1,2.6,0,2,260,260,48,1
+Style: M,DejaVu Sans,46,&H00FFE6B4,&H00FFFFFF,&H90000000,&H00000000,0,0,0,0,100,100,0,0,1,2.6,0,2,260,260,48,1
+Style: Credit,DejaVu Sans,30,&H00DDDDDD,&H00FFFFFF,&H90000000,&H00000000,0,1,0,0,100,100,0,0,1,2,0,8,200,200,36,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:05.47,0:00:07.47,F,start#0,0,0,0,,Bagaimana hendak bermula?
+Dialogue: 0,0:00:07.52,0:00:19.23,M,start#1,0,0,0,,Taip red one. Ucapan alu-aluan mengira kata kerja dan perkataannya: tujuh puluh tiga kata kerja, dua puluh enam perkataan. Kemudian ada petua.
+Dialogue: 0,0:00:24.22,0:00:26.34,F,help#0,0,0,0,,Apa yang boleh dilakukannya?
+Dialogue: 0,0:00:26.39,0:00:37.47,M,help#1,0,0,0,,tiga kumpulan: B I M, M I S dan E R P. Kumpulan E R P ada empat perkataan: post, do, run dan next.
+Dialogue: 0,0:00:43.63,0:00:46.71,F,level#0,0,0,0,,Bolehkah ia menerangkan sesuatu perkataan?
+Dialogue: 0,0:00:46.76,0:00:55.16,M,level#1,0,0,0,,Level student, kemudian help run. Ia menyatakan apa yang perkataan itu lakukan, dan baris yang dijalankannya.
+Dialogue: 0,0:01:03.22,0:01:05.65,F,bp#0,0,0,0,,Bagaimana hendak ke sebuah jadual?
+Dialogue: 0,0:01:05.70,0:01:16.34,M,bp#1,0,0,0,,Taip beberapa huruf. Cadangan kelabu muncul, dan Tab menerimanya. Kemudian ls: dua puluh daripada seratus tiga belas rakan niaga.
+Dialogue: 0,0:01:24.09,0:01:26.70,F,po1#0,0,0,0,,Bolehkah ia menjalankan proses?
+Dialogue: 0,0:01:26.75,0:01:35.12,M,po1#1,0,0,0,,Run, dan nama proses. Ia bertanya mengikut susunan kamus. Projek dahulu: tiga untuk dipilih.
+Dialogue: 0,0:01:36.76,0:01:38.15,F,po2#0,0,0,0,,Dan fasa?
+Dialogue: 0,0:01:38.20,0:01:43.34,M,po2#1,0,0,0,,Hanya tujuh fasa bagi projek itu ditawarkan. Saya langkaunya.
+Dialogue: 0,0:01:45.01,0:01:46.46,F,po3#0,0,0,0,,Baris projek?
+Dialogue: 0,0:01:46.51,0:01:50.72,M,po3#1,0,0,0,,tiga puluh dua baris. Yang ini pun saya langkau.
+Dialogue: 0,0:01:55.22,0:01:57.04,F,po4#0,0,0,0,,Dan soalan terakhir?
+Dialogue: 0,0:01:57.09,0:02:10.69,M,po4#1,0,0,0,,Consolidate kekal pada nilai asal, ya. Enter, dan baris penuh yang dijalankan dicetak, kemudian ringkasan: tiga pesanan belian dibuat, mengikut nombor, daripada empat baris pesanan.
+Dialogue: 0,0:02:16.76,0:02:19.10,F,co#0,0,0,0,,Bagaimana melengkapkan pesanan?
+Dialogue: 0,0:02:19.15,0:02:30.30,M,co#1,0,0,0,,Cd order, kemudian do C O dan nombor daripada ringkasan. Status bertukar daripada D R kepada C O, dan jumlah besar ialah lapan puluh satu.
+Dialogue: 0,0:02:34.05,0:02:36.66,F,next#0,0,0,0,,Apa lagi yang boleh dilakukan sekarang?
+Dialogue: 0,0:02:36.71,0:02:46.85,M,next#1,0,0,0,,Next, dan nombor. Langkah yang sah datang sebagai pokok. Close dan void ada perkataan. R E belum ada.
+Dialogue: 0,0:02:50.84,0:02:53.70,F,gap#0,0,0,0,,Dan proses yang tidak boleh dijalankannya?
+Dialogue: 0,0:02:53.75,0:03:01.94,M,gap#1,0,0,0,,Renumber belum ada port J S. Red one memberitahu begitu, dan jurang itu ada pada red one, bukan salah anda.
+Dialogue: 0,0:03:05.26,0:03:07.95,F,report#0,0,0,0,,Bolehkah saya maklumkan kepada pemilik?
+Dialogue: 0,0:03:08.00,0:03:13.82,M,report#1,0,0,0,,Report menunjukkan draf. Tiada apa-apa dihantar sehingga anda membukanya.
+Dialogue: 0,0:03:16.72,0:03:18.61,F,url#0,0,0,0,,Dan untuk menghantarnya?
+Dialogue: 0,0:03:18.66,0:03:27.88,M,url#1,0,0,0,,Pilih isu GitHub, dan pautan dicetak: enam ribu lapan ratus tiga puluh lapan aksara. Membukanya terpulang kepada anda.
+Dialogue: 0,0:03:34.26,0:03:36.10,F,cost#0,0,0,0,,Dan kembali ke bangunan?
+Dialogue: 0,0:03:36.15,0:03:52.11,M,cost#1,0,0,0,,Duplex. Cost mengikut disiplin menunjukkan kumpulannya dahulu: lima disiplin, satu juta lima puluh empat ribu empat ratus lapan puluh dua kesemuanya. Kemudian ia menawarkan untuk post ke pesanan projek E R P.
+Dialogue: 0,0:04:00.92,0:04:03.10,F,post#0,0,0,0,,Dan jika saya jawab ya?
+Dialogue: 0,0:04:03.15,0:04:19.92,M,post#1,0,0,0,,Ia post, dan menunggu itu benar: tujuh saat di sini. Sebuah projek dibuat, dengan lapan puluh satu perubahan. Jumlah yang dirancang ialah satu juta lima puluh empat ribu empat ratus lapan puluh dua titik dua dua tujuh lapan empat.
+Dialogue: 0,0:04:22.01,0:04:24.04,F,proj#0,0,0,0,,Bolehkah saya melihatnya?
+Dialogue: 0,0:04:24.09,0:04:31.55,M,proj#1,0,0,0,,Ia menawarkan untuk membuka projek. Ya, dan prompt berpindah ke situ: empat puluh lapan sifat.
+Dialogue: 0,0:04:34.55,0:04:36.19,F,ls#0,0,0,0,,Dan senarainya?
+Dialogue: 0,0:04:36.24,0:04:41.24,M,ls#1,0,0,0,,Ls menunjukkan empat projek. Projek baharu ada di situ.
+Dialogue: 0,0:04:43.55,0:04:46.05,M,exit#0,0,0,0,,Exit, dan anda kembali ke shell.
+Dialogue: 0,0:04:46.07,0:04:47.64,F,exit#1,0,0,0,,Ingat nama itu.
+Dialogue: 0,0:04:47.66,0:04:48.78,M,exit#2,0,0,0,,Red one.
+Dialogue: 0,0:04:50.62,0:04:58.52,Credit,,0,0,0,,Suara: dijana AI (Microsoft Edge TTS, awan)  ·  Skrip diarahkan oleh red1

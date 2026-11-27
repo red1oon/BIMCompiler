@@ -1,0 +1,8 @@
+ltB plenum [CACHE_VERSION = v1470] compositeMean=100.88 GLARE bld=Hospital PASS 0 0 0 | comp p5/50/95=2.1/64.4/237.6 le15=21.277% ge250=0.43% exp=10.8647
+   §METER_HIST low%=70 high%=95 bandsL[70/95:5.753e-3 40/90:3.677e-3 10/90:2.900e-3] bandL=5.753e-3 bandPixels=3602/14400 allLogAvg=2.446e-3 bandL=3.61e-3..1.19e-2
+ltB cgap [CACHE_VERSION = v1470] compositeMean=63.4 GLARE bld=Clinic PASS 0 0 0 | comp p5/50/95=1/1/229 le15=72.361% ge250=0% exp=4.4603
+   §METER_HIST low%=70 high%=95 bandsL[70/95:1.401e-2 40/90:3.180e-3 10/90:2.548e-3] bandL=1.401e-2 bandPixels=3601/14400 allLogAvg=3.908e-3 bandL=2.01e-3..2.72e-1
+ltB cgapup [CACHE_VERSION = v1470] compositeMean=33.81 GLARE bld=Clinic PASS 0 0 0 | comp p5/50/95=1/1/226.9 le15=79.492% ge250=0% exp=4.133
+   §METER_HIST low%=70 high%=95 bandsL[70/95:1.513e-2 40/90:3.302e-3 10/90:2.598e-3] bandL=1.512e-2 bandPixels=3602/14400 allLogAvg=3.969e-3 bandL=2.69e-3..2.72e-1
+== ltB done 10:32:32
+ALL

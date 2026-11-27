@@ -1,0 +1,27 @@
+  [console] §RENDERER_CAPS multi_draw=on (fast batched path) gpu=ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)
+  [console] §CLASH_SNAG_MODULE loaded
+  [console] [S203] §CAMERA envelope=9x22x8m dist=80m
+§M1_READY role=C url=/viewer/viewer.html?db=buildings/Duplex_extracted.db wait_s=7.3 (not filmed)
+§M1_GEO src=site lat=41.87440000 lng=-87.63940000
+  [console] §SHEET_REPLACE closed=inspect-drawer-panel by=clash-matrix
+  [console] §CLASH_MATRIX_COUNT MEP|ARC = 501 size=20px
+  [console] §CLASH_MATRIX_COUNT STR|ARC = 49 size=14px
+  [console] §CLASH_MATRIX_COUNT STR|MEP = 0 size=8px
+  [matrix] counts=[{"a":"MEP","b":"ARC","n":501},{"a":"STR","b":"ARC","n":49},{"a":"STR","b":"MEP","n":0}]
+  [fab] pills_shown before=11 after_fold=0
+  [console] §CLASH_REVEAL storey=active showing=20
+  [console] §CLASH_MATRIX_FILTER MEP vs ARC page=1
+  [clash_run] pair=MEP|ARC matrix_count=501
+§M1_BEAT id=clash_run ok=true frames=9 evidence="§CLASH_REVEAL storey=active showing=20"
+  [console] §CLASH_VIZ overlap=0.30x0.31x0.30m meshes=2
+  [console] §CLASH_DETAIL guidA=3N_mtG4Zf6BxUhd1a5x60b guidB=1hOSvn6df7F8_7GcBWlRrM overlap=0.033m
+§M1_BEAT id=clash_pick ok=true frames=1 evidence="§CLASH_DETAIL guidA=3N_mtG4Zf6BxUhd1a5x60b guidB=1hOSvn6df7F8_7GcBWlRrM overlap=0.033m"
+§M1_CLASH pair=3N_mtG4Zf6BxUhd1a5x60b|1hOSvn6df7F8_7GcBWlRrM idx=0 classes=IfcFlowSegment|IfcSlab panel_rect=210,446,240,373 row_rect=221,550,218,35 highlights=4 tgt_err_m=0.0000 checks=all_pass
+§M1_BEAT id=clash_detail ok=true frames=7 evidence="§M1_CLASH pair=3N_mtG4Zf6BxUhd1a5x60b|1hOSvn6df7F8_7GcBWlRrM idx=0 classes=IfcFlowSegment|IfcSlab panel_rect=210,446,240,373 row_rect=221,550,218,35 highlights=4 tgt_err_m=0.0000 checks=all_pass"
+  [console] §CLASH_SNAG idx=0 guidA=3N_mtG4Zf6BxUhd1a5x60b guidB=1hOSvn6df7F8_7GcBWlRrM overlap=0.033m snap=644ms
+  [console] §CLASH_SNAG_SHARE_PANEL shown (desktop fallback)
+  [console] §CLASH_SNAG_CLIPBOARD url OK
+  [console] §CLASH_SNAG_SAVED guid_a=3N_mtG4Zf6BxUhd1a5x60b guid_b=1hOSvn6df7F8_7GcBWlRrM
+§M1_SHARE url=/viewer/viewer.html?db=buildings%2FDuplex_extracted.db#clash=3N_mtG4Zf6BxUhd1a5x60b~1hOSvn6df7F8_7GcBWlRrM&st=Unknown&cam=5.24,1.76,-3.42&tgt=4.04,0.76,-4.62&tol=25 carries=#clash=3N_mtG4Zf6BxUhd1a5x60b~1hOSvn6df7F8_7GcBWlRrM overlap_mm=33 severity=Soft clash idb_clash_rows=1 checks=all_pass
+§M1_BEAT id=clash_snag_or_share ok=true frames=11 evidence="§M1_SHARE url=/viewer/viewer.html?db=buildings%2FDuplex_extracted.db#clash=3N_mtG4Zf6BxUhd1a5x60b~1hOSvn6df7F8_7GcBWlRrM&st=Unknown&cam=5.24,1.76,-3.42&tgt=4.04,0.76,-4.62&tol=25 carries=#clash=3N_mtG"
+§M1_RECORD role=C frames=29 film_frames=515 beats=4 not_ok=0

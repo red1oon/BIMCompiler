@@ -1,0 +1,41 @@
+[
+ {
+  "name": "cp_costcreate_123_reopen_inv",
+  "process": 335,
+  "params": [
+   {
+    "name": "M_Product_ID",
+    "value": 123
+   }
+  ],
+  "preSql": [
+   "UPDATE m_costdetail SET processed='N' WHERE m_costdetail_id IN (1000099,1000100)"
+  ],
+  "alignFromSeed": [
+   {
+    "table": "M_CostDetail",
+    "where": "M_Product_ID=123"
+   },
+   {
+    "table": "M_Cost",
+    "where": "M_Product_ID=123"
+   },
+   {
+    "table": "C_InvoiceLine",
+    "where": "C_InvoiceLine_ID=1000005"
+   },
+   {
+    "table": "C_Invoice",
+    "where": "C_Invoice_ID IN (SELECT C_Invoice_ID FROM C_InvoiceLine WHERE C_InvoiceLine_ID=1000005)"
+   },
+   {
+    "table": "M_CostHistory",
+    "where": "M_Product_ID=123"
+   },
+   {
+    "table": "M_CostQueue",
+    "where": "M_Product_ID=123"
+   }
+  ]
+ }
+]

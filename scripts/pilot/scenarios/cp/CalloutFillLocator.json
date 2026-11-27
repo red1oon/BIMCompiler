@@ -1,0 +1,41 @@
+[
+ {
+  "name": "cp_fillloc_inv",
+  "window": 168,
+  "tab": 1,
+  "parents": [
+   {
+    "tab": 0,
+    "id": 100
+   }
+  ],
+  "steps": [
+   {
+    "set": "M_Locator_ID",
+    "value": null
+   },
+   {
+    "set": "M_Locator_ID",
+    "value": 101
+   }
+  ]
+ },
+ {
+  "name": "cp_fillloc_io",
+  "window": 184,
+  "tab": 1,
+  "parents": [
+   {
+    "tab": 0,
+    "id": 1005106,
+    "from": "ref"
+   }
+  ],
+  "steps": [
+   {
+    "set": "M_Locator_ID",
+    "value": null
+   }
+  ]
+ }
+]

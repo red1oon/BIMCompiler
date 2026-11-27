@@ -1,0 +1,40 @@
+  [console] §RENDERER_CAPS multi_draw=on (fast batched path) gpu=ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)
+  [console] §CLASH_SNAG_MODULE loaded
+  [console] [S203] §CAMERA envelope=9x22x8m dist=80m
+§M1_READY role=A url=/viewer/viewer.html?db=buildings/Duplex_extracted.db wait_s=7.1 (not filmed)
+§M1_GEO src=site lat=41.87440000 lng=-87.63940000
+§M1_FAB pills_shown=11
+§M1_BEAT id=fab ok=true frames=2 evidence="§M1_FAB pills_shown=11"
+§M1_BEAT id=nav_open ok=true frames=3 evidence="§SHEET_OPEN id=navigate-drawer-panel n=1 layer=top sheet=bottom"
+  [console] §SHEET_SWALLOW armed pointer=1
+  [console] §SHEET_CLOSE id=navigate-drawer-panel via=swipe
+  [console] §SHEET_SWALLOW pointerup on=canvas
+  [console] §SHEET_SWALLOW click
+§M1_BEAT id=nav_swipe ok=true frames=6 evidence="§SHEET_CLOSE id=navigate-drawer-panel via=swipe"
+§M1_BEAT id=settings_open ok=true frames=3 evidence="§SHEET_OPEN id=settings-panel n=1 layer=top sheet=bottom"
+  [console] §SHEET_CLOSE id=settings-panel via=back
+§M1_BEAT id=settings_back ok=true frames=1 evidence="§SHEET_CLOSE id=settings-panel via=back"
+  [console] §SHEET_CLOSE id=navigate-drawer-panel via=row-prompt
+  [drawer] navigate-drawer-panel still_open_after_row=false (closed by the row itself, nothing to swipe)
+  [console] §WALK_XRAY_AUTO on
+  [console] §WALK_TRACE i=1 why=start steps=0 p=5.88,0.45,9.82 yaw=-31 geo=site
+§M1_BEAT id=walk_start ok=true frames=5 evidence="§WALK_XRAY_AUTO on"
+  [console] §WALK_TRACE i=2 why=step steps=5 p=4.34,0.45,7.24 yaw=-31 geo=site
+  [console] §WALK_TRACE i=3 why=turn steps=7 p=3.46,0.45,6.53 yaw=-71 geo=site
+  [console] §WALK_TRACE i=4 why=step steps=12 p=0.63,0.45,5.55 yaw=-71 geo=site
+§M1_BEAT id=walk_steps ok=true frames=13 evidence="§WALK_TRACE i=2 why=step steps=5 p=4.34,0.45,7.24 yaw=-31 geo=site"
+  [console] §PICK hits=7 chosen=0 0:BM d=0.06 op=0.3 g=slot:0 | 1:BM d=0.83 op=0.3 g=slot:3 | 2:BM d=2.27 op=0.3 g=slot:2
+  [console] [S204] §CAMERA opened
+  [gps] GPS: Timeout expired pos=false
+  [console] [S204] §SNAP IfcCovering GPS:GPS: unavailable 2026-11-28 03:31:26 +0800 BIM:YES
+  [console] [S205] §ISSUE_SAVED IfcCovering Level 1
+§M1_BEAT id=snag ok=true frames=10 evidence="[S205] §ISSUE_SAVED IfcCovering Level 1"
+  [console] §SHARE_URL state=cam,tgt,xray ctx=[cam=true,pick=none,storey=null,xray=true,clash=0,tm=false,fly=false,measure=false,walk=true] url=http://127.0.0.1:36071/viewer/viewer.html?db=buildings%2FDuplex_extr
+§M1_SHARE url=/viewer/viewer.html?db=buildings%2FDuplex_extracted.db#cam=0.6,0.5,5.6&tgt=4.3,0.5,7.2&xray=1
+§M1_BEAT id=share ok=true frames=0 evidence="§M1_SHARE url=/viewer/viewer.html?db=buildings%2FDuplex_extracted.db#cam=0.6,0.5,5.6&tgt=4.3,0.5,7.2&xray=1"
+  [console] §WALK_TRACE i=5 why=stop steps=12 p=0.63,0.45,5.55 yaw=-71 geo=site
+  [console] §WALK_XRAY_AUTO restored off
+§M1_BEAT id=walk_stop ok=true frames=1 evidence="§WALK_XRAY_AUTO restored off"
+§M1_SCRUB walk_events=5 labels="Walk · 0 steps · 0.0 m · start","Walk · 5 steps · 3.0 m","Walk · 7 steps · 4.2 m · turn","Walk · 12 steps · 7.2 m","Walk · 12 steps · 7.2 m · stop"
+§M1_BEAT id=scrub ok=true frames=5 evidence="§M1_SCRUB walk_events=5 labels="Walk · 0 steps · 0.0 m · start","Walk · 5 steps · 3.0 m","Walk · 7 steps · 4.2 m · turn","Walk · 12 steps · 7.2 m","Walk · 12 steps · 7.2 m · stop""
+§M1_RECORD role=A frames=50 film_frames=715 beats=11 not_ok=0

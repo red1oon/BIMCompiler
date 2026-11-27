@@ -1,0 +1,15 @@
+{
+ "home_lens": "หน้าแรก (Home dashboard) · เลนส์ Micro Finance (PA_DashboardContent)",
+ "import_window_before": "หน้าต่าง Import POS Sales · ประกาศใบขายแล้ว ยังไม่ได้นำเข้า",
+ "process_dialog": "หน้าต่างโปรเซส · พารามิเตอร์มาจาก AD_Process_Para",
+ "import_window_after": "หน้าต่างนำเข้า · ช่อง Imported และคอลัมน์ข้อผิดพลาด",
+ "menu_tree": "ต้นไม้เมนู · Data Import",
+ "wse_doc_action_access": "Document Action Access · Web Service Execution: ไม่มีสิทธิ์ใดถูกเสนอให้",
+ "recurring_run": "Recurring Run (โปรเซส 200074)",
+ "acct_processor": "Tenant Accounting Processor (โปรเซส 53187)",
+ "role_wse": "หน้าต่าง Role · Web Service Execution",
+ "plugins_user": "Plugins & Releases · ผู้ใช้ทั่วไปอ่านได้ มีแต่ผู้ดูแลระบบที่เปลี่ยนได้",
+ "home_103": "หน้าแรกบทบาท 103 · ไม่มีกล่อง Micro Finance",
+ "process_batch": "Import POS Sales · นำเข้าใบขายหนึ่งใบ อีกใบอยู่ครบพร้อมเหตุผล",
+ "import_payment_window": "Import Payment (หน้าต่าง 280)"
+}

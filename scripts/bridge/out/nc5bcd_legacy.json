@@ -1,0 +1,711 @@
+{
+ "D1": "2026-10-09",
+ "D2": "2026-10-14",
+ "client": 11,
+ "variants": [
+  {
+   "k": "V1gain",
+   "m1": 1.1,
+   "m2": 1.2,
+   "payCur": 102,
+   "invoice": 1002063,
+   "invHdr": {
+    "cur": 102,
+    "status": "CO",
+    "grand": 273
+   },
+   "invFacts": [
+    {
+     "schema": 101,
+     "account": 758,
+     "cur": 102,
+     "srcDr": 0,
+     "srcCr": 273,
+     "acctDr": 0,
+     "acctCr": 300.3,
+     "desc": "100376 #10 (NC5BCD V1gain)"
+    },
+    {
+     "schema": 101,
+     "account": 518,
+     "cur": 102,
+     "srcDr": 273,
+     "srcCr": 0,
+     "acctDr": 300.3,
+     "acctCr": 0,
+     "desc": "100376 (NC5BCD V1gain)"
+    },
+    {
+     "schema": 200000,
+     "account": 758,
+     "cur": 102,
+     "srcDr": 0,
+     "srcCr": 273,
+     "acctDr": 0,
+     "acctCr": 273,
+     "desc": "100376 #10 (NC5BCD V1gain)"
+    },
+    {
+     "schema": 200000,
+     "account": 518,
+     "cur": 102,
+     "srcDr": 273,
+     "srcCr": 0,
+     "acctDr": 273,
+     "acctCr": 0,
+     "desc": "100376 (NC5BCD V1gain)"
+    }
+   ],
+   "payment": 1000194,
+   "payHdr": {
+    "status": "CO",
+    "allocated": "Y",
+    "amt": 273
+   },
+   "allocLines": [
+    {
+     "hdr": 1000479,
+     "inv": 1002063,
+     "amount": 273,
+     "writeoff": 0,
+     "discount": 0
+    }
+   ],
+   "payFacts": [
+    {
+     "schema": 101,
+     "account": 509,
+     "cur": 102,
+     "srcDr": 273,
+     "srcCr": 0,
+     "acctDr": 327.6,
+     "acctCr": 0,
+     "desc": "400155 (NC5BCD V1gain)"
+    },
+    {
+     "schema": 101,
+     "account": 511,
+     "cur": 102,
+     "srcDr": 0,
+     "srcCr": 273,
+     "acctDr": 0,
+     "acctCr": 327.6,
+     "desc": "400155 (NC5BCD V1gain)"
+    },
+    {
+     "schema": 200000,
+     "account": 509,
+     "cur": 102,
+     "srcDr": 273,
+     "srcCr": 0,
+     "acctDr": 273,
+     "acctCr": 0,
+     "desc": "400155 (NC5BCD V1gain)"
+    },
+    {
+     "schema": 200000,
+     "account": 511,
+     "cur": 102,
+     "srcDr": 0,
+     "srcCr": 273,
+     "acctDr": 0,
+     "acctCr": 273,
+     "desc": "400155 (NC5BCD V1gain)"
+    }
+   ],
+   "allocFacts": [
+    {
+     "schema": 101,
+     "account": 511,
+     "cur": 102,
+     "srcDr": 273,
+     "srcCr": 0,
+     "acctDr": 327.6,
+     "acctCr": 0,
+     "desc": "1000475 #0 (Payment: 400155 [1])"
+    },
+    {
+     "schema": 101,
+     "account": 518,
+     "cur": 102,
+     "srcDr": 0,
+     "srcCr": 273,
+     "acctDr": 0,
+     "acctCr": 327.6,
+     "desc": "1000475 #0 (Payment: 400155 [1])"
+    },
+    {
+     "schema": 101,
+     "account": 767,
+     "cur": 100,
+     "srcDr": 0,
+     "srcCr": 27.3,
+     "acctDr": 0,
+     "acctCr": 27.3,
+     "desc": "Invoice=(102)273.00/300.30 - Allocation=(102)273.0/327.60 - (full) = -27.30"
+    },
+    {
+     "schema": 101,
+     "account": 518,
+     "cur": 100,
+     "srcDr": 27.3,
+     "srcCr": 0,
+     "acctDr": 27.3,
+     "acctCr": 0,
+     "desc": "Invoice=(102)273.00/300.30 - Allocation=(102)273.0/327.60 - (full) = -27.30"
+    },
+    {
+     "schema": 200000,
+     "account": 511,
+     "cur": 102,
+     "srcDr": 273,
+     "srcCr": 0,
+     "acctDr": 273,
+     "acctCr": 0,
+     "desc": "1000475 #0 (Payment: 400155 [1])"
+    },
+    {
+     "schema": 200000,
+     "account": 518,
+     "cur": 102,
+     "srcDr": 0,
+     "srcCr": 273,
+     "acctDr": 0,
+     "acctCr": 273,
+     "desc": "1000475 #0 (Payment: 400155 [1])"
+    }
+   ],
+   "allocHdr": [
+    "102",
+    "2026-10-14",
+    "2026-10-14",
+    "CO",
+    "0.0"
+   ],
+   "invPaid": "Y"
+  },
+  {
+   "k": "V2loss",
+   "m1": 1.2,
+   "m2": 1.1,
+   "payCur": 102,
+   "invoice": 1002064,
+   "invHdr": {
+    "cur": 102,
+    "status": "CO",
+    "grand": 273
+   },
+   "invFacts": [
+    {
+     "schema": 101,
+     "account": 758,
+     "cur": 102,
+     "srcDr": 0,
+     "srcCr": 273,
+     "acctDr": 0,
+     "acctCr": 327.6,
+     "desc": "100377 #10 (NC5BCD V2loss)"
+    },
+    {
+     "schema": 101,
+     "account": 518,
+     "cur": 102,
+     "srcDr": 273,
+     "srcCr": 0,
+     "acctDr": 327.6,
+     "acctCr": 0,
+     "desc": "100377 (NC5BCD V2loss)"
+    },
+    {
+     "schema": 200000,
+     "account": 758,
+     "cur": 102,
+     "srcDr": 0,
+     "srcCr": 273,
+     "acctDr": 0,
+     "acctCr": 273,
+     "desc": "100377 #10 (NC5BCD V2loss)"
+    },
+    {
+     "schema": 200000,
+     "account": 518,
+     "cur": 102,
+     "srcDr": 273,
+     "srcCr": 0,
+     "acctDr": 273,
+     "acctCr": 0,
+     "desc": "100377 (NC5BCD V2loss)"
+    }
+   ],
+   "payment": 1000195,
+   "payHdr": {
+    "status": "CO",
+    "allocated": "Y",
+    "amt": 273
+   },
+   "allocLines": [
+    {
+     "hdr": 1000480,
+     "inv": 1002064,
+     "amount": 273,
+     "writeoff": 0,
+     "discount": 0
+    }
+   ],
+   "payFacts": [
+    {
+     "schema": 101,
+     "account": 509,
+     "cur": 102,
+     "srcDr": 273,
+     "srcCr": 0,
+     "acctDr": 300.3,
+     "acctCr": 0,
+     "desc": "400156 (NC5BCD V2loss)"
+    },
+    {
+     "schema": 101,
+     "account": 511,
+     "cur": 102,
+     "srcDr": 0,
+     "srcCr": 273,
+     "acctDr": 0,
+     "acctCr": 300.3,
+     "desc": "400156 (NC5BCD V2loss)"
+    },
+    {
+     "schema": 200000,
+     "account": 509,
+     "cur": 102,
+     "srcDr": 273,
+     "srcCr": 0,
+     "acctDr": 273,
+     "acctCr": 0,
+     "desc": "400156 (NC5BCD V2loss)"
+    },
+    {
+     "schema": 200000,
+     "account": 511,
+     "cur": 102,
+     "srcDr": 0,
+     "srcCr": 273,
+     "acctDr": 0,
+     "acctCr": 273,
+     "desc": "400156 (NC5BCD V2loss)"
+    }
+   ],
+   "allocFacts": [
+    {
+     "schema": 101,
+     "account": 511,
+     "cur": 102,
+     "srcDr": 273,
+     "srcCr": 0,
+     "acctDr": 300.3,
+     "acctCr": 0,
+     "desc": "1000476 #0 (Payment: 400156 [1])"
+    },
+    {
+     "schema": 101,
+     "account": 518,
+     "cur": 102,
+     "srcDr": 0,
+     "srcCr": 273,
+     "acctDr": 0,
+     "acctCr": 300.3,
+     "desc": "1000476 #0 (Payment: 400156 [1])"
+    },
+    {
+     "schema": 101,
+     "account": 723,
+     "cur": 100,
+     "srcDr": 27.3,
+     "srcCr": 0,
+     "acctDr": 27.3,
+     "acctCr": 0,
+     "desc": "Invoice=(102)273.00/327.60 - Allocation=(102)273.0/300.30 - (full) = 27.30"
+    },
+    {
+     "schema": 101,
+     "account": 518,
+     "cur": 100,
+     "srcDr": 0,
+     "srcCr": 27.3,
+     "acctDr": 0,
+     "acctCr": 27.3,
+     "desc": "Invoice=(102)273.00/327.60 - Allocation=(102)273.0/300.30 - (full) = 27.30"
+    },
+    {
+     "schema": 200000,
+     "account": 511,
+     "cur": 102,
+     "srcDr": 273,
+     "srcCr": 0,
+     "acctDr": 273,
+     "acctCr": 0,
+     "desc": "1000476 #0 (Payment: 400156 [1])"
+    },
+    {
+     "schema": 200000,
+     "account": 518,
+     "cur": 102,
+     "srcDr": 0,
+     "srcCr": 273,
+     "acctDr": 0,
+     "acctCr": 273,
+     "desc": "1000476 #0 (Payment: 400156 [1])"
+    }
+   ],
+   "allocHdr": [
+    "102",
+    "2026-10-14",
+    "2026-10-14",
+    "CO",
+    "0.0"
+   ],
+   "invPaid": "Y"
+  },
+  {
+   "k": "V3same",
+   "m1": 1.1,
+   "m2": 1.1,
+   "payCur": 102,
+   "invoice": 1002065,
+   "invHdr": {
+    "cur": 102,
+    "status": "CO",
+    "grand": 273
+   },
+   "invFacts": [
+    {
+     "schema": 101,
+     "account": 758,
+     "cur": 102,
+     "srcDr": 0,
+     "srcCr": 273,
+     "acctDr": 0,
+     "acctCr": 300.3,
+     "desc": "100378 #10 (NC5BCD V3same)"
+    },
+    {
+     "schema": 101,
+     "account": 518,
+     "cur": 102,
+     "srcDr": 273,
+     "srcCr": 0,
+     "acctDr": 300.3,
+     "acctCr": 0,
+     "desc": "100378 (NC5BCD V3same)"
+    },
+    {
+     "schema": 200000,
+     "account": 758,
+     "cur": 102,
+     "srcDr": 0,
+     "srcCr": 273,
+     "acctDr": 0,
+     "acctCr": 273,
+     "desc": "100378 #10 (NC5BCD V3same)"
+    },
+    {
+     "schema": 200000,
+     "account": 518,
+     "cur": 102,
+     "srcDr": 273,
+     "srcCr": 0,
+     "acctDr": 273,
+     "acctCr": 0,
+     "desc": "100378 (NC5BCD V3same)"
+    }
+   ],
+   "payment": 1000196,
+   "payHdr": {
+    "status": "CO",
+    "allocated": "Y",
+    "amt": 273
+   },
+   "allocLines": [
+    {
+     "hdr": 1000481,
+     "inv": 1002065,
+     "amount": 273,
+     "writeoff": 0,
+     "discount": 0
+    }
+   ],
+   "payFacts": [
+    {
+     "schema": 101,
+     "account": 509,
+     "cur": 102,
+     "srcDr": 273,
+     "srcCr": 0,
+     "acctDr": 300.3,
+     "acctCr": 0,
+     "desc": "400157 (NC5BCD V3same)"
+    },
+    {
+     "schema": 101,
+     "account": 511,
+     "cur": 102,
+     "srcDr": 0,
+     "srcCr": 273,
+     "acctDr": 0,
+     "acctCr": 300.3,
+     "desc": "400157 (NC5BCD V3same)"
+    },
+    {
+     "schema": 200000,
+     "account": 509,
+     "cur": 102,
+     "srcDr": 273,
+     "srcCr": 0,
+     "acctDr": 273,
+     "acctCr": 0,
+     "desc": "400157 (NC5BCD V3same)"
+    },
+    {
+     "schema": 200000,
+     "account": 511,
+     "cur": 102,
+     "srcDr": 0,
+     "srcCr": 273,
+     "acctDr": 0,
+     "acctCr": 273,
+     "desc": "400157 (NC5BCD V3same)"
+    }
+   ],
+   "allocFacts": [
+    {
+     "schema": 101,
+     "account": 511,
+     "cur": 102,
+     "srcDr": 273,
+     "srcCr": 0,
+     "acctDr": 300.3,
+     "acctCr": 0,
+     "desc": "1000477 #0 (Payment: 400157 [1])"
+    },
+    {
+     "schema": 101,
+     "account": 518,
+     "cur": 102,
+     "srcDr": 0,
+     "srcCr": 273,
+     "acctDr": 0,
+     "acctCr": 300.3,
+     "desc": "1000477 #0 (Payment: 400157 [1])"
+    },
+    {
+     "schema": 200000,
+     "account": 511,
+     "cur": 102,
+     "srcDr": 273,
+     "srcCr": 0,
+     "acctDr": 273,
+     "acctCr": 0,
+     "desc": "1000477 #0 (Payment: 400157 [1])"
+    },
+    {
+     "schema": 200000,
+     "account": 518,
+     "cur": 102,
+     "srcDr": 0,
+     "srcCr": 273,
+     "acctDr": 0,
+     "acctCr": 273,
+     "desc": "1000477 #0 (Payment: 400157 [1])"
+    }
+   ],
+   "allocHdr": [
+    "102",
+    "2026-10-14",
+    "2026-10-14",
+    "CO",
+    "0.0"
+   ],
+   "invPaid": "Y"
+  },
+  {
+   "k": "V5usdPay",
+   "m1": 1.1,
+   "m2": 1.2,
+   "payCur": 100,
+   "invoice": 1002066,
+   "invHdr": {
+    "cur": 102,
+    "status": "CO",
+    "grand": 273
+   },
+   "invFacts": [
+    {
+     "schema": 101,
+     "account": 758,
+     "cur": 102,
+     "srcDr": 0,
+     "srcCr": 273,
+     "acctDr": 0,
+     "acctCr": 300.3,
+     "desc": "100379 #10 (NC5BCD V5usdPay)"
+    },
+    {
+     "schema": 101,
+     "account": 518,
+     "cur": 102,
+     "srcDr": 273,
+     "srcCr": 0,
+     "acctDr": 300.3,
+     "acctCr": 0,
+     "desc": "100379 (NC5BCD V5usdPay)"
+    },
+    {
+     "schema": 200000,
+     "account": 758,
+     "cur": 102,
+     "srcDr": 0,
+     "srcCr": 273,
+     "acctDr": 0,
+     "acctCr": 273,
+     "desc": "100379 #10 (NC5BCD V5usdPay)"
+    },
+    {
+     "schema": 200000,
+     "account": 518,
+     "cur": 102,
+     "srcDr": 273,
+     "srcCr": 0,
+     "acctDr": 273,
+     "acctCr": 0,
+     "desc": "100379 (NC5BCD V5usdPay)"
+    }
+   ],
+   "payment": 1000197,
+   "payHdr": {
+    "status": "CO",
+    "allocated": "Y",
+    "amt": 327.6
+   },
+   "allocLines": [
+    {
+     "hdr": 1000482,
+     "inv": 1002066,
+     "amount": 327.6,
+     "writeoff": 0,
+     "discount": 0
+    }
+   ],
+   "payFacts": [
+    {
+     "schema": 101,
+     "account": 509,
+     "cur": 100,
+     "srcDr": 327.6,
+     "srcCr": 0,
+     "acctDr": 327.6,
+     "acctCr": 0,
+     "desc": "400158 (NC5BCD V5usdPay)"
+    },
+    {
+     "schema": 101,
+     "account": 511,
+     "cur": 100,
+     "srcDr": 0,
+     "srcCr": 327.6,
+     "acctDr": 0,
+     "acctCr": 327.6,
+     "desc": "400158 (NC5BCD V5usdPay)"
+    },
+    {
+     "schema": 200000,
+     "account": 509,
+     "cur": 100,
+     "srcDr": 327.6,
+     "srcCr": 0,
+     "acctDr": 273,
+     "acctCr": 0,
+     "desc": "400158 (NC5BCD V5usdPay)"
+    },
+    {
+     "schema": 200000,
+     "account": 511,
+     "cur": 100,
+     "srcDr": 0,
+     "srcCr": 327.6,
+     "acctDr": 0,
+     "acctCr": 273,
+     "desc": "400158 (NC5BCD V5usdPay)"
+    }
+   ],
+   "allocFacts": [
+    {
+     "schema": 101,
+     "account": 511,
+     "cur": 100,
+     "srcDr": 327.6,
+     "srcCr": 0,
+     "acctDr": 327.6,
+     "acctCr": 0,
+     "desc": "1000478 #0 (Payment: 400158 [1])"
+    },
+    {
+     "schema": 101,
+     "account": 518,
+     "cur": 100,
+     "srcDr": 0,
+     "srcCr": 327.6,
+     "acctDr": 0,
+     "acctCr": 327.6,
+     "desc": "1000478 #0 (Payment: 400158 [1])"
+    },
+    {
+     "schema": 200000,
+     "account": 511,
+     "cur": 100,
+     "srcDr": 327.6,
+     "srcCr": 0,
+     "acctDr": 273,
+     "acctCr": 0,
+     "desc": "1000478 #0 (Payment: 400158 [1])"
+    },
+    {
+     "schema": 200000,
+     "account": 518,
+     "cur": 100,
+     "srcDr": 0,
+     "srcCr": 327.6,
+     "acctDr": 0,
+     "acctCr": 273,
+     "desc": "1000478 #0 (Payment: 400158 [1])"
+    },
+    {
+     "schema": 200000,
+     "account": 723,
+     "cur": 102,
+     "srcDr": 24.82,
+     "srcCr": 0,
+     "acctDr": 24.82,
+     "acctCr": 0,
+     "desc": "Invoice=(102)273.00/273.00 - Allocation=(100)327.6/273.00 - (partial) = 24.82"
+    },
+    {
+     "schema": 200000,
+     "account": 518,
+     "cur": 102,
+     "srcDr": 0,
+     "srcCr": 24.82,
+     "acctDr": 0,
+     "acctCr": 24.82,
+     "desc": "Invoice=(102)273.00/273.00 - Allocation=(100)327.6/273.00 - (partial) = 24.82"
+    }
+   ],
+   "allocHdr": [
+    "100",
+    "2026-10-14",
+    "2026-10-14",
+    "CO",
+    "0.0"
+   ],
+   "invPaid": "Y"
+  }
+ ]
+}

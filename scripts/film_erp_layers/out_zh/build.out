@@ -1,0 +1,4 @@
+§K2 OK   beat=move2 return=46.12 voice_start=46.76 ass_start=46.76 | voice-only track in typing window -180.0 dB vs in voice -17.1 dB (gap 162.9) | mixed in typing: peak -8.3 dBFS rms -32.7 dB
+§K2_LEVEL keys (mixed, typing windows) mean rms -33.0 dB, mean peak -8.3 dBFS; voice mean rms -17.5 dB -> keys are 15.4 dB under the voice rms
+§K2_VERDICT PASS beats=2 bad=0 audible=True
+§BUILD_DONE /home/red1/Videos/Immersive_Software_CH0_ERP_Field_ZH_AFTER_2026-11-15_v1.mp4

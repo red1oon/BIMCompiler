@@ -1,0 +1,16 @@
+{
+ "id": "G4",
+ "building": "HospitalGarage",
+ "trap": "over the RC span limit of 12 m, which the proposer is not told",
+ "impossible": true,
+ "text": "Make the bay between lines gx5 and gx6 13 m wide.",
+ "goal": [
+  {
+   "type": "bay",
+   "a": "gx5",
+   "b": "gx6",
+   "target": 13,
+   "tol": 0.1
+  }
+ ]
+}

@@ -1,0 +1,46 @@
+§FILM_GUARD OK   quote says "Jakob Nielsen" <- quote.source expected Jakob Nielsen · Nielsen Norman Group got Jakob Nielsen · Nielsen Norman Group
+§FILM_GUARD OK   quote says "tenth usability heuristic" <- quote.h10 expected Y got Y
+§FILM_GUARD OK   quote says "easy to search, and focused on the user's task" <- quote.found expected Y got Y
+§FILM_GUARD OK   quote says "Short, with concrete steps" <- quote.steps expected Y got Y
+§FILM_GUARD OK   klass says "I click a wall" <- klass.class expected IfcWall got IfcWall
+§FILM_GUARD OK   klass says "one plain sentence" <- klass.ours expected Y got Y
+§FILM_GUARD OK   klass says "the official IFC definition from buildingSMART" <- klass.ifc expected Y got Y
+§FILM_GUARD OK   klass says "word for word" <- w.c2 expected Y got Y
+§FILM_GUARD OK   klass says "with its credit" <- klass.credit expected Y got Y
+§FILM_GUARD OK   lang says "buildingSMART publishes its own text" <- de.bsdd expected Y got Y
+§FILM_GUARD OK   lang says "our sentence is Chinese" <- zh.ours expected Y got Y
+§FILM_GUARD OK   lang says "no Chinese text for a wall yet" <- zh.nobsdd expected Y got Y
+§FILM_GUARD OK   lang says "shows the English, and says so" <- zh.fallback expected Y got Y
+§FILM_GUARD OK   ask says "opens on the left" <- dock.left expected Y got Y
+§FILM_GUARD OK   ask says "without knowing its name" <- word.inName expected N got N
+§FILM_GUARD OK   ask says "It finds Save Building and Open Building" <- found.names expected Save Building + Open Building got Save Building + Open Building
+§FILM_GUARD OK   ask says "a step of each says native" <- found.why expected Y got Y
+§FILM_GUARD OK   ask says "both open to show you" <- found.open expected Y got Y
+§FILM_GUARD OK   ask says "It finds" <- found.only expected Y got Y
+§FILM_GUARD OK   cli says "a link to its guide section" <- find.guide expected Y got Y
+§FILM_GUARD OK   cli says "the same question as a command" <- find.cli expected viewer.counts building=<building> got viewer.counts building=<building>
+§FILM_GUARD OK   cli says "it counts this model" <- cli.status expected ok got ok
+§FILM_GUARD OK   cli says "one thousand one hundred and ninety-three" <- cli.total expected 1193 got 1193
+§FILM_GUARD OK   cli says "The same answer the Find panel gives" <- cli.same expected Y got Y
+§FILM_GUARD OK   dock says "Drag it wherever you like" <- dock.saved expected Y got Y
+§FILM_GUARD OK   dock says "it comes back where you left it" <- dock.same expected Y got Y
+§FILM_GUARD OK   dock says "still showing what you had open" <- dock.keptOpen expected Y got Y
+§FILM_GUARD OK   red control: a planted count 1194 is caught
+§FILM_GUARD OK   no page error in any session
+§FILM_GUARD OK   the Find panel (measured at the shot, after the class text opened) covers neither the class text nor, in the help stills, the help panel
+§FILM_GUARD OK   every picture the cards need exists
+§FILM_GUARD OK   the CLI line ran through red1 and answered ok
+§FILM_GUARD OK   the typed lines are the ones the beats name
+§FILM_GUARD OK   credentials: MIT, every PR the film shows merged, the paper states its priority date
+§FILM_GUARD OK   the verdicts on the card are PASS lines of logs run on the same tree as the pictures
+§FILM_GUARD OK   prior art "buildingSMART Data Dictionary (bSDD)" <- prior/bsdd_IfcWall_de-DE.json
+§FILM_GUARD OK   prior art "Creative Commons BY-ND 4.0, the legal code" <- prior/cc_by-nd_4.0_legalcode.en.txt
+§FILM_GUARD OK   prior art "iDempiere HelpController" <- idempiere:org.adempiere.ui.zk/WEB-INF/src/org/adempiere/webui/panel/HelpController.java:146
+§FILM_GUARD OK   not said: the pictures are taken, not streamed
+§FILM_GUARD OK   not said: no speed was measured
+§FILM_GUARD OK   not said: no priority is claimed
+§FILM_GUARD OK   not said: the Modeller help is not in this film
+§FILM_GUARD OK   not said: prefixes and did-you-mean are not built
+§FILM_GUARD OK   not said: only German and Chinese are shown
+§FILM_GUARD OK   not said: nothing is said about AI
+§FILM_GUARD VERDICT PASS

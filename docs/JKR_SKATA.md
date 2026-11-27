@@ -143,6 +143,9 @@ from the hospital model, so you can picture the shape of your own.
 
 ### Step 1 — Ask how bad it is (seconds)
 
+> The two command-line tools used below (`build/classification_checker.py`, `build/measure_classification_tiers.py`) live on
+> unmerged branches of the BIMCompiler repository, not on `master`, at the time of writing.
+
 ```bash
 python3 build/classification_checker.py --db buildings/YourBuilding.db
 ```
@@ -225,8 +228,8 @@ but not built. What exists now is the measurement and the worklist, which is the
 
 - **No SKATA verdict.** The shipped SKATA scheme is an explicitly-labelled example, and the checker
   **refuses to emit a verdict** against it. A checker that returns a confident answer for a placeholder
-  format is worse than no checker. The primary JKR specification has been obtained and is being
-  transcribed; until that is complete, no Malaysian compliance claim should be made from this tool.
+  format is worse than no checker. The primary SKATA v2.0 specification has been obtained (it is public on JKR's portal);
+  transcribing its code structure is on hold until a real submission needs it, so no Malaysian compliance claim should be made from this tool.
 - **PeDATA is not covered at all.**
 - **Element codes only.** The scheme verified against real data (UniFormat) has no space or storey code.
   SKATA expects building, level, space *and* component codes — a wider surface than is implemented.

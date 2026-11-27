@@ -1,0 +1,10 @@
+§W-VOID-SEED ad_seed.db + patches/ad_seed.db.sql statements=3803 failed=3 today=2026-10-30
+Error response from daemon: container b6351cea7eceaa82b1d209196c8f96d6da01c477e1d5edfff0d4be4fb5f9ebe6 is not running
+§WPI-ERROR Error: Command failed: docker exec -i postgres psql -v ON_ERROR_STOP=1 -U postgres -d idempiere_pilot -tAq
+Error response from daemon: container b6351cea7eceaa82b1d209196c8f96d6da01c477e1d5edfff0d4be4fb5f9ebe6 is not running
+
+    at checkExecSyncError (node:child_process:890:11)
+    at Object.execFileSync (node:child_process:926:15)
+    at pgRows (/tmp/wt-hq-main/erp/tests/witness_post_invoice_diff.js:19:67)
+    at main (/tmp/wt-hq-main/erp/tests/witness_post_invoice_diff.js:78:14)
+exit=2

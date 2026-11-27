@@ -1,0 +1,19 @@
+═══ W-FOLD-COMPLETE — completeIt(C_Order) folded → oracle-equivalent (fan-out + invoice posting + status) ═══
+    engine = erp_engine.completeOrder(buildDoc) · posting = post_resolver · oracle = GardenWorld fact_acct (client 11, schema 101)
+
+   🟢 order 80000 completeIt → oracle-equivalent — ship=1/1 inv=1/1 invPost=3@0c(EQUIVALENT) shipPost=2@0c status=CO/CO
+§FOLD-COMPLETE doc=C_Order id=100 docno=80000 status=CO ship_lines=1 inv_lines=1 invPostings=3 invMaxDiff=0c(EQUIVALENT) shipPostings=2 shipMaxDiff=0c ΣDR=ΣCR=Y oracle=iDempiere
+   🟢 order 80001 completeIt → oracle-equivalent — ship=1/1 inv=1/1 invPost=3@0c(EQUIVALENT) shipPost=2@0c status=CO/CO
+§FOLD-COMPLETE doc=C_Order id=101 docno=80001 status=CO ship_lines=1 inv_lines=1 invPostings=3 invMaxDiff=0c(EQUIVALENT) shipPostings=2 shipMaxDiff=0c ΣDR=ΣCR=Y oracle=iDempiere
+   🟢 order 80002 completeIt → oracle-equivalent — ship=3/3 inv=3/3 invPost=3@0c(EQUIVALENT) shipPost=0@0c status=CO/CL
+§FOLD-COMPLETE doc=C_Order id=102 docno=80002 status=CO ship_lines=3 inv_lines=3 invPostings=3 invMaxDiff=0c(EQUIVALENT) shipPostings=0 shipMaxDiff=0c ΣDR=ΣCR=Y oracle=iDempiere
+   🟢 order 60000 completeIt → oracle-equivalent — ship=1/1 inv=1/1 invPost=3@4039c(AMT-DRIFT) shipPost=2@0c status=CO/CO
+§FOLD-COMPLETE doc=C_Order id=108 docno=60000 status=CO ship_lines=1 inv_lines=1 invPostings=3 invMaxDiff=4039c(AMT-DRIFT) shipPostings=2 shipMaxDiff=0c ΣDR=ΣCR=Y oracle=iDempiere
+   🟢 3/4 orders fold to an ORACLE-EQUIVALENT invoice posting (1 post-posting drift, named) — equiv=3 drift=1
+   🟢 §FALSIFIER drop a derived posting line → maxDiff≠0 (diff is load-bearing) — maxDiff=5035c
+§FALSIFIER doc=C_Order order=100 invoice=100 mutation=drop-receivable-DR maxDiff=5035c (must be >0)
+
+§FOLD-NOTE shipment posting amount = cost-at-movement (m_costdetail, Σ|amt| per line, schema 101); accounts {Product.Cogs}/{Product.Asset} resolved from the master. Current m_cost has drifted off posting-time cost (same posting-time-vs-current class as the invoice amt-drift) — m_costdetail is iDempiere's own posted cost, NOT invented.
+
+🟢 W-FOLD-COMPLETE PASS — completeIt(C_Order) folds to ONE op-group; fan-out (shipment+invoice lines) + BOTH postings (invoice Doc_Invoice + shipment Doc_InOut) + DocStatus oracle-equivalent to the cent. MOrder archetype: the full Order→Ship→Invoice posting chain GREEN.
+exit=0

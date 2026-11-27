@@ -1,0 +1,29 @@
+§FILM_TREE new=560b3541
+§FILM_FRESH ok
+§FILM_START clean=true
+§FILM_STILL name=before geometry=1440x900+240+90 bytes=206700
+§FILM_SHOT name=before still_ms=214 json={"setting":true,"line":2,"text":"\"chat.disableAIFeatures\": true,","non_builtin_extensions":["bim-devtools.x0-navigator"],"ai_named_extensions":[],"vscode":"1.146.0"}
+§FILM_STILL name=q1_refs geometry=1440x900+240+90 bytes=263015
+§FILM_SHOT name=q1_refs still_ms=202 json={"field":"APP.db","at":"viewer/cost_panel.js:67","text":"if (!APP || !APP.db || !gridData) return;","places":824,"files":192,"definitions":["viewer/city.js:717"]}
+§FILM_STILL name=q2_line geometry=1440x900+240+90 bytes=276347
+§FILM_SHOT name=q2_line still_ms=208 json={"link":"vscode://file<bim-ootb>/erp/callouts/CalloutOrder.js:181","file":"erp/callouts/CalloutOrder.js","line":181,"text":"CalloutOrder.prototype.bPartner = function (ctx, WindowNo, mTab, mField, value) {"}
+§FILM_STILL name=q3_hover geometry=1440x900+240+90 bytes=393384
+§FILM_SHOT name=q3_hover still_ms=252 json={"tag":"§HOSTED_BEFORE_HOST","at":"viewer/schedule_gate.js:1029","last_value_line":"last value: `§HOSTED_BEFORE_HOST hostedTotal=5735 matched=5466 fellThrough=269 (noHostCell=128 noNearest=141) — fellThrough elements are gated at baseMs only, i.e. NOT he…` — 3379cbf0b211_4c8212a3a98b_meta/witness.log:20 @ 560b354","spec_places":4,"lens":["last: §HOSTED_BEFORE_HOST hostedTotal=5735 matched=5466 fellThrough=269 (noHostCell=128 noNearest=141) — fellThro…   ·   3379cbf0b211_4c8212a3a98b_meta/witness.log @ 560b354"]}
+§FILM_STILL name=q4_warn geometry=1440x900+240+90 bytes=332653
+§FILM_SHOT name=q4_warn still_ms=254 json={"file":"viewer/schedule_gate.js","line":1028,"typed":"Date.now()","diagnostics":1,"code":"x0.core-pure.clock","message":"Core file: Date.now() reads the clock itself, so a replay or a test gets a different value. Instead, ask the installed edge: Env.edge().nowMs() / the transaction env (Env.nowStamp(env)); for a timing, Env.elapsed(). CI fails this PR (W-CORE-PURE).","severity":1}
+§FILM_RESTORE step=q4 warnings_after_removal=0 file_equals_HEAD=true
+§FILM_STILL name=q5_idle geometry=1440x900+240+90 bytes=210608
+§FILM_SHOT name=q5_idle still_ms=203 json={"file":"viewer/cost_panel.js","bump_warning":1,"message":"This file is served from the viewer offline cache and was edited, but viewer/sw.js is still v1740: users with a cached copy keep the old file. Quick fix: bump the cache version."}
+§FILM_STILL name=q5_checking geometry=1440x900+240+90 bytes=170598
+§FILM_SHOT name=q5_checking still_ms=153 json={"delay_ms":258}
+§FILM_SHOT_TIMING name=q5_checking press_to_still_ms=412 check_ended_ms=461 during_check=Y
+§FILM_STILL name=q5_ready geometry=1440x900+240+90 bytes=224321
+§FILM_SHOT name=q5_ready still_ms=203 json={"lines":["§BUMP_CHANGED base=560b35414bd9 changed=1 bumpable=1 skipped=0 files=viewer/cost_panel.js","§BUMP page=viewer/viewer.html ref=cost_panel.js v=5->6","§BUMP sw=viewer/sw.js CACHE_VERSION v1740->v1741 (for: viewer/viewer.html)","§BUMP_CHECK verdict=PASS key=e896c4a63f47 targets=1 (nothing written; --write on the same tree reuses this result)"]}
+§FILM_STILL name=q5_written geometry=1440x900+240+90 bytes=415389
+§FILM_SHOT name=q5_written still_ms=257 json={"lines":["§BUMP_CHANGED base=560b35414bd9 changed=1 bumpable=1 skipped=0 files=viewer/cost_panel.js","§BUMP page=viewer/viewer.html ref=cost_panel.js v=5->6","§BUMP sw=viewer/sw.js CACHE_VERSION v1740->v1741 (for: viewer/viewer.html)","§BUMP_DONE targets=1 pages=1 loaders=0 sw=1 mode=write written=2"],"files_written_besides_edit":["viewer/sw.js","viewer/viewer.html"],"cache_line":"const CACHE_VERSION = 'v1741';","cache_line_no":268}
+§FILM_RESTORE step=q5 tree_clean=true
+§FILM_STILL name=passenger geometry=1440x900+240+90 bytes=398803
+§FILM_SHOT name=passenger still_ms=254 json={"file":"viewer/schedule_gate.js","block_lines":81,"sections":["## Its own header","## How it reaches a user","## APP fields whose listed write site is this file","## The § tags it prints","## Not in this block"],"clipboard_equals_doc":true,"first_line":"# Context for `viewer/schedule_gate.js`"}
+§FILM_END clean=true
+§FILM_TREE_AFTER clean=Y
+§FILM_SHOOT stills=10 errors=0

@@ -1,0 +1,274 @@
+{
+ "made": "2026-11-14T09:05:49.169Z",
+ "ootb": "7094bac6",
+ "lines": {
+  "open": {
+   "line": "model.open sheets=marked type=\"Farming Shed\"",
+   "status": "ok",
+   "answer": {
+    "ok": true,
+    "sheets": 9,
+    "gate": {
+     "ok": true,
+     "bodies": 445,
+     "left_out": 4
+    },
+    "type": "Farming Shed",
+    "summary": "9 sheets open, 445 bodies read (4 left out), the gate is open",
+    "page_errors": 0,
+    "ms": 5377
+   },
+   "why": null
+  },
+  "convert": {
+   "line": "model.convert",
+   "status": "ok",
+   "answer": {
+    "ok": true,
+    "inserts": 444,
+    "bayOffered": true,
+    "type": "Farming Shed",
+    "rule": true,
+    "elements": 444,
+    "summary": "444 elements made; add-a-bay is offered for Farming Shed",
+    "page_errors": 0,
+    "ms": 8421
+   },
+   "why": null
+  },
+  "addbay_high": {
+   "line": "model.addbay end=high",
+   "status": "ok",
+   "answer": {
+    "ok": true,
+    "end": "high",
+    "commit_line": "§DXF-BAY committed verify=true rows=88 gate=clean cost added=10722 changed=5176 total=15898 cur=USD",
+    "hinge": "41",
+    "pitch_m": 3.048,
+    "identical_bays": 8,
+    "copies": 29,
+    "copies_by_class": {
+     "IfcColumn": 2,
+     "IfcBeam": 2,
+     "IfcFooting": 2,
+     "IfcWall": 2,
+     "IfcMember": 12,
+     "IfcPlate": 9
+    },
+    "gate": "clean",
+    "cost": {
+     "added": 10722,
+     "changed": 5176,
+     "total": 15898,
+     "currency": "USD",
+     "pack": "rsmeans2024_us"
+    },
+    "copied": "Beam 2 · Column 2 · Footing 2 · Member 12 · Plate 9 · Wall 2",
+    "stretched": "Covering 2 · Member 12",
+    "elements_before": 444,
+    "elements_after": 473,
+    "summary": "one bay added at the high end (29 copies, pitch 3.0480 m), the gate is clean, cost 15898 USD (10722 added, 5176 changed)",
+    "page_errors": 0,
+    "ms": 3104
+   },
+   "why": null
+  },
+  "undo": {
+   "line": "model.undo",
+   "status": "ok",
+   "answer": {
+    "ok": true,
+    "elements_before": 473,
+    "elements_after": 444,
+    "summary": "undone: 473 -> 444 elements",
+    "page_errors": 0,
+    "ms": 2144
+   },
+   "why": null
+  },
+  "addbay_low": {
+   "line": "model.addbay end=low",
+   "status": "ok",
+   "answer": {
+    "ok": true,
+    "end": "low",
+    "commit_line": "§DXF-BAY committed verify=true rows=112 gate=⚠ 8 ORANGE cost added=11144 changed=5176 total=16320 cur=USD",
+    "hinge": "02",
+    "pitch_m": 3.048,
+    "identical_bays": 8,
+    "copies": 29,
+    "copies_by_class": {
+     "IfcColumn": 2,
+     "IfcBeam": 2,
+     "IfcFooting": 2,
+     "IfcWall": 2,
+     "IfcMember": 12,
+     "IfcPlate": 9
+    },
+    "gate": "⚠ 8 ORANGE",
+    "cost": {
+     "added": 11144,
+     "changed": 5176,
+     "total": 16320,
+     "currency": "USD",
+     "pack": "rsmeans2024_us"
+    },
+    "copied": "Beam 2 · Column 2 · Footing 2 · Member 12 · Plate 9 · Wall 2",
+    "stretched": "Covering 2 · Member 12",
+    "elements_before": 444,
+    "elements_after": 473,
+    "summary": "one bay added at the low end (29 copies, pitch 3.0480 m), the gate is ⚠ 8 ORANGE, cost 16320 USD (11144 added, 5176 changed)",
+    "page_errors": 0,
+    "ms": 2708
+   },
+   "why": null
+  },
+  "refuse": {
+   "line": "model.addbay end=sideways",
+   "status": "refused",
+   "answer": {
+    "ok": false,
+    "refused": true,
+    "error": "end= is high or low (the end of the building to lengthen)",
+    "ms": 1
+   },
+   "why": "end= is high or low (the end of the building to lengthen)"
+  },
+  "close": {
+   "line": "model.close",
+   "status": "ok",
+   "answer": {
+    "ok": true,
+    "closed": true
+   },
+   "why": null
+  }
+ },
+ "states": {
+  "s0": {
+   "file": "shots/s0.png",
+   "note": "the Modeller before anything is opened"
+  },
+  "s1": {
+   "file": "shots/s1.png",
+   "bytes": 265066
+  },
+  "s2": {
+   "file": "shots/s2.png",
+   "bytes": 276869
+  },
+  "s3": {
+   "file": "shots/s3.png",
+   "bytes": 289957
+  },
+  "s4": {
+   "file": "shots/s4.png",
+   "bytes": 285369
+  },
+  "s5": {
+   "file": "shots/s5.png",
+   "bytes": 300472
+  },
+  "s6": {
+   "file": "shots/s6.png",
+   "bytes": 286086
+  }
+ },
+ "sheets": 9,
+ "checks": {
+  "C": {
+   "copiesEqualGrowth": true,
+   "costSum": true,
+   "undoBack": true,
+   "lowGrowth": true
+  },
+  "D": {
+   "open": {
+    "pct": 19.225,
+    "w": 1920,
+    "h": 537
+   },
+   "convert": {
+    "pct": 10.815,
+    "w": 1920,
+    "h": 537
+   },
+   "bay": {
+    "pct": 0.562,
+    "w": 1920,
+    "h": 537
+   },
+   "undo_vs_convert": {
+    "pct": 0,
+    "w": 1920,
+    "h": 537
+   },
+   "undo_vs_convert_panel": {
+    "pct": 11.014,
+    "w": 1920,
+    "h": 537
+   },
+   "bay_vs_convert_panel": {
+    "pct": 11.014,
+    "w": 1920,
+    "h": 537
+   },
+   "bay_low": {
+    "pct": 0.241,
+    "w": 1920,
+    "h": 537
+   },
+   "refuse_unchanged": {
+    "pct": 0,
+    "w": 1920,
+    "h": 537
+   },
+   "refuse_unchanged_panel": {
+    "pct": 4.691,
+    "w": 1920,
+    "h": 537
+   }
+  },
+  "pageErrors": 0
+ },
+ "add": {
+  "sheets": 9,
+  "bodies": 445,
+  "left_out": 4,
+  "gateOpen": true,
+  "elements": 444,
+  "bayOffered": true,
+  "copies": 29,
+  "pitch": 3.048,
+  "gateHigh": "clean",
+  "costHigh": {
+   "added": 10722,
+   "changed": 5176,
+   "total": 15898,
+   "currency": "USD",
+   "pack": "rsmeans2024_us"
+  },
+  "copiesByClass": {
+   "IfcColumn": 2,
+   "IfcBeam": 2,
+   "IfcFooting": 2,
+   "IfcWall": 2,
+   "IfcMember": 12,
+   "IfcPlate": 9
+  },
+  "undoTo": 444,
+  "gateLow": "⚠ 8 ORANGE",
+  "costLow": {
+   "added": 11144,
+   "changed": 5176,
+   "total": 16320,
+   "currency": "USD",
+   "pack": "rsmeans2024_us"
+  },
+  "refuseWhy": "end= is high or low (the end of the building to lengthen)",
+  "hinge": {
+   "high": "41",
+   "low": "02"
+  }
+ }
+}

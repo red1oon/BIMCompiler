@@ -1,0 +1,36 @@
+§FILM_GUARD OK   before says "One topic" <- legacy.helps expected 1 got 1
+§FILM_GUARD OK   before says "Eighteen topics" <- twin.records expected 18 got 18
+§FILM_GUARD OK   before says "the same window" <- twin.window expected 200034 got 200034
+§FILM_GUARD OK   tab says "the tab's own words ... then the steps" <- so.shown expected dict+msg got dict+msg
+§FILM_GUARD OK   tab says "Click Order Line" <- line.tab expected 187 got 187
+§FILM_GUARD OK   tab says "its own step" <- line.shown expected dict+msg got dict+msg
+§FILM_GUARD OK   tab says "legacy's text alone" <- tax.shown expected dict got dict
+§FILM_GUARD OK   guide says "two thousand characters" <- fit.max expected 2000 got 2000
+§FILM_GUARD OK   guide says "links to the rest, in the guide" <- more.heading expected Step 9 · Complete the order got Step 9 · Complete the order
+§FILM_GUARD OK   ask says "the Sales Order window" <- ask.window expected 143 got 143
+§FILM_GUARD OK   ask says "the Close action" <- ask.action expected CL got CL
+§FILM_GUARD OK   cli says "the same answer" <- cli.window expected 143 got 143
+§FILM_GUARD OK   cli says "the same answer" <- cli.action expected CL got CL
+§FILM_GUARD OK   cli says "It only reads" <- cli.status expected ok got ok
+§FILM_GUARD OK   langs says "Mandarin" <- lang.zh expected zh_CN got zh_CN
+§FILM_GUARD OK   langs says "German" <- lang.de expected de_DE got de_DE
+§FILM_GUARD OK   langs says "In Spanish they stay English" <- lang.es_topic expected en_US got en_US
+§FILM_GUARD OK   langs says "the tab's own text" <- lang.es_own expected Y got Y
+§FILM_GUARD OK   tenant says "Their own text" <- tenant.client expected 11 got 11
+§FILM_GUARD OK   tenant says "shows at once" <- tenant.shown expected Y got Y
+§FILM_GUARD OK   tenant says "The original stays untouched" <- tenant.system expected 1635 got 1635
+§FILM_GUARD OK   legacy says "Its own panel now shows" <- legacy.shown expected Y got Y
+§FILM_GUARD OK   legacy says "Applied twice, nothing changes" <- legacy.l3 expected PASS got PASS
+§FILM_GUARD OK   legacy says "a site's own help is never replaced" <- legacy.l5 expected PASS got PASS
+§FILM_GUARD OK   legacy says "(not voiced: the pilot restored)" <- legacy.back expected true got true
+§FILM_GUARD OK   no page error in the twin session
+§FILM_GUARD OK   every twin picture the cards need exists
+§FILM_GUARD OK   beat 7's legacy picture exists and the pilot was restored to its snapshot
+§FILM_GUARD OK   the verdicts on the card are PASS lines of logs run on the same tree
+§FILM_GUARD OK   credentials: MIT, every PR the card names merged
+§FILM_GUARD OK   not said: the pictures are taken, not streamed
+§FILM_GUARD OK   not said: no speed was measured
+§FILM_GUARD OK   not said: only Mandarin, German and Spanish were shown
+§FILM_GUARD OK   not said: no translation was reviewed by a native speaker
+§FILM_GUARD OK   not said: beat 7 applied the script with psql, not through RUN_SyncDB
+§FILM_GUARD VERDICT PASS

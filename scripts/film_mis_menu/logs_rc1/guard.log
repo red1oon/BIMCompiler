@@ -1,0 +1,10 @@
+§GUARD OK   beat=still1 still1.rows.length=3 expect=3 spoken="three groups"
+§GUARD OK   beat=still1 states.s1.records=3 expect=3 spoken="same three"
+§GUARD OK   beat=still2 still2.windowRows=4 expect=4 spoken="shows four"
+§GUARD OK   beat=menu menu.windows=294 expect=294 spoken="two hundred and ninety-four windows"
+§GUARD OK   beat=find find.items=11 expect=11 spoken="eleven entries"
+§GUARD language=en beats with no Latin character: none
+§GUARD proof talk or first/novel/unique: none
+§GUARD not-said N (live link, or a thing not built), named in the voice: none
+§GUARD pane P (from facts.js): the page's record count = the door's on 3 of 3 states, page errors 0; the menu: door entries 471 all on the page, page-only entries not in the dictionary: ["BIM Document"] menuSame=true
+§GUARD_VERDICT PASS facts=5 bad=0

@@ -1,0 +1,4 @@
+§K2 OK   beat=passenger return=135.00 voice_start=135.63 ass_start=135.63 | voice-only track in typing window -180.0 dB vs in voice -15.5 dB (gap 164.5) | mixed in typing: peak -8.9 dBFS rms -33.5 dB
+§K2_LEVEL keys (mixed, typing windows) mean rms -33.4 dB, mean peak -9.1 dBFS; voice mean rms -16.0 dB -> keys are 17.4 dB under the voice rms
+§K2_VERDICT PASS beats=7 bad=0 audible=True
+§BUILD_DONE /home/red1/Videos/When_AI_Dies_CH_TH_AFTER_2026-11-18_v1.mp4

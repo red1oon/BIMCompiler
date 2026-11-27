@@ -1,0 +1,144 @@
+{
+ "_about": "Type template 'German Werkplan EFH' (PDF2BIM_VECTOR_PROBE.md §43, §43.16). Editable. Values the scan cannot read come from here, each with its source.",
+ "opening_series": {
+  "_source": "DIN 4172 Maßordnung im Hochbau, module 12.5 cm, 1 cm joint: Öffnungsmaß x*12.5 + 1 cm (BauNetz Wissen, 'Steinformat und Maßordnung', table mw_masse_2)",
+  "module_mm": 125,
+  "joint_mm": 10
+ },
+ "wall_series": {
+  "_source": "same table: Außenmaß x*12.5 - 1 cm. Planziegel follow their own system (same page): a wall READ on the drawing wins",
+  "module_mm": 125,
+  "joint_mm": -10
+ },
+ "window_system": {
+  "_status": "YELLOW: the drawing does not state a profile. frame_face_mm and pane_mm copied from the §34 template default; depth = the wall's READ thickness (the §34 convention, depth from the plan); height and sill = registry defaults (no norm value found)",
+  "frame_face_mm": 50,
+  "pane_mm": 6,
+  "sash_max_mm": 1250,
+  "_sash_source": "Dreh-Kipp windows usually 500-1250 mm wide (aroundhome.de 'Fenster Maße', consumer source): sashes = ceil(width / 1250)"
+ },
+ "door_series": {
+  "_source": "DIN 18101 via BauNetz Wissen 'Wandöffnungen und Türgrößen nach DIN 18101' (.../konstruktion-funktion/wandoeffnungen-und-tuergroessen-nach-din-18101-155227: Nennmaß = Baurichtmaß + 10 mm width, + 5 mm height) and 'Türblattgrößen nach DIN 18101' (.../konstruktion-funktion/tuerblattgroessen-nach-din-18101-155263), read 2026-11-23; PDF2BIM_VECTOR_PROBE.md §43.21",
+  "single_leaf_width_mm": [
+   635,
+   760,
+   885,
+   1010,
+   1135
+  ],
+  "double_leaf_width_mm": [
+   1260,
+   1510,
+   1760,
+   2010
+  ],
+  "height_mm": {
+   "opening_page_nennmass": 2005,
+   "leaf_page_nennmass": 2010,
+   "alternative": 2130,
+   "_status": "YELLOW: the two pages disagree (2005 vs 2010); not resolved"
+  }
+ },
+ "door_system": {
+  "_status": "YELLOW: the scan does not draw the frame or leaf at a readable scale. frame_face_mm and leaf_mm copied from the §38 'Low cost single storey unit' door_system; depth = the wall's READ thickness (the §34 convention); height = door_series opening Nennmaß (§43.21 step 2, DEFAULT)",
+  "frame_face_mm": 50,
+  "leaf_mm": 40
+ },
+ "fixture_symbols": {
+  "_about": "§52.5 (owner 2026-11-24: 'markings of toilet/sink ... insert mesh from library'). How the plan DRAWS a sanitary fixture, measured on DE-1 (scan 200 dpi; log /tmp/claude-1000/s52/fixtures_*.log): a closed shape (white region bounded by ink, ink = grey < 215), its bbox in metres, its fill share of the bbox, and the drain / tap mark inside it (its AREA in mm2: ink pixels inside the shape's box, 2 px in from its edges, that are not the shape: the mark may touch the rim). Ranges bracket the measured shapes; a shape outside every row is not placed. The fixture body comes from the Modeller's catalog (bim-ootb DXF2BIM §L46); this table only says what a drawn shape IS.",
+  "wc": {
+   "shape": "ellipse (the bowl)",
+   "fill": [
+    0.74,
+    0.84
+   ],
+   "long_m": [
+    0.22,
+    0.4
+   ],
+   "short_m": [
+    0.18,
+    0.32
+   ],
+   "aspect_min": 1.1,
+   "mark_mm2": [
+    0,
+    958
+   ],
+   "measured": "OG 0.291 x 0.221 fill 0.79, 0.277 x 0.235 fill 0.80; EG 0.201 x 0.261 fill 0.83; marks 0-3 px (0-575 mm2)"
+  },
+  "basin": {
+   "shape": "rounded rectangle (the bowl)",
+   "fill": [
+    0.88,
+    1.0
+   ],
+   "long_m": [
+    0.4,
+    0.7
+   ],
+   "short_m": [
+    0.22,
+    0.45
+   ],
+   "aspect_min": 1.0,
+   "mark_mm2": [
+    1500,
+    11500
+   ],
+   "measured": "OG 0.526 / 0.484 / 0.484 / 0.498 x 0.277 / 0.277 / 0.291 / 0.291 fill 0.91-0.95, marks 16-25 px at 72.2 px/m (3066-4790 mm2); EG 0.482 x 0.281 fill 0.91, mark 7 px at 49.8 px/m (2825 mm2): the mark is an AREA, the print scale differs per sheet"
+  },
+  "bath": {
+   "shape": "rounded rectangle (the tub)",
+   "fill": [
+    0.88,
+    1.0
+   ],
+   "long_m": [
+    1.0,
+    1.9
+   ],
+   "short_m": [
+    0.35,
+    0.8
+   ],
+   "aspect_min": 1.5,
+   "mark_mm2": [
+    1500,
+    23000
+   ],
+   "measured": "OG 1.107 x 0.415 fill 0.95; mark 53 px (10156 mm2, the drain arrow)"
+  },
+  "back_wall_max_m": 0.8
+ },
+ "prewall": {
+  "_about": "§55.1 (owner 2026-11-24: refer to industry defaults; the user edits). A WC pre-wall (Vorwandinstallation) as the plan draws it, measured on DE-1 OG (s55/prewall_probe.log): an unhatched strip between the WC's back-wall face and a straight line parallel to it. The line must run at least min_run_m (the narrowest WC pre-wall element) at a distance within depth_m of the wall face. Height = the common WC pre-wall element height (DEFAULT, editable in the Modeller).",
+  "min_run_m": 0.6,
+  "depth_m": [
+   0.08,
+   0.3
+  ],
+  "height_m": 1.12,
+  "height_source": "DEFAULT industry: WC pre-wall element height 1.12 m"
+ },
+ "owner_rulings": {
+  "_source": "owner 2026-11-23: 'just make the Modeller able to convert to DB for me to Viewer' (PDF2BIM_VECTOR_PROBE.md §46); bim-ootb DXF2BIM_MODELLER_LANE.md §L37 + §L41a say which codes a person can accept",
+  "WAIVED_DRAWING_DIMENSIONS": [
+   "QF:dim_missing",
+   "QF:dim_point_missing",
+   "QF:elev_height_dim_missing"
+  ],
+  "STATED_FINDING_NO_GRID": [
+   "QF:grid_missing"
+  ],
+  "_accept": {
+   "who": "the first-release rule of this building type (owner)",
+   "date": "2026-11-23",
+   "reason": "a scanned Werkplan: dimensioned per room not per wall or opening and with no grid"
+  }
+ },
+ "void_guard": {
+  "top_m": 3.75,
+  "source": "DE-1 section A-A, the level mark beside the LUFTRAUM word: +3,75 for the top of the Bruestung over the +2,86 floor (read from the owner's screenshot 2026-11-25; the level mark's triangle breaks OCR at 200 dpi). The height 3.75 - 2.855 = 0.895 m. Editable."
+ }
+}

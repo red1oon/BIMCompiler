@@ -1,0 +1,86 @@
+§FACTS trees {"T":{"path":"/tmp/wt-film-ootb","commit":"aa427638","dirty":0},"C":{"path":"/tmp/wt-film-zh","commit":"8e5a762fe","dirty":0},"I":{"path":"/home/red1/idempiere-dev-setup/idempiere","commit":"87968daa73","dirty":3}}
+§FACTS cmd after [T] git rev-list --count HEAD -> 1 lines: 3514
+§FACTS cmd u1 [T] node -p "require('./package.json').dependencies" -> 1 lines: { 'sql.js': '^1.14.1' }
+§FACTS cmd u2 [T] node erp/tests/witness_roster_verify.js | tail -1 -> 1 lines: 🟢 W-ROSTER-VERIFY ALL PASS
+§FACTS cmd v1 [T] git log --since=2026-06-01 --until=2026-07-01 --oneline -- erp | wc -l -> 1 lines: 243
+§FACTS cmd v2 [T] git ls-files | grep -cE 'witness[^/]*\.js$' -> 1 lines: 1492
+§FACTS cmd s1 [C] bash scripts/code_arch/size_stack.sh $OOTB | grep -E 'set=(app_js|app_html|witness_js|vendored_js) ' -> 4 lines: §STACK_SIZE set=witness_js files=2151 lines=288521 MB=23.8
+§FACTS cmd l1 [I] find . -name '*.java' -not -path '*/target/*' -print0 | xargs -0 cat | wc -l -> 1 lines: 1427147
+§FACTS cmd l2 [T] gh api repos/odoo/odoo/languages --jq 'to_entries | sort_by(-.value)[:2][] | "\(.key) \(.value)"' -> 2 lines: JavaScript 51883014
+§FACTS cmd c2 [T] cat .github/workflows/*.yml | grep -oE 'witness_[a-z0-9_]+\.js' | sort -u | wc -l -> 1 lines: 16
+§FACTS cmd c3 [T] git show 6d7ee87e^:README.md | grep -oE 'About [0-9,]+ JS and HTML files of app code' -> 1 lines: About 2,600 JS and HTML files of app code
+§FACTS v commits=3514 | cmd after
+§FACTS v deps=1 | package.json dependencies
+§FACTS v deps.desc=BIM OOTB viewer — static browser app (no build). | package.json description
+§FACTS v rv.rejected=5 | witness_roster_verify.log green lines that say REJECT
+§FACTS v rv.checks=17 | witness_roster_verify.log green lines, less the ALL PASS line
+§FACTS v rv.red=0 | witness_roster_verify.log red lines
+§FACTS v erp.june=243 | cmd v1
+§FACTS v witness.files=1492 | cmd v2
+§FACTS v size.app_js.files=1034 | cmd s1 app_js
+§FACTS v size.app_js.lines=316459 | cmd s1 app_js
+§FACTS v size.app_html.files=63 | cmd s1 app_html
+§FACTS v size.app_html.lines=38665 | cmd s1 app_html
+§FACTS v size.witness_js.files=2151 | cmd s1 witness_js
+§FACTS v size.witness_js.lines=288521 | cmd s1 witness_js
+§FACTS v size.vendored_js.files=131 | cmd s1 vendored_js
+§FACTS v size.vendored_js.lines=421186 | cmd s1 vendored_js
+§FACTS v precache.viewer=296 | size_stack.log precache viewer
+§FACTS v precache.erp=411 | size_stack.log precache erp
+§FACTS v precache.modeller=164 | size_stack.log precache modeller
+§FACTS v size.whole.files=4730 | size_stack.log whole_tree
+§FACTS v size.whole.lines=1087977 | size_stack.log whole_tree
+§FACTS v pure.files=125 | W-CORE-PURE
+§FACTS v pure.forbidden=0 | W-CORE-PURE
+§FACTS v pure.verdict=PASS | W-CORE-PURE
+§FACTS v ci.core_pure=Y | ci.yml
+§FACTS v ci.loop=4 | ci.yml X0 loop names (written as witness_x0_$w.js, so the c2 regex does not see them)
+§FACTS v ci.named=16 | cmd c2
+§FACTS v ci.total=20 | derived: the c2 names + the ci.yml loop names, as one set
+§FACTS v idem.lines=1427147 | cmd l1
+§FACTS v idem.files=4465 | iDempiere find
+§FACTS v idem.commit=87968daa73 | iDempiere git
+§FACTS v erp.files=318 | bim-ootb erp js, no tests/lib/witness
+§FACTS v erp.lines=70362 | same
+§FACTS v stars.idempiere=677 | GitHub idempiere/idempiere
+§FACTS v stars.odoo=55875 | GitHub odoo/odoo
+§FACTS v stars.erpnext=41392 | GitHub frappe/erpnext
+§FACTS v stars.frappe=11111 | GitHub frappe/frappe
+§FACTS v stars.ours=17 | GitHub red1oon/bim-ootb
+§FACTS v lang.idem.java=81.9 | GitHub languages
+§FACTS v lang.idem.js=11.4 | GitHub languages
+§FACTS v lang.odoo.py=52.5 | GitHub languages
+§FACTS v lang.odoo.js=43.2 | GitHub languages
+§FACTS v lang.erpnext.py=82.6 | GitHub languages
+§FACTS v lang.erpnext.js=11.8 | GitHub languages
+§FACTS v lang.ours.js=93.7 | GitHub languages
+§FACTS v lang.ours.py=0.4 | GitHub languages
+§FACTS v db.odoo=psycopg2 | odoo requirements.txt
+§FACTS v db.frappe=PyMySQL | frappe pyproject.toml
+§FACTS v par.match=113 | parity log §SCN lines that are not negative controls, MATCH
+§FACTS v par.differ=0 | same, not MATCH
+§FACTS v par.tables=19 | parity §COVERAGE
+§FACTS v par.tables_of=34 | parity §COVERAGE
+§FACTS v par.win=350 | parity §COVERAGE
+§FACTS v par.win_of=370 | parity §COVERAGE
+§FACTS v par.date=2026-10-12 | parity log file date
+§FACTS v so.distrust=46 | survey.stackoverflow.co/2025/ai (saved out/prior/so2025_ai.html)
+§FACTS v so.trust=33 | same
+§FACTS v so.fav0=70 | same
+§FACTS v so.fav1=60 | same
+§FACTS v vc.flaw=45 | veracode.com 2025 GenAI Code Security Report page (saved out/prior/veracode2025.html)
+§FACTS v erp.years=20 | VibeProgramming.md framework table
+§FACTS v date.fail1=2026-08-25 | VibeProgramming.md fail1
+§FACTS v date.fail2=2026-08-26 | VibeProgramming.md fail2
+§FACTS v date.fail3=2026-10-04 | VibeProgramming.md fail3
+§FACTS v c7.s=57 | CODE_ARCHITECTURE_DESIGN.md C7
+§FACTS v c7.files=1208 | same
+§FACTS v parts.cd=not started | CODE_ARCHITECTURE_DESIGN.md §2
+§FACTS v parts.b1=spec written, not built | CODE_ARCHITECTURE_DESIGN.md §2
+§FACTS v retract.times=three | VibeProgramming.md fail2
+§FACTS v ai.lines=288000 | VibeProgramming.md, the Gemini review row
+§FACTS v ai.files=3300 | same
+§FACTS v mem.gb=0.173 | BrowserScaleBenchmark.md fit
+§FACTS prs {"BIMCompiler#905":{"what":"outside assessment, fact-checked","state":"MERGED"},"BIMCompiler#925":{"what":"README counts","state":"MERGED"},"BIMCompiler#933":{"what":"scale check + peers","state":"MERGED"},"bim-ootb#3229":{"what":"README counts","state":"MERGED"},"bim-ootb#3234":{"what":"CI witness wording","state":"MERGED"},"BIMCompiler#923":{"what":"When AI Dies film","state":"MERGED"}}
+§FACTS first commit 2026-05-23
+§FACTS values=72 cmds=10 VERDICT PASS

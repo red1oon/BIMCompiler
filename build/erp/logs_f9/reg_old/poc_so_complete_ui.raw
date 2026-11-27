@@ -1,0 +1,71 @@
+§KERNEL_OPS_LOADED v13 (W-CHAIN/W-SIGN/G-IDENTITY/W-OPGROUP/W-RATE-INPUT/W-BLUE-FUTURE/W-EMIT/T6-persist-guard/T2-content-sign/T7-incremental/W-OPLOG-APPEND)
+═══ W-SO-COMPLETE-UI — T1: UI Complete = the document process (fan-out group) + History folds the WHOLE group ═══
+    issue=prompts/SO_FULL_CRUD_GAP.md GAP 1 + T1 Part B   seam=build/erp/crud_overlay.js buildDocActionGroup/foldBackGroup
+
+── A0. extracted inputs: order 108 header+lines (bundle) + DOCPOLICY flags (crud_ops.json __meta ← erp_rules.db) ──
+   🟢 order 108 (60000) with 1 line(s) read from the IMMUTABLE bundle — doctype=133
+   🟢 DOCPOLICY:133 EXTRACTED (io=Y inv=Y) via CORE.docPolicyFor — flags are data, not assumption — {"isautogenerateinout":"Y","isautogenerateinvoice":"Y","docsubtypeso":"WI"}
+   🟢 control: DOCPOLICY:132 (Standard Order) = N/N — the decision table is the gate, not code — {"isautogenerateinout":"N","isautogenerateinvoice":"N","docsubtypeso":"SO"}
+   🟢 unknown doctype → null (gate, never a defaulted Y) — 999999→null
+
+── A1. GAP 1: buildDocActionGroup(op, fanout) = [CREATE m_inout(+line), CREATE c_invoice(+line), SET_STATUS co] ──
+   🟢 DOC_ACTION op: DR→CO success (requires met from real row) — to=CO
+   group=[CREATE_DOCUMENT:M_InOut | CREATE_LINE:M_InOutLine | CREATE_DOCUMENT:C_Invoice | CREATE_LINE:C_InvoiceLine | SET_STATUS:c_order]
+   🟢 group = 2 CREATE_DOCUMENT + 2 CREATE_LINE + 1 SET_STATUS = 5 ops — CREATE_DOCUMENT:M_InOut,CREATE_LINE:M_InOutLine,CREATE_DOCUMENT:C_Invoice,CREATE_LINE:C_InvoiceLine,SET_STATUS:c_order
+   🟢 op[0] = CREATE_DOCUMENT M_InOut (the shipment) — {"op_type":"CREATE_DOCUMENT","table":"M_InOut","source_id":108,"movementtype":"C-"}
+   🟢 exactly one CREATE_DOCUMENT C_Invoice (the invoice) — {"op_type":"CREATE_DOCUMENT","table":"C_Invoice","source_id":108,"issotrx":"Y"}
+   🟢 SET_STATUS CO is LAST (consequences first, status seals the gesture)
+   🟢 shipment line params === the engine op object VERBATIM (movementqty=10 = qtyordered, engine-supplied) — {"op_type":"CREATE_LINE","table":"M_InOutLine","source_line_id":124,"m_product_id":128,"movementqty":10}
+   🟢 invoice line qtyinvoiced=10 (engine-supplied) — {"op_type":"CREATE_LINE","table":"C_InvoiceLine","source_line_id":124,"m_product_id":128,"qtyinvoiced":10}
+   🟢 back-compat: no fanout arg → [SET_STATUS] only (honest old path intact)
+   🟢 control: requires unmet → IP (no Complete) — to=IP
+
+── A2. commitGroup: all-or-none, ONE gid, sealed once; sidecar tip = M_InOut + C_Invoice + docstatus CO ──
+§KRN_GROUP committed gid=so-complete-108-g1 ops=5 groupHash=f1cb7201b640… tip=8264be99a92a… sealed=5 (WHOLE — all-or-none)
+§KRN_CHAIN verify OK len=5 tip=8264be99a92a…
+   🟢 commitGroup committed ALL 5 ops (all-or-none) — ids=1,2,3,4,5
+   🟢 ONE gid binds the group; verifyChain OK (sealed once from the tip) — gid=so-complete-108-g1 sealed=5
+   🟢 read-the-tip docstatus = CO — got=CO
+   🟢 M_InOut row EXISTS in the sidecar tip (source_id=108) — {"op_type":"CREATE_DOCUMENT","table":"M_InOut","source_id":108,"movementtype":"C-"}
+   🟢 C_Invoice row EXISTS in the sidecar tip (source_id=108) — {"op_type":"CREATE_DOCUMENT","table":"C_Invoice","source_id":108,"issotrx":"Y"}
+   🟢 GL gate is EVIDENCED: bundle has NO c_ordertax → invoice tax legs non-derivable for a fresh order → gl=gated (logged, never faked)
+§SO-COMPLETE order=108 ship=1 invoice=1 gl=gated sealed=Y gid=so-complete-108-g1
+
+── B1. Part B: ONE history moment carries the WHOLE group (v.docOp.gid) — glassbowl.html unchanged ──
+§DOC-DOT idx=1 total=2 label=CO Order → CO op=DOC_ACTION
+   🟢 ONE doc dot; its docOp CARRIES the group — docOp.gid=so-complete-108-g1 groupN=5
+
+── B2. Z scrub-back reverses ship + invoice + status (whole gid, REVERSE commit order) ──
+§KERNEL_OP undo id=5 type=SET_STATUS
+§KERNEL_OP undo id=4 type=CREATE_LINE
+§KERNEL_OP undo id=3 type=CREATE_DOCUMENT
+§KERNEL_OP undo id=2 type=CREATE_LINE
+§KERNEL_OP undo id=1 type=CREATE_DOCUMENT
+§FOLD-BACK key=c_order group=so-complete-108-g1 reversed=ship,invoice,status ops=5 status=CO→DR
+   🟢 fold-back resolved THE group from the tip — gid=so-complete-108-g1
+   🟢 EVERY op of the group reversed (5), not just the status dot — undone=5
+   🟢 REVERSE order on back: status undone first, ids strictly descending — order=5>4>3>2>1
+   🟢 reversed=ship,invoice,status (un-ship, un-invoice, status back) — labels=ship,invoice,status
+   🟢 tip docstatus folds back to pre-complete (null → descriptor DR) — readTip=null
+   🟢 M_InOut AND C_Invoice GONE from the tip (sidecar = pre-complete state)
+
+── B3. scrub forward re-applies the WHOLE group (commit order) ──
+§KERNEL_OP redo id=1 type=CREATE_DOCUMENT
+§KERNEL_OP redo id=2 type=CREATE_LINE
+§KERNEL_OP redo id=3 type=CREATE_DOCUMENT
+§KERNEL_OP redo id=4 type=CREATE_LINE
+§KERNEL_OP redo id=5 type=SET_STATUS
+§FOLD-FORWARD key=c_order group=so-complete-108-g1 reapplied=ship,invoice,status ops=5 status=→CO
+   🟢 fold-forward redid all 5 ops of the gid — redone=5
+   🟢 forward order = commit order (ids strictly ascending) — order=1<2<3<4<5
+   🟢 tip is back: docstatus=CO, ship + invoice present again
+
+── B4. control: a later single-op gesture folds back ALONE (gid-scoped, no over-reach) ──
+§KRN_GROUP committed gid=single-upd-g2 ops=1 groupHash=09d6f6a93283… tip=b424c1f43bb2… sealed=1 (WHOLE — all-or-none)
+§KERNEL_OP undo id=6 type=CRUD_UPDATE
+   🟢 single-op group: fold-back undoes exactly 1 op — gid=single-upd-g2 undone=1
+   🟢 the complete group is UNTOUCHED by the sibling fold (still CO + shipped)
+
+═══ W-SO-COMPLETE-UI results ═══
+🟢 ALL PASS — GAP 1 closed: UI Complete commits the engine fan-out (ship+invoice+status) as ONE sealed group, GL honestly gated; Part B closed: the history moment carries the gid and Z fold-back/forward replays the WHOLE group (reverse on back) through the EXISTING fold lane.
+exit=0

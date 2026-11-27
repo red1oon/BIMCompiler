@@ -1,0 +1,6 @@
+§VIEWER_ACTIONS N_entry=96 N_actions=64 X=1 verbs=2 shortcuts=30 direct=20 pills=46 phantom=0 conflicts=5 listeners=17 unaccounted=0 direct_missing=0
+§VIEWER_ACTIONS_CONFLICT pill=roleFilter key=r kind=DIFFERENT
+§VIEWER_ACTIONS_CONFLICT pill=ew key=u kind=UNBOUND
+§VIEWER_ACTIONS_CONFLICT pill=rw key=k kind=UNBOUND
+§VIEWER_ACTIONS_CONFLICT pill=sanity key=s kind=DIFFERENT
+§VIEWER_ACTIONS_CONFLICT pill=egress key=e kind=UNBOUND

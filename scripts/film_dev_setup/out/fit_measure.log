@@ -1,0 +1,18 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT b1 cue=0.00 room=998.70 dur=12.07 -> DETAIL slack=+986.63 words=33
+§NARR_TONE b1#0 F WH rose=0st endDelta=-2.2st want=fall OK "How do I get started from nothing?"
+§NARR_FIT b2 cue=0.00 room=998.70 dur=14.30 -> DETAIL slack=+984.40 words=42
+§NARR_TONE b2#0 F WH rose=0st endDelta=-5.5st want=fall OK "What did the script just set up?"
+§NARR_FIT b3 cue=0.00 room=998.70 dur=23.67 -> DETAIL slack=+975.03 words=72
+§NARR_TONE b3#0 F WH rose=0st endDelta=-0.5st want=fall OK "And what is Code Facts?"
+§NARR_FIT b4 cue=0.00 room=998.70 dur=11.53 -> DETAIL slack=+987.17 words=38
+§NARR_TONE b4#0 F WH rose=0st endDelta=-0.9st want=fall OK "How do I ask it a question?"
+§NARR_TONE b4#1 M WH rose=0st endDelta=-2.7st want=fall OK "Here, the camera: where is it written?"
+§NARR_FIT b5 cue=0.00 room=998.70 dur=6.53 -> DETAIL slack=+992.17 words=16
+§NARR_TONE b5#0 F YN rose=5.0st endDelta=+3.4st want=rise OK "And without the editor?"
+§NARR_FIT b6 cue=0.00 room=998.70 dur=18.49 -> DETAIL slack=+980.21 words=57
+§NARR_TONE b6#0 F YN rose=11.0st endDelta=+1.4st want=rise OK "Can it stop me from breaking something?"
+§NARR_FIT b7 cue=0.00 room=998.70 dur=19.66 -> DETAIL slack=+979.04 words=60
+§NARR_TONE b7#0 F WH rose=0st endDelta=-3.9st want=fall OK "Which witness proves which file?"

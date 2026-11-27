@@ -1,0 +1,7 @@
+$ node scripts/bump.js --changed --write
+§BUMP_CHANGED base=fc2f821615cc changed=1 bumpable=1 skipped=0 files=viewer/panels.js
+§BUMP page=viewer/viewer.html ref=panels.js v=cb4ecd9c->5225deef (manifest viewer/modules.json)
+§BUMP sw=viewer/sw.js CACHE_VERSION v1791->v1792 (for: viewer/viewer.html) (manifest viewer/modules.json)
+§BUMP_CODE file=viewer/panels.js code=5225deef sites=1 stale=1
+§BUMP_DONE targets=1 pages=1 loaders=0 sw=1 mode=write written=3
+§CMD_EXIT 0

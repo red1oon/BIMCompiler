@@ -1,0 +1,4 @@
+$ node scripts/gen_proof_map.js modeller | tail -1
+§PROOF_MAP app=modeller modules=101 proven=13 named_only=64 unproven=24 proves_lines=23 bad_paths=1 cached=21 stale=0 inconclusive=0
+
+§CMD_EXIT 0

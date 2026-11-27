@@ -1,0 +1,106 @@
+<!doctype html>
+<!-- Copyright (c) 2025-2026 Redhuan D. Oon <red1org@gmail.com> · SPDX-License-Identifier: MIT -->
+<!-- comm_poc.html — CL3 engine-in-browser POC: one device = one page = its own comm.db, talking ONLY through a pipe.
+     Spec: bim-compiler prompts/TEAMWORK_FRAMEWORK.md §12.4 — Witness: common/tests/witness_comm_cl3_folder.js (W-FOLDER-2CTX).
+     Not linked from any app. ?pipe=<base url of a dumb file pipe: PUT|GET <base>/f/<name>, GET <base>/list?prefix=> -->
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Comm POC</title>
+<style>body{font:14px/1.4 system-ui,sans-serif;margin:16px;background:#fff;color:#222}pre{background:#f4f4f4;padding:8px;white-space:pre-wrap}</style>
+</head><body>
+<h1>Comm layer POC (CL3)</h1>
+<p id="who">starting…</p>
+<pre id="out"></pre>
+<script src="../../erp/sqljs/sql-wasm.js"></script>
+<script src="../../erp/kernel_ops.js"></script>
+<script src="../../erp/crud_core.js"></script>
+<script src="../../erp/ad_access.js"></script>
+<script src="comm_envelope.js"></script>
+<script src="comm_order.js"></script>
+<script src="comm_roster.js"></script>
+<script src="comm_admit.js"></script>
+<script src="comm_pipe.js"></script>
+<script src="comm_store.js"></script>
+<script>
+(function () {
+  'use strict';
+  var SPACE_SEED = 'comm-poc-space';
+  var out = document.getElementById('out');
+  function log(m) { console.log(m); out.textContent += m + '\n'; }
+  async function sha(s) { var b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)); return Array.from(new Uint8Array(b)).map(function (x) { return (x < 16 ? '0' : '') + x.toString(16); }).join(''); }
+  // a deterministic uuid-shaped kernel op_uuid from an op hash (the kernel wants one; the envelope hash is the identity)
+  function uuidFromHash(h) { return h.slice(0, 8) + '-' + h.slice(8, 12) + '-4' + h.slice(13, 16) + '-8' + h.slice(17, 20) + '-' + h.slice(20, 32); }
+
+  var S = null, SQL = null, pipe = null, dev = null, adDb = null, roles = {};
+  // the AD layer's canUpdate (MRole port) over the browser's own ad_seed.db; a tiny prepare().get/all shim lets
+  // AdAccess.buildRole (written for better-sqlite3) read sql.js unchanged. Unknown table/role → refused.
+  function shim(sdb) { return { prepare: function (sql) { return {
+    get: function () { var st = sdb.prepare(sql); st.bind([].slice.call(arguments)); var r = st.step() ? st.getAsObject() : undefined; st.free(); return r; },
+    all: function () { var st = sdb.prepare(sql); st.bind([].slice.call(arguments)); var out = []; while (st.step()) out.push(st.getAsObject()); st.free(); return out; } }; } }; }
+  function access(roleId, client, org, table) {
+    var t = shim(adDb).prepare('SELECT ad_table_id AS id, accesslevel AS lvl FROM ad_table WHERE lower(tablename)=?').get(String(table).toLowerCase());
+    if (!t) return { allowed: false, reason: 'no-table' };
+    var r = roles[roleId]; if (r === undefined) { try { r = AdAccess.buildRole(shim(adDb), roleId); } catch (e) { r = null; } roles[roleId] = r; }
+    return r ? r.canUpdate(client, org, Number(t.id), t.lvl) : { allowed: false, reason: 'no-role' };
+  }
+    function tableId(n) { var t = shim(adDb).prepare('SELECT ad_table_id AS id FROM ad_table WHERE lower(tablename)=?').get(String(n).toLowerCase()); return t ? Number(t.id) : null; }
+  function openStore(space) { S = CommStore.open(new SQL.Database(), { SQL: SQL, space: space, self: dev, access: access, tableId: tableId, log: log }); }
+  window.CommPOC = {
+    init: async function (pipeBase) {
+      SQL = await initSqlJs({ locateFile: function (f) { return '../../erp/sqljs/' + f; } });
+      adDb = new SQL.Database(new Uint8Array(await (await fetch('../../erp/ad_seed.db')).arrayBuffer()));
+      dev = await CommStore.newDevice(); dev.person_uu = crypto.randomUUID();
+      pipe = CommPipe.httpPipe(pipeBase, 'folder-http');
+      document.getElementById('who').textContent = 'device ' + dev.kid;
+      return { kid: dev.kid, jwk: dev.pubJwk, dh_jwk: dev.dhPubJwk, person_uu: dev.person_uu };
+    },
+    // founder: a new space (its id is the invite) + genesis
+    found: async function (name, adRoleId) {
+      var sp = await CommStore.newSpace(name, dev, dev.person_uu, 'founder', adRoleId);
+      openStore(sp.space); await S.genesis(sp.params); return sp.space;
+    },
+    join: async function (space) { openStore(space); return true; },
+    // the founder enrols a peer from the code the peer showed (kid + public key) — §11.5
+    enrollPeer: async function (peer, name, adRoleId) {
+      await S.addPerson({ person_uu: peer.person_uu, name: name, ad_role_id: adRoleId, comm_admin: false });
+      await S.enroll(peer.kid, peer.jwk, peer.person_uu, peer.dh_jwk);   // CL8: dh_jwk → the enroller grants the space key
+    },
+    createOrder: async function (docno, total, org) {
+      var uu = crypto.randomUUID();
+      await S.author({ target: { table: 'c_order', uu: uu }, intent: 'K2', body: { op_type: 'CRUD_CREATE', params: { fields: { documentno: docno, grandtotal: total, ad_client_id: 11, ad_org_id: org == null ? 11 : org } } } });
+      return uu;
+    },
+    editOrder: async function (uu, from, to) {
+      await S.author({ target: { table: 'c_order', uu: uu }, intent: 'K2', body: { op_type: 'CRUD_UPDATE', params: { changes: { grandtotal: { old: from, new: to } } } } });
+    },
+    visit: async function () { return S.sync(pipe); },
+    // fold the placed ops, in order, through the REAL kernel + crud_core.listTip (fresh DB each time = pure projection)
+    fold: async function () {
+      var meta = new SQL.Database();
+      meta.run('CREATE TABLE c_order (c_order_id INTEGER, c_order_uu TEXT, documentno TEXT, grandtotal NUMERIC, created TEXT, updated TEXT, createdby INTEGER, updatedby INTEGER, ad_client_id INTEGER, ad_org_id INTEGER, isactive TEXT, processed TEXT, processing TEXT, posted TEXT)');
+      globalThis.__idmpDb = meta;
+      var K = window.KernelOps, kdb = new SQL.Database(), placed = await S.foldable();   // contested writes held back (§12.9)
+      placed.forEach(function (p) {
+        var e = p.env, opUuid = e.body.op_type === 'CRUD_CREATE' ? e.target.uu : uuidFromHash(p.hash);
+        K.commitOp(kdb, e.body.op_type, CommEnvelope.toKernelParams(e), null, null, opUuid, e.ts);
+      });
+      var rows = CrudCore.listTip(kdb, 'c_order', 'c_order_id', [], null).rows.map(function (r) {
+        return { documentno: r.documentno, grandtotal: r.grandtotal, c_order_uu: r.c_order_uu };
+      }).sort(function (a, b) { return a.c_order_uu < b.c_order_uu ? -1 : 1; });
+      log('§COMM_FOLD placed=' + placed.length + ' rows=' + rows.length + ' ' + rows.map(function (r) { return r.documentno + '=' + r.grandtotal; }).join(' '));
+      return rows;
+    },
+    conflicts: async function () { return (await S.conflicts()).map(function (c) { return { uu: c.uu, col: c.col, before: c.before, values: c.candidates.map(function (k) { return k.value; }).sort() }; }); },
+    notices: async function () { return S.notices(dev.person_uu); },
+    state: async function () {
+      var L = await S.order(), v = S.verdicts(), cnt = function (x) { return v.filter(function (r) { return r.verdict === x; }).length; };
+      return { kid: S.kid, ops: S.query('SELECT COUNT(*) AS n FROM cl_op')[0].n, placed: L.order.length, parked: L.parked.length, refused: cnt('REFUSED'),
+               business: (await S.placedEnvelopes()).length, rosterOk: L.roster.ok, devices: Object.keys(L.roster.devices).length,
+               orderHash: (await sha(L.order.join(','))).slice(0, 16), delivery: S.delivery(),
+               storage: { cl_tables: S.query("SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'cl_%' ORDER BY name").map(function (r) { return r.name; }) } };
+    }
+  };
+  log('§COMM_POC_LOADED envelope=' + !!window.CommEnvelope + ' order=' + !!window.CommOrder + ' pipe=' + !!window.CommPipe + ' store=' + !!window.CommStore +
+      ' kernel=' + !!window.KernelOps + ' crud_core=' + !!window.CrudCore + ' roster=' + !!window.CommRoster + ' admit=' + !!window.CommAdmit + ' ad_access=' + !!window.AdAccess);
+})();
+</script>
+</body></html>

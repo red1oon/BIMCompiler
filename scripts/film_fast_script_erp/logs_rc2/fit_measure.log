@@ -1,0 +1,38 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT start cue=0.00 room=998.70 dur=8.40 -> DETAIL slack=+990.30 words=22
+§NARR_TONE start#0 F WH rose=0st endDelta=-5.7st want=fall OK "How do I start?"
+§NARR_FIT help cue=0.00 room=998.70 dur=8.78 -> DETAIL slack=+989.92 words=29
+§NARR_TONE help#0 F WH rose=0st endDelta=-5.5st want=fall OK "What can it do?"
+§NARR_FIT level cue=0.00 room=998.70 dur=6.40 -> DETAIL slack=+992.30 words=21
+§NARR_TONE level#0 F YN rose=5.0st endDelta=+2.3st want=rise OK "Can it explain a word?"
+§NARR_FIT bp cue=0.00 room=998.70 dur=9.61 -> DETAIL slack=+989.09 words=29
+§NARR_TONE bp#0 F WH rose=0st endDelta=-4.3st want=fall OK "How do I get to a table?"
+§NARR_FIT po1 cue=0.00 room=998.70 dur=9.30 -> DETAIL slack=+989.40 words=30
+§NARR_TONE po1#0 F YN rose=5.0st endDelta=+3.6st want=rise OK "Can it run a process?"
+§NARR_FIT po2 cue=0.00 room=998.70 dur=5.11 -> DETAIL slack=+993.59 words=16
+§NARR_TONE po2#0 F YN rose=5.0st endDelta=+3.0st want=rise OK "And the phase?"
+§NARR_FIT po3 cue=0.00 room=998.70 dur=3.88 -> DETAIL slack=+994.82 words=10
+§NARR_TONE po3#0 F YN rose=5.0st endDelta=+3.7st want=rise OK "The project line?"
+§NARR_FIT po4 cue=0.00 room=998.70 dur=11.54 -> DETAIL slack=+987.16 words=31
+§NARR_TONE po4#0 F YN rose=8.0st endDelta=+7.9st want=rise OK "And the last question?"
+§NARR_FIT co cue=0.00 room=998.70 dur=10.19 -> DETAIL slack=+988.51 words=33
+§NARR_TONE co#0 F WH rose=0st endDelta=-3.1st want=fall OK "How do I complete an order?"
+§NARR_FIT next cue=0.00 room=998.70 dur=7.58 -> DETAIL slack=+991.12 words=26
+§NARR_TONE next#0 F WH rose=0st endDelta=-6.0st want=fall OK "What may it do now?"
+§NARR_FIT gap cue=0.00 room=998.70 dur=8.61 -> DETAIL slack=+990.09 words=28
+§NARR_TONE gap#0 F YN rose=5.0st endDelta=+1.7st want=rise OK "And a process it cannot run?"
+§NARR_FIT report cue=0.00 room=998.70 dur=4.96 -> DETAIL slack=+993.74 words=16
+§NARR_TONE report#0 F YN rose=5.0st endDelta=+3.2st want=rise OK "Can I tell the owners?"
+§NARR_FIT url cue=0.00 room=998.70 dur=8.16 -> DETAIL slack=+990.54 words=24
+§NARR_TONE url#0 F YN rose=5.0st endDelta=+2.8st want=rise OK "And to send it?"
+§NARR_FIT cost cue=0.00 room=998.70 dur=14.05 -> DETAIL slack=+984.65 words=37
+§NARR_TONE cost#0 F YN rose=5.0st endDelta=+2.6st want=rise OK "And back in the building?"
+§NARR_FIT post cue=0.00 room=998.70 dur=14.56 -> DETAIL slack=+984.14 words=40
+§NARR_TONE post#0 F YN rose=5.0st endDelta=+3.8st want=rise OK "And if I say yes?"
+§NARR_FIT proj cue=0.00 room=998.70 dur=6.50 -> DETAIL slack=+992.20 words=18
+§NARR_TONE proj#0 F YN rose=5.0st endDelta=+3.0st want=rise OK "Can I see it?"
+§NARR_FIT ls cue=0.00 room=998.70 dur=4.40 -> DETAIL slack=+994.30 words=12
+§NARR_TONE ls#0 F YN rose=5.0st endDelta=+1.4st want=rise OK "And the list?"
+§NARR_FIT exit cue=0.00 room=998.70 dur=3.83 -> DETAIL slack=+994.87 words=13

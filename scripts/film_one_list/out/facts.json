@@ -1,0 +1,335 @@
+{
+ "made": "2026-11-22T03:52:38.866Z",
+ "trees": {
+  "before": {
+   "dir": "/tmp/wt-film5-before",
+   "sha": "e4fa52fe",
+   "head": "e4fa52feefc4944454d0c6412e106f17df6aefdf",
+   "clean": true,
+   "node_modules": true
+  },
+  "after": {
+   "dir": "/tmp/wt-film5-after",
+   "sha": "0fa163b8",
+   "head": "0fa163b82c5306b9f7b1d3cc7bfd0289c306d0f2",
+   "clean": true,
+   "node_modules": true
+  }
+ },
+ "steps": {
+  "b1": [
+   {
+    "typed": "git grep -n \"import_db_builder.js?v=\" e4fa52fe -- index.html viewer/viewer.html",
+    "exit": 0,
+    "shown": [
+     "e4fa52fe:index.html:184:<script src=\"viewer/import_db_builder.js?v=11\"></script>",
+     "e4fa52fe:viewer/viewer.html:1027:<script src=\"import_db_builder.js?v=12\"></script>"
+    ]
+   }
+  ],
+  "b2": [
+   {
+    "typed": "node scripts/bump.js import_own.js",
+    "exit": 0,
+    "shown": [
+     "§BUMP page=index.html ref=import_own.js v=7->8 (manifest viewer/modules.json)",
+     "§BUMP_DONE targets=1 pages=1 loaders=0 sw=0 mode=dry-run written=0",
+     "dry run — nothing written. Add --write to apply, then run: node tests/audit_sw_precache.js"
+    ]
+   }
+  ],
+  "b3": [
+   {
+    "typed": "sed -i 's/import_own.js?v=7/import_own.js?v=9/' index.html && node scripts/gen_manifest.js --check 2>&1 | grep -E \"MANIFEST_(FAIL|CHECK)\"",
+    "exit": 1,
+    "shown": [
+     "§MANIFEST_FAIL index.html:187 differs from what modules.json writes (a hand edit of a generated site?); edit viewer/modules.json, then run: node scripts/gen_manifest.js --write viewer",
+     "§MANIFEST_CHECK apps=3 files=58 identical=58/58 sites=856 tag=725 asset=0 inline=47 lazy=84 precache=907 order_check=PASS deps_declared=264 unreviewed=0 source=viewer,erp,modeller written=0 verdict=FAIL"
+    ]
+   }
+  ],
+  "b4": [
+   {
+    "typed": "git diff --stat e4fa52fe 0fa163b8 -- index.html capex/index.html import_own.js",
+    "exit": 0,
+    "shown": [
+     " capex/index.html | 2 ++",
+     " index.html       | 4 ++++",
+     " 2 files changed, 6 insertions(+)"
+    ]
+   }
+  ],
+  "b5": [
+   {
+    "typed": "node scripts/tests/witness_manifest_roundtrip.js | tail -1",
+    "exit": 0,
+    "shown": [
+     "§MANIFEST_ROUNDTRIP apps=3 source=viewer,erp,modeller files=58 sites=856 tag=725 asset=0 inline=47 lazy=84 precache=907 identical=58/58 driven=774/774 sw_vm=3/3 claims=44/44 red=31/31 outside_owned=3/3 frozen=1 unresolved=1 order_check=PASS deps_declared=264 unreviewed=0 owner_gap=335 witness_gap=276 b2_trial=N site_v=40 pinned=4 verdict=PASS"
+    ]
+   }
+  ]
+ },
+ "ex": {
+  "b1_index": {
+   "sha": "e4fa52fe",
+   "path": "index.html",
+   "from": 183,
+   "to": 185,
+   "marks": [
+    184
+   ],
+   "amb": "\\?v=\\d+",
+   "label": null,
+   "lines": [
+    "<script src=\"viewer/vertex_weld.js?v=1\"></script>",
+    "<script src=\"viewer/import_db_builder.js?v=11\"></script>",
+    "<script src=\"common/import_key.js?v=2\"></script>"
+   ]
+  },
+  "b1_viewer": {
+   "sha": "e4fa52fe",
+   "path": "viewer/viewer.html",
+   "from": 1026,
+   "to": 1028,
+   "marks": [
+    1027
+   ],
+   "amb": "\\?v=\\d+",
+   "label": null,
+   "lines": [
+    "<script src=\"vertex_weld.js?v=1\"></script>",
+    "<script src=\"import_db_builder.js?v=12\"></script>",
+    "<script src=\"diff.js?v=6\"></script>"
+   ]
+  },
+  "b2_mod_v": {
+   "sha": "0fa163b8",
+   "path": "viewer/modules.json",
+   "from": 63,
+   "to": 63,
+   "marks": [
+    63
+   ],
+   "amb": "\"v\":7",
+   "label": null,
+   "lines": [
+    "  \"import_own.js\": {\"v\":7,\"load\":\"boot\",\"lazyGroup\":null,\"precache\":false,\"deps\":[],\"uses\":[\"common/import_key.js\",\"viewer/import_db_builder.js\"],\"notDeps\":[],\"owner\":\"\"},"
+   ]
+  },
+  "b2_mod_order": {
+   "sha": "0fa163b8",
+   "path": "viewer/modules.json",
+   "from": 350,
+   "to": 353,
+   "marks": [
+    352
+   ],
+   "amb": null,
+   "label": null,
+   "lines": [
+    "   {\"kind\":\"tag\",\"as\":\"viewer/import_db_builder.js\",\"v\":11},",
+    "   {\"kind\":\"tag\",\"as\":\"common/import_key.js\"},",
+    "   {\"kind\":\"tag\",\"as\":\"import_own.js\"},",
+    "   {\"kind\":\"tag\",\"as\":\"viewer/db_resolve.js\"},"
+   ]
+  },
+  "b2_index_tag": {
+   "sha": "0fa163b8",
+   "path": "index.html",
+   "from": 187,
+   "to": 187,
+   "marks": [
+    187
+   ],
+   "amb": "\\?v=\\d+",
+   "label": null,
+   "lines": [
+    "<script src=\"import_own.js?v=7\"></script>"
+   ]
+  },
+  "b3_edit": {
+   "sha": "0fa163b8 + the sed above",
+   "path": "index.html",
+   "from": 186,
+   "to": 188,
+   "marks": [
+    187
+   ],
+   "amb": "\\?v=\\d+",
+   "label": "hand edit, never committed",
+   "lines": [
+    "<script src=\"common/import_key.js?v=2\"></script>",
+    "<script src=\"import_own.js?v=9\"></script>",
+    "<script src=\"viewer/db_resolve.js?v=4\"></script><!-- §SEAM-W3 F13: cached-badge exact key -->"
+   ]
+  },
+  "b4_tag": {
+   "sha": "0fa163b8",
+   "path": "index.html",
+   "from": 663,
+   "to": 668,
+   "marks": [
+    666,
+    667
+   ],
+   "amb": null,
+   "label": null,
+   "lines": [
+    "     Same counter the bottom-left Live Stats link reports from; carried over from the old gallery footer. -->",
+    "<script>if(new URLSearchParams(location.search).has('ignore-me'))localStorage.setItem('goatcounter-ignore','t')</script>",
+    "<!-- §MANIFEST:BEGIN viewer tags (script tags here are written by scripts/gen_manifest.js from viewer/modules.json; comments are yours) -->",
+    "<script data-goatcounter=\"https://red1oon.goatcounter.com/count\"",
+    "        async src=\"//gc.zgo.at/count.js\"></script>",
+    "<!-- §MANIFEST:END viewer tags -->"
+   ],
+   "fence": [
+    665,
+    668
+   ]
+  }
+ },
+ "b1": {
+  "indexLine": 184,
+  "indexV": 11,
+  "viewerLine": 1027,
+  "viewerV": 12,
+  "commit": {
+   "id": "8d1ede96",
+   "date": "2026-11-08",
+   "subject": "feat(ifc): keep the IFC's stated grid on both open routes (ifc_grid_axis, W-IFC-GRID 29/0) (#2702)",
+   "touchesViewerHtml": true,
+   "touchesIndex": false,
+   "diff": [
+    "-<script src=\"import_db_builder.js?v=11\"></script>",
+    "+<script src=\"import_db_builder.js?v=12\"></script>"
+   ]
+  },
+  "beforeCheckVerdict": "PASS",
+  "beforeLog": "e4fa52fe 2026-11-21 chore(main): release 1.96.0 (#3369)"
+ },
+ "b2": {
+  "pageLine": "§BUMP page=index.html ref=import_own.js v=7->8 (manifest viewer/modules.json)",
+  "page": "index.html",
+  "ref": "import_own.js",
+  "v": "7->8",
+  "manifest": "viewer/modules.json",
+  "sw": 0,
+  "mode": "dry-run",
+  "written": 0,
+  "swLines": 0,
+  "swFiles": [
+   "./erp/sw.js",
+   "./modeller/sw.js",
+   "./oplogpic/sw.js",
+   "./viewer/sw.js"
+  ],
+  "indexSwMentions": 0,
+  "afterLog": "0fa163b8 2026-11-22 feat(manifest): B3-OUT — outside referrers written from the app lists, gallery frozen, bump.js regex path deleted (#3385)",
+  "dirtyAfter": 0
+ },
+ "b3": {
+  "fullExit": 1,
+  "failFile": "index.html",
+  "failLine": 187,
+  "failText": "differs from what modules.json writes (a hand edit of a generated site?); edit viewer/modules.json, then run: node scripts/gen_manifest.js --write viewer",
+  "fixCommand": "node scripts/gen_manifest.js --write viewer",
+  "verdict": "FAIL",
+  "fullVerdict": "FAIL",
+  "editedLine": [
+   "186\t<script src=\"common/import_key.js?v=2\"></script>",
+   "187\t<script src=\"import_own.js?v=9\"></script>",
+   "188\t<script src=\"viewer/db_resolve.js?v=4\"></script><!-- §SEAM-W3 F13: cached-badge exact key -->"
+  ],
+  "failLinesInFull": 1,
+  "restored": true
+ },
+ "b4": {
+  "files": 2,
+  "insertions": 6,
+  "deletions": 0,
+  "perFile": {
+   "capex/index.html": 2,
+   "index.html": 4
+  },
+  "importOwnInStat": false,
+  "changedLines": [
+   "+<!-- §MANIFEST:BEGIN erp tags (script tags here are written by scripts/gen_manifest.js from erp/modules.json; comments are yours) -->",
+   "+<!-- §MANIFEST:END erp tags -->",
+   "+<!-- §MANIFEST:BEGIN viewer tags (script tags here are written by scripts/gen_manifest.js from viewer/modules.json; comments are yours) -->",
+   "+<!-- §MANIFEST:END viewer tags -->",
+   "+<!-- §MANIFEST:BEGIN viewer tags (script tags here are written by scripts/gen_manifest.js from viewer/modules.json; comments are yours) -->",
+   "+<!-- §MANIFEST:END viewer tags -->"
+  ],
+  "allCommentMarkers": true,
+  "tagBefore": [
+   "<script data-goatcounter=\"https://red1oon.goatcounter.com/count\"",
+   "        async src=\"//gc.zgo.at/count.js\"></script>"
+  ],
+  "tagAfter": [
+   "<script data-goatcounter=\"https://red1oon.goatcounter.com/count\"",
+   "        async src=\"//gc.zgo.at/count.js\"></script>"
+  ],
+  "tagSame": true,
+  "tagLine": 666,
+  "beginLine": 665,
+  "endLine": 668
+ },
+ "b5": {
+  "line": "§MANIFEST_ROUNDTRIP apps=3 source=viewer,erp,modeller files=58 sites=856 tag=725 asset=0 inline=47 lazy=84 precache=907 identical=58/58 driven=774/774 sw_vm=3/3 claims=44/44 red=31/31 outside_owned=3/3 frozen=1 unresolved=1 order_check=PASS deps_declared=264 unreviewed=0 owner_gap=335 witness_gap=276 b2_trial=N site_v=40 pinned=4 verdict=PASS",
+  "claims": "44/44",
+  "red": "31/31",
+  "outsideOwned": "3/3",
+  "frozen": 1,
+  "verdict": "PASS",
+  "redDetectedY": 31,
+  "redDetectedN": 0,
+  "old": {
+   "c22": "§MANIFEST_RED_RUN id=C22 root=/tmp/wt-film5-before judged=49 unowned=3 (capex/index.html,import_own.js,index.html) verdict=FAIL",
+   "c23": "§MANIFEST_CLAIM id=C23 ok=Y archive/gallery.html names 9 files (7 of them raisable modules of the viewer list, read from the root); bump --write of those: exit=0 bump_lines=19 files_changed=9 gallery_changed=N (never in a list, never written)",
+   "c24": "§MANIFEST_CLAIM id=C24 ok=N bump import_own.js --write: exit=0 files_changed=index.html index_lines=1 tag_v=7->8:true sw_changed=0 · bump viewer/locale_loader.js: CACHE_VERSION v1781->v1782 index.html_changed=Y",
+   "c25": "§MANIFEST_CLAIM id=C25 ok=N zz_root.html (loads viewer/rates.js?v=3, in no list) after bump viewer/rates.js --write: exit=0 bump_lines=4 page_CHANGED",
+   "r26": "§MANIFEST_RED id=R26 detected=Y a copy of the gallery at the root (its paths resolve), adopted into a temp list, then the same bump --write: zz_gallery.html EDITED (so C23's \"untouched\" can fail)",
+   "c22Fail": true,
+   "c23Ok": true,
+   "c24Fail": true,
+   "c25Fail": true,
+   "r26Detected": true,
+   "oldTotals": "42/44",
+   "failed": 3,
+   "of": 4
+  },
+  "dirtyAfter": 0
+ },
+ "change": {
+  "bumpAdded": 19,
+  "bumpDeleted": 88,
+  "frozen": [
+   "archive/gallery.html"
+  ],
+  "outsideOwned": "3/3",
+  "outsideFiles": [
+   "capex/index.html",
+   "import_own.js",
+   "index.html"
+  ],
+  "pages": 2,
+  "loaders": 1
+ },
+ "credentials": {
+  "ootb": {
+   "n": 3385,
+   "state": "MERGED feat(manifest): B3-OUT — outside referrers written from the app lists, gallery frozen, bump.js regex path deleted"
+  },
+  "fixes": 3379,
+  "decisions": {
+   "1116": "MERGED prompts: CODE_ARCHITECTURE_DESIGN B3-Q2 answered (outside pages in now)",
+   "1117": "MERGED prompts: CODE_ARCHITECTURE_DESIGN B3-Q3 answered + B3-Q2 measurement corrected",
+   "1118": "MERGED prompts: CODE_ARCHITECTURE_DESIGN B3-OUT BUILD SPEC",
+   "1128": "MERGED prompts: CODE_ARCHITECTURE_DESIGN B3-OUT addendum (B3-OUT-Q1 answered)"
+  },
+  "fixesLine": "1:Fixes #3379"
+ },
+ "guide": {
+  "url": "https://red1oon.github.io/BIMCompiler/DeveloperGuide/#52-adding-a-new-browser-file"
+ }
+}

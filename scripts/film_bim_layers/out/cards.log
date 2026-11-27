@@ -1,0 +1,7 @@
+§CARD beat=cover entries=1 overflow_px=0
+§CARD beat=setup entries=41 overflow_px=0
+§CARD beat=move1 entries=2 overflow_px=0
+§CARD beat=move2 entries=2 overflow_px=0
+§CARD beat=move3 entries=51 overflow_px=0
+§CARD beat=close entries=1 overflow_px=0
+§CARDS_DONE beats=6 stills=96 too_tall=0 key_cues=85 return_cues=2

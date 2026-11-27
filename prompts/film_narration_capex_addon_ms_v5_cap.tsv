@@ -1,0 +1,12 @@
+nodata	F: Papan pemuka CAPEX, tanpa apa-apa? | M: Belum disambung, jadi ia berterus terang. Tiada sifar palsu, tiada lampu hijau palsu.
+addon	F: Jadi apa perlu saya ubah dalam iDempiere? | M: Tiada. Tiada plugin, tiada jadual baharu. Ia membaca melalui perkhidmatan web standard ke salinan tempatan, tempat papan pemuka berjalan.
+dash	F: Sekarang sudah bersambung? | M: Ya, ke pelayan ujian. Satu projek, bajet hampir lima juta dolar, ikut jadual.
+formula	F: Dari mana nombor itu? | M: Formulanya dicetak di bawah setiap petak: jumlah mudah atas lajur iDempiere.
+model	F: Siapa yang menaip projek ini? | M: Tiada sesiapa. Ia dikira: daripada lukisan dua dimensi, seperti bangsal ini, atau model bangunan, seperti pejabat ini. | F: Tiada taip dua kali? | M: Tiada. Enam fasa, sepuluh tugas, sembilan belas baris, dalam dolar Amerika.
+push	F: Dan pesanan itu sampai ke iDempiere? | M: Melalui perkhidmatan web standard yang sama, seperti ditaip manusia. Inilah projek yang sama, jumlah yang sama, dalam kedua-dua sistem.
+check	F: Betul-betul sama, atau hanya serupa? | M: Kami semak setiap nilai. Seratus enam puluh, semuanya sama. Tujuh perbezaan ditemui, seperti pembundaran dan kategori cukai. Semuanya dibetulkan di pihak kami.
+before	F: Dan kemajuan? | M: Belum ada yang siap. Sifar, di kedua-duanya.
+after	F: Struktur siap. Di mana direkod? | M: Dalam senarai fasa projek: tanda Struktur Utama siap. Kemajuan enam puluh dua peratus, sama di kedua-duanya. Kos masih sifar.
+roadmap	F: Apa seterusnya? | M: Editor papan pemuka: ubah petak dan susun atur tanpa kod, dan tanpa AI. Belum dibina.
+end	F: Jadi saya kekalkan iDempiere saya? | M: Ya. Pindah satu modul pada satu masa, setiap satu disemak. Sumber terbuka, MIT.
+closing	M: Kerja dalam proses, ditaja oleh Sysnova, United Kingdom dan Bangladesh. Setiap baris kod disaksikan, didokumenkan dan diterbitkan.

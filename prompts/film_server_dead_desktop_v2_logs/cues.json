@@ -1,0 +1,224 @@
+{
+ "T0": {
+  "A": 1792795178164,
+  "B": 1792795178203
+ },
+ "tClose": 1792795477255,
+ "cues": [
+  {
+   "name": "loaded",
+   "who": "A",
+   "t": 14.761
+  },
+  {
+   "name": "loaded",
+   "who": "B",
+   "t": 14.723
+  },
+  {
+   "name": "panel_open",
+   "who": "A",
+   "t": 20.701
+  },
+  {
+   "name": "mode_click",
+   "who": "A",
+   "t": 25.726
+  },
+  {
+   "name": "chip_unpaired",
+   "who": "A",
+   "t": 37.295
+  },
+  {
+   "name": "panel_unpaired",
+   "who": "A",
+   "t": 43.248
+  },
+  {
+   "name": "founded",
+   "who": "A",
+   "t": 47.508
+  },
+  {
+   "name": "invite_opened",
+   "who": "B",
+   "t": 63.731
+  },
+  {
+   "name": "invite_prefilled",
+   "who": "B",
+   "t": 66.542
+  },
+  {
+   "name": "joined_code",
+   "who": "B",
+   "t": 68.059
+  },
+  {
+   "name": "requests_listed",
+   "who": "A",
+   "t": 76.269
+  },
+  {
+   "name": "role_picked",
+   "who": "A",
+   "t": 80.367
+  },
+  {
+   "name": "approved",
+   "who": "A",
+   "t": 84.214
+  },
+  {
+   "name": "b_paired",
+   "who": "B",
+   "t": 91.464
+  },
+  {
+   "name": "grids_ready",
+   "who": "A",
+   "t": 109.225
+  },
+  {
+   "name": "order_new",
+   "who": "A",
+   "t": 109.235
+  },
+  {
+   "name": "order_saved",
+   "who": "A",
+   "t": 120.983
+  },
+  {
+   "name": "line_start",
+   "who": "A",
+   "t": 120.983
+  },
+  {
+   "name": "line_saved",
+   "who": "A",
+   "t": 130.121
+  },
+  {
+   "name": "visitA1",
+   "who": "A",
+   "t": 130.122
+  },
+  {
+   "name": "visitB1",
+   "who": "B",
+   "t": 132.398
+  },
+  {
+   "name": "b_sees_order",
+   "who": "B",
+   "t": 134.718
+  },
+  {
+   "name": "b_grid_has_order",
+   "who": "B",
+   "t": 140.187
+  },
+  {
+   "name": "a_form_open",
+   "who": "A",
+   "t": 151.011
+  },
+  {
+   "name": "b_form_open",
+   "who": "B",
+   "t": 152.182
+  },
+  {
+   "name": "complete_click",
+   "who": "A",
+   "t": 154.24
+  },
+  {
+   "name": "a_completed",
+   "who": "A",
+   "t": 157.307
+  },
+  {
+   "name": "visitA2",
+   "who": "A",
+   "t": 159.822
+  },
+  {
+   "name": "visitB2",
+   "who": "B",
+   "t": 162.099
+  },
+  {
+   "name": "b_shows_status",
+   "who": "B",
+   "t": 172.503
+  },
+  {
+   "name": "b_tax_tab",
+   "who": "B",
+   "t": 177.951
+  },
+  {
+   "name": "order2_new",
+   "who": "A",
+   "t": 193.898
+  },
+  {
+   "name": "order2_on_both",
+   "who": "B",
+   "t": 220.41
+  },
+  {
+   "name": "clash_start",
+   "who": "A",
+   "t": 235.41
+  },
+  {
+   "name": "a_completes_2",
+   "who": "A",
+   "t": 238.406
+  },
+  {
+   "name": "b_completes_2",
+   "who": "B",
+   "t": 241.847
+  },
+  {
+   "name": "visit_A_x1",
+   "who": "A",
+   "t": 244.409
+  },
+  {
+   "name": "visit_B_x1",
+   "who": "B",
+   "t": 246.68
+  },
+  {
+   "name": "visit_A_x2",
+   "who": "A",
+   "t": 249.032
+  },
+  {
+   "name": "visit_B_x2",
+   "who": "B",
+   "t": 251.313
+  },
+  {
+   "name": "conflict_shown",
+   "who": "A",
+   "t": 288.516
+  },
+  {
+   "name": "conflict_shown",
+   "who": "B",
+   "t": 288.478
+  }
+ ],
+ "vids": {
+  "A": "/tmp/claude-1000/-home-red1-bim-compiler/c07655a0-883e-4dcf-a5b0-37ebd2d4a624/scratchpad/take2b/vidA/page@ecd1c29d805cf21927969e45aad97b1c.webm",
+  "B": "/tmp/claude-1000/-home-red1-bim-compiler/c07655a0-883e-4dcf-a5b0-37ebd2d4a624/scratchpad/take2b/vidB/page@c834a57d3b396a1a6270cdf595691bb5.webm"
+ },
+ "errors": 0
+}

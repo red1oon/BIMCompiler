@@ -1,0 +1,497 @@
+{
+ "made": "2026-11-27T18:02:27.694Z",
+ "ootb": "9c9578dddcfdd739cde424354234ca08ad6b9fec",
+ "states": {
+  "h0_page": {
+   "file": "shots/h0_page.png",
+   "note": "the history page before any file"
+  },
+  "h1_open": {
+   "file": "shots/h1_open.png",
+   "note": "the sample workbook opened: This workbook has no history yet. Stamp starts one: it records every cell that holds something (114 cells in 3 sheets)."
+  },
+  "h1b_named": {
+   "file": "shots/h1b_named.png",
+   "note": "the name typed, ready to stamp"
+  },
+  "h2_stamped": {
+   "file": "shots/h2_stamped.png",
+   "note": "Stamp: Stamped. Entry 1 records 114 cells as Aisha. Download the workbook to keep it."
+  },
+  "h3_pending": {
+   "file": "shots/h3_pending.png",
+   "note": "changes since the last stamp: 3 cells"
+  },
+  "h3b_pending_list": {
+   "file": "shots/h3b_pending_list.png",
+   "note": "the cells listed, the typed-over one flagged"
+  },
+  "h4_stamp2": {
+   "file": "shots/h4_stamp2.png",
+   "note": "Stamp: Stamped. Entry 2 records 3 cells as Ben. Download the workbook to keep it."
+  },
+  "h4b_noop": {
+   "file": "shots/h4b_noop.png",
+   "note": "Stamp again: No change since the last stamp."
+  },
+  "h5_story": {
+   "file": "shots/h5_story.png",
+   "note": "the story of B6: 3 values"
+  },
+  "h5b_story_b9": {
+   "file": "shots/h5b_story_b9.png",
+   "note": "the story of B9: typed over a formula"
+  },
+  "h6_rewind": {
+   "file": "shots/h6_rewind.png",
+   "note": "the sheet at step 2: The sheet as it was after step 2 (Ben, 2026-11-27 18:02 UTC). Marked: the 3 cells that step changed."
+  },
+  "h7_merge_ready": {
+   "file": "shots/h7_merge_ready.png",
+   "note": "Aisha's copy open, the other copy to be opened"
+  },
+  "h8_conflict": {
+   "file": "shots/h8_conflict.png",
+   "note": "the conflict shown with both values and both names"
+  },
+  "h8b_conflict_buttons": {
+   "file": "shots/h8b_conflict_buttons.png",
+   "note": "the conflict: nothing chosen yet, Finish disabled"
+  },
+  "h9_picked": {
+   "file": "shots/h9_picked.png",
+   "note": "after the pick, Finish enabled"
+  },
+  "h10_merged": {
+   "file": "shots/h10_merged.png",
+   "note": "the merge finished: Merged. Entry 3 records 1 cell changed in this workbook and your 1 choice. The other copy's 1 entry is kept inside it. Download the workbook to keep it (copy_a_edit_merged.xlsx)."
+  },
+  "h11_merge_story": {
+   "file": "shots/h11_merge_story.png",
+   "note": "the story of B7 names both people"
+  },
+  "h12_broken": {
+   "file": "shots/h12_broken.png",
+   "note": "a history edited by hand: The history inside this file was edited by hand: entry 2 of 3 does not verify (payload (a recorded cell value was edited)). Nothing is shown and nothing can be stamped on top of it. Go back to a copy you trust."
+  }
+ },
+ "net": {
+  "requestsAtLoad": 6,
+  "bytesAtLoad": 313465,
+  "urlsAtLoad": [
+   "erp/sheet_addin/history.html",
+   "erp/xlsx.mini.min.js",
+   "erp/sheet_history.js",
+   "erp/sheet_addin/xlsx_host.js",
+   "erp/sheet_addin/host_shim.js",
+   "erp/sheet_addin/history.js"
+  ],
+  "serverRequestsTotal": 12,
+  "notGet": 0,
+  "external": 0,
+  "pageReqsNonGet": 0,
+  "pageLoads": 2,
+  "requestsAfterReady": 0,
+  "perLoad": 6
+ },
+ "ootbShort": "9c9578dd",
+ "sample": {
+  "file": "ninja_sample.xlsx",
+  "sheets": 3,
+  "cells": 114,
+  "B9": {
+   "v": 541.02,
+   "f": "SUM(B5:B8)"
+  },
+  "B6": 100.7,
+  "B7": 161.12
+ },
+ "load": {
+  "requests": 6,
+  "bytes": 313465,
+  "urls": [
+   "erp/sheet_addin/history.html",
+   "erp/xlsx.mini.min.js",
+   "erp/sheet_history.js",
+   "erp/sheet_addin/xlsx_host.js",
+   "erp/sheet_addin/host_shim.js",
+   "erp/sheet_addin/history.js"
+  ]
+ },
+ "cost": "§SHIST-PAGE-COST requests=6 bytes=313465 readyMs=42 heapMB=2 kernelLoaded=false scripts=5",
+ "o1": {
+  "status": "This workbook has no history yet. Stamp starts one: it records every cell that holds something (114 cells in 3 sheets).",
+  "opened": "Opened ninja_sample.xlsx (3 sheets, 114 cells).",
+  "log": "§SHIST-PAGE-OPEN name=ninja_sample.xlsx bytes=24938 sheets=3 cells=114 state=none ms=17 heapMB=3",
+  "whoNote": "Written into each stamp you make. It is a typed name, not a signature: anyone can type any name."
+ },
+ "s1": {
+  "log": "§SHIST-PAGE-STAMP verdict=RECORDED entry=1 cells=114 chunks=1 typedOverFormula=[] lineChars=14084 ms=2 heapMB=3",
+  "stamp": {
+   "verdict": "RECORDED",
+   "text": "Stamped. Entry 1 records 114 cells as Aisha. Download the workbook to keep it."
+  },
+  "state": "intact",
+  "status": "History: 1 entry, verified. The sheet matches the last stamp (Aisha, 2026-11-27 18:02 UTC): nothing has changed since."
+ },
+ "outside1": {
+  "cells": [
+   "BACKUP!B6 100.7 -> 200.7",
+   "BACKUP!F2 (a note)",
+   "BACKUP!B9 =SUM(B5:B8) -> 600"
+  ],
+  "by": "a script (SheetJS in node), not a spreadsheet program",
+  "historyRowsUnchanged": true
+ },
+ "p2": {
+  "state": "pending",
+  "status": "History: 1 entry, verified. 3 cells have changed since the last stamp (Aisha, 2026-11-27 18:02 UTC). The next Stamp records:",
+  "pending": [
+   {
+    "cell": "BACKUP!F2",
+    "over": false,
+    "text": "BACKUP!F2: (empty) → checked by QS"
+   },
+   {
+    "cell": "BACKUP!B6",
+    "over": false,
+    "text": "BACKUP!B6: 100.7 → 200.7"
+   },
+   {
+    "cell": "BACKUP!B9",
+    "over": true,
+    "text": "BACKUP!B9: =SUM(B5:B8) (541.02) → 600 (a number typed over a formula)"
+   }
+  ],
+  "marks": [
+   "F2",
+   "B6",
+   "B9"
+  ],
+  "log": "§SHIST-PAGE-BIND state=pending entries=1 cells=115 pending=3 cells=[\"BACKUP!F2\",\"BACKUP!B6\",\"BACKUP!B9\"]"
+ },
+ "s2": {
+  "log": "§SHIST-PAGE-STAMP verdict=RECORDED entry=2 cells=3 chunks=1 typedOverFormula=[\"BACKUP!B9\"] lineChars=706 ms=1 heapMB=4",
+  "stamp": {
+   "verdict": "RECORDED",
+   "text": "Stamped. Entry 2 records 3 cells as Ben. Download the workbook to keep it."
+  },
+  "state": "intact"
+ },
+ "noop": {
+  "stamp": {
+   "verdict": "NO-OP",
+   "text": "No change since the last stamp."
+  }
+ },
+ "s3": {
+  "log": "§SHIST-PAGE-STAMP verdict=RECORDED entry=3 cells=2 chunks=1 typedOverFormula=[] lineChars=566 ms=1 heapMB=6"
+ },
+ "story": {
+  "cell": "B6",
+  "head": "Every value BACKUP!B6 has had, oldest first:",
+  "lines": [
+   {
+    "seq": 1,
+    "actor": "Aisha",
+    "at": "2026-11-27T18:02:31.069Z",
+    "before": null,
+    "after": {
+     "v": 100.7,
+     "f": null
+    },
+    "typedOverFormula": false,
+    "mergedAt": null,
+    "text": "#1 · 2026-11-27 18:02 UTC · Aisha: (empty) → 100.7"
+   },
+   {
+    "seq": 2,
+    "actor": "Ben",
+    "at": "2026-11-27T18:02:35.047Z",
+    "before": {
+     "v": 100.7,
+     "f": null
+    },
+    "after": {
+     "v": 200.7,
+     "f": null
+    },
+    "typedOverFormula": false,
+    "mergedAt": null,
+    "text": "#2 · 2026-11-27 18:02 UTC · Ben: 100.7 → 200.7"
+   },
+   {
+    "seq": 3,
+    "actor": "Aisha",
+    "at": "2026-11-27T18:02:38.401Z",
+    "before": {
+     "v": 200.7,
+     "f": null
+    },
+    "after": {
+     "v": 201.7,
+     "f": null
+    },
+    "typedOverFormula": false,
+    "mergedAt": null,
+    "text": "#3 · 2026-11-27 18:02 UTC · Aisha: 200.7 → 201.7"
+   }
+  ],
+  "log": "§SHIST-PAGE-STORY sheet=BACKUP cell=B6 verdict=STORY lines=3"
+ },
+ "story9": {
+  "lines": [
+   {
+    "seq": 1,
+    "actor": "Aisha",
+    "at": "2026-11-27T18:02:31.069Z",
+    "before": null,
+    "after": {
+     "v": 541.02,
+     "f": "SUM(B5:B8)"
+    },
+    "typedOverFormula": false,
+    "mergedAt": null,
+    "text": "#1 · 2026-11-27 18:02 UTC · Aisha: (empty) → =SUM(B5:B8) (541.02)"
+   },
+   {
+    "seq": 2,
+    "actor": "Ben",
+    "at": "2026-11-27T18:02:35.047Z",
+    "before": {
+     "v": 541.02,
+     "f": "SUM(B5:B8)"
+    },
+    "after": {
+     "v": 600,
+     "f": null
+    },
+    "typedOverFormula": true,
+    "mergedAt": null,
+    "text": "#2 · 2026-11-27 18:02 UTC · Ben: =SUM(B5:B8) (541.02) → 600 (a number typed over a formula)"
+   }
+  ]
+ },
+ "rewind": {
+  "step": 2,
+  "viewNote": "The sheet as it was after step 2 (Ben, 2026-11-27 18:02 UTC). Marked: the 3 cells that step changed.",
+  "B9": {
+   "v": 600,
+   "f": null
+  },
+  "F2": {
+   "v": "checked by QS",
+   "f": null
+  },
+  "B6": {
+   "v": 200.7,
+   "f": null
+  },
+  "marks": [
+   "F2",
+   "B6",
+   "B9"
+  ],
+  "log": "§SHIST-PAGE-REWIND step=2 sheet=BACKUP cells=20 marked=3",
+  "file": {
+   "name": "day_edited2_as_of_step_2.xlsx",
+   "entries": 2,
+   "verifyOk": true,
+   "kernelOk": true,
+   "equalsAsOf2": true
+  },
+  "reopen": {
+   "state": "intact",
+   "lines": 2,
+   "pending": 0
+  }
+ },
+ "merge": {
+  "log": "§SHIST-PAGE-MERGE verdict=CONFLICTS other=copy_b_edit.xlsx fork=1 mine=1 theirs=1 applied=[\"BACKUP!C5:a\",\"BACKUP!C6:b\",\"BACKUP!B8:both\"] conflicts=[\"BACKUP!B7\"]",
+  "text": "The two copies are the same up to step 1. 1 cell comes from the other copy. 1 cell was changed in BOTH copies to different values: choose for each. Nothing is written until you do.",
+  "applied": [
+   [
+    "BACKUP!C6",
+    "Ben"
+   ]
+  ],
+  "conflicts": 1,
+  "cell": "BACKUP!B7",
+  "a": 11,
+  "b": 22,
+  "base": 161.12,
+  "whoA": "Aisha",
+  "whoB": "Ben",
+  "conflictText": "BACKUP!B7 was 161.12. In this workbook Aisha set it to 11 (2026-11-27 18:02 UTC). In the other copy Ben set it to 22 (2026-11-27 18:02 UTC). Which one stays?",
+  "buttons": [
+   "Keep 11 (Aisha)",
+   "Take 22 (Ben)",
+   "Neither: back to 161.12"
+  ],
+  "noPreselect": true,
+  "finishDisabled": true,
+  "workbookUnchanged": true
+ },
+ "merged": {
+  "log": "§SHIST-PAGE-MERGE verdict=RECORDED entry=3 ops=1 fork=1 otherEntries=1 otherHead=f06a6bdd51e9 picks=[\"BACKUP!B7:a\"] lineChars=1285",
+  "text": "Merged. Entry 3 records 1 cell changed in this workbook and your 1 choice. The other copy's 1 entry is kept inside it. Download the workbook to keep it (copy_a_edit_merged.xlsx).",
+  "file": "copy_a_edit_merged.xlsx",
+  "entries": 3,
+  "verifyOk": true,
+  "kernelOk": true,
+  "B7": [
+   11,
+   null
+  ],
+  "C5": [
+   "paid",
+   null
+  ],
+  "C6": [
+   "query",
+   null
+  ],
+  "state": "intact"
+ },
+ "mergeStory": {
+  "lines": [
+   {
+    "seq": 1,
+    "actor": "Aisha",
+    "at": "2026-11-27T18:02:31.069Z",
+    "before": null,
+    "after": {
+     "v": 161.12,
+     "f": null
+    },
+    "typedOverFormula": false,
+    "mergedAt": null,
+    "text": "#1 · 2026-11-27 18:02 UTC · Aisha: (empty) → 161.12"
+   },
+   {
+    "seq": 2,
+    "actor": "Aisha",
+    "at": "2026-11-27T18:02:44.814Z",
+    "before": {
+     "v": 161.12,
+     "f": null
+    },
+    "after": {
+     "v": 11,
+     "f": null
+    },
+    "typedOverFormula": false,
+    "mergedAt": null,
+    "text": "#2 · 2026-11-27 18:02 UTC · Aisha: 161.12 → 11"
+   },
+   {
+    "seq": 2,
+    "actor": "Ben",
+    "at": "2026-11-27T18:02:45.809Z",
+    "before": {
+     "v": 161.12,
+     "f": null
+    },
+    "after": {
+     "v": 22,
+     "f": null
+    },
+    "typedOverFormula": false,
+    "mergedAt": 3,
+    "text": "#2 · 2026-11-27 18:02 UTC · Ben: 161.12 → 22 · made in the other copy, merged at #3"
+   }
+  ]
+ },
+ "tamper": {
+  "change": "a recorded value in entry 2: 600 became 601",
+  "status": "The history inside this file was edited by hand: entry 2 of 3 does not verify (payload (a recorded cell value was edited)). Nothing is shown and nothing can be stamped on top of it. Go back to a copy you trust.",
+  "state": "broken",
+  "stampDisabled": true,
+  "sheetShown": false,
+  "storyShown": false,
+  "mergeShown": false,
+  "downloadShown": false,
+  "log": "§SHIST-PAGE-BIND state=broken entries=3 cells=114 pending=0 brokenAt=2 why=\"payload (a recorded cell value was edited)\"",
+  "forcedStamp": {
+   "rowsUnchanged": true,
+   "lines": 3,
+   "stateAfter": "broken"
+  }
+ },
+ "files": [
+  {
+   "id": "stamped1",
+   "name": "ninja_sample.xlsx",
+   "entries": 1,
+   "verifyOk": true,
+   "kernelOk": true,
+   "hidden": 2
+  },
+  {
+   "id": "stamped2",
+   "name": "day_edited1.xlsx",
+   "entries": 2,
+   "verifyOk": true,
+   "kernelOk": true,
+   "hidden": 2
+  },
+  {
+   "id": "stamped3",
+   "name": "day_edited2.xlsx",
+   "entries": 3,
+   "verifyOk": true,
+   "kernelOk": true,
+   "hidden": 2
+  },
+  {
+   "id": "step2",
+   "name": "day_edited2_as_of_step_2.xlsx",
+   "entries": 2,
+   "verifyOk": true,
+   "kernelOk": true,
+   "hidden": 2
+  },
+  {
+   "id": "copyA",
+   "name": "copy_a_edit.xlsx",
+   "entries": 2,
+   "verifyOk": true,
+   "kernelOk": true,
+   "hidden": 2
+  },
+  {
+   "id": "copyB",
+   "name": "copy_b_edit.xlsx",
+   "entries": 2,
+   "verifyOk": true,
+   "kernelOk": true,
+   "hidden": 2
+  },
+  {
+   "id": "merged",
+   "name": "copy_a_edit_merged.xlsx",
+   "entries": 3,
+   "verifyOk": true,
+   "kernelOk": true,
+   "hidden": 2
+  }
+ ],
+ "pageErrors": [],
+ "d": {
+  "genesisCells": 114,
+  "stamp1": true,
+  "listedExactly": true,
+  "overFlagged": true,
+  "noop": true,
+  "stamp2": true,
+  "storyThree": true,
+  "rewindOk": true,
+  "mergeCombine": true,
+  "oneClash": true,
+  "mergedOk": true,
+  "tamperCaught": true,
+  "filesVerify": true,
+  "noUpload": true,
+  "light": true
+ }
+}

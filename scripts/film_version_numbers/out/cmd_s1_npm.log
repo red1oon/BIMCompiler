@@ -1,0 +1,4 @@
+$ mkdir -p /tmp/wt-film6-min/site/viewer && cd /tmp/wt-film6-min && { [ -d node_modules/esbuild ] || npm i --no-save --no-audit --no-fund --prefix /tmp/wt-film6-min esbuild@0.23.0 >/dev/null 2>&1; } && ls node_modules/esbuild/package.json && node -e "console.log('esbuild '+require('./node_modules/esbuild/package.json').version)"
+node_modules/esbuild/package.json
+esbuild 0.23.0
+§CMD_EXIT 0

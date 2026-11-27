@@ -1,0 +1,20 @@
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1", "eleme
+
+p3_v1457 §FAULT OK dark=0.2% compositeMean=95.82 
+{"result":{"w":1666,"h":864,"compositeDarkPct":0.763,"appDarkPct":0.935}}
+10977 0.76 255
+67 d=54 batched/ARC 707f8e n=side away zone=in
+60 d=53 batched/ARC 707f8e n=up sunBlocked zone=in
+36 d=53 batched/ARC 009e49 n=up sunBlocked zone=in
+20 d=66 batched/ARC 000000 n=side away zone=out
+15 d=55 batched/ARC 564b4d n=up sunBlocked zone=in
+12 d=60 batched/ARC GLASS 737278 n=side away zone=in
+10 d=44 IfcMember/ARC ebe6d9 n=up sunBlocked zone=in
+8 d=52 batched/ARC 737278 n=side away zone=in
+5 d=66 batched/ARC 000000 n=side SUNLIT zone=out
+4 d=66 batched/ARC 000000 n=down away zone=out
+4 d=64 batched/ARC GLASS 737278 n=side away zone=out
+2 d=46 batched/ARC 707f8e n=side away zone=out
+2 d=42 batched/ARC 737278 n=side away zone=out
+2 d=46 IfcPlate/ARC 737278 n=side away zone=in
+== p3 done 07:51:13

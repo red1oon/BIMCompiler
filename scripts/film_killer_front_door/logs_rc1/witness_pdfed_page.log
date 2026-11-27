@@ -1,0 +1,20 @@
+  §PDFPG-CHECK key=boot OK rule="the page loads pdf.js, the reader and SheetJS (§PDFED-BOOT)"
+  §PDFPG-CHECK key=open OK rule="the real file chooser opens the trial balance: §PDFED-OPEN ok=true pages=1"
+§PDFPG-INK {"canvas":true,"w":1100,"h":850,"ink":111350}
+  §PDFPG-CHECK key=ink OK rule="page 1 is drawn: its canvas holds ink (dark pixels > 1000 of 935000)"
+  §PDFPG-CHECK key=read OK rule="Read as sheet logs §SHEET_READER verdict=ADDS_UP cells=144"
+  §PDFPG-CHECK key=grid OK rule="the grid shows 144 cells, D28 = 40,392.44, and says in words that the page adds up"
+  §PDFPG-CHECK key=box OK rule="hovering D28 marks exactly one box on page 1, placed at the source map's box (off by < 0.5 px)"
+  §PDFPG-CHECK key=xlsx OK rule="the .xlsx the page hands over re-reads to D28 = 40392.44 with =SUM(D6:D26) and A6 = "11100""
+  §PDFPG-CHECK key=open-12 OK rule="the 12-page report opens: §PDFED-OPEN ok=true pages=12 outline=23"
+  §PDFPG-CHECK key=reset OK rule="opening another file clears the previous sheet"
+  §PDFPG-CHECK key=outline OK rule="the outline lists 23 entries; clicking the last goes to the page poppler names (12)"
+  §PDFPG-CHECK key=find OK rule="Find "market" counts 45 hits, as poppler's text does"
+§PDFPG-RELEASE pages=12 aliveAtOpen=1 aliveAtEnd=2 renders=16 releases=13 heapMB=11
+  §PDFPG-CHECK key=release OK rule="after scrolling through all 12 pages: 12 or more draws, canvases alive < 12, releases > 0"
+  §PDFPG-CHECK key=cost OK rule="the page logs §PDFED-COST with canvasesAlive and heap"
+  §PDFPG-CHECK key=refuse OK rule="a non-PDF is refused in words (§PDFED-OPEN ok=false named=not-a-pdf), nothing drawn, Read as sheet off"
+  §PDFPG-CHECK key=offline OK rule="with the network OFF the page reloads, opens the trial balance and reads it: verdict=ADDS_UP cells=144"
+  §PDFPG-CHECK key=offline-control OK rule="red control: network off AND the offline cache bypassed -> the page does not boot (so the offline check can fail)"
+  §PDFPG-CHECK key=no-errors OK rule="no uncaught page error in the whole run"
+§PDFPG-VERDICT PASS judged=17 failed=0

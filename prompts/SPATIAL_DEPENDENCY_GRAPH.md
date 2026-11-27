@@ -69,6 +69,7 @@ affected when something moves*. **Backprop runs on the cross-edges.**
 | `instanced-by n` | **M_AttributeSetInstance / qty** | typical-storey × n + Z-span (derived) | extent = f(n) (riser len = n×h; flights = n−1) | n changed → re-issue extent → **ORANGE** |
 | `abuts` | *(new — no classic analogue)* | face-touch within tol (derived) | neighbor realigns to shared face | neighbor pulled away → gap → **ORANGE** |
 | `anchored-to` | routing to a work-center | nearest gridline / storey-plane snap (derived) | element follows its datum | datum moved → re-anchor |
+| `port-connects` (proposed, see §PORT-CONNECTS-RECOVERY below) | MRP routing (operation sequence, directed) | `IfcRelConnectsPorts` — **schema exists (`port_elements`/`port_connections`), never populated** | flow continues along the connected chain, topology-preserving | downstream port disconnected/flow-mismatched → orphaned segment → **ORANGE** |
 
 Each edge has **both directions built in** — a forward fold (explosion) and a backward signal (pegging). The fold
 rule is the **ASI attribute transform** (how the instance attribute recomputes). Every edge stamps provenance
@@ -91,6 +92,204 @@ rule is the **ASI attribute transform** (how the instance attribute recomputes).
 - **GREEN = coherent**, no action.
 Red = "you can't"; Orange = "you may want to, here's how." Constraints are measured (real door, real AD table) — a
 guessed constraint = a GIGO loss (ML lesson #2).
+
+## §ANCHOR-SUBSTRATE-SIBLINGS — cross_edges.js was not the only consumer (2026-09-18)
+
+§XEDGE-GEOWIRE fixed the Modeller's cross-edge derivation. The underlying defect is in the SUBSTRATE, not
+in that one file: `element_transforms.center_xyz` is the IFC local-placement ANCHOR, not the volumetric
+centre, so any consumer that treats `[center ± bbox/2]` as a world box is displaced by the anchor offset.
+Measured on SampleCastle: size correct 934/934, **centre wrong on 798/934, median 78mm, up to ~425mm**.
+
+**Second consumer found: `scripts/compile_rooms.py` (Viewer room injection — the Find-Panel Room lens,
+Fly Tour, Cinema and DLOD-nav all reach it through the one shared `A.ensureRooms({})` core).** Verified by
+reading the file, not inherited from a report: it selects `center_x/y/z` and `bbox_x/y/z` straight off
+`element_transforms`, with **no `rotation_z` applied and no vertex-blob resolution via `real_geometry.js`**
+— the same coarse substrate, applied to walls and doors instead of rooms.
+
+**But the exposure is NOT uniform, and that distinction is the useful part** — the measurement says size is
+safe and position is not, so each call site inherits only what it reads:
+
+| call site | reads | exposed? |
+|---|---|---|
+| `door_dims` (~L220) | `bbox_x/y/z` ONLY | **NO** — extents measured correct 934/934; door width/height medians are sound |
+| `storey_z_anchors` (~L229) | `center_z` | yes — though it takes a per-storey MEAN, so a non-directional offset partly averages out |
+| stair/ramp footprints (~L286) | `center_x/y` + `bbox_x/y` | yes, in position |
+| `storey_doors` (~L296) | `center_x/y/z` + `bbox_x/y` | yes, in position — this is the §DOOR-RESCUE clue that decides genuine small rooms |
+
+**Not redundant with §XEDGE-GEOWIRE, and not a reason to defer it.** Room injection solves *presence* (a
+building with zero/thin `IfcSpace` rows gets a computed room shape); the anchor defect is about *position
+accuracy*. They are siblings drinking from the same well, not two fixes for one problem.
+
+⚠ **UNMEASURED: whether this changes room output at all.** A 78mm median door-centre shift may be well
+inside `storey_doors`' own adjacency tolerance (it self-scales to each door's real footprint, by design) —
+or may flip borderline §DOOR-RESCUE decisions. Nobody has run it both ways. **Do not "fix" compile_rooms.py
+off this note**; measure first, exactly as §XEDGE-GEOWIRE was measured before a line was changed. The fix
+would also be harder here: it is a Python extraction script with no `real_geometry.js` equivalent in reach.
+
+## §ABUTS-ATTRIBUTE-PRIOR — SUPERSEDED: the real cause was a wiring bug, not ambiguity (2026-09-18)
+> **Update, same day, from a separate Modeller session's scrutiny — reproduced and verified before
+> writing this.** The proposal below is kept for the record but its premise turned out wrong. Read
+> this box first.
+>
+> **The real cause of G4's 843/9,817 disagreement: the §REAL-AABB fix never executes in production.**
+> `modeller/str_walker_outliner.js:179` calls `CrossEdges.deriveAll(db)` — one argument, no `geoDb`,
+> no `opts` (verified directly, this file). Since `§GEO-SERVED` (#1090) moved geometry into separate
+> `*_geo.db` files, `deriveAdjacency`'s `opts.geoDb` is always `undefined` in production, so
+> `_buildRealVerts` → `RealGeometry.buildGeometryIndex(db, undefined)` resolves 0 elements, and
+> **every element silently takes the coarse `[center_xyz ± bbox/2]` fallback** — `cross_edges.js` has
+> zero log statements anywhere, so this has never been visible. That box is centred on the placement
+> anchor, not the volumetric centre: measured, size matches authored `bbox_*` on 934/934 elements, but
+> the CENTRE is wrong on 798/934, median 78mm off — a pure translation error, exactly the
+> recenter/anchorOffset correction this file's own header (§REAL-AABB above) dismissed as "same final
+> numbers, fewer steps." It is not the same numbers; it never ran.
+>
+> **The attribute-prior idea below was tested, not just reasoned about, and it does not work — for a
+> good reason.** `SampleCastle_ARC.db` has no `componenttype` column, so the check ran on `ifc_class`
+> instead (the nearest available attribute): ifc_class mismatch correlates only weakly (75.7%
+> disagreeing vs 58.0% agreeing — not a clean split), and decisively, **`IfcCovering↔IfcWall` is BOTH
+> the #1 disagreeing pair (139) AND the #2 agreeing pair (1,094)** — the same class pair on both sides
+> means a type prior cannot separate them. This makes sense in hindsight: an attribute prior can only
+> ever filter/flag geometrically-wrong edges, it cannot fix wrong geometry — and wrong geometry
+> (wiring, not ambiguity) is what's actually happening here.
+>
+> **So the idea's "proposed, not built" status was lucky timing, not foresight.** Building it on top of
+> mis-wired geometry would have shipped a mechanism to paper over a bug that should just be fixed —
+> pass `geoDb` through at the `str_walker_outliner.js:179` call site, re-run G4, and the 843 may
+> largely disappear on their own. **The attribute-prior idea itself isn't dead** — it may still have
+> genuine value on whatever real disagreement remains AFTER the wiring fix, where the disagreement
+> would be true geometric ambiguity rather than a missing geoDb — but that is now unverified and
+> should not be assumed either way until the wiring fix actually lands and G4 is re-run.
+
+## §XEDGE-GEOWIRE — the fix for the above, SPEC (2026-09-18). Spec-first: written before any code.
+
+The supersession box above names the right defect but the wrong remedy. It says "pass `geoDb` through at
+the `str_walker_outliner.js:179` call site". **You cannot.** Measured on a real open, with `deriveAll`
+instrumented, console order is:
+
+```
+§XEDGE-ALL abuts=10612 anchored=18948 spans=9141 ...      ← derivation runs HERE
+§STRWALK-MO editable instance mo_SampleCastle active ops=0
+§STRWALK-OPEN SampleCastle geoDb cache-MISS → fetch ...   ← geometry is only REQUESTED now
+§GEO-SERVED SampleCastle real geometry substrate 5.02MB verified SQLite
+```
+
+At `deriveAll` time: `__dwGeoBuf = null`, `opts = undefined`. The derivation is in the SYNCHRONOUS open
+path and `db.close()` runs immediately after it; the geometry arrives later, in `_forkEditable`'s
+`_fetchGeoDb(res).then(...)`. **This is an ORDERING bug, not a missing argument** — there is no variable
+to pass at line 179 because the data does not exist yet.
+
+### What to build
+Re-derive the cross-edge set inside the geo-fetch continuation, beside `_seedArcEditable(O, res.key,
+geoBuf)` — the existing §LIVEWIRE convention that already threads `__dwGeoBuf` into `dwWalk` as
+`opts.geoDb`. Not a new mechanism; the same one, applied to the consumer that was missed.
+
+### Binding constraints — both measured, not assumed
+1. **Re-open from `__dwBuf`.** `db` is closed right after §XEDGE-ALL. `__dwBuf` keeps the raw bytes by
+   design (the file's own comment says so).
+2. **Re-apply the §ANCHOR-BLIND.** The synchronous path does
+   `DELETE FROM element_transforms WHERE transform_source='void_anchor'` before deriving. A re-derive
+   that skips it leaks all **65** SampleCastle anchors into the edge set and breaks the user's binding
+   condition that anchors are excluded from EVERY count. Measured: skipping the blind reports 13,331
+   abuts and 65 G4 disagreements; applying it correctly reports **12,983 and 11**. The first run of this
+   measurement made exactly that mistake — the corrected figure is the one below.
+3. **`swXEdges` now changes value mid-session.** Today it is set once, synchronously, at open. After this
+   it is set once and then REPLACED when geometry lands. Every reader must tolerate that or be re-driven:
+   `sdg_gate`, the bom-graph adjacency lens, `bonsai_roommove`, `bonsai_itemdrag`, `dagevu_engine`.
+
+### The expected result — measured in advance, so the witness has a number to hit
+SampleCastle, shipped `SampleCastle_ARC.db` + live `SampleCastle_geo.db` (5.02MB):
+
+| | `buildGeometryIndex` | abuts | W-XEDGE-REAL-AABB G4 |
+|---|---|---|---|
+| today, `deriveAll(db)` | **0 resolved** | 10,612 | 9,817 checked, **843 disagree (8.6%)** |
+| fixed, `deriveAll(db,{geoDb})` | `component_geometries`, 3,225 byGuid / 1,924 resolved | 12,983 | 12,983 checked, **11 disagree (0.1%)** |
+
+The +2,371 abuts edges are real adjacency the anchor-centred coarse box could not see — the same class of
+gain the original §REAL-AABB fix claimed in G3 and never actually delivered in production.
+
+### Honest residual — do NOT report this fix as "G4 green"
+**11 disagreements remain** and this spec does not fix them. Two known contributors, neither measured
+apart yet: (a) `_readBoxes`' `rx/ry` guard still sends genuinely 3-axis-rotated elements to the coarse
+box — and that guard's stated reason ("every building measured so far has `rotation_x=rotation_y=0`") is
+the SAME false claim corrected in bim-ootb #1738, which measured 293 such rows in SampleCastle alone, so
+the guard is probably liftable; (b) only 1,924 of 3,225 elements resolve a real blob, so 1,301 still fall
+back. G4's assertion should be tightened to the measured residual, not relaxed to pass.
+
+### Why this was invisible for ~7 weeks
+`cross_edges.js` contains **zero** `console.*` statements, and `_buildRealVerts` has three silent
+`return null` paths. A fix that stopped running left no trace. Any implementation of this spec adds a
+`§XEDGE-GEO` log line naming resolved-vs-total, so the next regression is loud.
+
+## §ABUTS-ATTRIBUTE-PRIOR (original text below, superseded above) — a semantic co-signal for `abuts`, proposed not built (2026-09-18)
+red1, cross-checking whether the Viewer's `room_graph.js` and the Modeller's `cross_edges.js` have any
+ERP analogue: *"I wonder if Product Attribute or a common child in a Product BOM be the connector... to
+give it more spatial semantics."*
+
+**Why a BOM-line connector doesn't fit `abuts` specifically — this doc already says why, above:**
+"Adjacency is cyclic: room A abuts B abuts C abuts A — un-topological-sortable." A BOM line is a
+directed parent→child edge (`contains`'s own analogue); two products can't be mutually "child of" each
+other, so a cyclic lateral relation cannot be expressed as a BOM-tree edge. That is WHY the table marks
+`abuts` `(new — no classic analogue)` — a real structural mismatch, not an oversight.
+
+**Why a Product ATTRIBUTE is a different, better fit:** an attribute is a property ON one product
+(`M_AttributeSetInstance`, already this doc's own named analogue for `instanced-by n`), not a relation
+BETWEEN two — no cyclic-relation problem. Real data already exists to hang it on: `pp_product_bomline.
+componenttype` (bim-ootb `hr_bim_asset/ad_bom.js`) and `conn_points` (extracted in bim-ootb `modeller/
+real_placement_resolver.js` from `library/component_library.db`). A "componenttype X expects to abut
+componenttype Y" prior would CROSS-CHECK the geometric face-touch test, not replace it, and not store
+the pairwise edge itself (that would just reinvent `rel_adjacency` by hand) — stays inside this doc's
+own DOCTRINE line above: derive from a measured property, never the class name.
+
+**Why this isn't just architecturally tidy — it's pointed at a real open gap:** bim-ootb's own witness
+(`modeller/tests/witness_cross_edges_real_aabb.js`, gate G4 LIVE-AGREEMENT), re-run live 2026-09-18:
+**843/9,817 (8.6%) of SampleCastle's derived `abuts` edges disagree with the live-rendered mesh.** A
+type-compatibility co-signal MIGHT explain some share of those — a hypothesis, not tested against the
+actual 843 disagreeing pairs this session.
+
+**Status: proposed, not designed, not built.** No code written, no schema change made. Next step if
+picked up: pull the 843 SampleCastle disagreement pairs' `componenttype` values and check whether a
+type-incompatibility pattern explains a meaningful share of them, before building anything on top.
+
+## §PORT-CONNECTS-RECOVERY — real MEP topology IFC already carries, currently discarded (proposed 2026-09-18)
+red1: *"I reckoned we already have some DAG capability and this will enrich it further by pasting what
+IFC inherited during its birth in an Autodesk project?"* — checked directly against
+`DAGCompiler/python/extractIFCtoDB.py` rather than assumed.
+
+**`port_elements`/`port_connections` are declared in the schema and never populated.** Lines 198-209:
+both tables exist (`port_guid`/`element_guid`/`flow_direction`/`local_x,y,z` for the first,
+`port_a_guid`/`port_b_guid` for the second) — grepped the whole file for `INSERT INTO port_`: zero
+matches. `IfcDistributionPort` is correctly recognised as non-geometric (line 340, "logical connection
+points, no mesh") — the schema was clearly designed with intent — but the actual `IfcRelConnectsPorts`
+relationship read + INSERT was never finished. This is IFC's *native* mechanism for "this fitting really
+connects to that pipe," authored at the point of origin (Revit or whatever tool modelled the MEP run) —
+recovered, not invented, same category as Path B's `rel_fills_host` above, just unfinished.
+
+**Same finding, different shape, for semantic richness:** arbitrary IFC property sets (`Pset_*` —
+manufacturer data, fire ratings, Uniclass/Omniclass classification) have **no table at all** — not
+unfinished, never started. `componenttype` (`hr_bim_asset/ad_bom.js`) is caller-supplied, not
+IFC-derived.
+
+**Why this matters beyond "one more table":** `disc_walker.js`'s own header already names a "Router —
+rule_routing → from_kind→to_kind chains" concept, but today it builds those chains by NEAREST-NEIGHBOUR
+distance heuristic over a fresh building (`_rwPairSegments`), because no real connectivity source
+exists to read instead. A populated `port_connections` table, read from a SOURCE building that was
+already MEP-routed in its authoring tool, would let the Router (and `cross_edges.js`'s `abuts`/
+`port-connects`) use REAL authored topology instead of re-inferring it — strictly better evidence,
+already sitting in every IFC export, currently thrown away at the door.
+
+**Explicitly not what this is:** synthetic inference (guessing `componenttype`/connectivity from
+`ifc_class` + geometry when a source file genuinely has no Psets) is the WRONG move, by this project's
+own standard, demonstrated repeatedly tonight — the door-orientation name-guess, the hardcoded pipe
+cross-section, `real_placement_resolver.js`'s `WalkerGapError` all exist specifically to kill that
+shortcut. Where real IFC data is genuinely absent, refuse-and-flag, per doctrine — never fabricate a
+constraint (ML lesson #2, GIGO is in the loss).
+
+**Status: proposed, not designed, not built.** Next step if picked up: (1) find/write the
+`IfcRelConnectsPorts` read in `extractIFCtoDB.py`, populate `port_elements`/`port_connections` on a
+real building that has MEP routing authored (Hospital/Terminal are the known-rich candidates), (2) check
+row counts are non-zero and spot-check a handful against the source IFC by hand before trusting them,
+(3) only then wire a consumer (`cross_edges.js` new `port-connects` edge, or `disc_walker.js`'s Router)
+— extraction and consumption are separate steps, don't build the consumer against an unverified source.
 
 ## TWO PROPAGATION ENGINES — continuous vs discrete (ML lesson #5)
 Backprop needs local gradients → it is for **continuous** edits. Discrete choices are non-differentiable.
@@ -635,5 +834,33 @@ it is built once and serves both. Then materialize the remaining derived edges +
   2. **`instanced-by n`** — the last Phase-1 edge (typical-storey × n, extent=f(n)); now safe to build against the
      proven fold-rule contract (ties [[CONSTRUCTION_GRID_BOM_DUAL_MODEL]] §SHELL-N-ZSPAN).
   3. **Phase 3 backprop** (W-SDG-BACKPROP) — reverse edges → RED/ORANGE exceptions, cyclic `abuts` realign, gated.
+  4. **§GEODB-WIRING-BUG — SHIPPED 2026-09-18** (bim-ootb #1744, spec written first as BIMCompiler
+     #108): the real cause was an ORDERING bug, not a missing arg as first diagnosed — `buildGeometryIndex`
+     resolved 0/3,225 elements before the fix, 1,924/3,225 after. Independently re-run this session,
+     confirmed exact: `witness_cross_edges_real_aabb.js` 7/2 → **10/1**; SampleCastle G4 disagreement
+     843 → **11** (all 11 left honestly red, not relaxed to pass — new G6 GEO-WIRED asserts the
+     re-derive actually fired, proven by commenting out the call and watching G4 return to precisely
+     843). Regression sweep against unmodified `origin/main` caught two real breaks this fix exposed:
+     `witness_e2e_gridmove_real` (a 0.5m grid drag was moving the wall 0.0m — grid recompose, the
+     Modeller's primary handle, silently broken on real geometry) and `witness_e2e_save` (a fixture
+     satisfiable only because the graph was wrong; fixed by tightening its own exclusion, not by
+     relaxing the assertion). Header's own `center_k=(minK+maxK)/2`/"100% resolves"/"rotation_x=
+     rotation_y=0 always" claims were also measured false and corrected in the same PR.
+     **Flagged, unverified, worth checking before touching §OPEN row 7 (the grid-lock/0.104m
+     emergent-grid residual):** datum count moved 802→657 post-fix — suspected (not confirmed)
+     anchor-displaced faces were manufacturing false alignment clusters pre-fix, and that grid is
+     built from these datums.
+  5. **§ABUTS-ATTRIBUTE-PRIOR** (proposed 2026-09-18, SUPERSEDED — see the box above): tested via
+     `ifc_class` as a componenttype proxy and found NOT discriminating (`IfcCovering↔IfcWall` is both
+     the #1 disagreeing pair and the #2 agreeing pair) — against the OLD 843. Item 4 has now landed;
+     the real residual is 11 pairs, unexamined. Still not worth building against 11 single-digit
+     ov_mm outliers without looking at them first — may just be more §ARC-3AXIS-guard cases (the
+     rotation_y guard's own header note above says it's a suspect and is now itself witnessed
+     230/0, so lifting it is a cheaper next check than an attribute prior).
+  6. **§PORT-CONNECTS-RECOVERY** (proposed 2026-09-18, see above) — `port_elements`/`port_connections`
+     are schema-declared, never populated; `IfcRelConnectsPorts` real MEP topology is sitting in every
+     IFC export, currently discarded at extraction. Would give `cross_edges.js`/`disc_walker.js`'s
+     Router real authored connectivity instead of nearest-neighbour inference. Not started — extract
+     + verify first, wire a consumer only after row counts are confirmed non-zero and spot-checked.
 **Separate, already-decided lane:** the orientation abstraction (kill `hasFront`/`_inheritHostRotation`) — doctrinally
 one with this (measure-don't-whitelist); its Path B half is shared with Phase 1 here.

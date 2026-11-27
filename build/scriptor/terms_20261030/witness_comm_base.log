@@ -1,0 +1,60 @@
+═══ W-BASE-HASH / W-BASE-EDIT (engine) — the shared loaded DB with signed ops on top (TEAMWORK_FRAMEWORK §13.12.I) ═══
+
+§BASE file=ad_full.db bytes=44937216 sha256=179cd349cedbe5a4 (real DB, hashed here by CommStore.baseFromBytes)
+§BASE one flipped byte: sha256=d4499b1e5fbb164c
+§BASE rows c_bpartner(org0)=61a84a1b client/org=11/0 | c_bpartner(org11)=6e967db4 | m_storagereservation=202ee7de client/org=11/11
+§BASE canUpdate: role102@org0=true role103@org0=false (missing=C) role103@org11=true role102@reservation=true
+§BASE-ID
+   🟢 a different base (one flipped byte) is a different space id; a base vs none differs too — 03b11784c1 / a8577818f8 / 5ca514dc38
+   🟢 CONTROL: the same params with the same base give the same id (so the difference above is the base) — 03b11784c1
+   🟢 newSpace(opts.base) copies {name, sha256, bytes, version} into the genesis params — {"name":"ad_full.db","sha256":"179cd349cedbe5a4146a0f1d67f99d4c61cd03ee4b783d0fd79b4612c3c24fd9","bytes":44937216,"versi
+   🟢 a malformed base (sha256 not 64 hex) is refused at newSpace, not silently dropped — newSpace: invalid base (sha256)
+   🟢 a space made without opts.base has NO base key (its id is exactly what it was before) — name,nonce,founder
+§BASE-TEAM base space=588e3b602653 no-base space=04c04b1f2213
+
+§BASE-INFO
+   🟢 before the genesis is seen the joiner has no base info (null) and its roster is not ok — baseInfo=null roster.ok=false
+   🟢 a joiner that has only the invite + the genesis reads the team's base from the folded roster — {"name":"ad_full.db","sha256":"179cd349cedbe5a4146a0f1d67f99d4c61cd03ee4b783d0fd79b4612c3c24fd9","bytes":44937
+   🟢 a space without base: roster ok and baseInfo() === null (told apart from "genesis not seen") — ok=true
+
+§BASE-CHECK
+   🟢 the right DB (same hash): ok — {"ok":true,"base":true}
+   🟢 ONE flipped byte of the DB: base-mismatch with have/want and a plain sentence naming the DB — {"reason":"base-mismatch","have":"d4499b1e","want":"179cd349"} | Your copy of ad_full.db is not the team's (yours d4499b1e5fbb, the team's 179cd349cedb, version witness-1). Update it, then try again.
+   🟢 CONTROL: the flipped copy really hashes differently (the mismatch above is not a constant) — 179cd349 vs d4499b1e
+   🟢 no hash / empty / junk hash from the host is a mismatch, never an ok (fail closed)
+   🟢 same hash but a different byte length (when both are given) is a mismatch — {"ok":false,"have":"179cd349"}
+   🟢 a space without base: ok, base:false — whatever DB the host has (additive) — {"ok":true,"base":false}
+
+§BASE-SKEW
+   🟢 author() stamps manifest = b:<sha12>: the genesis base by default, the host-supplied (loaded) hash when the host gives one — b:179cd349cedb / b:d4499b1e5fbb
+   🟢 CONTROL: the op stamped with the team's base MERGES — MERGED:role 103 ok
+   🟢 an op authored on another base is REFUSED base-skew on an honest observer — REFUSED:base-skew
+   🟢 a hand-stamped manifest m0 in a space with a base is REFUSED base-skew — REFUSED:base-skew
+   🟢 CONTROL: the same org-12 CREATE on the right base is refused by ACCESS (role 103 has no write on org 12) — REFUSED:access:missing=W
+   🟢 base-skew is judged BEFORE access: that same org-12 op from the wrong base reads base-skew, not access — REFUSED:base-skew
+   🟢 identity ops carry m0 and are not judged by base-skew: the roster still folds 3 devices — devices=3
+
+§BASE-NOBASE
+   🟢 a space without base: ops keep manifest m0 (as before) — m0
+   🟢 a space without base: a normal CREATE still MERGES (no base-skew) — MERGED:role 103 ok
+   🟢 a space without base: an op on a record with no CREATE is still scope-unknown and baseRow is NEVER asked (even when the host supplies it) — REFUSED:scope-unknown asked=0
+
+§BASE-EDIT
+   🟢 role 102 edits a BASE record (c_bpartner org 0, no CREATE anywhere in the log): MERGED by the base row's scope — MERGED:role 102 ok
+   🟢 role 103 (no write on org 0) editing the SAME base record is REFUSED with an access: reason from the base row's scope — REFUSED:access:missing=C
+   🟢 CONTROL: role 103 editing a base record of ITS org (11) is MERGED — the refusal above is the scope, not the role being blanket-blocked — MERGED:role 103 ok
+   🟢 an op on a uu that is in neither the log nor the base is REFUSED base-row-missing — REFUSED:base-row-missing
+   🟢 a real base uu asked under another table is also base-row-missing (the lookup is per table) — REFUSED:base-row-missing
+   🟢 precedence: an edit of a record CREATED in the log is judged by that CREATE; baseRow was not asked for it — MERGED:role 102 ok asked=false
+   🟢 the m_storagereservation write of the section 13.7 Complete (role 102, base row org 11) is MERGED — MERGED:role 102 ok
+   §BASE-BEFORE-AFTER refused: without baseRow=7 (m_storagereservation: REFUSED:scope-unknown; base edit: REFUSED:scope-unknown) | with baseRow=4 (m_storagereservation: MERGED:role 102 ok; base edit: MERGED:role 102 ok)
+   🟢 BEFORE (no baseRow, as today): the reservation write and the base edit are scope-unknown; AFTER: they apply — refused 7 -> 4 — before=REFUSED:scope-unknown after=MERGED:role 102 ok
+   🟢 the fold handed to the kernel contains the admitted base edits and NOT the refused one — 6e967db4|description 1af67f34| 202ee7de|qty b1860f4c| 61a84a1b|name b1860f4c|name
+
+§BASE-PERMUTE
+   🟢 20 arrival orders -> identical verdicts for every op, base edits included — 20/20
+   🟢 an ASYNC baseRow (a host that opens its pristine base lazily) gives the same verdicts as a sync one — 1/1
+   🟢 NON-VACUOUS: the permutation judged 16 ops, 4 of them refused (a permutation over nothing proves nothing) — ops=16
+
+──────────────────────────────────────────────
+§W-BASE-HASH PASS judged=36 fails=0 inconclusive=0

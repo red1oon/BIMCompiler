@@ -24,6 +24,10 @@ and the line between them is never blurred:
 If you grep the repo, the Tier-1 claims must hold and the Tier-2/3 ones must read as
 runway. That discipline is the point.
 
+*Currency, 2026-10-25: the Tier-1 rows were last re-read against merged work on 2026-09-27. The team-layer
+and replication rows added below postdate that pass and are labelled as such; a dated re-read of Tier 1 is
+owed before the next publish.*
+
 ---
 
 ## The core problem: geometry is not intent
@@ -137,6 +141,29 @@ Real markets, short runway. Stated as targets — not yet shipped.
   against real-world bugs and adding the compliance surface. The signed orderline is already
   a receipt artifact — evolving it into a MyInvois-format submission is the build. *(Not yet
   in code; this is the target.)*
+- **iDempiere branch / offline kit — legacy untouched.** A branch runs the same iDempiere
+  windows and documents offline in the browser, exchanging signed changes through a passive
+  post box, while head office keeps running legacy iDempiere unchanged. The legacy system is the
+  oracle: the parallel run against legacy (`prompts/SQLiteIDEMPIERE.md`) is how it is judged, and a
+  difference it finds is fixed on our side, never accepted. *(Target: a one-branch week is not
+  done; the parity run itself exists and is measured — next bullet. Kill criterion — parity cannot
+  reach every window/doctype, or the iDempiere community will not run it.)*
+- **The parity runner — the baseline proof the fork is faithful, useful on its own.** The same
+  scenario is submitted, as a normal web-service user, to a live legacy iDempiere and to the SQLite
+  kernel; documents, books, stock, cost and refusals are compared, and every difference is a
+  numbered finding fixed on our side ([method](LegacyOracleAdapterSpec.md); code
+  `scripts/bridge/run_all.sh`). *Landed, measured on a local pilot with the GardenWorld seed
+  (run of 2026-10-12):* the shop-day suite matched **25 of 25** scenarios, negative controls
+  included, and **19 of the 34** dictionary document tables have a compared scenario. GardenWorld
+  synthetic data is the standing convention for testing anything new in iDempiere and it proves
+  the *stock* behaviour. *Not yet:* a run against a customer's own server, where customisations,
+  plugins, costing and tax set-up and real data volumes are untested, and a re-run per iDempiere
+  version (iDempiere 13 is a long-term-support release; older versions lose maintenance —
+  [release post](https://idempiere.org/?p=3658)). A design partner has offered a legacy server for
+  test runs — **planned, not run.** Such runs go against a restored copy or a throwaway client,
+  because the scenarios create documents. The runner is also what a migration or a plugin
+  vendor can point at *their own* iDempiere to prove a change behaves like the system they
+  already run.
 - **Touch-kitchen + self-order tabs + QR payment.** A self-order surface (URL-fetched remote
   ordering, QR payment display, payment-status fold returned by email) sits naturally on the
   same op-log. *(Not yet in code; the POS loop it rides is.)*
@@ -255,6 +282,20 @@ zero-invented, snapshot-verified graph; this is architecture proven on a real mu
 not yet a finished capability. See `prompts/SPATIAL_DEPENDENCY_GRAPH.md`,
 `prompts/Modeller/DISC_Walker/OCCUPANT_PATHFINDER.md`, `prompts/Viewer/FLY_TOUR_CORRIDOR_GRAPH.md`.
 
+
+**Team layer and Replication Scriptor (added 2026-10-25).** *Witnessed (bench, two real browsers, folder pipe):*
+the Modeller and the ERP share signed changes through a passive post box with per-column conflict warnings,
+a People list and a heads-up label ("founder is editing this element") that carry each person's chosen
+built-in avatar, and ONE Team icon in the Modeller that starts, joins and approves a team inside the app
+(bim-ootb PR #2368; `W-TEAM-MODELLER` 33/0, `W-PEOPLE-MODELLER` 22/0, `W-TEAM-ICON-MODELLER` 15/0,
+`W-AVATARS` 13/0, `W-AVATAR-TRAVEL` 9/0). *Specified, prototype only:* the **Replication Scriptor** — a
+compiler that turns the dictionary, roles and topology into signed per-device plans of what each device holds,
+sends and asks for, so that a new flow is a new row and not new code (`TEAMWORK_FRAMEWORK.md` §16; its S1
+prototype passes 22/22 for logic only: one in-memory hub, sample data, not encrypted). **Stated plainly,
+what's still open:** the building itself is not shared (moving a seeded wall stays local), the wings of a
+shared building are agreement and not enforcement, the older Outliner dots still only see the same machine,
+and everything above is a proof of concept (risks 5 and 6).
+
 ---
 
 ## The landscape — nobody else compiles, nobody else connects
@@ -291,6 +332,17 @@ Design exploration. No BOM, no compilation, no verification.
 They parse and display IFC. They do not abstract intent, compile from recipes, or prove
 round-trip fidelity — and **none connect BIM to a transaction ERP over one signed log.**
 
+### A different field — local-first sync and offline POS (where the team layer competes)
+
+*Class and members listed from general knowledge, **not re-verified in this pass**; the sourced
+comparison is `prompts/prior_art_2026-10-25/` (R1–R3). Verify before any public comparison.*
+
+| Class | Examples | What they do | Where we differ |
+|---|---|---|---|
+| Local-first sync engines | Automerge, Yjs, Replicache / Zero, ElectricSQL, PowerSync, Ditto, CouchDB / PouchDB | replicate application data between devices; the developer hand-writes the sync scope (R2) | the scope is compiled from the dictionary (the Replication Scriptor, `TEAMWORK_FRAMEWORK.md` §16); the same deterministic verbs replay identically on every device |
+| Offline POS | Unicenta, Odoo POS offline mode | sell locally, sync to a central database on reconnect | the sale path needs no central database; head office derives stock from declared sales (§16.0a) |
+| Cloud BIM collaboration (CDE) | Trimble Connect, Autodesk Construction Cloud, Bentley iTwin, Procore | central servers, permissions, issues, support | no operated server, works offline, no subscription — but they sell integration, compliance and accountability, which we do not claim to replace |
+
 ### Adjacent layers — interop and governance (not authoring, not competing directly)
 
 | Layer | Example | What it does | What it doesn't |
@@ -310,13 +362,21 @@ of this pipeline's merge gate rather than replace it.
 1. **Spatial compilation is solved — and hard to replicate.** Intent extraction, recompile,
    and a 0.002 mm round-trip across 21 buildings from 9 tools. Years of domain work.
 2. **BIM↔ERP over one signed op-log — unique.** Building → procurement order, ERP documents
-   reproduced to the cent. Requires rare BIM *and* manufacturing-ERP knowledge in one head.
+   reproduced to the cent on every scenario compared against a live legacy iDempiere (19 of 34
+   document tables, 2026-10-12 — the denominator matters). Requires rare BIM *and*
+   manufacturing-ERP knowledge in one head.
 3. **One generic dashboard for every data model.** AD-field-driven group-by/pivot/timeline —
    not a bespoke report per table.
-4. **Serverless / local-first by construction.** Each browser is its own server; the only
-   shared resource is a stateless signature gatekeeper. Scales to 10,000 POS stations with no
-   central database to overload — the exact failure mode that sank the national e-invoicing
-   rollout.
+4. **Serverless / local-first by construction.** Each browser is its own server and no server we
+   operate holds the truth. Two carriages are measured and their numbers differ: the
+   signature-gatekeeper POS carriage reaches 10,000 stations (`poc_pos_wan_scale`, ~4.6k ops/s) with
+   no central database to overload — the failure mode that sank the national e-invoicing rollout;
+   the passive post-office carriage used by the team layer holds ~31 devices per GitHub account
+   at one visit per 15 s and ~100 on a web relay with staggered visits. A few scarce resources
+   (last unit of stock, ledger posting, credit limit, batch runs) still need one owner-designated
+   always-on hub (`prompts/TEAMWORK_FRAMEWORK.md` §16.14 B1), so "serverless" here means *no shared
+   database server we operate*, not *no always-on role*. **Forged or altered signed ops are detected
+   and refused on every device** (witnessed; tamper-evident, not tamper-proof).
 5. **Domain-agnostic pipeline.** Houses, terminals, bridges, rail (93% BOM compression) — one
    pipeline, a YAML mapping per domain. See `INFRA_DESIGNER_SRS.md`.
 6. **Op-log = git-for-data.** Every state is a deterministic, reversible fold of a signed log
@@ -339,6 +399,25 @@ compilation — or a to-the-cent ERP fold — to a GUI-first tool takes years.
    talk to each other (BIM, ERP, open-source/local-first) — coherent, but earned per
    conversation, not yet institutional.
 
+5. **The team layer is measured on a bench, not in the field.** The team-size ceiling above is
+   a simulator number; fold speed on a real phone, the email post-box path, and the free-tier limits
+   and terms of every relay in the path (GitHub as a pipe, Gmail as a post box) are unmeasured or
+   unchecked, and no real team has run it for two weeks. Each has a named test with a pass line in
+   `prompts/TEAMWORK_FRAMEWORK.md` §17 (T1 scale ladder, T2 phones, T3 post box, T9 cost ledger, T10 pilot).
+6. **Novelty is "to our knowledge", not "first".** The prior-art checks found no documented production
+   system with real transactions and no always-on database or application server, and no system combining a
+   serverless plan compiler with a signed deferred-query catalog — but the searches were shallow (digests and
+   excerpts, no patent-office search) and an independent clean-clone reproduction has not been done (§17 T8).
+   We say "to our knowledge", never "first", and never "no other open-source project has this" as a fact.
+
+7. **Parity is measured on a stock dataset, in a small community.** Every parity number above is
+   from the GardenWorld seed on a local pilot. A customer's customisations and real data are
+   untested, and parity has to be re-run for each iDempiere version a client runs. The community
+   is also small: the project's own 2025 survey had 88 respondents, most common deployment 10–100
+   users, largest 40,000 ([survey](https://idempiere.org/blog/2025/05/28/idempiere-survey-2025-results/);
+   self-selected, so it describes respondents, not the whole base). Whether enough iDempiere shops
+   want this to sustain more than one or two clients is unproven.
+
 None of these block using or trying the project — they're the risks worth tracking as it
 scales, stated plainly rather than smoothed over.
 
@@ -355,6 +434,20 @@ scales, stated plainly rather than smoothed over.
 | **SME merchant (Malaysia)** | Run a local POS that does e-invoicing + accounting | Mandate compliance without a server to crash | 2 (target) |
 | **ERP owner (migration)** | Run a DB health-check → dirty-data + migration-gap report | Knows what they're sitting on before committing | 2 (target) |
 | **Architect / small practice** | Author basic geometry in-browser, export IFC | A path off per-seat license fees | 3 (frontier) |
+
+---
+
+## Next moves (2026-11-16): ideas that follow from the pattern so far
+
+The same pattern repeats through the work: one engine with many faces (the door verbs, the AD layer, pure cores a terminal and a browser both draw), and one habit of proof (witnesses with falsifiers, `§` logs, a legacy system as the oracle). These ideas follow from that. They are a judgment, not market research, and none has a named buyer yet.
+
+1. **Repeat the paid chain so it becomes an offer.** DXF drawing to BIM to ERP project order to dashboard has been delivered once. A second client on the same flow shows how many hours a repeat takes, and that number is the price. A natural buyer is a contractor or quantity-surveying firm that wants cost control without a heavy ERP. This is the most direct route to revenue.
+2. **A safe gateway for AI agents into ERP and BIM.** The door already has harm classes, claims for AI writes, a journal, and refusals that name the legal values. Companies fear letting AI agents write into an ERP; this layer answers that. Publish the verb grammar as a small open specification with an MCP connector. It is the idea closest to a product that works for any ERP.
+3. **Legacy-parity migration as a service.** The parallel-run method, with the legacy system as the oracle, gives a client a parity report they can read. Aim it at small and mid-size sites stuck on older Compiere, Adempiere or iDempiere installs: provable zero impact.
+4. **The witness discipline as a verification toolkit.** The OpenBIM readiness toolkit in a broader form: audit AI-built or vendor-built systems against `§`-tagged claims that each have a falsifier. It answers "how do I trust AI-written code?". It can be a paid review, a short course, or a template repository.
+5. **A handover kit.** Write down what one trained person needs to run a lane from its resume block. This lowers key-person risk and lets a second client be taken on without doubling the hours.
+
+**Order.** One paying lane (1), one product lane (2), with (3) and (4) as the sales story. The prototypes elsewhere in the project (pawn fintech, halal track and trace, POS, warehouse robotics) should wait until (1) has a second client: the hard part is finishing and selling one thing, not generating ideas.
 
 ---
 

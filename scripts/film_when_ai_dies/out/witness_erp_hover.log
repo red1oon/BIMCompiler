@@ -1,0 +1,23 @@
+§ERP_HOVER_W E1 §ERP_HOVER_INDEX entries=305 kinds={"callout":18,"callout-method":44,"validator":69,"handler":18,"column-callout":14,"model":68,"docaction":14,"process":60} legacy_files=167 parsed=318 skipped=0 root=<bim-ootb> same_as_fresh_parse=Y
+§ERP_HOVER_W E1 kind=callout registered=17 indexed=17
+§ERP_HOVER_W E1 kind=process registered=60 indexed=60
+§ERP_HOVER_W E1 kind=model registered=46 indexed=46
+§ERP_HOVER_W E1 kind=validator registered=71 indexed=71
+PASS E1 the index = a fresh parse
+§ERP_HOVER_W E2 fields=12323 with_layers=3364 callouts_and_processes_named=466 lines_resolved=6664 wrong_line=0 unresolved=0 unported=196 (distinct 166)
+§ERP_HOVER_W E2 unported_first=AD_ExpireBroadcastMessage (org.idempiere.broadcast.process.ExpireBrodcastMessage),AD_PublishBroadcastMessage (org.idempiere.broadcast.process.PublishBrodcastMessage),AD_TestBroadcastMessage (org.idempiere.broadcast.process.TestBrodcastMessage),AD_ChangeLog_ReDo (org.compiere.process.ChangeLogProcess),AD_ChangeLog_UnDo (org.compiere.process.ChangeLogProcess),CalloutClient.clientLanguageWarning,AD_Client EMailTest (org.compiere.process.EMailTest),Callout_AD_Column.element,Callout_AD_Column.infoWindow,Callout_AD_Column.process
+§ERP_HOVER_W E2b false_unported=0
+PASS E2b every UNPORTED the hover says agrees with the engine's own lookup (getCallout / the process registries)
+PASS E2 every layer that names a line lands on its registration, over all 12323 AD window fields  3364 fields with layers beyond the dictionary row
+§ERP_HOVER_W E3 red-control removed=erp/callouts/CalloutGLJournal.js:8 unresolved_or_wrong=45 (was 0)
+PASS E3 red control: a removed index entry is counted, not hidden
+§ERP_HOVER_W E4 window=143 targets=40 hovered=36 distinct_fields=18 with_lines=36 same_as_node=36 wrong=0 page_errors=0 installed="§ERP_HOVER installed index_entries=305"
+  §ERP_HOVER_W E4 field=C_Order.DocumentNo layers=18 with_line=17
+  §ERP_HOVER_W E4 field=C_Order.DocumentNo layers=18 with_line=17
+  §ERP_HOVER_W E4 field=C_Order.C_BPartner_ID layers=20 with_line=18
+  §ERP_HOVER_W E4 field=C_Order.C_BPartner_ID layers=20 with_line=18
+  §ERP_HOVER_W E4 field=C_Order.DateOrdered layers=20 with_line=19
+  §ERP_HOVER_W E4 field=C_Order.DateOrdered layers=20 with_line=19
+  §ERP_HOVER_W E4 keys tried=122 wrong_or_dead=0 first_link=vscode://file<bim-ootb>/erp/model_order.js:57
+PASS E4 the page: every hovered field shows the same stack as the node kernel, and EVERY number shown (Alt+n) opens the line printed beside it  36 hovers, 122 keys
+§ERP_HOVER_W VERDICT PASS fail=0

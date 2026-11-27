@@ -1,0 +1,21 @@
+═══ W-MORDER-QTYROLLUP — completeIt running-total writeback == iDempiere C_OrderLine (units) ═══
+    rollup = erp_engine.qtyRollup(fan-out) · oracle = stored GardenWorld c_orderline (client 11) · order=106
+
+§QTYROLLUP order=106 docno=800002 issotrx=N fulfillment: delivered=true invoiced=false
+   🟢 ANCHOR: createShipment fan-out movementqty == real m_inoutline — derived={"121":30,"122":12,"123":15} oracle={"121":30,"122":12,"123":15} maxDiff=0
+   🟢 ROLLUP: qtyRollup(QtyDelivered) == stored c_orderline.qtydelivered — ops=3 delta={"121":30,"122":12,"123":15} oracle={"121":30,"122":12,"123":15} maxDiff=0
+§QTYROLLUP op=UPDATE_FIELD table=C_OrderLine id=121 field=qtydelivered delta=30 stored=30 diff=0
+§QTYROLLUP op=UPDATE_FIELD table=C_OrderLine id=122 field=qtydelivered delta=12 stored=12 diff=0
+§QTYROLLUP op=UPDATE_FIELD table=C_OrderLine id=123 field=qtydelivered delta=15 stored=15 diff=0
+   🟢 NO-INVOICE: zero invoice fan-out → stored qtyinvoiced all 0 (partial state reproduced) — invOps=0 storedInv={"121":0,"122":0,"123":0}
+§QTYROLLUP qtyinvoiced rollup=NONE (no c_invoiceline) stored={"121":0,"122":0,"123":0} diff=0
+   🟢 §FALSIFIER-A wrongly invoice order 106 → QtyInvoiced delta ≠ stored 0 (deliver-not-invoice policy is load-bearing) — badDelta={"121":30,"122":12,"123":15} stored={"121":0,"122":0,"123":0} maxDiff=30
+§FALSIFIER-A mutation=force-invoice badDelta={"121":30,"122":12,"123":15} maxDiff=30 (must be >0)
+   🟢 §FALSIFIER-B corrupt one QtyDelivered delta (+1) → diff≠0 vs stored — maxDiff=1
+§FALSIFIER-B mutation=+1-on-line-121 maxDiff=1 (must be >0)
+
+§QTYROLLUP-RESIDUAL completeOrder does NOT yet auto-emit the rollup (additive verb, not wired — keeps the 20+ existing fan-out witnesses byte-stable); wiring it behind the doc-action is the named next step. Over-delivery (Qty>QtyOrdered) + credit-memo negate (MInvoice.java:2922) absent in this seed — named, not synthesized.
+§HARDEN surface=MOrder.qtyrollup fixtures=3 diff=0 oracle=iDempiere(stored c_orderline, client 11)
+
+🟢 W-MORDER-QTYROLLUP PASS — the completeIt running-total writeback (QtyDelivered/QtyInvoiced) reproduces the stored GardenWorld order-line, partial state included.
+exit=0

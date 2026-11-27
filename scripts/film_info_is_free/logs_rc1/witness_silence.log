@@ -1,0 +1,4 @@
+size=       0kB time=00:00:00.00 bitrate=N/A speed=   0x    [silencedetect @ 0x64b5d23cac40] silence_start: 0
+[silencedetect @ 0x64b5d23cac40] silence_end: 4.17215 | silence_duration: 4.17215
+size=N/A time=00:01:12.23 bitrate=N/A speed= 144x    [silencedetect @ 0x64b5d23cac40] silence_start: 73.8765
+[silencedetect @ 0x64b5d23cac40] silence_end: 81.4605 | silence_duration: 7.58402

@@ -1,0 +1,49 @@
+§FILM_GUARD OK   refs.places 824 = W-X0-REALVSC's own count of Find All References on APP.db
+§FILM_GUARD OK   the definition list of the field has exactly the one X0 jump (viewer/city.js:717); the editor's own support gave 0 others
+§FILM_GUARD OK   erp.layers 20 = the count the tooltip itself prints
+§FILM_GUARD OK   W-ERP-HOVER: wrong_line=0, every number key opens its line (122 keys), page_errors=0
+§FILM_GUARD OK   the ERP page's Alt key opened erp/callouts/CalloutOrder.js:181 and the editor shows exactly that file:line (erp/callouts/CalloutOrder.js:181)
+§FILM_GUARD OK   q3: the log file itself holds the value the hover showed at bim4d/LTU_AHouse/3379cbf0b211_4c8212a3a98b_meta/witness.log:20 and its stamp names commit 560b354
+§FILM_GUARD OK   q3: the grey line (CodeLens) above the printing line is there: last: §HOSTED_BEFORE_HOST hostedTotal=5735 matched=5466 fell
+§FILM_GUARD OK   q4: one warning, kind clock, advice Env.edge().nowMs(); core files 125
+§FILM_GUARD OK   q5: viewer/sw.js CACHE_VERSION in the tree the stills were shot on (560b3541) v1740 -> the editor shows const CACHE_VERSION = 'v1741'; after the real press wrote it
+§FILM_GUARD OK   q5: the real check printed verdict=PASS before anything was written, the second press wrote (written=2), the warning was there before
+§FILM_GUARD OK   bump parity: judged=24 failed=0 and its real-bridge row says skipped (the card says so)
+§FILM_GUARD OK   offline: 6 understanding features, 0 doors, red control DETECTED, verdict PASS (out/offline.log)
+§FILM_GUARD OK   §X0_ISOLATION deps=0 with its red control
+§FILM_GUARD OK   the editor itself reports chat.disableAIFeatures=true, ONE extension that is not built in (bim-devtools.x0-navigator), no extension named like an assistant
+§FILM_GUARD OK   passenger: the block copied = the block opened beside (81 lines, 5 sections)
+§FILM_GUARD OK   no shoot step reported an error
+§FILM_GUARD OK   the tree started clean, every edit was taken back, the tree ended clean (§FILM_RESTORE x2, §FILM_END, §FILM_TREE_AFTER)
+§FILM_GUARD OK   the stills and the witnesses ran on the same clean tree: 560b3541 = origin/main
+§FILM_GUARD OK   q5: the "checking" still was taken while the check ran (still at 511 ms, the check ended at 740 ms)
+§FILM_GUARD OK   q5: the Bump item's pixels differ between states: idle/checking AE=1601, checking/ready AE=1706, ready/written AE=1177; written vs idle AE=83 (back to idle)
+§FILM_GUARD OK   every still is the real window (1440x900) and every cut band lies inside its picture
+§FILM_GUARD OK   the ERP band (x 128+1280, y 239+407, zoom 1.5) holds the whole tooltip and the hovered field
+§FILM_GUARD OK   before speaks ["1"]
+§FILM_GUARD OK   q1 speaks ["824","192","0"]
+§FILM_GUARD OK   q2 speaks ["20","1","12323","0"]
+§FILM_GUARD OK   q3 speaks ["5735"]
+§FILM_GUARD OK   q4 speaks ["125"]
+§FILM_GUARD OK   q5 speaks ["1","24"]
+§FILM_GUARD OK   why speaks ["6","0"]
+§FILM_GUARD OK   passenger speaks ["81"]
+§FILM_GUARD OK   roadmap speaks ["4"]
+§FILM_GUARD OK   close speaks []
+§FILM_GUARD OK   red control (th): a planted 825 in the q1 text is NOT a recorded fact (the number check would FAIL it)
+§FILM_GUARD OK   the roadmap card = the design file: B0 built, B1 next with its build spec written, C D E not started (prompts/CODE_ARCHITECTURE_DESIGN.md on master)
+§FILM_GUARD OK   P prior art "LSIF (Microsoft, language server index format)" <- out/prior/lsif.html holds: "answer language server LSP requests for the same workspace without run…"
+§FILM_GUARD OK   P prior art "Universal Ctags" <- out/prior/ctags.html holds: "ctags generates an index (or tag) file of language objects found in so…"
+§FILM_GUARD OK   P prior art "Temporal, Workflow Definition" <- out/prior/temporal.html holds: "A Workflow Definition must be deterministic to support replay…"
+§FILM_GUARD OK   P prior art "Quokka.js" <- out/prior/quokka.html holds: "displaying runtime values in your editor as you type…"
+§FILM_GUARD §FILM_GUIDE url=https://red1oon.github.io/BIMCompiler/DeveloperGuide/#41-x0-navigator-the-repos-own-vs-code-extension http=200 anchor=Y bump_described=Y core_pure_described=Y
+§FILM_GUARD OK   the guide link answers HTTP 200, the anchor is in the page, and §4.1 describes the Bump button and the core-purity warning (the gap named on 2026-11-18 is closed)
+§FILM_GUARD OK   not said: no claim that the network was cut (the machine cannot do that without root)
+§FILM_GUARD OK   not said: no claim of being first or novel
+§FILM_GUARD OK   not said: no speed was measured
+§FILM_GUARD OK   not said: no claim that it is never wrong
+§FILM_GUARD OK   not said: Parts B1, C, D, E are not claimed as built
+§FILM_GUARD OK   not said: no TypeScript, no "typed parts", no quoted line or file counts
+§FILM_GUARD OK   not said: no claim that the editor calls a model
+§FILM_GUARD OK   translated cut (th): every card sentence is translated; no English words left but code, file and proper names
+§FILM_GUARD VERDICT PASS

@@ -1,0 +1,9 @@
+[
+ {"name":"cp_bt_same_currency","window":200105,"tab":0,"date":"2006-12-15","steps":[
+   {"set":"PayDate","value":"2006-12-15"},{"set":"From_C_BankAccount_ID","value":100},{"set":"From_Amt","value":"100"},
+   {"set":"To_C_BankAccount_ID","value":200000},{"set":"Rate","value":"2"},{"set":"From_TenderType","value":"K"},{"set":"From_C_Charge_ID","value":100}]},
+ {"name":"cp_bt_cross_currency","window":200105,"tab":0,"date":"2006-12-15","steps":[
+   {"set":"PayDate","value":"2006-12-15"},{"set":"From_C_BankAccount_ID","value":100},{"set":"To_C_BankAccount_ID","value":200000},
+   {"set":"From_Amt","value":"100"},{"set":"To_C_Currency_ID","value":102},{"set":"C_ConversionType_ID","value":114},
+   {"set":"From_C_Currency_ID","value":100},{"set":"IsOverrideCurrencyRate","value":"Y"},{"set":"To_Amt","value":"90"},{"set":"Rate","value":"0.8"}]}
+]

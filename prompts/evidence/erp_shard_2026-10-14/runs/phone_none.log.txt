@@ -1,0 +1,12 @@
+§PHONE fatal TargetCloseError: Protocol error (Runtime.callFunctionOn): Target closed
+§PHONE PHONE-PROXY profile=none rtt=0ms bw=off cpu=4x chunk=16384 dbMB=11195 peakRssMB=1081
+§PHONE_VERDICT FAIL (killed/crashed — possible memory cap) PHONE-PROXY profile=none rtt=0ms bw=off cpu=4x chunk=16384 dbMB=11195
+qs=0 bytes=0 rows=1
+§PHONE repeat W2_tabs ms=2 reqs=0 bytes=0 rows=5
+§PHONE repeat W3_fields ms=3 reqs=0 bytes=0 rows=89
+§PHONE repeat W4_order ms=1 reqs=0 bytes=0 rows=1
+§PHONE repeat W5_orderlines ms=2 reqs=0 bytes=0 rows=1
+§PHONE PHONE-PROXY profile=none rtt=0ms bw=off cpu=4x chunk=16384 dbMB=11195 open ms=282 reqs=54 bytes=901120
+§PHONE PHONE-PROXY profile=none rtt=0ms bw=off cpu=4x chunk=16384 dbMB=11195 COLD firstWindowMs=545 (open 282 + queries 263) totalReqs=128 totalBytes=2146304 | REPEAT queriesMs=10 reqs=0 bytes=0
+§PHONE PHONE-PROXY profile=none rtt=0ms bw=off cpu=4x chunk=16384 dbMB=11195 peakRssMB=861
+§PHONE_VERDICT PASS PHONE-PROXY profile=none rtt=0ms bw=off cpu=4x chunk=16384 dbMB=11195

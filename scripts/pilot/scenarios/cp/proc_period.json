@@ -1,0 +1,44 @@
+[
+ {
+  "name": "cp_periodstatus_close_138",
+  "process": 167,
+  "recordId": 138,
+  "tableId": 145,
+  "params": [
+   {
+    "name": "PeriodAction",
+    "value": "C"
+   }
+  ],
+  "tables": [
+   "c_periodcontrol"
+  ],
+  "alignFromSeed": [
+   {
+    "table": "C_PeriodControl",
+    "where": "C_Period_ID=138"
+   }
+  ]
+ },
+ {
+  "name": "cp_periodstatus_open_138",
+  "process": 167,
+  "recordId": 138,
+  "tableId": 145,
+  "params": [
+   {
+    "name": "PeriodAction",
+    "value": "O"
+   }
+  ],
+  "tables": [
+   "c_periodcontrol"
+  ],
+  "alignFromSeed": [
+   {
+    "table": "C_PeriodControl",
+    "where": "C_Period_ID=138"
+   }
+  ]
+ }
+]

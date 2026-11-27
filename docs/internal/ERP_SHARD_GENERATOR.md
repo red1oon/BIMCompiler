@@ -191,3 +191,339 @@ deliberately NOT bundled — the witness is the access surface (roles + windows)
 - Cross-check: client 11 intact (4 roles); client-12 role ids = src+10M (10000102/103, 10050004, 10200001);
   0 orphans on `ur→role` / `oa→org` / `role→client`; client-12 access-row content hash STABLE across reruns.
 - Renderer untouched; output local only. STOP — no deploy without explicit GO.
+
+## §9 Large-client PG→SQLite migration (SPEC, 2026-10-13 — no code yet)
+> Question (user): can a ~10 GB client PG DB migrate to SQLite and shard into the browser? Sharding tiers
+> (§1–§8, `IDEMPIERE_DATA_STREAMING_SPEC.md`, `ACCESS_FREQUENCY_SHARDING.md`) are designed and witnessed ONLY on the
+> 45 MB `ad_full.db`. The gap is the front-end `scripts/migrate_pg_to_sqlite.js`, which was sized for the dictionary.
+
+**Measured from the code (not assumed):**
+- `pgCopy()` (`migrate_pg_to_sqlite.js:94-99`) uses `execFileSync` with `maxBuffer = 512 MB` (`:46`, comment: "largest
+  table is ~11MB"), then `payload.split('\n')` (`:291`) → the WHOLE table's text sits in RAM, twice. Any table whose COPY
+  text exceeds 512 MB throws `ENOBUFS`; below that it still costs ~2× table size in heap.
+- Values are bound as TEXT into `NUMERIC`-affinity columns (`affinity()` `:134-140`) → SQLite coerces to INTEGER/REAL
+  (IEEE double). Exact for amounts ≤15 significant digits; NOT proven for wider NUMERIC. Twin rule requires exact books.
+
+**Unmeasured, industry-typical (labelled ESTIMATE; replace with `pg_total_relation_size` on the real client):**
+largest iDempiere tables in a mature client: `fact_acct`, `m_transaction`, `m_costdetail`, `c_orderline`,
+`c_invoiceline`, `m_storageonhand`, `ad_changelog`, `ad_pinstance*`, `ad_session`, `ad_attachment`/`ad_archive` (BLOB).
+Expect `fact_acct` + `ad_changelog` + BLOB tables to dominate; each can individually exceed 512 MB at 10 GB total.
+
+**Changes (≈ few dozen lines, same script — do NOT fork):**
+1. Stream COPY: psql stdout is handed to a spool FILE (`execFileSync … stdio:[ignore,fd,inherit]`, stays synchronous), read back in
+   8 MB chunks (utf8-safe, partial tail carried), inserted in transactions of `ERP_BATCH` rows (default 50 000). Heap bounded by chunk.
+2. Build indexes AFTER load; `PRAGMA journal_mode=OFF; synchronous=OFF` during bulk load (rebuildable output).
+3. NUMERIC: per column, read PG `numeric_precision/scale`; where a value does not round-trip through a double
+   (`String(Number(s)) !== normalised(s)`), store TEXT/scaled-integer and log `§MIGRATE_NUMERIC_WIDE table col n`.
+4. BLOB columns (`ad_attachment`, `ad_archive`, `ad_image`): out of the SQLite shard set; keep as content-addressed objects.
+5. Cold set (policy §2 of `ACCESS_FREQUENCY_SHARDING.md`) is written to separate T2 files at load time, not post-split.
+
+**Witnesses (each names the issue it proves):**
+- `§MIGRATE_ROWS table rows_pg rows_sqlite` equal for EVERY table (silent row loss).
+- `§MIGRATE_SUM table col sum_pg sum_sqlite` exact string match over all NUMERIC cols (float drift).
+- `§MIGRATE_MEM peakRssMB` while migrating the largest table stays under a stated cap (proves streaming, not buffering).
+- `§MIGRATE_VACUOUS` if a table/col set judged is empty → INCONCLUSIVE, never PASS.
+- Shard stage: `§SHARD-SET` T0 ≤ 13 MB and `§SHARD-CLOSURE dangling=0` on the scaled DB.
+
+**Bloat test bed (non-invent):** scale by REPLICATING real GardenWorld rows with re-keyed ids (same method as
+`--rekey-client`, offset-asserted) into a SCRATCH PG database — never the working `idempiere` DB. Target ≥10 GB with
+the real column shapes and index set. Browser side: headless Chromium, numeric readouts only (heap, OPFS bytes,
+range-bytes-per-query, cold-start ms) vs the 200 MB mobile ceiling (`FoldEngineConstraints.md` §2 #1). Desktop
+emulation cannot reproduce the iOS ~500 MB tab kill; that limit stays a cited figure, not a measured one.
+
+### §9.1 RESULT 2026-10-13 — built + run (log: `build/erp/logs/{bloat10_build,migrate_bloat10}.log`)
+- **Equivalence:** old vs streaming loader on GardenWorld, per-table sha256 over all rows: `§MIGRATE_EQUIV tables=925 differing=0`.
+- **Bed:** `scripts/build_bloat_pg.js` → scratch PG `bloat10`: `§BLOAT_VERDICT PASS tablesOk=11 replicatedHeapGB=9.32 dbSize=11 GB`
+  (fact_acct 12.7 M rows, m_costdetail 6.6 M, c_orderline 5.5 M …). Own PK re-keyed densely (`max + (g-1)*n0 + rank`, stays int4);
+  FKs dropped, NOT re-keyed → tests size/memory/fidelity, NOT closure. Working `idempiere` DB untouched.
+- **Migration of the 45.8 M-row, 9.3 GB-heap DB:** `§MIGRATE_VERDICT PASS rows-match-all-tables tables=925 peakRssMB=237`;
+  `/usr/bin/time`: 23 m 18 s wall, max RSS 243 MB; SQLite output 9.62 GB. `§MIGRATE_ROWS FAIL` count = 0. `§MIGRATE_NUMERIC_WIDE` lines = 0.
+- **Old loader, same job:** would throw at the 512 MB `maxBuffer` on any table whose COPY text exceeds it (fact_acct here ≈ 2.9 GB heap) — by code reading, not re-run.
+- **NOT done / gaps (named):** (a) per-column exact SUM witness (`§MIGRATE_SUM`) not implemented — only row counts + wide-NUMERIC text count;
+  (b) replicated rows repeat 300–300 real rows, so numeric-width coverage = GardenWorld's, not a real client's; (c) shard stage
+  (`build_erp_shard.js` T0/T1/T2 split) NOT run on this DB; (d) browser/mobile measurement (httpvfs range bytes, heap, cold start) NOT run;
+  (e) BLOB-table exclusion (item 4) and index-after-load (item 2: the loader creates no indexes at all) not applicable/implemented.
+
+### §9.2 Range-read witness (SPEC, 2026-10-13 — written before the script)
+**Issue it proves/disproves:** "a 9.6 GB SQLite on a dumb static host can serve keyed ERP queries to a browser reading only the
+pages it needs." **Found while specifying:** `ad_full.db` and `bloat10.db` carry ZERO indexes (`sqlite_master type=index` = 0) —
+so a keyed lookup would scan the table; at 12.7 M `fact_acct` rows that is GBs over HTTP. Hence loader flags `ERP_INDEX=1`
+(recreate PG index column-lists after load) and `ERP_PAGE_SIZE` (match httpvfs `requestChunkSize`).
+**Arms:** A = `bloat10.db` (no index, 4 KB pages) · B = `bloat10_idx.db` (PG indexes, 16 KB pages).
+**Rig:** `scripts/range_read_witness.js` — Node static server with `Range` support that COUNTS bytes+requests per query window;
+headless Chromium (puppeteer, CPU only, `Emulation.setCPUThrottlingRate(4)` as the mobile proxy) loads
+`bim-ootb/viewer/lib/httpvfs.js` (`createDbWorker`, `serverMode:'full'`). Numbers only; no screenshots.
+**Queries (each reports `§RANGE q=<name> ms bytes requests rows`):**
+ Q1 `SELECT count(*) FROM ad_window` (dictionary) · Q2 `SELECT * FROM fact_acct WHERE fact_acct_id=?` (PK point lookup, 12.7 M rows) ·
+ Q3 `SELECT * FROM c_orderline WHERE c_order_id=?` (master→detail drill) · Q4 `SELECT * FROM c_order WHERE c_order_id=?`.
+**Asserts (VACUOUS-guarded):** rows>0 for every query else `INCONCLUSIVE`; arm B Q2 bytes < 1 % of table bytes (`§RANGE_RATIO`);
+arm A Q2 bytes reported as-is (expected ≈ whole-table scan = the failure this witness exists to expose).
+**Honest bound:** desktop Chromium + CPU throttle ≠ a phone; iOS ~500 MB tab kill stays a cited figure, not measured here.
+
+### §9.3 RESULT 2026-10-13 — range-read witness (logs: `build/erp/logs/range_armA.log`, `range_armB.log`, `migrate_bloat10_idx.log`)
+Rig: headless Chromium, CPU-only, 4× CPU throttle, `httpvfs` `serverMode:'full'`, Node static server with Range, bytes counted server-side (HEAD excluded).
+| query | A: no index, 4 KB pages (9.85 GB file) | B: PG indexes, 16 KB pages (10.2 GB file) |
+|---|---|---|
+| Q1 dictionary count | 127 KB · 5 reqs | 16 KB · 1 req |
+| Q2 `fact_acct` by PK (12.7 M rows) | **3.12 GB · 611 reqs · 14.6 s** (30 % of file) | **49 KB · 3 reqs · 11 ms** (`§RANGE_RATIO pct=0.0005`) |
+| Q4 `c_order` by PK (2.1 M rows) | 711 MB · 146 reqs · 4.2 s | 131 KB · 6 reqs · 188 ms |
+| Q3 `c_orderline` by `c_order_id` | invalid (0 rows: key came from a replicated order whose lines keep old FKs) | 1.37 GB · 317 reqs · 6.1 s · 16 587 rows — **no FK index in the bed**: `build_bloat_pg.js` drops all non-PK indexes on replicated tables |
+- **Finding 1 (decisive):** unindexed, one keyed lookup moves GBs; indexed, it moves tens of KB. The loader now takes `ERP_INDEX=1` (`§MIGRATE_INDEX created=2047 sec=10`) and `ERP_PAGE_SIZE`. Any shipped large DB MUST use them; dictionary-size DBs ship unindexed today (`ad_full.db` indexes=0).
+- **Finding 2:** FK indexes matter as much as PKs — master→detail drill is the AD engine's core move; Q3 shows the cost of missing one (a real PG client has them; the bed removed them).
+- **Indexed migration:** `§MIGRATE_VERDICT PASS` 925 tables, 16 m 31 s, max RSS 231 MB, output 9.95 GB.
+- **Gaps:** arm A used 4 KB chunks and B 16 KB (page size confounded with index; the 3.1 GB vs 49 KB gap is index-dominated). Arm A `open` line is invalid (HEAD was counted; fixed after). Q3 not re-run on A or B-with-FK-index. Not a phone: desktop Chromium + CPU throttle. Shard stage (T0/T1/T2 split) and cold-start under network throttle still NOT run.
+
+## §10 Warm/cold split on RELATED rows — design + first try (2026-10-13, SPEC before script)
+**Issue (found by reading `sharding_boundaries.json` / `gen_sharding_boundaries.js:46-105`):** today the split is per-table and
+header-only. (1) Lines (`c_orderline`, `c_invoiceline`, `m_inoutline`) and dependents (`m_transaction`, `c_allocationline`) are NOT in the
+map → unassigned; a cold header's lines have no tier. (2) `fact_acct` splits by PERIOD, docs by DOCSTATUS — two independent rules that
+disagree (CL doc in an open period; CO doc in a closed period). (3) A warm row can reference a cold row (`c_invoice.c_order_id` → a closed
+order; `c_allocationline` → a closed invoice); `resolveFK` then forces a cold ATTACH on a warm screen, defeating "cold never resident".
+**Rule set (one owner per question, BOM principle — parent + children atomic):**
+ R1 *Aggregate*: a header + all its lines + every dependent row owned by them (via `<hdr>_id`, `ad_table_id+record_id`, `*line_id`) is ONE unit; a unit is never split across tiers.
+ R2 *Candidate*: unit is cold-eligible iff header `DocStatus IN ('CL','VO')` (period-closed `fact_acct` follows its OWNER unit; period only adds candidates for units already complete).
+ R3 *Reverse closure*: cold set = greatest subset C of candidates such that NO row outside C references a unit in C. Computed by fixed point:
+    repeat { pin to warm every candidate unit referenced by any warm row } until no change. Warm→cold edges = 0 by construction; cold→warm and cold→cold are fine (warm is always attached).
+ R4 *Dependent rows* referencing several units are cold iff ALL their units are cold; otherwise warm and they pin the cold ones (via R3).
+ SQL form for scale: each pass is one anti-join `UPDATE cand SET pinned=1 WHERE EXISTS (SELECT 1 FROM refs r JOIN warm w ON … )`; passes = longest chain of warm→cold references (small).
+**Witnesses (INCONCLUSIVE when nothing judged):** `§SPLIT_UNITS`, `§SPLIT_PINNED n reasons`, `§SPLIT_ORPHANS=0` (every line/dependent has an owner unit or is reported),
+`§SPLIT_WARM_TO_COLD=0` (re-checked from scratch after the fixed point), `§SPLIT_EXHAUSTIVE warm+cold == total` per table.
+**Honest bound:** real data = GardenWorld (almost no closed docs) → policy run is mostly INCONCLUSIVE; a labelled STRESS run (extra
+candidates = docs older than a cutoff date — a parameter, not invented rows) exercises the same graph machinery on the same real rows.
+The REAL warm/cold ratio needs a real client's data.
+
+### §10.1 RESULT 2026-10-13 — `scripts/shard_split_plan.js` on REAL GardenWorld rows (`new.db` = full migrate of `idempiere`; logs `build/erp/logs/split_*.log`)
+Graph: 21 header tables, 12 line tables, dependents `fact_acct,m_transaction,m_costdetail,m_matchinv,m_matchpo`; 419 units, 1292 rows.
+| mode | cold candidates | pinned warm by R3 | cold units | warm→cold refs: fixed-point | same under today's per-table rule | verdict |
+|---|---|---|---|---|---|---|
+| policy (DocStatus CL,VO) | 1 | 1 | 0 | 0 | 11 | INCONCLUSIVE (nothing left cold) |
+| stress, dateacct < 2003-01-01 | 25 | 0 | 25 | 0 | 206 | PASS |
+| stress, dateacct < 2004-01-01 | 36 | 2 | 34 | 0 | 763 | PASS |
+- **The problem is real, not hypothetical:** the ONE closed order in GardenWorld (`c_order:102`) is referenced by a live invoice (`c_invoice:103`); R3 pins it warm (`§SPLIT_PINNED_WHY`). Today's per-table rule would have sent it cold and left 11 warm rows pointing at it.
+- **Chains are real:** 2004 run pins `m_inout:108` (a draft `m_inoutconfirm` references it) in pass 1, then `c_order:108` (its shipment line references the order) in pass 2 — `passes=2`.
+- **Postings follow their owner:** after letting `fact_acct` resolve through a dependent owner (`m_matchinv`, 76 rows), `fact_acct` splits 288 cold / 12 warm in the 2004 run; 2 dependents have no owner and stay warm (reported `§SPLIT_ORPHANS`).
+- **Exhaustive:** warm+cold == total for every table. **Honest bound:** the stress cutoff is a parameter on real rows, not a client's real closed-doc share; policy mode shows the closed-doc share in GardenWorld is ~0, so the realistic ratio and chain depth need a real client. Fixed point verified here in JS; the SQL anti-join form for 10 GB is specced (§10) but NOT built/run.
+
+### §10.2 SQL planner for scale (SPEC, 2026-10-13 — written before `scripts/shard_split_plan_sql.js`)
+Same rules R1–R4 as the JS planner, set-based so it runs on the 10 GB file without loading rows into JS.
+- Work DB `split.db` (writable) with the source ATTACHed read-only-in-practice (SELECT only). Unit code = `tblno*2^32 + id`.
+- Tables: `cand(u)`, `cold(u)` (working set, starts = cand), `ue(src,dst)` distinct unit→unit refs (header/line FK cols; line→its own header excluded),
+  `de(dep,dst)` distinct dependent→unit refs (`fact_acct` via `ad_table_id`+`record_id`, resolved through a dependent owner such as `m_matchinv` when that is the owner).
+- Fixed point per pass: (a) `DELETE FROM cold WHERE u IN (SELECT dst FROM ue WHERE src NOT IN cold)`; (b) `DELETE FROM cold WHERE u IN (SELECT d2.dst FROM de d1 JOIN de d2 USING(dep) WHERE d1.dst NOT IN cold)`; stop when both change 0 rows.
+- Independent re-check: `warm→cold` = count of `ue` rows with warm src / cold dst + dependents with a warm ref and a cold ref; must be 0.
+- **Correctness gate before scale:** on a small re-keyed bed the SQL cold set must EQUAL the JS planner's cold set (`--dump-cold`, diff = empty) in policy and stress modes; only then run on 10 GB. `§SPLIT_EQUIV` reports it.
+- Bed change that makes this meaningful: `build_bloat_pg.js` v2 re-maps every FK into another replicated table with the SAME copy index (copy g of an invoice → copy g of its order); `§BLOAT_FKCHECK … dangling=0`.
+
+### §10.3 RESULT 2026-10-13 — re-keyed 11 GB bed + SQL split planner at scale (logs `build/erp/logs/{bloat10r_build,migrate_bloat10r,split10_*,range_armC}.log`)
+- **Bed v2** (`build_bloat_pg.js`): every FK into another replicated table re-mapped with the SAME copy index; K = 29 138 copies of 23 tables; `§BLOAT_FKCHECK … dangling=0` on 6 edges; PG 12 GB; 8.74 M `fact_acct`, 9.67 M `c_orderline`, 9.12 M `c_order`, 17.5 M dependent→unit edges.
+- **Migration** (`ERP_INDEX=1 ERP_PAGE_SIZE=16384`): `§MIGRATE_VERDICT PASS` 925 tables, 15 m 43 s, max RSS 246 MB, 10.93 GB, `§MIGRATE_INDEX created=2057`.
+- **SQL planner, equivalence first:** on real GardenWorld, SQL cold set == JS cold set in all 3 modes (policy / <2003 / <2004; policy set empty in both).
+- **SQL planner at 10 GB** (`shard_split_plan_sql.js`, max RSS 108 MB, work DB 0.7–0.9 GB):
+| mode | candidates | pinned warm | cold units | warm→cold | wall | verdict |
+|---|---|---|---|---|---|---|
+| policy (CL,VO) | 29 139 | 29 139 | 0 | 0 | 72 s | INCONCLUSIVE (all pinned: each closed order has a live invoice, as in GardenWorld) |
+| stress, dateacct < 2004-01-01 | 932 452 | 58 278 | 874 174 | 0 | 54 s | PASS (3 passes: shipment pinned, then its order) |
+  Stress cold share: `fact_acct` 8.39 M of 8.74 M rows cold; `c_orderline` 758 k of 9.67 M; `m_transaction` 728 k of 816 k.
+- **Range read on the FK-indexed bed** (`range_armC.log`): `fact_acct` PK 49 KB / 3 reqs / 12 ms; `c_orderline` by `c_order_id` **49 KB / 3 reqs / 11 ms** (was 1.37 GB with no FK index); `c_order` PK 98 KB / 185 ms; file 11.7 GB → closes the §9.3 Q3 gap.
+- **Still NOT done:** warm/cold shard FILES are not written (plan only); the cutoff is a stress parameter; replicated data has GardenWorld's mix and decimal widths; no phone run; cold-start under network throttle not run.
+
+### §10.4 Phone-proxy witness (SPEC, 2026-10-14 — written before `scripts/phone_sim_witness.js`)
+**Issue it proves/disproves:** "a COLD start (nothing cached) of the first ERP window over a slow mobile link on the 11 GB file is usable, and the open path
+(54 range requests / 0.9 MB on localhost) is not latency-bound." Estimate to confirm or kill: 54 sequential requests × 150 ms RTT ≥ 8 s.
+**Proxies (NOT a phone; labelled in every log line):** headless Chromium, `Emulation.setCPUThrottlingRate(4)`, touch+phone UA, fresh profile per cold run;
+network shaped SERVER-SIDE (per-request RTT delay + per-connection bytes/s cap) because CDP page throttling does not cover the dedicated worker httpvfs fetches from;
+memory capped with a cgroup (`systemd-run --user --scope -p MemoryMax=…`) as a stand-in for a tab kill; Chromium RSS sampled every 200 ms (`peakRssMB`).
+**Profiles:** `wifi` 20 ms RTT · 6 MB/s · `4g` 80 ms · 1.5 MB/s · `slow4g` 150 ms · 200 KB/s (= 1.6 Mbps, Lighthouse mobile default).
+**First window = Sales Order** (numbers only): W1 `ad_window` by name · W2 `ad_tab` by window · W3 `ad_field` by first tab · W4 `c_order` by PK · W5 `c_orderline` by `c_order_id`.
+**Reports:** `§PHONE profile chunk open{ms,reqs,bytes} W1..W5{ms,reqs,bytes} firstWindowMs totalBytes totalReqs peakRssMB`, cold (new browser) and repeat (same worker, in-session cache).
+**Asserts:** every W* rows>0 else INCONCLUSIVE; `OOM/killed` is reported as FAIL with the cap, never PASS. Chunk 16 KB vs 64 KB compared to test fewer-requests-per-open.
+**Honest bound:** desktop Chromium on this CPU ≠ a phone SoC; cgroup kill ≠ iOS jetsam; server-side shaping has fixed RTT, no loss/jitter.
+
+### §10.5 RESULT 2026-10-14 — phone-proxy witness (`scripts/phone_sim_witness.js`; logs `build/erp/logs/phone_*.log`)
+PROXY, not a phone: headless Chromium, 4× CPU throttle, server-side RTT + per-connection bandwidth shaping, 11.2 GB `bloat10r.db`, 16 KB pages. Fresh browser per cold run.
+| profile | RTT · bandwidth | open (54 reqs, 0.9 MB) | cold first window (128 reqs, 2.1 MB) | repeat (same session) |
+|---|---|---|---|---|
+| none | 0 · off | 0.28 s | **0.53 s** | 9 ms · 0 reqs |
+| wifi | 20 ms · 6 MB/s | 1.4 s | 3.1 s | 12 ms · 0 reqs |
+| 4g | 80 ms · 1.5 MB/s | 4.7 s | 10.9 s | 10 ms · 0 reqs |
+| slow4g | 150 ms · 200 KB/s | 8.6 s | **20.2 s** | 10 ms · 0 reqs |
+| slow4g, 64 KB chunks | 150 ms · 200 KB/s | 21.4 s (3.5 MB) | 46.9 s (7.7 MB) | 10 ms |
+- **Estimate confirmed:** the open is latency-bound — 54 requests × 150 ms ≈ 8.1 s predicted, 8.6 s measured. 64 KB chunks are WORSE (same request count, 4× the bytes): keep `requestChunkSize` = page size.
+- **Memory:** whole-Chromium-tree RSS rose 39–123 MB above an empty page while using the 11 GB file (`dbDeltaMB`; slow4g/16 KB = 101 MB). Tree includes browser+GPU+network processes, so it overstates a single tab. The 200 MB mobile ceiling (FoldEngineConstraints §2) is not exceeded by the DB access itself; the cgroup-cap run was NOT done.
+- **Cold-start dominated by the dictionary, not data:** at slow4g, `W3 ad_field by ad_tab_id` = 8.9 s / 57 reqs / 0.97 MB (≈ 44 % of queries). Real iDempiere's PG has NO index on `ad_field.ad_tab_id` either (only pkey, column, uu) — PG hides it with an in-memory scan; over range reads it costs requests.
+- **NEGATIVE result, root cause UNCONFIRMED:** adding `CREATE INDEX ix_ad_field_tab ON ad_field(ad_tab_id)` (plan verified: `SEARCH … USING INDEX`) made W3 WORSE on slow4g: 45 s / 27 reqs / 8.7 MB. Hypothesis: httpvfs read-ahead grows the fetch on near-sequential page access; not tested. The index was dropped again. Do NOT ship an `ad_field` index on this evidence.
+- **Design consequence (reasoned from the T0/T1/T2 spec, not run here):** the AD dictionary is T0 (precached `ad_seed.db`, 12.7 MB) and never range-read, so W1–W3 are not on the network in production. The network cost of the first DATA drill is the open + W4/W5: measured parts 8.6 s + ~1.4 s ≈ **~10 s on slow4g, first time only**, then 0 requests in-session. That composition is an ESTIMATE from measured parts, not a measured end-to-end run.
+- **Not done:** cgroup memory-cap kill test; real phone; HTTPS/secure-context features (service worker, Web Crypto, OPFS) over LAN; jitter/packet loss; fewer-requests open (e.g. larger first fetch of the DB header + root pages) is an untested idea.
+
+### §10.6 Demo service (2026-10-14) — `scripts/range_demo_server.js`
+Static host with HTTP Range for one big SQLite file + a test page that runs open + W1–W5 in the VIEWER'S browser and POSTs numbers to the server log
+(`§DEMO_REPORT`/`§DEMO_STEP`; the tester only taps a button — numbers, not eyes, are the evidence). Binds 0.0.0.0, URL carries a random token, serves only the page,
+the db (read-only) and three httpvfs lib files; wrong/no token = 404 (checked). Verified end to end with headless Chromium over the LAN IP:
+`open 54 reqs 880 KB · W1..W5 · totalMs=369`, `secureContext=false` (plain HTTP on a LAN address — service worker / Web Crypto / OPFS unavailable there, as predicted).
+Limits: per-process byte counter is shared (one tester at a time); plain HTTP; LAN-only unless tunnelled; this serves the file, it does NOT shard it (shard-file writer not built).
+
+### §10.7 RESULT 2026-10-14 — FIRST REAL PHONE RUN (log `build/erp/logs/range_demo_server.log`, `§DEMO_REPORT ip=192.168.1.14`)
+Device: Android 10, Chrome 155, 8 cores, home Wi-Fi to the PC (`navigator.connection`: net=4g rtt=50 ms down=1.65 Mbps), plain HTTP (`secure=false`), ONE run, cold session.
+`totalMs=10140`: open 5891 ms (54 reqs, 880 KB) · W1 175 (3) · W2 240 (5) · W3 fields 3251 (57) · W4 158 (3) · W5 198 (6). Requests and bytes are IDENTICAL to the desktop proxy (128 reqs, 2.1 MB) — they are deterministic.
+- **Effective cost ≈ 55 ms per range request** on this phone (W1 58, W3 57, W4 53, W5 33 ms/req; open 109 ms/req incl. wasm instantiate). Matches the browser's own rtt=50 ms.
+- **Proxy calibration:** the `wifi` profile (20 ms) predicted 3.1 s for the cold first window — real was 10.1 s (3.3× slower); the `4g` profile (80 ms) predicted 10.9 s — close. Use the `4g` row as the phone-on-Wi-Fi proxy.
+- **Lever = request count, not bytes:** 128 requests → ~7 s of the 10.1 s. W3 alone (57 reqs) is 3.25 s. Dictionary steps W1–W3 (65 reqs ≈ 3.7 s) disappear if the dictionary is the precached T0 seed, as designed.
+- **NOT measured:** phone memory (`deviceMemory` n/a in this browser), repeat-in-session, mobile data, iPhone, secure-context features, more than one run (no variance).
+
+### §10.8 RESULT 2026-10-14 — what the 54-request open actually is (log: `range_read_witness.js` open lines; builder: scratchpad `mk.js`, not committed)
+- **Cause = the schema, not the data.** `bloat10r.db`: 927 tables + 2 057 indexes, `sum(length(sql))` = 613 KB; the open reads that b-tree (54 reqs / 880 KB at 16 KB pages). SQLite parses the whole schema on open.
+- **Controlled test (same GardenWorld rows, 16 KB pages, no indexes):** full 927-table file → open **34 reqs / 573 KB**; slim file with only the 23 document-graph tables → open **3 reqs / 64 KB** (≈ 11× fewer requests, 9× fewer bytes). Data volume is irrelevant to open cost.
+- **Consequence:** per-module / per-tier shard files (the T2 design) are not only about size — a small schema makes each open ~3 requests. At the phone's measured ~55 ms/request (§10.7) the 54-request open (5.9 s) would be ≈ 0.2 s for a 3-request open. ESTIMATE from measured parts; slim file with its indexes and real 10 GB of rows not yet built or phone-tested.
+- **Not tested:** slim file WITH indexes (adds ~38 index rows to the schema; expected small), the schema-heavy `ad_*` dictionary as a shard, any non-GardenWorld schema.
+
+## §11 Shard-file writer (SPEC, 2026-10-14 — written before `scripts/shard_write.js`)
+**Issue it proves/disproves:** the split plan (§10) can be MATERIALISED into two small-schema files — `warm.db` and `cold.db` — that (a) together hold exactly the source rows (no loss, no duplicate),
+(b) open in ~3 range requests each (§10.8) even when 10 GB, (c) answer the same keyed lookups as the monolith.
+**Input:** source SQLite (`bloat10r.db`) + the planner's work DB (`cold(u)` unit set, `depcold(dep)` dependent set) from `shard_split_plan_sql.js` (stress mode — labelled; policy mode leaves cold empty).
+**Output (`outdir/`):** `warm.db`, `cold.db` (16 KB pages) each holding ONLY the split-graph tables (headers, lines, dependents) with their original DDL + PG-derived indexes; `manifest.json`
+{table → warm/cold/source rows, file bytes, sha256}. Row routing: header → by its unit in `cold`; line → by its header's unit; dependent → by membership in `depcold`; dependents with no refs → warm.
+**Witnesses (INCONCLUSIVE if nothing judged):** `§SHARD_ROWS table warm cold source` with `warm+cold==source` for EVERY table; `§SHARD_DISJOINT` (no pk in both); `§SHARD_OPEN file reqs bytes`
+(range_read_witness open line: expect ≈3 reqs, schema ≪ 100 KB); `§SHARD_LOOKUP` sample order+lines+postings found in exactly one file and equal to the source row (sha of row JSON).
+**Honest bound:** stress-mode cold set (date cutoff, parameter on real rows); dictionary/other 880 tables are NOT in these files (they are T0/other shards); one-shot writer, no incremental update.
+
+### §11.1 RESULT 2026-10-14 — shard files written from the 11 GB bed (`scripts/shard_write.js`; logs `build/erp/logs/shard_write10.log`, `split10_for_writer.log`)
+- **Plan:** stress cutoff 2004-01-01 (labelled stress): 932 452 candidates, 58 278 pinned warm, 874 174 cold units, `§SPLIT_VERDICT PASS` (67 s).
+- **Write:** 110 s wall, max RSS 250 MB, 38 split-graph tables → `warm.db` 5.29 GB + `cold.db` 3.86 GB (16 KB pages, 99 indexes each, schema 42 KB each). `§SHARD_ROWS` warm+cold == source for all 38 tables (`mismatches=0`); `§SHARD_UNIT_INTACT lineOrphans=0` measured on the OUTPUT files; `§SHARD_WARM_TO_COLD total=0` over 8 real FK edges; `§SHARD_VERDICT PASS`.
+- **Witness can fail (negative control, GardenWorld):** forcing the pinned `c_order:108` into the cold set made the writer report `warm->cold=1` and `FAIL`.
+- **Open cost:** warm.db opens in **5 reqs / 98 KB**, cold.db **5 reqs / 82 KB** (monolith: 54 reqs / 880 KB). Desktop drill on warm.db (`DEMO_MODE=shard`): open + pick + order + lines + postings = **24 reqs / ~460 KB, 531 ms**.
+- **Phone estimate (NOT measured):** 24 reqs × ~55 ms ≈ 1.3 s vs the monolith's 10.1 s.
+- **Caveats:** stress-mode cold set; only split-graph tables in these files (880 other tables are not); shard-writer is one-shot; `warm.db` still 5.3 GB, so a phone reads it by range, not whole.
+
+### §11.2 RESULT 2026-10-14 — shard files on the REAL phone (`range_demo_server_shard.log`, `§DEMO_REPORT ip=192.168.1.14`, ONE run)
+Same Android 10 / Chrome 155 phone, `warm.db` (5.3 GB, 5-request open): `totalMs=4937` — open 2586 ms (5 reqs, 96 KB) · pick order 857 (3) · order 182 (3) · lines 675 (6) · postings 611 (7). 24 requests / 456 KB.
+| | monolith 11 GB (§10.7) | `warm.db` shard | change |
+|---|---|---|---|
+| requests | 128 | 24 | 5.3× fewer |
+| bytes | 2.1 MB | 0.46 MB | 4.6× fewer |
+| total (cold) | 10.1 s | 4.9 s | 2.1× faster |
+- **My estimate was wrong:** §11.1 predicted ≈ 1.3 s (24 reqs × 55 ms). It forgot the fixed start-up cost: 5 requests took 2.6 s to open (≈ 517 ms/req), so ≈ 2.5 s of the open is NOT range requests — most likely worker start + the 1.2 MB sqlite wasm download/compile on the phone (not isolated; `§DEMO_LIB` serve-time logging added to separate it next run).
+- **Per-request cost varied between runs:** monolith queries 4022 ms / 74 reqs = 54 ms/req (browser reported rtt=50); shard queries 2325 ms / 19 reqs = 122 ms/req (browser reported rtt=100). Single samples on home Wi-Fi: network state differed, so the 2.1× is a floor-ish comparison, not a stable ratio. Needs ≥3 runs each.
+- **Implication:** with the start-up cost fixed (~2.5 s, cacheable by the service worker in the real app), the remaining range-read cost is per-request × request count, which shards cut 5.3×.
+
+### §11.3 RESULT 2026-10-14 — repeated real-phone runs (same Android 10 / Chrome 155 phone, home Wi-Fi, plain HTTP; logs `range_demo_server*.log`)
+Cold first window, ms (`totalMs`, click → last query): **monolith 11 GB** (n=4): 8872 · 10390 · 9192 · 12455 → median 9.8 s, range 8.9–12.5 s. **`warm.db` shards** (n=3): 3504 · 2819 · 3417 → median 3.4 s, range 2.8–3.5 s.
+- **Speed-up ≈ 2.9× on medians; worst shard run (3.5 s) is 2.5× faster than best monolith run (8.9 s).** Requests 128 → 24. Small n; one phone, one network.
+- **Run-to-run noise is real:** monolith's slowest run (12.5 s) is the one where the browser reported rtt=100 ms (others 50 ms); shard run 3 also reported rtt=100 but stayed 3.4 s.
+- **Steady-state per-request cost ≈ 45–56 ms** at rtt=50 (monolith query steps 3.6–4.1 s / 74 reqs; shard query steps 0.85–1.06 s / 19 reqs); 72 ms at rtt=100.
+- **Open decomposition (server `§DEMO_LIB`):** the 1.24 MB `httpvfs-sql-wasm.wasm` took 1.0–2.1 s to serve to the phone (shard runs 1.8 / 1.0 / 1.4 s; monolith 1.3 / 2.1 / 1.4 s) — i.e. ~1.4 s of every cold open is the engine download, identical for both. Remainder of open: monolith 3.9–4.2 s for 54 reqs (≈ 74 ms/req incl. wasm compile + schema parse), shard 0.74–0.96 s for 5 reqs.
+- **So the shard cold start ≈ 3.4 s = ~1.4 s engine download + ~0.8 s open + ~1.0 s of 19 query requests.** The demo serves libs `no-store`; in the real app the service worker would cache the engine (not measured here), leaving ≈ 2 s. NOT measured: repeat visit, mobile data, other phones, memory on the phone.
+
+## §11.4 Repeat-visit test (SPEC, 2026-10-14 — written before the server change)
+**Issue it proves/disproves:** how much of the 3.4 s cold shard start (§11.3) is the one-off ~1.4 s engine download, i.e. what a RETURNING user sees when the engine is already on the device.
+**Method:** `range_demo_server.js` with `DEMO_CACHE_LIBS=1` sends `cache-control: public, max-age=3600` on the three lib files (page and db responses stay `no-store`). Tester loads the link, taps once (primes the cache), then reloads and taps again, 3 repeat runs per link.
+**Proxy caveat (stated up front):** this is the browser HTTP cache standing in for the real app's service worker (service workers need a secure context; plain-HTTP LAN has none). Compiled-wasm reuse by Chrome's code cache is possible but not controlled/observed here.
+**Witness:** server log. A repeat run shows a `§DEMO_REPORT` with NO preceding `§DEMO_LIB` lines (engine served from device cache); a primed run shows the 3 lib lines. A repeat run whose lib lines still appear is NOT counted as a repeat (INCONCLUSIVE for that run).
+**Reports:** per link: repeat `totalMs` vs the same link's cold `totalMs` (§11.3), `open` ms, and the delta attributed to the engine download.
+
+### §11.5 RESULT 2026-10-14 — repeat visit on the real phone (same phone/Wi-Fi/plain HTTP; logs `range_demo_server_cached.log`, `range_demo_server_shard_cached.log`)
+Engine files cacheable (`max-age=3600`), reload + tap. Witness: repeat runs have NO `§DEMO_LIB` lines before their report (engine served from device cache) — all counted repeats satisfy this. n = 1 primed + 2 repeat runs per link (3 taps each; 3 repeats were requested).
+| link | primed (engine downloaded) | repeat 1 | repeat 2 | open: primed → repeat |
+|---|---|---|---|---|
+| shard `warm.db` | 2083 ms | 1196 ms | 1406 ms | 1341 → 391 / 449 ms |
+| monolith 11 GB | 5998 ms | 5072 ms | 4201 ms | 2892 → 2226 / 1647 ms |
+- **Returning user, shard: ≈ 1.2–1.4 s** for open + order + lines + postings (24 requests); monolith ≈ 4.2–5.1 s (128 requests) → **≈ 3.5× on repeat medians**.
+- **Repeat saves ~0.7–0.9 s on the shard (−32…−43 %)** and ~0.9–1.8 s on the monolith (−15…−30 %).
+- **The saving is more than the engine DOWNLOAD:** in the shard primed run the engine was served in only 89 ms, yet open fell by ~0.9 s — so the cache also removes engine COMPILE / setup time (likely Chrome code cache); not isolated.
+- **Absolute numbers drift between sessions:** this session's primed shard run (2.1 s) beat §11.3's cold runs (2.8–3.5 s); the engine took 89 ms here vs 1.0–1.8 s earlier. Network state varies a lot; compare ratios WITHIN a session, not across.
+- **Still true on the monolith:** `W3 ad_field` (57 requests) costs ≈ 2.0 s in every run, repeat or not — the dictionary scan is not helped by the engine cache. In the real design the dictionary is the precached T0 and never range-read.
+- **NOT measured:** a true service worker (needs HTTPS), mobile data, other phones, phone memory, writes.
+
+## §12 Real-tenant run (SPEC, 2026-10-14 — written before the run)
+**Issue it proves/disproves:** the pipeline (migrate → SQL split planner → shard writer) holds on a REAL tenant's data, not only on replicated GardenWorld rows. Source: local PG `idempiere_pilot` (731 MB; tenant ShopDay1012142417, client 1000000: 2 341 orders 2001-03-15…2026-10-13 — CO 2 121 · VO 177 · DR 41 · CL 2). `idempiere_laos` is a near-copy (715 MB, same mix) and is NOT counted as a second sample.
+**Label:** a real tenant produced by test sales cycles — not a customer's business data; the closed-document share and chain depth of a real client remain unmeasured.
+**Run:** `ERP_INDEX=1 ERP_PAGE_SIZE=16384 ERP_PG_DB=idempiere_pilot migrate_pg_to_sqlite.js` → `shard_split_plan_sql.js` in POLICY mode (CL,VO — no date cutoff) → `shard_write.js`.
+**Witnesses:** `§MIGRATE_VERDICT`, `§MIGRATE_NUMERIC_WIDE` (any decimal wider than a double?), `§SPLIT_PINNED` (candidates vs pinned, with `§SPLIT_PINNED_WHY` for each reason class), `§SPLIT_WARM_TO_COLD`, `§SHARD_VERDICT`, `§SHARD_OPEN` request counts.
+**Expected (to be confirmed or killed):** ~179 candidates; voided orders may or may not be referenced by live invoices — GardenWorld pinned its only closed order. If every candidate is pinned the verdict is `INCONCLUSIVE` and that itself is the finding.
+
+### §12.1 FINDING + RULE CHANGE 2026-10-14 — terminal statuses are CL, VO **and RE**
+**Run on the real tenant `idempiere_pilot` with the old rule (CL,VO):** `mode=policy(CL,VO)`: 179 candidates → **177 pinned warm, 2 cold** (`split_pilot.log`; migrate PASS, 925 tables, 3 m 07 s, RSS 182 MB, `§MIGRATE_NUMERIC_WIDE` none).
+**Why they were pinned (measured from the work DB + PG):** referrers of the 177 voided orders = 353 invoices, 369 shipments, 176 allocations; by status the invoices are `RE` 352 / `CO` 1, shipments `RE` 352 / `DR` 16 / `CO` 1. The referrers are almost all **Reversed (`RE`)** — dead documents the old rule left warm.
+**Oracle (iDempiere source, not guessed):** `org.adempiere.base/src/org/compiere/model/MInvoice.java:2482-2489` `voidIt()` rejects `CL`, `RE` and `VO` alike with `"Document Closed: " + status` and sets `DocAction=None`; `:2755/:2780` the reversal sets `DocStatus=Reversed` on both the original and its reversal. `DocAction.java:77-81`: `STATUS_Voided="VO"`, `STATUS_Reversed="RE"`, `STATUS_Closed="CL"`. So the three terminal statuses are CL, VO, RE.
+**Rule change:** cold-candidate statuses = `CL,VO,RE` (planners take `--statuses`, default `CL,VO,RE`; `--statuses CL,VO` reproduces the old rule). `DocStatus NOT IN ('CL','VO')` in `ACCESS_FREQUENCY_SHARDING.md` §2 and `gen_sharding_boundaries.js` is superseded (note appended there). Reverse closure (R3) is unchanged: live docs (`CO`/`DR`) that reference a terminal doc still pin it.
+
+### §12.2 RESULT 2026-10-14 — real tenant `idempiere_pilot`, corrected rule (logs `migrate_pilot.log`, `split_pilot*.log`, `shard_write_pilot_clvore.log`)
+- **Migrate:** `§MIGRATE_VERDICT PASS` 925 tables, 601 133 rows, 3 m 07 s, RSS 182 MB, 0.21 GB with 2 089 indexes at 16 KB pages; `§MIGRATE_NUMERIC_WIDE` none.
+- **Equivalence JS vs SQL planner (`§SPLIT_EQUIV`): IDENTICAL in 4 runs** — pilot `CL,VO` (2 cold units), pilot `CL,VO,RE` (465), GardenWorld `CL,VO,RE` (0), GardenWorld stress<2004 (34).
+- **Rule effect on the real tenant:** old `CL,VO`: 179 candidates → 177 pinned, **2 cold**. Corrected `CL,VO,RE`: 1 068 candidates → 603 pinned, **465 cold units** (37 reversed allocations, 426 reversed shipments, 2 closed orders).
+- **What still pins (measured from the work DB):** 426 `CO` allocation headers reference the 426 reversed invoices (→ invoices stay warm, 0 `c_invoice` rows cold), and those warm reversed invoices keep 177 voided orders warm (`c_invoice(RE)→c_order` 352 edges); 16 draft shipments + 1 completed invoice + 1 completed shipment also reference voided orders.
+- **Cold share is small here:** `fact_acct` 1 608 of 19 438 (8 %), `m_costdetail` 804 of 2 521 (32 %), `m_transaction` 426 of 2 166 (20 %), `c_order` 2 of 2 341.
+- **Shard files (`shards_pilot/`):** warm 15 MB · cold 4 MB; `§SHARD_ROWS` warm+cold == source for all 45 non-empty tables; `lineOrphans=0`; `§SHARD_WARM_TO_COLD total=0` (8 edges); both open in **5 requests** (82 / 98 KB); `§SHARD_VERDICT PASS`.
+- **Honest limits:** a test-cycle tenant (voids/reversals from sales-cycle tests, dates 2026-10), not a business's data; at 0.2 GB the cold tier buys little — the measured wins on this tenant come from the small-schema open, not the cold split.
+- **Open policy question (needs the business, not a measurement):** a `CO` document whose every reference is terminal (e.g. the 426 allocations over reversed invoices) is semantically history but `CO`; making such documents cold needs an age/period rule. Not invented here.
+
+## §13 Period-close cold rule (SPEC, 2026-10-14 — written before the code)
+**Question (§12.2):** when is a *completed* (`CO`) document history? **Practice:** by the FISCAL CALENDAR, not by document age. Statutory/year-end close makes a period read-only; archiving follows.
+**iDempiere oracle (read, not guessed):** `MPeriod.isOpen(ctx, DateAcct, DocBaseType, org, forPosting)` (`MPeriod.java:291-315`) returns false unless the period's control row for that DocBaseType is `O` (or `D` for non-posting actions) — so docs in `C`/`P`/`N` periods cannot be actioned or posted. `X_C_PeriodControl`: `C` Closed, `D` Document Closed, `N` Never Opened, `O` Open, `P` Permanently Closed. `P` cannot be reopened → the only status that is immutable by construction.
+**Rule:** a header is a cold CANDIDATE if (a) `DocStatus ∈ {CL,VO,RE}` (§12.1) OR (b) its period control — period containing `DateAcct` for the header's client, row for `c_doctype.docbasetype` of `c_doctypetarget_id` (else `c_doctype_id`) — has `PeriodStatus ∈ --period-status` (default `P`; `none` disables; `P,C` opt-in since `C` can be reopened). Reverse closure (§10 R3) is unchanged: a live row in an OPEN period that references the candidate still pins it.
+**Measured on this machine's tenants (PG, `idempiere_pilot`):** documents by period status — orders N=2000 O=341; invoices N=2011 O=34; shipments N=1787 O=31; payments N=191 O=10; allocations N=474 O=11; journals N=65 O=8. **No document is in a `C` or `P` period.** So the rule changes nothing on this data (INCONCLUSIVE for effect), by measurement.
+**Test of the mechanism (labelled STRESS, not data):** in a scratch COPY of `pilot.db`, set `c_periodcontrol.periodstatus='P'` for periods ending before 2004-01-01 (a simulated year-end hard close). Witnesses: `§SPLIT_PERIOD candidatesAdded`, JS-vs-SQL cold-set equality, `§SPLIT_WARM_TO_COLD=0`, `§SHARD_VERDICT PASS`, and the cold share (rows) vs the status-only rule. Expected: many `CO` docs of 2001–2003 become candidates; any live open-period doc that references them pins them.
+
+### §13.1 RESULT 2026-10-14 — period-close rule (planners take `--period-status`, default `P`; logs `split_*`, `shard_write_hc.log`)
+- **Real statuses (no stress):** `§SPLIT_PERIOD candidatesAdded=0` — no document is in a `P` period (measured in §13). Cold set unchanged: 465 units. Effect on real data: none.
+- **STRESS (labelled simulated year-end hard close; 828 `c_periodcontrol` rows of periods ending before 2004-01-01 set to `P` in a scratch copy):** `candidatesAdded=64` (completed `CO` docs of 2001–2003), candidates 1 068 → 1 132, pinned 603 → 614 (open-period docs still reference some), **cold units 465 → 518**; JS vs SQL planner **IDENTICAL**; `§SPLIT_WARM_TO_COLD=0`; shard writer `§SHARD_VERDICT PASS` (rows exhaustive, `lineOrphans=0`).
+- **Reading it:** the rule works as practice says — a hard-closed year moves its completed documents to cold unless something in an open period still points at them (then they stay warm; nothing breaks). How much goes cold on a real client = how much of its history sits in `P` periods, which this machine's tenants don't have. That number needs a real client's period-control state, not a simulation.
+- **Standing defaults:** terminal statuses `CL,VO,RE` + period-close `P`. `--period-status P,C` is opt-in (Closed can be reopened); `none` disables.
+
+## §14 Migration fidelity check (SPEC, 2026-10-14 — written before `scripts/migrate_fidelity_check.js`)
+**Issue it proves/disproves:** the SQLite file holds EXACTLY what PG holds — every value, every table — not just the same row counts (§9 only had `§MIGRATE_ROWS` + `§MIGRATE_NUMERIC_WIDE`; the planned exact-sum witness was never built). Twin rule: any difference is a SQLite-side defect, never accepted.
+**Method (order-independent, exact):** per table, a fingerprint = (row count, Σ over rows of the first 60 bits of `md5(canonical row)` as an exact integer). Same canonical form on both sides, fields joined by `chr(31)`, NULL = `\N`:
+ - PG, in SQL: integer types `col::text`; `numeric` → `trim_scale(col)::text`; `character(n)` → `rtrim(col::text)`; `bytea` → `encode(col,'hex')`; everything else `col::text`.
+ - SQLite, in JS (rows read with safe integers): INTEGER → decimal string; REAL → shortest round-trip decimal (exponent expanded); TEXT in a numeric column → trailing zeros after the point trimmed; BLOB → lowercase hex; TEXT → itself, `character(n)` right-trimmed.
+ Sum is order-independent, so no ORDER BY / primary key is needed; collisions need a 60-bit md5 clash on a changed row (negligible, stated).
+**Witnesses:** `§FIDELITY table rows pg=… sq=… OK|MISMATCH` (printed for mismatches and tables ≥ 100 k rows), `§FIDELITY_COLS` if column names/order differ between engines, `§FIDELITY_VERDICT PASS|FAIL|INCONCLUSIVE` (INCONCLUSIVE if no row was judged). Large runs split into parts (`--part i/N`) run in parallel, tables assigned by size.
+**Negative control (required):** in a scratch COPY change one `fact_acct` amount by 0.01 and one text value; the check MUST report those tables as MISMATCH.
+**Honest limits:** `real/double precision` columns compare by decimal text (PG and JS exponent formats could differ — a FAIL there is investigated, not waved through); view definitions, sequences, functions and triggers are out of scope (flagged-subset, §0.10 of the migrator); the check proves the file equals PG at the moment of the run.
+
+### §14.1 RESULT 2026-10-14 — fidelity check, first runs (`scripts/migrate_fidelity_check.js`; logs `build/erp/logs/fid_*.log`)
+- **Negative control passed:** in a scratch copy of GardenWorld, `+0.01` on one `fact_acct` amount, one trailing space in `ad_user.name`, one deleted `c_bpartner` row → the checker reported exactly those 3 tables `MISMATCH`, the others `OK`.
+- **GardenWorld (`idempiere`, 925 tables, ~189 k rows):** 923 PASS; 2 MISMATCH — `c_conversion_rate`, `i_conversion_rate`.
+- **11 GB bed (`bloat10r`, 41.3 M rows [the earlier un-rekeyed bed had 45.8 M], 8 parallel parts, ≤ 7 min each):** 923 PASS including every big table byte-for-byte on the fingerprint (`fact_acct` 8 741 700, `c_orderline` 9 674 148, `c_order` 9 120 507, `ad_changelog` 5 769 522 …); the same 2 tables MISMATCH.
+- **Real tenant `idempiere_pilot` — drift is NOT a defect (proved):** first check showed 10 mismatching tables; a live iDempiere server (java `-Xmx2048M`, started Oct 13) writes processor logs/sequences into that PG (`r_requestprocessorlog` 133 → 134 rows between migrate and check; `c_acctprocessorlog` 662 vs 716). Control: `pg_dump` snapshot → `pilot_snap` (no writers) → migrate from the snapshot → check against the snapshot: **only the 2 exchange-rate tables mismatch**; every drift table passes.
+- **THE DEFECT (real, reproducible):** PG `numeric` with no precision holds exchange rates of ~38 significant digits (`1.17647058823529415683140086912317201495`); the migrated SQLite NUMERIC column stored a 64-bit float (`1.1764705882352942`). SQLite converts text to REAL when the first 15 digits survive, so `§MIGRATE_NUMERIC_WIDE` (counts values kept as TEXT) never fired. Twin rule: SQLite must equal legacy → fixed on the SQLite side (§14.2).
+- **Scope (PG scan of 2 957 unconstrained-`numeric` columns):** values exceeding 15 significant digits exist in 5 columns of GardenWorld and 23 of the pilot tenant, but the 16–17-digit ones (`processedon` epoch-ms-with-fraction, 7 700 values) round-trip exactly through a double and PASS the fingerprint. The only values that do NOT survive are the exchange-rate columns (`multiplyrate`, `dividerate` in `c_conversion_rate`, `i_conversion_rate`). A real client could have more (e.g. computed costs); the loader will now count them.
+
+### §14.2 Exact-numeric sidecar (SPEC, 2026-10-14 — written before the loader change)
+**Issue it proves/disproves:** values PG holds exactly but a SQLite double cannot (§14.1) are preserved, countable and verifiable — with ZERO change for existing readers.
+**Design (additive):** keep the data column as today (NUMERIC affinity → REAL/INTEGER). In the loader, for numeric columns with PG `numeric_precision IS NULL OR > 15`, test each value: lossy iff `String(Number(v))` ≠ `trimZeros(v)`. For a lossy value insert `_numeric_exact(tbl TEXT, row_id INTEGER, col TEXT, exact TEXT, PRIMARY KEY(tbl,row_id,col))` where `row_id` = the inserted SQLite rowid. Non-lossy values are not stored (the sidecar stays tiny). Rowids are stable (no VACUUM in the pipeline; shard writer copies `SELECT x.*`, so sidecars are rebuilt per output file — see Gap below).
+**Witnesses:** `§MIGRATE_NUMERIC_LOSSY table col n` per column and a total in `§MIGRATE_VERDICT`; the fidelity checker reads `_numeric_exact` and uses the exact text where present → GardenWorld 925/925 PASS expected.
+**Honest gaps (named):** (1) readers must opt in to the sidecar — the ERP kernel's currency conversion keeps reading the double until it is taught to prefer `_numeric_exact` (kernel lane, NOT done here); (2) shard files do not yet carry the sidecar rows for their tables (shard writer change needed); (3) `real/double precision` PG columns are doubles in PG too, so they are out of scope.
+
+### §14.3 RESULT 2026-10-14 — after the sidecar fix (logs `migrate_*_v2/snap2/gw2.log`, `fid_big2_*`, `fid_snap2_*`, `fid_gw2_*`)
+| database | tables | rows judged | result |
+|---|---|---|---|
+| GardenWorld (`idempiere`) | 925 | 189 k | **PASS** 925/925 |
+| pilot tenant, frozen snapshot (`pilot_snap`) | 925 | 601 k | **PASS** 925/925 |
+| 11 GB bed (`bloat10r`) | 925 | **41 302 818** (= the migrator's own row total) | **PASS** all 8 parts |
+- `§MIGRATE_NUMERIC_LOSSY`: 8 values preserved exactly in `_numeric_exact` (`c_conversion_rate.multiplyrate` 2, `.dividerate` 4; `i_conversion_rate` 1 + 1) — identical in all three databases.
+- 11 GB re-migration with the check added: 21 m 09 s wall, max RSS 285 MB (was 16–23 min / 231–246 MB without the per-value test).
+- **Every value of every table equals PG at the moment of the snapshot** (60-bit-md5 fingerprint per table; negative control proves it detects a 0.01 change, a trailing space and a deleted row).
+- **Still open (handoffs, not done here):** (1) the ERP kernel's currency conversion must prefer `_numeric_exact` over the stored double to be exact end to end; (2) shard files do not yet carry the sidecar rows for their tables; (3) a real client may have more wide values (e.g. computed costs) — the loader now counts them; (4) the check is a point-in-time proof: it does not cover later writes.
+
+## §15 Static-host load + cost test (SPEC, 2026-10-14 — written before `scripts/static_host_load.js`)
+**Issue it proves/disproves:** the claim "a dumb static file host serves many ERP users cheaply". Measures what is MEASURABLE here, host-independent where possible.
+**Method:** (1) record the exact byte-range request sequence of one cold first window from a real browser session (headless Chromium → demo server with `DEMO_TRACE=1`), for the 11 GB monolith (128 requests) and the shard (`warm.db`, 24 requests). (2) Replay that trace from N concurrent virtual users (each: one keep-alive connection, requests strictly sequential like the worker's synchronous reads), 3 sessions per user, N = 1, 10, 50, 100, 200, 400.
+**Metrics (per level):** sessions completed, requests, bytes served, request latency p50/p95/p99, session time p50/p95, requests/s, MB/s, errors, server CPU % and RSS (sampled with `ps`). Replay integrity: Σ bytes received per session must equal Σ of the recorded range lengths.
+**Cost arithmetic (labelled ASSUMPTION, not measurement):** per-session bytes and requests × stated sessions/day → GB and requests per month. No provider price is quoted; a price sheet is needed for dollars. The comparison to the legacy path uses the one thing measured here: the RSS of the running legacy iDempiere JVM on this machine.
+**Honest bounds:** the host is a single Node process on this machine (a stand-in, not OCI/CDN); loopback has no RTT or bandwidth limit, so session times show host contention only, not phone-visible latency (that is §11); virtual users replay a fixed trace and do not model think time, cache hits or mixed workloads.
+**Verdict:** `INCONCLUSIVE` if no sessions completed or replay integrity fails; `FAIL` on errors.
+
+### §15.1 RESULT 2026-10-14 — static host under load (`scripts/static_host_load.js`; logs `load_shard.log`, `load_monolith.log`)
+Trace = one real cold first window recorded from headless Chromium: **shard 24 requests / 464 KB; monolith 128 requests / 2 096 KB.** Replay: N virtual users × 3 sessions, one keep-alive connection per user, requests sequential. Host = one Node process, loopback, same 20-core machine as the load generator (stand-in, NOT OCI). 0 errors and replay integrity exact at every level.
+| users | shard: req/s · MB/s · req p95 · session p95 | monolith: req/s · MB/s · req p95 · session p95 |
+|---|---|---|
+| 10 | 7 129 · 135 · 3 ms · 39 ms | 8 828 · 141 · 3 ms · 197 ms |
+| 100 | 16 438 · 310 · 18 ms · 227 ms | 22 735 · 364 · 11 ms · 712 ms |
+| 400 | 20 253 · 382 · 39 ms · 545 ms | 18 881 · 302 · 39 ms · 2 830 ms |
+- **Host saturates near ~20 k requests/s for both** (server CPU 117 % shard / 175 % monolith at 400 users; RSS 70–122 MB). Because the shard needs 5.3× fewer requests per window, the same host serves ~5× more first windows per second (≈ 20 253/24 ≈ 840/s vs ≈ 18 881/128 ≈ 150/s) — derived arithmetic, loopback-only.
+- **Monolith's session p95 at 400 users = 2.8 s vs shard 0.55 s** on an unconstrained link: pure host contention, not phone latency (§11 has that).
+- **Egress per cold first window (ASSUMPTION table, no prices):** 1 000 sessions/day → shard 13.3 GB/month · 720 k requests; monolith ≈ 60 GB/month · 3.8 M requests; 10 000/day → shard 133 GB · 7.2 M; monolith ≈ 600 GB · 38 M. Repeat visits and any CDN/browser caching of pages would lower these; not modelled.
+- **Legacy comparison, the one measured number:** the live iDempiere server JVM on this machine (`-Xmx2048M`, up since Oct 13) held 0.97 GB RSS at one reading (`ps`, earlier today) and 0.44 GB at another (14 h uptime) — it varies with GC; no load test was run against it; its throughput per core was NOT measured, so no req/s or cost ratio vs the static path is claimed.
+- **Not measured / bounds:** real CDN or OCI behaviour, RTT/bandwidth limits, think time, mixed workloads, cache hits, cost in dollars (needs the provider's current price sheet).
+
+### §16 Where the evidence lives (2026-10-14)
+The logs cited in §9–§15 as `build/erp/logs/…` are gitignored; verbatim copies are tracked at `prompts/evidence/erp_shard_2026-10-14/runs/` (84 files, ~390 KB; each original `X.log` is saved as `X.log.txt` because `*.log` is gitignored) with the throw-away probes in `helpers/`. Scratch DATA (≈ 37 GB, not in git) is in `/home/red1/erp_shard_bed/`; the PG scratch databases `bloat10r` and `pilot_snap` live in the `postgres` container. Resume instructions: `prompts/ERP_LARGE_CLIENT_SHARDING.md`.

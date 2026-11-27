@@ -1,0 +1,2 @@
+9f9ab0a9cafcd1fa
+local owner copy ~/bim-ootb/buildings/Duplex_extracted.db (not published): counts 1193, clashes 393/291/102 via VIEWER_BLD_DIR. The public bucket copy differs (see d1/d2).

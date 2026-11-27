@@ -1,4 +1,5 @@
 site_name: BIM Intent Compiler
+site_url: https://red1oon.github.io/BIMCompiler/   # needed by the language chooser: without it the chooser's links are root-absolute (/es/), a 404 on this site (DOCS_I18N.md §6d)
 site_description: Construction is manufacturing. A building IS its Bill of Materials.
 site_author: Redhuan D. Oon
 repo_url: https://github.com/red1oon/bim-ootb
@@ -37,6 +38,16 @@ docs_dir: docs
 exclude_docs: |
   internal/
   archive/
+  ERP_PROJECT_REVIEW.md
+
+# Published but deliberately off the menu: developer specs reached from DXF2BIMGuide's "For developers"
+# line, and the generated Flow Row reference reached from DistributedERP.
+not_in_nav: |
+  OdooMigrationGuide.md
+  BusinessCentralMigrationGuide.md
+  DXF2BIM_SPEC.md
+  DXF2BIM_BASIC_SHAPES_SPEC.md
+  ReplicationFlowRows.md
 
 markdown_extensions:
   - tables
@@ -64,6 +75,16 @@ extra_javascript:
   - javascripts/bim_compiler_source.js
 
 extra:
+  # Feedback box on every page (bim-compiler prompts/VOCAB_MESSAGE_CATALOG.md §19.21 item 5; owner 2026-11-24: "Need no counter. Allow anon readers.
+  #   Feedback is good enough option"): giscus over this repo's GitHub Discussions. Anyone reads; posting needs a GitHub login. No server.
+  #   ON since 2026-11-25 (owner installed the giscus GitHub App on the repo; API answers "Discussion not found" = installed). Before the install the
+  #   widget shows "giscus is not installed on this repository" (checked 2026-11-24 at https://giscus.app/api/discussions/categories).
+  giscus:
+    enabled: true
+    repo: red1oon/BIMCompiler
+    repo_id: R_kgDORA12Lg
+    category: Announcements
+    category_id: DIC_kwDORA12Ls4DL3LB
   analytics:
     provider: custom
     # GoatCounter — privacy-friendly, no cookies, GDPR compliant
@@ -78,6 +99,7 @@ nav:
   - Start Here:
       - Home: index.md
       - "📖 User Guide": USER_GUIDE.md
+      - "🧰 BIM Tools — User Manual": BIMToolsGuide.md
       - "🔒 Fully Offline / Air-Gapped Install": OFFLINE_INSTALL_GUIDE.md
       - "🆕 What's New": WhatsNew.md
       - About BIM OOTB: AboutMore.md
@@ -95,11 +117,28 @@ nav:
       - "Viewer Ask — First Steps": AskFirstSteps.md
       - "Modeller — First Steps": ModellerFirstSteps.md
       - "DAGeVu Modeller — User Guide": ModellerGuide.md
+      - "AI Proposer Guide (propose an edit, get the proof)": ProposerGuide.md
+      - "Fast Script Guide (one door: commands and scripts)": FastScriptGuide.md
+      - "Fast Script Reference (every command with its output)": FastScriptReference.md
+      - "2D Drawings → BIM (DXF2BIM)": DXF2BIMGuide.md
+      - "DXF2BIM — the yellow list (what you fill in, defaults used)": DXF2BIM_Yellow_List.md
+      - "DXF2BIM — prior art (what is new, what we learned, cost of using others)": DXF2BIM_Prior_Art.md
+      - "DXF2BIM — format contract (marks, outputs, registry, codes; generated)": DXF2BIM_FORMAT.md
       - "Kernel-ERP User Guide": ERPUserGuide.md
+      - "uniCenta-style Till & Kitchen Screen": TillUserGuide.md
+      - "BIM → ERP and CAPEX Dashboard — for iDempiere users": CapexDashboardGuide.md
+      - "CAPEX UAT Guide — step-by-step test script": CapexUATGuide.md
+      - "Kernel-ERP — Your First Setup": ERP_FirstSetup.md
+      - "Migration User Guide (Odoo · Business Central · SAP Business One)": MigrationGuide.md
+      - "Moving from Odoo — how it works, what is proven": OdooMigration.md
+      - "NinjaExcel Report — User Manual": NinjaExcelReport_UserManual.md
+      - "PDF, Sheet history and File it: your own files": PdfPageGuide.md
       - "HR / Tenancy / Operate Module": HRBIMAssetGuide.md
+      - "Civil Works — Step by Step": CivilWorksGuide.md
       - "Teams Overlay — Collaboration & Optics": TeamsOverlayGuide.md
 
   - Go Deeper:
+      - "Developer Guide (read first if you will change the code)": DeveloperGuide.md
       - "Architecture Overview (for reviewers)": ArchitectureOverview.md
       - "Fold Engine Black Book (dev manual)": FoldEngineBlackBook.html
       - "The Holy Grail (editable rules, live)": HolyGrail.md
@@ -108,9 +147,10 @@ nav:
       - "Spatial ERP — Every Record Has a Place": SpatialERP_OOTB.md
       - "Spatial ERP × BIM × HR — One Building, One Log": SpatialERPIntegration.md
       - "Distributed ERP": DistributedERP.md
+      - "How to verify the terms": TermsHowToVerify.md
+      - "Letting an AI work on the ERP, safely": ERP_AI_ADVISORY.md
       - "How the Database Works (big picture)": SQLiteWasmArchitectureActual.html
       - "Viewer Component Model (dev architecture)": ViewerComponentModel.html
-      - "Red Pill — Design From Grammar": RED_PILL.md
       - "Clash Detection": CLASH_DETECTION.md
       - "Asset Classification & JKR/SKATA": JKR_SKATA.md
       - "IFC Export Guide (for the BIM author)": IFC_ExportGuide.md
@@ -121,16 +161,65 @@ nav:
 
   - Papers & Positioning:
       - "Deterministic Spatial Compilation (academic paper)": SpatialCompilationPaper.md
+      - "Defensive Disclosure: an Outside AI Proposes, the App Decides": AIProposerDefensiveDisclosure.md
+      - "DXF2BIM — Deterministic 2D ⇄ BIM Round Trip (technical note)": DXF2BIM_TechnicalNote.md
       - "Browser-Scale Benchmark (one tab, local first)": BrowserScaleBenchmark.md
-      - "Construction Economy / ERP Wave": BIMERPPaper.md
       - "Enterprise Authentication (security)": EnterpriseAuthentication.md
       - "Strategic Positioning": StrategicIndustryPositioning.md
       - "Local-First Prior Art": LocalFirstPriorArt.md
-      - "Enabling-Tech Timeline": EnablingTechTimeline.md
-      - "Vibe Programming — AI + Domain Expertise": VibeProgramming.md
-      - "The 4D Generator — Failure Catalogue & AI Findings": 4DGenerator.md
-      - "The Last Mile — drift tracking": LAST_MILE_PROBLEM.md
-      - "Project Chronology": PROJECT_CHRONOLOGY.md
+      - "Legacy-as-Oracle Adapter (migrate / test an ERP)": LegacyOracleAdapterSpec.md
       - "Beyond Buildings": ShipYard.md
       - "Find & Navigate (wayfinding)": RouteTemplate.md
-      - "Self-Host (DIY installer)": SYSTEMS_INSTALLER_GUIDE.md
+
+  - Prototypes & Demos:
+      - "Halalan Thayiban — halal track & trace (paper)": HalalTrace.md
+      - "Halalan Thayiban — open the prototype (sample data)": halal/index.html
+      - "Glassbowl — the ERP engine as data": glassbowl.html
+      - "Glassbowl · Gravity": glassbowl_gravity.html
+      - "Retail at Scale — two messages a day (benchmark story)": RetailScaleStory.html
+      - "How it works — interactive architecture tour": bim_architecture_viz.html
+
+  - History & Legacy:
+      - "Project Chronology": PROJECT_CHRONOLOGY.md
+      - "Vibe Programming — AI + Domain Expertise": VibeProgramming.md
+      - "The 4D Generator — Failure Catalogue & AI Findings": 4DGenerator.md
+      - "Enabling-Tech Timeline": EnablingTechTimeline.md
+      - "Red Pill — Design From Grammar (origin)": RED_PILL.md
+      - "The Last Mile — drift tracking (Java era)": LAST_MILE_PROBLEM.md
+      - "Construction Economy / ERP Wave (Java era)": BIMERPPaper.md
+      - "Self-Host the Java toolchain (legacy installer)": SYSTEMS_INSTALLER_GUIDE.md
+
+# Translated guides (prompts/DOCS_I18N.md): suffix files (Page.es.md beside Page.md; Spanish is the es-419 variant, but the plugin takes ISO 639-1 or a country code only, so its locale is es), English stays at the root and keeps every URL.
+# A language is listed here only once it has at least one translated page (§6d: each language builds a full fallback copy of the site).
+plugins:
+  - search
+  - i18n:
+      docs_structure: suffix
+      fallback_to_default: true
+      reconfigure_material: true
+      reconfigure_search: true
+      languages:
+        - locale: en
+          default: true
+          name: English
+          build: true
+        - locale: es
+          name: Español (Latinoamérica)
+          build: true
+        - locale: fr
+          name: Français
+          build: true
+        - locale: de
+          name: Deutsch
+          build: true
+        - locale: id
+          name: Bahasa Indonesia
+          build: true
+        - locale: ja
+          name: 日本語
+          build: true
+        - locale: zh
+          name: 简体中文
+          build: true
+hooks:
+  - hooks/i18n_pages.py

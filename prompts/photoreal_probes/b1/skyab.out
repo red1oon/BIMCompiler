@@ -1,0 +1,32 @@
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1&skyshell
+
+sky0_367 stops=2.65 expStep=0 blown=0.24% compositeMean=173.52 
+{"result":{"comp":{"p5":101.4,"p25":147.4,"p50":172.1,"p75":224,"p95":250.1,"mean":177.5,"std":46.3,"ge250pct":5.04,"meanSat":0.1407},"app":{"p5":93.2,"p25":150.1,"p50":173.3,"p75":229.8,"p95":250.1,"mean":176.7,"std":49.8,"ge250pct":5.05,"meanSat":0.1322},"exposure":2.4041,"toneMapping":4,"coveKey":"Hospital:288x105x342:848|2|21295.321|22727.273|Hospital:848|2:1274|0.85170,0.948","irKey":"","sceneChildren":4869,"hem
+
+clip 76862 5.34 259
+
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1", "eleme
+
+sky1_367 stops=2.61 expStep=0 blown=0.15% compositeMean=173.01 
+{"result":{"comp":{"p5":101.9,"p25":145.8,"p50":171,"p75":223.6,"p95":250.1,"mean":177.1,"std":46.5,"ge250pct":5.18,"meanSat":0.1432},"app":{"p5":95.4,"p25":147.4,"p50":171.3,"p75":228.8,"p95":250.1,"mean":176.4,"std":49.6,"ge250pct":5.19,"meanSat":0.1343},"exposure":2.3309,"toneMapping":4,"coveKey":"Hospital:288x105x342:848|2|21295.321|22727.273|Hospital:848|2:1274|0.85170,0.948","irKey":"","sceneChildren":4869,"hem
+
+clip 77780 5.4 253
+1 d=29 IfcPlate/ARC GLASS 737278 n=side away zone=out
+1 d=33 IfcMember/ARC GLASS 737278 n=side away zone=in
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1&skyshell
+
+sky0_100 stops=5.91 expStep=0 blown=6.67% compositeMean=127.03 
+{"result":{"comp":{"p5":47,"p25":78.4,"p50":95.4,"p75":192.6,"p95":255,"mean":127.6,"std":69.2,"ge250pct":7.17,"meanSat":0.0631},"app":{"p5":49.9,"p25":84.3,"p50":101.6,"p75":208.2,"p95":255,"mean":134.3,"std":71.2,"ge250pct":13.24,"meanSat":0.0629},"exposure":23.021,"toneMapping":4,"coveKey":"Hospital:288x105x342:848|2|21295.321|22727.273|Hospital:848|2:1274|0.85170,0.948","irKey":"","sceneChildren":4869,"hemiI":1.2
+
+clip 103112 7.16 254
+209 d=12 IfcPlate/ARC GLASS 737278 n=side away zone=in
+45 d=19 batched/ARC GLASS 737278 n=side away zone=in
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1", "eleme
+
+sky1_100 stops=5.90 expStep=0 blown=6.57% compositeMean=126.88 
+{"result":{"comp":{"p5":46.9,"p25":78.5,"p50":95.6,"p75":187.9,"p95":255,"mean":127.4,"std":68.8,"ge250pct":7.09,"meanSat":0.0627},"app":{"p5":49.9,"p25":84.3,"p50":102.1,"p75":204.3,"p95":255,"mean":134.2,"std":70.8,"ge250pct":13.08,"meanSat":0.0625},"exposure":22.8866,"toneMapping":4,"coveKey":"Hospital:288x105x342:848|2|21295.321|22727.273|Hospital:848|2:1274|0.85170,0.948","irKey":"","sceneChildren":4869,"hemiI":
+
+clip 102031 7.09 251
+211 d=11 IfcPlate/ARC GLASS 737278 n=side away zone=in
+40 d=15 batched/ARC GLASS 737278 n=side away zone=in
+== skyab done 08:18:00

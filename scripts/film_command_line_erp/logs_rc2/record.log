@@ -1,0 +1,14 @@
+§FILM_CUE beat=title t=0.000 frames=86 typing=0 answer_hold_frames=86 x1
+§FILM_CUE beat=intro t=3.583 frames=227 typing=0 answer_hold_frames=227 x1
+§FILM_CUE beat=list t=13.042 frames=246 typing=0 answer_hold_frames=82 x3
+§FILM_CUE beat=keys t=23.292 frames=266 typing=0 answer_hold_frames=266 x1
+§FILM_CUE beat=new t=34.375 frames=209 typing=0 answer_hold_frames=52 x4
+§FILM_CUE beat=edit t=43.083 frames=151 typing=0 answer_hold_frames=50 x3
+§FILM_CUE beat=delete t=49.375 frames=226 typing=0 answer_hold_frames=113 x2
+§FILM_CUE beat=load t=58.792 frames=250 typing=100 answer_hold_frames=75 x2
+§FILM_CUE beat=ai t=69.208 frames=192 typing=93 answer_hold_frames=49 x2
+§FILM_CUE beat=legacy t=77.208 frames=232 typing=89 answer_hold_frames=71 x2
+§FILM_CUE beat=onedoor t=86.875 frames=354 typing=0 answer_hold_frames=354 x1
+§FILM_CUE beat=light t=101.625 frames=231 typing=0 answer_hold_frames=231 x1
+§FILM_CUE beat=close t=111.250 frames=168 typing=0 answer_hold_frames=168 x1
+§FILM_DONE dur=118.250 frames=2838 planned=2838

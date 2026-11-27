@@ -27,6 +27,14 @@ therefore enforced only by the CALLER (`window._dwRules` in bim-ootb). **Any new
 residential building** — relying on the default silently walks a house with Terminal LOD400 cadence (wrong, dense). Candidate
 hardening (not yet done; flag before relying on the default): make the engine require an explicit class or auto-select.
 
+### Owner's decision 2026-11-07: a complex building reads ROOM SCHEDULES from a named set
+The table above still holds: a complex building's rules DB is `terminal_rules.db`, for clearances, gate, routing, shims and measured bands. It holds no room schedules, so room type never mattered there. **Decided by the owner, on the stated trade-off (*"your advice is sound. Follow that"*):** room types and schedules are read from `duplex_rules.db` when the class rules hold none. One map, `WalkRules.scheduleDb` (bim-ootb `common/walk_rules.js`); one read point, `_schedDbFor`. Spec: bim-ootb `prompts/DISC_WALK_SCHEDULE_SOURCE.md`.
+- This is §BORROW extended to one more kind of row. It is NOT switching the building to residential rules.
+- The rows are **projected, not measured on this class**. Every placement from them carries `schedFrom`. Correcting them is data work, not code.
+- A building with no typed space walks exactly as before. Typed spaces with a row take the schedule, bands serve the rest, a room is never filled twice, and a federated room is served once.
+- `terminal_rules.db` still carries no schedule tables: the M6 boundary and W-TERM-NOSPACES T1 stand.
+- Owner's standing note on this work: *"we are abstracting a rules engine not custom to any particular design."*
+
 ## §2 — Terminal's role: LOD400 reference + BORROW source (not a small-building ruleset)
 Terminal is the **densest/tightest LOD400 model** (measured cross-disc p05 FP|ELEC = 0.155m = the reference clearance;
 memory `project_dx_mep_class_boundary`). Its job for small buildings is **NOT** to be their ruleset. It is:

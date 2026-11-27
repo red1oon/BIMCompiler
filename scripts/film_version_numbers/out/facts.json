@@ -1,0 +1,352 @@
+{
+ "made": "2026-11-23T05:54:13.470Z",
+ "trees": {
+  "before": {
+   "dir": "/tmp/wt-film6-before",
+   "sha": "e4fa52fe",
+   "head": "e4fa52feefc4944454d0c6412e106f17df6aefdf",
+   "changed": 0,
+   "node_modules": true
+  },
+  "diff": {
+   "dir": "/tmp/wt-film6-diff",
+   "sha": "fce8fdc4^",
+   "head": "c38f4c3467ab530965d8b216e042c719c0b0ea10",
+   "changed": 31,
+   "node_modules": true
+  },
+  "after": {
+   "dir": "/tmp/wt-film6-after",
+   "sha": "fc2f8216",
+   "head": "fc2f821615cca3ec81758d35189d2e0f21035951",
+   "changed": 0,
+   "node_modules": true
+  }
+ },
+ "steps": {
+  "b1n": [
+   {
+    "typed": "git diff --cached --stat | tail -1",
+    "exit": 0,
+    "shown": [
+     " 31 files changed, 2942 insertions(+), 36 deletions(-)"
+    ]
+   },
+   {
+    "typed": "git grep -n -o -E 'locale_loader.js(\\?v=|\": \\{\"v\":)[0-9]+' -- index.html \"viewer/*.html\" modeller",
+    "exit": 0,
+    "shown": [
+     "index.html:179:locale_loader.js?v=15",
+     "modeller/edit_delta_ui.js:10:locale_loader.js?v=16",
+     "modeller/modeller.html:324:locale_loader.js?v=16",
+     "modeller/modules.json:105:locale_loader.js\": {\"v\":16",
+     "viewer/boq_charts.html:2266:locale_loader.js?v=16",
+     "viewer/clash_report.html:46:locale_loader.js?v=15",
+     "viewer/mep_report.html:62:locale_loader.js?v=16",
+     "viewer/viewer.html:1014:locale_loader.js?v=16"
+    ]
+   },
+   {
+    "typed": "git diff --cached -U0 -- \"*/sw.js\" | grep \"^+const\"",
+    "exit": 0,
+    "shown": [
+     "+const CACHE_VERSION = 'v305';   // §MANIFEST cacheVersion (written by gen_manifest.js; edit modeller/modules.json)",
+     "+const CACHE_VERSION = 'v1756';"
+    ]
+   }
+  ],
+  "b1b": [
+   {
+    "typed": "git grep -n -o -E \"import_db_builder.js\\?v=[0-9]+\" e4fa52fe -- index.html viewer/viewer.html",
+    "exit": 0,
+    "shown": [
+     "e4fa52fe:index.html:184:import_db_builder.js?v=11",
+     "e4fa52fe:viewer/viewer.html:1027:import_db_builder.js?v=12"
+    ]
+   }
+  ],
+  "b3": [
+   {
+    "typed": "git diff --stat",
+    "exit": 0,
+    "shown": [
+     " viewer/modules.json | 2 +-",
+     " viewer/panels.js    | 2 +-",
+     " viewer/sw.js        | 2 +-",
+     " viewer/viewer.html  | 2 +-",
+     " 4 files changed, 4 insertions(+), 4 deletions(-)"
+    ]
+   }
+  ],
+  "b4": [
+   {
+    "typed": "sha256sum viewer/panels.js | cut -c1-8",
+    "exit": 0,
+    "shown": [
+     "5225deef"
+    ]
+   },
+   {
+    "typed": "sed -i 's/panels.js?v=5225deef/panels.js?v=12345678/' viewer/viewer.html && node scripts/gen_manifest.js --check 2>&1 | grep -E \"MANIFEST_(FAIL|CHECK)\"",
+    "exit": 1,
+    "shown": [
+     "§MANIFEST_FAIL viewer/panels.js changed but viewer/viewer.html:910 still says ?v=12345678; run: node scripts/bump.js viewer/panels.js --write",
+     "§MANIFEST_CHECK apps=3 files=58 identical=58/58 sites=857 tag=726 asset=0 inline=47 lazy=84 precache=908 order_check=PASS deps_declared=265 unreviewed=0 source=viewer,erp,modeller written=0 verdict=FAIL"
+    ]
+   }
+  ],
+  "s4": [
+   {
+    "typed": "MANIFEST_W_OLD=/tmp/wt-film6-old node scripts/tests/witness_manifest_roundtrip.js | grep -E \"MANIFEST_CLAIM id=C(2[6-9]|3[01]) \" | cut -c1-30",
+    "exit": 1,
+    "shown": [
+     "  §MANIFEST_CLAIM id=C26 ok=N",
+     "  §MANIFEST_CLAIM id=C27 ok=N",
+     "  §MANIFEST_CLAIM id=C31 ok=N",
+     "  §MANIFEST_CLAIM id=C28 ok=N",
+     "  §MANIFEST_CLAIM id=C29 ok=N",
+     "  §MANIFEST_CLAIM id=C30 ok=N"
+    ]
+   },
+   {
+    "typed": "node scripts/tests/witness_manifest_roundtrip.js | tail -1 | grep -o \"claims=[0-9/]* red=[0-9/]*\"",
+    "exit": 0,
+    "shown": [
+     "claims=51/51 red=31/31"
+    ]
+   }
+  ]
+ },
+ "harm": {
+  "file": "viewer/panels.js",
+  "old": "Pill Icons",
+  "new": "Pill Icon Buttons",
+  "litOld": "'Pill Icons'",
+  "litNew": "'Pill Icon Buttons'",
+  "witnesses": 0,
+  "state": "settings",
+  "js_sourced": true,
+  "controller": true,
+  "shows_old_before": true,
+  "old_after_reload": true,
+  "new_after_reload": false,
+  "press_exit": 0,
+  "press_lines": 4,
+  "new_after_press_reload": false,
+  "toast": true,
+  "sw_versions": "bim-ootb-v1791,bim-ootb-v1792",
+  "new_after_second_reload": true,
+  "verdict": "SHOWS",
+  "tree_clean": true
+ },
+ "b1": {
+  "line": "fce8fdc4 2026-11-18 i18n: the Modeller looks terms up by key, not by exact English (TRL_TRILOGY_STANDARD S-2, T3) (#3302)",
+  "date": "2026-11-18",
+  "subject": "i18n: the Modeller looks terms up by key, not by exact English (TRL_TRILOGY_STANDARD S-2, T3) (#3302)"
+ },
+ "b1n": {
+  "stat": " 31 files changed, 2942 insertions(+), 36 deletions(-)",
+  "files": 31,
+  "places": 8,
+  "placeFiles": 8,
+  "placeList": [
+   "index.html:179:locale_loader.js?v=15",
+   "modeller/edit_delta_ui.js:10:locale_loader.js?v=16",
+   "modeller/modeller.html:324:locale_loader.js?v=16",
+   "modeller/modules.json:105:locale_loader.js\": {\"v\":16",
+   "viewer/boq_charts.html:2266:locale_loader.js?v=16",
+   "viewer/clash_report.html:46:locale_loader.js?v=15",
+   "viewer/mep_report.html:62:locale_loader.js?v=16",
+   "viewer/viewer.html:1014:locale_loader.js?v=16"
+  ],
+  "cache": 2,
+  "cacheLines": [
+   "+const CACHE_VERSION = 'v305';   // §MANIFEST cacheVersion (written by gen_manifest.js; edit modeller/modules.json)",
+   "+const CACHE_VERSION = 'v1756';"
+  ],
+  "fromV": {
+   "index.html": 15,
+   "modeller/edit_delta_ui.js": 16,
+   "modeller/modeller.html": 16,
+   "modeller/modules.json": 16,
+   "viewer/boq_charts.html": 16,
+   "viewer/clash_report.html": 15,
+   "viewer/mep_report.html": 16,
+   "viewer/viewer.html": 16
+  },
+  "placesAreAdded": true
+ },
+ "b1b": {
+  "indexLine": 184,
+  "indexV": 11,
+  "viewerLine": 1027,
+  "viewerV": 12,
+  "commit": {
+   "id": "8d1ede96",
+   "date": "2026-11-08",
+   "touchesViewerHtml": true,
+   "touchesIndex": false,
+   "diff": [
+    "-<script src=\"import_db_builder.js?v=11\"></script>",
+    "+<script src=\"import_db_builder.js?v=12\"></script>"
+   ]
+  },
+  "beforeCheckVerdict": "PASS"
+ },
+ "press": {
+  "file": "viewer/panels.js",
+  "swFile": "viewer/sw.js",
+  "sw_before": 1791,
+  "sha_before": "cb4ecd9c",
+  "tagsBefore": [
+   "viewer/viewer.html:910:\"panels.js?v=cb4ecd9c"
+  ],
+  "editDiff": [
+   "-      return [ { section: 'Pill Icons', reorderable: true, _key: 'pill', _array: true, rows: rows } ];",
+   "+      return [ { section: 'Pill Icon Buttons', reorderable: true, _key: 'pill', _array: true, rows: rows } ];"
+  ],
+  "staleCheck": [
+   "§MANIFEST_FAIL viewer/panels.js changed but viewer/viewer.html:910 still says ?v=cb4ecd9c; run: node scripts/bump.js viewer/panels.js --write",
+   "§MANIFEST_CHECK apps=3 files=58 identical=58/58 sites=857 tag=726 asset=0 inline=47 lazy=84 precache=908 order_check=PASS deps_declared=265 unreviewed=0 source=viewer,erp,modeller written=0 verdict=FAIL"
+  ],
+  "sha_edited": "5225deef",
+  "checkLines": [
+   "§BUMP_CHANGED base=fc2f821615cc changed=1 bumpable=1 skipped=0 files=viewer/panels.js",
+   "§BUMP page=viewer/viewer.html ref=panels.js v=cb4ecd9c->5225deef (manifest viewer/modules.json)",
+   "§BUMP sw=viewer/sw.js CACHE_VERSION v1791->v1792 (for: viewer/viewer.html) (manifest viewer/modules.json)",
+   "§BUMP_CODE file=viewer/panels.js code=5225deef sites=1 stale=1",
+   "§BUMP_CHECK verdict=PASS key=f8a8c672b39a targets=1 (nothing written; --write on the same tree reuses this result)"
+  ],
+  "writeLines": [
+   "§BUMP_CHANGED base=fc2f821615cc changed=1 bumpable=1 skipped=0 files=viewer/panels.js",
+   "§BUMP page=viewer/viewer.html ref=panels.js v=cb4ecd9c->5225deef (manifest viewer/modules.json)",
+   "§BUMP sw=viewer/sw.js CACHE_VERSION v1791->v1792 (for: viewer/viewer.html) (manifest viewer/modules.json)",
+   "§BUMP_CODE file=viewer/panels.js code=5225deef sites=1 stale=1",
+   "§BUMP_DONE targets=1 pages=1 loaders=0 sw=1 mode=write written=3"
+  ],
+  "verdict": "PASS",
+  "done": "§BUMP_DONE targets=1 pages=1 loaders=0 sw=1 mode=write written=3",
+  "sw_after": 1792,
+  "stat": [
+   " viewer/modules.json | 2 +-",
+   " viewer/panels.js    | 2 +-",
+   " viewer/sw.js        | 2 +-",
+   " viewer/viewer.html  | 2 +-",
+   " 4 files changed, 4 insertions(+), 4 deletions(-)"
+  ],
+  "statFiles": [
+   "viewer/modules.json",
+   "viewer/panels.js",
+   "viewer/sw.js",
+   "viewer/viewer.html"
+  ],
+  "sha_after": "5225deef",
+  "tagsAfter": [
+   "viewer/viewer.html:910:\"panels.js?v=5225deef"
+  ],
+  "viewerTag": {
+   "line": 910,
+   "code": "5225deef"
+  },
+  "refusal": {
+   "changed": "viewer/panels.js",
+   "file": "viewer/viewer.html",
+   "line": 910,
+   "saw": "12345678",
+   "fix": "node scripts/bump.js viewer/panels.js --write",
+   "verdict": "FAIL",
+   "bad": "12345678"
+  },
+  "refusalFull": {
+   "exit": 1,
+   "failLines": 1,
+   "first": "§MANIFEST_FAIL viewer/panels.js changed but viewer/viewer.html:910 still says ?v=12345678; run: node scripts/bump.js viewer/panels.js --write"
+  },
+  "editedLine": "<script src=\"panels.js?v=12345678\" onerror=\"console.warn('§LOAD_FAIL panels.js')\"></script>",
+  "restored": true
+ },
+ "b5": {
+  "bundlerConfigs": 0,
+  "deps": 3,
+  "bundlers": 0,
+  "buildScript": "N",
+  "bumpLines": 291
+ },
+ "s1": {
+  "file": "viewer/panels.js",
+  "srcBytes": 177308,
+  "minBytes": 102200,
+  "sha": "cb4ecd9c",
+  "shaCopy": "cb4ecd9c",
+  "shaMin": "c9bf0bbb",
+  "namesInSrc": 3428,
+  "namesInMin": 2174,
+  "namesOnlyInMin": 91,
+  "unexplained": [],
+  "localRenames": [
+   "right2",
+   "pill2",
+   "out2",
+   "cal2"
+  ],
+  "globalsInSrc": 59,
+  "globalsMissingInMin": 0,
+  "titleKept": true,
+  "minifyLine": "§PAYLOAD-MIN viewer/panels.js raw 173.2→99.8KB gz 54.3→30.6KB",
+  "firstLineSame": "var ICONS={clock:{svg:'<circle cx=\"12\" c"
+ },
+ "s4": {
+  "oldFailed": 6,
+  "oldOf": 6,
+  "oldTotals": "44/51",
+  "typedOld": [
+   "  §MANIFEST_CLAIM id=C26 ok=N",
+   "  §MANIFEST_CLAIM id=C27 ok=N",
+   "  §MANIFEST_CLAIM id=C31 ok=N",
+   "  §MANIFEST_CLAIM id=C28 ok=N",
+   "  §MANIFEST_CLAIM id=C29 ok=N",
+   "  §MANIFEST_CLAIM id=C30 ok=N"
+  ],
+  "line": "claims=51/51 red=31/31",
+  "claims": "51/51",
+  "red": "31/31"
+ },
+ "change": {
+  "handBefore": 767,
+  "handAfter": 0,
+  "checkLine": "§MANIFEST_CHECK apps=3 files=58 identical=58/58 sites=857 tag=726 asset=0 inline=47 lazy=84 precache=908 order_check=PASS deps_declared=265 unreviewed=0 source=viewer,erp,modeller written=0 verdict=PASS",
+  "sites": 857,
+  "apps": 3,
+  "checkVerdict": "PASS",
+  "witness": {
+   "line": "§MANIFEST_ROUNDTRIP apps=3 source=viewer,erp,modeller files=58 sites=857 tag=726 asset=0 inline=47 lazy=84 precache=908 identical=58/58 driven=853/853 sw_vm=3/3 claims=51/51 red=31/31 outside_owned=3/3 frozen=1 unresolved=1 order_check=PASS deps_declared=265 unreviewed=0 owner_gap=335 witness_gap=276 pinned=5 verdict=PASS",
+   "claims": "51/51",
+   "red": "31/31",
+   "outsideOwned": "3/3",
+   "verdict": "PASS"
+  },
+  "outsideFiles": [
+   "capex/index.html",
+   "import_own.js",
+   "index.html"
+  ],
+  "pages": 2,
+  "loaders": 1,
+  "dirtyAfter": 0
+ },
+ "credentials": {
+  "ootb": {
+   "3385": "MERGED feat(manifest): B3-OUT — outside referrers written from the app lists, gallery frozen, bump.js regex path deleted",
+   "3402": "MERGED feat(manifest): B4-HASH — ?v= is a content code, one press kept"
+  },
+  "decisions": {
+   "1116": "MERGED prompts: CODE_ARCHITECTURE_DESIGN B3-Q2 answered (outside pages in now)",
+   "1117": "MERGED prompts: CODE_ARCHITECTURE_DESIGN B3-Q3 answered + B3-Q2 measurement corrected",
+   "1118": "MERGED prompts: CODE_ARCHITECTURE_DESIGN B3-OUT BUILD SPEC",
+   "1128": "MERGED prompts: CODE_ARCHITECTURE_DESIGN B3-OUT addendum (B3-OUT-Q1 answered)"
+  }
+ },
+ "guide": {
+  "url": "https://red1oon.github.io/BIMCompiler/DeveloperGuide/#51-any-edit-to-a-file-the-browser-loads"
+ }
+}

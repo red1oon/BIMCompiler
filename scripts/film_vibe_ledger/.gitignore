@@ -1,0 +1,10 @@
+out/cards/
+out/prior/
+out/rec/
+out/work/
+out_*/cards/
+out_*/rec/
+out_*/work/
+*.wav
+*.mp4
+*.png

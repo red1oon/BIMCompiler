@@ -1,0 +1,45 @@
+   cached witness_comm_plantrust.js exit=0 inputs=14 key=c2da1f652c71
+   cached browser witness_team_publish.js exit=0 inputs=349 key=16cc0c91c924
+   cached witness_comm_policy.js exit=0 inputs=17 key=537295711c31
+§UNTRACKED trusted-keys BIMCompiler/build/erp/ad_full.db kind=untracked why=gitignored bytes=44937216 sha=179cd349cedb manifest=ok
+   cached witness_comm_executors.js exit=0 inputs=12 key=0ebfcf0e3080
+   cached witness_comm_settrust.js exit=0 inputs=16 key=df073dd7ef3f
+   cached browser witness_team_executors.js exit=0 inputs=354 key=5222128d256d
+   cached witness_comm_cl3_store.js exit=0 inputs=11 key=b40a1351ebdc
+   cached witness_comm_cl5_conflict.js exit=0 inputs=13 key=76fa826526d7
+   cached browser witness_team_base.js exit=0 inputs=355 key=39fe6105319b
+§UNTRACKED ledger-convergent BIMCompiler/build/erp/ad_full.db kind=untracked why=gitignored bytes=44937216 sha=179cd349cedb manifest=ok
+   cached witness_terms_visit.js exit=0 inputs=11 key=748743023891
+§UNTRACKED visit-lossless-offline BIMCompiler/build/erp/ad_full.db kind=untracked why=gitignored bytes=44937216 sha=179cd349cedb manifest=ok
+§UNTRACKED visit-once BIMCompiler/build/erp/ad_full.db kind=untracked why=gitignored bytes=44937216 sha=179cd349cedb manifest=ok
+   cached browser witness_team_so.js exit=0 inputs=355 key=614b3267ad86
+§UNTRACKED ack-trail BIMCompiler/build/erp/ad_full.db kind=untracked why=gitignored bytes=44937216 sha=179cd349cedb manifest=ok
+   cached witness_comm_versions.js exit=0 inputs=15 key=8a5db5f0f88e
+   cached browser witness_team_versions.js exit=0 inputs=349 key=a87302f18bd2
+§UNTRACKED version-skew BIMCompiler/build/erp/ad_full.db kind=untracked why=gitignored bytes=44937216 sha=179cd349cedb manifest=ok
+   ran ootb witness_docno_till.js exit=0 inputs=22 key=ff1d84437f5f
+   §CACHE_SKIP witness_docno_till.js reason=non-node-child (psql)
+   ran ootb witness_docno_till.js --mutants exit=0 inputs=22 key=4cfdcd80d9ae
+   §CACHE_SKIP witness_docno_till.js reason=non-node-child (psql)
+   ran ootb witness_f1_mailbox.js exit=0 inputs=25 key=c15a5531db27
+   ran ootb witness_read_scope.js exit=0 inputs=25 key=b8552fdd432c
+   ran ootb witness_team_keys.js exit=0 inputs=27 key=17c4319d3ef9
+   §CACHE_SKIP witness_team_keys.js reason=esm-import (wt-unwrap-memo/erp/plugin_registry.js)
+§TERMS table (open first; an open term is never green)
+term | witness | broken control | status | roadmap
+LEDGER signed / STATEMENT | PASS+PASS | 5/5 refused | ENFORCED [engine + browser] | 
+trusted keys | PASS+PASS+PASS | 4/4 refused | ENFORCED [engine + browser] | 
+STATEMENT (rule in force) | PASS+PASS+PASS | 3/3 refused | ENFORCED [engine + browser] | 
+BUNDLE (Complete) | PASS+PASS | 3/3 refused | ENFORCED [engine + browser] | 
+LEDGER convergent | PASS+PASS+PASS | 4/4 refused | ENFORCED [engine + browser] | 
+VISIT (offline / interrupted) | PASS | 3/3 refused | ENFORCED [engine only (no browser witness located)] | 
+VISIT (voluntary, once) | PASS+PASS | 2/2 refused | ENFORCED [engine only (no browser witness located)] | 
+ACK | PASS+PASS+PASS | 5/5 refused | ENFORCED [engine + browser] | 
+BUNDLE (version skew) | PASS+PASS | 4/4 refused | ENFORCED [engine + browser] | 
+LOCAL NUMBERING (LEDGER) | PASS+PASS | 8/8 refused | ENFORCED [bim-ootb tree (node, real modules)] | 
+VISIT (bounded) | PASS | 6/6 refused | ENFORCED [bim-ootb tree (node, real modules)] | 
+RELAY (sealing) | PASS+PASS | 9/9 refused | ENFORCED [bim-ootb tree (node, real modules)] | 
+trusted keys (roles + threshold) | PASS | 8/8 refused | ENFORCED [bim-ootb tree (node, real modules)] | 
+§TERMS_BROWSER judged=5 skipped=0
+§TERMS_PORTABLE rows=13 portable=13 not_portable=0 unknown=0 (a fresh clone + dev_env_fetch has every input of a portable row; §50.2)
+§TERMS_VERDICT PASS enforced=13 open=0 witness_failed=0 uncontrolled=0 browser=judged 5/skipped 0

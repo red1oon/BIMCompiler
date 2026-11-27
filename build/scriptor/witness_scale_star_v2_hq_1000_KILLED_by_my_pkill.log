@@ -1,0 +1,18 @@
+§STAR-HEADER W-SCALE-STAR mode=hq N=1000 M=1000 K=3 workers=6 box_min=120 ootb=/tmp/wt-hq-perf commit=226fcd9c node=v18.19.1 cpus=20 loadavg=4.89,3.82,2.94 at=2026-10-29T07:48:06.278Z
+§STAR-LIMITS one Node process family simulates all devices (no network latency, no browser); the relay is a folder pipe on local disk; load-generating devices fetch only the founder's roster bundle and are not measured;
+§STAR-LIMITS the measured edges (2 stations: first+last, 2 borrowers: first+last) and head office fetch the WHOLE relay; Node + sql.js timings are not browser timings; teamRebuild (ERP projection) is browser-only, so Visit ms = sync + adapter _project;
+§STAR-LIMITS per-device numbers are per device INSTANCE; head-office model-layer inputs are K4-shaped tickets (engine carries only the plan's declared columns; the two are not bridged by a projection in Node).
+§STAR-HQ-SETUP variant=shipped seed_patch ok=3803 failed=3 plugin=ACTIVE clientAccounting=Q ctx_cache=false (as shipped: the harness no longer memoises anything; login-context builds are counted)
+§STAR-HQ-ACCT-BASELINE ok=true summary=OK the seed's own unposted backlog is posted first and NOT counted in the day: ms=5262
+§STAR-HQ-IMPORT {"round":1,"deposited":600,"imported":600,"refused":0,"ms":194763.54099994898,"ms_per_ticket":324.60590166658164,"ms_per_ticket_ex_ctx":324.60590166658164,"login_ctx_calls":0,"login_ctx_ms":0,"ops":16207,"heap_mb":204,"orders_total":600}
+§STAR-HQ-IMPORT {"round":2,"deposited":600,"imported":600,"refused":0,"ms":193985.28600001335,"ms_per_ticket":323.3088100000223,"ms_per_ticket_ex_ctx":323.3088100000223,"login_ctx_calls":0,"login_ctx_ms":0,"ops":16206,"heap_mb":138,"orders_total":1200}
+§STAR-HQ-IMPORT {"round":3,"deposited":600,"imported":600,"refused":0,"ms":192593.3069999814,"ms_per_ticket":320.988844999969,"ms_per_ticket_ex_ctx":320.988844999969,"login_ctx_calls":0,"login_ctx_ms":0,"ops":16206,"heap_mb":153,"orders_total":1800}
+§STAR-HQ-IMPORT {"round":4,"deposited":600,"imported":600,"refused":0,"ms":191326.79100000858,"ms_per_ticket":318.8779850000143,"ms_per_ticket_ex_ctx":318.8779850000143,"login_ctx_calls":0,"login_ctx_ms":0,"ops":16206,"heap_mb":188,"orders_total":2400}
+§STAR-HQ-IMPORT {"round":5,"deposited":600,"imported":600,"refused":0,"ms":205053.30199998617,"ms_per_ticket":341.7555033333103,"ms_per_ticket_ex_ctx":341.7555033333103,"login_ctx_calls":0,"login_ctx_ms":0,"ops":16206,"heap_mb":206,"orders_total":3000}
+§STAR-HQ-ORACLE {"orders_co":3000,"invoices_co":3000,"receipts_co":3000,"tickets":3000}
+§STAR-HQ-COMPLETE invoice copy+Complete ms=[93,8,6,6,6]
+§STAR-HQ-PAYMENT {"round":1,"slips":250,"receipts_made":250,"ms":152318.0109999776,"ms_per_slip":609.2720439999104,"login_ctx_calls":0,"login_ctx_ms":0,"summary":""}
+§STAR-HQ-PAYMENT {"round":2,"slips":250,"receipts_made":250,"ms":150220.88499999046,"ms_per_slip":600.8835399999618,"login_ctx_calls":0,"login_ctx_ms":0,"summary":""}
+§STAR-HQ-PAYMENT {"round":3,"slips":250,"receipts_made":250,"ms":142026.2689999938,"ms_per_slip":568.1050759999752,"login_ctx_calls":0,"login_ctx_ms":0,"summary":""}
+§STAR-HQ-PAYMENT {"round":4,"slips":250,"receipts_made":250,"ms":147967.46099996567,"ms_per_slip":591.8698439998627,"login_ctx_calls":0,"login_ctx_ms":0,"summary":""}
+§STAR-HQ-REPLENISH {"ok":true,"summary":"#1 - 10000000","movements_made":1,"login_ctx_calls":0,"login_ctx_ms":0,"t_replenish_rows":9} ms=75

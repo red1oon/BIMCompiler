@@ -1,0 +1,119 @@
+═══ W-BASE-EDIT — the shared loaded DB with signed ops on top, in the real ERP (TEAMWORK_FRAMEWORK §13.12.I) ═══
+
+§BASE-FILE erp/ad_seed.db file=27193344 B file-sha256=174f25746f49815d | base (file + patches) sha256=d35e8a75a3be0629 bytes=30383663 | altered copy (1 byte @1073285) base sha256=6253f4a32b4996b0
+§BASE-R1
+     [A1] §TEAM_BASE state=none (this space has no base: unchanged behaviour, seeded edits stay local-only)
+     [B1] §TEAM_BASE state=none (this space has no base: unchanged behaviour, seeded edits stay local-only)
+   🟢 a team founded WITHOUT a base: baseInfo() is null, the host says state=none, the chip says data-base=none (unchanged behaviour) — {"state":"none","info":null,"chip":"none"}
+     [A1] §TEAM_OUT op=CRUD_CREATE table=c_order uu=4dade62d seq=6 refs=0 hash=e28e445ffaa4
+     [A1] §TEAM_OUT op=CRUD_CREATE table=c_orderline uu=68e15413 seq=7 refs=1 hash=87c90b2864b7
+     [A1] §TEAM_OUT op=CRUD_UPDATE table=c_order uu=4dade62d seq=8 refs=0 hash=ce8927a29402
+     [A1] §TEAM_VISIT sent=3 fetched=0 received=0 placed=8 parked=0 refused=0 gaps=0 | projection kept=4 projected=3 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent replicaIn=0/0
+     [B1] §TEAM_VISIT sent=0 fetched=3 received=3 placed=8 parked=0 refused=0 gaps=0 | projection kept=1 projected=3 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent replicaIn=3/3
+     [A1] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_process uuid=3cb553d2 reason=fk-table-mismatch record_id points at c_order (NOT SENT)
+     [A1] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_activity uuid=08ddaeed reason=fk-target-not-shared ad_wf_process_id=-11 (NOT SENT)
+     [A1] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_eventaudit uuid=4516b9c3 reason=fk-target-not-shared ad_wf_process_id=-11 (NOT SENT)
+     [A1] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_activity uuid=379c26b2 reason=fk-target-not-shared ad_wf_process_id=-11 (NOT SENT)
+     [A1] §TEAM_LOCALONLY op=CRUD_UPDATE table=c_acctschema uuid=89bf0e95 reason=target-not-a-team-record (uu-unresolved table=c_acctschema id=101) — the comm layer admits an op only against its record's CREATE scope (NOT SENT)
+     [A1] §TEAM_OUT op=CRUD_UPDATE table=c_order uu=4dade62d seq=9 refs=0 hash=6f4c0765f3b3
+     [A1] §TEAM_OUT op=CRUD_UPDATE table=m_storagereservation uu=019ee88d seq=10 refs=0 hash=4d0810a40324
+     [A1] §TEAM_LOCALONLY op=CRUD_CREATE table=m_storagereservationlog uuid=4a123859 reason=fk-table-mismatch record_id points at c_orderline (NOT SENT)
+     [A1] §TEAM_OUT op=CRUD_UPDATE table=c_orderline uu=68e15413 seq=11 refs=0 hash=3f0cdfb3c332
+     [A1] §TEAM_OUT op=CRUD_CREATE table=c_ordertax uu=b8a154eb seq=12 refs=1 hash=a8a59af3a892
+     [A1] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_eventaudit uuid=28632912 reason=fk-target-not-shared ad_wf_process_id=-11 (NOT SENT)
+     [A1] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_activity uuid=8e4015e7 reason=fk-target-not-shared ad_wf_process_id=-11 (NOT SENT)
+     [A1] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_eventaudit uuid=d1800590 reason=fk-target-not-shared ad_wf_process_id=-11 (NOT SENT)
+     [A1] §TEAM_OUT op=SET_STATUS table=c_order uu=4dade62d seq=13 refs=0 hash=8ac803776ab3
+     [A1] §TEAM_VISIT sent=5 fetched=0 received=0 placed=12 parked=0 refused=1 gaps=0 | projection kept=13 projected=7 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent replicaIn=0/0
+     [B1] §TEAM_VISIT sent=0 fetched=1 received=5 placed=12 parked=0 refused=1 gaps=0 | projection kept=1 projected=7 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent replicaIn=2/3
+   §BASE-BEFORE (no base) Complete: ops=8 refused=1 {"m_storagereservation:scope-unknown":1} | m_storagereservation ops=1 verdicts=["REFUSED:scope-unknown"] | local-only (never sent)=9
+   🟢 BEFORE: the Complete's m_storagereservation write(s) are REFUSED scope-unknown in a space without a base (the W2 named limit, reproduced here) — ["REFUSED:scope-unknown"]
+
+§BASE-FOUND
+     [A] §TEAM_BASE state=ok name=ad_seed.db+patches want=d35e8a75a3be have=d35e8a75a3be bytes=30383663 (verified: seeded-record edits are shared, judged by the base row)
+     [A] §TEAM_VISIT sent=2 fetched=0 received=0 placed=2 parked=0 refused=0 gaps=0 | projection kept=1 projected=0 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent replicaIn=0/0
+   🟢 A founds a team: the genesis pins ad_seed.db + its shipped patches — sha256 and size equal what node computes from the files on disk (independent oracle) — and A says state=ok — {"name":"ad_seed.db+patches","sha":"d35e8a75a3be","want":"d35e8a75a3be","bytes":30383663,"state":"ok"}
+     [A] §TEAM_VISIT sent=3 fetched=0 received=0 placed=5 parked=0 refused=0 gaps=0 | projection kept=1 projected=0 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent replicaIn=0/0
+     [B] §TEAM_BASE state=ok name=ad_seed.db+patches want=d35e8a75a3be have=d35e8a75a3be bytes=30383663 (verified: seeded-record edits are shared, judged by the base row)
+     [B] §TEAM_VISIT sent=0 fetched=2 received=5 placed=5 parked=0 refused=0 gaps=0 | projection kept=1 projected=0 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent replicaIn=0/0
+   🟢 B joins and is approved as role 103; both chips say data-base=ok (B hashed ITS OWN copy of the seed and it equals the team's) — {"requests":1,"enrolled":true,"devices":2,"A":"ok","B":"ok","haveB":"d35e8a75a3be"}
+
+§BASE-EDIT
+   §BASE-EDIT partner 114 description before: A="Vendor" B="Vendor"
+     [A] §TEAM_BASE pristine opened ad_seed.db+patches bytes=30383663 sha=d35e8a75a3be patch statements ok=3895 failed=3 ms=922 (+~26 MB wasm heap; base rows are read from this copy, not from the live dictionary)
+     [A] §TEAM_OUT op=CRUD_UPDATE table=c_bpartner uu=5c557ed6 seq=6 refs=0 hash=8af49f2a6017
+   🟢 A (role 102): an UPDATE of a SEEDED partner is SENT (was local-only: no CREATE in the log) — sent=1 localonly=0 §TEAM_OUT op=CRUD_UPDATE table=c_bpartner uu=5c557ed6 seq=6 refs=0 hash=8af49f2a6017
+     [A] §TEAM_VISIT sent=1 fetched=0 received=0 placed=6 parked=0 refused=0 gaps=0 | projection kept=2 projected=1 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent replicaIn=0/0
+     [B] §TEAM_BASE pristine opened ad_seed.db+patches bytes=30383663 sha=d35e8a75a3be patch statements ok=3895 failed=3 ms=880 (+~26 MB wasm heap; base rows are read from this copy, not from the live dictionary)
+     [B] §TEAM_VISIT sent=0 fetched=1 received=1 placed=6 parked=0 refused=0 gaps=0 | projection kept=1 projected=1 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent replicaIn=1/1
+   🟢 B sees A's edit of the base record after a Visit (B's own form, record 114) — B before="Vendor" after="edited by 102 on a base record"
+   🟢 the fold judged it MERGED by the base row's scope (no CREATE anywhere in the log) — {"v":"MERGED","r":"role 102 ok"}
+     [B] §TEAM_OUT op=CRUD_UPDATE table=c_bpartner uu=f6efd81a seq=1 refs=0 hash=2b39b50cb2ce
+   🟢 NO-OP guard: before B's Visit, B's own form DOES show its edit (so the revert below is the refusal, not a save that never happened) — "edited by 103 on org 0"
+     [B] §TEAM_VISIT sent=1 fetched=0 received=0 placed=6 parked=0 refused=1 gaps=0 | projection kept=2 projected=1 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent replicaIn=0/0
+     [A] §TEAM_VISIT sent=0 fetched=1 received=1 placed=6 parked=0 refused=1 gaps=0 | projection kept=2 projected=1 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent replicaIn=0/0
+     [B] §TEAM_VISIT sent=0 fetched=0 received=0 placed=6 parked=0 refused=1 gaps=0 | projection kept=2 projected=1 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent replicaIn=0/0
+   🟢 B (role 103): the edit of the org-0 partner was authored and SENT (the UI allows it; admission decides) — sent=1
+   🟢 role 103 has no write on org 0: REFUSED with an access: reason by the base row's scope — the SAME verdict on A and on B — A sees {"v":"REFUSED","r":"access:missing=C"} B sees {"v":"REFUSED","r":"access:missing=C"}
+   🟢 the refused edit is not on either screen: B's own form reverted to the base value and A never showed it — B before="Customer & Vendor" after="Customer & Vendor" A="Customer & Vendor"
+     [B] §TEAM_OUT op=CRUD_UPDATE table=c_bpartner uu=6e967db4 seq=2 refs=0 hash=e8b5f9a6324e
+     [B] §TEAM_VISIT sent=1 fetched=0 received=0 placed=7 parked=0 refused=1 gaps=0 | projection kept=3 projected=2 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent replicaIn=0/0
+     [A] §TEAM_VISIT sent=0 fetched=1 received=1 placed=7 parked=0 refused=1 gaps=0 | projection kept=2 projected=2 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent replicaIn=1/1
+   🟢 CONTROL: role 103 editing a base record of ITS org (11) is ADMITTED and reaches A — the refusal above is the base row's scope, not a blanket block — A sees "edited by 103 on org 11" (was "") merged ops=1
+     [A] §TEAM_VISIT sent=1 fetched=0 received=0 placed=7 parked=0 refused=2 gaps=0 | projection kept=2 projected=2 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent replicaIn=0/0
+     [B] §TEAM_VISIT sent=0 fetched=1 received=1 placed=7 parked=0 refused=2 gaps=0 | projection kept=3 projected=2 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent replicaIn=0/0
+   🟢 an op on a uu that is in neither the log nor the base is REFUSED base-row-missing — on both devices — ["base-row-missing","base-row-missing"]
+
+§BASE-COMPLETE
+     [A] §TEAM_BASE pristine opened ad_seed.db+patches bytes=30383663 sha=d35e8a75a3be patch statements ok=3895 failed=3 ms=4712 (+~26 MB wasm heap; base rows are read from this copy, not from the live dictionary)
+     [A] §TEAM_BASE state=ok name=ad_seed.db+patches want=d35e8a75a3be have=d35e8a75a3be bytes=30383663 (verified: seeded-record edits are shared, judged by the base row)
+     [B] §TEAM_BASE pristine opened ad_seed.db+patches bytes=30383663 sha=d35e8a75a3be patch statements ok=3895 failed=3 ms=4773 (+~26 MB wasm heap; base rows are read from this copy, not from the live dictionary)
+     [B] §TEAM_BASE state=ok name=ad_seed.db+patches want=d35e8a75a3be have=d35e8a75a3be bytes=30383663 (verified: seeded-record edits are shared, judged by the base row)
+     [A] §TEAM_OUT op=CRUD_CREATE table=c_order uu=9e718ba6 seq=8 refs=0 hash=8050e7d3c4d7
+     [A] §TEAM_OUT op=CRUD_CREATE table=c_orderline uu=ef804c7d seq=9 refs=1 hash=e3b11b78cd94
+     [A] §TEAM_OUT op=CRUD_UPDATE table=c_order uu=9e718ba6 seq=10 refs=0 hash=163dff61d30a
+     [A] §TEAM_VISIT sent=3 fetched=0 received=0 placed=10 parked=0 refused=2 gaps=0 | projection kept=6 projected=5 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent replicaIn=0/0
+     [B] §TEAM_VISIT sent=0 fetched=1 received=3 placed=10 parked=0 refused=2 gaps=0 | projection kept=4 projected=5 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent replicaIn=3/3
+     [A] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_process uuid=08acd86c reason=fk-table-mismatch record_id points at c_order (NOT SENT)
+     [A] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_activity uuid=54c81e78 reason=fk-target-not-shared ad_wf_process_id=-18 (NOT SENT)
+     [A] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_eventaudit uuid=728b71c2 reason=fk-target-not-shared ad_wf_process_id=-18 (NOT SENT)
+     [A] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_activity uuid=b6b23c4c reason=fk-target-not-shared ad_wf_process_id=-18 (NOT SENT)
+     [A] §TEAM_OUT op=CRUD_UPDATE table=c_acctschema uu=9db0c692 seq=11 refs=0 hash=825fdb387f66
+     [A] §TEAM_OUT op=CRUD_UPDATE table=c_order uu=9e718ba6 seq=12 refs=0 hash=f52476487ab7
+     [A] §TEAM_OUT op=CRUD_UPDATE table=m_storagereservation uu=019ee88d seq=13 refs=0 hash=e845785d4b24
+     [A] §TEAM_LOCALONLY op=CRUD_CREATE table=m_storagereservationlog uuid=13a6dceb reason=fk-table-mismatch record_id points at c_orderline (NOT SENT)
+     [A] §TEAM_OUT op=CRUD_UPDATE table=c_orderline uu=ef804c7d seq=14 refs=0 hash=e3cecb530d58
+     [A] §TEAM_OUT op=CRUD_CREATE table=c_ordertax uu=306d40be seq=15 refs=1 hash=55451782ab69
+     [A] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_eventaudit uuid=66627778 reason=fk-target-not-shared ad_wf_process_id=-18 (NOT SENT)
+     [A] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_activity uuid=687f5333 reason=fk-target-not-shared ad_wf_process_id=-18 (NOT SENT)
+     [A] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_eventaudit uuid=8d9c7892 reason=fk-target-not-shared ad_wf_process_id=-18 (NOT SENT)
+     [A] §TEAM_OUT op=SET_STATUS table=c_order uu=9e718ba6 seq=16 refs=0 hash=0755df83fb34
+     [A] §TEAM_VISIT sent=6 fetched=0 received=0 placed=16 parked=0 refused=2 gaps=0 | projection kept=14 projected=11 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent replicaIn=0/0
+     [B] §TEAM_VISIT sent=0 fetched=1 received=6 placed=16 parked=0 refused=2 gaps=0 | projection kept=4 projected=11 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent replicaIn=3/4
+     [A] §TEAM_VISIT sent=0 fetched=0 received=0 placed=16 parked=0 refused=2 gaps=0 | projection kept=14 projected=11 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent replicaIn=0/0
+   §BASE-RSV the Complete's reservation row 019ee88d is in the pristine base (file + patches) with scope {"client":11,"org":11}
+   🟢 the reservation row the Complete updates is NOT in the seed file but IS in the shipped patch, and the pristine base (file + patches) answers its scope client/org = 11/11 — {"client":11,"org":11}
+   §BASE-DEBUG A kernel rows on m_storagereservation: [{"id":24,"op":"CRUD_UPDATE","tag":"local","p":"{\"op_type\":\"CRUD_UPDATE\",\"key\":\"m_storagereservation\",\"table\":\"m_storagereservation\",\"verb\":\"update\",\"id\":\"019ee88d-7eca-741b-8bf7-ef6915ee9e42\",\"idCol\":\"m_storagereservation_uu\",\"changes\":{\"qty\":{\"old\":305,\"new\":307}},\"_sv\":1,\"_sigv\":2,\"signed_by\":\"3059301306072a8648ce3d020106082a8648ce3d030107034200047506b257d4055ad9ddde63c215"},{"id":37,"op":"CRUD_UPDATE","tag":"team","p":"{\"table\":\"m_storagereservation\",\"id\":\"019ee88d-7eca-741b-8bf7-ef6915ee9e42\",\"idCol\":\"m_storagereservation_uu\",\"changes\":{\"qty\":{\"old\":305,\"new\":307}}}"}]
+   §BASE-AFTER (base) Complete: ops=13 refused=2 {"c_bpartner:access:missing=C":1,"c_bpartner:base-row-missing":1} | m_storagereservation ops=1 verdicts=["MERGED:role 102 ok"] | local-only=8
+   §BASE-BEFORE-AFTER refused by the Complete: before(no base)=1 {"m_storagereservation:scope-unknown":1}  ->  after(base)=0 (all refusals in the space incl. the deliberate §BASE-EDIT ones: 2 {"c_bpartner:access:missing=C":1,"c_bpartner:base-row-missing":1}) | m_storagereservation: before ["scope-unknown"] after ["MERGED:role 102 ok"]
+   🟢 AFTER: the Complete's m_storagereservation write(s) are ADMITTED in the base team (before: scope-unknown) — ["MERGED:role 102 ok"]
+   🟢 refused ops of the Complete: 1 before (the m_storagereservation write) -> 0 after — before=1 after=0
+   🟢 B holds the SAME reservation update(s) as A in its op-log (projected through the idCol/uu addressing of the base row) — A=1 B=1 (B before the Complete: 0)
+
+§BASE-MISMATCH
+     [A] §TEAM_VISIT sent=3 fetched=0 received=0 placed=19 parked=0 refused=2 gaps=0 | projection kept=14 projected=11 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent replicaIn=0/0
+     [C] §TEAM_BASE pristine opened ad_seed_alt.db+patches bytes=30383663 sha=6253f4a32b49 patch statements ok=3895 failed=3 ms=1019 (+~26 MB wasm heap; base rows are read from this copy, not from the live dictionary)
+     [C] §TEAM_BASE state=mismatch name=ad_seed.db+patches want=d35e8a75a3be have=6253f4a32b49 bytes=30383663 - Your copy of ad_seed.db+patches is not the team's (yours 6253f4a32b49, the team's d35e8a75a3be, version f7e391af). Update it, then try again. (NOT folded)
+     [C] §TEAM_VISIT sent=0 fetched=9 received=21 placed=19 | BASE mismatch — NOTHING FOLDED: Your copy of ad_seed.db+patches is not the team's (yours 6253f4a32b49, the team's d35e8a75a3be, version f7e391af). Update it, then try again.
+   §BASE-MISMATCH C chip: {"text":"Team · 838F-997B · team devices 3 Visit my ops 0 · seen 0 · refused 0 · waiting on 0 · last visit 4:59:50 PM ⚠ Your copy of ad_seed.db+patches is not the team's (yours 6253f4a32b49, the team's d35e8a75a3be, version f7e391af). Update it, then try again.","team":"ready","base":"mismatch","warn":"⚠ Your copy of ad_seed.db+patches is not the team's (yours 6253f4a32b49, the team's d35e8a75a3be, version f7e391af). Update it, then try again. "}
+   🟢 C (seed differs by ONE byte) is told so: state=mismatch, have/want are the two real base hashes (node oracle for the altered copy and for the shipped files) — {"state":"mismatch","have":"6253f4a32b","want":"d35e8a75a3"}
+   🟢 the chip says it in plain words (no stack, no hash dump to read) — ⚠ Your copy of ad_seed.db+patches is not the team's (yours 6253f4a32b49, the team's d35e8a75a3be, version f7e391af). Update it, then try again. 
+   🟢 C holds the team's log (19 placed ops) but projected NOTHING onto its screen (team rows C=0); CONTROL: B, same log, right seed, has 15 — placed=19 C=0 B=15
+   🟢 the Visit line on C says NOTHING FOLDED (no rebuild ran) — §TEAM_VISIT sent=0 fetched=9 received=21 placed=19 | BASE mismatch — NOTHING FOLDED: Your copy of ad_seed.db+patches is not the team's (yours 6253f4a32b49, the 
+
+§BASE-NOERR
+   🟢 zero page errors on every device — errors=0
+
+──────────────────────────────────────────────
+§W-BASE-EDIT PASS judged=22 fails=0 inconclusive=0 pageerrors=0
+exit=0

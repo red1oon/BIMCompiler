@@ -1,0 +1,265 @@
+{
+ "made": "2026-11-16T00:22:30.839Z",
+ "ootb": "8c3f0af6",
+ "noport": {
+  "name": "Renumber",
+  "class": "org.compiere.process.DiscountSchemaReSeq",
+  "count": "162"
+ },
+ "setup": {
+  "lines": 6,
+  "ok": 6
+ },
+ "isolation": {
+  "sceneRequests": 44,
+  "leaked": 0,
+  "realOpLogFiles": 0
+ },
+ "greet": {
+  "version": "1.0.0",
+  "verbs": 72,
+  "words": 25,
+  "commit": "8c3f0af6",
+  "tip": true,
+  "welcome": true,
+  "name": true,
+  "hint": true
+ },
+ "help": {
+  "groups": 3,
+  "list": [
+   {
+    "g": "bim",
+    "title": "buildings and models",
+    "n": 16
+   },
+   {
+    "g": "mis",
+    "title": "records, tables, files, Ninja",
+    "n": 11
+   },
+   {
+    "g": "erp",
+    "title": "document actions (CO VO CL RC)",
+    "n": 3
+   }
+  ],
+  "erpWords": [
+   "do",
+   "run",
+   "next"
+  ],
+  "erpN": 3
+ },
+ "level": {
+  "set": true,
+  "what": true,
+  "line": true,
+  "taken": true
+ },
+ "bp": {
+  "ghost": true,
+  "ghostText": "\"Business Partner\"  (ERP kind · window)",
+  "tabLine": "cd \"Business Partner\"",
+  "props": 74,
+  "shown": 20,
+  "of": 113,
+  "ms": 856
+ },
+ "po": {
+  "asked": [
+   "C_Project_ID",
+   "C_ProjectPhase_ID",
+   "C_ProjectLine_ID",
+   "ConsolidateDocument"
+  ],
+  "consolidateDefault": "Y",
+  "project": {
+   "n": 3,
+   "items": [
+    "Hospital · BIM: Hospital · 990000",
+    "Landscape · Landcape for New Complex · 101",
+    "Standard · Standard · 100"
+   ],
+   "picked": "Hospital · BIM: Hospital",
+   "id": 990000
+  },
+  "phase": {
+   "n": 7,
+   "ids": [
+    990000,
+    990001,
+    990002,
+    990003,
+    990004,
+    990005,
+    990006
+   ],
+   "projectInArrow": 990000,
+   "leftOut": true,
+   "mine": [
+    990000,
+    990001,
+    990002,
+    990003,
+    990004,
+    990005,
+    990006
+   ],
+   "otherProjectsPhases": 1
+  },
+  "line": {
+   "n": 32,
+   "leftOut": true
+  },
+  "run": {
+   "id": 990000,
+   "ms": 7870,
+   "sec": 8,
+   "orders": 3,
+   "orderLines": 4,
+   "projectLines": 4,
+   "planned": 12
+  },
+  "dictionary": [
+   "C_Project_ID",
+   "C_ProjectPhase_ID",
+   "C_ProjectLine_ID",
+   "ConsolidateDocument"
+  ],
+  "numbersMade": [
+   "800003",
+   "800004",
+   "800005"
+  ],
+  "opLogOrderCreates": 3
+ },
+ "ord": {
+  "rows": 3,
+  "numbers": [
+   "800003",
+   "800004",
+   "800005"
+  ],
+  "statuses": [
+   "DR",
+   "DR",
+   "DR"
+  ],
+  "shown": 3,
+  "of": 3
+ },
+ "co": {
+  "number": "800003",
+  "before": "DR",
+  "after": "CO",
+  "total": 81,
+  "doc": "800003",
+  "ms": 9487,
+  "sec": 9
+ },
+ "next": {
+  "number": "800003",
+  "head": "800003",
+  "status": "CO",
+  "moves": [
+   {
+    "code": "CL",
+    "what": "→ do close 800003"
+   },
+   {
+    "code": "VO",
+    "what": "→ do void 800003"
+   },
+   {
+    "code": "RE",
+    "what": "(no red1 word for it yet)"
+   }
+  ],
+  "legalLog": [
+   "CL",
+   "VO",
+   "RE"
+  ],
+  "withWord": [
+   "CL",
+   "VO"
+  ],
+  "noWord": [
+   "RE"
+  ]
+ },
+ "gap": {
+  "arrowName": "Renumber",
+  "reasonName": "Renumber",
+  "klass": "org.compiere.process.DiscountSchemaReSeq",
+  "hint": true,
+  "kind": "no-port",
+  "process": "Renumber",
+  "noPortCount": 162,
+  "hintFrames": 1,
+  "firstHintFrame": 212,
+  "runReturnFrame": 211,
+  "logLines": 1,
+  "nonOkDoorLines": [
+   {
+    "verb": "erp.process",
+    "status": "refused"
+   }
+  ]
+ },
+ "report": {
+  "draft": true,
+  "line": "erp.process name=Renumber kind=Order",
+  "send": true,
+  "answer": "refused (gap: no-port)"
+ },
+ "url": {
+  "chars": 6980,
+  "joined": 6980,
+  "host": true,
+  "rowsWide": 34,
+  "via": "github",
+  "logChars": 6980
+ },
+ "cost": {
+  "elements": 1190,
+  "total": 1054482,
+  "noRate": 71,
+  "noSize": 3,
+  "ms": 607,
+  "rows": 32,
+  "rowSum": 1054482,
+  "byDisc": {
+   "MEP": 153825,
+   "STR": 35725,
+   "PLB": 49000,
+   "ELEC": 283500,
+   "ARC": 532432
+  },
+  "discs": 5,
+  "arrow": true,
+  "door": {
+   "total": 1054482,
+   "elements": 1190,
+   "groups": 5,
+   "groupSum": 1054482
+  },
+  "byDiscDoor": {
+   "ARC": 532432,
+   "ELEC": 283500,
+   "MEP": 153825,
+   "PLB": 49000,
+   "STR": 35725
+  }
+ },
+ "duplexElements": 0,
+ "checks": {
+  "bad": 0,
+  "missing": 0,
+  "frames": 264,
+  "rows": 50,
+  "cols": 200,
+  "buildingsChecked": 8
+ }
+}

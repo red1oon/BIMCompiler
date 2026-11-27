@@ -1,0 +1,12 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT still1 cue=6.97 room=8.36 dur=7.47 -> DETAIL slack=+0.89 detailDur=7.47 words=2
+§NARR_FIT still2 cue=19.51 room=5.52 dur=4.61 -> DETAIL slack=+0.91 detailDur=4.61 words=2
+§NARR_FIT menu cue=27.01 room=9.44 dur=8.53 -> DETAIL slack=+0.91 detailDur=8.53 words=5
+§NARR_FIT find cue=39.30 room=5.90 dur=5.01 -> DETAIL slack=+0.89 detailDur=5.01 words=2
+§NARR_FIT open cue=46.72 room=6.94 dur=6.03 -> DETAIL slack=+0.91 detailDur=6.03 words=1
+§NARR_FIT back cue=55.67 room=5.24 dur=4.33 -> DETAIL slack=+0.91 detailDur=4.33 words=3
+§EDGE_CALL voice=zh-CN-YunxiNeural rate=+2% chars=25 -> aaa1438433
+§EDGE_CALL voice=zh-CN-XiaoxiaoNeural rate=+9% chars=23 -> a7fef019f5
+§NARR_FIT close cue=61.51 room=7.90 dur=7.84 -> DETAIL x1.045 slack=+0.06 detailDur=8.25 words=2

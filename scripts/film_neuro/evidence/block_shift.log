@@ -1,0 +1,79 @@
+═══ W-BLOCK-SHIFT — real-user, maths-asserted (headless swiftshader) ═══
+§W-BLOCK-SHIFT hand plan {"moved":[1,2],"stretched":[4],"riders":[6],"left":[{"id":5,"cls":"IfcFurniture"}],"stayed":1,"band":0.4000000000000007,"at":9.6}
+  ✅ P1 the plane is the line minus the band, and the band is the column on the line + the engine tolerance
+  ✅ P2 wholly beyond moves; wholly before stays
+  ✅ P3 a crossing element gets one hinge at the plane, by exactly the move, and no scale
+  ✅ P4 a class that does not follow is named, never hinged
+  ✅ P5 a filling rides its host and is not classified itself
+  ✅ P6a a filling beyond the plane in a crossing host rides
+  ✅ P6b a filling straddling the plane: refused, with why  filling #6 straddles the line in #4: it has a fixed shape and cannot stretch
+  ✅ P6c a filling before the plane stays
+  ✅ P7 a crossing element carrying a cut: refused, the worker folds those as solids  #4 IfcWall crosses the line and carries a GEOM_CUT: it cannot follow a shift
+  ✅ P8 no such line: refused
+  ✅ P9 an element already carrying a hinge stays in command order: at null, no GEOM_MOVE
+  ✅ P10 a 3-axis or oblique crossing element follows too: the rule has no local axis
+  ✅ P11 on a rotated lattice the block travels along the lattice axis  {"parent":10,"induced":"block-shift","dx":0.06979899340500194,"dy":1.9987816540381915,"dz":0}
+  §OPEN-SETTLE candidates=40 waitedMs=5
+  ✅ Z1 §14.6 bay_add.js is not in the page until a shift is asked for  {"loaded":false,"tag":false}
+  ✅ Z2 the first shift loads it, and says so
+  ✅ L0 a report exists and names a block shift  {"kind":"block-shift","grid":"gy9","through":"gy28","lines":20,"delta":1.51,"moved":508,"stretched":22,"stretched_by_class":{"IfcWallStandardCase":2,"IfcBuildingElementProxy":12,"IfcWall":1,"IfcBeam":7},"riders":8,"stayed":298,"left":{"count":0,"by_class":{}},"verify":true}
+§W-BLOCK-SHIFT report {"kind":"block-shift","grid":"gy9","through":"gy28","lines":20,"delta":1.51,"moved":508,"stretched":22,"stretched_by_class":{"IfcWallStandardCase":2,"IfcBuildingElementProxy":12,"IfcWall":1,"IfcBeam":7},"riders":8,"stayed":298,"left":{"count":0,"by_class":{}},"verify":true} rows [["overlap","JUDGED",2218,2220],["span_red","JUDGED",91,91],["span_orange","JUDGED",14,19]]
+§W-BLOCK-SHIFT line §BLOCK-SHIFT grid=gy9 through=gy28 lines=20 delta=1.51 band=0.415 moved=508 stretched=22 riders=8 stayed=298 left=0 {} verify=true gate=⛔ 26 RED ms=586
+  ✅ L1 the widened bay reaches its goal  6.9997
+  ✅ L2 every other bay on the axis keeps its width
+  ✅ L3 lines before stay, lines from it on all moved by exactly the move
+  ✅ E0 not vacuous: over 100 moved elements were looked at  moved=516
+  ✅ E1 every moved element keeps its size and travels the block's vector  bad=
+  ✅ E2 every other element is unchanged  unchanged=326
+§W-BLOCK-SHIFT crossing vertices {"before":37089,"beyond":31247,"bad":0,"elementsBoth":22,"first":null}
+  ✅ E3a every vertex of a crossing element: before the plane unchanged, beyond it moved by exactly the vector  null
+  ✅ E3b not vacuous: crossing elements really have vertices on both sides  {"before":37089,"beyond":31247,"bad":0,"elementsBoth":22,"first":null}
+  ✅ E4 what the report says happened = the ops
+§W-BLOCK-SHIFT crossing by class {"IfcWallStandardCase":2,"IfcBuildingElementProxy":12,"IfcWall":1,"IfcBeam":7}
+  ✅ K1 §13 limit 1 is gone: nothing crossing this line is left behind  {"count":0,"by_class":{}}
+  ✅ K2 the floors really are among what followed, and the report says so  {"IfcWallStandardCase":2,"IfcBuildingElementProxy":12,"IfcWall":1,"IfcBeam":7}
+  ✅ R1 span rows = an independent recount, both sides  [{"RED":91,"ORANGE":14,"GREEN":123},{"RED":91,"ORANGE":19,"GREEN":118}]
+  ✅ R2 not vacuous: the shift moved the count  14->19
+  ✅ R3 the overlap row judged the moved elements  538 moved elements against 864
+  ✅ U1 one Ctrl+Z restores every box  different=0
+  ✅ U2 one Ctrl+Z restores every line
+  ✅ U3 one Ctrl+Y returns After  different=0
+  ✅ U4 the chain verifies
+  ✅ NO-ERROR (no pageerror / no fatal)   
+§NET-FAILLOG W-BLOCK-SHIFT n=0 kinds=0
+W-BLOCK-SHIFT: 35 PASS / 0 FAIL
+═══ W-BLOCK-SHIFT-LINEWISE — real-user, maths-asserted (headless swiftshader) ═══
+  §OPEN-SETTLE candidates=40 waitedMs=8
+§W-BLOCK-SHIFT line by line [["gy9","report"],["gy10","report"],["gy11","refused"],["gy12","refused"],["gy13","refused"],["gy14","report"]]
+  ✅ F1 the §12 flaw is real: line by line, the same shift is refused part way  gy11,gy12,gy13
+  ✅ NO-ERROR (no pageerror / no fatal)   
+§NET-FAILLOG W-BLOCK-SHIFT-LINEWISE n=9 kinds=3
+§NET-FAILLOG-KIND W-BLOCK-SHIFT-LINEWISE x3 warn: §GRIDMOVE §DAGEVU refused: opening #104 would leave wall #103 on y (wall 103.78..107.16 vs opening 102.68..103.70) — drag less, or ctrl+click the opening to let it ride
+§NET-FAILLOG-KIND W-BLOCK-SHIFT-LINEWISE x3 log: §TOAST kind=error §DAGEVU refused: opening #104 would leave wall #103 on y (wall 103.78..107.16 vs opening 102.68..103.70) — drag less, or ctrl+click the opening to let it ride
+§NET-FAILLOG-KIND W-BLOCK-SHIFT-LINEWISE x3 warn: §MODELLER gridmove fail Error: §DAGEVU refused: opening #104 would leave wall #103 on y (wall 103.78..107.16 vs opening 102.68..103.70) — drag less, or ctrl+click the opening to let it ride
+W-BLOCK-SHIFT-LINEWISE: 2 PASS / 0 FAIL
+═══ W-BLOCK-SHIFT-WIDEN — real-user, maths-asserted (headless swiftshader) ═══
+  §OPEN-SETTLE candidates=40 waitedMs=6
+§W-BLOCK-SHIFT widen [{"id":"clearance","label":"New clearance under the limit","level":"orange","state":"JUDGED","count":4}]
+  ✅ F2 the shift the line-by-line path refused is judged, on lattice boxes, with nothing new red  Box overlap over 20 mm
+  ✅ F3 a shift has no sideways error, so it is judged at the plain 20 mm  Box overlap over 20 mm
+  ✅ F4 a rigid widening changes no overlap count  1565->1565
+  ✅ NO-ERROR (no pageerror / no fatal)   
+§NET-FAILLOG W-BLOCK-SHIFT-WIDEN n=0 kinds=0
+W-BLOCK-SHIFT-WIDEN: 4 PASS / 0 FAIL
+═══ W-BLOCK-SHIFT-NARROW — real-user, maths-asserted (headless swiftshader) ═══
+  §OPEN-SETTLE candidates=40 waitedMs=7
+§W-BLOCK-SHIFT narrow [{"id":"clash","label":"New or deeper box overlap","level":"red","state":"JUDGED","count":2},{"id":"abuts-clash","label":"Driven into a wall it touches","level":"red","state":"JUDGED","count":2},{"id":"clearance","label":"New clearance under the limit","level":"orange","state":"JUDGED","count":2}]
+  ✅ N1 a narrowing into what stays is RED: a tolerance cannot hide it  clash=2
+  ✅ NO-ERROR (no pageerror / no fatal)   
+§NET-FAILLOG W-BLOCK-SHIFT-NARROW n=0 kinds=0
+W-BLOCK-SHIFT-NARROW: 2 PASS / 0 FAIL
+═══ W-BLOCK-SHIFT-3AXIS — real-user, maths-asserted (headless swiftshader) ═══
+  §OPEN-SETTLE candidates=38 waitedMs=2
+§W-BLOCK-SHIFT 3-axis [{"id":30,"d":[0,0,1,1,0,0]},{"id":31,"d":[0,0,1,1,0,0]},{"id":37,"d":[0,0,1,1,0,0]}]
+  ✅ A1 not vacuous: this building has 3-axis elements  n=3
+  ✅ A2 a plain move of a 3-axis element changes its box by exactly the move
+  ✅ NO-ERROR (no pageerror / no fatal)   
+§NET-FAILLOG W-BLOCK-SHIFT-3AXIS n=0 kinds=0
+W-BLOCK-SHIFT-3AXIS: 3 PASS / 0 FAIL
+§WITNESS_BLOCK_SHIFT fail=0 verdict=PASS

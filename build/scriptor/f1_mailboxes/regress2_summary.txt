@@ -1,0 +1,15 @@
+witness_pos_plan exit=1
+witness_team_floor exit=1
+witness_team_so exit=0
+witness_team_base exit=0
+witness_team_executors exit=0
+witness_team_publish exit=0
+witness_team_versions exit=0
+witness_team_docaction exit=0
+witness_docno_till exit=0
+witness_team_seatbelt exit=0
+witness_team_terms exit=0
+witness_team_plan exit=0
+witness_pos_chain exit=1
+hq_hotspots exit=0
+ALLDONE

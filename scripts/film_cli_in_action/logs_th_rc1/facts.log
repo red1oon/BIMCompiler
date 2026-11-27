@@ -1,0 +1,40 @@
+§EXPORTSAFE-REBIND n=1 names=core-udf
+§FACTS state s0 window=- grid=false page_chars_in_th_TH=169 sample="▸ / 📁 / การบริหารระบบ / ▸ / 📁 / แอพพลิเคชั่นดิกชั่นนารี่ / ▸ / 📁 / การบริหารธุรกิจสัมพันธ์ / ▸ / 📁 / ระบบการตลาด" page_errors=0 who="GardenWorld · GardenWorld Admin · HQ"
+§DOOR request=d-mwg0qz08-1318301-1 actor=human verb=mis.add_window status=ok ms=647
+§FACTS add ok mis.add_window file=AST_Asset.csv
+§EXPORTSAFE-REBIND n=1 names=core-udf
+§DOOR request=d-mwg0r4ev-1318301-1 actor=human verb=mis.list status=inconclusive ms=426 why="this model holds no AST Asset record, so nothing was listed"
+§FACTS state s1 window=7100001 grid=true head=IsActive|Name|PurchaseDate|Cost|Condition|IsInsured rows=0 names= door= same=true page_chars_in_th_TH=169 sample="▸ / 📁 / การบริหารระบบ / ▸ / 📁 / แอพพลิเคชั่นดิกชั่นนารี่ / ▸ / 📁 / การบริหารธุรกิจสัมพันธ์ / ▸ / 📁 / ระบบการตลาด" page_errors=0 who="GardenWorld · GardenWorld Admin · HQ"
+§DOOR request=d-mwg0r4qs-1318301-1 actor=human verb=mis.new status=ok ms=4007
+§FACTS create ok mis.new kind=AST_Asset Name=Tractor Cost=1200.50
+§EXPORTSAFE-REBIND n=1 names=core-udf
+§DOOR request=d-mwg0rbck-1318301-1 actor=human verb=mis.list status=ok ms=480
+§FACTS state s2 window=7100001 grid=true head=IsActive|Name|PurchaseDate|Cost|Condition|IsInsured rows=1 names=Tractor door=Tractor same=true page_chars_in_th_TH=169 sample="▸ / 📁 / การบริหารระบบ / ▸ / 📁 / แอพพลิเคชั่นดิกชั่นนารี่ / ▸ / 📁 / การบริหารธุรกิจสัมพันธ์ / ▸ / 📁 / ระบบการตลาด" page_errors=0 who="GardenWorld · GardenWorld Admin · HQ"
+§DOOR request=d-mwg0rbpy-1318301-1 actor=human verb=mis.new status=ok ms=3301
+§FACTS create2 ok mis.new kind=AST_Asset Name=Plough Cost=300 Condition=FAIR
+§EXPORTSAFE-REBIND n=1 names=core-udf
+§DOOR request=d-mwg0rhcy-1318301-1 actor=human verb=mis.list status=ok ms=370
+§FACTS state s3 window=7100001 grid=true head=IsActive|Name|PurchaseDate|Cost|Condition|IsInsured rows=2 names=Plough,Tractor door=Tractor,Plough same=true page_chars_in_th_TH=169 sample="▸ / 📁 / การบริหารระบบ / ▸ / 📁 / แอพพลิเคชั่นดิกชั่นนารี่ / ▸ / 📁 / การบริหารธุรกิจสัมพันธ์ / ▸ / 📁 / ระบบการตลาด" page_errors=0 who="GardenWorld · GardenWorld Admin · HQ"
+§DOOR request=d-mwg0rhnb-1318301-1 actor=human verb=mis.update status=ok ms=2396
+§FACTS update ok mis.update kind=AST_Asset number=Plough Condition=POOR
+§EXPORTSAFE-REBIND n=1 names=core-udf
+§DOOR request=d-mwg0rmff-1318301-1 actor=human verb=mis.list status=ok ms=335
+§FACTS state s4 window=7100001 grid=true head=IsActive|Name|PurchaseDate|Cost|Condition|IsInsured rows=2 names=Plough,Tractor door=Tractor,Plough same=true page_chars_in_th_TH=169 sample="▸ / 📁 / การบริหารระบบ / ▸ / 📁 / แอพพลิเคชั่นดิกชั่นนารี่ / ▸ / 📁 / การบริหารธุรกิจสัมพันธ์ / ▸ / 📁 / ระบบการตลาด" page_errors=0 who="GardenWorld · GardenWorld Admin · HQ"
+§DOOR request=d-mwg0rmot-1318301-1 actor=human verb=mis.new status=refused ms=2280 why="Condition Invalid value - BAD - Reference_ID=200277 - FAIR - GOOD - POOR; nothing was written"
+§FACTS refuse refused mis.new kind=AST_Asset Name=Roller Condition=BAD
+§DOOR request=d-mwg0rog7-1318301-1 actor=human verb=mis.load status=ok ms=2306
+§FACTS load ok mis.load kind=AST_Asset file=more.csv dry=N
+§EXPORTSAFE-REBIND n=1 names=core-udf
+§DOOR request=d-mwg0rt7z-1318301-1 actor=human verb=mis.list status=ok ms=334
+§FACTS state s6 window=7100001 grid=true head=IsActive|Name|PurchaseDate|Cost|Condition|IsInsured rows=5 names=Harrow,Seeder,Trailer,Plough,Tractor door=Tractor,Plough,Harrow,Seeder,Trailer same=true page_chars_in_th_TH=169 sample="▸ / 📁 / การบริหารระบบ / ▸ / 📁 / แอพพลิเคชั่นดิกชั่นนารี่ / ▸ / 📁 / การบริหารธุรกิจสัมพันธ์ / ▸ / 📁 / ระบบการตลาด" page_errors=0 who="GardenWorld · GardenWorld Admin · HQ"
+§DOOR request=d-mwg0rthb-1318301-1 actor=human verb=mis.delete status=ok ms=746
+§FACTS delete ok mis.delete kind=AST_Asset number=Plough
+§EXPORTSAFE-REBIND n=1 names=core-udf
+§DOOR request=d-mwg0tmc1-1318301-1 actor=human verb=mis.list status=ok ms=360
+§FACTS state s7 window=7100001 grid=true head=IsActive|Name|PurchaseDate|Cost|Condition|IsInsured rows=4 names=Harrow,Seeder,Trailer,Tractor door=Tractor,Harrow,Seeder,Trailer same=true page_chars_in_th_TH=169 sample="▸ / 📁 / การบริหารระบบ / ▸ / 📁 / แอพพลิเคชั่นดิกชั่นนารี่ / ▸ / 📁 / การบริหารธุรกิจสัมพันธ์ / ▸ / 📁 / ระบบการตลาด" page_errors=0 who="GardenWorld · GardenWorld Admin · HQ"
+§DOOR request=d-mwg0tmm3-1318301-1 actor=human verb=mis.sum status=ok ms=330
+§FACTS sum ok mis.sum kind=AST_Asset column=Cost
+§DOOR request=d-mwg0tmvb-1318301-1 actor=human verb=mis.list status=ok ms=332
+§FACTS list ok mis.list kind=AST_Asset columns=Name,Cost,Condition
+§FACTS PANE_VERDICT PASS the grid of the page names the same rows as the door on 6 of 6 states; page_errors=0
+§FACTS wrote out/facts.json add.ops=47 gridColumns=6 rows s1..s7=0/1/2/2/5/4 update.shown=Poor refuse.valid=FAIR/GOOD/POOR load=3/3 sum=4730.5 over 4

@@ -1,0 +1,17 @@
+═══ W-DOC-POSTER — doc_poster.derivePostings extracted from W-FOLD-COMPLETE, oracle-anchored ═══
+    verb = doc_poster.derivePostings(db,{table:C_Order,id},101) · oracle = GardenWorld fact_acct(318), client 11
+
+   🟢 order 80000 derivePostings == oracle — basis=invoice lines=3 postings=3 maxDiff=0c(EQUIVALENT) balanced=Y
+§DOC-POSTER doc=C_Order id=100 docno=80000 invoice=100 lines=3 postings=3 maxDiff=0c(EQUIVALENT) ΣDR=ΣCR=Y absent=0
+   🟢 order 80001 derivePostings == oracle — basis=invoice lines=3 postings=3 maxDiff=0c(EQUIVALENT) balanced=Y
+§DOC-POSTER doc=C_Order id=101 docno=80001 invoice=101 lines=3 postings=3 maxDiff=0c(EQUIVALENT) ΣDR=ΣCR=Y absent=0
+   🟢 order 80002 derivePostings == oracle — basis=invoice lines=3 postings=3 maxDiff=0c(EQUIVALENT) balanced=Y
+§DOC-POSTER doc=C_Order id=102 docno=80002 invoice=103 lines=3 postings=3 maxDiff=0c(EQUIVALENT) ΣDR=ΣCR=Y absent=0
+   🟢 order 60000 derivePostings == oracle — basis=invoice lines=3 postings=3 maxDiff=4039c(AMT-DRIFT) balanced=Y
+§DOC-POSTER doc=C_Order id=108 docno=60000 invoice=109 lines=3 postings=3 maxDiff=4039c(AMT-DRIFT) ΣDR=ΣCR=Y absent=0
+   🟢 3/4 orders derive to an ORACLE-EQUIVALENT posting (1 post-posting drift, named) — equiv=3 drift=1
+   🟢 §FALSIFIER drop a derived line → maxDiff≠0 (diff is load-bearing) — maxDiff=5035c
+§FALSIFIER doc=C_Order order=100 invoice=100 mutation=drop-receivable-DR maxDiff=5035c (must be >0)
+
+🟢 W-DOC-POSTER PASS — doc_poster.derivePostings is a shipped, oracle-anchored verb (== fact_acct(318) to the cent); the Posting-Preview seam consumes it, no re-derive. Gap-A closed.
+exit=0

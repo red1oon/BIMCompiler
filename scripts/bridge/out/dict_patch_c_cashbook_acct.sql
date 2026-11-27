@@ -1,0 +1,1 @@
+-- dict_diff patch for c_cashbook_acct (generated from legacy values; review before applying; never deletes)

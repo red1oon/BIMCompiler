@@ -1,0 +1,83 @@
+§ERP_FILM_FACT gpu=ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 4060 Laptop GPU/PCIe/SSE2, OpenGL 4.5.0)
+§ERP_FILM_BEAT id=g_th_TH t=0.00 lang=th_TH greeting
+§ERP_FILM_FACT i18n.th_TH=§I18N lang=th_TH labels=22/22 dir=ltr ms=3 menu=0/0 window=0/0 tab=0/0 field=0/0 chrome=22/22 src=pack:8,machine:14 packRows=Element:1866,Field:16,Form:16,Menu:338,Message:802,Process:201,Ref_List:515,Tab:521,Window:188
+§ERP_FILM_HOLD after=g_th_TH extra=0.66
+§ERP_FILM_BEAT id=s00 t=1.90 lang=th_TH opening in th_TH on the login card
+§ERP_FILM_HOLD after=s00 extra=5.57
+§ERP_FILM_BEAT id=s01 t=8.98 lang=th_TH System Monitor
+§ERP_FILM_FACT sysmonRelease=§SYSMON-RELEASE version=v815 build=v815 source=sw controlled=Y
+§ERP_FILM_FACT sysmonGather=§SYSTEM-MONITOR gather release=v815 heap=real storage=real tenants=null fieldHealth=na
+§ERP_FILM_FACT sysmonText=System Monitor iDempiere-faithful · serverless kernel — this device × SYSTEM Release v815 · this device’s deployed build Environment Linux x86_64 · 20 cores Client (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) H FIELD HEALTH · PARADIGM VITALS Field errors 0 no uncaught errors this session Durability n/a no
+§ERP_FILM_HOLD after=s01 extra=3.50
+§ERP_FILM_BEAT id=s02 t=14.33 lang=th_TH No longer needed: background processors, cluster
+§ERP_FILM_FACT badges=["No longer needed","No longer needed","No longer needed"]
+§ERP_FILM_HOLD after=s02 extra=1.36
+§ERP_FILM_BEAT id=s03 t=19.83 lang=th_TH SQLite-wasm in-page; signed op-log is the trace
+§ERP_FILM_HOLD after=s03 extra=2.71
+§ERP_FILM_BEAT id=s04 t=27.15 lang=th_TH GardenWorld login
+§ERP_FILM_HOLD after=s04 extra=0.50
+§ERP_FILM_BEAT id=s05 t=33.16 lang=th_TH the Application Dictionary
+§ERP_FILM_FACT count.AD_Window=375
+§ERP_FILM_FACT count.AD_Tab=1135
+§ERP_FILM_FACT count.AD_Field=20988
+§ERP_FILM_FACT count.AD_Process=476
+§ERP_FILM_FACT count.AD_Menu=590
+§ERP_FILM_FACT count.AD_Column=26161
+§ERP_FILM_FACT count.AD_Val_Rule=332
+§ERP_FILM_FACT callouts=277
+§ERP_FILM_FACT menu.win143=129
+§ERP_FILM_HOLD after=s05 extra=4.03
+§ERP_FILM_BEAT id=s06 t=40.95 lang=en_US Sales Order form from AD_Field
+§ERP_FILM_FACT i18n.en_US=§I18N lang=en_US labels=0/748 dir=ltr ms=53 menu=0/587 window=0/1 tab=0/5 field=0/141 chrome=0/14 src=pack:0,machine:0 packRows=base
+§ERP_FILM_FACT gotoRecord=1500003 idx=4 of 5
+§ERP_FILM_FACT recnav=Record 5 of 5
+§ERP_FILM_FACT formFields=56
+§ERP_FILM_FACT adFieldsHeaderTab=88
+§ERP_FILM_HOLD after=s06 extra=2.10
+§ERP_FILM_BEAT id=s07 t=52.17 lang=en_US DocAction legal actions
+§ERP_FILM_FACT docfsm=§AD-DOCFSM-LIVE table=259(C_Order) record=1500003 status=DR legal=[CO,PR,VO] periodOpen=true(no-dateacct→assume-open) backDate=true(named-default)
+§ERP_FILM_FACT docActions=["CO","PR","VO"]
+§ERP_FILM_HOLD after=s07 extra=5.77
+§ERP_FILM_BEAT id=s08 t=60.66 lang=en_US Complete
+§ERP_FILM_FACT complete=§AD-DOCFSM-LIVE table=259(C_Order) record=1500003 clicked=CO from=DR to=CO
+§ERP_FILM_FACT commit=NONE
+§ERP_FILM_FACT docActionsAfter=["CL","VO"]
+§ERP_FILM_HOLD after=s08 extra=4.06
+§ERP_FILM_BEAT id=s09 t=67.90 lang=en_US Dashboard Graph
+§ERP_FILM_FACT dashOpen=§DASHBOARD-OPEN table=C_Order tabs=5 amountCol=GrandTotal
+§ERP_FILM_FACT dashOverview=§DASH-OVERVIEW donuts=5 status=DocStatus cats=C_BPartner_ID,C_BPartner_Location_ID,Bill_Location_ID date=DateOrdered
+§ERP_FILM_HOLD after=s09 extra=0.01
+§ERP_FILM_BEAT id=s10 t=74.15 lang=en_US Dashboard Timeline
+§ERP_FILM_FACT dashTimeline=§DASH-TIMELINE records=5 days=4 forecastCols=0 span=2002-02-22..2026-07-03 dateField=DateOrdered statusCol=DocStatus
+§ERP_FILM_HOLD after=s10 extra=3.27
+§ERP_FILM_BEAT id=s11 t=79.54 lang=en_US World History
+§ERP_FILM_FACT worldHist=§IDMP-HISTORY-TOGGLE open=true | §WHOLE-OPEN page=idempiere mode=whole
+§ERP_FILM_BEAT id=s12 t=87.01 lang=en_US Project BIM: Hospital
+§ERP_FILM_FACT menu.win130=116
+§ERP_FILM_FACT gotoRecord=990000 idx=2 of 3
+§ERP_FILM_FACT recnav=Record 3 of 3
+§ERP_FILM_FACT project=["BIM: Hospital",64719479,28,7]
+§ERP_FILM_BEAT id=s13 t=93.98 lang=en_US Planned vs committed
+§ERP_FILM_FACT variance=§DASH-VARIANCE phases=6 planned=64719479 committed=87372995 delta=22653516 pct=35 forecast=0
+§ERP_FILM_HOLD after=s13 extra=1.48
+§ERP_FILM_BEAT id=s14 t=100.05 lang=en_US Project Line IfcWall
+§ERP_FILM_FACT gotoRecord=990003 idx=3 of 7
+§ERP_FILM_FACT recnav=Record 4 of 7
+§ERP_FILM_FACT task=990008 MASON
+§ERP_FILM_FACT gotoRecord=990008 idx=2 of 3
+§ERP_FILM_FACT recnav=Record 3 of 3
+§ERP_FILM_FACT taskLines=Project › Task Line · Record 1 of 2
+§ERP_FILM_FACT wallLine=[11024.494,1598552]
+§ERP_FILM_FACT gotoRecord=990016 idx=0 of 2
+§ERP_FILM_FACT recnav=Record 1 of 2
+§ERP_FILM_BEAT id=s15 t=119.19 lang=en_US Zoom Across → Viewer
+§ERP_FILM_FACT zoomAcross=§ZOOM-ACROSS launch id=viewer bld=Hospital find=IfcWall url=../viewer/viewer.html?db=../buildings/Hospital_extracted.db&bld=Hospital&home=http%3A%2F%2Flocalhost%3A34853%2Ferp%2Fidempiere.html&find=IfcWall
+§ERP_FILM_HOLD after=s15 extra=2.99
+§ERP_FILM_BEAT id=s16 t=123.81 lang=en_US Viewer loading the Hospital
+§ERP_FILM_FACT zoomScope=[viewer] §ZOOM-SCOPE route=find kind=class scope="IfcWall" matches=50
+§ERP_FILM_BEAT id=s17 t=139.36 lang=en_US same element set + cost
+§ERP_FILM_FACT zoomCost=[viewer] §ZOOM-COST class="IfcWall" matches=50 linePlanned=1598552 phase="Architecture" phasePlanned=13880038 phaseCommitted=15268042 projPlanned=64719479 projCommitted=87372995 projPct=35%
+§ERP_FILM_HOLD after=s17 extra=1.23
+§ERP_FILM_BEAT id=end t=147.10 lang=en_US 
+§ERP_FILM_CURSOR clicks=42 cursorOnTarget=42 OK
+§ERP_FILM_DONE frames=2548 dur=147.40 out=/home/red1/Videos/techth_work2/rec/erp_film_tech.mp4

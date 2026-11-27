@@ -1,0 +1,21 @@
+§KERNEL_OPS_LOADED v13 (W-CHAIN/W-SIGN/G-IDENTITY/W-OPGROUP/W-RATE-INPUT/W-BLUE-FUTURE/W-EMIT/T6-persist-guard/T2-content-sign/T7-incremental/W-OPLOG-APPEND)
+═══ W-OPLOG-CLIPBOARD — clipboard relay: serialize→deserialize→replay idempotency ═══
+
+   🟢 deliver-later group built (engine, newVerbs=[]) — ops=7
+§KRN_GROUP committed gid=pos-dl-1 ops=7 groupHash=b1dbdd6e75ea… tip=d9e401ba38c1… sealed=7 (WHOLE — all-or-none)
+   🟢 sender commitGroup ok — gid=pos-dl-1 ops=7
+   🟢 §CL-SERIAL sent op count matches original — sent=7 original=7
+   🟢 §CL-SERIAL serialized to base64 blob — bytes=2032
+§POS-OPLOG-COPY gid=pos-dl-1 ops=7 bytes=2032
+   🟢 §CL-SERIAL deserialized: v=1, ops array intact — ops=7
+   🟢 §CL-SERIAL all op_type + op_uuid survive round-trip
+§KRN_GROUP committed gid=363cee7f-0933-4616-a68d-7fb9b19f72fd ops=7 groupHash=5f97d3d8dc10… tip=f6b95edc7117… sealed=7 (WHOLE — all-or-none)
+   🟢 receiver commitGroup ok (first apply) — gid=363cee7f-0933-4616-a68d-7fb9b19f72fd
+   🟢 §CL-UUID receiver DB op_uuid matches sender op_uuid exactly
+   🟢 §CL-UUID pre-gate detects already-applied op_uuids before second commitGroup — existing=7 skip=true
+   🟢 §CL-UUID paste-twice: row count unchanged (pre-gate prevented duplicate) — count_before=7 count_after=7
+§WH-OPLOG-APPLY ops=7 ok=true idempotent=true
+   🟢 §CL-DELTA receiver op_types + movementqty match sender exactly — sender_ops=7 rx_ops=7
+
+✅ W-OPLOG-CLIPBOARD PASS — 0 failures
+exit=0

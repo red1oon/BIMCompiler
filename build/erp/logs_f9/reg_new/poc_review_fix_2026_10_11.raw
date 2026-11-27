@@ -1,0 +1,106 @@
+§POS-LENS loaded (dumb terminal — record, pay, send; the fold does the rest)
+═══ W-REVIEW-FIX — eight reviewed defects (engine=bim-compiler scripts/+build/erp) ═══
+
+— D1 credit gate must see GrandTotal (tax first), MOrder.prepareIt :1666 -> :1689, CreditManagerOrder :72,85
+§POS-TAX product=128 bp=112 tax=104 via=match
+   🟢 fixture: lens tax lookup resolved a C_Tax for the product — c_tax_id=104
+   🟢 fixture: ringLine net = 95.00 from the lens priceOf glue — 95.00
+§POS-TAX product=128 bp=112 tax=104 via=match
+§REVIEW-FIX D1 lens-path buildSaleGroup limit=100 open=0 net=95 tax=10% -> ok=false reason=credit-over-hold
+   🟢 lens glue + buildSaleGroup: grand 104.50 > limit 100 is REFUSED credit-over-hold — ok=false reason=credit-over-hold
+§POS-TAX product=128 bp=112 tax=104 via=match
+   🟢 recall-complete of the held order: same refusal — ok=false reason=credit-over-hold
+§POS-TAX product=128 bp=112 tax=104 via=match
+   🟢 deliver-later (Standard Order) : same refusal — ok=false reason=credit-over-hold
+§POS-TAX product=128 bp=112 tax=104 via=match
+§POS-TAX product=128 bp=112 tax=104 via=match
+   🟢 control: net 85 + 10% = 93.50 <= 100 completes — ok=true grandTotal(cents)=9350
+§POS-TAX product=128 bp=112 tax=104 via=match
+§POS-TAX product=128 bp=112 tax=104 via=match
+   🟢 boundary: net 91 -> grand 100.10 > 100 refused (net 91 alone would pass) — reason=credit-over-hold
+   🟢 pos_core alone (fake ctx): refused — ok=false reason=credit-over-hold
+
+— D2 reverseInvoice honours IsCreditMemo (MInvoice.reverse :2799-2802 getGrandTotal(true); MInvoice.java:844-853)
+§REVIEW-FIX D2 AR credit memo grand=50 alloc orig=-50 rev=50 ol.qtyinvoiced=[0]
+   🟢 AR credit memo 50: allocation lines orig -50 / reversal +50 — -50/50
+   🟢 AR credit memo: order-line QtyInvoiced goes -5 -> 0 (reversal adds back, not -10) — [0]
+   🟢 control AR invoice 50: +50/-50, QtyInvoiced 5 -> 0 (unchanged) — 50/-50 q=[0]
+   🟢 control AP invoice 50: -50/+50 (MInvoice.java:2800) — -50/50
+   🟢 AP credit memo 50: credit-memo negation then AP negation = +50/-50 — 50/-50
+
+— D3 voidOrder completes the shipment reversal: storage + QtyReserved/QtyDelivered; line qtyentered 0; C_OrderTax recalculated (MInOut.reverse ~:2851, MOrder.voidIt :2698-2740)
+§REVIEW-FIX D3 stock before=10 afterSale=7 afterVoid=10 MOVE_STOCK ops in void=1
+   🟢 fixture: the shipped sale took 3 off on-hand (10 -> 7) — afterSale=7
+   🟢 void of the shipped+invoiced sale restores on-hand to 10 — afterVoid=10
+   🟢 exactly ONE storage effect for the one shipment line (no double count) — moves=1
+   🟢 order line QtyDelivered 3 -> 0 (inoutOrderLineEffects of the reversal) — qtydelivered=0
+   🟢 order line QtyOrdered AND QtyEntered zeroed (setQty, MOrder.voidIt :2709) — qtyordered=0 qtyentered=0
+   🟢 the shipment reversal first RESTORES the reservation (+3), as completing a reversal does (MInOut.completeIt isReversal) — [3,0]
+   🟢 order line QtyReserved then cleared (reserveStock(null) :2735-2740) — qtyreserved=0
+   🟢 C_OrderTax row recalculated from the zeroed lines (tax.calculateTaxFromLines :2724-2728) — [{"op_type":"UPDATE_LINE","table":"C_OrderTax","c_order_id":1000,"c_tax_id":104,"taxbaseamt":0,"taxamt":0}]
+   🟢 without orderLines the delivered/reserved effect is NOT invented (reverseInOut precedent) — delivered-ops=0
+
+— D4 recalled held order: c_tax_id must be written onto the EXISTING lines; input must not be mutated (MOrderLine.beforeSave setTax :866-867)
+§REVIEW-FIX D4 recall ok=true c_tax_id updates=2 inputUnchanged=true
+   🟢 fixture: recall-complete of a synthetic held order succeeds — ok=true reason=undefined
+   🟢 one UPDATE_FIELD c_tax_id=104 per existing order line — [{"op_type":"UPDATE_FIELD","table":"C_OrderLine","id":70001,"field":"c_tax_id","value":104},{"op_type":"UPDATE_FIELD","table":"C_OrderLine","id":70002,"field":"c_tax_id","value":104}]
+   🟢 caller heldLines / heldOrder are NOT mutated (no c_tax_id leaked into the input) — [{"c_orderline_id":70001,"m_product_id":7,"qtyordered":2,"priceactual":"10.00","linenetamt":"20.00"},{"c_orderline_id":70002,"m_product_id":8,"qtyordered":1,"priceactual":"10.00","linenetamt":"10.00"}]
+   🟢 control: lines that already hold c_tax_id get no redundant UPDATE — updates=0
+   🟢 control: fresh sale stamps c_tax_id on CREATE_LINE only — [104]
+
+— D5 shipment reversal = the ORIGINAL posted facts swapped, not a re-derive at current cost (Doc_InOut :288-301, FactLine.updateReverseLine :1357-1359)
+§REVIEW-FIX D5 original @2.00 qty10 absent=[] lines=2 sumDr=2000
+   🟢 fixture: original shipment derives COGS/Asset 20.00 at avg cost 2.00 — sumDr=2000 absent=[]
+§REVIEW-FIX D5 reversal @cost 2.50 absent=[] basis=posted-original net(orig+rev) per account(cents)={"430":0,"742":0}
+   🟢 reversal derives (not absent) — absent=[]
+   🟢 COGS and Asset net to exactly 0 across original + reversal although cost moved 2.00 -> 2.50 — maxAbsNet=0c
+   🟢 reversal basis is labelled posted-original — posted-original
+§REVIEW-FIX D5 costQtyUpdates(reversal) delta=10 newprice=2
+   🟢 costQtyUpdates: reversal re-adds at the ORIGINAL line amount (avg price 2.00, not 2.50) — delta=10 price=2
+   🟢 no posted original available -> basis says recomputed-current-cost (never silent) — recomputed-current-cost
+
+— D6 completePayment IsPaid: raw signed allocation sum vs -GT for AP (MInvoice.testAllocation :1433-1455, getAllocatedAmt :1393)
+§REVIEW-FIX D6 AR 60+40 IsPaid=N/Y · AP 60+40 IsPaid=N/Y
+   🟢 AR partial 60 then 40: IsPaid N then Y — N/Y
+   🟢 AP partial 60 then 40: IsPaid N then Y (allocatedamt = raw signed sum, AP negative) — N/Y
+   🟢 AP single full payment: IsPaid Y — Y
+   🟢 falsifier: AP 60+30 of 100 stays unpaid — N/N
+   🟢 falsifier: AR 60+30 of 100 stays unpaid — N/N
+
+— D7 creditCheckOrder: BP already on Hold, lim-gt >= open keeps BPartnerCreditHold (MBPartner.getSOCreditStatus(add) :838-849)
+§REVIEW-FIX D7 H/lim1000/open100/gt50 -> credit-hold · H/100/90/50 -> credit-over-hold · O/100/90/50 -> credit-over-hold · S -> credit-stop · H/lim0 -> credit-over-hold
+   🟢 Hold BP, headroom remains (1000-50 >= 100): getSOCreditStatus(add) is not Hold -> message stays credit-hold / BPartnerCreditHold — credit-hold/BPartnerCreditHold
+   🟢 Hold BP, headroom exhausted (100-50 < 90): credit-over-hold — credit-over-hold
+   🟢 control: OK BP crossing the limit -> credit-over-hold — credit-over-hold
+   🟢 control: Stop BP stays credit-stop (nothing to do, :844-848) — credit-stop
+   🟢 control: Hold BP with limit 0: getSOCreditStatus(add) returns its own status H (nothing to do, :844-848) -> equals CreditHold -> OverOCreditHold (CreditManagerOrder :79) — credit-over-hold
+
+— D8 ringLine: qty must be a real number; 0 and negatives stay legal (pilot S14, spec §47.1)
+   🟢 reject ' ' -> bad-qty — ok=false reason=bad-qty
+   🟢 reject true -> bad-qty — ok=false reason=bad-qty
+   🟢 reject false -> bad-qty — ok=false reason=bad-qty
+   🟢 reject [] -> bad-qty — ok=false reason=bad-qty
+   🟢 reject 'abc' -> bad-qty — ok=false reason=bad-qty
+   🟢 reject NaN -> bad-qty — ok=false reason=bad-qty
+   🟢 reject null -> bad-qty — ok=false reason=bad-qty
+   🟢 reject undefined -> bad-qty — ok=false reason=bad-qty
+   🟢 reject Infinity -> bad-qty — ok=false reason=bad-qty
+   🟢 reject '' -> bad-qty — ok=false reason=bad-qty
+   🟢 reject {} -> bad-qty — ok=false reason=bad-qty
+   🟢 reject [5] -> bad-qty — ok=false reason=bad-qty
+   🟢 accept 0 (qty kept as given) — ok=true linenetamt=0.00
+   🟢 accept -2 (qty kept as given) — ok=true linenetamt=-20.00
+   🟢 accept "3" (qty kept as given) — ok=true linenetamt=30.00
+   🟢 accept 2.5 (qty kept as given) — ok=true linenetamt=25.00
+   🟢 accept "-1" (qty kept as given) — ok=true linenetamt=-10.00
+§REVIEW-FIX D8 accepted 0/-2/"3"/2.5/"-1"; rejected blank/boolean/array/object/NaN/Infinity/null/undefined/text
+§REVIEW-FIX D1 judged=8 fails=0 PASS — credit gate must see GrandTotal (tax first), MOrder.prepareIt :1666 -> :1689, CreditManagerOrder :72,85
+§REVIEW-FIX D2 judged=5 fails=0 PASS — reverseInvoice honours IsCreditMemo (MInvoice.reverse :2799-2802 getGrandTotal(true); MInvoice.java:844-853)
+§REVIEW-FIX D3 judged=9 fails=0 PASS — voidOrder completes the shipment reversal: storage + QtyReserved/QtyDelivered; line qtyentered 0; C_OrderTax recalculated (MInOut.reverse ~:2851, MOrder.voidIt :2698-2740)
+§REVIEW-FIX D4 judged=5 fails=0 PASS — recalled held order: c_tax_id must be written onto the EXISTING lines; input must not be mutated (MOrderLine.beforeSave setTax :866-867)
+§REVIEW-FIX D5 judged=6 fails=0 PASS — shipment reversal = the ORIGINAL posted facts swapped, not a re-derive at current cost (Doc_InOut :288-301, FactLine.updateReverseLine :1357-1359)
+§REVIEW-FIX D6 judged=5 fails=0 PASS — completePayment IsPaid: raw signed allocation sum vs -GT for AP (MInvoice.testAllocation :1433-1455, getAllocatedAmt :1393)
+§REVIEW-FIX D7 judged=5 fails=0 PASS — creditCheckOrder: BP already on Hold, lim-gt >= open keeps BPartnerCreditHold (MBPartner.getSOCreditStatus(add) :838-849)
+§REVIEW-FIX D8 judged=17 fails=0 PASS — ringLine: qty must be a real number; 0 and negatives stay legal (pilot S14, spec §47.1)
+🟢 W-REVIEW-FIX PASS — 8/8 defects proven fixed  engine=compiler
+exit=0

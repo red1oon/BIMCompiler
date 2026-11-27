@@ -1,0 +1,4 @@
+§FACTS verdicts {"overlay":"W-CTXHELP-OVERLAY pass=9 fail=0 inconclusive=0 verdict=PASS","legacy":"W-CTXHELP-LEGACY pass=6 fail=0 inconclusive=0 verdict=PASS","erpAsk":"W-ERP-ASK pass=15 fail=0 inconclusive=0 verdict=PASS"}
+§FACTS lines {"k6cut":"§CTXHELP_OVERLAY K6 tab 186 [UG1+FS7+FS9] cut at the limit: 1635 of max 2000 chars, the guide text starts it word for word, link to FS9 \"Step 9 · Complete the order\"","l3":"PASS L3 a second apply changes nothing: 84 of 84 statements report 0 rows, sequences [1000021,1000021] -> [1000021,1000021]","l5":"PASS L5 a tab that already has a site help keeps it: tab 187 help 200000 -> 200000"}
+§FACTS credentials {"licence":"MIT License","repo":"github.com/red1oon/bim-ootb","prs":[{"n":3380,"state":"MERGED"},{"n":3384,"state":"MERGED"},{"n":3387,"state":"MERGED"},{"n":3388,"state":"MERGED"},{"n":3374,"state":"MERGED"}]}
+§FACTS VERDICT PASS

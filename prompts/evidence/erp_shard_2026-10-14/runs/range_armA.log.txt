@@ -1,0 +1,9 @@
+§RANGE open label=armA_noindex_4k dbMB=9847 chunk=4096 openMs=492 openBytes=10327859200 openReqs=132 ready=true
+§RANGE q=key_fact_acct_mid ms=21 bytes=16384 reqs=4 rows=1
+§RANGE q=key_c_order_mid ms=8 bytes=12288 reqs=3 rows=1
+§RANGE q=Q1_dict_count ms=12 bytes=126976 reqs=5 rows=1
+§RANGE q=Q2_fact_acct_pk ms=14568 bytes=3122683904 reqs=611 rows=1
+§RANGE q=Q3_orderline_by_order ms=6139 bytes=1413496832 reqs=283 rows=0
+§RANGE q=Q4_order_pk ms=4183 bytes=710934528 reqs=146 rows=1
+§RANGE_RATIO q=Q2 bytes=3122683904 fileBytes=10325266432 pct=30.2431
+§RANGE_VERDICT INCONCLUSIVE (empty/zero queries judged: nq=6 empty=1) label=armA_noindex_4k

@@ -1,0 +1,188 @@
+═══ W-TEAM-DOCACTION — the real Sales Order window in team mode, two real browsers (TEAMWORK_FRAMEWORK §13.7) ═══
+
+§TEAM-OFF
+   🟢 without ?team=1: no chip, no conflict box, no TeamSync/CommStore global, no comm_*/team_sync script tags — {"chip":false,"conf":false,"ts":"undefined","cs":"undefined","scripts":0}
+   🟢 without ?team=1 the page emits no §TEAM log line — lines=0
+
+§TEAM-PAIR
+     [A] §COMM_SYNC kid=3fcbbf1b344a8208 pipe=gh:red1oon/bim-teams-pipe sent=2 fetched=0 received=0 placed=2 parked=0 refused=0 gaps=0 equivocations=0
+     [A] §COMM_SYNC kid=3fcbbf1b344a8208 pipe=gh:red1oon/bim-teams-pipe sent=3 fetched=0 received=0 placed=5 parked=0 refused=0 gaps=0 equivocations=0
+     [B] §COMM_SYNC kid=ea4f8c9a10c6da3f pipe=gh:red1oon/bim-teams-pipe sent=0 fetched=2 received=5 placed=5 parked=0 refused=0 gaps=0 equivocations=0
+   🟢 phone pages paired: founder A approved B's code EA4F-8C9A, B says enrolled — EA4F-8C9A | ✓ enrolled — you are in the team
+     [A] §TEAM_BOOT device=3fcbbf1b344a8208 space=49b33eb3301e store=seeded-from-phone-page pipe=http://127.0.0.1:44721/pipe sent=0 localOnly=0
+     [A] §TEAM_STATION_LOCAL op=CRUD_CREATE station-owned ad_session (not shared by design)
+     [B] §TEAM_BOOT device=ea4f8c9a10c6da3f space=49b33eb3301e store=seeded-from-phone-page pipe=http://127.0.0.1:44721/pipe sent=0 localOnly=0
+     [B] §TEAM_STATION_LOCAL op=CRUD_CREATE station-owned ad_session (not shared by design)
+   🟢 the ERP chip shows device code · team devices 2 · a Visit button with the hand cursor (A) — {"text":"Team · 3FCB-BF1B · team devices 2 Visit my ops 5 · seen 0 · refused 0 · waiting on 0 · last visit never","cursor":"pointer","conflicts":0,"localonly":0}
+   🟢 the ERP chip reads B's identity from the phone page storage (B) — {"text":"Team · EA4F-8C9A · team devices 2 Visit my ops 0 · seen 0 · refused 0 · waiting on 0 · last visit never","cursor":"pointer","conflicts":0,"localonly":0}
+
+§DA-SYNC
+     [A] §TEAM_OUT op=CRUD_CREATE table=c_order uu=5368527f seq=6 refs=0 hash=455c56ddd45a
+     [A] §TEAM_STATION_LOCAL op=CRUD_UPDATE station-owned ad_sequence (not shared by design)
+     [A] §TEAM_STATION_LOCAL op=CRUD_CREATE station-owned ad_recentitem (not shared by design)
+     [A] §TEAM_OUT op=CRUD_CREATE table=c_orderline uu=2723d0cc seq=7 refs=1 hash=4225edaf83e5
+     [A] §TEAM_OUT op=CRUD_UPDATE table=c_order uu=5368527f seq=8 refs=0 hash=e00cfdb8627f
+     [A] §TEAM_STATION_LOCAL op=CRUD_UPDATE station-owned ad_recentitem (not shared by design)
+     [A] §COMM_SYNC kid=3fcbbf1b344a8208 pipe=http://127.0.0.1:44721/pipe sent=3 fetched=0 received=0 placed=8 parked=0 refused=0 gaps=0 equivocations=0
+     [A] §TEAM-REBUILD rows=11 was=8 tombstoned=0 verifyChain=ok
+     [A] §TEAM_VISIT sent=3 fetched=0 received=0 placed=8 parked=0 refused=0 gaps=0 | projection kept=5 projected=3 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent
+     [A] §TEAM-REFRESH rekeyed=4 tables=c_order,c_orderline view=form
+     [B] §COMM_SYNC kid=ea4f8c9a10c6da3f pipe=http://127.0.0.1:44721/pipe sent=0 fetched=3 received=3 placed=8 parked=0 refused=0 gaps=0 equivocations=0
+     [B] §TEAM-REBUILD rows=4 was=1 tombstoned=0 verifyChain=ok
+     [B] §TEAM_VISIT sent=0 fetched=3 received=3 placed=8 parked=0 refused=0 gaps=0 | projection kept=1 projected=3 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent
+     [B] §TEAM-REFRESH rekeyed=0 tables= view=grid
+   §DA before: A={"pk":-9,"tip":null,"col":"DR","tax":0,"lines":1,"linesProcessed":0} B={"pk":-2,"tip":null,"col":"DR","tax":0,"lines":1,"linesProcessed":0}
+     [A] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_process uuid=7314d9d9 reason=fk-table-mismatch record_id points at c_order (NOT SENT)
+     [A] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_activity uuid=d6ea2e7e reason=fk-target-not-shared ad_wf_process_id=-12 (NOT SENT)
+     [A] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_eventaudit uuid=3000e977 reason=fk-target-not-shared ad_wf_process_id=-12 (NOT SENT)
+     [A] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_activity uuid=f5de20fa reason=fk-target-not-shared ad_wf_process_id=-12 (NOT SENT)
+     [A] §TEAM_LOCALONLY op=CRUD_UPDATE table=c_acctschema uuid=1c4a96f5 reason=target-not-a-team-record (uu-unresolved table=c_acctschema id=101) — the comm layer admits an op only against its record's CREATE scope (NOT SENT)
+     [A] §TEAM_OUT op=CRUD_UPDATE table=c_order uu=5368527f seq=9 refs=0 hash=b8d1169fab34
+     [A] §TEAM_OUT op=CRUD_UPDATE table=m_storagereservation uu=019ee88d seq=10 refs=0 hash=2a689a173442
+     [A] §TEAM_LOCALONLY op=CRUD_CREATE table=m_storagereservationlog uuid=4fc1a6ec reason=fk-table-mismatch record_id points at c_orderline (NOT SENT)
+     [A] §TEAM_OUT op=CRUD_UPDATE table=c_orderline uu=2723d0cc seq=11 refs=0 hash=7f922a1fa732
+     [A] §TEAM_OUT op=CRUD_CREATE table=c_ordertax uu=dec3e902 seq=12 refs=1 hash=a7b4e61ff7fa
+     [A] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_eventaudit uuid=5028925d reason=fk-target-not-shared ad_wf_process_id=-12 (NOT SENT)
+     [A] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_activity uuid=f673fcfc reason=fk-target-not-shared ad_wf_process_id=-12 (NOT SENT)
+     [A] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_eventaudit uuid=4a8d4e62 reason=fk-target-not-shared ad_wf_process_id=-12 (NOT SENT)
+     [A] §TEAM_OUT op=SET_STATUS table=c_order uu=5368527f seq=13 refs=0 hash=64cdc675c830
+   §DA-COMMIT-CHAIN A §CRUD process committed key=c_order viaGroup=Y gid=824239f2-0f75-43ae-b39c-452c650caf14 ops=14 sealed=14 op_uuid=09328677-48bb-4619-926f-f8431899a4a8 to=CO veri
+   🟢 the Complete commit on A leaves the op-log chain valid (verifyChain=ok, no group-torn) — verifyChain=ok
+   🟢 A: the SET_STATUS of the Complete is sent (it was local-only in W1) — sent=1 localonly=0 §TEAM_OUT op=SET_STATUS table=c_order uu=5368527f seq=13 refs=0 hash=64cdc675c830
+   🟢 NO-OP guard: before B visits, B does not already show CO — B tip=null col=DR
+     [A] §COMM_SYNC kid=3fcbbf1b344a8208 pipe=http://127.0.0.1:44721/pipe sent=5 fetched=0 received=0 placed=12 parked=0 refused=1 gaps=0 equivocations=0
+     [A] §TEAM-REBUILD rows=31 was=25 tombstoned=0 verifyChain=ok
+     [A] §TEAM_VISIT sent=5 fetched=0 received=0 placed=12 parked=0 refused=1 gaps=0 | projection kept=14 projected=7 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent
+     [A] §TEAM-REFRESH rekeyed=4 tables=c_order,c_orderline,c_ordertax view=form
+     [B] §COMM_SYNC kid=ea4f8c9a10c6da3f pipe=http://127.0.0.1:44721/pipe sent=0 fetched=1 received=5 placed=12 parked=0 refused=1 gaps=0 equivocations=0
+     [B] §TEAM-REBUILD rows=8 was=4 tombstoned=0 verifyChain=ok
+     [B] §TEAM_VISIT sent=0 fetched=1 received=5 placed=12 parked=0 refused=1 gaps=0 | projection kept=1 projected=7 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent
+     [B] §TEAM-REFRESH rekeyed=0 tables= view=grid
+   §DA after: A={"pk":-25,"tip":"CO","col":"CO","tax":1,"lines":1,"linesProcessed":1} B={"pk":-2,"tip":"CO","col":"CO","tax":1,"lines":1,"linesProcessed":1}
+   🟢 both devices: the DocStatus lane (readTip) says CO — A=CO B=CO
+   🟢 both devices: the order's docstatus column says CO (the grid shows the same as the bar) — A=CO B=CO
+   🟢 B holds the SAME consequences as A (tax rows 1, processed lines 1/1) — B tax=1 processed=1/1
+   🟢 an uncrossed Complete raises no conflict on either device — A=0 B=0
+   §DA-REFUSED [{"table":"m_storagereservation","reason":"scope-unknown"}]
+   🟢 the only refused op(s) of a Complete are the m_storagereservation write on a seeded row (named limit: needs the K3 owner/CAS rule) — [{"table":"m_storagereservation","reason":"scope-unknown"}]
+   🟢 B's rebuilt sidecar chain verifies (SET_STATUS rows re-sealed) — §TEAM_VISIT sent=0 fetched=1 received=5 placed=12 parked=0 refused=1 gaps=0 | projection kept=1 projected=7 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent
+
+§DA-CROSS
+     [A] §TEAM_OUT op=CRUD_CREATE table=c_order uu=1c6f3b00 seq=14 refs=0 hash=6538dce014af
+     [A] §TEAM_STATION_LOCAL op=CRUD_UPDATE station-owned ad_sequence (not shared by design)
+     [A] §TEAM_STATION_LOCAL op=CRUD_CREATE station-owned ad_recentitem (not shared by design)
+     [A] §TEAM_OUT op=CRUD_CREATE table=c_orderline uu=ef2097f7 seq=15 refs=1 hash=4051b440474f
+     [A] §TEAM_OUT op=CRUD_UPDATE table=c_order uu=1c6f3b00 seq=16 refs=0 hash=84e5d4b91ddd
+     [A] §TEAM_STATION_LOCAL op=CRUD_UPDATE station-owned ad_recentitem (not shared by design)
+     [A] §COMM_SYNC kid=3fcbbf1b344a8208 pipe=http://127.0.0.1:44721/pipe sent=3 fetched=0 received=0 placed=15 parked=0 refused=1 gaps=0 equivocations=0
+     [A] §TEAM-REBUILD rows=47 was=37 tombstoned=0 verifyChain=ok
+     [A] §TEAM_VISIT sent=3 fetched=0 received=0 placed=15 parked=0 refused=1 gaps=0 | projection kept=17 projected=10 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent
+     [A] §TEAM-REFRESH rekeyed=4 tables=c_order,c_orderline,c_ordertax view=form
+     [B] §COMM_SYNC kid=ea4f8c9a10c6da3f pipe=http://127.0.0.1:44721/pipe sent=0 fetched=1 received=3 placed=15 parked=0 refused=1 gaps=0 equivocations=0
+     [B] §TEAM-REBUILD rows=11 was=8 tombstoned=0 verifyChain=ok
+     [B] §TEAM_VISIT sent=0 fetched=1 received=3 placed=15 parked=0 refused=1 gaps=0 | projection kept=1 projected=10 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent
+     [B] §TEAM-REFRESH rekeyed=0 tables=c_ordertax view=grid
+     [A] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_process uuid=b960a7c1 reason=fk-table-mismatch record_id points at c_order (NOT SENT)
+     [A] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_activity uuid=b8179fc6 reason=fk-target-not-shared ad_wf_process_id=-48 (NOT SENT)
+     [A] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_eventaudit uuid=3524087b reason=fk-target-not-shared ad_wf_process_id=-48 (NOT SENT)
+     [A] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_activity uuid=55dd59fe reason=fk-target-not-shared ad_wf_process_id=-48 (NOT SENT)
+     [A] §TEAM_LOCALONLY op=CRUD_UPDATE table=c_acctschema uuid=b72414c8 reason=target-not-a-team-record (uu-unresolved table=c_acctschema id=101) — the comm layer admits an op only against its record's CREATE scope (NOT SENT)
+     [A] §TEAM_OUT op=CRUD_UPDATE table=c_order uu=1c6f3b00 seq=17 refs=0 hash=1b22bc245d32
+     [A] §TEAM_OUT op=CRUD_UPDATE table=m_storagereservation uu=019ee88d seq=18 refs=0 hash=aaa1f8521a24
+     [A] §TEAM_LOCALONLY op=CRUD_CREATE table=m_storagereservationlog uuid=7d08d0c9 reason=fk-table-mismatch record_id points at c_orderline (NOT SENT)
+     [A] §TEAM_OUT op=CRUD_UPDATE table=c_orderline uu=ef2097f7 seq=19 refs=0 hash=d0933881861e
+     [A] §TEAM_OUT op=CRUD_CREATE table=c_ordertax uu=9c07dafa seq=20 refs=1 hash=7b20ba02c619
+     [A] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_eventaudit uuid=346d272c reason=fk-target-not-shared ad_wf_process_id=-48 (NOT SENT)
+     [A] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_activity uuid=5e98e3e8 reason=fk-target-not-shared ad_wf_process_id=-48 (NOT SENT)
+     [A] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_eventaudit uuid=58255219 reason=fk-target-not-shared ad_wf_process_id=-48 (NOT SENT)
+     [A] §TEAM_OUT op=SET_STATUS table=c_order uu=1c6f3b00 seq=21 refs=0 hash=245d1b39dd32
+   §DA-COMMIT-CHAIN A §CRUD process committed key=c_order viaGroup=Y gid=bc4b1b26-7d5b-43da-9c2b-1d99c5231f2a ops=14 sealed=14 op_uuid=b3261bd8-156f-46d0-9d3f-98ebfbdcefb2 to=CO veri
+   🟢 the Complete commit on A leaves the op-log chain valid (verifyChain=ok, no group-torn) — verifyChain=ok
+     [B] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_process uuid=1bbe68d8 reason=fk-table-mismatch record_id points at c_order (NOT SENT)
+     [B] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_activity uuid=406feeff reason=fk-target-not-shared ad_wf_process_id=-12 (NOT SENT)
+     [B] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_eventaudit uuid=1ebd9dc1 reason=fk-target-not-shared ad_wf_process_id=-12 (NOT SENT)
+     [B] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_activity uuid=21eec304 reason=fk-target-not-shared ad_wf_process_id=-12 (NOT SENT)
+     [B] §TEAM_LOCALONLY op=CRUD_UPDATE table=c_acctschema uuid=4497b198 reason=target-not-a-team-record (uu-unresolved table=c_acctschema id=101) — the comm layer admits an op only against its record's CREATE scope (NOT SENT)
+     [B] §TEAM_OUT op=CRUD_UPDATE table=c_order uu=1c6f3b00 seq=1 refs=0 hash=8ae253825717
+     [B] §TEAM_OUT op=CRUD_UPDATE table=m_storagereservation uu=019ee88d seq=2 refs=0 hash=edd5c4a68324
+     [B] §TEAM_LOCALONLY op=CRUD_CREATE table=m_storagereservationlog uuid=e0932275 reason=fk-table-mismatch record_id points at c_orderline (NOT SENT)
+     [B] §TEAM_OUT op=CRUD_UPDATE table=c_orderline uu=ef2097f7 seq=3 refs=0 hash=3e36b32e8a3a
+     [B] §TEAM_OUT op=CRUD_CREATE table=c_ordertax uu=0e337ea4 seq=4 refs=1 hash=d2c795c03627
+     [B] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_eventaudit uuid=0c8d7bf6 reason=fk-target-not-shared ad_wf_process_id=-12 (NOT SENT)
+     [B] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_activity uuid=e85095d6 reason=fk-target-not-shared ad_wf_process_id=-12 (NOT SENT)
+     [B] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_eventaudit uuid=42015a4e reason=fk-target-not-shared ad_wf_process_id=-12 (NOT SENT)
+     [B] §TEAM_OUT op=SET_STATUS table=c_order uu=1c6f3b00 seq=5 refs=0 hash=cc9cbbd87654
+   §DA-COMMIT-CHAIN B §CRUD process committed key=c_order viaGroup=Y gid=0f92073e-b626-4f17-8ff6-4da3b28be7df ops=14 sealed=14 op_uuid=33812738-4626-41f3-b825-a4c73a85ae4f to=CO veri
+   🟢 the Complete commit on B leaves the op-log chain valid (verifyChain=ok, no group-torn) — verifyChain=ok
+   §DA-CROSS before visit: A={"pk":-40,"tip":"CO","col":"CO","tax":1,"lines":1,"linesProcessed":1} B={"pk":-4,"tip":"CO","col":"CO","tax":1,"lines":1,"linesProcessed":1}
+     [A] §COMM_SYNC kid=3fcbbf1b344a8208 pipe=http://127.0.0.1:44721/pipe sent=5 fetched=0 received=0 placed=19 parked=0 refused=2 gaps=0 equivocations=0
+     [A] §TEAM-REBUILD rows=74 was=61 tombstoned=0 verifyChain=ok
+     [A] §TEAM_VISIT sent=5 fetched=0 received=0 placed=19 parked=0 refused=2 gaps=0 | projection kept=26 projected=14 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent
+     [A] §TEAM-REFRESH rekeyed=4 tables=c_order,c_orderline,c_ordertax view=form
+     [B] §COMM_SYNC kid=ea4f8c9a10c6da3f pipe=http://127.0.0.1:44721/pipe sent=5 fetched=1 received=5 placed=23 parked=0 refused=3 gaps=0 equivocations=0
+     [B] §TEAM_GROUP_HELD grp=0f92073e CRUD_UPDATE c_orderline ef2097f7 (docstatus conflict — whole group left out)
+     [B] §TEAM_GROUP_HELD grp=bc4b1b26 CRUD_UPDATE c_order 1c6f3b00 (docstatus conflict — whole group left out)
+     [B] §TEAM_GROUP_HELD grp=bc4b1b26 SET_STATUS c_order 1c6f3b00 (docstatus conflict — whole group left out)
+     [B] §TEAM_GROUP_HELD grp=bc4b1b26 CRUD_CREATE c_ordertax 9c07dafa (docstatus conflict — whole group left out)
+     [B] §TEAM_GROUP_HELD grp=0f92073e CRUD_UPDATE c_order 1c6f3b00 (docstatus conflict — whole group left out)
+     [B] §TEAM_GROUP_HELD grp=0f92073e SET_STATUS c_order 1c6f3b00 (docstatus conflict — whole group left out)
+     [B] §TEAM_GROUP_HELD grp=bc4b1b26 CRUD_UPDATE c_orderline ef2097f7 (docstatus conflict — whole group left out)
+     [B] §TEAM_GROUP_HELD grp=0f92073e CRUD_CREATE c_ordertax 0e337ea4 (docstatus conflict — whole group left out)
+     [B] §TEAM-REBUILD rows=34 was=25 tombstoned=0 verifyChain=ok
+     [B] §TEAM_VISIT sent=5 fetched=1 received=5 placed=23 parked=0 refused=3 gaps=0 | projection kept=10 projected=10 skipped=0 groupHeld=8 rebuild=ok verifyChain=ok refresh=sent
+     [B] §TEAM-REFRESH rekeyed=0 tables=c_order,c_orderline,c_ordertax view=grid
+     [A] §COMM_SYNC kid=3fcbbf1b344a8208 pipe=http://127.0.0.1:44721/pipe sent=0 fetched=1 received=5 placed=23 parked=0 refused=3 gaps=0 equivocations=0
+     [A] §TEAM_GROUP_HELD grp=0f92073e CRUD_UPDATE c_orderline ef2097f7 (docstatus conflict — whole group left out)
+     [A] §TEAM_GROUP_HELD grp=bc4b1b26 CRUD_UPDATE c_order 1c6f3b00 (docstatus conflict — whole group left out)
+     [A] §TEAM_GROUP_HELD grp=bc4b1b26 SET_STATUS c_order 1c6f3b00 (docstatus conflict — whole group left out)
+     [A] §TEAM_GROUP_HELD grp=bc4b1b26 CRUD_CREATE c_ordertax 9c07dafa (docstatus conflict — whole group left out)
+     [A] §TEAM_GROUP_HELD grp=0f92073e CRUD_UPDATE c_order 1c6f3b00 (docstatus conflict — whole group left out)
+     [A] §TEAM_GROUP_HELD grp=0f92073e SET_STATUS c_order 1c6f3b00 (docstatus conflict — whole group left out)
+     [A] §TEAM_GROUP_HELD grp=bc4b1b26 CRUD_UPDATE c_orderline ef2097f7 (docstatus conflict — whole group left out)
+     [A] §TEAM_GROUP_HELD grp=0f92073e CRUD_CREATE c_ordertax 0e337ea4 (docstatus conflict — whole group left out)
+     [A] §TEAM-REBUILD rows=74 was=74 tombstoned=0 verifyChain=ok
+     [A] §TEAM_VISIT sent=0 fetched=1 received=5 placed=23 parked=0 refused=3 gaps=0 | projection kept=26 projected=10 skipped=0 groupHeld=8 rebuild=ok verifyChain=ok refresh=sent
+     [A] §TEAM-REFRESH rekeyed=0 tables=c_order,c_orderline,c_ordertax view=form
+     [B] §COMM_SYNC kid=ea4f8c9a10c6da3f pipe=http://127.0.0.1:44721/pipe sent=0 fetched=0 received=0 placed=23 parked=0 refused=3 gaps=0 equivocations=0
+     [B] §TEAM_GROUP_HELD grp=0f92073e CRUD_UPDATE c_orderline ef2097f7 (docstatus conflict — whole group left out)
+     [B] §TEAM_GROUP_HELD grp=bc4b1b26 CRUD_UPDATE c_order 1c6f3b00 (docstatus conflict — whole group left out)
+     [B] §TEAM_GROUP_HELD grp=bc4b1b26 SET_STATUS c_order 1c6f3b00 (docstatus conflict — whole group left out)
+     [B] §TEAM_GROUP_HELD grp=bc4b1b26 CRUD_CREATE c_ordertax 9c07dafa (docstatus conflict — whole group left out)
+     [B] §TEAM_GROUP_HELD grp=0f92073e CRUD_UPDATE c_order 1c6f3b00 (docstatus conflict — whole group left out)
+     [B] §TEAM_GROUP_HELD grp=0f92073e SET_STATUS c_order 1c6f3b00 (docstatus conflict — whole group left out)
+     [B] §TEAM_GROUP_HELD grp=bc4b1b26 CRUD_UPDATE c_orderline ef2097f7 (docstatus conflict — whole group left out)
+     [B] §TEAM_GROUP_HELD grp=0f92073e CRUD_CREATE c_ordertax 0e337ea4 (docstatus conflict — whole group left out)
+     [B] §TEAM-REBUILD rows=34 was=34 tombstoned=0 verifyChain=ok
+     [B] §TEAM_VISIT sent=0 fetched=0 received=0 placed=23 parked=0 refused=3 gaps=0 | projection kept=10 projected=10 skipped=0 groupHeld=8 rebuild=ok verifyChain=ok refresh=sent
+     [B] §TEAM-REFRESH rekeyed=0 tables=c_order,c_orderline,c_ordertax view=grid
+   §DA-CROSS after: A={"pk":-63,"tip":null,"col":"DR","tax":0,"lines":1,"linesProcessed":0} B={"pk":-27,"tip":null,"col":"DR","tax":0,"lines":1,"linesProcessed":0}
+   §DA-CROSS conflicts A=["⚠ c_order 50001 (1c6f3b00) · c_doctype_id: values 132 / 132, kept 0 — Current record was changed by another user, please","⚠ c_order 50001 (1c6f3b00) · docaction: values \"CL\" / \"CL\", kept null — Current record was changed by another user, plea","⚠ c_order 50001 (1c6f3b00) · docstatus: values \"CO\" / \"CO\", kept \"DR\" — Current record was changed by another user, plea","⚠ c_order 50001 (1c6f3b00) · isapproved: values \"Y\" / \"Y\", kept null — Current record was changed by another user, pleas","⚠ c_order 50001 (1c6f3b00) · posted: values \"Y\" / \"Y\", kept null — Current record was changed by another user, please Re","⚠ c_order 50001 (1c6f3b00) · processed: values \"Y\" / \"Y\", kept null — Current record was changed by another user, please","⚠ c_order 50001 (1c6f3b00) · processedon: values 1792794992541 / 1792794994332, kept null — Current record was changed b","⚠ c_orderline (ef2097f7) · processed: values \"Y\" / \"Y\", kept \"N\" — Current record was changed by another user, please Re","⚠ c_orderline (ef2097f7) · qtyreserved: values 2 / 2, kept 0 — Current record was changed by another user, please ReQuer"] B=["⚠ c_order 50001 (1c6f3b00) · c_doctype_id: values 132 / 132, kept 0 — Current record was changed by another user, please","⚠ c_order 50001 (1c6f3b00) · docaction: values \"CL\" / \"CL\", kept null — Current record was changed by another user, plea","⚠ c_order 50001 (1c6f3b00) · docstatus: values \"CO\" / \"CO\", kept \"DR\" — Current record was changed by another user, plea","⚠ c_order 50001 (1c6f3b00) · isapproved: values \"Y\" / \"Y\", kept null — Current record was changed by another user, pleas","⚠ c_order 50001 (1c6f3b00) · posted: values \"Y\" / \"Y\", kept null — Current record was changed by another user, please Re","⚠ c_order 50001 (1c6f3b00) · processed: values \"Y\" / \"Y\", kept null — Current record was changed by another user, please","⚠ c_order 50001 (1c6f3b00) · processedon: values 1792794992541 / 1792794994332, kept null — Current record was changed b","⚠ c_orderline (ef2097f7) · processed: values \"Y\" / \"Y\", kept \"N\" — Current record was changed by another user, please Re","⚠ c_orderline (ef2097f7) · qtyreserved: values 2 / 2, kept 0 — Current record was changed by another user, please ReQuer"]
+   §DA-CROSS group lines A: 8 B: 16
+   🟢 both devices show a docstatus conflict with CurrentRecordModified — A=9 B=9
+   🟢 the order keeps its last agreed status (not CO) on both — A tip=null col=DR | B tip=null col=DR
+   🟢 all-or-none: NONE of the Complete's consequences show on either device (tax rows, processed lines) — A tax=0 processed=0 | B tax=0 processed=0
+
+§DA-TRIAL
+     [A] §TEAM_BOOT device=3fcbbf1b344a8208 space=49b33eb3301e store=own(erp_db) pipe=http://127.0.0.1:44721/pipe sent=16 localOnly=18
+     [A] §TEAM_TRIAL trial-finished cycles=3 businessOps=18 (new business ops stay on this device)
+     [A] §TEAM_STATION_LOCAL op=CRUD_CREATE station-owned ad_session (not shared by design)
+   🟢 with the trial on, the chip knows the cycle is already done (A completed an order earlier) — data-trial=finished
+     [A] §TEAM_TRIAL trial-finished cycles=3 businessOps=18 (new business ops stay on this device)
+     [A] §TEAM_LOCALONLY op=CRUD_CREATE table=c_order uuid=7a36d117 reason=trial-finished (NOT SENT)
+     [A] §TEAM_STATION_LOCAL op=CRUD_UPDATE station-owned ad_sequence (not shared by design)
+     [A] §TEAM_TRIAL trial-finished cycles=3 businessOps=18 (new business ops stay on this device)
+     [A] §TEAM_STATION_LOCAL op=CRUD_CREATE station-owned ad_recentitem (not shared by design)
+   🟢 a new order after the cycle stays on this device (local-only, trial-finished), nothing is sent — localonly=1 sent=0
+   🟢 the chip tells the user in words — Trial cycle finished — use your own repo and key to continue. ⚠ 19 local-only (not shared)
+     [A] §TEAM_BOOT device=3fcbbf1b344a8208 space=49b33eb3301e store=own(erp_db) pipe=http://127.0.0.1:44721/pipe sent=16 localOnly=19
+     [A] §TEAM_STATION_LOCAL op=CRUD_CREATE station-owned ad_session (not shared by design)
+     [A] §TEAM_OUT op=CRUD_CREATE table=c_order uu=72b33d98 seq=22 refs=0 hash=1d68b3cfbfb4
+     [A] §TEAM_STATION_LOCAL op=CRUD_UPDATE station-owned ad_sequence (not shared by design)
+     [A] §TEAM_STATION_LOCAL op=CRUD_CREATE station-owned ad_recentitem (not shared by design)
+   🟢 control: with trial off (own setup) the same action IS sent — sent=1 trial-blocked=0
+
+§DA-NOERR
+   🟢 zero page errors on both devices — errors=0
+
+──────────────────────────────────────────────
+§W-TEAM-DOCACTION PASS judged=24 fails=0 inconclusive=0 pageerrors=0

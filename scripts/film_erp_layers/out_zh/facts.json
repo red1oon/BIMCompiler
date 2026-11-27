@@ -1,0 +1,132 @@
+{
+ "made": "2026-11-15T07:03:19.536Z",
+ "commits": {
+  "new": "d1e37e2f",
+  "old": "ead91b69"
+ },
+ "index": {
+  "line": "§ERP_HOVER_INDEX entries=302 kinds={\"callout\":18,\"callout-method\":44,\"validator\":69,\"handler\":19,\"column-callout\":14,\"model\":68,\"docaction\":14,\"process\":56} legacy_files=161 parsed=306 skipped=0",
+  "entries": 302,
+  "cmd": "node devtools/hover/gen_erp_index.js"
+ },
+ "doctype": {
+  "layers": 20,
+  "callout": {
+   "step": "on change",
+   "kind": "callout",
+   "name": "CalloutOrder.docType",
+   "owner": "core@0",
+   "at": "erp/callouts/CalloutOrder.js:97",
+   "legacy": "CalloutOrder.java",
+   "note": null
+  },
+  "alt1": "vscode://file/tmp/wt-f2-new/erp/callouts/CalloutOrder.js:97",
+  "alt1OpensCallout": true,
+  "text": "C_Order.C_DocTypeTarget_ID   (20 layers, in the order they fire)\nFIELD\n      dictionary: C_Order.C_DocTypeTarget_ID  (entity D)\n        Table · mandatory\nON CHANGE\n  [1] callout: CalloutOrder.docType  (core@0)  erp/callouts/CalloutOrder.js:97  ← CalloutOrder.java\nPICKER\n      validation rule: C_DocTypeTarget PO or SO\n        C_DocType.DocBaseType IN ('SOO', 'POO') AND C_DocType.IsSOTrx='@IsSOTrx@' AND COALESCE(C_DocType.DocSubTypeSO,' ')<>'RM' AND C_DocType.AD_Client_ID=@#AD_Client_\nON SAVE\n  [2] model: beforeSave,initialClock,initialDefaults  (core@0)  erp/model_order.js:57\n  [3] doc action: C_Order  (core@0)  erp/model_order.js:761\n  [4] model validator: 15 × MOrder.* (issotrxFromWindow, clientNotZero, …)  (base, installed at the first save)  erp/ad_modelval.js:272\n1-4 (or Alt+1-4 while typing) = open that line in VS Code",
+  "tip": {
+   "x": 312,
+   "y": 726,
+   "w": 760,
+   "h": 294.25
+  },
+  "point": {
+   "x": 296,
+   "y": 710
+  },
+  "png": "pages/new_doctype.png"
+ },
+ "dateNew": {
+  "layer": {
+   "step": "on change",
+   "kind": "callout",
+   "name": "CalloutEngine.dateAcct",
+   "owner": "core (base class)",
+   "at": "erp/ad_callout.js:477",
+   "legacy": null,
+   "note": null
+  },
+  "alt1": "vscode://file/tmp/wt-f2-new/erp/ad_callout.js:477",
+  "alt1Opens": true,
+  "text": "C_Order.DateOrdered   (20 layers, in the order they fire)\nFIELD\n      dictionary: C_Order.DateOrdered  (entity D)\n        Date · mandatory · default @#Date@\nON CHANGE\n  [1] callout: CalloutEngine.dateAcct  (core (base class))  erp/ad_callout.js:477\n  [2] callout: CalloutOrder.priceList  (core@0)  erp/callouts/CalloutOrder.js:353  ← CalloutOrder.java\nON SAVE\n  [3] model: beforeSave,initialClock,initialDefaults  (core@0)  erp/model_order.js:57\n  [4] doc action: C_Order  (core@0)  erp/model_order.js:761\n  [5] model validator: 15 × MOrder.* (issotrxFromWindow, clientNotZero, …)  (base, installed at the first save)  erp/ad_modelval.js:272\n1-5 (or Alt+1-5 while typing) = open that line in VS Code",
+  "tip": {
+   "x": 312,
+   "y": 368,
+   "w": 760,
+   "h": 242.078125
+  },
+  "point": {
+   "x": 296,
+   "y": 352
+  },
+  "png": "pages/new_dateordered.png"
+ },
+ "dateOld": {
+  "layer": {
+   "step": "on change",
+   "kind": "callout",
+   "name": "CalloutEngine.dateAcct",
+   "owner": null,
+   "at": null,
+   "legacy": null,
+   "note": "UNPORTED: no class registered for org.compiere.model.CalloutEngine"
+  },
+  "unported": true,
+  "text": "C_Order.DateOrdered   (20 layers, in the order they fire)\nFIELD\n      dictionary: C_Order.DateOrdered  (entity D)\n        Date · mandatory · default @#Date@\nON CHANGE\n      callout: CalloutEngine.dateAcct\n        UNPORTED: no class registered for org.compiere.model.CalloutEngine\n  [1] callout: CalloutOrder.priceList  (core@0)  erp/callouts/CalloutOrder.js:353  ← CalloutOrder.java\nON SAVE\n  [2] model: beforeSave,initialClock,initialDefaults  (core@0)  erp/model_order.js:57\n  [3] doc action: C_Order  (core@0)  erp/model_order.js:761\n  [4] model validator: 15 × MOrder.* (issotrxFromWindow, clientNotZero, …)  (base, installed at the first save)  erp/ad_modelval.js:272\n1-4 = open that line in VS Code",
+  "tip": {
+   "x": 312,
+   "y": 368,
+   "w": 760,
+   "h": 259.46875
+  },
+  "point": {
+   "x": 296,
+   "y": 352
+  },
+  "png": "pages/old_dateordered.png"
+ },
+ "memory": {
+  "withOverlay": {
+   "used": 48722670,
+   "gc": true
+  },
+  "without": {
+   "used": 49142580,
+   "gc": true
+  },
+  "deltaBytes": -419910,
+  "overlayBytes": 15678,
+  "indexBytes": 66730
+ },
+ "red": {
+  "falseUnported": 17,
+  "failed": true,
+  "line": "§ERP_HOVER_W E2b false_unported=17 e.g. A_Depreciation_Entry.DateDoc callout:CalloutEngine.dateAcct | C_BankStatement.StatementDate callout:CalloutEngine.dateAcct | C_BankStatement"
+ },
+ "fix": {
+  "falseUnported": 0,
+  "fields": 12323,
+  "unported": 199,
+  "verdict": "§ERP_HOVER_W VERDICT PASS",
+  "e2line": "§ERP_HOVER_W E2 fields=12323 with_layers=3311 callouts_and_processes_named=466 lines_resolved=6590 wrong_line=0 unresolved=0 unported=199 (distinct 169)",
+  "keys": "E4 keys tried=112 wrong_or_dead=0"
+ },
+ "credentials": {
+  "licence": "MIT License",
+  "repo": "github.com/red1oon/bim-ootb",
+  "prs": [
+   {
+    "n": "3055",
+    "state": "MERGED feat(devtools): hover an ERP field to see every layer of code behind it (F.22)"
+   },
+   {
+    "n": "3057",
+    "state": "MERGED fix(devtools): ERP hover asks the engine whether a callout exists (no false UNPORTED)"
+   },
+   {
+    "n": "3059",
+    "state": "MERGED fix(devtools): ERP hover - every number in the tooltip opens its line"
+   }
+  ],
+  "paperPriority": "2026-03-30"
+ }
+}

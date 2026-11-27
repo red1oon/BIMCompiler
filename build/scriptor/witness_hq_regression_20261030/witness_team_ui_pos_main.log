@@ -1,0 +1,44 @@
+═══ W-TEAM-UI-POS — the plan at "Start a team" and "Bound to" in Approve, through the real Team panel (§44) ═══
+
+§U6 a page with no POS plan file
+   🟢 U6 no POS plan loaded -> no plan choice is offered (Start a team is the same button as before) — []
+§U4 an OFFICE team (default choice), then a join request approved as 50004
+   🟢 U1 the panel offers Office team (default) and Point-of-sale team at Start a team — [{"id":"office","checked":true,"label":"Office team — everyone shares the same records"},{"id":"pos","checked":false,"label":"Point-of-sale team — tills and phones send up what the plan declares and receive only what is addressed to them"}]
+   🟢 U4 the Office choice writes no POS plan to the genesis (the roster reads office) — {"plan":"office","person":"f8791ef4-aa4a-45f2-9dba-99f96b1caa23","role":102}
+   🟢 U4 an OFFICE team: role 50004 shows NO "Bound to" — {"bound":false,"groups":[],"options":[],"msg":null}
+   🟢 U4 the office device was approved without a binding and reads the office plan — kind=office
+   🟢 U5 the founded OFFICE team shows its plan read-only on the founder — Kind of team: Office team · chosen when the team was started; it cannot be changed
+   🟢 U1 ?teamplan=pos in the address only PRE-SELECTS Point-of-sale team; both choices are still there (U1b) — [{"id":"office","checked":false,"label":"Office team — everyone shares the same records"},{"id":"pos","checked":true,"label":"Point-of-sale team — tills and phones send up what the plan declares and receive only what is addressed to them"}]
+§U1 a POS team: founder picks Point-of-sale team in the panel (no ?teamplan)
+   🟢 U1 the founder chose Point-of-sale team in the panel: the signed genesis carries plan=pos and the founder reads it — {"plan":"pos","person":"a8b0420b-1520-4177-98d1-4e026e80b7a5","role":102}
+   🟢 U8 a POS team, role 102 (the processor): the plan has no `by` rows for it -> NO "Bound to" — bound controls=0
+   🟢 U7 role 50004 with "Bound to" left empty is REFUSED with a plain message and nothing is sent (request still pending, device not enrolled) — msg="Choose what this device is bound to first: the plan sends it only that record's data." pending=3
+   🟢 U2 role 50004 offers "Bound to" with the record types the plan addresses, named by the dictionary: ["Organization","Business Partner"] — ["Organization","Business Partner"]
+§U2 the till bound to Store North through the Approve dialog
+   §UIP_OPTIONS groups=["Organization","Business Partner"] options=34 first=["— choose —","Fertilizer","Furniture","HQ","Store Central","Store East"]
+   🟢 U2 Approve with Bound to = "Store North" wrote the till's person_uu = that org's AD_Org_UU (74c991db) at role 50004 — {"plan":"pos","person":"74c991db-2710-412b-bdc0-366ea8dd5e13","role":50004}
+   🟢 U2 the till bound through the dialog holds ONLY its branch's movement (locator 50002); the processor made two; 0 of South's reached it — processor=[{"l":50002},{"l":50003}] till=[{"l":50002}]
+§U3 a borrower bound to a Business Partner through the Approve dialog (same role 50004)
+   🟢 U3 Approve with Bound to = "C&W Construction" wrote the borrower's person_uu = that C_BPartner_UU (037972d8) — {"plan":"pos","person":"037972d8-b74c-462d-b407-4a9b60e66ca8","role":50004}
+   🟢 U3 the borrower holds ITS loan (LN-A-6218) and 0 of the other borrower's (LN-B-6218); the till holds neither — {"borrower":[{"d":"LN-A-6218"}],"till":[]}
+§U10 a record created this session is offered in Bound to
+   §UIP_NEWBP id=-6 offered=true uu=[{"u":"4c99910c-b40b-4412-85b5-de9fb6508586"}] person="4c99910c-b40b-4412-85b5-de9fb6508586"
+   🟢 U10 "Session Borrower 6218" (created this session by one signed op, not in the shipped bundle) is offered in Bound to — offered=true created=-6
+   🟢 U10 binding it wrote the person_uu = that record's _uu — [[{"u":"4c99910c-b40b-4412-85b5-de9fb6508586"}],{"plan":"pos","person":"4c99910c-b40b-4412-85b5-de9fb6508586","role":50004}]
+   🟢 U9 Who is on what shows each bound device's record by name (Store North, C&W Construction); the founder (bound to nothing) shows none — [{"name":"founder (you)","bound":null},{"name":"device 401F-0AD1","bound":"· Session Borrower 6218"},{"name":"device 1603-5F8B","bound":"· C&W Construction"},{"name":"device 7F16-FE8A","bound":"· Store North"}]
+   🟢 U5 the founded POS team shows "Point-of-sale team" read-only (no radios) on the founder AND on a device that only joined, which read it from the genesis — ["Kind of team: Point-of-sale team · chosen when the team was started; it cannot be changed","Kind of team: Point-of-sale team · chosen when the team was started; it cannot be changed"]
+   🟢 U11 0 page errors, 0 console 🔴 on all devices — errors=0 reds=0
+§UIP_ARMS red=none judged=20
+
+§UIP_MUTANTS
+   🟢 the choice is ignored (the genesis is always the office plan) -> red arms: U1, U5, U7, U2, U3, U10, U9
+   🟢 the plan list is hand-coded (offered whether or not the plan file was loaded) -> red arms: U6
+   🟢 the binding is not written (Approve sends the role only) -> red arms: U2, U3, U10, U9
+   🟢 "Bound to" is shown for a role without `by` rows (the role is ignored) -> red arms: U8
+   🟢 the picker reads the bare bundle, not the tip (a record made this session is missing) -> red arms: U10
+   🟢 the picker's record type is hand-coded (organisation only) -> red arms: U2, U3, U10, U9
+   🟢 an empty binding is sent (the panel does not refuse) -> red arms: U7, U2, U3, U9
+   🟢 the founded team does not show its plan -> red arms: U5
+   🟢 Who is on what does not show the bound record -> red arms: U9
+§UIP_VERDICT PASS judged=20 fails=0 mutants_killed=9/9 pageerrors=0 reds=0
+exit=0

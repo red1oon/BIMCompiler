@@ -1,0 +1,26 @@
+§FILM_GUARD OK   setup says "三百零二个" <- index.entries expected 302 got 302
+§FILM_GUARD OK   move1 says "二十层" <- doctype.layers expected 20 got 20
+§FILM_GUARD OK   move1 says "第九十七行" <- doctype.callout_line expected 97 got 97
+§FILM_GUARD OK   move1 says "CalloutOrder.java" <- doctype.callout_legacy expected CalloutOrder.java got CalloutOrder.java
+§FILM_GUARD OK   move1 says "按 Alt 加一，打开这个回调" <- doctype.alt1_opens_callout expected Y got Y
+§FILM_GUARD OK   move2 says "十七个误报" <- red.false_unported expected 17 got 17
+§FILM_GUARD OK   move2 says "现在是零" <- fix.false_unported expected 0 got 0
+§FILM_GUARD OK   move2 says "说错过一次" <- old.dateacct_unported expected Y got Y
+§FILM_GUARD OK   move2 says "引擎确实在运行它" <- new.dateacct_line_found expected Y got Y
+§FILM_GUARD OK   move2 says "一百九十九个" <- fix.unported expected 199 got 199
+§FILM_GUARD OK   move2 says "一万二千三百二十三个字段" <- fix.fields expected 12323 got 12323
+§FILM_GUARD OK   the red run FAILED E2b and the run on main PASSED
+§FILM_GUARD OK   the logs the cards quote are copied into out/
+§FILM_GUARD OK   every key the tooltip showed on main opened its line (E4 wrong_or_dead=0)
+§FILM_GUARD OK   credentials: MIT licence, every PR merged, the paper states its priority date
+§FILM_GUARD OK   no shoot step reported an error
+§FILM_GUARD OK   memory measured after a forced GC in both sessions
+§FILM_GUARD OK   every picture exists
+§FILM_GUARD OK   prior art "iDempiere, the field tooltip" <- ~/idempiere-dev-setup/idempiere/org.adempiere.ui.zk/WEB-INF/src/org/adempiere/webui/adwindow/ADTabpanel.java:837
+§FILM_GUARD OK   prior art "iDempiere, Field Record Info" <- ~/idempiere-dev-setup/idempiere/org.adempiere.ui.zk/WEB-INF/src/org/adempiere/webui/window/WFieldRecordInfo.java:176
+§FILM_GUARD OK   prior art "Odoo developer mode" <- out/prior/odoo_devmode.html
+§FILM_GUARD OK   prior art "click-to-component (React)" <- out/prior/click_to_component_README.md
+§FILM_GUARD OK   not said: the page pictures are taken, not streamed
+§FILM_GUARD OK   not said: the claim is only that the shipped ERP never loads it
+§FILM_GUARD OK   not said: no speed was measured
+§FILM_GUARD VERDICT PASS

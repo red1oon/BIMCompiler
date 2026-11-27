@@ -1,0 +1,8 @@
+§TIPREAD-CENSUS tables_with_pk=377 mixed_case_pk=46 lowercase_pk=331 mixed=[AD_Column,AD_Element,AD_Field,AD_Menu,AD_Ref_List,AD_Reference,AD_Tab,AD_Table,AD_User,AD_Window,C_AcctSchema,C_BP_Group,C_BPartner,C_BPartner_Location,C_BankStatement,C_BankStatementLine,C_Charge,C_Country,C_Currency,C_DocType,C_ElementValue,C_Invoice,C_InvoiceLine,C_Location,C_Order,C_OrderLine,C_Payment,C_Project,C_ProjectPhase,C_ProjectTask,C_Region,C_Tax,C_TaxCategory,C_UOM,M_InOut,M_InOutLine,M_Locator,M_PriceList,M_PriceList_Version,M_Product,M_ProductPrice,M_Product_Category,M_Warehouse,PP_Order_Node,PP_Order_Cost,AD_Form]
+   🟢 T1 the bundle has tables whose pk column name is not lowercase (the property under test): N=377 mixed=46
+§TIPREAD-SAMPLE X_of_N=43_of_43 (census N=377, sampled=58, not judged=15) not_judged=[AD_Column:empty-table,AD_Element:empty-table,AD_Field:empty-table,AD_Menu:empty-table,AD_Ref_List:empty-table,AD_Reference:empty-table,AD_Tab:empty-table,AD_Table:empty-table,AD_Window:empty-table,C_Country:empty-table,C_Currency:empty-table,C_Region:empty-table,M_ProductPrice:no-plain-text-column,AD_Form:empty-table,ad_entitytype:empty-table] WRONG=[]
+   🟢 T2 a signed CRUD_UPDATE on a bundle row is what Trx.get reads: X of N = 43 of 43 tables (46 mixed-case pk in the census)
+   🟢 T3 M_Warehouse 104 M_WarehouseSource_ID set by a signed CRUD_UPDATE reads 103 in Trx.get and in trx.q — write=committed get=103 q=[{"s":103}]
+   🟢 T4 a CRUD_CREATE warehouse is read back by Trx.get and trx.q (control: the create side) — id=-47 get=Tip Warehouse q=[{"name":"Tip Warehouse"}]
+§TIPREAD-VERDICT PASS judged=4 fails=0 pageerrors=0
+exit=0

@@ -927,3 +927,175 @@ hooks must sit in `_removePhotoStaging`/`stopStillRefine`, and witnesses must ex
 intensity sum exactly halved (400→200, photo-prop lights untouched), exit restores plScale=1.0,
 nav budget 30 intact. Related same-day context: §TRINORM_LINEAR (PHOTOREAL_STILL_RENDER.md) made
 all triplanar surfaces brighter, which is likely why "too bright" resurfaced now.
+
+## §SHADOW_REAL_SUN — LARGELY DONE for the bake, per §SUN_ONE (#1752, MERGED 2026-09-18 23:51,
+4284ee9f). Corrected 2026-09-19 by the session on Alt+C bake work (feat/loadpath-ledger) — my
+earlier "no gap, two disconnected systems" claim below was WRONG for one real case, verified
+independently before accepting the correction, not just relayed.
+
+**Where I was wrong:** I grepped `cpe_sun_compass.js` and `cinema_maxq.js` for `A.sun.position`/
+`castShadow` and found nothing, so I concluded the bake shadow was never connected to the real sun
+math. The actual wiring is in a THIRD file, `viewer/effects.js`, which I hadn't searched for this —
+`_realSunForRender()` / `_sunArcStep()` (now on `origin/main`, checked directly):
+
+```
+function _sunArcStep(tNorm) {
+  var _real = _realSunForRender();          // real az/el from the compass, IF A._sunCompassOn
+  if (_real) {
+    A.updateSky(_real.el, _real.az);         // repositions the REAL A.sun DirectionalLight
+    A.renderer.shadowMap.needsUpdate = true; // re-aims the shadow right after
+    ...
+  }
+  ... // else: the OLD scripted 55°→6° arc at fixed azimuth 200, untouched
+}
+```
+
+**So, precisely — three cases, not one blanket "fake everywhere":**
+1. **Alt+C bake, `--sun-compass` ON:** the REAL sun drives `A.sun` directly. The code's own comment
+   cites the exact measured divergence that motivated this — one real Hospital frame rendered at
+   345° az / 55.0° elev under the old scripted arc, vs. the real sun at 267.3° / 30.4° elev, 77.7°/
+   24.6° apart. Live bakes print `§SUN_ONE ... the REAL sun is lighting the scene, so the shadows
+   and the compass rose agree` on every frame. **This is genuinely fixed, not parked.**
+2. **Alt+C bake WITHOUT `--sun-compass` (the default):** still the old scripted 55°→6° arc at fixed
+   azimuth 200 — deliberately, an explicit opt-in gate, so a film nobody asked for the compass on
+   doesn't change. Still fake, by design, not a bug.
+3. **Interactive Shadow+Ground toggle (live viewer, not a bake)** — `A.toggleShadow`
+   (`viewer/tools.js` ~975-981) — still the original finding, unchanged and still accurate: fixed
+   `_env*0.8/2/0.6` placement, no connection to real geography or date at all. This is the one
+   remaining gap.
+
+**What's actually left to fix, if picked up — ONE call site now, not two:** `toggleShadow`'s turn-on
+path (`tools.js` ~975) could call the same real-sun derivation `_realSunForRender()`/`updateSky`
+already prove out for the bake, keyed to the CURRENT real-world date/time instead of a film date
+(there is no film in the live interactive viewer). Fall back to exactly today's fixed-ratio
+placement when geo-ref is absent/defaulted — same discipline as everything else in this lane. Not
+scheduled, no urgency assigned, but no longer blocked on anything — #1752 is merged. Filed here, the
+canonical lighting/`A.sun` doc, rather than as a new file, per this project's own anti-drift rule.
+
+## §SHADOW_BAKE_TRUNCATION — FOUND, NOT VERIFIED, NOT FIXED (2026-09-19)
+
+**Reported by red1, visual observation from an Alt+C bake, not yet confirmed by a witness or a
+programmatic check — this project's own FUNDAMENTAL LAW says a screenshot/visual is not proof, so
+treat the symptom description below as the finding, not the diagnosis:** shadows during an Alt+C
+bake appear cut off / truncated near the ground — "each column or edge where shadow appears, there
+is a cut off," rather than the shadow running naturally to its full length at the base.
+
+**CORRECTED 2026-09-19 — the Alt+C bake does NOT go through `A.toggleShadow` at all.** Investigated
+before handing this off, specifically so a session already deep in the bake pipeline doesn't have to
+re-derive the same ground (user's own instruction: conduct this here first, to avoid two sessions
+splitting/conflicting on it). The real bake-time shadow arming is `viewer/effects.js`
+`_enablePhotoShadows()` (~line 3064) — see §SHADOW_REAL_SUN item 2 above for its exact location and
+how it differs from the interactive toggle.
+
+**This function already has a deep, cited history of shadow bugs found AND fixed — read this before
+suspecting anything new:**
+- **§PHOTO_SHADOW_TARGET_CENTRE** (2026-08-11, effects.js ~3077-3100): shadow frustum was aimed at
+  wherever the VIEW camera happened to be looking (drifts far from the building during an
+  establishing dive), not the building itself — fixed, now aimed at the real building bbox centre.
+- **§PHOTO_SKYLINE_SHADOW_FRUSTUM** (effects.js ~3107-3124): the skyline prop ring (radius =
+  envelope × a multiplier) sat outside the shadow frustum's own bounds — confirmed via real numbers
+  (HHS: envelope 68.17m, frustum half-width 69m, skyline ring ~150m, all 36 skyline boxes clipped) —
+  fixed, frustum now sized from the same real bbox the skyline ring itself uses.
+- **§PHOTO_SUN_SHADOW_REACH** (2026-08-11, effects.js ~3125-3148): at low sun elevation (the film's
+  own dusk end, 6°), a building's shadow can throw ~9.5× its own height — the footprint-only frustum
+  didn't account for this, clipping the shadow's own far tip at dusk. Measured on a real 52-frame
+  bake (`scratchpad/analyze_hhs_shadow_frames.py`) — fixed, frustum now widens to fit the worst-case
+  shadow reach.
+- **§PHOTO_SHADOW_RESOLUTION** (effects.js ~3154-3165): the widened frustum above spreads a fixed
+  texel budget more thinly — small rooftop fixtures end up under-resolved and wash out even though
+  they're geometrically inside the frustum. Addressed: bake-only resolution doubled to 4096² (never
+  applied to the interactive toggle's own 2048², a different cost/benefit — that path runs every
+  frame of continuous navigation, this one only during a deliberate capture).
+- **§PHOTO_SHADOW_BIAS** (2026-08-11/12, effects.js ~3195-3227): the bias constant copied from
+  `toggleShadow` meant something very different on this path's much longer near/far range (a
+  world-space bias of 9.87m vs. `toggleShadow`'s proven 0.305m) — erased every caster shorter than
+  ~8.1m at the film's 55° opening, confirmed by a real paired A/B render (`scratchpad/
+  witness_shadow_bias_ab.js`: same scene, only this line changed, 1,665px darkened at 55°/12,095px
+  at dusk, 0px ever brightened). Fixed: bias now held in real world-space units, scaled to clear the
+  worst grazing angle the film's arc reaches.
+- **§R17_SHADOWMAP_RELEASE** (effects.js ~3166+): a raised 4096² shadow map was found surviving
+  teardown across repeated Alt+S presses — a persistence/memory finding, not a geometry one.
+
+**Candidate 7, MEASURED 2026-09-19 (feat/loadpath-ledger session, from a real 1969-frame 1080p HHS
+bake, compass ON) — real sun elevation exceeds the old tuned range, causing FAR-TIP clipping.** Real
+sun elevation across that film ran **1.4° to 42.4°**. `effects.js:2660` — `PHOTO_SUN_ELEVATION = 6`
+— is the old scripted arc's deliberately-chosen floor. Shadow length runs `cot(elevation)`: 6° →
+~9.5× object height (the range `§PHOTO_SUN_SHADOW_REACH`'s frustum sizing was proven safe for); 1.4°
+→ ~41×. **This is a distinct fault from candidate 8 below — do not pay for one with the other's
+fix** (the session that measured this corrected itself on exactly this point: its first framing
+conflated the two). Candidate 7 predicts the shadow's far end vanishing; it does not by itself
+explain a cutoff specifically at a column's own base.
+
+**Candidate 8, MEASURED 2026-09-19 (same session, this time from real code, not just the elevation
+range) — the actual base-cutoff mechanism, and the strongest candidate on record.**
+`§PHOTO_SHADOW_BIAS_SCALE` freezes ONE depth bias at staging time:
+`_worldBias = max(0.305, texelWorld / tan(PHOTO_SUN_ELEVATION_END))`, using the SCRIPTED arc's 6°
+floor — a number that no longer bounds anything once §SUN_ONE's real sun (42.4° → 1.4°) replaces
+that arc. A depth bias is a push ALONG THE LIGHT RAY; on the ground it separates a shadow from its
+own caster by `worldBias / tan(elevation)`. Measured on HHS (env 180, map 4096, texelWorld 0.0879m,
+frozen bias 0.836m): **42.4° → 0.9m gap · 9° → 5.3m · 3° → 16m · 1.4° → 34m.** Every column's shadow
+detaches from its own base — small at the film's start, tens of metres by the end — which is
+precisely "cut off at the base of each column," and precisely predicts the worsening-toward-the-end
+shape. **Widening the shadow frustum (the obvious-looking fix) makes this WORSE, not better** —
+`texelWorld = 2×env/mapSize`, so a bigger frustum means a bigger gap; this rules out candidate 7's
+own fix as a cure for candidate 8. Proposed fix (not yet verified visually): move the grazing-angle
+term to `shadow.normalBias` (offset along the surface normal — what acne actually needs) and restore
+the depth bias to `toggleShadow`'s already-proven 0.305m. Projected: gap at 1.4° drops 34m → 12.5m,
+at 42° drops 0.9m → 0.33m. Control flag: `window.__noNormalBias`.
+
+**On a competing "noise/AO touch-up" reading:** none exists on record from this doc or this session
+— checked directly, no such diagnosis appears anywhere here. If one surfaces elsewhere, treat it as
+a genuinely separate, unconfirmed candidate (a dark AO band at a column base and a shadow physically
+detached from one would look similar at low resolution) rather than assuming either explanation
+wins without frames or numbers behind it.
+
+**None of these, as documented, is CONFIRMED as red1's exact cause — but candidate 8 is now the
+strongest, with a real formula and real numbers, not a hypothesis.** The first six historical bugs
+are about the shadow's far tip, rooftop/small-object resolution, or blanket erasure at grazing
+angles specifically at the arc's OLD bounded range — none were tested against an unbounded real sun.
+**Before fixing anything:** verify candidate 8's predicted numbers against an actual frame (does the
+gap at a known column, at a known frame's elevation, match `worldBias/tan(elevation)`?), then try
+the `normalBias` fix behind `__noNormalBias` and re-measure — don't fix on the strength of the math
+alone, the same discipline as every other shadow/render finding in this codebase. Re-run
+`scratchpad/witness_shadow_bias_ab.js` (already exists, already proven this general bug class once)
+once the fix lands, and read the real `§PHOTO_SHADOW_*`/`§SUN_ONE` log lines — don't re-diagnose
+from the video.
+
+## §116 / §129.41 — Interior fixtures relight for the closing orbit — DONE, WITNESSED (2026-09-19,
+`feat/loadpath-ledger`, not yet merged to main)
+
+**Original rule (§116, predates this section):** from the last construction stick (`plan.beats.out`)
+to the end of the film, every interior fixture — PointLights AND the separate glow-sprite/emissive-
+material family (§116's own note: "a separate object family from the PointLights, which is why
+capping the lights alone still left fixture glow on screen") — is OFF. Reason at the time: by then
+the camera is outside and climbing away, so interior glow only reads as clutter in rooms nobody's
+looking into.
+
+**Narrowed, not undone, by §129.41 (`cinema_maxq.js` ~3128-3156, red1: "restore back night lighting
+only after storey build so when dusk or dark its windows are lighted"):** the reason for §116 stops
+holding once the building tops out — from there the film is a closing orbit around a *finished*
+building, and (now that §SUN_ONE drives a real sun, see §SHADOW_REAL_SUN above) that orbit can be
+genuinely at dusk. A dark building at real dusk isn't restraint, it's an unlit model. So the
+off-window is now `[beats.out, topoutU)` instead of `[beats.out, end]` — `topoutU` is not a new
+number, it's the same fraction `_buildupTopoutU()`/`§CPE_BUILDUP_TOPOUT` already uses elsewhere.
+Nothing before the last stick changes.
+
+**Two falsifiability controls, deliberately kept separate from the gate itself (§118):**
+`window.__ilForceOn` defeats the whole gate; `window.__ilNoRelight` restores the ORIGINAL §116
+behaviour (off to the end), specifically so the relight can be proven to be what lit the windows,
+rather than assumed from a frame looking right.
+
+**Witnessed, real tag `§INTERIOR_LIGHTS_WITNESS`** (`cinema_maxq.js` ~3696) — reports
+`poolLit`/`navLit`/`glowSpritesStaged`/`lensQuadLive`/`emissiveMatsLit` and its own PASS/FAIL rule
+was updated in the same change: under §116 the bar was "nothing interior emits after the last
+stick," full stop; past topout under §129.41 the CORRECT answer is now the opposite (interior
+should be lit), so the verdict logic had to change with the rule or it would fail on the exact
+behaviour red1 asked for. Measured on a real HHS bake: real sun elevation (§SUN_ONE) ran 34.7° at
+`tNorm=0` down to 1.4° at `tNorm=1` — genuinely setting, which is what makes "lit windows at dusk"
+a real, not staged, visual claim.
+
+**Status: done and witnessed on this branch, not yet on main.** No open question here — filed for
+the record (this is the canonical interior-fixture-lighting doc) and because it shares the same
+sun-elevation data (`1.4°` low end) as §SHADOW_BAKE_TRUNCATION's candidate 7 above — worth knowing
+both findings come from the same real bake conditions, not a coincidence of two separate low-sun
+numbers.

@@ -1,0 +1,14 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT open cue=0.00 room=12.60 dur=12.49 -> DETAIL x1.058 slack=+0.11 detailDur=13.33 words=5
+§EDGE_CALL voice=zh-CN-YunxiNeural rate=-3% chars=24 -> e0ac979667
+§EDGE_CALL voice=zh-CN-YunxiNeural rate=-3% chars=14 -> 2f9a462eae
+§NARR_FIT login cue=12.90 room=9.91 dur=9.25 -> DETAIL slack=+0.66 detailDur=9.25 words=4
+§NARR_FIT menu cue=23.11 room=5.10 dur=4.79 -> DETAIL slack=+0.31 detailDur=4.79 words=2
+§EDGE_CALL voice=zh-CN-YunxiNeural rate=-3% chars=18 -> a85a9c73b5
+§EDGE_CALL voice=zh-CN-XiaoxiaoNeural rate=+3% chars=11 -> 82331e597d
+§NARR_FIT form cue=28.51 room=7.10 dur=6.56 -> DETAIL slack=+0.54 detailDur=6.56 words=3
+§NARR_FIT create cue=35.91 room=2.27 dur=1.22 -> DETAIL slack=+1.05 detailDur=1.22 words=1
+§NARR_FIT facts cue=38.48 room=15.01 dur=14.84 -> DETAIL x1.028 slack=+0.17 detailDur=15.44 words=5
+§NARR_FIT enter cue=53.79 room=7.10 dur=7.02 -> DETAIL slack=+0.08 detailDur=7.02 words=3

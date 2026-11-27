@@ -1,0 +1,223 @@
+[
+ {
+  "id": "start",
+  "do": [
+   {
+    "line": "red1"
+   },
+   {
+    "wait": "red1> ",
+    "quiet": 0.8,
+    "max": 90
+   }
+  ]
+ },
+ {
+  "id": "menu",
+  "do": [
+   {
+    "key": "CtrlL"
+   },
+   {
+    "wait": "red1> "
+   },
+   {
+    "line": "menu"
+   },
+   {
+    "wait": "red1 menu> ",
+    "quiet": 1.0,
+    "max": 120
+   }
+  ]
+ },
+ {
+  "id": "quote",
+  "do": [
+   {
+    "key": "CtrlL"
+   },
+   {
+    "wait": "red1 menu> "
+   },
+   {
+    "line": "cd Quote"
+   },
+   {
+    "wait": "red1 menu/Quote-to-Invoice (Sales)> ",
+    "quiet": 0.8,
+    "max": 60
+   }
+  ]
+ },
+ {
+  "id": "orders",
+  "do": [
+   {
+    "key": "CtrlL"
+   },
+   {
+    "wait": "red1 menu/Quote-to-Invoice (Sales)> "
+   },
+   {
+    "line": "cd \"Sales Orders\""
+   },
+   {
+    "wait": "red1 menu/Quote-to-Invoice (Sales)/Sales Orders> ",
+    "quiet": 0.8,
+    "max": 60
+   }
+  ]
+ },
+ {
+  "id": "window",
+  "do": [
+   {
+    "key": "CtrlL"
+   },
+   {
+    "wait": "red1 menu/Quote-to-Invoice (Sales)/Sales Orders> "
+   },
+   {
+    "line": "cd \"Sales Order\""
+   },
+   {
+    "wait": "red1 menu/Quote-to-Invoice (Sales)/Sales Orders/Order> ",
+    "quiet": 1.0,
+    "max": 120
+   }
+  ]
+ },
+ {
+  "id": "record",
+  "do": [
+   {
+    "key": "CtrlL"
+   },
+   {
+    "wait": "red1 menu/Quote-to-Invoice (Sales)/Sales Orders/Order> "
+   },
+   {
+    "line": "cd 100"
+   },
+   {
+    "wait": "red1 menu/Quote-to-Invoice (Sales)/Sales Orders/Order/80000> ",
+    "quiet": 1.5,
+    "max": 120
+   },
+   {
+    "type": "do "
+   },
+   {
+    "pause": 0.6
+   },
+   {
+    "key": "Tab"
+   },
+   {
+    "pause": 1.0
+   },
+   {
+    "key": "Tab"
+   },
+   {
+    "pause": 1.0
+   }
+  ]
+ },
+ {
+  "id": "re",
+  "do": [
+   {
+    "key": "CtrlL"
+   },
+   {
+    "pause": 0.6
+   },
+   {
+    "type": "RE"
+   },
+   {
+    "key": "Return"
+   },
+   {
+    "wait": "red1 menu/Quote-to-Invoice (Sales)/Sales Orders/Order/80000> ",
+    "quiet": 1.5,
+    "max": 240
+   }
+  ]
+ },
+ {
+  "id": "co",
+  "do": [
+   {
+    "key": "CtrlL"
+   },
+   {
+    "wait": "red1 menu/Quote-to-Invoice (Sales)/Sales Orders/Order/80000> "
+   },
+   {
+    "line": "do CO"
+   },
+   {
+    "wait": "red1 menu/Quote-to-Invoice (Sales)/Sales Orders/Order/80000> ",
+    "quiet": 1.5,
+    "max": 240
+   }
+  ]
+ },
+ {
+  "id": "hist",
+  "do": [
+   {
+    "key": "CtrlL"
+   },
+   {
+    "wait": "red1 menu/Quote-to-Invoice (Sales)/Sales Orders/Order/80000> "
+   },
+   {
+    "line": "history 3"
+   },
+   {
+    "wait": "red1 menu/Quote-to-Invoice (Sales)/Sales Orders/Order/80000> ",
+    "quiet": 0.8,
+    "max": 60
+   },
+   {
+    "line": "!{hist:do RE}"
+   },
+   {
+    "wait": "red1 menu/Quote-to-Invoice (Sales)/Sales Orders/Order/80000> ",
+    "quiet": 1.5,
+    "max": 240
+   }
+  ]
+ },
+ {
+  "id": "up",
+  "do": [
+   {
+    "key": "CtrlL"
+   },
+   {
+    "wait": "red1 menu/Quote-to-Invoice (Sales)/Sales Orders/Order/80000> "
+   },
+   {
+    "key": "ShiftTab"
+   },
+   {
+    "wait": "red1 menu/Quote-to-Invoice (Sales)/Sales Orders/Order> ",
+    "quiet": 0.8,
+    "max": 60
+   },
+   {
+    "key": "ShiftTab"
+   },
+   {
+    "wait": "red1 menu/Quote-to-Invoice (Sales)/Sales Orders> ",
+    "quiet": 0.8,
+    "max": 60
+   }
+  ]
+ }
+]

@@ -899,6 +899,8 @@ public class DesignerAPIImpl implements DesignerAPI {
                 double w = bb.maxX() - bb.minX();
                 double d = bb.maxY() - bb.minY();
                 double h = bb.maxZ() - bb.minZ();
+                final double submittedW = w;
+                final double submittedD = d;
 
                 // Grid snap
                 if (gridMm > 0) {
@@ -966,6 +968,21 @@ public class DesignerAPIImpl implements DesignerAPI {
                         BIMLogger.warn(TAG, "SNAP BLOCK {}: {} ({:.0f} < {:.0f})",
                                 bb.bomId(), verdict.ruleName(),
                                 verdict.actualValue(), verdict.requiredValue());
+                    } else if (submittedW != w || submittedD != d) {
+                        // prompts/NEURO_SYMBOLIC_ORDER_CONTRACT.md §6.2 — rounding must not hide a submitted size that broke a rule.
+                        ValidationVerdict submitted = validator.validate(new PlacementRequest(
+                                bb.category(), bb.ifcClass(), null,
+                                submittedW, submittedD, h,
+                                bb.minX(), bb.minY(), minZ,
+                                "SNAP", 0, bb.storey()));
+                        if (submitted.isBlocked()) {
+                            adjustments.add(new Adjustment(bb.bomId(),
+                                    submitted.ruleName(), "pre_snap",
+                                    submitted.actualValue(), submitted.requiredValue()));
+                            BIMLogger.warn(TAG, "§SNAP_ROUNDED_PAST_RULE {}: {} submitted {} required {}",
+                                    bb.bomId(), submitted.ruleName(),
+                                    submitted.actualValue(), submitted.requiredValue());
+                        }
                     }
                 }
 

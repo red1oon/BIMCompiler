@@ -643,3 +643,7 @@ Measured by the dev-toolkit triage (`bim-ootb prompts/DEV_TOOLKIT_NO_AI.md` §9.
   unrunnable on any other dev's machine.
 - Tool side (bim-ootb DEV_TOOLKIT T14) will lint NEW/changed witnesses for both. Migrating the existing 211 and
   wiring witnesses into CI is this lane's decision.
+
+## Note from the VOCAB lane (2026-11-18): the contract's verdict lines never reached a witness's own .log
+`Witness().run()` printed with `console.log` only, so a witness that writes its own log file showed `fail=N` with no FAIL line (PRIMAL LAW 4). Fixed in the owner: `run(sink)` (bim-ootb #3220, spec `VOCAB_MESSAGE_CATALOG.md` §14.8.2, witness `witness_kit/tests/witness_contract_sink.js`, W-CONTRACT-SINK 3/0 with a falsifier). With no sink, stdout is byte-identical. **Left for this lane:** 25 callers still call a bare `.run()` while keeping their own log, so each needs a one-word `.run(<its logger>)`. The list is printed by `node witness_kit/tests/witness_contract_sink.js` (`§SINK_CALLER bare …`). 6 more patch `console.log` and are unaffected.
+

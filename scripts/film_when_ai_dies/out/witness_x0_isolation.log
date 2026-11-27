@@ -1,0 +1,3 @@
+  PASS red controls count planted hits (precache=1 minify=1 tags=1)
+  PASS extension package.json has no dependencies (n=0)
+§X0_ISOLATION precache=0 minify=0 tags=0 sw_files=4 html_files=83 deps=0 red=Y verdict=PASS

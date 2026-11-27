@@ -1,0 +1,173 @@
+{
+ "total": 200.84999999999997,
+ "segments": [
+  {
+   "kind": "card",
+   "id": "title",
+   "fs": 0.0,
+   "fe": 5.0
+  },
+  {
+   "kind": "card",
+   "id": "problem",
+   "fs": 5.0,
+   "fe": 16.0
+  },
+  {
+   "kind": "card",
+   "id": "bench",
+   "fs": 16.0,
+   "fe": 29.0
+  },
+  {
+   "kind": "clip",
+   "id": "on",
+   "ts": 13.0,
+   "te": 24.4,
+   "sp": 1,
+   "title": "1 \u00b7 User A turns team mode on from the Team pill",
+   "fs": 29.0,
+   "fe": 40.4
+  },
+  {
+   "kind": "clip",
+   "id": "found",
+   "ts": 28.8,
+   "te": 45.3,
+   "sp": 1,
+   "title": "2 \u00b7 Start a team  \u2192  an invite link (blurred in this film)",
+   "fs": 40.4,
+   "fe": 56.89999999999999
+  },
+  {
+   "kind": "clip",
+   "id": "join",
+   "ts": 53.5,
+   "te": 66.0,
+   "sp": 1,
+   "title": "3 \u00b7 User B opens the invite in a private window and presses Join",
+   "fs": 56.89999999999999,
+   "fe": 69.39999999999999
+  },
+  {
+   "kind": "clip",
+   "id": "approve",
+   "ts": 66.0,
+   "te": 88.5,
+   "sp": 1,
+   "title": "4 \u00b7 User A approves B's code and picks a role \u00b7 User B visits \u2192 paired",
+   "fs": 69.39999999999999,
+   "fe": 91.89999999999999
+  },
+  {
+   "kind": "clip",
+   "id": "enter",
+   "ts": 102.6,
+   "te": 124.8,
+   "sp": 4,
+   "title": "5 \u00b7 User A enters a Sales Order and one line",
+   "fs": 91.89999999999999,
+   "fe": 97.44999999999999
+  },
+  {
+   "kind": "clip",
+   "id": "visit1",
+   "ts": 124.8,
+   "te": 138.0,
+   "sp": 1,
+   "title": "5 \u00b7 Visit on both  \u2192  the order is on User B",
+   "fs": 97.44999999999999,
+   "fe": 110.64999999999999
+  },
+  {
+   "kind": "clip",
+   "id": "complete",
+   "ts": 145.5,
+   "te": 165.0,
+   "sp": 1,
+   "title": "6 \u00b7 User A presses Complete \u00b7 User B visits \u2192 Completed here too",
+   "fs": 110.64999999999999,
+   "fe": 130.14999999999998
+  },
+  {
+   "kind": "clip",
+   "id": "tax",
+   "ts": 172.0,
+   "te": 179.2,
+   "sp": 1,
+   "title": "6 \u00b7 \u2026and its consequence came across: an Order Tax row",
+   "fs": 130.14999999999998,
+   "fe": 137.34999999999997
+  },
+  {
+   "kind": "clip",
+   "id": "clash",
+   "ts": 240.0,
+   "te": 262.5,
+   "sp": 1,
+   "title": "7 \u00b7 The clash: both complete the same order before visiting",
+   "fs": 137.34999999999997,
+   "fe": 159.84999999999997
+  },
+  {
+   "kind": "clip",
+   "id": "clash2",
+   "ts": 296.0,
+   "te": 307.0,
+   "sp": 1,
+   "title": "7 \u00b7 Both: \"changed by another user, please ReQuery\" \u00b7 status stays Drafted",
+   "fs": 159.84999999999997,
+   "fe": 170.84999999999997
+  },
+  {
+   "kind": "card",
+   "id": "limits",
+   "fs": 170.84999999999997,
+   "fe": 187.84999999999997
+  },
+  {
+   "kind": "card",
+   "id": "close",
+   "fs": 187.84999999999997,
+   "fe": 200.84999999999997
+  }
+ ],
+ "cue_film": {
+  "panel_open/A": 32.88,
+  "mode_click/A": 37.91,
+  "chip_unpaired/A": 42.03,
+  "panel_unpaired/A": 47.99,
+  "founded/A": 52.15,
+  "invite_opened/B": 59.79,
+  "invite_prefilled/B": 62.6,
+  "joined_code/B": 64.12,
+  "requests_listed/A": 72.33,
+  "role_picked/A": 76.42,
+  "approved/A": 80.38,
+  "b_paired/B": 87.71,
+  "grids_ready/A": 91.9,
+  "order_new/A": 91.9,
+  "order_saved/A": 95.02,
+  "line_start/A": 95.02,
+  "line_saved/A": 97.51,
+  "visitA1/A": 97.51,
+  "visitB1/B": 99.81,
+  "b_sees_order/B": 102.15,
+  "b_grid_has_order/B": 107.75,
+  "a_form_open/A": 111.78,
+  "b_form_open/B": 113.07,
+  "complete_click/A": 115.12,
+  "a_completed/A": 118.36,
+  "visitA2/A": 120.92,
+  "visitB2/B": 123.21,
+  "b_tax_tab/B": 133.2,
+  "a_completes_2/A": 140.52,
+  "b_completes_2/B": 144.85,
+  "visit_A_x1/A": 147.41,
+  "visit_B_x1/B": 149.73,
+  "visit_A_x2/A": 152.12,
+  "visit_B_x2/B": 154.44,
+  "conflict_shown/A": 161.25,
+  "conflict_shown/B": 161.22
+ }
+}

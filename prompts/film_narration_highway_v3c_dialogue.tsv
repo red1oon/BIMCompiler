@@ -1,0 +1,29 @@
+greet_en	0.00	1.60	lang=en	F: Hello!	F: Hello everyone!
+greet_ms	1.60	3.20	lang=ms	M: Selamat petang!	M: Selamat petang!
+greet_zh	3.20	4.80	lang=zh	F: 大家好！	F: 大家好！
+greet_th	4.80	6.40	lang=th	M: สวัสดีครับ	M: สวัสดีครับ
+greet_ar	6.40	8.00	lang=ar	F: السلام عليكم	F: السلام عليكم
+greet_fr	8.00	9.60	lang=fr	M: Bonjour !	M: Bonjour à tous !
+xray	9.60	18.40	[VALID] intro clip BIM_JELAPANG_v3c_intro.mp4: far orbit (§FLYAROUND_ARC sweep 80°, r 1,245 m) of the finished model, no build-up · x-ray look NOT applied (the tap stalled the bake — §11.v3c)	F: The whole highway! | M: Finished, from afar.	F: The whole highway! | M: That is the finished model, from afar. Now watch it built from nothing.
+open	18.60	28.00	[VALID] §0 7 IFCs Civil 3D · card 1 counts (§ROAD_PANELS) · name per user 2026-10-06: 'A Malaysian Highway'	F: A Malaysian highway, compiled! | M: One database.	F: A Malaysian highway... compiled! | M: Seven Civil 3D files, one database. That card counts this stretch, straight from it.
+check	28.00	35.00	[VALID] card 2 = road_check row + its film_status · [SPECULATIVE] the sign-height method itself (road_rules.json)	F: A formula? | M: A road check, tagged speculative.	F: A formula? | M: A JKR rule, checked from geometry. Tagged speculative, the method is under review.
+bridge	35.00	45.00	[VALID] cutaway: BIM_JELAPANG_v3_bridge.mp4 15.0–25.0 s — bridge pieces placed 6,094→10,417 over frames 240–420 (§CPE_BUILDUP, v3_bridge log) · order = the schedule's own (route order SPECULATIVE)	F: The bridge works! | M: Piece by piece.	F: The bridge works! | M: Piers, crossheads, deck... each piece in its scheduled order.
+compile	45.00	51.40	[VALID] features exist today: 4D (Time Machine), 5D quantities, clash, road checks, film path — all read one compiled DB	F: What does compiling give? | M: Many answers, one model.	F: What does compiling give? | M: One model, many answers. Schedule, quantities, clashes, checks.
+terrain	51.60	57.00	[VALID] card 3 planned (A 42.6) · §0 JELAPANG_EARTHWORK.ifc = 0 elements	F: Where's the terrain? | M: Planned.	F: Where's the terrain? | M: Not exported yet. Terrain, weather and traffic are planned.
+fourD	57.00	62.00	[VALID] build-up by pieces completed through the whole drive (§ALTC_V3 V3a, no Reveal per user) · lamps before own pavement 0 (§CHAINAGE_V2) · [SPECULATIVE] full route order (0.30)	F: Still building? | M: All the way.	F: Still building? | M: All the way. Lamps never before their road.
+theory	62.00	68.00	[VALID] card 4 drainage types/sizes (A 53.1, element_psets 02_Type/03_Dimension) · [SPECULATIVE] flood/runoff check needs terrain (§K), not built	F: What else, in theory? | M: Flood checks, with terrain.	F: What else, in theory? | M: Drain sizes plus terrain... a flood check.
+quantities	68.00	74.40	[VALID] quantities counted (5D lines) · [SPECULATIVE] prices: rates null pending JKR SoR (§R)	F: Can it cost them? | M: Quantities now.	F: Can it cost them? | M: Quantities now. Prices once official rates arrive.
+signs	74.50	80.00	[VALID] card 5 signs (A 65.6) — JKR 17_Code / 16_Name from element_psets	F: Signs too? | M: Each with its JKR code.	F: Signs too? | M: Each one carries its JKR code, read from the model.
+lamps	80.00	85.50	[VALID] §NIGHT_CIVIL_LAMPS heads=223 (RE-CHECK v3 log)	F: Those lights? | M: Two hundred twenty three heads.	F: Those lights? | M: Two hundred and twenty three lamp heads, from each column's mesh.
+clash	85.50	91.00	[VALID] §CLASH_NARROWPHASE pair=film broad=1011 meshTrue=138 (v2 log; RE-CHECK v3 — v3 bake has clash on)	F: Real clashes? | M: One hundred thirty eight.	F: Real clashes? | M: A thousand boxes overlap. One hundred thirty eight really touch.
+check2	91.20	98.60	[VALID] card 7 check (A 84.6) = road_check row + film_status	F: Another check? | M: Formula and confidence.	F: Another check? | M: Every rule shows its formula... and how sure we are.
+tech	98.60	105.20	[VALID] film path = A.civilDriveRoute (§ALTC_V2); SQLite WASM + three.js local first	F: Who made this film? | M: Nobody, by hand.	F: Who made this film? | M: Nobody, by hand. Computed in one browser tab, local first.
+fourd5d	105.20	113.20	[VALID] page clip of boq_charts.html on this model (§RENDER_CHARTS 6 charts)	F: And the reports? | M: Four-D, five-D, one click.	F: And the reports? | M: Four-D and five-D, in one click. Schedule and quantities from the same database.
+compliance	113.20	119.20	[VALID] page clip of model_check_report.html (§MC_REPORT rows=302 valid=20 speculative=282); MEP button → Model Check (§MC_BUTTON)	F: Compliance? | M: Road checks, each tagged.	F: Compliance? | M: Road checks replace the MEP bill, each tagged.
+junction	119.25	121.60	[VALID] §ALTC_V2 orbit pivot=junction heads=5	F: The junction! | M: Five signals.	F: The junction! | M: Five signals.
+bye_en	121.60	122.60	lang=en	M: Thanks!	M: Thanks!
+bye_ms	122.60	123.95	lang=ms	F: Terima kasih!	F: Terima kasih!
+bye_zh	123.95	124.70	lang=zh	M: 谢谢！	M: 谢谢！
+bye_th	124.70	125.80	lang=th	F: ขอบคุณค่ะ	F: ขอบคุณค่ะ
+bye_ar	125.80	126.75	lang=ar	M: شكراً	M: شكراً
+bye_fr	126.75	127.60	lang=fr	F: Merci !	F: Merci !

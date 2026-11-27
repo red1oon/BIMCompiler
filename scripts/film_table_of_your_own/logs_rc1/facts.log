@@ -1,0 +1,23 @@
+§DOOR request=d-mwf8ljlu-415849-1 actor=human verb=mis.add_window status=ok ms=272
+§FACTS dry ok mis.add_window file=AST_Asset.csv dry=Y
+§DOOR request=d-mwf8ljth-415849-1 actor=human verb=mis.add_window status=ok ms=1462
+§FACTS add ok mis.add_window file=AST_Asset.csv
+§DOOR request=d-mwf8lky6-415849-1 actor=human verb=mis.describe status=ok ms=343
+§DOOR request=d-mwf8ll7q-415849-2 actor=human verb=mis.list status=inconclusive ms=320 why="this model holds no AST Asset record, so nothing was listed"
+§FACTS session empty keys=1 screens=2 door_lines=2
+§DOOR request=d-mwf8llgp-415849-1 actor=human verb=mis.describe status=ok ms=340
+§DOOR request=d-mwf8llq6-415849-2 actor=human verb=mis.list status=inconclusive ms=317 why="this model holds no AST Asset record, so nothing was listed"
+§DOOR request=d-mwf8llz0-415849-3 actor=human verb=mis.new status=ok ms=2502
+§DOOR request=d-mwf8lnwk-415849-4 actor=human verb=mis.new status=ok ms=2409
+§DOOR request=d-mwf8lprh-415849-5 actor=human verb=mis.list status=ok ms=323
+§FACTS session first keys=5 screens=6 door_lines=5
+§DOOR request=d-mwf8lq0i-415849-1 actor=human verb=mis.new status=refused ms=2591 why="mandatory and still empty after the defaults and callouts: Name (give them as column=value)"
+§FACTS refuse1 refused mis.new kind=AST_Asset Cost=5
+§DOOR request=d-mwf8ls0z-415849-1 actor=human verb=mis.new status=refused ms=2569 why="Condition Invalid value - BAD - Reference_ID=200277 - FAIR - GOOD - POOR; nothing was written"
+§FACTS refuse2 refused mis.new kind=AST_Asset Name=Plough Condition=BAD
+§DOOR request=d-mwf8lu0d-415849-1 actor=human verb=mis.list status=ok ms=323
+§FACTS list ok mis.list kind=AST_Asset columns=AST_Asset_ID,Name,Cost,Condition
+§DOOR request=d-mwf8lu9e-415849-1 actor=human verb=mis.read status=ok ms=341
+§FACTS read ok mis.read kind=AST_Asset id=1
+§FACTS restart ok (separate process pid 416095) mis.list kind=AST_Asset columns=Name,Cost,Condition
+§FACTS wrote out/facts.json sheet.columns=5 add.ops=46 standard=9 roles=12 first.asked=1 filled=6 refuse2.valid=FAIR/GOOD/POOR stamp=2026-11-14 01:14:47 by 101 restart.total=1

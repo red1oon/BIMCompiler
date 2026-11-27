@@ -1,0 +1,26 @@
+§FILM_CUE beat=cover t=0.000 frames=101 typing=0 answer_hold_frames=101 x1
+§FILM_CUE beat=before t=4.208 frames=535 typing=42 answer_hold_frames=493 x1
+§FILM_CUE beat=after t=26.500 frames=386 typing=47 answer_hold_frames=339 x1
+§FILM_CUE beat=ch1 t=42.583 frames=86 typing=0 answer_hold_frames=86 x1
+§FILM_CUE beat=u1 t=46.167 frames=436 typing=70 answer_hold_frames=366 x1
+§FILM_CUE beat=u2 t=64.333 frames=506 typing=71 answer_hold_frames=435 x1
+§FILM_CUE beat=ch2 t=85.417 frames=86 typing=0 answer_hold_frames=86 x1
+§FILM_CUE beat=v1 t=89.000 frames=613 typing=92 answer_hold_frames=521 x1
+§FILM_CUE beat=v2 t=114.542 frames=366 typing=65 answer_hold_frames=301 x1
+§FILM_CUE beat=ch3 t=129.792 frames=86 typing=0 answer_hold_frames=86 x1
+§FILM_CUE beat=s1 t=133.375 frames=644 typing=122 answer_hold_frames=522 x1
+§FILM_CUE beat=s2 t=160.208 frames=517 typing=46 answer_hold_frames=471 x1
+§FILM_CUE beat=ch4 t=181.750 frames=86 typing=0 answer_hold_frames=86 x1
+§FILM_CUE beat=l1 t=185.333 frames=777 typing=98 answer_hold_frames=679 x1
+§FILM_CUE beat=l2 t=217.708 frames=548 typing=119 answer_hold_frames=429 x1
+§FILM_CUE beat=l3 t=240.542 frames=474 typing=0 answer_hold_frames=474 x1
+§FILM_CUE beat=ch5 t=260.292 frames=86 typing=0 answer_hold_frames=86 x1
+§FILM_CUE beat=c1 t=263.875 frames=570 typing=49 answer_hold_frames=521 x1
+§FILM_CUE beat=c2 t=287.625 frames=513 typing=103 answer_hold_frames=410 x1
+§FILM_CUE beat=c3 t=309.000 frames=544 typing=107 answer_hold_frames=437 x1
+§FILM_CUE beat=c5 t=331.667 frames=714 typing=51 answer_hold_frames=663 x1
+§FILM_CUE beat=aid t=361.417 frames=428 typing=48 answer_hold_frames=380 x1
+§FILM_CUE beat=roadmap t=379.250 frames=282 typing=0 answer_hold_frames=282 x1
+§FILM_CUE beat=close t=391.000 frames=432 typing=0 answer_hold_frames=432 x1
+§FILM_KEYS typed=800 returns=15
+§FILM_DONE dur=409.000 frames=9816 planned=9816

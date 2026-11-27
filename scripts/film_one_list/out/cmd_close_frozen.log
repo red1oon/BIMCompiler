@@ -1,0 +1,3 @@
+$ grep -n "FROZEN = \[" scripts/gen_manifest.js
+26:const FROZEN = ['archive/gallery.html'];
+§CMD_EXIT 0

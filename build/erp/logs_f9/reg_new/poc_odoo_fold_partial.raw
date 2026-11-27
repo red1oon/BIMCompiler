@@ -1,0 +1,28 @@
+
+══════════════════════════════════════════════════════════════════════════════
+═══ POC-ODOO-FOLD-PARTIAL — f7: matcher under a PARTIAL 3-way (P00012) ═══
+    scenario: PARTIAL — ordered 20, received 12 (backorder 8), billed 12
+══════════════════════════════════════════════════════════════════════════════
+
+   🟢 event 1 (confirm PO) committed — ops=1
+   🟢 event 2 (receive) committed — ops=2
+   🟢 event 3 (vendor bill) committed — ops=2
+   🟢 event 4 (post bill GL) committed — ops=1
+
+── effects vs the Odoo oracle (PARTIAL) ──
+   🟢 received qty reproduces oracle (partial) — mine=12 oracle=12
+   🟢 billed qty reproduces oracle (partial) — mine=12 oracle=12
+   🟢 AP balanced AND total == oracle bill total — ΣDR=1380.00 ΣCR=1380.00 oracle=1380.00
+   🟢 settlement leg receipt↔bill EXACT-matches (received==billed=12) — inv-pairs=1 matcherCalls=2
+   🟢 partial decomposes: matched(12) + FK-directed open(8) == ordered(20) = Odoo backorder — matched=12 open=8
+   🟢 order↔bill does NOT exact-match (20≠12) — the bound, correctly NOT forced — po-bill exact-pairs=0 (open handled FK-directed, not by the matcher)
+   🟢 replay rebuilds projection EXACTLY + stable — live=8096d01b A=8096d01b B=8096d01b
+
+§ODOO-FOLD-PARTIAL scenario=ordered:20/received:12/billed:12/open:8
+§ODOO-FOLD-PARTIAL verbs used=[CREATE_DOCUMENT,CREATE_LINE,MATCH,POST,SET_STATUS] newVerbs=[] matcherInvoked=2
+§ODOO-FOLD-PARTIAL decompose matched=12(exact-match leg) + open=8(FK-directed, §0.17) == ordered=20 agree=Y
+§ODOO-FINDINGS-PARTIAL f7-RESULT=HOLDS(partial-receipt folds: received==billed → exact MATCH on the settlement leg; ordered−received → FK-directed open remainder, NOT a matcher pairing — exactly the §0.17 split; newVerbs=[], no new matcher policy needed) f8-NEXT=deeper-partial-where-bill≠receipt(would need partial-QUANTITY matching — pair min(qtyL,qtyR), leave remainder — which the exact-qty greedy matcher does NOT carry; the honest next falsifier, untested here because Odoo bills received-qty by default)
+
+═══ VERDICT ═══
+§ODOO-FOLD-PARTIAL PASS (f7 HOLDS) — Odoo partial-receipt 3-way folds: exact-match settlement leg + FK-directed open remainder reproduce Odoo (received=12, billed=12, open=8); newVerbs=[]. Bound f8 (bill≠receipt → partial-qty matching) named, not hidden.
+exit=0

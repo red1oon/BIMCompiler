@@ -1,0 +1,28 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT intro cue=3.88 room=7.65 dur=6.73 -> DETAIL slack=+0.92 words=25
+§NARR_TONE intro#2 F YN rose=5.0st endDelta=+4.4st want=rise OK "And next time?"
+§NARR_FIT twin cue=12.13 room=14.03 dur=13.12 -> DETAIL slack=+0.91 words=39
+§NARR_FIT column cue=26.76 room=10.61 dur=9.72 -> DETAIL slack=+0.89 words=28
+§NARR_TONE column#0 F WH rose=0st endDelta=-1.9st want=fall OK "Where does this value come from?"
+§NARR_FIT where cue=37.97 room=7.86 dur=6.96 -> DETAIL slack=+0.90 words=24
+§NARR_TONE where#0 F WH rose=0st endDelta=-2.6st want=fall OK "And where is that in the source?"
+§NARR_FIT status cue=46.42 room=3.53 dur=2.64 -> DETAIL slack=+0.89 words=9
+§NARR_TONE status#0 F YN rose=5.0st endDelta=+1.5st want=rise OK "Is the test server running?"
+§NARR_FIT witness cue=50.55 room=7.61 dur=6.69 -> DETAIL slack=+0.92 words=24
+§NARR_FIT sheet cue=58.76 room=7.52 dur=6.63 -> DETAIL slack=+0.89 words=23
+§NARR_TONE sheet#0 F WH rose=0st endDelta=-5.6st want=fall OK "Where does a data model start?"
+§NARR_FIT diagram cue=66.88 room=8.74 dur=7.84 -> DETAIL slack=+0.90 words=26
+§NARR_FIT pack cue=76.22 room=7.73 dur=6.85 -> DETAIL slack=+0.88 words=20
+§NARR_TONE pack#0 F YN rose=5.0st endDelta=+2.1st want=rise OK "And for a legacy server?"
+§NARR_FIT twopack cue=84.55 room=8.73 dur=7.82 -> DETAIL slack=+0.91 words=24
+§NARR_FIT again cue=93.88 room=7.99 dur=7.10 -> DETAIL slack=+0.89 words=22
+§NARR_TONE again#0 F YN rose=5.0st endDelta=+3.9st want=rise OK "And if I run it again?"
+§NARR_FIT manual cue=102.47 room=9.06 dur=8.15 -> DETAIL slack=+0.91 words=25
+§NARR_TONE manual#0 F WH rose=0st endDelta=-0.8st want=fall OK "How was that done by hand?"
+§NARR_FIT twinlight cue=112.13 room=9.03 dur=8.14 -> DETAIL slack=+0.89 words=22
+§NARR_TONE twinlight#0 F YN rose=5.0st endDelta=+3.8st want=rise OK "And our twin?"
+§NARR_FIT claim cue=121.76 room=7.98 dur=7.08 -> DETAIL slack=+0.90 words=25
+§NARR_TONE claim#0 F WH rose=0st endDelta=-3.3st want=fall OK "Who else can type these lines?"
+§NARR_FIT close cue=130.34 room=7.82 dur=6.92 -> DETAIL slack=+0.90 words=23

@@ -1,0 +1,4 @@
+$ node scripts/gen_manifest.js --check 2>&1 | grep -E "MANIFEST_(FAIL|CHECK)" | cut -c1-260
+§MANIFEST_FAIL viewer/panels.js changed but viewer/viewer.html:910 still says ?v=cb4ecd9c; run: node scripts/bump.js viewer/panels.js --write
+§MANIFEST_CHECK apps=3 files=58 identical=58/58 sites=857 tag=726 asset=0 inline=47 lazy=84 precache=908 order_check=PASS deps_declared=265 unreviewed=0 source=viewer,erp,modeller written=0 verdict=FAIL
+§CMD_EXIT 1

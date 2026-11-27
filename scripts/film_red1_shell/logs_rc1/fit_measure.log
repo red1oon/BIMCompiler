@@ -1,0 +1,28 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT start cue=0.00 room=998.70 dur=4.11 -> DETAIL slack=+994.59 words=14
+§NARR_TONE start#0 F WH rose=0st endDelta=-5.7st want=fall OK "How do I start?"
+§NARR_FIT help cue=0.00 room=998.70 dur=4.38 -> DETAIL slack=+994.32 words=14
+§NARR_TONE help#0 F WH rose=0st endDelta=-5.5st want=fall OK "What words does it know?"
+§NARR_FIT cd cue=0.00 room=998.70 dur=4.57 -> DETAIL slack=+994.13 words=15
+§NARR_TONE cd#0 F YN rose=5.0st endDelta=+2.6st want=rise OK "And to go into a building?"
+§NARR_FIT count cue=0.00 room=998.70 dur=9.94 -> DETAIL slack=+988.76 words=26
+§NARR_TONE count#0 F WH rose=0st endDelta=-12.9st want=fall OK "How many elements?"
+§NARR_FIT clash cue=0.00 room=998.70 dur=13.23 -> DETAIL slack=+985.47 words=35
+§NARR_TONE clash#0 F YN rose=8.0st endDelta=+1.8st want=rise OK "Clashes, architecture against M E P?"
+§NARR_FIT ls cue=0.00 room=998.70 dur=9.31 -> DETAIL slack=+989.39 words=30
+§NARR_TONE ls#0 F WH rose=0st endDelta=-4.0st want=fall OK "Which of those touch a bath?"
+§NARR_FIT menu cue=0.00 room=998.70 dur=4.72 -> DETAIL slack=+993.98 words=15
+§NARR_TONE menu#0 F YN rose=8.0st endDelta=+1.4st want=rise OK "And if I forget the disciplines?"
+§NARR_FIT pick cue=0.00 room=998.70 dur=11.02 -> DETAIL slack=+987.68 words=24
+§NARR_TONE pick#0 F YN rose=5.0st endDelta=+1.0st want=rise OK "Pick with the arrow keys?"
+§NARR_FIT element cue=0.00 room=998.70 dur=6.38 -> DETAIL slack=+992.32 words=17
+§NARR_TONE element#0 F YN rose=11.0st endDelta=+0.7st want=rise OK "Can I go inside the building?"
+§NARR_FIT lsel cue=0.00 room=998.70 dur=6.73 -> DETAIL slack=+991.97 words=17
+§NARR_TONE lsel#0 F YN rose=5.0st endDelta=+4.4st want=rise OK "Find the bathrooms?"
+§NARR_FIT group cue=0.00 room=998.70 dur=9.34 -> DETAIL slack=+989.36 words=23
+§NARR_TONE group#0 F YN rose=5.0st endDelta=+5.2st want=rise OK "And across the storeys?"
+§NARR_FIT pwd cue=0.00 room=998.70 dur=4.74 -> DETAIL slack=+993.96 words=14
+§NARR_TONE pwd#0 F WH rose=0st endDelta=-1.9st want=fall OK "Where am I?"
+§NARR_FIT exit cue=0.00 room=998.70 dur=3.83 -> DETAIL slack=+994.87 words=13

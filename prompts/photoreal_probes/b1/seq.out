@@ -1,0 +1,25 @@
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1", "eleme
+
+seq1_fresh_367 exposure=0.383 exposure=2.331 stops=2.61 expStep=0 blown=0.23% compositeMean=172.51 appMean=172.48 
+{"result":{"comp":{"p5":102.2,"p25":145,"p50":170.3,"p75":225,"p95":249.2,"mean":176.6,"std":46.3,"ge250pct":4.08,"meanSat":0.1436},"app":{"p5":95.2,"p25":145.2,"p50":171.3,"p75":231.7,"p95":249.2,"mean":175.9,"std":49.5,"ge250pct":4.08,"meanSat":0.135},"exposure":2.3309,"toneMapping":4,"coveKey":"Hospital:288x105x342:848|2|21295.321|22727.273|Hospital:848|2:1274|0.85170,0.948","irKey":"","sceneChildren":4869,"hemiI":1.234,"ambI":0,"sunI":4.4}}
+
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1", "eleme
+
+seq1_fresh_100 exposure=0.383 exposure=22.887 stops=5.90 expStep=0 blown=6.96% compositeMean=127.04 appMean=133.69 
+{"result":{"comp":{"p5":46.7,"p25":78.3,"p50":95.8,"p75":187.7,"p95":255,"mean":127.6,"std":69,"ge250pct":7.64,"meanSat":0.0625},"app":{"p5":50,"p25":84.1,"p50":102.4,"p75":204.3,"p95":255,"mean":134.3,"std":71,"ge250pct":13.55,"meanSat":0.0621},"exposure":22.8866,"toneMapping":4,"coveKey":"Hospital:288x105x342:848|2|21295.321|22727.273|Hospital:848|2:1274|0.85170,0.948","irKey":"","sceneChildren":4869,"hemiI":1.234,"ambI":0,"sunI":4.4}}
+
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1", "eleme
+
+seq2_a_616 exposure=0.383 exposure=0.383 stops=0 expStep=0 blown=0% compositeMean=93.65 appMean=95.34 
+{"result":{"comp":{"p5":29.5,"p25":47,"p50":84.4,"p75":141,"p95":173.2,"mean":94.2,"std":50.1,"ge250pct":0,"meanSat":0.1222},"app":{"p5":25.4,"p25":45.5,"p50":86.4,"p75":147.8,"p95":179.4,"mean":95.9,"std":54.7,"ge250pct":0,"meanSat":0.1246},"exposure":0.3825,"toneMapping":4,"coveKey":"Hospital:288x105x342:848|2|21295.321|22727.273|Hospital:848|2:1274|0.85170,0.948","irKey":"","sceneChildren":4869,"hemiI":1.234,"ambI":0,"sunI":4.4}}
+
+seq2_b_698 exposure=0.383 exposure=37.219 stops=6.60 expStep=6.6 blown=0.04% compositeMean=120.15 appMean=127.93 
+{"result":{"comp":{"p5":71.4,"p25":103.6,"p50":118.4,"p75":137.9,"p95":185.4,"mean":121,"std":29.9,"ge250pct":0.04,"meanSat":0.0534},"app":{"p5":71.9,"p25":112.4,"p50":127.6,"p75":145,"p95":200.3,"mean":128.8,"std":33.1,"ge250pct":0.26,"meanSat":0.0562},"exposure":37.2189,"toneMapping":4,"coveKey":"Hospital:288x105x342:848|2|21295.321|22727.273|Hospital:848|2:1274|0.85170,0.948","irKey":"","sceneChildren":4869,"hemiI":1.234,"ambI":0,"sunI":4.4}}
+
+seq2_c_100 exposure=0.383 exposure=22.887 stops=5.90 expStep=-0.7 blown=6.8% compositeMean=129.91 appMean=137.09 
+{"result":{"comp":{"p5":50.4,"p25":81,"p50":98.1,"p75":196.7,"p95":255,"mean":130.5,"std":68.6,"ge250pct":7.24,"meanSat":0.0615},"app":{"p5":53.4,"p25":87.4,"p50":105.4,"p75":212.4,"p95":255,"mean":137.7,"std":70.4,"ge250pct":12.89,"meanSat":0.0612},"exposure":22.8866,"toneMapping":4,"coveKey":"Hospital:288x105x342:848|2|21295.321|22727.273|Hospital:848|2:1274|0.85170,0.948","irKey":"","sceneChildren":4869,"hemiI":1.234,"ambI":0,"sunI":4.4}}
+
+seq2_d_367 exposure=0.383 exposure=2.331 stops=2.61 expStep=-3.3 blown=0.02% compositeMean=177.94 appMean=178.12 
+{"result":{"comp":{"p5":106.6,"p25":153.6,"p50":178.9,"p75":221.8,"p95":248.7,"mean":181.4,"std":43.2,"ge250pct":2.97,"meanSat":0.1501},"app":{"p5":96,"p25":151.2,"p50":176.2,"p75":227,"p95":248.7,"mean":181,"std":47,"ge250pct":2.97,"meanSat":0.1403},"exposure":2.3309,"toneMapping":4,"coveKey":"Hospital:288x105x342:848|2|21295.321|22727.273|Hospital:848|2:1274|0.85170,0.948","irKey":"","sceneChildren":4869,"hemiI":1.234,"ambI":0,"sunI":4.4}}
+
+== seq done 08:09:07

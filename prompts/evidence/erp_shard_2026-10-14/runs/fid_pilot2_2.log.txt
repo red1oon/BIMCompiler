@@ -1,0 +1,2 @@
+§FIDELITY start part=2/4 tables=231 of 925 sqlite=pilot2.db pgdb=idempiere_pilot
+§FIDELITY_VERDICT part=2/4 PASS tables=231 judgedTables=130 judgedRows=98728 totalSec=23s

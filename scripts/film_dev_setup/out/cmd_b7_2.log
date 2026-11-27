@@ -1,0 +1,3 @@
+$ sed -i '/^\/\/ PROVES:/a // PROVES: modeller/missing_file.js' modeller/tests/witness_clipboard.js
+
+§CMD_EXIT 0

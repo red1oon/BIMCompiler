@@ -1,0 +1,12 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT open cue=6.63 room=5.78 dur=4.89 -> DETAIL slack=+0.89 words=16
+§NARR_FIT convert cue=14.47 room=4.61 dur=3.69 -> DETAIL slack=+0.92 words=10
+§NARR_FIT addbay_high cue=21.47 room=6.77 dur=5.86 -> DETAIL slack=+0.91 words=21
+§NARR_FIT undo cue=30.18 room=5.06 dur=4.15 -> DETAIL slack=+0.91 words=11
+§NARR_FIT addbay_low cue=37.59 room=5.78 dur=4.89 -> DETAIL slack=+0.89 words=17
+§NARR_TONE addbay_low#0 F YN rose=5.0st endDelta=+3.8st want=rise OK "And at the other end?"
+§NARR_FIT refuse cue=45.93 room=4.19 dur=3.31 -> DETAIL slack=+0.88 words=10
+§NARR_TONE refuse#0 F WH rose=0st endDelta=-1.2st want=fall OK "Which end is sideways?"
+§NARR_FIT close cue=50.72 room=7.44 dur=6.56 -> DETAIL slack=+0.88 words=20

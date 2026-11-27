@@ -1,0 +1,25 @@
+═══ W-UPS-ONE-DOCACTION — E1 COMPILE: one DocAction executor per document (TEAMWORK_FRAMEWORK FL-7, §38.1) ═══
+§U1 CONTROL
+   🔴 P1 + the processor's order with ONE executor (HQ role 102, CO) compiles; no plan error — ok=undefined planErrors=undefined
+   🔴 the compiled plan CARRIES the executor on that row (what E2/E3 will read)
+§U2 DUAL
+   🔴 a second row giving C_Order another executor (the station) -> dual-docaction, the plan does not compile
+§U3 STATION
+   🔴 the station's UP declaration given a DocAction by its own role -> station-docaction
+§U4 AUTHOR
+   🔴 executor "author" on a UP declaration -> docaction-author-not-mesh
+/home/red1/bim-compiler/scripts/witness_ups_docaction.js:53
+  A('U4', !c.authorMesh.planErrors.length && c.authorMesh.ok === true, 'executor "author" on a BOTH + space (peer team) row compiles — the device that authored the document is its one executor', JSON.stringify(c.authorMesh.planErrors));
+                                   ^
+
+TypeError: Cannot read properties of undefined (reading 'length')
+    at arms (/home/red1/bim-compiler/scripts/witness_ups_docaction.js:53:36)
+    at Object.<anonymous> (/home/red1/bim-compiler/scripts/witness_ups_docaction.js:63:12)
+    at Module._compile (node:internal/modules/cjs/loader:1356:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
+    at Module.load (node:internal/modules/cjs/loader:1197:32)
+    at Module._load (node:internal/modules/cjs/loader:1013:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:128:12)
+    at node:internal/main/run_main_module:28:49
+
+Node.js v18.19.1

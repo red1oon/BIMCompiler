@@ -1,0 +1,65 @@
+§BUS-LOAD erp=/tmp/wt-hq-main/erp mutant=none seedPatch ok=3803 failed=3 modelClasses=47 busApi=subscribe:Y,unsubscribe:Y,dispatch:Y,deliverObserved:Y,topicOf:Y
+§BUS-ORDER-SPEC legacy order for one table+topic: global validators -> client validators(po client only) -> [script validators: absent] -> handlers; first validator error stops; handler errors collected+reversed+joined <br>
+  §BUS-CHECK case=ORDER key=api OK rule="the bus API exists: subscribe, unsubscribe, dispatch, topicOf"
+  §BUS-CHECK case=ORDER key=topics OK rule="every probed timing maps to the legacy topic string"
+  §BUS-CHECK case=ORDER key=order OK rule="fire order == [VG, VC, H1, H2] (VX other client and Hother other table never run)"
+  §BUS-CHECK case=ORDER key=dispatch OK rule="dispatch(topic) = the same dispatcher fireHooks(timing) uses"
+  §BUS-CHECK case=ORDER key=stop-global OK rule="error returned, client validator and handler never ran"
+  §BUS-CHECK case=ORDER key=stop-client OK rule="error returned, handler never ran"
+  §BUS-CHECK case=ORDER key=collect OK rule="all three handlers ran; error === "err-b<br>err-a<br>""
+  §BUS-CHECK case=ORDER key=collect-throw OK rule="a throwing handler is an error (collected), the next handler still runs, no crash escapes"
+  §BUS-CHECK case=ORDER key=wildcard OK rule="'*' ran for 2 tables, unsubscribe returned 1 and it ran no more"
+  §BUS-CHECK case=ORDER key=doc OK rule="doc timing: validator then handler"
+§BUS-ORDER-STAGE3 script-validator (AD_Table_ScriptValidator) stage = BUILT in erp/ad_rule.js (TEAM_REPLICATION_PLUGIN_STUDY §10.8, witnessed by witness_script_validator.js); this witness has no ad_rule rows, so the order above is judged with that stage empty
+  §BUS-CHECK case=REPLICA key=api OK rule="ML.saveReplica and ML.removeReplica are functions"
+  §BUS-CHECK case=REPLICA key=ordinary OK rule="sequence beforeNew,BEFORE_SAVE,afterNew,AFTER_SAVE; no afterNewReplication"
+  §BUS-CHECK case=REPLICA key=replica-new OK rule="sequence beforeNew*,BEFORE_SAVE,afterNewR*  (the BEFORE timings fire for a replica too, flagged isReplication; no afterNew, no AFTER_SAVE)"
+  §BUS-CHECK case=REPLICA key=replica-change OK rule="replica: afterChangeR* and not afterChange/AFTER_SAVE"
+  §BUS-CHECK case=REPLICA key=ordinary-change OK rule="ordinary: afterChange + AFTER_SAVE and not afterChangeR"
+  §BUS-CHECK case=REPLICA key=replica-delete OK rule="replica: beforeDeleteR* and not beforeDelete"
+  §BUS-CHECK case=REPLICA key=ordinary-delete OK rule="ordinary: beforeDelete and not beforeDeleteR; afterDelete in both"
+  §BUS-CHECK case=REPLICA key=key OK rule="replica op carries c_uom_id=9123456 and the received uu; ordinary op has the placeholder key, never 9123457"
+  §BUS-CHECK case=REPLICA key=key-committed OK rule="after the commit the row is stored under the received key"
+  §BUS-CHECK case=REPLICA key=flag-reset OK rule="first save afterNewR*, second save afterChange (not a replica)"
+  §BUS-CHECK case=REPLICA key=fl8 OK rule="chain ran 0x for the station save, 1x for the replica; the replica group carries its local chain row (2 ops)"
+  §BUS-CHECK case=REPLICA key=model-class OK rule="M.beforeSave and M.afterSave ran on the replica save"
+  §BUS-CHECK case=OBSERVE key=api OK rule="MV.deliverObserved and ML.deliverObserved are functions"
+  §BUS-CHECK case=OBSERVE key=moment OK rule="nothing delivered by run() itself; one delivery after commit sees the committed row; the second call delivers 0"
+  §BUS-CHECK case=OBSERVE key=ids OK rule="observer saw the numeric committed id and it exists in the table"
+  §BUS-CHECK case=OBSERVE key=cannot-veto OK rule="save ok with its op, all 3 observers ran, 1 logged throw, delivery reports errors>=1 and still delivered"
+  §BUS-CHECK case=OBSERVE key=gate-topic-flag OK rule="not run inside the save (0), save ok, run once after commit"
+  §BUS-CHECK case=OBSERVE key=rollback OK rule="group refused -> 0 delivered; savepoint rolled back -> 0; gate refused -> 0; observer never ran"
+  §BUS-CHECK case=OBSERVE key=failed-save-in-ok-group OK rule="the refused save was reported not-ok, the group committed, observers (post + observe-flag afterNew) saw only BUSW 40"
+  §BUS-CHECK case=OBSERVE key=group OK rule="3 events in one batch: create,create,update; one shared group id; group size 3"
+  §BUS-CHECK case=OBSERVE key=delete OK rule="nothing before commit; one postDelete with the row name after"
+  §BUS-CHECK case=OBSERVE key=readonly OK rule="write attempt threw (strict mode) and the stored name is intact"
+  §BUS-CHECK case=OBSERVE key=replica-observe OK rule="nothing in-save; after commit post:true and replicaObs:true"
+  §BUS-CHECK case=OBSERVE key=no-cost OK rule="run() result carries an empty observed list"
+§BUS-COMPAT installers=13 tablesWithHooks=14 cells=18 hooks=71 outcomes={"ok":16,"blocked":2,"derived":3} identical=18 of 18
+  §BUS-CHECK case=COMPAT key=population OK rule="hooks exist to judge (not vacuous): >=10 tables, >=20 hooks"
+  §BUS-CHECK case=COMPAT key=inventory OK rule="no registration was dropped by the adapter: >= the pre-bus main inventory (14 tables, 18 cells, 71 hooks, measured on the unmodified module)"
+  §BUS-CHECK case=COMPAT key=identical OK rule="result object AND info.derived identical to the original loop in ALL 18 cells"
+  §BUS-CHECK case=COMPAT key=varied OK rule="the comparison is not trivially all-ok: at least one cell blocked and one wrote derived values"
+  §BUS-CHECK case=COMPAT key=topics OK rule="every timing carrying a hook today maps to a topic (otherwise unreachable by the bus)"
+  §BUS-CHECK case=COMPAT key=count OK rule="registeredCount equals the number of REGISTRY entries"
+  §BUS-CHECK case=COMPAT key=roundtrip OK rule="register -> blocks (case-insensitive table) -> unregister returns 1 -> no longer blocks; count restored"
+  §BUS-CHECK case=COMPAT key=save-path OK rule="a hook-bearing table still goes through ML.save and returns a verdict (ok or a refusal text) without throwing"
+  §BUS-CHECK case=PLUGIN key=ctx-events OK rule="start adds 2 subscriptions and both fire; stop removes both; afterwards nothing fires"
+  §BUS-CHECK case=COMMITTED key=all-rows OK rule="a * subscriber gets every committed row of the group, once, in order (incl. raw-write and SET_STATUS rows), with the sidecar read handle"
+  §BUS-CHECK case=COMMITTED key=table-filter OK rule="a table subscriber gets only the rows of its table"
+  §BUS-CHECK case=COMMITTED key=awaited-in-order OK rule="subscribers run in registration order, each AWAITED; delivery resolves after the last (the order guarantee of the old commit observer)"
+  §BUS-CHECK case=COMMITTED key=cannot-stop OK rule="a throwing and a rejecting subscriber are logged and do not stop the next subscriber or the persist (delivery never rejects)"
+  §BUS-CHECK case=COMMITTED key=empty-and-frozen OK rule="an empty group calls nobody; a subscriber cannot change the committed rows (frozen copies)"
+  §BUS-CHECK case=COMMITTED key=observe-class OK rule="twin/trx/afterCommit is an OBSERVE topic (an observe-granted bundle may hold it; it can never veto)"
+  §BUS-CHECK case=COMMITTED key=host-seam OK rule="crud_overlay has no Team-named commit observer any more (_teamPush deleted) and _sidePersist delivers through the bus"
+§BUS-MEASURE-6 tablesWithBeforeValidators=14 alsoModelBeforeSave=6 [c_invoiceline,c_order,c_invoice,c_payment,m_movement,m_requisition] namedInStudy(6)=["c_order","c_invoice","c_payment","m_movement"] => 4 of 6 study-named tables have BOTH homes; dynamic one-save probe both-fired=6 of 6 detail={"c_invoiceline":{"M":true,"V":true,"validators":2,"saved":true},"c_order":{"M":true,"V":true,"validators":15,"saved":true},"c_invoice":{"M":true,"V":true,"validators":9,"saved":true},"c_payment":{"M":true,"V":true,"validators":10,"saved":true},"m_movement":{"M":true,"V":true,"validators":1,"saved":true},"m_requisition":{"M":true,"V":true,"validators":1,"saved":true}}
+  §BUS-CHECK case=MEASURE6 key=population OK rule="the measurement judged tables (not vacuous)"
+§BUS-ORDER verdict=PASS judged=10 failed=0
+§BUS-REPLICA verdict=PASS judged=12 failed=0
+§BUS-OBSERVE verdict=PASS judged=12 failed=0
+§BUS-COMPAT verdict=PASS judged=8 failed=0
+§BUS-PLUGIN verdict=PASS judged=1 failed=0
+§BUS-COMMITTED verdict=PASS judged=7 failed=0
+§BUS-MEASURE6 verdict=PASS judged=1 failed=0
+§BUS-RESULT verdict=PASS judged=51 failed=0 failedCases=[]
+exit=0

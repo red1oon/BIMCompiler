@@ -1,0 +1,2 @@
+$ find . -name '*.java' -not -path '*/target/*' -print0 | xargs -0 cat | wc -l
+1427147

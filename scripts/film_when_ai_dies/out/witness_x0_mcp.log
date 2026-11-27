@@ -1,0 +1,19 @@
+  PASS initialize → the server names itself and offers tools ({"name":"x0-facts","version":"0.1.0"}, protocol 2025-06-18)
+  PASS tools/list → 8 tools, each with a description and an input schema
+  PASS where_is_field_set("BARE_METAL_PBR") → viewer/streaming.js:769, and that line mentions the field
+  PASS a phantom, given with its object prefix → says PHANTOM, offers no place
+  PASS red control: a made-up field → "not in the index", no place
+  PASS what_is_tag (given without the §) → spec places and the code that prints it (bim-compiler not found: its specs are named as not searched)
+  PASS red control: a made-up tag → "no spec found"
+  PASS how_is_file_loaded: a page script → start-up with bytes; a dev script → not loaded at start; a missing file → says so
+  PASS cost_if_deployed → one §DEPLOY_COST line per app (3)
+  PASS last_logged_value → counts provable and hidden values, and names how many logs were ignored as unstamped (viewer/schedule_gate.js: 10 provable value(s), 0 hidden (stamped logs: 28, unstamped and i)
+  PASS context_for_file → the lib's own block (header and load sections identical), field and tag sections answered from the indexes; a missing file says so
+  PASS where_is_field_used → counts and write sites for a real field (APP.db: 14 write site(s), 810 other read site(s)); a made-up field says so
+  PASS ship_check → the three steps and a verdict (§SHIP_CHECK verdict=PASS steps=3)
+  PASS red control: an unknown tool → an error result, not a crash
+  PASS red control: a line that is not JSON → a JSON-RPC parse error, and the server still answers the next request
+  PASS an unsupported method → "Method not found", not silence
+  FAIL the server imports no network module (0), never calls the one network function of the lib, and no other lib module imports one (1)
+  PASS nothing but protocol messages on stdout (0 stray lines)
+§X0_MCP tools=8 init=Y field=Y phantom=Y unknown=Y tag=Y fake_tag=Y cost=Y loaded=Y lens=Y context=Y used=Y check=Y bad_tool_error=Y bad_json_survives=Y network_modules=1 verdict=FAIL

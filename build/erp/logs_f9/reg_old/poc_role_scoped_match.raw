@@ -1,0 +1,20 @@
+═══ POC — role-scoped, policy-tiebroken GENERIC matcher (engine on sql.js) ═══
+
+Fixture: BPartner 100, product 1, qty 10 — receipts R1(org1000,Jan1) R2(org2000,Jan2); invoice I1(org1000). AMBIGUOUS.
+
+── (1) AMBIGUITY: pluggable ordering policy picks the right candidate ──
+   🟢 FIFO picks earliest receipt R1 — chose receipt id=1 (spec: 1)
+   🟢 LIFO picks latest receipt R2 — chose receipt id=2 (spec: 2)
+   🟢 policy is a real knob (FIFO≠LIFO, deterministic) — FIFO=1 LIFO=2
+
+── (2) ROLE SCOPE: org-access narrows the matcher partition (§0.8) ──
+   🟢 LIFO + role-scope(org 1000) picks R1 (R2 invisible) — chose receipt id=1 (spec: 1 — access overrides policy)
+   🟢 role-scope(org 2000) sees no in-scope invoice → no match — chose=null (spec: null)
+
+── (3) GUARD: engine.evalGuard runs a predicate over the same sql.js db ──
+   🟢 evalGuard resolves @bp@ + runs under sql.js — rows=2
+
+═══ VERDICT ═══
+§POCMATCH PASS — one engine: match + ordering-policy + role-scope + guard, all via opts/data
+§POCMATCH note: ambiguity oracle = FIFO/LIFO SPEC (synthetic); real-data match was 18/18 vs iDempiere oracle (poc_sales_to_ship)
+exit=0

@@ -1,0 +1,33 @@
+§RED1 session tty=true journal=/tmp/red1film_gv8kqrgg/journal.jsonl verbs=69 words=23
+§RED1 help topic="" words=23
+§RED1 warm start building=Duplex pid=2250343 state=/tmp/red1-2250312-viewer.json
+§RED1 typed n=2 where="red1 Duplex>"
+§DOOR request=d-mwhlqbee-2250312-1 actor=human verb=viewer.counts status=ok ms=25054
+§RED1 line verb=viewer.counts status=ok request=d-mwhlqbee-2250312-1 line="viewer.counts building=Duplex by=discipline"
+§RED1 typed n=3 where="red1 Duplex>"
+§DOOR request=d-mwhlqx12-2250312-2 actor=human verb=viewer.clashes status=ok ms=1965
+§RED1 line verb=viewer.clashes status=ok request=d-mwhlqx12-2250312-2 line="viewer.clashes building=Duplex discA=ARC discB=MEP rows=all"
+§RED1 draw funnel lines=7 value={"discA":"ARC","discB":"MEP","toleranceM":0.025,"bboxOverlaps":393,"rtree":true,"meshClashes":291,"contained":156,"unknown":0,"obbRejected":76,"triangleClear":26,"cleared":102}
+§RED1 typed n=4 where="red1 Duplex>"
+§RED1 held line="viewer.clashes building=Duplex discA=ARC discB=MEP rows=all"
+§RED1 match glob="*Bath*" rows=4 of=393
+§RED1 typed n=5 where="red1 Duplex>"
+§RED1 held line="viewer.counts building=Duplex by=discipline"
+§RED1 typed n=6 where="red1 Duplex>"
+§RED1 held line="viewer.counts building=Duplex by=discipline"
+§RED1 typed n=7 where="red1 Duplex>"
+§DOOR request=d-mwhlr3v5-2250312-3 actor=human verb=viewer.clashes status=ok ms=786
+§RED1 line verb=viewer.clashes status=ok request=d-mwhlr3v5-2250312-3 line="viewer.clashes building=Duplex discA=ARC discB=STR rows=all"
+§RED1 draw funnel lines=7 value={"discA":"ARC","discB":"STR","toleranceM":0.025,"bboxOverlaps":45,"rtree":true,"meshClashes":18,"contained":2,"unknown":0,"obbRejected":19,"triangleClear":8,"cleared":27}
+§RED1 typed n=8 where="red1 Duplex>"
+§DOOR request=d-mwhlr6nq-2250312-4 actor=human verb=object.describe status=ok ms=488
+§RED1 line verb=object.describe status=ok request=d-mwhlr6nq-2250312-4 line="object.describe building=Duplex kind=Element"
+§RED1 typed n=9 where="red1 Duplex/Element>"
+§DOOR request=d-mwhlr8tf-2250312-5 actor=human verb=object.list status=ok ms=631
+§RED1 line verb=object.list status=ok request=d-mwhlr8tf-2250312-5 line="object.list building=Duplex kind=Element columns=elements_meta_uu,guid,ifc_class,element_name limit=20 element_name=*bath*"
+§RED1 typed n=10 where="red1 Duplex/Element>"
+§DOOR request=d-mwhlrat5-2250312-6 actor=human verb=object.group status=ok ms=559
+§RED1 line verb=object.group status=ok request=d-mwhlrat5-2250312-6 line="object.group building=Duplex kind=Element by=storey"
+§RED1 typed n=11 where="red1 Duplex/Element>"
+§RED1 typed n=12 where="red1 Duplex/Element>"
+§RED1 session end lines=13

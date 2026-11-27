@@ -1,0 +1,5 @@
+out/
+out_*/
+build_*.log
+langs.txt
+langs*.txt

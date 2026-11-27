@@ -1,0 +1,14 @@
+§X0_OFFLINE feature="references" entry=lib/app_refs.js reaches=2 files net_doors=0
+§X0_OFFLINE feature="field hover and F12" entry=lib/app_surface_index.js reaches=1 files net_doors=0
+§X0_OFFLINE feature="tag hover" entry=lib/tag_index.js reaches=1 files net_doors=0
+§X0_OFFLINE feature="value beside the code" entry=lib/lens_index.js reaches=2 files net_doors=0
+§X0_OFFLINE feature="purity warning" entry=core_pure.js(repo scripts/lib) reaches=1 files net_doors=0
+§X0_OFFLINE feature="context for a file" entry=lib/file_context.js reaches=5 files net_doors=0
+§X0_OFFLINE glue file=extension.js net_doors=0
+§X0_OFFLINE feature="Fetch back" (Run & Ship) entry=lib/ship.js net_doors=3 lib/ship.js:12 require('https') in (top level)() | lib/ship.js:13 require('http') in (top level)() | lib/ship.js:204 'gh' in deployMain()
+§X0_OFFLINE feature="Deploy main now" (Run & Ship) entry=lib/ship.js net_doors=3 lib/ship.js:12 require('https') in (top level)() | lib/ship.js:13 require('http') in (top level)() | lib/ship.js:204 'gh' in deployMain()
+§X0_OFFLINE feature="memory of the pages" (Run & Ship) entry=lib/heap_impact.js net_doors=0 
+§X0_OFFLINE local_listener file=lib/heap_impact.js 17 require('http') | 50 http.createServer() (a server on 127.0.0.1 for the headless page run: it cannot leave the machine)
+§X0_OFFLINE url_literals {"lib/heap_impact.js":["127.0.0.1"],"lib/ship.js":["cli.github.com","localhost"]}
+§X0_OFFLINE red_control file=lib/tag_index.js planted=fetch() counted=Y doors_before=0 doors_after=1
+§X0_OFFLINE files=16 parsed=16 understanding_features=6 understanding_features_net=0 ship_features=3 ship_features_net=6 glue_net=0 red_control=DETECTED scanner_blind=N verdict=PASS

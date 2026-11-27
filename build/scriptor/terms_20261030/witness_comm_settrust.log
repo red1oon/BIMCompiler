@@ -1,0 +1,30 @@
+§SETTRUST_START glue=/tmp/ootb_main_n4c37d engine=build/comm
+§V1 a set published under [K0,K1], then K0 is dropped
+§OP_VERSIONS_LOADED v1 (J.2 amended: signed declarative upcasters, parking, min_v, provisional hash)
+§OPV_SET_LOADED op=CRUD_CREATE steps=1->2 signer=[object Object]
+§OPV_SET_LOADED op=CRUD_CREATE steps=1->2 signer=[object Object]
+   🟢 V1 precondition: device A loaded S0 (signed by K0) under [K0,K1]; the rotation to [K1,K2] is MERGED — A loaded=1 rotation=MERGED:policy
+   🟢 V1 a FRESH device adopting after the rotation (its trust list is now [K1,K2]) still loads S0 — the set is judged by the list it was published under — C loaded=1 §TEAM_VERSIONS_SET op=CRUD_CREATE ok
+   🟢 V1 the policy in force names the list each set was published under (setTrust) — 1 set(s)
+§V2 a K0-signed set published AFTER K0 was dropped
+§OPV_SET_LOADED op=CRUD_CREATE steps=1->2 signer=[object Object]
+§OPV_SET_REFUSED untrusted-signer op=CRUD_UPDATE
+§OPV_SET_REFUSED untrusted-signer op=CRUD_UPDATE
+   🟢 V2 a fresh device after that POLICY: S0 loads, S1 is refused untrusted-signer — D loaded=1 §TEAM_VERSIONS_SET op=CRUD_CREATE ok | §TEAM_VERSIONS_SET op=CRUD_UPDATE refused:untrusted-signer
+   🟢 V2 the OLD device refuses S1 too (same verdict on both) — A newly loaded=0 §TEAM_VERSIONS_SET op=CRUD_UPDATE refused:untrusted-signer
+§V3 one POLICY rotates [K1,K2] -> [K2,K3] AND carries S2 signed by K1
+§OPV_SET_LOADED op=CRUD_CREATE steps=1->2 signer=[object Object]
+§OPV_SET_REFUSED untrusted-signer op=CRUD_UPDATE
+§OPV_SET_LOADED op=CRUD_DELETE steps=1->2 signer=[object Object]
+   🟢 V3 MERGED; a fresh device on [K2,K3] loads S0 and S2 (S2 was published under [K1,K2]) and refuses S1 — MERGED loaded=2 §TEAM_VERSIONS_SET op=CRUD_CREATE ok | §TEAM_VERSIONS_SET op=CRUD_UPDATE refused:untrusted-signer | §TEAM_VERSIONS_SET op=CRUD_DELETE ok
+   §V3_REVERSE ingested=6 results={"RECEIVED":6} roster.ok=true
+   🟢 V3 a device ingesting the same ops in reverse order reaches the same setTrust — 3 sets, equal=true
+§V4 deployment-shipped sets (not in the log) — unchanged
+§OPV_SET_LOADED op=CRUD_CREATE steps=1->2 signer=[object Object]
+§OPV_SET_REFUSED untrusted-signer op=CRUD_CREATE
+   🟢 V4 a shipped set is judged by the deployment list, as before (K0 list: ok; K2 list: refused) — §TEAM_VERSIONS_SET op=CRUD_CREATE ok | §TEAM_VERSIONS_SET op=CRUD_CREATE refused:untrusted-signer
+§SETTRUST_ARMS red=none judged=8
+   🟢 mutant setTrust never recorded -> red=V1,V2,V3 (expected V1)
+   🟢 mutant recorded AFTER the POLICY's own rotation -> red=V3 (expected V3)
+   🟢 mutant a later POLICY carrying the same set overwrites its list -> red=V2,V3 (expected V2)
+§SETTRUST_VERDICT PASS judged=8 fails=0 mutants=3/3

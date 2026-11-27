@@ -1,0 +1,18 @@
+§ERPNEW_TWIN twin order=50000 header_cols=94 line_cols=61
+§ERPNEW_TWIN legacy header columns sent: M_PriceList_ID,M_Warehouse_ID,C_BPartner_ID,C_BPartner_Location_ID,Bill_BPartner_ID,Bill_Location_ID,C_DocTypeTarget_ID,DateOrdered,DateAcct
+§ERPNEW_TWIN legacy order=50981 id=1009899
+§ERPNEW_TWIN HEAD DIFF amountrefunded twin=0 legacy=
+§ERPNEW_TWIN HEAD DIFF amounttendered twin=0 legacy=
+§ERPNEW_TWIN HEAD DIFF c_conversiontype_id twin=114 legacy=
+§ERPNEW_TWIN HEAD DIFF copyfrom twin=N legacy=
+§ERPNEW_TWIN HEAD DIFF docaction twin=CO legacy=PR
+§ERPNEW_TWIN HEAD DIFF invoicerule twin=D legacy=I
+§ERPNEW_TWIN HEAD DIFF isdiscountprinted twin=Y legacy=N
+§ERPNEW_TWIN HEAD DIFF processedon twin=0 legacy=
+§ERPNEW_TWIN HEAD DIFF shippingrateinquiry twin=N legacy=
+§ERPNEW_TWIN HEAD DIFF volume twin=0 legacy=
+§ERPNEW_TWIN HEAD DIFF weight twin=0 legacy=
+§ERPNEW_TWIN LINE DIFF pricecost twin=0 legacy=
+§ERPNEW_TWIN LINE DIFF rramt twin=0 legacy=
+§ERPNEW_TWIN DOCNO twin=50000 legacy=50981 format_MATCH
+§WITNESS_ERP_NEW_TWIN cells_match=119 diffs=13 verdict=FINDINGS

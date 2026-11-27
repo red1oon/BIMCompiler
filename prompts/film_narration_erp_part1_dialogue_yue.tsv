@@ -1,0 +1,7 @@
+open	0.00	12.90	§ERP_FILM_FACT seedMiB=25.9 · boot db=network · tenants=7 [System,GardenWorld,Odoo,iDempiere,SAP Flights,Oracle Scott,Dynamics Cronus]	F: 呢個就係ERP？	F: 呢個就係ERP？ | M: 係呀，成個系統直接載入瀏覽器，下載一次就得，大約二十六MB。 | F: 咁呢啲呢？ | M: 七間示範公司。GardenWorld、Odoo、SAP Flights……
+login	12.90	23.11	§ERP_FILM_FACT role=System Administrator · 2 role(s) · menu groups=41 leaves=195	F: 點樣登入？	F: 點樣登入？ | M: 揀公司、用戶、角色，同iDempiere一樣。 | F: 系統管理員？ | M: 啱，咁就可以開一間全新嘅公司。
+menu	23.11	28.51	§ERP_FILM_FACT menuPath=System Admin > Tenant Rules > Initial Tenant Setup	M: 初始租戶設定。	F: 喺邊度開始？ | M: 系統管理，租戶規則……初始租戶設定。
+form	28.51	35.91	§ERP_FILM_FACT name=FirstCo admin=owner · currencyOptions=163 · picked MYR	F: 就叫佢FirstCo啦。	F: 就叫佢FirstCo啦。 | M: 管理員係owner，貨幣揀……令吉。 | F: 一百六十三種揀一種！
+create	35.91	38.48	§W-GENESIS-SYSADMIN-LIVE created client=17 rows=515	F: 建立！	F: 好……建立！
+facts	38.48	53.79	§ERP_FILM_FACT accounts=311 periods=12 fiscalYear=2026 docTypes=42 acctSchemaCcy=MYR priceListCcy=MYR · rows=515	M: 搞掂！成間公司。	M: 搞掂！五百一十五條記錄，成間公司。 | F: 入面有啲咩？ | M: 三百一十一個科目，二零二六年十二個會計期，四十二種單據類型。 | F: 啲數用令吉記？ | M: 係呀，價目表都係令吉。
+enter	53.79	61.19	§ERP_FILM_FACT enterUsers=owner	M: 進入FirstCo。	F: 可以入去未？ | M: 進入FirstCo……owner用戶已經準備好登入。 | F: 下一步，客戶同產品！

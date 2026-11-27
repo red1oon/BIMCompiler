@@ -23,8 +23,9 @@ Items 1–4 are the true low-hanging fruit: no core code, fully parallel.
 
 ## Flow
 
-Fork → branch `add-<thing>` → one small change → run the area's witness and paste the `§`
-log (or show data loading) → open a PR with "what + source." No CLA, no ceremony.
+**Open an issue on the tracker first** (what, how to reproduce, the source) → fork → branch `add-<thing>` →
+one small change → run the area's witness and paste the `§` log (or show data loading) → open a PR with
+"what + source" and `Fixes #<issue>`. No CLA. Full flow: [Developer Guide §9](docs/DeveloperGuide.md).
 
 ## Avoid
 

@@ -1,0 +1,14 @@
+
+══ POC-IDMP-FRAME-FIT — frozen engine on the MIGRATED iDempiere tenant (13-idempiere.db, Client 13) ══
+
+   migrated tenant: AD_Client=iDempiere(13)  doc=C_Order id=1300100 → invoice 1300100 (basis=invoice)
+   derived journal:
+     acct 1300518 12110 Accounts Receivable - Trade  DR 50.35  CR 0.00
+     acct 1300596 21610 Tax due  DR 0.00  CR 2.85
+     acct 1300758 41000 Trade Revenue  DR 0.00  CR 47.50
+§FRAME-FIT client=13 doc=C_Order postingDoc=true coverage=complete balanced=Y oracle=fact_acct(3) maxDiff=0c verdict=ORACLE-EQUIVALENT
+§FALSIFIER dropped c_bp_customer_acct(bp=1300112) → absent=[{BPartner.Receivable}] balanced=N loadBearing=Y
+
+§IDMP-FRAME-FIT PASS
+
+exit=0

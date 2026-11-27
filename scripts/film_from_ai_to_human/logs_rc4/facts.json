@@ -1,0 +1,357 @@
+{
+ "made": "2026-11-10T22:38:55.445Z",
+ "ootb": "4598d52b",
+ "lines": {
+  "status": {
+   "line": "legacy.status",
+   "status": "ok"
+  },
+  "new_order": {
+   "line": "erp.new kind=Order issotrx=Y c_doctypetarget_id=132 c_bpartner_id=112 salesrep_id=101",
+   "status": "ok"
+  },
+  "new_line": {
+   "line": "erp.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2",
+   "status": "ok"
+  },
+  "compare": {
+   "line": "erp.compare kind=Order number=50000 legacy=50981",
+   "status": "ok"
+  },
+  "column": {
+   "line": "erp.column kind=Order column=C_ConversionType_ID",
+   "status": "ok"
+  },
+  "where": {
+   "line": "idempiere.where symbol=InvoiceRule in=CalloutOrder limit=3",
+   "status": "ok"
+  },
+  "witness": {
+   "line": "witness.run name=door_help",
+   "status": "ok"
+  },
+  "pack": {
+   "line": "erp.pack book=erp/plugins/models/BIM_Document.xlsx version=1.0.0 out=plugin/META-INF",
+   "status": "ok"
+  },
+  "pack_again": {
+   "line": "erp.pack book=erp/plugins/models/BIM_Document.xlsx version=1.0.0 out=plugin/META-INF",
+   "status": "ok"
+  },
+  "hand_Reference": {
+   "line": "legacy.query table=ad_window name=\"Reference\" columns=name",
+   "status": "ok"
+  },
+  "hand_Table_and_Column": {
+   "line": "legacy.query table=ad_window name=\"Table and Column\" columns=name",
+   "status": "ok"
+  },
+  "hand_Window_Tab_and_Field": {
+   "line": "legacy.query table=ad_window name=\"Window, Tab and Field\" columns=name",
+   "status": "ok"
+  },
+  "hand_Menu": {
+   "line": "legacy.query table=ad_window name=\"Menu\" columns=name",
+   "status": "ok"
+  },
+  "hand_Report_and_Process": {
+   "line": "legacy.query table=ad_window name=\"Report and Process\" columns=name",
+   "status": "ok"
+  },
+  "hand_PackOut": {
+   "line": "legacy.query table=ad_process name=\"PackOut\" columns=name",
+   "status": "ok"
+  },
+  "claim": {
+   "line": "erp.new kind=Order issotrx=Y c_doctypetarget_id=132 c_bpartner_id=112 salesrep_id=101",
+   "status": "claim"
+  }
+ },
+ "before": {
+  "twin": {
+   "file": "scripts/bridge/witness_erp_new_twin.js",
+   "lines": 83,
+   "head": [
+    "#!/usr/bin/env node",
+    "// ⚠ DO NOT REMOVE — W-ERP-NEW-TWIN (spec: prompts/NEURO_SYMBOLIC_ORDER_CONTRACT.md §R.V item 2 / triage A2, \"Not done",
+    "// READ THE LOG after every run: §ERPNEW_TWIN lines are the product. Exit code is not evidence."
+   ],
+   "logDiffs": 13
+  },
+  "column": {
+   "source": "typed by the assistant on 11 November 2026",
+   "cmd": "docker exec postgres psql -U adempiere -d idempiere_pilot -x -c \"select c.columnname,c.defaultvalue,c.ad_val_rule_id,c.ad_reference_id from ad_column c join ad_table t using(ad_table_id) where t.tablename='C_Order' and c.columnname='C_ConversionType_ID'\""
+  },
+  "where": {
+   "source": "typed by the assistant on 11 November 2026",
+   "cmd": "grep -n \"INVOICERULE\\|\\\"InvoiceRule\\\"\\|IsDiscountPrinted\\|C_ConversionType_ID\" $F | head -20"
+  },
+  "witness": {
+   "source": "typed by the assistant on 11 November 2026",
+   "cmd": "grep -E \"❌|^§WITNESS\" ~/.cache/bim_bridge/a7c_witness.log | cut -c1-220"
+  },
+  "status": {
+   "source": "typed by the assistant on 11 November 2026",
+   "cmd": "docker ps --format '{{.Names}}'; curl -s -o /dev/null -w \"pilot %{http_code}\\n\" http://localhost:8088/webui/"
+  },
+  "pack": {
+   "source": "the script, before the verb (Fast Script Guide)",
+   "cmd": "node erp/tools/xlsx_pack.js erp/plugins/models/BIM_Document.xlsx --version 1.0.0 --out plugin/META-INF --java plugin/src --package org.kernel.bim.model"
+  }
+ },
+ "status": {
+  "verdict": "UP",
+  "summary": "legacy UP: postgres ready, pilot up"
+ },
+ "compare": {
+  "twinNumber": "50000",
+  "legacyNumber": "50981",
+  "cells": {
+   "match": 70,
+   "diff": 4,
+   "nullVsDefault": 7,
+   "onlyTwin": 0,
+   "onlyLegacy": 0,
+   "skipped": 13
+  },
+  "diffs": [
+   "amountrefunded: 0 |  (NULL-VS-DEFAULT)",
+   "amounttendered: 0 |  (NULL-VS-DEFAULT)",
+   "c_conversiontype_id: 114 |  (DIFF)",
+   "copyfrom: N |  (NULL-VS-DEFAULT)",
+   "docaction: CO | PR (DIFF)",
+   "invoicerule: D | I (DIFF)",
+   "isdiscountprinted: Y | N (DIFF)",
+   "processedon: 0 |  (NULL-VS-DEFAULT)",
+   "shippingrateinquiry: N |  (NULL-VS-DEFAULT)",
+   "volume: 0 |  (NULL-VS-DEFAULT)",
+   "weight: 0 |  (NULL-VS-DEFAULT)"
+  ],
+  "summary": "c_order 50000 vs legacy 50981: 70 cells match, 4 differ, 7 legacy NULL vs a twin default"
+ },
+ "column": {
+  "verdict": "DIFFERENT",
+  "legacyDefaultId": 114,
+  "legacyFilledBy": "the login default: the C_ConversionType row with IsDefault=Y (id 114)",
+  "twinNote": "table C_ConversionType is not in this dictionary slice"
+ },
+ "where": {
+  "total": 20,
+  "files": 1,
+  "hits": [
+   "CalloutOrder.java:50  *\t\t- InvoiceRule/DeliveryRule/PaymentRule",
+   "CalloutOrder.java:131  mTab.setValue (\"InvoiceRule\", X_C_Order.INVOICERULE_Immediate);",
+   "CalloutOrder.java:133  mTab.setValue (\"InvoiceRule\", X_C_Order.INVOICERULE_AfterDelivery);"
+  ]
+ },
+ "witness": {
+  "verdict": "PASS",
+  "pass": 8,
+  "fail": 0,
+  "name": "door_help"
+ },
+ "pack": {
+  "status": "written",
+  "again": "unchanged",
+  "elements": 108,
+  "records": 107,
+  "tables": 1,
+  "columns": 32,
+  "tabs": 2,
+  "processClasses": 2,
+  "classes": [
+   "BIMDocumentOpen",
+   "BIMDocumentRegisterExport"
+  ],
+  "sha": "cb9aac7b0874e3cc",
+  "sameSha": true,
+  "ms": 5982
+ },
+ "twopack": {
+  "zip": "2Pack_1.0.0.zip",
+  "files": [
+   {
+    "name": "org.kernel.bim-document/dict/PackOut.xml",
+    "bytes": 177170
+   },
+   {
+    "name": "org.kernel.bim-document/doc/org.kernel.bim-documentDoc.xml",
+    "bytes": 288
+   }
+  ],
+  "fileCount": 2,
+  "xmlLines": 4652,
+  "excerpt": [
+   "<?xml version=\"1.0\" encoding=\"UTF-8\"?><idempiere Name=\"org.kernel.bim-document\" Version=\"1.0.0\" idempiereVersion",
+   "    <AD_Element type=\"table\">",
+   "        <AD_Client_ID>0</AD_Client_ID>",
+   "        <AD_Org_ID>0</AD_Org_ID>",
+   "        <IsActive>Y</IsActive>",
+   "        <ColumnName>BIM_Document_ID</ColumnName>",
+   "        <Name>BIM Document</Name>",
+   "        <Description/>",
+   "        <Help/>",
+   "        <PrintName>BIM Document</PrintName>",
+   "        <PO_Description/>"
+  ]
+ },
+ "sheet": {
+  "file": "BIM_Document.xlsx",
+  "count": 13,
+  "order": [
+   {
+    "name": "Plugin",
+    "rows": 4
+   },
+   {
+    "name": "AD_Element",
+    "rows": 12
+   },
+   {
+    "name": "AD_Reference",
+    "rows": 4
+   },
+   {
+    "name": "AD_Ref_List",
+    "rows": 14
+   },
+   {
+    "name": "AD_Process",
+    "rows": 2
+   },
+   {
+    "name": "AD_Window",
+    "rows": 1
+   },
+   {
+    "name": "AD_Table",
+    "rows": 1
+   },
+   {
+    "name": "AD_Column",
+    "rows": 32
+   },
+   {
+    "name": "AD_Ref_Table",
+    "rows": 1
+   },
+   {
+    "name": "AD_Tab",
+    "rows": 2
+   },
+   {
+    "name": "AD_Field",
+    "rows": 37
+   },
+   {
+    "name": "AD_Menu",
+    "rows": 1
+   },
+   {
+    "name": "AD_TreeNodeMM",
+    "rows": 1
+   }
+  ],
+  "column": {
+   "head": [
+    "Key",
+    "ad_table_id",
+    "columnname",
+    "name",
+    "description",
+    "ad_reference_id"
+   ],
+   "rows": [
+    [
+     "BIM_Document.BIM_Document_ID",
+     "ref:BIM_Document",
+     "BIM_Document_ID",
+     "BIM Document",
+     "",
+     "existing:AD_Reference:ID"
+    ],
+    [
+     "BIM_Document.AD_Client_ID",
+     "ref:BIM_Document",
+     "AD_Client_ID",
+     "Client",
+     "",
+     "existing:AD_Reference:Table Direct"
+    ],
+    [
+     "BIM_Document.AD_Org_ID",
+     "ref:BIM_Document",
+     "AD_Org_ID",
+     "Organization",
+     "",
+     "existing:AD_Reference:Table Direct"
+    ],
+    [
+     "BIM_Document.IsActive",
+     "ref:BIM_Document",
+     "IsActive",
+     "Active",
+     "",
+     "existing:AD_Reference:Yes-No"
+    ]
+   ]
+  }
+ },
+ "manual": {
+  "steps": [
+   {
+    "kind": "window",
+    "name": "Reference",
+    "found": true
+   },
+   {
+    "kind": "window",
+    "name": "Table and Column",
+    "found": true
+   },
+   {
+    "kind": "window",
+    "name": "Window, Tab and Field",
+    "found": true
+   },
+   {
+    "kind": "window",
+    "name": "Menu",
+    "found": true
+   },
+   {
+    "kind": "window",
+    "name": "Report and Process",
+    "found": true
+   },
+   {
+    "kind": "process",
+    "name": "PackOut",
+    "found": true
+   }
+  ],
+  "windowsFound": 5,
+  "allFound": true
+ },
+ "legacySteps": 7,
+ "legacyStepNames": [
+  "setup",
+  "stop",
+  "seed",
+  "sync",
+  "bundle",
+  "start",
+  "verify"
+ ],
+ "size": {
+  "twinDictionaryBytes": 27193344,
+  "legacySeedDumpBytes": 45192181,
+  "twinMB": "27.2",
+  "legacyMB": "45.2"
+ },
+ "claim": {
+  "status": "claim",
+  "why": "actor ai has proof \"local-user\", which allows read/trial verbs; erp.new is writes. Held as a claim, not run. A person confirms it with: door"
+ },
+ "verbs": 38
+}

@@ -1,0 +1,2 @@
+§FIDELITY start part=0/4 tables=232 of 925 sqlite=gw2.db pgdb=idempiere
+§FIDELITY_VERDICT part=0/4 PASS tables=232 judgedTables=124 judgedRows=58442 totalSec=26s

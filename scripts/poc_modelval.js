@@ -27,8 +27,8 @@ registered.forEach(function (r) { console.log('   • ' + r.modelvalidationclass
 // install the ported timing hooks (the mechanism)
 M.installDefaultHooks();
 console.log('§MODELVAL_TIMINGS modeled=' + M.TIMINGS.length + ' [' + M.TIMINGS.join(',') + '] portedHooks=' + M.registeredCount());
-verdict(M.TIMINGS.indexOf('BEFORE_COMPLETE') >= 0 && M.registeredCount() >= 4,
-  'timing engine reaches BEFORE/AFTER × NEW/SAVE/COMPLETE (NOT a single SET_STATUS op)', 'timings=' + M.TIMINGS.length + ' hooks=' + M.registeredCount());
+verdict(M.TIMINGS.indexOf('BEFORE_COMPLETE') >= 0 && M.registeredCount() >= 1,
+  'timing engine reaches BEFORE/AFTER × NEW/SAVE/COMPLETE (NOT a single SET_STATUS op); F13: the invented qty/total hooks are gone, hasLines remains', 'timings=' + M.TIMINGS.length + ' hooks=' + M.registeredCount());
 
 // ── ctx: data accessor a doc hook needs (line count for the has-lines invariant) ────────────────────────
 var ctx = { lineCount: function (info) { return db.prepare('SELECT COUNT(*) AS n FROM c_orderline WHERE c_order_id=?').get(info.record.c_order_id).n; } };
@@ -38,20 +38,20 @@ console.log('\n── hooks fire and PASS on real rows ──');
 var line = db.prepare('SELECT * FROM c_orderline WHERE c_orderline_id=100').get();
 var s1 = M.fireHooks('BEFORE_SAVE', { table: 'C_OrderLine', record: line }, ctx);
 console.log('§MODELVAL_HOOK timing=BEFORE_SAVE table=C_OrderLine fired=' + s1.fired + ' ok=' + s1.ok);
-verdict(s1.ok && s1.fired === 1, 'BEFORE_SAVE qty hook fires and passes (qtyordered=' + line.qtyordered + ' > 0)', 'fired=' + s1.fired);
+verdict(s1.ok && s1.fired === 0, 'BEFORE_SAVE: NO qty hook (legacy has none — F13, SQLiteIDEMPIERE.md §47.1); a real line passes as an explicit fired=0 no-op', 'fired=' + s1.fired);
 
 // ── BEFORE_COMPLETE on a real C_Order (id 100, 1 line) → both hooks fire, pass ──────────────────────────
 var order = db.prepare('SELECT * FROM c_order WHERE c_order_id=100').get();
 var c1 = M.fireHooks('BEFORE_COMPLETE', { table: 'C_Order', record: order }, ctx);
 console.log('§MODELVAL_HOOK timing=BEFORE_COMPLETE table=C_Order fired=' + c1.fired + ' ok=' + c1.ok + ' (lines=' + ctx.lineCount({ record: order }) + ')');
-verdict(c1.ok && c1.fired === 2, 'BEFORE_COMPLETE fires 2 hooks (hasLines + totalNonNegative) and passes', 'fired=' + c1.fired);
+verdict(c1.ok && c1.fired === 1, 'BEFORE_COMPLETE fires 1 hook (hasLines) and passes; totalNonNegative was invented and is removed (F13)', 'fired=' + c1.fired);
 
-// ── §FALSIFIER 1: a line with qty<=0 is BLOCKED at BEFORE_SAVE ───────────────────────────────────────────
-console.log('\n── §FALSIFIER — a hook that should block does ──');
+// ── LEGACY PARITY (was §FALSIFIER 1): a line with qty<=0 is NOT blocked — legacy has no such check (pilot S14a/b/c complete qty -1 / qty 0) ──
+console.log('\n── legacy parity: no invented qty rule ──');
 var badLine = Object.assign({}, line, { qtyordered: 0 });
 var f1 = M.fireHooks('BEFORE_SAVE', { table: 'C_OrderLine', record: badLine }, ctx);
-console.log('§FALSIFIER timing=BEFORE_SAVE qtyordered=0 → ok=' + f1.ok + ' blocked=' + f1.blocked + ' error="' + f1.error + '"');
-verdict(f1.ok === false && /qty/i.test(f1.error), 'qty<=0 line is BLOCKED before save (hook is load-bearing)', 'blocked=' + f1.blocked);
+console.log('§PARITY timing=BEFORE_SAVE qtyordered=0 → ok=' + f1.ok + ' fired=' + f1.fired + ' (legacy accepts; SQLiteIDEMPIERE.md §47.1)');
+verdict(f1.ok === true && f1.fired === 0, 'qty=0 line is NOT blocked at BEFORE_SAVE (matches legacy; the invented hook is gone)', 'fired=' + f1.fired);
 
 // ── §FALSIFIER 2: a 0-line order is BLOCKED at BEFORE_COMPLETE ───────────────────────────────────────────
 var emptyCtx = { lineCount: function () { return 0; } };                        // synthetic empty order

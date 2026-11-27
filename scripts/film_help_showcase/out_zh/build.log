@@ -1,0 +1,5 @@
+§K2 OK   beat=cli return=85.96 voice_start=86.59 ass_start=86.59 | voice-only track in typing window -180.0 dB vs in voice -16.2 dB (gap 163.8) | mixed in typing: peak -8.4 dBFS rms -35.9 dB
+§K2_LEVEL keys (mixed, typing windows) mean rms -35.2 dB, mean peak -8.6 dBFS; voice mean rms -16.4 dB -> keys are 18.8 dB under the voice rms
+§K2_VERDICT PASS beats=3 bad=0 audible=True
+§CAPTION_VERDICT PASS cues=33
+§BUILD_DONE /home/red1/Videos/Help_that_answers_ERP_ZH_AFTER_2026-11-16_v5.mp4

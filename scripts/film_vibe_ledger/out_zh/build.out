@@ -1,0 +1,6 @@
+§FILM_GUARD VERDICT PASS bad=0
+§K2 OK   beat=aid return=387.79 voice_start=388.43 ass_start=388.43 | voice-only track in typing window -180.0 dB vs in voice -16.9 dB (gap 163.1) | mixed in typing: peak -9.3 dBFS rms -34.6 dB
+§K2_LEVEL keys (mixed, typing windows) mean rms -33.7 dB, mean peak -9.2 dBFS; voice mean rms -16.8 dB -> keys are 16.8 dB under the voice rms
+§K2_VERDICT PASS beats=15 bad=0 audible=True
+§BUILD_DONE /home/red1/Videos/Vibe_Coding_Honestly_ZH_AFTER_2026-11-18_v1.mp4
+rc=0

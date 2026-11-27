@@ -63,3 +63,83 @@ Each test names the issue it proves; a pass that can't tell whether the guard wo
 ## Acceptance
 Bare `mkdocs gh-deploy` is no longer run by any session; all publishing goes through `safe_gh_deploy.sh`;
 W-DEPLOY-GUARD is green; a deliberately stale tree **cannot** shrink the live site (it aborts with the list).
+
+## Printable guides: the PDF is built at publish time, checked, then published with its page (2026-11-15)
+**Owner (verbatim):** *"so the PDF print will always reflect what is latest in HTML and will have proper page breaks?"* · *"Yes"* (to a check after every publish) · *"But can't that be inbuilt or build time rather than compile to PDF each time?"*
+**Why:** a browser's own print varies with the browser, paper size and scale, and nothing re-checked it after an edit. So every page whose source `docs/<Name>.md` carries `window.print()` (today: `CapexUATGuide.md`) gets ONE PDF made at publish time from the very tree being published, checked, and published beside it at `/<Name>.pdf`. The page links it (*Download the PDF*); the print button stays as a fallback.
+**Build (in `safe_gh_deploy.sh`, step 2b, after `mkdocs build` and BEFORE the manifest):** `scripts/guide/print_check.js` prints the built page in headless Chrome (print media, A4), writes `docs/<Name>.pdf` (untracked, git-ignored, removed on exit: step 5's `mkdocs gh-deploy` rebuilds from `docs/`, so the file must be there) and copies it into `site_new`. If the built page is byte-identical to the live one and the live PDF exists, the live PDF is reused unchanged (no new 4-5 MB blob on `gh-pages` per deploy) and the check is not re-run. A check FAIL aborts the publish (`gh-pages` untouched); a machine without puppeteer or `pdftotext` cannot make the PDF, and the existing DELETE guard then refuses the publish (it would remove the live PDF): `ALLOW_NO_PDF=1` is the explicit way past.
+**The check (W-GUIDE-PRINT, every `§PRINT` line in the deploy log; issue: *"the published PDF has a page break, a split or a cut-off the reader would trip on"*):** the page is printed twice, once clean (published) and once with invisible markers at the start and end of every table row, every `##` heading and the checklist sheet (`.uat-sheet`). P1 the sheet's start and end markers are on ONE page, the element before it ends on an earlier page and the one after starts on a later page. P2 every `##` heading outside the sheet is the first marker on its page. P3 every table row's start and end markers are on the same page (no split row). P4 every row's markers are present at all (a marker missing = the row or its last column cut off). P5 the clean and the marked prints have the same page count and the same first text line on every page (the markers move nothing). `PRINT_BREAK=1` removes the sheet's `break-after`: P1 must FAIL. 0 rows or 0 headings judged = INCONCLUSIVE, which also aborts.
+**RESULT 2026-11-15 (W-GUIDE-PRINT 5/0 on CapexUATGuide; both break modes FAIL; W-DEPLOY-GUARD still PASS).** On the built guide: 31 pages, 225 table rows, 6 chapter headings: P1 the checklist sheet = page 2 alone (the element before ends on page 1, the one after starts on page 3), P2 every chapter heading starts its page, P3 no row split, P4 no row or last column cut off, P5 the published and the marked prints agree page by page. `PRINT_BREAK=1` -> P1 FAIL (the next element starts on page 2); `PRINT_BREAK=clip` (tables wider than the page) -> P4 FAIL on every cut row. In the deploy: `DRY_RUN=1` builds, prints, checks (PASS), guards (PASS) and removes `docs/CapexUATGuide.pdf` afterwards; `PRINT_BREAK=1 DRY_RUN=1` ABORTS with `gh-pages` untouched. **Two instrument faults found and fixed before trusting a FAIL** (both looked like a cut-off TD_PUMP row in chapter C): adjacent markers `QQ…QQQQ…QQ` were read as one (now `qq<ID>qq`, whose lowercase ends cannot join), and an end marker placed after a cell's last word overflowed the right edge and was itself clipped (now anchored inside the cell's bottom-right corner, so it goes missing only when the cell does). The row itself was intact (its text ends at x = 554 pt, inside the 562 pt edge).
+
+### Printable guides, 2026-11-19 SPEC — a cover page, a page per section, page numbers, links that open (written before code)
+**Owner (verbatim):** *"Go thru your PDF (https://red1oon.github.io/BIMCompiler/CapexUATGuide.pdf) again. Put in page break to each sub heading title. Also have page numbers Page # of ## (total). Put a proper credential and version box on the first page as cover. Run thru all the links are working."*
+**Measured on the live PDF first (2026-11-19):** 32 pages, no page numbers, no cover; 35 link annotations, of which **9 point at the print server** (`http://127.0.0.1:40487/DeveloperGuide/#3-start-from-scratch…`, `…/CapexDashboardGuide/…`, `…/BIMUserGuide/…`, `…/DXF2BIMGuide/…`, `…/ModellerGuide/…`): dead for every reader of the PDF. Cause: `print_check.js` prints the page from a local server, and Chrome writes each relative link resolved against that origin. W-GUIDE-PRINT never looked at links (scope-blind for this defect).
+**Change.**
+1. **Links:** before printing, every link that resolves to the print server is rewritten to the same path under the site's public `site_url` (read from `mkdocs.yml`), anchor kept.
+2. **Page numbers:** every page carries a footer *"<guide title> · Page i of N"* (Chrome's print footer, `displayHeaderFooter`; CSS `@page` margin boxes are not supported by Chrome).
+3. **A page per section:** every `###` heading starts a new page, except one that directly follows its `##` chapter heading (it stays on the chapter's first page), and none inside the cover or the checklist sheet.
+4. **Cover:** the guide's first page is a cover: the title and a document-control box (document, purpose, revision, status, issued by, for, where the latest copy lives) and the revision history, taken from `git log` of the guide; `.uat-cover`, alone on page 1. Contact data: only what the repo already publishes (the author's name and role); nothing private.
+**New checks (W-GUIDE-PRINT, `§PRINT` lines; each names the issue):**
+- **P2b** every `###` heading that is not right after its `##` is the first marker on its page (*a section starts mid-page*).
+- **P6** the cover's start and end markers are both on page 1 and the next element starts on page 2 (*the cover shares a page*).
+- **P7** every page of the published print reads *"Page i of N"* with its own i and the true N (*a page without its number, or a wrong total*).
+- **P8** no link annotation in the published PDF points at the print server (`127.0.0.1` / `localhost`); every link into the site resolves to a page of the built site and, with a `#fragment`, to an element with that id there (*a dead link in the PDF*).
+- **P9** every outside link answers HTTP 2xx/3xx (curl, 2 tries; a network error is INCONCLUSIVE for that link and printed, never PASS) (*a dead download*).
+**Break switches (each must FAIL its check):** `PRINT_BREAK=links` keeps the print-server links (P8) · `PRINT_BREAK=footer` prints without the footer (P7) · `PRINT_BREAK=cover` drops the cover's break-after (P6) · `PRINT_BREAK=h3` drops the section breaks (P2b).
+**The UAT dry-run proof is not disturbed:** this revision changes the cover and print style only; the 80 steps' text must parse identically to the revision the dry run proved (`guide.js` parse of both, compared), and the cover says the proof is for those steps.
+**RESULT 2026-11-19 (W-GUIDE-PRINT 10/0 on CapexUATGuide, local build of this tree).** 39 pages (was 32), 240 table rows, 6 chapters, 16 sections judged: P1 the checklist sheet = page 3 alone · P2 every chapter starts a page · P2b every section not right after its chapter starts a page · P3 no row split · P4 nothing cut off · P5 the two prints agree · P6 the cover = page 1 alone (next element on page 2) · P7 every page reads "Page i of 39" · P8 0 links to the print server, 10 links into the site each open a built page and its #id, written under `https://red1oon.github.io/BIMCompiler/` · P9 13 outside links each answer 200. Break switches: `links` → P8 FAIL (`http://127.0.0.1:…/DeveloperGuide/#3-…`), `footer` → P7 FAIL (no number on any page), `cover` → P6 FAIL (next element on page 1), `h3` → P2b FAIL (A2, A3, A4 … mid-page); the old ones still fail: `1` → P1, `clip` → P4 (and now P5 too: the clipped prints paginate differently). The 80 steps parse identically to the revision the dry run proved (`§STEPS_SAME proved=80 new=80 identical=true`).
+
+
+### Printable guides, 2026-11-20 SPEC: the order after the cover, a contents page, and no short table cut in two (written before code)
+**Owner (2026-11-20, verbatim):** *"On page 2 of the PDF, put a title to it, 'What is this?'. After page 2, insert a table of contents. Before page 2, is the list of changes we dicussed. Also look thru the PDF to make better page breaks so that we don't have truncated halfway parts particularly tables."*
+**Order (CapexUATGuide):**
+1. The cover (one page, P6).
+2. `## Changes since the signed UAT report`.
+3. `## What is this?` (the intro that used to follow the cover).
+4. `## Contents`: every `##` and `###` as a link to its anchor. The PDF keeps the links; there are no page numbers.
+5. The checklist sheet (P1), then the chapters.
+**Breaks (the guide's print CSS):** a table that fits on a page is kept whole (`break-inside: avoid` on the table); a longer table repeats its header row on each page (`thead` as `table-header-group`); a heading, and the paragraph just before a table, are kept with what follows (`break-after: avoid`).
+**P10 (new, `scripts/guide/print_check.js`), named issue:** *"a table short enough for one page is cut across two pages"*.
+- Each table's height is measured in print media at the printed text width (A4 210 mm − 2 × 12 mm = 186 mm ≈ 703 px).
+- A table at most 90 % of the text height (297 − 2 × 14 mm = 269 mm ≈ 1,017 px) must have its first and last row markers on the same page.
+- Tables taller than that may continue, and they are listed with their heights.
+- `PRINT_BREAK=tables` removes the keep-whole rule: P10 must then FAIL on today's guide (the issue was real), else P10 is scope-blind.
+**RESULT 2026-11-20 (logs read, `PRINT_NO_NET=1` for the local runs; the publish runs P9):**
+- RED, the live PDF before the fix: `P10 FAIL nCut=4`. Cut were Pack In Application Dictionary (h 468 px, pp. 4–5), Shed Floor Plan (294, pp. 11–12), PLAN sheets (419, pp. 14–15) and TD_RIVERSIDE (669, pp. 28–29).
+- GREEN, after the fix: `P10 PASS nCut=0`, 36 tables. 3 are taller than a page (B0.1 h 1427, B2.1 993, D1 1685) and continue with their header row repeated on each page (pdftotext pp. 17, 18, 24, 41, 42).
+- The new build: 44 pages, P1–P8 PASS. The order is p2 Changes, p3 What is this?, p4 Contents, p5 Checklist.
+- `PRINT_BREAK=tables`: P10 FAIL on the same 4 tables (not scope-blind).
+
+### Printable guides, 2026-11-20 SPEC (2): page numbers in Contents (written before code)
+**Owner (verbatim):** *"add page number to Contents items."*
+**How (`scripts/guide/print_check.js`, only when the page has a `.uat-toc`):**
+1. A first marked print finds the page of every Contents target. Each `.uat-toc a[href^="#"]` gets an invisible marker at the element with that id.
+2. The clean print and the marked print are then made with the numbers written in: a right-aligned `span.uat-pg` after each link, print only.
+3. The web page keeps plain links. The Contents page stands alone (the checklist sheet breaks before it), so the numbers cannot move later pages.
+**P11 (new), named issue:** *"a page number in Contents points to the wrong page"*. In the final marked print, every number written in equals the page that its target's marker is on.
+- `PRINT_BREAK=toc` writes every number +1: P11 must FAIL.
+- A page with no `.uat-toc` gives `P11 not judged`.
+**RESULT (2026-11-20, logs read):**
+- `§PRINT TOC 27 of 27 targets placed`; **P11 PASS** (27 entries, 0 wrong); P1–P10 PASS; 44 pages.
+- `PRINT_BREAK=toc`: P11 FAIL (every number off by one, as written).
+- First run: P2 and P2b FAILed falsely, because the new Contents markers sit at each heading's start and read as "first on the page". Fixed: qqK markers are left out of the page-start order. Re-run all PASS.
+- pdftotext of page 4 shows each entry with its number on the right (Changes 2, What is this? 3, How do I pass? 3, Checklist 5, A 8 … ).
+
+### Printable guides, 2026-11-20 SPEC (3): a lead-in stays with its table (written before code)
+**Owner, 2026-11-20 (verbatim):** *"FOr the PDF, push the 'Changes since..' on page 1 to the followng page so that cut off line is together with it"*.
+**Measured on the live PDF (45 pages):** page 2 holds only the heading *Changes since the signed UAT report (2026-11-19)* and the first line of its sentence ("… They go into the"). The rest of the sentence and the whole table start on page 3, which the table fills (content to y 827 of 842). The table is kept whole (P10), so it moves to the next page and leaves its heading and the cut sentence behind.
+**P12 (new), named issue:** *"a table's lead-in (the heading or sentence right before it) is left on another page, or cut across two"*.
+- Every table gets a start marker on the visible element right before its wrapper, and an end marker inside it.
+- P12 holds when that element starts and ends on the page where the table's first row starts.
+- `PRINT_BREAK=lead` drops the new keep-together rule: P12 must FAIL. The live PDF before the fix is the RED.
+**Fix (`docs/CapexUATGuide.md`):** the section goes in `<div class="uat-keep" markdown="1">` (heading, sentence, table), print rule `break-inside: avoid`. Its table prints at 8.5 pt, so the three fit one page. The web page is unchanged.
+**RESULT (2026-11-20, logs read):**
+- **RED, the live guide:** P12 FAIL on exactly the owner's case: "Read these even if you have already done the UAT." (lead pages 2–3, table starts 3).
+- **After the fix:** `§PRINT_VERDICT PASS judged=13 fails=0`. P12 PASS (29 judged, the tables that fit a page); P1–P11 PASS; 44 pages (was 45).
+  - Page 2 now holds the heading, the whole sentence and all 8 rows.
+  - Wrapped: the *Changes since* section (`uat-keep uat-keep-small`), *Where to find each window* (`uat-keep uat-keep-small`), and the B0.6 datums (`uat-keep`).
+- **`PRINT_BREAK=lead`** (keeps dropped): P12 FAIL on the other two lead-ins.
+- **Measured while making the check:**
+  - An absolute marker inside a block that a keep rule moved to the next page is painted at the block's old place. So P12 reads a lead-in's pages from its own text on the published pages (whitespace dropped, markers stripped) and falls back to the markers only when the text is not found.
+  - A table right after a table has no lead-in.
+  - A table taller than the text height (1,017 px) breaks anyway and is not judged.

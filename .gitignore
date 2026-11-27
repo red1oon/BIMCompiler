@@ -4,7 +4,8 @@ target/
 # IDE
 .idea/
 *.iml
-.vscode/
+.vscode/*
+!.vscode/settings.json
 .classpath
 .project
 .settings/
@@ -155,3 +156,5 @@ build/erp/.demo_controller_key.json
 # The two SQL-defined exceptions stay tracked as TEXT, never as binaries:
 !migration/*.sql
 !**/patches/*.sql
+# safe_gh_deploy.sh step 2b writes the printable guides' PDFs here for the publish, then removes them (prompts/DOCS_DEPLOY_GUARD.md)
+docs/CapexUATGuide.pdf

@@ -1,0 +1,50 @@
+═══ W-POLICY-FOLD — one signed policy, one stagger rule, one reference gate (TEAMWORK_FRAMEWORK §13.12.1) ═══
+   🟢 CONTROL: before any POLICY op no device has a policy — policies=none/none/none
+   §POLICY-FOLD epoch=1/1/1/1 hash=5f6b9b092b/5f6b9b092b/5f6b9b092b/5f6b9b092b pos=3/3/3/3
+   🟢 all four devices hold the admin's policy (same op hash)
+   🟢 the policy sits at the same fold position on every device — pos=3
+   🟢 the folded values (V, gate, pipe directory) are those the admin signed — visit_ms=900000
+   §POLICY-NONADMIN verdicts=REFUSED:not-admin | REFUSED:not-admin | REFUSED:not-admin | REFUSED:not-admin effective epoch(C)=1
+   🟢 a non-admin POLICY is REFUSED not-admin on every device and changes nothing
+   🟢 CONTROL: the same kind of op from an admin is MERGED and takes effect — epoch=2 visit_ms=600000
+   §POLICY-EPOCH lower=REFUSED:epoch-stale equal=REFUSED:epoch-exists effective epoch=2 visit_ms=600000
+   🟢 a lower epoch is epoch-stale, an equal one epoch-exists; the effective policy stays at epoch 2
+   🟢 a higher epoch (5) supersedes on every device, same hash and position — epoch=5
+   §POLICY-EPOCH race epoch6: A:REFUSED D:MERGED | A:REFUSED D:MERGED | A:REFUSED D:MERGED | A:REFUSED D:MERGED winner=2519f51f/2519f51f/2519f51f/2519f51f
+   🟢 two admins racing epoch 6: exactly one is MERGED, the same one on every device — merged=1
+   §POLICY-VALUE zero visit_ms=REFUSED:bad-policy:visit_ms ; unknown keys=MERGED kept={"hr":"k2"}
+   🟢 an invalid value is refused bad-policy:visit_ms
+   🟢 CONTROL/skew: unknown keys are kept and do not make the op invalid
+   §STAGGER V=900000 kids=100 buckets=9,13,13,13,9,7,6,10,8,12 max=13 (mean 10, limit 20) min=3232 max=898793
+   🟢 every offset is in [0,V)
+   🟢 the offset is deterministic (same kid, same V, same offset)
+   🟢 offsets spread: no bucket holds more than 2x the mean — max=13 limit=20
+   🟢 CONTROL: a clustered rule (everyone at offset 0) FAILS the same spread test — max=100
+   🟢 store.visitOffset() applies the folded V to the device's own kid — offset=575739 V=900000
+   §CAP bundle_max_ops=3 ops=8 sent per visit=3+3+2+0 A placed=8 B placed=8
+   🟢 bundle_max_ops=3: 8 ops leave as 3+3+2, nothing is lost, both devices place all 8
+   🟢 CONTROL: without a policy the same 8 ops leave in one visit (cap is the policy's doing) — sent=8
+   🟢 CONTROL: a write with the current token under the size and rate caps is stored
+   §GATE stale-token: refused=true stored=false refusals=["stale-token"] ; fresh token stored=true
+   🟢 a write with the old token after rotation is refused (stale-token) and nothing is stored
+   🟢 CONTROL: the same write with the new token is stored
+   §GATE oversize: 1001 B refused=true reason=oversize ; 1000 B stored=true
+   🟢 an object over max_object_bytes is refused (oversize)
+   🟢 CONTROL: an object of exactly max_object_bytes is stored
+   §GATE rate: puts in this hour so far=3, next four → true,true,false,false last refusal=rate ; other device=true
+   🟢 the (cap+1)-th put within an hour is refused (rate): cap 5 → puts 4,5 stored, 6,7 refused
+   🟢 CONTROL: another device is not affected by the first one's count (the cap is per device)
+   🟢 CONTROL: an hour later the same device may write again (the window slides, it is not a lifetime cap)
+   🟢 a name outside s/<space>/{o,h,r}/<kid> is refused (bad-name)
+   §GATE e2e stale visit: sent=0 readBackFail=1 outbox=PUT-UNVERIFIED delivery=SAVED gate refusals=2
+   🟢 a visit on a stale token delivers nothing: ops stay SAVED, the visit reports PUT-UNVERIFIED
+   §GATE e2e fresh visit: sent=2 A placed=2
+   🟢 CONTROL: with the fresh token the next visit delivers both ops and A places them — sent=2 A placed=2
+   §SKEW old engine: crashed=false POLICY op held=1 verdict=REFUSED:scope-unknown business placed=1
+   🟢 an engine from before POLICY folds a log containing it without crashing, and refuses the unknown op — scope-unknown
+   🟢 CONTROL: the old engine still places the one ordinary business op of that log (nothing else was disturbed) — placed=1
+   §SKEW new engine, unknown op type FUTURE_OP: REFUSED:scope-unknown
+   🟢 a newer device does not crash on an op type it does not know — it refuses it — scope-unknown
+
+──────────────────────────────────────────────
+§W-POLICY-FOLD PASS judged=32 fails=0 inconclusive=0

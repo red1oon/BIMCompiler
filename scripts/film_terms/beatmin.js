@@ -1,0 +1,4 @@
+// ⚠ DO NOT REMOVE — Scope: beat lengths from the measured narration: speech duration (out/fit_measure.log §NARR_FIT dur=) + 0.3 s lead + 1.2 s tail. Writes out/beatmin.json. READ THE LOG.
+const fs = require('fs'), o = {}; const sp = {};
+fs.readFileSync(process.argv[2], 'utf8').split('\n').forEach(l => { const m = /^§NARR_FIT (\S+) cue=\S+ room=\S+ dur=([\d.]+) -> (DETAIL|SHORT)/.exec(l); if (m) { o[m[1]] = +(+m[2] + 0.3 + 1.2).toFixed(2); o[m[1] + '_speech'] = +m[2]; } else if (/^§NARR_FIT/.test(l)) { console.log('§BEATMIN_PROBLEM ' + l); process.exit(2); } });
+fs.writeFileSync(process.argv[3], JSON.stringify(o, null, 1)); console.log('§BEATMIN beats=' + Object.keys(o).filter(k => !/_speech/.test(k)).length + ' total=' + Object.keys(o).filter(k => !/_speech/.test(k)).reduce((a, k) => a + o[k], 0).toFixed(1) + 's');

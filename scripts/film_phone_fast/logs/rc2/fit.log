@@ -1,0 +1,23 @@
+§VOX F=af_heart M=am_michael speed_mult=1.0 base=1.000
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT intro cue=0.10 room=2.80 dur=1.53 -> DETAIL slack=+1.27 words=7
+§NARR_TONE intro#0 F YN rose=8.0st endDelta=+1.8st want=rise OK "Is it really fast, on a phone?"
+§NARR_FIT ready cue=3.20 room=2.20 dur=1.59 -> SHORT slack=+0.61 words=5
+§NARR_FIT fab cue=5.70 room=1.60 dur=1.48 -> DETAIL slack=+0.12 words=4
+§NARR_FIT nav_swipe cue=7.60 room=3.00 dur=2.53 -> DETAIL slack=+0.47 words=7
+§NARR_FIT walk_start cue=10.90 room=2.20 dur=1.80 -> SHORT slack=+0.40 words=5
+§NARR_FIT walk_steps cue=13.40 room=2.63 dur=1.79 -> DETAIL slack=+0.84 words=6
+§NARR_FIT snag cue=16.33 room=5.40 dur=3.55 -> DETAIL slack=+1.85 words=10
+§NARR_FIT clash_run cue=22.03 room=3.27 dur=2.55 -> DETAIL slack=+0.72 words=9
+§NARR_FIT clash_detail cue=25.60 room=2.10 dur=1.79 -> DETAIL slack=+0.31 words=4
+§NARR_FIT clash_snag cue=28.00 room=1.50 dur=1.49 -> DETAIL x1.091 slack=+0.01 words=6
+§NARR_FIT clash_share cue=29.80 room=2.70 dur=2.67 -> DETAIL slack=+0.03 words=9
+§NARR_FIT clash_saved cue=32.80 room=2.07 dur=1.17 -> SHORT slack=+0.90 words=4
+§NARR_FIT s_send cue=35.17 room=4.16 dur=1.95 -> DETAIL slack=+2.21 words=6
+§NARR_FIT s_get cue=39.63 room=2.90 dur=1.63 -> SHORT slack=+1.27 words=4
+§NARR_FIT s_replay cue=42.83 room=2.90 dur=1.59 -> DETAIL slack=+1.31 words=5
+§NARR_FIT s_scrub cue=46.03 room=5.20 dur=2.70 -> DETAIL slack=+2.50 words=8
+§NARR_FIT site_b cue=51.53 room=5.70 dur=2.37 -> DETAIL slack=+3.33 words=7
+§NARR_FIT outro cue=57.53 room=3.10 dur=2.94 -> DETAIL slack=+0.16 words=9

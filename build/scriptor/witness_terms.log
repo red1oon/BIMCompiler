@@ -1,0 +1,16 @@
+§TERMS table (open first; an open term is never green)
+term | witness | broken control | status | roadmap
+VISIT (bounded) | - | - | OPEN | TEAMWORK §45.2 F1 per-device mailboxes
+RELAY (sealing) | - | - | OPEN | TEAMWORK §29 (simulator PASS only, real comm layer untouched)
+LEDGER (document numbering) | - | - | OPEN | per-device counters today; team-wide numbering not switched on
+trusted keys (roles + threshold) | - | - | OPEN | TEAMWORK §46.5 versioning Stage 2
+LEDGER signed / STATEMENT | PASS | 2/2 refused | ENFORCED | 
+trusted keys | PASS+PASS | 3/3 refused | ENFORCED | 
+STATEMENT (rule in force) | PASS+PASS | 2/2 refused | ENFORCED | 
+BUNDLE (Complete) | PASS | 2/2 refused | ENFORCED | 
+LEDGER convergent | PASS+PASS | 2/2 refused | ENFORCED | 
+VISIT (offline / interrupted) | PASS | 3/3 refused | ENFORCED | 
+VISIT (voluntary, once) | PASS+PASS | 2/2 refused | ENFORCED | 
+ACK | PASS+PASS | 3/3 refused | ENFORCED | 
+BUNDLE (version skew) | PASS | 1/1 refused | ENFORCED | 
+§TERMS_VERDICT PASS enforced=9 open=4 witness_failed=0 uncontrolled=0

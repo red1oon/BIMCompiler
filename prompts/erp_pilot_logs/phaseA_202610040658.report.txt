@@ -1,0 +1,21 @@
+§PILOT-GROUP-REPORT-RAW kind=header UNVERIFIED run=202610040658 source=admin folded op log (210 ops), joined by gid
+§PILOT-GROUP-REPORT-RAW kind=stock warehouse=50003 product=123 seed_onhand=0 shipped_net=-9 onhand=-9 UNVERIFIED
+§PILOT-GROUP-REPORT-RAW kind=stock warehouse=50004 product=123 seed_onhand=0 shipped_net=-9 onhand=-9 UNVERIFIED
+§PILOT-GROUP-REPORT-RAW kind=stock warehouse=50005 product=123 seed_onhand=0 shipped_net=-9 onhand=-9 UNVERIFIED
+§PILOT-GROUP-REPORT-RAW kind=pl org=50002 account="51100 Product CoGs" dr_cents=46305 cr_cents=0 net_dr_cents=46305 UNVERIFIED
+§PILOT-GROUP-REPORT-RAW kind=pl org=50002 account="12110 Accounts Receivable - Trade" dr_cents=55575 cr_cents=0 net_dr_cents=55575 UNVERIFIED
+§PILOT-GROUP-REPORT-RAW kind=pl org=50002 account="14120 Product asset" dr_cents=0 cr_cents=46305 net_dr_cents=-46305 UNVERIFIED
+§PILOT-GROUP-REPORT-RAW kind=pl org=50002 account="41000 Trade Revenue" dr_cents=0 cr_cents=55575 net_dr_cents=-55575 UNVERIFIED
+§PILOT-GROUP-REPORT-RAW kind=pl org=50004 account="51100 Product CoGs" dr_cents=46305 cr_cents=0 net_dr_cents=46305 UNVERIFIED
+§PILOT-GROUP-REPORT-RAW kind=pl org=50004 account="12110 Accounts Receivable - Trade" dr_cents=55575 cr_cents=0 net_dr_cents=55575 UNVERIFIED
+§PILOT-GROUP-REPORT-RAW kind=pl org=50004 account="14120 Product asset" dr_cents=0 cr_cents=46305 net_dr_cents=-46305 UNVERIFIED
+§PILOT-GROUP-REPORT-RAW kind=pl org=50004 account="41000 Trade Revenue" dr_cents=0 cr_cents=55575 net_dr_cents=-55575 UNVERIFIED
+§PILOT-GROUP-REPORT-RAW kind=pl org=50005 account="51100 Product CoGs" dr_cents=46305 cr_cents=0 net_dr_cents=46305 UNVERIFIED
+§PILOT-GROUP-REPORT-RAW kind=pl org=50005 account="12110 Accounts Receivable - Trade" dr_cents=55575 cr_cents=0 net_dr_cents=55575 UNVERIFIED
+§PILOT-GROUP-REPORT-RAW kind=pl org=50005 account="14120 Product asset" dr_cents=0 cr_cents=46305 net_dr_cents=-46305 UNVERIFIED
+§PILOT-GROUP-REPORT-RAW kind=pl org=50005 account="41000 Trade Revenue" dr_cents=0 cr_cents=55575 net_dr_cents=-55575 UNVERIFIED
+§PILOT-GROUP-REPORT-RAW kind=pl org=ALL account="51100 Product CoGs" net_dr_cents=138915 UNVERIFIED
+§PILOT-GROUP-REPORT-RAW kind=pl org=ALL account="12110 Accounts Receivable - Trade" net_dr_cents=166725 UNVERIFIED
+§PILOT-GROUP-REPORT-RAW kind=pl org=ALL account="14120 Product asset" net_dr_cents=-138915 UNVERIFIED
+§PILOT-GROUP-REPORT-RAW kind=pl org=ALL account="41000 Trade Revenue" net_dr_cents=-166725 UNVERIFIED
+§PILOT-GROUP-REPORT-RAW kind=pl org=ALL profit_cents=27810 (revenue+cogs accounts value 4-9xxxx, cr-positive) balanced_all_accounts=true UNVERIFIED

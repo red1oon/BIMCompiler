@@ -1,0 +1,13 @@
+§RD_HEADER W-RESTORE-DRILL tree=/tmp/wt-restore commit=cf40f5b1 K=4 rounds=3 node=v18.19.1
+§RD_REFERENCE deputy_ops=43 hub_ops=55 station1_ops=37 relay_objects=31 box_objects=31
+   PASS §RD-R1 the deputy hub device rebuilt from its keys + the relay copy == reference (the relay holds the whole history) - ops 43/43
+   FAIL §RD-S1 SELF-REBUILD: the hub rebuilt from its own keys + the relay == reference - ops 0/55 (sync never fetches a device's own bundles: comm_store sync skips o/<self> and its own mailbox)
+   FAIL §RD-S1 SELF-REBUILD: station 1 rebuilt from its own keys + the relay == reference - ops 34/37 missing=3 (= its own authored ops)
+   PASS §RD-R2 the deputy rebuilt from the office-box copy alone (modelled replica) == reference - ops 43/43
+   PASS §RD-R3 the rebuilt deputy NAMES the missing bundle as a gap - [{"author":"82d7216232fe41b3","box":"hub","seq":2}]
+   PASS §RD-R3 it lacks exactly the lost bundle's ops (1), nothing else - missing=1 parked=0
+   PASS §RD-R5 without the right key the business ops stay sealed: present, unreadable (not a silent empty ledger) - sealed=12 laned_opened=0
+   FAIL §RD-CTL a tampered bundle is not restored and the rebuild differs from the reference (detected) - ops in bundle=1 restored=1 rebuilt_ops=43
+§LIMIT work authored but never relayed is invisible to every rebuild: 0 of 2 unsent ops in the rebuilt hub, gaps naming them=0; only the device itself (copy 1) or a save-time office box holds them
+   PASS §RD-R4 the limit is real and measured: unsent ops are absent from the rebuild (so copy 1 / a save-time box is what protects them) - unsent=2 in_rebuild=0 rebuilt_ops=43
+§RD_VERDICT FAIL judged=9 fails=3 inconclusive=0

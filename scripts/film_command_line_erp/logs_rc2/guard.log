@@ -1,0 +1,20 @@
+§GUARD OK   beat=list list.total=113 expect=113 spoken="one hundred thirteen"
+§GUARD OK   beat=keys keys.lines=2 expect=2 spoken="two"
+§GUARD OK   beat=new new.mandatory=2 expect=2 spoken="two fields"
+§GUARD OK   beat=new new.filled=32 expect=32 spoken="thirty two"
+§GUARD OK   beat=edit edit.changed=1 expect=1 spoken="one column"
+§GUARD OK   beat=load load.rows=2 expect=2 spoken="two lines"
+§GUARD OK   beat=load load.ok=1 expect=1 spoken="one is fine"
+§GUARD OK   beat=load load.rejected=1 expect=1 spoken="one is rejected"
+§GUARD OK   beat=ai ai.status="claim" expect=claim spoken="waits"
+§GUARD OK   beat=ai ai.confirmStatus="ok" expect=ok spoken="runs"
+§GUARD OK   beat=legacy legacy.verdict="UP" expect=UP spoken="up"
+§GUARD OK   beat=legacy compare.match=70 expect=70 spoken="seventy"
+§GUARD OK   beat=legacy compare.diff=4 expect=4 spoken="four"
+§GUARD OK   beat=onedoor onedoor.built.length=2 expect=2 spoken="two speakers"
+§GUARD OK   beat=onedoor onedoor.planned.length=3 expect=3 spoken="three are planned"
+§GUARD OK   beat=light light.coreLines=216 expect=216 spoken="two hundred sixteen"
+§GUARD OK   beat=light light.coreRequires=0 expect=0 spoken="no dependencies"
+§GUARD proof-talk or "first/novel" in the voice: none
+§GUARD honesty H: mail/phone/device named in onedoor; onedoor says "not built": true; figure says planned=Mailbox/Phone/Device built=AI/Person
+§GUARD_VERDICT PASS facts=17 bad=0

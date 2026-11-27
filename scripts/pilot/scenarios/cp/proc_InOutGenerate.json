@@ -1,0 +1,60 @@
+[
+ {
+  "name": "cp_ioutgen_wh103",
+  "process": 118,
+  "recordId": 0,
+  "tableId": 0,
+  "params": [
+   {
+    "name": "M_Warehouse_ID",
+    "value": 103
+   },
+   {
+    "name": "C_BPartner_ID",
+    "value": 118
+   },
+   {
+    "name": "DatePromised",
+    "value": "2006-12-31"
+   },
+   {
+    "name": "DocAction",
+    "value": "CO"
+   },
+   {
+    "name": "ConsolidateDocument",
+    "value": "Y"
+   }
+  ],
+  "tables": [
+   "m_inout",
+   "m_inoutline",
+   "c_order",
+   "c_orderline",
+   "m_storageonhand",
+   "m_transaction",
+   "fact_acct"
+  ],
+  "alignFromSeed": [
+   {
+    "table": "ad_sequence",
+    "where": "istableid='N' and ad_client_id in (0,11)"
+   },
+   {
+    "table": "c_order",
+    "where": "c_order_id=1000312"
+   },
+   {
+    "table": "c_orderline",
+    "where": "c_order_id=1000312"
+   },
+   {
+    "table": "m_storageonhand",
+    "where": "m_product_id in (select m_product_id from c_orderline where c_order_id=1000312)"
+   }
+  ],
+  "preSql": [
+   "UPDATE c_bpartner SET socreditstatus='O' WHERE c_bpartner_id=118"
+  ]
+ }
+]

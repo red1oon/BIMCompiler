@@ -1,0 +1,18 @@
+{
+ "_about": "Reinforcement + weld rule rows for rebar_from_schedule.py (LOD400_DEFAULT_RULES_SCOPE.md section 6). Every row: value, unit, source. source = 'stated: <sheet#handle>' | 'default: ours (...)' | 'default: AISC 360-16 Table J2.4'. A stated schedule value read from the model always wins over a row here. Change a row, re-run; no code change.",
+ "footing_cover_mm": {"value": 75, "unit": "mm", "source": "default: ours (concrete cast against earth, practice; no clause read)"},
+ "column_cover_mm": {"value": 40, "unit": "mm", "source": "default: ours (practice; no clause read)"},
+ "tie_hooks_modelled": {"value": "no", "unit": "-", "source": "default: ours (hooks not modelled; logged)"},
+ "cross_ties_modelled": {"value": "no", "unit": "-", "source": "default: ours (no cross-ties; logged)"},
+ "laps_modelled": {"value": "no", "unit": "-", "source": "default: ours (no laps; every bar is checked against the stock length)"},
+ "stock_length_mm": {"value": 12000, "unit": "mm", "source": "default: ours (12 m stock bar length used only for the no-lap check)"},
+ "column_zone_A_stated_in": {"value": 20, "unit": "in", "source": "stated: 5_DETAILS_marked.dxf#25B and #263 ('20\"' next to (A) on 'Typical Long Section of Column')"},
+ "column_zone_A_rule": {"value": "max(stated, L/6)", "unit": "-", "source": "default: ours (reading of the two labels on the same section: 'L' #257 and '4L/6' #25F; L = clear height, footing top to beam soffit)"},
+ "weld_min_table_mm": {"value": [[6, 3], [13, 5], [19, 6], [999, 8]], "unit": "[thinner part up to mm, weld mm]", "source": "default: AISC 360-16 Table J2.4"},
+ "weld_length_rule": {"value": "overlap length along the member axis", "unit": "-", "source": "default: ours"},
+ "weld_contact_end_tol_mm": {"value": 1.0, "unit": "mm", "source": "default: ours (an overlap that reaches within this distance of a member end is an end contact)"},
+ "bar_sides": {"value": 8, "unit": "no.", "source": "default: ours (facets of a bar prism)"},
+ "inside_tol_mm": {"value": 1.0, "unit": "mm", "source": "default: ours (INSIDE witness tolerance, from the spec: cover - 1 mm)"},
+ "footing_bottom_layer": {"value": "L_Bar", "unit": "-", "source": "default: ours (layer order is not on the schedule; long-side bars lowest) [not in spec 6, added because a mesh needs an order]"},
+ "column_bar_face_normal_axis": {"value": "x", "unit": "-", "source": "default: ours (which two opposite faces carry the 3 + 3 main bars is not drawn) [not in spec 6, added because the arrangement needs an axis]"}
+}

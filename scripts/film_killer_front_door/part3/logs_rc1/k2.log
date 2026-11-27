@@ -1,0 +1,12 @@
+§K2 OK   beat=b1a return=5.17 voice_start=5.80 ass_start=5.80 | voice-only track in typing window -180.0 dB vs in voice -20.8 dB (gap 159.2) | mixed in typing: peak -9.0 dBFS rms -33.6 dB
+§K2 OK   beat=b1b return=14.42 voice_start=15.05 ass_start=15.05 | voice-only track in typing window -180.0 dB vs in voice -18.8 dB (gap 161.2) | mixed in typing: peak -10.3 dBFS rms -39.9 dB
+§K2 OK   beat=b2 return=26.75 voice_start=27.38 ass_start=27.38 | voice-only track in typing window -180.0 dB vs in voice -15.5 dB (gap 164.5) | mixed in typing: peak -9.0 dBFS rms -35.9 dB
+§K2 OK   beat=b3 return=36.08 voice_start=36.72 ass_start=36.72 | voice-only track in typing window -180.0 dB vs in voice -16.6 dB (gap 163.4) | mixed in typing: peak -10.1 dBFS rms -32.9 dB
+§K2 OK   beat=b2s return=47.08 voice_start=47.72 ass_start=47.72 | voice-only track in typing window -180.0 dB vs in voice -16.5 dB (gap 163.5) | mixed in typing: peak -9.0 dBFS rms -39.0 dB
+§K2 OK   beat=b4 return=54.92 voice_start=55.55 ass_start=55.55 | voice-only track in typing window -180.0 dB vs in voice -16.4 dB (gap 163.6) | mixed in typing: peak -9.3 dBFS rms -37.7 dB
+§K2 OK   beat=b5 return=67.92 voice_start=68.55 ass_start=68.55 | voice-only track in typing window -180.0 dB vs in voice -16.5 dB (gap 163.5) | mixed in typing: peak -8.6 dBFS rms -36.5 dB
+§K2 OK   beat=b6a return=77.38 voice_start=78.01 ass_start=78.01 | voice-only track in typing window -180.0 dB vs in voice -16.2 dB (gap 163.8) | mixed in typing: peak -8.8 dBFS rms -33.0 dB
+§K2 OK   beat=b6b return=97.17 voice_start=97.80 ass_start=97.80 | voice-only track in typing window -180.0 dB vs in voice -16.3 dB (gap 163.7) | mixed in typing: peak -9.1 dBFS rms -36.6 dB
+§K2 OK   beat=b7 return=106.33 voice_start=106.97 ass_start=106.97 | voice-only track in typing window -180.0 dB vs in voice -16.4 dB (gap 163.6) | mixed in typing: peak -9.2 dBFS rms -33.8 dB
+§K2_LEVEL keys (mixed, typing windows) mean rms -35.9 dB, mean peak -9.2 dBFS; voice mean rms -17.0 dB -> keys are 18.9 dB under the voice rms
+§K2_VERDICT PASS beats=10 bad=0 audible=True

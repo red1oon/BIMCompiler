@@ -1,0 +1,12 @@
+{
+  "_readme": "What the next library publish may change, stated before it runs (\u00a734, \u00a738). witness_library_publish.js holds the export to exactly this. Update it for each publish.",
+  "spec": "\u00a753.2 + \u00a754.1 (2026-11-24): the kitchen corner windows (CL018: DEWP_W1900_1900x1200, DEWP_W1945_1945x1200) + the T30 door between house and garage (CL019: DEWP_D1010_1010x2275, GaVO, DIN 18101), on top of the live afa5bdf611a0 (5cdf4ad4cd62 = CL018 alone was uploaded, never flipped); stated from the migrations before the run: 3 families, 6 ad_geometry_map rows",
+  "added_families": [
+    "DEWP_D1010_1010x2275",
+    "DEWP_W1900_1900x1200",
+    "DEWP_W1945_1945x1200"
+  ],
+  "added_map_rows": 6,
+  "families_that_may_resolve_differently": [],
+  "descriptions_that_may_change": []
+}

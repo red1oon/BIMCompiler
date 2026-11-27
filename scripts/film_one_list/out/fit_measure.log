@@ -1,0 +1,15 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT cover cue=0.00 room=998.70 dur=20.57 -> DETAIL slack=+978.13 words=63
+§NARR_TONE cover#0 F WH rose=0st endDelta=-2.5st want=fall OK "Why does a file need a version number?"
+§NARR_FIT b1 cue=0.00 room=998.70 dur=14.80 -> DETAIL slack=+983.90 words=44
+§NARR_TONE b1#0 F WH rose=0st endDelta=-6.0st want=fall OK "Why two numbers?"
+§NARR_FIT b2 cue=0.00 room=998.70 dur=15.87 -> DETAIL slack=+982.83 words=47
+§NARR_TONE b2#0 F YN rose=5.0st endDelta=+2.0st want=rise OK "And now?"
+§NARR_FIT b3 cue=0.00 room=998.70 dur=8.77 -> DETAIL slack=+989.93 words=29
+§NARR_TONE b3#0 F WH rose=0st endDelta=-5.6st want=fall OK "What if I just edit the number?"
+§NARR_FIT b4 cue=0.00 room=998.70 dur=10.15 -> DETAIL slack=+988.55 words=29
+§NARR_TONE b4#0 F WH rose=0st endDelta=-6.1st want=fall OK "How much of the page changed?"
+§NARR_FIT b5 cue=0.00 room=998.70 dur=19.18 -> DETAIL slack=+979.52 words=58
+§NARR_TONE b5#0 F WH rose=0st endDelta=-3.1st want=fall OK "How do we know it holds?"

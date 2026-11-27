@@ -1,0 +1,7 @@
+0.9s plugin ACTIVE
+12.1s b1 n=1 ok=true sum=#1/0 ms=11115 ops=34
+12.1s §POSS-TICKET key=S0/2026-10-29/0 org=11 lines=2 tenders=1 result=IMPORTED order=#new:2 invoice=#new:18 receipts=#new:24 || §POSS client=11 bank=100 key=* tickets=1 imported=1 refused=0 receipts=1
+12.1s loginContext calls=5 ms=10217
+12.1s 3x at _runJavaIn (ad_process.js:1149:27) < at runJava (ad_process.js:1145:14) < at Object.runInTrx (ad_process.js:1190:12)
+12.1s 2x at S.MOrderLine_setTaxIfMissing (model_order.js:738:98) < at /tmp/wt-ootb-scale/erp/processes/ImportOrder.js:349:40 < at Array.forEach (<anonymous>)
+12.1s heap 18MB rss 191

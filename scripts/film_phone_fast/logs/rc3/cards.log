@@ -1,0 +1,21 @@
+§PRIOR_ROW ok name="Google RAIL guideline" cited=prompts/MOBILE_PERF.md:716 (§2026-11-27 PANELS)
+§PRIOR_ROW ok name="Popover API (top layer)" cited=prompts/MOBILE_PERF.md:717 (§2026-11-27 PANELS)
+§PRIOR_ROW ok name="Bottom-sheet pattern (current design systems)" cited=prompts/MOBILE_PERF.md:717 (§2026-11-27 PANELS)
+§PRIOR_ROW ok name="Web Share API, navigator.share with files" cited=prompts/MOBILE_PERF.md:703 (§P5 F3 STEPS 1–2 BUILD SPEC)
+§PRIOR_ROW ok name="GitHub REST API rate limits" cited=common/tests/gh_standin.js:8 (file header, lines 7-8)
+§PR_STATES {"3458":"MERGED","3459":"MERGED","3460":"MERGED","3461":"MERGED","3462":"MERGED","3468":"MERGED","3469":"MERGED","3471":"MERGED","3474":"MERGED","3476":"MERGED","3480":"MERGED"}
+§CRED_ROW ok #3458 W-MOBILE-P1 23/0 MOBILE_PERF.md:603
+§CRED_ROW ok #3459 W-MOBILE-P2 61/0 MOBILE_PERF.md:635
+§CRED_ROW ok #3462 W-MOBILE-P2 63/0 MOBILE_PERF.md:12
+§CRED_ROW ok #3460 W-MOBILE-P3 9/0 MOBILE_PERF.md:666
+§CRED_ROW ok #3461 W-FIELD-OPS 8/0 MOBILE_PERF.md:693
+§CRED_ROW ok #3468 W-SEND-HQ 5/0 MOBILE_PERF.md:763
+§CRED_ROW ok #3469 W-MOBILE-PANELS 43/0 MOBILE_PERF.md:774
+§CRED_ROW ok #3471 W-SEND-HQ-TEAM 10/0 MOBILE_PERF.md:789
+§CRED_ROW ok #3474 W-HQ-VIEW 9/0 MOBILE_PERF.md:803
+§CRED_ROW ok #3476 W-MOBILE-DRAWER-ROW 24/0 MOBILE_PERF.md:809
+§CRED_ROW ok #3480 W-ISSUE-LOG-ROUTE 12/0 MOBILE_PERF.md:810
+§CRED_ROW ok offline #3471 MOBILE_PERF.md:789
+§CARD kind=chapter kicker="CH 0  ·  OFFLINE MOBILITY" title="Offline mobility comes to the BIM and ERP world" sub="The phone, fast: walk the site, snag it, HQ gets it." background=rgb(11, 15, 23) images_behind=0 lines=3 left=160 right=1760 title_h=212 overflow_px=0.0 OK
+§CARD kind=close rows_saw=5/5 prior_art=5/5 credentials_rows=4 witnessed=11/11 cols_bottom=850 credit_top=866 credit_bottom=890 wide=0.0 overflow_px=0.0 OK
+§CARDS_DONE chapter=/home/red1/Videos/film_m1_work_rc2/cards/chapter.png close=/home/red1/Videos/film_m1_work_rc2/cards/close.png too_tall=0 OK

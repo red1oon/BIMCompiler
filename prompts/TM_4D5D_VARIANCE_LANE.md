@@ -722,7 +722,7 @@ solve output, so nothing needs a pipeline run (recorded so the omission is delib
 |---|---|---|
 | `GEOM_MOVE {parent,dx,dy,dz}` | **no quantity** (length, area, volume, count all unchanged) → Δ = 0, printed as 0, labelled "a move changes no quantity" | the op log |
 | `GEOM_SCALE {parent,fx,fy,fz}` (net, multiplicative, LOCAL axes, edge-anchored) | the element's bbox dims `[bx,by,bz] × [fx,fy,fz]` → its length / dominant-face area / volume | net per parent = `bonsai_kernel.js:311-316` (the fold's own accumulation) |
-| `GEOM_GRID_MOVE` (stretch via gridline) | quantity changes but the per-command extents are not in the payload shape this stage reads | ⛔ **BLOCKED (S8 does not cover it): "does a `GEOM_GRID_MOVE` command carry the new span, or only the gridline delta?"** — shown as "quantity Δ not computed for grid-stretch" (never guessed) |
+| `GEOM_GRID_MOVE` (stretch via gridline) | ~~⛔ BLOCKED: "does a command carry the new span, or only the gridline delta?"~~ **ANSWERED 2026-10-28 from code (bim-ootb DXF2BIM §D89):** the stored op keeps every command (`featureId, action, axis, delta, newScale, translateDelta, yawRad`; `bonsai_gridmove.js:387`) and the fold applies them on the WORLD axis (`bonsai_library.js foldInsert` §STRETCH-1): TRANSLATE = no quantity; SCALE = the extent on that axis × `newScale` | `netEdits` reads the commands as the fold does: SCALE on world x/y -> the local factor of the same axis (yaw 0 / 180°) or the other (yaw ±90°); an oblique yaw is named unsupported (`GEOM_GRID_MOVE(oblique)`), never guessed. Witness: W-S8-PURE P7 (exact = the same GEOM_SCALE Δ, independent SQL recompute), P7b oblique named, P7c TRANSLATE = 0 |
 - "before" = the element's RECORD: `element_transforms.bbox_x/y/z` joined to `elements_meta` by guid (the same rows
   `analysis_sidecar.js compute5D` sums). "after" = before × the net scale.
 - **The quantity basis is the shipped 5D basis** (`compute5D`: length = longest bbox edge; area = longest × second-longest;
@@ -1014,3 +1014,9 @@ W-S7-INJECT-HONEST · W-S7-INJECT ✅24/24 · W-S7-INJECT-GUARD ✅17/17 · W-S7
 W-S7-INJECT-PERSIST ✅21/21 · W-S7-INJECT-COST ✅parts1+2 | S7 legs 2-4 ✅ W-S7-TASK-GRAIN 12/12 ·
 W-S7-GRAIN 10/10 · W-S7-GATE 22/22 · W-S7-HOVER-BUDGET 9/9 · W-S7-CANVAS-PICK 14/14 ✅#1735
 PHASE 2 (the wedge): W0=S5 W-PC-EARN (keystone) | W1 W-EAC | W2 W-CLAIM-CERT | W3 W-COCKPIT-LOOP
+
+## §CAPEX-R1 cross-ref (2026-11-03, bim-ootb `prompts/CAPEX_DASHBOARD.md §5.1/§5.2`) — fold line grain changes WHEN a 4D programme is passed
+`foldProjectOrder` with `opts.schedule` (the 4D owner's tasks) writes one C_ProjectTask per 4D task and one C_ProjectLine per (product × 4D task) — no longer one line per IFC class; phase dates are the
+4D windows (overlapping). WITHOUT a programme (every browser caller today: `find_erp_push.js`, `proj_order_state.js`) the old grain holds and phases carry NO dates (`NO_4D_SCHEDULE`) — the old serial
+duration loop is gone. Checked: `proj_claim.js:106` looks lines up by phase (unchanged), `proj_order_state.rowsAmount` sums per class across lines (grain-independent). When the browser is wired to pass
+the Time Machine's programme (CAPEX R1-f), re-run this lane's VO/claim witnesses against product × task lines.

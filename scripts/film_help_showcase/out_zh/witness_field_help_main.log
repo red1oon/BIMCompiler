@@ -1,0 +1,25 @@
+§W-FIELD-HELP seed=/tmp/wt-film-zh-ootb/erp/ad_seed.db break=none
+§W-FIELD-HELP F4 tabs=1120 displayed fields judged=15849 twin-only (plugin ids, not in legacy, not judged)=0 legacy rows=20871
+  ✅ F4 description = AD_Field_v.description  15849/15849
+  ✅ F4 help = AD_Field_v.help  15849/15849
+§W-FIELD-HELP panel §FIELD_HELP panel bound collapsed=false tech=false
+§W-FIELD-HELP F3 idle panel title="Tool Tip" visible=true content="<div class=\"help-content\"><p><em>(Place your cursor into a field on the screen)</em></p></div>"
+§W-FIELD-HELP F1 read-only form: windows=294 tabs=745 displayed non-key fields (dictionary)=11052 rendered=11052
+  ✅ F1 read-only form: label tooltip = AD_Field.Description (none when empty)  11052/11052
+  ✅ F1 read-only form: value tooltip = AD_Field.Description (none when empty)  11052/11052
+  ✅ F1 read-only form renders every displayed non-key field the dictionary lists  11052/11052 (a field hidden by the renderer is counted, not excused)
+  ✅ F3 focus -> the panel shows header / description / help as HelpController  11052/11052
+§W-FIELD-HELP F5 menu processes=137 with parameters=131 parameters (dictionary)=545 rendered=545 open errors=0
+  ✅ F5 parameter editor tooltip = AD_Process_Para.Description  545/545
+  ✅ F5 parameter label tooltip = AD_Process_Para.Description  545/545
+§W-FIELD-HELP F1 inline window=143 (new) rows=56 editor ok=56 label ok=56 panel ok=24/24 focusable (disabled=9 hidden=23) label != AD_Field.Name: 1
+§W-FIELD-HELP F1 inline window=169 (new) rows=53 editor ok=53 label ok=53 panel ok=20/20 focusable (disabled=6 hidden=27) label != AD_Field.Name: 1
+§W-FIELD-HELP F1 inline window=167 (edit) rows=47 editor ok=47 label ok=47 panel ok=17/17 focusable (disabled=13 hidden=17) label != AD_Field.Name: 1
+§W-FIELD-HELP F1 inline window=195 (new) rows=78 editor ok=78 label ok=78 panel ok=27/27 focusable (disabled=19 hidden=32) label != AD_Field.Name: 2
+  ✅ F1 inline editor: editor tooltip = AD_Field.Description (4 windows)  234/234
+  ✅ F1 inline editor: label tooltip = AD_Field.Description  234/234
+  ✅ F3 inline editor focus -> panel as HelpController  88/88 focusable (not judged: disabled=47 hidden=99)
+§W-FIELD-HELP F2 tooltips seen=21280 developer-form=0
+  ✅ F2 0 tooltips of the form `<ColumnName> · …`  0 of 21280
+  ✅ F3 idle panel = (PlaceCursorIntoField) and the East panel is shown (HelpCollapsed default N)  "<div class=\"help-content\"><p><em>(Place your cursor into a field on the screen)<"
+§WITNESS_FIELD_HELP pass=13 fail=0 inconclusive=0 verdict=PASS

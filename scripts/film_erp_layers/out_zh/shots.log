@@ -1,0 +1,6 @@
+§FILM_TREE new=d1e37e2f
+§FILM_STILL name=v_doctype geometry=1440x900+240+90 bytes=300485
+§FILM_SHOT name=v_doctype link="vscode://file/tmp/wt-f2-new/erp/callouts/CalloutOrder.js:97" file="CalloutOrder.js" line=97 text="CalloutOrder.prototype.docType = function (ctx, WindowNo, mTab, mField, value) {"
+§FILM_STILL name=v_date geometry=1440x900+240+90 bytes=335056
+§FILM_SHOT name=v_date link="vscode://file/tmp/wt-f2-new/erp/ad_callout.js:477" file="ad_callout.js" line=477 text="CalloutEngine.prototype.dateAcct = function (ctx, WindowNo, mTab, mField, value) {"
+§FILM_SHOOT stills=2 errors=0

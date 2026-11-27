@@ -1,0 +1,43 @@
+§GUARD OK   O cards.log: both cards measured, none overflows (§CARDS_DONE too_tall=0 OK)
+§GUARD OK   T chapter card: the owner's kicker, title and sub-line, plain dark background, no picture behind it
+§GUARD OK   P prior art "Google RAIL model (web.dev, read 2026-11-28)" cited at prompts/MOBILE_PERF.md:827 (§2026-11-28 rc3 NOTES SETTLED)
+§GUARD OK   P prior art "MDN Popover API (read 2026-11-28)" cited at prompts/MOBILE_PERF.md:828 (§2026-11-28 rc3 NOTES SETTLED)
+§GUARD OK   P prior art "MDN Navigator.share() (read 2026-11-28)" cited at prompts/MOBILE_PERF.md:829 (§2026-11-28 rc3 NOTES SETTLED)
+§GUARD OK   P prior art "GitHub REST API rate limits" cited at common/tests/gh_standin.js:8 (file header, lines 7-8)
+§GUARD OK   P the card shows exactly the verified sources (4 of 4)
+§GUARD_RED P made-up source "Imaginary Layout Spec" FAILS as required
+§GUARD_RED P a real source with one number changed (100 → 200 ms) FAILS as required
+§GUARD_RED P a source citing a file that does not exist FAILS as required
+§GUARD OK   CR #3458 W-MOBILE-P1 23/0 <- MOBILE_PERF.md:603 (PR MERGED)
+§GUARD OK   CR #3459 W-MOBILE-P2 61/0 <- MOBILE_PERF.md:635 (PR MERGED)
+§GUARD OK   CR #3462 W-MOBILE-P2 63/0 <- MOBILE_PERF.md:12 (PR MERGED)
+§GUARD OK   CR #3460 W-MOBILE-P3 9/0 <- MOBILE_PERF.md:666 (PR MERGED)
+§GUARD OK   CR #3461 W-FIELD-OPS 8/0 <- MOBILE_PERF.md:693 (PR MERGED)
+§GUARD OK   CR #3468 W-SEND-HQ 5/0 <- MOBILE_PERF.md:763 (PR MERGED)
+§GUARD OK   CR #3469 W-MOBILE-PANELS 43/0 <- MOBILE_PERF.md:774 (PR MERGED)
+§GUARD OK   CR #3471 W-SEND-HQ-TEAM 10/0 <- MOBILE_PERF.md:789 (PR MERGED)
+§GUARD OK   CR #3474 W-HQ-VIEW 9/0 <- MOBILE_PERF.md:803 (PR MERGED)
+§GUARD OK   CR #3476 W-MOBILE-DRAWER-ROW 24/0 <- MOBILE_PERF.md:809 (PR MERGED)
+§GUARD OK   CR #3480 W-ISSUE-LOG-ROUTE 12/0 <- MOBILE_PERF.md:810 (PR MERGED)
+§GUARD OK   CR the card prints every verified witness verdict (11)
+§GUARD OK   CR offline claim (W-SEND-HQ-TEAM T4) <- MOBILE_PERF.md:789
+§GUARD_RED CR made-up credential W-IMAGINARY 99/0 FAILS as required
+§GUARD_RED CR a real PR with the wrong verdict (23/0 → 24/0) FAILS as required
+§GUARD_RED CR a verdict line that does not carry its PR (3476 claimed on the wrong line) FAILS as required
+§GUARD_RED CR a real verdict with a PR that is not merged FAILS as required
+§GUARD OK   F clash matrix count of the picked pair (§CLASH_MATRIX_COUNT MEP|ARC) = 501 (raw log) and on the card
+§GUARD OK   F overlap in m (§M1_SHARE overlap_mm / 1000) = 0.033 (raw log) and on the card
+§GUARD OK   F walk points (§M1_SCRUB labels count) = 5 (raw log) and on the card
+§GUARD OK   F walk steps (last §WALK_TRACE steps=) = 12 (raw log) and on the card
+§GUARD OK   F replayed points (§M1_SYNC_REPLAY points=) = 4 (raw log) and on the card
+§GUARD OK   F scrub max error (max of §M1_SYNC_SCRUB_DETAIL per_point_err_m) = 0.0000 (raw log) and on the card
+§GUARD OK   F issues HQ got (§M1_SYNC rows / §HQ_GET issues_added) = 1 (raw log) and on the card
+§GUARD OK   F site B name on the card = the captions' name (m1_sources siteName, db=HHS_Office_Federated -> "Office")
+§GUARD_RED F site B row rewritten with the raw db prefix ("HHS", the rc3 card) must fail the name check FAILS as required
+§GUARD OK   F offline order in the S log (offline -> snag -> work offline, folder 0 -> queued -> sent; online report after the queue) = 1124,2141,2397,2701,3038 off=3164
+§GUARD OK   F the card says the To-HQ report was done offline only because the log proves it
+§GUARD_RED F a log where the send went out before the queue (positions swapped) must fail the order check FAILS as required
+§GUARD OK   F site B snag class (§SNAP line) matches the card
+§FILM_GUIDE url=https://red1oon.github.io/BIMCompiler/BIMUserGuide/#send-to-hq http=200 anchor=Y
+§GUARD OK   G §FILM_GUIDE url=https://red1oon.github.io/BIMCompiler/BIMUserGuide/#send-to-hq http=200 anchor=Y; the card carries the link
+§GUARD_CARDS PASS judged=32 fails=0 red_controls_detected=9/9

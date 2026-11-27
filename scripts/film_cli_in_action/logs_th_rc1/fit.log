@@ -1,0 +1,13 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT sheet cue=5.51 room=4.86 dur=3.96 -> DETAIL slack=+0.90 detailDur=3.96 words=3
+§NARR_FIT oneline cue=13.26 room=6.02 dur=5.14 -> DETAIL slack=+0.88 detailDur=5.14 words=5
+§NARR_FIT create cue=22.80 room=4.03 dur=3.12 -> DETAIL slack=+0.91 detailDur=3.12 words=3
+§NARR_FIT create2 cue=30.76 room=3.11 dur=2.20 -> DETAIL slack=+0.91 detailDur=2.20 words=3
+§NARR_FIT update cue=37.63 room=4.15 dur=3.24 -> DETAIL slack=+0.91 detailDur=3.24 words=4
+§NARR_FIT refuse cue=45.30 room=6.11 dur=5.22 -> DETAIL slack=+0.89 detailDur=5.22 words=4
+§NARR_FIT load cue=54.72 room=5.19 dur=4.29 -> DETAIL slack=+0.90 detailDur=4.29 words=4
+§NARR_FIT delete cue=63.05 room=3.65 dur=2.76 -> DETAIL slack=+0.89 detailDur=2.76 words=3
+§NARR_FIT sum cue=69.63 room=3.61 dur=2.71 -> DETAIL slack=+0.90 detailDur=2.71 words=2
+§NARR_FIT close cue=73.84 room=7.11 dur=6.20 -> DETAIL slack=+0.91 detailDur=6.20 words=6

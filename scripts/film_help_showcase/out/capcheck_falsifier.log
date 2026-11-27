@@ -1,0 +1,25 @@
+§CAPTION OVER cue=0, t=6.17 changed_px_above_caption_area=3102
+§CAPTION OVER cue=0, t=9.09 changed_px_above_caption_area=2790
+§CAPTION OVER cue=0, t=12.91 changed_px_above_caption_area=6090
+§CAPTION OVER cue=0, t=17.19 changed_px_above_caption_area=2091
+§CAPTION OVER cue=0, t=18.97 changed_px_above_caption_area=1547
+§CAPTION OVER cue=0, t=22.14 changed_px_above_caption_area=3791
+§CAPTION OVER cue=0, t=27.50 changed_px_above_caption_area=8424
+§CAPTION OVER cue=0, t=33.28 changed_px_above_caption_area=6392
+§CAPTION OVER cue=0, t=41.11 changed_px_above_caption_area=906
+§CAPTION OVER cue=0, t=43.97 changed_px_above_caption_area=3942
+§CAPTION OVER cue=0, t=48.12 changed_px_above_caption_area=3599
+§CAPTION OVER cue=0, t=51.33 changed_px_above_caption_area=2444
+§CAPTION OVER cue=0, t=54.59 changed_px_above_caption_area=2920
+§CAPTION OVER cue=0, t=58.36 changed_px_above_caption_area=1075
+§CAPTION OVER cue=0, t=61.59 changed_px_above_caption_area=6198
+§CAPTION OVER cue=0, t=66.23 changed_px_above_caption_area=3739
+§CAPTION OVER cue=0, t=73.25 changed_px_above_caption_area=1874
+§CAPTION OVER cue=0, t=76.13 changed_px_above_caption_area=3780
+§CAPTION OVER cue=0, t=80.26 changed_px_above_caption_area=3637
+§CAPTION OVER cue=0, t=84.21 changed_px_above_caption_area=1356
+§CAPTION OVER cue=0, t=86.86 changed_px_above_caption_area=3547
+§CAPTION OVER cue=0, t=90.95 changed_px_above_caption_area=6758
+§CAPTION OVER cue=0, t=95.76 changed_px_above_caption_area=5784
+§CAPTION OK   cue=0, t=113.16 changed_px_above_caption_area=0
+§CAPTION_VERDICT FAIL 23 cues=24

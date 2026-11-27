@@ -1,0 +1,12 @@
+§RD_HEADER W-RESTORE-DRILL tree=/tmp/wt-restore commit=cf40f5b1 K=4 rounds=3 node=v18.19.1
+§RD_REFERENCE hub_ops=51 station1_ops=33 relay_objects=31 box_objects=31
+   FAIL §RD-R1 hub rebuilt from its keys + the relay copy == reference - ops 0/51
+   FAIL §RD-R1 station 1 rebuilt from its keys + the relay copy == reference - ops 30/33
+   FAIL §RD-R2 hub rebuilt from the office-box copy alone (modelled replica) == reference - ops 0/51
+   FAIL §RD-R3 the rebuilt hub NAMES the missing bundle as a gap - []
+   FAIL §RD-R3 it lacks exactly the lost bundle's ops (1), nothing else - missing=51 parked=0
+   FAIL §RD-R5 without the right key the business ops stay sealed: present, unreadable (not a silent empty ledger) - sealed=0 laned_opened=0
+   PASS §RD-CTL a tampered bundle is not restored and the rebuild differs from the reference (detected) - ops in bundle=1 restored=0
+§LIMIT work authored but never relayed is invisible to every rebuild: 0 of 5 unsent ops in the rebuilt hub, gaps naming them=0; only the device itself (copy 1) or a save-time office box holds them
+   PASS §RD-R4 the limit is real and measured: unsent ops are absent from the rebuild (so copy 1 / a save-time box is what protects them) - unsent=5 in_rebuild=0
+§RD_VERDICT FAIL judged=8 fails=6 inconclusive=0

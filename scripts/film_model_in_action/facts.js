@@ -1,0 +1,46 @@
+#!/usr/bin/env node
+// ⚠ DO NOT REMOVE — film "Model in Action" (bim-compiler prompts/FILM_COMMAND_LINE_ERP.md, CH 1; spec prompts/MODEL_SESSION_LINES.md): runs every line the film types THROUGH THE DOOR on a bim-ootb checkout that has
+// model_session.js, keeps the REAL answers, and after each line takes a picture of the REAL Modeller canvas (the session's own page, headless on the CPU). Nothing is typed by hand into the film. The terminal and the
+// canvas are not linked live: the picture is taken after each line. Checks: F (each line answered as the beat shows), P (the canvas changed by a measured share of pixels where a line changed the model; undo puts the picture back),
+// C (the numbers agree: +copies elements, cost = added + changed). Usage: OOTB=<bim-ootb checkout with model_session.js> [SHED_MARKED_DIR=…] node facts.js      READ out/facts.log after a run.
+'use strict';
+const fs = require('fs'), path = require('path'), os = require('os'), http = require('http'), cp = require('child_process');
+const OOTB = process.env.OOTB, OUT = path.join(__dirname, process.env.OUTD || 'out'), SH = path.join(OUT, 'shots'); fs.mkdirSync(SH, { recursive: true });
+if (!OOTB || !fs.existsSync(path.join(OOTB, 'modeller/tools/model_session.js'))) { console.error('§FACTS_FAIL set OOTB to a bim-ootb checkout that has modeller/tools/model_session.js'); process.exit(2); }
+const SHEETS = process.env.SHED_MARKED_DIR || path.join(os.homedir(), '.cache/capex_uat_dryrun/shed_cli/marked');
+const dxf = fs.existsSync(SHEETS) ? fs.readdirSync(SHEETS).filter(f => /\.dxf$/i.test(f)) : []; if (dxf.length !== 9) { console.error('§FACTS_FAIL the 9 marked Shed sheets are not at ' + SHEETS); process.exit(2); }
+const W = fs.mkdtempSync(path.join(os.tmpdir(), 'mia_')), M = path.join(W, 'marked'); fs.mkdirSync(M); dxf.forEach(f => fs.copyFileSync(path.join(SHEETS, f), path.join(M, f)));
+const env = Object.assign({}, process.env, { NODE_PATH: path.join(os.homedir(), 'bim-compiler', 'node_modules') }), L = (m) => console.log('§FACTS ' + m);
+const out = { made: new Date().toISOString(), ootb: cp.spawnSync('git', ['-C', OOTB, 'rev-parse', '--short', 'HEAD'], { encoding: 'utf8' }).stdout.trim(), lines: {}, states: {}, sheets: dxf.length };
+const door = (line) => { const r = cp.spawnSync(process.execPath, [path.join(OOTB, 'common/door/door.js'), '--actor', 'human', line], { cwd: W, env, encoding: 'utf8', timeout: 900000 }); let j = null; try { j = JSON.parse(r.stdout.split('\n').filter(l => l.charAt(0) === '{').pop()); } catch (e) { /* null */ } return j || { status: 'unparseable', why: (r.stdout + r.stderr).slice(-300) }; };
+const shot = (id) => { const f = path.join(SH, id + '.png'), r = cp.spawnSync(process.execPath, [path.join(OOTB, 'modeller/tools/model_session.js'), 'shot', 'out=' + f, 'w=1920', 'h=537'], { cwd: W, env, encoding: 'utf8' }); let j = null; try { j = JSON.parse(r.stdout); } catch (e) { /* null */ } if (!j || !j.ok) throw new Error('no picture for ' + id + ': ' + (r.stdout + r.stderr).slice(-200)); out.states[id] = { file: 'shots/' + id + '.png', bytes: j.bytes }; return f; };
+const run = (id, line, expect) => { const j = door(line); out.lines[id] = { line, status: j.status, answer: j.answer || null, why: j.why || null }; L(id + ' ' + j.status + ' ' + line + (j.status !== 'ok' ? ' why=' + String(j.why).slice(0, 120) : ''));
+  if (j.status !== expect) throw new Error(id + ': expected ' + expect + ', got ' + j.status + ' ' + String(j.why || '').slice(0, 200)); return j; };
+const diff = (a, b, region) => { const r = cp.spawnSync('python3', ['-c', 'import sys\nfrom PIL import Image, ImageChops\na=Image.open(sys.argv[1]).convert("RGB");b=Image.open(sys.argv[2]).convert("RGB");W,H=a.size;y0,y1=(0,int(H*0.8)) if sys.argv[3]=="canvas" else ((int(H*0.8),H) if sys.argv[3]=="panel" else (0,H))\nd=ImageChops.difference(a.crop((0,y0,W,y1)),b.crop((0,y0,W,y1))).convert("L").point(lambda v:255 if v>8 else 0);h=d.histogram();n=sum(h);print(round(100.0*h[255]/n,3),W,H)', a, b, region || 'all'], { encoding: 'utf8' }); const p = r.stdout.trim().split(' '); return { pct: Number(p[0]), w: Number(p[1]), h: Number(p[2]) }; };   // canvas = the top 80% of the frame (the 3D view), panel = the bottom 20% (the page's own panel strip); a pixel counts when it differs by more than 8 of 255
+(async () => {
+  // s0: the blank canvas, a Modeller page with nothing opened (what a person sees first): its own throwaway page, same viewport
+  const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.wasm': 'application/wasm', '.json': 'application/json', '.css': 'text/css', '.png': 'image/png', '.svg': 'image/svg+xml', '.db': 'application/octet-stream' };
+  const srv = http.createServer((q, s) => { fs.readFile(path.join(OOTB, decodeURIComponent(q.url.split('?')[0])), (e, b) => { if (e) { s.writeHead(404); s.end(); return; } s.writeHead(200, { 'Content-Type': MIME[path.extname(q.url.split('?')[0])] || 'application/octet-stream' }); s.end(b); }); }); await new Promise(z => srv.listen(0, '127.0.0.1', z));
+  const P = require(path.join(os.homedir(), 'bim-compiler', 'node_modules', 'puppeteer')), br = await P.launch({ headless: 'new', args: ['--no-sandbox', '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] }), pg = await br.newPage(); await pg.setViewport({ width: 1920, height: 537 });
+  const errs = []; pg.on('pageerror', e => errs.push(String(e).slice(0, 160))); await pg.goto('http://127.0.0.1:' + srv.address().port + '/modeller/modeller.html', { waitUntil: 'load', timeout: 120000 }); await pg.waitForFunction('window.__sceneReady===true && window.Bonsai', { timeout: 120000 }); await new Promise(r => setTimeout(r, 1500));
+  fs.writeFileSync(path.join(SH, 's0.png'), await pg.screenshot()); out.states.s0 = { file: 'shots/s0.png', note: 'the Modeller before anything is opened' }; await br.close(); srv.close();
+  const o = run('open', 'model.open sheets=marked type="Farming Shed"', 'ok'); shot('s1');
+  const c = run('convert', 'model.convert', 'ok'); shot('s2');
+  const h = run('addbay_high', 'model.addbay end=high', 'ok'); shot('s3');
+  const u = run('undo', 'model.undo', 'ok'); shot('s4');
+  const lo = run('addbay_low', 'model.addbay end=low', 'ok'); shot('s5');
+  const bad = run('refuse', 'model.addbay end=sideways', 'refused'); shot('s6');
+  const cl = run('close', 'model.close', 'ok');
+  // check C: the answers agree with each other; check P: the canvas moved where the model moved
+  const A = (j) => j.answer || {}, ch = A(h), cost = ch.cost || {}, cl2 = A(lo);
+  const C = { copiesEqualGrowth: ch.elements_after - ch.elements_before === ch.copies, costSum: cost.total === cost.added + cost.changed, undoBack: A(u).elements_after === ch.elements_before && A(u).elements_before === ch.elements_after, lowGrowth: cl2.elements_after - cl2.elements_before === cl2.copies };
+  const PNG = (id) => path.join(SH, id + '.png'), D = { open: diff(PNG('s0'), PNG('s1'), 'canvas'), convert: diff(PNG('s1'), PNG('s2'), 'canvas'), bay: diff(PNG('s2'), PNG('s3'), 'canvas'), undo_vs_convert: diff(PNG('s2'), PNG('s4'), 'canvas'), undo_vs_convert_panel: diff(PNG('s2'), PNG('s4'), 'panel'), bay_vs_convert_panel: diff(PNG('s2'), PNG('s3'), 'panel'), bay_low: diff(PNG('s4'), PNG('s5'), 'canvas'), refuse_unchanged: diff(PNG('s5'), PNG('s6'), 'canvas'), refuse_unchanged_panel: diff(PNG('s5'), PNG('s6'), 'panel') };
+  out.checks = { C, D, pageErrors: errs.length + (A(o).page_errors || 0) + (A(c).page_errors || 0) + (ch.page_errors || 0) };
+  out.add = { sheets: A(o).sheets, bodies: (A(o).gate || {}).bodies, left_out: (A(o).gate || {}).left_out, gateOpen: (A(o).gate || {}).ok, elements: A(c).elements, bayOffered: A(c).bayOffered, copies: ch.copies, pitch: ch.pitch_m, gateHigh: ch.gate, costHigh: cost, copiesByClass: ch.copies_by_class, undoTo: A(u).elements_after, gateLow: cl2.gate, costLow: cl2.cost, refuseWhy: bad.why, hinge: { high: ch.hinge, low: cl2.hinge } };
+  fs.writeFileSync(path.join(OUT, 'facts.json'), JSON.stringify(out, null, 1));
+  const ok = Object.values(C).every(Boolean), moved = D.open.pct > 1 && D.convert.pct > 1 && D.bay.pct > 0.2 && D.bay_low.pct > 0.1, undone = D.undo_vs_convert.pct === 0 && D.bay.pct > 0.2, still = D.refuse_unchanged.pct < 0.05;
+  L('C ' + JSON.stringify(C)); L('P (canvas = top 80%, panel = bottom 20%) diffs ' + Object.keys(D).map(k => k + '=' + D[k].pct + '%').join(' ') + ' sizes ' + D.open.w + 'x' + D.open.h);
+  L('PANE_VERDICT ' + (ok && moved && undone && still && !out.checks.pageErrors ? 'PASS' : 'FAIL') + ' answersAgree=' + ok + ' canvasMoved=' + moved + ' undoRestoresPicture=' + undone + ' refuseLeavesPicture=' + still + ' pageErrors=' + out.checks.pageErrors);
+  L('wrote out/facts.json sheets=' + out.add.sheets + ' bodies=' + out.add.bodies + ' elements=' + out.add.elements + ' copies=' + out.add.copies + ' costHigh=' + cost.total + ' costLow=' + (cl2.cost || {}).total + ' gateLow=' + out.add.gateLow);
+  if (!(ok && moved && undone && still && !out.checks.pageErrors)) process.exit(1);
+})().catch(e => { console.error('§FACTS_FAIL ' + (e && e.stack || e)); try { door('model.close'); } catch (x) { /* closed */ } process.exit(1); });

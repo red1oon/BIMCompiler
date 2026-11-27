@@ -1,0 +1,16 @@
+team_keys exit=1
+team_updates exit=0
+team_publish exit=0
+team_versions exit=0
+team_so exit=0
+team_ui_pos exit=0
+team_terms exit=0
+team_seatbelt exit=0
+plugin_role exit=0
+plugin_lifecycle exit=0
+plugin_grant exit=0
+plugin_semver exit=0
+osgi_console exit=0
+modelval_bridge exit=0
+libero_bundle exit=0
+ALLDONE

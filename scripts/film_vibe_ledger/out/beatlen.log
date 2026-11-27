@@ -1,0 +1,25 @@
+§BEATLEN beat=cover voice=0 typing=0.00 -> hold from narr.js
+§BEATLEN beat=before voice=20.53 typing=1.75 -> 22.28 (typing 1.75 + gap 0.3 + voice 19.03 + tail 1.2)
+§BEATLEN beat=after voice=14.11 typing=1.96 -> 16.07 (typing 1.96 + gap 0.3 + voice 12.61 + tail 1.2)
+§BEATLEN beat=ch1 voice=0 typing=0.00 -> hold from narr.js
+§BEATLEN beat=u1 voice=15.23 typing=2.92 -> 18.15 (typing 2.92 + gap 0.3 + voice 13.73 + tail 1.2)
+§BEATLEN beat=u2 voice=18.12 typing=2.96 -> 21.08 (typing 2.96 + gap 0.3 + voice 16.62 + tail 1.2)
+§BEATLEN beat=ch2 voice=0 typing=0.00 -> hold from narr.js
+§BEATLEN beat=v1 voice=21.72 typing=3.83 -> 25.55 (typing 3.83 + gap 0.3 + voice 20.22 + tail 1.2)
+§BEATLEN beat=v2 voice=12.56 typing=2.71 -> 15.27 (typing 2.71 + gap 0.3 + voice 11.06 + tail 1.2)
+§BEATLEN beat=ch3 voice=0 typing=0.00 -> hold from narr.js
+§BEATLEN beat=s1 voice=21.74 typing=5.08 -> 26.82 (typing 5.08 + gap 0.3 + voice 20.24 + tail 1.2)
+§BEATLEN beat=s2 voice=19.63 typing=1.92 -> 21.55 (typing 1.92 + gap 0.3 + voice 18.13 + tail 1.2)
+§BEATLEN beat=ch4 voice=0 typing=0.00 -> hold from narr.js
+§BEATLEN beat=l1 voice=28.28 typing=4.08 -> 32.36 (typing 4.08 + gap 0.3 + voice 26.78 + tail 1.2)
+§BEATLEN beat=l2 voice=17.89 typing=4.96 -> 22.85 (typing 4.96 + gap 0.3 + voice 16.39 + tail 1.2)
+§BEATLEN beat=l3 voice=19.73 typing=0.00 -> 19.73
+§BEATLEN beat=ch5 voice=0 typing=0.00 -> hold from narr.js
+§BEATLEN beat=c1 voice=21.69 typing=2.04 -> 23.73 (typing 2.04 + gap 0.3 + voice 20.19 + tail 1.2)
+§BEATLEN beat=c2 voice=17.09 typing=4.29 -> 21.38 (typing 4.29 + gap 0.3 + voice 15.59 + tail 1.2)
+§BEATLEN beat=c3 voice=18.22 typing=4.46 -> 22.68 (typing 4.46 + gap 0.3 + voice 16.72 + tail 1.2)
+§BEATLEN beat=c5 voice=27.62 typing=2.13 -> 29.75 (typing 2.13 + gap 0.3 + voice 26.12 + tail 1.2)
+§BEATLEN beat=aid voice=15.83 typing=2.00 -> 17.83 (typing 2.00 + gap 0.3 + voice 14.33 + tail 1.2)
+§BEATLEN beat=roadmap voice=11.76 typing=0.00 -> 11.76
+§BEATLEN beat=close voice=18.01 typing=0.00 -> 18.01
+§BEATLEN_DONE beats=18 total=386.8s

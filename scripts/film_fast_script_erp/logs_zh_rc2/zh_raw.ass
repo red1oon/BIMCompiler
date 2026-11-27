@@ -1,0 +1,52 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1920
+PlayResY: 1080
+WrapStyle: 0
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: F,Noto Sans CJK SC,46,&H00B4F0FF,&H00FFFFFF,&H90000000,&H00000000,0,0,0,0,100,100,0,0,1,2.6,0,2,260,260,48,1
+Style: M,Noto Sans CJK SC,46,&H00FFE6B4,&H00FFFFFF,&H90000000,&H00000000,0,0,0,0,100,100,0,0,1,2.6,0,2,260,260,48,1
+Style: Credit,Noto Sans CJK SC,30,&H00DDDDDD,&H00FFFFFF,&H90000000,&H00000000,0,1,0,0,100,100,0,0,1,2,0,8,200,200,36,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:05.47,0:00:06.70,F,start#0,0,0,0,,怎么开始？
+Dialogue: 0,0:00:06.57,0:00:14.99,M,start#1,0,0,0,,输入 red one。问候语会数出它的动词和词：七十三个动词，二十六个词。然后是提示行。
+Dialogue: 0,0:00:19.97,0:00:21.25,F,help#0,0,0,0,,它能做什么？
+Dialogue: 0,0:00:21.12,0:00:29.72,M,help#1,0,0,0,,三个组：BIM、MIS 和 ERP。ERP 组有四个词：post、do、run 和 next。
+Dialogue: 0,0:00:35.88,0:00:37.70,F,level#0,0,0,0,,它会解释每个词吗？
+Dialogue: 0,0:00:37.57,0:00:45.56,M,level#1,0,0,0,,先输入 level student，再输入 help run。它会说明这个词做什么，以及它运行的那行命令。
+Dialogue: 0,0:00:53.63,0:00:55.08,F,bp#0,0,0,0,,怎么进入表格？
+Dialogue: 0,0:00:54.95,0:01:06.57,M,bp#1,0,0,0,,先输入几个字母。灰色的建议会出现，按 Tab 就能接受。然后输入 ls：共一百一十三个业务伙伴，显示二十个。
+Dialogue: 0,0:01:14.30,0:01:15.98,F,po1#0,0,0,0,,它能运行流程吗？
+Dialogue: 0,0:01:15.85,0:01:23.01,M,po1#1,0,0,0,,输入 run 和流程的名称。它按字典里的顺序提问。先问项目：有三个可选。
+Dialogue: 0,0:01:24.67,0:01:25.72,F,po2#0,0,0,0,,阶段呢？
+Dialogue: 0,0:01:25.59,0:01:29.87,M,po2#1,0,0,0,,只提供这个项目自己的七个阶段。我跳过它。
+Dialogue: 0,0:01:31.51,0:01:32.70,F,po3#0,0,0,0,,项目行呢？
+Dialogue: 0,0:01:32.57,0:01:35.68,M,po3#1,0,0,0,,共三十二行。这个也跳过。
+Dialogue: 0,0:01:40.18,0:01:41.62,F,po4#0,0,0,0,,最后的问题呢？
+Dialogue: 0,0:01:41.49,0:01:54.57,M,po4#1,0,0,0,,合并选项保持默认，选是。按回车，它运行的完整命令就打印出来，接着是摘要：生成了三张采购订单，按编号列出，来自四行订单行。
+Dialogue: 0,0:02:00.63,0:02:02.10,F,co#0,0,0,0,,怎么完成订单？
+Dialogue: 0,0:02:01.97,0:02:11.17,M,co#1,0,0,0,,输入 cd Order，再输入 do CO 和摘要里的订单号。状态从 D R 变成 C O，总计是八十一。
+Dialogue: 0,0:02:14.93,0:02:16.79,F,next#0,0,0,0,,现在它还能做什么？
+Dialogue: 0,0:02:16.66,0:02:26.36,M,next#1,0,0,0,,next 加订单号。合法的下一步，画成树状图。关闭和作废有对应的词。R E 还没有词。
+Dialogue: 0,0:02:30.34,0:02:32.28,F,gap#0,0,0,0,,它不能运行的流程呢？
+Dialogue: 0,0:02:32.15,0:02:39.68,M,gap#1,0,0,0,,Renumber 还没有 J S 移植。red one 会这样告诉你，缺口在 red one，不是你的错。
+Dialogue: 0,0:02:43.01,0:02:44.76,F,report#0,0,0,0,,我能告诉开发者吗？
+Dialogue: 0,0:02:44.63,0:02:49.63,M,report#1,0,0,0,,report 会显示草稿。你打开它之前，什么都不会发送。
+Dialogue: 0,0:02:52.55,0:02:53.71,F,url#0,0,0,0,,怎么发送？
+Dialogue: 0,0:02:53.58,0:03:00.96,M,url#1,0,0,0,,选择 GitHub 议题，链接就打印出来：六千八百三十八个字符。要不要打开，由你决定。
+Dialogue: 0,0:03:07.34,0:03:08.78,F,cost#0,0,0,0,,回到建筑里呢？
+Dialogue: 0,0:03:08.66,0:03:20.91,M,cost#1,0,0,0,,Duplex。按专业计价，先显示各组：五个专业，一共一百零五万四千四百八十二。然后是提议：要过账到 ERP 项目订单吗？
+Dialogue: 0,0:03:29.72,0:03:30.95,F,post#0,0,0,0,,回答是呢？
+Dialogue: 0,0:03:30.82,0:03:42.95,M,post#1,0,0,0,,它开始过账，等待是真实的：这里用了七秒。生成了项目，共有八十一项更改。计划金额是一百零五万四千四百八十二点二二七八四。
+Dialogue: 0,0:03:45.01,0:03:46.33,F,proj#0,0,0,0,,能看到它吗？
+Dialogue: 0,0:03:46.20,0:03:52.50,M,proj#1,0,0,0,,它提议打开这个项目。回答是，提示符就移到那里：四十八个属性。
+Dialogue: 0,0:03:55.47,0:03:56.51,F,ls#0,0,0,0,,列表呢？
+Dialogue: 0,0:03:56.38,0:04:00.22,M,ls#1,0,0,0,,ls 显示四个项目。新的就在其中。
+Dialogue: 0,0:04:02.55,0:04:05.08,M,exit#0,0,0,0,,输入 exit，就回到了 shell。
+Dialogue: 0,0:04:04.95,0:04:06.46,F,exit#1,0,0,0,,记住这个名字。
+Dialogue: 0,0:04:06.33,0:04:07.49,M,exit#2,0,0,0,,red one。
+Dialogue: 0,0:04:09.33,0:04:17.23,Credit,,0,0,0,,声音：AI 生成（Microsoft Edge TTS，云端）  ·  脚本导演 red1

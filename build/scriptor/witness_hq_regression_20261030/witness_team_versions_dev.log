@@ -1,0 +1,50 @@
+═══ W-VERSIONS-ERP — the ERP host passes opts.versions (TEAMWORK_FRAMEWORK §16.33) ═══
+
+§M1 default configuration
+   🟢 M1 no configuration: shape 1 for all four op types, 0 sets, one §TEAM_VERSIONS line — {"appV":1,"loaded":0}
+   🟢 M1 an op authored through the real commit funnel carries NO `sv` (byte-identical to before) and is MERGED — ["op_type","params"] MERGED
+   🟢 M1 versionState: nothing parked, not provisional — {"parked_count":0,"provisional":false,"parked_by_reason":{},"refused_count":0,"refused_by_reason":{}}
+§M2 a newer peer's op parks
+   🟢 M2 the ERP authored a real c_bpartner op (precondition)
+   🟢 M2 the sv:2 op is PARKED needs-upgrade and absent from foldable() — {"verdict":"PARKED","reason":"needs-upgrade"}
+   🟢 M2 versionState: provisional, 1 op needs-upgrade — {"parked_count":1,"provisional":true,"parked_by_reason":{"needs-upgrade":1},"refused_count":0,"refused_by_reason":{}}
+   🟢 M2 CONTROL: the same op without sv is MERGED and folded — {"verdict":"MERGED","reason":"role 102 ok"}
+   🟢 M2 the ERP database gained exactly ONE business partner from the two peer ops (the control): the parked op never reached it — c_bpartner CRUD_CREATE rows 2 -> 3
+§M3 shape 2 and an admin-signed set
+   🟢 M3 the ERP authored a real c_bpartner op under shape 2 (precondition)
+   🟢 M3 the signed set loads (sets=1/1) and the signed plan verifies with the same key — plan=ok
+   🟢 M3 an older peer's op (no sv) is folded in the v2 shape: fields.legacy_note -> fields.description, marked _sv 2 — description=from an older app
+   🟢 M3 the STORED envelope of that op is byte-identical and still says legacy_note (upcast is on a copy)
+   🟢 M3 a native sv:2 op MERGES, and the op the ERP authored itself carries sv:2 — real.sv=2
+   🟢 M3 both peer ops became business partners in the ERP database (2 -> 4) and nothing is parked — {"parked_count":0,"provisional":false,"parked_by_reason":{},"refused_count":0,"refused_by_reason":{}}
+§M4 sets that must be refused
+   🟢 M4 unsigned set -> refused:unsigned, sets=0/1
+   🟢 M4 unsigned: the older peer's op is PARKED needs-mapping, not folded, not in the database (rows 2 -> 2) — {"verdict":"PARKED","reason":"needs-mapping"}
+   🟢 M4 untrusted set -> refused:untrusted-signer, sets=0/1
+   🟢 M4 untrusted: the older peer's op is PARKED needs-mapping, not folded, not in the database (rows 2 -> 2) — {"verdict":"PARKED","reason":"needs-mapping"}
+   🟢 M4 tampered set -> refused:bad-signature, sets=0/1
+   🟢 M4 tampered: the older peer's op is PARKED needs-mapping, not folded, not in the database (rows 2 -> 2) — {"verdict":"PARKED","reason":"needs-mapping"}
+§M5 empty trust list
+   🟢 M5 a correctly signed set is REFUSED untrusted-signer when the trust list is empty; the older op parks needs-mapping — {"verdict":"PARKED","reason":"needs-mapping"}
+   🟢 M5 CONTROL: the (unsigned) plan still works exactly as before with an empty trust list (c_order, c_bpartner, c_orderline shared) — plan=unsigned shared=3
+§I indicator
+   🟢 I1 default configuration: data-versions=ok, nothing parked, no versioning text in the warning line — {"v":"ok","p":"0","w":"⚠ 1 local-only (not shared)"}
+   🟢 I2 a newer peer's op: data-versions=provisional, data-parked=1, the warning line says exactly "⚠ 1 change from a newer app waits — update this app", the title carries needs-upgrade: 1 — {"v":"provisional","p":"1","w":"⚠ 1 local-only (not shared) ⚠ 1 change from a newer app waits — update this app","t":"66db7852: fk-table-mismatch node_id points at c_bpartner\nneeds-upgrade: 1"}
+   🟢 I3 a refused set with an older peer's op: the line says "⚠ 1 change waits for a translation rule from the team admin" and never "newer app" — {"v":"provisional","w":"⚠ 1 local-only (not shared) ⚠ 1 change waits for a translation rule from the team admin"}
+   🟢 I4 shape 2 + the signed set: the indicator is clear by itself (data-versions=ok, no versioning text) — {"v":"ok","w":"⚠ 1 local-only (not shared)"}
+   🟢 I5 parity: describe() counts equal the store's versionState() counts (needs-upgrade 1 in M2, needs-mapping 1 in M4) — {"m2":{"parked":1,"by":{"needs-upgrade":1}},"m4":{"parked":1,"by":{"needs-mapping":1}}}
+   🟢 I6 the wording for retired / unreadable / plural / dependents, exactly (pure function fed synthetic verdicts) — {"ret":"⚠ 2 changes from a retired version were ignored · 1 change with an unreadable version was ignored","up":"⚠ 2 changes from a newer app wait — update this app · 3 more wait on those","none":"","depsOnly":"","lvlRefused":"refused","lvlProv":"provisional"}
+   🟢 M6 0 page errors across all 7 loads — errors=0
+§VM_ARMS red=none judged=29
+
+§VM_MUTANTS
+   🟢 versions not passed to the store -> red arms: M2, M3, M4, M5, I2, I3, I5 (expected M2/M4)
+   🟢 verifySet accepts everything -> red arms: M4, M5, I3, I5 (expected M4/M5)
+   🟢 an empty trust list accepts a set -> red arms: M5 (expected M5)
+   🟢 stamp ignores the shape -> red arms: M1 (expected M1)
+   🟢 indicator text blanked -> red arms: I2, I3, I6 (expected I2/I3)
+   🟢 mapping wording swapped -> red arms: I3 (expected I3)
+   🟢 host never paints the chip -> red arms: I1, I2, I3, I4 (expected I2)
+   🟢 level never clears -> red arms: I1, I4, I6 (expected I1/I4)
+§VM_VERDICT PASS judged=29 fails=0 mutants_killed=8/8 pageerrors=0
+exit=0

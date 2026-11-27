@@ -1,0 +1,7 @@
+  PASS B1 activation shows one Bump button, idle, wired to x0Navigator.bumpButton — $(circle-outline) Bump
+  PASS B2 a press checks in the background (the press returned before the check ended), shows progress, ends solid ✓ — during="$(sync~spin) Bump: checking" progress=[$(sync~spin) Bump: bridge 0/2 | $(sync~spin) Bump: bridge 1/2 | $(sync~spin) Bump: bridge 2/2 | $(sync~spin) Bump: witnesses 0/1 | $(sync~spin) Bump: witnesses 1/1] end="$(pass-filled) Bump ✓" args="--changed --check --root /tmp/wt-film-aid-ootb"
+  PASS B3 a press on ✓ writes (--changed --write) and goes back to idle — args="--changed --write --root /tmp/wt-film-aid-ootb" end="$(circle-outline) Bump"
+  PASS B4 a check with a new failure ends red with the witness name — $(error) Bump ✗ witness_x
+  PASS B5 a save in the source root while ✗ puts it back to idle (the result was for the old tree) — $(circle-outline) Bump / X0 Navigator: changed since the check. X
+  PASS B6 the ERP quick fix starts the background check (not ship.bump's 60 s spawnSync): the fixture saw --changed --check — args="--changed --check --root /tmp/wt-film-aid-ootb"
+§X0_BUMP_BUTTON checks=6 failed=0 verdict=PASS

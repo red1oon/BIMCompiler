@@ -1,0 +1,27 @@
+§FACTS tree commit=560b3541 origin/main=a59d0566
+§FACTS witness refs reused out/witness_x0_refs.log
+§FACTS   refs PASS | §X0_REFS fields=61 counts_agree=Y sites=304 lines_ok=Y phantom_reads_only=Y unknown=Y moved_line_dropped=Y no_list_no_guess=Y gen_ms=7035 verdict=PASS
+§FACTS witness core_pure reused out/witness_x0_core_pure.log
+§FACTS   core_pure PASS | §X0_CORE_PURE_W core_files=125 tracked_js=3396 judged=9 failed=0 verdict=PASS
+§FACTS witness isolation reused out/witness_x0_isolation.log
+§FACTS   isolation PASS | §X0_ISOLATION precache=0 minify=0 tags=0 sw_files=4 html_files=83 deps=0 red=Y verdict=PASS
+§FACTS witness lens reused out/witness_x0_lens.log
+§FACTS   lens PASS | §LENS shown=Y hidden_changed=Y hidden_dirty=Y unstamped_ignored=Y explain_shown=Y explain_hidden=Y explain_absent=Y extra_dir=Y extra_changed=Y bake_env_not_a_stamp=Y caps=Y bake_stamps=Y verdict=PASS
+§FACTS witness context reused out/witness_x0_context.log
+§FACTS   context PASS | §X0_CONTEXT header=Y load=Y fields=Y tags=Y changed_hidden=Y unstamped_no_value=Y empty_says_none=Y missing_file=Y no_index_inconclusive=Y real_files=6 real_same=6 verdict=PASS
+§FACTS witness taghover reused out/witness_x0_taghover.log
+§FACTS   taghover PASS | §DEVTK_SPEC tags=5594 files=769 known_hit=Y fake_none=Y verdict=PASS
+§FACTS witness bump_button reused out/witness_x0_bump_button.log
+§FACTS   bump_button PASS | §X0_BUMP_BUTTON checks=6 failed=0 verdict=PASS
+§FACTS witness bump_parity reused out/witness_bump_parity.log
+§FACTS   bump_parity PASS | §BUMP_PARITY_W_VERDICT PASS judged=24 failed=0 real_row=skipped
+§FACTS witness erp_hover reused out/witness_erp_hover.log
+§FACTS   erp_hover PASS | §ERP_HOVER_W VERDICT PASS fail=0
+§FACTS witness realvsc reused out/witness_x0_realvsc.log
+§FACTS   realvsc PASS | §X0_REALVSC vscode=1.146.0 active=Y fresh=Y def=Y hover=Y phantom=Y unknown_silent=Y tag=Y fake_tag=Y commands=Y cost=Y check=Y status=Y lens=Y refs=Y bump=Y bump_button=Y refs_red=Y last_value=Y last
+§FACTS witness mcp reused out/witness_x0_mcp.log
+§FACTS   mcp FAIL | §X0_MCP tools=8 init=Y field=Y phantom=Y unknown=Y tag=Y fake_tag=Y cost=Y loaded=Y lens=Y context=Y used=Y check=Y bad_tool_error=Y bad_json_survives=Y network_modules=1 verdict=FAIL
+§FACTS §X0_OFFLINE files=16 parsed=16 understanding_features=6 understanding_features_net=0 ship_features=3 ship_features_net=6 glue_net=0 red_control=DETECTED scanner_blind=N verdict=PASS
+§FACTS erp {"table":"C_Order","column":"C_BPartner_ID","layers":20,"lined":18,"key":"Alt+1","opened":"vscode://file<bim-ootb>/erp/callouts/CalloutOrder.js:181","pickedAt":"erp/callouts/CalloutOrder.js:181","hoverLine":"","pageErrors":0}
+§FACTS prs {"2966":{"what":"Context for this file","state":"MERGED feat(devtools): Context for this file, X0 command and facts-server tool (#2965)"},"2970":{"what":"tag hover: last value","state":"MERGED feat(devtools): tag hover says the last provable value or names why there is none (#2969)"},"2985":{"what":"Find All References","state":"MERGED feat(devtools): Find All References for a field of the shared object (#2983)"},"3055":{"what":"ERP field hover","state":"MERGED feat(devtools): hover an ERP field to see every layer of code behind it (F.22)"},"3162":{"what":"the Bump button","state":"MERGED devtools: the Bump button - check in the background, solid on pass, press to write (§F.34)"},"3209":{"what":"core-purity warning","state":"MERGED devtools(x0): a core-purity warning in the editor; the scan moves to one shared module (§F.35)"}}
+§FACTS VERDICT PASS

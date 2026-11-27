@@ -1,0 +1,35 @@
+§HOSTS_START reader=/tmp/wt-pin · real adapters, real plans, compiler signer · no browser
+§W-HOSTS-MODELLER
+   🟢 modeller: no trust list (the shipped default) => state=unsigned, the same scope as before, and the app prints its plan line — sig=unsigned | §TEAM_PLAN hash=4f0bfecad90b creates=6 move=pos_x|pos_y|pos_z
+   🟢 modeller: trust [K1] + plan signed by K1 (by the compiler's own signer) => state=ok and the host shares exactly what the unsigned run shared — sig=ok | §TEAM_PLAN hash=4f0bfecad90b creates=6 move=pos_x|pos_y|pos_z
+   🟢 modeller: a plan altered AFTER signing => state=invalid, NOTHING is shared, and the app says so — sig=invalid | §TEAM_PLAN missing — nothing is shared
+   🟢 modeller: the UNSIGNED plan under a trust list => closed (state=invalid) — sig=invalid
+   🟢 modeller: signed by a key that is not in the trust list => state=untrusted, closed — sig=untrusted
+   🟢 modeller: no plan at all => state=missing, nothing shared, "missing — nothing is shared" printed — sig=missing | §TEAM_PLAN missing — nothing is shared
+§W-HOSTS-ORDER
+   🟢 modeller (trust+signed): the verification verdict is printed BEFORE `ready` resolves, so no scan or commit is judged against an unverified plan — sig@1 ready@3
+   🟢 modeller (no trust): the verification verdict is printed BEFORE `ready` resolves, so no scan or commit is judged against an unverified plan — sig@1 ready@3
+   🟢 modeller (tampered): the verification verdict is printed BEFORE `ready` resolves, so no scan or commit is judged against an unverified plan — sig@1 ready@3
+   🟢 modeller (trust+signed, SLOW verification (120 ms)): the verification verdict is printed BEFORE `ready` resolves, so no scan or commit is judged against an unverified plan — sig@2 ready@3
+§W-HOSTS-ERP
+   🟢 erp: no trust list (the shipped default) => state=unsigned, the same scope as before, and the app prints its plan line — sig=unsigned | §TEAM_PLAN hash=87977c52fb50 tables=857 local=5
+   🟢 erp: trust [K1] + plan signed by K1 (by the compiler's own signer) => state=ok and the host shares exactly what the unsigned run shared — sig=ok | §TEAM_PLAN hash=87977c52fb50 tables=857 local=5
+   🟢 erp: a plan altered AFTER signing => state=invalid, NOTHING is shared, and the app says so — sig=invalid | §TEAM_PLAN missing — nothing is shared
+   🟢 erp: the UNSIGNED plan under a trust list => closed (state=invalid) — sig=invalid
+   🟢 erp: signed by a key that is not in the trust list => state=untrusted, closed — sig=untrusted
+   🟢 erp: no plan at all => state=missing, nothing shared, "missing — nothing is shared" printed — sig=missing | §TEAM_PLAN missing — nothing is shared
+§W-HOSTS-ORDER
+   🟢 erp (trust+signed): the verification verdict is printed BEFORE `ready` resolves, so no scan or commit is judged against an unverified plan — sig@1 ready@3
+   🟢 erp (no trust): the verification verdict is printed BEFORE `ready` resolves, so no scan or commit is judged against an unverified plan — sig@1 ready@3
+   🟢 erp (tampered): the verification verdict is printed BEFORE `ready` resolves, so no scan or commit is judged against an unverified plan — sig@1 ready@3
+   🟢 erp (trust+signed, SLOW verification (120 ms)): the verification verdict is printed BEFORE `ready` resolves, so no scan or commit is judged against an unverified plan — sig@2 ready@3
+§W-HOSTS-GENESIS
+/home/red1/bim-compiler/scripts/witness_scriptor_hosts.js:90
+  var r1 = await boot('erp', byK1, null, src); await r1.api._pinTrust(withK1.S);
+                                                            ^
+
+TypeError: r1.api._pinTrust is not a function
+    at genesisArms (/home/red1/bim-compiler/scripts/witness_scriptor_hosts.js:90:61)
+    at async /home/red1/bim-compiler/scripts/witness_scriptor_hosts.js:111:3
+
+Node.js v18.19.1

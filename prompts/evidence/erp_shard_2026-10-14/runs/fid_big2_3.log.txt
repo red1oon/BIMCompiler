@@ -1,0 +1,4 @@
+§FIDELITY start part=3/8 tables=116 of 925 sqlite=bloat10r_v2.db pgdb=bloat10r
+§FIDELITY table=ad_changelog rows=5769522 pgRows=5769522 pg=3326250019878983512075481 sq=3326250019878983512075481 OK t=83s
+§FIDELITY table=m_inout rows=262251 pgRows=262251 pg=151421179391736864995600 sq=151421179391736864995600 OK t=91s
+§FIDELITY_VERDICT part=3/8 PASS tables=116 judgedTables=62 judgedRows=6113926 totalSec=114s

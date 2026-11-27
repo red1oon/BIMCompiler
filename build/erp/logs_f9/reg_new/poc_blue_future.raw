@@ -1,0 +1,36 @@
+§KERNEL_OPS_LOADED v13 (W-CHAIN/W-SIGN/G-IDENTITY/W-OPGROUP/W-RATE-INPUT/W-BLUE-FUTURE/W-EMIT/T6-persist-guard/T2-content-sign/T7-incremental/W-OPLOG-APPEND)
+§KRN_GROUP committed gid=g-create-7001 ops=1 groupHash=deee77b4163c… tip=996fa2be36c3… sealed=1 (WHOLE — all-or-none)
+§KRN_GROUP committed gid=g-status-7001 ops=1 groupHash=50ed81bf6165… tip=e099c295323d… sealed=1 (WHOLE — all-or-none)
+── W-BLUE-FUTURE ──
+§KERNEL_OP replay type=ALL count=2
+§KERNEL_OP replay type=SET_STATUS count=1
+§KRN_GROUP committed gid=g-blue-complete-7001 ops=5 groupHash=bdf021ef52b1… tip=d52578b1c7ac… sealed=5 (WHOLE — all-or-none)
+§KRN_GROUP committed gid=g-blue-note-7001 ops=1 groupHash=b5766618b333… tip=2cadb7d6d0e5… sealed=1 (WHOLE — all-or-none)
+§KERNEL_OP replay type=CREATE_DOCUMENT count=2
+§KERNEL_OP replay type=CREATE_DOCUMENT count=2
+   🟢 §BLUE-COMPLETEIT full fan-out in blue (M_InOut + C_Invoice created) — M_InOut=1 C_Invoice=1
+§KERNEL_OP replay type=ALL count=2
+   🟢 §BLUE-INVISIBLE official projection sees NONE of the blue ops — officialOps before=2 after=2 offInOut=0 offInv=0
+§KERNEL_OP replay type=SET_STATUS count=1
+§KERNEL_OP replay type=SET_STATUS count=1
+§KERNEL_OP replay type=SET_STATUS count=1
+§KERNEL_OP replay type=SET_STATUS count=1
+   🟢 §FALSIFIER official=DR (blue CO invisible) but branch=CO — official=DR branch=CO
+§KERNEL_OP replay type=CREATE_DOCUMENT count=2
+   🟢 §BLUE-ZOOM drill-through resolves blue children — targets=["M_InOut","C_Invoice"]
+§KRN_CHAIN verify OK len=8 tip=2cadb7d6d0e5…
+   🟢 §FALSIFIER chain verifies with blue ops present (tag ∉ hash) — len=8
+§KRN_CHAIN verify OK len=8 tip=2cadb7d6d0e5…
+§BLUE-ACCEPT branch=blue-7001-sandbox uptoId=7 accepted=5 remainingBlue=1 chainOk=true
+§KERNEL_OP replay type=CREATE_DOCUMENT count=2
+§KERNEL_OP replay type=CREATE_DOCUMENT count=2
+§KERNEL_OP replay type=SET_STATUS count=2
+§KERNEL_OP replay type=SET_STATUS count=2
+   🟢 §BLUE-ACCEPT-UPTO accepted CompleteIt → official CO + children real; chain still OK — official=CO offInOut=1 offInv=1 chainOk=true
+   🟢 §BLUE-ACCEPT-UPTO later dot stays blue (accept-up-to-here, not accept-all) — remainingBlue=1
+§BLUE-DISCARD branch=blue-7001-sandbox folded=1 (official tip untouched)
+   🟢 §BLUE-DISCARD shirk remaining blue → folded away, never official — discarded=1 noteInOfficial=0 branchOpsLeft=0
+§KRN_CHAIN verify OK len=8 tip=2cadb7d6d0e5…
+   🟢 §FALSIFIER chain verifies after accept+discard — len=8
+✅ W-BLUE-FUTURE ALL PASS — speculative forward branch: invisible→CompleteIt→Zoom→accept-up-to / discard, all on the log
+exit=0

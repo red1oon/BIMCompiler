@@ -3,6 +3,7 @@ BIM OOTB / ERP OOTB — iDempiere 2.0: the engine↔UI contract (the seam).
 Copyright (c) 2025-2026 Redhuan D. Oon <red1org@gmail.com>
 SPDX-License-Identifier: MIT
 -->
+> **Lane (2026-11-09):** this file is one part of the ONE-DOOR framework (Actor | Channel | One door | Engine). Home and lane map: `prompts/NEURO_SYMBOLIC_ORDER_CONTRACT.md` §0. Column owned here: ENGINE seam (`dispatch`, `verbs(ctx)`).
 
 # Engine ↔ UI Contract — the one seam between the model engine and the renderer
 

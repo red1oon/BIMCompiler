@@ -270,11 +270,6 @@
       "bytes": 16187
     },
     {
-      "file": "img_store.js",
-      "loc": 173,
-      "bytes": 9219
-    },
-    {
       "file": "inout_confirm.js",
       "loc": 181,
       "bytes": 12719
@@ -293,16 +288,6 @@
       "file": "kernel_ops.js",
       "loc": 817,
       "bytes": 51421
-    },
-    {
-      "file": "kitchen_core.js",
-      "loc": 89,
-      "bytes": 5160
-    },
-    {
-      "file": "kitchen_lens.js",
-      "loc": 215,
-      "bytes": 12917
     },
     {
       "file": "ninja_bundle.js",
@@ -388,11 +373,6 @@
       "file": "pos_core.js",
       "loc": 512,
       "bytes": 33182
-    },
-    {
-      "file": "pos_lens.js",
-      "loc": 1553,
-      "bytes": 97551
     },
     {
       "file": "post_resolver.js",

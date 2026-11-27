@@ -1,0 +1,27 @@
+ch0	0.40	12.00	user 2026-10-06 wording (Ch0 speech card)	M: A work in progress, all from your IFC model.	M: A work in progress: three D to eight D ERP, all from your IFC model, with no AI API call. All landed code, on GitHub.
+chap1	12.00	15.00	chapter card 1	M: Chapter one.	M: Chapter one. Bake a movie in seconds.
+ask	15.00	17.40	screen: Alt+C panel beside the preview	F: How long to set this up?	F: How long does this take to set up?
+boxes	17.40	26.00	user 2026-10-07 wording · screen: feature checkboxes ticked	M: Seconds. Check the boxes.	M: Seconds. Easily check the boxes of what you want seen in the film, and all is preset according to your IFC metadata.
+preview	26.00	31.20	screen: preview captions Ground Treatment → Road Furniture, days running	F: Can I see it first? | M: The preview.	F: Can I see it first? | M: The preview plays the build. Ground treatment first, finishing last.
+bake	31.20	36.50	§CLI_BAKE_WALL totalSec=1252 (v7)	F: Then? | M: Leave it to bake.	F: And then? | M: Leave it to bake. This one took twenty-one minutes.
+chap2	36.50	39.50	chapter card 2	M: Chapter two.	M: Chapter two. The build-up.
+ground	39.50	46.50	§CGD_PAIR GEOTECH=9145 · v7 Build-up=Ground Treatment	M: Ground treatment first.	F: What goes in first? | M: Ground treatment. Nine thousand pieces: piles, soil nails, drains.
+earth	46.50	52.50	v7 Build-up=Earthworks 11.8 s	M: Then the earthworks.	M: Then the earthworks, and the slopes.
+counts	52.50	58.50	§ROAD_PANEL_DRAW kind=counts (v7 21.6 s)	F: Those panels? | M: Counts.	F: What are those panels? | M: Counts, read from the model as it builds.
+groundcard	58.50	64.97	§ROAD_PANEL_DRAW kind=ground · §EARTHWORKS_VOLUME V_m3=22048.191 B_m3=2.256	M: Twenty-two thousand cubic metres.	M: Ground works here: about twenty-two thousand cubic metres, read from its own solid.
+check	64.97	71.00	§ROAD_PANEL_DRAW kind=check (SPECULATIVE)	M: A road check, speculative.	M: A road check, marked speculative. The engine says what it cannot prove.
+outstanding	71.00	77.43	§ROAD_PANEL_DRAW kind=outstanding	M: What is outstanding.	M: And what is outstanding: not in this model yet.
+planned	77.43	82.93	§ROAD_PANEL_DRAW kind=planned	M: What is planned.	M: Then what is planned for this view.
+finish	82.93	89.93	v7 Build-up Road Lighting/Signage/Road Furniture/Road Marking	M: Lamps, signs, markings.	M: Lamps, signs, furniture and markings close it out.
+total	89.93	98.53	§TIME_MACHINE 19559 ops · §CPE_DAY_COUNTER of=79 · §CPE_BUILDUP_PLACED_SUMMARY drawn=8/8	F: How many pieces? | M: Nineteen thousand.	F: How many pieces in all? | M: Nineteen thousand five hundred fifty-nine, over seventy-nine days.
+chap3	98.53	101.53	chapter card 3	M: Chapter three.	M: Chapter three. ERP, the eighth dimension.
+find	101.53	104.53	§FIND_COST scope=SIGNAGE elements=138 cost=110400	M: Pick signage.	M: Pick signage. One hundred thirty-eight signs.
+login	104.53	110.53	ERP sign-in "Offline demo · identity & context selection" · §SIGN alg=ECDSA-P256 custody=idb-nonextractable	M: Offline sign-in.	M: Offline sign-in: no server, local-first. Every change is signed on your device.
+lines	110.53	122.53	§PROJ_PUSH plannedAmt=110400 · Task Line 138 ea SIGNAGE · rates.js SIGNAGE 800 (Selangor tender 2023)	F: And in the ERP? | M: One line.	F: And in the ERP? | M: One project line. One hundred thirty-eight signs, at eight hundred ringgit each, from a published state tender.
+back	122.53	131.53	§ZOOM-ACROSS launch · §FOCUS_ELEM guids=138 lit=138	M: The red pill leads back.	M: From here, procurement leads back to the model. The red pill lights the same signs.
+chap4	131.53	134.53	chapter card 4	M: Chapter four.	M: Chapter four. Mobile.
+mobile	134.53	139.53	user 2026-10-06 (mock-up clip, chip: GPS mapping pending)	M: Mobile-ready.	M: You can set it up mobile-ready.
+health	139.53	147.53	§HEALTH_CARD overall proven=2 bounded=1 speculative=4 · clash real=11 broad=30529 · B=2.256	M: Eleven real clashes.	M: Overall health. Eleven real clashes. Volume within two cubic metres. Four checks still speculative.
+close	147.53	157.50	§MC_REPORT rows=302 valid=20 speculative=282 · user 2026-10-06	M: Now you know what you got.	F: And the full report? | M: Every row, valid or speculative, shown. Now you know what you got.
+wipcard	157.50	164.50	user 2026-10-06 closing card wording	M: Give us another week.	M: Civil works road construction is our latest challenge. Give us another week to complete.
+fees	164.50	174.50	close_fees card · solibri.com/pricing · CDW-G Navisworks · user 2026-10-07 wording	F: What would others charge?	F: What would others charge for this? | M: For the long tail of DIY users who want freedom, not a free lunch.

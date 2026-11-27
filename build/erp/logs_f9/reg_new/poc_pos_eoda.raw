@@ -1,0 +1,19 @@
+═══ W-POS-EODA — backflush is the LATE Close-Cash fold, == Σ per-sale, VO skipped ═══
+
+   🔴 1. per-sale group with backflush:false emits ZERO CONSUME (till records, does not consume) — consumeOps=8
+   🟢    (control) default still backflushes per-sale (opt-out only) — engine unit witnesses unaffected
+/home/red1/bim-compiler/scripts/poc_pos_eoda.js:68
+var eod = POS.backflushOps(ctx, dayLines, WH);
+              ^
+
+TypeError: POS.backflushOps is not a function
+    at Object.<anonymous> (/home/red1/bim-compiler/scripts/poc_pos_eoda.js:68:15)
+    at Module._compile (node:internal/modules/cjs/loader:1356:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
+    at Module.load (node:internal/modules/cjs/loader:1197:32)
+    at Module._load (node:internal/modules/cjs/loader:1013:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:128:12)
+    at node:internal/main/run_main_module:28:49
+
+Node.js v18.19.1
+exit=1

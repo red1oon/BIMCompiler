@@ -1,0 +1,45 @@
+§ERP_FILM_FACT gpu=ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)
+§ERP_FILM_BEAT id=s01 t=0.00 lang=en Info Product before the sale
+§ERP_FILM_FACT menu.win143=129
+§ERP_FILM_FACT onhand.before=50
+§ERP_FILM_FACT infoProduct.before={"oh":"50","av":"50","rs":"0"}
+§ERP_FILM_BEAT id=s02 t=17.00 lang=en New POS Order, customer, org
+§ERP_FILM_FACT docnoPreview=<80003>
+§ERP_FILM_FACT docnoAllocated=§DOCNO table=c_order docno=80003 seqOps=ad_sequence:CRUD_UPDATE via=ModelTrade.MSequence bump=in-group
+§ERP_FILM_BEAT id=s03 t=31.00 lang=en Order line: Mulch x 1
+§ERP_FILM_FACT line=["qtyentered=1","priceentered=3","linenetamt=3"]
+§ERP_FILM_BEAT id=s04 t=41.78 lang=en Complete: one signed group
+§ERP_FILM_FACT docActions=["CO","PR","VO"]
+§ERP_FILM_FACT complete=§MODEL-DOCACTION table=c_order id=-1 action=CO ok=true status=CO ops=60 tables={"ad_wf_process:CREATE":1,"ad_wf_activity:CREATE":3,"ad_wf_eventaudit:CREATE":3,"c_acctschema:UPDATE":1,"c_order:UPDATE":
+§ERP_FILM_FACT coGroup=§KRN_GROUP committed gid=073c4d3b-1a27-488c-8653-4c1a6a1102d7 ops=61 groupHash=018c124c7bb0… tip=18781968fd36… sealed=61 (WHOLE — all-or-none)
+§ERP_FILM_FACT coPost=§MODEL-POST table=m_inout id=#new:10 posted=Y facts=4 ; §MODEL-POST table=c_invoice id=#new:37 posted=Y facts=4
+§ERP_FILM_FACT orderId=-1
+§ERP_FILM_FACT docActionsAfter=["CL","VO","RE"]
+§ERP_FILM_HOLD after=s04 extra=2.93
+§ERP_FILM_BEAT id=s05 t=55.21 lang=en Zoom Across lists the generated documents
+§ERP_FILM_FACT zoom=§ZOOM-ACROSS table=C_Order key=C_Order_ID=-1 destinations=2 ["Sales Invoice and Credit/Debit Note(1)","Shipment (Customer)(1)"]
+§ERP_FILM_FACT shipmentRow=[" Completed GardenWorld HQ -1 2026-10-12 600004 Posted"]
+§ERP_FILM_BEAT id=s06 t=65.30 lang=en Shipment books
+§ERP_FILM_FACT posted.shipment={"lines":["14120 · Product asset 0.00 2.70","51100 · Product CoGs 2.70 0.00"],"bal":"Balanced","cov":"complete"}
+§ERP_FILM_FACT postedLog.shipment=§POSTED-FACTS table=M_InOut rec=-15 schema=101 lines=2 schemas=2 dr=2.7 cr=2.7 balanced=true
+§ERP_FILM_HOLD after=s06 extra=0.74
+§ERP_FILM_BEAT id=s07 t=72.75 lang=en Invoice books
+§ERP_FILM_FACT toOrderForm=recnav=Record 6 of 6 status=Sales Order › Order · Record 6 of 6
+§ERP_FILM_FACT invoiceRow=[" Completed GardenWorld HQ -1 2026-10-12 200003 Posted"]
+§ERP_FILM_FACT posted.invoice={"lines":["41000 · Trade Revenue 0.00 3.00","12110 · Accounts Receivable - Trade 3.00 0.00"],"bal":"Balanced","cov":"complete"}
+§ERP_FILM_FACT postedLog.invoice=§POSTED-FACTS table=C_Invoice rec=-42 schema=101 lines=2 schemas=2 dr=3 cr=3 balanced=true
+§ERP_FILM_BEAT id=s08 t=92.60 lang=en Info Product after the sale
+§ERP_FILM_FACT toOrderForm=recnav=Record 6 of 6 status=Sales Order › Order · Record 6 of 6
+§ERP_FILM_FACT infoProduct.afterSale={"oh":"49","av":"49","rs":"0"}
+§ERP_FILM_FACT onhand.afterSale=49
+§ERP_FILM_BEAT id=s09 t=107.49 lang=en Void reverses everything
+§ERP_FILM_FACT void=§MODEL-DOCACTION table=c_order id=-1 action=VO ok=true status=VO ops=82 tables={"c_order:UPDATE":1,"ad_wf_process:CREATE":1,"ad_wf_activity:CREATE":2,"ad_wf_eventaudit:CREATE":2,"c_acctschema:UPDATE":
+§ERP_FILM_FACT voidGroup=§KRN_GROUP committed gid=99695c7c-cdad-4cd2-a988-d27b6db27e0b ops=83 groupHash=d1f9d0f2bc1d… tip=b86767db07ca… sealed=83 (WHOLE — all-or-none)
+§ERP_FILM_FACT voidDocs=[{"k":"inv","docstatus":"RE","v":3},{"k":"inv","docstatus":"RE","v":-3},{"k":"io","docstatus":"RE","v":"C-"},{"k":"io","docstatus":"RE","v":"C-"}]
+§ERP_FILM_FACT infoProduct.afterVoid={"oh":"50","av":"50","rs":"0"}
+§ERP_FILM_FACT onhand.afterVoid=50
+§ERP_FILM_BEAT id=s10 t=124.14 lang=en closing
+§ERP_FILM_HOLD after=s10 extra=3.93
+§ERP_FILM_BEAT id=end t=131.07 lang=en 
+§ERP_FILM_CURSOR clicks=38 cursorOnTarget=38 OK
+§ERP_FILM_DONE frames=3282 dur=131.38 out=/home/red1/Videos/depth_work/rec/erp_film_depth.mp4

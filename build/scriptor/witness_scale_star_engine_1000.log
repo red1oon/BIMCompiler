@@ -1,0 +1,27 @@
+§STAR-HEADER W-SCALE-STAR mode=engine N=1000 M=1000 K=3 workers=6 box_min=150 ootb=/tmp/wt-ootb-scale commit=193677b1 node=v18.19.1 cpus=20 loadavg=3.64,3.17,2.40 at=2026-10-29T00:20:51.175Z
+§STAR-LIMITS one Node process family simulates all devices (no network latency, no browser); the relay is a folder pipe on local disk; load-generating devices fetch only the founder's roster bundle and are not measured;
+§STAR-LIMITS the measured edges (2 stations: first+last, 2 borrowers: first+last) and head office fetch the WHOLE relay; Node + sql.js timings are not browser timings; teamRebuild (ERP projection) is browser-only, so Visit ms = sync + adapter _project;
+§STAR-LIMITS per-device numbers are per device INSTANCE; head-office model-layer inputs are K4-shaped tickets (engine carries only the plan's declared columns; the two are not bridged by a projection in Node).
+§STAR-PHASE create-devices devices=2000 ms=369
+§STAR-ENROL devices=200/2000 block_ms=21725
+§STAR-ENROL devices=400/2000 block_ms=59796
+§STAR-ENROL devices=600/2000 block_ms=104054
+§STAR-ENROL devices=800/2000 block_ms=127643
+§STAR-ENROL devices=1000/2000 block_ms=156410
+§STAR-ENROL devices=1200/2000 block_ms=181536
+§STAR-ENROL devices=1400/2000 block_ms=250357
+§STAR-ENROL devices=1600/2000 block_ms=276780
+§STAR-ENROL devices=1800/2000 block_ms=305534
+§STAR-ENROL devices=2000/2000 block_ms=332582
+§STAR-PHASE enrol devices=2000 identity_ops=6000 ms=1816418 per_device_ms=908.2
+§STAR-PHASE founder-push sent=6002 bytes=12829060
+§STAR-PHASE produce load_generators=1996/1996 ops=16966 errs=0 wall_ms=2873705 sum_device_ms=17161709
+§STAR-EDGE-V1 s:0 {"sync_ms":40650.71100002527,"visit_ms":49347.360000014305,"bytes_down":45778648,"objs_down":3993,"gets":3995,"lists":2,"listed":3995,"bytes_up":76090,"sent":15,"fetched":1996,"received":16966,"placed":16981,"accepted":15,"refused":16966,"rows":15,"db_bytes":39448576}
+§STAR-EDGE-V1 s:999 {"sync_ms":38268.47299998999,"visit_ms":47278.15299999714,"bytes_down":45854738,"objs_down":3995,"gets":3997,"lists":2,"listed":3997,"bytes_up":76112,"sent":15,"fetched":1997,"received":16981,"placed":16996,"accepted":15,"refused":16981,"rows":15,"db_bytes":39448576}
+§STAR-EDGE-V1 b:0 {"sync_ms":36660.205999970436,"visit_ms":43503.60299998522,"bytes_down":45930850,"objs_down":3997,"gets":3999,"lists":2,"listed":3999,"bytes_up":55652,"sent":2,"fetched":1998,"received":16996,"placed":16998,"accepted":2,"refused":16996,"rows":2,"db_bytes":39452672}
+§STAR-EDGE-V1 b:999 {"sync_ms":32118.506999969482,"visit_ms":37404.389999985695,"bytes_down":45986502,"objs_down":3999,"gets":4001,"lists":2,"listed":4001,"bytes_up":55673,"sent":2,"fetched":1999,"received":16998,"placed":17000,"accepted":2,"refused":16998,"rows":2,"db_bytes":39448576}
+§STAR-HQ-VISIT {"sync_ms":35497.10900002718,"project_ms":7940.3259999752045,"fold_ms":43437.435000002384,"bytes_down":46041787,"objs_down":4000,"listed":4002,"fetched":2000,"received":17000,"placed":23002,"foldable":17000,"accepted":17000,"refused":0,"db_bytes":39444480}
+§STAR-HQ-REPLIES {"movements":1000,"loans":1000,"schedules":1000,"author_ms":5313095.930999994,"pushed":3000}
+§STAR-INCONCLUSIVE phase=hq-replies time box 150 min exhausted at replies
+§STAR-POINT {"n":1000,"m":1000,"k":3,"workers":6,"status":"INCONCLUSIVE","phases":{"create_ms":368.7030000090599,"enrol_ms":1816417.7220000029,"produce_ms":2873704.6420000196},"enrol_block_ms":[[200,21725],[400,59796],[600,104054],[800,127643],[1000,156410],[1200,181536],[1400,250357],[1600,276780],[1800,305534],[2000,332582]],"generated":{"devices":1996,"ops":16966,"nerr":0,"errs":[],"ms":17161708.734999597},"hq_visit":{"sync_ms":35497.10900002718,"project_ms":7940.3259999752045,"fold_ms":43437.435000002384,"bytes_down":46041787,"objs_down":4000,"listed":4002,"fetched":2000,"received":17000,"placed":23002,"foldable":17000,"accepted":17000,"refused":0,"db_bytes":39444480},"hq_replies":{"movements":1000,"loans":1000,"schedules":1000,"author_ms":5313095.930999994,"pushed":3000},"reason":"hq-replies: time box 150 min exhausted at replies","wall_ms":10250395,"kind":"engine"}
+§STAR-DONE engine N=1000 M=1000 status=INCONCLUSIVE reason=hq-replies: time box 150 min exhausted at replies wall_s=10250

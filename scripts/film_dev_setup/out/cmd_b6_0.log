@@ -1,0 +1,3 @@
+$ sed -i 's/arc_editable.js?v=[0-9]*/arc_editable.js?v=99/' modeller/modeller.html
+
+§CMD_EXIT 0

@@ -1,0 +1,30 @@
+═══ W-POS-PLAN (browser) — the till receives only what the plan declares; borrower 2 receives 0 of borrower 1 (§38.14/§38.15) ═══  key=POS1/2026-10-28/6292
+
+§B0 BEFORE — an OFFICE space (no plan): A processor, B till
+   §PPB_BEFORE office space · till B received ops=48 (delivered by the relay 48) envelope_bytes=55476 tables=14 {"m_costqueue":4,"m_cost":16,"c_order":1,"c_ordertax":1,"c_orderline":3,"c_invoice":1,"i_order":9,"m_inout":1,"c_bpartner":1,"m_inoutline":3,"c_invoiceline":3,"m_inoutlinema":3,"c_acctschema":1,"c_invoicetax":1}
+   🟢 B0 CONTROL (office plan): the till holds the completed order and received the processor's Complete group (the finding of W-POS-CHAIN: 103 ops committed at the processor; the share-able part reaches the till) — orders A=1 B=1 till_received_ops=48
+§B1 AFTER — a POS space (?teamplan=pos): A processor, B till, C1 + C2 borrowers bound to two C_BPartners
+   🟢 B1 all four devices read the POS plan from the genesis (kind:role) - nobody was told by a flag — pos:102 pos:200001 pos:103 pos:103
+   §PPB_MADE movementline=-113 invoiceA=-114 invoiceB=-115 scheduleA=-116 scheduleB=-117
+   §PPB_AFTER A delivered_by_relay=4 (3242 B) projected=4 own=5 thin={"placed":9,"accepted":9,"refused":0,"bytesAccepted":7617,"bytesRefused":0,"byTable":{}} projected_tables=c_payment:1,i_order:3
+   §PPB_AFTER B(till) delivered_by_relay=6 (5048 B) projected=1 own=3 thin={"placed":9,"accepted":4,"refused":5,"bytesAccepted":3363,"bytesRefused":4254,"byTable":{"c_invoice":2,"c_payment":1,"c_invoicepayschedule":2}} projected_tables=m_movementline:1
+   §PPB_AFTER C1 delivered_by_relay=8 (6944 B) projected=2 own=1 thin={"placed":9,"accepted":3,"refused":6,"bytesAccepted":2467,"bytesRefused":5150,"byTable":{"i_order":3,"c_invoice":1,"m_movementline":1,"c_invoicepayschedule":1}} projected_tables=c_invoice:1,c_invoicepayschedule:1
+   §PPB_AFTER C2 delivered_by_relay=9 (7617 B) projected=2 own=0 thin={"placed":9,"accepted":2,"refused":7,"bytesAccepted":1787,"bytesRefused":5830,"byTable":{"i_order":3,"c_payment":1,"c_invoice":1,"c_invoicepayschedule":1,"m_movementline":1}} projected_tables=c_invoice:1,c_invoicepayschedule:1
+   §PPB_TILL before(office): ops=48 bytes=55476 | after(pos): ops=1 bytes=794 | the plan declares for role 200001 to RECEIVE: ["m_movementline"] -> processor authored 1 such ops
+   🟢 B2 THE TILL: received 1 ops (was 48) = exactly the 1 the plan declares for its role (the replenishment line) — bytes 55476 -> 794
+   🟢 B2 AT THE SOURCE: the processor kept 100 undeclared ops on its own device (§TEAM_NOT_DECLARED) and put on the pipe only {"c_invoice":2,"c_invoicepayschedule":2,"m_movementline":1} — sent tables=c_invoice,c_invoicepayschedule,m_movementline
+   🟢 B2 the till holds its own 3 ticket lines but NOT the completed order, NOT the borrowers' loans (the processor's order / shipment / invoice / postings never reached it) — projected tables=m_movementline:1 order=0 loans=0
+   🟢 B2 BORROWER 1 holds ITS loan (LN-A-4607), ITS instalment (114.43) and its own payment WITH its own full record (slip number, photo note: only the carried columns ever left the phone) — [[{"d":"LN-A-4607","ds":null}],[{"a":114.43}],[{"a":114.43,"d":"SLIP-4607","ds":"photo of the slip"}]]
+   🟢 B2 BORROWER 2 (same role) holds ITS loan (LN-B-4607) and instalment (50) and 0 of borrower 1's loan / instalment / payment — [[{"d":"LN-B-4607","ds":null}],[{"a":50}],[]]
+   🟢 B2 borrower 2 took in exactly 2 ops (its loan, its instalment) although the relay delivered 9 - it refused 7 locally (not-addressed, 5830 bytes never projected) — {"placed":9,"accepted":2,"refused":7,"bytesAccepted":1787,"bytesRefused":5830,"byTable":{"i_order":3,"c_payment":1,"c_invoice":1,"c_invoicepayschedule":1,"m_movementline":1}}
+   🟢 B2 the processor received the borrower's payment carrying only its declared columns (payamt; the slip number and the photo note stayed on the phone) — [{"a":114.43,"d":null,"ds":null}]
+   🟢 B2 the processor still imported ONE completed order from the till's declaration (the plan thinned the pipe, not the business) — [{"ds":"CO","nl":3}]
+   🟢 B2 0 page errors on all devices — errors=0
+§PPB_ARMS red=none judged=11
+
+§PPB_MUTANTS
+   🟢 the inbound filter is off (everything the relay delivered is projected) -> red arms: B2
+   🟢 `by` is ignored: a DOWN row is addressed by role alone -> red arms: B2
+   🟢 the sender sends undeclared tables (every table is shipped as a flow) -> red arms: B2
+§PPB_VERDICT PASS judged=11 fails=0 mutants_killed=3/3 pageerrors=0 till_ops 48->1 till_bytes 55476->794
+exit=0

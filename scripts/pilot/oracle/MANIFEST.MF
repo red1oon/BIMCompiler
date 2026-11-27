@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: bim-ootb callout/process oracle
+Bundle-SymbolicName: org.bimootb.oracle
+Bundle-Version: 1.0.0
+Bundle-Activator: org.bimootb.oracle.Activator
+Require-Bundle: org.adempiere.base
+Import-Package: org.json, org.osgi.framework
+Bundle-RequiredExecutionEnvironment: JavaSE-17

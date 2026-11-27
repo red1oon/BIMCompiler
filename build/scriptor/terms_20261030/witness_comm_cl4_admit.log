@@ -1,0 +1,79 @@
+═══ W-ADMIT-FOLD — identity as ops + admission at fold, real MRole.canUpdate (TEAMWORK_FRAMEWORK §12.7) ═══
+
+§CL4 space=b2af8e8a29d8 founder=f3cfea08752e22bf (role 102)
+§CL4 ops written=28 (incl. 2 crafted)
+
+§ADMIT verdicts (observer):
+   §ADMIT genesis                        → MERGED:genesis
+   §ADMIT person P                       → MERGED:person
+   §ADMIT person W                       → MERGED:person
+   §ADMIT person Sy                      → MERGED:person
+   §ADMIT person Q                       → MERGED:person
+   §ADMIT enroll D1                      → MERGED:enroll
+   §ADMIT enroll DW                      → MERGED:enroll
+   §ADMIT enroll DS                      → MERGED:enroll
+   §ADMIT enroll DQ                      → MERGED:enroll
+   §ADMIT D1 enrolls own phone D2        → MERGED:enroll
+   §ADMIT D1 enrolls X for person W      → REFUSED:not-admin-or-same-person
+   §ADMIT 103 org 11                     → MERGED:role 103 ok
+   §ADMIT 103 org 12                     → REFUSED:access:missing=W
+   §ADMIT 103 org 0                      → REFUSED:access:missing=C
+   §ADMIT unknown table                  → REFUSED:access:no-table
+   §ADMIT 50004 org 11                   → MERGED:role 50004 ok
+   §ADMIT System org 11                  → MERGED:role 0 system
+   §ADMIT stranger self-enrol            → REFUSED:unknown-signer
+   §ADMIT stranger writes                → PARKED:unknown-device
+   §ADMIT D2 seq1                        → MERGED:role 103 ok
+   §ADMIT D2 seq2                        → REFUSED:revoked
+   §ADMIT revoke D2 after 1              → MERGED:revoke
+   §ADMIT Q seq1 org 12 as 102           → MERGED:role 102 ok
+   §ADMIT Q role 102->103 from seq 2     → MERGED:role
+   §ADMIT Q seq2 org 12 as 103           → REFUSED:access:missing=W
+   §ADMIT D1 edits revoked record        → REFUSED:dep-refused
+   §ADMIT forged-at-D1-slot               → REFUSED:signature
+   §COMM_ROSTER ok=true walks=2 devices=6 revokes={"ec8c":1}
+
+§ADMIT-ENROLL
+   🟢 genesis → MERGED — MERGED:genesis
+   🟢 enroll D1 → MERGED — MERGED:enroll
+   🟢 D1 enrolls own phone D2 → MERGED — MERGED:enroll
+   🟢 D1 enrolls X for person W → REFUSED (not-admin-or-same-person) — REFUSED:not-admin-or-same-person
+   🟢 stranger self-enrol → REFUSED (unknown-signer) — REFUSED:unknown-signer
+
+§ADMIT-ACCESS (real canUpdate on ad_full.db)
+   🟢 103 org 11 → MERGED — MERGED:role 103 ok
+   🟢 103 org 12 → REFUSED (access:missing=W) — REFUSED:access:missing=W
+   🟢 103 org 0 → REFUSED (access:) — REFUSED:access:missing=C
+   🟢 50004 org 11 → MERGED — MERGED:role 50004 ok
+   🟢 System org 11 → MERGED (system) — MERGED:role 0 system
+
+§ADMIT-REVOKE
+   🟢 revoke D2 after 1 → MERGED — MERGED:revoke
+   🟢 D2 seq1 → MERGED — MERGED:role 103 ok
+   🟢 D2 seq2 → REFUSED (revoked) — REFUSED:revoked
+
+§ADMIT-ROLE
+   🟢 Q seq1 org 12 as 102 → MERGED — MERGED:role 102 ok
+   🟢 Q role 102->103 from seq 2 → MERGED — MERGED:role
+   🟢 Q seq2 org 12 as 103 → REFUSED (access:missing=W) — REFUSED:access:missing=W
+
+§ADMIT-FAILCLOSED
+   🟢 unknown table → REFUSED (access:no-table) — REFUSED:access:no-table
+   🟢 stranger writes → PARKED (unknown-device) — PARKED:unknown-device
+   🟢 D1 edits revoked record → REFUSED (dep-refused) — REFUSED:dep-refused
+
+§ADMIT-FAKE-EQUIV
+   🟢 a forged op at D1's slot is not an equivocation — equivocations=0
+   🟢 D1's real seq-1 op is still placed
+
+§ADMIT-PERMUTE
+   🟢 identical verdicts across 20 arrival orders — 20/20
+
+§ADMIT-GENESIS
+   §ADMIT-GENESIS roster ok=false reason=no-trusted-genesis placed=0
+   🟢 a genesis not hashing to the pinned space is untrusted; nothing is placed
+
+   §ADMIT canUpdate calls=211 roles=0,102,103,50004
+
+──────────────────────────────────────────────
+§W-ADMIT-FOLD PASS judged=23 fails=0

@@ -1,0 +1,86 @@
+═══ W-CHECKPOINT — a closed prefix is folded once; a visit folds only what follows (TEAMWORK_FRAMEWORK §13.12.3) ═══
+   §CK-SETUP ops=80 business=60 placed=80 (A) ; A=V=O op set 81a34b89431d/81a34b89431d/81a34b89431d order 61edd0dc95a0/61edd0dc95a0/61edd0dc95a0
+   🟢 before any checkpoint all devices hold the same ops and the same order (control for everything below) — business=60
+   §CK-PUBLISH {"pos":80,"state":"c0875e93cdd9","snapshotBytes":163840}
+   🟢 A publishes a checkpoint (snapshot object + CHECKPOINT op) — pos=80
+   §CK-EQUAL published state_hash=c0875e93cdd914f0 oracle=c0875e93cdd914f0 pos=80/80 frontier authors=3
+   🟢 the published state_hash equals the hash of the state an independent oracle computes for that frontier — order=80
+   🟢 CONTROL: a different frontier (one op fewer) gives a different state_hash, so the equality above can fail — e45e996da068
+   §CK-STATUS A=["IN-FORCE cosigners=2"] B(before cosign)=IN-FORCE cosigned=1 V=IN-FORCE O(control)=off/PENDING
+   🟢 A and the verifier V have the checkpoint IN FORCE (V by its own fold); two persons signed it — cosigners=2
+   🟢 CONTROL: the device opened with noCheckpoint never adopts it — O in force=false
+   🟢 B (which verified it) co-signed once
+     §CKPT_VERIFY kid=7319e6af51dce06b state=c0875e93cdd9 pos=80 = my own fold of S (80 placed, 80 judged)
+     §CKPT_ADOPT kid=7319e6af51dce06b state=c0875e93cdd9 pos=80 judged=80 refused=0 rest=1
+   §CK-RETENTION withheld 10 bundles wholly inside the frontier; snapshot ck.80.c0875e93cdd9.bimsnap stays
+   §CK-TRUST F: fetched=3 status=IN-FORCE inForce=true access calls=0 (business ops in S=60, V's visit that verified S called the adapter 60 times)
+     §CKPT_PENDING kid=751feae8ac36d1a2 state=c0875e93cdd9 pos=80 — not all of its ops are held yet
+     §CKPT_TRUST kid=751feae8ac36d1a2 state=c0875e93cdd9 pos=80 cosigners=2 adopted without folding S
+     §CKPT_ADOPT kid=751feae8ac36d1a2 state=c0875e93cdd9 pos=80 judged=80 refused=0 rest=2
+   🟢 the light client adopts the co-signed checkpoint from the snapshot alone (§CKPT_TRUST)
+   🟢 and did not fold S: the AD adapter was called 0 times for a log whose prefix holds 60 business ops — calls=0
+   🟢 CONTROL: the verifier, which checks the same checkpoint by its own fold, called the adapter once per business op of S (60) plus the few ops after it — V visit calls=60
+   §CK-BARRIER order hash: oracle=036b049a4086 A=036b049a4086 B=036b049a4086 V=036b049a4086 F=036b049a4086 | control O=77dbfde839b0 ; op set A/F/O=8d076b58d599/8d076b58d599/8d076b58d599
+   🟢 A, B, V and the light client F all have exactly the order the oracle computes (S first, the CHECKPOINT op, then the rest)
+   🟢 every device holds the same op set (F got S from the snapshot) — ops=82
+   🟢 verdicts equal the oracle's on every 82 ops on A, and A, B, V, F and the no-checkpoint control O agree — oracle=true devices=true
+   🟢 the cl_verdict rows (written incrementally) equal the verdict map on A, V and F
+   🟢 the control O, with nothing after the checkpoint, still folds the plain way — O order 77dbfde839b0
+   🟢 the snapshot state is sealed in the pipe (no op hash readable in it) — bytes=21102
+     §CKPT_REFUSED kid=751feae8ac36d1a2 state=c0875e93cdd9 reason=snapshot-state-does-not-hash-to-state_hash-or-lists-other-ops — falling back to my own fold
+     §CKPT_VERIFY kid=751feae8ac36d1a2 state=c0875e93cdd9 pos=80 = my own fold of S (80 placed, 80 judged)
+     §CKPT_ADOPT kid=751feae8ac36d1a2 state=c0875e93cdd9 pos=80 judged=80 refused=0 rest=2
+   §CK-TAMPER (a) insider re-sealed a state with one verdict changed: trusted=false refused=true verified-own-fold=true inForce=true calls=60 order=036b049a4086
+   🟢 a state that differs in one verdict (re-sealed by an insider) is refused by the light client: it does not hash to state_hash
+   🟢 it fell back to its own fold (paid 60 adapter calls) and ended with the same order and verdicts — order=036b049a4086
+     §CKPT_REFUSED kid=751feae8ac36d1a2 state=c0875e93cdd9 reason=snapshot-state-does-not-hash-to-state_hash-or-lists-other-ops — falling back to my own fold
+     §CKPT_VERIFY kid=751feae8ac36d1a2 state=c0875e93cdd9 pos=80 = my own fold of S (80 placed, 80 judged)
+     §CKPT_ADOPT kid=751feae8ac36d1a2 state=c0875e93cdd9 pos=80 judged=80 refused=0 rest=2
+   §CK-TAMPER (b) outsider flipped a bit of the sealed state: trusted=false refused=true verified-own-fold=true inForce=true calls=60 order=036b049a4086
+   🟢 a flipped bit in the sealed state is refused by the AES-GCM tag, the light client folds S itself and still ends on the same order
+   §CK-TAMPER bogus CHECKPOINT (pos 85): status on V=BAD ; in force still c0875e93cdd9
+   🟢 a CHECKPOINT op with a wrong state_hash is BAD on a verifier, and the true checkpoint stays in force
+   §CK-CONVERGE ops=125 ; order hash A/B/C/V/F/L=3ec0c4f905df/3ec0c4f905df/3ec0c4f905df/3ec0c4f905df/3ec0c4f905df/3ec0c4f905df ; control O=94ca7a0d241d ; verdict hash A/F/O=723cc7763025/723cc7763025/723cc7763025
+   🟢 after more ops from three devices A, B, C, V, F and the returning L have the same op set AND the same order
+   🟢 and the same verdicts, including the no-checkpoint control
+   🟢 the engine's final order equals the oracle's (S first, CHECKPOINT op, then 60+ later ops) — ops placed=125
+   §CK-LATE S=80 placed ; the CHECKPOINT op at 80 ; L's 14 old ops at positions (barrier) 110,89,84,115,109,99,91,120,122,112,117,111,114,103 ; (plain control) 39,5,3,70,28,24,10,101,104,46,88,43,66,25 ; inside S: barrier=0 plain=11
+   🟢 every late op is placed AFTER the barrier (after S and after the CHECKPOINT op) on every in-force device — inside S=0
+   🟢 CONTROL: the plain fold (no checkpoint) places 11 of those late ops INSIDE the old S span — the barrier is observable — plain inside=11
+   🟢 the late ops are MERGED, not lost (the barrier moves them, it does not refuse them)
+   🟢 every op has a verdict (no silent drop)
+   §CK-AGG hole at B#3 + a head claiming B#400 : gaps=368 (reference 368) ; frontier B=2 (reference 2)
+   🟢 gaps() and frontier() (aggregates) equal the old per-row scans on a store with a hole and a far-ahead head — gaps=368
+   🟢 CONTROL: and on a complete store (no hole) too — gaps=0
+   🟢 CONTROL: before any revoke, and after a REVOKE whose cut-off (1000) is beyond S, the checkpoint stays in force on V
+   §CK-STALE REVOKE C last_good=2 (C has 9 ops, S covers them): V inForce=false ; §CKPT_STALE kid=f56f5167235c6cf4 state=d5bf463f0cc1 pos=41 reason=revoke-inside — falling back to the full fold ; order V=aeb60eae02ba A=aeb60eae02ba plain control O=aeb60eae02ba
+   🟢 a REVOKE whose cut-off lies inside S switches the checkpoint OFF (§CKPT_STALE reason=revoke-inside)
+   🟢 and the fold is then exactly the plain full fold: V and A equal the control O in order and verdicts
+   🟢 C's ops beyond the cut-off are REFUSED revoked (the retroactive rule the checkpoint must not hide) — refused revoked=7
+   🟢 CONTROL: a ROLE change that takes effect from a seq beyond S (from_seq 100000) leaves the checkpoint in force
+   §CK-STALE ROLE for B from seq 0: V inForce=false ; §CKPT_STALE kid=8b53d67f2394fa26 state=c565fe6a7c3c pos=41 reason=role-inside — falling back to the full fold ; order V=c8d4b575ba5c control=c8d4b575ba5c
+   🟢 a ROLE change that reaches into S switches it off and the fold equals the plain fold
+   §CK-STALE contender on slot C#3 (equivocation): before inForce=true after=false equivocations seen=1 ; V order=039ea1565713 control=039ea1565713
+   🟢 a second signed op on an S slot (equivocation) switches the checkpoint off and the plain fold (which excludes both) is what everyone computes
+
+   ── §CK-COST: visit time vs log size (node, in-memory sql.js, cached AD adapter; best of 3 for quiet visits) ──
+§CK-COST log=175 ops : in force pos=183 | quiet visit  ckpt 10.2 ms  vs  control 21.7 ms | visit with 150 new  ckpt 335 ms vs 330 ms | cold start ckpt 9 ms vs 135 ms | adapter calls: quiet visit ckpt 0 vs 175, visit with news 175 vs 350 | publish (A) 67 ms
+§CK-COST log=325 ops : in force pos=335 | quiet visit  ckpt 11.0 ms  vs  control 34.3 ms | visit with 150 new  ckpt 366 ms vs 369 ms | cold start ckpt 10 ms vs 284 ms | adapter calls: quiet visit ckpt 0 vs 325, visit with news 150 vs 825 | publish (A) 131 ms
+§CK-COST log=475 ops : in force pos=487 | quiet visit  ckpt 10.7 ms  vs  control 46.7 ms | visit with 150 new  ckpt 351 ms vs 405 ms | cold start ckpt 14 ms vs 405 ms | adapter calls: quiet visit ckpt 0 vs 475, visit with news 150 vs 1275 | publish (A) 178 ms
+§CK-COST log=625 ops : in force pos=639 | quiet visit  ckpt 11.0 ms  vs  control 58.6 ms | visit with 150 new  ckpt 373 ms vs 442 ms | cold start ckpt 13 ms vs 508 ms | adapter calls: quiet visit ckpt 0 vs 625, visit with news 150 vs 1725 | publish (A) 222 ms
+§CK-COST log=775 ops : in force pos=791 | quiet visit  ckpt 10.9 ms  vs  control 68.7 ms | visit with 150 new  ckpt 380 ms vs 532 ms | cold start ckpt 12 ms vs 680 ms | adapter calls: quiet visit ckpt 0 vs 775, visit with news 150 vs 2175 | publish (A) 265 ms
+§CK-COST log=925 ops : in force pos=943 | quiet visit  ckpt 10.9 ms  vs  control 80.3 ms | visit with 150 new  ckpt 392 ms vs 538 ms | cold start ckpt 12 ms vs 821 ms | adapter calls: quiet visit ckpt 0 vs 925, visit with news 150 vs 2625 | publish (A) 358 ms
+§CK-COST log=1075 ops : in force pos=1095 | quiet visit  ckpt 12.4 ms  vs  control 92.4 ms | visit with 150 new  ckpt 431 ms vs 613 ms | cold start ckpt 15 ms vs 952 ms | adapter calls: quiet visit ckpt 0 vs 1075, visit with news 150 vs 3075 | publish (A) 411 ms
+§CK-COST log=1225 ops : in force pos=1247 | quiet visit  ckpt 11.0 ms  vs  control 103.9 ms | visit with 150 new  ckpt 473 ms vs 629 ms | cold start ckpt 15 ms vs 900 ms | adapter calls: quiet visit ckpt 0 vs 1225, visit with news 150 vs 3525 | publish (A) 469 ms
+§CK-COST fit (ms per op of log): quiet ckpt 0.0011 vs control 0.0775 ; cold start ckpt 0.0046 vs control 0.8027 ; adapter calls per quiet visit at 175/1225 ops: ckpt 0/0 control 175/1225
+   🟢 CONTROL: without checkpoints a quiet visit grows with the log (21.7 → 103.9 ms; adapter calls 175 → 1225)
+   🟢 with checkpoints at a fixed cadence the quiet visit is flat within noise (10.2 → 11.0 ms; slope 0.0011 vs 0.0775 ms/op; adapter calls 0 → 0)
+   🟢 a visit WITH news folds only the news: the adapter is called <= 175 times per visit with checkpoints (max 175) and 3525 times at 1225 ops without. (Wall time of such a visit is dominated by verifying the news' signatures — O(news) either way — and is noisy: ckpt 335 → 473 ms, control 330 → 629 ms)
+   🟢 a cold start (fresh store over the saved comm.db) stays small with checkpoints — less than a tenth of the control, slope 0.0046 vs 0.8027 ms/op (9 → 15 ms) and grows without (135 → 900 ms)
+   🟢 the two series ended with the same op set and the same verdicts (the speed did not change the answer) — ops=1249
+   §CK-SKEW old engine: crashed=false CHECKPOINT ops held=3 verdict=REFUSED:scope-unknown business placed=102 (new engine 102)
+   🟢 an engine from before CHECKPOINT folds a log with CHECKPOINT ops and a snapshot object without crashing, and refuses the op — scope-unknown
+   🟢 CONTROL: it still places every business op the new engine places (the extra snapshot rows were duplicates) — old=102 new=102
+
+──────────────────────────────────────────────
+§W-CHECKPOINT PASS judged=43 fails=0 inconclusive=0

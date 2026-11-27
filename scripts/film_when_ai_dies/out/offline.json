@@ -1,0 +1,88 @@
+{
+ "files": 16,
+ "parsed": 16,
+ "understanding": [
+  "references",
+  "field hover and F12",
+  "tag hover",
+  "value beside the code",
+  "purity warning",
+  "context for a file"
+ ],
+ "understandNet": 0,
+ "shipNet": 6,
+ "ship": [
+  "Fetch back",
+  "Deploy main now",
+  "memory of the pages"
+ ],
+ "shipDoors": {
+  "Fetch back": [
+   "lib/ship.js:12 require('https') in (top level)()",
+   "lib/ship.js:13 require('http') in (top level)()",
+   "lib/ship.js:204 'gh' in deployMain()"
+  ],
+  "Deploy main now": [
+   "lib/ship.js:12 require('https') in (top level)()",
+   "lib/ship.js:13 require('http') in (top level)()",
+   "lib/ship.js:204 'gh' in deployMain()"
+  ],
+  "memory of the pages": []
+ },
+ "glueNet": 0,
+ "redSeen": true,
+ "urlLits": {
+  "lib/heap_impact.js": [
+   "127.0.0.1"
+  ],
+  "lib/ship.js": [
+   "cli.github.com",
+   "localhost"
+  ]
+ },
+ "traced": {
+  "references": {
+   "files": [
+    "lib/app_refs.js",
+    "lib/app_surface_index.js"
+   ],
+   "doors": []
+  },
+  "field hover and F12": {
+   "files": [
+    "lib/app_surface_index.js"
+   ],
+   "doors": []
+  },
+  "tag hover": {
+   "files": [
+    "lib/tag_index.js"
+   ],
+   "doors": []
+  },
+  "value beside the code": {
+   "files": [
+    "lib/lens_index.js",
+    "lib/tag_index.js"
+   ],
+   "doors": []
+  },
+  "purity warning": {
+   "files": [
+    "core_pure.js(repo scripts/lib)"
+   ],
+   "doors": []
+  },
+  "context for a file": {
+   "files": [
+    "lib/file_context.js",
+    "lib/tag_index.js",
+    "lib/lens_index.js",
+    "lib/deploy_cost.js",
+    "lib/js_facts.js"
+   ],
+   "doors": []
+  }
+ },
+ "verdict": "PASS"
+}

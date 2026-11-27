@@ -1,0 +1,36 @@
+§E2_READER /home/red1/bim-ootb vs origin/main for 5 files: identical
+§FIXTURE_SHIPPED seed=/home/red1/bim-ootb/erp/ad_seed.db patch_stmts_ok=3803 failed=3 sql_functions=57 product_prices=149 FIXTURE_HAS_PRICES
+§E2_START access=build/erp/ad_access.js checkActionAccess=present
+§E2_DENOMINATOR tables=25 (C_Order + DOC_FAMILY) doctypes(client 11)=51 roles=102/103/200001 statuses=11 access_rows=2170
+
+── A1 zero impact on the shipped seed (every role has all 14 values per doctype) ──
+   🟢 A1 checked list == getValidActions list for every (table, status, processing, IsSOTrx, doctype, role) — judged=145350 differ=0
+
+── A2 removal (Standard Order doctype 132, CO = ad_ref_list 178) ──
+   🟢 A2a IsActive='N' on (role 103, Standard Order, CO) → 103 is not offered CO — got [PR,VO]
+   🟢 A2b role 102 unchanged — got [CO,PR,VO]
+   🟢 A2c no row for (103, Standard Order, CO) → CO is not offered (legacy starts from an empty list) — got [PR,VO]
+   🟢 A2d the removal is per doctype: another SOO doctype (128) still offers CO to 103 — got [CO,PR,VO]
+
+── A3 included role (MRole.getIncludedRoles(true) :2825-2850; ad_role_included present after the patch, 0 rows) ──
+   🟢 A3a 103 lacks CO but includes 102 (which has it, 'Y') → CO offered — got [CO,PR,VO]
+   🟢 A3b the logged role is judged LAST: included 102 says 'N', 103's own 'Y' re-adds → CO offered — got [CO,PR,VO]
+   🟢 A3c an 'N' removes what an earlier role added: included 102 says 'Y', 103's own 'N' (judged last) → CO not offered — got [PR,VO]
+
+── A4 master role on System (MRole.java:2710-2736) ──
+   🟢 A4a master role, rows of the same DocBaseType/DocSubTypeSO, any client → CO offered — got [CO,PR,VO]
+   🟢 A4b master role: every SOO/SO doctype's CO row 'N' → CO not offered — got [PR,VO]
+
+── B executor overlay (§38.5 E2b) ──
+   🟢 B1a a non-executor device: overlay = every value → nothing offered (E3 would refuse any SET_STATUS) — got []
+   🟢 B1b the executor device: no overlay → unchanged — got [CO,PR,VO]
+   🟢 B2 empty overlay (no map in force / team off) → identical to A1 — got [CO,PR,VO]
+
+§E2_ARMS red=none judged=13
+   mutant skip: red=A2a,A2c,A3c,A4b,B1a → KILLED by A2
+   mutant N-ignored: red=A3c → KILLED by A3
+   mutant no-row-offered: red=A2c → KILLED by A2
+   mutant included-off: red=A3a → KILLED by A3
+   mutant master-as-tenant: red=A4a,A4b → KILLED by A4
+   mutant overlay-off: red=B1a → KILLED by B1
+§E2_VERDICT PASS judged=13 fails=0 mutants=6/6

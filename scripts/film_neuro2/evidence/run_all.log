@@ -1,0 +1,24 @@
+=== d1_viewer_counts.sh 10:14:50
+§DEMO d1_counts folder=/tmp/demo_d1_counts_KGURjn (empty at start)
+§DEMO d1_counts exit=0 stdout=925B files=379 secs=20
+=== d2_viewer_clashes.sh 10:15:50
+§DEMO d2_clashes folder=/tmp/demo_d2_clashes_O0HoDd (empty at start)
+curl: (35) OpenSSL/3.0.13: error:0A0000F4:SSL routines::unexpected message
+curl: (35) OpenSSL/3.0.13: error:0A0000F4:SSL routines::unexpected message
+§DEMO d2_clashes exit=0 stdout=6540B files=379 secs=12
+=== d3_edit_shift.sh 10:16:43
+§DEMO d3_shift folder=/tmp/demo_d3_shift_a5XYS8 (empty at start)
+§DEMO d3_shift exit=3 stdout=14879B files=1 secs=18
+=== d4_path_vis.sh fwd 10:17:01
+§DEMO d4_path_fwd folder=/tmp/demo_d4_path_fwd_Xx88un (empty at start)
+§DEMO d4_path_fwd exit=0 stdout=2717B files=379 secs=28
+=== d4_path_vis.sh rev 10:18:14
+§DEMO d4_path_rev folder=/tmp/demo_d4_path_rev_H1d3gK (empty at start)
+§DEMO d4_path_rev exit=0 stdout=2560B files=379 secs=60
+=== d5_mcp_menu.sh 10:21:02
+§DEMO d5_menu folder=/tmp/demo_d5_menu_nMBnNQ (empty at start)
+§DEMO d5_menu exit=0 stdout=2744B files=2 secs=0
+=== d6_inventories.sh 10:21:04
+§DEMO d6_viewer_actions exit=0 §VIEWER_ACTIONS N_entry=96 N_actions=64 X=1 verbs=2 shortcuts=30 direct=20 pills=46 phantom=0 conflicts=5 listeners=17 unaccounted=0 direct_missing=0
+§DEMO d6_erp_verbs exit=0 §ERP_VERBS N=1153 N_doc=702 (tables=54 actions=13) N_proc=451 (inactive=25) impl=102 (doc=65 proc=37) not_impl=1051 X=0 handler_no_dict=1 dynamic=4 unresolved=0
+=== done 10:21:09

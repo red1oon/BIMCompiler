@@ -1,0 +1,48 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1920
+PlayResY: 1080
+WrapStyle: 0
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: F,DejaVu Sans,46,&H00B4F0FF,&H00FFFFFF,&H90000000,&H00000000,0,0,0,0,100,100,0,0,1,2.6,0,2,260,260,48,1
+Style: M,DejaVu Sans,46,&H00FFE6B4,&H00FFFFFF,&H90000000,&H00000000,0,0,0,0,100,100,0,0,1,2.6,0,2,260,260,48,1
+Style: Credit,DejaVu Sans,30,&H00DDDDDD,&H00FFFFFF,&H90000000,&H00000000,0,1,0,0,100,100,0,0,1,2,0,8,200,200,36,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:05.47,0:00:06.77,F,start#0,0,0,0,,How do I start?
+Dialogue: 0,0:00:06.82,0:00:14.15,M,start#1,0,0,0,,Type red one. The greeting counts its verbs and its words: Seventy-two verbs, twenty-five words. Then a tip.
+Dialogue: 0,0:00:19.13,0:00:20.24,F,help#0,0,0,0,,What can it do?
+Dialogue: 0,0:00:20.29,0:00:27.69,M,help#1,0,0,0,,Three groups: B I M, M I S and E R P. The E R P group has three words: Do, run and next.
+Dialogue: 0,0:00:33.84,0:00:35.33,F,level#0,0,0,0,,Can it explain a word?
+Dialogue: 0,0:00:35.38,0:00:40.59,M,level#1,0,0,0,,Level student, then help run. It says what the word does, and the line it runs.
+Dialogue: 0,0:00:48.59,0:00:50.15,F,bp#0,0,0,0,,How do I get to a table?
+Dialogue: 0,0:00:50.20,0:00:58.55,M,bp#1,0,0,0,,Type a few letters. A grey suggestion appears, and Tab takes it. Then ls: Twenty of one hundred and thirteen business partners.
+Dialogue: 0,0:01:06.30,0:01:07.73,F,po1#0,0,0,0,,Can it run a process?
+Dialogue: 0,0:01:07.78,0:01:15.95,M,po1#1,0,0,0,,Run, and the name of the process. It asks its questions in the order of the dictionary. The project comes first: Three to pick from.
+Dialogue: 0,0:01:17.59,0:01:18.70,F,po2#0,0,0,0,,And the phase?
+Dialogue: 0,0:01:18.75,0:01:23.05,M,po2#1,0,0,0,,Only the seven phases of that project are offered. I leave it out.
+Dialogue: 0,0:01:24.72,0:01:26.00,F,po3#0,0,0,0,,The project line?
+Dialogue: 0,0:01:26.05,0:01:28.95,M,po3#1,0,0,0,,Thirty-two lines. I leave this out too.
+Dialogue: 0,0:01:33.43,0:01:34.82,F,po4#0,0,0,0,,And the last question?
+Dialogue: 0,0:01:34.87,0:01:43.94,M,po4#1,0,0,0,,Consolidate keeps its default, yes. Enter, and the full line it runs is printed. Three purchase orders are made, from four order lines.
+Dialogue: 0,0:01:51.09,0:01:52.26,F,ord#0,0,0,0,,Where did they go?
+Dialogue: 0,0:01:52.31,0:01:56.53,M,ord#1,0,0,0,,Cd order, and list by description. Three orders, all drafts.
+Dialogue: 0,0:02:00.34,0:02:01.90,F,co#0,0,0,0,,Can I complete an order?
+Dialogue: 0,0:02:01.95,0:02:08.64,M,co#1,0,0,0,,Do C O and its number. The status goes from D R to C O, and the grand total is eighty-one.
+Dialogue: 0,0:02:12.38,0:02:13.67,F,next#0,0,0,0,,What may it do now?
+Dialogue: 0,0:02:13.72,0:02:20.31,M,next#1,0,0,0,,Next, and the number. The legal moves come as a tree. Close and void have words. R E has none yet.
+Dialogue: 0,0:02:24.30,0:02:26.12,F,gap#0,0,0,0,,And a process it cannot run?
+Dialogue: 0,0:02:26.17,0:02:33.26,M,gap#1,0,0,0,,Renumber has no J S port yet. Red one says so, and says the gap is in red one, not your mistake.
+Dialogue: 0,0:02:36.59,0:02:38.06,F,report#0,0,0,0,,Can I tell the owners?
+Dialogue: 0,0:02:38.11,0:02:41.90,M,report#1,0,0,0,,Report shows the draft. Nothing is sent until you open it.
+Dialogue: 0,0:02:44.80,0:02:45.93,F,url#0,0,0,0,,And to send it?
+Dialogue: 0,0:02:45.98,0:02:53.03,M,url#1,0,0,0,,Choose the GitHub issue, and the link prints: Six thousand nine hundred and eighty characters. Opening it is your move.
+Dialogue: 0,0:02:59.43,0:03:00.83,F,cost#0,0,0,0,,And back in the building?
+Dialogue: 0,0:03:00.88,0:03:16.30,M,cost#1,0,0,0,,Duplex. Cost by discipline prices one thousand one hundred and ninety elements, one million fifty-four thousand four hundred and eighty-two in all. The rows add up to it. Posting that cost to the E R P project order is being built.
+Dialogue: 0,0:03:18.59,0:03:20.53,M,exit#0,0,0,0,,Exit, and you are back in the shell.
+Dialogue: 0,0:03:20.55,0:03:21.66,F,exit#1,0,0,0,,Remember the name.
+Dialogue: 0,0:03:21.68,0:03:22.77,M,exit#2,0,0,0,,Red one.
+Dialogue: 0,0:03:24.62,0:03:32.53,Credit,,0,0,0,,Voices: AI-generated (Kokoro, local)  ·  Script directed by red1

@@ -1,0 +1,38 @@
+§KERNEL_OPS_LOADED v13 (W-CHAIN/W-SIGN/G-IDENTITY/W-OPGROUP/W-RATE-INPUT/W-BLUE-FUTURE/W-EMIT/T6-persist-guard/T2-content-sign/T7-incremental/W-OPLOG-APPEND)
+§SNAP_SIGN_LOADED v1 (ECDSA P-256, pinned controller key)
+§EPOCH_LOADED v3 (roster + key-epoch verification + multi-device concurrent verify, content-aware — T1/W-ROSTER-VERIFY/W-MULTI-DEVICE-VERIFY)
+
+═══ W-ROSTER-VERIFY — HQ-signed device roster + ROTATE/REVOKE key epochs on the verify/import path (T1) ═══
+
+§RV-ROSTER — HQ-signed roster verifies; a swapped device key REJECTS
+   🟢 §RV-ROSTER erp_key_epochs.js loads (ported module present) — loaded
+   🟢 §RV-ROSTER HQ-signed roster verifies under the pinned HQ key — ok=true
+   🟢 §RV-ROSTER roster with a swapped device key is REJECTED — why=roster signature invalid
+
+§RV-ROTATE / §RV-HISTORY — counter-signed ROTATE installs the new key; history untouched
+   🟢 §RV-ROTATE valid ROTATE accepted; active key advanced K0→K1 — active=K1
+   🟢 §RV-ROTATE stranger-signed ROTATE is REJECTED — why=ROTATE not counter-signed by outgoing key (signer=K1 active=K0)
+   🟢 §RV-HISTORY pre-rotation op verifies under OLD key only (past never re-signed) — old=true new=false
+
+§RV-FUTURE — post-rotation: OLD key rejected, NEW key accepted
+   🟢 §RV-FUTURE post-rotation OLD-key op is REJECTED at id=3 — brokeAt=3 why=op signed by non-active key K0 (active=K1) — superseded key cannot sign new ops
+   🟢 §RV-FUTURE the same position signed by the NEW key is ACCEPTED (dbA id=4) — ok=true
+
+§RV-REVOKE — a revoked key loses the future, keeps the past
+   🟢 §RV-REVOKE graceful offboard verifies; successor K2 active — active=K2
+   🟢 §RV-REVOKE a FUTURE op by the revoked key is REJECTED — brokeAt=6 why=op signed by REVOKED key K1 (revoked at 4)
+
+§RV-RENUMBER-EPOCH — a rotated branch, ids renumbered, still roster-verifies (content sigs)
+   🟢 §RV-RENUMBER-EPOCH renumbered branch re-chains cleanly (ids 101…) — len=4
+   🟢 §RV-RENUMBER-EPOCH sigs + ROTATE still verify after renumbering — merge-safe — ok=true active=K1
+
+§RV-IMPORT-FORGE — forged foreign-key op: keyless import accepts (the gap), roster import REJECTS
+   🟢 §RV-IMPORT-FORGE the forged branch's CHAIN is self-consistent (chain alone cannot catch it) — len=3
+   🟢 §RV-IMPORT-FORGE keyless import ACCEPTS the forgery (the documented pre-T1 gap, live) — hash=5c2d91f3…
+   🟢 §RV-IMPORT-FORGE roster-gated import REJECTS the forgery — erp_sync: import REJECTED — signature invalid under K0 (op id=3)
+
+§RV-IMPORT-RENUMBER — honest renumbered branch roster-imports and replays
+   🟢 §RV-IMPORT-RENUMBER renumbered honest branch ACCEPTED (sigs id-independent) — active=K0
+   🟢 §RV-IMPORT-RENUMBER peer replay == origin projectionHash (byte-identical World) — e76a9fb7… == e76a9fb7…
+
+🟢 W-ROSTER-VERIFY ALL PASS

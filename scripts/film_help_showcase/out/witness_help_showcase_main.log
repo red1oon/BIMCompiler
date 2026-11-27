@@ -1,0 +1,29 @@
+§W-HELP-SHOWCASE break=none
+§W-HELP-SHOWCASE S1 fr_FR fields=14262 texts=26208
+  ✅ S1 fr_FR every pack text occurs in the published pack (element or field row)  26208/26208
+§W-HELP-SHOWCASE S1 de_DE fields=14961 texts=28176
+  ✅ S1 de_DE every pack text occurs in the published pack (element or field row)  28176/28176
+§W-HELP-SHOWCASE S1 ja_JP fields=3537 texts=3656
+  ✅ S1 ja_JP every pack text occurs in the published pack (element or field row)  3656/3656
+§W-HELP-SHOWCASE S1 zh_CN fields=9315 texts=12336
+  ✅ S1 zh_CN every pack text occurs in the published pack (element or field row)  12336/12336
+  ✅ S5 every how-to row is the guide section it names, word for word (proof asides left out)  4/4
+§W-HELP-SHOWCASE §HELP_SEARCH index windows=295 tables=573 actions=13 howto=4 phrases=895 pageErrors=0
+§W-HELP-SHOWCASE S3 ok "How do I close a Sales Order?" -> window=143 action=CL cli="erp.close kind=Order number=<Document No>" (want 143/CL)
+§W-HELP-SHOWCASE S3 ok "what does complete do on a sales order" -> window=143 action=CO cli="erp.complete kind=Order number=<Document No>" (want 143/CO)
+§W-HELP-SHOWCASE S3 ok "complete an invoice" -> window=167 action=CO cli="erp.complete is offered for Order (C_Order), not for Invoice" (want 167/CO)
+§W-HELP-SHOWCASE S3 ok "How can I void a payment?" -> window=195 action=VO cli="erp.void is offered for Order (C_Order), not for Payment" (want 195/VO)
+§W-HELP-SHOWCASE S3 ok "how to record a customer payment" -> window=195 action=null cli=null (want 195/null)
+§W-HELP-SHOWCASE S3 ok "How do I create a shipment?" -> window=169 action=null cli=null (want 169/null)
+§W-HELP-SHOWCASE S3 ok "reactivate a sales order" -> window=143 action=RE cli=null (want 143/RE)
+§W-HELP-SHOWCASE S3 ok "Re-activate a Sales Order" -> window=143 action=RE cli=null (want 143/RE)
+  ✅ S3 the question set finds the window and the action  8/8
+  ✅ S4 every rendered help link points at a window on the role's menu  9/9
+  ✅ S4 clicking the card's window link opens that window  §HELP_LINK window=195 onMenu=true | §IDEMPIERE window=Payment and Receipt(195) tabs=3 source=sqlite
+  ✅ S4 the How To widget follows the window in view (its own how-to row)  §HELP_CTX window=195 howto=4
+§W-HELP-SHOWCASE S2 tab=186 rendered=60 with a German pack entry=54 without (English shown)=6
+  ✅ S2 de_DE tooltip = the pack's German Description  54/54
+  ✅ S2 de_DE Tool Tip panel shows the German Description  54/54
+  ✅ S2 a field without a German entry shows the English text, as legacy  6/6
+  ✅ S2 back to English: tooltips and panel byte-identical to before the switch  60 fields
+§WITNESS_HELP_SHOWCASE pass=13 fail=0 inconclusive=0 verdict=PASS

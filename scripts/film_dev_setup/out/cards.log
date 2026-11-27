@@ -1,0 +1,17 @@
+§CUE_CONST editor=#38bdf8/IN VS CODE terminal=#4ade80/IN THE TERMINAL answer=#fbbf24 steps=6
+§CARD_STRIP beat=cover file=cover_0001.png strip=N overlap_px=0.0
+§CARD beat=cover entries=1 overflow_px=0
+§CARD beat=b1 entries=72 overflow_px=0
+§CARD beat=b2 entries=6 overflow_px=0
+§CARD beat=b3 entries=1 overflow_px=0
+§CARD beat=b4 entries=39 overflow_px=0
+§CARD beat=b5 entries=32 overflow_px=0
+§CARD beat=b6 entries=116 overflow_px=0
+§CARD beat=b7 entries=54 overflow_px=0
+§CARD_STRIP beat=recap file=recap_0311.png strip=N overlap_px=0.0
+§CARD beat=recap entries=1 overflow_px=0
+§CARD_STRIP beat=close file=close_0312.png strip=N overlap_px=0.0
+§CARD beat=close entries=1 overflow_px=0
+§CARD_STRIP_ALL unique_frames=312 with_strip=309 without_strip=3 bad=0
+§CUE_CHECK unique_frames=312 editor_frames=240 terminal_frames=309 bad=0
+§CARDS_DONE beats=10 stills=312 too_tall=0 key_cues=247 return_cues=8 chars_per_line=161 rows=11

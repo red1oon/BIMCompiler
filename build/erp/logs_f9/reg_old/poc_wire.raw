@@ -1,0 +1,32 @@
+═══ POC-WIRE — compile→engine, EVERY opt from data (§0.14-0.15) ═══
+
+loadCell(M_InOut,CO): policy=FIFO(src=erp_rules) guards=6
+
+── WIRE-1. SETTLEMENT: zero JS opts (policy←erp_rules, orgs←ad_role) ──
+   🟢 M_MatchInv reproduces oracle (opts from data) — oracle=18 mine=18 matched=18 missed=0
+   🟢 M_MatchPO reproduces oracle (opts from data) — oracle=18 mine=18 matched=18 missed=0
+§WIRE cell=(M_InOut,CO) policy=FIFO(src=erp_rules) orgs=4(src=ad_role role=103 GardenWorld User) match=18/18 matchPO=18/18
+
+── WIRE-2. DERIVATION: completeOrder, flags ← DOCPOLICY:<docTypeId> ──
+   🟢 order 60000 (docType 133 ino=Y) ship ops==oracle — mine=1 oracle=1
+   🟢 order 80000 (docType 135 ino=Y) ship ops==oracle — mine=1 oracle=1
+   🟢 order 80001 (docType 135 ino=Y) ship ops==oracle — mine=1 oracle=1
+   🟢 order 80002 (docType 135 ino=Y) ship ops==oracle — mine=3 oracle=3
+§WIRE derivation orders=4 shipMatch=4/4 (policy src=erp_rules DOCPOLICY, no JS override)
+
+── WIRE-3. POLICY-EDIT: flip MATCHPOLICY rule record, pairing changes ──
+   🟢 FIFO record picks earliest receipt R1 — order=FIFO src=erp_rules chose=1
+   🟢 edited record (LIFO) picks latest receipt R2 — order=LIFO chose=2
+   🟢 rule-record edit deterministically changed the pairing — FIFO->R1 LIFO->R2
+§WIRE policy-edit FIFO→LIFO pairsChanged=1 (FIFO→R1 LIFO→R2, src=rule-record)
+
+── WIRE-4. ACCESS: role scope composes INTO the engine (§0.8) ──
+   🟢 access role=0 (orgs={0}) → partition empty → 0 matches — matched=0 (data is org 11)
+§WIRE access role=0(System Administrator) orgs-visible=0 match=0/18 (access narrows partition → empty)
+   🟢 role=50004 has no (C_Order POS,CO) grant → mayRun=N — mayRun=false
+   🟢 role=103 IS granted (C_Order POS,CO) → mayRun=Y — mayRun=true
+§WIRE access role=50004(Web Service Execution) mayRun(C_Order POS,CO)=N | role=103 mayRun=Y
+
+═══ VERDICT ═══
+§WIRE PASS — every engine opt sourced from data (ordering/fan-out/access), settlement 18/18
+exit=0

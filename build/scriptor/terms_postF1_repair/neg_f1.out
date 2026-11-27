@@ -1,0 +1,6 @@
+§TERMS table (open first; an open term is never green)
+term | witness | broken control | status | roadmap
+VISIT (bounded) | PASS | 5/6 refused | UNCONTROLLED [bim-ootb tree (node, real modules)] | 
+   🔴 control NOT FOUND: CONTROL pre-F1: station 1 held foreign DOWN ops (now none)
+§TERMS_BROWSER judged=0 skipped=0 reason="--browser 0" reused-logs
+§TERMS_VERDICT FAIL enforced=0 open=0 witness_failed=0 uncontrolled=1 browser=judged 0/skipped 0

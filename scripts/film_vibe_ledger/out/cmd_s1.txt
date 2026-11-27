@@ -1,0 +1,5 @@
+$ bash scripts/code_arch/size_stack.sh $OOTB | grep -E 'set=(app_js|app_html|witness_js|vendored_js) '
+§STACK_SIZE set=app_js files=1034 lines=316459 MB=23.9
+§STACK_SIZE set=app_html files=63 lines=38665 MB=3.1
+§STACK_SIZE set=vendored_js files=131 lines=421186 MB=30.2
+§STACK_SIZE set=witness_js files=2151 lines=288521 MB=23.8

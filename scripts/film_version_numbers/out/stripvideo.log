@@ -1,0 +1,3 @@
+§STRIP_VIDEO windows=0:5.383,62.167:73.967 frames=35 bar_frames=0 
+§STRIP_VIDEO_VERDICT PASS
+§FILM_FILE frames=1780 dur_s=74.166667 size=6182248

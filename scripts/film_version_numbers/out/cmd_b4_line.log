@@ -1,0 +1,3 @@
+$ sed -n "910p" viewer/viewer.html
+<script src="panels.js?v=12345678" onerror="console.warn('§LOAD_FAIL panels.js')"></script>
+§CMD_EXIT 0

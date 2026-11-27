@@ -118,3 +118,61 @@ session cleanly rather than answer the go/no-go, no implementation attempted. Re
 questions above (any concurrent session already on Modeller? go to dispatch?) — do not assume either answer
 from a prior session. See `project_modeller_clipboard_spec.md` memory + `PROGRESS.md` 2026-08-11 entry for
 the full chain if picking this up cold.
+
+---
+
+## §REGROUND 2026-10-28 — re-read against bim-ootb main 1e7b6d40; owner's go given ("Go", DXF2BIM review session 10, item 2). Supersedes §SCOPE's "copy = bbox/realGeomHash/transform" and §DISPATCH's block.
+**Why now:** `DXF2BIM_ARCHITECT_REVIEW.md` session-10 order (2): "add a bay" (bim-ootb `modeller/bay_add.js`, §D89) clones a source insert's params itself. It is the second copy path,
+and it carries no holes, no door / window links, and no later edit of its source. The owner wants ONE copy path that carries relations, and the bay copy calls it.
+**What changed since 2026-08-11 (read in code, not assumed):**
+1. `buildSeedOps` is no longer the right precedent: an element's state is its GEOM_INSERT row PLUS every later op on it. The fold (`bonsai_kernel.js:313-350`) sums GEOM_MOVE / ROTATE /
+   SCALE per `parent`, adds GEOM_ROOM_MOVE members (`bonsai_roommove.js accumulate`, a rigid dx/dy/dz) and applies GEOM_GRID_MOVE `commands[featureId]` in world space after the
+   placement (`bonsai_library.js foldInsert`, §STRETCH-1); a cut host is a worker B-rep (`_computeSeeds`, §CUT-ON-ARC) folded with GEOM_CUT (`void.c1/c2` = WORLD corners),
+   GEOM_CUT_MOVE / GEOM_CUT_RESIZE (`cutId` = the cut's op id, `bonsai_kernel_worker.js:404-445`), GEOM_FILLET, … . MEASURED DEFECT: copying only the insert row puts a copy of
+   a moved / stretched source at its PRE-edit place and size — today's bay copy does exactly that (a second "add a bay" copies the last typical bay, whose elements the first one moved).
+2. Relations: a host's fillings come from `swXEdges.fills` through the §ARC-1 bridge (`SdgCascade.ridersFor`); a DXF convert publishes both (`dxf_import_ui.js:889-893`, §D59 (c)).
+   A cut names its filling (`params.slide.fillingFid`).
+3. Ids: `KernelOps.commitGroup` gives a gesture contiguous ids from MAX(id)+1; `commitGesture` accepts `outputGuid` per op. The DXF convert predicts ids and refuses + undoes on a
+   mismatch (`dxf_import_ui.js:876-882`) — the same convention here.
+4. Keys: still no element clipboard in `modeller/` (`git grep`, 2026-10-28). Ctrl+Z / Ctrl+Y at `modeller.html` ~3950, typing-guarded; selection = `window.Bonsai._selSet` (fids).
+**Rule (to build, `modeller/clipboard.js`, pure core + page glue).**
+- `Clipboard.build(srcFids, shift, ops, firstId, cascade, opts)` → `{ ok, why, ops, items:[{from, cls, to}], riders, edges }`. `ops` = the active geom ops up to the cursor (`_geomOps().slice(0, cursor)`).
+  (a) the set = `srcFids` + their fillings (`cascade.ridersFor`, deduped): copying a wall brings its doors / windows (a filling copied alone comes alone); anchors (`anchorOnly`) are not copied.
+  (b) each element = its GEOM_INSERT (params cloned, `placement` + shift, grid-line tags `bayCopy` / `spanSplit` / `_gsg` dropped, `provenance: 'derived:user-edit'`, `copyOf: <src fid>`,
+  a new `outputGuid` = `<src guid>~c<gesture-unique n>`) then, in op order, every op on it re-pointed: per-parent ops (GEOM_MOVE / ROTATE / SCALE / CUT / CUT_MOVE / CUT_RESIZE / FILLET)
+  with `parent` -> the copy, `cutId` -> the copied cut's id, `slide.fillingFid` -> the copied filling (or null), GEOM_CUT `void` + shift; a GEOM_ROOM_MOVE naming it -> a GEOM_MOVE of
+  its dx/dy/dz (what it folds to); its GEOM_GRID_MOVE commands -> ONE GEOM_GRID_MOVE `{gridId: null, delta: 0, commands: [the copy's, in order]}` (the grid fold skips a null gridId,
+  `bonsai_grid.js foldFromOplog`). Any other op type that names the element REFUSES the copy, naming it (never a guess at what it means).
+  (c) the fills edges of the copied pairs, re-keyed to the copies' guids (opening = the copied cut's guid), to publish to `swXEdges.fills` + the bridge after commit.
+- Page (`Bonsai.clipboard`): **Ctrl+C** holds the selection's fids (memory only, nothing written; `§CLIPBOARD copy n=`); **Ctrl+V** builds from the CURRENT ops and commits ONE gesture
+  (one undo), verifies the predicted ids (mismatch -> undo + refuse), publishes the edges, gates the result (`sdg_gate opts.copies`, as the bay), selects the copies
+  (`§CLIPBOARD paste n= riders= cuts= edges= verify=`). Paste offset (§OPEN-1, default stated, not a rule from data): one grid bay on +x (the two grid lines either side of
+  the selection's centre x); no active grid -> the selection's own x width; the k-th paste of one copy goes k offsets on. `Bonsai.clipboard.paste({dx,dy,dz})` takes an explicit shift.
+- **The bay copy uses it** (§D89): `bay_add.plan` hands the typical bay's rows + the hinge line's rows (minus `never_copy`, minus fillings — they come as riders) to `Clipboard.build`
+  with the pitch shift and tags each copied insert `bayCopy`; the allow-lists `copy` / `line_copy` are dropped from `element_defaults.json`, `never_copy` keeps only building-wide
+  sizing (IfcFan: airflow). One copy path.
+**Witness claims.** W-CLIPBOARD (pure, node, a built op log): C1 a wall with a cut + its door: copy = 2 inserts + the cut, the cut's parent = the copied wall, its void = source + shift,
+`slide.fillingFid` = the copied door, 1 fills edge re-keyed; C2 a source moved, scaled and grid-stretched after insert: the copy's ops fold (the shipped `foldInsert` on a box) to the
+source's folded box + shift (1e-9 m); C3 a GEOM_CUT_MOVE on the source's cut -> the copy's `cutId` = the copied cut's id; C4 an unknown op type on the source refuses, named; C5 the
+copy carries no `bayCopy` / `spanSplit` of its source. Falsifier: the bay's own clone (`bay_add.js` main) on C1-C3. W-DXF-ADD-BAY: B1-B7 unchanged on the shed + **B8** a typical bay holding
+a cut wall + door gives the new bay the same, cut into the copied wall (FAIL on main: door not copied, no cut) + **B9** a second "add a bay" after the first: every copy = its source's
+CURRENT box + pitch (FAIL on main: the first bay's moved sources are copied at their pre-move place). Page W-CLIPBOARD-KEYS: Ctrl+C / Ctrl+V on a converted Duplex wall with a door:
++2 elements, +1 cut, one Ctrl+Z restores, Ctrl+Y returns; the pasted door rides a Move of the pasted wall (the published edge works).
+**§REGROUND corrections from the build (2026-10-28, same day; the rule text above stands except where named here):** (1) "MEASURED DEFECT" in item 1 was read in code when written;
+it is now measured by bim-ootb W-DXF-ADD-BAY B9 (a wall of the last typical bay moved 5 cm, then a second bay: each copy = its source's current box + pitch). (2) Grid commands: ONE
+GEOM_GRID_MOVE per SOURCE grid op that touched a copied element, at that op's place (not one for all) — the worker folds ops in order, so a cut before / after a stretch must keep its
+order. (3) C2's tolerance is 2 float32 steps of the largest coordinate, not 1e-9 m: the fold writes `Float32Array` positions (measured 2.38e-7 m). (4) The spec's B8 (a typical bay
+with a cut wall + door) runs as W-BAY-RIDE R6, pure: the shed holds no cut opening (§D89 measured). (5) Found while building B9: a second bay over-stretched the full-length members
+(the factor read the insert's original length; the fold multiplies scales) — fixed in `bay_add.js`. Built + witnessed: bim-ootb `DXF2BIM_FOUNDATION_LANE.md` §D89 step 4.
+**Status: ✅ BUILT 2026-10-28 (W-CLIPBOARD 6/0, W-CLIPBOARD-KEYS 4/0, W-DXF-ADD-BAY 11/0, W-BAY-RIDE 6/0).** §DISPATCH's block above is history.
+
+## §PLACE 2026-10-28 — paste lands where the pointer is (owner 2026-10-28: "Ensure fixes before film")
+**Why (measured, W-CLIPBOARD-KEYS 2026-10-28):** the stated §OPEN-1 default (one grid bay on +x, else the selection's x width) pasted the Duplex wall #15 0.417 m beside itself, into
+its cross walls: the gate reported 4 RED. A fixed offset cannot know where free space is. Revit, AutoCAD and SketchUp all paste at a point the user gives: the copy follows the cursor
+and a click places it.
+**Rule.** Ctrl+V (something held) enters PASTE PLACEMENT, a mode like Insert (`inSelectCtx()` false: no pick / hover while placing; cursor `copy`): a translucent ghost of the held
+elements' current world boxes follows the pointer on the horizontal plane at the held set's base z; the anchor is the held set's box centre (x, y); the target is the pointer's hit
+snapped by `Bonsai.grid.snap` (the Insert tool's own snap); a left click commits `paste(shift)` with shift = target − anchor (z 0); Esc cancels and commits nothing. The status line
+says what to do. `Bonsai.clipboard.paste(shift)` with an explicit shift stays (the bay copy, scripts). The fixed-offset default is removed.
+**Witness (W-CLIPBOARD-KEYS, updated):** K1 Ctrl+V then a real pointer move + click on an empty ground point beside the building: the copy lands with its centre at the snapped
+click point (1 mm), the gate clean; K5 Ctrl+V then Esc: 0 ops committed, the mode left; K6 while placing, a click does not select the element under it (selection after = the copies).

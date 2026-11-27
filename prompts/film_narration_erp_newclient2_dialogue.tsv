@@ -1,0 +1,12 @@
+r0	en	prompts/film_nc_title_card.py (chapter 2 card)	F: Setup rules.	F: Setup rules. | M: What a shop types in, and what iDempiere does for it.
+s1	en	§ERP_FILM_FACT rates.before=6	F: Currency Rate.	F: Currency Rate.
+s1b	en	§ERP_FILM_FACT rate.pair=USD -> CAD	F: Type one rate.	F: Type one rate. | M: US dollars to Canadian dollars, one and a half, for the whole of twenty forty.
+s1c	en	§ERP_FILM_FACT rates.after (2 rows) · rates.created	F: Save, and a second rate appears.	F: Save it, and a second rate appears. | M: The reverse, Canadian to US, made by itself, with the divide rate swapped in.
+s2	en	§ERP_FILM_FACT (Payment Term window)	F: Payment Term.	F: Payment Term. | M: A fixed day each month. We tick Due Fixed, and type day zero, with the cutoff at five.
+s2b	en	§ERP_FILM_FACT refusalOnScreen · paymentTerm.log (verdict=REJECT Invalid: Fix month day)	F: Refused.	F: Save, and it is refused. | M: Invalid: fix month day.
+s2c	en	§ERP_FILM_FACT paymentTerm.saved (day 15 cutoff 5 valid Y)	F: Make it the fifteenth.	F: Make it the fifteenth, and it saves. | M: Valid.
+s3	en	§ERP_FILM_FACT manualDefault=true	F: Now a role.	F: Now a role. | M: A name, and the Client plus Organization level. Manual is ticked by default, as in legacy.
+s3b	en	§ERP_FILM_FACT roleAccess {window 334, process 383, form 41, docaction 714}	F: Untick Manual, and save.	F: Untick Manual, and save. | M: In one save the role gets three hundred thirty-four windows, three hundred eighty-three processes, forty-one forms, and seven hundred fourteen document actions.
+s3c	en	§ERP_FILM_FACT roleAccess	F: Here are its windows.	F: Here are its windows. | M: Window Access, and Process Access beside it.
+s4	en	prompts/ERP_DEPTH_FILM.md §NC-6/8/9 (W-NC6-SETUPRULES 24 cases, W-NC9-ROLE-UI 3/3)	F: Each rule was measured on legacy first.	F: Each rule was measured on legacy first. | M: The same answers, the same refusals.
+p	en	prompts/film_depth_process_card.py — the five steps on the black closing card (red1 2026-10-13)	F: This is how every film here is made.	F: This is how every film here is made. | M: One: run the same task on SQLite and on iDempiere, side by side. | F: Two: smell out the gaps. Every difference is logged. | M: Three: fix them the iDempiere way, and prove it again. | F: Four: move on to the next task. | M: Five: your turn. Suggest an important task for us to check.

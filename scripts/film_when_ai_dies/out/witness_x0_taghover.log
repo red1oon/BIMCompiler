@@ -1,0 +1,38 @@
+§X0_TAG_INDEX spec_tags=5594 spec_files=769 printer_tags=13399 js_files=3372 missing_roots=0 build_ms=724
+  PASS population-nonempty (27 rows)
+  PASS schema-valid (all 27 rows)
+  PASS known tag resolves to bim-compiler prompts/4D_MODEL_INTEGRITY.md
+  PASS every spec place really contains the tag
+  PASS heading places sort first
+  PASS redControl-detected (witness can fail)
+§WITNESS_X0_TAGHOVER pass=6 fail=0 ran=27
+  PASS made-up tag §ZZ_NOT_A_TAG_MWL4AE3Y → "no spec found" (never a guess)
+  PASS red control: the known tag does NOT say "no spec found"
+  PASS red control: the same places shifted by one line fail the line check
+  PASS printed by: ≥1 .js line, each really contains the tag (n=22)
+  PASS hover shows at most 5 spec places and 5 printers
+  PASS tagAt finds the tag under the cursor and nothing beside it
+  PASS tag grammar reads §CRUD-PERSIST §W-EMPTY-POP §4D_RECV §MODEL-PA §GOAL_STORE whole; nothing for §F.24 §5.24 §4b §4D §W § x
+  PASS red control: the old grammar /§[A-Z][A-Z0-9_]+/g fails the same judge
+--- hover text for §HOSTED_BEFORE_HOST ---
+**§HOSTED_BEFORE_HOST**
+
+- `bim-compiler prompts/4D_SCHEDULE_ARCHITECTURE_REDESIGN.md:500` — §OG_HANG_BAND/§OG_HANG_UNBOUND die with their pass; §HOSTED_BEFORE_HOST's IfcCovering pool rides
+- `bim-compiler prompts/4D_SCHEDULE_PERFECTION.md:1896` — §HOSTED_BEFORE_HOST — MEASURED. The bug the user sees, that no witness owned (2026-08-12)
+- `bim-compiler docs/DeveloperGuide.md:322` — What you see, step by step
+- `bim-compiler prompts/4D_BAR_MODEL.md:150` — §3 `needs()` — ONE LIST, MANY PROVIDERS
+- `bim-compiler prompts/4D_GANTT_TM_REFACTOR.md:4052` — §S58.1 — the two that matter
+- … 22 more spec places
+
+printed by:
+- `viewer/schedule_gate.js:1029`
+- `viewer/schedule_gate.js:116`
+- `viewer/schedule_gate.js:118`
+- `viewer/schedule_gate.js:134`
+- `viewer/schedule_gate.js:182`
+- … 17 more lines
+--- hover text for §ZZ_NOT_A_TAG_MWL4AE3Y ---
+**§ZZ_NOT_A_TAG_MWL4AE3Y**
+
+no spec found
+§DEVTK_SPEC tags=5594 files=769 known_hit=Y fake_none=Y verdict=PASS

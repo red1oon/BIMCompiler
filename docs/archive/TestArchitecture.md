@@ -293,15 +293,15 @@ SpotBugs + PMD. Advisory, not blocking.
 
 ## Tamper Seal — Trust Boundary Hash Manifest
 
-SHA256 hash of 73 files (63 test + 10 critical production). Super-hash = hash of all hashes.
+SHA256 hash of 76 files. Super-hash = hash of all hashes.
 
 **Three defense layers:**
 1. **Hash seal (L1)** — any byte change = SEAL BROKEN
 2. **Structural guards (L2)** — ArchUnit, G4-TAMPER T1-T16, cross-DB joins, EntityType guards
 3. **Git diff review (L3)** — every `[SEAL]` commit shows exact diff
 
-**Sealed:** 2026-03-31 (v19: S102 streamlined fleet output + R4/R6 fixes)
-**Super-hash:** `bb1c75a31db670511ab8730843884a8794e0ac03d3dc0606f612cc1bff54e373`
+**Sealed:** 2026-11-07 (v20: hook carries the NO-LFS guard; audit in prompts/NEURO_SYMBOLIC_ORDER_CONTRACT.md §6.3)
+**Super-hash:** `dbedb86a71ca9082965279310ec18d5e0474db3b60dfb6a9a1d83c544b46e10f`
 
 ```
 bash scripts/verify_test_seal.sh            # quick check
@@ -310,35 +310,35 @@ bash scripts/verify_test_seal.sh --detail   # show which files changed
 
 ### DAGCompiler Tests (30 files)
 ```
-801ac925  contract/ArchitectureTest.java
-4fa82454  contract/RosettaPlacementTest.java
-d32f0a2f  library/AnchorComputationTest.java
-5dafc8e4  contract/TranslationChainTest.java
-233fddba  coordinate/LocalCoordTest.java
-cb37cde4  contract/PhantomLayoutTest.java
-27b8d845  contract/PlacementCollectorVisitorTest.java
-f0f59e2f  contract/BOMWalkerTest.java
-d00d791c  library/StallDividerParamsTest.java
-f5a3df1e  contract/VerbStageTest.java
-863473a7  contract/ExtractedGeometryTruthTest.java
-02c431f4  contract/EdgeVertexTest.java
-b9d57454  contract/OutputTemplateTest.java
-b2527197  contract/BOMDigestVerifyTest.java
-9709b84b  contract/StructuralCrossCheckTest.java
-e5d6bcbc  arch/DriftGuardTest.java
-fd65b3f6  contract/CompilerContractTest.java
-26eb8b47  contract/RosettaStoneGateTest.java
-4371b836  contract/ExtractedBOMWalkTest.java
-284951e2  contract/BomChainIntegrityTest.java
-c1b54166  contract/BOMChainMathTest.java
-a0ce0436  contract/SpatialPlacementVisitorTest.java
-e3f80cdc  contract/StTemplatePipelineTest.java
-8bafb5b8  contract/BuildingRegistryTest.java
-3a91a827  contract/IntraBOMRelativeTest.java
-cc7e581e  contract/MetadataIntegrityTest.java
-c3fdd0fd  contract/DataIntegrityTest.java
-6c97940b  contract/FurnitureGeometryTest.java
-a0287085  contract/StackedDuplexWitnessTest.java
+7addd1ce  contract/ArchitectureTest.java
+d6268785  contract/RosettaPlacementTest.java
+e2698f5b  library/AnchorComputationTest.java
+0fc52eb2  contract/TranslationChainTest.java
+7242cc8e  coordinate/LocalCoordTest.java
+1afd3801  contract/PhantomLayoutTest.java
+0caa9ff2  contract/PlacementCollectorVisitorTest.java
+6571b255  contract/BOMWalkerTest.java
+9d89b537  library/StallDividerParamsTest.java
+42ea02ad  contract/VerbStageTest.java
+4448ba05  contract/ExtractedGeometryTruthTest.java
+35ba5edd  contract/EdgeVertexTest.java
+ca4a7160  contract/OutputTemplateTest.java
+4be6d56d  contract/BOMDigestVerifyTest.java
+7840e0c0  contract/StructuralCrossCheckTest.java
+c83b47be  arch/DriftGuardTest.java
+f895bea2  contract/CompilerContractTest.java
+fe217577  contract/RosettaStoneGateTest.java
+92a514e2  contract/ExtractedBOMWalkTest.java
+a0ecbdc7  contract/BomChainIntegrityTest.java
+760c3582  contract/BOMChainMathTest.java
+001f9466  contract/SpatialPlacementVisitorTest.java
+e9e95b2a  contract/StTemplatePipelineTest.java
+1e8b5c49  contract/BuildingRegistryTest.java
+6a9aad3e  contract/IntraBOMRelativeTest.java
+2cc63657  contract/MetadataIntegrityTest.java
+8e367c6e  contract/DataIntegrityTest.java
+290afd7b  contract/FurnitureGeometryTest.java
+4cf6d635  contract/StackedDuplexWitnessTest.java
 ```
 
 ### BIM_COBOL Tests (27 files)
@@ -346,12 +346,12 @@ a0287085  contract/StackedDuplexWitnessTest.java
 9f35fe2f  CheckBomVerbTest.java
 142bb5c6  CoverWithRoofVerbTest.java
 6a1e1293  RouteSprinklersVerbTest.java
-25cc1c08  RosettaStoneTest.java
-0f1130c0  ConnectFittingsVerbTest.java
-6c88148d  CheckPlacementClashTest.java
-46ff4ef3  CheckRoomComplianceTest.java
+1c189cf9  RosettaStoneTest.java
+53831c65  ConnectFittingsVerbTest.java
+b8d3edad  CheckPlacementClashTest.java
+2616bfed  CheckRoomComplianceTest.java
 26422d9f  WireLightingVerbTest.java
-539d485b  VerifyPlacementVerbTest.java
+3159edd5  VerifyPlacementVerbTest.java
 81ca9121  TileSurfaceVerbTest.java
 7c9c693c  ArrayVerbTest.java
 b617201c  VerbStageIntegrationTest.java
@@ -376,7 +376,7 @@ cc2906e9  PrimeRuleWitnessTest.java
 ```
 181e34fa  EmptySpaceTest.java
 da2e12d2  W_Verb_NodeTest.java
-3cabff5d  BuildingInspectorTest.java
+2154c0bc  BuildingInspectorTest.java
 f86d52fe  OrderLineInterfaceContractTest.java
 50f65541  BasePOTest.java
 aeaa7e09  TopologyBatchProcessTest.java
@@ -384,20 +384,20 @@ aeaa7e09  TopologyBatchProcessTest.java
 
 ### Critical Production Files + Hook (10 files)
 ```
-414e8816  CompilationPipeline.java
-fd1cd3d9  BuildingCompiler.java
+71bdeabf  CompilationPipeline.java
+d9b29826  BuildingCompiler.java
 7a1b759c  PlaceBomVerb.java
 87f8aa95  EnBlocVerb.java
 a1ce5479  WalkThruVerb.java
 b366f5e8  MBOM.java
 4970aa07  MBOMLine.java
-38f498ae  run_tests.sh
-c2d7932a  run_RosettaStones.sh
+127f1cdd  run_tests.sh
+ecb8cde6  run_RosettaStones.sh
 e6ac9ef2  lib_rosetta_helpers.sh
-77ebf32c  rosetta_compile.sh
-0f77a8a4  rosetta_integrity.sh
-bcd2af85  rosetta_fidelity.sh
-39839729  pre-commit
+ef6543c4  rosetta_compile.sh
+9b714362  rosetta_integrity.sh
+46a36520  rosetta_fidelity.sh
+86d6460e  pre-commit
 ```
 
 ### Rosetta Stone Coverage

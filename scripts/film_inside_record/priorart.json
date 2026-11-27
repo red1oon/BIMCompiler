@@ -1,0 +1,6 @@
+[
+ { "who": "iDempiere", "what": "a window button acts on the record by its ID", "took": "in a record, do and next name it by its id (§45)", "src": "~/idempiere-dev-setup/idempiere/org.adempiere.ui.zk/WEB-INF/src/org/adempiere/webui/adwindow/AbstractADWindowContent.java", "line": 3739, "contains": "getRecord_ID()" },
+ { "who": "iDempiere", "what": "the DocAction panel offers the record's legal actions", "took": "a record offers only its own actions, in that order", "src": "~/idempiere-dev-setup/idempiere/org.adempiere.ui.zk/WEB-INF/src/org/adempiere/webui/adwindow/AbstractADWindowContent.java", "line": 3768, "contains": "WDocActionPanel" },
+ { "who": "iDempiere", "what": "MOrder.reActivateIt", "took": "do RE, ported line by line (§44)", "src": "~/idempiere-dev-setup/idempiere/org.adempiere.base/src/org/compiere/model/MOrder.java", "line": 3044, "contains": "reActivateIt" },
+ { "who": "GNU Bash manual", "what": "HISTORY EXPANSION: !n, !-n, !string", "took": "history and !n at the red1 prompt (§39)", "src": "man:bash", "contains": "HISTORY EXPANSION" }
+]

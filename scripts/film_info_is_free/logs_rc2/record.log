@@ -1,0 +1,11 @@
+§FILM_CUE beat=cover t=0.000 frames=86 typing=0 answer_hold_frames=86 x1
+§FILM_CUE beat=clone t=3.583 frames=217 typing=70 answer_hold_frames=147 x1
+§FILM_CUE beat=prompts t=12.625 frames=522 typing=45 answer_hold_frames=477 x1
+§FILM_CUE beat=docs t=34.375 frames=231 typing=52 answer_hold_frames=179 x1
+§FILM_CUE beat=fsg t=44.000 frames=385 typing=360 answer_hold_frames=25 x1
+§FILM_CUE beat=login t=60.042 frames=172 typing=0 answer_hold_frames=43 x4
+§FILM_CUE beat=license t=67.208 frames=171 typing=37 answer_hold_frames=134 x1
+§FILM_CUE beat=mantra t=74.333 frames=144 typing=0 answer_hold_frames=144 x1
+§FILM_CUE beat=credits t=80.333 frames=168 typing=0 answer_hold_frames=168 x1
+§FILM_KEYS typed=144 returns=5
+§FILM_DONE dur=87.333 frames=2096 planned=2096

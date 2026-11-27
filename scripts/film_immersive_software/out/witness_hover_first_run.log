@@ -1,0 +1,20 @@
+§DXF_HOVER_W H1 §DXF_HOVER_INDEX keys=27 root=/tmp/wt-dxf-hover out=/tmp/wt-dxf-hover/devtools/hover/trace_index.json parse_keys=27 same=Y
+PASS H1 the index = a fresh parse, one line per key
+§DXF_HOVER_W oracle cli_exit=0 traced=512 §DXF_TRACE elements=512 traced=512 untraced=0 keys=11
+  §DXF_HOVER_W H2 fid=22 key=dxf2bodies:body at=modeller/dxf2bodies.js:422 oracle=dxf2bodies:body link=vscode://file/tmp/wt-dxf-hover/modeller/dxf2bodies.js:422
+  §DXF_HOVER_W H2 fid=38 key=dxf2bodies:body at=modeller/dxf2bodies.js:422 oracle=dxf2bodies:body link=vscode://file/tmp/wt-dxf-hover/modeller/dxf2bodies.js:422
+  §DXF_HOVER_W H2 fid=95 key=dxf2bodies:body at=modeller/dxf2bodies.js:422 oracle=dxf2bodies:body link=vscode://file/tmp/wt-dxf-hover/modeller/dxf2bodies.js:422
+  §DXF_HOVER_W H2 fid=100 key=null at=null oracle=- link=undefined
+  §DXF_HOVER_W H2 fid=118 key=dxf2panels:panel at=modeller/dxf2panels.js:158 oracle=dxf2panels:panel link=vscode://file/tmp/wt-dxf-hover/modeller/dxf2panels.js:158
+  §DXF_HOVER_W H2 fid=139 key=dxf2panels:panel at=modeller/dxf2panels.js:158 oracle=dxf2panels:panel link=vscode://file/tmp/wt-dxf-hover/modeller/dxf2panels.js:158
+§DXF_HOVER_W H2 hovered=14 keys={"dxf2bodies:body":3,"null":1,"dxf2panels:panel":2,"dxf2section:bar":1,"dxf2section:member":3,"dxf2synth:column":2,"dxf2synth:roof":2} wrong=1 page_hover_lines=24 page_errors=0
+  §DXF_HOVER_W H2 WRONG {"fid":100,"guid":"73c6343db3ed416fd182ec8c0a7c8272","key":null,"at":null,"text":"no trace for this body: it was converted before the hover tool loaded; Convert again (the trace is on now)\n?  handle -  layer -  sheet -  ","pageKey":null}
+FAIL H2 every hovered body shows its key = page map = Node CLI trace, its file:line = the index, and the V link  14 bodies, 7 keys
+§DXF_HOVER_W FATAL TimeoutError: Waiting failed: 180000ms exceeded
+    at new WaitTask (/home/red1/bim-compiler/node_modules/puppeteer-core/lib/cjs/puppeteer/common/WaitTask.js:49:34)
+    at IsolatedWorld.waitForFunction (/home/red1/bim-compiler/node_modules/puppeteer-core/lib/cjs/puppeteer/api/Realm.js:52:26)
+    at CdpFrame.waitForFunction (/home/red1/bim-compiler/node_modules/puppeteer-core/lib/cjs/puppeteer/api/Frame.js:583:43)
+    at CdpFrame.<anonymous> (/home/red1/bim-compiler/node_modules/puppeteer-core/lib/cjs/puppeteer/util/decorators.js:109:27)
+    at CdpPage.waitForFunction (/home/red1/bim-compiler/node_modules/puppeteer-core/lib/cjs/puppeteer/api/Page.js:1451:37)
+    at session (/tmp/wt-dxf-hover/devtools/hover/tests/witness_dxf_hover.js:56:46)
+    at async /tmp/wt-dxf-hover/devtools/hover/tests/witness_dxf_hover.js:82:15

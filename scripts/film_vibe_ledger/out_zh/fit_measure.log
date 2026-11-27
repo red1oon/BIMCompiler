@@ -1,0 +1,73 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§EDGE_CALL voice=zh-CN-XiaoxiaoNeural rate=+3% chars=14 -> 20718b1062
+§EDGE_CALL voice=zh-CN-YunxiNeural rate=-3% chars=90 -> 4d54e720fe
+§NARR_FIT before cue=0.00 room=998.70 dur=18.82 -> DETAIL slack=+979.88 detailDur=18.82 words=11
+§EDGE_CALL voice=zh-CN-XiaoxiaoNeural rate=+3% chars=10 -> d262973091
+§EDGE_CALL voice=zh-CN-YunxiNeural rate=-3% chars=36 -> 3162605fab
+§EDGE_CALL voice=zh-CN-XiaoxiaoNeural rate=+3% chars=6 -> ec26a4a7e3
+§EDGE_CALL voice=zh-CN-YunxiNeural rate=-3% chars=15 -> bbdcd3acc9
+§NARR_FIT after cue=0.00 room=998.70 dur=13.90 -> DETAIL slack=+984.80 detailDur=13.90 words=7
+§EDGE_CALL voice=zh-CN-XiaoxiaoNeural rate=+3% chars=11 -> 7827755abf
+§EDGE_CALL voice=zh-CN-YunxiNeural rate=-3% chars=71 -> efd316377a
+§NARR_FIT u1 cue=0.00 room=998.70 dur=16.15 -> DETAIL slack=+982.55 detailDur=16.15 words=5
+§EDGE_CALL voice=zh-CN-XiaoxiaoNeural rate=+3% chars=18 -> b8faf095dc
+§EDGE_CALL voice=zh-CN-YunxiNeural rate=-3% chars=62 -> 732f6913ac
+§EDGE_CALL voice=zh-CN-XiaoxiaoNeural rate=+3% chars=7 -> baeccb48f3
+§EDGE_CALL voice=zh-CN-YunxiNeural rate=-3% chars=10 -> 35a7b0d4af
+§NARR_FIT u2 cue=0.00 room=998.70 dur=18.44 -> DETAIL slack=+980.26 detailDur=18.44 words=7
+§EDGE_CALL voice=zh-CN-XiaoxiaoNeural rate=+3% chars=16 -> e006c724da
+§EDGE_CALL voice=zh-CN-YunxiNeural rate=-3% chars=74 -> 6f97f7f941
+§EDGE_CALL voice=zh-CN-XiaoxiaoNeural rate=+3% chars=5 -> ee6517c958
+§EDGE_CALL voice=zh-CN-YunxiNeural rate=-3% chars=31 -> baa3fce9f6
+§NARR_FIT v1 cue=0.00 room=998.70 dur=21.61 -> DETAIL slack=+977.09 detailDur=21.61 words=18
+§EDGE_CALL voice=zh-CN-XiaoxiaoNeural rate=+3% chars=10 -> 8be785b8c2
+§EDGE_CALL voice=zh-CN-YunxiNeural rate=-3% chars=55 -> af6d696508
+§NARR_FIT v2 cue=0.00 room=998.70 dur=13.35 -> DETAIL slack=+985.35 detailDur=13.35 words=4
+§EDGE_CALL voice=zh-CN-XiaoxiaoNeural rate=+3% chars=6 -> 52954248bd
+§EDGE_CALL voice=zh-CN-YunxiNeural rate=-3% chars=34 -> 2217e7ce26
+§EDGE_CALL voice=zh-CN-XiaoxiaoNeural rate=+3% chars=6 -> 6011569817
+§EDGE_CALL voice=zh-CN-YunxiNeural rate=-3% chars=55 -> 97eab480a3
+§NARR_FIT s1 cue=0.00 room=998.70 dur=19.67 -> DETAIL slack=+979.03 detailDur=19.67 words=10
+§EDGE_CALL voice=zh-CN-XiaoxiaoNeural rate=+3% chars=5 -> 2474a96588
+§EDGE_CALL voice=zh-CN-YunxiNeural rate=-3% chars=94 -> de56b164b2
+§NARR_FIT s2 cue=0.00 room=998.70 dur=18.50 -> DETAIL slack=+980.20 detailDur=18.50 words=7
+§EDGE_CALL voice=zh-CN-XiaoxiaoNeural rate=+3% chars=23 -> f033926733
+§EDGE_CALL voice=zh-CN-YunxiNeural rate=-3% chars=93 -> f410cb932b
+§EDGE_CALL voice=zh-CN-XiaoxiaoNeural rate=+3% chars=7 -> 2b176fc723
+§EDGE_CALL voice=zh-CN-YunxiNeural rate=-3% chars=52 -> 12d6bb1a68
+§NARR_FIT l1 cue=0.00 room=998.70 dur=26.66 -> DETAIL slack=+972.04 detailDur=26.66 words=23
+§EDGE_CALL voice=zh-CN-XiaoxiaoNeural rate=+3% chars=35 -> fb92a707f4
+§EDGE_CALL voice=zh-CN-YunxiNeural rate=-3% chars=94 -> 40b0cb7b0f
+§NARR_FIT l2 cue=0.00 room=998.70 dur=20.41 -> DETAIL slack=+978.29 detailDur=20.41 words=14
+§EDGE_CALL voice=zh-CN-XiaoxiaoNeural rate=+3% chars=10 -> c5358f9c9b
+§EDGE_CALL voice=zh-CN-YunxiNeural rate=-3% chars=107 -> 0fc8ac45a8
+§NARR_FIT l3 cue=0.00 room=998.70 dur=20.61 -> DETAIL slack=+978.09 detailDur=20.61 words=12
+§EDGE_CALL voice=zh-CN-XiaoxiaoNeural rate=+3% chars=7 -> 253ac00825
+§EDGE_CALL voice=zh-CN-YunxiNeural rate=-3% chars=78 -> cc124dcbc8
+§EDGE_CALL voice=zh-CN-XiaoxiaoNeural rate=+3% chars=7 -> d43d31325f
+§EDGE_CALL voice=zh-CN-YunxiNeural rate=-3% chars=27 -> 772597104b
+§NARR_FIT c1 cue=0.00 room=998.70 dur=22.93 -> DETAIL slack=+975.77 detailDur=22.93 words=6
+§EDGE_CALL voice=zh-CN-XiaoxiaoNeural rate=+3% chars=13 -> 6aa0c0427e
+§EDGE_CALL voice=zh-CN-YunxiNeural rate=-3% chars=76 -> 1cd537bf88
+§NARR_FIT c2 cue=0.00 room=998.70 dur=18.28 -> DETAIL slack=+980.42 detailDur=18.28 words=6
+§EDGE_CALL voice=zh-CN-XiaoxiaoNeural rate=+3% chars=19 -> 0894f37594
+§EDGE_CALL voice=zh-CN-YunxiNeural rate=-3% chars=47 -> 94ec68ffa4
+§EDGE_CALL voice=zh-CN-XiaoxiaoNeural rate=+3% chars=4 -> ad0140ff31
+§EDGE_CALL voice=zh-CN-YunxiNeural rate=-3% chars=40 -> d5c6657d65
+§NARR_FIT c3 cue=0.00 room=998.70 dur=19.53 -> DETAIL slack=+979.17 detailDur=19.53 words=12
+§EDGE_CALL voice=zh-CN-XiaoxiaoNeural rate=+3% chars=18 -> 29e34dbe82
+§EDGE_CALL voice=zh-CN-YunxiNeural rate=-3% chars=91 -> d4b290985f
+§EDGE_CALL voice=zh-CN-XiaoxiaoNeural rate=+3% chars=7 -> 729475bbbf
+§EDGE_CALL voice=zh-CN-YunxiNeural rate=-3% chars=52 -> 40ff6d9127
+§NARR_FIT c5 cue=0.00 room=998.70 dur=27.44 -> DETAIL slack=+971.26 detailDur=27.44 words=14
+§EDGE_CALL voice=zh-CN-XiaoxiaoNeural rate=+3% chars=11 -> 43fa0334ff
+§EDGE_CALL voice=zh-CN-YunxiNeural rate=-3% chars=81 -> 518d1411c4
+§NARR_FIT aid cue=0.00 room=998.70 dur=14.92 -> DETAIL slack=+983.78 detailDur=14.92 words=10
+§EDGE_CALL voice=zh-CN-YunxiNeural rate=-3% chars=47 -> 2bc67c6dda
+§NARR_FIT roadmap cue=0.00 room=998.70 dur=11.85 -> DETAIL slack=+986.86 detailDur=11.85 words=3
+§EDGE_CALL voice=zh-CN-XiaoxiaoNeural rate=+3% chars=14 -> f0460b886d
+§EDGE_CALL voice=zh-CN-YunxiNeural rate=-3% chars=58 -> 2e4e7e0af3
+§EDGE_CALL voice=zh-CN-YunxiNeural rate=-3% chars=34 -> 3d3f3b9556
+§NARR_FIT close cue=0.00 room=998.70 dur=20.32 -> DETAIL slack=+978.38 detailDur=20.32 words=7

@@ -1,0 +1,12 @@
+§FILM_CUE beat=cover t=0.000 frames=108 typing=0 answer_hold_frames=108 x1
+§FILM_CUE beat=before t=4.500 frames=484 typing=86 answer_hold_frames=398 x1
+§FILM_CUE beat=so t=24.667 frames=439 typing=0 answer_hold_frames=146 x3
+§FILM_CUE beat=who t=42.958 frames=387 typing=70 answer_hold_frames=317 x1
+§FILM_CUE beat=tick t=59.083 frames=390 typing=122 answer_hold_frames=268 x1
+§FILM_CUE beat=refuse t=75.333 frames=483 typing=108 answer_hold_frames=375 x1
+§FILM_CUE beat=po t=95.458 frames=261 typing=0 answer_hold_frames=261 x1
+§FILM_CUE beat=any t=106.333 frames=378 typing=0 answer_hold_frames=126 x3
+§FILM_CUE beat=legacy t=122.083 frames=698 typing=152 answer_hold_frames=182 x3
+§FILM_CUE beat=close t=151.167 frames=480 typing=0 answer_hold_frames=480 x1
+§FILM_KEYS typed=214 returns=5
+§FILM_DONE dur=171.167 frames=4108 planned=4108

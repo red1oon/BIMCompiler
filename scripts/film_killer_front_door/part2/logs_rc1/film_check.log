@@ -1,0 +1,18 @@
+§FILM_OUT file=/home/red1/Videos/PDF_and_Excel_are_killer_apps_PART2_EN_rc1.mp4 duration_s=127.292 resolution=1920x1080 fps=24/1 frames=3055 audio=aac,48000,1,127.197000 silent_picture_s=127.292
+§FILM beat=cover start=0.000 end=3.583 planned_frames=86 measured_frames=85
+§FILM beat=b1a start=3.583 end=11.583 planned_frames=192 measured_frames=192
+§FILM beat=b1b start=11.583 end=24.875 planned_frames=319 measured_frames=319
+§FILM beat=b1c start=24.875 end=35.875 planned_frames=264 measured_frames=264
+§FILM beat=b2a start=35.875 end=45.375 planned_frames=228 measured_frames=228
+§FILM beat=b2b start=45.375 end=49.500 planned_frames=99 measured_frames=99
+§FILM beat=b3 start=49.500 end=57.917 planned_frames=202 measured_frames=202
+§FILM beat=choice start=57.917 end=61.500 planned_frames=86 measured_frames=86
+§FILM beat=b4a start=61.500 end=73.708 planned_frames=293 measured_frames=293
+§FILM beat=b4b start=73.708 end=86.667 planned_frames=311 measured_frames=311
+§FILM beat=b5a start=86.667 end=96.333 planned_frames=232 measured_frames=232
+§FILM beat=b5b start=96.333 end=104.792 planned_frames=203 measured_frames=203
+§FILM beat=b5c start=104.792 end=115.917 planned_frames=267 measured_frames=267
+§FILM beat=b6 start=115.917 end=121.792 planned_frames=141 measured_frames=141
+§FILM beat=prior start=121.792 end=127.292 planned_frames=132 measured_frames=132
+§FILM total planned_frames=3055 measured=3055
+§FILM_VERDICT PASS beats=15 bad=0

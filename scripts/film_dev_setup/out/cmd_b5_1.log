@@ -1,0 +1,4 @@
+$ node devtools/code-facts/code-facts.js where camera
+APP.camera is written at viewer/grid_views.js:83 (spelled A.camera there) · 4 writes · 1247 reads. Source: fresh copy (§APP_SURFACE files=3500 fields=1875 alias_only=1604 phantom=179 untied=11).
+
+§CMD_EXIT 0

@@ -1,0 +1,15 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§EDGE_CALL voice=ms-MY-YasminNeural rate=+3% chars=29 -> d0a71a78dc
+§NARR_FIT still1 cue=0.00 room=998.70 dur=8.52 -> DETAIL slack=+990.18 detailDur=8.52 words=19
+§NARR_TONE still1#0 F YN own=-7.0st rose=5.0st endDelta=+2.5st want=rise OK "Arahan lama masih boleh guna?"
+§NARR_FIT still2 cue=0.00 room=998.70 dur=6.70 -> DETAIL slack=+992.00 detailDur=6.70 words=11
+§NARR_TONE still2#0 F WH own=-3.4st rose=0st endDelta=-3.4st want=any OK "Bagaimana dengan menulis?"
+§NARR_FIT menu cue=0.00 room=998.70 dur=9.59 -> DETAIL slack=+989.11 detailDur=9.59 words=20
+§NARR_FIT find cue=0.00 room=998.70 dur=5.58 -> DETAIL slack=+993.12 detailDur=5.58 words=10
+§NARR_TONE find#0 F WH own=-5.7st rose=0st endDelta=-5.7st want=any OK "Di mana rakan niaga?"
+§NARR_FIT open cue=0.00 room=998.70 dur=6.20 -> DETAIL slack=+992.50 detailDur=6.20 words=13
+§NARR_FIT back cue=0.00 room=998.70 dur=4.88 -> DETAIL slack=+993.82 detailDur=4.88 words=8
+§NARR_TONE back#0 F YN own=-5.0st rose=5.0st endDelta=+6.0st want=rise OK "Dan untuk kembali?"
+§NARR_FIT close cue=0.00 room=998.70 dur=9.86 -> DETAIL slack=+988.84 detailDur=9.86 words=23

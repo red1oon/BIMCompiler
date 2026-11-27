@@ -1,0 +1,3 @@
+[
+ {"name":"cp_freight_rule","window":169,"tab":0,"steps":[{"set":"C_BPartner_ID","value":117},{"set":"FreightCostRule","value":"U"},{"set":"FreightCostRule","value":"I"}]}
+]

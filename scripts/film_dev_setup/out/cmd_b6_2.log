@@ -1,0 +1,6 @@
+$ node scripts/bump.js modeller/arc_editable.js --write
+§BUMP page=modeller/modeller.html ref=arc_editable.js v=9->10 (manifest modeller/modules.json)
+§BUMP sw=modeller/sw.js CACHE_VERSION v309->v310 (for: modeller/modeller.html) (manifest modeller/modules.json)
+§BUMP_DONE targets=1 pages=1 loaders=0 sw=1 mode=write written=3
+
+§CMD_EXIT 0

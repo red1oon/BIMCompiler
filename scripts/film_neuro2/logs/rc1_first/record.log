@@ -1,0 +1,21 @@
+§GUARD_OK guard.js PASS before the first frame
+§FILM_PLAN beats=15 total=179.20s frames=4301 fps=24
+§FILM_CUE beat=b01 t=0.00 frame=0
+§FILM_CUE beat=b02 t=4.42 frame=106
+§FILM_CUE beat=b03 t=15.13 frame=363
+§FILM_CUE beat=b04 t=25.88 frame=621
+§FILM_CUE beat=b05 t=46.54 frame=1117
+§FILM_CUE beat=b06 t=64.04 frame=1537
+§FILM_CUE beat=b07 t=75.21 frame=1805
+§FILM_CUE beat=b08 t=91.50 frame=2196
+§FILM_CUE beat=b09 t=106.33 frame=2552
+§FILM_CUE beat=b10 t=121.25 frame=2910
+§FILM_CUE beat=b11 t=131.46 frame=3155
+§FILM_CUE beat=b12 t=142.92 frame=3430
+§FILM_CUE beat=b13 t=160.29 frame=3847
+§FILM_CUE beat=b14 t=165.13 frame=3963
+§FILM_CUE beat=b15 t=173.21 frame=4157
+  §FILM_LAYOUT_PROBLEM x2 chart text clipped: 487
+§FILM_LAYOUT_DONE distinct_images_checked=55 images_with_problems=2 FAIL
+§CONSOLE_ERRORS console_errors=0 page_errors=0 failed_requests=0 PASS
+§FILM_DONE frames=4301 distinct_images=55 dur=179.21s out=/tmp/wt-part2/scripts/film_neuro2/out/rec/film_silent.mp4

@@ -1,0 +1,24 @@
+{
+ "provenance": "tables named by §TEAM_OUT / §TEAM_LOCALONLY / §TEAM_STATION_LOCAL lines in the logs of witness_team_so, docaction, base, desktop, pill (bim-ootb origin/main d0153e46 + plan changes), run 2026-10-25; counts = number of log lines. DERIVED DATA, regenerate by re-running those witnesses.",
+ "out": {
+  "c_order": 128,
+  "c_orderline": 41,
+  "m_storagereservation": 13,
+  "c_ordertax": 13,
+  "c_bpartner": 8,
+  "c_acctschema": 2
+ },
+ "localonly": {
+  "c_order": 19,
+  "ad_wf_process": 13,
+  "ad_wf_activity": 39,
+  "ad_wf_eventaudit": 39,
+  "c_acctschema": 11,
+  "m_storagereservationlog": 13
+ },
+ "stationLocal": {
+  "ad_session": 28,
+  "ad_sequence": 38,
+  "ad_recentitem": 94
+ }
+}

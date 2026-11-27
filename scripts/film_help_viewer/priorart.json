@@ -1,0 +1,23 @@
+{
+ "note": "Only sources this lane READ (VOCAB_MESSAGE_CATALOG §14 (a), §14.1-§14.4). A repo row names the file, the line and a text that must be on that line (idempiere = the local legacy source, read from disk); a saved row names the copy fetched into ~/bim-compiler/build/bim_help_prior/ (2026-11-17), copied into out/prior/ by facts.js, and a text that must be in it. guard.js check P fails a row whose text is not there. Nothing from memory.",
+ "items": [
+  {
+   "name": "buildingSMART Data Dictionary (bSDD)",
+   "where": { "saved": "prior/bsdd_IfcWall_de-DE.json", "text": "Vertikale Konstruktion zur Abgrenzung oder Unterteilung von Räumen" },
+   "does": "IFC class definitions, with the translations buildingSMART itself publishes",
+   "took": "the info panel shows bSI's own text, byte for byte, in your language or in English, labelled (W-CLASS-HELP C2, C3, C4)"
+  },
+  {
+   "name": "Creative Commons BY-ND 4.0, the legal code",
+   "where": { "saved": "prior/cc_by-nd_4.0_legalcode.en.txt", "text": "NoDerivatives" },
+   "does": "the IFC documentation's licence: share it with credit, never changed",
+   "took": "verbatim only, the credit under every bSI text, no machine translation (§14 (a))"
+  },
+  {
+   "name": "iDempiere HelpController",
+   "where": { "repo": "idempiere", "path": "org.adempiere.ui.zk/WEB-INF/src/org/adempiere/webui/panel/HelpController.java", "line": 146, "text": "onFieldTooltip" },
+   "does": "the help lives in a panel beside the window: this field, then how-to",
+   "took": "the same parts in the Viewer: this element, How To, the question box (§14)"
+  }
+ ]
+}

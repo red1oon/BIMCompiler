@@ -1,0 +1,60 @@
+§DT-NUMBERS device=A T1=HQ-T1-000001 T2=HQ-T2-000001 T1=HQ-T1-000002 T1=HQ-T1-000003 T2=HQ-T2-000002 N1=Store North-N1-000001
+§DT PASS D1 - two tills in one org each run their own series over interleaved saves (prefix Org-Till-) :: T1=[1,2,3] T2=[1,2]
+§DT PASS D2 - each till series is gapless 1..n :: T1=1,2,3 T2=1,2
+§DT PASS D3 - another org's till starts its own series (the org value is part of the key) :: N1=[1] got=Store North-N1-000001
+§DT-OFFLINE device B1(T1)=HQ-T1-000001,HQ-T1-000002,HQ-T1-000003,HQ-T1-000004,HQ-T1-000005 device B2(T2)=HQ-T2-000001,HQ-T2-000002,HQ-T2-000003,HQ-T2-000004,HQ-T2-000005
+§DT PASS D4 - two devices numbering OFFLINE from the same shipped state, each for its own till, share no DocumentNo (the legacy unique (DocumentNo,C_DocType_ID,C_BPartner_ID) cannot fire) :: shared=[]
+§DT-CONTROL plain seq=387 device C1=50000,50001,50002 device C2=50000,50001,50002
+§DT PASS D5 - CONTROL: the same two devices on the shipped plain sequence DO draw the same numbers (the defect D4 removes is real) :: clash=["50000","50001","50002"]
+§DT-NOTILL org=HQ c_pos_id=null DocumentNo=HQ--000001
+§DT PASS D6 - an order with no till gets a number outside every till series (measured: HQ--000001) :: HQ--000001
+§DT-SEQLOG §MODEL-SEQ seq=9300001 level=AD_Sequence_No org=0 key=HQ-T1 next=1 (FOR UPDATE row lock: none in a single-writer op-group) | §MODEL-SEQ seq=9300001 level=AD_Sequence_No org=0 key=HQ-T2 next=1 (FOR UPDATE row lock: none in a single-writer op-group)
+§DT PASS D7 - solo device (no Team, no overlay): the shipped number is unchanged and no shipped sequence carries the format (the switch is Team only) :: number=50000 sequences with format=0
+§TEAM_DOCNO_PREFIX applied=31 kept=1 format=@AD_Org_ID.Value/K@-@#AD_User_Value/K@- valueless_users=0 shared_values=0 (boot overlay, live DB only, base hash unchanged)
+§DT PASS D8 - Team overlay: every un-prefixed DocType sequence gets the format, the prefixed are kept, the BASE manifest (seed bytes + patch text) is byte-identical :: targets=32 applied=31 kept=1 left-unprefixed=0 base 49ab8b256500->49ab8b256500
+§TEAM_DOCNO_PREFIX applied=0 kept=32 format=@AD_Org_ID.Value/K@-@#AD_User_Value/K@- valueless_users=0 shared_values=0 (boot overlay, live DB only, base hash unchanged)
+§DT PASS D8b - the overlay is idempotent (a second boot applies nothing) :: applied=0 kept=32
+§DT-VALUELESS active users of client 11 with no Search Key (Value) = 0 — each would draw OrgValue--n and collide with another valueless user (a station user needs a Value)
+§DT-STATION device=T user=joesales {"order":"HQ-joesales-50000","invoice":"HQ-joesales-100000","shipment":"HQ-joesales-500000","payment":"HQ-joesales-400000"}
+§DT PASS D9 - order, invoice, shipment, payment are each numbered OrgValue-UserValue-n from the LOGIN context (#AD_User_Value, G1-G4) :: {"order":"HQ-joesales-50000","invoice":"HQ-joesales-100000","shipment":"HQ-joesales-500000","payment":"HQ-joesales-400000"}
+§TEAM_DOCNO_PREFIX applied=31 kept=1 format=@AD_Org_ID.Value/K@-@#AD_User_Value/K@- valueless_users=0 shared_values=0 (boot overlay, live DB only, base hash unchanged)
+§TEAM_DOCNO_PREFIX applied=31 kept=1 format=@AD_Org_ID.Value/K@-@#AD_User_Value/K@- valueless_users=0 shared_values=0 (boot overlay, live DB only, base hash unchanged)
+§DT-OFFLINE2 X(joesales)=HQ-joesales-50000,HQ-joesales-100000,HQ-joesales-500000,HQ-joesales-400000,HQ-joesales-50001,HQ-joesales-100001,HQ-joesales-500001,HQ-joesales-400001,HQ-joesales-50002,HQ-joesales-100002,HQ-joesales-500002,HQ-joesales-400002 Y(gardenusr)=HQ-gardenusr-50000,HQ-gardenusr-100000,HQ-gardenusr-500000,HQ-gardenusr-400000,HQ-gardenusr-50001,HQ-gardenusr-100001,HQ-gardenusr-500001,HQ-gardenusr-400001,HQ-gardenusr-50002,HQ-gardenusr-100002,HQ-gardenusr-500002,HQ-gardenusr-400002
+§DT PASS D10 - two devices, two users, OFFLINE from the same shipped state: no shared number on any of the 4 doc types :: shared=[]
+§TEAM_DOCNO_PREFIX applied=31 kept=1 format=@AD_Org_ID.Value/K@-@#AD_User_Value/K@- valueless_users=0 shared_values=0 (boot overlay, live DB only, base hash unchanged)
+§TEAM_DOCNO_PREFIX applied=31 kept=1 format=@AD_Org_ID.Value/K@-@#AD_User_Value/K@- valueless_users=0 shared_values=0 (boot overlay, live DB only, base hash unchanged)
+§DT-CONTROL2 same user on X and Y: X=HQ-joesales-50000,HQ-joesales-100000,HQ-joesales-500000,HQ-joesales-400000 Y=HQ-joesales-50000,HQ-joesales-100000,HQ-joesales-500000,HQ-joesales-400000
+§DT PASS D11 - CONTROL: the SAME user on two devices shares one series and collides (one user per station is the rule; else D10 is vacuous) :: shared=12/12
+§DT PASS D12 - an admin's own prefix is kept by the overlay (shipped Quotation sequence 383) :: prefix=@AD_Org_ID<AD_Org.Value>@-
+§TEAM_DOCNO_PREFIX applied=31 kept=1 format=@AD_Org_ID.Value/K@-@#AD_User_Value/K@- valueless_users=0 shared_values=0 (boot overlay, live DB only, base hash unchanged)
+§DT PASS D13 - a user preference named AD_User_Value (or #AD_User_Value) does not change the number: the station comes from the login, not a user-editable preference :: number=HQ-joesales-50000 ctx P|AD_User_Value=HIJACK
+     [T] §TEAM_DOCNO_REFUSED docno-station documentno=HQ-joesales-50000 expected prefix HQ-gardenusr- (author user gardenusr)
+     [T] §TEAM_DOCNO_REFUSED docno-station documentno=12345 expected prefix HQ-gardenusr- (author user gardenusr)
+     [F] §TEAM_DOCNO_REFUSED docno-station documentno=HQ-joesales-50000 expected prefix HQ-gardenusr- (author user gardenusr)
+     [F] §TEAM_DOCNO_REFUSED docno-station documentno=12345 expected prefix HQ-gardenusr- (author user gardenusr)
+     [S] §TEAM_DOCNO_REFUSED docno-station documentno=HQ-joesales-50000 expected prefix HQ-gardenusr- (author user gardenusr)
+     [S] §TEAM_DOCNO_REFUSED docno-station documentno=12345 expected prefix HQ-gardenusr- (author user gardenusr)
+§DT-FOLD honest=MERGED:role 102 undefined MERGED:role 102 undefined MERGED:role 102 undefined | forged=REFUSED:docno-station REFUSED:docno-station REFUSED:docno-station | typed=REFUSED:docno-station REFUSED:docno-station REFUSED:docno-station | unbound-founder=MERGED:role 102 undefined MERGED:role 102 undefined MERGED:role 102 undefined | unjudged={"unbound":53}
+§DT PASS D14 - a received document carrying ANOTHER station's prefix (or a hand-typed number) is REFUSED docno-station on every device; the station's own number is MERGED :: honest=MERGED:role 102 undefined forged=REFUSED:docno-station typed=REFUSED:docno-station
+§DT PASS D14b - an author whose person is not bound to an AD_User is NOT judged (merged, counted unbound) — stated, never guessed :: founder=MERGED:role 102 undefined unbound=53
+     [T] §TEAM_DOCNO_REFUSED docno-station documentno=HQ/gardenusr/50001 expected prefix HQ-gardenusr- (author user gardenusr)
+     [F] §TEAM_DOCNO_REFUSED docno-station documentno=HQ/gardenusr/50001 expected prefix HQ-gardenusr- (author user gardenusr)
+     [S] §TEAM_DOCNO_REFUSED docno-station documentno=HQ/gardenusr/50001 expected prefix HQ-gardenusr- (author user gardenusr)
+§DT-FOLD-FORMAT the admin's format edit (ad_sequence 8f82bed9) verdicts=MERGED:role 102 undefined MERGED:role 102 undefined MERGED:role 102 undefined
+     [T] §TEAM_DOCNO_REFUSED docno-station documentno=HQ/joesales/50002 expected prefix HQ-gardenusr- or HQ/gardenusr/ (author user gardenusr)
+     [F] §TEAM_DOCNO_REFUSED docno-station documentno=HQ/joesales/50002 expected prefix HQ-gardenusr- or HQ/gardenusr/ (author user gardenusr)
+     [S] §TEAM_DOCNO_REFUSED docno-station documentno=HQ/joesales/50002 expected prefix HQ-gardenusr- or HQ/gardenusr/ (author user gardenusr)
+§DT-FOLD-FORMAT new-format number before the edit arrived=REFUSED:docno-station REFUSED:docno-station REFUSED:docno-station after=MERGED:role 102 undefined MERGED:role 102 undefined MERGED:role 102 undefined | forged in the new format=REFUSED:docno-station REFUSED:docno-station REFUSED:docno-station
+§DT PASS D15b - at fold an admin's format edit is honoured once it is in the log (CONTROL: before it, the same number is refused); a forged number in the new format is still refused :: before=REFUSED:docno-station after=MERGED:role 102 undefined forged=REFUSED:docno-station
+§TEAM_DOCNO_PREFIX applied=31 kept=1 format=@AD_Org_ID.Value/K@-@#AD_User_Value/K@- valueless_users=0 shared_values=0 (boot overlay, live DB only, base hash unchanged)
+§DT PASS D15 - an admin's edit of the format in the Document Sequence window changes the next number (as legacy) :: number=HQ/joesales/50000
+§DT PASS D16 - after the shipped patch no user is left without a Search Key (before: 10 in the seed file) :: before=10 after=0
+§DT PASS D17 - every patched Value is legacy MUser.setValue's own result on that user's Name (not typed), and GardenAdmin = gardenad (the value legacy's pilot already carries) :: mismatch=[] GardenAdmin=gardenad
+§DT PASS D18 - no two active users of one client share a Search Key in the shipped data (else two stations would share one series) :: shared=[]
+§TEAM_DOCNO_PREFIX applied=31 kept=1 format=@AD_Org_ID.Value/K@-@#AD_User_Value/K@- valueless_users=0 shared_values=0 (boot overlay, live DB only, base hash unchanged)
+§DT PASS D19 - the demo station (GardenAdmin) numbers HQ-gardenad-n, never HQ--n (the live defect seen in W-TEAM-SO, §48.11c) :: number=HQ-gardenad-50000
+§DT-LEGACY-USER-VALUE pilot users=11 shared ids=9 102=gardenusr 103=joesales 104=carlboss 105=hseed 101=gardenad 50001=webserv 100=superusr 10=system 0=systemdeprecated
+§DT PASS D17L - LEGACY: every AD_User_ID present on both sides carries the same Search Key on the twin and on the pilot :: shared=9 differ=[]
+§DT INCONCLUSIVE D20 - no oracle file /tmp/BIMCompiler/scripts/bridge/out/docno_station_legacy.json (run scripts/bridge/docno_station_legacy.js on the pilot)
+§DT INCONCLUSIVE LEGACY - no oracle file /tmp/BIMCompiler/scripts/bridge/out/docno_till_legacy.json (run the same config on the pilot; until then the twin numbers are not legacy-compared)
+§DT_VERDICT PASS judged=23 fails=0 inconclusive=2 (legacy arm)

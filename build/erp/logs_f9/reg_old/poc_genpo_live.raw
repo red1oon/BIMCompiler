@@ -1,0 +1,10 @@
+— GeneratePO (AD_Process 164, ProjectGenOrder) via ?process=164 deep link, GardenAdmin
+  §AD-PROC-LIVE handlers=[report:c_order,report:c_invoice,report:m_inout,report:m_inoutconfirm,report:m_movement,report:m_inventory,report:pp_order,report:c_project,report:c_payment,org.compiere.process.Aging,org.compiere.process.ImportBPartner,org.compiere.report.TrialBalance,org.compiere.process.FactAcctReset,org.compiere.process.DocumentTypeVerify,org.compiere.process.ProjectGenOrder,org.compiere.process.InOutGenerate,org.compiere.process.InvoiceGenerate,org.compiere.process.CreateFromInvoice] reportCore=Y engine=Y
+  §AD-PROC-LIVE open proc=164 name="Generate Order" report=N paras=0
+  §GENPO-LIVE picker options=3 incl. project 101 "Landscape — Landcape for New Complex"
+  §GENPO-LIVE run proc=164 Record_ID(C_Project_ID)=101
+  §AD-PROC-LIVE proc=164 name="Generate Order" classname=org.compiere.process.ProjectGenOrder dispatched=Y ok=N rows=0 reason=project-not-ready message="Project has no Price List"
+  §GENPO-LIVE honest rejection card: "Project has no Price List"
+  §GENPO-LIVE seed-limit: no served tenant carries a gate-passing project (warehouse+pricelist) → the positive C_Order fold is proven headless/oracle-equivalent (W-PROC-GENPO), live shows the honest gate rejection.
+🟢 W-PROC-GENPO-LIVE PASS — proc 164 dispatches via the W-PROC spine to the KIND-2 ProjectGenOrder handler; the picker folds real projects; a thin project is honestly REJECTED (no fabricated order), 0 pageerrors
+exit=0

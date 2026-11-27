@@ -1,0 +1,12 @@
+[
+  {"name": "F1 pos-sales-up", "treatment": "FACT", "role": 103, "strategy": 100, "dir": "UP", "table": "C_OrderLine", "carries": ["M_Product_ID", "QtyEntered", "C_UOM_ID"], "group": "POSStation/Date/Order#", "schedule": "end-of-day", "from": "POS station", "to": "HQ"},
+  {"name": "F2 replenishment-down", "treatment": "FACT", "role": 103, "strategy": 100, "dir": "DOWN", "table": "M_MovementLine", "carries": ["M_Product_ID", "M_Locator_ID", "M_LocatorTo_ID", "QtyEntered", "C_UOM_ID"], "group": "Movement doc key", "schedule": "on-change", "from": "HQ", "to": "POS station"},
+  {"name": "R1 replenish-rule", "treatment": "RULE", "role": 103, "schedule": "daily", "process": "Replenish Report", "processId": 53267, "emits": "F2 replenishment-down"},
+  {"name": "S1 price-list-seed", "treatment": "SEED", "role": 103, "audience": "addressed", "guard": "daily"},
+  {"name": "S2 gold-price", "treatment": "SEED", "audience": "public", "guard": "daily"},
+  {"name": "I1 loyalty-code", "treatment": "INSTRUMENT", "authorityRole": 103, "holderRole": "PHONE", "account": "loyalty id"},
+  {"name": "P1 borrower-payment-up", "treatment": "FACT", "role": "BORROWER", "strategy": 100, "dir": "UP", "table": "C_Payment", "carries": ["C_BPartner_ID", "PayAmt"], "group": "Borrower/Date/Slip#", "schedule": "at-visit"},
+  {"name": "R2 payment-rule", "treatment": "RULE", "on": "P1 borrower-payment-up", "process": "ApplyPayment", "emits": "N1 payment-confirmation-down"},
+  {"name": "N1 payment-confirmation-down", "treatment": "FACT", "role": "BORROWER", "dir": "DOWN", "group": "Borrower/Date/Confirm#", "schedule": "on-change"},
+  {"name": "S0 roster", "treatment": "SEED", "audience": "public", "guard": "once"}
+]

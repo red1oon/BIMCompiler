@@ -1,0 +1,38 @@
+═══ W-UPS-E3 — every device refuses a DocAction from anyone but the document's one executor (TEAMWORK_FRAMEWORK FL-8, §38.3) ═══
+§X1 MAP
+   🟢 the owner-signed map {c_order: HQ 102} published by the admin is MERGED on all 3 devices; every device returns it, executorsEpoch=1 — MERGED:policy MERGED:policy MERGED:policy map={"c_order":102} epoch=1
+§X2 HQ
+   🟢 HQ (the executor) completes its order: the status op and its consequence are MERGED on every device — MERGED:role 102 undefined MERGED:role 102 undefined MERGED:role 102 undefined | MERGED:role 102 undefined MERGED:role 102 undefined MERGED:role 102 undefined
+§X3 STATION
+   🟢 a STATION completes an order it created: its status op is REFUSED not-executor on EVERY device — REFUSED:not-executor REFUSED:not-executor REFUSED:not-executor
+   🟢 and the consequence in the same DocAction group is REFUSED not-executor-group everywhere (all-or-none) — REFUSED:not-executor-group REFUSED:not-executor-group REFUSED:not-executor-group
+   🟢 no ghost: neither op is in any device's foldable() — ghost=0
+§X4 NO-ENTRY
+   🟢 CONTROL: a table with no entry in the map (m_movement) — the station's status op is MERGED as today — MERGED:role 103 undefined MERGED:role 103 undefined MERGED:role 103 undefined
+§X5 AUTHOR RETIRED
+   🟢 map {c_order: "author"} (backup key K1 signs, chained) is REFUSED bad-policy:executors on every device; the map in force stays {c_order: HQ}, epoch 1 — REFUSED:bad-policy:executors REFUSED:bad-policy:executors REFUSED:bad-policy:executors map={"c_order":102} epoch=1
+   🟢 a role-valued second statement {c_order, m_inout: HQ} (backup key K1, chained) is MERGED everywhere and applies, epoch 2 (the chain the X6 cases refuse against) — MERGED:policy MERGED:policy MERGED:policy map={"c_order":102,"m_inout":102} epoch=2
+§X6 REFUSE
+   🟢 unsigned/edited after signing -> REFUSED:executors-signature on every device; the map in force stays {c_order, m_inout: HQ} — REFUSED:executors-signature REFUSED:executors-signature REFUSED:executors-signature map={"c_order":102,"m_inout":102}
+   🟢 signed by a key outside the trust list -> REFUSED:executors-untrusted-signer on every device; the map in force stays {c_order, m_inout: HQ} — REFUSED:executors-untrusted-signer REFUSED:executors-untrusted-signer REFUSED:executors-untrusted-signer map={"c_order":102,"m_inout":102}
+   🟢 the FIRST statement replayed after the second -> REFUSED:executors-stale on every device; the map in force stays {c_order, m_inout: HQ} — REFUSED:executors-stale REFUSED:executors-stale REFUSED:executors-stale map={"c_order":102,"m_inout":102}
+   🟢 a valid statement published by a NON-admin station -> REFUSED:not-admin on every device; the map in force stays {c_order, m_inout: HQ} — REFUSED:not-admin REFUSED:not-admin REFUSED:not-admin map={"c_order":102,"m_inout":102}
+   🟢 a malformed map -> REFUSED:bad-policy:executors on every device; the map in force stays {c_order, m_inout: HQ} — REFUSED:bad-policy:executors REFUSED:bad-policy:executors REFUSED:bad-policy:executors map={"c_order":102,"m_inout":102}
+   🟢 a space founded with NO trust list cannot name executors -> executors-unpinned — REFUSED:executors-unpinned REFUSED:executors-unpinned REFUSED:executors-unpinned
+§X7 ORDER
+   🟢 a fourth device ingesting the same 25 ops in REVERSE order gives the same verdicts — MERGED:role 102 undefined REFUSED:not-executor REFUSED:not-executor-group MERGED:role 103 undefined REFUSED:bad-policy:executors MERGED:policy
+§X8 POSITION-AWARE MAP (TEAMWORK_FRAMEWORK §41.2 L2: an authorisation is judged by the policy in force WHEN THE ACT WAS DONE, never re-judged by a later policy)
+   🟢 under the map {c_order, m_inout: HQ} the station's Complete is REFUSED not-executor on every device (the act) — REFUSED:not-executor REFUSED:not-executor REFUSED:not-executor
+   🟢 the owner retires the map with {} (chained to the map in force): MERGED everywhere, epoch 3, the map in force is empty — MERGED:policy MERGED:policy MERGED:policy epoch=3
+   🔴 AFTER {} the Complete done under the old map STAYS refused (status op and its group consequence), on every device; so does the earlier X3 station Complete — MERGED:role 103 undefined MERGED:role 103 undefined MERGED:role 103 undefined | MERGED:role 103 undefined MERGED:role 103 undefined MERGED:role 103 undefined | MERGED:role 103 undefined MERGED:role 103 undefined MERGED:role 103 undefined
+   🟢 a Complete done AFTER {} (the station authors it once the map is retired) is MERGED on every device: the retirement still takes effect going forward — MERGED:role 103 undefined MERGED:role 103 undefined MERGED:role 103 undefined | MERGED:role 103 undefined MERGED:role 103 undefined MERGED:role 103 undefined
+   🔴 a FRESH device folding all 32 ops from zero (reverse arrival) reaches the same five verdicts: refused, refused, refused, merged, merged — MERGED:role 103 undefined MERGED:role 103 undefined MERGED:role 103 undefined MERGED:role 103 undefined MERGED:role 103 undefined
+§MUTANTS (a copy of build/comm with one rule broken; each must turn at least one arm red; a crash is NOT a kill)
+   🟢 role check off -> red arms: X3, X8
+   🟢 group refusal off -> red arms: X3, X8
+   🟢 signer check off -> red arms: X6, X8
+   🟢 'author' accepted again by the map shape -> red arms: X5, X6, X8
+   🔴 final-map read (E3 judges every op by the map in force at the END of the fold) -> red arms: X8 (MUTATION DID NOT APPLY)
+   🔴 the policy carries no frontier (position unknown: every op falls under the newest map) -> red arms: X8 (MUTATION DID NOT APPLY)
+   🟢 map never applied -> red arms: X1, X3, X5, X6, X8
+§EXE_VERDICT FAIL judged=27 fails=4

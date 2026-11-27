@@ -1,0 +1,17 @@
+§HS-HEADER W-HQ-HOTSPOTS ootb=/tmp/wt-hq-main base=/tmp/wt-hq-main commit=692f8861 node=v18.19.1 at=2026-10-29T06:12:37.057Z
+§HS-SECTION HS1 login context = Env.getCtx(): built once per login identity (legacy Login.loadPreferences U/Login.java:477, RolePanel.java:910, ValuePreference.java:583)
+§HS FAIL HS1-C1 - five processes of one session build the login context at most once (RED on main: one build per process) :: builds=5 ran=5 pref=v1,v1,v1,v1,v1
+§HS FAIL HS1-C2a - a preference changed in the DB AFTER login is not seen by the next process of the same session (legacy: Login.loadPreferences ran at login) :: sees=v2 builds=1
+§HS PASS HS1-C2b - a new login (role switch) loads the changed preference :: sees=v2 role=103
+§HS PASS HS1-C3 - an organization switch rebuilds: the process sees the new #AD_Org_ID :: org=12
+§HS FAIL HS1-C2c - resetSession(holder) exists (a host's login event) :: AdCallout.resetSession is not defined
+§HS PASS HS1-C4 - a second database (kernel) with the same identity gets its own context :: sees=other-db
+§HS-SECTION HS2 reply authoring reads the roster once per translate pass (team_sync.js translate / rosterPersons)
+§HS FAIL HS2-C5 - S.order() (a whole-log refold) is called at most once per translate pass in the reply phase (2 passes here), not once per DOWN row (RED on main: 12) :: order_calls=12 down_rows=12
+§HS PASS HS2-C6 - the authored replies are IDENTICAL to main's (same specs, same order; uuids/timestamps normalised by first appearance) :: main=435ffea8b2dcfa7c/12 branch=435ffea8b2dcfa7c/12 main_order_calls=12
+§HS-SECTION HS3 per-ticket import work does not grow with the orders already in the DB (find pushdown; legacy official indexes as a boot overlay)
+§HS FAIL HS3-C8 - find(exclude) and find(ids) give exactly the unrestricted answer filtered in JS, over pending writes too :: all=6 exclude=6/4 ids=6/3
+§HS FAIL HS3-C9 - legacy's official dictionary indexes (IDEMPIERE-1132) exist on the physical tables: a lookup by c_payment.c_bpartner_id SEARCHes an index instead of SCANning (RED on main: no index at all) :: plan=SCAN c_payment indexes=0
+§HS PASS HS3-C10 - the Team BASE inputs (ad_seed.db, patches/ad_seed.db.sql, patches/mfg.sql) are byte-identical to main's: the fixes ship as boot overlays, outside the hashed base :: identical=[true,true,true]
+§HS INCONCLUSIVE HS3-C7 - a round did not import all its tickets: [{"imported":0,"reads":704,"ms":27303.294999957085,"ok":true},{"imported":0,"reads":2688,"ms":41311.46099996567,"ok":true},{"imported":0,"reads":5952,"ms":60416.66100001335,"ok":true},{"imported":0,"reads":10496,"ms":114278.12400001287,"ok":true}]
+§HS-VERDICT FAIL judged=11 failed=6 inconclusive=1

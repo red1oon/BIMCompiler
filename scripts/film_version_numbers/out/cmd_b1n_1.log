@@ -1,0 +1,10 @@
+$ git grep -n -o -E 'locale_loader.js(\?v=|": \{"v":)[0-9]+' -- index.html "viewer/*.html" modeller
+index.html:179:locale_loader.js?v=15
+modeller/edit_delta_ui.js:10:locale_loader.js?v=16
+modeller/modeller.html:324:locale_loader.js?v=16
+modeller/modules.json:105:locale_loader.js": {"v":16
+viewer/boq_charts.html:2266:locale_loader.js?v=16
+viewer/clash_report.html:46:locale_loader.js?v=15
+viewer/mep_report.html:62:locale_loader.js?v=16
+viewer/viewer.html:1014:locale_loader.js?v=16
+§CMD_EXIT 0

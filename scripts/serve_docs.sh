@@ -25,6 +25,8 @@ if ! "$VENV_DIR/bin/python" -c "import material" 2>/dev/null; then
     echo "Installing mkdocs-material (one-time)..."
     "$VENV_DIR/bin/pip" install --quiet mkdocs-material
 fi
+# the language chooser's plugin (prompts/DOCS_I18N.md §6d), pinned
+"$VENV_DIR/bin/python" -c "import mkdocs_static_i18n" 2>/dev/null || "$VENV_DIR/bin/pip" install --quiet mkdocs-static-i18n==1.3.1
 
 echo ""
 echo "  BIM Intent Compiler — Documentation"

@@ -1,0 +1,29 @@
+§FILM_GUARD OK   setup says "twenty-eight" <- index.keys expected 28 got 28
+§FILM_GUARD OK   setup says "twenty-eight" <- page.installed_keys expected 28 got 28
+§FILM_GUARD OK   move1 says "line eighty-nine" <- bar.line expected 89 got 89
+§FILM_GUARD OK   move1 says "assumed" <- bar.prov expected assumed got assumed
+§FILM_GUARD OK   move1 says "thirteen stations" <- truss.stations expected 13 got 13
+§FILM_GUARD OK   move1 says "Press V, and the editor opens on that line" <- bar.v_link_matches expected Y got Y
+§FILM_GUARD OK   move2 says "the tool's own test failed on one" <- wall.first_run_failed expected Y got Y
+§FILM_GUARD OK   move2 says "a body nobody stamped" <- wall.old_unstamped expected Y got Y
+§FILM_GUARD OK   move2 says "five hundred and twelve" <- bodies expected 512 got 512
+§FILM_GUARD OK   move2 says "five hundred and eleven" <- inserts expected 511 got 511
+§FILM_GUARD OK   move2 says "seven hundred and sixteen" <- wall.line expected 716 got 716
+§FILM_GUARD OK   the bar line in VS Code is the stamp the tooltip named
+§FILM_GUARD OK   the wall line in VS Code is the wall-line stamp
+§FILM_GUARD OK   every body and every insert traced (CLI)
+§FILM_GUARD OK   the OLD tree is main minus the one stamp (commit +edit)
+§FILM_GUARD OK   no page error in any session
+§FILM_GUARD OK   no shoot step reported an error
+§FILM_GUARD OK   the memory was measured after a forced GC in both sessions
+§FILM_GUARD OK   credentials: MIT licence, both PRs merged, the paper states its priority date
+§FILM_GUARD OK   the witness lines on the card are PASS lines from the logs copied into out/
+§FILM_GUARD OK   every picture the cards need exists
+§FILM_GUARD OK   prior art "click-to-component (React)" <- out/prior/click_to_component_README.md
+§FILM_GUARD OK   prior art "its source map" <- out/prior/click_to_component_README.md
+§FILM_GUARD OK   prior art "VS Code, opening with URLs" <- out/prior/vscode_command_line.html
+§FILM_GUARD OK   prior art "this Modeller's own hover label" <- bim-ootb:modeller/edit_delta_ui.js:82
+§FILM_GUARD OK   not said: the page pictures are taken, not streamed
+§FILM_GUARD OK   not said: the claim is only that the shipped Modeller never loads it
+§FILM_GUARD OK   not said: no speed was measured
+§FILM_GUARD VERDICT PASS

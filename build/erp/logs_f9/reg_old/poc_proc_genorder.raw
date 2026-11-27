@@ -1,0 +1,29 @@
+═══ W-PROC-GENPO — ProjectGenOrder (AD_Process 164) folds a project → Sales Order op-group ═══
+
+— §GENPO-DISPATCH (real AD_Process 164 row → classname → registered handler) —
+§GENPO-DISPATCH proc=164 value=C_Project_Generate name="Generate Order" classname=org.compiere.process.ProjectGenOrder isReport=false paras=0 hasHandler=true
+🟢 AD_Process 164 = ProjectGenOrder (isReport=N, 0 params) resolves to a registered handler  — name="Generate Order"
+
+— §GENPO-GATE (thin project 101 → honest rejection, no fabricated order) —
+§GENPO-GATE project=101 m_pricelist_version_id=(null) m_warehouse_id=(null) c_bpartner_id=117
+§GENPO-GATE dispatched=true ok=false reason=project-not-ready msg="Project has no Price List" result.ops=none
+🟢 thin project → handler runs but gate REJECTS (no order ops emitted) — honest, not fabricated  — reason=project-not-ready
+
+— §GENPO-FOLD (gate-passing project → buildDoc archetype → C_Order op-group) —
+🟢 bound header rows are REAL seed rows (warehouse/pricelist-version/bp-loc/on-credit-doctype all exist)  — wh=103 plv=104→pl=101 bploc=112 doctype=133
+§GENPO-FOLD dispatched=true ok=true kind=process rows=1 ops=2 (1 CREATE_DOCUMENT + 1 CREATE_LINE)
+§GENPO-FOLD header issotrx=Y docsubtypeso=WI c_doctypetarget_id=133 c_bpartner_id=117 m_warehouse_id=103 m_pricelist_id=101 c_project_id=101 source_id=101
+🟢 C_Order header is a SALES order (IsSOTrx=Y, On-Credit doctype) sourced from the project (faithful to MOrder(MProject))  — doctype=133
+§GENPO-ORACLE independent SQL re-derivation rows=1 (qty=PlannedQty−InvoicedQty, price=PlannedPrice; distinct path from the fold)
+🟢 order-line count == project-line count (every project line folds to one order line)  — lines=1 oracle=1
+§GENPO-FOLD lines=1 fields{qty,price,source_line} mismatches=0 plannedPriceBranch=1 priceListBranch=0 netAmt(eng)=600 netAmt(oracle)=600
+🟢 every order line == independent SQL re-derivation, EXACT (qty, price, source link)  — lines=1 mismatches=0
+🟢 net amount (price×qty) matches the oracle to the cent over real numbers  — eng=600 oracle=600
+🟢 the diffed line(s) exercise the PlannedPrice branch (price is a real folded value, not vacuous)  — plannedPriceBranch=1
+
+— §GENPO-FALSIFIER (bent PlannedQty must break the Qty diff) —
+§GENPO-FALSIFIER bent product=132 PlannedQty 10→7 folded Qty=7 oracle Qty=10
+🟢 perturbing PlannedQty breaks the Qty diff (the fold reads the real qty — the metric is load-bearing)
+
+═══ ALL PASS — ProjectGenOrder folds a project → Sales Order op-group, oracle-equivalent — W-PROC-GENPO ═══
+exit=0

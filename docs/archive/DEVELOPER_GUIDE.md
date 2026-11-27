@@ -1,5 +1,7 @@
 # Developer Guide
 
+> **Superseded 2026-11-13 by [DeveloperGuide.md](../DeveloperGuide.md)** (current, both repos). Kept here unchanged for the compiler-side detail it still carries.
+
 Expert-level onboarding. Assumes you know Java, SQL, and BIM concepts.
 
 > **Architecture Reference**

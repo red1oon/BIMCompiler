@@ -1,0 +1,42 @@
+{
+ "source_file": "reports/BIM AI verb prior art.md",
+ "found": "In the pages we read, we did not find these together in one tool.",
+ "items": [
+  {
+   "name": "Blender",
+   "url": "https://developer.blender.org/T73150",
+   "does": "shows the Python call behind a button and lists its operators; some tools are not operators",
+   "took": "every button is one typed line, and the list of lines is read from the app's own actions"
+  },
+  {
+   "name": "Blender and Bonsai",
+   "url": "https://lists.blender.org/pipermail/bf-blender-cvs/2020-January/134584.html",
+   "does": "share operators between the screen and a script by design; no published test pins the two outputs together",
+   "took": "a typed line calls the page's own functions, and a witness compares the answers"
+  },
+  {
+   "name": "VS Code",
+   "url": "https://code.visualstudio.com/api/extension-guides/command",
+   "does": "keeps commands apart from key bindings",
+   "took": "one list of commands; keys and typed lines are two ways to call it"
+  },
+  {
+   "name": "AppleScript",
+   "url": "https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/ScriptableCocoaApplications/SApps_script_cmds/SAppsScriptCmds.html",
+   "does": "describes an app's commands in a hand-written dictionary",
+   "took": "our list of lines is generated from the app, not written by hand"
+  },
+  {
+   "name": "MCP",
+   "url": "https://modelcontextprotocol.io/specification/2025-06-18/schema",
+   "does": "labels each tool read-only or destructive",
+   "took": "every line carries a class: read, trial or writes"
+  },
+  {
+   "name": "BlenderMCP, MCP4IFC and the Revit connectors",
+   "url": "https://github.com/ahujasid/blender-mcp",
+   "does": "ship a tool that runs any code",
+   "took": "we leave that out: a line is a described verb, never code"
+  }
+ ]
+}

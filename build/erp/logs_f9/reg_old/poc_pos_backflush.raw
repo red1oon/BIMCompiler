@@ -1,0 +1,16 @@
+═══ W-POS-BACKFLUSH — ring a BOM tile → CONSUME leaves in the SAME group == explodeBOM == path-enumeration ═══
+
+   🟢 Patio Furniture Set(145) is a REAL tile on layout 100 (c_poskey 50158)
+§BACKFLUSH-RECIPE parent=Patio Furniture Set direct=[Patio Chair×4, Patio Table×1, Patio Sun Screen×1] nested=Y
+
+   🟢 group CONSUME ops == E.explodeBOM(145, 1) — the wiring rides the verb — leaves=8
+   🟢 explodeBOM == independent path-enumeration (two impls agree, NESTED recursion fires) — leaves=8
+§POS-BACKFLUSH parent=Patio Furniture Set(145) components=[Patio Table×1, Patio Sun Screen×1, #6-32 x 3/8 Socket Head Cap Screw×64, Ultra Glue×4600, Seat×4, Back Support×4, Front Leg×8, Back Leg×8] consumed=Y sameGroup=Y
+   🟢 every CONSUME op is movementtype 'P-' (movementSign=-1) — folds as a DECREMENT on the qty spine — ops=8
+   🟢 qtyOnHand over the sale movements: every touched product DECREMENTS (ship C- + consume P-) — products=9
+   🟢 Elm Tree(124) has no recipe (real non-BOM control)
+   🟢 §FALSIFIER non-BOM sale emits ZERO CONSUME ops (no invented consumption) — consumeOps=0
+§FALSIFIER pos=backflush product=124 bomLines=0 consumeOps=0 (must be 0)
+
+🟢 W-POS-BACKFLUSH PASS — the sale group consumes exactly the recipe leaves (explodeBOM == independent enumeration), with P- polarity on the qty spine, and a non-BOM sale consumes nothing.
+exit=0

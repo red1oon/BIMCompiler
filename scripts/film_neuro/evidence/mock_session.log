@@ -1,0 +1,8 @@
+§BIM_MCP ready tools=bim_lines,bim_try_shift
+§BIM_MCP initialize client={"name":"film_mock_session (a script, not an AI)","version":"1"} version=2025-06-18
+§BIM_MCP call bim_lines {"building":"HospitalGarage"} -> exit=0 ms=19902
+§MOCK brief=G4 "Make the bay between lines gx5 and gx6 13 m wide." gx5=145.987 gx6=157.163 bay=11.176 -> shift gx6 by 1.824
+§BIM_MCP call bim_try_shift {"building":"HospitalGarage","line":"gx6","move":1.824} -> exit=3 ms=39306
+§MOCK result stopped=true reason=stopped: Beam spans over limit: 91 -> 92 (limit 12 m, RC); bay gx5-gx6 newly over the limit: 13 m
+§BIM_MCP stdin closed
+§MOCK done log_lines=3 -> evidence/session_calls.jsonl OK

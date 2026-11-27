@@ -1,0 +1,12 @@
+§TWIN_MENU clicks=3
+§DEPTH before onhand(137)=50 m_transaction=28
+  ✅ D1 a New order saved with the preview number ("<50000>") is NOT rejected by the numeric pin — §CRUD validate key=c_order verb=create ok
+  ✅ D1b the sequence number is allocated at save (PO.saveNew) — §DOCNO table=c_order docno=50000 seqOps=ad_sequence:CRUD_UPDATE via=ModelTrade.MSequence bump=in-group
+  ✅ D2 Complete on an order typed this session reaches the model layer and succeeds (not "no lines") — §MODEL-DOCACTION table=c_order id=-2 action=CO ok=true status=CO ops=13 tables={"ad_wf_process:CREATE":1,"ad_wf_activity:CREATE":3,"ad_wf_eventaudit:CREATE":3,"
+  ✅ D3b the group is signed and chain-verified
+  ✅ G1 Generate Shipments (generic form, verbatim port) on the session-made order: ok=Y, committed — §AD-PROC-LIVE proc=118 name="Generate Shipments" classname=org.compiere.process.InOutGenerate dispatched=Y ok=Y rows=29 | §PROC-COMMIT proc=118 ops=29 committed=true gid=02671367-3a1f-4001-a600-7e9b2ed09522 verifyChain=ok
+  ✅ G2 Generate Invoices (generic form, verbatim port) on the session-made order: ok=Y, committed — §AD-PROC-LIVE proc=119 name="Generate Invoices" classname=org.compiere.process.InvoiceGenerate dispatched=Y ok=Y rows=10 | §PROC-COMMIT proc=119 ops=10 committed=true gid=62b62afd-6382-436d-abc7-e8ff208a22a3 verifyChain=ok
+  ✅ G3 an M_InOut and a COMPLETED C_Invoice (document type, number, total) now exist for it — inout=[{"s":"CO","d":"500000","t":120}] invoice=[{"s":"CO","d":"100001","t":116,"g":3}]
+  ✅ G4 Payment: picking the session-made invoice fills PayAmt with open - discount (callout ran) — PayAmt + DiscountAmt = invoice total (legacy CalloutPayment.invoice: open - discount); invoiceOption=100001 (-64) payamt=2.94 discount=0.06 invoiceTotal=3
+§GTR_VERDICT GREEN pass=8 fail=0
+exit=0

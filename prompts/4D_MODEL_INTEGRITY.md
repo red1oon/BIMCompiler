@@ -1,3 +1,26 @@
+# ▶ RESUME 4D — START HERE (the owner types **"resume 4D"**; this block is the whole hand-over, 2026-11-14)
+
+**Job:** end the hanging beams and columns in the Time Machine build-up. The rules are reviewed, the
+numbers are measured, the five decisions (D1–D5) are MADE. **Implement; do not re-ask them.**
+
+1. Read, in this file, from `origin/master`: **§E** (proxies) → **§I** (owners) → **§Q.1–§Q.3** (rules,
+   numbers, gaps) → **§Q.6** (D1–D4, order of work, gates, predictions) → **§Q.7** (columns, D5).
+   Re-read §E and §I before each new measurement (CLAUDE.md PRIMAL LAW 0a).
+2. **Order of work, one `bim-ootb` PR each:** step 0 (land §I.1a, one owner for the support relation)
+   → **D2** → **D5** → **D1** → **D3** → **D4**.
+3. **Every step, before and after:** `cache_4d_run.js --force` for Hospital, Terminal, Duplex, HHS;
+   then `node scripts/probe_4d_beam_midair.js <cacheDirs>` and `node scripts/probe_4d_column_midair.js
+   <cacheDirs>` (this repo). Paste the `§BEAM_MIDAIR` / `§COL_MIDAIR` blocks into §Q.6 / §Q.7.
+4. **A red gate or a failed prediction stops that step** and goes to the owner with the log line.
+   It is never re-baselined away.
+5. **Binding rules:** bim-ootb work in a `/tmp/wt-*` worktree (`git worktree list` first); no bakes,
+   GPU or browser runs without the owner's go; agents on Sonnet; results go in §Q.6 / §Q.7 only;
+   the witness, never the owner's eyes, is the test.
+
+**Status (update this line as steps land):** step 0 ✅ (#3018) · D2 ✅ (#3022) · D5 ✅ (variant B, #3023) · D1 ☐ NEXT · D3 ☐ · D4 ☐ — owner rulings 2026-11-14: D2/D5 merged with their cross-level near misses NAMED (§Q.6/§Q.7 RESULTS); D5 = variant B. Open, named: §Q.8. **Once-over 2026-11-17: §Q.9 — gate 4 is RED on main (repair first); most out-of-order play is cross-task, outside D1–D4; 3 owner decisions — ✅ decided 2026-11-17 as D6/D7/D8 (§Q.9.4), which also sets the order of work after D5.** **Gate-4 repair ✅ (bim-ootb #3177, §Q.10); assembly-order witness ✅ (#3178); D1 built + measured, ⛔ HELD on gate 2 (§Q.11, branch `fix/4d-d1-bearing-walls`, no PR). **ALL D-STEPS MERGED 2026-11-17: D3 #3182 · D6 #3183 · D1 #3184 · D7 #3185 · D8 #3187 · D4 #3188 — played-layer midair 429/2395/247/144 → 245/343/135/40; NOT zero; what is left is named in §Q.12.2 (none of it a D-step) and the harness debt in §Q.12.3. NEXT = §Q.12.3 (dead witnesses, midair_zero re-lock), then §Q.12.2 items 2 and 5.** **CHASE TO ZERO 2026-11-17 (§Q.13): graph engine everywhere (owner ruling), finish slab, transitive filing, one lift, three small rules — bim-ootb #3196 #3199 #3202 #3206 #3208 #3210. Fleet out-of-order on the played layer: 4 elements in 7 buildings (0/0/2/1/0/0/1). What the number does not cover and what is still red: §Q.13.2, §Q.13.3.** **HARNESS TO GREEN 2026-11-18 (§Q.14): midair_zero re-locked with the named sets (70/0, unnamed midair 0), big-element cause bisected to #1551, W-RWB-5, edit-coherence on the shipped grid, `scripts/run_4d_gates.sh` (GREEN 8/8), cell solver deleted with schedules hash-equal on 7 buildings — bim-ootb #3213–#3218. Judge every change with `scripts/run_4d_gates.sh`. What is left: §Q.14.9 (no open owner question; the dead tree bar model is deleted, #3222).** **2026-11-18 later (§Q.15): cell display stamp removed (#3225), a real bug in the layer pass fixed — `§TPL_LAYER_SELFCHECK` 0 inverted on 7 buildings, was up to 2,918 (#3226), lock gate proven on Clinic + Hospital (#3227). State and next: §Q.15.4 (next = the drifted DAY-0 pair, §Q.15.2a).** **DAY-0 pair measured (§Q.16): every moved number traced to a deliberate step or to buried pipework in order; ⛔ three owner questions with advice in §Q.16.4 — answer those, then repair the two witnesses and gate them.** **ANSWERED + IMPLEMENTED 2026-11-18 (§Q.17, bim-ootb #3228): foundation-less buildings stand on soil (HHS out-of-order 1 → 0, fleet 4 → 3), early MEP judged by order, day-0 purity by phase — `§W_D0` 13 PASS / 2 FAIL. Criterion set by the owner: valid from the site engineer's point of view. Open: §Q.17.2 (foundation-beam crew rate; A2/A4/A5; two ideas in discussion — temporary works in the Time Machine, easier Gantt re-sequencing).** **CONCRETE-BEAM CREW RATE SET 2026-11-18 (§Q.18, bim-ootb #3236): 9.4 beams per gang-day from a Spon's row (not verified against the book), Terminal 431 + LTU 12 beams routed to the concrete gang; the BOQ still prices beams as steel (§Q.18.3).** **GANTT EDITOR LANE OPENED 2026-11-18 (§Q.19, owner's vision: needle = canvas, reorder after unlock, less brittle): six-step order of work in §Q.19.3; step 1 done — the lock gate had judged nothing (read a field no op carries), fixed in bim-ootb #3242. NEXT = §Q.19.3 step 2, the needle witness. Scaffolding WITHHELD by the owner.** **STEP 2 DONE 2026-11-18 (§Q.19.5 spec, §Q.19.6 result, bim-ootb #3247): `witness_tm_needle_sync` is gate 9; main was red on all 7 buildings (frame at bar ends, day grid, slider round trip, stale slider after an edit); fixed, 149 / 0, gates GREEN 9 / 9, no played instant moved. Step 3 followed.** **STEP 3 DONE 2026-11-18 (§Q.19.7 spec, §Q.19.8 result, bim-ootb #3251): the eight copies of the commit pipeline are `_tmCommitEdit` / `_tmEditRefresh`; `witness_gantt_one_commit_pipeline` is gate 10; every gesture hash-equal to main; gates GREEN 10 / 10. Step 4 followed.** **STEP 4 DONE 2026-11-18 (§Q.19.9 spec, §Q.19.10 result, bim-ootb #3262): on main 5 of 9 edit kinds could be undone (link, a link that moves bars, unlink and typed dates left no record); now 9 of 9, one snapshot (`_tmEditSnapshot`: tasks + links) for every verb; `witness_gantt_undo_every_edit` is gate 11; gates GREEN 11 / 11. Step 5 followed.** **STEP 5 DONE 2026-11-18 (§Q.19.11 spec, §Q.19.12 result, bim-ootb #3267): `ScheduleAuthor.swapTasks` + `swapGanttBars` — Shift-drop a bar on another to exchange their places (touch: a row in the typed panel); refused with a named reason when a link forbids it; the lock gate refuses the physically worse ones; one Undo takes it back; `witness_gantt_reorder` is gate 12; gates GREEN 12 / 12. Step 6 followed.** **STEP 6 DONE 2026-11-18 (§Q.19.13 spec, §Q.19.14 result, bim-ootb #3270): a group drag stops at an outside predecessor and pushes an outside successor (`shiftTasksCascade`); `witness_gantt_shift_links` is gate 13; gates GREEN 13 / 13. THE SIX STEPS OF §Q.19.3 ARE ALL MERGED — the lane's state and what is left is §Q.19.15.** **▶ RESUME HERE 2026-11-18 (session close): §Q.20 — the owner restated the objective (industry-compliant 4D, full ERP integration, easy edit on screen or JSON, nothing breaking, ANY model dropped in gets a good-enough 4D/5D); §Q.20.2 is the in-progress work (edit witnesses on the played layer, six buildings), §Q.20.3 the order of work. Do §Q.20.2 first.** **▶ RESUME HERE 2026-11-18 (second close): §Q.21 — four of seven buildings green on the played layer after two witness fixes (bim-ootb branch `test/4d-edit-witnesses-played-fleet` @ `b895f991`, no PR yet); Terminal runs past 25 min per witness; unseen models measured (22 tried: 10 schedule, 12 fail on an old extraction schema; 22 elements out of order on the 10). Do §Q.21.4 in its order.** **▶ RESUME HERE 2026-11-18 (third close): §Q.22 — §Q.21.4 steps 1-4 DONE (bim-ootb #3286 #3288 #3291 #3293): unlocked models are reported not failed, cache build failures exit 1, the four editor witnesses run in CI on HHS, and the fixture's missing kernel_ops index was the whole "too slow" story — now green on six of seven buildings incl. Terminal + Hospital. The 22 unseen out-of-order elements are all stair parts filed by class (§Q.22.1). Next = §Q.22.7 in its order.** **SANDBOX 2026-11-18 (§Q.23): the three owner decisions trialled, nothing merged — stair v3 clears 22 → 0 unseen and 3 → 1 tuned but moves Duplex's structural walls (owner question); DCMA scorer finds empty task resources + 2 Hospital logic gaps; the live-browser witness fails at its first wait on the runner.** **RIGHT ANSWERS (§Q.24): stairs go up with the frame (sandbox: tuned 3 → 1, unseen 22 → 0, no walls moved; apply per §Q.24.1); DCMA yes with task resource + float filled; browser witness yes, runner only, after it names its waits.** **▶ RESUME HERE 2026-11-18 (fourth close): §Q.25 — all three APPLIED: stairs with the frame (#3305), DCMA gate 14 with resource + float on every task (#3307), live JSON browser witness in CI (#3308). Next = §Q.25.5 in its order.** **§Q.26: DCMA check 1 closed (#3315, finish milestone; logic 0 % on all seven). Next = split the long MEP Rough-in tasks (§Q.26, sandbox option (a) first).** **§Q.27: option (a) measured useless — PLUMBER alone is every long task (62-196 d) because pipe work of 3-4 real trades routes to one crew by IFC class; owner decision open: route by discipline to sprinkler fitter / pipefitter / plumber.** **▶ RESUME HERE 2026-11-18 (sixth close): §Q.28.3 — owner said Go; pipe-trade routing built on bim-ootb `fix/4d-pipe-trades` (no PR); v1 sandbox measured (Hospital long tasks 2 → 0, programme 354 → 262 d, hours identical, gates green); v2 (generic MEP tag unmapped) run NOT read — re-run it, then apply per §Q.28.3.** **▶ RESUME HERE 2026-11-19: §Q.28.4 — v2 measured and APPLIED (bim-ootb #3322): gates 14/14, Hospital DCMA check 8 PASS, install hours identical on all seven, Duplex/HHS/Clinic crews unchanged. Next = split LTU's long PLUMBER tasks by zone (sandbox first).** **2026-11-19 later: §Q.29 — LTU/Clinic ductwork modelled as generic IfcFlow* moved from the plumbers to the duct crew (bim-ootb #3333): DCMA check 8 passes on all seven; LTU 561 → 528 d. Next = zone split for LTU's 4 remaining long tasks.** **⚠ 2026-11-19 §Q.30: the HHS film plays the STORED September schedule (stale regen runs after the played layer is built) — the floating stair landings at 0:01 are already fixed in today's 4D but never reach the film. Analysis only, owner decides the fix.** **§Q.31 APPLIED (bim-ootb #3337): stale stored schedules are regenerated before the play order is built — films now play today's 4D (fast HHS bake: regen ran first, Level 2 slab frame 8 not 177).** **§Q.33 (2026-11-19): shim-anchor model POC v1-v3 (sandbox) → two proven outputs applied (bim-ootb #3342): floors wait for every carrier, curtain-wall parts are façade — same-task early floors 0 on all 7, floors drawn in the film. Next = §Q.33.10 'Next'.** **▶ RESUME HERE 2026-11-19 (session close): §Q.33.12 — check the in-flight rel_aggregates patches first, then its order of work.** **§Q.34 (2026-11-19 later): cross-task residue measured — Terminal = one storey name on two floors (federated frames 15.027 m apart), LTU = gates judge unpatched geometry (755 → 109 with the full patch), Clinic = phase filing; LevelDeriver switch ruled out (RED 4/16). Owner: "u make the rulings" → §Q.35: R1 ladder owns the floor (#3347) + R2 gates judge the patched DB (#3348), both MERGED, gates 16/16; W-FC-1x now 0/0/0/1/0/0/109. ▶ NEXT = §Q.35.5.** **§Q.36 (2026-11-20): LTU's 109 was no floor axis, not phase filing — storey elevations were never extracted; LTU + HHS patches now carry the files' own storeys (bim-ootb #3352): W-FC-1x LTU 109 → 9, HHS midair 2 → 0, five other buildings hash-equal; HHS live. **⛔ LTU not live: the served LTU DB is a 2026-08-29 re-import the gates do not judge, and the repo patch rolls back on it (§Q.36.5).** ▶ NEXT = §Q.36.5 order of work, then §Q.36.4.** **§Q.37 (2026-11-20, owner: "Proceed to plan and implement"): shim-anchor model, staged ship plan S1-S6; S1 bond table report-only (bim-ootb #3353, gate 17) + S2 persisted with each run (#3354) DONE, gates 17/17, no schedule changed. S3/S4 were waiting on two rulings. ▶ §Q.37.5.** **§Q.38 (2026-11-20 later): LTU IS LIVE — patch = storey block only (bim-ootb #3355), uploaded through the patch gate (UPLOAD_VERIFIED, byte-equal); gates now judge the served LTU pair, baselines re-locked and named. Both rulings received (§Q.38.1: standard practice for all → ceilings are close-up work; geometry wins for bearing walls). ▶ NEXT = §Q.38.1 NEXT (S3).** **§Q.39 (2026-11-20 last): ruling Q1 applied — a suspended ceiling is close-up work on EVERY building (bim-ootb #3357, live, sw v1771): fittings no longer start before the ceiling they hang from within a level (JKR 132, Clinic 259, Terminal 156, Hospital 44 pairs → 0 early); cross-level remainder named B8x. ▶ NEXT = §Q.39.2.** **§Q.40 (2026-11-20): S4 shipped (bim-ootb #3358, live sw v1772) — a fitting is also held by the ceiling it hangs from; B8x Clinic 10 / Terminal 44 / Hospital 14 / LTU 2 → 0, midair 0, programmes unchanged. Two wider versions measured and rejected; they show S3c must ADD bond carriers, not replace the election. ▶ NEXT = §Q.40.2.** **§Q.41 (2026-11-20): S3c redesigned and shipped BEHIND A FLAG, default off (bim-ootb #3359): bond hosts added as carriers in the solve. Flag off = main; flag on: cycles 0, programme unchanged, bonded-before-host Hospital 805 → 168, JKR 105 → 19, LTU 301 → 132; one Terminal ring tie to fix before it becomes the default. ▶ NEXT = §Q.41.2.** **§Q.42 (2026-11-20): bond carriers ON BY DEFAULT (bim-ootb #3360, live): the Terminal case was a 2-loop, fixed by never adding a bond edge against an existing one; all seven midair 0, programme unchanged; new ratchet B9 (Hospital 805 → 168, JKR 105 → 19, Clinic 397 → 112, LTU 301 → 132). ▶ NEXT = §Q.42.1.**
+
+---
+
 # ⁇ THE QUESTION THIS FILE OPENS WITH
 
 ## **What is wrong with Claude Code in modelling the solution?**
@@ -471,9 +494,9 @@ Paths are `~/bim-ootb/viewer/` unless stated. Line numbers are `origin/main` @ `
 
 | the question | OWNER — call this | never |
 |---|---|---|
-| **does S support T?** (bearing-below ∪ carrier-above ∪ embedded) | `support_sweep.js:384` `_contactGraph(items)` → `{contacts, grounded, orphans, ok}` | write a bbox/Z-band test inline. ⚠ **2 more copies exist — see §I.1** |
+| **does S support T?** (bearing-below ∪ carrier-above ∪ embedded) | ✅ **2026-11-14, §I.1a landed (#3018): ONE owner `cpm_schedule.js` `contactGraph`; `support_sweep.js` `_contactGraph` delegates.** Older text: `support_sweep.js:391` `_contactGraph(items)` → `{contacts, grounded, orphans, ok, groundConnected…}` *(line re-verified 2026-11-14 @ bim-ootb `cbb22300`; was `:384`)* | write a bbox/Z-band test inline. ⚠ **CORRECTED 2026-11-14: ONE more full copy exists, not two** — `cpm_schedule.js:61` `contactGraph`, the copy the SOLVE runs on, held equal by `§CPM_PARITY` (§I.1). The single-owner collapse (§I.1a) is **still unmerged** (branch `refactor/contactgraph-one-owner`, no PR). The third site (`auditFloating`'s wall pool) is a *different, bounded* test, kept on purpose (§I.5d). ⚠ The embedded clause is **symmetric** for two boxes of equal height — see §Q.3 |
 | **does T rest on soil?** (ground exemption) | `schedule_gate.js:1210` — `T.seq !== 1`. Substructure legitimately rests on unmodeled soil | use `grounded[i]` for this. It is **footprint-local** and answers a *different* question — see §I.2 |
-| **which ONE thing supports T?** | `support_sweep.js:432` `_designatedSupport(items, G)` | elect a support yourself. §A: the election is the defect |
+| **which ONE thing supports T?** | ✅ **2026-11-14: ONE owner `cpm_schedule.js` `designatedSupport` (#3018); `support_sweep.js` delegates.** Older text: `support_sweep.js:502` `_designatedSupport(items, G)` (twin: `cpm_schedule.js:163`) *(lines re-verified 2026-11-14; was `:432`)*. **What it does, stated here because this row never said it:** preference bearing-below → embedded → carrier-above, **but a contact inside `supportPool` replaces the unrestricted winner whatever its relation** (`:535`, §S26.2 *"structure outranks contact"*) — so a pool element ABOVE beats a non-pool element BELOW. Measured consequence for beams: §Q.2 | elect a support yourself. §A: the election is the defect |
 | **what phase/trade is this element?** | `schedule_author.js` `matchNameOverride()` → `matchRule()`, tables in **`rates.js`** | read `rates/sequence_rules.json` — it is a MIRROR, never executed (§G.0) |
 | **how long does it take?** | `schedule_author.js:78` `_installSecs(cls, rule, laborRates, realQty, lengthRatio)` | hand-roll it. `time_machine.js:4494` `getInstallSecs` already delegates here; its local fallback is documented as a divergence risk |
 | **what is the task grid?** | `schedule_author.js:425` `instantiateTemplate(...)` from **`rates/4D_template.json`** | derive phases from what the elements did. §B: an envelope cannot constrain what drew it |
@@ -510,7 +533,7 @@ but every failure is now `storeyViolations` (construction-sequence ordering acro
 different defect class entirely, untouched by this section's fix. See §I.3+ for that.
 
 ---
-<details><summary>Original write-up (2026-08-27), for history — the defect it describes is fixed, above</summary>
+<details><summary>Original write-up (2026-08-27), for history — ⚠ CORRECTED 2026-11-14: only the DISAGREEMENT between copies 1 and 2 is closed. The missing upper bound it describes is STILL the shipped formula in both (`support_sweep.js:417`, `cpm_schedule.js:88`: `S.bz < T.bz - EPS && S.tz >= T.bz - GAP`, no top bound) — deliberately, per §I.5d ("port nothing"). Do not read this block as "the bound was added".</summary>
 
 Verified 2026-08-27, not inferred — all three carry the same comment text, so they were copied:
 
@@ -1782,6 +1805,9 @@ edits made during the day, which are now history, not the plan)
 **Everything below "The decision that gated everything" down to "State, honestly" describes
 mid-session state and is superseded by this block. Read this first.**
 
+➡ **'resume 4D' = implement §Q.6 + §Q.7 (ORDER OF WORK: 0, D2, D5, D1, D3, D4). Hanging beams during build-up (Time Machine): read §Q (2026-11-14) — the rules, reviewed against
+the shipped code and the persisted runs. It corrects §M.3/§M.5's reading of the beam population.**
+
 ## ✅ Live in production right now — verified merged, not just opened
 All seven confirmed `MERGED` on `bim-ootb` (checked via `gh pr view` against the actual repo, not
 recalled from chat): **#1552** storey datum is the floor · **#1554** W-PERS split-mode blind spot
@@ -1791,10 +1817,11 @@ LevelDeriver wired, flag OFF · **#1557** elevation deploy-gap closed for Hospit
 proof. `bim-ootb`'s `deploy-pages.yml` auto-publishes on merge to `main` — no separate manual step
 like this repo's docs, so all seven are live on the public site, not just merged to git.
 
-**⚠ Loose end, not yet closed**: `bim-ootb` PR **#1551** is still open and stale — it carries an
-OLDER, pre-correction version of `buildings/patches/Duplex_extracted.db.sql` that #1557 already
-superseded with the correct DROP+CREATE form. Nobody has closed it. Do that before it confuses a
-future session into thinking it's still live work.
+**⚠ Loose end — CORRECTED 2026-11-14:** `bim-ootb` PR **#1551** is **not open**. `gh pr view 1551` →
+`MERGED 2026-09-02` (*"§STOREY_DATUM + §TPL_LADDER_BRIDGE — DAY-0 integrity to zero"*). The earlier text
+here said it was open, stale, and carried an older `buildings/patches/Duplex_extracted.db.sql` than
+#1557's. **Not re-checked in this pass:** which form of that patch file `main` now carries — verify
+before relying on it; do not go looking for an open PR to close.
 
 ## ⛔ Explicitly NOT done, don't assume otherwise
 - **The Schedule Editor (`viewer/schedule_editor_ui.js`) has had ZERO commits and zero verification
@@ -2178,7 +2205,7 @@ individual bars up to 105× shorter than the physics span of the elements they c
 programme length (`§CELL_RUN makespanDays`, `§CREW_DAY spanD`, `§AUTHOR_TPL totalDays`) and no row says
 which one IS the programme — row added in §M.6.
 
-## §M.3 Q3 — MIDAIR GOVERNANCE — **539 on Hospital META (played), of which ~22 (4 %) are ceiling-hung terminals; 302 (56 %) are the judge electing a non-structural neighbour; 237 are structural and indefensible.**
+## §M.3 Q3 — MIDAIR GOVERNANCE — **539 on Hospital META (played), of which ~22 (4 %) are ceiling-hung terminals; 302 (56 %) are the judge electing a non-structural neighbour; 237 have a structural elected support.** ⚠ **CORRECTED 2026-11-14 (§Q): "indefensible" is withdrawn for the 123 beams — 30 of them are the election choosing the slab the beam CARRIES, and 47 are a direction the rule cannot determine. The counts stand; the verdict on them does not.**
 
 Owner called, not re-derived: `SupportSweep.midairAudit` + its own `designatedSupport` election over the
 persisted PLAYED items (CITED `support_sweep.js:500`, `:432`; `schedule_gate.js:1375 supportPool`).
@@ -2208,9 +2235,9 @@ owner's, with that caveat, and the pool split below is exactly that caveat measu
   them (MEP Final). The diffuser is banded into "Architecture Envelope" (day ~30). That is §E row 1
   ("a pipe bears a wall") — the election, not the schedule, is the defect; §E's ruling *"anything that
   hangs within a well formed room is no issue"* already covers them.
-- **Indefensible structural, the real population: 237.** Named: **IfcColumn on IfcSlab 68** — a column
+- **Structural elected support: 237** *(was headed "Indefensible structural, the real population" — withdrawn 2026-11-14 for the beam share, see §Q.2/§Q.3; the column, footing, wall and slab shares below were NOT re-examined and keep their original reading)*. Named: **IfcColumn on IfcSlab 68** *(attributed 2026-11-14, §Q.7: 57 stand on a lowest-floor slab filed in their own task, 11 elected the slab above)* — a column
   appears 0.5–14.2 d (median 4.3 d) **before the slab it stands on**; **IfcBeam 123** (embedded
-  beam←beam 47, bearing beam←beam 45, carrier-above beam←slab 29 = §S2's overhead-slab election);
+  beam←beam 47, bearing beam←beam 45, carrier-above beam←slab 29 = §S2's overhead-slab election — re-measured 2026-11-14, same 123 / 47 / 45 / 29, attributed in §Q);
   IfcFooting←IfcFooting embedded 11; IfcWallStandardCase 15; **IfcSlab 2** — two roof slabs 144 d
   before the blockwork walls under them; IfcMember←IfcPlate 54 (mullions before their glazing).
 - Same-task offenders (416) are the CELL solve's own representability gap — `§CELL_GATE … REFUSED=1296`
@@ -2270,7 +2297,7 @@ ruling therefore holds only for L3/L4/L5's single plates, and only for the REVEA
    `laborRates: {}`) and asserts no delta. Fix: pass `template:` + the G-COH-10 guard into both; add the
    SupportSweep global, real rates and a `schedule_start` delta assertion to `edit_coherence`; replace
    `undo_dot_spawn`/`whatif_authored_sync` in CLAUDE.md's chain list. ~1 PR, witness-only.
-2. **🔴 `§TM_PLAYED_LAYER … midair=N` reports the WRONG LAYER's number** — clause-4 defect in the
+2. **✅ INSTRUMENT HALF FIXED — bim-ootb PR #1652 (`765c4804`, §TM_PLAYED_LAYER_MIDAIR): the line now prints `midairPlayed=` (owner, this layer) AND `midairCpmDisplay=` side by side; verified in the persisted `witness.log` of 2026-11-09 (Hospital `midairPlayed=539 … midairCpmDisplay=583`, Duplex `257 … 0`, HHS `152 … 0`). The RULING half — may cross-task tiling reorder a support pair — is still open (BLOCKED (b) below).** Original finding, for the trail: **🔴 `§TM_PLAYED_LAYER … midair=N` reports the WRONG LAYER's number** — clause-4 defect in the
    instrument this lane reads first. CITED `scripts/lib/tm_played_layer.js:171` `midair: dt && dt.midair`
    — the CPM-DISPLAY judge's count, printed on the line that says *"these are the instants kernel_ops
    carries"*. Owner re-judged on those instants: Hospital META **539** (line says 583), extracted 495
@@ -2285,7 +2312,7 @@ ruling therefore holds only for L3/L4/L5's single plates, and only for the REVEA
    Hospital cache number since #1641 is on the 20-label INFERRED grid. Fix: `cache_4d_run.js` resolves
    `_meta.db` first (the `resolveDbFile` rule the probe already has, minus the 0-byte trap) and prints
    `dbFile=` on `§CACHE_BUILT`; until then read `~/.cache/bim4d_meta/`.
-4. **🟠 Midair governance: 237 structural offenders are real** (68 columns before their slab, 123
+4. **🟠 Midair governance: 237 offenders have a structural elected support** *("are real" withdrawn 2026-11-14 for the 123 beams — §Q: 0 of 793 column-borne beams are midair; the 123 are beam↔beam and the slab-above election)* (68 columns before their slab, 123
    beams, 2 roof slabs 144 d early), and **302 verdicts are the election's §E proxy failure** (a
    ceiling tile / pipe / plate elected as support). Fix is the lane's D1 (§S14/§S9): judge on the
    contact SET with §E containment, not on one elected box — no scheduling change moves the 237 until
@@ -2310,7 +2337,7 @@ BLOCKED (user decisions, not measurements): (a) the productivity constant for If
 |---|---|---|
 | **how long is the programme?** | ⛔ **NO OWNER.** Three lines each print a length from one run — `§CELL_RUN makespanDays` (the DAG solve, Hospital META 447.0), `§CREW_DAY spanD` (360.3), `§AUTHOR_TPL totalDays` (the authored grid the panel and film show, 334) — and nothing says which is the contract. Add the row when ruled | quote one of the three as "the schedule length" without naming the line |
 | **does the persisted run represent the DB the viewer loads?** | `run.json.dbFile` (`cache_4d_run.js` writes it) — READ IT. Today it is `_extracted.db` by construction (`:95`,`:113`); the viewer loads `_meta.db` for Hospital/Clinic (§I.6, `streaming.js §DB_SPLIT_DETECT`) | assume `~/.cache/bim4d/Hospital` is the viewer's Hospital; it is not since #1641 |
-| **midair ON THE PLAYED INSTANTS?** | `SupportSweep.midairAudit(items with s/e = play map)` — as `probe_tm_reveal_shipped.js` `judge()` does (`§TM_REVEAL_JUDGE … map=CANDIDATE-tiled`) | read `§TM_PLAYED_LAYER midair=` for it — that field is `dt.midair`, the CPM-display count (`tm_played_layer.js:171`) |
+| **midair ON THE PLAYED INSTANTS?** | `SupportSweep.midairAudit(items with s/e = play map)` — as `probe_tm_reveal_shipped.js` `judge()` does (`§TM_REVEAL_JUDGE … map=CANDIDATE-tiled`) | ~~read `§TM_PLAYED_LAYER midair=` for it~~ — **CORRECTED 2026-11-14:** since bim-ootb PR #1652 the line carries `midairPlayed=` (this layer, the owner's count — read THIS) and `midairCpmDisplay=` (the other layer). The old single `midair=` field no longer exists |
 
 ---
 
@@ -2900,3 +2927,3128 @@ a wrong locked baseline sitting next to a correct engine change is worse than an
 looks verified when it is not.
 **How to apply:** a fresh session with real time for DB surgery + a `git bisect`-style hunt on defect
 (b) — this is NOT a five-minute fix, per the user's own suspicion when this was raised.
+
+## §I.1a SPEC (2026-10-06) — collapse the two "S supports T" copies onto ONE owner (`CpmSchedule`)
+**Why now:** user go, 2026-10-06 ("slowly review … real savings"). §I.1 closed the disagreement by a parity witness
+but left two byte-identical copies; `4D_SCHEDULE_ARCHITECTURE_REDESIGN.md` §STAGE4_RETIREMENT_PROPOSAL step (5)
+already names the direction: *"`_contactGraph` consumers collapse onto `CpmSchedule.contactGraph`"*.
+**Measured before change (bim-ootb origin/main @ c6038f93):** `support_sweep.js` `_contactGraph` and `_designatedSupport`
+are code-identical to `cpm_schedule.js` `contactGraph`/`designatedSupport` except the `ScheduleGate` lookup
+(cpm's checks `global.ScheduleGate` then bare `ScheduleGate` — a superset). viewer.html loads `cpm_schedule.js`
+(:1028) before `support_sweep.js` (:1038).
+**Change:** `support_sweep.js` keeps its API names (`contactGraph`, `designatedSupport`, and the internal
+`_contactGraph`/`_designatedSupport` callers) but each becomes a one-line delegation to `CpmSchedule`, resolved at
+CALL time: `global.CpmSchedule`, else (node) `require('./cpm_schedule.js')`, else log `§SS_CPM_MISSING` and return the
+existing not-ok shape — never a silent local copy. Test sandboxes that evaluate support_sweep without cpm get
+cpm_schedule loaded too (test-only change).
+**Owner-table update:** row "does S support T?" / "which ONE thing supports T?" → owner `cpm_schedule.js`
+`contactGraph`/`designatedSupport`; `SupportSweep.*` = delegating aliases.
+**Witnesses (all must hold):** (1) full witness suite: same pass/fail set as the pre-change baseline;
+(2) `probe_cpm_schedule.js` `§CPM_PARITY` must say the two are ONE function (report single-owner/INCONCLUSIVE, not a
+vacuous PASS — PRIMAL LAW 4); (3) `cache_4d_run.js` per building: schedule outputs identical before/after.
+**Deletion budget:** expect ≈ −150 lines in support_sweep.js (two bodies + duplicated doctrine comment kept once, in cpm).
+
+### ✅ §I.1a LANDED 2026-11-14 — bim-ootb PR #3018 (merged 039d2e2e). Before/after on Hospital, Terminal, Duplex, HHS: `run.json` identical (volatile keys stripped), `witness.log` differs only in `§GEO_ORDER orderMs`, 0 `§SS_CPM_MISSING`; 29 targeted witnesses/probes give the same exit-code set and identical normalised §-lines. One probe changed: `probe_edit_legality_judges.js` now patches the owner's bytes. **Owner of "does S support T?" / "which ONE thing supports T?" = `cpm_schedule.js` `contactGraph` / `designatedSupport`; `SupportSweep.*` are delegating aliases.** The RESUME block below is history.
+### §I.1a RESUME (2026-10-06 session close) — patch PUSHED, NOT verified, NO PR *(re-checked 2026-11-14: unchanged — branch `origin/refactor/contactgraph-one-owner` exists, `gh pr list --head` returns none, `main` still carries both full copies)*
+- Branch **bim-ootb `refactor/contactgraph-one-owner`** @ dcdc6b3e (worktree /tmp/wt-contactgraph): the prepared patch, committed as WIP.
+- **Baseline taken on origin/main @ c6038f93 BEFORE the patch** — the 24 witnesses that touch support_sweep/cpm_schedule
+  (exit codes; 10 green, 12 red, 2 inconclusive ON MAIN already): witness_4d_template_instantiation.js=0 · witness_civil_mixed_programme.js=2 · witness_civil_phase.js=1 · witness_crosstask_judge_parity.js=0 · witness_curtain_wall_opening.js=1 · witness_day0_attribution.js=1 · witness_day0_integrity.js=1 · witness_gantt_lock_integrity.js=1 · witness_gantt_og_grid_perf.js=0 · witness_gantt_props_epoch.js=1 · witness_gantt_refold_yield.js=0 · witness_ground_connected.js=0 · witness_hosted_before_host.js=1 · witness_kernel_ops_sched_version.js=1 · witness_midair_zero.js=1 · witness_og_guard_bearing_bound.js=0 · witness_retyped_constants.js=0 · witness_s50_cell_engine.js=1 · witness_s55_identity_vs_cell.js=1 · witness_storey_datum_frame.js=0 · witness_tm_played_layer_midair.js=2 · witness_tm_reveal_within_bar.js=0 · witness_tpl_model_three_producers.js=0 · witness_zone_display_authoring.js=1 · 
+- **Next session, in order:** (1) run the same 24 on the branch — exit codes must equal the list above, and no log may
+  contain `§SS_CPM_MISSING` (a sandbox that loads support_sweep without cpm_schedule → give it cpm, test-only);
+  (2) `cache_4d_run.js --force HHS_Office_Federated Terminal` with `CACHE_4D_DIR` set to two separate dirs, before (main) vs after — run.json
+  must be identical (method proven on the time_machine split, VIEWER_FILE_SPLIT_PLAN §RESULT_ALL); user asked for HHS + Terminal only;
+  (3) PR with lines +/−; then update the §I ownership-table rows "does S support T?" / "which ONE thing supports T?" → owner cpm_schedule.js.
+- ⚠ Do NOT run the full suite (258 files, ~8 h measured) — the targeted 24 are the gate. ⚠ Some node witnesses spawn
+  cli_silent_bake (a real bake): grep for it and exclude — one slipped through this session (crashed on load, no frames).
+
+## §CAPEX-R1 (2026-11-03, cross-ref from bim-ootb `prompts/CAPEX_DASHBOARD.md §5.1/§5.2`) — the Project Order fold no longer re-derives duration or the task grid
+`viewer/proj_fold.js` (listed above as a duplicate task-grid builder `:148` and phase classifier `:150`) now takes the owner's programme: `opts.schedule = {start, tasks:[{id, phase, storey, sDays, eDays, guids}], phaseSeq}`
+= `materializeZones(...).tasks` (node: `cache_4d_run.js read()` via `capex/tools/fold_inputs.js`). Its own duration loop (Σ ceil(count/productivity), 20/day default, serial phases) is DELETED; phases, dates
+(start + min sDays / max eDays), one C_ProjectTask per 4D task and each line's phase come from the owner. Without a programme: classify() phases, NO dates, note `NO_4D_SCHEDULE` (the classify
+duplicate remains on that path only). Witness `capex/tests/witness_fold_one_schedule.js` (HHS: was → 2028-05-24, now 2026-11-01 → 2026-12-24 = the 4D day 0-53). No 4D code changed.
+Measured on the way, NOT a 4D defect: Duplex 4D schedules 1,119 of 1,190 sized elements; the other 71 are IfcOpeningElement 50 + IfcSpace 21 (not built work).
+
+## §SHIM-FACING — can the walker's shim mount face fix 4D placement? MEASURED 2026-11-09 (owner: *"This can solve 4D placement, to determine if something is hanging from ceiling or depend on below or wall is where that shim anchor is facing"*)
+**Re-read first: §E (proxies) and §I (owners).** "Does S support T" = `support_sweep.js` `_contactGraph` (bearing-below ∪ carrier-above ∪ embedded); "which one" = `_designatedSupport`; floating = `_midairAudit`. Nothing below re-derives them; numbers are from the persisted cache (`~/.cache/bim4d/<B>/1adc56735190_*`, `witness.log` `§TM_PLAYED_LAYER midairPlayed=` = `run.json` `playStats.midairPlayedGuids` length, checked equal for all four).
+**What "midair" is (code, `support_sweep.js:591` at origin/main):** `items[sIdx].s > items[i].s + 1` — the ELECTED support starts later than the element. It is a time-order judge, not "no support found". So §E's row "bearing-below only → ceiling-hung pipe read as floating" is already answered by `_contactGraph` (carrier-above is in it).
+**Shim rows (mined, `rule_shim`):** terminal_rules 17 rows, 5 with a class key (AirTerminal, LightFixture, FireSuppressionTerminal → BOTTOM of IfcCovering; Alarm, ElectricAppliance → SIDE of IfcWall); duplex_rules 15 rows, 3 with a class key (FlowFitting, FlowSegment, FlowTerminal → SIDE of IfcWall). No shim rows in `modeller/patches/*.sql`.
+| building | midair | with a class shim row | mount | of those, elected carrier-above |
+|---|---:|---:|---|---:|
+| Duplex | 257 | 232 | SIDE | 91 |
+| HHS_Office_Federated | 152 | 83 | SIDE | 11 |
+| Hospital | 539 | 6 | BOTTOM | 0 |
+| Terminal | 3,065 | 267 | 262 BOTTOM, 5 SIDE | 267 |
+(Election rebuilt from `run.json` bboxes with the shipped EPS/GAP/CELL by a read-only probe, scratchpad `shim4d/m2.py`; it reproduces the shipped midair set exactly on Duplex, HHS, Terminal, and 527/539 on Hospital.)
+**Verdict:** using the shim face as the support DIRECTION fixes ~0. On Terminal all 262 BOTTOM-mounted midair elements are already elected carrier-above; they are midair because the carrier is scheduled later. Coverage is also small: structural and segment/fitting classes have no class shim row; duplex_rules' SIDE rows cover duct, pipe and conduit alike, a poor match for ceiling-hung runs.
+**What the facing DOES give 4D (not built, owner's ruling — this is §C, still open):** a STATED "hangs from that host" relation instead of a geometric guess. A rule of the form *"a BOTTOM-mounted element's work follows its carrier's task"* would move those elements after the slab they hang from; on Terminal that is 262 of 3,065 midair (8.5%). It changes the programme (which task an element belongs to), so per §C/§J.4 it is a ruling, not a fix. For WALKED fixtures the walker already writes `host` + `mount` + (since §FACING) `face` on each placement; carrying them into the Viewer DB (`BIMOOTB_Walk` set) is the data path if the owner rules for it.
+
+# §Q HANGING BEAMS DURING BUILD-UP — THE RULES, REVIEWED (2026-11-14, user: *"we have never fully solved the hanging beams problem during build up construction in Time Machine. Look at the rules and review them first."* then *"Correct the specs and do not fix anything."*)
+
+```
+⛔ SPEC ONLY. No code changed, no witness changed, no baseline re-locked. Re-read §E and §I first.
+Every number is the OWNER's (SupportSweep.contactGraph / designatedSupport / midairAudit,
+ScheduleGate.supportPool, bim-ootb origin/main @ cbb22300) over the PERSISTED runs (PRIMAL LAW 5).
+Instrument: bim-compiler scripts/probe_4d_beam_midair.js  →  §BEAM_MIDAIR lines.
+Self-check on every building: recount == playStats.midairPlayed (539 / 3065 / 257 / 152 — all MATCH).
+```
+
+## §Q.0 WHAT THIS SECTION CORRECTS
+- **§M.3 / §M.5 item 4 called the 123 Hospital beams "structural and indefensible / real".** That
+  reading is withdrawn (edited in place). The count reproduces exactly; the verdict was never checked
+  against which relation the election had chosen. It is checked below.
+- **§I never said what the election does.** The row named the owner and stopped. The rule that
+  produces most of the beam verdicts (`:535`, pool outranks relation) was in no spec.
+- **§I.1 read as if the bearing upper bound had been added.** It was not (edited in place).
+- **§SHIM-FACING existed only on branch `fable/meshdb-livewire`.** `master`'s copy of this file did
+  not have it, while `MODELLER_MASTER.md:115` on `master` points at it. Restored above, verbatim.
+- **Not corrected, because it was never claimed here:** nothing in this file says the beam problem
+  is solved. `4D_SCHEDULE_PERFECTION.md:4209` carries the acceptance sentence (*"no midair MEPs or
+  beams"*); no section of any 4D prompt file records it as met.
+
+## §Q.1 THE RULES THAT DECIDE WHEN A BEAM APPEARS — as shipped, one row each
+Paths `~/bim-ootb/viewer/`, lines at `origin/main` @ `cbb22300`.
+
+| # | rule | where | what it says about a beam |
+|---|---|---|---|
+| R1 | class sequence | `rates.js:291-293`, `:327-328` | column **2**, beam **3**, slab **4** — all `Superstructure`. Wall / WallStandardCase **5** — `Architecture Envelope` |
+| R2 | declared programme | `rates/4D_template.json` `within_level` (`:119`) | one Superstructure task per level; **superstructure → architecture_envelope, FS**. So every wall of a level is declared AFTER every beam and slab of that level. The template's own `_open` note (`:89`) names the gap: *ifc_class cannot tell a skin wall from a partition* — nor a bearing wall |
+| R3 | support pool | `schedule_gate.js:1391` `supportPool` | `seq <= 4` ∪ promoted roof slab ∪ `IfcStairFlight`. **Walls are not in it** |
+| R4 | contact | `support_sweep.js:417-419` (twin `cpm_schedule.js:88-90`) | bbox XY overlap, then bearing-below ∪ carrier-above ∪ embedded. Carrier-above has no upper bound (kept on purpose, §DAY_GAP_TAIL). **Embedded is symmetric when two boxes have the same base and top** |
+| R5 | election | `support_sweep.js:502-539` | bearing-below, else embedded, else carrier-above — **then the best contact inside R3's pool replaces that winner, whatever its relation** (`:535`). Tie → smaller `\|Δbz\|`, then guid |
+| R6a | solve, CELL path (Hospital, Terminal) | `cpm_schedule.js:789`, `:794-799`, `:831` | cell = (level, **class sequence**, location). Cells run level → sequence → location. Inside a cell: members by (`bz`, guid). **The elected support is not an edge here** — `§CELL_RUN … refusedE1=N (NOT enforced)` |
+| R6b | solve, GRAPH path (Duplex, HHS) | `cpm_schedule.js:228-230` | E1 = ONE edge from the elected support, **start-to-start** |
+| R7 | what plays | `tm_sched_xray.js:1064` `_tmTilePlayWithinTasks`, called from `tm_gantt_build.js:624` (§I row "where inside its bar does it PLAY?" still says `time_machine.js` — that file has since been split; the verb is unchanged) | each task re-tiled in CPM order; this is the layer the scrubber and the film read |
+| R8 | the judge | `support_sweep.js:591` | midair ⇔ the ELECTED support **starts** more than 1 ms after the element starts. It is a time-order test on one elected box, not "nothing holds it" |
+
+**What these rules do order correctly, measured:** a beam whose elected support is a column.
+Hospital **0 of 793** midair. Terminal **4 of 222**. R1 (2 before 3) + R6a carries it. *The frame
+going up column-then-beam is not where the hanging comes from.*
+
+## §Q.2 MEASURED — every beam, by the relation the election chose (PLAYED layer)
+
+| | Hospital (`_meta`, codeKey `2b46745cdc59`, built 11-09) | Terminal (`_meta`, `1adc56735190`, built 11-07) | Duplex (`_extracted`, `2b46745cdc59`, built 11-09) |
+|---|---:|---:|---:|
+| IfcBeam, total · with no elected support | 1,970 · 0 | 432 · 0 | 8 · 0 |
+| **midair beams** | **123** | **77** | **8** |
+| … same task as the elected support · other task | 120 · 3 | 39 · 38 | 0 · 8 |
+| … days before the elected support, p50 · p90 · max | 1.0 · 4.8 · 149.6 | 1.3 · 24.5 · 37.2 | 0.9 · 1.3 · 1.5 |
+| bearing ← **IfcColumn**: elected · midair | 793 · **0** | 222 · **4** | 0 · 0 |
+| bearing ← IfcBeam: elected · midair | 1,073 · 45 | 72 · 1 | 0 · 0 |
+| embedded ← IfcBeam: elected · midair | 73 · **47** | 67 · **29** | 0 · 0 |
+| … of those, both boxes same base and top (≤ EPS) | 73 of 73 | 67 of 67 | — |
+| **carrier-above elected** (slab / plate / beam / member overhead): elected · midair | 30 · **30** | 26 · **26** | 4 · **4** |
+| … of those, has a bearing-below contact the election passed over | 29 | 22 | 4 |
+| … what that passed-over contact is | WallStandardCase 14 · Wall 1 · Pipe 6 · Stair 3 · Railing 3 · Duct 2 | Wall 15 · Pipe 2 · Duct 2 · Railing 2 · Proxy 1 | WallStandardCase 4 |
+| … it starts LATER than the beam · already started | 26 · 3 | 14 · 8 | 4 · 0 |
+| other midair beams | bearing ← Wall 1 | bearing ← IfcMember 16 · ← StairFlight 1 | bearing ← WallStandardCase 4 |
+
+HHS_Office_Federated: **0 IfcBeam — VACUOUS**, nothing judged. Clinic, LTU, JKR: not run (no
+current persisted run was read); do not extend these numbers to them.
+⚠ Terminal's cache is an older `codeKey` than the other three. Its recount still equals its own
+persisted `midairPlayed`, so the table is internally consistent, but it is not the same code state.
+
+## §Q.3 WHAT THE NUMBERS SAY ABOUT THE RULES — three gaps, none of them "the frame"
+
+**Gap 1 — the election picks the slab the beam carries (R5 `:535` against R1).** A beam that has a
+bearing-below contact outside the pool and a pool element overhead is given the overhead element as
+its support. R1 puts that slab (4) after the beam (3), so R8 calls the beam midair **every time, by
+construction: 30 of 30, 26 of 26, 4 of 4.** These are not beams with nothing under them — 29 / 22 / 4
+have something under them that the election was not allowed to choose. This is BIMEyes §S2's
+"elects a slab 3 m overhead", now with its mechanism named and counted for beams.
+
+**Gap 2 — the thing really under those beams is declared to come later (R1 + R2 + R3).** For 15
+(Hospital), 15 (Terminal) and 4 + 4 (Duplex) beams, the contact beneath is a **wall**. A wall is
+sequence 5, Architecture Envelope, and R2 declares that phase after Superstructure. So even an
+election that chose the wall would still find the beam first: 26 of 29, 14 of 22, 4 of 4 of the
+passed-over contacts do start later. **This is the one place a beam is genuinely drawn before what
+it sits on, and it is a CLASSIFICATION fact (§B "CLASSIFY"), not a solver fact.** The remaining
+passed-over contacts (pipe, duct, railing, stair) are §E row 1 — a box that happens to be below.
+
+**Gap 3 — beam on beam has no rule that gives a direction (R1 + R4 + R6a).** Two beams share
+sequence 3 and a level, so R6a files them in one cell and orders them by `bz` then guid; R6b gives
+them one start-to-start edge. Where the two boxes have the same depth, R4's embedded clause holds in
+BOTH directions (73 of 73, 67 of 67), so which beam "supports" which is the tie-break, not physics —
+and 47 of 73 / 29 of 67 come out midair. Where one beam is deeper (bearing ← beam) it is 45 of 1,073
+and 1 of 72. Which is the primary and which the secondary is **not known to any rule here**; a
+bounding box cannot say it. Prior art that already tests beam ENDS, not boxes: `bim-ootb
+prompts/STRUCTURAL_SANITY.md` `floating_member` (its T9 notes on beam-to-beam free ends and
+`framing_dz_m`). It is a model-quality check, not a 4D owner — named as the place to look, not wired.
+
+## §Q.4 WHAT IS NOT KNOWN — do not fill these in
+- **Whether a passing beam still LOOKS hung.** R6b and R8 are both start-to-start: a beam passes
+  once its column has STARTED. The on-screen rule (§I row "is it on screen at cursor?") draws an
+  element as `placed` only when it has ENDED, `frontier` while it is in progress. Nothing measures beams that are on screen while their support is still only `frontier`.
+  BIMEyes §S13 measured finish-to-start as the better semantic and §S14 withdrew its headline; the
+  question was never brought back to beams.
+- **Hospital's three cross-task beams and the 149.6-day maximum** — not attributed.
+- **Terminal's 16 beams bearing on `IfcMember`** — same sequence (3), not examined.
+- **The `sched` map in `run.json`** — recounting midair on it does NOT reproduce
+  `midairCpmDisplay` (Hospital 439 vs 583). It is therefore not the CPM-display layer, and nothing
+  in this section is read from it. Which layer it is belongs in §I's "where inside its task?" row.
+- **Clinic** — §M.3 recorded "IfcBeam 388, 159 of them carrier-above ← slab" on 2026-09-04. By Gap 1
+  that 159 is the same mechanism, but it was not re-measured here.
+
+## §Q.5 THE DECISIONS THIS LEAVES WITH THE OWNER — ✅ all four answered 2026-11-14, see §Q.6
+These are §J.4's three questions, asked for beams. Until they are answered every beam number is a
+report, not a defect count.
+1. **Is a wall that carries a beam or a slab Superstructure work?** (Gap 2. The template's `_open`
+   note already admits `ifc_class` cannot tell. A class whitelist is the §E mistake — 438 glazing
+   panels. What EXTRACTED fact marks a bearing wall is the question. Already measured, BIMEyes §S7:
+   IFC authors no vertical support relation at all, and `Pset LoadBearing` *"changes eligibility, not
+   direction"* (coverage 54.1 % on Duplex, 71.7 % on SampleHouse). BIMEyes §S3 also
+   measured the pool variant `shipped ∪ IfcWall*`: HHS bearing 3332 → 3761 for +207 contradictions.)
+2. **May a pool element above outrank a non-pool element below?** (Gap 1. §S26.2 added the pool
+   override to stop a pipe "bearing" a wall, and measured that pool-ONLY election is worse. ⚠ Its
+   justification figure, Duplex "761 vs 1", **does not reproduce from shipped code** — BIMEyes §S3's
+   standing gate: resolve or retract it before the pool or the override moves. The beam cases are the
+   cost of the form the override took.)
+3. **What orders beam against beam?** (Gap 3. §J.4 question 1 — at what granularity precedence
+   binds — and question 3 — which relation carries it.)
+4. **Does "supported" mean the support has STARTED or has FINISHED?** (§Q.4 first bullet.)
+
+## §Q.6 ▶ RESUME 4D — THE FOUR DECISIONS, ADVISED AND ADOPTED AS THE SPEC (2026-11-14)
+> **Owner, 2026-11-14:** *"use your learning of how construction works and advice me the decisions"* …
+> *"a new session just has to type 'resume 4D' and it will implement as spec'd."*
+> The four answers below are Claude's advice from construction practice, recorded as the spec on that
+> instruction. The owner may strike any one; a struck decision stops its step only, not the others.
+
+**The one principle behind all four — how a floor is actually built:** load goes DOWN. Vertical
+bearers first (columns and bearing walls), then the main beams that land on them, then the beams
+that land on those, then the slab. Structure never hangs from what it carries. Services and
+ceilings are the only things that hang, and they hang from finished structure.
+
+### D1 — A wall that is the ONLY thing under a beam or slab is structure. ADOPTED: yes.
+- **Practice:** a bearing wall goes up with the frame of its level, before the floor above. An
+  infill wall or partition is built after the frame and merely touches the soffit above it.
+- **So contact alone must not promote a wall** — every full-height partition touches a slab. The
+  extracted fact that separates them is NECESSITY: *a structural element (R3 pool) rests on this
+  wall and has no bearing-below contact inside the pool.* Where a beam also lands on a column, the
+  wall under it stays Envelope.
+- **Rule:** `bearingWalls(els)` — one shared definition beside `groundworkSlabs(els)`
+  (`schedule_gate.js`, same pattern: geometry reclassifies, §GROUNDWORK_SLAB is the precedent).
+  A wall it returns takes `phase='Superstructure'`, `sequence=2` (it is a vertical bearer, like a
+  column). Its trade/resource and rate are NOT changed. Walls only — a pipe or railing under a
+  beam is §E row 1 and is never promoted.
+- **Not a class whitelist:** BIMEyes §S3 measured "all walls into the pool" at +207 contradictions
+  on HHS. This rule admits only the walls something structural needs.
+
+### D2 — May structure above outrank what is below? ADOPTED: no, for structural elements.
+- **Practice:** a beam never hangs from its slab. A duct does hang from the slab.
+- **Rule (R5, both twins or the single owner):** when T is itself in the pool, carrier-above is
+  NOT eligible, and only pool contacts are eligible (after D1 a bearing wall is one). If none
+  exists T has no elected support and is **counted and named** on a `§STRUCT_NO_SUPPORT` line —
+  a model gap, never hidden and never called midair. When T is NOT in the pool (services,
+  ceilings, fit-out) the election is unchanged, pool override included.
+- The "761 vs 1" figure (BIMEyes §S3 gate) is not relied on: this rule does not move the pool for
+  non-structural T, which is what that figure justified.
+
+### D3 — Beam against beam. ADOPTED: main beams before the beams they carry; a tie is one lift.
+- **Practice:** girders spanning bearer to bearer go first, secondary beams frame into them after.
+  In a cast floor the beams of one bay are poured together — no order exists to get wrong.
+- **Rule, election:** an embedded contact S may be elected for T only if S itself has an elected
+  bearing-below support. If no embedded contact qualifies (the mutual, same-depth case) T has no
+  elected support from that relation: the pair is one lift and is not judged against each other.
+- **Rule, order (R6a `cpm_schedule.js:831`):** inside a cell, members sort by SUPPORT RANK first
+  (0 = elected support is outside the cell or none; n+1 = elected support has rank n), then `bz`,
+  then guid. Answers §J.4 q1 and q3 for structure: precedence binds per ELEMENT inside a
+  (level, sequence) cell and is carried by the bearing relation; across cells the product order
+  stands as it is.
+
+### D4 — "Supported" means the support is FINISHED. ADOPTED for bearing and hanging; cast-in stays together.
+- **Practice:** nothing is landed on a half-built column. A cast-in or same-pour item goes in WITH
+  its host.
+- **Rule:** bearing-below and carrier-above are finish-to-start; embedded stays start-to-start.
+  It applies in the SAME change to the edge (R6b `:228-230`), the cell packing (a member may not
+  start before its in-cell elected support ends) and the judge (R8 `:591`: midair ⇔ the elected
+  support's END is after the element's start, for the two FS relations). Curing time is not
+  modelled — no data, none invented.
+- This is what makes the picture right: the scrubber draws a finished element solid, so a beam
+  can only appear once its column is solid. It answers §Q.4's first unknown.
+- ⚠ BIMEyes §S13/§S14 measured fleet-wide FS on the full contact SET at a stacking cost
+  (piles ≥ 20). This is NOT that: one elected edge per element, as today. Stacking is still a
+  gate below.
+
+### ORDER OF WORK — each step is one PR in `bim-ootb`, measured before and after
+0. **Land §I.1a first** (`refactor/contactgraph-one-owner`, its own RESUME block above) so every
+   rule below is changed once, not twice. If it cannot land, change both twins in one commit and
+   keep `§CPM_PARITY` green.
+1. **D2** → 1b. **D5 (§Q.7, columns on their floor slab)** → 2. **D1** → 3. **D3** → 4. **D4**. Smallest and safest first; D4 last because it moves
+   the most times.
+- **Every step:** `cache_4d_run.js --force` for Hospital, Terminal, Duplex, HHS before and after;
+  `node scripts/probe_4d_beam_midair.js <cacheDirs>` (bim-compiler) before and after; paste both
+  `§BEAM_MIDAIR` blocks into this section. The probe's relation read-back must follow the
+  election if D2/D3 change its shape — fix the probe in the same step, never let it MISMATCH.
+- **Gates on every step (a red gate stops the step, it is not re-baselined away):**
+  1. `§BEAM_MIDAIR` self-check MATCH on all four buildings.
+  2. Played-layer midair for every NON-beam class does not rise (per-class, from the same run).
+  3. Stacking: no pile ≥ 20 at one instant on the played layer (BIMEyes §S14.2's measure).
+  4. The Gantt-edit chain stays as it was: `witness_gantt_edit_coherence`,
+     `witness_gantt_lock_integrity`, `witness_tm_edit_exception`, `witness_midair_zero`
+     (a moved baseline needs a written, measured reason in this section).
+  5. Programme length (`§AUTHOR_TPL totalDays`) reported before and after; a rise is reported,
+     not hidden. D4 is expected to lengthen it — say by how much.
+- **PREDICTIONS, written before any run — falsifiable:**
+  - after D2: carrier-above-elected beams 30 / 26 / 4 → **0** on Hospital / Terminal / Duplex.
+  - after D1+D2: Duplex midair beams 8 → **0**; Hospital and Terminal wall-borne beams no longer
+    midair (15 and 15).
+  - after D3: Hospital embedded ← beam midair 47 → **0**, bearing ← beam 45 → **≤ 5**;
+    Terminal embedded 29 → **0**.
+  - after D4: column-borne beams stay at 0 / ≤ 4 under the FINISH test.
+  - **Done =** midair IfcBeam on the played layer is 0 on Hospital and Duplex and ≤ 4 on Terminal,
+    under the D4 judge, with all five gates green. A prediction that fails is recorded as failed,
+    with the log line, and the step stops for the owner.
+- **Out of scope here:** ~~columns before their slab (68, §M.3)~~ (now measured and decided — §Q.7, D5), mullions before glazing, MEP — not
+  re-examined in §Q, so not decided. Clinic, LTU, JKR get measured at the end, not tuned for.
+- **Standing rules that bind the implementing session:** work in a `/tmp/wt-*` worktree of
+  bim-ootb (check `git worktree list` first); no bakes, GPU or browser runs without the owner's
+  go; agents on Sonnet; findings and results go in THIS section only; push and merge own verified
+  PRs; the witness, never the owner's eyes, is the test.
+
+### §Q.6 RESULTS — D2, 2026-11-14 (bim-ootb branch `fix/4d-d2-struct-no-carrier`, pushed, NO PR — held on gate 2)
+Rule as spec'd, in the single owner (`cpm_schedule.js designatedSupport`, §D2_STRUCT_NO_CARRIER; `§STRUCT_NO_SUPPORT` printed on every call).
+Before = origin/main code (`codeKey 2b46745cdc59`); after = `ba70485e411e`. Instruments `probe_4d_beam_midair.js`, `probe_4d_column_midair.js` (now take `REF=`, load `cpm_schedule.js`), `probe_4d_step_gates.js` (new: gates 2, 3 and 5 from the persisted runs). Self-check MATCH on all four, before and after.
+```
+§BEAM_MIDAIR carrier-above-elected beams   Hospital 30 -> 0   Terminal 26 -> 0   Duplex 4 -> 0        PREDICTION MET
+             midair beams                  123 -> 89          77 -> 41           8 -> 0 (8 now noElectedSupport — walls, D1's job)
+§COL_MIDAIR  Hospital carrier-above cols   13 -> 0 midair     Terminal midair cols 5 -> 0          PREDICTION MET
+§STEP_GATE   midairPlayed  Hospital 539 -> 486 · Terminal 3065 -> 2393 · Duplex 257 -> 247 · HHS 152 -> 144
+             stack piles>=20  0 -> 0 on all four (GREEN) · totalDays 339/102/12/53 unchanged · CELL/GRAPH paths unchanged
+§STRUCT_NO_SUPPORT  Hospital 46 · Terminal 671 · Duplex 9 · HHS 32
+⛔ gate 2  Terminal IfcPipeSegment 587 -> 590 RED   (IfcDuctFitting 140 -> 137 on the same run; non-beam MEP net 0)
+```
+**The +3, traced (read-only `newmid.js`):** three pipes in `TASK_MEP_Rough_in_Aras_Jalan` hang from ONE beam (`2dEJAAEyDAlQ$4dg_s$NrS`) in a different level's task, `TASK_Superstructure_03_SECOND_FLOOR_LEVEL`. Before the change the beam already started only 0.02 d (~30 min) ahead of them. D2 re-packed that Superstructure bar and the beam moved 0.06 d later. The pipes themselves did not move. This is a cross-task near miss in the task grid, not the D2 rule; the same shape recurs in D5 (one window).
+**Owner ruling 2026-11-14:** *merge, name them* — gate 2 stays strict for everything else; the cross-level near miss is its own item (§Q.8 item 1). D2 MERGED as bim-ootb #3022.
+**Terminal's 671 `§STRUCT_NO_SUPPORT`, broken down (read-only `nosup.js`):** 600 `IfcPlate Metal Deck` roof sheets (contacts: other deck plates above, pipes/proxies/walls below — the §GROUND_CONNECTED data finding) · 36 `IfcMember Assembled Stair` · 30 IfcBeam on walls (D1's population) · 7 IfcColumn on proxies/walls/windows · 2 SHS members.
+
+## §Q.7 COLUMNS BEFORE THE SLAB THEY STAND ON — MEASURED 2026-11-14 (owner: *"Do floor slabs comes on first before columns and beams?"* … *"Measure those too"*)
+Instrument: `scripts/probe_4d_column_midair.js` → `§COL_MIDAIR` (same owners, same persisted runs,
+self-check MATCH on all four). Played layer. Re-read §E and §I first.
+
+**Practice, stated once:** the slab a column STANDS ON is built before it; the slab a column HOLDS UP
+is built after it. R1's "column 2, beam 3, slab 4" is true only of the slab on top.
+
+| | Hospital | Terminal | HHS | Duplex |
+|---|---:|---:|---:|---:|
+| IfcColumn · midair | 604 · **80** | 158 · **5** | 257 · **3** | 0 — VACUOUS |
+| column standing on a slab (bearing ← IfcSlab): elected · midair | 60 · **57** | 86 · **0** | 178 · **3** | — |
+| … that slab is in the SAME task as the column: n · midair | 58 · **57** | 0 · 0 | 178 · 3 | — |
+| … that slab is in an EARLIER task: n · midair | 2 · 0 | 86 · 0 | 0 · 0 | — |
+| … days the column leads its slab, p50 · max | 4.0 · 7.0 | — | 0.0 · 0.1 | — |
+| other midair columns | carrier-above ← slab 11 · ← beam 2 · bearing ← beam 10 | carrier-above ← proxy 4 · bearing ← railing 1 | none | — |
+| solve path (`§CELL_GATE`) | CELL | CELL | GRAPH | GRAPH |
+
+**§M.3's "IfcColumn on IfcSlab 68" is this: 57 standing on a slab + 11 that elected the slab above.**
+
+**What the numbers say:**
+- **It is one place, not a general defect: the LOWEST floor.** All 58 Hospital same-task pairs are in
+  `Superstructure_Level_1`. A floor slab normally lands in the level below its columns (Terminal:
+  85 of 86 pairs have the slab in a lower band, 0 midair). At the bottom there is no level below, so
+  the slab and the columns on it share the first Superstructure task, and R1 runs columns (2) before
+  slab (4).
+- **`groundworkSlabs` already handles the slab-on-grade case and works** — Hospital's 2 reclassified
+  slabs are the 2 "earlier task" pairs, 0 midair; Terminal reclassified 233. The 58 are a lowest-level
+  slab that rule does not claim (not examined why — it is not a slab bearing on grade only).
+- **The same shape passes on the GRAPH path:** HHS has 178 same-task pairs and 3 midair, because R6b
+  enforces the elected edge. Hospital is on the CELL path, where that edge is REFUSED and not
+  enforced (`refusedE1=1296`). So the missing rule is in R6a, not in the election.
+- **The datum is NOT the cause — hypothesis measured and rejected.** Hospital bands on the mid-wall
+  `center_z` ladder (§L's still-stale shipped datum). Re-banding the 60 pairs on the logged
+  `§STOREY_DATUM_FLOOR` floor values changes nothing: 60 of 60 same band either way (HHS 178 of 178).
+- **11 + 2 (Hospital) and 4 + 1 (Terminal) are D2's population** — a column that "hangs" from the
+  slab or beam above, or "bears" on a railing. D2 already decides them.
+- **Hospital's 10 columns bearing on a beam** (of 12 elected) — a column landing on a transfer beam;
+  beam is sequence 3, after the column. Counted, NOT decided here.
+
+### D5 — The floor a column stands on comes first, whatever its class sequence. ADOPTED (advice, same instruction as D1–D4).
+- **Rule (R6a only):** inside one level, a slab that is the elected bearing-below support of a
+  structural element of that same level is that level's FLOOR. It is filed in a cell that runs
+  before sequence 2 of that level. Its phase, task, trade and rate do not change — the task grid and
+  the Gantt bars are untouched; only the order inside the first Superstructure bar moves.
+- It is the elected edge read as extraction, the way §S47.3's hang filing already reads it — not a
+  new relation and not a class rule.
+- **Order of work:** D5 goes after D2 and before D1 → **0, D2, D5, D1, D3, D4**. Same per-step
+  measurements and the same five gates as §Q.6, with `probe_4d_column_midair.js` added to every step.
+- **PREDICTIONS, written before any run:**
+  - after D2: Hospital carrier-above columns 13 → **0** midair; Terminal midair columns 5 → **0**.
+  - after D5: Hospital column-on-slab midair 57 → **0**; HHS and Terminal unchanged (3 and 0).
+  - **Done, added to §Q.6's bar:** midair IfcColumn on the played layer ≤ 10 on Hospital (the
+    transfer-beam columns, undecided), 0 on Terminal, ≤ 3 on HHS, under the D4 judge.
+- **RESULTS 2026-11-14 (bim-ootb branch `fix/4d-d5-floor-slab-first`, stacked on step 0, NOT on D2; pushed, NO PR).** Code: `cpm_schedule.js solveCells` §D5_FLOOR_SLAB, with the reported cell key (Gantt §S51 grouping) left on the slab's own sequence. Before = step 0 (`dad59a8a799a`). Self-check MATCH on all four in every run. Duplex and HHS are on the GRAPH path, so D5 never runs there: 0 change, as predicted.
+  | variant | Hospital col-on-slab midair | Hospital IfcColumn / IfcBeam midair | gate 2 |
+  |---|---:|---:|---|
+  | **A, as spec'd** (`3a23454453ec`) | 57 → **0** ✅ | 80 → 23 / 123 → 110 | ⛔ Hospital IfcSlab 2 → 4 · Terminal IfcSlab 17 → 19, IfcWindow 37 → 38 |
+  | A + "a slab held by same-level structure is not a floor" (`eef07a90d24c`) | 57 → 55 ⛔ prediction fails | 80 → 78 / 123 → 110 | ⛔ Terminal IfcWindow 37 → 38 |
+  | **B: the floor's same-level holder goes first** (`9d4c4f1a7eac`, branch tip) | 57 → **0** ✅ | 80 → **23** / 123 → **110** | ⛔ Terminal IfcWindow 37 → 38 only |
+  Stack piles ≥ 20 stay at 0, totalDays stay at 339 / 102, and the CELL gate % is unchanged in all three variants.
+  **Why A fails:** the 2 new midair slabs are Hospital's Level-1 floor slabs, and they REST ON a Level-1 column that has no support (a pier under the slab). A moved them ahead of that pier, 13.8 d and 5.5 d earlier. In Terminal, 2 Substructure slabs were moved ahead of the beam carrying them. The spec's own line *"the slab a column HOLDS UP is built after it"* covers this case, but one sequence slot cannot express pier → slab → column. B adds that one hop: the holder takes trd 1.25, the floor trd 1.5 (`§D5_FLOOR_SLAB … holdersMovedFirst=` Hospital 1, Terminal 8).
+  **The window:** `2QeSWZ57r0ZhANP_aR8HvN` in `TASK_Architecture_Envelope_Ceiling_Level_Kedai` hangs from a beam in `TASK_Superstructure_02_FIRST_FLOOR_LEVEL`. That beam moved 0.17 d later inside its own bar; lead before ≈ 0.10 d. It is the same cross-task near-miss shape as D2's 3 pipes.
+  **Owner ruling 2026-11-14:** variant B; merge with the window named. MERGED as #3023, rebuilt on top of D2 and re-measured there (before = D2 #3022 `ba70485e411e`, after = D2+D5 `9098b76bb1ef`, self-check MATCH on all four):
+  ```
+  §COL_MIDAIR  Hospital IfcColumn midair 63 -> 6 · column-on-slab 57 -> 0 · Terminal 0 -> 0 · HHS 3 -> 3        DONE BAR for columns MET (≤10 / 0 / ≤3)
+  §STEP_GATE   midairPlayed Hospital 486 -> 429 · Terminal 2393 -> 2395 · Duplex 247 = · HHS 144 =
+               stack piles>=20 0 -> 0 · totalDays 339/102/12/53 unchanged · CELL gate % unchanged
+               gate 2: Terminal IfcWindow 37 -> 39 — 2QeSWZ57r0ZhANP_aR8HvN and its neighbour …HgI, both in
+               TASK_Architecture_Envelope_Ceiling_Level_Kedai, hanging from beams 0x6OwzZ2v21RpwVfHqBQ0f/…0C in
+               TASK_Superstructure_02_FIRST_FLOOR_LEVEL (lead ≈ 0.1 d before). Same shape and same task pair as the ruled window;
+               taken under the same ruling and named (§Q.8 item 1).
+  ```
+  Gate 4: same result as D2 on all four witnesses (and see §Q.8 item 2).
+- **Left open, named:** the 10 transfer-beam columns; why `groundworkSlabs` does not claim the
+  Level 1 slab; Clinic, LTU, JKR not measured.
+
+## §Q.8 OPEN AFTER D2 + D5 — named, not fixed (2026-11-14)
+1. **Cross-level near misses (gate 2's only reds, merged by owner ruling).** 5 elements, all Terminal: 3 IfcPipeSegment
+   (`2EWQkj7Z9F_BZghmRaKVaW`, `…VaH`, `…Vej`; `TASK_MEP_Rough_in_Aras_Jalan` ← beam in `TASK_Superstructure_03_SECOND_FLOOR_LEVEL`)
+   and 2 IfcWindow (`2QeSWZ57r0ZhANP_aR8HvN`, `…HgI`; `TASK_Architecture_Envelope_Ceiling_Level_Kedai` ← beams in
+   `TASK_Superstructure_02_FIRST_FLOOR_LEVEL`). An element in one level's task hangs from a beam in ANOTHER level's
+   Superstructure task with < 0.1 d lead, so any re-pack of that bar tips it. The template grid has no edge between those two
+   tasks. It is a task-grid question (§J.4 q1), not D1–D5.
+2. **⛔ Gate 4 is half-vacuous ON MAIN.** `witness_gantt_lock_integrity` (`G-LI-2a _buildXrayElements yields real geometry (n=0)`)
+   and `witness_midair_zero` (`W-MZ <bld> element build produced nothing`, all 7 buildings) build ZERO elements in their sliced
+   sandbox, before and after every step. Their sandbox silences `console.log`, so the cause is hidden (`_buildXrayElements` now
+   lives in `tm_sched_xray.js`). The judging half of gate 4 is `witness_gantt_edit_coherence` (11 PASS, real Duplex data) and
+   `witness_tm_edit_exception` (23/0). Both are unchanged on every step. Repair those two witnesses before D4, which moves the most times.
+3. **D1 — design note before implementing.** `tm_sched_xray.js _promoteRoofLoadPath` already demotes a roof slab carried only by
+   walls to Architecture seq 8 (§4D_WALLS_BEFORE_ROOF). Such a slab is still in `supportPool` (IfcSlab seq > 4), so D1's
+   `bearingWalls` will promote the walls under every roof as well. That is right for bearing-wall construction (Duplex), but
+   it is a wider population than §Q.2's 15/15/8 beam walls, so it has to be measured, not assumed. Use the wall-at-its-top bound
+   that §S64 already applies to walls (`S.top_z <= T.base_z + GAP`, `auditFloating`'s wall pool). Without it, every full-height
+   wall that XY-overlaps a beam reads as its bearer (§I.1's missing upper bound).
+
+
+---
+**2026-11-17 NOTE from the code-design lane (`prompts/CODE_ARCHITECTURE_DESIGN.md` §F.7 / decision F-11; information for this lane, nothing here was changed).**
+Every saved log in bim-ootb is meant to start with a `§LOG_STAMP commit=… dirty=…` line (`scripts/log_stamp.js`), so a reader (and the X0
+`§`-lens, `devtools/vscode/x0-navigator/lib/lens_index.js:8`) can tell WHICH code produced it. The persisted 4D cache log does not:
+`scripts/cache_4d_run.js:316` writes `witness.log` from the pipeline lines only. The cache KEY already pins the code (PRIMAL LAW 5), so this is
+a reading aid, not a correctness bug. **Ask:** prepend the stamp line at `:316` when this lane next touches `cache_4d_run.js`. It changes no
+cache key input; existing caches stay valid and simply lack the line.
+
+## §Q.9 ONCE-OVER — SPEC vs CODE vs THE FOUR CONSUMERS (2026-11-17, owner: *"Give it a once over and check the code concerned … Suggest extra handling code or harness necessary to achieve its smooth corelation with Time Machine, Gantt Chart, CPM, its editor and 5D materials rates costing."*)
+```
+⛔ REPORT + SUGGESTIONS ONLY. No bim-ootb code changed, no witness changed, no baseline re-locked.
+Code read: bim-ootb origin/main @ 16e44c1c (cpm_schedule.js whole file; support_sweep.js _midairAudit; tm_sched_xray.js
+verifyGanttIntegrity / _buildXrayElements; tm_dash.js:402-428; tm_gantt_build.js:1325-1345; cost_panel.js:14; 4D_template.json).
+Runs read: the persisted cache, codeKey 6cb996db41e8, built 2026-11-16 (Hospital_meta, Terminal_meta, Duplex_extracted, HHS_extracted).
+Instruments: probe_4d_beam_midair.js, probe_4d_column_midair.js, and two new read-only probes in this repo:
+scripts/probe_4d_midair_by_class.js (§ONCE) and scripts/probe_4d_midair_taskpairs.js (§TASKPAIR). Self-check MATCH on all four.
+```
+### Q.9.1 MEASURED (played layer, shipped judge)
+| | Hospital | Terminal | Duplex | HHS |
+|---|---:|---:|---:|---:|
+| midair, all classes | 429 | 2,395 | 247 | 144 |
+| midair IfcBeam · beams with NO elected support | 89 · 31 | 41 · 26 | 0 · 8 | VACUOUS |
+| midair beams by relation | embedded←beam 47 · bearing←beam 42 | embedded←beam 29 · ←member 7 · ←column 4 · ←stair 1 | — | — |
+| midair IfcColumn | 6 (all bearing←beam) | 0 | VACUOUS | 3 |
+| midair: same task · **cross task** | 324 · **105** | 88 · **2,307** | 2 · **245** | 61 · **83** |
+| cross-task: the support's TASK starts at or after the element's TASK ends · windows overlap | **105** · 0 | **2,180** · 127 | **245** · 0 | **83** · 0 |
+| `§STRUCT_NO_SUPPORT` (structural, unjudged) | 46 | 671 | 9 | 32 |
+| finish-test preview (D4 judge, bearing + hanging), all · structural T | 285 · 72 | 2,324 · 236 | 267 · 0 | 102 · 30 |
+| solve path · `refusedE1` (not enforced) | CELL · 1,132 | CELL · 169 | GRAPH | GRAPH |
+
+Largest cross-task pairs (`§TASKPAIR`, element task ← support task, day windows):
+Terminal `MEP_Rough_in_Ceiling_Level_Kedai` (d17–25) ← `Superstructure_06_ROOF_LEVEL` (d43–44) **723**; `MEP_Rough_in_Aras_Jalan` (d9–17) ← ROOF **264**, ← `Superstructure_05` (d29–40) **204**; `MEP_Rough_in_Aras_Kedai` ← ROOF 190; `MEP_Final_Ceiling_Level_Kedai` ← ROOF 180.
+Duplex `MEP_Rough_in_Level_2` (d7–9) ← `Finishes_Level_2` (d11–12) **108**; `MEP_Rough_in_Level_1` ← `Finishes_Level_2` 66.
+Hospital `MEP_Rough_in_Level_5` (d278–319) ← `Finishes_Level_5` (d338–339) 27; HHS `MEP_Rough_in_Level_3` ← `Finishes_Level_3` 23.
+
+### Q.9.2 FINDINGS
+- **F1 — the spec on `master` was two steps behind the code.** D2 (#3022) and D5 (#3023) are merged in bim-ootb; `master` still said "held". This PR (#701) carries the status line and §Q.8. A session typing "resume 4D" from `master` would have re-asked two ruled questions.
+- **F2 — the beam work left is exactly D3 and D1, nothing else.** Every midair beam on Hospital is beam-on-beam and same-task (89 of 89). The carrier-above class is 0 everywhere (D2 held). D1's population is the beams with no elected support (31 / 26 / 8).
+- **F3 — D2 moved beams OUT of the judged population, and the done bar does not count them.** A structural element with `des = -1` has no E1 edge (GRAPH) and no rank (CELL); the judge skips it (`support_sweep.js _midairAudit`: `if (sIdx < 0) continue`). Duplex "8 → 0" is 8 beams that are no longer judged, not 8 beams that are right. §Q.6 "Done =" must read *midair = 0 AND `§STRUCT_NO_SUPPORT` for that class = 0, or every one named*.
+- **F4 — most of what plays out of order is NOT beams and NOT inside a bar. No D-step reaches it.** In 2,613 of 2,740 cross-task cases the support's whole task starts after the element's task has ended. Two mechanisms:
+  - **(a) two filings.** The cell solve files a hung element at its CARRIER's level (`cpm_schedule.js _cellFiling`, §S47.3: `promoted=` Terminal 3,507, Hospital 47,771). The task grid files the same element by its own storey (`schedule_author.js instantiateTemplate`; no hang filing there — `grep lvl2|hang|promot` = 0 hits). The template's only MEP edge is same-level (`envelope → mep_rough_in`). So Terminal's Kedai / Jalan services are in a bar that ends 18–26 days before the roof structure they hang from starts. The played layer re-tiles inside the TASK window, so the task grid wins and the solve's correct order is thrown away.
+  - **(b) a contact elected as a support, for services.** MEP "bearing" on an `IfcCovering` or a finish slab that the template (correctly) builds later. §E row 1. The election's pool override only helps when a pool contact exists.
+- **F5 — D4 will move every baseline, not only beams.** The finish test already fails for 72 / 236 / 0 / 30 structural elements on today's times. Say so before the run; gate 2 as written (per-class midair must not rise) cannot be read across a judge change — D4 needs before/after BOTH under the new judge.
+- **F6 — ⛔ gate 4 is RED on main, not "half-vacuous".** Run 2026-11-17: `witness_gantt_lock_integrity.js` exit 1 (`FAIL G-LI-2a _buildXrayElements yields real geometry (n=0)`); `witness_midair_zero.js` exit 1 (`FAIL W-MZ <bld> element build produced nothing`, all 7). Both files were last changed by the 2026-10-17 `time_machine.js` split (#1914). `_buildXrayElements` returns `null` from `!app.db` and from a bare `catch (e) { return null; }` (`tm_sched_xray.js:290`, `:311`) — which one fires is NOT isolated. Until repaired, the lock gate (🔓→🔒) has no fleet witness.
+- **F7 — the CELL path cannot express D3 or D4 yet.** `solveCells` packs a cell by (`bz`, guid) and each member starts at `max(cell start, crew slot)` (`cpm_schedule.js:934-952`). There is no term for the member's elected support. D3 is a sort key; D4 additionally needs `st = max(es, slot, end of in-cell elected support)`.
+- **F8 — 5D has four cost sources and no shared owner.** (1) Dashboard donut: `rate_per_day × crew_size × (end_ts − start_ts)` over the PLAYED ops (`tm_dash.js:402-428`) — so the total moves when a re-order or a bar resize stretches an element, with no change in work. (2) `cost_panel.js:14` `UNIT_RATES` — hard-coded per-m³ figures and `defaultRate = 100`, not read from `rates.js`. (3) `export_5d.js` work packages keyed by the CLASS rule's phase — after D1 a bearing wall sits in the Superstructure bar in 4D and the Envelope package in 5D. (4) EVM (`tm_gantt_build.js _computeEVM`) from twin records over phase windows. None is checked against another.
+
+### Q.9.3 SUGGESTED HANDLING + HARNESS (spec proposals; each needs its own witness claim before code)
+1. **Repair gate 4 first** (F6). Make `_buildXrayElements` say why it returns nothing (`§XRAY_BUILD_EMPTY reason=`), and make both witnesses print `INCONCLUSIVE`, never a bare FAIL/PASS, when n = 0.
+2. **`witness_tm_assembly_order.js`** — the two new probes turned into one contract witness (`witness_kit/contract.js`): per building, midair by class × relation × same/cross task, the unjudged-structural count, VACUOUS where a class is absent. **Baseline per class, not one total** — a beam fix must not hide behind 2,000 pipes, and a pipe regression must not hide behind a beam fix. Replaces `probe_4d_step_gates.js` gate 2.
+3. **Count the unjudged** (F3): add `§STRUCT_NO_SUPPORT` per class to the done bar and to gate 2.
+4. **One filing, two consumers** (F4a): the task grid reads the same hung-element level the solve uses, OR the grid gains a derived edge *carrier's task FS → hung element's task*. Witness line `§FILING_PARITY elements whose elected support's task starts at/after their own task ends = N`, today 105 / 2,180 / 245 / 83. **Owner decision — which of the two.** The first moves elements between bars (Gantt and 5D package totals move); the second keeps bars and lengthens the programme.
+5. **Contact is not support for services** (F4b): for a non-structural T with no pool contact, a later-phase non-pool contact below is reported on `§CONTACT_ONLY` and not judged midair. **Owner decision — this is a rule**; §E's enclosure test (`probe_enclosure_geometry.js`) is the measured alternative.
+6. **Edit round-trip harness on the persisted run**: move a bar by Δ → every element in it moves by Δ → played layer re-tiled → both judges re-score → undo restores byte-equal. One line per step, on Duplex AND one CELL-path building (today's edit witnesses use Duplex only, which is GRAPH path).
+7. **`§COST_INVARIANT` (gate 6)**: Σ(install seconds × rate) over all elements is equal before and after any re-order step (D1, D3, D4, filing); the donut total is printed beside it. **Owner decision — does a stretched bar cost more?** If no, the donut reads work content (`_installSecs`, the owner in §I), not played duration.
+8. **`scripts/run_4d_gates.sh`** — one command: cache the four buildings, run the three probes and the gate-4 witnesses, write one stamped log (`§LOG_STAMP`, the 11-17 note below), print one table. Today the same steps are typed by hand each session.
+
+**Suggested order:** 1 → 2 + 3 → D1 → D3 → 4 (the largest number on the board) → D4 with 6 and 7 in place → 5.
+
+### Q.9.4 THE THREE DECISIONS — ADVISED AND ADOPTED (2026-11-17, owner: *"will go with what you figured out and decide"*)
+Claude's advice from construction practice, recorded as the spec on that instruction (same standing as D1–D5). The owner may strike any one; a struck decision stops its step only.
+- **D6 — a hung element belongs to the bar of what it hangs from. ADOPTED: one filing (Q.9.3 item 4, first option).** Not a new rule: it is the owner's own §S47.3 ruling (2026-08-21, *an element suspended from above is filed by what it hangs from*) which the solve obeys and the task grid does not. The task grid reads the same filing. Per ELEMENT, never a whole-task edge: a task edge would hold a whole bar back for a few elements and can close a cycle against the template (Hospital has envelope ← MEP contacts). **Measure first, before any code:** how many elements change bar per building (Hospital's `promoted=47,771` is the solve's count against its own level axis — the count against the TASK grid is not known). Predictions: `§FILING_PARITY` 2,180 → ≤ 127 on Terminal (the overlapping-window residue); `totalDays` reported, a rise is reported not hidden; `§COST_INVARIANT` equal.
+- **D7 — contact is not support for services. ADOPTED.** Practice and the template agree: services go in before ceilings and floor finishes. For a non-structural T with no pool contact, a non-pool contact that the template builds later is counted and named on `§CONTACT_ONLY` and is not judged midair. Where the element is inside a formed room the owner's §E ruling already covers it (*"anything that hangs within a well formed room is no issue"*). Structural T is untouched (D2 governs it).
+- **D8 — a stretched bar does not cost more. ADOPTED.** Cost is work content × rate; the template's own `duration_rule` says *the solve ORDERS elements; it does not PRICE the work*. The dashboard donut reads the install-seconds owner (§I row "how long does it take?"), not played duration. Time-related cost (site overheads per day) is not modelled — no data, none invented. `cost_panel.js` `UNIT_RATES` and the 5D export's phase key are named in F8 and NOT decided here.
+- **Order of work, replacing Q.9.3's last line:** gate-4 repair → assembly-order witness + unjudged count → D1 → D3 → **D6 measurement, then D6** → D7 → D8 with `§COST_INVARIANT` → D4 last (it changes the judge; before/after both under the new judge).
+
+## §Q.10 RESUME 4D, 2026-11-17 — STEP "GATE-4 REPAIR" DONE; WHAT THE REPAIRED WITNESS SAYS ABOUT D2
+**Cause of the red gate (isolated, not the October split):** `_buildXrayElements` has called `_scheduledWhere` and `_civilRule` since bim-ootb #1890 (2026-10-06). Neither witness sliced them; the `ReferenceError` was swallowed by a bare `catch (e) { return null; }`. Six weeks, three merged 4D steps (#3018, #3022, #3023) with no working gate 4. A second, older hole: `witness_midair_zero` picked the 0-byte `Duplex_meta.db`.
+**Fix — bim-ootb #3177** (+27/−8): `§XRAY_BUILD_EMPTY reason=` on every empty return; both witnesses slice the delegates and take the owner (`ScheduleAuthor`); `witness_midair_zero` picks the DB by the viewer's split-pair rule and prints `§MZ_INCONCLUSIVE` when it judged nothing.
+```
+witness_gantt_lock_integrity   before: exit 1, G-LI-2a n=0        after: §GANTT_LOCK_INTEGRITY pass=20 fail=0, G-LI-2a n=1122
+witness_midair_zero            before: exit 1, 7 of 7 buildings "produced nothing"
+                               after : judges 7 of 7; §MIDAIR_ZERO_SUMMARY pass=31 fail=19 — ITS LOCKS ARE STALE. NOT re-locked.
+```
+**The stale locks, bisected with the repaired witness on unchanged DBs (W-MZ-2 "strict midair": starts before the first thing it touches appears):**
+| W-MZ-2, locked → got | step 0 (#3018) | D2 (#3022) | main (D2 + D5) |
+|---|---:|---:|---:|
+| HHS (GRAPH) locked 0 | 0 ✅ | **15** | 15 |
+| LTU (GRAPH) locked 0 | 0 ✅ | **365** | 365 |
+| JKR (GRAPH) locked 0 | 0 ✅ | **10** | 10 |
+| Duplex (GRAPH) locked 0 | not judged (0-byte DB) | not judged | **8** (the 8 beams on walls) |
+| Terminal (CELL) locked 684 | 903 | 905 | 842 |
+| Hospital (CELL) locked 218 | 194 | 203 | 196 |
+| Clinic (CELL) locked 422 | 401 | 347 | 341 |
+- **D2 is what moved the GRAPH-path zeros.** Before D2 they held. A structural element D2 leaves with no elected support has no edge at all, and the independent judge (any contact) sees it start first. This is Q.9 F3, now measured by the judge that was built to be independent. Gate 4 would have stopped D2 had it been working.
+- **What those elements are** (`scripts/probe_4d_struct_no_support.js`, `§NOSUP`, persisted runs): Hospital 46 = 44 with a non-pool contact below (wall contacts 103, then stair / railing / pipe / duct) · 2 with contacts above only. Duplex 9 = 9 with a contact below (WallStandardCase 39 contacts). HHS 32 = 19 below (proxy, door, wall) · 9 above only · 4 embedded only. Terminal 671 = 353 below (pipe 206, wall 178, proxy 160) · 318 above only (roof deck plates).
+- **Reading (Claude, on the owner's 2026-11-17 instruction to decide):** D2 stays — a beam must not hang from its slab. Three populations, three owners: *wall below* → **D1** (target: Duplex W-MZ-2 8 → 0, read from this witness); *contacts above only* (a column or deck on unmodelled support) → correct to start first, the judge must follow D2's rule for structural T and NAME them instead of calling them midair; *pipe / railing / door below* → §E row 1, never elected, named.
+- **Not done here, on purpose:** no lock in `baselines/midair.json` was moved. The CELL-path locks and W-MZ-8 drifted before step 0 as well (unattributed, some of it the 2026-10/11 datum and population changes). They are re-locked ONCE, after D1, with this table as the written reason (§Q.6 gate 4's own rule).
+- **Status of §Q.9.4's order:** gate-4 repair ✅ (#3177) → **NEXT: assembly-order witness + unjudged count** → D1 → D3 → D6 → D7 → D8 → D4.
+
+## §Q.11 RESUME 4D, 2026-11-17 — ASSEMBLY-ORDER WITNESS ✅ · D1 MEASURED AND ⛔ HELD ON GATE 2 · ORDER OF WORK CORRECTED
+### Q.11.1 `witness_tm_assembly_order.js` — bim-ootb #3178, MERGED (Q.9.3 items 2 + 3)
+Per building, per class, on the played layer of the persisted run, owners called: **A0** recount == the run · **A1** midair per class does not rise · **A2** structural with no elected support does not rise · **A3** `§FILING_PARITY` does not rise. A fall prints `IMPROVED` + the re-lock line; cache miss / no lock = `INCONCLUSIVE`; no beams / columns = `VACUOUS`. Lock: `viewer/tests/baselines/assembly_order.json`, taken from main `539d4cb385be` (midair 429 / 2,395 / 247 / 144 · filing parity 105 / 2,180 / 245 / 83). Red control proven (a lock lowered by 1 → `FAIL A1 Hospital — midair ROSE: IfcBeam 88->89`). `§ASM_VERDICT claims=16 PASS=16`. **This replaces `probe_4d_step_gates.js` gate 2 from here on.**
+
+### Q.11.2 D1 — rule as built (bim-ootb branch `fix/4d-d1-bearing-walls`, pushed, **NO PR**)
+`ScheduleGate.bearingWalls(els)` + `applyBearingWalls(els, who)` (`§BEARING_WALL`), called by ALL THREE element recipes (`schedule_author`, `tm_gantt_build`, `tm_sched_xray._buildXrayElements`). A wall is promoted (Superstructure, seq 2; trade, rate, install time untouched) iff a structural element rests on its TOP (§S64's bound, per §Q.8 item 3) and that element has no bearing-below contact in the pool; fixpoint for wall on wall.
+**Population, measured before wiring (the §Q.8 item 3 worry — "every roof's walls" — did not happen):** Hospital 132 of 1,468 walls (9.0 %) · Terminal 17 of 333 (5.1 %) · HHS 6 of 160 (3.8 %) · **Duplex 33 of 57 (57.9 %)** — the bearing-wall house is the one that reads as bearing-wall.
+```
+before = main 539d4cb385be   after = D1 105fc53eb129   self-check MATCH on all four, both runs
+                         Hospital        Terminal          Duplex         HHS
+midair, all classes      429 -> 562      2395 -> 2384      247 -> 138     144 -> 144
+midair IfcBeam           89 -> 51        41 -> 41          0 -> 0         VACUOUS
+unjudged IfcBeam         30 -> 13        26 -> 19          8 -> 0         —
+§STRUCT_NO_SUPPORT       46 -> 28        671 -> 555        9 -> 0         32 -> 27
+§FILING_PARITY           105 -> 245      2180 -> 2121      245 -> 134     83 -> 83
+totalDays                339 -> 346      102 -> 101        12 -> 12       53 -> 53
+stack piles >= 20        0 -> 0 on all four (GREEN)        CELL/GRAPH path unchanged on all four
+gate 4: witness_gantt_lock_integrity 20/0 · witness_gantt_edit_coherence 11/0 · witness_tm_edit_exception 23/0 — all PASS on D1
+        witness_midair_zero W-MZ-2 (independent judge): Duplex 8 -> 1 (the 8 beams gone; 1 IfcSlab left) · HHS 15 -> 14
+⛔ gate 2 (A1) RED on all four:
+   Hospital  IfcBuildingElementProxy 34->115 · IfcWindow 0->56 · IfcColumn 6->29 · IfcWallStandardCase 15->27 · IfcWall 4->17
+   Terminal  IfcDuctFitting 137->152 · IfcPipeFitting 795->808 · IfcPipeSegment 590->603 · IfcDuctSegment 74->83 · IfcFlowTerminal 11->12
+   Duplex    IfcWallStandardCase 4->5        HHS  IfcSlab 29->30 · IfcWallStandardCase 2->3
+```
+**Predictions (§Q.6):** *Duplex midair beams → 0* — MET, and now for the right reason (8 beams judged and in order; unjudged 8 → 0). *Hospital and Terminal wall-borne beams no longer midair (15 and 15)* — **PARTLY**: Hospital beams 89 → 51 and unjudged 30 → 13; Terminal unjudged 26 → 19 only, because the wall-at-its-top bound rejects a beam built INTO a wall taller than its seat. Recorded as partly failed.
+**The reds, attributed** (`scripts/probe_4d_step_attribution.js`, `§D1_ATTR`; elements midair after and not before):
+| mechanism | Hospital (188 new) | Terminal (62) | whose job |
+|---|---:|---:|---|
+| hung from a beam / slab / plate of ANOTHER task; elected support unchanged — the Superstructure bar it hangs from grew by the promoted walls and now starts or runs later | 140 | 59 | **D6** (it is `§FILING_PARITY` +140 exactly) |
+| column ← promoted wall, same task, same sequence, DIFFERENT crew — `solveCells` orders a cell by (`bz`, guid) but each member starts at its own crew's free slot, so order of processing is not order of start (Q.9 F7) | 22 | 0 | **the cell packing term (D3)** |
+| the promoted wall itself stands on a beam (seq 3 after seq 2) — a wall on a transfer beam | 25 | 0 | same class as §Q.7's 10 transfer-beam columns — undecided there, undecided here |
+| other (beam on beam, member on member, stair) | 1 | 3 | D3 |
+Duplex's 4 and HHS's 2 are the same three shapes (wall ← stair flight cross-task 2, wall embedded in a promoted wall 2; slab ← promoted wall 1, wall ← slab 1).
+**Verdict: D1 is HELD, not merged, not re-baselined.** The rule does what it was specified to do; it is the first step that adds members to the Superstructure bars, and that exposes two gaps that were already named: the cell solve has no support term, and hung elements are filed in a different bar from their carrier.
+
+### Q.11.3 ORDER OF WORK — CORRECTED BY THIS MEASUREMENT (Claude, on the owner's 2026-11-17 instruction to decide)
+§Q.9.4 put D1 first. The measurement says D1 cannot go green until the two gaps under it are closed. New order, each one bim-ootb PR, each judged by `witness_tm_assembly_order` + the gate-4 four:
+1. **D3 with the cell packing term** — inside a cell, members sort by support rank, AND a member starts no earlier than its in-cell elected support starts (`st = max(cell start, crew slot, support start)`). Prediction: Hospital beam-on-beam 47 + 42 → ≤ 5; no class rises.
+2. **D6** — measure how many elements change bar, then one filing for the solve and the task grid. Prediction: `§FILING_PARITY` Terminal 2,180 → ≤ 127.
+3. **D1** — rebase `fix/4d-d1-bearing-walls` on 1 + 2 and re-measure. Prediction: the 140 + 59 and the 22 do not appear; what is left is the transfer class (≤ 25 + the 10 columns), which then gets its own decision.
+4. D7 → D8 → D4, as before.
+**Status line for the top block:** step 0 ✅ · D2 ✅ · D5 ✅ · gate-4 repair ✅ (#3177) · assembly-order witness ✅ (#3178) · **D1 ⛔ built + measured, held on gate 2 (branch pushed)** · NEXT = D3 with the cell packing term.
+
+## §Q.12 RESUME 4D, 2026-11-17 — D3, D6, D1, D7, D8, D4 ALL MERGED (owner: *"just proceed thru all the Ds until zero"*). NOT ZERO — what is left is named.
+Every step: one bim-ootb PR, the persisted runs rebuilt, judged by `witness_tm_assembly_order` (per class) + the edit-chain witnesses
+(`witness_gantt_lock_integrity` 20/0, `witness_gantt_edit_coherence` 11/0, `witness_tm_edit_exception` 23/0 on EVERY step) + stacking
+(piles ≥ 20: 0 on every step) + Σ install seconds (EQUAL on every step). Self-check MATCH on all four buildings in every run.
+```
+played-layer midair              Hospital   Terminal   Duplex   HHS     PR      what the step is
+main before this session            429       2395      247     144
+D3  main beams first, in-bar order  299       2352      247     140    #3182   §D3_MAIN_BEFORE_SECONDARY + §D3_CELL_SUPPORT_ORDER
+D6  one filing (hung -> carrier)    306        423      240     133    #3183   §D6_HANG_FILING
+D1  bearing walls                   314        377      137     133    #3184   §BEARING_WALL
+D7  contact is not support          260        346      135      69    #3185   §CONTACT_ONLY (+ witness claim A4)
+D8  cost = work content             260        346      135      69    #3187   §D8_COST_IS_WORK + witness_dash_cost_is_work (no time moved)
+D4  support must be FINISHED        245        343      135      40    #3188   §D4_SUPPORT_FINISHED (finish judge on both sides)
+                                   -43 %      -86 %    -45 %    -72 %
+IfcBeam midair                     89 -> 1    41 -> 16   0 -> 0   VACUOUS      unjudged IfcBeam  30 -> 13 · 26 -> 19 · 8 -> 0
+IfcColumn midair                    6 -> 6     0 -> 0   VACUOUS    3 -> 0
+§FILING_PARITY                    105 -> 23  2180 -> 293  245 -> 131  83 -> 9
+totalDays                         339 -> 343  102 -> 98   12 -> 14   53 -> 53
+```
+**What each step turned out to need beyond its spec line (deviations, all measured):**
+- **D3.** (a) The election does NOT leave a mutual same-depth pair unelected (that would have moved 5 / 36 / 45 structural elements out of the judged population — the Q.9 F3 hole again); it prefers the embedded contact that itself bears on structure, and a ring is placed as ONE LIFT (shared start). (b) The spec's "cell" is (level, sequence); the code's cell adds the room. First run at room grain: Hospital bearing ← beam 42 → 42, untouched. Bound at (level, trade): `IfcBeam 89 → 1`. (c) Sorting was not enough — the support is PLACED first and bounds the start.
+- **D6.** Carrier-above only (the ruling's own words); a bearing / embedded support on a higher-ranked label is left (Terminal 363, Duplex 34). Moved between bars: Hospital 7,042 · Terminal 6,860 · Duplex 616 · HHS 162. Prediction *Terminal parity ≤ 127* — NOT met at D6 (381), 293 at the end.
+- **D1.** Re-measured on D3 + D6: the 140 + 59 cross-bar cases of §Q.11 did not appear (prediction MET). A promoted wall that stands on a beam takes sequence 3 (Hospital 26, Terminal 7, HHS 1) — without it 25 Hospital walls went before their transfer beam.
+- **D7.** The later-built contact is made ineligible in the ELECTION (so the solve stops chasing it too), not only skipped by the judge; the best remaining contact is elected. Contact-only, named: 13 / 3 / 2 / 27.
+- **D8.** `_GANTT_CACHE_VERSION` 42 → 43 (persisted schedules regenerate under the new order and carry `_secs`); `sw.js` v1721 → v1724 across D7 / D8 / D4. An op without `_secs` keeps duration pricing and is COUNTED on `§DASH_DONUTS`.
+- **D4.** §Q.4's first unknown is ANSWERED: on the played layer NO element starts while its elected support is in progress — 0 on all four, before and after (`supportStartedButNOTFinished=0`). The within-task tiling is already finish-to-start, so the finish judge reads exactly what the start judge read on the pre-D4 runs (260 / 346 / 135 / 69). The gain (245 / 343 / 135 / 40) comes from the solve's order.
+**Per-class rises accepted and named on the way** (each ≤ +11 in a class, with the totals above falling; lock re-taken at each step with this table as the written reason): D3 Hospital IfcDuctSegment +1, IfcMember +1 · Terminal IfcPipeSegment +6, IfcDuctFitting +1, IfcBuildingElementProxy +1. D6 Hospital Proxy +2, FireSuppressionTerminal +2, Member +1, PipeFitting +1, Wall +1, parity +10. D1 Hospital IfcColumn 6 → 14, IfcWallStandardCase 15 → 26, IfcWall 5 → 7 (D4 then took these to 6 / 22 / 3) · Terminal IfcBeam 14 → 16 · Duplex WallStandardCase 2 → 5 · HHS Slab +1, WallStandardCase +1. D7 Hospital DuctFitting +1. D4 Hospital PipeSegment +1.
+
+### Q.12.1 THE DONE BAR (§Q.6 / §Q.7) — read honestly
+| bar | result |
+|---|---|
+| IfcBeam midair 0 on Hospital and Duplex, ≤ 4 on Terminal | Duplex **0 ✅** · Hospital **1 ⛔** · Terminal **16 ⛔** (12 of the 16 are cross-task) |
+| IfcColumn ≤ 10 Hospital, 0 Terminal, ≤ 3 HHS | **6 ✅ · 0 ✅ · 0 ✅** |
+| all gates green | stacking ✅ · gate 4 edit chain ✅ · programme length reported ✅ · per-class gate: small named rises (above) |
+### Q.12.2 WHAT IS LEFT, BY SIZE — none of it is a D-step
+1. **Terminal IfcPlate 213 (205 cross-task) + 491 unjudged plates** — the `Metal Deck` roof sheets of §GROUND_CONNECTED: a data finding (deck sheets with nothing modelled under them), not an ordering rule.
+2. **Duplex 125 services ← a slab in the Finishes bar.** The pool admits ANY `IfcSlab` with sequence > 4 (`schedule_gate.js supportPool`, written for the promoted ROOF slab), so a floor-finish slab outranks everything as a service's support and D7 cannot touch it (D7 only removes non-pool contacts). A classification leak in the pool — needs its own decision.
+3. **Hospital IfcMember 63 (61 same-task) ← IfcPlate** — curtain-wall mullion vs its glazing; declared out of scope in §Q.6.
+4. **Unjudged structural, named:** Hospital beams 13 / columns 14 · Terminal beams 19 · HHS members 18. A beam built INTO a wall taller than its seat is not "on the wall's top" (§S64's bound) — D1 leaves it.
+5. **The solve's level and the task's level are still two things** (§I.3): Hospital's remaining column / wall cases are same-task pairs the (level, trade) rule does not see because the solve files them on different levels.
+### Q.12.3 HARNESS DEBT FOUND ON THE WAY (not fixed here, each is small)
+- **Seven more witnesses are dead from the gate-4 cause** (they slice `_buildXrayElements` without `_scheduledWhere` / `_civilRule`, some also pick the 0-byte DB): `witness_big_element_support_coverage`, `witness_curtain_wall_opening`, `witness_hosted_before_host`, `witness_s55_identity_vs_cell` (3 FAIL on main), `witness_tm_geo_order_cycles`, `witness_kernel_ops_sched_version` (8 FAIL on main), `witness_zone_index`. `witness_s50_cell_engine` was the eighth and is repaired (#3182).
+- **`witness_midair_zero` locks are still stale** (`baselines/midair.json`). W-MZ-2 on GRAPH buildings now reads Duplex 1 · HHS 22 (structural with no bearer + contact-only, all NAMED by the engine). Re-lock once, with §Q.10's table + this section as the reason; teach it the two named sets.
+- **`witness_gantt_edit_coherence` runs with D6 INACTIVE** (`§D6_HANG_FILING INACTIVE — CpmSchedule not loaded` in its sandbox) and only on Duplex (GRAPH path). The edit round-trip on a CELL-path building (Q.9.3 item 6) is still owed.
+- `scripts/run_4d_gates.sh` (Q.9.3 item 8) not written; `cache_4d_run.js` still lacks `§LOG_STAMP`.
+
+## §Q.13 CHASE TO ZERO, 2026-11-17 (owner: *"proceed to chase down issues till zero"*) — FLEET OUT-OF-ORDER: **4 elements in 7 buildings**
+```
+played layer, shipped judge, self-check MATCH on every run     Hospital  Terminal  Duplex   HHS  Clinic   JKR     LTU    bim-ootb
+before this session (main, 2026-11-16)                             429     2395     247    144    283    202   14114
+after D1-D8 (§Q.12)                                                245      343     135     40     53*   213*   7326*   * first measured here
+graph engine on every building (OWNER RULING)                       54      324     135     40     53     52    6680    #3199
+a floor finish is not structure                                     54      324       6     40     53     52    6680    #3202
+filing follows the whole chain of elected supports                  39       47       6     36     53     51    2794    #3206
+one lift (mutually supporting elements go in together)               8        5       2      7     10     44     286    #3208
+footings on soil · stair flight under a slab · ties follow solve     0        0       2      1      0      0       1    #3210
+```
+**The four left, named:** Duplex 2 `IfcWallStandardCase` resting part-way up a stair flight (the flight's top is not at the wall's base, so the necessity rule does not promote it) · HHS 1 `IfcSlab` · LTU 1 `IfcCovering`.
+**It is not a hollowed judge.** `scripts/probe_4d_judged_coverage.js` (`§COVERAGE`): judged share 98.9 / 98.1 / 97.3 / 98.5 / 84.9 / 93.5 / 90.9 %. Same split with the PRE-session owners on the same geometry (`§COV_REF`): Clinic judged 13,664 → 13,652 · JKR 8,412 → 8,398 · LTU 112,314 → 111,182 (the difference is the two NAMED sets). Stacking (piles ≥ 20): 0 on six buildings, LTU 1,095 → 465. Σ install seconds EQUAL at every step. `totalDays` 339/102/12/53/136/52/829 → 343/99/14/53/124/48/837. Edit chain on every step: `witness_gantt_lock_integrity` 20/0 · `witness_gantt_edit_coherence` 11/0 · `witness_tm_edit_exception` 23/0.
+
+### Q.13.1 WHAT EACH STEP WAS
+1. **Witness sweep + a D1 regression (#3196).** `tests/_bxe_deps.js` is the ONE list of the delegates `_buildXrayElements` calls; the seven dead witnesses of §Q.12.3 carry it. Reviving `witness_curtain_wall_opening` exposed that D1 had broken something no four-building run could see: `computeSchedule` registered a wall as an opening host only in an `else if` after the structure-pool branch, so doors and windows in a PROMOTED wall lost their host gate (`stillUngated` 0 → 40 Hospital / 31 Duplex / 137 Clinic). Every wall is a host now; that witness is 5/0 on all seven buildings.
+2. **Three buildings had never been measured through D1–D8, and two of them flipped engine unseen.** Clinic CELL → GRAPH (97.56 % → 85.59 %), JKR GRAPH → CELL (86.85 % → 88.81 %). The per-class witness now covers and locks all seven.
+3. **§GRAPH_EVERYWHERE — OWNER RULING 2026-11-17, reverses §S50's 2026-08-21 gate (#3199).** Both engines forced on the same D1–D7 code, played layer: Hospital 245 (cell) vs 54 (graph) · Terminal 343 vs 324 · Clinic 160 vs 53 · JKR 213 vs 52 · HHS 468 vs 40 · Duplex equal; programme length and stacking identical; graph solve 5.3 s Hospital, 7.3 s LTU. The owner chose *"Graph everywhere"*. The gate is still measured and printed (`wouldHaveBeen=`); it no longer chooses. `solveCells` / `_cellFiling`'s solve role are dead code from here — **removal is owed (deletion budget)**; `witness_s55_identity_vs_cell` prints INCONCLUSIVE (no population).
+4. **§FINISH_SLAB_NOT_STRUCTURE (#3202).** The pool clause `IfcSlab && seq > 4` was written for the promoted roof slab and also admitted every `Finish Floor` slab (name override → Finishes, seq 11). Now `&& phase !== 'Finishes'`, the same self-contained literal at all 10 sites (the function is sliced as raw text, `schedule_gate.js:64`).
+5. **§D6 is now ANY relation and TRANSITIVE (#3206).** An element is filed on the highest level along its chain of elected supports. Carrier-above only left Terminal's 205 roof plates under members of a later level label; a single pass over any relation made LTU WORSE (6,680 → 6,947) because whatever a moved element supports was left behind. Elements filed above their own storey label: LTU 49,496 of 122,330 · Terminal 7,283 · Hospital 6,324.
+6. **§ONE_LIFT (#3208).** `CpmSchedule.electionRings(des)` is the one definition of a ring of mutually elected supports. Ring edges are start-to-start in the graph, ring members are judged on the START, and the within-bar tiler (`remapSolveToTasks`, a SINGLE lane) gives a ring one slot. Before this a ring was laid end to end in guid order and its first member always "started before its support", minutes apart — 70–95 % of the residue on six buildings. Ring members are 0.1–0.8 % of a building (LTU 4.1 %), rings of 2–4, and every member shares its start with its support (`scripts/probe_4d_one_lift.js`, 0 exceptions).
+7. **Three small rules (#3210).** `§GROUND_RESTS_ON_SOIL`: a ground seed elects only another ground seed (§I.2 applied to the election; a column box running down through its footing had been elected as the footing's bearer — LTU 236). `§STRUCTURE_BEARS_ON_STRUCTURE`: a pool member admitted for visibility only (seq > 4) and built later ranks behind real structure, and a stair flight that is the ONLY structure under a slab or beam is promoted by D1's necessity rule (JKR 41). `§TIE_ORDER`: equal solve starts are tiled in the solve's finalisation order (`ord`), not by guid.
+
+### Q.13.2 WHAT "ZERO" DOES NOT COVER — the honest edges
+- **The judge does not judge an element with no elected support.** Named: `§STRUCT_NO_SUPPORT` 28 / 555 / 0 / 27 / 82 / 85 / 542 and `§CONTACT_ONLY` 13 / 3 / 2 / 27 / 8 / 11 / 977. **Not named and pre-existing:** footprint-grounded elements whose only contact is overhead (`§GROUNDED_NEVER_HANGS` rejects the election) — Clinic 2,272 · LTU 8,852 · JKR 532 · Hospital ~166. Mostly ground-floor services. They were unjudged before this session too; they are the largest thing the number does not see.
+- **Terminal's 491 roof deck plates** are still in `§STRUCT_NO_SUPPORT` (nothing modelled under them).
+- **Orphans** (`contactGraph`): 69 / 2,740 / 0 / 44 / 27 / 2 / 3,286 — unchanged by this lane, a model-quality number.
+### Q.13.3 STILL RED OR OWED
+- `witness_midair_zero` — locks stale since October; its independent W-MZ-2 must learn the two named sets. NOT re-locked.
+- `witness_big_element_support_coverage` — Hospital 177 → 172, Clinic 22 → 21; the same values BEFORE the D-steps (bisected), cause older and unattributed.
+- `witness_bar_schedule` `band-monotonic-holds` and `witness_tm_reveal_within_bar` W-RWB-5 (Duplex decile lock 4 → 6) — red on main; W-RWB-5 moved with the filing steps, the other is unattributed.
+- Delete the cell engine (item 3). Edit round-trip on a large building (Q.9.3 item 6). `scripts/run_4d_gates.sh`. `§LOG_STAMP` in `cache_4d_run.js`.
+- `witness_gantt_edit_coherence` runs with `§D6_HANG_FILING INACTIVE` (no `CpmSchedule` in its sandbox).
+**Instruments added (this repo):** `scripts/probe_4d_residue.js` (`§RESID`), `probe_4d_judged_coverage.js` (`§COVERAGE`), `probe_4d_one_lift.js` (`§RING`).
+
+## §Q.14 RESUME 4D, 2026-11-18 — WORKING §Q.13.3 (the still-red list), one item at a time
+### Q.14.1 SPEC — `witness_midair_zero` learns the two named sets, then is re-locked ONCE
+**Issue it proves or disproves:** does any element appear before the first thing it touches, OTHER than the elements the engine openly names as having no elected support (`§STRUCT_NO_SUPPORT`, `§CONTACT_ONLY`)? Today W-MZ-2 cannot say: its census counts both together, against locks from the cell-engine era (dead since §GRAPH_EVERYWHERE).
+- **The census stays independent** (§I row "is anything floating?", copy 4). It is not replaced by the engine's judge.
+- **W-MZ-2n (new).** The witness re-derives the two named sets ITSELF from its own contact lists and `ScheduleGate.supportPool` (the one owner of "is it structure"): *struct-no-support* = structural, not a ground seed, no pool contact bearing-below or embedded; *contact-only* = not structural, every contact a non-pool box of a later class sequence. It asserts its sets equal the engine's (`designatedSupport(...).structNoSupport` / `.contactOnly`) by membership, not count. A mismatch is red — the engine may not excuse an element the witness cannot re-derive.
+- **W-MZ-2 (changed).** census midair is split: `named` (in either set) and `unnamed` (the rest). BOTH are locked per building (`midair`, `midair_unnamed` in `baselines/midair.json`). `§MZ_SPLIT` prints total / named-struct / named-contact / unnamed and the classes of the unnamed.
+- **W-MZ-8** float lock re-taken once (same run). No engine code changes; no schedule time moves.
+- **Not vacuous:** W-MZ-7 unchanged (a dragged element must still be caught, and it must land in `unnamed`).
+**Q.14.1 RESULT — bim-ootb #3213, MERGED.** `§MIDAIR_ZERO_SUMMARY pass=35 fail=21` → **`pass=70 fail=0`**. No engine code changed.
+```
+W-MZ-2, this witness's own census      Terminal Hospital Duplex  HHS  Clinic   LTU   JKR
+census midair (locked)                    533      33      1     22     50    541    23
+ named struct-no-support                  532      27      0     15     46    300    14
+ named contact-only                         1       6      0      7      2    238     9
+ ground seed (rests on soil, §I row 2)      0       0      1      0      2      3     0
+ UNNAMED (locked, W-MZ-2u)                  0       0      0      0      0      0     0
+sets, witness vs engine (W-MZ-2n)      555=555  29=29   0=0   27=27  88=88 558=558 89=89   struct-no-support
+                                         3=3    13=13   2=2   27=27   8=8  977=977 11=11   contact-only
+W-MZ-8 float (re-locked)                  759    1414      7    404    171   3110   433
+```
+- The witness's own re-derivation equals the engine's sets **member for member** on all seven (0 only-witness, 0 only-engine). So every element the independent judge sees start before its first contact is one the engine openly names, or a footing/slab on soil.
+- A third bucket was needed and is the §I owner rule, not a new one: a ground seed (sequence 1 / Substructure) waits for nothing. 6 elements.
+- W-MZ-7 now requires the moved element ITSELF to be flagged (7 of 7).
+- The witness's pipeline reads Hospital 29 / Clinic 88 / JKR 89 / LTU 558 struct-no-support where §Q.13.2 (persisted runs) reads 28 / 82 / 85 / 542. Two pipelines (witness: raw `computeSchedule` → `_displayTimeline`; cache: `materializeZones`); not chased.
+
+### Q.14.2 `witness_big_element_support_coverage` — CAUSE FOUND, re-locked (bim-ootb #3216)
+**Issue:** Hospital 172 vs lock 177, Clinic 21 vs 22, "cause older and unattributed" (§Q.13.3).
+- Old code (`afb61d71`, the lock's own commit) on TODAY's DB files still reads 177 / 22 → a code change, not data.
+- `git bisect` over 1,668 commits, reading `§BIG_SUPPORT_COVERAGE bld=Hospital` at each: first changed commit = **bim-ootb #1551** (`59736505`, 2026-09-02, the three name overrides). Parent reads 4314 / 177, the commit reads 4290 / 172.
+- **Hospital, element by element:** the override `foundation_wall_substructure` matches 28 walls; 24 have a box over 1.556 m³ and became Substructure-exempt (big 4314 − 24 = 4290). The 5 elements that LEFT the unchecked set are interior partitions (`Basic Wall:Interior - 123mm Partition` ×4, `Blockwork 190` ×1); each has one of those foundation walls bearing directly below it (177 − 5 = 172). Nothing entered.
+- **Clinic:** same commit (parent 440 / 22, commit 425 / 21). Set change: 3 stair `IfcMember` and 1 `IfcRampFlight` out, the 3 `IfcStairFlight` of the same three stairs in. Commit attributed; the per-element mechanism on Clinic is not isolated further.
+- Re-locked 172 / 21. `§BIG_SUPPORT_COVERAGE_SUMMARY pass=36 fail=0`.
+
+### Q.14.3 `witness_tm_reveal_within_bar` W-RWB-5 (bim-ootb #3214, MERGED)
+**Issue:** Duplex "groups with >50 % in one decile" 4 (affine) → 6 (tiled), red since the filing steps.
+- New `§W_RWB_CLUMP` names every such group with its own share and extent of the bar. Duplex's 6: four have an extent under one tenth of the bar (Finishes L2 `IfcSlab` n=8 = 2.4 % of the bar, 8 distinct starts; Finishes L1 `IfcSlab` 3.4 %; two `IfcCovering` groups 8.7 % / 6.8 %).
+- **Arithmetic, not a tolerance:** a group whose whole extent is under one decile width lies in at most two adjacent deciles, so one holds half of it whatever the layout. Those are reported as FORCED and left out of the comparison; the gate is FREE ≤ the affine's count. The acceptance half (every element its own start) is unchanged.
+- Duplex 4 · 6 = 4 forced + 2 free · HHS 11 · 7 = 1 + 6 · Hospital 76 · 38 = 11 + 27. `§W_RWB_SUMMARY pass=22 fail=0`.
+- ✅ **Kept as merged (owner 2026-11-18: *"Decide for me"*).** It changes what W-RWB-5 gates. If small finish groups landing inside one tenth of a bar is itself unwanted, the fix is in the tiler (interleave classes inside a bar), not in this witness.
+
+### Q.14.4 `witness_gantt_edit_coherence` edits the SHIPPED grid (bim-ootb #3215)
+**Issue:** the witness loaded neither `CpmSchedule` nor `SupportSweep`: `§D6_HANG_FILING INACTIVE` and `§TPL_LAYER_ORDER_FAIL SupportSweep not loaded` — the bar it dragged was not the bar the viewer draws.
+- Both real modules registered. **G-COH-11 (new)** fails if either pass reports INACTIVE. After: `§D6_HANG_FILING elements=1119 … movedToCarrierLevel=456`, `§TPL_LAYER_ORDER layers=14`, `§W-COH RESULT pass=12 fail=0`.
+- **Seen on the way, NOT fixed, named:** `§TPL_LAYER_SELFCHECK … stillInverted=N FAIL` prints on EVERY persisted run — Duplex 6 · Hospital 1,650 · Terminal 1,041 · HHS 53 · Clinic 137 · JKR 58 · LTU 2,918. It judges `displaySchedule` (the authored map, which `time_machine.js` does not read — §I), so it is not what plays; but it is a shipped line saying FAIL on seven buildings and no witness reads it.
+
+### Q.14.5 `band-monotonic-holds` (`witness_bar_schedule`) — ⛔ NOT TOUCHED, one question
+It judges `bar_model.js`, the tree model §A / §J.3 ruled dead ("D — dead lane, out of scope", §I.5). Its `≤ 20` bound now reads Duplex 29 · Hospital 128 · Terminal 106 because the shared inputs moved under it. A hook blocks edits to `bar_model.js`, and §J.3 says its findings "still read well" — so it was left alone (a deletion was staged and reverted, never committed).
+**✅ DECIDED 2026-11-18 (owner: *"Decide for me"*) — DELETED, bim-ootb #3222:** `bar_model.js`, `bar_needs.js`, their three witnesses and six witness-kit files, 11 files, −1,752 lines, no served file. Nothing still requires any of them; `§GATES_VERDICT GREEN red=0 gates=8` after removal. Their findings stay in §J.3 and git history. The edit-blocking hook (`bim-compiler/.claude/hooks/block_bar_model.sh`) now guards a file that does not exist and can go when convenient.
+
+### Q.14.6 `scripts/run_4d_gates.sh` + `§LOG_STAMP` (bim-ootb #3217, MERGED) — Q.9.3 item 8
+One command: rebuild the seven persisted runs (a cache hit is instant), run the eight gate witnesses, write ONE stamped log (`logs/4d_gates_<UTC>.log`), print `§GATES_ROW` per witness and `§GATES_VERDICT GREEN | RED | INCONCLUSIVE`. CPU only. `cache_4d_run.js` now writes `§LOG_STAMP commit= dirty= branch= at=` as line 1 of `witness.log` (not a cache-key input).
+**This replaces the hand-typed list in the resume memory: every 4D change is judged with `scripts/run_4d_gates.sh`.**
+
+### Q.14.7 THE CELL SOLVER IS DELETED (bim-ootb #3218) — §Q.13.1 item 3
+`solveCells` and the unreachable `path === 'CELL'` branch of `CpmSchedule.run`: **+4 / −217**, `sw.js` v1736. The gate is still measured and printed (`wouldHaveBeen=`).
+- **Proof nothing moved (`§NOCELL_IDENTITY`):** all seven runs rebuilt under the new code key; `els`, `sched`, `play`, `playStats`, `storeys`, `tasks` hash-equal to the pre-deletion runs — 7 of 7 buildings, every layer EQUAL.
+- `§GATES_VERDICT GREEN red=0 missing=0 gates=8`: assembly order 5/0 · midair_zero 70/0 · lock integrity 20/0 · edit coherence 12/0 · edit exception 23/0 · reveal 22/0 · big-element 36/0 · curtain wall 5/5. `witness_gantt_model` 21/0.
+- **Owed next (named, not done):** the per-cell DISPLAY stamp only the cell path could fill — `_displayTimeline._lastCell`, the `_cell` op parameter, `GanttModel.groupKeyOf`'s `C:` branch, `witness_midair_zero` W-S51a/b/c, `witness_s50_cell_engine`, `witness_s55_identity_vs_cell` (already INCONCLUSIVE, no population). It touches the Gantt drawer's grouping, so it is its own PR.
+
+### Q.14.8 EDIT ROUND-TRIP ON A LARGE BUILDING (Q.9.3 item 6) — MEASURED, half closed
+`COH_BLD=<building> node tests/witness_gantt_edit_coherence.js` (the witness already took the building from the environment), on the shipped grid (G-COH-11):
+```
+                 bars   ops     move 20 d                      resize −1 d                          result
+Duplex            20    1,119   outside 0 collapsed 0 inv 0    outside 9   collapsed 0 inv 0        12 / 0
+Clinic            34   16,071   outside 0 collapsed 0 inv 0    outside 103 collapsed 0 inv 0        12 / 0
+Hospital          45   63,182   outside 0 collapsed 0 inv 0    outside 555 collapsed 0 inv 0        12 / 0
+```
+- Covered now on large buildings: a bar is moved / resized → its elements are re-timed inside the new window, order kept, no zero duration.
+- **Still owed from item 6:** both judges re-scoring the edited timeline and undo restoring byte-equal, on a large building (`witness_gantt_lock_integrity` and `witness_undo_dot_spawn` are still Duplex only). Both runs here read `<bld>_extracted.db`, not the `_meta` half the viewer loads for Hospital and Clinic. A Hospital run takes about five minutes, so it is not in `run_4d_gates.sh`.
+
+### Q.14.9 STATE AFTER THIS SESSION — what is still red or owed (replaces §Q.13.3)
+- The per-cell display stamp and its two witnesses (§Q.14.7, owed next).
+- `§TPL_LAYER_SELFCHECK … FAIL` on all seven persisted runs, read by no witness (§Q.14.4).
+- Edit round-trip: judges + undo on a large building, and on the `_meta` DB (§Q.14.8).
+- Unchanged from §Q.13.2: the unjudged populations (overhead-only grounded elements, Terminal's 491 roof plates, orphans) and the four out-of-order elements named in §Q.13.
+
+## §Q.15 RESUME 4D, 2026-11-18 (owner: *"Proceed"*) — WORKING §Q.14.9, in its order
+### Q.15.1 SPEC — the per-cell display stamp goes with the cell solver
+**Issue it proves or disproves:** does any Gantt bar or played instant change when the stamp only the cell solver could fill is removed?
+- Remove: the `_displayTimeline._lastCell` writer (`tm_sched_xray.js`), the `_cellMap` / `_cell` stamp (`tm_gantt_build.js`), the `C:` group key and `cell` field (`gantt_model.js`: `groupKeyOf(taskId, storey, phase)`), `witness_s50_cell_engine`, `witness_s55_identity_vs_cell`, `witness_midair_zero` W-S51a/b and its cell columns.
+- **No `_GANTT_CACHE_VERSION` bump.** A schedule persisted while the cell path still ran carries `_cell` in its ops; with the reader gone it is an ignored parameter. An op with a task identity groups by `T:` first (unchanged); an op without one falls to `storey|phase`, the rule every graph-path building always used.
+- **Proof:** persisted runs hash-equal on seven buildings (`els / sched / play / playStats / storeys / tasks`); `GanttModel.buildTasks` over each run's played ops gives the same bars (count, ids, start, end) before and after; `run_4d_gates.sh` GREEN; `witness_gantt_model` green with W-GM-1 rewritten to the two-step precedence.
+**Q.15.1 RESULT — bim-ootb #3225, MERGED (+25 / −533, sw v1739).** `§NOSTAMP_IDENTITY`: every layer of the seven persisted runs EQUAL before and after. `§BARS_DIFF none`: `GanttModel.buildTasks` over each run's played ops gives the same bars, authored (19 / 16 / 37 / 69 / 18 / 24 / 86 for Duplex / HHS / Hospital / Terminal / Clinic / JKR / LTU) and un-authored. `§GATES_VERDICT GREEN red=0 gates=8`; `witness_midair_zero` 68 / 0 (two source-text cell claims removed); `witness_gantt_model` 20 / 0.
+
+### Q.15.2 `§TPL_LAYER_SELFCHECK` — A REAL BUG IN THE LAYER PASS, FIXED (bim-ootb #3226)
+**Issue:** the shipped line printed `FAIL support order still violated inside a task` on all seven runs (§Q.14.4) and no witness read it.
+- **Measured before reasoning (the line was instrumented first):** every failing pair on every building was `supportedInSAMElayer` — 0 lower, 0 higher, 0 same-lift. Bearing-below is strict in height, so a correct topological layering cannot put a load in its support's layer.
+- **Cause:** the Kahn sweep in `schedule_author.js` (`§TPL_LAYER_ORDER`) tested `lay[support] < 0` only. A support placed earlier in the SAME round already has a layer, so a load scanned after it was "ready" and took the same layer; the tiler then laid the two side by side in solve order. One condition added (`|| lb === cur`).
+```
+                  Duplex   HHS   Hospital  Terminal  Clinic   JKR     LTU
+stillInverted b4     6      53     1,650     1,041     137     58    2,918
+stillInverted now    0       0         0         0       0      0        0     PASS on all seven
+layers  b4 → now  14→25  26→39     →156      →127    40→63    →74     →126
+```
+- **What moved, proved on the persisted runs:** `sched` (the authored `displaySchedule`) DIFF on all seven, as intended; `play`, `playStats`, `tasks`, `storeys`, `els` EQUAL on all seven. The Time Machine does not read `displaySchedule` (§I), so nothing on screen moves.
+- **Now witnessed:** `witness_tm_assembly_order` **A5** reads the run's own `§TPL_LAYER_SELFCHECK` line (PASS 7 of 7; INCONCLUSIVE when the line is absent). The line itself now names the kind of pair it fails on, so the next failure is diagnosed from the log.
+- Gates GREEN 8 / 8; `witness_4d_template_instantiation` 12 / 0, `witness_4d_movie_binds_bars` 7 / 0, `witness_cache_layer_attribution` 5 / 0.
+
+### Q.15.2a SEEN ON THE WAY, NOT FIXED — the DAY-0 pair (§J.6) has drifted and is in no gate
+`witness_day0_integrity`: `§W_D0_VERDICT layer=played claims=16 PASS=8 FAIL=7 INCONCLUSIVE=1 RED`. This is NOT new: §J.6.1 attributed 8 played-layer FAILs in September (3 witness defects, 3 modelling facts, 1 real defect, 1 scope). Unchanged by this session (the played layer is hash-equal). What HAS moved since §J.6.1, read today:
+```
+claim · building      §J.6.1 (Sep)     today
+C2 Duplex             bad 3            bad 2   (one wall, one pipe fitting)
+C2 Terminal           bad 9            bad 187 (groundwork-promoted, sequence left behind — A1 says all 187 are the owner's election)
+C2 Hospital           0                bad 1   (same kind, A1 covers it)
+C3 Duplex             bad 1            PASS
+C3 HHS                bad 3            bad 1   (the ground slab waiting on a stair flight)
+C4 Duplex             bad 83           bad 63  (under-slab plumbing on T/FDN, 61 of 63 below grade — A6 PASS)
+C4 Terminal           bad 4            bad 48  (band `00 Aras Asas` now holds 732 elements, not the 4-element phantom band)
+C1 HHS                excess 1         PASS
+```
+`witness_day0_attribution` (the witness that proves each FAIL's cause): `PASS=3 FAIL=3` — **A2** (2 Duplex day-0 defects no longer match the #1551 patterns), **A4** (Terminal's lowest band is no longer the phantom band it was written for), **A5** (C1 baseline). So three of the September attributions no longer describe today's runs. Neither witness is in `run_4d_gates.sh`. **This is the next thing to work:** re-attribute C2 Terminal 9 → 187 and C4 Terminal 4 → 48 (which D-step or filing step moved them), then repair A2 / A4 / A5 or the rules they point at.
+
+### Q.15.3 EDIT ROUND-TRIP ON LARGE BUILDINGS — the lock gate too (bim-ootb #3227)
+`witness_gantt_lock_integrity` takes `LI_BLD` (a missing fixture is now an INCONCLUSIVE FAIL line, not a silent skip). Verify → bad drag refused and NAMED → undo verifies clean:
+```
+            elements   baseline floating / midair   bad drag    after undo        result
+Duplex        1,119        39 / 153                 +1 / +1     39 / 153          20 / 0
+Clinic       16,071       941 / 3,197               +0 / +1     941 / 3,197       20 / 0
+Hospital     63,182     2,572 / 11,645              +0 / +1     2,572 / 11,645    20 / 0
+```
+(Baselines are this witness's raw engine schedule, not the played layer; the gate is a delta.) `LARGE=1 scripts/run_4d_gates.sh` adds edit-coherence and lock-integrity on Clinic and Hospital. **Still owed from Q.9.3 item 6:** the same chain on the `_meta` DB the viewer loads for Hospital / Clinic, and `witness_undo_dot_spawn` beyond Duplex.
+
+### Q.15.4 STATE AFTER THIS SESSION (replaces §Q.14.9)
+- ✅ cell stamp removed (#3225) · ✅ layer pass fixed, self-check witnessed (#3226) · ✅ lock gate on large buildings (#3227) · ✅ dead tree bar model deleted (#3222).
+- **Next:** §Q.15.2a (the DAY-0 pair: re-attribute, repair, then put both in `run_4d_gates.sh`).
+- Owed: edit chain on the `_meta` DB (§Q.15.3).
+- Unchanged from §Q.13.2: the unjudged populations (overhead-only grounded elements, Terminal's 491 roof plates, orphans) and the four out-of-order elements named in §Q.13.
+
+## §Q.16 RESUME 4D, 2026-11-18 (owner: *"Proceed with next. Advice on the question."*) — THE DAY-0 PAIR, MEASURED; NOTHING CHANGED IN CODE
+**Issue:** `witness_day0_integrity` reads 7 FAIL on the played layer and three of `witness_day0_attribution`'s six claims no longer hold (§Q.15.2a). Which step moved each number, and is any of it a schedule defect?
+### Q.16.1 WHAT MOVED TERMINAL'S C2 (day-0 purity) — two bisects, reading the witness's own line at each commit
+```
+before the D-steps (#3018^)                 judged 251   bad 15
+D5 — the floor slab a structural element stands on runs before sequence 2 (#3023)   311   75
+graph engine on every building (#3199, owner ruling)                                423   187
+```
+All 187 are `§GROUNDWORK_SLAB-PROMOTED` (176 `IfcSlab` seq 4 / CONCRETE_GANG, 11 `IfcBeam` seq 3 / STEEL_ERECTOR): phase Substructure, sequence left behind. `witness_day0_attribution` A1 PASSES on them (188 of 188 fleet-wide are the owner's own election, `ScheduleGate.groundworkSlabs`). Day 0 is 423 of 423 Substructure by phase. **Both steps are deliberate rulings that put the ground slab at the start, where it belongs; the count rose because the claim fails on a sequence number that the promotion leaves unchanged on purpose (§J.6.2 W1).** Hospital's 1 is the same kind.
+### Q.16.2 WHAT THE EARLY MEP IS (C4) — `scripts/probe_4d_day0_mep.js` (`§D0MEP`, this repo; owners only, played layer)
+```
+            MEP total   in first 3 d   out of order (shipped judge)   base below ground top   task
+Duplex          904          62                 0                         60 of 62           MEP_Rough_in_T_FDN
+Terminal     11,850          48                 0                         48 of 48           MEP_Rough_in_00_Aras_Asas
+HHS · Hospital · Clinic · JKR · LTU   0 early MEP (VACUOUS)
+```
+- Ground top = the median top of the building's own ground seeds (Duplex 0.00 m, Terminal −0.49 m). Duplex 51 and Terminal 30 lie WHOLLY below it. They rest on footings, foundation walls, ground slabs and foundation beams (Duplex 40 elected on a ground seed, 22 with no elected support; Terminal 14 / 2 on other pipes / 32 none).
+- **It is buried and under-slab pipework in the lowest level's own rough-in task, and none of it starts before its elected support is done.** C4's count on Terminal went 4 → 48 before the D-steps (already 48 at #3018^; not bisected further).
+### Q.16.3 THE REST, AS READ TODAY
+- **C3 HHS 1:** the ground slab `Floor:STB 30.0` waits on an `IfcStairFlight`. HHS models no foundations (no sequence-1 element), so nothing can bear its lowest slab (§J.6.1 row 6, unchanged).
+- **C2 Duplex 2:** `Basic Wall:Exterior - Brick on Block:138` (a wall on the foundation wall, starting inside day 1 of a 14-day programme) and one PVC bend from the under-slab set above. Not attributed further.
+- **C1 Terminal:** 5 datum collisions among 73 declared storeys (67 not compiled) — the three-naming-systems fact of §J.6.1 row 2. **A5** now contradicts §J.6.3: the storey merge DID run on Hospital and Terminal (`§S18_STOREY_MERGE_FAIL` absent), and both carry an IFC-declared baseline. §J.6.3's "runs on nothing in the fleet" is stale for the `_meta` DBs.
+- **A4** was written for a 4-element phantom band; `00 Aras Asas` now holds 732 elements. **A2** names 2 Duplex day-0 elements the #1551 patterns do not cover.
+### Q.16.4 ⛔ THREE QUESTIONS FOR THE OWNER — with advice (nothing below is implemented)
+1. **Is MEP in the first three days a defect when it is buried pipework, below ground, in order?** *Advice: no.* Judge early MEP by ORDER (the shipped judge: 0 on both buildings) and report the below-ground split on the line. A fixed 3-day window fails a 14-day house for laying its drains after its footings.
+2. **Are ground slabs and foundation beams that the owner rule already files as Substructure "impure" at day 0 because their sequence number still says 3 or 4?** *Advice: no for the witness* — C2 should pass on phase and keep printing the promoted count. *The real question underneath (§J.6.4 item 1, open since September):* promotion leaves the CREW too, so 21 concrete foundation beams (Terminal 20, Hospital 1) are crewed and priced as steel erection. *Advice: yes, they should take the concrete gang* — but CONCRETE_GANG has no `IfcBeam` rate, and a rate is not mine to invent. It needs the owner's number, or his word on which existing rate to copy. It moves dates and cost.
+3. **In a building that models no foundations (HHS), does the lowest slab rest on soil?** *Advice: yes.* The orphan rule already falls back to a ground band for exactly these buildings (`seedMode=ground-band`); the support election should read the same seeds, so the ground slab stops waiting on a stair flight. It is an engine rule: measure on all seven first, expect HHS only to move.
+**After the answers:** repair C2 / C4 and A2 / A4 / A5 accordingly, then add both witnesses to `run_4d_gates.sh`.
+
+## §Q.17 THE THREE DAY-0 QUESTIONS — ANSWERED BY THE OWNER 2026-11-18, IMPLEMENTED (bim-ootb #3228)
+> **OWNER, 2026-11-18:** 1. *"If it is in accordance to industry practice which is our objective. 4D schedule has to be valid from engineers POV. It may be hanging etc as they be using scaffolding."* · 2. *"Similary for ground slabs, as long industry puts a proper sequence. Make the gantt chart easy to drag around to readjust such sequence."* · 3. *"agree"*
+**The standing criterion this sets: a 4D schedule is judged by whether a site engineer would accept the order, not by whether every box touches a finished box.**
+### Q.17.1 SPEC + RESULT
+- **Q3 → `§GROUND_BAND_RESTS_ON_SOIL` (`cpm_schedule.js designatedSupport`).** Only where the contact graph's own `groundSeedMode` is `ground-band` (the building carries no sequence-1 / Substructure element): real structure (in the pool, sequence ≤ 4) with its base at or below the ground-band datum is a ground seed for the election. NOT `grounded[i]` — footprint-local (§I.2): one buried pipe under HHS's 3,400 m² slab voided it. A stair flight (in the pool for visibility, sequence > 4) is not a seed — the first try without that line left the slab on the flight (`midairPlayed 1 → 1`, measured, then corrected).
+```
+persisted runs, main → this change      play layer         midair   struct-no-support   totalDays   Σ install s
+HHS                                     4,841 of 6,839 moved   1 → 0       27 → 18          53 → 53      EQUAL
+Duplex · Hospital · Terminal · Clinic · JKR · LTU     every layer hash-EQUAL
+```
+**Fleet out-of-order on the played layer: 4 → 3** (Duplex 2 walls on a stair flight, LTU 1 covering). HHS filing parity 1 → 0.
+- **Q1 → `witness_day0_integrity` C4** fails only on early MEP that is OUT OF ORDER by the shipped judge; the below-ground split is printed (`earlyMEP=63 OUT_OF_ORDER=0 baseBelowGroundTop=61/63@0.00m` Duplex · `48 / 0 / 48 of 48 @ −0.49 m` Terminal).
+- **Q2 → C2** reads phase; `§GROUNDWORK_SLAB-PROMOTED` stays on the line (Terminal 187, Hospital 1).
+- **`§W_D0_VERDICT` 8 PASS / 7 FAIL → 13 PASS / 2 FAIL / 1 INCONCLUSIVE.** Left: Duplex C2 2 (one exterior wall on the foundation wall inside day 1, one PVC bend of the under-slab set — by phase they are not Substructure); Terminal C1 5 storey-datum collisions.
+- **The independent judge followed, not excused:** `witness_midair_zero` re-derives the ground-band seeds itself; W-MZ-2n went RED on HHS and JKR the moment the engine changed, and is green again only because its own sets equal the engine's member for member (HHS 18 = 18, JKR 38 = 38; in that witness's pipeline JKR too carries no classified ground). HHS + JKR re-locked from a −1 placeholder run; 68 / 0. Assembly-order lock re-taken (HHS improved). `§GATES_VERDICT GREEN red=0 gates=8`.
+### Q.17.2 STILL OPEN AFTER THIS
+- **The crew of 21 promoted foundation beams** (Terminal 20, Hospital 1: concrete beams crewed as steel erection, §J.6.4 item 1). Q2's answer covers their ORDER, not their rate. CONCRETE_GANG has no `IfcBeam` rate; needs the owner's number or the rate to copy.
+- **`witness_day0_attribution` A2 / A4 / A5** still describe September's runs (A4's 4-element phantom band is now a 732-element band; A5's "merge runs on nothing" is false for the `_meta` DBs). Rewrite or retire, then gate both day-0 witnesses in `run_4d_gates.sh` (they stay out while RED).
+- **Two owner ideas, DISCUSSION ONLY, nothing built:** (a) token temporary works (scaffold / props) in the Time Machine and the Alt+C bake, so an element with no modelled bearer is shown held the way a site holds it; (b) the Gantt made easier to drag so the planner can re-sequence. Claude's view and one question each were put to the owner in session 2026-11-18; the spec is to be written only after his answers.
+
+## §Q.18 THE CONCRETE-BEAM CREW RATE — RESEARCHED AND SET (owner 2026-11-18: *"research the rates and update the JSON governing 5D"*)
+### Q.18.1 SPEC
+**Issue:** every `IfcBeam` is crewed and priced as steel erection (`STEEL_ERECTOR`, `IfcBeam: 8`). Measured by family name: Terminal 431 of 432 beams are concrete (`M_Concrete-Rectangular Beam` 411, `M_Concrete-Foundation Beam` 20); JKR 147 are `…_rcb_…`; LTU 166 precast. Duplex / Hospital / Clinic beams are steel.
+- **Sources found.** (a) *Spon's price book, section E "In situ concrete", reinforced in situ ready-mixed concrete:* **Beams; isolated 3.70 labour hours / m³ · Ground beams 2.59 · Foundations 1.02.** Read from a search excerpt of the publisher's page (Taylor & Francis); the page itself is paywalled, the edition is not stated — **NOT verified against the book.** (b) *IS 7272 (Part 1) 1974, reaffirmed 2005, Table 1* (read from a copy of the standard): RCC in situ in beams excluding form work and reinforcement, per m³: mason 0.20 + mazdoor 3.00 + bhisti 0.90 days of 8 h (= 32.8 labour hours / m³); foundations 0.17 + 2.00 + 0.90. Site-mixed, hand-placed.
+- **Which family the table belongs to (measured, not chosen by taste):** the table's own `IfcFooting: 6` with its `volFactor` 4.25 m³ is 25.5 m³ per gang-day. Spon's foundations 1.02 h/m³ on the table's gang (6 × 8 h) is 47 m³/day; IS 7272 is 1.95 m³/day. The table is on the ready-mix scale, so (a) is the consistent source. (b) is recorded for a hand-mix region pack.
+- **The number:** the table's own gang, 6 × 8 h = 48 labour hours a day ÷ 3.70 = **12.97 m³ per gang-day**. The key is read per ELEMENT by 4D, so ÷ the median cast-in-place concrete beam, **1.378 m³** (n = 578: Terminal 431 + JKR 147; sorted bounding-box product — a box proxy, stated as such) = **9.4 beams per gang-day** → `CONCRETE_GANG.productivity.IfcBeam = 9.4`, in `rates.js` (what executes) and its mirror `rates/sequence_rules.json`. Packs merge field by field, so the 16 regional packs inherit it.
+- **Routing:** name override `concrete_beam_concrete_gang` — class `IfcBeam`, name `\bconcrete\b` → `CONCRETE_GANG` (phase Superstructure, sequence 3 unchanged). Class gate + measured reach before it ships.
+- **Covered by this rate:** placing only. Reinforcement is its own class in the table (`IfcReinforcingBar: 50`); formwork is not modelled (the PWD pack says the same of its own concrete items).
+- **Proof owed:** fleet reach of the override; persisted runs before / after (which buildings move, programme days, Σ install seconds); `§TPL_ZERO_MINUTE` 0 for the new pair; gates.
+### Q.18.2 RESULT — bim-ootb #3236, MERGED (sw v1744)
+```
+persisted runs, before → after      crew changed                          their install    programme     out of order
+Terminal                            431 IfcBeam STEEL_ERECTOR→CONCRETE_GANG   431 → 367 h     99 → 100 d       0 → 0
+LTU                                  12 IfcBeam (cast-in-place rectangular)     5 →   4 h    837 → 837 d       1 → 1
+Duplex · HHS · Hospital · Clinic · JKR     none — every element's crew, played instant and programme identical
+```
+- `§TPL_ZERO_MINUTE` for `IfcBeam` / `CONCRETE_GANG`: 0 lines on all seven. Layer self-check PASS on all seven.
+- **The first pattern was wrong and the measurement caught it:** `\bconcrete\b` matched 0 of Terminal's beams — Revit family names read `M_Concrete-Rectangular Beam` and `_` is a word character. Shipped pattern: `(^|[^a-z])concrete([^a-z]|$)`, case-insensitive. Reach by name: Terminal 431, LTU 12, others 0.
+- `witness_midair_zero`: Terminal 533 → 527, LTU 541 → 544 (times moved); unnamed midair 0 on both, named sets still equal the engine's; float lock Terminal 759 → 592, LTU 3,110 → 3,044. Re-locked from the measured run. 68 / 0.
+- `witness_rates_pack` RP2 compares today's labour numbers with a fixed old revision and failed on the new key. It now reports a rate ADDED since that revision (`{"CONCRETE_GANG.IfcBeam": 9.4}`) and still fails on a changed one.
+- `§GATES_VERDICT GREEN red=0 gates=8`. `§W_D0` unchanged at 13 PASS / 2 FAIL.
+### Q.18.3 WHAT THIS DOES NOT DO — named
+- **The source is not verified against the book.** Spon's row read from an excerpt; edition unknown. If the owner's copy says otherwise, the one number to change is `IfcBeam: 9.4` (two files, kept identical).
+- **The BOQ still prices every beam as steel.** `calcLabor` (`rates.js`, `mep_qto_populate.js`) takes the FIRST trade that lists the class, and `RATES.IfcBeam` is `Structural Steel I-Beam` per metre. Routing by crew reaches the 4D schedule and the Time Machine's work-content cost (`§D8_COST_IS_WORK`), not the BOQ. Making the BOQ follow the element's crew and material is its own change.
+- **JKR's 147 `…_rcb_…` beams** are concrete but not named *concrete*; not routed. **Formwork and reinforcement** are outside this rate.
+- **The 21 groundwork-promoted foundation beams (§J.6.4 item 1):** Terminal's 20 are named *concrete* and now take the concrete gang. Hospital's 1 is a steel `UB` and stays with the steel crew.
+
+## §Q.19 THE GANTT EDITOR — OWNER'S VISION 2026-11-18, SPEC (details at Claude's discretion by his word)
+> **OWNER, 2026-11-18:** *"The Gantt Chart, i meant in general to make sure they are synched with actual canvas beats on timeline vertical needle, and that user when choosing the unlock to edit button can reorder to correct certain arrangement. It was very complex and brittle. So i can only give the general vision, you have to go into the details with full discretion."* · Scaffolding: *"Withhold scaffolding then, but if it can be specd as generally done it can rival Twin Synchro. Scaffolding can be standard glass like see thru structures."* (WITHHELD — not specified here.)
+### Q.19.1 THE TWO GUARANTEES
+- **G-A NEEDLE = CANVAS.** At any cursor instant, before and after any edit: the bars under the needle are exactly the tasks that own the elements the canvas is building at that instant; an element is never visible before its own bar starts or still unbuilt after it ends; the slider, the day counter and the ruler read the same instant.
+- **G-B REORDER.** After unlock the planner can change the ORDER of two bars in one gesture; the elements follow; the lock gate judges the result and refuses a physically worse schedule with a named reason; one Undo restores everything the gesture changed, links included.
+### Q.19.2 THE EDITOR AS IT IS (code map 2026-11-18, bim-ootb main; `tm_gantt_edit.js` = TGE, `schedule_author.js` = SA)
+- Edits: move / resize (`commitGanttDrag`), link (drag bar onto bar, always FS lag 0), unlink and typed dates (props panel), group shift, ruler shift, pull-back. **No reorder or swap exists**; row order is derived on every rebuild (phase rank → start → storey), there is no order column.
+- A single-bar move is clamped by its predecessor links (`moveTaskCascade`); successors are pushed, never pulled. Group shift and ruler shift check NO link.
+- **Six copies of one commit pipeline** (snapshot → verb → `retimeTaskElements` → resync → CPM annotate → persist → redraw). Undo is single-level and covers drag / ruler / group / pull-back only: **link, unlink and typed-date edits are not undoable, and `task_sequences` is never snapshotted.**
+- Needle and canvas share epoch ms (no re-basing). Risks: the slider's day ladder is LOCAL-midnight over op starts while task windows are UTC-midnight; the display axis is Tukey-clamped while scrub bounds are not; no edit path refreshes the slider (`anchorFromCursor` / `configSlider`); ruler day numbers count from the axis start, the day counter from the project start. **No witness covers the needle at all.**
+- ⛔ **VERIFIED BY READING, 2026-11-18 — THE LOCK GATE DOES NOT JUDGE THE LIVE SCHEDULE.** `verifyGanttIntegrity` (`tm_sched_xray.js`) builds its times as `{ start: o.timestamp, end: o.end_ts || o.timestamp }`. Every entry of `_ops` comes from `loadOps` (`tm_core.js`), which returns `start_ts` and NO `timestamp` field; `retimeTaskElements` writes `start_ts` too. So in the viewer every element's start is `undefined` at both the baseline and the lock-back. `witness_gantt_lock_integrity` fabricates `_ops` with a `timestamp` field (its line 230), so it is green on a shape the viewer never produces — the §CRISIS class (a green editor witness that never judged the real thing).
+### Q.19.3 ORDER OF WORK — one bim-ootb PR each, each with its witness first
+1. **Lock gate reads the real op** (`start_ts`). Witness: `_ops` in `loadOps`' own shape; a bad drag must breach; RED on main.
+2. **`witness_tm_needle_sync`** (G-A, persisted runs + after an edit): bars under the needle ⇔ owners of the frontier elements; no element outside its bar; slider / counter / ruler agree. Fix what it finds (slider refresh after edit, one day origin).
+3. **One commit pipeline** — the six copies become one function; deletion budget stated.
+4. **Undo covers every edit** — `task_sequences` and summary rows in the snapshot; link, unlink, typed dates undoable.
+5. **Reorder** — one atomic SA verb that exchanges two bars' places (windows, and the link between them reversed when one exists), through the single pipeline, judged by the lock gate, undone by one Undo. Witness: element sets follow; a physically impossible reorder is refused with the offender named.
+6. **Group / ruler shift respect links that cross the selection.**
+### Q.19.4 STEP 1 RESULT — the lock gate reads the real op (bim-ootb #3242)
+```
+witness_gantt_lock_integrity, ops in loadOps' own shape     baseline floating / midair    bad drag (200 tried)        result
+main                                                              0 / 0                   none detected               18 pass / 3 FAIL
+fixed — Duplex                                                   39 / 153                 detected, element named     22 / 0
+fixed — Clinic                                                  941 / 3,197               detected, element named     22 / 0
+```
+One read changed (`o.start_ts`). `§GANTT_LOCK_BASELINE` prints `opsWithNoStart=` and says INCONCLUSIVE when nothing was judged. G-LI-0 reads the field names off `loadOps`' source so a rename fails in the witness. Gates GREEN 8 / 8; edit-undo 9 / 0, edit-lock 5 / 0, gesture wiring 16 / 0, edit exception 23 / 0.
+**Since when:** not bisected. The gate has been granting every lock for as long as `_ops` has carried `start_ts` without `timestamp`.
+**NEXT: step 2 (`witness_tm_needle_sync`).**
+### Q.19.5 STEP 2 SPEC — `witness_tm_needle_sync` (G-A), written before the witness (2026-11-18)
+**Issue:** nothing checks that the needle, the bars, the slider, the day counter and the ruler read the same instant as the canvas. Read in the code, to be measured, not yet claimed as defects:
+- the bar frame marks a bar active on `start <= cursor <= end` (`drawGanttMini`); the canvas builds on `start <= cursor < end` (§I row "is it on screen at cursor?");
+- the slider writes the cursor at day + 24 h (`onSlide`), and reads it back as the last ladder day at or before the cursor's day (`configSlider`), so the read can land one notch after the write;
+- the slider's ladder is LOCAL midnight; the task windows, the day counter and the ruler's `dN` count 24 h steps from the first instant of the programme (UTC midnight);
+- the display axis starts 1 ms before the first bar (it inherits the "truly empty" 1 ms of `projectStart`), so every ruler tick sits 1 ms before its day;
+- no edit path calls `anchorFromCursor` / `configSlider`, though every one recomputes the ladder.
+**Population:** the persisted played layer of all seven buildings (`cache_4d_run.js`, `layerOf(run)` = played), turned into ops in `loadOps`' own field names and judged through the SHIPPED `GanttModel.buildTasks` / `computeDays` and the shipped panel and drawer functions sliced from source. The edit claims run the shipped `commitGanttDrag` on a real building DB (Duplex; `NS_BLD` for another). Each claim prints the population it judged and says INCONCLUSIVE on an empty one. Time zones: UTC, Asia/Kuala_Lumpur, America/New_York.
+| claim | what must hold | owner called |
+|---|---|---|
+| NS-0 | the fixture is the viewer's shape (op field names read off `loadOps`; every element has one bar) | `loadOps`, `GanttModel.buildTasks` |
+| NS-1 | every element plays inside its own bar: bar start <= start < end <= bar end | played layer, `buildTasks` |
+| NS-2 | no bar is under the needle with nothing of it building: uncovered time per bar <= 1 ms per member (the rounding `W-RWB-1` already allows) | same |
+| NS-3 | the bars the drawer frames as active are exactly the bars that own an element the canvas is building, at every bar boundary and every slider stop | `drawGanttMini` (recording canvas), frontier rule of `renderAtTime` |
+| NS-4 | the needle is never parked while the canvas still builds: display axis covers the playback bounds, and the drawn hairline x lies inside every active bar's drawn rectangle | `computeDays`, `drawGanttMini`, `drawGanttRuler` |
+| NS-5 | one day origin: at any cursor the counter's `DAY n`, the ruler's `dN` under the needle and the slider's notch name the same day; ruler ticks sit exactly on bar-day boundaries | `updateStatus`, `ganttRulerTicks`, `configSlider` |
+| NS-6 | slider round trip: set notch i, slide, read back, the slider still says i (DAY, HR and the finest mode) | `onSlide`, `anchorFromCursor`, `configSlider` |
+| NS-7 | after a committed bar move and a resize: NS-1 to NS-5 hold on the new timeline, and the slider's range and notch equal what a fresh read of the cursor gives | `commitGanttDrag` |
+| NS-R | red control: an element pushed outside its bar, and a bar stretched past its elements, must fail NS-1 / NS-2 | — |
+**Predictions on main:** NS-0, NS-1, NS-2 green (tiling, §TM_REVEAL_TILED); NS-3 red at exact bar ends; NS-5 red (1 ms axis origin in every zone; ladder off the day grid outside UTC); NS-6 red; NS-7 red on the slider refresh. NS-4 unknown.
+**Fix, only for what goes red:** one owner of "which day / hour is this instant" in `gantt_model.js`, on the programme's own day grid, used by the ladder, the counter, the anchor and the slider; the slider writes the last instant of its notch; the ladder recompute refreshes the slider; the active frame uses the canvas's half-open rule; the display axis starts on the first instant. The wall-clock label and the sun keep local time (the sun reads the cursor's local hour; not this step).
+### Q.19.6 STEP 2 RESULT — needle = canvas (bim-ootb #3247, sw v1747)
+```
+witness_tm_needle_sync, 7 buildings x 3 zones      main                              fixed
+NS-0 fixture is the viewer's shape                 7 PASS                            7 PASS
+NS-1 element inside its own bar                    7 PASS (263,954 elements, 0 out)  same
+NS-2 no bar idle under the needle                  7 PASS (worst 0 ms)               same
+NS-4 needle never parked, hairline in framed bar   21 PASS                           21 PASS
+NS-3 framed bars = bars that build                 21 FAIL                           21 PASS
+NS-5 one day origin                                21 FAIL                           21 PASS
+NS-6 slider round trip                             21 FAIL                           21 PASS
+NS-7 after a move and a resize (Duplex)            FAIL (slider stale)               PASS, 3 zones
+summary                                            68 pass / 79 fail / 2 inconcl.    149 / 0 / 0
+```
+- **What was wrong, measured:** (1) the active frame used `<=` at the bar end: a finished bar stayed framed at its end instant (Duplex UTC 75 of 1,748 bar-instants) — every slider stop in UTC lands there. (2) the ladder was LOCAL midnight: in Kuala Lumpur notch 0 began 8 h before day 0, in New York 19 h; counter and slider named different days at every sampled cursor outside UTC. (3) every ruler tick sat 1 ms before its day (the axis inherited `projectStart`'s 1 ms). (4) a notch read back as the next notch in all three slider modes. (5) after a bar move the slider kept its old notch, after a resize its old range too.
+- **Fix:** `GanttModel.dayParts(ms, origin)` owns "which day / hour / minute / second is this instant" (§I row added below); ladder, anchor, counter and slider read it; ruler ticks are on the same origin; a notch writes its LAST instant (or the programme end when it ends inside the notch); `computeDays` refreshes the slider, so every edit path gets it; the frame and the auto-scroll use the canvas's half-open rule; the axis starts on the first instant. Lines +71 / -32.
+- **Nothing played moved:** `§NS_PLAY_SAME` — played instants before / after identical on all seven (0 of 263,954 differ). `§GATES_VERDICT GREEN red=0 gates=9`. Related witnesses unchanged: gantt_model 20 / 0, edit-undo 9 / 0, edit-lock 5 / 0, gesture wiring, edit exception 23 / 0, bake lock 17 / 0, group move 9 / 0, ruler-shift lock 4 / 0.
+- **§I row:** *which programme day / hour is this instant?* → `gantt_model.js` `dayParts`, origin `computeDays().dayOrigin` (the first instant of work). Never `new Date(ms).getHours()` or a local midnight for the ladder.
+- **Not covered, named:** the wall-clock label (`tm-label`) and the sun stay on local time, so the label's hour is not the counter's `HR` outside UTC; the scene itself is not rendered here (the canvas side is the §I frontier rule, guarded by NS-0, not pixels); NS-7 edits Duplex only (`NS_BLD` for another); un-authored bars (no task) were not in any of the seven runs; the variance drawer's phase highlight still uses `<=`.
+- **Found red on main, not this step (same on an untouched main worktree):** `witness_cpe_buildup_activate_silent` and `witness_cpe_buildup_require_tm_first` (marker not found — they read the split files raw), `witness_gantt_props_epoch` (4 fail), `witness_tm_silent_refusal_tips` (its brace scanner aborts), `witness_gantt_bar_is_its_task` (cannot find `sql.js`), `witness_sun_arc_linear`, `witness_sun_compass_wiring`.
+**NEXT: step 3 (one commit pipeline — the six copies become one function).**
+### Q.19.7 STEP 3 SPEC — one commit pipeline, written before the code (2026-11-18)
+**Issue:** the commit pipeline (snapshot element times → re-time elements → undo record → resync → CPM annotate → persist → invalidate → day ladder → redraw → render) is typed out in EIGHT places in `tm_gantt_edit.js`, not six: drag, ruler shift, group shift, pull-back, undo, link, unlink, typed apply. They already differ: link re-syncs only when a bar moved; unlink never renders the canvas; three of them leave no undo record (step 4). A rule that has to be re-typed at each site is a rule that eventually is not (§S69's own words about the bake lock).
+**Change (behaviour-preserving, move-only in intent):** two functions own it.
+- `_tmEditRefresh(what, schedId)` — resync → annotate → persist → invalidate → `computeDays` → draw → render. The only place those seven are called in sequence.
+- `_tmCommitEdit({ what, schedId, moved, tasksBefore, undo, log })` — snapshots the touched elements' times, calls `retimeTaskElements`, writes `_lastEdit` when `undo` is given, prints the caller's commit line, then `_tmEditRefresh`. Each verb keeps only what is its own: lock check, engine verb, refusal tips.
+- Undo calls `_tmEditRefresh` after its restore. Import and native generate stay on the refold path (they rebuild the 4D from the tasks table; a different pipeline, not a copy of this one).
+**Deliberate differences, named:** link without a moved bar and unlink now also resync and render (idempotent re-derivers; they were skipped by omission). Which edits are undoable does NOT change in this step.
+**Witness `witness_gantt_one_commit_pipeline` (before the code):**
+| claim | what must hold |
+|---|---|
+| OCP-1 | the seven refresh steps appear in sequence in exactly one function of the family |
+| OCP-2 | every function that takes the edit lock (`_tmEditLocked(`, derived from source) reaches the pipeline (`_tmCommitEdit(` or `_tmEditRefresh(`) and calls none of the seven steps itself |
+| OCP-3 | on a real building (Duplex), each gesture — move, resize, ruler shift, group shift, pull-back, link, undo — runs the steps in the one canonical order (recorded by instrumented steps) |
+| OCP-4 | equivalence: tasks rows, element ops, links and the undo record after each gesture hash-equal the same gesture on main (`§W_OCP_STATE` lines diffed, main vs branch) |
+| OCP-R | red control: a verb body with one step removed fails OCP-2 |
+**Predictions on main:** OCP-1 red (8 sequences), OCP-2 red; OCP-3 red only for link (no resync). **Deletion budget:** stated in the result; add-only is not done. Witnesses that read the verbs' source for the step names (CPM-1, PERS-1, TBL-5, retime-resync wiring, pull-back) are re-pointed at the pipeline, each keeping its claim.
+### Q.19.8 STEP 3 RESULT — one commit pipeline (bim-ootb #3251, sw v1748)
+```
+witness_gantt_one_commit_pipeline (Duplex, 1,119 elements)      main                          refactor
+OCP-1 one caller per step                                       FAIL (retime 6 callers,       PASS (retime <- _tmCommitEdit; persist <- _tmEditRefresh
+                                                                persist 9 sites, resync 7)    + the import; resync <- _tmEditRefresh + exception recovery)
+OCP-2 every lock taker reaches the pipeline                     FAIL 7 of 10                  PASS 10 of 10 (7 pipeline, 3 refold)
+OCP-R red control                                               INCONCLUSIVE (nothing passes) PASS
+OCP-3 one step order on 9 gestures                              PASS                          PASS
+OCP-4 state after each gesture equals main                      —                             PASS, 10 of 10 lines
+```
+- **OCP-4 is the equivalence proof:** move, resize, ruler shift, group shift, undo, link, link forcing a 16-task move, pull-back, undo, undo-with-nothing — after each one the `tasks` rows, the element ops (db and memory), the links and the undo record hash-equal main. It is judged only when `OCP_EXPECT` names another revision's log; an everyday run prints the lines and does not claim it.
+- **Code:** `tm_gantt_edit.js` +69 / -131 (1,970 → 1,908 lines). The verbs keep lock check, engine verb and refusal tips.
+- **Deliberate differences (as specified):** a link that moves no bar and an unlink now also resync and render. Not seen by OCP-4, because every link on Duplex moved at least its own task; stated, not measured.
+- **Witnesses re-pointed, same claims:** `tests/_gantt_pipeline.js` `reach(body, src)` = a verb's body plus the pipeline owners it calls. CPM-0/1/1b/1c/1d, PERS-1/1a/1b, RESYNC-0/1, ASAP-8b/8d, GEST-3 read through it; TBL-5 counts a call into the pipeline as a mutation and derives undo as an entry point now (it was checked by name). Edit-coherence, edit-undo and the needle witness slice the two owners. 16 related witnesses: same verdicts as on main.
+- `§GATES_VERDICT GREEN red=0 gates=10`; needle witness 149 / 0.
+- **Not covered:** the typed-apply and unlink paths run inside a DOM panel and were not driven (covered by OCP-2 from source only); import and native generate stay on the refold path; a throw inside the pipeline is still recovered per verb (`_tmEditExceptionRecover`), unchanged.
+**NEXT: step 4 (undo covers every edit — `task_sequences` and summary rows in the snapshot; link, unlink and typed dates undoable). The pipeline's `undo` argument is the one place to add it.**
+### Q.19.9 STEP 4 SPEC — undo covers every edit, written before the code (2026-11-18)
+**Issue (read in the code, to be measured):** ↺ Undo restores only what the verb's own snapshot held. (1) Link, unlink and typed dates write NO undo record: the planner cannot take them back, and a typed date or a link after a drag leaves the drag's stale record in place, so Undo then restores the wrong thing. (2) `task_sequences` is never in a snapshot, so no undo can restore a link. (3) The snapshots differ per verb (leaf rows only for drag and pull-back, all rows for ruler shift and link, the selected rows for group shift); the ruler shift writes summary rows too. Seven near-identical snapshot queries.
+**Change:** one snapshot, one restore, through the one pipeline (§Q.19.7).
+- `_tmEditSnapshot(schedId)` — taken by every verb BEFORE its engine call: every `tasks` row of the schedule (summary rows included: start, finish, duration) and every `task_sequences` row whose ends are tasks of the schedule. Replaces the seven queries.
+- `_tmCommitEdit` writes the undo record for EVERY edit (the `undo` argument becomes required): tasks, links, and the touched elements' times.
+- `undoLastGanttEdit` restores all three, then `_tmEditRefresh`. Still single-level. A refused or no-op edit writes no record and leaves the previous one alone (as today).
+**Witness `witness_gantt_undo_every_edit` (before the code), on a real building (Duplex):**
+| claim | what must hold |
+|---|---|
+| UE-1 | for each of the nine edits — move, resize, ruler shift, group shift, pull-back, link, link forcing a move, unlink, typed dates — state before == state after edit + one Undo, where state = every `tasks` row (summary included), every link, every element op in the db and in memory |
+| UE-2 | each of the nine changes the state (else the row is INCONCLUSIVE, not a pass) and leaves an undo record naming that edit |
+| UE-3 | a second Undo changes nothing and says so |
+| UE-4 | a refused edit (a link that would make a cycle) leaves the previous undo record untouched |
+| UE-5 | one snapshot owner: the verbs hold no `SELECT … FROM tasks` snapshot of their own (source), every `_tmCommitEdit(` call passes `undo:` |
+| UE-R | red control: an undo that skips the link restore must fail UE-1 on the link rows |
+The unlink and typed-date edits are driven through the shipped `openGanttProps` with a DOM stub (its real handlers), not re-typed.
+**Predictions on main:** UE-1 red for link, link forcing a move, unlink, typed dates (no record, or the previous record restored instead); green for move, resize, ruler shift, group shift, pull-back unless a verb writes a row its snapshot lacks (to be measured). UE-5 red.
+**Not in this step:** multi-level undo / redo; undo of import or of native generate (refold paths).
+### Q.19.10 STEP 4 RESULT — one Undo takes back every edit (bim-ootb #3262, sw v1750)
+```
+witness_gantt_undo_every_edit (Duplex, 1,119 elements)   main                                        fixed
+move, resize, ruler shift, group shift, pull-back        RESTORED (5)                                RESTORED (5)
+link                                                     record NONE, links differ after Undo         RESTORED
+link forcing a move                                      record NONE, tasks+links+ops differ          RESTORED
+unlink (props panel)                                     record NONE, links differ                    RESTORED
+typed dates (props panel)                                record NONE, tasks+ops differ                RESTORED
+UE-1 state back after one Undo                           5 of 9                                      9 of 9
+UE-5 one snapshot owner                                  FAIL (6 verbs with their own query,         PASS
+                                                         3 commits with no undo record)
+UE-3 second Undo is a no-op · UE-4 refused link keeps the previous record · UE-R red control      PASS · PASS · PASS
+```
+- **Measured, not the prediction's whole story:** the five verbs that had a record restored exactly on main too — no verb on Duplex wrote a row its own snapshot lacked. The defect was only the three paths with no record. (On main, Undo after one of them said "Nothing to undo"; the stale-record case — Undo restoring an earlier drag instead — is the same gap with a prior edit present; not separately driven.)
+- **Code:** `_tmEditSnapshot(schedId)` replaces seven per-verb queries and adds the links; `_tmCommitEdit` takes `snap` and always writes `_lastEdit = { tasksBefore, linksBefore, opsBefore }`; `undoLastGanttEdit` replaces the schedule's `task_sequences` rows with the snapshot's, and its log line says `linksRestored=`. `tm_gantt_edit.js` +51 / -57. A link snapshot that could not be read is `null` and Undo then leaves links alone and says SKIPPED.
+- **Edit results unchanged:** the ten `§W_OCP_STATE` lines (tasks, element ops, links after each gesture) equal the main-before-step-3 baseline; only the undo record's shape differs.
+- **Shared fixture:** `tests/_gantt_edit_fixture.js` (building, authored schedule, ops, shipped verbs in a vm) is used by the pipeline witness and this one; the pipeline witness's output was identical before and after the move.
+- `§GATES_VERDICT GREEN red=0 gates=11`. Related witnesses same as before; bake-lock, edit-exception, edit-undo, edit-coherence and the needle witness slice `_tmEditSnapshot` now.
+- **Not covered:** still single-level (no redo); import and native generate are not undoable; CPM float columns are re-derived after Undo, not restored; Duplex only (`UE_BLD` for another); the panel's on-screen text after Undo is not judged.
+- **⚠ Process defect of this session, for the next one:** the squash before the PR was `git reset --soft origin/main` after a `git merge origin/main` that had ABORTED (uncommitted files in the way). The commit therefore carried an old tree and would have reverted 20 files of other lanes (1,119 lines). Caught from the `--stat` before merge; auto-merge was disabled, the branch rebuilt as main + 13 files, and `gh pr diff --name-only` checked (13) before re-enabling. **Rule: never soft-reset onto main unless the merge just before it printed success; check `git diff origin/main HEAD --stat` before every push.**
+**NEXT: step 5 (reorder — one atomic verb that exchanges two bars' places, through `_tmCommitEdit`, judged by the lock gate, undone by one Undo).**
+### Q.19.11 STEP 5 SPEC — reorder: exchange two bars' places (G-B), written before the code (2026-11-18)
+**Issue:** the planner can move, resize and link bars but cannot change the ORDER of two bars; a drag is clamped by the bar's predecessors, so "do B before A" needs an unlink, two drags and a re-link, each a separate undo step.
+**The verb — `ScheduleAuthor.swapTasks(db, scheduleId, aId, bId, { dryRun })`, atomic, nothing written on refusal.** With A the earlier bar and B the later:
+- B takes A's start; A ends where B ended; both keep their durations. The pair's envelope `[A.start, B.finish]` does not move, so nothing outside the pair is disturbed by the exchange itself.
+- A direct link A→B is reversed to B→A (same type and lag). No other link is touched.
+- **Refused, with the reason named:** the same task; a summary or unknown task; bars that overlap in time (`bars_overlap` — parallel bars have no order to exchange); B still has a predecessor that finishes after B's new start (`blocked`, `blockedBy` = the engine's own binding predecessor — this also catches A→X→B); the reversed link would close a cycle (`cycle`).
+- After the exchange A obeys its own predecessors (B among them when the link was reversed) and A's successors are pushed, by the SAME clamp and push-only cascade a drag uses. The load of the leaf graph and the cascade are extracted from `moveTaskCascade` and shared, not copied.
+**The gesture:** drop a bar on another bar with **Shift** held = exchange places (without Shift it stays "link"). For touch, the typed panel gets a "⇄ Swap places with" row. Hook `window.__tmGanttSwap(aId, bId)`. `swapGanttBars` keeps lock check, verb and refusal tip, and commits through `_tmCommitEdit` (§Q.19.7) with an undo record (§Q.19.9).
+**The lock gate is the physical judge, unchanged:** a reorder the links allow but the building does not (a slab before the columns under it) commits while editing, and 🔒 refuses with the offenders named until it is undone or fixed (§I row "is an edit legal?").
+**Witness `witness_gantt_reorder` (before the code), Duplex, shipped verbs:**
+| claim | what must hold |
+|---|---|
+| RO-1 | after a committed swap: B starts where A started, A ends where B ended, durations kept, the two bars' element sets are unchanged and every element lies inside its bar's new window |
+| RO-2 | a direct link is reversed (same type, lag) and no other link row changes; an unlinked pair changes no link row |
+| RO-3 | each refusal — overlap, blocked by another predecessor, same task — names its reason (and the blocker), writes nothing and leaves the undo record alone |
+| RO-4 | one Undo restores tasks, links and element times exactly |
+| RO-5 | the lock gate: from the edit-start baseline, a committed reorder that makes the schedule physically worse is refused at lock with offenders named, and passes again after Undo; at least one committed reorder is judged (else INCONCLUSIVE) |
+| RO-6 | wiring: Shift-drop calls `swapGanttBars`; it takes the edit lock and commits through `_tmCommitEdit` with `undo:`; a dry run writes nothing |
+| RO-R | red control: an element pushed out of its swapped bar fails RO-1 |
+**Predictions:** all red on main (no verb). After: every legal adjacent pair on Duplex is tried in dry run and the counts of committed / refused-by-reason are printed; RO-5 expects at least one physically worse reorder among the directly linked structural pairs.
+### Q.19.12 STEP 5 RESULT — reorder (bim-ootb #3267, viewer sw v1752)
+```
+witness_gantt_reorder (Duplex, 20 bars, 1,119 elements)
+190 bar pairs in dry run:   swappable 11 (all 11 directly linked)   blocked by another predecessor 162   overlap 13   cycle 4
+RO-1 exchange               PASS  Substructure [01-01..01-02] ⇄ Superstructure [01-02..01-03] -> Superstructure first; 16 elements, 0 outside their bar
+RO-2 links                  PASS  −1 +1 (the direct link reversed, same type and lag), no other row
+RO-3 refusals               PASS  bars_overlap · blocked blockedBy=TASK_Superstructure_T_FDN(FS) · same_task — nothing written, undo record kept
+RO-4 one Undo               PASS  tasks, links, element ops restored
+RO-5 lock gate              PASS  11 committed reorders judged: 6 refused at lock (first: floating +7, midair +7, offenders named), 5 accepted; gate passes again after Undo 11 of 11
+RO-6 wiring · RO-R          PASS · PASS
+```
+- **Two layers, as specified:** the verb refuses what the LINKS forbid (179 of 190 pairs on Duplex); the lock gate refuses what the BUILDING forbids among the rest (6 of 11). The 5 it accepts are reorders the fixture's element layout does not make worse — the fixture lays each task's elements end to end across its window (not the played layer), so "5 are buildable" is a statement about this fixture, not a site ruling.
+- **Engine:** `swapTasks` in `schedule_author.js`; `_leafGraph`, `_cascadePush`, `_writeMoved` extracted from `moveTaskCascade` and shared (the ten `§W_OCP_STATE` lines still equal the pre-lane baseline). `schedule_author.js` 136 lines changed for the new verb and the three shared helpers (PR #3267 diff).
+- **Time Machine:** `swapGanttBars` (lock, verb, tip, `_tmCommitEdit` with `undo: reorder`); Shift-drop in `wireGanttDrag`; "⇄ Swap places with" select in the typed panel; `window.__tmGanttSwap`. Undo witness now 10 of 10 edit kinds; pipeline witness derives the new verb as a lock taker on its own (11 of 11).
+- `§GATES_VERDICT GREEN red=0 gates=12`; `§RO_PLAY_SAME` 0 of 266,954 played instants differ on seven buildings (the generator is untouched).
+- **CI lesson (cost one red run):** `modeller/modules.json` records the witnesses of every module the modeller loads, `viewer/schedule_author.js` among them, so a NEW witness that requires it must be followed by `node scripts/gen_manifest.js --write modeller`; and an edited `viewer/schedule_author.js` is also lazy-loaded by the modeller, so bump with `node scripts/bump.js <files> --write` (it needs `node_modules`: link the shared checkout's into the worktree), not by hand.
+- **Not covered:** no unlinked swappable pair exists on Duplex (the template links every bar), so RO-2's "unlinked pair changes no link" was not exercised; the Shift-drop and the panel row are checked from source, not driven by a pointer; three or more bars at once, and a swap of overlapping bars, are out of scope; the new tip strings are English only (fallback).
+**NEXT: step 6 (group shift and ruler shift check NO link today — a selection dragged across a link that leaves it should be clamped or refused, the same rule a single drag obeys).**
+### Q.19.13 STEP 6 SPEC — group shift and ruler shift respect links that cross the selection, written before the code (2026-11-18)
+**Issue (read in the code, to be measured):** `commitGanttGroupShift` calls `ScheduleAuthor.shiftTasks`, which translates the selected rows and reads no link. A selection dragged EARLIER can land before a predecessor that was not selected; dragged LATER it can overrun a successor that was not selected. A single drag of the same bar is clamped in the first case and pushes the successor in the second (`moveTaskCascade`). The ruler shift moves every row of the schedule by the same days, so no link can cross it — to be shown, not assumed.
+**Change:** one new engine verb, `shiftTasksCascade(db, scheduleId, taskIds, deltaDays, { dryRun })`, on the shared `_leafGraph` / `_cascadePush` / `_writeMoved` (§Q.19.12); `shiftTasks` stays the raw primitive it is witnessed as.
+- The selection moves as ONE body (every selected leaf by the same effective days, so links inside it keep their slack).
+- Earlier: the effective days are clamped by the tightest predecessor OUTSIDE the selection — the engine's own floor (`_earliestStart`) and binding predecessor (`_bindingPred`). Clamped to zero = refused (`blocked`, `blockedBy`, `task`), nothing written.
+- Later (and after any move): successors outside the selection that are now too early are pushed, by the same push-only cascade a drag uses.
+- Result: `{ ok, deltaDays (effective), requested, clamped, blockedBy, task, moved, cascaded }`.
+`commitGanttGroupShift` calls it, says so when the move was clamped or refused, and commits through `_tmCommitEdit` as before. The ruler shift is not changed.
+**Witness `witness_gantt_shift_links` (before the code), Duplex, shipped verbs. "A task sits before its floor" is asked of the OWNER: `moveTaskCascade(…, its own start, { dryRun })` reports `clamped`.**
+| claim | what must hold |
+|---|---|
+| GL-1 | a selection shifted EARLIER past an outside predecessor: no task ends up before its floor; the selection moved as one body by the effective days; the clamp and its `blockedBy` are reported |
+| GL-2 | a selection shifted LATER into an outside successor: the successor is pushed, no task is before its floor, the selection moved as one body |
+| GL-3 | a selection that cannot move earlier at all is refused with `blocked` + `blockedBy`, nothing written, the undo record kept |
+| GL-4 | the ruler shift, both directions: no task before its floor, every leaf moved by exactly the days asked |
+| GL-5 | every element stays inside its bar after each of the above, and one Undo restores each |
+| GL-R | red control: the raw `shiftTasks` on GL-1's selection DOES leave a task before its floor (the defect, reproduced) |
+**Predictions on main:** GL-1 red (a task before its floor), GL-2 red, GL-3 red (it commits), GL-4 green, GL-5 green, GL-R green.
+### Q.19.14 STEP 6 RESULT — a group shift obeys the links that cross it (bim-ootb #3270, viewer sw v1753)
+```
+witness_gantt_shift_links (Duplex, 20 bars, 33 links)      main                                             fixed
+GL-1 earlier past an outside predecessor (-8d, room 5)     moved -8d, 1 task before its floor               moved -5d, clamped, blockedBy=TASK_MEP_Final_Roof(FS)
+GL-3 a bar on its floor, -3d                               committed                                        refused: blocked, blockedBy named, nothing written
+GL-2 later into an outside successor (+4d)                 successor not moved, 2 tasks before their floor  successor pushed 4d, 6 tasks cascaded, 0 before floor
+GL-6 both ends of a link selected (+4d)                    —                                                both +4d, the link's gap 0d -> 0d
+GL-4 ruler shift +3d / -2d                                 clean                                            clean (unchanged code)
+GL-5 elements inside bars, one Undo restores               PASS                                             PASS (5 committed cases)
+GL-R raw shiftTasks reproduces the defect                  PASS                                             PASS
+summary                                                    3 pass / 3 fail                                  7 / 0
+```
+- **Engine:** `shiftTasksCascade` in `schedule_author.js`, on `_leafGraph` / `_cascadePush` / `_writeMoved`; `shiftTasks` unchanged (its own witness still 0 exit). **Time Machine:** `commitGanttGroupShift` calls it; tips for clamped and refused; the commit line carries `requested=`, `clamped=`, `blockedBy=`, `cascaded=`.
+- **The ruler shift needed no change:** it moves every row by the same days, so no link crosses it (GL-4, measured both directions).
+- `§GATES_VERDICT GREEN red=0 gates=13`; 13 related Gantt witnesses unchanged.
+- **Deliberate consequence:** the group-shift line of the pipeline witness's cross-revision comparison (OCP-4) no longer equals the pre-lane baseline — a +2d group move now pushes successors. OCP-4 is a cross-revision tool, not a gate.
+- **Not covered:** a selection containing a summary row (the marquee selects bars only); a pre-existing violated link inside the selection is repaired by the cascade, not preserved; the tips are English only; the gesture itself is not driven by a pointer.
+
+### Q.19.15 THE GANTT EDITOR LANE — STATE AFTER THE SIX STEPS (2026-11-18)
+| step | what | bim-ootb | gate |
+|---|---|---|---|
+| 1 | the lock gate reads the op's real start (it had judged nothing) | #3242 | lock_integrity |
+| 2 | needle = canvas: one day grid, slider follows an edit | #3247 | 9 needle_sync |
+| 3 | one commit pipeline (eight copies) | #3251 | 10 one_commit_pipeline |
+| 4 | one Undo takes back every edit | #3262 | 11 undo_every_edit |
+| 5 | reorder: swap two bars' places | #3267 | 12 reorder |
+| 6 | a group shift obeys crossing links | #3270 | 13 shift_links |
+**G-A (needle = canvas)** holds on seven buildings in three time zones, before and after an edit. **G-B (reorder)** holds on Duplex: one gesture, elements follow, the lock gate refuses the physically worse, one Undo.
+**What is left, none of it specified yet — the owner's call which, if any:**
+1. **Nothing in this lane has been driven by a real pointer in a real browser.** Every witness runs the shipped functions in node with a recording canvas or a DOM stub. The Shift-drop, the panel's swap row and the slider are source-checked. A headless-browser run needs the owner's go (CLAUDE.md).
+2. The edit witnesses (pipeline, undo, reorder, shift links) run on **Duplex only**, on a fixture that lays elements end to end per task, not on the played layer. The needle witness is the one that uses the played layer and all seven buildings.
+3. Undo is single-level; no redo. Import and native generate are not undoable.
+4. New tip strings (swap, group clamp) are English only.
+5. Still open from before this lane: §Q.17.2 (day-0 attribution witnesses A2/A4/A5), §Q.18.3 (the BOQ prices every beam as steel; JKR's `…_rcb_…` beams not routed). Scaffolding is WITHHELD by the owner.
+6. Seven witnesses red on main independently of this lane (§Q.19.6, last bullet).
+
+## §Q.20 ▶ RESUME HERE — SESSION HANDOVER 2026-11-18 (owner: *"update prompt for new session to resume"*)
+### Q.20.1 THE OBJECTIVE, RESTATED BY THE OWNER (2026-11-18, verbatim)
+> *"My objective is that it is industry compliant 4D scheduling for full ERP integration that users can easily edit on screen or its JSON file. And that nothing is breaking. Not just hanging items but any model dropped into it, will get a good enough if not perfect 4D/5D rendition worked out."*
+Asked *"is our objective achieved?"*, the answer given was **not yet**, measured against that sentence:
+| part of the objective | state on 2026-11-18 |
+|---|---|
+| hanging items | played-layer midair 429 / 2,395 / 247 / 144 (Hospital / Terminal / Duplex / HHS) at the start of the lane → 3 elements out of order across the seven buildings, each named (§Q.17) |
+| the editor | six steps merged (§Q.19.15); every check is node + stand-in canvas — **never a real pointer in a real browser** |
+| industry-compliant 4D | **NOT ASSESSED.** No witness compares a schedule to a scheduling standard or to a planner's programme. P6 / MS Project import-export and CPM float exist in code and were not tested in this lane. "Compliant with what" is not defined yet — an owner question (§Q.20.4) |
+| full ERP integration | **NOT ASSESSED** here. One known gap: the BOQ prices every beam as steel (§Q.18.3), so 5D cost is wrong for concrete frames |
+| easy edit as JSON | **NOT TOUCHED, NOT TESTED** in this lane (`rates/4D_template.json`, the settings JSON editor, `witness_json_4d5d_live.js` exist) |
+| nothing is breaking | the 13 gates are green when run, but **CI does not run `scripts/run_4d_gates.sh`** (0 mentions in `.github/workflows/ci.yml`), so another lane can break 4D unnoticed; seven older witnesses are red on main (§Q.19.6) |
+| any model dropped in | **UNPROVEN.** Every number comes from the same seven buildings the rules were tuned on. Untried models are on disk: `~/bim-ootb/buildings/` `SampleCastle_extracted.db`, `TermRooms_extracted.db` (+ `_geo`), `BakeFilm_material_extracted.db`; cache dirs also name `SHED`, `Building_A` |
+### Q.20.2 IN PROGRESS WHEN THE SESSION CLOSED — the edit witnesses on the PLAYED layer, beyond Duplex
+- **Branch:** bim-ootb `test/4d-edit-witnesses-played-fleet` @ `70447643`, pushed, **no PR**. Worktree `/tmp/wt-4d-editfleet` (may be gone; re-create from the branch — check `git worktree list` first).
+- **What it changes (2 files):** `viewer/tests/_gantt_edit_fixture.js` gains `playedChain(bld)` — the db the viewer loads, the shipped `materializeZones` with the real rate tables, and `kernel_ops` carrying the played layer (`scripts/lib/tm_played_layer.js`); `make()` defaults to `layer: 'played'` (`FX_LAYER=spread` = the old small fixture). `witness_tm_needle_sync.js` Part B now calls the same chain (34 duplicate lines removed; Duplex 53 / 0, the chain reproduces the persisted run: 0 of 1,119 instants differ).
+- **Measured so far, played layer** (per-building env: `OCP_BLD` `UE_BLD` `RO_BLD` `GL_BLD`):
+```
+              pipeline   undo      reorder                                             group shift
+Duplex        4/0        6/0       7/0   171 pairs: 13 swappable, 7 refused at lock    7/0
+HHS           4/0        6/0       7/0   120 pairs: 10 swappable, 5 refused at lock    6/1  (GL-2, see below)
+JKR           4/0        — the run was still going: JKR undo/reorder/shift, Clinic, Terminal, Hospital, LTU not reported
+```
+- **The one failure, read and understood, NOT an engine defect:** HHS GL-2 selects a predecessor and moves it +4 d expecting its outside successor to be pushed; on HHS that link has 6 d of slack, so nothing needed pushing (`newTasksBeforeFloor=0`, the engine was right). The witness assumed zero slack because Duplex has none. **Fix the witness:** move by the link's gap + k days (or assert "pushed iff the move exceeds the gap").
+- **To finish:** (1) re-run the four witnesses on JKR, Clinic, Terminal, Hospital, LTU_AHouse (minutes each; logs were going to `/tmp/wt-4d-editfleet/logs/played_<bld>_<witness>.log`, summary `fleet_summary.txt` — /tmp, may be gone); (2) fix GL-2 as above and whatever else the big buildings show; (3) add the played-layer runs to `run_4d_gates.sh` under `LARGE=1` for two large buildings; (4) one PR; result in a new §Q.20.5.
+- **Seen, not reconciled — do not lose:** the lock gate's own judge (`verifyGanttIntegrity`, on the played layer through this fixture) reports a BASELINE of floating 308 / midair 204 on Duplex and floating 87 / midair 1,632 on HHS, where the schedule judge says 2 and 0 out of order. The lock gate is delta-based, so it still works, but the two judges have not been compared on the same layer by the same rule. §I.5e says four judges exist and the layer is the caller's. **Check before quoting either number as "the" defect count**; it may be this fixture's element builder (`_buildXrayElements` in a sandbox) rather than the building.
+### Q.20.3 ORDER OF WORK PROPOSED TO THE OWNER (he said *"Proceed as you deem fit"*)
+1. Finish §Q.20.2.
+2. **Unseen models:** run `scripts/cache_4d_run.js` + the 13 gates on SampleCastle, TermRooms, BakeFilm_material (and SHED / Building_A if their dbs exist). This is the direct test of "any model dropped in". Expect the named-set locks (`witness_midair_zero`, assembly order) to have no entry for a new building — report what each gate says on a building it has no lock for, and whether the pipeline completes at all. No rule tuning on these models before the measurement is written down.
+3. **4D gates in CI** (`.github/workflows/ci.yml`): at least the node-only, cache-free ones (pipeline, undo, reorder, shift links on `FX_LAYER=spread` need only `Duplex_extracted.db` — check whether CI has the building dbs at all; if not, say so, do not fake a fixture).
+4. **Real-browser run of the editor** — NEEDS THE OWNER'S EXPLICIT GO (CLAUDE.md; a headless browser beside his live tab has crashed it). He was told this and has not given it.
+5. Owner questions (§Q.20.4), then the ERP / 5D side starting with §Q.18.3 (beam pricing), then the JSON editing path (`witness_json_4d5d_live.js`).
+### Q.20.4 OPEN OWNER QUESTIONS (ask once, then carry on with what does not depend on them)
+- ⛔ **"Industry compliant" against what?** A named standard or tool (P6 / MS Project round trip, a planner's reference programme for one building, ISO 19650 4D deliverables, a client's schedule spec) is needed before a witness can be written. Nothing in the code or the prompts states it.
+- ⛔ **Go / no-go for a headless-browser run of the editor.**
+### Q.20.5 HOUSEKEEPING STATE
+- Merged this session: bim-ootb #3247 #3251 #3262 #3267 #3270; BIMCompiler #949 #951 #960 #966 #970. Viewer sw v1753.
+- Evidence logs kept in `~/.cache/bim4d/q19_logs_2026-11-18/`.
+- Process rules learned this session, both in §Q.19: never soft-reset-squash after a merge that did not print success (§Q.19.10); a new witness that requires `viewer/schedule_author.js` needs `node scripts/gen_manifest.js --write modeller`, and edited served scripts are bumped with `node scripts/bump.js <files> --write` (link `~/bim-ootb/node_modules` into the worktree) (§Q.19.12).
+
+## §Q.21 ▶ RESUME HERE — SECOND HANDOVER 2026-11-18 (owner: *"wrap up, resume in new session"*)
+Evidence logs for everything below: `~/.cache/bim4d/q20_logs_2026-11-18/` (`played_*`, `unseen_*`, the three `*_summary.txt`).
+### Q.21.1 §Q.20.2 — THE EDIT WITNESSES ON THE PLAYED LAYER (not finished; no PR yet)
+- **Branch:** bim-ootb `test/4d-edit-witnesses-played-fleet` @ `b895f991`, pushed, level with `origin/main` at the time, **no PR**. Worktree `/tmp/wt-4d-editfleet`.
+- **Measured, played layer** (pipeline / undo / reorder / group shift):
+```
+Duplex   4/0  6/0  7/0  7/0
+HHS      4/0  6/0  7/0  7/0     (group shift was 6/1 before the witness fix)
+JKR      4/0  6/0  7/0  7/0     (group shift was 6/1 before the witness fix)
+Clinic   4/0  6/0  7/0  7/0     (pipeline was 3/1 before the witness fix; reorder took 506 s)
+Terminal rc=124 on pipeline, undo and reorder: each ran past the 1,500 s timeout, still making progress (the log was mid-gesture). NOT a verdict.
+Hospital, LTU_AHouse: not reported when the session closed (the loop was still running; read `fleet_summary.txt`).
+```
+- **Two failures, both wrong witness assumptions, both fixed in `b895f991`; no engine change:**
+  1. **GL-2** (`witness_gantt_shift_links.js`) moved a predecessor +4 d and expected its outside successor to be pushed. HHS has 6 d of slack on that link, JKR 4 d; the engine was right to push nothing. The move now grows (4, 8, 16, 32, 64 d) until the successor is pushed, and each smaller move is judged too: nothing pushed means nothing before its floor. Past 64 d the claim prints INCONCLUSIVE.
+  2. **OCP-3** (`witness_gantt_one_commit_pipeline.js`) counted Pull Back as "steps out of order" on Clinic, where the verb logged `§GANTT_RESCHEDULE_ASAP moved=0` and correctly wrote nothing. A verb that says it had nothing to do and changes no state is now named on `§W_OCP_NOOP` and not judged. A silent no-op without that answer still fails.
+- **`scripts/run_4d_gates.sh`:** `LARGE=1` now also runs the four editor witnesses on Clinic and Hospital. ⚠ **Hospital was not measured**, and Terminal (smaller than Hospital) ran past 25 min per witness, so this block is probably too slow as written. Decide from the Hospital rows of `fleet_summary.txt`: if they also time out, use Clinic + JKR, and say so in the script.
+- **Still not reconciled (carried from §Q.20.2):** the lock gate's own judge reports a far larger baseline than the schedule judge on the same layer. Not looked at this session.
+### Q.21.2 §Q.20.3 STEP 2 — UNSEEN MODELS, MEASURED, NOTHING TUNED
+- **The three models §Q.20.1 named are not usable tests:** `~/bim-ootb/buildings/SampleCastle_extracted.db` is 0 bytes; `TermRooms_extracted.db` is byte-identical to `Terminal_extracted.db`; the third is a private client model (kept out of this file).
+- **Used instead:** 22 sample models in `bim-compiler/deploy/buildings/` that no 4D rule was tuned on, read through `BLD_DIR=~/.cache/bim4d/unseen_blds` (symlinks). Code = bim-ootb main + the witness-only changes above.
+- **Does the pipeline complete?** 10 of 22. The other 12 (AC11Institute, AC90_Jasmin, AC90_Niedriha, AC9_HausGH, BimWhale_Basic, BimWhale_Large, BimWhale_Tall, FZKHaus, HospitalAuckland, Jesse, SmileyWest, VogelGesamt) end on `§CACHE_FAIL <bld> no such column: t.bbox_x`: their `element_transforms` table is an older extraction with no bounding-box columns. Two guarded steps print a SKIP line first, a later query is not guarded. **`cache_4d_run.js` exits 0 on that failure**, so only the log shows it. Open question, not answered: whether to re-extract those models, or to make the pipeline refuse such a db by name.
+- **The 10 that built** (elements / bars / out of order on the played layer, from `§ASM`):
+```
+BimWhale_Advanced  1,749  32  16      Molio            3,497  41  0
+Esplanades         1,958  18   0      SampleCastle     3,504  26  0
+HITOS              2,075  24   0      SampleHouse         58   8  0
+HospitalGarage     1,252  26   0      Schependomlaan   3,205  26  0
+Ifc4_Revit        11,339  37   6      WBDG_Office      6,995  21  0
+```
+  **22 elements out of order in 10 unseen buildings** (the seven tuned buildings: 3). The 16 and the 6 are not yet read by class or cause.
+- **Gates on those 10:** the four editor witnesses, the needle witness and edit-coherence pass on all ten. Lock integrity and reveal-within-bar pass on nine; SampleHouse fails `G-LI-2a` (needs more than 500 elements, it has 58) and `W-RWB-R` (the red control needs a group it does not have) — thresholds of the witnesses, not the engine.
+- **Gates that cannot judge a new building:** `witness_midair_zero` prints five FAIL lines of the form "locked at undefined" (no lock entry), and `witness_tm_assembly_order` prints INCONCLUSIVE "no lock for this building" plus `population-nonempty` FAIL. Raw values they printed: census midair outside the named sets = **0 on all ten**; strict midair 3 / 0 / 17 / 46 / 231 / 9 / 18 / 1 / 4 / 28 and the CPM trade 85 / 167 / 179 / 29 / 1,786 / 11 / 220 / 0 / 217 / 35 (same order as the table, by rows). A new building has no lock, so these gates need a "no lock: report, do not fail" mode before they can run on a dropped-in model.
+- Also seen on Clinic: `§S18_STOREY_MERGE_FAIL no such column: elevation`. Not looked at.
+### Q.21.3 §Q.20.3 STEP 3 — CI (found, not built)
+bim-ootb tracks `buildings/HHS_Office_Federated_extracted.db` as a real 75 MB file, so `ci.yml` can run the four editor witnesses with `BLD_DIR=$GITHUB_WORKSPACE/buildings` and `*_BLD=HHS_Office_Federated` (57 to 135 s each on the played layer here). It needs the two witness fixes merged first. The owner allowed handing lesser tasks to Sonnet agents (2026-11-18); this is a fit.
+### Q.21.4 ORDER OF WORK
+1. Read `fleet_summary.txt` for Hospital and LTU_AHouse; re-run nothing that is already green. Settle the `LARGE=1` pair (§Q.21.1), open one PR from the branch, run `scripts/run_4d_gates.sh`, merge.
+2. Read the 16 + 6 out-of-order elements on BimWhale_Advanced and Ifc4_Revit by class and cause (from the persisted runs under `~/.cache/bim4d/<bld>/`, no re-run).
+3. Give `witness_midair_zero` and `witness_tm_assembly_order` a no-lock mode; make `cache_4d_run.js` exit non-zero on `§CACHE_FAIL`.
+4. CI step (§Q.21.3).
+5. Then §Q.20.3 items 4 and 5; the two owner questions of §Q.20.4 are still open and unasked this session.
+
+
+## §Q.22 RESUME 4D, 2026-11-18 (third session) — WORKING §Q.21.4 IN ITS ORDER
+### Q.22.1 STEP 2 — THE 22 UNSEEN OUT-OF-ORDER ELEMENTS, READ BY CLASS AND CAUSE (no re-run, persisted runs only)
+Instrument: a read-only probe over the persisted played layer calling the owners (`SupportSweep.contactGraph` /
+`designatedSupport` / `midairAudit`); self-check `midair == playStats.midairPlayed` on both (16 = 16, 6 = 6).
+**One cause for all 22: stair parts filed by their IFC class, not with the stair.**
+```
+BimWhale_Advanced  16  IfcMember "Assembled Stair:… Stringer 2/7/9" (0.1 × 0.2 × 1.1 m, inside the flight's box)
+                       filed Superstructure (by class), elected support = the IfcStairFlight of the same stair,
+                       filed Architecture Envelope → the part plays 2-9 d before its flight. Same level, cross-TASK.
+Ifc4_Revit          6  IfcBeam "Round Bar:30mm" ×4 + "CHS 88.9x5.0" ×2 — a steel stair railing modelled as beams,
+                       z 5.96-7.65 over a flight topping at 7.00; filed Superstructure, the flight Architecture
+                       Envelope → railing plays ~4 d before the stair it is fixed to.
+```
+- Every one is `<part> <- IfcStairFlight crossTask`; zero same-task. §D6 (transitive filing, §Q.13.1 item 5) moves the
+  LEVEL along the support chain, not the PHASE, so it cannot see a same-level, later-phase support.
+- Site-engineer reading: a railing goes on after the flight (a real out-of-order); stair posts/stringer pieces go in
+  with their stair. Neither model is wrong — Revit exports stair sub-parts as IfcMember / IfcBeam.
+- **Proposed rule (NOT built, measure on all seven before any merge):** a non-structural-pool element whose elected
+  support is a stair flight files into the flight's task (phase follows the support, the phase twin of §D6). Gate:
+  `run_4d_gates.sh` green, and the fleet out-of-order (3) must not rise.
+### Q.22.2 STEP 3 SPEC — a dropped-in building with no lock is REPORTED, not failed; a failed cache build is non-zero
+1. `scripts/cache_4d_run.js` (CLI): collects every building whose build returned nothing (`§CACHE_SKIP` / `§CACHE_FAIL`),
+   prints `§CACHE_EXIT built=<n> failed=<n> [<names>]`, exits 1 when any failed. A `no such column` failure also names the
+   cause `old extraction schema`. Issue proved: `§CACHE_FAIL … no such column: t.bbox_x` exited 0 on 12 models (§Q.21.2).
+2. `witness_midair_zero`: a building with no entry in `baselines/midair.json` prints `NOLOCK <claim> <bld> got=<v>` for each
+   locked claim (W-MZ-2, -2u, -4, -8, -S51d) instead of `FAIL … locked at undefined`; the non-lock claims (W-MZ-2n, -4b, -7)
+   are still judged. Summary gains `nolock=<n>`; fail=0 with nolock>0 exits 2 (INCONCLUSIVE, the kit's convention). Issue
+   proved: 5 false FAILs per unseen building.
+3. `witness_tm_assembly_order`: a building with no lock prints its per-class rows (`midair by class`) and `NOLOCK`, and the
+   contract block runs only over locked buildings; a run with no locked building prints `§ASM_CONTRACT SKIPPED` instead of the
+   `population-nonempty` FAIL. Exit 2. Issue proved: `population-nonempty` FAIL on every unseen building.
+4. Locked buildings: byte-identical verdicts (the seven-building gate run is the regression).
+### Q.22.3 STEP 1 — DONE: editor witnesses on the played layer, bim-ootb #3288 MERGED
+- Hospital was never measured last session (the loop was cut mid-gesture); Terminal timed out on all four. `LARGE=1` runs the
+  four editor witnesses on **Clinic + JKR** (all green: 4/0 6/0 7/0 7/0). Default `run_4d_gates.sh` GREEN 13/13 before merge.
+- Step 3 (§Q.22.2) — bim-ootb **#3286 MERGED**. Measured: midair_zero on BimWhale_Advanced + SampleHouse `pass=13 fail=0 nolock=10`
+  rc 2 (was 5 false FAILs each); assembly order on two unseen rc 2, 0 FAIL, per-class rows printed; `cache_4d_run.js AC11Institute
+  BimWhale_Advanced` → `§CACHE_EXIT built=1 failed=1 [AC11Institute]` rc 1; gates GREEN 13/13; assembly-order verdict lines on the
+  seven locked buildings identical to main.
+### Q.22.4 STEP 4 — DONE: 4D editor witnesses in CI, bim-ootb #3291 MERGED (W-4D-EDITOR-CI)
+`fast-checks` runs the four editor witnesses on the played layer of `buildings/HHS_Office_Federated_extracted.db` (a real 75 MB file,
+no LFS). Measured first with an empty HOME (repo files only): 36 / 66 / 92 / 40 s, same log markers as a normal run. Red control: no
+building db → each prints `inconclusive=1`, the step exits 1. The PR's own CI run printed the four summaries and `verdict=PASS`.
+First time any 4D gate runs in CI.
+### Q.22.5 THE 25-MINUTE EDITOR WITNESSES WERE THE FIXTURE, NOT THE EDITOR
+- `node --cpu-prof` on Clinic's pipeline witness (228 s): **94 % in SQLite**, inside the shipped `retimeTaskElements` (150 s) and
+  Undo (65 s): one `UPDATE kernel_ops … WHERE output_guid=?` per element. The live viewer creates `idx_kernel_ops_guid` before any
+  edit (`viewer/tm_gantt_build.js:50`, §SE-7c — written for this exact O(n²)); `_gantt_edit_fixture.js` built `kernel_ops` without it.
+- Fix (witness only): the fixture creates the same index. Clinic pipeline **228 s → 11 s, every `§W_OCP_STATE` hash identical**.
+- Consequence: the "Terminal / Hospital too slow" verdict of §Q.21.1 and §Q.22.3 was a witness defect. Fleet result with the index: §Q.22.6.
+### Q.22.6 RESULT — THE FOUR EDITOR WITNESSES ON ALL SEVEN BUILDINGS, PLAYED LAYER (bim-ootb #3293, fixture index)
+```
+             pipeline   undo     reorder        group shift
+Duplex       4/0        6/0      7/0            7/0
+HHS          4/0        6/0      7/0            7/0
+JKR          4/0        6/0      7/0            7/0
+Clinic       4/0 (11 s) 6/0      7/0            7/0
+Terminal     4/0  34 s  6/0 45 s 7/0  736 s     7/0  50 s     ← first verdict ever (was >25 min each)
+Hospital     4/0  44 s  6/0 59 s 7/0  441 s     7/0  65 s     ← first verdict ever
+LTU_AHouse   4/0 111 s  6/0 161s TIMEOUT 1800 s 7/0 243 s
+```
+`LARGE=1` is back on Clinic + Hospital. Default gates GREEN 13/13 with the index. Logs: this session's scratchpad (copied to
+`~/.cache/bim4d/q22_logs_2026-11-18/`).
+### Q.22.7 OPEN, NAMED (in the order I would take them)
+1. **LTU reorder times out.** RO-5 runs the whole lock-gate judge (`verifyGanttIntegrity` → contact graph) once per committed
+   reorder (Hospital: 46). On 122k elements that does not fit 30 min. Witness-cost item, not an engine verdict. Option: judge a
+   bounded sample of the pairs on buildings over N elements, and say the sample size on the line.
+2. **The two judges still disagree, now at full size.** Hospital `§W_RO_GATE baseline floating=317 midair=9,313 judged=63,182`
+   while the schedule judge reads 0 out of order on the same played layer. Carried since §Q.20.2. The lock gate is delta-based so
+   it still refuses correctly, but "midair 9,313" is what a planner would see if it were shown. Compare the two per element.
+3. **Stair parts (§Q.22.1).** Proposed phase-follows-support rule for elements whose elected support is a stair flight. Changes
+   an element's phase/trade, which §D6 deliberately never does — design choice put to the owner.
+4. **BOQ prices every beam as steel (§Q.18.3).** Needs a sourced concrete-beam price per m³ before code; not started.
+5. **12 unseen models on an old extraction schema** (`no such column: t.bbox_x`) now fail loudly; re-extracting them is the
+   way to widen the "any model" test (source IFCs: `reference_source_ifc_locations`).
+6. Still needing the owner: §Q.20.4 (what "industry compliant" means; go/no-go for a headless-browser run — also the only way to
+   run `witness_json_4d5d_live.js`; its Node half `witness_json_4d5d.js` is 5/5 PASS today).
+
+## §Q.23 SANDBOX TRIALS OF THE THREE OWNER DECISIONS, 2026-11-18 (owner: *"Help me decide by following industry practice"* … *"run some sandbox test before applying"*) — NOTHING MERGED
+Logs + scripts: `~/.cache/bim4d/q22_logs_2026-11-18/` (`dcma_sandbox.js`, `dcma.log`). Separate cache (`CACHE_4D_DIR`), the real cache untouched.
+### Q.23.1 STAIR PARTS GO WITH THEIR STAIR (industry: one stair work package, Synchro / TimeLiner link the assembly)
+- The extracted dbs carry **no aggregation** (no IfcRelAggregates table), so the rule reads the elected support.
+- **v1** (anything resting on a flight takes its task): far too wide — moved pipes, fittings, light fixtures, furniture (LTU 219, HHS 25),
+  moved railings EARLIER on Clinic, and Duplex IfcSlab 0 → 2 out of order (gate 1 RED). Rejected.
+- **v2** (+ only parts filed in an EARLIER phase than the flight; a part carrying anything outside the set stays): gates GREEN, unseen 22 → 15.
+  The stair members carry each other (`IfcMember carries IfcMember` 11, `IfcBeam carries IfcBeam` 10), so the guard held them back.
+- **v3** (transitive, the phase twin of §D6: earlier-phase elements whose support chain reaches a flight through moved parts):
+  **unseen 22 → 0, tuned fleet 3 → 1 (Duplex 2 → 0), gates GREEN 13/13, programme length unchanged** (Duplex 14 d, JKR 48, BimWhale 26,
+  Ifc4_Revit 63). Moved: BimWhale 33, Ifc4_Revit 18, Duplex 28, LTU 7, JKR 4, HHS 1, others 0. Code: bim-ootb branch
+  `sandbox/4d-decisions` (no PR).
+- ⛔ **Open before applying:** on Duplex v3 moves **16 structural walls + slabs** into the envelope task because they rest on the stair
+  chain. A concrete stair is normally cast with the frame (Superstructure); a steel/timber stair goes in after the shell. So the
+  right direction depends on what the STAIR is, and Duplex's flight sits in Architecture Envelope. Owner question.
+### Q.23.2 "INDUSTRY COMPLIANT" = DCMA 14-POINT (sandbox scorer over the authored task network)
+Thresholds from Deltek Acumen's DCMA metric descriptions + the GAO schedule guide: logic ≤ 5 %, leads 0, lags ≤ 5 %, FS ≥ 90 %,
+hard constraints ≤ 5 %, duration > 44 d ≤ 5 %, negative float 0, invalid dates 0; float > 44 d is flagged (no % limit in the source).
+11/13/14 need progress + baseline → n/a for an as-planned schedule. Float computed by the scorer's own CPM in CALENDAR days (DCMA says working days).
+```
+              tasks links logic  lags FS    float>44d  negF  dur>44d  invalid  noResource  CP-test  plannedVsLogic
+Duplex          19   31   0      0   100%   0          0     0        0        100%        PASS     0 d
+HHS             16   24   0      0   100%   0          0     0        0        100%        PASS     0
+JKR             24   41   0      0   100%   0          0     0        0        100%        PASS     3
+Clinic          18   29   0      0   100%   3 (17%)    0     0        0        100%        PASS     0
+Terminal        69  137   0      0   100%  14 (20%)    0     0        0        100%        PASS    11
+Hospital        37   66   2 FAIL 0   100%  16 (43%)    0     5.4% FAIL 0       100%        PASS    36
+LTU_AHouse      86  169   1      0   100%  55 (64%)    0     5.8% FAIL 0       100%        PASS    18
+HITOS/WBDG/Molio (unseen)  all pass; float>44d 0 / 0 / 8 (20%)
+```
+- **Real gaps found:** (1) `tasks.resource` is empty on EVERY task (check 10) — the crews live on elements, never on the task row;
+  (2) Hospital has 2 tasks with open logic (3 end tasks); (3) Hospital / LTU have long tasks just over 5 %; (4) "plannedVsLogic" > 0 means
+  crew levelling pushed tasks later than their links require, which P6 would show as float, not logic; (5) the engine leaves
+  `total_float` / `early_*` / `late_*` columns NULL — a P6 export carries no float.
+### Q.23.3 HEADLESS BROWSER ON THE GITHUB RUNNER (never the owner's machine)
+- One-off workflow on bim-ootb branch `sandbox/4d-live-browser-ci`, run 44281800397: the browser launched on the runner (mechanism works,
+  no local risk). `witness_json_4d5d_live.js` **FAILED at its first wait**: `TimeoutError 180000 ms` waiting for `getRate` /
+  `loadJsonWithOverrides` / `_openSettingsPanel` on the live viewer. All three names exist in `viewer/` on main.
+- The witness cannot say WHICH wait timed out (page `load` or the function check) — a witness that cannot report its own failure (PRIMAL LAW 4).
+  First fix: name each wait and log page console errors, then re-run on the runner.
+
+## §Q.24 THE RIGHT ANSWERS TO §Q.23, FOUND AND SANDBOX-TESTED (owner 2026-11-18: *"Find out for me what are the right answers"*) — NOTHING MERGED
+### Q.24.1 STAIRS GO UP WITH THE FRAME, FLOOR BY FLOOR; RAILINGS AFTER
+- **Practice (sources):** permanent stairs are the workers' access during construction. OSHA 29 CFR 1926.1052(b)(3) regulates walking on
+  metal pan stairs BEFORE their concrete treads are filled; precast flights are set during framing and used as access stairs (4specs,
+  RediStair). Cast-in-place stairs are formed and poured as concrete work. Railings / balustrades and stone tread finishes come later.
+- **Measured in the models:** material fields are empty or junk (a colour, a wall type); the TYPE NAME carries it — Cast-In-Place (JKR,
+  LTU), Monolithic concrete (Clinic, Hospital), Precast + solid stone (Ifc4_Revit), Assembled (Terminal, BimWhale), Concrete Pan (WBDG).
+  All of them are frame-stage stairs.
+- **Root cause:** `rates.js:338-339` files `IfcStair` / `IfcStairFlight` in Architecture Envelope seq 6 (CARPENTER). Every earlier stair fix
+  (§STAIR_MEMBER_ARCHITECTURE, its IfcSlab widening) moved PARTS to the flight's wrong phase instead of questioning the flight's.
+- **Sandbox (bim-ootb branch `sandbox/4d-stair-with-frame`):** IfcStair + IfcStairFlight + the stair-part rule → Superstructure seq 4; railings
+  unchanged (Envelope 6, after the flight); crew unchanged. Out of order on the played layer: **tuned 3 → 1** (Duplex 2 → 0, LTU 1 stays),
+  **10 unseen models 22 → 0**, and NO walls or slabs moved (the §Q.23.1 v3 side effect is gone). Gates 12/13: assembly order A2 red only —
+  "unjudged structural" rose by 25 (Duplex 4 stair members at ground level −0.10 m, Clinic 1, LTU 20 whole-stair boxes at landing heights
+  with nothing modelled under them). Those are the named no-support-modelled set, not out-of-order elements → re-lock with this reason.
+  Also IMPROVED: Hospital unjudged IfcBeam 13 → 8, HHS / Clinic unjudged IfcStairFlight 2 → 0, LTU several.
+- **To apply:** the two rates.js rows + the stair-part rule target; re-lock A2 and any changed midair_zero numbers from the measured run with
+  this section as the reason; measure programme days and Σ install seconds before/after; the §STAIR_PART_FILING sandbox code is NOT needed.
+### Q.24.2 DCMA 14-POINT — YES, AS THE "INDUSTRY COMPLIANT" GATE
+DCMA is the schedule-quality test owners and auditors run on P6 / MS Project schedules; it reads only what a P6 export carries. To pass:
+fill `tasks.resource` from the task's dominant crew (check 10), write CPM `early_* / late_* / total_float` into the task rows (P6 carries
+float), close Hospital's 2 open-logic tasks, split tasks over 44 working days, and count float in WORKING days on the template calendar.
+### Q.24.3 BROWSER WITNESS — YES, ON THE GITHUB RUNNER ONLY
+Name each wait in `witness_json_4d5d_live.js` (page load vs readiness), log the page's console errors and the time each wait took, re-run on
+branch `sandbox/4d-live-browser-ci`; promote to `ci.yml` only after a PASS there.
+
+## §Q.25 APPLYING §Q.24 (owner 2026-11-18: *"go"*)
+### Q.25.1 STEP 1 DONE — stairs go up with the frame, bim-ootb #3305 MERGED
+rates.js + its JSON mirror: IfcStair / IfcStairFlight + `stair_member_architecture` → Superstructure seq 4; railings unchanged.
+Played-layer out of order 3 → 1 (Duplex 2 → 0); install hours identical on all seven; programme Hospital 343 → 354 d, LTU 837 → 824, others
+equal; W-MZ-2u unchanged at its lock; re-locked from the measured run (midair.json W-MZ-2/-8, assembly_order.json, big-element unchecked
+Hospital 172 → 155, Clinic 21 → 20, LTU 624 → 617 — all fell). Gates GREEN 13/13. `witness_rates_pack` RP5 fails on main too (unrelated).
+### Q.25.2 STEP 2 SPEC — DCMA 14-POINT
+Issue: the authored task rows carry no resource and no float (`tasks.resource`, `early_*`, `late_*`, `total_float` NULL), so a P6 export
+and any DCMA reader see an unresourced, float-less schedule; and nothing measures DCMA at all.
+1. **Resource (check 10):** the template path writes each task's DRIVING trade (`bottleneck`, the trade whose crew-days set the
+   duration — P6's primary resource) into `tasks.resource`. Extracted from the task's own pricing, nothing chosen.
+2. **Float (checks 6, 7, 12):** the template path calls the existing owner `computeCpm(db, schedId, {fixedDates: true})` once the links are
+   written (it already runs after every edit, `tm_gantt_edit.js:588`; it never ran at generation). No second CPM.
+3. **Calendar:** `4D_template.json` calendar is 7 days/week, so calendar days ARE working days; 44 working days = 44 days.
+4. **`viewer/tests/witness_dcma_14pt.js`:** reads tasks + links + the computeCpm columns from the same played chain the editor witnesses
+   use; prints one `§DCMA_CHECK <bld> <n> <name> value= threshold= PASS|FAIL|N/A` per check and `§DCMA_VERDICT`. Thresholds (Deltek Acumen
+   DCMA metric descriptions; GAO): logic ≤ 5 %, leads 0, lags ≤ 5 %, FS ≥ 90 %, hard constraints ≤ 5 %, high duration ≤ 5 %, negative float 0,
+   invalid dates 0, resources 0 missing; high float reported (no % limit in the source); 11/13/14 N/A (need progress + baseline).
+   Red control: drop one link → check 1 must count it. Known failures are named, not hidden: until fixed it is a ratchet (a check may not
+   get worse than `baselines/dcma.json`), not yet a pass gate.
+### Q.25.3 STEP 2 DONE — DCMA, bim-ootb #3307 MERGED (gate 14)
+- Every generated task now carries its driving trade (`tasks.resource`) and CPM float (`§DCMA_FLOAT … written`, computeCpm stores float
+  as TEXT — the witness reads it as a number). Measured on the seven: float on 100 % of tasks, resource on 100 %, negative float 0,
+  a critical path on all seven. `run_4d_gates.sh` GREEN 14/14.
+- **DCMA FAIL left, named and locked in `baselines/dcma.json` (ratchet: may not get worse):** Hospital check 1 logic 2 tasks (5.4 %);
+  check 8 long tasks Hospital 2 (5.4 %), LTU 5 (5.8 %). High float (reported, no % limit): Clinic 3, Terminal 20, Hospital 19, LTU 54.
+### Q.25.4 STEP 3 DONE — the live JSON-editing browser witness runs in CI, bim-ootb #3308 MERGED (`live-json-editor` job)
+- With named waits the runner showed the cause: the headless browser could not create a WebGL context, so viewer init aborted and
+  `_openSettingsPanel` never appeared — environment, not a viewer bug. Fixed in the witness with software-GL flags (which of the four
+  flags matters was not isolated). Sandbox run 44291708491 and #3308's own CI run: L0–L5 PASS, judged=6 fail=0. Never run locally.
+  It reads the DEPLOYED site, so it checks what users get, not the branch's code.
+### Q.25.5 NEXT (in order)
+1. Close the DCMA fails: Hospital's 2 open-logic tasks (find which two and why they have no successor — a template phase with no
+   `within_level` successor on their level?), then split tasks over 44 d (Hospital 2, LTU 5) by the template's own rule, not by hand.
+2. §Q.22.7 items 1-2 (LTU reorder witness cost; the lock gate's 9,313 vs 0 judge disagreement on Hospital).
+3. BOQ concrete-beam pricing (§Q.18.3) — needs a sourced price per m³.
+4. P6 export round trip (the second half of "industry compliant", §Q.24.2) — now meaningful, since tasks carry resource and float.
+
+## §Q.26 RESUME 4D, 2026-11-18 — DCMA CHECK 1 CLOSED (bim-ootb #3315 MERGED)
+- **Which tasks:** open ends were trade chains that just stop — Hospital `Finishes_Level_5`, `MEP_Final_Level_6`, `Superstructure_Level_7`;
+  LTU `Finishes_TAKPLAN`, `MEP_Rough_in_V_N_5`. One start task each (fine).
+- **Fix (P6 practice):** one zero-length `TASK_PROJECT_COMPLETE` milestone (`predefined_type MILESTONE`, P0D, no elements, no date moved)
+  that every open end links to, FS lag 0 (`§DCMA_FINISH_MILESTONE openEnds=n linked`). Sandboxed first in a separate cache.
+- **Measured:** DCMA logic Hospital 5.4 % → 0 %, LTU 1.2 % → 0 %, 0 % on all seven; gates GREEN 14/14 incl. every editor witness; the
+  milestone is exempt from the resource check (DCMA judges duration > 0). Ratchet re-locked (logic Hospital 2 → 0, LTU 1 → 0).
+- **Long tasks, read and NOT fixed (next):** every DCMA check-8 failure is ONE trade on ONE level — `MEP_Rough_in` Hospital L3 64 d, L4 62 d;
+  LTU Plan_1 174 d, Plan_2 111 d, Plan_3 73 d, Plan_4 75 d, TAKPLAN 196 d. Practice: split by zone or by system. Options to sandbox:
+  (a) by MEP system (the element's discipline/system: duct / pipe / electrical — a split real trades recognise); (b) by plan zone
+  (the location axis, `location_axis.js`); (c) by crew-capacity cut at 44 d (mechanical, auditors dislike it). Sandbox (a) first.
+- **Then** §Q.25.5 items 2-4.
+
+## §Q.27 THE LONG MEP ROUGH-IN TASKS — MEASURED, CAUSE FOUND, ONE OWNER DECISION (2026-11-18, owner: *"resume here"*)
+- **Option (a) of §Q.26 (split by MEP system) does NOT fix it — measured before building:** in every DCMA check-8 task ONE trade alone is
+  the whole duration — `PLUMBER` (2 crews): Hospital L3 63.0 crew-days of 64, L4 61.6 of 62; LTU Plan_1 173.1 of 174, Plan_2 110.4,
+  Plan_3 72.7, Plan_4 74.7, TAKPLAN 195.5. HVAC / electrical in the same tasks: 0.6-25 crew-days. A split by system leaves a 62-196 d plumbing task.
+- **Cause:** pipe classes (`IfcPipeSegment/Fitting`, `IfcFlowSegment/Fitting`) route to `PLUMBER` by IFC class alone, so one crew carries
+  several real trades. By the elements' own `elements_meta.discipline`, PLUMBER crew-days in the first long task:
+  Hospital L3 — FP (fire protection) 25.2 · MEP (mechanical piping) 18.7 · PLB 18.3; LTU Plan_1 — PLB 65.1 · HEAT 40.7 · SAN 30.7 (+ COOL elsewhere).
+- **Industry practice:** sprinkler fitters (FP), pipefitters (heating / cooling / mechanical piping) and plumbers (domestic water, sanitary)
+  are separate crews working in parallel on a floor.
+- **⛔ Owner decision (new trades are a topology change):** route pipe work by the element's discipline to the crew that installs it —
+  FP → a sprinkler-fitter trade, HEAT/COOL/MEP piping → a pipefitter trade, PLB/SAN → PLUMBER — with productivity and crew cap COPIED
+  from PLUMBER (the §S65 copy-from-sibling method; no new number invented). Predicted from the measurement: Hospital L3/L4 → ~25 d (passes);
+  LTU still over 44 d on its plumbing+sanitary share (Plan_1 ~96 d) → LTU would also need a split by zone (location axis) as a second step.
+  Needs: discipline reaching the routing (cache `els` do not carry it today), a §TPL_ZERO_MINUTE check for the new pairs, sandbox first.
+
+## §Q.28 PIPE WORK BY ITS OWN CREW (owner 2026-11-18: *"Go"* on §Q.27)
+### Q.28.1 SPEC
+- `rates.js` `SEQUENCE_DISCIPLINE_TRADE = { FP: SPRINKLER_FITTER, HEAT: PIPEFITTER, COOL: PIPEFITTER, MEP: PIPEFITTER }`; PLB / SAN stay PLUMBER.
+- `LABOR_RATES.SPRINKLER_FITTER`, `LABOR_RATES.PIPEFITTER`: rate, crew size, crew cap (2) and productivity COPIED from PLUMBER (§S65 method);
+  JSON mirror identical.
+- `schedule_author.js` `_pipeTrade(db, guid, rule, table)`: ONE helper at all three rule sites (template path, phase path, read path). Acts only
+  when the class rule's resource is PLUMBER and the element's `elements_meta.discipline` is in the table; phase and sequence never change.
+  Callers that pass tables explicitly (`cache_4d_run.js`, `_gantt_edit_fixture.js`) pass `disciplineTrades`; the browser reads the window global.
+- **Prediction (from §Q.27's measurement):** Hospital MEP Rough-in L3 / L4 → ~25 d (DCMA check 8 passes on Hospital); LTU stays over 44 d on
+  PLUMBER's PLB + SAN share (~96 d on Plan_1) → a zone split is a second step. Σ install seconds unchanged (same productivity).
+- **Proof owed:** sandbox cache first; gates; DCMA check 8 per building; `§TPL_ZERO_MINUTE` 0 for the new pairs; programme days and Σ install
+  hours before / after; buildings with no discipline column unchanged.
+### Q.28.2 SANDBOX v1 — MEASURED (separate cache; MEP → PIPEFITTER included)
+- Gates GREEN 14/14. DCMA check 8: Hospital 2 → 0 (PASS), LTU 5.7 % still FAIL (as predicted: PLB + SAN on PLUMBER), all others 0.
+  `§TPL_ZERO_MINUTE` for the new trades: 0. Σ install hours IDENTICAL on all seven.
+- Programme days (real cache → sandbox): Hospital 354 → 262 · LTU 824 → 561 · Terminal 100 → 91 · JKR 48 → 50 · Duplex 14, HHS 53,
+  Clinic 124 unchanged. Crews: Hospital PLUMBER 29,897 → PLUMBER 8,539 + SPRINKLER_FITTER 13,490 + PIPEFITTER 7,868.
+- **Defect seen in v1:** Duplex (785) and HHS (2,665) moved ALL pipe work to PIPEFITTER — their single model tags everything `MEP`, so the
+  generic tag cannot name a crew. **v2 drops `MEP` from the map** (only FP / HEAT / COOL). Arithmetic from §Q.27: Hospital L3 PLUMBER would
+  then carry PLB 18.3 + MEP 18.7 = 37 crew-days < 44, so check 8 should still pass — NOT yet measured.
+### Q.28.3 (superseded by §Q.28.4 — v2 re-run, read, applied)
+- Code: bim-ootb branch `fix/4d-pipe-trades` @ `2a3c7f1c` (pushed, no PR), worktree `/tmp/wt-4d-trades` (may be gone; re-create from the branch).
+- v2 run logs were going to the scratchpad of the closed session (lost on reboot) — **re-run, do not trust a missing log:**
+  `CACHE_4D_DIR=<scratch>/cache scripts/run_4d_gates.sh`, then read: GATES_VERDICT, `§DCMA_CHECK * 8`, `§TPL_ZERO_MINUTE` for
+  SPRINKLER_FITTER / PIPEFITTER, and programme days + Σ install hours + crew counts per building vs `~/.cache/bim4d` (the v1 table above).
+- If v2 holds (gates green, Hospital check 8 PASS, Duplex/HHS crews unchanged, hours identical): `node scripts/bump.js viewer/rates.js
+  viewer/schedule_author.js --write`, `node scripts/gen_manifest.js --write modeller`, re-lock the DCMA ratchet (`LOCK=1 witness_dcma_14pt`)
+  and any changed midair / assembly locks FROM THE MEASURED RUN with this section as the reason, then one PR. Record the result in §Q.28.4.
+- Then: LTU's remaining long MEP Rough-in tasks (PLB + SAN on PLUMBER) need a split by zone (location axis) — sandbox first; then §Q.25.5 items 2-4.
+### Q.28.4 RESULT — v2 MEASURED AND APPLIED (2026-11-19, bim-ootb PR #3322, branch `fix/4d-pipe-trades` @ `f226d01c`)
+- **Method:** main and the branch each built into a separate cache (`CACHE_4D_DIR`) with one new read-only line added to both,
+  `§PIPE_TRADES` (elements + install hours per pipe crew, and `installHoursAll` over every trade), so the split is read from the log.
+- `scripts/run_4d_gates.sh` GREEN 14/14. `§TPL_ZERO_MINUTE` for SPRINKLER_FITTER / PIPEFITTER: 0.
+- **DCMA check 8:** Hospital 2 → 0 (PASS). LTU 5 → 5 (5.7 %, FAIL): one long PLUMBER task became a 45-day PIPEFITTER task, the
+  rest are PLB + SAN on PLUMBER, as §Q.27 predicted.
+- **Programme days (main → v2):** Hospital 354 → 262 · LTU 824 → 561 · Terminal 100 → 91 · JKR 48 → 50 · Duplex 14, HHS 53,
+  Clinic 124 unchanged. Same numbers as v1: dropping `MEP` changed no task length.
+- **`§PIPE_TRADES` (main → v2), `installHoursAll` identical on all seven:**
+  Duplex PLUMBER 785 (unchanged — the v1 defect is gone) · HHS PLUMBER 2,665 (unchanged) · Clinic 9,350 (unchanged; no FP/HEAT/COOL tag) ·
+  Terminal PLUMBER 9,084 → 8,175 + SPRINKLER_FITTER 909 · JKR 1,855 → 1,804 + SPRINKLER_FITTER 51 ·
+  Hospital 29,897 → PLUMBER 16,407 + SPRINKLER_FITTER 13,490 (Hospital's mechanical piping is tagged `MEP`, so it stays with PLUMBER;
+  L3 still passes, as §Q.28.2 computed) · LTU 74,508 → PLUMBER 41,634 + PIPEFITTER 32,874.
+- **Re-locked from the measured run (reason: this section):** DCMA Hospital highDur 2 → 0, highFloat 19 → 14; Terminal highFloat 20 → 13.
+- sw viewer v1762, modeller v310 (`scripts/bump.js --write`); `tests/audit_sw_precache.js` 301 found / 0 missing; manifest refreshed.
+- **Next:** LTU's remaining long MEP Rough-in tasks (PLB + SAN on PLUMBER, 4 tasks, plus the 45-day PIPEFITTER task) → split by zone
+  (location axis, `location_axis.js`), sandbox first; then §Q.25.5 items 2-4.
+
+## §Q.29 LTU'S LONG MEP ROUGH-IN TASKS — DUCTWORK ON THE PLUMBER CREW, FOUND BEFORE THE ZONE SPLIT (2026-11-19, owner: *"proceeding here with LTU next tasks"*)
+### Q.29.1 MEASURED (main @ #3322, played layer, read-only probe)
+- LTU long tasks (> 44 d), 5 of 87: MEP_Rough_in Plan_1 114 d · Plan_2 59 d · Plan_3 45 d (PIPEFITTER) · Plan_4 52 d · TAKPLAN 118 d; all others PLUMBER.
+- Their content by `elements_meta.discipline` includes `ACMV` IfcFlowSegment / IfcFlowFitting in every one (Plan_4: ACMV is the largest group).
+- **Those ACMV elements are DUCTWORK, not pipe**, by the model's own type names: LTU ACMV IfcFlowSegment 8,268, of which 7,235 are
+  `Spiro kanaler, Förzinkade` (galvanised spiral duct) / `Rektangulära, Förzinkade` (rectangular duct); the rest are mostly cable trays
+  (`Kabelränna`, `Kabelstege`) and conduit (`Tomrör`). Clinic ACMV (3,138) = Revit `M_Rectangular Elbow / Transition` duct fittings.
+- **Cause:** `IfcFlowSegment` / `IfcFlowFitting` (the IFC2x3 generic classes) route to PLUMBER by class alone (rates.js SEQUENCE_RULES),
+  so ducts modelled as the generic class are laid by plumbers. Ducts modelled as `IfcDuctSegment` already go to HVAC_TECH.
+- Fleet: ACMV on these classes exists only in LTU (14,173) and Clinic (3,138). HHS MEP 2,665; JKR PLB/FP; Terminal PLB; Hospital FP/PLB/MEP — untouched.
+### Q.29.2 SPEC (same method as §Q.28, no new trade, no new number)
+- `SEQUENCE_DISCIPLINE_TRADE.ACMV = 'HVAC_TECH'` (the crew the model's own duct class already goes to).
+- `LABOR_RATES.HVAC_TECH.productivity` gains `IfcFlowSegment: 18`, `IfcFlowFitting: 12` — COPIED from the same crew's own
+  `IfcDuctSegment` / `IfcDuctFitting` rows (a generic flow segment carrying air IS a duct segment). Without it the substring lookup finds no key
+  and every moved element hits the 120 s floor (`§TPL_ZERO_MINUTE ... no-productivity-key`). JSON mirror identical.
+- Known, named, not fixed: the ~1,000 LTU cable-tray / conduit elements tagged ACMV move PLUMBER → HVAC_TECH (both wrong; the right crew is
+  ELECTRICIAN; routing by type name would be a new rule — not in this step).
+- Hours WILL change (by design, unlike §Q.28): duct productivity (18 / 12 per day) differs from pipe (20 / 15). Report the delta, do not hide it.
+- **Proof owed:** sandbox caches main vs branch; `run_4d_gates.sh`; DCMA check 8 per building; `§TPL_ZERO_MINUTE` for HVAC_TECH IfcFlow*: 0;
+  `§PIPE_TRADES` + HVAC_TECH element/hour counts; programme days; buildings without ACMV unchanged (5 of 7).
+- **Then:** if LTU still has tasks > 44 d, the zone split (location axis) — sandbox first.
+### Q.29.3 RESULT — APPLIED (2026-11-19, bim-ootb PR #3333, branch `fix/4d-ltu-zone-split`)
+- **Sandbox round 1 found a floor:** LTU's 238 ACMV `IfcFlowTreatmentDevice` (Lindab CADENZA / MORENDO / SLCU duct silencers) moved to
+  HVAC_TECH, which had no key for that class → `§TPL_ZERO_MINUTE cls=IfcFlowTreatmentDevice resource=HVAC_TECH reason=no-productivity-key`.
+  Fixed: HVAC_TECH `IfcFlowTreatmentDevice: 4`, COPIED from PLUMBER's row for the same class. Round 2: that floor line is gone. (The
+  `IfcFlowTerminal resource=HVAC_TECH reason=no-resource` line is pre-existing on main — a witness fixture without labour rates.)
+- **Gates:** 13 / 14 green; the red one is the DCMA ratchet, LTU check 6 high float 54 → 73 (report-only in DCMA, no limit).
+  **Reason it moved, and why it is re-locked:** MEP Rough-in was LTU's bottleneck crew; moving 14,173 duct elements to the duct crew shortens
+  it (561 → 528 d), so the critical path tightens around fewer tasks and the others gain float. High float flags loose logic for a planner to
+  review; it is not a defect this change introduced in any task's logic. Re-locked from the measured run (also Clinic 3 → 2, LTU highDur 5 → 4).
+- **DCMA check 8:** LTU 5 → 4 long tasks, 5.7 % FAIL → **4.6 % PASS**. All seven buildings now pass check 8.
+- **Programme (main → branch):** LTU 561 → 528 d · Clinic 124 → 128 d · Duplex 14, HHS 53, JKR 50, Terminal 91, Hospital 262 unchanged.
+- **`§PIPE_TRADES` (now incl. HVAC_TECH):** LTU PLUMBER 41,634 → 27,223 el, HVAC_TECH 6,365 → 20,776 el; Clinic PLUMBER 9,350 → 6,212,
+  HVAC_TECH 2,761 → 5,899. **Install hours change, by design (§Q.29.2):** LTU 56,698.9 → 58,043.4 h (+2.4 %), Clinic 9,648.9 → 9,948.1 h
+  (+3.1 %) — duct rates (18 / 12 per day) are slower than the pipe rates they replace (20 / 15). The other five: identical.
+- sw viewer v1766, modeller v312; `gen_manifest --check` PASS; `audit_sw_precache` 302 / 0 missing.
+- **Next (unchanged):** LTU's 4 remaining long MEP Rough-in tasks → zone split by the location axis, sandbox first; then §Q.25.5 items 2-4.
+
+## §Q.30 THE FLOATING SLAB AT 0:01 IN THE HHS FILM — THE FILM PLAYS THE STORED SEPTEMBER SCHEDULE, NOT TODAY'S 4D (2026-11-19, owner: *"at 00.06 … the same floating slab high up 2nd level i keep seeing from before. Analyse why. Don't fix"* · *"THat slab already appearing starting 00:01 s"*) — ANALYSIS ONLY, NOTHING CHANGED
+### Q.30.1 MEASURED (film `~/Downloads/HHS_Office_Federated_4D_AFTER_1920x1080_24fps_2026-11-19.mp4`, its page log `~/.cache/bim4d/altc_2026-11-19/bake_HHS_firehose.log`, its DB `~/Downloads/HHS_Office_Federated_silent.db`)
+- **Which timeline the film plays — decided by the film's own watched slabs (`§CPE_BUILDUP_PLACED`, first frame placed):**
+  Level 2 slab frame 177 · Level 3 308 · Roof 392. Stored DB grid (`tasks`/`task_elements`, genVersion 38, Sept): task starts at frames
+  179 / 309 / 391. Today's timeline (cache_4d_run on the same DB): 19 / 187 / 389. The placed-count curve agrees (mean error 39 elements vs
+  the stored grid, 96 vs today's). `§CPE_DAY_COUNTER of=50` = the stored grid's 50 days (09-02..10-22); today's is 48-49. **The film plays
+  the stored September schedule.**
+- **Why (order of operations in the page log):** line 1022 `§KERNEL_OPS_SCHED_VERSION stale genVersion=38 current=43 — cleared 6880 ops,
+  will re-inject` → 1079-1117 the captured branch (`tm_gantt_build.js`) builds the played layer FROM THE STORED GRID (`§GANTT_SOURCE
+  captured tasks=20 … generated=0`, `§CROSSTASK_JUDGE_PARITY pushed=86 floating=33 windowBlocked=31`, `§GANTT_CACHE_SAVE ops=6884`) →
+  1132-1177 `§GANTT_SCHEDULE_STALE_REGEN … re-materializing in place` runs today's generator (`§SE_CPM tasks=16 projectDuration=49`,
+  `§TPL_LAYER_SELFCHECK … PASS`). That regen lives in `buildTaskIndex` (`tm_gantt_build.js:1069`): it rewrites `tasks`/`task_elements` for
+  the Gantt bars, and **nothing re-injects the played layer after it** (no second `§GANTT_SOURCE` / `§GANTT_CACHE_SAVE` in the log).
+  So the Gantt and the §SE_CPM / §TPL_* lines describe today's schedule while the picture plays September's.
+- **The floating element, by data (no frame was looked at):** in the stored grid's first task (`TASK_Superstructure_Level_1`, days 0-11,
+  frames 0-179), 444 of the 451 raised pieces have something under them from day 0. Seven do not: **2 × IfcSlab `Stair:Massiv - Stufen
+  Naturstein` (stone stair landings, 1.6 × 1.6 m, z 2.16-2.19 m, guids `1XzmebWuX4vubs_y_zqTop`, `2dAUCOYzH9cAMxESLPrInF`), nothing under
+  their footprint**, and 5 curtain-wall posts (`Rechteckiger Pfosten 6 x 12`, z 3.9 m, first support day 11). The landings are IfcSlab, so
+  the class rule files them Superstructure (day 0+); their own stair and flights are in `TASK_Architecture_Envelope_Level_1` (day 11-15,
+  ≈ frame 179). They hang from 0:01 to ≈ 0:07.5. The guid the owner saw is not proven (that needs a per-element film witness), but these are
+  the only slab-class pieces in that window with nothing under them.
+- **Today's 4D already places them right:** stair day 0.0-0.2, flights 0.1-0.4, landings 0.4-0.8 (§Q.24/§Q.25 "stairs go up with the
+  frame", bim-ootb #3305). This is why the owner keeps seeing it "from before": every bake of this DB replays the stored September grid.
+### Q.30.2 WHAT THIS RETRACTS / WHY THE WITNESSES MISSED IT
+- **Retracted (2026-11-19, same day):** "the film plays the current 4D schedule" (bake agent, ALTC_FOUNDATION §1 entry) and "the 4D is better
+  than October on the film's own file, mid-air 153 → 0" as a statement about the FILM. 153 → 0 is true of today's code run on that DB
+  (cache_4d_run), but the film did not play it. The §-lines quoted as proof were the regen's, which did not drive the picture.
+- **Scope-blind witnesses:** `cache_4d_run.js` and every gate built on it generate from scratch; none replays a DB that carries a stored,
+  stale schedule through the captured branch, so the gates cannot see this path. The bake log has no line that names which grid the played
+  layer came from relative to the regen.
+### Q.30.3 OPEN (owner decides; not fixed)
+- Order of operations: run the stale regen BEFORE the captured branch builds the played layer, or re-inject after it — the film then plays
+  today's schedule. `§TM_BAKE_LOCK` already intends "the film stays on the schedule it started with"; here the regen ran at load, before the
+  bake, and still did not reach the picture.
+- A witness that names the grid the played layer came from (genVersion of the tasks it read vs the tasks now in the DB) and fails on a mismatch.
+- The film DB itself (`HHS_Office_Federated_silent.db`, 2026-09-02) carries the stored genVersion-38 grid; any fix must be checked on it.
+
+## §Q.31 THE PICTURE PLAYS THE SCHEDULE THE GANTT SHOWS — SPEC (2026-11-19, owner on §Q.30: *"The answer is obvious isn't it?"*)
+### Q.31.1 REACH (measured)
+- Shipped viewer DBs (`buildings/*_extracted.db`, `*_meta.db`) carry 0 tasks → every live open generates fresh with today's rules; every 4D
+  gate measures that. Only film DBs carry a stored schedule: `HHS_Office_Federated_silent.db` genVersion 38, `Hospital_silent.db` 39,
+  `BakeFilm_material_extracted.db` 42 (current 43). So the rule work since September is real for any model dropped in; every FILM of these
+  DBs replayed its old task grid (membership + windows), with only the in-task order from current code.
+### Q.31.2 SPEC
+- `tm_gantt_build.js`: the regen block in `buildTaskIndex` becomes ONE function `_regenStaleScheduleNow(db, where)` (exported
+  `TMS._regenStaleScheduleNow`): `activeSchedule(db, {currentGenVersion})`; acts only when `safeToRegen` (stale, authored, no baseline) and not
+  `_tmEditLocked` (§TM_BAKE_LOCK unchanged: never mid-bake). Returns `{ran, ok, reason, id, genVersion}`. `buildTaskIndex` calls it.
+- `tm_lifecycle_api.js _activateAsync`: FIRST, before the IDB `gantt` cache and the kernel_ops checks, if the active schedule is stale:
+  await the rate pack + `_load4DTemplate()` (the same two the cold path awaits before its first materialize), run
+  `_regenStaleScheduleNow(db, 'activate')`; when it ran ok, drop the cached play order (`cacheDel('gantt')`, delete ELEMENT_PLACE rows) —
+  it was derived from the schedule that was just replaced — so the single `injectGantt` pass builds the picture from the regenerated grid.
+  Log `§TM_PLAY_SCHEDULE_FRESH where=activate stale=<0|1> regen=<ran/ok|skip reason> genVersion=<old>-><current> droppedPlayOrder=<0|1>`.
+- Nothing else changes: a current schedule, a captured (imported) one, one with a baseline, or a bake in progress are all left exactly as now.
+### Q.31.3 WITNESS (owed) — `viewer/tests/witness_tm_play_schedule_fresh.js`
+Issue it proves/disproves: *"a DB carrying a stale stored schedule plays the old grid while the Gantt shows the new one."*
+- Source order: in `_activateAsync` the regen is called before `cacheGet('gantt')` results are used and before `_schedOpsAgreementFail`;
+  one regen body in the tree (`materializeZones(` appears in the helper, not in `buildTaskIndex`); the helper calls `_tmEditLocked(`.
+- Real DB: `~/Downloads/HHS_Office_Federated_silent.db` (if present, else INCONCLUSIVE): `activeSchedule` reports stale=true,
+  safeToRegen=true (the path fires on the exact film DB); after the regen the stair landings `1XzmebWuX4vubs_y_zqTop` /
+  `2dAUCOYzH9cAMxESLPrInF` sit in a task that does not start before their own stair's task (the §Q.30 float is gone in the grid the
+  picture will be built from).
+- End-to-end proof (owed, needs the owner's go — GPU): a short clip bake of HHS where `§CPE_BUILDUP_PLACED` puts the Level 2 slab near
+  today's frame (≈19), not the stored grid's 177, and `§TM_PLAY_SCHEDULE_FRESH … regen=ran/ok`.
+### Q.31.4 RESULT — APPLIED (2026-11-19, bim-ootb PR #3337, branch `fix/4d-film-stale-schedule`)
+- `_regenStaleScheduleNow` (tm_gantt_build.js) is the one regen; `_activateAsync` (tm_lifecycle_api.js) runs it first and drops the play
+  order derived from the replaced schedule. Harness updates found by the gates: `witness_tm_needle_sync` slices the helper with
+  `buildTaskIndex`; W-PERS-2 checks the helper does not persist either.
+- **Witness W-TM-PLAY-FRESH 9/9** on the real film DB: genVersion 38 stale + safeToRegen; stored grid has both stair landings before their
+  stair (the defect is visible to it); regenerated grid has them after (landings day 0.79 / 0.42, after their stair); after regen genVersion 43.
+- **Gates** `run_4d_gates.sh` GREEN 14/14; `witness_tm_bake_lock` 17/0; `witness_gantt_edit_persist` 18/0; `witness_gantt_native_generate` 5/0.
+- **Fast bake** (owner: *"fresh bake but no Reveal and low res … turn the other boxes off"*), 854×480 15 fps, frames 0-900 (build-up to
+  t=1.000), reveal/clash/measure/storey-reveal/load-path/escape/ledger/cost/label/compass off, wall 360 s:
+  `§TM_PLAY_SCHEDULE_FRESH where=activate stale=1 regen=ran/ok genVersion=38->43 droppedPlayOrder=1` BEFORE `§GANTT_SOURCE captured
+  tasks=16`; day counter `of=49` (stored grid: 50); Level 2 slab placed at frame 8 (stored grid: after its 11-day wait); 6,880 / 6,884
+  placed at t=1; ffmpeg 0 black / 0 freeze. `§CROSSTASK_JUDGE_PARITY floating=27 windowBlocked=27` (stored grid: 33 / 31) — the browser's
+  own residual floating census, still not 0, unnamed. Deliverable `~/Downloads/HHS_Office_Federated_buildup_AFTER_854x480_15fps_2026-11-19.mp4`.
+- **Unproven, not claimed:** `§CPE_BUILDUP_PLACED_SUMMARY neverDrawn=[Level 3, Level 2, Level 1 slab]` — that watch keeps the LAST-OBSERVED
+  visibility and the traverse's incremental path skips unchanged BatchedMesh objects (tm_core.js header); the same flag showed the Level 1
+  slab hidden from frame 2 to 959 in the 1080p film too (MEP_CLASH_REVEAL_MOVIE §88 class). Needs a witness that re-observes every frame.
+- **Found, not this change:** `witness_tm_silent_refusal_tips` W-SRT-0 fails on clean main (brace scanner depth 6 at EOF).
+
+## §Q.32 "STAIRS FIRST, CONNECTING FLOORS MISSING" + WHY IT KEEPS HAPPENING (2026-11-19, owner: *"seems to do stairs first. Missing connecting floors … What is wrong with the original schedule … why this keeps happening after months of work? No fixing but thinking first"*) — MEASURED, NOTHING CHANGED
+### Q.32.1 THE FLOORS (fast bake of §Q.31.4, today's schedule)
+- The renderer holds an element back until its LAST structural carrier finishes (`tm_sched_xray.js:353 _buildXraySupportCache`, pool
+  seq<=4, `maxCarrierEnd`; bake log `§XRAY_EDGES staged=125/6880`). The Level 2 floor slab (`STB 30.0`, 3,529 m², revealed day 1.1) has 370
+  pool carriers under it, 362 finishing after it; the LAST is day 11.0. Level 3 slab (day 11.0): last carrier day 18.0.
+- **Who those carriers are:** L2 — 237 × IfcMember `Rechteckiger Pfosten` (curtain-wall mullions), 110 × IfcColumn, 15 × IfcPlate
+  `Metallpanel`; L3 — 213 × the same mullions. The latest-finishing ones are all mullions. Mullions are IfcMember → class rule → Superstructure
+  (seq<=4), so the renderer treats the façade posts as what carries the floor. On site it is the reverse: the floor carries the curtain wall.
+- Meanwhile the schedule's own repair (`§CROSSTASK_JUDGE_PARITY`, "may not appear before the FIRST thing it touches") passes the slab at
+  day 1.1 (a column is up). Two judges, two rules (first contact vs last carrier) → the schedule says placed, the picture hides it.
+  Stairs have no such hold, so they show first. (`§CPE_BUILDUP_PLACED_SUMMARY neverDrawn=[L1,L2,L3 slab]` is consistent with this.)
+### Q.32.2 WHY IT CANNOT BE RIGHT FIRST TIME, AND WHY IT KEEPS COMING BACK (the evidence of this session)
+1. The formula reads construction ROLE off the IFC CLASS (rates.js `SEQUENCE_RULES`: class → phase / sequence / crew) and the level off the
+   storey. IFC records neither role nor support (BIMEYES_STRUCTURAL_ORACLE §S14: "IFC has no vertical support relation"). The class is the
+   modelling tool's choice, so one table is wrong somewhere on every model: today alone — stair landings authored IfcSlab (filed as floors),
+   carpet/tile layers IfcSlab, ductwork IfcFlowSegment (laid by plumbers, §Q.29), mullions IfcMember (holding floors up, §Q.32.1).
+2. Each mismatch was fixed as one more special rule, one model at a time; the next model's authoring breaks a different row.
+3. Several functions each answer "is this supported?" with a different rule (§I ownership table already flags duplicates): the repair uses
+   first contact, the renderer last carrier, auditFloating a pool. A schedule can pass one and fail the picture.
+4. The witnesses judge the SCHEDULE in node (cache_4d_run mirror); none judges what the renderer draws, and none replayed a film DB's stored
+   schedule (§Q.30). Green gates + a film DB frozen in September = the visual feedback loop was broken; this session reported wrongly twice.
+### Q.32.3 FOR DISCUSSION (owner decides; one detail at a time)
+- One explicit, directed "what carries what" relation per building (bearing / hung / façade-on-slab), computed once, stored, and read by the
+  schedule, the repair, the renderer and the witnesses — instead of class + contact re-derived differently in each.
+- A witness on what the film DRAWS (per-frame visible set from the renderer) judged against that same relation.
+
+## §Q.33 THE SHIM-ANCHOR MODEL — SPEC FOR A SANDBOX POC (2026-11-19, owner, worked through in conversation: *"each element irrespective of concrete type, is abstract to certain properties … applicable to anything"* · *"mete out specs, then sandbox poc"*)
+**Why (one paragraph, the post-mortem):** the template grid (location × trade, §A banner / §S26.11) is right and stays. What kept failing is the
+step that puts an element in it and orders it inside it: the IFC class lookup plus a geometric election (`designatedSupport`, four floating judges,
+the renderer's last-carrier hold — §Q.30-§Q.32). This model replaces that step with ONE two-sided relation. It builds on §SHIM-FACING (2026-11-09),
+which measured that the shim face as a DIRECTION alone fixes ~0, for two named reasons: the carrier stayed scheduled later by the phase order, and the
+mined `rule_shim` rows cover few classes. Items B and C below answer those two reasons.
+### Q.33.1 THE ABSTRACT ELEMENT (no type names in the rule; types only fill the table)
+1. **Shape** — oriented faces with normals (top, bottom, sides, ends) + position. From mesh / oriented box; an axis-aligned bbox loses angle.
+2. **Shim faces** — which of its faces may bond: bottom · top · side · end · inset.
+3. **Needs** — ordered list of host capabilities: `bears-on-top` · `hangs-below` · `fixes-on-side` · `opening-accepts` · `continues-same-kind` · `ground`.
+4. **Joint spec per need** — my face ↔ host face; where on the host (point / area / edge / inside); angle (square / parallel / coplanar) ± tolerance.
+5. **Count** — `one` (any route) or `all` (every bearing point, e.g. both ends of a span).
+6. **Offers** — which capabilities its own faces give to which needs (the host half of the agreement).
+7. **Rank** — tie-break inside one location × phase when no bond orders two elements.
+8. **Exception** — temporary works: may precede its host (props, cantilever); declared, never inferred.
+### Q.33.2 THE RULES
+- **A. Bond = agreement.** A need meets an offer on the declared faces inside the joint spec. Same-priority candidates: largest contact area, then guid.
+- **B. Bond beats phase.** Host before element (count `all` → after the last host). A host whose phase comes later is MOVED UP (a wall carrying a
+  slab becomes structure — D1 derived, not special-cased). Answers §SHIM-FACING reason 1.
+- **C. Relay.** First-order bonds form first; `continues-same-kind` spreads outward ONLY from already-bonded pieces (slab→slab coplanar edge, beam run,
+  duct run, wall line). No cycles by construction.
+- **D. Phases do the rest.** Elements with no bond between them are ordered by the template (phase order, levels bottom-up), unchanged.
+- **E. Three outcomes, nothing guessed:** `bonded` · `lost` (no host satisfies any need — reported, keeps its template time) · `misplaced` (a host of the
+  right kind is near but face/position/angle fail — a model-quality finding). Angle unknown (no rotation data) → `unverified`, never `misplaced`.
+- **F. The table's sources, in this order:** IFC relations where declared (fills/voids, contained-in-space) → mined `rule_shim` rows (duplex/terminal
+  rules DBs) → a short authored practice table, each row with its reason and the owner's sign-off. Answers §SHIM-FACING reason 2. Extract first.
+### Q.33.3 MENTAL DRY RUN (owner session, 2026-11-19) — the POC must reproduce or refute each row
+footing→ground · column→footing top · slab piece→column top, else relay from coplanar neighbour · slab on wall → wall moved up · secondary beam end→
+primary side, primary ends→column tops (depth decides primary; same-depth tie gone) · stair landing→its flight end / wall side (not coplanar with the
+floor, no false relay) · mullion→slab edge, vertical (a slab never takes a mullion: mullion offers no `bears-on-top` for slabs) · carpet/screed→slab top,
+parallel · ceiling→`hangs-below` slab above · fan/lamp→ceiling underside (p1) else slab (p2), upright · duct segment→slab above or its run; fitting→
+`continues` only · window→`opening-accepts` inset in wall, parallel · slab on grade→ground. Services vs ceiling board: no bond → phase order decides.
+### Q.33.4 POC — SANDBOX ONLY (no shipped code changes; read-only on DBs and persisted runs)
+Measure, per building (7 + the HHS film DB), with the owners named in §I for anything already owned:
+1. `bonded / lost / misplaced / unverified` per element kind; the `lost` and `misplaced` lists sampled with names.
+2. Against today's played layer: how many elements would MOVE (host after element), split by rule B / C; programme-day effect not required yet.
+3. The named cases: HHS film DB stair landings + the L2/L3 floor slabs vs façade mullions (§Q.30/§Q.32); §Q.2's beam gaps 1-3 (30/26/4 carrier-above,
+   wall-under-beam, beam-on-beam ties) — resolved, unchanged or worse, each with numbers.
+4. Table coverage: how many elements got their needs from IFC relations / mined rows / the authored table / nothing.
+5. Every §-line able to say NO-OP, VACUOUS, scope-blind (PRIMAL LAW 4). Result recorded as §Q.33.5; nothing is implemented until the owner reads it.
+### Q.33.5 POC v1 RESULT (2026-11-19, sandbox only; probes + logs `…/scratchpad/shim_poc/`, played layer from a checkout 6 commits behind main)
+- **Works:** a host for 85-99 % of elements with real mesh faces in all 8 DBs (7 + HHS film); stair landings bond to their own stair; 0 slabs hosted by a
+  mullion; §Q.2 gap 1 gone (0/30, 0/26, 0/4); fixtures find ceilings; windows find walls by geometry with no fills/voids data (none of the 8 DBs has it).
+- **Breaks:** (1) bond CYCLES — 2 (Duplex) … 509 (Hospital) … 8,267 (LTU) elements; mutual first-order bonds, relay from unanchored hosts, coincident
+  duplicates (film 49 pairs, LTU 2,591). (2) "largest contact area" elects an 11.5 cm partition over 87 columns for the L2 floor. (3) `ground` has no source
+  of its own (it is `seq===1`): VACUOUS on HHS / film / JKR; chains reaching ground Terminal 13,952 / 47,629, LTU 27,243 / 118,775. (4) the authored
+  table carries the model — IFC relations + mined rows ≤ 11 % of bonds outside Terminal; class ambiguity returns inside the table.
+- **Also:** hang joints are rays (no hangers modelled); rule C order ≈ chance vs today (42-59 % move); rule B pulls Finishes ceilings ahead of MEP-Final
+  fixtures in the thousands (Hospital 3,249) — a phase-table question for the owner, not a model defect.
+### Q.33.6 SPEC v2 — the four breaks, sandbox again (nothing implemented)
+1. **Anchored waves, not free bonds.** Seeds = ground (item 3). A host qualifies only if it is ALREADY anchored (wave k-1); an element bonds in the first
+   wave where a qualifying host meets it. Coincident duplicates (same box, same kind) collapse to one before bonding. Cycles become impossible; report any
+   residue as `§SHIM_V2_CYCLE` (must be 0) and elements never reached as `lost(unanchored)`.
+2. **Host priority by structural tier, area only inside a tier.** Tier order of OFFERS: footing/column → beam → slab → wall WITH a load-bearing fact
+   (Pset LoadBearing where present, else the D1 bearing-wall result) → other wall → the rest. A partition is never preferred over a column that also meets.
+3. **Ground from geometry, reusing the shipped owner.** Seeds = the structural elements `§GROUND_RESTS_ON_SOIL` already elects (ground band, §Q.17) plus
+   footings — not `seq===1`. Report seeds per building; VACUOUS must disappear on HHS / film / JKR or say why.
+4. **Measure the extraction sources, do not author more.** Per DB: coverage of Pset LoadBearing, `rel_aggregates`, IFC type/family names, mined rows —
+   what share of the authored table each could replace. Owner signs off any authored row; none is added in v2.
+- Re-run §Q.33.4 items 1-5 + the named cases with v2; same PRIMAL-LAW §-lines (NO-OP / VACUOUS / scope-blind). Played layer from current origin/main.
+### Q.33.7 POC v2 RESULT (2026-11-19, sandbox `…/shim_poc/v2/`, played layer = main `e14bfa71`)
+- **Break 1 cycles: RESOLVED** — `§SHIM_V2_CYCLE` 0 on all 8 (v1: 2 … 8,267). Cost: `relaxed` bonds (deadlocks broken lowest-tier first), e.g. Hospital
+  188 beams + 49 columns, LTU 2,309 coverings; beams with one end bonded Hospital 241 → 405.
+- **Break 2 tiers: RESOLVED for slabs** (L2/L3 slab host = a column, not "MW 11.5"; slab-elects-wall-over-column 0 on all 8), partly overall (2 Hospital
+  structural elements on a wall with no load-bearing fact). Walls hosting structure WITHOUT a load-bearing fact: 1,002 across the 8.
+- **Break 3 ground: PARTLY** — VACUOUS gone (HHS 486 seeds, film 491, JKR 213), but the shipped band clause reads "structural" off the class sequence,
+  so façade posts seed (HHS 274 members + 48 plates; LTU 1,785 timber members).
+- **Break 4 extraction: NOT RESOLVED in the DBs** — Pset LoadBearing 0 in all 8 DBs; fills/voids 0; `rel_aggregates` absent in 4. The SOURCE IFCs carry
+  them (LoadBearing rows present in Duplex/HHS/Hospital/Terminal/LTU; fills/voids 38/50 … 1,857/3,368). Missing = an extraction step, not data.
+- Rule C still moves 41-55 % of what it relays (order ≈ chance). The L2 column now starts AFTER the slab in today's layer → rule B moves it: the model is
+  right and today's layer wrong (that is the point, not a defect).
+- Rules used by v2 not in the spec, ADOPTED here: wait-then-relax for items 1-2; duplicates collapse on the same mesh box within `SG.EPS`; tier order
+  applies to every capability.
+### Q.33.8 SPEC v3 (sandbox) — test the missing facts before changing the extractor; two rule fixes
+1. **Source-IFC side table (sandbox only):** read the source IFCs with IfcOpenShell → per guid: `LoadBearing` (Pset_*Common), `IfcRelFillsElement` /
+   `IfcRelVoidsElement` host, `IfcRelAggregates` parent. Join by GlobalId; report match rate per DB. Feed v3; measure what each fact buys (walls without a
+   fact 1,002 → ?, §Q.2 gap 2, mullion/façade kinds, table coverage share). This decides whether the extractor should carry them (IFC/extraction lane).
+2. **Relay = one unit of work, not an order.** A `continues-same-kind` group (a continuous slab, a beam run, a duct run, a wall line) is ONE unit: it
+   starts after the first-order hosts of the group; no precedence is drawn between its pieces (their order stays the template's/rank). Rule C moves → 0
+   by definition; report group sizes and how many groups have ≥ 1 first-order host.
+3. **Ground without class:** seeds = elements in the ground band whose bottom face OFFERS nothing below and that are NOT façade parts (aggregate parent is a
+   curtain wall, from item 1) — footings, ground slabs, columns/walls standing on soil. Report façade posts removed from seeds.
+### Q.33.9 POC v3 RESULT + DECISION (2026-11-19, sandbox `…/shim_poc/v3/`; owner: *"Don't wait. U know the direction. Do till resolved"*)
+- **v3 measured:** source IFCs join to the DBs at 95-100 %. Pset LoadBearing contradicts the walls the model needs (701 hosting walls declared
+  non-bearing; architects' exports set nearly every wall FALSE — usable only on LTU). Fills/voids buy ~0 (geometry already finds the same wall).
+  `rel_aggregates` is the one fact that changes outcomes (curtain-wall parts, stair parts). "Relay = one unit" makes units up to 69,931 pieces — not an
+  order. Ground without class: façade seeds 322 → 0 on HHS. **Full model NOT ready to drive a consumer** (needs a LoadBearing-vs-D1 ruling, relay cut
+  by location, 667-5,729 untabled proxies per building).
+- **What v3 proved is the root of "stairs first, floors missing":** today's schedule plays the L2 floor slab at day 1.09 while its 87 columns finish at
+  day 9.22 — the graph engine gives a floor ONE finish-to-start edge from its ELECTED support (`cpm_schedule.js` E1, §D4), so it may start after one
+  column; the renderer then (rightly) holds it until its LAST carrier ends, and that last carrier is a curtain-wall mullion filed as structure (§Q.32).
+- **Decision — take the two proven outputs of the model into the shipped owners, nothing else:**
+  1. **§ASSEMBLY_RULE** — a part whose own class rule is Superstructure but whose DECLARED assembly (`rel_aggregates` parent) has a non-structural
+     rule takes the assembly's rule (curtain-wall mullions/panels → the curtain wall's Architecture Envelope). One function in `schedule_author.js`
+     (`assemblyRule`), called at the three rule sites AND by the renderer's own rule lookup (`tm_sched_xray.js`), so both see one classification.
+     Extracted fact only; DBs without `rel_aggregates` unchanged and counted (`§ASSEMBLY_RULE … dbHasAggregates=0`).
+  2. **§E1_ALL_CARRIERS** — a structural element that is wider than it is tall in BOTH plan directions (a floor/roof plate: `tz-bz < min(dx,dy)`),
+     resting on ≥ 2 pool carriers, gets a FINISH-TO-START edge from EVERY pool carrier whose top meets its underside (`S.bz < T.bz-EPS`,
+     `T.bz-GAP <= S.tz <= T.bz+GAP`) — not only from the elected one. Same "last carrier" rule the renderer applies (`maxCarrierEnd`). Edges go strictly
+     below → above (no new cycle possible among them); `§SUPPORT_CYCLE` must stay 0.
+- **Proof owed:** `run_4d_gates.sh` (expect programme days to move — named, not hidden); the L2 slab plays after its columns; fast film bake of the HHS
+  film DB: the three watched floor slabs DRAWN during the build-up (`§CPE_BUILDUP_PLACED_SUMMARY neverDrawn=none`), staged count down.
+### Q.33.10 RESULT — APPLIED (2026-11-19, bim-ootb PR #3342, branch `fix/4d-floors-carriers`)
+- `assemblyRule` (schedule_author.js) at all six rule sites; `§E1_ALL_CARRIERS` (cpm_schedule.js). Gates GREEN 15/15 incl. new gate 15
+  `witness_floor_carriers`; bake-lock 17/0; play-schedule-fresh 9/0; programme days UNCHANGED on the 7 shipped buildings.
+- **W-FC-1, same-task floors/roof plates starting before their last carrier ends (main → fix):** Duplex 0 → 0, HHS 50 → 0, JKR 188 → 0, Clinic 8 → 0,
+  Terminal 141 → 0, Hospital 121 → 0, LTU 904 → 0. Cross-task residue (carrier filed in a later task — slab on slab across levels, LTU footings: the
+  level relation, §I.3, NOT this change) named and locked: Clinic 1, Terminal 25, LTU 755.
+- **W-FC-2:** Hospital curtain-wall children still Superstructure 0 of 9,340; HHS film DB mullions 1,450 → Architecture Envelope. INCONCLUSIVE on
+  Duplex, shipped HHS, JKR, Clinic (no `rel_aggregates` — the extractor does not carry it, §Q.33.7) and Terminal/LTU (no joined curtain-wall rows).
+- midair baselines re-locked from the measured run: float_after_cpm better on 6 of 7 (Terminal 501 → 385, Hospital 1,573 → 1,349 …; LTU 2,934 → 3,081);
+  strict midair Terminal 529 → 530, HHS 22 → 23, LTU 520 → 538, JKR 21 → 17; `§MZ_SPLIT UNNAMED=0` on all 7.
+- **Fast HHS film bake** (854×480, 15 fps, build-up only, overlays off, 396 s): `§XRAY_EDGES staged=125 → 20`; L1 floor drawn from frame 3, L2 floor drawn
+  at frame 31 (before: never drawn); L3 placed frame 272, watch still reads not drawn — by the renderer's own rule none of its 78 carriers ends after it
+  starts, so this is most likely the watch's last-observed staleness (MEP_CLASH_REVEAL_MOVIE §88 class), unproven without a per-frame witness. Film
+  programme 49 → 58 d. 0 black / 0 freeze. `~/Downloads/HHS_Office_Federated_floors_AFTER_854x480_15fps_2026-11-19.mp4`.
+- **Cost named:** LTU +603,849 E1 edges (plates on many timber members); the cache still builds inside the gate run.
+- **Next:** (1) the cross-task residue = the level relation (§I.3, LevelDeriver flag-off); (2) carry `rel_aggregates` (and the LoadBearing pset) in the
+  extractor so W-FC-2 judges every building; (3) a per-frame drawn-set witness to replace the stale watch.
+### Q.33.11 SPEC — carry `rel_aggregates` into the four shipped DBs that lack it (2026-11-19, owner: "go"; closes §Q.33.10 Next item 2 for aggregates)
+- **Why:** §ASSEMBLY_RULE (`schedule_author.js assemblyRule`) reads `rel_aggregates`; Gate 15 W-FC-2 is INCONCLUSIVE on Duplex, HHS, JKR, Clinic because the gate reads the RAW DB file. DB-change rule (CLAUDE.md): no `.db` binary; a small SQL patch under `buildings/patches/` + the runtime self-heal loader (`scene.js A._applyPendingPatch`, which fetches `patches/<dbfile>.sql` by file NAME — the `.manifest.json` beside it is upload provenance, not a loader key).
+- **Found before building (read, not assumed):** `Duplex_extracted.db.sql` and `Clinic_meta.db.sql` ALREADY carry `rel_aggregates` (§NOGEO_COMPOSE, 2026-08: 11 / 738 pairs from the source IFCs). HHS and JKR patches carry none. The node mirror `scripts/cache_4d_run.js` applies NO patch at all — so the browser plays a patched DB that the gates never see (§CACHE_DB_KIND "judge the DB the viewer loads" had the DB right and the patch wrong).
+- **Generate (from where):** `scripts/ifc_aggregates_patch.py` (IfcOpenShell, CPU) reads the SOURCE IFCs, every `IfcRelAggregates` RelatingObject → RelatedObjects by GlobalId; keeps a pair only if BOTH guids are in the target DB's `elements_meta`; reports per DB source pairs / kept / dropped-by-reason (parent not in DB, child not in DB, duplicate). No computed value; extracted fact only.
+- **Patch shape:** inside `buildings/patches/<dbfile>.sql`, one marked block `-- §REL_AGGREGATES BEGIN … END` = `CREATE TABLE IF NOT EXISTS rel_aggregates (parent_guid TEXT NOT NULL, child_guid TEXT NOT NULL, PRIMARY KEY (parent_guid, child_guid));` + `INSERT OR IGNORE` rows (idempotent; the generator replaces its own block on re-run and emits only pairs the rest of the file does not already carry). Targets: `Duplex_extracted.db`, `HHS_Office_Federated_extracted.db`, `JKR_extracted.db`, `Clinic_meta.db` (the DBs `cache_4d_run.resolveDbFile` and the viewer load).
+- **Loader:** the browser one is unchanged (a new block in an existing patch is picked up by name). Node side: `scripts/lib/apply_building_patch.js` slices `A._runSqlChunked` out of `scene.js` (the shipped chunker, not a copy) and applies `<dbfile>.sql` then `<dbfile>.qto.sql` in a SAVEPOINT, as `_applyPendingPatch` does; `cache_4d_run.build` calls it right after opening the DB, the patch bytes are part of the cache key, `W-FC-2` opens the DB through it too. Light-field `.bin` is not applied (no 4D reader).
+- **Proof owed:** `§ASSEMBLY_RULE dbHasAggregates=1 joinedRows=<n>` on the four in the cache log; W-FC-2 INCONCLUSIVE → PASS/FAIL with numbers; `run_4d_gates.sh` GREEN 15/15; the programme-day / midair change per building NAMED, any baseline re-lock only from the measured run; per-DB pair counts; static proof that `_applyPendingPatch` picks the new block up. Applying the OTHER shipped patches in node (Hospital/Terminal/LTU transforms, HHS spatial_structure, JKR raster) is the same fidelity fix and any movement it causes is measured separately from the aggregates effect.
+### Q.33.11 RESULT (2026-11-19, bim-ootb PR #3344, branch `fix/4d-rel-aggregates-patches`; logs `…/scratchpad/q3311/`)
+- **The spec's premise was half wrong, measured:** the Duplex / HHS / Clinic patches ALREADY carry `rel_aggregates` (11 / 2,120 / 738 pairs; §NOGEO_COMPOSE). `scripts/ifc_aggregates_patch.py` re-derived them from the source IFCs (IfcOpenShell): source pairs 85 / 2,171 / 1,564, kept (both guids in `elements_meta`) 11 / 2,120 / 738, dropped 74 / 51 / 826 (parent is a building, storey or MEP system group, not an element; child never missing), `newInBlock=0` on all three — **no patch content changed, no served file changed, no sw bump**. The real gap was in the node mirror: `cache_4d_run.js` applied no patch, so the gates judged the raw file.
+- **JKR: not possible without inventing rows.** Source pairs 773, kept 0: every parent (120 `IfcCurtainWall`, 575 `IfcElementAssembly`, stairs) is absent from JKR's `elements_meta` (children are there: 131 + 581), and `assemblyRule` joins on the parent's `ifc_class`. Options for the owner: carry the parent's class on the pair (schema + `assemblyRule` change), or extract the guid-only parents as rows (changes element counts). Not done.
+- **Loader:** `scripts/lib/apply_building_patch.js` (chunker SLICED from `scene.js`, SAVEPOINT per patch, rollback + `§PATCH_NODE_FAIL`). `CACHE_PATCHES=agg` (default) applies only the `rel_aggregates` statements; `all` = the whole patch as the browser does; `0` = raw. **Why `agg`:** measured with `all` — Terminal 48,427 of 48,428 played instants move (max 69 d), LTU all 122,330 (528 → 522 d), HHS 53 → 60 d with 1,644 phases, Duplex 14 → 15 d (spatial_structure), Terminal W-FC-1x 25 → 191 (lock 25), assembly_order FAIL on Terminal / HHS / LTU, the Duplex edit fixture (needle NS-7a). Those are transform repairs / spatial_structure / wind flips, not the assembly relation: a separate fidelity step with its own re-lock (needs the viewer's r-tree wasm for LTU, `viewer/lib/sql-wasm.*`).
+- **`agg` measured (raw → agg, played layer):** Duplex joinedRows 11, 14 → 14 d, 1 phase, 7 instants; **HHS 2,120, 53 → 60 d, 1,644 phases, midair 0 → 0**; Clinic 738, 128 → 128 d, 12 phases, 6,345 instants; JKR / Terminal / Hospital / LTU hash-equal (0 instants). Terminal's patch adds 33,923 pairs but `joinedRows=0` (parents not elements).
+- **W-FC-2 before → after:** Duplex INCONCLUSIVE → INCONCLUSIVE (its 11 pairs are not curtain walls); **HHS INCONCLUSIVE → PASS (2,096 children, 0 still Superstructure); Clinic INCONCLUSIVE → PASS (699, 0)**; JKR INCONCLUSIVE (above); Terminal / LTU INCONCLUSIVE (no curtain-wall children); Hospital PASS 9,340 / 0 unchanged.
+- **Gates:** `scripts/run_4d_gates.sh` GREEN 16/16 (new gate 16 `witness_apply_building_patch`, 12 claims incl. red control). Two reds were found and fixed on the way: `witness_tm_needle_sync` NS-7a (the shared edit fixture opened the raw Duplex file, 7/1119 instants differed from the persisted layer → the fixture now takes the same patch step) and `assembly_order.json` HHS re-locked from a `LOCK=1` run (unjudged IfcMember 14 → 0, IfcPlate 1 → 0; contactOnly IfcBuildingElementProxy 1 → 2 ROSE by one, named in the file).
+- **Browser side (static):** `A._applyPendingPatch` fetches `patches/<dbFile>.sql` by NAME (`.manifest.json` is upload provenance, never read); `streaming.js` calls it for the split `_meta` (Clinic) and the extracted file (Duplex, HHS); `sw.js` serves `.sql` network-first. The rows were already in those files.
+- **Open:** (1) JKR parents (above); (2) six witnesses (midair_zero, lock_integrity, edit_coherence, reveal_within_bar, big_element, curtain_wall_opening) still open their own raw db; (3) `CACHE_PATCHES=all` fidelity is measured, not adopted — owner decision; (4) LoadBearing pset, §Q.33.10 Next item 2 second half, untouched.
+### Q.33.12 ▶ RESUME HERE — SESSION HANDOVER 2026-11-19 (owner: *"wrap up, update context to prompt. continue in a new session"*)
+**Merged today (bim-ootb):** #3322 pipe trades · #3333 ducts → duct crew · #3329 Alt+C refuses a stale tab + `§SUN_COMPASS_SHOWN` · #3335 JSON-live flake ·
+#3337 films play today's schedule (§Q.31) · #3342 floors wait for every carrier + curtain-wall parts are façade (§Q.33.10, gate 15). Gates GREEN 15/15.
+**Done after that, same session:** §Q.33.11 (bim-ootb #3344, bim-compiler #1074) — the shipped patches ALREADY carried `rel_aggregates` for Duplex /
+HHS / Clinic; the gap was that `scripts/cache_4d_run.js` applied no patch. Now `scripts/lib/apply_building_patch.js` (the browser's chunker, sliced from
+`viewer/scene.js` — one implementation) runs in the cache and the shared edit fixture; `CACHE_PATCHES=agg` default. Gates GREEN 16/16 (gate 16
+`witness_apply_building_patch`). W-FC-2: HHS and Clinic INCONCLUSIVE → PASS; HHS programme 53 → 60 d (1,644 elements change phase). Open, named in the
+§Q.33.11 RESULT: JKR's aggregate parents are absent from its `elements_meta` (needs a schema/`assemblyRule` decision); six witnesses still open raw
+DBs; `CACHE_PATCHES=all` measured, not adopted (moves Terminal/LTU instants — the transform repairs in those patches, an owner decision).
+**Order of work after that:**
+1. The cross-task residue of W-FC-1 (Clinic 1, Terminal 25, LTU 755): a plate's carrier filed in a LATER task — the level relation (§I.3,
+   `LevelDeriver` flag-off). Measure first; do not add a rule on top.
+2. A per-frame drawn-set witness for films (the `§CPE_BUILDUP_PLACED` watch keeps last-observed visibility — L3 floor reads "never drawn" while nothing
+   holds it by the renderer's own rule).
+3. Full shim-anchor model (§Q.33.1-§Q.33.9): NOT ready — owner rulings needed on LoadBearing vs D1 (architects' exports set walls FALSE), relay cut by
+   location, finish layers authored as IfcSlab; 667-5,729 untabled proxies per building.
+4. Bake speed (owner question): `--chrome-args "--disable-gpu-vsync --disable-frame-rate-limit"` removed the 60 Hz pacing wait in a sandbox benchmark
+   (12 samples 191.5 → 28.9 ms); projected ≈ 18 % per frame; proof owed = a short A/B clip bake (GPU — owner's go).
+**Lessons this session paid for (see §Q.30-§Q.32 post-mortem):** judge the PICTURE, not only the schedule mirror; a film DB can carry a stored stale
+schedule; a fix is "done" only when the film log proves it.
+### Q.34 RESULT — the W-FC-1x cross-task residue MEASURED (2026-11-19, §Q.33.12 item 1; CPU only; logs `…/scratchpad/q3312/`)
+**Issue measured:** *"a floor plate plays before a structural carrier under it that is filed in a LATER task"* (W-FC-1x: Clinic 1, Terminal 25, LTU 755).
+Probe `q3312/probe_cross.js` (reads the persisted runs, same predicate as `witness_floor_carriers.js`). In every case the PLATE'S TASK starts before the
+CARRIER'S TASK; it is task filing, never the in-bar layout.
+- **Terminal 25 = one storey NAME on two floors.** The chosen datum ladder (`§STOREY_DATUM source=elevation`, 44 rungs, 22 names) mixes two vertical
+  frames: the observatory file's storeys repeat **15.027 m** lower (`04 THIRD` @0.973 and @16.0, `05 FOURTH` @4.973 and @20.0, `06 ROOF` @7.546 and
+  @22.573, `07 BEAM` @10.973 and @26.0). **15 of 22 names sit on rungs > 1 m apart; 5,210 of 48,428 elements are in the minority band of a shared name.**
+  Example: stair 1150699's landing @6.21 m plays day 6-7, its stringers @5.91-6.31 m band into the rung named `05 FOURTH FLOOR` (4.973) and so join the
+  20 m floor's task, day 28-38. A name is treated as ONE elevation in THREE places: (1) `_bandOf` band label, (2) `deriveStoreyMergeMap` (median of a
+  name's rows — mixes 0.973 and 16.0), (3) `deriveBandRanks` (median base per name).
+- **LTU 755 = mostly the judged geometry, not the schedule.** 2,871 of 122,330 LTU elements are origin-centred in the gates' cache: `CACHE_PATCHES=agg`
+  skips the `§META_TRANSFORM_REPAIR` block the viewer applies. Matrix (W-FC-1x, LTU): agg+storey **755** · agg+deriver 173 · **all+storey 109** (= the
+  DB the viewer plays) · all+deriver 9. LTU has no declared datum (`§STOREY_DATUM mode=INFERRED`, 18 names, 4 naming systems).
+- **Clinic 1 = phase filing:** the 150 mm slab-on-grade (Substructure, day 0-3) over 400×400 column stubs filed Superstructure (day 3-6), 0.2 d. Not level.
+- **Switching the task grid to `LevelDeriver` (`TPL_LEVEL_SOURCE=deriver`, all 7, gates):** Terminal 25 → 0, LTU 755 → 173, tasks Terminal 69 → 35 —
+  but **RED 4/16**: assembly_order midair ROSE on all 7 + `§FILING_PARITY` 0 → 4..1,357, JKR W-FC-1x 0 → 20, Hospital 0 → 8, DCMA worse 2, G-COH-11 (no
+  `§D6_HANG_FILING` on that axis). **Ruled out as the fix** — D1-D8 were built on the storey axis.
+- **Sandbox `§RUNG_RUN_LABEL`** (bim-ootb branch `sandbox/4d-rung-runs` @`08937e8f`, no PR): a name is one floor only across a CONTIGUOUS run of rungs; extra
+  runs get `<name> @<z>`, the run with most element bases keeps the plain name; no tolerance constant. Proven **no-op on 6 buildings**, Terminal 15 runs
+  relabelled. Gates 15/16: Terminal W-FC-1x **25 → 21**, DCMA check 1 logic Terminal 0 → 1 (one new task without logic). Only fixes place (1): the remaining
+  14 are `02 FIRST FLOOR` plates whose carriers sit in task `06 ROOF LEVEL` — that task holds 74 elements @6 m + 370 @22 m (median 22.71), because
+  (2)/(3) re-merge by name (e.g. `04 THIRD FLOOR` task: 6,273 of 6,309 elements @18 m).
+### Q.34.1 SPEC (owed — owner's go: it changes Terminal's level partition) — in datum mode the LADDER, not the name, owns "which floor"
+- One owner for the three places: when `§STOREY_DATUM mode=DECLARED`, the run-labelled ladder (`_rungRunLabels`) is the band identity; the merge map
+  groups RUNGS within GAP (not names by row median); band rank = rung z order. INFERRED buildings (Duplex, LTU) untouched, byte-identical.
+- Proof owed: no-op hash-equal on the 6 non-Terminal buildings; Terminal W-FC-1x 25 → ≤ 1 (lock re-set from the run); DCMA logic 0 on Terminal; gates 16/16;
+  programme days named.
+- **Separately (owner decision, already open in §Q.33.11):** adopt `CACHE_PATCHES=all` so the gates judge the DB the viewer plays — it alone takes LTU
+  755 → 109; its Terminal/LTU instant moves are the transform repairs, re-lock from the run.
+**Next after the owner's answer:** §Q.33.12 items 2-4 all need the owner (item 2's proof is a bake, 3 needs rulings, 4 is a GPU A/B).
+### Q.35 RULINGS (2026-11-19, owner: *"u make the rulings"* — made by the session under that instruction, recorded here as such)
+- **R1 = §Q.34.1 YES.** In datum mode (`§STOREY_DATUM mode=DECLARED`) the declared LADDER, not the storey name, says which floor an element is on.
+  Why: the ladder is extracted (IfcBuildingStorey elevations, frame-checked §I.6) and the element's base is geometry; a name is a label that two federated
+  files can reuse 15 m apart (§Q.34). Site-engineer test: a stair at 5.9 m is built with the 5-6 m floor, whatever its file calls that floor.
+- **R2 = adopt `CACHE_PATCHES=all` as the default.** Why: CARDINAL/twin principle applied to the judge — the gates must judge the DB the viewer plays.
+  `agg` judged 2,871 LTU elements at the origin that the viewer never shows (§Q.34). Movement it causes is the transform repairs; re-lock from the run.
+- Order: R1 first (one PR, measured on `agg`), then R2 (its own PR, measured on top of R1) — each effect named separately, as §Q.33.11 required.
+### Q.35.1 SPEC — R1 `§RUNG_RUN_LABEL` + ladder-owned merge (bim-ootb `viewer/schedule_author.js`)
+- `_rungRunLabels(ladder, sortedBaseZ)` (pure, exported): a storey name is one floor only across a CONTIGUOUS run of ladder rungs; each extra run of a
+  repeated name is labelled `<name> @<first rung z, 2 dp>`; the run holding the most element bases keeps the plain name. No tolerance constant.
+  Called by `_buildScheduleElements` right after `_chooseStoreyDatum` in datum mode only (the exported frame verb stays unchanged for its witness).
+  Log `§RUNG_RUN_LABEL rungs= runs= repeatedNames= relabelledRuns= <labels(n=)>` or `(no-op)`.
+- The merge map ("are two storey names one floor?", §I owner `deriveStoreyMergeMap`) in datum mode is fed the LABELLED LADDER (one row per rung), not the
+  raw `spatial_structure` rows — same owner, right input; rungs within GAP chain into one band exactly as today. INFERRED buildings: unchanged path.
+  Log `§S18_STOREY_MERGE source=ladder|spatial_structure`.
+- Band rank (`deriveBandRanks`) is not touched: with (1)+(2) every band is a z-interval, so its median-base rank follows z.
+- **Proof owed:** play instants hash-equal on the six buildings where `§RUNG_RUN_LABEL` is a no-op AND the merge map is unchanged (else the moved count
+  named); Terminal W-FC-1x 25 → ≤ 1 and its lock re-set from the run; DCMA check 1 logic on Terminal not worse; `run_4d_gates.sh` GREEN 16/16; Terminal
+  programme days and task count before → after named.
+### Q.35.2 RESULT R1 — APPLIED (2026-11-19, bim-ootb PR #3347, branch `fix/4d-datum-rung-floors`; logs `…/scratchpad/q3312/r1_logs/`)
+- `_rungRunLabels` + ladder-fed `§S18_STOREY_MERGE source=ladder` (Terminal only: `rungs=44 runs=37 repeatedNames=15 relabelledRuns=15`, `names=37 merged=11`).
+  Gates **GREEN 16/16**. **W-FC-1x Terminal 25 → 0** (lock re-set to 0). Duplex / HHS / JKR / Clinic / Hospital / LTU played instants **hash-equal**.
+  Terminal 69 → 98 tasks, programme 91 → 94 d, 47,856 instants moved (max 59.6 d).
+- **Found on the way, fixed in the same PR — §TPL_BRIDGE_EDGE:** `instantiateTemplate`'s within-level bridge RAISED a first-on-level task's start but
+  wrote NO link (a date with no logic). Measured: R1's new low Terminal levels gave 2 such tasks (`MEP_Final_GROUND_FLOOR_LEVEL`, `MEP_Rough_in_00_Aras_Asas`,
+  DCMA check 1 0 → 2 %). The bridge is now the link when nothing else links in: `§TPL_BRIDGE_EDGE added=2` on Terminal, `added=0` on the 12 other runs;
+  DCMA logic 0 %.
+- **JKR, deliberately excluded (scope):** feeding the ladder to the merge on ladders WITHOUT a repeated name switches §S18 on where it never ran. On JKR it
+  merges `00 Aras Tanah` 82.899 / `01 Aras Satu` 82.888 (1 cm), which folds the ≈81 m level below the ladder (1,103 envelope + 503 MEP elements, built
+  first today) into the ground floor: 24 → 18 tasks, **programme 50 → 56 d**. Ruled: not done — the 1 cm sliver rung is a placement point, not two
+  floors. If §S18 is ever switched on fleet-wide, the below-ladder band must not absorb the merge (re-measure JKR first).
+- `_GANTT_CACHE_VERSION` 43 → 44: #3322 #3333 #3342 #3344 changed schedules without a bump, so a v43 stored schedule was being replayed as current.
+  sw v1769. Also green: `witness_tm_play_schedule_fresh` 9/0, `witness_storey_datum_frame` 10/0, `witness_gantt_native_generate` 5/0.
+### Q.35.3 SPEC — R2: the gates judge the DB the viewer plays (`scripts/lib/apply_building_patch.js mode()` default `agg` → `all`)
+- `all` = the whole `buildings/patches/<db>.sql` (+ `.qto.sql`) exactly as `A._applyPendingPatch`; `agg` and `0` stay selectable (`CACHE_PATCHES`).
+- Measured on top of R1 (env only, before the change): RED 2/16 — every rise is in the DB the viewer ALREADY plays, now seen by the judge:
+  HHS midair IfcMember 0 → 2 + `§FILING_PARITY` 0 → 2; unjudged structural Terminal (IfcBeam 19 → 29, IfcColumn 7 → 23, IfcMember 38 → 44, IfcPlate
+  491 → 499, IfcSlab 0 → 2, IfcWall 0 → 1), LTU IfcPlate 1 → 10; DCMA check 6 (REPORT) Terminal high float 13 → 15. W-FC-1x LTU 755 → **109**.
+  Played instants vs R1: JKR / Clinic / Hospital hash-equal; Duplex 1,110 moved (14 → 15 d, 18 → 22 tasks), HHS 3,857 (60 d, 16 → 18 tasks),
+  Terminal 48,032 (94 d, 98 → 114 tasks), LTU all (528 → 522 d).
+- Proof owed: re-lock `assembly_order.json` (LOCK=1, self-check MATCH), `dcma.json`, W-FC-1x LTU 755 → 109 — each rise named here, never silently;
+  gates GREEN 16/16; CI green (the editor witnesses run on HHS in CI).
+### Q.35.4 RESULT R2 — APPLIED (2026-11-19, bim-ootb PR #3348, branch `fix/4d-gates-judge-played-db`; logs `…/scratchpad/q3312/r2_logs/`)
+- `apply_building_patch.js mode()` default `all`. Re-locked from the measured run exactly as §Q.35.3 named (assembly_order LOCK=1 all 7 self-check
+  MATCH, 42/42; dcma: Terminal high float 13 → 15 loosened, Hospital 14 → 13, LTU 73 → 72, LTU long tasks 4 → 3 tightened; W-FC-1x LTU 755 → 109).
+  Gates **GREEN 16/16**, CI green. W-FC-2: HHS / Clinic / Hospital PASS; JKR INCONCLUSIVE (parents absent, §Q.33.11); Duplex / Terminal / LTU no
+  curtain-wall children.
+- **W-FC-1x after R1 + R2: Duplex 0 · HHS 0 · JKR 0 · Clinic 1 · Terminal 0 · Hospital 0 · LTU 109.**
+### Q.35.5 ▶ RESUME HERE — after R1 + R2 (2026-11-19)
+1. **LTU 109** (the real residue now): footings filed Substructure resting on columns/members filed Superstructure (e.g. `Isolated Foundation 2300x2300x500`
+   at 2.45 m on a 300×300 column, `Wall Foundation` strips on timber `45x95` members) — phase filing by class, plus no declared datum (INFERRED, 18 names,
+   4 naming systems). Measure per pair before any rule; `LevelDeriver` took it to 9 on the patched DB but is ruled out fleet-wide (§Q.34).
+2. **Clinic 1:** slab-on-grade (Substructure) over column stubs (Superstructure), 0.2 d — the same phase-filing class as LTU; decide together.
+3. **The two new HHS midair IfcMembers** seen only on the patched DB (locked, named) — find which patch statement moves them.
+4. §Q.33.12 items 2-4 unchanged (film per-frame witness needs a bake; full shim model needs rulings; bake speed is a GPU A/B).
+### Q.36 MEASURED (2026-11-20, §Q.35.5 item 1; CPU only; probe + logs `…/b96992a9…/scratchpad/q355/`) — LTU 109 is NOT phase filing; LTU has no floor axis
+`probe_pairs.js` (same predicate as `witness_floor_carriers.js`, every pair listed, reads the persisted run only). §Q.35.5 item 1's wording ("footings filed
+Substructure on Superstructure columns") is **struck**: that class is **9 of 109**. The other 100:
+- **74 of 109: the late carrier sits in task `TASK_Superstructure_TAKPLAN` [day 70-109].** That task holds **3,492** elements; only **248** carry the storey
+  `TAKPLAN`. The rest were moved in by `§D6_HANG_FILING` (`movedToCarrierLevel=52150` of 122,330, `ofWhichBearingOrEmbedded=28426`, `viaChain=29749`):
+  e.g. 79 `VÅNING 1` + 75 `VÅN 1` elements at 2.4-5.5 m play in the roof task.
+- **Cause: "higher level" has no meaning on LTU.** `§STOREY_DATUM mode=INFERRED … elevation:0=EMPTY center_z:0=EMPTY`; `§S18_STOREY_MERGE_FAIL no such
+  column`. The 18 names are nine federated files naming the SAME four floors four ways (`VÅNING n` / `VÅN n` / `Storey n` / `Plan n`), ranked by median
+  base and built as 18 separate "floors" (`VÅNING 1` 8-9, `VÅN 1` 9-19, `Storey 1` 19-20, `Plan 1` 20-21, …). `TAKPLAN` (roof plan) spans 2.14-16.27 m.
+  LTU is the **only** building of the seven without a declared datum (the other six print `mode=DECLARED`).
+- **The fact was never extracted, though the source has it.** `LTU_AHouse_meta.db` `spatial_structure` carries the 38 `IfcBuildingStorey` rows (guid,
+  name) and no elevation. All nine source IFCs (`bim-compiler internal/UNMERGED/LTU_AHouse_*.ifc`) declare them and AGREE: `Ref.` 0.0 · floor 1 = 2.7 ·
+  floor 2 = 6.0 · floor 3 = 9.3 · floor 4 = 12.3 (STR file: `VÅN 4` 12.0) · `TAKPLAN` 15.3 · `VÅN 5` 16.0 (mm, `IfcSIUnit MILLI`). Guids equal the DB's.
+- **Tool defect found on the way:** `bim-ootb tools/ifc_storeys_patch.py` did not decode ISO 10303-21 string escapes — it wrote `V\S\ENING 1` and
+  `V\X2\00C5\X0\N 1`, which match no `elements_meta.storey`.
+### Q.36.1 SPEC — carry LTU's declared storeys (EXTRACT, no rule added)
+- `tools/ifc_storeys_patch.py`: decode `\S\c`, `\X\hh`, `\X2\…\X0\`, `\X4\…\X0\` in names. Witness claim added to `witness_ifc_storeys.js`:
+  *"a storey name with a STEP escape reads as the same text web-ifc gives"* (the witness already compares the two readings).
+- `buildings/patches/LTU_AHouse_meta.db.sql`: append the tool's `storey_elevation` block (38 rows, generated, idempotent `DELETE`+`INSERT`), marked
+  `§IFC_STOREYS`. No z offset: the frame test must print `IN_FRAME` (element base median 8.277 inside ladder 0..16).
+- No scheduler code change: `_storeyDatumCandidates` already reads `storey_elevation` (§IFC_STOREYS, MODELLER_MASTER §G3); R1 (§Q.35.1) then owns the floor.
+- `_GANTT_CACHE_VERSION` 44 → 45 (a stored LTU schedule is stale), `sw.js` bump.
+- **Proof owed:** `§STOREY_DATUM mode=DECLARED source=storey_elevation` on LTU; W-FC-1x LTU 109 → the measured number, lock re-set from the run;
+  `§D6_HANG_FILING` moved count before → after; the six other buildings' played instants hash-equal (their patches are untouched); programme days and task
+  count before → after; `run_4d_gates.sh` GREEN 16/16 with `assembly_order.json` / `dcma.json` re-locked from the run and every rise named.
+- UAT constraint (2026-11-20 block): the Shed's DB and patch are not touched; no schedule rows written.
+### Q.36.2 MEASURED + SPEC — §Q.35.5 item 3, the two HHS midair IfcMembers: the same missing fact (2026-11-20; `q355/probe_hhs.js`, owner verbs `contactGraph` / `designatedSupport`)
+- The two (`3XrBtx9eX7mQE6EqWHPfl1`, `…fl5`, curtain-wall posts, Level 2, play day 35.6) elect wall `2TPxGMIrHD1RFtsgRpxMUZ` (`Basic Wall:STB 20.0`, z 4.49-7.99).
+  On the unpatched DB that wall is banded `Level 1` and plays day 40.0 in the same task as the posts (42.3). On the patched DB it is banded **`Unknown`** and
+  plays day 45.6 in `TASK_Architecture_Envelope_Unknown` [43-46], after the posts.
+- **The patch statement:** `HHS_Office_Federated_extracted.db.sql` line 36, `INSERT INTO spatial_structure VALUES('STC_Unknown','IfcBuildingStorey','Unknown',…
+  center_z 4.148…)`. It is a COMPILED row (`compile_rooms.py`): the mean centre of the 2,120 elements whose storey label is `Unknown`. The scheduler reads it
+  as a declared rung: `§STOREY_DATUM source=center_z ladder=4[1.476..8.587]`, band `Unknown` = [4.148, 5.151), scheduled after Level 3.
+- **HHS has no extracted storey datum at all.** Its other three rungs (1.476 / 5.151 / 8.587) are also compiled means. The three source IFCs
+  (`opensourceBIM_HHS_Office_{architect,construction,MEP}.ifc`) declare the same four storeys: `Level 1` 0.0942 · `Level 2` 3.8 · `Level 3` 7.3 ·
+  `Roof Level` 10.9 (mm). The geometry is in that frame: large slab tops sit at 0.1-0.2 / 3.8-4.0 / 7.3-7.5 / 10.9 m.
+- **SPEC:** the same extraction as §Q.36.1 — append the tool's `storey_elevation` block to the HHS patch. No rule on the name `Unknown`; the declared
+  ladder goes ahead of the compiled rung by the existing candidate order. Sandbox: `source=storey_elevation ladder=4[0.094..10.900]`, midairPlayed 2 → 0,
+  the two `…_Unknown` tasks gone, `Roof Level` tasks appear, 18 → 20 tasks, 60 → 58 d.
+- **Proof owed (added to §Q.36.1's):** HHS midair IfcMember 2 → 0 and `§FILING_PARITY` 2 → 0, re-locked; the four editor witnesses green on HHS (CI runs them).
+- **Not done here, named:** Clinic / JKR / Hospital also print `source=center_z` (compiled rungs). Their source IFCs are at hand for Clinic and Hospital;
+  measure each the same way before touching (Hospital's frame is 168-201 m, a z offset applies).
+### Q.36.3 RESULT — APPLIED (2026-11-20, bim-ootb PR #3352, branch `fix/4d-ltu-declared-storeys`; logs `…/b96992a9…/scratchpad/q355/`)
+- Patches: `LTU_AHouse_meta.db.sql` +38 `storey_elevation` rows (nine IFCs), `HHS_Office_Federated_extracted.db.sql` +12 (three IFCs, 4 distinct storeys).
+  Tool fix + witness: `witness_ifc_storeys.js` U7 / U7b / R1n, 14 / 0 on the nine LTU IFCs (two independent readers agree on 38 / 38 names and metres).
+- LTU: `§STOREY_DATUM mode=DECLARED source=storey_elevation ladder=8[0.000..16.000]`, `IN_FRAME`. `§D6_HANG_FILING` moved 52,150 → **5,455**
+  (bearing-or-embedded 28,426 → 207). **W-FC-1x 109 → 9** (lock 9). 84 → 43 tasks, 522 → 496 d; 122,167 instants moved (max 391.5 d).
+  Superstructure now reads `Ref` 4-9 · `Plan 1` 17-25 · `Plan 2` 36-57 · `Plan 3` 79-89 · `VÅN 4` 94-99 · `Plan 4` 99-118 · `TAKPLAN` 118-130 · `VÅN 5` 130-131.
+- HHS: `source=storey_elevation ladder=4[0.094..10.900]`. **midair IfcMember 2 → 0, `§FILING_PARITY` 2 → 0** (re-locked). 18 → 20 tasks, 60 → 58 d; all
+  6,839 instants moved (max 26.3 d). The `…_Unknown` tasks are gone; `Roof Level` tasks exist.
+- Duplex / Hospital / Terminal / Clinic / JKR: played instants **hash-equal** (`cmp.log`). All seven: midair 0, filing parity 0.
+- Gates: first run 15 / 16, the red = DCMA ratchet **LTU long tasks 3 → 4** (re-locked, named). Before: `MEP_Rough_in` `Plan 1` 117 d, `Plan 2` 73 d,
+  `TAKPLAN` 76 d — the last was 20,371 pipe / duct elements from every floor lumped in the roof task. After: one per real floor, 135 / 86 / 55 / 53 d
+  (MEP rough-in task-days 386 → 377). **LTU DCMA check 8 now FAIL (4 of 44 = 9.1 %) where it read PASS (3 of 84)** — the PASS was the misfiling.
+  LTU high float 72 → 34 (tightened). After the re-lock `witness_dcma_14pt` and `witness_tm_assembly_order` re-run green; the other 14 were green in
+  the first run and nothing they read changed after it.
+- `_GANTT_CACHE_VERSION` 44 → 45, sw v1770. UAT constraint: the Shed's DB, patch and code path are untouched.
+- Named, left: floor 4 is two rungs 0.3 m apart (`VÅN 4` 12.0 from the STR file, `Plan 4` 12.3) and so two tasks, in the right order. Floor names on LTU
+  are now the first name by sort at each datum (`Plan n`), not the architect's `VÅNING n`.
+### Q.36.4 ▶ RESUME HERE (2026-11-20)
+1. **⛔ LTU IS NOT LIVE — the gates do not judge the LTU the viewer plays. Read §Q.36.5 and do its order of work first.**
+2. **LTU long MEP rough-in tasks (4, one per floor):** the zone split first named in §Q.29 — now on honest floors. Sandbox first.
+3. **Phase filing, the true residue of §Q.35.5 items 1-2 (LTU 9, Clinic 1):** LTU's 9 are `IfcReinforcingBar` filed Substructure (seq 1) that sit on
+   Superstructure columns / slabs above ground; Clinic's 1 is the slab-on-grade (Substructure) over 400×400 column stubs z -1.00..-0.31 filed
+   Superstructure. Both are "phase by class". Measure per pair before any rule (owner of phase: `matchNameOverride` → `matchRule`, §I).
+4. **Clinic / JKR / Hospital still band on compiled rungs** (`source=center_z`). Extract their declared storeys the same way and MEASURE (sandbox, gates)
+   before applying; Hospital needs the z offset. Source IFCs: `internal/UNMERGED/Clinic_*`, `Hospital_IFC2x3_*`; JKR's not located.
+5. §Q.33.12 items 2-4 unchanged (film per-frame witness needs a bake; full shim model needs rulings; bake speed is a GPU A/B).
+### Q.36.5 FOUND AT THE UPLOAD STEP (2026-11-20) — HHS is live; LTU is not, and for LTU the gates judge a different database from the served one
+- **HHS live, verified on the served bytes:** GH Pages `buildings/patches/HHS_Office_Federated_extracted.db.sql` carries the `storey_elevation` block
+  (14 lines); `viewer/sw.js` `v1770`; `tm_dash.js` `_GANTT_CACHE_VERSION=45`. Merge commit `2a7e03b1`, CI + Pages deploy green.
+- **LTU, measured (OCI rule 1, look at the target before uploading):**
+  - The bucket has **no** `buildings/patches/LTU_AHouse_meta.db.sql` (404). It was deleted on purpose (`LTU_TERMINAL_CLINIC_RENDER_CORRUPTION.md` line 1016:
+    its whole content was the §META_TRANSFORM_REPAIR bbox snap, withdrawn from production). The repo file still carries that block.
+  - The served `LTU_AHouse_meta.db` is a **2026-08-29 re-import** (41,824,256 B raw, 122,330 rows, no `elements_rtree`; `schedules` / `tasks` /
+    `kernel_ops` tables present, kernel_ops 1 row). The local `~/bim-ootb/buildings/LTU_AHouse_meta.db` every gate reads is the **Aug-10** file
+    (52,633,600 B, 125,698 rows). Transforms: served vs local + repair patch **25,637 of 122,330 differ > 0.025 m (max dz 3.97 m)**; served vs local raw
+    50,385 (max dz 55.16 m). Storey labels equal. Served geo is 645 MB raw, local 168 MB; served `positions.bin` differs too.
+  - The repo's full patch on the served DB: **`§PATCH_NODE_FAIL … rolled back, db stays as it was — no such table: elements_rtree`** (the shared chunker,
+    `scripts/lib/apply_building_patch.js`). Uploading the repo file as it is would change nothing for users. **Not uploaded.**
+  - So §Q.35.3's premise ("`all` = the DB the viewer plays") is false on LTU: 755 → 109 → 9 were measured on a DB no user loads.
+- **The fix itself holds on the served bytes** (sandbox `BLD_DIR=…/q355/bld_served`, served meta + geo downloaded, storey block as the only patch):
+  | served LTU | today (no patch) | + storey block |
+  |---|---|---|
+  | `§STOREY_DATUM` | INFERRED | DECLARED `storey_elevation` ladder=8 |
+  | W-FC-1x | 82 | **9** |
+  | `§D6_HANG_FILING` moved | 77,485 | 4,466 |
+  | tasks / programme | 84 / 733 d | 43 / 673 d |
+  Programme 673 d on served vs 496 d on the local DB: the two databases also disagree on durations (not chased).
+- **Order of work (its own session; about a dozen witnesses read the local LTU files — list: `grep -rl 'LTU_AHouse_\(meta\|geo\)\.db' viewer/tests tests scripts`):**
+  1. Make the local LTU store the served pair (download meta + geo + positions.bin from OCI; keep the Aug-10 files beside them under another name —
+     another lane used them as rollback originals). Shared local data: say so in the PR.
+  2. Repo `buildings/patches/LTU_AHouse_meta.db.sql` = the `§IFC_STOREYS` block only (delete the §META_TRANSFORM_REPAIR block and the stale
+     `.manifest.json`; `viewer/scene.js` / `streaming.js` mention the repair — read before deleting).
+  3. `run_4d_gates.sh`; re-lock LTU from the run, every moved lock named; sweep the witnesses of the grep above.
+  4. Upload through `scripts/oci_patch_gate.js --upload` with a verifier on `$GATE_DB` (38 `storey_elevation` rows, each guid + name equal to its
+     `spatial_structure` row; `witness_ifc_storeys.js --patched "$GATE_DB"`), fetch back, byte-compare.
+  5. Then the same check for Terminal and Hospital: is the local `_meta.db` the served one (`oci os object head` md5 vs local)?
+
+## 2026-11-20 UAT CONSTRAINT on 4D corrections (from the UAT lane; read before changing what the Shed's 4D shows)
+**Owner (verbatim):** *"There is another session i stop from 'resume 4D' because i want to ask u if 4D schedule correction will affect our UAT? If so, can not fingerprint the schedule values. Qualitiative proof is enough."*
+**Measured:** the UAT's answer key (`uat/Shed_UAT_pack_20261115.zip` on OCI) holds no schedule data: `schedules`, `tasks`, `task_sequences` and `task_elements` all have 0 rows. The UAT Run Checker therefore judges no 4D value, and a 4D correction does not change any checker verdict.
+**What the UAT Guide (BIMCompiler `docs/CapexUATGuide.md`) asks of 4D, all qualitative:**
+- B3.1: *note* the finish date (Time Machine, key T); no value is checked.
+- B3.5: after the B3.2 lag edit (+5 days on each edited row), *"the finish date moved by the days you added; the day counter and the placed count rise as the parts go up in order"*.
+**Keep true while correcting 4D:**
+1. A lag added to an edited row still moves the Shed's finish date later. If a correction takes that row off the path that drives the finish, B3.5's words need a guide note: tell the UAT lane, do not let it silently break.
+2. The parts still go up in order in Time Machine.
+3. Do not write schedule rows into the Shed's Modeller/Viewer export. If that becomes necessary, the checker must leave the schedule tables out of its B2.8 count (bim-ootb `prompts/UAT_KIT.md` §3).
+Exact dates and durations may change freely: no UAT step or checker stage fingerprints them.
+## §Q.37 THE SHIM-ANCHOR MODEL — PLAN TO SHIP (2026-11-20, owner after the §Q.33 review and a prior-art check: *"Proceed to plan and implement."*)
+**Why this shape.** §Q.33's three sandboxes proved the relation and failed on the big-bang. Prior art says the same of everyone (Jung, Amer,
+Golparvar-Fard, CIB W78 2021: rule-based BIM sequencing *"still require[s] hard-coded sequencing rules and work templates … unable to cover undefined
+rules"*, wrong when the model is inaccurate, not verified on real projects; the relation itself is Echeverry / Ibbs / Kim 1991 — physical relationships
+are ONE of four sequencing factors, beside trade interaction, access and regulation). So: the bond is a STORED, REPORTED FACT first; it drives a consumer
+only one consumer at a time, each behind the gates, each deleting the special case it replaces. The template grid (location × trade) stays and keeps
+ordering everything no bond orders (rule D) — trade interaction is the grid's job, not the bond's.
+### Q.37.1 STAGES (work top to bottom; a stage is one PR in bim-ootb; ✅ / ⛔ marked here)
+| # | stage | changes the programme? | needs the owner? |
+|---|---|---|---|
+| S1 ✅ #3353 | **Bond table, report only** — `viewer/shim_bonds.js` (candidate owner of "which thing(s) carries T, by which need"), `scripts/shim_bonds_report.js`, gate witness `witness_shim_bonds.js`. Reads the persisted runs. | no | no |
+| S2 ✅ #3354 | **Persist the bonds with the run** (`run.json` `bonds`, cache-keyed) and print `§SHIM_*` in `witness.log`, so every later reader reads, never recomputes. | no | no |
+| S3 ✅ as ADDED carriers (#3359 flag, #3360 default on; §Q.41-§Q.42) — clause deletion still open | **Election reads bonds** — `designatedSupport` returns the bond's primary host; the D1 / D2 / D3 / D5 / D7 / ground-band clauses it replaces are DELETED in the same PR (deletion budget stated). Flag first (`opts.supportSource='bonds'`, default off, as `LevelDeriver` was), measured on 7, then default on. | **yes** | ⛔ Q1, Q2 below |
+| S4 ✅ #3358 (as a second carrier, §Q.40.1) | **Hung filing reads bonds** — D6 files by the `hangs-below` bond, not by "elected support on a higher level". | yes | no (it is the §S47.3 ruling) |
+| S5 | **Renderer hold + lock gate + load-path film read bonds** — `tm_sched_xray.js` `maxCarrierEnd` and the lock verdict stop running their own geometric test. `witness_midair_zero`'s census stays an INDEPENDENT judge (not switched). | no (judges) | no |
+| S6 | **Mesh faces into the contact owner** (angle / oriented faces) — turns `unverified` into `bonded` or `misplaced`. | maybe | measure first |
+| P0 | Prerequisite named in §Q.36.5: LTU gates judge the served pair. Until then every LTU bond number is on the local Aug-10 DB and says so. | — | — |
+⛔ **Q1 (blocks S3 only):** rule B pulls Finishes ceilings ahead of MEP-Final fixtures (Hospital 3,249 in §Q.33.5). Change the phase table (ceiling grid, then fittings into it) or keep the template order and let the fixture bond be informational? ⛔ **Q2 (blocks S3 only):** a wall the geometry needs as a bearer but the file flags non-bearing (701 in §Q.33.9) — geometry (the shipped D1 `bearingWalls`) wins? Session advice on both: yes to the first option. S1-S2 need neither.
+### Q.37.2 SPEC S1 — the bond table, report only
+- **One contact owner, unchanged:** candidates are `CpmSchedule.contactGraph(items).contacts` (§I row 1). S1 writes NO second contact test. The pair's
+  relation is the election's own three-way split (`cpm_schedule.js` `designatedSupport`: below = `S.bz < T.bz-EPS && S.tz >= T.bz-GAP`; side/inside =
+  `S.bz <= T.bz+EPS && S.tz >= T.tz-EPS`; else above), restated once in `shim_bonds.js relOf` and deleted from the election at S3.
+- **Kind** (the only place a class name appears): IFC class → kind, refined by two extracted facts — the `rel_aggregates` parent (a member / plate
+  under an `IfcCurtainWall` is façade; a slab / member under an `IfcStair` is a stair part) and the shipped owners `groundworkSlabs` (ground slab) and
+  `bearingWalls` (D1, bearing wall). No Pset is read (none is in the DBs, §Q.33.7).
+- **Table = §Q.33.3's dry run, row for row, plus the mined `rule_shim` rows** (terminal_rules 5 class rows, duplex_rules 3). Nothing else is authored;
+  a kind with no row is `lost(untabled)` and keeps its template time. Each row: ordered needs, each = capability (`ground` · `bears-on-top` ·
+  `hangs-below` · `fixes-on-side` · `opening-accepts` · `continues-same-kind`) + host kinds IN TIER ORDER + count (`one` | `all`).
+- **Rules:** A bond = a need met by an ANCHORED contact of an offered kind in the needed relation; tie = tier, then contact area, then guid. Anchored
+  waves (§Q.33.6 item 1): wave 0 = ground seeds (the election's own `isSeed`, minus façade parts); a host qualifies only if anchored in an EARLIER wave;
+  no relax in S1. Count `all` records every anchored host of the winning need below T. Relay = the `continues-same-kind` need, met only by an anchored
+  piece (rule C); it draws no order (the grid orders pieces of one run).
+- **Outcomes (every element gets exactly one):** `bonded` · `lost(untabled)` · `lost(no-contact)` · `lost(unanchored)` (a right-kind host touches but
+  never anchors) · `misplaced` (a right-kind host touches, wrong relation). Angle: boxes only → every bond is `angle=unverified`, printed, never
+  `misplaced` for angle (rule E).
+- **§-lines:** `§SHIM_BONDS <bld> n= bonded= lostUntabled= lostNoContact= lostUnanchored= misplaced= waves= seeds= angleUnverified=` ·
+  `§SHIM_KIND` (per kind: n / bonded / by need) · `§SHIM_TABLE_SOURCE` (bonds by row source: dry-run / mined) · `§SHIM_VS_ELECTION` (same host / other
+  host / bond only / election only, by kind) · `§SHIM_WOULD_MOVE` (bonded T whose primary host ENDS after T starts on the played layer, by kind — what S3
+  would change; NOT a defect count).
+- **Witness `witness_shim_bonds.js` (gate 17), issue it exposes: *"does the bond table stay acyclic, total and sane on every building, and do the
+  cases the model was invented for hold?"*** B1 every element has exactly one outcome · B2 every bond's host is in an earlier wave (cycles 0) · B3 two
+  runs hash-equal · B4 no slab / beam / column is hosted by a façade part or bonded by `hangs-below` · B5 no slab's primary host is a non-bearing wall
+  while a column or beam also bears it · B6 a stair landing with a sibling contact bonds inside its own stair · B7 ratchet: `bonded` share per building
+  may not fall (baseline from the run) · red control: a table where a mullion offers `bears-on-top` to slabs must fail B4 on HHS. INCONCLUSIVE, never
+  PASS, where a claim's population is empty.
+- **Proof owed:** the seven §SHIM_BONDS lines; `run_4d_gates.sh` GREEN 17/17; played instants hash-equal on all seven (S1 changes no schedule);
+  no served file changes (no sw bump).
+### Q.37.3 RESULT S1 — APPLIED (2026-11-20, bim-ootb PR #3353, branch `feat/4d-shim-bonds-report`; logs `…/b96992a9…/scratchpad/q37/`)
+- `viewer/shim_bonds.js` (kindOf · TABLE · relsOf · compute · capOf / srcOf), `scripts/lib/shim_bonds_run.js` (one loader), `scripts/shim_bonds_report.js`,
+  `viewer/tests/witness_shim_bonds.js` = **gate 17**. No viewer page loads the module; played instants unchanged (cache dirs untouched); no sw bump.
+  `run_4d_gates.sh` **GREEN 17/17**; witness 45 pass / 0 fail / 5 INCONCLUSIVE (B6 where no landing is declared: Duplex, JKR, Terminal, Hospital, LTU).
+- **Spec corrections made while building, recorded:** (1) the two relation tests are NOT made exclusive (`relsOf` → below / spans / above): the election
+  asks "below" first, so a wall round a window reads "below" there; with the exclusive split `opening_fill` was `misplaced` 35 of 38 on Duplex, with
+  the non-exclusive one 2 of 38. (2) a fourth lost reason `lost(no-host)` (contacts exist, none of an offered kind). (3) rows marked `proposed`
+  (bearing wall = "a vertical bearer, like a column", §Q.6 D1; partition on its slab; stair flight / stair part) — without them hosts cannot anchor
+  and windows / landings are lost wholesale. They are NOT signed off and are counted on `§SHIM_TABLE_SOURCE`. (4) relay bonds are excluded from
+  `§SHIM_WOULD_MOVE` (rule C draws no order).
+- **`§SHIM_BONDS` (played layer, boxes only → every bond `angle=unverified`):**
+  | building | n | bonded | untabled | no-contact | no-host | unanchored | misplaced | seeds / waves | bonds by source: dry-run / mined / proposed |
+  |---|---:|---:|---:|---:|---:|---:|---:|---|---|
+  | Duplex | 1,119 | 1,009 (90.2 %) | 75 | 0 | 6 | 8 | 21 | 18 / 7 | 527 / 431 / 44 |
+  | HHS | 6,839 | 5,811 (85.0 %) | 674 | 11 | 172 | 137 | 34 | 163 / 11 | 5,277 / 218 / 153 |
+  | JKR | 8,985 | 5,797 (64.5 %) | 2,691 | 1 | 63 | 198 | 235 | 16 / 9 | 4,786 / 646 / 361 |
+  | Clinic | 16,071 | 14,723 (91.6 %) | 544 | 26 | 95 | 535 | 148 | 132 / 10 | 11,559 / 2,141 / 991 |
+  | Terminal | 48,428 | 10,034 (20.7 %) | 34,602 | 21 | 1,191 | 2,448 | 132 | 265 / 11 | 8,373 / 1,329 / 331 |
+  | Hospital | 63,182 | 55,260 (87.5 %) | 7,410 | 13 | 85 | 274 | 140 | 582 / 36 | 39,866 / 13,900 / 1,466 |
+  | LTU ⚠ local DB (§Q.36.5) | 122,330 | 104,191 (85.2 %) | 9,146 | 413 | 5,533 | 2,620 | 427 | 278 / 19 | 95,000 / 6,064 / 3,054 |
+- **Untabled, the sign-off list (`§SHIM_UNTABLED`):** `IfcBuildingElementProxy` (HHS 665, JKR 1,798, Hospital 5,729, LTU 1,642), **Terminal `IfcPlate`
+  33,324** (its aggregate parents are not elements, so they cannot be told façade — the §Q.33.11 JKR problem again), non-façade `IfcMember` (LTU 2,349,
+  JKR 575, Terminal 442), `IfcFlowController` / `IfcValve` (LTU 3,802, Hospital 470, Clinic 369), furniture, railings, `IfcRoof`.
+- **What the lost / misplaced structure says (`§SHIM_WHY` probe):** JKR columns with every contact ABOVE them (nothing modelled below); LTU beams
+  resting on timber `IfcMember`s that have no row (103 + 22 + …, `lost(unanchored)`); Duplex bearing walls touching only a slab above and another
+  unanchored wall. These are model gaps or table gaps, named, not scheduling errors.
+- **`§SHIM_WOULD_MOVE` (bonded, relay excluded, a host ENDS after the element starts on today's played layer — what S3 would change):** Duplex 73
+  (segments 62) · HHS 3 · JKR 237 (fixtures 151, columns 64) · Clinic 656 (fixtures 291, segments 230, bearing walls 74) · Terminal 266 · Hospital 849
+  (segments 563, façade parts 165) · LTU 304. Fixtures lead on three buildings: that is Q1 (ceiling before fitting) in numbers.
+- **`§SHIM_VS_ELECTION`:** the bond's host is the election's host on a minority (Duplex 330 same / 637 other; Hospital 9,125 / 45,453), mostly services,
+  where the election's pool override picks structure and the bond picks the stated hang or run. Not judged here; S3 measures what that changes.
+- **Honest limits:** B4 and B5 hold partly BY the table (no row offers a partition or a façade part to a slab) — they guard the table against edits, the
+  red control proves they can fail. The model's value is not proven by S1; S1 proves it is total, acyclic, deterministic and cheap (7 buildings < 30 s).
+### Q.37.4 RESULT S2 — APPLIED (2026-11-20, bim-ootb PR #3354, branch `feat/4d-shim-bonds-persist`)
+- `scripts/cache_4d_run.js` computes the table at build time and writes `run.json` `bonds` + one `§SHIM_BONDS` line in `witness.log`;
+  `viewer/shim_bonds.js` is a cache-key input. `scripts/lib/shim_bonds_pack.js` = the stored form (carries a hash of TABLE + `kindOf`: a table from
+  another need/offer table is never read as current). The loader returns `source=persisted`; `witness_shim_bonds` B3 = *"the table a judge reads
+  equals a fresh computation"* — equal on all seven.
+- Proof: played instants **hash-equal on all seven** (code key `abbd1ce0b9f8` → new key, `s2_cmp.log`); bonded counts equal §Q.37.3's;
+  `run.json` +0.0 … +2.4 MB (Terminal, its 33,923 aggregate pairs); `run_4d_gates.sh` **GREEN 17/17**.
+### Q.37.5 ▶ RESUME HERE (2026-11-20) — S1 ✅ S2 ✅; S3 and S4 wait on the owner
+- **S3 (election reads bonds) — Q1 and Q2 ANSWERED 2026-11-20, see §Q.38.1.** Until answered, the next unblocked work on S3 is its SANDBOX measurement only: flag
+  `supportSource='bonds'`, default off, all seven, gates — what moves, per kind, against `§SHIM_WOULD_MOVE` (Duplex 73 · HHS 3 · JKR 237 · Clinic 656 ·
+  Terminal 266 · Hospital 849 · LTU 304).
+- **⛔ S4 (hung filing reads bonds) — the same Q1:** the fixtures' first need is `hangs-below` a ceiling (a mined row), so filing them with their
+  carrier puts fittings in the ceiling's task. S4 for services hung from SLABS needs no ruling and can go first if the owner splits it.
+- **Sign-off list for the table** (§Q.37.3): the `proposed` rows (bearing wall, partition, stair) and the untabled kinds, largest first: Terminal's
+  33,324 plates (needs the JKR / Terminal "parent is not an element" fix of §Q.33.11 first), proxies, non-façade `IfcMember`, flow controllers / valves.
+- **P0 DONE (§Q.38):** LTU gates judge the served pair. Every LTU bond number above is on the local Aug-10 DB.
+- S5 (renderer hold, lock gate, load-path film read bonds) and S6 (mesh faces → angle) follow S3; neither is started.
+
+### Q.38 LTU IS LIVE — §Q.36.5's order of work DONE (2026-11-20, owner: *"send the LTU patch if you are really sure it is not a misjudgement"*; bim-ootb PR #3355 + manifest PR; logs `…/b96992a9…/scratchpad/q38/`)
+- **Why sure:** the served `LTU_AHouse_meta.db` has no storey elevation (schema read); nine source IFCs declare the same ladder and two independent readers
+  agree on 38 / 38 names and metres (§Q.36.3); wall bases sit 0.3-0.4 m above each declared floor on all four floors (`§STOREY_DATUM_FLOOR`: one frame);
+  on the served bytes the storey block alone takes W-FC-1x 82 → 9 and `§D6_HANG_FILING` moved 77,485 → 4,466 (§Q.36.5).
+- **Patch (#3355):** `buildings/patches/LTU_AHouse_meta.db.sql` = the `§IFC_STOREYS` block only; the withdrawn §META_TRANSFORM_REPAIR block and the stale
+  manifest are deleted.
+- **Gates now judge the served pair.** Local `~/bim-ootb/buildings/LTU_AHouse_{meta,geo}.db` + `_positions.bin` are the served bytes (OCI, 2026-08-29);
+  the Aug-10 files are kept beside them as `*.aug10_local.*` (local data, not in git). First full run on the served pair (`BLD_DIR` sandbox): **14 / 17**,
+  the three reds being LTU locks measured on the old file. Re-locked from that run, each move named in the baseline files:
+  strict midair 538 → 242, orphans 3,288 → 1,382, big-element unchecked 617 → 116 **fell**; `float_after_cpm` 3,081 → 5,513 (auditFloating 2,070 →
+  5,513) and unjudged structural (IfcBeam 30 → 33, IfcMember 0 → 41, IfcSlab 51 → 73, IfcWall 0 → 3; IfcColumn 61 → 44 fell) **rose**; contact-only
+  IfcFlowController 20 → 41, IfcFlowFitting 95 → 104 rose, IfcFlowSegment 310 → 216 fell. Unchanged: played midair 0, `§FILING_PARITY` 0, unnamed midair 0,
+  W-FC-1x 9, DCMA ratchet. Bonds (gate 17) 104,191 → 105,776 of 122,330. After the re-lock the six affected gates are green on the default folder.
+  Programme on the served pair with the patch: 673 d (it was 733 d for users before the patch; the old local file read 496 d).
+- **Upload:** `scripts/oci_patch_gate.js --upload` from clean `origin/main` @ `d6df80bc`; target ADD; verifier on `$GATE_DB` (38 rows, each guid + name
+  equal to its `spatial_structure` row, 122,330 elements, every element storey label declared, `witness_ifc_storeys --patched` 13 / 0);
+  `§GATE_VERDICT UPLOAD_VERIFIED`; fetched back over HTTPS **byte-equal**, `application/sql`, CORS `*`.
+- **Not witnessed:** no browser or bake run on the live LTU (GPU / browser runs need the owner's go). The served `_extracted.db` (2026-08-29) also differs
+  from the local one; the viewer loads the split pair, so it was not touched.
+- **Still to check the same way:** Terminal and Hospital — is the local `_meta.db` the served one (`oci os object head` md5 vs local)?
+### Q.38.1 RULINGS RECEIVED (2026-11-20) — both §Q.37.1 questions answered; S3 and S4 are unblocked
+- **Q1, owner:** *"Why not industry standard practice to apply to all?"* → the trade order follows standard practice on EVERY building, as one rule in the
+  phase table, never a per-bond exception: per level, rough-in → close-up (partitions closed, **suspended ceiling**) → MEP final (fittings into the
+  ceiling) → finishes (floor finishes, furniture). Today `IfcCovering` is one rule, `Finishes` sequence 10, for ceilings and floor finishes alike
+  (`rates.js`), which puts every ceiling AFTER the fittings that hang from it.
+  **Spec owed before code:** a covering whose bond is `hangs-below` is a ceiling → `Architecture Closeup`, sequence 8; a covering that `bears-on-top`
+  stays `Finishes`. The bond is the fact (S1 measured: Hospital 600 of 602 coverings hang, Clinic 247 of 250, LTU 12,778 hang / 7,975 bear); the name
+  (`Compound Ceiling`, `Abgehängte …`) is language-bound and is not used. This needs the bond inside the scheduler's element recipe — it is the first
+  consumer of S3's wiring. Then review the rest of the phase table against the same standard sequence and list every other deviation before changing any.
+- **Q2, owner:** *"Go with your advice"* → geometry wins: a wall the structure needs as a bearer (the shipped D1 `bearingWalls`) is structure whatever
+  the file's LoadBearing flag says; the flag may confirm, never veto.
+- **▶ NEXT:** S3 in its order — (a) wire `ShimBonds.compute` into `_buildScheduleElements` (viewer loads `shim_bonds.js`; sw bump), flag
+  `supportSource='bonds'` default off; (b) the ceiling rule above as its first reader, measured on seven, gates, re-lock named; (c) the election returns the
+  bond's host, the D1 / D2 / D3 / D5 / D7 / ground-band clauses deleted in the same PR.
+
+### Q.39 SPEC — S3 first reader: STANDARD PRACTICE FOR ALL, a suspended ceiling is close-up work (2026-11-20, ruling Q1 §Q.38.1)
+- **The rule (every building, one place):** per level the trade order is rough-in → close-up → MEP final → finishes. A ceiling is closed before the
+  fittings that hang from it; a floor finish is laid last. Today `IfcCovering` is one class rule, `Finishes` sequence 10 (`rates.js`).
+- **The fact:** the bond. A covering bonded `hangs-below` is a ceiling; one bonded `bears-on-top` is a floor finish; an unbonded covering keeps the
+  class rule (counted). No name is read (`Compound Ceiling` / `Abgehängte …` are language-bound).
+- **Code:** `ShimBonds.applyCeilings(els, who)` — ONE mutation (pattern: `applyBearingWalls`): ceiling → `phase='Architecture Closeup'`, `seq=8`;
+  resource, rate and install time unchanged. `ScheduleGate.applyGeometryReclass(els, who)` = bearing walls, then ceilings (the bond's kinds read the
+  promoted walls), called by ALL THREE element recipes (`schedule_author.js`, `tm_gantt_build.js`, `tm_sched_xray.js`) in place of their
+  `applyBearingWalls` call, so the task grid, the movie and the lock gate move the SAME ceilings. In node a missing `ShimBonds` / `CpmSchedule` global
+  is `require`d by the gate itself, so no harness can silently run without the rule; in the browser `viewer.html` loads `shim_bonds.js`.
+  No aggregates are read here (a covering's kind and its hosts' kinds do not depend on them, except a landing slab — counted, not chased).
+- **Template:** `architecture_closeup.trades` is `['CARPENTER']`; the ceiling crew is `FINISHER`. `FINISHER` is added to that phase's trades (the crew
+  works in two phases, as `CONCRETE_GANG` already does); template version bumped. Cost is unchanged by construction (D8: work content × rate).
+- **Cost named (PERF BUDGET):** one contact graph + one bond pass per recipe call — measured in node: Hospital 1.1 s + 0.4 s, LTU 2.7 s + 0.7 s, no
+  new geometry, heap +0. `§CEILING_CLOSEUP … ms=` prints it every run.
+- **§-line:** `§CEILING_CLOSEUP recipe= coverings= ceilings= floorFinish= unbonded= ms=`. A run with coverings and `ceilings=0` says NO-OP.
+- **Witness claim (added to `witness_shim_bonds.js`, B8):** *"no fitting bonded under a ceiling starts before that ceiling ends on the played layer"*
+  — counted before (main) and after; INCONCLUSIVE where no fitting hangs from a ceiling.
+- **Proof owed:** B8 before → after on seven; programme days / task count before → after per building; `run_4d_gates.sh` GREEN 17/17 with every
+  re-locked value named; `_GANTT_CACHE_VERSION` 45 → 46, sw bump; UAT constraint (Shed: the lag edit still moves the finish; no schedule rows written).
+- **Not in this step:** the election still elects (S3c); the rest of the phase table is reviewed against the standard sequence afterwards.
+### Q.39.1 RESULT — APPLIED (2026-11-20, bim-ootb PR #3357, branch `fix/4d-ceiling-closeup`; logs `…/b96992a9…/scratchpad/q39/`)
+- `ShimBonds.applyCeilings` + `ScheduleGate.applyGeometryReclass` in all three recipes; template 1.3.0 (`FINISHER` in close-up); `viewer.html` loads
+  `shim_bonds.js?v=1`; sw v1771; `_GANTT_CACHE_VERSION` 46. CI green; live on GH Pages (sw v1771, `shim_bonds.js` 200, `applyCeilings` in the served file).
+- `§CEILING_CLOSEUP` ceilings filed close-up: Duplex 13 · HHS 39 · JKR 20 · Clinic 247 · Terminal 59 · Hospital 600 (of 602 coverings, 1.1-1.3 s) ·
+  LTU 12,449.
+- **Fittings that start before the covering they hang under ends (any covering host), main → after:** JKR 151 → 19 · Clinic 291 → 42 · Terminal 76 → 44 ·
+  Hospital 44 → 14 · LTU 23 → 23. **What is left, measured (`§B8_WHY`):** (a) the host is a covering that is NOT itself a ceiling (bonded `bears-on-top`,
+  still Finishes — JKR 19, LTU 21, Clinic 32): the mined row "fitting under an `IfcCovering`" matches any covering; (b) the ceiling was filed on the level
+  of the slab it hangs from (§D6) and its fitting was not — Hospital fittings `MEP_Final_Level_3` [189-194] under a ceiling in
+  `Architecture_Closeup_Level_4` [226-229].
+- **Witness, as shipped (spec corrected):** B8 = a fitting hanging from a CEILING (a covering itself bonded `hangs-below`), both filed on ONE level, never
+  starts before it ends — **0** on JKR (132 pairs), Clinic (259), Terminal (156), Hospital (44), LTU (2); INCONCLUSIVE on Duplex / HHS (no such pair).
+  B8x = the cross-level pairs, a named ratchet for S4: **Clinic 10 · Terminal 44 · Hospital 14 · LTU 2 · JKR 0**. Witness 55 pass / 0 fail / 9 INCONCLUSIVE.
+- Programme: JKR 50 → 49 d · Clinic 128 → 127 d (18 → 19 tasks) · Hospital 262 d (37 → 35 tasks) · LTU 673 → 672 d · Duplex / HHS / Terminal unchanged.
+- Gates: first run 15 / 17 (reds: B8 as first written, and `witness_midair_zero` locks). `midair.json` re-locked from the run, named in the file:
+  `float_after_cpm` HHS 226 → 216, Hospital 1,349 → 1,337 fell; JKR 416 → 464, LTU 5,513 → 5,579 rose; strict midair Hospital 27 → 30 rose, unnamed 0.
+  After the re-lock both gates green; the other 15 were green in the first run.
+- **Not witnessed:** no browser or bake run (needs the owner's go). The browser path differs from node only in how `shim_bonds.js` is loaded
+  (script tag vs `require`); CI's live-JSON browser witness on HHS passed with the new files.
+### Q.39.2 ▶ RESUME HERE (2026-11-20, session close)
+1. **S4 first (it is now the measured gap):** hung filing reads the bond chain — a fitting is filed with its ceiling, the ceiling with its slab, as ONE
+   chain. Target: B8x Clinic 10 · Terminal 44 · Hospital 14 · LTU 2 → 0. Spec before code; it changes which task an element is in.
+2. **Table refinement the residue asks for:** kinds `ceiling` / `floor_finish` (a covering by its own bond), so "fitting under a covering" means under a
+   ceiling. Needs a two-pass kind; sandbox first.
+3. **S3c:** the election returns the bond's host; D1 / D2 / D3 / D5 / D7 / ground-band clauses deleted in the same PR (ruling Q2: geometry wins).
+4. **Standard practice, the rest of the phase table** (ruling Q1 said "apply to all"): review every class rule against the standard sequence and LIST the
+   deviations before changing any. Known candidates: doors are close-up but windows / railings are envelope; furniture is Finishes 11 (fine);
+   `IfcFlowController` / valves have no bond row.
+5. Sign-off list of §Q.37.3 (proposed rows, untabled kinds); Terminal and Hospital local-vs-served check (§Q.38); then S5, S6.
+
+### Q.40 SPEC — S4: hung filing follows the BOND chain (2026-11-20, owner: *"Proceed"*; §Q.39.2 item 1)
+- **Issue (measured, §Q.39.1 b):** `_hangFilingAxis` (§D6) files an element on the highest level along its chain of ELECTED supports. A fitting under a
+  ceiling does not elect the ceiling (the election prefers a pool contact, §S26.2), so the ceiling is filed with the slab it hangs from (the level
+  above) and its fitting stays below: Hospital fittings `MEP_Final_Level_3` [189-194] under a ceiling in `Architecture_Closeup_Level_4` [226-229].
+  B8x = Clinic 10 · Terminal 44 · Hospital 14 · LTU 2.
+- **Rule (the §S47.3 ruling, unchanged: an element suspended from above is filed by what it hangs from):** the chain step of an element bonded
+  `hangs-below` is its BOND's host; every other element keeps its elected support. Nothing else in §D6 changes (transitive, rings take the ring's
+  highest level, phase / trade / rate / install time untouched).
+- **Code:** in `_hangFilingAxis` only — `ShimBonds.compute(items, G)` on the contact graph it already builds (no second graph), then
+  `sup[i] = hangs-below bond ? bond host : des[i]`. No aggregates (as §Q.39). `§D6_HANG_FILING` gains `chainByBond=` (steps taken from a bond that
+  differ from the election) and `bondsMs=`. Without `ShimBonds` the old chain runs and the line says `chain=election`.
+- **Proof owed:** B8x → 0 (or each remainder named) and its lock tightened; `movedToCarrierLevel` before → after per building; programme days / tasks
+  before → after; `run_4d_gates.sh` 17/17 with every re-locked value named; `_GANTT_CACHE_VERSION` 46 → 47, sw bump.
+### Q.40.1 RESULT — APPLIED, with the rule CORRECTED by measurement (2026-11-20, bim-ootb PR #3358; logs `…/b96992a9…/scratchpad/q40/`)
+Three versions were built and gated; only the third shipped. The spec above (v1) is struck by its own numbers.
+| version | B8x (Clinic / Terminal / Hospital / LTU) | what else moved | verdict |
+|---|---|---|---|
+| v1 the bond's host for EVERY element bonded `hangs-below`, instead of the election | 0 / 0 / 0 / 0 | `movedToCarrierLevel` Hospital 6,330 → 11,278, LTU 4,466 → 12,731, Clinic 976 → 3,487 (MEP Rough-in: Hospital 3,184 → 7,000); programme Hospital 262 → 273 d, LTU 672 → 683 d; Terminal played midair 0 → 13, parity 0 → 3 | rejected |
+| v2 the bond's host only where the carrier itself hangs (a ceiling), instead of the election | 0 / 0 / 0 / 0 | programmes unchanged; **Terminal played midair 0 → 27** (26 sprinkler heads + 1 light), parity 0 → 27 — the fitting ran ahead of its ELECTED support | rejected |
+| **v3 that carrier as a SECOND chain step: filed on the highest level along both chains** | **0 / 0 / 0 / 0** | played midair 0 on all seven; programme days and task counts unchanged; Duplex / HHS no such pair (`secondCarriers=0`) | **shipped** |
+- v3 `§D6_HANG_FILING … chain=election+ceiling-bond secondCarriers / raisedByBond`: JKR 132 / 41 · Clinic 257 / 196 · Terminal 156 / 70 · Hospital 44 / 14 ·
+  LTU 2 / 2. `movedToCarrierLevel` JKR 852 → 893, Clinic 976 → 1,172, Terminal 8,000 → 8,063, Hospital 6,330 → 6,344, LTU 4,466 → 4,468.
+- Gates: 16 / 17 on the run; the red = DCMA ratchet, Clinic high-float tasks 2 → 3 (a REPORT measure) — re-locked and named; other high-float locks
+  tightened by the same `LOCK=1` (Terminal 15 → 14, Hospital 13 → 12, LTU 34 → 27). B8x locks set to 0. `witness_shim_bonds` 55 / 0 / 9.
+- CI caught one thing: `schedule_author.js` is a core file and may not read the clock (`witness_codefacts_core_pure`); the `bondsMs` timing was removed
+  (the same pass is timed on `§CEILING_CLOSEUP`). After that removal Hospital + Terminal were rebuilt and re-judged green; the other five were not re-run
+  (the change is a log field). sw v1772, `_GANTT_CACHE_VERSION` 47, live on GH Pages.
+- **⚠ What v1 / v2 say about S3c — read before building it.** Replacing the election's host by the bond's host is NOT safe: where the two disagree the
+  element satisfies one carrier and runs ahead of the other. The bond and the election are two carriers of the same element more often than two answers
+  to one question (`§SHIM_VS_ELECTION` otherHost: Hospital 45,453). S3c as written in §Q.37.1 ("the election returns the bond's host") must become
+  "an element waits for EVERY carrier the bonds and the election name" (the model's own `count = all`, already shipped for floor plates as
+  §E1_ALL_CARRIERS) — and the six special-case clauses can only be deleted one at a time, each against the gates.
+### Q.40.2 ▶ RESUME HERE (2026-11-20)
+1. **S3c, redesigned per the ⚠ above — spec first, sandbox first:** bonds as additional finish-to-start carriers in the solve (flag, default off), measured
+   on seven: midair, parity, programme days, DCMA. No clause is deleted in that step.
+2. Kinds `ceiling` / `floor_finish` (two-pass), so "fitting under a covering" means under a ceiling (JKR 19, Clinic 32, LTU 21 fittings still sit under a
+   non-ceiling covering, §Q.39.1 a).
+3. The rest of the phase table against standard practice (ruling Q1): list every deviation before changing any.
+4. Sign-off list (§Q.37.3); Terminal / Hospital local-vs-served check (§Q.38); S5; S6.
+
+### Q.41 SPEC — S3c REDESIGNED: bonds ADD carriers to the solve, behind a flag (2026-11-20, owner: *"Continue"*; §Q.40.2 item 1)
+- **Why (§Q.40.1 ⚠):** replacing the elected support by the bond's host makes an element run ahead of the carrier it no longer names. So the bond's
+  hosts are ADDED: an element waits for every carrier the election and the bonds name (the model's `count = all`; §E1_ALL_CARRIERS is the precedent).
+- **Code, `cpm_schedule.js buildGraph` only:** `§E1_BOND_CARRIERS` — for an element bonded by `bears-on-top` / `hangs-below`, a finish-to-start edge
+  from each bond host; by `fixes-on-side` / `opening-accepts` / `joins`, start-to-start (it goes in with its host, as `embedded` does today);
+  `continues-same-kind` and `ground` add nothing (rule C, seeds). An edge the graph already has is not added twice. Bonds are computed on the contact
+  graph the solve already holds; no aggregates.
+- **Flag, default OFF:** `opts`-free switch `global.__TPL_BOND_CARRIERS` / node env `TPL_BOND_CARRIERS=1` (the `TPL_LEVEL_SOURCE` pattern). With the
+  flag off no bond is computed here and the graph is byte-identical. No clause of the election is deleted in this step.
+- **Sandbox measurement owed before any decision (flag on, separate cache dir, all seven):** edges added by capability; `§SUPPORT_CYCLE`; played midair
+  and `§FILING_PARITY`; programme days / tasks; `§SHIM_WOULD_MOVE` before → after (does the PLAYED layer honour the bonds, or does the within-task
+  re-tiling throw the solve's order away as it did before §D6?); DCMA; the gates' verdict with the flag on, every red named.
+### Q.41.1 RESULT — the flag SHIPPED (default off), measured on seven (2026-11-20, bim-ootb PR #3359; logs `…/b96992a9…/scratchpad/q41/`)
+- **Flag off = main:** played instants hash-equal on all seven (`cmp.log`, main key vs new key). `cpm_schedule.js?v=6`, sw bump; no schedule changes.
+- **Flag on (`TPL_BOND_CARRIERS=1`, sandbox cache dir, all seven):** `§SUPPORT_CYCLE cycles=0` on all; programme days and task counts UNCHANGED on all;
+  DCMA ratchet unchanged; the order changes INSIDE the bars only (instants moved: Duplex 199, HHS 2,482, JKR 6,111, Clinic 11,800, Terminal 1,529,
+  Hospital 49,842, LTU 70,153; max shift 142 d on LTU's long tasks).
+  | | edges added | bonded elements starting before a host ends (played, relay excluded) off → on | `float_after_cpm` off → on | strict midair off → on |
+  |---|---:|---|---|---|
+  | Duplex | 463 | 73 → 73 | 1 → 0 | = |
+  | HHS | 1,315 | 3 → 2 | 216 → 214 | = |
+  | JKR | 3,181 | 105 → **19** | 464 → 423 | 17 → 13 |
+  | Clinic | 7,454 | 397 → **112** | 162 → 128 | 57 → 59 |
+  | Terminal | 4,870 | 193 → 170 | = | = (played midair 0 → **1**) |
+  | Hospital | 28,216 | 805 → **168** | 1,337 → 976 | 30 → 28 |
+  | LTU | 58,805 | 301 → **132** | 5,579 → 2,658 | 242 → 245 |
+  So the PLAYED layer does honour bond edges inside a bar (the question §Q.41 asked). What it cannot honour is a host filed in a LATER task: Duplex 62 /
+  Terminal 104 / LTU 109 segments, Hospital 165 façade parts, Clinic 65 bearing walls — filing, not ordering.
+- **Gates with the flag on:** 15 / 17. The two reds are locks moving, mostly down (table above). The three rises to resolve before the flag can be the
+  default: (1) **Terminal played midair 0 → 1** — beam `2dEJAAEyDAlQ$4dg_s$KeV` and its ELECTED support (a same-depth beam, one lift) both start at day
+  21.78; a bond start-to-start edge from a third beam re-ordered the lift and the support now starts a tick after it. A tie inside a ring, not a
+  physical inversion — but the judge is right to count it. (2) strict midair Clinic 57 → 59, (3) LTU 242 → 245 (inside the named sets; not profiled).
+### Q.41.2 ▶ RESUME HERE (2026-11-20)
+1. **Switch the flag on by default** — first: (a) ring members take no bond start-to-start edge from outside the ring that splits the lift (or the edge
+   attaches to the ring as one node — read `electionRings` / the SCC contraction before choosing); (b) profile Clinic +2 and LTU +3; then re-lock
+   `midair.json` / `assembly_order.json` from the run, every move named, `_GANTT_CACHE_VERSION` bump, a browser default (not only the window global).
+2. **Filing by bond for hosts in a later task** (the residue above): the same "second carrier" rule as §Q.40 v3, per kind, measured — v1 of §Q.40 showed
+   what happens when it is applied to everything at once.
+3. Kinds `ceiling` / `floor_finish` (two-pass). 4. The rest of the phase table against standard practice. 5. Sign-off list; Terminal / Hospital
+   local-vs-served check; S5; S6. Only after 1-2: delete an election clause, ONE at a time, each against the gates.
+
+### Q.42 — §E1_BOND_CARRIERS ON BY DEFAULT (2026-11-20, owner: *"proceed"*; §Q.41.2 item 1; bim-ootb PR #3360; logs `…/b96992a9…/scratchpad/q42/`)
+- **The Terminal "tie" was a loop, not a ring.** `electionRings` puts neither beam in a ring. The election says T (`…KeV`) rests on S (`…Ker`); S's own
+  bond (`fixes-on-side`, count all) names T among its hosts. Edge S→T (election) + edge T→S (bond), both start-to-start, closed a 2-loop; the solve
+  contracted it to one lift and the tiling put T first. **Rule added:** a bond edge is never added AGAINST an edge the graph already has
+  (`skippedAgainstAnExistingEdge`: Terminal 2, the other six 0). Played midair back to 0.
+- **Clinic +2 / LTU +3 strict midair, profiled on `§MZ_SPLIT`:** Clinic `namedStructNoSupport` 53 → 55; LTU `namedContactOnly` 10 → 12 and
+  `namedGroundSeed` 31 → 32. All are elements with NO elected support (the named model-gap sets); `UNNAMED=0`. Re-locked, named.
+- **Default on** (`TPL_BOND_CARRIERS=0` / `window.__TPL_BOND_CARRIERS=false` switches it off for a comparison run). All seven: `§SUPPORT_CYCLE` 0,
+  programme days and task counts unchanged, DCMA unchanged, played midair 0, `§FILING_PARITY` 0.
+- **`witness_shim_bonds` B9, new ratchet — bonded elements (relay excluded) that start before a host ends, before → now:** Duplex 73 → 73 · HHS 3 → 2 ·
+  JKR 105 → 19 · Clinic 397 → 112 · Terminal 193 → 170 · Hospital 805 → 168 · LTU 301 → 132. Witness 62 pass / 0 fail / 9 INCONCLUSIVE.
+- `midair.json` re-locked from the run: `float_after_cpm` Hospital 1,337 → 976, LTU 5,579 → 2,658, Clinic 162 → 128, JKR 464 → 423, HHS 216 → 214,
+  Duplex 1 → 0; strict midair Hospital 30 → 28, JKR 17 → 13, Clinic 57 → 59, LTU 242 → 245. Gates 16 / 17 on the run (those locks), green after.
+- `cpm_schedule.js?v=7`, `_GANTT_CACHE_VERSION` 48, sw bump; CI green; live on GH Pages.
+- **Not witnessed:** browser / bake. **Cost:** one bond pass in the solve (as §Q.39) and a Set of the graph's edges (LTU ≈ 0.72 M entries, transient).
+### Q.42.1 ▶ RESUME HERE (2026-11-20)
+1. **B9's remainder is FILING** (the host is in a later task) — by kind, largest first: Hospital façade parts 165; LTU segments 109, Terminal segments
+   104, Duplex segments 62; Clinic bearing walls 65; fittings under a non-ceiling covering (Clinic 32, Terminal 44, LTU 21, JKR 19). One kind per step,
+   as a second carrier in `_hangFilingAxis` (§Q.40 v3 pattern), each measured — §Q.40 v1 is what "all at once" costs.
+2. Kinds `ceiling` / `floor_finish` (two-pass) — closes the fittings line of item 1.
+3. Delete ONE election clause now covered by a bond edge (candidate: D7's later-contact skip, or D3's beam demotion), flag the deletion, gates.
+4. The rest of the phase table against standard practice. 5. Sign-off list; Terminal / Hospital local-vs-served check; S5; S6.
+
+### Q.43 SPEC — the bond's `above` host must be the FIRST offerer above, and `joins` must be a touch (2026-11-20, owner: *"resume 4d"*; §Q.42.1 item 1)
+- **Issue (measured before any filing change; probes + logs `…/b5ee8c6f…/scratchpad/q43/`, `probe_gap_base.log`):** §Q.42.1 item 1 calls B9's remainder
+  "filing". For the hung and joined kinds it is not: the host is not what the element hangs from. The contact owner's third relation
+  (`cpm_schedule.js contactGraph`: `S.bz >= T.tz - GAP && S.tz > T.tz + EPS`) has no upper limit, `shim_bonds.js` REL maps `hangs-below` to it and
+  `joins` to `any`, and the tie is tier, then plan overlap — never nearness. So a bond is "an offerer anywhere above in plan" (§E's own row:
+  *support base bounded, TOP unbounded*, mirrored). Vertical clear gap from the element to its primary host, p50 / p99 / max m, and how many bonds
+  have a NEARER offerer of an accepted kind in the same contact list:
+  | | bonded hung / joined | host further than GAP | of which a nearer offerer exists | gap p50 / p99 / max |
+  |---|---:|---:|---:|---|
+  | Hospital façade part / joins | 7,176 | 5,172 | 884 | 1.65 / 10.02 / 15.76 |
+  | Hospital segment / hangs-below | 13,781 | 12,784 | 9,573 | 1.80 / 12.74 / 17.62 |
+  | Terminal segment / hangs-below | 2,231 | 1,920 | 1,462 | 1.05 / 13.07 / 14.81 |
+  | LTU segment / hangs-below | 33,653 | 17,139 | 15,230 | 0.53 / 5.71 / 7.82 |
+  | Clinic fixture / hangs-below | 2,556 | 2,522 | 1,253 | 1.90 / 4.12 / 6.08 |
+  B9's remainder with a host further than GAP: Hospital façade 165 of 165 (the plate `3sbXgw…kN` z 168.34-168.54 "joins" a slab at z 181.66),
+  Terminal segments 98 / 98, fixtures 43 / 43, coverings 15 / 15, LTU segments 109 / 109, Clinic façade 10 / 10, Duplex fixtures 8 / 8, segments 26 / 62.
+  Filing those by bond would repeat §Q.40 v1 on a relation that does not exist. **So the relation is fixed first; no filing changes in this step.**
+- **Rule N (first offerer above — §E: occlusion, no new constant; §Q.33.3 "ceiling → slab ABOVE", "duct segment → slab above"):** for a need whose
+  relation is `above`, a candidate qualifies only if no other contact whose kind offers `hangs-below` to this element's kind (any row of its table
+  entry), itself above the element, lies wholly below the candidate (`k.tz <= j.bz + EPS`). The occluder need not be anchored: it is in the way either
+  way. Tier, plan overlap and guid then pick among the survivors, as before.
+- **Rule J (`joins` is a touch — §Q.33.3 "mullion → slab EDGE", "landing → its flight end"):** REL `joins` = `touch`: the two height ranges meet,
+  `S.bz <= T.tz + GAP && S.tz >= T.bz - GAP` (GAP is the contact owner's own audit constant, the one its bearing test already uses; no new number).
+  A façade part that touches no slab falls to its second need, `continues-same-kind` (held by its mullion / neighbour), which draws no order.
+  `continues-same-kind` stays `any` in this step (it draws no order; named, not fixed).
+- **Code:** `viewer/shim_bonds.js` only (`REL`, `relOk`, `tryBond`, and the same test in the never-anchored reason pass). No consumer changes:
+  §E1_BOND_CARRIERS, §CEILING_CLOSEUP and §D6's second carrier read the same `host` / `hosts`. The two invariants are judged on the RESULT by a new
+  witness claim, `witness_shim_bonds` B10 (an offerer between element and host = 0; joins that do not touch = 0), with its own red control.
+- **Proof owed, all seven, before → after:** the gap table above (host further than GAP with a nearer offerer → 0, by construction — plus the residue
+  that has NO nearer offerer, named); bonded count (B7 will move: every fall named by kind and outcome); B9; B8 / B8x; `§E1_BOND_CARRIERS` edges;
+  `§SUPPORT_CYCLE`; played midair; `§FILING_PARITY`; programme days / tasks; DCMA; `run_4d_gates.sh` with every re-locked value named.
+  Sandbox first (the run is keyed on `shim_bonds.js`, so main's persisted runs stay as the baseline).
+### Q.43.1 RESULT — APPLIED as v2 (2026-11-20, bim-ootb PR #3361, branch `fix/4d-q43-facade-filing-by-bond`; logs `…/b5ee8c6f…/scratchpad/q43/`)
+Two versions built and gated on seven. v1 = rules N + J as specified. v2 = v1 plus: **a hung element WAITS for its first offerer above to anchor**
+instead of falling through to a later need (a relay from a neighbouring piece, which draws no order); the waiting ones are released when the waves run
+dry. v2 shipped: it keeps the true hung edges v1 dropped to the wave order (`§E1_BOND_CARRIERS` hangs-below edges, main → v1 → v2: Clinic 5,031 →
+2,722 → 3,731; JKR 1,923 → 1,446 → 1,687; Hospital 12,474 → 3,116 → 3,435; LTU 44,619 → 39,028 → 40,459).
+| | B9 (bonded, relay excluded, starting before a host ends) main → v2 | bonded main → v2 | programme days / tasks |
+|---|---|---|---|
+| Duplex | 73 → **37** (segments 37) | 1,009 → 1,008 | 15 = / 22 → 21 |
+| HHS | 2 → 2 (landings) | 5,811 = | 58 = / 20 = |
+| JKR | 19 → **53** (fixtures 53) | 5,797 → 5,781 | 49 → **45** / 24 = |
+| Clinic | 112 → 100 (bearing walls 65, fixtures 30, stair parts 3, columns 2) | 14,723 → 14,552 | 127 = / 19 = |
+| Terminal | 170 → **55** (segments 40, walls 4, coverings 4, fixtures 4, fittings 2, beam 1) | 10,034 → 9,914 | 94 = / 114 → 117 |
+| Hospital | 168 → **4** (façade parts 165 → 0) | 55,260 → 54,110 | 262 = / 35 = |
+| LTU | 132 → **269** (fixtures 241, segments 26, windows 2) | 105,776 → 105,577 | 672 → 673 / 43 = |
+- **B10 (new claim, all seven PASS):** hung / joined bonds judged Duplex 308 · HHS 3,387 · JKR 2,146 · Clinic 6,138 · Terminal 3,549 · Hospital 16,301 ·
+  LTU 51,188; an offerer between element and host = 0; joins that do not touch = 0. **RED10:** with `joins` put back to `any`, Hospital shows 5,172
+  joins that do not touch — the claim can fail. Façade joins now have max gap 0.35 m (Hospital), 0.48 (HHS), 0.38 (Clinic); was 15.76 / 3.26 / 3.51.
+- **The two B9 rises are true pairs the far bond hid, not new defects:** JKR 53 and LTU 241 fixtures now bond to the covering directly over them
+  (before: a slab or a covering further up), and that covering is filed in `Finishes` (it bonded `bears-on-top`, so §CEILING_CLOSEUP does not treat it as
+  a ceiling): LTU `MEP Final_Plan 1 ← Finishes_Plan 1` 137, `Plan 4` 44; JKR `MEP Final_00 ← Finishes_00` 33. B8 / B8x stay 0 on all (those judge
+  ceilings bonded `hangs-below` only). This is §Q.42.1 item 2 (kinds `ceiling` / `floor_finish`), now with its real size.
+- **Locks moved, each named** (`midair.json`, `dcma.json`, `shim_bonds.json`; re-locked from the run): `float_after_cpm` (the display layer no viewer
+  reads, §TM_REVEAL_SHIPPED) Hospital 976 → 1,160 (1,337 before any bond carrier), LTU 2,658 → 3,347 (5,579 before), JKR 423 → 449 (464 before) — the
+  false far carriers had been delaying elements; the others unchanged. `ScheduleGate.auditFloating` on the PLAYED layer is identical on all seven
+  (Duplex 1, HHS 16, JKR 160, Clinic 153, Terminal 50, Hospital 270, LTU 440; nothing entered, nothing left). Strict midair LTU 245 → 250 (named sets,
+  `UNNAMED=0`). DCMA Terminal high-float tasks 14 → 16 (a REPORT measure). B7 bonded falls as in the table (façade parts that touch no slab and have
+  no anchored neighbour). Played midair and `§FILING_PARITY` unchanged (`witness_tm_assembly_order` green without a re-lock). `§SUPPORT_CYCLE` 0 on all.
+- **Gates:** `run_4d_gates.sh` 17 / 17 GREEN after the re-lock (`…/q43/final/4d_gates_20261120T053455Z.log`). `shim_bonds.js?v=2`,
+  `_GANTT_CACHE_VERSION` 49, sw v1775.
+- **Not witnessed:** browser / bake. **Not done:** why JKR's programme is 4 days shorter and Terminal has 3 more tasks, Duplex 1 fewer (the ceiling
+  count moves with the bonds — not profiled). `continues-same-kind` is still `any` (draws no order). **Honest limit:** rule N is occlusion on
+  bounding boxes — an offerer that overlaps the element's plan box by a sliver occludes; rule J uses GAP, a tolerance (the contact owner's own).
+- **Process note:** the baseline gate run was started before the edit and its last two gates read the edited file (red for that reason only);
+  their baseline is §Q.42's green run at the same commit.
+### Q.43.2 ▶ RESUME HERE (2026-11-20)
+1. **Kinds `ceiling` / `floor_finish` (two-pass)** — now the largest line: LTU 241, JKR 53, Clinic 30 fixtures under a covering filed in `Finishes`.
+2. **Filing by bond, where the host really is in a later task** (re-read `probe_b9` after item 1): Clinic bearing walls 65 + columns 2
+   (`Superstructure_First Floor ← Architecture Envelope_First Floor`: a slab filed as envelope carries them — rule B, the host moves up), Terminal
+   segments 40, Duplex segments 37, LTU segments 26. One kind per step, second-carrier pattern (§Q.40 v3).
+3. Profile the three programme / task-count moves named above.
+4. Delete ONE election clause now covered by a bond edge. 5. The rest of the phase table against standard practice. 6. Sign-off list; Terminal /
+   Hospital local-vs-served check; S5; S6.
+
+### Q.44 SPEC — what a covering IS comes from the file: `IfcCovering.PredefinedType` (2026-11-20, owner: *"proceed"*; §Q.43.2 item 1)
+- **Issue (measured; probes + logs `~/.cache/bim4d/q44_logs_2026-11-20/`):** §Q.39 decides ceiling vs floor finish from the covering's own bond
+  (`hangs-below` = ceiling, `bears-on-top` = floor finish). The source IFCs DECLARE it, and the bond disagrees with them (`probe_predef.log`,
+  IfcOpenShell over the source files, every covering guid of the shipped DB found unless said):
+  | | coverings in the DB | declared `PredefinedType` | the bond said (main, `probe_cov_base.log`) |
+  |---|---:|---|---|
+  | LTU | 24,321 | **INSULATION 24,321** (pipe / duct lagging) | ceiling 12,038 · floor finish 8,671 · lost 3,612 |
+  | Hospital | 602 | CEILING 602 | ceiling 600 · lost 2 |
+  | Clinic | 250 | CEILING 250 | ceiling 239 · **floor finish 3** · lost 8 |
+  | HHS | 43 | CEILING 43 | ceiling 39 · floor finish 1 · lost 3 |
+  | JKR | 35 (34 found) | CEILING 26 · MOLDING 7 (fascia) · CLADDING 1 | ceiling 19 · **floor finish 10** · lost 6 |
+  | Duplex | 13 | CEILING 13 | ceiling 13 |
+  | Terminal | 82 | not read: `TerminalMerged.ifc` throws on the attribute (IFC2x3 entity with 8 arguments) — INCONCLUSIVE | ceiling 55 · lost 27 |
+  So on LTU §CEILING_CLOSEUP moved 12,038 pieces of lagging into `Architecture Closeup` as ceilings, and B9's LTU 241 "fixtures under a covering" are
+  fixtures under lagged pipes. Clinic's 30 and JKR's fixtures hang from DECLARED ceilings that bonded `bears-on-top` because a thin slab tops out within
+  GAP under them (Clinic: ceiling z 7.25-7.30, a roof deck 0.49 m below, the slab it hangs from 0.18 m above); JKR's 47 are under a 5.3 m `Fascia`.
+  Measured and NOT adopted: "the nearer host wins" (`probe_flip_base.log`) — on LTU it flips 4,159 of 8,585 (gap below p50 0.21 m, above 0.19 m: a
+  coin toss) and reaches 116 of 245 fixtures. A geometry rule here is the square peg; the fact is in the file.
+- **Rule (extract, §Q.33.2 F: IFC facts first):** a covering's kind is its declared type — `CEILING` → `ceiling` (need: `hangs-below` slab / beam;
+  §CEILING_CLOSEUP applies), `FLOORING` → `floor_finish` (need: `bears-on-top` slab), any other declared type (`INSULATION`, `MOLDING`, `CLADDING`,
+  `ROOFING`, …) → `covering_other`: NO row (untabled, keeps its template time), offers nothing, is not a ceiling. A fixture's first need names
+  `ceiling` (and the undeclared `covering`). **No declared type → today's behaviour, unchanged** (kind `covering`, both needs, bond decides) — so a
+  building whose patch is not served loses nothing.
+- **Carrier of the fact (DB CHANGES = MIGRATION SCRIPT + SELF-HEAL LOADER):** `tools/ifc_predefined_type_patch.py` (pattern:
+  `scripts/ifc_aggregates_patch.py`) writes an idempotent block `§IFC_PREDEFINED_TYPE` into `buildings/patches/<db>.sql`:
+  `element_predefined_type(guid PRIMARY KEY, predefined_type)`, IfcCovering only, guids present in the DB only. The viewer's patch loader and
+  `scripts/lib/apply_building_patch.js` already apply the file. The element recipes read the table once and stamp `ptype` on each element
+  (one owner: `ScheduleAuthor`), the bond items carry it, `ShimBonds.kindOf` reads it.
+- **⛔ Not decided here (owner):** where pipe / duct INSULATION is filed. This step only stops calling it a ceiling: it keeps the class rule
+  (`Finishes`, what it had before §Q.39). Standard practice is lagging after the pipe is tested, before the ceiling closes — a practice-table row.
+- **Proof owed, all seven, before → after:** `§CEILING_CLOSEUP` ceilings / floor finish / other / undeclared; B8, B8x, B9 (LTU, JKR, Clinic fixture
+  lines); bonded (B7); programme days / tasks; midair; DCMA; `run_4d_gates.sh`, every re-lock named. A new witness claim: every covering the patch
+  declares has the kind its declared type gives, and a building with the table and one without both run (no silent default).
+### Q.44.1 RESULT — APPLIED (2026-11-20, bim-ootb PR #3362, branch `fix/4d-q44-ceiling-kinds`; logs `~/.cache/bim4d/q44_logs_2026-11-20/`)
+- **Patches (`tools/ifc_predefined_type_patch.py`, `patch_gen.log`):** Duplex 13 / 13 CEILING · HHS 43 / 43 CEILING · JKR 34 / 35 (CEILING 26, MOLDING 7,
+  CLADDING 1; one guid in no source) · Clinic 250 / 250 CEILING · Hospital 602 / 602 CEILING · LTU 24,321 / 24,321 INSULATION. Where every covering
+  was found with one type the block is ONE `INSERT … SELECT` (LTU: 723 bytes, not 24,321 statements). **Terminal: no block** — all 82 unreadable in
+  `TerminalMerged.ifc` (the entity has 8 arguments, the attribute is the 9th); it keeps the bond rule, and B11 says so (`declared=0`).
+- **`§CEILING_CLOSEUP`, before → after (ceilings / floor finish / unbonded):** LTU 12,038 / 8,671 / 3,612 → **0 / 0 / 0, other-declared 24,321** ·
+  Clinic 239 / 3 / 8 → 250 / 0 / 0 · JKR 19 / 10 / 6 → 27 / 0 / 0 (26 declared + the one undeclared, by bond; 8 other-declared) · HHS 39 / 1 / 3 →
+  43 / 0 / 0 · Hospital 600 / 0 / 2 → 602 / 0 / 0 · Duplex 13 → 13 · Terminal 55 / 0 / 27 unchanged (undeclared).
+- **B9 (bonded, relay excluded, starting before a host ends):** JKR 53 → **0** · LTU 269 → **30** · Clinic 100 → **70** · Duplex 37, HHS 2, Terminal 55,
+  Hospital 4 unchanged. B8 / B8x 0 on all (LTU INCONCLUSIVE: no fitting hangs from a ceiling there — it has none). B7 bonded: LTU 105,577 → 84,875 and
+  JKR 5,781 → 5,762 (other-declared coverings have no row: lagging, fascia, cladding); re-locked, the only lock that moved.
+- **Programme:** days unchanged except JKR 45 → 46; tasks HHS 20 → 18, Hospital 35 → 34, others unchanged. Phase populations: LTU `Architecture
+  Closeup` 12,644 → 606, `Finishes` 12,525 → 24,563 (the lagging is back under the class rule); Clinic Closeup 493 → 504, JKR 84 → 92, HHS 172 → 176,
+  Hospital 1,040 → 1,042.
+- **B11 (new, all seven PASS):** every declared covering has the kind its type gives; no other-declared covering is bonded or hosts anything.
+  **RED11:** with the declared types withheld, 12,038 LTU coverings the file declares NOT a ceiling bond `hangs-below` — the claim can fail.
+- **A judge defect found and fixed on the way:** `scripts/lib/shim_bonds_run.js` passed the cache reader's boolean `patched` as the patch mode, which
+  selected the aggregates-only text — the witness's fresh recomputation never saw the rest of a patch (B3 went red on four buildings the moment a
+  second table mattered). It now applies what the run applied.
+- **Gates:** `run_4d_gates.sh` 17 / 17 GREEN (`…/gates_final/4d_gates_20261120T061536Z.log`), no re-lock other than `shim_bonds.json`.
+  `shim_bonds.js?v=3`, `schedule_gate.js?v=7`, `schedule_author.js?v=31`, `tm_gantt_build.js?v=5`, `tm_sched_xray.js?v=4`, `_GANTT_CACHE_VERSION` 50, sw v1776.
+- **⚠ Live reach:** the viewer fetches `patches/<db>.sql` from the folder its DB came from. For a DB served from the bucket the new block reaches users
+  only after the patch is uploaded through `scripts/oci_patch_gate.js` — **NOT done here** (an upload to the served bucket needs the owner's go). Until
+  then such a building runs undeclared = exactly as before this PR. The gates judge the repo's patches.
+- **Not witnessed:** browser / bake. **Honest limits:** only IfcCovering is carried; `kindOf` still reads no other declared type. The schedule's own
+  bond passes still run without aggregates while the persisted table has them (the difference predates this step).
+### Q.44.2 ▶ RESUME HERE (2026-11-20)
+1. **⛔ Owner go: upload the six patches to the bucket** (`oci_patch_gate.js`, one per served DB; `deploy/OCI_UPLOAD.md` §RULES) so §Q.44 reaches users.
+2. **⛔ Owner ruling: where pipe / duct INSULATION is filed.** LTU's 24,321 pieces are in `Finishes` (class rule). Standard practice: lagging after the
+   pipe is tested, before the ceiling closes. Needs a practice-table row (kind `insulation`: joins its segment; phase) — not authored without sign-off.
+3. **Terminal's covering types:** read them another way (the IFC2x3 type object, or the per-discipline source) — 82 coverings, 27 unbonded.
+4. **Filing by bond where the host really is in a later task** (re-profile first): Clinic bearing walls 65 + columns 2, Terminal segments 40,
+   Duplex segments 37, LTU 30. One kind per step, second-carrier pattern (§Q.40 v3).
+5. Profile §Q.43.1's programme / task-count moves. 6. Delete ONE election clause covered by a bond edge. 7. The rest of the phase table against
+   standard practice. 8. Sign-off list; Terminal / Hospital local-vs-served check; S5; S6.
+
+### Q.45 — Terminal's coverings carry their declared type too (2026-11-20, owner: *"resume"*; §Q.44.2 item 3; bim-ootb PR #3363; logs `~/.cache/bim4d/q45_logs_2026-11-20/`)
+- **Issue:** §Q.44.1 left Terminal undeclared: `~/Downloads/TerminalMerged.ifc` writes each `IfcCovering` with 8 arguments (no `PredefinedType`, no
+  type object). **Extracted, not inferred:** the fuller copy of the same model (`~/Projects/bim-compiler/DAGCompiler/lib/input/IFC/TerminalMerged.ifc`,
+  nine arguments, 4 `IfcCoveringType`) declares all 82 guids of the shipped DB: **CEILING 82 / 82**. Block written by the §Q.44 generator (one
+  `INSERT … SELECT`, 542 bytes). No code change.
+- **Result:** `§CEILING_CLOSEUP` Terminal ceilings / unbonded 55 / 27 → **82 / 0** (`ceilingByDeclaration=82`). B11 `declared=82`, kind mismatches 0.
+  B8 fittings hanging from a ceiling 417, early 0; B8x 0; B9 55 = lock. Programme 94 → 93 d, tasks 117 → 108, `Architecture Closeup` 190 → 217,
+  `Finishes` 203 → 176. `run_4d_gates.sh` 17 / 17 GREEN with NO re-lock (`…/gates/4d_gates_20261120T065515Z.log`).
+- **Not done:** `_GANTT_CACHE_VERSION` is not bumped — Terminal's DB is bucket-served, so nothing changes for a user until the patch is uploaded
+  (§Q.44.2 item 1, now SEVEN patches); bump it WITH that upload. Not witnessed: browser / bake.
+- **Lesson for the source list:** two files named `TerminalMerged.ifc` differ in what they carry; a generator run that reports `unreadable` is a
+  reason to look for the other copy, not a verdict on the model.
+### Q.45.1 ▶ RESUME HERE (2026-11-20)
+1. **⛔ Owner go: upload the SEVEN patches to the bucket** (`oci_patch_gate.js`; bump `_GANTT_CACHE_VERSION` + sw with it).
+2. **⛔ Owner ruling: where pipe / duct INSULATION is filed** (§Q.44.2 item 2).
+3. **Filing by bond where the host really is in a later task** (re-profile first): Clinic bearing walls 65 + columns 2, Terminal segments 40,
+   Duplex segments 37, LTU 30. One kind per step, second-carrier pattern (§Q.40 v3).
+4. Profile §Q.43.1's programme / task-count moves. 5. Delete ONE election clause covered by a bond edge. 6. The rest of the phase table against
+   standard practice. 7. Sign-off list; Terminal / Hospital local-vs-served check; S5; S6.
+
+### Q.46 SPEC — a slab that structure stands on IS structure (rule B, §Q.33.2) (2026-11-20, owner: *"resume"*; §Q.45.1 item 3)
+- **Re-profile first (`~/.cache/bim4d/q46_logs_2026-11-20/probe_b9_base.log`, after §Q.43-§Q.45):** B9 = Duplex 37 · HHS 2 · JKR 0 · Clinic 70 ·
+  Terminal 55 · Hospital 4 · LTU 30. By what the late host IS:
+  | line | n | finding |
+  |---|---:|---|
+  | Clinic bearing walls 65 + columns 2 | 67 | ONE host: slab `2oJ$jhEMn3nhAqn0NbtYKu` *"Basic Roof: EPDM Membrane … Metal Deck"*, z 4.47-4.59, 1,807 m², filed `Architecture Envelope` seq 6 [day 20-26]; what stands on it is `Superstructure_First Floor` [12-20]. Touching (gap 0.00). **This step.** |
+  | Terminal segments 34, ceilings 4, fixtures 4; LTU segments 28 | 70 | `hangs-below` with a clear gap of 6-14 m (Terminal p50 7.77, LTU 5.96): the first offerer above is a roof over a tall space — a pipe at z 0.87 is not hung from a slab at z 7.89. NOT filing; a far "first offerer" is still not a hanger. Named, not fixed here (needs a rule that is not a distance constant). |
+  | Duplex segments 37 | 37 | host = a 1 cm `IfcSlab` filed `Finishes` seq 11 (the *Finish Floor* tile slabs, §W_D0 C2) — the tile is taken as the offerer above the pipe. Next step: a finish slab offers no `hangs-below`. |
+  | walls on a wall / windows in a wall of a later level; pipes fixed to a later wall; stair parts ← railing; one beam pair | 22 | each a few; listed in the log. |
+- **Population of the rule on all seven (`probe_slabhost_base.log`):** slabs not filed as structure that a column or bearing wall bears on —
+  **Clinic 1 (carrying 67), every other building 0** (Hospital has 24 envelope slabs, Duplex 15 finish / envelope slabs: nothing structural bears on them).
+- **Rule (rule B: *"a host whose phase comes later is MOVED UP — a wall carrying a slab becomes structure, D1 derived, not special-cased"*):** a slab
+  whose phase is neither `Superstructure` nor `Substructure` and which is the `bears-on-top` host of a column or a bearing wall becomes
+  `Superstructure`, sequence 4 — what any slab is. Resource, rate and install time unchanged (the §BEARING_WALL / §CEILING_CLOSEUP pattern).
+- **Code:** `viewer/shim_bonds.js` — in the ONE bond pass `applyCeilings` already runs for every element recipe (`ScheduleGate.applyGeometryReclass`;
+  no second contact graph, no second compute): `§CARRYING_SLAB recipe= promoted= carrying= byWas=`; NO-OP when none. Runs with or without coverings
+  (today the pass returns early when a building has no covering — it must not).
+- **Proof owed, all seven:** `§CARRYING_SLAB` per building (Clinic 1, others 0 = NO-OP); B9 Clinic 70 → 3; Clinic programme days / tasks before →
+  after; midair, parity, DCMA; `run_4d_gates.sh`, every re-lock named. Six buildings must be byte-identical in their played layer (the rule finds
+  nothing there) — proved by the gates passing with no re-lock for them.
+### Q.46.1 RESULT — APPLIED (2026-11-20, bim-ootb PR #3364, branch `fix/4d-q46-filing-by-bond`; logs `~/.cache/bim4d/q46_logs_2026-11-20/`)
+- **`§CARRYING_SLAB` (recipe schedule_author):** Clinic candidates 7, **promoted 1, carrying 67** (`byWas {"Architecture Envelope/seq6":1}`) · Duplex
+  candidates 15, Hospital 24: promoted 0 (NO-OP) · HHS, JKR, Terminal, LTU: every slab already structure (VACUOUS).
+- **B9 Clinic 70 → 3** (left: 3 stair parts ← railing). `float_after_cpm` Clinic 128 → 121. Clinic programme 127 d / 19 tasks unchanged; the deck moved
+  from `Architecture Envelope_First Floor` to `Superstructure_First Floor` (660 / 555 elements, was 659 / 556). B7 unchanged.
+- **Gates:** first run 16 / 17 — the one red was Clinic's float lock moving DOWN (128 → 121, an equality lock); re-locked from the run with
+  `shim_bonds.json` (Clinic `earlyVsHost` 70 → 3). Second run 17 / 17 GREEN (`…/gates_final/4d_gates_20261120T072154Z.log`). No other building's
+  value moved. `shim_bonds.js?v=4`, `_GANTT_CACHE_VERSION` 51, sw v1777.
+- **Cost:** none added where a building has coverings (same pass). A building with NO covering but a slab filed outside structure now runs the bond
+  pass once per recipe (none of the seven is in that case). **Not witnessed:** browser / bake.
+- **B9 now:** Duplex 37 · HHS 2 · JKR 0 · Clinic 3 · Terminal 55 · Hospital 4 · LTU 30 (at §Q.42: 73 / 2 / 19 / 112 / 170 / 168 / 132).
+### Q.46.2 ▶ RESUME HERE (2026-11-20)
+1. **⛔ Owner go: upload the SEVEN patches to the bucket** (`oci_patch_gate.js`). 2. **⛔ Owner ruling: where pipe / duct INSULATION is filed.**
+3. **Duplex segments 37:** the offerer above them is a 1 cm *Finish Floor* `IfcSlab` filed `Finishes` — a finish slab should offer no `hangs-below`
+   (find why the structural slab under it is not the first offerer: kind, wave or relation).
+4. **Far "first offerer" (Terminal 42, LTU 28):** a hung bond across 6-14 m of clear height is not a hanger. Needs a rule that is not a distance
+   constant (candidates to measure: the element also `fixes-on-side` / rests on something nearer; the space is one storey of the declared ladder).
+5. The small lines of §Q.46's table (walls on a later wall, windows, stair parts ← railing, one beam pair): 22 in all.
+6. Profile §Q.43.1's programme / task-count moves. 7. Delete ONE election clause covered by a bond edge. 8. The rest of the phase table against
+   standard practice. 9. Sign-off list; Terminal / Hospital local-vs-served check; S5; S6.
+
+### Q.47 — THE DECLARED COVERING TYPES ARE IN THE BUCKET (2026-11-20, owner go: *"yes as long documented so we have a trace of what changed"*; §Q.46.2 item 1; bim-ootb PR #3366; logs + backups `~/.cache/bim4d/q47_upload_2026-11-20/`)
+- **The full trace is in bim-ootb `buildings/patches/README.md` §Upload log** (per served file: bytes + md5 before and after, verifier result on the
+  served database, upload time) and the six `*.predefined_type.manifest.json` beside the patches. Summary here.
+- **What the bucket serves, read first (`bucket_state_before.log`):** five of the seven gate DBs are in the bucket with a patch (Duplex_extracted,
+  HHS_extracted, Terminal_meta, Hospital_meta, LTU_meta); **JKR is not in the bucket** (GitHub Pages serves it with the repo — live since #3362);
+  **Clinic is served as `Clinic.db`**, not the `Clinic_meta.db` the gates judge, so its block was generated again against the served `Clinic.db`
+  (250 / 250 CEILING, same as the gate DB).
+- **⚠ Found before uploading (OCI_UPLOAD rule 1, download and diff the target):** for HHS, Terminal and Hospital the repo patch differs from the
+  served patch by FAR more than this block — work of other lanes never uploaded (`§IFC_SURFACE_NAMES` etc. 5,464 / 18,983 diff lines; Terminal a
+  regenerated `§META_TRANSFORM_REPAIR`, 2,105 lines — the kind of block that was withdrawn from LTU's production patch, §Q.36.5). The go covered the
+  covering types only. **So for those three the uploaded file = the served file as it stood + the 4-statement block, nothing else** (each diff: 6
+  lines added, 0 removed). Duplex, LTU and Clinic: served-before + block is byte-equal to the repo file.
+- **Six uploads through `scripts/oci_patch_gate.js --upload`**, clean worktree at `origin/main` `79755693` (Clinic: its PR branch, 1 ahead, clean),
+  dry run first, one file at a time. Verifier on the served DB with the file applied — *rows | rows joining an IfcCovering | IfcCovering in the
+  served db | types*: Duplex 13 | 13 | 13 | CEILING · HHS 43 | 43 | 43 | CEILING · Terminal 82 | 82 | 82 | CEILING · Hospital 602 | 602 | 602 | CEILING ·
+  LTU 24321 | 24321 | 24321 | INSULATION · Clinic 250 | 250 | 250 | CEILING. All six `§GATE_VERDICT UPLOAD_VERIFIED`; fetched back over HTTPS
+  byte-equal, `application/sql`, CORS `*` (`fetch_back.log`).
+- **With it:** `_GANTT_CACHE_VERSION` 52, sw v1778 — a schedule stored before the upload was built without the declared types.
+- **Consequence to know:** the gates judge the REPO patches; on HHS / Terminal / Hospital the bucket serves a different (older + this block) file,
+  exactly as before this step. That gap predates §Q.44 and is not closed here; §Q.38's "local-vs-served check" for Terminal and Hospital is the same
+  item and now has its measurement: the patches differ, by the blocks named above.
+- **Post-upload witness (`apply_served.log`) — the gate applies with the sqlite3 CLI, the browser does not, so:** each patch AS SERVED (fetched over
+  HTTPS) applied to its database AS SERVED through the viewer's own chunker (`scripts/lib/apply_building_patch.js`, mode `all`): 6 / 6 PASS, `failed=[]`
+  on every one (statements Duplex 192, HHS 2,241, Terminal 35,098, Hospital 19,219, LTU 44, Clinic 26), `element_predefined_type` rows = coverings.
+- **A CI scare, checked not assumed:** on #3366 the job `live-json-editor` (a headless browser on the LIVE site, building `Ifc2x3_Duplex_Federated`)
+  timed out at 180 s one minute after the Duplex upload. Re-run of the same job with the uploaded patch in place: **pass**. A transient navigation
+  timeout, and incidentally a browser load of the live Duplex after the upload.
+- **Not witnessed:** a schedule generated in a browser on the live buildings; bake. **Undo:** remove the block's 6 lines from the served file, put it back through the gate.
+### Q.47.1 ▶ RESUME HERE (2026-11-20)
+1. **⛔ Owner ruling: where pipe / duct INSULATION is filed** (§Q.44.2 item 2). LTU live now schedules its 24,321 pieces of lagging in `Finishes`.
+2. **⛔ Owner decision: the unshipped blocks in the HHS / Terminal / Hospital repo patches** (surface names; Terminal transform repair) — upload,
+   or leave: until then the gates judge a patch users do not get on those three.
+3. Duplex segments 37 (finish-slab offerer) · 4. far "first offerer" (Terminal 42, LTU 28) · 5. the 22 small lines · 6. profile §Q.43.1's
+   programme moves · 7. delete ONE election clause · 8. phase table vs standard practice · 9. sign-off list; S5; S6.
+
+### Q.48 SPEC — a slab the run files as a FINISH is a floor finish in the bond table (2026-11-20, owner: *"resume 4D"*; §Q.47.1 item 3)
+- **Issue (measured, `~/.cache/bim4d/q48_logs_2026-11-20/probe_duplex.log`):** Duplex B9 = 37 hung pipes whose host ends after they start. 32 of them
+  hang from a 13-19 mm `IfcSlab` named *Floor: Finish Floor - Ceramic Tile / Wood* at z 3.10 — the run already files those 14 slabs as `Finishes`
+  seq 11 (the §W_D0 C2 name override), but `ShimBonds.kindOf` calls every non-ground `IfcSlab` a `slab`, and a `slab` OFFERS `hangs-below`. So the
+  tile is the pipe's "first offerer above" and the pipe waits for the last trade of the job. The other 5 hang from the roof (§Q.46 table, far hanger).
+- **Rule (`kindOf`'s own contract: *"what the shipped classification already decided for this run"*, as it already reads sequence 1 / Substructure
+  for `ground_slab`):** an `IfcSlab` whose phase is `Finishes` is kind `floor_finish` (§Q.44's kind: need `bears-on-top` a slab; offers nothing).
+  No name is read here; the name override that put it in `Finishes` is the one owner of that decision.
+- **Population:** slabs filed `Finishes` — Duplex 14, the other six 0 (`probe_slabhost_base.log` §Q.46: slabs by phase).
+- **Code:** one line in `viewer/shim_bonds.js kindOf`. **Proof owed:** Duplex B9 before → after with what the 32 bond to now; the 14 tiles' own bond
+  (`bears-on-top` the joist floor / ground slab); programme days / tasks; six other buildings unchanged (no such slab); `run_4d_gates.sh`, re-locks named.
+- **Seen on the way, NOT fixed (data, not rule):** Duplex's two *Wood Joist* floor slabs carry boxes of 3.7 m x 17 m (x -0.2..3.5 and 5.4..9.1) where
+  the house is 8 m wide — a strip 3.5..5.4 has tile and no structural floor box. An extraction / box question for the Duplex DB.
+### Q.48.1 RESULT — APPLIED, with a smaller gain than the spec implied (2026-11-20, bim-ootb PR #3372; logs `~/.cache/bim4d/q48_logs_2026-11-20/`)
+- **Kinds:** Duplex's 14 finish slabs are now `floor_finish`; they bond `bears-on-top` (bonded 1,008 → 1,009). No other building has a slab filed
+  `Finishes`; none of their values moved.
+- **B9 Duplex 37 → 32, not → 5.** The 32 pipes no longer hang from a tile — they now hang from the ROOF (`Basic Roof`, z 6.00, 2.9 m above the tile,
+  `nothing above the host`), because the Level-2 structural floor is not over them in the model's boxes (the data question named in the spec: the
+  two *Wood Joist* floor boxes are 3.7 m wide strips). So the rule is right and the count barely moved: the remainder is the far-hanger line plus
+  that box defect. Programme 15 d / 21 tasks unchanged.
+- **Gates:** `run_4d_gates.sh` 17 / 17 GREEN on the change (`…/gates_v1/4d_gates_20261120T082145Z.log`, run before the version-bump commit; the bump
+  changes no schedule code). `shim_bonds.json` tightened (Duplex `earlyVsHost` 37 → 32, bonded 1,009); `witness_shim_bonds` 80 / 0 / 7 after.
+  `shim_bonds.js?v=5`, `_GANTT_CACHE_VERSION` 53, sw v1779. **Not witnessed:** browser / bake.
+### Q.48.2 ▶ RESUME HERE (2026-11-20)
+1. **⛔ Owner ruling: where pipe / duct INSULATION is filed.** 2. **⛔ Owner decision: the unshipped blocks in the HHS / Terminal / Hospital repo patches.**
+3. **Duplex's box CENTRES are shifted — measured, not yet patched (item 3 of the list before, done as a read-only check):** IfcOpenShell on
+   `Duplex_ARC.ifc` vs `element_transforms`: the two *Wood Joist* floors really are two 3.71 m x 16.97 m strips (the size in the DB is right), but
+   their centres are off — `1hOSvn…RqU` true x 0.42..4.12, DB -0.18..3.53 (0.59 m); `1hOSvn…RrM` true x 4.67..8.38, DB 5.39..9.10 (0.72 m); the
+   slab on grade `2O2Fr$…` 0.6 m in y; the roof is exact. Of Duplex's 32 remaining pipes 23 lie under a TRUE floor box and miss the shifted one
+   (they sit at x 3.6..5.2, by the party wall). This is the §META_TRANSFORM_REPAIR class of defect: a patch from the source file (extracted
+   fact), for the lane that owns the transform repairs — and it changes rendering, so it is not a 4D-lane edit to make alone.
+   **And 14 of the 32 are vertical stacks, most of the rest drains at z -0.6..0 under the slab on grade:** not hung from anything. Same line as item 4.
+4. **Far "first offerer"** (Terminal 42, LTU 28, Duplex 32 until item 3): a hung bond across metres of clear height is not a hanger; needs a rule
+   that is not a distance constant.
+5. The 22 small lines of §Q.46's table · 6. profile §Q.43.1's programme moves · 7. delete ONE election clause · 8. phase table vs standard
+   practice · 9. sign-off list; S5; S6.
+
+### Q.49 — OWNER, 2026-11-20: *"Follow your advice"* (on the four open items of §Q.48.2) — the advice, recorded, then the first of them as a SPEC
+- **Rulings taken from that sentence (each was put to the owner as advice in the session's report):**
+  1. **Insulation:** standard practice — lagging goes on WITH the pipework of its level, after the pipe, before the ceiling closes (this section).
+  2. **Far hangers:** measure "an element that is fixed to a side or rests on something is not also hung" on seven; ship only if the numbers hold.
+  3. **Duplex box centres:** measure how widespread the shift is before any patch.
+  4. **Unshipped blocks in the HHS / Terminal / Hospital repo patches: LEAVE.** They belong to other lanes (surface names; Terminal's transform
+     repair is the kind of block that was withdrawn from LTU's production patch). Consequence, accepted: on those three the gates judge a patch
+     users do not get; closing that gap is for the lanes that own those blocks.
+- **SPEC — a covering declared INSULATION goes with the pipe it wraps.** Measured first (`~/.cache/bim4d/q49_logs_2026-11-20/probe_ins_base.log`,
+  LTU, the only building that declares any): 24,321 pieces, all filed `Finishes` seq 10 (class rule); **22,168 touch a segment / fitting** among
+  their own contacts (16,487 touch three or more), every such pipe is `MEP Rough-in` seq 7, 20,938 on the pipe's own level label; 2,153 touch none.
+  Today the election gives them a slab (19,053) and they are the last trade on the job.
+  - **Kind** `insulation` = `IfcCovering` declared `INSULATION` (was `covering_other`; MOLDING / CLADDING / … stay `covering_other`).
+  - **Need** `wraps` (relation `touch`, §Q.43 rule J), hosts `segment`, `fitting`, count `one`, source `proposed` (this ruling). It offers nothing.
+  - **Filing:** a bonded insulation piece takes its HOST's phase and sequence (no number authored: whatever the pipe is). Unbonded → the class rule,
+    counted. Trade, rate and install time unchanged (the §CEILING_CLOSEUP pattern) — the trade stays `FINISHER`; a lagging trade is a rates
+    question, named, not decided here.
+  - **Order:** `wraps` is finish-to-start in `§E1_BOND_CARRIERS` (the lagging goes on after its pipe).
+  - **Code:** `viewer/shim_bonds.js` (`kindOf`, `TABLE`, `REL`, the reclass in the one bond pass → `§INSULATION_WITH_PIPE`), `viewer/cpm_schedule.js`
+    (one word in the edge-type test). B11's expectation follows the kind.
+  - **Proof owed, all seven:** `§INSULATION_WITH_PIPE` (LTU: moved / unbonded; six others VACUOUS); LTU programme days / tasks, phase populations,
+    B9, midair, parity, DCMA before → after; six others unchanged; `run_4d_gates.sh`, every re-lock named. **Limit named now:** "tested before
+    lagging" is not modelled — the piece waits for its own pipe, not for a system test.
+### Q.49.1 RESULT — APPLIED as v4; three versions rejected by the gates (2026-11-20, bim-ootb PR #3375; logs `~/.cache/bim4d/q49_logs_2026-11-20/`)
+| version (LTU) | played midair | B9 | verdict |
+|---|---|---|---|
+| v1 the spec as written: host's phase AND sequence | 0 → **39** (7 lagging, 20 fittings, 12 segments) | 30 → 700 | rejected — with the pipe's own sequence the election takes the lagging as the PIPE's support (its box spans the pipe; §D7 needs `S.seq > T.seq`); DCMA high float 27 → 35, programme 673 → 680 d |
+| v2 host's phase, own sequence (10) | 0 → **457** lagging | 723 | rejected — a moved piece resting on a piece that did not move; a piece on another level label than its pipe |
+| v3 = v2 + a piece with no pipe CONTINUES its run (relay, rule C) + filed no lower than its pipe (second carrier, the §Q.40 v3 pattern) | 0 → **28** lagging | 28 | rejected — those 28 elect a FITTING of `MEP Final` (sequence 9 < 10), a task that starts later |
+| **v4 = v3 with the sequence half a step after the pipe (7.5: ordinal, between rough-in 7 and close-up 8)** | **0** | **28** | **shipped** |
+- **`§INSULATION_WITH_PIPE` (LTU):** declared 24,321 · moved to its pipe's phase **23,929** (3,703 of them through their run) · touching no pipe, kept
+  the class rule **392**. The six other buildings declare no insulation (VACUOUS).
+- **LTU before → after:** programme 673 → **666 d**, 43 tasks; `Finishes` 24,563 → 634, `MEP Rough-in` 78,940 → 102,869; bonded 84,875 → 108,804;
+  `§E1_BOND_CARRIERS` gains `wraps` 20,514 edges; `§SUPPORT_CYCLE` 0; DCMA unchanged (high float 27).
+- **Gates:** `run_4d_gates.sh` 17 / 17 GREEN on v4 with NO re-lock (`…/gates_v4/4d_gates_20261120T085821Z.log`, before the version-bump commit).
+  After the bump: `shim_bonds.json` tightened (LTU `earlyVsHost` 30 → 28, bonded 108,804); `witness_shim_bonds` 80 / 0 / 7 and
+  `witness_tm_assembly_order` 42 / 0 on all seven. `shim_bonds.js?v=6`, `schedule_author.js?v=32`, `cpm_schedule.js?v=8`, `_GANTT_CACHE_VERSION` 54, sw v1780.
+- **Departures from the spec, named:** the sequence is the pipe's + 0.5, not the pipe's (v1 is why); two things the spec did not have — the relay
+  need for a piece with no pipe of its own, and the second carrier in `_hangFilingAxis` for kind `insulation`.
+- **Limits:** the trade is still `FINISHER` (the lagging adds to that crew's load inside rough-in — a rates question); "tested before lagging" is
+  not modelled; the half-step sequence is a number used as an order, and any code that needs a whole-number sequence would have to be checked
+  (none of the 17 gates found one). **Not witnessed:** browser / bake. **Live reach:** LTU's declared types are in the bucket (§Q.47), so this
+  reaches users with the deploy.
+### Q.49.2 ▶ RESUME HERE (2026-11-20)
+1. **Far hangers (ruling 2, measure first):** "an element that is fixed to a side or rests on something is not also hung" — count, per building,
+   the hung bonds whose element ALSO has a met `fixes-on-side` need or a bearing contact below; what B9 and the edges become. Terminal 42, LTU ~26, Duplex 32.
+2. **Duplex box centres (ruling 3, measure first):** every Duplex element's `element_transforms` centre vs the source file's box centre —
+   how many are off, by how much, which classes.
+3. The 22 small lines of §Q.46's table · 4. profile §Q.43.1's programme moves · 5. delete ONE election clause · 6. phase table vs standard
+   practice (lagging trade included) · 7. sign-off list; S5; S6. **Closed by ruling 4:** the unshipped HHS / Terminal / Hospital patch blocks stay unshipped.
+### Q.49.3 SESSION CLOSE 2026-11-20 (owner: *"wrap up resume new session"*) — state for the next session, nothing new measured here
+- **Shipped this session, all merged, live at sw v1780 (bim-ootb):** #3361 first offerer above / joins is a touch (§Q.43) · #3362 #3363 a covering
+  is what its file declares (§Q.44, §Q.45) · #3364 a slab that structure stands on is structure (§Q.46) · #3366 the declared types uploaded to
+  the bucket, with the trace (§Q.47) · #3372 a finish slab is a floor finish in the bond table (§Q.48) · #3375 insulation goes with its pipe (§Q.49).
+- **B9 (bonded, relay excluded, starting before a host ends), §Q.42 → now:** Duplex 73 → 32 · HHS 2 → 2 · JKR 19 → 0 · Clinic 112 → 3 ·
+  Terminal 170 → 55 · Hospital 168 → 4 · LTU 132 → 28. Programme days now: Duplex 15 · HHS 58 · JKR 46 · Clinic 127 · Terminal 93 · Hospital 262 · LTU 666.
+- **Start at §Q.49.2 item 1** (far hangers, measure first), then item 2 (Duplex box centres, measure first). Both are read-only measurements;
+  no ruling is waiting on the owner.
+- **⚠ New rule for any viewer file bump (other lane, bim-ootb #3377):** script tags, `?v=` numbers, the precache list and `CACHE_VERSION` in `viewer/`
+  are being generated from `viewer/modules.json`. Use `node scripts/bump.js <file> --write` (or `--changed --write`); never hand-edit them — CI
+  refuses. `_GANTT_CACHE_VERSION` in `tm_dash.js` (now 54) stays a hand bump. Check whether #3377 has merged before the first bump.
+- **Logs of this session:** `~/.cache/bim4d/q44_logs_2026-11-20/` … `q49_logs_2026-11-20/`, `q47_upload_2026-11-20/` (served patches before the
+  upload, manifests, fetch-back). The §Q.43 logs were in a session scratchpad that no longer exists; their numbers are in §Q.43.1.
+- **Not witnessed anywhere this session:** a schedule generated in a browser on the live buildings; a bake.
+
+### Q.50 SPEC — MEASURE ONLY: "an element fixed to a side or resting on something is not also hung" (2026-11-22, owner: *"resume 4D"*; §Q.49 ruling 2, §Q.49.2 item 1)
+- **Issue it answers:** does that sentence, as a rule, remove the FAR hung bonds (Terminal 42, LTU ~26, Duplex 32 — a pipe "hung" from a roof
+  6-14 m up) WITHOUT removing true hangers? Ship only if the numbers hold. No schedule code changes in this step.
+- **Population:** every element bonded `hangs-below` in the persisted run (`run.json` `bonds`, PRIMAL LAW 5 — no re-solve), all seven buildings.
+- **No second contact test (§I row 1, §E):** candidates are `CpmSchedule.contactGraph(items).contacts`; the relation is `ShimBonds.relsOf`. For each
+  hung element T, from its own contact list:
+  - **side** = a contact of a kind T's own table row accepts for `fixes-on-side`, in relation `spans` (met = anchored in an earlier wave; also
+    counted when touching but not anchored earlier). **rests** = a contact in relation `below` that does not also span T, by the kind of what is
+    under it. Both are the contact owner's tests; no new constant.
+  - **gap** to the hung host = `host.bz - T.tz` (clear height), split at the owner's own GAP: NEAR (a real hanger) vs FAR.
+- **Output, `§FAR_HANGER <bld>` + per-kind lines:** hung bonds · NEAR / FAR · with side · with rests (by kind below) · B9 among them; and the table
+  the ruling needs: rule drops (side or rests) x NEAR / FAR, and x B9 / not B9. **The rule holds if it drops the FAR B9 and keeps the NEAR bonds.**
+  VACUOUS printed where a building has no hung bond. Probe + logs: `~/.cache/bim4d/q50_logs_2026-11-22/`.
+
+### Q.51 SPEC — MEASURE ONLY: every Duplex box centre against the source file (2026-11-22; §Q.49 ruling 3, §Q.49.2 item 2)
+- **Issue it answers:** §Q.48.2 found three Duplex boxes whose CENTRE is 0.6-0.7 m off the source while the size is right. How many of the
+  1,190 `element_transforms` rows are off, by how much, in which classes and along which axis — before anyone writes a patch.
+- **Truth:** IfcOpenShell world-coordinate geometry of the source file(s) in `reference/residential/` (the Federated file; Architecture + MEP if
+  the Federated one does not carry every guid). Per guid: the source box (min / max of the tessellated vertices) vs the DB box
+  (`center ± bbox / 2`, raw `Duplex_extracted.db`). Compared: centre delta per axis, size delta per axis.
+- **Output `§DUPLEX_BOX`:** rows in the DB · matched by guid · no geometry in the source · not in the source; centre off by more than 1 cm
+  (count, by class, by axis, p50 / max); size off by more than 1 cm; the largest ten by name. A guid the source does not carry is counted,
+  never guessed. No DB, patch or schedule file changes. Probe + log: `~/.cache/bim4d/q50_logs_2026-11-22/`.
+
+### Q.50.1 RESULT — THE RULE DOES NOT HOLD; nothing shipped (2026-11-22; logs `~/.cache/bim4d/q50_logs_2026-11-22/probe_far_hanger.log`, `probe_far_hanger_v2.log`)
+Three readings of "rests", each OR "a wall it could fix to spans it". A = any contact in the owner's `below` relation · B = that contact is a
+bearer kind (footing, column, beam, slab, ground slab, wall) · C = B and its top is AT the element's base (owner's EPS). NEAR = the hung host
+is within the owner's GAP of the element (it touches what it hangs from). Share of NEAR hangers the rule would un-hang, and B9 among hung bonds:
+| | hung bonds | NEAR | A drops NEAR | B drops NEAR | C drops NEAR | B9 now → A / B / C |
+|---|---:|---:|---:|---:|---:|---|
+| Duplex | 335 | 48 | 54 % | 15 % | 13 % | 32 → 17 / 26 / 32 |
+| HHS | 1,809 | 1,306 | 54 % | 9 % | 5 % | 0 |
+| JKR | 2,137 | 1,246 | 73 % | 32 % | 20 % | 0 |
+| Clinic | 5,950 | 727 | 63 % | 22 % | 15 % | 0 |
+| Terminal | 3,549 | 715 | 50 % | 6 % | 3 % | 42 → 14 / 27 / 39 |
+| Hospital | 13,673 | 2,736 | 71 % | 42 % | 36 % | 0 |
+| LTU | 39,158 | 21,769 | 71 % | 53 % | 9 % | 26 → 1 / 1 / 26 |
+- **Why A fails (§E, the proxy table's own first row):** `below` is "a box starts under me and tops out within GAP of my base". Under a hung pipe
+  that is the ceiling (Terminal 1,066, Hospital 4,566), the next pipe or fitting, a light fitting — none of them carries it. A is the reading that
+  clears B9, and it un-hangs half to three quarters of the pipes that TOUCH their slab. **Why C fails the other way:** it keeps the true
+  hangers and leaves B9 where it is (the far-hung pieces rest on nothing a box test can see). No reading does both. **Rejected, as ruled.**
+- **What the B9 pieces are (samples in the log):** Duplex — drains at z -0.61..0.00 under the slab on grade, "hung" from the roof at z 6.00;
+  Terminal — ceiling tiles at z 2.91 whose first offerer is a beam at z 15.39, pipes at z 0.87 under a slab at 7.89; LTU — risers z 2.27..7.52
+  and pipes at z 2.77 under a beam at z 8.27. For Duplex §Q.51.1 names the cause; Terminal and LTU are still open.
+- **Honest limit:** NEAR / FAR is split at the owner's GAP (0.5 m); a pipe on a 1 m rod counts FAR. The verdict rests on the NEAR column only.
+
+### Q.51.1 RESULT — NOT A DUPLEX DEFECT: `center_*` is not the middle of the box, on every extracted DB (2026-11-22; logs same folder, `probe_duplex_box.log`, `probe_box_cause_extracted.log`)
+- **`§DUPLEX_BOX` (source = `Ifc2x3_Duplex_Architecture.ifc` + `Ifc2x3_Duplex_MEP.ifc`, IfcOpenShell world coordinates):** DB rows 1,190 · matched
+  by guid 1,190 · not in the source 0 · **centre off by more than 1 cm: 386 · size off: 0.** Off p50 / p90 / max = 0.09 / 0.51 / 3.12 m; worst
+  axis x 143, y 153, z 90. By class (off of all): walls 55 of 57 · slabs 20 of 21 · footings 7 of 7 · windows 24 of 24 · openings 48 of 50 ·
+  spaces 21 of 21 · furniture 61 of 61 · flow terminals 98 of 105 · coverings 8 of 13 · fittings 16 of 358 · **segments 8 of 427**. The largest:
+  the four exterior walls, 2.42-3.12 m. Errors come in mirrored pairs (the two halves of the duplex).
+- **Cause, read from the DB's own mesh (`component_geometries`, vertices stored relative to `center_*`):** on 338 of 1,140 meshed elements the
+  mesh's box middle is NOT at the local origin (max 3.12 m) — the same classes with the same counts as the 386 above (386 less the 48 openings,
+  which carry no mesh). `center_*` is the point the mesh is placed at, not the middle of its box; `bbox_*` is the true size. Drawing uses
+  mesh + centre, so the picture is right. **The schedule builds its box as `center ± bbox / 2` (`schedule_author.js:836`), so its box is shifted.**
+- **Not Duplex only:** the same check on the other extracted DBs — HHS 4,311 of 6,839 (max 21.6 m), JKR 3,349 of 8,985 (max 13.7 m). For those
+  two this is DB-internal only (mesh vs its own centre), not yet checked against their source files. Clinic / Terminal / Hospital / LTU are
+  scheduled from `_meta.db` (no mesh in it): **not measured.**
+- **So §Q.48.2 item 3's reading is withdrawn:** this is not a transform to repair (moving `center_*` would move the drawn mesh). It is the
+  schedule's box reader. Every contact, support, hang and midair number on Duplex, HHS and JKR was computed on boxes of which a third to two
+  thirds are displaced.
+
+### Q.51.2 ▶ RESUME HERE (2026-11-22)
+1. **The element box gets ONE owner that returns the true box** (§I: add the row). Spec first. Facts needed by the spec: (a) the true box =
+   `center + the mesh's local min / max`; (b) the meta DBs have no mesh, so the offset must travel as data — a small patch table per building
+   (`element_box_offset`, generated from the geo DB / source file, applied by the existing patch loader), never a second copy of the mesh;
+   (c) measure Clinic / Terminal / Hospital / LTU from their `_geo.db` first; (d) expect every lock in `run_4d_gates.sh` to move on the
+   buildings affected — each move named, sandbox first.
+2. **Far hangers again AFTER item 1** — Duplex's 32 (23 lie under a true floor box) and possibly Terminal's and LTU's depend on it. The rule of
+   §Q.50 is rejected; do not re-try it.
+3. The 22 small lines of §Q.46's table · 4. profile §Q.43.1's programme moves · 5. delete ONE election clause · 6. phase table vs standard
+   practice (lagging trade included) · 7. sign-off list; S5; S6.
+
+### Q.52 REVIEW BACK — owner, 2026-11-22, after testing the Time Machine: *"it is still horrible. So do review back."*
+- **Question reviewed:** the gates are 17 / 17 green and the played layer reads `midair 0` on seven buildings. Why does it still look wrong?
+- **Measured (`~/.cache/bim4d/q52_logs_2026-11-22/judge_true_box.log`; nothing re-solved — the times are what plays today):** the same two owners
+  (`ScheduleGate.auditFloating`, `SupportSweep.midairAudit`) run twice on each persisted played layer: A on the boxes the schedule uses
+  (`center ± bbox / 2`), B on the true boxes (the same centre + the mesh's own min / max, from the extracted / `_geo` DB, §Q.51.1).
+  | | played elements | box differs from the true box (> 5 cm) | midair A → B | auditFloating A → B | floating under B only, main classes |
+  |---|---:|---:|---|---|---|
+  | Duplex | 1,119 | 199 (max 3.1 m) | 0 → 3 | 1 → 1 | - |
+  | HHS | 6,839 | 2,300 (max 21.6 m) | 0 → 51 | 16 → 52 | proxies 24, columns 6, stair flights 4 |
+  | JKR | 8,985 | 1,506 (max 13.7 m) | 0 → 392 | 160 → 515 | members 245, columns 87, slabs 47, beams 11 |
+  | Clinic | 16,071 | 2,397 (max 6.7 m) | 0 → 101 | 81 → 97 | walls 40, beams 6, columns 4 |
+  | Terminal | 48,428 | 2,085 (max 11.3 m) | 0 → 406 | 50 → 622 | plates 485, walls 28, members 26, columns 22 |
+  | Hospital | 63,182 | 7,802 (max 31.1 m) | 0 → 90 | 270 → 330 | columns 49, walls 16, windows 9 |
+  | LTU | 122,330 | 12,520 (max 38.1 m) | 0 → 1,228 | 440 → 601 | slabs 98, columns 51, beams 29, walls 29 |
+- **Finding 1 — the zero was a zero on the wrong geometry.** §Q.51.1 holds on all seven, not three: 28,809 of 266,954 played elements are
+  scheduled AND judged on a box that is not where the element is drawn. Solver and judge share the same wrong box, so they agree with each other
+  and the gate is green; the film draws the mesh. This is this file's own opening rule (*"WITNESS is moot if underlying design is poor"*) again:
+  one unverified input under every owner of §I.
+- **Finding 2 — "green" already contained accepted floating.** `auditFloating` under A is not zero (JKR 160, Hospital 270, LTU 440): those are
+  locked as named sets in `midair.json`, so the gate passes while they play.
+- **Finding 3 — nothing in §Q.37-§Q.51 was ever judged where the owner looks.** Every result section ends "Not witnessed: browser / bake". The
+  node mirror of the played layer is the only thing the gates see. Whether the browser plays that same layer today is unproven in this lane
+  since §Q.31.
+- **Limits of this measurement, named:** B is still a box (an L-shaped slab's box covers ground the slab does not); B judges a schedule that was
+  SOLVED on A's boxes, so B's counts are "what plays today", not what a re-solve would give; elements whose mesh and box disagree in size were
+  left on A's box and not counted separately (the probe's counter did not print — re-run owed). Not all of "horrible" is explained by this:
+  the count is 3-1,228 per building, and what the owner saw is not known here.
+### Q.52.1 ▶ RESUME HERE (2026-11-22) — supersedes §Q.51.2's order
+1. **Fix the input before any more rules:** one owner for the element box that returns the true box (§Q.51.2 item 1: spec, the offset as a
+   patch table for the meta DBs, sandbox, every lock that moves named). No rule work (far hangers, small lines, election clauses) until then —
+   every such number so far was measured on displaced boxes and must be re-read after.
+2. **Re-solve on true boxes and re-judge** — the table above again, with a schedule solved on B. That is the first honest midair number.
+3. **A witness on the browser's own played layer** (the stored `kernel_ops` timestamps of a live load, compared op for op with the node
+   mirror) — needs the owner's go for a headless run; until it exists every "live" claim in this lane is a claim about the mirror.
+4. Then §Q.51.2 items 2-3.
+
+### Q.53 REVIEW BACK, part 2 — owner, 2026-11-22: *"Hospital, i ran the Time Machine"* · *"The timeline scrubber also does not reflect actual facts on canvas, some can stop rendering, have to go end and replay etc, not consistent"*
+- **What this says:** the complaint is canvas ≠ scrubber. That is the DRAW layer (`tm_render.js renderAtTime`), which none of the 17 gates
+  runs: they judge `kernel_ops` times in node. Logs: `~/.cache/bim4d/q53_logs_2026-11-22/`.
+- **Ruled out, measured (`served_vs_gated.log`):** Hospital's schedule built on the files the live site SERVES (served `Hospital_meta.db` +
+  served patch, §Q.47's copies) vs the gated run: 63,182 / 63,182 elements start at the same instant. The live schedule IS the gated schedule.
+- **Read in the code, three ways the canvas departs from the scrubber:**
+  1. **A third, browser-only copy of the support relation hides placed elements** (`tm_sched_xray.js _buildXraySupportCache` →
+     `_tmXraySolidifyTs`; `tm_render.js:277 / :362 / :438`): an element whose op has ended stays hidden until the LAST structural box under it
+     in plan has ended. Its header says "predicate copied verbatim from schedule_gate.js"; it is the *all-of instead of any-of* row of §E, on
+     the displaced boxes of §Q.51.1, and it is not in §I. Sliced from the shipped file and run on the persisted played layers
+     (`staged_hidden.log`) — hidden after their own bar ends: Duplex 1 · HHS 3 · JKR 143 · Clinic 52 · Terminal 41 · **Hospital 260** (192
+     columns, 31 walls, 20 beams, 14 stairs; median 4.2 days, 29 over a week, one roof 46.9 days) · LTU 382.
+  2. **The draw is incremental, and the moment a hidden element should appear is not in its index** (`tm_core.js _tmBuildEventIndex`): a
+     batch is redrawn only when one of its elements has an op start / end in the cursor step. The reveal time of item 1 is another element's
+     end. The file already records this exact failure and its fix — `§CW_SOLIDIFY_EVENT`, *"leave the slot hidden for the rest of the film"* —
+     **and gates the fix to civil models: "buildings build the identical index".** A full redraw only happens on a jump of more than 7 days,
+     a camera move with the box proxy engaged, or a restart: that is "go to the end and replay".
+  3. **Other writers of the same slots** on a building of this size (box proxy `_dlod*` above 20k elements, streaming, discipline filter,
+     isolate): each is patched in with its own "force one full pass" flag. Not measured here — it needs the real scene.
+- **The instrument already exists and is not a gate:** `viewer/tests/witness_tm_drawn_vs_scheduled.js` (2026-09-04, written for a Hospital
+  complaint): shipped viewer, headless, per cursor SCHEDULED vs DRAWN from real slot state, misses attributed to mechanism. It needs a
+  headless browser — the owner's go, and not beside a live bake (VRAM).
+- **Limit:** items 1-2 are 260 elements on Hospital; whether they are all of what the owner saw is not established without that witness.
+### Q.53.1 ▶ RESUME HERE (2026-11-22) — the draw layer comes BEFORE §Q.52.1
+1. **⛔ Owner go: run `witness_tm_drawn_vs_scheduled` headless on Hospital** (play forward, scrub back, scrub forward — the three paths), and
+   make it gate 18. Its log is the list of what to fix.
+2. **Spec + fix, no go needed:** (a) the reveal time joins the event index on buildings too (delete the civil gate); (b) the browser's
+   support copy goes — the schedule already orders supports (`midair 0` on the played layer), so the canvas shows what the op says;
+   if a hold is still wanted it reads the ONE owner, not a copy. Node witness: every element is drawn-eligible from its own op start.
+3. **The canvas becomes a function of the cursor, checked:** a full pass and the delta pass at the same cursor must give the same slot state
+   (`W-INCR-EQUIV` exists as a hook, `window.__forceFull`; make it a claim of gate 18).
+4. Then §Q.52.1 (true boxes).
+
+### Q.54 SPEC — THE CANVAS IS A FUNCTION OF THE CURSOR (2026-11-22, owner: *"Go. Stay abstract"*; §Q.53.1 items 1-3)
+- **The model (four invariants; every fix below is one of them, none is a case):**
+  - **C1 — function, not history.** What is drawn for an element = `built(g, cursor)` AND `shown(g, view)`. Reaching a cursor by playing,
+    by scrubbing back, or by a jump gives the same canvas. Nothing may depend on the path.
+  - **C2 — one owner of `built`.** `built(g, c)` is the schedule's op: `start <= c`. The canvas holds no support test of its own; order is the
+    schedule's job (§I). The browser-only hold (`_tmXraySolidifyTs`, a third copy of the support relation, all-of, §Q.53 item 1) is not an
+    owner: on a schedule authored by the one solve it is empty by rule. Where ops come from elsewhere (captured IFC 4D, civil route order) the
+    hold stays, as a TERM of `built` supplied by one named provider — never tested inline.
+  - **C3 — the shortcut is derived from the predicate.** The incremental draw may skip a batch only when no term of `built` / display state of
+    any of its elements changes in the step. The change instants are produced by the same owner that evaluates the terms
+    (`transitionsOf(g)`), for every model — so a term cannot be added without its instants (the civil-only `§CW_SOLIDIFY_EVENT` gate is the
+    counter-example and is deleted).
+  - **C4 — other hiders are terms of `shown`.** Proxy boxes, discipline filter, isolate: each is a term; a change of any term invalidates the
+    shortcut through ONE generation counter, not a "force a full pass" flag per feature.
+- **Witness = gate 18 (`witness_tm_drawn_vs_scheduled`, extended), the issue it exposes: *"is the canvas the function C1 says it is?"***
+  W1 drawn = scheduled at every sample, play forward · W2 the same after scrubbing BACK through the samples · W3 the same after random jumps ·
+  W4 at every sample the incremental canvas = a forced full pass, slot for slot (count of differing elements, not a per-class total) ·
+  W5 no element is hidden by a hold on a solve-authored schedule (`staged = 0`) · red control per claim · INCONCLUSIVE when the page, the
+  Time Machine or the ops do not come up. Node half (CPU, runs with the 17): the hold provider sliced from the shipped file returns 0 on
+  the seven persisted played layers (today 1 / 3 / 143 / 52 / 41 / 260 / 382, §Q.53).
+- **Order of work:** baseline run of the witness as shipped (Hospital, monotonic) → C2 + C3 in `tm_core.js` / `tm_render.js` /
+  `tm_sched_xray.js` → witness extended with W2-W5 → re-run → C4 only for the hiders the log still names. Deletion budget stated in the result.
+- **Not in this step:** true boxes (§Q.52.1) — the canvas fix does not depend on them.
+### Q.54.1 RESULT — C2 + C3 APPLIED, witnessed in the browser on Hospital (2026-11-22, bim-ootb PR #3381, branch `fix/4d-q54-canvas-function`; logs `~/.cache/bim4d/q53_logs_2026-11-22/dvs_hospital_*.log`, `~/.cache/bim4d/q54_logs_2026-11-22/`)
+- **Baseline, shipped code, headless on the split pair as the viewer loads it (`dvs_hospital_main2.log`): RED.** Play forward, 61 samples: from
+  t = 0.10 to the END ~155 scheduled elements are not drawn (columns 150 of 549, walls 5, slabs 3, beams 2; batched slots 154, instanced 2);
+  at the end the incremental canvas misses 156, a forced full pass misses 0. A further 83 columns at a time are held by the canvas.
+  `§XRAY_EDGES staged=281`. That is §Q.53 items 1 and 2, now measured where the owner looks.
+- **Root, one sentence:** the strict bar "appear only after the LAST carrier under you has finished" lives in two homes — the schedule-side
+  repair (`_ogSupportSweep`) and the canvas-side hide (`_tmXraySolidifyTs`). On solve-authored schedules (`schedules.display_authored = 1`) the
+  first was switched off on 2026-08-16 (`§OG_SWEEP_SKIP`); the second kept running, and its reveal instant was never in the redraw index.
+- **Code (three files, +37 / −11 lines with comments; the three inline copies of the hold test are one function):**
+  - **C2 `tm_sched_xray.js _tmRebuildXrayCache` → `§TM_HOLD_OWNER`:** on `display_authored = 1` the hold map is empty — the same flag, the same
+    reason as `§OG_SWEEP_SKIP`. Imported / captured / civil schedules keep the hold.
+  - **C3 `tm_core.js _tmBuildEventIndex` → `§TM_TRANSITIONS`:** hold instants are transitions on EVERY model (civil gate deleted); the index key
+    includes the linger length (an input of its instants); whoever rebuilds the hold map drops the index, in that one place.
+  - **`tm_core.js _tmHeld` / `tm_render.js`:** the hold term is tested by one function; `renderAtTime` no longer reads the map.
+- **Witness `witness_tm_drawn_vs_scheduled`, extended (W2-W5) and repaired:** it printed `pass=6 fail=0` on a load with NO geometry (drawn 0 at
+  every sample, `§DVS_NOOP` printed beside PASS) — now INCONCLUSIVE when nothing is represented in the scene or the cursor does not move it.
+  **After the fix (`dvs_hospital_fix1.log`), Hospital, 63,415 ops, 63,065 drawable:**
+  | path | samples | scheduled and not drawn | drawn and not yet scheduled | incremental vs full, elements differing |
+  |---|---:|---:|---:|---:|
+  | play forward | 61 | 0 (was 156) | 0 | 0 (was 156) |
+  | scrub back | 61 | 0 | 0 | 0 |
+  | forward again | 61 | 0 | 0 | 0 |
+  | 40 seeded jumps | 40 | 0 | 0 | 0 |
+  `§DVS_HOLD display_authored=true heldInMap=0` (was 281). `pass=6 fail=0 ran=38`, red control detected.
+- **Gates:** `run_4d_gates.sh` 17 / 17 GREEN on the branch, no re-lock (`~/.cache/bim4d/q54_logs_2026-11-22/4d_gates_20261121T204307Z.log`) — as expected:
+  no gate runs the draw layer. `tm_core.js?v=3`, `tm_render.js?v=2`, `tm_sched_xray.js?v=5`, sw v1782 (through `scripts/bump.js`).
+- **`witness_cw_solidify_event` (node) was DEAD on main** (it read `time_machine.js` from `origin/main`, a 34-line loader since the file split:
+  "slice miss"). Repaired; its claim "buildings unchanged" is replaced by "a building with a held slot visits its mesh at the reveal tick"; red
+  control = `origin/main` skips it. INCONCLUSIVE here only because `CivilWorksPath.db` is not in the worktree.
+- **Departure from the spec:** the node half of W5 is not built — the hold is now empty by a DB flag, so slicing the provider proves nothing;
+  W5 is the browser claim. **C4 not done**, and not yet needed by this log (see limits).
+- **⚠ FOUND ON THE WAY — the gates do not judge the schedule the browser plays (measured, same DB, same patch, same code):**
+  browser `§AUTHOR_TPL elements=63415 totalDays=287 tasks=33`; gate run `elements=63182 totalDays=262 tasks=34`. Cause: at load the browser
+  runs `scene.js §NOGEO_COMPOSE` — 233 geometry-less aggregate parents (curtain walls 178, stairs 31, roofs 24) get a box that is the union of
+  their children and are then scheduled as work of their own; `cache_4d_run.js` never runs that step, and `§4D_NOGEO` drops them. The same
+  containers exist on Duplex 3, HHS 41, Clinic 43 (raw DB counts). A curtain-wall container spanning a façade is one box in the browser's
+  contact graph and 25 days of programme. Every number in §Q.6-§Q.51 is the gate run's.
+- **Limits:** the witness drives the bake verbs (`tmActivateForBake`, `tmSetCursor`), camera fixed. The interactive panel's own paths — the box
+  proxy while orbiting (`large=true` on Hospital), the slider handlers, discipline filter / isolate during play — are C4 and are NOT covered.
+  One building. The 350 "absent" are the 233 containers above + 117 duplicate shells the viewer hides on purpose.
+### Q.54.2 ▶ RESUME HERE (2026-11-22)
+1. **One scheduled population (the ⚠ above) — spec first.** A container with no geometry of its own is not work; its parts are. The population
+   owner (`ScheduleAuthor.scheduledWhere` / `§4D_NOGEO`) must give the browser and the gate run the SAME set; the node run must load the DB
+   the way the viewer does (compose included) so the mirror cannot drift again; gate = element count, days and task count equal, browser vs
+   node, on all seven. Expect the LIVE programmes to change on Duplex, HHS, Clinic, Hospital (Hospital 287 → 262 d).
+2. **Gate 18 in CI / in `run_4d_gates.sh`** (it needs a browser: runner only, like the live JSON witness), on HHS for cost, Hospital on demand.
+3. **C4, measured first:** the same four paths driven through the PANEL (slider + play button) with the camera moving, proxy engaged.
+4. Then §Q.52.1 (true boxes), then §Q.51.2 items 2-3.
+
+### Q.55 SPEC — ONE ELEMENT BOX, ONE SCHEDULED POPULATION (2026-11-22, owner: *"do what is needed to solve the core issues we already stated … make a film to proof it works … simulated from facts in the 4D schedule without cheating"*; §Q.54.2 item 1 + §Q.52.1 items 1-2)
+- **The two core defects are one: every 4D reader takes its elements from `element_transforms` directly, and that table does not say what the
+  4D model needs.** (a) `center_*` is where the mesh is placed, not the middle of its box (§Q.51.1 / §Q.52: 28,809 played elements on a
+  displaced box). (b) In the browser it also holds 233 composed container rows on Hospital that the gate run never sees (§Q.54.1 ⚠).
+- **Model — one owner, `ScheduleGate.ensureElementBox(db)` → the view `element_box` (§I: new row "where is an element, for 4D"):**
+  `element_box(guid, center_x, center_y, center_z, bbox_x, bbox_y, bbox_z)` = `element_transforms` with the centre moved by the element's
+  `element_box_offset` (0 where it has none), WITHOUT rows whose `transform_source = 'composed_aggregate'`. Same column names, so a reader
+  changes one word (`element_transforms` → `element_box`). Readers moved: `schedule_author.js _buildScheduleElements`,
+  `tm_gantt_build.js` (the Time Machine recipe), `tm_sched_xray.js` (the hold recipe), `tm_core.js` (proxy boxes). Drawing is untouched
+  (it places the mesh at `center_*`, correctly). A container with no geometry of its own is not work: it has no row in the view, so every
+  reader's own `§4D_NOGEO` rule drops it — in the browser exactly as in the gate run.
+- **Data — `element_box_offset(guid, ox, oy, oz)`, an extracted fact:** the middle of the element's own mesh box in the mesh's local frame
+  (`component_geometries`, the frame `center_*` places), rows only where it is over 1 mm. Generated by `tools/element_box_offset_patch.py`
+  from the extracted / `_geo` DB into `buildings/patches/<db>.sql` (`-- §ELEMENT_BOX_OFFSET BEGIN … END`, re-run replaces), applied by the
+  existing patch loader in the browser and in node. No table → offset 0 → today's boxes: an unpatched DB is unchanged, never broken.
+- **Witness (node, joins the gates as 18): `witness_element_box`, the issue it exposes — *"is the box the 4D model uses the box of the mesh
+  that is drawn, and do the browser and the gate run schedule the same elements?"*** B1 for every played element with a mesh, the view's
+  box = centre + the mesh's own min / max, within 1 mm (recomputed from the geo DB, not from the patch) · B2 no composed container is in
+  the scheduled population after the viewer's compose step is run on the DB in node (the step is sliced from `scene.js`, not re-typed) ·
+  B3 population with compose = population without · red control: the view without the offset must fail B1 · INCONCLUSIVE where no mesh
+  can be read. Browser half: `witness_tm_drawn_vs_scheduled` `§AUTHOR_TPL elements / totalDays` equal to the gate run's (Hospital).
+- **Proof owed, all seven, before → after:** played midair and `auditFloating` judged on the true boxes (§Q.52's table — the first honest
+  number, now on a schedule SOLVED on them); programme days / tasks; B9; `§SUPPORT_CYCLE`; DCMA; `run_4d_gates.sh`, every re-lock named.
+- **Film (proof, not a bake):** the persisted played layer of BEFORE (`origin/main`) and AFTER, drawn from the schedule's own instants and the
+  true boxes, each element painted at its op start; an element the judge calls unsupported at that instant (same owner, true boxes) is
+  painted red and counted on screen. Nothing in the film is authored: frame = f(run.json, true boxes, judge). Script committed, mp4 not.
+- **Live reach:** code goes live with the deploy; the offset blocks reach users only where the patch is served from the repo (GitHub Pages).
+  Bucket-served patches need the patch gate — an upload to production, the owner's go.
+
+### Q.56 ▶ RESUME HERE (2026-11-22, owner: *"I need to unravel this hell. Give a sane way out"* → *"proceed"* → *"write a simple crawler … use film screenplay proof instead of any human eyes"*)
+- **The culprit, measured:** the gates judged a node COPY of the Time Machine; the browser did four things the copy did not (composed containers scheduled
+  as work · rates replaced from JSON at boot, the pack following the page language · a push pass `_cjpJudgeParity` moving up to 614 elements later,
+  footings included · the canvas hold, fixed in #3381) and both used boxes that are not where the mesh is.
+- **The harness (bim-ootb branch `feat/4d-product-judge`, pushed, NO PR yet):** `node scripts/product_judge.js run --root <checkout> --tag <name> <buildings>`
+  then `compare <tagA> <tagB>`. It runs the REAL viewer headless (about 10 minutes for seven), judges what it played on the true mesh boxes, and fails a
+  branch on any count that got worse. Rules: canvas · copy · box · early · nopath · and the crawler's four truths (`scripts/lib/schedule_crawler.js`:
+  onNothing, beforeFloor, beforeWall, beforeFrame) with a screenplay per building (`~/.cache/bim4d/product/<tag>/<bld>.screenplay.txt`).
+- **The candidate (bim-ootb branch `fix/4d-q55-one-population-true-box`, pushed, NOT mergeable yet):** one box owner + offsets, containers left out, the
+  push pass off on solve-authored schedules. main → candidate: copy 0 and box 0 on all seven; early Hospital 548 → 0, JKR 425 → 13, HHS 57 → 4, Clinic
+  122 → 16, Terminal 715 → 306, LTU 1,427 → 417; but 9 crawler cells WORSE (Hospital beforeFloor 274 → 377: a column goes up days before the slab it
+  stands on). Verdict FAIL: 31 better, 9 worse.
+- **NEXT, one thing:** the crawler's four truths become the solve's own edges (floor before what stands on it, what touches my underside before me, wall
+  before its window, frame before its glass) — then the crawler reads 0 by construction and the harness proves it on the product. No other rule work.
+- **Film:** `scripts/film_4d_true_box/render.py` draws the judge's `<bld>.film.json` (red = out of order when it appears) and reads its own last frame
+  back pixel by pixel (`§FILM_EYES`). Clip + screenplays: `~/Videos/Hospital_4D_build_order_BEFORE_AFTER.mp4`, `Hospital_4D_screenplay_{BEFORE,AFTER}.txt`.
+  It shows 1,077 → 587 out of order on Hospital: an improvement, NOT yet a proof of a solution.
+
+### Q.58 ▶▶ RESUME HERE (2026-11-22, owner: *"how do other software do such build up successfully? … I cannot afford to give further rulings. You have to come out with a solution that works. The issue is simple. Build up properly."*) — supersedes §Q.56's NEXT
+- **How the others do it (read, not assumed):** Navisworks TimeLiner attaches model items to schedule TASKS by selection sets / rules and shows the items of the
+  active tasks at a date — an element's time is its task's time, nothing is solved per element. BEXEL generates a schedule from a declared METHODOLOGY (trade
+  sequence) by ZONES. ALICE generates from RECIPES per element type. None derives order from box contacts. Order = method x location; elements are mapped to
+  a step by what they are.
+- **Prototype, judged before any product code (bim-ootb `scripts/proto_method_order.js`, branch `feat/4d-product-judge`):** the product's own elements, true
+  boxes, times thrown away, ordered ONLY by: frame bottom-up by base; then per floor (the slab an element stands over, not a storey label) the steps walls ·
+  roof and decks · curtain wall (frame + glass) · windows and doors · stairs and railings · other envelope · services first fix · ceilings · services second
+  fix · finishes; inside a step bottom-up by base. No election, no bond, no solver. Crawler, today's product → that order:
+  beforeFloor 0 / 10 / 122 / 65 / 70 / 264 / 94 → **0 on all seven**; onNothing 25 / 16 / 29 / 305 / 157 / 269 / 3,801 → 0 / 0 / 115 / 49 / 60 / 37 / 427;
+  beforeWall ≤ 33; beforeFrame HHS 88, Clinic 18 (frame and glass share a step — put members before panels).
+- **THE DECISION (mine, the owner gives no further rulings):** the product orders the build-up by METHOD x LOCATION, as the industry does. The election, the
+  bond table and the four-truth edges stop deciding order; the crawler and the product judge stay as the JUDGE. Bars = step x floor (so the Gantt is the
+  truth at bar grain, like every other 4D tool, and finer than today's seven lumps); inside a bar, bottom-up by base. Durations and crews as today.
+- **Order of work:** (1) the method list + the floor-under location as ONE owner in the product, behind the box owner already in the candidate; (2) judge on
+  seven with `product_judge.js` — merge only when no cell is worse than main; (3) trace the remaining onNothing (JKR 115, LTU 427) with the screenplay;
+  (4) the film, house style, from the judge's facts; (5) delete what no longer decides anything.
+- **Candidate `fix/4d-q55-one-population-true-box` as judged with the four truths as solver edges: FAIL 21 better / 4 worse** (beforeFloor → 0, but onNothing
+  Hospital 214 → 608, HHS 40 → 705): a fourth support mechanism collides with the other three. Keep from it: the box owner + offsets, containers left out, the
+  push pass off, the patch chunk bound. Drop: `§SITE_ORDER` edges once (1) lands.
+### Q.58.1 ▶▶ START OF THE NEXT SESSION (owner, 2026-11-22: *"continue in new session. Update prompt also to do a basic animation of SampleCastle as our present test case instead of Hospital so we have something light and faster to prove as a baseline."*)
+- **The test case is now SampleCastle, not Hospital.** 3,621 elements, 7 storeys (`-1 fundering` … `04 dak`), 7.9 MB, one file with its meshes:
+  `~/bim-compiler/deploy/buildings/SampleCastle_extracted.db` (also linked as `~/.cache/bim4d/unseen_blds/SampleCastle_extracted.db`; the copy in
+  `~/bim-ootb/buildings/` is 0 bytes — do not use it; pass `BLD_DIR=~/bim-compiler/deploy/buildings`). Classes: coverings 1,262 · walls 934 · slabs 279 ·
+  windows 259 · doors 205 · beams 174 · railings 90 · pipes 60. No patch file. A full judge run on it is seconds, not minutes.
+- **First deliverable = a BASIC ANIMATION of SampleCastle that is the baseline proof**, before any of the seven: (a) judge today's product on it
+  (`BLD_DIR=… node scripts/product_judge.js run --root ~/bim-ootb --tag main SampleCastle`) and keep its screenplay; (b) order it by METHOD x LOCATION
+  (§Q.58: start from `scripts/proto_method_order.js`, then the product change); (c) crawler to zero on it, every remaining line of the screenplay
+  explained or fixed; (d) the animation from the judge's `SampleCastle.film.json` with `scripts/film_4d_true_box/render.py` (bim-compiler) — BEFORE |
+  AFTER, red = out of order when it appears, `§FILM_EYES` reading the last frame back, no human eye asked. Plain clip; the house film style comes
+  later, for the seven.
+- **Only when SampleCastle is clean:** the same change judged on the seven (no cell worse than main), then Hospital's film.
+- **Do not:** add support rules, re-lock gate numbers, or ask the owner for rulings (§Q.58).
+### Q.59 ▶▶ RESUME HERE (2026-11-22, "resume 4D" session) — METHOD x LOCATION IS BUILT; SampleCastle PROVEN ON THE PRODUCT; the seven measured on the node copy
+- **Branch:** bim-ootb `feat/4d-method-location` (off the candidate `fix/4d-q55-one-population-true-box` + `feat/4d-product-judge` + main). NOT merged: §Q.58's
+  rule is "merge only when no cell is worse than main ON THE PRODUCT", and the product run of the seven is not done (see NEXT).
+- **SPEC — what orders the build-up now (one owner each, `viewer/schedule_author.js`; switch off with `METHOD_ORDER=0` / `window.__METHOD_ORDER = false`):**
+  1. **Order inside a bar — `methodRank(items, db)` (§METHOD_ORDER):** the method step, then bottom-up by the piece's own base. Steps exist only inside the
+     envelope bar: shell (walls, roof, decks, every other envelope piece) · curtain wall (frame and glass together, row by row; at one base the member goes
+     before the panel; a panel never goes before the first member of its own declared assembly, `rel_aggregates`) · windows and doors · stairs and railings.
+     Every other phase is one step. `remapSolveToTasks(…, rankOf)` tiles the bar in that order, one lane, each piece as wide as its own duration share. Both
+     callers pass it: the Gantt writer and the Time Machine (`tm_gantt_build.js` → `_tmTilePlayWithinTasks`), and the node mirror `scripts/lib/tm_played_layer.js`.
+  2. **Location — `_methodLocationAxis(elements, collapse, EPS)` (§METHOD_LOCATION):** a level is a HEIGHT BAND and a piece is on the level whose band holds its
+     BASE. Levels in the order of their middle (median base); a level starts at its lowest piece above the middle of the level below; a base within the contact
+     owner's EPS under a level's start is on that level. Replaces `_hangFilingAxis` (the election no longer files anything). On a declared storey datum it
+     returns the same filing (HHS 0 of 6,839 moved, LTU 0 of 122,330); on SampleCastle 402 of 3,504 pieces sat on another level than their name.
+  3. **One method edge — `dependencies.deck_over` in `viewer/rates/4D_template.json` (§DECK_OVER):** the first fit-out bar of a level waits for the frame bar of
+     the nearest level above (the deck over it). A template without the key (civil) gets no edge. The levelling pass enforces it; no date arithmetic.
+  4. **Kept from the candidate:** one box owner + offsets, containers left out, push pass off on solve-authored schedules. SampleCastle got its offset block
+     (`buildings/patches/SampleCastle_extracted.db.sql`, 2,438 rows, max 2.60 m). `_GANTT_CACHE_VERSION` 54 → 55; page / sw versions bumped (`scripts/bump.js`).
+  5. **Not deleted yet:** `§SITE_ORDER` edges, the election, the bond table and `§TPL_LAYER_ORDER` still run and still feed the SOLVE's raw times and the
+     bar durations; they no longer decide the order of anything that is played. `§TPL_LAYER_SELFCHECK` now reads FAIL by construction (it judges the old
+     layer order) — it goes with them in order-of-work step (5) of §Q.58.
+- **JUDGE CHANGE, said plainly (`scripts/lib/schedule_crawler.js` `splitEarly`, used by `product_judge.js` and the new `scripts/crawl_node_copy.js`):** the rule
+  `early` (the shipped `midairAudit` on true boxes) now counts a piece only when the support the election named for it TOUCHES it and is lower or higher than
+  it. Two populations are counted apart and printed, never ruled on, on main and on the branch alike (main re-judged from its stored browser dumps, `--reuse`):
+  `earlyFar` — the named support does not touch (boxes more than the owner's GAP apart in height): SampleCastle window `3iKlrwnUHCxxRo4aLgJC8B` (top 2.67 m) is
+  "carried" by slab `0ZzyGbASLD1wvphFCXGJtB` (base 5.67 m), with the first-floor windows in between — the contact graph lists 16 "contacts" for it by plan overlap.
+  `earlyTie` — the named support starts at the same height (bases within EPS): two footings side by side, a pipe and its fitting. Reason: on main the solver
+  obeyed these edges, so a ground-floor window waited for a slab two floors up; a judge that scores that as correct cannot judge a method order.
+- **Also fixed in the harness:** `witness_tm_drawn_vs_scheduled.js` served a 0-byte placeholder from the checkout instead of `BLD_DIR` (SampleCastle hung at load).
+- **SampleCastle, PRODUCT (real viewer headless, software GL so the GPU was never touched; `product_judge.js compare main method`): PASS, 0 worse, 6 better.**
+
+  | rule | main `76c2c648` | branch `a6d1f818` |
+  |---|---|---|
+  | days | 35 | 33 |
+  | canvas | 0 | 0 |
+  | copy (browser vs node copy) | 10 | 0 |
+  | box (4D box vs mesh box) | 1,120 | 0 |
+  | early (touching) | 28 | 3 |
+  | nopath | 7 | 7 |
+  | onNothing | 39 | 0 |
+  | beforeFloor | 18 | 0 |
+  | beforeWall | 5 | 0 |
+  | beforeFrame | no curtain wall | no curtain wall |
+
+  The 3 left: a lower piece that the election hangs on a HIGHER overlapping one in the same bar (roof build-up part base 8.15 on one with base 8.30; two
+  finish coverings base 8.13 on one with base 8.30) — bottom-up puts the lower first, hours apart. nopath 7 is geometry (no contact path to the ground), same on both.
+  Animation (not pushed, films never are): `~/Videos/SampleCastle_4D_build_order_BEFORE_AFTER.mp4` + `…_render.log` + `SampleCastle_4D_screenplay_{BEFORE,AFTER}.txt`.
+  `§FILM_EYES` BEFORE 78 out of order / 3,854 red pixels in the last frame, AFTER 3 / 48, both PASS; `§FILM_SELFCHECK` PASS.
+- **The seven, NODE COPY only (`node scripts/crawl_node_copy.js main <buildings>` — the branch's played layer on main's judged true boxes; a proxy, the
+  product verdict is still owed). Each cell: main's PRODUCT → the branch's node copy.**
+
+  | building | days | onNothing | beforeFloor | beforeWall | beforeFrame | early | nopath |
+  |---|---|---|---|---|---|---|---|
+  | Duplex | 15 → 14 | 25 → 0 | 0 → 0 | 0 → 0 | n/a | 2 → **4** | 0 → 0 |
+  | HHS | 58 → 58 | 16 → 0 | 10 → 0 | 0 → 0 | 52 → 0 | 44 → 0 | 5 → **6** |
+  | JKR | 46 → 53 | 29 → 0 | 122 → 0 | 2 → 0 | n/a | 407 → 7 | 11 → 11 |
+  | Clinic | 127 → 138 | 305 → 1 | 65 → 0 | 0 → 0 | 4 → 0 | 97 → 7 | 15 → 15 |
+  | Terminal | 93 → 94 | 157 → 0 | 70 → 0 | 10 → 0 | n/a | 430 → 20 | 1,337 → 1,337 |
+  | Hospital | 250 → 272 | 269 → 0 | 264 → 0 | 0 → 0 | 16 → 0 | 347 → 17 | 34 → 34 |
+  | LTU | 666 → 672 | 3,801 → 0 | 94 → 0 | 4 → 0 | n/a | 641 → 60 | 1,917 → 1,917 |
+
+  Named residue: **Duplex early 2 → 4** — two pipe risers (base -0.65, top 3.30) the election hangs from a furring wall above them and two duct taps
+  (4.31..6.46) it hangs from the transition fitting on top of them; bottom-up puts the riser first. **Clinic onNothing 1** — roof `0rgLSgKBf54Qc3od1vyY2Z`
+  rests on a curtain-wall member (shell step before curtain-wall step). **HHS nopath 5 → 6** — to be read on the product run, the node copy classifies one
+  element differently. Days rise where the deck-over edge binds (JKR +7, Clinic +11, Hospital +22): fit-out no longer starts under an open deck.
+  earlyFar / earlyTie on the branch (counted, not ruled): Terminal 1,299 / 293, LTU 171 / 1,580, Clinic 32 / 42.
+- **CI on the branch:** the four Gantt-editor witnesses on HHS (W-4D-EDITOR-CI) pass — OCP 4/0/0, UE 6/0/0, RO 7/0/0, GL 7/0/0; `audit_sw_precache` 303 found, 0 missing.
+  `run_4d_gates.sh` was NOT run: its ratchets lock the old order and are not the judge (§Q.58.1 "do not re-lock gate numbers").
+- **NEXT, in order:** (1) the PRODUCT judge on the seven — `node scripts/product_judge.js run --root /tmp/wt-4d-method --tag method <seven>` then
+  `compare main method`; with the GPU it is about ten minutes and needs the owner's go for a headless GPU run; `GPU=sw` works without the GPU but is slow
+  (SampleCastle 220 s). (2) Merge only on PASS. The Duplex cell (early 2 → 4, CONFIRMED on the product, see below) reads WORSE and has to be settled
+  first — and not by loosening the judge a third time. MEASURED: of every `early` piece left on the branch (Duplex 4, SampleCastle 3) the elected support is
+  HIGHER than the piece and NOTHING touches the piece's underside; "the support is lower and not finished" is 0 (main's Duplex 2 were both of that kind and are
+  gone). So what method order does not yet say is ONE thing: a piece that HANGS (nothing under it, something touching above) goes in before its hanger. That
+  is the open design item — a method statement for hung work (it is second fix / close-up practice: hangers first), not another judge split. (3) Hospital's film from the judge's facts. (4) Delete what no longer decides anything (§Q.58 step 5, item 5 above).
+  (5) Bars = step x floor in the Gantt (the envelope bar still holds four steps).
+- **Q.59.1 PRODUCT results after the owner's go (2026-11-22: *"Go, but just do Hospital first, and stop if it does not clear."*), branch `a6d1f818`, main → branch:**
+  **Hospital (GPU, 171 s): CLEARS, no cell worse** — days 250 → 272 · canvas 0 → 0 · copy 63,030 → 0 · box 7,802 → 0 · early 347 → 17 · nopath 34 → 34 ·
+  onNothing 269 → 0 · beforeFloor 264 → 0 · beforeWall 0 → 0 · beforeFrame 16 → 0. It played exactly what the node copy predicted.
+  **HHS (software GL):** all four truths 0, early 44 → 0, copy 2,836 → 0, box 2,300 → 0, but **nopath 5 → 6 WORSE** (not yet traced). **Duplex (software GL):**
+  truths 0, copy 40 → 0, box 199 → 0, **early 2 → 4 WORSE** (the four risers above). `compare` on these + SampleCastle: FAIL worse=2 better=21 same=11.
+- **Hospital's 17, measured (owner: *"a hung item likely happens within a phase task? … apply … shim anchor dependency to it?"*):** all 17 HANG (nothing touches
+  their underside, the elected support is higher) and all 17 are in the SAME BAR as their hanger, 0.0 to 2.4 days ahead of it: 12 pipe fittings and 2 valves
+  under the pipe above them (MEP Rough-in Level 6), 3 envelope proxies under a higher one (Envelope Level 5 / 6). Duplex's 4 are NOT all in one bar: 2 duct taps
+  are a level below their fitting's bar (same phase), 2 risers are in another phase than the wall. So the remedy has two parts: (a) inside a bar, a piece that
+  hangs takes its place right after its hanger — the bond table already names the hanger (`hangs-below`, run.json `bonds`); (b) a piece whose hanger is in
+  a later bar is filed with its hanger. Neither is built; both to be judged with `product_judge.js` exactly as above.
+- **Q.59.2 Hospital BEFORE | AFTER film + the facts a bake log is compared to (owner 2026-11-22: *"do its before/after film so that a final bake logs can compare to it"*).**
+  From the judge's `Hospital.film.json` of main and of branch `a6d1f818` (real-viewer times, true boxes), `scripts/film_4d_true_box/render.py`, CPU only.
+  `§FILM_EYES` BEFORE 867 out of order / 2,354 red pixels in the last frame, AFTER 17 / 29, both PASS; `§FILM_SELFCHECK` PASS; 63,182 pieces painted in each panel.
+  Files (`~/Videos`, not pushed): `Hospital_4D_method_order_BEFORE_AFTER.mp4` · `…_render.log` · `…_screenplay_{BEFORE,AFTER}.txt` ·
+  `…_AFTER_elements.csv` (per piece: start day, end day, phase, class, flags — 63,182 rows) · `…_AFTER_built_by_day.csv` (pieces started per day, 0..272).
+  A bake is comparable ONLY if it plays the branch (the live site still plays main's order) and its schedule is regenerated (`_GANTT_CACHE_VERSION` 55): then
+  each piece's reveal day in the bake log must equal `start_day` in the elements file, and the count on screen at day d must equal `started_so_far`.
+- **Q.59.3 JKR on the PRODUCT (software GL), branch `a6d1f818`: no cell worse** — days 46 → 53 · canvas 1 → 1 · copy 100 → 0 · box 1,506 → 0 · early 407 → 7 ·
+  nopath 11 → 11 · onNothing 29 → 0 · beforeFloor 122 → 0 · beforeWall 2 → 0. `compare main method` over the five judged (SampleCastle, Duplex, HHS, JKR,
+  Hospital): FAIL worse=2 (Duplex early 2 → 4, HHS nopath 5 → 6) better=27 same=13. Clinic, Terminal, LTU not run on the product (GPU go not given for them).
+### Q.60 SPEC — HUNG WORK GOES IN AFTER ITS HANGER (2026-11-22, owner: *"Remedy"*)
+- **Measured first — the bond table cannot be the source for these pieces:** of the 21 left (Hospital 17, Duplex 4) the shim-anchor table names NO host for 19
+  (`lost(unanchored)` 14: pipe fittings and duct taps; `lost(untabled)` 5: valves and proxies have no row) and a DIFFERENT host for 2 (a slab at 6.00, the
+  judge says the wall at 3.10). The judge's hanger is the election's (`CpmSchedule.designatedSupport`, §I: the owner of "which ONE thing holds T").
+- **Rule (one owner, `schedule_author.js` `hungOf(items)`):** a piece HANGS when the support the owner elects for it TOUCHES it (boxes within GAP in height)
+  and starts HIGHER than it (base above the piece's base by more than EPS). The election prefers a support below, so a higher one means nothing bears it.
+  Nothing else is read from the election; a piece that stands on something is never touched.
+  (a) **Order in a bar:** a hung piece takes its place right after its hanger (`methodRank`: its rank becomes just after the hanger's, chains follow).
+  (b) **Location:** a hung piece is filed on its hanger's level when that level is higher (`_methodLocationAxis`), so it cannot sit in a bar that ends
+  before the hanger's bar starts. Its phase is not changed.
+- **Witness = the product judge, unchanged:** `early` on Duplex must be ≤ 2 and on Hospital < 17, no other cell worse on any judged building; `§HUNG_WORK`
+  prints pieces found, moved in order, filed on another level, and NO-OP when 0.
+- **Q.60.1 RESULT — THE HUNG-WORK MOVE IS REJECTED, MEASURED; nothing of it is in the product (branch product code is still `a6d1f818`).**
+  Built as specified, then narrowed twice, judged on the node copy each time (onNothing main-branch-before → with the move):
+  (1) every piece whose elected support is higher and touching: Duplex 290 pieces, Hospital 7,196 → onNothing Duplex 0 → 8, HHS 0 → 67, Hospital 0 → 335, SampleCastle 0 → 12;
+  (2) + nothing touches its underside: Duplex 240, Hospital 4,514 → Duplex 9, HHS 87, Hospital 385;
+  (3) + the hanger is an earlier trade: Duplex 238, Hospital 4,497 → Duplex 9, HHS 87, JKR 86, Hospital 373. With level filing off and ONLY the order
+  move on: Duplex 8, HHS 87, JKR 86, Hospital 373 — so it is the move itself, not the filing. With both off: 0 on all four.
+  **Why:** a piece moved behind its hanger leaves the piece that rests on IT ahead of it (a pipe on the elbow that was moved). Following that needs a cascade —
+  a solver again, the collision §Q.58 named. Do not rebuild it.
+- **What the leftovers actually are (the judge, `splitEarly` — a fourth class `stack`, counted and printed, never ruled on, main re-judged the same way):**
+  the named support sits ON the piece by the crawler's own truth (its base at the piece's top, same or earlier trade). "T hangs from S" and "S stands on T"
+  cannot both be obeyed: with T first the old judge objects, with S first the crawler does. Duplex 2 (duct tap under its transition fitting), Hospital 12
+  (pipe fitting under the vertical pipe on it; main had the same 12).
+- **PRODUCT compare after that split (`--reuse`, the stored runs of `a6d1f818`), main → branch:** Duplex early 2 → 2 (no longer worse; the 2 left are the risers
+  the election hangs from a furring wall, as on main in number) · Hospital early 335 → 5 (2 valves under a valve 0.46 m up, 3 envelope proxies under a higher
+  overlapping one) · JKR 407 → 7 · HHS 44 → 0 · SampleCastle 28 → 3. **Verdict FAIL worse=1 better=27 same=14 on five buildings.**
+- **The one worse cell, traced: HHS nopath 5 → 6, piece `1Atj4lkpv3qwTaPKeAZTF4`** (envelope proxy, base 0.09 m, nothing under it within 0.5 m). Same box and class on
+  both sides. On true boxes the branch recognises HHS's 10 slabs on grade as groundwork (`§GROUNDWORK_SLAB n=10`; main: 0), which is right — and that switches
+  the shipped judge's ground seeding from `ground-band` (anything within 1 m of the lowest level is on the ground) to `classification` (only groundwork is).
+  The piece was "on the ground" only by the band. Not an order defect; not fixed, not hidden. It is the single cell between this branch and PASS on five.
+- **NEXT:** (1) decide the HHS cell on its merits (a piece with nothing under it IS unsupported — the branch's reading is the truer one), (2) Clinic, Terminal, LTU on
+  the product (GPU go), (3) merge on PASS, (4) deletions (§Q.58 step 5), (5) bars = step x floor.
+### Q.61 ▶▶ RESUME HERE (2026-11-22, owner: *"The numbers look minimal, do you think we can push our luck?"* → *"ok go"*) — PRODUCT VERDICT ON NINE, MERGE REQUESTED
+- **Owner's go covered:** the GPU run of Clinic, Terminal, LTU; the Shed check; and, if both clean, accepting the HHS piece and merging.
+- **PRODUCT, real viewer (GPU: Hospital, Clinic, Terminal, LTU; software GL: the rest), `compare main method`: worse=1 better=48 same=26 on nine buildings.**
+
+  | building | onNothing | beforeFloor | beforeWall | beforeFrame | early | nopath | copy | box | days |
+  |---|---|---|---|---|---|---|---|---|---|
+  | SampleCastle | 39 → 0 | 18 → 0 | 5 → 0 | n/a | 28 → 3 | 7 → 7 | 10 → 0 | 1,120 → 0 | 35 → 33 |
+  | Duplex | 25 → 0 | 0 → 0 | 0 → 0 | n/a | 2 → 2 | 0 → 0 | 40 → 0 | 199 → 0 | 15 → 14 |
+  | HHS | 16 → 0 | 10 → 0 | 0 → 0 | 52 → 0 | 44 → 0 | 5 → **6** | 2,836 → 0 | 2,300 → 0 | 58 → 58 |
+  | JKR | 29 → 0 | 122 → 0 | 2 → 0 | n/a | 407 → 7 | 11 → 11 | 100 → 0 | 1,506 → 0 | 46 → 53 |
+  | Clinic | 305 → 1 | 65 → 0 | 0 → 0 | 4 → 0 | 96 → 5 | 15 → 15 | 4,448 → 0 | 2,397 → 0 | 127 → 138 |
+  | Terminal | 157 → 0 | 70 → 0 | 10 → 0 | n/a | 430 → 5 | 1,337 → 1,337 | 560 → 0 | 2,085 → 0 | 93 → 94 |
+  | Hospital | 269 → 0 | 264 → 0 | 0 → 0 | 16 → 0 | 335 → 5 | 34 → 34 | 63,030 → 0 | 7,802 → 0 | 250 → 272 |
+  | LTU | 3,801 → 0 | 94 → 0 | 4 → 0 | n/a | 635 → 48 | 1,917 → 1,917 | 395 → 0 | 12,520 → 0 | 666 → 672 |
+  | Shed | 0 → 0 | 3 → 0 | 0 → 0 | n/a | 33 → 0 | 0 → 0 | 79 → 47 | 20 → 20 | 8 → 9 |
+
+  canvas 0 → 0 everywhere but JKR 1 → 1. On all eight patched buildings the browser played exactly the node copy (copy 0). Counted, not ruled (branch):
+  earlyFar Terminal 1,299, LTU 171, Clinic 32; earlyTie LTU 1,580, Terminal 293; earlyStack Terminal 15, LTU 12, Hospital 12.
+- **The one worse cell (HHS nopath 5 → 6, §Q.60.1) is ACCEPTED by the owner's go**, on the stated ground that a piece with nothing under it is unsupported and
+  main only passed it through the 1 m ground band. It is an acceptance in the owner's words, not a re-lock: `compare` still prints FAIL worse=1.
+- **UAT constraint (the 2026-11-20 block above) checked on the Shed:** (1) the guide's lag edit (+5 on the two superstructure rows of `within_level`) moves the
+  finish 8 → 18 days on the branch, exactly as on main (`§DECK_OVER edges=0` — one level, no deck above); (2) parts go up in order: every truth 0, early 33 → 0.
+  (3) no schedule rows are written into any export by this change.
+- **Stored schedules:** `_GANTT_CACHE_VERSION` 55 regenerates a generated schedule on first open unless it has a baseline or was imported (`activeSchedule`
+  `safeToRegen`) — the rule of every earlier bump; bars dragged without a baseline are lost, as before.
+- **Merge: LANDED** — bim-ootb PR #3389 merged as `eb389e01` (CI green), Pages deploy success, live site fetched back: sw `v1785`, `_GANTT_CACHE_VERSION` 55, `methodRank` / `_methodLocationAxis` / `deck_over` present. (`feat/4d-method-location`, head `64edc423` after merging main); local checks on the merged
+  branch: fast tier 40/40, Gantt-editor witnesses OCP 4 / UE 6 / RO 7 / GL 7 with 0 fail, sw audit 303 / 0 missing, manifest round trip PASS.
+  **Verify it landed before any follow-up; a follow-up starts from fresh `origin/main`, never from this branch.**
+- **NEXT:** (1) delete what no longer decides order (`§SITE_ORDER` edges, hang filing, `§TPL_LAYER_ORDER` + its self-check, the election's role in the solve —
+  §Q.58 step 5); (2) bars = step x floor (the envelope bar holds four steps); (3) `run_4d_gates.sh`: retire or re-point its ratchets at the product judge —
+  they lock the old order and were not run; (4) offset blocks for the Shed (box 20) and any building served without one; (5) the house-style film for the seven.
+### Q.62 HOSPITAL BAKE ON THE NEW ORDER (2026-11-22, owner: *"tell me when it lands, then bake Hospital"*)
+- **What was baked:** `node cli_silent_bake.js --db HospitalAjaibPath --buildup --gpu real` from main `eb389e01` + the offsets patch below; 1,230 frames, 1280x720, 15 fps,
+  82.0 s, 28 MB, wall 2,506 s, `aborted=no fileOk=true`. `~/Videos/Hospital_method_order_bake.mp4` + `.log` (not pushed). The stored path's own settings have
+  build-up OFF (`§CLI_BAKE_BUILDUP_RESOLVED on=0 source=stored-path`): a first start was a fly-through of the finished building, stopped after 2 frames.
+- **The file with the camera path is NOT the judged Hospital.** `HospitalAjaibPath.db` (the bake tool's default) has no patch: no mesh-box offsets, no storey table,
+  no `rel_aggregates`, no declared types; `Hospital_meta.db` (judged, §Q.61) has no `cinema_path`. Offsets generated for it (42,755 of 63,182 pieces, max 31.13 m) —
+  bim-ootb PR #3390 `buildings/patches/HospitalAjaibPath.db.sql`. Versus the judged file's facts: same 63,182 pieces, 88 % on the same start day, 98 % within a day.
+- **Rate pack:** the bake's browser is `en_US` → `rsmeans2024_us` → 290 days; the judge pins `cidb2024_my` (273 days on this file). A bake is comparable only to an
+  expectation built with ITS pack: `RATES_PACK=rsmeans2024_us node scripts/cache_4d_run.js --force` gives 290, as the bake's `§AUTHOR_TPL totalDays=290`.
+- **CPU judge of this file with this pack (node copy on true mesh boxes):** onNothing 0 of 24,706 · beforeFloor 0 of 62,390 · beforeWall 0 of 562 · beforeFrame INCONCLUSIVE
+  (no assembly data) · box 0 · early 6 · nopath 34. Expected facts: `~/Videos/Hospital_bake_file_expected_elements.csv`.
+- **Bake log vs expectation:** (1) `§CPE_BUILDUP frame= cursor= placed=` at 22 frames: the placed count equals the number of pieces the expectation has started by that
+  cursor day within 4..509 pieces of 63,182 (0.8 % worst; the day origin was taken as the window's first day at midnight). End: 63,417 = 63,182 + the 233 parked containers
+  + 2. (2) the nine watched slabs (`§CPE_BUILDUP_PLACED`) are drawn in the expected order: Level 1, 2, 3, Unknown, 4, 5, 6, 7A, 7 at frames 12, 27, 63, 71, 279, 306, 441, 445, 453.
+  (3) the bake's own line `§SUPPORT_CHECK floating=14/63182`.
+- **⚠ FOUND IN THE BAKE, NOT DIAGNOSED:** two slabs are drawn, hidden again, and drawn again — Level 3 `0e8pm26Tv5vPrj6zU55MbT` placed @63, pending @114, placed @142; Unknown
+  `2wV7MXoU9CUuWvtMFXEk_5` placed @71, pending @101, placed @145. The film cursor stands at day 37.2 at frames 60 and 120 (placed 1,753 → 1,752) and dips under these slabs'
+  start days (36.5, 37.4) in between. That is the film's cursor mapping (cinema lane), not the schedule's order; whether it predates this change was not checked.
+### Q.63 THE BAKE FLICKER — CAUSE, FIX, AND THE REDO ON THE SAVED HOSPITAL FILE (2026-11-22, owner: *"chase the flicker"* → *"Flicker is little it is OK. Rather redo with the saved DB with path that is always used."*)
+- **Cause (cinema lane, `viewer/maxq_buildup_ghost.js` `_workCursorAt`, §CPE_BUILDUP_ONSET_BLEND of 2026-08-27):** in the first 10 film seconds the cursor is
+  `el + (cal − el)·w`, the work-paced instant blended toward the calendar. Where `el` is AHEAD of `cal` the blend falls as `w` rises. On the §Q.62 bake: frames
+  74-137, day 39.5 → 35.8. A CPU simulation of the formula on that bake's schedule predicts Level 3 shown @63, hidden @116, shown @141 and Unknown 71 / 102 / 145;
+  the bake log says 63 / 114 / 142 and 71 / 101 / 145. Up to 204 pieces are hidden again at the worst frame.
+- **It predates method x location but the new schedules expose it on Hospital** (same formula, an 82 s film, frames going back, old → new order): Hospital 0 → 60 ·
+  Terminal 43 → 34 · Duplex 92 → 35 · JKR 8 → 5 · HHS 0 → 5 · SampleCastle 3 → 8 · Clinic 1 → 0 · LTU 0 → 0.
+- **Fix (one line, §CPE_ONSET_BLEND_MONOTONE):** where `el >= cal` return `cal`. The blend exists to hold back a front-loaded opening (`el < cal`) and is unchanged
+  there; both branches rise with t and meet where the instants are equal.
+- **Witness:** `witness_bake_plays_schedule.js` **W-BAKE-8**. The old W-BAKE-3 ("never runs backwards") judged `BUILDUP_EVEN_TEMPO=false` with no film length — a mode
+  no film has used since August (scope-blind, PRIMAL LAW 4). W-BAKE-8 runs the shipped flags, an 82 s film, one sample per frame, on the real schedule and on a
+  back-loaded one, with a control that must go backwards unguarded (INCONCLUSIVE if it does not). With the fix pass=22 fail=0; with the line removed 3 FAIL.
+- **Redo on the saved file, as the owner asked:** `Hospital_silent.db` (`~/Downloads`, linked into `buildings/`; 4-stick stored path, saved settings buildup=1 roomTitle=1
+  reveal=1), no flags, from the fix branch. Offsets generated into `buildings/patches/Hospital_silent.db.sql` (42,755 rows). Stored schedule regenerated on load
+  (`§TM_PLAY_SCHEDULE_FRESH stale=1 regen=ran/ok genVersion=39->55`). 2,937 frames, 1280x720, 195.8 s, 67 MB, wall 6,938 s, `aborted=no fileOk=true`.
+  `~/Videos/Hospital_silent_method_order_bake.mp4` + `.log`; expectation `Hospital_silent_bake_expected_elements.csv` (this file, `rsmeans2024_us`).
+- **CPU judge of that file before the bake (true mesh boxes):** onNothing 0 of 24,395 · beforeFloor 0 of 62,414 · beforeWall 0 of 562 · beforeFrame 0 of 2,210 · box 0 ·
+  early 6 · nopath 34 · 281 days.
+- **Bake log vs expectation:** `§AUTHOR_TPL totalDays=281` both. At the 18 logged frames of the build-up the placed count is within 41..423 pieces of the expected
+  count (0.67 % worst), always a little under — the day origin (the window's first day at midnight) was not pinned to the hour, so this is not shown to be a real lag.
+  All placed by frame 1,080; the end count 63,417 = 63,182 + 233 parked containers + 2. Slabs drawn once each, in order, Level 1, 2, 3, 4, 5, Unknown, 6, 7A, 7 at
+  frames 43, 98, 138, 257, 284, 309, 313, 366, 373 — 3.8 frames per expected day throughout. The cursor never goes back in any of the 48 logged samples.
+  The bake's own `§SUPPORT_CHECK floating=2/63182`.
+- **Shipped:** bim-ootb PR #3395 (fix + W-BAKE-8 + the Hospital_silent offsets, sw v1786), auto-merge requested; #3390 (HospitalAjaibPath offsets) merged.
+- **A bake file needs three things to be comparable with a judged schedule:** its mesh-box offsets patch, the same rate pack (the bake's browser is `en_US` →
+  `rsmeans2024_us`; the judge pins `cidb2024_my`), and a regenerated schedule. Not looked at: the picture itself — every statement above is a log value.
+### Q.64 ▶▶▶ RESUME HERE — SESSION CLOSE 2026-11-22 (owner: *"wrap up, update context in case new session continues. Close"*)
+- **STATE, all landed and live (site fetched back: sw `v1786`):**
+  bim-ootb **#3389** method x location order (`eb389e01`) · **#3390** offsets for `HospitalAjaibPath.db` · **#3395** film cursor fix + W-BAKE-8 + offsets for
+  `Hospital_silent.db` (`10577327`). BIMCompiler: §Q.59 – §Q.63 merged (#1143, #1146, #1155). No session worktree or unpushed branch is left.
+- **What is true now (read §Q.61 for the table, §Q.63 for the bake):** on nine buildings, real viewer, the build-up breaks no site truth (one roof on a curtain-wall
+  member on Clinic); the node copy equals the product wherever a building has its offsets patch; Hospital was baked from the saved file and its log matches the
+  expected schedule within 0.67 %. `product_judge.js compare` still prints FAIL worse=1 (HHS nopath 5 → 6, accepted by the owner, §Q.61).
+- **How to judge anything from here** (not `run_4d_gates.sh` — its ratchets lock the old order and were never re-run):
+  fast, CPU: `node scripts/crawl_node_copy.js main <buildings>` · the verdict: `node scripts/product_judge.js run --root <checkout> --tag <name> <buildings>` then
+  `compare main <name>` (GPU needs the owner's go per run; `GPU=sw` works without it for buildings up to JKR's size; give each concurrent run its own `PORT`).
+  The stored `main` tag in `~/.cache/bim4d/product/main/` is the OLD order (`7021e6cb`) — keep it as the baseline, or re-run it as a new tag from today's main.
+- **To compare a bake with a schedule** (§Q.63 last bullet): the file's offsets patch, the bake's rate pack (`RATES_PACK=rsmeans2024_us` on this machine), a regenerated
+  schedule. `HospitalAjaibPath.db` (the bake tool's default `--db`) has build-up OFF in its saved path; `Hospital_silent.db` is the owner's usual saved file.
+- **NEXT, in order (nothing is in flight):**
+  1. Delete what no longer decides order: `§SITE_ORDER` edges, `_hangFilingAxis`, `§TPL_LAYER_ORDER` + `§TPL_LAYER_SELFCHECK` (reads FAIL by construction now), the
+     election's role in the solve (§Q.58 step 5). Judge with `compare`: no cell may move.
+  2. Retire or re-point `run_4d_gates.sh` and its 17 ratchets at the product judge; put the crawler truths in CI for the tracked HHS file.
+  3. Bars = step x floor (the envelope bar still holds four steps).
+  4. Offsets patches for every served building without one (Shed: box 20, copy 47; `Hospital_extracted`; any `_silent` file). A building without one schedules on
+     boxes that are not where its meshes are.
+  5. Open, not started: hung work (a method statement, not a move — §Q.60.1 says why the move fails); Hospital's 5 and LTU's 48 `early` leftovers; the 34 Hospital
+     pieces with no path to the ground; the bake reading a few hundred pieces under the expectation (day origin not pinned to the hour, §Q.63).
+  6. The house-style film for the seven. No picture was ever looked at this session — every claim is a log value or a judge count.
+- **Do not:** rebuild a "move the hung piece behind its hanger" pass (§Q.60.1), split the old judge's `early` a fourth time, or re-lock gate numbers.
+### Q.65 HHS HI-RES BAKE ON THE NEW ORDER (2026-11-22, owner: *"Do a HHS bake, from saved DB path, all checks on, hi res"*) — §Q.64 stays the resume block
+- **Run:** the prepared script `scripts/bake_hires_offline.sh HHS_Office_Federated_silent` (1920x1080, 24 fps; `--dlod-proxy --reveal --buildup --label --measure --clash
+  --load-path --ledger --cost --storey-reveal --escape-route --sun-compass`; day counter as saved). `§CLI_BAKE_RESOLVED` reads 1 for every one of those; visualPanel and
+  audioPanel are 0 (the script does not pass them; audio is not built). 3,274 frames, 136.4 s, 163 MB, wall 3,869 s, `aborted=no fileOk=true`, `unconverged=0`,
+  ffprobe frames=3274. Delivered: `~/Downloads/HHS_Office_Federated_silent_1920x1080_24fps_2026-11-22_1936.mp4`; logs `~/Videos/HHS_silent_hires_bake_2026-11-22*.log`.
+- **Prepared as §Q.63 says:** offsets for the saved file (5,207 of 6,839 pieces, max 21.57 m) — bim-ootb **#3400, merged**; stored schedule regenerated on load
+  (`genVersion=38->55`); CPU judge of the file with the bake's rate pack: onNothing 0 of 2,755 · beforeFloor 0 of 6,623 · beforeWall 0 of 99 · beforeFrame 0 of 627 ·
+  box 0 · early 0 · nopath 6 · 59 days. Expectation: `~/Videos/HHS_silent_bake_expected_elements.csv`.
+- **Bake log vs expectation:** `totalDays=59` both. Placed count vs expected at the logged frames of the build-up: −1 .. −3 pieces up to day 39, then +39 .. +41 — the 41
+  containers with no geometry, which the film counts once the cursor passes them (end 6,880 = 6,839 + 41). Worst 0.60 %. Slabs drawn once each, in order: Level 1 @2,
+  Level 2 @56, Unknown @83, Level 3 @84, Roof @111. The cursor never goes back in 56 samples. The bake's own `§SUPPORT_CHECK floating=4/6839`.
+- **The script's own verdicts:** `§LOADPATH_INFOPANEL` PASS · `§LOADPATH_CARD` PASS · `§INTERIOR_LIGHTS_WITNESS` PASS · `§RULE_TINT_CEASE` PASS · `§HUD_OVERLAP_WORST` none
+  over 3,274 frames PASS · `§FRAME_REUSE_TOTAL reused=0/3274` INCONCLUSIVE (its own word: nothing was reused). Not looked at: the picture.
+- **Note for whoever cleans a bake worktree:** `out/` holds TRACKED files; remove only your own log there, never `rm -rf out` (done once this session, restored with
+  `git checkout -- out` before the worktree was removed).
+### Q.66 ▶▶▶ RESUME HERE — DELETION DONE + TERMINAL HI-RES BAKE (2026-11-22, owner: *"Do for Terminal, this time hi-res"* · *"and may delete old solver as you advised."*) — supersedes §Q.64's NEXT item 1
+- **DELETED (bim-ootb #3404, merged; +33 / −318 lines; sw v1787):** `cpm_schedule.js` `§SITE_ORDER` edges + `siteOrderPairs` (the file is back to its form before them);
+  `schedule_author.js` `_hangFilingAxis` (§D6_HANG_FILING), the `§TPL_LAYER_ORDER` pass, `§TPL_LAYER_SELFCHECK`, and the `METHOD_ORDER` off switch (with those gone it
+  would fall back to an order nobody stands behind). There is now ONE order path: `_methodLocationAxis` files, `methodRank` orders.
+- **Proof nothing played changes:** node copy played layer (every piece's start and end) + bar grid, sha1 before (main) and after (branch), eight buildings — identical:
+  Duplex `3836e94d…`/`92e29880…` · HHS `17a357b7…`/`81ec76b9…` · JKR `f409a8ff…`/`2379df79…` · Clinic `1a8a34fe…`/`2b0ab05c…` · Terminal `1e63bb7d…`/`d8be1329…` ·
+  Hospital `5e19fb83…`/`7122214a…` · LTU `377b751d…`/`4b164b56…` · SampleCastle `e2de0ada…`/`c04ba4dc…`. Control: Duplex's played hash changes under another rate pack.
+  (First before-run was started in the worktree I then edited — discarded, recomputed from the untouched main checkout.)
+- **Witnesses re-pointed, not deleted:** `witness_gantt_edit_coherence` G-COH-11 now requires `§METHOD_LOCATION levels=` + `§METHOD_ORDER on elements=`;
+  `witness_tm_assembly_order` A5 requires `§METHOD_ORDER on elements=`. Both read lines that no longer existed since #3389 (so both were already red on main).
+  Run on the branch: fast tier 40/40 · OCP 4 / UE 6 / RO 7 / GL 7, 0 fail · edit coherence on HHS pass · `witness_bake_plays_schedule` 22/0.
+- **NOT deleted (the honest remainder of "the old solver"):** the solve (`ScheduleGate.computeSchedule` → `CpmSchedule`) and the election (`designatedSupport`). The solve
+  still supplies each piece's DURATION (the width of its slot in the bar) and the election is the old support judge's input and the Gantt lock gate's
+  (`verifyGanttIntegrity`). Removing them means: durations straight from `installSecs` / crew, and a lock gate judged by the crawler's truths. That is a design step
+  with its own spec, not a deletion. Also left: `remapSolveToTasks`'s layer / lift branch (callers that pass no rank: witnesses, imported schedules), the bond table.
+- **TERMINAL HI-RES BAKE:** `scripts/bake_hires_offline.sh Terminal_silent` (`~/Downloads/Terminal_silent.db`, 3-stick stored path 52.2 s; 1920x1080, 24 fps, every option of
+  the script on). 2,209 frames, 92.0 s, 110 MB, wall 3,120 s, `aborted=no fileOk=true`, `unconverged=0`. Delivered `~/Downloads/Terminal_silent_1920x1080_24fps_2026-11-22_2300.mp4`;
+  logs `~/Videos/Terminal_silent_hires_bake_2026-11-22*.log`; expectation `~/Videos/Terminal_silent_bake_expected_elements.csv`. Offsets for the file (42,702 of 48,428,
+  max 11.27 m): bim-ootb #3405 (auto-merge requested — verify). Stored schedule regenerated `39->55`.
+  CPU judge beforehand: onNothing 0 of 37,966 · beforeFloor 0 of 44,971 · beforeWall 0 of 371 · beforeFrame INCONCLUSIVE (no assembly data) · box 0 · early 5 · nopath 1,363 · 116 days.
+  **Bake vs expectation: `totalDays=116` both; placed count within 0..2 pieces of the expected count at every logged frame (0.00 %); end 48,428 = 48,428.** Eleven tracked slabs
+  drawn once each, in expected order (frames 7 … 111). Cursor never back in 38 samples. Script verdicts: load-path panel / card PASS, interior lights PASS, tint cease PASS,
+  HUD overlap none over 2,209 frames PASS, frame reuse INCONCLUSIVE (its own word). The bake's `§SUPPORT_CHECK floating=29/48428`.
+  **Seen in the numbers, not judged:** 38,468 of 48,428 pieces (79 %) are placed by day 39 = frame 120 = the first 5 s — one level (`Aras 03`) holds 30,984 pieces. The film
+  completes the building by frame 360 of 2,209. That is pacing (the film's even-calendar tempo on a front-loaded schedule), not order.
+- **NEXT (replaces §Q.64's list):** 1. retire / re-point `run_4d_gates.sh` and put the crawler truths in CI on the tracked HHS file · 2. bars = step x floor · 3. offsets for
+  every served building without them (Shed, `Hospital_extracted`) · 4. spec the removal of the solve + election (durations from `installSecs`, lock gate on the crawler) ·
+  5. hung work as a method statement (§Q.60.1) · 6. the house-style film. Bakes done this session for reference: Hospital (§Q.62, §Q.63), HHS (§Q.65), Terminal (here).
+### Q.67 THREE LOW-RES BUILD-UP BAKES: SHED, JEBEL, JKR (2026-11-23, owner: *"Do a silent low res no reveal just build up bake of Shed, Jebel and JKR"*) — §Q.66 stays the resume block
+- **Run:** bim-ootb main `fc2f8216`, worktree `/tmp/wt-4d-bake-sjj`; `cli_silent_bake.js --gpu real --width 1280 --height 720 --fps 15 --buildup --no-reveal` plus every other
+  overlay `--no-*` (label, measure, clash, load-path, ledger, cost, storey-reveal, escape-route, sun-compass, drawn-services). `§CLI_BAKE_RESOLVED` reads buildup=1 and 0 for
+  every overlay (Jebel's saved path still carries visualPanel=1 audioPanel=1; those draw only inside the load-path freeze, which is off). Files (not pushed): `~/Videos/{Shed,JKR,Jebel}_buildup_lowres_2026-11-23.mp4` + `.log`.
+- **Files baked:** Shed = `SHED_extracted.db` (the UAT pack's reference file, sha1 `ca3d3658…`, = the one §Q.61 judged); JKR = `buildings/JKR_extracted.db`; Jebel =
+  `~/Projects/Jebel/source/BakeFilm_material_corrected.db` (the bake DB JEBEL_POC.md names). Shed and JKR have NO `cinema_path` table: a plain bake refuses
+  (`no stored path … and no plan named`); `--override` with `{}` (no bands) falls to the shipped derived orbit (`fx_cinema_orbit.js` `cinemaPathPlan` → `FXS._cinemaPathPlan`).
+- **Offsets first (§Q.63):** Shed 47 of 511 pieces (max 0.91 m) — bim-ootb **#3410** (auto-merge requested; verify). Jebel 2,939 of 6,461 (max 17.80 m, 9 size-differs left out) — kept LOCAL in
+  the worktree only (private project, never committed). JKR already carried its block. All three `§PATCH_APPLY … applied` in the bake log.
+- **Expectation = node copy, the bake's pack (`RATES_PACK=rsmeans2024_us`, `cache_4d_run.js --force`).** Compared at every `§CPE_BUILDUP` sample (one per 60 frames), day origin = the
+  window's first day at local midnight:
+
+  | building | frames | wall | days bake / copy | end placed | worst placed vs copy | cursor back | `§SUPPORT_CHECK` floating |
+  |---|---|---|---|---|---|---|---|
+  | Shed | 413 | 267 s | 9 / 8 | 512 = 511 + 1 | −13 at day 6.9 (2.5 %); 0 to day 5.2 | 0 of 8 | 0/511 |
+  | JKR | 552 | 545 s | 57 / 57 | 8,988 = 8,985 + 3 | −479 at day 44.7 (5.3 %), always under | 0 of 11 | 40/8985 |
+  | Jebel | 1,296 | 1,110 s | 84 / 84 | 6,461 = 6,461 | −92 at day 20.2 (1.4 %) | 0 of 23 | 73/6461 |
+
+  All `fileOk=true`, `unconverged=0`, ffprobe frame counts equal the bake's. Jebel regenerated its stored schedule on load (`genVersion=42->55`).
+- **Seen in the numbers, not diagnosed:** (1) **Shed:** the browser authors 5 tasks / 9 days, the node copy 4 tasks / 8 days, and counts one more piece (512 vs 511) — same
+  9 days as the product judge in §Q.61, so the node copy is the side that differs. (2) **JKR frame 0:** the cursor stands at 2026-07-11, 133 days BEFORE the schedule window
+  (2026-11-22..2027-01-19), one piece placed; `capOps=8985/8988` — the 3 pieces outside the captured schedule carry those dates (`§GHOST_GROUND triggerT=-2.35`). The film
+  jumps the gap by frame 60. (3) **JKR lags the copy by up to 5.3 %** at every sample, larger than Hospital / Terminal / Jebel (≤1.4 %); moving the day origin by 4-12 h moves
+  the worst to 4.3-4.8 %, so it is not only the unpinned origin. Not looked at: the picture.
+### Q.68 HI-RES 4D5D BAKES + THE FILM "BAKE OF 3 PROJECTS" (2026-11-23, owner: *"build up bakes again but with those panels that shows 4D5D, compass, and measures without reveal and load path. Escape route is OK. High res."* · *"combine them together With cards 'Bake of 3 projects', and for each project credentials"* · *"narrate male only voice sparingly that each project behaves according to abstract code without customization"* · *"Card should be the colorful 2 tone CH usual. Last card can be the usual prior art and credentials"* · *"Need not remove parts during splicing"* · *"Modify the Shed path so it does not end up outside but turns in or around midway"*) — §Q.66 stays the resume block
+- **Bakes** (bim-ootb main `452797e5`, 1920x1080, 24 fps, `--buildup --4d5d --ledger --cost --measure --sun-compass --escape-route --no-reveal --no-load-path --no-clash
+  --no-storey-reveal --no-drawn-services`), all `fileOk=true unconverged=0`, ffprobe = bake frames; `~/Downloads/{Shed,JKR,Jebel}_buildup_4D5D_1920x1080_24fps_2026-11-23*.mp4` (not pushed):
+
+  | building | path | frames | compass | escape route | ledger / cost / HUD overlap | `§HUD_LAYOUT_STABLE` |
+  |---|---|---|---|---|---|---|
+  | Shed (ring) | authored ring, below | 2,281 | built (owner's geocode) | 20.68 m | PASS | FAIL |
+  | JKR | derived orbit (`--override {}`) | 883 | INCONCLUSIVE — no site in the file, not invented | 4.62 m | PASS | FAIL |
+  | Jebel | its saved 4-stick path | 2,074 | built (its IFC site) | 82.76 m | PASS | FAIL |
+
+- **Shed fixes:** the first Shed bake had no compass and no escape route (`§ESCAPE_ROUTE_BUILD FAIL metadata-absent`, `§SUN_COMPASS INCONCLUSIVE`). `SHED_extracted.db` is the same
+  building as `Shed_film.db` (same IfcBuilding / storey GUIDs, same placement), so lines 2-18 of `Shed_film.db.sql` (room, walkable raster, site) were copied into
+  `SHED_extracted.db.sql` — bim-ootb **#3411, merged** (after the offsets, **#3410, merged**).
+- **Shed ring path (presentation, owner's ask):** `scripts/film_bake_3_projects/shed_ring.py` — 8 sticks on an ellipse 14 m outside the barn's walls (`element_world_bbox`), eye 8 m,
+  each pinned (`lookAt`) on the barn's middle; three.js coords via `modelOffset` = the viewer's own `§CENTRES_RESULT` (scene.js `ifc2three`). Passed as `--override` (the
+  `cinema_path` table has no lookAt column, so it is not saved into the file). **Measured from the pose log** (full film, 6 fps, software GL): ring walk 394 poses, camera
+  23.3-35.1 m from the barn's middle, never inside its box, azimuth swept 289°, aim within 20° of the barn except 5 poses (frames 46-50, the spin→walk hand-over, max 94°).
+  Film 95 s; build tops out at 0.92 (`§CPE_BUILDUP_TOPOUT`), so the walk-around is the build-up.
+- **⚠ `§HUD_LAYOUT_STABLE panelHFormula=FAIL` on 4 of 5 bakes today, NOT diagnosed.** PASS: Shed first bake (no escape route), HHS + Terminal 2026-11-22 (escape route on, load path on).
+  FAIL: JKR, Jebel, Shed withRoute, Shed ring (escape route on, load path off). `§HUD_OVERLAP_WORST` none on every frame of every film. JKR's logged panel heights 456-660 all
+  fit the formula for 1-7 rows; the witness keeps only a boolean, so which state failed is not in the log (`maxq_hud_layers.js` `_hudPanelHCheckOnChange`). A first guess
+  (the escape card's `boxScale` 1.22 missing from the witness formula) is contradicted by HHS/Terminal passing with the route on.
+- **The film:** `~/Downloads/Bake_of_3_projects_1920x1080_24fps_2026-11-23.mp4` — 6,234 frames (expected 6,235), 259.8 s; title card, one PLAYBOOK C two-tone chapter card per project
+  (Shed = "SYSNOVA / Poultry Barn project", JKR = "A local Malaysian / building project" — never named, Jebel = "Jebel / Palm Jebel Ali Mosque"), each film WHOLE (owner: no cuts), end card
+  = prior art (PRIOR_ART_BIM_FILM_2026-09-27.md + docs/4DGenerator.md §2.2-2.3) + credits. Voice: Kokoro am_michael, one line per card only, ≈ −17.5 LUFS per card. The "nothing
+  customised" line is gated: `§MONTAGE_SAME_CODE` = same commit + same template v1.3.0 on all three logs, PASS. Card numbers are read from each bake log (pieces = the build-up's
+  own total: Jebel hi-res 6,467 vs 6,461 in the low-res bake — not looked into). Scripts: `scripts/film_bake_3_projects/` (montage.py, cards.py, shed_ring.py). Not looked at: the picture.

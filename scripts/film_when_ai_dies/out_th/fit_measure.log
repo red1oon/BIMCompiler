@@ -1,0 +1,25 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT before cue=0.00 room=998.70 dur=11.88 -> DETAIL slack=+986.82 detailDur=11.88 words=8
+§NARR_TONE before#0 F YN own=-3.8st rose=0st endDelta=-3.8st want=report OK "ถ้าผู้ช่วยเอไอเงียบไปเฉยๆ ล่ะ?"
+§NARR_FIT q1 cue=0.00 room=998.70 dur=13.42 -> DETAIL slack=+985.28 detailDur=13.42 words=15
+§NARR_TONE q1#0 F WH own=-2.4st rose=0st endDelta=-2.4st want=report OK "ช่องนี้ถูกใช้ที่ไหนบ้าง?"
+§NARR_FIT q2 cue=0.00 room=998.70 dur=20.15 -> DETAIL slack=+978.55 detailDur=20.15 words=24
+§NARR_TONE q2#0 F WH own=-1.0st rose=0st endDelta=-1.0st want=report OK "เมื่อฉันเปลี่ยนช่องหนึ่ง อะไรทำงานบ้าง?"
+§NARR_TONE q2#2 F YN own=-2.1st rose=0st endDelta=-2.1st want=report OK "มันเคยผิดไหม?"
+§NARR_FIT q3 cue=0.00 room=998.70 dur=14.77 -> DETAIL slack=+983.93 detailDur=14.77 words=9
+§NARR_TONE q3#0 F WH own=-8.2st rose=0st endDelta=-8.2st want=report OK "บรรทัดนี้พิมพ์อะไรไว้ครั้งก่อน?"
+§NARR_FIT q4 cue=0.00 room=998.70 dur=16.55 -> DETAIL slack=+982.15 detailDur=16.55 words=9
+§NARR_TONE q4#0 F YN own=-6.6st rose=0st endDelta=-6.6st want=report OK "ฉันกำลังทำให้การเล่นซ้ำพังหรือเปล่า?"
+§NARR_FIT q5 cue=0.00 room=998.70 dur=12.59 -> DETAIL slack=+986.11 detailDur=12.59 words=13
+§NARR_TONE q5#0 F YN own=-5.7st rose=0st endDelta=-5.7st want=report OK "ฉันส่งมอบถูกต้องไหม?"
+§NARR_FIT why cue=0.00 room=998.70 dur=16.12 -> DETAIL slack=+982.58 detailDur=16.12 words=13
+§NARR_TONE why#0 F WH own=-4.7st rose=0st endDelta=-4.7st want=report OK "ทำไมมันถึงไม่ผิดเรื่องโค้ดของฉัน?"
+§NARR_FIT passenger cue=0.00 room=998.70 dur=9.26 -> DETAIL slack=+989.44 detailDur=9.26 words=6
+§NARR_TONE passenger#0 F YN own=-5.8st rose=0st endDelta=-5.8st want=report OK "แล้วถ้าผู้ช่วยกลับมา?"
+§NARR_FIT roadmap cue=0.00 room=998.70 dur=9.16 -> DETAIL slack=+989.54 detailDur=9.16 words=10
+§NARR_TONE roadmap#0 F WH own=+0.0st rose=0st endDelta=+0.0st want=report OK "อะไรที่ยังไม่ได้สร้าง?"
+§NARR_FIT close cue=0.00 room=998.70 dur=14.78 -> DETAIL slack=+983.92 detailDur=14.78 words=15
+§NARR_TONE close#0 F WH own=-5.6st rose=0st endDelta=-5.6st want=report OK "แล้วเมื่อเอไอใช้ไม่ได้ เหลืออะไร?"
+§NARR_TONE close#2 F WH own=-6.7st rose=0st endDelta=-6.7st want=report OK "อ่านเพิ่มได้ที่ไหน?"

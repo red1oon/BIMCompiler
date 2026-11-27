@@ -1,0 +1,12 @@
+open	0.2	3.2	opener.html intro (signal down; caption on screen)	F: Tiada isyarat?	F: Tiada isyarat di tapak?
+clash	3.4	13.2	phone1.html; Hospital film 148.6 s HUD: 29 ARC vs ELEC clashes, Level 4, Hall/Corridor 2	M: Kongsi clash, ke atau dari tapak. Semak, hantar foto balik.	F: HQ jumpa clash. | M: Kongsi analisis clash, ke atau dari tapak. Semak, hantar foto balik.
+road	13.4	19.0	BIM_JELAPANG_v3c 30 s (Civil Works walk)	M: Jalan di tapak. Rekod kecacatan. Kongsi.	M: Dihantar bila boleh. Jalan di tapak, rekod, kongsi.
+send	19.1	22.4	opener.html send (links green, stacks to HQ)	M: Isyarat pulih, sampai ke HQ.	M: Bila isyarat pulih, semua sampai ke HQ.
+model	22.60	31.18	build_hq.py arrange+convert (UAT Film 1 374.5/381 s) · addbay (Model in Action 20.5 s) · fp_walk/fp_head (walk_film.log FP_glimpse 90.01, FP_closeup 104.23)	M: Lukisan 2D anda, menjadi 3D.	F: Modelnya? | M: Lukisan 2D anda... menjadi 3D, bermesh. Tambah bay. Pasang sprinkler.
+cost	31.38	34.93	build_hq.py 4d5d pages (Bengali analytics page)	M: Masa dan kos, dari model.	M: Masa dan kos, dalam apa jua bahasa.
+you	35.03	41.07	build_hq.py time_mach + bake panel stills	M: Anda yang tetapkan. Tiada A-I.	M: Anda tetapkan semua. Seret bar, letak kamera. Tiada A-I.
+find	41.17	45.02	build_hq.py find stills (storey, parts, room, path)	M: Cari apa saja, atau jalan keluar.	M: Cari apa saja, dan jalan keluar.
+erp	45.12	48.42	build_hq.py erp_en/de/zh/th	M: ERP yang sama, dalam bahasa anda.	M: ERP sama, dalam bahasa anda.
+board	48.52	53.18	build_hq.py dash_looks; FILM_UAT_GUIDE build_rc3.log: looks=4 numbers_same_in_all=true	M: Semua projek, satu halaman.	F: Pengurusan? | M: Semua projek, satu halaman.
+bakes	53.38	59.33	build_hq.py bake montage	M: Lihat ia dibina.	F: Wah. | M: Kemudian lihat ia dibina, hari demi hari.
+card	60.93	67.33	opener.html benefits card (§13.6; licence range = report §4, estimate)	M: Tiada yuran lesen. Data anda milik anda.	F: Yuran lesen? | M: Tiada. Kepakaran kekal dalam syarikat... dan data anda kekal milik anda.

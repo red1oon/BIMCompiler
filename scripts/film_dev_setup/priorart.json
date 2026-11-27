@@ -1,0 +1,11 @@
+{
+ "note": "Only sources this lane READ. A web row names the URL and the copy fetched into out/prior/ (2026-11-18) and a text that must be in that copy; guard.js check P fails a row whose text is not there. Nothing from memory.",
+ "items": [
+  { "name": "GitHub Docs, source code archives", "where": { "url": "https://docs.github.com/en/repositories/working-with-files/using-files/downloading-source-code-archives", "saved": "out/prior/gh_archives.html", "text": "Snapshots don't contain the entire repository history" },
+    "does": "Download ZIP is a git archive snapshot", "took": "a snapshot with no history: setup.js and the tools need none" },
+  { "name": "VS Code docs, install from a VSIX", "where": { "url": "https://code.visualstudio.com/docs/editor/extension-marketplace", "saved": "out/prior/vscode_vsix.html", "text": "You can also install using the VS Code --install-extension command-line switch providing the path to the .vsix file" },
+    "does": "one switch installs a packed add-on", "took": "the install line, into a throwaway folder" },
+  { "name": "Development Containers", "where": { "url": "https://containers.dev/", "saved": "out/prior/devcontainers.html", "text": "allows you to use a container as a full-featured development environment" },
+    "does": "ships the whole environment as a container", "took": "the contrast: here it is a plain folder and Node, and its gaps are listed" }
+ ]
+}

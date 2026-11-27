@@ -526,4 +526,11 @@ datum (D1), and `_designatedSupport` can be deleted rather than guarded in two p
 - Both on `probe/floating-guid-audit`, **PR #1545**, base `44f42dd`.
 
 # ⛔ RESUME HERE
-Nothing started. Step 1 (the coverage probe) is unclaimed and blocks the most.
+~~Nothing started. Step 1 (the coverage probe) is unclaimed and blocks the most.~~
+**CORRECTED 2026-11-14 — that line was stale the day §S7 was written.** Step 1 is DONE (§S7, answer
+ABSENT), and §S8–§S14 were all measured after it. The state of this file is **§S14** (which withdraws
+§S13's headline). ORDER OF WORK steps 2–5 are not recorded as done anywhere. Step 4's line numbers
+(`support_sweep.js:465`, `cpm_schedule.js:159`) are stale — the election is at `:502` / `:163` on
+bim-ootb `origin/main` @ `cbb22300`. The lane continued in `4D_MODEL_INTEGRITY.md`: read its §L, then
+**§Q (hanging beams — the election's pool override, measured per beam)**, which is this file's §S2
+with the mechanism named.

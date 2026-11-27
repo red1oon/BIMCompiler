@@ -1,0 +1,23 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT g_th_TH cue=0.00 room=1.60 dur=0.92 -> DETAIL slack=+0.68 detailDur=0.92 words=1
+§NARR_TONE g_th_TH#0 F ! own=+0.7st rose=0st endDelta=+0.7st want=report OK "สวัสดีค่ะ!"
+§NARR_FIT s00 cue=1.90 room=6.78 dur=6.37 -> DETAIL slack=+0.41 detailDur=6.37 words=9
+§NARR_FIT s01 cue=8.98 room=5.05 dur=4.65 -> DETAIL slack=+0.40 detailDur=4.65 words=6
+§NARR_FIT s02 cue=14.33 room=5.20 dur=4.80 -> DETAIL slack=+0.40 detailDur=4.80 words=5
+§NARR_FIT s03 cue=19.83 room=7.02 dur=6.61 -> DETAIL slack=+0.41 detailDur=6.61 words=6
+§NARR_FIT s04 cue=27.15 room=5.71 dur=5.31 -> DETAIL slack=+0.40 detailDur=5.31 words=7
+§NARR_FIT s05 cue=33.16 room=7.49 dur=7.09 -> DETAIL slack=+0.40 detailDur=7.09 words=7
+§NARR_FIT s06 cue=40.95 room=10.92 dur=10.52 -> DETAIL slack=+0.40 detailDur=10.52 words=6
+§NARR_FIT s07 cue=52.17 room=8.19 dur=7.78 -> DETAIL slack=+0.41 detailDur=7.78 words=10
+§NARR_FIT s08 cue=60.66 room=6.94 dur=6.53 -> DETAIL slack=+0.41 detailDur=6.53 words=4
+§NARR_FIT s09 cue=67.90 room=5.95 dur=5.55 -> DETAIL slack=+0.40 detailDur=5.55 words=3
+§NARR_FIT s10 cue=74.15 room=5.09 dur=4.69 -> DETAIL slack=+0.40 detailDur=4.69 words=2
+§NARR_FIT s11 cue=79.54 room=7.17 dur=4.72 -> DETAIL slack=+2.45 detailDur=4.72 words=5
+§NARR_FIT s12 cue=87.01 room=6.67 dur=5.40 -> DETAIL slack=+1.27 detailDur=5.40 words=6
+§NARR_FIT s13 cue=93.98 room=5.77 dur=5.36 -> DETAIL slack=+0.41 detailDur=5.36 words=4
+§NARR_FIT s14 cue=100.05 room=18.84 dur=12.92 -> DETAIL slack=+5.92 detailDur=12.92 words=9
+§NARR_FIT s15 cue=119.19 room=4.32 dur=3.92 -> DETAIL slack=+0.40 detailDur=3.92 words=3
+§NARR_FIT s16 cue=123.81 room=15.25 dur=13.76 -> DETAIL slack=+1.49 detailDur=13.76 words=16
+§NARR_FIT s17 cue=139.36 room=7.44 dur=7.04 -> DETAIL slack=+0.40 detailDur=7.04 words=10

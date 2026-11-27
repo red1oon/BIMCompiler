@@ -1,0 +1,3 @@
+§HS-HEADER W-HQ-HOTSPOTS ootb=/tmp/wt-hq-main base=/tmp/wt-hq-main commit=692f8861 node=v18.19.1 at=2026-10-29T06:20:53.355Z
+§HS FAIL HS3-C7 - rows read from i_order / i_payment per imported ticket do not grow with the tickets already imported (flat within 25% + 2 rows; RED on main: grows ~linearly) :: rows_read_per_ticket by round=110.0 > 217.0 > 324.0 > 431.0 ms_per_ticket=10220 > 13256 > 11173 > 10406
+§HS-VERDICT FAIL judged=1 failed=1 inconclusive=0

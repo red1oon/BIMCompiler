@@ -147,3 +147,50 @@ User, 2026-10-07: *"We shall plan for the DB move as advised. And upgrade rest t
   second THREE build (count distinct `THREE.REVISION` at runtime = 1).
 - User note: IFC set load → merge → save to one DB → reopen already works (a SQLite round trip, not IFC export);
   BCF export proof exists (`modeller/tests/witness_e2e_bcf.js`).
+
+---
+
+## §ENGINE_PROVENANCE — which SQLite ships, and what the witnesses actually test (2026-10-22, read-only review)
+**Status: FINDINGS ONLY. User directive 2026-10-22: do NOT refactor yet — wait until the direction is clear.** Nothing below is
+implemented. Evidence = `strings` on the shipped `.wasm`, the shipped builds loaded in Node (probe run, scratchpad), and
+`git grep` over `~/bim-ootb` (main checkout `ba4ad07b`, 18 behind origin/main — re-check before acting). Not run in a browser.
+
+### §EP.1 Engines in play (measured)
+| Engine | SQLite | Notes |
+|---|---|---|
+| `viewer/lib/sql-wasm.wasm` (= `modeller/lib/`, `erp/sqljs/`, byte-identical, md5 618e54b0) | 3.38.5 (2022-05-06) | RTREE, JSON1, `->>`, RETURNING, STRICT, DROP COLUMN yes; **no FTS5, no DBSTAT, no math fns** |
+| `viewer/lib/sql-wasm-fts5.wasm` (= `erp/lib/`, md5 07e92f01) | 3.33.0 (2020-08-14) | FTS5, JSON1, DBSTAT yes; **no RTREE, no `->>`, RETURNING, STRICT, DROP COLUMN, math fns** |
+| `viewer/lib/httpvfs-sql-wasm.wasm` | 3.35.0 | FTS5+JSON1 per strings; features not probed (worker build). Sole consumer `viewer/streaming.js:2499` |
+| `node_modules/sql.js` 1.14.1 (204 test/script files) | 3.49.1 | **stock build: no FTS5, no RTREE, no DBSTAT** |
+| Python `sqlite3`, sqlite3 CLI, `sqlite-jdbc` (pom 3.45.1.0) | 3.45.1 | the PRODUCERS of the building DBs |
+
+### §EP.2 Findings
+1. **Witness/engine mismatch (check-the-instrument class).** Node witnesses run 3.49.1 stock; browsers run 3.33/3.35/3.38. Stock lacks
+   FTS5/RTREE/DBSTAT, so no Node witness on stock can exercise `erp_search.js` (FTS5) or `elements_rtree` reads. No witness in
+   `erp/tests` or `viewer/tests` was found referencing `erp_search` (only a fixture). Only 8 test files load a `lib/` build.
+2. **The two shipped builds are complementary-incomplete** (table above): the ERP FTS5 build cannot run newer SQL; the main build
+   cannot run FTS5. No app SQL needing math fns (sqrt/pow/…) was found — latent only.
+3. **Producers newer than readers** (3.45 → 3.33/3.35/3.38). File format is compatible; no STRICT/generated/RETURNING found in app
+   SQL. Nothing enforces it: no `PRAGMA user_version`/`application_id`/`foreign_keys` in app code (0 hits), `integrity_check` once.
+4. **External fetches (user-accepted, see §EP.3).** `index.html:325` pre-warms three CDN files on landing
+   (`cdnjs three.js r128`, `jsdelivr rtree-sql.js@1.7.0`, `jsdelivr sql.js-fts5@1.4.0`, `fetch(...,{mode:'no-cors'})`); ERP pages
+   fall back to the same jsdelivr packages (`erp.html`, `idempiere.html`, `kanban_lens.html`, `pivot_lens.html`, `erp_pills.js`,
+   precached in `erp/sw.js:70-71`). `rtree-sql.js` and `sql.js-fts5` are third-party forks of sql.js, outside any official build.
+5. **Provenance unrecorded.** The three `.wasm` files arrived in one commit (`818ae9f3`, 2026-05-23); no build recipe/source found.
+   `httpvfs.js` is a webpack bundle (Comlink); origin/version not readable from it.
+6. **Duplicates** (already known: `TRILOGY_STALE_CODE_AUDIT.md:288,378`, deliberately not touched).
+
+### §EP.3 Owner decisions recorded (user, 2026-10-22)
+- **No refactor now.** Direction undecided; revisit when clear.
+- **CDN calls are accepted best-effort**, pragmatic: a complete offline launch needs libs that cannot all be self-hosted, and an
+  initial site call is acceptable. Goals are perf, local-first, minimalist design. (Wording for any "nothing phones home" claim must
+  stay consistent with this — see `project_positioning_no_ai_inside.md`: that line was already found false once, 2026-10-02.)
+- Purity concern raised (Hipp-style: one solid, unmodified kernel) — recorded as a direction question, not a task.
+
+### §EP.4 Options when the direction is chosen (NOT started)
+(a) one current SQLite WASM build with FTS5+RTREE+JSON1+DBSTAT, witnesses load that same file (clears 1, 2, 6); stock sql.js 1.14.1
+cannot supply this without a custom compile. (b) official `@sqlite.org/sqlite-wasm` — different API from sql.js: ~1,318 `.exec(`,
+730 `.run(`, 336 `.prepare(`, 184 `new SQL.Database`, 14 `create_function` UDFs (`erp/overlay/goal_engine.js`) → needs an adapter;
+async/OPFS question per `MOBILE_PERF.md:70-78` and `CPE_4D_PERF_MEM_FINDINGS.md` R6 still unscoped. (c) leave as is.
+Cheap, non-refactor options if wanted: a witness asserting `sqlite_version()`/feature probe of each shipped build.
+Related: `SpatialERP_OOTB.md ~1560` (stance: in-memory sql.js + op-log; no dependence on OPFS persistence).

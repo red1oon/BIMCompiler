@@ -1,0 +1,2 @@
+$ git show 6d7ee87e^:README.md | grep -oE 'About [0-9,]+ JS and HTML files of app code'
+About 2,600 JS and HTML files of app code

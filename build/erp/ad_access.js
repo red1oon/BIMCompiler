@@ -73,6 +73,18 @@
     this.proc          = o.proc || new Map();    // AD_Process_ID -> isReadWrite(bool)
     this.form          = o.form || new Map();    // AD_Form_ID    -> isReadWrite(bool)
     this.entityTypes   = toSet(o.entityTypes);   // entitytype values the role's dictionary scope allows
+    // canUpdate inputs (MRole.java:825-950 loadOrgAccess, :1369 loadTableAccess) — additive, absent = empty
+    this.clientId      = o.clientId != null ? o.clientId : null;                 // MRole.getAD_Client_ID
+    this.orgAccess     = o.orgAccess || [];      // [{client, org, readOnly}] AD_Role_OrgAccess IsActive='Y'
+    this.tableAccess   = o.tableAccess || [];    // [{table, rule, exclude, readOnly}] AD_Table_Access IsActive='Y'
+    this.useUserOrgAccess = !!o.useUserOrgAccess;
+    this.columnAccess  = o.columnAccess || [];   // [{table, column, exclude, readOnly}] AD_Column_Access IsActive='Y' (MRole.loadColumnAccess :1033)
+    this.recordAccess  = o.recordAccess || [];   // [{table, record, exclude, readOnly, dependent}] AD_Record_Access IsActive='Y' ORDER BY AD_Table_ID (:1067)
+    this.isPersonalAccess = !!o.isPersonalAccess; this.orgTreeId = o.orgTreeId || 0;
+    // checkActionAccess inputs (MRole.java:2685-2778): [{roleId, master, rows:[{c, dt, v, act, dbt, sso, sinv}]}] in the order legacy walks them
+    //   (included roles first, the logged role last); null = no ad_document_action_access table in this DB (not judged, options pass through)
+    this.docActRoles   = o.docActRoles || null;
+    this.docTypes      = o.docTypes || null;     // c_doctype_id -> {dbt, sso, sinv}, loaded only when a master role is in the walk
   }
   function toSet(a) {
     if (a instanceof Set) return a;
@@ -106,12 +118,197 @@
     return { allowed: true, reason: 'ok' };
   };
 
+  // ── canUpdate — the DATA-level write check iDempiere runs on save (not window access).
+  // Implementing prompts/TEAMWORK_FRAMEWORK.md §12.7 (CL4) — Witness: W-ADMIT-FOLD.
+  // Ported from org.compiere.model.MRole: canUpdate :2335-2390, isClientAccess :1161-1185, isOrgAccess :1246-1267,
+  // isTableAccess :1369-1418, isTableAccessLevel :1426-1463. NOT ported (named): isRecordAccess (AD_Record_Access —
+  // 0 rows in the seed), summary-org tree expansion in loadOrgAccess, and AD_User_OrgAccess (a role with
+  // IsUseUserOrgAccess='Y' is refused fail-closed rather than judged on half the rules).
+  RoleContext.prototype.isClientAccess = function (client, rw) {
+    if (client === 0 && !rw) return true;                                  // :1163 can always read System
+    if (this.isAccessAllOrgs) return this.clientId === client;             // :1167
+    for (var i = 0; i < this.orgAccess.length; i++) {
+      var a = this.orgAccess[i];
+      if (a.client === client) { if (!rw) return true; if (!a.readOnly) return true; }
+    }
+    return false;
+  };
+  RoleContext.prototype.isOrgAccess = function (org, rw) {
+    if (this.isAccessAllOrgs) return true;                                 // :1248
+    if (org === 0 && !rw) return true;                                     // :1250 can always read common org
+    for (var i = 0; i < this.orgAccess.length; i++) {
+      var a = this.orgAccess[i];
+      if (a.org === org) { if (!rw) return true; return !a.readOnly; }
+    }
+    return false;
+  };
+  RoleContext.prototype.isTableAccessLevel = function (level, ro) {
+    if (ro) return true;                                                   // :1428 role can always read
+    if (level == null) return false;
+    level = String(level); var ul = this.userLevel;
+    if (level === '7') return true;
+    if (ul.charAt(0) === 'S' && (level === '4' || level === '6')) return true;
+    if (ul.charAt(1) === 'C' && (level === '2' || level === '6')) return true;
+    if (ul.charAt(2) === 'O' && (level === '1' || level === '3')) return true;
+    return false;
+  };
+  RoleContext.prototype.isTableAccess = function (tableId, level, ro) {
+    if (!this.isTableAccessLevel(level, ro)) return false;
+    var has = true;                                                        // :1376 negative list by default
+    for (var i = 0; i < this.tableAccess.length; i++) {
+      var t = this.tableAccess[i];
+      if (t.rule !== 'A') continue;                                        // ACCESSTYPERULE_Accessing only
+      if (t.exclude) { if (t.table === tableId) return ro ? t.readOnly : false; }
+      else {                                                               // include list: tables outside it get no rw
+        has = false;                                                       // (ro default MSysConfig …=false)
+        if (t.table === tableId) return ro ? true : !t.readOnly;
+      }
+    }
+    return has;
+  };
+  RoleContext.prototype.canUpdate = function (client, org, tableId, tableAccessLevel) {
+    if (this.useUserOrgAccess) return { allowed: false, reason: 'user-org-access-not-ported' };
+    var ul = this.userLevel;
+    if (ul.indexOf('S') !== -1) return { allowed: true, reason: 'system' };             // :2340
+    var ok = true, miss = '';
+    if (client === 0 && org === 0 && ul.charAt(0) !== 'S') { ok = false; miss += 'S'; }
+    else if (client !== 0 && org === 0 && ul.charAt(1) !== 'C') {
+      if (!(ul.charAt(2) === 'O' && this.isOrgAccess(org, true))) { ok = false; miss += 'C'; }
+    } else if (client !== 0 && org !== 0 && ul.charAt(2) !== 'O') { ok = false; miss += 'O'; }
+    if (ok) { ok = this.isClientAccess(client, true); miss += 'C'; }                    // :2373
+    if (ok) { ok = this.isOrgAccess(org, true); miss = 'W'; }                           // :2379
+    if (ok) { ok = this.isTableAccess(tableId, tableAccessLevel, false); if (!ok) miss = 'T'; }
+    return { allowed: ok, reason: ok ? 'ok' : 'missing=' + miss };
+  };
+
+  // ── The role on anything that LISTS (bim-compiler prompts/CLI_ERP_IVR.md §17, NEURO §R.V item 6) — Witness: W-MIS-ROLE.
+  // Ported from MRole: getClientWhere :1110-1157, getOrgWhere :1192-1240, addAccessSQL :2074-2180 (client, org, table access 1=3, record where),
+  // getRecordWhere :2515-2557 (AD_Record_Access exclude / include lists), isColumnAccess :1487-1558, isRecordAccess :1565-1603.
+  // The ids are written in ascending order (legacy iterates a HashSet: its order carries no meaning). NOT ported, refused by unportedRules():
+  // personal lock (:2561-2570), AD_TableValRule (:2571-2580), dependent entities (:2190-2240), AD_User_OrgAccess, summary-org tree expansion (:928-950).
+  function idList(set) { return Object.keys(set).map(Number).sort(function (x, y) { return x - y; }); }
+  RoleContext.prototype.clientWhere = function (rw) {
+    if (this.isAccessAllOrgs) return (rw || this.clientId === 0) ? 'AD_Client_ID=' + this.clientId : 'AD_Client_ID IN (0,' + this.clientId + ')';
+    var set = {}; if (!rw) set[0] = 1;
+    for (var i = 0; i < this.orgAccess.length; i++) if (this.orgAccess[i].client === this.clientId) set[this.orgAccess[i].client] = 1;   // loadOrgAccessRole :880 reads the role's own client only
+    var ids = idList(set);
+    if (ids.length <= 1) return ids.length ? 'AD_Client_ID=' + ids[0] : 'AD_Client_ID=-1';
+    return 'AD_Client_ID IN(' + ids.join(',') + ')';
+  };
+  RoleContext.prototype.orgWhere = function (rw) {
+    if (this.isAccessAllOrgs) return null;
+    var set = {}; if (!rw) set[0] = 1;
+    for (var i = 0; i < this.orgAccess.length; i++) { var a = this.orgAccess[i]; if (a.client !== this.clientId) continue; if (!rw || !a.readOnly) set[a.org] = 1; }
+    var ids = idList(set);
+    if (ids.length <= 1) return ids.length ? 'AD_Org_ID=' + ids[0] : 'AD_Org_ID=-1';
+    return '(AD_Org_ID IN (' + ids.join(',') + '))';
+  };
+  RoleContext.prototype.recordWhere = function (tableId, keyColumn, rw) {
+    var ex = [], inc = [];
+    for (var i = 0; i < this.recordAccess.length; i++) { var r = this.recordAccess[i]; if (r.table !== tableId) continue;
+      if (r.exclude) ex.push(r.record); else if (!rw || !r.readOnly) inc.push(r.record); }
+    var out = [];
+    if (ex.length) out.push('(' + keyColumn + ' IS NULL OR ' + keyColumn + ' NOT IN (' + ex.join(',') + '))');
+    if (inc.length) out.push(keyColumn + ' IN (' + inc.join(',') + ')');
+    return out.join(' AND ');
+  };
+  // t = { tableId, level (AD_Table.AccessLevel), keyColumn (the single _ID key, or null), hasClient, hasOrg }. Returns the clauses addAccessSQL appends, joined by AND.
+  RoleContext.prototype.accessWhere = function (t, rw) {
+    var out = [];
+    if (t.hasClient !== false) out.push(this.clientWhere(rw));
+    var ow = this.orgWhere(rw); if (ow && t.hasOrg !== false) out.push(ow);
+    if (t.tableId && !this.isTableAccess(t.tableId, t.level, !rw)) { out.push('1=3'); return out.join(' AND '); }
+    if (t.keyColumn) { var rwh = this.recordWhere(t.tableId, t.keyColumn, rw); if (rwh) out.push(rwh); }
+    return out.join(' AND ');
+  };
+  RoleContext.prototype.isColumnAccess = function (tableId, level, columnId, ro) {
+    if (!this.isTableAccess(tableId, level, ro)) return false;
+    var ret = true;
+    for (var i = 0; i < this.columnAccess.length; i++) { var c = this.columnAccess[i];
+      if (c.exclude) { if (c.table === tableId && c.column === columnId) return ro ? c.readOnly : false; }
+      else if (c.table === tableId) { ret = false; if (c.column === columnId) return ro ? true : !c.readOnly; }
+    }
+    return ret;
+  };
+  RoleContext.prototype.isRecordAccess = function (tableId, recordId, ro) {
+    var negative = true;
+    for (var i = 0; i < this.recordAccess.length; i++) { var r = this.recordAccess[i]; if (r.table !== tableId) continue;
+      if (r.exclude) { if (r.record === recordId) return ro ? r.readOnly : false; }
+      else { negative = false; if (r.record === recordId) return ro ? true : !r.readOnly; }
+    }
+    return negative;
+  };
+  // the rules above are the whole of what is judged; a role or table that carries data for a rule NOT ported is named here so the caller refuses (fail closed), never judges on half the rules
+  function unportedRules(db, rc, tableId) {
+    var out = [];
+    if (rc.useUserOrgAccess) out.push('user organisation access (AD_User_OrgAccess, IsUseUserOrgAccess=Y)');
+    if (rc.recordAccess.some(function (r) { return r.dependent; })) out.push('dependent entities (AD_Record_Access.IsDependentEntities=Y)');
+    if (rc.orgTreeId && rc.orgAccess.length) { var sum = false; try { sum = rc.orgAccess.some(function (a) { var o = db.prepare('SELECT issummary AS s FROM ad_org WHERE ad_org_id=?').get(a.org); return o && o.s === 'Y'; }); } catch (e) { sum = false; }
+      if (sum) out.push('summary organisation tree (AD_Role.AD_Tree_Org_ID with a summary organisation)'); }
+    if (tableId != null) {
+      if (!rc.isPersonalAccess && hasTable(db, 'ad_private_access')) { try { if (db.prepare("SELECT 1 AS x FROM ad_private_access WHERE ad_table_id=? AND isactive='Y' LIMIT 1").get(tableId)) out.push('personal lock (AD_Private_Access)'); } catch (e) { out.push('personal lock (AD_Private_Access)'); } }
+      if (hasTable(db, 'ad_tablevalrule')) { try { if (db.prepare("SELECT 1 AS x FROM ad_tablevalrule WHERE ad_table_id=? AND isactive='Y' LIMIT 1").get(tableId)) out.push('table validation rule (AD_TableValRule)'); } catch (e) { out.push('table validation rule (AD_TableValRule)'); } }
+    }
+    return out;
+  }
+
   // entityTypeAllowed — AD_EntityType dictionary/customization scope (a dictionary object whose
   //   entitytype is outside the role's set is not in scope). Permissive if role declares no set.
   RoleContext.prototype.entityTypeAllowed = function (et) {
     if (!this.entityTypes.size) return true;
     return this.entityTypes.has(et);
   };
+
+  // checkActionAccess — port of MRole.checkActionAccess (MRole.java:2685-2778), called by the DocAction list after getValidActions
+  //   (WDocActionPanel.java:185-205). Starts EMPTY; for each role in the walk, the rows for the offered values — a tenant role by client + doctype, a
+  //   master role on System by the doctype's DocBaseType (+ DocSubTypeSO for SOO, for POO when set, DocSubTypeInv for MMI) — DISTINCT (value, IsActive):
+  //   'Y' adds, 'N' removes. A value with no row is not offered. The getValidActions order is kept (the legacy SQL result order is an open oracle check, §38.5).
+  //   The team's executor map reaches this function only as 'N' rows (team_sync projectExecutorRows, §38.5 E2b / study 2.5): there is no other input.
+  RoleContext.prototype.checkActionAccess = function (clientId, docTypeId, options) {
+    var opt = (options || []).slice(); if (!opt.length) return opt;
+    if (!this.docActRoles) return opt;   /*E2:FILTER*/
+    var offered = {}; opt.forEach(function (v) { offered[v] = 1; });
+    var tdt = this.docTypes ? this.docTypes[Number(docTypeId)] : null;
+    var valid = {};
+    this.docActRoles.forEach(function (R) {
+      var seen = {}, pairs = [];
+      R.rows.forEach(function (r) {
+        if (!offered[r.v]) return;
+        if (R.master) { if (!tdt || r.dbt !== tdt.dbt) return;
+          if (tdt.dbt === 'SOO' && r.sso !== tdt.sso) return;
+          if (tdt.dbt === 'POO' && tdt.sso != null && r.sso !== tdt.sso) return;
+          if (tdt.dbt === 'MMI' && r.sinv !== tdt.sinv) return; }
+        else if (Number(r.c) !== Number(clientId) || Number(r.dt) !== Number(docTypeId)) return;
+        var k = r.v + '|' + r.act; if (seen[k]) return; seen[k] = 1; pairs.push(r);
+      });
+      pairs.sort(function (a, b) { return a.v < b.v ? -1 : a.v > b.v ? 1 : (a.act < b.act ? -1 : a.act > b.act ? 1 : 0); });
+      pairs.forEach(function (r) { var v = r.v, act = r.act; if (act === 'N') delete valid[v]; else valid[v] = 1; });
+    });
+    return opt.filter(function (v) { return valid[v]; });
+  };
+
+  function hasTable(db, t) { try { return !!db.prepare("SELECT 1 AS x FROM sqlite_master WHERE type='table' AND lower(name)=?").get(t); } catch (e) { return false; } }
+  // the walk MRole.checkActionAccess takes: getIncludedRoles(true) (:2825-2850 — each included role, then ITS included roles; AD_Role_Included active rows
+  //   by SeqNo, Included_Role_ID, the included role itself active, never the parent itself, no duplicate under one parent :2793-2818), then the logged role.
+  //   AD_User_Substitute (loadSubstitutedRoles :2890) is not walked: the table is not in the base.
+  function docActionRoles(db, role) {
+    if (!hasTable(db, 'ad_document_action_access')) return null;
+    var inc = hasTable(db, 'ad_role_included'), master = {}, rolesInfo = {};
+    function info(id) { if (rolesInfo[id] === undefined) { var r = null;
+        try { r = db.prepare('SELECT ad_role_id AS id, ad_client_id AS c, isactive AS act, ismasterrole AS m FROM ad_role WHERE ad_role_id=?').get(id) || null; }
+        catch (e) { r = db.prepare("SELECT ad_role_id AS id, ad_client_id AS c, isactive AS act, 'N' AS m FROM ad_role WHERE ad_role_id=?").get(id) || null; }
+        rolesInfo[id] = r; } return rolesInfo[id]; }
+    function included(id, stack) { var out = []; if (!inc) return out; var mine = {};
+      db.prepare("SELECT included_role_id AS id FROM ad_role_included WHERE ad_role_id=? AND isactive='Y' ORDER BY seqno, included_role_id").all(id).forEach(function (x) {
+        var r = info(x.id); if (!r || r.act !== 'Y' || Number(x.id) === Number(id) || mine[x.id] || stack.indexOf(Number(x.id)) >= 0) return;   // stack: a cycle stops (legacy would recurse forever)
+        mine[x.id] = 1; out.push(Number(x.id)); out = out.concat(included(x.id, stack.concat([Number(x.id)])));
+      }); return out; }
+    var walk = included(role.ad_role_id, [Number(role.ad_role_id)]).concat([Number(role.ad_role_id)]);
+    var q = db.prepare('SELECT a.ad_client_id AS c, a.c_doctype_id AS dt, rl.value AS v, a.isactive AS act, ty.docbasetype AS dbt, ty.docsubtypeso AS sso, ty.docsubtypeinv AS sinv' +
+      ' FROM ad_document_action_access a JOIN ad_ref_list rl ON rl.ad_reference_id=135 AND rl.ad_ref_list_id=a.ad_ref_list_id' +
+      ' LEFT JOIN c_doctype ty ON ty.c_doctype_id=a.c_doctype_id WHERE a.ad_role_id=?');
+    return walk.map(function (id) { var r = info(id) || {}; return { roleId: id, master: Number(r.c) === 0 && r.m === 'Y', rows: q.all(id) }; });
+  }
 
   // ── Loader: build a RoleContext by EXTRACTING the real grant rows from an open better-sqlite3 db ──────
   //   db = better-sqlite3 handle on ad_full.db. roleId = ad_role_id. Reads ad_role + the 3 *_access tables,
@@ -145,15 +342,35 @@
       try { entityTypes = db.prepare("SELECT entitytype AS et FROM ad_entitytype WHERE isactive='Y'").all().map(function (r) { return r.et; }); }
       catch (e) { entityTypes = []; }
     }
+    // canUpdate inputs — read-write org access rows and table access rules (MRole.loadOrgAccessRole / loadTableAccess)
+    var orgAccess = [], tableAccess = [], useUser = false;
+    if (hasOrgAccess) db.prepare("SELECT ad_client_id AS c, ad_org_id AS o, isreadonly AS ro FROM ad_role_orgaccess WHERE ad_role_id=? AND isactive='Y'").all(roleId)
+      .forEach(function (r) { orgAccess.push({ client: Number(r.c), org: Number(r.o), readOnly: r.ro === 'Y' }); });
+    try { db.prepare("SELECT ad_table_id AS t, accesstyperule AS rule, isexclude AS ex, isreadonly AS ro FROM ad_table_access WHERE ad_role_id=? AND isactive='Y'").all(roleId)
+      .forEach(function (r) { tableAccess.push({ table: Number(r.t), rule: r.rule, exclude: r.ex === 'Y', readOnly: r.ro === 'Y' }); }); } catch (eT) { tableAccess = []; }
+    try { var uu = db.prepare('SELECT isuseuserorgaccess AS u FROM ad_role WHERE ad_role_id=?').get(roleId); useUser = !!(uu && uu.u === 'Y'); } catch (eU) { useUser = false; }
+    var columnAccess = [], recordAccess = [], personal = false, orgTree = 0;   // absent table = no row = the legacy "no restriction"
+    if (hasTable(db, 'ad_column_access')) db.prepare("SELECT ad_table_id AS t, ad_column_id AS c, isexclude AS ex, isreadonly AS ro FROM ad_column_access WHERE ad_role_id=? AND isactive='Y'").all(roleId)
+      .forEach(function (r) { columnAccess.push({ table: Number(r.t), column: Number(r.c), exclude: r.ex === 'Y', readOnly: r.ro === 'Y' }); });
+    if (hasTable(db, 'ad_record_access')) db.prepare("SELECT ad_table_id AS t, record_id AS r, isexclude AS ex, isreadonly AS ro, isdependententities AS dep FROM ad_record_access WHERE ad_role_id=? AND isactive='Y' ORDER BY ad_table_id").all(roleId)
+      .forEach(function (r) { recordAccess.push({ table: Number(r.t), record: Number(r.r), exclude: r.ex === 'Y', readOnly: r.ro === 'Y', dependent: r.dep === 'Y' }); });
+    try { var pp = db.prepare('SELECT ispersonalaccess AS p, ad_tree_org_id AS tr FROM ad_role WHERE ad_role_id=?').get(roleId); personal = !!(pp && pp.p === 'Y'); orgTree = Number(pp && pp.tr || 0); } catch (eP) { personal = false; orgTree = 0; }
+    var docActRoles = null, docTypes = null;
+    try { docActRoles = docActionRoles(db, role); } catch (eD) { docActRoles = null; }
+    if (docActRoles && docActRoles.some(function (R) { return R.master; })) { docTypes = {};
+      db.prepare('SELECT c_doctype_id AS id, docbasetype AS dbt, docsubtypeso AS sso, docsubtypeinv AS sinv FROM c_doctype').all().forEach(function (d) { docTypes[d.id] = d; }); }
     return new RoleContext({
+      docActRoles: docActRoles, docTypes: docTypes,
       AD_Role_ID: role.ad_role_id, name: role.name, userLevel: role.userlevel,
       isAccessAllOrgs: role.isaccessallorgs === 'Y',
-      orgs: orgs, clients: [role.ad_client_id], win: win, proc: proc, form: form, entityTypes: entityTypes
+      orgs: orgs, clients: [role.ad_client_id], win: win, proc: proc, form: form, entityTypes: entityTypes,
+      clientId: Number(role.ad_client_id), orgAccess: orgAccess, tableAccess: tableAccess, useUserOrgAccess: useUser,
+      columnAccess: columnAccess, recordAccess: recordAccess, isPersonalAccess: personal, orgTreeId: orgTree
     });
   }
 
   var API = {
-    RoleContext: RoleContext, buildRole: buildRole,
+    RoleContext: RoleContext, buildRole: buildRole, unportedRules: unportedRules,
     canView: canView, accessLevelBits: accessLevelBits, gateAccess: gateAccess,
     BIT_ORG: BIT_ORG, BIT_CLIENT: BIT_CLIENT, BIT_SYSTEM: BIT_SYSTEM
   };

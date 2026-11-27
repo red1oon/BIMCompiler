@@ -1,0 +1,64 @@
+§FILM_GUARD OK   b1 says "four thousand nine hundred twenty-six files" <- fetch.files expected 4926 got 4926
+§FILM_GUARD OK   b1 says "four steps" <- setup.steps expected 4 got 4
+§FILM_GUARD OK   b1 says "four fine" <- setup.ok expected 4 got 4
+§FILM_GUARD OK   b1 says "no gaps" <- setup.gaps expected 0 got 0
+§FILM_GUARD OK   b2 says "one add-on, called Code Facts" <- cf.installed_active expected Y got Y
+§FILM_GUARD OK   b2 says "opened the editor on this folder" <- setup.opened expected Y got Y
+§FILM_GUARD OK   b2 says "six tasks in the run menu" <- tasks.count expected 6 got 6
+§FILM_GUARD OK   b2 says "snippets" <- snippet.expanded expected Y got Y
+§FILM_GUARD OK   b2 says "launch targets" <- launch.count expected 4 got 4
+§FILM_GUARD OK   b3 says "the add-on you just saw" <- cf.installed_active expected Y got Y
+§FILM_GUARD OK   b3 says "a command in the terminal" <- cf.command_runs expected Y got Y
+§FILM_GUARD OK   b4 says "four writes" <- hover.writes expected 4 got 4
+§FILM_GUARD OK   b4 says "one thousand two hundred forty-seven reads" <- hover.reads expected 1247 got 1247
+§FILM_GUARD OK   b4 says "Point at a name in the code" <- pointer.on_token expected Y got Y
+§FILM_GUARD OK   b5 says "Same answer" <- cf.same_line expected Y got Y
+§FILM_GUARD OK   b5 says "one thousand two hundred forty-seven reads" <- hover.reads expected 1247 got 1247
+§FILM_GUARD OK   b6 says "the check refuses" <- manifest.red expected FAIL got FAIL
+§FILM_GUARD OK   b6 says "naming the file and the line" <- manifest.red_names_line expected Y got Y
+§FILM_GUARD OK   b6 says "the check passes" <- manifest.green expected PASS got PASS
+§FILM_GUARD OK   b6 says "files identical" <- manifest.identical expected 55 got 55
+§FILM_GUARD OK   b7 says "one hundred one modules" <- proof.modules expected 101 got 101
+§FILM_GUARD OK   b7 says "thirteen have a witness" <- proof.proven expected 13 got 13
+§FILM_GUARD OK   b7 says "sixty-four are only named" <- proof.named_only expected 64 got 64
+§FILM_GUARD OK   b7 says "twenty-four have none" <- proof.unproven expected 24 got 24
+§FILM_GUARD OK   b7 says "zero" <- proof.bad_before expected 0 got 0
+§FILM_GUARD OK   b7 says "one" <- proof.bad_after expected 1 got 1
+§FILM_GUARD OK   the from-scratch witness ran 5/5, passed, and its setup step passed (the named gaps are its)
+§FILM_GUARD OK   the fetch was the real tarball: a 40-hex commit read from its own header, more than a thousand files
+§FILM_GUARD OK   the editor opened on the download with the arguments setup.js printed (§SETUP_NEXT), and the commit is the fetched one
+§FILM_GUARD OK   every typed command exited 0 (19 logs)
+§FILM_GUARD OK   the typed lines are the Developer Guide's own lines (step 0 and setup.js --open)
+§FILM_GUARD OK   the editor reported no error
+§FILM_GUARD OK   the editor hover (the add-on installed by setup.js) names the field, the line and the counts
+§FILM_GUARD OK   the edits shown were undone in the editor and the download hashes the same before and after the driver ran
+§FILM_GUARD OK   the version the editor shows is exactly what the typed sed made
+§FILM_GUARD OK   the proof header the editor shows is the line the typed sed inserted
+§FILM_GUARD OK   the last card's CI figures are counts from the download (witness files, fast tier, excluded)
+§FILM_GUARD OK   setup.js wrote exactly one file outside .setup/ and node_modules/: the packed add-on (the tree grew by one, and that file is the .vsix)
+§FILM_GUARD OK   every picture the cards need exists
+§FILM_GUARD OK   credentials: MIT licence line and every PR merged (from facts, read from GitHub at facts time)
+§FILM_GUARD OK   D every term is defined in its own beat before it is used (7 terms: setup script@b1, Code Facts@b2, hover@b4, manifest@b6, version stamp@b6, bump@b6, witness@b7); F1 every beat opens with its F question (7)
+§FILM_GUARD OK   C the cues: constants as the legend, every frame's tags match them (bad=0, editor frames 240, terminal frames 309) 
+§FILM_GUARD OK   P1a pointer.py re-run exits 0 (deterministic) §POINTER still=1440x900 target={"x": 510, "y": 457, "w": 77, "h": 21} popup={"x": 529, "y": 361, "w": 450, "h": 96} rows=[{"y": 373, "h": 12}, {"y": 403, "h": 1
+§FILM_GUARD OK   P1b the token rectangle is the re-derived one (same pixels)
+§FILM_GUARD OK   P1c the last motion frame ends inside the token rectangle ±2 px tip=731.3,320.3 rect=680.0,306.3,782.7,334.3
+§FILM_GUARD OK   P2a the motion is 1.25 s (1.0 to 1.4), one still per frame, eased (30 frames)
+§FILM_GUARD OK   P2b the ripple hold is 10 frames (0.4 s) frames=10
+§FILM_GUARD OK   P2c the popup is the first frame after the hold kinds=move>ripple>popup>pulse>answer
+§FILM_GUARD OK   P3 no move/ripple frame after the popup
+§FILM_GUARD OK   P5 the amber number: 1247 reads in the hover (the editor's own text), in the terminal answer, and the outlined row is the popup's first text row
+§FILM_GUARD OK   P1..P5 the pointer, the popup and the amber number agree
+§FILM_GUARD OK   the two-forms card: the command's help lists where/loaded/cost/check and the add-on declares Run & Ship
+§FILM_GUARD OK   F6 the recap beat exists (seven steps, the session step is cut: the strip shows six)
+§FILM_GUARD OK   prior art "GitHub Docs, source code archives" <- out/prior/gh_archives.html
+§FILM_GUARD OK   prior art "VS Code docs, install from a VSIX" <- out/prior/vscode_vsix.html
+§FILM_GUARD OK   prior art "Development Containers" <- out/prior/devcontainers.html
+§FILM_GUARD OK   not said: no speed was measured
+§FILM_GUARD OK   not said: no claim of being first
+§FILM_GUARD OK   not said: no claim about all users
+§FILM_GUARD OK   not said: nothing here measures safety
+§FILM_GUARD OK   not said: one name on screen (Code Facts); the in-app hover overlay is not mentioned
+§FILM_GUARD OK   not said: no AI claim
+§FILM_GUARD OK   one name on screen: no typed command names x0
+§FILM_GUARD VERDICT PASS

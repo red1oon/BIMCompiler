@@ -14,6 +14,8 @@
 ```
 
 ## §0 — Vision & sources (non-invent ground)
+> ⚠ **2026-10-28 (owner):** the POS follows legacy — a **standalone Unicenta-style till and a standalone kitchen screen**, depositing tickets (`I_Order`) for head office to import; the in-ERP pill that completes sales on the till is superseded. Architecture + phases: **`prompts/POS_PLUGIN_LOCAL_FIRST.md`**. The register/KDS/kiosk/tender UI work below carries into those apps.
+
 The 2012 plugin RED1 shipped fed **Unicenta oPOS → iDempiere** over ActiveMQ with **AutoBOMOrder**
 backflush + **Replenishment Report**. This lane rebuilds that loop — plus the modern-POS surfaces a
 real stall expects — as **browser folds over one signed op-log** (no server). Anchored specs:

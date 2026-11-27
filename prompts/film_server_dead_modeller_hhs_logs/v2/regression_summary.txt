@@ -1,0 +1,15 @@
+witness_team_modeller §W-TEAM-MODELLER PASS judged=33 fails=0 inconclusive=0 pageerrors=0
+witness_people_modeller §W-PEOPLE-MODELLER PASS judged=22 fails=0 inconclusive=0 pageerrors=0
+witness_team_icon_modeller 🟢 §W-TEAM-ICON-MODELLER PASS judged=15 fails=0 inconclusive=0 pageerrors=0
+witness_team_so §W-TEAM-SO PASS judged=19 fails=0 inconclusive=0 pageerrors=0
+witness_team_docaction §W-TEAM-DOCACTION PASS judged=24 fails=0 inconclusive=0 pageerrors=0
+witness_team_desktop §W-TEAM-DESKTOP PASS judged=9 fails=0 inconclusive=0 pageerrors=0
+witness_team_pill §W-TEAM-PILL PASS judged=14 fails=0 inconclusive=0 pageerrors=0
+witness_team_base §W-BASE-EDIT PASS judged=22 fails=0 inconclusive=0 pageerrors=0
+witness_people_strip §W-PEOPLE-STRIP-ALL FAIL judged=29 fails=1 inconclusive=0 pageerrors=0
+witness_avatars 🟢 §W-AVATARS PASS judged=13 fails=0 inconclusive=0
+witness_avatar_travel 🟢 §W-AVATAR-TRAVEL PASS judged=9 fails=0 inconclusive=0
+witness_people_pure §W-PEOPLE-PURE PASS judged=39 fails=0 inconclusive=0
+witness_scope_derive §W-SCOPE-DERIVE PASS judged=13 fails=0 inconclusive=0
+witness_focus_board §W-FOCUS-BOARD FAIL judged=12 fails=1
+done

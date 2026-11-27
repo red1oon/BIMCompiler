@@ -1,0 +1,28 @@
+§EXPORTSAFE-REBIND n=1 names=core-udf
+§FACTS state s0 window=- page_role=GardenWorld Admin page_menu={"visibleWindows":295,"totalWindows":333} page_leaves=472 page_errors=0
+§DOOR request=d-mwhde9j9-2127357-1 actor=human verb=mis.list status=ok ms=909
+§FACTS still1 ok ms=909 mis.list kind=C_BP_Group columns=Value,Name role=102
+§EXPORTSAFE-REBIND n=1 names=core-udf
+§DOOR request=d-mwhdem8w-2127357-1 actor=human verb=mis.list status=ok ms=700
+§FACTS state s1 window=192 page_records=3 door(role 102)=Standard Customers,Vendors,Staff same=true page_role=null page_menu={"visibleWindows":295,"totalWindows":333} page_leaves=472 page_errors=0
+§DOOR request=d-mwhdemsh-2127357-1 actor=human verb=mis.new status=ok ms=6924
+§FACTS still2 ok ms=6924 mis.new kind=C_BP_Group Value=FILM Name="Film Partners" role=102
+§EXPORTSAFE-REBIND n=1 names=core-udf
+§DOOR request=d-mwhdf4yn-2127357-1 actor=human verb=mis.list status=ok ms=881
+§FACTS state s2 window=192 page_records=4 door(role 102)=Standard Customers,Vendors,Staff,Film Partners same=true page_role=null page_menu={"visibleWindows":295,"totalWindows":333} page_leaves=472 page_errors=0
+§DOOR request=d-mwhdf5n8-2127357-1 actor=human verb=mis.menu status=ok ms=909
+§FACTS menuRead ok ms=909 mis.menu role=102
+§DOOR request=d-mwhdf6cm-2127357-1 actor=human verb=mis.menu status=ok ms=1015
+§FACTS findRead ok ms=1015 mis.menu role=102 find=partner
+§DOOR request=d-mwhdf752-2127357-1 actor=human verb=mis.menu status=ok ms=976
+§DOOR request=d-mwhdf7ww-2127357-2 actor=human verb=mis.menu status=ok ms=983
+§DOOR request=d-mwhdf8ok-2127357-3 actor=human verb=mis.describe status=ok ms=978
+§DOOR request=d-mwhdf9fs-2127357-4 actor=human verb=mis.list status=ok ms=805
+§FACTS screen opened=["C_BP_Group"] door_lines=4 screens=15 phase=quit ms=3796
+§EXPORTSAFE-REBIND n=1 names=core-udf
+§FACTS state sM window=- page_role=GardenWorld Admin page_menu={"visibleWindows":295,"totalWindows":333} page_leaves=472 page_errors=0
+§EXPORTSAFE-REBIND n=1 names=core-udf
+§DOOR request=d-mwhdg07f-2127357-1 actor=human verb=mis.list status=ok ms=776
+§FACTS state s3 window=192 page_records=4 door(role 102)=Standard Customers,Vendors,Staff,Film Partners same=true page_role=null page_menu={"visibleWindows":295,"totalWindows":333} page_leaves=472 page_errors=0
+§FACTS PANE_VERDICT PASS grids=3/3 page_entries=472 door_entries=471 only_door=0 only_page=[{"id":9541001,"name":"BIM Document"}] (not in the dictionary: 1) role=GardenWorld Admin menuSame=true page_errors=0 opened=C_BP_Group
+§FACTS wrote facts.json still1.rows=3 still2.windowRows=4 menu={"windows":294,"leaves":471,"folders":51,"role":{"id":102,"name":"GardenWorld Admin"}} find.items=11 proof={"menuWitness":"§WITNESS_MIS_MENU pass=6 fail=0 inconclusive=0 verdict=PASS","pass":6,"fail":0,"entries":534,"entriesSql":534,"windows":332,"windowsSql":332,"role102":471,"role103":312} costs={"msMin":909,"msMax":6924,"lines":4,"node":"v18.19.1"} credits={"licence":"MIT License","copyright":"Copyright (c) 2026 Redhuan D. Oon","lineage":"Compiere → ADempiere → iDempiere lineage"}

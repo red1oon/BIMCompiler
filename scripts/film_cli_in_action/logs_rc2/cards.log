@@ -1,0 +1,12 @@
+§CARD beat=cover stills=1 overflow_px=0 (full card)
+§CARD beat=sheet stills=20 overflow_px=0 erp_picture=1920x537 typed=17 before=s0 after=s0
+§CARD beat=oneline stills=36 overflow_px=0 erp_picture=1920x537 typed=33 before=s0 after=s1
+§CARD beat=create stills=51 overflow_px=0 erp_picture=1920x537 typed=48 before=s1 after=s2
+§CARD beat=create2 stills=61 overflow_px=0 erp_picture=1920x537 typed=58 before=s2 after=s3
+§CARD beat=update stills=57 overflow_px=0 erp_picture=1920x537 typed=54 before=s3 after=s4
+§CARD beat=refuse stills=51 overflow_px=0 erp_picture=1920x537 typed=48 before=s4 after=s4
+§CARD beat=load stills=46 overflow_px=0 erp_picture=1920x537 typed=43 before=s4 after=s6
+§CARD beat=delete stills=42 overflow_px=0 erp_picture=1920x537 typed=39 before=s6 after=s7
+§CARD beat=sum stills=37 overflow_px=0 erp_picture=1920x537 typed=34 before=s7 after=s7
+§CARD beat=close stills=1 overflow_px=0 (full card)
+§CARDS_DONE beats=11 stills=403 too_tall=0 key_stills=374 return_stills=9

@@ -1,0 +1,1 @@
+witness_team_publish exit=0

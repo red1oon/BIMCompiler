@@ -1,0 +1,10 @@
+§FLOW OK   F4 beat=cover cue=0.00 first word +0.80 s (needs ≥ 0.80: strip lead 0.8)
+§FLOW OK   F4 beat=s1 cue=5.58 first word +3.22 s (needs ≥ 3.22: typing 2.92 + 0.3)
+§FLOW OK   F5 cover → s1 silence 4.06 s (needs ≥ 0.6)
+§FLOW OK   F4 beat=s2 cue=18.38 first word +1.96 s (needs ≥ 1.97: typing 1.67 + 0.3)
+§FLOW OK   F5 s1 → s2 silence 2.80 s (needs ≥ 0.6)
+§FLOW OK   F4 beat=s3 cue=29.92 first word +1.38 s (needs ≥ 1.38: typing 1.08 + 0.3)
+§FLOW OK   F5 s2 → s3 silence 2.23 s (needs ≥ 0.6)
+§FLOW OK   F4 beat=s4 cue=42.42 first word +8.59 s (needs ≥ 8.59: typing 8.29 + 0.3)
+§FLOW OK   F5 s3 → s4 silence 9.42 s (needs ≥ 0.6)
+§FLOW_VERDICT PASS beats=5

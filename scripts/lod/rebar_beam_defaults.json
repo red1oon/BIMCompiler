@@ -1,0 +1,15 @@
+{
+ "_about": "Beam reinforcement rule rows for rebar_beams.py (LOD400_DEFAULT_RULES_SCOPE.md section 7). Same row shape as rebar_defaults.json: value, unit, source. source = 'stated: ...' | 'default: ours (...)'. A stated schedule value always wins over a row here. Kept in its own file so rebar_defaults.json (and with it the build-1 outputs) stays byte-identical. The shared rows bar_sides, inside_tol_mm and stock_length_mm are read from rebar_defaults.json.",
+ "beam_cover_mm": {"value": 40, "unit": "mm", "source": "default: ours (cover to the stirrup surface; ACI 318-19 stated on S-001 but its cover clause was NOT read)"},
+ "beam_min_clear_mm": {"value": 25, "unit": "mm", "source": "default: ours (minimum clear spacing between parallel bars; the rule id R110 is the project's, the value is ours; ACI 318-19 spacing clause NOT read)"},
+ "beam_layer_clear_mm": {"value": 25, "unit": "mm", "source": "default: ours (clear distance between bar layers; same value as the minimum clear spacing; clause NOT read)"},
+ "beam_sample_step_mm": {"value": 10, "unit": "mm", "source": "default: ours (station step used to find the stretch of a bar line that lies inside the beam mesh; the end is then refined by bisection)"},
+ "beam_fit_margin_mm": {"value": 0.1, "unit": "mm", "source": "default: ours (numerical margin above the cover when a bar end or a stirrup is fitted; far below the 1 mm witness tolerance)"},
+ "beam_anchorage_modelled": {"value": "no", "unit": "-", "source": "default: ours (no anchorage into supports; bars end at cover from the modelled beam end; logged)"},
+ "beam_hooks_modelled": {"value": "no", "unit": "-", "source": "default: ours (stirrup hooks not modelled; logged)"},
+ "beam_laps_modelled": {"value": "no", "unit": "-", "source": "default: ours (no laps; a bar over the stock length is flagged 'needs lap (not modelled)')"},
+ "beam_bar_order": {"value": "stated column order, first layer nearest the face", "unit": "-", "source": "default: ours (a layer is filled in the order the schedule columns list the bars; bottom A then ADD B, top D then E)"},
+ "beam_side_levels_rule": {"value": "interior levels evenly between the outermost bar centres, spacing <= stated pitch; 'nTd' without a pitch = n/2 bars per face evenly spaced", "unit": "-", "source": "default: ours (reading of the stated string '2T12-300' as 2 bars per level, one per face, at most 300 mm apart over the web depth; spec R105)"},
+ "beam_stirrup_rule": {"value": "closed outer loop at the stated end-zone dia and spacing over the whole clear length, first loop at cover + d/2 from the beam end, loops that do not fit the beam mesh are skipped and counted", "unit": "-", "source": "default: ours (the balance-zone spacing and the inner legs are on the schedule but their zone lengths are not stated; recorded, not modelled)"},
+ "beam_hanger_C_built": {"value": "no", "unit": "-", "source": "default: ours (spec section 7 lists bottom, top, side, stirrups; the earlier hand parser also leaves column C out; each stated C value is reported as NOT_BUILT)"}
+}

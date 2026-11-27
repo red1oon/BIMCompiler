@@ -1,0 +1,6 @@
+§TERMS table (open first; an open term is never green)
+term | witness | broken control | status | roadmap
+RELAY (sealing) | PASS+PASS | 8/9 refused | UNCONTROLLED [bim-ootb tree (node, real modules)] | 
+   🔴 control NOT FOUND: CONTROL team key only: the same member opens all of it
+§TERMS_BROWSER judged=0 skipped=0 reason="--browser 0" reused-logs
+§TERMS_VERDICT FAIL enforced=0 open=0 witness_failed=0 uncontrolled=1 browser=judged 0/skipped 0

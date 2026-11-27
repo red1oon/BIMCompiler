@@ -1,0 +1,39 @@
+[
+ {
+  "name": "cp_pkg_107_noofpackages3_undeclared",
+  "process": 282,
+  "recordId": 0,
+  "tableId": 0,
+  "params": [
+   {
+    "name": "M_InOut_ID",
+    "value": 107,
+    "type": "int"
+   },
+   {
+    "name": "M_Shipper_ID",
+    "value": 100,
+    "type": "int"
+   },
+   {
+    "name": "NoOfPackages",
+    "value": 3,
+    "type": "int"
+   }
+  ],
+  "tables": [
+   "m_package",
+   "m_packageline"
+  ],
+  "preSql": [
+   "UPDATE m_inout SET nopackages=1 WHERE m_inout_id=107",
+   "UPDATE ad_sequence SET currentnext=currentnext+10 WHERE ad_sequence_id=915"
+  ],
+  "alignFromSeed": [
+   {
+    "table": "ad_sequence",
+    "where": "istableid='N' and ad_client_id in (0,11)"
+   }
+  ]
+ }
+]

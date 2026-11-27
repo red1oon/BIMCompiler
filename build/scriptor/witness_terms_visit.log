@@ -1,0 +1,24 @@
+═══ W-TERMS-VISIT — Visit lossless / offline, ACK refused (TEAMWORK_FRAMEWORK §48.2) ═══
+
+§V1-OFFLINE
+   §V1 dead pipe: sync threw "offline" own=7 bundled_to=5 unsent=2 pipe objects 3 -> 3
+   🟢 a dead pipe: every claim still held locally, none marked sent — unsent=2
+   🟢 nothing reached the shared place
+   §V1 healthy Visit: sent=2 unsent=0
+   🟢 the later Visit sends every held claim — sent=2
+   🟢 nothing is left unsent after it
+   🟢 a third Visit sends nothing (once only) — sent=0
+   🟢 CONTROL V1 loss-checker with a claim missing (checker on a doctored state must FAIL) — failed as designed
+§V2-LIAR
+   §V2 liar pipe: sent=0 readBackFail=1 bundled_to 7 -> 7 unsent 2 -> 2
+   🟢 the read-back catches the dropped bundle: not counted as sent — readBackFail=1
+   🟢 the claims stay unsent (bundled_to did not advance)
+   🟢 a healthy Visit then sends them — sent=2
+   🟢 the peer saw every claim after it Visited (ACK sent → seen) — seen=5
+   🟢 CONTROL V2 liar-checker on a Visit that claims success (checker on a doctored state must FAIL) — failed as designed
+§V3-REFUSED
+   §V3 sender trail: accepted(MERGED)=9 refused=1 reasons=access:no-table
+   🟢 the refused claim is on the sender's own trail with a named reason, beside the accepted ones — refused=1 merged=9
+   🟢 CONTROL V3 refused-counter with the refused claim removed (checker on a doctored state must FAIL) — failed as designed
+
+§VISIT_VERDICT PASS judged=13 fails=0 inconclusive=0

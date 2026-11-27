@@ -1,0 +1,201 @@
+[
+ {
+  "process": 200143,
+  "recordId": 1000063,
+  "tableId": 318,
+  "params": [
+   {
+    "name": "C_Invoice_ID",
+    "value": 1000063
+   }
+  ],
+  "infoWindow": 200024,
+  "preSql": [
+   "UPDATE ad_sequence SET currentnext=1009900 WHERE name='AD_PInstance' AND currentnext<1009900",
+   "DELETE FROM c_invoicetax WHERE c_invoice_id=1000063",
+   "DELETE FROM c_invoiceline WHERE c_invoice_id=1000063",
+   "UPDATE c_invoice SET c_order_id=NULL, totallines=0, grandtotal=0 WHERE c_invoice_id=1000063"
+  ],
+  "alignFromSeed": [
+   {
+    "table": "c_invoice",
+    "where": "c_invoice_id=1000063"
+   },
+   {
+    "table": "c_invoiceline",
+    "where": "c_invoice_id=1000063"
+   }
+  ],
+  "ignoreTables": [
+   "ad_process",
+   "ad_pinstance",
+   "ad_pinstance_para",
+   "ad_pinstance_log",
+   "ad_changelog",
+   "ad_session",
+   "ad_user",
+   "ad_issue",
+   "t_selection",
+   "t_selection_infowindow",
+   "ad_sequence"
+  ],
+  "name": "cp_createfrominvoice_receipt",
+  "selection": [
+   {
+    "T_Selection_ID": 123,
+    "Qty": 20,
+    "C_UOM_ID": 100,
+    "M_Product_ID": 133,
+    "C_OrderLine_ID": 121,
+    "Line": 10,
+    "C_BPartner_ID": 121,
+    "C_Order_ID": 0,
+    "M_InOut_ID": 107,
+    "M_RMA_ID": 0,
+    "AD_Table_ID": 320
+   },
+   {
+    "T_Selection_ID": 124,
+    "Qty": 12,
+    "C_UOM_ID": 100,
+    "M_Product_ID": 134,
+    "C_OrderLine_ID": 122,
+    "Line": 20,
+    "C_BPartner_ID": 121,
+    "C_Order_ID": 0,
+    "M_InOut_ID": 107,
+    "M_RMA_ID": 0,
+    "AD_Table_ID": 320
+   },
+   {
+    "T_Selection_ID": 125,
+    "Qty": 15,
+    "C_UOM_ID": 100,
+    "M_Product_ID": 135,
+    "C_OrderLine_ID": 123,
+    "Line": 30,
+    "C_BPartner_ID": 121,
+    "C_Order_ID": 0,
+    "M_InOut_ID": 107,
+    "M_RMA_ID": 0,
+    "AD_Table_ID": 320
+   }
+  ],
+  "note": "W-CREATEFROM-INVOICE-IW (ERP_FRIENDLY_OPS_LENS.md \u00a752): real CreateFromInvoice vs ours, receipt 107's 3 lines (qty of the first EDITED 30->20) onto draft API 1000063; T_Selection_ID = the view key (M_InOutLine_ID)"
+ },
+ {
+  "process": 200143,
+  "recordId": 1000063,
+  "tableId": 318,
+  "params": [
+   {
+    "name": "C_Invoice_ID",
+    "value": 1000063
+   }
+  ],
+  "infoWindow": 200024,
+  "preSql": [
+   "UPDATE ad_sequence SET currentnext=1009900 WHERE name='AD_PInstance' AND currentnext<1009900",
+   "DELETE FROM c_invoicetax WHERE c_invoice_id=1000063",
+   "DELETE FROM c_invoiceline WHERE c_invoice_id=1000063",
+   "UPDATE c_invoice SET c_order_id=NULL, totallines=0, grandtotal=0 WHERE c_invoice_id=1000063"
+  ],
+  "alignFromSeed": [
+   {
+    "table": "c_invoice",
+    "where": "c_invoice_id=1000063"
+   },
+   {
+    "table": "c_invoiceline",
+    "where": "c_invoice_id=1000063"
+   }
+  ],
+  "ignoreTables": [
+   "ad_process",
+   "ad_pinstance",
+   "ad_pinstance_para",
+   "ad_pinstance_log",
+   "ad_changelog",
+   "ad_session",
+   "ad_user",
+   "ad_issue",
+   "t_selection",
+   "t_selection_infowindow",
+   "ad_sequence"
+  ],
+  "name": "cp_createfrominvoice_order",
+  "selection": [
+   {
+    "T_Selection_ID": 121,
+    "Qty": 30,
+    "C_UOM_ID": 100,
+    "M_Product_ID": 133,
+    "C_OrderLine_ID": 121,
+    "Line": 10,
+    "C_BPartner_ID": 121,
+    "C_Order_ID": 106,
+    "M_InOut_ID": 0,
+    "M_RMA_ID": 0,
+    "AD_Table_ID": 260
+   },
+   {
+    "T_Selection_ID": 122,
+    "Qty": 12,
+    "C_UOM_ID": 100,
+    "M_Product_ID": 134,
+    "C_OrderLine_ID": 122,
+    "Line": 20,
+    "C_BPartner_ID": 121,
+    "C_Order_ID": 106,
+    "M_InOut_ID": 0,
+    "M_RMA_ID": 0,
+    "AD_Table_ID": 260
+   }
+  ],
+  "note": "W-CREATEFROM-INVOICE-IW: by ORDER 106 (AD_Table 260 rows, key C_OrderLine_ID): setOrder on the header + createLineFrom finds the receipt line whose open qty == Qty"
+ },
+ {
+  "process": 200143,
+  "recordId": 1000063,
+  "tableId": 318,
+  "params": [
+   {
+    "name": "C_Invoice_ID",
+    "value": 1000063
+   }
+  ],
+  "infoWindow": 200024,
+  "preSql": [
+   "UPDATE ad_sequence SET currentnext=1009900 WHERE name='AD_PInstance' AND currentnext<1009900",
+   "DELETE FROM c_invoicetax WHERE c_invoice_id=1000063",
+   "DELETE FROM c_invoiceline WHERE c_invoice_id=1000063",
+   "UPDATE c_invoice SET c_order_id=NULL, totallines=0, grandtotal=0 WHERE c_invoice_id=1000063"
+  ],
+  "alignFromSeed": [
+   {
+    "table": "c_invoice",
+    "where": "c_invoice_id=1000063"
+   },
+   {
+    "table": "c_invoiceline",
+    "where": "c_invoice_id=1000063"
+   }
+  ],
+  "ignoreTables": [
+   "ad_process",
+   "ad_pinstance",
+   "ad_pinstance_para",
+   "ad_pinstance_log",
+   "ad_changelog",
+   "ad_session",
+   "ad_user",
+   "ad_issue",
+   "t_selection",
+   "t_selection_infowindow",
+   "ad_sequence"
+  ],
+  "name": "cp_createfrominvoice_empty",
+  "selection": [],
+  "note": "vacuity: no picked row -> no line on either side"
+ }
+]

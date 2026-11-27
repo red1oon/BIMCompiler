@@ -1,0 +1,33 @@
+
+══════════════════════════════════════════════════════════════════════════════
+═══ POC-ODOO-FOLD-3WAY — buy-side continuation, the MATCH verb (P00011) ═══
+    source: odoodemo (Odoo 17) purchase module, driven via RPC, STATIC export (§0.12)
+══════════════════════════════════════════════════════════════════════════════
+
+── the chain (oracle): PO P00011 → WH/IN/00006 → BILL/2026/06/0002 → 3-way reconcile
+
+   🟢 event 1 (confirm PO) committed (DR→CO) — ops=1
+   🟢 event 2 (receive) committed (DR→CO) — ops=2
+   🟢 event 3 (vendor bill) committed (DR→CO) — ops=2
+   🟢 event 4 (post bill GL) committed (CO→CO) — ops=1
+   🟢 event 5 (3-way MATCH) committed (DR→CO) — ops=2
+   🟢 the EXISTING matcher (erp_engine.match) was genuinely INVOKED (not stubbed) — E.match calls=2
+
+── effects vs the Odoo oracle ──
+   🟢 received qty reproduces oracle — oracle=1 mine=1 matched=1
+   🟢 billed qty reproduces oracle — oracle=1 mine=1 matched=1
+   🟢 AP double-entry reproduces oracle (account:dr:cr) — oracle=3 mine=3 matched=3
+   🟢 AP balanced AND total == oracle bill total — ΣDR=6596.40 ΣCR=6596.40 oracleTotal=6596.40
+   🟢 3-way MATCH reproduces oracle (PO↔receipt↔bill, qty agrees to the unit) — inv-pairs=1 po-pairs=1 lines=1 qtyAligned=true
+   🟢 both settlement edges committed to the projection (M_MatchInv + M_MatchPO) — edges=[inv:1,po:1]
+   🟢 replay rebuilds projection EXACTLY + stable — live=dd600f51 A=dd600f51 B=dd600f51
+
+§ODOO-FOLD-3WAY chain po→receipt→bill→post→match mapped=5/5 missing=0
+§ODOO-FOLD-3WAY verbs used=[CREATE_DOCUMENT,CREATE_LINE,MATCH,POST,SET_STATUS] newVerbs=[] matcherInvoked=2
+§ODOO-FOLD-3WAY diff matched=5 vs odoo_oracle_p2p agree=Y
+§ODOO-FOLD-VERB-COVERAGE sell-side=[ALLOCATE,CREATE_DOCUMENT,CREATE_LINE,POST,SET_STATUS] + buy-side=[CREATE_DOCUMENT,CREATE_LINE,MATCH,POST,SET_STATUS] → all 6 kernel verbs exercised across the two folds, newVerbs=[]
+§ODOO-FINDINGS-3WAY f5=matcher-reconciles-Odoo-3way(PO↔receipt↔bill via erp_engine.match, partition=partner, key=product, qty-tolerance — the SAME settlement engine, no Odoo-specific code) f6=AP-mirror-of-AR(vendor bill posts DR Expense/Tax CR Payable; same POST verb, ΣDR==ΣCR) f7=full-qty-3way-here(partial-receipt/over-bill would test tolerance+ordering policy — the matcher already carries FIFO/LIFO+tol, untested on Odoo)
+
+═══ VERDICT ═══
+§ODOO-FOLD-3WAY PASS — Odoo procure-to-pay 3-way folds with the EXISTING verb set incl. MATCH; newVerbs=[]; matcher genuinely invoked; effects reproduce Odoo. With the sell-side fold, ALL 6 kernel verbs now fold Odoo with nothing invented.
+exit=0

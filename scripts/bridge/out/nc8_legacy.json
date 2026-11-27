@@ -1,0 +1,39 @@
+{
+ "tag": "bnj6",
+ "org": {
+  "id": 1000001,
+  "name": "NC8-ORG-bnj6",
+  "nonManualRoles": [
+   102,
+   103,
+   200001
+  ],
+  "info": {
+   "duns": "?",
+   "taxid": "?",
+   "warehouse": "",
+   "orgtype": "",
+   "calendar": "",
+   "parent": ""
+  },
+  "roleAccess": [
+   {
+    "role": 102,
+    "ro": "N"
+   },
+   {
+    "role": 103,
+    "ro": "N"
+   },
+   {
+    "role": 200001,
+    "ro": "N"
+   }
+  ],
+  "treeNode": {
+   "tree": 104,
+   "parent": 0,
+   "seq": 999
+  }
+ }
+}

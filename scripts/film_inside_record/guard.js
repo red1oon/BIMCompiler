@@ -1,0 +1,26 @@
+// ⚠ DO NOT REMOVE — film "Inside the Record" (prompts/FILM_COMMAND_LINE_ERP.md CH 3; from the "Fast Script ERP" guard): G every spoken figure is in out/facts.json with that value and its words are in the
+// beat's text; every number word spoken is covered by a fact (or a listed idiom); no proof talk; N not-said (no live link to the page, nothing claimed first/unique); no private name; the facts verdict;
+// P the end card's prior art: every source exists and holds the text it is cited for (a source not on this machine = INCONCLUSIVE, never PASS). READ out/guard.log.
+'use strict';
+const fs = require('fs'), path = require('path'), os = require('os'), { spawnSync } = require('child_process');
+const F = require('./' + (process.env.OUTD || 'out') + '/facts.json'), N = require('./narr.js'); let bad = 0, n = 0, incon = 0;
+N.beats.forEach(b => (b.says || []).forEach(([p, want, word]) => { n++; const got = N.get(p), ok = String(got) === String(want) && b.text.toLowerCase().indexOf(word.toLowerCase()) >= 0; if (!ok) bad++; console.log('§GUARD ' + (ok ? 'OK  ' : 'FAIL') + ' beat=' + b.id + ' ' + p + '=' + JSON.stringify(got) + ' expect=' + want + ' spoken="' + word + '"'); }));
+const NUMW = /\b(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred|thousand|million)\b/gi;
+if (N.lang === 'zh' || N.lang === 'th') {   // every numeral in a text must sit inside a `says` word (the figure, from facts.json) or a listed idiom; no typed digit may be voiced
+  const NUMX = N.lang === 'zh' ? /[零〇一二两三四五六七八九十百千万]/g : /(ศูนย์|หนึ่ง|สอง|สาม|สี่|ห้า|หก|เจ็ด|แปด|เก้า|สิบ|ยี่|ร้อย|พัน|หมื่น|แสน|ล้าน|เอ็ด)/g, IDI = N.lang === 'zh' ? /(一张|一个个|一个位置|一个文件夹|同一个|一样|一次|那一行)/g : /(red one)/g;
+  N.beats.filter(b => b.text).forEach(b => { let t = b.text; (b.says || []).slice().sort((a, c) => c[2].length - a[2].length).forEach(x => { t = t.split(x[2]).join(''); }); t = t.replace(IDI, '').replace(/red one/g, ''); const left = t.match(NUMX) || [], digits = (b.text.match(/[0-9]/g) || []).length, ok = !left.length && !digits; if (!ok) bad++; console.log('§GUARD ' + (ok ? 'OK  ' : 'FAIL') + ' beat=' + b.id + ' numerals not covered by a fact or idiom=' + left.length + ' (' + left.join(',') + ') digits=' + digits); });
+} else N.beats.filter(b => b.text).forEach(b => { const spoken = (b.text.match(NUMW) || []).length, covered = (b.says || []).reduce((a, s) => a + (s[2].match(NUMW) || []).length, 0), free = (b.text.match(/\b(red one|one order|one place)/gi) || []).join(' ').match(NUMW) || [], digits = (b.text.match(/[0-9]/g) || []).length;
+  const ok = spoken <= covered + free.length && !digits; if (!ok) bad++; console.log('§GUARD ' + (ok ? 'OK  ' : 'FAIL') + ' beat=' + b.id + ' number words spoken=' + spoken + ' covered by a fact=' + covered + ' idiom=' + free.length + ' digits=' + digits); });
+const proof = /witness|falsif|parity|verified|proven|\bnovel\b|\bunique\b|\bthe first\b|first ever|nobody else|no one else|首创|首个|第一个|独一无二|唯一|没有人|已证实|证明|หนึ่งเดียว|ครั้งแรก|ไม่มีใคร|พิสูจน์แล้ว/i, hit = N.beats.filter(b => b.text && proof.test(b.text)).map(b => b.id);
+console.log('§GUARD proof talk or first/novel/unique: ' + (hit.join(',') || 'none')); if (hit.length) bad++;
+const notSaid = /\blive\b|real[- ]time|browser|updates itself|\bsync|instantly|logged in|sign[- ]?in|log ?in|实时|同步|即时|自动更新|登录|浏览器|เรียลไทม์|ถ่ายทอดสด|ซิงค์|ทันที|ล็อกอิน|เบราว์เซอร์/i, nb = N.beats.filter(b => b.text && notSaid.test(b.text)).map(b => b.id);
+console.log('§GUARD not-said N (a live link to the page), named in the voice: ' + (nb.join(',') || 'none')); if (nb.length) bad++;
+const priv = /jelapang|jebel|hhs|jkr|ltu/i, pv = N.beats.filter(b => b.text && priv.test(b.text)).map(b => b.id).concat(JSON.stringify(F.states).match(priv) ? ['facts.states'] : []);
+console.log('§GUARD private names: ' + (pv.join(',') || 'none')); if (pv.length) bad++;
+require('./priorart.json').forEach(p => { let ok;
+  if (p.src === 'man:bash') { const t = spawnSync('bash', ['-c', 'man bash 2>/dev/null | col -b'], { encoding: 'utf8' }).stdout || ''; ok = t ? t.indexOf(p.contains) >= 0 : null; }
+  else { const f = p.src.replace(/^~/, os.homedir()); if (!fs.existsSync(f)) ok = null; else { const L = fs.readFileSync(f, 'utf8').split('\n'); ok = p.line ? (L[p.line - 1] || '').indexOf(p.contains) >= 0 : L.some(l => l.indexOf(p.contains) >= 0); } }
+  if (ok === false) bad++; if (ok === null) incon++; console.log('§GUARD ' + (ok ? 'OK  ' : ok === null ? 'INCON' : 'FAIL') + ' prior art ' + p.who + ' · ' + p.what + ' · ' + p.src.split('/').pop() + (p.line ? ':' + p.line : '') + ' holds "' + p.contains + '"'); });
+console.log('§GUARD language=' + N.lang + (N.beats.filter(b => b.text && !({ zh: /[\u4e00-\u9fff]/, th: /[\u0e00-\u0e7f]/, en: /[a-z]/i }[N.lang]).test(b.text)).length ? ' FAIL: a beat not in the language' : ''));
+console.log('§GUARD facts verdict in facts.json: bad=' + F.checks.bad + ' inconclusive=' + F.checks.missing); if (F.checks.bad) bad++; if (F.checks.missing) incon++;
+console.log('§GUARD_VERDICT ' + (bad ? 'FAIL' : incon || !n ? 'INCONCLUSIVE' : 'PASS') + ' facts=' + n + ' bad=' + bad + ' inconclusive=' + incon); process.exit(bad ? 1 : (incon || !n ? 2 : 0));

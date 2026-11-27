@@ -6,7 +6,7 @@ description: Project history by the numbers — from the IfcOpenShell Federation
 *How the tech was discovered, by the numbers. Every date traces to a git commit or a
 cited doc; commit/fix counts are `git log` extractions on the dates shown. Nothing here
 is estimated. Companion to the narrative in [`VibeProgramming.md`](VibeProgramming.md)
-and the feature list in [`ROADMAP.md`](ROADMAP.md).*
+and the feature list in [`ROADMAP.md`](https://github.com/red1oon/BIMCompiler/blob/master/docs/internal/ROADMAP.md).*
 
 Snapshot date: **2026-06-22**.
 
@@ -53,7 +53,7 @@ These are two separate things — keep them apart:
 - **1,065,130 elements (the sandbox city) → ~13 s** to draw as **GPU wireframe bounding
   boxes only**, zero mesh in RAM, then instant orbit. The full meshes are *not* loaded;
   exact IFC geometry streams on demand (<1 s per MESH press near the camera). Measured —
-  see [`StressTest_1M.md`](StressTest_1M.md).
+  see [`StressTest_1M.md`](https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/StressTest_1M.md).
 - **~126 K elements (LTU A-House) → ~10 s** to render the **full meshes to screen**
   (author's machine). This is real geometry, not bounding boxes.
 

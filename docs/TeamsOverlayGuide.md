@@ -1,6 +1,6 @@
 ---
 title: Teams Overlay — collaboration & universal optics
-description: The Teams overlay turns any surface — Modeller, Viewer, or ERP — into a collaborative one. One toggle overlays who-did-what, a chat that is the log, and dashboard graphs, all off one signed op-log.
+description: The Teams overlay turns a surface — Modeller or ERP — into a collaborative one. One toggle overlays who-did-what, a chat that is the log, and dashboard graphs, all off one signed op-log.
 ---
 
 # Teams Overlay — Collaboration & Universal Optics  *(ALPHA)*
@@ -9,8 +9,8 @@ description: The Teams overlay turns any surface — Modeller, Viewer, or ERP �
 > **`CONTOH — TIDAK RASMI` / `SAMPLE — NOT OFFICIAL`** watermark. The names, documents and numbers are
 > illustrative demo values — this is a demonstrator, **not** a production collaboration system.
 
-**The Teams overlay turns any surface — the [Modeller](ModellerGuide.md), the [Viewer](BIMUserGuide.md), or
-[Kernel-ERP](ERPUserGuide.md) — into a collaborative one.** It is *not* a separate app. One toggle paints
+**The Teams overlay turns a surface — the [Modeller](ModellerGuide.md) or
+[Kernel-ERP](ERPUserGuide.md) — into a collaborative one.** *(The pill is wired into those two; the [Viewer](BIMUserGuide.md) does not carry it.)* It is *not* a separate app. One toggle paints
 **who-did-what** onto the screens you already have: coloured dots on the very rows and elements you work with,
 a history you can read, a chat that **is** the signed log, and dashboard graphs — the same overlay, the same
 grammar, whether you are authoring a building or posting an invoice.
@@ -26,8 +26,8 @@ tasks**. If you want to know *how it works* (or why every number is trustworthy)
 
 The overlay is **off by default** — until you turn it on, the screen is byte-for-byte unchanged.
 
-1. **Open any surface.** A Kernel-ERP window (e.g. *Accounts Receivable*), a building in the Viewer, or the
-   Modeller — the overlay works the same on all three.
+1. **Open a surface.** A Kernel-ERP window (e.g. *Accounts Receivable*) or the Modeller — the overlay works
+   the same on both.
 2. **Find the Teams pill.** Look on the toolbar for the **share glyph** (three linked nodes). It is the *host's*
    own icon — the overlay borrows the app's icon set, it never imposes its own.
 3. **Toggle it on.** The pill lights with the host's active colour and a side pane — the **Teams Outliner** —
@@ -79,10 +79,10 @@ the same signed log — never a hand-entered figure:
 ![The complete experience on Kernel-ERP — who-dots on the AR rows, the Teams Outliner, and the four dashboard graphs (involvement, flow with a red bottleneck, gate ladder, post-it aging), every series folded from the same signed log and watermarked](img/teams_showcase_on.png)
 
 ### On a building — who-dots on the rooms
-In the Viewer's **Find** panel, the same overlay lands on the **Storey → Rooms** result rows: the who-dots
-append after each room's state chip, and each **storey header rolls up a `+N` density** of the people active
-below it. It is the identical engine as the ERP rows — only the anchor changes (a room's guid instead of a
-document id).
+In the Modeller, the same overlay lands on the **Outliner** element rows as who-dots. It is the identical
+engine as the ERP rows — only the anchor changes (an element's guid instead of a document id). A
+**Storey → Rooms** variant (dots after each room's state chip, a `+N` density per storey header) is shown in
+the picture below as a demonstrator view; the Viewer's Find panel does not carry it.
 
 ![The Find panel's Storey→Rooms rows with Teams who-dots after each state chip, and a storey-level `+N` density badge on each level header](img/teams_find_placement.png)
 
@@ -96,7 +96,7 @@ The overlay carries **git-style branches** over the one log — *"you build that
 join up."* When two branches merge, a **gate** checks them for you, and the gate is the right one for the
 surface:
 
-- On the **Modeller / Viewer building side** — a **spatial gate**: it flags where two branches' elements
+- On the **Modeller building side** — a **spatial gate**: it flags where two branches' elements
   **clash** in space.
 - On the **schedule side** — a **PERT gate**: it flags **dependency violations** (a task starting before its
   predecessor finishes), **dependency cycles**, and **resource double-bookings** (one crane, two overlapping jobs).
@@ -109,7 +109,7 @@ with **stale** when the trunk has moved on since you branched.
 
 ## The same overlay — on the building, too
 
-Everything above is the ERP view. Open the Modeller or Viewer and the *identical* overlay renders over the 3D
+Everything above is the ERP view. Open the Modeller and the *identical* overlay renders over the 3D
 model: the tabbed Outliner (Tree / Chat / Dashboard), identity-coloured dots on elements, and the colour
 ladder — one grammar, two surfaces.
 
@@ -125,7 +125,7 @@ ladder — one grammar, two surfaces.
 | **Tree** | *Who last touched it, and when?* | Outliner tab — blame, a pure log replay |
 | **Chat** | *What's the conversation?* | Outliner tab — the chat **is** the signed log |
 | **Dashboard** | *Give me the numbers.* | Outliner tab + ERP graph gadgets — folds, never hand-typed |
-| **Find placement** | *Who is active in this room / storey?* | Viewer Find panel — dots on rooms, `+N` per storey |
+| **Find placement** | *Who is active in this room / storey?* | Demonstrator view — dots on rooms, `+N` per storey |
 | **Merge gate** | *Do these two branches conflict?* | on merge — spatial clash (building) or PERT dep/resource (schedule) |
 
 **Off by default, always.** Until you toggle the pill, the overlay adds **zero** DOM — the host screen is
@@ -188,5 +188,7 @@ The Teams overlay supplies the **collaboration + optics** layer; the surfaces su
   **[Kernel-ERP Guide](ERPUserGuide.md)** — the three surfaces the overlay rides on.
 
 ---
+
+*Looking for multi-device team setup (Start a team, Join, Approve, Releases)? That is the separate ERP **Team** mode — see the [Team guide](https://red1oon.github.io/bim-ootb/erp/team_guide.html).*
 
 *Back to the [User Guide](USER_GUIDE.md).*

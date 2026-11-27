@@ -1,0 +1,20 @@
+[
+ {
+  "name": "cp_invcio_fullymatched105",
+  "process": 142,
+  "recordId": 105,
+  "tableId": 318,
+  "params": [
+   {
+    "name": "M_Warehouse_ID",
+    "value": 103
+   }
+  ],
+  "tables": [
+   "m_inout",
+   "m_inoutline",
+   "c_invoiceline",
+   "c_invoice"
+  ]
+ }
+]

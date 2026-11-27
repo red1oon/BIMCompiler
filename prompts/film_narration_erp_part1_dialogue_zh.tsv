@@ -1,0 +1,7 @@
+open	0.00	12.90	§ERP_FILM_FACT seedMiB=25.9 · boot db=network · tenants=7 [System,GardenWorld,Odoo,iDempiere,SAP Flights,Oracle Scott,Dynamics Cronus]	F: 这就是ERP吗？ | M: 整个系统，就在你的浏览器里。	F: 这就是ERP吗？ | M: 对，整个系统直接加载到浏览器里，只要下载一次，大约二十六兆。 | F: 那这些呢？ | M: 七家演示公司。GardenWorld、Odoo、SAP Flights……
+login	12.90	23.11	§ERP_FILM_FACT role=System Administrator · 2 role(s) · menu groups=41 leaves=195	F: 怎么登录？ | M: 公司、用户、角色。	F: 怎么登录？ | M: 先选公司、用户、角色，跟iDempiere一样。 | F: 系统管理员？ | M: 对，这样就能创建全新的公司。
+menu	23.11	28.51	§ERP_FILM_FACT menuPath=System Admin > Tenant Rules > Initial Tenant Setup	M: 初始租户设置。	F: 从哪里开始？ | M: 系统管理，租户规则……初始租户设置。
+form	28.51	35.91	§ERP_FILM_FACT name=FirstCo admin=owner · currencyOptions=163 · picked MYR	F: 就叫它FirstCo吧。	F: 就叫它FirstCo吧。 | M: 管理员owner，币种选……林吉特。 | F: 一百六十三种里挑一个！
+create	35.91	38.48	§W-GENESIS-SYSADMIN-LIVE created client=17 rows=515	F: 创建！	F: 那么……创建！
+facts	38.48	53.79	§ERP_FILM_FACT accounts=311 periods=12 fiscalYear=2026 docTypes=42 acctSchemaCcy=MYR priceListCcy=MYR · rows=515	M: 完成。一整家公司。	M: 完成！五百一十五条记录，一整家公司。 | F: 里面有什么？ | M: 三百一十一个科目，二零二六年的十二个会计期间，四十二种单据类型。 | F: 账是用林吉特记的吗？ | M: 是的，价格表也是林吉特。
+enter	53.79	61.19	§ERP_FILM_FACT enterUsers=owner	M: 进入FirstCo。	F: 我们能进去了吗？ | M: 进入FirstCo……owner用户已经准备好登录了。 | F: 接下来，客户和产品！

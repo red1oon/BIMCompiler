@@ -1,0 +1,15 @@
+§ERP_HOVER_W E1 §ERP_HOVER_INDEX entries=302 kinds={"callout":18,"callout-method":44,"validator":69,"handler":19,"column-callout":14,"model":68,"docaction":14,"process":56} legacy_files=161 parsed=306 skipped=0 root=<bim-ootb> same_as_fresh_parse=Y
+§ERP_HOVER_W E1 kind=callout registered=17 indexed=17
+§ERP_HOVER_W E1 kind=process registered=56 indexed=56
+§ERP_HOVER_W E1 kind=model registered=44 indexed=44
+§ERP_HOVER_W E1 kind=validator registered=71 indexed=71
+PASS E1 the index = a fresh parse
+§ERP_HOVER_W E2 fields=12323 with_layers=3311 callouts_and_processes_named=466 lines_resolved=6576 wrong_line=0 unresolved=0 unported=213 (distinct 169)
+§ERP_HOVER_W E2 unported_first=AD_ExpireBroadcastMessage (org.idempiere.broadcast.process.ExpireBrodcastMessage),AD_PublishBroadcastMessage (org.idempiere.broadcast.process.PublishBrodcastMessage),AD_TestBroadcastMessage (org.idempiere.broadcast.process.TestBrodcastMessage),AD_ChangeLog_ReDo (org.compiere.process.ChangeLogProcess),AD_ChangeLog_UnDo (org.compiere.process.ChangeLogProcess),CalloutClient.clientLanguageWarning,AD_Client EMailTest (org.compiere.process.EMailTest),Callout_AD_Column.element,Callout_AD_Column.infoWindow,Callout_AD_Column.process
+§ERP_HOVER_W E2b false_unported=17 e.g. A_Depreciation_Entry.DateDoc callout:CalloutEngine.dateAcct | C_BankStatement.StatementDate callout:CalloutEngine.dateAcct | C_BankStatementLine.StatementLineDate callout:CalloutEngine.dateAcct | C_Conversion_Rate.DivideRate callout:CalloutEngine.rate | C_Conversion_Rate.MultiplyRate callout:CalloutEngine.rate
+FAIL E2b every UNPORTED the hover says agrees with the engine's own lookup (getCallout / the process registries)
+PASS E2 every layer that names a line lands on its registration, over all 12323 AD window fields  3311 fields with layers beyond the dictionary row
+§ERP_HOVER_W E3 red-control removed=erp/callouts/CalloutGLJournal.js:8 unresolved_or_wrong=45 (was 0)
+PASS E3 red control: a removed index entry is counted, not hidden
+§ERP_HOVER_W E4 skipped (WEH_PAGE=0)
+§ERP_HOVER_W VERDICT FAIL fail=1

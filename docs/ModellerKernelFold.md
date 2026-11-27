@@ -156,7 +156,7 @@ Stated plainly so the disclosure above isn't read as claiming more than it does:
 API, no multi-hop traversal (the cascade is one hop, directional, wall→door only), no MEP flow/
 connectivity graph (no `flows-into` edge type exists), no assembly clone/duplicate-with-reconnect. Each is
 a plausible extension of the same recovered, non-invented relations — not a different architecture — but
-none are shipped, and none should be read into the claims above. This is a fast-moving build, not a
+none were shipped at the 2026-07-13 date of this disclosure, and none should be read into the claims above. *(Update 2026-10-27: the Modeller now has relation-carrying copy and paste — a copied wall brings the doors and windows it hosts, and the pasted door belongs to the pasted wall — so "assembly clone/duplicate-with-reconnect" is no longer a gap. The other gaps stand.)* This is a fast-moving build, not a
 finished one; the tiered gap-and-sequencing plan is tracked internally, not restated here each time it
 moves — see `prompts/BONSAI_KERNEL_RESEARCH.md §GAP-TO-COMPETITIVE`.
 

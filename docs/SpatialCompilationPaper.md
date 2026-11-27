@@ -290,7 +290,7 @@ prove CLUSTER replay fidelity.
 **Ongoing work:** converting CLUSTER fallbacks to formula verbs through
 improved pattern detection in VerbDetector. Each CLUSTER-to-TILE conversion
 strengthens the spatial compilation claim by replacing a stored transcript
-with a computed recipe. See §10.4.10 in [DISC_VALIDATION_DB_SRS.md](DISC_VALIDATION_DB_SRS.md).
+with a computed recipe. See §10.4.10 in [DISC_VALIDATION_DB_SRS.md](https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/DISC_VALIDATION_DB_SRS.md).
 
 ### 4.4 Results: Duplex (1,099 elements, mirrored)
 
@@ -698,7 +698,7 @@ The pattern — extract spatial motifs from solved structures, compile new struc
 
 [15] MDPI, "A Review of Path Optimization Algorithms for MEP Pipe Routing in Building Information Modelling," *Buildings*, vol. 15, no. 12, 2025.
 
-[16] Oon, R.D., "BIM Intent Compiler — The Rosetta Stone Strategy," https://red1oon.github.io/BIMCompiler/TheRosettaStoneStrategy/, 2026.
+[16] Oon, R.D., "BIM Intent Compiler — The Rosetta Stone Strategy," https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/TheRosettaStoneStrategy.md, 2026.
 
 [17] Oon, R.D., "ShipYard — A Deterministic Engine for Any Manufactured Assembly," https://red1oon.github.io/BIMCompiler/ShipYard/, 2026.
 

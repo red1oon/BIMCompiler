@@ -813,3 +813,107 @@ path does NOT hit F1's raw-url-vs-canonical-key drift. F1 itself is untouched an
 **Still open, untouched by this fix:** F1, F3–F18. Pass-1's "fix nothing" directive no longer holds
 blanket — this was a targeted, user-reviewed exception for the two live-reported symptoms; the rest of
 the list is still fix-nothing-until-reviewed.
+
+---
+
+# PASS 2 — STATUS RE-CHECK + WAVE 1 (2026-11-03, bim-ootb origin/main a3233475 → #2564)
+Re-verified F1–F18 against main (read-only, `git show`/`grep`; line numbers in PASS 1 are stale). 5 fixed/gone, 4 partly, 9 open.
+
+| F | status 2026-11-03 | note |
+|---|---|---|
+| F1 #1-2 scene.js | ✅ canonical (2026-07-30) | `_checkCache` keeps a raw fallback |
+| F1 #3 city.js / F3 | ✅ **W1** | reads canonical→raw (`§CITY_DB_SOURCE`) |
+| F1 #4 boq_charts.html | ✅ **W1** | `peekDbCache` + `fetchDbBuffer` via `DbResolve.readCached` |
+| F1 #5 clash_report.html | ✅ **W1** | + F2 open fixed in the same function |
+| F1 #6 viewer/kernel_ops.js | GONE | deleted, bim-ootb #2560 |
+| F1 #7 modeller/kernel_ops.js | vacuous | Modeller never sets `APP.DB_URL` → `_persistToIdb` returns early; it persists via bonsai_oplog / str_walker_outliner |
+| F1 #8 erp/kernel_ops.js | ✅ | canonical key + raw reclaim, #2562 |
+| F1 #9 / F15 str_walker_outliner `?v=N` in key | OPEN | resident DBs orphan old versions (`_idbDropStale` covers only the room-walker key) |
+| F1 #10-11, #13 | OK / CHANGED-OK | disc_walker K4-verbatim; routewalker own `rw_` namespace; dlod_nav uses `app.openCacheDB` |
+| F2 boq_charts | ✅ d2766f51 (#1106) | |
+| F2 clash_report, viewer+modeller routewalker | ✅ **W1** | unversioned open + guarded create (viewer/routewalker.js was a NEW site, not in PASS 1) |
+| F4 inventory (`dbs` vs `timestamps`) | OPEN | edit snapshots/imports never evicted, invisible to the 80-entry cap |
+| F5/F6 import url shapes | OPEN | duplicate import blobs; materialised designs unreachable from importers |
+| F7, F7b | OPEN (F7b harmless) | F7c: report pages now read `?bld=` |
+| F8 building class ×3 | OPEN | `Schependomlaan`, SH/DX/SC residential in `_dwRules` only |
+| F9 | GONE | schedule_editor_ui.js deleted |
+| F10 `ad_seed_v18` ×9 literals | OPEN | comments still say v16; a test reads v13 |
+| F11 kernel_ops copies | CHANGED | 3 → 2 (erp + modeller) |
+| F12 sw precache | OPEN, smaller | ~35 of 245 viewer.html scripts not precached (was 53; approximate) |
+| F13 badge stem match | OPEN | |
+| F14 clash pair `a|b` vs `a~b` | OPEN | |
+| F16, F17 literals | OPEN, harmless | |
+| F18 rules-DB bust | OPEN, latent | log claims an eviction that did not happen |
+
+**WAVE 1 ✅ DONE (witness)** — bim-ootb #2564 (live viewer sw v1679, modeller sw v211; live `db_resolve.js?v=3` has `readCached`,
+0 `open('bim_ootb_cache', 1)` left in either routewalker). New pure helpers `DbResolve.readKeys` / `readCached`
+(canonical → raw, read-only). W-SEAM-W1 38 claims PASS; FAILS on origin/main at all 6 sites; 3/3 mutants caught
+(raw-only, canonical-only, K3-folding). Regression: db_cache_key 20/20, db_404_oci_retry 12/12, one_kernel_ops,
+gantt_edit_persist PASS; sw precache 0 unlisted. `boq_charts.html` has no PROD_BASE source — passes undefined, which
+cannot change a key (K2 folds on the filename).
+
+**Next wave (ranked by user cost):** F4 eviction blind spot · F5/F6 one `importUrl()` + one project key · F10 one seed
+constant (+ repoint the v13 test) · F15 resident `?v=N` · then the data-correctness set F8, F7, F13, F14, F12, F18.
+
+**WAVE 2 ✅ DONE (witness) — 2026-11-03, three PRs, all live (viewer sw v1681, erp sw v966, modeller sw v212):**
+- **F10 → bim-ootb #2565.** One owner `erp/seed_key.js` (`window.ERP_SEED_KEY = 'ad_seed_v18'`, value unchanged → no re-download; no drift
+  found). W-ONE-SEED-KEY: 0 literals outside the owner over 2852 files; FAIL on the pre-fix tree (19 literals); mutant caught.
+- **F4 + F15 → bim-ootb #2566.** Measured writer table (spec): `_evictOldest` saw `timestamps` only, so dbs-only blobs were never
+  reclaimed — and it had NO guard, so a timestamped `import://` / Time-Machine / open-building entry could be evicted. Now
+  timestamps ∪ dbs behind default-deny `A._cacheEvictable` (re-downloadable keys only; never `import://`, `::tip`, TM/kanban/walk
+  state, the open building). F15: `_idbPutVersioned` drops superseded `<base>?v=*` residents. W-SEAM-W2-EVICT 9/9; 7/9 fail pre-fix;
+  3/3 mutants. **Open:** an edit snapshot under a plain url key still looks like a clean download (only the OPEN building is
+  protected) — needs a "dirty" marker from the savers; pre-existing, not a regression.
+- **F5 + F6 → bim-ootb #2569.** One owner `common/import_key.js` (project key verbatim, split `_extracted/_meta/_geo.db`, monolith
+  `K/v0`); 18 inline constructions removed. Legacy `K/extracted`+`K/library` (same bytes written twice) re-keyed put→verify→delete,
+  and `§IMPORT_KEY_ALIAS` lets old links/restored tabs still open them. W-ONE-IMPORT-KEY 125 checks; 3/3 mutants. **Partial F6:**
+  materialize keeps its sanitised design key (it goes into a `?db=` link), so a design named with spaces/punctuation is still not
+  reachable under the importers' raw key. **Not touched:** scene.js "Open DB" builds `import://K_extracted.db/v0` (a fourth shape).
+- **Witness lesson:** a before-proof against a MOVING `origin/main` stops discriminating the moment the fix merges (W1 and W2 reported
+  "before did not fail" on the next branch). Both now pin their baseline to the pre-fix commit (a3233475 / 0d7ef429), as
+  W-ONE-KERNEL-OPS already did (38fbb8fb). New witnesses: pin, don't point at a branch.
+
+**Next:** scene.js Open-DB import shape (F5 tail) · edit-snapshot dirty marker (F4 tail) · F8 building class · F13 badge · F14 clash
+pair order · F12 precache gap · F7 · F18.
+
+**WAVE 3 ✅ DONE (witness) — 2026-11-03, four PRs, all live (viewer sw v1685, erp sw v968, modeller sw v213):**
+- **F5 tail + F4 tail → bim-ootb #2571.** scene.js Open-DB urls now come from ImportKey (split `import://K/K_{extracted,meta,geo}.db`;
+  old `import://K_<part>.db/v0` entries aliased + re-keyed only when byte-identical). Side fix: the url-basename building label
+  for an Open-DB file with no building column was `v0` for EVERY such file; now its own name. `A.markEdited(key)` merges
+  `{edited}` into `revalidation` (etag/contentLength untouched, no new store, no IDB version bump); erp/kernel_ops +
+  schedule_author mark; evictor skips marked keys (`§CACHE_EVICT_SKIP_EDITED`); a STALE re-download clears it (newer wins).
+  W-SEAM-W3A 20/20, baseline 7586a565 fails 11, 3/3 mutants.
+- **F8 + F18 → bim-ootb #2573.** F8 was TWO questions conflated: the Find-panel PLANT_ROOM gate mirrors
+  `config/building_taxonomy.yaml` and hides PLANT_ROOM on unlisted buildings — RULED in `FIND_PANEL_PLANT_ROOM_GATE_FIX.md`
+  (2026-07-11), left as is; the Modeller's walk-rules pick (`_dwRules`, WalkerDoctrine §1) is now one owner
+  `common/walk_rules.js` (`WalkRules.rulesDb`, rule verbatim; header warns not to "unify" it with the gate). F18: rules-cache
+  clear builds the real key via `disc_walker.dwRulesKey` and logs `§RULES_BUST deleted=true|false`. W-SEAM-W3C 40 claims.
+- **F13 + F14 → bim-ootb #2574.** Landing badge matches each card's exact keys (`DbResolve.readKeys` of `openBuilding()`'s url);
+  `Hospital_3` no longer greens Hospital. Clash status key = one owner `A._clashPair` (sorted); legacy `a|b`/`b|a`/`a~b`
+  statuses migrated without loss (write-verify-then-remove), old `a~b` links resolve. W-SEAM-W3B 15 claims, baseline fails 8.
+- **Needle persist → bim-ootb #2575 (found while closing F4).** `nf_tree_lens.js` §S3 persisted the room-injected building under
+  RAW `A.DB_URL` — rooms re-injected on every load (~7 s on 48k elements) and the wrong url in split mode. New pure
+  `DbResolve.persistTarget(app)` = the ONE save-key rule (url = `_dbPersistUrl || DB_URL`, key = `cacheKey(url)`); needle persist
+  and erp/kernel_ops.js use it. W-NEEDLE-PERSIST-KEY 7/7, baseline 1a11a9ee fails 7.
+- **F12 RESOLVED, no change needed:** `tests/audit_sw_precache.js` = 0 unlisted, 0 known-gap (all 18 triaged 2026-08-21 gaps
+  since precached), 33 out-of-shell = deliberate lanes (HBA demo, dev `connect_` harness, GI POC). `lib/` is outside that audit;
+  of viewer.html's lib scripts only `lib/room_walker.js` is unlisted and it is DELIBERATELY network-first (viewer/sw.js ~1305-1310).
+
+**Remaining open:** F7 (building name = filename stem in some places vs `elements_meta.building` in others → saved per-building
+settings can orphan), F7b / F16 / F17 (harmless literals). Not yet re-checked: `schedule_author.persistDb` still keys from its
+caller's url via its own `_cacheKeyFor` — could adopt `persistTarget` too.
+
+**CLOSE-OUT (2026-11-03):**
+- ✅ **§PERSIST_TARGET tail → bim-ootb #2577 (+ #2579 cache-bust).** `schedule_inject.js` (Apply-to-4D / inject) and
+  `schedule_author_ui.js` passed raw `A.DB_URL` to `ScheduleAuthor.persistDb` — in split mode that slot is never read back
+  (streaming.js §TM_SPLITMODE_PERSIST_KEY), so an applied or authored schedule vanished on reload on split buildings (Hospital).
+  `ScheduleAuthor.persistUrlFor(app)` (on `DbResolve.persistTarget`) is now used by all three callers. W-SCHED-PERSIST-TARGET 7/7,
+  baseline 4c451725 fails 7. Live viewer sw v1687.
+- ✅ **F7 — NOT a live defect (measured, no code).** Stem ≠ `elements_meta.building` for ~28 of 33 real DBs (Duplex →
+  `Ifc2x3_Duplex_Federated`, Terminal → `T0_Terminal`, …) but EVERY per-building persisted family keys on `A.activeBuilding`
+  (= `elements_meta.building`): saved sections, clash statuses, section cuts, scissors bookmarks, cinema paths, occlStruct, TM
+  caches, BOM, tour cache, issues filter, report `?bld=`, ERP `C_Project.Value`. DB-url keys (history tree, cache, persist,
+  pwa_last_db) are FILE identity by design. One building value per real DB today (Clinic no longer multi-valued). Residual
+  risk only from a re-extraction that renames the value (moves all families together). Tables: session result file.
+- F7b / F16 / F17 — harmless (own prefixes / literals), left.
+**Audit status: every PASS 1 finding is now FIXED, GONE, measured not-a-defect, ruled by design, or harmless.**

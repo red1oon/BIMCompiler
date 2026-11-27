@@ -1,0 +1,34 @@
+open	8.317	13.542	ledger flash + F/M cards	F: Wow! | M: Are they real?	F: Wow! AI is super cool! | M: Wait... are they real? Can they show us the numbers?
+tease	13.692	16.917	card b2	M: Just that it isn't.	F: AI is nice, isn't it? | M: Just that it isn't.
+reveal	17.067	22.833	card b3 (viewer/lib three.module.min.js + sql-wasm.js verified)	M: JavaScript, ThreeJS, SQLite.	M: It's all JavaScript, ThreeJS, and SQLite in WebAssembly. | F: No AI model anywhere.
+concede	22.983	26.667	card b4a	M: AI is prettier. I admit it.	F: So AI wins on looks? | M: In five seconds. Yes.
+why	26.817	30.167	card b4b	M: Might be, or is?	F: So why bother? | M: What it might be, or what it is?
+autodesk	30.317	36.458	help.autodesk.com Assistant page (fetched 2026-11-02)	M: Autodesk says: patterns and probabilities.	M: Autodesk's own help page: answers are based on patterns and probabilities. | F: Their words, not mine!
+latent	36.608	42.833	Cumberland 2026-08-03	M: Latent space versus physical space.	F: And a practitioner? | M: Generative AI lives in latent space. Buildings live in physical space.
+duel0	42.983	46.792	duel_ledger_2026-11-02	M: I tried a free demo.	M: So I tried a free demo. One Hospital frame, one prompt.
+duel1	46.942	51.167	duel_ledger_b run1 wait=64.6s 832x544 3.56s	M: Sixty-four seconds.	F: And the result? | M: Sixty-four seconds. Three seconds of video.
+duel2	51.317	56.917	duel_ledger_b sha equal; 206/3.56=58	M: Repeatable, yes. Fifty-eight clips though.	F: Same file twice? | M: Yes, seed pinned. Fair is fair. But my film is fifty-eight of those.
+ours	57.067	61.917	Hospital_FULL_HIRES	M: Now mine. Baked once.	M: Now mine. The Hospital, baked once. | F: Same file, every time!
+clash	62.067	67.917	§CLASH HUD 270 mesh-true	F: The clashes! | M: Two hundred seventy.	F: Oh, the clashes! | M: Two hundred and seventy, real mesh overlaps.
+trade	68.067	73.917	§CLASH_HUD by trade and pair	M: By trade, by pair.	M: By trade, and by pair. | F: Read from the model, not guessed.
+glory	74.067	83.917	§RULE_FILM_EXIT_STAT ~217 steps; sun az/alt HUD	F: A compass? | M: Sun azimuth. And the longest walk to an exit.	F: What's that compass? | M: The sun's azimuth and altitude, day by day. | F: And safety? | M: The longest walk to an exit. About two hundred seventeen steps.
+tm	84.067	88.917	4D.mp4 schedule editor	M: The Time Machine.	F: Can I change the plan? | M: This is the Time Machine. The schedule editor.
+whatif	89.067	94.917	4D.mp4 What-if schedule	M: Slip a phase, the rest follows.	M: A what-if. Slip a phase, and every downstream phase re-folds. | F: No re-prompting!
+twod	95.067	99.458	DXF2BIM shed film v5	M: A big job. No AI in the code.	F: And from 2D drawings? | M: A big job. Done without AI in the code.
+fiveD	99.608	107.458	shed v5 v03: 5D, rate based estimate ~1.13M	M: Five D. Cost by discipline.	M: Five D: cost by discipline, from the model's quantities. | F: A tender? | M: No. A rate based estimate.
+fourD	107.608	115.458	shed v5 v04: 6 phases, 194 days, default	M: Four D. A default schedule.	M: Four D: a schedule, when the model has none. | F: Whose sequence? | M: A default. Six phases, a hundred ninety four days.
+noai	115.608	122.458	shed v5 card: no AI on your drawings	M: No AI on your drawings.	F: Same drawings, same model? | M: Same drawings, same model. No AI on your drawings.
+upg	122.608	129.125	§UPGRADE_REPORT 38898->38603, 110 ms	M: One key. Upgrade. Pass.	F: How do pros reuse it? | M: One key upgrades to IFC four point three. A tenth of a second. Pass.
+split	129.275	134.125	toast: split into 4 storey files PASS	M: Press K. Four storey files.	F: And one floor alone? | M: Press K. Four storey files. Pass.
+pro	134.275	141.458	red1 line	M: This is how professionals work.	M: This is how professionals work. Fast, repeatable, sequenced. | F: Skills their learning can wrap around. | M: Not out of their control.
+altc	141.608	147.667	red1 timing: Alt+C opens ~3 s (not from a log)	M: Alt C opens in three seconds.	F: And the films? | M: Press Alt C. It opens in about three seconds. For fast work, press O K.
+menu	147.817	152.292	Inspect menu 4D/5D	M: Four D, five D, clash, section.	F: And the reports? | M: Four D, five D, clash, section. One menu.
+prep	152.442	162.042	red1 timing; bake 26-49 min / orbit ~10 min	M: Press go. Up to an hour. No prompt.	M: To shape it, drag the path and tick boxes, and I preview it first. | F: Then? | M: The bake runs, up to an hour. I walk away. No prompt, no API, no credits.
+door	162.192	170.208	duel upload; Nomic 2026	M: Your model leaves your machine.	F: Why worry about APIs? | M: To ask an AI, your model leaves your machine. My duel sent a Hospital frame to a stranger's host.
+mit	170.358	176.417	LICENSE MIT verified	M: MIT. Read it, fork it, break it.	M: An API you can't inspect is a risk, anywhere. Mine is M I T. Read it, fork it, break it.
+shut	176.567	184.958	The Decoder 2026-03-28 Sora app 26 Apr, API 24 Sep	M: AI can be shut off tomorrow.	F: And if it's switched off? | M: AI can be shut off tomorrow. OpenAI announced Sora closes: the app in April, the API in September.
+local	185.108	187.958	§NOAI_NETWORK PASS 2026-10-02	M: And it's local first.	M: And all of it is local first.
+collage	188.108	200.875	collage labels (unverified)	F: Drawings, ERP, roads. | M: One kernel.	F: Drawings, ERP, roads, earthworks, reports. | M: One kernel, in a browser tab. | F: No install? | M: None. | F: Even offline? | M: The viewer boots and imports with every outside request blocked. I tested it.
+find	201.025	205.375	Find Panel stills	M: Room to room, door by door.	F: And finding a room? | M: Find a route, room to room, door by door.
+graph	205.525	217.375	graph card: citations on screen	M: One picture. Every cell cites a source.	M: One picture. AI wins on looks, and on starting from nothing. I said so first. | F: And the rest? | M: Elements you can count, code you can read, nothing leaving your machine. | F: Every cell cites its source.
+end	217.525	223.708	closing card	M: I show what it is.	M: AI draws what a building might be. I show what it is. | F: Re-run it yourself. The ledger is public.

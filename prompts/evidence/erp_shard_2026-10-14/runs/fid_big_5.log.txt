@@ -1,0 +1,4 @@
+§FIDELITY start part=5/8 tables=115 of 925 sqlite=bloat10r.db pgdb=bloat10r
+§FIDELITY table=m_matchpo rows=1078143 pgRows=1078143 pg=621308559619464994152404 sq=621308559619464994152404 OK t=19s
+§FIDELITY table=gl_journalline rows=116556 pgRows=116556 pg=67158054952018423993682 sq=67158054952018423993682 OK t=21s
+§FIDELITY_VERDICT part=5/8 PASS tables=115 judgedTables=61 judgedRows=1235229 totalSec=34s

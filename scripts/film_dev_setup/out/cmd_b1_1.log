@@ -1,0 +1,11 @@
+$ node scripts/setup.js --open
+§SETUP_PREREQ node=18.19.1 npm=Y python3=Y code=/snap/bin/code
+§SETUP_DEPS npm_ci=ok espree=Y
+§SETUP_TOOLS manifest=PASS proof_map=PASS bump=PASS
+§SETUP_VSC code=/snap/bin/code codefacts=installed eslint=recommended tasks=6 snippets=3 launch=Y mode=throwaway ext_dir=/home/red1/.cache/film_dev_setup4/dl/bim-ootb-main/.setup/vscode-ext
+§SETUP_NEXT open="code \"--extensions-dir\" \"/home/red1/.cache/film_dev_setup4/dl/bim-ootb-main/.setup/vscode-ext\" \"--user-data-dir\" \"/home/red1/.cache/film_dev_setup4/dl/bim-ootb-main/.setup/vscode-user\" \"/home/red1/.cache/film_dev_setup4/dl/bim-ootb-main\"" serve="node scripts/setup.js --serve [port]"
+§SETUP steps=4 ok=4 gaps=0 verdict=PASS
+§SETUP_OPEN launched=Y
+
+§CMD_EXIT 0
+§OPEN_STILL geometry=1919x1079+0+0 window="0x200003 \"bim-ootb-main - Visual Studio Code\": (\"code_code\" \"code_code\")  1919x1079+0+0  +0+0" bytes=103541

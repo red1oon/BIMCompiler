@@ -1,0 +1,8 @@
+$ MANIFEST_W_OLD=/tmp/wt-film6-old node scripts/tests/witness_manifest_roundtrip.js | grep -E "MANIFEST_CLAIM id=C(2[6-9]|3[01]) " | cut -c1-30
+  §MANIFEST_CLAIM id=C26 ok=N
+  §MANIFEST_CLAIM id=C27 ok=N
+  §MANIFEST_CLAIM id=C31 ok=N
+  §MANIFEST_CLAIM id=C28 ok=N
+  §MANIFEST_CLAIM id=C29 ok=N
+  §MANIFEST_CLAIM id=C30 ok=N
+§CMD_EXIT 1

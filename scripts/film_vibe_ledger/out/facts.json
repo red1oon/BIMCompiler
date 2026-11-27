@@ -1,0 +1,622 @@
+{
+ "made": "2026-11-17T23:49:28.947Z",
+ "trees": {
+  "T": {
+   "path": "/tmp/wt-film-ootb",
+   "commit": "aa427638",
+   "dirty": 0
+  },
+  "C": {
+   "path": "/tmp/wt-film-zh",
+   "commit": "8e5a762fe",
+   "dirty": 0
+  },
+  "I": {
+   "path": "/home/red1/idempiere-dev-setup/idempiere",
+   "commit": "87968daa73",
+   "dirty": 3
+  }
+ },
+ "cmds": {
+  "after": {
+   "tree": "T",
+   "cmd": "git rev-list --count HEAD",
+   "out": [
+    "3514"
+   ]
+  },
+  "u1": {
+   "tree": "T",
+   "cmd": "node -p \"require('./package.json').dependencies\"",
+   "out": [
+    "{ 'sql.js': '^1.14.1' }"
+   ]
+  },
+  "u2": {
+   "tree": "T",
+   "cmd": "node erp/tests/witness_roster_verify.js | tail -1",
+   "out": [
+    "🟢 W-ROSTER-VERIFY ALL PASS"
+   ]
+  },
+  "v1": {
+   "tree": "T",
+   "cmd": "git log --since=2026-06-01 --until=2026-07-01 --oneline -- erp | wc -l",
+   "out": [
+    "243"
+   ]
+  },
+  "v2": {
+   "tree": "T",
+   "cmd": "git ls-files | grep -cE 'witness[^/]*\\.js$'",
+   "out": [
+    "1492"
+   ]
+  },
+  "s1": {
+   "tree": "C",
+   "cmd": "bash scripts/code_arch/size_stack.sh $OOTB | grep -E 'set=(app_js|app_html|witness_js|vendored_js) '",
+   "out": [
+    "§STACK_SIZE set=app_js files=1034 lines=316459 MB=23.9",
+    "§STACK_SIZE set=app_html files=63 lines=38665 MB=3.1",
+    "§STACK_SIZE set=vendored_js files=131 lines=421186 MB=30.2",
+    "§STACK_SIZE set=witness_js files=2151 lines=288521 MB=23.8"
+   ]
+  },
+  "l1": {
+   "tree": "I",
+   "cmd": "find . -name '*.java' -not -path '*/target/*' -print0 | xargs -0 cat | wc -l",
+   "out": [
+    "1427147"
+   ]
+  },
+  "l2": {
+   "tree": "T",
+   "cmd": "gh api repos/odoo/odoo/languages --jq 'to_entries | sort_by(-.value)[:2][] | \"\\(.key) \\(.value)\"'",
+   "out": [
+    "Python 63054712",
+    "JavaScript 51883014"
+   ]
+  },
+  "c2": {
+   "tree": "T",
+   "cmd": "cat .github/workflows/*.yml | grep -oE 'witness_[a-z0-9_]+\\.js' | sort -u | wc -l",
+   "out": [
+    "16"
+   ]
+  },
+  "c3": {
+   "tree": "T",
+   "cmd": "git show 6d7ee87e^:README.md | grep -oE 'About [0-9,]+ JS and HTML files of app code'",
+   "out": [
+    "About 2,600 JS and HTML files of app code"
+   ]
+  }
+ },
+ "v": {
+  "commits": {
+   "val": "3514",
+   "src": "cmd after"
+  },
+  "deps": {
+   "val": "1",
+   "src": "package.json dependencies"
+  },
+  "deps.desc": {
+   "val": "BIM OOTB viewer — static browser app (no build).",
+   "src": "package.json description"
+  },
+  "rv.rejected": {
+   "val": "5",
+   "src": "witness_roster_verify.log green lines that say REJECT"
+  },
+  "rv.checks": {
+   "val": "17",
+   "src": "witness_roster_verify.log green lines, less the ALL PASS line"
+  },
+  "rv.red": {
+   "val": "0",
+   "src": "witness_roster_verify.log red lines"
+  },
+  "erp.june": {
+   "val": "243",
+   "src": "cmd v1"
+  },
+  "witness.files": {
+   "val": "1492",
+   "src": "cmd v2"
+  },
+  "size.app_js.files": {
+   "val": "1034",
+   "src": "cmd s1 app_js"
+  },
+  "size.app_js.lines": {
+   "val": "316459",
+   "src": "cmd s1 app_js"
+  },
+  "size.app_html.files": {
+   "val": "63",
+   "src": "cmd s1 app_html"
+  },
+  "size.app_html.lines": {
+   "val": "38665",
+   "src": "cmd s1 app_html"
+  },
+  "size.witness_js.files": {
+   "val": "2151",
+   "src": "cmd s1 witness_js"
+  },
+  "size.witness_js.lines": {
+   "val": "288521",
+   "src": "cmd s1 witness_js"
+  },
+  "size.vendored_js.files": {
+   "val": "131",
+   "src": "cmd s1 vendored_js"
+  },
+  "size.vendored_js.lines": {
+   "val": "421186",
+   "src": "cmd s1 vendored_js"
+  },
+  "precache.viewer": {
+   "val": "296",
+   "src": "size_stack.log precache viewer"
+  },
+  "precache.erp": {
+   "val": "411",
+   "src": "size_stack.log precache erp"
+  },
+  "precache.modeller": {
+   "val": "164",
+   "src": "size_stack.log precache modeller"
+  },
+  "size.whole.files": {
+   "val": "4730",
+   "src": "size_stack.log whole_tree"
+  },
+  "size.whole.lines": {
+   "val": "1087977",
+   "src": "size_stack.log whole_tree"
+  },
+  "pure.files": {
+   "val": "125",
+   "src": "W-CORE-PURE"
+  },
+  "pure.forbidden": {
+   "val": "0",
+   "src": "W-CORE-PURE"
+  },
+  "pure.verdict": {
+   "val": "PASS",
+   "src": "W-CORE-PURE"
+  },
+  "ci.core_pure": {
+   "val": "Y",
+   "src": "ci.yml"
+  },
+  "ci.loop": {
+   "val": "4",
+   "src": "ci.yml X0 loop names (written as witness_x0_$w.js, so the c2 regex does not see them)"
+  },
+  "ci.named": {
+   "val": "16",
+   "src": "cmd c2"
+  },
+  "ci.total": {
+   "val": "20",
+   "src": "derived: the c2 names + the ci.yml loop names, as one set"
+  },
+  "idem.lines": {
+   "val": "1427147",
+   "src": "cmd l1"
+  },
+  "idem.files": {
+   "val": "4465",
+   "src": "iDempiere find"
+  },
+  "idem.commit": {
+   "val": "87968daa73",
+   "src": "iDempiere git"
+  },
+  "erp.files": {
+   "val": "318",
+   "src": "bim-ootb erp js, no tests/lib/witness"
+  },
+  "erp.lines": {
+   "val": "70362",
+   "src": "same"
+  },
+  "stars.idempiere": {
+   "val": "677",
+   "src": "GitHub idempiere/idempiere"
+  },
+  "stars.odoo": {
+   "val": "55875",
+   "src": "GitHub odoo/odoo"
+  },
+  "stars.erpnext": {
+   "val": "41392",
+   "src": "GitHub frappe/erpnext"
+  },
+  "stars.frappe": {
+   "val": "11111",
+   "src": "GitHub frappe/frappe"
+  },
+  "stars.ours": {
+   "val": "17",
+   "src": "GitHub red1oon/bim-ootb"
+  },
+  "lang.idem.java": {
+   "val": "81.9",
+   "src": "GitHub languages"
+  },
+  "lang.idem.js": {
+   "val": "11.4",
+   "src": "GitHub languages"
+  },
+  "lang.odoo.py": {
+   "val": "52.5",
+   "src": "GitHub languages"
+  },
+  "lang.odoo.js": {
+   "val": "43.2",
+   "src": "GitHub languages"
+  },
+  "lang.erpnext.py": {
+   "val": "82.6",
+   "src": "GitHub languages"
+  },
+  "lang.erpnext.js": {
+   "val": "11.8",
+   "src": "GitHub languages"
+  },
+  "lang.ours.js": {
+   "val": "93.7",
+   "src": "GitHub languages"
+  },
+  "lang.ours.py": {
+   "val": "0.4",
+   "src": "GitHub languages"
+  },
+  "db.odoo": {
+   "val": "psycopg2",
+   "src": "odoo requirements.txt"
+  },
+  "db.frappe": {
+   "val": "PyMySQL",
+   "src": "frappe pyproject.toml"
+  },
+  "par.match": {
+   "val": "113",
+   "src": "parity log §SCN lines that are not negative controls, MATCH"
+  },
+  "par.differ": {
+   "val": "0",
+   "src": "same, not MATCH"
+  },
+  "par.tables": {
+   "val": "19",
+   "src": "parity §COVERAGE"
+  },
+  "par.tables_of": {
+   "val": "34",
+   "src": "parity §COVERAGE"
+  },
+  "par.win": {
+   "val": "350",
+   "src": "parity §COVERAGE"
+  },
+  "par.win_of": {
+   "val": "370",
+   "src": "parity §COVERAGE"
+  },
+  "par.date": {
+   "val": "2026-10-12",
+   "src": "parity log file date"
+  },
+  "so.distrust": {
+   "val": "46",
+   "src": "survey.stackoverflow.co/2025/ai (saved out/prior/so2025_ai.html)"
+  },
+  "so.trust": {
+   "val": "33",
+   "src": "same"
+  },
+  "so.fav0": {
+   "val": "70",
+   "src": "same"
+  },
+  "so.fav1": {
+   "val": "60",
+   "src": "same"
+  },
+  "vc.flaw": {
+   "val": "45",
+   "src": "veracode.com 2025 GenAI Code Security Report page (saved out/prior/veracode2025.html)"
+  },
+  "erp.years": {
+   "val": "20",
+   "src": "VibeProgramming.md framework table"
+  },
+  "date.fail1": {
+   "val": "2026-08-25",
+   "src": "VibeProgramming.md fail1"
+  },
+  "date.fail2": {
+   "val": "2026-08-26",
+   "src": "VibeProgramming.md fail2"
+  },
+  "date.fail3": {
+   "val": "2026-10-04",
+   "src": "VibeProgramming.md fail3"
+  },
+  "c7.s": {
+   "val": "57",
+   "src": "CODE_ARCHITECTURE_DESIGN.md C7"
+  },
+  "c7.files": {
+   "val": "1208",
+   "src": "same"
+  },
+  "parts.cd": {
+   "val": "not started",
+   "src": "CODE_ARCHITECTURE_DESIGN.md §2"
+  },
+  "parts.b1": {
+   "val": "spec written, not built",
+   "src": "CODE_ARCHITECTURE_DESIGN.md §2"
+  },
+  "retract.times": {
+   "val": "three",
+   "src": "VibeProgramming.md fail2"
+  },
+  "ai.lines": {
+   "val": "288000",
+   "src": "VibeProgramming.md, the Gemini review row"
+  },
+  "ai.files": {
+   "val": "3300",
+   "src": "same"
+  },
+  "mem.gb": {
+   "val": "0.173",
+   "src": "BrowserScaleBenchmark.md fit"
+  }
+ },
+ "rvRejects": [
+  "§RV-ROSTER roster with a swapped device key is REJECTED — why=roster signature invalid",
+  "§RV-ROTATE stranger-signed ROTATE is REJECTED — why=ROTATE not counter-signed by outgoing key (signer=K1 active=K0)",
+  "§RV-FUTURE post-rotation OLD-key op is REJECTED at id=3 — brokeAt=3 why=op signed by non-active key K0 (active=K1) — superseded key cannot sign new ops",
+  "§RV-REVOKE a FUTURE op by the revoked key is REJECTED — brokeAt=6 why=op signed by REVOKED key K1 (revoked at 4)",
+  "§RV-IMPORT-FORGE roster-gated import REJECTS the forgery — erp_sync: import REJECTED — signature invalid under K0 (op id=3)"
+ ],
+ "purityLine": "§CORE_PURE files=125 parse_fail=0 forbidden=0 red_control=detected verdict=PASS",
+ "langs": {
+  "idempiere": [
+   [
+    "Java",
+    81.9
+   ],
+   [
+    "JavaScript",
+    11.4
+   ],
+   [
+    "Fluent",
+    2.5
+   ],
+   [
+    "PLpgSQL",
+    1.9
+   ],
+   [
+    "HTML",
+    1.1
+   ],
+   [
+    "CSS",
+    0.4
+   ],
+   [
+    "Faust",
+    0.4
+   ],
+   [
+    "Shell",
+    0.3
+   ],
+   [
+    "Batchfile",
+    0.1
+   ],
+   [
+    "PLSQL",
+    0.1
+   ],
+   [
+    "XSLT",
+    0
+   ],
+   [
+    "ANTLR",
+    0
+   ],
+   [
+    "ZenScript",
+    0
+   ]
+  ],
+  "odoo": [
+   [
+    "Python",
+    52.5
+   ],
+   [
+    "JavaScript",
+    43.2
+   ],
+   [
+    "Fluent",
+    1.9
+   ],
+   [
+    "SCSS",
+    1.9
+   ],
+   [
+    "CSS",
+    0.4
+   ],
+   [
+    "HTML",
+    0.1
+   ],
+   [
+    "Shell",
+    0
+   ],
+   [
+    "NSIS",
+    0
+   ],
+   [
+    "XSLT",
+    0
+   ],
+   [
+    "Sass",
+    0
+   ],
+   [
+    "TypeScript",
+    0
+   ],
+   [
+    "Vim Script",
+    0
+   ]
+  ],
+  "erpnext": [
+   [
+    "Python",
+    82.6
+   ],
+   [
+    "JavaScript",
+    11.8
+   ],
+   [
+    "TypeScript",
+    3.4
+   ],
+   [
+    "HTML",
+    1.3
+   ],
+   [
+    "Vue",
+    0.4
+   ],
+   [
+    "SCSS",
+    0.2
+   ],
+   [
+    "CSS",
+    0.2
+   ],
+   [
+    "Dockerfile",
+    0
+   ]
+  ],
+  "frappe": [
+   [
+    "Python",
+    52.5
+   ],
+   [
+    "JavaScript",
+    26.4
+   ],
+   [
+    "Vue",
+    9.5
+   ],
+   [
+    "TypeScript",
+    7
+   ],
+   [
+    "SCSS",
+    2.1
+   ],
+   [
+    "CSS",
+    1.3
+   ],
+   [
+    "HTML",
+    1.3
+   ],
+   [
+    "Dockerfile",
+    0
+   ],
+   [
+    "Jinja",
+    0
+   ]
+  ],
+  "ours": [
+   [
+    "JavaScript",
+    93.7
+   ],
+   [
+    "HTML",
+    5.7
+   ],
+   [
+    "Python",
+    0.4
+   ],
+   [
+    "Shell",
+    0.2
+   ],
+   [
+    "PLpgSQL",
+    0
+   ]
+  ]
+ },
+ "prs": {
+  "BIMCompiler#905": {
+   "what": "outside assessment, fact-checked",
+   "state": "MERGED"
+  },
+  "BIMCompiler#925": {
+   "what": "README counts",
+   "state": "MERGED"
+  },
+  "BIMCompiler#933": {
+   "what": "scale check + peers",
+   "state": "MERGED"
+  },
+  "bim-ootb#3229": {
+   "what": "README counts",
+   "state": "MERGED"
+  },
+  "bim-ootb#3234": {
+   "what": "CI witness wording",
+   "state": "MERGED"
+  },
+  "BIMCompiler#923": {
+   "what": "When AI Dies film",
+   "state": "MERGED"
+  }
+ },
+ "firstCommit": "2026-05-23",
+ "licence": "MIT License"
+}

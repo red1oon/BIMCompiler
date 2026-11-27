@@ -1,0 +1,6 @@
+§TERMS table (open first; an open term is never green)
+term | witness | broken control | status | roadmap
+trusted keys (roles + threshold) | PASS | 7/8 refused | UNCONTROLLED [bim-ootb tree (node, real modules)] | 
+   🔴 control NOT FOUND: duplicate signer counted once
+§TERMS_BROWSER judged=0 skipped=0 reason="--browser 0" reused-logs
+§TERMS_VERDICT FAIL enforced=0 open=0 witness_failed=0 uncontrolled=1 browser=judged 0/skipped 0

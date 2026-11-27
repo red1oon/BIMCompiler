@@ -1,0 +1,62 @@
+═══ W-POS-PLAN — role-scoped delivery: the hosts read a POS (star) plan (TEAMWORK_FRAMEWORK §38.14, §38.15) ═══  reader=/tmp/wt-ootb-base engine=/tmp/wt-bc-g6
+§P0 OFFICE UNCHANGED (the immutable additive rule: the shipped office plan and its reader answers are the base's)
+   🟢 erp/team_plan.js (the office plan) is byte-identical to 3e779487 (so its plan hash is unchanged) — 377a2a5abc14 vs 377a2a5abc14
+   🟢 scopeOf / flow answers are identical for ALL 1004 tables (1-arg, and with any role: an office plan has only space rows) — 1004 tables
+   🔴 THREW: NEW.kind is not a function
+   🟢 the office plan carries no hub row, no hub and NO executor map: the mesh = legacy (whoever's login role has Document Action Access may act) — flows=855
+§P1 DIRECTION PER ROLE
+   🔴 role 200001 · c_orderline = up — got share
+   🔴 role 200001 · m_movementline = receive — got share
+   🔴 role 200001 · i_order = up — got share
+   🔴 role 102 · c_orderline = receive — got share
+   🔴 role 102 · m_movementline = down — got share
+   🔴 role 102 · i_order = receive — got share
+   🔴 role 102 · c_invoice = down — got share
+   🔴 role 103 · c_invoice = receive — got share
+   🔴 role 103 · c_payment = up — got share
+   🔴 role 102 · c_payment = receive — got share
+   🔴 role 103 · c_orderline = unplanned — got share
+   🔴 role 200001 · c_invoice = unplanned — got share
+   🔴 no role · c_orderline = unplanned — got share
+   🔴 role 200001 · c_bpartner = unplanned — got share
+   🟢 role 200001 · ad_sequence = station-local — got station-local
+   🔴 the order header never leaves either device (the processor's own order is a LOCAL row of the plan) — share/share
+   🔴 THREW: T.hub is not a function
+§P2 CARRIES BINDS OUTBOUND (FL-1) + the processor's Complete group
+   🔴 a station's C_OrderLine create leaves with EXACTLY the declared columns + the partition (description, priceactual, linenetamt, c_order_id stay on the device) — ["ad_client_id","ad_org_id","c_order_id","c_uom_id","description","linenetamt","m_product_id","priceactual","qtyentered"]
+   🔴 the station's order header never leaves (its plan row is the processor's LOCAL) — {"target":{"table":"c_order","uu":"c49e64f5-eb05-4859-b2cf-42d883bc6ac5"},"body":{"op_type
+   🔴 the processor's replenishment line (DOWN) leaves with its declared columns only — ["m_product_id","qtyentered","c_uom_id","m_locator_id","m_locatorto_id","description","ad_client_id","ad_org_id"]
+   🟢 an UPDATE that touches no declared column sends nothing — {"local":"target-not-a-team-record (uu-unresolved table=c_orderline id=7) — the comm layer admits an
+   🔴 the processor's 103-op Complete group (order, shipment, invoice, postings, ...): 103 leave, 0 stay on the device (the plan declares no flow for them from the hub role) — sent=103 local=0
+   🟢 CONTROL: the SAME adapter in a space with no `plan` (office) DOES share those tables (12 of 12 sent) - the thin pipe is the plan's doing, not a broken sender — office sent=12
+§P3 NOT-ADDRESSED INBOUND (a station never folds another station's declaration)
+   🔴 the processor projects the declaration (1), the author keeps its own (1), the OTHER station projects 0 — F=10 T1=10 T2=10
+   🔴 the ENGINE did place that op on T2 (the dumb relay delivered it) - it is the adapter that refused it locally, and says so (§TEAM_THIN refused>0) — placed=10 refused=undefined
+   🟢 a DOWN flow addressed to the station ROLE reaches every station (role-scoped), and the hub keeps what it sent — T1=1 T2=1
+   🔴 THREW: Cannot read properties of undefined (reading 'accepted')
+§P6 BORROWER SCOPE IS PER RECORD (two borrowers, ONE role)
+   🟢 the processor sends the two loans and their instalments (their borrowers are bound in the roster) — sent,sent,sent,sent
+   🔴 a record whose entity has NO bound person (a cash customer) is never sent: no-addressee (it would only fatten the pipe)
+   🔴 the loan leaves with its declared columns only (the address column c_bpartner_id is among them; description is not) — ["ad_client_id","ad_org_id","c_bpartner_id","description","documentno","grandtotal"]
+   🔴 borrower 1's payment (UP) carries only c_bpartner_id and payamt — ["c_bpartner_id","payamt","description","ad_client_id","ad_org_id"]
+   🔴 borrower 1 holds ITS loan, ITS instalment and its own payment — c_order,c_order,c_payment,m_cost,c_orderline,c_invoiceline,fact_acct,c_invoiceline,m_inout,c_invoice,c_invoice,m_storageonhand,c_invoiceline,c_orderline,c_orderline,c_orderline,c_allocationhdr,m_transaction,m_inoutline,m_transaction,c_invoicepayschedule,fact_acct,m_inout,m_storageonhand,m_transaction,m_transaction,m_inout,c_allocationhdr,c_invoiceline,c_allocationhdr,fact_acct,m_transaction,c_orderline,c_payment,m_inout,m_cost,m_transaction,c_allocationhdr,m_inout,c_payment,c_invoice,m_inoutline,m_cost,m_cost,c_orderline,c_invoiceline,c_order,m_storageonhand,c_allocationhdr,m_inout,m_inoutline,c_payment,c_invoice,c_invoicepayschedule,m_inout,m_inoutline,c_invoice,c_order,c_orderline,c_invoiceline,c_invoice,c_allocationhdr,c_invoice,m_storageonhand,c_order,m_cost,m_storageonhand,m_inoutline,c_payment,m_inoutline,fact_acct,m_transaction,m_storageonhand,c_invoice,m_storageonhand,c_orderline,m_inoutline,fact_acct,c_allocationhdr,m_inout,c_payment,c_invoiceline,c_order,m_movementline,m_inout,c_orderline,fact_acct,c_order,c_payment,fact_acct,c_order,c_payment,fact_acct,c_invoice,m_cost,c_invoiceline,c_payment,c_allocationhdr,m_transaction,m_inoutline,c_order,c_invoice,c_orderline,m_inoutline,m_storageonhand,fact_acct,m_cost,c_invoice,c_invoice,c_order,c_invoiceline,m_cost
+   🔴 borrower 2 (same role) holds ITS loan + instalment only: 0 of borrower 1's invoice / schedule / payment (112 ops in all) — c_order,c_order,c_payment,m_cost,c_orderline,c_invoiceline,fact_acct,c_invoiceline,m_inout,c_invoice,c_invoice,m_storageonhand,c_invoiceline,c_orderline,c_orderline,c_orderline,c_allocationhdr,m_transaction,m_inoutline,m_transaction,c_invoicepayschedule,fact_acct,m_inout,m_storageonhand,m_transaction,m_transaction,m_inout,c_allocationhdr,c_invoiceline,c_allocationhdr,fact_acct,m_transaction,c_orderline,c_payment,m_inout,m_cost,m_transaction,c_allocationhdr,m_inout,c_payment,c_invoice,m_inoutline,m_cost,m_cost,c_orderline,c_invoiceline,c_order,m_storageonhand,c_allocationhdr,m_inout,m_inoutline,c_payment,c_invoice,c_invoicepayschedule,m_inout,m_inoutline,c_invoice,c_order,c_orderline,c_invoiceline,c_invoice,c_allocationhdr,c_invoice,m_storageonhand,c_order,m_cost,m_storageonhand,m_inoutline,c_payment,m_inoutline,fact_acct,m_transaction,m_storageonhand,c_invoice,m_storageonhand,c_orderline,m_inoutline,fact_acct,c_allocationhdr,m_inout,c_payment,c_invoiceline,c_order,m_movementline,m_inout,c_orderline,fact_acct,c_order,c_payment,fact_acct,c_order,c_payment,fact_acct,c_invoice,m_cost,c_invoiceline,c_payment,c_allocationhdr,m_transaction,m_inoutline,c_order,c_invoice,c_orderline,m_inoutline,m_storageonhand,fact_acct,m_cost,c_invoice,c_invoice,c_order,c_invoiceline,m_cost refused=undefined
+   🔴 and none of borrower 1's values is in borrower 2's projection (228.85 / LN-A / 114.43) — {"ad_client_id":11,"ad_org_id":0,"documentno":"G-48"}|{"ad_client_id":11,"ad_org_id":0,"documentno":"G-36"}|{"ad_client_
+   🔴 borrower 1's SECOND device (enrolled onto the existing person) holds exactly what the first holds — B1b=112 B1=112
+   🔴 THREW: Cannot read properties of undefined (reading 'refused')
+§P4 THE GENESIS NAMES THE PLAN (absent = office)
+   🔴 newSpace without the option writes no `plan`; with it writes office|pos; any other value is refused — absent=true explicit=undefined pos=undefined bogus=null
+   🔴 the roster reads the plan back: absent -> office, "office" -> office, "pos" -> pos — undefined/undefined/undefined
+   🔴 a genesis carrying an unknown plan value is untrusted (the space does not open) — ok
+   🔴 the founder's choice (?teamplan=pos) reaches the genesis through spaceOpts; with no choice there is no option at all
+   🔴 THREW: ad2.scope.kind is not a function
+§P7 THE POS PLAN IS VERIFIED LIKE THE OFFICE PLAN (same trust list, §33)
+   🔴 signed by the trusted key -> state=ok, the station's C_OrderLine is "up" — ok share
+   🔴 altered after signing / unsigned under a trust list -> invalid, signed by another key -> untrusted: all CLOSED (nothing declared, nothing shared) — ok/ok/ok
+   🔴 a pos space whose device has NO pos plan file shares nothing and prints "missing — nothing is shared" — share
+§P5 THE PLAN'S OWN docaction ROW IS THE EXECUTOR MAP (G-4 overlay); no executor for the station
+   🟢 the POS plan carries executors = {c_order: 102} derived from its docaction row, and hub = 102 — {"c_order":102}
+   🟢 the plan's map, signed by the owner (stmt executors) and MERGED, leaves the station role (200001) with no active DocAction row on the order doctype (was 14) and the processor (102) with all 14 — policy=MERGED till Y=0 N=14 hq Y=14
+   🟢 an 'author' executor is not accepted anywhere any more (signer or fold) — refused: the statement would be refused: shape:map
+§PP_ARMS red=P0!THREW,P1,P1!THREW,P2,P3,P3!THREW,P6,P6!THREW,P4,P4!THREW,P7 judged=51 fails=40
+§PP_VERDICT FAIL judged=51 fails=40 mutants=NOT RUN (the base run is red)

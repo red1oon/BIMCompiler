@@ -1,0 +1,64 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>std sheets</title>
+<style>
+/* DXF2BIM film, chapter 2: the std sheets as ezdxf drew them (render_sheets.py). The page DRAWS; every overlay item is a DXF entity
+   listed in <sheet>.json (door ARCs on A-DOOR, CIRCLEs on A-GRID, DIMENSION extents). Nothing here is computed from the model. */
+html,body{margin:0;height:100%;background:#2b2f38;overflow:hidden;font-family:"Noto Sans","DejaVu Sans",sans-serif}
+#grid{position:absolute;inset:0;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr);gap:18px;padding:70px 40px 120px;box-sizing:border-box;transition:opacity 1.3s ease}
+.th{background:#fff;border-radius:6px;position:relative;opacity:0;transform:translateY(10px);transition:opacity 1.6s ease,transform 1.6s ease;overflow:hidden;box-shadow:0 6px 24px rgba(0,0,0,.45)}
+.th.on{opacity:1;transform:none}
+.th img{position:absolute;inset:0;width:100%;height:calc(100% - 26px);object-fit:contain}
+.th span{position:absolute;left:0;right:0;bottom:0;height:26px;line-height:26px;font-size:12.5px;color:#3b4250;background:#eef0f3;text-align:center;letter-spacing:.02em}
+#stage{position:absolute;left:0;top:0;width:3840px;height:2160px;transform-origin:0 0;transition:opacity 1.3s ease;opacity:0}
+#stage img{position:absolute;left:0;top:0;width:3840px;height:2160px}
+#stage svg{position:absolute;left:0;top:0;width:3840px;height:2160px}
+#stage svg g{opacity:0;transition:opacity 1.1s}
+#stage svg g.on{opacity:1}
+#badge{position:absolute;left:28px;top:28px;background:rgba(21,23,28,.86);color:#e7e9ee;font-size:20px;padding:8px 14px;border-radius:8px;border:1px solid #2c303a;opacity:0;transition:opacity .5s}
+#badge b{color:#FF6B78;font-weight:700}
+</style></head>
+<body>
+<div id="grid"></div>
+<div id="stage"><img id="simg"><svg id="sov" viewBox="0 0 3840 2160"></svg></div>
+<div id="badge"></div>
+<script>
+const NAMES = ['FLOOR_GF','FLOOR_FF','FRONT','REAR','LEFT','RIGHT','ROOF','SECTION'];
+const J = {};
+const VW = innerWidth, VH = innerHeight, FIT = Math.min(VW / 3840, VH / 2160);
+const stage = document.getElementById('stage'), sov = document.getElementById('sov'), badge = document.getElementById('badge');
+const NS = 'http://www.w3.org/2000/svg', el = (t, a) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); return e; };
+const C = '#FF6B78';
+const CUR = { cx: 1920, cy: 1080, z: 1 };
+function setView(cx, cy, z) {                     // cx, cy in sheet px (centre of view); z = zoom over "fit"; the recorder steps it frame by frame
+  const s = FIT * z; Object.assign(CUR, { cx, cy, z });
+  stage.style.transform = `translate(${VW / 2 - cx * s}px,${VH / 2 - cy * s}px) scale(${s})`;
+}
+window.scene = {
+  async load() { for (const n of NAMES) J[n] = await (await fetch(n + '.json')).json();
+    const g = document.getElementById('grid'); g.innerHTML = NAMES.map(n => `<div class="th"><img src="${n}.png"><span>${J[n].file}</span></div>`).join('');
+    await Promise.all(Array.from(document.images).map(i => i.decode().catch(() => {}))); return NAMES.map(n => n + ':' + J[n].file); },
+  showGrid() { document.getElementById('grid').style.transition = 'none'; document.getElementById('grid').style.opacity = 0; stage.style.opacity = 0; badge.style.opacity = 0;
+    const th = document.querySelectorAll('.th'); th.forEach(t => t.classList.add('on')); return th.length; },
+  sheet(n) {                                       // the whole sheet, centred
+    const d = J[n]; document.getElementById('simg').src = n + '.png'; sov.innerHTML = '';
+    const gGrid = el('g', { id: 'g-grid' }), gDims = el('g', { id: 'g-dims' }), gDoor = el('g', { id: 'g-doors' });
+    d.items.grid_bubbles.forEach(b => gGrid.appendChild(el('circle', { cx: b.c[0], cy: b.c[1], r: b.r + 6, fill: 'rgba(255,107,120,.18)', stroke: C, 'stroke-width': 7 })));
+    d.items.dims.forEach(x => gDims.appendChild(el('rect', { x: Math.min(x.r[0], x.r[2]) - 4, y: Math.min(x.r[1], x.r[3]) - 4, width: Math.abs(x.r[2] - x.r[0]) + 8, height: Math.abs(x.r[3] - x.r[1]) + 8, fill: 'rgba(80,170,255,.16)', stroke: '#3d9bff', 'stroke-width': 3, rx: 4 })));
+    d.items.door_arcs.forEach(a => { gDoor.appendChild(el('polyline', { points: a.pts.map(p => p.join(',')).join(' '), fill: 'none', stroke: C, 'stroke-width': 11, 'stroke-linecap': 'round' }));
+      gDoor.appendChild(el('circle', { cx: a.hinge[0], cy: a.hinge[1], r: 11, fill: C })); });
+    sov.append(gDims, gGrid, gDoor);
+    stage.style.transition = 'none'; setView(1920, 1080, 1);
+    return { arcs: d.items.door_arcs.length, bubbles: d.items.grid_bubbles.length, dims: d.items.dims.length, labels: [...new Set(d.items.grid_labels)].sort().join('') };
+  },
+  fadeOut() { stage.style.opacity = 0; badge.style.opacity = 0; },
+  gridOp(v) { const g = document.getElementById('grid'); g.style.transition = 'none'; g.style.opacity = v; document.querySelectorAll('.th').forEach(t => { t.style.transition = 'none'; t.style.opacity = 1; t.style.transform = 'none'; }); },
+  stageOp(v) { stage.style.transition = 'none'; stage.style.opacity = v; },
+  hl(kind, on) { const g = document.getElementById('g-' + kind); if (g) g.classList.toggle('on', on !== false); return g ? g.childElementCount : 0; },
+  centre(kind) { const bb = sov.querySelector('#g-' + kind).getBBox(); return [bb.x + bb.width / 2, bb.y + bb.height / 2, Math.round(bb.width), Math.round(bb.height)]; },
+  cur() { return [CUR.cx, CUR.cy, CUR.z]; },
+  view(cx, cy, z) { setView(cx, cy, z); },
+  badge(html) { badge.innerHTML = html || ''; badge.style.opacity = html ? 1 : 0; },
+};
+window.FILM_SHEETS_READY = true;
+</script>
+</body></html>

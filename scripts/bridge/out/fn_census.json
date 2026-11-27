@@ -1,0 +1,696 @@
+{
+ "date": "2026-10-15T09:13:26.856Z",
+ "rows": [
+  {
+   "name": "acctbalance",
+   "overloads": 1,
+   "cls": "BUSINESS",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/callouts/sqlfn.js",
+    "erp/model_post.js",
+    "erp/report_overlay.js"
+   ]
+  },
+  {
+   "name": "add_missing_translations",
+   "overloads": 1,
+   "cls": "INFRA",
+   "port": "NONE",
+   "refs": []
+  },
+  {
+   "name": "add_months",
+   "overloads": 1,
+   "cls": "SHIM",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/ad_callout.js",
+    "erp/callouts/sqlfn.js"
+   ]
+  },
+  {
+   "name": "adddays",
+   "overloads": 2,
+   "cls": "SHIM",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/ad_callout.js",
+    "erp/callouts/sqlfn.js",
+    "erp/callouts/support.js",
+    "erp/model_trade.js",
+    "erp/processes/FactAcctReset.js"
+   ]
+  },
+  {
+   "name": "altercolumn",
+   "overloads": 1,
+   "cls": "INFRA",
+   "port": "NONE",
+   "refs": []
+  },
+  {
+   "name": "bompricelimit",
+   "overloads": 1,
+   "cls": "BUSINESS",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/ad_infowin.js",
+    "erp/callouts/pricing.js",
+    "erp/callouts/sqlfn.js"
+   ]
+  },
+  {
+   "name": "bompricelist",
+   "overloads": 1,
+   "cls": "BUSINESS",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/ad_infowin.js",
+    "erp/callouts/pricing.js",
+    "erp/callouts/sqlfn.js"
+   ]
+  },
+  {
+   "name": "bompricestd",
+   "overloads": 1,
+   "cls": "BUSINESS",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/ad_infowin.js",
+    "erp/callouts/pricing.js",
+    "erp/callouts/sqlfn.js"
+   ]
+  },
+  {
+   "name": "bomqtyavailable",
+   "overloads": 1,
+   "cls": "BUSINESS",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/callouts/sqlfn.js"
+   ]
+  },
+  {
+   "name": "bomqtyonhand",
+   "overloads": 1,
+   "cls": "BUSINESS",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/callouts/sqlfn.js",
+    "erp/crud_overlay.js"
+   ]
+  },
+  {
+   "name": "bomqtyonhandforreservation",
+   "overloads": 1,
+   "cls": "BUSINESS",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/callouts/sqlfn.js"
+   ]
+  },
+  {
+   "name": "bomqtyordered",
+   "overloads": 1,
+   "cls": "BUSINESS",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/callouts/sqlfn.js"
+   ]
+  },
+  {
+   "name": "bomqtyreserved",
+   "overloads": 1,
+   "cls": "BUSINESS",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/callouts/sqlfn.js"
+   ]
+  },
+  {
+   "name": "bpartnerremitlocation",
+   "overloads": 1,
+   "cls": "BUSINESS",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/callouts/sqlfn.js"
+   ]
+  },
+  {
+   "name": "charat",
+   "overloads": 1,
+   "cls": "SHIM",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/accts_posted.js",
+    "erp/ad_access.js",
+    "erp/ad_callout.js",
+    "erp/ad_evaluator.js",
+    "erp/ad_modelval.js",
+    "erp/ad_process.js"
+   ]
+  },
+  {
+   "name": "currencybase",
+   "overloads": 1,
+   "cls": "BUSINESS",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/callouts/sqlfn.js",
+    "erp/erp_engine.js",
+    "erp/model_trade.js"
+   ]
+  },
+  {
+   "name": "currencyconvert",
+   "overloads": 1,
+   "cls": "BUSINESS",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/callouts/CalloutPaySelection.js",
+    "erp/callouts/sqlfn.js",
+    "erp/callouts/views.js",
+    "erp/model_cost.js",
+    "erp/model_trade.js",
+    "erp/processes/DunningRunCreate.js"
+   ]
+  },
+  {
+   "name": "currencyconvertinvoice",
+   "overloads": 1,
+   "cls": "BUSINESS",
+   "port": "referenced in 5 file(s)",
+   "refs": [
+    "erp/ad_process.js",
+    "erp/callouts/CalloutPaySelection.js",
+    "erp/callouts/sqlfn.js",
+    "erp/callouts/views.js",
+    "erp/processes/PaySelectionCreateFrom.js"
+   ]
+  },
+  {
+   "name": "currencyconvertpayment",
+   "overloads": 1,
+   "cls": "BUSINESS",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/callouts/sqlfn.js"
+   ]
+  },
+  {
+   "name": "currencyrate",
+   "overloads": 1,
+   "cls": "BUSINESS",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/ad_modelval.js",
+    "erp/ad_process.js",
+    "erp/callouts/CalloutGLJournal.js",
+    "erp/callouts/CalloutPayment.js",
+    "erp/callouts/sqlfn.js",
+    "erp/callouts/views.js"
+   ]
+  },
+  {
+   "name": "currencyround",
+   "overloads": 1,
+   "cls": "BUSINESS",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/callouts/sqlfn.js",
+    "erp/callouts/views.js"
+   ]
+  },
+  {
+   "name": "daysbetween",
+   "overloads": 1,
+   "cls": "SHIM",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/ad_process.js",
+    "erp/callouts/sqlfn.js",
+    "erp/processes/DunningRunCreate.js"
+   ]
+  },
+  {
+   "name": "delete_ad_archive_binary",
+   "overloads": 1,
+   "cls": "INFRA",
+   "port": "NONE",
+   "refs": []
+  },
+  {
+   "name": "delete_ad_attachment_binary",
+   "overloads": 1,
+   "cls": "INFRA",
+   "port": "NONE",
+   "refs": []
+  },
+  {
+   "name": "delete_ad_image_binary",
+   "overloads": 1,
+   "cls": "INFRA",
+   "port": "NONE",
+   "refs": []
+  },
+  {
+   "name": "documentno",
+   "overloads": 1,
+   "cls": "BUSINESS",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/ad_data.js",
+    "erp/ad_graph.js",
+    "erp/ad_infowin.js",
+    "erp/ad_ui.js",
+    "erp/callouts/CalloutInOut.js",
+    "erp/callouts/CalloutInvoiceBatch.js"
+   ]
+  },
+  {
+   "name": "firstof",
+   "overloads": 1,
+   "cls": "SHIM",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/ad_callout.js",
+    "erp/callouts/sqlfn.js"
+   ]
+  },
+  {
+   "name": "forbid_multiple_rows_in_dbreplicasyncverifier",
+   "overloads": 1,
+   "cls": "INFRA",
+   "port": "NONE",
+   "refs": []
+  },
+  {
+   "name": "generate_uuid",
+   "overloads": 1,
+   "cls": "BUSINESS",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/callouts/sqlfn.js",
+    "erp/model_master.js",
+    "erp/processes/InventoryCountCreate.js",
+    "erp/processes/M_PriceList_Create.js"
+   ]
+  },
+  {
+   "name": "get1099bucket",
+   "overloads": 1,
+   "cls": "BUSINESS",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/callouts/sqlfn.js"
+   ]
+  },
+  {
+   "name": "get_sysconfig",
+   "overloads": 1,
+   "cls": "BUSINESS",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/callouts/sqlfn.js",
+    "erp/pos_core.js"
+   ]
+  },
+  {
+   "name": "getdate",
+   "overloads": 1,
+   "cls": "SHIM",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/ad_callout.js",
+    "erp/callouts/CalloutRMA.js",
+    "erp/callouts/sqlfn.js",
+    "erp/crud_overlay.js",
+    "erp/doc_poster.js",
+    "erp/processes/InventoryCountCreate.js"
+   ]
+  },
+  {
+   "name": "instr",
+   "overloads": 3,
+   "cls": "SHIM",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/ad_callout.js",
+    "erp/ad_infowin.js",
+    "erp/callouts/sqlfn.js",
+    "erp/erp_picker.js",
+    "erp/kernel_ops.js",
+    "erp/model_trade.js"
+   ]
+  },
+  {
+   "name": "invoicediscount",
+   "overloads": 1,
+   "cls": "BUSINESS",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/callouts/CalloutCashJournal.js",
+    "erp/callouts/CalloutPaymentAllocate.js",
+    "erp/callouts/CalloutPayment.js",
+    "erp/callouts/sqlfn.js",
+    "erp/processes/PaySelectionCreateFrom.js"
+   ]
+  },
+  {
+   "name": "invoiceopen",
+   "overloads": 1,
+   "cls": "BUSINESS",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/ad_process.js",
+    "erp/callouts/CalloutCashJournal.js",
+    "erp/callouts/CalloutPaymentAllocate.js",
+    "erp/callouts/CalloutPayment.js",
+    "erp/callouts/CalloutPaySelection.js",
+    "erp/callouts/sqlfn.js"
+   ]
+  },
+  {
+   "name": "invoiceopentodate",
+   "overloads": 2,
+   "cls": "BUSINESS",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/ad_process.js",
+    "erp/callouts/sqlfn.js"
+   ]
+  },
+  {
+   "name": "invoicepaid",
+   "overloads": 1,
+   "cls": "BUSINESS",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/callouts/sqlfn.js"
+   ]
+  },
+  {
+   "name": "invoicepaidtodate",
+   "overloads": 1,
+   "cls": "BUSINESS",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/callouts/sqlfn.js"
+   ]
+  },
+  {
+   "name": "invoicewriteoff",
+   "overloads": 1,
+   "cls": "BUSINESS",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/callouts/sqlfn.js",
+    "erp/processes/PaySelectionCreateFrom.js"
+   ]
+  },
+  {
+   "name": "isintersectcsv",
+   "overloads": 1,
+   "cls": "BUSINESS",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/callouts/sqlfn.js"
+   ]
+  },
+  {
+   "name": "ismemberofacctschema",
+   "overloads": 1,
+   "cls": "BUSINESS",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/callouts/sqlfn.js"
+   ]
+  },
+  {
+   "name": "migr_fix_payment_cashline",
+   "overloads": 1,
+   "cls": "INFRA",
+   "port": "NONE",
+   "refs": []
+  },
+  {
+   "name": "nextbusinessday",
+   "overloads": 1,
+   "cls": "BUSINESS",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/ad_callout.js",
+    "erp/callouts/sqlfn.js"
+   ]
+  },
+  {
+   "name": "nextid",
+   "overloads": 1,
+   "cls": "BUSINESS",
+   "port": "referenced in 2 file(s)",
+   "refs": [
+    "erp/crud_overlay.js",
+    "erp/kernel_ops.js"
+   ]
+  },
+  {
+   "name": "nextidfunc",
+   "overloads": 1,
+   "cls": "BUSINESS",
+   "port": "referenced in 1 file(s)",
+   "refs": [
+    "erp/processes/M_PriceList_Create.js"
+   ]
+  },
+  {
+   "name": "nvl",
+   "overloads": 4,
+   "cls": "SHIM",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/callouts/sqlfn.js",
+    "erp/callouts/support_stock.js"
+   ]
+  },
+  {
+   "name": "paymentallocated",
+   "overloads": 1,
+   "cls": "BUSINESS",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/callouts/sqlfn.js"
+   ]
+  },
+  {
+   "name": "paymentavailable",
+   "overloads": 1,
+   "cls": "BUSINESS",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/callouts/sqlfn.js",
+    "erp/erp_engine.js",
+    "erp/model_trade.js",
+    "erp/processes/DunningRunCreate.js"
+   ]
+  },
+  {
+   "name": "paymenttermdiscount",
+   "overloads": 1,
+   "cls": "BUSINESS",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/callouts/CalloutPaySelection.js",
+    "erp/callouts/sqlfn.js"
+   ]
+  },
+  {
+   "name": "paymenttermduedate",
+   "overloads": 1,
+   "cls": "BUSINESS",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/ad_process.js",
+    "erp/callouts/sqlfn.js",
+    "erp/callouts/views.js"
+   ]
+  },
+  {
+   "name": "paymenttermduedays",
+   "overloads": 1,
+   "cls": "BUSINESS",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/ad_process.js",
+    "erp/callouts/sqlfn.js",
+    "erp/processes/DunningRunCreate.js"
+   ]
+  },
+  {
+   "name": "prodqtyordered",
+   "overloads": 1,
+   "cls": "BUSINESS",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/callouts/sqlfn.js"
+   ]
+  },
+  {
+   "name": "prodqtyreserved",
+   "overloads": 1,
+   "cls": "BUSINESS",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/callouts/sqlfn.js"
+   ]
+  },
+  {
+   "name": "productattribute",
+   "overloads": 1,
+   "cls": "BUSINESS",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/ad_infowin.js",
+    "erp/callouts/sqlfn.js"
+   ]
+  },
+  {
+   "name": "register_migration_script",
+   "overloads": 1,
+   "cls": "INFRA",
+   "port": "NONE",
+   "refs": []
+  },
+  {
+   "name": "role_access_update",
+   "overloads": 1,
+   "cls": "INFRA",
+   "port": "NONE",
+   "refs": []
+  },
+  {
+   "name": "round",
+   "overloads": 1,
+   "cls": "SHIM",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/ad_callout.js",
+    "erp/ad_charts.js",
+    "erp/ad_data.js",
+    "erp/ad_graph.js",
+    "erp/ad_infowin.js",
+    "erp/ad_modelval.js"
+   ]
+  },
+  {
+   "name": "subtractdays",
+   "overloads": 2,
+   "cls": "SHIM",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/ad_callout.js",
+    "erp/callouts/sqlfn.js"
+   ]
+  },
+  {
+   "name": "torecordid",
+   "overloads": 1,
+   "cls": "BUSINESS",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/callouts/sqlfn.js"
+   ]
+  },
+  {
+   "name": "trunc",
+   "overloads": 5,
+   "cls": "SHIM",
+   "port": "sqlfn.js UDF",
+   "refs": [
+    "erp/ad_callout.js",
+    "erp/ad_process.js",
+    "erp/callouts/CalloutOrder.js",
+    "erp/callouts/sqlfn.js",
+    "erp/callouts/support.js",
+    "erp/callouts/uom.js"
+   ]
+  },
+  {
+   "name": "update_sequences",
+   "overloads": 1,
+   "cls": "INFRA",
+   "port": "NONE",
+   "refs": []
+  },
+  {
+   "name": "uuid_generate_v1",
+   "overloads": 1,
+   "cls": "INFRA",
+   "port": "NONE",
+   "refs": []
+  },
+  {
+   "name": "uuid_generate_v1mc",
+   "overloads": 1,
+   "cls": "INFRA",
+   "port": "NONE",
+   "refs": []
+  },
+  {
+   "name": "uuid_generate_v3",
+   "overloads": 1,
+   "cls": "INFRA",
+   "port": "NONE",
+   "refs": []
+  },
+  {
+   "name": "uuid_generate_v4",
+   "overloads": 1,
+   "cls": "INFRA",
+   "port": "NONE",
+   "refs": []
+  },
+  {
+   "name": "uuid_generate_v5",
+   "overloads": 1,
+   "cls": "INFRA",
+   "port": "NONE",
+   "refs": []
+  },
+  {
+   "name": "uuid_nil",
+   "overloads": 1,
+   "cls": "INFRA",
+   "port": "NONE",
+   "refs": []
+  },
+  {
+   "name": "uuid_ns_dns",
+   "overloads": 1,
+   "cls": "INFRA",
+   "port": "NONE",
+   "refs": []
+  },
+  {
+   "name": "uuid_ns_oid",
+   "overloads": 1,
+   "cls": "INFRA",
+   "port": "NONE",
+   "refs": []
+  },
+  {
+   "name": "uuid_ns_url",
+   "overloads": 1,
+   "cls": "INFRA",
+   "port": "NONE",
+   "refs": []
+  },
+  {
+   "name": "uuid_ns_x500",
+   "overloads": 1,
+   "cls": "INFRA",
+   "port": "NONE",
+   "refs": []
+  }
+ ]
+}

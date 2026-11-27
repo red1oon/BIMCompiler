@@ -1,0 +1,265 @@
+{
+ "year2012": {
+  "value": "2012",
+  "raw": "2012",
+  "src": "/home/red1/bim-compiler/prompts/POS_PLUGIN_LOCAL_FIRST.md",
+  "re": "(2012)",
+  "what": "the owner's POS integration year, spec §1 M8 / §12.1"
+ },
+ "parity_n": {
+  "value": "25",
+  "raw": "25",
+  "src": "/tmp/rest_logs/final_witness_till.log",
+  "re": "§TILL_PARITY (\\d+) of 25",
+  "what": "uniCenta 5 parity rows passing, §32.R"
+ },
+ "parity_of": {
+  "value": "25",
+  "raw": "25",
+  "src": "/tmp/rest_logs/final_witness_till.log",
+  "re": "§TILL_PARITY 25 of (25)",
+  "what": "parity rows total"
+ },
+ "relay_order": {
+  "value": "38",
+  "raw": "38",
+  "src": "/tmp/till_logs/p2_kds.log",
+  "re": "lines=8 \\| Send Order: .* = (\\d+) per delivered order",
+  "what": "relay requests per delivered Send Order, §20"
+ },
+ "lines_lo": {
+  "value": "1",
+  "raw": "1",
+  "src": "/tmp/till_logs/p2_kds.log",
+  "re": "§KDS_RELAY lines=(1) \\|",
+  "what": "smallest order measured"
+ },
+ "lines_hi": {
+  "value": "8",
+  "raw": "8",
+  "src": "/tmp/till_logs/p2_kds.log",
+  "re": "§KDS_RELAY lines=(8) \\|",
+  "what": "largest order measured"
+ },
+ "rest_open_writes": {
+  "value": "1",
+  "raw": "1",
+  "src": "/tmp/rest_logs/final_witness_rest.log",
+  "re": "§REST_RELAY action=open writes=(\\d+)",
+  "what": "writes to open a table, §32.R"
+ },
+ "rest_tap_writes": {
+  "value": "0",
+  "raw": "0",
+  "src": "/tmp/rest_logs/final_witness_rest.log",
+  "re": "§REST_RELAY action=tap x12 writes=(\\d+)",
+  "what": "writes per item tap, §32.R"
+ },
+ "day_requests": {
+  "value": "0",
+  "raw": "0",
+  "src": "/tmp/eoda_logs/GREEN_eoda.log",
+  "re": "till requests while ringing 9 tickets=(\\d+)",
+  "what": "till relay requests while selling, §26.R"
+ },
+ "eoda_sends": {
+  "value": "3",
+  "raw": "3",
+  "src": "/tmp/eoda_logs/GREEN_eoda.log",
+  "re": "admin=3 \\((3) sends",
+  "what": "(witness ran partial/override/final; the film sends once)"
+ },
+ "dc_before_g": {
+  "value": "28",
+  "raw": "28",
+  "src": "/tmp/dayclose_logs/arm_one.log",
+  "re": "before G=(\\d+) S=",
+  "what": "clicks before (model-derived), §22"
+ },
+ "dc_before_s": {
+  "value": "6",
+  "raw": "6",
+  "src": "/tmp/dayclose_logs/arm_one.log",
+  "re": "before G=\\d+ S=(\\d+)",
+  "what": "screens before, §22"
+ },
+ "dc_after_g": {
+  "value": "9",
+  "raw": "9",
+  "src": "/tmp/dayclose_logs/arm_one.log",
+  "re": "after G=(\\d+) S=",
+  "what": "clicks after, §22"
+ },
+ "dc_after_s": {
+  "value": "1",
+  "raw": "1",
+  "src": "/tmp/dayclose_logs/arm_one.log",
+  "re": "after G=\\d+ S=(\\d+)",
+  "what": "screens after, §22"
+ },
+ "dc_rowdiff": {
+  "value": "0",
+  "raw": "0",
+  "src": "/tmp/dayclose_logs/GREEN_run.log",
+  "re": "case=W-DAYCLOSE verdict=PASS .*rowDiff=(\\d+)",
+  "what": "one-click vs step-by-step row diff, §22"
+ },
+ "bom_a": {
+  "value": "6",
+  "raw": "6",
+  "src": "/tmp/bom_logs/witness_bom_explode.log",
+  "re": "component storage at the branch warehouse drops by BOM qty x sold qty: 50016 -(\\d+)",
+  "what": "component A storage drop, §25.R"
+ },
+ "bom_b": {
+  "value": "24",
+  "raw": "24",
+  "src": "/tmp/bom_logs/witness_bom_explode.log",
+  "re": "50002 -(\\d+), 50003",
+  "what": "component B storage drop, §25.R"
+ },
+ "bom_c": {
+  "value": "1500",
+  "raw": "1500",
+  "src": "/tmp/bom_logs/witness_bom_explode.log",
+  "re": "50003 -(\\d+)",
+  "what": "component C storage drop, §25.R"
+ },
+ "soda_prices": {
+  "value": "27",
+  "raw": "27",
+  "src": "/tmp/soda_logs/reg2/witness_soda.log",
+  "re": "§SODA_BASELINE rows=\\d+ kinds=\\{\"B\":1,\"P\":(\\d+)",
+  "what": "prices in the first batch, §28.R"
+ },
+ "soda_one": {
+  "value": "1",
+  "raw": "1",
+  "src": "/tmp/soda_logs/reg2/witness_soda.log",
+  "re": "batch=Store Central-SODA-2026-11-04-3 .* prices=(1) ",
+  "what": "price rows sent for one edit, §28.R"
+ },
+ "recv_target": {
+  "value": "5",
+  "raw": "5",
+  "src": "/tmp/soda2_logs/receipt_up_final.log",
+  "re": "line=\\{\"t\":(\\d+),\"c\":3",
+  "what": "receive target qty, §28.2.R"
+ },
+ "recv_conf": {
+  "value": "3",
+  "raw": "3",
+  "src": "/tmp/soda2_logs/receipt_up_final.log",
+  "re": "line=\\{\"t\":5,\"c\":(\\d+)",
+  "what": "received qty, §28.2.R"
+ },
+ "recv_scrap": {
+  "value": "1",
+  "raw": "1",
+  "src": "/tmp/soda2_logs/receipt_up_final.log",
+  "re": "\"c\":3,\"s\":(\\d+)",
+  "what": "scrapped qty, §28.2.R"
+ },
+ "src_before": {
+  "value": "20",
+  "raw": "20",
+  "src": "/tmp/soda2_logs/receipt_up_final.log",
+  "re": "source (\\d+)->15",
+  "what": "source stock before, §28.2.R"
+ },
+ "src_after": {
+  "value": "15",
+  "raw": "15",
+  "src": "/tmp/soda2_logs/receipt_up_final.log",
+  "re": "source 20->(\\d+)",
+  "what": "source stock after, §28.2.R"
+ },
+ "tgt_before": {
+  "value": "4",
+  "raw": "4",
+  "src": "/tmp/soda2_logs/receipt_up_final.log",
+  "re": "target (\\d+)->6",
+  "what": "store stock before, §28.2.R"
+ },
+ "tgt_after": {
+  "value": "6",
+  "raw": "6",
+  "src": "/tmp/soda2_logs/receipt_up_final.log",
+  "re": "target 4->(\\d+)",
+  "what": "store stock after, §28.2.R"
+ },
+ "par_items": {
+  "value": "{\"REPLENISH\":\"MATCH\",\"CONFIRM\":\"MATCH\",\"DIFFDOCS\":\"MATCH\",\"STORAGE\":\"MATCH\",\"PRICE\":\"INCONCLUSIVE\"}",
+  "raw": "{\"REPLENISH\":\"MATCH\",\"CONFIRM\":\"MATCH\",\"DIFFDOCS\":\"MATCH\",\"STORAGE\":\"MATCH\",\"PRICE\":\"INCONCLUSIVE\"}",
+  "src": "/tmp/soda2_logs/run_all_bridge.log",
+  "re": "§SODAR_ITEMS (\\{.*\\})",
+  "what": "parity run_all items; four MATCH, price stamp not compared, §28.2.R"
+ },
+ "par_hdr": {
+  "value": "42",
+  "raw": "42",
+  "src": "/tmp/soda2_logs/run_all_bridge.log",
+  "re": "§SODAR_REPLENISH MATCH .* header columns compared=(\\d+)",
+  "what": "movement header columns compared, §28.2.R"
+ },
+ "par_line": {
+  "value": "21",
+  "raw": "21",
+  "src": "/tmp/soda2_logs/run_all_bridge.log",
+  "re": "lines legacy=1 twin=1 columns compared=(\\d+)",
+  "what": "movement line columns compared, §28.2.R"
+ },
+ "open_dec": {
+  "value": "9.0",
+  "raw": "9.0",
+  "src": "/home/red1/bim-compiler/prompts/POS_PLUGIN_LOCAL_FIRST.md",
+  "re": "\"Total: (9\\.0)\" in legacy",
+  "what": "OPEN-1 decimals in text, §28.3"
+ },
+ "open_dec2": {
+  "value": "9",
+  "raw": "9",
+  "src": "/home/red1/bim-compiler/prompts/POS_PLUGIN_LOCAL_FIRST.md",
+  "re": "\"Total: (9)\" in the twin",
+  "what": "OPEN-1 twin value, §28.3"
+ },
+ "open_count": {
+  "value": "OPEN-1",
+  "raw": "OPEN-1",
+  "src": "/home/red1/bim-compiler/prompts/POS_PLUGIN_LOCAL_FIRST.md",
+  "re": "(OPEN-1)",
+  "what": "the four named limits: OPEN-1, OPEN-2, two tills one table, memory with pictures (§28.3, §32.R)"
+ },
+ "tills": {
+  "live": true,
+  "what": "tills in the recording (3 devices opened)"
+ },
+ "sale_total": {
+  "live": true,
+  "what": "total of the sample sale, read from #t-tot (shown on screen, not spoken)"
+ },
+ "sale_lines": {
+  "live": true,
+  "what": "2 x Rose Bush + Hoe + Patio Chair: two rose bushes, four units"
+ },
+ "z_equal": {
+  "live": true,
+  "what": "statement gross == sum of the tills' Z (printed by the recording)"
+ },
+ "relay_day": {
+  "live": true,
+  "what": "till requests counted by the recorder while the tills sell"
+ },
+ "eoda_send": {
+  "live": true,
+  "what": "admin sends counted by the recorder"
+ },
+ "soda_other": {
+  "value": "26",
+  "raw": "27",
+  "derived": "27 - soda_one",
+  "src": "/tmp/soda_logs/reg2/witness_soda.log",
+  "re": "batch=Store Central-SODA-2026-11-04-3 .* prices=1 .* totalPrices=(\\d+)",
+  "what": "27 prices, 1 edited: the others (27-1) stay, §28.R"
+ }
+}

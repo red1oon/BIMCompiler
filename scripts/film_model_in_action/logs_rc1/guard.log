@@ -1,0 +1,8 @@
+§GUARD OK   beat=open add.sheets=9 expect=9 spoken="nine sheets"
+§GUARD OK   beat=convert add.elements=444 expect=444 spoken="four hundred forty-four"
+§GUARD OK   beat=addbay_high add.copies=29 expect=29 spoken="twenty-nine copies"
+§GUARD OK   beat=undo add.undoTo=444 expect=444 spoken="four hundred forty-four"
+§GUARD proof talk or first/novel/unique: none
+§GUARD not-said N (a live link, or a thing not built), named in the voice: none
+§GUARD pane P (from facts.js): answers agree=true canvas moved open 19.225% convert 10.815% bay 0.562% undo-vs-convert 0%, page errors 0
+§GUARD_VERDICT PASS facts=4 bad=0

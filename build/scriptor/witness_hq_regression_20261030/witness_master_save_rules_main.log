@@ -1,0 +1,24 @@
+node:internal/deps/undici/undici:11360
+    Error.captureStackTrace(err, this);
+          ^
+
+TypeError: Failed to parse URL from /tmp/wt-hq-main/erp/sqljs/sql-wasm.wasm
+    at Object.fetch (node:internal/deps/undici/undici:11360:11) {
+  [cause]: TypeError [ERR_INVALID_URL]: Invalid URL
+      at new NodeError (node:internal/errors:405:5)
+      at new URL (node:internal/url:676:13)
+      at new Request (node:internal/deps/undici/undici:5055:25)
+      at fetch2 (node:internal/deps/undici/undici:9183:25)
+      at Object.fetch (node:internal/deps/undici/undici:11358:18)
+      at fetch (node:internal/process/pre_execution:281:25)
+      at /tmp/wt-hq-main/erp/sqljs/sql-wasm.js:158:271
+      at /tmp/wt-hq-main/erp/sqljs/sql-wasm.js:158:492
+      at /tmp/wt-hq-main/erp/sqljs/sql-wasm.js:158:505
+      at new Promise (<anonymous>) {
+    input: '/tmp/wt-hq-main/erp/sqljs/sql-wasm.wasm',
+    code: 'ERR_INVALID_URL'
+  }
+}
+
+Node.js v18.19.1
+exit=1

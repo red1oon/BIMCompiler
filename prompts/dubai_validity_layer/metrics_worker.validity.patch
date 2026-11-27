@@ -1,0 +1,32 @@
+--- a/plan/readiness/metrics_worker.js	2026-08-24 17:06:40.672643117 +0800
++++ b/plan/readiness/metrics_worker.js	2026-10-02 06:24:46.395675040 +0800
+@@ -38,9 +38,16 @@
+   console.log('[READINESS] §MW_SRC cdn unpkg');
+ }
+ 
++/* ---- VALIDITY LAYER (additive; prompts/TOOLKIT_VALIDITY_LAYER.md). Loaded same-origin next to this file.
++   If it fails to load, the worker behaves exactly as before (no `validity` key). ---- */
++var VALIDITY_OK = false, __validity = null;
++try { importScripts('validity_tables.js', 'validity_core.js'); VALIDITY_OK = true; console.log('[READINESS] §VL_SRC local validity_core.js'); }
++catch (eV) { console.warn('[READINESS] §VL_SRC_FAIL ' + eV.message + ' — metrics continue without the validity layer'); }
++
+ function post(type, extra) {
+   var msg = { type: type };
+   for (var k in extra) if (Object.prototype.hasOwnProperty.call(extra, k)) msg[k] = extra[k];
++  if ((type === 'done' || type === 'error') && __validity) msg.validity = __validity;   /* new key only; M1-M15 and messages unchanged */
+   self.postMessage(msg);
+ }
+ function progress(pct, phase) { post('progress', { pct: pct, phase: phase }); }
+@@ -82,6 +89,12 @@
+   var arrayBuffer = e.data.arrayBuffer;
+   if (!arrayBuffer) { post('error', { message: 'No file data received.' }); return; }
+ 
++  /* validity pass runs FIRST and independently of web-ifc, so it is available on the error path too */
++  if (VALIDITY_OK) {
++    try { __validity = VALIDITY.run(new Uint8Array(arrayBuffer), VALIDITY_TABLES); console.log('[READINESS] §VL_RESULT overall=' + __validity.overall + ' ' + __validity.headline.text); }
++    catch (eVr) { __validity = { version: 1, overall: 'INCONCLUSIVE', note: 'Indicative, not a certification.', summary: 'The validity pass failed to run: ' + String(eVr && eVr.message || eVr), checks: [] }; console.warn('[READINESS] §VL_ERROR ' + eVr.message); }
++  }
++
+   var api, modelID = -1;
+   try {
+     progress(4, 'Starting the IFC parser');

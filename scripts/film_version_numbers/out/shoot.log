@@ -1,0 +1,36 @@
+§SHOOT promo tree=/tmp/wt-film6-after started 2026-11-23T06:29:57.991Z
+§SHOOT §FILM_TREE after before 58ffb997c1fd
+§SHOOT xvfb display=:143 size=1920x1080 pid=2202394
+§SHOOT pack exit=0 install:  code --install-extension ../../home/red1/.cache/film_version_numbers/vsix/code-facts-0.1.0.vsix      (or: Extensions view ▸ … ▸ Install from VSIX)
+§SHOOT install exit=0 (node:2202785) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities. | (Use `code
+§SHOOT vscode start folder=/tmp/wt-film6-after window=1920x850 pid=2202866
+§SHOOT vscode driver up version=1.147.0
+§SHOOT §FILM_CODEFACTS {"installed":true,"active":true,"version":"0.1.0","from":"throwaway-extensions-folder","fresh":"§APP_SURFACE files=3539 fields=1886 alias_only=1611 phantom=180 untied=11"}
+§SHOOT edit: viewer/panels.js:2152 insert " Button" at col 36
+§SAME_BYTES file=viewer/panels.js dev_server_status=200 dev_sha=cb4ecd9c file_sha=cb4ecd9c same=Y published_copy_status=200 published_sha=c9bf0bbb minified_sha=c9bf0bbb same_as_minified=Y bytes_src=177308 bytes_published=102200
+§SHOOT s1 inset (published copy) context="pperCase()+act.id.slice(1),icon,fields}});return[{section:\"Pill Icons\",reorderable:!0,_key:\"pill\",_array:!0,rows}]}function _renderPillEdito" rect={"x":64,"y":69,"w":125,"h":24}
+§SHOOT s1 explorer row panels.js rect={"x":53,"y":410,"w":289,"h":22} heading rect={"x":681,"y":440,"w":90,"h":22}
+§SHOOT §HOVER s2a file=viewer/grid_views.js:83 token="camera" text="**APP.camera** written at [viewer/grid_views.js:83](file:///tmp/wt-film6-after/viewer/grid_views.js#L83) · 4 writes · 1247 reads"
+§SHOOT §HOVER s2b file=scripts/bump.js:84 token="§BUMP_DONE" text="**§BUMP_DONE** last value not shown: tag not in any stamped log no spec found printed by: - [scripts/bump.js:84](file:///tmp/wt-film6-after/scripts/bump.js#L84) - [scripts/bump.js:290](file:///tmp/wt-film6-after/scripts/bump.js#L290) - [devtools/vscode/code-facts/tests/realvsc/run.js:208](file:///tmp/wt-film6-after/devtools/vscode/code-facts/tests/realvsc/run.js#L208) - [devtools/vscode/code-facts/tests/witness_codefacts_bump_button.js:22](file:///tmp/wt-film6-after/devtools/vscode/code-facts/te"
+§SHOOT viewer before the edit: shows=OLD controller=Y rect={"x":230,"y":110,"w":93,"h":29}
+§FILM_TYPED id=s3_edit text=" Button"
+§SHOOT saved=true line now: return [ { section: 'Pill Icon Buttons', reorderable: true, _key: 'pill', _array: true, rows: rows } ];
+§SHOOT viewer after save + reload: shows=OLD rect={"x":230,"y":110,"w":93,"h":29}
+§SHOOT §BUMP_WARN diagnostics=["Code Facts: This file is served from the viewer offline cache and was edited, but viewer/sw.js is still v1791: users with a cached copy keep the old file. Quick fix: bump the cache version.","ts: This may be converted to an async function.","ts: This may be converted to an async function.","ts: This may be converted to an async function.","ts: This may be converted to an async function.","ts: This may be converted to an async function."]
+§SHOOT status bar Bump rect={"x":152,"y":824,"w":69,"h":24} text="Bump"
+§SHOOT press 1 (check): button text "Bump ✓" after 0 s
+§SHOOT press 2 (write): button text "Bump"
+§SHOOT viewer/sw.js CACHE_VERSION 1791 -> 1792
+§SHOOT diff of viewer/viewer.html: new code 5225deef rect={"x":726,"y":283,"w":72,"h":18}
+§SHOOT viewer after the press + reload: shows=OLD toast=Y sw_console=["§BUILD_VERSION v1791 (sw-controlled)","§BUILD_VERSION v1791 (sw-controlled)","§SW_REG scope=http://localhost:8661/viewer/","§SWUPDATE_TOAST controllerchange — new version active, showing toast (hadController=true)"]
+§SHOOT viewer after the update: shows=NEW via=toast rect={"x":230,"y":110,"w":171,"h":29}
+§HARM file=viewer/panels.js old="Pill Icons" new="Pill Icon Buttons" controller=Y before_edit_shows=OLD after_save_reload_shows=OLD old_after_reload=Y new_after_reload=N after_press_reload_shows=OLD toast=Y after_tap_shows=NEW new_after_press=Y via=toast sw_before=1791 sw_after=1792
+§SHOOT restore: git status --short lines=0
+§SHOOT terminal open shell_pid=2229067
+§SHOOT terminal panel rect={"x":352,"y":526,"w":1564,"h":292}
+§FILM_TYPED id=s4_0 text="MANIFEST_W_OLD=/tmp/wt-film6-old node scripts/tests/witness_manifest_roundtrip.js | grep -E \"MANIFEST_CLAIM id=C(2[6-9]|3[01]) \" | cut -c1-30"
+§SHOOT typed s4_0 keys=71 secs=86.9
+§FILM_TYPED id=s4_1 text="node scripts/tests/witness_manifest_roundtrip.js | tail -1 | grep -o \"claims=[0-9/]* red=[0-9/]*\""
+§SHOOT typed s4_1 keys=49 secs=92.6
+§SHOOT §FILM_TREE after == before 58ffb997c1fd
+§SHOOT §FILM_SHOOT scene=promo secs=368 stills=159

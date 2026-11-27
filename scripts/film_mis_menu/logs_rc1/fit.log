@@ -1,0 +1,14 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT still1 cue=6.97 room=7.77 dur=6.86 -> DETAIL slack=+0.91 words=22
+§NARR_TONE still1#0 F YN rose=5.0st endDelta=+2.0st want=rise OK "Do the single lines of before still work?"
+§NARR_FIT still2 cue=18.93 room=4.73 dur=3.85 -> DETAIL slack=+0.88 words=11
+§NARR_TONE still2#0 F YN rose=5.0st endDelta=+2.8st want=rise OK "And writing?"
+§NARR_FIT menu cue=25.63 room=7.70 dur=6.80 -> DETAIL slack=+0.90 words=20
+§NARR_FIT find cue=36.17 room=4.70 dur=3.79 -> DETAIL slack=+0.91 words=10
+§NARR_TONE find#0 F WH rose=0st endDelta=-1.8st want=fall OK "Where are the partners?"
+§NARR_FIT open cue=42.38 room=5.28 dur=4.37 -> DETAIL slack=+0.91 words=13
+§NARR_FIT back cue=49.67 room=4.16 dur=3.26 -> DETAIL slack=+0.90 words=8
+§NARR_TONE back#0 F YN rose=5.0st endDelta=+1.2st want=rise OK "And back?"
+§NARR_FIT close cue=54.42 room=7.91 dur=6.47 -> DETAIL slack=+1.44 words=26

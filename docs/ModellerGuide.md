@@ -10,7 +10,7 @@ the Kernel-ERP.
 **Open it:** [red1oon.github.io/bim-ootb/modeller/modeller.html](https://red1oon.github.io/bim-ootb/modeller/modeller.html)
 (desktop — the B-rep kernel is heavy). The **Home** pill returns to the Matrix landing.
 
-> **Every tool on this page is proven by a real-user, end-to-end test** — the tool is driven through the
+> **Every tool on this page is checked by a real-user, end-to-end test** — the tool is driven through the
 > production path with real mouse/keyboard and the result checked by numbers (the op-log, the scene graph,
 > the pixels), not by eye. **The screenshots are real frames captured from those test runs** — nothing here
 > is a mock-up.
@@ -59,13 +59,16 @@ structure, MEP, the 4D schedule, the 5D cost and the ERP auto-complete by *crawl
 
 ---
 
+> **New: 2D drawings → BIM.** Open a set of `.dxf` plans, elevations, roof and section and convert them into a model — see [2D Drawings → BIM (DXF2BIM)](DXF2BIMGuide.md); for what a plain drawing set asks of you (the yellow rows, the datums, doors and windows) and how long it took, see [Raw drawings: fill in what is missing](DXF2BIMGuide.md#3-raw-drawings-fill-in-what-is-missing).
+
 ## The workspace
 
 ![The modeller workspace: the Outliner (left) over the BOM tree, the ARC building on the grid, the ⋯ pill toolbar down the right edge, and the history scrubber along the bottom](img/modeller/workspace-open.png)
 
 - **Outliner** (left) — the BOM tree of the opened building (`Building → Level → Room → ARC → element`), plus the **Walk** rows and a live **find** filter. Collapse it with its chevron to free the canvas.
+- **Properties panel** — select a part of an opened building and the panel shows what its IFC carries: class, name, type, material and its property sets (for a converted 2D set, also where it came from and its size basis). A raw `.ifc` is read once to fill it.
 - **Canvas** (centre) — the 3D building on the construction grid. Click an element to select it; **Shift-drag** marquee-selects many. Elements cast real shadows onto each other and the ground, so massing and floor-to-floor relationships read correctly at a glance — not a flat, shadowless render.
-- **Pill toolbar** (right edge) — an icon rail. Tap **⋯** (bottom-right) to fan the pills open; hover a pill for its name; **? Help** lists every tool + shortcut. `Esc` cancels any active mode.
+- **Pill toolbar** (right edge) — an icon rail. The rail is open by default and stays open; tap **⋯** (bottom-right) to fold or unfold it; hover a pill for its name; **? Help** lists every tool + shortcut. `Esc` cancels any active mode.
 - **History scrubber** (bottom) — the signed op-log *is* the timeline. Drag it to travel through every edit. The status line beneath it echoes what each op did (e.g. `scaled #183 X ×1.50  verify=true`).
 
 **How to read it:** the op-log is the model, the 3D is a fold of it, and the slider is the single honest
@@ -78,7 +81,7 @@ retreat across every tool below.
 > **Brand new?** Start with the **[First Steps](ModellerFirstSteps.md)** page — a nine-step first edit, then [what your edit costs and sending it to ERP](ModellerFirstSteps.md#part-2-see-what-your-edit-costs-and-send-it-to-erp), then [filling the building with services](ModellerFirstSteps.md#part-3-fill-the-building-with-services-mep-walk).
 
 1. **Open the app** — [red1oon.github.io/bim-ootb/modeller/modeller.html](https://red1oon.github.io/bim-ootb/modeller/modeller.html)
-   (desktop; the B-rep kernel is heavy). Tap **⋯** at the bottom-right to fan the pill toolbar open.
+   (desktop; the B-rep kernel is heavy). The pill toolbar is open on the right edge; **⋯** at the bottom-right folds and unfolds it.
 2. **Open a building** — tap **📂 Open** and pick a resident building (e.g. *Duplex*). Its **ARC** model loads
    onto the grid and its BOM tree fills the Outliner on the left. You're now editing a real building, not a
    blank canvas.
@@ -96,16 +99,16 @@ That's the whole loop: **open → select → tool → commit → scrub**. Every 
 ### Open your own building — straight from an `.ifc`
 
 The resident buildings are there so you can start in one click, but **📂 Open** takes your own model too.
-Besides a resident, it accepts an **`.ifc` file** and a local **`.db`**.
+Besides a resident, it accepts an **`.ifc` file**, a local **`.db`** and a set of **2D drawings (`.dxf`)**.
 
 1. Tap **📂 Open**.
-2. Choose **FROM IFC** and pick your `.ifc` — or pick a local `.db` you exported earlier.
+2. Choose **Open local .db / .ifc…** and pick your `.ifc` — or a local `.db` you exported earlier. (The **FROM IFC (ARC only)** rows in the list open the two sample ARC `.ifc` files, SampleHouse and Duplex, the same way.)
 3. The building lands on the grid the same way a resident does: it walks the structure and seeds the
    editable ARC substrate, so you can select and edit immediately.
 
 Two things to know. First, an IFC opens **filtered to ARC** — the architectural model only, the single
 editable substrate; the other disciplines follow by walking, exactly as they do for a resident. Second,
-it's parsed by the **same engine the Viewer uses** — not a second, differently-behaved importer — so a
+it's read by the **same extractor the Viewer uses** — not a second, differently-behaved importer — so a
 building reads the same in both tools.
 
 Because an IFC carries more than the pre-filtered resident `.db` does, an IFC-opened building often shows
@@ -282,7 +285,7 @@ The opening shows immediately; undo closes it to the exact original frame. (Cutt
 promotes it to a B-rep just-in-time — from its measured box, or, on a layered wall, from its real layer
 slabs — so it is never approximated. See [What a wall is made of](#what-a-wall-is-made-of).)
 
-**This works on a layered wall.** It was checked with a real click on the Duplex (`W-E2E-CUT-LAYERS`, 10/10). A 5-layer
+**This works on a layered wall.** Checked with a real click on the Duplex: a 5-layer
 wall is selected, one signed `GEOM_CUT` lands, the opening is visible, and undo closes it again. Two limits:
 - **Rounding an edge (Fillet) right after cutting a layered wall** is not reliable yet.
 - **A wall boxed in on every side by other walls** can't be clicked. On the Duplex that is the 7-layer party-wall core,
@@ -316,8 +319,7 @@ combination — open a *complete, real, production* IFC and safely edit *part* o
 Bonsai/FreeCAD-style direct editor doesn't do.
 
 Which elements touch which is worked out from each element's **real shape, where it actually sits** — not
-from a rough box around its insertion point, which could land up to about 0.4 m off. (Before this was
-fixed on 18 September 2026, a gridline drag on a real building could leave its walls where they were.)
+from a rough box around its insertion point, which could land up to about 0.4 m off.
 
 Full dated disclosure:
 **[Event-Sourced Geometry & the Graph-Cascade Conformity Layer](ModellerKernelFold.md)**.
@@ -408,19 +410,6 @@ window-frame walls are consumed by their own openings, so they take part as invi
 never drawn or counted), *HHS* (99), *Clinic* (302), *Hospital* (506) and *Garage* (36). *Terminal*
 has none: its source IFC declares no opening/filling relationship at all, so there is nothing to follow.
 
-Since 18 September 2026 four more residents carry it too, so a door or window there holds or rides
-its wall the same way:
-
-| Resident | Doors & windows that hold or ride their wall |
-|---|---:|
-| HHS Office | 99 |
-| Clinic | 302 |
-| Hospital | 506 |
-| HospitalGarage | 36 |
-
-**Terminal is the one exception.** Its source file never says which door or window sits in which wall, so
-there is nothing real to hold or ride — the Modeller leaves it that way rather than guessing.
-
 **A carved hole comes along too.** If the held or ridden opening has a real cut-through void (a door or
 window opening actually subtracted from the wall, not a catalog frame sitting in front of it), the hole
 itself is kept in sync with it — its centre never drifts off the door under a stretch, its width is held
@@ -439,8 +428,7 @@ identically against a real, fully-loaded building — no separate mode, nothing 
 Duplex's own ground floor, near the stair: a column grid aligned to a real wall's own measured edge, then that
 gridline dragged for real.
 
-Witnessed end-to-end (`modeller/tests/witness_e2e_gridmove_real.js`, 8/8 assertions green, real
-`pg.mouse` down→move→up, no synthetic shortcuts):
+Checked end-to-end with a real mouse drag (down→move→up), no synthetic shortcuts:
 
 - A real mouse drag on gridline "2" landed at **delta = 0.5000 m**, folded into **16** real recompose
   commands. The governed wall's own *rendered* Y-extent grew from **2.920 m → 3.420 m** — exactly the
@@ -474,13 +462,13 @@ preliminary Eurocode-cited table in `str_walker.js` (RC: depth about span/12, ma
 median beam depth (0.535 m on Garage, so orange from 6.42 m). The material is the majority material of the building's own beam names
 (Garage: RC, 166 of 195). Release on red opens **Add one more** / **Cancel**: Add one more inserts a column line at the bay midpoint (5 columns on
 Garage, real copies of the building's own column, one Ctrl+Z); Cancel stops the drag at the limit. Wall-bearing or hand-drawn grids get no
-colours. Every message says "preliminary — the structural engineer confirms". Witness: `witness_grid_span_gate.js` (20 checks).
+colours. Every message says "preliminary — the structural engineer confirms". 
 
 Roofs recompose the same way. *SampleHouse*'s barrel-vault roof spans the two gridlines bracketing the
 building; dragging the far one **0.5000 m** grows the roof's own rendered X-extent from **14.8410 m → 15.3410
 m** — exactly the drag, with the near edge held fixed at the other gridline — while the wall it sits on rides
 along in the same recomposed group (`recomposed=8`, `§STRETCH-RIDE riders=7`). Undo restores the roof's extent
-byte-exact. Witnessed end-to-end: `modeller/tests/witness_e2e_gridmove_roof.js`, 8/8 §-tagged assertions green.
+byte-exact. Checked end-to-end the same way.
 
 ![The roof stretched 0.5 m along with the wall it sits on — gridline "2" dragged for real on SampleHouse](img/modeller/grid-editor-roof.png)
 
@@ -489,9 +477,21 @@ byte-exact. Witnessed end-to-end: `modeller/tests/witness_e2e_gridmove_roof.js`,
 
 1. Select the feature — its children (hosted fillings) come along.
 2. Tap **Delete** (or press `Del`).
-3. The feature hides from the model — the signed payload is never rewritten, so the chain stays valid. **Redo** (`Ctrl+Y`) brings it back exactly.
+3. The feature hides from the model — the signed payload is never rewritten, so the chain stays valid. Delete is now a real node in the history tree, so **Undo** (`Ctrl+Z`) — not Redo — brings it back exactly; `Ctrl+Y` right after a delete is a no-op (there's nothing ahead of it to redo), and a further `Ctrl+Y` after undoing re-applies the delete.
 
-![Delete — the selected feature removed; Redo restores it](img/modeller/delete-gone.png)
+![Delete — the selected feature removed; Undo restores it](img/modeller/delete-gone.png)
+
+### Copy & paste
+*Commits one gesture: a `GEOM_INSERT` per copied element plus every edit it carries.*
+
+1. Select one or more elements and press **`Ctrl+C`**. Nothing is written yet.
+2. Press **`Ctrl+V`**. A blue ghost of the copy follows the pointer and snaps to the grid like **Insert** does. **`Esc`** cancels.
+3. Click where the copy goes. It lands with its centre on the snapped point and is selected, ready to move.
+
+A copy is the element **as it is now**: its later moves, stretches and grid drags come with it, not just the shape it was first inserted with. Copying a wall brings the doors and windows it hosts and the holes they sit in. The pasted door belongs to the pasted wall, so moving the copy drags its door the way the original does. One **`Ctrl+Z`** removes the whole paste. If the copy lands on something, the conformity check reports the overlap in red or orange, as it does after a move.
+
+### Add a bay (repeating-bay buildings)
+A farm or industrial shed is lengthened by whole bays. When the building type in force allows it (*Element defaults ▸ `building.type`*, e.g. **Farming Shed**), the **2D Drawings** panel shows a row **Add a bay (Farming Shed)** with the buttons **at <first grid line>** and **at <last grid line>**. One click copies the typical bay **as it is** (frame, side walls, purlins, sheets, and any opening, door or window it holds) one bay on, moves everything beyond it one bay further (hosted doors ride their walls), stretches the full-length members and sheets by one bay, and adds the new grid line. The panel shows the cost of the change (copies as added, stretched members as changed). It is one step in the history, so **`Ctrl+Z`** undoes it. Fans are not copied: their number is sized for the airflow, not repeated per bay. See [2D Drawings → BIM](DXF2BIMGuide.md) for converting the drawings first.
 
 ### Room Move
 *Commits `GEOM_ROOM_MOVE {spaceGuid,dx,dy,members[]}`.*
@@ -531,12 +531,12 @@ nothing on an empty room (nothing honest to move). Like every other geometry edi
 through the modeller's conformity gate — if the delta pushes a member into another element's real footprint,
 the status line names the clash the same way Move or Grid-Stretch would.
 
-Verified on SampleHouse's "1 - Living room" (`witness_room_move.js`, 10/10): 16 real members — 12 via
+Verified on SampleHouse's "1 - Living room": 16 real members — 12 via
 `rel_contained_in_space`, 4 via `derived-footprint` — move as one `GEOM_ROOM_MOVE`, every member's rendered
 centre landing on the committed delta to within float32 precision (max error 2.4×10⁻⁷ m). Round-tripping
-`(dx,dy)` then `(−dx,−dy)` (`witness_room_move_roundtrip.js`, 7/7) returns all 16 members to their exact
+`(dx,dy)` then `(−dx,−dy)` returns all 16 members to their exact
 starting position — 0.000 mm residual. The Outliner grab-to-drag UI above is verified the same way, with real
-pointer input instead of a direct engine call: `witness_e2e_roommove_ui.js` (9/9, real Duplex) clicks a real
+pointer input instead of a direct engine call (real Duplex): it clicks a real
 ⛶ glyph, drags a real mouse gesture across the canvas, and asserts the committed op's member list is
 byte-identical to what the grab enumerated, the moved elements' rendered centres shifted by exactly the
 committed delta, and one scrub undoes it exactly.
@@ -575,12 +575,11 @@ the same refuse-don't-fabricate rule the rest of the modeller runs on: a future 
 holds the product id at drag time reaches the real match/commit path shown below; a plain pick on existing
 content reaches the refusal path, cleanly, every time.
 
-`witness_item_drag_gate.js` (9/9, real SampleHouse data) proves both refusals live at the engine level: a
+On real SampleHouse data, both refusals hold at the engine level: a
 session with no product hint throws `WalkerGapError` and adds zero rows to the op-log; a matched item (a real
 sink, 0.5×0.45×0.2 m from `ad_product_dim`) that collides with a neighbour is refused with the colliding fids
 named and the log length unchanged; the same item dropped against a real wall face commits exactly one
-`GEOM_MOVE` with a `snappedPos` read off that wall's own geometry. `witness_e2e_itemdrag_ui.js` (8/8, real
-Duplex) proves the UI above end-to-end with real pointer input: a real **Drag Item** arm + real canvas pick
+`GEOM_MOVE` with a `snappedPos` read off that wall's own geometry. On the real Duplex, the UI above works end-to-end with real pointer input: a real **Drag Item** arm + real canvas pick
 on existing content refuses cleanly (zero ops); a held product hint reaches a real wall face found by
 scanning with the tool's own validity check and commits one `GEOM_MOVE`, the dragged mesh's rendered centre
 landing on the exact committed delta; the same grab dropped onto another element's real box refuses the
@@ -598,7 +597,7 @@ it: it places that trade's elements at the **measured cadence** of a real coordi
 runs it can, gates the clashes, and **honestly refuses** when the building has nothing to hang the trade
 on. Nothing is invented — every placement uses a spacing/clearance rule *mined from a real IFC model*.
 
-![Walk · ELEC, X-ray reveal — 270 electrical fixtures placed across 6 storeys in SampleCastle; structure goes near-transparent glass and every fixture glows in its discipline colour through the shell](img/modeller/walk-fixtures.png)
+![Walk ALL on the Duplex, X-ray: 202 service elements glow through 196 near-transparent building elements. The Outliner rows read ACMV 19 placed, ELEC 102, PLB 18, FP 0 placed · 38 provisional](img/modeller/duplex-walk-all-xray.png)
 
 A normal (non-X-ray) view of this same walk is honestly near-empty: a real electrical outlet or light
 lives inside a room, not poking through an exterior wall, so from outside the sealed shell it's naturally
@@ -617,14 +616,10 @@ all, not a box:
 
 ![Close-up of a Duplex-walked ceiling fan — a real rule-mined LOD400 device mesh (motor housing, blades, mount stem), not a box stand-in](img/modeller/duplex-fixture-lod400-closeup.png)
 
-SampleCastle walks the *same* residential rule-set (it's a different building — see the table below), so
-it has no catalog match for its own fixture classes and falls back honestly to a measured box, sized from
-that class's real dimensions but not a finished model:
-
-![Close-up of a SampleCastle-walked fixture — an honest measured-box fallback (no catalog mesh match for this building's own classes) placed against its host wall](img/modeller/samplecastle-fixture-honestbox-closeup.png)
-
-Guessing at a fixture's real shape when no mesh is mined is exactly what this project's non-invent rule
-forbids — a plain box, correctly sized and positioned, beats an invented model every time.
+SampleCastle walks the *same* residential rule-set (it's a different building — see the table below). A
+walk places a fixture only when it can seat a real extracted mesh for it (LOD400). Where a fixture class has
+no mesh match, the walk **refuses** that placement and says so; it never stands a box in for the real shape.
+Today that is why SampleHouse gets no plumbing devices (table below). SampleCastle has no rooms in its file, so its devices come from the measured bands: since 2026-11-10 each band device takes one of the real meshes its rule row was measured from, in the measured mix, and is always *provisional* (drawn and flagged, never counted as placed). SampleHouse's electrical devices are placed since 2026-11-10: its source IFC states four rooms, the Modeller now reads them, and a device placed from a room schedule carries its own real mesh.
 
 **One engine, two standards.** A single walker drives every discipline; the discipline is just a data
 filter. It carries two measured rule-sets and auto-selects by building class:
@@ -642,27 +637,38 @@ figure traces to a witnessed `§`-log (no estimates).
 
 ### What a walk actually places
 
-Status-line results per discipline on the three residential buildings
-(`build/logs/witness_disc_walk_generalize.log`). *Placed* = elements seated; *chains* = runs linked
-end-to-end; the note is what the walk reported when a trade had nothing to route:
+**Walk ALL** on the three residential buildings, measured on a real Open → Walk ALL (Modeller sw v267,
+2026-11-09; the walk's own `§DISC-WALK` lines). *Placed* = devices seated with a real mesh; *provisional* =
+see below; *refused* = what the walk declined and why:
 
-| Building (storeys) | Discipline | Placed | Chains | Honesty note |
+| Building | Discipline | Placed | Provisional | What the walk reported |
 |---|---|---:|---:|---|
-| **SampleHouse** (3) | Fire-Protection | 55 | 0 | — |
-| | Electrical | 159 | 0 | — |
-| | Structure | 30 | 1 | members linked, no measured gap |
-| | Plumbing | 6 | 0 | ~no pipes in a small house → honest |
-| **Duplex** (5) | Fire-Protection | 303 | 0 | — |
-| | Electrical | 771 | 0 | — |
-| | Structure | 162 | 1 | members linked |
-| | Plumbing | 10 | 0 | sparse → honest |
-| **SampleCastle** (7) | Fire-Protection | 2 665 | 0 | — |
-| | Electrical | 8 123 | 0 | — |
-| | Structure | 1 836 | 1 | members linked |
-| | Plumbing | 14 | 0 | sparse → honest |
+| **SampleHouse** | HVAC (ACMV) | 0 | 0 | refused: 4 duct or pipe pieces with no main |
+| | Electrical | 21 | 0 | from its own 4 rooms: Living room 11, Bedroom 7, Entrance hall 3; the Roof space gets none (re-measured 2026-11-10, sw v269) |
+| | Plumbing | 0 | 0 | refused: no real mesh for any of 7; none of its rooms has a plumbing schedule (the file has no bathroom or kitchen space) |
+| | Fire-Protection | 0 | 0 | refused: no real mesh for any of 17 |
+| **Duplex** | HVAC (ACMV) | 19 | 0 | — |
+| | Electrical | 102 | 0 | 15 gated, 27 clashes flagged |
+| | Plumbing | 18 | 0 | 8 gated, 2 clashes flagged |
+| | Fire-Protection | 0 | 38 | sprinklers at borrowed spacing |
+| **SampleCastle** | HVAC (ACMV) | 0 | 0 | refused: 12 duct or pipe pieces with no main |
+| | Electrical | 0 | 88 | band devices with the meshes of their rule row's own source elements, in the measured mix (re-measured 2026-11-10, sw v272) |
+| | Plumbing | 0 | 21 | same: band devices in the measured mix |
+| | Fire-Protection | 0 | 126 | sprinklers at borrowed spacing |
 
-Counts scale with footprint because the **cadence is constant** — the same measured spacing tiles a bigger
-floor. Walking an *unknown* discipline returns **REFUSE — no measured rule** rather than guessing.
+The status line says the same: *Walk ALL — 4/4 disciplines · 139 placed · 38 provisional* on the Duplex.
+Structure is not part of Walk ALL; it keeps its own row. Walking an *unknown* discipline returns
+**REFUSE — no measured rule** rather than guessing.
+
+**Provisional devices.** Two kinds. A building with no rooms gets its devices from measured bands: their count follows the measured density and each takes a mesh from the mix its rule row was measured from, so neither its position nor which device it is can be claimed for this building. And some devices are placed at a spacing *borrowed* from another building, because this
+building's own rules have none for that trade (the residential rules hold no sprinkler rule, so FP borrows
+the Terminal's). Their positions follow that borrowed spacing, so their count is not a claim about this
+building. They are drawn, flagged *provisional* in the Outliner row and the status line, and **left out of
+the placed totals**.
+
+> The tables in the next three sections quote logs written before the real-mesh-only rule above (the clash
+> and Duplex re-growth logs are dated 2026-06-28). They have not been re-run since; read them as that walker's
+> results, not today's counts.
 
 ### Why the right standard matters — clash collapse
 
@@ -724,23 +730,56 @@ It walks every absent **service** (ACMV, ELEC, PLB, FP) in turn. Structure and r
 it: on a large building they are tens of thousands of elements (Terminal's roof alone is 10,584 plates), so
 they keep their own rows and you walk them only when you want them. It works through exactly the same production path a single click uses —
 same rules, same gating, same honest refusal when a trade has nothing to hang on. The difference is the
-presentation: X-ray brackets the whole run so you can watch it land, and each discipline's placements
-flash amber and settle into their own trade colour just before they're committed, so you can see *which*
-trade just filled in rather than watching one undifferentiated wave.
+presentation: X-ray brackets the whole run so you can watch it land. Each discipline **builds up** after
+its walk is committed: its devices come on one by one over a few seconds, so you see *which* trade just
+filled in rather than one undifferentiated wave. On a big building the commit can take a few seconds; the
+build-up waits for it and then plays in full.
 
 X-ray is restored afterwards even if a discipline refuses part-way. On a very large building the
 per-element flash is dropped in favour of one batched hold-and-settle — the geometry committed is
 identical either way, only the reveal animation is coarser.
 
+### Find a walked type, and see one device up close
+
+After a walk, the Outliner's **Walked Fixtures** category scrolls into view. Each type row shows its count,
+e.g. *FlowTerminal (102)*.
+
+- **Click a type row**: every device of that type is selected (tinted) and the camera frames the whole set.
+  `Escape` clears it. A device you have hidden with its eye is left out.
+- **Click one device**: the camera frames it at a size you can see, from the side it **faces**: from below
+  for a ceiling device, from in front for a wall device. The close-up stays inside the space the device
+  faces.
+
+![Walked Fixtures, X-ray: the Electrical type row FlowTerminal (102) clicked on the Duplex; all 102 devices are selected and in frame](img/modeller/walked-fixtures-typeset.png)
+
+### Rules — read and edit what the walker uses
+
+The walker's rules are tables mined from real buildings: room schedules, placement bands, clearances,
+routing. Tap **Rules** (the `{ }` button) to see them as JSON, one section per table.
+
+![The Rules editor on the Duplex: duplex_rules.db, 12 tables, 364 rows; the header says the rules are shared by every residential building (SampleHouse, Duplex, SampleCastle)](img/modeller/rules-editor.png)
+
+1. Change a value (for example a device's height in a room schedule).
+2. **Save**, then walk that discipline again: the walk uses your value.
+3. **Download edits (JSON)** saves your changes (each cell, plus the same change as SQL) to send back.
+4. **Reset to shipped** removes your changes.
+
+Your edits are kept in this browser and applied every time the rules load. **The rules belong to a building
+type, not to one building**: the header names every building that uses them, and one edited cell changes
+all of them. The downloaded file carries `checkedOn: []`. Before an edit is contributed, a fleet check
+(`modeller/tests/rules_edit_fleet_check.js`) walks every building that reads that rules file with and without
+the edit, lists what moved, and fills `checkedOn`. That includes buildings of the other type: complex
+buildings read their room schedules from the residential rules, and residential buildings borrow sprinkler
+rules from the Terminal's.
+
 ### What a walk gives you now — pipes, one-step undo, and pipes that follow
 
 **Plumbing is routed, not just placed.** Walking **PLB** on a bare building now also draws the pipe runs
-between the fixtures: cold water and waste. It works through the same path as any walk, measured on the real
-Open → Walk (`W-MEP-OPENPATH`):
+between the fixtures: cold water and waste. It works through the same path as any walk; measured on a real Open → Walk:
 
 | Building | PLB fixtures | Pipe runs drawn | Runs signed into the log |
 |---|---:|---:|---:|
-| Duplex | 18 | 18 | 18 |
+| Duplex | 18 | 22 | 22 |
 | SampleCastle | 84 | 18 | 18 |
 | Terminal | 969 | 2,915 | 60 (a size cap; every run is drawn) |
 
@@ -748,16 +787,16 @@ Typical run length is 2–3 m. The pipe sizes are real, measured from the Duplex
 - cold water 25.4 mm (1″, the mains size; the Duplex also has ½″ branches)
 - waste 48.3 mm (1½″)
 
-A pipe is never drawn at an invented size. A stand-alone PLB walk on the live Duplex measured 18 fixtures and 22 pipe runs (1 cold-water 25.4 mm, 21 waste 48.3 mm), all signed. In **Walk ALL** the existing witness (`W-MEP-OPENPATH`, Duplex, 2026-09-30) also routes ducts (ACMV, 8 runs) and sprinklers (FP, 4 runs), signed; cable (ELEC) is placed but not routed (0 runs on Duplex).
+A pipe is never drawn at an invented size. A stand-alone PLB walk on the live Duplex measured 18 fixtures and 22 pipe runs (1 cold-water 25.4 mm, 21 waste 48.3 mm), all signed. In **Walk ALL** the Duplex also routes ducts (ACMV, 8 runs) and sprinklers (FP, 4 runs), signed; cable (ELEC) is placed but not routed (0 runs on Duplex).
 
 **One Ctrl+Z takes the whole walk back.** A walk appears in the history as one step, e.g. *Walk PLB (45)*:
 the fixtures, the pipe runs and their bend fittings together. `Ctrl+Z` removes all of it from the model and
-the screen, and `Ctrl+Y` brings it all back (`W-WALK-GESTURE`).
+the screen, and `Ctrl+Y` brings it all back.
 
 **Move a fixture and its pipes follow.** Moving a walked fixture, by dragging it or a gridline, re-routes
-that trade's pipes from the new positions (`W-MEP-REROUTE`: a 1 m move re-routes the Duplex network so a
+that trade's pipes from the new positions (a 1 m move re-routes the Duplex network so a
 run ends at the fixture's new spot). Undo the move and the pipes route back. The re-routed runs and their bend fittings are written to
-the signed history too (measured 2026-09-30, live Duplex: after a 0.5 m move, 14 runs kept, 2 new, 8 superseded; fittings 3 kept, 1 new, 2 superseded; re-route about 0.5 s).
+the signed history too (measured on the live Duplex: after a 0.5 m move, 14 runs kept, 2 new, 8 superseded; fittings 3 kept, 1 new, 2 superseded; re-route about 0.5 s).
 Walked fixtures have no drag handle yet (clicking one only identifies it), so that move is made by the engine — see [First Steps, Part 3](ModellerFirstSteps.md#part-3-fill-the-building-with-services-mep-walk).
 
 ### Seed-Trunk — route a service trunk
@@ -775,11 +814,88 @@ doors, up risers between storeys.
 
 ![The Duplex after Route ▶ — a real ELEC trunk is now rendered (0→3,922 segments, verified by framebuffer diff), threaded through the walked fixtures and recoloured magenta for this shot (its real default is gold, the same family as the ELEC fixture boxes, which read as low-contrast clutter against the wall in a static frame); the important thing this proves is that nothing renders outside the building anymore](img/modeller/seedtrunk-trunk.png)
 
-> **Deeper proof.** The full mining, round-trip, boundary and generalization analysis lives in the resume
-> cards `prompts/RESUME_DX_MEP_RESIDENTIAL_STANDARD.md`, `RESUME_TERMINAL_RULE_MINING.md` and
-> `RESUME_DISC_WALKER_ENVELOPE_BOUND.md`, each backed by the witnessed `build/logs/` set summarised above.
-
 ---
+
+## Upgrade — add rule-based detail (LOD 400)
+
+The **↑ Upgrade** arrow adds detail to the open building by rule: it reads what the model and its drawings
+already state, applies a published rule where they say nothing, and adds the parts (rebar, welds, material
+layers, steel joints, gussets). It never changes or removes a part that is already there.
+
+### 1. Open the Upgrade panel
+
+Open your building (**📂 Open**), then tap the **↑ arrow** at the top right of the toolbar.
+
+![The Upgrade arrow, top right of the Modeller toolbar](img/modeller/upgrade-1-arrow.png)
+
+### 2. See what each pack can do on this building
+
+The panel lists the rule packs, one row each. Every row says what it **applies to** on the open building (or
+*0 not applicable here*), how many **rule rows** are stated, default or unset (**Rules** opens them), and
+what the **last run** added, refused and did not build.
+
+![The Upgrade panel: one row per rule pack, each with what it applies to, its rule rows and its last run](img/modeller/upgrade-2-panel.png)
+
+| Pack | Adds | Needs |
+|------|------|-------|
+| **Rebar (from schedules)** | bar sets in footings and columns | schedules attached by a 2D conversion ([DXF2BIM](DXF2BIMGuide.md)) |
+| **Truss welds** | fillet welds where a steel member meets a gusset plate | members and plates in the model |
+| **Layers** | one part per material layer of a wall, floor or ceiling | the IFC's layer sets (an extracted architecture model) |
+| **Steel joints** | fin plate, bolts and welds at steel beam ends | steel beams with I-sections and their supports |
+| **Bracing gussets** | a gusset plate, bolts and welds at brace ends | diagonal steel braces |
+| **Beam rebar (schedule)** | bars and stirrups in concrete beams | the beam schedule: tap **Load schedule…** first (below) |
+
+### 3. Run a pack
+
+Tap **Run** on a row. A long run shows its progress in the row (*Beam rebar: beam 50 of 92*) and the page keeps
+working. When it ends, the row and the status line say what was added, and the parts are in the model.
+**Ctrl+Z** removes the whole run in one step.
+
+![After Run on Rebar (from schedules): the row says added 256 / refused 0 / not built 35; the status line says Ctrl+Z removes it all](img/modeller/upgrade-3-run.png)
+
+Where a rule cannot be applied, the part is **refused** with its reason (for example *would clash with a
+neighbouring element*); nothing is guessed. Steel joints and gussets are **configuration only: capacity is not
+checked**, a starting detail for the engineer, not a design.
+
+### 4. Export (IFC): send what this upgrade added
+
+At the bottom of the panel:
+
+1. Pick the schema beside **Export (IFC) as**: **IFC2X3** or **IFC4**.
+2. Tap **Export (IFC)** (hover: *Exports out what was added from this upgrade*). It is greyed out until a run
+   has added parts.
+3. The browser saves the file to your downloads folder, named after the model:
+   `<model>_upgrade_IFC2X3.ifc`. The line under the buttons says what went in:
+
+![The bottom of the panel: Export (IFC) as IFC2X3, Load frame…, Change list (.txt), Export (IFC), and the line "Export (IFC, IFC2X3): 256 parts, 10.5 MB"](img/modeller/upgrade-4-export.png)
+
+The file holds **only what this upgrade added**, every part of every pack you ran (no discipline is picked; Undo a
+run to leave it out), and nothing of the model itself. Send it with the original model: the receiving team lays
+it over their own. For the **whole building** as IFC, use **Export ▸ IFC** on the toolbar instead.
+
+**Change list (.txt)**, beside it, downloads the same runs as a plain list: every added, refused and not-built row.
+
+**If Export (IFC) refuses** with *Storey "…" has no elevation*: the model does not carry its storey heights, and
+none is invented. Tap **Load frame…** and pick a small JSON file with them, then tap **Export (IFC)** again:
+
+```json
+{ "frame_name": "storey heights from the author's IFC",
+  "storey_elevations_m": { "GROUND FLOOR": 0.0, "LEVEL 1": 4.8, "ROOF": 9.05 } }
+```
+
+The file may also hold `site` (the original model's site placement) and `shift_m` (the move from this model's
+coordinates to the original's), so the export lands exactly on the original.
+
+### Beam schedules — where they come from, and other firms' layouts
+
+**Load schedule…** (in the **Beam rebar (schedule)** row) takes the drawing's **schedule sheet as a `.dxf`** (the
+beam table is read from the sheet itself) or a **marks file (`.json`)** made from it. The row then says what it
+read, for example *22 marks read from the drawing (format revit-s401-style, one building)*.
+
+How a table is read (which heading is which bar, how `8T25` or `2T10-150` is read) and how a beam finds its row
+(its type mark in the element name) is **data, not code**: tap **Formats** in the same row to see and edit it. A
+schedule with other headings is refused with the headings it found; one new entry in **Formats** for that layout
+is enough to read it. **Download edits** saves your formats to share.
 
 ## History — the slider *is* the timeline
 
@@ -791,8 +907,7 @@ doors, up risers between storeys.
 
 **The dots.** Above the slider sits a row of dots, one per edit gesture (a square dot = a model edit, a round dot =
 a milestone such as *Opened Duplex*). Clicking a dot, or the **‹ ›** arrows beside them, only *shows* that moment —
-the camera and highlight go there, the model is not changed. Undo stays **Ctrl+Z** (or the slider). Until 2026-10-02
-the Modeller kept this dot row hidden and only the slider was visible.
+the camera and highlight go there, the model is not changed. Undo stays **Ctrl+Z** (or the slider).
 
 **History threads — see the history of one kind of thing.** Next to the dots, chips such as **`+ Walls (2)`**,
 **`+ Openings (2)`**, **`+ MEP (1)`**, **`+ Inserts (1)`** count the edits of each kind (seven kinds: Grid/Structure,
@@ -827,17 +942,15 @@ gap-closed before the snapshot writes. If that heal itself nudges a *third*, pre
 a new soft finding, Save reports that new ORANGE by name rather than chasing it with a second heal pass —
 one heal, never an unbounded cascade.
 
-Witnessed end-to-end (`modeller/tests/witness_e2e_save.js`, 11/11): a real hard clash blocks the physical
-write outright (no snapshot written); a real auto-healable pair heals, re-verifies clean, and a real
-snapshot lands; a heal engineered to disturb a third element reports that one new finding by name without
-touching it further.
+In practice: a real hard clash blocks the write outright (no snapshot is written); a real auto-healable pair
+heals, re-verifies clean, and the snapshot lands; a heal that disturbs a third element reports that one new
+finding by name without touching it further.
 
 ---
 
 ## See what your edit costs
 
-*Commits nothing new — it reads the edit you already made. Proven on the live site (`W-S8-EDIT-DELTA` 9/9,
-`W-CONNECT-COMMIT` 10/10); first-timer version: [First Steps, Part 2](ModellerFirstSteps.md#part-2-see-what-your-edit-costs-and-send-it-to-erp).*
+*Commits nothing new — it reads the edit you already made. First-timer version: [First Steps, Part 2](ModellerFirstSteps.md#part-2-see-what-your-edit-costs-and-send-it-to-erp).*
 
 When you **stretch** an element (the cube handles of the Move gizmo), its quantity changes — and so do its material
 cost and, for some classes, its labour time. The Modeller shows that change on the element itself:
@@ -863,11 +976,11 @@ active **rate pack** — your language setting picks it (the tested run used US 
 **flat time per element**, so stretching it changes cost but not labour (`+0 s`); a linear class such as a beam or duct
 scales with length. A plain **move** changes no quantity, so it reads `+0.00`. The **finish date is not re-solved** — that
 would need a whole-programme re-run, and whether a hover may trigger one is an open question.
-Grid-stretch edits are not priced yet (the line says so).
+A grid stretch is priced too, from the commands the stretch stored.
 
 ## Send it to ERP — Project Order, variant, VO
 
-*Proven on the live site across the Modeller, the Viewer and the ERP app (`W-S9-MODELLER-PROJECT` 10/10); first-timer
+*Works across the Modeller, the Viewer and the ERP app; first-timer
 version: [First Steps, Part 2](ModellerFirstSteps.md#part-2-see-what-your-edit-costs-and-send-it-to-erp).*
 
 Select parts and click **ERP ▸ Project Order** (bottom-left). It reads the ERP's Project Order for those parts:
@@ -898,16 +1011,25 @@ Select parts and click **ERP ▸ Project Order** (bottom-left). It reads the ERP
 The Viewer reads the same store: the same parts folded from the Viewer give the same planned amount and find the existing order.
 Any IFC you open works: the order is keyed by the model's own name (the Duplex resident keeps its measured Viewer label).
 
+### After the order: documents, the dashboard, and the walker
+
+The drawings filed against the order (BIM Document), the register the walkers read, and the CAPEX dashboard are described in one place: [BIM → ERP and the CAPEX Dashboard](CapexDashboardGuide.md#from-the-bim-model-to-the-dashboard-the-whole-flow).
+
 ---
 
-## Export — .db, IFC, or a BCF issue
+## Export — .db, IFC, reports, BCF issue, 2D drawings
 
-Tap the **Export** pill. A small menu offers three things:
+Tap the **Export** pill. The menu offers:
 
 - **Native .db** — the full-fidelity signed op-log, every edit you made. Re-open it later with
-  **📂 Open ▸ local .db**.
+  **📂 Open ▸ Open local .db / .ifc…**.
+- **Viewer database (.db)** — the building (elements, materials, positions) in the form the Viewer opens.
 - **IFC (IFC4)** — the building as a standard IFC4 file other BIM tools can read.
+- **Load Summary…** — own weight by part and per footing, as a report for the structural engineer (needs a converted 2D set).
+- **Regulatory Report…** — the facts of the model for a submission (checks, loads, bill, assumptions) as a page to attach (needs a converted 2D set). A facts form asks for what the model cannot state.
+- **Analytical model (STAAD)…** — nodes, members, sections, supports and self-weight as a `.std` file, from a converted drawing set or any `.ifc`: a starting model, not a design.
 - **BCF issue (.bcfzip)** — your current view and selection, as an issue (see below).
+- **2D drawings (DXF)** — plans, elevations, roof and section with markings, so a model goes back to drawings (the reverse of [2D Drawings → BIM](DXF2BIMGuide.md)).
 
 ### IFC — the whole building you opened
 
@@ -929,9 +1051,6 @@ SampleCastle's 3,225 come back as 3,225 (about 26 MB).
 **Not in the file yet:** materials and colours, property sets, the storey/space structure, and openings as
 separate cut objects. It carries the building's real shapes, not yet a fully furnished IFC.
 
-Until 18 September 2026 this export wrote an **empty** file for any opened building — only drawn
-geometry went in. If you have an old export of a resident, export it again.
-
 The status line after an IFC export counts `walls=` only for walls you drew with Sketch → Extrude, so on
 an opened building it can read `walls=0` even though the file is full — check the byte count it prints
 instead.
@@ -942,24 +1061,25 @@ Pick **Export ▸ BCF issue** to export your current view as a **BCF 2.1** file 
 buildingSMART format for exchanging issues between BIM tools. The export carries your live camera
 viewpoint and the real `IfcGuid`s of whatever's selected, so the file opens correctly in Navisworks,
 Solibri, BIMcollab, Revit (via plugin), or Trimble Connect — never a synthetic ID that only means
-something inside this app. See [Clash Detection §8.5](CLASH_DETECTION.md#85-bcf-export) for exporting a
+something inside this app. See [Clash Detection §8.5](CLASH_DETECTION.md#85-bcf-export-shipped) for exporting a
 whole batch of detected clashes as one topic set.
 
 ---
 
 ## Toolbar — icon index
 
-The toolbar is a **⋯ pill rail** at the right edge: tap **⋯** to fan the pills, hover for a name, and open
+The toolbar is a **⋯ pill rail** at the right edge: the rail starts open (**⋯** folds / unfolds it), hover for a name, and open
 **? Help** for the live registry (icon · name · shortcut). `Esc` always cancels the current mode.
 
 | Icon | Does |
 |------|------|
-| **⋯ Toolbar** | Fan the pills open / closed |
+| **⋯ Toolbar** | Fold / unfold the pill rail (open by default) |
 | **Home** | Back to the Matrix landing |
-| **📂 Open** | Load a resident building, a local `.db`, or your own `.ifc` — filtered to ARC, walked + BOM-graphed |
+| **📂 Open** | Load a resident building, a local `.db`, your own `.ifc` (filtered to ARC, walked + BOM-graphed), or a set of 2D drawings (`.dxf`, see [DXF2BIM](DXF2BIMGuide.md)) |
 | **Fit** | Zoom to fit — the selection, or the whole scene (`F`) |
 | **Iso** | Cycle the view: Iso ⇄ Top |
 | **Grid** | Show / add a construction grid |
+| **↑ Upgrade** | Add rule-based detail: rebar, welds, layers, steel joints, gussets, beam bars; change list and **Export (IFC)** of what was added (see [Upgrade](#upgrade-add-rule-based-detail-lod-400)) |
 | **Move Grid** | Drag a gridline — attached walls recompose (`GEOM_GRID_MOVE`); hosted openings hold or ride (see [Grid-Stretch](#grid-stretch)) |
 | **Move** | Transform gizmo — move / scale / rotate the selection (`M`) |
 | **Drag Item** | Free single-item drag for a fixture/fitting, gated by real product data and a real drop surface (see [Item Drag](#item-drag)) |
@@ -973,16 +1093,17 @@ The toolbar is a **⋯ pill rail** at the right edge: tap **⋯** to fan the pil
 | **Apply** | Commit the pending fillet / chamfer |
 | **Insert** | Insert a library component — assemble, don't draw (`GEOM_INSERT`) |
 | **LOD 200** | Refine the last-placed component's level of detail (same signed row) — appears once you enter **Insert**, not on the resting rail |
-| **Export** | Export menu — Native `.db` (the signed op-log), IFC4 (the whole opened building), or a BCF 2.1 issue (see [Export](#export-db-ifc-or-a-bcf-issue)) |
+| **Export** | Export menu — Native `.db`, Viewer `.db`, IFC4, Load Summary, Regulatory Report, Analytical model (STAAD), BCF 2.1 issue, 2D drawings (DXF) (see [Export](#export-db-ifc-reports-bcf-issue-2d-drawings)) |
 | **Save** | Clash-check + auto-heal, then write a physical-DB snapshot — blocks on residual RED (see [Save](#save)) |
 | **History** | World History — the cross-page timeline shared with the Viewer, iDempiere, and Gravity |
+| **Language** | Flag button — the Modeller speaks the 13 film languages |
 | **Guide** | A short in-app user guide — how to Open, walk, edit & export |
 | **? Help** | Toolbar & shortcuts — the live pill registry |
 | **Delete** | Delete the selection (`Del`) |
 | **Clear** | Empty the scene |
 | **Sound** | Toggle authoring sound feedback |
 | **Connect** | Connect Scene — share selection / timeline with the Viewer & ERP (opt-in) |
-| **Teams** | Mount the Teams presence overlay — design branches, a spatial merge gate, who-dots (see [Collaborate](#collaborate-on-the-design-the-teams-overlay)) |
+| **Team** | Start or join a team (the Team panel); once you are in one, it opens the people strip (see [Collaborate](#collaborate-on-the-design-team-mode)) |
 | **X-ray** | Reveal — structure goes glass so routed MEP glows through in its discipline colours (`X`) |
 | **Undo / Redo** | Undo (`Ctrl+Z`) · Redo (`Ctrl+Y`) |
 
@@ -996,7 +1117,7 @@ always a safe retreat.
 
 | Symptom | Why | What to do |
 |---|---|---|
-| **A pill looks stuck in the top-left corner** and won't click | A mode-revealed pill (Extrude, Sweep-Run, Apply) is shown only after you start its mode; the rail lays them out on reveal. | Start the mode first (e.g. finish the Sketch before reaching for **Extrude**). The rail re-positions the pill as it appears — if one still looks stranded, toggle the **⋯** rail closed and open. |
+| **A pill looks stuck in the top-left corner** and won't click | A mode-revealed pill (Extrude, Sweep-Run, Apply) is shown only after you start its mode; the rail lays them out on reveal. | Start the mode first (e.g. finish the Sketch before reaching for **Extrude**). The rail re-positions the pill as it appears — if one still looks stranded, toggle the **⋯** rail folded and unfolded. |
 | **Cut / Scale seems to do nothing on a wall from an opened building** | A seeded ARC wall is a *baked* mesh, not a B-rep. Cut promotes it to a B-rep just-in-time — from its box, or on a layered wall from its real layer slabs; an insert that is neither a plain box nor layered is refused up-front (logged) rather than approximated. | Nothing to do for a normal axis-aligned wall — the op commits and renders. If a specific insert is *refused*, it can't be cut exactly; sketch the void instead. |
 | **A Walk seems to hang on a big building** | A discipline walk places hundreds of fixtures; they commit as **one batched signed group**, so a large walk takes a couple of seconds, not a frozen minute. | Wait for the batch — the status line reports the result when it lands (e.g. `ELEC — 267 placed across 5 storeys · 0 routed`). Scrub the slider back to clear them. |
 | **I want to "make an opening" but there's no Opening tool** | Opening is not a separate authoring tool — the real "cut a window/door" is the **Cut** tool (`GEOM_CUT`). | Select the wall, tap **Cut**. `GEOM_OPENING` is only a legacy sample primitive, never a user action. |
@@ -1005,12 +1126,15 @@ always a safe retreat.
 
 ---
 
-## Collaborate on the design — the Teams overlay
+## Collaborate on the design — Team mode
 
-The Modeller shares **one signed op-log** with the Viewer and the Kernel-ERP, so the same **Teams overlay**
-rides on it: git-style **design branches** ("you build that wing, I build this"), a **spatial merge gate**
-that flags where two branches clash, identity-coloured **who-dots** on elements, and the tabbed Outliner
-(Tree / Chat / Dashboard). Off by default, pixel-identical until you toggle it on.
+The Modeller shares **one signed op-log** with the Viewer and the Kernel-ERP, so a team can work on **one model
+from two browsers** over the same comm layer the ERP uses. Tap the **Team** icon on the right rail: the Team
+panel lets you **Start a team** or **Join** one and pick an avatar; once you are in a team the same icon opens
+the **people strip** (who is on what). See the **[Team guide](https://red1oon.github.io/bim-ootb/erp/team_guide.html)**.
+
+The older **Teams overlay** — who-dots on the Outliner rows, git-style design branches, a spatial merge gate,
+the tabbed Outliner (Tree / Chat / Dashboard) — is reached from the Team panel (**Show dots on this machine**).
 → **[Teams Overlay guide (with screenshots)](TeamsOverlayGuide.md).**
 
 ---

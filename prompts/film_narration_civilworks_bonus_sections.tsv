@@ -1,0 +1,4 @@
+card	0.30	3.00	bonus chapter card	M: Bonus. Long and cross sections.	M: Bonus. Long and cross sections.
+long	3.00	10.00	§PROFILE_LENS_PRECOMPUTE samples=2111 ds=1m routeLen=2110.3m · lens road/ground/drain	F: The road's profile? | M: The lens.	F: And the road's profile? | M: The lens shows road, ground and drains along the road. Scroll to zoom.
+cross	10.00	16.00	§CROSS_SECTION slabM=2 elementsCut=131/157/38/36 at 900/1000/1100/1200 m	M: Then a cross slice.	M: Cross: a two-metre slice, square to the road. Slide it along.
+pdf	16.00	19.50	§PROFILE_LENS_PDF sheets=22 · chainage inferred	M: Twenty-two profile sheets.	M: Plus twenty-two profile sheets.

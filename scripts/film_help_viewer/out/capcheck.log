@@ -1,0 +1,24 @@
+§CAPTION OK   cue=0, t=5.62 changed_px_above_caption_area=0
+§CAPTION OK   cue=0, t=8.76 changed_px_above_caption_area=0
+§CAPTION OK   cue=0, t=12.94 changed_px_above_caption_area=0
+§CAPTION OK   cue=Short t=15.80 changed_px_above_caption_area=0
+§CAPTION OK   cue=So t=19.54 changed_px_above_caption_area=0
+§CAPTION OK   cue=0, t=23.03 changed_px_above_caption_area=0
+§CAPTION OK   cue=0, t=27.95 changed_px_above_caption_area=0
+§CAPTION OK   cue=0, t=33.01 changed_px_above_caption_area=0
+§CAPTION OK   cue=0, t=36.21 changed_px_above_caption_area=0
+§CAPTION OK   cue=0, t=39.94 changed_px_above_caption_area=0
+§CAPTION OK   cue=0, t=44.37 changed_px_above_caption_area=0
+§CAPTION OK   cue=0, t=51.26 changed_px_above_caption_area=0
+§CAPTION OK   cue=0, t=54.42 changed_px_above_caption_area=0
+§CAPTION OK   cue=0, t=57.36 changed_px_above_caption_area=0
+§CAPTION OK   cue=0, t=61.61 changed_px_above_caption_area=0
+§CAPTION OK   cue=0, t=69.94 changed_px_above_caption_area=0
+§CAPTION OK   cue=0, t=73.45 changed_px_above_caption_area=0
+§CAPTION OK   cue=0, t=79.02 changed_px_above_caption_area=0
+§CAPTION OK   cue=0, t=83.06 changed_px_above_caption_area=0
+§CAPTION OK   cue=0, t=86.22 changed_px_above_caption_area=0
+§CAPTION OK   cue=0, t=87.87 changed_px_above_caption_area=0
+§CAPTION OK   cue=0, t=91.41 changed_px_above_caption_area=0
+§CAPTION OK   cue=0, t=108.91 changed_px_above_caption_area=0
+§CAPTION_VERDICT PASS cues=23

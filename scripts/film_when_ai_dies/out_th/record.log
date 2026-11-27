@@ -1,0 +1,13 @@
+§FILM_CUE beat=cover t=0.000 frames=101 typing=0 answer_hold_frames=101 x1
+§FILM_CUE beat=before t=4.208 frames=380 typing=59 answer_hold_frames=321 x1
+§FILM_CUE beat=q1 t=20.042 frames=406 typing=48 answer_hold_frames=358 x1
+§FILM_CUE beat=q2 t=36.958 frames=581 typing=61 answer_hold_frames=260 x2
+§FILM_CUE beat=q3 t=61.167 frames=445 typing=55 answer_hold_frames=390 x1
+§FILM_CUE beat=q4 t=79.708 frames=465 typing=32 answer_hold_frames=433 x1
+§FILM_CUE beat=q5 t=99.083 frames=379 typing=41 answer_hold_frames=112 x3
+§FILM_CUE beat=why t=114.875 frames=423 typing=0 answer_hold_frames=423 x1
+§FILM_CUE beat=passenger t=132.500 frames=326 typing=68 answer_hold_frames=258 x1
+§FILM_CUE beat=roadmap t=146.083 frames=256 typing=0 answer_hold_frames=256 x1
+§FILM_CUE beat=close t=156.750 frames=391 typing=0 answer_hold_frames=391 x1
+§FILM_KEYS typed=210 returns=7
+§FILM_DONE dur=173.042 frames=4153 planned=4153

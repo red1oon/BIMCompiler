@@ -1,0 +1,7 @@
+§FILE name=b4_tag sha=0fa163b8 path=index.html from=663 to=668 marks=666,667
+     Same counter the bottom-left Live Stats link reports from; carried over from the old gallery footer. -->
+<script>if(new URLSearchParams(location.search).has('ignore-me'))localStorage.setItem('goatcounter-ignore','t')</script>
+<!-- §MANIFEST:BEGIN viewer tags (script tags here are written by scripts/gen_manifest.js from viewer/modules.json; comments are yours) -->
+<script data-goatcounter="https://red1oon.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+<!-- §MANIFEST:END viewer tags -->

@@ -64,7 +64,7 @@ Built on [iDempiere](https://idempiere.org/) ERP conventions and [SQLite](https:
 
     Real iDempiere in the browser — POS, financial statements, the full Application Dictionary from SQLite. No Java, no server, no install.
 
-    [:octicons-arrow-right-24: Kernel-ERP Guide](ERPUserGuide.md) · [Open](https://red1oon.github.io/bim-ootb/erp/erp.html)
+    [:octicons-arrow-right-24: Kernel-ERP Guide](ERPUserGuide.md) · [Till & Kitchen (uniCenta twin)](TillUserGuide.md) · [All the lenses](ERPUserGuide.md#other-views-of-the-same-log-the-lens-family) · [Open](https://red1oon.github.io/bim-ootb/erp/erp.html)
 
 </div>
 
@@ -124,7 +124,18 @@ Built on [iDempiere](https://idempiere.org/) ERP conventions and [SQLite](https:
 | **Get going (everyone starts here)** | [📖 **User Guide**](USER_GUIDE.md) |
 | View a building in the browser | [BIM Viewer Guide](BIMUserGuide.md) |
 | Author geometry | [DAGeVu Modeller Guide](ModellerGuide.md) |
+| Turn 2D drawings (DXF) into a 3D BIM model | [2D Drawings → BIM (DXF2BIM)](DXF2BIMGuide.md) |
+| Get civil-works reports from a road IFC set | [Civil Works — Step by Step](CivilWorksGuide.md) |
+| Collaborate on a surface (who-did-what, chat) | [Teams Overlay](TeamsOverlayGuide.md) |
+| See what shipped recently | [What's New](WhatsNew.md) |
 | Run the browser ERP | [Kernel-ERP User Guide](ERPUserGuide.md) |
+| Drive the apps with one-line commands (you or an AI) | [Fast Script Guide](FastScriptGuide.md) |
+| Move a company in from Odoo, Business Central or SAP Business One | [Migration User Guide](MigrationGuide.md) · [how the Odoo move works](OdooMigration.md) |
+| Run a till and kitchen screen | [Till & Kitchen User Guide](TillUserGuide.md) |
+| See a building become a project order and a CAPEX dashboard | [BIM → ERP and the CAPEX Dashboard](CapexDashboardGuide.md) · [CAPEX UAT Guide](CapexUATGuide.md) |
+| Let an outside AI propose changes to the Modeller | [AI Proposer Guide](ProposerGuide.md) · [Defensive disclosure](AIProposerDefensiveDisclosure.md) |
+| Read or change the code | [Developer Guide](DeveloperGuide.md) |
+| Try the prototypes (proofs of concept, sample data only) | [Halal track & trace](HalalTrace.md) · [open it](halal/index.html) · [Retail at scale](RetailScaleStory.html) · [Glassbowl Gravity](glassbowl_gravity.html) · [Architecture tour](bim_architecture_viz.html) |
 | Understand the ERP world view | [MANIFESTO — read first](MANIFESTO.md) |
 | Compare to other tools | [Feature Comparison](FeatureComparison.md) · [Migrate & Compare (ERP)](MigrateComparisonPaper.md) |
 | See where this sits in the industry | [Strategic Positioning](StrategicIndustryPositioning.md) |

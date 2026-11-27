@@ -1,0 +1,201 @@
+{
+ "made": "2026-11-17T20:59:11.607Z",
+ "commit": "560b3541",
+ "tree": "/tmp/wt-film-aid-ootb",
+ "witness": {
+  "refs": {
+   "verdict": "PASS",
+   "line": "§X0_REFS fields=61 counts_agree=Y sites=304 lines_ok=Y phantom_reads_only=Y unknown=Y moved_line_dropped=Y no_list_no_guess=Y gen_ms=7035 verdict=PASS",
+   "log": "out/witness_x0_refs.log",
+   "needed": true
+  },
+  "core_pure": {
+   "verdict": "PASS",
+   "line": "§X0_CORE_PURE_W core_files=125 tracked_js=3396 judged=9 failed=0 verdict=PASS",
+   "log": "out/witness_x0_core_pure.log",
+   "needed": true
+  },
+  "isolation": {
+   "verdict": "PASS",
+   "line": "§X0_ISOLATION precache=0 minify=0 tags=0 sw_files=4 html_files=83 deps=0 red=Y verdict=PASS",
+   "log": "out/witness_x0_isolation.log",
+   "needed": true
+  },
+  "lens": {
+   "verdict": "PASS",
+   "line": "§LENS shown=Y hidden_changed=Y hidden_dirty=Y unstamped_ignored=Y explain_shown=Y explain_hidden=Y explain_absent=Y extra_dir=Y extra_changed=Y bake_env_not_a_stamp=Y caps=Y bake_stamps=Y verdict=PASS",
+   "log": "out/witness_x0_lens.log",
+   "needed": true
+  },
+  "context": {
+   "verdict": "PASS",
+   "line": "§X0_CONTEXT header=Y load=Y fields=Y tags=Y changed_hidden=Y unstamped_no_value=Y empty_says_none=Y missing_file=Y no_index_inconclusive=Y real_files=6 real_same=6 verdict=PASS",
+   "log": "out/witness_x0_context.log",
+   "needed": true
+  },
+  "taghover": {
+   "verdict": "PASS",
+   "line": "§DEVTK_SPEC tags=5594 files=769 known_hit=Y fake_none=Y verdict=PASS",
+   "log": "out/witness_x0_taghover.log",
+   "needed": true
+  },
+  "bump_button": {
+   "verdict": "PASS",
+   "line": "§X0_BUMP_BUTTON checks=6 failed=0 verdict=PASS",
+   "log": "out/witness_x0_bump_button.log",
+   "needed": true
+  },
+  "bump_parity": {
+   "verdict": "PASS",
+   "line": "§BUMP_PARITY_W_VERDICT PASS judged=24 failed=0 real_row=skipped",
+   "log": "out/witness_bump_parity.log",
+   "needed": true
+  },
+  "erp_hover": {
+   "verdict": "PASS",
+   "line": "§ERP_HOVER_W VERDICT PASS fail=0",
+   "log": "out/witness_erp_hover.log",
+   "needed": true
+  },
+  "realvsc": {
+   "verdict": "PASS",
+   "line": "§X0_REALVSC vscode=1.146.0 active=Y fresh=Y def=Y hover=Y phantom=Y unknown_silent=Y tag=Y fake_tag=Y commands=Y cost=Y check=Y status=Y lens=Y refs=Y bump=Y bump_button=Y refs_red=Y last_value=Y last_value_red=Y context=Y builtin_ready=Y builtin_defs=0 seconds=38.7 verdict=PASS",
+   "log": "out/witness_x0_realvsc.log",
+   "needed": true
+  },
+  "mcp": {
+   "verdict": "FAIL",
+   "line": "§X0_MCP tools=8 init=Y field=Y phantom=Y unknown=Y tag=Y fake_tag=Y cost=Y loaded=Y lens=Y context=Y used=Y check=Y bad_tool_error=Y bad_json_survives=Y network_modules=1 verdict=FAIL",
+   "log": "out/witness_x0_mcp.log",
+   "needed": false
+  }
+ },
+ "originMain": "a59d0566",
+ "offline": {
+  "files": 16,
+  "parsed": 16,
+  "understanding": [
+   "references",
+   "field hover and F12",
+   "tag hover",
+   "value beside the code",
+   "purity warning",
+   "context for a file"
+  ],
+  "understandNet": 0,
+  "shipNet": 6,
+  "ship": [
+   "Fetch back",
+   "Deploy main now",
+   "memory of the pages"
+  ],
+  "shipDoors": {
+   "Fetch back": [
+    "lib/ship.js:12 require('https') in (top level)()",
+    "lib/ship.js:13 require('http') in (top level)()",
+    "lib/ship.js:204 'gh' in deployMain()"
+   ],
+   "Deploy main now": [
+    "lib/ship.js:12 require('https') in (top level)()",
+    "lib/ship.js:13 require('http') in (top level)()",
+    "lib/ship.js:204 'gh' in deployMain()"
+   ],
+   "memory of the pages": []
+  },
+  "glueNet": 0,
+  "redSeen": true,
+  "urlLits": {
+   "lib/heap_impact.js": [
+    "127.0.0.1"
+   ],
+   "lib/ship.js": [
+    "cli.github.com",
+    "localhost"
+   ]
+  },
+  "traced": {
+   "references": {
+    "files": [
+     "lib/app_refs.js",
+     "lib/app_surface_index.js"
+    ],
+    "doors": []
+   },
+   "field hover and F12": {
+    "files": [
+     "lib/app_surface_index.js"
+    ],
+    "doors": []
+   },
+   "tag hover": {
+    "files": [
+     "lib/tag_index.js"
+    ],
+    "doors": []
+   },
+   "value beside the code": {
+    "files": [
+     "lib/lens_index.js",
+     "lib/tag_index.js"
+    ],
+    "doors": []
+   },
+   "purity warning": {
+    "files": [
+     "core_pure.js(repo scripts/lib)"
+    ],
+    "doors": []
+   },
+   "context for a file": {
+    "files": [
+     "lib/file_context.js",
+     "lib/tag_index.js",
+     "lib/lens_index.js",
+     "lib/deploy_cost.js",
+     "lib/js_facts.js"
+    ],
+    "doors": []
+   }
+  },
+  "verdict": "PASS",
+  "line": "§X0_OFFLINE files=16 parsed=16 understanding_features=6 understanding_features_net=0 ship_features=3 ship_features_net=6 glue_net=0 red_control=DETECTED scanner_blind=N verdict=PASS"
+ },
+ "erp": {
+  "table": "C_Order",
+  "column": "C_BPartner_ID",
+  "layers": 20,
+  "lined": 18,
+  "key": "Alt+1",
+  "opened": "vscode://file<bim-ootb>/erp/callouts/CalloutOrder.js:181",
+  "pickedAt": "erp/callouts/CalloutOrder.js:181",
+  "hoverLine": "",
+  "pageErrors": 0
+ },
+ "prs": {
+  "2966": {
+   "what": "Context for this file",
+   "state": "MERGED feat(devtools): Context for this file, X0 command and facts-server tool (#2965)"
+  },
+  "2970": {
+   "what": "tag hover: last value",
+   "state": "MERGED feat(devtools): tag hover says the last provable value or names why there is none (#2969)"
+  },
+  "2985": {
+   "what": "Find All References",
+   "state": "MERGED feat(devtools): Find All References for a field of the shared object (#2983)"
+  },
+  "3055": {
+   "what": "ERP field hover",
+   "state": "MERGED feat(devtools): hover an ERP field to see every layer of code behind it (F.22)"
+  },
+  "3162": {
+   "what": "the Bump button",
+   "state": "MERGED devtools: the Bump button - check in the background, solid on pass, press to write (§F.34)"
+  },
+  "3209": {
+   "what": "core-purity warning",
+   "state": "MERGED devtools(x0): a core-purity warning in the editor; the scan moves to one shared module (§F.35)"
+  }
+ },
+ "licence": "MIT License"
+}

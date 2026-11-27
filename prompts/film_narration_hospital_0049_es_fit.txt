@@ -1,0 +1,51 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT open cue=0.00 room=12.70 dur=12.13 -> DETAIL slack=+0.57 detailDur=12.13 words=27
+§NARR_TONE open#0 F ! own=-5.4st rose=0st endDelta=-5.4st want=any OK "¡Buenos días, desde Boston!"
+§NARR_TONE open#0 F WH own=-6.4st rose=0st endDelta=-6.4st want=any OK "¿Qué tenemos aquí?"
+§NARR_TONE open#2 F YN own=+1.3st rose=0st endDelta=+1.3st want=rise OK "¿Todo?"
+§NARR_FIT inside cue=13.00 room=5.10 dur=4.77 -> DETAIL slack=+0.33 detailDur=4.77 words=12
+§NARR_TONE inside#1 F ! own=-5.0st rose=0st endDelta=-5.0st want=any OK "¡Y todavía está subiendo!"
+§NARR_FIT hall cue=18.40 room=11.70 dur=11.66 -> DETAIL x1.080 slack=+0.04 detailDur=12.63 words=28
+§NARR_TONE hall#0 F ! own=-5.5st rose=0st endDelta=-5.5st want=any OK "¡Mira este vestíbulo!"
+§NARR_TONE hall#2 F YN own=-2.3st rose=5.0st endDelta=+3.6st want=rise OK "¿Y el recorrido más largo hasta la salida?"
+§NARR_FIT days cue=30.40 room=13.10 dur=10.80 -> DETAIL slack=+2.30 detailDur=10.80 words=25
+§NARR_TONE days#0 F ! own=-1.5st rose=0st endDelta=-1.5st want=any OK "Mientras tanto, afuera, ¡el calendario vuela!"
+§NARR_FIT checks cue=43.80 room=12.80 dur=12.75 -> DETAIL x1.013 slack=+0.05 detailDur=12.97 words=27
+§NARR_TONE checks#0 F WH own=-3.0st rose=0st endDelta=-3.0st want=any OK "Oye, ¿qué es esa caja?"
+§NARR_TONE checks#2 F WH own=+0.0st rose=0st endDelta=+0.0st want=any OK "¿Cuántas encuentra?"
+§NARR_FIT egress cue=56.90 room=5.70 dur=4.24 -> DETAIL slack=+1.46 detailDur=4.24 words=12
+§NARR_TONE egress#0 F YN own=-0.2st rose=5.0st endDelta=+3.5st want=rise OK "¿Y la seguridad?"
+§NARR_FIT door cue=62.90 room=9.30 dur=6.36 -> DETAIL slack=+2.94 detailDur=6.36 words=16
+§NARR_TONE door#0 F ! own=-4.4st rose=0st endDelta=-4.4st want=any OK "¡Hasta las puertas se miden!"
+§NARR_FIT done cue=72.50 room=10.00 dur=8.23 -> DETAIL slack=+1.77 detailDur=8.23 words=20
+§NARR_TONE done#0 F ! own=-3.1st rose=0st endDelta=-3.1st want=any OK "¡Día trescientos veintiuno!"
+§NARR_FIT loadpath cue=82.80 room=11.90 dur=11.73 -> DETAIL slack=+0.17 detailDur=11.73 words=26
+§NARR_TONE loadpath#0 F WH own=-0.5st rose=0st endDelta=-0.5st want=any OK "¿por qué se ha parado?"
+§NARR_TONE loadpath#2 F YN own=-6.9st rose=5.0st endDelta=+4.1st want=rise OK "¿Y esa caja?"
+§NARR_FIT clash cue=95.00 room=19.70 dur=19.46 -> DETAIL slack=+0.24 detailDur=19.46 words=41
+§NARR_TONE clash#0 F ! own=-5.8st rose=0st endDelta=-5.8st want=any OK "¡Mira, muestra todas las colisiones!"
+§NARR_TONE clash#2 F YN own=-6.0st rose=5.0st endDelta=+4.4st want=rise OK "¿Importa eso?"
+§NARR_TONE clash#3 M YN own=+2.0st rose=0st endDelta=+2.0st want=rise OK "¿Solapes reales?"
+§NARR_TONE clash#4 F ! own=-3.3st rose=0st endDelta=-3.3st want=any OK "¡O sea, cuatro de cada cinco eran falsas alarmas!"
+§NARR_FIT which cue=115.00 room=18.50 dur=18.35 -> DETAIL slack=+0.15 detailDur=18.35 words=42
+§NARR_TONE which#0 F WH own=-4.9st rose=0st endDelta=-4.9st want=any OK "¿Qué choca más?"
+§NARR_TONE which#4 F YN own=-6.9st rose=5.0st endDelta=+4.1st want=rise OK "¿Y esa caja?"
+§NARR_TONE which#5 M YN own=-9.4st rose=5.0st endDelta=+3.3st want=rise OK "¿Tiene cada viga canto suficiente?"
+§NARR_FIT rules2 cue=133.80 room=14.60 dur=10.20 -> DETAIL slack=+4.40 detailDur=10.20 words=23
+§NARR_TONE rules2#0 F YN own=-3.9st rose=5.0st endDelta=+3.3st want=rise OK "¿Distancia de circulación?"
+§NARR_FIT datum cue=148.70 room=10.80 dur=4.69 -> DETAIL slack=+6.11 detailDur=4.69 words=13
+§NARR_TONE datum#0 F ! own=-2.5st rose=0st endDelta=-2.5st want=any OK "¡Oh, otra vez el plano de replanteo!"
+§EDGE_CALL voice=es-ES-ElviraNeural rate=+3% chars=90 -> e27ea47c79
+§NARR_FIT parade cue=159.80 room=7.70 dur=4.80 -> DETAIL slack=+2.90 detailDur=4.80 words=13
+§NARR_TONE parade#0 F ! own=-0.8st rose=0st endDelta=-0.8st want=any OK "Incendios, treinta y ocho, electricidad, treinta y tres, ¡mecánica, ciento treinta y tres!"
+§NARR_FIT pairs cue=167.80 room=4.50 dur=4.46 -> DETAIL x1.062 slack=+0.04 detailDur=4.78 words=10
+§NARR_TONE pairs#0 M YN own=+4.9st rose=0st endDelta=+4.9st want=rise OK "¿El par más grande?"
+§NARR_FIT reveal cue=172.60 room=21.00 dur=19.96 -> DETAIL slack=+1.04 detailDur=19.96 words=41
+§NARR_FIT value cue=193.90 room=4.60 dur=2.86 -> DETAIL slack=+1.74 detailDur=2.86 words=6
+§NARR_TONE value#0 F YN own=+2.6st rose=0st endDelta=+2.6st want=rise OK "¿Al vuelo?"
+§NARR_FIT cards cue=198.80 room=7.70 dur=5.45 -> DETAIL slack=+2.25 detailDur=5.45 words=11
+§NARR_TONE cards#0 F YN own=-1.6st rose=5.0st endDelta=+3.8st want=rise OK "Entonces, ¿el resultado?"
+§NARR_TONE cards#2 F ! own=-6.4st rose=0st endDelta=-6.4st want=any OK "¡Que tengas un buen día!"
+rc=0

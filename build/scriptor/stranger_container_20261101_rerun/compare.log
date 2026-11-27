@@ -1,0 +1,19 @@
+§SC_HEADER logdir=build/scriptor/stranger_container_20261101_rerun host_record=build/scriptor/terms_limits_20261101/terms_combined.json
+   §SC_ENV os=Debian GNU/Linux 12 (bookworm) node=v22.23.4 user=node home=/home/node pwd=/home/node
+   §SC_ENV /home/red1 absent
+   §SC_STEP clone exit=0 s=372
+   §SC_HEADS BIMCompiler=d9bba810b bim-ootb=7d0cf638
+   §SC_STEP npm_install exit=0 s=129
+   §SC_STEP dev_env_fetch exit=0 s=5
+   §SC_STEP npm_install_ootb_tests exit=0 s=2
+   §SC_STEP terms_runner exit=0 s=316
+   §SC_DOCKER exit=0
+   PASS §SC-S1 container runner verdict - §TERMS_VERDICT PASS enforced=13 open=0 witness_failed=0 uncontrolled=0 browser=judged 0/skipped 5
+   PASS §SC-S1 container portability - §TERMS_PORTABLE rows=13 portable=13 not_portable=0 unknown=0 (a fresh clone + dev_env_fetch has every input of a portable row; §50.2)
+   PASS §SC-S2-CONTROL a host record with row statement-signed changed is detected (1 diff)
+   PASS §SC-S2 per-term status + engine/ootb witness verdicts == host record - 13 rows
+   PASS §SC-S3 no /home/red1 path in 19 container log files
+   PASS §SC-S4 different OS - container="Debian GNU/Linux 12 (bookworm)" host="Ubuntu 24.04.5 LTS"
+   PASS §SC-S4 different Node - container=v22.23.4 host=v18.19.1
+   PASS §SC-S4 /home/red1 absent inside the container
+§SC_VERDICT PASS judged=7 fails=0 inconclusive=0 (a container on this machine: same kernel, CPU and network - NOT another machine)

@@ -1,0 +1,7 @@
+[
+  { "name": "X1 payment-up",        "treatment": "FACT", "role": 103, "strategy": 100, "dir": "UP",   "table": "C_Payment",        "group": "Station/Date/Payment#",    "schedule": "end-of-day" },
+  { "name": "X2 invoiceline-up",    "treatment": "FACT", "role": 103, "strategy": 100, "dir": "UP",   "table": "C_InvoiceLine",    "group": "Station/Date/Invoice#",    "schedule": "end-of-day" },
+  { "name": "X3 shipment-down",     "treatment": "FACT", "role": 103, "strategy": 100, "dir": "DOWN", "table": "M_InOutLine",      "group": "Shipment doc key",         "schedule": "on-change" },
+  { "name": "X4 timeexpense-up",    "treatment": "FACT", "role": 103, "strategy": 100, "dir": "UP",   "table": "S_TimeExpenseLine","group": "Station/Date/Expense#",    "schedule": "end-of-day" },
+  { "name": "X5 request-up",        "treatment": "FACT", "role": 103, "strategy": 100, "dir": "UP",   "table": "R_Request",        "group": "Station/Date/Request#",    "schedule": "at-visit" }
+]

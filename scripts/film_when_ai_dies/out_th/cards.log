@@ -1,0 +1,12 @@
+§CARD beat=cover entries=1 overflow_px=0
+§CARD beat=before entries=40 overflow_px=0
+§CARD beat=q1 entries=29 overflow_px=0
+§CARD beat=q2 entries=43 overflow_px=0
+§CARD beat=q3 entries=36 overflow_px=0
+§CARD beat=q4 entries=13 overflow_px=0
+§CARD beat=q5 entries=24 overflow_px=0
+§CARD beat=why entries=1 overflow_px=0
+§CARD beat=passenger entries=49 overflow_px=0
+§CARD beat=roadmap entries=1 overflow_px=0
+§CARD beat=close entries=1 overflow_px=0
+§CARDS_DONE beats=11 stills=231 too_tall=0 key_cues=210 return_cues=7

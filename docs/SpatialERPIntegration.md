@@ -111,4 +111,4 @@ integration contract in one sentence: *shared model + shared log, optional money
 
 *Companion reads: [Spatial ERP OOTB — Every Record Has a Place](SpatialERP_OOTB.md) ·
 [HR / Tenancy / Operate Module](HRBIMAssetGuide.md) · [Kernel-ERP User Guide](ERPUserGuide.md) ·
-[BIM Viewer Guide](BIMUserGuide.md). Spec: `prompts/RESUME_HR_BIM_ASSET.md` (§CROSS-APP · §FM-FAMILY · §REAL-BIND).*
+[BIM Viewer Guide](BIMUserGuide.md). Spec: `prompts/Viewer/HBA/RESUME_HR_BIM_ASSET.md` (§CROSS-APP · §FM-FAMILY · §REAL-BIND).*

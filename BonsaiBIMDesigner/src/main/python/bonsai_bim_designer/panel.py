@@ -646,6 +646,10 @@ class BIM_PT_bim_designer(Panel):
             if rule == "GRID_SNAP":
                 icon = 'PREFERENCES'
                 text = f"{bom_id} {field}: {actual:.0f} -> {required:.0f}mm (grid)"
+            elif field == "pre_snap":
+                # Submitted size broke the rule; the snapped size is legal, so there is nothing to fix.
+                icon = 'INFO'
+                text = f"{bom_id}: submitted {actual:.0f} below {required:.0f}, grid rounded it up"
             else:
                 # Validation failure — red indicator
                 delta = required - actual
@@ -660,7 +664,7 @@ class BIM_PT_bim_designer(Panel):
             row.label(text=text, icon=icon)
 
             # Click-to-fix button for BLOCK violations (not GRID_SNAP)
-            if rule != "GRID_SNAP" and actual < required:
+            if rule != "GRID_SNAP" and field != "pre_snap" and actual < required:
                 fix_op = row.operator("bim.designer_auto_fix",
                                        text="Fix", icon='TOOL_SETTINGS')
                 fix_op.fix_rule = rule

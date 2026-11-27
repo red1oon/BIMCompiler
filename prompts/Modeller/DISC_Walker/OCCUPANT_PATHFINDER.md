@@ -1960,3 +1960,122 @@ SHARED across every session that has ever used this standing sandbox (9+ unrelat
 sitting there mid-session). A `git stash` here is not scoped to your branch — verify with `git
 stash show -p stash@{0}` that the top entry is really yours before popping. Already documented in
 memory ([[feedback_git_stash_shared_across_worktrees]]); this is a live confirmation, not a new rule.
+
+# ⚠ DO NOT REMOVE
+# ▶ §PATHING-DEFECTS-2026-09-20 — FIVE DEFECTS, MEASURED ON A REAL FILM. SPEC'D, NOT STARTED.
+**SCOPE: `common/room_graph.js` connectivity and the two consumers that print a distance.
+Nothing here is built. Every claim below was measured on `Hospital_silent.db` — the DB the
+movie bake actually renders — using this project's own modules, never a re-implementation.
+Read the log after every run. Do not start any item without red1's go.**
+
+Filed by the escape-route film lane (`prompts/ESCAPE_ROUTE_REVEAL.md`,
+`prompts/LOADPATH_FREEZE_POLISH_RESUME.md`) after red1 watched the closing beat and asked the
+right question: *"the escape route is rather long crossing whole wings which is rather
+unrealistic. Investigate."* It is. **§GRAPH-FOUNDATION above called this in July — "connectivity
+is the bottleneck, not routing" — and P1 is a second, independent instance of it.**
+
+⚠ `A.getRoomGraph` has **seven** consumers (§GRAPH-FOUNDATION lists them). Any change to P1
+changes the graph for all of them and for every building in the fleet. Nothing here is a local fix.
+
+## The route that started it, for reference
+`§ESCAPE_ROUTE_BUILD room="≈ Level 4 R1" walk=247.03m steps=~329 time=3:28 doorsOnRoute=7
+pathHops=10 line=shortestPath.polyline (§RASTER-ASTAR) pts=13 spDelta=0.00e+0
+selection=argmax MEASURED WALK over 30 rooms (6 reach an exit)`
+
+**The pathfinder is not at fault and must not be "fixed".** `spDelta=0.00e+0` — the drawn
+polyline matches the computed shortest path exactly, and the descent lands `0.0 m` in plan from a
+real `IfcStair`. A* is doing its job on the graph it is handed. **The graph is the defect.**
+
+## P1 — `stairBaseKey()` merges physically separate stairs. THE CAUSE OF THE UNREALISTIC ROUTE.
+`common/room_graph.js:141`
+```js
+var INDEX_SUFFIX_RE = /:\d+$/;
+function stairBaseKey(name) {
+  if (RUN_SUFFIX_RE.test(n)) return n.replace(RUN_SUFFIX_RE, '');
+  return n.replace(INDEX_SUFFIX_RE, '');        // <-- strips the trailing :digits
+}
+```
+Hospital names every stair `Stair:180mm max riser 280mm going:<id>`, where the trailing number is
+the **Revit element ID, not a flight index**. Stripping it leaves the TYPE name, which every stair
+in the building shares.
+
+**MEASURED on the real DB:**
+| | |
+|---|---|
+| stair rows | **62** |
+| distinct base keys after `stairBaseKey()` | **11** |
+| largest collapsed group | **26 stairs -> one key** |
+| that group's merged footprint | **x 2.9 .. 81.0, y 69.2 .. 129.5** |
+
+Twenty-six separate stairs, spread over 78 m of plan, become one stair whose bbox covers most of
+the building. Downstream: `§ROOM_GRAPH ... stairs=3 (skipped=2)` — three vertical links out of 62 —
+so one descent chain exists and every cross-storey route must reach it.
+
+**The consequence, probed vertex by vertex** (`escapeRouteBuild()` on the same DB, `rec.pts3`):
+the start room sits at x=-1.9; the nearest stairs are `Stair:...543090` and `...543380` at
+**10.1 m and 10.2 m**; the route walks **~71 m east to x=80.6**, descends -9.66 m then -5.55 m
+(both `0.0 m` in plan from `IfcStair:...534855`), then returns **~52 m west** to an exit at x=10.6.
+**~123 m of the 247 m is an out-and-back to the far-east stair**, past stairs 10 m from the door.
+
+⚠ The file's own comment at `:137` names this hazard in the opposite direction — *"some names ALSO
+end in ':<ID>' (the flight's own numeric id), and stripping ':\d+$' unconditionally would eat that
+id too (measured bug, POC run 1)"*. The `" Run N"` guard catches one convention; a name with **no**
+`" Run N"` still falls through to the unconditional strip. Hospital is that case, and so is every
+Revit default export that names stairs by type.
+
+**FIX DIRECTION (not built):** group by something that cannot collide — GUID, merged by proximity
+and z-span overlap rather than by string. A name may still be used as a tiebreak, never as the key.
+**T1** POC-gate first, as §GRAPH-FOUNDATION requires: a calculation-only node script over all
+7 fleet DBs printing stairs-in / groups-out / links-out before and after. **T2** the engine change.
+**T3** re-run every egress and pathing witness across the fleet — the graph changes for all seven
+consumers, so "green on Hospital" is not evidence.
+
+## P2 — the drawn polyline sawtooths vertically. NEEDS A PROBE BEFORE IT CAN BE SPEC'D.
+Vertices 5 -> 12 of the same route alternate **±1.7 m, six times**, with no stair within 5-13 m:
+```
+[ 6] y=167.0  <== -1.69m   nearest stair 12.1 m away
+[ 7] y=168.7  <== +1.69m   nearest stair 12.7 m
+[ 8] y=167.0  <== -1.68m ... and so on to [12]
+```
+That adds **~11.8 m of phantom climb** to a walk measured in 3D, and draws a visibly bobbing line
+across the last half of the route. **Cause not identified** — the leading read is the raster A*
+snapping between two floor z-levels. **Do not spec a fix from this paragraph**; probe it first and
+write the cause down here.
+
+## P3 — the graph is nearly edgeless. CHECK THE ROOM DATA BEFORE CALLING THIS A PATHING BUG.
+`§ROOM_GRAPH nodes=30 doors=440 edges=7 deadend=148 orphan=285 orphanRescued=272 circ=3 exits=8`
+Seven edges for thirty nodes is why `§ESCAPE_ROUTE_ALTERNATES commonPathRED=183.16m` and
+`shape=SNAKE (long common spine, choice only at the end — BAD egress)`: there is no second way
+round for the graph to find. ⚠ But this DB carries `rooms_meta.room_count = 7` and **18 rows** in
+`rel_contained_in_space` for a 63,000-element model — so P3 may be downstream of absent IfcSpace
+data rather than a defect in the builder. **Establish which before speccing.** Re-measure after P1.
+
+## P4 — TWO different "longest path" numbers ship at once. A WRONG NUMBER IS ALREADY ON SCREEN.
+The bake says so itself:
+`§ESCAPE_ROUTE_COST_IS_NOT_A_DISTANCE ... graphCost=106.93 (escapeRoute().distance — penalty-
+weighted) vs drawnWalk=247.03m ... ratio=0.43 | ... The film prints the drawn walk. The Egress
+report prints the cost. That report figure is wrong and is NOT fixed here.`
+`rule_checklist.js` divides the **cost** by the 0.75 m stride for its "Longest path to exit"
+headline — **~143 steps** — while the film draws **~329 steps** for the same room in the same
+building. A penalty-weighted cost is not a distance and must never be divided by a stride.
+**FIX DIRECTION:** the report quotes the measured walk, or it labels its figure a cost and drops
+the step conversion. One building, one number.
+
+## P5 — selection and ranking disagree by construction, and a penalty has no effect.
+The film selects by `argmax MEASURED WALK`; the Egress panel ranks by penalty-weighted cost. They
+agreed on Hospital and the log says so, but it also warns they can diverge by more than 5%.
+Related: `§ROOM_GRAPH_UTILITY utilityRooms=3 (routing penalty x8 on touching edges, not removed)` —
+that ×8 lives in the COST, which selection ignores, so a utility room can be chosen as the start
+with the penalty having no effect on the choice. Decide which measure is authoritative, once.
+
+## What is NOT a defect, so nobody re-opens it
+- **A\*** — `spDelta=0.00e+0`, polyline equals shortest path.
+- **`§PATH_LEGAL`** — `legalized=3..11 detoured=0/1` across the run; the legaliser is not detouring.
+- **The 62 stairs in the source data** — distinct GUIDs, distinct positions, real z-spans. **P1 is a
+  code fault, not a data fault**, and the spec must not be written as if the model were at fault.
+
+## Suggested order, and why
+**P1, then P4.** P1 is one function, provably wrong on a naming convention Revit emits by default,
+and P3 may partly dissolve once the stairs reconnect — so measuring P3 before P1 would be measuring
+the wrong thing. P4 is second because it is a wrong number already published, and it is independent
+of the graph. P2 needs a probe. P5 is a ruling, not a repair.

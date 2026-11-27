@@ -1,0 +1,13 @@
+{
+ "note": "Only sources this lane READ. A web row names the URL and the copy fetched into out/prior/ (2026-11-15) and a text that must be in that copy; a repo row names the file, the line and a text on that line. guard.js check P fails a row whose text is not there. Nothing from memory.",
+ "items": [
+  { "name": "RenderDoc, Pixel History", "where": { "url": "https://renderdoc.org/docs/window/texture_viewer.html", "saved": "out/prior/renderdoc_texture_viewer.html", "text": "shows all modifications that have happened to the texture since the start of the frame" },
+    "does": "click a pixel: every draw that changed it, in order", "took": "a body's layers, in the order they happened" },
+  { "name": "The Whyline (CMU)", "where": { "url": "https://www.cs.cmu.edu/~NatProg/whyline.html", "saved": "out/prior/whyline_cmu.html", "text": "ask \"Why did\" and \"Why didn't\" questions about their program's output" },
+    "does": "ask why about the output, get the chain of code", "took": "why this size, and say what is not recorded" },
+  { "name": "click-to-component (React)", "where": { "url": "https://github.com/ericclemmons/click-to-component", "saved": "out/prior/click_to_component_README.md", "text": "a Component in the browser to **instantly** goto the source in your editor" },
+    "does": "Option+Click a component: its source; lines from a Babel plugin", "took": "no build step: a literal key at each builder, a parser finds the line" },
+  { "name": "this Modeller's edit owner", "where": { "repo": "bim-ootb", "path": "viewer/edit_delta.js", "line": 23, "text": "function netEdits(ops)" },
+    "does": "the one function that says which ops edit a body", "took": "layer 5 asks it; no second copy" }
+ ]
+}

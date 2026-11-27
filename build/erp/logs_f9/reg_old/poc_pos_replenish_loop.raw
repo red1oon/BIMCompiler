@@ -1,0 +1,35 @@
+═══ W-POS-REPLENISH-LOOP — full cycle: suggest → PO CO → receipt CO → onhand +N → clears ═══
+
+   🟢 1a. Elm Tree (124) has type-1 replenish policy (min=10 max=20) — type=1
+   🟢 1b. Elm Tree NOT in baseline suggestions (onhand 15 > min 10) — baseline suggests=8 products
+   🟢 1c. buildSaleGroup for Elm Tree ×6 ok (the cross-leg sale at warehouse 103) — ok=true
+   🟢 1d. SUGGESTION FIRES: Elm Tree appears with qtyToOrder=11 (= max 20 − available 9) — got=11
+§POS-LOOP suggest qty=11 product=124 (Elm Tree)
+   🟢 2a. vendor-from-seed: Elm Tree has current vendor in m_product_po — vendor=114 (Tree Farm Inc.) pricepo=30
+§POS-LOOP vendor=114 (Tree Farm Inc.) pricepo=30 newVerbs=[]
+   🟢 2b. buildReplenishPO → CREATE_DOCUMENT C_Order (IsSOTrx=N) via buildDoc archetype — ops=10
+   🟢 2c. PO header: IsSOTrx=N (purchase order, NOT a sale) — issotrx=N
+   🟢 2d. PO has one CREATE_LINE per vendored suggestion — lines=9 suggestions=9
+   🟢 2e. PO line for Elm Tree has qtyordered=11 (== the suggestion) — got=11
+§POS-LOOP po=built lines=9 verb=buildDoc newVerbs=[]
+   🟢 3. dispatchOrder(C_Order DR → CO) for the PO: ok — from=DR to=CO reason=none
+§POS-LOOP po=CO dispatch=DR→CO ok=true
+   🟢 4a. buildDoc → CREATE_DOCUMENT M_InOut (receipt) — table=M_InOut
+   🟢 4b. receipt movementtype=V+ (vendor in — the buy-side polarity) — movementtype=V+
+   🟢 4c. receipt has one M_InOutLine per PO line — receiptLines=9 poLines=9
+   🟢 4d. receipt line for Elm Tree: movementqty=11 (FULL delivery) — got=11
+§POS-LOOP receipt=built movementtype=V+ lines=9 verb=buildDoc newVerbs=[]
+   🟢 5. dispatchFor(M_InOut DR → CO) for the receipt: ok — from=DR to=CO reason=none
+§POS-LOOP receipt=CO dispatch=DR→CO ok=true
+   🟢 6. QTY RISES by exactly the received qty to the unit — before=9 received=11 after=20 (before+received=20)
+§POS-LOOP onhand +11@locator=101 product=124 before=9 after=20
+   🟢 7. SUGGESTION CLEARS after receipt: Elm Tree suggestion is GONE (available=20 ≥ min=10) — still-suggested=false
+§POS-LOOP suggestions: gone product=124 available=20 min=10 cleared=Y
+   🟢 §FALSIFIER-A: receipt with no PO lines → zero CREATE_LINE (refused by archetype, no invented lines) — lines=0
+§FALSIFIER pos=receipt-no-po lines=0 (must be 0)
+   🟢 §FALSIFIER-B: short-receive (5 of 11) → available 14 > min 10, no duplicate suggestion (open PO remainder noted) — available=14 min=10
+§FALSIFIER pos=short-receive qty=5 available=14 min=10 suggestion-clear=true po-remainder=6
+
+🟢 W-POS-REPLENISH-LOOP PASS
+  full cycle: sale below min → suggestion → PO CO (vendor=114/TreeFarm pricepo=30) → receipt CO → onhand +11 → suggestion clears; newVerbs=[]; both falsifiers hold.
+exit=0

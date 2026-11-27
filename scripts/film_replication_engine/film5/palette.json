@@ -1,0 +1,24 @@
+{
+  "_scope": "Film 5 palette. EXTRACTED from the Civil Works films' own scripts (repo-relative file:line) and CONFIRMED by pixel sampling of ~/Videos/Civil_Works_Road_Report_narrated_AFTER.mp4 and ~/Videos/CivilWorks_ch_speed_zones_BEFORE.mp4 (tolerance +-6 per channel, full-resolution frames). Nothing here is invented.",
+  "colours": {
+    "ground":   { "hex": "#080A0E", "use": "page ground (the dim layer behind every card)", "source": "prompts/film_earthworks_clip_cards.py:27 overlay (8,10,14,185); film_ch0_card_v7.py:18 band (10,12,16)" },
+    "panel":    { "hex": "#1A1A19", "use": "panels, boxes, grid lines", "source": "prompts/film_health_card.py:44 BG" },
+    "muted":    { "hex": "#6B6A63", "use": "box borders, series tag, hatch for 'not judged'", "source": "prompts/film_health_card.py:44 MUTED" },
+    "ink2":     { "hex": "#C3C2B7", "use": "chapter kicker 'Chapter N', secondary text, source tags", "source": "prompts/film_ch0_card_v7.py:86 kicker fill (195,194,183); film_health_card.py:44 INK2" },
+    "ink":      { "hex": "#FFFFFF", "use": "titles and primary text", "source": "prompts/film_ch0_card_v7.py:87 title fill (255,255,255); film_health_card.py:44 INK" },
+    "cyan":     { "hex": "#4FC3F7", "use": "accent: the 8 px rule at x=96, info chips, 'today vs thin' thin side", "source": "prompts/film_earthworks_clip_cards.py:30 title fill (79,195,247); measured on the Road Report cards: rule x=96..103, y=331..659 = (78,194,246) / (77,193,245)" },
+    "yellow":   { "hex": "#FFEB3B", "use": "chapter sub-text and the one takeaway line", "source": "prompts/film_ch0_card_v7.py:88 chapter sub-text fill (255,235,59)" },
+    "green":    { "hex": "#0CA30C", "use": "accepted / merged / identical (MATCH)", "source": "prompts/film_health_card.py:45 GOOD" },
+    "amber":    { "hex": "#FAB219", "use": "warning / not built / open", "source": "prompts/film_health_card.py:45 WARN" },
+    "orange":   { "hex": "#FF8C1A", "use": "refused / today's bytes / closes the document", "source": "prompts/film_earthworks_clip_cards.py:34 CUT colour (255,140,26)" },
+    "blue":     { "hex": "#3388FF", "use": "reserved (not used in this film)", "source": "prompts/film_earthworks_clip_cards.py:34 FILL colour (51,136,255)" }
+  },
+  "layout_measured_on_Road_Report_cards": "left rule 8 px wide at x=96..103, y=330..659; title text from x=132, white, cap block y=330..394; body lines grey y=460..495 and 520..555 (40 px type, 60 px pitch); last line cyan",
+  "chapter_card_timing": "prompts/CIVIL_HIGHWAY_JELAPANG.md:154 'card chapter style 1.0 s hold + 0.5 s fade'; this film fades each chapter card in and out over 0.5 s and holds it for the length of its spoken lines",
+  "pixel_confirmation": {
+    "Civil_Works_Road_Report_narrated_AFTER.mp4 (7 frames)": "ground 895,987 px, panel 1,514,822, muted 13,598, ink2 1,908, white 1,662,086, cyan 8,995, green 870",
+    "CivilWorks_ch_speed_zones_BEFORE.mp4 (5 frames)": "ground 709, panel 10,182, muted 109,337, ink2 25,881, white 27,769, cyan 32, green 244",
+    "not found in these two films": "yellow, amber, orange, blue (they come from other Civil Works card scripts); the Road Report body text measured (220,220,217), whose script is not in the repo, so ink2 is used for body text"
+  },
+  "not_used": "coral #FF6B78 and off-white #F3EEE8 (prompts/film_title_cards.py:145, the Viewer/Modeller trailer family, 2026-10-04); 1 pixel of coral in the Road Report film"
+}

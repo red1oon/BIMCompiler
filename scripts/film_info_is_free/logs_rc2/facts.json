@@ -1,0 +1,254 @@
+{
+ "made": "2026-11-16T00:12:41.414Z",
+ "bc": {
+  "slug": "red1oon/BIMCompiler",
+  "ref": "origin/master",
+  "sha": "bd245ef4a",
+  "visibility": "PUBLIC",
+  "license": "MIT License",
+  "licenseFirstLine": "MIT License",
+  "copyright": "Copyright (c) 2025-2026 Redhuan D. Oon",
+  "url": "https://github.com/red1oon/BIMCompiler",
+  "prompts": 369,
+  "witnessFiles": 358,
+  "docsMd": 323,
+  "fsgFiles": [
+   "FastScriptGuide.de.md",
+   "FastScriptGuide.es.md",
+   "FastScriptGuide.fr.md",
+   "FastScriptGuide.id.md",
+   "FastScriptGuide.ja.md",
+   "FastScriptGuide.zh.md"
+  ],
+  "i18nLocales": [
+   {
+    "locale": "en",
+    "name": "English"
+   },
+   {
+    "locale": "es",
+    "name": "Español (Latinoamérica)"
+   },
+   {
+    "locale": "fr",
+    "name": "Français"
+   },
+   {
+    "locale": "de",
+    "name": "Deutsch"
+   },
+   {
+    "locale": "id",
+    "name": "Bahasa Indonesia"
+   },
+   {
+    "locale": "ja",
+    "name": "日本語"
+   },
+   {
+    "locale": "zh",
+    "name": "简体中文"
+   }
+  ],
+  "guideLanguagesBesidesEnglish": 6
+ },
+ "oo": {
+  "slug": "red1oon/bim-ootb",
+  "ref": "origin/main",
+  "sha": "186d80ae",
+  "visibility": "PUBLIC",
+  "license": "MIT License",
+  "licenseFirstLine": "MIT License",
+  "copyright": "Copyright (c) 2026 Redhuan D. Oon",
+  "url": "https://github.com/red1oon/bim-ootb",
+  "prompts": 70,
+  "witnessFiles": 1425,
+  "docsMd": 0,
+  "fsgFiles": []
+ },
+ "cloneExit": 0,
+ "cloneFirstLine": "Cloning into 'BIMCompiler'...",
+ "shotsMade": "2026-11-16T00:00:31.455Z",
+ "shots": {
+  "gh_repo": {
+   "file": "shots/gh_repo.png",
+   "url": "https://github.com/red1oon/BIMCompiler",
+   "requested": "https://github.com/red1oon/BIMCompiler",
+   "http": 200,
+   "note": "the BIMCompiler GitHub page",
+   "title": "GitHub - red1oon/BIMCompiler: Deterministic BIM compiler - extracts patterns from IFC databases, generates geometry with validated connections · GitHub",
+   "about": "",
+   "license": true
+  },
+  "gh_spec": {
+   "file": "shots/gh_spec.png",
+   "url": "https://github.com/red1oon/BIMCompiler/blob/master/prompts/DOCS_I18N.md",
+   "requested": "DOCS_I18N.md",
+   "http": 200,
+   "note": "a spec rendered on GitHub",
+   "title": "BIMCompiler/prompts/DOCS_I18N.md at master · red1oon/BIMCompiler · GitHub",
+   "h1": "⚠ DO NOT REMOVE"
+  },
+  "site_home": {
+   "file": "shots/site_home.png",
+   "url": "https://red1oon.github.io/BIMCompiler/",
+   "requested": "https://red1oon.github.io/BIMCompiler",
+   "http": 200,
+   "note": "the docs site home page",
+   "title": "Home - BIM Intent Compiler",
+   "h1": "BIM Intent Compiler¶"
+  },
+  "guide_en": {
+   "file": "shots/guide_en.png",
+   "url": "https://red1oon.github.io/BIMCompiler/FastScriptGuide/",
+   "requested": "FastScriptGuide",
+   "http": 200,
+   "note": "the CLI guide, English",
+   "title": "Fast Script Guide (one door: commands and scripts) - BIM Intent Compiler",
+   "lang": "en",
+   "h1": "Fast Script User Guide¶"
+  },
+  "guide_menu": {
+   "file": "shots/guide_menu.png",
+   "url": "https://red1oon.github.io/BIMCompiler/FastScriptGuide/",
+   "requested": "chooser",
+   "http": 200,
+   "note": "the language chooser open",
+   "choices": [
+    "en:English",
+    "es:Español (Latinoamérica)",
+    "fr:Français",
+    "de:Deutsch",
+    "id:Bahasa Indonesia",
+    "ja:日本語",
+    "zh:简体中文"
+   ]
+  },
+  "guide_es": {
+   "file": "shots/guide_es.png",
+   "url": "https://red1oon.github.io/BIMCompiler/es/FastScriptGuide/",
+   "requested": "chooser->es",
+   "http": 200,
+   "note": "the CLI guide, es, reached by its chooser link",
+   "title": "Fast Script Guide (one door: commands and scripts) - BIM Intent Compiler",
+   "lang": "es",
+   "h1": "Guía del usuario de Fast Script¶"
+  },
+  "guide_ja": {
+   "file": "shots/guide_ja.png",
+   "url": "https://red1oon.github.io/BIMCompiler/ja/FastScriptGuide/",
+   "requested": "chooser->ja",
+   "http": 200,
+   "note": "the CLI guide, ja, reached by its chooser link",
+   "title": "Fast Script Guide (one door: commands and scripts) - BIM Intent Compiler",
+   "lang": "ja",
+   "h1": "Fast Script ユーザーガイド¶"
+  },
+  "guide_de": {
+   "file": "shots/guide_de.png",
+   "url": "https://red1oon.github.io/BIMCompiler/de/FastScriptGuide/",
+   "requested": "chooser->de",
+   "http": 200,
+   "note": "the CLI guide, de, reached by its chooser link",
+   "title": "Fast Script Guide (one door: commands and scripts) - BIM Intent Compiler",
+   "lang": "de",
+   "h1": "Fast Script Benutzerhandbuch¶"
+  },
+  "gh_license": {
+   "file": "shots/gh_license.png",
+   "url": "https://github.com/red1oon/BIMCompiler/blob/master/LICENSE",
+   "requested": "LICENSE",
+   "http": 200,
+   "note": "the LICENSE page on GitHub",
+   "title": "BIMCompiler/LICENSE at master · red1oon/BIMCompiler · GitHub",
+   "text": "MIT License",
+   "copyright": ""
+  },
+  "login_en": {
+   "file": "shots/login_en.png",
+   "url": "https://red1oon.github.io/bim-ootb/erp/idempiere.html",
+   "requested": "https://red1oon.github.io/bim-ootb/erp/idempiere.html",
+   "http": 200,
+   "note": "the ERP login card, picker = en_US",
+   "picker": "en_US",
+   "pickerText": "English",
+   "heading": "",
+   "card": "Language / English / Français / Español"
+  },
+  "login_es": {
+   "file": "shots/login_es.png",
+   "url": "https://red1oon.github.io/bim-ootb/erp/idempiere.html",
+   "requested": "https://red1oon.github.io/bim-ootb/erp/idempiere.html",
+   "http": 200,
+   "note": "the ERP login card, picker = es_ES",
+   "picker": "es_ES",
+   "pickerText": "Español",
+   "heading": "",
+   "card": "Lenguaje / English / Français / Español"
+  },
+  "login_ja": {
+   "file": "shots/login_ja.png",
+   "url": "https://red1oon.github.io/bim-ootb/erp/idempiere.html",
+   "requested": "https://red1oon.github.io/bim-ootb/erp/idempiere.html",
+   "http": 200,
+   "note": "the ERP login card, picker = ja_JP",
+   "picker": "ja_JP",
+   "pickerText": "日本語",
+   "heading": "",
+   "card": "言語 / English / Français / Español"
+  },
+  "login_zh": {
+   "file": "shots/login_zh.png",
+   "url": "https://red1oon.github.io/bim-ootb/erp/idempiere.html",
+   "requested": "https://red1oon.github.io/bim-ootb/erp/idempiere.html",
+   "http": 200,
+   "note": "the ERP login card, picker = zh_CN",
+   "picker": "zh_CN",
+   "pickerText": "中文 (简体)",
+   "heading": "",
+   "card": "语言 / English / Français / Español"
+  }
+ },
+ "shotsPageErrors": 0,
+ "lines": {
+  "clone": {
+   "cmd": "git clone https://github.com/red1oon/BIMCompiler",
+   "answer": [
+    "Cloning into 'BIMCompiler'..."
+   ]
+  },
+  "prompts": {
+   "cmd": "ls prompts/*.md | wc -l",
+   "answer": [
+    "369"
+   ]
+  },
+  "docs": {
+   "cmd": "find docs -name '*.md' | wc -l",
+   "answer": [
+    "323"
+   ]
+  },
+  "fsg": {
+   "cmd": "ls docs/FastScriptGuide.*.md",
+   "answer": [
+    "FastScriptGuide.de.md",
+    "FastScriptGuide.es.md",
+    "FastScriptGuide.fr.md",
+    "FastScriptGuide.id.md",
+    "FastScriptGuide.ja.md",
+    "FastScriptGuide.zh.md"
+   ]
+  },
+  "license": {
+   "cmd": "head -1 LICENSE",
+   "answer": [
+    "MIT License"
+   ]
+  }
+ },
+ "sum": {
+  "promptsBoth": 439,
+  "witnessBoth": 1783
+ }
+}

@@ -1,0 +1,11 @@
+§CUE id=intro start=0.10 end=3.20 room=3.10
+§CUE id=ready start=3.20 end=5.70 room=2.50
+§CUE id=fab start=5.70 end=7.60 room=1.90
+§CUE id=nav_swipe start=7.60 end=10.90 room=3.30
+§CUE id=walk_start start=10.90 end=14.40 room=3.50
+§CUE id=walk_steps start=14.40 end=17.87 room=3.47
+§CUE id=snag start=17.87 end=25.03 room=7.17
+§CUE id=scrub start=25.03 end=28.83 room=3.80
+§CUE id=hq_open start=28.83 end=32.33 room=3.50
+§CUE id=site_b start=32.33 end=38.93 room=6.60
+§CUE id=outro start=38.93 end=42.33 room=3.40

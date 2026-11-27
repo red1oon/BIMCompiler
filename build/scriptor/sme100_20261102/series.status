@@ -1,0 +1,11 @@
+ref 10 exit=0
+sme 10 exit=0
+ref 20 exit=0
+sme 20 exit=1
+ref 30 exit=0
+sme 30 exit=1
+ref 50 exit=0
+sme 50 exit=0
+ref 100 exit=0
+sme 100 exit=0
+SERIES-DONE

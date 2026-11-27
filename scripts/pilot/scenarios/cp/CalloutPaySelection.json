@@ -1,0 +1,4 @@
+[
+ {"name":"cp_paysel_line_invoice","window":206,"tab":1,"parents":[{"tab":0,"id":1009100,"from":"ref"}],"steps":[
+   {"set":"C_Invoice_ID","value":104},{"set":"PayAmt","value":"300"},{"set":"DiscountAmt","value":"5"}]}
+]

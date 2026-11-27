@@ -1,0 +1,78 @@
+[
+ {
+  "virtualTable": "bim_element",
+  "columns": [
+   {
+    "name": "element_id",
+    "cls": "KEY"
+   },
+   {
+    "name": "geom_op",
+    "cls": "CODE",
+    "mand": true,
+    "values": [
+     "GEOM_INSERT",
+     "GEOM_EXTRUDE",
+     "GEOM_EXTRUDE_POLY",
+     "GEOM_SWEEP",
+     "GEOM_LOFT",
+     "GEOM_REVOLVE"
+    ]
+   },
+   {
+    "name": "geom",
+    "cls": "OTHER",
+    "mand": true
+   },
+   {
+    "name": "pos_x",
+    "cls": "MEASURE"
+   },
+   {
+    "name": "pos_y",
+    "cls": "MEASURE"
+   },
+   {
+    "name": "pos_z",
+    "cls": "MEASURE"
+   },
+   {
+    "name": "ad_client_id",
+    "cls": "REF",
+    "target": "AD_Client"
+   },
+   {
+    "name": "ad_org_id",
+    "cls": "REF",
+    "target": "AD_Org"
+   },
+   {
+    "name": "output_guid",
+    "cls": "OTHER"
+   },
+   {
+    "name": "input_guids",
+    "cls": "OTHER"
+   }
+  ]
+ },
+ {
+  "name": "M1 element",
+  "treatment": "FACT",
+  "role": "DESIGNER",
+  "dir": "BOTH",
+  "audience": "space",
+  "table": "bim_element",
+  "carries": [
+   "geom_op",
+   "geom",
+   "pos_x",
+   "pos_y",
+   "pos_z",
+   "output_guid",
+   "input_guids"
+  ],
+  "group": "element_id",
+  "schedule": "on-change"
+ }
+]

@@ -1,0 +1,3 @@
+§FIDELITY start part=2/4 tables=231 of 925 sqlite=pilot.db pgdb=idempiere_pilot
+§FIDELITY table=ad_workflowprocessorlog rows=44 pgRows=47 pg=27470781179249255536 sq=25596338634420832818 MISMATCH t=7s
+§FIDELITY_VERDICT part=2/4 FAIL mismatches=1 colMismatch=0 tables=231 judgedTables=130 judgedRows=98725 totalSec=28s

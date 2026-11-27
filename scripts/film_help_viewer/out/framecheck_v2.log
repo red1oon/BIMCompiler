@@ -1,0 +1,1 @@
+§FRAMECHECK v2 numbers {"a": 0.57, "b": 0.19, "c": 0.57, "d": 8.2} against bars {"a": 0.99, "b": 0.8, "c": 0.6, "d": 10.5} -> fail ['a', 'b', 'c', 'd'] VERDICT FAIL (as it must)

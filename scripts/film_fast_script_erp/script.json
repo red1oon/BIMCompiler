@@ -1,0 +1,365 @@
+[
+{
+"id": "start",
+"do": [
+{
+"line": "red1"
+},
+{
+"wait": "red1> ",
+"quiet": 0.8,
+"max": 90
+}
+]
+},
+{
+"id": "help",
+"do": [
+{
+"key": "CtrlL"
+},
+{
+"wait": "red1> "
+},
+{
+"line": "help"
+},
+{
+"wait": "red1> "
+},
+{
+"line": "erp"
+},
+{
+"wait": "red1> "
+}
+]
+},
+{
+"id": "level",
+"do": [
+{
+"key": "CtrlL"
+},
+{
+"wait": "red1> "
+},
+{
+"line": "level student"
+},
+{
+"wait": "red1> "
+},
+{
+"line": "help run"
+},
+{
+"wait": "red1> "
+}
+]
+},
+{
+"id": "bp",
+"do": [
+{
+"key": "CtrlL"
+},
+{
+"wait": "red1> "
+},
+{
+"type": "cd Busi"
+},
+{
+"pause": 1.0
+},
+{
+"key": "Tab"
+},
+{
+"pause": 0.6
+},
+{
+"key": "Return"
+},
+{
+"wait": "red1 Business Partner> ",
+"max": 90
+},
+{
+"line": "ls"
+},
+{
+"wait": "red1 Business Partner> ",
+"quiet": 1.0,
+"max": 90
+}
+]
+},
+{
+"id": "po1",
+"do": [
+{
+"key": "CtrlL"
+},
+{
+"wait": "red1 Business Partner> "
+},
+{
+"line": "cd Project"
+},
+{
+"wait": "red1 Project> ",
+"max": 90
+},
+{
+"line": "run \"Generate PO from Project\""
+},
+{
+"see": "Esc cancel",
+"max": 120
+}
+]
+},
+{
+"id": "po2",
+"do": [
+{
+"key": "CtrlL"
+},
+{
+"line": "1"
+},
+{
+"see": "Phase (C_ProjectPhase_ID",
+"max": 120
+}
+]
+},
+{
+"id": "po3",
+"do": [
+{
+"key": "CtrlL"
+},
+{
+"line": "1"
+},
+{
+"see": "Project Line (C_ProjectLine_ID",
+"max": 120
+}
+]
+},
+{
+"id": "po4",
+"do": [
+{
+"key": "CtrlL"
+},
+{
+"line": "1"
+},
+{
+"see": "ConsolidateDocument)? [Y]",
+"max": 120
+},
+{
+"pause": 1.0
+},
+{
+"key": "Return"
+},
+{
+"wait": "red1 Project> ",
+"quiet": 2.0,
+"max": 240
+}
+]
+},
+{
+"id": "co",
+"do": [
+{
+"key": "CtrlL"
+},
+{
+"wait": "red1 Project> "
+},
+{
+"line": "cd Order"
+},
+{
+"wait": "red1 Order> ",
+"max": 90
+},
+{
+"line": "do CO {po0}"
+},
+{
+"wait": "red1 Order> ",
+"quiet": 2.0,
+"max": 240
+}
+]
+},
+{
+"id": "next",
+"do": [
+{
+"key": "CtrlL"
+},
+{
+"wait": "red1 Order> "
+},
+{
+"line": "next {po0}"
+},
+{
+"wait": "red1 Order> ",
+"quiet": 1.5,
+"max": 120
+}
+]
+},
+{
+"id": "gap",
+"do": [
+{
+"key": "CtrlL"
+},
+{
+"wait": "red1 Order> "
+},
+{
+"line": "run \"{noport}\""
+},
+{
+"wait": "red1 Order> ",
+"quiet": 2.0,
+"max": 120
+}
+]
+},
+{
+"id": "report",
+"do": [
+{
+"key": "CtrlL"
+},
+{
+"wait": "red1 Order> "
+},
+{
+"line": "report"
+},
+{
+"wait": "red1 Order> ",
+"quiet": 1.0,
+"max": 60
+}
+]
+},
+{
+"id": "url",
+"do": [
+{
+"key": "CtrlL"
+},
+{
+"wait": "red1 Order> "
+},
+{
+"line": "1"
+},
+{
+"wait": "red1 Order> ",
+"quiet": 1.0,
+"max": 60
+}
+]
+},
+{
+"id": "cost",
+"do": [
+{
+"key": "CtrlL"
+},
+{
+"wait": "red1 Order> "
+},
+{
+"line": "cd Duplex"
+},
+{
+"wait": "red1 Duplex> ",
+"max": 180
+},
+{
+"line": "cost discipline"
+},
+{
+"wait": "red1 Duplex> ",
+"quiet": 2.0,
+"max": 600
+}
+]
+},
+{
+"id": "post",
+"do": [
+{
+"line": "y"
+},
+{
+"wait": "red1 Duplex> ",
+"quiet": 3.0,
+"max": 300,
+"showwait": true
+}
+]
+},
+{
+"id": "proj",
+"do": [
+{
+"line": "y"
+},
+{
+"wait": "red1 Project> ",
+"quiet": 2.0,
+"max": 180
+}
+]
+},
+{
+"id": "ls",
+"do": [
+{
+"key": "CtrlL"
+},
+{
+"wait": "red1 Project> "
+},
+{
+"line": "ls"
+},
+{
+"wait": "red1 Project> ",
+"quiet": 1.5,
+"max": 120
+}
+]
+},
+{
+"id": "exit",
+"do": [
+{
+"line": "exit"
+},
+{
+"wait": "$"
+}
+]
+}
+]

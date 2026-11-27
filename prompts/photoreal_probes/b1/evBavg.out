@@ -1,0 +1,7 @@
+evBavg night [CACHE_VERSION = v1461] compositeMean=227.45 GLARE bld=Hospital PASS 0 0 0 | comp p5/50/95=199/232.8/253.6 le15=0.138% ge250=7.71% exp=13.4622
+   §METER camera=outside mode=avg Lavg=105.5cd/m2 EV100=9.72 exposure=13.4622 (luxPer 22727.3 x ACES 0.6 / (1.2 x 2^EV)) vs base 0.383 = 5.14 stops skyPx=0/14400 pixels=14400 hidden=1 ms=1772
+evBavg a616 [CACHE_VERSION = v1461] compositeMean=175.58 GLARE bld=Hospital PASS 0 0 0 | comp p5/50/95=101.7/179.4/233.1 le15=0.169% ge250=0% exp=1.8192
+   §METER camera=outside mode=avg Lavg=780.8cd/m2 EV100=12.61 exposure=1.8192 (luxPer 22727.3 x ACES 0.6 / (1.2 x 2^EV)) vs base 0.383 = 2.25 stops skyPx=0/14400 pixels=14400 hidden=1 ms=884
+evBavg clinic [CACHE_VERSION = v1461] compositeMean=35.83 GLARE bld=Clinic PASS 0 0 0 | comp p5/50/95=15.4/27.4/75.1 le15=5.165% ge250=0% exp=25.2883
+   §METER camera=inside mode=avg Lavg=56.2cd/m2 EV100=8.81 exposure=25.2883 (luxPer 22727.3 x ACES 0.6 / (1.2 x 2^EV)) vs base 0.383 = 6.05 stops skyPx=0/14400 pixels=14400 hidden=1 ms=416
+== evBavg done 09:30:04

@@ -142,6 +142,42 @@ All panels collapse with **−/+**.
 - IndexedDB cache — download once, instant on revisit
 - City mode — 786 building bboxes, click to download + stream on demand
 
+### Help — F1, the info panel, and the command line *(LIVE)*
+
+**In the Viewer**
+
+- **F1** (or the Help pill) opens the help panel on the left. It stays open while you work. Drag it by its
+  header; close it with × or Esc. It opens again where you left it, with the same search text and the same
+  entries open.
+- It lists every tool with its key. Type in its box to find a tool by its name, or by a word from its steps:
+  *native* finds Save Building and Open Building.
+- Open a tool's entry to see its steps and a **Guide** link to its section in this guide. Find and the Time Machine also show **Same at the CLI**: the command line that gives the same
+  answer.
+- **Click an element**: the info panel says **What this is** in one plain sentence, and under it the official
+  **IFC definition** from buildingSMART (bSDD), word for word, with its credit (CC BY-ND 4.0). Where
+  buildingSMART publishes a translation (German, for example) you get theirs; otherwise the English, with a
+  line saying there is no official translation in your language.
+
+**In the [Modeller](ModellerGuide.md)**, **?** and the Guide pill open the same panel, in the outliner's place.
+The outliner comes back when you drag the panel away or close it. The guide's sections are inside the panel.
+
+**At the command line (`red1`)**: the help panel is part of the page, so it is not at the command line. This
+is what the command line does have for BIM:
+
+| You want | At the command line |
+|---|---|
+| The list of BIM words | `help bim` |
+| One word explained | `help count`; type `level student` first for a fuller explanation |
+| The same answer as a Viewer tool | The line its help shows, e.g. `viewer.counts building=Duplex` (it counts the model, the same answer as Find) |
+| Ask a question in plain words | **Not for BIM yet.** `ask` answers ERP questions only, inside an ERP kind (e.g. `cd "Business Partner"`) |
+| What an element is (the class text, the IFC definition) | **Viewer only**, in the info panel |
+
+The command line itself is explained in the [Fast Script Guide](FastScriptGuide.md).
+
+> *Proven by* **W-HELP-DOCK** (place, drag, reopen, phone), **W-HOWTO** (guide links, the word search, the
+> command lines), **W-CLASS-HELP** (the class text and the bSDD text, byte for byte), and **W-HELP-DOCK-M**
+> (the Modeller).
+
 ### Find panel — search, voice query, and axis lenses
 
 > **New: Ask.** Pick a question, get a computed answer, save the answers as one Excel file for your own AI —
@@ -157,8 +193,9 @@ material, phase, or the newest axis, building **Parts**).
    (mobile) — tap the **···** button if the rail isn't already showing. Find the **Navigate** icon
    (a sailboat glyph) among the rail's icons.
    ![The toolbar rail, with the Navigate (sailboat) icon centred between Inspect (compass) above and Open (folder) below](img/viewer/find-panel-navigate-icon.png)
-2. Tap **Navigate**. The **Navigate** drawer opens, listing **Find / Navigate**, **World History**,
-   **Page History**, and **Home** (a fifth row, **Walk**, is mobile-only and won't appear on desktop).
+2. Tap **Navigate**. The **Navigate** drawer opens, listing **Find / Navigate**, **Role View**, **World History**,
+   **Page History**, **Home**, **Fly Tour** and **Nav LOD** (for large buildings); a further row, **Walk**, is
+   mobile-only and won't appear on desktop.
    Tap the **Find / Navigate** row (magnifying-glass icon, shortcut **F**).
    ![The Navigate drawer open, showing the Find / Navigate row at the top with its "f" shortcut](img/viewer/find-panel-navigate-drawer.png)
 3. The **Find panel** opens on the right side of the screen, with the search bar focused and ready to
@@ -204,46 +241,28 @@ has that kind of data (no data, no empty axis):
 |------|----------------|----------------|
 | **Storey** | Always | Elements grouped by building level/storey. Expand a storey to see the rooms/spaces on it (or, if the building has no room data, its most common IFC classes). Tapping a storey or room isolates it in the 3D view. |
 | **Discipline** | Always | Elements grouped by discipline (ARC/STR/MEP/ELEC, etc). Expand a discipline to see its IFC classes; tap a class to highlight just those elements. |
-| **Room** | Only if the building has volumetric room (IfcSpace) data | A highlight lens: the model is X-rayed and a translucent box is drawn over each room. Has its own **Storey / Type / Path** sub-toggle: group rooms by floor, by the compiler's own confidence tier (see [Room health](#room-health-the-type-sub-toggle-verified-live-on-terminal) below), or route between two rooms the way a person walks. (On a building without volume data, this falls back to a plain isolate-by-room list instead.) |
+| **Room** | Only if the building has volumetric room (IfcSpace) data | A highlight lens: the model is X-rayed and a translucent box is drawn over each room. Has its own **Storey / Type / Path** sub-toggle: group rooms by floor, by the compiler's own confidence tier (see [Room health](#room-health-the-type-sub-toggle-shown-on-terminal) below), or route between two rooms the way a person walks. (On a building without volume data, this falls back to a plain isolate-by-room list instead.) |
 | **Material** | Only if material data is present | Elements grouped by material name, or — via a **Material / Category** sub-toggle — by a derived construction category (Concrete, Metal, Wood, Glass, Drywall/Partition, Masonry, Insulation, Tile, Finish, Membrane, Flooring, Generic, Other). Categories are a keyword-derived heuristic, not an extracted IFC property, and are labelled accordingly in the panel. Highlight lens, same X-ray-and-box behavior as Room. |
 | **Phase** | Only if a construction timeline can be generated for the building | Elements grouped by construction phase/task, generated on the fly (a short "Timeline generating…" message appears first). |
 | **Parts** *(new)* | Only if the building has stairway, lift-shaft, or plant-room elements | Elements grouped into up to three building-part categories: **Stairway** (stair/ramp classes), **Lift Shaft** (elements named for lifts/elevators), **Plant Room** (HVAC-plant elements — vents, ducts, fans, AHUs, dampers, chillers, pumps). Each category is itself data-gated — it only appears if the building actually has a match. Tapping a category, or a single item inside it, isolates it in the 3D view (hides the rest of the model). |
 
   ![The axis toggle cycled to Parts on HHS Office ("6/6 Parts"), a real institutional-scale building showing all three categories at once: Stairway (20), Lift Shaft (3), and Plant Room (1769) — Plant Room only appears on complex-class buildings like this one, never on a residential building like Duplex](img/viewer/find-axis-parts.png)
 
-**Room highlight, verified live on HHS Office.** Level 2 alone compiles 31 real rooms (105 across the
+**Room highlight, shown on HHS Office.** Level 2 alone compiles 31 real rooms (105 across the
 whole building) — tapping one X-rays the model and draws a clean, correctly-bounded translucent box
 over just that room, confirming the room's geometry is well-formed and doesn't overlap its neighbours.
-On a larger building, the biggest rooms on a floor stand in for a "hall"-scale space until a real
-labelled corridor/hall example is captured (HHS's own rooms carry no such label yet — a future guide
-pass).
 
 ![A single real room on HHS Office Level 2, X-rayed and highlighted as a clean translucent purple box against the surrounding structure — SAMPLE, HHS_Office_Federated data](img/viewer/find-room-highlight-hhs.png)
 
-*Known gap, not glossed over:* tapping a room does not currently reframe the camera to it (confirmed
-live, 2026-07-12) — the highlight is accurate, but you may need to manually orbit/zoom to see a small
-room clearly on a large building. Tracked for a future fix.
+*Known gap:* tapping a room highlights it but does not move the camera to it; on a large building, orbit or
+zoom to see a small room clearly.
 
-> The Parts axis is the newest addition (bim-ootb `d04ddd5`) — see
-> `prompts/VIEWER_FIND_PANEL_PARTS_VERIFICATION.md` for its live verification on Duplex/SampleCastle data.
-> A false-positive/missing-class-gate bug found after that verification (`prompts/FIND_PANEL_PLANT_ROOM_GATE_FIX.md`)
-> is now fixed (bim-ootb PR #740/#742) — Plant Room only shows on `complex`-class buildings (Terminal,
-> Clinic, Hospital, HHS), never on residential ones, and its keyword match is word-boundary-checked to
-> avoid substring false positives like "Backflow Preventer" matching "vent".
+**Plant Room** appears only on larger, complex buildings (Terminal, Clinic, Hospital, HHS), never on homes, and
+it matches whole words only (so "Backflow Preventer" is not taken for a vent).
 
-*Not yet confirmed from source, flagged rather than guessed:* the exact on-screen wording of the axis
-toggle's next-axis hint on narrow/mobile screens, and whether the typed-language decoder mentioned above
-recognizes any further phrasing beyond the regex patterns documented — both would need a dedicated read of
-`decoder.js`, which was out of scope for this pass.
+*While you type a recognized query phrase, the panel shows no preview and does not filter the tree; press **Enter** to run it.*
 
-*Also discovered while capturing these screenshots (reported, not fixed here — this task is docs-only):*
-the natural-language query hint text described above is written into the DOM by `navigate_find.js`
-`_handleInput()`, but the panel's `results-expanded` CSS class (which gives `#find-results` its visible
-height) is only added by the plain-search code path, not the NL-query path — so, live, no visible hint
-actually appears while typing a recognized phrase; the query still runs correctly on **Enter**. The guide
-text above describes the observed (silent) behavior, not an invented visible hint.
-
-#### Room health — the Type sub-toggle (verified live on Terminal)
+#### Room health — the Type sub-toggle (shown on Terminal)
 
 Switch the Room axis's grouping from **Storey** to **Type** and rooms are grouped by the compiler's
 own confidence in them, not by a floor: **INTERNAL** / **INTERNAL_SMALL** (ordinary enclosed rooms,
@@ -252,14 +271,11 @@ geometrically but flags for a human rather than silently accepting). This is the
 principle made visible — a low-confidence room is *shown* as low-confidence, never quietly promoted
 to "room" just because it fits inside walls.
 
-**Terminal, the hard case, verified live.** A user-reported screenshot showed a stairwell counted as
-a room — the compiler doesn't know "stairwell" as a concept, only geometry, and a tall vertical shaft
-can look room-shaped from a single floor's footprint alone. The fix (**STAIRWELL-STACK reject**)
-rejects a room candidate whose footprint recurs, stacked, through multiple storeys with a real stair
-inside it — the signature of a shaft, not a room — checked against both compiler mirrors, 6/6 parity.
-Reloading Terminal applies the healed patch over whatever the browser had cached already: **59 rooms →
-40 rooms, 73 rects, no room anywhere near the shaft threshold** — the stairwell is gone from both the
-Room list and the 3D view.
+**Terminal, the hard case.** The compiler knows only geometry, and a tall vertical shaft can look
+room-shaped from a single floor's footprint alone. So a room candidate whose footprint recurs, stacked,
+through multiple storeys with a real stair inside it — the signature of a shaft, not a room — is
+rejected. On Terminal that leaves **40 rooms** (down from 59) and no stairwell in either the Room list or
+the 3D view. A Terminal copy cached in your browser before this change is corrected automatically on reload.
 
 ![Terminal, Type grouping open: INTERNAL (30), INTERNAL_SMALL (15), SUSPECT_OPEN (22), SUSPECT_NO_DOOR (6) — "Aras 02 R3" selected, an empty doorless pocket beside a stair flight, flagged rather than guessed into being a room](img/viewer/type-suspect-no-door-terminal.png)
 
@@ -269,11 +285,8 @@ the room look finished.
 
 *Known gap, named not hidden:* Type is a **health** taxonomy (how sure the compiler is this is a
 room), not a **semantic** one — it doesn't yet know "corridor" from "office." Terminal's concourses
-show no CORRIDOR band today because the only measured corridor template on file is Duplex's 10.4m²
-hallway (n=2 samples), and stretching that onto a terminal concourse would be inventing, not
-compiling. The room-path routing below already produces a building-relative, *measurable* definition
-of a corridor — the elongated, many-doored room every route keeps passing through — scoped as a
-future CIRCULATION_DISPLAY pass, not built yet.
+show no CORRIDOR band because the only measured corridor reference on file is Duplex's 10.4 m²
+hallway, and stretching that onto a terminal concourse would be inventing, not compiling.
 
 #### Room-to-room paths & escape routes
 
@@ -282,7 +295,7 @@ person actually walks — out the door, along the corridor or concourse, and up 
 when the two rooms are on different floors. The route draws as a line through the real doors and
 stair flights it uses, and the rooms along the way stay highlighted.
 
-*Verified live (2026-07-12):* a real route across Terminal's floors returns several stair-crossing
+A route across Terminal's floors returns several stair-crossing
 legs in sequence, not a single best-guess hop — each leg names the room and the door or stair flight
 it passes through.
 
@@ -292,32 +305,10 @@ it passes through.
 
 ![Angled view along the Hospital building's length, same route — the yellow line now runs along the real corridor windows and through the doorways it uses on its way up the stair instead of floating outside the floor plates — 3 doors · 1 stair · 124.7m](img/viewer/find-room-path-hospital-sideview.png)
 
-*Fixed and verified live (2026-07-26):* the drawn-line defect shown in earlier versions of the
-screenshots above — a room-to-room path cutting straight through open air or atrium space instead of
-hugging the real walkable floor — is fixed. The same Hospital route (`≈ Level 1 R35 → ≈ Level 4 R8`,
-124.69m, same 3 doors and 1 stair as before) was re-run live after the fix: the 5 legality checks that
-used to fail no longer need rescuing at all — most of those stretches are simply on real floor now, and
-where a detour is still required (3 of 9 same-storey chords) one is found. **Zero**
-`§PATH_LEGAL_DETOUR_FAIL` remain, and all 15 same-storey legs measure **0 illegal sample points** (was
-265 across 3 unroutable legs). The extra waypoints in the drawn line (`polyPts` 15 → 19) are the fix's
-fingerprint, not a longer route — the 124.69m distance and the doors used did not change, deliberately,
-because the fix only changes the drawn line, never which rooms or doors a route uses. Fleet-wide on
-Hospital, a detour-failure sweep over 3023 real room pairs went **63.3% → 0.0%** with zero newly-broken
-pairs, room-pair pathability rose **69.4% → 91.2%**, and unreachable (deg-0) rooms fell **26 → 7**;
-Terminal's off-floor sampling went 352 → 0, Clinic's 49 → 0. Root cause, plainly: (a) the walkable-floor
-raster was consulted *instead of* the room data rather than *together with* it, so rooms compiled in the
-browser after the raster was built had no floor under them; (b) doorways and stairs — the only ways
-through a wall or between floors — weren't counted as walkable at all; (c) the raster builder picked
-floor slabs in a fixed height window that missed Hospital's real floor plates by 5cm, dropping an
-8270m² Level 4 plate entirely. Still imperfect, worth saying plainly: on Level 4 two chords needed a
-wider-than-local detour search (`§PATH_LEGAL_DETOUR_NONLOCAL`), and the line passes one door twice — a
-real ~3m back-step out of room R9 — so the drawn route is on real floor but not always the tidiest
-line. Full technical trail, for anyone who wants it:
-`prompts/Viewer/FindRooms/VIEWER_FIND_PANEL_ROOM_ACCURACY.md` §17 (supersedes §9–§16), shipped in
-bim-ootb PRs #1006–#1009.
-
-*Future feature — fire escape:* the same routing will pin a **Fire Escape** entry at the top of the
-path list — one tap from any room to the nearest building exit.
+The drawn route follows the real walkable floor: along corridors, through doorways and up the stairs, never
+through open air or across an atrium. On some floors the line may step back through a door it has just passed,
+so the route is right even where the line is not the tidiest; the distance and the doors it lists are the
+route's own.
 
 *Future feature — mobile:* scan a QR code posted beside a door to fetch that building's lightweight
 architecture model on your phone and see the escape route in Walk mode from exactly where you stand.
@@ -341,13 +332,17 @@ above for how to open it) has three more rows besides Find / Navigate:
 
 ### Inspect drawer — Measure, Clash, X-Ray, Section, Time Machine, 4D/5D, Fly Tour
 
-The **Inspect** drawer (compass icon, next to Navigate on the toolbar rail) bundles seven tools behind
-one icon:
+> **Road (civil works) model?** The same drawer gives extra road reports — clash between trades, earthworks volume, long / cross sections and a road Model Check. Walkthrough: **[Civil Works — Step by Step](CivilWorksGuide.md)**.
 
-![The Inspect drawer open — Measure, Clash Matrix, X-Ray / Bbox (currently "Off"), Section Cut, Time Machine, 4D / 5D, and Fly Tour, each with its shortcut key](img/viewer/pill-inspect-drawer.png)
+The **Inspect** drawer (compass icon, next to Navigate on the toolbar rail) bundles the analysis tools behind
+one icon: Measure, Clash Matrix, X-Ray / Bbox, Section Cut, Time Machine and 4D / 5D. On a road (civil
+works) model it also lists Road standards, Road report, Earthworks and Roadworks. **Fly Tour** now lives in
+the **Navigate** drawer (key **L**).
 
-- **Measure**, **X-Ray / Bbox**, **Section Cut**, and **Fly Tour** are covered above, under
-  [Viewer Features](#viewer-features).
+![The Inspect drawer open — Measure, Clash Matrix, X-Ray / Bbox (currently "Off"), Section Cut, Time Machine and 4D / 5D, each with its shortcut key](img/viewer/pill-inspect-drawer.png)
+
+- **Measure**, **X-Ray / Bbox** and **Section Cut** are covered above, under
+  [Viewer Features](#viewer-features); **Fly Tour** is there too.
 - **Clash Matrix** (key **C**) opens the clash-detection engine (discipline-pair grid, tolerance, Review /
   Resolve / Accept status, HTML + CSV export) — full coverage: **[Clash Detection guide](CLASH_DETECTION.md)**.
 - **Time Machine** (key **T**) opens the 4D construction timeline — author a schedule, play it back,
@@ -375,9 +370,49 @@ one icon:
 - **4D / 5D** (key **4**) opens the analytics dashboard (`boq_charts.html`) for the loaded building in a
   new tab — full coverage: **[4D/5D Analysis guide](4D5DAnalysis.md)**.
 
+#### Your own 4D / 5D references: rates, durations, sequence
+
+The 4D schedule and the 5D cost are computed from reference files the Viewer ships with. You can pull each one
+out, change it to your own references (your firm's rates, your crew sizes, your durations) and the Viewer then
+uses your copy.
+
+| Reference | File | What it holds |
+|---|---|---|
+| **5D Rate Pack** | `rates/<pack>.json`: 16 national packs (`cidb2024_my`, `bcis2024_uk`, `rsmeans2024_us`, `rawlinsons2024_au` …) plus `custom_template.json`, an empty pack to fill | `meta` (name, region, currency, exchange rate, source), `materials` (a rate and unit per IFC class, e.g. `IfcDuct`: 165 per metre), `labor`, `equipment`, `work_packages`, `smm_sections`, `provisions` |
+| **4D Schedule Template** | `rates/4D_template.json` | `calendar`, `duration_rule`, `capacity_rule`, the 7 `phases` (substructure, superstructure, envelope …, each with its trades and whether it repeats per storey) and their `dependencies` (predecessor, successor, type, lag days) |
+| **4D Sequence & Labour Rules** | `rates/sequence_rules.json` | `SEQUENCE_RULES` (the trade order by IFC class) and `LABOR_RATES` (per trade: rate per day, crew size, crews, productivity per IFC class) |
+
+**Pull a file out.** **Settings → Edit Project JSON**, open the file (the rate pack entry always shows the pack that is
+active now; choose another one under **5D Rate Pack** first), then **⬇ Download**. You can also open the file
+straight from the site, for example `https://red1oon.github.io/bim-ootb/viewer/rates/cidb2024_my.json`.
+
+**Edit it to your own references.** In the same **Edit Project JSON** form, change the values: a rate, a crew size,
+a lag. A list of items inside an item (such as a phase's dependencies) is shown as JSON text: keep it valid JSON;
+if it is not, the last good value is kept and nothing is broken. Your copy is saved in this browser as you type,
+separately for each rate pack, so a change to the Malaysian pack does not touch the UK one.
+
+**Use it.** These references belong to the **Viewer**. After editing, switch to the Viewer tab and reload it.
+The Modeller uses them only for the cost and labour change it shows on an edited element: that change is priced with
+the same rate pack, and the same copies, as the Viewer. Where each copy takes effect:
+
+- **5D Rate Pack:** the Viewer (the Find panel's `total cost`, the Time Machine's schedule) and the **4D / 5D**
+  dashboard price with your rates as soon as they open. The pack is the one picked under **Settings → 5D Rate Pack**;
+  with none picked, it is the pack of the display language (English (US): `rsmeans2024_us`, English (Malaysia):
+  `cidb2024_my`), and switching the language switches the pack. The language changes only the words (descriptions,
+  trade names); the prices and the currency always come from the pack.
+- **4D Schedule Template:** the next schedule the Time Machine generates uses it.
+- **4D Sequence & Labour Rules:** used by the Viewer, the **4D / 5D** dashboard and the MEP report when they open.
+
+**Reset** in the same form discards your copy and goes back to the shipped file.
+
+**Keep and share it.** **⬇ Download** saves your edited file. Your copy lives in this browser only: there is no
+*load from file* yet, so on another browser or computer the changes are entered again (or the downloaded file is
+added to the project's `viewer/rates/` folder by whoever publishes the Viewer).
+
 ### Camera / View drawer
 
-The **Camera / View** drawer (camera icon) bundles three camera-control toggles:
+The **Camera / View** drawer (camera icon) bundles three camera-control toggles, plus **GI Preview** (**Alt+G**,
+desktop only — an ambient-occlusion preview):
 
 ![The Camera / View drawer open — Precision (Fine), Reset Camera, and Auto-Pivot, each with its shortcut key](img/viewer/pill-camview-drawer.png)
 
@@ -448,9 +483,9 @@ where you are standing, aimed exactly where you are looking.
    the stick and keeps you walking, for laying several in one pass. **Esc** leaves without planting.
    Pressing the shoes again continues from the exact spot you left.
 
-Proof from a real session on the Terminal building: the user walked into the POV, hit Spacebar, and
-**stick @ 13%** appeared — the new row highlighted in the panel and its blue middle dot on the path
-in canvas right beside it. One keypress, one stick, position and aim both set:
+Example on the Terminal building: walk into the POV, hit Spacebar, and **stick @ 13%** appears — the new
+row highlighted in the panel and its blue middle dot on the path in canvas right beside it. One keypress,
+one stick, position and aim both set:
 
 ![Walk finger mode's result the moment Spacebar was hit — the Cinema path panel now lists a highlighted "stick @ 13%" row with its pinned aim coordinates, the same stick's blue middle dot visible on the yellow flight tube in canvas just left of the panel, the POV frame bottom-left still showing the walker's own view, and the Time Machine's construction timeline still running top-left](img/viewer/filmmaker-walk-stick13.png)
 
@@ -585,7 +620,7 @@ construction sequence advance together in the same take:
 You can also stage a **single still** rather than a whole film: **Alt+S** applies the same photographic pass
 and then refines the frozen frame over 16 jittered sub-pixel samples for clean edges. **Alt+J** adds an
 optional bounce-light (GI) pass — off by default, and deliberately excluded from film recording because it
-costs far more per frame than a film's frame budget allows.
+costs far more per frame than a film's frame budget allows. **Alt+G** is the lighter ambient-occlusion preview.
 
 **What this is honestly not.** There is no weather: no rain, no snow, no cloud shapes — the sky model is a
 clear-sky one and has no cloud geometry at all. And it does not claim to be indistinguishable from a
@@ -597,7 +632,7 @@ tier — and, unlike a still-render tool, it does it *while the building assembl
 
 Everything above records the film from the viewer window: press **Alt+C**, edit, press **OK**, and watch
 it bake. There is also a **command-line path that bakes the same film with no window and nobody
-watching**, added 2026-09-01. It is a development tool — it is gated behind an internal flag that a
+watching**. It is a development tool — it is gated behind an internal flag that a
 normal viewer session never sets, and there is no button for it.
 
 It exists because a film is expensive to check. A bake takes tens of minutes, so a defect in the HUD or
@@ -668,12 +703,7 @@ it produces, because the Reveal round's second act is derived rather than author
 | HHS Office (federated) | 6,880 | 1,901 | 126.7 s | **15 min 21 s** | 0.485 s |
 | Hospital | 63,415 | 2,937 | 195.8 s | **~30–45 min** | 0.6–0.9 s |
 
-**A later, separately-measured Hospital run** (2026-09-05/06, same building, `--clash` on, 1920×1080@24,
-same RTX 4060) came back **4,699 frames** for the same 195.8 s film — a different frame count for the same
-duration than the row above, most likely a later change to the film's own fps/pacing rather than this
-guide's row being wrong; not reconciled here. At that frame count: **5,476 s (~91 min)** wall clock full
-run, **~83 min** on a repeat run the same night — call it **80–90 minutes** at 1080p with clash markers on.
-1280p/1440p have not been measured.
+With clash markers on, the same Hospital film at 1080p takes **80–90 minutes** on that machine. 1280p/1440p have not been measured.
 
 Hospital carries **9x** the elements for under **2x** the per-frame cost — the frame cost scales far
 better than the model does, and most of the difference in wall clock is simply that its film is longer
@@ -717,15 +747,116 @@ The **Settings** pill (key **=**) opens a panel with four sections:
   exists). A **Reset Pill Icons** button restores the defaults.
 - **Edit Project JSON** — a power-user hub: open and edit any of the project's config files directly
   in-browser (auto-inferred form fields, not raw text), then **Download** the edited file to commit back
-  to the repo, or **Reset** to discard the override. Six files are registered: **Corporate / Branding**,
-  **Grid Rules**, **Clash Rules**, **ERP Globe Bubbles**, **Sound Effects** (the audio *parameters* file —
-  distinct from the Display-options Sound FX on/off toggle above), and a **read-only** view of the
-  **4D Schedule** captured for the currently-open building (the same data Time Machine authors).
+  to the repo, or **Reset** to discard the override. Eleven files are registered: **Corporate / Branding**,
+  **Grid Rules**, **Clash Rules**, **Road Standards (ATJ sign table)**, **Civil Labels**, **ERP Globe Bubbles**,
+  **Sound Effects** (the audio *parameters* file — distinct from the Display-options Sound FX on/off toggle above),
+  the three 4D / 5D references (**5D Rate Pack** of the active pack, **4D Schedule Template**, **4D Sequence &
+  Labour Rules**: see *Your own 4D / 5D references* above), and a **read-only** view of the **4D Schedule**
+  captured for the currently-open building (the same data Time Machine authors).
 - **5D Rate Pack** — pick which cost-rate pack is active (the same rate pack the Find panel's
   `total cost` query and the 4D/5D dashboard both price against).
 - **Cache Info** — see how much this building's data is using in IndexedDB, and clear it.
 
   ![The full Settings panel, Pill Icons section open — every toolbar action listed with its visibility and shortcut](img/viewer/pill-settings-panel.png)
+
+### LOD400 Upgrade
+
+The **LOD400 Upgrade** pill (box icon, on the toolbar rail) opens a panel that cleans up the open building's
+geometry: it welds duplicate vertices and smooths curved surfaces. Revit IFC meshes arrive as flat-shaded
+triangle soups, so the same triangles, area and size need far fewer vertices; the tool's own measurement is
+about 70–80 % fewer on curved parts. No element is added, removed or renamed, and every number is counted and
+logged. **Save Building** keeps the result (see [Save & Open a building](#save-open-a-building)).
+
+*Written from the tool's own help text and code header, 2026-11-17. No screenshot yet.*
+
+### Sanity and Egress — rule checks
+
+Two rule checks read the loaded building and list what they find in one checklist panel. Neither is on the
+toolbar rail: press **Y** for Sanity or **E** for Egress, or open the **F1** help, type the name and press **Enter**.
+
+- **Sanity** — *Floating Member* (STR beams), *Span/Depth* (advisory) and *Column Continuity*.
+- **Egress** — *Isolated Room* (no measured route out), *Circulation Distance* (to a real exit; falls back to the
+  circulation spine) and *Door Width* (advisory).
+
+Each Egress distance row says which target it measured, the exit or the circulation fallback, so the panel never
+claims more than it measured. The limits the code cites: a door clear width of 0.813 m (IBC 2021 §1010.1.1) and a
+travel distance of 60.96 m (IBC 2021 Table 1017.2, Group I-2, sprinklered). The warning levels (0.85 m and 45.7 m)
+are early-heads-up buffers the code does not cite, and because the model carries no occupancy class, the stricter
+hospital door width is not applied.
+
+*Written from the tool's own help text and code header, 2026-11-17. No screenshot yet.*
+
+### 4D Window
+
+The **4D Window** pill (calendar icon) puts the construction schedule next to the model. It appears on the toolbar
+rail when the schedule engine is loaded, and it is always in the **F1** help. With a schedule loaded, hover or click
+any element: the info panel shows its task name and start → finish, its trade and float, and a critical-path marker;
+hovering adds one extra line. If the building has no schedule yet, tap it to generate one on the fly (its tooltip then
+reads *4D Window — tap to generate a programme*). The full timeline, playback and What-if are the **Time Machine**
+(key **T**), in the [Inspect drawer](#inspect-drawer-measure-clash-x-ray-section-time-machine-4d5d-fly-tour).
+
+*Written from the tool's own help text and code header, 2026-11-17. No screenshot yet.*
+
+### Issues
+
+The **Issues** panel (key **I**) is the building's issue log: one list per building, each entry a snag with its photo
+and annotation. Open an entry for its detail view; a clash snag also carries a deep link that flies to that clash.
+**Export Excel** and **Export BCF** write the list out, and **Clear All** deletes every logged issue after a
+confirmation. The log is kept in this browser (IndexedDB), not on a server. An empty list says *To log one: start a Walk, tap the
+element, then 📸 Snag*: the **Snag** button shows on an element's card only while a Walk is on, and it opens the Site
+Camera (the mobile tool described under **Mobile-only** below).
+
+*Written from the tool's own help text and code header, 2026-11-17. No screenshot yet.*
+
+<a id="send-to-hq"></a>
+#### Send to HQ, and the HQ view
+
+**On the phone: Send to HQ.** At the top of the Issue Log, **📤 Send to HQ** sends the site report to head office: every
+issue in the log with its photo, and the walk you took (the points of a Walk-mode walk, each with its camera view). On a
+phone the Issue Log opens from the **Inspect** pill, row **Issues**. What happens next depends on the browser:
+
+- **Not in a team:** the phone's own share sheet opens with the report and the photos attached, so you can email them
+  to HQ. The status line says *Saved N file(s) — attach them to an email to HQ.* if the browser has no share sheet and
+  the files were downloaded instead.
+- **In a team** (this browser has joined a team in the **Team** panel, see the
+  [Team guide](https://red1oon.github.io/bim-ootb/erp/team_guide.html); the viewer on the same site uses that
+  pairing): the report goes into the team folder with nothing more to tap. It is sealed with the team key and signed by
+  this phone; nothing in the folder is readable (no building name, no issue id in the clear). The status line says
+  *Sent to your team folder.*
+- **No signal:** the report is kept on the phone and the status line says *Saved on this phone — it goes to your team
+  folder when you are online.* When the signal comes back it sends itself; nothing is lost and nothing has to be pressed
+  again. The walk and snags themselves work with no signal: the model and the Issue Log are on the phone.
+
+**At HQ: Get from team.** In a team, the Issue Log on HQ's browser shows **📥 Get from team** beside Send to HQ. It
+reads every phone's reports into the same Issue Log: each issue card names the phone it came from by its device code
+(as the Team panel shows it), with its photo. A phone sends its whole log each time, so an issue it sends again
+replaces its own row; it is never listed twice. A report that does not open (not signed by a team device, or
+changed on the way) is refused whole and the status line counts it as *refused*. HQ's own issues are never sent on as
+its own.
+
+**Replay a walk.** After Get from team, the Issue Log has one row per phone that walked: *Walk · device code · N points ·
+tap to replay*. Tap it: the walk's points go on the history bar, and the bar opens. Scrub the bar and HQ's camera goes
+to where the phone's camera was at each point.
+
+*Written from the code (`viewer/issues.js`) and the witnesses W-SEND-HQ, W-SEND-HQ-TEAM, W-HQ-VIEW and
+W-ISSUE-LOG-ROUTE (bim-compiler `prompts/MOBILE_PERF.md` §P5), 2026-11-28. No screenshot yet.*
+
+#### GI Preview (AO)
+
+**GI Preview (AO)** (**Alt+G**, desktop only) turns on an ambient-occlusion preview using the N8AO effect. The help lists
+it as a research spike, and it is disabled on mobile because of memory. It sits in the
+[Camera / View drawer](#camera-view-drawer).
+
+*Written from the tool's own help text and code header, 2026-11-17.*
+
+#### Nav LOD (large bldgs)
+
+**Nav LOD (large bldgs)** (key **O**, in the Navigate drawer) keeps flying and orbiting smooth on a large building: while
+you move, it draws far or off-screen elements as boxes and keeps the real mesh only within 50 m and in view. It is off by
+default, does nothing on a building under 50,000 elements (it shows a message instead), and is switched off during the
+Time Machine, a Find isolate and Cinema.
+
+*Written from the tool's own help text and code header, 2026-11-17.*
 
 ### Save & Open a building
 
@@ -759,7 +890,7 @@ warehouse-class building loaded to demonstrate, outside this general viewer guid
 <a id="find-lenses-tenancy"></a>
 ### FM / Operate lenses — HR_BIM_Asset  *(ALPHA)*
 
-The viewer carries one **`FM / Operate`** toolbar pill (a building glyph) that opens a wake-aware drawer of
+The viewer carries one **`FM / Operate`** toolbar pill (a building glyph; its entry in the **F1** help is labelled **Human-Asset**) that opens a wake-aware drawer of
 operate-phase lenses — **Occupancy** (incl. lease status) · **Presence** · **Unit class** · **Assets / IoT** ·
 **Dashboard**. It appears only when the loaded building carries operate data, and each lens is enabled only when
 *its* data exists (else greyed) — no data, no clutter.
@@ -767,8 +898,9 @@ operate-phase lenses — **Occupancy** (incl. lease status) · **Presence** · *
 → **Full walkthrough (with screenshots): [HR / Tenancy / Operate Module guide](HRBIMAssetGuide.md).**
 
 **Collaborate on the model — the Teams overlay.** One toolbar toggle overlays **who-did-what** on the building:
-identity-coloured dots on elements and Find-panel rooms, a history/blame tree, a chat that **is** the signed log,
-and dashboard graphs — off by default, pixel-identical until you turn it on.
+identity-coloured dots on elements, a history/blame tree, a chat that **is** the signed log,
+and dashboard graphs — off by default, pixel-identical until you turn it on. It is available in the Modeller and
+Kernel-ERP; the Viewer does not carry the toggle.
 → **[Teams Overlay guide (with screenshots)](TeamsOverlayGuide.md).**
 
 **Mobile-only (touch-optimised):**
@@ -798,10 +930,15 @@ and dashboard graphs — off by default, pixel-identical until you turn it on.
 | **Alt+C** | [Film-Maker](#cinema-film-maker-altc-the-bim-ootb-film-maker) — derive a cinematic film, edit the flight, record |
 | **Alt+S** | [Photographic still](#sun-sky-and-shadow-while-the-film-records) — stages the sun/sky/shadow pass, then refines the frozen frame over 16 sub-pixel samples |
 | **Alt+J** | Bounce-light (GI) pass — optional, off by default, not used while recording a film |
+| **Alt+G** | GI Preview — ambient-occlusion preview (desktop only) |
+| **Y** / **E** | Sanity / Egress — the rule checks ([Sanity and Egress](#sanity-and-egress-rule-checks)) |
+| **D** | Role View — cycles the discipline filter |
+| **U** / **K** | Earthworks / Roadworks (civil-works models only) |
+| **Alt+P** | Populate — adds staffage (people, trees and cars) to the scene |
 | **Click the flight tube** (in the Film-Maker) | Add a stick — a new band you can drag |
 | **Ctrl+Z / Ctrl+Shift+Z** (in the Film-Maker) | Undo / redo a path edit |
 | **F11** | Toggle fullscreen |
-| **F1** | Help — the full, live list of every toolbar action and its shortcut key |
+| **F1** | Help — the panel on the left: every tool and its key, search, steps, guide links ([Help](#help-f1-the-info-panel-and-the-command-line-live)) |
 
 > Authoring — editing the structural grid, sketching, extruding — lives in the **[DAGeVu Modeller](ModellerGuide.md)**, not the Viewer.
 
@@ -811,6 +948,7 @@ and dashboard graphs — off by default, pixel-identical until you turn it on.
 
 | Doc | What |
 |-----|------|
+| [Civil Works — Step by Step](CivilWorksGuide.md) | Road models: discipline counts + cost, cross-vendor clash, earthworks volume, long / cross sections, road Model Check report |
 | [Kernel-ERP User Guide](ERPUserGuide.md) | iDempiere browser ERP — login → install → POS → reporting · [Tenancy](ERPUserGuide.md#hr-tenancy) |
 | [DAGeVu Modeller Guide](ModellerGuide.md) | Author geometry — the editable 3D Grid |
 | [Clash Detection](CLASH_DETECTION.md) | Clash detection engine |

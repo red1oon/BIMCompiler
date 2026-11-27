@@ -11,7 +11,9 @@ m_attributeset m_warehouse m_locator c_tax c_currency m_pricelist c_bankaccount 
 c_acctschema ad_clientinfo ad_client ad_workflow ad_wf_node ad_wf_nodenext ad_wf_process ad_wf_activity ad_wf_eventaudit ad_process
 m_matchpo m_matchinv c_paymentallocate c_orderlandedcost c_orderpayschedule c_invoicepayschedule c_pos
 fact_acct c_validcombination c_elementvalue c_bp_customer_acct c_bp_vendor_acct c_bp_group_acct m_product_acct m_product_category_acct c_tax_acct
-c_bankaccount_acct c_acctschema_default c_acctschema_gl c_conversion_rate c_conversiontype ad_orginfo gl_category ad_message'''.split()
+c_bankaccount_acct c_acctschema_default c_acctschema_gl c_conversion_rate c_conversiontype ad_orginfo gl_category ad_message
+ad_sequence_no t_fact_acct_history m_product_po c_orderlandedcostallocation ad_org m_rma m_rmaline
+c_uom c_uom_conversion c_payselection c_payselectionline c_payselectioncheck c_bp_bankaccount ad_sysconfig c_projectissue m_inventory m_inventoryline m_movement m_movementline m_production m_productionline'''.split()
 cn = psycopg2.connect(host='localhost', user='adempiere', password='adempiere', dbname=dbn); cur = cn.cursor(); cur.execute('set search_path=adempiere')
 lite = sqlite3.connect(out)
 def conv(v):

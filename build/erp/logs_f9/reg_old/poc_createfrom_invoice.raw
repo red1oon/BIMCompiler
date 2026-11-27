@@ -1,0 +1,42 @@
+═══ W-CREATEFROM-INVOICE — the P2P line-maker (AD_Process 200143) over the REAL handler ═══
+§CREATEFROM-AD proc=200143 value=C_Invoice_CreateFromProcess classname=org.compiere.process.CreateFromInvoice isreport=N para=["C_Invoice_ID(Y)"]
+   🟢 the AD row exists and is what the handler registers against (200143 / CreateFromInvoice / mandatory C_Invoice_ID) — classname=org.compiere.process.CreateFromInvoice
+§CREATEFROM-FIXTURE receipt=105 issotrx=N docstatus=CO lines=10 allLinked=true invoice=105 issotrx=N docstatus=DR bpartnerMatch=true
+   🟢 handler registered under the real classname — registered=true
+
+── ARM 1 · LINES CREATED ──
+§CREATEFROM-INVOICE invoice=105 selected=10 linesCreated=10 withInOutLine=10 withOrderLine=10 deferred=["updateFrom(order)-payment-schedule(MOrderPaySchedule)"]
+   🟢 10 selected receipt lines → 10 C_InvoiceLine CREATE_LINE ops — ok=true rows=10 ops=10 msg=@Created@ = 10
+   🟢 every op is a C_InvoiceLine CREATE_LINE bound to the target invoice — c_invoice_id=105
+   🟢 EVERY created line carries M_InOutLine_ID — the column AD_Field locks and only this process sets — withInOutLine=10/10
+
+── ARM 2 · setShipLine COPY IS EXACT ──
+§CREATEFROM-COPY fields=m_inoutline_id,c_orderline_id,line,isdescription,description,m_product_id,c_uom_id,m_attributesetinstance_id +qtyentered/qtyinvoiced  rows=10 mismatches=0
+   🟢 every setShipLine-copied column equals its source receipt-line value, all 10 rows — mismatches=0
+
+── ARM 3 · PRICE BLOCK FROM THE LINKED C_OrderLine ──
+§CREATEFROM-PRICE cols=priceactual,pricelimit,pricelist,c_tax_id,linenetamt rows=10 mismatches=0 priceEnteredBranchMismatches=0
+   🟢 price/tax/net columns equal the linked C_OrderLine's own values — mismatches=0
+   🟢 PriceEntered follows the sameOrderLineUOM branch (entered when same UOM, actual when not) — mismatches=0
+
+── ARM 4 · completeInvoice NOW EMITS M_MatchInv (the lane measured 0) ──
+§INVOICE-FANOUT invoice=105 issotrx=N lines=10 matchInvOps=10 linkMismatches=0
+   🟢 completeInvoice emits one M_MatchInv per created line (was 0 before this fix) — matchInvOps=10 expected=10
+   🟢 each M_MatchInv points at the right M_InOutLine_ID at the right qty — mismatches=0
+
+── ARM 5 · GATES REFUSE ──
+§CREATEFROM-GATES noInvoice="@NotFound@ @C_Invoice_ID@" completed="Invoice is not drafted (CreateFrom is reachable only on a DR/IP invoice)" emptySelection="@NotSupported@ (no line selection — CreateFrom needs an Info-Window selection)"
+   🟢 no invoice → @NotFound@ @C_Invoice_ID@, zero ops (the Java's own message) — @NotFound@ @C_Invoice_ID@
+   🟢 completed invoice → refused, zero ops (CreateFrom is reachable only on DR/IP) — Invoice is not drafted (CreateFrom is reachable only on a DR/IP invoice)
+   🟢 empty selection → @NotSupported@, zero ops (the Info-Window precondition) — @NotSupported@ (no line selection — CreateFrom needs an Info-Window selection)
+
+── ARM 6 · DEFERRALS DECLARED ──
+§CREATEFROM-INVOICE invoice=105 selected=1 linesCreated=1 withInOutLine=1 withOrderLine=0 deferred=["product-uom-unavailable(cross-UOM: MUOMConversion)","no-order-line(setPrice()/setTax() — the price-list engine)","updateFrom(order)-payment-schedule(MOrderPaySchedule)"]
+§CREATEFROM-INVOICE invoice=105 selected=1 linesCreated=1 withInOutLine=1 withOrderLine=0 deferred=["product-uom-unavailable(cross-UOM: MUOMConversion)","rma-line-pricing(MRMALine — the RMA corpus)","updateFrom(order)-payment-schedule(MOrderPaySchedule)"]
+§CREATEFROM-DEFERRED noOrderLine=["product-uom-unavailable(cross-UOM: MUOMConversion)","no-order-line(setPrice()/setTax() — the price-list engine)","updateFrom(order)-payment-schedule(MOrderPaySchedule)"] rmaLine=["product-uom-unavailable(cross-UOM: MUOMConversion)","rma-line-pricing(MRMALine — the RMA corpus)","updateFrom(order)-payment-schedule(MOrderPaySchedule)"]
+   🟢 a line with no C_OrderLine declares the price-list deferral — ["product-uom-unavailable(cross-UOM: MUOMConversion)","no-order-line(setPrice()/setTax() — the price-list engine)","updateFrom(order)-payment-schedule(MOrderPaySchedule)"]
+   🟢 an RMA-line selection declares the RMA-corpus deferral — ["product-uom-unavailable(cross-UOM: MUOMConversion)","rma-line-pricing(MRMALine — the RMA corpus)","updateFrom(order)-payment-schedule(MOrderPaySchedule)"]
+   🟢 the mainline run still declares updateFrom(order)'s payment-schedule deferral — ["updateFrom(order)-payment-schedule(MOrderPaySchedule)"]
+
+🟢 W-CREATEFROM-INVOICE PASS — 16 PASS / 0 FAIL — the P2P line-maker sets M_InOutLine_ID and M_MatchInv now fires
+exit=0

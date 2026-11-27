@@ -1,0 +1,31 @@
+§FILM_WS_HASH before 4ea56ed03e053659c7a990c76a4b04da0461770a files=4927
+§FILM_TREE work=/home/red1/.cache/film_dev_setup4/dl/bim-ootb-main commit=9b7156a1 setup_next_args_match=Y
+§FILM_CODEFACTS installed=true active=true version=0.1.0 from=setup-extensions-folder fresh="§APP_SURFACE files=3500 fields=1875 alias_only=1604 phantom=179 untied=11" vscode=1.146.0
+§FILM_STILL name=s_vscodedir geometry=1440x900+240+90 bytes=286083
+§FILM_SHOT name=s_vscodedir {"kind":"dir","file":".vscode/tasks.json","line":1,"text":"{","vscode_dir":"extensions.json,launch.json,settings.json,tasks.json,witness.code-snippets"}
+§FILM_STILL name=s_ext geometry=1440x900+240+90 bytes=260206
+§FILM_SHOT name=s_ext {"kind":"ext","installed":"bim-devtools.code-facts@0.1.0","active":true}
+§FILM_STILL name=s_tasks geometry=1440x900+240+90 bytes=258516
+§FILM_SHOT name=s_tasks {"kind":"tasks","labels":["Serve repo (http://localhost:8000)","Lint viewer (no-undef gate)","Lint as CI does (viewer + modeller)","Run this witness (full log -> logs/)","Run viewer witness suite (full log -> logs/)","Regenerate editor indexes (APP_SURFACE + global types)"],"count":6}
+§FILM_STILL name=s_snip_suggest geometry=1440x900+240+90 bytes=75389
+§FILM_SHOT name=s_snip_suggest {"kind":"snippet","prefix":"witness","step":"suggest"}
+§FILM_STILL name=s_snip geometry=1440x900+240+90 bytes=201060
+§FILM_SHOT name=s_snip {"kind":"snippet","prefix":"witness","step":"suggest list","via":"suggest","first_line":"#!/usr/bin/env node","lines":23,"unedited_fails":true}
+§FILM_STILL name=s_launch geometry=1440x900+240+90 bytes=276622
+§FILM_SHOT name=s_launch {"kind":"launch","targets":["Viewer in Chrome (localhost:8000)","ERP (iDempiere client) in Chrome","Modeller in Chrome","Node: this witness / script"],"count":4}
+§FILM_STILL name=h_pre geometry=1440x900+240+90 bytes=236709
+§FILM_SHOT name=h_pre {"kind":"pre","file":"viewer/grid_views.js","line":83,"state":"caret at line 89 col 1, no selection, no hover","text":"A.camera = cam;"}
+§FILM_STILL name=h_sel geometry=1440x900+240+90 bytes=237547
+§FILM_SHOT name=h_sel {"kind":"tokensel","file":"viewer/grid_views.js","line":83,"state":"token selected","token":"A.camera","sel_text":"A.camera","text":"A.camera = cam;"}
+§FILM_STILL name=h_hover geometry=1440x900+240+90 bytes=240356
+§FILM_SHOT name=h_hover {"kind":"hover","file":"viewer/grid_views.js","line":83,"hover":"**APP.camera** written at [viewer/grid_views.js:83](file:///home/red1/.cache/film_dev_setup4/dl/bim-ootb-main/viewer/grid_views.js#L83) · 4 writes · 1247 reads | ```typescript any ```","text":"A.camera = cam;"}
+§FILM_STILL name=b6_edit geometry=1440x900+240+90 bytes=537070
+§FILM_SHOT name=b6_edit {"kind":"replace","file":"modeller/modeller.html","line":290,"before":"<script src=\"arc_editable.js?v=9\" onerror=\"console.warn('§ARC LOAD_FAIL arc_editable.js')\"></script>","saved":true,"text":"<script src=\"arc_editable.js?v=99\" onerror=\"console.warn('§ARC LOAD_FAIL arc_editable.js')\"></script>"}
+§FILM_UNDO name=b6_edit restored=true
+§FILM_STILL name=b7_header geometry=1440x900+240+90 bytes=423988
+§FILM_SHOT name=b7_header {"kind":"select","file":"modeller/tests/witness_clipboard.js","line":3,"text":"// PROVES: modeller/clipboard.js"}
+§FILM_STILL name=b7_proves geometry=1440x900+240+90 bytes=423693
+§FILM_SHOT name=b7_proves {"kind":"insert","file":"modeller/tests/witness_clipboard.js","line":4,"saved":true,"text":"// PROVES: modeller/missing_file.js"}
+§FILM_UNDO name=b7_proves restored=true
+§FILM_WS_HASH after 4ea56ed03e053659c7a990c76a4b04da0461770a files=4927
+§FILM_SHOOT stills=13 errors=0

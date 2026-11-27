@@ -131,6 +131,8 @@ Most BIM tools let users draw geometry directly. This system does the opposite: 
 
 **What's still batch-mode:** The Blender integration currently requires a full recompile after each edit. Real-time incremental update (G-8 on the roadmap) is architecturally prepared — file watchers and scope detectors exist — but the pipeline does not yet support partial-stage entry. This is a significant gap between the current prototype and a production-grade interactive editor.
 
+> **Status note (2026-11):** the Blender-based BIM Designer described here has since been replaced by the in-browser [DAGeVu Modeller](ModellerGuide.md) (author geometry over a signed op-log, no Blender, no server), so the "batch-mode" limitation applies only to the legacy Blender path. The text below is kept as written for the Java/Blender-era prototype.
+
 ## 7. Multi-User Back Office and ERP Reporting
 
 Construction projects have many stakeholders reading the same data differently. A project manager wants a Gantt chart. A cost consultant wants a 5D breakdown. A sustainability officer wants embodied carbon. A facilities manager wants a maintenance schedule. An auditor wants a change log.
@@ -211,6 +213,8 @@ Claude Code (Anthropic's AI coding assistant) served as pair-programming partner
 - DX mirror verb is incomplete (7/10 gates)
 
 ## 10. Roadmap: From Proof to Platform
+
+> **Status note (2026-11):** this roadmap describes the Java/Blender-era plan. Its items are not tracked here any more; current status is in the [Action Roadmap](https://github.com/red1oon/BIMCompiler/blob/master/docs/internal/ACTION_ROADMAP.md) and [What's New](WhatsNew.md).
 
 **Near-term (in progress):**
 - CP-1: TE per-element traceability (closes the 48K-element verification gap)

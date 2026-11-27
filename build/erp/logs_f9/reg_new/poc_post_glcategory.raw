@@ -1,0 +1,26 @@
+§W-POST-GLCATEGORY start db=/home/red1/bim-ootb/erp/ad_seed.db
+§GLCAT-POPULATION fact_acct=600 c_doctype=52 (of which GL_Category_ID=0, the sentinel: 14) gl_category=9
+
+── 1 · FactLine.java:404 — one category per DOCUMENT, stamped on every line ──
+   🟢 every posted document's fact lines carry ONE gl_category_id (n=50) — 50 documents, all single-valued
+
+── 2 · glCategoryFor vs the seed's OWN fact_acct.gl_category_id (the oracle) ──
+   🟢 our resolved GL_Category_ID equals what iDempiere actually posted, per document (n=50) — 50/50 agree
+   §GLCAT-ORACLE judged=50 agree=50 disagree=0 skipped={}
+
+── 3 · which stages of the Doc.java chain fire (a one-stage witness proves only one stage) ──
+   §GLCAT-STAGES {"own-column":2,"doctype":30,"client-default":18}
+   🟢 at least the doctype stage (Doc.java:996-1009) is exercised on real documents (n=3) — {"own-column":2,"doctype":30,"client-default":18}
+
+── 4 · every derived posting line carries the document category ──
+   🟢 derivePostings stamps the oracle's category on EVERY line of a real invoice (n=3) — C_Invoice 100 lines=3 oracle=109 stamped=[109,109,109] envelope=109/doctype
+   §GLCAT-STAMP table=C_Invoice id=100 lines=3 gl_category_id=109 stage=doctype oracle=109
+
+── FALSIFIER · the resolution is real, not a constant ──
+   🟢 the oracle is discriminating — the seed's postings carry more than one distinct category (n=5) — 5 distinct gl_category_id values across 600 fact rows
+   🟢 an unknown document resolves to the 0 sentinel with stage="none", never a fabricated category — {"id":0,"stage":"none"}
+   🟢 two invoices whose DOCTYPES carry different categories resolve to those different categories (n=2) — [{"inv":100,"cat":109},{"inv":102,"cat":112}]
+
+§GLCATEGORY-VERDICT CRITIC ✔ GL_Category_ID is no longer absent from posting: doc_poster resolves it through Doc.setDocumentType's own chain and stamps it on every derived line as FactLine.java:404 does, and the answer matches the seed's OWN fact_acct rows document for document.
+✅ W-POST-GLCATEGORY: 7/7 PASS (0 FAIL, 0 INCONCLUSIVE)
+exit=0

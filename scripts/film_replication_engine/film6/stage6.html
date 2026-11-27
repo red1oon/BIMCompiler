@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Film 6 stage</title>
+<!-- ⚠ DO NOT REMOVE — Scope: the STAGE page of Film 6 "No Server to Keep Alive — and the Books Still Close" (TEAMWORK_FRAMEWORK §42.1). Adapted from the Film 1 stage (scripts/film_replication_engine/stage.html, untouched): actor cards with ONLINE/OFFLINE badges,
+     envelopes between actors and a dumb relay, and the LOWER TIMELINE PANEL that stamps each activity with its sample-day clock. Colours = the Civil Works chapter-card palette (palette.json). NO disaster / rebuild beats.
+     Every pixel is a pure function of Stage.at(filmSeconds) and the trace (trace6.schema.json): no timers, no CSS animation. A trace whose header.status is DRAFT paints a DRAFT watermark; film6_guard.js refuses it for recording. Read the dry-run log (logs/stage6_dry.log). -->
+<style>
+:root{--bg:#080A0E;--panel:#1A1A19;--line:#6B6A63;--ink:#FFFFFF;--ink2:#C3C2B7;--cy:#4FC3F7;--ye:#FFEB3B;--gd:#0CA30C;--am:#FAB219;--or:#FF8C1A}
+*{box-sizing:border-box;margin:0}
+html,body{width:1920px;height:930px;overflow:hidden;background:var(--bg);color:var(--ink);font-family:'Noto Sans','DejaVu Sans',sans-serif}
+#app{position:absolute;left:0;top:0;width:1920px;height:930px;overflow:hidden;background:var(--bg)}
+.abs{position:absolute}
+#top{left:0;top:0;width:1920px;height:58px;display:flex;align-items:center;padding:0 24px;gap:20px;background:var(--panel);border-bottom:2px solid var(--line)}
+#top .ttl{font:700 26px/1 'Noto Sans';color:var(--ink);white-space:nowrap}
+#top .part{font:700 20px/1.3 'Noto Sans';color:var(--cy);white-space:nowrap;overflow:hidden;flex:1;min-width:0}
+#top .sp{display:none}
+#top .smp{font:800 17px/1 'Noto Sans';letter-spacing:2px;color:#080A0E;background:var(--am);padding:7px 14px;border-radius:8px;white-space:nowrap}
+#top .draft{font:800 17px/1 'Noto Sans';letter-spacing:2px;color:#080A0E;background:var(--or);padding:7px 14px;border-radius:8px;white-space:nowrap}
+#top .clk{font:700 26px/1 'DejaVu Sans Mono',monospace;color:var(--ink);min-width:330px;text-align:right;white-space:nowrap}
+.card{position:absolute;background:var(--panel);border:3px solid var(--line);border-radius:16px;padding:9px 14px 8px;overflow:hidden}
+.card.on{border-color:var(--gd)}
+.card.off{border-color:var(--or)}
+.card.run{border-color:var(--cy)}
+.card .hd{display:flex;align-items:center;gap:10px;height:34px;flex:none}
+.card .nm{font:700 24px/1 'Noto Sans';color:var(--ink);white-space:nowrap}
+.card .sb{font:400 16px/18px 'Noto Sans';color:var(--ink2);white-space:nowrap;overflow:hidden;height:18px}
+.card .sp{flex:1}
+.badge{font:800 18px/1 'Noto Sans';letter-spacing:1.5px;padding:6px 12px;border-radius:8px;color:#080A0E;white-space:nowrap}
+.badge.off{background:var(--or)}
+.badge.onl{background:var(--gd)}
+.badge.rel{background:var(--cy)}
+.card .st{margin-top:4px;font:400 18px/26px 'Noto Sans';color:var(--ink);overflow:hidden}
+.card .st b{font-weight:800}
+.card .st i{font-style:normal;color:var(--ink2);font-size:16px}
+.card .lg{margin-top:3px;font:400 15px/19px 'DejaVu Sans Mono',monospace;color:var(--ink2);overflow:hidden;border-top:1px dashed var(--line);padding-top:3px}
+.card .lg div{white-space:nowrap;overflow:hidden}
+.card .lg div:last-child{color:var(--ink);font-weight:700}
+.card .nt{margin-top:3px;font:600 15px/19px 'Noto Sans';overflow:hidden;border-radius:6px;padding:0 8px;box-sizing:border-box;background:#080A0E;border:2px solid var(--line);color:var(--ink)}
+.card .nt.ok{border-color:var(--gd)}.card .nt.bad{border-color:var(--or)}.card .nt.n{border-color:var(--cy)}
+.card .nt:empty{display:none}
+.todo{display:inline-block;font:800 15px/1 'Noto Sans';letter-spacing:1px;padding:4px 8px;border-radius:6px;background:var(--am);color:#080A0E;margin-right:6px}
+.pill{position:absolute;z-index:50;border-radius:15px;font:800 15px/28px 'DejaVu Sans Mono',monospace;height:28px;min-width:44px;padding:0 10px;text-align:center;color:#080A0E;white-space:nowrap}
+.pill.up{background:var(--cy)}.pill.dn{background:var(--am)}.pill.vf{background:var(--ye);border:2px dashed #080A0E}.pill.bad{background:var(--or)}
+#strip{left:0;top:596px;width:1920px;height:36px;background:var(--panel);display:flex;align-items:center;padding:0 24px;gap:20px;border-top:2px solid var(--line)}
+#strip .t{font:700 21px/1.3 'Noto Sans';flex:1;white-space:nowrap;overflow:hidden;color:var(--ink)}
+#strip .s{font:400 14px/1.4 'DejaVu Sans Mono',monospace;color:var(--ink2);max-width:700px;white-space:nowrap;overflow:hidden}
+#lanes{left:0;top:634px;width:1920px;height:296px;background:var(--bg);border-top:2px solid var(--line)}
+#wm{left:0;top:0;width:1920px;height:930px;display:none;z-index:200;pointer-events:none;align-items:center;justify-content:center}
+#wm div{font:800 150px/1 'Noto Sans';letter-spacing:10px;color:rgba(255,140,26,.28);transform:rotate(-14deg);border:12px solid rgba(255,140,26,.28);padding:20px 50px;white-space:nowrap}
+#ov{left:0;top:0;width:1920px;height:930px;display:none;z-index:100}
+</style></head>
+<body><div id="app">
+<div id="top" class="abs"><span class="ttl">No Server to Keep Alive</span><span class="part" id="part"></span><span class="sp"></span><span class="draft" id="draft" style="display:none">DRAFT TRACE</span><span class="smp" id="smp">SAMPLE DATA</span><span class="clk" id="clk"></span></div>
+<div id="cards"></div>
+<div id="fly"></div>
+<div id="strip" class="abs"><span class="t" id="stripT"></span><span class="s" id="stripS"></span></div>
+<div id="lanes" class="abs"><svg id="svg" width="1920" height="296" viewBox="0 0 1920 296" xmlns="http://www.w3.org/2000/svg"></svg></div>
+<div id="ov" class="abs"></div>
+<div id="wm" class="abs"><div>DRAFT · NOT FOR PUBLICATION</div></div>
+</div>
+<script src="stage6.js"></script>
+</body></html>

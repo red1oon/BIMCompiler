@@ -1,0 +1,45 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§EDGE_CALL voice=de-DE-KatjaNeural rate=+3% chars=53 -> cf3e47d215
+§EDGE_CALL voice=de-DE-ConradNeural rate=-3% chars=39 -> 8bc52f28c2
+§EDGE_CALL voice=de-DE-ConradNeural rate=-3% chars=42 -> 05b6be4748
+§EDGE_CALL voice=de-DE-ConradNeural rate=-3% chars=42 -> 93fc6a2d03
+§NARR_FIT quote cue=0.00 room=998.70 dur=10.72 -> DETAIL slack=+987.98 detailDur=10.72 words=27
+§NARR_TONE quote#0 F WH own=-3.7st rose=0st endDelta=-3.7st want=any OK "Wie viel Zeit der Woche geht fürs Nachschlagen drauf?"
+§EDGE_CALL voice=de-DE-KatjaNeural rate=+3% chars=34 -> 0577a43864
+§EDGE_CALL voice=de-DE-ConradNeural rate=-3% chars=39 -> ae06c996b4
+§EDGE_CALL voice=de-DE-ConradNeural rate=-3% chars=59 -> 0984f37806
+§EDGE_CALL voice=de-DE-ConradNeural rate=-3% chars=17 -> 6ea79b098c
+§EDGE_CALL voice=de-DE-ConradNeural rate=-3% chars=52 -> a3d290545f
+§EDGE_CALL voice=de-DE-ConradNeural rate=-3% chars=53 -> 7f4692278d
+§EDGE_CALL voice=de-DE-ConradNeural rate=-3% chars=34 -> bdde835e83
+§EDGE_CALL voice=de-DE-ConradNeural rate=-3% chars=56 -> 96aa7d01ca
+§NARR_FIT before cue=0.00 room=998.70 dur=21.31 -> DETAIL slack=+977.39 detailDur=21.31 words=46
+§NARR_TONE before#0 F WH own=-1.4st rose=0st endDelta=-1.4st want=any OK "Was hat ein Feld früher angezeigt?"
+§EDGE_CALL voice=de-DE-KatjaNeural rate=+3% chars=36 -> 31202baea5
+§EDGE_CALL voice=de-DE-ConradNeural rate=-3% chars=59 -> 059ba506f9
+§EDGE_CALL voice=de-DE-ConradNeural rate=-3% chars=56 -> 21a39e54fa
+§EDGE_CALL voice=de-DE-ConradNeural rate=-3% chars=39 -> 215258bba5
+§EDGE_CALL voice=de-DE-ConradNeural rate=-3% chars=60 -> 3b8107d8d3
+§NARR_FIT ask1 cue=0.00 room=998.70 dur=16.47 -> DETAIL slack=+982.23 detailDur=16.47 words=37
+§NARR_TONE ask1#0 F YN own=-3.0st rose=8.0st endDelta=+2.7st want=rise OK "Kann ich einfach auf Deutsch fragen?"
+§EDGE_CALL voice=de-DE-KatjaNeural rate=+3% chars=28 -> 2039e0928a
+§EDGE_CALL voice=de-DE-ConradNeural rate=-3% chars=62 -> d31b1d5282
+§EDGE_CALL voice=de-DE-ConradNeural rate=-3% chars=37 -> cbef955c44
+§EDGE_CALL voice=de-DE-ConradNeural rate=-3% chars=49 -> 3ee7c7bfec
+§EDGE_CALL voice=de-DE-ConradNeural rate=-3% chars=34 -> b34acda0fd
+§NARR_FIT link cue=0.00 room=998.70 dur=13.28 -> DETAIL slack=+985.42 detailDur=13.28 words=29
+§NARR_TONE link#0 F YN own=-2.3st rose=11.0st endDelta=+0.7st want=rise OK "Woher kommen diese Schritte?"
+§EDGE_CALL voice=de-DE-KatjaNeural rate=+3% chars=32 -> ca208fbc75
+§EDGE_CALL voice=de-DE-ConradNeural rate=-3% chars=50 -> 9d3476b7a1
+§EDGE_CALL voice=de-DE-ConradNeural rate=-3% chars=42 -> 43ee824db6
+§EDGE_CALL voice=de-DE-ConradNeural rate=-3% chars=54 -> 7e51f31448
+§NARR_FIT ask2 cue=0.00 room=998.70 dur=11.37 -> DETAIL slack=+987.33 detailDur=11.37 words=27
+§NARR_TONE ask2#0 F YN own=+0.5st rose=5.0st endDelta=+4.5st want=rise OK "Und eine Rechnung fertigstellen?"
+§EDGE_CALL voice=de-DE-KatjaNeural rate=+3% chars=36 -> 8aac093c91
+§EDGE_CALL voice=de-DE-ConradNeural rate=-3% chars=62 -> e6dda94160
+§EDGE_CALL voice=de-DE-ConradNeural rate=-3% chars=68 -> c7a4784d4c
+§EDGE_CALL voice=de-DE-ConradNeural rate=-3% chars=36 -> 9fd51e4025
+§NARR_FIT cli cue=0.00 room=998.70 dur=14.04 -> DETAIL slack=+984.66 detailDur=14.04 words=29
+§NARR_TONE cli#0 F YN own=+1.9st rose=0st endDelta=+1.9st want=rise OK "Geht das auch auf der Kommandozeile?"

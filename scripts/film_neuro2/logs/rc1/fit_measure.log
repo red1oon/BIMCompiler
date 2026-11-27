@@ -1,0 +1,28 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT b02 cue=0.00 room=998.70 dur=9.81 -> DETAIL slack=+988.89 words=29
+§NARR_FIT b03 cue=0.00 room=998.70 dur=9.25 -> DETAIL slack=+989.45 words=33
+§NARR_TONE b03#0 F WH rose=0st endDelta=-4.5st want=fall OK "What can an AI ask for now?"
+§NARR_FIT b04 cue=0.00 room=998.70 dur=19.14 -> DETAIL slack=+979.56 words=46
+§NARR_TONE b04#0 F YN rose=5.0st endDelta=+3.6st want=rise OK "Can I ask the Viewer a question from the command line?"
+§NARR_TONE b04#3 F YN rose=5.0st endDelta=+3.0st want=rise OK "Is that the Viewer's own number?"
+§NARR_FIT b05 cue=0.00 room=998.70 dur=16.01 -> DETAIL slack=+982.69 words=32
+§NARR_TONE b05#0 F YN rose=5.0st endDelta=+1.9st want=rise OK "Is every box overlap a clash?"
+§NARR_FIT b06 cue=0.00 room=998.70 dur=9.67 -> DETAIL slack=+989.03 words=29
+§NARR_TONE b06#0 F YN rose=8.0st endDelta=+1.3st want=rise OK "Does an edit report say that too?"
+§NARR_FIT b07 cue=0.00 room=998.70 dur=14.77 -> DETAIL slack=+983.93 words=34
+§NARR_TONE b07#0 F YN rose=5.0st endDelta=+3.2st want=rise OK "Minus 29 cleared?"
+§NARR_FIT b08 cue=0.00 room=998.70 dur=13.34 -> DETAIL slack=+985.36 words=46
+§NARR_TONE b08#0 F YN rose=5.0st endDelta=+2.0st want=rise OK "Can it check a film before I bake it?"
+§NARR_FIT b09 cue=0.00 room=998.70 dur=13.45 -> DETAIL slack=+985.25 words=34
+§NARR_TONE b09#0 F YN rose=5.0st endDelta=+1.2st want=rise OK "So can it do everything?"
+§NARR_FIT b10 cue=0.00 room=998.70 dur=8.67 -> DETAIL slack=+990.03 words=23
+§NARR_TONE b10#0 F YN rose=5.0st endDelta=+2.7st want=rise OK "And people?"
+§NARR_TONE b10#0 F YN rose=5.0st endDelta=+1.8st want=rise OK "Email?"
+§NARR_FIT b11 cue=0.00 room=998.70 dur=9.96 -> DETAIL slack=+988.74 words=30
+§NARR_TONE b11#0 F WH rose=0st endDelta=-6.1st want=fall OK "What comes next?"
+§NARR_FIT b12 cue=0.00 room=998.70 dur=15.93 -> DETAIL slack=+982.77 words=44
+§NARR_FIT b13 cue=0.00 room=998.70 dur=3.35 -> DETAIL slack=+995.35 words=8
+§NARR_FIT b14 cue=0.00 room=998.70 dur=6.59 -> DETAIL slack=+992.11 words=20
+§NARR_TONE b14#0 F WH rose=0st endDelta=-4.8st want=fall OK "How do I try it?"

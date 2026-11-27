@@ -1,0 +1,5 @@
+$ node scripts/gen_manifest.js --check modeller | grep -E "MANIFEST_(FAIL|CHECK)"
+§MANIFEST_FAIL modeller/modeller.html:290 differs from what modules.json writes (a hand edit of a generated site?); edit modeller/modules.json, then run: node scripts/gen_manifest.js --write modeller
+§MANIFEST_CHECK apps=3 files=55 identical=55/55 sites=823 tag=695 asset=0 inline=47 lazy=81 precache=900 order_check=PASS deps_declared=25 unreviewed=0 source=modeller written=0 verdict=FAIL
+
+§CMD_EXIT 0

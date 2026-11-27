@@ -1,0 +1,16 @@
+
+══ W-MIGRATE-POSTCFG — regenerated seed + Client-13 tenant carry RESOLVABLE posting config ══
+
+── §1 SEED (ad_seed_postcfg.db, client 11) ──
+§MIGRATE-POSTCFG client=11 doc=C_Order id=100 tokens_resolved=3/3 coverage=complete balanced=Y basis=invoice
+§MIGRATE-POSTCFG client=11 oracle=fact_acct(318) invoice=100 rows=3 maxDiff=0c
+§MIGRATE-POSTCFG client=11 fact_acct rows=300 ΣDR=46574.97 ΣCR=46574.97 TB-balanced=Y (TrialBalance honest-empty residual lit)
+── §2 TENANT (13-idempiere-postcfg.db, client 13) ──
+§MIGRATE-POSTCFG client=13 doc=C_Order id=1300100 tokens_resolved=3/3 coverage=complete balanced=Y basis=invoice
+§MIGRATE-POSTCFG client=13 oracle=fact_acct(318) invoice=1300100 rows=3 maxDiff=0c
+§MIGRATE-POSTCFG client=13 fact_acct rows=300 ΣDR=46574.97 ΣCR=46574.97 TB-balanced=Y (TrialBalance honest-empty residual lit)
+§FALSIFIER dropped c_bp_customer_acct rows=2 (bp=112) → coverage=partial({BPartner.Receivable})
+
+§W-MIGRATE-POSTCFG PASS
+
+exit=0

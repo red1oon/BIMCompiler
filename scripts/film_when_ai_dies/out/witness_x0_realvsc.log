@@ -1,0 +1,27 @@
+  VS Code run: exit=0 seconds=38.7 program=/snap/code/current/usr/share/code/code
+  PASS VS Code 1.146.0 loaded and activated the extension
+  PASS the index refresh finished INSIDE VS Code (§APP_SURFACE files=3415 fields=1866 alias_only=1599 phantom=176 untied=11 ms=4460) and the providers now read VS Code's storage folder
+  def step: viewer/cost_panel.js:67  if (!APP || !APP.db || !gridData) return;
+  PASS F12 on APP.db (written only under the one-letter name) → VS Code offers viewer/city.js:717, a line that mentions the field
+  built-in JavaScript support ready=Y after 0.2 s (probe: a call of createPanel() → viewer/cost_panel.js:24)
+  VS Code's built-in JavaScript support gave 0 other definition(s) for it: []
+  PASS hover on it → "written at viewer/city.js:717"
+  PASS phantom APP.closeSunglass → hover says PHANTOM; X0 offers no jump (0 result(s), all from the built-in support)
+  PASS red control: a made-up field → no X0 hover text, no definition
+  PASS §HOSTED_BEFORE_HOST hover → names the tag, lists spec places (bim-compiler specs included)
+  PASS red control: a made-up tag → "no spec found"
+  PASS VS Code knows all 9 X0 commands
+  PASS "Cost if deployed" run as a VS Code command → 3 app lines (§DEPLOY_COST app=erp boot_files=262 boot_bytes=5481139 boot_delta=0 precache_fil…)
+  PASS "Check" run as a VS Code command: syntax step ran under VS Code's own runtime, audit passed, a verdict was printed (§SHIP_CHECK verdict=PASS steps=3)
+  PASS status bar text for viewer/schedule_gate.js: viewer: start-up · 111 KB
+  PASS CodeLens from VS Code's own provider call: line 1029 "last: §HOSTED_BEFORE_HOST hostedTotal=11 matched=11   ·   x0_realvsc_l…"
+  PASS one-click bump: no warning before the edit (0); after an edit and save, 1 warning naming the app and its sw.js; 2 quick fixes (write, dry); the dry run names CACHE_VERSION and writes nothing; warning gone once the edit is taken back (0)
+  button press 1 (0 s): §BUMP_CHANGED base=560b35414bd9 changed=1 bumpable=1 skipped=0 files=viewer/cost_panel.js | §BUMP_CHECK verdict=PASS key=1d2f5931a641 targets=1 (nothing written; --write on the same tree reuses this result)
+  button press 2 (after the restore): §BUMP_CHANGED base=560b35414bd9 changed=0 bumpable=0 skipped=0 files=
+  PASS Bump button pressed in the real editor: the real bump.js --changed --check found the edited file (viewer/cost_panel.js) and passed, wrote nothing; after the restore a press finds nothing to bump
+  PASS Find All References on APP.db → VS Code returns 824 places; all 824 sites of the index are among them (missing 0), the write site included
+  PASS red control: a made-up field → X0 adds no reference (0 from VS Code itself)
+  PASS tag hover from VS Code's own provider call ends with the provable value, its log and commit ("last value: `§HOSTED_BEFORE_HOST hostedTotal=11 matched=11` — x0_realvsc_lens_probe.log:2 @ 560b")
+  PASS red control: the made-up tag in a file outside the repo gets no last-value line
+  PASS "Context for this file" run as a VS Code command on viewer/schedule_gate.js → the lib's block (81 lines; header and load sections identical), field and tag sections answered, copied to the clipboard, opened beside (1 markdown editor)
+§X0_REALVSC vscode=1.146.0 active=Y fresh=Y def=Y hover=Y phantom=Y unknown_silent=Y tag=Y fake_tag=Y commands=Y cost=Y check=Y status=Y lens=Y refs=Y bump=Y bump_button=Y refs_red=Y last_value=Y last_value_red=Y context=Y builtin_ready=Y builtin_defs=0 seconds=38.7 verdict=PASS

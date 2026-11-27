@@ -1,0 +1,34 @@
+open	8.317	14.958	ledger flash + F/M cards	F: 哇！ | M: 是真的吗？	F: 哇！AI 太厉害了！ | M: 等等……这些是真的吗？能给我们看数字吗？
+tease	15.108	19.333	card b2	M: 只是，其实不是。	F: AI 很不错，对吧？ | M: 只是，其实不是。
+reveal	19.483	28.292	card b3 (viewer/lib three.module.min.js + sql-wasm.js verified)	M: JavaScript、Three J S、SQLite。	M: 全部是 JavaScript、Three J S，还有 WebAssembly 里的 SQLite。 | F: 哪里都没有 AI 模型。
+concede	28.442	33.167	card b4a	M: AI 更好看。我承认。	F: 所以 AI 在外观上赢了？ | M: 五秒钟之内，是的。
+why	33.317	38.208	card b4b	M: 可能的，还是真实的？	F: 那为什么还要费劲？ | M: 是可能的样子，还是真实的样子？
+autodesk	38.358	45.958	help.autodesk.com Assistant page (fetched 2026-11-02)	M: Autodesk：模式与概率。	M: Autodesk 自己的帮助页面说：回答是基于模式和概率的。 | F: 是他们的原话，不是我的！
+latent	46.108	53.417	Cumberland 2026-08-03	M: 潜在空间，物理空间。	F: 一位从业者怎么说？ | M: 生成式 AI 活在潜在空间里。建筑活在物理空间里。
+duel0	53.567	59.375	duel_ledger_2026-11-02	M: 我试了免费演示。	M: 所以我试了一个免费演示。一帧医院画面，一条提示词。
+duel1	59.525	63.750	duel_ledger_b run1 wait=64.6s 832x544 3.56s	M: 六十四秒。	F: 结果呢？ | M: 六十四秒。三秒钟的视频。
+duel2	63.900	72.583	duel_ledger_b sha equal; 206/3.56=58	M: 可重复，是的。但要五十八个片段。	F: 同样的文件，两次？ | M: 是的，固定了种子。公平地说。但我的影片需要五十八个这样的片段。
+ours	72.733	79.125	Hospital_FULL_HIRES	M: 轮到我了。只生成一次。	M: 现在轮到我的。这家医院，只生成一次。 | F: 每次都是同一个文件！
+clash	79.275	85.125	§CLASH HUD 270 mesh-true	F: 碰撞！ | M: 二百七十。	F: 哦，碰撞检测！ | M: 二百七十处，真实的网格重叠。
+trade	85.275	91.125	§CLASH_HUD by trade and pair	M: 按专业，按配对。	M: 按专业，也按配对。 | F: 从模型读取，不是猜的。
+glory	91.275	101.125	§RULE_FILM_EXIT_STAT ~217 steps; sun az/alt HUD	F: 指南针？ | M: 太阳方位角。还有到出口最远的路。	F: 那个指南针是什么？ | M: 太阳的方位角和高度角，逐日变化。 | F: 安全呢？ | M: 到出口最远的路径。大约二百一十七步。
+tm	101.275	106.375	4D.mp4 schedule editor	M: 时间机器。	F: 我能改计划吗？ | M: 这是时间机器。进度计划编辑器。
+whatif	106.525	114.375	4D.mp4 What-if schedule	M: 推迟一个阶段，其余跟着变。	M: 假设分析。推迟一个阶段，后面每个阶段都会重新排好。 | F: 不用再重新写提示词！
+twod	114.525	120.292	DXF2BIM shed film v5	M: 大工程。代码里没有 AI。	F: 那从二维图纸呢？ | M: 是个大工程。代码里没有用 AI。
+fiveD	120.442	128.458	shed v5 v03: 5D, rate based estimate ~1.13M	M: 五维。按专业算成本。	M: 五维：按专业的成本，来自模型的工程量。 | F: 招标价？ | M: 不是。基于费率的估算。
+fourD	128.608	137.708	shed v5 v04: 6 phases, 194 days, default	M: 四维。默认进度。	M: 四维：模型没有进度时，自动生成进度。 | F: 谁的顺序？ | M: 默认的。六个阶段，一百九十四天。
+noai	137.858	145.708	shed v5 card: no AI on your drawings	M: 你的图纸上没有 AI。	F: 同样的图纸，同样的模型？ | M: 同样的图纸，同样的模型。你的图纸上没有 AI。
+upg	145.858	154.000	§UPGRADE_REPORT 38898->38603, 110 ms	M: 一个按键。升级。通过。	F: 专业人士怎么复用？ | M: 一个按键升级到 I F C 四点三。十分之一秒。通过。
+split	154.150	159.750	toast: split into 4 storey files PASS	M: 按 K。四个楼层文件。	F: 只要一层楼呢？ | M: 按 K。四个楼层文件。通过。
+pro	159.900	170.167	red1 line	M: 专业人士就这样工作。	M: 专业人士就是这样工作的。快速、可重复、有序。 | F: 他们的学习可以围绕这些技能展开。 | M: 而不是脱离他们的掌控。
+altc	170.317	177.667	red1 timing: Alt+C opens ~3 s (not from a log)	M: Alt C 三秒钟打开。	F: 那影片呢？ | M: 按 Alt C。大约三秒钟就打开。快速工作，按确定。
+menu	177.817	183.583	Inspect menu 4D/5D	M: 四维、五维、碰撞、剖面。	F: 报告呢？ | M: 四维、五维、碰撞、剖面。一个菜单。
+prep	183.733	196.458	red1 timing; bake 26-49 min / orbit ~10 min	M: 按开始。最长一小时。不用提示词。	M: 要调整的话，拖动路径、勾选选项，我可以先预览。 | F: 然后呢？ | M: 生成最长一小时。我走开就行。不用提示词，不用 API，不花积分。
+door	196.608	206.958	duel upload; Nomic 2026	M: 你的模型离开了你的机器。	F: 为什么担心 API？ | M: 要问 AI，你的模型就离开了你的机器。我的演示把一帧医院画面发给了陌生人的主机。
+mit	207.108	215.708	LICENSE MIT verified	M: M I T。读、分叉、拆。	M: 无法检查的 API，在哪里都是风险。我的是 M I T。可以读，可以分叉，可以拆。
+shut	215.858	225.292	The Decoder 2026-03-28 Sora app 26 Apr, API 24 Sep	M: AI 明天就可能被关掉。	F: 要是被关掉了呢？ | M: AI 明天就可能被关掉。OpenAI 宣布 Sora 关闭：应用在四月，API 在九月。
+local	225.442	228.292	§NOAI_NETWORK PASS 2026-10-02	M: 而且本地优先。	M: 而且一切都以本地优先。
+collage	228.442	244.000	collage labels (unverified)	F: 图纸、E R P、道路。 | M: 一个内核。	F: 图纸、E R P、道路、土方、报告。 | M: 一个内核，在一个浏览器标签页里。 | F: 不用安装？ | M: 不用。 | F: 离线也行？ | M: 查看器启动和导入时，所有外部请求都被拦截。我测试过。
+find	244.150	249.500	Find Panel stills	M: 房间到房间，门接门。	F: 那找房间呢？ | M: 找路线，房间到房间，一扇门接一扇门。
+graph	249.650	264.167	graph card: citations on screen	M: 一张图。每格都有来源。	M: 一张图。AI 赢在外观，也赢在从零开始。我先说了。 | F: 其他的呢？ | M: 可以计数的构件、可以阅读的代码、没有任何东西离开你的机器。 | F: 每个格子都注明了来源。
+end	264.317	273.083	closing card	M: 我展示真实的样子。	M: AI 画的是建筑可能的样子。我展示的是它真实的样子。 | F: 请自己重新运行。账本是公开的。

@@ -1,0 +1,30 @@
+═══ W-PLAN-ERP — the ERP adapter reads its table scope from the compiled plan, behaviour-preserving (TEAMWORK_FRAMEWORK §25) ═══
+
+§E1 equivalence
+   🟢 over all N=1003 live dictionary tables the plan differs from the old rule on EXACTLY 141 tables, and every one is a dictionary VIEW (IsView=Y) — 141 differ, all views; shared 855 (old rule 996)
+   🟢 in the LIVE database (shipped seed + self-heal patches) none of those 141 views is a TABLE (nothing can store a record in it) and there are 0 triggers (no INSTEAD OF write path): 5 exist as read-only SQL views, 136 do not exist at all — views=5 absent=136 tables=0
+   🟢 X of N AD windows: every window has the same number of shared tab-tables under both rules (N=373) — no window loses a table — 0 differ
+   🟢 the 5 station-owned tables + the 2 decided rule tables (study §13.2) are station-local, nothing else is — ad_changelog,ad_recentitem,ad_sequence,ad_rule,ad_table_scriptvalidator,ad_sequence_no,ad_session
+§E2 names that are not active AD tables
+   🟢 every sqlite table that is not an active AD table is unplanned under the new rule (old rule: shared) — 28 names — 28 names
+   🟢 none of them has a row in the live ad_table, so no AD window tab can reference it: a user cannot author an op on them through any window (they are cm_*/k_* module tables, working tables and sqlite internals) — 0 of 28 in ad_table
+§E3 fail closed
+   🟢 no plan => every table unplanned (0 shared) and a visible log line — shared=0 log=["§TEAM_PLAN missing — nothing is shared","§TEAM_PLAN_SIG state=missing"]
+§E4 the plan decides
+   🟢 a plan with one more table shares it (x_widget unplanned -> share) with no adapter change — unplanned -> share
+   🟢 a plan that moves c_order to local silences it; c_orderline stays shared — station-local / share
+   🟢 hub-audience flows share nothing in the team ERP (only audience space) — shared=0
+   🟢 team_sync.js served byte-identical in both runs (no adapter change) — 305b2a560f8a = 305b2a560f8a
+§E5 provenance
+   🟢 the §TEAM_PLAN line states the header hash and the plan's own counts (855 tables, 7 local) — ["§TEAM_PLAN hash=276308d4ef15 tables=855 local=7","§TEAM_PLAN_SIG state=unsigned"] header=276308d4ef15
+§E6 page errors
+   🟢 zero page errors across all 5 loads — errors=0
+§MUTANTS (the adapter is served with one rule broken; each must turn at least one arm red)
+   🟢 plan ignored (old rule reinstated in the reader) -> red arms: E1, E2, E3, E4
+   🟢 audience ignored -> red arms: E4
+   🟢 plan hash not logged -> red arms: E5
+   🟢 unplanned treated as share -> red arms: E1, E2, E4
+   🟡 OPEN — 28 tables outside the live dictionary were shared by the old default and are now local-only: ad_treebar,cm_container,cm_container_element,cm_container_element_trl,cm_container_trl,cm_cstage,cm_cstage_element,cm_cstage_element_trl,cm_cstage_trl,cm_media,cm_media_server,cm_template,cm_webproject,cm_webproject_domain,dbreplicasyncverifier,k_category,k_source,k_topic,k_type,m_bom,m_bomalternative,m_product_bom_old,kernel_ops,sqlite_sequence,ad_ddl_default,ad_ddl_unique,t_selection,t_selection_infowindow (no ops on them appeared in any team witness run: grep table-not-in-plan = 0)
+
+§W-PLAN-ERP PASS judged=17 fails=0 open=1 pageerrors=0  (plan unsigned: §16.13 Q1)
+exit=0

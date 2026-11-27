@@ -1,0 +1,4 @@
+$ find . -path ./node_modules -prune -o -path ./.setup -prune -o -type f -regextype posix-extended -regex '.*/(witness_|poc_)[^/]*\.js' -print | wc -l
+1746
+
+§CMD_EXIT 0

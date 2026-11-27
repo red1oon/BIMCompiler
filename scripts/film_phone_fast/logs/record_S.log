@@ -1,0 +1,47 @@
+  [phone console] §RENDERER_CAPS multi_draw=on (fast batched path) gpu=ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)
+  [phone console] §CLASH_SNAG_MODULE loaded
+  [phone console] [S203] §CAMERA envelope=9x22x8m dist=80m
+§M1_READY role=S screen=phone url=/viewer/viewer.html?db=buildings/Duplex_extracted.db&pipe=http%3A%2F%2F127.0.0.1%3A42947%2Fpipe wait_s=7.3 (not filmed)
+§M1_GEO src=site lat=41.87440000 lng=-87.63940000
+  [hq console] §RENDERER_CAPS multi_draw=on (fast batched path) gpu=ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)
+  [hq console] §CLASH_SNAG_MODULE loaded
+  [hq console] [S203] §CAMERA envelope=9x22x8m dist=80m
+§M1_READY role=S screen=hq url=/viewer/viewer.html?db=buildings/Duplex_extracted.db&pipe=http%3A%2F%2F127.0.0.1%3A42947%2Fpipe wait_s=10.5 (not filmed)
+§M1_SYNC_ARRANGE space=679bdf03adb2 phone=5CC1-DE44 hq=7433-489A folder=/tmp/m1-sync-folder-4MTses (not filmed: devices + team space made as witness_hq_view.js makes them; both browsers paired)
+  [phone console] §SHEET_SWALLOW armed pointer=1
+  [phone console] §SHEET_CLOSE id=navigate-drawer-panel via=swipe
+  [phone console] §SHEET_SWALLOW pointerup on=canvas
+  [phone console] §SHEET_SWALLOW click
+  [phone console] §WALK_XRAY_AUTO on
+  [phone console] §WALK_TRACE i=1 why=start steps=0 p=5.88,0.45,9.82 yaw=-31 geo=site
+  [phone console] §WALK_TRACE i=2 why=turn steps=4 p=4.39,0.45,8.08 yaw=-71 geo=site
+  [phone console] §WALK_TRACE i=3 why=turn steps=9 p=1.56,0.45,7.51 yaw=-111 geo=site
+§M1_BEAT id=s_walk ok=true frames=25 evidence="§WALK_TRACE i=1 why=start steps=0 p=5.88,0.45,9.82 yaw=-31 geo=site"
+  [phone console] §PICK hits=5 chosen=0 0:BM d=0.06 op=0.3 g=slot:0 | 1:BM d=0.62 op=0.3 g=slot:2 | 2:BM d=0.91 op=0.3 g=slot:0
+  [phone console] [S204] §CAMERA opened
+  [gps] GPS: Timeout expired pos=false
+  [phone console] [S204] §SNAP IfcCovering GPS:GPS: unavailable 2026-11-27 16:22:59 +0800 BIM:YES
+  [phone console] [S205] §ISSUE_SAVED IfcCovering Level 1
+§M1_BEAT id=s_snag ok=true frames=10 evidence="[S205] §ISSUE_SAVED IfcCovering Level 1"
+  [phone console] §WALK_TRACE i=4 why=stop steps=12 p=-0.12,0.45,8.15 yaw=-111 geo=site
+  [phone console] §WALK_XRAY_AUTO restored off
+§M1_SYNC_PHONE issues=1 walk_trace_lines=4 photo_bytes=29820
+  [phone console] §SHEET_CLOSE id=cmd-palette via=other
+  [phone console] §HQ_TEAM queued id=qmwypsa6yuiub files=2
+  [phone console] §HQ_SEND via=team drop=7766eb750b60b60e parts=2 epoch=1 kid=5cc1de44c10eb8d5
+  [phone console] §HQ_TEAM flushed sent=1 left=0
+§M1_SYNC_SEND status="Sent to your team folder." share_sheet=none folder_files=3
+§M1_BEAT id=s_send ok=true frames=7 evidence="§HQ_SEND via=team drop=7766eb750b60b60e parts=2 epoch=1 kid=5cc1de44c10eb8d5"
+  [hq console] §HQ_GET drops=1 new=1 issues_added=1 issues_updated=0 walks=1 refused=0
+§M1_SYNC issue_from=5CC1-DE44 photo_equal=true rows=1
+§M1_BEAT id=s_get ok=true frames=3 evidence="§HQ_GET drops=1 new=1 issues_added=1 issues_updated=0 walks=1 refused=0"
+  [hq console] §HQ_REPLAY kid=5cc1de44c10eb8d5 points=4 from=5CC1-DE44
+§M1_SYNC_REPLAY points=4 phone_trace_lines=4 history_walk_entries=4 bar_visible_after_replay=false bar_visible_after_key_Z=true marks=5
+§M1_BEAT id=s_replay ok=true frames=3 evidence="§HQ_REPLAY kid=5cc1de44c10eb8d5 points=4 from=5CC1-DE44"
+§M1_SYNC_SCRUB_DETAIL per_point_err_m=0.0000,0.0000,0.0000,0.0000 immediately_after_jump_max_err_m=0.0000 labels="5CC1-DE44 · Walk · 0 steps · 0.0 m · start","5CC1-DE44 · Walk · 4 steps · 2.4 m · turn","5CC1-DE44 · Walk · 9 steps · 5.4 m · turn","5CC1-DE44 · Walk · 12 steps · 7.2 m · stop"
+§M1_SYNC_SCRUB_RED shifted_by_m=0.05 check_le_0.01_failed_on=4/4 min_err_m=0.0500 max_err_m=0.0500 RED_AS_REQUIRED
+§M1_SYNC_SCRUB points=4 max_err_m=0.0000 ok
+§M1_BEAT id=s_scrub ok=true frames=13 evidence="§M1_SYNC_SCRUB points=4 max_err_m=0.0000"
+§M1_SCREEN screen=phone frames=43 film_frames=566 t_first=69 t_last=163633
+§M1_SCREEN screen=hq frames=20 film_frames=408 t_first=0 t_last=193819
+§M1_RECORD role=S frames=63 film_frames=974 beats=6 not_ok=0

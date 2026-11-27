@@ -1,0 +1,27 @@
+§FILM_CUE beat=title t=0.000 len=3.6 stills=1
+§FILM_SEG seg_00.mp4 still=title_1.png asked=3.600 measured=3.667
+§FILM_CUE beat=screens t=3.667 len=5.83 stills=1
+§FILM_SEG seg_01.mp4 still=screens_1.png asked=5.830 measured=5.917
+§FILM_CUE beat=find t=9.583 len=7.79 stills=2
+§FILM_SEG seg_02.mp4 still=find_1.png asked=1.600 measured=1.667
+§FILM_SEG seg_03.mp4 still=find_2.png asked=6.190 measured=6.250
+§FILM_CUE beat=do t=17.500 len=10.15 stills=2
+§FILM_SEG seg_04.mp4 still=do_1.png asked=1.600 measured=1.667
+§FILM_SEG seg_05.mp4 still=do_2.png asked=8.550 measured=8.625
+§FILM_CUE beat=more t=27.792 len=6.96 stills=3
+§FILM_SEG seg_06.mp4 still=more_1.png asked=1.600 measured=1.667
+§FILM_SEG seg_07.mp4 still=more_2.png asked=2.680 measured=2.750
+§FILM_SEG seg_08.mp4 still=more_3.png asked=2.680 measured=2.750
+§FILM_CUE beat=building t=34.958 len=9 stills=2
+§FILM_SEG seg_09.mp4 still=building_1.png asked=1.600 measured=1.667
+§FILM_SEG seg_10.mp4 still=building_2.png asked=7.400 measured=7.458
+§FILM_CUE beat=script t=44.083 len=5.52 stills=2
+§FILM_SEG seg_11.mp4 still=script_1.png asked=1.600 measured=1.667
+§FILM_SEG seg_12.mp4 still=script_2.png asked=3.920 measured=4.000
+§FILM_CUE beat=door t=49.750 len=7.08 stills=1
+§FILM_SEG seg_13.mp4 still=door_1.png asked=7.080 measured=7.167
+§FILM_CUE beat=others t=56.917 len=12.71 stills=1
+§FILM_SEG seg_14.mp4 still=others_1.png asked=12.710 measured=12.792
+§FILM_CUE beat=close t=69.708 len=7.86 stills=1
+§FILM_SEG seg_15.mp4 still=close_1.png asked=7.860 measured=7.958
+§FILM_DONE dur=77.667 segs=16 sum=77.667

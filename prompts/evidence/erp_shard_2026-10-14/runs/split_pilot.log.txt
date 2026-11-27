@@ -1,0 +1,54 @@
+§SPLIT_UNITS headers=28 lineTables=13 dependents=[fact_acct,m_transaction,m_costdetail,m_matchinv,m_matchpo] candidates=179 mode=policy(CL,VO) t=0s
+§SPLIT_EDGES unit->unit=6853 t=0s
+§SPLIT_EDGES dependent->unit=24927 t=0s
+§SPLIT_PASS 1 pinnedByUnits=177 pinnedByDependents=0 t=0s
+§SPLIT_PASS 2 pinnedByUnits=0 pinnedByDependents=0 t=0s
+§SPLIT_TABLE a_asset_addition warm=258 cold=0 total=258
+§SPLIT_TABLE a_asset_disposed warm=36 cold=0 total=36
+§SPLIT_TABLE a_asset_reval warm=35 cold=0 total=35
+§SPLIT_TABLE a_asset_transfer warm=19 cold=0 total=19
+§SPLIT_TABLE a_depreciation_entry warm=262 cold=0 total=262
+§SPLIT_TABLE c_allocationhdr warm=485 cold=0 total=485
+§SPLIT_TABLE c_bankstatement warm=46 cold=0 total=46
+§SPLIT_TABLE c_cash warm=126 cold=0 total=126
+§SPLIT_TABLE c_depositbatch warm=1 cold=0 total=1
+§SPLIT_TABLE c_invoice warm=2045 cold=0 total=2045
+§SPLIT_TABLE c_order warm=2339 cold=2 total=2341
+§SPLIT_TABLE c_payment warm=201 cold=0 total=201
+§SPLIT_TABLE c_projectissue warm=40 cold=0 total=40
+§SPLIT_TABLE gl_journal warm=73 cold=0 total=73
+§SPLIT_TABLE gl_journalbatch warm=5 cold=0 total=5
+§SPLIT_TABLE m_inout warm=1818 cold=0 total=1818
+§SPLIT_TABLE m_inoutconfirm warm=3 cold=0 total=3
+§SPLIT_TABLE m_inventory warm=127 cold=0 total=127
+§SPLIT_TABLE m_movement warm=115 cold=0 total=115
+§SPLIT_TABLE m_requisition warm=56 cold=0 total=56
+§SPLIT_TABLE m_rma warm=2 cold=0 total=2
+§SPLIT_TABLE mp_maintain warm=3 cold=0 total=3
+§SPLIT_TABLE mp_ot warm=3 cold=0 total=3
+§SPLIT_TABLE mp_ot_request warm=3 cold=0 total=3
+§SPLIT_TABLE pp_mrp warm=56 cold=0 total=56
+§SPLIT_TABLE pp_order warm=2 cold=0 total=2
+§SPLIT_TABLE pp_order_node warm=2 cold=0 total=2
+§SPLIT_TABLE s_timeexpense warm=1 cold=0 total=1
+§SPLIT_TABLE c_allocationline warm=699 cold=0 total=699
+§SPLIT_TABLE c_bankstatementline warm=48 cold=0 total=48
+§SPLIT_TABLE c_cashline warm=128 cold=0 total=128
+§SPLIT_TABLE c_depositbatchline warm=0 cold=0 total=0
+§SPLIT_TABLE c_invoiceline warm=2110 cold=0 total=2110
+§SPLIT_TABLE c_orderline warm=2346 cold=4 total=2350
+§SPLIT_TABLE gl_journalline warm=144 cold=0 total=144
+§SPLIT_TABLE m_inoutline warm=1865 cold=0 total=1865
+§SPLIT_TABLE m_inventoryline warm=144 cold=0 total=144
+§SPLIT_TABLE m_movementline warm=114 cold=0 total=114
+§SPLIT_TABLE m_requisitionline warm=55 cold=0 total=55
+§SPLIT_TABLE m_rmaline warm=2 cold=0 total=2
+§SPLIT_TABLE s_timeexpenseline warm=4 cold=0 total=4
+§SPLIT_TABLE fact_acct warm=19438 cold=0 total=19438
+§SPLIT_TABLE m_transaction warm=2166 cold=0 total=2166
+§SPLIT_TABLE m_costdetail warm=2521 cold=0 total=2521
+§SPLIT_TABLE m_matchinv warm=84 cold=0 total=84
+§SPLIT_TABLE m_matchpo warm=115 cold=0 total=115
+§SPLIT_PINNED candidates=179 pinnedWarm=177 coldUnits=2 passes=2
+§SPLIT_WARM_TO_COLD=0
+§SPLIT_VERDICT PASS warm->cold=0 totalSec=0s

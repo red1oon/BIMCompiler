@@ -1,0 +1,16 @@
+{
+  // Editor-only. Spec: prompts/EDITOR_MAINTAINABILITY_STUDY.md §11 (W-ED-XREPO).
+  // This repo holds out-of-date copies of bim-ootb modules (329 of 791 same-named copies differ from bim-ootb).
+  // Search and Ctrl+P hide them so they don't open the stale copy. The file tree still shows them.
+  // To search them anyway, click "Use Exclude Settings" in the Search panel.
+  "search.exclude": {
+    "build/scriptor/*/_kw_old/**": true,
+    "build/scriptor/*/*/_kw_old/**": true,
+    "deploy/live/**": true,
+    "deploy/sandbox/**": true
+  },
+  // deploy/live is the PRODUCTION snapshot: never edit it (CLAUDE.md PRIME RULE). The editor enforces that.
+  "files.readonlyInclude": {
+    "deploy/live/**": true
+  }
+}

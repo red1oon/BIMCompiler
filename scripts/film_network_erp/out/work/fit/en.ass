@@ -1,0 +1,26 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1920
+PlayResY: 1080
+WrapStyle: 0
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: F,DejaVu Sans,46,&H00B4F0FF,&H00FFFFFF,&H90000000,&H00000000,0,0,0,0,100,100,0,0,1,2.6,0,2,260,260,48,1
+Style: M,DejaVu Sans,46,&H00FFE6B4,&H00FFFFFF,&H90000000,&H00000000,0,0,0,0,100,100,0,0,1,2.6,0,2,260,260,48,1
+Style: Credit,DejaVu Sans,30,&H00DDDDDD,&H00FFFFFF,&H90000000,&H00000000,0,1,0,0,100,100,0,0,1,2,0,8,200,200,36,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:07.00,0:00:18.33,M,b02#0,0,0,0,,Normally, a business system that many people share needs two computers running all day in the middle: one runs the program, one keeps the data. Every click travels there and back.
+Dialogue: 0,0:00:19.50,0:00:34.39,M,b03#0,0,0,0,,Here, every person's device runs the whole program and keeps its own copy of the data. Only the changes travel between them, just the essentials, like item codes, quantities and amounts. Nothing sits in the middle doing the work.
+Dialogue: 0,0:00:35.54,0:00:49.27,M,b04#0,0,0,0,,So we gave it a hard test: 100 users, on every kind of connection, from the office network and home internet to mobile data and a bad rural line, all sending their day's work in the same minute at closing time.
+Dialogue: 0,0:00:50.42,0:01:02.24,M,b05#0,0,0,0,,Connections dropped 87 times. Each time, the device simply tried again on the spot. Head office received 850 of 850 records. Nothing was lost.
+Dialogue: 0,0:01:03.38,0:01:12.75,M,b06#0,0,0,0,,And the accounts came out exactly the same as a test with no network at all. A bad connection changes when the data arrives, never what arrives.
+Dialogue: 0,0:01:13.92,0:01:28.21,M,b07#0,0,0,0,,Sending the changes takes about 0.5 seconds on home internet, 1.4 on mobile data, and 5.2 on a bad line. Nobody waits for it: it happens quietly in the background while people keep working.
+Dialogue: 0,0:01:29.33,0:01:49.86,M,b08#0,0,0,0,,We didn't need a thousand computers to know what happens with a thousand users. We measured ten to a hundred, found the pattern in each number, and tested each pattern by using the small tests to guess the hundred. The guesses were off by 1 to 15 percent. 3 of the 11 numbers had no reliable pattern, so we don't guess those.
+Dialogue: 0,0:01:51.04,0:02:16.28,M,b09#0,0,0,0,,There is a limit, and it's the free delivery service in the middle, not the business program. If everyone shares one free GitHub account, GitHub's own rules stop it at 10 to 17 users all sending at closing time. Give each person their own account, and head office's account becomes the limit, at about 520 to 585 users. We tested up to 100; beyond that is untested.
+Dialogue: 0,0:02:17.42,0:02:53.79,M,b10#0,0,0,0,,Now the fair comparison. The same six documents, on a traditional server-based system and on this one, with exactly the same results. Even after removing the traditional system's extra sign-in on every step, each document waits at least 1.1 seconds on mobile data. Here: 0.03 seconds, faster than a blink, because nothing has to travel first. This system still sends its changes, but later, in the background: about 1.4 seconds on mobile data. And the traditional system needs two computers running all day. This one needs none.
+Dialogue: 0,0:02:54.96,0:03:27.33,M,b11#0,0,0,0,,So, honestly. The traditional way gives everyone the same data at the same moment, and it has a long track record. But it needs computers running all day, and every click waits for the network. This way needs no central computers, and nobody waits. But others see your change only after it has been sent, the free delivery service has limits, every device keeps a full copy of the data, and one safety check the traditional system makes, warning you when someone else just changed the same record, isn't built here yet.
+Dialogue: 0,0:03:28.46,0:03:41.30,M,b12#0,0,0,0,,Here is the whole picture, side by side: the traditional server you run yourself, the cloud system you rent, and this one. The cloud column shows how such systems generally work. We did not measure it.
+Dialogue: 0,0:03:41.46,0:03:49.36,Credit,,0,0,0,,Voices: AI-generated (Kokoro, local)  ·  Script directed by red1

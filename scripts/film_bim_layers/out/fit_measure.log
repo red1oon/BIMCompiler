@@ -1,0 +1,11 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT setup cue=0.00 room=998.70 dur=11.99 -> DETAIL slack=+986.71 words=32
+§NARR_TONE setup#0 F WH rose=0st endDelta=-4.8st want=fall OK "How do I turn it on?"
+§NARR_FIT move1 cue=0.00 room=998.70 dur=13.91 -> DETAIL slack=+984.79 words=42
+§NARR_TONE move1#0 F WH rose=0st endDelta=-1.8st want=fall OK "Why is this column this tall?"
+§NARR_FIT move2 cue=0.00 room=998.70 dur=11.97 -> DETAIL slack=+986.73 words=37
+§NARR_TONE move2#0 F WH rose=0st endDelta=-1.1st want=fall OK "Where did the holes in this wall come from?"
+§NARR_FIT move3 cue=0.00 room=998.70 dur=13.97 -> DETAIL slack=+984.73 words=42
+§NARR_TONE move3#0 F WH rose=0st endDelta=-4.3st want=fall OK "And what it does not know?"

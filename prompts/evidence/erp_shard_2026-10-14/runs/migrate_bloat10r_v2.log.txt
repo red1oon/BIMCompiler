@@ -1,0 +1,24 @@
+§MIGRATE start tables=925 out=/tmp/claude-1000/-home-red1-bim-compiler/a4835524-cb34-4812-bf29-2fe73b37ec6e/scratchpad/m/bloat10r_v2.db
+§MIGRATE_ROWS ok table=ad_changelog rows=5769522 rssMB=185
+§MIGRATE_ROWS ok table=ad_session rows=349668 rssMB=214
+§MIGRATE_NUMERIC_LOSSY table=c_conversion_rate col=multiplyrate n=2
+§MIGRATE_NUMERIC_LOSSY table=c_conversion_rate col=dividerate n=4
+§MIGRATE_ROWS ok table=c_invoice rows=233112 rssMB=201
+§MIGRATE_ROWS ok table=c_invoiceline rows=699336 rssMB=199
+§MIGRATE_ROWS ok table=c_order rows=9120507 rssMB=224
+§MIGRATE_ROWS ok table=c_orderline rows=9674148 rssMB=189
+§MIGRATE_ROWS ok table=fact_acct rows=8741700 rssMB=183
+§MIGRATE_ROWS ok table=gl_journalline rows=116556 rssMB=184
+§MIGRATE_NUMERIC_LOSSY table=i_conversion_rate col=dividerate n=1
+§MIGRATE_NUMERIC_LOSSY table=i_conversion_rate col=multiplyrate n=1
+§MIGRATE_ROWS ok table=m_costdetail rows=2505954 rssMB=218
+§MIGRATE_ROWS ok table=m_inout rows=262251 rssMB=217
+§MIGRATE_ROWS ok table=m_inoutline rows=786753 rssMB=232
+§MIGRATE_ROWS ok table=m_matchinv rows=524502 rssMB=209
+§MIGRATE_ROWS ok table=m_matchpo rows=1078143 rssMB=192
+§MIGRATE_ROWS ok table=m_transaction rows=815892 rssMB=210
+§MIGRATE_INDEX created=2057 sec=30 pageSize=16384
+§MIGRATE_VERDICT PASS rows-match-all-tables lossyNumeric=8 tables=925 peakRssMB=278
+§MIGRATE tables=925 rows=41302818 blobTables=12
+§MIGRATE rules AD_Rule=4 AD_Val_Rule=332 callouts=284 docTypeFlags=4/4 docTypes=52
+§MIGRATE flagged sequences=0 (dropped) functions=83 (skipped) triggers=4 (skipped) views=161 (snapshot=161, deferred)

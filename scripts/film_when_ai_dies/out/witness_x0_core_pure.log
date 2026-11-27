@@ -1,0 +1,10 @@
+  PASS C1 every core file as committed (125) is judged and gives no warning
+  PASS C2 isCore() equals `git ls-files <pathspecs>` for every tracked .js (3396 files, 0 differ)
+  PASS C3 RED: a planted Date.now() in erp/processes/InvoiceGenerate.js → ONE warning on its line and column (Date.now()@192:24)
+  PASS C3 RED: a planted fetch() too → TWO warnings, the second kind network (clock,network)
+  PASS C3 restoring the text clears the warning
+  PASS C4 the same text in a comment and in a string gives no warning
+  PASS C4 RED (scope): the same planted call in erp/kernel_ops.js (outside the list; the bare scan finds 8) gives no warning
+  PASS C4 a broken file mid-edit (does not parse) gives no warning and does not throw
+  PASS the save and open handlers are registered and do not throw on a core file
+§X0_CORE_PURE_W core_files=125 tracked_js=3396 judged=9 failed=0 verdict=PASS

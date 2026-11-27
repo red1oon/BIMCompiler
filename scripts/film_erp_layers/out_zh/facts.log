@@ -1,0 +1,10 @@
+§FACTS index §ERP_HOVER_INDEX entries=302 kinds={"callout":18,"callout-method":44,"validator":69,"handler":19,"column-callout":14,"model":68,"docaction":14,"process":56} legacy_files=161 parsed=306 skipped=0
+§FACTS session new ran
+§FACTS session plain ran
+§FACTS session old ran
+§FACTS doctype layers=20 callout=["CalloutOrder.docType","erp/callouts/CalloutOrder.js:97","CalloutOrder.java"] alt1=vscode://file/tmp/wt-f2-new/erp/callouts/CalloutOrder.js:97
+§FACTS dateordered old=["CalloutEngine.dateAcct","UNPORTED: no class registered for org.compiere.model.CalloutEngine"] new=["CalloutEngine.dateAcct","core (base class)","erp/ad_callout.js:477"] alt1=vscode://file/tmp/wt-f2-new/erp/ad_callout.js:477
+§FACTS memory with=48722670 without=49142580 delta=-419910 overlay=15678 index=66730
+§FACTS red {"falseUnported":17,"failed":true,"line":"§ERP_HOVER_W E2b false_unported=17 e.g. A_Depreciation_Entry.DateDoc callout:CalloutEngine.dateAcct | C_BankStatement.StatementDate callout:CalloutEngine.dateAcct | C_BankStatement"} fix {"falseUnported":0,"fields":12323,"unported":199,"verdict":"§ERP_HOVER_W VERDICT PASS","e2line":"§ERP_HOVER_W E2 fields=12323 with_layers=3311 callouts_and_processes_named=466 lines_resolved=6590 wrong_line=0 unresolved=0 unported=199 (distinct 169)","keys":"E4 keys tried=112 wrong_or_dead=0"}
+§FACTS credentials {"licence":"MIT License","repo":"github.com/red1oon/bim-ootb","prs":[{"n":"3055","state":"MERGED feat(devtools): hover an ERP field to see every layer of code behind it (F.22)"},{"n":"3057","state":"MERGED fix(devtools): ERP hover asks the engine whether a callout exists (no false UNPORTED)"},{"n":"3059","state":"MERGED fix(devtools): ERP hover - every number in the tooltip opens its line"}],"paperPriority":"2026-03-30"}
+§FACTS VERDICT PASS

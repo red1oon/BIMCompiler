@@ -1,0 +1,5 @@
+[
+ {"name":"cp_rate_multiply","window":116,"tab":0,"steps":[{"set":"MultiplyRate","value":"1.5"},{"set":"DivideRate","value":"3"}]},
+ {"name":"cp_so_dateordered","window":143,"tab":0,"steps":[{"set":"DateOrdered","value":"2026-09-15"}]},
+ {"name":"cp_so_dateordered_closed","window":143,"tab":0,"steps":[{"set":"DateOrdered","value":"2001-03-15"}]}
+]

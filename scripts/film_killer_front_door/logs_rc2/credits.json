@@ -1,0 +1,28 @@
+{
+ "lines": [
+  {
+   "id": "no_ai",
+   "shown": "No AI inside.",
+   "source": "docs/USER_GUIDE.md",
+   "found": "There is no AI and no LLM in this app."
+  },
+  {
+   "id": "mit",
+   "shown": "Open source, MIT licence.",
+   "source": "LICENSE",
+   "found": "MIT License"
+  },
+  {
+   "id": "paper",
+   "shown": "Earlier work, dated: the Spatial Compilation paper, priority date 2026-03-30",
+   "source": "docs/SpatialCompilationPaper.md",
+   "found": "Priority date: 2026-03-30",
+   "url": "https://red1oon.github.io/BIMCompiler/SpatialCompilationPaper/",
+   "http": 200,
+   "pageHasText": true,
+   "date": "2026-03-30",
+   "link": "red1oon.github.io/BIMCompiler/SpatialCompilationPaper/"
+  }
+ ],
+ "dropped": []
+}

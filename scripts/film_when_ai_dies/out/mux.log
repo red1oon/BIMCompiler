@@ -1,0 +1,2 @@
+§LOUDNORM_PASS1 input_i=-23.82 input_tp=-2.09 input_lra=3.80 input_thresh=-34.27 target_offset=1.07
+§MUX rc=0 clips=10 out=../film_voice.mp4

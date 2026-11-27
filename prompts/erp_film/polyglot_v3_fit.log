@@ -1,0 +1,60 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT g_ar cue=7.60 room=2.00 dur=1.28 -> DETAIL slack=+0.72 detailDur=1.28 words=2
+§NARR_TONE g_ar#0 F ! own=-2.6st rose=0st endDelta=-2.6st want=report OK "السلام عليكم!"
+§NARR_FIT s05 cue=57.31 room=9.71 dur=9.59 -> DETAIL x1.018 slack=+0.12 detailDur=9.88 words=19
+§NARR_FIT s14 cue=159.80 room=9.82 dur=9.37 -> DETAIL slack=+0.45 detailDur=9.37 words=14
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT g_de_DE cue=5.80 room=1.50 dur=0.76 -> DETAIL slack=+0.74 detailDur=0.76 words=2
+§NARR_TONE g_de_DE#0 M ! own=-8.1st rose=0st endDelta=-8.1st want=any OK "Guten Tag!"
+§NARR_FIT s04 cue=47.31 room=9.70 dur=9.51 -> DETAIL slack=+0.19 detailDur=9.51 words=16
+§NARR_FIT s13 cue=149.80 room=9.70 dur=9.36 -> DETAIL slack=+0.34 detailDur=9.36 words=18
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT g_en_US cue=0.00 room=1.50 dur=0.47 -> DETAIL slack=+1.03 words=1
+§NARR_TONE g_en_US#0 F ! rose=0st endDelta=+0.3st want=any OK "Hi!"
+§NARR_FIT s01 cue=17.30 room=9.70 dur=8.74 -> DETAIL slack=+0.96 words=27
+§NARR_FIT s10 cue=118.43 room=9.70 dur=8.35 -> DETAIL slack=+1.35 words=25
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT g_es_ES cue=3.60 room=1.90 dur=1.20 -> DETAIL slack=+0.70 detailDur=1.20 words=3
+§NARR_TONE g_es_ES#0 F ! own=-2.8st rose=0st endDelta=-2.8st want=any OK "¡Hola!"
+§NARR_TONE g_es_ES#0 F WH own=-7.4st rose=0st endDelta=-7.4st want=any OK "¿Cómo está?"
+§NARR_FIT s03 cue=37.31 room=9.70 dur=8.59 -> DETAIL slack=+1.11 detailDur=8.59 words=23
+§NARR_FIT s12 cue=139.80 room=9.70 dur=9.61 -> DETAIL slack=+0.09 detailDur=9.61 words=27
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT g_fr_FR cue=1.80 room=1.50 dur=0.61 -> DETAIL slack=+0.89 detailDur=0.61 words=2
+§NARR_TONE g_fr_FR#0 M ! own=-2.7st rose=0st endDelta=-2.7st want=any OK "Bonjour !"
+§NARR_FIT s02 cue=27.30 room=9.71 dur=9.38 -> DETAIL slack=+0.33 detailDur=9.38 words=24
+§NARR_FIT s11 cue=128.43 room=11.07 dur=9.77 -> DETAIL slack=+1.30 detailDur=9.77 words=26
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT g_ja_JP cue=11.70 room=1.50 dur=0.72 -> DETAIL slack=+0.78 detailDur=0.72 words=1
+§NARR_FIT s07 cue=77.89 room=9.70 dur=9.56 -> DETAIL x1.027 slack=+0.14 detailDur=9.96 words=5
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT g_ms_MY cue=13.50 room=1.50 dur=0.84 -> DETAIL slack=+0.66 detailDur=0.84 words=2
+§NARR_TONE g_ms_MY#0 M WH own=-0.7st rose=0st endDelta=-0.7st want=any OK "Apa khabar?"
+§NARR_FIT s08 cue=87.89 room=15.93 dur=15.77 -> DETAIL x1.009 slack=+0.16 detailDur=16.07 words=29
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT g_th_TH cue=15.30 room=1.70 dur=0.92 -> DETAIL slack=+0.78 detailDur=0.92 words=1
+§NARR_TONE g_th_TH#0 F ! own=+0.7st rose=0st endDelta=+0.7st want=report OK "สวัสดีค่ะ!"
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=29 -> 81d0b15bf6
+§NARR_FIT s09 cue=104.12 room=14.01 dur=12.17 -> DETAIL slack=+1.84 detailDur=12.17 words=12
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT g_zh_CN cue=9.90 room=1.50 dur=0.45 -> DETAIL slack=+1.05 detailDur=0.45 words=1
+§NARR_FIT s06 cue=67.32 room=10.27 dur=9.27 -> DETAIL slack=+1.00 detailDur=9.27 words=2
+§NARR_FIT s15 cue=169.92 room=9.70 dur=8.64 -> DETAIL slack=+1.06 detailDur=8.64 words=2

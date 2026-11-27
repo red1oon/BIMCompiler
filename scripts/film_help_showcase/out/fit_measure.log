@@ -1,0 +1,15 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT quote cue=0.00 room=998.70 dur=10.05 -> DETAIL slack=+988.65 words=30
+§NARR_TONE quote#0 F WH rose=0st endDelta=-0.3st want=fall OK "How much of the week goes into just looking things up?"
+§NARR_FIT before cue=0.00 room=998.70 dur=19.26 -> DETAIL slack=+979.44 words=55
+§NARR_TONE before#0 F WH rose=0st endDelta=-3.6st want=fall OK "What did a field tell you before?"
+§NARR_FIT ask1 cue=0.00 room=998.70 dur=15.84 -> DETAIL slack=+982.86 words=48
+§NARR_TONE ask1#0 F YN rose=5.0st endDelta=+4.3st want=rise OK "Can I just ask it?"
+§NARR_FIT link cue=0.00 room=998.70 dur=10.16 -> DETAIL slack=+988.54 words=33
+§NARR_TONE link#0 F YN rose=5.0st endDelta=+3.0st want=rise OK "And these steps?"
+§NARR_FIT ask2 cue=0.00 room=998.70 dur=9.59 -> DETAIL slack=+989.11 words=29
+§NARR_TONE ask2#0 F WH rose=0st endDelta=-5.0st want=fall OK "What about voiding a payment?"
+§NARR_FIT german cue=0.00 room=998.70 dur=14.51 -> DETAIL slack=+984.19 words=38
+§NARR_TONE german#0 F YN rose=11.0st endDelta=+2.5st want=rise OK "Does it speak German?"

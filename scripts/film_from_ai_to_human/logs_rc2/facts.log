@@ -1,0 +1,9 @@
+§FACTS status ok legacy.status
+§FACTS new_order ok erp.new kind=Order issotrx=Y c_doctypetarget_id=132 c_bpartner_id=112 salesrep_id=101
+§FACTS new_line ok erp.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2
+§FACTS compare ok erp.compare kind=Order number=50000 legacy=50981
+§FACTS column ok erp.column kind=Order column=C_ConversionType_ID
+§FACTS where ok idempiere.where symbol=InvoiceRule in=CalloutOrder limit=3
+§FACTS witness ok witness.run name=door_help
+§FACTS claim claim erp.new kind=Order issotrx=Y c_doctypetarget_id=132 c_bpartner_id=112 salesrep_id=101
+§FACTS wrote out/facts.json verbs=37 compare=70/4/7 column114=114 where=20 witness=PASS/8 claim=claim twinScriptLines=83

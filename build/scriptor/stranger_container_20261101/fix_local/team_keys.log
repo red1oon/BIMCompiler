@@ -1,0 +1,85 @@
+═══ W-KEYS — roles, threshold, bundle signing, time anchor (spec STAGE2_SPEC; review F5/F6/F7) ═══   root=/tmp/wt-stranger-fix team_keys=loaded
+
+── R: per-key roles (F5) ──
+   🟢 R1 the rotate-only recovery key ALONE replaces a lost owner key (rotation Ko->Kn signed by Kr) — MERGED:policy
+   🟢 R1 the folded list holds the new owner key and the recovery key WITH its role — ["owner","rotate-only"]
+   🟢 R2 the rotate-only key CANNOT publish an executors map — REFUSED:executors-role
+   🟢 R2 CONTROL: the owner key publishes the same map (the refusal is the role, not the map) — MERGED:policy
+   🟢 R3 a publish-only key CANNOT rotate the list — REFUSED:plan-trust-role
+   🟢 R3 CONTROL: the same publish-only key publishes an executors map — MERGED:policy
+   🟢 R4 a list nobody can publish with / rotate with is refused at founding — newSpace: invalid planTrust (no-publisher) | newSpace: invalid planTrust (no-rotator)
+   🟢 R4 an unknown role is refused (not silently treated as owner) — key
+   🟢 R5 preserved: an OUTSIDE signer is still refused — REFUSED:plan-trust-untrusted-signer
+   🟢 R5 preserved: a statement edited after signing is still refused — REFUSED:plan-trust-signature
+
+── T: signing threshold (F5) ──
+   🟢 T0 the genesis pins the threshold (roster.planTrustThreshold) — 2
+   🟢 T1 T=2: ONE signature on a rotation is REFUSED — REFUSED:plan-trust-threshold
+   🟢 T1 T=2: the SAME key signing twice counts once - REFUSED — REFUSED:plan-trust-threshold
+   🟢 T4 a forged cosignature (a signature over other content) is ignored, so the count falls short — REFUSED:plan-trust-threshold
+   🟢 T1 CONTROL: two distinct listed keys (both also in the new list, as T stays 2) sign - MERGED — MERGED:policy
+   🟢 T1 a rotation that omits `threshold` KEEPS the threshold in force (no silent downgrade) — 2
+   🟢 T2 T=2: ONE signature on an executors map is REFUSED — REFUSED:executors-threshold
+   🟢 T2 CONTROL: two distinct keys publish the map — MERGED:policy
+   🟢 T3 a rotation declaring T_new=2 with no 2 signers from the NEW list is REFUSED — REFUSED:plan-trust-new-threshold
+   🟢 T3 CONTROL: K1 (both lists) + K2 (old) + K4 (new) satisfy old T=2 and new T=2 — MERGED:policy
+   🟢 T5 a threshold larger than the keys able to meet it is refused — REFUSED:plan-trust-threshold-unreachable
+
+── B: bundle signing (F6) ──
+§BUNDLE_SIG id=kw.demo version=1.0.0 verdict=accepted digest=checked
+§PLUGIN-INSTALL id=kw.demo version=1.0.0 opId=null
+   🟢 B1 a bundle signed by an owner key installs and the registry reports signed=true (no unsigned badge) — installed
+§BUNDLE_SIG id=kw.demo version=1.0.0 verdict=accepted digest=checked
+§PLUGIN-INSTALL id=kw.demo version=1.0.0 opId=null
+   🟢 B1 a publish-only key may sign a bundle — installed
+§BUNDLE_SIG id=kw.demo version=1.0.0 verdict=bundle-unsigned digest=checked
+   🟢 B2 an UNSIGNED bundle is refused when the host requires signatures — bundle-unsigned plugin kw.demo: bundle-unsigned
+§BUNDLE_SIG id=kw.demo version=1.0.0 verdict=bundle-digest-mismatch digest=checked
+   🟢 B3 a bundle whose bytes differ from the signed digest is refused — bundle-digest-mismatch plugin kw.demo: bundle-digest-mismatch
+§BUNDLE_SIG id=kw.demo version=1.0.0 verdict=bundle-signer digest=checked
+   🟢 B4 a bundle signed by an OUTSIDE key is refused — bundle-signer
+§BUNDLE_SIG id=kw.demo version=1.0.0 verdict=bundle-role digest=checked
+   🟢 B5 a rotate-only key may NOT sign a bundle — bundle-role
+§BUNDLE_SIG id=kw.demo version=1.0.0 verdict=bundle-threshold digest=checked
+   🟢 B6 T=2 with ONE signature is refused — bundle-threshold
+§BUNDLE_SIG id=kw.demo version=1.0.0 verdict=accepted digest=checked
+§PLUGIN-INSTALL id=kw.demo version=1.0.0 opId=null
+   🟢 B6 CONTROL: T=2 with two signatures installs — installed
+§BUNDLE_SIG id=kw.demo version=1.0.0 verdict=bundle-identity digest=checked
+   🟢 B8 a signature made for ANOTHER version of the bundle is refused — bundle-identity
+§BUNDLE_SIG id=kw.demo version=1.0.0 verdict=bundle-signature digest=checked
+   🟢 B9 a corrupted signature is refused — bundle-signature
+§PLUGIN-INSTALL id=kw.demo version=1.0.0 opId=null
+§PLUGIN_UNSIGNED id=kw.demo version=1.0.0 source=u://b
+   🟢 B7 LEGACY: no bundleTrust => an unsigned bundle installs exactly as before — installed
+§BUNDLE_SIG id=kw.demo version=1.0.0 verdict=accepted digest=checked
+§PLUGIN-INSTALL id=kw.demo version=1.0.0 opId=null
+   🟢 B10 the BUILD STEP (erp/tools/sign_bundle.js) writes a signature the registry accepts — installed
+
+── A: the time anchor (F7) ──
+   🟢 A2 an admin-signed POLICY sets the anchor — MERGED:policy anchor=1793404800000
+   🟢 A2 an anchor that goes BACK is refused — REFUSED:anchor-skew
+   🟢 A2 an anchor that jumps > 366 days is refused (a typo cannot expire everything) — REFUSED:anchor-skew
+   🟢 A2 CONTROL: a 100-day step is accepted — MERGED:policy
+   🟢 A3 an op authored under a 2040 device clock does not move the anchor — anchor 1802044800000 -> 1802044800000
+   🟢 A1 with the device clock at 2040, entries expiring after the anchor are NOT expired (the clock is never read) — [false,false,false]
+   🟢 A1 CONTROL: the function does say "expired" when an admin-signed anchor is past the expiry — true
+   🟢 A4 no anchor yet => nothing is expired (and the verdict says so, never a guess) — false
+
+── L: spaces and statements written before this change keep loading ──
+   🟢 L1 a log written by the UNMODIFIED engine (rotation, executors map, a refused stale-signer map) folds to the IDENTICAL verdicts under the new engine — ops=5 differing=0 old: MERGED:policy / MERGED:policy / REFUSED:executors-untrusted-signer
+   🟢 L1 the folded trust list is byte-identical (no role field invented) — [{"crv":"P-256","kty":"EC","x":"nh9cAnxJClYq5vppagBKn7ouYX_c
+   🟢 L1 planTrustHash of a role-less list equals the old hash AND sha256(canonical(list)) - the `prev` chain is unchanged
+   🟢 L1 CONTROL: a role DOES change the hash (a role change is a signed rotation)
+   🟢 L1 a legacy space reads threshold 1 and no anchor — 1/null
+§KW_ARMS red=none judged=46
+   🟢 mutant role ignored on rotation -> red=R2,R3,B5 (expected R3)
+   🟢 mutant threshold ignored -> red=T1,T4,T2,B6 (expected T1)
+   🟢 mutant duplicate signer counted twice -> red=T1,T4 (expected T1)
+   🟢 mutant new-threshold check removed -> red=T3 (expected T3)
+   🟢 mutant bundle digest not compared -> red=B3 (expected B3)
+   🟢 mutant anchor skew check removed -> red=A2 (expected A2)
+   🟢 mutant isExpired reads Date.now -> red=A1,A4 (expected A1)
+   🟢 mutant planTrustOf drops the role -> red=R1,R2,R3,L1 (expected R1)
+   🟢 mutant executors judged with the rotate ability -> red=R2,R3 (expected R2)
+§KW_VERDICT PASS judged=46 mutants=9/9

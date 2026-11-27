@@ -1,0 +1,35 @@
+═══ W-FOLD-REVERSE — reverseCorrect annihilates the REAL fact_acct + FSM CO→RE (ORACLE-ANCHORED) ═══
+    forward = post_resolver (re-derived from source) · reversal = erp_engine.reversePosting · oracle = real fact_acct (client 11) · schema=101
+    §FIXTURES C_Payment(100) C_Payment(101) C_Invoice(102) C_Invoice(104) C_Invoice(105) C_Invoice(106)
+
+   🟢 FSM: from CO the reversal actions are legal and land on the right status — RC→RE RA→RE VO→VO legal@CO=[CL,RC,RA,RE,VO,PO]
+§FSM-REVERSAL from=CO RC→RE RA→RE VO→VO (terminal RE actions=[])
+
+   🟢 C_Payment(100) reverseCorrect → annihilates oracle, sides swapped — anchorDiff=0c residual=0c swapDiff=0c accts=2
+§FOLD-COMPLETE doc=C_Payment id=100 action=RC status=CO→RE postings=2 anchor=iDempiere(maxDiff=0c) reverseCorrect+original=NET-ZERO(residual=0c) oracle=iDempiere
+   🟢 C_Payment(101) reverseCorrect → annihilates oracle, sides swapped — anchorDiff=0c residual=0c swapDiff=0c accts=2
+§FOLD-COMPLETE doc=C_Payment id=101 action=RC status=CO→RE postings=2 anchor=iDempiere(maxDiff=0c) reverseCorrect+original=NET-ZERO(residual=0c) oracle=iDempiere
+   🟢 C_Invoice(102) reverseCorrect → annihilates oracle, sides swapped — anchorDiff=0c residual=0c swapDiff=0c accts=2
+§FOLD-COMPLETE doc=C_Invoice id=102 action=RC status=CO→RE postings=2 anchor=iDempiere(maxDiff=0c) reverseCorrect+original=NET-ZERO(residual=0c) oracle=iDempiere
+   🟢 C_Invoice(104) reverseCorrect → annihilates oracle, sides swapped — anchorDiff=0c residual=0c swapDiff=0c accts=2
+§FOLD-COMPLETE doc=C_Invoice id=104 action=RC status=CO→RE postings=2 anchor=iDempiere(maxDiff=0c) reverseCorrect+original=NET-ZERO(residual=0c) oracle=iDempiere
+   🟢 C_Invoice(105) reverseCorrect → annihilates oracle, sides swapped — anchorDiff=0c residual=0c swapDiff=0c accts=2
+§FOLD-COMPLETE doc=C_Invoice id=105 action=RC status=CO→RE postings=2 anchor=iDempiere(maxDiff=0c) reverseCorrect+original=NET-ZERO(residual=0c) oracle=iDempiere
+   🟢 C_Invoice(106) reverseCorrect → annihilates oracle, sides swapped — anchorDiff=0c residual=0c swapDiff=0c accts=2
+§FOLD-COMPLETE doc=C_Invoice id=106 action=RC status=CO→RE postings=2 anchor=iDempiere(maxDiff=0c) reverseCorrect+original=NET-ZERO(residual=0c) oracle=iDempiere
+   🟢 6/6 forward derivations RE-CONFIRMED == real fact_acct (anchor holds) — anchored=6
+   🟢 6/6 reverseCorrect postings ANNIHILATE the real oracle to the cent (CO→RE) — annihilated=6
+   🟢 reverseAccrual posting == reverseCorrect posting (only the booked DATE differs) — postingDiff=0c
+§FOLD-DEFERRED reverseAccrual date-shift — the next-OPEN-period date is the only delta; this fact_acct extract carries NO c_period/calendar table, so the booked date is unverifiable in seed (the posting negation IS proven, oracle-anchored).
+   🟢 §FALSIFIER-A same-sign (no Dr/Cr swap) → original+"reversal" DOUBLES, residual≠0 — residual=19700c
+§FALSIFIER-A doc=C_Payment id=100 mutation=no-swap residual=19700c (must be >0)
+   🟢 §FALSIFIER-B reversal posted to a wrong account → annihilation fails, residual≠0 — residual=9850c
+§FALSIFIER-B doc=C_Payment id=100 mutation=wrong-account residual=9850c (must be >0)
+   🟢 6/6 reversals ENACTED in sandbox (docstatus CO→RE) — sandbox=_sandbox_reverse.db
+   🟢 anchor untouched — every real client-11 doc still CO in the read-only original — anchorIntact=true
+§ENACT sandbox=_sandbox_reverse.db enacted=6/6 CO→RE anchorIntact=true
+
+§FOLD-RESIDUAL void(unposted)=status-only + reverseAccrual booked-date (no c_period in seed) + sales-invoice reverseCorrect (same fold, AP shown) — named. newVerbs=1 (reversePosting, the reversal RULE); fold-not-fork: forward derives + FSM reused.
+
+🟢 W-FOLD-REVERSE PASS — reverseCorrect emits the exact negation of iDempiere's real posting (annihilates to the cent), FSM CO→RE, enacted in a sandbox with the anchor intact.
+exit=0

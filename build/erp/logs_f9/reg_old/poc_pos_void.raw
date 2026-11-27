@@ -1,0 +1,25 @@
+═══ W-POS-VOID — void the POS sale; postings net to 0c, qty spine restored (W-FOLD-REVERSE recipe) ═══
+
+   🟢 fixture: POS order 100 CO on seed — docstatus=CO
+   🟢 fixture: POS invoice 100 (AR, issotrx=Y) — grandtotal=50.35
+   🟢 fixture: invoice has lines — lines=1
+   🟢 fixture: POS shipment (C-) linked to order 100 — docstatus=CO
+   🟢 fixture: shipment has lines — lines=1
+§POS-VOID fixture order=100 invoice=100 grandtotal=50.35 inout=100 shiplines=1
+   🟢 1. dispatchOrder(C_Order CO, VO) → ok, CO→VO — ok=true to=VO legal=["CL","VO"]
+§POS-VOID order=100 CO→VO group ops=2 chainOk=Y
+   🟢 2a. forward AR posting: all accounts resolved (no absent tokens) — absent=
+   🟢 2b. forward posting balanced: Dr == Cr — Dr=5035 Cr=5035
+§POS-VOID forward invoice=100 Dr=50.35 Cr=50.35 accounts=3
+   🟢 2c. POSTINGS NET TO ZERO: forward + reversal per account = 0c (annihilation contract) — maxNet=0c
+§POS-VOID postings-net=0c accounts=3 maxNet=0c
+   🟢 3. QTY-SPINE-RESTORE: on-hand after void == on-hand before sale (to the unit) — product=130 before=18 afterSale=17 afterVoid=18 restored=Y
+§POS-VOID qty-restore product=130 before=18 afterSale=17 afterVoid=18 restored=Y
+§POS-VOID onhand-restored=Y
+   🟢 4. backflush N/A: all shipped products are leaves (no BOM components) — no P- to reverse — products=130
+§POS-VOID backflush=N/A products-are-leaves=Y
+   🟢 §FALSIFIER: void an already-VO order is REFUSED (legal=[]) — reason=illegal-action legalActions=[]
+§FALSIFIER pos=void docstatus=VO action=VO refused=true reason=illegal-action
+
+🟢 W-POS-VOID PASS — legal set allows VO; postings net 0c; qty-spine restored; backflush N/A (leaf); falsifier double-void refused.
+exit=0

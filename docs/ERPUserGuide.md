@@ -96,6 +96,28 @@ flowchart TD
 
 ---
 
+## Other views of the same log — the lens family
+
+Every surface in this table reads the **same signed op-log** the windows write to; none keeps data of its own. A lens
+changes how you *see* the log, not what it says. **Kanban, Chat and Pivot are concept lenses:** they read the demo data
+and have no section of their own yet, so the table below is their documentation.
+
+| Lens | What you see | Open | More |
+|---|---|---|---|
+| **Data Globe · Glass · Gravity** | The bubbles front door and its two concept views | [erp.html](https://red1oon.github.io/bim-ootb/erp/erp.html) | *Quick start*, above |
+| **Dashboard** | Any window's records grouped, as donuts, a list or a timeline | the Dashboard tab of a window | §2 |
+| **Kanban** | Columns are document states; cards are real documents; dragging a card sends a status change, and only the moves that document's workflow allows are offered | [kanban_lens.html](https://red1oon.github.io/bim-ootb/erp/kanban_lens.html) | concept, demo data |
+| **Chat** | The log as a mobile-first conversation; each bubble is one real operation, and absent data is labelled *absent* | [chat_lens.html](https://red1oon.github.io/bim-ootb/erp/chat_lens.html) | concept, demo data |
+| **Pivot** | A read-only cross-tab; a cell opens its records; the result can be exported | [pivot_lens.html](https://red1oon.github.io/bim-ootb/erp/pivot_lens.html) | concept, demo data |
+| **Till & Kitchen** (the uniCenta twin) | A cash-register screen, a kitchen screen and a branch admin page; head office imports the sales and closes the day | [till.html](https://red1oon.github.io/bim-ootb/erp/till.html) · [kitchen.html](https://red1oon.github.io/bim-ootb/erp/kitchen.html) · [branch_admin.html](https://red1oon.github.io/bim-ootb/erp/branch_admin.html) | **[Till & Kitchen User Guide](TillUserGuide.md)**, §7 |
+| **Teams overlay** | Who did what, a chat that is the log, dashboard graphs | the overlay toggle | [Teams Overlay guide](TeamsOverlayGuide.md) |
+| **Tenancy · Occupancy · Tickets** | Leases, bookable rooms and service requests on the building's own geometry | the Tenancy section below | [HR · BIM · Asset guide](HRBIMAssetGuide.md) |
+| **Warehouse Walk** | The warehouse as a 3D model, picked bin by bin | the Warehouse pill | §10 |
+| **Excel report** | Your workbook is the report | the Excel Report process | §8, [NinjaExcel manual](NinjaExcelReport_UserManual.md) |
+| **Command line** | The same actions as one-line commands, for you or an AI | a terminal | [Fast Script Guide](FastScriptGuide.md) |
+
+---
+
 ## Initial Tenant Setup — born a new client *(LIVE)*
 
 This is iDempiere's **Initial Client Setup**, on our engine. Open **genesis.html**, give the new
@@ -139,6 +161,9 @@ if a window is absent for your role, that is correct, not a bug.
 
 ## 2. Bring your data in — the DIY box (Help → *Run it yourself*)
 
+> **Moving your company in?** The step-by-step guide for every source (Odoo · Business Central · SAP Business One) is the
+> **[Migration User Guide](MigrationGuide.md)**. This section is the overview.
+
 Migration is **delegate-to-install**: the browser never connects to your database. The **Help pill**
 opens one **About / Run it yourself (DIY)** box. On the DIY tab you **pick your source ERP → download
 its self-contained agent zip → run the commands its README gives you, in your own terminal → load the
@@ -149,9 +174,9 @@ row (nothing is faked). The README is the single "what to run" — you copy-past
 |---|---|---|
 | **Odoo** | `odoo_agent.zip` → `cd odoo_agent && npm install && node agent.js` → writes `odoo_chain.json` (the browser re-folds + verifies it) | **Client 12** — the full migrated Odoo catalog (**38 partners · 35 products · 27 sale orders**, `12-odoo.db`), books diffed to the cent |
 | **iDempiere** | `idempiere_agent.zip` → `cd idempiere_agent && npm install && node migrate_agent.js --masters` → writes `ad_masters.db` | **Client 13** — real PG-agent extraction, PKs re-banded |
-| **SAP** | on the roadmap (greyed "under construction") | **Client 14 "SAP Flights"** — PoC: the documented **SFLIGHT** flight-booking reference model (carriers → Business Partners, connections → Products) |
+| **SAP Business One** | **alpha**: `sap_agent.zip` → `cd sap_agent && node agent.js --url https://<server>:50000 --company <db> --user <user>` → writes `sap_export.json` (read only; [guide](MigrationGuide.md#sap-business-one-alpha)) | **Client 14 "SAP Flights"** — PoC: the documented **SFLIGHT** flight-booking reference model (carriers → Business Partners, connections → Products) |
 | **Oracle** | on the roadmap | **Client 15 "Oracle Scott"** — PoC: the canonical **EMP/DEPT (SCOTT)** schema (departments → BP Groups, employees → Business Partners) |
-| **MS Dynamics** | on the roadmap | **Client 16 "Dynamics Cronus"** — PoC: the Business Central **CRONUS** demo company (items → Products, customers → Business Partners) |
+| **MS Dynamics 365 Business Central** | **alpha**: no agent — Business Central's own Excel export (a configuration package) → **Migrate from Business Central (alpha)** ([guide](MigrationGuide.md#business-central-alpha)) | **Client 16 "Dynamics Cronus"** — PoC: the Business Central **CRONUS** demo company (items → Products, customers → Business Partners) |
 
 **Point an agent at your own server with environment variables** (defaults shown — every value is real):
 
@@ -332,9 +357,9 @@ the cent**, every phase `SeqNo` tracing to `sequence_rules.json`. See the **[BIM
 
 ### Authoring, editing, and importing the 4D/5D schedule
 
-The Time Machine's own topic — authoring a schedule (**`✎`**), the box-cube LOD toggle for large
+The Time Machine's own topic — the generated schedule, the box-cube LOD toggle for large
 buildings, What-if slips, direct Gantt editing (drag / resize / link / marquee-group-move /
-**⏪ Pull Back**), the standalone Schedule Editor, and Primavera P6 / MS Project import — is now
+**⏪ Pull Back**), and Primavera P6 / MS Project import — is now
 documented on its own page:
 
 **→ [Time Machine — the 4D construction timeline](TimeMachine.md)**
@@ -463,6 +488,120 @@ built-in pre-release test harness (§15).
   ReActivate unless the DocType allows it.
 - **Editable fields**: tap a field to edit. Changes are staged in a CRUD overlay. Hit **Save** to
   commit as a signed sidecar op.
+
+### Help on every field, and a question box *(LIVE)*
+
+- **Hover a field** to see its own description, the same text legacy iDempiere shows (the field's
+  Description in the dictionary). A field with no description shows no tooltip, as legacy does.
+- **Click into a field** and the **Tool Tip** panel on the right shows its name, its description and its
+  longer help. With nothing focused it says *Place your cursor into a field on the screen*. Click the panel's
+  title to fold it.
+- **How To**, under the Tool Tip, explains the window you have open. Every window of the trade cycle and the
+  books has one (see [The Help panel](#the-help-panel-what-to-have-in-place-and-a-check-before-you-complete) below).
+  A window name in it opens that window.
+  Running real iDempiere? The same How To text is available there as an add-on: [iDempiere add-on for the How To panel](https://github.com/red1oon/bim-ootb/tree/main/erp/legacy).
+- **Ask a question** in the box at the top of How To, in plain words, then press Enter, for example
+  *How do I close a Sales Order?* The answer card names the window (click it to open), the document action,
+  the statuses it is allowed from, the command line that does it where one is offered, and the guide
+  section. Every part is read from the dictionary; there is no AI inside.
+- **In your language:** choose it in the header (or at login). Field help comes from the published iDempiere
+  language packs: French, German, Chinese and Japanese today. A field the pack does not cover stays in
+  English, as in legacy. Questions can be asked in that language too, e.g. *如何关闭销售订单？*. The How To
+  steps are in Chinese as well; they were translated by the build, not by a native speaker, and say so. The
+  pack's own words are shown unchanged, even where they read oddly (the Chinese pack calls Void 空白).
+- **At the command line**, the same question works: `ask "How do I close a Sales Order?"` at the `red1`
+  prompt, or the door line `erp.ask question="…"`. The language is your saved preference when you are
+  logged in, else your terminal's `LANG`, else the system's; `lang=zh_CN` chooses one. It only reads.
+
+> *Proven by* **W-FIELD-HELP** (every displayed field's text equals the real legacy `AD_Field_v`, 15,849 of
+> 15,849), **W-HELP-SHOWCASE** (packs extracted from the published packs, the question sets in English and
+> Chinese, the links) and **W-ERP-ASK** (the same answers at the command line, and the language order).
+
+### The Help panel: what to have in place, and a check before you complete
+
+**What a newcomer needs.** Before pressing an action, you need to know two things: what must already be in
+place, and what the action will do. The Help panel tells you both, for every window. With the **Friendly**
+plugin switched on, it also checks the document in front of you and shows what would stop it.
+
+**Opening it.** Press **?** on the right-hand strip. The panel opens on the right. Its top line links to this
+guide (the section for the window you are on), the guided **Tour**, and **About / Run it yourself**.
+
+**What every window shows (for everyone).** The window's own description comes first, exactly as in
+iDempiere. Below it:
+
+- **Before you start**: the records that must exist first, each a link to the window where you make it
+  (for a Sales Order: document type, customer and address, warehouse, price list, sales rep, payment term).
+- **Do it**: the tabs in the order you fill them, then the action that finishes the job.
+- **What Complete does**: what Complete makes and changes, by kind of document. For example, a POS Order
+  also creates the shipment and the invoice; a Standard Order reserves the stock.
+
+The reasons that can stop Complete are not listed here: a fixed list of everything that could go wrong hides the
+one thing that is wrong. With the Friendly plugin on, **Check** (below) lists the ones that apply to your document.
+
+This text is read from iDempiere's own rules, and each line traces to the code it comes from. iDempiere users
+get the same text in their own system through a small help script, the [iDempiere add-on for the How To panel](https://github.com/red1oon/bim-ootb/tree/main/erp/legacy) (what it changes, and how to install it).
+
+**Check before you complete (Friendly plugin).** Press the light-bulb **Check** in the panel. It runs the same
+Complete on your document as a trial, and nothing is saved. It then lists everything that would stop it, not
+only the first thing:
+
+> **Before you complete: 2 to fix**
+> 1. Period Closed
+> 2. Business Partner is on Credit Hold - Open Balance=269.23, Credit Limit=10000 · **Open**
+
+The field each problem is about turns red (here *Date Ordered* and *Business Partner*), and **Open** takes you
+to the record that fixes it. iDempiere tells you these one at a time, only after you press Complete.
+
+**▶ Fix.** When one field value would clear a problem, the panel offers it, for example
+*▶ Fix 1: Date Ordered → today*. Pressing it fills that field as if you had typed it, and the panel checks
+again. Some rules:
+
+- A fix is offered only after the check has tried it and seen the problem go away.
+- It changes only a field of the document you are on. It never completes, posts or runs a process.
+- Nothing is saved: **Save** keeps it, **Undo Changes** puts the old value back.
+
+**Checking while you work.** With the Friendly plugin on, a saved document is checked by itself when you open
+it and after each save. The number of problems shows on **?** (and on **⋯** while the strip is folded).
+For a problem on a line, **Show line N** jumps to it, and **Show lines with issues** shows only those lines
+(**Show all lines** brings the rest back). The switch *Checking while you work* in the panel turns it off.
+
+**What is covered.** All 15 kinds of document in the core windows are checked, including Requisition, Payments into
+Batch, Ship/Receipt Confirm and Bank/Cash Transfer. If the form has unsaved changes, **Check** asks you to save
+first.
+
+> *Proven by* **W-HELP-PEEK**. After every check the data is byte-for-byte the same, and the check always agrees
+> with what Complete then does. It also checks that every problem is listed in iDempiere's order, that the fields
+> are marked on screen, and that **Open** lands on the right record. Each fix is tried before it is offered, and
+> saving it lets Complete pass. All 9 fixes were tried on a document that really stops there (a date in a closed
+> period on six kinds of document, a date older than the allowed back-dating on a movement, a wrong control
+> amount on a journal and on a journal batch). Without the plugin there is no check at all.
+> *The same idea elsewhere:* Microsoft Business Central checks journals and documents while you work and
+> offers recommended fixes. SAP's purchase order has a **Check** button. Here the check runs the very same
+> Complete, so the two cannot disagree.
+
+#### Developer note: how the help is organised in its own files
+
+Help content never goes into `ad_seed.db` and never into legacy iDempiere: it lives in the ERP twin as
+separate files, one per language, fetched only when that language is chosen. Each concern has one file.
+
+| File (bim-ootb) | What it holds or does |
+|---|---|
+| `erp/field_help.js` | The ONE tooltip setter and the Tool Tip panel (a port of legacy `WEditor` / `HelpController`). Every field-render path calls it. |
+| `erp/help_search.js` | The question box: a question becomes an answer card. `indexFrom()` builds the index from the dictionary and a help pack; the page, the witnesses and `erp.ask` all call it. No page code, so it runs in Node. |
+| `erp/i18n/help/<lang>/help.json` | The help pack of one language. `en_US`: the how-to rows and the document actions. Other languages: field Description/Help (each text stored once, fields point at it), the names of windows, tables, actions and statuses, and translated how-to rows where they exist. Loaded by `ErpI18n.loadHelp(lang)`, cached by the service worker. |
+| `erp/tools/build_help_pack.js` | Builds every pack: the published language packs (the same pinned sources as `build_i18n.py`, legacy's `SynchronizeTerminology` rule), `ad_seed.db`, `common/door/verbs.json`, and the trade-cycle sections of this guide. |
+| `erp/tools/help_howto_<lang>.json` | A translated how-to source (today `zh_CN`), marked as the build's translation, its English sentences kept beside it. |
+| `erp/i18n/chrome.json` (`help.*` keys) | The answer card's labels: the dictionary's own names where one exists (Window, Document Action), otherwise marked machine entries. |
+| `common/door/lang_rule.js` | The command line's language order (preference, `LANG`, system), written once. |
+| `common/door/erp_cli.js` (`ask`) and `common/door/vocab/hand.json` (`erp.ask`) | The command-line verb; `verbs.json` is composed from `hand.json` by `scripts/compose_door_verbs.js`. |
+| `erp/tests/fixtures/help_questions.json` | The question sets (English, Chinese) that the page and the command-line witnesses both read. |
+
+**To add a language:** add its pinned source to `SOURCES` in `build_help_pack.js`, run
+`node erp/tools/build_help_pack.js` and read its `§HELP_PACK` lines, then run
+`node erp/tests/witness_help_showcase.js` (S1 checks every text against the published pack).
+**To add how-to steps:** write the section in this guide, add its window and heading to `HOWTO` in the
+builder; for a translation, add a row to `help_howto_<lang>.json`. Spec and results:
+`prompts/VOCAB_MESSAGE_CATALOG.md` §7 and §10–§13.
 
 ---
 
@@ -616,112 +755,10 @@ this guide's walkthrough stays the trade cycle.
 
 ## 7. POS — Point of Sale
 
-**Prerequisite:** log in as **GardenUser** (the POS station `c_pos_id=1` is scoped to that role).
-Tap the **POS** pill in the bottom bar (it appears only when the loaded db has a `c_pos` station).
-
-### POS screen layout (the killer-demo surface)
-
-- **Album cards** — the product grid is a photo album: each card
-  from `c_poskey → m_product` (the sealed keylayout) shows its photo (full-res from the device images
-  folder → ledger thumbnail → placeholder glyph, honestly tiered) and its master price from the
-  station's pricelist — you ring the master, not a manual price.
-- **Floating payment panel** — the cart pill summons a floating panel on its own layer;
-  tap the cart pill again to dismiss it. The album keeps
-  scrolling underneath; payment never squeezes the grid.
-- **Panel lifecycle** — **swipe-down** to dismiss, and it **follows the cart**: when the cart empties
-  — sale completed, or the last line removed — the panel dismisses itself. The cart pill re-summons it
-  anytime. Dismissing is pure UI: it never touches
-  the cart contents or a committed sale (the sale is sealed atomically at Complete, before the panel
-  ever moves).
-
-![POS — Garden User · Store: product grid left, live cart right, replenishment suggestions below](figs/pos_live.png)
-
-### Payment panel layout (top-bar total + single Pay)
-
-The panel is a **draggable** float, stripped to the essentials:
-
-- **Top bar — the running total.** The top row shows the **live cart total**,
-  updating as you ring items. The **cart icon** stays on the left (tap it to summon/dismiss the panel);
-  the **scan-QR** button sits on the **right** (opens the
-  barcode overlay to add an item).
-- **One Pay icon.** A single **Pay** icon (right) **completes the sale directly**
-  — there is no pre-completion preview modal (the earlier orange/green rim drawers + receipt-preview
-  modal are retired). The walk-in partner is **defaulted** (the **Standard** business partner, else
-  first active — `§POS-PARTNER-DEFAULT`), so Pay works out of the box.
-- **Draggable.** Grab the panel header to reposition it (`§POS-FLOAT-DRAG moved=Y`); the album keeps
-  scrolling underneath, payment never squeezes the grid.
-- **⋯ dock** (bottom-right, reveal-up, taps-outside close it) — the secondary actions live here:
-  **home**, **import** (register a product — the `(+)` glyph), **receipt** (re-open the last receipt,
-  appears after a sale), and **Deliver later** (the WH-walk `route` glyph; dictionary-gated — present
-  only when the loaded db has an `SO` doctype — opens the warehouse walk in a new tab).
-
-### Making a sale
-
-1. Tap a product card (or **scan** from the top bar) → it is added to the cart at the sealed price.
-2. Tap again to increment qty, or edit qty in the line.
-3. Review the **running total** in the top bar (BigDecimal fold of line amounts, never a posted figure yet).
-4. Tap **Pay** (`#pos-float-tender`) → the sale **completes directly** into one signed op-group
-   (`§POS-SALE … newVerbs=[] chainOk=Y` — the receipt shows `signed=Y`). No partner prompt — the
-   Standard partner is used unless you pick another.
-5. The receipt opens in its own overlay (re-openable via the **receipt** entry in the ⋯ dock) and the
-   payment panel dismisses itself — the sale is already closed: one signed op-group, nothing left pending.
-
-!!! note "Audio earcons"
-    Subtle earcons sound on key POS actions — ring an item, Pay, sale-complete (`§POS-AUDIO`) — via the
-    shared synth engine reading `sfx.json` (data rows, `ui_clicks:false` so there is no per-button
-    spam). They no-op silently if the sound engine is absent.
-
-!!! tip "Barcode scan distance"
-    The scan overlay shows the hint **"Hold steady · 10–15 cm from barcode"** on open.
-    Barcode scanning works best at 10–15 cm from the label. Some Android phones apply macro focus
-    automatically (Chrome-only; Safari degrades silently — typed fallback always works).
-
-### Register a new product at the till — the Import pill (§P-9)
-
-The **Import** pill opens the snap+scan+price flow: photograph the item (camera, downscaled to a
-≤32KB ledger thumbnail; the full-res photo goes to the device images folder under a
-`sha256:` content address — `§POS-IMGKEY`), scan or type its barcode, key the price. **Register**
-commits ONE signed group of 4 CRUD_CREATE ops — M_Product, M_ProductPrice (station pricelist),
-AD_Image, C_POSKey — every default EXTRACTED from the dictionary and the station's own rows.
-The new card appears in the album and rings
-immediately through the unchanged sale path. A duplicate barcode is refused and the existing
-product handed back (propose-merge). Editing name/price/photo later rides the same signed path,
-changed columns only.
-
-### Hold / recall (§P-13)
-
-**Hold** parks the in-progress cart as a real `DR` C_Order — the same ledger row the Sales Order
-window and Kanban read, not a private store (`§POS-HOLD park order=… listed window=Y kanban=Y`).
-**Recall** is a plain query of the held orders; completing a recalled sale completes THE held
-order (never a duplicate — exactly one C_Order exists, witnessed).
-
-The "Complete" creates ONE signed op-group:
-
-```
-CREATE_DOCUMENT  C_Order  (the POS sale order)
-CREATE_LINE      C_OrderLine  (one per cart line)
-SET_STATUS       C_Order → CO
-CREATE_DOCUMENT  M_InOut  (shipment, policy-gated)
-CREATE_LINE      M_InOutLine
-SET_STATUS       M_InOut → CO
-CREATE_DOCUMENT  C_Invoice  (invoice, policy-gated)
-SET_STATUS       C_Invoice → CO
-CONSUME          M_Transaction P−  (one per BOM leaf, the backflush)
-```
-
-### Kitchen Display
-
-The **Kitchen** pill (visible at a POS station) shows every order currently waiting to be served —
-the same *deliver-later* shipments described in [§S-2b](#deliver-later-pick-at-the-warehouse-s-2b),
-but for a kitchen counter rather than a warehouse pick. The queue is a live view of the ledger, not a
-separate list: as soon as a sale is rung with **Deliver later**, the ticket appears here, oldest first.
-
-- **Queue order is first-in-first-out** — the ticket that's been waiting longest is always at the top.
-- Tap **Serve** on a ticket once the order is ready. This completes the same shipment the Warehouse
-  Walk would otherwise pick — serving from the kitchen and picking from the warehouse are two doors
-  onto the same document, so a ticket can only be served once (a second tap is refused).
-- Nothing here is a separate order type — no new sale action exists for "send to kitchen"; any
-  deliver-later sale automatically becomes a kitchen ticket.
+> **The in-ERP POS pill was removed on 2026-11-03.** Selling now happens on the standalone uniCenta-style till and
+> kitchen screen; head office imports their sales with **Import POS Sales** and **Branch Day Close**. The full
+> walkthrough (cashier, branch manager, head-office clerk) is the
+> **[uniCenta-style Till & Kitchen Screen — User Guide](TillUserGuide.md)**.
 
 ### Backflush (§P-3)
 
@@ -733,7 +770,7 @@ expands the recipe and adds a `CONSUME P−` op for every leaf component. The on
 
 Replenishment is a **staged, reviewable action** — nothing reorders automatically after a sale.
 
-1. Tap **Generate Replenishment** in the POS panel. The system folds every sale and movement to
+1. Run the **Replenish Report** (it is also step 2 of **Branch Day Close**, see the [Till guide](TillUserGuide.md)). The system folds every sale and movement to
    find current on-hand per product, compares it against each product's stock policy
    (`Level_Min`/`Level_Max`), and proposes an editable staging list — nothing is committed yet.
 2. **Review the list.** Adjust the quantity on any row, or deselect a row you don't want ordered
@@ -745,7 +782,6 @@ Replenishment is a **staged, reviewable action** — nothing reorders automatica
    outstanding. Anything already ordered this round is never re-ordered, even if you generate
    again before it arrives.
 
-*(Screenshot pending — see `docs/figs/pos_live.png` for the general POS panel in the meantime.)*
 
 ---
 
@@ -770,6 +806,7 @@ Tap the **Excel Report** pill (grid icon ▦) on the iDempiere bottom bar. This 
 workbook into a live report over the open tenant — Excel stays the designer (layout, formatting,
 subtotals, charts: zero learning curve, it *is* Excel); the lens is only the **binder** that fills
 the data cells from the database. No Jasper, no print-format authoring, no server.
+The full walk-through for report authors is the **[NinjaExcel Report — User Manual](NinjaExcelReport_UserManual.md)**.
 
 One workbook, three sheets:
 
@@ -830,11 +867,10 @@ shows any warnings, and **Emit & Install** stages them into the live tenant — 
 in the menu immediately. Don't know the grammar? **Download starter template** gives you a filled
 two-table shell to learn from and edit.
 
-**Reverse — export an existing window (🔧 proposed).** Point at a window or menu already in the AD
-and export its definition *back* into the same sheet/bundle, edit it in Excel, and re-emit. This is
-the literal **PackOut**, and it's the more common need — most customizations start as "a window like
-Business Partner, plus three fields," not a blank sheet. *Status: designed, not yet built — the
-`extractModel(db, AD_Window_ID) → model` verb (the clean inverse of the sheet parser).*
+**Reverse — export an existing window (✅ live).** In the Ninja pill, pick a window already in the AD
+from the list and press **Export**: its definition is written *back* into the same sheet format, you edit it
+in Excel, and re-emit. This is the literal **PackOut** — most customizations start as "a window like Business
+Partner, plus three fields," not a blank sheet.
 
 ### One bundle = structure + behavior
 
@@ -900,6 +936,91 @@ backup**, and a **teaching sample** — versionable in git, not a DB dump or an 
 > share only the spreadsheet-reading code.
 
 ---
+
+### Getting plugins running — what starts by itself, what you switch on, and what depends on what
+
+A plugin is one file (a bundle) that adds windows, processes or rules to the ERP while it runs. Nothing
+is installed on a server: each browser keeps its own list of plugins and their state.
+
+**Where to look.** Two doors open the same list:
+
+- the **Plugins & Releases** link on the login screen (beside *System Monitor*): the list in the layout
+  iDempiere administrators know from the OSGi console (Id, Name, Version, Status, Actions);
+- the **Plugin Engine** pill (🔌) in the bottom bar.
+
+**Who may change it.** Every role can see the list. Only the **System Administrator** role gets the
+Install, Start, Stop and Uninstall buttons (log in as *SuperUser / System*). Other roles see
+*Read-only* above the list.
+
+**What you have to do, by plugin:**
+
+| Plugin | State on a first visit | What you do |
+|---|---|---|
+| Ninja Excel Report | starts by itself | nothing |
+| Ninja (model from Excel) | starts by itself | nothing |
+| BIM Document (project deliverables) | starts by itself | nothing; its window is in the menu and as a tab under Project → Task |
+| Ninja data migration (Migrate Excel Data) | installed, **stopped** | **Start** it before any migration |
+| Migrate from Odoo | installed, stopped | Start *Ninja data migration* first, then Start this one |
+| Migrate from Business Central (alpha) | installed, stopped | same: *Ninja data migration* first |
+| Migrate from SAP Business One (alpha) | installed, stopped | same: *Ninja data migration* first |
+| Web Services (ADInterface) | installed, stopped | Start it when you want the web service endpoints |
+| POS integration (head office) | installed, stopped | Start it at head office only |
+| Micro Finance lens (home page) | installed, stopped | Start it if you use it |
+| Friendly operations | not installed, offered in the list | Install, then Start |
+
+The three that start by themselves do so **once per browser**. After that your own choice is kept: a
+plugin you stop or uninstall is not brought back on the next visit. Clearing the site's data starts
+the first visit again.
+
+**Do I need Ninja switched on before the others?** Mostly no, and it helps to know there are three
+different Ninja plugins:
+
+- **Ninja (model from Excel)** builds a module from a workbook. No other shipped plugin needs it.
+- **Ninja Excel Report** turns a workbook into a report. No other plugin needs it.
+- **Ninja data migration** loads master data and opening balances from a workbook. **The three
+  "Migrate from …" plugins do need this one.**
+
+Why: each migration plugin is only a reader. It reads the other system's export and turns it into the
+same 17-sheet workbook; the loading into the books is done by one loader, the Ninja data migration
+process. There is one loader on purpose, so a migration from Odoo, Business Central or SAP is checked
+by the same code and cannot drift apart. If the loader is stopped, the migration form opens but tells
+you: *Start the plugin "Ninja data migration" first*. Nothing is loaded until you do.
+
+BIM Document, Web Services, POS integration, Friendly operations and the Micro Finance lens stand on
+their own. They need no Ninja plugin.
+
+**If a plugin does not appear or will not start.** Open *Plugins & Releases* and read its Status:
+*Active* is running, *Resolved* is stopped (press Start), *Installed* has never been started. A start
+that fails undoes itself completely and names the reason in the browser console on a line beginning
+`§PLUGIN-START-FAILED`.
+
+#### For developers — what a plugin must and must not do
+
+- **One file, three exports:** `manifest`, `activate(ctx)`, `deactivate(ctx)`. A worked example and the
+  full contract are in bim-ootb `erp/plugins/README.md`.
+- **Dictionary rows go in the manifest** (`manifest.dictionary`: tables, columns, windows, tabs, fields,
+  processes, menu). The host stages them when the plugin starts and removes them when it stops. Give
+  them ids in your own band; the shipped bands are checked by the witness W-PLUGIN-ID-BANDS.
+- **Do not write access rows for your own window, process or form.** When a plugin starts, the host
+  gives every active, non-manual role its access by the record's access level, the way legacy's pack-in
+  does (`PackInHandler.updateRoleAccess`). A plugin that also inserted its own `AD_Window_Access` rows
+  hit the unique key and failed to start (this happened to BIM Document in November 2026). If you ship
+  access rows for a role other than the login role, the host treats your list as explicit and adds
+  nothing.
+- **Declare what you need.** `manifest.requires = { 'other.plugin.id': '>=1.0.0' }` makes the host refuse
+  the start with a clear message until that plugin is active. The three migration plugins do not
+  declare the loader today; they check for it when the form opens and say so there. Either way, tell
+  the user.
+- **Actions belong in the dictionary, not in a side panel.** A record action is an `AD_Process` behind
+  a Button column, so it appears under the gear, gets a process log and role access, and is counted by
+  the tools that read the dictionary. The witness W-PLUGIN-AD-ACTIONS fails a bundle that registers
+  actions any other way.
+- **A process that produces a file** hands it back with `this.processUI.download(name, bytes, mime)`.
+- **Which plugins start by themselves** is two lists in `erp/plugin_overlay.js`: `BUILTINS` (installed
+  and started once) and `INSTALL_ONLY` (installed, left stopped). Offers shown in the list are
+  `PluginOffers` in `erp/osgi_console.js`.
+- **Prove it in a page.** Start your plugin in a real browser run and read the log. A plugin can pass
+  every headless check and still fail to start in the page.
 
 ## 10. Warehouse Walk
 
@@ -1079,7 +1200,6 @@ needed if you see an old `CACHE_VERSION` number in the console.
 
 | Gap | Condition | Fix |
 |---|---|---|
-| **Trial Balance shows 0 rows** on default `ad_seed.db` | `fact_acct` table not in seed (Postgres-only source) | Load `?db=preview_demo.db` or run `prompts/MIGRATE_POSTING_CONFIG.md` |
 | **Posting Preview** empty | Same — acct linkage absent in default seed | Same fix |
 | **POS live ring to the cent** | posting-config needed for the live ring | `MIGRATE_POSTING_CONFIG.md` |
 | **T_Aging / T_ReportStatement** folds | 13 `T_*` temp-table folds not yet built | Phase B §H-7..§H-11 (future) |
@@ -1089,12 +1209,11 @@ needed if you see an old `CACHE_VERSION` number in the console.
 
 | Gap | Engine status | UI status |
 |---|---|---|
-| `AD_Callout` derived fields on field-change | ✅ engine ready | Render-wiring parked |
-| `AD_Val_Rule` picklist filter | ✅ engine ready | Render-wiring parked |
+| `AD_Callout` derived fields on field-change | ✅ engine ready | ✅ wired to field changes |
+| `AD_Val_Rule` picklist filter | ✅ engine ready | ✅ reaches the live pickers |
 | `AD_Workflow` node-walk | 🟡 `ad_workflow.js` built, no seed activity oracle | Parked |
 | Column-level / Record-level access | `AD_Column_Access` / `AD_Record_Access` empty in seed | n/a |
 | 454 SvrProcess handlers | 5 registered, 454 named-deferred | Honest absent-handler card shown |
-| `stale fork`: `report_overlay.js` in bim-ootb | 256 vs 908 lines in build/erp — lacks foldStatement/foldPrint | Needs sync + sw bump |
 
 ### Coverage matrix summary (2026-06-12)
 

@@ -1,0 +1,19 @@
+═══ W-FOLD-PRODUCTION — MProduction movement fold (P+/P- ride the proven qty spine) — RULE-CONSISTENT ═══
+    verbs = explodeBOM + movementSign + qtyOnHand (all PROVEN) · NO fact_acct oracle (m_production=0) · enact-only
+
+§PROD-SCENARIO produce = [Patio Chair(133)×30, Fertilizer #50(136)×40] (qty anchored to real c_orderline)
+
+   🟢 produce Patio Chair ×30 → finished +30, 6 leaves decremented (NESTED) — finishedDelta=30 leafSigns=all −used
+§FOLD-PRODUCTION parent=Patio Chair(133) Q=30 P+1/P-6 finished=+30 Σleaf-consumed=−35160 tier=RULE-CONSISTENT(no-oracle)
+   🟢 produce Fertilizer #50 ×40 → finished +40, 5 leaves decremented (NESTED) — finishedDelta=40 leafSigns=all −used
+§FOLD-PRODUCTION parent=Fertilizer #50(136) Q=40 P+1/P-5 finished=+40 Σleaf-consumed=−40 tier=RULE-CONSISTENT(no-oracle)
+   🟢 2/2 enacted productions fold the P± ledger through the qty spine (finished +Q, leaves −used) — ok=2
+   🟢 §FALSIFIER-A flip one component P- → P+ (wrong polarity) → that leaf goes +used not −used — leaf=#6-32 x 3/8 Socket Head Cap Screw got=480 expected=−480
+§FALSIFIER-A doc=M_Production mutation=flip-component-polarity leaf=50002 got=480 (must ≠ −480)
+   🟢 §FALSIFIER-B flat (non-recursive) explosion → consumes the wrong component set (misses sub-assembly leaves) — recursiveLeaves=6 flatLeaves=4
+§FALSIFIER-B doc=M_Production mutation=flat-explosion recursiveLeaves=6 flatLeaves=4 (must differ — recursion load-bearing)
+
+§GL-DEFERRED Doc_Production GL (DR finished {Product.Asset} / CR component {Product.Asset} at cost) — the cost-selection RULE is proven (W-FOLD-MOVEMENT) but the LEAF-component m_cost DATA is absent in this seed (only finished goods + traded items carry cost), so the component-cost CR side cannot be valued without inventing. The production MOVEMENT fold is proven; the cost-valued GL is named, not faked.
+
+🟢 W-FOLD-PRODUCTION PASS — RULE-CONSISTENT: enacted MProduction P± ledger folds through the proven qty spine (finished +Q, leaves −used); closes the StorageOnHand DECREMENT that backflush/qtyonhand deferred. GL named-deferred (component cost absent in seed). NOT claimed == iDempiere.
+exit=0

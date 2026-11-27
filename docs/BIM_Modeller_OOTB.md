@@ -8,6 +8,13 @@
 <b>A modeller is not a program that writes files.</b> It is an interactive log of operations applied to a database. The browser is the ideal runtime for this log.
 </div>
 
+> **Status, November 2026.** This page is the founding argument. The Modeller it argues for now exists: the
+> operation log is the signed op-log, every edit is one signed operation, **Ctrl+Z / Ctrl+Y and the history
+> scrubber** replay it, and **Team mode** puts two browsers on one model. Its geometry kernel is **occt-wasm
+> (OpenCascade)** with a 2D sketch solver, not the Manifold library proposed below. For what you can do with it today, see the
+> [Modeller guide](ModellerGuide.md) and the [10-minute First Steps](ModellerFirstSteps.md); for the log itself,
+> [Geometry as a Signed-Log Fold](ModellerKernelFold.md).
+
 ---
 
 ## The Claim
@@ -123,7 +130,7 @@ All modelling reduces to three composable primitives:
 
 **The profile is an `M_Product`.** Common cross-sections — rectangular, circular, L-shape, C-shape, hollow box — are stored as `M_Product` rows with `IsBOM=N` and a `profile_vertices` BLOB (a 2D polyline in the product's local plane). This means a profile is not hardcoded geometry. It is a catalog entry: swappable by `M_Product_Category`, priced via `M_PriceList`, jurisdictionally constrained by `AD_Val_Rule`, and replaceable at the order level via `C_OrderLine` exception. The Extrude primitive becomes: look up the profile product, extrude its vertices by depth, write the resulting mesh to `component_geometries`. Changing the profile is a product swap — the same Configure-to-Order pattern the ERP layer uses everywhere.
 
-**Boolean operations use Manifold.** [Manifold](https://github.com/elalish/manifold) is a C++ geometry library (Apache 2.0, active maintainers, used in Blender 3.x+) with a pre-built WASM target. It handles union, subtraction, and intersection on triangle meshes robustly and fast — without OpenCascade, without CGAL, without the GPL. A Web Worker loads the Manifold WASM module, applies the Boolean to the two input geometry BLOBs, and writes the result as a new `component_geometries` row. The originals are not deleted — they are marked `hidden=1` in `elements_meta`, preserving the operation history for undo.
+**Boolean operations (as first proposed: Manifold).** [Manifold](https://github.com/elalish/manifold) is a C++ geometry library (Apache 2.0, active maintainers, used in Blender 3.x+) with a pre-built WASM target. It handles union, subtraction, and intersection on triangle meshes robustly and fast — without OpenCascade, without CGAL, without the GPL. *(The shipped Modeller chose occt-wasm instead, for real B-rep cuts and fillets.)* A Web Worker loads the Manifold WASM module, applies the Boolean to the two input geometry BLOBs, and writes the result as a new `component_geometries` row. The originals are not deleted — they are marked `hidden=1` in `elements_meta`, preserving the operation history for undo.
 
 ### Constraints as SQL Queries
 
@@ -295,8 +302,8 @@ To claim "browser is a better modeller" rather than "browser is a capable modell
 |---|---|---|
 | **1. Reparametrizable elements** | Wall height change → scene repaint from updated recipe, no re-import | `kernel_ops` + geometry hash invalidation + Web Worker |
 | **2. Constraint maintenance** | Move a column → attached beams follow via constraint propagation | `AD_Val_Rule` SQL + `kernel_ops` dependency tracking |
-| **3. Infinite undo/redo** | From `kernel_ops` log replay, survives page reload | `bim_changelog` table + `kernel_ops` ordered by id |
-| **4. Collaborative session** | Two browsers, same DB, peer-to-peer delta sync | IndexedDB + WebRTC DataChannel + CRDT on op log |
+| **3. Infinite undo/redo** | From `kernel_ops` log replay, survives page reload | `bim_changelog` table + `kernel_ops` ordered by id *(undo/redo and the history scrubber replay the signed op-log)* |
+| **4. Collaborative session** | Two browsers, same DB, peer-to-peer delta sync | IndexedDB + WebRTC DataChannel + CRDT on op log *(shipped as Team mode, over the ERP's comm layer — see [Modeller guide](ModellerGuide.md#collaborate-on-the-design-team-mode))* |
 | **5. Crash recovery** | Kill the tab; reopen; state restored to last committed op | `kernel_ops` in SQLite, survives tab close |
 
 ### The One to Do First

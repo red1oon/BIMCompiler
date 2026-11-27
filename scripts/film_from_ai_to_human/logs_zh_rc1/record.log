@@ -1,0 +1,17 @@
+§FILM_CUE beat=title t=0.000 frames=86 typing=0 answer_hold_frames=86 x1
+§FILM_CUE beat=intro t=3.583 frames=191 typing=0 answer_hold_frames=191 x1
+§FILM_CUE beat=twin t=11.542 frames=394 typing=71 answer_hold_frames=323 x1
+§FILM_CUE beat=column t=27.958 frames=276 typing=55 answer_hold_frames=221 x1
+§FILM_CUE beat=where t=39.458 frames=215 typing=81 answer_hold_frames=134 x1
+§FILM_CUE beat=status t=48.417 frames=134 typing=36 answer_hold_frames=98 x1
+§FILM_CUE beat=witness t=54.000 frames=250 typing=49 answer_hold_frames=201 x1
+§FILM_CUE beat=sheet t=64.417 frames=251 typing=0 answer_hold_frames=251 x1
+§FILM_CUE beat=diagram t=74.875 frames=235 typing=0 answer_hold_frames=235 x1
+§FILM_CUE beat=pack t=84.667 frames=199 typing=79 answer_hold_frames=120 x1
+§FILM_CUE beat=twopack t=92.958 frames=270 typing=0 answer_hold_frames=270 x1
+§FILM_CUE beat=again t=104.208 frames=228 typing=79 answer_hold_frames=149 x1
+§FILM_CUE beat=manual t=113.708 frames=273 typing=0 answer_hold_frames=273 x1
+§FILM_CUE beat=twinlight t=125.083 frames=268 typing=0 answer_hold_frames=268 x1
+§FILM_CUE beat=claim t=136.250 frames=227 typing=91 answer_hold_frames=136 x1
+§FILM_CUE beat=close t=145.708 frames=242 typing=0 answer_hold_frames=242 x1
+§FILM_DONE dur=155.792 frames=3739 planned=3739

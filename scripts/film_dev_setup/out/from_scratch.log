@@ -1,0 +1,19 @@
+  §FROM_SCRATCH_S1 node=v18.19.1 python3=Python 3.12.3 git=git version 2.43.0 code=1.146.0 chromium=Y
+  §FROM_SCRATCH_S2 files=4926 mb=546 lfs_pointer_files=0
+  §FROM_SCRATCH_S2_DATA buildings_db_files_in_download=3
+  §FROM_SCRATCH_S3 serve=python3 -m http.server port=44023 root_status=200
+  §FROM_SCRATCH_S4 page=viewer/viewer.html status=200 http_fail=11 console_errors=9 outside_hosts=[gc.zgo.at,objectstorage.ap-kulai-2.oraclecloud.com] title="BIM OOTB v3 — DEV" first_words="Ifc2x3_Duplex_Federated — 1,118/1,118 (100%)"
+    §FROM_SCRATCH_S4_FAIL page=viewer/viewer.html 404 viewer/buildings/Duplex_meta.db
+    §FROM_SCRATCH_S4_FAIL page=viewer/viewer.html failed viewer/buildings/Duplex_meta.db
+    §FROM_SCRATCH_S4_FAIL page=viewer/viewer.html 404 viewer/buildings/Duplex_extracted.db
+    §FROM_SCRATCH_S4_FAIL page=viewer/viewer.html failed viewer/buildings/Duplex_extracted.db
+    §FROM_SCRATCH_S4_FAIL page=viewer/viewer.html 404 viewer/buildings/Duplex_positions.bin
+    §FROM_SCRATCH_S4_FAIL page=viewer/viewer.html 404 viewer/buildings/patches/Duplex_extracted.db.lightfield.bin
+    §FROM_SCRATCH_S4_ERR page=viewer/viewer.html "Failed to load resource: the server responded with a status of 404 (File not found)"
+  §FROM_SCRATCH_GAP step=S4 what="viewer/viewer.html: 11 request(s) failed, e.g. 404 viewer/buildings/Duplex_meta.db ; failed viewer/buildings/Duplex_meta.db"
+  §FROM_SCRATCH_GAP step=S4 what="viewer/viewer.html: 9 console error(s), e.g. \"Failed to load resource: the server responded with a status of 404 (File not found)\""
+  §FROM_SCRATCH_S4 page=erp/idempiere.html status=200 http_fail=0 console_errors=0 outside_hosts=[] title="Kernel-ERP — Application Dictionary (SQLite WASM)" first_words="Language English Français Español Deutsch العربية 中文 (简体) 日本語 Bahasa Melayu ไทย Português Bahasa Indonesia 한국어 Kernel-ERP — Sign In Offline demo · identity & co"
+  §FROM_SCRATCH_S4 page=modeller/modeller.html status=200 http_fail=0 console_errors=0 outside_hosts=[] title="DAGeVu Modeller — alternative authoring viewer" first_words="🇺🇸 history 0/0 DAGeVu · MODELLER ready — supported=true OUTLINER ⤒ ⇄ DAGeVu Model BOM Tree (0) STR Walker (0) Open a resident (▾) or local .db (🏗) to walk Wa"
+  §FROM_SCRATCH_S5_SETUP exit=0 §SETUP steps=4 ok=4 gaps=0 verdict=PASS
+  §SETUP_VSC code=/snap/bin/code codefacts=installed eslint=recommended tasks=6 snippets=3 launch=Y mode=throwaway ext_dir=/tmp/w-from-scratch-2vttAr/bim-ootb-main/.setup/vscode-ext
+§FROM_SCRATCH steps_ran=5/5 gaps=2 by_step=S1:0,S2:0,S3:0,S4:2,S5:0 verdict=PASS

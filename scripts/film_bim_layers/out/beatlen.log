@@ -1,0 +1,7 @@
+§BEATLEN beat=cover voice=0 typing=0.00 -> hold from narr.js
+§BEATLEN beat=setup voice=13.49 typing=2.50 -> 15.99 (typing 2.50 + gap 0.3 + voice 11.99 + tail 1.2)
+§BEATLEN beat=move1 voice=15.41 typing=0.00 -> 15.41
+§BEATLEN beat=move2 voice=13.47 typing=0.00 -> 13.47
+§BEATLEN beat=move3 voice=15.47 typing=2.88 -> 18.34 (typing 2.88 + gap 0.3 + voice 13.97 + tail 1.2)
+§BEATLEN beat=close voice=0 typing=0.00 -> hold from narr.js
+§BEATLEN_DONE beats=4 total=63.2s

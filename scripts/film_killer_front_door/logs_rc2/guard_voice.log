@@ -1,0 +1,15 @@
+§GUARD OK   beat=b2a find.everyHit=true expect=true spoken="every hit"
+§GUARD OK   beat=b3a read.cells=144 expect=144 spoken="one hundred forty-four"
+§GUARD OK   beat=b3a read.debitEqualsCredit=true expect=true spoken="debit equals credit"
+§GUARD OK   beat=b3a read.verdict="ADDS_UP" expect=ADDS_UP spoken="it adds up"
+§GUARD OK   beat=b3b box.inside=true expect=true spoken="where it came from"
+§GUARD OK   beat=b4 changed.linesDiffer=1 expect=1 spoken="one digit"
+§GUARD OK   beat=b4 bad.verdict="DOES_NOT_ADD_UP" expect=DOES_NOT_ADD_UP spoken="does not add up"
+§GUARD OK   beat=b5a xlsx.d28f="SUM(D6:D26)" expect=SUM(D6:D26) spoken="real formulas"
+§GUARD OK   beat=b5b offline.worked=true expect=true spoken="still works"
+§GUARD digits in the voice (numbers are spelled in words): none
+§GUARD proof talk or first/novel/unique: none
+§GUARD not-said N (an unmeasured network or privacy claim, another product, many users / speed / compliance): none
+§GUARD beat 1 network claim: requests after the file was chosen=1 (urls GET /modeller/lib/pdfjs/pdf.worker.min.js), carrying a body=0 -> the voice says "on your own computer", not "nothing leaves it"
+§GUARD_CONTROL planted number 7777.77 is REJECTED (the guard can fail)
+§GUARD_VERDICT voice PASS facts=9 bad=0

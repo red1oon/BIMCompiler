@@ -1,0 +1,386 @@
+{
+ "made": "2026-11-15T08:19:04.886Z",
+ "commit": "5e01bc3d",
+ "index": {
+  "line": "§DXF_HOVER_INDEX keys=28 defaults=99 root=<bim-ootb>",
+  "keys": 28,
+  "defaults": 99,
+  "cmd": "node devtools/hover/gen_trace_index.js"
+ },
+ "cli": {
+  "bodies": 512,
+  "untraced": 0,
+  "inserts": 511,
+  "insertsUntraced": 0
+ },
+ "wallGuid": "73c6343db3ed416fd182ec8c0a7c8272",
+ "page": {
+  "installedLine": "§DXF_HOVER installed index_keys=28 defaults=99 trace_map=on edit_delta=loading",
+  "installedKeys": 28,
+  "installedDefaults": 99,
+  "inserts": 511,
+  "errors": [],
+  "converted": "pages/new_converted.png"
+ },
+ "targets": {
+  "col": {
+   "point": {
+    "x": 960,
+    "y": 657
+   },
+   "png": "/tmp/wt-film3/scripts/film_bim_layers/out/pages/new_col.png",
+   "keyPressed": "3",
+   "opened": [
+    "vscode://file/tmp/wt-ootb-film3/modeller/element_defaults.json:5"
+   ],
+   "tipInView": true,
+   "fid": 22,
+   "guid": "body-column-0-3A1",
+   "key": "dxf2bodies:body",
+   "at": "modeller/dxf2bodies.js:422",
+   "link": "vscode://file/tmp/wt-ootb-film3/modeller/dxf2bodies.js:422",
+   "prov": "derived",
+   "cls": "IfcColumn",
+   "handle": "3A1",
+   "layer": "Col",
+   "sheet": "0_FLOOR_PLAN_marked.dxf",
+   "text": "IfcColumn  #22  handle 3A1  layer Col  sheet 0_FLOOR_PLAN_marked.dxf  derived\n1 BUILDER  [1]\n    dxf2bodies:body  modeller/dxf2bodies.js:422\n2 PASS-THROUGH\n    none\n3 SIZES  [3]\n    x 0.3048  label rule single\n    y 0.3048  label rule single\n    top 3.0988  default  column.top_under_beam  modeller/element_defaults.json:5\n    height  elevation\n4 CUTS\n    none\n5 EDITS\n    none\n6 EVIDENCE\n    handle 3A1  layer Col  sheet 0_FLOOR_PLAN_marked.dxf  prov derived  run e30b6478\n    Note CastingRatio  5_DETAILS_marked.dxf#2E2\n    Note fc_MPa  5_DETAILS_marked.dxf#2E1\n    Note fy_MPa  5_DETAILS_marked.dxf#2E1\n    Sched column  5_DETAILS_marked.dxf#2CA\n1-6 open a layer's line · V = builder",
+   "unstamped": false,
+   "counts": [
+    1,
+    0,
+    4,
+    0,
+    0,
+    5
+   ],
+   "layers": [
+    {
+     "n": 1,
+     "name": "BUILDER",
+     "items": [
+      {
+       "text": "dxf2bodies:body  modeller/dxf2bodies.js:422",
+       "at": "modeller/dxf2bodies.js:422",
+       "link": "vscode://file/tmp/wt-ootb-film3/modeller/dxf2bodies.js:422"
+      }
+     ]
+    },
+    {
+     "n": 2,
+     "name": "PASS-THROUGH",
+     "items": []
+    },
+    {
+     "n": 3,
+     "name": "SIZES",
+     "items": [
+      {
+       "text": "x 0.3048  label rule single",
+       "at": null,
+       "link": null
+      },
+      {
+       "text": "y 0.3048  label rule single",
+       "at": null,
+       "link": null
+      },
+      {
+       "text": "top 3.0988  default  column.top_under_beam  modeller/element_defaults.json:5",
+       "at": "modeller/element_defaults.json:5",
+       "link": "vscode://file/tmp/wt-ootb-film3/modeller/element_defaults.json:5"
+      },
+      {
+       "text": "height  elevation",
+       "at": null,
+       "link": null
+      }
+     ]
+    },
+    {
+     "n": 4,
+     "name": "CUTS",
+     "items": []
+    },
+    {
+     "n": 5,
+     "name": "EDITS",
+     "items": []
+    },
+    {
+     "n": 6,
+     "name": "EVIDENCE",
+     "items": [
+      {
+       "text": "handle 3A1  layer Col  sheet 0_FLOOR_PLAN_marked.dxf  prov derived  run e30b6478",
+       "at": null,
+       "link": null
+      },
+      {
+       "text": "Note CastingRatio  5_DETAILS_marked.dxf#2E2",
+       "at": null,
+       "link": null
+      },
+      {
+       "text": "Note fc_MPa  5_DETAILS_marked.dxf#2E1",
+       "at": null,
+       "link": null
+      },
+      {
+       "text": "Note fy_MPa  5_DETAILS_marked.dxf#2E1",
+       "at": null,
+       "link": null
+      },
+      {
+       "text": "Sched column  5_DETAILS_marked.dxf#2CA",
+       "at": null,
+       "link": null
+      }
+     ]
+    }
+   ],
+   "tip": {
+    "x": 974,
+    "y": 228,
+    "w": 536,
+    "h": 415.125
+   },
+   "hoverLine": "§DXF_HOVER fid=22 guid=body-column-0-3A1 key=dxf2bodies:body at=modeller/dxf2bodies.js:422 layers=1,0,4,0,0,5"
+  },
+  "wall": {
+   "point": {
+    "x": 48,
+    "y": 282
+   },
+   "png": "/tmp/wt-film3/scripts/film_bim_layers/out/pages/new_wall.png",
+   "keyPressed": "1",
+   "opened": [
+    "vscode://file/tmp/wt-ootb-film3/modeller/dxf2bim_import.js:716"
+   ],
+   "tipInView": true,
+   "fid": 100,
+   "guid": "73c6343db3ed416fd182ec8c0a7c8272",
+   "key": "dxf2bim_import:wall-line",
+   "at": "modeller/dxf2bim_import.js:716",
+   "link": "vscode://file/tmp/wt-ootb-film3/modeller/dxf2bim_import.js:716",
+   "prov": "derived",
+   "cls": "IfcWall",
+   "handle": "CC-L0+CC-L1",
+   "layer": "Wall",
+   "sheet": "1N_ELEV_NORTH_marked.dxf",
+   "text": "IfcWall  #100  handle CC-L0+CC-L1  layer Wall  sheet 1N_ELEV_NORTH_marked.dxf  derived\n1 BUILDER  [1]\n    dxf2bim_import:wall-line  modeller/dxf2bim_import.js:716\n2 PASS-THROUGH\n    none\n3 SIZES\n    t inherited\n4 CUTS\n    #512 GEOM_CUT door-gap:353  rule D88B door gap  holds #159\n    #513 GEOM_CUT door-gap:33B  rule D88B door gap  holds #158\n5 EDITS\n    none\n6 EVIDENCE\n    handle CC-L0+CC-L1  layer Wall  sheet 1N_ELEV_NORTH_marked.dxf  prov derived  run e30b6478\n1-6 open a layer's line · V = builder",
+   "unstamped": false,
+   "counts": [
+    1,
+    0,
+    1,
+    2,
+    0,
+    1
+   ],
+   "layers": [
+    {
+     "n": 1,
+     "name": "BUILDER",
+     "items": [
+      {
+       "text": "dxf2bim_import:wall-line  modeller/dxf2bim_import.js:716",
+       "at": "modeller/dxf2bim_import.js:716",
+       "link": "vscode://file/tmp/wt-ootb-film3/modeller/dxf2bim_import.js:716"
+      }
+     ]
+    },
+    {
+     "n": 2,
+     "name": "PASS-THROUGH",
+     "items": []
+    },
+    {
+     "n": 3,
+     "name": "SIZES",
+     "items": [
+      {
+       "text": "t inherited",
+       "at": null,
+       "link": null
+      }
+     ]
+    },
+    {
+     "n": 4,
+     "name": "CUTS",
+     "items": [
+      {
+       "text": "#512 GEOM_CUT door-gap:353  rule D88B door gap  holds #159",
+       "at": null,
+       "link": null
+      },
+      {
+       "text": "#513 GEOM_CUT door-gap:33B  rule D88B door gap  holds #158",
+       "at": null,
+       "link": null
+      }
+     ]
+    },
+    {
+     "n": 5,
+     "name": "EDITS",
+     "items": []
+    },
+    {
+     "n": 6,
+     "name": "EVIDENCE",
+     "items": [
+      {
+       "text": "handle CC-L0+CC-L1  layer Wall  sheet 1N_ELEV_NORTH_marked.dxf  prov derived  run e30b6478",
+       "at": null,
+       "link": null
+      }
+     ]
+    }
+   ],
+   "tip": {
+    "x": 62,
+    "y": 296,
+    "w": 536,
+    "h": 297.546875
+   },
+   "hoverLine": "§DXF_HOVER fid=100 guid=73c6343db3ed416fd182ec8c0a7c8272 key=dxf2bim_import:wall-line at=modeller/dxf2bim_import.js:716 layers=1,0,1,2,0,1"
+  },
+  "bar": {
+   "point": {
+    "x": 1152,
+    "y": 563
+   },
+   "png": "/tmp/wt-film3/scripts/film_bim_layers/out/pages/new_bar.png",
+   "keyPressed": "3",
+   "opened": [],
+   "tipInView": true,
+   "fid": 248,
+   "guid": "body-bar-0-1C1-S10",
+   "key": "dxf2section:bar",
+   "at": "modeller/dxf2section.js:89",
+   "link": "vscode://file/tmp/wt-ootb-film3/modeller/dxf2section.js:89",
+   "prov": "assumed",
+   "cls": "IfcMember",
+   "handle": "1C1-S10",
+   "layer": "Fo",
+   "sheet": "8_SECTION_AA_TRUSS_marked.dxf",
+   "text": "IfcMember  #248  handle 1C1-S10  layer Fo  sheet 8_SECTION_AA_TRUSS_marked.dxf  assumed\n1 BUILDER  [1]\n    dxf2section:bar  modeller/dxf2section.js:89\n2 PASS-THROUGH\n    none\n3 SIZES\n    w 0.0381  default  (which default is not recorded on the body)\n    station -648.62374  (no source recorded)\n    height  section\n4 CUTS\n    none\n5 EDITS\n    none\n6 EVIDENCE\n    handle 1C1-S10  layer Fo  sheet 8_SECTION_AA_TRUSS_marked.dxf  prov assumed  run e30b6478\n1-6 open a layer's line · V = builder",
+   "unstamped": false,
+   "counts": [
+    1,
+    0,
+    3,
+    0,
+    0,
+    1
+   ],
+   "layers": [
+    {
+     "n": 1,
+     "name": "BUILDER",
+     "items": [
+      {
+       "text": "dxf2section:bar  modeller/dxf2section.js:89",
+       "at": "modeller/dxf2section.js:89",
+       "link": "vscode://file/tmp/wt-ootb-film3/modeller/dxf2section.js:89"
+      }
+     ]
+    },
+    {
+     "n": 2,
+     "name": "PASS-THROUGH",
+     "items": []
+    },
+    {
+     "n": 3,
+     "name": "SIZES",
+     "items": [
+      {
+       "text": "w 0.0381  default  (which default is not recorded on the body)",
+       "at": null,
+       "link": null
+      },
+      {
+       "text": "station -648.62374  (no source recorded)",
+       "at": null,
+       "link": null
+      },
+      {
+       "text": "height  section",
+       "at": null,
+       "link": null
+      }
+     ]
+    },
+    {
+     "n": 4,
+     "name": "CUTS",
+     "items": []
+    },
+    {
+     "n": 5,
+     "name": "EDITS",
+     "items": []
+    },
+    {
+     "n": 6,
+     "name": "EVIDENCE",
+     "items": [
+      {
+       "text": "handle 1C1-S10  layer Fo  sheet 8_SECTION_AA_TRUSS_marked.dxf  prov assumed  run e30b6478",
+       "at": null,
+       "link": null
+      }
+     ]
+    }
+   ],
+   "tip": {
+    "x": 1166,
+    "y": 577,
+    "w": 536,
+    "h": 314.34375
+   },
+   "hoverLine": "§DXF_HOVER fid=248 guid=body-bar-0-1C1-S10 key=dxf2section:bar at=modeller/dxf2section.js:89 layers=1,0,3,0,0,1"
+  }
+ },
+ "memory": {
+  "withOverlay": {
+   "used": 45467755,
+   "total": 78938983,
+   "gc": true,
+   "traceEntries": 513,
+   "traceJsonBytes": 21136
+  },
+  "without": {
+   "used": 45594070,
+   "total": 80483478,
+   "gc": true,
+   "traceEntries": 0,
+   "traceJsonBytes": 0
+  },
+  "deltaBytes": -126315,
+  "overlayBytes": 16120,
+  "indexBytes": 7636
+ },
+ "witness": {
+  "blVerdict": "§BIM_LAYERS_W VERDICT PASS fail=0 inserts=511 cuts=2",
+  "l3": "§BIM_LAYERS_W L3 inserts=511 wrong=0 by_source={\"label\":376,\"default\":122,\"inherited\":98,\"drawn\":25,\"schedule\":64}",
+  "l3def": "§BIM_LAYERS_W L3 default_sides linked=12 not_recorded=110",
+  "l4": "§BIM_LAYERS_W L4 cuts=2 listed_under_hosts=2 wrong=0",
+  "dhVerdict": "§DXF_HOVER_W VERDICT PASS fail=0",
+  "h2b": "§DXF_HOVER_W H2b nextId=1 hovered=14 counts_differ=0",
+  "linked": 12,
+  "notRecorded": 110,
+  "cuts": 2
+ },
+ "credentials": {
+  "licence": "MIT License",
+  "repo": "github.com/red1oon/bim-ootb",
+  "pr3043": "MERGED feat(dxf2bim): --trace names the line that built each body (F.21 slice 1)",
+  "pr3047": "MERGED feat(devtools): hover a Modeller body to see the line that built it (F.21 slice 2)",
+  "pr3064": "MERGED feat(devtools): provenance hover - six layers behind a BIM body (F.23)",
+  "paperPriority": "2026-03-30"
+ }
+}

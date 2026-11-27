@@ -1,0 +1,33 @@
+§FACTS COPY made=trial_balance_th_one_digit_changed.pdf pdftotext_lines_differing=1 was=498.09 now=499.09 (a one-digit edit of the text stream; nothing else differs; the file is in a temp folder and is never committed)
+§FACTS boot §PDFED-BOOT pdfjs=3.11.174 reader=function sheetjs=0.18.5 | §PDFED-OFFLINE ready=true
+§FACTS shot empty the page before any file: "Nothing is uploaded: the file stays on this device."
+§FACTS b1 §PDFED-OPEN ok=true file="trial_balance_th.pdf" bytes=74945 pages=1 chars=1017 outline=0 ms=313 | requests after the file was chosen=1 withBody=0 notGet=0 otherOrigin=0 urls=GET /modeller/lib/pdfjs/pdf.worker.min.js
+§FACTS shot b1_open trial balance opened: trial_balance_th.pdf: 1 page
+§FACTS b2 §PDFED-OPEN ok=true file="market_impact_report.pdf" bytes=183883 pages=12 chars=16842 outline=23 ms=314 | requests after the file was chosen=1 otherOrigin=0
+§FACTS shot b2_open the 12-page report opened with its outline
+§FACTS find §PDFED-FIND q="market" hits=45 pages=12 | poppler counts 45 (same=true)
+§FACTS shot b2_find Find "market": 45 hits on 12 pages
+§FACTS outline clicked entry 6 of 23 "3. The Structural Problem You Solve" -> page 5
+§FACTS shot b2_outline outline entry "3. The Structural Problem You Solve" -> page 5
+§FACTS shot b3_open back to the trial balance
+§FACTS b3 §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=7 reason="4 totals agree with their rows" | page says "Page 1 adds up: 4 totals agree with their rows." cells_in_grid=144 D28=40,392.44 E28=40,392.44
+§FACTS shot b3_sheet Read as sheet: Page 1 adds up: 4 totals agree with their rows.
+§FACTS b3 hover D28: box {"a":"D28","n":1,"rect":[663.28125,202.609375,733.65625,221.28125],"inside":true,"cellInside":true}
+§FACTS shot b3_hover hover D28: its box on the page
+§FACTS b3 hover D28 painted: pixels of the box outline colour inside its rectangle in the frame=133 of 2968
+§FACTS shot b4_open the changed copy opened
+§FACTS b4 §SHEET_READER verdict=DOES_NOT_ADD_UP ok=false page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=4 ms=2 reason="D28: printed 40392.44 != rows sum 40393.44" | page says "Page 1 does NOT add up: D28: printed 40392.44 != rows sum 40393.44."
+§FACTS shot b4_sheet the copy: Page 1 does NOT add up: D28: printed 40392.44 != rows sum 40393.44.
+§FACTS b5a again §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=3 reason="4 totals agree with their rows" | page says "Page 1 adds up: 4 totals agree with their rows."
+§FACTS shot b5_sheet the first report read again: Page 1 adds up: 4 totals agree with their rows.
+§FACTS b5a §PDFED-XLSX file="trial_balance_th_page1.xlsx" bytes=54802 cells=144 verdict=ADDS_UP | the file re-read: sheets=Report/_door_source D28=40392.44 formula=SUM(D6:D26) sum_formulas=4 cells_in_file=144
+§FACTS shot b5_download Download .xlsx clicked: trial_balance_th_page1.xlsx
+§FACTS b6 network off: navigator.onLine=false reload -> §PDFED-BOOT pdfjs=3.11.174 reader=function sheetjs=0.18.5
+§FACTS shot b6_offline_boot the page reloaded with the network off
+§FACTS b6 offline §PDFED-OPEN ok=true file="trial_balance_th.pdf" bytes=74945 pages=1 chars=1017 outline=0 ms=187 | §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=4 reason="4 totals agree with their rows" | page says "Page 1 adds up: 4 totals agree with their rows." navigator.onLine_after=true | requests that reached the server from reload to the end of the read=0 | probe of an uncached address: no network: TypeError
+§FACTS shot b6_offline_sheet read offline: Page 1 adds up: 4 totals agree with their rows.
+§FACTS NET whole take: requests=19 to another origin=0 page_errors=0
+§FACTS WITNESS reader {"verdict":"PASS","judged":36,"failed":0,"exit":0} | page {"verdict":"PASS","judged":17,"failed":0,"exit":0} | layouts tried=5 (manifest files with an oracle) not rebuilt=2 (§SREAD-LIMIT lines) rebuilt=3
+§FACTS PRS git log HEAD (the checkout served, aedf3774) -- pdf/ gives PR numbers 3470,3472
+§FACTS FILM_GUIDE url=https://red1oon.github.io/bim-ootb/pdf/ http=200 anchor=- (guide page http=404 anchor_found=false; app http=200)
+§FACTS FACTS_VERDICT PASS (judged: pages, cells, debit=credit, find vs poppler, xlsx formula, offline, witnesses, page errors)

@@ -1,0 +1,23 @@
+[
+ {
+  "name": "cp_matchpodelete_1009701",
+  "process": 301,
+  "recordId": 1009701,
+  "tableId": 473,
+  "tables": [
+   "m_matchpo",
+   "c_orderline"
+  ],
+  "alignFromSeed": [
+   {
+    "table": "C_OrderLine",
+    "where": "C_OrderLine_ID=200003"
+   }
+  ],
+  "preSql": [
+   "UPDATE c_orderline SET qtyreserved=0, qtydelivered=10, qtyinvoiced=10 WHERE c_orderline_id=200003",
+   "DELETE FROM m_matchpo WHERE m_matchpo_id=1009701",
+   "INSERT INTO m_matchpo (m_matchpo_id,ad_client_id,ad_org_id,isactive,created,createdby,updated,updatedby,c_orderline_id,m_product_id,m_inoutline_id,c_invoiceline_id,datetrx,qty,processing,processed,posted,documentno,dateacct,m_attributesetinstance_id,pricematchdifference,isapproved,m_matchpo_uu) VALUES (1009701,11,11,'Y','2026-10-04 00:00:00',100,'2026-10-04 00:00:00',100,200003,130,102,102,'2002-02-22 00:00:00',3,'N','Y','N','CP-1009701','2002-02-22 00:00:00',0,0,'Y','00000000-0000-4000-8000-000001009701')"
+  ]
+ }
+]

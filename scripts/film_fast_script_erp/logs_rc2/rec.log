@@ -1,0 +1,77 @@
+§REC setup door lines ok=5 of 5 (setup.log)
+§REC start screen cursor=(2,0) line='$'
+§REC step start begin
+§REC step start wait for 'red1> ' -> ok after 1.7 s
+§REC step start done: 1.7 s, frames so far 7
+§REC step help begin
+§REC step help wait for 'red1> ' -> ok after 1.0 s
+§REC step help wait for 'red1> ' -> ok after 2.2 s
+§REC step help wait for 'red1> ' -> ok after 3.2 s
+§REC step help done: 3.2 s, frames so far 20
+§REC step level begin
+§REC step level wait for 'red1> ' -> ok after 1.0 s
+§REC step level wait for 'red1> ' -> ok after 2.8 s
+§REC step level wait for 'red1> ' -> ok after 4.3 s
+§REC step level done: 4.3 s, frames so far 47
+§REC step bp begin
+§REC step bp wait for 'red1> ' -> ok after 1.0 s
+§REC step bp wait for 'red1 Business Partner> ' -> ok after 5.5 s
+§REC step bp wait for 'red1 Business Partner> ' -> ok after 7.9 s
+§REC step bp done: 7.9 s, frames so far 65
+§REC step po1 begin
+§REC step po1 wait for 'red1 Business Partner> ' -> ok after 0.9 s
+§REC step po1 wait for 'red1 Project> ' -> ok after 3.6 s
+§REC step po1 see 'Esc cancel' -> ok
+§REC step po1 done: 8.8 s, frames so far 111
+§REC step po2 begin
+§REC step po2 see 'Phase (C_ProjectPhase_ID' -> ok
+§REC step po2 done: 2.1 s, frames so far 115
+§REC step po3 begin
+§REC step po3 see 'Project Line (C_ProjectLine_ID' -> ok
+§REC step po3 done: 2.2 s, frames so far 119
+§REC step po4 begin
+§REC step po4 see 'ConsolidateDocument)? [Y]' -> ok
+§REC step po4 wait for 'red1 Project> ' -> ok after 12.4 s
+§REC step po4 done: 12.4 s, frames so far 126
+§REC step co begin
+§REC step co wait for 'red1 Project> ' -> ok after 1.0 s
+§REC step co wait for 'red1 Order> ' -> ok after 3.8 s
+§REC step co wait for 'red1 Order> ' -> ok after 16.0 s
+§REC step co done: 16.0 s, frames so far 152
+§REC step next begin
+§REC step next wait for 'red1 Order> ' -> ok after 1.0 s
+§REC step next wait for 'red1 Order> ' -> ok after 4.7 s
+§REC step next done: 4.7 s, frames so far 167
+§REC step gap begin
+§REC step gap wait for 'red1 Order> ' -> ok after 1.0 s
+§REC step gap wait for 'red1 Order> ' -> ok after 6.5 s
+§REC step gap done: 6.5 s, frames so far 185
+§REC step report begin
+§REC step report wait for 'red1 Order> ' -> ok after 1.0 s
+§REC step report wait for 'red1 Order> ' -> ok after 2.7 s
+§REC step report done: 2.7 s, frames so far 195
+§REC step url begin
+§REC step url wait for 'red1 Order> ' -> ok after 1.0 s
+§REC step url wait for 'red1 Order> ' -> ok after 2.3 s
+§REC step url done: 2.3 s, frames so far 200
+§REC step cost begin
+§REC step cost wait for 'red1 Order> ' -> ok after 0.9 s
+§REC step cost wait for 'red1 Duplex> ' -> ok after 2.5 s
+§REC step cost wait for 'red1 Duplex> ' -> ok after 7.4 s
+§REC step cost done: 7.4 s, frames so far 230
+§REC step post begin
+§REC step post wait for 'red1 Duplex> ' -> ok after 10.4 s
+§REC step post done: 10.4 s, frames so far 233
+§REC step proj begin
+§REC step proj wait for 'red1 Project> ' -> ok after 4.2 s
+§REC step proj done: 4.2 s, frames so far 236
+§REC step ls begin
+§REC step ls wait for 'red1 Project> ' -> ok after 0.9 s
+§REC step ls wait for 'red1 Project> ' -> ok after 4.0 s
+§REC step ls done: 4.0 s, frames so far 242
+§REC step exit begin
+§REC step exit wait for '$' -> ok after 1.1 s
+§REC step exit done: 1.1 s, frames so far 248
+§REC scratch=/tmp/fse_scratch_29idrwzh ops=/tmp/fse_scratch_29idrwzh/ops.jsonl
+§REC noport name=Renumber class=org.compiere.process.DiscountSchemaReSeq count=162 pos=['800003', '800004', '800005']
+§REC_DONE frames=248 keys=183 returns=25 answers=39

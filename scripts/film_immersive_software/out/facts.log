@@ -1,0 +1,12 @@
+§FACTS index §DXF_HOVER_INDEX keys=28 root=<bim-ootb> out=/tmp/wt-film-new/devtools/hover/trace_index.json
+§FACTS cli bodies=512 inserts=511 untraced=0/0 assumed=252 truss={"stations":13,"spacing_m":3.048,"bars":156,"plates":117}
+§FACTS session new reused out/ms_new.log
+§FACTS session plain ran
+§FACTS session old ran
+§FACTS page installed="§DXF_HOVER installed index_keys=28 trace_map=on" inserts=511 errors=0
+§FACTS bar {"key":"dxf2section:bar","at":"modeller/dxf2section.js:89","prov":"assumed","v":["vscode://file/tmp/wt-film-new/modeller/dxf2section.js:89"]}
+§FACTS wall new {"key":"dxf2bim_import:wall-line","at":"modeller/dxf2bim_import.js:716","v":["vscode://file/tmp/wt-film-new/modeller/dxf2bim_import.js:716"]} old {"key":null,"unstamped":true,"text":"no trace key: the code that built this body has no trace stamp (run modeller/tests/witness_dxf_trace.js, it lists such bodies)\nIfcWall  handle CC-L0+CC-L1  layer Wall  sheet 1N_ELEV_NORTH_marked.dxf  derived"}
+§FACTS memory with=45568473 without=45817645 delta=-249172 trace_entries=513 trace_json_bytes=21136 gc=true overlay_bytes=6534 index_bytes=1630
+§FACTS first run failed_h2=true wrong_wall=true main: §DXF_HOVER_W VERDICT PASS | §DXF_TRACE_W VERDICT PASS bodies=512 keys=12 fail=0
+§FACTS credentials {"licence":"MIT License","repo":"github.com/red1oon/bim-ootb","pr3043":"MERGED feat(dxf2bim): --trace names the line that built each body (F.21 slice 1)","pr3047":"MERGED feat(devtools): hover a Modeller body to see the line that built it (F.21 slice 2)","paperPriority":"2026-03-30"}
+§FACTS VERDICT PASS

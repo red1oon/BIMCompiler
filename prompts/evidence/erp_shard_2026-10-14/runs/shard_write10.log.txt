@@ -1,0 +1,27 @@
+§SHARD start tables=38 coldUnits=874174 t=0s
+§SHARD_ROWS table=fact_acct warm=349668 cold=8392032 source=8741700 ok t=23s
+§SHARD_ROWS table=m_costdetail warm=116556 cold=2389398 source=2505954 ok t=32s
+§SHARD_ROWS table=m_matchinv warm=0 cold=524502 source=524502 ok t=36s
+§SHARD_ROWS table=m_matchpo warm=0 cold=1078143 source=1078143 ok t=41s
+§SHARD_ROWS table=m_transaction warm=87417 cold=728475 source=815892 ok t=45s
+§SHARD_ROWS table=c_invoice warm=0 cold=233112 source=233112 ok t=46s
+§SHARD_ROWS table=c_order warm=8916534 cold=203973 source=9120507 ok t=71s
+§SHARD_ROWS table=m_inout warm=29139 cold=233112 source=262251 ok t=72s
+§SHARD_ROWS table=c_invoiceline warm=0 cold=699336 source=699336 ok t=74s
+§SHARD_ROWS table=c_orderline warm=8916534 cold=757614 source=9674148 ok t=96s
+§SHARD_ROWS table=gl_journalline warm=0 cold=116556 source=116556 ok t=96s
+§SHARD_ROWS table=m_inoutline warm=29139 cold=757614 source=786753 ok t=97s
+§SHARD_ROWS summary tables=38 judged=38 mismatches=0 t=98s
+§SHARD_UNIT_INTACT lineOrphans=0
+§SHARD_WARM_TO_COLD c_invoice.c_order_id -> c_order rows=0
+§SHARD_WARM_TO_COLD c_invoiceline.c_orderline_id -> c_orderline rows=0
+§SHARD_WARM_TO_COLD m_inoutline.c_orderline_id -> c_orderline rows=0
+§SHARD_WARM_TO_COLD m_inoutconfirm.m_inout_id -> m_inout rows=0
+§SHARD_WARM_TO_COLD c_allocationline.c_invoice_id -> c_invoice rows=0
+§SHARD_WARM_TO_COLD m_transaction.m_inoutline_id -> m_inoutline rows=0
+§SHARD_WARM_TO_COLD m_matchinv.m_inoutline_id -> m_inoutline rows=0
+§SHARD_WARM_TO_COLD m_matchpo.c_orderline_id -> c_orderline rows=0
+§SHARD_WARM_TO_COLD total=0 edgesJudged=8 t=100s
+§SHARD_FILE warm.db MB=5416 sha256=ee28932a4e77de05 t=104s
+§SHARD_FILE cold.db MB=3952 sha256=cf69082745d281b6 t=110s
+§SHARD_VERDICT PASS rows-exhaustive units-intact warm->cold=0 (edgesJudged=8) totalSec=110s

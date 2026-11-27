@@ -1,0 +1,141 @@
+##### north
+§SIGN installed alg=ECDSA-P256 pubkey=3059301306072a86… custody=idb-nonextractable
+§SIGN installed alg=ECDSA-P256 pubkey=3059301306072a86… custody=idb-nonextractable
+§SYNC_RELAY push accepted=1 skipped=0 head=1
+§SYNC_RELAY push accepted=1 skipped=0 head=2
+§SO-FANOUT order=-1 doctype=135 policy(io,inv)=Y,Y policySrc=docPolicy header=sidecar lines=1 engineOps=4 crudOps=5 gl=post-after-commit
+§SYNC_RELAY push accepted=6 skipped=0 head=8
+§SO-COMPLETE order=-1 ship=1 invoice=1 gl=post-after-commit sealed=Y gid=ba3127d5-b3fe-4d7c-808d-ea124403cb5f
+§CRUD process committed key=c_order viaGroup=Y gid=ba3127d5-b3fe-4d7c-808d-ea124403cb5f ops=6 sealed=6 op_uuid=af5a4011-d6dd-4587-8d8f-218ab695ac99 to=CO verifyChain=ok
+§SYNC_RELAY push accepted=6 skipped=0 head=14
+§GL-POST-COMMIT ops=6 committed=true gid=c1070ca0-6d3b-485c-a788-efab26cd7bed verifyChain=ok
+§SIGN installed alg=ECDSA-P256 pubkey=3059301306072a86… custody=idb-nonextractable
+§SYNC_RELAY push accepted=1 skipped=0 head=15
+§SYNC_RELAY push accepted=1 skipped=0 head=16
+§SO-FANOUT order=-15 doctype=135 policy(io,inv)=Y,Y policySrc=docPolicy header=sidecar lines=1 engineOps=4 crudOps=5 gl=post-after-commit
+§SYNC_RELAY push accepted=6 skipped=0 head=22
+§SO-COMPLETE order=-15 ship=1 invoice=1 gl=post-after-commit sealed=Y gid=16caff9a-3629-490b-9be0-7760d054f32e
+§CRUD process committed key=c_order viaGroup=Y gid=16caff9a-3629-490b-9be0-7760d054f32e ops=6 sealed=6 op_uuid=daa6e378-724d-4cfa-b237-4903f47282a5 to=CO verifyChain=ok
+§SYNC_RELAY push accepted=6 skipped=0 head=28
+§GL-POST-COMMIT ops=6 committed=true gid=972666ee-e18d-45fb-a6d1-e214ef098c69 verifyChain=ok
+§SIGN installed alg=ECDSA-P256 pubkey=3059301306072a86… custody=idb-nonextractable
+§SYNC_RELAY push accepted=1 skipped=0 head=29
+§SYNC_RELAY push accepted=1 skipped=0 head=30
+§SO-FANOUT order=-29 doctype=135 policy(io,inv)=Y,Y policySrc=docPolicy header=sidecar lines=1 engineOps=4 crudOps=5 gl=post-after-commit
+§SYNC_RELAY push accepted=6 skipped=0 head=36
+§SO-COMPLETE order=-29 ship=1 invoice=1 gl=post-after-commit sealed=Y gid=eb4fbd77-113e-45cc-afbd-a1340869d893
+§CRUD process committed key=c_order viaGroup=Y gid=eb4fbd77-113e-45cc-afbd-a1340869d893 ops=6 sealed=6 op_uuid=44aaba4d-bb3e-4334-9746-1fe0533fe9be to=CO verifyChain=ok
+§SYNC_RELAY push accepted=6 skipped=0 head=42
+§GL-POST-COMMIT ops=6 committed=true gid=f05316ed-a22b-4763-92a3-395b178a3cc0 verifyChain=ok
+§SIGN installed alg=ECDSA-P256 pubkey=3059301306072a86… custody=idb-nonextractable
+§SYNC_RELAY push accepted=1 skipped=0 head=43
+§SYNC_RELAY push accepted=1 skipped=0 head=44
+§SO-FANOUT order=-43 doctype=135 policy(io,inv)=Y,Y policySrc=docPolicy header=sidecar lines=1 engineOps=4 crudOps=5 gl=post-after-commit
+§SYNC_RELAY push accepted=6 skipped=0 head=50
+§SO-COMPLETE order=-43 ship=1 invoice=1 gl=post-after-commit sealed=Y gid=734c9468-32d4-4fe9-bf7c-f5351d85af2e
+§CRUD process committed key=c_order viaGroup=Y gid=734c9468-32d4-4fe9-bf7c-f5351d85af2e ops=6 sealed=6 op_uuid=62252176-ad3e-413e-8e9e-c735bd0d62b2 to=CO verifyChain=ok
+§SYNC_RELAY push accepted=6 skipped=0 head=56
+§GL-POST-COMMIT ops=6 committed=true gid=b8b71ead-25b9-486e-8f3a-72bcdd19e8e6 verifyChain=ok
+§SIGN installed alg=ECDSA-P256 pubkey=3059301306072a86… custody=idb-nonextractable
+§SYNC_RELAY push accepted=1 skipped=0 head=57
+§SYNC_RELAY push accepted=1 skipped=0 head=58
+§SO-FANOUT order=-57 doctype=135 policy(io,inv)=Y,Y policySrc=docPolicy header=sidecar lines=1 engineOps=4 crudOps=5 gl=post-after-commit
+§SYNC_RELAY push accepted=6 skipped=0 head=64
+§SO-COMPLETE order=-57 ship=1 invoice=1 gl=post-after-commit sealed=Y gid=c010d400-4360-4e1f-948e-13dd0f26c91c
+§CRUD process committed key=c_order viaGroup=Y gid=c010d400-4360-4e1f-948e-13dd0f26c91c ops=6 sealed=6 op_uuid=e3d037dc-e14f-48bb-9e79-221755db9402 to=CO verifyChain=ok
+§SYNC_RELAY push accepted=6 skipped=0 head=70
+§GL-POST-COMMIT ops=6 committed=true gid=6218d400-8bc1-42fe-bcc9-fed194999952 verifyChain=ok
+##### south
+§SIGN installed alg=ECDSA-P256 pubkey=3059301306072a86… custody=idb-nonextractable
+§SIGN installed alg=ECDSA-P256 pubkey=3059301306072a86… custody=idb-nonextractable
+§SYNC_RELAY push accepted=1 skipped=0 head=1
+§SYNC_RELAY push accepted=1 skipped=0 head=2
+§SO-FANOUT order=-1 doctype=135 policy(io,inv)=Y,Y policySrc=docPolicy header=sidecar lines=1 engineOps=4 crudOps=5 gl=post-after-commit
+§SYNC_RELAY push accepted=6 skipped=0 head=8
+§SO-COMPLETE order=-1 ship=1 invoice=1 gl=post-after-commit sealed=Y gid=fd93703f-2c3a-4784-8574-f2e68fab62d5
+§CRUD process committed key=c_order viaGroup=Y gid=fd93703f-2c3a-4784-8574-f2e68fab62d5 ops=6 sealed=6 op_uuid=099455ae-d477-4ae8-aee1-47aae157dc5b to=CO verifyChain=ok
+§SYNC_RELAY push accepted=6 skipped=0 head=14
+§GL-POST-COMMIT ops=6 committed=true gid=5ddd81d2-c5d9-413b-b6ef-119a9be215a0 verifyChain=ok
+§SIGN installed alg=ECDSA-P256 pubkey=3059301306072a86… custody=idb-nonextractable
+§SYNC_RELAY push accepted=1 skipped=0 head=15
+§SYNC_RELAY push accepted=1 skipped=0 head=16
+§SO-FANOUT order=-15 doctype=135 policy(io,inv)=Y,Y policySrc=docPolicy header=sidecar lines=1 engineOps=4 crudOps=5 gl=post-after-commit
+§SYNC_RELAY push accepted=6 skipped=0 head=22
+§SO-COMPLETE order=-15 ship=1 invoice=1 gl=post-after-commit sealed=Y gid=b31150e3-bc7d-43c2-ab88-8b24b7a6b406
+§CRUD process committed key=c_order viaGroup=Y gid=b31150e3-bc7d-43c2-ab88-8b24b7a6b406 ops=6 sealed=6 op_uuid=4999fdd3-5507-433f-a15d-f9ff9d1d04b7 to=CO verifyChain=ok
+§SYNC_RELAY push accepted=6 skipped=0 head=28
+§GL-POST-COMMIT ops=6 committed=true gid=e0234ac1-0c2e-4c24-ac32-a86519dc438e verifyChain=ok
+§SIGN installed alg=ECDSA-P256 pubkey=3059301306072a86… custody=idb-nonextractable
+§SYNC_RELAY push accepted=1 skipped=0 head=29
+§SYNC_RELAY push accepted=1 skipped=0 head=30
+§SO-FANOUT order=-29 doctype=135 policy(io,inv)=Y,Y policySrc=docPolicy header=sidecar lines=1 engineOps=4 crudOps=5 gl=post-after-commit
+§SYNC_RELAY push accepted=6 skipped=0 head=36
+§SO-COMPLETE order=-29 ship=1 invoice=1 gl=post-after-commit sealed=Y gid=8d0402ab-c207-4dac-a765-213759378879
+§CRUD process committed key=c_order viaGroup=Y gid=8d0402ab-c207-4dac-a765-213759378879 ops=6 sealed=6 op_uuid=13bb9ba8-8879-4360-97b2-c8c436618cbd to=CO verifyChain=ok
+§SYNC_RELAY push accepted=6 skipped=0 head=42
+§GL-POST-COMMIT ops=6 committed=true gid=810d5401-0e35-431b-a71e-3695445d8212 verifyChain=ok
+§SIGN installed alg=ECDSA-P256 pubkey=3059301306072a86… custody=idb-nonextractable
+§SYNC_RELAY push accepted=1 skipped=0 head=43
+§SYNC_RELAY push accepted=1 skipped=0 head=44
+§SO-FANOUT order=-43 doctype=135 policy(io,inv)=Y,Y policySrc=docPolicy header=sidecar lines=1 engineOps=4 crudOps=5 gl=post-after-commit
+§SYNC_RELAY push accepted=6 skipped=0 head=50
+§SO-COMPLETE order=-43 ship=1 invoice=1 gl=post-after-commit sealed=Y gid=e421b2d4-aff3-43a1-9a11-17cbdba42d26
+§CRUD process committed key=c_order viaGroup=Y gid=e421b2d4-aff3-43a1-9a11-17cbdba42d26 ops=6 sealed=6 op_uuid=f250bc07-f9bc-4289-9fb1-5395858890a6 to=CO verifyChain=ok
+§SYNC_RELAY push accepted=6 skipped=0 head=56
+§GL-POST-COMMIT ops=6 committed=true gid=9d354297-e804-46f6-a47b-84cf88ecc717 verifyChain=ok
+§SIGN installed alg=ECDSA-P256 pubkey=3059301306072a86… custody=idb-nonextractable
+§SYNC_RELAY push accepted=1 skipped=0 head=57
+§SYNC_RELAY push accepted=1 skipped=0 head=58
+§SO-FANOUT order=-57 doctype=135 policy(io,inv)=Y,Y policySrc=docPolicy header=sidecar lines=1 engineOps=4 crudOps=5 gl=post-after-commit
+§SYNC_RELAY push accepted=6 skipped=0 head=64
+§SO-COMPLETE order=-57 ship=1 invoice=1 gl=post-after-commit sealed=Y gid=836481a7-2b75-46f6-82c0-5fde7d143839
+§CRUD process committed key=c_order viaGroup=Y gid=836481a7-2b75-46f6-82c0-5fde7d143839 ops=6 sealed=6 op_uuid=cfb5a23b-6ba3-433c-ba8b-5bfce4ef8bc2 to=CO verifyChain=ok
+§SYNC_RELAY push accepted=6 skipped=0 head=70
+§GL-POST-COMMIT ops=6 committed=true gid=55771398-70f5-4c46-98c8-1391d12d9490 verifyChain=ok
+##### east
+§SIGN installed alg=ECDSA-P256 pubkey=3059301306072a86… custody=idb-nonextractable
+§SIGN installed alg=ECDSA-P256 pubkey=3059301306072a86… custody=idb-nonextractable
+§SYNC_RELAY push accepted=1 skipped=0 head=1
+§SYNC_RELAY push accepted=1 skipped=0 head=2
+§SO-FANOUT order=-1 doctype=135 policy(io,inv)=Y,Y policySrc=docPolicy header=sidecar lines=1 engineOps=4 crudOps=5 gl=post-after-commit
+§SYNC_RELAY push accepted=6 skipped=0 head=8
+§SO-COMPLETE order=-1 ship=1 invoice=1 gl=post-after-commit sealed=Y gid=51f1869d-82fd-4c60-869d-5f3a5b1a0411
+§CRUD process committed key=c_order viaGroup=Y gid=51f1869d-82fd-4c60-869d-5f3a5b1a0411 ops=6 sealed=6 op_uuid=450a3af1-ae83-4064-a421-376ca5da5437 to=CO verifyChain=ok
+§SYNC_RELAY push accepted=6 skipped=0 head=14
+§GL-POST-COMMIT ops=6 committed=true gid=ca30a853-79d6-4e15-80f8-4be2881a7f13 verifyChain=ok
+§SIGN installed alg=ECDSA-P256 pubkey=3059301306072a86… custody=idb-nonextractable
+§SYNC_RELAY push accepted=1 skipped=0 head=15
+§SYNC_RELAY push accepted=1 skipped=0 head=16
+§SO-FANOUT order=-15 doctype=135 policy(io,inv)=Y,Y policySrc=docPolicy header=sidecar lines=1 engineOps=4 crudOps=5 gl=post-after-commit
+§SYNC_RELAY push accepted=6 skipped=0 head=22
+§SO-COMPLETE order=-15 ship=1 invoice=1 gl=post-after-commit sealed=Y gid=73a592ce-9253-45ba-8e80-5f1ffcbefccd
+§CRUD process committed key=c_order viaGroup=Y gid=73a592ce-9253-45ba-8e80-5f1ffcbefccd ops=6 sealed=6 op_uuid=fef6834b-2c66-4f57-acf8-dda31e521b91 to=CO verifyChain=ok
+§SYNC_RELAY push accepted=6 skipped=0 head=28
+§GL-POST-COMMIT ops=6 committed=true gid=27ad8277-f5b8-45ab-90e5-6b0f677975be verifyChain=ok
+§SIGN installed alg=ECDSA-P256 pubkey=3059301306072a86… custody=idb-nonextractable
+§SYNC_RELAY push accepted=1 skipped=0 head=29
+§SYNC_RELAY push accepted=1 skipped=0 head=30
+§SO-FANOUT order=-29 doctype=135 policy(io,inv)=Y,Y policySrc=docPolicy header=sidecar lines=1 engineOps=4 crudOps=5 gl=post-after-commit
+§SYNC_RELAY push accepted=6 skipped=0 head=36
+§SO-COMPLETE order=-29 ship=1 invoice=1 gl=post-after-commit sealed=Y gid=51820508-98d0-4d5d-8e24-83418d75a0fd
+§CRUD process committed key=c_order viaGroup=Y gid=51820508-98d0-4d5d-8e24-83418d75a0fd ops=6 sealed=6 op_uuid=2e349e0f-1669-4acd-b344-0bafe09472d1 to=CO verifyChain=ok
+§SYNC_RELAY push accepted=6 skipped=0 head=42
+§GL-POST-COMMIT ops=6 committed=true gid=1fea04fc-242a-4463-80e6-05ca9473144b verifyChain=ok
+§SIGN installed alg=ECDSA-P256 pubkey=3059301306072a86… custody=idb-nonextractable
+§SYNC_RELAY push accepted=1 skipped=0 head=43
+§SYNC_RELAY push accepted=1 skipped=0 head=44
+§SO-FANOUT order=-43 doctype=135 policy(io,inv)=Y,Y policySrc=docPolicy header=sidecar lines=1 engineOps=4 crudOps=5 gl=post-after-commit
+§SYNC_RELAY push accepted=6 skipped=0 head=50
+§SO-COMPLETE order=-43 ship=1 invoice=1 gl=post-after-commit sealed=Y gid=9c10886b-7365-40a8-80c1-69e378a09386
+§CRUD process committed key=c_order viaGroup=Y gid=9c10886b-7365-40a8-80c1-69e378a09386 ops=6 sealed=6 op_uuid=d9ee7281-e495-4bc2-8bd6-7a4d88a0e323 to=CO verifyChain=ok
+§SYNC_RELAY push accepted=6 skipped=0 head=56
+§GL-POST-COMMIT ops=6 committed=true gid=1926bc9a-b410-4654-a444-9850ef495684 verifyChain=ok
+§SIGN installed alg=ECDSA-P256 pubkey=3059301306072a86… custody=idb-nonextractable
+§SYNC_RELAY push accepted=1 skipped=0 head=57
+§SYNC_RELAY push accepted=1 skipped=0 head=58
+§SO-FANOUT order=-57 doctype=135 policy(io,inv)=Y,Y policySrc=docPolicy header=sidecar lines=1 engineOps=4 crudOps=5 gl=post-after-commit
+§SYNC_RELAY push accepted=6 skipped=0 head=64
+§SO-COMPLETE order=-57 ship=1 invoice=1 gl=post-after-commit sealed=Y gid=0ffe0a5c-cf53-484b-8a78-235bae3bf837
+§CRUD process committed key=c_order viaGroup=Y gid=0ffe0a5c-cf53-484b-8a78-235bae3bf837 ops=6 sealed=6 op_uuid=55e9216c-8f71-4ad3-a1e3-cbc57b14165b to=CO verifyChain=ok
+§SYNC_RELAY push accepted=6 skipped=0 head=70
+§GL-POST-COMMIT ops=6 committed=true gid=2aef2508-22d2-4dea-a9fd-37cf991e41b2 verifyChain=ok

@@ -1,0 +1,12 @@
+§FILM_CUE beat=cover t=0.000 frames=108 typing=0 answer_hold_frames=108 x1
+§FILM_CUE beat=before t=4.500 frames=445 typing=86 answer_hold_frames=359 x1
+§FILM_CUE beat=tab t=23.042 frames=437 typing=0 answer_hold_frames=145 x3
+§FILM_CUE beat=guide t=41.250 frames=394 typing=0 answer_hold_frames=197 x2
+§FILM_CUE beat=ask t=57.667 frames=369 typing=80 answer_hold_frames=289 x1
+§FILM_CUE beat=cli t=73.042 frames=322 typing=112 answer_hold_frames=210 x1
+§FILM_CUE beat=langs t=86.458 frames=446 typing=0 answer_hold_frames=148 x3
+§FILM_CUE beat=tenant t=105.042 frames=439 typing=186 answer_hold_frames=253 x1
+§FILM_CUE beat=legacy t=123.333 frames=626 typing=152 answer_hold_frames=474 x1
+§FILM_CUE beat=close t=149.417 frames=384 typing=0 answer_hold_frames=384 x1
+§FILM_KEYS typed=253 returns=5
+§FILM_DONE dur=165.417 frames=3970 planned=3970

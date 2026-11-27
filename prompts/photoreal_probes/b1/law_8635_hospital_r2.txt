@@ -1,0 +1,503 @@
+§CPE_LOADED v25 — full changelog moved to this file's own comment above (search any §TAG)
+§CPE_WALK_MODULE_LOADED
+§CPE_XR_MODULE_LOADED
+§MAXQ_LOADED v22 — full changelog moved to this file's own comment above (search any §TAG)
+§INPUTREG ready (facade over scene.js focus state)
+§WH-WALK loaded (data-gated pick-walk lens, SPATIAL_PICKING_SPEC §S-3..§S-5)
+§KERNEL_OPS_LOADED v13 (W-CHAIN/W-SIGN/G-IDENTITY/W-OPGROUP/W-RATE-INPUT/W-BLUE-FUTURE/W-EMIT/T6-persist-guard/T2-content-sign/T7-incremental/W-OPLOG-APPEND)
+§HIST_CONFIGURE source=viewer depth=high host=status-bar-wrap treeKey=bim.hist.tree._buildings_Hospital_extracted.db.s1790480309207
+§HIST_LIST n=0 cursor=-1 
+§HIST_SESSION id=s1790480309207 reHome=false treeKey=bim.hist.tree._buildings_Hospital_extracted.db.s1790480309207 dots=0
+§HIST_WRAP commitOp wrapped
+§EVT SNIFF|on — recording every §act, deny-filtered
+§HIST_TAP_WIRED fields(ghost,xray,cam,section,palette,clash) + sniffer ON + bar SUBSCRIBES tap — one symmetric line each
+§WHOLE-MOUNT page=viewer rootPrefix="../" mode=whole
+§WHOLE-LANDED page=viewer origin=http://127.0.0.1:8635 db=/buildings/Hospital_extracted.db ghost=1 sess=none reHome=false
+§UNIVERSAL_HISTORY_LOADED v3 (viewer adapter on shared HistoryBar)
+§ROOM-WALKER module loaded, version=v3 (§LOCAL-FRAME + §RASTER-EPS + §CONTAINMENT-ALIAS, post-§SUSPECT-LARGE)
+§LEVEL_DERIVE module loaded
+§LOC_AXIS module loaded
+§DLOD_NAV_READY pill=off engaged=false
+§SCHEDULE_AUTHOR_LOADED v8
+§SCHEDULE_INJECT_LOADED v1
+§SCHEDULE_SYNC_LOADED v1
+§SCHEDULE_AUTHOR_UI_LOADED v4
+§CONNECT broker loaded v1 (channels: selection/timeline/identity + toggle)
+§MAIN_JS v38 loaded — S287b single-owner render loop
+§BUILD_VERSION (no active controller yet — reload once to confirm)
+§GI_STILL ready — Alt+S renders a bounce still (r186 WebGPU SSGI, 8 passes, geometry-pass build)
+§UPGRADE_THREE local WebGPU ESM loaded r=186 WebGPURenderer=function
+§UPGRADE_THREE_DONE r=186 ms=61 BatchedMesh=function
+§COLOR_MGMT enabled=false
+§UPGRADE_ORBIT local ESM loaded
+§UPGRADE_ORBIT_DONE ms=12 OrbitControls=function
+§UPGRADE_API_CHECK BatchedMesh=function InstancedMesh=function BufferGeometry=function WebGLRenderer=undefined NeutralToneMapping=7 SRGBColorSpace=srgb
+§BVH_LOADING importing three-mesh-bvh@0.8.0 from CDN...
+§TRL_LOADED fetched locale=en_US keys=334
+§SFX_INIT enabled=false sounds=24 style=cinematic violin=false
+§SFX_CONFIG loaded=json sounds=24
+goatcounter: not counting because of: localhost
+Failed to load resource: the server responded with a status of 404 (Not Found)
+§PWA_INSTALL prompt captured (early)
+Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner.
+§BVH_FETCHED ms=287 exports=AVERAGE,BVHShaderGLSL,CENTER,CONTAINED,ExtendedTriangle,FloatVertexAttributeTexture,INTERSECTED,IntVertexAttributeTexture,MeshBVH,MeshBVHHelper,MeshBVHUniformStruct,NOT_INTERSECTED,OrientedBox,SAH,StaticGeometryGenerator,UIntVertexAttributeTexture,VertexAttributeTexture,acceleratedRaycast,computeBatchedBoundsTree,computeBoundsTree,disposeBatchedBoundsTree,disposeBoundsTree,estimateMemoryInBytes,getBVHExtremes,getJSONStructure,getTriangleHitPointInfo,shaderDistanceFunction,shaderIntersectFunction,shaderStructs,validateBounds
+§BVH_INIT three-mesh-bvh v0.8.0 monkey-patch applied in 287ms
+§BVH_SELFTEST boundsTree=true
+§SKY_OCCLUSION not installed (opt-in: add &skyocc=0.15)
+§LAMP_LOOP dynamic (point lights: one loop body per program, not one per lamp; &lamploop=0 = unrolled)
+§SOURCED_LIGHT installed patchedLines=9/9 (zone-once, point, lamp-data, spot, ambient, hemi, env irradiance, env radiance, zone-debug) — inert until an Alt+S stages it
+§STILL_SHADOW_CASCADE installed (lights_fragment_begin: once-per-fragment cascade choice + the sun's shadow line) — inert until an Alt+S sets uCsm
+§S277b_RENDERER WebGLRenderer r184 (WebGPU deferred)
+§RENDERER_CAPS multi_draw=on (fast batched path) gpu=ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 4060 Laptop GPU/PCIe/SSE2, OpenGL ES 3.2)
+§GPU_BASELINE_INIT gpu=ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 4060 Laptop GPU/PCIe/SSE2, OpenGL ES 3.2) multi_draw=true
+§TONEMAPPING type=ACESFilmic exposure=0.45
+§SKY_SHADER loaded — Preetham r184 (hidden until Shadow H or TM sun)
+§ENV_MAP Sky-based atmospheric env map ready (per-material, not scene.environment)
+§LENSFLARE loaded — disc + halo sprites
+§SW_REG scope=http://127.0.0.1:8635/viewer/
+§EFFECTS_INIT loaded — TAARenderPass + SSAO + Outline + Output
+§EFFECTS_LOADED v25 (§CPE_DISCIPLINE_REVEAL_FLYBACK new fast eased retrace sub-beat replaces the pull-out->round-2 teleport cut; §CPE_DISCIPLINE_REVEAL_ORDER discs sorted ascending by real avg bbox volume, MEP forced last; §CPE_DISCIPLINE_REVEAL_FADE tail-parade boundaries get a brief overlap window instead of an instant swap; §CPE_AIM_DEPTH_RETIRED (2026-09-02) §CPE_AIM_DEPTH REMOVED — path-follow is now the ONLY automatic gaze rule in the walk. It was the sole surviving exception (§CPE_AIM_SIMPLIFY, 2026-08-14, which had already retired §CPE_AIM_DENSITY), and its own formula shows why it had to go: clearM = clamp(envelope*0.06, 3, 8) = 8.0m on Hospital and w = 1 - smoothstep( fwdClear/clearM), so HALF its authority was spent at 4m of forward clearance — a "something within 8m" rule, not the dead-end rescue it was described as. Measured before removal: Hospital 28/91 probes firing / gaze turned 83.45deg, HHS_Office 65/65 probes active. Gone with it: §CPE_AIM_GRID, §CPE_AIM_LATCH, §CPE_AIM_DEPTH_SERIES/_SCALE/_VERTICALITY/ _OPEN_TAPER/_FWD_CLEAR/_BUILDUP, and §CPE_STICK_HOLD's aim half (_holdBoostAt fed only _aimDepthApply — a held beat is now a pure rate dip; §CPE_AIM_PIN is the authored head-turn that replaces it). §CPE_AIM_DEPTH_FREEZE and §CPE_CORR_BRANCH are KEPT, both reduce motion; §CPE_AIM_PIN a pinned band's Voronoi zone of the walk overrides path-follow outright (_buildPinZones/_pinLookAtAt inside _beat3Pose); §CPE_PACE_SWING_SOFTEN CINEMA_PACE_SWING 1.6->1.45, direct user tuning request; §CINEMA_LOOKAHEAD_ARC no-threshold look-ahead; §CPE_EVEN_TURN cost-parameterized walk + §CPE_SEAM_CONTINUOUS Beat2→3 opening blend; §STAFFAGE_OUTSIDE_VARIETY + §STAFFAGE_FLOOR_PHANTOM)
+§HELPERS_READY collectMeshes+filterInstancedMesh+dbQuery+reportBug+QR+snags
+§SURFACE_RULES ON (default; ?surf=off for the previous look)
+§COLOR_PALETTE built with bim-panel + icon slider rows
+§PILL_AUDIT ids_checked=7 collisions=[xray,section,sunglass,fly,shadow,bg,grid2d] removed=[xray,section,sunglass,fly,shadow,bg,grid2d] (dead overflow-menu registration removed — canonical path = pill_builder.js _actions/_sync)
+§UI_PILL rendered=true icons=0 total=0
+§SHADOW_GROUND_SWATCH key=off
+§VISUALFX_EXTEND rows=4
+§PILL_BUILDER ready actions=38 layout=rail
+§MOBILE_BAR_READY actions=38
+§ESCAPE_ROUTE_INIT wired stride=0.75m (uncited) walk=1.19m/s (SFPE, cited) window=orbit[0.15..0.7000000000000001] draw=0.7 fade=0.1 easeA=1.2 (no allocation until build)
+§LOADPATH_INIT wired gate=measure (§129.1 v8b — camera holds at arm pose, no cut; hold-point searched forward from topout; pick/chain/visible(clip+clones)/framing/hold/restore; controls: window.__lpBreakSupport, window.__lpSkipRestore, window.__lpHideRest, window.__lpFrameOff, window.__lpClipAll)
+§LEDGER_TICKER_INIT wired gate=measure (§129.2 v2 — gate requires ALL rows sealed, build runs one FULL verifyChain (never incremental/cached) against the live A.db, buildup paints the count-up, topout locks 2s; control: window.__ledgerFlipByte=<id>)
+§FLYTHRU_DIMS_INIT wired (gate + gap finder; no allocation until a cast runs)
+§FLYTHRU_CUES_INIT wired (baseline B1/B2/B4/B5; scene geometry + DB numbers, no frame map)
+§FLYTHRU_DATUM_INIT wired (ground grid + ONE upright with storey rules; depth-tested, occluded by the build)
+§SUN_PATH ready — NOAA low-precision solar position, offline, no network
+§SLAB_BEAT_INIT wired (one floor plate per film, marked as it is laid: NO TINT (§45) — a shine-through box OUTLINE plus the surface area in the fixed §MEASURE_BOX; §40.2 retired the X and the in-plane label plane)
+§LINEAR_BEAT_INIT wired (one column + one beam per film, measured as they go up; 2D standard cue, rides Measure)
+§INDOOR_BEATS_INIT wired (hall walkable area bounded at doors · stair going · door type · clear height; 4 slots, rides Measure)
+§FLYOUT_BEATS_INIT wired (wing spans from the largest plate's raster + roof-edge-to-sill facade heights, slotted into the pull-out window by held legibility; rides Measure)
+§FILM_BOXES_INIT wired (three fixed boxes: HUD column, status below it, Measure panel opposite; geometry is a pure function of frame size + corner + armed members — never of the text)
+§RULE_FILM_INIT wired (Structural Sanity + Egress findings as world content for the whole film, clash model — §70)
+[TOUR] §TOUR_VERSION v19 (timeline-scrub + highlight-first + SUSPECT_OPEN + wall-legal room-spine bridge + A* polyline flight + no lift-door entrance — FLY_TOUR_CORRIDOR_GRAPH.md)
+§MEASURE_VERSION S245e-v1
+§CLASH_MATRIX_INIT loaded
+§CLASH_NARROW_INIT wired (no allocation until qualifyRows) triPairCap=4096 obbEps=0.000001 vertCap=4096 (§MESH_OVERLAP_DEPTH on)
+§CLASH_FILM_INIT wired (no allocation until build)
+§CLASH_LABELS_INIT wired topN=8 rankMarginM=0.6 fade=0.5s text=A:rgb(255,133,129)/B:rgb(137,176,255) (marker colours tinted 0.45 toward white) weight=700 plate=rgba(0,0,0,0.45) leader=rgba(255,255,255,0.92)+halo rgba(0,0,0,0.55) (no allocation until update)
+§CLASH_REPORT_MODULE loaded
+§CLASH_SNAG_MODULE loaded
+[S210] §SITECAM_INIT textBtn=removed
+§SHARE_LOADED share.js v2 (S265 Phase 3 — navigator.share + buildShareUrl)
+§CONNECT register surface=viewer inst=inst-litrat1
+[S211] §NLP_INIT voice=true
+[S211] §NLP_READY patterns=10 voice=true
+§GHOSTGLASS_READY
+[S274] §ERROR_REPORTER_READY max=3 toasts/session
+[GridAssembler] §GRID_ASSEMBLE loaded=[GridDims, GridConfig, GridViews, DoorArcs, SectionCut, Elevation, GridContours, DimChains, GridDrag, setupGridOverlay]
+[GridDrag] §GRID_DRAG init — pointer events wired
+[GridOverlay] §GRID_INIT GridDrag wired
+[GridScissors] §GRID_SCISSORS init — all 3 axes ready
+[GridOverlay] §GRID_INIT GridScissors wired
+[GridOverlay] §GRID_INIT ready
+[GridAssembler] §GRID_ASSEMBLE OK — APP.toggleGridOverlay ready
+§4D_CHANNEL_READY listener=viewer
+§RENDER_LOOP start total=1
+§PILL_SYNC synced=5
+[S203] §QUOTA available=10240MB used=0MB
+§IDLE_GATE park — rAF chain stopped (self-parking, 0 frames) parks=1
+[S203] §PERSIST granted=false — cache is best-effort, browser may evict
+[GridDrag] §GRID_RULES loaded grid_move={"min_bay_m":0.5,"max_extend_m":5,"snap_m":0.05,"max_step_m":2} clearance_count=6
+[GridDrag] §GRID_RULES loaded — shared to window._gridRules
+§PHOTO_STAFFAGE_PRELOAD warming 12 cutouts + car mesh
+§STAFFAGE_CAR_MESH loaded verts=2058 tris=686
+§STAFFAGE_TEX_READY people/person_standing_casual_male.png
+§STAFFAGE_TEX_READY people/person_standing_gesture_female.png
+§STAFFAGE_TEX_READY people/person_walking_shopping_female.png
+§STAFFAGE_TEX_READY people/person_walking_gym_female.png
+§STAFFAGE_TEX_READY people/person_sitting_formal_male.png
+§STAFFAGE_TEX_READY people/person_sitting_casual_female.png
+§STAFFAGE_TEX_READY trees/tree_oak_big.png
+§STAFFAGE_TEX_READY trees/tree_linden_big_old.png
+§STAFFAGE_TEX_READY trees/tree_poplar.png
+§STAFFAGE_TEX_READY trees/tree_oak_young.png
+§STAFFAGE_TEX_READY trees/tree_beech.png
+§STAFFAGE_TEX_READY trees/tree_linden_city.png
+§SHORTCUT key=2 status=ok target=open2DPlans
+§SHORTCUT key=4 status=ok target=export4D5D
+§SHORTCUT key=+ status=ok target=_zoomStep
+§SHORTCUT key=- status=ok target=_zoomStep
+§SHORTCUT key=x status=ok target=console.log
+§SHORTCUT key=f status=ok target=openFindPanel
+§SHORTCUT key=p status=ok target=toggleSunglass
+§SHORTCUT key=t status=ok target=toggleTimeMachine
+§SHORTCUT key=z status=ok target=UniversalHistory.toggleOpen
+§SHORTCUT key=w status=ok target=WholeHistory.toggleOpen
+§SHORTCUT key=l status=ok target=toggleFlyAround
+§SHORTCUT key=o status=ok target=toggleDlodNav
+§SHORTCUT key=v status=ok target=toggleSfx
+§SHORTCUT key=s status=ok target=screenshot
+§SHORTCUT key=n status=ok target=toggleNightMode
+§SHORTCUT key=b status=ok target=toggleBackground
+§SHORTCUT key=i status=ok target=toggleIssues
+§SHORTCUT key=h status=ok target=toggleShadow
+§SHORTCUT key=c status=ok target=_panels.splice
+§SHORTCUT key=m status=ok target=toggleMeasure
+§SHORTCUT key=r status=ok target=_cycleRoom
+§SHORTCUT key=a status=ok target=resetCamOrbit
+§SHORTCUT key=q status=ok target=toggleCamPivot
+§SHORTCUT key=Ctrl+S status=ok target=saveModelDb
+§SHORTCUT key=Ctrl+O status=ok target=openModelDb
+§SHORTCUT key== status=ok target=_openSettingsPanel
+§SHORTCUT key=/ status=ok target=quickShare
+§SHORTCUT key=' status=ok target=toggleHoverName
+§SHORTCUT key=. status=ok target=toggleMobilePill
+§SHORTCUT_AUDIT total=29 ok=29 inline=0 dead=0 deadKeys=-
+§SCRIPT_DUP_AUDIT total=202 dup=0
+§PANEL_REGISTER id=toolbar hasNav=true hasClose=false totalPanels=1 allIds=[toolbar]
+§LISTNAV_WIRE panel=toolbar
+§PANEL_REGISTER id=section hasNav=true hasClose=true totalPanels=2 allIds=[toolbar,section]
+§LISTNAV_WIRE panel=section
+§PANEL_REGISTER id=sunglass hasNav=true hasClose=true totalPanels=3 allIds=[toolbar,section,sunglass]
+§LISTNAV_WIRE panel=sunglass
+§PANELS_INIT static panels registered
+§SHORTCUT_AUDIT MISS action=help key=F1 — no scene.js shortcut
+§SHORTCUT_AUDIT MISS action=egress key=e — no scene.js shortcut
+§SHORTCUT_AUDIT MISS action=xray key=Alt+Z — no scene.js shortcut
+§SHORTCUT_AUDIT MISS action=fullscreen key=F11 — no scene.js shortcut
+§SHORTCUT_AUDIT MISS action=precision key=Caps Lock — no scene.js shortcut
+§SHORTCUT_AUDIT matched=24 missing=5
+[S192] §DB_SPLIT_DETECT meta=/buildings/Hospital_meta.db geo=/buildings/Hospital_geo.db found=true
+Failed to load resource: the server responded with a status of 404 (Not Found)
+[S260b] §POSITIONS_MISS — falling back to meta.db for bboxes
+[S203] §CACHE_KEY url=Hospital_meta.db key=buildings/Hospital_meta.db
+[S203] §CACHE_MISS_READ url=Hospital_meta.db — not in IDB, will fetch
+[S203] §CACHE_WRITE_OK url=Hospital_meta.db size=24.4MB
+§DB_LOAD_STEP patch-fetch /buildings/patches/Hospital_meta.db.sql
+§DB_LOAD_STEP patch-response status=200
+[S203] §PATCH_APPLY Hospital_meta.db applied (2592535 bytes, 19208 statements, 39 chunk(s)) from /buildings/patches/Hospital_meta.db.sql
+[S203] §NOGEO_COMPOSE composed=233 ms=164 (aggregate-parent elements, transform_source=composed_aggregate, union bbox of real AGGREGATES children)
+[S192] §DB_META_LOADED size=24.4MB
+[S260b] §ACTIVE_BUILDING_EARLY name=Hospital
+§HELPERS_QUERY_ERR no such table: m_bom_line SELECT COUNT(*) FROM m_bom_line WHERE role='BIN'
+§WH PILL gate=off (locator-GUID bins absent)
+§4D_PILL_GATE capable=true has_schedule=false
+[S260b] §GEO_CACHE_CHECK url=Hospital_geo.db hit=false
+[S203] §CACHE_KEY url=Hospital_geo.db key=buildings/Hospital_geo.db
+[S203] §CACHE_MISS_READ url=Hospital_geo.db — not in IDB, will fetch
+[S203] §CACHE_WRITE_OK url=Hospital_geo.db size=228.6MB
+§SPLIT_GEO_LOADED src=download size=229MB ms=988
+§CENTRES_QUERY A.db=true tables=[{"columns":["name"],"values":[["project_metadata"],["elements_meta"],["element_transforms"],["element_instances"],["schedules"],["tasks"],["task_sequences"],["task_elements"],["qto_cache"],["rel_contained_in_space"],["storey_walkable_raster"],["rel_aggregates"],["spatial_structure"]]}]
+§CENTRES_RESULT rows=1 bldCol=true first=["Hospital",63415,46.25474095058637,92.98373596840268,181.2803396060723]
+[S192] §BOOTSTRAP centres=1
+§FOG_DENSITY env=100m density=0.00400
+[S192] §OFFSET ifc=(46, 93, 181)
+§GROUND_Y src=gf-storey-slab(Level 1) z=165.36 y=-15.92
+[S200] §GROUND_INIT y=-15.9 visible=false
+§RENDER_LOOP start total=2
+[S203] §CAMERA envelope=101x151x43m dist=226m
+[S204] §TRUE_NORTH 0° (source=absent) — the bearing of MODEL north measured from TRUE north; sitecam/walk rotate by this
+[S204] §GEOREF_SITE lat=unknown lon=unknown elev=unknown (source=absent)
+[S192] §DS_AUTO_START bld=Hospital dist=192m
+§MATNAME_COL present=true
+[BBOX] §BBOX_PLACEHOLDERS total=63182 shown=63182 step=1 discs=6 mobile=false short_rows=0
+[S192] §DS_QUEUED bld=Hospital elements=63182 dlod=false (sorted by camera distance)
+[S241] §BBOX_EARLY placeholders drawn before library fetch
+[S223] §DIFF_PARAM diffdb=none db_ready=true computeDiff=function
+§HASH_PARSE keys= clash=none db=true
+§SCENE_STATE_RESTORE none (no scene_state table)
+§FPS_MODE mean=24067.4 max=24067.4 n=1 dlod=off disp=solid fly=0 orbit=0
+[S231] §NORMALS_PROBE libHasNormals=false
+[S231] §BLOB_FETCH new=250 total_cached=250 normals_pre=0 normals_cpu=250 bvh=0
+[S231] §INSTANCED_STREAM batch=500 pending_hashes=250
+§INST_RGBA_SPLIT this flush hashes=3 extraGroups=3 elements=20 (building total {"hashes":3,"extraGroups":3,"elements":20})
+§SURFACE_ROOF_LAYER bld=Hospital flat=26558 roofLayer=488 ms=241
+§TRIPLANAR_INIT class=IfcColumn tex=textures/materials/concrete_color_1k.jpg src=surf:R3 name=
+§TRIPLANAR_INIT class=IfcWall tex=textures/materials/concrete_color_1k.jpg src=surf:R3 name=≈ Slate
+§TRIPLANAR_INIT class=IfcColumn tex=textures/materials/concrete_color_1k.jpg src=surf:R3 name=
+[S260] §BATCHED_FLUSH instanced=212 batched=288 drawCalls=60 (was 500) mobile=false
+§MEP_DISC_COVERAGE instancedMeshes uniformDisc=25 mixedDisc=0 (100% now keyed; these were ALL 'Unknown' before §MEP_DISC_PALETTE)
+§BATCHED_DETAIL buckets=35 elements=288 saved=253 drawCalls
+§BILLBOARD_NAME no BIM_OOTB_NamePlate element in this db — apply migration/billboards/terminal_billboard_nameplate.sql
+[S260] §PROGRESSIVE_FLUSH at=500/63182 drawCalls=74
+§IDLE_GATE wake parks=1 (1-in-25 sample)
+§TRIPLANAR_TEX_READY path=textures/materials/concrete_color_1k.jpg
+§TRIPLANAR_TEX_READY path=textures/materials/concrete_rough_1k.jpg
+§TRIPLANAR_TEX_READY path=textures/materials/concrete_normal_1k.jpg
+§INST_RGBA_SPLIT this flush hashes=7 extraGroups=7 elements=38 (building total {"hashes":10,"extraGroups":10,"elements":58})
+§TRIPLANAR_INIT class=IfcColumn tex=textures/materials/concrete_color_1k.jpg src=surf:R3 name=≈ Grey
+§BILLBOARD_NAME no BIM_OOTB_NamePlate element in this db — apply migration/billboards/terminal_billboard_nameplate.sql
+§FPS_MODE mean=546.6 max=639.7 n=4 dlod=off disp=solid fly=0 orbit=0
+§INST_RGBA_SPLIT this flush hashes=4 extraGroups=4 elements=36 (building total {"hashes":14,"extraGroups":14,"elements":94})
+§ENTOURAGE_INIT variant=tree class=IfcBuildingElementProxy
+§TRIPLANAR_INIT class=IfcColumn tex=textures/materials/concrete_color_1k.jpg src=surf:R3 name=≈ Light Grey
+§TRIPLANAR_INIT class=IfcFooting tex=textures/materials/concrete_color_1k.jpg src=surf:R3 name=≈ Light Grey
+§TRIPLANAR_INIT class=IfcWall tex=textures/materials/concrete_color_1k.jpg src=surf:R3 name=
+§TRIPLANAR_INIT class=IfcWall tex=textures/materials/concrete_color_1k.jpg src=surf:R3 name=≈ Grey
+§BILLBOARD_NAME no BIM_OOTB_NamePlate element in this db — apply migration/billboards/terminal_billboard_nameplate.sql
+§INST_RGBA_SPLIT this flush hashes=1 extraGroups=1 elements=7 (building total {"hashes":15,"extraGroups":15,"elements":101})
+§TRIPLANAR_INIT class=IfcFooting tex=textures/materials/concrete_color_1k.jpg src=surf:R3 name=
+§BILLBOARD_NAME no BIM_OOTB_NamePlate element in this db — apply migration/billboards/terminal_billboard_nameplate.sql
+§FPS_MODE mean=427.3 max=600.9 n=6 dlod=off disp=solid fly=0 orbit=0
+§INST_RGBA_SPLIT this flush hashes=3 extraGroups=3 elements=39 (building total {"hashes":18,"extraGroups":18,"elements":140})
+§BILLBOARD_NAME no BIM_OOTB_NamePlate element in this db — apply migration/billboards/terminal_billboard_nameplate.sql
+§INST_RGBA_SPLIT this flush hashes=3 extraGroups=3 elements=20 (building total {"hashes":21,"extraGroups":21,"elements":160})
+§TRIPLANAR_INIT class=IfcSlab tex=textures/materials/concrete_color_1k.jpg src=surf:R2c name=≈ Light Grey
+§TRIPLANAR_INIT class=IfcSlab tex=textures/materials/concrete_color_1k.jpg src=surf:R2c name=
+§BILLBOARD_NAME no BIM_OOTB_NamePlate element in this db — apply migration/billboards/terminal_billboard_nameplate.sql
+§FPS_MODE mean=342.6 max=409.5 n=6 dlod=off disp=solid fly=0 orbit=0
+§TRIPLANAR_INIT class=IfcSlab tex=textures/materials/concrete_color_1k.jpg src=surf:R2c name=≈ Light Grey
+§BILLBOARD_NAME no BIM_OOTB_NamePlate element in this db — apply migration/billboards/terminal_billboard_nameplate.sql
+§MEP_SMOOTH_NORMALS geoms=1166 ranges=8393 vertsSmoothed=15591853 vertsKeptHard=5511311 creaseDeg=55 minDistinctN=16 ms=3483.2
+§DUCT_SILHOUETTE considered=13443 measured=9876 refined=819 skippedTooSmall=9057 skippedNotCurved=3567 addedVerts=1051074 addedTris=350358 smoothMid=32808 hardMid=140961 gateM=5 alpha=0.5 kPxPerRad=935.3 meanSagittaMm=20.866->5.212 (4.00x)
+§IDX16 geoms=0 saved=0.0MB (merged path unused on this building — the per-element site in scene.js carries it)
+§PHOTO_PREWARM ms=3484 did=[mepSmooth,hdri,groundTex] — this work is now OFF the first Alt+S press (measured 8,923.6 ms of it on Hospital)
+§FPS_MODE mean=1066.9 max=3732.1 n=5 dlod=off disp=solid fly=0 orbit=0
+§BILLBOARD_NAME no BIM_OOTB_NamePlate element in this db — apply migration/billboards/terminal_billboard_nameplate.sql
+§SWUPDATE_TOAST skip reason=first-claim (page had no controller at load; this is the initial install taking over, not a new version) — no toast
+§LAYER2_HDRI_READY belfast_sunset_puresky_1k — real photographed envMap ready
+§BILLBOARD_NAME no BIM_OOTB_NamePlate element in this db — apply migration/billboards/terminal_billboard_nameplate.sql
+§FPS_MODE mean=456.3 max=635.3 n=5 dlod=off disp=solid fly=0 orbit=0
+§BILLBOARD_NAME no BIM_OOTB_NamePlate element in this db — apply migration/billboards/terminal_billboard_nameplate.sql
+[S260] §PROGRESSIVE_FLUSH at=54500/63182 drawCalls=4208
+§INST_RGBA_SPLIT this flush hashes=4 extraGroups=4 elements=56 (building total {"hashes":25,"extraGroups":25,"elements":216})
+§BILLBOARD_NAME no BIM_OOTB_NamePlate element in this db — apply migration/billboards/terminal_billboard_nameplate.sql
+§INST_RGBA_SPLIT this flush hashes=2 extraGroups=2 elements=28 (building total {"hashes":27,"extraGroups":27,"elements":244})
+[S260] §BATCHED_FLUSH instanced=1223 batched=1459 drawCalls=234 (was 2682) mobile=false
+§MEP_DISC_COVERAGE instancedMeshes uniformDisc=2863 mixedDisc=7 (100% now keyed; these were ALL 'Unknown' before §MEP_DISC_PALETTE)
+§BATCHED_DETAIL buckets=113 elements=1459 saved=1346 drawCalls
+§CONTRACT_CHECK batch=38118 instanced=25016 merged=0 mergedIndex=0 guidMap=63182 streamed=63182 orphans=0
+§BILLBOARD_NAME no BIM_OOTB_NamePlate element in this db — apply migration/billboards/terminal_billboard_nameplate.sql
+[BBOX] §BBOX_CLEARED
+§TRI_SRC_TALLY bld=Hospital rows=63182 palette_tick=0 palette_recoloured=0 named=6664 approx_named=6664 by_name=0 by_class=51516 alpha_none=1442 none=10224 textured=51516 distinct_names_resolved=0 NO-OP — no element resolved by material_name on this building
+§TRI_BIG_ONLY_TALLY bld=Hospital switch=off texturedNow=51516 texturedUnderSwitch=3293 perClass(now/switch)=IfcPipeSegment:14452/0 IfcPipeFitting:13621/0 IfcMember:6635/0 IfcDuctSegment:4816/0 IfcDuctFitting:4740/0 IfcBeam:1970/0 IfcWallStandardCase:1310/1310 IfcPlate:1276/0 IfcColumn:604/604 IfcCovering:602/602 IfcFooting:553/553 IfcValve:470/0 IfcWall:158/158 IfcRailing:93/0 IfcCableCarrierSegment:84/0 IfcCableCarrierFitting:66/0 IfcSlab:35/35 IfcStair:30/30 IfcStairFlight:1/1
+§SURFACE_RULES_TALLY bld=Hospital R2c=5(againstOwnRow=0) R3=1315(againstOwnRow=0) R4=61(againstOwnRow=0) R5=1912(againstOwnRow=0) R6=9881(againstOwnRow=0) R7=6579(againstOwnRow=0) R8=41987(againstOwnRow=0) R9=1442(againstOwnRow=0) textured=R1+R2+R3=1320
+§SURFACE_RULES_COLOUR bld=Hospital authored=63182 classDefault=0 (colours unchanged by the rules)
+§SURFACE_RULES_CLASS bld=Hospital IfcPipeSegment:R8=14452 IfcPipeFitting:R8=13621 IfcMember:R6=6635,R9=492 IfcBuildingElementProxy:R7=5729 IfcDuctSegment:R8=4816 IfcDuctFitting:R8=4740 IfcPlate:R6=1276,R9=935 IfcBeam:R6=1970 IfcFireSuppressionTerminal:R8=1354 IfcWallStandardCase:R5=1310 IfcLightFixture:R8=1272 IfcDistributionControlElement:R8=861 IfcColumn:R3=604 IfcCovering:R5=602 IfcFooting:R3=553 IfcValve:R8=470 IfcDoor:R7=438,R9=2 IfcFurniture:R7=201 IfcWall:R3=158 IfcElectricAppliance:R8=138 IfcWindow:R7=118,R9=13 IfcSwitchingDevice:R8=113 IfcRailing:R7=93 IfcCableCarrierSegment:R8=84 IfcCableCarrierFitting:R8=66 IfcSlab:R4=30,R2c=5 IfcStair:R4=30 IfcStairFlight:R4=1
+§SURFACE_OPENING_SINGLE_STYLE bld=Hospital class=IfcWindow n=118
+§SURFACE_OPENING_SINGLE_STYLE bld=Hospital class=IfcDoor n=438
+§SURFACE_R10_SPLIT bld=Hospital windows clean=118 fallback=0 (none) doors hardware=5 leafOnly=418 (untouched: NO_LEAF:15) paneAlpha=0.300 paneAlphaSrc=authored IfcWindow glazing
+§SURFACE_R10_PATHS bld=Hospital instanced=75 merged=0 batchedMoved=77 single=48 (moved out of a batch/merge -> instanced 29, -> single 48)
+§SURFACE_R10_SHADOW bld=Hospital paneCasters=0 frameCasters=118 (split window meshes=60, pane triangles drawn=2976, all discarded in the depth pass by aPane)
+§MEP_HUE_TALLY bld=Hospital rows=63182 mep_elements=41987 tinted=40634 tier1_authored_name=0 tier1_own_hue=1353 no_trade_hue=0 distinct_hues=5 trade_codes=5 legend_ceiling=12 T=0.344 inst_mep_uniform=2870 inst_mep_mixed=0 consulted_T=41987 min_dist_to_T=0.2679 hue_off=0
+§MEP_HUE_CODE bld=Hospital code=PLB n=17096
+§MEP_HUE_CODE bld=Hospital code=MEP n=13495
+§MEP_HUE_CODE bld=Hospital code=FP n=6832
+§MEP_HUE_CODE bld=Hospital code=ELEC n=1623
+§MEP_HUE_CODE bld=Hospital code=SAN n=1588
+[DLOD] §DLOD_ENABLE count=63182 mode=per_slot_frustum
+[DLOD] §DLOD_REFS built instanced=2887 imInstances=25016 (BM handled by r184 perObjectFrustumCulled)
+§DLOD_TICK n=1 ms_mean=1.90 ms_max=1.90 flips_mean=0.0 fly=0 vfCamActive=0 imHid=0 imVis=25016
+§KERNEL_OP committed id=1 uuid=19a87829 type=BUILDING_OPEN params={"name":"Hospital","count":63182}
+§WHOLE-DEDUP doc=viewer|Opened Hospital day=2026-09-27 action=append count=1
+§WHOLE-REC page=viewer kind=op ts=1790480350349 label="Opened Hospital"
+§HIST_PUSH n=1 idx=0 kind=op label="Opened Hospital" opType=BUILDING_OPEN opId=1
+§HBA_LAZY armed — no seed, no pill promotion until the Human-Asset pill is used (guidMap=63182, deep_link=no)
+§IDLE_GATE park — rAF chain stopped (self-parking, 0 frames) parks=2
+[S258] §BVH_DEFERRED built=20609 ms=1923 (incremental)
+§KRN_SEAL_FROM mode=incremental fromId=0 sealed=1 tip=69be2292e5ad…
+§KRN_PERSIST url=/buildings/Hospital_extracted.db size=25196KB tip=69be2292e5ad…
+§RENDER_LOOP start total=3
+§FPS_MODE mean=747.5 max=4234.9 n=8 dlod=off disp=solid fly=0 orbit=0
+§IDLE_GATE wake parks=2 (1-in-25 sample)
+§IDLE_GATE park — rAF chain stopped (self-parking, 0 frames) parks=3
+§KBD_ROUTE drop key=Alt noMod=false notInput=true
+§IDLE_GATE wake parks=3 (1-in-25 sample)
+§STILL_LOCK on (only Esc exits)
+§STILL_STATUS painted t=46756.8
+§KBD_ROUTE Alt+S → still-refine
+§HIST_PUSH n=2 idx=1 kind=event label="Alt+S → still-refine"
+§HIST_TAP_DOT tag=KBD_ROUTE label="Alt+S → still-refine" t=112 (from §-stream, no per-feature wiring)
+§STILL_STATUS frame t=46757.6
+§NAV_FIND_VERSION v41 — yellow-outline + focus-bg(tree+results) + adjustable-panel
+§PANEL_REGISTER id=find hasNav=true hasClose=true totalPanels=4 allIds=[toolbar,section,sunglass,find]
+§PANEL_NAV_WIRE id=find zones=4
+§PANEL_NAV_FIND wired zones=4
+[S233] §NAV_FIND_MODULE_LOADED panel=true
+[S233] §NAV_FIND_WIRED openFindPanel=function
+[S233] §NAV_MODULE_LOADED
+[S239] §NAVIGATE_LAZY_LOADED
+§PANEL_PLACE id=find-panel col=0 right=12 others=0
+§HELPERS_QUERY_ERR no such table: rooms_meta SELECT version FROM rooms_meta WHERE id=1
+[NEEDLE] §NEEDLE_VERSION_STALE bld=Hospital_extracted.db stored=null current=v3 (§LOCAL-FRAME + §RASTER-EPS + §CONTAINMENT-ALIAS, post-§SUSPECT-LARGE) — recompiling
+[NEEDLE] §PATCH_APPLY Hospital_extracted.db applied (1381431 bytes, 9466 statements, 19 chunk(s)) from /buildings/patches/Hospital_extracted.db.sql [needle]
+§STOREY_DATUM_FLOOR st=Level 1 walls=723 meanCentreZ=168.605 meanBaseZ=166.088 drop=2.518
+§STOREY_DATUM_FLOOR st=Level 2 walls=544 meanCentreZ=174.155 meanBaseZ=171.979 drop=2.176
+§STOREY_DATUM_FLOOR st=Level 3 walls=1445 meanCentreZ=178.883 meanBaseZ=177.367 drop=1.516
+§STOREY_DATUM_FLOOR st=Level 4 walls=1655 meanCentreZ=183.820 meanBaseZ=182.403 drop=1.417
+§STOREY_DATUM_FLOOR st=Level 5 walls=1544 meanCentreZ=188.842 meanBaseZ=187.538 drop=1.304
+§STOREY_DATUM_FLOOR st=Level 6 walls=333 meanCentreZ=193.321 meanBaseZ=192.165 drop=1.156
+§STOREY_DATUM_FLOOR st=Level 7 walls=9 meanCentreZ=201.429 meanBaseZ=199.814 drop=1.616
+§STOREY_DATUM_FLOOR st=Level 7A walls=38 meanCentreZ=197.121 meanBaseZ=196.470 drop=0.651
+§NO-OVERLAP: 0 cross-room overlaps (invariant holds)
+§STOREY_ROW_EMIT walked=8 withRooms=3 withoutRooms=5 emitted=8 (old guard would have emitted 3)
+§ROOM-WALKER §ROOMS_META stamped version=v3 (§LOCAL-FRAME + §RASTER-EPS + §CONTAINMENT-ALIAS, post-§SUSPECT-LARGE) room_count=7
+[NEEDLE] §NEEDLE_INJECT bld=Hospital source=patch+walker rooms=7 rects=8
+[NEEDLE] §NEEDLE_STAMP rooms_meta version=v3 (§LOCAL-FRAME + §RASTER-EPS + §CONTAINMENT-ALIAS, post-§SUSPECT-LARGE) rooms=7 source=patch+walker
+[MG] §SHELL_GHOST_AUTO skipped (navigate module loaded by still, not a ghost request)
+[NEEDLE] §NEEDLE_PERSIST idb=ok bytes=25804800
+§STILL_ROOMS ready ms=661
+§STILL_STATUS stagingStart t=47422.3 gap=665.5ms (rooms 661ms)
+§ZONE_IDB_CACHE prime bld=Hospital none readMs=6
+Failed to load resource: the server responded with a status of 404 (Not Found)
+§SPACE_USES bld=Hospital none (http://127.0.0.1:8635/buildings/space_uses/Hospital.json)
+§GROUND_WETNESS_OVERRIDE value=0.5 userSet=false
+[DLOD] §DLOD_RESTORE all visible
+[DLOD] §DLOD_DISABLE reason=photo-still
+§DLOD_STILL_OWNERSHIP paused=1 dlodEnabledNow=0 tmOn=0
+§STILL_GHOST_OWNERSHIP suspended=0 ghostOnNow=0
+§PHOTO_PAINT_SEED seed=0.9891 locked=false puddles=6
+§GROUND_Y src=gf-storey-slab(Level 1) z=165.36 y=-15.92
+§GROUND_ALBEDO gain=2.30 texAvgLum=0.155 effAlbedo=0.356 color=2.30 map=none
+§MIRROR_TRUE_REFLECT bld=Hospital no mirrors — nothing to fix
+§PHOTO_SHADOW_TARGET src=building-bbox-centre target=(-7.3,2.9,18.1) cameraTarget=(14.7,-8.1,2.1) drift=29.4
+§SHADOW_SIZE_BY_ENVELOPE cascades on: per-cascade size 4096 (was 8192 for one map) — §STILL_SHADOW_CASCADE C3
+§SHADOW_SIZE_BY_ENVELOPE env=362 size=4096 maxTex=32768 texel=0.177m
+§STILL_SHADOW_RADIUS radius=1.5
+§PHOTO_SHADOW_CONTACT staging values (worldBias 0.305m, range 19792m) are superseded by §STILL_SHADOW_EDGE — the fitted range, bias, normalBias and predictedBaseGap are printed there
+§PHOTO_SHADOW_FRUSTUM_COVERAGE inFrustum=4857 outsideFrustum=0 (outsideFrustum = geometry the shadow camera cannot see right now, regardless of castShadow flags -- nonzero here is a real, unfixed frustum-coverage gap; zero here rules frustum coverage OUT as the cause)
+§PHOTO_SHADOW enabled casters=4857 sunDist=5011 env=362 texelPerM=5.7
+§STILL_SHADOW_CASCADE lights m=4 (sun + 3 shadow-only, colour 0, same direction) mapSize=4096 added before the first staged compile (C2) programs=23
+§SOURCED_LIGHT_CALIB on lampLux=500 sunLux=100000 ratio=0.005 sunI=4.400 refH=2.5m decay=1.5 base=2 lampMul old 16 -> new 0.0435 (fixture intensity 0.0870, floor E at 2.5 m = 0.0220 vs sun 4.400) applied=0.0435
+§SKY_PORTAL_RETIRED budget portalCap=0 shadowed=0 (§SKY_VIEW_FIELD on; &portals=1 keeps them) — frees the portal vectors + up to 8 shadow-map units
+§LIGHT_UNIFORM_BUDGET maxFragmentUniforms=1024 reserve=320 maxTextures=32 texReserve=12 (cascades +3 units, +16 vectors) portalCap=0 (shadowed 0, 0 vectors) lampCap=160 (680 vectors) sourcedLight=4+40 vectors total=684/688 — set before the lamps are built; one light count per still
+§LIGHT_ZONE bld=Hospital {"cells":10342080,"MB":20.7,"solid":447799,"outsideCells":6581055,"openSkyCells":6581055,"capCentre":1,"capCells":236984,"capSkipped":210815,"capTris":120175,"soilCells":1781957,"indoorCells":1531269,"zones":848,"largestZoneM3":159087,"largestShareOfIndoor":0.831,"hist":{"lt2m3":53,"lt50m3":618,"lt500m3":169,"lt5000m3":7,"ge5000m3":1},"zonesWithAperture":63,"apertureM2":4775.5,"apertureUpM2":0,"apertureSideM2":4775.5,"apertureDownFaces":0,"skyLitCells":277097,"skyRayCells":206542,"skyDirs":24,"topApertureZones":[[1,4405.75,0,4405.75,1272695],[236,19.5,0,19.5,71],[32,17.25,0,17.25,69],[600,16,0,16,57],[348,15.25,0,15.25,54]],"tris":234224,"samples":43385412,"draws":{"mesh":48,"inst":1272,"batched":3567,"skippedHidden":0,"skippedDisc":0},"rasMs":557,"skyMs":1557,"ms":2237,"innerR":0,"groundY":-15.92,"earthCells":1781957,"grid":[288,105,342],"org":[-81.7,-28.9,-116.7],"glare":{"blackExteriorFaces":0,"exteriorFaces":146293,"junctionFlips":0,"junctionZoneFlips":0,"junctionTested":192987,"canopyCells":0,"rayLitCoveredCells":219738,"openCells":6566143,"coveredCells":1546181,"ms":1431}}
+§GLARE bld=Hospital PASS black_exterior=0 junction_zone_flip=0 covered_open_side_black=0 (exteriorFaces=146293 junctionTested=192987 rayLitCoveredCells=219738 auditMs=1431)
+§SOURCED_LIGHT_CAP zonesCache=built camZone=207 visibleZones=2 (207:81,208:3) rays=84 hits=84 ms=4821
+§LAMP_UNCAPPED decide dataPath=1
+§LAMP_SHAPE_COLOUR bld=Hospital round=12 rect=1203 ambiguous=0 noMesh=2 exit=57 (round -> NIGHT_WARM 0xffdca8, rect -> 0xffffff, rest keep the mix colour)
+§GROUND_Y src=gf-storey-slab(Level 1) z=165.36 y=-15.92
+§NIGHT_GLOW_REASSERT +glowMeshes=5 +windowGlowMats=4 totalGlowMats=9
+§NIGHT_MODE on fixtures=1274 source=IFC+room-fallback(2 rooms, 0 via flow-terminal) glowMats=9
+§NIGHT_BUILDUP_GATE total=1274 placed=1274 lit=1274 invariantOK=true
+§NIGHT_PL_INTENSITY_HEURISTIC n=1274 min=0.85 max=1.00 mean=0.992 (style convention, NOT extracted wattage/lumen data)
+§LAMP_DATA lamps=1274 lit=1274 placed=1274 total=1274 range=25 decay=1.5 plScale=1 lampMul=0.04348131782731522 ver=1
+§NIGHT_MEM_WITNESS heapMB=1895.7 matCacheKeys=108 glowMatKeys=108 nightLights=0
+§MOVIE_SHADOW_TM sun=4.400 ambient=0.386 hemi=0.617 fill=1.003 sunFillRatio=4.387 (TM native ratio 2.155 — equal means the bake matches TM shadow strength)
+§STILL_GLOW daylight=1 sunElev=44.8 duskMood=0 threshold=6 camInside=1 (rooms roomAt=none rects=2 -> up-ray fallback (an overhang can fool it) hit=0.7m uses={"rooms":1,"ray":1}) glowMats=4 emissive->0 lamps=1274 on (lamp data)
+§STILL_BASE sky=2 base=0 lamps=0.04348131782731522 decay=1.5 range=25m hemi=1.234 ambient=0.000 (from 0.617/0.386) camInside=1 lampsOn=1274/1274 (lamp data) lampSum=107.283 (at staging; §STILL_DIALS_LAMPS logs the refined set)
+§CONCRETE_TONE strength=0.55 contrast=0.605 (R3 was 1.1) normalScale=0.55 tile=4m (was 2.5) r3Mats=9
+§ALBEDO_SRGB srgbfix=0 converted=0 albedoCap=off capped=0 wallColour(IfcWallStandardCase) before=null after=null exposure=0.383 (x1) lampRange=25 lampDecay=1.5
+§SKY_OCCLUSION skipped installed=false
+§SKY_PORTAL off retired=1 (§SKY_VIEW_FIELD carries the sky through glass; &portals=1 for A/B)
+§GLASS_FRESNEL patched={"IfcPlate":67,"IfcPlate(members)":12,"IfcWindow(R10 pane)":60,"IfcWindow(members)":5} skippedShared={"IfcMember":44,"?":9} clones=3 newClones=3 f0=0.04 body=0.08 (glazing meshes only; alpha = Schlick F; reflection = full-strength specular, premultiplied add)
+§SOURCED_LIGHT_GLERR upload before=0 after=0 (0 = none; 1282 = INVALID_OPERATION) RG16UI 288x105x342
+§SKY_SHELL_RAYS bld=Hospital cache=built on shellCells=31630 pretestSkipped=16621 recomputed=15009 mc=64 rays=1084927 usPerRay=5.81 boundaryTris=234224 occluderTris=5824916 cull=1 occluderCulled=1194363 glassTris=21776 soupMs=620 bvhMs=2149 selectMs=87 passMs=6299 F mean=0.1878 dF mean=0.0372 meanAbs=0.0901 lifted(>0.05)=6841 lowered(<-0.05)=3025 maxLift=0.564 maxDrop=-0.411 (shell = covered cells beside a wall within 2 cells of open air; F = 64 CIE-cos rays vs boundary + occluder triangles; deeper cells keep the lattice)
+§GROUND_VIEW_FIELD built bld=Hospital mode=bounce ms=1547 dirs=41 minDepressionDeg=6.72 (cosine weights only, uniform ground; lowest-weight dir 0.0003) activeCells=1546607 coveredCells=1531269 nonZero=1158889 Gd p10/p50/p90/max=0/0.004/0.0821/0.8358 (open cells 1; a floor is SOLID, not ground)
+§GROUND_VIEW_FIELD on mode=bounce cache=built buildMs=1547 dirs=41 coveredCells=1531269 nonZero=1158889 Gd p10/p50/p90/max=0/0.004/0.0821/0.8358 uploadMs=82 texMB=20.7 (hemi = F x sky half + Gd x ground half; ambient + IBL x F as before)
+§SKY_VIEW_FIELD on cache=built dirs=41 minElevDeg=6.72 (CIE overcast weights, cos x (1+2 sin elev) x dOmega; lowest-weight dir 0.0002) sweepMs=10225 activeCells=1546607 coveredCells=1531269 glassCells=15338 maxF=0.7188 (sky component max 0.7188) ASSERT_MAXF_LE_1 PASS irc=off (default: the GI bounce carries it) irc(zones/median/max)=291/0.626%/2.90% (V12, R 0.5) uploadMs=13 glassT=[c0e9412b:op0.3:T0.7:7084m2,99c14da5:op0.3:T0.7:1873m2,d48e46b7:op0.3:T0.7:67m2,a26ed95b:op0.3:T0.7:17m2] ERC=ground term scaled by F only (externally reflected component not modelled) ms=11919
+§SKY_VIEW_FIELD_DIST (working-plane mean F per lit zone, floor-m2 weighted) all: n=291 p10/p50/p90/max=1.80/1.80/1.80/50.79% · enclosed rooms (no open aperture): n=229 p10/p50/p90/max=0.03/1.98/3.60/6.82% · maxZoneWpF=50.79%
+§SKY_VIEW_FIELD_BENT (log only) [zone:unit dir x,y,z:floorM2] 1:0.01,1.00,0.05:26184 171:0.79,0.60,-0.11:719 3:-0.12,0.69,-0.72:356 47:-0.76,0.60,-0.23:356 556:0.00,0.00,0.00:271 17:0.04,0.64,-0.77:236 328:0.00,0.00,0.00:232 46:0.00,0.00,0.00:227 267:0.79,0.59,-0.18:215 269:0.80,0.60,-0.08:215 344:0.00,0.00,0.00:166 23:0.00,0.00,0.00:152 207:0.00,0.00,0.00:110
+§SKY_VIEW_ADF_CHECK enclosedGlazedZones=153 median(Fwp%/ADF%)=0.108 (ADF logged only, not used) top [zone:Fwp%:ADF%:floorM2] 171:0.00:0.38:719 17:0.98:11.84:236 267:0.04:0.87:215 746:0.49:10.99:105 747:0.04:2.60:105 351:0.08:8.35:71 739:1.45:13.93:34 740:0.06:3.83:34 800:2.42:14.60:31 792:2.65:14.60:31
+§SOURCED_LIGHT_DIALS indoorSky=0 skyField=on (&skyfield=0 = the binary SKY_BIT path)
+[RP-CORRIDOR] §ROOM_GRAPH_STAIR_MERGE flightRows=1 assemblyOnlyRows=61 (assembly stairs not already covered by a flight — merged in, not replacing)
+[RP-CORRIDOR] §ROOM_GRAPH_STAIR_SPLIT baseKeys=11 split=8 into=20 radius=4m — one NAME covered several physically separate shafts; plan distance subdivides it. Split-only: no group is ever merged that the name key kept apart.
+[RP-CORRIDOR] §HALLWAY_BACKBONE buckets=241 joined=43 chains=16 crossings=37 openEnds=12 stairTerminated=11 stairGroups=23
+[RP-CORRIDOR] §CORRIDOR_TYPE_LABEL classifiedRooms=0 / 7
+[RP-TA] §ROOM_VOL_COUNT habitable=7 excluded=0 boxes=8
+[RP-TA] §PERF_PROBE _allRoomVolumes ms=83.5
+§LAMP_EN_ZONE zones=402 lamps=1270 (of 1270 in no room) target=200lx scale p10/p50/p90=0.176/0.222/0.294 cappedAtP90=40 achieved E/EN p10/p50/p90=1.00/1.00/1.00
+§LAMP_EN applied rooms=8 judged(lamps+wp)=4 {"habitable":4} lampsInRooms=4 unassigned(-> median 0.018)=1270 cappedAtP90(0.350)=0 scale p10/p50/p90/min/max=0.00/0.02/0.35/0.00/0.35 achieved E/EN p10/p50/p90=0.94/1.07/1.09 (3 passes; direct + zone IR on the 0.8 m plane) table=corridor:100,restroom:200,kitchen:200,utilities:200,bedroom:200,habitable:200 ms=313
+§LAMP_UNCAPPED on lamps=1274 lit=1274 sumI=20.612 (zoned 1274, outside 0, unbound 0) range=25m decay=1.5 clusters=72x27x86 (2 m) nonEmpty=33818/167184 entries=2648591 perCluster max/mean=242/78.3 MB=6.7 listMs=394 ms=396 ver=1 (no point lights, no cap, camera-free)
+§IRC_MAX build zones=848 withLampIR=403 withDayIR=291 lamps=1274 (unbound 0) maxE lamp/day=0.00459/0.0278 R=0.5 facesPerZone<=4000 facesMs=160 ms=42 (E_ir = R/(1-R) x mean direct E over the zone surfaces; day = V12 irc x hemi)
+§COVE_QUAL (L1a) qualified=358 belowLevelWithLamps=0 belowLevelWithSkyOnly=18 (left to their real sources; cove only where lamps = 0 and sky = 0)
+§COVE_LIGHT build bld=Hospital zones=848 types {"room":646,"void":143,"crevice":2,"shaft":57} qualified=358 byType {"room":218,"void":127,"crevice":2,"shaft":11} deficit lx p10/p50/p90/max=100/100/100/100 emitters=9078 perimeterM=4703.0 cells=79518 (strided zones 1, below level but no ceiling edge 0) fieldsMarched=358 (cached 0) marchSteps=36497817 memMB=41.4 (RGBA8UI log-8, range 2^12, maxE=11250 lx) buildMs=417 (types 55) texMs=112 uploadMs=66 level: room=EN row | unknown use 100 lx (6.1.1 circulation) | void/crevice/shaft TRIM_LUX_VOID=100 lx (EN 12464-1 circulation row via secondary summaries, primary not consulted) colour=0xffe4b5 R=15m
+§COVE_LIGHT NOFLAT PASS texelsOutsideCoveZones=0 coveZonesWithCv0=0/357 judged (1 zones of 1-2 cells not judged) (cell-to-cell coefficient of variation of |V| per zone; directional term, never a flat fill)
+§COVE_LIGHT_ZONE [z:type:existingE+cove=level lx:emitters:perimM:cells:litCells/upCells:cv:calib:stride:m3] 171:room:0+100=100:328:328:8780:5745/4075:1.368:wp:2:1097.5 24:void:0+100=100:127:63.5:1818:1818/606:1.167:wp:1:227.3 208:room:0+100=100:156:78:1737:1737/1000:0.819:wp:1:217.1 45:room:0+100=100:46:23:1431:1431/159:1.033:wp:1:178.9 44:room:0+100=100:44:22:1278:1278/142:1.008:wp:1:159.8 136:room:0+100=100:59:29.5:1250:1250/250:1.101:wp:1:156.3 690:room:0+100=100:74:37:1125:1125/225:0.889:wp:1:140.6 561:room:0+100=100:75:37.5:1120:1120/347:1.161:wp:1:140 camZone=207 (no cove: existingE=199.0 lx >= level)
+§COVE_LIGHT strip mesh bars=11964 tris=143568 colour=0xffe4b5 (MeshBasicMaterial, excludeFromShadow, Alt+S only)
+§COVE_IR on zones=358 maxE=0.00220 (E_ir = R/(1-R) x cove direct, R=0.5; direct = deficit x (1-R))
+§SUN_GLASS_CASTERS fixed pureGlassMeshes=137 (depth pass discards them: sun + portal shadows pass through glass)
+§SOURCED_LIGHT_BIND points=0 bound=0 (litOutside=0) litUnbound=0 spots=0 portalsBound=0
+§SOURCED_LIGHT_GLERR firstFrame=0
+§METER_HIST low%=70 high%=95 bandL=5.528e-3 bandPixels=3605/14400 allLogAvg=3.562e-3 bandL=4.78e-3..8.57e-3
+§METER camera=inside mode=hist Lavg=125.6cd/m2 EV100=9.97 exposure=11.3067 (luxPer 22727.3 x ACES 0.6 / (1.2 x 2^EV)) vs base 0.383 = 4.89 stops skyPx=0/14400 pixels=3605 hidden=1 ms=1345
+§LIGHT_LAW tag=stage v=1 lawHash=5368cb0a liveHash=4f202758 luxPer=22727.273 exposure=11.3067 ev100=9.973 sunI=4.400 hemiI=1.234
+§LUX_CHECK zones=843 spaces=8 (spatial_structure, mapped 0) withEN=0 FAIL=0 unverified=0 unknown=843 EskyH=21295lx (hemi+ambient up, luxPerUnit=22727.3 = 100000 lx / calibSunI 4.400) exposure=11.307 stops=4.89 largest [1:unknown:EN-:sky384+lamps200=584lx:F1.80%:lamps545:26184m2:unknown 171:unknown:EN-:sky0+lamps0+cove100=100lx:F0.00%:lamps0:719m2:unknown 3:unknown:EN-:sky186+lamps179=365lx:F0.87%:lamps11:356m2:unknown 47:unknown:EN-:sky7+lamps0=7lx:F0.03%:lamps0:356m2:unknown 556:unknown:EN-:sky0+lamps200=200lx:F0.00%:lamps9:271m2:unknown 17:unknown:EN-:sky208+lamps0=208lx:F0.98%:lamps0:236m2:unknown 328:unknown:EN-:sky0+lamps196=196lx:F0.00%:lamps9:232m2:unknown 46:unknown:EN-:sky0+lamps197=197lx:F0.00%:lamps20:227m2:unknown] FAILrows []
+§COVE_LIGHT LUXCHECK coveZonesWithWp=354 within10pct=354 worst z12 Etotal=100.0 level=100 rel=0.0% (identity by construction; a miss = quantisation / stride)
+§LAMP_EN dry-run lampSource=lamp data zonesWithEN=0 (0 m2 of 40673 floor; unknown use 40673 m2) scale s=EN/Elamps floor-m2 p10/p50/p90=-/-/- min/max=- EN-zones with no lamp=0 (0 m2) byUse median s 
+§LUX_CHECK_CAM camZone=207 207:unknown:EN-:sky0+lamps199=199lx:F0.00%:lamps15:110m2:unknown exposure=11.307 stops=4.89
+§SOURCED_LIGHT on zonesCache=hit zones=848 grid=288x105x342 cell=0.5 texMB=20.7 indoorSky=0 groundView=on mats=113 pushed=105 points=0 bound=0 (litOutside=0) litUnbound=0 spots=0 portalsBound=0 ms=14756
+§SUN_ARC_FILL_BASE ambient=0.0000 hemi=1.2340 plScaleStaged=1 nightWasOn=false
+§GROUND_COLOR_ORDER_FIX reasserted color=2.30 gain=2.30
+§CAM_LIGHT off (§SOURCED_LIGHT: not a real source) intensity=0 distance=4 decay=2 forwardOffset=0.4
+§PHOTO_PROPS built skylineBoxes=35 (no staging lights: §NO_PHOTO_PROPS)
+§FACADE_WARM_COOL sunAz=0.000,-1.000 warm=0 cool=0 dots=
+§PHOTO_FACING facades=0 strengths=
+§BILLBOARD_NAME no BIM_OOTB_NamePlate element in this db — apply migration/billboards/terminal_billboard_nameplate.sql
+§SOURCED_LIGHT_BIND points=1 bound=0 (litOutside=0) litUnbound=0 spots=0 portalsBound=0
+§MIRROR_ROOM_PROBE built pos=(-7.3,-6.3,16.3) envelope=150.9 size=128
+§STILL_SHADOW_FIT env=362 box=37.5x141.3m texelX=0.0091 texelY=0.0345 normalBias=0.103 propsKept=0/0 camOutside=0 (was 724, texel 0.1768) gain=5.12x viewDepth=67 bldgFootprint=102x137 sunElev=45.0 view=93x153 union=102x137
+§STILL_SHADOW_EDGE_SINGLE (superseded by §STILL_SHADOW_CASCADE) range 19792m -> 203.6m (near 251->4905.7 far 20043->5109.3, points=8 propsKept=0 slabPts=8 groundY=-15.92 topY=21.9 pad=3.9) texel=0.0345 R=1.5 normalBias=0.1035m ((R+1.5) texels) worldBias=0.00311m (range/65536) bias=-1.526e-5 predictedBaseGap45=0.0031m 20deg=0.0085m here(45.0deg)=0.0031m (was 0.305/tan: 45deg=0.305m) thinCasterRisk=0.103m (= normalBias: a caster thinner or lower than this next to its receiver can lose its shadow)
+§STILL_SHADOW_EDGE range 204m -> 143.2m (near 4906->4939.8 far 5109->5083.0, points=8 propsKept=0 slabPts=8 groundY=-15.92 topY=21.9 pad=2.8) texel=0.0013 R=1.5 normalBias=0.0038m ((R+1.5) texels) worldBias=0.00219m (range/65536) bias=-1.526e-5 predictedBaseGap45=0.0022m 20deg=0.0060m here(45.0deg)=0.0022m (was 0.305/tan: 45deg=0.305m) thinCasterRisk=0.004m (= normalBias: a caster thinner or lower than this next to its receiver can lose its shadow) cascade=0 slice=[0.10,2.97]m box=3.4x5.2m
+§STILL_SHADOW_EDGE range 500m -> 143.2m (near 1->4939.8 far 500->5083.0, points=8 propsKept=0 slabPts=8 groundY=-15.92 topY=21.9 pad=2.8) texel=0.0014 R=1.5 normalBias=0.0041m ((R+1.5) texels) worldBias=0.00219m (range/65536) bias=-1.526e-5 predictedBaseGap45=0.0022m 20deg=0.0060m here(45.0deg)=0.0022m (was 0.305/tan: 45deg=0.305m) thinCasterRisk=0.004m (= normalBias: a caster thinner or lower than this next to its receiver can lose its shadow) cascade=1 slice=[2.81,4.91]m box=4.0x5.6m
+§STILL_SHADOW_EDGE range 500m -> 143.2m (near 1->4939.8 far 500->5083.0, points=8 propsKept=0 slabPts=8 groundY=-15.92 topY=21.9 pad=2.8) texel=0.0012 R=1.5 normalBias=0.0035m ((R+1.5) texels) worldBias=0.00219m (range/65536) bias=-1.526e-5 predictedBaseGap45=0.0022m 20deg=0.0060m here(45.0deg)=0.0022m (was 0.305/tan: 45deg=0.305m) thinCasterRisk=0.004m (= normalBias: a caster thinner or lower than this next to its receiver can lose its shadow) cascade=2 slice=[4.71,7.35]m box=4.7x4.8m
+§STILL_SHADOW_EDGE range 500m -> 143.2m (near 1->4939.8 far 500->5083.0, points=8 propsKept=0 slabPts=8 groundY=-15.92 topY=21.9 pad=2.8) texel=0.0012 R=1.5 normalBias=0.0037m ((R+1.5) texels) worldBias=0.00219m (range/65536) bias=-1.526e-5 predictedBaseGap45=0.0022m 20deg=0.0060m here(45.0deg)=0.0022m (was 0.305/tan: 45deg=0.305m) thinCasterRisk=0.004m (= normalBias: a caster thinner or lower than this next to its receiver can lose its shadow) cascade=3 slice=[7.11,10.67]m box=4.6x5.0m
+§STILL_SHADOW_CASCADE uncovered=0/14400 m=4 used=4 mode=cascades(worst 0.0014 <= single 0.0172 at 8192) splits=[1.35,2.97,4.91,7.35,10.67] texel=[0.0013,0.0014,0.0012,0.0012] normalBias=[0.0038,0.0041,0.0035,0.0037] thinCasterRisk=[0.0038,0.0041,0.0035,0.0037] bias=[-0.0000153,-0.0000153,-0.0000153,-0.0000153] range=[143.2,143.2,143.2,143.2] gap45=[0.0022,0.0022,0.0022,0.0022] gap20=[0.0060,0.0060,0.0060,0.0060] texelPerPixel=[0.71,0.35,0.18,0.13] thinCasterPx=[2.12,1.04,0.54,0.38] thinCasterLimit=[0.0500,0.0500,0.0500,0.0500] box=[3.4x5.2,4.0x5.6,4.7x4.8,4.6x5.0] ptsInSlice=[6497,6650,1385,1048] memMB=512 size=4096 c0at8192=no(not needed) textureUnits=+3 dirShadows=4 sunSlot=0 slots=[0,1,2,3] zMin=1.35 zMax=10.7 (readback 10.7, edge clamp 83.8, points 14400/14400, hidden 174) pixelAtSplit=[0.0018,0.0039,0.0065,0.0097] H=874 fov=60 c0texelIf[m2,m3,m4]=[0.0014,0.0013,0.0013] tppIfM2=[0.77,0.28] tppIfM3=[0.75,0.30,0.16] texelIfM3=[0.0013,0.0014,0.0014] lambda=0.5 blend=0.1 R=1.5 programs=79 ms=107.3
+§PHOTO_STAGING on nightWasOn=false
+§STILL_POSE {"cam":[9.947,-7.699,0.098],"tgt":[14.735,-8.114,2.081],"fov":60,"aspect":1.9279,"sun":[0,3535.534,-3535.534],"sunTgt":[-7.324,2.927,18.05],"sunI":4.4,"db":"/buildings/Hospital_extracted.db","w":1685,"h":874,"film":false,"url":"?db=/buildings/Hospital_extracted.db&ghost=1","host":"127.0.0.1:8635","sw":null}
+§METER off exposure=0.383
+[RP-TA] §ROOM_VOL_CACHE_HIT boxes=8
+§LAMP_EN_ZONE zones=402 lamps=1270 (of 1270 in no room) target=200lx scale p10/p50/p90=0.176/0.218/0.274 cappedAtP90=40 achieved E/EN p10/p50/p90=1.00/1.00/1.00
+§LAMP_EN applied rooms=8 judged(lamps+wp)=4 {"habitable":4} lampsInRooms=4 unassigned(-> median 0.018)=1270 cappedAtP90(0.350)=0 scale p10/p50/p90/min/max=0.00/0.02/0.35/0.00/0.35 achieved E/EN p10/p50/p90=0.94/1.00/1.08 (3 passes; direct + zone IR on the 0.8 m plane) table=corridor:100,restroom:200,kitchen:200,utilities:200,bedroom:200,habitable:200 ms=68
+§LAMP_UNCAPPED on lamps=1274 lit=1274 sumI=20.615 (zoned 1274, outside 0, unbound 0) range=25m decay=1.5 clusters=72x27x86 (2 m) nonEmpty=33818/167184 entries=2648591 perCluster max/mean=242/78.3 MB=6.7 listMs=394 ms=2 ver=2 (no point lights, no cap, camera-free)
+§IRC_MAX build zones=848 withLampIR=403 withDayIR=291 lamps=1274 (unbound 0) maxE lamp/day=0.00453/0.0278 R=0.5 facesPerZone<=4000 facesMs=160 ms=30 (E_ir = R/(1-R) x mean direct E over the zone surfaces; day = V12 irc x hemi)
+§COVE_QUAL (L1a) qualified=358 belowLevelWithLamps=0 belowLevelWithSkyOnly=18 (left to their real sources; cove only where lamps = 0 and sky = 0)
+§COVE_LIGHT build bld=Hospital zones=848 types {"room":646,"void":143,"crevice":2,"shaft":57} qualified=358 byType {"room":218,"void":127,"crevice":2,"shaft":11} deficit lx p10/p50/p90/max=100/100/100/100 emitters=9078 perimeterM=4703.0 cells=79518 (strided zones 1, below level but no ceiling edge 0) fieldsMarched=0 (cached 358) marchSteps=0 memMB=41.4 (RGBA8UI log-8, range 2^12, maxE=11250 lx) buildMs=6 (types 55) texMs=36 uploadMs=9 level: room=EN row | unknown use 100 lx (6.1.1 circulation) | void/crevice/shaft TRIM_LUX_VOID=100 lx (EN 12464-1 circulation row via secondary summaries, primary not consulted) colour=0xffe4b5 R=15m
+§COVE_LIGHT NOFLAT PASS texelsOutsideCoveZones=0 coveZonesWithCv0=0/357 judged (1 zones of 1-2 cells not judged) (cell-to-cell coefficient of variation of |V| per zone; directional term, never a flat fill)
+§COVE_LIGHT_ZONE [z:type:existingE+cove=level lx:emitters:perimM:cells:litCells/upCells:cv:calib:stride:m3] 171:room:0+100=100:328:328:8780:5745/4075:1.368:wp:2:1097.5 24:void:0+100=100:127:63.5:1818:1818/606:1.167:wp:1:227.3 208:room:0+100=100:156:78:1737:1737/1000:0.819:wp:1:217.1 45:room:0+100=100:46:23:1431:1431/159:1.033:wp:1:178.9 44:room:0+100=100:44:22:1278:1278/142:1.008:wp:1:159.8 136:room:0+100=100:59:29.5:1250:1250/250:1.101:wp:1:156.3 690:room:0+100=100:74:37:1125:1125/225:0.889:wp:1:140.6 561:room:0+100=100:75:37.5:1120:1120/347:1.161:wp:1:140 camZone=207 (no cove: existingE=198.8 lx >= level)
+§COVE_LIGHT strip mesh bars=11964 tris=143568 colour=0xffe4b5 (MeshBasicMaterial, excludeFromShadow, Alt+S only)
+§COVE_IR on zones=358 maxE=0.00220 (E_ir = R/(1-R) x cove direct, R=0.5; direct = deficit x (1-R))
+§STILL_STAGE_MS zoneBuild=3668 skySweep=1557 audit=1431 zoneCap=1153 portals=1 sourcedStage=14979 shadowFit=109 other=1723 (staging steps not named above) stagingTotal=21634 link=758 (first frame, newPrograms=26) total=22392
+§METER_HIST low%=70 high%=95 bandL=5.528e-3 bandPixels=3605/14400 allLogAvg=3.562e-3 bandL=4.78e-3..8.57e-3
+§METER camera=inside mode=hist Lavg=125.6cd/m2 EV100=9.97 exposure=11.3067 (luxPer 22727.3 x ACES 0.6 / (1.2 x 2^EV)) vs base 0.383 = 4.89 stops skyPx=0/14400 pixels=3605 hidden=1 ms=822
+§LIGHT_LAW tag=remeter v=1 lawHash=5368cb0a liveHash=4f202758 luxPer=22727.273 exposure=11.3067 ev100=9.973 sunI=4.400 hemiI=1.234
+§LIGHT_STACK point=(18.1,-8.4,3.5) lampsLit=1274 reachingOver5pctOfPeak=168 sum=0.098 strongest=0.004 sum/strongest=27.8 exposure=11.307 sky(hemi)=1.234
+§STILL_LIGHT_PAD lamps=0 pads=0 total=0 cap=160
+§STILL_DIALS_LAMPS lamps=0.04348131782731522 decay=1.5 plScale=1 lit=1274/1274 sum=20.615 (lamp data, uncapped)
+§NIGHT_STILL_LIGHTS raised to 0 lights, near-fade floor 1 (was 0.3), plScale 1 (§STAGED_PL_CUT) for the still
+§GLASS_ENV captured 256x6 at camera [9.95,-7.70,0.10] glassMeshesHidden=197 clonesReflecting=3 ms=203
+§STILL_REFINE start samples=16 triplanarMaterials=12
+§FPS_MODE mean=11966 max=23425.7 n=2 dlod=off disp=solid fly=0 orbit=0
+§ZONE_IDB_CACHE saved bld=Hospital MB=82.7 field=1 ms=977
+§GROUND_Y src=gf-storey-slab(Level 1) z=165.36 y=-15.92
+§GROUND_MAP key=earth src=textures/ground/earth_1k.jpg repeat=64 aniso=8 nor=ok rough=ok detailMean=0.1599
+§SHADOW_GROUND_SWATCH key=off
+§PHOTO_SHADOW_FORCE_REASSERT visMeshes=4892 flippedOn=0 (0 flipped = every visible mesh already had castShadow on)
+§STILL_REFINE done accumulateIndex=16 elapsedMs=24564 (frozen — stays until interaction)
+§LAMP_UNCAPPED_COST pixels=14400 offClusterGrid=0 list mean/p95/max=28.9/168/180 zonePass mean/max=14.4/153 (lamps evaluated per fragment) ms=93
+§FAULT OK unlit=0/144 unlitCeil=0 irOnly=25 (ceil 25) fieldBad=0 lamps=1274/1274 (lit/loaded, cap none (lamp data)) capDropNear=0 extLightsDay=0 (camInside) glassLow=0 glassOpaque=0 glassPlateLost=0 (see-through plates db=935 drawnGlass=935 drawnOpaque=0 notDrawn=0) glassReflDark=0/0 (old sky-view gate: 0) glassStock=0 (untagged 0) portalsRetired=1 expStep=0 csmUncovered=0 guard=0 lampList mean/max=28.9/180 zonePass=14.4 ms=137.5
+§FIXTURE_EMISSIVE bld=Hospital lamps=1274 withMesh=1272 withoutMesh=2 byClass={"IfcLightFixture":[1272,1272,0,1272],"synthetic":[2,0,2,0]} (withoutMesh = noDrawn 2 + notEmissive 0; lampsOff=0) withMeshWhenLampsOn=1272 K=2 (byClass = [lamps, withMesh, withoutMesh, withMeshWhenLampsOn]; count only, no shapes built)
+§STILL_SHADOW_RENDERS n=2 refineMs=24564 autoUpdate=0
+§SUN_SHADOW_RESTORE_INIT_OK kernelPx=4 strength=1 kernelMaxScale=4 (§SUN_SHADOW_GRAZE_SCALE — kernel now widens per-pixel at grazing sun incidence)
+§SUN_SHADOW_RESTORE OFF (default) — set APP._sunShadowRestoreEnabled=true to enable
+§PHOTO_AO_INIT_OK N8AOPass in native composer chain (lazy) size=1685x874
+§PHOTO_AO start frames=24 radius=32 intensity=4 denoiseRadius=7 denoiseSamples=5 (still-only fold — Alt+G untouched)
+§PHOTO_AO done frames=24 totalMs=549 avgRenderMs=7.0 (frozen with AO — stays until interaction)
+§GI_STILL stage loading the bounce-light code (once per page) 9ms
+THREE.WebGPURenderer: WebGPU is not available, running under WebGL2 backend.
+§GI_STILL stage starting the bounce-light graphics engine (once per page) 145ms
+Device failed at creation.
+§GI_APP_FRAME read=displayed mean=8 (no re-render)
+THREE.RenderPipeline: "renderAsync()" has been deprecated. Use "render()" and "await renderer.init();" when creating the renderer.
+§GI_STILL glass skip: 0 transparent meshes left out of the geometry pass (they keep the app's own pixels)
+§GI_SHARED_ATTR_WIDEN swapped=3310 8/16-bit attributes for the second renderer, app arrays restored after every pass
+§GI_STILL progressive compile: 4893 renderables in 1945 chunks, worst chunk 171ms (budget 40ms)
+§GI_STILL stage copying the building to the bounce-light engine (once per page, 4869 objects) 75708ms
+§GI_STILL orientation by match (scored only where the geometry pass drew): {"texSame_outSame":{"covered":10.02,"composite":10.02},"texSame_outFlip":{"covered":2.81,"composite":2.81},"texFlip_outSame":{"covered":2.73,"composite":2.73},"texFlip_outFlip":{"covered":10.33,"composite":10.33}} colour pick flipTex=true flipOut=false margin=0.08
+§GI_STILL_ORIENT_GEOM backfacing asRead=45.76% reversed=0.00% covered=90072 -> flipTex=false flipOut=true decidedBy=geometry (OVERRULED colour pick flipTex=true flipOut=false) [a front-facing surface cannot face away from its own camera ray: the right row order breaks that on ~0.1-2% of pixels, the wrong one on 21-32% (HHS, 4 poses)]
+§GI_STILL stage checking picture orientation (once) 11433ms
+§GI_ORIENT_CACHE stored flipTex=false flipOut=true key=||||Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Headl
+§GI_STILL geom pass mode=scene.overrideMaterial swapped=0 hid 138 raw-GLSL/sky object(s); scene.overrideMaterial restored=true
+§GI_STILL gain=1 ao=0.55 recv=1 applied (uniforms, read this press) ssgi: radius=12 (screen-space: ~625px search at 1666px wide) steps=16 slices=3 thickness=1m giIntensity=10 expFactor=2 screenSpace=true
+§GI_APP_FRAME read=displayed mean=8 (no re-render)
+§GI_STILL stage taking the finished picture 411ms
+§IRC_MAX share 1666x864 pixelsWithIR=1439424 meanShare=0.57 pixelsIRover50%=531661 ms=259 (share = IR radiance / total, linear; applied to the tone-mapped app colour = approximation)
+§IRC_MAX composite rule=max(IR, SSGI) share=pixelsWithIR 1439424 mean 0.57
+§GI_STILL underlay mean=8 (the app frame; it is also the colour fed to SSGI — ~0 means the app canvas handed back an empty buffer)
+§GI_STILL stage adding bounce light 2108ms
+§GI_STILL mask: clear(a<0.02)=0%  partial(0.02..0.98)=0%  solid(a>0.98)=100% — the partial band is where alpha blending used to add the bounce on top of itself
+§FAULT_GI OK hueNoise=0 giAdapter=||| blown=0% dark=0.05% (1666x864)
+§GI_STILL result mode=composite encode=oetf compositeMean=15.86 appMean=16.61 meanAbsDiff=3.33 passes=8 secs=90.3
+§GI_STILL app state restored: overrideMaterial=null skyVisible=true background=null
+§GI_STILL renderer kept for the next Alt+S (Alt+Shift+S releases it)
+§FPS_MODE mean=46848 max=92550.6 n=2 dlod=off disp=solid fly=0 orbit=0

@@ -1,0 +1,11 @@
+§MIGRATE start tables=925 out=/tmp/claude-1000/-home-red1-bim-compiler/a4835524-cb34-4812-bf29-2fe73b37ec6e/scratchpad/m/pilot_snap2.db
+§MIGRATE_ROWS ok table=ad_changelog rows=212129 rssMB=145
+§MIGRATE_NUMERIC_LOSSY table=c_conversion_rate col=multiplyrate n=2
+§MIGRATE_NUMERIC_LOSSY table=c_conversion_rate col=dividerate n=4
+§MIGRATE_NUMERIC_LOSSY table=i_conversion_rate col=dividerate n=1
+§MIGRATE_NUMERIC_LOSSY table=i_conversion_rate col=multiplyrate n=1
+§MIGRATE_INDEX created=2089 sec=1 pageSize=16384
+§MIGRATE_VERDICT PASS rows-match-all-tables lossyNumeric=8 tables=925 peakRssMB=183
+§MIGRATE tables=925 rows=601211 blobTables=12
+§MIGRATE rules AD_Rule=4 AD_Val_Rule=332 callouts=284 docTypeFlags=4/4 docTypes=108
+§MIGRATE flagged sequences=0 (dropped) functions=83 (skipped) triggers=4 (skipped) views=161 (snapshot=161, deferred)

@@ -1,0 +1,23 @@
+	Command being timed: "node scripts/shard_split_plan_sql.js /tmp/claude-1000/-home-red1-bim-compiler/a4835524-cb34-4812-bf29-2fe73b37ec6e/scratchpad/m/bloat10r.db /tmp/claude-1000/-home-red1-bim-compiler/a4835524-cb34-4812-bf29-2fe73b37ec6e/scratchpad/m/work10_stresscutoff20040101.db --stress-cutoff 2004-01-01"
+	User time (seconds): 38.06
+	System time (seconds): 6.79
+	Percent of CPU this job got: 82%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:54.18
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 108992
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 18679
+	Voluntary context switches: 1747
+	Involuntary context switches: 1795
+	Swaps: 0
+	File system inputs: 791424
+	File system outputs: 5138904
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

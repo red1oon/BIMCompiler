@@ -1,0 +1,4 @@
+§K2 OK   beat=move2 return=35.88 voice_start=36.51 ass_start=36.51 | voice-only track in typing window -180.0 dB vs in voice -16.7 dB (gap 163.3) | mixed in typing: peak -7.9 dBFS rms -32.5 dB
+§K2_LEVEL keys (mixed, typing windows) mean rms -32.7 dB, mean peak -8.0 dBFS; voice mean rms -17.9 dB -> keys are 14.9 dB under the voice rms
+§K2_VERDICT PASS beats=2 bad=0 audible=True
+§BUILD_DONE /home/red1/Videos/Immersive_Software_CH0_EN_AFTER_2026-11-15_v1.mp4

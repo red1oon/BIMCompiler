@@ -725,6 +725,159 @@ def _length_unit_scale(ifc_file):
     return float(_ifcunit.calculate_unit_scale(ifc_file, "LENGTHUNIT"))
 
 
+# ── §GEOREF (prompts/GEOREF_SUNPATH_COMPASS.md §1-§4) ────────────────────────
+# Implementing GEOREF_SUNPATH_COMPASS.md §2/§3.1 — Witness: W-GEOREF-EXTRACT
+# (scripts/witness_georef_extract.py).
+#
+# WHY THIS EXISTS: `project_metadata.true_north_angle` has been written as the literal
+# string "0" for every building since §KUL001 added the key (see the writer below), while
+# viewer/sitecam.js:81 and viewer/walk.js:275 have been applying a real rotation formula to
+# it the whole time. The pipe was live at both ends and stubbed in the middle.
+#
+# ⚠ SIGN. The spec's §2 first guessed `atan2(x, y)`; that is BACKWARDS for the two live
+# consumers and was corrected here against a real file before any code depended on it.
+# Derivation, from the consumers rather than from a textbook:
+#   TrueNorth is a direction expressed IN MODEL COORDINATES that points at true north, so
+#   true north sits at model-bearing atan2(tx, ty). The consumers do not want that; both want
+#   B = the bearing of MODEL north measured from TRUE north:
+#     sitecam.js:81  modelAzimuth = heading - trueNorthAngle   (heading is a true bearing;
+#                                  subtracting B re-expresses it as a model bearing)
+#     walk.js:275    mx = dx*cos(a) - dy*sin(a); my = dx*sin(a) + dy*cos(a)
+#                                  (rotates an east/north displacement into model X/Y — which
+#                                   is R(B) exactly)
+#   B is the negation of the first angle, so B = atan2(-tx, ty), in DEGREES (both consumers
+#   multiply by PI/180 themselves).
+#   CHECKED on Hospital_IFC2x3_ARC.ifc: TrueNorth = (-0.0871557427476695, 0.996194698091745)
+#   -> B = +5.000000 deg, i.e. model north is 5 deg east of true north. atan2(x,y) would have
+#   shipped -5 deg and rotated every site-camera and walk-mode fix the wrong way.
+#
+# ⚠ A MISSING TrueNorth AND A REAL ZERO ARE DIFFERENT FACTS, and conflating them is the whole
+# reason this stub survived. `true_north_source` records which one it was; no consumer has to
+# guess again.
+def _compound_angle_to_degrees(parts):
+    """IfcCompoundPlaneAngleMeasure -> decimal degrees, or None.
+
+    The measure is a 3- or 4-element list [deg, min, sec, millionths-of-sec], NOT a decimal
+    degree. Per the IFC spec every component carries the SAME sign, but exporters disagree:
+    SampleHouse_ARC.ifc writes RefLongitude = (0, -7, -34, -450321) with an unsigned zero
+    degrees component. Summing signed parts happens to be right there, and is WRONG for a
+    (-3, 30, 0)-style export. Take the sign from ANY negative component, then sum magnitudes.
+    """
+    if not parts:
+        return None
+    try:
+        vals = [float(p) for p in list(parts)[:4]]
+    except (TypeError, ValueError):
+        return None
+    if not vals:
+        return None
+    while len(vals) < 4:
+        vals.append(0.0)
+    sign = -1.0 if any(v < 0 for v in vals) else 1.0
+    d, m, s, u = (abs(v) for v in vals)
+    return sign * (d + m / 60.0 + s / 3600.0 + u / 3600000000.0)
+
+
+def extract_georef(ifc_file):
+    """Read the model's real geo-reference. EXTRACT ONLY — nothing here is defaulted to a
+    plausible number.
+
+    Returns a dict of project_metadata values, always with every key present:
+      true_north_angle   str, degrees, bearing of MODEL north from TRUE north (see above)
+      true_north_source  'ifc_truenorth' | 'default_zero'
+      site_latitude      str, decimal degrees, or '' when the IFC carries none
+      site_longitude     str, decimal degrees, or '' when the IFC carries none
+      site_elevation_m   str, metres (RefElevation is in the FILE's length unit), or ''
+      site_latlong_source 'ifc_site' | 'unknown'
+
+    §4 decision: an absent lat/long is written as an EMPTY value, never as 0/0. 0,0 is a real
+    place in the Gulf of Guinea; writing it would turn "we do not know" into "we know, and it
+    is there" — the exact substitution the Prime Directive forbids. The key is still present
+    and `site_latlong_source` says which it is, so a consumer can tell "not extracted yet"
+    (key missing) from "the source file has none" (key present, empty) without guessing.
+    """
+    import math as _math
+    out = {
+        'true_north_angle': '0',
+        'true_north_source': 'default_zero',
+        'site_latitude': '',
+        'site_longitude': '',
+        'site_elevation_m': '',
+        'site_latlong_source': 'unknown',
+    }
+
+    # TrueNorth lives on the project's representation contexts, not on IfcSite.
+    try:
+        for _proj in ifc_file.by_type('IfcProject'):
+            for _ctx in (getattr(_proj, 'RepresentationContexts', None) or []):
+                _tn = getattr(_ctx, 'TrueNorth', None)
+                _ratios = getattr(_tn, 'DirectionRatios', None) if _tn else None
+                if _ratios and len(_ratios) >= 2:
+                    # ⚠ TRUE NORTH MUST LIE IN THE GROUND PLANE, and some exporters write something
+                    # that does not. FOUND IN THIS FLEET 2026-09-18, in four shipped source files —
+                    # Clinic_Electrical_IFC2x3.ifc #11050, Clinic_HVAC_IFC2x3.ifc #76172,
+                    # Ifc2x3_Duplex_Plumbing.ifc #40 and LTU_AHouse_STR.ifc #66 all carry
+                    # TrueNorth = IFCDIRECTION((2.0, 6.12303176911189E-17, 1.0)).
+                    # That is a THREE-component direction with z = 1.0 and an XY part of length 2 —
+                    # not a bearing at all, and not conformant (IFC defines TrueNorth in a 3D
+                    # context as a 2-dimensional direction in the XY plane). Reading its first two
+                    # ratios gives atan2(-2, 0) = -90.000000 deg, which is a confident, precise,
+                    # completely wrong answer: it would have rotated every site-camera fix and
+                    # every walk-mode GPS fix on those buildings by a quarter turn.
+                    # So: REFUSE it rather than interpret it. `malformed_truenorth_ignored` records
+                    # that the file had one and it was rejected — which is a different fact from
+                    # "the file had none", and the reader should not have to guess which.
+                    _tz = float(_ratios[2]) if len(_ratios) > 2 else 0.0
+                    if abs(_tz) > 1e-6:
+                        out['true_north_source'] = 'malformed_truenorth_ignored'
+                        continue
+                    _tx, _ty = float(_ratios[0]), float(_ratios[1])
+                    if _tx or _ty:
+                        _ang = _math.degrees(_math.atan2(-_tx, _ty))
+                        # Revit writes cos(90 deg) as 6.123e-17 rather than 0, so "true north IS
+                        # model north" arrives as -3.5e-15 deg and formats as the string
+                        # "-0.000000". Snap that float noise to a clean 0 — 1e-9 deg is 0.1 mm of
+                        # arc at the equator, far below any real survey bearing. This is a FORMAT
+                        # fix, not a value fix: `true_north_source` still says ifc_truenorth, so a
+                        # REAL authored zero stays distinguishable from the old stub zero.
+                        if abs(_ang) < 1e-9:
+                            _ang = 0.0
+                        out['true_north_angle'] = f"{_ang:.6f}"
+                        out['true_north_source'] = 'ifc_truenorth'
+                        break
+            if out['true_north_source'] == 'ifc_truenorth':
+                break
+    except (RuntimeError, AttributeError, TypeError, ValueError):
+        pass   # schema without IfcProject / malformed context — stays default_zero, and SAYS so
+
+    # RefLatitude/RefLongitude/RefElevation live on IfcSite. IfcSite is in NON_GEOMETRIC_CLASSES
+    # (skipped for geometry); this reads its ATTRIBUTES, which is a different question.
+    try:
+        _sites = ifc_file.by_type('IfcSite')
+    except (RuntimeError, AttributeError):
+        _sites = []
+    for _site in _sites:
+        _lat = _compound_angle_to_degrees(getattr(_site, 'RefLatitude', None))
+        _lon = _compound_angle_to_degrees(getattr(_site, 'RefLongitude', None))
+        if _lat is None or _lon is None:
+            continue                      # a federated drop can carry a bare IfcSite; keep looking
+        out['site_latitude'] = f"{_lat:.8f}"
+        out['site_longitude'] = f"{_lon:.8f}"
+        out['site_latlong_source'] = 'ifc_site'
+        _elev = getattr(_site, 'RefElevation', None)
+        if _elev is not None:
+            # RefElevation is an IfcLengthMeasure in the FILE's own length unit, NOT metres.
+            # Hospital_IFC2x3_ARC.ifc declares MILLI.METRE and writes 165811.2 -> 165.8112 m.
+            try:
+                # `+ 0.0` normalises a "-0." RefElevation (Duplex writes exactly that) so the
+                # stored string is "0.0000" and not "-0.0000".
+                out['site_elevation_m'] = f"{float(_elev) * _length_unit_scale(ifc_file) + 0.0:.4f}"
+            except (TypeError, ValueError):
+                pass
+        break
+    return out
+
+
 def extract_material_layers(ifc_file):
     """Extract all IfcMaterialLayerSet → material_layers rows.
 
@@ -2555,14 +2708,26 @@ def extract_reference(ifc_path, output_path, classes=None, exclude=None,
         # `no such table: project_metadata` on every CLI-extracted DB. Same shape the browser
         # importer writes (viewer/import_db_builder.js:28).
         conn.execute("CREATE TABLE IF NOT EXISTS project_metadata (key TEXT PRIMARY KEY, value TEXT)")
+        # Implementing GEOREF_SUNPATH_COMPASS.md §3.1 — Witness: W-GEOREF-EXTRACT.
+        # `true_north_angle` used to be the literal "0" on this line for every building ever
+        # extracted, while sitecam.js/walk.js applied a real rotation to it. It is REAL now.
+        _geo = extract_georef(ifc_file)
         for _k, _v in (("project_name", building_type),
                        ("building_name", _building_label),
                        ("source_file", os.path.basename(ifc_path)),
                        ("import_date", _dt.datetime.now(_dt.timezone.utc)
                                           .strftime("%Y-%m-%dT%H:%M:%S.000Z")),
-                       ("true_north_angle", "0")):
+                       ("true_north_angle", _geo['true_north_angle']),
+                       ("true_north_source", _geo['true_north_source']),
+                       ("site_latitude", _geo['site_latitude']),
+                       ("site_longitude", _geo['site_longitude']),
+                       ("site_elevation_m", _geo['site_elevation_m']),
+                       ("site_latlong_source", _geo['site_latlong_source'])):
             conn.execute("INSERT OR REPLACE INTO project_metadata (key,value) VALUES (?,?)", (_k, _v))
         conn.commit()
+        print(f"  §GEOREF true_north={_geo['true_north_angle']}deg src={_geo['true_north_source']} "
+              f"lat={_geo['site_latitude'] or 'n/a'} lon={_geo['site_longitude'] or 'n/a'} "
+              f"elev={_geo['site_elevation_m'] or 'n/a'}m src={_geo['site_latlong_source']}")
         _bn = conn.execute("SELECT COUNT(*) FROM elements_meta WHERE building IS NOT NULL").fetchone()[0]
         _bt = conn.execute("SELECT COUNT(*) FROM elements_meta").fetchone()[0]
         print(f"  §BUILDING_COL {_bn}/{_bt} rows carry building={_building_label}; "

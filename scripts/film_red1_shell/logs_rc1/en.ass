@@ -1,0 +1,42 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1920
+PlayResY: 1080
+WrapStyle: 0
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: F,DejaVu Sans,46,&H00B4F0FF,&H00FFFFFF,&H90000000,&H00000000,0,0,0,0,100,100,0,0,1,2.6,0,2,260,260,48,1
+Style: M,DejaVu Sans,46,&H00FFE6B4,&H00FFFFFF,&H90000000,&H00000000,0,0,0,0,100,100,0,0,1,2.6,0,2,260,260,48,1
+Style: Credit,DejaVu Sans,30,&H00DDDDDD,&H00FFFFFF,&H90000000,&H00000000,0,1,0,0,100,100,0,0,1,2,0,8,200,200,36,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:05.47,0:00:06.77,F,start#0,0,0,0,,How do I start?
+Dialogue: 0,0:00:06.82,0:00:09.93,M,start#1,0,0,0,,One word. Red one. And a prompt waits for you.
+Dialogue: 0,0:00:12.26,0:00:13.68,F,help#0,0,0,0,,What words does it know?
+Dialogue: 0,0:00:13.73,0:00:16.99,M,help#1,0,0,0,,Twenty-three. Each one prints the door line it runs.
+Dialogue: 0,0:00:20.55,0:00:22.01,F,cd#0,0,0,0,,And to go into a building?
+Dialogue: 0,0:00:22.06,0:00:25.47,M,cd#1,0,0,0,,Cd, like any shell. The prompt now says Duplex.
+Dialogue: 0,0:00:27.88,0:00:29.20,F,count#0,0,0,0,,How many elements?
+Dialogue: 0,0:00:29.25,0:00:38.17,M,count#1,0,0,0,,One thousand one hundred and ninety-three, by discipline. That first line started the viewer in the background, so it took twenty-five seconds here.
+Dialogue: 0,0:00:42.09,0:00:44.62,F,clash#0,0,0,0,,Clashes, architecture against M E P?
+Dialogue: 0,0:00:44.67,0:00:55.67,M,clash#1,0,0,0,,The line it runs, and a funnel. Three hundred and ninety-three boxes overlap. Two hundred and ninety-one really clash. One hundred and two are cleared by the shape tests.
+Dialogue: 0,0:00:58.43,0:00:59.99,F,ls#0,0,0,0,,Which of those touch a bath?
+Dialogue: 0,0:01:00.04,0:01:08.09,M,ls#1,0,0,0,,L S, and a pattern. It does not run again. It reads the answer above. Four of the three hundred and ninety-three rows match.
+Dialogue: 0,0:01:11.30,0:01:13.13,F,menu#0,0,0,0,,And if I forget the disciplines?
+Dialogue: 0,0:01:13.18,0:01:16.37,M,menu#1,0,0,0,,Then a menu springs up. The building's own five.
+Dialogue: 0,0:01:21.59,0:01:23.15,F,pick#0,0,0,0,,Pick with the arrow keys?
+Dialogue: 0,0:01:23.20,0:01:32.96,M,pick#1,0,0,0,,Down, return. Down, down, down, return. The line it ran says ARC against STR. Forty-five boxes overlap, eighteen clash.
+Dialogue: 0,0:01:36.59,0:01:38.36,F,element#0,0,0,0,,Can I go inside the building?
+Dialogue: 0,0:01:38.41,0:01:43.32,M,element#1,0,0,0,,Cd Element. The prompt says Duplex slash Element, with nine properties.
+Dialogue: 0,0:01:47.13,0:01:48.52,F,lsel#0,0,0,0,,Find the bathrooms?
+Dialogue: 0,0:01:48.57,0:01:54.21,M,lsel#1,0,0,0,,A column, and a pattern. Six elements: Four bathroom spaces and two bath tubs.
+Dialogue: 0,0:01:57.22,0:01:58.66,F,group#0,0,0,0,,And across the storeys?
+Dialogue: 0,0:01:58.71,0:02:06.91,M,group#1,0,0,0,,Group storey. Five groups. Level two holds eighty-three. One thousand and twenty-six have no storey, so they say unknown.
+Dialogue: 0,0:02:09.13,0:02:10.14,F,pwd#0,0,0,0,,Where am I?
+Dialogue: 0,0:02:10.19,0:02:14.22,M,pwd#1,0,0,0,,P W D. The building and the kind, as door keys.
+Dialogue: 0,0:02:16.55,0:02:18.49,M,exit#0,0,0,0,,Exit, and you are back in the shell.
+Dialogue: 0,0:02:18.51,0:02:19.62,F,exit#1,0,0,0,,Remember the name.
+Dialogue: 0,0:02:19.64,0:02:20.73,M,exit#2,0,0,0,,Red one.
+Dialogue: 0,0:02:22.58,0:02:30.48,Credit,,0,0,0,,Voices: AI-generated (Kokoro, local)  ·  Script directed by red1

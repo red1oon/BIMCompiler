@@ -1,0 +1,105 @@
+§FILM_FIT en-klass home  box=675,360,237,200 box_h/canvas_h=0.222
+§FILM_FIT en-klass mouse at 760,450 (the canvas itself is the element there)
+§FILM_FIT en-klass wheel 1 (h -229 px off target) box=669,357,248,210 box_h/canvas_h=0.233
+§FILM_FIT en-klass wheel 2 (h -219 px off target) box=660,353,263,224 box_h/canvas_h=0.248
+§FILM_FIT en-klass wheel 3 (h -205 px off target) box=647,347,286,245 box_h/canvas_h=0.272
+§FILM_FIT en-klass wheel 4 (h -184 px off target) box=627,338,321,277 box_h/canvas_h=0.308
+§FILM_FIT en-klass wheel 5 (h -152 px off target) box=597,325,372,327 box_h/canvas_h=0.363
+§FILM_FIT en-klass wheel 6 (h -102 px off target) box=560,310,433,387 box_h/canvas_h=0.430
+§FILM_FIT en-klass wheel 7 (h -42 px off target) box=519,293,500,456 box_h/canvas_h=0.507
+§FILM_FIT en-klass pan 1 dx=4 dy=88 box=411,256,669,646 box_h/canvas_h=0.718
+§FILM_FIT en-klass wheel 8 (h 217 px off target) box=445,272,617,588 box_h/canvas_h=0.653
+§FILM_FIT en-klass wheel 9 (h 159 px off target) box=478,287,566,531 box_h/canvas_h=0.590
+§FILM_FIT en-klass wheel 10 (h 102 px off target) box=488,293,549,514 box_h/canvas_h=0.571
+§FILM_FIT en-klass wheel 11 (h 85 px off target) box=498,298,534,497 box_h/canvas_h=0.552
+§FILM_FIT en-klass wheel 12 (h 68 px off target) box=508,303,518,481 box_h/canvas_h=0.534
+§FILM_FIT en-klass wheel 13 (h 52 px off target) box=517,307,503,465 box_h/canvas_h=0.517
+§FILM_FIT en-klass wheel 14 (h 36 px off target) box=526,312,489,450 box_h/canvas_h=0.500
+§FILM_FIT en-klass pan 2 dx=2 dy=73 box=528,353,489,465 box_h/canvas_h=0.517
+§FILM_FIT en-klass wheel 15 (h 36 px off target) box=537,359,475,451 box_h/canvas_h=0.501
+§FILM_FIT en-klass pan 3 dx=-1 dy=25 box=537,391,475,462 box_h/canvas_h=0.513
+§FILM_FIT en-klass wheel 16 (h 33 px off target) box=545,394,461,446 box_h/canvas_h=0.496
+§FILM_FIT en-klass DONE wheels=16 pans=3 target_h=429 target_c=773,610 box=545,394,461,446 box_h/canvas_h=0.496
+§FILM_SHOT name=klass_en rects={"#find-panel":{"x":1308,"y":54,"w":280,"h":421},"#cmd-palette":null,"#cmd-head":null,"#cmd-search":null,"#cmd-list":null,"#info-panel":{"x":1210,"y":455.8,"w":320,"h":394.2},"#info-class-help":{"x":1227,"y":630.3,"w":286,"h":206.7}}
+§FILM_FRAME name=klass_en canvas={"x":0,"y":0,"w":1600,"h":900} meshes=92 box={"x":545.0099779042763,"y":394.3089642941011,"w":460.8773965513426,"h":446.47648622165957} box_h/canvas_h=0.496 box_w/canvas_w=0.288 panels={"#cmd-palette":null,"#info-panel":[1210,1530]} minFont={"#find-panel":9,"#cmd-palette":null,"#cmd-head":null,"#cmd-search":null,"#cmd-list":null,"#info-panel":10,"#info-class-help":10}
+§FILM_FIT en-help start (no Home, the framing of the step before) box=545,395,461,447 box_h/canvas_h=0.496
+§FILM_FIT en-help mouse at 760,450 (the canvas itself is the element there)
+§FILM_FIT en-help pan 1 dx=-2 dy=-373 box=543,206,461,383 box_h/canvas_h=0.426
+§FILM_FIT en-help wheel 1 (h -46 px off target) box=535,179,475,388 box_h/canvas_h=0.431
+§FILM_FIT en-help wheel 2 (h -41 px off target) box=526,154,489,393 box_h/canvas_h=0.437
+§FILM_FIT en-help wheel 3 (h -36 px off target) box=517,130,504,399 box_h/canvas_h=0.443
+§FILM_FIT en-help wheel 4 (h -30 px off target) box=507,108,518,405 box_h/canvas_h=0.450
+§FILM_FIT en-help pan 2 dx=6 dy=-66 box=511,10,518,367 box_h/canvas_h=0.408
+§FILM_FIT en-help wheel 5 (h -62 px off target) box=502,-7,533,374 box_h/canvas_h=0.416
+§FILM_FIT en-help wheel 6 (h -55 px off target) box=492,-24,548,382 box_h/canvas_h=0.424
+§FILM_FIT en-help wheel 7 (h -47 px off target) box=482,-40,565,389 box_h/canvas_h=0.432
+§FILM_FIT en-help wheel 8 (h -40 px off target) box=472,-56,581,397 box_h/canvas_h=0.441
+§FILM_FIT en-help wheel 9 (h -32 px off target) box=462,-73,598,404 box_h/canvas_h=0.449
+§FILM_FIT en-help pan 3 dx=12 dy=115 box=471,-28,596,425 box_h/canvas_h=0.473
+§FILM_FIT en-help pan 4 dx=4 dy=60 box=478,34,594,454 box_h/canvas_h=0.505
+§FILM_FIT en-help pan 5 dx=-2 dy=-17 box=479,48,594,461 box_h/canvas_h=0.512
+§FILM_FIT en-help wheel 10 (h 32 px off target) box=489,58,577,448 box_h/canvas_h=0.498
+§FILM_FIT en-help pan 6 dx=-5 dy=-37 box=486,37,578,439 box_h/canvas_h=0.488
+§FILM_FIT en-help DONE wheels=10 pans=6 target_h=429 target_c=773,245 box=486,37,578,439 box_h/canvas_h=0.488
+§FILM_SHOT name=pal_open rects={"#find-panel":{"x":1308,"y":54,"w":280,"h":421},"#cmd-palette":{"x":16,"y":16,"w":320,"h":868},"#cmd-head":{"x":17,"y":17,"w":318,"h":33},"#cmd-search":{"x":31,"y":60,"w":290,"h":33},"#cmd-list":{"x":17,"y":104,"w":318,"h":746},"#info-panel":{"x":1210,"y":455.8,"w":320,"h":394.2},"#info-class-help":{"x":1227,"y":630.3,"w":286,"h":206.7}}
+§FILM_FRAME name=pal_open canvas={"x":0,"y":0,"w":1600,"h":900} meshes=92 box={"x":485.9003289817156,"y":37.41602324273071,"w":577.6855997933831,"h":438.81774629845586} box_h/canvas_h=0.488 box_w/canvas_w=0.361 panels={"#cmd-palette":[16,336],"#info-panel":[1210,1530]} minFont={"#find-panel":9,"#cmd-palette":12,"#cmd-head":13,"#cmd-search":null,"#cmd-list":12,"#info-panel":10,"#info-class-help":10}
+§FILM_SHOT name=pal_native rects={"#find-panel":{"x":1308,"y":54,"w":280,"h":421},"#cmd-palette":{"x":16,"y":16,"w":320,"h":868},"#cmd-head":{"x":17,"y":17,"w":318,"h":33},"#cmd-search":{"x":31,"y":60,"w":290,"h":33},"#cmd-list":{"x":17,"y":104,"w":318,"h":746},"#info-panel":{"x":1210,"y":455.8,"w":320,"h":394.2},"#info-class-help":{"x":1227,"y":630.3,"w":286,"h":206.7}}
+§FILM_FRAME name=pal_native canvas={"x":0,"y":0,"w":1600,"h":900} meshes=92 box={"x":485.5905503257301,"y":35.486148572335196,"w":577.763119598911,"h":437.9477366440125} box_h/canvas_h=0.487 box_w/canvas_w=0.361 panels={"#cmd-palette":[16,336],"#info-panel":[1210,1530]} minFont={"#find-panel":9,"#cmd-palette":12,"#cmd-head":13,"#cmd-search":null,"#cmd-list":12,"#info-panel":10,"#info-class-help":10}
+§FILM_SHOT name=pal_find rects={"#find-panel":{"x":1308,"y":54,"w":280,"h":421},"#cmd-palette":{"x":16,"y":16,"w":320,"h":868},"#cmd-head":{"x":17,"y":17,"w":318,"h":33},"#cmd-search":{"x":31,"y":60,"w":290,"h":33},"#cmd-list":{"x":17,"y":104,"w":318,"h":746},"#info-panel":{"x":1210,"y":455.8,"w":320,"h":394.2},"#info-class-help":{"x":1227,"y":630.3,"w":286,"h":206.7},"#film-find-row":{"x":17,"y":104,"w":318,"h":36},"#film-find-body":{"x":31,"y":140,"w":304,"h":187}}
+§FILM_FRAME name=pal_find canvas={"x":0,"y":0,"w":1600,"h":900} meshes=92 box={"x":485.4539895682164,"y":34.63539548846931,"w":577.7972929131813,"h":437.5642073880119} box_h/canvas_h=0.486 box_w/canvas_w=0.361 panels={"#cmd-palette":[16,336],"#info-panel":[1210,1530]} minFont={"#find-panel":9,"#cmd-palette":11,"#cmd-head":13,"#cmd-search":null,"#cmd-list":11,"#info-panel":10,"#info-class-help":10,"#film-find-row":12,"#film-find-body":11}
+§FILM_SHOT name=dock_moved rects={"#find-panel":{"x":1308,"y":54,"w":280,"h":421},"#cmd-palette":{"x":216,"y":32,"w":320,"h":868},"#cmd-head":{"x":217,"y":33,"w":318,"h":33},"#cmd-search":{"x":231,"y":76,"w":290,"h":33},"#cmd-list":{"x":217,"y":120,"w":318,"h":746},"#info-panel":{"x":1210,"y":455.8,"w":320,"h":394.2},"#info-class-help":{"x":1227,"y":630.3,"w":286,"h":206.7}}
+§FILM_FRAME name=dock_moved canvas={"x":0,"y":0,"w":1600,"h":900} meshes=92 box={"x":485.32835367130394,"y":33.852702651312434,"w":577.82873236231,"h":437.2113604724914} box_h/canvas_h=0.486 box_w/canvas_w=0.361 panels={"#cmd-palette":[216,536],"#info-panel":[1210,1530]} minFont={"#find-panel":9,"#cmd-palette":11,"#cmd-head":13,"#cmd-search":null,"#cmd-list":11,"#info-panel":10,"#info-class-help":10}
+§FILM_SHOT name=dock_closed rects={"#info-panel":{"x":1210,"y":455.8,"w":320,"h":394.2},"#find-panel":{"x":1308,"y":54,"w":280,"h":421}}
+§FILM_FRAME name=dock_closed canvas={"x":0,"y":0,"w":1600,"h":900} meshes=92 box={"x":485.21276864614424,"y":33.13262524112845,"w":577.8576566555084,"h":436.8867413102126} box_h/canvas_h=0.485 box_w/canvas_w=0.361 panels={"#cmd-palette":null,"#info-panel":[1210,1530]} minFont={"#info-panel":10,"#find-panel":9}
+§FILM_SHOT name=dock_reopen rects={"#find-panel":{"x":1308,"y":54,"w":280,"h":421},"#cmd-palette":{"x":216,"y":32,"w":320,"h":868},"#cmd-head":{"x":217,"y":33,"w":318,"h":33},"#cmd-search":{"x":231,"y":76,"w":290,"h":33},"#cmd-list":{"x":217,"y":120,"w":318,"h":746},"#info-panel":{"x":1210,"y":455.8,"w":320,"h":394.2},"#info-class-help":{"x":1227,"y":630.3,"w":286,"h":206.7}}
+§FILM_FRAME name=dock_reopen canvas={"x":0,"y":0,"w":1600,"h":900} meshes=92 box={"x":485.10643042299773,"y":32.47015402375889,"w":577.8842670052508,"h":436.58809168091597} box_h/canvas_h=0.485 box_w/canvas_w=0.361 panels={"#cmd-palette":[216,536],"#info-panel":[1210,1530]} minFont={"#find-panel":9,"#cmd-palette":11,"#cmd-head":13,"#cmd-search":null,"#cmd-list":11,"#info-panel":10,"#info-class-help":10}
+§FILM_FIT de_DE-klass home  box=679,363,229,193 box_h/canvas_h=0.215
+§FILM_FIT de_DE-klass mouse at 760,450 (the canvas itself is the element there)
+§FILM_FIT de_DE-klass wheel 1 (h -236 px off target) box=673,360,241,203 box_h/canvas_h=0.226
+§FILM_FIT de_DE-klass wheel 2 (h -226 px off target) box=664,356,256,217 box_h/canvas_h=0.241
+§FILM_FIT de_DE-klass wheel 3 (h -212 px off target) box=652,350,278,238 box_h/canvas_h=0.264
+§FILM_FIT de_DE-klass wheel 4 (h -191 px off target) box=632,341,313,270 box_h/canvas_h=0.300
+§FILM_FIT de_DE-klass wheel 5 (h -159 px off target) box=602,327,364,319 box_h/canvas_h=0.355
+§FILM_FIT de_DE-klass wheel 6 (h -110 px off target) box=565,312,426,380 box_h/canvas_h=0.423
+§FILM_FIT de_DE-klass wheel 7 (h -49 px off target) box=523,295,494,450 box_h/canvas_h=0.500
+§FILM_FIT de_DE-klass pan 1 dx=3 dy=90 box=411,256,669,646 box_h/canvas_h=0.718
+§FILM_FIT de_DE-klass wheel 8 (h 217 px off target) box=445,272,617,588 box_h/canvas_h=0.653
+§FILM_FIT de_DE-klass wheel 9 (h 159 px off target) box=478,287,566,531 box_h/canvas_h=0.590
+§FILM_FIT de_DE-klass wheel 10 (h 102 px off target) box=488,293,549,514 box_h/canvas_h=0.571
+§FILM_FIT de_DE-klass wheel 11 (h 85 px off target) box=498,298,534,497 box_h/canvas_h=0.552
+§FILM_FIT de_DE-klass wheel 12 (h 68 px off target) box=508,303,518,481 box_h/canvas_h=0.534
+§FILM_FIT de_DE-klass wheel 13 (h 52 px off target) box=517,308,503,465 box_h/canvas_h=0.517
+§FILM_FIT de_DE-klass wheel 14 (h 36 px off target) box=526,312,489,450 box_h/canvas_h=0.500
+§FILM_FIT de_DE-klass pan 2 dx=2 dy=73 box=528,353,489,465 box_h/canvas_h=0.517
+§FILM_FIT de_DE-klass wheel 15 (h 36 px off target) box=537,360,475,451 box_h/canvas_h=0.501
+§FILM_FIT de_DE-klass pan 3 dx=-1 dy=25 box=537,391,475,462 box_h/canvas_h=0.513
+§FILM_FIT de_DE-klass wheel 16 (h 33 px off target) box=545,394,461,446 box_h/canvas_h=0.496
+§FILM_FIT de_DE-klass DONE wheels=16 pans=3 target_h=429 target_c=773,610 box=545,394,461,446 box_h/canvas_h=0.496
+§FILM_SHOT name=klass_de_DE rects={"#find-panel":{"x":1308,"y":54,"w":280,"h":421},"#cmd-palette":null,"#cmd-head":null,"#cmd-search":null,"#cmd-list":null,"#info-panel":{"x":1210,"y":340.7,"w":320,"h":509.3},"#info-class-help":{"x":1227,"y":515.2,"w":286,"h":321.8}}
+§FILM_FRAME name=klass_de_DE canvas={"x":0,"y":0,"w":1600,"h":900} meshes=92 box={"x":545.0077938798566,"y":394.2976236538932,"w":460.8778440354116,"h":446.47268003193597} box_h/canvas_h=0.496 box_w/canvas_w=0.288 panels={"#cmd-palette":null,"#info-panel":[1210,1530]} minFont={"#find-panel":9,"#cmd-palette":null,"#cmd-head":null,"#cmd-search":null,"#cmd-list":null,"#info-panel":10,"#info-class-help":10}
+§FILM_FIT zh_CN-klass home  box=675,360,236,200 box_h/canvas_h=0.222
+§FILM_FIT zh_CN-klass mouse at 760,450 (the canvas itself is the element there)
+§FILM_FIT zh_CN-klass wheel 1 (h -229 px off target) box=669,357,248,210 box_h/canvas_h=0.233
+§FILM_FIT zh_CN-klass wheel 2 (h -219 px off target) box=660,353,263,223 box_h/canvas_h=0.248
+§FILM_FIT zh_CN-klass wheel 3 (h -206 px off target) box=647,347,286,245 box_h/canvas_h=0.272
+§FILM_FIT zh_CN-klass wheel 4 (h -184 px off target) box=627,338,320,277 box_h/canvas_h=0.308
+§FILM_FIT zh_CN-klass wheel 5 (h -152 px off target) box=597,325,372,326 box_h/canvas_h=0.363
+§FILM_FIT zh_CN-klass wheel 6 (h -103 px off target) box=560,310,433,387 box_h/canvas_h=0.430
+§FILM_FIT zh_CN-klass wheel 7 (h -42 px off target) box=519,293,500,456 box_h/canvas_h=0.507
+§FILM_FIT zh_CN-klass pan 1 dx=4 dy=88 box=411,256,669,646 box_h/canvas_h=0.718
+§FILM_FIT zh_CN-klass wheel 8 (h 217 px off target) box=445,272,617,588 box_h/canvas_h=0.653
+§FILM_FIT zh_CN-klass wheel 9 (h 159 px off target) box=478,287,566,531 box_h/canvas_h=0.590
+§FILM_FIT zh_CN-klass wheel 10 (h 102 px off target) box=488,293,549,514 box_h/canvas_h=0.571
+§FILM_FIT zh_CN-klass wheel 11 (h 85 px off target) box=498,298,534,497 box_h/canvas_h=0.552
+§FILM_FIT zh_CN-klass wheel 12 (h 68 px off target) box=508,303,518,481 box_h/canvas_h=0.534
+§FILM_FIT zh_CN-klass wheel 13 (h 52 px off target) box=517,307,503,465 box_h/canvas_h=0.517
+§FILM_FIT zh_CN-klass wheel 14 (h 36 px off target) box=526,312,489,450 box_h/canvas_h=0.500
+§FILM_FIT zh_CN-klass pan 2 dx=2 dy=73 box=528,353,489,465 box_h/canvas_h=0.517
+§FILM_FIT zh_CN-klass wheel 15 (h 36 px off target) box=537,359,475,451 box_h/canvas_h=0.501
+§FILM_FIT zh_CN-klass pan 3 dx=-1 dy=25 box=537,391,475,462 box_h/canvas_h=0.513
+§FILM_FIT zh_CN-klass wheel 16 (h 33 px off target) box=545,394,461,446 box_h/canvas_h=0.496
+§FILM_FIT zh_CN-klass DONE wheels=16 pans=3 target_h=429 target_c=773,610 box=545,394,461,446 box_h/canvas_h=0.496
+§FILM_SHOT name=klass_zh_CN rects={"#find-panel":{"x":1308,"y":54,"w":280,"h":424},"#cmd-palette":null,"#cmd-head":null,"#cmd-search":null,"#cmd-list":null,"#info-panel":{"x":1210,"y":436.6,"w":320,"h":413.4},"#info-class-help":{"x":1227,"y":611.1,"w":286,"h":225.9}}
+§FILM_FRAME name=klass_zh_CN canvas={"x":0,"y":0,"w":1600,"h":900} meshes=92 box={"x":545.0096819933417,"y":394.30879363474804,"w":460.8774571804404,"h":446.47642894430516} box_h/canvas_h=0.496 box_w/canvas_w=0.288 panels={"#cmd-palette":null,"#info-panel":[1210,1530]} minFont={"#find-panel":9,"#cmd-palette":null,"#cmd-head":null,"#cmd-search":null,"#cmd-list":null,"#info-panel":10,"#info-class-help":10}
+§FILM_CLI {"line":"viewer.counts building=Duplex","exit":0,"status":"ok","summary":"1193 elements: MEP 809, ARC 270, ELEC 81, STR 19, PLB 14","total":1193,"viewerLine":"§ASK_ANSWER id=counts verdict=OK value={\"total\":1193,\"by\":\"discipline\",\"groups\":{\"MEP\":809,\"ARC\":270,\"ELEC\":81,\"STR\":19,\"PLB\":14}}","door":"§DOOR request=d-mwk7rk9s-228083-1 actor=human verb=viewer.counts status=ok ms=8950","ms":8950}
+§FILM_FACTS en={"i":21,"of":50} de={"i":21,"of":50} zh={"i":21,"of":50} word={"w":"native","inName":false,"holders":[{"id":"save","name":"Save Building","bullet":"Native Save As… dialog — pick name + folder"},{"id":"open","name":"Open Building","bullet":"Native Open… dialog"}]} find={"name":"Find / NavigateF","open":true,"guide":"https://red1oon.github.io/BIMCompiler/BIMUserGuide/#find-panel-search-voice-query-and-axis-lenses","cliLabel":"Same at the CLI","cli":["viewer.counts building=<building>","viewer.clashes building=<building> discA=<discA> discB=<discB>","viewer.cost building=<building>"]} dock={"before":{"l":16,"t":16},"moved":{"l":216,"t":32},"reopened":{"l":216,"t":32},"keptOpen":true} errors=0

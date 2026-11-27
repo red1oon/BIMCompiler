@@ -6,7 +6,7 @@
 
 **BIM OOTB — Frictionless BIM. Two DBs. One browser. Zero install.**
 
-Version 0.6 alpha (October 2025 - May 2026)
+Release 1.84.0 (31 October 2026)
 Creator: Redhuan D. Oon <red1org@gmail.com>
 Tickets: github.com/red1oon/bim-ootb/issues
 License: MIT
@@ -17,16 +17,16 @@ Browser-native BIM viewer. Drop an IFC file or pick a building — geometry stre
 from SQLite databases directly to the GPU via Three.js. No server, no plugins,
 no build step. Works on desktop and mobile.
 
-~50K lines of vanilla JavaScript — no framework, no build step, no npm, no bundler.
+~150K lines of vanilla JavaScript in the Viewer alone (231 modules) — no framework, no build step, no bundler.
 ~4MB total download (cached after first visit). Static files only — zero server-side code.
 Compare typical web BIM viewers at 100K–500K+ lines with Node backends and heavy frameworks.
 
-- ~50K lines of JavaScript + HTML
+- ~150K lines of JavaScript in the Viewer (231 modules), plus the Modeller and Kernel-ERP
 - 18 languages, locale-aware currency
 - 30 Playwright test suites
 - GitHub Pages (free hosting)
 
-### Third-Party Libraries (all loaded via CDN, not modified)
+### Third-Party Libraries (not modified)
 
 | Library | Version | License | What it does |
 |---------|---------|---------|--------------|
@@ -72,7 +72,7 @@ into a serverless BIM pipeline.** The original contribution is:
 
 18 languages with local currency and exchange rates. Click the flag to switch.
 
-**Locale files:** `deploy/dev/locales/*.js` — one file per country.
+**Locale files:** `viewer/locales/*.js` — one file per country.
 Each file contains all UI translations and currency settings (`cur`, `cur2`, `cur_rate`).
 
 To customise your own:
@@ -81,8 +81,7 @@ To customise your own:
 2. Edit the translations, currency symbol, and exchange rate
 3. Add your locale to the `AVAILABLE_LOCALES` array in `locale_loader.js`
 
-Source: [deploy/dev/locales/](https://github.com/red1oon/BIMCompiler/tree/master/deploy/dev/locales)
-Full guide: [Localization Guide](https://red1oon.github.io/BIMCompiler/Localization/)
+Source: [viewer/locales/](https://github.com/red1oon/bim-ootb/tree/main/viewer/locales)
 
 > **Note:** Language and currency/rates are currently bundled per country flag (POC).
 > A future version will separate language preference from currency/rate selection —
@@ -119,11 +118,10 @@ browser already consumes. Stage 2 adds server-side compilation, not a new viewer
 
 ## DIY Self-Host
 
-Run BIM OOTB on your own machine. ~49MB download (full repo), ~4MB viewer.
-Libraries loaded from CDN on first use, then cached offline by the Service Worker.
+Run BIM OOTB on your own machine. Libraries are cached offline by the Service Worker.
 
-1. Download `deploy/dev/` from [GitHub](https://github.com/red1oon/BIMCompiler)
-2. Run `python3 -m http.server 8080` in the folder
+1. Download the repo from [GitHub](https://github.com/red1oon/bim-ootb) (the `main` branch ZIP)
+2. Run `python3 -m http.server 8080` in the unzipped folder
 3. Open `http://localhost:8080` — drop any IFC file
 
 Or use the **DIY Downloader** in the About box of the [live viewer](https://red1oon.github.io/bim-ootb/) — it generates an install script for your platform (Windows/Mac/Linux) that handles prerequisites automatically.
@@ -140,7 +138,7 @@ Includes everything needed to run:
 - All viewer JS modules (~30 files)
 - 14 DXF templates (floor plans, elevations, roof)
 - Cost rates and exchange rate data (`rates.js`)
-- 15 language packs with local currency (`locales/`)
+- 18 language packs with local currency (`viewer/locales/`)
 - Service worker for offline caching (`sw.js`)
 
 No databases are bundled — buildings load from OCI cloud via the manifest,

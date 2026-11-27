@@ -1,0 +1,117 @@
+§OP_VERSIONS_LOADED v1 (J.2 amended: signed declarative upcasters, parking, min_v, provisional hash)
+§SIGN_LOADED erp_signer.js (W-SIGN edge keypair, ECDSA P-256)
+═══ §COMM-VERSIONS — W-COMM-VERSIONS: event versioning in the comm fold (spec §16.31) ═══
+
+── C1: CONTROL — without opts.versions an op stamped sv:2 is MERGED everywhere ──
+   🟢 C1 an sv:2 create is MERGED on both devices (no versions hook => unchanged behaviour) — MERGED:role 102 ok / MERGED:role 102 ok
+
+── C2: an old app parks what it cannot read, the others fold it; after the upgrade all agree ──
+§OPV_SET_LOADED op=CRUD_CREATE steps=1->2 signer=admin
+§OPV_SET_LOADED op=CRUD_CREATE steps=1->2 signer=admin
+   🟢 C2 B and C (appV 2 + signed set) MERGE all three — MERGED:role 102 ok MERGED:role 102 ok MERGED:role 102 ok MERGED:role 102 ok MERGED:role 102 ok MERGED:role 102 ok
+   🟢 C2 A (appV 1): the v1 op MERGES, the v2 op is PARKED needs-upgrade, the op that reads it is PARKED deps — MERGED:role 102 ok PARKED:needs-upgrade PARKED:deps
+   🟢 C2 A's foldable() omits the parked ops; B's has all three — A=1 B=3
+   🟢 C2 A.versionState(): provisional, 2 parked, with reasons — {"parked_count":2,"provisional":true,"parked_by_reason":{"needs-upgrade":1,"deps":1},"refused_count":0,"refused_by_reason":{}}
+   🟢 C2 B.versionState(): not provisional, nothing parked — {"parked_count":0,"provisional":false,"parked_by_reason":{},"refused_count":0,"refused_by_reason":{}}
+   🟢 C3 foldable() gives the legacy op in the v2 shape (grandtotal -> total) and marks it sv:2 — {"fields":{"documentno":"L1","ad_client_id":11,"ad_org_id":11,"total":100},"_sv":2}
+   🟢 C3 the STORED envelope string in cl_op is byte-identical after foldable(), and its signature still verifies against the author key — len=602
+§OPV_SET_LOADED op=CRUD_CREATE steps=1->2 signer=admin
+   🟢 C2 after the upgrade A MERGES all three, in the same placed order as B and C — MERGED:role 102 ok MERGED:role 102 ok MERGED:role 102 ok
+   🟢 C2 after the upgrade A is no longer provisional — {"parked_count":0,"provisional":false,"parked_by_reason":{},"refused_count":0,"refused_by_reason":{}}
+   🟢 C3 after the upgrade A and B hand the host identical bodies (compared in the envelope's own canonical form) — n=3/3
+
+── C4: a bogus sv is refused everywhere; what reads it is dep-refused ──
+   🟢 C4 sv 0, "x" and 1.5 are REFUSED bogus-version on all three devices (not parked, not merged) — REFUSED:bogus-version REFUSED:bogus-version REFUSED:bogus-version REFUSED:bogus-version REFUSED:bogus-version REFUSED:bogus-version REFUSED:bogus-version REFUSED:bogus-version REFUSED:bogus-version
+
+── C5: min_v rides the admin POLICY: retirement is the same on every device ──
+   🟢 C5 CONTROL: before any retirement the v1 create and the edit that reads it are MERGED everywhere — MERGED:role 102 ok/MERGED:role 102 ok | MERGED:role 102 ok/MERGED:role 102 ok | MERGED:role 102 ok/MERGED:role 102 ok
+   🟢 C5 min_v:{CRUD_CREATE:"x"} is REFUSED bad-policy:min_v; a non-admin POLICY with min_v is REFUSED not-admin; no policy took effect — REFUSED:bad-policy:min_v | REFUSED:not-admin | policy=null
+   🟢 C5 after the admin POLICY the v1 create the publisher had already SEEN stays MERGED on all three devices (position-bound floor; was REFUSED retired-version) — MERGED:role 102 ok | MERGED:role 102 ok | MERGED:role 102 ok
+   🟢 C5 and so does the edit authored before the raise that READS that create (was REFUSED dep-refused) — MERGED:role 102 ok | MERGED:role 102 ok | MERGED:role 102 ok
+   🟢 C5 NO op on any device is REFUSED retired-version or dep-refused after the raise (a floor never refuses for age) — judged=57
+   🟢 C5 the native v2 create still MERGES — MERGED:role 102 ok | MERGED:role 102 ok | MERGED:role 102 ok
+   🟢 C5 lowering min_v in a later epoch is REFUSED `min_v-lowered` when judged (and stays REFUSED); raising it is MERGED (CONTROL) — when judged: REFUSED:min_v-lowered; after epoch 3 arrived: REFUSED:min_v-lowered (once a higher epoch is in force the same refused op reads epoch-stale — same verdict, the reason names the first rule it fails in fold order) | MERGED:policy | in force epoch=3
+
+── C6: an op refused for access keeps that verdict even when it is also unreadable ──
+§OPV_SET_LOADED op=CRUD_CREATE steps=1->2 signer=admin
+   🟢 C6 on the old app (appV 1) an sv:2 op on an unknown table is REFUSED access:no-table, not parked — REFUSED:access:no-table
+   🟢 C6 CONTROL: an sv:2 op on a real table on the same device is PARKED needs-upgrade — PARKED:needs-upgrade
+
+── C7: two up-to-date devices co-sign a checkpoint over an op the old device parks; the old device must not adopt it ──
+§OPV_SET_LOADED op=CRUD_CREATE steps=1->2 signer=admin
+§OPV_SET_LOADED op=CRUD_CREATE steps=1->2 signer=admin
+   🟢 C7 CONTROL: the up-to-date devices B and C take the checkpoint into force and hold the op MERGED — B.inForce=true C.inForce=true B:MERGED:role 102 ok
+   🟢 C7 the old device A does NOT put that checkpoint in force and still holds the op PARKED needs-upgrade — A.inForce=false A:PARKED:needs-upgrade candidates=WAITING-VERSION,PENDING
+   🟢 C7 and A does not condemn it: no candidate is BAD (BAD is persisted for good; an unreadable prefix is a wait, not a lie) — WAITING-VERSION,PENDING
+§OPV_SET_LOADED op=CRUD_CREATE steps=1->2 signer=admin
+   🟢 C7 after A upgrades it MERGES the same op — MERGED:role 102 ok
+   🟢 C7 and after the upgrade A no longer holds that checkpoint BAD: it re-verifies it by its own fold and takes it into force — A.inForce=true candidates=PENDING,IN-FORCE
+
+── C8: POLICY upcasters: validated, admin-only, never dropped ──
+   🟢 C8 a string, a set without steps, and 17 sets are each REFUSED bad-policy:upcasters on all three devices — REFUSED:bad-policy:upcasters | REFUSED:bad-policy:upcasters | REFUSED:bad-policy:upcasters
+   🟢 C8 a non-admin POLICY carrying a set is REFUSED not-admin everywhere and takes no effect — REFUSED:not-admin REFUSED:not-admin REFUSED:not-admin
+   🟢 C8 the admin's POLICY with one set is MERGED and every device returns the same set — MERGED:policy MERGED:policy MERGED:policy
+   🟢 C8 a later epoch that drops every set, omits the key, or edits a set is REFUSED upcasters-dropped on all three — REFUSED:upcasters-dropped | REFUSED:upcasters-dropped | REFUSED:upcasters-dropped
+   🟢 C8 CONTROL: a later epoch that keeps the set and adds another is MERGED; the policy in force has both — MERGED:policy MERGED:policy MERGED:policy
+   🟢 C8 CONTROL: a POLICY with no `upcasters` at all is MERGED as before and carries none
+
+── C9: the floor is judged at the op's position; below it an op is PARKED needs-translation, never REFUSED ──
+§OPV_SET_LOADED op=CRUD_CREATE steps=1->2 signer=admin
+   🟢 C9 roster.minVAt: the raise does NOT cover the op the publisher had seen (seq 1) and DOES cover the one it had not (seq 2) — {} / {"CRUD_CREATE":2}
+   🟢 C9 B (appV 1): the op the publisher had SEEN stays MERGED natively; the late op is PARKED needs-translation (not REFUSED); the edit that reads it is PARKED deps — MERGED:role 102 ok | PARKED:needs-translation | PARKED:deps
+   🟢 C9 A (appV 2 + the signed set): all three MERGE (the late op folds THROUGH the translation) — MERGED:role 102 ok | MERGED:role 102 ok | MERGED:role 102 ok
+   🟢 C9 C (appV 2, no set): the seen op is PARKED needs-mapping (above the floor at its position, a rung is missing), the late op PARKED needs-translation, the edit PARKED deps — PARKED:needs-mapping | PARKED:needs-translation | PARKED:deps
+   🟢 C9 NO op on any device is REFUSED retired-version / dep-refused (0 business declarations lost to the floor) — refused=0
+
+── C10: a translation set is loaded: the parked late ops fold, every device agrees, nothing was lost ──
+   🟢 C10 BEFORE the translation: C is provisional with needs-translation counted (the UI says "N items need an update", not a spinner) — {"parked_count":3,"provisional":true,"parked_by_reason":{"needs-mapping":1,"needs-translation":1,"deps":1},"refused_count":0,"refused_by_reason":{}}
+§OPV_SET_LOADED op=CRUD_CREATE steps=1->2 signer=admin
+§OPV_SET_LOADED op=CRUD_CREATE steps=1->2 signer=admin
+   🟢 C10 after the set is loaded the late op, the seen op and the edit are MERGED on A, B and C (the parked op FOLDED, none lost) — A:MERGED:role 102 ok,MERGED:role 102 ok,MERGED:role 102 ok | B:MERGED:role 102 ok,MERGED:role 102 ok,MERGED:role 102 ok | C:MERGED:role 102 ok,MERGED:role 102 ok,MERGED:role 102 ok
+   🟢 C10 A, B and C hand the host byte-identical bodies (the translated late op is the same everywhere) — len=313
+   🟢 C10 C is no longer provisional (parked_count 0) — {"parked_count":0,"provisional":false,"parked_by_reason":{},"refused_count":0,"refused_by_reason":{}}
+
+── C11: a parked old-version op holds only its own author out of a checkpoint; a co-signer that cannot translate WAITS, never BAD ──
+§OPV_SET_LOADED op=CRUD_CREATE steps=1->2 signer=admin
+   🟢 C11 C (cannot translate) PUBLISHES a checkpoint although two of B's ops are parked: the other authors are not stalled — {"name":"s/4229d597e636db3ee4bfd213d5c6e025cd2bf39c8e2032fb1e3858060b24d84d/o/a00cee2d917e frontier={"916660f2de53b39e":10,"ef2fe9c882ab3cdf":1}
+   🟢 C11 its frontier for B stops BEFORE the first parked op (the hold is per author: B ends at seq 1, the first parked op is 2) — B=1
+   🟢 C11 checkpointInfo().held names the held author, its first held seq and the reason (what the Rollout screen will read) — [{"author":"ef2fe9c882ab3cdf","seq":2,"reason":"needs-translation","hash":"370e9704273973f99b6fcd57b45a1dc05c78ad774e1cb15d5145552760e675a4"}]
+   🟢 C11 A (can translate) co-signs it; the checkpoint is in force on A and on C — A=11 C=11
+   🟢 C11 A (can translate) then checkpoints PAST the late ops (frontier for B = seq 3) — {"name":"s/4229d597e636db3ee4bfd213d5c6e025cd2bf39c8e2032fb1e3858060b24d84d/o/916660f2de53 B=3
+   🟢 C11 C cannot translate yet: it WAITS on that checkpoint (WAITING-VERSION), it does not condemn it (BAD is persisted for good), and still runs on the earlier one — status=WAITING-VERSION all=WAITING-VERSION,IN-FORCE
+§OPV_SET_LOADED op=CRUD_CREATE steps=1->2 signer=admin
+   🟢 C11 once C loads the translation it verifies that checkpoint by its own fold and takes it into force: same state as A, nothing BAD, no author held — C=36cf9567 A=36cf9567 held=[]
+
+── C11b: a later floor raise may not re-judge an op inside a closed checkpoint prefix ──
+   🟢 C11b CONTROL: the checkpoint is in force and the op is MERGED before the raise — inForce=true MERGED:role 102 ok
+   🟢 C11b an unstamped raise that WOULD re-judge an op inside the prefix is not trusted: the checkpoint falls out of force and both devices re-fold the op under the floor (PARKED needs-translation), identically — inForce=false A:PARKED:needs-translation B:PARKED:needs-translation
+
+── C12: an old device cannot drop a field it does not know, and a record it cannot fully read is READ-ONLY on it (D10) ──
+§OPV_SET_LOADED op=CRUD_CREATE steps=1->2 signer=admin
+   🟢 C12 the old device's save of a readable record is a DELTA: its op carries only the edited column, so the field it does not know (zz_new) is untouched on every device — changes=documentno ops=2
+   🟢 C12 the old device's save of a record whose history it has PARKED is refused locally with needs-upgrade (read-only, D10) and writes NO op — thrown=needs-upgrade ops 8->8
+§OPV_SET_LOADED op=CRUD_CREATE steps=1->2 signer=admin
+   🟢 C12 after the old device upgrades, the same save succeeds — ok
+   🟢 C12 CONTROL: a store opened WITHOUT `versions` is unchanged: it saves a record carrying sv:2 as before — ok
+§CV_ARMS red=none vacuous=none judged=54
+
+§CV_MUTANTS
+   🟢 verdict hook removed -> red arms: C2, C4, C6, C7, C9, C10, C11, C11b, C12 (expected C2/C4/C7)
+   🟢 foldable() does not upcast -> red arms: C3 (expected C3)
+   🟢 min_v not taken from POLICY -> red arms: C9, C10, C11, C11b (expected C9)
+   🟢 the hook overwrites ANY verdict (un-refuses) -> red arms: C6 (expected C6)
+   🟢 a lower min_v is accepted -> red arms: C5 (expected C5)
+   🟢 a prefix the app cannot read is condemned BAD for good -> red arms: C7, C11 (expected C7)
+   🟢 upcasters are not validated -> red arms: C8 (expected C8)
+   🟢 a later epoch may drop a set -> red arms: C8 (expected C8)
+   🟢 min_v is not validated -> red arms: C5 (expected C5)
+   🟢 the floor is judged by the FINAL policy again (not at the op's position) -> red arms: C9, C10, C11 (expected C9)
+   🟢 minVAt ignores the position (every raise covers every op) -> red arms: C9, C10, C11 (expected C9)
+   🟢 a raise is published without the publisher's frontier -> red arms: C9, C10, C11 (expected C9)
+   🟢 a below-floor op is REFUSED retired-version again -> red arms: C9, C10, C11, C11b (expected C9/C10)
+   🟢 a below-floor op never folds through a loaded translation -> red arms: C9, C10, C11 (expected C9/C10)
+   🟢 needs-translation is not a version-wait reason (held, provisional, checkpoint wait, read-only) -> red arms: C11 (expected C11)
+   🟢 a parked op counts as decided (it no longer holds its author out of the checkpoint) -> red arms: C11 (expected C11)
+   🟢 a floor raise may re-judge an op inside a closed checkpoint prefix -> red arms: C11b (expected C11b)
+   🟢 a record with parked history is writable on the old device -> red arms: C12 (expected C12)
+§CV_VERDICT PASS judged=54 fails=0 vacuous=0 mutants_killed=18/18

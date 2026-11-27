@@ -1,0 +1,57 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT open cue=0.00 room=12.70 dur=12.64 -> DETAIL x1.050 slack=+0.06 detailDur=13.34 words=26
+§NARR_TONE open#0 F ! own=-8.7st rose=0st endDelta=-8.7st want=any OK "Selamat pagi dari Boston!"
+§NARR_TONE open#0 F WH own=-6.3st rose=0st endDelta=-6.3st want=any OK "Apa yang kita ada di sini?"
+§NARR_TONE open#2 F YN own=-3.3st rose=5.0st endDelta=+3.5st want=rise OK "Semuanya?"
+§NARR_FIT inside cue=13.00 room=5.10 dur=4.29 -> DETAIL slack=+0.81 detailDur=4.29 words=9
+§NARR_TONE inside#1 F ! own=-9.0st rose=0st endDelta=-9.0st want=any OK "Masih dibina lagi!"
+§NARR_FIT hall cue=18.40 room=11.70 dur=10.39 -> DETAIL slack=+1.31 detailDur=10.39 words=22
+§NARR_TONE hall#0 F ! own=-7.6st rose=0st endDelta=-7.6st want=any OK "Wah, dewan ini!"
+§NARR_TONE hall#2 F YN own=-6.0st rose=5.0st endDelta=+3.2st want=rise OK "Laluan keluar paling jauh?"
+§NARR_FIT days cue=30.40 room=13.10 dur=12.99 -> DETAIL x1.073 slack=+0.11 detailDur=14.06 words=25
+§NARR_TONE days#0 F ! own=-0.5st rose=0st endDelta=-0.5st want=any OK "Sementara itu, di luar, kalendar berlari laju!"
+§NARR_FIT checks cue=43.80 room=12.80 dur=12.79 -> DETAIL slack=+0.01 detailDur=12.79 words=22
+§NARR_TONE checks#0 F WH own=-3.0st rose=0st endDelta=-3.0st want=any OK "Eh, kotak apa tu?"
+§NARR_TONE checks#2 F WH own=-4.6st rose=0st endDelta=-4.6st want=any OK "Berapa banyak?"
+§NARR_FIT egress cue=56.90 room=5.70 dur=5.65 -> DETAIL x1.042 slack=+0.05 detailDur=5.94 words=11
+§NARR_TONE egress#0 F YN own=-8.7st rose=5.0st endDelta=+2.1st want=rise OK "Keselamatan maksudnya?"
+§NARR_FIT door cue=62.90 room=9.30 dur=8.29 -> DETAIL slack=+1.01 detailDur=8.29 words=18
+§NARR_TONE door#0 F ! own=-6.9st rose=0st endDelta=-6.9st want=any OK "Pintu pun diukur!"
+§NARR_FIT done cue=72.50 room=10.00 dur=9.05 -> DETAIL slack=+0.95 detailDur=9.05 words=21
+§NARR_TONE done#0 F ! own=-5.6st rose=0st endDelta=-5.6st want=any OK "Hari tiga ratus dua puluh satu!"
+§NARR_FIT loadpath cue=82.80 room=11.90 dur=11.80 -> DETAIL x1.029 slack=+0.10 detailDur=12.25 words=20
+§NARR_TONE loadpath#0 F WH own=-6.6st rose=0st endDelta=-6.6st want=any OK "Eh, kenapa berhenti?"
+§NARR_TONE loadpath#2 F YN own=-5.3st rose=5.0st endDelta=+4.3st want=rise OK "Kotak keselamatan itu?"
+§NARR_FIT clash cue=95.00 room=19.70 dur=19.62 -> DETAIL x1.052 slack=+0.08 detailDur=20.73 words=37
+§NARR_TONE clash#0 F ! own=-7.2st rose=0st endDelta=-7.2st want=any OK "Tengok, ia tunjuk semua pertembungan!"
+§NARR_TONE clash#2 F YN own=+0.0st rose=5.0st endDelta=+3.4st want=rise OK "Penting ke?"
+§NARR_TONE clash#3 M YN own=-1.2st rose=5.0st endDelta=+2.6st want=rise OK "Pertindihan sebenar?"
+§NARR_TONE clash#4 F ! own=-0.6st rose=0st endDelta=-0.6st want=any OK "Jadi empat daripada lima, penggera palsu!"
+§NARR_FIT which cue=115.00 room=18.50 dur=18.36 -> DETAIL x1.038 slack=+0.14 detailDur=19.20 words=36
+§NARR_TONE which#0 F WH own=-4.9st rose=0st endDelta=-4.9st want=any OK "Apa yang paling banyak bertembung?"
+§NARR_TONE which#4 F YN own=+1.0st rose=0st endDelta=+1.0st want=rise OK "Kotak itu?"
+§NARR_TONE which#5 M YN own=+3.5st rose=0st endDelta=+3.5st want=rise OK "Cukup dalamkah?"
+§NARR_FIT rules2 cue=133.80 room=14.60 dur=10.35 -> DETAIL slack=+4.25 detailDur=10.35 words=23
+§NARR_TONE rules2#0 F YN own=-2.4st rose=5.0st endDelta=+3.5st want=rise OK "Jarak edaran?"
+§NARR_FIT datum cue=148.70 room=10.80 dur=6.10 -> DETAIL slack=+4.70 detailDur=6.10 words=13
+§NARR_TONE datum#0 F ! own=-3.3st rose=0st endDelta=-3.3st want=any OK "Oh, lukisan pemancangan sekali lagi!"
+§NARR_FIT parade cue=159.80 room=7.70 dur=7.65 -> DETAIL x1.032 slack=+0.05 detailDur=7.95 words=15
+§NARR_TONE parade#0 F ! own=-1.0st rose=0st endDelta=-1.0st want=any OK "Ikut disiplin! Kebakaran tiga puluh lapan, elektrik tiga puluh tiga, mekanikal seratus tiga puluh tiga!"
+§NARR_FIT pairs cue=167.80 room=4.50 dur=4.46 -> DETAIL x1.049 slack=+0.04 detailDur=4.72 words=9
+§NARR_TONE pairs#0 M YN own=+1.6st rose=0st endDelta=+1.6st want=rise OK "Pasangan terbesar?"
+§EDGE_CALL voice=ms-MY-YasminNeural rate=+3% chars=20 -> 7ee049e706
+§EDGE_CALL voice=ms-MY-OsmanNeural rate=-3% chars=71 -> cbfee53b64
+§EDGE_CALL voice=ms-MY-YasminNeural rate=+12% chars=20 -> 998a852298
+§EDGE_CALL voice=ms-MY-OsmanNeural rate=+5% chars=35 -> d62a721064
+§EDGE_CALL voice=ms-MY-YasminNeural rate=+12% chars=68 -> 542ecea60d
+§EDGE_CALL voice=ms-MY-OsmanNeural rate=+5% chars=71 -> a6ada7d891
+§EDGE_CALL voice=ms-MY-YasminNeural rate=+12% chars=43 -> db620faee7
+§EDGE_CALL voice=ms-MY-OsmanNeural rate=+5% chars=29 -> 614d1cae6a
+§NARR_FIT reveal cue=172.60 room=21.00 dur=20.95 -> DETAIL x1.076 slack=+0.05 detailDur=22.60 words=41
+§NARR_FIT value cue=193.90 room=4.60 dur=3.99 -> DETAIL slack=+0.61 detailDur=3.99 words=6
+§NARR_TONE value#0 F YN own=-5.8st rose=5.0st endDelta=+3.3st want=rise OK "Serta-merta?"
+§NARR_FIT cards cue=198.80 room=7.70 dur=6.55 -> DETAIL slack=+1.15 detailDur=6.55 words=11
+§NARR_TONE cards#0 F YN own=-4.7st rose=5.0st endDelta=+5.7st want=rise OK "Jadi, kesimpulannya?"
+§NARR_TONE cards#2 F ! own=-8.1st rose=0st endDelta=-8.1st want=any OK "Semoga hari anda ceria!"

@@ -1,0 +1,33 @@
+§FILM_SHOT url=https://red1oon.github.io/BIMCompiler/CapexUATGuide/ title="CAPEX UAT Guide — step-by-step test script - BIM Intent Compiler" button={"x":422,"y":296,"w":335,"h":56,"text":"🖨 Print this guide / Save as PDF"} pageerrors=0 print_pdf_kb=3874
+§FILM_PRINT pages_stacked=6 tall=1100x9432
+§FILM_PDF file=CAPEX UAT Guide — step-by-step test script - BIM Intent Compiler.pdf pages=22
+§FILM_PDF still=s05 page=1 anchor=^need$ window_pt=93..457 boxes=2 band_clear=True
+§FILM_PDF still=s06 page=7 anchor=^B1-b$ window_pt=238..602 boxes=1 band_clear=True
+§FILM_PDF still=s07 page=9 anchor=^Confirm$ window_pt=0..364 boxes=6 band_clear=True
+§FILM_PDF still=s08a page=15 anchor=^Notes$ window_pt=247..611 boxes=1 band_clear=True
+§FILM_PDF still=s08b page=21 anchor=^limits$ window_pt=0..364 boxes=1 band_clear=True
+§FILM_PDF still=s09 page=22 anchor=^Sign-off$ window_pt=0..364 boxes=5 band_clear=True
+§FILM_LOGO file=SYSNOVALogo.png size=300x80
+§FILM_STILL s01 floor_plan=1799x1215 band_clear=True
+§FILM_STILL s02 band_clear=True
+§FILM_STILL s03 guide_top=1920x850 band_clear=True
+§FILM_STILL s10 lines=5 last_y=808 band_clear=True
+§FILM_STILL s11 contact_right_edge=1662 frame=1920 inside=True
+§FILM_STILL s11 standards=8 band_clear=True
+§FILM_VOICE pass1 beats=11 dur={"b01": 11.31, "b02": 13.04, "b03": 9.21, "b04": 7.64, "b05": 8.25, "b06": 7.7, "b07": 5.73, "b08": 7.75, "b09": 5.96, "b10": 13.18, "b11": 6.27}
+§FILM_SCROLL travel_px=3400 seconds=9.33
+§FILM_PICTURE segments=13 frames_planned=3007 frames_counted=3007 seconds=125.292
+§FILM_VOICE pass2 detail=11 of 11 not_detail=[] tone_wrong=0
+  §NARR_FIT b01 cue=2.50 room=12.10 dur=11.31 -> DETAIL slack=+0.79 words=36
+  §NARR_FIT b02 cue=19.08 room=13.85 dur=13.04 -> DETAIL slack=+0.81 words=30
+  §NARR_FIT b03 cue=33.83 room=10.02 dur=9.21 -> DETAIL slack=+0.80 words=30
+  §NARR_FIT b04 cue=44.75 room=8.43 dur=7.64 -> DETAIL slack=+0.79 words=22
+  §NARR_FIT b05 cue=54.08 room=9.06 dur=8.25 -> DETAIL slack=+0.81 words=24
+  §NARR_FIT b06 cue=64.04 room=8.52 dur=7.70 -> DETAIL slack=+0.82 words=23
+  §NARR_FIT b07 cue=73.46 room=6.52 dur=5.73 -> DETAIL slack=+0.79 words=16
+  §NARR_FIT b08 cue=80.88 room=8.52 dur=7.75 -> DETAIL slack=+0.77 words=27
+  §NARR_FIT b09 cue=90.29 room=6.77 dur=5.96 -> DETAIL slack=+0.81 words=19
+  §NARR_FIT b10 cue=97.96 room=13.98 dur=13.18 -> DETAIL slack=+0.79 words=38
+  §NARR_FIT b11 cue=112.83 room=12.06 dur=6.27 -> DETAIL slack=+5.79 words=20
+§FILM_WITNESS out=~/Videos/CAPEX_UAT_Guide_film_EN_2026-11-14_rc2.mp4 frames=3007 (picture 3007) seconds=125.29 silences_ge_4s=[5.34, 6.23] longest=6.23 loudness_LUFS=-17.0
+§FILM_DONE contact_sheet=<work>/film_uat/contact_sheet.png tiles=13

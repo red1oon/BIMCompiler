@@ -1,0 +1,19 @@
+witness_team_plan exit=0
+witness_team_terms exit=0
+witness_team_seatbelt exit=0
+witness_docno_till exit=0
+witness_plugin_semver exit=0
+witness_plugin_lifecycle exit=0
+witness_plugin_grant exit=0
+witness_team_executors exit=0
+witness_event_bus exit=0
+witness_osgi_console exit=0
+witness_pos_sales exit=1
+witness_modelval_bridge exit=0
+witness_script_validator exit=0
+witness_team_base exit=0
+witness_mfg_trace exit=0
+witness_mf_lens exit=1
+witness_plugin_role exit=0
+witness_team_ui_pos exit=0
+DONE

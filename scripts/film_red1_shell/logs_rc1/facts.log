@@ -1,0 +1,18 @@
+§FACTS check C1 count OK   the screen holds the → line of count
+§FACTS check C1 clash OK   the screen holds the → line of clash
+§FACTS check C1 ls OK   the screen holds the → line of ls
+§FACTS check C1 element OK   the screen holds the → line of element
+§FACTS check C1 lsel OK   the screen holds the → line of lsel
+§FACTS check C1 group OK   the screen holds the → line of group
+§FACTS check C1 pick OK   the picked line says discA=ARC discB=STR
+§FACTS check C2 clash1 OK   screen box/mesh/contained/cleared/turned/triangles/unjudged = the §RED1 funnel value (393/291)
+§FACTS check C2 pick OK   screen box/mesh = the §RED1 funnel value (45/18)
+§FACTS check C3 OK   the menu offers [MEP,ARC,ELEC,STR,PLB], `count` listed [ARC,ELEC,MEP,PLB,STR]
+§FACTS check C4 OK   ls served from the held answer (screen + log), 4 of 393 rows, the funnel said 393 box overlaps
+§FACTS check C5 OK   shown 6 of 6, rows drawn 6 (4 IfcSpace + 2 bath tubs)
+§FACTS check C6 OK   the 5 storey groups add to 1193, the element total 1193, `count` said 1193
+§FACTS check C7 OK   the last screen ends on the bash prompt
+§FACTS check C8 OK   screens checked against 9 other local building names + the private-name list: hits=[]
+§FACTS check C9 OK   the widest line on any screen is 214 of 220 columns (nothing wrapped)
+§FACTS wrote facts.json {"words":23,"count":1193,"countMs":25054,"clash1":[393,291,102,1965],"pick":["ARC","STR",45,18,786],"ls":[4,393],"lsel":6,"group":5}
+§FACTS FACTS_VERDICT PASS bad=0 missing=0

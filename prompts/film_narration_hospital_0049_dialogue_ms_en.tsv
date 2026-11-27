@@ -1,0 +1,18 @@
+open	F: Good morning from Boston! What do we have here? | M: A hospital. Its IFC data computes everything you see. | F: Everything? | M: How it's built, what it costs... and its blind spots.
+inside	M: Steel, floors... and we're inside. | F: Still going up!
+hall	F: Wow, this hall! | M: Over six thousand square metres, five and a half metres high. | F: The longest way out? | M: About two hundred and seventeen steps.
+days	F: Meanwhile, outside, the calendar is flying! | M: Day one eighty. Nearly two thirds of the pieces are in. | F: Every one scheduled, and costed, straight from the model.
+checks	F: Hey, what's that box? | M: Structural checks. The model checks itself. | F: How many? | M: Three hundred and eighty four structural. Twenty six safety.
+egress	F: Safety means? | M: How far you walk, before you get a choice of exits.
+door	F: Even the doors get measured! | M: Ten eighty by twenty one ten. And four hundred and forty of them.
+done	F: Day three twenty one! | M: Fully done. Sixty three thousand pieces... and nearly ninety five thousand work hours.
+loadpath	F: Hey, why did it stop? | M: That's the load path. See the weight come down, floor by floor. | F: That safety box? | M: One isolated room. A blind spot.
+clash	F: Look, it shows all the clashes! | M: Yes. But not bounding boxes. Real mesh overlap, checked against its tolerance. | F: Does that matter? | M: Boxes flagged almost fifteen hundred. Real overlaps? Two hundred and seventy one. | F: So four in five, false alarms!
+which	F: What clashes the most? | M: Pipes against ducts. Cable trays, against walls. | F: Labels show the tolerance, and the depth. | M: Some are false alarms. But if the problem is there, it finds it. | F: That box? | M: Beam span and depth. Deep enough?
+rules2	F: More boxes. Circulation distance? | M: Thirteen walks too long to an exit. | F: And column continuity. | M: Fifteen columns flagged, floor to floor.
+datum	F: Oh, the setting out drawing again! | M: Laid right over the finished building.
+parade	F: Trade by trade! Fire protection thirty eight, electrical thirty three, mechanical one hundred and thirty three!
+pairs	M: The biggest pair? Architecture against structure. Sixty six.
+reveal	F: Now, the signs step aside. | M: Level by level... the whole hospital. | F: The side panel keeps counting! Fire protection and mechanical, eighty one. | M: Mechanical and structure, thirty eight. Fire protection and structure, the same. | F: Architecture and electrical, twenty nine. | M: All of it, from one IFC file.
+value	F: On the fly? | M: No installer, no AI call.
+cards	F: So, the bottom line? | M: Twenty two million, estimated. | F: Have a cheerful day!

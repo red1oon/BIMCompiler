@@ -1,0 +1,29 @@
+{
+ "lines": [
+  {
+   "id": "no_ai",
+   "shown": "No AI inside.",
+   "source": "docs/USER_GUIDE.md",
+   "found": "There is no AI and no LLM in this app."
+  },
+  {
+   "id": "licence",
+   "shown": "Open source: MIT licence, except 39 ERP files under GPL-2.0-only.",
+   "source": "bim-ootb LICENSE (\"MIT License\") and the SPDX header of 39 files under erp/ and pdf/",
+   "found": "MIT License; GPL-2.0-only in 39 files: PackIn.js, PackOut.js, ad_form_generic.js, ad_lens.js, friendly_ops.mjs, gen_2pack.js, libero_callouts.mjs, libero_cost.mjs, libero_dd.mjs, libero_manufacturing.mjs, libero_mto.mjs, libero_pporder.mjs, libero_sqlfn.mjs, manifest_to_xlsx.js, pg_view_sql.js, pipo_packgen.js, pipo_packin.js, pipo_packout.js, webservices.mjs, witness_event_seq.js, witness_libero_activity.js, witness_libero_backflush.js, witness_libero_bundle.js, witness_libero_corehooks.js, witness_libero_cost.js, witness_libero_dashboard.js, witness_libero_mto.js, witness_libero_orderend.js, witness_mfg_trace.js, witness_view_window_first.js, ws_adinterface.js, ws_agent.js, ws_json.js, ws_kernel.js, ws_kernel_web.js, ws_password.js, ws_policy.js, ws_server.js, xlsx_pack.js",
+   "gplFiles": 39
+  },
+  {
+   "id": "paper",
+   "shown": "Earlier work, dated: the Spatial Compilation paper, priority date 2026-03-30",
+   "source": "docs/SpatialCompilationPaper.md",
+   "found": "Priority date: 2026-03-30",
+   "url": "https://red1oon.github.io/BIMCompiler/SpatialCompilationPaper/",
+   "http": 200,
+   "pageHasText": true,
+   "date": "2026-03-30",
+   "link": "red1oon.github.io/BIMCompiler/SpatialCompilationPaper/"
+  }
+ ],
+ "dropped": []
+}

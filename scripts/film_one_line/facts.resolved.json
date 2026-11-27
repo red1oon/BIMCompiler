@@ -1,0 +1,871 @@
+{
+ "made": "2026-11-10T06:58:18.287Z",
+ "ootb": "fe7376d9",
+ "lines": {
+  "find": {
+   "line": "erp.find kind=Order number=50000",
+   "status": "ok",
+   "why": null,
+   "answer": {
+    "kind": "Order",
+    "by": "documentno",
+    "matches": [
+     {
+      "kind": "Order",
+      "id": 1500004,
+      "number": "50000",
+      "docStatus": "DR",
+      "docAction": "CO",
+      "doctypeId": 0,
+      "doctypeTargetId": 132,
+      "org": 11
+     }
+    ]
+   }
+  },
+  "actions": {
+   "line": "erp.actions kind=Order id=1500004",
+   "status": "ok",
+   "why": null,
+   "answer": {
+    "document": {
+     "kind": "Order",
+     "id": 1500004,
+     "number": "50000",
+     "docStatus": "DR",
+     "docAction": "CO",
+     "doctypeId": 0,
+     "doctypeTargetId": 132,
+     "org": 11
+    },
+    "docStatus": "DR",
+    "actions": [
+     "CO",
+     "PR",
+     "VO"
+    ],
+    "legal": [
+     "CO",
+     "PR",
+     "VO"
+    ],
+    "period": "period=200178 SOO=N"
+   }
+  },
+  "complete": {
+   "line": "erp.complete kind=Order id=1500004",
+   "status": "ok",
+   "why": null,
+   "answer": {
+    "document": {
+     "kind": "Order",
+     "id": 1500004,
+     "number": "50000",
+     "docStatus": "CO",
+     "docAction": "CL",
+     "doctypeId": 132,
+     "doctypeTargetId": 132,
+     "org": 11
+    },
+    "before": {
+     "docStatus": "DR"
+    },
+    "after": {
+     "docStatus": "CO",
+     "docAction": "CL",
+     "processed": "Y",
+     "grandTotal": 6
+    },
+    "ops": [
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_process",
+      "id": 200007
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_activity",
+      "id": 200019
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_eventaudit",
+      "id": 200019
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_activity",
+      "id": 200020
+     },
+     {
+      "op_type": "CRUD_UPDATE",
+      "table": "c_acctschema",
+      "id": 101
+     },
+     {
+      "op_type": "CRUD_UPDATE",
+      "table": "c_order",
+      "id": 1500004
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "m_storagereservation",
+      "id": "ffc1ac9e-4d3b-4ba9-80a7-ff2a333fdacf"
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "m_storagereservationlog",
+      "id": 1
+     },
+     {
+      "op_type": "CRUD_UPDATE",
+      "table": "c_orderline",
+      "id": 120002710
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "c_ordertax",
+      "id": "13e1e463-cd83-47cc-9161-69f4f4d8481f"
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_eventaudit",
+      "id": 200020
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_activity",
+      "id": 200021
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_eventaudit",
+      "id": 200021
+     }
+    ],
+    "opSummary": {
+     "create:ad_wf_process": 1,
+     "create:ad_wf_activity": 3,
+     "create:ad_wf_eventaudit": 3,
+     "update:c_acctschema": 1,
+     "update:c_order": 1,
+     "create:m_storagereservation": 1,
+     "create:m_storagereservationlog": 1,
+     "update:c_orderline": 1,
+     "create:c_ordertax": 1
+    },
+    "related": [],
+    "facts": [],
+    "engine": [
+     "§MODEL-POST table=c_order id=1500004 posted=Y facts=0",
+     "§MODEL-WF table=c_order id=1500004 workflow=116 path=183>185>186 state=CC"
+    ],
+    "actions": [
+     "CL",
+     "VO",
+     "RE"
+    ]
+   }
+  },
+  "void_complete": {
+   "line": "erp.complete kind=Order id=1500005",
+   "status": "ok",
+   "why": null,
+   "answer": {
+    "document": {
+     "kind": "Order",
+     "id": 1500005,
+     "number": "50001",
+     "docStatus": "CO",
+     "docAction": "CL",
+     "doctypeId": 132,
+     "doctypeTargetId": 132,
+     "org": 11
+    },
+    "before": {
+     "docStatus": "DR"
+    },
+    "after": {
+     "docStatus": "CO",
+     "docAction": "CL",
+     "processed": "Y",
+     "grandTotal": 6
+    },
+    "ops": [
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_process",
+      "id": 200008
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_activity",
+      "id": 200022
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_eventaudit",
+      "id": 200022
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_activity",
+      "id": 200023
+     },
+     {
+      "op_type": "CRUD_UPDATE",
+      "table": "c_order",
+      "id": 1500005
+     },
+     {
+      "op_type": "CRUD_UPDATE",
+      "table": "m_storagereservation",
+      "id": "ffc1ac9e-4d3b-4ba9-80a7-ff2a333fdacf"
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "m_storagereservationlog",
+      "id": 2
+     },
+     {
+      "op_type": "CRUD_UPDATE",
+      "table": "c_orderline",
+      "id": 120002711
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "c_ordertax",
+      "id": "b62af517-e1e8-4b63-b57b-1a3cd591e301"
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_eventaudit",
+      "id": 200023
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_activity",
+      "id": 200024
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_eventaudit",
+      "id": 200024
+     }
+    ],
+    "opSummary": {
+     "create:ad_wf_process": 1,
+     "create:ad_wf_activity": 3,
+     "create:ad_wf_eventaudit": 3,
+     "update:c_order": 1,
+     "update:m_storagereservation": 1,
+     "create:m_storagereservationlog": 1,
+     "update:c_orderline": 1,
+     "create:c_ordertax": 1
+    },
+    "related": [],
+    "facts": [],
+    "engine": [
+     "§MODEL-POST table=c_order id=1500005 posted=Y facts=0",
+     "§MODEL-WF table=c_order id=1500005 workflow=116 path=183>185>186 state=CC"
+    ],
+    "actions": [
+     "CL",
+     "VO",
+     "RE"
+    ]
+   }
+  },
+  "void": {
+   "line": "erp.void kind=Order id=1500005",
+   "status": "ok",
+   "why": null,
+   "answer": {
+    "document": {
+     "kind": "Order",
+     "id": 1500005,
+     "number": "50001",
+     "docStatus": "VO",
+     "docAction": "--",
+     "doctypeId": 132,
+     "doctypeTargetId": 132,
+     "org": 11
+    },
+    "before": {
+     "docStatus": "CO"
+    },
+    "after": {
+     "docStatus": "VO",
+     "docAction": "--",
+     "processed": "Y",
+     "grandTotal": 0
+    },
+    "ops": [
+     {
+      "op_type": "CRUD_UPDATE",
+      "table": "c_order",
+      "id": 1500005
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_process",
+      "id": 200009
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_activity",
+      "id": 200025
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_eventaudit",
+      "id": 200025
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_activity",
+      "id": 200026
+     },
+     {
+      "op_type": "CRUD_UPDATE",
+      "table": "c_orderline",
+      "id": 120002711
+     },
+     {
+      "op_type": "CRUD_UPDATE",
+      "table": "c_ordertax",
+      "id": "b62af517-e1e8-4b63-b57b-1a3cd591e301"
+     },
+     {
+      "op_type": "CRUD_UPDATE",
+      "table": "m_storagereservation",
+      "id": "ffc1ac9e-4d3b-4ba9-80a7-ff2a333fdacf"
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "m_storagereservationlog",
+      "id": 3
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_eventaudit",
+      "id": 200026
+     }
+    ],
+    "opSummary": {
+     "update:c_order": 1,
+     "create:ad_wf_process": 1,
+     "create:ad_wf_activity": 2,
+     "create:ad_wf_eventaudit": 2,
+     "update:c_orderline": 1,
+     "update:c_ordertax": 1,
+     "update:m_storagereservation": 1,
+     "create:m_storagereservationlog": 1
+    },
+    "related": [],
+    "facts": [],
+    "engine": [
+     "§MODEL-WF table=c_order id=1500005 workflow=116 path=183>184 state=CC"
+    ],
+    "actions": []
+   }
+  },
+  "close_complete": {
+   "line": "erp.complete kind=Order id=1500006",
+   "status": "ok",
+   "why": null,
+   "answer": {
+    "document": {
+     "kind": "Order",
+     "id": 1500006,
+     "number": "50002",
+     "docStatus": "CO",
+     "docAction": "CL",
+     "doctypeId": 132,
+     "doctypeTargetId": 132,
+     "org": 11
+    },
+    "before": {
+     "docStatus": "DR"
+    },
+    "after": {
+     "docStatus": "CO",
+     "docAction": "CL",
+     "processed": "Y",
+     "grandTotal": 6
+    },
+    "ops": [
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_process",
+      "id": 200010
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_activity",
+      "id": 200027
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_eventaudit",
+      "id": 200027
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_activity",
+      "id": 200028
+     },
+     {
+      "op_type": "CRUD_UPDATE",
+      "table": "c_order",
+      "id": 1500006
+     },
+     {
+      "op_type": "CRUD_UPDATE",
+      "table": "m_storagereservation",
+      "id": "ffc1ac9e-4d3b-4ba9-80a7-ff2a333fdacf"
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "m_storagereservationlog",
+      "id": 4
+     },
+     {
+      "op_type": "CRUD_UPDATE",
+      "table": "c_orderline",
+      "id": 120002712
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "c_ordertax",
+      "id": "1e24e415-038c-4e64-812b-b420d4831eef"
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_eventaudit",
+      "id": 200028
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_activity",
+      "id": 200029
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_eventaudit",
+      "id": 200029
+     }
+    ],
+    "opSummary": {
+     "create:ad_wf_process": 1,
+     "create:ad_wf_activity": 3,
+     "create:ad_wf_eventaudit": 3,
+     "update:c_order": 1,
+     "update:m_storagereservation": 1,
+     "create:m_storagereservationlog": 1,
+     "update:c_orderline": 1,
+     "create:c_ordertax": 1
+    },
+    "related": [],
+    "facts": [],
+    "engine": [
+     "§MODEL-POST table=c_order id=1500006 posted=Y facts=0",
+     "§MODEL-WF table=c_order id=1500006 workflow=116 path=183>185>186 state=CC"
+    ],
+    "actions": [
+     "CL",
+     "VO",
+     "RE"
+    ]
+   }
+  },
+  "close": {
+   "line": "erp.close kind=Order id=1500006",
+   "status": "ok",
+   "why": null,
+   "answer": {
+    "document": {
+     "kind": "Order",
+     "id": 1500006,
+     "number": "50002",
+     "docStatus": "CL",
+     "docAction": "--",
+     "doctypeId": 132,
+     "doctypeTargetId": 132,
+     "org": 11
+    },
+    "before": {
+     "docStatus": "CO"
+    },
+    "after": {
+     "docStatus": "CL",
+     "docAction": "--",
+     "processed": "Y",
+     "grandTotal": 6
+    },
+    "ops": [
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_process",
+      "id": 200011
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_activity",
+      "id": 200030
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_eventaudit",
+      "id": 200030
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_activity",
+      "id": 200031
+     },
+     {
+      "op_type": "CRUD_UPDATE",
+      "table": "c_orderline",
+      "id": 120002712
+     },
+     {
+      "op_type": "CRUD_UPDATE",
+      "table": "m_storagereservation",
+      "id": "ffc1ac9e-4d3b-4ba9-80a7-ff2a333fdacf"
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "m_storagereservationlog",
+      "id": 5
+     },
+     {
+      "op_type": "CRUD_UPDATE",
+      "table": "c_order",
+      "id": 1500006
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_eventaudit",
+      "id": 200031
+     }
+    ],
+    "opSummary": {
+     "create:ad_wf_process": 1,
+     "create:ad_wf_activity": 2,
+     "create:ad_wf_eventaudit": 2,
+     "update:c_orderline": 1,
+     "update:m_storagereservation": 1,
+     "create:m_storagereservationlog": 1,
+     "update:c_order": 1
+    },
+    "related": [],
+    "facts": [],
+    "engine": [
+     "§MODEL-WF table=c_order id=1500006 workflow=116 path=183>184 state=CC"
+    ],
+    "actions": []
+   }
+  },
+  "reverse_complete": {
+   "line": "erp.complete kind=Order id=1500007",
+   "status": "ok",
+   "why": null,
+   "answer": {
+    "document": {
+     "kind": "Order",
+     "id": 1500007,
+     "number": "50003",
+     "docStatus": "CO",
+     "docAction": "CL",
+     "doctypeId": 132,
+     "doctypeTargetId": 132,
+     "org": 11
+    },
+    "before": {
+     "docStatus": "DR"
+    },
+    "after": {
+     "docStatus": "CO",
+     "docAction": "CL",
+     "processed": "Y",
+     "grandTotal": 6
+    },
+    "ops": [
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_process",
+      "id": 200012
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_activity",
+      "id": 200032
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_eventaudit",
+      "id": 200032
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_activity",
+      "id": 200033
+     },
+     {
+      "op_type": "CRUD_UPDATE",
+      "table": "c_order",
+      "id": 1500007
+     },
+     {
+      "op_type": "CRUD_UPDATE",
+      "table": "m_storagereservation",
+      "id": "ffc1ac9e-4d3b-4ba9-80a7-ff2a333fdacf"
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "m_storagereservationlog",
+      "id": 6
+     },
+     {
+      "op_type": "CRUD_UPDATE",
+      "table": "c_orderline",
+      "id": 120002713
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "c_ordertax",
+      "id": "4fe0892b-e277-4c78-ac40-1a74c358e5f8"
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_eventaudit",
+      "id": 200033
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_activity",
+      "id": 200034
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_eventaudit",
+      "id": 200034
+     }
+    ],
+    "opSummary": {
+     "create:ad_wf_process": 1,
+     "create:ad_wf_activity": 3,
+     "create:ad_wf_eventaudit": 3,
+     "update:c_order": 1,
+     "update:m_storagereservation": 1,
+     "create:m_storagereservationlog": 1,
+     "update:c_orderline": 1,
+     "create:c_ordertax": 1
+    },
+    "related": [],
+    "facts": [],
+    "engine": [
+     "§MODEL-POST table=c_order id=1500007 posted=Y facts=0",
+     "§MODEL-WF table=c_order id=1500007 workflow=116 path=183>185>186 state=CC"
+    ],
+    "actions": [
+     "CL",
+     "VO",
+     "RE"
+    ]
+   }
+  },
+  "reverse": {
+   "line": "erp.reverse kind=Order id=1500007",
+   "status": "ok",
+   "why": null,
+   "answer": {
+    "document": {
+     "kind": "Order",
+     "id": 1500007,
+     "number": "50003",
+     "docStatus": "RE",
+     "docAction": "--",
+     "doctypeId": 132,
+     "doctypeTargetId": 132,
+     "org": 11
+    },
+    "before": {
+     "docStatus": "CO"
+    },
+    "after": {
+     "docStatus": "RE",
+     "docAction": "--",
+     "processed": "Y",
+     "grandTotal": 0
+    },
+    "ops": [
+     {
+      "op_type": "CRUD_UPDATE",
+      "table": "c_order",
+      "id": 1500007
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_process",
+      "id": 200013
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_activity",
+      "id": 200035
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_eventaudit",
+      "id": 200035
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_activity",
+      "id": 200036
+     },
+     {
+      "op_type": "CRUD_UPDATE",
+      "table": "c_orderline",
+      "id": 120002713
+     },
+     {
+      "op_type": "CRUD_UPDATE",
+      "table": "c_ordertax",
+      "id": "4fe0892b-e277-4c78-ac40-1a74c358e5f8"
+     },
+     {
+      "op_type": "CRUD_UPDATE",
+      "table": "m_storagereservation",
+      "id": "ffc1ac9e-4d3b-4ba9-80a7-ff2a333fdacf"
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "m_storagereservationlog",
+      "id": 7
+     },
+     {
+      "op_type": "CRUD_CREATE",
+      "table": "ad_wf_eventaudit",
+      "id": 200036
+     }
+    ],
+    "opSummary": {
+     "update:c_order": 1,
+     "create:ad_wf_process": 1,
+     "create:ad_wf_activity": 2,
+     "create:ad_wf_eventaudit": 2,
+     "update:c_orderline": 1,
+     "update:c_ordertax": 1,
+     "update:m_storagereservation": 1,
+     "create:m_storagereservationlog": 1
+    },
+    "related": [],
+    "facts": [],
+    "engine": [
+     "§MODEL-WF table=c_order id=1500007 workflow=116 path=183>184 state=CC"
+    ],
+    "actions": []
+   }
+  },
+  "rooms": {
+   "line": "viewer(Duplex).Room.count",
+   "doorLine": "object.count building=Duplex kind=Room",
+   "status": "ok",
+   "value": 5
+  },
+  "walk": {
+   "line": "modeller(Duplex).walk(FP).count",
+   "doorLine": "modeller.walk building=Duplex discipline=FP",
+   "status": "ok",
+   "value": 46
+  }
+ },
+ "order": {
+  "number": "50000",
+  "id": 1500004,
+  "grandTotal": 6,
+  "qty": 2
+ },
+ "find": {
+  "kind": "Order",
+  "id": 1500004,
+  "number": "50000",
+  "docStatus": "DR",
+  "docAction": "CO",
+  "doctypeId": 0,
+  "doctypeTargetId": 132,
+  "org": 11
+ },
+ "actions": [
+  "CO",
+  "PR",
+  "VO"
+ ],
+ "complete": {
+  "before": {
+   "docStatus": "DR"
+  },
+  "after": {
+   "docStatus": "CO",
+   "docAction": "CL",
+   "processed": "Y",
+   "grandTotal": 6
+  }
+ },
+ "void": {
+  "number": "50001",
+  "before": {
+   "docStatus": "CO"
+  },
+  "after": {
+   "docStatus": "VO",
+   "docAction": "--",
+   "processed": "Y",
+   "grandTotal": 0
+  }
+ },
+ "close": {
+  "number": "50002",
+  "before": {
+   "docStatus": "CO"
+  },
+  "after": {
+   "docStatus": "CL",
+   "docAction": "--",
+   "processed": "Y",
+   "grandTotal": 6
+  }
+ },
+ "reverse": {
+  "number": "50003",
+  "before": {
+   "docStatus": "CO"
+  },
+  "after": {
+   "docStatus": "RE",
+   "docAction": "--",
+   "processed": "Y",
+   "grandTotal": 0
+  }
+ },
+ "rooms": 5,
+ "walk": 46,
+ "script": {
+  "text": "o = erp.find kind=Order number=50004\nerp.actions kind=Order id=1500008\nerp.complete kind=Order id=1500008",
+  "statuses": [
+   "erp.find ok",
+   "erp.actions ok",
+   "erp.complete ok"
+  ],
+  "after": {
+   "docStatus": "CO",
+   "docAction": "CL",
+   "processed": "Y",
+   "grandTotal": 6
+  }
+ },
+ "verbs": 23
+}

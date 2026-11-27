@@ -1,0 +1,31 @@
+recap	0.30	8.20	recap card (the ERP film's 'how it works' image, unchanged)	F: Same idea as part one? | M: Yes.	F: Same idea as part one? | M: Yes: a full copy in each browser, signed letters through a post box. Now a model.
+pairA	8.20	13.20	§FILM_CUE S_pair1_in · A starts a space, invite blurred	F: How do they pair? | M: A starts a space.	F: How do they pair? | M: A starts a space, and the invite stays hidden.
+pairB	13.20	17.60	§FILM_CUE S_pair2_in · B joins, short code	M: B joins and gets a code.	M: B joins, and shows a short code.
+pairC	17.60	23.16	§FILM_CUE S_pair3_in · A lists the same code and approves	M: A approves that code.	M: A lists the same code, and approves it.
+pairD	23.16	26.04	§FILM_CUE S_pair4_in · B enrolled	M: B is enrolled.	M: Then B says enrolled.
+chip	26.04	30.94	§FILM_CUE S_chip_in · both Modeller windows empty	F: And the Modeller? | M: Both start empty.	F: And the Modeller? | M: Both windows start empty.
+draw1	30.94	34.23	§FILM_STATE A_drew_block1_before_visit · A block 1 centre [1,0.5,0.75], B empty	M: A draws block one.	M: A draws block one, at x one, y a half.
+draw2	34.23	37.00	§FILM_STATE A_drew_block2_before_visit · A block 2 centre [3.5,2.5,0.75], B still empty	M: And block two. B sees nothing.	M: Then block two. B sees nothing yet.
+visitA	37.00	39.16	§FILM_CUE V1_A_in · A Visit	M: A visits.	M: A visits.
+visitB	39.16	42.43	§FILM_CUE V2_B_in · B Visit	F: And B? | M: B visits.	F: And B? | M: B visits.
+arrived	42.43	46.91	§FILM_STATE B_visited_blocks_arrived · B shows both blocks, same centres	M: Both blocks appear.	M: Both blocks appear, in the same places.
+mvA	46.91	51.95	§FILM_CUE G1_A_down · A grabs the gizmo (drag x -2)	F: What if we both move? | M: A drags block one left.	F: What if both of us move? | M: A drags block one left by two.
+mvB	51.95	55.30	§FILM_CUE G2_B_down · B grabs the gizmo (drag x +2)	M: B drags block two right.	M: B drags block two right by two.
+own	55.30	58.30	§FILM_STATE moves_before_visit · each pane shows only its own move	M: Each sees only its own move.	M: Each pane shows only its own move.
+vis3	58.30	63.80	§FILM_CUE V3_A_in · three Visits	M: Three visits.	M: Three visits: A sends, B receives and sends, A receives.
+agree	63.80	67.85	§FILM_STATE moves_after_visits · both panes block 1 [-1,0.5,0.75], block 2 [5.5,2.5,0.75]	M: Both agree.	M: Both agree: x minus one, and five and a half.
+clA	67.85	72.79	§FILM_CUE G3_A_down · A grabs block 1 (x +1)	F: And the same block? | M: A drags it a metre.	F: And the same block? | M: A drags it a metre along x.
+clB	72.79	76.25	§FILM_CUE G4_B_down · B grabs block 1 (x +2)	M: B drags it two metres.	M: B drags it two metres, before any visit.
+clY	76.25	79.70	§FILM_CUE G5_B_down · B grabs the y handle (y +1)	M: B also moves it along y.	M: B also moves it a metre along y.
+clOwn	79.70	82.70	§FILM_STATE clash_before_visit · A [0,0.5,0.75], B [1,1.5,0.75]	M: Each pane shows its own result.	M: Each pane shows its own result.
+clVis	82.70	88.13	§FILM_CUE V6_A_in · three Visits	M: Now the visits.	M: Now the visits.
+warn	88.13	95.15	§FILM_STATE clash_after_visits · conf pos_x values 0 / -1 kept -2 on both, y applied	M: Both screens warn. The y move went through.	M: Both screens warn: minus one and zero. The block stays where they last agreed, and the y move went through.
+rsA	95.15	98.58	§FILM_CUE G6_A_down · A grabs block 1 (x +1)	F: How does it end? | M: A moves it again.	F: How does it end? | M: A moves it again.
+rsOwn	98.58	101.28	§FILM_STATE resolve_A_moved · A clear, B still warned	M: A is clear. B is not yet.	M: A is clear, B is not yet.
+rsVis	101.28	104.66	§FILM_CUE V9_A_in · two Visits	M: That is the decision.	M: A had seen both, so that is the decision.
+rsDone	104.66	107.76	§FILM_STATE resolve_after_visits · both [0,1.5,0.75], 0 conflicts	M: Warning gone. Block at x zero.	M: Warning gone, block at x zero.
+rot	107.76	110.17	§FILM_CUE S_limits1_in · A rotates block 1	F: All shared? | M: No.	F: Is it all shared? | M: No.
+rotChip	110.17	116.42	§FILM_STATE limits_A_rotated · A size [1,2,1.5], chip local-only 1	M: A rotated it. One local-only change.	M: A's block is now one by two, and the chip counts one local-only change.
+rotB	116.42	119.42	§FILM_STATE limits_after_visits · B size [2,1,1.5]	M: B's is still two by one.	M: B's is still two by one.
+limits	119.42	131.42	limits card · §TM-XOFN 7 of 22 · TEAMWORK_FRAMEWORK §15.8	F: What is shared? | M: Only drawing and moving.	F: So what is shared? | M: Only drawing and moving: seven of twenty-two operation types. Everything else stays on your device, and who may touch which floor or trade is still to be built.
+close	131.42	143.12	close card · witness PASS lines (witness_team_modeller_run.log)	F: No server? | M: A proof of concept, witnessed. Thanks!	F: So, a shared model with no server? | M: A proof of concept, and every claim in it is backed by a test line. Same post office as the orders. Thanks for watching!

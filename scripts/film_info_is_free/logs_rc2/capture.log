@@ -1,0 +1,14 @@
+§CAPTURE gh_repo http=200 url=https://github.com/red1oon/BIMCompiler {"title":"GitHub - red1oon/BIMCompiler: Deterministic BIM compiler - extracts patterns from IFC databases, generates geometry with validated connections · GitHub","about":"","license":true}
+§CAPTURE gh_spec http=200 url=https://github.com/red1oon/BIMCompiler/blob/master/prompts/DOCS_I18N.md {"title":"BIMCompiler/prompts/DOCS_I18N.md at master · red1oon/BIMCompiler · GitHub","h1":"⚠ DO NOT REMOVE"}
+§CAPTURE site_home http=200 url=https://red1oon.github.io/BIMCompiler/ {"title":"Home - BIM Intent Compiler","h1":"BIM Intent Compiler¶"}
+§CAPTURE guide_en http=200 url=https://red1oon.github.io/BIMCompiler/FastScriptGuide/ {"title":"Fast Script Guide (one door: commands and scripts) - BIM Intent Compiler","lang":"en","h1":"Fast Script User Guide¶"}
+§CAPTURE guide_menu http=200 url=https://red1oon.github.io/BIMCompiler/FastScriptGuide/ {"choices":["en:English","es:Español (Latinoamérica)","fr:Français","de:Deutsch","id:Bahasa Indonesia","ja:日本語","zh:简体中文"]}
+§CAPTURE guide_es http=200 url=https://red1oon.github.io/BIMCompiler/es/FastScriptGuide/ {"title":"Fast Script Guide (one door: commands and scripts) - BIM Intent Compiler","lang":"es","h1":"Guía del usuario de Fast Script¶"}
+§CAPTURE guide_ja http=200 url=https://red1oon.github.io/BIMCompiler/ja/FastScriptGuide/ {"title":"Fast Script Guide (one door: commands and scripts) - BIM Intent Compiler","lang":"ja","h1":"Fast Script ユーザーガイド¶"}
+§CAPTURE guide_de http=200 url=https://red1oon.github.io/BIMCompiler/de/FastScriptGuide/ {"title":"Fast Script Guide (one door: commands and scripts) - BIM Intent Compiler","lang":"de","h1":"Fast Script Benutzerhandbuch¶"}
+§CAPTURE gh_license http=200 url=https://github.com/red1oon/BIMCompiler/blob/master/LICENSE {"title":"BIMCompiler/LICENSE at master · red1oon/BIMCompiler · GitHub","text":"MIT License","copyright":""}
+§CAPTURE login_en http=200 url=https://red1oon.github.io/bim-ootb/erp/idempiere.html {"picker":"en_US","pickerText":"English","heading":"","card":"Language / English / Français / Español"}
+§CAPTURE login_es http=200 url=https://red1oon.github.io/bim-ootb/erp/idempiere.html {"picker":"es_ES","pickerText":"Español","heading":"","card":"Lenguaje / English / Français / Español"}
+§CAPTURE login_ja http=200 url=https://red1oon.github.io/bim-ootb/erp/idempiere.html {"picker":"ja_JP","pickerText":"日本語","heading":"","card":"言語 / English / Français / Español"}
+§CAPTURE login_zh http=200 url=https://red1oon.github.io/bim-ootb/erp/idempiere.html {"picker":"zh_CN","pickerText":"中文 (简体)","heading":"","card":"语言 / English / Français / Español"}
+§CAPTURE DONE shots=13 missing_or_http_error=none page_errors=0 fails=0

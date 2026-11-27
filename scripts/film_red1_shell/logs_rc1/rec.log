@@ -1,0 +1,46 @@
+§REC start screen cursor=(2,0) line='$'
+§REC step start begin
+§REC step start wait for 'red1> ' -> ok after 1.2 s
+§REC step start done: 1.2 s, frames so far 7
+§REC step help begin
+§REC step help wait for 'red1> ' -> ok after 1.2 s
+§REC step help done: 1.2 s, frames so far 13
+§REC step cd begin
+§REC step cd wait for 'red1> ' -> ok after 1.0 s
+§REC step cd wait for 'red1 Duplex> ' -> ok after 2.5 s
+§REC step cd done: 2.5 s, frames so far 26
+§REC step count begin
+§REC step count wait for 'red1 Duplex> ' -> ok after 26.6 s
+§REC step count done: 26.6 s, frames so far 33
+§REC step clash begin
+§REC step clash wait for 'red1 Duplex> ' -> ok after 0.9 s
+§REC step clash wait for 'red1 Duplex> ' -> ok after 4.9 s
+§REC step clash done: 4.9 s, frames so far 50
+§REC step ls begin
+§REC step ls wait for 'red1 Duplex> ' -> ok after 1.9 s
+§REC step ls done: 1.9 s, frames so far 61
+§REC step menu begin
+§REC step menu wait for 'red1 Duplex> ' -> ok after 0.9 s
+§REC step menu see 'pick discA' -> ok
+§REC step menu done: 2.0 s, frames so far 70
+§REC step pick begin
+§REC step pick see 'pick discB' -> ok
+§REC step pick wait for 'red1 Duplex> ' -> ok after 3.9 s
+§REC step pick done: 3.9 s, frames so far 78
+§REC step element begin
+§REC step element wait for 'red1 Duplex> ' -> ok after 0.9 s
+§REC step element wait for 'red1 Duplex/Element> ' -> ok after 2.9 s
+§REC step element done: 2.9 s, frames so far 92
+§REC step lsel begin
+§REC step lsel wait for 'red1 Duplex/Element> ' -> ok after 3.3 s
+§REC step lsel done: 3.3 s, frames so far 116
+§REC step group begin
+§REC step group wait for 'red1 Duplex/Element> ' -> ok after 2.6 s
+§REC step group done: 2.6 s, frames so far 130
+§REC step pwd begin
+§REC step pwd wait for 'red1 Duplex/Element> ' -> ok after 1.1 s
+§REC step pwd done: 1.1 s, frames so far 135
+§REC step exit begin
+§REC step exit wait for '$' -> ok after 1.1 s
+§REC step exit done: 1.1 s, frames so far 141
+§REC_DONE frames=141 keys=108 returns=14 answers=18

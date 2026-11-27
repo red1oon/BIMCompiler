@@ -13,7 +13,7 @@ description: Technical feature paper for BIM OOTB — in-browser IFC parsing, cl
 
 BIM OOTB is a browser-based IFC viewer that runs entirely on the client. No server. No cloud subscription. No software to install. Open a URL, drop an IFC file, and view a full BIM model with construction scheduling, cost breakdown, and clash detection — all in a single browser tab.
 
-The viewer handles buildings from 200 to 122,000+ elements with smooth orbit, pick, and section cut — and a **whole-city view that streams a 1,000,000+ element city** (52 buildings, 24 archetypes) in the same single browser tab. After first load, it works offline from local cache. The entire application is under 500KB of code.
+The viewer handles buildings from 200 to 122,000+ elements with smooth orbit, pick, and section cut — and a **whole-city view that streams a 1,000,000+ element city** (52 buildings, 24 archetypes) in the same single browser tab. After first load, it works offline from local cache.
 
 The viewer is read-only by design. Alongside it now ships an early **browser BIM authoring modeller** — **DAGeVu** — and a "choose your door" landing that wires viewer, modeller, and the ERP engine over one shared signed op-log. These are covered in the **DAGeVu — Browser BIM Authoring Modeller** section below; the bulk of this paper documents the mature read-only viewer.
 
@@ -61,7 +61,7 @@ What you see is exactly what is in the IFC file — no proxies, no LOD geometry,
 
 ### City-Scale Streaming — 1,000,000+ elements (S285)
 
-The same viewer scales from one building to an entire city: **1,035,522 elements across 52 buildings (24 archetypes)** in one browser tab, with no server and the same 500KB of code. Five techniques make a million elements tractable on a desktop browser:
+The same viewer scales from one building to an entire city: **1,035,522 elements across 52 buildings (24 archetypes)** in one browser tab, with no server. Five techniques make a million elements tractable on a desktop browser:
 
 - **Facade-first residency.** A city is mostly hidden services — across the city, MEP/plumbing/structure is ~86% of elements; the architectural facade (ARC) is only ~14% (145K elements). The city streams **ARC only** by default, so the whole facade builds and stays resident. Structure and MEP for a building load on demand when you go into it. From the street you never see a building's pipes, so they are never fetched or built.
 - **Element-count memory budget.** Residency is bounded by **element count (~250K, the measured browser-pressure knee)**, not bytes — the honest limit for geometry the browser can hold. The whole ARC facade (145K) sits comfortably under it and is never evicted while panning the overview.
@@ -237,6 +237,23 @@ model. When a user needs a feature served by a table not yet loaded
 (e.g., C_Commission), the manifest defines its structure and data is
 fetched on demand. See ERP.md §16.6.
 
+#### How closely the kernel matches legacy iDempiere
+
+The kernel is checked against a **live legacy iDempiere instance used as the oracle**
+([method](LegacyOracleAdapterSpec.md)). The same scenario is run on both sides and compared:
+documents, books, stock, cost and refusals. What is and is not claimed:
+
+- **Measured (run of 2026-10-12):** the shop-day suite (a fresh client, sale to return) matched
+  **25 of 25** scenarios, with every negative control correctly failing. Across the whole suite,
+  **19 of the 34** dictionary document tables had at least one compared scenario.
+- **Not claimed:** the other 15 document tables are unmeasured, and known gaps are tracked in the
+  project's parity log (for example return reversal and void). "Matches legacy" holds only for the scenarios
+  that were run. It is not a claim of byte-identical behaviour across the whole system.
+- **Version dependence:** parity is established against one iDempiere build. iDempiere 13 is a
+  long-term-support release ([release post](https://idempiere.org/?p=3658)) and the project
+  keeps moving, so the comparison has to be re-run against the version a client actually uses
+  before relying on it.
+
 ## Comparison
 
 | Capability | BIM OOTB | Autodesk APS (Forge) | IFC.js / ThatOpen | Trimble Connect |
@@ -247,7 +264,7 @@ fetched on demand. See ERP.md §16.6.
 | Install required | **None** | None | npm build | Desktop or web |
 | IFC colour fidelity | **IfcSurfaceStyle extracted** | Proprietary conversion | WASM parse | Proprietary |
 | IFC export from browser | **Yes (STEP format)** | No | No | No |
-| Max elements (smooth) | **125K** | ~50K (server tiles) | ~20K | Server-rendered |
+| Max elements (smooth) | **125K**¹ | ~50K (server tiles) | ~20K | Server-rendered |
 | Load from cache | **<1 second** | N/A (cloud) | N/A | N/A |
 | 4D scheduling | **Integrated** | Separate product | No | Separate |
 | 5D cost | **Integrated** | Separate product | No | Separate |
@@ -261,6 +278,8 @@ fetched on demand. See ERP.md §16.6.
 | ERP integration | **Built-in (AD engine)** | None | None | None |
 | Construction scheduling | **4D in same viewer** | None | None | None |
 | Browser authoring (B-rep) | **DAGeVu (spine-proven, op-log fold)** | No | No | No |
+
+¹ **Viewing and importing are different limits.** 125K is a pre-extracted building database viewed from cache. In-browser IFC *import* is bounded by the wasm32 4 GB ceiling and fails at about 63,600 elements in a Web Worker ([Architecture Overview](ArchitectureOverview.md)). A larger IFC is extracted once, natively, and then viewed in the browser. The browser is the viewer and the kernel, not the importer of very large models.
 
 ### Key Differences
 
@@ -374,7 +393,7 @@ No server in the loop. No WebSocket. No REST API. The browser is the entire appl
 | Database | sql.js (SQLite WASM) | Query engine in browser |
 | Spatial index | rtree-sql.js 1.7.0 | R-tree for clash detection |
 | Caching | Service Worker + IndexedDB | Offline-first, cache-first |
-| BVH | three-mesh-bvh 0.7.8 | Accelerated raycasting for pick |
+| BVH | three-mesh-bvh 0.8.0 | Accelerated raycasting for pick |
 | Tone mapping | ACESFilmic | Cinematic colour grading |
 | Export (Excel) | SheetJS | 4D schedule + 5D BOQ multi-sheet workbooks |
 | Export (IFC) | Custom STEP writer | IFC STEP/ISO-10303-21 generation from SQLite |

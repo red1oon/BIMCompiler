@@ -1,0 +1,28 @@
+evA night [CACHE_VERSION = v1457] compositeMean=43.42 GLARE bld=Hospital PASS 0 0 0 | comp p5/50/95=22.7/41.4/77.6 le15=1.948% ge250=0% exp=0.3825
+   §METER camera=outside exposure=0.383 stops=0 (base 0.383, unchanged outside)
+evA p367 [CACHE_VERSION = v1457] compositeMean=171.51 GLARE bld=Hospital PASS 0 0 0 | comp p5/50/95=102.4/169.3/248.9 le15=0.004% ge250=3.28% exp=2.3306
+   §METER camera=inside logAvgEin=6.644e-1 Eout=4.048 (sun 4.40 x sinElev 0.707 + sky 0.937) mode=avg indoor/outdoor=1.641e-1 adapt=ciecam02 D=1.000 Ein=15099.7lx LA=961.28cd/m2 exposure=2.331 stops=2.61 (base 0.383) pixels=12615/14400 hidden=139 ms=292
+evA p100 [CACHE_VERSION = v1457] compositeMean=127.09 GLARE bld=Hospital PASS 0 0 0 | comp p5/50/95=47.6/95.6/255 le15=0.311% ge250=7.15% exp=22.8466
+   §METER camera=inside logAvgEin=4.639e-2 Eout=4.048 (sun 4.40 x sinElev 0.707 + sky 0.937) mode=avg indoor/outdoor=1.146e-2 adapt=ciecam02 D=0.915 Ein=1054.3lx LA=67.12cd/m2 exposure=22.847 stops=5.90 (base 0.383) pixels=13339/14400 hidden=139 ms=420
+evA p501 [CACHE_VERSION = v1457] compositeMean=85.84 GLARE bld=Hospital PASS 0 0 0 | comp p5/50/95=18.6/61.2/211.1 le15=2.652% ge250=0% exp=0.3825
+   §METER camera=outside exposure=0.383 stops=0 (base 0.383, unchanged outside)
+evA p614 [CACHE_VERSION = v1457] compositeMean=69.51 GLARE bld=Hospital PASS 0 0 0 | comp p5/50/95=22.3/55.6/143.8 le15=1.459% ge250=0% exp=0.3825
+   §METER camera=outside exposure=0.383 stops=0 (base 0.383, unchanged outside)
+evA a616 [CACHE_VERSION = v1457] compositeMean=90.52 GLARE bld=Hospital PASS 0 0 0 | comp p5/50/95=22.7/79.1/172.5 le15=1.333% ge250=0% exp=0.3825
+   §METER camera=outside exposure=0.383 stops=0 (base 0.383, unchanged outside)
+evA a862 [CACHE_VERSION = v1457] compositeMean=67.53 GLARE bld=Hospital PASS 0 0 0 | comp p5/50/95=26.4/55.4/161.9 le15=0.753% ge250=0% exp=0.3825
+   §METER camera=outside exposure=0.383 stops=0 (base 0.383, unchanged outside)
+evA clinic [CACHE_VERSION = v1457] compositeMean=76.82 GLARE bld=Clinic PASS 0 0 0 | comp p5/50/95=47.2/69.5/134 le15=0.02% ge250=0% exp=76.6096
+   §METER camera=inside logAvgEin=7.578e-3 Eout=4.048 (sun 4.40 x sinElev 0.707 + sky 0.937) mode=avg indoor/outdoor=1.872e-3 adapt=ciecam02 D=0.844 Ein=172.2lx LA=10.96cd/m2 exposure=76.610 stops=7.65 (base 0.383) pixels=14387/14400 hidden=28 ms=123
+evA inner [CACHE_VERSION = v1457] compositeMean=99.85 GLARE bld=Hospital PASS 0 0 0 | comp p5/50/95=61.1/107.2/139.7 le15=0% ge250=0% exp=95.155
+   §METER camera=inside logAvgEin=5.645e-3 Eout=4.048 (sun 4.40 x sinElev 0.707 + sky 0.937) mode=avg indoor/outdoor=1.394e-3 adapt=ciecam02 D=0.839 Ein=128.3lx LA=8.17cd/m2 exposure=95.155 stops=7.96 (base 0.383) pixels=14400/14400 hidden=139 ms=531
+evA term [CACHE_VERSION = v1457] compositeMean=103.36 GLARE bld=TerminalMerged PASS 0 0 0 | comp p5/50/95=74.1/99/213.1 le15=0.007% ge250=0.06% exp=94.7529
+   §METER camera=inside logAvgEin=5.677e-3 Eout=4.048 (sun 4.40 x sinElev 0.707 + sky 0.937) mode=avg indoor/outdoor=1.402e-3 adapt=ciecam02 D=0.839 Ein=129.0lx LA=8.21cd/m2 exposure=94.753 stops=7.95 (base 0.383) pixels=14400/14400 hidden=19 ms=159
+evA p2 [CACHE_VERSION = v1457] compositeMean=111.59 GLARE bld=Hospital PASS 0 0 0 | comp p5/50/95=55.4/107.1/187.2 le15=0.019% ge250=0.28% exp=34.252
+   §METER camera=inside logAvgEin=2.455e-2 Eout=4.048 (sun 4.40 x sinElev 0.707 + sky 0.937) mode=avg indoor/outdoor=6.064e-3 adapt=ciecam02 D=0.880 Ein=557.9lx LA=35.52cd/m2 exposure=34.252 stops=6.48 (base 0.383) pixels=14355/14400 hidden=139 ms=305
+evA p698 [CACHE_VERSION = v1457] compositeMean=116.9 GLARE bld=Hospital PASS 0 0 0 | comp p5/50/95=67.8/115.8/182.3 le15=0.005% ge250=0.04% exp=37.2136
+   §METER camera=inside logAvgEin=2.160e-2 Eout=4.048 (sun 4.40 x sinElev 0.707 + sky 0.937) mode=avg indoor/outdoor=5.335e-3 adapt=ciecam02 D=0.875 Ein=490.9lx LA=31.25cd/m2 exposure=37.214 stops=6.60 (base 0.383) pixels=14392/14400 hidden=139 ms=1025
+evA p672 [CACHE_VERSION = v1457] compositeMean=118.53 GLARE bld=Hospital PASS 0 0 0 | comp p5/50/95=60.8/110.6/204.7 le15=0.008% ge250=0.01% exp=24.7644
+   §METER camera=inside logAvgEin=4.087e-2 Eout=4.048 (sun 4.40 x sinElev 0.707 + sky 0.937) mode=avg indoor/outdoor=1.010e-2 adapt=ciecam02 D=0.907 Ein=928.8lx LA=59.13cd/m2 exposure=24.764 stops=6.02 (base 0.383) pixels=14344/14400 hidden=139 ms=937
+== evA done 10:09:39
+ALL

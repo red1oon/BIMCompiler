@@ -1,0 +1,4 @@
+§FIDELITY start part=0/8 tables=116 of 925 sqlite=bloat10r.db pgdb=bloat10r
+§FIDELITY table=c_orderline rows=9674148 pgRows=9674148 pg=5576312816927270215600306 sq=5576312816927270215600306 OK t=217s
+§FIDELITY table=c_invoiceline rows=699336 pgRows=699336 pg=403028574299171401370743 sq=403028574299171401370743 OK t=233s
+§FIDELITY_VERDICT part=0/8 PASS tables=116 judgedTables=62 judgedRows=10465869 totalSec=247s

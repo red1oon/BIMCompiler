@@ -109,3 +109,6 @@ Witnesses: `§SHARD-FREQ paint=<ms> tier=T0 coldAttached=N`, `§SHARD-FREQ warm 
 Flip the relevant rows of `FoldEngineConstraints.md` Phase-4 scorecard (Max DB size / Mobile memory) to
 ✅ Implemented (access-frequency split + on-demand loader land the size mitigation). DATA + scripts only;
 renderer untouched; EXPLICIT GO before any deploy.
+
+## 7. Update 2026-10-14 — cold = CL, VO **and RE** (see ERP_SHARD_GENERATOR.md §12.1)
+§2's `DocStatus NOT IN ('CL','VO')` warm rule and `gen_sharding_boundaries.js` (`WARM`/`COLD`) miss **RE** (Reversed). iDempiere's `MInvoice.voidIt()` treats CL, RE, VO identically as terminal ("Document Closed"). On the real tenant `idempiere_pilot`, 352 of the 353 invoices referencing voided orders are `RE`; leaving them warm pinned 177 of 179 candidate orders warm. Cold-eligible statuses are now CL,VO,RE, and a unit also stays warm while any live (non-terminal) row references it (ERP_SHARD_GENERATOR.md §10 reverse closure). `gen_sharding_boundaries.js` NOT yet updated.

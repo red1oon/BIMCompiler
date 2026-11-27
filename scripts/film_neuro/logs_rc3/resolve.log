@@ -1,0 +1,54 @@
+§FACT wan_wait1="64.6"  <- scripts/film_neuro/evidence/duel_ledger_b_2026-11-02.log :: run1 RESULT wait=
+§FACT wan_prompt="slow cinematic fly-through of this hospital building"  <- scripts/film_neuro/evidence/duel_ledger_b_2026-11-02.log :: t0 start prompt='…'
+§FACT rep_verdict="PASS"  <- scripts/film_neuro/evidence/w_repeat.log :: §W_FILM_NEURO_4D5D_REPEAT verdict=
+§FACT rep_n="63,182"  <- scripts/film_neuro/evidence/w_repeat.log :: part=4D.play n=
+§FACT rep_days="341"  <- scripts/film_neuro/evidence/w_repeat.log :: §W_REPEAT_OVERLAY days=
+§FACT rep_cost="1,763,131"  <- scripts/film_neuro/evidence/w_repeat.log :: §W_REPEAT_OVERLAY cost=
+§FACT rep_tasks="36"  <- scripts/film_neuro/evidence/w_repeat.log :: part=4D.tasks n=
+§FACT clash_broad="1,478"  <- scripts/film_neuro/evidence/hospital_0049_clash.log :: §CLASH_NARROWPHASE broad=
+§FACT clash_true="271"  <- scripts/film_neuro/evidence/hospital_0049_clash.log :: §CLASH_NARROWPHASE meshTrue=
+§FACT clash_fp="79.0"  <- scripts/film_neuro/evidence/hospital_0049_clash.log :: §CLASH_NARROWPHASE falsePositiveRate=
+§FACT a_right=15  <- scripts/film_neuro/evidence/results_v3_2026-11-07.json :: summary.right_outcome_A
+§FACT b_right=24  <- scripts/film_neuro/evidence/results_v3_2026-11-07.json :: summary.right_outcome_B
+§FACT n_runs=30  <- scripts/film_neuro/evidence/results_v3_2026-11-07.json :: summary.runs
+§FACT cost_v3="0.45"  <- scripts/film_neuro/evidence/results_v3_2026-11-07.json :: cost_usd (Claude Code estimate, not a charge), 2 decimals
+§FACT model="claude-sonnet-5-5"  <- scripts/film_neuro/evidence/results_v3_2026-11-07.json :: model
+§FACT ai_quote="Bay gx5 to gx6 is currently 161.234 − 150.051 = 11.183 m. To reach 13 m it must widen by 1.817 m."  <- scripts/film_neuro/evidence/results_v3_2026-11-07.json :: runs[G4 rep0].attempts[0].raw, first two sentences
+§FACT ai_forecast="Girders crossing the gx5–gx6 bay will stretch by 1.817 m, which may overstress them or need larger sections."  <- scripts/film_neuro/evidence/results_v3_2026-11-07.json :: runs[G4 rep0].attempts[0].forecast, first sentence
+§FACT ai_decline="false"  <- scripts/film_neuro/evidence/results_v3_2026-11-07.json :: runs[G4 rep0].attempts[0].decline
+§FACT ai_target="13"  <- scripts/film_neuro/evidence/results_v3_2026-11-07.json :: the 13 m in the quote
+§FACT run_date="2026-11-07"  <- scripts/film_neuro/evidence/results_v3_2026-11-07.json :: file name date
+§FACT g4_reason="Beam spans over limit: 91 -> 92 (limit 12 m, RC); bay gx5-gx6 newly over the limit: 12.993 m"  <- scripts/film_neuro/evidence/g4.json :: edits[0].reason
+§FACT g4_bay="12.993"  <- scripts/film_neuro/evidence/g4.json :: reason: newly over the limit: <m>
+§FACT g4_limit="12"  <- scripts/film_neuro/evidence/g4.json :: reason: (limit <m> m
+§FACT g4_mat="RC"  <- scripts/film_neuro/evidence/g4.json :: reason: limit .. m, <material>
+§FACT g4_secs="11"  <- scripts/film_neuro/evidence/g4.json :: ms / 1000, whole seconds
+§FACT g4_cmd="node edit_cli.js --building HospitalGarage --lattice-boxes --shift gx6 --move 1.817"  <- scripts/film_neuro/evidence/g4.json :: the command that produced it (building, edit)
+§FACT g2_reason="New or deeper box overlap: 2; Driven into a wall it touches: 2"  <- scripts/film_neuro/evidence/g2.json :: edits[0].reason
+§FACT g2_ov_before=1533  <- scripts/film_neuro/evidence/g2.json :: report row overlap before
+§FACT g2_ov_after=1535  <- scripts/film_neuro/evidence/g2.json :: report row overlap after
+§FACT g2_cmd="node edit_cli.js --building HospitalGarage --lattice-boxes --shift gy11 --move -1.49"  <- scripts/film_neuro/evidence/g2.json :: the command
+§FACT lines_n=124  <- scripts/film_neuro/evidence/hosp_lines.json :: model.lines.length
+§FACT lines_src="column-derived"  <- scripts/film_neuro/evidence/hosp_lines.json :: model.grid_source
+§FACT lines_first="gx0 x -11.655 · gx1 x -8.573 · gx2 x -8.027"  <- scripts/film_neuro/evidence/hosp_lines.json :: model.lines[0..2] as printed
+§FACT nc_n=11  <- scripts/film_neuro/evidence/panel_report.json :: notChecked.length
+§FACT nc_list="duplicate ids · elements changed outside the edit's own list · floating or unsupported elements · grid lines placed on top of each other · invalid coordinates · real beams: only girders walked from columns are span-checked · unknown element types · wrong units or absurd sizes, unless they hit something · zero-size elements · load capacity · beam and column rules (Regulatory Report only)"  <- scripts/film_neuro/evidence/panel_report.json :: notChecked
+§FACT live_same="SAME"  <- scripts/film_neuro/evidence/w_live.log :: §W_FILM_NEURO_LIVE … SAME|DIFFER
+§FACT bs_vertices="68,336"  <- scripts/film_neuro/evidence/block_shift.log :: crossing vertices before+beyond
+§FACT bs_off="0"  <- scripts/film_neuro/evidence/block_shift.log :: crossing vertices bad
+§FACT bs_elements="22"  <- scripts/film_neuro/evidence/block_shift.log :: crossing vertices elementsBoth
+§FACT bs_pass="35 PASS / 0 FAIL"  <- scripts/film_neuro/evidence/block_shift.log :: W-BLOCK-SHIFT: n PASS / m FAIL
+§FACT cp_total="17"  <- prompts/NEURO_SYMBOLIC_ORDER_CONTRACT.md :: §ORDER_COVERAGE_SUMMARY defects= none=
+§FACT cp_none="8"  <- prompts/NEURO_SYMBOLIC_ORDER_CONTRACT.md :: §ORDER_COVERAGE_SUMMARY defects= none=
+§FACT check_cost="0"  <- prompts/NEURO_SYMBOLIC_ORDER_CONTRACT.md :: §15.1 hand-off rehearsal `$N`, 4 CLI calls, no model
+§FACT ag_solved="25"  <- scripts/film_neuro/evidence/web_sources_2026-11-08.md :: alphageometry: solved N problems
+§FACT ag_of="30"  <- scripts/film_neuro/evidence/web_sources_2026-11-08.md :: alphageometry: (of N)
+§FACT ag_year="2024"  <- scripts/film_neuro/evidence/web_sources_2026-11-08.md :: alphageometry paper year
+§FACT blender_date="April 28, 2026"  <- scripts/film_neuro/evidence/web_sources_2026-11-08.md :: blender_connector: published <date>
+§FACT autodesk_q="AI-generated responses may not always be complete or accurate."  <- scripts/film_neuro/evidence/web_sources_2026-11-08.md :: autodesk_assistant first quote
+§FACT guide_url="red1oon.github.io/BIMCompiler/ProposerGuide"  <- scripts/film_neuro/evidence/web_sources_2026-11-08.md :: (the guide link, from docs/ProposerGuide.md)
+§FACT cmd_install="npm install puppeteer@24"  <- docs/ProposerGuide.md :: Getting started
+§FACT cmd_get="curl -O https://red1oon.github.io/bim-ootb/modeller/tools/edit_cli.js"  <- docs/ProposerGuide.md :: Getting started
+§FACT cmd_lines="node edit_cli.js --building Hospital --lines"  <- docs/ProposerGuide.md :: Getting started
+§FACTS resolved=52 missing=0
+§FACTS-USED storyboard=19 unresolved=0

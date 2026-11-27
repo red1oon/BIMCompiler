@@ -1,0 +1,18 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT screens cue=3.88 room=5.24 dur=4.33 -> DETAIL slack=+0.91 words=16
+§NARR_FIT find cue=9.72 room=7.19 dur=6.29 -> DETAIL slack=+0.90 words=21
+§NARR_TONE find#0 M WH rose=0st endDelta=-7.5st want=fall OK "What if you could just say it?"
+§NARR_FIT do cue=17.51 room=9.57 dur=8.65 -> DETAIL slack=+0.92 words=29
+§NARR_TONE do#0 F WH rose=0st endDelta=-4.2st want=fall OK "What can I do with it?"
+§NARR_FIT more cue=27.68 room=6.35 dur=5.46 -> DETAIL slack=+0.89 words=17
+§NARR_TONE more#1 F YN rose=5.0st endDelta=+2.4st want=rise OK "Is each one just a line?"
+§NARR_FIT building cue=34.63 room=8.40 dur=7.50 -> DETAIL slack=+0.90 words=19
+§NARR_TONE building#0 F YN rose=5.0st endDelta=+3.4st want=rise OK "And the building?"
+§NARR_TONE building#1 M WH rose=0st endDelta=-5.8st want=fall OK "How many rooms?"
+§NARR_FIT script cue=43.63 room=4.90 dur=4.02 -> DETAIL slack=+0.88 words=17
+§NARR_FIT door cue=49.13 room=6.49 dur=5.58 -> DETAIL slack=+0.91 words=18
+§NARR_FIT others cue=56.22 room=12.11 dur=11.21 -> DETAIL slack=+0.90 words=34
+§NARR_TONE others#0 F YN rose=5.0st endDelta=+2.5st want=rise OK "Do other systems do this?"
+§NARR_FIT close cue=68.92 room=7.28 dur=6.36 -> DETAIL slack=+0.92 words=23

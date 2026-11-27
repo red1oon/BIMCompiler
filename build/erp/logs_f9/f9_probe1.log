@@ -1,0 +1,36 @@
+§FIXTURE_SHIPPED seed=/home/red1/bim-ootb/erp/ad_seed.db patch_stmts_ok=1262 failed=0 sql_functions=0 (UDF load failed: Cannot find module '/home/red1/bim-ootb/erp/callouts/sqlfn.js'
+Require stack:
+- /home/red1/bim-compiler/scripts/bridge/ad_shipped_fixture.js
+- /home/red1/bim-compiler/scripts/bridge/witness_m3_gap.js) product_prices=149 FIXTURE_HAS_PRICES
+§M3_STATE_SYNC m_product_category_acct:+2col,28stmt,left=0 m_costelement:+2col,9stmt,left=0 m_cost:+1col,408stmt,left=0 m_product:+2col,55stmt,left=0 c_acctschema:+8col,4stmt,left=0 c_cashbook_acct:+2col,4stmt,left=0 ad_sysconfig:+6col,409stmt,left=0 c_bankaccount:+0col,1stmt,left=0
+§S7_FACTS product=128 legacy_onhand_before=-355 legacy_avg_costed_qty=5 qty=6 warehouse=103
+§RECON_SUMMARY scenarios=0 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§RECON_SUMMARY scenarios=0 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§RECON_SUMMARY scenarios=0 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§RECON_SUMMARY scenarios=0 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§RECON_SUMMARY scenarios=0 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§PI_FACTS product=137 locator=101 qtybook=-110
+§RECON_SUMMARY scenarios=0 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§P2P_STEP legacy PO order=1002580
+§SCN F9-PO MATCH compared=11 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§P2P_STEP legacy RCPT inout=1001545
+§SCN F9-RCPT MATCH compared=10 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§GAP scenario=F9a-sale-backdated-before-receipt key=postings_shipment legacy="430:DR255/CR0|742:DR0/CR255" sqlite="430:DR289/CR0|742:DR0/CR289" verdict=SQLITE-GAP
+§GAP scenario=F9a-sale-backdated-before-receipt key=cost_qty_delta legacy="{\"141\":-3}" sqlite="{\"141\":-1}" verdict=SQLITE-GAP
+§GAP scenario=F9a-sale-backdated-before-receipt key=postings_shipment_euro legacy="430:DR217/CR0|742:DR0/CR217" sqlite="430:DR246/CR0|742:DR0/CR246" verdict=SQLITE-GAP
+§GAP scenario=F9a-sale-backdated-before-receipt key=cost_state legacy="101:2.55@29/76.5|200000:2.1675@29/65.025" sqlite="101:2.890625@31/92.5|200000:2.45703125@31/78.625" verdict=SQLITE-GAP
+§SCN F9a-sale-backdated-before-receipt SQLITE-GAP compared=19 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§F9_STATE legacy_cost=101:2.55@29/76.5|200000:2.1675@29/65.025 sqlite_cost=101:2.890625@31/92.5|200000:2.45703125@31/78.625
+§RECON_SUMMARY scenarios=0 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§RECON_SUMMARY scenarios=0 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§RECON_SUMMARY scenarios=0 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§RECON_SUMMARY scenarios=0 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§RECON_SUMMARY scenarios=0 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§RECON_SUMMARY scenarios=0 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SCN_DETAIL F9-PO legacy={"outcome":"COMPLETED","docstatus":"CO","lines":"141:2:800:104","order_tax":"104:1600:0","grand_total":1600,"books":"none","books_euro":"none","ol_qty":"141:2/2/0/0","bp_delta":"0/0","stock_delta":"0","cost":"101:2.55@30/76.5|200000:2.1675@30/65.025"} sqlite={"outcome":"COMPLETED","docstatus":"CO","lines":"141:2:800:104","order_tax":"104:1600:0","grand_total":1600,"books":"none","books_euro":"none","ol_qty":"141:2/2/0/0","bp_delta":"0/0","stock_delta":"0","cost":"101:2.55@30/76.5|200000:2.1675@30/65.025"}
+§SCN_DETAIL F9-RCPT legacy={"outcome":"COMPLETED","rcpt_status":"CO","rcpt_lines":"141:2","books":"587:DR0/CR1600|742:DR1600/CR0","books_euro":"587:DR0/CR1360|742:DR1360/CR0","match_po":"2:rcpt:-","ol_qty":"141:2/0/2/0","bp_delta":"0/0","stock_delta":"2","cost":"101:2.890625@32/92.5|200000:2.45703125@32/78.625"} sqlite={"outcome":"COMPLETED","rcpt_status":"CO","rcpt_lines":"141:2","books":"587:DR0/CR1600|742:DR1600/CR0","books_euro":"587:DR0/CR1360|742:DR1360/CR0","match_po":"2:rcpt:-","ol_qty":"141:2/0/2/0","bp_delta":"0/0","stock_delta":"2","cost":"101:2.890625@32/92.5|200000:2.45703125@32/78.625"}
+§SCN_DETAIL F9a-sale-backdated-before-receipt legacy={"outcome":"COMPLETED","docstatus":"CO","lines":"141:1:270","total_cents":270,"shipments":1,"shipments_completed":1,"invoices":1,"stock_delta":"{\"141\":-1}","postings":"518:DR270/CR0|758:DR0/CR270","postings_shipment":"430:DR255/CR0|742:DR0/CR255","postings_euro":"518:DR230/CR0|758:DR0/CR230","postings_shipment_euro":"430:DR217/CR0|742:DR0/CR217","line_tax":"141:104","order_tax":"104:270:0","grand_total_cents":270,"invoice_tax":"104:270:0","cost_qty_delta":"{\"141\":-3}","cost_state":"101:2.55@29/76.5|200000:2.1675@29/65.025","books_receipt_after":"587:DR0/CR1600|742:DR1600/CR0"} sqlite={"outcome":"COMPLETED","docstatus":"CO","lines":"141:1:270","total_cents":270,"shipments":1,"shipments_completed":1,"invoices":1,"stock_delta":"{\"141\":-1}","postings":"518:DR270/CR0|758:DR0/CR270","postings_shipment":"430:DR289/CR0|742:DR0/CR289","cost_qty_delta":"{\"141\":-1}","postings_euro":"518:DR230/CR0|758:DR0/CR230","postings_shipment_euro":"430:DR246/CR0|742:DR0/CR246","line_tax":"141:104","order_tax":"104:270:0","grand_total_cents":270,"invoice_tax":"104:270:0","cost_state":"101:2.890625@31/92.5|200000:2.45703125@31/78.625","books_receipt_after":"587:DR0/CR1600|742:DR1600/CR0"}
+§M3_VERDICT ONLY F9

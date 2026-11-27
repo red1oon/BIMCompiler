@@ -6,6 +6,7 @@
 # Gate 4: Data integrity (cross-database fraud detection)
 
 set -euo pipefail
+~/.config/git/no-lfs/guard.sh commit || exit 1  # NO-LFS HARD STOP 2026-10-07
 cd "$(git rev-parse --show-toplevel)"
 
 FAIL=0

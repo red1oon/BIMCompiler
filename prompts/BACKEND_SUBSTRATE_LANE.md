@@ -562,3 +562,10 @@ against the newly committed `test_kernel_relay.js` exactly as designed (it compa
 compute. Until a relay is deployed and reachable over https, the live product is signed-snapshot
 exchange, **single writer per device**. The code no longer blocks that; a hosting decision does. This
 also gates `U-E1` (roster gate default-ON) — a gate that nothing runs is not yet a production question.
+
+---
+### 2026-11-13 — pointer: core determinism (Part A of `prompts/CODE_ARCHITECTURE_DESIGN.md`, issue #599)
+An AST scan (comments excluded) of bim-ootb `erp/*.js` found **15 core files / 26 clock-random-network calls**. The op-log stamps its own records,
+which is this lane's rule working (`erp/kernel_ops.js:87,:93`). About a dozen are "today with a wall-clock fallback" in posting, callouts and
+processes, written differently each time. **Open fact, to settle first (Part A0, witness `W-REPLAY-CLOCK`):** does a replay re-run a process (a new
+"today" on a later day, which would break this lane's rule) or replay its rows? Part A is carried out under THIS lane's rules. Progress is recorded there.

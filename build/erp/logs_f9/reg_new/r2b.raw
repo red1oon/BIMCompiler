@@ -1,0 +1,97 @@
+§POS-LENS loaded (dumb terminal — record, pay, send; the fold does the rest)
+═══ W-REVIEW2 — ten second-review findings (engine=bim-compiler scripts/+build/erp) ═══
+
+— R1 balanceAccounting / _allocBalanceAccounting must use the R handed to derivePostings (browser host: window.PostResolver, no require) — not a private _R()
+§REVIEW2 R1 fx invoice 103 @schema 200000 lines=4 balancing-line(724)=[0,-0.01] spy.elementOf calls=[200020] (CurrencyBalancing_Acct vc=200020)
+   🟢 fixture: the FX invoice needs a CurrencyBalancing line (otherwise the finding is not exercised) — lines=4
+   🟢 balanceAccounting resolved the balancing account through the INJECTED R (browser has no require) — calls=[200020]
+   🟢 output identical with a delegating spy R (no behaviour change under node) — same=true
+   🟢 a different injected R decides the balancing account — ["SPY","SPY-INJECTED"]
+
+— R2 reverseInOut / voidOrder: MOVE_STOCK must carry a RESOLVED locator (MInOutLine.getM_Locator_ID of the original line), never undefined
+§REVIEW2 R2 realistic shipment (no locator on rows): MOVE_STOCK ops=0 locators=[] unresolved=[{"m_inoutline_id":20001,"m_product_id":7}]
+   🟢 no MOVE_STOCK is emitted with an undefined/null locator — []
+   🟢 the line whose locator cannot be resolved is REPORTED (ops.unresolved), not silently dropped — [{"m_inoutline_id":20001,"m_product_id":7}]
+   🟢 host locatorOf(line, shipment) resolves the locator from the original row; reversal puts the 3 back (+3) — [{"op_type":"MOVE_STOCK","table":"M_Storage","m_product_id":7,"m_locator_id":9003,"qty":3}]
+   🟢 shipment-level m_locator_id is used when the row has none — [{"op_type":"MOVE_STOCK","table":"M_Storage","m_product_id":7,"m_locator_id":9002,"qty":3}]
+   🟢 the original LINE locator wins over header / host resolver (MInOutLine.getM_Locator_ID) — [{"op_type":"MOVE_STOCK","table":"M_Storage","m_product_id":7,"m_locator_id":9001,"qty":3}]
+   🟢 reverseInOut itself returns the unresolved list — [{"m_inoutline_id":20001,"m_product_id":7}]
+
+— R3 costQtyUpdates must follow the document type sign (Doc_InOut): C- shipment -qty, C+ sales return +qty, V- vendor return -qty, V+ vendor receipt NO cost detail
+§REVIEW2 R3 C- qty=4 -> updates=8 deltas=[-4]
+   🟢 customer shipment: stock leaves, delta -4 — deltas=[-4]
+§REVIEW2 R3 C+ qty=4 -> updates=8 deltas=[4]
+   🟢 customer return (MMR + IsSOTrx): stock comes back, delta +4 — deltas=[4]
+§REVIEW2 R3 V- qty=4 -> updates=8 deltas=[-4]
+   🟢 vendor return (MMS, !IsSOTrx): delta -4 — deltas=[-4]
+§REVIEW2 R3 V+ qty=4 -> updates=0 deltas=[]
+   🟢 vendor receipt (MMR purchase): Doc_InOut makes no cost detail -> NO update (the qty follows MatchPO/MatchInv) — deltas=[]
+
+— R4 POS line tax: (a) missing inputs refuse tax-not-found = legacy (MOrderLine.setTax :346-359 false -> save refused) [not-substantiated control]; (b) billDate is the ORDER date (setTax uses getDateOrdered)
+§POS-TAX inputs-missing no such table: c_tax
+§REVIEW2 R4a lens tax on a db without tax inputs -> {"ok":false,"reason":"tax-inputs-missing"} ; buildSaleGroup ok=false reason=tax-not-found
+   🟢 R4a (control, NOT a defect): no tax inputs => refused tax-not-found (legacy setTax false => PO.save false); behaviour unchanged by this review — reason=tax-not-found
+§POS-TAX product=128 bp=112 tax=104 via=match
+§POS-TAX product=128 bp=112 tax=104 via=match
+§POS-TAX product=128 bp=112 tax=990001 via=match
+§REVIEW2 R4b taxOf(today)=104 taxOf(order date 2999-06-01)=990001 (future-dated row 990001)
+   🟢 taxOf(product) without a date keeps today (unchanged) — c_tax_id=104
+   🟢 taxOf(product, orderDate) looks up at the ORDER date (MOrderLine.setTax getDateOrdered) — c_tax_id=990001
+§POS-TAX product=128 bp=112 tax=990001 via=match
+   🟢 buildSaleGroup with opts.dateAcct stamps the line tax valid on that order date — ok=true reason=undefined c_tax_id=990001
+
+— R5 MOrderLine.beforeSave pricing: an exception inside beforeSave means save()==false in legacy (PO.save catch) -> return an error string, not throw; restore EVERYTHING bind() rebinds
+   ⚪ INCONCLUSIVE: cannot load the bim-ootb model layer (Cannot find module '/tmp/wt-ootb-erp-port/erp/ad_callout.js'
+Require stack:
+- /home/red1/bim-compiler/scripts/poc_review2_2026_10_11.js)
+
+— R6 costUpdatesForMatchPO: ONE result shape {updates, absent}; a looping caller must never meet a bogus {absent} row
+§REVIEW2 R6 unknown matchpo -> {"updates":[],"absent":[]} ; fixture matchpo -> {"updates":[],"absent":["tax-corrected purchase cost not ported (Doc_InOut.java:719-783)","tax-corrected purchase cost not ported (Doc_InOut.java:719-783)"]}
+   🟢 no matchpo -> {updates:[], absent:[]} — {"updates":[],"absent":[]}
+   🟢 a computed matchpo returns the same {updates, absent} shape — {"updates":[],"absent":["tax-corrected purchase cost not ported (Doc_InOut.java:719-783)","tax-corrected purchase cost not ported (Doc_InOut.java:719-783)"]}
+   🟢 every element of the update list is a real update record (no {absent} pseudo-row inside) — []
+§REVIEW2 R6 untaxed fixture -> {"updates":[{"m_product_id":126,"c_acctschema_id":101,"m_costtype_id":100,"m_costelement_id":103,"currentcostprice":25.4,"currentqty":5,"cumulatedamt":127,"cumulatedqty":5},{"m_product_id":126,"c_acctschema_id":200000,"m_costtype_id":100,"m_costelement_id":103
+   🟢 positive path returns {updates, absent} — {"updates":[{"m_product_id":126,"c_acctschema_id":101,"m_costtype_id":100,"m_costelement_id":103,"currentcostprice":25.4
+   🟢 no {absent} pseudo-row among the updates on the positive path either — [{"m_product_id":126,"c_acctschema_id":101,"m_costtype_id":100,"m_costelement_id":103,"currentcostprice":25.4,"currentqt
+   ℹ absent reasons: ["tax-corrected purchase cost not ported (Doc_InOut.java:719-783)","tax-corrected purchase cost not ported (Doc_InOut.java:719-783)"]
+
+— R7 costQtyUpdates: _postedFacts / currentCost depend on (schema) / (product,schema) only — read once, not per line x schema x element; OUTPUT IDENTICAL
+§REVIEW2 R7 schemas=2 elements=4 lines=2 | original: fact_acct reads=0 currentCost reads=0 | reversal: fact_acct reads=2 currentCost reads=2
+§REVIEW2 R7 OUTPUT-GOLDEN original=[{"m_product_id":126,"c_acctschema_id":101,"m_costtype_id":100,"m_costelement_id":102,"delta":-4},{"m_product_id":126,"c_acctschema_id":101,"m_costtype_id":100,"m_costelement_id":103,"delta":-4},{"m_product_id":126,"c_acctschema_id":101,"m_costtype_id":100,"m_costelement_id":100,"delta":-4},{"m_product_id":126,"c_acctschema_id":101,"m_costtype_id":100,"m_costelement_id":104,"delta":-4},{"m_product_id":126,"c_acctschema_id":200000,"m_costtype_id":100,"m_costelement_id":102,"delta":-4},{"m_product_id":126,"c_acctschema_id":200000,"m_costtype_id":100,"m_costelement_id":103,"delta":-4},{"m_product_id":126,"c_acctschema_id":200000,"m_costtype_id":100,"m_costelement_id":100,"delta":-4},{"m_product_id":126,"c_acctschema_id":200000,"m_costtype_id":100,"m_costelement_id":104,"delta":-4},{"m_product_id":126,"c_acctschema_id":101,"m_costtype_id":100,"m_costelement_id":102,"delta":-6},{"m_product_id":126,"c_acctschema_id":101,"m_costtype_id":100,"m_costelement_id":103,"delta":-6},{"m_product_id":126,"c_acctschema_id":101,"m_costtype_id":100,"m_costelement_id":100,"delta":-6},{"m_product_id":126,"c_acctschema_id":101,"m_costtype_id":100,"m_costelement_id":104,"delta":-6},{"m_product_id":126,"c_acctschema_id":200000,"m_costtype_id":100,"m_costelement_id":102,"delta":-6},{"m_product_id":126,"c_acctschema_id":200000,"m_costtype_id":100,"m_costelement_id":103,"delta":-6},{"m_product_id":126,"c_acctschema_id":200000,"m_costtype_id":100,"m_costelement_id":100,"delta":-6},{"m_product_id":126,"c_acctschema_id":200000,"m_costtype_id":100,"m_costelement_id":104,"delta":-6}] reversal=[{"m_product_id":126,"c_acctschema_id":101,"m_costtype_id":100,"m_costelement_id":102,"delta":4},{"m_product_id":126,"c_acctschema_id":101,"m_costtype_id":100,"m_costelement_id":103,"delta":4,"currentcostprice":2.85714286},{"m_product_id":126,"c_acctschema_id":101,"m_costtype_id":100,"m_costelement_id":100,"delta":4},{"m_product_id":126,"c_acctschema_id":101,"m_costtype_id":100,"m_costelement_id":104,"delta":4,"currentcostprice":2.85714286},{"m_product_id":126,"c_acctschema_id":200000,"m_costtype_id":100,"m_costelement_id":102,"delta":4},{"m_product_id":126,"c_acctschema_id":200000,"m_costtype_id":100,"m_costelement_id":103,"delta":4,"currentcostprice":2},{"m_product_id":126,"c_acctschema_id":200000,"m_costtype_id":100,"m_costelement_id":100,"delta":4},{"m_product_id":126,"c_acctschema_id":200000,"m_costtype_id":100,"m_costelement_id":104,"delta":4,"currentcostprice":2},{"m_product_id":126,"c_acctschema_id":101,"m_costtype_id":100,"m_costelement_id":102,"delta":6},{"m_product_id":126,"c_acctschema_id":101,"m_costtype_id":100,"m_costelement_id":103,"delta":6,"currentcostprice":2.6},{"m_product_id":126,"c_acctschema_id":101,"m_costtype_id":100,"m_costelement_id":100,"delta":6},{"m_product_id":126,"c_acctschema_id":101,"m_costtype_id":100,"m_costelement_id":104,"delta":6,"currentcostprice":2.6},{"m_product_id":126,"c_acctschema_id":200000,"m_costtype_id":100,"m_costelement_id":102,"delta":6},{"m_product_id":126,"c_acctschema_id":200000,"m_costtype_id":100,"m_costelement_id":103,"delta":6,"currentcostprice":2},{"m_product_id":126,"c_acctschema_id":200000,"m_costtype_id":100,"m_costelement_id":100,"delta":6},{"m_product_id":126,"c_acctschema_id":200000,"m_costtype_id":100,"m_costelement_id":104,"delta":6,"currentcostprice":2}]
+   🟢 fixture: every line x schema x element yields an update — orig=16 rev=16
+   🟢 original-shipment output IDENTICAL to the pre-change golden — got=[{"m_product_id":126,"c_acctschema_id":101,"m_costtype_id":100,"m_costelement_id":102,"delta":-4},{"m_product_id":126,"c
+   🟢 reversal: posted facts read at most once per schema (was per line x schema x element) — fact_acct reads=2 (limit 2)
+   🟢 reversal: currentCost read at most once per (product, schema) (one product here) instead of per line x schema x element — reads=2 (limit 2)
+   🟢 reversal output IDENTICAL to the pre-change golden — got=[{"m_product_id":126,"c_acctschema_id":101,"m_costtype_id":100,"m_costelement_id":102,"delta":4},{"m_product_id":126,"c_
+
+— R8 posGlue.creditOf must read the sysconfig like MSysConfig.getValue (client/org scoping, IsActive, ORDER BY client DESC, org DESC) — not "WHERE name=?"
+§REVIEW2 R8 creditOf.sys={"CHECK_CREDIT_ON_CASH_POS_ORDER":"N","CHECK_CREDIT_ON_PREPAY_ORDER":"Y"} (expect CHECK_CREDIT_ON_CASH_POS_ORDER=N via client-0 row ignoring the inactive client row; CHECK_CREDIT_ON_PREPAY_ORDER not N: another client's row is invisible)
+   🟢 CHECK_CREDIT_ON_CASH_POS_ORDER: inactive client row ignored, client-0 row N wins — got N
+   🟢 CHECK_CREDIT_ON_PREPAY_ORDER: a row of ANOTHER client is not visible (legacy default true) — got Y
+   🟢 CHECK_CREDIT_ON_CASH_POS_ORDER: active own-client row (client DESC) beats the system row — got Y
+
+— R9 cleanup: dead neg() in voidOrder, active-schemas SELECT pasted 5x, duplicated MSysConfig comment in pos_core (source-level checks)
+§REVIEW2 R9 voidOrder local neg(): defined=0 used=0
+   🟢 voidOrder carries no local neg() (it was dead: _neg is the shared helper) — defined=0 used=0
+§REVIEW2 R9 doc_poster active-schemas SELECT pasted 0x
+   🟢 the active-schemas SELECT lives in ONE helper (no pasted copies) — copies=0
+§REVIEW2 R9 pos_core duplicated §45 comment block: 1x
+   🟢 the §45 F11 comment block appears once — copies=1
+
+— R10 UPDATE_FIELD delta ops carry COLUMN units (decimal), never minor units: completeBankStatement == completeProjectIssue convention
+§REVIEW2 R10 bank delta="123.45" (statement 123.45) · project delta="45.6789" (cost 45.6789) · stmt.statementDifference=12345
+   🟢 bank-account balance delta is 123.45 (column units), not 12345 cents — delta="123.45"
+   🟢 money deltas share one representation (decimal string) across the two verbs — string vs string
+   🟢 project-issue delta unchanged (decimal) — delta="45.6789"
+   🟢 the verb's documented minor-unit RESULT fields (statementDifference/endingBalance) are untouched — diff=12345
+§REVIEW2 R1 judged=4 fails=0 PASS — balanceAccounting / _allocBalanceAccounting must use the R handed to derivePostings (browser host: window.PostResolver, no require) — not a private _R()
+§REVIEW2 R2 judged=6 fails=0 PASS — reverseInOut / voidOrder: MOVE_STOCK must carry a RESOLVED locator (MInOutLine.getM_Locator_ID of the original line), never undefined
+§REVIEW2 R3 judged=4 fails=0 PASS — costQtyUpdates must follow the document type sign (Doc_InOut): C- shipment -qty, C+ sales return +qty, V- vendor return -qty, V+ vendor receipt NO cost detail
+§REVIEW2 R4 judged=4 fails=0 PASS — POS line tax: (a) missing inputs refuse tax-not-found = legacy (MOrderLine.setTax :346-359 false -> save refused) [not-substantiated control]; (b) billDate is the ORDER date (setTax uses getDateOrdered)
+§REVIEW2 R5 judged=0 fails=0 INCONCLUSIVE — MOrderLine.beforeSave pricing: an exception inside beforeSave means save()==false in legacy (PO.save catch) -> return an error string, not throw; restore EVERYTHING bind() rebinds
+§REVIEW2 R6 judged=5 fails=0 PASS — costUpdatesForMatchPO: ONE result shape {updates, absent}; a looping caller must never meet a bogus {absent} row
+§REVIEW2 R7 judged=5 fails=0 PASS — costQtyUpdates: _postedFacts / currentCost depend on (schema) / (product,schema) only — read once, not per line x schema x element; OUTPUT IDENTICAL
+§REVIEW2 R8 judged=3 fails=0 PASS — posGlue.creditOf must read the sysconfig like MSysConfig.getValue (client/org scoping, IsActive, ORDER BY client DESC, org DESC) — not "WHERE name=?"
+§REVIEW2 R9 judged=3 fails=0 PASS — cleanup: dead neg() in voidOrder, active-schemas SELECT pasted 5x, duplicated MSysConfig comment in pos_core (source-level checks)
+§REVIEW2 R10 judged=4 fails=0 PASS — UPDATE_FIELD delta ops carry COLUMN units (decimal), never minor units: completeBankStatement == completeProjectIssue convention
+🟡 W-REVIEW2 INCONCLUSIVE (1)  engine=compiler

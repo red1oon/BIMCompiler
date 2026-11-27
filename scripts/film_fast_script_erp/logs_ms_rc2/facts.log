@@ -1,0 +1,48 @@
+§FACTS check S OK   setup.door: 5 of 5 lines answered ok (scratch op-log only)
+§FACTS check I OK   the film's 48 journalled lines are in the scratch journal only (0 of their request ids found in ~/.cache/bim_door/journal.jsonl); ~/.cache/bim_object (the default op-log folder) holds 0 files, identical before and after the run
+§FACTS check C1 OK   beat start: `welcome` drew its line
+§FACTS check C1 OK   beat help: `help` drew its line
+§FACTS check C1 OK   beat help: `erp` drew its line
+§FACTS check C1 OK   beat level: `level student` drew its line
+§FACTS check C1 OK   beat level: `help run` drew its line
+§FACTS check C1 OK   beat bp: `cd` drew its line
+§FACTS check C1 OK   beat bp: `ls` drew its line
+§FACTS check C1 OK   beat po1: `cd Project` drew its line
+§FACTS check C1 OK   beat po1: `run (params)` drew its line
+§FACTS check C1 OK   beat po1: `run (project list)` drew its line
+§FACTS check C1 OK   beat po2: `pick project` drew its line
+§FACTS check C1 OK   beat po3: `leave phase out` drew its line
+§FACTS check C1 OK   beat po4: `Enter default` drew its line
+§FACTS check C1 OK   beat co: `cd Order` drew its line
+§FACTS check C1 OK   beat co: `do CO` drew its line
+§FACTS check C1 OK   beat next: `next` drew its line
+§FACTS check C1 OK   beat gap: `run (no port)` drew its line
+§FACTS check C1 OK   beat report: `report` drew its line
+§FACTS check C1 OK   beat url: `1` drew its line
+§FACTS check C1 OK   beat cost: `cd Duplex` drew its line
+§FACTS check C1 OK   beat cost: `cost discipline` drew its line
+§FACTS check C2 OK   no beat scrolled: each screen starts at its first line and ends above the bottom (max used rows 38 of 50; bad: )
+§FACTS check C3 OK   the screens asked C_Project_ID, C_ProjectPhase_ID, C_ProjectLine_ID, ConsolidateDocument; AD_Process_Para SeqNo order is C_Project_ID, C_ProjectPhase_ID, C_ProjectLine_ID, ConsolidateDocument; the default shown [Y] = the dictionary's [Y]
+§FACTS check C4 OK   the phase menu offers 7 phases (990000,990001,990002,990003,990004,990005,990006), the project 990000's own are 7 (990000,990001,990002,990003,990004,990005,990006) by an independent door read; the lookup line carried C_Project_ID=990000
+§FACTS §D0_VACUOUS C4b the exclusion half ("no other project's phase is offered") judged nothing: 0 phases of other projects exist in this data (mis.new "Project Phase" fails on main: no column bim_deliverables; C_Project_ID is read-only on an existing phase). Only the first half (the menu = the project's own phases, filtered by C_Project_ID in the lookup line) is proven.
+§FACTS check C5a OK   the run said it created 3 orders (opSummary); the scratch op-log holds 3 c_order creates, document numbers 800003, 800004, 800005
+§FACTS check C5b OK   the run summary on screen names the orders made 800003, 800004, 800005 (and 4 Purchase Order lines) = the numbers in the scratch op-log (800003, 800004, 800005); the 28 Hospital lines without a vendor are reported once (×28)
+§FACTS check C5c OK   `do CO 800003` and `next 800003` use the same number, one that beat 5 made (the answer's document number 800003)
+§FACTS check C6 OK   the order was DR before, CO after, and `next` reads status CO
+§FACTS check C7 OK   the tree's moves [CL,VO,RE] = the §RED1 draw tree legal list [CL,VO,RE]
+§FACTS check C8 OK   the gap line first appears in frame 184 after the no-port run's Return (frame 183), only in that beat's answer; §RED1 gap lines 1; of 19 door lines 2 did not answer ok (erp.process refused,object.describe error; the second is `cd project` trying the BIM kind first, see Found); the process is Renumber from the dictionary (162 have no port), class org.compiere.process.DiscountSchemaReSeq
+§FACTS check C8b OK   the class the shell names (org.compiere.process.DiscountSchemaReSeq) = the class the dictionary + loaded ports give for Renumber (org.compiere.process.DiscountSchemaReSeq)
+§FACTS check C9 OK   the draft says nothing is sent until you open it, names the line `erp.process name=Renumber kind=Order` and its answer `refused (gap: no-port)`
+§FACTS check C10 OK   the GitHub link on screen, its 34 wrapped rows joined, is 6838 characters = the 6838 the shell said = the §RED1 report line (github 6838); RED1_NO_OPEN=1 was set in the recording, nothing was opened
+§FACTS check C11 OK   the 5 discipline groups on screen (ARC 267/532432, ELEC 81/283500, MEP 809/153825, PLB 14/49000, STR 19/35725) add up to 1054482 = the total line 1054482 = viewer.cost's own total 1054482 and each group equals the answer's group (cost and elements); the offer line appears once; ls lists 32 priced rows = the answer's 32
+§FACTS check C15 OK   posted PlannedAmt 1054482.22784 rounded to whole units = 1054482 = cost's total 1054482 (cost rounds each group to whole units, the post keeps the legacy line rule unrounded: the two figures are shown as they are, nothing claimed equal to the cent); the project record read back (mis.read 990001) holds plannedamt 1054482.22784
+§FACTS check C16 OK   the post's 81 changes on screen = the last 81 entries of the scratch op-log, creates {"create:c_project":1,"create:c_projectphase":8,"create:c_projecttask":19,"create:c_projectline":43,"create:m_product":7,"create:m_product_category":1,"create:m_product_category_acct":2} = the screen's {"create:c_project":1,"create:c_projectphase":8,"create:c_projecttask":19,"create:c_projectline":43,"create:m_product":7,"create:m_product_category":1,"create:m_product_category_acct":2}; the created project is 990001
+§FACTS check C17 OK   one "Open the project?" offer; `y` ran the `cd project` it named (48 properties); `ls` lists 4 of 4 projects, among them the posted 990001 "BIM: Ifc2x3_Duplex_Federated"
+§FACTS check C18 OK   the post's real wait is in the film: 7.1 s between the arrow and the answer (shown frame for frame, not cut)
+§FACTS check C19 OK   no grey hint on any frame of the 4 questions of `run` (0 frames with one); the suggestions while typing `cd Busi` were ["\"BIM Document\"  (ERP kind · window)","\"Business Partner\"  (ERP kind · window)"] (no building name); the report link, decoded (4843 chars), holds no /home/ path and not the scratch folder name
+§FACTS check C12 OK   no table or tree line is as wide as the terminal (200 columns): bp=0 next=0 cost=0 ls=0; wrapped paragraphs/JSON/link rows are the terminal's own wrapping of one long line (help run, do CO ops, the link)
+§FACTS check C13 OK   screens checked against 8 other local building names (Duplex and the project name Hospital are the owner's) + the private-name list + the refused-cd text: hits=[]
+§FACTS check C14 OK   the last screen ends on the bash prompt
+§FACTS wrote facts.json {"verbs":73,"words":26,"groups":3,"bp":[20,113],"po":[3,7,32,3,4,8],"made":["800003","800004","800005"],"co":["800003","DR","CO",81],"gap":"Renumber","url":6838,"cost":[1190,1054482,5],"post":[990001,"1054482.22784",81,7],"ls":4}
+§FACTS VACUOUS_CHECKS C4b
+§FACTS FACTS_VERDICT PASS bad=0 missing=0

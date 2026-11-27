@@ -1,0 +1,62 @@
+[
+ {
+  "name": "cp_olcship_so124_partial",
+  "process": 200007,
+  "recordId": 124,
+  "tableId": 260,
+  "params": [],
+  "tables": [
+   "m_inout",
+   "m_inoutline"
+  ],
+  "preSql": [
+   "UPDATE c_orderline SET qtydelivered=3, qtyreserved=7 WHERE c_orderline_id=124"
+  ],
+  "alignFromSeed": [
+   {
+    "table": "ad_sequence",
+    "where": "istableid='N' and ad_client_id in (0,11)"
+   },
+   {
+    "table": "c_order",
+    "where": "c_order_id=108"
+   },
+   {
+    "table": "c_orderline",
+    "where": "c_order_id=108"
+   },
+   {
+    "table": "c_doctype",
+    "where": "c_doctype_id in (select c_doctype_id from c_order where c_order_id=108)"
+   }
+  ]
+ },
+ {
+  "name": "cp_olcship_so124_full",
+  "process": 200007,
+  "recordId": 124,
+  "tableId": 260,
+  "params": [],
+  "tables": [
+   "m_inout",
+   "m_inoutline"
+  ],
+  "preSql": [
+   "UPDATE c_orderline SET qtydelivered=0, qtyreserved=10 WHERE c_orderline_id=124"
+  ],
+  "alignFromSeed": [
+   {
+    "table": "ad_sequence",
+    "where": "istableid='N' and ad_client_id in (0,11)"
+   },
+   {
+    "table": "c_order",
+    "where": "c_order_id=108"
+   },
+   {
+    "table": "c_orderline",
+    "where": "c_order_id=108"
+   }
+  ]
+ }
+]

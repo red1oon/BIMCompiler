@@ -1,0 +1,1 @@
+-- dict_diff patch for m_pricelist (generated from legacy values; review before applying; never deletes)

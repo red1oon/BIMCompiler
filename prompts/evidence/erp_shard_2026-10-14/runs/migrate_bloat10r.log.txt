@@ -1,0 +1,20 @@
+§MIGRATE start tables=925 out=/tmp/claude-1000/-home-red1-bim-compiler/a4835524-cb34-4812-bf29-2fe73b37ec6e/scratchpad/m/bloat10r.db
+§MIGRATE_ROWS ok table=ad_changelog rows=5769522 rssMB=184
+§MIGRATE_ROWS ok table=ad_session rows=349668 rssMB=213
+§MIGRATE_ROWS ok table=c_invoice rows=233112 rssMB=190
+§MIGRATE_ROWS ok table=c_invoiceline rows=699336 rssMB=168
+§MIGRATE_ROWS ok table=c_order rows=9120507 rssMB=157
+§MIGRATE_ROWS ok table=c_orderline rows=9674148 rssMB=170
+§MIGRATE_ROWS ok table=fact_acct rows=8741700 rssMB=157
+§MIGRATE_ROWS ok table=gl_journalline rows=116556 rssMB=166
+§MIGRATE_ROWS ok table=m_costdetail rows=2505954 rssMB=205
+§MIGRATE_ROWS ok table=m_inout rows=262251 rssMB=164
+§MIGRATE_ROWS ok table=m_inoutline rows=786753 rssMB=213
+§MIGRATE_ROWS ok table=m_matchinv rows=524502 rssMB=181
+§MIGRATE_ROWS ok table=m_matchpo rows=1078143 rssMB=165
+§MIGRATE_ROWS ok table=m_transaction rows=815892 rssMB=202
+§MIGRATE_INDEX created=2057 sec=24 pageSize=16384
+§MIGRATE_VERDICT PASS rows-match-all-tables tables=925 peakRssMB=240
+§MIGRATE tables=925 rows=41302818 blobTables=12
+§MIGRATE rules AD_Rule=4 AD_Val_Rule=332 callouts=284 docTypeFlags=4/4 docTypes=52
+§MIGRATE flagged sequences=0 (dropped) functions=83 (skipped) triggers=4 (skipped) views=161 (snapshot=161, deferred)

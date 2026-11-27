@@ -1,0 +1,26 @@
+§FILM_GUARD OK   setup says "three hundred and two" <- index.entries expected 302 got 302
+§FILM_GUARD OK   move1 says "twenty layers" <- doctype.layers expected 20 got 20
+§FILM_GUARD OK   move1 says "line ninety-seven" <- doctype.callout_line expected 97 got 97
+§FILM_GUARD OK   move1 says "CalloutOrder dot java" <- doctype.callout_legacy expected CalloutOrder.java got CalloutOrder.java
+§FILM_GUARD OK   move1 says "Alt one opens the callout" <- doctype.alt1_opens_callout expected Y got Y
+§FILM_GUARD OK   move2 says "seventeen false alarms" <- red.false_unported expected 17 got 17
+§FILM_GUARD OK   move2 says "now zero" <- fix.false_unported expected 0 got 0
+§FILM_GUARD OK   move2 says "it said that once" <- old.dateacct_unported expected Y got Y
+§FILM_GUARD OK   move2 says "the engine runs it" <- new.dateacct_line_found expected Y got Y
+§FILM_GUARD OK   move2 says "one hundred and ninety-nine" <- fix.unported expected 199 got 199
+§FILM_GUARD OK   move2 says "twelve thousand three hundred and twenty-three" <- fix.fields expected 12323 got 12323
+§FILM_GUARD OK   the red run FAILED E2b and the run on main PASSED
+§FILM_GUARD OK   the logs the cards quote are copied into out/
+§FILM_GUARD OK   every key the tooltip showed on main opened its line (E4 wrong_or_dead=0)
+§FILM_GUARD OK   credentials: MIT licence, every PR merged, the paper states its priority date
+§FILM_GUARD OK   no shoot step reported an error
+§FILM_GUARD OK   memory measured after a forced GC in both sessions
+§FILM_GUARD OK   every picture exists
+§FILM_GUARD OK   prior art "iDempiere, the field tooltip" <- ~/idempiere-dev-setup/idempiere/org.adempiere.ui.zk/WEB-INF/src/org/adempiere/webui/adwindow/ADTabpanel.java:837
+§FILM_GUARD OK   prior art "iDempiere, Field Record Info" <- ~/idempiere-dev-setup/idempiere/org.adempiere.ui.zk/WEB-INF/src/org/adempiere/webui/window/WFieldRecordInfo.java:176
+§FILM_GUARD OK   prior art "Odoo developer mode" <- out/prior/odoo_devmode.html
+§FILM_GUARD OK   prior art "click-to-component (React)" <- out/prior/click_to_component_README.md
+§FILM_GUARD OK   not said: the page pictures are taken, not streamed
+§FILM_GUARD OK   not said: the claim is only that the shipped ERP never loads it
+§FILM_GUARD OK   not said: no speed was measured
+§FILM_GUARD VERDICT PASS

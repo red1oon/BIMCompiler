@@ -1,0 +1,27 @@
+§GUARD_OK guard.js PASS before the first frame
+§FILM_PLAN beats=22 total=243.62s frames=5847 fps=24
+§FILM_CUE beat=b01 t=0.00 frame=0
+§FILM_CUE beat=b02 t=4.42 frame=106
+§FILM_CUE beat=b03 t=14.54 frame=349
+§FILM_CUE beat=b04 t=34.96 frame=839
+§FILM_CUE beat=b05 t=48.67 frame=1168
+§FILM_CUE beat=b06 t=66.08 frame=1586
+§FILM_CUE beat=b07 t=78.04 frame=1873
+§FILM_CUE beat=b08 t=92.92 frame=2230
+§FILM_CUE beat=b09 t=106.42 frame=2554
+§FILM_CUE beat=b10 t=110.00 frame=2640
+§FILM_CUE beat=b11 t=123.00 frame=2952
+§FILM_CUE beat=b12 t=126.58 frame=3038
+§FILM_CUE beat=b13 t=141.75 frame=3402
+§FILM_CUE beat=b14 t=157.08 frame=3770
+§FILM_CUE beat=b15 t=167.33 frame=4016
+§FILM_CUE beat=b16 t=170.92 frame=4102
+§FILM_CUE beat=b17 t=181.71 frame=4361
+§FILM_CUE beat=b18 t=198.63 frame=4767
+§FILM_CUE beat=b19 t=212.00 frame=5088
+§FILM_CUE beat=b20 t=221.17 frame=5308
+§FILM_CUE beat=b21 t=227.04 frame=5449
+§FILM_CUE beat=b22 t=237.63 frame=5703
+§FILM_LAYOUT_DONE distinct_images_checked=79 images_with_problems=0 PASS
+§CONSOLE_ERRORS console_errors=0 page_errors=0 failed_requests=0 PASS
+§FILM_DONE frames=5847 distinct_images=79 dur=243.63s out=/tmp/wt-film-rc4m/scripts/film_neuro/out/rec/film_silent.mp4

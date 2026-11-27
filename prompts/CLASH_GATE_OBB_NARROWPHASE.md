@@ -1,5 +1,6 @@
 <!-- Copyright (c) 2025-2026 Redhuan D. Oon <red1org@gmail.com> · SPDX-License-Identifier: MIT -->
 # CLASH GATE — OBB narrow-phase upgrade (TOUGH, Fable) — 2026-07-11, strategy session
+> **Lane (2026-11-09):** this file is one part of the ONE-DOOR framework (Actor | Channel | One door | Engine). Home and lane map: `prompts/NEURO_SYMBOLIC_ORDER_CONTRACT.md` §0. Column owned here: ENGINE (the real-shape clash judge).
 
 ```
 # ⚠ DO NOT REMOVE

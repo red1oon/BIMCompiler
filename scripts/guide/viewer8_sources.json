@@ -1,0 +1,335 @@
+{
+ "note": "Each row: a phrase the guide says (docs/BIMUserGuide.md, whitespace-folded) and the phrase in the bim-ootb source that it comes from (whitespace-folded). Witness: scripts/guide/witness_guide_viewer8.js. VOCAB_MESSAGE_CATALOG §14.6.",
+ "rows": [
+  {
+   "guide": "LOD400 Upgrade",
+   "kind": "the pill's name",
+   "file": "viewer/panels.js",
+   "source": "name: 'LOD400 Upgrade'"
+  },
+  {
+   "guide": "welds duplicate vertices and smooths curved surfaces",
+   "kind": "bullet",
+   "file": "viewer/panels.js",
+   "source": "Weld duplicate vertices + smooth curved surfaces"
+  },
+  {
+   "guide": "the same triangles, area and size need far fewer vertices",
+   "kind": "bullet",
+   "file": "viewer/panels.js",
+   "source": "Same triangles, area and size; fewer vertices"
+  },
+  {
+   "guide": "flat-shaded\ntriangle soups",
+   "kind": "header",
+   "file": "viewer/lod400_upgrade.js",
+   "source": "UNINDEXED FLAT-SHADED triangle soups"
+  },
+  {
+   "guide": "about 70–80 % fewer on curved parts",
+   "kind": "header",
+   "file": "viewer/lod400_upgrade.js",
+   "source": "70-80 % fewer vertices on curved parts"
+  },
+  {
+   "guide": "No element is added, removed or renamed",
+   "kind": "header",
+   "file": "viewer/lod400_upgrade.js",
+   "source": "no element is added, removed or renamed"
+  },
+  {
+   "guide": "every number is counted and\nlogged",
+   "kind": "bullet",
+   "file": "viewer/panels.js",
+   "source": "Counted, logged; Save to keep it"
+  },
+  {
+   "guide": "*Floating Member* (STR beams)",
+   "kind": "bullet",
+   "file": "viewer/panels.js",
+   "source": "Floating Member (STR beams)"
+  },
+  {
+   "guide": "*Span/Depth* (advisory)",
+   "kind": "bullet",
+   "file": "viewer/panels.js",
+   "source": "Span/Depth (advisory)"
+  },
+  {
+   "guide": "*Column Continuity*",
+   "kind": "bullet",
+   "file": "viewer/panels.js",
+   "source": "Column Continuity"
+  },
+  {
+   "guide": "one checklist panel",
+   "kind": "comment",
+   "file": "viewer/panels.js",
+   "source": "reuses the SAME generic A.showRuleChecklist chassis as Sanity"
+  },
+  {
+   "guide": "Neither is on the\ntoolbar rail",
+   "kind": "code (pill:false, in no drawer list)",
+   "file": "viewer/panels.js",
+   "source": "{ id: 'sanity',     name: 'Sanity',          key: 'y', pill: false"
+  },
+  {
+   "guide": "*Isolated Room* (no measured route out)",
+   "kind": "bullet",
+   "file": "viewer/panels.js",
+   "source": "Isolated Room (no measured route out)"
+  },
+  {
+   "guide": "*Circulation Distance* (to a real exit; falls back to the\n  circulation spine)",
+   "kind": "bullet",
+   "file": "viewer/panels.js",
+   "source": "Circulation Distance (to real exit, falls back to spine)"
+  },
+  {
+   "guide": "*Door Width* (advisory)",
+   "kind": "bullet",
+   "file": "viewer/panels.js",
+   "source": "Door Width (advisory)"
+  },
+  {
+   "guide": "says which target it measured",
+   "kind": "header",
+   "file": "viewer/egress_sanity.js",
+   "source": "row is labelled which target it actually measured"
+  },
+  {
+   "guide": "0.813 m (IBC 2021 §1010.1.1)",
+   "kind": "header",
+   "file": "viewer/egress_sanity.js",
+   "source": "door_clear_width critical_m=0.813 — CITED: IBC 2021 §1010.1.1"
+  },
+  {
+   "guide": "60.96 m (IBC 2021 Table 1017.2, Group I-2, sprinklered)",
+   "kind": "header",
+   "file": "viewer/egress_sanity.js",
+   "source": "circulation_distance critical_m=60.96 — CITED: IBC 2021 Table 1017.2, Group I-2"
+  },
+  {
+   "guide": "early-heads-up buffers the code does not cite",
+   "kind": "header",
+   "file": "viewer/egress_sanity.js",
+   "source": "warning_m=45.7 (~75%) is an uncited early-heads-up buffer"
+  },
+  {
+   "guide": "0.85 m and 45.7 m",
+   "kind": "header",
+   "file": "viewer/egress_sanity.js",
+   "source": "warning_m=0.85 stays an uncited early-heads-up buffer"
+  },
+  {
+   "guide": "the model carries no occupancy class",
+   "kind": "header",
+   "file": "viewer/egress_sanity.js",
+   "source": "this pipeline extracts no\n//     occupancy classification"
+  },
+  {
+   "guide": "4D Window",
+   "kind": "the pill's name",
+   "file": "viewer/panels.js",
+   "source": "name: '4D Window'"
+  },
+  {
+   "guide": "task name and start → finish",
+   "kind": "bullet",
+   "file": "viewer/panels.js",
+   "source": "Task name + start→finish beside the picked element"
+  },
+  {
+   "guide": "trade and float, and a critical-path marker",
+   "kind": "bullet",
+   "file": "viewer/panels.js",
+   "source": "Trade + float, critical-path marker"
+  },
+  {
+   "guide": "hovering adds one extra line",
+   "kind": "bullet",
+   "file": "viewer/panels.js",
+   "source": "One extra line on hover"
+  },
+  {
+   "guide": "tap it\nto generate one on the fly",
+   "kind": "bullet",
+   "file": "viewer/panels.js",
+   "source": "No schedule yet? Tap to generate one on the fly"
+  },
+  {
+   "guide": "*4D Window — tap to generate a programme*",
+   "kind": "code",
+   "file": "viewer/panels.js",
+   "source": "4D Window — tap to generate a programme"
+  },
+  {
+   "guide": "appears on the toolbar\nrail when the schedule engine is loaded",
+   "kind": "comment",
+   "file": "viewer/panels.js",
+   "source": "CAPABLE (the authoring engine is loaded) replaces HAS A\n    // SCHEDULE ALREADY as the pill-VISIBILITY gate"
+  },
+  {
+   "guide": "(key **I**)",
+   "kind": "code",
+   "file": "viewer/scene.js",
+   "source": "'i':  function() { if (typeof toggleIssues === 'function') toggleIssues(); }"
+  },
+  {
+   "guide": "**Export Excel** and **Export BCF**",
+   "kind": "markup",
+   "file": "viewer/viewer.html",
+   "source": "ui_export_bcf"
+  },
+  {
+   "guide": "**Clear All** deletes every logged issue after a\nconfirmation",
+   "kind": "code",
+   "file": "viewer/issues.js",
+   "source": "Delete all logged issues? This cannot be undone."
+  },
+  {
+   "guide": "kept in this browser (IndexedDB)",
+   "kind": "code",
+   "file": "viewer/issues.js",
+   "source": "indexedDB.open('bim_ootb_issues'"
+  },
+  {
+   "guide": "*Use Site Camera to snap\nand save photos*",
+   "kind": "code",
+   "file": "viewer/issues.js",
+   "source": "Use Site Camera to snap and save photos."
+  },
+  {
+   "guide": "a clash snag also carries a deep link",
+   "kind": "code",
+   "file": "viewer/issues.js",
+   "source": "Deep-link (clash snags have it, regular snags don't)"
+  },
+  {
+   "guide": "a snag with its photo\nand annotation",
+   "kind": "bullet",
+   "file": "viewer/panels.js",
+   "source": "Snag photo + annotation"
+  },
+  {
+   "guide": "**GI Preview (AO)**",
+   "kind": "the pill's name",
+   "file": "viewer/panels.js",
+   "source": "name: 'GI Preview (AO)'"
+  },
+  {
+   "guide": "**Alt+G**",
+   "kind": "code",
+   "file": "viewer/panels.js",
+   "source": "key: 'Alt+G'"
+  },
+  {
+   "guide": "N8AO",
+   "kind": "bullet",
+   "file": "viewer/panels.js",
+   "source": "N8AO ambient occlusion (research spike)"
+  },
+  {
+   "guide": "disabled on mobile because of memory",
+   "kind": "bullet",
+   "file": "viewer/panels.js",
+   "source": "Desktop only — disabled on mobile (memory)"
+  },
+  {
+   "guide": "**Nav LOD (large bldgs)**",
+   "kind": "the pill's name",
+   "file": "viewer/panels.js",
+   "source": "name: 'Nav LOD (large bldgs)'"
+  },
+  {
+   "guide": "key **O**",
+   "kind": "code",
+   "file": "viewer/scene.js",
+   "source": "'o':  function() { if (typeof window.toggleDlodNav === 'function') window.toggleDlodNav(); }"
+  },
+  {
+   "guide": "draws far or off-screen elements as boxes",
+   "kind": "bullet",
+   "file": "viewer/panels.js",
+   "source": "Boxes far/off-screen elements while you fly/orbit"
+  },
+  {
+   "guide": "real mesh only within 50 m and in view",
+   "kind": "bullet",
+   "file": "viewer/panels.js",
+   "source": "Real mesh within 50 m + in view"
+  },
+  {
+   "guide": "off by\ndefault, does nothing on a building under 50,000 elements",
+   "kind": "comment",
+   "file": "viewer/panels.js",
+   "source": "Default OFF; no-ops with a toast on <50k-element buildings"
+  },
+  {
+   "guide": "switched off during the\nTime Machine, a Find isolate and Cinema",
+   "kind": "bullet",
+   "file": "viewer/panels.js",
+   "source": "Off during Time Machine, Find isolate, Cinema"
+  },
+  {
+   "guide": "labelled **Human-Asset**",
+   "kind": "the pill's name",
+   "file": "viewer/panels.js",
+   "source": "name: 'Human-Asset'"
+  },
+  {
+   "guide": "press **Y** for Sanity",
+   "kind": "code",
+   "file": "viewer/panels.js",
+   "source": "name: 'Sanity',          key: 'y'"
+  },
+  {
+   "guide": "press **Y** for Sanity",
+   "kind": "code",
+   "file": "viewer/scene.js",
+   "source": "'y':  function() { A._pillRun('sanity'); }"
+  },
+  {
+   "guide": "**E** for Egress",
+   "kind": "code",
+   "file": "viewer/panels.js",
+   "source": "name: 'Egress',          key: 'e'"
+  },
+  {
+   "guide": "**E** for Egress",
+   "kind": "code",
+   "file": "viewer/scene.js",
+   "source": "'e':  function() { A._pillRun('egress'); }"
+  },
+  {
+   "guide": "| **D** | Role View — cycles the discipline filter |",
+   "kind": "code",
+   "file": "viewer/panels.js",
+   "source": "name: 'Role View',       key: 'd'"
+  },
+  {
+   "guide": "| **D** | Role View — cycles the discipline filter |",
+   "kind": "code",
+   "file": "viewer/scene.js",
+   "source": "'d':  function() { A._pillRun('roleFilter'); }"
+  },
+  {
+   "guide": "| **U** / **K** | Earthworks / Roadworks (civil-works models only) |",
+   "kind": "code",
+   "file": "viewer/panels.js",
+   "source": "name: 'Earthworks',      key: 'u'"
+  },
+  {
+   "guide": "| **U** / **K** | Earthworks / Roadworks (civil-works models only) |",
+   "kind": "code",
+   "file": "viewer/panels.js",
+   "source": "name: 'Roadworks',       key: 'k'"
+  },
+  {
+   "guide": "| **U** / **K** | Earthworks / Roadworks (civil-works models only) |",
+   "kind": "code",
+   "file": "viewer/earthworks_overlay.js",
+   "source": "VACUOUS not a civil model"
+  }
+ ]
+}

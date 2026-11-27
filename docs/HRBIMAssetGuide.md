@@ -196,10 +196,10 @@ from the real AD dictionary, never guessed:
 | Dashboard → Resources | Resource | `S_Resource` |
 | Payslip → concept line | Payroll Movement | `HR_Movement` |
 | Leave → unpaid entry | Payroll Concept Catalog | `HR_Concept` (the "Leave without pay" concept it feeds — Leave has no native table of its own) |
-| Leave → "Resource ↗" | Resource | `S_Resource` (a leave TAKE also compiles a real `S_ResourceUnAvailable` blackout on the employee's own resource — see [Leave — balance & statement](#leave--balance--statement)) |
+| Leave → "Resource ↗" | Resource | `S_Resource` (a leave TAKE also compiles a real `S_ResourceUnAvailable` blackout on the employee's own resource — see [Leave — balance & statement](#leave-balance-statement)) |
 | Tenancy → subscription | Subscription | `C_Subscription` |
 | IoT → billing line | Sales Order | `C_Order` |
-| Presence → roster row | User | `AD_User` (the employee's own identity record — see [See who is physically here right now](#see-who-is-physically-here-right-now--with-people-you-can-walk-up-to)) |
+| Presence → roster row | User | `AD_User` (the employee's own identity record — see [See who is physically here right now](#see-who-is-physically-here-right-now-with-people-you-can-walk-up-to)) |
 
 No link appears on a row that doesn't (yet) resolve to a real record — the same non-invent discipline as
 everywhere else in this module: an absent link is honest, never a dead one.

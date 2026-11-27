@@ -1,0 +1,40 @@
+§GUARD OK   beat=start greet.verbs=72 expect=72 spoken="seventy-two verbs"
+§GUARD OK   beat=start greet.words=25 expect=25 spoken="twenty-five words"
+§GUARD OK   beat=help help.groups=3 expect=3 spoken="three groups"
+§GUARD OK   beat=help help.erpN=3 expect=3 spoken="three words"
+§GUARD OK   beat=bp bp.shown=20 expect=20 spoken="twenty of"
+§GUARD OK   beat=bp bp.of=113 expect=113 spoken="one hundred and thirteen business"
+§GUARD OK   beat=po1 po.project.n=3 expect=3 spoken="three to pick"
+§GUARD OK   beat=po2 po.phase.n=7 expect=7 spoken="seven phases"
+§GUARD OK   beat=po3 po.line.n=32 expect=32 spoken="thirty-two lines"
+§GUARD OK   beat=po4 po.run.orders=3 expect=3 spoken="three purchase orders"
+§GUARD OK   beat=po4 po.run.orderLines=4 expect=4 spoken="four order lines"
+§GUARD OK   beat=ord ord.rows=3 expect=3 spoken="three orders"
+§GUARD OK   beat=co co.total=81 expect=81 spoken="total is eighty-one"
+§GUARD OK   beat=next next.withWord=["CL","VO"] expect=CL,VO spoken="close and void"
+§GUARD OK   beat=next next.noWord=["RE"] expect=RE spoken="r e has none"
+§GUARD OK   beat=gap gap.process="Renumber" expect=Renumber spoken="renumber"
+§GUARD OK   beat=url url.chars=6980 expect=6980 spoken="six thousand nine hundred and eighty characters"
+§GUARD OK   beat=cost cost.elements=1190 expect=1190 spoken="one thousand one hundred and ninety elements"
+§GUARD OK   beat=cost cost.total=1054482 expect=1054482 spoken="one million fifty-four thousand four hundred and eighty-two in all"
+§GUARD OK   beat=start number words spoken=5 covered by a fact=4 idiom=1
+§GUARD OK   beat=help number words spoken=2 covered by a fact=2 idiom=0
+§GUARD OK   beat=level number words spoken=0 covered by a fact=0 idiom=0
+§GUARD OK   beat=bp number words spoken=4 covered by a fact=4 idiom=0
+§GUARD OK   beat=po1 number words spoken=1 covered by a fact=1 idiom=0
+§GUARD OK   beat=po2 number words spoken=1 covered by a fact=1 idiom=0
+§GUARD OK   beat=po3 number words spoken=2 covered by a fact=2 idiom=0
+§GUARD OK   beat=po4 number words spoken=2 covered by a fact=2 idiom=0
+§GUARD OK   beat=ord number words spoken=1 covered by a fact=1 idiom=0
+§GUARD OK   beat=co number words spoken=2 covered by a fact=2 idiom=0
+§GUARD OK   beat=next number words spoken=0 covered by a fact=0 idiom=0
+§GUARD OK   beat=gap number words spoken=2 covered by a fact=0 idiom=2
+§GUARD OK   beat=report number words spoken=0 covered by a fact=0 idiom=0
+§GUARD OK   beat=url number words spoken=5 covered by a fact=5 idiom=0
+§GUARD OK   beat=cost number words spoken=14 covered by a fact=14 idiom=0
+§GUARD OK   beat=exit number words spoken=1 covered by a fact=0 idiom=1
+§GUARD proof talk or first/novel/unique: none
+§GUARD not-said N (a live link to a browser, or a thing not built), named in the voice: none
+§GUARD next-step talk ("being built", owner-allowed, only on the cost beat): cost
+§GUARD facts verdict in facts.json: bad=0 missing=0
+§GUARD_VERDICT PASS facts=19 bad=0

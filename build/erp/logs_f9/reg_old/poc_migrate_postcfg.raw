@@ -1,0 +1,15 @@
+
+══ POC-MIGRATE-POSTCFG — frozen engine on the MIGRATED Odoo tenant (12-odoo.db) ══
+
+   journal (basis=invoice):
+     121000 Account Receivable  DR 5002.50  CR 0.00
+     251000 Tax Received  DR 0.00  CR 652.50
+     400000 Product Sales  DR 0.00  CR 4350.00
+§MIGRATE-POSTCFG client=12 doc=C_Order id=1200001 tokens_resolved=3/3 coverage=complete balanced=Y sumDr=5002.50 sumCr=5002.50
+   (odoodemo down — using recorded oracle)
+§FRAME-FIT client=12 doc=C_Order postingDoc=true coverage=complete balanced=Y oracle=recorded maxDiff=0c verdict=ORACLE-EQUIVALENT
+§FALSIFIER dropped c_bp_customer_acct → absent=[{BPartner.Receivable}] balanced=N loadBearing=Y
+
+§MIGRATE-POSTCFG PASS
+
+exit=0

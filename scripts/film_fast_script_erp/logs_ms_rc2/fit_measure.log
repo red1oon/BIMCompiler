@@ -1,0 +1,76 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§EDGE_CALL voice=ms-MY-YasminNeural rate=+3% chars=25 -> 1fe5db12e8
+§EDGE_CALL voice=ms-MY-OsmanNeural rate=-3% chars=142 -> 85c2fa0982
+§NARR_FIT start cue=0.00 room=998.70 dur=13.41 -> DETAIL slack=+985.29 detailDur=13.41 words=25
+§NARR_TONE start#0 F WH own=-5.3st rose=0st endDelta=-5.3st want=any OK "Bagaimana hendak bermula?"
+§EDGE_CALL voice=ms-MY-YasminNeural rate=+3% chars=28 -> 5afb1ac594
+§EDGE_CALL voice=ms-MY-OsmanNeural rate=-3% chars=98 -> 10e19ebdb8
+§NARR_FIT help cue=0.00 room=998.70 dur=12.90 -> DETAIL slack=+985.80 detailDur=12.90 words=28
+§NARR_TONE help#0 F WH own=-5.6st rose=0st endDelta=-5.6st want=any OK "Apa yang boleh dilakukannya?"
+§EDGE_RETRY attempt=1 voice=ms-MY-YasminNeural text="Bolehkah ia menerangkan sesuatu perkataan?"
+§EDGE_CALL voice=ms-MY-YasminNeural rate=+3% chars=42 -> a3cb3d1dfc
+§EDGE_CALL voice=ms-MY-OsmanNeural rate=-3% chars=109 -> 10e740555f
+§NARR_FIT level cue=0.00 room=998.70 dur=11.18 -> DETAIL slack=+987.52 detailDur=11.18 words=21
+§NARR_TONE level#0 F YN own=-4.2st rose=8.0st endDelta=+1.6st want=rise OK "Bolehkah ia menerangkan sesuatu perkataan?"
+§EDGE_CALL voice=ms-MY-YasminNeural rate=+3% chars=34 -> f43b53db5b
+§EDGE_CALL voice=ms-MY-OsmanNeural rate=-3% chars=129 -> a1a1330e87
+§NARR_FIT bp cue=0.00 room=998.70 dur=12.77 -> DETAIL slack=+985.93 detailDur=12.77 words=24
+§NARR_TONE bp#0 F WH own=-6.4st rose=0st endDelta=-6.4st want=any OK "Bagaimana hendak ke sebuah jadual?"
+§EDGE_CALL voice=ms-MY-YasminNeural rate=+3% chars=31 -> 531e2c7baf
+§EDGE_CALL voice=ms-MY-OsmanNeural rate=-3% chars=92 -> 9b142c5c06
+§NARR_FIT po1 cue=0.00 room=998.70 dur=10.68 -> DETAIL slack=+988.02 detailDur=10.68 words=18
+§NARR_TONE po1#0 F YN own=-4.6st rose=5.0st endDelta=+6.7st want=rise OK "Bolehkah ia menjalankan proses?"
+§EDGE_CALL voice=ms-MY-YasminNeural rate=+3% chars=9 -> 63656380c8
+§EDGE_CALL voice=ms-MY-OsmanNeural rate=-3% chars=61 -> 4603243c9f
+§NARR_FIT po2 cue=0.00 room=998.70 dur=6.23 -> DETAIL slack=+992.47 detailDur=6.23 words=11
+§NARR_TONE po2#0 F YN own=-5.3st rose=5.0st endDelta=+3.0st want=rise OK "Dan fasa?"
+§EDGE_CALL voice=ms-MY-YasminNeural rate=+3% chars=13 -> 0b84e75966
+§EDGE_CALL voice=ms-MY-OsmanNeural rate=-3% chars=48 -> 55c119461b
+§NARR_FIT po3 cue=0.00 room=998.70 dur=5.36 -> DETAIL slack=+993.34 detailDur=5.36 words=11
+§NARR_TONE po3#0 F YN own=+0.1st rose=5.0st endDelta=+4.5st want=rise OK "Baris projek?"
+§EDGE_CALL voice=ms-MY-YasminNeural rate=+3% chars=20 -> c642e064a9
+§EDGE_CALL voice=ms-MY-OsmanNeural rate=-3% chars=181 -> 6170207943
+§NARR_FIT po4 cue=0.00 room=998.70 dur=15.12 -> DETAIL slack=+983.58 detailDur=15.12 words=28
+§NARR_TONE po4#0 F YN own=-5.5st rose=5.0st endDelta=+4.1st want=rise OK "Dan soalan terakhir?"
+§EDGE_CALL voice=ms-MY-YasminNeural rate=+3% chars=31 -> a81626d3fb
+§EDGE_CALL voice=ms-MY-OsmanNeural rate=-3% chars=138 -> 5cee60fdc5
+§NARR_FIT co cue=0.00 room=998.70 dur=13.19 -> DETAIL slack=+985.51 detailDur=13.19 words=28
+§NARR_TONE co#0 F WH own=-5.3st rose=0st endDelta=-5.3st want=any OK "Bagaimana melengkapkan pesanan?"
+§EDGE_CALL voice=ms-MY-YasminNeural rate=+3% chars=39 -> 40630e3670
+§EDGE_CALL voice=ms-MY-OsmanNeural rate=-3% chars=101 -> 12dd2aa936
+§NARR_FIT next cue=0.00 room=998.70 dur=12.45 -> DETAIL slack=+986.25 detailDur=12.45 words=24
+§NARR_TONE next#0 F WH own=-1.7st rose=0st endDelta=-1.7st want=any OK "Apa lagi yang boleh dilakukan sekarang?"
+§EDGE_CALL voice=ms-MY-YasminNeural rate=+3% chars=42 -> 16b36cda14
+§EDGE_CALL voice=ms-MY-OsmanNeural rate=-3% chars=107 -> 347fe57e56
+§NARR_FIT gap cue=0.00 room=998.70 dur=10.75 -> DETAIL slack=+987.95 detailDur=10.75 words=26
+§NARR_TONE gap#0 F YN own=-4.5st rose=8.0st endDelta=+2.0st want=rise OK "Dan proses yang tidak boleh dijalankannya?"
+§EDGE_CALL voice=ms-MY-YasminNeural rate=+3% chars=39 -> 2a8d67637f
+§EDGE_CALL voice=ms-MY-OsmanNeural rate=-3% chars=73 -> 134861f99f
+§NARR_FIT report cue=0.00 room=998.70 dur=8.21 -> DETAIL slack=+990.49 detailDur=8.21 words=14
+§NARR_TONE report#0 F YN own=-5.6st rose=11.0st endDelta=+2.1st want=rise OK "Bolehkah saya maklumkan kepada pemilik?"
+§EDGE_CALL voice=ms-MY-YasminNeural rate=+3% chars=24 -> 6333880ff7
+§EDGE_CALL voice=ms-MY-OsmanNeural rate=-3% chars=118 -> 73c9e2a38c
+§NARR_FIT url cue=0.00 room=998.70 dur=10.81 -> DETAIL slack=+987.89 detailDur=10.81 words=21
+§NARR_TONE url#0 F YN own=-7.1st rose=5.0st endDelta=+4.2st want=rise OK "Dan untuk menghantarnya?"
+§EDGE_CALL voice=ms-MY-YasminNeural rate=+3% chars=24 -> f7b2d9fd37
+§EDGE_CALL voice=ms-MY-OsmanNeural rate=-3% chars=208 -> 1050853c38
+§NARR_FIT cost cue=0.00 room=998.70 dur=17.50 -> DETAIL slack=+981.20 detailDur=17.50 words=36
+§NARR_TONE cost#0 F YN own=-6.0st rose=5.0st endDelta=+3.1st want=rise OK "Dan kembali ke bangunan?"
+§EDGE_CALL voice=ms-MY-YasminNeural rate=+3% chars=23 -> d78c998edb
+§EDGE_CALL voice=ms-MY-OsmanNeural rate=-3% chars=230 -> b5659be17f
+§NARR_FIT post cue=0.00 room=998.70 dur=18.65 -> DETAIL slack=+980.05 detailDur=18.65 words=44
+§NARR_TONE post#0 F YN own=-5.7st rose=5.0st endDelta=+2.7st want=rise OK "Dan jika saya jawab ya?"
+§EDGE_CALL voice=ms-MY-YasminNeural rate=+3% chars=25 -> cef4f5e2fe
+§EDGE_CALL voice=ms-MY-OsmanNeural rate=-3% chars=94 -> 4bc9e9e2d6
+§NARR_FIT proj cue=0.00 room=998.70 dur=9.19 -> DETAIL slack=+989.51 detailDur=9.19 words=18
+§NARR_TONE proj#0 F YN own=-4.8st rose=5.0st endDelta=+3.2st want=rise OK "Bolehkah saya melihatnya?"
+§EDGE_CALL voice=ms-MY-YasminNeural rate=+3% chars=15 -> 2771894ed8
+§EDGE_CALL voice=ms-MY-OsmanNeural rate=-3% chars=55 -> 3574b20cdb
+§NARR_FIT ls cue=0.00 room=998.70 dur=6.34 -> DETAIL slack=+992.36 detailDur=6.34 words=11
+§NARR_TONE ls#0 F YN own=-6.8st rose=5.0st endDelta=+4.0st want=rise OK "Dan senarainya?"
+§EDGE_CALL voice=ms-MY-OsmanNeural rate=-3% chars=32 -> 94d68a1f56
+§EDGE_CALL voice=ms-MY-YasminNeural rate=+3% chars=15 -> 200ae144f7
+§EDGE_CALL voice=ms-MY-OsmanNeural rate=-3% chars=8 -> 3734b133aa
+§NARR_FIT exit cue=0.00 room=998.70 dur=4.88 -> DETAIL slack=+993.82 detailDur=4.88 words=11
