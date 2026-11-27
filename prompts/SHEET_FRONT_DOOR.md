@@ -340,3 +340,56 @@ Build-order step (3). Code: bim-ootb `erp/sheet_addin/` (`host_shim.js`, `excel_
 Not claimed (stated up front): real Excel (none on this machine; the witness proves the contract against a FAKE host and a FAKE Office.js written from Microsoft's
 public API pages); Office on the IE11 engine (cannot run it, §1); the ribbon rendering and the `?action=` hand-over; a browser runner for File it (S3b); multi-user
 co-authoring; sheet protection (a user can unhide a very-hidden sheet through the VBA editor, tampering is detected by the chain, not prevented).
+
+### 8.3 RESULTS — S3 (2026-11-27, bim-ootb `feat/sheet-addin-excel`, PR #3475)
+Command: `SADDIN_MUTANTS=1 node erp/tests/witness_sheet_addin.js` (GardenWorld seed via `ws_kernel.load`, one fresh kernel per scenario; a FAKE workbook that records
+every cell read and write; a FAKE Office.js over the same workbook, written from the Microsoft pages named in §8.1, strict about load-before-read and about
+queued writes). **REAL EXCEL WAS NOT RUN (no Excel on this machine). This proves the contract on a fake host only.**
+```
+§SADDIN-ORACLE direct ok=true verdict=FILED grandtotal=153.5 fingerprintBytes=660
+§SADDIN-A1 PASS 5/5 · A2 PASS 4/4 · A3 PASS 2/2 · A4 PASS 3/3 · A5 PASS 8/8 · A6 PASS 7/7 · A7 PASS 7/7 · A8 PASS 14/14 · A9 PASS 7/7 · A10 PASS 2/2
+§SADDIN-COST ledgerRowChars=11596 chunks=1 (one filing of 2 lines)
+§SADDIN-COST stampGenesisChars=90979 cells=453 chunks=3 maxStoredCell=32767 bytesPerCell=201
+§SADDIN-MUTANTS killed=11/11  (reads whole sheet→A1, extra cell written→A2, no split→A6, ledger line on refusal→A4, no-op stamp writes→A6, shim rounds numbers→A3,
+   hidden sheet visible→A8, date conversion dropped→A8, ribbon action renamed→A9, Check skips ledger→A5, story first only→A7)
+§SADDIN-VERDICT PASS judged=59 failed=0 (fake host + fake Office.js only; real Excel NOT run)
+```
+- A1/A2: the visible-sheet read set is exactly the 60 template cells (each read once, no decoy, no used-range read); the writes are exactly {F2, G24}; a cell-by-cell
+  diff of the whole workbook shows only G24 changed. A3: fingerprint of the invoice filed through the shim == the engine called directly; `host_shim.js` (comments
+  stripped) holds no invoice word and no cell address. A4: a wrong subtotal writes only the status cell, adds no ledger row, the kernel journal does not move.
+- A5: one filing = one ledger row, verified by `SheetHistory.verify` AND `ws_kernel.verifyJournal`, replayed into a fresh kernel to the same books; "reopen" (fresh kernel
+  replays the ledger, user changes the docno, files again) chains: 2 rows, seq 1 then 2, row 2 prev == row 1 hash, both replay; one edited field is caught by Check
+  history (entry 1, payload) and refused by the kernel replay (digest).
+- A6/A7: a 90,979-character history entry (453 cells, 201 bytes per cell) is stored as 3 chunks, none over 32,767, re-joined byte for byte (emoji cells included), accepted
+  by `ws_kernel.verifyJournal`; a second Stamp is NO-OP with zero writes; one edit = one row with one CELL_SET; a one-character edit in the LAST chunk of the split entry
+  is caught, and a broken history refuses Stamp and shows no story. A8: the same filing through `excel_host.js` on the fake Office.js gives the same writes, the same
+  fingerprint, the same read set; the date arrives as a serial and is converted; 123.50000000000001 reaches the engine as 123.5; hidden sheets are VeryHidden and text-formatted.
+- A9: `manifest.xml` parses with an independent parser (python3 `xml.etree`); 4 ShowTaskpane buttons whose action ids equal `SheetAddin.ACTIONS` both ways and each has its
+  button in `taskpane.html` and a function in the shim; every resid resolves; ids unique; every URL https under the site.
+
+**Findings (each from a failing check or a measurement):**
+1. **No browser kernel for File it.** `ws_kernel.js` is node-only (`fs`, `require`); the signed journal exists nowhere in the browser (the page commits through
+   `erp_kernel` `commitGroup`, another entry format). So the task pane cannot run File it today; it reports "books engine not loaded" in plain words (verdict `NOT-WIRED`).
+   Stamp, Cell history and Check history need only WebCrypto and work in the pane. **Slice S3b = a browser runner** (`runner.file(tpl, cells, ledgerLines)`): load the
+   ERP engine scripts + sql.js + `ad_seed.db` in the pane and give it the same one-Trx commit + journal entry. The shim and the Excel layer do not change.
+2. **Excel hands out numbers, not the printed text.** A subtotal cell holding 153.5 reaches the engine as `153.5`, so the refusal text says "153.5 but the subtotal prints
+   153.51", not "153.50" (S1's string cells did). The comparison is unchanged (exact decimals, trailing zeros irrelevant); only the wording loses a trailing zero. First run
+   of A4 FAILed on exactly this expectation; the claim now names 153.5.
+3. **Four things the Excel layer must do that the engine cannot know:** a date cell is a serial (converted by its date number format; M8 kills the version without it), a
+   formula's float noise is cut to Excel's own 15 significant digits, hidden chunks are written text-formatted first (a digit-only or `=`-leading chunk would otherwise be
+   coerced), and a written text that starts with `=` gets an apostrophe. Each is witnessed against a fake that coerces the way Excel does; none against real Excel.
+4. **Witness defect found by its own mutant run:** a mutant whose damage cascaded into another case made a check THROW there; the first sweep counted that as a kill
+   (M3). The sweep now counts a throw in the named case as CRASHED, not a kill, and a later check in a case reads the state defensively.
+5. **A cell limit costs rows, not just cells:** one filing of two lines is already 11,596 characters of ledger; a 40-line invoice will pass 32,767 and splits across
+   columns, which is why the ledger uses the same row-of-chunks writer as the history.
+6. **Manifest governance:** the task pane's script tags made `erp/sheet_addin/taskpane.html` an owned erp page, so CI's W-MANIFEST-ROUNDTRIP (C10) failed on the first push
+   (309 modules listed, 315 read). The page is now registered in `erp/modules.json` (6 modules + 1 page, all `precache:false`, marker pair + `?v=` codes written by
+   `gen_manifest.js --write erp`); `sw.js` and `idempiere.html` are untouched (the tool's CACHE_VERSION step was reverted, nothing precaches these files). Any edit to those
+   five scripts needs `node scripts/gen_manifest.js --write erp` again for the `?v=` codes. `--write` also showed two unrelated `uses` drifts in the list; not touched.
+
+**Not yet (stated, not hidden):** real Excel (desktop Windows/Mac, Excel on the web); the ribbon rendering and whether the four buttons sharing one `TaskpaneId` re-navigate the
+pane to the clicked `?action=` (the in-pane buttons cover it); the SourceLocation is not yet deployed (nothing is served from `https://red1oon.github.io/bim-ootb/erp/sheet_addin/`
+until the next docs/site deploy; no sideload was attempted); a browser runner for File it (S3b, finding 1); who = a name typed in the pane and kept in the workbook settings
+(Office.js has no user identity without sign-in); Stamp is on demand only (no save/close trigger yet: Excel `onChanged` events could record more often); a very large sheet's
+Stamp reads the whole used range once (cost measured only at 453 cells); WPS / LibreOffice / Google Sheets hosts (S4, S5) implement the same host interface; the old-Office
+IE11 limit stands (§1, stated in the pane); the witnesses are not wired into CI (same as S1, S9, S10).
