@@ -394,3 +394,12 @@ Not claimed in this cut: a signed identity (who = a name, §6.2 of the sister fi
 refusal: the history cannot be put in, said in words, the PDF is still handed back); name trees with `/Kids`; the embedded file's
 `/CheckSum`, `/ModDate` and `/AFRelationship`; binding of anything but the cells the reader reads; real Excel (the .xlsx is judged
 through the shim's reader on a stand-in host); merging two downloaded copies (`SheetHistory.merge` exists, not wired here).
+
+### 4.5.4 Addition (2026-11-27, after #3481 merged, before its code): the .xlsx is written compressed
+Measured on the merged slice: the page writes its .xlsx with SheetJS's default (ZIP "stored", no deflate), so two history lines of
+15,048 bytes made the .xlsx 31,794 bytes larger (each `"` of the JSON is stored as `&quot;`); with `compression: true` the same
+file grows by 7,283 bytes and the whole workbook falls from 54,802 to 25,248 bytes. **Change:** one owner of the .xlsx bytes,
+`PdfHistory.xlsxBytes(XLSX, wb)` (deflate on), used by the page's Download .xlsx. **Claim H10 widened:** `§PDFHIST-COST` also carries the
+.xlsx bytes with and without the history; the history must add FEWER bytes than its own lines, and the compressed file must re-read
+through `host_shim.js`'s reader to the same lines (H9 runs on those bytes). Issue exposed: a history that doubles the size of the sheet it
+travels in. The older page witnesses (which re-read the downloaded .xlsx) stay green.
