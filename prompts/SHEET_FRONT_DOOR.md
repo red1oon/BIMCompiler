@@ -1632,3 +1632,45 @@ helpx.adobe.com/document-cloud/faq/free-online-pdf.html · adobe.com/acrobat/onl
 | Scans (OCR) | refused in words | MEDIUM: 12 of 158 PDFs on this machine are scans; G8 |
 Sources: sikayetvar.com (PDF Guru complaint) · trustpilot.com/review/pdf.net · kimola.com iLovePDF feedback report · producthunt.com/products/desidocs ·
 techrepublic.com best free PDF editors 2026 · dev.to / hashnode bank-statement converter articles · cpapracticeadvisor.com 2024-02-28.
+
+## 18. "Edit as a sheet": the report becomes OUR editable page, exported back to PDF or Excel (spec 2026-11-28, before code)
+Owner, 2026-11-28, verbatim: *"since we are in our own browser and we already load a PDF content, what is stopping us of swapping it outright to our own editor
+that can then export back to PDF or Excel?"* — then, on the two-mode proposal (sheet by default where a table is found, the original otherwise): *"Go with you"*.
+Earlier the same day: *"Can we merge Excel table features right into our PDF space instead of it opening as a separate panel?"* — this section answers both.
+
+### 18.1 Novelty, stated honestly (the owner asked "my idea is novel isn't it?")
+The GENERAL idea is not new: Microsoft Word has opened a PDF as an editable copy and saved it back as PDF since Word 2013 ("PDF Reflow", a converter that makes
+a copy; complex layouts break; scans are not editable — support.microsoft.com/word/opening-pdfs-in-word, microsoft.com/en-us/microsoft-365/blog/?p=836);
+Acrobat exports PDF to Excel/Word. What MAY be new is the combination: in the browser with nothing uploaded; the rebuilt table is CHECKED against the page's own
+printed totals before it is trusted; every cell is traced to its box on the original page; the history travels inside the file; two modes chosen per document;
+the result can be filed into the ERP. **No claim of novelty is made until a prior-art search is done** (OPEN LIST 24).
+
+### 18.2 Design (owner delegated: "Go with you")
+- **Two modes, one page.** After the text is read, the reader looks at page 1. A table found (cells ≥ 12 in ≥ 3 columns, any verdict) → the file opens in
+  **Edit as a sheet**; otherwise in **Keep the original** (today's viewer + numbers-only in-place write-back, unchanged). A switch at the top flips between them;
+  the choice and why are said in the status line ("Opened as a sheet: a table of 144 cells was found on page 1").
+- **Our page (Edit as a sheet):** the page is drawn FROM OUR MODEL, not by pdf.js: every word at its box (`pdf_open.js` items), the ruling lines and boxes
+  (`modeller/pdf2dxf/pdf_reader.js` paths — one reader, reused, not a second one), scaled to the screen width. Any word is editable where it stands (tap / double-click);
+  table cells behave like a spreadsheet: totals the reader found are live `SUM`s, recomputed on every edit, each total marked on the page (adds up / does not +
+  the gap); drag across numbers → sum and count; tap a total → its formula and rows lit. This IS the "Excel features in the PDF space": no separate panel.
+- **Export:** `.xlsx` (existing `ReportReader.toWorkbook` + the history sheet) and **a fresh PDF in the same layout**, written by OUR writer in the browser:
+  words at their boxes, lines and rectangles, standard PDF fonts (Helvetica family, WinAnsi). Text the standard fonts cannot show (Thai, CJK, ...) is REFUSED by
+  name in slice A, not silently dropped (an embedded font is slice B). The PDF Keep-the-original writes is untouched.
+- **History:** every edit is an S9 entry (`SheetHistory`), carried inside both exports as today.
+- **Not in slice A (stated):** images, shading, annotations, forms, signatures on the page (said on screen: "this page has N images that the sheet copy leaves
+  out" — counted from the page, never silently lost); add / delete rows, sort (slice B); more than one page in the sheet (slice B); embedded fonts (slice B);
+  scans (OCR, later).
+
+### 18.3 Claims for slice A (W-EDIT-SHEET, `pdf/tests/witness_edit_sheet.js`; verdict `§EDSHEET-VERDICT PASS|FAIL|INCONCLUSIVE judged=N failed=M`)
+- **E1 mode chosen right:** the trial balance opens as a sheet ("144 cells"); a text-only corpus PDF (market report, page 1) opens as the original; the switch flips both ways.
+- **E2 our page is faithful:** every word of page 1 is drawn, at its box within 0.5 pt (from the model); every ruling line pdf_reader finds is drawn. Exposes: dropped words.
+- **E3 edit anywhere:** a text cell (an account name) and a number cell changed in place; the totals recompute; D10 +1 → its total marked "does not add up" with
+  the gap 1.00; the consistent edits → "adds up". Each edit one S9 entry.
+- **E4 PDF round trip:** the exported PDF, re-read by OUR reader → the same sheet (all cells at the same addresses, the edited values); poppler `pdftotext -raw`
+  contains every word of the model; `pdfinfo` clean. Exposes: an export that looks right but reads back wrong.
+- **E5 Excel export** re-reads to the same cells with SUM formulas on the totals and the history verifying (existing checks reused).
+- **E6 refused in words:** a Thai word in the model makes the PDF export refuse with the word named (slice A has no embedded font); the .xlsx still exports.
+- **E7 phone:** at 390 px, CPU 4x: the sheet page fits the width, a cell tap opens its editor without scrolling the page, W-PDF-MOBILE still 162/162 on the
+  owner's PDFs (`PDFM_LIST`, names never printed) and on the corpus.
+- **Mutants (`EDSHEET_MUTANTS=1`):** a word dropped from the drawn page → E2; total not recomputed → E3; a cell written at the wrong box in the PDF → E4;
+  a Thai word silently dropped → E6. Each must be killed.
