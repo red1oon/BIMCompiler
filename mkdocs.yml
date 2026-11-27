@@ -132,7 +132,7 @@ nav:
       - "Migration User Guide (Odoo · Business Central · SAP Business One)": MigrationGuide.md
       - "Moving from Odoo — how it works, what is proven": OdooMigration.md
       - "NinjaExcel Report — User Manual": NinjaExcelReport_UserManual.md
-      - "PDF page: open a report and read it as a sheet": PdfPageGuide.md
+      - "PDF, Sheet history and File it: your own files": PdfPageGuide.md
       - "HR / Tenancy / Operate Module": HRBIMAssetGuide.md
       - "Civil Works — Step by Step": CivilWorksGuide.md
       - "Teams Overlay — Collaboration & Optics": TeamsOverlayGuide.md
