@@ -1,0 +1,3 @@
+§GUARD cards: 55 numbers printed on the cards and in the strip, each a number of facts.json: yes
+§GUARD_CONTROL planted number on a card is REJECTED
+§GUARD_VERDICT cards PASS facts=55 bad=0
