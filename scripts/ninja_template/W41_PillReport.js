@@ -5,7 +5,7 @@
 const { chromium } = require(process.env.HOME + '/bim-ootb/tests/node_modules/playwright');
 const http = require('http'), fs = require('fs'), path = require('path'), cp = require('child_process'), os = require('os');
 const ROOT = process.env.ERP_ROOT, FROM = (process.env.FROM || '2003-01-01').slice(0, 10), TO = (process.env.TO || '2003-12-31').slice(0, 10);
-const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.json': 'application/json', '.db': 'application/octet-stream', '.wasm': 'application/wasm', '.css': 'text/css', '.xlsx': 'application/octet-stream', '.ttf': 'font/ttf', '.png': 'image/png', '.svg': 'image/svg+xml' };
+const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.json': 'application/json', '.db': 'application/octet-stream', '.wasm': 'application/wasm', '.css': 'text/css', '.xlsx': 'application/octet-stream', '.ttf': 'font/ttf', '.png': 'image/png', '.svg': 'image/svg+xml' };
 const srv = http.createServer((q, r) => {
   let p = decodeURIComponent(q.url.split('?')[0]); if (p === '/') p = '/erp/idempiere.html';
   fs.readFile(path.join(ROOT, p), (e, b) => { if (e) { r.writeHead(404); return r.end('404'); } r.writeHead(200, { 'Content-Type': MIME[path.extname(p)] || 'application/octet-stream' }); r.end(b); });
@@ -19,6 +19,7 @@ const near = (a, b) => Math.abs(a - b) < 0.005;
   const bad = []; const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'w41-'));
   await pg.goto(`http://localhost:${port}/erp/idempiere.html?login=GardenAdmin`, { waitUntil: 'networkidle' });
   await pg.waitForSelector('#idmp-tree .idmp-row.leaf', { state: 'attached', timeout: 25000 });
+  await pg.waitForSelector('#pill-ninja', { state: 'attached', timeout: 30000 });   // the Excel Report pill is contributed by the built-in bundle plugins/ninja_excel.mjs after boot (§PILL-CONTRIB, bim-ootb #2083)
   await pg.evaluate(() => {
     const dock = document.getElementById('idmp-pill'), trig = document.querySelector('#idmp-pill-trigger,[data-pill-trigger]');
     if (dock && trig && getComputedStyle(dock).display === 'none') trig.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }));
