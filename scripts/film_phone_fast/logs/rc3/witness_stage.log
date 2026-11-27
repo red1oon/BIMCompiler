@@ -1,0 +1,151 @@
+§WIT (a) aspect phone/A0 A OK screen=456.00x933.00 aspect_err=0.0000% src_nat=456x933
+§WIT (b) img==screen==spec phone/A0 A OK img=732.00,73.00,456.00,933.00 screen=732.00,73.00,456.00,933.00 max_d=0.000px
+§WIT (c) pixels==recording phone/A0 A OK mad=0.00/255 big_px=0.00% n=296548
+§WIT (c) NEGCONTROL wrong frame B/f/0000.png vs shot of A/f/0000.png: mad=35.68/255 big_px=30.47%
+§WIT (d) bezel colour + plain bg phone/A0 A OK bezel L/R/T/B=20.23.28 20.23.28 20.23.28 20.23.28 want=20.23.28±3; bg(10,10)=228.231.235 want=228.231.235±2
+§WIT (a) aspect phone/A25 A OK screen=456.00x933.00 aspect_err=0.0000% src_nat=456x933
+§WIT (b) img==screen==spec phone/A25 A OK img=732.00,73.00,456.00,933.00 screen=732.00,73.00,456.00,933.00 max_d=0.000px
+§WIT (c) pixels==recording phone/A25 A OK mad=0.00/255 big_px=0.00% n=296548
+§WIT (d) bezel colour + plain bg phone/A25 A OK bezel L/R/T/B=20.23.28 20.23.28 20.23.28 20.23.28 want=20.23.28±3; bg(10,10)=228.231.235 want=228.231.235±2
+§WIT (a) aspect phone/A49 A OK screen=456.00x933.00 aspect_err=0.0000% src_nat=456x933
+§WIT (b) img==screen==spec phone/A49 A OK img=732.00,73.00,456.00,933.00 screen=732.00,73.00,456.00,933.00 max_d=0.000px
+§WIT (c) pixels==recording phone/A49 A OK mad=0.00/255 big_px=0.00% n=296548
+§WIT (d) bezel colour + plain bg phone/A49 A OK bezel L/R/T/B=20.23.28 20.23.28 20.23.28 20.23.28 want=20.23.28±3; bg(10,10)=228.231.235 want=228.231.235±2
+§WIT (a) aspect phone+desktop/A0 A OK screen=392.16x802.38 aspect_err=0.0003% src_nat=456x933
+§WIT (b) img==screen==spec phone+desktop/A0 A OK img=150.00,140.00,392.16,802.38 screen=150.00,140.00,392.16,802.38 max_d=0.005px
+§WIT (c) pixels==recording phone+desktop/A0 A OK mad=0.00/255 big_px=0.00% n=204984
+§WIT (d) bezel colour + plain bg phone+desktop/A0 A OK bezel L/R/T/B=20.23.28 20.23.28 20.23.28 20.23.28 want=20.23.28±3; bg(10,10)=228.231.235 want=228.231.235±2
+§WIT (a') desktop 16:9 phone+desktop/A0 OK content=1140.00x641.25 aspect_err=0.0000% url_text="HQ" src_nat=1920x1080
+§WIT (b') desktop img==content phone+desktop/A0 OK max_d=0.000px
+§WIT (c') desktop pixels==HQ recording phone+desktop/A0 OK mad=0.00/255 big_px=0.00% n=627480
+§WIT (a) aspect phone+desktop/A25 A OK screen=392.16x802.38 aspect_err=0.0003% src_nat=456x933
+§WIT (b) img==screen==spec phone+desktop/A25 A OK img=150.00,140.00,392.16,802.38 screen=150.00,140.00,392.16,802.38 max_d=0.005px
+§WIT (c) pixels==recording phone+desktop/A25 A OK mad=0.00/255 big_px=0.00% n=204984
+§WIT (d) bezel colour + plain bg phone+desktop/A25 A OK bezel L/R/T/B=20.23.28 20.23.28 20.23.28 20.23.28 want=20.23.28±3; bg(10,10)=228.231.235 want=228.231.235±2
+§WIT (a') desktop 16:9 phone+desktop/A25 OK content=1140.00x641.25 aspect_err=0.0000% url_text="HQ" src_nat=1920x1080
+§WIT (b') desktop img==content phone+desktop/A25 OK max_d=0.000px
+§WIT (c') desktop pixels==HQ recording phone+desktop/A25 OK mad=0.00/255 big_px=0.00% n=627480
+§WIT (a) aspect phone+desktop/A49 A OK screen=392.16x802.38 aspect_err=0.0003% src_nat=456x933
+§WIT (b) img==screen==spec phone+desktop/A49 A OK img=150.00,140.00,392.16,802.38 screen=150.00,140.00,392.16,802.38 max_d=0.005px
+§WIT (c) pixels==recording phone+desktop/A49 A OK mad=0.00/255 big_px=0.00% n=204984
+§WIT (d) bezel colour + plain bg phone+desktop/A49 A OK bezel L/R/T/B=20.23.28 20.23.28 20.23.28 20.23.28 want=20.23.28±3; bg(10,10)=228.231.235 want=228.231.235±2
+§WIT (a') desktop 16:9 phone+desktop/A49 OK content=1140.00x641.25 aspect_err=0.0000% url_text="HQ" src_nat=1920x1080
+§WIT (b') desktop img==content phone+desktop/A49 OK max_d=0.000px
+§WIT (c') desktop pixels==HQ recording phone+desktop/A49 OK mad=0.00/255 big_px=0.00% n=627480
+§WIT (a) aspect phone+desktop+phone/B0 A OK screen=392.16x802.38 aspect_err=0.0003% src_nat=456x933
+§WIT (b) img==screen==spec phone+desktop+phone/B0 A OK img=62.00,185.00,392.16,802.38 screen=62.00,185.00,392.16,802.38 max_d=0.005px
+§WIT (c) pixels==recording phone+desktop+phone/B0 A OK mad=0.00/255 big_px=0.00% n=204984
+§WIT (d) bezel colour + plain bg phone+desktop+phone/B0 A OK bezel L/R/T/B=20.23.28 20.23.28 20.23.28 20.23.28 want=20.23.28±3; bg(10,10)=228.231.235 want=228.231.235±2
+§WIT (a) aspect phone+desktop+phone/B0 B OK screen=392.16x802.38 aspect_err=0.0003% src_nat=456x933
+§WIT (b) img==screen==spec phone+desktop+phone/B0 B OK img=1465.83,185.00,392.16,802.38 screen=1465.83,185.00,392.16,802.38 max_d=0.012px
+§WIT (c) pixels==recording phone+desktop+phone/B0 B OK mad=0.00/255 big_px=0.00% n=204984
+§WIT (d) bezel colour + plain bg phone+desktop+phone/B0 B OK bezel L/R/T/B=20.23.28 20.23.28 20.23.28 20.23.28 want=20.23.28±3; bg(10,10)=228.231.235 want=228.231.235±2
+§WIT (a') desktop 16:9 phone+desktop+phone/B0 OK content=912.00x513.00 aspect_err=0.0000% url_text="HQ" src_nat=1920x1080
+§WIT (b') desktop img==content phone+desktop+phone/B0 OK max_d=0.000px
+§WIT (c') desktop pixels==HQ recording phone+desktop+phone/B0 OK mad=0.00/255 big_px=0.00% n=385956
+§WIT (a) aspect phone+desktop+phone/B10 A OK screen=392.16x802.38 aspect_err=0.0003% src_nat=456x933
+§WIT (b) img==screen==spec phone+desktop+phone/B10 A OK img=62.00,185.00,392.16,802.38 screen=62.00,185.00,392.16,802.38 max_d=0.005px
+§WIT (c) pixels==recording phone+desktop+phone/B10 A OK mad=0.00/255 big_px=0.00% n=204984
+§WIT (d) bezel colour + plain bg phone+desktop+phone/B10 A OK bezel L/R/T/B=20.23.28 20.23.28 20.23.28 20.23.28 want=20.23.28±3; bg(10,10)=228.231.235 want=228.231.235±2
+§WIT (a) aspect phone+desktop+phone/B10 B OK screen=392.16x802.38 aspect_err=0.0003% src_nat=456x933
+§WIT (b) img==screen==spec phone+desktop+phone/B10 B OK img=1465.83,185.00,392.16,802.38 screen=1465.83,185.00,392.16,802.38 max_d=0.012px
+§WIT (c) pixels==recording phone+desktop+phone/B10 B OK mad=0.00/255 big_px=0.00% n=204984
+§WIT (d) bezel colour + plain bg phone+desktop+phone/B10 B OK bezel L/R/T/B=20.23.28 20.23.28 20.23.28 20.23.28 want=20.23.28±3; bg(10,10)=228.231.235 want=228.231.235±2
+§WIT (a') desktop 16:9 phone+desktop+phone/B10 OK content=912.00x513.00 aspect_err=0.0000% url_text="HQ" src_nat=1920x1080
+§WIT (b') desktop img==content phone+desktop+phone/B10 OK max_d=0.000px
+§WIT (c') desktop pixels==HQ recording phone+desktop+phone/B10 OK mad=0.00/255 big_px=0.00% n=385956
+§WIT (a) aspect phone+desktop+phone/B20 A OK screen=392.16x802.38 aspect_err=0.0003% src_nat=456x933
+§WIT (b) img==screen==spec phone+desktop+phone/B20 A OK img=62.00,185.00,392.16,802.38 screen=62.00,185.00,392.16,802.38 max_d=0.005px
+§WIT (c) pixels==recording phone+desktop+phone/B20 A OK mad=0.00/255 big_px=0.00% n=204984
+§WIT (d) bezel colour + plain bg phone+desktop+phone/B20 A OK bezel L/R/T/B=20.23.28 20.23.28 20.23.28 20.23.28 want=20.23.28±3; bg(10,10)=228.231.235 want=228.231.235±2
+§WIT (a) aspect phone+desktop+phone/B20 B OK screen=392.16x802.38 aspect_err=0.0003% src_nat=456x933
+§WIT (b) img==screen==spec phone+desktop+phone/B20 B OK img=1465.83,185.00,392.16,802.38 screen=1465.83,185.00,392.16,802.38 max_d=0.012px
+§WIT (c) pixels==recording phone+desktop+phone/B20 B OK mad=0.00/255 big_px=0.00% n=204984
+§WIT (d) bezel colour + plain bg phone+desktop+phone/B20 B OK bezel L/R/T/B=20.23.28 20.23.28 20.23.28 20.23.28 want=20.23.28±3; bg(10,10)=228.231.235 want=228.231.235±2
+§WIT (a') desktop 16:9 phone+desktop+phone/B20 OK content=912.00x513.00 aspect_err=0.0000% url_text="HQ" src_nat=1920x1080
+§WIT (b') desktop img==content phone+desktop+phone/B20 OK max_d=0.000px
+§WIT (c') desktop pixels==HQ recording phone+desktop+phone/B20 OK mad=0.00/255 big_px=0.00% n=385956
+§WIT (a) aspect morph u=0 A OK screen=456.00x933.00 aspect_err=0.0000% src_nat=456x933
+§WIT (b) img==screen morph u=0 A OK img=732.00,73.00,456.00,933.00 screen=732.00,73.00,456.00,933.00 max_d=0.000px
+§WIT (a) aspect morph u=0 B OK screen=392.16x802.38 aspect_err=0.0003% src_nat=456x933
+§WIT (b) img==screen morph u=0 B OK img=1465.83,185.00,392.16,802.38 screen=1465.83,185.00,392.16,802.38 max_d=0.000px
+§WIT (a) aspect morph u=1 A OK screen=392.16x802.38 aspect_err=0.0003% src_nat=456x933
+§WIT (b) img==screen==spec morph u=1 A OK img=62.00,185.00,392.16,802.38 screen=62.00,185.00,392.16,802.38 max_d=0.005px
+§WIT (c) pixels==recording morph u=1 A OK mad=0.00/255 big_px=0.00% n=204984
+§WIT (d) bezel colour + plain bg morph u=1 A OK bezel L/R/T/B=20.23.28 20.23.28 20.23.28 20.23.28 want=20.23.28±3; bg(10,10)=228.231.235 want=228.231.235±2
+§WIT (a) aspect morph u=1 B OK screen=392.16x802.38 aspect_err=0.0003% src_nat=456x933
+§WIT (b) img==screen==spec morph u=1 B OK img=1465.83,185.00,392.16,802.38 screen=1465.83,185.00,392.16,802.38 max_d=0.012px
+§WIT (c) pixels==recording morph u=1 B OK mad=0.00/255 big_px=0.00% n=204984
+§WIT (d) bezel colour + plain bg morph u=1 B OK bezel L/R/T/B=20.23.28 20.23.28 20.23.28 20.23.28 want=20.23.28±3; bg(10,10)=228.231.235 want=228.231.235±2
+§WIT (a') desktop 16:9 morph u=1 OK content=912.00x513.00 aspect_err=0.0000% url_text="HQ" src_nat=1920x1080
+§WIT (b') desktop img==content morph u=1 OK max_d=0.000px
+§WIT (c') desktop pixels==HQ recording morph u=1 OK mad=0.00/255 big_px=0.00% n=385956
+§WIT (c) DISCRIMINATION wrong_frame_mad=35.68 worst_right_mad=0.00 OK (control separates)
+§WIT (d) leak control (solid magenta, 3 devices) OK magenta_outside=0 magenta_inside=812131/812131
+§WIT (d) leak control (solid magenta, layout phone) OK magenta_outside=0 magenta_inside=320728/320728
+§WIT (e) tap obj phone OK rings no_tap=0 tap=1 mapped=(960.0,539.0) ring_centre=(960.0,539.0) px_no_tap=28.164.45 px_tap=152.214.160 delta=289 far_px_same=true
+§WIT (e) tap arr phone OK rings no_tap=0 tap=1 mapped=(1032.0,773.0) ring_centre=(1032.0,773.0) px_no_tap=26.26.46 px_tap=151.151.160 delta=364 far_px_same=true
+§WIT (e) tap obj@s=.86 phone+desktop+phone OK rings no_tap=0 tap=1 mapped=(320.0,787.0) ring_centre=(320.0,787.0) px_no_tap=26.26.46 px_tap=151.151.160 delta=364 far_px_same=true
+§WIT (e) real manifest tap array [x,y] from rc1 A (frame 1) OK tap=[424,901] rings=1
+§WIT (e) tap:null draws nothing OK rings=0
+§WIT (e) malformed tap draws nothing OK rings=0 for 4 malformed entries
+§WIT (g) title card: text, no phone body OK cards=1 phones=0
+§WIT RED control screen forced 456x800: (a) FAIL as required aspect_err=16.62% ; (b) FAIL as required img_h=800 spec_h=933 max_d=133.0px
+§WIT (f) trailer parity sample 0 OK old=31c28a0c2ccdd0de new=31c28a0c2ccdd0de
+§WIT (f) trailer parity sample 1 OK old=ddb142bf0ac43d7d new=ddb142bf0ac43d7d
+§WIT (f) trailer parity sample 2 OK old=d45ef573c789b83d new=d45ef573c789b83d
+§WIT (i) S timed segment present in timeline (population not empty) OK event_frames=461
+§WIT (i) S event times never go backwards OK rows=461 t_first=164492 t_last=196606
+§WIT (i) RED order reversed: monotonic check FAILS as required
+§WIT (i) both screens act in the S segment (not vacuous) OK acting_screens=A,hq
+§WIT (i) S frame 1163 t=164492 acts=A beat=s_send: phone=0030.png hq=0000.png OK timeline_files_match=true phone_mad=0.18 hq_mad=0.00
+§WIT (i) S frame 1227 t=165461 acts=A beat=s_send: phone=0034.png hq=0000.png OK timeline_files_match=true phone_mad=0.59 hq_mad=0.00
+§WIT (i) S frame 1290 t=165822 acts=A beat=s_send: phone=0035.png hq=0000.png OK timeline_files_match=true phone_mad=0.00 hq_mad=0.00
+§WIT (i) S frame 1291 t=167776 acts=hq beat=s_get: phone=0035.png hq=0001.png OK timeline_files_match=true phone_mad=0.00 hq_mad=0.00
+§WIT (i) S frame 1339 t=169126 acts=hq beat=s_get: phone=0035.png hq=0003.png OK timeline_files_match=true phone_mad=0.00 hq_mad=0.00
+§WIT (i) S frame 1386 t=169126 acts=hq beat=s_get: phone=0035.png hq=0003.png OK timeline_files_match=true phone_mad=0.00 hq_mad=0.00
+§WIT (i) S frame 1387 t=169186 acts=hq beat=s_replay: phone=0035.png hq=0004.png OK timeline_files_match=true phone_mad=0.00 hq_mad=0.00
+§WIT (i) S frame 1435 t=170721 acts=hq beat=s_replay: phone=0035.png hq=0006.png OK timeline_files_match=true phone_mad=0.00 hq_mad=0.00
+§WIT (i) S frame 1482 t=170721 acts=hq beat=s_replay: phone=0035.png hq=0006.png OK timeline_files_match=true phone_mad=0.00 hq_mad=0.00
+§WIT (i) S frame 1483 t=179220 acts=hq beat=s_scrub: phone=0035.png hq=0007.png OK timeline_files_match=true phone_mad=0.00 hq_mad=0.00
+§WIT (i) S frame 1553 t=192203 acts=hq beat=s_scrub: phone=0035.png hq=0015.png OK timeline_files_match=true phone_mad=0.00 hq_mad=0.00
+§WIT (i) S frame 1623 t=196606 acts=hq beat=s_scrub: phone=0035.png hq=0019.png OK timeline_files_match=true phone_mad=0.00 hq_mad=0.00
+§WIT (i) RED swapped order: 12/12 mirrored-time expectations rejected (detected as required)
+§WIT (i) S interleave sampled frames show the right screen at t OK right=12/12
+§WIT (i) S: no waiting shown (longest identical run <= 60 film frames, film time < recorded time) OK longest_run=60 film_s=15.37 recorded_s=32.1
+§WIT (i) play segment fast (A): only asked-for ok beats, holds scaled OK frames=231 beats=ready,fab,nav_open,nav_swipe,settings_open,settings_back problems=none
+§WIT (i) RED forbidden frame (walk_start) injected into fast: CAUGHT as required
+§WIT (i) play segment walk (A): only asked-for ok beats, holds scaled OK frames=334 beats=walk_start,walk_steps,snag problems=none
+§WIT (i) RED forbidden frame (fab) injected into walk: CAUGHT as required
+§WIT (i) play segment clash (C): only asked-for ok beats, holds scaled OK frames=355 beats=clash_run,clash_pick,clash_detail,clash_snag_or_share problems=none
+§WIT (i) play segment sites (B): only asked-for ok beats, holds scaled OK frames=162 beats=b_walk,b_snag problems=none
+§WIT (i) RED forbidden frame (b_fab) injected into sites: CAUGHT as required
+§WIT (i) morph phone+desktop -> phone+desktop+phone u=0 equals the from layout OK phone_x=150.0 want=150.0 desk_x=620.0 want=620.0 desk_w=1140.0 want=1140.0
+§WIT (i) morph phone+desktop -> phone+desktop+phone u=1 equals the target layout OK phone_x=62.0 want=62.0 desk_x=504.0 want=504.0 desk_w=912.0 want=912.0
+§WIT (i) morph u=0.5 desktop is between the two layouts OK desk_x=562.0 between 504..620
+§WIT (k) segment order is the plan's OK chapter>opener>fast>walk>clash>hq>sites>outro>close
+§WIT (k) chapter card hold frame == cards/chapter.png OK frame=54 mad=0.000 big_px=0.000%
+§WIT (k) chapter card fades in from its plain background (frame 0 = bg + picture at 1/12) OK mad=0.000
+§WIT (k) chapter card background is the plain dark #0b0f17 at the corners (nothing behind it) OK corners=11.15.23 11.15.23
+§WIT (k) last card hold frame == cards/close.png OK frame=2228 mad=0.000 big_px=0.000%
+§WIT (k) hand-off opener -> phone body: frame 204 (step 1/15, over alpha 0.938) is the linear blend OK mad=0.011
+§WIT (k) RED hand-off opener -> phone body frame 204: blend with alpha reversed REJECTED as required mad=125.409
+§WIT (k) hand-off opener -> phone body: frame 211 (step 8/15, over alpha 0.500) is the linear blend OK mad=0.578
+§WIT (k) hand-off opener -> phone body: frame 218 (step 15/15, over alpha 0.063) is the linear blend OK mad=1.086
+§WIT (k) RED hand-off opener -> phone body frame 218: blend with alpha reversed REJECTED as required mad=124.477
+§WIT (k) opener phone box == phone layout screen rect (numbers) OK opener_box=732,73,456,933 layout=732,73,456,933
+§WIT (k) the stage logged §STAGE_HANDOFF equal=true OK render_stage.log
+§WIT (k) phone bodies -> trailer outro: frame 1810 (step 1/15, over alpha 0.063) is the linear blend OK mad=0.000
+§WIT (k) RED phone bodies -> trailer outro frame 1810: blend with alpha reversed REJECTED as required mad=89.316
+§WIT (k) phone bodies -> trailer outro: frame 1817 (step 8/15, over alpha 0.500) is the linear blend OK mad=0.000
+§WIT (k) phone bodies -> trailer outro: frame 1824 (step 15/15, over alpha 0.938) is the linear blend OK mad=0.000
+§WIT (k) RED phone bodies -> trailer outro frame 1824: blend with alpha reversed REJECTED as required mad=89.316
+§WIT (k) trailer outro -> last card: frame 1930 (step 1/12, over alpha 0.923) is the linear blend OK mad=0.000
+§WIT (k) RED trailer outro -> last card frame 1930: blend with alpha reversed REJECTED as required mad=26.995
+§WIT (k) trailer outro -> last card: frame 1936 (step 7/12, over alpha 0.462) is the linear blend OK mad=0.000
+§WIT (k) trailer outro -> last card: frame 1941 (step 12/12, over alpha 0.077) is the linear blend OK mad=0.000
+§WIT (k) RED trailer outro -> last card frame 1941: blend with alpha reversed REJECTED as required mad=26.995
+§WIT (k) no voice clip starts during the chapter card (first cue 4.00 s >= 3.60 s) OK cues.tsv
+§WIT (k) no voice clip starts over the last card (last cue 60.93 s < 64.33 s) OK cues.tsv
+§WIT page_errors=0
+§WITNESS_STAGE PASS judged=135 fails=0 red_a_fails=true red_b_fails=true discriminating=true trailer_samples=3 rc2_red_controls_detected=5/5 rc3_hybrid_judged=1 rc3_red_controls_detected=6/6

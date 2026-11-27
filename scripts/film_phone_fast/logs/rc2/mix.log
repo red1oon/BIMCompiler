@@ -1,0 +1,20 @@
+§MIX_CLIP intro start=0.10 end=1.63 cue_end=3.20 OK
+§MIX_CLIP ready start=3.20 end=4.79 cue_end=5.70 OK
+§MIX_CLIP fab start=5.70 end=7.18 cue_end=7.60 OK
+§MIX_CLIP nav_swipe start=7.60 end=10.13 cue_end=10.90 OK
+§MIX_CLIP walk_start start=10.90 end=12.70 cue_end=13.40 OK
+§MIX_CLIP walk_steps start=13.40 end=15.19 cue_end=16.33 OK
+§MIX_CLIP snag start=16.33 end=19.88 cue_end=22.03 OK
+§MIX_CLIP clash_run start=22.03 end=24.58 cue_end=25.60 OK
+§MIX_CLIP clash_detail start=25.60 end=27.39 cue_end=28.00 OK
+§MIX_CLIP clash_snag start=28.00 end=29.49 cue_end=29.80 OK
+§MIX_CLIP clash_share start=29.80 end=32.47 cue_end=32.80 OK
+§MIX_CLIP clash_saved start=32.80 end=33.97 cue_end=35.17 OK
+§MIX_CLIP s_send start=35.17 end=37.12 cue_end=39.63 OK
+§MIX_CLIP s_get start=39.63 end=41.26 cue_end=42.83 OK
+§MIX_CLIP s_replay start=42.83 end=44.42 cue_end=46.03 OK
+§MIX_CLIP s_scrub start=46.03 end=48.73 cue_end=51.53 OK
+§MIX_CLIP site_b start=51.53 end=53.90 cue_end=57.53 OK
+§MIX_CLIP outro start=57.53 end=60.47 cue_end=60.93 OK
+§MIX clips=18 overlaps=0 seconds=60.93 peak_scaled_to=0.89 OK
+§MIX_LOUDNORM before=-22.89 LUFS peak=-1.34 dBTP -> target -16.9 LUFS (linear, 2 pass)

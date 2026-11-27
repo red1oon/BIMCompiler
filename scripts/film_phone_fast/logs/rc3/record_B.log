@@ -1,0 +1,19 @@
+  [console] §RENDERER_CAPS multi_draw=on (fast batched path) gpu=ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)
+  [console] §CLASH_SNAG_MODULE loaded
+  [console] [S203] §CAMERA envelope=68x55x15m dist=102m
+§M1_READY role=B url=/viewer/viewer.html?db=buildings/HHS_Office_Federated_extracted.db wait_s=12.3 (not filmed)
+§M1_GEO src=none {}
+§M1_FAB pills_shown=11
+§M1_BEAT id=b_fab ok=true frames=1 evidence="§M1_FAB pills_shown=11"
+  [console] §SHEET_CLOSE id=navigate-drawer-panel via=row-prompt
+  [drawer] navigate-drawer-panel still_open_after_row=false (closed by the row itself, nothing to swipe)
+  [console] §WALK_XRAY_AUTO on
+  [console] §WALK_TRACE i=1 why=start steps=0 p=44.94,-2.98,16.27 yaw=-70 geo=model
+§M1_BEAT id=b_walk ok=true frames=9 evidence="§WALK_XRAY_AUTO on"
+  [console] §PICK hits=10 chosen=0 0:BM d=1.05 op=0.3 g=slot:1 | 1:BM d=1.19 op=0.3 g=slot:1 | 2:BM d=1.62 op=0.3 g=slot:0
+  [console] [S204] §CAMERA opened
+  [gps] GPS: Timeout expired pos=false
+  [console] [S204] §SNAP IfcPlate GPS:GPS: unavailable 2026-11-27 17:27:37 +0800 BIM:YES
+  [console] [S205] §ISSUE_SAVED IfcPlate Unknown
+§M1_BEAT id=b_snag ok=true frames=10 evidence="[S205] §ISSUE_SAVED IfcPlate Unknown"
+§M1_RECORD role=B frames=21 film_frames=360 beats=3 not_ok=0

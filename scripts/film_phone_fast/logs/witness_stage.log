@@ -1,0 +1,98 @@
+§WIT (a) aspect phone/A0 A OK screen=456.00x933.00 aspect_err=0.0000% src_nat=456x933
+§WIT (b) img==screen==spec phone/A0 A OK img=732.00,73.00,456.00,933.00 screen=732.00,73.00,456.00,933.00 max_d=0.000px
+§WIT (c) pixels==recording phone/A0 A OK mad=0.00/255 big_px=0.00% n=296548
+§WIT (c) NEGCONTROL wrong frame B/f/0000.png vs shot of A/f/0000.png: mad=35.70/255 big_px=30.51%
+§WIT (d) bezel colour + plain bg phone/A0 A OK bezel L/R/T/B=20.23.28 20.23.28 20.23.28 20.23.28 want=20.23.28±3; bg(10,10)=228.231.235 want=228.231.235±2
+§WIT (a) aspect phone/A28 A OK screen=456.00x933.00 aspect_err=0.0000% src_nat=456x933
+§WIT (b) img==screen==spec phone/A28 A OK img=732.00,73.00,456.00,933.00 screen=732.00,73.00,456.00,933.00 max_d=0.000px
+§WIT (c) pixels==recording phone/A28 A OK mad=0.00/255 big_px=0.00% n=296548
+§WIT (d) bezel colour + plain bg phone/A28 A OK bezel L/R/T/B=20.23.28 20.23.28 20.23.28 20.23.28 want=20.23.28±3; bg(10,10)=228.231.235 want=228.231.235±2
+§WIT (a) aspect phone/A55 A OK screen=456.00x933.00 aspect_err=0.0000% src_nat=456x933
+§WIT (b) img==screen==spec phone/A55 A OK img=732.00,73.00,456.00,933.00 screen=732.00,73.00,456.00,933.00 max_d=0.000px
+§WIT (c) pixels==recording phone/A55 A OK mad=0.00/255 big_px=0.00% n=296548
+§WIT (d) bezel colour + plain bg phone/A55 A OK bezel L/R/T/B=20.23.28 20.23.28 20.23.28 20.23.28 want=20.23.28±3; bg(10,10)=228.231.235 want=228.231.235±2
+§WIT (a) aspect phone+desktop/A0 A OK screen=392.16x802.38 aspect_err=0.0003% src_nat=456x933
+§WIT (b) img==screen==spec phone+desktop/A0 A OK img=150.00,140.00,392.16,802.38 screen=150.00,140.00,392.16,802.38 max_d=0.005px
+§WIT (c) pixels==recording phone+desktop/A0 A OK mad=0.00/255 big_px=0.00% n=204984
+§WIT (d) bezel colour + plain bg phone+desktop/A0 A OK bezel L/R/T/B=20.23.28 20.23.28 20.23.28 20.23.28 want=20.23.28±3; bg(10,10)=228.231.235 want=228.231.235±2
+§WIT (a') desktop 16:9 phone+desktop/A0 OK content=1140.00x641.25 aspect_err=0.0000% url_text="HQ" src_nat=1920x1080
+§WIT (b') desktop img==content phone+desktop/A0 OK max_d=0.000px
+§WIT (c') desktop pixels==HQ recording phone+desktop/A0 OK mad=0.00/255 big_px=0.00% n=627480
+§WIT (a) aspect phone+desktop/A28 A OK screen=392.16x802.38 aspect_err=0.0003% src_nat=456x933
+§WIT (b) img==screen==spec phone+desktop/A28 A OK img=150.00,140.00,392.16,802.38 screen=150.00,140.00,392.16,802.38 max_d=0.005px
+§WIT (c) pixels==recording phone+desktop/A28 A OK mad=0.00/255 big_px=0.00% n=204984
+§WIT (d) bezel colour + plain bg phone+desktop/A28 A OK bezel L/R/T/B=20.23.28 20.23.28 20.23.28 20.23.28 want=20.23.28±3; bg(10,10)=228.231.235 want=228.231.235±2
+§WIT (a') desktop 16:9 phone+desktop/A28 OK content=1140.00x641.25 aspect_err=0.0000% url_text="HQ" src_nat=1920x1080
+§WIT (b') desktop img==content phone+desktop/A28 OK max_d=0.000px
+§WIT (c') desktop pixels==HQ recording phone+desktop/A28 OK mad=0.00/255 big_px=0.00% n=627480
+§WIT (a) aspect phone+desktop/A55 A OK screen=392.16x802.38 aspect_err=0.0003% src_nat=456x933
+§WIT (b) img==screen==spec phone+desktop/A55 A OK img=150.00,140.00,392.16,802.38 screen=150.00,140.00,392.16,802.38 max_d=0.005px
+§WIT (c) pixels==recording phone+desktop/A55 A OK mad=0.00/255 big_px=0.00% n=204984
+§WIT (d) bezel colour + plain bg phone+desktop/A55 A OK bezel L/R/T/B=20.23.28 20.23.28 20.23.28 20.23.28 want=20.23.28±3; bg(10,10)=228.231.235 want=228.231.235±2
+§WIT (a') desktop 16:9 phone+desktop/A55 OK content=1140.00x641.25 aspect_err=0.0000% url_text="HQ" src_nat=1920x1080
+§WIT (b') desktop img==content phone+desktop/A55 OK max_d=0.000px
+§WIT (c') desktop pixels==HQ recording phone+desktop/A55 OK mad=0.00/255 big_px=0.00% n=627480
+§WIT (a) aspect phone+desktop+phone/B0 A OK screen=392.16x802.38 aspect_err=0.0003% src_nat=456x933
+§WIT (b) img==screen==spec phone+desktop+phone/B0 A OK img=62.00,185.00,392.16,802.38 screen=62.00,185.00,392.16,802.38 max_d=0.005px
+§WIT (c) pixels==recording phone+desktop+phone/B0 A OK mad=0.00/255 big_px=0.00% n=204984
+§WIT (d) bezel colour + plain bg phone+desktop+phone/B0 A OK bezel L/R/T/B=20.23.28 20.23.28 20.23.28 20.23.28 want=20.23.28±3; bg(10,10)=228.231.235 want=228.231.235±2
+§WIT (a) aspect phone+desktop+phone/B0 B OK screen=392.16x802.38 aspect_err=0.0003% src_nat=456x933
+§WIT (b) img==screen==spec phone+desktop+phone/B0 B OK img=1465.83,185.00,392.16,802.38 screen=1465.83,185.00,392.16,802.38 max_d=0.012px
+§WIT (c) pixels==recording phone+desktop+phone/B0 B OK mad=0.00/255 big_px=0.00% n=204984
+§WIT (d) bezel colour + plain bg phone+desktop+phone/B0 B OK bezel L/R/T/B=20.23.28 20.23.28 20.23.28 20.23.28 want=20.23.28±3; bg(10,10)=228.231.235 want=228.231.235±2
+§WIT (a') desktop 16:9 phone+desktop+phone/B0 OK content=912.00x513.00 aspect_err=0.0000% url_text="HQ" src_nat=1920x1080
+§WIT (b') desktop img==content phone+desktop+phone/B0 OK max_d=0.000px
+§WIT (c') desktop pixels==HQ recording phone+desktop+phone/B0 OK mad=0.00/255 big_px=0.00% n=385956
+§WIT (a) aspect phone+desktop+phone/B13 A OK screen=392.16x802.38 aspect_err=0.0003% src_nat=456x933
+§WIT (b) img==screen==spec phone+desktop+phone/B13 A OK img=62.00,185.00,392.16,802.38 screen=62.00,185.00,392.16,802.38 max_d=0.005px
+§WIT (c) pixels==recording phone+desktop+phone/B13 A OK mad=0.00/255 big_px=0.00% n=204984
+§WIT (d) bezel colour + plain bg phone+desktop+phone/B13 A OK bezel L/R/T/B=20.23.28 20.23.28 20.23.28 20.23.28 want=20.23.28±3; bg(10,10)=228.231.235 want=228.231.235±2
+§WIT (a) aspect phone+desktop+phone/B13 B OK screen=392.16x802.38 aspect_err=0.0003% src_nat=456x933
+§WIT (b) img==screen==spec phone+desktop+phone/B13 B OK img=1465.83,185.00,392.16,802.38 screen=1465.83,185.00,392.16,802.38 max_d=0.012px
+§WIT (c) pixels==recording phone+desktop+phone/B13 B OK mad=0.00/255 big_px=0.00% n=204984
+§WIT (d) bezel colour + plain bg phone+desktop+phone/B13 B OK bezel L/R/T/B=20.23.28 20.23.28 20.23.28 20.23.28 want=20.23.28±3; bg(10,10)=228.231.235 want=228.231.235±2
+§WIT (a') desktop 16:9 phone+desktop+phone/B13 OK content=912.00x513.00 aspect_err=0.0000% url_text="HQ" src_nat=1920x1080
+§WIT (b') desktop img==content phone+desktop+phone/B13 OK max_d=0.000px
+§WIT (c') desktop pixels==HQ recording phone+desktop+phone/B13 OK mad=0.00/255 big_px=0.00% n=385956
+§WIT (a) aspect phone+desktop+phone/B26 A OK screen=392.16x802.38 aspect_err=0.0003% src_nat=456x933
+§WIT (b) img==screen==spec phone+desktop+phone/B26 A OK img=62.00,185.00,392.16,802.38 screen=62.00,185.00,392.16,802.38 max_d=0.005px
+§WIT (c) pixels==recording phone+desktop+phone/B26 A OK mad=0.00/255 big_px=0.00% n=204984
+§WIT (d) bezel colour + plain bg phone+desktop+phone/B26 A OK bezel L/R/T/B=20.23.28 20.23.28 20.23.28 20.23.28 want=20.23.28±3; bg(10,10)=228.231.235 want=228.231.235±2
+§WIT (a) aspect phone+desktop+phone/B26 B OK screen=392.16x802.38 aspect_err=0.0003% src_nat=456x933
+§WIT (b) img==screen==spec phone+desktop+phone/B26 B OK img=1465.83,185.00,392.16,802.38 screen=1465.83,185.00,392.16,802.38 max_d=0.012px
+§WIT (c) pixels==recording phone+desktop+phone/B26 B OK mad=0.00/255 big_px=0.00% n=204984
+§WIT (d) bezel colour + plain bg phone+desktop+phone/B26 B OK bezel L/R/T/B=20.23.28 20.23.28 20.23.28 20.23.28 want=20.23.28±3; bg(10,10)=228.231.235 want=228.231.235±2
+§WIT (a') desktop 16:9 phone+desktop+phone/B26 OK content=912.00x513.00 aspect_err=0.0000% url_text="HQ" src_nat=1920x1080
+§WIT (b') desktop img==content phone+desktop+phone/B26 OK max_d=0.000px
+§WIT (c') desktop pixels==HQ recording phone+desktop+phone/B26 OK mad=0.00/255 big_px=0.00% n=385956
+§WIT (a) aspect morph u=0 A OK screen=456.00x933.00 aspect_err=0.0000% src_nat=456x933
+§WIT (b) img==screen morph u=0 A OK img=732.00,73.00,456.00,933.00 screen=732.00,73.00,456.00,933.00 max_d=0.000px
+§WIT (a) aspect morph u=0 B OK screen=392.16x802.38 aspect_err=0.0003% src_nat=456x933
+§WIT (b) img==screen morph u=0 B OK img=1465.83,185.00,392.16,802.38 screen=1465.83,185.00,392.16,802.38 max_d=0.000px
+§WIT (a) aspect morph u=1 A OK screen=392.16x802.38 aspect_err=0.0003% src_nat=456x933
+§WIT (b) img==screen==spec morph u=1 A OK img=62.00,185.00,392.16,802.38 screen=62.00,185.00,392.16,802.38 max_d=0.005px
+§WIT (c) pixels==recording morph u=1 A OK mad=0.00/255 big_px=0.00% n=204984
+§WIT (d) bezel colour + plain bg morph u=1 A OK bezel L/R/T/B=20.23.28 20.23.28 20.23.28 20.23.28 want=20.23.28±3; bg(10,10)=228.231.235 want=228.231.235±2
+§WIT (a) aspect morph u=1 B OK screen=392.16x802.38 aspect_err=0.0003% src_nat=456x933
+§WIT (b) img==screen==spec morph u=1 B OK img=1465.83,185.00,392.16,802.38 screen=1465.83,185.00,392.16,802.38 max_d=0.012px
+§WIT (c) pixels==recording morph u=1 B OK mad=0.00/255 big_px=0.00% n=204984
+§WIT (d) bezel colour + plain bg morph u=1 B OK bezel L/R/T/B=20.23.28 20.23.28 20.23.28 20.23.28 want=20.23.28±3; bg(10,10)=228.231.235 want=228.231.235±2
+§WIT (a') desktop 16:9 morph u=1 OK content=912.00x513.00 aspect_err=0.0000% url_text="HQ" src_nat=1920x1080
+§WIT (b') desktop img==content morph u=1 OK max_d=0.000px
+§WIT (c') desktop pixels==HQ recording morph u=1 OK mad=0.00/255 big_px=0.00% n=385956
+§WIT (c) DISCRIMINATION wrong_frame_mad=35.70 worst_right_mad=0.00 OK (control separates)
+§WIT (d) leak control (solid magenta, 3 devices) OK magenta_outside=0 magenta_inside=812131/812131
+§WIT (d) leak control (solid magenta, layout phone) OK magenta_outside=0 magenta_inside=320728/320728
+§WIT (e) tap obj phone OK rings no_tap=0 tap=1 mapped=(960.0,539.0) ring_centre=(960.0,539.0) px_no_tap=28.164.45 px_tap=152.214.160 delta=289 far_px_same=true
+§WIT (e) tap arr phone OK rings no_tap=0 tap=1 mapped=(1032.0,773.0) ring_centre=(1032.0,773.0) px_no_tap=26.26.46 px_tap=151.151.160 delta=364 far_px_same=true
+§WIT (e) tap obj@s=.86 phone+desktop+phone OK rings no_tap=0 tap=1 mapped=(320.0,787.0) ring_centre=(320.0,787.0) px_no_tap=26.26.46 px_tap=151.151.160 delta=364 far_px_same=true
+§WIT (e) real manifest tap array [x,y] from rc1 A (frame 1) OK tap=[424,901] rings=1
+§WIT (e) tap:null draws nothing OK rings=0
+§WIT (e) malformed tap draws nothing OK rings=0 for 4 malformed entries
+§WIT (g) title card: text, no phone body OK cards=1 phones=0
+§WIT RED control screen forced 456x800: (a) FAIL as required aspect_err=16.62% ; (b) FAIL as required img_h=800 spec_h=933 max_d=133.0px
+§WIT (f) trailer parity sample 0 OK old=31c28a0c2ccdd0de new=31c28a0c2ccdd0de
+§WIT (f) trailer parity sample 1 OK old=ddb142bf0ac43d7d new=ddb142bf0ac43d7d
+§WIT (f) trailer parity sample 2 OK old=2eb8484ba3f23ab1 new=2eb8484ba3f23ab1
+§WIT page_errors=0
+§WITNESS_STAGE PASS judged=93 fails=0 red_a_fails=true red_b_fails=true discriminating=true trailer_samples=3

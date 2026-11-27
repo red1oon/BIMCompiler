@@ -1,0 +1,7 @@
+  [console] §RENDERER_CAPS multi_draw=on (fast batched path) gpu=ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)
+  [console] §CLASH_SNAG_MODULE loaded
+  [console] [S203] §CAMERA envelope=9x22x8m dist=80m
+§M1_READY role=HQ url=/viewer/viewer.html?db=buildings%2FDuplex_extracted.db#cam=0.6,0.5,5.6&tgt=4.3,0.5,7.2&xray=1 wait_s=14.6 (not filmed)
+§M1_HQ_CAM link=0.6,0.5,5.6 desktop=0.60,0.50,5.60 dist_m=0.000 SAME_VIEW
+§M1_BEAT id=hq_open ok=true frames=1 evidence="§M1_HQ_CAM link=0.6,0.5,5.6 desktop=0.60,0.50,5.60 dist_m=0.000 SAME_VIEW"
+§M1_RECORD role=HQ frames=1 film_frames=90 beats=1 not_ok=0
