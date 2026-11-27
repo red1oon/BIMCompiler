@@ -16,6 +16,11 @@ layout, two-step open, observer root, track/go, serial drawing; `pdf/pdf_open.js
 responsibility owned once (CLAUDE.md AD-layer rule 5, "one implementation")? what can be deleted (deletion budget)? can each witness actually FAIL on the defect it
 names, or is it scope-blind / vacuous (WITNESS_INTERFACE_FRAMEWORK)? perf budget (heap, verts, bytes) respected? Fix what is found as its own numbered section
 here (spec → fix → witness), keep every existing witness green, record "reviewed, no change needed" where that is the answer.
+**Delegation (owner, 2026-11-28, verbatim: "tell it to assign well scoped Sonnet agents if needed to do easier tasks"):** the Fable session keeps the judgment —
+the review, the design calls, the specs — and hands EASIER, well-scoped work to **Sonnet** agents (Agent tool, `model: sonnet`): e.g. the guide update for the
+film, wiring witnesses into CI (P11), plain-word message fixes (P7), a fix whose spec section is already written. One bounded task per agent, its own `/tmp/wt-*`
+worktree, the spec section to read named in the brief, the rules of "How to run things" restated (a fresh agent has no memory), and the coordinator re-runs the
+agent's witness itself before believing its report.
 
 ### What this lane is (one paragraph)
 **Start from the user's own file, not from an ERP window.** A PDF report or a spreadsheet the user already has is opened in our browser pages, read, checked
