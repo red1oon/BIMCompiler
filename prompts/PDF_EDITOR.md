@@ -11,6 +11,7 @@
   STATED substitution. G4 parity is NOT claimed (numbers only; one-byte fonts, cross-reference streams and form text are named refusals).
   After it the reader names a stale row (`SHEET_FRONT_DOOR.md` §7.6), so the write-back witnesses expect F10 named after a D10 + D28 edit.
 - **History inside the file DONE (witness) 2026-11-27** (bim-ootb #3481, #3482; spec §4.5, results §4.6); the sheet panel closes (#3485).
+- **State 2026-11-28:** what is open for the PDF side is in the **▶ OPEN LIST** of `SHEET_FRONT_DOOR.md` (items 8, 13, 20, 21-24).
 - **Next for the editor = P1 organise**, then P2; the lane's overall next step is in the ▶▶ block of `SHEET_FRONT_DOOR.md`.
 - Sister lane: `prompts/SHEET_FRONT_DOOR.md` (the PDF→sheet report reader S10 and history S9 are the extras this editor gets for free).
 
