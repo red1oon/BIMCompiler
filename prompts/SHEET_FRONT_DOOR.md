@@ -820,3 +820,156 @@ the base rows and were not judged. Handed-over rows are base rows: the page's hi
 WITHOUT filing offers no link (the link appears after a filing). The kept hand-over is never pruned from `localStorage` (about 12 KB per filing; a full store is said in words,
 not witnessed). The note on the page is English only. The door files invoices only; the order path was shown at the hook, not at the door. W-WINDOW-SWEEP was run on
 9 of 332 windows. W-DOOR-ERP is not wired into CI (same as S1, S3, S3b, S9). A phone was not tried.
+
+## 11. Slice S4 — WPS: the menu on it, the file with it, and mobile (spec 2026-11-27, before code)
+Owner, 2026-11-27: *"Make it work on or with WPS, the Chinese clone of MSExcel. In mobile can it work with the mobile version? Or we just use it as now as served by our URLs?"*
+Three answers, each proven as far as this machine can: (1) **ON** WPS desktop = a WPSJS add-in on the same host interface (§8.1); (2) **WITH** WPS on any device = the
+no-add-in path of §9 (a workbook WPS saves, opened in `file_it.html`; the PDF page's `.xlsx` opened back in WPS); (3) **mobile** = what the sources say, with UNKNOWN where
+they are silent. **WPS is NOT installed here (only LibreOffice at `/usr/bin/soffice`) and no software is installed for this slice: real WPS is NOT run.** Everything
+under (1) is proven against a FAKE WPS object model written only from the API names cited below, exactly as S3 did for Excel; (2) uses LibreOffice as a STAND-IN for
+"saved by another office suite" (WPS's own writer is NOT run); (3) uses headless Chromium device emulation, which is not a phone.
+Code (bim-ootb): `erp/sheet_addin/wps_host.js`, `erp/sheet_addin/wps/{ribbon.xml, index.html, main.js, ribbon.js, jsplugins.xml, images/}`, `taskpane.js`/`taskpane.html`
+(host chosen by what exists), `excel_host.js` (two helpers exported, no change of behaviour). Witnesses `erp/tests/witness_sheet_wps.js` (node, W-SHEET-WPS) and
+`erp/tests/witness_sheet_wps_page.js` (headless Chromium, W-SHEET-WPS-PAGE); the fake WPS object model is `erp/tests/fake_wps.js`.
+
+### 11.1 Sources (EXTRACT, never invent; every WPS name used must be on this list, read 2026-11-27)
+**Finding 0 (stated first): the WPS developer documentation site is not readable by a fetch tool.** `open.wps.cn/documents/...` is a client-rendered single-page app: the
+server returns an empty shell (`<div id="root">`, 609 bytes); `solution.wps.cn/docs/client/api/...` is the WPS *WebOffice* (server/web SDK) product, a different object model, NOT used.
+What WAS read are WPS's own published toolkit packages on npm (same maintainer account for both; the scaffold of one depends on the other), which are the add-in's real
+file layout and the ET object model as typings. Where the doc site would say more, this section says UNKNOWN.
+- **[S-A] `wpsjs` 2.2.3** (WPS add-in toolkit; npmjs.com/package/wpsjs; tarball registry.npmjs.org/wpsjs/-/wpsjs-2.2.3.tgz). Its spreadsheet scaffold `packages/@wps-jsapi/et/`
+  is the layout a WPSJS spreadsheet add-in has: `ribbon.xml` (`<customUI xmlns="http://schemas.microsoft.com/office/2006/01/customui" onLoad="OnAddinLoad">`, `ribbon/tabs/tab/group/button`,
+  callbacks `onAction`, `getImage`, `getLabel`, `getEnabled`, `getVisible`), `index.html` (comment: the add-in's entry file, WPS loads it at startup; it loads `main.js`), `main.js`
+  (`document.write` of `js/ribbon.js`), `js/ribbon.js` (global functions `OnAddinLoad(ribbonUI)`, `OnAction(control)` with `control.Id`, `GetImage(control)`; calls
+  `window.Application.ActiveWorkbook`, `.PluginStorage.setItem/getItem`, `.CreateTaskPane(url)` -> `.ID` / `.Visible`, `.GetTaskPane(id)`, `.ShowDialog(url, title, w, h, modal)`),
+  `js/taskpane.js` (a pane page reads `window.Application.ActiveSheet.Cells.Item(1, 1).Formula`: Item is 1-based), `manifest.xml` (only for custom functions, not needed here).
+  **Install / deploy** from `src/lib/publish.js`, `debug_xmlplugin.js`, `debug_publish.js`: *online mode* = a server directory whose `ribbon.xml` is reachable (the tool says the
+  address must end with `/` and `<address>ribbon.xml` must open as text starting `<customUI`); the user's WPS learns of it from `<jsplugins><jspluginonline name type url .../></jsplugins>` with
+  `type` = `et` for a spreadsheet add-in (`debug_xmlplugin.js`: `addonType ... "et"`); `publish.xml` lives at `%APPDATA%/kingsoft/wps/jsaddons/publish.xml` (Windows),
+  `~/Library/Containers/com.kingsoft.wpsoffice.mac/Data/.kingsoft/wps/jsaddons/publish.xml` (macOS), `~/.local/share/Kingsoft/wps/jsaddons/publish.xml` (Linux) (`debug_publish.js GetPublistXmlPath`);
+  the user-facing install page (`res/publish.html`) talks to a local service of the desktop client, `http://localhost:58890/deployaddons/runParams` (HTTP 58890, HTTPS 58891).
+  **Platform evidence in the same package** (README release notes): "v1.4.6 fixes debug failing under linux", "v1.4.10 ... error on linux" , "v2.1.8 added PC HarmonyOS (鸿蒙) adaptation code",
+  "v2.2.0 added Mac adaptation code"; its platform branches are `win32`, `darwin`, else Linux; **no Android or iOS branch anywhere**.
+- **[S-B] `et-jsapi-declare` 2.5.0** (npmjs.com/package/et-jsapi-declare; the scaffold's `devDependencies`; file header "Copyright @ 2012-2019, Kingsoft office"; its licence forbids
+  modification or sale, so NOTHING of it is copied into the repo: names only). `index.d.ts`: `window.Application` is the recommended global; **`EtApplication` is marked `@deprecated`**
+  ("use the global Application object") — so the task's `wps.EtApplication()` is not used; `CreateTaskPane(url, title?)` (comment: set `Visible = true` to show), `GetTaskPane(id)`,
+  `CustomTaskpane { Delete(), DockPosition, ID, Visible, Navigate(url), Width... }`, `PluginStorage { setItem(key, number|boolean|string), getItem(key): string }` (not persisted, shared between the
+  pages of one add-in), `RibbonUi { Invalidate, InvalidateControl, ... }`. `lib.et.d.ts`: `Application { ActiveSheet, ActiveWorkbook, ActiveCell: Range, UserName: string, Workbooks }`;
+  `Workbook { Name, Worksheets: Sheets, Sheets, ActiveSheet, Save() }`; `Sheets { Add(Before?, After?, Count?, Type?): Worksheet, Count, Item(Index: string|number) }`;
+  `Worksheet { Name, Visible: XlSheetVisibility, Cells: Range, Range(Cell1, Cell2?), UsedRange: Range, Activate(), Delete() }`; `enum XlSheetVisibility { xlSheetVisible = -1, xlSheetHidden = 0,
+  xlSheetVeryHidden = 2 }`; `Range { Value2: string|Array, Formula: string, NumberFormat: string, Row, Column, Rows, Columns, Count, Cells, Item(RowIndex, ColumnIndex?), Worksheet, Clear(), Address(...) }`.
+  **These are typings: they give names and shapes, not behaviour** (what a date cell's `Value2` holds, whether a missing sheet's `Item` throws, 0 or 1 based `Sheets.Item`, whether `Sheets.Add`
+  activates the new sheet): all UNKNOWN until real WPS runs, and each is a stated assumption in 11.2.
+- **[S-C]** `forum.wps.cn/topic/86364` (WPS developer forum, 2026-04-25; WPS staff reply 2026-04-29): in a `toggleButton`, `onAction` receives `(pressed, control)` in WPS but `(control, pressed)` in the
+  VBA ribbon standard; WPS replied it will consider compatibility, no date. **Our ribbon uses `button` only** (`onAction(control)`, as the scaffold does), so the difference does not touch this slice.
+  `forum.wps.cn/topic/47510` (2024-12-26): on macOS the in-app install did not work for the poster (the 58890 connection failed); a hand-edited `publish.xml` did.
+- **[S-D] Microsoft** `learn.microsoft.com/en-us/office/dev/add-ins/overview/office-add-in-availability` (`ms.date` 2026-08-13): the Excel rows are Office on the web, Windows (365, 2021 retail, 2024 / 2021
+  volume), Mac, and **Office on iPad (Microsoft 365)** (task pane and content add-ins, ExcelApi 1.1 to 1.21). Excel on iPhone and Excel on Android are **not in the table** (the phone footnotes there belong to Outlook).
+- **[S-E] discounted:** `bbs.wps.cn/topic/82371` (a community post, 2026-02-11, titled as a DeepSeek comparison) claims WPS add-ins cover "Win/Mac/Linux/Android/iOS/Web"; its author's own comment says it is "mainly based on
+  the situation in 2021", it cites nothing, and it contradicts [S-A]. Not relied on.
+
+### 11.2 Design
+- **`wps_host.js`** = the SAME host interface as §8.1 (`readCells`, `writeCells`, `readSheetValues`, `getHidden`, `setHidden`, `userName`, `activeSheet`, `visibleSheets`, `selectedCell`), over the WPS
+  `Application` object. `create(app, deps)`; `deps.ex` = the Excel layer's two value rules (`engineValue`: a date-formatted number as its ISO day, 15 significant digits; `textForCell`: a written text
+  starting `=` gets an apostrophe) — ONE rule, not a copy (AD-LAYER rule 5); `host_shim.js` does not change; the host holds no invoice word, no cell address, no logic. Mapping, every name from [S-B]:
+  sheet by name = walk `Workbook.Worksheets` with `Count` and `Item(i)` (1-based, as `Cells.Item` is in [S-A]) comparing `.Name`; a cell = `Worksheet.Range("B3")` then `.Value2`, `.NumberFormat`; **never a
+  multi-cell `Value2`** (the shape of an array result is UNKNOWN): a used range is walked cell by cell with `UsedRange.Row/Column/Rows.Count/Columns.Count` and `Cells.Item(r, c)`; formula = `.Formula`
+  starting `=`; a hidden sheet = `Sheets.Add()`, `.Name = n`, `.Visible = 2` (xlSheetVeryHidden), then the previously active sheet `.Activate()`d again (assumption: `Add` activates, as Excel's does); its cells
+  are written one by one with `NumberFormat = "@"` BEFORE `Value2` (a chunk of digits, or one starting `=`, stays text; assumption: WPS honours `@` as Excel does); rewrite = `UsedRange.Clear()`;
+  who = `Application.UserName` (WPS's own user name, unlike Excel's workbook-setting; the pane's name box is therefore read-only there); selected cell = `ActiveCell` with `.Worksheet.Name`, `.Row`, `.Column`.
+- **The add-in files** `erp/sheet_addin/wps/`, laid out as [S-A]'s scaffold: `ribbon.xml` (one tab "Sheet Door", one group, four `button`s: `btnFileIt`, `btnStamp`, `btnCellHistory`, `btnCheckHistory`),
+  `index.html` -> `main.js` -> `ribbon.js` (`OnAddinLoad`, `OnAction`, `GetImage`; an id -> action table `{btnFileIt: fileit, ...}`, nothing else), `images/door.svg`, and `jsplugins.xml`
+  (`<jspluginonline name="SheetDoor" type="et" url="https://red1oon.github.io/bim-ootb/erp/sheet_addin/wps/"/>`, the attributes the tool itself writes for an online add-in). `OnAction` opens the pane:
+  first click `CreateTaskPane(<taskpane.html?action=..>)`, `.Visible = true`, its `ID` kept in `PluginStorage`; later clicks `GetTaskPane(id)`, `.Navigate(<url>)`, `.Visible = true` (a pane that no longer
+  exists: create anew). The pane URL is resolved from the entry page's own address (`../taskpane.html`, the scaffold's `GetUrlPath()` way), so a debug copy works too.
+- **ONE pane, not two.** `taskpane.html` / `taskpane.js` / `runner.js` are reused; `taskpane.js` picks the host by what exists (`window.Application.PluginStorage` -> WPS host; else Office.js -> Excel host). Two changes
+  follow from WPS: the Office.js `<script>` is written only when no WPS `Application` exists (a pane in WPS must not wait on a Microsoft CDN), and the name box is read-only when the host cannot set a name.
+  **Whether a pane served from a remote https address receives `window.Application` at all is UNKNOWN** ([S-A]'s pane is a local file and calls it directly): if it does not, the pane says so in words and the
+  four actions stay on the page route (§9). This is the first thing a real-WPS run must settle.
+- **WITH (no add-in):** §9's `file_it.html` + the PDF page's `.xlsx`. What is measured here: a workbook re-saved by LibreOffice (stand-in) and what it loses; both pages at a phone viewport.
+
+### 11.3 Claims (W-SHEET-WPS `§SWPS-<case> verdict=PASS|FAIL|INCONCLUSIVE judged=N failed=M`; W-SHEET-WPS-PAGE `§SWPP-<case> ...`; INCONCLUSIVE when nothing was judged; a mutant that crashes is not a kill)
+| ID | Claim | Issue it exposes | Falsifier (mutant) |
+|----|-------|------------------|--------------------|
+| P1 SAME | The one shim, driven through `wps_host.js` on the fake WPS object model, gives the same verdict, the same writes, the same read set (exactly the template's cells, built by hand in the witness), the same C_Invoice + lines + Fact_Acct fingerprint, and (clock and ids fixed) the same ledger line BYTE FOR BYTE as through the plain fake host and through `excel_host.js` on the fake Office.js; no decoy cell is read or written | the WPS layer adds, loses or reformats something (twin breach) | M1 host reads the whole sheet; M6 date conversion dropped |
+| P2 WRITESET | Visible writes == the engine's `writes` == {docno, status}; a cell-by-cell diff of the whole workbook shows only the status cell changed; a wrong subtotal (153.51) writes only the status cell ("Not filed: ..."), adds no ledger row, the kernel journal does not move | the menu writes outside its tags; a refusal leaves a trace | M2 host writes one extra cell |
+| P3 LONG | A history entry of >32,767 characters (453 cells incl. emoji) is split across chunks, none truncated by the fake (it truncates like the real limit), re-joined byte for byte, `ws_kernel.verifyJournal` accepts it; a second Stamp is NO-OP and writes nothing; one edit then Stamp = one row, one CELL_SET; one character changed in the LAST chunk is caught by Check history, a broken history refuses Stamp | a long entry is truncated silently; tamper in a split entry slips through | M7 text format skipped (a digit-only chunk is coerced) |
+| P4 HIDDEN | `_door_*` sheets are created `Visible = 2`; rows written come back identical (digit-only, `=`-leading, padded text, ragged rows); a rewrite leaves no stale cell; the user's active sheet is the same after the sheet was added | a hidden sheet shows, or its text is coerced by the host | M5 hidden sheet left visible; M7 |
+| P5 VALUES | A date serial with a date `NumberFormat` reaches the engine as its ISO day; 123.50000000000001 as 123.5; blank as null; text stays text; a written `=1+1` stays text; `ActiveCell` on a quoted sheet name parses to {sheet, cell}; the user's name is `Application.UserName` | the engine is fed WPS's raw values | M6 |
+| P6 CITED | The fake WPS object model THROWS on any member not in its cited list (each name carries its [S-x] in the fake's source); every member name `wps_host.js` and `ribbon.js` use is on that list or is a plain JS name; a name off the list fails | an API name invented, not extracted | M10 host uses a name not on the list |
+| P7 RIBBON | `ribbon.xml` parses with an independent parser (python3 `xml.etree`) and is `<customUI>` in the Office customUI namespace; its button ids == the `OnAction` table's ids both ways; every callback it names (`onLoad`, `onAction`, `getImage`) is a global function in `ribbon.js`; the table's actions == `SheetAddin.ACTIONS` both ways; every `getImage` target exists; `index.html` loads `main.js` and `main.js` loads `ribbon.js`; the pane URL resolved from the entry address is `taskpane.html` under `https://red1oon.github.io/bim-ootb/erp/sheet_addin/`, and so is `jsplugins.xml`'s url (ends `/`); ids unique; no `toggleButton` (the [S-C] difference) | a button that does nothing, or code no button reaches | M3 a ribbon button without a handler; M9 a handler id renamed |
+| Q1 PANE | The REAL `taskpane.html`, with a fake WPS `Application` injected before the page loads and no Office.js: it chooses the WPS host; Stamp RECORDED (cells from the fake workbook); File it FILED with the oracle fingerprint through the pane's own runner; the name box is read-only and shows `UserName`; no request goes to a Microsoft host | the pane is Excel-only, or waits on a CDN | M12 pane always picks the Excel host |
+| Q2 RESAVE | The lane's sample workbook, filed (one `_door_ledger` row), stamped (a history entry > 32,767 chars) and re-saved through LibreOffice headless (`soffice --convert-to xlsx`; STAND-IN, WPS's writer not run): measured per attribute (the `_door_*` hidden state, ledger and history chunk text byte for byte, formulas, date number format, cell values), then opened in the real `file_it.html`: `_door_tags` read, FILED, the ledger line replays (2 rows chained), same fingerprint as the original; the `.xlsx` of the PDF page (its history sheets) through the same re-save; any `_door_*` sheet visible after the re-save fails the claim | the file does not survive another suite; the loss is unmeasured | M4 the re-save step makes `_door_tags` visible (not detected = FAIL) |
+| Q3 MOBILE | `file_it.html` and `pdf/index.html` at 390 x 844 (device pixel ratio 3, mobile and touch emulation): `scrollWidth <= innerWidth` (no horizontal scroll) on load and after a result is shown; the file control accepts a file; a sample invoice files (FILED) and a PDF opens (`§PDFED-OPEN ok=true`); logged `§DOOR-MOBILE` = first-load bytes, boot ms, JS heap MB after boot and after filing | the pages only work on a desktop width; the phone cost is unmeasured | M13 the page forced wide |
+**Not claimed (up front):** real WPS (desktop, any OS) and WPS mobile; whether a remote https pane receives `window.Application`; WPS's real `Value2` / `Sheets.Item` / `Sheets.Add` / `@`-format behaviour
+(all assumptions above); the ribbon's rendering; the install flow (`publish.xml`, port 58890) — written from the tool's source, not run; WPS's own xlsx writer (LibreOffice is only a stand-in); a real phone
+(Chromium emulation sets viewport, pixel ratio, touch and user agent, not the phone's memory, CPU or WebView); WPS mobile and Excel mobile add-ins; CI wiring.
+
+### 11.4 RESULTS — S4 (2026-11-27, bim-ootb `feat/sheet-addin-wps`, PR #3486)
+Commands: `SWPS_MUTANTS=1 node erp/tests/witness_sheet_wps.js` and `env -u DBUS_SESSION_BUS_ADDRESS SWPP_MUTANTS=1 node erp/tests/witness_sheet_wps_page.js`. **REAL WPS WAS NOT RUN** (not installed here, nothing installed for this slice):
+every WPS claim below is against the FAKE object model `erp/tests/fake_wps.js`, which is built only from the names in §11.1 and THROWS on any other (its 9 behavioural assumptions are printed as `§SWPS-FAKE-ASSUMES`).
+```
+§SWPS-P1 PASS 8/8 · P2 PASS 6/6 · P3 PASS 11/11 · P4 PASS 6/6 · P5 PASS 6/6 · P6 PASS 5/5 · P7 PASS 13/13
+§SWPS-CITED wps_host.js uses 23 WPS names: Activate ActiveCell ActiveSheet ActiveWorkbook Add Cells Clear Column Columns Count Formula Item Name NumberFormat Range Row Rows UsedRange UserName Value2 Visible Worksheet Worksheets
+§SWPS-COST stampGenesisChars=90979 cells=453 chunks=3
+§SWPS-MUTANTS killed=8/8  (reads whole sheet→P1, extra cell written→P2, hidden sheet left visible→P4, date conversion dropped→P5, text format skipped→P4, a name off the list→P6, ribbon button without handler→P7, handler id renamed→P7)
+§SWPS-VERDICT PASS judged=55 failed=0 cases=["PASS","PASS","PASS","PASS","PASS","PASS","PASS"] (fake WPS object model; real WPS NOT run)
+§SWPP-Q1 PASS 4/4 · Q2 PASS 15/15 · Q3 PASS 8/8
+§SWPP-MUTANTS killed=3/3  (pane always picks the Excel host→Q1, page forced wide→Q3, the re-save un-hides the _door_ sheets→Q2)
+§SWPP-VERDICT PASS judged=27 failed=0 cases=["PASS","PASS","PASS"] (headless Chromium; fake WPS Application; openpyxl stand-in for the re-save; device emulation; real WPS NOT run)
+```
+Old witnesses on the touched files: W-SHEET-ADDIN still `PASS judged=59`, mutants 11/11 (its fake hosts moved to `erp/tests/sheet_fakes.js`: that file −136 lines, the shared module +146, `fake_wps.js` and the two new witnesses are additions);
+W-FILE-IT `PASS judged=40`, mutants 9/9 (its pane case F10 and mutant M8 run against the changed `taskpane.js`); W-SHEET-DOOR 21 and W-SHEET-HISTORY 20 unchanged. `gen_manifest --check` PASS; eslint clean on everything touched.
+- **P1 SAME:** the one shim through `wps_host.js` on the fake WPS gives the same verdict, writes, read set (exactly the 60 template cells, each once, no decoy), C_Invoice + lines + Fact_Acct fingerprint and — clock and ids fixed — the same
+  11,594-character ledger line byte for byte as the plain host and `excel_host.js` on the fake Office.js. P2: writes == {docno, status}; a wrong subtotal writes only the status cell, no ledger row, journal unmoved. P3: a 90,979-character history
+  entry (453 cells) stored as 3 chunks, re-joined byte for byte, `verifyJournal` accepts it; NO-OP stamp writes nothing; one edit = one CELL_SET; a changed character in the LAST chunk is caught and refuses Stamp. P4: hidden sheets created
+  `Visible = 2`, digit-only / `=`-leading / padded rows come back identical, the user's active sheet unchanged. P5: date serial -> ISO day, 15 digits, blank -> null, `=1+1` written as text, `ActiveCell` and `UserName`.
+  P7: `ribbon.xml` parses (python `xml.etree`), 4 plain `button`s (no `toggleButton`), ids == the `OnAction` table both ways, actions == `SheetAddin.ACTIONS`, every callback is a global function, and `ribbon.js` RUN on the fake WPS creates the pane once, then
+  `Navigate`s it to `…/erp/sheet_addin/taskpane.html?action=<id>` for each button; `jsplugins.xml` is the https base ending `/`, type `et`.
+- **Q1 PANE:** the real `taskpane.html` with the fake `window.Application` injected and no Office.js: Stamp RECORDED through the WPS host into a very hidden sheet; File it FILED with the engine's own fingerprint; the name box is read-only and shows `UserName`;
+  no request to a Microsoft host. **Q2** and **Q3** below.
+
+**Q2 — the file re-saved by another writer (stand-in). LibreOffice CALC IS NOT INSTALLED here** (deviation from §11.3: `soffice` exists but with Writer / Math / Base only; `§SWPP-STANDIN soffice=/usr/bin/soffice converts_csv_to_xlsx=NO said="... Error: source file could not be loaded"`).
+The stand-in is **openpyxl 3.1.5** (an independent xlsx reader + writer in Python, not an office suite and not WPS). What the re-save of a filed + stamped workbook (one ledger row, a 93,556-character history entry in 3 chunks, 451 text cells) measured:
+```
+§SWPP-LOSS hidden-state (SheetJS Hidden: 0 visible, 1 hidden, 2 very hidden): _door_tags hidden 2->2 | _door_ledger hidden 2->2 | _door_history hidden 2->2
+§SWPP-LOSS chunks _door_ledger: rows 1->1 joined lines 1->1 chars 11567->11567 · _door_history chars 93556->93556 cells per row [3]->[3] · _door_tags 308->308
+§SWPP-LIMIT formula-cells ["G8","G9","G20"]: after the re-save our reader (SheetJS) sees 3 of them as EMPTY cells; the saved file still holds the formulas for openpyxl itself: {"G8":"=D8*E8","G9":"=D9*E9","G20":"=SUM(G8:G18)"}
+§SWPP-LIMIT add-up-check subtotal cell G20 reaches the engine as null and amount G8 as null after this re-save: with a blank printed subtotal the engine runs NO adds-up check, so the file is filed unchecked
+§SWPP-LIMIT astral-character original=[... 1f600 ...] after-resave-read-by-SheetJS=[... f600 ...] after-resave-read-by-openpyxl=[... 1f600 ...]
+§SWPP-LIMIT pdf-page formula-cells ["C28","D28","E28","F28"] (the totals): empty after the re-save for the same reason; the other 140 report cells are unchanged
+```
+Kept (judged): every `_door_*` sheet still hidden (very hidden stayed very hidden; the mutant that un-hides them is killed); the ledger and history lines byte for byte, and both still verify (`SheetHistory.verify` and `ws_kernel.verifyJournal`); the 28 - 3 plain cells of the sheet and the 451 text cells
+(accents, a CJK character); the date cell still reaches the engine as `2026-11-20`. The re-saved workbook opened in the REAL `file_it.html` is FILED, its ledger replays, the chain is 2 entries (seq 1, 2, the second linked to the first) and the new invoice has the fingerprint the ORIGINAL file gives
+in node. The PDF page's own `.xlsx` (Report + hidden `_door_source` + very hidden `_door_history`): hidden flags kept, history line identical and verifying, 140 of 144 report cells unchanged.
+**Two findings from the loss table (neither fixed here; both are the READER's):** (1) a writer that does not calculate (openpyxl) saves a formula with no cached result; `erp/xlsx.mini.min.js` then yields NO cell, so the amount cells and the printed subtotal vanish and File it files with its
+adds-up check silently off (the S1 rule: a blank subtotal is not checked). Excel, WPS and LibreOffice are expected to keep cached results (UNKNOWN until WPS runs); the hazard is a workbook whose formula results are missing, which the engine cannot tell from one that never printed a subtotal.
+(2) a character beyond U+FFFF (an emoji) stored by another writer as an INLINE string is read by the vendored SheetJS as U+F600 (the writer is right: openpyxl reads its own file back as U+1F600; SheetJS reads its OWN shared-string files right). A cell of the user's text holding an emoji would
+then make the next Check history report the sheet history as edited. Excel and LibreOffice write shared strings; WPS UNKNOWN. A fix belongs in the vendored reader or a pre-pass, a separate slice.
+
+**Q3 — both pages at a phone viewport (headless Chromium EMULATION: 390 x 844, pixel ratio 3, mobile flag, touch events; no user agent was set; NOT a phone: no phone memory, CPU or WebView):**
+```
+§DOOR-MOBILE page=file_it.html viewport=390x844 dpr=3 touch=true emulated=true requests=59 firstLoadBytes=33695207 (to the engine ready; the page alone was 2041322) bootMs=887 fileMs=126 jsHeapMBAfterBoot=123 jsHeapMBAfterFiling=42 scrollW=390 innerW=390 (device emulation, not a phone)
+§DOOR-MOBILE page=pdf/index.html viewport=390x844 dpr=3 touch=true emulated=true requests=9 firstLoadBytes=753851 openMs=276 jsHeapMBAfterLoad=4 jsHeapMBAfterRead=6 scrollW=390 innerW=390 (device emulation, not a phone)
+```
+Both pages: `scrollWidth == innerWidth` (no horizontal scroll) on load and with the document, its books (file_it) or the read-as-sheet grid (PDF page) on screen; the file control opened a file by TAP through a real chooser; the workbook filed (FILED) and the trial-balance PDF opened and read (ADDS_UP, 144 cells).
+Weight: file_it.html is 33.7 MB to first use (the seed) and 123 MB of JS heap at boot on desktop Chromium; whether a phone tab survives that is UNKNOWN (§9.5; the PERF BUDGET puts a phone near 0.6 GB per tab, unverified). The PDF page is 0.75 MB and 6 MB of heap.
+
+**The mobile answer, from sources (§11.1):**
+1. **WPS mobile (Android / iOS) running WPSJS add-ins: UNKNOWN.** No WPS page that says so was readable (the docs site is a script-rendered page that returns an empty shell); the official toolkit `wpsjs` 2.2.3 has install and debug branches for Windows, macOS, Linux and PC HarmonyOS and none for Android or iOS, and its install page talks to a local service of the
+   desktop client on port 58890; one uncited community post (self-described as 2021 information) claims all platforms and is not relied on. **Excel mobile running Office add-ins:** Microsoft's availability table (`ms.date` 2026-08-13) lists Excel on **iPad** (Microsoft 365, task pane) and does not list Excel on iPhone or Android.
+2. **Recommendation that follows:** desktop = the menu inside the app (Excel add-in, WPS add-in); phones = our URLs with the user's own file, no add-in: `file_it.html` and the PDF page fit a 390-px width and work by touch in emulation, with the 33.7 MB first load of `file_it.html` as the open cost; a user on an iPad with Microsoft 365 could also load the Excel add-in (not tried).
+3. **What this does NOT settle:** a real phone, WPS mobile's own capabilities, and whether a WPS-saved workbook behaves as the stand-in did (WPS's writer was not run).
+
+**Findings (each from a check or a measurement):**
+0. **The WPS docs site cannot be read by a fetch tool; the add-in layout and the object-model names came from WPS's own published packages `wpsjs` and `et-jsapi-declare`** (names and shapes, not behaviour). 1. **`EtApplication` is `@deprecated`** in those typings in favour of the global `Application`; the task's `wps.EtApplication()` is not used.
+2. **`CustomTaskpane.Navigate(url)` exists**: the Excel add-in's open question (does a second button re-navigate the pane to its `?action=`) has a documented WPS answer on paper: `GetTaskPane(id).Navigate(url)` (P7 runs it on the fake). 3. **The shim did not change; the Excel layer exported two helpers** (`textForCell`, `strRow`) so the WPS layer reuses one value rule.
+4. **Pane choice by what exists:** `taskpane.js` picks the WPS host when `window.Application.PluginStorage` exists and writes the Office.js `<script>` only otherwise (a WPS pane must not wait on a Microsoft CDN); the manifest tool needed `wps_host.js` and `wps/main.js` registered, its Office.js tag entry removed, and wrote a `CACHE_VERSION` bump in `erp/sw.js` and an unrelated `uses` change that were both reverted
+   (`sw.js`, `idempiere.html`, `ws_kernel.js` untouched). 5. **Witness defects found by running it:** the first page run showed LibreOffice cannot load a spreadsheet here (a would-be PASS never ran); a P7 check failed after the manifest tool added `?v=` to `index.html`'s script tag (the check now accepts it).
+
+**Not yet (stated, not hidden):** REAL WPS (desktop on Windows / Linux / macOS) and WPS mobile are not run. In particular UNKNOWN until WPS runs: whether a pane served from `https://red1oon.github.io/…` receives `window.Application` at all (the scaffold's pane is a local file); a date cell's `Value2`; whether `Sheets.Item` is 1-based and
+`Sheets.Add()` activates the new sheet; whether the `@` text format is honoured; the ribbon rendering; the install flow (`publish.xml`, port 58890 — written from the tool's source, not run; the macOS in-app install is reported broken by one forum poster, §11.1 [S-C]); WPS's own xlsx writer (openpyxl only); a real phone; the two reader findings above (cached formula results, astral inline strings) are open;
+the witnesses are not wired into CI.
+
+**Merged and deployed (2026-11-27):** bim-ootb PR #3486 merged as `9561b7ce` (CI fast-checks, e2e-tests, live-json-editor green; the deploy to GitHub Pages ran on that commit). Fetched back: `https://red1oon.github.io/bim-ootb/erp/sheet_addin/wps/ribbon.xml` 200, byte-identical to the merged file (825 bytes, `<customUI ...>`), so is `wps/jsplugins.xml` (134 bytes);
+`wps/index.html`, `wps/main.js`, `wps/ribbon.js` (the deploy's minified build, the global handler names `OnAddinLoad`, `OnAction`, `GetImage` and the table `ACTION_OF` intact), `wps_host.js` and `taskpane.html` all 200. Nothing was installed into a WPS (none here): the URL WPS would be given is `https://red1oon.github.io/bim-ootb/erp/sheet_addin/wps/`.
