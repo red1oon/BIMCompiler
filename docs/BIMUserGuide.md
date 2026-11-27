@@ -802,8 +802,9 @@ reads *4D Window — tap to generate a programme*). The full timeline, playback 
 The **Issues** panel (key **I**) is the building's issue log: one list per building, each entry a snag with its photo
 and annotation. Open an entry for its detail view; a clash snag also carries a deep link that flies to that clash.
 **Export Excel** and **Export BCF** write the list out, and **Clear All** deletes every logged issue after a
-confirmation. The log is kept in this browser (IndexedDB), not on a server. An empty list says *Use Site Camera to snap
-and save photos*: the camera is the mobile tool described under **Mobile-only** below.
+confirmation. The log is kept in this browser (IndexedDB), not on a server. An empty list says *To log one: start a Walk, tap the
+element, then 📸 Snag*: the **Snag** button shows on an element's card only while a Walk is on, and it opens the Site
+Camera (the mobile tool described under **Mobile-only** below).
 
 *Written from the tool's own help text and code header, 2026-11-17. No screenshot yet.*
 

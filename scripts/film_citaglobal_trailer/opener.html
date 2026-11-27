@@ -37,7 +37,7 @@ const STR = {
             ['Tiada AI di dalam','Input sama, jawapan sama. Data anda kekal milik anda.']] },
 };
 // FILM-M1 "the phone, fast" (MOBILE_PERF.md §FILM-M1): same world, its own captions/phases; the trailer (film '') is unchanged
-const M1 = { en: { hospital:'Site A', civil:'Site B', cap1:'The phone, fast.', sub1:'Walk the site, snag it, and HQ sees the same view.', end1:'Fast on the phone.', end2:'Every step on the record.' } };
+const M1 = { en: { hospital:'Site A', civil:'Site B', end1:'Fast on the phone.', end2:'Every step on the record.' } };
 let FILM='';
 let LANG='en'; const T=(k)=>(FILM==='m1'&&(M1[LANG]||M1.en)[k]!==undefined?(M1[LANG]||M1.en)[k]:STR[LANG]&&STR[LANG][k]!==undefined?STR[LANG][k]:STR.en[k]);
 // ---------- world geometry (all in 1920x1080 world units) ----------
@@ -178,7 +178,7 @@ const PHASES = {
 const PHASES_M1 = { intro: { dur: 3.2 }, outro: { dur: 4.0 } };
 function stateAtM1(phase, t, q){
   const m=M1[LANG]||M1.en, st={ cam:OVER, linkOn:{A:true,B:true}, stack:{A:0,B:0}, packets:[], hqLit:1, phoneHref:q.phone||null, phoneBHref:q.phoneB||null, hqHref:q.hq||null, cap:'', sub:'', capAlpha:0, endCard:0, blink:false };
-  if (phase==='intro'){ st.cap=m.cap1; st.sub=m.sub1; st.capAlpha=clamp(t/0.3,0,1)*clamp((2.3-t)/0.25,0,1); st.cam = t<2.2 ? OVER : camLerp(OVER, PHONE_FULL, (t-2.2)/0.9); }
+  if (phase==='intro'){ st.capAlpha=0; /* rc4 (MOBILE_PERF §2026-11-28 point 1): the chapter card already says it; no caption over the zoom */ st.cam = t<2.2 ? OVER : camLerp(OVER, PHONE_FULL, (t-2.2)/0.9); }
   else if (phase==='outro'){ st.phoneHref = q.phoneOut || q.phone || null; st.phoneBHref = q.phoneBOut || q.phoneB || null; st.hqHref = q.hqOut || q.hq || null;
     st.cap=m.end1; st.sub=m.end2; st.capAlpha=clamp((t-0.6)/0.4,0,1); }
   return st;

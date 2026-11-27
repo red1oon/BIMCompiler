@@ -68,6 +68,9 @@ const FACTS = {
   clash_fallback:['C', '§CLASH_SNAG_SHARE_PANEL shown \\(desktop fallback\\)', 0],
   clash_link:   ['C', '§M1_SHARE url=\\S+ carries=#clash=\\S+ overlap_mm=\\d+ severity=.* idb_clash_rows=(\\d+) checks=all_pass'],
   send_via:     ['S', '§HQ_SEND via=(team) drop='],
+  off_issues:   ['S', '§M1_OFFLINE_WORK onLine=false issues_saved=(\\d+)'],
+  off_badge:    ['S', '§M1_OFFLINE on onLine=false badge="([^"]+)"'],
+  on_drops:     ['S', '§M1_OFFLINE off onLine=true folder_drops 0->(\\d+)'],
   send_status:  ['S', '§M1_SYNC_SEND status="([^"]+)" share_sheet=none'],
   get_added:    ['S', '§HQ_GET drops=\\d+ new=\\d+ issues_added=(\\d+)'],
   get_from:     ['S', '§M1_SYNC issue_from=(\\S+) photo_equal=true'],
@@ -91,7 +94,9 @@ const CAPS = {
   'C:clash_snag':    { text: 'Long-press: snag the clash.', sub: 'A photo with the clash strip (simulated camera), then Share.', source: '§CLASH_SNAG_SAVED', needs: ['clash_saved'] },
   'C:clash_share':   { text: 'Share: the desktop-style panel.', sub: 'This browser has no phone share sheet, so the app shows its own panel. A real phone shows its own share sheet.', source: '§CLASH_SNAG_SHARE_PANEL shown (desktop fallback)', needs: ['clash_fallback'] },
   'C:clash_saved':   { text: 'Saved to the Issue Log, with a link.', sub: 'The link carries the clash, the camera and the tolerance; ${clash_link} clash stored.', source: '§CLASH_SNAG_SAVED; §M1_SHARE idb_clash_rows=${clash_link}', needs: ['clash_saved'] },
-  'S:s_send':        { text: 'Phone: Send to HQ.', sub: '"${send_status}" Through the team folder, no share sheet.', source: '§HQ_SEND via=${send_via}; §M1_SYNC_SEND status="${send_status}" share_sheet=none' },
+  'S:s_offline':     { text: 'No signal on site.', sub: 'The phone shows ${off_badge}. The walk and the snag go on: ${off_issues} issue saved on the phone.', source: '§M1_OFFLINE on badge="${off_badge}"; §M1_OFFLINE_WORK onLine=false issues_saved=${off_issues}' },
+  'S:s_send':        { text: 'Phone: Send to HQ.', sub: '"${send_status}"', source: '§M1_SYNC_SEND status="${send_status}" share_sheet=none' },
+  'S:s_online':      { text: 'Signal back: it sends itself.', sub: 'Into the team folder, sealed (${on_drops} files). Nothing to tap, no share sheet.', source: '§M1_OFFLINE off folder_drops 0->${on_drops}; §HQ_SEND via=${send_via}' },
   'S:s_get':         { text: 'HQ gets the report.', sub: '${get_added} issue from ${get_from}, photo identical. Recorded in sequence: sent first, then fetched.', source: '§HQ_GET issues_added=${get_added}; §M1_SYNC issue_from=${get_from} photo_equal=true' },
   'S:s_replay':      { text: 'HQ replays the phone’s walk.', sub: '${replay_points} points from ${get_from}.', source: '§HQ_REPLAY points=${replay_points} from=${get_from}' },
   'S:s_scrub':       { text: 'Scrub: the camera matches.', sub: 'At each of ${scrub_points} points, HQ’s camera vs the phone’s record: max error ${scrub_err} m.', source: '§M1_SYNC_SCRUB points=${scrub_points} max_err_m=${scrub_err}' },
@@ -108,7 +113,7 @@ const MID = [   // the middle of the film, identical in every plan: real phone b
   // 4 — Clash in detail
   { id: 'clash', kind: 'play', src: 'C', layout: 'phone', beats: ['clash_run', 'clash_pick', 'clash_detail', 'clash_snag_or_share'], hold: { default: 0.7, clash_pick: 1, clash_share: 0.9 }, maxHold: 36 },
   // 5 — report arrives at HQ: S's phone sends, HQ gets / replays / scrubs; true t order
-  { id: 'hq', kind: 'timed', src: 'S', layout: 'phone+desktop', beats: ['s_send', 's_get', 's_replay', 's_scrub'], hold: { default: 1 }, maxHold: 60, lead: 15, morph: { from: 'phone', frames: 24 }, labels: L2 },
+  { id: 'hq', kind: 'timed', src: 'S', layout: 'phone+desktop', beats: ['s_offline', 's_send', 's_online', 's_get', 's_replay', 's_scrub'], hold: { default: 1 }, maxHold: 60, lead: 15, morph: { from: 'phone', frames: 24 }, labels: L2 },   // s_offline / s_online: rc4 (absent when recorded with M1_OFFLINE=0)
   // 6 — two sites: Site B snags its own (A and HQ show their last frames from role S)
   { id: 'sites', kind: 'play', src: 'B', slot: 'B', layout: 'phone+desktop+phone', beats: ['b_walk', 'b_snag'], hold: { default: 0.6 }, maxHold: 24,
     stills: { A: { src: 'S', screen: 'phone', at: 'last' }, hq: { src: 'S', screen: 'hq', at: 'last' } }, morph: { from: 'phone+desktop', frames: 24 }, labels: L3 },
@@ -179,7 +184,7 @@ const useBeats = (src, frames) => { for (const b of new Set(frames.map(f => f.rb
   say(`§STAGE_FRAME_MODE frame=${FRAME} plan=${FRAME === 'trailer' ? 'n/a (rc1 device, fixed)' : fs.existsSync(path.join(W, 'plan.json')) ? 'plan.json' : PLAN_NAME}`);
   const D = [], seg = {}, beatAt = {}, TL = [], mark = n => { seg[n] = D.length; };
   const dbB = (logText('B').match(/db=buildings\/(\w+?)_extracted/) || [])[1] || '?';
-  siteB = ({ HHS_Office_Federated: 'Office', Hospital: 'Hospital', Duplex: 'Duplex', Terminal: 'Terminal' })[dbB] || dbB;
+  siteB = require('./m1_sources.js').siteName(dbB);
   say(`§STAGE_SITE_B db=${dbB} label=${siteB}`);
   if (FRAME === 'trailer') {
     // frame=trailer (rc1, unchanged): reads the rc1 recordings A / B / HQ and the opener stills; captions = the frozen CAP table above
