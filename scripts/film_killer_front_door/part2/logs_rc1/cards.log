@@ -1,0 +1,16 @@
+§CARD beat=cover stills=1 overflow_px=0 (full card)
+§CARD beat=b1a stills=23 overflow_px=0 page_picture=1920x536 typed=20
+§CARD beat=b1b stills=55 overflow_px=0 page_picture=1920x536 typed=17+16+13
+§CARD beat=b1c stills=19 overflow_px=0 page_picture=1920x536 typed=16
+§CARD beat=b2a stills=27 overflow_px=0 page_picture=1920x536 typed=24
+§CARD beat=b2b stills=6 overflow_px=0 page_picture=1920x536 typed=3
+§CARD beat=b3 stills=47 overflow_px=0 page_picture=1920x536 typed=44
+§CARD beat=choice stills=1 overflow_px=0 (full card)
+§CARD beat=b4a stills=55 overflow_px=0 page_picture=1920x536 typed=42+7
+§CARD beat=b4b stills=43 overflow_px=0 page_picture=1920x536 typed=28+7
+§CARD beat=b5a stills=23 overflow_px=0 page_picture=1920x536 typed=18
+§CARD beat=b5b stills=29 overflow_px=0 page_picture=1920x536 typed=26
+§CARD beat=b5c stills=17 overflow_px=0 page_picture=1920x536 typed=13
+§CARD beat=b6 stills=1 overflow_px=0 (full card)
+§CARD beat=prior stills=1 overflow_px=0 (full card)
+§CARDS_DONE beats=15 stills=348 too_tall=0 key_stills=294 return_stills=15

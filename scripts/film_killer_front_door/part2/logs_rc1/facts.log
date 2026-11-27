@@ -1,0 +1,48 @@
+§FACTS boot §PDFED-BOOT pdfjs=3.11.174 reader=function sheetjs=0.18.5 writer=function history=function inFile=function chunks=function
+§FACTS p0 §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=6 reason="4 totals agree with their rows" | page says "Page 1 adds up: 4 totals agree with their rows." | History: 1 entry, verified. It is kept inside the PDF and the .xlsx you download.
+§FACTS shot p0_sheet the trial balance read as a sheet: Page 1 adds up: 4 totals agree with their rows.
+§FACTS edit D10 500.09 | §PDFWR-EDIT cell=D10 ok=true old="498.09" new="500.09" sheetVerdict=DOES_NOT_ADD_UP pdfVerdict=DOES_NOT_ADD_UP agree=true fontSub=none align=right bytes=74939 edits=1 | §PDFWR-HISTORY entries=2 ops=1 cell=D10 before=498.09 after=500.09 typedOverFormula=false | page says "D10 is now 500.09 in the PDF. Page 1 does NOT add up: D28: printed 40392.44 != rows sum 40394.44; F10: printed 1018.16 != F = C + D - E gives 1020.16."
+§FACTS shot p1_d10 D10 changed to 500.09: D10 is now 500.09 in the PDF. Page 1 does NOT add up: D28: printed 40392.44 != rows sum 40394.44; F10: printed 1018.16 != F = C + D - E gives 1020.16.
+§FACTS edit D28 40394.44 | §PDFWR-EDIT cell=D28 ok=true old="40,392.44" new="40,394.44" sheetVerdict=DOES_NOT_ADD_UP pdfVerdict=DOES_NOT_ADD_UP agree=true fontSub=none align=right bytes=74937 edits=2 | §PDFWR-HISTORY entries=3 ops=1 cell=D28 before=40392.44 after=40394.44 typedOverFormula=true | page says "D28 is now 40,394.44 in the PDF. Page 1 does NOT add up: F10: printed 1018.16 != F = C + D - E gives 1020.16."
+§FACTS shot p1_d28 D28: D28 is now 40,394.44 in the PDF. Page 1 does NOT add up: F10: printed 1018.16 != F = C + D - E gives 1020.16.
+§FACTS edit F10 1020.16 | §PDFWR-EDIT cell=F10 ok=true old="1,018.16" new="1,020.16" sheetVerdict=DOES_NOT_ADD_UP pdfVerdict=DOES_NOT_ADD_UP agree=true fontSub=none align=right bytes=74935 edits=3 | §PDFWR-HISTORY entries=4 ops=1 cell=F10 before=1018.16 after=1020.16 typedOverFormula=false | page says "F10 is now 1,020.16 in the PDF. Page 1 does NOT add up: F28: printed 0.00 != rows sum 2.00."
+§FACTS shot p1_f10 F10: F10 is now 1,020.16 in the PDF. Page 1 does NOT add up: F28: printed 0.00 != rows sum 2.00.
+§FACTS edit F28 2.00 | §PDFWR-EDIT cell=F28 ok=true old="0.00" new="2.00" sheetVerdict=ADDS_UP pdfVerdict=ADDS_UP agree=true fontSub=none align=right bytes=74933 edits=4 | §PDFWR-HISTORY entries=5 ops=1 cell=F28 before=0 after=2 typedOverFormula=true | page says "F28 is now 2.00 in the PDF. Page 1 adds up: 4 totals agree with their rows."
+§FACTS shot p1_f28 F28: F28 is now 2.00 in the PDF. Page 1 adds up: 4 totals agree with their rows.
+§FACTS download §PDFWR-DOWNLOAD file="trial_balance_th_edited.pdf" bytes=77441 edits=4 historyEntries=5 verdict=ADDS_UP historyInFile=true | §PDFHIST-SAVE ok=true entries=5 lineBytes=16695 bytesIn=74933 bytesOut=77441 added=2508 replaced=false
+§FACTS shot p1_download Download PDF clicked: trial_balance_th_edited.pdf
+§FACTS poppler on the downloaded file: words 188 vs 188, changed 4 [498.09->500.09, 40,392.44->40,394.44, 1,018.16->1,020.16, 0.00->2.00], unchanged but moved 0, "500.09" 1x, "498.09" 0x, pages 1
+§FACTS pdfdetach lists "1 embedded files / 1: _door_history.jsonl" and extracts 5 history lines
+§FACTS b2 §PDFHIST-OPEN state=ok entries=5 cells=144 differ=0 pages=1 continued=true | page says "History: 5 entries, verified, carried inside this file and continued. It is kept inside the PDF and the .xlsx you download."
+§FACTS shot p2_open the downloaded file opened again: History: 5 entries, verified, carried inside this file and continued. It is kept inside the PDF and the .xlsx you download.
+§FACTS story §PDFHIST-STORY cell=D10 sheet="Report" values=2 text="#1 2026-11-27 14:29 report-reader: (empty) -> 498.09 | #2 2026-11-27 14:29 you: 498.09 -> 500.09" | #1 2026-11-27 14:29 report-reader: (empty) -> 498.09 || #2 2026-11-27 14:29 you: 498.09 -> 500.09
+§FACTS shot p2_story the story of D10
+§PDF_EMBED ok=true name=_door_history.jsonl bytesIn=77441 bytesOut=77443 data=16693 stored=2138 replaced=true
+§FACTS b3 §PDFHIST-OPEN state=broken entries=5 brokenAt=2 why="payload (a recorded cell value was edited)" continued=false | page says "The history carried in this file was changed by hand: entry 2 of 5 does not verify (payload (a recorded cell value was edited)). It is not continued: the next change starts a new history that records this."
+§FACTS shot p3_broken a history edited by hand: The history carried in this file was changed by hand: entry 2 of 5 does not verify (payload (a recorded cell value was edited)). It is not continued: the next change starts a new history that records this.
+§FACTS file_it ready after 907 ms | page says "Books engine ready: 45 program files and 29.0 MB of demo books loaded in 1.0 s."
+§FACTS shot f0_ready the filing page, Books engine ready: 45 program files and 29.0 MB of demo books loaded in 1.0 s.
+§FACTS shot f1_wrong_open the workbook with a wrong printed total opened
+§FACTS 4a {"verdict":"REFUSED","text":"Not filed: the lines add up to 153.5 but the subtotal prints 153.51","opened":"Opened invoice_wrong_total.xlsx (sheet Invoice)."}
+§FACTS shot f2_refused File it on the wrong total: Not filed: the lines add up to 153.5 but the subtotal prints 153.51
+§FACTS shot f3_right_open the workbook with the right total opened
+§FACTS 4b {"verdict":"FILED","text":"Filed. AR Invoice 100001 for C&W Construction is in the books (Completed).","opened":"Opened invoice.xlsx (sheet Invoice)."}
+§FACTS shot f4_filed File it: Filed. AR Invoice 100001 for C&W Construction is in the books (Completed).
+§FACTS doc {"Document":"AR Invoice","Number":"100001","Status":"Completed","Date":"2026-11-20","Customer":"C&W Construction","Lines total":"153.50 USD","Grand total":"153.50 USD"} lines=2 | books: 6 entries, debit 283.98 credit 283.98
+§FACTS shot f5_doc the document in the books
+§FACTS shot f6_books the accounting entries posted
+§FACTS link ../idempiere.html?window=167&record=1300110
+§FACTS ERP page: §IDEMPIERE boot db=network ms=2504 | §DOOR-HANDOVER applied=1 skipped=0 refused=0 books=1 ops=19 persisted=Y
+§FACTS ERP window: GardenWorld · GardenWorld Admin · * | Sales Invoice and Credit/Debit Note › Invoice  ·  Record 1 of 1 | tabs Invoice,Invoice Line,Invoice Tax,Payment Schedule,Allocation | page says "1 document filed from your sheet invoice.xlsx is now in these books."
+§FACTS shot e1_invoice_form the invoice in the ERP window (form)
+§FACTS ERP grid rows [{"id":"1300110","table":"C_Invoice","doc":"100001","desc":"Oak tree, 2m"}]
+§FACTS shot e2_invoice_grid the Invoice window as a grid: 1 row
+§FACTS ERP Invoice Line rows [{"AD_Org_ID":"HQ","C_Invoice_ID":"100001","Line":"10","M_InOutLine_ID":"","M_Product_ID":"Oak Tree","C_Charge_ID":"","M_AttributeSetInstance_ID":"0","S_ResourceAssignment_ID":"","Description":"","QtyEntered":"2","C_UOM_ID":"Each","QtyInvoiced":"2","PriceEntered":"61.75","PriceActual":"61.75","PriceList":"65","C_Tax_ID":"Standard","C_Project_ID":"","C_Activity_ID":"","C_Campaign_ID":"","AD_OrgTrx_ID":"","User1_ID":"","User2_ID":"","LineNetAmt":"123.5","IsDescription":"N","IsPrinted":"Y","C_Department_ID":"","C_CostCenter_ID":"","C_Employee_ID":""},{"AD_Org_ID":"HQ","C_Invoice_ID":"100001","Line":"20","M_InOutLine_ID":"","M_Product_ID":"Elm Tree","C_Charge_ID":"","M_AttributeSetInstance_ID":"
+§FACTS shot e3_invoice_lines the Invoice Line tab: 2 rows
+§FACTS Posted view: [["12110 · Accounts Receivable - Trade","153.50","0.00"],["41000 · Trade Revenue","0.00","123.50"],["41000 · Trade Revenue","0.00","30.00"]] | Accounting schema 101 (1 more schema(s) posted) | §POSTED-FACTS table=C_Invoice rec=1300110 schema=101 lines=3 schemas=2 dr=153.5 cr=153.5 balanced=true
+§FACTS shot e4_posted the Posted view
+§FACTS shot e5_tb_params the Trial Balance report: accounting schema and date chosen
+§FACTS report: 12110 row ["12110","Accounts Receivable - Trade","734.91","151.05","583.86"] | 41000 row ["41000","Trade Revenue","0.00","702.00","-702.00"] | Total Dr 25329.19 · Total Cr 25329.19 · balanced=true | from the entries: debit with the invoice 734.91, without it 581.41, this invoice 153.5
+§FACTS shot e6_tb_report the Trial Balance report, row 12110
+§FACTS NET external requests aborted for the take: 0 []
+§FACTS wrote facts.json

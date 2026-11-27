@@ -1,0 +1,20 @@
+§GUARD OK   beat=b1a p1.verdictNames=true expect=true spoken="what no longer adds up"
+§GUARD OK   beat=b1b p1.finalAddsUp=true expect=true spoken="adds up"
+§GUARD OK   beat=b1c dl.sameWithFourChanged=true expect=true spoken="nothing else moved"
+§GUARD OK   beat=b2a reopen.ok=true expect=true spoken="every entry is checked"
+§GUARD OK   beat=b2b story.ok=true expect=true spoken="story"
+§GUARD OK   beat=b3 broken.ok=true expect=true spoken="caught"
+§GUARD OK   beat=b4a refused.ok=true expect=true spoken="names both figures"
+§GUARD OK   beat=b4b books.entries=6 expect=6 spoken="six entries"
+§GUARD OK   beat=b4b books.balanced=true expect=true spoken="debit equals credit"
+§GUARD OK   beat=b5a erp.once=true expect=true spoken="its own window"
+§GUARD OK   beat=b5b posted.balanced=true expect=true spoken="debit equals credit"
+§GUARD OK   beat=b5c report.thisInvoice=153.5 expect=153.5 spoken="one hundred fifty-three dollars fifty"
+§GUARD OK   beat=b5c report.honest=true expect=true spoken="report that includes it"
+§GUARD digits in the voice (numbers are spelled in words): none
+§GUARD proof talk or first/novel/unique: none
+§GUARD not-said N (a network or security claim, another product, many users / speed / compliance, price or licence detail, phone): none
+§GUARD closing line is the owner's, with only the article fixed ("a utility"): OK
+§GUARD network claims over the pages: none made; external requests aborted in the take: 0
+§GUARD_CONTROL planted number 7777.77 is REJECTED (the guard can fail)
+§GUARD_VERDICT voice PASS facts=13 bad=0
