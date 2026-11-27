@@ -90,3 +90,26 @@ Order of value for our users (reports): P0 → P1 → P2 → P4 → P5 → S10 r
 KillerPDF reports ~145,000 lines of its own C# engine, 8,508 engine tests and a 47,024-file corpus (its own figures, not
 verified). P0-P3 sit mostly on existing libraries. P4 (text edit), P5 (redaction), P7 (encryption + signing) and P9 (PDF/UA) are
 the deep parts. Claims stay "X of 14 groups", each backed by its phase witness, never "parity" in general.
+
+## 4.1 Phase P0 in detail (spec 2026-11-27, before code) — with `SHEET_FRONT_DOOR.md` §7 (S10)
+Code (bim-ootb): `pdf/pdf_open.js` (open + describe, the one owner of "is this file open"), `pdf/index.html` (the page),
+witness `pdf/tests/witness_pdfed_p0.js` (W-PDFED-P0). pdf.js is the copy already shipped at `modeller/lib/pdfjs/` (3.11.174).
+- `PdfOpen.open(pdfjsLib, bytes, password?) -> { ok, pages, text:[per page], outline:[{title,depth}], items:[per page] }` or
+  `{ ok:false, named:'not-a-pdf'|'empty'|'needs-password'|'wrong-password'|'damaged', message }`. `ok:true` with 0 pages cannot
+  be returned. `items` are the text items in page points, y down: what S10 reads.
+- **The page:** Open (file chooser or drop; File API, nothing uploaded), pages drawn on demand and released off screen, text
+  search, outline, **Read as sheet** (S10: the table, the adds-up verdict, hover a cell to see its box on the page, download
+  `.xlsx`). Logs `§PDFED-OPEN`, `§PDFED-COST` (heap, canvases alive), `§SHEET_READER`.
+- **Corpus (in git, ours):** `trial_balance_th.pdf` (1 page, Thai + Latin) and `market_impact_report.pdf` (bim-compiler
+  `docs/BIM_Compiler_Market_Impact_Report.pdf`, 12 pages, 23 outline entries). Made at run time from them, never committed: a
+  copy with its cross-reference table cut off, a password copy (ghostscript), an empty file, a non-PDF. More files by `PDFED_EXTRA=<dir>`.
+
+| ID | Claim | Issue it exposes | Falsifier |
+|----|-------|------------------|-----------|
+| V1 PAGES | per file, page count == poppler `pdfinfo` | pages lost | — |
+| V2 TEXT | per page, the characters read (spaces removed, NFC) are the same multiset as poppler `pdftotext` gives | text lost or garbled | mutant: last item of each page dropped |
+| V3 OUTLINE | outline titles in order == poppler `pdftohtml -xml` outline | bookmarks lost | mutant: nested entries dropped |
+| V4 BROKEN / LOCKED | the cut-xref copy opens with the same page count and text, or is NAMED; the password copy without password is NAMED needs-password and opens with it; empty and non-PDF are NAMED | a blank page shown for a damaged or locked file | mutant: errors swallowed, "opened" with 0 pages |
+| V5 PAGE (wiring, real page, real file chooser, headless) | the page logs `§PDFED-OPEN pages=N`; the first page's canvas holds ink (count of non-white pixels > 0, a number, no screenshot); Read as sheet logs `§SHEET_READER verdict=ADDS_UP cells=144` and the `.xlsx` it offers re-reads to 40,392.44 in D28; on the 12-page file, after scrolling to the end, canvases alive < pages | scripts not loaded, nothing drawn, memory never released | — |
+
+Password files need pdf.js's own decryption only (reading); writing encrypted files stays in P7.
