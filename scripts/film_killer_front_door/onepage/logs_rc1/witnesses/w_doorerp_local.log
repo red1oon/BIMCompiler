@@ -1,0 +1,83 @@
+§DOORERP-LOAD tree=/tmp/wt-film-one-page-ootb mutant=none puppeteer=yes
+§DOORERP-ORACLE direct ok=true fingerprintBytes=662 node door verdict=FILED sameFingerprint=true ledgerLineChars=11603
+§DOORERP-ORDER import ok=true entries=1 order={"c_order_id":1500004,"documentno":"DOORERP-SO1","docstatus":"IP","grandtotal":171,"c_bpartner_id":117,"issotrx":"Y"} lines=2 window=143
+§DOORERP-BASELINE (a page that took no hand-over) {"ok":true,"hooks":6,"sig":"{\"c_invoice\":20,\"c_invoiceline\":56,\"c_invoicetax\":20,\"fact_acct\":600,\"i_invoice\":0,\"c_order\":44,\"c_orderline\":117,\"c_greeting\":1,\"bp\":{\"so_creditused\":161.12,\"totalopenbalance\":161.12,\"actuallifetimevalue\":161.12},\"period\":{\"c_period_id\":200104}}","inv":0,"door":[],"resources":266,"line":[],"dh":"undefined/undefined","applied":0}
+  §DOORERP-CHECK case=E1 key=filed OK rule="the filing page filed it (FILED) and its books equal the node oracle (fingerprint, non-empty)"
+  §DOORERP-CHECK case=E1 key=link OK rule="the page offers "Open in the ERP": the ERP page's own deep link ?window=&record= and nothing else in it (no login); record == the filed C_Invoice_ID"
+  §DOORERP-CHECK case=E1 key=link-window OK rule="the link's window is the one the ERP page's own dictionary gives for C_Invoice (AD_Table.AD_Window_ID; a sales-side record)"
+  page: §DOOR-HANDOVER applied=1 skipped=0 refused=0 books=1 ops=18 persisted=Y
+  page: §PROJ-SNAPSHOT projectors=0 unprojected=0 bytes=32841728
+  page: §DOOR-HANDOVER-COST ms=26 scriptsMs=4 applyMs=6 persistMs=16 entries=1 ops=18 saveHooks=6->6
+  page: §IDEMPIERE boot db=network ms=1589
+  §DOORERP-CHECK case=E1 key=log OK rule="the ERP page logged §DOOR-HANDOVER applied=1 skipped=0 refused=0 (before its login)"
+  §DOORERP-CHECK case=E1 key=header OK rule="the ERP page DB holds that invoice exactly ONCE and its id, DocumentNo, partner, grand total, lines total, DocStatus and Posted equal the filing page's row (a page with no hand-over holds none)"
+  §DOORERP-CHECK case=E1 key=fact-acct OK rule="the Fact_Acct rows of that record in the ERP page DB equal the filing page's (id, schema, account, debit, credit), 6 rows; per accounting schema debits = credits > 0"
+  §DOORERP-CHECK case=E1 key=fingerprint OK rule="fingerprint(ERP page DB) == fingerprint(filing page) == fingerprint(node oracle)"
+  §DOORERP-CHECK case=E1 key=told OK rule="the page tells the user in plain words that the document of that workbook is now in these books"
+§DOORERP-E1 verdict=PASS judged=8 failed=0 threw=0
+  §DOORERP-CHECK case=E2 key=landed OK rule="the link landed in window 167: its tabs are the dictionary's tabs, in order; the record shown is the filed one (DocumentNo, grand total, DocStatus in the form) - Record 1 of 1"
+  §DOORERP-CHECK case=E2 key=grid OK rule="the grid shows exactly 1 row; its record id == the filed C_Invoice_ID, the DB holds a row at the id the grid shows, and its DocumentNo and Business Partner cells are the DB's (the partner by NAME)"
+  page: §POSTED-FACTS table=C_Invoice rec=1300110 schema=101 lines=3 schemas=2 dr=153.5 cr=153.5 balanced=true selector=101,200000 of=6 all=101:3:153.5:153.5,200000:3:130.48:130.48
+  §DOORERP-CHECK case=E2 key=posting OK rule="the Posted view (the row's own button, "Posted") shows the Fact_Acct rows of the page DB for that record in its first accounting schema: same account, debit, credit, same count (3), balanced"
+  page: §POSTED-FACTS table=C_Invoice rec=1300110 schema=200000 lines=3 schemas=2 dr=130.48 cr=130.48 balanced=true selector=101,200000 of=6 all=101:3:153.5:153.5,200000:3:130.48:130.48
+  §DOORERP-CHECK case=E2 key=posting-all OK rule="through the view's schema selector (101, 200000: pick, Refresh) every Fact_Acct row of the record is shown, each under its own schema, equal to the page DB: 6 of 6 entries; every schema that holds rows is offered"
+  §DOORERP-CHECK case=E2 key=lines OK rule="tab "Invoice Line" shows the 2 lines without any Save: 2 grid rows, their record ids == the DB's C_InvoiceLine ids of that invoice, the parent id of every shown row == the invoice; no save happened on the page"
+  §DOORERP-CHECK case=E2 key=parent-intact OK rule="back on tab "Invoice" the same single row is there (record id, DocumentNo)"
+  page: §IDEMPIERE tab=Invoice table=C_Invoice rows=1 fields=68 parentFilter=onlyCurrentRows postingDoc=true
+  §DOORERP-CHECK case=E2 key=menu OK rule="the same window opened from its MENU leaf (no zoom) lists the record exactly once among its 1 rows, and every row the grid shows has its row in the DB"
+§DOORERP-E2 verdict=PASS judged=7 failed=0 threw=0
+  page: §DOOR-HANDOVER applied=0 skipped=1 refused=0 books=1 ops=0 persisted=-   (boot db=idb_cache)
+  §DOORERP-CHECK case=E4 key=reload OK rule="after a reload: §DOOR-HANDOVER applied=0 skipped=1 refused=0; still exactly 1 invoice, 2 lines, 1 tax row, 6 Fact_Acct rows; 1 applied hash recorded"
+  §DOORERP-CHECK case=E4 key=same-books OK rule="the fingerprint of the reloaded page DB is still the oracle's"
+  §DOORERP-CHECK case=E6 key=bundle OK rule="the reloaded page booted from its resident bundle (§IDEMPIERE boot db=idb_cache), applied nothing, and the invoice with its 6 Fact_Acct rows is there"
+  §DOORERP-CHECK case=E4 key=chained OK rule="filed again (FILED): the workbook's ledger now has 2 entries, chained, and the page offers the link to the NEW record"
+  page: §DOOR-HANDOVER applied=1 skipped=1 refused=0 books=1 ops=17 persisted=Y
+  §DOORERP-CHECK case=E4 key=one-of-each OK rule="§DOOR-HANDOVER applied=1 skipped=1 refused=0; exactly one invoice of each number, 12 Fact_Acct rows for the two; the customer's open balance and credit used equal the filing page's ({"so_creditused":468.12,"totalopenbalance":468.12,"actuallifetimevalue":468.12})"
+  §DOORERP-CHECK case=E4 key=second-in-window OK rule="the second link lands on the second invoice: 1 grid row, record id == its C_Invoice_ID, DocumentNo DOORERP-0002"
+  page: §CRUD-PERSIST key=c_greeting id=null op=CRUD_CREATE cols=ad_client_id,ad_org_id,name,isactive,isfirstnameonly,isdefault source=sidecar gid=991dfe79-8ef1-4ea6-8027-475e765a69bc ops=1 sealed=1 verifyCha
+  page: §DOOR-HANDOVER applied=0 skipped=2 refused=0 books=1 ops=0 persisted=-   (boot db=idb_cache)
+  §DOORERP-CHECK case=E6 key=after-save OK rule="after a normal save (a new Greeting through the toolbar: op=CRUD_CREATE, its own op log) and a reload: boot from the bundle, §DOOR-HANDOVER applied=0 skipped=2 refused=0, both invoices with the oracle fingerprint, the saved Greeting is in its window (record id -3, the page's own negative id) and the Invoice window from the menu lists both invoices"
+§DOORERP-E4 verdict=PASS judged=5 failed=0 threw=0
+§DOORERP-E6 verdict=PASS judged=2 failed=0 threw=0
+  §DOORERP-CHECK case=E3 key=order-made OK rule="the node kernel made a Sales Order through iDempiere's Import Order (one journal entry, 2 lines, In Progress) and the door's offer took its ledger (verified)"
+  page: §DOOR-HANDOVER applied=1 skipped=0 refused=0 books=1 ops=15 persisted=Y
+  §DOORERP-CHECK case=E3 key=order-books OK rule="§DOOR-HANDOVER applied=1 skipped=0 refused=0; the ERP page DB holds that order once, equal to the node kernel's row and its 2 lines; its window by the dictionary is 143"
+  §DOORERP-CHECK case=E3 key=order-window OK rule="the same generic window engine shows it: window 143, 1 grid row with record id == C_Order_ID and its DocumentNo; tab "Order Line" shows its 2 lines (record ids == the DB's)"
+  §DOORERP-CHECK case=E3 key=no-table-named OK rule="door_handover.js (comments stripped) and the hook in idempiere.html (3 lines, 325 characters) name none of the dictionary's 1004 tables; the hook holds no "if table" branch"
+§DOORERP-E3 verdict=PASS judged=4 failed=0 threw=0
+  §DOORERP-CHECK case=E5 key=offer-refuses OK rule="the tamper is real (one character differs in each line) and the door's own offer refuses a ledger whose chain is broken; nothing is kept"
+  page: §DOOR-HANDOVER applied=0 skipped=0 refused=3 books=3 ops=0 persisted=-
+  page: §DOOR-HANDOVER-REFUSED book="payload-changed.xlsx" why="journal payload of seq 1 does not match its digest"
+  page: §DOOR-HANDOVER-REFUSED book="header-changed.xlsx" why="journal does not verify: broken at line 1 (content)"
+  page: §DOOR-HANDOVER-REFUSED book="not-a-ledger.xlsx" why="journal does not verify: broken at line 1 (unparseable)"
+  §DOORERP-CHECK case=E5 key=refused-3 OK rule="§DOOR-HANDOVER applied=0 skipped=0 refused=3; each named with its reason: the changed payload (does not match its digest), the changed header (does not verify), the non-entry (unparseable)"
+  §DOORERP-CHECK case=E5 key=nothing-applied OK rule="nothing was applied: the rows a ledger could touch are exactly those of a page that took no hand-over (counts of 8 tables, the customer's balances, the schema's period), no invoice of that number, no applied-hash table"
+  §DOORERP-CHECK case=E5 key=told OK rule="the page tells the user in plain words, naming each workbook, that it was not taken and nothing was changed"
+  page: §DOOR-HANDOVER applied=1 skipped=0 refused=0 books=1 ops=18 persisted=Y
+  §DOORERP-CHECK case=E5 key=first-taken OK rule="a good ledger (the node door's filing of the same workbook) is taken first: applied=1, the oracle fingerprint; so the guard does not refuse everything"
+  page: §DOOR-HANDOVER applied=0 skipped=1 refused=3 books=4 ops=0 persisted=-
+  page: §DOOR-HANDOVER-REFUSED book="other-workbook.xlsx" why="entry 1: i_invoice 1000001 is already in these books"
+  page: §DOOR-HANDOVER-REFUSED book="moved-on.xlsx" why="entry 1: c_bpartner 117 so_creditused is 314.62 in these books, the ledger started from 161.12"
+  page: §DOOR-HANDOVER-REFUSED book="two-entries.xlsx" why="entry 2: c_bpartner 117 so_creditused is 314.62 in these books, the ledger started from 161.12"
+  §DOORERP-CHECK case=E5 key=three-verify OK rule="the three other ledgers are well-formed (the offer verified and kept each): a different workbook (same seed, so the same record ids), an update of a row, a 2-entry chain"
+  §DOORERP-CHECK case=E5 key=ids-used OK rule="the different workbook is REFUSED: its record ids are already in these books (named: table and id)"
+  §DOORERP-CHECK case=E5 key=moved-on OK rule="the update is REFUSED: the row no longer holds the value the ledger started from (named: table, id, column, both values 314.62 and 161.12)"
+  §DOORERP-CHECK case=E5 key=all-or-none OK rule="the 2-entry ledger is REFUSED whole: its first entry alone would apply (a new record), its second is refused, and the first entry's record is NOT in the books"
+  §DOORERP-CHECK case=E5 key=unchanged OK rule="§DOOR-HANDOVER applied=0 skipped=1 refused=3 and the books are exactly as after the first ledger (same counts and values); 1 applied hash"
+§DOORERP-E5 verdict=PASS judged=10 failed=0 threw=0
+  page: §DOOR-HANDOVER applied=1 skipped=0 refused=0 books=1 ops=18 persisted=Y
+  page: §DOOR-HANDOVER-COST ms=46 scriptsMs=5 applyMs=12 persistMs=29 entries=1 ops=18 saveHooks=6->6
+  page: §PROJ-SNAPSHOT projectors=0 unprojected=0 bytes=32841728
+  §DOORERP-CHECK case=E7 key=page OK rule="a page that took a hand-over has the same number of registered validators as a page that took none (6, > 0), and the count did not move across the hand-over (6 -> 6)"
+  §DOORERP-CHECK case=E8 key=cost OK rule="§DOOR-HANDOVER-COST is measured: total ms, scripts / apply / persist ms, entries=1, ops=18; the bundle the page persisted is measured (§PROJ-SNAPSHOT bytes)"
+  §DOORERP-CHECK case=E8 key=lazy OK rule="a page with NO hand-over loaded none of the door's scripts among its 266 script elements and has neither global (undefined/undefined); a page WITH one requested exactly door_handover.js, ws_kernel_web.js, ws_kernel.js, once each"
+  §DOORERP-CHECK case=E7 key=one-replay OK rule="node: K.replayInto on a database (no kernel journal touched) gives the same books as build().replay of the same ledger: both the oracle fingerprint, replayed=1"
+  §DOORERP-CHECK case=E7 key=dispose OK rule="node: build() registers its validators (533 -> 599) and dispose() removes exactly those (66), back to 533"
+  §DOORERP-CHECK case=E7 key=guard-node OK rule="node: the same ledger a second time with the guard is refused (its record ids are in the books) and the invoice is still one"
+§DOORERP-E7 verdict=PASS judged=4 failed=0 threw=0
+§DOORERP-E8 verdict=PASS judged=2 failed=0 threw=0
+§DOORERP-NET serverRequests=5016 notGET=0 pageRequestsToOtherHosts=1 ["GET https://www.idempiere.org/short-donate/"]
+  §DOORERP-CHECK case=E9 key=get-only OK rule="over the whole run (file_it pages and ERP pages, their service worker included) the server saw only GETs (5016 requests)"
+  §DOORERP-CHECK case=E9 key=no-other-host OK rule="no page request went to another host with a body; requests to another host: 1 (blocked by the witness, listed above)"
+§DOORERP-E9 verdict=PASS judged=2 failed=0 threw=0
+§DOORERP-VERDICT PASS judged=44 failed=0 cases=["E1","E2","E4","E6","E3","E5","E7","E8","E9"] ["PASS","PASS","PASS","PASS","PASS","PASS","PASS","PASS","PASS"] (headless Chromium on the real file_it.html and idempiere.html; real Excel NOT run)

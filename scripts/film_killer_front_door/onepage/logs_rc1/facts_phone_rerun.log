@@ -1,0 +1,108 @@
+§FACTS LIVE_EQ_MAIN (erp overlay files are minified on the site: markers {"report_pill":true,"ninja_pdf":true}) ootb=ccbbac3a files=7 differ=[] equal
+§FACTS INPUTS {"picture":"made by ghostscript from the corpus trial balance (a 64x32 stand-in picture added)","pictureExit":0,"longExit":0,"longPages":2400,"longBytes":19636046,"longSource":"the 12-page corpus report joined 200 times (pdfunite)"}
+  PG[phone] §PDFED-BOOT pdfjs=3.11.174 reader=function sheetjs=0.18.5 writer=function history=function inFile=function chunks=function
+  PG[phone] §PDFED-LAYOUT pages=1 observedAgainst=window
+  PG[phone] §PDFED-OFFLINE ready=true
+  PG[phone] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=1 releases=0 heapMB=5
+  PG[phone] §PDFED-FIRST page=1 drawn=true ms=430 pages=1 canvasesAlive=1
+  PG[phone] §PDFHIST-OPEN state=none entries=0 continued=false
+  PG[phone] §PDFHIST-STATE entries=0 verified=nothing-to-verify carried=none restarted=false text="No history yet. Your first change, or Show grid, starts one; it is kept inside the PDF and the .xlsx you download."
+  PG[phone] §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=11 reason="4 totals agree with their rows"
+  PG[phone] §EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={"script-not-supported":46} file=writable forms=0 table=ADDS_UP redBoxes=0 ms=64 heapMB=6
+  PG[phone] §PDFED-OPEN ok=true file="trial_balance_th.pdf" bytes=74945 pages=1 chars=1017 outline=0 ms=510
+§FACTS ink p0_trial darkPixelSamples=1284
+§FACTS darkshare p0_trial 0.02521 retakes=0
+§FACTS shot p0_trial on an emulated phone: the report opened clip=0,0,390,389
+  PG[phone] §EDSHEET-EDITOR id=cD10 cell=D10 kind=cell windowScrolled=0
+  PG[phone] §PDFWR-HISTORY entries=1 ops=144 genesis=true page=1
+  PG[phone] §PDFHIST-STATE entries=1 verified=true carried=none restarted=false text="History: 1 entry, verified. It is kept inside the PDF and the .xlsx you download."
+  PG[phone] §PDF_WRITE ok=true edits=1 applied=1 refused=0 bytesIn=74945 bytesOut=74939 ms=14 cells=D10:"498.09"->"499.09"
+  PG[phone] §PDFED-REOPEN page=1 pagesRead=1 of=1 ms=151
+  PG[phone] §EDSHEET-UNDO-MEM steps=1 withBytes=1 heldMB=0.07 budgetMB=128.00 dropped=0 heapMB=7
+  PG[phone] §SHEET_READER verdict=DOES_NOT_ADD_UP ok=false page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=6 ms=5 reason="D28: printed 40392.44 != rows sum 40393.44; F10: printed 1018.16 != F = C + D - E gives 1019.16"
+  PG[phone] §PDFHIST-STATE entries=2 verified=true carried=none restarted=false text="History: 2 entries, verified. It is kept inside the PDF and the .xlsx you download."
+  PG[phone] §PDFWR-HISTORY entries=2 ops=1 cell=D10 before=498.09 after=499.09 typedOverFormula=false actor=you sheet=Report
+  PG[phone] §SHEET_READER verdict=DOES_NOT_ADD_UP ok=false page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=6 ms=2 reason="D28: printed 40392.44 != rows sum 40393.44; F10: printed 1018.16 != F = C + D - E gives 1019.16"
+  PG[phone] §EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={"script-not-supported":46} file=writable forms=0 table=DOES_NOT_ADD_UP redBoxes=0 ms=38 heapMB=8
+  PG[phone] §EDSHEET-EDIT id=cD10 cell=D10 kind=cell ok=true old="498.09" new="499.09" font=LiberationSans sub=none verdict=DOES_NOT_ADD_UP entries=2 bytes=74939 edits=1
+  PG[phone] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=2 releases=1 heapMB=9
+§FACTS phone tap edit: §EDSHEET-EDITOR id=cD10 cell=D10 kind=cell windowScrolled=0 | §EDSHEET-EDIT id=cD10 cell=D10 kind=cell ok=true old="498.09" new="499.09" font=LiberationSans sub=none verdict=DOES_NOT_ADD_UP entries=2 bytes=74939 edits=1 | docWidth=390
+§FACTS ink p1_trial darkPixelSamples=1284
+§FACTS darkshare p1_trial 0.03196 retakes=0
+§FACTS shot p1_trial on an emulated phone: D10 is now "499.09". Page 1 does NOT add up: D28: printed 40392.44 != rows sum 40393.44; F10: printed 1018.16 != F = C + D - E gives 1019.16. Ctrl+Z undoes it. clip=0,0,390,389
+§FACTS quiet? before long-file run 1 loadavg1=4.92 waitedMs=1 cpus=20
+  PG[phone] §PDFED-BOOT pdfjs=3.11.174 reader=function sheetjs=0.18.5 writer=function history=function inFile=function chunks=function
+  PG[phone] §PDFED-OFFLINE ready=true
+  PG[phone] §PDFED-LAYOUT pages=2400 observedAgainst=window
+  PG[phone] §PDFED-COST why=draw-p1 pages=2400 canvasesAlive=1 renders=1 releases=0 heapMB=23
+  PG[phone] §PDFED-FIRST page=1 drawn=true ms=1635 pages=2400 canvasesAlive=2
+  PG[phone] §PDFED-COST why=draw-p2 pages=2400 canvasesAlive=2 renders=2 releases=0 heapMB=24
+  PG[phone] §PDFED-COST why=draw-p3 pages=2400 canvasesAlive=3 renders=3 releases=0 heapMB=24
+  PG[phone] §PDFHIST-OPEN state=none entries=0 continued=false
+  PG[phone] §PDFHIST-STATE entries=0 verified=nothing-to-verify carried=none restarted=false text="No history yet. Your first change, or Show grid, starts one; it is kept inside the PDF and the .xlsx you download."
+  PG[phone] §SHEET_READER verdict=INCONCLUSIVE ok=false page=1 items=12 lines=12 cols=0 cells=0 blankRows=0 edgeSplits=0 bandsMerged=0 boxesTrimmed=0 collisions=0 checks=0 ms=2 reason="no table found (fewer than 2 lines with 3 or more cells)"
+  PG[phone] §EDSHEET-LAYER page=1 runs=16 writableRuns=16 lockedRuns=0 cells=0 cellTargets=0 runTargets=16 locked=0 images=0 reasons={} file=writable forms=0 table=INCONCLUSIVE redBoxes=0 ms=491 heapMB=82
+  PG[phone] §PDFED-OPEN ok=true file="long_report_2400_pages.pdf" bytes=19636046 pages=2400 chars=3368400 outline=0 ms=7717
+§FACTS phone long file run 1: firstPagePaintedMs=1689 | §PDFED-FIRST page=1 drawn=true ms=1635 pages=2400 canvasesAlive=2 | §PDFED-OPEN ok=true  bytes=19636046 pages=2400 chars=3368400 outline=0 ms=7717 | canvases=3 | loadavg1=4.69 cpus=20
+§FACTS quiet? before long-file run 2 loadavg1=4.69 waitedMs=0 cpus=20
+  PG[phone] §PDFED-BOOT pdfjs=3.11.174 reader=function sheetjs=0.18.5 writer=function history=function inFile=function chunks=function
+  PG[phone] §PDFED-OFFLINE ready=true
+  PG[phone] §PDFED-LAYOUT pages=2400 observedAgainst=window
+  PG[phone] §PDFED-COST why=draw-p1 pages=2400 canvasesAlive=1 renders=1 releases=0 heapMB=23
+  PG[phone] §PDFED-FIRST page=1 drawn=true ms=1629 pages=2400 canvasesAlive=2
+  PG[phone] §PDFED-COST why=draw-p2 pages=2400 canvasesAlive=2 renders=2 releases=0 heapMB=24
+  PG[phone] §PDFED-COST why=draw-p3 pages=2400 canvasesAlive=3 renders=3 releases=0 heapMB=24
+  PG[phone] §PDFHIST-OPEN state=none entries=0 continued=false
+  PG[phone] §PDFHIST-STATE entries=0 verified=nothing-to-verify carried=none restarted=false text="No history yet. Your first change, or Show grid, starts one; it is kept inside the PDF and the .xlsx you download."
+  PG[phone] §SHEET_READER verdict=INCONCLUSIVE ok=false page=1 items=12 lines=12 cols=0 cells=0 blankRows=0 edgeSplits=0 bandsMerged=0 boxesTrimmed=0 collisions=0 checks=0 ms=2 reason="no table found (fewer than 2 lines with 3 or more cells)"
+  PG[phone] §EDSHEET-LAYER page=1 runs=16 writableRuns=16 lockedRuns=0 cells=0 cellTargets=0 runTargets=16 locked=0 images=0 reasons={} file=writable forms=0 table=INCONCLUSIVE redBoxes=0 ms=497 heapMB=82
+  PG[phone] §PDFED-OPEN ok=true file="long_report_2400_pages.pdf" bytes=19636046 pages=2400 chars=3368400 outline=0 ms=7691
+§FACTS phone long file run 2: firstPagePaintedMs=1678 | §PDFED-FIRST page=1 drawn=true ms=1629 pages=2400 canvasesAlive=2 | §PDFED-OPEN ok=true  bytes=19636046 pages=2400 chars=3368400 outline=0 ms=7691 | canvases=3 | loadavg1=4.28 cpus=20
+§FACTS quiet? before long-file run 3 loadavg1=4.28 waitedMs=1 cpus=20
+  PG[phone] §PDFED-BOOT pdfjs=3.11.174 reader=function sheetjs=0.18.5 writer=function history=function inFile=function chunks=function
+  PG[phone] §PDFED-OFFLINE ready=true
+  PG[phone] §PDFED-LAYOUT pages=2400 observedAgainst=window
+  PG[phone] §PDFED-COST why=draw-p1 pages=2400 canvasesAlive=1 renders=1 releases=0 heapMB=23
+  PG[phone] §PDFED-FIRST page=1 drawn=true ms=1841 pages=2400 canvasesAlive=2
+  PG[phone] §PDFED-COST why=draw-p2 pages=2400 canvasesAlive=2 renders=2 releases=0 heapMB=24
+  PG[phone] §PDFED-COST why=draw-p3 pages=2400 canvasesAlive=3 renders=3 releases=0 heapMB=24
+  PG[phone] §PDFHIST-OPEN state=none entries=0 continued=false
+  PG[phone] §PDFHIST-STATE entries=0 verified=nothing-to-verify carried=none restarted=false text="No history yet. Your first change, or Show grid, starts one; it is kept inside the PDF and the .xlsx you download."
+  PG[phone] §SHEET_READER verdict=INCONCLUSIVE ok=false page=1 items=12 lines=12 cols=0 cells=0 blankRows=0 edgeSplits=0 bandsMerged=0 boxesTrimmed=0 collisions=0 checks=0 ms=2 reason="no table found (fewer than 2 lines with 3 or more cells)"
+  PG[phone] §EDSHEET-LAYER page=1 runs=16 writableRuns=16 lockedRuns=0 cells=0 cellTargets=0 runTargets=16 locked=0 images=0 reasons={} file=writable forms=0 table=INCONCLUSIVE redBoxes=0 ms=528 heapMB=82
+  PG[phone] §PDFED-OPEN ok=true file="long_report_2400_pages.pdf" bytes=19636046 pages=2400 chars=3368400 outline=0 ms=8574
+§FACTS phone long file run 3: firstPagePaintedMs=1948 | §PDFED-FIRST page=1 drawn=true ms=1841 pages=2400 canvasesAlive=2 | §PDFED-OPEN ok=true  bytes=19636046 pages=2400 chars=3368400 outline=0 ms=8574 | canvases=3 | loadavg1=4.16 cpus=20
+§FACTS quiet? before long-file run 4 loadavg1=4.16 waitedMs=0 cpus=20
+  PG[phone] §PDFED-BOOT pdfjs=3.11.174 reader=function sheetjs=0.18.5 writer=function history=function inFile=function chunks=function
+  PG[phone] §PDFED-OFFLINE ready=true
+  PG[phone] §PDFED-LAYOUT pages=2400 observedAgainst=window
+  PG[phone] §PDFED-COST why=draw-p1 pages=2400 canvasesAlive=1 renders=1 releases=0 heapMB=23
+  PG[phone] §PDFED-FIRST page=1 drawn=true ms=2260 pages=2400 canvasesAlive=2
+  PG[phone] §PDFED-COST why=draw-p2 pages=2400 canvasesAlive=2 renders=2 releases=0 heapMB=24
+  PG[phone] §PDFED-COST why=draw-p3 pages=2400 canvasesAlive=3 renders=3 releases=0 heapMB=24
+  PG[phone] §PDFHIST-OPEN state=none entries=0 continued=false
+  PG[phone] §PDFHIST-STATE entries=0 verified=nothing-to-verify carried=none restarted=false text="No history yet. Your first change, or Show grid, starts one; it is kept inside the PDF and the .xlsx you download."
+  PG[phone] §SHEET_READER verdict=INCONCLUSIVE ok=false page=1 items=12 lines=12 cols=0 cells=0 blankRows=0 edgeSplits=0 bandsMerged=0 boxesTrimmed=0 collisions=0 checks=0 ms=2 reason="no table found (fewer than 2 lines with 3 or more cells)"
+  PG[phone] §EDSHEET-LAYER page=1 runs=16 writableRuns=16 lockedRuns=0 cells=0 cellTargets=0 runTargets=16 locked=0 images=0 reasons={} file=writable forms=0 table=INCONCLUSIVE redBoxes=0 ms=553 heapMB=82
+  PG[phone] §PDFED-OPEN ok=true file="long_report_2400_pages.pdf" bytes=19636046 pages=2400 chars=3368400 outline=0 ms=9428
+§FACTS phone long file run 4: firstPagePaintedMs=2464 | §PDFED-FIRST page=1 drawn=true ms=2260 pages=2400 canvasesAlive=2 | §PDFED-OPEN ok=true  bytes=19636046 pages=2400 chars=3368400 outline=0 ms=9428 | canvases=3 | loadavg1=5.63 cpus=20
+§FACTS quiet? before long-file run 5 loadavg1=5.63 waitedMs=0 cpus=20
+  PG[phone] §PDFED-BOOT pdfjs=3.11.174 reader=function sheetjs=0.18.5 writer=function history=function inFile=function chunks=function
+  PG[phone] §PDFED-OFFLINE ready=true
+  PG[phone] §PDFED-LAYOUT pages=2400 observedAgainst=window
+  PG[phone] §PDFED-COST why=draw-p1 pages=2400 canvasesAlive=1 renders=1 releases=0 heapMB=23
+  PG[phone] §PDFED-FIRST page=1 drawn=true ms=1776 pages=2400 canvasesAlive=2
+  PG[phone] §PDFED-COST why=draw-p2 pages=2400 canvasesAlive=2 renders=2 releases=0 heapMB=24
+  PG[phone] §PDFED-COST why=draw-p3 pages=2400 canvasesAlive=3 renders=3 releases=0 heapMB=24
+  PG[phone] §PDFHIST-OPEN state=none entries=0 continued=false
+  PG[phone] §PDFHIST-STATE entries=0 verified=nothing-to-verify carried=none restarted=false text="No history yet. Your first change, or Show grid, starts one; it is kept inside the PDF and the .xlsx you download."
+  PG[phone] §SHEET_READER verdict=INCONCLUSIVE ok=false page=1 items=12 lines=12 cols=0 cells=0 blankRows=0 edgeSplits=0 bandsMerged=0 boxesTrimmed=0 collisions=0 checks=0 ms=3 reason="no table found (fewer than 2 lines with 3 or more cells)"
+  PG[phone] §EDSHEET-LAYER page=1 runs=16 writableRuns=16 lockedRuns=0 cells=0 cellTargets=0 runTargets=16 locked=0 images=0 reasons={} file=writable forms=0 table=INCONCLUSIVE redBoxes=0 ms=505 heapMB=82
+  PG[phone] §PDFED-OPEN ok=true file="long_report_2400_pages.pdf" bytes=19636046 pages=2400 chars=3368400 outline=0 ms=8361
+§FACTS phone long file run 5: firstPagePaintedMs=1896 | §PDFED-FIRST page=1 drawn=true ms=1776 pages=2400 canvasesAlive=2 | §PDFED-OPEN ok=true  bytes=19636046 pages=2400 chars=3368400 outline=0 ms=8361 | canvases=3 | loadavg1=5.46 cpus=20
+§FACTS ink p2_long darkPixelSamples=217
+§FACTS darkshare p2_long 0.00359 retakes=0
+§FACTS shot p2_long a long file on an emulated phone: long_report_2400_pages.pdf: 2400 pages clip=0,0,390,389
+§FACTS phone long file: runs ms=[1678,1689,1896,1948,2464] median=1896 ms (pages=2400)
+§FACTS DERIVED {"cells":144,"addsUp":true,"cellTargets":133,"lockedRuns":46,"writableRuns":139,"noUpload":true,"gap":1,"redTotal":true,"greenAgain":true,"wordEdited":true,"fontBox":true,"undoClears":true,"pictureLocked":true,"objectsInOriginal":40,"objectsIdentical":38,"objectsChanged":2,"changedAreCatalogAndPage":true,"objectsAdded":2,"imageSame":true,"rasterOutside":0,"rasterInside":116,"integrity":true,"sumFormulas":4,"noDoorText":true,"historyInBoth":true,"historyEntries":2,"xlsxCells":144,"historyOnSheetPage":true,"storyValues":2,"storyOk":true,"erpReportReady":true,"erpPdfOnePage":true,"erpReadBack":144,"erpAddsUp":true,"erpEditNames":true,"erpUndoAdds":true,"erpReportCells":144,"filed":true,"entriesBalanced":true,"erpOnce":true,"handover":true,"postedBalanced":true,"invoiceDollars":153,"invoiceCents":50,"reportHonest":true,"firstVisitBytes":257309,"firstVisitMs":341,"pageOneMs":235,"rewriteMs":6,"offlineOk":true,"phoneTapOk":true,"longPages":2400,"longFirstMs":1896,"longCanvases":3,"longOk":true}
+§FACTS FACTS_VERDICT PASS (judged: 55 derived facts)

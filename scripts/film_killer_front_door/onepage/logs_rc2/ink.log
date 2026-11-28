@@ -1,0 +1,20 @@
+§INK OK   still=b1_full page=1 drawn=true ink=0.04301 ref=0.04301 waitedMs=806
+§INK OK   still=b1_open page=1 drawn=true ink=0.04301 ref=0.04301 waitedMs=546
+§INK OK   still=b2a_red page=1 drawn=true ink=0.04301 ref=0.04301 waitedMs=555
+§INK OK   still=b2a_green page=1 drawn=true ink=0.04301 ref=0.04301 waitedMs=549
+§INK OK   still=b2b_word page=1 drawn=true ink=0.04288 ref=0.04301 waitedMs=543
+§INK OK   still=b2b_font page=1 drawn=true ink=0.04282 ref=0.04301 waitedMs=541
+§INK OK   still=b2b_undo page=1 drawn=true ink=0.04288 ref=0.04301 waitedMs=542
+§INK OK   still=b3_open page=1 drawn=true ink=0.0486 ref=0.0486 waitedMs=814
+§INK OK   still=b3_locked page=1 drawn=true ink=0.0486 ref=0.0486 waitedMs=542
+§INK OK   still=b3_edit page=1 drawn=true ink=0.04847 ref=0.0486 waitedMs=543
+§INK OK   still=b3_dl page=1 drawn=true ink=0.04847 ref=0.0486 waitedMs=543
+§INK OK   still=b4_xlsx page=1 drawn=true ink=0.04847 ref=0.0486 waitedMs=541
+§INK OK   still=b6_open page=1 drawn=true ink=0.04255 ref=0.04255 waitedMs=814
+§INK OK   still=b6_red page=1 drawn=true ink=0.04255 ref=0.04255 waitedMs=548
+§INK OK   still=b6_undo page=1 drawn=true ink=0.04255 ref=0.04255 waitedMs=540
+§INK OK   still=p0_trial page=1 drawn=true ink=0.06386 ref=0.06386 waitedMs=793
+§INK OK   still=p1_trial page=1 drawn=true ink=0.06385 ref=0.06386 waitedMs=532
+§INK OK   still=p2_long page=1 drawn=true ink=0.00825 ref=0.00825 waitedMs=811
+§INK_CONTROL blank canvas rejected=true not-drawn rejected=true good page accepted=true (the check can fail)
+§INK_VERDICT PASS stills=18 bad=0

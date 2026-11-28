@@ -1,0 +1,107 @@
+§NINJAPDF-LOAD tree=/tmp/wt-film-one-page-rc2-ootb mutant=none puppeteer=yes
+  §NINJAPDF-CHECK claim=N6 key=identical OK rule="every engine file in erp/overlay/ninja equals bim-compiler origin/master:build/erp (6 of 6)"
+§NINJAPDF-NODE engine=erp/overlay/ninja/ninja_pdf.js exports=renderSheet,PROFILES,runsOf,cellText,PAGE_MAX
+  §NINJAPDF-N2b-FACT words=19 popplerExact=19 clustersChecked=6 badClusters=0
+  §NINJAPDF-CHECK claim=N2b key=population OK rule="the word list holds every shape: tone mark before AM (>=4), AM at a run start (>=3), Lao (>=4), a repeat in one cell (>=2)"
+  §NINJAPDF-CHECK claim=N2b key=clusters OK rule="a tone mark between the consonant and AM keeps ONE cluster (น้ำ ต่ำ ก๊ำ ນ້ຳ); AM alone is its own (6 of 6)"
+  §NINJAPDF-CHECK claim=N2b key=poppler OK rule="pdftotext -raw gives back every word exactly (19 of 19)"
+§NINJAPDF-N2b PASS  judged=3 failed=0 threw=0
+  §NINJA_PDF cells=3 pages=1 maxPageH=156.75 fontParses=2 overflowNumbers=1 missingGlyphs=0 missingDistinct=0 missingCells=0
+  §NINJAPDF-C1-FACT cellA1 word="####" x=38.00..60.25 cellBounds=36.00..63.00 B1="1,234.50" returned overflowNumbers=1
+  §NINJAPDF-CHECK claim=C1 key=hash-fill OK rule="the number that does not fit prints as # fill (and no digit of it)"
+  §NINJAPDF-CHECK claim=C1 key=inside-cell OK rule="the # fill lies inside its cell (36.00..63.00 pt): 36 <= x0 and x1 <= 63"
+  §NINJAPDF-CHECK claim=C1 key=fit-untouched OK rule="a number that fits is printed whole (1,234.50)"
+  §NINJAPDF-CHECK claim=C1 key=counted OK rule="the count is returned and logged: overflowNumbers=1 (returned) and the §NINJA_PDF line says overflowNumbers=1"
+§NINJAPDF-C1 PASS  judged=4 failed=0 threw=0
+  §NINJA_PDF cells=1800 pages=1 maxPageH=3969.00 fontParses=3 overflowNumbers=50 missingGlyphs=0 missingDistinct=0 missingCells=0
+  §NINJAPDF-C2-FACT cells=1800 fontParses=3 distinctFontFiles=2 ms=134
+  §NINJAPDF-CHECK claim=C2 key=population OK rule="both a Latin and a Thai font were used (2 distinct font files)"
+  §NINJAPDF-CHECK claim=C2 key=parses OK rule="the font is parsed once per distinct file, not per use: fontParses <= distinct files + 1 (got 3 for 1,800 cells)"
+§NINJAPDF-C2 PASS  judged=2 failed=0 threw=0
+  §NINJA_PDF cells=5000 pages=3 maxPageH=14398.50 fontParses=2 overflowNumbers=0 missingGlyphs=0 missingDistinct=0 missingCells=0
+  §NINJAPDF-C3-FACT rows=2500 pdfinfoPages=3 expected=3 tallest=14398.5pt rowsOnPage1=1118 expectedPerPage=1118
+  §NINJAPDF-CHECK claim=C3 key=page-count OK rule="the sheet is cut into ceil(2500 / 1118) = 3 pages (pdfinfo)"
+  §NINJAPDF-CHECK claim=C3 key=height OK rule="no page is taller than 14,400 pt, and the first is nearly full (> 14,000)"
+  §NINJAPDF-CHECK claim=C3 key=row-cut OK rule="page 1 holds exactly 1118 whole rows (the cut is a row boundary)"
+  §NINJAPDF-CHECK claim=C3 key=no-row-lost OK rule="every row 1..2500 is read back once, in order, with its number"
+  §NINJAPDF-C3-FACT merge rows 1117-1119: page1 lastLine="m 1116" MERGED on page 2 pages=2
+  §NINJAPDF-CHECK claim=C3 key=merge-whole OK rule="a merge across the natural cut moves whole to page 2 (page 1 ends "m 1116", MERGED is on page 2)"
+§NINJAPDF-C3 PASS  judged=5 failed=0 threw=0
+  §NINJA_PDF cells=3 pages=1 maxPageH=182.25 fontParses=4 overflowNumbers=0 missingGlyphs=7 missingDistinct=6 missingCells=2 missing=U+4E2D,U+6587,U+062A,U+0642,U+0631,U+064A
+  §NINJA_PDF cells=4 pages=1 maxPageH=195.00 fontParses=4 overflowNumbers=0 missingGlyphs=0 missingDistinct=0 missingCells=0
+  §NINJAPDF-C4-FACT withCJKArabic: {"count":7,"distinct":6,"cells":2,"chars":"中文تقري"} clean: {"count":0,"distinct":0,"cells":0,"chars":""}
+  §NINJAPDF-CHECK claim=C4 key=counted OK rule="the Chinese + Arabic cells are counted: >= 7 code points (2 + 5), 2 cells, and 中 and ت are named; the Latin and Thai words are not"
+  §NINJAPDF-CHECK claim=C4 key=clean-is-zero OK rule="a sheet of Latin / Thai / Lao text and a number counts 0 (a population of 4 cells was judged)"
+  §NINJAPDF-CHECK claim=C4 key=logged OK rule="the §NINJA_PDF line says missingGlyphs=7 for the first sheet and missingGlyphs=0 for the second"
+§NINJAPDF-C4 PASS  judged=3 failed=0 threw=0
+  §NINJAPDF-CHECK claim=P3 key=exported OK rule="cellText is exported by the engine (a function)"
+  §NINJAPDF-P3-FACT cellText=["1,234.50","7.00","5","TRUE","abc","",""] printed=["1,234.50","7.00","5","TRUE","abc"]
+  §NINJAPDF-CHECK claim=P3 key=renderer-prints-it OK rule="the renderer prints exactly what cellText returns, cell by cell (5 printed)"
+  §NINJAPDF-CHECK claim=P3 key=one-copy OK rule="the number-format fallback rule is written in exactly one file (ninja_pdf.js): the pill and this witness call cellText"
+§NINJAPDF-P3 PASS  judged=3 failed=0 threw=0
+§NINJAPDF-LIVE base=https://red1oon.github.io/bim-ootb/
+  §NINJA-REPORT-PILL loaded base=/bim-ootb/erp/overlay/ninja/
+  §NINJA-REPORT-PILL panel samples=2
+  §NINJA_REPORT_LOAD part=engine scripts=6 ms=1968 files=exceljs.min.js,ninja_calc.js,ninja_template.js,ninja_template_xlsx.js,ninja_preflight.js,ninja_pdf.js
+  §PREFLIGHT_SUMMARY errors=0 warnings=0 - run allowed
+  §SQL_SUMMARY statements=3 distinct=3 duplicates=0 totalMs=9.2
+  §NINJA_REPORT_RUN client=11 from=2003-01-01 to=2003-12-31 statements=3 ms=22
+  §NINJA_REPORT_DONE client=11 formulas=34 errors=0 xlsxBytes=11643 pdf=on-demand
+  §NINJA_REPORT_LOAD part=fonts files=6 bytes=964452
+  §NINJA_REPORT_LOAD part=pdf scripts=1 ms=424 files=pdfkit.standalone.js
+  §NINJA_REPORT_PDF client=11 pdfBytes=74855 page=681.00x526.50 pages=1 ms=527 renderMs=101 heapMB=93.6 overflowNumbers=0 missingGlyphs=0 missingCells=0
+  §PREFLIGHT_SUMMARY errors=0 warnings=0 - run allowed
+  §SQL_SUMMARY statements=3 distinct=3 duplicates=0 totalMs=1.0
+  §NINJA_REPORT_RUN client=11 from=2002-01-01 to=2026-12-31 statements=3 ms=4
+  §NINJA_REPORT_DONE client=11 formulas=9 errors=0 xlsxBytes=9786 pdf=on-demand
+  §NINJA_REPORT_PDF client=11 pdfBytes=49215 page=513.00x309.75 pages=1 ms=44 renderMs=44 heapMB=71.4 overflowNumbers=0 missingGlyphs=0 missingCells=0
+  §PREFLIGHT_SUMMARY errors=0 warnings=0 - run allowed
+  §SQL_SUMMARY statements=3 distinct=3 duplicates=0 totalMs=1.6
+  §NINJA_REPORT_RUN client=11 from=2003-01-01 to=2003-12-31 statements=3 ms=11
+  §NINJA_REPORT_DONE client=11 formulas=34 errors=0 xlsxBytes=11643 pdf=on-demand
+  §NINJA-REPORT-PILL PDF ERROR boom-test
+  §NINJA_REPORT_PDF client=11 pdfBytes=75005 page=1641.00x526.50 pages=1 ms=116 renderMs=116 heapMB=76.4 overflowNumbers=0 missingGlyphs=2 missingCells=1
+  §NINJAPDF-N1-FACT pdf=tb_ninja_tb_sample_report.pdf bytes=74855 pages=1 sheetCells=144 read=144 sameAddressAndText=144 extra=0 verdict=ADDS_UP reason="4 totals agree with their rows"
+  §NINJAPDF-CHECK claim=N1 key=population OK rule="the trial balance printed cells to judge (more than 40)"
+  §NINJAPDF-CHECK claim=N1 key=opens OK rule="pdf.js opens the downloaded PDF, one page"
+  §NINJAPDF-CHECK claim=N1 key=same-cells OK rule="every sheet cell is read back at the same address with the same text (144 of 144)"
+  §NINJAPDF-CHECK claim=N1 key=no-extra OK rule="no cell is read that the sheet does not hold"
+  §NINJAPDF-CHECK claim=N1 key=adds-up OK rule="the reader finds the totals by arithmetic: verdict ADDS_UP"
+  §NINJAPDF-CHECK claim=N1 key=engine-counts OK rule="the trial balance printed with overflowNumbers=0 missingGlyphs=0 pages=1 and renderMs= heapMB= in its §NINJA_REPORT_PDF line"
+§NINJAPDF-N1 PASS  judged=6 failed=0 threw=0
+  §NINJAPDF-N2-FACT pdf=trial-balance thaiCells=11 popplerEqual=11 pdfjsEqual=11
+  §NINJAPDF-CHECK claim=N2 key=trial-balance-poppler OK rule="every Thai cell of the trial-balance is in pdftotext -raw exactly (11 of 11)"
+  §NINJAPDF-CHECK claim=N2 key=trial-balance-pdfjs OK rule="every Thai cell of the trial-balance is in the pdf.js text the reader reads (11 of 11)"
+  §NINJAPDF-N2-FACT pdf=sales-register thaiCells=9 popplerEqual=9 pdfjsEqual=9 saraAmLine="จำนวนเอกสาร (ใบ) 4"
+  §NINJAPDF-CHECK claim=N2 key=sales-register-poppler OK rule="every Thai cell of the sales-register is in pdftotext -raw exactly (9 of 9)"
+  §NINJAPDF-CHECK claim=N2 key=sales-register-pdfjs OK rule="every Thai cell of the sales-register is in the pdf.js text the reader reads (9 of 9)"
+  §NINJAPDF-CHECK claim=N2 key=sara-am-population OK rule="at least one judged Thai cell holds SARA AM (the defect's own word)"
+§NINJAPDF-N2 PASS  judged=5 failed=0 threw=0
+  §NINJAPDF-N3-FACT §18=edit_layer.js cell=C6 old="273.80" new="274.80" layer="§EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={"script-not" edit="§EDSHEET-EDIT id=cC6 cell=C6 kind=cell ok=true old="273.80" new="274.80" font=LiberationSans sub=none verdict=DOES_NOT_ADD_UP entries=2 bytes=74849 edits=1"
+  §NINJAPDF-CHECK claim=N3 key=opens OK rule="pdf/index.html opens the engine's PDF and lays the edit layer over it (§PDFED-OPEN ok=true, §EDSHEET-LAYER)"
+  §NINJAPDF-CHECK claim=N3 key=edit-applies OK rule="the number typed on the page is applied: §EDSHEET-EDIT cell=C6 ok=true old="273.80" new="274.80""
+  §NINJAPDF-CHECK claim=N3 key=bytes OK rule="the edited PDF bytes were read back from the page (no later check of this claim is skipped)"
+§SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=2 reason="4 totals agree with their rows"
+§SHEET_READER verdict=DOES_NOT_ADD_UP ok=false page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=6 ms=2 reason="C28: printed 0.00 != rows sum 1.00; F6: printed 273.80 != F = C + D - E gives 274.80"
+  §NINJAPDF-N3-READ cells=144 C6="274.80" othersChanged=0 rightEdgeMoved=0.000pt verdict=DOES_NOT_ADD_UP reason="C28: printed 0.00 != rows sum 1.00; F6: printed 273.80 != F = C + D - E gives 274.80" poppler new=1 old=1 (before: old=2)
+  §NINJAPDF-CHECK claim=N3 key=reader-new OK rule="our reader reads the new number at C6, the same 144 addresses, every other cell unchanged"
+  §NINJAPDF-CHECK claim=N3 key=same-box OK rule="the edited cell keeps its right edge (moved <= 0.01 pt)"
+  §NINJAPDF-CHECK claim=N3 key=poppler-new OK rule="poppler reads the new number once more and the old one once less"
+  §NINJAPDF-CHECK claim=N3 key=total-named OK rule="the total that no longer agrees is NAMED by the reader (verdict DOES_NOT_ADD_UP)"
+§NINJAPDF-N3 PASS  judged=7 failed=0 threw=0
+§NINJAPDF-N4 INCONCLUSIVE "no run_all.sh log (set NINJAPDF_LANE_LOG)"  judged=0 failed=0 threw=0
+  §NINJAPDF-N5-FACT firstVisitRequests=268 newFiles=erp/overlay/ninja/report_pill.js bytesAdded=8488 (report_pill.js 8488 + pills.js 0) run=ninja_report.js,exceljs.min.js,ninja_calc.js,ninja_template.js,ninja_template_xlsx.js,ninja_preflight.js,ninja_pdf.js runBytes=1004962 pdf=NotoSansLao-Bold.ttf,NotoSansThai-Bold.ttf,NotoSansThai-Regular.ttf,NotoSansLao-Regular.ttf,LiberationSans-Regular.ttf,LiberationSans-Bold.ttf,pdfkit.standalone.js pdfBytes=2851862
+  §NINJAPDF-CHECK claim=N5 key=first-visit OK rule="the first visit fetches report_pill.js and nothing else of the report (no engine, no ExcelJS, no PDFKit, no font)"
+  §NINJAPDF-CHECK claim=N5 key=run-no-pdf-writer OK rule=""Run report" fetches ExcelJS + the engine (ninja_pdf.js too: it owns cellText, the one printed-text rule, 16 KB) and NOT PDFKit or a font"
+  §NINJAPDF-CHECK claim=N5 key=pdf-on-demand OK rule="the first "Download PDF" fetches PDFKit and the six fonts (ninja_pdf.js is already there)"
+  §NINJAPDF-CHECK claim=N5 key=once OK rule="the second report fetches nothing of the report again"
+§NINJAPDF-N5 PASS  judged=4 failed=0 threw=0
+§NINJAPDF-N6 PASS  judged=1 failed=0 threw=0
+  §NINJAPDF-N7-FACT A(failing PDF)={"calls":1,"sum":true,"preview":true,"xlsxLink":true,"pdfLink":true,"err":"PDF failed: boom-test","pdfSet":false} B(three clicks, one cell of Chinese)={"calls":1,"pdf":true,"sum":true,"err":false,"note":"2 characters in 1 cell (中文) have no font in this PDF and are left blank.","facts":{"count":2,"distinct":2,"cells":1,"chars":"中文"}} log="§NINJA_REPORT_PDF client=11 pdfBytes=75005 page=1641.00x526.50 pages=1 ms=116 renderMs=116 heapMB=76.4 overflowNumbers=0 missingGlyphs=2 missingCells=1"
+  §NINJAPDF-CHECK claim=N7 key=fail-keeps-report OK rule="a PDF that fails leaves the finished report on the pill (summary, preview, both download links still there)"
+  §NINJAPDF-CHECK claim=N7 key=fail-own-node OK rule="the PDF error is in its own node #np-pdf-err and names the cause (boom-test)"
+  §NINJAPDF-CHECK claim=N7 key=one-in-flight OK rule="three clicks on "Download PDF" while it renders start ONE toPdf (calls=1), the PDF is made, the report is still there, the old error is gone"
+  §NINJAPDF-CHECK claim=N7 key=glyph-line OK rule="the pill says in one line that the Chinese cell has no font (#np-pdf-note: 2 characters in 1 cell, 中文)"
+  §NINJAPDF-CHECK claim=N7 key=glyph-log OK rule="the §NINJA_REPORT_PDF line says missingGlyphs=2 missingCells=1 and carries renderMs= heapMB="
+§NINJAPDF-N7 PASS  judged=5 failed=0 threw=0
+§NINJAPDF-VERDICT PASS-PARTIAL notJudged=N4 N1=PASS N2=PASS N2b=PASS N3=PASS N4=INCONCLUSIVE N5=PASS N6=PASS N7=PASS C1=PASS C2=PASS C3=PASS C4=PASS P3=PASS judged=48 failed=0

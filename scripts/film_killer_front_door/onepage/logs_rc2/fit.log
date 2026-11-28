@@ -1,0 +1,20 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT b1 cue=8.80 room=8.65 dur=7.73 -> DETAIL slack=+0.92 words=25
+§NARR_FIT b2a cue=19.38 room=5.03 dur=4.11 -> DETAIL slack=+0.92 words=14
+§NARR_FIT b2a2 cue=26.34 room=2.49 dur=1.58 -> DETAIL slack=+0.91 words=7
+§NARR_FIT b2b cue=33.80 room=5.07 dur=4.18 -> DETAIL slack=+0.89 words=15
+§NARR_FIT b2c cue=40.63 room=2.40 dur=1.27 -> DETAIL slack=+1.13 words=4
+§NARR_FIT b3 cue=53.88 room=7.61 dur=6.70 -> DETAIL slack=+0.91 words=24
+§NARR_TONE b3#0 F YN rose=5.0st endDelta=+5.6st want=rise OK "And the rest of the file?"
+§NARR_FIT b4 cue=69.80 room=9.73 dur=8.82 -> DETAIL slack=+0.91 words=24
+§NARR_FIT b5 cue=81.17 room=5.66 dur=4.76 -> DETAIL slack=+0.90 words=16
+§NARR_TONE b5#0 F WH rose=0st endDelta=-1.8st want=fall OK "What happened to that cell?"
+§NARR_FIT b6 cue=98.22 room=8.81 dur=7.93 -> DETAIL slack=+0.88 words=25
+§NARR_TONE b6#0 F YN rose=5.0st endDelta=+3.1st want=rise OK "Can the ERP print a report like this?"
+§NARR_FIT b6u cue=108.80 room=2.53 dur=1.62 -> DETAIL slack=+0.91 words=6
+§NARR_FIT b7a cue=115.88 room=7.70 dur=6.79 -> DETAIL slack=+0.91 words=20
+§NARR_FIT b7b cue=132.55 room=7.28 dur=6.38 -> DETAIL slack=+0.90 words=18
+§NARR_FIT b8 cue=144.13 room=14.99 dur=14.08 -> DETAIL slack=+0.91 words=39
+§NARR_FIT close cue=159.72 room=5.27 dur=4.39 -> DETAIL slack=+0.88 words=13

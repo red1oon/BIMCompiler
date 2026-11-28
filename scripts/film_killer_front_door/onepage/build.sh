@@ -10,6 +10,7 @@ PY=~/.local/share/film_narration/venv/bin/python; FIT=../../film_replication_eng
 export CUDA_VISIBLE_DEVICES=""; FTAG=en; FARG=1.15; KEYVOL="${KEYVOL:-0.8}"
 for f in keys.py k2.py beatlen.js check_film.js record.js tsv.js; do cmp -s $f ../part3/$f && echo "§REUSED_UNCHANGED $f == part3/$f" || echo "§CHANGED $f differs from part3/$f"; done > $OD/reuse.log
 [ -n "$SKIP_FACTS" ] || env -u DBUS_SESSION_BUS_ADDRESS node facts.js > $OD/facts.log 2>&1 || { echo "§FACTS_FAIL see $OD/facts.log"; exit 3; }
+node check_ink.js $OD > $OD/ink.log 2>&1 || { echo "§INK_FAIL see $OD/ink.log"; exit 3; }; tail -1 $OD/ink.log
 node links.js > $OD/links.log 2>&1 || { echo "§LINKS_FAIL see $OD/links.log"; exit 3; }
 node credits.js > $OD/credits.log 2>&1 || { echo "§CREDITS_FAIL see $OD/credits.log"; exit 3; }
 node guard.js voice > $OD/guard_voice.log 2>&1 || { echo "§GUARD_FAIL see $OD/guard_voice.log"; exit 3; }

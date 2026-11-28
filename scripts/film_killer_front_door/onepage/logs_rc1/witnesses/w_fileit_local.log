@@ -1,0 +1,86 @@
+§FILEIT-LOAD tree=/tmp/wt-film-one-page-ootb mutant=none puppeteer=yes
+§FILEIT-ORACLE direct ok=true invoice={"grandtotal":153.5,"totallines":153.5,"docstatus":"CO"} fingerprintBytes=661
+§FILEIT-NODE verdict=FILED text="Filed FILEIT-0001 (CO)" writes=[{"cell":"F2","value":"FILEIT-0001"},{"cell":"G24","value":"Filed FILEIT-0001 (CO)"}] ledgerLineChars=11594
+  §FILEIT-CHECK case=F1 key=oracle OK rule="the oracle run itself is real: ok, CO, total lines 153.50, a non-empty fingerprint"
+  §FILEIT-CHECK case=F1 key=node-filed OK rule="node: the workbook filed through xlsx_host + host_shim + runner (verdict FILED) and equals the oracle"
+  §FILEIT-CHECK case=F1 key=browser-filed OK rule="browser: the page filed the same workbook (verdict FILED, the page shows it)"
+  §FILEIT-CHECK case=F1 key=same-verdict-writes OK rule="same verdict text in the status cell and the same writes as node"
+  §FILEIT-CHECK case=F1 key=fingerprint OK rule="fingerprint(browser page DB) == fingerprint(node) == fingerprint(oracle), non-empty"
+§FILEIT-F1 verdict=PASS judged=5 failed=0 threw=0
+§KRN-BROWSER-COST scripts=45 kernelFiles=44 requests=59 bytesServed=33719012 seedAndPatchBytes=30440402 scriptsMs=60 bootMs=940 pageReadyMs=1082 fileMs=99 jsHeapMBAfterBoot=123 jsHeapMBAfterFiling=41
+  §FILEIT-CHECK case=F8 key=cost OK rule="scripts, bytes, boot ms, file ms and heap are all measured (numbers > 0)"
+§FILEIT-F8 verdict=PASS judged=1 failed=0 threw=0
+  §FILEIT-CHECK case=F5 key=rows OK rule="every entry row on screen == the witness's own SQL read of Fact_Acct in the page DB (account, name, debit, credit), same count, > 0 rows"
+  §FILEIT-CHECK case=F5 key=balanced OK rule="debits = credits > 0 in the DB, and the total row on screen shows that sum"
+  §FILEIT-CHECK case=F5 key=node-books OK rule="the rows on screen equal the node kernel's entries for the same filing"
+  §FILEIT-CHECK case=F5 key=names OK rule="the page shows the partner NAME and the product NAMES from the DB; the sheet holds only their search keys (C&W, Oak, Elm)"
+  §FILEIT-CHECK case=F6 key=offered OK rule="after a filing the page offers the workbook back and the file arrives"
+  §FILEIT-CHECK case=F6 key=one-row OK rule="exactly ONE _door_ledger row (the input had none), and it is the line the page kernel journalled"
+  §FILEIT-CHECK case=F6 key=cells OK rule="docno cell F2 holds the filed number, status cell G24 says Filed; no other cell of the sheet differs in value or formula (27 cells compared)"
+  §FILEIT-CHECK case=F6 key=hidden OK rule="_door_tags and _door_ledger are very hidden in the downloaded file; the invoice sheet is visible"
+  §FILEIT-CHECK case=F2 key=b-verifies-in-node OK rule="the ledger line from the DOWNLOADED workbook passes node ws_kernel.verifyJournal"
+  §FILEIT-CHECK case=F2 key=b-replays-in-node OK rule="replayed into a fresh NODE kernel it gives the same fingerprint as the page DB and the oracle"
+  §FILEIT-CHECK case=F5 key=pricelist OK rule="filed; the Elm line's price cell is blank in the sheet, the page shows the price list price read from the DB (> 0) and its net"
+§FILEIT-F5 verdict=PASS judged=5 failed=0 threw=0
+  §FILEIT-CHECK case=F6 key=chain OK rule="second filing FILED; the workbook now holds 2 ledger rows, seq 1 then 2, row 2 chained to row 1, both verify"
+  §FILEIT-CHECK case=F6 key=replay-both OK rule="both rows replay into a fresh node kernel: invoice 1 identical to the oracle, invoice 2 identical apart from its number"
+  §FILEIT-CHECK case=F6 key=other-own-chain OK rule="a different workbook opened in the same page starts its OWN chain: 1 row, seq 1, verifies alone, and the page DB does not hold the first workbook's invoices"
+§FILEIT-F6 verdict=PASS judged=7 failed=0 threw=0
+  §FILEIT-CHECK case=F2 key=n-verifies-in-browser OK rule="the NODE ledger line passes the browser kernel's verifyJournal (the same function, the browser shell's SHA-256)"
+  §FILEIT-CHECK case=F2 key=n-replays-in-browser OK rule="replayed into a fresh BROWSER kernel it gives the oracle fingerprint"
+§FILEIT-F2 verdict=PASS judged=4 failed=0 threw=0
+  §FILEIT-CHECK case=F3 key=filed-both OK rule="both fixed-clock filings produced a ledger line"
+  §FILEIT-CHECK case=F3 key=same-string OK rule="the journal line of the same filing is the SAME STRING in node and in the browser (11594 characters: seq, actor, at, opsDigest, prev, hash, every op with its ids, stamps and uuids)"
+  §FILEIT-CHECK case=F3 key=sha256 OK rule="the browser shell's SHA-256 == node crypto on 9 texts (empty, ASCII, astral, block edges, 1 MB, the line's own ops text and hash text); the last two ARE the line's opsDigest and hash"
+  §FILEIT-CHECK case=F3 key=sha256-node-copy OK rule="the same shell file loaded in node gives node crypto's digests too"
+§FILEIT-F3 verdict=PASS judged=4 failed=0 threw=0
+  §FILEIT-CHECK case=F4 key=reason OK rule="the page says Not filed and names BOTH numbers (lines 153.5, printed 153.51), marked REFUSED"
+  §FILEIT-CHECK case=F4 key=no-document OK rule="no document and no books are shown; the kernel journal is empty; no C_Invoice and no pending I_Invoice row in the page DB"
+  §FILEIT-CHECK case=F4 key=no-ledger-row OK rule="the workbook offered back has NO _door_ledger row, and only the status cell G24 differs from what was opened"
+§FILEIT-F4 verdict=PASS judged=3 failed=0 threw=0
+  §FILEIT-CHECK case=F9 key=no-tags OK rule="INCONCLUSIVE in plain words naming _door_tags; no document shown, journal empty, no download offered"
+§FILEIT-F9 verdict=PASS judged=1 failed=0 threw=0
+  §FILEIT-CHECK case=F7 key=files-offline OK rule="with the network OFF the page files the workbook (FILED, the oracle fingerprint) and attempts NO request"
+  §FILEIT-CHECK case=F7 key=nothing-sent OK rule="across every file_it page of this run: every request was a GET to the page's own server (the server saw no other method), none went anywhere else"
+§FILEIT-OFFLINE-RELOAD (measured, not a claim) page reloaded with the network off: engine ready=N engineText="(no page)"
+§FILEIT-F7 verdict=PASS judged=2 failed=0 threw=0
+  §FILEIT-CHECK case=F10 key=lazy OK rule="the pane did not load the kernel before File it was used (no WsKernel global at pane load)"
+  §FILEIT-CHECK case=F10 key=wired OK rule="File it through the shim with the pane's own runner is FILED, not NOT-WIRED; one ledger row; the docno + status written"
+  §FILEIT-CHECK case=F10 key=verify-without-boot OK rule="with the kernel scripts loaded and NO kernel booted, the pane verifies a ledger line (what Check history needs for a ledger made elsewhere)"
+  §FILEIT-CHECK case=F10 key=fingerprint OK rule="the invoice filed in the pane has the oracle fingerprint"
+  §FILEIT-CHECK case=F10 key=text OK rule="the pane no longer tells the user that File it is not loaded in this build"
+§FILEIT-F10 verdict=PASS judged=5 failed=0 threw=0
+  page: §KRN-BROWSER-BOOT n=1 scripts=45 scriptsMs=60 seedAndPatchBytes=30440402 bootMs=940 totalMs=1000 jsHeapMB=123
+  page: §KRN-BROWSER-BOOT n=2 scripts=45 scriptsMs=0 seedAndPatchBytes=30440402 bootMs=610 totalMs=610 jsHeapMB=125
+  page: §KRN-BROWSER-BOOT n=1 scripts=45 scriptsMs=39 seedAndPatchBytes=30440402 bootMs=894 totalMs=933 jsHeapMB=124
+  page: §KRN-BROWSER-BOOT n=2 scripts=45 scriptsMs=0 seedAndPatchBytes=30440402 bootMs=636 totalMs=636 jsHeapMB=125
+  page: §KRN-BROWSER-BOOT n=1 scripts=45 scriptsMs=50 seedAndPatchBytes=30440402 bootMs=861 totalMs=911 jsHeapMB=124
+  page: §KRN-BROWSER-BOOT n=2 scripts=45 scriptsMs=0 seedAndPatchBytes=30440402 bootMs=633 totalMs=633 jsHeapMB=157
+  page: §KRN-BROWSER-BOOT n=3 scripts=45 scriptsMs=0 seedAndPatchBytes=30440402 bootMs=621 totalMs=621 jsHeapMB=190
+  page: §KRN-BROWSER-BOOT n=1 scripts=45 scriptsMs=43 seedAndPatchBytes=30440402 bootMs=893 totalMs=935 jsHeapMB=124
+  page: §KRN-BROWSER-BOOT n=1 scripts=45 scriptsMs=0 seedAndPatchBytes=30440402 bootMs=878 totalMs=878 jsHeapMB=123
+§FILEIT-STANDIN openpyxl=3.1.5
+  §FILEIT-CHECK case=F12 key=resave-ran OK rule="the openpyxl load + save wrote the re-saved file"
+  §FILEIT-CHECK case=F12 key=why-stubs OK rule="the re-saved file holds the formulas but NO result: read without sheetStubs SheetJS DROPS G8, G9 and G20 (the old silent hole), read with XH.READ it keeps them as formula cells"
+§FILEIT-NOSAVED verdict=REFUSED text="Not filed: cells G20, G8 and G9 hold formulas with no saved result; open and save the file in your spreadsheet program, or type the figures" checks: line=no-saved-result subtotal=no-saved-result grandtotal=not-reached linenet=no-saved-result
+  §FILEIT-CHECK case=F12 key=refused OK rule="REFUSED (not FILED), the text names G20, G8 and G9 and says "formulas with no saved result"; "open and save the file" is in it"
+  §FILEIT-CHECK case=F12 key=nothing-filed OK rule="zero ledger rows in the workbook, zero kernel journal entries, no invoice, only the status cell written"
+  §FILEIT-CHECK case=F12 key=says-which OK rule="the verdict says which checks did not run: line=no-saved-result subtotal=no-saved-result"
+  §FILEIT-CHECK case=F12 key=remedy OK rule="the same file with the three figures typed in is FILED, every check ran"
+  §FILEIT-CHECK case=F12 key=normal OK rule="WB_A filed in node: FILED, the oracle fingerprint, checks: line=ran subtotal=ran grandtotal=ran linenet=ran, the status cell the plain "Filed <no> (CO)""
+  §FILEIT-CHECK case=F12 key=no-tag OK rule="the template does not tag a subtotal: FILED, subtotal=absent, no "not checked" in the status cell"
+  §FILEIT-CHECK case=F12 key=tagged-empty OK rule="the subtotal is tagged but the cell is empty: FILED, subtotal=absent, the status cell says "not checked: subtotal (none printed)""
+  §FILEIT-CHECK case=F13 key=stamped OK rule="Stamp recorded the entry (RECORDED) and the stored history text holds the emoji only as the escape \ud83d\ude00, no character beyond U+FFFF"
+  §FILEIT-CHECK case=F13 key=before OK rule="Check history on the new workbook says OK"
+  §FILEIT-CHECK case=F13 key=resaved OK rule="after the re-save Check history still says OK (a history that was never edited is not called edited)"
+  §FILEIT-CHECK case=F13 key=old OK rule="the old raw-emoji history verifies as written, a Stamp appends entry 2, both verify, and the stored text is now escaped (no character beyond U+FFFF)"
+§FILEIT-F12 verdict=PASS judged=9 failed=0 threw=0
+§FILEIT-F13 verdict=PASS judged=4 failed=0 threw=0
+  §FILEIT-OLD witness_sheet_door.js -> §SDOOR-VERDICT PASS judged=33 failed=0 cases=["PASS","PASS","PASS","PASS","PASS","PASS","PASS","PASS","PASS","PASS","PASS"]
+  §FILEIT-CHECK case=F11 key=witness_sheet_door.js OK rule="witness_sheet_door.js prints §SDOOR-VERDICT PASS judged=33 failed=0"
+  §FILEIT-OLD witness_sheet_addin.js -> §SADDIN-VERDICT PASS judged=63 failed=0 cases=["PASS","PASS","PASS","PASS","PASS","PASS","PASS","PASS","PASS","PASS","PASS"] (fake host + fake Office.js only; r
+  §FILEIT-CHECK case=F11 key=witness_sheet_addin.js OK rule="witness_sheet_addin.js prints §SADDIN-VERDICT PASS judged=63 failed=0"
+  §FILEIT-OLD witness_sheet_history.js -> §SHIST-VERDICT PASS judged=20 failed=0 cases=["PASS","PASS","PASS","PASS","PASS","PASS","PASS","PASS"]
+  §FILEIT-CHECK case=F11 key=witness_sheet_history.js OK rule="witness_sheet_history.js prints §SHIST-VERDICT PASS judged=20 failed=0"
+§FILEIT-F11 verdict=PASS judged=3 failed=0 threw=0
+§FILEIT-VERDICT PASS judged=53 failed=0 cases=["F1","F8","F5","F6","F2","F3","F4","F9","F7","F10","F12","F13","F11"] ["PASS","PASS","PASS","PASS","PASS","PASS","PASS","PASS","PASS","PASS","PASS","PASS","PASS"] (headless Chromium on the real page; real Excel NOT run)
