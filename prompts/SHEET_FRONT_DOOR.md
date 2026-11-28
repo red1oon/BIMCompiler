@@ -2031,3 +2031,29 @@ What follows from it (the coordinator's reading, to be confirmed one detail at a
   Import Invoice** - the one question to settle first (below). "Semi-OCR" = P1 "Mark my invoice": mark the fields once per supplier layout, the next PDF from
   that supplier fills itself.
 - **Install for offline File it** = P4 (a service worker + install prompt over the books engine).
+
+## 24. File it stops at an UNPOSTED document; the ERP tells its user (owner 2026-11-28: "Yes agree"; spec before code)
+**Rule (owner, §23):** what comes through the door is an unposted source document, created or updated by the same rules as a user in the ERP window; a
+logged-in user is made aware of it and can track it. A document that arrives from a file gets a human look before it reaches the ledger.
+**Today:** `erp/sheet_door.js:170` runs Import Invoice (AD_Process 207) with `DocAction: tpl.docAction || 'CO'` - the door's OWN override: the invoice is
+completed and posted in one press. iDempiere's own default for that parameter is `PR` (Prepare; `ImportInvoice.js:40,62`, AD_Process_Para default): the twin
+of what a user gets when running Import Invoice from the menu.
+### 24.1 Part A - the door stops overriding (small)
+The door passes NO DocAction of its own: the process takes its dictionary default (PR): the invoice is prepared (In Progress), not completed, not posted.
+A template may no longer ask for `CO` (a `docAction` in `_door_tags` other than empty / `PR` is refused in words: "this page files a document for review; complete
+it in the ERP"). The page's words change from "Filed ... (Completed)" to the document's real status, and "Open in the ERP" lands on the invoice where the user
+presses Complete. The signed ledger line in the workbook, replay and "never filed twice" are unchanged in kind (they record what was done: a prepared invoice).
+Completing in the ERP afterwards is the ERP's own action, by its own rules - not the door's.
+### 24.2 Part B - the user is made aware (needs a READ of the ERP first; no design is fixed here)
+To be answered from the code and from real iDempiere (the oracle: `~/idempiere-dev-setup/idempiere/`, the `idempiere` postgres DB) BEFORE any build:
+(1) what legacy shows under the home screen's Activities for an In-Progress invoice (PA_DocumentStatus "unprocessed documents"?), and whether our ERP's home
+shows the same from the same dictionary rows - if it already does, Part B(1) is a witness, not code; (2) how a Request tied to a record is created by a user
+(R_Request with AD_Table_ID / Record_ID, RequestType, SalesRep, DateNextAction) and how it reaches the Calendar; whether one generic kernel call can create it
+exactly as the window would (AD-layer law: no door-only logic, no `if table===`). The door then asks for that Request through the generic path; nothing is
+invented. Each answer cites file:line (legacy and ours).
+### 24.3 Witness
+W-FILE-IT / W-SHEET-DOOR / W-DOOR-ERP re-stated: after File it the invoice's DocStatus is the one legacy gives for PR, `posted` is not set, no Fact_Acct row
+exists for it; Open in the ERP shows it; pressing Complete there (the window's own button) completes and posts it, the same entries as before this change;
+a `CO` template is refused in words; replay and file-twice are unchanged. Part B: the home screen's unprocessed count rises by one after File it and falls
+after Complete; the Request exists, points at the invoice, and is on the calendar - each read from the page a user sees, not from a table alone. Mutant: the
+door passes `CO` again -> FAIL. The parallel run (`scripts/bridge/run_all.sh`) stays green: this REMOVES a divergence (the door's own DocAction), it adds none.
