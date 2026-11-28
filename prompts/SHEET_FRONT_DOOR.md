@@ -2408,3 +2408,24 @@ make its sweep print FAIL; `witness_master_save_rules` fails 2 of 21 on main too
 too (pre-existing, for the parallel-run lane); the witness's overall word is PASS while D12L is INCONCLUSIVE (it should say PASS-PARTIAL).
 FILM 1 (the PDF handler alone) rc1: bim-compiler #1418, `~/Videos/..._ONE_PAGE_FILM1_EN_rc1.mp4` (2:04), a generated letterhead banner for the picture beat
 (`§BANNER_VERDICT PASS stills=4`), coordinator's scan 0 blank sheets; beat 2a to be re-shot when §30 is live.
+
+### 30.4 RESULT 2026-11-28 - totals follow an edit, LIVE (bim-ootb #3535, Sonnet builder)
+ONE owner: `PdfWrite.figureEdits(R, cell, typed)` (`pdf/pdf_write.js`), called by the page edit and the grid edit; their two copies of "column texts /
+formatLike / alignOf" are gone. BigInt decimals; only checks that held; a loop of formulas refused by name (`formulas-loop`).
+| Run (coordinator's own, logs read) | Verdict |
+|---|---|
+| W-PDF-WRITE, mutants | `§PDFWR-VERDICT PASS judged=99 failed=0`, `§PDFWR-MUTANTS killed=20/20` (W16: 7 checks; M18 follow off, M19 a broken total repaired, M20 float arithmetic) |
+| W-EDIT-SHEET, local | `§EDSHEET-VERDICT PASS judged=72 failed=0` (builder's sweep: 18/18 mutants) |
+| W-EDIT-SHEET, **LIVE** | `§EDSHEET-E3 PASS judged=12 ... followed=D28,F10,F28 ops=4 lit=3`, `E3F PASS wrong total stays 321.60 · too-wide refused=true · cents B7=320.70`, `E3G PASS ops=4 sameBytes=true`, `§EDSHEET-VERDICT PASS judged=72 failed=0` |
+| the new E3 against untouched main (builder) | `§EDSHEET-VERDICT FAIL judged=67 failed=14` |
+On the sample: D10 498.09 -> 499.09 and D28, F10, F28 follow in ONE writer call; one history entry, 4 ops, 3 carrying a formula; one Undo = the original bytes.
+The fixture of cents that a float gets wrong (320.60 + 0.10 = 320.70000000000005) comes out 320.70. The page and the grid give byte-identical files.
+What changed that a reader of old claims should know: a red total is now reached only by typing over the total (or by a document wrong as printed), so
+E3 / H3 / H5 / H7, the two page witnesses and W-KILLER-USE J1 were RE-STATED (none deleted; the builder's report lists each old rule -> new rule).
+The `ROW` check now carries its rows and terms (it held only a summary); the reader gives a formula only to SUM totals, so typing over a row total in a fresh
+file is not flagged until a figure has fed it (open).
+**The measure on REAL files (counts only, 128 PDFs): 48 have a table on page 1, only 6 ADD UP as printed; of those 6, three had a figure changed and their
+totals followed, re-read "adds up" with only those cells changed and poppler opening them (wrong=0), three are turned pages.** So the feature is sound where it
+applies, and it applies to FEW real documents: the reader judges 6 of 48 real tables. **Widening the reader (P2, and §30.3's formulas - running balance first)
+is what makes this feature reach real files; that is the next lever, ahead of more editor features.**
+Not done: followed cells lit on a touch screen and the 3 s timing not checked on a phone; §30.3 not built.
