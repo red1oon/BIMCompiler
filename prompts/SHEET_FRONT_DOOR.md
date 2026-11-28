@@ -2204,3 +2204,46 @@ proposed slice order; nothing is built until the coordinator has put the open ch
 Seen from the user's side only: a qualified sample saved by the PDF page, dropped on the ERP -> the standard window holds ONE new draft with those values, the
 file attached, nothing posted; the same file dropped again -> no second draft; an unqualified file dropped -> the PDF page opens with it; an edited copy of the
 draft's file -> update offered; after Complete -> refused. Sweep: every window a template exists for, not one hand-picked route. Mutants for each.
+
+### 29.4 What the read found (2026-11-28; the investigator's report with file:line is in the session scratchpad `drop/`; a real headless probe on `erp/idempiere.html`)
+- **The whole path already works inside the ERP page, with no host code** (probe): `window.__crud.withModelTrx` -> `SheetDoor.file(...)` UNCHANGED -> FILED,
+  In Progress, one group of 11 ops -> `__crud.applyOpGroup` `committed=true verifyChain=ok`; `docstatus=IP posted=N`, 0 Fact_Acct rows, 2 lines. The same path
+  as the page's own Import menu entry (`idempiere.html:5310-5320`).
+- **Attachment IS ported** (`erp/ad_attachment.js`, W-ATTACH; toolbar button wired; seam `window.__idmpAttach`; 16 MB in the books, the OPFS store beyond):
+  an overlay attaches with zero host code (probe: saved, read back). Not ported: the dialog's own drag-and-drop (legacy `WAttachment.java:264-266`) - a twin gap.
+- **Overlays mount from one list** (`erp/overlay/boot.js:37-48`); nothing in the host handles `dragover` / `drop`; the six existing drop zones are element-local
+  and call `preventDefault`, so a window-level listener guarded by `!e.defaultPrevented` cannot break them.
+- **The session's user files the draft** (`createdby=101`), so Activities' "Unprocessed Documents" will count it: §26.5 decision (1) is gone.
+- **To handle:** org `*` at login -> legacy's own `ERR=Invalid Org` (HQ files); a duplicate DocumentNo is refused by legacy's unique index with an EMPTY reason
+  (the words are only in `§IMPORT_INVOICE_COLLISION`); with no printed DocumentNo the same lines file twice - the file needs an identity (the first hash of its
+  history chain, kept on the attachment); the engine is invoice-only today (`sheet_door.js:24,112,181,186`), so "every window a template exists for" is ONE
+  window until it is generalised (legacy's generic form: `AD_ImpFormat` / `AD_ImpFormat_Row`).
+- **For a PDF:** marks need page BOXES, not cell addresses (addresses shift with the line count); the mark carries the date format and the decimal style
+  (legacy `ImpFormatRow`); Import Invoice matches a partner by Value, a PDF prints a name; the grand total with tax can only be judged by the books (at the
+  drop); a saved PDF has no history unless one is forced at Save; "open /pdf with the file" needs same-origin storage and a popup from a drop may be blocked
+  (not testable headless).
+### 29.5 BUILD SPEC, slice 1 + 2 (spec before code): a tagged workbook dropped on the ERP becomes a draft with the file attached
+**Slice 1 - `erp/overlay/door_drop.js`** (one overlay, one line in `boot.js`'s list, its `modules.json` entry; NO host code):
+- A `window` listener for `dragover` / `drop` in the bubble phase, acting only when the event is not already handled and carries files; it stays out while
+  the Attachment dialog is open. Everything it needs is loaded on the first drop, nothing before (a page with no drop loads none of it).
+- For each dropped `.xlsx` that carries `_door_tags`: read the tagged cells (the existing `xlsx_host` / `host_shim` readers), run `SheetDoor.file` inside
+  `__crud.withModelTrx`, commit with `__crud.applyOpGroup`, attach the file's bytes to the new record through `__idmpAttach`, then show the record in its
+  standard window (`IdmpHost.zoom`). One line of plain words tells the result ("Drafted: AR Invoice <DocumentNo>, In Progress. Open it and press Complete.").
+- Refusals, each in plain words and with NOTHING committed (no ops, no attachment): not logged in ("Log in first, then drop the file"); organisation `*`
+  ("Choose an organisation at login: a document cannot be filed under *" - the twin's own rule, said in words); the engine's own refusals (does not add up,
+  unknown partner / product, a `CO` template); a duplicate DocumentNo (the words taken from the collision line); a file with no marks ("This file is not
+  marked for the ERP yet" - the hand-off to `/pdf` is slice 6). Several files = each judged on its own.
+- No per-window code: the table, the window to show and the key come from the template and the dictionary.
+**Slice 2 - engine hygiene** (`erp/sheet_door.js`): the pure checks become one callable `check(tpl, cells)` (moved, not rewritten) so the PDF page and the ERP
+judge by the same code; a duplicate's reason is no longer empty. W-SHEET-DOOR D1-D12 unchanged.
+**Witness W-DOOR-DROP** (headless, the REAL `erp/idempiere.html`, a synthetic `DragEvent` carrying a File; legacy facts cited where a rule is legacy's):
+D1 one draft: after the drop the books hold ONE new invoice, In Progress, not posted, 0 Fact_Acct rows, its lines and totals equal the node oracle's
+fingerprint; D2 the window: the standard Invoice window is in front on that record (grid row + record id read from the page, not a table alone), its line tab
+shows the lines WITHOUT Save, the window's own Complete completes and posts the same entries as §24's oracle; D3 the file is attached (the Attachment dialog's
+own list names it; bytes read back equal the dropped bytes); D4 refusals: each of the cases above -> its words on screen, 0 ops, 0 attachment, books
+unchanged; D5 nothing loaded before a drop (requests recorded), and what a first drop costs (bytes, ms, heap in a `§` line); D6 the six existing drop zones
+still work with the overlay listening (each exercised); D7 reload: the draft and its attachment are still there; D8 Activities: "Unprocessed Documents" on
+the home screen rises by one after the drop and falls after Complete (read from the page). A claim with nothing judged says INCONCLUSIVE. Mutants: the drop
+does nothing; a second draft per drop; the draft completed by the drop; the attachment skipped; a refusal that commits.
+**Not in this slice:** PDFs (slices 3-4), same-file-again / update / completed-refused (5), the `/pdf` hand-off (6), deleting the File it page (7), the
+Attachment dialog's own drag-and-drop, the Request.
