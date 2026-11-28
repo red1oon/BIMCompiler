@@ -2143,3 +2143,23 @@ All build checks PASS (facts 55, voice guard 38, card guard 370, K2, keys 367/36
 an edit in 6 ms; `§FILM_OFFLINE reloadOk=true openOk=true editOk=true`, PDF page only). **To re-shoot: beat 7 (it shows the one-press filing, gone since #3520).**
 The phone time is load-sensitive (median 1,896 ms of five; 1,554 ms in an earlier run). The live site changed DURING the shoot (#3518 deployed 07:27 UTC, the
 last live stage ended 07:29): the phone beat does not edit, so no fact is affected, but the build's `LIVE_EQ_MAIN` was taken at its start only.
+
+## 27. Owner direction 2026-11-28 (after watching FILM v2 rc1): no scaffolding - the user sees the PDF sheet or the iDempiere model (ideas, NOT specced)
+Verbatim, in order: *"Also the ERP side, reflect how to make it more seamless or transparent its shape, ie at 1.44, such UI may demand some learning curve, so that
+user is dealing it as i did for Ninja Excel, without needing to see any scaffolding. It only sees PDF sheet or iDempiere model. May need to brainstorm a bit"* ·
+(to the coordinator's "two doors" idea) *"Are we importing a PDF or Excel into iDempiere? I don't see the question of door to ERP which is to remain as legacy twin.
+PDF is to be only door inside. Or i missing something?"* · *"If we are to drop a qualified PDF/Excel sheet in ie sanitized to be our ERP doc model, then it can be so
+too but right away converted to our UI shape."*
+At 1:44 the film shows the **File it page**: a third page with steps, "Books engine ready: 45 program files and 29.0 MB", a Result panel, a signed ledger line -
+the machinery, shown. The coordinator's reading (put to the owner, to be confirmed one detail at a time):
+- **Two places only: the document (the PDF page, with its sheet view) and the ERP window. Filing is an action, not a place.** The File it page retires; its
+  engine talk, result panel and ledger text are not shown (the ledger line and history stay inside the file, seen under History on request).
+- **The PDF page is the door.** Any file - a supplier's PDF, a workbook - is read, checked and made to fit our ERP document model THERE (the one teaching step:
+  point once at the number, date, partner, lines of a new layout). "Send to ERP" hands the event data to the ERP's own import; a draft appears (§24).
+- **The ERP stays the legacy twin.** It gains no viewer and no foreign screen. A file may be dropped on the ERP ONLY when it is already QUALIFIED - sanitized to
+  our document model - and then it is converted at once to our own UI shape: the standard window with the draft record, nothing else on screen.
+- **To settle first: what "qualified" means.** Proposed: the file carries our marks (which field is which), every required field is present, its totals add up,
+  and its history verifies - all judged by the PDF page's own checks, so a file can only become qualified by passing through that page (or by being printed
+  by our ERP in the first place).
+Also from the owner on rc1: *"from 0:37 sec onwards the sheet seems blank"* (confirmed: two stills taken before the page redrew; the live page measured never
+blank) and *"The first sec doesn't show how it arrived or load the PDF excel"* - both in the rc2 brief, with a new INK check on every PDF-page still.
