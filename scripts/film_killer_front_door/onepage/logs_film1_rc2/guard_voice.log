@@ -1,0 +1,38 @@
+§GUARD OK   beat=b1 d.cells=144 expect=144 spoken="one hundred forty-four"
+§GUARD OK   beat=b1 d.addsUp=true expect=true spoken="totals add up"
+§GUARD OK   beat=b1 d.noUpload=true expect=true spoken="nothing is uploaded"
+§GUARD OK   beat=b2a d.followed=3 expect=3 spoken="three"
+§GUARD OK   beat=b2a d.followOk=true expect=true spoken="totals follow"
+§GUARD OK   beat=b2a d.litCells=3 expect=3 spoken="three"
+§GUARD OK   beat=b2a2 d.undoAllBack=true expect=true spoken="undo"
+§GUARD OK   beat=b2b d.wordEdited=true expect=true spoken="change a word"
+§GUARD OK   beat=b2b d.fontBox=true expect=true spoken="red box"
+§GUARD OK   beat=b2c d.undoClears=true expect=true spoken="undo"
+§GUARD OK   beat=b3 d.bannerShown=true expect=true spoken="letterhead"
+§GUARD OK   beat=b3 d.pictureLocked=true expect=true spoken="it is locked"
+§GUARD OK   beat=b3 d.imageSame=true expect=true spoken="byte for byte"
+§GUARD OK   beat=b3 d.rasterOutside=0 expect=0 spoken="no pixel"
+§GUARD OK   beat=b3 d.objectsIdentical=38 expect=38 spoken="thirty-eight"
+§GUARD OK   beat=b3 d.objectsInOriginal=40 expect=40 spoken="forty"
+§GUARD OK   beat=b3 d.integrity=true expect=true spoken="same"
+§GUARD OK   beat=b3 d.changedAreCatalogAndPage=true expect=true spoken="same"
+§GUARD OK   beat=b4 d.sumFormulas=4 expect=4 spoken="real sums"
+§GUARD OK   beat=b4 d.historyInBoth=true expect=true spoken="inside both"
+§GUARD OK   beat=b4 d.historyOnSheetPage=true expect=true spoken="open it again"
+§GUARD OK   beat=b4 d.noDoorText=true expect=true spoken="spreadsheet file"
+§GUARD OK   beat=b5 d.storyOk=true expect=true spoken="every value"
+§GUARD OK   beat=b8 d.firstVisitBytes=263721 expect=263721 spoken="two hundred sixty-four"
+§GUARD OK   beat=b8 d.offlineOk=true expect=true spoken="network switched off"
+§GUARD OK   beat=b8 d.phoneTapOk=true expect=true spoken="emulated phone"
+§GUARD OK   beat=b8 d.longPages=2400 expect=2400 spoken="two thousand four hundred"
+§GUARD OK   beat=b8 d.longFirstMs=1611 expect=1611 spoken="one point six one"
+§GUARD OK   beat=b8 d.longOk=true expect=true spoken="page one"
+§GUARD digits in the voice (numbers are spelled in words): none
+§GUARD proof talk or first/novel/unique: none
+§GUARD not-said N (a network or security claim, another product, Excel, many users / speed claims / compliance, price or licence detail, a real phone): none
+§GUARD "uploaded" spoken in: b1 ; measured over the PDF-page sessions: non-GET=0, external=0, page errors=0
+§GUARD network claim only over the PDF-page sessions (non-GET 0, external 0); the ERP pages are not claimed (other-host requests there: 0)
+§GUARD offline claim spoken in: b8 ; §FILM_OFFLINE reloadOk=true openOk=true editOk=true requestsWhileOffline=13 failedWhileOffline=0 serviceWorkerActive=true
+§GUARD closing line is the owner's, verbatim: yes
+§GUARD_CONTROL planted number 7777.77 is REJECTED (the guard can fail)
+§GUARD_VERDICT voice PASS facts=30 bad=0

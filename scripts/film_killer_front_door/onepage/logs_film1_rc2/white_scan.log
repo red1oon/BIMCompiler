@@ -1,0 +1,11 @@
+§SCAN deliberate-empty-state t=4.25s still=b1_001.png beat=b1 white=1.000 ink=0.00000
+§SCAN deliberate-empty-state t=4.75s still=b1_006.png beat=b1 white=1.000 ink=0.00000
+§SCAN deliberate-empty-state t=5.25s still=b1_018.png beat=b1 white=1.000 ink=0.00000
+§SCAN deliberate-empty-state t=5.75s still=b1_030.png beat=b1 white=1.000 ink=0.00000
+§SCAN deliberate-empty-state t=6.25s still=b1_033.png beat=b1 white=0.958 ink=0.00016
+§SCAN deliberate-empty-state t=6.75s still=b1_033.png beat=b1 white=0.958 ink=0.00016
+§SCAN deliberate-empty-state t=7.25s still=b1_033.png beat=b1 white=0.958 ink=0.00016
+§SCAN deliberate-empty-state t=7.75s still=b1_035.png beat=b1 white=0.958 ink=0.00016
+§SCAN deliberate-empty-state t=8.25s still=b1_045.png beat=b1 white=0.958 ink=0.00016
+§SCAN frames=246 step=0.5s frames_with_a_white_area=215 deliberate_empty=9 white_sheets_without_ink=0
+§SCAN_VERDICT PASS frames=246 bad=0

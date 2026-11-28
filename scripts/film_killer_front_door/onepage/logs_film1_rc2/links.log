@@ -1,0 +1,4 @@
+§FILM_LINK id=pdf url=https://red1oon.github.io/bim-ootb/pdf/ http=200 SHOWN
+§FILM_LINK id=history url=https://red1oon.github.io/bim-ootb/history/ http=200 SHOWN
+§FILM_LINK id=guide url=https://red1oon.github.io/BIMCompiler/PdfPageGuide/ http=200 anchor=2-pdf-change-text-or-a-number-right-on-the-page found=true page_covers_the_history_page=true SHOWN
+§FILM_LINK_VERDICT PASS shown=3 dropped=0
