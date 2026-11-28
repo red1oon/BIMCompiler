@@ -1,0 +1,98 @@
+// ⚠ DO NOT REMOVE — film "PDF and Excel are killer apps — ONE PAGE" (prompts/FILM_KILLER_FRONT_DOOR.md, FILM v2): the stills (1920x1080 PNG, headless Chrome on the CPU, --disable-gpu). Split screen: the line typed above (one still per character, one real key sound each;
+// the voice starts after the return key) and the REAL live page below (the pictures facts.js took). Every figure and every picture is read from out/facts.json and out/shots/; nothing is typed in by hand. The top strip states each step in plain words
+// (where the user really types, those very keystrokes): a film device, never shown as a command that exists. The bottom 230 px stay empty for the captions. Cards: cover (owner confirms the wording on rc1: ONE constant below), YOUR CHOICE, the closing line, the prior-art card.
+// Usage: node cards.js <outDir>. READ THE LOG.
+'use strict';
+const fs = require('fs'), path = require('path'), os = require('os');
+const puppeteer = require(process.env.PUPPETEER_PATH || path.join(os.homedir(), 'bim-compiler', 'node_modules', 'puppeteer'));
+// ---- THE COVER WORDING: one constant, the owner confirms it on rc1 (coordinator 2026-11-28: kicker "ONE PAGE"; the grey line is the owner's own words of 2026-11-28, "Editable where text is.", replacing the plan's draft "One page. Your own file. Edit where it is.")
+const COVER = { kicker: 'ONE PAGE', title1: 'PDF and Excel', title2: 'are killer apps', line: 'Editable where text is.' };
+const CLOSING_LINE = ['ERP is now a utility,', 'no longer a luxury.', 'It is granted free.'];   // the owner's line, verbatim (one word fixed in the plan: "a utility")
+const OD = process.env.OUTD || 'out', F = JSON.parse(fs.readFileSync(path.join(__dirname, OD, 'facts.json'), 'utf8')), out = path.resolve(process.argv[2] || OD + '/cards'); fs.mkdirSync(out, { recursive: true });
+const CRED = JSON.parse(fs.readFileSync(path.join(__dirname, OD, 'credits.json'), 'utf8')), LINKS = JSON.parse(fs.readFileSync(path.join(__dirname, OD, 'links.json'), 'utf8'));
+const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;'), FONT = "'DejaVu Sans'";
+const pics = {}, img = (id) => { if (!F.states[id]) throw new Error('no shot ' + id); return pics[id] || (pics[id] = 'data:image/png;base64,' + fs.readFileSync(path.join(__dirname, OD, F.states[id].file)).toString('base64')); };
+const CSS = `*{box-sizing:border-box;margin:0;padding:0} body{width:1920px;height:1080px;background:#0f172a;color:#F3EEE8;font-family:${FONT},sans-serif;overflow:hidden}
+.term{position:absolute;left:28px;right:28px;top:14px;height:262px;background:#0b0f17;border:2px solid #334155;border-radius:14px;padding:12px 26px;font-family:'DejaVu Sans Mono',monospace;font-size:27px;line-height:1.3;overflow:hidden}
+.cmd{color:#F3EEE8;white-space:pre} .cmd:before{content:'\\203A  ';color:#FF6B78;font-weight:700}
+.ans{color:#fbbf24;white-space:pre-wrap} .ans b{color:#7dd3fc;font-weight:700} .ok{color:#4ade80;white-space:pre-wrap} .no{color:#f87171;font-weight:700;white-space:pre-wrap} .dim{color:#94a3b8;white-space:pre-wrap}
+.cur{display:inline-block;width:15px;height:28px;background:#4ade80;vertical-align:-5px;margin-left:2px}
+.bar{position:absolute;left:0;right:0;top:282px;height:30px;background:#1e293b;color:#94a3b8;font-size:20px;line-height:30px;padding:0 28px;letter-spacing:1px} .bar b{color:#7dd3fc;font-weight:700} .bar i{float:right;font-style:normal;color:#fbbf24;font-weight:700;letter-spacing:2px}
+.erp{position:absolute;left:0;top:312px;width:1920px;height:537px;display:block;object-fit:contain;background:#0f172a}
+.pp{position:absolute;top:312px;width:940px;height:537px;display:block;object-fit:contain;background:#0f172a}`;
+const WHAT = (state) => /^h\d/.test(state) ? 'the real Sheet history page, live on the site' : /^p\d/.test(state) ? 'an emulated phone (390 x 844, slower processor), the live page' : /^b3/.test(state) ? 'the real PDF page, live: the same report with a picture added for this film' : /^b6_(pill|report)$/.test(state) ? 'the real ERP page, live, on the demo books' : /^(f|e)\d/.test(state) ? 'the real ' + (/^f/.test(state) ? 'File it page' : 'ERP window') + ', live, on the demo books' : 'the real PDF page, live on the site';
+const split = (termInner, state, what) => `<!doctype html><html><head><meta charset="utf-8"><style>${CSS}</style></head><body><div class="term">${termInner}</div><div class="bar">&#9660; <b>${what}</b><i>PROTOTYPE</i></div><img class="erp" src="${img(state)}"></body></html>`;
+const split2 = (termInner, left, right, what) => `<!doctype html><html><head><meta charset="utf-8"><style>${CSS}</style></head><body><div class="term">${termInner}</div><div class="bar">&#9660; <b>${what}</b><i>PROTOTYPE</i></div><img class="erp" style="display:none" src="${img(left)}"><img class="pp" style="left:10px" src="${img(left)}">${right ? '<img class="pp" style="left:970px" src="' + img(right) + '">' : ''}</body></html>`;
+const CH = `*{box-sizing:border-box;margin:0;padding:0} body{width:1920px;height:1080px;background:#0b0f17;color:#F3EEE8;font-family:${FONT},sans-serif;overflow:hidden} .ch{text-align:center;padding:0 70px} .k{font-size:34px;color:#FF6B78;letter-spacing:6px;font-weight:700} .t1{font-size:128px;font-weight:700;color:#F3EEE8;margin-top:36px;line-height:1.1} .t2{font-size:60px;font-weight:700;color:#FF6B78;line-height:1.3;margin-top:26px} .p{font-size:38px;color:#94a3b8;margin-top:40px} .s{font-size:25px;color:#94a3b8;line-height:1.36} .l{font-size:34px;color:#7dd3fc;font-weight:700}`;
+const full = (inner) => `<!doctype html><html><head><meta charset="utf-8"><style>${CH}</style></head><body><div class="term" style="display:none"></div>${inner}</body></html>`;
+const A = (h) => '<div class="ans">' + h + '</div>', AS = (h) => '<div class="ans sm">' + h + '</div>', OK = (h) => '<div class="ok sm">' + h + '</div>', NO = (h) => '<div class="no sm">' + h + '</div>', DIM = (s) => '<div class="dim">' + esc(s) + '</div>', b = (s) => '<b>' + esc(s) + '</b>';
+const o = F, d = F.d, reason = (s) => (/reason="([^"]*)"/.exec(s) || [, ''])[1], logOf = (s, k) => (new RegExp(' ' + k + '=(\\S+)').exec(s) || [, ''])[1];
+const tbl = (s) => 'a table of ' + d.cells + ' cells · ' + reason(s);
+const H3 = o.b3.h3, XL = o.b4, ST = o.b5.log.replace(/^.*text="/, '').replace(/"$/, '').split(' | ');
+const kindsWords = H3.changedKinds.map(x => x.split(':')[1].replace('page-content', 'the page text you changed').replace('catalog', 'the list that holds the history')).sort().reverse().join(' and ');
+const steps = {
+  b1: [{ cmd: 'open my report', before: 'b1_empty', answers: [{ state: 'b1_open', lines: [A(b('trial_balance_th.pdf') + ' · 1 page'), AS(esc(tbl(o.b1.reader))), DIM('the page can edit ' + d.cellTargets + ' table cells; ' + d.lockedRuns + ' pieces of Thai text stay locked'), DIM('after the file was open: ' + o.net.pdfNonGet.length + ' requests that were not plain downloads, ' + o.net.pdfExternal.length + ' to another host')] }] }],
+  b2a: [{ cmd: 'D10 499.09', before: 'b1_open', answers: [{ state: 'b2a_red', lines: [NO(esc(o.b2a.red.stat))] }] }],
+  b2a2: [{ cmd: 'D10 498.09', before: 'b2a_red', answers: [{ state: 'b2a_green', lines: [OK(esc(o.b2a.green.stat))] }] }],
+  b2b: [{ cmd: 'B10 Accounts Receivable', before: 'b2a_green', answers: [{ state: 'b2b_word', lines: [AS(esc(o.b2b.word.stat))] }] },
+        { cmd: 'B12 Quiz Zebra', before: 'b2b_word', answers: [{ state: 'b2b_font', lines: [AS(esc(o.b2b.font.stat)), DIM(o.b2b.font.subs[0].replace(' Accept', '') + ', and a button to accept it')] }] }],
+  b2c: [{ cmd: 'ctrl+z', before: 'b2b_font', answers: [{ state: 'b2b_undo', lines: [OK(esc(o.b2b.undo.stat))] }] }],
+  b3: [{ cmd: 'open the same report, with a picture', before: 'b2b_undo', answers: [{ state: 'b3_open', lines: [A(b('report_with_picture.pdf') + ' · 1 page'), DIM('the picture is a stand-in, added to the report for this film with ghostscript')] }] },
+       { cmd: 'tap the picture', before: 'b3_open', answers: [{ state: 'b3_locked', lines: [AS(esc(o.b3.locked.stat))] }] },
+       { cmd: 'B10 Accounts Receivable', before: 'b3_locked', answers: [{ state: 'b3_edit', lines: [OK(esc(o.b3.edit.stat))] }] },
+       { cmd: 'download PDF', before: 'b3_edit', answers: [{ state: 'b3_dl', lines: [OK('the file it gave back, against the original: ' + H3.objectsInOriginal + ' parts, ' + H3.identical + ' byte for byte the same'), AS('the ' + H3.changed.length + ' that differ: ' + esc(kindsWords) + ' · ' + H3.added.length + ' added: the history'),
+         AS('the picture: ' + H3.imageObjects + ' object, byte for byte the same · pixels changed outside the edited box: ' + H3.rasterOutside), DIM('(inside it: ' + H3.rasterInside + ') · read by poppler, not by the page')] }] }],
+  b4: [{ cmd: 'open the spreadsheet file on Sheet history', before: 'b3_dl', answers: [{ state: 'h1_xlsx', lines: [A(b(XL.file) + ' · ' + d.xlsxCells + ' cells · from Download .xlsx'), AS('real sums: ' + esc(XL.sums[1]) + ' · ' + XL.sums.length + ' totals in all'), OK(esc(XL.hist.status)), DIM('history: inside the PDF (attachment) and inside this file (hidden sheet): ' + d.historyEntries + ' entries each')] }] }],
+  b5: [{ cmd: 'b10', before: 'b4_xlsx', answers: [{ state: 'b5_story', lines: ST.map(x => AS(esc(x))) }] }],
+  b6: [{ cmd: 'print a report from the ERP', before: 'b6_pill', answers: [{ state: 'b6_report', lines: [A(esc(o.b6.ready)), OK('its PDF: ' + logOf(o.b6.pdfLog, 'pages') + ' page · numbers that did not fit: ' + logOf(o.b6.pdfLog, 'overflowNumbers') + ' · characters without a font: ' + logOf(o.b6.pdfLog, 'missingGlyphs'))] }] },
+       { cmd: 'open it on the one page', before: 'b6_report', answers: [{ state: 'b6_open', lines: [A(b(o.b6.pdfFile.replace(/^erpreport_/, '')) + ' · 1 page'), AS(esc(tbl(o.b6.open.reader)))] }] },
+       { cmd: o.b6.edit.cell + ' ' + o.b6.edit.neu, before: 'b6_open', answers: [{ state: 'b6_red', lines: [NO(esc(o.b6.edit.stat))] }] }],
+  b6u: [{ cmd: 'ctrl+z', before: 'b6_red', answers: [{ state: 'b6_undo', lines: [OK(esc(o.b6.undo.stat))] }] }],
+  b7a: [{ cmd: 'file it into the books', before: 'f1_sample', answers: [{ state: 'f2_filed', lines: [OK(esc(o.filed.text)), AS('document ' + o.doc.head.Number + ' · ' + esc(o.doc.head['Grand total']) + ' · ' + o.doc.lines.length + ' lines · ' + o.books.entries + ' entries in the books: debit ' + o.books.debit + ' = credit ' + o.books.credit)] }] }],
+  b7b: [{ cmd: 'open it in the ERP', before: 'f2_filed', answers: [{ state: 'e1_invoice_form', lines: [AS(esc(o.erp.status)), DIM('the invoice ' + o.books.filedDocNo + ' is in the ERP window once: ' + o.erp.grid.length + ' row · ' + o.erp.lines.length + ' lines')] }] },
+        { cmd: 'show its entries', before: 'e1_invoice_form', answers: [{ state: 'e4_posted', lines: [OK(esc(o.posted.lines.map(l => l[0].split(' · ')[0] + ' dr ' + l[1] + ' cr ' + l[2]).join(' · '))), DIM('balanced: ' + (/dr=([\d.]+) cr=([\d.]+)/.exec(o.posted.log) || []).slice(1).map(x => x).join(' = '))] }] },
+        { cmd: 'the trial balance', before: 'e4_posted', answers: [{ state: 'e6_tb_report', lines: [OK('12110 Accounts Receivable: debit ' + o.report.r12110[2] + ' · credit ' + o.report.r12110[3]), AS(esc(o.report.foot)), DIM(o.report.sql.thisInvoice + ' of that debit is this invoice (the page\'s own entries: ' + o.report.sql.debitWithInvoice + ' with it, ' + o.report.sql.debitWithoutInvoice + ' without)')] }] }],
+  b8: [{ cmd: 'D10 499.09', before: 'p0_trial', left: true, answers: [{ state: 'p1_trial', lines: [NO(esc(o.phone.tap.stat))] }] },
+       { cmd: 'a long file', before: 'p1_trial', left: true, answers: [{ state: 'p1_trial', right: 'p2_long', lines: [A(esc(o.phone.long.stat)), OK('page one on screen after ' + o.phone.long.firstPagePaintedMs + ' ms (median of ' + o.phone.long.medianOf + ' runs: ' + o.phone.long.runsMs.join(', ') + ' ms)'), DIM('made for this film (the corpus report, 200 times) · ' + F.inputs.longPages + ' pages · rest of the text read in the background: ' + logOf(o.phone.long.openLog, 'ms') + ' ms'), DIM('page size on opening: ' + F.light.bytesAtUsable + ' bytes · network off, PDF page: reload, open, edit all ok (' + F.offline.failedWhileOffline + ' failed requests)')] }] }]
+};
+const texts = {}, FONTS = {};
+function beat(id) {
+  const st = [], S = steps[id];
+  S.forEach((s, si) => { const last = si === S.length - 1, line = (k, done) => '<div class="cmd">' + esc(s.cmd.slice(0, k)) + (done ? '' : '<span class="cur"></span>') + '</div>';
+    const frame = (termInner, state, right) => s.left || id === 'b8' ? split2(termInner, state, right, WHAT('p1')) : split(termInner, state, WHAT(state));
+    st.push({ html: frame(line(0, false), s.before), frames: si === 0 ? 14 : 8 });
+    for (let k = 1; k <= s.cmd.length; k++) st.push({ html: frame(line(k, false), s.before), frames: 1, key: 'k' });   // one character a frame at 24 fps: one key sound each
+    st.push({ html: frame(line(s.cmd.length, false), s.before), frames: 8, key: 'r' });                                  // the return key
+    s.answers.forEach((a, ai) => { if (!last && ai > 0) return; st.push({ html: frame(line(s.cmd.length, true) + a.lines.join(''), a.state, a.right), frames: last ? null : 30 }); }); });
+  return st;
+}
+const link = (id) => (LINKS.links.find(l => l.id === id) || {}).shown;
+const lim = 'The editor covers page 1 · Thai text stays locked · some PDFs cannot be written back yet · demo books, one fixed demo login · a spreadsheet file, not opened in real Excel · an emulated phone, not a real one · no claim about many users, speed on very large files, or e-invoice rules';
+const cards = {
+  cover: [{ html: full('<div class="ch" style="margin-top:200px"><div class="k">' + esc(COVER.kicker) + '</div><div class="t1" style="font-size:112px">' + esc(COVER.title1) + '<br>' + esc(COVER.title2) + '</div><div class="p">' + esc(COVER.line) + '</div></div>'), frames: null }],
+  choice: [{ html: full('<div class="ch" style="margin-top:300px"><div class="k">YOUR CHOICE</div><div class="t1" style="font-size:96px">Take it into the ERP,<br>if you want</div></div>'), frames: null }],
+  close: [{ html: full('<div class="ch" style="margin-top:24px"><div class="t1" style="font-size:92px;margin-top:0">' + CLOSING_LINE[0] + '</div><div class="t1" style="font-size:92px;margin-top:4px">' + CLOSING_LINE[1] + '</div><div class="t2" style="font-size:76px;margin-top:14px">' + CLOSING_LINE[2] + '</div>'
+    + '<div class="s" style="margin-top:28px;font-size:30px;color:#F3EEE8"><b style="color:#7dd3fc">Light</b> ' + F.light.bytesAtUsable + ' bytes when the page is opened &nbsp;·&nbsp; <b style="color:#7dd3fc">Fast</b> page one in ' + d.pageOneMs + ' ms, an edit written in ' + d.rewriteMs + ' ms &nbsp;·&nbsp; <b style="color:#7dd3fc">Easy</b> nothing to install, one page<br><b style="color:#7dd3fc">Works with the network switched off</b> (claimed for the PDF page, not for File it or the ERP)</div>'
+    + '<div class="s" style="margin-top:26px">The pages:</div>' + LINKS.links.map(l => '<div class="l" style="margin-top:8px">' + esc(l.shown) + (l.anchor ? '' : '') + '</div>').join('')
+    + '<div class="s" style="margin-top:26px">' + esc(lim) + '</div></div>'), frames: null }],
+  prior: [{ html: full('<div class="ch" style="margin-top:50px"><div class="k">PRIOR ART  /  CREDENTIALS</div>'
+    + CRED.lines.map((l, i) => '<div class="' + (i === 0 ? 't1' : 'p') + '" style="' + (i === 0 ? 'font-size:70px;margin-top:26px' : 'font-size:32px;margin-top:18px;color:#F3EEE8;line-height:1.28') + '">' + esc(l.shown) + '</div>').join('')
+    + (CRED.lines.find(l => l.link) ? '<div class="l" style="margin-top:20px;font-size:28px">' + esc(CRED.lines.find(l => l.link).link) + '</div>' : '')
+    + '<div class="s" style="margin-top:24px">Key sounds: eklee, qubodup (CC BY 3.0, opengameart.org) · the top line states each step in plain words, it is not a command</div></div>'), frames: null }]
+};
+['b1', 'b2a', 'b2a2', 'b2b', 'b2c', 'b3', 'b4', 'b5', 'b6', 'b6u', 'b7a', 'b7b', 'b8'].forEach(id => { cards[id] = beat(id); });
+const order = require('./narr.js').beats.map(x => x.id);
+(async () => {
+  const br = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-gpu', '--allow-file-access-from-files', '--window-size=1920,1080'] }), pg = await br.newPage(); await pg.setViewport({ width: 1920, height: 1080 });
+  const plan = {}; let n = 0, tall = 0, keys = 0, rets = 0;
+  for (const id of order) { if (!cards[id]) throw new Error('no card for beat ' + id); plan[id] = []; texts[id] = []; let worst = 0, pic = 0;
+    for (let i = 0; i < cards[id].length; i++) { const name = id + '_' + String(i + 1).padStart(3, '0') + '.png'; await pg.setContent(cards[id][i].html, { waitUntil: 'load' });
+      const m = await pg.evaluate(() => { const t = document.querySelector('.term'), ims = Array.from(document.querySelectorAll('.erp,.pp')).filter(x => x.style.display !== 'none'), ch = document.querySelector('.ch'); const im = ims[0];
+        return { over: t && im ? Math.max(t.scrollHeight - t.clientHeight, t.scrollWidth - t.clientWidth) : 0, low: im ? Math.max.apply(null, ims.map(x => x.getBoundingClientRect().bottom)) - (window.innerHeight - 230) : (ch ? Math.max(ch.scrollWidth - ch.clientWidth, ch.getBoundingClientRect().bottom - (window.innerHeight - 230)) : 0), img: im ? ims.every(x => x.complete && x.naturalWidth > 0) : null, w: im ? im.naturalWidth : 0, h: im ? im.naturalHeight : 0, text: document.body.innerText, fonts: ['.cmd', '.ans', '.ok', '.no', '.dim'].reduce((o, k) => { const e = document.querySelector(k); if (e) o[k] = getComputedStyle(e).fontSize; return o; }, {}), cols: (() => { const t = document.querySelector('.term'); return t ? Math.floor((t.clientWidth - 52) / 18.6) : 0; })() }; });
+      worst = Math.max(worst, m.over, m.low); if (m.img === false) throw new Error('the page picture of ' + id + ' did not load'); if (m.img) pic = m.w + 'x' + m.h; texts[id].push({ t: m.text, typing: cards[id][i].key === 'k' }); Object.keys(m.fonts || {}).forEach(k => { FONTS[k] = FONTS[k] || new Set(); FONTS[k].add(m.fonts[k]); });
+      await pg.screenshot({ path: path.join(out, name) }); const e = { file: name, frames: cards[id][i].frames }; if (cards[id][i].key) { e.key = cards[id][i].key; if (e.key === 'k') keys++; else rets++; } plan[id].push(e); n++; }
+    if (worst > 0) tall++; console.log('§CARD beat=' + id + ' stills=' + cards[id].length + ' overflow_px=' + Math.max(0, worst) + (worst > 0 ? ' TOO-TALL' : '') + (pic ? ' page_picture=' + pic : ' (full card)') + (steps[id] ? ' typed=' + steps[id].map(s => s.cmd.length).join('+') : '')); }
+  await br.close(); fs.writeFileSync(path.join(out, 'plan.json'), JSON.stringify(plan, null, 1)); fs.writeFileSync(path.join(out, 'text.json'), JSON.stringify(texts));
+  { const all = new Set(); Object.keys(FONTS).forEach(k => FONTS[k].forEach(v => all.add(v))); const bad = all.size === 1 ? [] : ['more than one size: ' + Array.from(all).join('|')]; console.log('§T font sizes per class over every still: ' + Object.keys(FONTS).map(k => k + '=' + Array.from(FONTS[k]).join('|')).join(' ') + ' ; rows cut (overflow_px>0): ' + tall); console.log('§T_VERDICT ' + (bad.length || tall ? 'FAIL' : 'PASS') + ' (the strip uses ONE font size for all its text in every still of the film, never shrunk per beat; no row is cut; there is no terminal emulator here: lines wrap by the page layout)'); }
+  console.log('§CARDS_DONE beats=' + Object.keys(plan).length + ' stills=' + n + ' too_tall=' + tall + ' key_stills=' + keys + ' return_stills=' + rets);
+})().catch(e => { console.error('§CARDS_FAIL ' + (e && e.stack || e)); process.exit(1); });
