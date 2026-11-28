@@ -11,8 +11,9 @@
 Fixed and LIVE (bim-ootb #3509 `a16077a4`, live run `§EDSHEET-VERDICT PASS judged=55 failed=0`): hidden scan text was editable unseen; a glyph a subset font lacks was
 written at width 0; a page offered runs the writer refused; every edit re-read every page (1.3 s at 600 pages); undo memory had no limit; two opens that overlap
 mixed two files; a turned phone drew every page; a text edit outside the table made Sheet history list 37 changes nobody made; a drag off the page broke the next drag.
-**The report engine (§20.6, nine findings: clipped numbers, font parsed per cell, no page break, dropped scripts) is with a builder: results in §20.8 when the
-coordinator has re-run its witness. If §20.8 is missing, that work is NOT merged: look for PRs from branch `fix/ninja-pdf-review-20` in both repos.**
+**The report engine (§20.6) is fixed and LIVE too (§20.8): bim-compiler #1386, bim-ootb #3510** - a number too wide for its column printed as a different,
+smaller number (now `####`); the font was parsed again for every cell (1,800 cells: 7,300 ms -> 150 ms); no page break (now cut at rows, 14,400 pt a page);
+text in a script with no font vanished silently (now counted and said on the pill).
 **Delegation (owner, 2026-11-28, verbatim: "tell it to assign well scoped Sonnet agents if needed to do easier tasks"):** the Fable session keeps the judgment —
 the review, the design calls, the specs — and hands EASIER, well-scoped work to **Sonnet** agents (Agent tool, `model: sonnet`). One bounded task per agent, its own
 `/tmp/wt-*` worktree, the spec section to read named in the brief, the rules of "How to run things" restated (a fresh agent has no memory), and the coordinator
@@ -1942,3 +1943,22 @@ needs the Sheet-history reader, `erp/`, three hosts); the "plausible" items of �
 (link row, download helper, breakpoint) are not merged; the editor still covers page 1 only.
 **LIVE (2026-11-28, after #3509 `a16077a4` reached GitHub Pages):** `EDSHEET_URL=https://red1oon.github.io/bim-ootb/pdf/` ->
 `§EDSHEET-H8 PASS judged=5`, `§EDSHEET-H9 PASS judged=4 ... opens=small1.pdf/1p · turned alive=3 widest=366/390 · prose 0 pending`, `§EDSHEET-VERDICT PASS judged=55 failed=0`.
+
+### 20.8 RESULTS (2026-11-28) - the report engine (§20.6): bim-compiler #1386 `c9ae739e`, bim-ootb #3510 `bd635644`
+Built by a Sonnet builder from §20.6; its witness re-run by the coordinator before the merge (log read), then on the LIVE site.
+| Run | Verdict |
+|---|---|
+| local, mutants, with the lane's `run_all.sh` log | `§NINJAPDF-VERDICT PASS N1..N7, N2b, C1..C4, P3 = PASS judged=50 failed=0`, `§NINJAPDF-MUTANTS killed=7/7` (M3-M7 new) |
+| the new cases against the OLD engine | `C1=FAIL C2=FAIL C3=FAIL C4=FAIL P3=FAIL judged=18 failed=12` (N2b passes: that code was right) |
+| LIVE `NINJAPDF_LIVE=https://red1oon.github.io/bim-ootb/` | `§NINJAPDF-VERDICT PASS-PARTIAL notJudged=N4 ... judged=48 failed=0` (N4 is local only, and now SAYS so) |
+Facts: C1 `cellA1 word="####" x=38.00..60.25 cellBounds=36.00..63.00 overflowNumbers=1` (before: `1,234,567.89` from x=1.86, clipped); C2 `cells=1800
+fontParses=3 ms=128` (before 6,001 parses, 7,300 ms); C3 `rows=2500 pdfinfoPages=3 tallest=14398.5pt rowsOnPage1=1118`, a merge over a cut moves whole to
+the next page; C4 `{"count":7,"distinct":6,"cells":2}`, on the pill "2 characters in 1 cell (中文) have no font in this PDF and are left blank."; N7 three
+clicks = 1 PDF run, a failed PDF keeps the finished report; `§NINJA_REPORT_PDF ... renderMs=77 heapMB=64.7 overflowNumbers=0 missingGlyphs=0` on the live page.
+Lines: `ninja_pdf.js` +63 −16, `ninja_report.js` +11 −8, `report_pill.js` +13 −13, witness +192 −19. Deleted: `hasLao`, `_fonts`, N3's `git log | grep` gate,
+two copies of the printed-text rule.
+**Where §20.6 was wrong, found by the builder:** poppler cannot see the tone-mark mutant (the hidden text is the same, the DRAWING differs): N2b judges the
+glyph clusters too, and only that kills M3. **Changes of behaviour to know:** `cellText` lives in `ninja_pdf.js`, so that file (16 KB) now loads at Run report,
+not at Download PDF (PDFKit and the fonts still load only at Download PDF; N5 reworded); a NUMBER cell never wraps now; `#` fill is for numbers only.
+**Not done:** the ⛔ tenant question; no header row repeated on later pages; a merge taller than a page is still split; N7 has no "fails before" run;
+N4 still trusts any `run_all.sh` log it is handed (needs `OOTB_WT` set, or W40 / W41 read as missing).
