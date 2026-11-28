@@ -2378,3 +2378,33 @@ In the order they matter for the lane (invoices and statements feed the ERP drop
    is the designer overlay's work (§23), so this comes with it.
 7. Less often: variance = actual − budget and % of total; averages; a due date = the invoice date + the terms.
 Each is one more relation for `ReportReader` to test and one more formula kind for §30.1 to follow; none needs a different mechanism.
+
+### 29.10 RESULT 2026-11-28 - slice 2b LIVE: missing partner / products are created at the drop after an OK (bim-ootb #3534, Sonnet builder)
+| Run (coordinator's own, logs read) | Verdict |
+|---|---|
+| local, mutants | `§DOORDROP-VERDICT PASS judged=40 failed=0`, `§DOORDROP-MUTANTS killed=9/9` (M6 dialog skipped, M7 Cancel still writes, M8 a default invented, M9 product import skipped) |
+| **LIVE** (`DOORDROP_BASE=https://red1oon.github.io/bim-ootb/`) | `§DOORDROP-VERDICT PASS judged=37 failed=0` (D10-D13 PASS) |
+| W-IMPORT-INVOICE (the ported branch, P9: 63 partner columns against the source) | `§IINV-RESULT verdict=PASS judged=64 failed=0` |
+| the SAME import run in legacy and compared (D12L) | **INCONCLUSIVE** - the local pilot has no WebService type for I_Invoice / I_Product / the two imports; adding one is a write to its database (not done). The source citations stand in. |
+The dialog: "This document needs 1 new Business Partner (MD New Partner Sdn Bhd) and 2 new Products (MD-PRD-1, MD-PRD-2). Create them and draft the invoice?";
+focus starts on Cancel, Escape = Cancel ("Cancelled: nothing was created.", 0 groups, counts and op-log unchanged); OK creates and the line names what was made.
+**Where legacy overruled §29.8 (kept as legacy has it):**
+1. **Not one transaction.** Legacy commits the products (`ImportProduct.java:435,652`), then the partner / location / contact (`ImportInvoice.java:649`), then makes
+   the invoice (its tax lookup reads them committed). The drop writes in that order: 4 signed groups (3 with no new product, 2 with nothing new). Cancel still
+   writes nothing. If the invoice step fails after OK, the masters exist and the line says "Created before this stopped: ...".
+2. **A new partner needs a COUNTRY** (`ERR=Invalid Country`, then `No BPartner`); with regions, a region or the country's default. New optional header cells:
+   `partnername`, `countrycode`, `address1`, `address2`, `city`, `postal`, `regionname`, `contactname`, `email`, `phone` - only `countrycode` is required, and a
+   layout's mark may fix it. **This is a requirement on the PDF marks (slice 3).**
+3. A row whose e-mail or unique contact name matches an existing contact goes to THAT partner (`ImportInvoice.java:323-341`): no duplicate from a known e-mail.
+4. A region given for a non-default country is dropped (a legacy quirk in the order of two setters; proven for Canada, kept).
+5. A known partner never gets a second location from a second address.
+Created by ONE implementation (`erp/model_master.js`, the window's own initial defaults; `ImportInvoice.js`; `sheet_door.js` stages Value and Name only): the
+partner from the client's cash-trx template partner + group defaults (`MBPartner.java:261-304, 402-440, 892-908, 959-1002`), location, BP location, contact
+(`MLocation`, `MBPartnerLocation`, `MUser` cited in the code); products with the client's default category and unit, type Item.
+**Not done / open:** D12L above (needs the owner's leave to add a WebService type on the pilot, or another way to drive those imports in legacy); two files
+in ONE drop that each need a dialog (sequential by design, not tested); "use existing: <closest name>" in the dialog; C_City (not in the bundle, named
+`§MASTER-NOT-PORTED NP-4`); the e-mail check is a stand-in for `javax.mail`'s; three stale mutants of W-IMPORT-INVOICE (M14, M16, M18 NOT-APPLIED on main too)
+make its sweep print FAIL; `witness_master_save_rules` fails 2 of 21 on main too; the bridge `run_all.sh` shows DD / CTX / FA FAIL and M3 HARNESS-FAIL on main
+too (pre-existing, for the parallel-run lane); the witness's overall word is PASS while D12L is INCONCLUSIVE (it should say PASS-PARTIAL).
+FILM 1 (the PDF handler alone) rc1: bim-compiler #1418, `~/Videos/..._ONE_PAGE_FILM1_EN_rc1.mp4` (2:04), a generated letterhead banner for the picture beat
+(`§BANNER_VERDICT PASS stills=4`), coordinator's scan 0 blank sheets; beat 2a to be re-shot when §30 is live.
