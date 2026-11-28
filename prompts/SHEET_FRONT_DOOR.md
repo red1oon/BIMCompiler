@@ -2072,5 +2072,9 @@ Already there: the event / formatting split is the template (`_door_tags` names 
 document refuses changes by the ERP's own rules; the Request has its own update log (one summary entry per sync, not one per cell). Limits to state plainly:
 a file is a copy - "locked" means locked in our pages, a change made elsewhere is DETECTED (the history's binding check), not prevented; an offline file learns
 "ERP posted" only when it next meets the ERP. Proposed first rule: the ERP is the authority when file and ERP disagree.
-**⛔ Open, the one question before any spec: who may unlock** - anyone holding the file (works offline; the ERP checks every update and refuses a processed
-document), or only from the ERP side? Coordinator's recommendation: anyone holding the file.
+**✅ Answered by the owner (2026-11-28, verbatim): *"it can be unlocked if its link to ERP is marked inactive or void as rules permit"*.** So the unlock is
+governed from the ERP side, by the ERP's own rules: when the linked document is voided or made inactive (where its status and the rules allow it), the file's
+event fields are free again and it can be filed anew. Nobody unlocks from the file alone. This replaces the coordinator's recommendation ("anyone holding the
+file") and narrows the table above: from **ERP drafted** the way out is the ERP voiding / inactivating the link, not an Unlock button on the page; whether an
+edit of a still-linked draft may go back as an UPDATE (the owner's earlier "unlock will synch back a draft") is the next detail to confirm. A file that is
+offline learns of the void, as of "ERP posted", when it next meets the ERP.
