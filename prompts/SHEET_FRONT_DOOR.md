@@ -2251,3 +2251,23 @@ Attachment dialog's own drag-and-drop, the Request.
 keep HISTORY only; the one way into the ERP is a file dragged onto it. Deleted with the File it page: the menus' File it action, `runner.js`, `ws_kernel_web.js`,
 the `taskpane` filing parts and `host_shim.js`'s fileIt / ledger parts (about 400 lines, on top of the ~1,500 of §29.4's list), and W-SHEET-DOOR D9 (the signed
 ledger line in the workbook) unless the drop keeps a ledger of its own. `sample_invoice.js` stays (it builds the tagged sample).
+
+### 29.6 Owner direction 2026-11-28: the file is sanitized twice; missing master data is created at the drop, after an OK (recorded; slice NOT yet specced in full)
+Verbatim: *"But in such separation, it still gets 'sanitized' by our ERP?"* · *"It can also create those data on the fly during drop, ie new BPartner, Product
+(Std Category)"* · *"perhaps a dialog box to OK that"*.
+- **Sanitized twice, by the same rules.** On the PDF page before Save, with a small extract the page carries (the window's own field list, ~1 KB from the
+  dictionary, and the engine's `check()`): required fields marked and present, lines = subtotal, the history verifies. In the ERP at the drop, again and never
+  on the file's say-so, plus what only the books can judge (partner / product exist, grand total with tax, the document number, the organisation). The extract
+  is GENERATED from the dictionary and a witness fails when the two drift.
+- **Master data on the fly = legacy's own rules, nothing invented.** A partner that does not exist: legacy's Import Invoice creates it with its location and
+  contact (`ImportInvoice.java:512-626`); our port names that branch as NOT ported (`erp/processes/ImportInvoice.js` header (1)-(3)), which is why the drop says
+  "No BPartner" today. Porting it closes a twin gap. A product that does not exist: legacy's Import Invoice refuses it (`:462` "Invalid Product"); legacy's way
+  is its Import Product process (ported: `erp/processes/ImportProduct.js`; the default product category and unit when none is given, `ImportProduct.java:215-226,
+  307-315`) - run at the drop BEFORE Import Invoice for the unknown items.
+- **A dialog first (owner).** The drop pauses before anything is written: "This document needs 1 new Business Partner (<name>) and 2 new Products (...).
+  Create them and draft the invoice?" OK -> created by the two imports, then the draft; Cancel -> NOTHING written (no partner, no product, no draft, no
+  attachment). Nothing new needed -> no dialog. The dialog is the overlay's, the windows stay the twin.
+- Coordinator's additions, to confirm: the result line names what was created; next after it, the dialog offers "use existing: <closest name>" beside
+  "create new" (a PDF's spelling becomes master data: "Acme Sdn Bhd" / "ACME Sdn. Bhd." would be two partners); a supplier layout's mark may pin the partner.
+- Slice order with this: 1+2 the tagged workbook (built, §29.7 when merged); **2b master data at the drop with its dialog**; 3 PDF marks; 4 the ERP reads a
+  dropped PDF; 5 same file again / update / completed; 6 unqualified -> `/pdf`; 7 deletion (File it page, the hand-over, the menus' File it action).
