@@ -32,7 +32,7 @@ The idea: **the page you see is the page you edit.** Where the page can safely w
 2. **Only that spot changes.** The page rewrites that one piece of text **inside the same PDF**. The picture, the logo, the other text, the rest of the file stay as they were. The line in the top bar tells you what happened, for example `D10 is now "499.09". Page 1 does NOT add up: …` and ends with "Ctrl+Z undoes it."
 3. **Take it away.** *Download PDF* (it becomes available after your first change) hands you your PDF with the change in it, as `<name>_edited.pdf`. *Download .xlsx* gives the table as a spreadsheet, as `<name>_page1.xlsx`: where the report printed a total, the file holds a real sum formula over its rows, not a pasted number.
 
-A number you type is printed like the rest of its column: the same number of decimals, the same thousands commas. The page refuses, in words, rather than guess. The line in the top bar then says "… was not changed:" and the reason, for example a number with more decimals than its column prints (`1.234` is not rounded for you), a text or number too wide for its box, or a letter the report's font does not have and no other font can show.
+A number you type is printed like the rest of its column: the same number of decimals, the same thousands commas. The page refuses, in words, rather than guess. The line in the top bar then says "… was not changed:" and the reason, for example a letter typed into a figure (`12O.50` with a letter O: a cell that holds a number takes a number only), a number with more decimals than its column prints (`1.234` is not rounded for you), a text or number too wide for its box, or a letter the report's font does not have and no other font can show.
 
 ### "Locked": what it means
 
@@ -57,7 +57,7 @@ If the page has a table with totals, each total is marked **on the page** while 
 
 Try it on the sample: change the Debit figure on the *Accounts Receivable - Trade* line from 498.09 to 499.09. The total under that column is marked red with the gap of 1.00. Put 498.09 back (or press Undo) and the mark turns green again.
 
-Click a total to see its formula in the top bar (for example `D28 = SUM(D6:D27) = 40,392.44, as printed.`) and to light up the rows it adds. With a mouse, **drag across some numbers** to see their sum and count (`Sum … · count …`); a finger scrolls the page instead, so drag-sum is for the mouse.
+Click a total to see its formula in the top bar (for example `D28 = SUM(D6:D26) = 40,392.44, as printed.`) and to light up the rows it adds. With a mouse, **drag across some numbers** to see their sum and count (`Sum … · count …`); a finger scrolls the page instead, so drag-sum is for the mouse.
 
 ### The red "font not same" box
 
