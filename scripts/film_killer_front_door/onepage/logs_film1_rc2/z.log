@@ -1,0 +1,18 @@
+§Z beat=b1 step=b1_032.png->b1_033.png changed_pixels=790617 share=76.68%
+§Z beat=b1 step=b1_045.png->b1_046.png changed_pixels=946973 share=91.85%
+§Z beat=b2a step=b2a_012.png->b2a_013.png changed_pixels=420866 share=40.82%
+§Z beat=b2a2 step=b2a2_008.png->b2a2_009.png changed_pixels=3859 share=0.37%
+§Z beat=b2b step=b2b_025.png->b2b_026.png changed_pixels=3915 share=0.38%
+§Z beat=b2b step=b2b_042.png->b2b_043.png changed_pixels=13231 share=1.28%
+§Z beat=b2c step=b2c_008.png->b2c_009.png changed_pixels=10505 share=1.02%
+§Z beat=b3 step=b3_041.png->b3_042.png changed_pixels=468806 share=45.47%
+§Z beat=b3 step=b3_062.png->b3_063.png changed_pixels=467175 share=45.31%
+§Z beat=b3 step=b3_088.png->b3_089.png changed_pixels=134897 share=13.08%
+§Z beat=b3 step=b3_103.png->b3_104.png changed_pixels=2627 share=0.25%
+§Z beat=b4 step=b4_016.png->b4_017.png changed_pixels=827199 share=80.23%
+§Z beat=b4 step=b4_053.png->b4_054.png changed_pixels=849881 share=82.43%
+§Z beat=b4 step=b4_079.png->b4_080.png changed_pixels=25866 share=2.51%
+§Z beat=b5 step=b5_005.png->b5_006.png changed_pixels=903295 share=87.61%
+§Z beat=b8 step=b8_012.png->b8_013.png changed_pixels=6529 share=0.63%
+§Z beat=b8 step=b8_026.png->b8_027.png changed_pixels=288906 share=28.02%
+§Z_VERDICT PASS steps=17 no_op=0

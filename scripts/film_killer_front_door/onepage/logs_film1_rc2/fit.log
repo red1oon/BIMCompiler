@@ -1,0 +1,15 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT b1 cue=8.80 room=8.65 dur=7.73 -> DETAIL slack=+0.92 words=25
+§NARR_FIT b2a cue=19.38 room=4.32 dur=3.41 -> DETAIL slack=+0.91 words=11
+§NARR_FIT b2a2 cue=25.47 room=2.65 dur=1.75 -> DETAIL slack=+0.90 words=6
+§NARR_FIT b2b cue=33.09 room=5.07 dur=4.18 -> DETAIL slack=+0.89 words=15
+§NARR_FIT b2c cue=39.92 room=2.41 dur=1.27 -> DETAIL slack=+1.14 words=4
+§NARR_FIT b3 cue=53.42 room=13.32 dur=12.42 -> DETAIL slack=+0.90 words=40
+§NARR_TONE b3#0 F YN rose=5.0st endDelta=+3.9st want=rise OK "And the picture?"
+§NARR_FIT b4 cue=75.05 room=9.73 dur=8.82 -> DETAIL slack=+0.91 words=24
+§NARR_FIT b5 cue=86.42 room=5.66 dur=4.76 -> DETAIL slack=+0.90 words=16
+§NARR_TONE b5#0 F WH rose=0st endDelta=-1.8st want=fall OK "What happened to that cell?"
+§NARR_FIT b8 cue=96.38 room=14.86 dur=13.96 -> DETAIL slack=+0.90 words=39
+§NARR_FIT close cue=111.84 room=5.28 dur=4.39 -> DETAIL slack=+0.89 words=13

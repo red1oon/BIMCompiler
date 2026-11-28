@@ -16,4 +16,8 @@ B.forEach(r => { if (!bOk(r)) bb++; console.log('§BANNER ' + (bOk(r) ? 'OK  ' :
 const bctl = bOk({ visible: false, match: true, png_match: true }) === false && bOk({ visible: true, match: false, png_match: true }) === false && bOk({ visible: true, match: true, png_match: false }) === false && bOk({ visible: true, match: true, png_match: true }) === true;
 const bverdict = !needBanner ? 'N/A' : B.length === 0 ? 'INCONCLUSIVE' : (bb || !bctl) ? 'FAIL' : 'PASS'; console.log('§BANNER_CONTROL a cropped-out, an undrawn and a blank-picture banner are rejected: ' + bctl);
 console.log('§BANNER_VERDICT ' + bverdict + ' stills=' + B.length + ' bad=' + bb);
-process.exit(verdict === 'PASS' && (bverdict === 'PASS' || bverdict === 'N/A') ? 0 : (verdict === 'INCONCLUSIVE' || bverdict === 'INCONCLUSIVE') ? 2 : 1);
+// ---- check LIT (Film 1 rc2, beat 2a): the still of the followed totals must be taken while at least THREE followed cells are lit (before and after the picture); fewer fails the beat
+const LI = F.lit || [], lOk = (r) => r.lit >= 3 && Array.isArray(r.before) && r.before.length >= 3; let lb = 0; LI.forEach(r => { if (!lOk(r)) lb++; console.log('§LIT ' + (lOk(r) ? 'OK  ' : 'FAIL') + ' still=' + r.still + ' lit=' + r.lit + ' cells=' + JSON.stringify(r.after)); });
+const lctl = lOk({ lit: 2, before: ['a', 'b', 'c'] }) === false && lOk({ lit: 3, before: ['a', 'b'] }) === false && lOk({ lit: 3, before: ['a', 'b', 'c'] }) === true; const needLit = !!(F.b2a && F.b2a.follow);
+const lverdict = !needLit ? 'N/A' : LI.length === 0 ? 'INCONCLUSIVE' : (lb || !lctl) ? 'FAIL' : 'PASS'; console.log('§LIT_CONTROL fewer than three lit cells are rejected: ' + lctl); console.log('§LIT_VERDICT ' + lverdict + ' stills=' + LI.length + ' bad=' + lb);
+const oks = (v) => v === 'PASS' || v === 'N/A'; process.exit(verdict === 'PASS' && oks(bverdict) && oks(lverdict) ? 0 : (verdict === 'INCONCLUSIVE' || bverdict === 'INCONCLUSIVE' || lverdict === 'INCONCLUSIVE') ? 2 : 1);
