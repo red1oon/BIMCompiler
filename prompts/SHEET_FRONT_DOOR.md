@@ -2078,3 +2078,9 @@ event fields are free again and it can be filed anew. Nobody unlocks from the fi
 file") and narrows the table above: from **ERP drafted** the way out is the ERP voiding / inactivating the link, not an Unlock button on the page; whether an
 edit of a still-linked draft may go back as an UPDATE (the owner's earlier "unlock will synch back a draft") is the next detail to confirm. A file that is
 offline learns of the void, as of "ERP posted", when it next meets the ERP.
+**Owner, a moment later (2026-11-28, verbatim): *"it can be from paper side, if notified 'Unlock will mark document as void'"*.** So there IS an Unlock on the
+file side, and it is the same act: pressing it tells the user, in those words, that the linked ERP document will be marked void, and on a yes asks the ERP to
+void it by the ERP's own rules; when the ERP has done so the event fields are free. The two readings join: the unlock always goes THROUGH the ERP's void (or
+inactive) - it may be started from the ERP window or from the file. Still to confirm, one at a time: (1) with the network off, does Unlock wait until the file
+meets the ERP, or free the file at once and carry a pending void? (2) is Unlock offered only on **ERP drafted** (the owner: a processed document "cannot be
+edited")? (3) may an edit of a still-linked draft go back as an UPDATE without a void?
