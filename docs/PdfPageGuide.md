@@ -131,7 +131,7 @@ The page lists its own limits under *What to know*: if someone deletes the hidde
 2. Press **File it.** The books check that it adds up, file it as a real invoice with its accounting entries, and hand the workbook back with the document number and a signed ledger line inside. *Download the workbook* to keep it.
 3. **Open in the ERP** shows the same invoice in the ERP's own Invoice window, with its lines and its accounting entries. Opening it again, or reloading, never files it twice.
 
-Everything runs in this browser tab on the **GardenWorld demo books**, one fixed demo login. The first open downloads the books engine (about 34 MB): use Wi-Fi. It has not yet been tried on a real phone.
+Everything runs in this browser tab on the **GardenWorld demo books**, one fixed demo login. The first open downloads the books engine (about 11 MB over the network): use Wi-Fi. It has not yet been tried on a real phone.
 
 ## Limits (stated plainly)
 
