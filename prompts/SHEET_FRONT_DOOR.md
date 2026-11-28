@@ -6,21 +6,21 @@
 
 ## ▶▶ RESUME HERE — call sign **'resume killer'** (consolidated 2026-11-28; read this block, then the section it points to)
 
-### ▶ FIRST for the next session (owner, 2026-11-28: "if u think Fable needs to review what is done perhaps it can code what is done thus far better")
-**A review that fixes what it finds — not a rewrite for its own sake.** Model: Fable (a well-scoped code-design review). Read the code itself, not the results
-prose; judge it cold. Scope = what was written on 2026-11-28 in bim-ootb: PR **#3500** (the one-page editor: `pdf/edit_layer.js`, `pdf/pdf_write.js` rewriteText/lockOf/fonts, `pdf/index.html`), **#3501/#3502** (`erp/overlay/ninja/`, `common/pdfwriter/`, SARA AM in `ninja_pdf.js`), **#3493** (short addresses, the row), **#3494** (samples, phantom-change fix in
-`pdf/index.html` download/applyEdit + `pdf/pdf_write.js` record, File it wording, `erp/sheet_addin/history.js` sample), **#3498** (`pdf/index.html` phone
-layout, two-step open, observer root, track/go, serial drawing; `pdf/pdf_open.js` textLater), and the two builders' PRs of §18 (`feat/edit-as-sheet`) and §19
-(`feat/ninja-pdf-main`) — both merged now; plus the witnesses they added (`erp/tests/witness_door_urls*.js`, `witness_killer_usability.js`,
-`pdf/tests/witness_pdf_mobile.js`, the §18/§19 witnesses). Questions to answer, each with file:line: is it correct (find the input that breaks it)? is each
-responsibility owned once (CLAUDE.md AD-layer rule 5, "one implementation")? what can be deleted (deletion budget)? can each witness actually FAIL on the defect it
-names, or is it scope-blind / vacuous (WITNESS_INTERFACE_FRAMEWORK)? perf budget (heap, verts, bytes) respected? Fix what is found as its own numbered section
-here (spec → fix → witness), keep every existing witness green, record "reviewed, no change needed" where that is the answer.
+### ✅ The review the owner asked for (2026-11-28) is DONE for the editor and the pages: §20
+**Read §20.1 (the table of findings) and §20.7 (results).** A cold read of the 2026-11-28 code, three readers, every finding reproduced before it was believed.
+Fixed and LIVE (bim-ootb #3509 `a16077a4`, live run `§EDSHEET-VERDICT PASS judged=55 failed=0`): hidden scan text was editable unseen; a glyph a subset font lacks was
+written at width 0; a page offered runs the writer refused; every edit re-read every page (1.3 s at 600 pages); undo memory had no limit; two opens that overlap
+mixed two files; a turned phone drew every page; a text edit outside the table made Sheet history list 37 changes nobody made; a drag off the page broke the next drag.
+**The report engine (§20.6, nine findings: clipped numbers, font parsed per cell, no page break, dropped scripts) is with a builder: results in §20.8 when the
+coordinator has re-run its witness. If §20.8 is missing, that work is NOT merged: look for PRs from branch `fix/ninja-pdf-review-20` in both repos.**
 **Delegation (owner, 2026-11-28, verbatim: "tell it to assign well scoped Sonnet agents if needed to do easier tasks"):** the Fable session keeps the judgment —
-the review, the design calls, the specs — and hands EASIER, well-scoped work to **Sonnet** agents (Agent tool, `model: sonnet`): e.g. the guide update for the
-film, wiring witnesses into CI (P11), plain-word message fixes (P7), a fix whose spec section is already written. One bounded task per agent, its own `/tmp/wt-*`
-worktree, the spec section to read named in the brief, the rules of "How to run things" restated (a fresh agent has no memory), and the coordinator re-runs the
-agent's witness itself before believing its report.
+the review, the design calls, the specs — and hands EASIER, well-scoped work to **Sonnet** agents (Agent tool, `model: sonnet`). One bounded task per agent, its own
+`/tmp/wt-*` worktree, the spec section to read named in the brief, the rules of "How to run things" restated (a fresh agent has no memory), and the coordinator
+re-runs the agent's witness itself before believing its report.
+**Left open by the review (each small, none started):** ⛔ the report takes the LOWEST client id - can the live page's database hold more than one tenant? (§20.6);
+the `_door_text` tab is visible in the .xlsx (hiding it = the Sheet-history reader, three hosts); the undo limit (128 MB) is chosen, not measured on a phone;
+the link row / download helper / 760 px breakpoint are each written 3-4 times; `witness_pdf_mobile.js` rests three gates on the one multi-page corpus file;
+four "plausible, not reproduced" items at the end of §20.5.
 
 ### What this lane is (one paragraph)
 **Start from the user's own file, not from an ERP window.** A PDF report or a spreadsheet the user already has is opened in our browser pages, read, checked
@@ -1820,3 +1820,125 @@ LIVE (https://red1oon.github.io/bim-ootb/, after the Pages deploy of 03f67130): 
 CACHE_VERSION, CU3); the slow-statement guard is still not called by the pill host; `ninja_excel.js` (old scalar binder) and the template engine are still two engines
 (AD-LAYER LAW 5, lane item 4); the manual's "designer section" draft is not merged into the live manual; the film beat itself is not recorded.
 **The `ninja-xtab2` branch** is fully contained in master (#1375 squashed it with the 4 commits above); it holds nothing master lacks and can be deleted.
+
+## 20. Review of the 2026-11-28 code: what it found, the fixes (spec 2026-11-28, before code)
+The ▶ FIRST task of the resume block. The code was read cold (not the results prose); each finding below was reproduced before it was believed
+(`§REVIEW-R1..R4`, a throw-away script over hand-built PDFs; numbers quoted are from its log). Scope of this section's fixes: bim-ootb `pdf/`.
+Findings of the two parallel reads (§19 report engine; #3493 / #3494 / #3498 pages and witnesses) are in §20.6-20.7.
+
+### 20.1 Findings in the one-page editor (`pdf/pdf_write.js`, `pdf/edit_layer.js`, `pdf/index.html`, `pdf/pdf_open.js`)
+| # | Finding (file:line at bim-ootb `a3faf543`) | Reproduced | Kind |
+|---|---|---|---|
+| R1 | **Invisible text is offered and "edited".** The interpreter (`pdf_write.js:256-321`) never reads the `Tr` operator, so the hidden text layer of a scan (render mode 3) is a writable run. The edit succeeds and the page looks exactly as before: the picture on top is untouched. | `lock=null rewriteOk=true` | correctness |
+| R2 | **A glyph the subset does not hold is written at width 0.** A one-byte font read through WinAnsiEncoding (`pdf_write.js:235`) is given EVERY WinAnsi character as "carried", whatever `/Widths` says. `/Widths [278 0 556 556 556 556 0 0]` from code 46: typing a `7` (beyond LastChar) or a `4` (width 0, how a subsetter marks an unused code) is accepted with no substitution, the number comes out 6.68 pt narrower (36.70 -> 30.02). | `ok=true fontSub=null` twice | correctness |
+| R3 | **Offered, then refused.** `listRuns` (`pdf_write.js:559-568`) and `rewriteNumbers` (`:418-429`) each build "this page's runs" on their own; only the writer knows `shared-content` (two pages, one content stream) and the page's rotation is checked a third time in `index.html:311`. The layer offers a run the writer refuses. | `offeredLock=null refused=shared-content` | one owner (§18.5 H1) |
+| R4 | **Every edit, undo and redo re-reads the text of EVERY page.** `swapTo` (`index.html:298`) reopens without `textLater`. 600 pages: 1,288 ms per edit against 64 ms for the sizes and 20 ms for the rewrite itself. | measured | perf budget |
+| R5 | **Undo keeps one whole copy of the file per edit**, without limit (`index.html:306`, `before` / `after`). 2.5 MB each on the 600-page file; a 50 MB PDF and ten edits is 550 MB, above a phone tab. | by reading (N+1 buffers for N edits) | perf budget |
+| R6 | "Is this run in that box" is written three times: `pdf_write.js:361` (plan), `:479` (applyToItems), `edit_layer.js:20` with its own copy of the 0.5 pt tolerance and the comment "the writer's own rule". | by reading | one owner |
+| R7 | A mouse drag that ends outside the page leaves the sum-box on the page and the next click is taken as the end of that drag (`edit_layer.js:96-106`: no `pointercancel` / leave). | by reading | correctness, small |
+Reviewed, no change needed: the lexer and object reader; the full rewrite (`build`) and its cross-reference table; the kerning arithmetic of `plan` (lead / tail keep
+the pen); font substitution choice and the red box staying on screen; `embedFile`; `formatLike` / `alignOf`; the open flow's `S.opens` guards in the edit path.
+`witness_edit_sheet.js` and `witness_pdf_write.js` can fail (7/7 and their own mutants; W13 sweeps every number cell of the corpus, not a picked one).
+Their blind spot is the corpus: no scan, no one-byte subset font, no shared content stream, one page - which is why R1-R4 passed green.
+
+### 20.2 The fixes (each in the generic place, none per file or per PDF)
+- **R1** `interpret` keeps the text render mode (`Tr`, part of the graphics state, so `q`/`Q` restore it); `lockOf` locks mode 3 and 7 by name:
+  `invisible-text` - "this text is not drawn (the hidden text of a scanned page): changing it would not change what the page shows".
+- **R2** a one-byte font carries a character only if its code has a `/Widths` entry above 0. Anything else is "missing" and takes the path already there:
+  another face of the family, else the closest standard font with the red box (owner ruling 2026-11-28), else a named refusal.
+- **R3** ONE function turns a page into `{ lock, runs, fonts, streams }` and both `listRuns` and `rewriteNumbers` call it. A page-level refusal (turned page,
+  shared content) reaches the layer as `runs.pageLock`; `index.html` drops its own rotation check. `runs.rotate` stays (the phone witness counts it).
+- **R4** `PdfOpen.reopen(pdfjsLib, bytes, prev, page)`: sizes for all pages, the text of `page` only, every other page's text and runs carried over from `prev`
+  (an edit touches one page). Falls back to a full read when the page count differs. `swapTo` uses it; a `§PDFED-REOPEN pagesRead= of= ms=` line states the cost.
+- **R5** the undo stack holds at most `UNDO_BYTES` of earlier copies (128 MB: a fifth of the ~0.6 GB a phone tab has, CLAUDE.md PERF BUDGET; a bound chosen here,
+  not measured). Beyond it the OLDEST steps lose their bytes, never their record (the font list of the export stays whole); undo then stops there and says so.
+  `§EDSHEET-UNDO-MEM steps= heldMB= dropped=` after every push.
+- **R6** `PdfWrite.inBox(cx, y, box)` is the one rule; `plan`, `applyToItems` and the layer call it. `edit_layer.js` loses its copy and its tolerance.
+- **R7** a drag is ended by `pointercancel` and by the pointer leaving the layer: the box is removed, nothing is summed.
+Deletion budget: stated with the results (lines + / −).
+
+### 20.3 Witness (the corpus gap is closed in the witness, with PDFs made in it - no new binary in git)
+W-PDF-WRITE gains case **W14 REVIEW** over four PDFs built in the witness itself (poppler must open each: an invalid fixture judges nothing):
+- `invisible` a mode-3 run: `listRuns` locks it `invisible-text`; `rewriteText` refuses by the same name; bytes unchanged. A visible run on the same page stays writable.
+- `subset` the `/Widths` font above: `7` and `4` are written in a standard font, `fontSub` stated, and the new text is as wide as that font says (not narrower
+  by a glyph); `5` (carried) is written in the font itself with no substitution.
+- `shared` two pages on one content stream: `listRuns(…).pageLock.reason === 'shared-content'` and the writer refuses by the same name (offered == writable).
+- `reopen` 40 pages, one edit on page 7: `reopen` reads 1 page; its text and runs for ALL 40 pages equal a full fresh open of the new bytes; the edited
+  page shows the new text. (The equality is the point: a carried page that was in fact changed would fail it.)
+Mutants (each must turn W14 FAIL): `MUT-TR` (the lock for mode 3 dropped), `MUT-WIDTHS` (the width rule dropped), `MUT-PAGELOCK` (listRuns ignores the page lock),
+`MUT-CARRY` (reopen carries the edited page too). W-EDIT-SHEET (browser) gains H8: with the budget set to one file's size, three edits leave one step with
+bytes, `§EDSHEET-UNDO-MEM dropped=2`, one undo works byte-identically and the next says it cannot; and R7: a drag released outside the page leaves no box.
+Every existing case of W-PDF-WRITE, W-EDIT-SHEET, W-PDF-HISTORY, W-PDFED-P0 and the page witnesses stays green.
+
+### 20.4 Found by the new witness itself (added to the fix list before it could pass)
+- **R8** a mouse drag that leaves the page starts a browser TEXT SELECTION; the next drag on the page is then a native drag-and-drop (`pointercancel`), so the
+  sum-box never comes. Measured in the headless page (`pointerdown` then `pointercancel`, no `§EDSHEET-SELECT`). Fix: the layer is `user-select: none`
+  (the editor's input keeps `text`). H8 `drag-left-the-page` asserts the drag AFTER the escaped one sums 4 cells.
+
+### 20.5 The pages around the editor (#3493 / #3494 / #3498): findings of the second read, each reproduced on the local page
+| # | Finding (`pdf/index.html` at `a3faf543`) | Reproduced |
+|---|---|---|
+| D1 | **Two opens that overlap leave one file's bytes with the other file's document.** `o = S.opens` is taken after `await PdfOpen.open` (`:136`), so neither call backs off; the loser's document is never destroyed. A drop during a slow open, or a double tap on the sample. An edit from there writes one file's boxes into the other's bytes. | `S.name` = the 1-page file, `S.info` = the 12-page one |
+| D2 | **No resize / rotation handling.** `layout()` runs once per open: widths are fixed px and the observer root is chosen once. Phone landscape -> portrait: 12 of 12 canvases alive, page 580 px in 390. The §17 "every page drawn" defect back through a rotate. | canvases 1 -> 12 |
+| D3 | **A prose edit still makes Sheet history list changes nobody made.** An edit outside a table skips `startPage`, so the history's only sheet is `_door_text`, which the .xlsx does not carry: "37 cells have changed since the last stamp". #3494's fix, defeated by #3500. `witness_killer_usability.js` J2 edits number cells only and cannot see it. | pending = 37 |
+| D4 | A failed open after a good one keeps `body.open`: the sample button stays hidden, Undo stays visible, under a message that says to open a PDF. | `bodyOpen=true` |
+Fixes: **D1** the open's own number is taken right after `closeDoc()` and checked after EVERY await of `openBytes`; a document that lost is destroyed. **D2** one
+debounced `resize` listener: when the panel's width or "which element scrolls" changed, the observer is dropped, `layout()` runs again, the page that was on
+screen is brought back and the edit layer re-mounted. **D3** ONE rule at the export: the workbook and its history hold the SAME sheets. (1) A history that never saw this page's sheet gets it at Download
+.xlsx, as first read. (2) Every other sheet the history holds - another page read as a sheet, the texts changed outside a table (`_door_text`) - goes into
+the workbook as the history holds it. These sheets are VISIBLE: the Sheet history page compares the visible sheets only (`history.js:34`), a hidden one would
+again read as cleared. (A hidden `_door_text` needs the reader to read history-named hidden sheets, in `erp/`, three hosts: not done here.)
+**D4** `closeDoc()` removes `body.open`.
+Witness: W-EDIT-SHEET **H9** - (a) the 12-page report and the trial balance opened without waiting: bytes, document and page count are all the LAST file's;
+(b) after a good file, a non-PDF: `body.open` is gone; (c) the 12-page report at 844 px wide then 390: canvases alive <= 6 and every page <= the window's width;
+(d) a prose edit beside a table, Download .xlsx, read by `SheetHistory`: 0 pending changes. Mutants: `MUT-OPENRACE` (the check after the open dropped),
+`MUT-NORESIZE` (the listener does nothing), `MUT-ONESHEET` (the workbook carries its own page only). Plausible, not reproduced, left as notes: a page that leaves during `getPage` keeps its canvas until it returns;
+a text read that fails on the open file leaves "Reading ..." with no words; `go()` on a phone lands under the sticky header; the history sample restores
+the visitor's name without try/finally. Owned three or four times, not merged here (P7-sized, listed in the resume block): the link row markup + CSS (three
+pages), the download-a-blob helper (four), the 760 px breakpoint (CSS and `phone()`); `witness_pdf_mobile.js` rests M2 / U6 / U7 on the one multi-page corpus file.
+
+### 20.6 The report engine in the live app (§19, #3501 / #3502): findings of the third read
+Engine files are bim-compiler `build/erp` first, copied out (N6 byte-identity). Reproduced in node (pdfkit + poppler):
+| # | Finding | Reproduced |
+|---|---|---|
+| C1 | **A number wider than its column prints as a different, smaller number**: right-aligned then clipped (`ninja_pdf.js:157-159`), only the tail digits show. Poppler still extracts the whole number, so N1 / N2 cannot see it. | 1234567.89 in a 5-char column: text starts 34 pt left of its clip |
+| C2 | **The font is parsed again on every `doc.font(bytes)`** (`ninja_pdf.js:145-149,162`), ~3.3 times per cell. | 1,800 cells: 8,583 ms against 118 ms with each font registered once |
+| C3 | **No page break**: one page as tall as the sheet (`:90-91`). PDF's limit is 14,400 pt, about 1,100 default rows. | 5,000 rows: one page of 63,894 pt |
+| C4 | **Text in a script with no font here is dropped without a word** (`runsOf :31` sends everything not Thai / Lao to Liberation Sans). | Chinese, Arabic, the rupee sign: absent from the PDF, no log line |
+| C5 | N2 judges SARA AM on ONE word; the tone-mark branch (`:45`), AM at a run's start and Lao are never judged (the code is right: 10 of 11 variants exact through poppler). | a mutant deleting `:45` would survive |
+| C6 | Dead: `hasLao` (`ninja_pdf.js:27`), `_fonts` (`ninja_report.js:10,44,48`), N3's `git log | grep` gate (INCONCLUSIVE on a shallow clone). | by reading |
+| P-R1 | A second "Download PDF" click while the first runs gives two downloads (`report_pill.js:76-83`); a PDF failure wipes the finished report (`:82` -> `fail()` sets `innerHTML`). | by reading |
+| P-R3 | The printed-text rule (`numFmt || z || 'General'` through SSF) is written three times, the third in the witness: N1 compares the PDF with a copy of the rule. | by reading |
+| P-R4 | The verdict word is PASS while a claim is INCONCLUSIVE (the recorded LIVE run: N4 not judged, "PASS"); N3 skips four checks when its bytes are null. | by reading |
+Fixes (one bounded builder task, spec = this table): **C2** each font registered once per document, used by name. **C1** a number that does not fit prints as
+`#` fill, as Excel does, counted in `§NINJA_PDF overflowNumbers=`. **C3** pages: the sheet is cut at ROW boundaries so no page is taller than 14,400 pt (the
+header row is not repeated: no evidence for it in the template). **C4** code points no loaded font holds are counted, returned as `missingGlyphs`, logged in
+`§NINJA_REPORT_PDF`, and said in one line on the pill. **C6** deleted. **P-R1** one in-flight promise per result; the error goes in its own node. **P-R3** one
+exported `cellText(c, styles, fmt)`, used by the renderer, the pill and the witness. **P-R4** the verdict word is `PASS` only when every claim is judged, else
+`PASS-PARTIAL notJudged=...`. **C5** witness N2b (node only): the word list through the renderer and poppler; mutant M3 on the tone-mark loop. Each of C1-C4
+gets a node case that fails before and passes after; `renderMs` and `heapMB` join `§NINJA_REPORT_PDF`.
+**⛔ Not fixed, needs one fact:** the report takes the LOWEST `ad_client_id > 0` (`ninja_report.js:76-78`) and the pill passes no client; `ad_seed.db` holds six
+clients. Whether the live page's database can hold more than one tenant at once decides if this is a defect (other overlays take the client from the session).
+
+### 20.7 RESULTS (2026-11-28) - bim-ootb #3509 (`fix/killer-review-20`), the editor and the pages (§20.1-20.5)
+All of R1-R8 and D1-D4 fixed as specified, with two changes of plan found while building, both stated in §20.4 / §20.5 before the code:
+R8 (the text selection) was found by the new drag check itself; D3 became ONE rule at the export, and its sheets are visible.
+| Witness (logs read, local tree) | Verdict |
+|---|---|
+| W-PDF-WRITE (node) | `§PDFWR-VERDICT PASS judged=77 failed=0`, `§PDFWR-MUTANTS killed=10/10` (W14: 10 checks; M7-M10 new) |
+| W-EDIT-SHEET (browser) | `§EDSHEET-VERDICT PASS judged=55 failed=0`, mutants 12/12 (H8: 5 checks, H9: 4; five new mutants) |
+| W-PDFED-P0 12 · W-SHEET-READER 37 · W-PDF-HISTORY 56 · PDFPG 19 · PDFWP 22 · PDFHP 19 · phone PDFM 36 · usability USE 44 | all PASS, 0 failed |
+Evidence lines: `§REVIEW-R1 lock=null rewriteOk=true` -> `lock=invisible-text rewriteOk=false`; `§REVIEW-R2 ... fontSub=null widthAfter=30.02` ->
+`fontSub Arial -> Helvetica, widthAfter=36.70`; W14 `reopen pages=40 pagesRead=1 pagesDifferentFromFreshOpen=[]`; `§EDSHEET-UNDO-MEM steps=3 withBytes=1
+heldMB=0.07 budgetMB=0.07 dropped=1`; `§PDFED-RELAYOUT width=580->366 phone=true page=1 pages=12` (3 canvases alive, widest page 366 of 390 px);
+`§PDFXLSX-SHEETS page="Report" alsoFromHistory=["_door_text:1"]` then on the history page `§SHIST-PAGE-BIND state=intact entries=2 cells=37 pending=0`
+(was 37 pending); with the `open-race` mutant the overlap check reads `name=small1.pdf pages=12` - the defect itself.
+A lesson for the witness: the first overlap check (two opens in one tick) could NOT fail on the missing guard after the read - the mutant survived (11/12).
+The check now also asks for the second file 4 ms into the first one's read; then the mutant dies. A guard needs a check timed to the await it protects.
+Lines: `pdf_write.js` +41 −24, `index.html` +58 −15, `pdf_open.js` +17 −2, `edit_layer.js` +5 −3; witnesses +148 −9. Deleted: the second "page -> runs"
+(listRuns' own copy), the page's own rotation check, two copies of the in-box rule and one of its tolerance.
+**Not done / stated limits:** the undo budget (128 MB) is a bound chosen, not measured on a phone; a `_door_text` tab is visible in the .xlsx (hiding it
+needs the Sheet-history reader, `erp/`, three hosts); the "plausible" items of §20.5 are not reproduced and not fixed; the copies named at the end of §20.5
+(link row, download helper, breakpoint) are not merged; the editor still covers page 1 only.
+**LIVE (2026-11-28, after #3509 `a16077a4` reached GitHub Pages):** `EDSHEET_URL=https://red1oon.github.io/bim-ootb/pdf/` ->
+`§EDSHEET-H8 PASS judged=5`, `§EDSHEET-H9 PASS judged=4 ... opens=small1.pdf/1p · turned alive=3 widest=366/390 · prose 0 pending`, `§EDSHEET-VERDICT PASS judged=55 failed=0`.
